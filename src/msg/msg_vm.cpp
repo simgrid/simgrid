@@ -226,47 +226,27 @@ void MSG_vm_shutdown(msg_vm_t vm)
  * to detect the completion of a migration. The names of these mailboxes must not conflict with others. */
 static inline char *get_mig_mbox_src_dst(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
-  const char *vm_name = sg_host_get_name(vm);
-  const char *src_pm_name = sg_host_get_name(src_pm);
-  const char *dst_pm_name = sg_host_get_name(dst_pm);
-
-  return bprintf("__mbox_mig_src_dst:%s(%s-%s)", vm_name, src_pm_name, dst_pm_name);
+  return bprintf("__mbox_mig_src_dst:%s(%s-%s)", vm->cname(), src_pm->cname(), dst_pm->cname());
 }
 
 static inline char *get_mig_mbox_ctl(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
-  const char *vm_name = sg_host_get_name(vm);
-  const char *src_pm_name = sg_host_get_name(src_pm);
-  const char *dst_pm_name = sg_host_get_name(dst_pm);
-
-  return bprintf("__mbox_mig_ctl:%s(%s-%s)", vm_name, src_pm_name, dst_pm_name);
+  return bprintf("__mbox_mig_ctl:%s(%s-%s)", vm->cname(), src_pm->cname(), dst_pm->cname());
 }
 
 static inline char *get_mig_process_tx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
-  const char *vm_name = sg_host_get_name(vm);
-  const char *src_pm_name = sg_host_get_name(src_pm);
-  const char *dst_pm_name = sg_host_get_name(dst_pm);
-
-  return bprintf("__pr_mig_tx:%s(%s-%s)", vm_name, src_pm_name, dst_pm_name);
+  return bprintf("__pr_mig_tx:%s(%s-%s)", vm->cname(), src_pm->cname(), dst_pm->cname());
 }
 
 static inline char *get_mig_process_rx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
-  const char *vm_name = sg_host_get_name(vm);
-  const char *src_pm_name = sg_host_get_name(src_pm);
-  const char *dst_pm_name = sg_host_get_name(dst_pm);
-
-  return bprintf("__pr_mig_rx:%s(%s-%s)", vm_name, src_pm_name, dst_pm_name);
+  return bprintf("__pr_mig_rx:%s(%s-%s)", vm->cname(), src_pm->cname(), dst_pm->cname());
 }
 
 static inline char *get_mig_task_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm, int stage)
 {
-  const char *vm_name = sg_host_get_name(vm);
-  const char *src_pm_name = sg_host_get_name(src_pm);
-  const char *dst_pm_name = sg_host_get_name(dst_pm);
-
-  return bprintf("__task_mig_stage%d:%s(%s-%s)", stage, vm_name, src_pm_name, dst_pm_name);
+  return bprintf("__task_mig_stage%d:%s(%s-%s)", stage, vm->cname(), src_pm->cname(), dst_pm->cname());
 }
 
 struct migration_session {
@@ -288,34 +268,26 @@ static int migration_rx_fun(int argc, char *argv[])
   // The structure has been created in the do_migration function and should only be freed in the same place ;)
   struct migration_session *ms = (migration_session *) MSG_process_get_data(MSG_process_self());
 
-  s_vm_params_t params;
-  static_cast<simgrid::s4u::VirtualMachine*>(ms->vm)->parameters(&params);
-
-  int need_exit = 0;
+  bool received_finalize = false;
 
   char *finalize_task_name = get_mig_task_name(ms->vm, ms->src_pm, ms->dst_pm, 3);
-
-  int ret = 0;
-  for (;;) {
+  while (!received_finalize) {
     msg_task_t task = nullptr;
-    ret = MSG_task_recv(&task, ms->mbox);
-    {
-      if (ret != MSG_OK) {
-        // An error occurred, clean the code and return
-        // The owner did not change, hence the task should be only destroyed on the other side
-        xbt_free(finalize_task_name);
-        return 0;
-      }
+    int ret         = MSG_task_recv(&task, ms->mbox);
+
+    if (ret != MSG_OK) {
+      // An error occurred, clean the code and return
+      // The owner did not change, hence the task should be only destroyed on the other side
+      xbt_free(finalize_task_name);
+      return 0;
     }
 
     if (strcmp(task->name, finalize_task_name) == 0)
-      need_exit = 1;
+      received_finalize = 1;
 
     MSG_task_destroy(task);
-
-    if (need_exit)
-      break;
   }
+  xbt_free(finalize_task_name);
 
   // Here Stage 1, 2  and 3 have been performed.
   // Hence complete the migration
@@ -388,7 +360,6 @@ static int migration_rx_fun(int argc, char *argv[])
     xbt_free(task_name);
   }
 
-  xbt_free(finalize_task_name);
 
   XBT_DEBUG("mig: rx_done");
   return 0;
@@ -799,7 +770,7 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
   argv[1]     = nullptr;
   MSG_process_create_with_arguments(pr_rx_name, migration_rx_fun, ms, dst_pm, 1, argv);
 
-  char** argv = xbt_new(char*, 2);
+  argv        = xbt_new(char*, 2);
   argv[0]     = pr_tx_name;
   argv[1]     = nullptr;
   MSG_process_create_with_arguments(pr_tx_name, migration_tx_fun, ms, src_pm, 1, argv);
@@ -863,11 +834,11 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
   simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
   msg_host_t old_pm                        = pimpl->getPm();
 
-  if(MSG_host_is_off(old_pm))
-    THROWF(vm_error, 0, "SRC host(%s) seems off, cannot start a migration", sg_host_get_name(old_pm));
+  if (old_pm->isOff())
+    THROWF(vm_error, 0, "Cannot start a migration from host '%s', which is offline.", sg_host_get_name(old_pm));
 
-  if(MSG_host_is_off(new_pm))
-    THROWF(vm_error, 0, "DST host(%s) seems off, cannot start a migration", sg_host_get_name(new_pm));
+  if (new_pm->isOff())
+    THROWF(vm_error, 0, "Cannot start a migration to host '%s', which is offline.", sg_host_get_name(new_pm));
 
   if (!MSG_vm_is_running(vm))
     THROWF(vm_error, 0, "VM(%s) is not running", sg_host_get_name(vm));
