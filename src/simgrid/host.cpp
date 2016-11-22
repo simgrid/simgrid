@@ -61,7 +61,7 @@ sg_host_t *sg_host_list() {
 
 const char *sg_host_get_name(sg_host_t host)
 {
-  return host->name().c_str();
+  return host->cname();
 }
 
 void* sg_host_extension_get(sg_host_t host, size_t ext)

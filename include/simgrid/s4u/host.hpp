@@ -67,6 +67,7 @@ public:
   static s4u::Host *current();
 
   simgrid::xbt::string const& name() const { return name_; }
+  const char* cname() { return name_.c_str(); }
 
   /** Turns that host on if it was previously off
    *
