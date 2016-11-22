@@ -222,18 +222,6 @@ void MSG_vm_shutdown(msg_vm_t vm)
   // (eg with the VM destroy)
 }
 
-/* We have two mailboxes. mbox is used to transfer migration data between source and destination PMs. mbox_ctl is used
- * to detect the completion of a migration. The names of these mailboxes must not conflict with others. */
-static inline char *get_mig_mbox_src_dst(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
-{
-  return bprintf("__mbox_mig_src_dst:%s(%s-%s)", vm->cname(), src_pm->cname(), dst_pm->cname());
-}
-
-static inline char *get_mig_mbox_ctl(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
-{
-  return bprintf("__mbox_mig_ctl:%s(%s-%s)", vm->cname(), src_pm->cname(), dst_pm->cname());
-}
-
 static inline char *get_mig_process_tx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
   return bprintf("__pr_mig_tx:%s(%s-%s)", vm->cname(), src_pm->cname(), dst_pm->cname());
@@ -753,8 +741,11 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
   ms->vm = vm;
   ms->src_pm = src_pm;
   ms->dst_pm = dst_pm;
-  ms->mbox_ctl = get_mig_mbox_ctl(vm, src_pm, dst_pm);
-  ms->mbox = get_mig_mbox_src_dst(vm, src_pm, dst_pm);
+
+  /* We have two mailboxes. mbox is used to transfer migration data between source and destination PMs. mbox_ctl is used
+   * to detect the completion of a migration. The names of these mailboxes must not conflict with others. */
+  ms->mbox_ctl = bprintf("__mbox_mig_ctl:%s(%s-%s)", vm->cname(), src_pm->cname(), dst_pm->cname());
+  ms->mbox     = bprintf("__mbox_mig_src_dst:%s(%s-%s)", vm->cname(), src_pm->cname(), dst_pm->cname());
 
   char *pr_rx_name = get_mig_process_rx_name(vm, src_pm, dst_pm);
   char *pr_tx_name = get_mig_process_tx_name(vm, src_pm, dst_pm);
@@ -780,7 +771,6 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
   xbt_free(ms->mbox);
   xbt_free(ms);
 
-  // xbt_assert(ret == MSG_OK);
   if (ret == MSG_HOST_FAILURE) {
     // Note that since the communication failed, the owner did not change and the task should be destroyed on the
     // other side. Hence, just throw the execption
@@ -829,16 +819,16 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
   msg_host_t old_pm                        = pimpl->getPm();
 
   if (old_pm->isOff())
-    THROWF(vm_error, 0, "Cannot start a migration from host '%s', which is offline.", sg_host_get_name(old_pm));
+    THROWF(vm_error, 0, "Cannot start a migration from host '%s', which is offline.", old_pm->cname());
 
   if (new_pm->isOff())
-    THROWF(vm_error, 0, "Cannot start a migration to host '%s', which is offline.", sg_host_get_name(new_pm));
+    THROWF(vm_error, 0, "Cannot start a migration to host '%s', which is offline.", new_pm->cname());
 
   if (!MSG_vm_is_running(vm))
-    THROWF(vm_error, 0, "VM(%s) is not running", sg_host_get_name(vm));
+    THROWF(vm_error, 0, "VM(%s) is not running", vm->cname());
 
   if (MSG_vm_is_migrating(vm))
-    THROWF(vm_error, 0, "VM(%s) is already migrating", sg_host_get_name(vm));
+    THROWF(vm_error, 0, "VM(%s) is already migrating", vm->cname());
 
   pimpl->isMigrating = 1;
 
