@@ -587,9 +587,7 @@ static int migration_tx_fun(int argc, char *argv[])
   const double mig_speed    = params.mig_speed;
   double max_downtime       = params.max_downtime;
 
-  /* hard code it temporally. Fix Me */
-#define MIGRATION_TIMEOUT_DO_NOT_HARDCODE_ME 10000000.0
-  double mig_timeout = MIGRATION_TIMEOUT_DO_NOT_HARDCODE_ME;
+  double mig_timeout = 10000000.0;
 
   double remaining_size = (double) (ramsize + devsize);
   double threshold = 0.0;
@@ -636,8 +634,7 @@ static int migration_tx_fun(int argc, char *argv[])
     double clock_post_send = MSG_get_clock();
     mig_timeout -= (clock_post_send - clock_prev_send);
     if (mig_timeout < 0) {
-      XBT_VERB("The duration of stage 1 exceeds the timeout value (%lf > %lf), skip stage 2",
-          (clock_post_send - clock_prev_send), MIGRATION_TIMEOUT_DO_NOT_HARDCODE_ME);
+      XBT_VERB("The duration of stage 1 exceeds the timeout value, skip stage 2");
       skip_stage2 = 1;
     }
 
@@ -737,8 +734,42 @@ static int migration_tx_fun(int argc, char *argv[])
   return 0;
 }
 
-static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
+/** @brief Migrate the VM to the given host.
+ *  @ingroup msg_VMs
+ */
+void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
 {
+  /* some thoughts:
+   * - One approach is ...
+   *   We first create a new VM (i.e., destination VM) on the destination   physical host. The destination VM will
+   *   receive the state of the source
+   *   VM over network. We will finally destroy the source VM.
+   *   - This behavior is similar to the way of migration in the real world.
+   *     Even before a migration is completed, we will see a destination VM, consuming resources.
+   *   - We have to relocate all processes. The existing process migration code will work for this?
+   *   - The name of the VM is a somewhat unique ID in the code. It is tricky for the destination VM?
+   *
+   * - Another one is ...
+   *   We update the information of the given VM to place it to the destination physical host.
+   *
+   * The second one would be easier.
+   */
+
+  simgrid::s4u::VirtualMachine* typedVm    = static_cast<simgrid::s4u::VirtualMachine*>(vm);
+  simgrid::surf::VirtualMachineImpl* pimpl = typedVm->pimpl_vm_;
+  msg_host_t src_pm                        = pimpl->getPm();
+
+  if (src_pm->isOff())
+    THROWF(vm_error, 0, "Cannot migrate VM '%s' from host '%s', which is offline.", vm->cname(), src_pm->cname());
+  if (dst_pm->isOff())
+    THROWF(vm_error, 0, "Cannot migrate VM '%s' to host '%s', which is offline.", vm->cname(), dst_pm->cname());
+  if (!MSG_vm_is_running(vm))
+    THROWF(vm_error, 0, "Cannot migrate VM '%s' that is not running yet.", vm->cname());
+  if (typedVm->isMigrating())
+    THROWF(vm_error, 0, "Cannot migrate VM '%s' that is already migrating.", vm->cname());
+
+  pimpl->isMigrating = true;
+
   struct migration_session *ms = xbt_new(struct migration_session, 1);
   ms->vm = vm;
   ms->src_pm = src_pm;
@@ -766,8 +797,10 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
   XBT_DEBUG("wait for reception of the final ACK (i.e. migration has been correctly performed");
   msg_task_t task = nullptr;
   msg_error_t ret = MSG_TIMEOUT;
-  while (ret == MSG_TIMEOUT && MSG_host_is_on(dst_pm)) // Wait while you receive the message o
+  while (ret == MSG_TIMEOUT && dst_pm->isOn()) // The rx will tell me when he gots the VM
     ret = MSG_task_receive_with_timeout(&task, ms->mbox_ctl, 4);
+
+  pimpl->isMigrating = false;
 
   xbt_free(ms->mbox_ctl);
   xbt_free(ms->mbox);
@@ -779,71 +812,18 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
     XBT_ERROR("SRC crashes, throw an exception (m-control)");
     // MSG_process_kill(tx_process); // Adrien, I made a merge on Nov 28th 2014, I'm not sure whether this line is
     // required or not
-    return -1;
+    THROWF(host_error, 0, "Source host '%s' failed during the migration of VM '%s'.", src_pm->cname(), vm->cname());
   } else if ((ret == MSG_TRANSFER_FAILURE) || (ret == MSG_TIMEOUT)) {
     // MSG_TIMEOUT here means that MSG_host_is_avail() returned false.
     XBT_ERROR("DST crashes, throw an exception (m-control)");
-    return -2;
+    THROWF(host_error, 0, "Destination host '%s' failed during the migration of VM '%s'.", dst_pm->cname(),
+           vm->cname());
   }
 
   char* expected_task_name = get_mig_task_name(vm, src_pm, dst_pm, 4);
   xbt_assert(strcmp(task->name, expected_task_name) == 0);
   xbt_free(expected_task_name);
   MSG_task_destroy(task);
-  return 0;
-}
-
-/** @brief Migrate the VM to the given host.
- *  @ingroup msg_VMs
- *
- * FIXME: No migration cost occurs. If you want to simulate this too, you want to use a MSG_task_send() before or after,
- * depending on whether you want to do cold or hot migration.
- */
-void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
-{
-  /* some thoughts:
-   * - One approach is ...
-   *   We first create a new VM (i.e., destination VM) on the destination   physical host. The destination VM will
-   *   receive the state of the source
-   *   VM over network. We will finally destroy the source VM.
-   *   - This behavior is similar to the way of migration in the real world.
-   *     Even before a migration is completed, we will see a destination VM, consuming resources.
-   *   - We have to relocate all processes. The existing process migration code will work for this?
-   *   - The name of the VM is a somewhat unique ID in the code. It is tricky for the destination VM?
-   *
-   * - Another one is ...
-   *   We update the information of the given VM to place it to the destination physical host.
-   *
-   * The second one would be easier.
-   */
-
-  simgrid::s4u::VirtualMachine* typedVm    = static_cast<simgrid::s4u::VirtualMachine*>(vm);
-  simgrid::surf::VirtualMachineImpl* pimpl = typedVm->pimpl_vm_;
-  msg_host_t old_pm                        = pimpl->getPm();
-
-  if (old_pm->isOff())
-    THROWF(vm_error, 0, "Cannot migrate VM '%s' from host '%s', which is offline.", vm->cname(), old_pm->cname());
-
-  if (new_pm->isOff())
-    THROWF(vm_error, 0, "Cannot migrate VM '%s' to host '%s', which is offline.", vm->cname(), new_pm->cname());
-
-  if (!MSG_vm_is_running(vm))
-    THROWF(vm_error, 0, "Cannot migrate VM '%s' that is not running yet.", vm->cname());
-
-  if (typedVm->isMigrating())
-    THROWF(vm_error, 0, "Cannot migrate VM '%s' that is already migrating.", vm->cname());
-
-  pimpl->isMigrating = true;
-
-  int ret = do_migration(vm, old_pm, new_pm);
-  if (ret == -1) {
-    pimpl->isMigrating = false;
-    THROWF(host_error, 0, "Source host '%s' failed during the migration of VM '%s'.", old_pm->cname(), vm->cname());
-  } else if (ret == -2) {
-    pimpl->isMigrating = false;
-    THROWF(host_error, 0, "Destination host '%s' failed during the migration of VM '%s'.", new_pm->cname(),
-           vm->cname());
-  }
 }
 
 /** @brief Immediately suspend the execution of all processes within the given VM.
