@@ -871,7 +871,8 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
    * The second one would be easier.
    */
 
-  msg_host_t old_pm = (msg_host_t) simcall_vm_get_pm(vm);
+  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
+  msg_host_t old_pm                        = pimpl->getPm();
 
   if(MSG_host_is_off(old_pm))
     THROWF(vm_error, 0, "SRC host(%s) seems off, cannot start a migration", sg_host_get_name(old_pm));
@@ -885,8 +886,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
   if (MSG_vm_is_migrating(vm))
     THROWF(vm_error, 0, "VM(%s) is already migrating", sg_host_get_name(vm));
 
-  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
-  pimpl->isMigrating                       = 1;
+  pimpl->isMigrating = 1;
 
   {
     int ret = do_migration(vm, old_pm, new_pm);
@@ -994,7 +994,7 @@ void MSG_vm_restore(msg_vm_t vm)
  */
 msg_host_t MSG_vm_get_pm(msg_vm_t vm)
 {
-  return (msg_host_t) simcall_vm_get_pm(vm);
+  return static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getPm();
 }
 
 /** @brief Set a CPU bound for a given VM.
