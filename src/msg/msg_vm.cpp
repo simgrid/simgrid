@@ -172,7 +172,7 @@ msg_vm_t MSG_vm_create_core(msg_host_t pm, const char* name)
 void MSG_vm_destroy(msg_vm_t vm)
 {
   if (MSG_vm_is_migrating(vm))
-    THROWF(vm_error, 0, "VM(%s) is migrating", vm->name().c_str());
+    THROWF(vm_error, 0, "Cannot destroy VM '%s', which is migrating.", vm->cname());
 
   /* First, terminate all processes on the VM if necessary */
   if (MSG_vm_is_running(vm))
@@ -218,8 +218,10 @@ void MSG_vm_start(msg_vm_t vm)
 void MSG_vm_shutdown(msg_vm_t vm)
 {
   simcall_vm_shutdown(vm);
-  MSG_process_sleep(0.); // Make sure that the processes in the VM are killed in this scheduling round before processing
+
+  // Make sure that the processes in the VM are killed in this scheduling round before processing
   // (eg with the VM destroy)
+  MSG_process_sleep(0.);
 }
 
 static inline char *get_mig_process_tx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
@@ -303,8 +305,7 @@ static int migration_rx_fun(int argc, char *argv[])
   {
     // Now the VM is running on the new host (the migration is completed) (even if the SRC crash)
     vm->pimpl_vm_->isMigrating = false;
-    XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", sg_host_get_name(ms->vm), sg_host_get_name(ms->src_pm),
-              sg_host_get_name(ms->dst_pm));
+    XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", ms->vm->cname(), ms->src_pm->cname(), ms->dst_pm->cname());
 
     if (TRACE_msg_vm_is_enabled()) {
       static long long int counter = 0;
@@ -322,7 +323,7 @@ static int migration_rx_fun(int argc, char *argv[])
       PJ_container_free(existing_container);
 
       // create new container on the new_host location
-      PJ_container_new(vm->name().c_str(), INSTR_MSG_VM, PJ_container_get(sg_host_get_name(ms->dst_pm)));
+      PJ_container_new(vm->cname(), INSTR_MSG_VM, PJ_container_get(sg_host_get_name(ms->dst_pm)));
 
       // end link
       msg  = PJ_container_get(vm->name().c_str());
@@ -815,30 +816,32 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
    * The second one would be easier.
    */
 
-  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
+  simgrid::s4u::VirtualMachine* typedVm    = static_cast<simgrid::s4u::VirtualMachine*>(vm);
+  simgrid::surf::VirtualMachineImpl* pimpl = typedVm->pimpl_vm_;
   msg_host_t old_pm                        = pimpl->getPm();
 
   if (old_pm->isOff())
-    THROWF(vm_error, 0, "Cannot start a migration from host '%s', which is offline.", old_pm->cname());
+    THROWF(vm_error, 0, "Cannot migrate VM '%s' from host '%s', which is offline.", vm->cname(), old_pm->cname());
 
   if (new_pm->isOff())
-    THROWF(vm_error, 0, "Cannot start a migration to host '%s', which is offline.", new_pm->cname());
+    THROWF(vm_error, 0, "Cannot migrate VM '%s' to host '%s', which is offline.", vm->cname(), new_pm->cname());
 
   if (!MSG_vm_is_running(vm))
-    THROWF(vm_error, 0, "VM(%s) is not running", vm->cname());
+    THROWF(vm_error, 0, "Cannot migrate VM '%s' that is not running yet.", vm->cname());
 
-  if (MSG_vm_is_migrating(vm))
-    THROWF(vm_error, 0, "VM(%s) is already migrating", vm->cname());
+  if (typedVm->isMigrating())
+    THROWF(vm_error, 0, "Cannot migrate VM '%s' that is already migrating.", vm->cname());
 
-  pimpl->isMigrating = 1;
+  pimpl->isMigrating = true;
 
   int ret = do_migration(vm, old_pm, new_pm);
   if (ret == -1) {
-    pimpl->isMigrating = 0;
-    THROWF(host_error, 0, "SRC host failed during migration");
+    pimpl->isMigrating = false;
+    THROWF(host_error, 0, "Source host '%s' failed during the migration of VM '%s'.", old_pm->cname(), vm->cname());
   } else if (ret == -2) {
-    pimpl->isMigrating = 0;
-    THROWF(host_error, 0, "DST host failed during migration");
+    pimpl->isMigrating = false;
+    THROWF(host_error, 0, "Destination host '%s' failed during the migration of VM '%s'.", new_pm->cname(),
+           vm->cname());
   }
 }
 
@@ -853,14 +856,14 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
 void MSG_vm_suspend(msg_vm_t vm)
 {
   if (MSG_vm_is_migrating(vm))
-    THROWF(vm_error, 0, "VM(%s) is migrating", sg_host_get_name(vm));
+    THROWF(vm_error, 0, "Cannot suspend VM '%s', which is migrating", vm->cname());
 
   simcall_vm_suspend(vm);
 
   XBT_DEBUG("vm_suspend done");
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t vm_container = PJ_container_get(vm->name().c_str());
+    container_t vm_container = PJ_container_get(vm->cname());
     type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
     val_t value              = PJ_value_get_or_new("suspend", "1 0 0", type); // suspend is red
     new_pajePushState(MSG_get_clock(), vm_container, type, value);
@@ -877,7 +880,7 @@ void MSG_vm_resume(msg_vm_t vm)
   simcall_vm_resume(vm);
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t vm_container = PJ_container_get(vm->name().c_str());
+    container_t vm_container = PJ_container_get(vm->cname());
     type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
     new_pajePopState(MSG_get_clock(), vm_container, type);
   }
@@ -896,12 +899,12 @@ void MSG_vm_resume(msg_vm_t vm)
 void MSG_vm_save(msg_vm_t vm)
 {
   if (MSG_vm_is_migrating(vm))
-    THROWF(vm_error, 0, "VM(%s) is migrating", sg_host_get_name(vm));
+    THROWF(vm_error, 0, "Cannot save VM '%s', which is migrating.", vm->cname());
 
   simcall_vm_save(vm);
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t vm_container = PJ_container_get(vm->name().c_str());
+    container_t vm_container = PJ_container_get(vm->cname());
     type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
     val_t value              = PJ_value_get_or_new("save", "0 1 0", type); // save is green
     new_pajePushState(MSG_get_clock(), vm_container, type, value);
@@ -919,7 +922,7 @@ void MSG_vm_restore(msg_vm_t vm)
   simcall_vm_restore(vm);
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t vm_container = PJ_container_get(vm->name().c_str());
+    container_t vm_container = PJ_container_get(vm->cname());
     type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
     new_pajePopState(MSG_get_clock(), vm_container, type);
   }
