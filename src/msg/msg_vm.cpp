@@ -360,20 +360,21 @@ static int migration_rx_fun(int argc, char *argv[])
     xbt_free(task_name);
   }
 
-
   XBT_DEBUG("mig: rx_done");
   return 0;
 }
 
-static void reset_dirty_pages(msg_vm_t vm)
+static void start_dirty_page_tracking(msg_vm_t vm)
 {
   simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
+
+  pimpl->dp_enabled = 1;
+  if (!pimpl->dp_objs)
+    return;
 
   char *key = nullptr;
   xbt_dict_cursor_t cursor = nullptr;
   dirty_page_t dp = nullptr;
-  if (!pimpl->dp_objs)
-    return;
   xbt_dict_foreach (pimpl->dp_objs, cursor, key, dp) {
     double remaining = MSG_task_get_flops_amount(dp->task);
     dp->prev_clock = MSG_get_clock();
@@ -381,13 +382,6 @@ static void reset_dirty_pages(msg_vm_t vm)
 
     // XBT_INFO("%s@%s remaining %f", key, sg_host_name(vm), remaining);
   }
-}
-
-static void start_dirty_page_tracking(msg_vm_t vm)
-{
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->dp_enabled = 1;
-
-  reset_dirty_pages(vm);
 }
 
 static void stop_dirty_page_tracking(msg_vm_t vm)
