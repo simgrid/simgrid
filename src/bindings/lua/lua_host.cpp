@@ -8,6 +8,7 @@
 
 #include "lua_private.h"
 #include <simgrid/host.h>
+#include <simgrid/s4u/host.hpp>
 extern "C" {
 #include <lauxlib.h>
 }
