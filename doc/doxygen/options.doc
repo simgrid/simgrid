@@ -168,7 +168,7 @@ details).
 The network and CPU models that are based on lmm_solve (that
 is, all our analytical models) accept specific optimization
 configurations.
-  - items \b network/optim and \b CPU/optim (both default to 'Lazy'):
+  - items \b network/optim and \b cpu/optim (both default to 'Lazy'):
     - \b Lazy: Lazy action management (partial invalidation in lmm +
       heap in action remaining).
     - \b TI: Trace integration. Highly optimized mode when using
