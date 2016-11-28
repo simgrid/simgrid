@@ -19,18 +19,18 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 static const char *string_action(simgrid::surf::Action::State state)
 {
   switch (state) {
-  case (simgrid::surf::Action::State::ready):
-    return "SURF_ACTION_READY";
-  case (simgrid::surf::Action::State::running):
-    return "SURF_ACTION_RUNNING";
-  case (simgrid::surf::Action::State::failed):
-    return "SURF_ACTION_FAILED";
-  case (simgrid::surf::Action::State::done):
-    return "SURF_ACTION_DONE";
-  case (simgrid::surf::Action::State::not_in_the_system):
-    return "SURF_ACTION_NOT_IN_THE_SYSTEM";
-  default:
-    return "INVALID STATE";
+    case simgrid::surf::Action::State::ready:
+      return "SURF_ACTION_READY";
+    case simgrid::surf::Action::State::running:
+      return "SURF_ACTION_RUNNING";
+    case simgrid::surf::Action::State::failed:
+      return "SURF_ACTION_FAILED";
+    case simgrid::surf::Action::State::done:
+      return "SURF_ACTION_DONE";
+    case simgrid::surf::Action::State::not_in_the_system:
+      return "SURF_ACTION_NOT_IN_THE_SYSTEM";
+    default:
+      return "INVALID STATE";
   }
 }
 
@@ -41,7 +41,7 @@ int main(int argc, char **argv)
   xbt_cfg_set_parse("cpu/model:Cas01");
   xbt_cfg_set_parse("network/model:CM02");
 
-  xbt_assert(argc >1, "Usage : %s platform.txt\n", argv[0]);
+  xbt_assert(argc > 1, "Usage: %s platform.xml\n", argv[0]);
   parse_platform_file(argv[1]);
 
   XBT_DEBUG("CPU model: %p", surf_cpu_model_pm);
@@ -54,10 +54,9 @@ int main(int argc, char **argv)
   simgrid::surf::Action *actionB = hostB->pimpl_cpu->execution_start(1000.0);
   simgrid::surf::Action *actionC = surf_host_sleep(hostB, 7.32);
 
-  /* Use whatever calling style you want... */
-  simgrid::surf::Action::State stateActionA = actionA->getState(); /* When you know actionA model type */
-  simgrid::surf::Action::State stateActionB = actionB->getState(); /* If you're unsure about it's model type */
-  simgrid::surf::Action::State stateActionC = actionC->getState(); /* When you know actionA model type */
+  simgrid::surf::Action::State stateActionA = actionA->getState();
+  simgrid::surf::Action::State stateActionB = actionB->getState();
+  simgrid::surf::Action::State stateActionC = actionC->getState();
 
   /* And just look at the state of these tasks */
   XBT_INFO("actionA state: %s", string_action(stateActionA));
