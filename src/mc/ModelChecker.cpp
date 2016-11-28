@@ -40,6 +40,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ModelChecker, mc, "ModelChecker");
 
 using simgrid::mc::remote;
 
+#ifdef __linux__
+# define WAITPID_CHECKED_FLAGS __WALL
+#else
+# define WAITPID_CHECKED_FLAGS 0
+#endif
+
 // Hardcoded index for now:
 #define SOCKET_FD_INDEX 0
 #define SIGNAL_FD_INDEX 1
@@ -91,7 +97,7 @@ void ModelChecker::start()
   int status;
 
   // The model-checked process SIGSTOP itself to signal it's ready:
-  pid_t res = waitpid(pid, &status, __WALL);
+  pid_t res = waitpid(pid, &status, WAITPID_CHECKED_FLAGS);
   if (res < 0 || !WIFSTOPPED(status) || WSTOPSIG(status) != SIGSTOP)
     xbt_die("Could not wait model-checked process");
 
@@ -102,8 +108,14 @@ void ModelChecker::start()
 
   setup_ignore();
 
+#ifdef __linux__
   ptrace(PTRACE_SETOPTIONS, pid, nullptr, PTRACE_O_TRACEEXIT);
   ptrace(PTRACE_CONT, pid, 0, 0);
+#elif defined BSD
+  ptrace(PT_CONTINUE, pid, (caddr_t)1, 0);
+#else
+# error "no ptrace equivalent coded for this platform"
+#endif
 }
 
 static const std::pair<const char*, const char*> ignored_local_variables[] = {
@@ -393,6 +405,7 @@ void ModelChecker::handle_waitpid()
     if (pid == this->process().pid()) {
 
       // From PTRACE_O_TRACEEXIT:
+#ifdef __linux__
       if (status>>8 == (SIGTRAP | (PTRACE_EVENT_EXIT<<8))) {
         if (ptrace(PTRACE_GETEVENTMSG, this->process().pid(), 0, &status) == -1)
           xbt_die("Could not get exit status");
@@ -401,11 +414,18 @@ void ModelChecker::handle_waitpid()
           mc_model_checker->exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
         }
       }
+#endif
 
       // We don't care about signals, just reinject them:
       if (WIFSTOPPED(status)) {
         XBT_DEBUG("Stopped with signal %i", (int) WSTOPSIG(status));
-        if (ptrace(PTRACE_CONT, this->process().pid(), 0, WSTOPSIG(status)) == -1)
+        errno = 0;
+#ifdef __linux__
+        ptrace(PTRACE_CONT, this->process().pid(), 0, WSTOPSIG(status));
+#elif defined BSD
+        ptrace(PT_CONTINUE, this->process().pid(), nullptr, WSTOPSIG(status));
+#endif
+        if (errno != 0)
           xbt_die("Could not PTRACE_CONT");
       }
 

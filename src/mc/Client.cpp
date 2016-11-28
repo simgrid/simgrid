@@ -73,7 +73,7 @@ Client* Client::initialize()
 #elif defined BSD
   ptrace(PT_TRACE_ME, 0, nullptr, 0);
 #else
-# error "ptrace not declared on this platform"
+# error "no ptrace equivalent coded for this platform"
 #endif
   if(errno != 0 || raise(SIGSTOP) != 0)
     xbt_die("Could not wait for the model-checker");

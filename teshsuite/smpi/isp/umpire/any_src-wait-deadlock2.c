@@ -40,7 +40,7 @@ main (int argc, char **argv)
 
       MPI_Irecv (buf1, buf_size, MPI_INT, 
 		 MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &req);
-      printf("Proc 0:  Request number - %d\n",req);
+      printf("Proc 0:  Request number - %p\n",req);
       
       MPI_Send (buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD);
 	
@@ -49,7 +49,7 @@ main (int argc, char **argv)
       MPI_Send (buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD);
 
       MPI_Wait (&req, &status);
-      printf("Proc 0:  Request number after wait test- %d\n",req);
+      printf("Proc 0:  Request number after wait test- %p\n",req);
     }
   else if (rank == 1)
     {
@@ -57,7 +57,7 @@ main (int argc, char **argv)
 
       MPI_Irecv (buf1, buf_size, MPI_INT, 
 		 MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &req);
-      printf("Proc 1:  Request number - %d\n",req);
+      printf("Proc 1:  Request number - %p\n",req);
 
       MPI_Send (buf1, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
 
@@ -66,7 +66,7 @@ main (int argc, char **argv)
       MPI_Send (buf1, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
 
       MPI_Wait (&req, &status);
-      printf("Proc 1:  Request number after wait test- %d\n",req);
+      printf("Proc 1:  Request number after wait test- %p\n",req);
     }
 
   MPI_Barrier (MPI_COMM_WORLD);
