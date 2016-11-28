@@ -11,13 +11,14 @@
    hello.c -- simple hello world app
 
  */
-
+#include <stdio.h>
 #ifndef lint
 static char *rcsid = "$Header: /usr/gapps/asde/cvs-vault/umpire/tests/hello.c,v 1.2 2000/12/04 19:09:46 bronis Exp $";
 #endif
 
 #include "mpi.h"
 
+int
 main (int argc, char **argv)
 {
   int nprocs = -1;

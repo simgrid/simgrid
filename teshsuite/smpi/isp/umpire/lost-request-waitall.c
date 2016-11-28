@@ -14,7 +14,7 @@ static char *rcsid =
 
 #define buf_size 128
 
-mydelay ()			/* about 6 seconds */
+int mydelay ()			/* about 6 seconds */
 {
   int i;
   int val;
@@ -32,7 +32,7 @@ main (int argc, char **argv)
   int rank = -1;
   int tag1 = 31;
   int tag2 = 32;
-  int comm = MPI_COMM_WORLD;
+  MPI_Comm comm = MPI_COMM_WORLD;
   char processor_name[128];
   int namelen = 128;
   int buf0[buf_size];
