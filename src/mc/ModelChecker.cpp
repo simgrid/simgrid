@@ -423,7 +423,7 @@ void ModelChecker::handle_waitpid()
 #ifdef __linux__
         ptrace(PTRACE_CONT, this->process().pid(), 0, WSTOPSIG(status));
 #elif defined BSD
-        ptrace(PT_CONTINUE, this->process().pid(), nullptr, WSTOPSIG(status));
+        ptrace(PT_CONTINUE, this->process().pid(), (caddr_t)1, WSTOPSIG(status));
 #endif
         if (errno != 0)
           xbt_die("Could not PTRACE_CONT");
