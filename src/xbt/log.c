@@ -264,9 +264,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_trace);
   XBT_LOG_CONNECT(surf_vm);
   XBT_LOG_CONNECT(surf_host);
-
-  /* routing */
-  XBT_LOG_CONNECT(AsImpl);
    
 #endif /* simgrid_EXPORTS */
 }

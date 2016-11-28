@@ -10,12 +10,13 @@
 
 #include <simgrid/s4u/host.hpp>
 
-#include "surf_routing.hpp"
+#include "src/surf/surf_routing.hpp"
 
 #include "simgrid/sg_config.h"
-#include "storage_interface.hpp"
+#include "src/surf/storage_interface.hpp"
 
 #include "src/kernel/routing/AsImpl.hpp"
+#include "src/surf/network_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
@@ -94,9 +95,13 @@ namespace routing {
  */
 void RoutingPlatf::getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Link*> * route, double *latency)
 {
-  XBT_DEBUG("getRouteAndLatency from %s to %s", src->name().c_str(), dst->name().c_str());
-
   AsImpl::getGlobalRoute(src, dst, route, latency);
+  if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {
+    XBT_DEBUG("Route from '%s' to '%s' (latency: %f):", src->cname(), dst->cname(),
+              (latency == nullptr ? -1 : *latency));
+    for (auto link : *route)
+      XBT_DEBUG("Link %s", link->getName());
+  }
 }
 
 }}}

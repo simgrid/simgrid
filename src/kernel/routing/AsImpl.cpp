@@ -8,9 +8,9 @@
 #include "simgrid/s4u/host.hpp"
 #include "src/kernel/routing/AsImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
-#include "src/surf/network_interface.hpp" // Link FIXME: move to proper header
+#include "src/surf/network_interface.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(AsImpl,surf, "Implementation of S4U autonomous systems");
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_route);
 
 namespace simgrid {
   namespace kernel {
@@ -164,7 +164,6 @@ namespace simgrid {
                               /* OUT */ std::vector<surf::Link*>* links, double* latency)
   {
     // If never set a bypass route return nullptr without any further computations
-    XBT_DEBUG("generic_get_bypassroute from %s to %s", src->name().c_str(), dst->name().c_str());
     if (bypassRoutes_.empty())
       return false;
 
@@ -177,7 +176,8 @@ namespace simgrid {
           if (latency)
             *latency += link->latency();
         }
-        XBT_DEBUG("Found a bypass route with %zu links", bypassedRoute->links.size());
+        XBT_DEBUG("Found a bypass route from '%s' to '%s' with %zu links", src->cname(), dst->cname(),
+                  bypassedRoute->links.size());
         return true;
       }
       return false;
@@ -248,6 +248,9 @@ namespace simgrid {
 
     /* (4) If we have the bypass, use it. If not, caller will do the Right Thing. */
     if (bypassedRoute) {
+      XBT_DEBUG("Found a bypass route from '%s' to '%s' with %zu links. We may have to complete it with recursive "
+                "calls to getRoute",
+                src->cname(), dst->cname(), bypassedRoute->links.size());
       if (src != key.first)
         getGlobalRoute(src, const_cast<NetCard*>(bypassedRoute->gw_src), links, latency);
       for (surf::Link* link : bypassedRoute->links) {
@@ -259,6 +262,7 @@ namespace simgrid {
         getGlobalRoute(const_cast<NetCard*>(bypassedRoute->gw_dst), dst, links, latency);
       return true;
     }
+    XBT_DEBUG("No bypass route from '%s' to '%s'.", src->cname(), dst->cname());
     return false;
     }
 
@@ -268,7 +272,7 @@ namespace simgrid {
       s_sg_platf_route_cbarg_t route;
       memset(&route,0,sizeof(route));
 
-      XBT_DEBUG("Solve route/latency \"%s\" to \"%s\"", src->name().c_str(), dst->name().c_str());
+      XBT_DEBUG("Resolve route from '%s' to '%s'", src->cname(), dst->cname());
 
       /* Find how src and dst are interconnected */
       AsImpl *common_ancestor, *src_ancestor, *dst_ancestor;

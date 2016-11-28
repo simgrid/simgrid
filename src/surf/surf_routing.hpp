@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,7 +10,6 @@
 #include <xbt/signal.hpp>
 
 #include "surf_interface.hpp"
-#include "src/surf/xml/platf_private.hpp" // FIXME: including this here is pure madness. KILKILKIL XML.
 #include "src/kernel/routing/AsImpl.hpp"
 
 #include <float.h>
@@ -46,7 +44,8 @@ public:
   virtual ~NetCard()            = default;
   virtual unsigned int id()=0; // Our rank in the vertices_ array of our containing AS.
   virtual std::string name()    = 0;
-  virtual AsImpl *containingAS()=0; // This is the AS in which I am
+  virtual const char* cname()    = 0;
+  virtual AsImpl* containingAS() = 0; // This is the AS in which I am
   virtual bool isAS()=0;
   virtual bool isHost()=0;
   virtual bool isRouter()=0;
@@ -68,6 +67,7 @@ public:
 
   unsigned int id()  override {return id_;}
   std::string name() override { return name_; }
+  const char* cname() override { return name_.c_str(); }
   AsImpl *containingAS() override {return containingAS_;}
 
   bool isAS()        override {return componentType_ == Type::As;}
