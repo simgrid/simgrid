@@ -1007,6 +1007,7 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Modules/FindGraphviz.cmake
   tools/cmake/Modules/FindLibdw.cmake
   tools/cmake/Modules/FindLibunwind.cmake
+  tools/cmake/Modules/FindLibevent.cmake
   tools/cmake/Modules/FindLuaSimgrid.cmake
   tools/cmake/Modules/FindNS3.cmake
   tools/cmake/Modules/FindPAPI.cmake

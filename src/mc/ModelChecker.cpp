@@ -6,11 +6,9 @@
 
 #include <cassert>
 
-#include <poll.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/socket.h>
-#include <sys/signalfd.h>
 #include <sys/ptrace.h>
 
 #include <memory>
@@ -46,14 +44,13 @@ using simgrid::mc::remote;
 # define WAITPID_CHECKED_FLAGS 0
 #endif
 
-// Hardcoded index for now:
-#define SOCKET_FD_INDEX 0
-#define SIGNAL_FD_INDEX 1
-
 namespace simgrid {
 namespace mc {
 
 ModelChecker::ModelChecker(std::unique_ptr<Process> process) :
+  base_(nullptr),
+  socket_event_(nullptr),
+  signal_event_(nullptr),
   page_store_(500),
   process_(std::move(process)),
   parent_snapshot_(nullptr)
@@ -61,37 +58,34 @@ ModelChecker::ModelChecker(std::unique_ptr<Process> process) :
 
 }
 
-ModelChecker::~ModelChecker() {}
+ModelChecker::~ModelChecker() {
+  if (socket_event_ != nullptr)
+    event_free(socket_event_);
+  if (signal_event_ != nullptr)
+    event_free(signal_event_);
+  if (base_ != nullptr)
+    event_base_free(base_);
+}
 
 void ModelChecker::start()
 {
   const pid_t pid = process_->pid();
 
-  // Block SIGCHLD (this will be handled with accept/signalfd):
-  sigset_t set;
-  sigemptyset(&set);
-  sigaddset(&set, SIGCHLD);
-  if (sigprocmask(SIG_BLOCK, &set, nullptr) == -1)
-    throw simgrid::xbt::errno_error();
-
-  sigset_t full_set;
-  sigfillset(&full_set);
-
-  // Prepare data for poll:
-
-  struct pollfd* socket_pollfd = &fds_[SOCKET_FD_INDEX];
-  socket_pollfd->fd = process_->getChannel().getSocket();
-  socket_pollfd->events = POLLIN;
-  socket_pollfd->revents = 0;
-
-  int signal_fd = signalfd(-1, &set, 0);
-  if (signal_fd == -1)
-    throw simgrid::xbt::errno_error();
-
-  struct pollfd* signalfd_pollfd = &fds_[SIGNAL_FD_INDEX];
-  signalfd_pollfd->fd = signal_fd;
-  signalfd_pollfd->events = POLLIN;
-  signalfd_pollfd->revents = 0;
+  base_ = event_base_new();
+  event_callback_fn event_callback = [](evutil_socket_t fd, short events, void *arg)
+  {
+    ((ModelChecker *)arg)->handle_events(fd, events);
+  };
+  socket_event_ = event_new(base_,
+                            process_->getChannel().getSocket(),
+                            EV_READ|EV_PERSIST,
+                            event_callback, this);
+  event_add(socket_event_, NULL);
+  signal_event_ = event_new(base_,
+                            SIGCHLD,
+                            EV_SIGNAL|EV_PERSIST,
+                            event_callback, this);
+  event_add(signal_event_, NULL);
 
   XBT_DEBUG("Waiting for the model-checked process");
   int status;
@@ -315,72 +309,29 @@ void ModelChecker::exit(int status)
   ::exit(status);
 }
 
-bool ModelChecker::handle_events()
+void ModelChecker::handle_events(int fd, short events)
 {
-  char buffer[MC_MESSAGE_LENGTH];
-  struct pollfd* socket_pollfd = &fds_[SOCKET_FD_INDEX];
-  struct pollfd* signalfd_pollfd = &fds_[SIGNAL_FD_INDEX];
-
-  while(poll(fds_, 2, -1) == -1) {
-    switch(errno) {
-    case EINTR:
-      continue;
-    default:
+  if (events == EV_READ) {
+    char buffer[MC_MESSAGE_LENGTH];
+    ssize_t size = process_->getChannel().receive(buffer, sizeof(buffer), false);
+    if (size == -1 && errno != EAGAIN)
       throw simgrid::xbt::errno_error();
+    if (!handle_message(buffer, size)) {
+      event_base_loopbreak(base_);
     }
   }
-
-  if (socket_pollfd->revents) {
-    if (socket_pollfd->revents & POLLIN) {
-      ssize_t size = process_->getChannel().receive(buffer, sizeof(buffer), false);
-      if (size == -1 && errno != EAGAIN)
-        throw simgrid::xbt::errno_error();
-      return handle_message(buffer, size);
-    }
-    if (socket_pollfd->revents & POLLERR)
-      throw_socket_error(socket_pollfd->fd);
-    if (socket_pollfd->revents & POLLHUP)
-      xbt_die("Socket hang up?");
+  else if (events == EV_SIGNAL) {
+    on_signal(fd);
   }
-
-  if (signalfd_pollfd->revents) {
-    if (signalfd_pollfd->revents & POLLIN) {
-      this->handle_signals();
-      return true;
-    }
-    if (signalfd_pollfd->revents & POLLERR)
-      throw_socket_error(signalfd_pollfd->fd);
-    if (signalfd_pollfd->revents & POLLHUP)
-      xbt_die("Signalfd hang up?");
+  else {
+    xbt_die("Unexpected event");
   }
-
-  return true;
 }
 
 void ModelChecker::loop()
 {
-  while (this->process().running())
-    this->handle_events();
-}
-
-void ModelChecker::handle_signals()
-{
-  struct signalfd_siginfo info;
-  struct pollfd* signalfd_pollfd = &fds_[SIGNAL_FD_INDEX];
-  while (1) {
-    ssize_t size = read(signalfd_pollfd->fd, &info, sizeof(info));
-    if (size == -1) {
-      if (errno == EINTR)
-        continue;
-      else
-        throw simgrid::xbt::errno_error();
-    } else if (size != sizeof(info))
-        return throw std::runtime_error(
-          "Bad communication with model-checked application");
-    else
-      break;
-  }
-  this->on_signal(&info);
+  if (this->process().running())
+    event_base_dispatch(base_);
 }
 
 void ModelChecker::handle_waitpid()
@@ -437,9 +388,9 @@ void ModelChecker::handle_waitpid()
   }
 }
 
-void ModelChecker::on_signal(const struct signalfd_siginfo* info)
+void ModelChecker::on_signal(int signo)
 {
-  switch(info->ssi_signo) {
+  switch(signo) {
   case SIGCHLD:
     this->handle_waitpid();
     break;
@@ -451,9 +402,8 @@ void ModelChecker::on_signal(const struct signalfd_siginfo* info)
 void ModelChecker::wait_client(simgrid::mc::Process& process)
 {
   this->resume(process);
-  while (this->process().running())
-    if (!this->handle_events())
-      return;
+  if (this->process().running())
+    event_base_dispatch(base_);
 }
 
 void ModelChecker::handle_simcall(Transition const& transition)
@@ -465,9 +415,8 @@ void ModelChecker::handle_simcall(Transition const& transition)
   m.value = transition.argument;
   this->process_->getChannel().send(m);
   this->process_->clear_cache();
-  while (this->process_->running())
-    if (!this->handle_events())
-      return;
+  if (this->process_->running())
+    event_base_dispatch(base_);
 }
 
 bool ModelChecker::checkDeadlock()
