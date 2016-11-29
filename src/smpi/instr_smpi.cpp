@@ -11,7 +11,6 @@
 #include <stdarg.h>
 #include <wchar.h>
 
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_smpi, instr, "Tracing SMPI");
 
 static xbt_dict_t keys;
@@ -225,7 +224,7 @@ void TRACE_smpi_init(int rank)
   val_t val = PJ_value_new ("migrate", "0 0 0", eventype);
 #if HAVE_PAPI
   container_t container = me;
-  
+
   papi_counter_t counters = smpi_process_papi_counters();
 
   for (auto& it : counters) {
@@ -590,5 +589,4 @@ void TRACE_smpi_process_change_host(int rank, sg_host_t host,
 		    type, container, "MIG", key);
 
 }
-
 

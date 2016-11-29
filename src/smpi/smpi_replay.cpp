@@ -104,16 +104,6 @@ static void log_timed_action (const char *const *action, double clock){
   }
 }
 
-//static std::vector<MPI_Request>* get_reqq_self()
-//{
-//  return reqq.at(smpi_process_index());
-//}
-//
-//static void set_reqq_self(std::vector<MPI_Request> *mpi_request)
-//{
-//   reqq.insert({smpi_process_index(), mpi_request});
-//}
-
 //allocate a single buffer for all sends, growing it if needed
 void* smpi_get_tmp_sendbuffer(int size)
 {
@@ -320,7 +310,6 @@ void action_send(const char *const *action)
   } else {
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
   }
-
   int rank = smpi_process_index();
 
   int dst_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), to);
@@ -351,8 +340,10 @@ void action_Isend(const char *const *action)
   double clock = smpi_process_simulated_elapsed();
   MPI_Request request;
 
-  if(action[5]) MPI_CURRENT_TYPE=decode_datatype(action[5]);
-  else MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
+  if(action[5]) 
+    MPI_CURRENT_TYPE=decode_datatype(action[5]);
+  else 
+    MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
   int rank = smpi_process_index();
   int dst_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), to);
@@ -385,8 +376,10 @@ void action_recv(const char *const *action) {
   double clock = smpi_process_simulated_elapsed();
   MPI_Status status;
 
-  if(action[5]) MPI_CURRENT_TYPE = decode_datatype(action[5]);
-  else MPI_CURRENT_TYPE = MPI_DEFAULT_TYPE;
+  if(action[5])
+    MPI_CURRENT_TYPE = decode_datatype(action[5]);
+  else
+    MPI_CURRENT_TYPE = MPI_DEFAULT_TYPE;
 
   int rank = smpi_process_index();
   int src_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), from);
@@ -424,8 +417,10 @@ void action_Irecv(const char *const *action)
   double clock = smpi_process_simulated_elapsed();
   MPI_Request request;
 
-  if(action[5]) MPI_CURRENT_TYPE=decode_datatype(action[5]);
-  else MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
+  if(action[5])
+    MPI_CURRENT_TYPE=decode_datatype(action[5]);
+  else
+    MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
   int rank = smpi_process_index();
   int src_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), from);
@@ -535,10 +530,8 @@ void action_wait(const char *const *action){
 void action_waitall(const char *const *action){
   CHECK_ACTION_PARAMS(action, 0, 0);
   double clock = smpi_process_simulated_elapsed();
-  int count_requests=0;
+  unsigned int count_requests = xbt_dict_length(reqd[smpi_process_index()]);
   unsigned int i=0;
-
-  count_requests=xbt_dict_length(reqd[smpi_process_index()]);
 
   if (count_requests>0) {
     MPI_Request requests[count_requests];
@@ -979,7 +972,7 @@ void action_allgather(const char *const *action) {
 }
 
 void action_allgatherv(const char *const *action) {
-  /* The structure of the allgatherv action for the rank 0 (total 4 processes) is the following:
+/* The structure of the allgatherv action for the rank 0 (total 4 processes) is the following:
 0 allGatherV 275427 275427 275427 275427 204020
 
   where: 

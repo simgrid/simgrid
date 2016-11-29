@@ -301,7 +301,6 @@ smx_mailbox_t smpi_process_mailbox_migration()
   return data->mailbox_migration;
 }
 
-
 xbt_mutex_t smpi_process_mailboxes_mutex()
 {
   smpi_process_data_t data = smpi_process_data();

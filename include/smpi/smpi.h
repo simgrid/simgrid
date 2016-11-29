@@ -868,7 +868,6 @@ XBT_PUBLIC(void) smpi_replay_run(int *argc, char***argv); // init AND run
 XBT_PUBLIC(void) smpi_replay_init(int *argc, char***argv); // init NOT run
 XBT_PUBLIC(void) smpi_replay_start(int *argc, char***argv); // run AFTER init
 
-
 XBT_PUBLIC(void) SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_processes);
 XBT_PUBLIC(void) SMPI_init();
 XBT_PUBLIC(void) SMPI_finalize();

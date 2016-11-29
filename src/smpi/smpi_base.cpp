@@ -21,7 +21,6 @@
 
 #include "src/kernel/activity/SynchroComm.hpp"
 
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi, "Logging specific to SMPI (base)");
 
 static int match_recv(void* a, void* b, smx_activity_t ignored) {
