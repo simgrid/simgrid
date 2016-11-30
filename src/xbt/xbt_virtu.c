@@ -1,7 +1,6 @@
-/* virtu - virtualization layer for XBT to choose between GRAS and MSG implementation */
+/* virtualization layer for XBT */
 
-/* Copyright (c) 2007-2010, 2012-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2014. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */

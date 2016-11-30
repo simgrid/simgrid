@@ -222,8 +222,7 @@ void SIMIX_process_stop(smx_actor_t arg) {
                                         arg->properties,
                                         arg->auto_restart);
   }
-  XBT_DEBUG("Process %s (%s) is dead",
-    arg->name.c_str(), sg_host_get_name(arg->host));
+  XBT_DEBUG("Process %s@%s is dead", arg->cname(), arg->host->cname());
   arg->context->stop();
 }
 
@@ -303,20 +302,18 @@ smx_actor_t SIMIX_process_create(
 
     /* Now insert it in the global process list and in the process to run list */
     xbt_swag_insert(process, simix_global->process_list);
-    XBT_DEBUG("Inserting %s(%s) in the to_run list",
-      process->name.c_str(), sg_host_get_name(host));
+    XBT_DEBUG("Inserting %s(%s) in the to_run list", process->cname(), host->cname());
     xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, process);
 
     if (kill_time > SIMIX_get_clock() && simix_global->kill_process_function) {
-      XBT_DEBUG("Process %s(%s) will be kill at time %f",
-        process->name.c_str(), sg_host_get_name(process->host), kill_time);
+      XBT_DEBUG("Process %s(%s) will be kill at time %f", process->cname(), process->host->cname(), kill_time);
       process->kill_timer = SIMIX_timer_set(kill_time, [=]() {
         simix_global->kill_process_function(process);
       });
     }
 
     /* Tracing the process creation */
-    TRACE_msg_process_create(process->name.c_str(), process->pid, process->host);
+    TRACE_msg_process_create(process->cname(), process->pid, process->host);
   }
   return process;
 }
@@ -383,12 +380,11 @@ smx_actor_t SIMIX_process_attach(
 
   /* Now insert it in the global process list and in the process to run list */
   xbt_swag_insert(process, simix_global->process_list);
-  XBT_DEBUG("Inserting %s(%s) in the to_run list",
-    process->name.c_str(), sg_host_get_name(host));
+  XBT_DEBUG("Inserting %s(%s) in the to_run list", process->cname(), host->cname());
   xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, process);
 
   /* Tracing the process creation */
-  TRACE_msg_process_create(process->name.c_str(), process->pid, process->host);
+  TRACE_msg_process_create(process->cname(), process->pid, process->host);
 
   auto context = dynamic_cast<simgrid::kernel::context::AttachContext*>(process->context);
   if (!context)
@@ -449,8 +445,7 @@ void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_actor_t process) {
  */
 void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
 
-  XBT_DEBUG("Killing process %s on %s",
-    process->name.c_str(), sg_host_get_name(process->host));
+  XBT_DEBUG("Killing process %s@%s", process->cname(), process->host->cname());
 
   process->context->iwannadie = 1;
   process->blocked = 0;
@@ -518,7 +513,7 @@ void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const
   SMX_EXCEPTION(process, cat, value, msg);
 
   if (process->suspended)
-    SIMIX_process_resume(process,SIMIX_process_self());
+    SIMIX_process_resume(process);
 
   /* cancel the blocking synchro if any */
   if (process->waiting_synchro) {
@@ -627,18 +622,13 @@ smx_activity_t SIMIX_process_suspend(smx_actor_t process, smx_actor_t issuer)
 
     return nullptr;
   } else {
-    /* FIXME: computation size is zero. Is it okay that bound is zero ? */
     return SIMIX_execution_start(process, "suspend", 0.0, 1.0, 0.0);
   }
 }
 
-void simcall_HANDLER_process_resume(smx_simcall_t simcall, smx_actor_t process){
-  SIMIX_process_resume(process, simcall->issuer);
-}
-
-void SIMIX_process_resume(smx_actor_t process, smx_actor_t issuer)
+void SIMIX_process_resume(smx_actor_t process)
 {
-  XBT_IN("process = %p, issuer = %p", process, issuer);
+  XBT_IN("process = %p", process);
 
   if(process->context->iwannadie) {
     XBT_VERB("Ignoring request to suspend a process that is currently dying.");
@@ -648,14 +638,9 @@ void SIMIX_process_resume(smx_actor_t process, smx_actor_t issuer)
   if(!process->suspended) return;
   process->suspended = 0;
 
-  /* If we are resuming another process, resume the synchronization it was waiting for
-     if any. Otherwise add it to the list of process to run in the next round. */
-  if (process != issuer) {
-
-    if (process->waiting_synchro) {
-      process->waiting_synchro->resume();
-    }
-  } else XBT_WARN("Strange. Process %p is trying to resume himself.", issuer);
+  /* resume the synchronization that was blocking the resumed process. */
+  if (process->waiting_synchro)
+    process->waiting_synchro->resume();
 
   XBT_OUT();
 }
@@ -799,9 +784,8 @@ smx_activity_t SIMIX_process_sleep(smx_actor_t process, double duration)
 {
   sg_host_t host = process->host;
 
-  /* check if the host is active */
   if (host->isOff())
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function", sg_host_get_name(host));
+    THROWF(host_error, 0, "Host %s failed, you cannot sleep there.", host->cname());
 
   simgrid::kernel::activity::Sleep *synchro = new simgrid::kernel::activity::Sleep();
   synchro->host = host;
@@ -952,7 +936,7 @@ smx_actor_t simcall_HANDLER_process_restart(smx_simcall_t simcall, smx_actor_t p
 }
 /** @brief Restart a process, starting it again from the beginning. */
 smx_actor_t SIMIX_process_restart(smx_actor_t process, smx_actor_t issuer) {
-  XBT_DEBUG("Restarting process %s on %s", process->name.c_str(), sg_host_get_name(process->host));
+  XBT_DEBUG("Restarting process %s on %s", process->cname(), process->host->cname());
 
   //retrieve the arguments of the old process
   //FIXME: Factorize this with SIMIX_host_add_auto_restart_process ?

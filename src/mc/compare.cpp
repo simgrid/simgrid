@@ -93,10 +93,10 @@ struct HeapLocation {
 static inline
 HeapLocationPair makeHeapLocationPair(int block1, int fragment1, int block2, int fragment2)
 {
-  return simgrid::mc::HeapLocationPair({
+  return simgrid::mc::HeapLocationPair{{
     simgrid::mc::HeapLocation(block1, fragment1),
     simgrid::mc::HeapLocation(block2, fragment2)
-  });
+  }};
 }
 
 struct HeapArea : public HeapLocation {

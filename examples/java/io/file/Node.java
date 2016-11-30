@@ -31,22 +31,22 @@ public class Node extends Process {
   private static String FILENAME3 = "/doc/simgrid/examples/platforms/g5k_cabinets.xml";
   private static String FILENAME4 = "/doc/simgrid/examples/platforms/nancy.xml";
 
-  protected int number;
+  protected int rank;
 
   public Node(Host host, int number) throws HostNotFoundException {
     super(host, Integer.toString(number), null);
-    this.number = number;
+    this.rank = number;
   }
 
   public void main(String[] args) throws MsgException {
     String mount;
     String filename;
-    switch (number) {
-      case 0:
+    switch (rank) {
+      case 4:
         mount = "/home";
         filename = mount + FILENAME1;
       break;
-      case 1:
+      case 0:
         mount = "c:";
         filename = mount + FILENAME2;
       break;
@@ -54,7 +54,7 @@ public class Node extends Process {
         mount = "/home";
         filename = mount + FILENAME3;
       break;
-      case 3:
+      case 1:
         mount = "/home";
         filename = mount + FILENAME4;
       break;
@@ -73,7 +73,7 @@ public class Node extends Process {
     Msg.info("Having write " + write + " on " + filename);
 
     Msg.info("Seek back to the beginning of " + filename);
-    file.seek(0,file.SEEK_SET);
+    file.seek(0,File.SEEK_SET);
 
     read = file.read(150000,1);
     Msg.info("Having read " + read + " on " + filename);  

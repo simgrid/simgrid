@@ -9,6 +9,8 @@
 #include "src/surf/surf_interface.hpp"
 #include "src/simix/smx_host_private.h"
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
+
 simgrid::kernel::activity::Exec::Exec(const char*name, sg_host_t hostarg)
 {
   if (name)
@@ -21,15 +23,19 @@ simgrid::kernel::activity::Exec::~Exec()
 {
   if (surf_exec)
     surf_exec->unref();
+  if (timeoutDetector)
+    timeoutDetector->unref();
 }
 void simgrid::kernel::activity::Exec::suspend()
 {
+  XBT_VERB("This exec is suspended (remain: %f)", surf_exec->getRemains());
   if (surf_exec)
     surf_exec->suspend();
 }
 
 void simgrid::kernel::activity::Exec::resume()
 {
+  XBT_VERB("This exec is resumed (remain: %f)", surf_exec->getRemains());
   if (surf_exec)
     surf_exec->resume();
 }
@@ -51,6 +57,8 @@ void simgrid::kernel::activity::Exec::post()
   } else if (surf_exec->getState() == simgrid::surf::Action::State::failed) {
     /* If the host running the synchro didn't fail, then the synchro was canceled */
     state = SIMIX_CANCELED;
+  } else if (timeoutDetector && timeoutDetector->getState() == simgrid::surf::Action::State::done) {
+    state = SIMIX_TIMEOUT;
   } else {
     state = SIMIX_DONE;
   }
@@ -58,6 +66,10 @@ void simgrid::kernel::activity::Exec::post()
   if (surf_exec) {
     surf_exec->unref();
     surf_exec = nullptr;
+  }
+  if (timeoutDetector) {
+    timeoutDetector->unref();
+    timeoutDetector = nullptr;
   }
 
   /* If there are simcalls associated with the synchro, then answer them */

@@ -59,7 +59,7 @@ typedef struct s_smpi_process_data {
   int sampling;                 /* inside an SMPI_SAMPLE_ block? */
   char* instance_id;
   bool replaying;                /* is the process replaying a trace */
-  xbt_bar_t finalization_barrier;
+  msg_bar_t finalization_barrier;
   smx_mailbox_t mailbox_migration; //Mailbox to receive process data on migration.
   int return_value;
   smpi_trace_call_location_t trace_call_loc;
@@ -106,6 +106,10 @@ static char *get_mailbox_name_migration(char *str, int index)
 void smpi_process_init(int *argc, char ***argv)
 {
 
+  if (process_data == nullptr){
+    printf("SimGrid was not initialized properly before entering MPI_Init. Aborting, please check compilation process and use smpirun\n");
+    exit(1);
+  }
   if (argc != nullptr && argv != nullptr) {
     smx_actor_t proc = SIMIX_process_self();
     proc->context->set_cleanup(&MSG_process_cleanup_from_SIMIX);
@@ -125,7 +129,7 @@ void smpi_process_init(int *argc, char ***argv)
     }
 
     MPI_Comm* temp_comm_world;
-    xbt_bar_t temp_bar;
+    msg_bar_t temp_bar;
     smpi_deployment_register_process(instance_id, rank, index, &temp_comm_world, &temp_bar);
     smpi_process_data_t data = smpi_process_remote_data(index);
     data->comm_world         = temp_comm_world;
@@ -176,7 +180,7 @@ void smpi_process_finalize()
 
     int index = smpi_process_index();
     // wait for all pending asynchronous comms to finish
-    xbt_barrier_wait(process_data[index_to_process_data[index]]->finalization_barrier);
+    MSG_barrier_wait(process_data[index_to_process_data[index]]->finalization_barrier);
 }
 
 /** @brief Check if a process is finalized */
@@ -619,7 +623,7 @@ void smpi_global_init()
     group = smpi_group_new(process_count);
     MPI_COMM_WORLD = smpi_comm_new(group, nullptr);
     MPI_Attr_put(MPI_COMM_WORLD, MPI_UNIVERSE_SIZE, reinterpret_cast<void *>(process_count));
-    xbt_bar_t bar=xbt_barrier_init(process_count);
+    msg_bar_t bar = MSG_barrier_init(process_count);
 
     for (i = 0; i < process_count; i++) {
       smpi_group_set_mapping(group, i, i);
@@ -631,16 +635,15 @@ void smpi_global_init()
 void smpi_global_destroy()
 {
   int count = smpi_process_count();
-  int i;
 
   smpi_bench_destroy();
   if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED){
       while (smpi_group_unuse(smpi_comm_group(MPI_COMM_WORLD)) > 0);
-      xbt_barrier_destroy(process_data[0]->finalization_barrier);
+      MSG_barrier_destroy(process_data[0]->finalization_barrier);
   }else{
       smpi_deployment_cleanup_instances();
   }
-  for (i = 0; i < count; i++) {
+  for (int i = 0; i < count; i++) {
     if(process_data[i]->comm_self!=MPI_COMM_NULL){
       smpi_comm_destroy(process_data[i]->comm_self);
     }

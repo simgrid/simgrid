@@ -16,6 +16,7 @@
 #include "simgrid/simix.h"
 #include "popping_private.h"
 
+#include "simgrid/s4u/VirtualMachine.hpp"
 #include "src/kernel/activity/SynchroExec.hpp"
 
 /** @brief Host datatype from SIMIX POV */
@@ -54,10 +55,9 @@ XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host,
 XBT_PRIVATE void SIMIX_host_autorestart(sg_host_t host);
 XBT_PRIVATE smx_activity_t SIMIX_execution_start(smx_actor_t issuer, const char *name,
     double flops_amount, double priority, double bound);
-XBT_PRIVATE smx_activity_t SIMIX_execution_parallel_start(const char *name,
-    int host_nb, sg_host_t *host_list,
-    double *flops_amount, double *bytes_amount,
-    double amount, double rate);
+XBT_PRIVATE smx_activity_t SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list,
+                                                          double* flops_amount, double* bytes_amount, double amount,
+                                                          double rate, double timeout);
 XBT_PRIVATE void SIMIX_execution_cancel(smx_activity_t synchro);
 XBT_PRIVATE void SIMIX_execution_set_priority(smx_activity_t synchro, double priority);
 XBT_PRIVATE void SIMIX_execution_set_bound(smx_activity_t synchro, double bound);
@@ -67,30 +67,14 @@ XBT_PRIVATE void SIMIX_execution_finish(simgrid::kernel::activity::Exec *exec);
 XBT_PRIVATE void SIMIX_set_category(smx_activity_t synchro, const char *category);
 
 /* vm related stuff */
-XBT_PRIVATE void SIMIX_vm_destroy(sg_host_t ind_vm);
-// --
-XBT_PRIVATE void SIMIX_vm_resume(sg_host_t ind_vm, smx_actor_t issuer);
+XBT_PRIVATE void SIMIX_vm_resume(sg_host_t ind_vm);
 
 XBT_PRIVATE void SIMIX_vm_suspend(sg_host_t ind_vm, smx_actor_t issuer);
 // --
 XBT_PRIVATE void SIMIX_vm_save(sg_host_t ind_vm, smx_actor_t issuer);
 
-XBT_PRIVATE void SIMIX_vm_restore(sg_host_t ind_vm, smx_actor_t issuer);
-// --
-XBT_PRIVATE void SIMIX_vm_start(sg_host_t ind_vm);
-
 XBT_PRIVATE void SIMIX_vm_shutdown(sg_host_t ind_vm, smx_actor_t issuer);
 // --
-
-XBT_PRIVATE e_surf_vm_state_t SIMIX_vm_get_state(sg_host_t ind_vm);
-// --
-XBT_PRIVATE void SIMIX_vm_migrate(sg_host_t ind_vm, sg_host_t ind_dst_pm);
-
-XBT_PRIVATE void *SIMIX_vm_get_pm(sg_host_t ind_vm);
-
-XBT_PRIVATE void SIMIX_vm_set_bound(sg_host_t ind_vm, double bound);
-
-XBT_PRIVATE void SIMIX_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst_pm);
 
 SG_END_DECL()
 

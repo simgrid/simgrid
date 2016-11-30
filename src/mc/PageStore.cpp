@@ -8,6 +8,9 @@
 #include <string.h> // memcpy, memcmp
 
 #include <sys/mman.h>
+#ifdef __FreeBSD__
+# define MAP_POPULATE MAP_PREFAULT_READ
+#endif
 
 #include <xbt/base.h>
 #include <xbt/log.h>
@@ -71,12 +74,46 @@ void PageStore::resize(std::size_t size)
 {
   size_t old_bytesize = this->capacity_ << xbt_pagebits;
   size_t new_bytesize = size << xbt_pagebits;
+  void *new_memory;
 
   // Expand the memory region by moving it into another
   // virtual memory address if necessary:
-  void* new_memory = mremap(this->memory_, old_bytesize, new_bytesize, MREMAP_MAYMOVE);
+#if HAVE_MREMAP
+  new_memory = mremap(this->memory_, old_bytesize, new_bytesize, MREMAP_MAYMOVE);
   if (new_memory == MAP_FAILED)
     xbt_die("Could not mremap snapshot pages.");
+#else
+  if (new_bytesize > old_bytesize) {
+    // Grow: first try to add new space after current map
+    new_memory = mmap((char *)this->memory_ + old_bytesize,
+                      new_bytesize-old_bytesize,
+                      PROT_READ|PROT_WRITE,
+                      MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE,
+                      -1, 0);
+    if (new_memory == MAP_FAILED)
+      xbt_die("Could not mremap snapshot pages.");
+    // Check if expanding worked
+    if (new_memory != (char *)this->memory_ + old_bytesize) {
+      // New memory segment could not be put at the end of this->memory_,
+      // so cancel this one and try to rellocate everything and copy data
+      munmap(new_memory, new_bytesize-old_bytesize);
+      new_memory = mmap(nullptr,
+                        new_bytesize,
+                        PROT_READ|PROT_WRITE,
+                        MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE,
+                        -1, 0);
+      if (new_memory == MAP_FAILED)
+        xbt_die("Could not mremap snapshot pages.");
+      memcpy(new_memory, this->memory_, old_bytesize);
+      munmap(this->memory_, old_bytesize);
+    }
+  }
+  else {
+    // We don't have functions to shrink a mapping, so leave memory as
+    // it is for now
+    new_memory = this->memory_;
+  }
+#endif
 
   this->capacity_ = size;
   this->memory_ = new_memory;

@@ -54,39 +54,14 @@
 #include "xbt/backtrace.h"
 #include "xbt/backtrace.hpp"
 #include "xbt/str.h"
-#include "xbt/synchro_core.h"
 #include "src/xbt_modinter.h"       /* backtrace initialization headers */
 
 #include "src/xbt/ex_interface.h"
 #include "simgrid/sg_config.h"  /* Configuration mechanism of SimGrid */
 
-#include "simgrid/simix.h" /* SIMIX_process_self_get_name() */
-
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex, xbt, "Exception mechanism");
 
 xbt_ex::~xbt_ex() {}
-
-/* Change raw libc symbols to file names and line numbers */
-void xbt_setup_backtrace(xbt_backtrace_location_t** loc, std::size_t count,
-  char** res);
-
-void xbt_backtrace_display(xbt_backtrace_location_t* loc, std::size_t count)
-{
-#ifdef HAVE_BACKTRACE
-  std::vector<std::string> backtrace =
-    simgrid::xbt::resolveBacktrace(loc, count);
-  if (backtrace.empty()) {
-    fprintf(stderr, "(backtrace not set)\n");
-    return;
-  }
-  fprintf(stderr, "Backtrace (displayed in process %s):\n", SIMIX_process_self_get_name());
-  for (std::string const& s : backtrace)
-    fprintf(stderr, "---> %s\n", s.c_str());
-#else
-  XBT_ERROR("No backtrace on this arch");
-#endif
-}
 
 void _xbt_throw(
   char* message, xbt_errcat_t errcat, int value, 

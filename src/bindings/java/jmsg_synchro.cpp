@@ -9,9 +9,9 @@
 #include <xbt/ex.hpp>
 
 #include "jmsg.h"
-#include "xbt/synchro_core.h"
 #include "jmsg_synchro.h"
 #include "jxbt_utilities.h"
+#include "xbt/synchro.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 

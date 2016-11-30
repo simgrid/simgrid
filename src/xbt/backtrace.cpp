@@ -13,6 +13,7 @@
 #include <cxxabi.h>
 #endif
 
+#include "simgrid/simix.h" /* SIMIX_process_self_get_name() */
 #include <xbt/backtrace.h>
 #include <xbt/backtrace.hpp>
 #include <xbt/log.h>
@@ -24,6 +25,22 @@ extern "C" {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_backtrace, xbt, "Backtrace");
 
+}
+
+void xbt_backtrace_display(xbt_backtrace_location_t* loc, std::size_t count)
+{
+#ifdef HAVE_BACKTRACE
+  std::vector<std::string> backtrace = simgrid::xbt::resolveBacktrace(loc, count);
+  if (backtrace.empty()) {
+    fprintf(stderr, "(backtrace not set)\n");
+    return;
+  }
+  fprintf(stderr, "Backtrace (displayed in process %s):\n", SIMIX_process_self_get_name());
+  for (std::string const& s : backtrace)
+    fprintf(stderr, "---> %s\n", s.c_str());
+#else
+  XBT_ERROR("Cannot display backtrace when compiled without libunwind.");
+#endif
 }
 
 /** @brief show the backtrace of the current point (lovely while debugging) */

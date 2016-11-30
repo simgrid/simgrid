@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <vector>
+
 #include "xbt/dict.h"
 #include "simgrid/host.h"
 #include <xbt/Extendable.hpp>
@@ -14,16 +16,33 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sg_host, sd, "Logging specific to sg_hosts");
 
-extern xbt_dict_t host_list; // FIXME:killme don't dupplicate the content of s4u::Host this way
+extern std::unordered_map<std::string, simgrid::s4u::Host*>
+    host_list; // FIXME: don't dupplicate the content of s4u::Host this way
 
 void sg_host_exit()
 {
-  xbt_dict_free(&host_list);
+  /* copy all names to not modify the map while iterating over it.
+   *
+   * Plus, the hosts are destroyed in the lexicographic order to ensure
+   * that the output is reproducible: we don't want to kill them in the
+   * pointer order as it could be platform-dependent, which would break
+   * the tests.
+   */
+  std::vector<std::string> names = std::vector<std::string>();
+  for (auto kv : host_list)
+    names.push_back(kv.second->name());
+
+  std::sort(names.begin(), names.end());
+
+  for (auto name : names)
+    host_list.at(name)->destroy();
+
+  // host_list.clear(); This would be sufficient if the dict would contain smart_ptr. It's now useless
 }
 
 size_t sg_host_count()
 {
-  return xbt_dict_length(host_list);
+  return host_list.size();
 }
 /** @brief Returns the host list
  *
@@ -42,7 +61,7 @@ sg_host_t *sg_host_list() {
 
 const char *sg_host_get_name(sg_host_t host)
 {
-  return host->name().c_str();
+  return host->cname();
 }
 
 void* sg_host_extension_get(sg_host_t host, size_t ext)
@@ -60,16 +79,22 @@ sg_host_t sg_host_by_name(const char *name)
   return simgrid::s4u::Host::by_name_or_null(name);
 }
 
+static int hostcmp_voidp(const void* pa, const void* pb)
+{
+  return strcmp((*static_cast<simgrid::s4u::Host* const*>(pa))->name().c_str(),
+                (*static_cast<simgrid::s4u::Host* const*>(pb))->name().c_str());
+}
+
 xbt_dynar_t sg_hosts_as_dynar()
 {
   xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t),nullptr);
 
-  xbt_dict_cursor_t cursor = nullptr;
-  const char* name = nullptr;
-  simgrid::s4u::Host* host = nullptr;
-  xbt_dict_foreach(host_list, cursor, name, host)
+  for (auto kv : host_list) {
+    simgrid::s4u::Host* host = kv.second;
     if (host && host->pimpl_netcard && host->pimpl_netcard->isHost())
        xbt_dynar_push(res, &host);
+  }
+  xbt_dynar_sort(res, hostcmp_voidp);
   return res;
 }
 
@@ -109,11 +134,11 @@ smx_host_priv_t sg_host_simix(sg_host_t host){
 
 // ========= storage related functions ============
 xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host){
-  return host->extension<simgrid::surf::HostImpl>()->getMountedStorageList();
+  return host->pimpl_->getMountedStorageList();
 }
 
 xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t host){
-  return host->extension<simgrid::surf::HostImpl>()->getAttachedStorageList();
+  return host->pimpl_->getAttachedStorageList();
 }
 
 
@@ -177,10 +202,10 @@ void sg_host_dump(sg_host_t host)
   xbt_dict_cursor_t cursor=nullptr;
   char *key,*data;
 
-  XBT_INFO("Displaying host %s", sg_host_get_name(host));
+  XBT_INFO("Displaying host %s", host->cname());
   XBT_INFO("  - speed: %.0f", host->speed());
   XBT_INFO("  - available speed: %.2f", sg_host_get_available_speed(host));
-  props = sg_host_get_properties(host);
+  props = host->properties();
 
   if (!xbt_dict_is_empty(props)){
     XBT_INFO("  - properties:");

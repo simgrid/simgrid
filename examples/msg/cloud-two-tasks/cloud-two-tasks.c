@@ -14,12 +14,11 @@ static int computation_fun(int argc, char *argv[])
 {
   const char *pr_name = MSG_process_get_name(MSG_process_self());
   const char *host_name = MSG_host_get_name(MSG_host_self());
-  double clock_sta, clock_end;
   atask = MSG_task_create("Task1", 1e9, 1e9, NULL);
-  clock_sta = MSG_get_clock();
+  double clock_sta = MSG_get_clock();
   XBT_INFO("%s:%s task 1 created %g", host_name, pr_name, clock_sta);
   MSG_task_execute(atask);
-  clock_end = MSG_get_clock();
+  double clock_end = MSG_get_clock();
 
   XBT_INFO("%s:%s task 1 executed %g", host_name, pr_name, clock_end - clock_sta);
 
@@ -57,10 +56,8 @@ static int master_main(int argc, char *argv[])
 {
   xbt_dynar_t hosts_dynar = MSG_hosts_as_dynar();
   msg_host_t pm0 = MSG_host_by_name("Fafard");
-  msg_vm_t vm0;
-  vm0 = MSG_vm_create_core(pm0, "VM0");
+  msg_vm_t   vm0 = MSG_vm_create_core(pm0, "VM0");
   MSG_vm_start(vm0);
-  //MSG_process_sleep(1);
 
   launch_computation_worker(vm0);
 

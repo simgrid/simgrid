@@ -7,6 +7,9 @@
 #include <cstdlib>
 
 #include <sys/mman.h>
+#ifdef __FreeBSD__
+# define MAP_POPULATE MAP_PREFAULT_READ
+#endif
 
 #include "mc/mc.h"
 #include "src/mc/mc_snapshot.h"
@@ -90,10 +93,12 @@ RegionSnapshot dense_region(
     remote(permanent_addr),
     simgrid::mc::ProcessIndexDisabled);
 
+#ifdef __linux__
   if (_sg_mc_ksm)
     // Mark the region as mergeable *after* we have written into it.
     // Trying to merge them before is useless/counterproductive.
     madvise(data.get(), size, MADV_MERGEABLE);
+#endif
 
   simgrid::mc::RegionSnapshot region(
     region_type, start_addr, permanent_addr, size);

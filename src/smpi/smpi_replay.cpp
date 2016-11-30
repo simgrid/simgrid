@@ -321,7 +321,7 @@ void action_send(const char *const *action)
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
   if (!TRACE_smpi_view_internals()) {
-    TRACE_smpi_send(rank, rank, dst_traced, size*smpi_datatype_size(MPI_CURRENT_TYPE));
+    TRACE_smpi_send(rank, rank, dst_traced, 0, size*smpi_datatype_size(MPI_CURRENT_TYPE));
   }
 
   smpi_mpi_send(nullptr, size, MPI_CURRENT_TYPE, to , tag, MPI_COMM_WORLD);
@@ -355,7 +355,7 @@ void action_Isend(const char *const *action)
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
   if (!TRACE_smpi_view_internals()) {
-    TRACE_smpi_send(rank, rank, dst_traced, size*smpi_datatype_size(MPI_CURRENT_TYPE));
+    TRACE_smpi_send(rank, rank, dst_traced, 0, size*smpi_datatype_size(MPI_CURRENT_TYPE));
   }
 
   request = smpi_mpi_isend(nullptr, size, MPI_CURRENT_TYPE, to, tag, MPI_COMM_WORLD);
@@ -402,7 +402,7 @@ void action_recv(const char *const *action) {
 
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
   if (!TRACE_smpi_view_internals()) {
-    TRACE_smpi_recv(rank, src_traced, rank);
+    TRACE_smpi_recv(rank, src_traced, rank, 0);
   }
 
   log_timed_action (action, clock);
@@ -523,7 +523,7 @@ void action_wait(const char *const *action){
 
   TRACE_smpi_ptp_out(rank, src_traced, dst_traced, __FUNCTION__);
   if (is_wait_for_receive)
-    TRACE_smpi_recv(rank, src_traced, dst_traced);
+    TRACE_smpi_recv(rank, src_traced, dst_traced, 0);
   log_timed_action (action, clock);
 }
 
@@ -550,17 +550,21 @@ void action_waitall(const char *const *action){
    xbt_dynar_t srcs = xbt_dynar_new(sizeof(int), NULL);
    xbt_dynar_t dsts = xbt_dynar_new(sizeof(int), NULL);
    xbt_dynar_t recvs = xbt_dynar_new(sizeof(int), NULL);
+   xbt_dynar_t tags = xbt_dynar_new(sizeof(int), NULL);
    for (i = 0; i < count_requests; i++) {
     if(requests[i]){
       int *asrc = xbt_new(int, 1);
       int *adst = xbt_new(int, 1);
       int *arecv = xbt_new(int, 1);
+      int *atag = xbt_new(int, 1);
       *asrc = requests[i]->src;
       *adst = requests[i]->dst;
       *arecv = requests[i]->recv;
+      *atag= requests[i]->tag;
       xbt_dynar_insert_at(srcs, i, asrc);
       xbt_dynar_insert_at(dsts, i, adst);
       xbt_dynar_insert_at(recvs, i, arecv);
+      xbt_dynar_insert_at(tags, i, atag);
       xbt_free(asrc);
       xbt_free(adst);
       xbt_free(arecv);
@@ -569,6 +573,7 @@ void action_waitall(const char *const *action){
       xbt_dynar_insert_at(srcs, i, t);
       xbt_dynar_insert_at(dsts, i, t);
       xbt_dynar_insert_at(recvs, i, t);
+      xbt_dynar_insert_at(tags, i, t);
       xbt_free(t);
     }
    }
@@ -581,12 +586,13 @@ void action_waitall(const char *const *action){
    smpi_mpi_waitall(count_requests, requests, status);
 
    for (i = 0; i < count_requests; i++) {
-    int src_traced, dst_traced, is_wait_for_receive;
+    int src_traced, dst_traced, tag_traced, is_wait_for_receive;
     xbt_dynar_get_cpy(srcs, i, &src_traced);
     xbt_dynar_get_cpy(dsts, i, &dst_traced);
     xbt_dynar_get_cpy(recvs, i, &is_wait_for_receive);
+    xbt_dynar_get_cpy(tags, i, &tag_traced);
     if (is_wait_for_receive) {
-      TRACE_smpi_recv(rank_traced, src_traced, dst_traced);
+      TRACE_smpi_recv(rank_traced, src_traced, dst_traced, tag_traced);
     }
    }
 
@@ -596,6 +602,7 @@ void action_waitall(const char *const *action){
    xbt_dynar_free(&srcs);
    xbt_dynar_free(&dsts);
    xbt_dynar_free(&recvs);
+   xbt_dynar_free(&tags);
 
    int freedrank=smpi_process_index();
    //This would destroy the dictionay's content, but the free function for
@@ -1121,7 +1128,7 @@ void smpi_replay_send_process_data(double data_size, sg_host_t host)
   comm_amount[2] = 0;
   comm_amount[3] = 0;
   action = simcall_execution_parallel_start("data_migration", 2, host_list, 
-	    comp_amount, comm_amount, 1.0, -1.0);
+	    comp_amount, comm_amount, 1.0, -1.0, 0);
   simcall_execution_wait(action);
 
   TRACE_smpi_send_process_data_out(smpi_process_index());

@@ -55,13 +55,13 @@
 #define HAVE_SMPI          @HAVE_SMPI@
 #define SMPI_FORTRAN       @SMPI_FORTRAN@
 #define HAVE_PRIVATIZATION @HAVE_PRIVATIZATION@ /* We have mmap and objdump to handle privatization */
-
-/* Make PAPI available? */
-#define HAVE_PAPI @HAVE_PAPI@
+#define HAVE_PAPI          @HAVE_PAPI@ /* We have PAPI to fine-grain trace execution time */
 
 /* Other function checks */
 #define HAVE_BACKTRACE @HAVE_BACKTRACE@ /* Function backtrace */
+#define HAVE_DLFUNC    @HAVE_DLFUNC@ /* Function dlfunc */
 #define HAVE_MMAP      @HAVE_MMAP@ /* Function mmap */
+#define HAVE_MREMAP    @HAVE_MREMAP@ /* Function mremap */
 #define HAVE_SEM_INIT  @HAVE_SEM_INIT@ /* Function sem_init (part of XPG6 standard only) */
 #define HAVE_POPEN     @HAVE_POPEN@ /* Function popen */
 #define HAVE_SYSCONF   @HAVE_SYSCONF@ /* Function sysconf */
@@ -70,3 +70,4 @@
 /* Other checks */
 #cmakedefine ADDR2LINE       "@ADDR2LINE@" /* Path to the addr2line tool */
 #define HAVE_GRAPHVIZ   @HAVE_GRAPHVIZ@ /* The graphviz library */
+#define HAVE_LIBUNWIND  @HAVE_LIBUNWIND@ /* The lib unwind library (for MC and backtrace display) */

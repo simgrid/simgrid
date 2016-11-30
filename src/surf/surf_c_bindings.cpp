@@ -4,26 +4,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/surf/HostImpl.hpp"
-#include "surf_interface.hpp"
-#include "network_interface.hpp"
-#include "src/instr/instr_private.h"
 #include "plugins/energy.hpp"
-#include "virtual_machine.hpp"
+#include "src/instr/instr_private.h"
+#include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "src/surf/HostImpl.hpp"
+#include "src/surf/network_interface.hpp"
+#include "surf_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
 
 /*********
  * TOOLS *
  *********/
-
-static simgrid::surf::HostImpl *get_casted_host(sg_host_t host){ //FIXME: killme
-  return host->extension<simgrid::surf::HostImpl>();
-}
-
-static simgrid::surf::VirtualMachine *get_casted_vm(sg_host_t host){
-  return static_cast<simgrid::surf::VirtualMachine*>(host->extension<simgrid::surf::HostImpl>());
-}
 
 extern double NOW;
 
@@ -68,13 +60,13 @@ double surf_solve(double max_date)
 
   /* Physical models MUST be resolved first */
   XBT_DEBUG("Looking for next event in physical models");
-  double next_event_phy = surf_host_model->next_occuring_event(NOW);
+  double next_event_phy = surf_host_model->nextOccuringEvent(NOW);
   if ((time_delta < 0.0 || next_event_phy < time_delta) && next_event_phy >= 0.0) {
     time_delta = next_event_phy;
   }
   if (surf_vm_model != nullptr) {
     XBT_DEBUG("Looking for next event in virtual models");
-    double next_event_virt = surf_vm_model->next_occuring_event(NOW);
+    double next_event_virt = surf_vm_model->nextOccuringEvent(NOW);
     if ((time_delta < 0.0 || next_event_virt < time_delta) && next_event_virt >= 0.0)
       time_delta = next_event_virt;
   }
@@ -87,7 +79,7 @@ double surf_solve(double max_date)
     next_event_date = future_evt_set->next_date();
     XBT_DEBUG("Next TRACE event: %f", next_event_date);
 
-    if(! surf_network_model->next_occuring_event_isIdempotent()){ // NS3, I see you
+    if(! surf_network_model->nextOccuringEventIsIdempotent()){ // NS3, I see you
       if (next_event_date!=-1.0 && time_delta!=-1.0) {
         time_delta = MIN(next_event_date - NOW, time_delta);
       } else {
@@ -96,7 +88,7 @@ double surf_solve(double max_date)
 
       XBT_DEBUG("Run the NS3 network at most %fs", time_delta);
       // run until min or next flow
-      model_next_action_end = surf_network_model->next_occuring_event(time_delta);
+      model_next_action_end = surf_network_model->nextOccuringEvent(time_delta);
 
       XBT_DEBUG("Min for network : %f", model_next_action_end);
       if(model_next_action_end>=0.0)
@@ -176,81 +168,49 @@ int surf_model_running_action_set_size(surf_model_t model){
   return model->getRunningActionSet()->size();
 }
 
-surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_host_t src, sg_host_t dst, double size, double rate){
-  return model->communicate(src->pimpl_netcard, dst->pimpl_netcard, size, rate);
-}
-
 surf_action_t surf_host_sleep(sg_host_t host, double duration){
   return host->pimpl_cpu->sleep(duration);
 }
 
 surf_action_t surf_host_open(sg_host_t host, const char* fullpath){
-  return get_casted_host(host)->open(fullpath);
+  return host->pimpl_->open(fullpath);
 }
 
 surf_action_t surf_host_close(sg_host_t host, surf_file_t fd){
-  return get_casted_host(host)->close(fd);
+  return host->pimpl_->close(fd);
 }
 
 int surf_host_unlink(sg_host_t host, surf_file_t fd){
-  return get_casted_host(host)->unlink(fd);
+  return host->pimpl_->unlink(fd);
 }
 
 size_t surf_host_get_size(sg_host_t host, surf_file_t fd){
-  return get_casted_host(host)->getSize(fd);
+  return host->pimpl_->getSize(fd);
 }
 
 surf_action_t surf_host_read(sg_host_t host, surf_file_t fd, sg_size_t size){
-  return get_casted_host(host)->read(fd, size);
+  return host->pimpl_->read(fd, size);
 }
 
 surf_action_t surf_host_write(sg_host_t host, surf_file_t fd, sg_size_t size){
-  return get_casted_host(host)->write(fd, size);
+  return host->pimpl_->write(fd, size);
 }
 
 xbt_dynar_t surf_host_get_info(sg_host_t host, surf_file_t fd){
-  return get_casted_host(host)->getInfo(fd);
+  return host->pimpl_->getInfo(fd);
 }
 
 size_t surf_host_file_tell(sg_host_t host, surf_file_t fd){
-  return get_casted_host(host)->fileTell(fd);
+  return host->pimpl_->fileTell(fd);
 }
 
 int surf_host_file_seek(sg_host_t host, surf_file_t fd,
                                sg_offset_t offset, int origin){
-  return get_casted_host(host)->fileSeek(fd, offset, origin);
+  return host->pimpl_->fileSeek(fd, offset, origin);
 }
 
 int surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath){
-  return get_casted_host(host)->fileMove(fd, fullpath);
-}
-
-void surf_vm_suspend(sg_host_t vm){
-  get_casted_vm(vm)->suspend();
-}
-
-void surf_vm_resume(sg_host_t vm){
-  get_casted_vm(vm)->resume();
-}
-
-void surf_vm_save(sg_host_t vm){
-  get_casted_vm(vm)->save();
-}
-
-void surf_vm_restore(sg_host_t vm){
-  get_casted_vm(vm)->restore();
-}
-
-void surf_vm_migrate(sg_host_t vm, sg_host_t ind_vm_ws_dest){
-  get_casted_vm(vm)->migrate(ind_vm_ws_dest);
-}
-
-sg_host_t surf_vm_get_pm(sg_host_t vm){
-  return get_casted_vm(vm)->getPm();
-}
-
-void surf_vm_set_bound(sg_host_t vm, double bound){
-  get_casted_vm(vm)->setBound(bound);
+  return host->pimpl_->fileMove(fd, fullpath);
 }
 
 xbt_dict_t surf_storage_get_content(surf_resource_t resource){
@@ -282,5 +242,5 @@ void surf_cpu_action_set_bound(surf_action_t action, double bound) {
 }
 
 surf_file_t surf_storage_action_get_file(surf_action_t action){
-  return static_cast<simgrid::surf::StorageAction*>(action)->p_file;
+  return static_cast<simgrid::surf::StorageAction*>(action)->file_;
 }

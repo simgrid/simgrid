@@ -44,7 +44,7 @@ main (int argc, char **argv)
 {
   int nprocs = -1;
   int rank = -1;
-  int comm = MPI_COMM_WORLD;
+  MPI_Comm comm = MPI_COMM_WORLD;
   int i;
   char processor_name[128];
   int namelen = 128;

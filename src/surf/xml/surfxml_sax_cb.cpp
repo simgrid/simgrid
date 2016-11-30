@@ -81,6 +81,43 @@ int surf_parse_get_int(const char *string) {
   return res;
 }
 
+/* Turn something like "1-4,6,9-11" into the vector {1,2,3,4,6,9,10,11} */
+static std::vector<int>* explodesRadical(const char* radicals)
+{
+  std::vector<int>* exploded = new std::vector<int>();
+  char* groups;
+  unsigned int iter;
+
+  // Make all hosts
+  xbt_dynar_t radical_elements = xbt_str_split(radicals, ",");
+  xbt_dynar_foreach (radical_elements, iter, groups) {
+
+    xbt_dynar_t radical_ends = xbt_str_split(groups, "-");
+    int start                = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char*));
+    int end                  = 0;
+
+    switch (xbt_dynar_length(radical_ends)) {
+      case 1:
+        end = start;
+        break;
+      case 2:
+        end = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char*));
+        break;
+      default:
+        surf_parse_error("Malformed radical: %s", groups);
+        break;
+    }
+
+    for (int i = start; i <= end; i++)
+      exploded->push_back(i);
+
+    xbt_dynar_free(&radical_ends);
+  }
+  xbt_dynar_free(&radical_elements);
+
+  return exploded;
+}
+
 struct unit_scale {
   const char *unit;
   double scale;
@@ -511,7 +548,7 @@ void ETag_surfxml_cluster(){
   cluster.id          = A_surfxml_cluster_id;
   cluster.prefix      = A_surfxml_cluster_prefix;
   cluster.suffix      = A_surfxml_cluster_suffix;
-  cluster.radical     = A_surfxml_cluster_radical;
+  cluster.radicals    = explodesRadical(A_surfxml_cluster_radical);
   cluster.speed       = surf_parse_get_speed(A_surfxml_cluster_speed, "speed of cluster", cluster.id);
   cluster.core_amount = surf_parse_get_int(A_surfxml_cluster_core);
   cluster.bw          = surf_parse_get_bandwidth(A_surfxml_cluster_bw, "bw of cluster", cluster.id);
@@ -596,7 +633,7 @@ void STag_surfxml_cabinet(){
   cabinet.speed   = surf_parse_get_speed(A_surfxml_cabinet_speed, "speed of cabinet", cabinet.id);
   cabinet.bw      = surf_parse_get_bandwidth(A_surfxml_cabinet_bw, "bw of cabinet", cabinet.id);
   cabinet.lat     = surf_parse_get_time(A_surfxml_cabinet_lat, "lat of cabinet", cabinet.id);
-  cabinet.radical = A_surfxml_cabinet_radical;
+  cabinet.radicals = explodesRadical(A_surfxml_cabinet_radical);
 
   sg_platf_new_cabinet(&cabinet);
 }

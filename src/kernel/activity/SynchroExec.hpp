@@ -24,6 +24,7 @@ namespace activity {
 
     sg_host_t host = nullptr; /* The host where the execution takes place. If nullptr, then this is a parallel exec (and only surf knows the hosts) */
     surf_action_t surf_exec = nullptr; /* The Surf execution action encapsulated */
+    surf::Action* timeoutDetector = nullptr;
   };
 
 }}} // namespace simgrid::kernel::activity

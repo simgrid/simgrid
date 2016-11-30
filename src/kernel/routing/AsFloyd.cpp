@@ -3,6 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <limits>
+
 #include "xbt/log.h"
 #include "src/kernel/routing/AsFloyd.hpp"
 #include "src/surf/network_interface.hpp"
@@ -17,8 +19,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-AsFloyd::AsFloyd(const char*name)
-  : AsRoutedGraph(name)
+AsFloyd::AsFloyd(As* father, const char* name) : AsRoutedGraph(father, name)
 {
   predecessorTable_ = nullptr;
   costTable_ = nullptr;
@@ -26,9 +27,9 @@ AsFloyd::AsFloyd(const char*name)
 }
 
 AsFloyd::~AsFloyd(){
-  int table_size = static_cast<int>(vertices_.size());
   if (linkTable_ == nullptr) // Dealing with a parse error in the file?
     return;
+  int table_size = vertices_.size();
   /* Delete link_table */
   for (int i = 0; i < table_size; i++)
     for (int j = 0; j < table_size; j++)
@@ -39,7 +40,7 @@ AsFloyd::~AsFloyd(){
   xbt_free(costTable_);
 }
 
-void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
+void AsFloyd::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
 {
   size_t table_size = vertices_.size();
 
@@ -47,12 +48,11 @@ void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbar
 
   /* create a result route */
   std::vector<sg_platf_route_cbarg_t> route_stack;
-  int pred;
   unsigned int cur = dst->id();
   do {
-    pred = TO_FLOYD_PRED(src->id(), cur);
+    int pred = TO_FLOYD_PRED(src->id(), cur);
     if (pred == -1)
-      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name(), dst->name());
+      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name().c_str(), dst->name().c_str());
     route_stack.push_back(TO_FLOYD_LINK(pred, cur));
     cur = pred;
   } while (cur != src->id());
@@ -66,14 +66,15 @@ void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbar
   while (!route_stack.empty()) {
     sg_platf_route_cbarg_t e_route = route_stack.back();
     route_stack.pop_back();
-    if (hierarchy_ == RoutingMode::recursive && prev_dst_gw != nullptr && strcmp(prev_dst_gw->name(), e_route->gw_src->name())) {
+    if (hierarchy_ == RoutingMode::recursive && prev_dst_gw != nullptr &&
+        strcmp(prev_dst_gw->name().c_str(), e_route->gw_src->name().c_str())) {
       routing_platf->getRouteAndLatency(prev_dst_gw, e_route->gw_src, route->link_list, lat);
     }
 
     for (auto link: *e_route->link_list) {
       route->link_list->push_back(link);
       if (lat)
-        *lat += link->getLatency();
+        *lat += link->latency();
     }
 
     prev_dst_gw = e_route->gw_dst;
@@ -105,11 +106,13 @@ void AsFloyd::addRoute(sg_platf_route_cbarg_t route)
   /* Check that the route does not already exist */
   if (route->gw_dst) // AS route (to adapt the error message, if any)
     xbt_assert(nullptr == TO_FLOYD_LINK(route->src->id(), route->dst->id()),
-        "The route between %s@%s and %s@%s already exists (Rq: routes are symmetrical by default).",
-        route->src->name(),route->gw_src->name(),route->dst->name(),route->gw_dst->name());
+               "The route between %s@%s and %s@%s already exists (Rq: routes are symmetrical by default).",
+               route->src->name().c_str(), route->gw_src->name().c_str(), route->dst->name().c_str(),
+               route->gw_dst->name().c_str());
   else
     xbt_assert(nullptr == TO_FLOYD_LINK(route->src->id(), route->dst->id()),
-        "The route between %s and %s already exists (Rq: routes are symmetrical by default).", route->src->name(),route->dst->name());
+               "The route between %s and %s already exists (Rq: routes are symmetrical by default).",
+               route->src->name().c_str(), route->dst->name().c_str());
 
   TO_FLOYD_LINK(route->src->id(), route->dst->id()) = newExtendedRoute(hierarchy_, route, 1);
   TO_FLOYD_PRED(route->src->id(), route->dst->id()) = route->src->id();
@@ -118,13 +121,15 @@ void AsFloyd::addRoute(sg_platf_route_cbarg_t route)
 
   if (route->symmetrical == true) {
     if (route->gw_dst) // AS route (to adapt the error message, if any)
-      xbt_assert(nullptr == TO_FLOYD_LINK(route->dst->id(), route->src->id()),
+      xbt_assert(
+          nullptr == TO_FLOYD_LINK(route->dst->id(), route->src->id()),
           "The route between %s@%s and %s@%s already exists. You should not declare the reverse path as symmetrical.",
-          route->dst->name(),route->gw_dst->name(),route->src->name(),route->gw_src->name());
+          route->dst->name().c_str(), route->gw_dst->name().c_str(), route->src->name().c_str(),
+          route->gw_src->name().c_str());
     else
       xbt_assert(nullptr == TO_FLOYD_LINK(route->dst->id(), route->src->id()),
-          "The route between %s and %s already exists. You should not declare the reverse path as symmetrical.",
-          route->dst->name(),route->src->name());
+                 "The route between %s and %s already exists. You should not declare the reverse path as symmetrical.",
+                 route->dst->name().c_str(), route->src->name().c_str());
 
     if(route->gw_dst && route->gw_src) {
       NetCard* gw_tmp = route->gw_src;
@@ -133,10 +138,10 @@ void AsFloyd::addRoute(sg_platf_route_cbarg_t route)
     }
 
     if(!route->gw_src && !route->gw_dst)
-      XBT_DEBUG("Load Route from \"%s\" to \"%s\"", route->dst->name(), route->src->name());
+      XBT_DEBUG("Load Route from \"%s\" to \"%s\"", route->dst->name().c_str(), route->src->name().c_str());
     else
-      XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", route->dst->name(),
-          route->gw_src->name(), route->src->name(), route->gw_dst->name());
+      XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", route->dst->name().c_str(), route->gw_src->name().c_str(),
+                route->src->name().c_str(), route->gw_dst->name().c_str());
 
     TO_FLOYD_LINK(route->dst->id(), route->src->id()) = newExtendedRoute(hierarchy_, route, 0);
     TO_FLOYD_PRED(route->dst->id(), route->src->id()) = route->dst->id();
@@ -164,7 +169,7 @@ void AsFloyd::seal(){
   }
 
   /* Add the loopback if needed */
-  if (routing_platf->loopback_ && hierarchy_ == RoutingMode::base) {
+  if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
     for (unsigned int i = 0; i < table_size; i++) {
       sg_platf_route_cbarg_t e_route = TO_FLOYD_LINK(i, i);
       if (!e_route) {
@@ -172,7 +177,7 @@ void AsFloyd::seal(){
         e_route->gw_src = nullptr;
         e_route->gw_dst = nullptr;
         e_route->link_list = new std::vector<Link*>();
-        e_route->link_list->push_back(routing_platf->loopback_);
+        e_route->link_list->push_back(surf_network_model->loopback_);
         TO_FLOYD_LINK(i, i) = e_route;
         TO_FLOYD_PRED(i, i) = i;
         TO_FLOYD_COST(i, i) = 1;

@@ -41,17 +41,18 @@ namespace surf {
 class Model;
 class CpuModel;
 class HostModel;
-class VMModel;
 class NetworkModel;
 class StorageModel;
 class Resource;
 class ResourceLmm;
-class HostImpl;
 class HostCLM03;
 class NetworkCm02Link;
 class Action;
 class ActionLmm;
 class StorageActionLmm;
+}
+namespace vm {
+class VMModel; // FIXME: KILLME
 }
 namespace kernel {	
 namespace routing {
@@ -63,7 +64,7 @@ class RoutingPlatf;
 typedef simgrid::surf::Model surf_Model;
 typedef simgrid::surf::CpuModel surf_CpuModel;
 typedef simgrid::surf::HostModel surf_HostModel;
-typedef simgrid::surf::VMModel surf_VMModel;
+typedef simgrid::vm::VMModel surf_VMModel;
 typedef simgrid::surf::NetworkModel surf_NetworkModel;
 typedef simgrid::surf::StorageModel surf_StorageModel;
 typedef simgrid::surf::Resource surf_Resource;
@@ -140,18 +141,6 @@ typedef struct surf_model_description* surf_model_description_t;
 XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table, const char *name);
 XBT_PUBLIC(void) model_help(const char *category, s_surf_model_description_t * table);
 
-/** @ingroup SURF_vm_interface */
-/* FIXME: Where should the VM state be defined? */
-typedef enum {
-  SURF_VM_STATE_CREATED, /**< created, but not yet started */
-  SURF_VM_STATE_RUNNING,
-  SURF_VM_STATE_SUSPENDED, /**< Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
-
-  SURF_VM_STATE_SAVING, /**< Save/restore involves disk I/O, so there should be transition states. */
-  SURF_VM_STATE_SAVED,
-  SURF_VM_STATE_RESTORING,
-} e_surf_vm_state_t;
-
 /***************************/
 /* Generic model object */
 /***************************/
@@ -191,17 +180,6 @@ XBT_PUBLIC(surf_action_t) surf_model_extract_failed_action_set(surf_model_t mode
  * @return The size of the running action set
  */
 XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
-
-/** @brief Create a communication between two hosts
- *
- * @param model The model which handle the communication
- * @param src The source host
- * @param dst The destination host
- * @param size The amount of data (in bytes) needed to transfer
- * @param rate [description]
- * @return The action corresponding to the communication
- */
-XBT_PUBLIC(surf_action_t) surf_network_model_communicate(surf_network_model_t model, sg_host_t src, sg_host_t dst, double size, double rate);
 
 /** @brief Create a sleep action on the given host */
 XBT_PUBLIC(surf_action_t) surf_host_sleep(sg_host_t host, double duration);
@@ -250,51 +228,6 @@ XBT_PUBLIC(sg_size_t) surf_host_get_free_size(sg_host_t resource, const char* na
  * @return The amount of used space in bytes
  */
 XBT_PUBLIC(sg_size_t) surf_host_get_used_size(sg_host_t resource, const char* name);
-
-/** @brief Suspend a VM */
-XBT_PUBLIC(void) surf_vm_suspend(sg_host_t resource);
-
-/** @brief Resume a VM */
-XBT_PUBLIC(void) surf_vm_resume(sg_host_t resource);
-
-/**
- * @brief Save the VM (Not yet implemented)
- *
- * @param resource The surf vm
- */
-XBT_PUBLIC(void) surf_vm_save(sg_host_t resource);
-
-/**
- * @brief Restore the VM (Not yet implemented)
- *
- * @param resource The surf vm
- */
-XBT_PUBLIC(void) surf_vm_restore(sg_host_t resource);
-
-/**
- * @brief Migrate the VM to the destination host
- *
- * @param resource The surf vm
- * @param ind_vm_ws_dest The destination host
- */
-XBT_PUBLIC(void) surf_vm_migrate(sg_host_t resource, sg_host_t ind_vm_ws_dest);
-
-/**
- * @brief Get the physical machine hosting the VM
- *
- * @param resource The surf vm
- * @return The physical machine hosting the VM
- */
-XBT_PUBLIC(sg_host_t) surf_vm_get_pm(sg_host_t resource);
-
-/**
- * @brief [brief description]
- * @details [long description]
- *
- * @param resource [description]
- * @param bound [description]
- */
-XBT_PUBLIC(void) surf_vm_set_bound(sg_host_t resource, double bound);
 
 /**
  * @brief Unlink a file descriptor
@@ -435,8 +368,6 @@ XBT_PUBLIC(const char * ) surf_storage_get_host(surf_resource_t resource);
 /**************************************/
 /* Implementations of model object */
 /**************************************/
-
-XBT_PUBLIC_DATA(void_f_void_t) surf_cpu_model_init_preparse;
 
 /** \ingroup SURF_models
  *  \brief The CPU model object for the physical machine layer

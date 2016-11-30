@@ -1,11 +1,11 @@
-/* Copyright (c) 2010, 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010, 2012-2016. The SimGrid Team. All rights reserved.    */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/simix/ActorImpl.hpp"
 #include "msg_private.h"
+#include "src/simix/ActorImpl.hpp"
+#include <simgrid/s4u/host.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_process, instr, "MSG process");
 
@@ -58,7 +58,7 @@ void TRACE_msg_process_create (const char *process_name, int process_pid, msg_ho
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t host_container = PJ_container_get (sg_host_get_name(host));
+    container_t host_container = PJ_container_get(host->cname());
     PJ_container_new(instr_process_id_2(process_name, process_pid, str, len), INSTR_MSG_PROCESS, host_container);
   }
 }

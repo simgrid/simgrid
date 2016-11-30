@@ -20,10 +20,19 @@ namespace energy {
 
 class XBT_PRIVATE HostEnergy;
 
+class PowerRange {
+  public: 
+  double idle;
+  double min;
+  double max;
+
+  PowerRange(double idle, double min, double max) : idle(idle), min(min), max(max) {
+  }
+};
+
 class HostEnergy {
 public:
   static simgrid::xbt::Extension<simgrid::s4u::Host, HostEnergy> EXTENSION_ID;
-  typedef std::pair<double,double> power_range;
 
   explicit HostEnergy(simgrid::s4u::Host *ptr);
   ~HostEnergy();
@@ -37,7 +46,7 @@ public:
 private:
   void initWattsRangeList();
   simgrid::s4u::Host *host = nullptr;
-  std::vector<power_range> power_range_watts_list;   /*< List of (min_power,max_power) pairs corresponding to each cpu pstate */
+  std::vector<PowerRange> power_range_watts_list;   /*< List of (min_power,max_power) pairs corresponding to each cpu pstate */
 public:
   double watts_off = 0.0; /*< Consumption when the machine is turned off (shutdown) */
   double total_energy = 0.0; /*< Total energy consumed by the host */

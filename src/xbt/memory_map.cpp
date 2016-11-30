@@ -11,6 +11,15 @@
 #include <sys/types.h>
 #ifdef __linux__
 # include <sys/mman.h>
+#elif defined __FreeBSD__
+# include <sys/types.h>
+# include <sys/mman.h>
+# include <sys/param.h>
+# include <sys/queue.h>
+# include <sys/socket.h>
+# include <sys/sysctl.h>
+# include <sys/user.h>
+# include <libprocstat.h>
 #endif
 
 #include <xbt/sysdep.h>
@@ -35,6 +44,7 @@ namespace xbt {
  */
 XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 {
+  std::vector<VmMap> ret;
 #ifdef __linux__
   /* Open the actual process's proc maps file and create the memory_map_t */
   /* to be returned. */
@@ -46,8 +56,6 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
   }
   free(path);
   setbuf(fp, nullptr);
-
-  std::vector<VmMap> ret;
 
   /* Read one line at the time, parse it and add it to the memory map to be returned */
   ssize_t read; /* Number of bytes readed */
@@ -175,11 +183,90 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 
   std::free(line);
   std::fclose(fp);
-  return ret;
+#elif defined __FreeBSD__
+  struct procstat *prstat;
+  struct kinfo_proc *proc;
+  struct kinfo_vmentry *vmentries;
+  unsigned int cnt;
+
+  if ((prstat = procstat_open_sysctl()) == NULL) {
+    std::perror("procstat_open_sysctl failed");
+    xbt_die("Cannot access kernel state information");
+  }
+  if ((proc = procstat_getprocs(prstat, KERN_PROC_PID, pid, &cnt)) == NULL) {
+    std::perror("procstat_open_sysctl failed");
+    xbt_die("Cannot access process information");
+  }
+  if ((vmentries = procstat_getvmmap(prstat, proc, &cnt)) == NULL) {
+    std::perror("procstat_getvmmap failed");
+    xbt_die("Cannot access process memory mappings");
+  }
+  for (unsigned int i = 0; i < cnt; i++) {
+    VmMap memreg;
+
+    /* Addresses */
+    memreg.start_addr = vmentries[i].kve_start;
+    memreg.end_addr = vmentries[i].kve_end;
+
+    /* Permissions */
+    memreg.prot = PROT_NONE;
+    if (vmentries[i].kve_protection & KVME_PROT_READ)
+      memreg.prot |= PROT_READ;
+    if (vmentries[i].kve_protection & KVME_PROT_WRITE)
+      memreg.prot |= PROT_WRITE;
+    if (vmentries[i].kve_protection & KVME_PROT_EXEC)
+      memreg.prot |= PROT_EXEC;
+
+    /* Private (copy-on-write) or shared? */
+    if (vmentries[i].kve_flags & KVME_FLAG_COW)
+      memreg.flags |= MAP_PRIVATE;
+    else
+      memreg.flags |= MAP_SHARED;
+
+    /* Offset */
+    memreg.offset = vmentries[i].kve_offset;
+
+    /* Device : not sure this can be mapped to something outside of Linux? */
+    memreg.dev_major = 0;
+    memreg.dev_minor = 0;
+
+    /* Inode */
+    memreg.inode = vmentries[i].kve_vn_fileid;
+
+     /*
+      * Path. Linuxize result by giving an anonymous mapping a path from
+      * the previous mapping, provided previous is vnode and has a path,
+      * and mark the stack.
+      */
+    if (vmentries[i].kve_path[0] != '\0')
+      memreg.pathname = vmentries[i].kve_path;
+    else if (vmentries[i].kve_type == KVME_TYPE_DEFAULT
+	    && vmentries[i-1].kve_type == KVME_TYPE_VNODE
+        && vmentries[i-1].kve_path[0] != '\0')
+      memreg.pathname = vmentries[i-1].kve_path;
+    else if (vmentries[i].kve_type == KVME_TYPE_DEFAULT
+        && vmentries[i].kve_flags & KVME_FLAG_GROWS_DOWN)
+      memreg.pathname = "[stack]";
+
+    /*
+     * One last dirty modification: remove write permission from shared
+     * libraries private clean pages. This is necessary because simgrid
+     * later identifies mappings based on the permissions that are expected
+     * when running the Linux kernel.
+     */
+    if (vmentries[i].kve_type == KVME_TYPE_VNODE
+        && ! (vmentries[i].kve_flags & KVME_FLAG_NEEDS_COPY))
+      memreg.prot &= ~PROT_WRITE;
+
+    ret.push_back(std::move(memreg));
+  }
+  procstat_freevmmap(prstat, vmentries);
+  procstat_freeprocs(prstat, proc);
+  procstat_close(prstat);
 #else
-  /* On FreeBSD, kinfo_getvmmap() could be used but mmap() support is disabled anyway. */
   xbt_die("Could not get memory map from process %lli", (long long int) pid);
 #endif
+  return ret;
 }
 
 }

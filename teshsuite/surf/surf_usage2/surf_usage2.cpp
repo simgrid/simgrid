@@ -1,24 +1,22 @@
 /* A few basic tests for the surf library                                   */
 
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2015. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/sg_config.h"
-#include "simgrid/host.h"
 #include "surf/surf.h"
-#include "src/surf/surf_interface.hpp"
+#include "simgrid/s4u/host.hpp"
+#include "simgrid/sg_config.h"
 #include "src/surf/cpu_interface.hpp"
+#include "src/surf/network_interface.hpp"
+#include "src/surf/surf_interface.hpp"
 
 #include "xbt/log.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
 int main(int argc, char **argv)
 {
-  sg_host_t hostA = nullptr;
-  sg_host_t hostB = nullptr;
   double now = -1.0;
   int running;
 
@@ -31,19 +29,15 @@ int main(int argc, char **argv)
   parse_platform_file(argv[1]);
 
   /*********************** HOST ***********************************/
-  hostA = sg_host_by_name("Cpu A");
-  hostB = sg_host_by_name("Cpu B");
-
-  /* Let's check that those two processors exist */
-  XBT_DEBUG("%s : %p", sg_host_get_name(hostA), hostA);
-  XBT_DEBUG("%s : %p", sg_host_get_name(hostB), hostB);
+  simgrid::s4u::Host* hostA = sg_host_by_name("Cpu A");
+  simgrid::s4u::Host* hostB = sg_host_by_name("Cpu B");
 
   /* Let's do something on it */
   hostA->pimpl_cpu->execution_start(1000.0);
   hostB->pimpl_cpu->execution_start(1000.0);
   surf_host_sleep(hostB, 7.32);
 
-  surf_network_model_communicate(surf_network_model, hostA, hostB, 150.0, -1.0);
+  surf_network_model->communicate(hostA, hostB, 150.0, -1.0);
 
   surf_solve(-1.0);                 /* Takes traces into account. Returns 0.0 */
   do {

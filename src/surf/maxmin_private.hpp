@@ -107,7 +107,7 @@ typedef struct lmm_variable {
  */
 typedef struct lmm_system {
   int modified;
-  int selective_update_active;  /* flag to update partially the system only selecting changed portions */
+  bool selective_update_active;  /* flag to update partially the system only selecting changed portions */
   unsigned visited_counter;     /* used by lmm_update_modified_set  and lmm_remove_modified_set to cleverly (un-)flag the constraints (more details in these functions)*/
   s_xbt_swag_t variable_set;    /* a list of lmm_variable_t */
   s_xbt_swag_t constraint_set;  /* a list of lmm_constraint_t */
@@ -121,6 +121,8 @@ typedef struct lmm_system {
   simgrid::surf::ActionLmmListPtr keep_track;
 
   xbt_mallocator_t variable_mallocator;
+
+  void (*solve_fun)(lmm_system_t self);
 } s_lmm_system_t;
 
 #define extract_variable(sys) xbt_swag_extract(&(sys->variable_set))

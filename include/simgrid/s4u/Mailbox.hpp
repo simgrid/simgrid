@@ -121,7 +121,7 @@ public:
   smx_mailbox_t getImpl() { return pimpl_; }
 
   /** Gets the name of that mailbox */
-  const char *getName();
+  const char *name();
 
   /** Retrieve the mailbox associated to the given C string */
   static MailboxPtr byName(const char *name);

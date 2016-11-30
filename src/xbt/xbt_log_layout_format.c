@@ -1,13 +1,11 @@
 /* layout_simple - a dumb log layout                                        */
 
-/* Copyright (c) 2007-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2016. The SimGrid Team.                               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/internal_config.h"       /* execinfo when available */
-#include "xbt/synchro_core.h"   /* xbt_thread_self_name */
 #include "xbt/sysdep.h"
 #include "xbt/strbuff.h"
 #include "src/xbt/log_private.h"

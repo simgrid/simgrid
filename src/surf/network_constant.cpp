@@ -16,32 +16,26 @@ void surf_network_model_init_Constant()
   xbt_assert(surf_network_model == nullptr);
   surf_network_model = new simgrid::surf::NetworkConstantModel();
   all_existing_models->push_back(surf_network_model);
-
-  routing_model_create(nullptr);
 }
 
 namespace simgrid {
   namespace surf {
+  Link* NetworkConstantModel::createLink(const char* name, double bw, double lat, e_surf_link_sharing_policy_t policy)
+  {
 
-    NetworkConstantModel::~NetworkConstantModel() {}
-
-    Link* NetworkConstantModel::createLink(const char *name, double bw, double lat, e_surf_link_sharing_policy_t policy,
-        xbt_dict_t properties) {
-
-      xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "
-          "Please remove any link from your platform (and switch to routing='None')", name);
-      return nullptr;
+    xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "
+            "Please remove any link from your platform (and switch to routing='None')",
+            name);
+    return nullptr;
     }
 
-    double NetworkConstantModel::next_occuring_event(double /*now*/)
+    double NetworkConstantModel::nextOccuringEvent(double /*now*/)
     {
-      NetworkConstantAction *action = nullptr;
       double min = -1.0;
 
       ActionList *actionSet = getRunningActionSet();
-      for(ActionList::iterator it(actionSet->begin()), itend(actionSet->end())
-          ; it != itend ; ++it) {
-        action = static_cast<NetworkConstantAction*>(&*it);
+      for(auto it(actionSet->begin()), itend(actionSet->end()) ; it != itend ; ++it) {
+        NetworkConstantAction *action = static_cast<NetworkConstantAction*>(&*it);
         if (action->latency_ > 0 && (min < 0 || action->latency_ < min))
           min = action->latency_;
       }
@@ -79,7 +73,7 @@ namespace simgrid {
       }
     }
 
-    Action *NetworkConstantModel::communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate)
+    Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
     {
       NetworkConstantAction *action = new NetworkConstantAction(this, size, sg_latency_factor);
 
@@ -96,12 +90,11 @@ namespace simgrid {
     {
       latency_ = latency;
       if (latency_ <= 0.0) {
-        stateSet_ = getModel()->getDoneActionSet();
+        stateSet_ = model_->getDoneActionSet();
         stateSet_->push_back(*this);
       }
     };
 
-    NetworkConstantAction::~NetworkConstantAction() {}
-
+    NetworkConstantAction::~NetworkConstantAction() = default;
   }
 }

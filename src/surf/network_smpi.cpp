@@ -57,12 +57,13 @@ void surf_network_model_init_SMPI()
 namespace simgrid {
   namespace surf {
 
-    NetworkSmpiModel::NetworkSmpiModel()
-    : NetworkCm02Model() {
-      haveGap_=true;
+  NetworkSmpiModel::NetworkSmpiModel() : NetworkCm02Model()
+  {
+    haveGap_ = true;
     }
 
-    NetworkSmpiModel::~NetworkSmpiModel(){
+    NetworkSmpiModel::~NetworkSmpiModel()
+    {
       xbt_dict_free(&gap_lookup);
     }
 

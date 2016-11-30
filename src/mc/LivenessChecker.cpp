@@ -454,7 +454,7 @@ std::shared_ptr<Pair> LivenessChecker::newPair(Pair* current_pair, xbt_automaton
     next_pair->search_cycle = true;
   else
     next_pair->search_cycle = false;
-  return std::move(next_pair);
+  return next_pair;
 }
 
 void LivenessChecker::backtrack()

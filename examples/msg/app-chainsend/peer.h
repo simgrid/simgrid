@@ -26,7 +26,8 @@ typedef struct s_peer {
   xbt_dynar_t pending_recvs;
   xbt_dynar_t pending_sends;
   unsigned int total_pieces;
-} s_peer_t, *peer_t;
+} s_peer_t;
+typedef s_peer_t *peer_t;
 
 /* Peer: helper functions */
 msg_error_t peer_wait_for_message(peer_t peer);

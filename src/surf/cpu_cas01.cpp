@@ -38,23 +38,21 @@ namespace surf {
 CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
 {
   char *optim = xbt_cfg_get_string("cpu/optim");
-  int select = xbt_cfg_get_boolean("cpu/maxmin-selective-update");
+  bool select = xbt_cfg_get_boolean("cpu/maxmin-selective-update");
 
   if (!strcmp(optim, "Full")) {
     updateMechanism_ = UM_FULL;
     selectiveUpdate_ = select;
   } else if (!strcmp(optim, "Lazy")) {
     updateMechanism_ = UM_LAZY;
-    selectiveUpdate_ = 1;
-    xbt_assert((select == 1)
-               || (xbt_cfg_is_default_value("cpu/maxmin-selective-update")),
+    selectiveUpdate_ = true;
+    xbt_assert(select || (xbt_cfg_is_default_value("cpu/maxmin-selective-update")),
                "Disabling selective update while using the lazy update mechanism is dumb!");
   } else {
     xbt_die("Unsupported optimization (%s) for this model", optim);
   }
 
   p_cpuRunningActionSetThatDoesNotNeedBeingChecked = new ActionList();
-
   maxminSystem_ = lmm_system_new(selectiveUpdate_);
 
   if (getUpdateMechanism() == UM_LAZY) {
@@ -80,11 +78,6 @@ CpuCas01Model::~CpuCas01Model()
 Cpu *CpuCas01Model::createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core)
 {
   return new CpuCas01(this, host, speedPerPstate, core);
-}
-
-double CpuCas01Model::next_occuring_event_full(double /*now*/)
-{
-  return Model::shareResourcesMaxMin(getRunningActionSet(), maxminSystem_, lmm_solve);
 }
 
 /************
@@ -173,11 +166,7 @@ void CpuCas01::apply_event(tmgr_trace_iterator_t event, double value)
 
 CpuAction *CpuCas01::execution_start(double size)
 {
-  XBT_IN("(%s,%g)", getName(), size);
-  CpuCas01Action *action = new CpuCas01Action(getModel(), size, isOff(), speed_.scale * speed_.peak, getConstraint());
-
-  XBT_OUT();
-  return action;
+  return new CpuCas01Action(getModel(), size, isOff(), speed_.scale * speed_.peak, getConstraint());
 }
 
 CpuAction *CpuCas01::sleep(double duration)

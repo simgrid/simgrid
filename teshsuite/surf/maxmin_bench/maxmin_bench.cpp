@@ -19,11 +19,11 @@
 #include <stdint.h>
 
 double date;
-int64_t seedx= 0;
+int64_t seedx = 0;
 
-static int myrand(void) {
+static int myrand() {
   seedx=seedx * 16807 % 2147483647;
-  return (int32_t) seedx%1000;
+  return static_cast<int32_t>(seedx%1000);
 }
 
 static double float_random(double max)
@@ -33,26 +33,22 @@ static double float_random(double max)
 
 static unsigned int int_random(int max)
 {
-  return (uint32_t) (((max * 1.0) * myrand()) / (MYRANDMAX + 1.0));
+  return static_cast<uint32_t>(((max * 1.0) * myrand()) / (MYRANDMAX + 1.0));
 }
 
 static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limit, unsigned int pw_max_limit,
                  float rate_no_limit, int max_share, int mode)
 {
-  lmm_system_t Sys = NULL;
   lmm_constraint_t *cnst = xbt_new0(lmm_constraint_t, nb_cnst);
   lmm_variable_t *var = xbt_new0(lmm_variable_t, nb_var);
   int *used = xbt_new0(int, nb_cnst);
-  int i;
-  int j;
-  int k;
-  int l;
   int concurrency_share;
 
-  Sys = lmm_system_new(1);
+  lmm_system_t Sys = lmm_system_new(1);
 
-  for (i = 0; i < nb_cnst; i++) {
+  for (int i = 0; i < nb_cnst; i++) {
     cnst[i] = lmm_constraint_new(Sys, NULL, float_random(10.0));
+    int l;
     if(rate_no_limit>float_random(1.0))
       //Look at what happens when there is no concurrency limit 
       l=-1;
@@ -63,16 +59,16 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
     lmm_constraint_concurrency_limit_set(cnst[i],l );
   }
 
-  for (i = 0; i < nb_var; i++) {
+  for (int i = 0; i < nb_var; i++) {
     var[i] = lmm_variable_new(Sys, NULL, 1.0, -1.0, nb_elem);
     //Have a few variables with a concurrency share of two (e.g. cross-traffic in some cases)
     concurrency_share=1+int_random(max_share);
     lmm_variable_concurrency_share_set(var[i],concurrency_share);
 
-    for (j = 0; j < nb_cnst; j++)
+    for (int j = 0; j < nb_cnst; j++)
       used[j] = 0;
-    for (j = 0; j < nb_elem; j++) {
-      k = int_random(nb_cnst);
+    for (int j = 0; j < nb_elem; j++) {
+      int k = int_random(nb_cnst);
       if (used[k]>=concurrency_share) {
         j--;
         continue;
@@ -90,10 +86,10 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
 
   if(mode==2){
     fprintf(stderr,"Max concurrency:\n");
-    l=0;
-    for (i = 0; i < nb_cnst; i++) {
-      j=lmm_constraint_concurrency_maximum_get(cnst[i]);
-      k=lmm_constraint_concurrency_limit_get(cnst[i]);
+    int l=0;
+    for (int i = 0; i < nb_cnst; i++) {
+      int j=lmm_constraint_concurrency_maximum_get(cnst[i]);
+      int k=lmm_constraint_concurrency_limit_get(cnst[i]);
       xbt_assert(k<0 || j<=k);
       if(j>l)
         l=j;
@@ -108,7 +104,7 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
     lmm_print(Sys);
   }
 
-  for (i = 0; i < nb_var; i++)
+  for (int i = 0; i < nb_var; i++)
     lmm_variable_free(Sys, var[i]);
   lmm_system_free(Sys);
   free(cnst);

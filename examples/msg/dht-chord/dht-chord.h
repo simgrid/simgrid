@@ -69,7 +69,7 @@ int remote_get_predecessor(node_t node, int ask_to_id);
 int closest_preceding_node(node_t node, int id);
 void stabilize(node_t node);
 void notify(node_t node, int predecessor_candidate_id);
-void remote_notify(node_t node, int notify_to, int predecessor_candidate_id);
+void remote_notify(int notify_to, int predecessor_candidate_id);
 void fix_fingers(node_t node);
 void check_predecessor(node_t node);
 void random_lookup(node_t node);

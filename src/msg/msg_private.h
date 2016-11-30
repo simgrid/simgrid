@@ -29,10 +29,6 @@ SG_BEGIN_DECL()
 /**************** datatypes **********************************/
 /********************************* Host **************************************/
 typedef struct s_msg_host_priv {
-  int        dp_enabled;
-  xbt_dict_t dp_objs;
-  double     dp_updated_by_deleted_tasks;
-  int        is_migrating;
 
   std::vector<int> *file_descriptor_table;
 } s_msg_host_priv_t;
@@ -119,17 +115,9 @@ typedef struct dirty_page {
   msg_task_t task;
 } s_dirty_page, *dirty_page_t;
 
-XBT_PUBLIC_DATA(const char*) MSG_vm_get_property_value(msg_vm_t vm, const char *name);
-XBT_PUBLIC_DATA(xbt_dict_t) MSG_vm_get_properties(msg_vm_t vm);
-XBT_PUBLIC_DATA(void) MSG_vm_set_property_value(msg_vm_t vm, const char *name, void *value, void_f_pvoid_t free_ctn);
-XBT_PUBLIC_DATA(msg_vm_t) MSG_vm_get_by_name(const char *name);
-XBT_PUBLIC_DATA(const char*) MSG_vm_get_name(msg_vm_t vm);
-
 /************************** Global variables ********************************/
 typedef struct MSG_Global {
-  xbt_fifo_t host;
-  int session;
-  int debug_multiple_use;
+  int debug_multiple_use;       /* whether we want an error message when reusing the same Task for 2 things */
   unsigned long int sent_msg;   /* Total amount of messages sent during the simulation */
   void (*task_copy_callback) (msg_task_t task, msg_process_t src, msg_process_t dst);
   void_f_pvoid_t process_data_cleanup;
@@ -181,19 +169,6 @@ XBT_PRIVATE void TRACE_msg_process_suspend(msg_process_t process);
 XBT_PRIVATE void TRACE_msg_process_resume(msg_process_t process);
 XBT_PRIVATE void TRACE_msg_process_sleep_in(msg_process_t process);   //called from msg/gos.c
 XBT_PRIVATE void TRACE_msg_process_sleep_out(msg_process_t process);
-
-/* declaration of instrumentation functions from instr_msg_vm.c */
-XBT_PRIVATE char *instr_vm_id(msg_vm_t vm, char *str, int len);
-XBT_PRIVATE char *instr_vm_id_2(const char *vm_name, char *str, int len);
-XBT_PRIVATE void TRACE_msg_vm_change_host(msg_vm_t vm, msg_host_t old_host, msg_host_t new_host);
-XBT_PRIVATE void TRACE_msg_vm_start(msg_vm_t vm);
-XBT_PRIVATE void TRACE_msg_vm_create(const char *vm_name, msg_host_t host);
-XBT_PRIVATE void TRACE_msg_vm_kill(msg_vm_t process);
-XBT_PRIVATE void TRACE_msg_vm_suspend(msg_vm_t vm);
-XBT_PRIVATE void TRACE_msg_vm_resume(msg_vm_t vm);
-XBT_PRIVATE void TRACE_msg_vm_save(msg_vm_t vm);
-XBT_PRIVATE void TRACE_msg_vm_restore(msg_vm_t vm);
-XBT_PRIVATE void TRACE_msg_vm_end(msg_vm_t vm);
 
 SG_END_DECL()
 

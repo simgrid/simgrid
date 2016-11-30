@@ -48,9 +48,9 @@
 							<tool id="cdt.managedbuild.tool.gnu.assembler.base.1593279917" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base">
 								<option id="gnu.both.asm.option.include.paths.2076655261" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/lib/jvm/java-7-openjdk-amd64/include"/>
-									<listOptionValue builtIn="false" value="/usr/include/ns3.22"/>
 									<listOptionValue builtIn="false" value="/opt/gtnets/include"/>
 									<listOptionValue builtIn="false" value="/usr/include/lua5.3"/>
+									<listOptionValue builtIn="false" value="/usr/include/ns3.26"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.2071407067" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>

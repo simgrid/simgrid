@@ -20,7 +20,9 @@ typedef struct s_connection {
   unsigned int interested:1;      //Indicates if the peer is interested in one of our pieces
   unsigned int choked_upload:1;   //Indicates if the peer is choked for the current peer
   unsigned int choked_download:1; //Indicates if the peer has choked the current peer
-} s_connection_t, *connection_t;
+} s_connection_t;
+
+typedef s_connection_t *connection_t;
 
 /** @brief Build a new connection object from the peer id.
  *  @param id id of the peer

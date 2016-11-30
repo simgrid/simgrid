@@ -347,10 +347,8 @@ static void _sg_cfg_cb__surf_network_coordinates(const char *name)
   static int already_set = 0;
   int val = xbt_cfg_get_boolean(name);
   if (val) {
-    if (!already_set) {
-      COORD_HOST_LEVEL = sg_host_extension_create(xbt_dynar_free_voidp);
+    if (!already_set)
       COORD_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_dynar_free_voidp);
-    }
     already_set = 1;
   } else
     if (already_set)
@@ -596,6 +594,8 @@ void sg_config_init(int *argc, char **argv)
 
     xbt_cfg_register_boolean("smpi/privatize-global-variables", "no", nullptr, "Whether we should privatize global variable at runtime.");
     xbt_cfg_register_alias("smpi/privatize-global-variables", "smpi/privatize_global_variables");
+
+    xbt_cfg_register_boolean("smpi/grow-injected-times", "yes", nullptr, "Whether we want to make the injected time in MPI_Iprobe and MPI_Test grow, to allow faster simulation. This can make simulation less precise, though.");
 
 #if HAVE_PAPI
     xbt_cfg_register_string("smpi/papi-events", nullptr, nullptr, "This switch enables tracking the specified counters with PAPI");

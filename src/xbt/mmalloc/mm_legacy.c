@@ -18,7 +18,7 @@
 #include <math.h>
 #include "src/mc/mc_protocol.h"
 
-/* ***** Whether to use `mmalloc` of the undrlying malloc ***** */
+/* ***** Whether to use `mmalloc` of the underlying malloc ***** */
 
 static int __malloc_use_mmalloc;
 
@@ -58,7 +58,11 @@ xbt_mheap_t mmalloc_set_current_heap(xbt_mheap_t new_heap)
  * This is used before we have found the real malloc implementation with dlsym.
  */
 
-#define BUFFER_SIZE 32
+#ifdef __FreeBSD__ /* FreeBSD require more memory, other might */
+# define BUFFER_SIZE 256
+#else /* Valid on: Linux */
+# define BUFFER_SIZE 32
+#endif
 static size_t fake_alloc_index;
 static uint64_t buffer[BUFFER_SIZE];
 
@@ -72,7 +76,7 @@ static void* mm_fake_malloc(size_t n)
   size_t count = n / sizeof(uint64_t);
   if (n % sizeof(uint64_t))
     count++;
-  // Check that we have enough availabel memory:
+  // Check that we have enough available memory:
   if (fake_alloc_index + count >= BUFFER_SIZE)
     exit(127);
   // Allocate it:
@@ -123,10 +127,17 @@ static void __attribute__((constructor(101))) mm_legacy_constructor()
   if (__malloc_use_mmalloc) {
     __mmalloc_current_heap = mmalloc_preinit();
   } else {
+#if HAVE_DLFUNC
+    mm_real_realloc  = (void *(*)(void *, size_t))dlfunc(RTLD_NEXT, "realloc");
+    mm_real_malloc   = (void *(*)(size_t))dlfunc(RTLD_NEXT, "malloc");
+    mm_real_free     = (void (*)(void *))dlfunc(RTLD_NEXT, "free");
+    mm_real_calloc   = (void *(*)(size_t, size_t))dlfunc(RTLD_NEXT, "calloc");
+#else
     mm_real_realloc  = dlsym(RTLD_NEXT, "realloc");
     mm_real_malloc   = dlsym(RTLD_NEXT, "malloc");
     mm_real_free     = dlsym(RTLD_NEXT, "free");
     mm_real_calloc   = dlsym(RTLD_NEXT, "calloc");
+#endif
   }
   mm_initializing = 0;
   mm_initialized = 1;

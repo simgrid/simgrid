@@ -129,7 +129,7 @@ void SIMIX_process_set_function(const char *process_host,
   sg_host_t host = sg_host_by_name(process_host);
   if (!host)
     THROWF(arg_error, 0, "Host '%s' unknown", process_host);
-  process.host = sg_host_get_name(host);
+  process.host = host->cname();
 
   process.argc = 1 + xbt_dynar_length(arguments);
   process.argv = (const char**)xbt_new(char *, process.argc + 1);

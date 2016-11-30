@@ -5,13 +5,16 @@ p Testing a MSG application with properties in the XML for Hosts, Links and Proc
 ! output sort 19
 $ $SG_TEST_EXENV ${bindir:=.}/platform-properties$EXEEXT ${srcdir:=.}/prop.xml ${srcdir:=.}/../msg/platform-properties/platform-properties_d.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) There are 7 hosts in the environment
-> [  0.000000] (0:maestro@) Host 'node-3.acme.org' runs at 1000000000 flops/s
-> [  0.000000] (0:maestro@) Host 'node-0.acme.org' runs at 1000000000 flops/s
-> [  0.000000] (0:maestro@) Host 'node-4.acme.org' runs at 1000000000 flops/s
-> [  0.000000] (0:maestro@) Host 'node-1.acme.org' runs at 1000000000 flops/s
-> [  0.000000] (0:maestro@) Host 'node-2.acme.org' runs at 1000000000 flops/s
 > [  0.000000] (0:maestro@) Host 'host1' runs at 1000000000 flops/s
 > [  0.000000] (0:maestro@) Host 'host2' runs at 1000000000 flops/s
+> [  0.000000] (0:maestro@) Host 'node-0.acme.org' runs at 1000000000 flops/s
+> [  0.000000] (0:maestro@) Host 'node-1.acme.org' runs at 1000000000 flops/s
+> [  0.000000] (0:maestro@) Host 'node-2.acme.org' runs at 1000000000 flops/s
+> [  0.000000] (0:maestro@) Host 'node-3.acme.org' runs at 1000000000 flops/s
+> [  0.000000] (0:maestro@) Host 'node-4.acme.org' runs at 1000000000 flops/s
+> [  0.000000] (2:bob@host1) == Print the properties of the process
+> [  0.000000] (2:bob@host1)    Process property: SomeProp -> SomeValue
+> [  0.000000] (2:bob@host1) == Try to get a process property that does not exist
 > [  0.000000] (1:alice@host1) == Print the properties of the host 'host1'
 > [  0.000000] (1:alice@host1)   Host property: 'mem' -> '4'
 > [  0.000000] (1:alice@host1)   Host property: 'Hdd' -> '180'
@@ -20,9 +23,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/platform-properties$EXEEXT ${srcdir:=.}/prop.xml $
 > [  0.000000] (1:alice@host1)    Property: Hdd old value: 180
 > [  0.000000] (1:alice@host1) == Trying to modify a host property
 > [  0.000000] (1:alice@host1)    Property: Hdd old value: 250
-> [  0.000000] (2:bob@host1) == Print the properties of the process
-> [  0.000000] (2:bob@host1)    Process property: SomeProp -> SomeValue
-> [  0.000000] (2:bob@host1) == Try to get a process property that does not exist
 > [  1.000000] (3:carole@host2) == Print the properties of the host 'host1'
 > [  1.000000] (3:carole@host2)   Host property: 'mem' -> '4'
 > [  1.000000] (3:carole@host2)   Host property: 'Hdd' -> '180'

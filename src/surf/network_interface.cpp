@@ -31,10 +31,10 @@ extern "C" {
     return link->sharingPolicy();
   }
   double sg_link_bandwidth(Link *link){
-    return link->getBandwidth();
+    return link->bandwidth();
   }
   double sg_link_latency(Link *link){
-    return link->getLatency();
+    return link->latency();
   }
   void* sg_link_data(Link *link) {
     return link->getData();
@@ -61,7 +61,7 @@ extern "C" {
 namespace simgrid {
   namespace surf {
 
-    boost::unordered_map<std::string,Link *> *Link::links = new boost::unordered_map<std::string,Link *>();
+    std::unordered_map<std::string,Link *> *Link::links = new std::unordered_map<std::string,Link *>();
     Link *Link::byName(const char* name) {
       if (links->find(name) == links->end())
         return nullptr;
@@ -96,8 +96,7 @@ namespace simgrid {
     simgrid::xbt::signal<void(Link*)> Link::onStateChange;
 
     simgrid::xbt::signal<void(NetworkAction*, Action::State, Action::State)> networkActionStateChangedCallbacks;
-    simgrid::xbt::signal<void(NetworkAction*, kernel::routing::NetCard *src, kernel::routing::NetCard *dst)> Link::onCommunicate;
-
+    simgrid::xbt::signal<void(NetworkAction*, s4u::Host* src, s4u::Host* dst)> Link::onCommunicate;
   }
 }
 
@@ -129,13 +128,11 @@ namespace simgrid {
       return rate;
     }
 
-    double NetworkModel::next_occuring_event_full(double now)
+    double NetworkModel::nextOccuringEventFull(double now)
     {
-      ActionList *runningActions = surf_network_model->getRunningActionSet();
-      double minRes = shareResourcesMaxMin(runningActions, surf_network_model->maxminSystem_, surf_network_model->f_networkSolve);
+      double minRes = Model::nextOccuringEventFull(now);
 
-      for(ActionList::iterator it(runningActions->begin()), itend(runningActions->end())
-          ; it != itend ; ++it) {
+      for(auto it(getRunningActionSet()->begin()), itend(getRunningActionSet()->end()); it != itend ; it++) {
         NetworkAction *action = static_cast<NetworkAction*>(&*it);
         if (action->latency_ > 0)
           minRes = (minRes < 0) ? action->latency_ : std::min(minRes, action->latency_);
@@ -150,26 +147,14 @@ namespace simgrid {
      * Resource *
      ************/
 
-    Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props)
-    : Resource(model, name),
-      PropertyHolder(props)
-    {
-      links->insert({name, this});
-
-      m_latency.scale = 1;
-      m_bandwidth.scale = 1;
-      XBT_DEBUG("Create link '%s'",name);
-    }
-
-    Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint)
-    : Resource(model, name, constraint),
-      PropertyHolder(props)
+    Link::Link(simgrid::surf::NetworkModel* model, const char* name, lmm_constraint_t constraint)
+        : Resource(model, name, constraint)
     {
       if (strcmp(name,"__loopback__"))
         xbt_assert(!Link::byName(name), "Link '%s' declared several times in the platform.", name);
 
-      m_latency.scale = 1;
-      m_bandwidth.scale = 1;
+      latency_.scale   = 1;
+      bandwidth_.scale = 1;
 
       links->insert({name, this});
       XBT_DEBUG("Create link '%s'",name);
@@ -180,9 +165,9 @@ namespace simgrid {
     Link::~Link() {
       xbt_assert(currentlyDestroying_, "Don't delete Links directly. Call destroy() instead.");
     }
-    /** @brief Fire the require callbacks and destroy the object
+    /** @brief Fire the required callbacks and destroy the object
      *
-     * Don't delete directly an Link, call l->destroy() instead.
+     * Don't delete directly a Link, call l->destroy() instead.
      */
     void Link::destroy()
     {
@@ -198,14 +183,14 @@ namespace simgrid {
       return lmm_constraint_used(getModel()->getMaxminSystem(), getConstraint());
     }
 
-    double Link::getLatency()
+    double Link::latency()
     {
-      return m_latency.peak * m_latency.scale;
+      return latency_.peak * latency_.scale;
     }
 
-    double Link::getBandwidth()
+    double Link::bandwidth()
     {
-      return m_bandwidth.peak * m_bandwidth.scale;
+      return bandwidth_.peak * bandwidth_.scale;
     }
 
     int Link::sharingPolicy()
@@ -226,18 +211,18 @@ namespace simgrid {
       }
     }
     void Link::setStateTrace(tmgr_trace_t trace) {
-      xbt_assert(m_stateEvent==nullptr,"Cannot set a second state trace to Link %s", getName());
-      m_stateEvent = future_evt_set->add_trace(trace, 0.0, this);
+      xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Link %s", getName());
+      stateEvent_ = future_evt_set->add_trace(trace, 0.0, this);
     }
     void Link::setBandwidthTrace(tmgr_trace_t trace)
     {
-      xbt_assert(m_bandwidth.event==nullptr,"Cannot set a second bandwidth trace to Link %s", getName());
-      m_bandwidth.event = future_evt_set->add_trace(trace, 0.0, this);
+      xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth trace to Link %s", getName());
+      bandwidth_.event = future_evt_set->add_trace(trace, 0.0, this);
     }
     void Link::setLatencyTrace(tmgr_trace_t trace)
     {
-      xbt_assert(m_latency.event==nullptr,"Cannot set a second latency trace to Link %s", getName());
-      m_latency.event = future_evt_set->add_trace(trace, 0.0, this);
+      xbt_assert(latency_.event == nullptr, "Cannot set a second latency trace to Link %s", getName());
+      latency_.event = future_evt_set->add_trace(trace, 0.0, this);
     }
 
 
