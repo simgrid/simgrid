@@ -205,8 +205,8 @@ void HostEnergy::initWattsRangeList()
   for (int i=0; i< pstate_nb; i++) {
     /* retrieve the power values associated with the current pstate */
     xbt_dynar_t current_power_values = xbt_str_split(xbt_dynar_get_as(all_power_values, i, char*), ":");
-    xbt_assert(xbt_dynar_length(current_power_values) > 1,
-        "Power properties incorrectly defined - could not retrieve min and max power values for host %s",
+    xbt_assert(xbt_dynar_length(current_power_values) == 3,
+        "Power properties incorrectly defined - could not retrieve idle, min and max power values for host %s",
         host->name().c_str());
 
     /* min_power corresponds to the idle power (cpu load = 0) */
@@ -220,6 +220,7 @@ void HostEnergy::initWattsRangeList()
       xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 2, char*), msg_max)
     );
     power_range_watts_list.push_back(range);
+    xbt_free(msg_idle);
     xbt_free(msg_min);
     xbt_free(msg_max);
 
