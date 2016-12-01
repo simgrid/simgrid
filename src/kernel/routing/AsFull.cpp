@@ -81,9 +81,6 @@ void AsFull::addRoute(sg_platf_route_cbarg_t route)
 {
   NetCard* src        = route->src;
   NetCard* dst        = route->dst;
-  const char* srcName = src->name().c_str();
-  const char* dstName = dst->name().c_str();
-
   addRouteCheckParams(route);
 
   size_t table_size = vertices_.size();
@@ -94,11 +91,11 @@ void AsFull::addRoute(sg_platf_route_cbarg_t route)
   /* Check that the route does not already exist */
   if (route->gw_dst) // AS route (to adapt the error message, if any)
     xbt_assert(nullptr == TO_ROUTE_FULL(src->id(), dst->id()),
-               "The route between %s@%s and %s@%s already exists (Rq: routes are symmetrical by default).", srcName,
-               route->gw_src->name().c_str(), dstName, route->gw_dst->name().c_str());
+               "The route between %s@%s and %s@%s already exists (Rq: routes are symmetrical by default).", src->name().c_str(),
+               route->gw_src->name().c_str(), dst->name().c_str(), route->gw_dst->name().c_str());
   else
     xbt_assert(nullptr == TO_ROUTE_FULL(src->id(), dst->id()),
-               "The route between %s and %s already exists (Rq: routes are symmetrical by default).", srcName, dstName);
+               "The route between %s and %s already exists (Rq: routes are symmetrical by default).", src->name().c_str(), dst->name().c_str());
 
   /* Add the route to the base */
   TO_ROUTE_FULL(src->id(), dst->id()) = newExtendedRoute(hierarchy_, route, 1);
@@ -114,11 +111,11 @@ void AsFull::addRoute(sg_platf_route_cbarg_t route)
       xbt_assert(
           nullptr == TO_ROUTE_FULL(dst->id(), src->id()),
           "The route between %s@%s and %s@%s already exists. You should not declare the reverse path as symmetrical.",
-          dstName, route->gw_dst->name().c_str(), srcName, route->gw_src->name().c_str());
+          dst->name().c_str(), route->gw_dst->name().c_str(), src->name().c_str(), route->gw_src->name().c_str());
     else
       xbt_assert(nullptr == TO_ROUTE_FULL(dst->id(), src->id()),
                  "The route between %s and %s already exists. You should not declare the reverse path as symmetrical.",
-                 dstName, srcName);
+                 dst->name().c_str(), src->name().c_str());
 
     TO_ROUTE_FULL(dst->id(), src->id()) = newExtendedRoute(hierarchy_, route, 0);
     TO_ROUTE_FULL(dst->id(), src->id())->link_list->shrink_to_fit();

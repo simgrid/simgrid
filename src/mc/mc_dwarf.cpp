@@ -874,7 +874,7 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
 
   if (klass == simgrid::dwarf::TagClass::Subprogram) {
     const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
-    if (ns)
+    if (name && ns)
       frame.name  = std::string(ns) + "::" + name;
     else if (name)
       frame.name = name;
