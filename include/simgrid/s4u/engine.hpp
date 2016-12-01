@@ -18,6 +18,9 @@
 #include <simgrid/s4u/forward.hpp>
 
 namespace simgrid {
+namespace kernel {
+class EngineImpl;
+}
 namespace s4u {
 /** @brief Simulation engine
  *
@@ -85,6 +88,8 @@ public:
       });
     });
   }
+
+  simgrid::kernel::EngineImpl* pimpl;
 
 private:
   static s4u::Engine *instance_;

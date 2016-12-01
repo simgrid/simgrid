@@ -12,6 +12,8 @@
 #include "simgrid/s4u/engine.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "simgrid/s4u/storage.hpp"
+#include "simgrid/simix.h"
+#include "src/kernel/EngineImpl.hpp"
 
 #include "surf/surf.h"               // routing_platf. FIXME:KILLME. SOON
 #include "src/surf/surf_routing.hpp" // routing_platf. FIXME:KILLME. SOON
@@ -27,6 +29,7 @@ Engine *Engine::instance_ = nullptr; /* That singleton is awful, but I don't see
 Engine::Engine(int *argc, char **argv) {
   xbt_assert(s4u::Engine::instance_ == nullptr, "It is currently forbidden to create more than one instance of s4u::Engine");
   s4u::Engine::instance_ = this;
+  // pimpl                  = new kernel::EngineImpl();
 
   TRACE_global_init(argc, argv);
   SIMIX_global_init(argc, argv);
@@ -78,6 +81,7 @@ void Engine::run() {
 s4u::As *Engine::rootAs()
 {
   return routing_platf->root_; // FIXME: get the root into the Engine directly (and kill the platf)
+  // return pimpl->rootAs_;
 }
 
 static s4u::As *asByNameRecursive(s4u::As *current, const char *name)
