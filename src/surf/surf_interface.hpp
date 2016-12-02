@@ -7,6 +7,7 @@
 #define SURF_MODEL_H_
 
 #include <cstddef>
+#include <string>
 
 #include <xbt.h>
 #include <memory>
@@ -113,13 +114,6 @@ public:
     to_free,          /**< Action to free in next cleanup */
     not_in_the_system /**< Not in the system anymore. Why did you ask ? */
   };
-
-private:
-  /**
-   * @brief Common initializations for the constructors
-   */
-  void initialize(simgrid::surf::Model *model, double cost, bool failed,
-                  lmm_variable_t var = nullptr);
 
 public:
   /**
@@ -323,11 +317,9 @@ public:
    * @param now The current time of the simulation
    * @return The delta of time till the next action will finish
    */
-  virtual double next_occuring_event(double now);
-  virtual double next_occuring_event_lazy(double now);
-  virtual double next_occuring_event_full(double now);
-  double shareResourcesMaxMin(ActionList* running_actions,
-      lmm_system_t sys, void (*solve) (lmm_system_t));
+  virtual double nextOccuringEvent(double now);
+  virtual double nextOccuringEventLazy(double now);
+  virtual double nextOccuringEventFull(double now);
 
   /**
    * @brief Update action to the current time
@@ -344,13 +336,13 @@ public:
    * The only model that is not is NS3: computing the next timestamp moves the model up to that point,
    * so we need to call it only when the next timestamp of other sources is computed.
    */
-  virtual bool next_occuring_event_isIdempotent()=0;
+  virtual bool nextOccuringEventIsIdempotent() { return true;}
 
 protected:
   ActionLmmListPtr modifiedSet_;
   lmm_system_t maxminSystem_ = nullptr;
   e_UM_t updateMechanism_ = UM_UNDEFINED;
-  int selectiveUpdate_;
+  bool selectiveUpdate_;
   xbt_heap_t actionHeap_;
 
 private:
@@ -385,14 +377,6 @@ namespace surf {
  */
 XBT_PUBLIC_CLASS Resource {
 public:
-  /**
-   * @brief Constructor of non-LMM Resources
-   *
-   * @param model Model associated to this Resource
-   * @param name The name of the Resource
-   */
-  Resource(Model *model, const char *name);
-
   /**
    * @brief Constructor of LMM Resources
    *
@@ -433,7 +417,7 @@ public:
   virtual void turnOff();
 
 private:
-  const char *name_;
+  std::string name_;
   Model *model_;
   bool isOn_ = true;
 
@@ -441,7 +425,7 @@ public: /* LMM */
   /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component (or null if none) */
   lmm_constraint_t getConstraint() const;
 protected:
-  lmm_constraint_t constraint_ = nullptr;
+  const lmm_constraint_t constraint_ = nullptr;
 };
 
 }

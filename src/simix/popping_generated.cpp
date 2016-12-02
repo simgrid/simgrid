@@ -27,7 +27,6 @@ const char* simcall_names[] = {
   "SIMCALL_VM_RESUME",
   "SIMCALL_VM_SHUTDOWN",
   "SIMCALL_VM_SAVE",
-  "SIMCALL_VM_RESTORE",
   "SIMCALL_PROCESS_KILL",
   "SIMCALL_PROCESS_KILLALL",
   "SIMCALL_PROCESS_CLEANUP",
@@ -109,7 +108,7 @@ case SIMCALL_VM_SUSPEND:
       break;
 
 case SIMCALL_VM_RESUME:
-      simcall_HANDLER_vm_resume(simcall, simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
+      SIMIX_vm_resume(simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
       SIMIX_simcall_answer(simcall);
       break;
 
@@ -120,11 +119,6 @@ case SIMCALL_VM_SHUTDOWN:
 
 case SIMCALL_VM_SAVE:
       simcall_HANDLER_vm_save(simcall, simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
-      SIMIX_simcall_answer(simcall);
-      break;
-
-case SIMCALL_VM_RESTORE:
-      simcall_HANDLER_vm_restore(simcall, simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
       SIMIX_simcall_answer(simcall);
       break;
 
@@ -148,7 +142,7 @@ case SIMCALL_PROCESS_SUSPEND:
       break;
 
 case SIMCALL_PROCESS_RESUME:
-      simcall_HANDLER_process_resume(simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]));
+      SIMIX_process_resume(simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]));
       SIMIX_simcall_answer(simcall);
       break;
 
@@ -176,7 +170,7 @@ case SIMCALL_EXECUTION_START:
       break;
 
 case SIMCALL_EXECUTION_PARALLEL_START:
-      simgrid::simix::marshal<smx_activity_t>(simcall->result, SIMIX_execution_parallel_start(simgrid::simix::unmarshal<const char*>(simcall->args[0]), simgrid::simix::unmarshal<int>(simcall->args[1]), simgrid::simix::unmarshal<sg_host_t*>(simcall->args[2]), simgrid::simix::unmarshal<double*>(simcall->args[3]), simgrid::simix::unmarshal<double*>(simcall->args[4]), simgrid::simix::unmarshal<double>(simcall->args[5]), simgrid::simix::unmarshal<double>(simcall->args[6])));
+      simgrid::simix::marshal<smx_activity_t>(simcall->result, SIMIX_execution_parallel_start(simgrid::simix::unmarshal<const char*>(simcall->args[0]), simgrid::simix::unmarshal<int>(simcall->args[1]), simgrid::simix::unmarshal<sg_host_t*>(simcall->args[2]), simgrid::simix::unmarshal<double*>(simcall->args[3]), simgrid::simix::unmarshal<double*>(simcall->args[4]), simgrid::simix::unmarshal<double>(simcall->args[5]), simgrid::simix::unmarshal<double>(simcall->args[6]), simgrid::simix::unmarshal<double>(simcall->args[7])));
       SIMIX_simcall_answer(simcall);
       break;
 

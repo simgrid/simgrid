@@ -15,10 +15,10 @@ namespace routing {
 /** Floyd routing data: slow initialization, fast lookup, lesser memory requirements, shortest path routing only */
 class XBT_PRIVATE AsFloyd: public AsRoutedGraph {
 public:
-  explicit AsFloyd(const char *name);
+  explicit AsFloyd(As* father, const char* name);
   ~AsFloyd() override;
 
-  void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
+  void getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t into, double* latency) override;
   void addRoute(sg_platf_route_cbarg_t route) override;
   void seal() override;
 

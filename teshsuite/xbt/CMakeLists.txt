@@ -27,7 +27,7 @@ if(NOT enable_debug)
 endif()
 
 if(HAVE_MMALLOC)
-  if(${ARCH_32_BITS})
+  if(CMAKE_SIZEOF_VOID_P EQUAL 4) # 32 bits
     ADD_TESH(tesh-xbt-mmalloc-32 --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/mmalloc --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc mmalloc_32.tesh)
   else()
     ADD_TESH(tesh-xbt-mmalloc-64 --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/mmalloc --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc mmalloc_64.tesh)

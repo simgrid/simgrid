@@ -153,9 +153,9 @@ SG_BEGIN_DECL()
 /** @{ @ingroup SURF_lmm */
 /**
  * @brief Create a new Linear MaxMim system
- * @param selective_update [description]
+ * @param selective_update whether we should do lazy updates
  */
-XBT_PUBLIC(lmm_system_t) lmm_system_new(int selective_update);
+XBT_PUBLIC(lmm_system_t) lmm_system_new(bool selective_update);
 
 /**
  * @brief Free an existing Linear MaxMin system

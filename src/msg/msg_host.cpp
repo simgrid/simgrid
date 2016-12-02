@@ -29,13 +29,7 @@ msg_host_t __MSG_host_create(sg_host_t host) // FIXME: don't return our paramete
 {
   msg_host_priv_t priv = xbt_new0(s_msg_host_priv_t, 1);
 
-  priv->dp_objs = xbt_dict_new();
-  priv->dp_enabled = 0;
-  priv->dp_updated_by_deleted_tasks = 0;
-  priv->is_migrating = 0;
-
-  priv->file_descriptor_table = new std::vector<int>(sg_storage_max_file_descriptors);
-  std::iota (priv->file_descriptor_table->rbegin(), priv->file_descriptor_table->rend(), 0); // Fill with ..., 1, 0.
+  priv->file_descriptor_table = nullptr;
 
   sg_host_msg_set(host,priv);
 
@@ -115,10 +109,6 @@ void __MSG_host_priv_free(msg_host_priv_t priv)
 {
   if (priv == nullptr)
     return;
-  unsigned int size = xbt_dict_size(priv->dp_objs);
-  if (size > 0)
-    XBT_WARN("dp_objs: %u pending task?", size);
-  xbt_dict_free(&priv->dp_objs);
   delete priv->file_descriptor_table;
   free(priv);
 }
@@ -163,7 +153,7 @@ double MSG_get_host_speed(msg_host_t host) {
  * \return the number of cores
  */
 int MSG_host_get_core_number(msg_host_t host) {
-  return host->coresCount();
+  return host->coreCount();
 }
 
 /** \ingroup m_host_management
@@ -235,28 +225,6 @@ int MSG_host_is_on(msg_host_t host)
 int MSG_host_is_off(msg_host_t host)
 {
   return host->isOff();
-}
-
-/** \ingroup m_host_management
- * \brief Set the parameters of a given host
- *
- * \param host a host
- * \param params a prameter object
- */
-void MSG_host_set_params(msg_host_t host, vm_params_t params)
-{
-  host->setParameters(params);
-}
-
-/** \ingroup m_host_management
- * \brief Get the parameters of a given host
- *
- * \param host a host
- * \param params a prameter object
- */
-void MSG_host_get_params(msg_host_t host, vm_params_t params)
-{
-  host->parameters(params);
 }
 
 /** \ingroup m_host_management
@@ -340,6 +308,10 @@ xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
 
 int __MSG_host_get_file_descriptor_id(msg_host_t host){
   msg_host_priv_t priv = sg_host_msg(host);
+  if(!priv->file_descriptor_table){
+    priv->file_descriptor_table = new std::vector<int>(sg_storage_max_file_descriptors);
+    std::iota (priv->file_descriptor_table->rbegin(), priv->file_descriptor_table->rend(), 0); // Fill with ..., 1, 0.
+  }
   xbt_assert(!priv->file_descriptor_table->empty(), "Too much files are opened! Some have to be closed.");
   int desc = priv->file_descriptor_table->back();
   priv->file_descriptor_table->pop_back();

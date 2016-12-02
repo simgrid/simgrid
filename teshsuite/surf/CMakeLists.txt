@@ -16,7 +16,7 @@ foreach(x small medium large)
 endforeach()
 
 set(tesh_files     ${tesh_files}                                                               PARENT_SCOPE)
-set(teshsuite_src  ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/maxmin_bench/maxmin_bench.c   PARENT_SCOPE)
+set(teshsuite_src  ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/maxmin_bench/maxmin_bench.cpp  PARENT_SCOPE)
 
 foreach(x lmm_usage surf_usage surf_usage2 trace_usage)
   ADD_TESH(tesh-surf-${x} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/${x} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/${x} ${x}.tesh)

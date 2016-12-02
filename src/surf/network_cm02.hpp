@@ -39,13 +39,13 @@ namespace simgrid {
     class NetworkCm02Model : public NetworkModel {
     public:
       NetworkCm02Model();
-      ~NetworkCm02Model();
-      Link* createLink(const char *name, double bandwidth,  double latency, e_surf_link_sharing_policy_t policy,
-          xbt_dict_t properties) override;
+      explicit NetworkCm02Model(void (*solve_fun)(lmm_system_t self));
+      virtual ~NetworkCm02Model();
+      Link* createLink(const char* name, double bandwidth, double latency,
+                       e_surf_link_sharing_policy_t policy) override;
       void updateActionsStateLazy(double now, double delta) override;
       void updateActionsStateFull(double now, double delta) override;
-      Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate) override;
-      bool next_occuring_event_isIdempotent() override;
+      Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
       virtual void gapAppend(double size, const Link* link, NetworkAction* action);
     protected:
       bool haveGap_ = false;
@@ -57,13 +57,12 @@ namespace simgrid {
 
     class NetworkCm02Link : public Link {
     public:
-      NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_dict_t props,
-          double bandwidth, double latency, e_surf_link_sharing_policy_t policy,
-          lmm_system_t system);
+      NetworkCm02Link(NetworkCm02Model* model, const char* name, double bandwidth, double latency,
+                      e_surf_link_sharing_policy_t policy, lmm_system_t system);
       ~NetworkCm02Link() override;
       void apply_event(tmgr_trace_iterator_t event, double value) override;
-      void updateBandwidth(double value) override;
-      void updateLatency(double value) override;
+      void setBandwidth(double value) override;
+      void setLatency(double value) override;
       virtual void gapAppend(double size, const Link* link, NetworkAction* action);
     };
 
@@ -72,7 +71,7 @@ namespace simgrid {
      * Action *
      **********/
     class NetworkCm02Action : public NetworkAction {
-      friend Action *NetworkCm02Model::communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate);
+      friend Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate);
       friend NetworkSmpiModel;
     public:
       NetworkCm02Action(Model *model, double cost, bool failed)

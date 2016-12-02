@@ -27,6 +27,7 @@ namespace kernel {
   namespace routing {
     class AsImpl;
     class NetCard;
+    class AsRoute;
   }
 }
 namespace s4u {
@@ -40,7 +41,7 @@ XBT_PUBLIC_CLASS As {
 protected:
   friend simgrid::kernel::routing::AsImpl;
 
-  explicit As(const char *name);
+  explicit As(As * father, const char* name);
   virtual ~As();
   
 public:
@@ -49,9 +50,8 @@ public:
   char *name();
   As *father();;
   xbt_dict_t children(); // Sub AS
-  xbt_dynar_t hosts();   // my content
+  xbt_dynar_t hosts();   // my content as a dynar
 
-  As *father_ = nullptr; // FIXME: hide me
 public:
   /* Add content to the AS, at parsing time. It should be sealed afterward. */
   virtual int addComponent(kernel::routing::NetCard *elm); /* A host, a router or an AS, whatever */
@@ -59,14 +59,17 @@ public:
   void addBypassRoute(sg_platf_route_cbarg_t e_route);
 
 protected:
-  char *name_ = nullptr;
-  xbt_dict_t children_ = xbt_dict_new_homogeneous(nullptr); // sub-ASes
   std::vector<kernel::routing::NetCard*> vertices_; // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
 
-  std::map<std::pair<std::string, std::string>, std::vector<surf::Link*>*> bypassRoutes_; // srcName x dstName -> route
-
 private:
+  As* father_ = nullptr;
+  char* name_ = nullptr;
+
   bool sealed_ = false; // We cannot add more content when sealed
+
+  std::map<std::pair<kernel::routing::NetCard*, kernel::routing::NetCard*>, kernel::routing::AsRoute*>
+      bypassRoutes_;                                                                      // src x dst -> route
+  xbt_dict_t children_ = xbt_dict_new_homogeneous(nullptr);                               // sub-ASes
 };
 
 }}; // Namespace simgrid::s4u

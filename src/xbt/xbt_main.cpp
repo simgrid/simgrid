@@ -95,7 +95,6 @@ static void xbt_preinit(void) {
   _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
   xbt_log_preinit();
-  xbt_backtrace_preinit();
   xbt_os_thread_mod_preinit();
   xbt_fifo_preinit();
   xbt_dict_preinit();
@@ -111,7 +110,6 @@ static void xbt_postexit(void)
 {
   if(!_sg_do_clean_atexit) return;
   xbt_initialized--;
-  xbt_backtrace_postexit();
   xbt_fifo_postexit();
   xbt_dict_postexit();
   xbt_os_thread_mod_postexit();

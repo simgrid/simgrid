@@ -16,8 +16,8 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-AsClusterDragonfly::AsClusterDragonfly(const char*name)
-  : AsCluster(name) {
+AsClusterDragonfly::AsClusterDragonfly(As* father, const char* name) : AsCluster(father, name)
+{
 }
 
 AsClusterDragonfly::~AsClusterDragonfly() {
@@ -49,7 +49,8 @@ void AsClusterDragonfly::parse_specific_arguments(sg_platf_cluster_cbarg_t clust
 
   // TODO : we have to check for zeros and negative numbers, or it might crash
   if (parameters.size() != 4){
-    surf_parse_error("Dragonfly are defined by the number of groups, chassiss per groups, blades per chassis, nodes per blade");
+    surf_parse_error(
+        "Dragonfly are defined by the number of groups, chassis per groups, blades per chassis, nodes per blade");
   }
 
   // Blue network : number of groups, number of links between each group
@@ -61,7 +62,7 @@ void AsClusterDragonfly::parse_specific_arguments(sg_platf_cluster_cbarg_t clust
   this->numGroups_=xbt_str_parse_int(tmp[0].c_str(), "Invalid number of groups: %s");
   this->numLinksBlue_=xbt_str_parse_int(tmp[1].c_str(), "Invalid number of links for the blue level: %s");
 
- // Black network : number of chassiss/group, number of links between each router on the black network
+  // Black network : number of chassis/group, number of links between each router on the black network
   boost::split(tmp, parameters[1], boost::is_any_of(","));
   if(tmp.size() != 2) {
     surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
@@ -235,21 +236,23 @@ void AsClusterDragonfly::generateLinks() {
   }
 }
 
-void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_platf_route_cbarg_t route, double *latency) {
+void AsClusterDragonfly::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* latency)
+{
   //Minimal routing version.
   // TODO : non-minimal random one, and adaptive ?
 
   if (dst->isRouter() || src->isRouter())
     return;
 
-  XBT_VERB("dragonfly_get_route_and_latency from '%s'[%d] to '%s'[%d]", src->name(), src->id(), dst->name(), dst->id());
+  XBT_VERB("dragonfly getLocalRout from '%s'[%d] to '%s'[%d]", src->name().c_str(), src->id(), dst->name().c_str(),
+           dst->id());
 
   if ((src->id() == dst->id()) && hasLoopback_) {
      s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id() * linkCountPerNode_);
 
      route->link_list->push_back(info.linkUp);
      if (latency)
-       *latency += info.linkUp->getLatency();
+       *latency += info.linkUp->latency();
      return;
   }
 
@@ -264,13 +267,11 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
 
   //node->router local link
   route->link_list->push_back(myRouter->myNodes_[myCoords[3]*numLinksperLink_]);
-  if(latency) {
-    *latency += myRouter->myNodes_[myCoords[3]*numLinksperLink_]->getLatency();
-  }
+  if (latency)
+    *latency += myRouter->myNodes_[myCoords[3] * numLinksperLink_]->latency();
 
   if (hasLimiter_) {    // limiter for sender
-    s_surf_parsing_link_up_down_t info;
-    info = privateLinks_.at(src->id() * linkCountPerNode_ + hasLoopback_);
+    s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id() * linkCountPerNode_ + hasLoopback_);
     route->link_list->push_back(info.linkUp);
   }
 
@@ -282,26 +283,23 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
       if(currentRouter->blade_!=targetCoords[0]){
         //go to the nth router in our chassis
         route->link_list->push_back(currentRouter->greenLinks_[targetCoords[0]]);
-        if(latency) {
-          *latency += currentRouter->greenLinks_[targetCoords[0]]->getLatency();
-        }
+        if (latency)
+          *latency += currentRouter->greenLinks_[targetCoords[0]]->latency();
         currentRouter=routers_[myCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+myCoords[1] * numBladesPerChassis_+targetCoords[0]];
       }
 
       if(currentRouter->chassis_!=0){
         //go to the first chassis of our group
         route->link_list->push_back(currentRouter->blackLinks_[0]);
-        if(latency) {
-          *latency += currentRouter->blackLinks_[0]->getLatency();
-        }
+        if (latency)
+          *latency += currentRouter->blackLinks_[0]->latency();
         currentRouter=routers_[myCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+targetCoords[0]];
       }
 
       //go to destination group - the only optical hop 
       route->link_list->push_back(currentRouter->blueLinks_[0]);
-      if(latency) {
-        *latency += currentRouter->blueLinks_[0]->getLatency();
-      }
+      if (latency)
+        *latency += currentRouter->blueLinks_[0]->latency();
       currentRouter=routers_[targetCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+myCoords[0]];
     }
 
@@ -309,37 +307,31 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
     //same group, but same blade ?
     if(targetRouter->blade_ != currentRouter->blade_){
       route->link_list->push_back(currentRouter->greenLinks_[targetCoords[2]]);
-      if(latency) {
-        *latency += currentRouter->greenLinks_[targetCoords[2]]->getLatency();
-      }
+      if (latency)
+        *latency += currentRouter->greenLinks_[targetCoords[2]]->latency();
       currentRouter=routers_[targetCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+targetCoords[2]];
     }
 
     //same blade, but same chassis ?
     if(targetRouter->chassis_ != currentRouter->chassis_){
       route->link_list->push_back(currentRouter->blackLinks_[targetCoords[1]]);
-      if(latency) {
-        *latency += currentRouter->blackLinks_[targetCoords[1]]->getLatency();
-      }
+      if (latency)
+        *latency += currentRouter->blackLinks_[targetCoords[1]]->latency();
       currentRouter=routers_[targetCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+targetCoords[1]*numBladesPerChassis_+targetCoords[2]];
     }
   }
 
   if (hasLimiter_) {    // limiter for receiver
-    s_surf_parsing_link_up_down_t info;
-    info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_);
+    s_surf_parsing_link_up_down_t info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_);
     route->link_list->push_back(info.linkUp);
   }
 
   //router->node local link
   route->link_list->push_back(targetRouter->myNodes_[targetCoords[3]*numLinksperLink_+numLinksperLink_-1]);
-  if(latency) {
-    *latency += targetRouter->myNodes_[targetCoords[3]*numLinksperLink_+numLinksperLink_-1]->getLatency();
-  }
+  if (latency)
+    *latency += targetRouter->myNodes_[targetCoords[3] * numLinksperLink_ + numLinksperLink_ - 1]->latency();
 
   xbt_free(myCoords);
   xbt_free(targetCoords);
-
-  
 }
 }}} // namespace

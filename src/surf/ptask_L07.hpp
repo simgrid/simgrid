@@ -39,7 +39,7 @@ public:
   HostL07Model();
   ~HostL07Model();
 
-  double next_occuring_event(double now) override;
+  double nextOccuringEvent(double now) override;
   void updateActionsState(double now, double delta) override;
   Action *executeParallelTask(int host_nb, sg_host_t *host_list,
                               double *flops_amount, double *bytes_amount, double rate) override;
@@ -51,21 +51,18 @@ public:
   ~CpuL07Model();
 
   Cpu *createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core) override;
-  HostL07Model *p_hostModel;
+  HostL07Model *hostModel_;
 };
 
 class NetworkL07Model : public NetworkModel {
 public:
   NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys);
   ~NetworkL07Model();
-  Link* createLink(const char *name, double bandwidth, double latency,
-      e_surf_link_sharing_policy_t policy,
-      xbt_dict_t properties) override;
+  Link* createLink(const char* name, double bandwidth, double latency, e_surf_link_sharing_policy_t policy) override;
 
-  Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate) override;
-  bool next_occuring_event_isIdempotent() override {return true;}
+  Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
 
-  HostL07Model *p_hostModel;
+  HostL07Model *hostModel_;
 };
 
 /************
@@ -86,13 +83,13 @@ protected:
 
 class LinkL07 : public Link {
 public:
-  LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
-      double bandwidth, double latency, e_surf_link_sharing_policy_t policy);
+  LinkL07(NetworkL07Model* model, const char* name, double bandwidth, double latency,
+          e_surf_link_sharing_policy_t policy);
   ~LinkL07(){ };
   bool isUsed() override;
   void apply_event(tmgr_trace_iterator_t event, double value) override;
-  void updateBandwidth(double value) override;
-  void updateLatency(double value) override;
+  void setBandwidth(double value) override;
+  void setLatency(double value) override;
 };
 
 /**********
@@ -111,11 +108,11 @@ public:
 
   int unref() override;
 
-  std::vector<kernel::routing::NetCard*> * p_netcardList = new std::vector<kernel::routing::NetCard*>();
-  double *p_computationAmount;
-  double *p_communicationAmount;
-  double m_latency;
-  double m_rate;
+  std::vector<kernel::routing::NetCard*> * netcardList_ = new std::vector<kernel::routing::NetCard*>();
+  double *computationAmount_;
+  double *communicationAmount_;
+  double latency_;
+  double rate_;
 };
 
 }

@@ -28,7 +28,6 @@ public:
   ~CpuCas01Model() override;
 
   Cpu *createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core) override;
-  double next_occuring_event_full(double now) override;
   ActionList *p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
 };
 

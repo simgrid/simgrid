@@ -12,32 +12,22 @@
 XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf, "Logging specific to the SURF cpu module");
 
-void_f_void_t surf_cpu_model_init_preparse = nullptr;
-
 simgrid::surf::CpuModel *surf_cpu_model_pm;
 simgrid::surf::CpuModel *surf_cpu_model_vm;
 
 namespace simgrid {
 namespace surf {
 
-/*************
- * Callbacks *
- *************/
-
-simgrid::xbt::signal<void(CpuAction*, Action::State, Action::State)> cpuActionStateChangedCallbacks;
-
 /*********
  * Model *
  *********/
 
-CpuModel::~CpuModel() {}
-
 void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 {
-  CpuAction *action;
   while ((xbt_heap_size(getActionHeap()) > 0)
          && (double_equals(xbt_heap_maxkey(getActionHeap()), now, sg_surf_precision))) {
-    action = static_cast<CpuAction*>(xbt_heap_pop(getActionHeap()));
+
+    CpuAction *action = static_cast<CpuAction*>(xbt_heap_pop(getActionHeap()));
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
     if (TRACE_is_enabled()) {
       Cpu *cpu = static_cast<Cpu*>(lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)));
@@ -53,7 +43,6 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     action->setRemains(0);
     action->setState(Action::State::done);
-    action->heapRemove(getActionHeap()); //FIXME: strange call since action was already popped
   }
   if (TRACE_is_enabled()) {
     //defining the last timestamp that we can safely dump to trace file
@@ -62,7 +51,7 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     ActionList *actionSet = getRunningActionSet();
     for(ActionList::iterator it(actionSet->begin()), itend(actionSet->end())
        ; it != itend ; ++it) {
-      action = static_cast<CpuAction*>(&*it);
+      CpuAction *action = static_cast<CpuAction*>(&*it);
         if (smaller < 0) {
           smaller = action->getLastUpdate();
           continue;
@@ -75,7 +64,6 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
       TRACE_last_timestamp_to_dump = smaller;
     }
   }
-  return;
 }
 
 void CpuModel::updateActionsStateFull(double now, double delta)
@@ -115,11 +103,6 @@ void CpuModel::updateActionsStateFull(double now, double delta)
       action->setState(Action::State::done);
     }
   }
-}
-
-bool CpuModel::next_occuring_event_isIdempotent()
-{
-  return true;
 }
 
 /************
@@ -203,7 +186,7 @@ void Cpu::onSpeedChange() {
   TRACE_surf_host_set_speed(surf_get_clock(), getName(), coresAmount_ * speed_.scale * speed_.peak);
 }
 
-int Cpu::getCoreCount()
+int Cpu::coreCount()
 {
   return coresAmount_;
 }

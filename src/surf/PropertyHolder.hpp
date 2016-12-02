@@ -17,7 +17,7 @@ namespace surf {
 class PropertyHolder { // DO NOT DERIVE THIS CLASS, or the diamond inheritance mayhem will get you
 
 public:
-  explicit PropertyHolder(xbt_dict_t props);
+  explicit PropertyHolder();
   ~PropertyHolder();
 
   const char *getProperty(const char*id);

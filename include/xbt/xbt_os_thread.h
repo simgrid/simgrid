@@ -70,7 +70,6 @@ XBT_PUBLIC(xbt_os_sem_t) xbt_os_sem_init(unsigned int value);
 XBT_PUBLIC(void) xbt_os_sem_acquire(xbt_os_sem_t sem);
 XBT_PUBLIC(void) xbt_os_sem_release(xbt_os_sem_t sem);
 XBT_PUBLIC(void) xbt_os_sem_destroy(xbt_os_sem_t sem);
-XBT_PUBLIC(void) xbt_os_sem_get_value(xbt_os_sem_t sem, int *svalue);
 
 /** @} */
 

@@ -55,13 +55,12 @@ static int master_main(int argc, char *argv[])
   msg_host_t pm0 = MSG_host_by_name("Fafard");
   msg_host_t pm1 = MSG_host_by_name("Tremblay");
   msg_host_t pm2 = MSG_host_by_name("Bourassa");
-  msg_vm_t vm0, vm1;
   s_vm_params_t params;
   memset(&params, 0, sizeof(params));
 
-  vm0 = MSG_vm_create_core(pm0, "VM0");
+  msg_vm_t vm0 = MSG_vm_create_core(pm0, "VM0");
   params.ramsize = 1L * 1000 * 1000 * 1000; // 1Gbytes
-  MSG_host_set_params(vm0, &params);
+  MSG_vm_set_params(vm0, &params);
   MSG_vm_start(vm0);
 
   XBT_INFO("Test: Migrate a VM with %llu Mbytes RAM", params.ramsize / 1000 / 1000);
@@ -71,7 +70,7 @@ static int master_main(int argc, char *argv[])
 
   vm0 = MSG_vm_create_core(pm0, "VM0");
   params.ramsize = 1L * 1000 * 1000 * 100; // 100Mbytes
-  MSG_host_set_params(vm0, &params);
+  MSG_vm_set_params(vm0, &params);
   MSG_vm_start(vm0);
 
   XBT_INFO("Test: Migrate a VM with %llu Mbytes RAM", params.ramsize / 1000 / 1000);
@@ -80,11 +79,11 @@ static int master_main(int argc, char *argv[])
   MSG_vm_destroy(vm0);
 
   vm0 = MSG_vm_create_core(pm0, "VM0");
-  vm1 = MSG_vm_create_core(pm0, "VM1");
+  msg_vm_t vm1 = MSG_vm_create_core(pm0, "VM1");
 
   params.ramsize = 1L * 1000 * 1000 * 1000; // 1Gbytes
-  MSG_host_set_params(vm0, &params);
-  MSG_host_set_params(vm1, &params);
+  MSG_vm_set_params(vm0, &params);
+  MSG_vm_set_params(vm1, &params);
   MSG_vm_start(vm0);
   MSG_vm_start(vm1);
 
@@ -100,8 +99,8 @@ static int master_main(int argc, char *argv[])
   vm1 = MSG_vm_create_core(pm0, "VM1");
 
   params.ramsize = 1L * 1000 * 1000 * 1000; // 1Gbytes
-  MSG_host_set_params(vm0, &params);
-  MSG_host_set_params(vm1, &params);
+  MSG_vm_set_params(vm0, &params);
+  MSG_vm_set_params(vm1, &params);
   MSG_vm_start(vm0);
   MSG_vm_start(vm1);
 

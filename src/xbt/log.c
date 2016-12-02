@@ -15,15 +15,16 @@
 
 #include "src/xbt_modinter.h"
 
-#include "xbt/misc.h"
+#include "src/xbt/log_private.h"
+#include "xbt/asserts.h"
+#include "xbt/dynar.h"
 #include "xbt/ex.h"
+#include "xbt/misc.h"
 #include "xbt/str.h"
 #include "xbt/sysdep.h"
-#include "src/xbt/log_private.h"
-#include "xbt/dynar.h"
 #include "xbt/xbt_os_thread.h"
 
-int xbt_log_no_loc = 0;         /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
+int xbt_log_no_loc = 0; /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
 static xbt_os_mutex_t log_cat_init_mutex = NULL;
 
 /** \addtogroup XBT_log
@@ -136,7 +137,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(instr_config);
   XBT_LOG_CONNECT(instr_msg);
   XBT_LOG_CONNECT(instr_msg_process);
-  XBT_LOG_CONNECT(instr_msg_vm);
   XBT_LOG_CONNECT(instr_paje_containers);
   XBT_LOG_CONNECT(instr_paje_header);
   XBT_LOG_CONNECT(instr_paje_trace);
@@ -264,9 +264,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_trace);
   XBT_LOG_CONNECT(surf_vm);
   XBT_LOG_CONNECT(surf_host);
-
-  /* routing */
-  XBT_LOG_CONNECT(AsImpl);
    
 #endif /* simgrid_EXPORTS */
 }

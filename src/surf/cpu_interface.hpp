@@ -30,7 +30,6 @@ namespace surf {
 class CpuModel;
 class Cpu;
 class CpuAction;
-class CpuPlugin;// FIXME:DEADCODE
 
  /** @ingroup SURF_cpu_interface
  * @brief SURF cpu model interface class
@@ -38,9 +37,6 @@ class CpuPlugin;// FIXME:DEADCODE
  */
 XBT_PUBLIC_CLASS CpuModel : public Model {
 public:
-  CpuModel() : Model() {};
-  ~CpuModel() override;
-
   /**
    * @brief Create a Cpu
    *
@@ -52,7 +48,6 @@ public:
 
   void updateActionsStateLazy(double now, double delta) override;
   void updateActionsStateFull(double now, double delta) override;
-  bool next_occuring_event_isIdempotent() override;
 };
 
 /************
@@ -106,7 +101,7 @@ public:
   virtual simgrid::surf::Action *sleep(double duration)=0;
 
   /** @brief Get the amount of cores */
-  virtual int getCoreCount();
+  virtual int coreCount();
 
   /** @brief Get the speed, accounting for the trace load and provided process load instead of the real current one */
   virtual double getSpeed(double load);
@@ -154,13 +149,17 @@ public:
 XBT_PUBLIC_CLASS CpuAction : public simgrid::surf::Action {
 friend XBT_PUBLIC(Cpu*) getActionCpu(CpuAction *action);
 public:
-  /** @brief Callbacks handler which emit the callbacks after CpuAction State changed *
-   * @details Callback functions have the following signature: `void(CpuAction *action, simgrid::surf::Action::State previous)`
-   */
-  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*, simgrid::surf::Action::State)> onStateChange;
+/** @brief Signal emitted when the action state changes (ready/running/done, etc)
+ *  Signature: `void(CpuAction *action, simgrid::surf::Action::State previous)`
+ */
+static simgrid::xbt::signal<void(simgrid::surf::CpuAction*, simgrid::surf::Action::State)> onStateChange;
+/** @brief Signal emitted when the action share changes (amount of flops it gets)
+ *  Signature: `void(CpuAction *action)`
+ */
+static simgrid::xbt::signal<void(simgrid::surf::CpuAction*)> onShareChange;
 
   CpuAction(simgrid::surf::Model *model, double cost, bool failed)
-  : Action(model, cost, failed) {} //FIXME:DEADCODE?
+  : Action(model, cost, failed) {}
   CpuAction(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var)
   : Action(model, cost, failed, var) {}
 

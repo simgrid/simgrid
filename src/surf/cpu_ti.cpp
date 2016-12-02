@@ -360,7 +360,7 @@ Cpu *CpuTiModel::createCpu(simgrid::s4u::Host *host, std::vector<double>* speedP
   return new CpuTi(this, host, speedPerPstate, core);
 }
 
-double CpuTiModel::next_occuring_event(double now)
+double CpuTiModel::nextOccuringEvent(double now)
 {
   double min_action_duration = -1;
 

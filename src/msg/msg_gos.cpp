@@ -29,7 +29,6 @@ msg_error_t MSG_task_execute(msg_task_t task)
   msg_error_t ret = MSG_parallel_task_execute(task);
 
   MSG_host_del_task(host, task);
-
   return ret;
 }
 
@@ -42,6 +41,11 @@ msg_error_t MSG_task_execute(msg_task_t task)
  * or #MSG_HOST_FAILURE otherwise
  */
 msg_error_t MSG_parallel_task_execute(msg_task_t task)
+{
+  return MSG_parallel_task_execute_with_timeout(task, -1);
+}
+
+msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeout)
 {
   simdata_task_t simdata = task->simdata;
   simdata_process_t p_simdata = static_cast<simdata_process_t>(SIMIX_process_self_get_data());
@@ -63,10 +67,9 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
     simdata->setUsed();
 
     if (simdata->host_nb > 0) {
-      simdata->compute = static_cast<simgrid::kernel::activity::Exec*>(
-          simcall_execution_parallel_start(task->name, simdata->host_nb,simdata->host_list,
-                                                       simdata->flops_parallel_amount, simdata->bytes_parallel_amount,
-                                                       1.0, -1.0));
+      simdata->compute = static_cast<simgrid::kernel::activity::Exec*>(simcall_execution_parallel_start(
+          task->name, simdata->host_nb, simdata->host_list, simdata->flops_parallel_amount,
+          simdata->bytes_parallel_amount, 1.0, -1.0, timeout));
       XBT_DEBUG("Parallel execution action created: %p", simdata->compute);
     } else {
       simdata->compute = static_cast<simgrid::kernel::activity::Exec*>(
@@ -88,6 +91,9 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
       break;
     case host_error:
       status = MSG_HOST_FAILURE;
+      break;
+    case timeout_error:
+      status = MSG_TIMEOUT;
       break;
     default:
       throw;
@@ -268,7 +274,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
   /* Try to receive it by calling SIMIX network layer */
   try {
     simcall_comm_recv(MSG_process_self(), mailbox->getImpl(), task, nullptr, nullptr, nullptr, nullptr, timeout, rate);
-    XBT_DEBUG("Got task %s from %s",(*task)->name,mailbox->getName());
+    XBT_DEBUG("Got task %s from %s",(*task)->name,mailbox->name());
     (*task)->simdata->setNotUsed();
   }
   catch (xbt_ex& e) {

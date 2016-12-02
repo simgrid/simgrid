@@ -49,16 +49,17 @@ static void IB_action_state_changed_callback(
 
 }
 
-
-static void IB_action_init_callback(
-    simgrid::surf::NetworkAction *action, simgrid::kernel::routing::NetCard *src, simgrid::kernel::routing::NetCard *dst)
+static void IB_action_init_callback(simgrid::surf::NetworkAction* action, simgrid::s4u::Host* src,
+                                    simgrid::s4u::Host* dst)
 {
   simgrid::surf::NetworkIBModel* ibModel = (simgrid::surf::NetworkIBModel*)surf_network_model;
 
-  simgrid::surf::IBNode* act_src= (simgrid::surf::IBNode*) xbt_dict_get_or_null(ibModel->active_nodes, src->name());
+  simgrid::surf::IBNode* act_src =
+      (simgrid::surf::IBNode*)xbt_dict_get_or_null(ibModel->active_nodes, src->name().c_str());
   xbt_assert(act_src, "could not find src node active comms !");
 
-  simgrid::surf::IBNode* act_dst= (simgrid::surf::IBNode*) xbt_dict_get_or_null(ibModel->active_nodes, dst->name());
+  simgrid::surf::IBNode* act_dst =
+      (simgrid::surf::IBNode*)xbt_dict_get_or_null(ibModel->active_nodes, dst->name().c_str());
   xbt_assert(act_dst, "could not find dst node active comms !");
 
   ibModel->active_comms[action]=std::make_pair(act_src, act_dst);

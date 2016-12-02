@@ -37,6 +37,7 @@ simgrid::xbt::signal<void(StorageAction*, Action::State, Action::State)> storage
 
 StorageModel::StorageModel(): Model()
 {
+  maxminSystem_ = lmm_system_new(true /* lazy update */);
 }
 
 StorageModel::~StorageModel(){
@@ -48,30 +49,15 @@ StorageModel::~StorageModel(){
  * Resource *
  ************/
 
-Storage::Storage(Model *model, const char *name, xbt_dict_t props,
-                 const char* type_id, const char *content_name, const char *content_type,
-                 sg_size_t size)
- : Resource(model, name)
- , PropertyHolder(props)
- , contentType_(xbt_strdup(content_type))
- , size_(size), usedSize_(0)
- , typeId_(xbt_strdup(type_id))
- , writeActions_(std::vector<StorageAction*>())
-{
-  content_ = parseContent(content_name);
-  turnOn();
-}
-
-Storage::Storage(Model *model, const char *name, xbt_dict_t props,
-                 lmm_system_t maxminSystem, double bread, double bwrite,
-                 double bconnection, const char* type_id, const char *content_name,
-                 const char *content_type, sg_size_t size, const char *attach)
- : Resource(model, name, lmm_constraint_new(maxminSystem, this, bconnection))
- , PropertyHolder(props)
- , contentType_(xbt_strdup(content_type))
- , size_(size), usedSize_(0)
- , typeId_(xbt_strdup(type_id))
- , writeActions_(std::vector<StorageAction*>())
+Storage::Storage(Model* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
+                 double bconnection, const char* type_id, const char* content_name, const char* content_type,
+                 sg_size_t size, const char* attach)
+    : Resource(model, name, lmm_constraint_new(maxminSystem, this, bconnection))
+    , contentType_(xbt_strdup(content_type))
+    , size_(size)
+    , usedSize_(0)
+    , typeId_(xbt_strdup(type_id))
+    , writeActions_(std::vector<StorageAction*>())
 {
   content_ = parseContent(content_name);
   attach_ = xbt_strdup(attach);
@@ -175,18 +161,18 @@ sg_size_t Storage::getUsedSize(){
 /**********
  * Action *
  **********/
-StorageAction::StorageAction(Model *model, double cost, bool failed,
-                             Storage *storage, e_surf_action_storage_type_t type)
-: Action(model, cost, failed)
-, m_type(type), p_storage(storage), p_file(nullptr){
-  progress = 0;
+StorageAction::StorageAction(Model* model, double cost, bool failed, Storage* storage,
+                             e_surf_action_storage_type_t type)
+    : Action(model, cost, failed), type_(type), storage_(storage), file_(nullptr)
+{
+  progress_ = 0;
 };
 
-StorageAction::StorageAction(Model *model, double cost, bool failed, lmm_variable_t var,
-                             Storage *storage, e_surf_action_storage_type_t type)
-  : Action(model, cost, failed, var)
-  , m_type(type), p_storage(storage), p_file(nullptr){
-  progress = 0;
+StorageAction::StorageAction(Model* model, double cost, bool failed, lmm_variable_t var, Storage* storage,
+                             e_surf_action_storage_type_t type)
+    : Action(model, cost, failed, var), type_(type), storage_(storage), file_(nullptr)
+{
+  progress_ = 0;
 }
 
 void StorageAction::setState(Action::State state){

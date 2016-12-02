@@ -45,7 +45,7 @@ void xbt_lib_free(xbt_lib_t *plib)
 int xbt_lib_add_level(xbt_lib_t lib, void_f_pvoid_t free_f)
 {
   XBT_DEBUG("xbt_lib_add_level");
-  xbt_assert(xbt_dict_is_empty(lib->dict), "Lib is not empty, cannot add a level");
+  xbt_assert(xbt_dict_is_empty(lib->dict), "Lib is not empty (size: %u), cannot add a level", xbt_dict_size(lib->dict));
   lib->free_f = xbt_realloc(lib->free_f, sizeof(void_f_pvoid_t) * (lib->levels + 1));
   lib->free_f[lib->levels] = free_f;
   return lib->levels++;

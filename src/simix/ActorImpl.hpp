@@ -51,6 +51,7 @@ public:
   unsigned long pid  = 0;
   unsigned long ppid = 0;
   simgrid::xbt::string name;
+  const char* cname() { return name.c_str(); }
   sg_host_t host        = nullptr; /* the host on which the process is running */
   smx_context_t context = nullptr; /* the context (uctx/raw/thread) that executes the user function */
 
@@ -126,7 +127,7 @@ XBT_PRIVATE void SIMIX_process_yield(smx_actor_t self);
 XBT_PRIVATE void SIMIX_process_exception_terminate(xbt_ex_t * e);
 XBT_PRIVATE void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest);
 XBT_PRIVATE smx_activity_t SIMIX_process_suspend(smx_actor_t process, smx_actor_t issuer);
-XBT_PRIVATE void SIMIX_process_resume(smx_actor_t process, smx_actor_t issuer);
+XBT_PRIVATE void SIMIX_process_resume(smx_actor_t process);
 XBT_PRIVATE int SIMIX_process_get_PID(smx_actor_t self);
 XBT_PRIVATE void* SIMIX_process_get_data(smx_actor_t process);
 XBT_PRIVATE void SIMIX_process_set_data(smx_actor_t process, void *data);

@@ -13,9 +13,9 @@ int tasks_done = 0;
 
 static int process_daemon(int argc, char *argv[])
 {
-  XBT_INFO("  Start daemon on %s (%f)",  MSG_host_get_name(MSG_host_self()), MSG_get_host_speed(MSG_host_self()));
+  XBT_INFO("  Start daemon on %s (%f)", MSG_host_get_name(MSG_host_self()), MSG_host_get_speed(MSG_host_self()));
   for(;;){
-    msg_task_t task = MSG_task_create("daemon", MSG_get_host_speed(MSG_host_self()), 0, NULL);
+    msg_task_t task = MSG_task_create("daemon", MSG_host_get_speed(MSG_host_self()), 0, NULL);
     XBT_INFO("  Execute daemon");
     MSG_task_execute(task);
     MSG_task_destroy(task);

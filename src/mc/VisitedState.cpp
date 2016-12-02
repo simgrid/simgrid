@@ -118,7 +118,7 @@ std::unique_ptr<simgrid::mc::VisitedState> VisitedStates::addVisitedState(
           old_state->num, new_state->num);
 
         visited_state = std::move(new_state);
-        return std::move(old_state);
+        return old_state;
       }
     }
 

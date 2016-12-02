@@ -10,7 +10,7 @@ int
 main (int argc, char **argv)
 {
   int rank;
-  int comm = MPI_COMM_WORLD;
+  MPI_Comm comm = MPI_COMM_WORLD;
   char processor_name[128];
   int namelen = 128;
   int buf0[buf_size];

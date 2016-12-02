@@ -5,6 +5,7 @@
 
 #define buf_size 32000
 
+int
 main (int argc, char **argv)
 {
   int nprocs = -1;

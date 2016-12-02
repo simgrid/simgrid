@@ -8,24 +8,23 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_app_masterworker, "Messages specific for this msg example");
 
 
-/* Main function of the master process. It expects 4 arguments given in the XML deployment file: */
+/* Main function of the master process */
 static int master(int argc, char *argv[])
 {
+  xbt_assert(argc==5, "The master function expects 4 arguments from the XML deployment file");
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");    /* - Number of tasks      */
   double comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s");  /* - Task compute cost    */
   double comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s");  /* - Task communication size */
   long workers_count = xbt_str_parse_int(argv[4], "Invalid amount of workers: %s");    /* - Number of workers    */
 
-  int i;
-
   XBT_INFO("Got %ld workers and %ld tasks to process", workers_count, number_of_tasks);
 
-  for (i = 0; i < number_of_tasks; i++) {  /* For each task to be executed: */
-    char mailbox[256];
-    char task_name[256];
+  for (int i = 0; i < number_of_tasks; i++) {  /* For each task to be executed: */
+    char mailbox[80];
+    char task_name[80];
 
-    snprintf(mailbox,255, "worker-%ld", i % workers_count); /* - Select a @ref worker in a round-robin way */
-    snprintf(task_name,255, "Task_%d", i);
+    snprintf(mailbox,79, "worker-%ld", i % workers_count); /* - Select a @ref worker in a round-robin way */
+    snprintf(task_name,79, "Task_%d", i);
     msg_task_t task = MSG_task_create(task_name, comp_size, comm_size, NULL);   /* - Create a task */
     if (number_of_tasks < 10000 || i % 10000 == 0)
       XBT_INFO("Sending \"%s\" (of %ld) to mailbox \"%s\"", task->name, number_of_tasks, mailbox);
@@ -34,7 +33,7 @@ static int master(int argc, char *argv[])
   }
 
   XBT_INFO("All tasks have been dispatched. Let's tell everybody the computation is over.");
-  for (i = 0; i < workers_count; i++) { /* - Eventually tell all the workers to stop by sending a "finalize" task */
+  for (int i = 0; i < workers_count; i++) { /* - Eventually tell all the workers to stop by sending a "finalize" task */
     char mailbox[80];
 
     snprintf(mailbox,79, "worker-%ld", i % workers_count);
@@ -45,10 +44,10 @@ static int master(int argc, char *argv[])
   return 0;
 }
 
-/* Main functions of the Worker processes. It expects a single argument given in the XML deployment file: the unique ID of the worker. */
+/* Main functions of the Worker processes */
 static int worker(int argc, char *argv[])
 {
-  msg_task_t task = NULL;
+  xbt_assert(argc==2, "The worker expects a single argument from the XML deployment file: its worker ID (its numerical rank)");
   char mailbox[80];
 
   long id= xbt_str_parse_int(argv[1], "Invalid argument %s");
@@ -56,7 +55,8 @@ static int worker(int argc, char *argv[])
   snprintf(mailbox,79, "worker-%ld", id);
 
   while (1) {  /* The worker wait in an infinite loop for tasks sent by the \ref master */
-    int res = MSG_task_receive(&(task), mailbox);
+    msg_task_t task = NULL;
+    int res = MSG_task_receive(&task, mailbox);
     xbt_assert(res == MSG_OK, "MSG_task_get failed");
 
     if (strcmp(MSG_task_get_name(task), "finalize") == 0) {
@@ -65,7 +65,6 @@ static int worker(int argc, char *argv[])
     }
     MSG_task_execute(task);    /*  - Otherwise, process the task */
     MSG_task_destroy(task);
-    task = NULL;
   }
   XBT_INFO("I'm done. See you!");
   return 0;

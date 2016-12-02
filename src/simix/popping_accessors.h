@@ -42,13 +42,6 @@ static inline void simcall_vm_save__set__ind_vm(smx_simcall_t simcall, sg_host_t
     simgrid::simix::marshal<sg_host_t>(simcall->args[0], arg);
 }
 
-static inline sg_host_t simcall_vm_restore__get__ind_vm(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]);
-}
-static inline void simcall_vm_restore__set__ind_vm(smx_simcall_t simcall, sg_host_t arg) {
-    simgrid::simix::marshal<sg_host_t>(simcall->args[0], arg);
-}
-
 static inline smx_actor_t simcall_process_kill__get__process(smx_simcall_t simcall) {
   return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
 }
@@ -214,6 +207,12 @@ static inline double simcall_execution_parallel_start__get__rate(smx_simcall_t s
 }
 static inline void simcall_execution_parallel_start__set__rate(smx_simcall_t simcall, double arg) {
     simgrid::simix::marshal<double>(simcall->args[6], arg);
+}
+static inline double simcall_execution_parallel_start__get__timeout(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<double>(simcall->args[7]);
+}
+static inline void simcall_execution_parallel_start__set__timeout(smx_simcall_t simcall, double arg) {
+    simgrid::simix::marshal<double>(simcall->args[7], arg);
 }
 static inline smx_activity_t simcall_execution_parallel_start__get__result(smx_simcall_t simcall){
     return simgrid::simix::unmarshal<smx_activity_t>(simcall->result);
@@ -1147,14 +1146,11 @@ static inline void simcall_run_blocking__set__code(smx_simcall_t simcall, std::f
 /* The prototype of all simcall handlers, automatically generated for you */
 
 XBT_PRIVATE void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, sg_host_t ind_vm);
-XBT_PRIVATE void simcall_HANDLER_vm_resume(smx_simcall_t simcall, sg_host_t ind_vm);
 XBT_PRIVATE void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, sg_host_t ind_vm);
 XBT_PRIVATE void simcall_HANDLER_vm_save(smx_simcall_t simcall, sg_host_t ind_vm);
-XBT_PRIVATE void simcall_HANDLER_vm_restore(smx_simcall_t simcall, sg_host_t ind_vm);
 XBT_PRIVATE void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_actor_t process);
 XBT_PRIVATE void simcall_HANDLER_process_killall(smx_simcall_t simcall, int reset_pid);
 XBT_PRIVATE void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t process);
-XBT_PRIVATE void simcall_HANDLER_process_resume(smx_simcall_t simcall, smx_actor_t process);
 XBT_PRIVATE void simcall_HANDLER_process_set_host(smx_simcall_t simcall, smx_actor_t process, sg_host_t dest);
 XBT_PRIVATE void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, double timeout);
 XBT_PRIVATE void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration);

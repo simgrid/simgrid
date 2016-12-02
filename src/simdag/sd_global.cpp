@@ -4,11 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/sg_config.h"
-#include "simgrid/host.h"
-#include "src/surf/surf_interface.hpp"
-#include "simgrid/s4u/engine.hpp"
 #include "simdag_private.hpp"
+#include "simgrid/host.h"
+#include "simgrid/s4u/engine.hpp"
+#include "simgrid/sg_config.h"
+#include "src/include/instr/instr_interface.h"
+#include "src/surf/surf_interface.hpp"
 
 XBT_LOG_NEW_CATEGORY(sd, "Logging specific to SimDag");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_kernel, sd, "Logging specific to SimDag (kernel)");
@@ -244,6 +245,7 @@ double SD_get_clock() {
  */
 void SD_exit()
 {
+  TRACE_end();
 #if HAVE_JEDULE
   jedule_sd_exit();
 #endif

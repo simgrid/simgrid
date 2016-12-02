@@ -10,13 +10,13 @@
 
 #include <simgrid/s4u/host.hpp>
 
-#include "surf_routing.hpp"
+#include "src/surf/surf_routing.hpp"
 
 #include "simgrid/sg_config.h"
-#include "storage_interface.hpp"
+#include "src/surf/storage_interface.hpp"
 
 #include "src/kernel/routing/AsImpl.hpp"
-#include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
+#include "src/surf/network_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
@@ -34,8 +34,6 @@ namespace routing {
  * @ingroup SURF_build_api
  * @brief A library containing all known hosts
  */
-
-int COORD_HOST_LEVEL = -1;         //Coordinates level
 
 int MSG_FILE_LEVEL = -1;             //Msg file level
 
@@ -62,8 +60,7 @@ simgrid::kernel::routing::NetCard *sg_netcard_by_name_or_null(const char *name)
 }
 
 /* Global vars */
-simgrid::kernel::routing::RoutingPlatf *routing_platf = nullptr;
-
+simgrid::kernel::routing::RoutingPlatf* routing_platf = new simgrid::kernel::routing::RoutingPlatf();
 
 void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
 {
@@ -98,43 +95,16 @@ namespace routing {
  */
 void RoutingPlatf::getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Link*> * route, double *latency)
 {
-  XBT_DEBUG("getRouteAndLatency from %s to %s", src->name(), dst->name());
-
-  AsImpl::getRouteRecursive(src, dst, route, latency);
-}
-
-static xbt_dynar_t _recursiveGetOneLinkRoutes(AsImpl *as)
-{
-  xbt_dynar_t ret = xbt_dynar_new(sizeof(Onelink*), xbt_free_f);
-
-  //adding my one link routes
-  xbt_dynar_t onelink_mine = as->getOneLinkRoutes();
-  if (onelink_mine)
-    xbt_dynar_merge(&ret,&onelink_mine);
-
-  //recursing
-  char *key;
-  xbt_dict_cursor_t cursor = nullptr;
-  AsImpl *rc_child;
-  xbt_dict_foreach(as->children(), cursor, key, rc_child) {
-    xbt_dynar_t onelink_child = _recursiveGetOneLinkRoutes(rc_child);
-    if (onelink_child)
-      xbt_dynar_merge(&ret,&onelink_child);
+  AsImpl::getGlobalRoute(src, dst, route, latency);
+  if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {
+    XBT_DEBUG("Route from '%s' to '%s' (latency: %f):", src->cname(), dst->cname(),
+              (latency == nullptr ? -1 : *latency));
+    for (auto link : *route)
+      XBT_DEBUG("Link %s", link->getName());
   }
-  return ret;
-}
-
-xbt_dynar_t RoutingPlatf::getOneLinkRoutes(){
-  return _recursiveGetOneLinkRoutes(root_);
 }
 
 }}}
-
-/** @brief create the root AS */
-void routing_model_create(Link *loopback)
-{
-  routing_platf = new simgrid::kernel::routing::RoutingPlatf(loopback);
-}
 
 /* ************************************************************************** */
 /* ************************* GENERIC PARSE FUNCTIONS ************************ */
@@ -144,13 +114,13 @@ static void check_disk_attachment()
   xbt_lib_cursor_t cursor;
   char *key;
   void **data;
-  simgrid::kernel::routing::NetCard *host_elm;
   xbt_lib_foreach(storage_lib, cursor, key, data) {
-    if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
-    simgrid::surf::Storage *storage = static_cast<simgrid::surf::Storage*>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
-    host_elm = sg_netcard_by_name_or_null(storage->attach_);
-    if(!host_elm)
-      surf_parse_error("Unable to attach storage %s: host %s doesn't exist.", storage->getName(), storage->attach_);
+    if (xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
+      simgrid::surf::Storage* storage =
+          static_cast<simgrid::surf::Storage*>(xbt_lib_get_or_null(storage_lib, key, SURF_STORAGE_LEVEL));
+      simgrid::kernel::routing::NetCard* host_elm = sg_netcard_by_name_or_null(storage->attach_);
+      if (!host_elm)
+        surf_parse_error("Unable to attach storage %s: host %s doesn't exist.", storage->getName(), storage->attach_);
     }
   }
 }
@@ -167,10 +137,7 @@ void routing_exit() {
   delete routing_platf;
 }
 
-simgrid::kernel::routing::RoutingPlatf::RoutingPlatf(simgrid::surf::Link *loopback)
-: loopback_(loopback)
-{
-}
+simgrid::kernel::routing::RoutingPlatf::RoutingPlatf() = default;
 simgrid::kernel::routing::RoutingPlatf::~RoutingPlatf()
 {
   delete root_;

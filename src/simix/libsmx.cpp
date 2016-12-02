@@ -17,17 +17,17 @@
 
 #include <xbt/functional.hpp>
 
+#include <simgrid/s4u/VirtualMachine.hpp>
 #include <simgrid/simix/blocking_simcall.hpp>
 
-#include "src/mc/mc_replay.h"
-#include "smx_private.h"
-#include "src/mc/mc_forward.hpp"
-#include "xbt/ex.h"
 #include "mc/mc.h"
-#include "src/simix/smx_host_private.h"
+#include "smx_private.h"
 #include "src/kernel/activity/SynchroComm.hpp"
-#include "src/surf/virtual_machine.hpp"
-
+#include "src/mc/mc_forward.hpp"
+#include "src/mc/mc_replay.h"
+#include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "src/simix/smx_host_private.h"
+#include "xbt/ex.h"
 
 #include <simgrid/simix.hpp>
 
@@ -97,15 +97,12 @@ smx_activity_t simcall_execution_start(const char *name,
  * amount between each pair of hosts
  * \param amount the SURF action amount
  * \param rate the SURF action rate
+ * \param timeout timeout
  * \return A new SIMIX execution synchronization
  */
-smx_activity_t simcall_execution_parallel_start(const char *name,
-                                         int host_nb,
-                                         sg_host_t *host_list,
-                                         double *flops_amount,
-                                         double *bytes_amount,
-                                         double amount,
-                                         double rate)
+smx_activity_t simcall_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list,
+                                                double* flops_amount, double* bytes_amount, double amount, double rate,
+                                                double timeout)
 {
   int i,j;
   /* checking for infinite values */
@@ -122,11 +119,8 @@ smx_activity_t simcall_execution_parallel_start(const char *name,
   xbt_assert(std::isfinite(amount), "amount is not finite!");
   xbt_assert(std::isfinite(rate), "rate is not finite!");
 
-  return simcall_BODY_execution_parallel_start(name, host_nb, host_list,
-                                            flops_amount,
-                                            bytes_amount,
-                                            amount, rate);
-
+  return simcall_BODY_execution_parallel_start(name, host_nb, host_list, flops_amount, bytes_amount, amount, rate,
+                                               timeout);
 }
 
 /**
@@ -181,78 +175,6 @@ e_smx_state_t simcall_execution_wait(smx_activity_t execution)
   return (e_smx_state_t) simcall_BODY_execution_wait(execution);
 }
 
-
-/**
- * \ingroup simix_vm_management
- * \brief Create a VM on the given physical host.
- *
- * \param name VM name
- * \param host Physical host
- *
- * \return The host object of the VM
- */
-sg_host_t simcall_vm_create(const char *name, sg_host_t phys_host)
-{
-  return simgrid::simix::kernelImmediate([&name, &phys_host] {
-    sg_host_t host = surf_vm_model->createVM(name, phys_host);
-    host->extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
-
-    return host;
-  });
-}
-
-/**
- * \ingroup simix_vm_management
- * \brief Start the given VM to the given physical host
- *
- * \param vm VM
- */
-void simcall_vm_start(sg_host_t vm)
-{
-  simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_start, vm));
-}
-
-/**
- * \ingroup simix_vm_management
- * \brief Get the state of the given VM
- *
- * \param vm VM
- * \return The state of the VM
- */
-int simcall_vm_get_state(sg_host_t vm)
-{
-  return simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_get_state, vm));
-}
-
-/**
- * \ingroup simix_vm_management
- * \brief Get the name of the physical host on which the given VM runs.
- *
- * \param vm VM
- * \return The name of the physical host
- */
-void *simcall_vm_get_pm(sg_host_t vm)
-{
-  return simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_get_pm, vm));
-}
-
-void simcall_vm_set_bound(sg_host_t vm, double bound)
-{
-  simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_set_bound, vm, bound));
-}
-
-/**
- * \ingroup simix_vm_management
- * \brief Migrate the given VM to the given physical host
- *
- * \param vm VM
- * \param host Destination physical host
- */
-void simcall_vm_migrate(sg_host_t vm, sg_host_t host)
-{
-  simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_migrate, vm, host));
-}
-
 /**
  * \ingroup simix_vm_management
  * \brief Suspend the given VM
@@ -288,17 +210,6 @@ void simcall_vm_save(sg_host_t vm)
 
 /**
  * \ingroup simix_vm_management
- * \brief Restore the given VM
- *
- * \param vm VM
- */
-void simcall_vm_restore(sg_host_t vm)
-{
-  simcall_BODY_vm_restore(vm);
-}
-
-/**
- * \ingroup simix_vm_management
  * \brief Shutdown the given VM
  *
  * \param vm VM
@@ -306,36 +217,6 @@ void simcall_vm_restore(sg_host_t vm)
 void simcall_vm_shutdown(sg_host_t vm)
 {
   simcall_BODY_vm_shutdown(vm);
-}
-
-/**
- * \ingroup simix_vm_management
- * \brief Destroy the given VM
- *
- * \param vm VM
- */
-void simcall_vm_destroy(sg_host_t vm)
-{
-  simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_destroy, vm));
-}
-
-/**
- * \ingroup simix_vm_management
- * \brief Encompassing simcall to prevent the removal of the src or the dst node at the end of a VM migration
- *  The simcall actually invokes the following calls: 
- *     simcall_vm_migrate(vm, dst_pm); 
- *     simcall_vm_resume(vm);
- *
- * It is called at the end of the migration_rx_fun function from msg/msg_vm.c
- *
- * \param vm VM to migrate
- * \param src_pm  Source physical host
- * \param dst_pmt Destination physical host
- */
-void simcall_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst_pm)
-{
-  simgrid::simix::kernelImmediate(std::bind(
-    SIMIX_vm_migratefrom_resumeto, vm, src_pm, dst_pm));
 }
 
 /**
@@ -400,8 +281,6 @@ void simcall_process_join(smx_actor_t process, double timeout)
  */
 void simcall_process_suspend(smx_actor_t process)
 {
-  xbt_assert(process, "Invalid parameters");
-
   simcall_BODY_process_suspend(process);
 }
 
@@ -463,8 +342,7 @@ void simcall_process_set_kill_time(smx_actor_t process, double kill_time)
 
   if (kill_time <= SIMIX_get_clock() || simix_global->kill_process_function == nullptr)
     return;
-  XBT_DEBUG("Set kill time %f for process %s(%s)",
-    kill_time, process->name.c_str(), sg_host_get_name(process->host));
+  XBT_DEBUG("Set kill time %f for process %s@%s", kill_time, process->cname(), process->host->cname());
   process->kill_timer = SIMIX_timer_set(kill_time, [=] {
     simix_global->kill_process_function(process);
     process->kill_timer=nullptr;

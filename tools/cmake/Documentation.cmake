@@ -16,7 +16,7 @@ endif()
 
 find_path(FIG2DEV_PATH  NAMES fig2dev  PATHS NO_DEFAULT_PATHS)
 
-if(DOXYGEN_FOUND)
+if(enable_documentation)
   ADD_CUSTOM_TARGET(documentation 
     COMMENT "Generating the SimGrid documentation..."
     DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
@@ -97,7 +97,11 @@ add_custom_target(gforge-sync
   )
 add_dependencies(gforge-sync documentation)
 
-endif() # Doxygen found
+else(enable_documentation)
+  ADD_CUSTOM_TARGET(documentation 
+    COMMENT "The generation of the SimGrid documentation was disabled in cmake"
+    )
+endif(enable_documentation)
 
 if (Java_FOUND)
   find_path(JAVADOC_PATH  NAMES javadoc   PATHS NO_DEFAULT_PATHS)

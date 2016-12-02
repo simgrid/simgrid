@@ -12,16 +12,26 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-/* This derivates from cluster because each host has a private link */
+/* This extends cluster because each host has a private link */
 class XBT_PRIVATE AsVivaldi: public AsCluster {
 public:
-  explicit AsVivaldi(const char *name);
-  ~AsVivaldi() override;
+  explicit AsVivaldi(As* father, const char* name);
 
-  xbt_dynar_t getOneLinkRoutes() override {return nullptr;};
-  void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
+  void getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t into, double* latency) override;
 };
 
-}}} // namespace
+namespace vivaldi {
+class XBT_PRIVATE Coords {
+public:
+  static simgrid::xbt::Extension<simgrid::s4u::Host, Coords> EXTENSION_ID;
+  explicit Coords(s4u::Host* host, const char* str);
+  virtual ~Coords();
+
+  xbt_dynar_t coords;
+};
+}
+}
+}
+} // namespace
 
 #endif /* SURF_ROUTING_VIVALDI_HPP_ */

@@ -461,15 +461,14 @@ signed int xbt_dynar_search_or_negative(xbt_dynar_t const dynar, void *const ele
  */
 int xbt_dynar_member(xbt_dynar_t const dynar, void *const elem)
 {
-  try {
-    xbt_dynar_search(dynar, elem);
-  }
-  catch (xbt_ex& e) {
-    if (e.category == not_found_error)
-      return 0;
-    throw;
-  }
-  return 1;
+  unsigned long it;
+
+  for (it = 0; it < dynar->used; it++)
+    if (!memcmp(_xbt_dynar_elm(dynar, it), elem, dynar->elmsize)) {
+      return 1;
+    }
+
+  return 0;
 }
 
 /** @brief Make room at the end of the dynar for a new element, and return a pointer to it.

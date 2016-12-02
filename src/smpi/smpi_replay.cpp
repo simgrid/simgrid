@@ -239,7 +239,7 @@ static void action_send(const char *const *action)
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
   if (!TRACE_smpi_view_internals()) {
-    TRACE_smpi_send(rank, rank, dst_traced, size*smpi_datatype_size(MPI_CURRENT_TYPE));
+    TRACE_smpi_send(rank, rank, dst_traced, 0, size*smpi_datatype_size(MPI_CURRENT_TYPE));
   }
 
   smpi_mpi_send(nullptr, size, MPI_CURRENT_TYPE, to , 0, MPI_COMM_WORLD);
@@ -272,7 +272,7 @@ static void action_Isend(const char *const *action)
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
   if (!TRACE_smpi_view_internals()) {
-    TRACE_smpi_send(rank, rank, dst_traced, size*smpi_datatype_size(MPI_CURRENT_TYPE));
+    TRACE_smpi_send(rank, rank, dst_traced, 0, size*smpi_datatype_size(MPI_CURRENT_TYPE));
   }
 
   request = smpi_mpi_isend(nullptr, size, MPI_CURRENT_TYPE, to, 0,MPI_COMM_WORLD);
@@ -318,7 +318,7 @@ static void action_recv(const char *const *action) {
 
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
   if (!TRACE_smpi_view_internals()) {
-    TRACE_smpi_recv(rank, src_traced, rank);
+    TRACE_smpi_recv(rank, src_traced, rank, 0);
   }
 
   log_timed_action (action, clock);
@@ -419,7 +419,7 @@ static void action_wait(const char *const *action){
 
   TRACE_smpi_ptp_out(rank, src_traced, dst_traced, __FUNCTION__);
   if (is_wait_for_receive)
-    TRACE_smpi_recv(rank, src_traced, dst_traced);
+    TRACE_smpi_recv(rank, src_traced, dst_traced, 0);
   log_timed_action (action, clock);
 }
 
@@ -436,13 +436,25 @@ static void action_waitall(const char *const *action){
    extra->type = TRACING_WAITALL;
    extra->send_size=count_requests;
    TRACE_smpi_ptp_in(rank_traced, -1, -1, __FUNCTION__,extra);
-
+   int* recvs_snd= xbt_new0(int,count_requests);
+   int* recvs_rcv= xbt_new0(int,count_requests);
+   unsigned int i=0;
+   for (auto req : *(get_reqq_self())){
+     if (req && req->recv){
+       recvs_snd[i]=req->src;
+       recvs_rcv[i]=req->dst;
+     }else
+       recvs_snd[i]=-100;
+     i++;
+   }
    smpi_mpi_waitall(count_requests, &(*get_reqq_self())[0], status);
 
-   for (auto req : *(get_reqq_self())){
-     if (req && req->recv)
-       TRACE_smpi_recv(rank_traced, req->src, req->dst);
+   for (i=0; i<count_requests;i++){
+     if (recvs_snd[i]!=-100)
+       TRACE_smpi_recv(rank_traced, recvs_snd[i], recvs_rcv[i],0);
    }
+   xbt_free(recvs_rcv);
+   xbt_free(recvs_snd);
    TRACE_smpi_ptp_out(rank_traced, -1, -1, __FUNCTION__);
   }
   log_timed_action (action, clock);

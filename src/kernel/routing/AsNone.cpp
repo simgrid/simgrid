@@ -15,15 +15,12 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-AsNone::AsNone(const char*name)
-  : AsImpl(name)
+AsNone::AsNone(As* father, const char* name) : AsImpl(father, name)
 {}
 
-AsNone::~AsNone()
-{}
+AsNone::~AsNone() = default;
 
-void AsNone::getRouteAndLatency(NetCard * /*src*/, NetCard * /*dst*/,
-                                sg_platf_route_cbarg_t /*res*/, double */*lat*/)
+void AsNone::getLocalRoute(NetCard* /*src*/, NetCard* /*dst*/, sg_platf_route_cbarg_t /*res*/, double* /*lat*/)
 {}
 
 void AsNone::getGraph(xbt_graph_t /*graph*/, xbt_dict_t /*nodes*/, xbt_dict_t /*edges*/)

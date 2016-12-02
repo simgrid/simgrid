@@ -17,7 +17,7 @@ main (int argc, char **argv)
 {
   int nprocs = -1;
   int rank = -1;
-  int comm = MPI_COMM_WORLD;
+  MPI_Comm comm = MPI_COMM_WORLD;
   char processor_name[128];
   int namelen = 128;
   MPI_Comm newcomm;
@@ -45,7 +45,7 @@ main (int argc, char **argv)
 
     MPI_Comm_size (newcomm, &nsize);
     MPI_Comm_rank (newcomm, &nrank);
-    printf ("world task %d/%d/%d maps to new comm task %d/%d/%d\n",
+    printf ("world task %p/%d/%d maps to new comm task %p/%d/%d\n",
 	    comm, nprocs, rank, newcomm, nsize, nrank);
   }
 

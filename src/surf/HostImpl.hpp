@@ -1,5 +1,4 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -25,8 +24,6 @@ namespace surf {
 class XBT_PRIVATE HostModel;
 class XBT_PRIVATE HostImpl;
 class XBT_PRIVATE HostAction;
-
-
 }
 }
 
@@ -50,15 +47,10 @@ namespace surf {
 class HostModel : public Model {
 public:
   HostModel() : Model() {}
-  ~HostModel() override {}
-
-  HostImpl *createHost(const char *name, kernel::routing::NetCard *net, Cpu *cpu);
 
   virtual void adjustWeightOfDummyCpuActions();
-  virtual Action *executeParallelTask(int host_nb, sg_host_t *host_list,
-      double *flops_amount, double *bytes_amount, double rate);
-
-  bool next_occuring_event_isIdempotent() override {return true;}
+  virtual Action* executeParallelTask(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount,
+                                      double rate);
 };
 
 /************
@@ -68,54 +60,15 @@ public:
  * @brief SURF Host interface class
  * @details An host represents a machine with a aggregation of a Cpu, a RoutingEdge and a Storage
  */
-class HostImpl
-: public simgrid::surf::Resource,
-  public simgrid::surf::PropertyHolder {
-public:
-  static simgrid::xbt::Extension<simgrid::s4u::Host, HostImpl> EXTENSION_ID;
+class HostImpl : public simgrid::surf::PropertyHolder {
 
 public:
-  /**
-   * @brief Host constructor
-   *
-   * @param model HostModel associated to this Host
-   * @param name The name of the Host
-   * @param storage The Storage associated to this Host
-   * @param cpu The Cpu associated to this Host
-   */
-  HostImpl(HostModel *model, const char *name, xbt_dynar_t storage, Cpu *cpu);
-
-  /**
-   * @brief Host constructor
-   *
-   * @param model HostModel associated to this Host
-   * @param name The name of the Host
-   * @param constraint The lmm constraint associated to this Host if it is part of a LMM component
-   * @param storage The Storage associated to this Host
-   * @param cpu The Cpu associated to this Host
-   */
-  HostImpl(HostModel *model, const char *name,
-      lmm_constraint_t constraint, xbt_dynar_t storage, Cpu *cpu);
-
-  /* Host destruction logic */
-  /**************************/
-  ~HostImpl() override;
+  HostImpl(s4u::Host* host, xbt_dynar_t storage);
+  virtual ~HostImpl();
 
 public:
-  // Overload the method for covariant return type:
-  HostModel *getModel()
-  {
-    return static_cast<HostModel*>(Resource::getModel());
-  }
-  void attach(simgrid::s4u::Host* host);
-
-  bool isOn() const override;
-  bool isOff() const override;
-  void turnOn() override;
-  void turnOff() override;
-
   /** @brief Return the storage of corresponding mount point */
-  virtual simgrid::surf::Storage *findStorageOnMountList(const char* storage);
+  virtual simgrid::surf::Storage* findStorageOnMountList(const char* storage);
 
   /** @brief Get the xbt_dict_t of mount_point: Storage */
   virtual xbt_dict_t getMountedStorageList();
@@ -129,7 +82,7 @@ public:
    * @param fullpath The full path to the file
    * @return The StorageAction corresponding to the opening
    */
-  virtual Action *open(const char* fullpath);
+  virtual Action* open(const char* fullpath);
 
   /**
    * @brief Close a file
@@ -137,7 +90,7 @@ public:
    * @param fd The file descriptor to close
    * @return The StorageAction corresponding to the closing
    */
-  virtual Action *close(surf_file_t fd);
+  virtual Action* close(surf_file_t fd);
 
   /**
    * @brief Unlink a file
@@ -163,7 +116,7 @@ public:
    * @param size The size in bytes to read
    * @return The StorageAction corresponding to the reading
    */
-  virtual Action *read(surf_file_t fd, sg_size_t size);
+  virtual Action* read(surf_file_t fd, sg_size_t size);
 
   /**
    * @brief Write a file
@@ -172,7 +125,7 @@ public:
    * @param size The size in bytes to write
    * @return The StorageAction corresponding to the writing
    */
-  virtual Action *write(surf_file_t fd, sg_size_t size);
+  virtual Action* write(surf_file_t fd, sg_size_t size);
 
   /**
    * @brief Get the information of a file descriptor
@@ -221,29 +174,12 @@ public:
    */
   virtual int fileMove(surf_file_t fd, const char* fullpath);
 
-  bool isUsed() override {DIE_IMPOSSIBLE;} // FIXME: Host should not be a Resource
-  void apply_event(tmgr_trace_iterator_t event, double value) override
-    {THROW_IMPOSSIBLE;} // FIXME: Host should not be a Resource
-
 public:
-  xbt_dynar_t storage_;
-  Cpu *cpu_;
+  xbt_dynar_t storage_        = nullptr;
   simgrid::s4u::Host* piface_ = nullptr;
 
-  /** @brief Get the list of virtual machines on the current Host */
-  xbt_dynar_t getVms();
-
-  /* common with vm */
-  /** @brief Retrieve a copy of the parameters of that VM/PM
-   *  @details The ramsize and overcommit fields are used on the PM too */
-  void getParams(vm_params_t params);
-  /** @brief Sets the params of that VM/PM */
-  void setParams(vm_params_t params);
   simgrid::s4u::Host* getHost() { return piface_; }
-private:
-  s_vm_params_t params_;
 };
-
 }
 }
 

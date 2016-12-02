@@ -19,11 +19,16 @@ static int lazy_guy(int argc, char *argv[])
   MSG_process_sleep(10.0);
   XBT_INFO("Mmm... waking up.");
 
-  XBT_INFO("Going to sleep one more time...");
+  XBT_INFO("Going to sleep one more time (for 10 sec)...");
   MSG_process_sleep(10.0);
   XBT_INFO("Waking up once for all!");
 
-  XBT_INFO("Mmmh, goodbye now.");
+  XBT_INFO("Ok, let's do some work, then (for 10 sec on Boivin).");
+  msg_task_t task = MSG_task_create("easy work", 980.95e6, 0, NULL);
+  MSG_task_execute(task);
+  MSG_task_destroy(task);
+
+  XBT_INFO("Mmmh, I'm done now. Goodbye.");
   return 0;
 }
 
@@ -55,7 +60,14 @@ static int dream_master(int argc, char *argv[])
   XBT_INFO("Wake up, lazy guy!");
   MSG_process_resume(lazy);
 
-  XBT_INFO("OK, goodbye now.");
+  MSG_process_sleep(5.0);
+  XBT_INFO("Give a 2 seconds break to the lazy guy while he's working...");
+  MSG_process_suspend(lazy);
+  MSG_process_sleep(2.0);
+  XBT_INFO("Back to work, lazy guy!");
+  MSG_process_resume(lazy);
+
+  XBT_INFO("OK, I'm done here.");
   return 0;
 }
 
@@ -73,6 +85,5 @@ int main(int argc, char *argv[])
   xbt_dynar_free(&hosts);
   res = MSG_main();                 /* - Run the simulation */
 
-  XBT_INFO("Simulation time %g", MSG_get_clock());
   return res != MSG_OK;
 }

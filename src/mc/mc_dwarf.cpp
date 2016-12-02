@@ -874,7 +874,7 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
 
   if (klass == simgrid::dwarf::TagClass::Subprogram) {
     const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
-    if (ns)
+    if (name && ns)
       frame.name  = std::string(ns) + "::" + name;
     else if (name)
       frame.name = name;
@@ -1044,6 +1044,7 @@ void read_dwarf_info(simgrid::mc::ObjectInformation* info, Dwarf* dwarf)
 static
 std::vector<char> get_build_id(Elf* elf)
 {
+#ifdef __linux
   // Summary: the GNU build ID is stored in a ("GNU, NT_GNU_BUILD_ID) note
   // found in a PT_NOTE entry in the program header table.
 
@@ -1081,6 +1082,7 @@ std::vector<char> get_build_id(Elf* elf)
     }
 
   }
+#endif
   return std::vector<char>();
 }
 

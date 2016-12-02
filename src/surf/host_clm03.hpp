@@ -29,9 +29,7 @@ class XBT_PRIVATE HostCLM03Model;
 
 class HostCLM03Model : public HostModel {
 public:
-  HostCLM03Model(): HostModel(){}
-  ~HostCLM03Model() override;
-  double next_occuring_event(double now) override;
+  double nextOccuringEvent(double now) override;
   void updateActionsState(double now, double delta) override;
 };
 }

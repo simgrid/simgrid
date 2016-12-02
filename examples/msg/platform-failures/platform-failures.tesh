@@ -10,10 +10,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/platform-failures$EXEEXT --log=xbt_cfg.thres:criti
 > [  0.010309] (2:worker@Tremblay) Received "Task"
 > [  0.010309] (2:worker@Tremblay) Communication time : "0.010309"
 > [  0.010309] (2:worker@Tremblay) Processing "Task"
-> [  1.000000] (0:maestro@) Restart processes on host: Fafard
+> [  1.000000] (0:maestro@) Restart processes on host Fafard
 > [  1.000000] (1:master@Tremblay) Mmh. Something went wrong with 'worker-1'. Nevermind. Let's keep going!
 > [  1.000000] (3:worker@Jupiter) Gloups. The cpu on which I'm running just turned off!. See you!
-> [  2.000000] (0:maestro@) Restart processes on host: Jupiter
+> [  2.000000] (0:maestro@) Restart processes on host Jupiter
 > [  2.010309] (2:worker@Tremblay) "Task" done
 > [ 11.000000] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'worker-2'. Nevermind. Let's keep going!
 > [ 12.030928] (1:master@Tremblay) Send completed
@@ -105,10 +105,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/platform-failures$EXEEXT --log=xbt_cfg.thres:criti
 > [  0.010825] (2:worker@Tremblay) Received "Task"
 > [  0.010825] (2:worker@Tremblay) Communication time : "0.010825"
 > [  0.010825] (2:worker@Tremblay) Processing "Task"
-> [  1.000000] (0:maestro@) Restart processes on host: Fafard
+> [  1.000000] (0:maestro@) Restart processes on host Fafard
 > [  1.000000] (1:master@Tremblay) Mmh. Something went wrong with 'worker-1'. Nevermind. Let's keep going!
 > [  1.000000] (3:worker@Jupiter) Gloups. The cpu on which I'm running just turned off!. See you!
-> [  2.000000] (0:maestro@) Restart processes on host: Jupiter
+> [  2.000000] (0:maestro@) Restart processes on host Jupiter
 > [  2.010825] (2:worker@Tremblay) "Task" done
 > [ 11.000000] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'worker-2'. Nevermind. Let's keep going!
 > [ 12.082474] (1:master@Tremblay) Send completed
@@ -200,10 +200,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/platform-failures$EXEEXT --log=xbt_cfg.thres:criti
 > [  0.010825] (2:worker@Tremblay) Received "Task"
 > [  0.010825] (2:worker@Tremblay) Communication time : "0.010825"
 > [  0.010825] (2:worker@Tremblay) Processing "Task"
-> [  1.000000] (0:maestro@) Restart processes on host: Fafard
+> [  1.000000] (0:maestro@) Restart processes on host Fafard
 > [  1.000000] (1:master@Tremblay) Mmh. Something went wrong with 'worker-1'. Nevermind. Let's keep going!
 > [  1.000000] (3:worker@Jupiter) Gloups. The cpu on which I'm running just turned off!. See you!
-> [  2.000000] (0:maestro@) Restart processes on host: Jupiter
+> [  2.000000] (0:maestro@) Restart processes on host Jupiter
 > [  2.010825] (2:worker@Tremblay) "Task" done
 > [ 11.000000] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'worker-2'. Nevermind. Let's keep going!
 > [ 12.082474] (1:master@Tremblay) Send completed

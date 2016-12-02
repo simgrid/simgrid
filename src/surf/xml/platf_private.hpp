@@ -11,6 +11,7 @@
 
 #include "simgrid/host.h"
 #include "src/surf/xml/platf.hpp"
+#include <vector>
 
 SG_BEGIN_DECL()
 #include "src/surf/xml/simgrid_dtd.h"
@@ -100,7 +101,7 @@ typedef struct s_sg_platf_cluster_cbarg {
   const char* id;
   const char* prefix;
   const char* suffix;
-  const char* radical;
+  std::vector<int>* radicals;
   double speed;
   int core_amount;
   double bw;
@@ -123,7 +124,7 @@ typedef struct s_sg_platf_cabinet_cbarg {
   const char* id;
   const char* prefix;
   const char* suffix;
-  const char* radical;
+  std::vector<int>* radicals;
   double speed;
   double bw;
   double lat;
@@ -247,7 +248,7 @@ XBT_PUBLIC(void) routing_route_free(sg_platf_route_cbarg_t route);
 /********** Instr. **********/
 XBT_PRIVATE void sg_instr_AS_begin(sg_platf_AS_cbarg_t AS);
 XBT_PRIVATE void sg_instr_new_router(sg_platf_router_cbarg_t router);
-XBT_PRIVATE void sg_instr_new_host(sg_platf_host_cbarg_t host);
+XBT_PRIVATE void sg_instr_new_host(simgrid::s4u::Host& host);
 XBT_PRIVATE void sg_instr_AS_end();
 
 typedef struct s_surf_parsing_link_up_down *surf_parsing_link_up_down_t;

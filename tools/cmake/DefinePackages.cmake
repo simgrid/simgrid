@@ -73,7 +73,7 @@ set(EXTRA_DIST
   src/kernel/routing/AsFull.hpp
   src/kernel/routing/AsRoutedGraph.hpp
   src/kernel/routing/AsNone.hpp
-  src/kernel/routing/AsVivaldi.hpp
+  src/kernel/routing/AsVivaldi.hpp  
 
   src/surf/storage_interface.hpp
   src/surf/storage_n11.hpp
@@ -81,7 +81,6 @@ set(EXTRA_DIST
   src/surf/surf_private.h
   src/surf/surf_routing.hpp
   src/surf/PropertyHolder.hpp
-  src/surf/virtual_machine.hpp
   src/surf/host_clm03.hpp
   src/surf/HostImpl.hpp
   src/surf/ptask_L07.hpp
@@ -306,7 +305,10 @@ set(SURF_SRC
   src/kernel/routing/AsRoutedGraph.cpp
   src/kernel/routing/AsNone.cpp
   src/kernel/routing/AsVivaldi.cpp
-  
+
+  src/kernel/EngineImpl.cpp
+  src/kernel/EngineImpl.hpp
+
   src/surf/cpu_cas01.cpp
   src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp
@@ -332,12 +334,19 @@ set(SURF_SRC
   src/surf/xml/surfxml_parseplatf.cpp
   src/surf/trace_mgr.hpp
   src/surf/trace_mgr.cpp
-  src/surf/virtual_machine.cpp
   src/surf/host_clm03.cpp
   src/surf/HostImpl.cpp
   src/surf/ptask_L07.cpp
   )
 
+set(PLUGINS_SRC
+  src/plugins/vm/s4u_VirtualMachine.cpp
+  src/plugins/vm/VirtualMachineImpl.hpp
+  src/plugins/vm/VirtualMachineImpl.cpp
+  src/plugins/vm/VmHostExt.hpp
+  src/plugins/vm/VmHostExt.cpp
+  )
+  
 set(SIMIX_GENERATED_SRC   src/simix/popping_generated.cpp  )
 set(SIMIX_SRC
   src/kernel/future.cpp
@@ -402,7 +411,6 @@ set(SIMGRID_SRC
 set(MSG_SRC
   src/msg/instr_msg_process.cpp
   src/msg/instr_msg_task.cpp
-  src/msg/instr_msg_vm.cpp
   src/msg/msg_actions.cpp
   src/msg/msg_deployment.cpp
   src/msg/msg_environment.cpp
@@ -419,15 +427,11 @@ set(MSG_SRC
 
 set(SIMDAG_SRC
   src/simdag/sd_daxloader.cpp
+  src/simdag/sd_dotloader.cpp
   src/simdag/sd_global.cpp
   src/simdag/sd_task.cpp
   src/simdag/sd_workstation.cpp
   )
-if(HAVE_GRAPHVIZ)
-  set(SIMDAG_SRC    ${SIMDAG_SRC} src/simdag/sd_dotloader.cpp)
-else()
-  set(EXTRA_DIST    ${EXTRA_DIST} src/simdag/sd_dotloader.cpp)
-endif()
 
 set(BINDINGS_SRC
   src/bindings/lua/lua_private.h
@@ -657,6 +661,7 @@ set(headers_to_install
   include/simgrid/s4u/Mutex.hpp
   include/simgrid/s4u/conditionVariable.hpp
   include/simgrid/s4u/storage.hpp  
+  include/simgrid/s4u/VirtualMachine.hpp  
   include/simgrid/s4u.hpp
   include/simgrid/plugins/energy.h
   include/smpi/mpi.h
@@ -707,7 +712,7 @@ set(headers_to_install
   include/xbt/str.h
   include/xbt/strbuff.h
   include/xbt/swag.h
-  include/xbt/synchro_core.h
+  include/xbt/synchro.h
   include/xbt/sysdep.h
   include/xbt/system_error.hpp
   include/xbt/utility.hpp
@@ -744,6 +749,7 @@ endif()
 
 ### Simgrid Lib sources
 set(simgrid_sources
+  ${PLUGINS_SRC}
   ${BINDINGS_SRC}
   ${MC_SRC_BASE}
   ${MSG_SRC}
@@ -849,6 +855,7 @@ set(DOC_SOURCES
   doc/doxygen/stylesheet.css
   doc/doxygen/uhood.doc
   doc/doxygen/uhood_switch.doc
+  doc/doxygen/uhood_arch.doc
 
   doc/manpage/smpicc.1
   doc/manpage/smpicxx.1
@@ -1000,10 +1007,10 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Java.cmake
   tools/cmake/MakeLib.cmake
   tools/cmake/MakeLibWin.cmake
-  tools/cmake/Modules/FindGFortran.cmake
   tools/cmake/Modules/FindGraphviz.cmake
   tools/cmake/Modules/FindLibdw.cmake
   tools/cmake/Modules/FindLibunwind.cmake
+  tools/cmake/Modules/FindLibevent.cmake
   tools/cmake/Modules/FindLuaSimgrid.cmake
   tools/cmake/Modules/FindNS3.cmake
   tools/cmake/Modules/FindPAPI.cmake

@@ -26,15 +26,11 @@ namespace simgrid {
      *********/
     class NetworkConstantModel : public NetworkModel {
     public:
-      NetworkConstantModel()  : NetworkModel() { };
-      ~NetworkConstantModel() override;
-
-      Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate) override;
-      double next_occuring_event(double now) override;
-      bool next_occuring_event_isIdempotent() override {return true;}
+      Action* communicate(simgrid::s4u::Host* src, simgrid::s4u::Host* dst, double size, double rate) override;
+      double nextOccuringEvent(double now) override;
       void updateActionsState(double now, double delta) override;
 
-      Link* createLink(const char *name, double bw, double lat, e_surf_link_sharing_policy_t policy, xbt_dict_t properties) override;
+      Link* createLink(const char* name, double bw, double lat, e_surf_link_sharing_policy_t policy) override;
     };
 
     /**********

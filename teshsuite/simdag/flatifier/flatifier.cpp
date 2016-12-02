@@ -104,10 +104,10 @@ int main(int argc, char **argv)
     std::qsort((void *) hosts, totalHosts, sizeof(sg_host_t), name_compare_hosts);
 
     for (i = 0; i < totalHosts; i++) {
-      std::printf("  <host id=\"%s\" speed=\"%.0f\"", sg_host_get_name(hosts[i]), sg_host_speed(hosts[i]));
+      std::printf("  <host id=\"%s\" speed=\"%.0f\"", hosts[i]->cname(), sg_host_speed(hosts[i]));
       props = sg_host_get_properties(hosts[i]);
-      if (hosts[i]->coresCount()>1) {
-        std::printf(" core=\"%d\"", hosts[i]->coresCount());
+      if (hosts[i]->coreCount()>1) {
+        std::printf(" core=\"%d\"", hosts[i]->coreCount());
       }
       if (props && !xbt_dict_is_empty(props)) {
         std::printf(">\n");
@@ -149,14 +149,14 @@ int main(int argc, char **argv)
     sg_host_t host1, host2;
     for (unsigned int it_src = 0; it_src < totalHosts; it_src++) { // Routes from host
       host1 = hosts[it_src];
-      value1 = sg_host_by_name(host1->name().c_str())->pimpl_netcard;
+      value1 = host1->pimpl_netcard;
       for (unsigned int it_dst = 0; it_dst < totalHosts; it_dst++) { // Routes to host
         host2 = hosts[it_dst];
         std::vector<Link*> *route = new std::vector<Link*>();
         value2 = host2->pimpl_netcard;
-        routing_platf->getRouteAndLatency(value1, value2, route,nullptr);
+        simgrid::kernel::routing::AsImpl::getGlobalRoute(value1, value2, route, nullptr);
         if (! route->empty()){
-          std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->name().c_str(), host2->name().c_str());
+          std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->cname(), host2->cname());
           for (auto link: *route)
             std::printf("<link_ctn id=\"%s\"/>",link->getName());
           std::printf("\n  </route>\n");
@@ -166,9 +166,9 @@ int main(int argc, char **argv)
       xbt_lib_foreach(as_router_lib, cursor_dst, dst, value2){ //to router
         value2 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
         if(value2->isRouter()){
-          std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->name().c_str(), dst);
+          std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->cname(), dst);
           std::vector<Link*> *route = new std::vector<Link*>();
-          routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,route,nullptr);
+          simgrid::kernel::routing::AsImpl::getGlobalRoute(value1, value2, route, nullptr);
           for (auto link : *route)
             std::printf("<link_ctn id=\"%s\"/>",link->getName());
           delete route;
@@ -185,7 +185,7 @@ int main(int argc, char **argv)
           if(value2->isRouter()){
             std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, dst);
             std::vector<Link*> *route = new std::vector<Link*>();
-            routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,route,nullptr);
+            simgrid::kernel::routing::AsImpl::getGlobalRoute(value1, value2, route, nullptr);
             for(auto link :*route)
               std::printf("<link_ctn id=\"%s\"/>",link->getName());
             delete route;
@@ -194,10 +194,10 @@ int main(int argc, char **argv)
         }
         for (unsigned int it_dst = 0; it_dst < totalHosts; it_dst++) { // Routes to host
           host2 = hosts[it_dst];
-          std::printf("  <route src=\"%s\" dst=\"%s\">\n  ",src, host2->name().c_str());
+          std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, host2->cname());
           std::vector<Link*> *route = new std::vector<Link*>();
           value2 = host2->pimpl_netcard;
-          routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,route, nullptr);
+          simgrid::kernel::routing::AsImpl::getGlobalRoute(value1, value2, route, nullptr);
           for(auto link : *route)
             std::printf("<link_ctn id=\"%s\"/>",link->getName());
           delete route;

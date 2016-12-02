@@ -25,7 +25,9 @@ dynar
 dynars
 endverbatim
 FIXME
+fprintf
 Gbytes
+getline
 GPU
 hideinitializer
 hpp
@@ -45,6 +47,7 @@ LGPL
 libdw
 libunwind
 lmm
+loopback
 LTL
 malloc
 Mbytes
@@ -53,6 +56,8 @@ MCed
 MCer
 memcpy
 memcmp
+memmove
+memset
 Mflops
 mmap
 ModelChecker
@@ -68,6 +73,9 @@ pid
 printf
 proc
 pstate
+pthread
+pthreads
+realloc
 RngStream
 SD
 simcall
@@ -83,6 +91,9 @@ smpi
 smx
 src
 std
+strbuff
+strerror
+strlen
 struct
 syscall
 syscalls

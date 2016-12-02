@@ -57,8 +57,18 @@ namespace mc {
 
 // List of library which memory segments are not considered:
 static const char *const filtered_libraries[] = {
+#ifdef __linux__
   "ld",
+#elif defined __FreeBSD__
+  "ld-elf",
+  "ld-elf32",
+  "libkvm", /* kernel data access library */
+  "libprocstat", /* process and file information retrieval */
+  "libthr", /* thread library */
+  "libutil",
+#endif
   "libasan", /* gcc sanitizers */
+  "libargp", /* workarounds for glibc-less systems */
   "libtsan",
   "libubsan",
   "libbz2",
@@ -70,9 +80,11 @@ static const char *const filtered_libraries[] = {
   "libc++",
   "libcdt",
   "libcgraph",
+  "libcxxrt",
   "libdl",
   "libdw",
   "libelf",
+  "libevent",
   "libgcc_s",
   "liblua5.1",
   "liblua5.3",
@@ -649,7 +661,7 @@ std::vector<simgrid::mc::SimixProcessInformation>& Process::old_simix_processes(
 
 void Process::dumpStack()
 {
-  unw_addr_space_t as = unw_create_addr_space(&_UPT_accessors, __BYTE_ORDER);
+  unw_addr_space_t as = unw_create_addr_space(&_UPT_accessors, BYTE_ORDER);
   if (as == nullptr) {
     XBT_ERROR("Could not initialize ptrace address space");
     return;

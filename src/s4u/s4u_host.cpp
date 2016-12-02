@@ -20,7 +20,7 @@
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/storage.hpp"
 
-xbt_dict_t host_list = nullptr; // FIXME: make it a static field of Host
+std::unordered_map<std::string, simgrid::s4u::Host*> host_list; // FIXME: move it to Engine
 
 int MSG_HOST_LEVEL = -1;
 int USER_HOST_LEVEL = -1;
@@ -40,39 +40,51 @@ simgrid::xbt::signal<void(Host&)> Host::onStateChange;
 Host::Host(const char* name)
   : name_(name)
 {
+  xbt_assert(sg_host_by_name(name) == nullptr, "Refusing to create a second host named '%s'.", name);
+  host_list[name_] = this;
 }
 
-Host::~Host() {
+Host::~Host()
+{
+  xbt_assert(currentlyDestroying_, "Please call h->destroy() instead of manually deleting it.");
+
+  delete pimpl_;
   delete pimpl_cpu;
   delete pimpl_netcard;
   delete mounts;
 }
 
-Host *Host::by_name(std::string name) {
-  Host* host = Host::by_name_or_null(name.c_str());
-  // TODO, raise an exception instead?
-  if (host == nullptr)
-    xbt_die("No such host: %s", name.c_str());
-  return host;
+/** @brief Fire the required callbacks and destroy the object
+ *
+ * Don't delete directly an Host, call h->destroy() instead.
+ *
+ * This is cumbersome but this is the simplest solution to ensure that the
+ * onDestruction() callback receives a valid object (because of the destructor
+ * order in a class hierarchy).
+ */
+void Host::destroy()
+{
+  if (!currentlyDestroying_) {
+    currentlyDestroying_ = true;
+    onDestruction(*this);
+    host_list.erase(name_);
+    delete this;
+  }
+}
+
+Host* Host::by_name(std::string name)
+{
+  return host_list.at(name); // Will raise a std::out_of_range if the host does not exist
 }
 Host* Host::by_name_or_null(const char* name)
 {
-  if (host_list == nullptr)
-    host_list = xbt_dict_new_homogeneous([](void*p) {
-      simgrid::s4u::Host* host = static_cast<simgrid::s4u::Host*>(p);
-      simgrid::s4u::Host::onDestruction(*host);
-      delete host;
-    });
-  return (Host*) xbt_dict_get_or_null(host_list, name);
+  return by_name_or_null(std::string(name));
 }
-Host* Host::by_name_or_create(const char* name)
+Host* Host::by_name_or_null(std::string name)
 {
-  Host* host = by_name_or_null(name);
-  if (host == nullptr) {
-    host = new Host(name);
-    xbt_dict_set(host_list, name, host, nullptr);
-  }
-  return host;
+  if (host_list.find(name) == host_list.end())
+    return nullptr;
+  return host_list.at(name);
 }
 
 Host *Host::current(){
@@ -86,7 +98,7 @@ void Host::turnOn() {
   if (isOff()) {
     simgrid::simix::kernelImmediate([&]{
       this->extension<simgrid::simix::Host>()->turnOn();
-      this->extension<simgrid::surf::HostImpl>()->turnOn();
+      this->pimpl_cpu->turnOn();
     });
   }
 }
@@ -125,22 +137,15 @@ boost::unordered_map<std::string, Storage*> const& Host::mountedStorages() {
 
 /** Get the properties assigned to a host */
 xbt_dict_t Host::properties() {
-  return simgrid::simix::kernelImmediate([&] {
-    simgrid::surf::HostImpl* surf_host = this->extension<simgrid::surf::HostImpl>();
-    return surf_host->getProperties();
-  });
+  return simgrid::simix::kernelImmediate([&] { return this->pimpl_->getProperties(); });
 }
 
 /** Retrieve the property value (or nullptr if not set) */
 const char*Host::property(const char*key) {
-  simgrid::surf::HostImpl* surf_host = this->extension<simgrid::surf::HostImpl>();
-  return surf_host->getProperty(key);
+  return this->pimpl_->getProperty(key);
 }
 void Host::setProperty(const char*key, const char *value){
-  simgrid::simix::kernelImmediate([&] {
-    simgrid::surf::HostImpl* surf_host = this->extension<simgrid::surf::HostImpl>();
-    surf_host->setProperty(key,value);
-  });
+  simgrid::simix::kernelImmediate([&] { this->pimpl_->setProperty(key, value); });
 }
 
 /** Get the processes attached to the host */
@@ -172,8 +177,8 @@ double Host::speed() {
   return pimpl_cpu->getSpeed(1.0);
 }
 /** @brief Returns the number of core of the processor. */
-int Host::coresCount() {
-  return pimpl_cpu->getCoreCount();
+int Host::coreCount() {
+  return pimpl_cpu->coreCount();
 }
 
 /** @brief Set the pstate at which the host should run */
@@ -189,20 +194,6 @@ int Host::pstate()
   return pimpl_cpu->getPState();
 }
 
-void Host::parameters(vm_params_t params)
-{
-  simgrid::simix::kernelImmediate([&]() {
-    this->extension<simgrid::surf::HostImpl>()->getParams(params);
-  });
-}
-
-void Host::setParameters(vm_params_t params)
-{
-  simgrid::simix::kernelImmediate([&]() {
-    this->extension<simgrid::surf::HostImpl>()->setParams(params);
-  });
-}
-
 /**
  * \ingroup simix_storage_management
  * \brief Returns the list of storages mounted on an host.
@@ -210,9 +201,7 @@ void Host::setParameters(vm_params_t params)
  */
 xbt_dict_t Host::mountedStoragesAsDict()
 {
-  return simgrid::simix::kernelImmediate([&] {
-    return this->extension<simgrid::surf::HostImpl>()->getMountedStorageList();
-  });
+  return simgrid::simix::kernelImmediate([&] { return this->pimpl_->getMountedStorageList(); });
 }
 
 /**
@@ -222,9 +211,7 @@ xbt_dict_t Host::mountedStoragesAsDict()
  */
 xbt_dynar_t Host::attachedStorages()
 {
-  return simgrid::simix::kernelImmediate([&] {
-    return this->extension<simgrid::surf::HostImpl>()->getAttachedStorageList();
-  });
+  return simgrid::simix::kernelImmediate([&] { return this->pimpl_->getAttachedStorageList(); });
 }
 
 } // namespace simgrid
