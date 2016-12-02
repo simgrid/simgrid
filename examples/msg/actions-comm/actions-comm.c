@@ -19,7 +19,9 @@ typedef struct {
   /* Used to implement irecv+wait */
   xbt_dynar_t irecvs;           /* of msg_comm_t */
   xbt_dynar_t tasks;            /* of msg_task_t */
-} s_process_globals_t, *process_globals_t;
+} s_process_globals_t;
+
+typedef s_process_globals_t *process_globals_t;
 
 /* Helper function */
 static double parse_double(const char *string)
@@ -172,7 +174,8 @@ static void action_barrier(const char *const *action)
   ACT_DEBUG("Entering barrier: %s (%d already there)", NAME, processes_arrived_sofar);
 
   simcall_mutex_lock(mutex);
-  if (++processes_arrived_sofar == communicator_size) {
+  processes_arrived_sofar++;
+  if (processes_arrived_sofar == communicator_size) {
     simcall_cond_broadcast(cond);
     simcall_mutex_unlock(mutex);
   } else {
@@ -203,7 +206,8 @@ static void action_bcast(const char *const *action)
 
   const char * process_name = MSG_process_get_name(MSG_process_self());
 
-  char *bcast_identifier = bprintf("bcast_%d", counters->bcast_counter++);
+  char *bcast_identifier = bprintf("bcast_%d", counters->bcast_counter);
+  counters->bcast_counter++;
 
   if (!strcmp(process_name, "p0")) {
     XBT_DEBUG("%s: %s is the Root", bcast_identifier, process_name);

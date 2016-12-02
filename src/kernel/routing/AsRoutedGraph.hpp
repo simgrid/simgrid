@@ -14,10 +14,9 @@ namespace routing {
 
 class XBT_PRIVATE AsRoutedGraph : public AsImpl {
 public:
-  explicit AsRoutedGraph(const char*name);
-  ~AsRoutedGraph() override;
+  explicit AsRoutedGraph(As* father, const char* name);
 
-  xbt_dynar_t getOneLinkRoutes() override;
+  void getOneLinkRoutes(std::vector<Onelink*>* accumulator) override;
 
   void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
   virtual sg_platf_route_cbarg_t newExtendedRoute(RoutingMode hierarchy, sg_platf_route_cbarg_t routearg, int change_order);

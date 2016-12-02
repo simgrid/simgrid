@@ -83,7 +83,7 @@ void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src, unsigned int lsi
   XBT_DEBUG ("Copy a %ux%u submatrix from %ux%u(of %ux%u) to %ux%u (of %ux%u)",
        lsize, rsize, lpos_src, rpos_src, src->lines, src->rows, lpos_dst, rpos_dst, dst->lines, dst->rows);
 
-  /* everybody knows that issue is between the chair and the screen (particulary in my office) */
+  /* everybody knows that issue is between the chair and the screen (particularly in my office) */
   xbt_assert(src->elmsize == dst->elmsize);
   /* don't check free_f since the user may play weird games with this */
 

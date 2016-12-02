@@ -128,6 +128,7 @@ class FileReader(Singleton):
         else:
             self.filename_raw = filename
             self.filename = os.path.basename(filename)
+            self.abspath = os.path.abspath(filename)
             self.f = open(self.filename_raw)
         
         self.linenumber = 0
@@ -163,6 +164,7 @@ class TeshState(Singleton):
         self.args_suffix = ""
         self.ignore_regexps_common = []
         self.wrapper = None
+        self.keep = False
     
     def add_thread(self, thread):
         self.threads.append(thread)
@@ -304,10 +306,11 @@ class Cmd(object):
                 e.strerror += "\nOSError: [Errno 8] Executed scripts should start with shebang line (like #!/bin/sh)"
             raise e
 
+        cmdName = FileReader().filename+":"+str(self.linenumber)
         try:
             (stdout_data, stderr_data) = proc.communicate("\n".join(self.input_pipe), self.timeout)
         except subprocess.TimeoutExpired:
-            print("Test suite `"+FileReader().filename+"': NOK (<"+FileReader().filename+":"+str(self.linenumber)+"> timeout after "+str(self.timeout)+" sec)")
+            print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> timeout after "+str(self.timeout)+" sec)")
             exit(3)
 
         if self.output_display:
@@ -320,7 +323,7 @@ class Cmd(object):
         #print ((stdout_data, stderr_data))
         
         if self.ignore_output:
-            print("(ignoring the output of <"+FileReader().filename+":"+str(self.linenumber)+"> as requested)")
+            print("(ignoring the output of <"+cmdName+"> as requested)")
         else:
             stdouta = stdout_data.split("\n")
             while len(stdouta) > 0 and stdouta[-1] == "":
@@ -338,22 +341,32 @@ class Cmd(object):
             
             diff = list(difflib.unified_diff(self.output_pipe_stdout, stdouta,lineterm="",fromfile='expected', tofile='obtained'))
             if len(diff) > 0: 
-                print("Output of <"+FileReader().filename+":"+str(self.linenumber)+"> mismatch:")
+                print("Output of <"+cmdName+"> mismatch:")
                 for line in diff:
                     print(line)
-                print("Test suite `"+FileReader().filename+"': NOK (<"+str(FileReader())+"> output mismatch)")
+                print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> output mismatch)")
                 if lock is not None: lock.release()
+                if TeshState().keep:
+                    f = open('obtained','w')
+                    obtained = stdout_data.split("\n")
+                    while len(obtained) > 0 and obtained[-1] == "":
+                        del obtained[-1]
+                    obtained = self.remove_ignored_lines(obtained)
+                    for line in obtained:
+                        f.write("> "+line+"\n")
+                    f.close()
+                    print("Obtained output kept as requested: "+os.path.abspath("obtained"))
                 exit(2)
         
         #print ((proc.returncode, self.expect_return))
         
         if proc.returncode != self.expect_return:
             if proc.returncode >= 0:
-                print("Test suite `"+FileReader().filename+"': NOK (<"+str(FileReader())+"> returned code "+str(proc.returncode)+")")
+                print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> returned code "+str(proc.returncode)+")")
                 if lock is not None: lock.release()
                 exit(2)
             else:
-                print("Test suite `"+FileReader().filename+"': NOK (<"+str(FileReader())+"> got signal "+SIGNALS_TO_NAMES_DICT[-proc.returncode]+")")
+                print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> got signal "+SIGNALS_TO_NAMES_DICT[-proc.returncode]+")")
                 if lock is not None: lock.release()
                 exit(-proc.returncode)
             
@@ -386,6 +399,7 @@ if __name__ == '__main__':
     group1.add_argument('--log', metavar='arg', help='add parameter --log=arg to each command line')
     group1.add_argument('--ignore-jenkins', action='store_true', help='ignore all cruft generated on SimGrid continous integration servers')
     group1.add_argument('--wrapper', metavar='arg', help='Run each command in the provided wrapper (eg valgrind)')
+    group1.add_argument('--keep', action='store_true', help='Keep the obtained output when it does not match the expected one')
 
     try:
         options = parser.parse_args()
@@ -407,7 +421,7 @@ if __name__ == '__main__':
         print("Test suite from stdin")
     else:
         f = FileReader(options.teshfile)
-        print("Test suite '"+f.filename+"'")
+        print("Test suite '"+f.abspath+"'")
     
     if options.setenv is not None:
         for e in options.setenv:
@@ -420,6 +434,9 @@ if __name__ == '__main__':
 
     if options.wrapper is not None:
         TeshState().wrapper = options.wrapper
+        
+    if options.keep:
+        TeshState().keep = True
     
     #cmd holds the current command line
     # tech commands will add some parameters to it

@@ -64,21 +64,8 @@ public:
   StorageModel();
   ~StorageModel();
 
-  /** @brief Create a Storage
-   *
-   * @param id [description]
-   * @param type_id [description]
-   * @param content_name [description]
-   * @param content_type [description]
-   * @param properties [description]
-   * @param attach [description]
-   * @return The created Storage
-   */
-  virtual Storage *createStorage(const char* id, const char* type_id,
-                                 const char* content_name, const char* content_type,
-                                 xbt_dict_t properties, const char *attach) = 0;
-
-  bool next_occuring_event_isIdempotent() {return true;}
+  virtual Storage* createStorage(const char* id, const char* type_id, const char* content_name,
+                                 const char* content_type, const char* attach) = 0;
 
   std::vector<Storage*> p_storageList;
 };
@@ -93,20 +80,6 @@ public:
 class Storage : public simgrid::surf::Resource,
         public simgrid::surf::PropertyHolder {
 public:
-  /**
-   * @brief Storage constructor
-   *
-   * @param model StorageModel associated to this Storage
-   * @param name The name of the Storage
-   * @param props Dictionary of properties associated to this Storage
-   * @param type_id [description]
-   * @param content_name [description]
-   * @param content_type [description]
-   * @param size [description]
-   */
-  Storage(Model *model, const char *name, xbt_dict_t props,
-          const char* type_id, const char *content_name, const char *content_type,
-          sg_size_t size);
 
   /**
    * @brief Storage constructor
@@ -115,11 +88,8 @@ public:
    * @param name The name of the Storage
    * @param props Dictionary of properties associated to this Storage
    */
-  Storage(Model *model, const char *name, xbt_dict_t props,
-          lmm_system_t maxminSystem, double bread, double bwrite,
-          double bconnection,
-          const char* type_id, const char *content_name, const char *content_type,
-          sg_size_t size, const char *attach);
+  Storage(Model* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
+          const char* type_id, const char* content_name, const char* content_type, sg_size_t size, const char* attach);
 
   ~Storage();
 
@@ -258,10 +228,10 @@ public:
 
   void setState(simgrid::surf::Action::State state) override;
 
-  e_surf_action_storage_type_t m_type;
-  Storage *p_storage;
-  surf_file_t p_file;
-  double progress;
+  e_surf_action_storage_type_t type_;
+  Storage* storage_;
+  surf_file_t file_;
+  double progress_;
 };
 
 }

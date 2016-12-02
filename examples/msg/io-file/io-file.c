@@ -3,11 +3,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#define FILENAME1 "/home/doc/simgrid/examples/platforms/g5k.xml"
-#define FILENAME2 "c:\\Windows\\setupact.log"
-#define FILENAME3 "/home/doc/simgrid/examples/platforms/g5k_cabinets.xml"
-#define FILENAME4 "/home/doc/simgrid/examples/platforms/nancy.xml"
-
 #include "simgrid/msg.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(io_file, "Messages specific for this io example");
@@ -22,21 +17,21 @@ static int host(int argc, char *argv[])
 
   switch(MSG_process_self_PID()){
   case 1:
-    file = MSG_file_open(FILENAME1, NULL);
-    MSG_file_dump(file);
-    st_name = "Disk4";
-    break;
-  case 2 :
-    file = MSG_file_open(FILENAME2, NULL);
+    file    = MSG_file_open("c:\\Windows\\setupact.log", NULL);
     st_name = "Disk2";
     break;
-  case 3 :
-    file = MSG_file_open(FILENAME3, NULL);
+  case 2:
+    file    = MSG_file_open("/home/doc/simgrid/examples/platforms/nancy.xml", NULL);
+    st_name = "Disk1";
+    break;
+  case 3:
+    file    = MSG_file_open("/home/doc/simgrid/examples/platforms/g5k_cabinets.xml", NULL);
     st_name = "Disk3";
     break;
   case 4:
-    file = MSG_file_open(FILENAME4, NULL);
-    st_name = "Disk1";
+    file = MSG_file_open("/home/doc/simgrid/examples/platforms/g5k.xml", NULL);
+    MSG_file_dump(file);
+    st_name = "Disk4";
     break;
   default:
     xbt_die("FILENAME NOT DEFINED %s",MSG_process_get_name(MSG_process_self()));

@@ -65,7 +65,7 @@ XBT_PUBLIC_CLASS trace_iterator {
 /** @brief A trace is a set of timed values, encoding the value that a variable takes at what time *
  *
  * It is useful to model dynamic platforms, where an external load that makes the resource availability change over time.
- * To model that, you have to set several traces per resource: one for the on/off state and one for each numerical value (computational speed, bandwidt and latency).
+ * To model that, you have to set several traces per resource: one for the on/off state and one for each numerical value (computational speed, bandwidth and latency).
  */
 XBT_PUBLIC_CLASS trace {
 public:

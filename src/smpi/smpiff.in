@@ -9,7 +9,7 @@
 SIMGRID_VERSION="@SIMGRID_VERSION_STRING@"
 SIMGRID_GITHASH="@SIMGRID_GITHASH@"
 
-F77=@GFORTRAN_EXE@
+F77=@SAVED_Fortran_COMPILER@
 
 INCLUDEARGS="@includeflag@"
 CMAKE_LINKARGS="-L@libdir@"
@@ -34,7 +34,7 @@ filter_and_compile() {
       echo "#include \"@includedir@/smpi/smpi_extended_traces_fortran.h\"" > ${TMPFILE}
     echo "#line 1 \"${ARG}\"" >> ${TMPFILE}
     fi
-    sed 's/[[:space:]]\{6\}[[:space:]]*\(end \)\{0,1\}program[[:space:]]*\([a-zA-Z0-9\-\_]*\)/      \1subroutine user_main /gI;s/[[:space:]]*use[[:space:]]*mpi/\include \"mpif\.h\" /gI' "${ARG}" >> "${TMPFILE}"
+    sed 's/[[:space:]]\{6\}[[:space:]]*\([eE][nN][dD] \)\{0,1\}[pP][rR][oO][gG][rR][aA][mM][[:space:]]*\([a-zA-Z0-9\-\_]*\)/      \1subroutine user_main /g;s/[[:space:]]*[uU][sS][eE][[:space:]]*[mM][pP][iI]/\include \"mpif\.h\" /g' "${ARG}" >> "${TMPFILE}"
     SRCFILE="${TMPFILE}"
     list_add CMDLINE "${SRCFILE}"
 }

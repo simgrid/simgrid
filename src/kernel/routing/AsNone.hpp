@@ -15,10 +15,10 @@ namespace routing {
 /** No specific routing. Mainly useful with the constant network model */
 class XBT_PRIVATE AsNone : public AsImpl {
 public:
-  explicit AsNone(const char*name);
+  explicit AsNone(As* father, const char* name);
   ~AsNone() override;
 
-  void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
+  void getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t into, double* latency) override;
   void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
 };
 

@@ -145,6 +145,7 @@ set(source_to_pack
   ${MSG_SRC}
   ${S4U_SRC}
   ${NS3_SRC}
+  ${PLUGINS_SRC}
   ${RNGSTREAM_SRC}
   ${SIMDAG_SRC}
   ${SIMGRID_SRC}

@@ -9,10 +9,7 @@
 namespace simgrid {
 namespace surf {
 
-PropertyHolder::PropertyHolder(xbt_dict_t props)
-: properties_(props)
-{
-}
+PropertyHolder::PropertyHolder() = default;
 
 PropertyHolder::~PropertyHolder() {
   xbt_dict_free(&properties_);

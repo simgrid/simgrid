@@ -11,6 +11,5 @@
   <!-- The receiver processes -->
   <process host="Ruby" function="receiver">
     <argument value="0"/>
-    <argument value="3"/>       <!-- Number of tasks -->
   </process>
 </platform>

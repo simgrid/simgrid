@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -10,14 +9,15 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(mag_app_pingpong,"Messages specific for this msg ex
 
 static int pinger(int argc, char *argv[])
 {
+  xbt_assert(argc==2, "The pinger function one argument from the XML deployment file");
   XBT_INFO("Ping -> %s", argv[1]);
   xbt_assert(MSG_host_by_name(argv[1]) != NULL, "Unknown host %s. Stopping Now! ", argv[1]);
 
   /* - Do the ping with a 1-Byte task (latency bound) ... */
-  double time = MSG_get_clock();
+  double now = MSG_get_clock();
   msg_task_t ping_task = MSG_task_create("small communication (latency bound)", 0.0, 1, NULL);
   ping_task->data = xbt_new(double, 1);
-  *(double *) ping_task->data = time;
+  *(double *) ping_task->data = now;
   MSG_task_send(ping_task, argv[1]);
 
   /* - ... then wait for the (large) pong */
@@ -37,6 +37,7 @@ static int pinger(int argc, char *argv[])
 
 static int ponger(int argc, char *argv[])
 {
+  xbt_assert(argc==2, "The ponger function one argument from the XML deployment file");
   XBT_INFO("Pong -> %s", argv[1]);
   xbt_assert(MSG_host_by_name(argv[1]) != NULL, "Unknown host %s. Stopping Now! ", argv[1]);
 
@@ -53,10 +54,10 @@ static int ponger(int argc, char *argv[])
   XBT_INFO(" Ping time (latency bound) %e", communication_time);
 
   /*  - ... Then send a 1GB pong back (bandwidth bound) */
-  double time = MSG_get_clock();
+  double now = MSG_get_clock();
   msg_task_t pong_task = MSG_task_create("large communication (bandwidth bound)", 0.0, 1e9, NULL);
   pong_task->data = xbt_new(double, 1);
-  *(double *) pong_task->data = time;
+  *(double *) pong_task->data = now;
   XBT_INFO("task_bw->data = %e", *((double *) pong_task->data));
   MSG_task_send(pong_task, argv[1]);
 
@@ -65,8 +66,6 @@ static int ponger(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
-
   MSG_init(&argc, argv);
 
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
@@ -74,12 +73,12 @@ int main(int argc, char *argv[])
 
   MSG_create_environment(argv[1]);          /* - Load the platform description */
 
-  MSG_function_register("pinger", pinger);  /* - Register the function to be executed by the processes */
+  MSG_function_register("pinger", pinger);  /* - Register the functions to be executed by the processes */
   MSG_function_register("ponger", ponger);
 
   MSG_launch_application(argv[2]);          /* - Deploy the application */
 
-  res = MSG_main();                         /* - Run the simulation */
+  msg_error_t res = MSG_main();             /* - Run the simulation */
 
   XBT_INFO("Total simulation time: %e", MSG_get_clock());
   return res!=MSG_OK;

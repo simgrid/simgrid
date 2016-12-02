@@ -67,8 +67,7 @@ smx_activity_t SIMIX_file_read(smx_file_t fd, sg_size_t size, sg_host_t host)
 {
   /* check if the host is active */
   if (host->isOff())
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function", sg_host_get_name(host));
-
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->cname());
 
   simgrid::kernel::activity::Io *synchro = new simgrid::kernel::activity::Io();
   synchro->host = host;
@@ -91,7 +90,7 @@ void simcall_HANDLER_file_write(smx_simcall_t simcall, smx_file_t fd, sg_size_t 
 smx_activity_t SIMIX_file_write(smx_file_t fd, sg_size_t size, sg_host_t host)
 {
   if (host->isOff())
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function", sg_host_get_name(host));
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->cname());
 
   simgrid::kernel::activity::Io *synchro = new simgrid::kernel::activity::Io();
   synchro->host = host;
@@ -113,7 +112,7 @@ void simcall_HANDLER_file_open(smx_simcall_t simcall, const char* fullpath, sg_h
 smx_activity_t SIMIX_file_open(const char* fullpath, sg_host_t host)
 {
   if (host->isOff())
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function", sg_host_get_name(host));
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->cname());
 
   simgrid::kernel::activity::Io *synchro = new simgrid::kernel::activity::Io();
   synchro->host = host;
@@ -135,7 +134,7 @@ void simcall_HANDLER_file_close(smx_simcall_t simcall, smx_file_t fd, sg_host_t 
 smx_activity_t SIMIX_file_close(smx_file_t fd, sg_host_t host)
 {
   if (host->isOff())
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function", sg_host_get_name(host));
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->cname());
 
   simgrid::kernel::activity::Io *synchro = new simgrid::kernel::activity::Io();
   synchro->host = host;
@@ -150,7 +149,7 @@ smx_activity_t SIMIX_file_close(smx_file_t fd, sg_host_t host)
 int SIMIX_file_unlink(smx_file_t fd, sg_host_t host)
 {
   if (host->isOff())
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function", sg_host_get_name(host));
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->cname());
 
   int res = surf_host_unlink(host, fd->surf_file);
   xbt_free(fd);

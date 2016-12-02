@@ -19,9 +19,9 @@
  * and the MC does not find the counter-example.
  */
 
-#include "simgrid/msg.h"
 #include "mc/mc.h"
-#include <xbt/synchro_core.h>
+#include "simgrid/msg.h"
+#include <xbt/synchro.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 

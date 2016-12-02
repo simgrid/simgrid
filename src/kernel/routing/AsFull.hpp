@@ -15,12 +15,11 @@ namespace routing {
 /** Full routing: fast, large memory requirements, fully expressive */
 class XBT_PRIVATE AsFull: public AsRoutedGraph {
 public:
-
-  explicit AsFull(const char*name);
+  explicit AsFull(As* father, const char* name);
   void seal() override;
   ~AsFull() override;
 
-  void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
+  void getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t into, double* latency) override;
   void addRoute(sg_platf_route_cbarg_t route) override;
 
   sg_platf_route_cbarg_t *routingTable_ = nullptr;

@@ -4,13 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "smx_private.h"
-#include <xbt/ex.hpp>
-#include "xbt/sysdep.h"
 #include "mc/mc.h"
+#include "smx_private.h"
 #include "src/mc/mc_replay.h"
-#include "src/surf/virtual_machine.hpp"
+#include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/HostImpl.hpp"
+#include "xbt/sysdep.h"
+#include <xbt/ex.hpp>
 
 #include "src/kernel/activity/SynchroExec.hpp"
 #include "src/kernel/activity/SynchroComm.hpp"
@@ -23,8 +23,8 @@ namespace simgrid {
 
     Host::Host()
     {
-      if (!EXTENSION_ID.valid())
-        EXTENSION_ID = simgrid::s4u::Host::extension_create<simgrid::simix::Host>();
+      if (!Host::EXTENSION_ID.valid())
+        Host::EXTENSION_ID = s4u::Host::extension_create<simix::Host>();
 
       simgrid::simix::ActorImpl act;
       process_list = xbt_swag_new(xbt_swag_offset(act, host_proc_hookup));
@@ -84,21 +84,18 @@ void SIMIX_host_off(sg_host_t h, smx_actor_t issuer)
   xbt_assert((host != nullptr), "Invalid parameters");
 
   if (h->isOn()) {
-    simgrid::surf::HostImpl* surf_host = h->extension<simgrid::surf::HostImpl>();
-    surf_host->turnOff();
+    h->pimpl_cpu->turnOff();
 
     /* Clean Simulator data */
     if (xbt_swag_size(host->process_list) != 0) {
       smx_actor_t process = nullptr;
       xbt_swag_foreach(process, host->process_list) {
         SIMIX_process_kill(process, issuer);
-        XBT_DEBUG("Killing %s on %s by %s",
-          process->name.c_str(),  sg_host_get_name(process->host),
-          issuer->name.c_str());
+        XBT_DEBUG("Killing %s@%s on behalf of %s", process->cname(), process->host->cname(), issuer->cname());
       }
     }
   } else {
-    XBT_INFO("Host %s is already off", h->name().c_str());
+    XBT_INFO("Host %s is already off", h->cname());
   }
 }
 
@@ -115,7 +112,7 @@ const char* SIMIX_host_self_get_name()
   if (host == nullptr || SIMIX_process_self() == simix_global->maestro_process)
     return "";
 
-  return sg_host_get_name(host);
+  return host->cname();
 }
 
 void _SIMIX_host_free_process_arg(void *data)
@@ -143,9 +140,9 @@ void SIMIX_host_add_auto_restart_process(
   arg->properties = properties;
   arg->auto_restart = auto_restart;
 
-  if( host->isOff() && !xbt_dict_get_or_null(watched_hosts_lib,sg_host_get_name(host))){
-    xbt_dict_set(watched_hosts_lib,sg_host_get_name(host),host,nullptr);
-    XBT_DEBUG("Push host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF",sg_host_get_name(host));
+  if (host->isOff() && !xbt_dict_get_or_null(watched_hosts_lib, host->cname())) {
+    xbt_dict_set(watched_hosts_lib, host->cname(), host, nullptr);
+    XBT_DEBUG("Push host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF", host->cname());
   }
   sg_host_simix(host)->auto_restart_processes.push_back(arg);
 }
@@ -158,7 +155,7 @@ void SIMIX_host_autorestart(sg_host_t host)
 
   for (auto arg : process_list) {
 
-    XBT_DEBUG("Restarting Process %s@%s right now", arg->name.c_str(), arg->host->name().c_str());
+    XBT_DEBUG("Restarting Process %s@%s right now", arg->name.c_str(), arg->host->cname());
     simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host, arg->kill_time,
         arg->properties, arg->auto_restart, nullptr);
   }
@@ -192,8 +189,9 @@ smx_activity_t SIMIX_execution_start(smx_actor_t issuer, const char *name, doubl
   return exec;
 }
 
-smx_activity_t SIMIX_execution_parallel_start(const char *name, int host_nb, sg_host_t *host_list, double *flops_amount,
-                                             double *bytes_amount, double amount, double rate){
+smx_activity_t SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount,
+                                              double* bytes_amount, double amount, double rate, double timeout)
+{
 
   /* alloc structures and initialize */
   simgrid::kernel::activity::Exec *exec = new simgrid::kernel::activity::Exec(name, nullptr);
@@ -204,10 +202,9 @@ smx_activity_t SIMIX_execution_parallel_start(const char *name, int host_nb, sg_
     host_list_cpy[i] = host_list[i];
 
   /* Check that we are not mixing VMs and PMs in the parallel task */
-  simgrid::surf::HostImpl *host = host_list[0]->extension<simgrid::surf::HostImpl>();
-  bool is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachine*>(host));
+  bool is_a_vm = (nullptr != dynamic_cast<simgrid::s4u::VirtualMachine*>(host_list[0]));
   for (int i = 1; i < host_nb; i++) {
-    bool tmp_is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachine*>(host_list[i]->extension<simgrid::surf::HostImpl>()));
+    bool tmp_is_a_vm = (nullptr != dynamic_cast<simgrid::s4u::VirtualMachine*>(host_list[i]));
     xbt_assert(is_a_vm == tmp_is_a_vm, "parallel_execute: mixing VMs and PMs is not supported (yet).");
   }
 
@@ -215,6 +212,10 @@ smx_activity_t SIMIX_execution_parallel_start(const char *name, int host_nb, sg_
   if (!MC_is_active() && !MC_record_replay_is_active()) {
     exec->surf_exec = surf_host_model->executeParallelTask(host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
     exec->surf_exec->setData(exec);
+    if (timeout > 0) {
+      exec->timeoutDetector = host_list[0]->pimpl_cpu->sleep(timeout);
+      exec->timeoutDetector->setData(exec);
+    }
   }
   XBT_DEBUG("Create parallel execute synchro %p", exec);
 
@@ -276,7 +277,7 @@ void SIMIX_execution_finish(simgrid::kernel::activity::Exec *exec)
         break;
 
       case SIMIX_FAILED:
-        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", sg_host_get_name(simcall->issuer->host));
+        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->host->cname());
         simcall->issuer->context->iwannadie = 1;
         SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
         break;
@@ -284,6 +285,11 @@ void SIMIX_execution_finish(simgrid::kernel::activity::Exec *exec)
       case SIMIX_CANCELED:
         XBT_DEBUG("SIMIX_execution_finished: execution canceled");
         SMX_EXCEPTION(simcall->issuer, cancel_error, 0, "Canceled");
+        break;
+
+      case SIMIX_TIMEOUT:
+        XBT_DEBUG("SIMIX_execution_finished: execution timeouted");
+        SMX_EXCEPTION(simcall->issuer, timeout_error, 0, "Timeouted");
         break;
 
       default:

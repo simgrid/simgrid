@@ -9,7 +9,7 @@
 
 #include <xbt/base.h>
 
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include "xbt/fifo.h"
 #include "xbt/dict.h"
@@ -60,10 +60,9 @@ namespace simgrid {
        * @param bandwidth The initial bandwidth of the Link in bytes per second
        * @param latency The initial latency of the Link in seconds
        * @param policy The sharing policy of the Link
-       * @param props Dictionary of properties associated to this Link
        */
-      virtual Link* createLink(const char *name, double bandwidth, double latency,
-          e_surf_link_sharing_policy_t policy, xbt_dict_t properties)=0;
+      virtual Link* createLink(const char* name, double bandwidth, double latency,
+                               e_surf_link_sharing_policy_t policy) = 0;
 
       /**
        * @brief Create a communication between two hosts.
@@ -77,7 +76,7 @@ namespace simgrid {
        * unlimited.
        * @return The action representing the communication
        */
-      virtual Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate)=0;
+      virtual Action* communicate(simgrid::s4u::Host* src, simgrid::s4u::Host* dst, double size, double rate) = 0;
 
       /** @brief Function pointer to the function to use to solve the lmm_system_t
        *
@@ -119,7 +118,9 @@ namespace simgrid {
        * @return The new bandwidth.
        */
       virtual double bandwidthConstraint(double rate, double bound, double size);
-      double next_occuring_event_full(double now) override;
+      double nextOccuringEventFull(double now) override;
+
+      Link* loopback_ = nullptr;
     };
 
     /************
@@ -134,13 +135,11 @@ namespace simgrid {
         public simgrid::surf::PropertyHolder {
         public:
 
-      /** @brief Constructor of non-LMM links */
-      Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props);
       /** @brief Constructor of LMM links */
-      Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint);
+          Link(simgrid::surf::NetworkModel* model, const char* name, lmm_constraint_t constraint);
 
-      /* Link destruction logic */
-      /**************************/
+          /* Link destruction logic */
+          /**************************/
         protected:
       ~Link() override;
         public:
@@ -162,22 +161,20 @@ namespace simgrid {
       static simgrid::xbt::signal<void(surf::Link*)> onStateChange;
 
       /** @brief Callback signal fired when a communication starts
-       *  Signature: `void(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst)` */
-      static simgrid::xbt::signal<void(surf::NetworkAction*, kernel::routing::NetCard *src, kernel::routing::NetCard *dst)> onCommunicate;
-
-
+       *  Signature: `void(NetworkAction *action, host *src, host *dst)` */
+      static simgrid::xbt::signal<void(surf::NetworkAction*, s4u::Host* src, s4u::Host* dst)> onCommunicate;
 
       /** @brief Get the bandwidth in bytes per second of current Link */
-      virtual double getBandwidth();
+      virtual double bandwidth();
 
       /** @brief Update the bandwidth in bytes per second of current Link */
-      virtual void updateBandwidth(double value)=0;
+      virtual void setBandwidth(double value) = 0;
 
       /** @brief Get the latency in seconds of current Link */
-      virtual double getLatency();
+      virtual double latency();
 
       /** @brief Update the latency in seconds of current Link */
-      virtual void updateLatency(double value)=0;
+      virtual void setLatency(double value) = 0;
 
       /** @brief The sharing policy is a @{link e_surf_link_sharing_policy_t::EType} (0: FATPIPE, 1: SHARED, 2: FULLDUPLEX) */
       virtual int sharingPolicy();
@@ -192,9 +189,9 @@ namespace simgrid {
       virtual void setBandwidthTrace(tmgr_trace_t trace); /*< setup the trace file with bandwidth events (peak speed changes due to external load). Trace must contain percentages (value between 0 and 1). */
       virtual void setLatencyTrace(tmgr_trace_t trace); /*< setup the trace file with latency events (peak latency changes due to external load). Trace must contain absolute values */
 
-      tmgr_trace_iterator_t m_stateEvent = nullptr;
-      s_surf_metric_t m_latency = {1.0,0,nullptr};
-      s_surf_metric_t m_bandwidth = {1.0,0,nullptr};
+      tmgr_trace_iterator_t stateEvent_ = nullptr;
+      s_surf_metric_t latency_          = {1.0, 0, nullptr};
+      s_surf_metric_t bandwidth_        = {1.0, 0, nullptr};
 
       /* User data */
         public:
@@ -203,9 +200,9 @@ namespace simgrid {
         private:
       void *userData = nullptr;
 
-      /* List of all links */
+      /* List of all links. FIXME: should move to the Engine */
         private:
-      static boost::unordered_map<std::string, Link *> *links;
+      static std::unordered_map<std::string, Link *> *links;
         public:
       static Link *byName(const char* name);
       static int linksCount();

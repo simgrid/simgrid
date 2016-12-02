@@ -20,6 +20,7 @@
 #include "simgrid/s4u/Mailbox.hpp"
 
 #include "src/kernel/activity/SynchroComm.hpp"
+#include "src/surf/network_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix, "SIMIX network-related synchronization");
 
@@ -29,7 +30,7 @@ static xbt_dict_t mailboxes = xbt_dict_new_homogeneous(SIMIX_mbox_free);
 static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall);
 static void SIMIX_comm_copy_data(smx_activity_t comm);
 static inline void SIMIX_mbox_push(smx_mailbox_t mbox, smx_activity_t comm);
-static smx_activity_t _find_matching_comm(std::deque<smx_activity_t> *deque, e_smx_comm_type_t type,
+static smx_activity_t _find_matching_comm(boost::circular_buffer_space_optimized<smx_activity_t> *deque, e_smx_comm_type_t type,
     int (*match_fun)(void *, void *,smx_activity_t), void *user_data, smx_activity_t my_synchro, bool remove_matching);
 static void SIMIX_comm_start(smx_activity_t synchro);
 
@@ -112,7 +113,7 @@ void SIMIX_mbox_remove(smx_mailbox_t mbox, smx_activity_t synchro)
  *  \param type The type of communication we are looking for (comm_send, comm_recv)
  *  \return The communication synchro if found, nullptr otherwise
  */
-static smx_activity_t _find_matching_comm(std::deque<smx_activity_t> *deque, e_smx_comm_type_t type,
+static smx_activity_t _find_matching_comm(boost::circular_buffer_space_optimized<smx_activity_t> *deque, e_smx_comm_type_t type,
     int (*match_fun)(void *, void *,smx_activity_t), void *this_user_data, smx_activity_t my_synchro, bool remove_matching)
 {
   void* other_user_data = nullptr;
@@ -541,19 +542,19 @@ static inline void SIMIX_comm_start(smx_activity_t synchro)
   /* If both the sender and the receiver are already there, start the communication */
   if (synchro->state == SIMIX_READY) {
 
-    sg_host_t sender   = comm->src_proc->host;
-    sg_host_t receiver = comm->dst_proc->host;
+    simgrid::s4u::Host* sender   = comm->src_proc->host;
+    simgrid::s4u::Host* receiver = comm->dst_proc->host;
 
-    XBT_DEBUG("Starting communication %p from '%s' to '%s'", synchro, sg_host_get_name(sender), sg_host_get_name(receiver));
+    XBT_DEBUG("Starting communication %p from '%s' to '%s'", synchro, sender->cname(), receiver->cname());
 
-    comm->surf_comm = surf_network_model_communicate(surf_network_model, sender, receiver, comm->task_size, comm->rate);
+    comm->surf_comm = surf_network_model->communicate(sender, receiver, comm->task_size, comm->rate);
     comm->surf_comm->setData(synchro);
     comm->state = SIMIX_RUNNING;
 
     /* If a link is failed, detect it immediately */
     if (comm->surf_comm->getState() == simgrid::surf::Action::State::failed) {
-      XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure",
-                sg_host_get_name(sender), sg_host_get_name(receiver));
+      XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure", sender->cname(),
+                receiver->cname());
       comm->state = SIMIX_LINK_FAILURE;
       comm->cleanupSurf();
     }
@@ -562,11 +563,13 @@ static inline void SIMIX_comm_start(smx_activity_t synchro)
        it will be restarted when the sender process resume */
     if (SIMIX_process_is_suspended(comm->src_proc) || SIMIX_process_is_suspended(comm->dst_proc)) {
       if (SIMIX_process_is_suspended(comm->src_proc))
-        XBT_DEBUG("The communication is suspended on startup because src (%s@%s) was suspended since it initiated the communication",
-            comm->src_proc->name.c_str(), sg_host_get_name(comm->src_proc->host));
+        XBT_DEBUG("The communication is suspended on startup because src (%s@%s) was suspended since it initiated the "
+                  "communication",
+                  comm->src_proc->cname(), comm->src_proc->host->cname());
       else
-        XBT_DEBUG("The communication is suspended on startup because dst (%s@%s) was suspended since it initiated the communication",
-            comm->dst_proc->name.c_str(), sg_host_get_name(comm->dst_proc->host));
+        XBT_DEBUG("The communication is suspended on startup because dst (%s@%s) was suspended since it initiated the "
+                  "communication",
+                  comm->dst_proc->cname(), comm->dst_proc->host->cname());
 
       comm->surf_comm->suspend();
     }
@@ -648,11 +651,11 @@ void SIMIX_comm_finish(smx_activity_t synchro)
 
       case SIMIX_LINK_FAILURE:
 
-        XBT_DEBUG("Link failure in synchro %p between '%s' and '%s': posting an exception to the issuer: %s (%p) detached:%d",
-                  synchro,
-                  comm->src_proc ? sg_host_get_name(comm->src_proc->host) : nullptr,
-                  comm->dst_proc ? sg_host_get_name(comm->dst_proc->host) : nullptr,
-                  simcall->issuer->name.c_str(), simcall->issuer, comm->detached);
+        XBT_DEBUG(
+            "Link failure in synchro %p between '%s' and '%s': posting an exception to the issuer: %s (%p) detached:%d",
+            synchro, comm->src_proc ? comm->src_proc->host->cname() : nullptr,
+            comm->dst_proc ? comm->dst_proc->host->cname() : nullptr, simcall->issuer->cname(), simcall->issuer,
+            comm->detached);
         if (comm->src_proc == simcall->issuer) {
           XBT_DEBUG("I'm source");
         } else if (comm->dst_proc == simcall->issuer) {
@@ -772,12 +775,9 @@ void SIMIX_comm_copy_data(smx_activity_t synchro)
   if (!comm->src_buff || !comm->dst_buff || comm->copied)
     return;
 
-  XBT_DEBUG("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)",
-            comm,
-            comm->src_proc ? sg_host_get_name(comm->src_proc->host) : "a finished process",
-            comm->src_buff,
-            comm->dst_proc ? sg_host_get_name(comm->dst_proc->host) : "a finished process",
-            comm->dst_buff, buff_size);
+  XBT_DEBUG("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)", comm,
+            comm->src_proc ? comm->src_proc->host->cname() : "a finished process", comm->src_buff,
+            comm->dst_proc ? comm->dst_proc->host->cname() : "a finished process", comm->dst_buff, buff_size);
 
   /* Copy at most dst_buff_size bytes of the message to receiver's buffer */
   if (comm->dst_buff_size)

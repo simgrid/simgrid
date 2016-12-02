@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -10,8 +9,8 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 /** @addtogroup MSG_examples
- * 
- * - <b>parallel_task/parallel_task.c</b>: Demonstrates the use of @ref MSG_parallel_task_create, to create special
+ *
+ * - <b>energy-ptask/energy-ptask.c</b>: Demonstrates the use of @ref MSG_parallel_task_create, to create special
  *   tasks that run on several hosts at the same time. The resulting simulations are very close to what can be
  *   achieved in @ref SD_API, but still allows to use the other features of MSG (it'd be cool to be able to mix
  *   interfaces, but it's not possible ATM).
@@ -40,6 +39,20 @@ static int runner(int argc, char *argv[])
   MSG_parallel_task_execute(ptask);
   MSG_task_destroy(ptask);
   /* The arrays communication_amounts and computation_amounts are not to be freed manually */
+
+  XBT_INFO("We can do the same with a timeout of one second enabled.");
+  computation_amounts   = xbt_new0(double, hosts_count);
+  communication_amounts = xbt_new0(double, hosts_count* hosts_count);
+  for (int i               = 0; i < hosts_count; i++)
+    computation_amounts[i] = 1e9; // 1 Gflop
+  for (int i = 0; i < hosts_count; i++)
+    for (int j                                   = i + 1; j < hosts_count; j++)
+      communication_amounts[i * hosts_count + j] = 1e7; // 10 MB
+  ptask =
+      MSG_parallel_task_create("parallel task", hosts_count, hosts, computation_amounts, communication_amounts, NULL);
+  msg_error_t errcode = MSG_parallel_task_execute_with_timeout(ptask, 1 /* timeout (in seconds)*/);
+  xbt_assert(errcode == MSG_TIMEOUT, "Woops, this did not timeout as expected... Please report that bug.");
+  MSG_task_destroy(ptask);
 
   XBT_INFO("Then, build a parallel task involving only computations and no communication (1 Gflop per node)");
   computation_amounts = xbt_new0(double, hosts_count);

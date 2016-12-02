@@ -67,7 +67,15 @@ Client* Client::initialize()
   client_ = std::unique_ptr<Client>(new simgrid::mc::Client(fd));
 
   // Wait for the model-checker:
-  if (ptrace(PTRACE_TRACEME, 0, nullptr, nullptr) == -1 || raise(SIGSTOP) != 0)
+  errno = 0;
+#if defined __linux__
+  ptrace(PTRACE_TRACEME, 0, nullptr, nullptr);
+#elif defined BSD
+  ptrace(PT_TRACE_ME, 0, nullptr, 0);
+#else
+# error "no ptrace equivalent coded for this platform"
+#endif
+  if(errno != 0 || raise(SIGSTOP) != 0)
     xbt_die("Could not wait for the model-checker");
 
   client_->handleMessages();

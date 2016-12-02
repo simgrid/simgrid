@@ -39,11 +39,13 @@ main (int argc, char **argv)
 {
   int nprocs = -1;
   int rank = -1;
-  int comm = MPI_COMM_WORLD;
+  MPI_Comm comm = MPI_COMM_WORLD;
   char processor_name[128];
   int namelen = 128;
-  int i, basic_extent;
-  int blocklens[3], displs[3];
+  int i;
+  MPI_Aint basic_extent;
+  int blocklens[3];
+  MPI_Aint displs[3];
   MPI_Datatype structtypes[3]; 
   MPI_Datatype newtype[2]; 
   MPI_Request aReq[2];
@@ -79,13 +81,13 @@ main (int argc, char **argv)
   
   MPI_Type_extent (newtype[0], &basic_extent);
   if (basic_extent != sizeof (test_small_struct_t)) {
-    fprintf (stderr, "(%d): Unexpected extent for small struct\n");
+    fprintf (stderr, "(%d): Unexpected extent for small struct\n", rank);
     MPI_Abort (MPI_COMM_WORLD, 666);
   }
   
   MPI_Type_extent (newtype[1], &basic_extent);
   if (basic_extent != sizeof (test_big_struct_t)) {
-    fprintf (stderr, "(%d): Unexpected extent for big struct\n");
+    fprintf (stderr, "(%d): Unexpected extent for big struct\n", rank);
     MPI_Abort (MPI_COMM_WORLD, 666);
   }
 

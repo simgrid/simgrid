@@ -103,7 +103,7 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
   msg_host_t attached_host = MSG_host_by_name(storage_priv_src->hostname);
   read_size = simcall_file_read(file_priv->simdata->smx_file, size, attached_host);
 
-  if(strcmp(storage_priv_src->hostname, MSG_host_get_name(MSG_host_self()))){
+  if (strcmp(storage_priv_src->hostname, MSG_host_self()->cname())) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", storage_priv_src->hostname, read_size);
     msg_host_t *m_host_list = nullptr;
@@ -121,7 +121,7 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
     xbt_free(m_host_list);
     if(transfer != MSG_OK){
       if (transfer == MSG_HOST_FAILURE)
-        XBT_WARN("Transfer error, %s remote host just turned off!", MSG_host_get_name(attached_host));
+        XBT_WARN("Transfer error, %s remote host just turned off!", attached_host->cname());
       if (transfer == MSG_TASK_CANCELED)
         XBT_WARN("Transfer error, task has been canceled!");
 
@@ -150,7 +150,7 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
   msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
   msg_host_t attached_host = MSG_host_by_name(storage_priv_src->hostname);
 
-  if(strcmp(storage_priv_src->hostname, MSG_host_get_name(MSG_host_self()))){
+  if (strcmp(storage_priv_src->hostname, MSG_host_self()->cname())) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", storage_priv_src->hostname, size);
     msg_host_t *m_host_list = nullptr;
@@ -168,7 +168,7 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
     free(m_host_list);
     if(transfer != MSG_OK){
       if (transfer == MSG_HOST_FAILURE)
-        XBT_WARN("Transfer error, %s remote host just turned off!", MSG_host_get_name(attached_host));
+        XBT_WARN("Transfer error, %s remote host just turned off!", attached_host->cname());
       if (transfer == MSG_TASK_CANCELED)
         XBT_WARN("Transfer error, task has been canceled!");
 
@@ -201,7 +201,7 @@ msg_file_t MSG_file_open(const char* fullpath, void* data)
   priv->simdata->smx_file = simcall_file_open(fullpath, MSG_host_self());
   priv->desc_id = __MSG_host_get_file_descriptor_id(MSG_host_self());
 
-  name = bprintf("%s:%s:%d", priv->fullpath, MSG_host_get_name(MSG_host_self()), priv->desc_id);
+  name = bprintf("%s:%s:%d", priv->fullpath, MSG_host_self()->cname(), priv->desc_id);
 
   xbt_lib_set(file_lib, name, MSG_FILE_LEVEL, priv);
   msg_file_t fd = static_cast<msg_file_t>(xbt_lib_get_elm_or_null(file_lib, name));
@@ -225,7 +225,7 @@ int MSG_file_close(msg_file_t fd)
     xbt_free(priv->data);
 
   int res = simcall_file_close(priv->simdata->smx_file, MSG_host_self());
-  name = bprintf("%s:%s:%d", priv->fullpath, MSG_host_get_name(MSG_host_self()), priv->desc_id);
+  name    = bprintf("%s:%s:%d", priv->fullpath, MSG_host_self()->cname(), priv->desc_id);
   __MSG_host_release_file_descriptor_id(MSG_host_self(), priv->desc_id);
   xbt_lib_unset(file_lib, name, MSG_FILE_LEVEL, 1);
   xbt_free(name);
@@ -359,7 +359,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
     host_name_dest = (char*)storage_dest_priv->hostname;
     host_dest = MSG_host_by_name(host_name_dest);
   }else{
-    XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, sg_host_get_name(host));
+    XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, host->cname());
     return MSG_TASK_CANCELED;
   }
 

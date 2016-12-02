@@ -13,8 +13,6 @@
 SG_BEGIN_DECL()
 
 /* Modules definitions */
-void xbt_backtrace_preinit();
-void xbt_backtrace_postexit();
 
 void xbt_log_preinit(void);
 void xbt_log_init(int *argc, char **argv);

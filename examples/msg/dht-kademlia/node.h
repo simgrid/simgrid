@@ -17,7 +17,9 @@
 typedef struct s_node_contact {
   unsigned int id;              //The node identifier
   unsigned int distance;        //The distance from the node
-} s_node_contact_t, *node_contact_t;
+} s_node_contact_t;
+
+typedef s_node_contact_t *node_contact_t;
 
 /* Node data */
 typedef struct s_node {
@@ -30,7 +32,9 @@ typedef struct s_node {
   unsigned int find_node_success;       //Number of find_node which have succeeded.
   unsigned int find_node_failed;        //Number of find_node which have failed.
 
-} s_node_t, *node_t;
+} s_node_t;
+
+typedef s_node_t *node_t;
 
 // node functions
 node_t node_init(unsigned int id);

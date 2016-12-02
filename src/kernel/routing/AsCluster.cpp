@@ -14,38 +14,38 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf"
 namespace simgrid {
 namespace kernel {
 namespace routing {
-  AsCluster::AsCluster(const char*name)
-    : AsImpl(name)
-  {}
-  AsCluster::~AsCluster()=default;
-
-void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
+AsCluster::AsCluster(As* father, const char* name) : AsImpl(father, name)
 {
-  s_surf_parsing_link_up_down_t info;
-  XBT_VERB("cluster_get_route_and_latency from '%s'[%d] to '%s'[%d]",
-            src->name(), src->id(), dst->name(), dst->id());
-  xbt_assert(!privateLinks_.empty(), "Cluster routing : no links attached to the source node - did you use host_link tag?");
+}
+
+void AsCluster::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
+{
+  XBT_VERB("cluster getLocalRoute from '%s'[%d] to '%s'[%d]", src->name().c_str(), src->id(), dst->name().c_str(),
+           dst->id());
+  xbt_assert(!privateLinks_.empty(),
+             "Cluster routing: no links attached to the source node - did you use host_link tag?");
+
   if (! src->isRouter()) {    // No specific link for router
 
     if((src->id() == dst->id()) && hasLoopback_ ){
-      info = privateLinks_.at(src->id() * linkCountPerNode_);
+      s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id() * linkCountPerNode_);
       route->link_list->push_back(info.linkUp);
       if (lat)
-        *lat += info.linkUp->getLatency();
+        *lat += info.linkUp->latency();
       return;
     }
 
-
     if (hasLimiter_){          // limiter for sender
-      info = privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_?1:0));
-      route->link_list->push_back((Link*)info.linkUp);
+      s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0));
+      route->link_list->push_back(info.linkUp);
     }
 
-    info = privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_?1:0) + (hasLimiter_?1:0));
+    s_surf_parsing_link_up_down_t info =
+        privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0) + (hasLimiter_ ? 1 : 0));
     if (info.linkUp) {         // link up
       route->link_list->push_back(info.linkUp);
       if (lat)
-        *lat += info.linkUp->getLatency();
+        *lat += info.linkUp->latency();
     }
 
   }
@@ -53,16 +53,16 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   if (backbone_) {
     route->link_list->push_back(backbone_);
     if (lat)
-      *lat += backbone_->getLatency();
+      *lat += backbone_->latency();
   }
 
   if (! dst->isRouter()) {    // No specific link for router
-    info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_ + hasLimiter_);
+    s_surf_parsing_link_up_down_t info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_ + hasLimiter_);
 
     if (info.linkDown) {       // link down
       route->link_list->push_back(info.linkDown);
       if (lat)
-        *lat += info.linkDown->getLatency();
+        *lat += info.linkDown->latency();
     }
     if (hasLimiter_){          // limiter for receiver
         info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_);
@@ -73,14 +73,13 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
 
 void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 {
-  xbt_node_t current, previous, backboneNode = nullptr, routerNode;
+  xbt_node_t current, previous, backboneNode = nullptr;
   s_surf_parsing_link_up_down_t info;
 
   xbt_assert(router_,"Malformed cluster. This may be because your platform file is a hypergraph while it must be a graph.");
 
   /* create the router */
-  char *link_name = router_->name();
-  routerNode = new_xbt_graph_node(graph, link_name, nodes);
+  xbt_node_t routerNode = new_xbt_graph_node(graph, router_->name().c_str(), nodes);
 
   if(backbone_) {
     const char *link_nameR = backbone_->getName();
@@ -91,7 +90,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 
   for (auto src: vertices_){
     if (! src->isRouter()) {
-      previous = new_xbt_graph_node(graph, src->name(), nodes);
+      previous = new_xbt_graph_node(graph, src->name().c_str(), nodes);
 
       info = privateLinks_.at(src->id());
 

@@ -229,6 +229,20 @@
       parameter( MPI_COMBINER_RESIZED=17)
       parameter( MPI_COMBINER_HINDEXED_BLOCK=18)
 
+      integer MPI_MODE_RDONLY, MPI_MODE_RDWR, MPI_MODE_WRONLY
+      integer MPI_MODE_CREATE, MPI_MODE_EXCL, MPI_MODE_DELETE_ON_CLOSE
+      integer MPI_MODE_UNIQUE_OPEN, MPI_MODE_APPEND, MPI_MODE_SEQUENTIAL
+
+      parameter( MPI_MODE_RDONLY=2)
+      parameter( MPI_MODE_RDWR=8)
+      parameter( MPI_MODE_WRONLY=4)
+      parameter( MPI_MODE_CREATE=1)
+      parameter( MPI_MODE_EXCL=64)
+      parameter( MPI_MODE_DELETE_ON_CLOSE=16)
+      parameter( MPI_MODE_UNIQUE_OPEN=32)
+      parameter( MPI_MODE_APPEND=128)
+      parameter( MPI_MODE_SEQUENTIAL=256)
+
       integer MPI_ORDER_C, MPI_ORDER_FORTRAN
       parameter(MPI_ORDER_C=1)
       parameter(MPI_ORDER_FORTRAN=0)

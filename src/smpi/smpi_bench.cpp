@@ -21,11 +21,11 @@
 #include "simgrid/modelchecker.h"
 #include "src/mc/mc_replay.h"
 
+#include <sys/types.h>
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
 #include <sys/stat.h>
-#include <sys/types.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <math.h> // sqrt
@@ -175,7 +175,7 @@ static void* shm_map(int fd, size_t size, shared_data_key_type* data) {
 
   mem = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   if(mem == MAP_FAILED) {
-    xbt_die("Could not map fd %d with size %zu: %s", fd, size, strerror(errno));
+    xbt_die("Could not map fd %d with size %zu: %s.\n If you are running a lot of processes, you may be exceeding the amount of mappings allowed per process. \n On linux systems, this value can be set by using sudo sysctl -w vm.max_map_count=newvalue .\n Default value is 65536", fd, size, strerror(errno));
   }
   snprintf(loc, PTR_STRLEN, "%p", mem);
   meta.size = size;
@@ -207,9 +207,8 @@ void smpi_execute_(double *duration)
 }
 
 void smpi_execute_flops(double flops) {
-  smx_activity_t action;
   XBT_DEBUG("Handle real computation time: %f flops", flops);
-  action = simcall_execution_start("computation", flops, 1, 0);
+  smx_activity_t action = simcall_execution_start("computation", flops, 1, 0);
   simcall_set_category (action, TRACE_internal_smpi_get_category());
   simcall_execution_wait(action);
   smpi_switch_data_segment(smpi_process_index());
@@ -225,6 +224,7 @@ void smpi_execute(double duration)
     extra->type=TRACING_COMPUTING;
     extra->comp_size=flops;
     TRACE_smpi_computing_in(rank, extra);
+
     smpi_execute_flops(flops);
 
     TRACE_smpi_computing_out(rank);
@@ -747,11 +747,15 @@ void smpi_initialize_global_memory_segments(){
 
   for (int i=0; i< smpi_process_count(); i++){
       //create SIMIX_process_count() mappings of this size with the same data inside
+      int file_descriptor;
       void *address = nullptr;
-      char path[] = "/dev/shm/my-buffer-XXXXXX";
+      char path[24];
       int status;
 
-      int file_descriptor= mkstemp (path);
+      do {
+        snprintf(path, sizeof(path), "/smpi-buffer-%06x", rand()%0xffffff);
+        file_descriptor = shm_open(path, O_RDWR|O_CREAT|O_EXCL, S_IRUSR|S_IWUSR);
+      } while (file_descriptor == -1 && errno == EEXIST);
       if (file_descriptor < 0) {
         if (errno==EMFILE) {
           xbt_die("Impossible to create temporary file for memory mapping: %s\n\
@@ -772,10 +776,6 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
             strerror(errno));
       }
 
-      status = unlink (path);
-      if (status)
-        xbt_die("Impossible to unlink temporary file for memory mapping");
-
       status = ftruncate(file_descriptor, smpi_size_data_exe);
       if(status)
         xbt_die("Impossible to set the size of the temporary file for memory mapping");
@@ -784,6 +784,10 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
       address = mmap (nullptr, smpi_size_data_exe, PROT_READ | PROT_WRITE, MAP_SHARED, file_descriptor, 0);
       if (address == MAP_FAILED)
         xbt_die("Couldn't find a free region for memory mapping");
+
+      status = shm_unlink(path);
+      if (status)
+        xbt_die("Impossible to unlink temporary file for memory mapping");
 
       //initialize the values
       memcpy(address, TOPAGE(smpi_start_data_exe), smpi_size_data_exe);

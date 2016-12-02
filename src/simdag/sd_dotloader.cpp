@@ -14,7 +14,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
 
 #if HAVE_GRAPHVIZ
 #include <graphviz/cgraph.h>
-#endif
 
 typedef enum {
   sequential =0,
@@ -253,3 +252,15 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par, bool
   }
   return result;
 }
+#else
+xbt_dynar_t SD_dotload(const char *filename) {
+  xbt_die("SD_dotload_generic() is not usable because graphviz was not found.\n"
+      "Please install graphviz, graphviz-dev, and libgraphviz-dev (and erase CMakeCache.txt) before recompiling.");
+}
+xbt_dynar_t SD_dotload_with_sched(const char *filename) {
+  return SD_dotload(filename);
+}
+xbt_dynar_t SD_PTG_dotload(const char * filename) {
+  return SD_dotload(filename);
+}
+#endif

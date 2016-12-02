@@ -66,34 +66,22 @@ include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Option.cmake)
 
 ### SMPI vs. Fortran
 if ((NOT DEFINED enable_smpi) OR enable_smpi) 
-  if(enable_fortran)
-    include(FindGFortran)
-  else()
-    SET(SMPI_FORTRAN 0)
-  endif()
+  # First unset the compiler in case we're re-running cmake over a previous
+  # configuration where it was saved as smpiff
+  unset(CMAKE_Fortran_COMPILER)
   
-  if(NOT APPLE) # smpi is enabled by default
-    # Call enable_language(Fortran) in order to load the build rules for this language, needed by 
-    # teshsuite/smpi/mpich-test/.  Use CMAKE_FORCE_Fortran_COMPILER to bypass checks for a working compiler (smpiff 
-    # doesn't exist at configure time).
-    include(CMakeForceCompiler)
-    if(NOT COMMAND CMAKE_FORCE_Fortran_COMPILER)
-      MACRO(CMAKE_FORCE_Fortran_COMPILER compiler id)
-        SET(CMAKE_Fortran_COMPILER "${compiler}")
-        SET(CMAKE_Fortran_COMPILER_ID_RUN TRUE)
-        SET(CMAKE_Fortran_COMPILER_ID ${id})
-        SET(CMAKE_Fortran_COMPILER_WORKS TRUE)
-        SET(CMAKE_Fortran_COMPILER_FORCED TRUE)
-
-        # Set old compiler id variables.
-        IF("${CMAKE_Fortran_COMPILER_ID}" MATCHES "GNU")
-          SET(CMAKE_COMPILER_IS_GNUG77 1)
-        ENDIF("${CMAKE_Fortran_COMPILER_ID}" MATCHES "GNU")
-      ENDMACRO(CMAKE_FORCE_Fortran_COMPILER)
-    endif()
-    CMAKE_FORCE_Fortran_COMPILER(smpiff smpiff)
+  SET(SMPI_FORTRAN 0)
+  if(enable_fortran)
     enable_language(Fortran OPTIONAL)
   endif()
+  
+  if(CMAKE_Fortran_COMPILER)
+    # Fortran compiler detected: save it, then replace by smpiff
+    set(SAVED_Fortran_COMPILER "${CMAKE_Fortran_COMPILER}" CACHE FILEPATH "The real Fortran compiler")
+    set(CMAKE_Fortran_COMPILER smpiff)
+    set(SMPI_FORTRAN 1)
+  endif(CMAKE_Fortran_COMPILER)
+
 endif()
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
@@ -119,19 +107,22 @@ set(libsimgrid_version "${release_version}")
 set(libsimgrid-java_version "${release_version}")
 
 ### SET THE LIBRARY EXTENSION 
-if(APPLE) #MAC
+if(APPLE)
   set(LIB_EXE "dylib")
+elseif(WIN32)
+  set(LIB_EXE "a")
+  set(BIN_EXE ".exe")
 else()
-  if(WIN32) #WINDOWS
-    set(LIB_EXE "a")
-    set(BIN_EXE ".exe")
-  else() #UNIX
-    set(LIB_EXE "so")
-  endif()
+  set(LIB_EXE "so")
 endif()
 
-execute_process(COMMAND   ${CMAKE_LINKER}   --version    OUTPUT_VARIABLE LINKER_VERSION)
+execute_process(COMMAND   ${CMAKE_LINKER}   -version    OUTPUT_VARIABLE LINKER_VERSION)
 string(REGEX MATCH "[0-9].[0-9]*" LINKER_VERSION "${LINKER_VERSION}")
+
+### Set the library providing dlopen
+if("${CMAKE_SYSTEM}" MATCHES "Linux")
+  find_library(DL_LIBRARY dl)
+endif("${CMAKE_SYSTEM}" MATCHES "Linux")
 
 ### Find programs and paths
 FIND_PROGRAM(GCOV_PATH gcov)
@@ -168,13 +159,6 @@ if(NOT CMAKE_CROSSCOMPILING AND EXISTS /usr/include/)
   set(INCLUDES ${INCLUDES} /usr/include/)
 endif()
 
-### Check 32bits or 64bits
-IF(CMAKE_SIZEOF_VOID_P EQUAL 4)
-  SET(ARCH_32_BITS 1)
-ELSE()
-  SET(ARCH_32_BITS 0)
-ENDIF()
-
 if(WIN32)
   set(CMAKE_INCLUDE_WIN "${CMAKE_C_COMPILER}")
   set(CMAKE_LIB_WIN "${CMAKE_C_COMPILER}")
@@ -186,13 +170,14 @@ endif()
 
 include_directories(${INCLUDES})
 
-
+# library dependency cannot start with a space (CMP0004), so initialize it with something that is never desactivated.
+set(SIMGRID_DEP "-lm") 
 
 ### Determine the assembly flavor that we need today
 set(HAVE_RAW_CONTEXTS 0)
 include(CMakeDetermineSystem)
 IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86|AMD64|amd64")
-  IF(${ARCH_32_BITS})
+  IF(CMAKE_SIZEOF_VOID_P EQUAL 4) # 32 bits
     message(STATUS "System processor: i686 (${CMAKE_SYSTEM_PROCESSOR}, 32 bits)")
     set(PROCESSOR_i686 1)
     set(PROCESSOR_x86_64 0)
@@ -245,17 +230,14 @@ if(enable_smpi_papi)
   endif()
 endif()
 
-find_package(Boost 1.48)
+find_package(Boost 1.48 COMPONENTS unit_test_framework)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 else()
   if(APPLE)
-    message(FATAL_ERROR "Failed to find Boost libraries (Try to install them with 'sudo fink install boost1.53.nopython')")
+    message(FATAL_ERROR "Boost libraries not found. Try to install them with 'sudo fink install boost1.53.nopython'")
   else()
-    message(FATAL_ERROR "Failed to find Boost libraries."
-                        "Did you install libboost-dev and libboost-context-dev?"
-                        "(libboost-context-dev is optional)"
-                        "SimGrid requires Boost >= 1.48.0")
+    message(FATAL_ERROR "Boost libraries not found. Install libboost-dev libboost-test-dev (>= 1.48.0).")
   endif()
 endif()
 
@@ -289,23 +271,13 @@ else()
   endif()
 endif()
 
-# Try again to see if we have libboost-graph
-#find_package(Boost 1.42 COMPONENTS graph)
-#set(Boost_FOUND 1) # We don't care of whether this component is missing
-#
-#if(Boost_FOUND AND Boost_GRAPH_FOUND)
-#  set(HAVE_BOOST_GRAPH 1)
-#else()
-#  message ("   boost        : found.")
-#  message ("   boost-graph  : missing. Install libboost-graph-dev for this optional feature.")
-#  set(HAVE_BOOST_GRAPH 0)
-#endif()
-
 # Checks for header libraries functions.
 CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
 
 CHECK_LIBRARY_EXISTS(pthread pthread_create          "" HAVE_PTHREAD)
-CHECK_LIBRARY_EXISTS(pthread sem_init                "" HAVE_SEM_INIT_LIB)
+if(NOT APPLE) # OS X El Capitan deprecates this function
+  CHECK_LIBRARY_EXISTS(pthread sem_init                "" HAVE_SEM_INIT_LIB)
+endif()
 CHECK_LIBRARY_EXISTS(pthread sem_open                "" HAVE_SEM_OPEN_LIB)
 set(HAVE_PTHREAD_SETAFFINITY 0)
 CHECK_LIBRARY_EXISTS(pthread pthread_setaffinity_np  "" HAVE_PTHREAD_SETAFFINITY)
@@ -330,6 +302,7 @@ CHECK_INCLUDE_FILE("ucontext.h" HAVE_UCONTEXT_H)
 CHECK_INCLUDE_FILE("linux/futex.h" HAVE_FUTEX_H)
 
 CHECK_FUNCTION_EXISTS(backtrace HAVE_BACKTRACE)
+CHECK_FUNCTION_EXISTS(dlfunc HAVE_DLFUNC)
 CHECK_FUNCTION_EXISTS(gettimeofday HAVE_GETTIMEOFDAY)
 CHECK_FUNCTION_EXISTS(nanosleep HAVE_NANOSLEEP)
 CHECK_FUNCTION_EXISTS(getdtablesize HAVE_GETDTABLESIZE)
@@ -337,6 +310,7 @@ CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
 CHECK_FUNCTION_EXISTS(popen HAVE_POPEN)
 CHECK_FUNCTION_EXISTS(process_vm_readv HAVE_PROCESS_VM_READV)
 CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
+CHECK_FUNCTION_EXISTS(mremap HAVE_MREMAP)
 
 CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF)
 if(MINGW)
@@ -358,20 +332,19 @@ else()
   set(HAVE_THREAD_LOCAL_STORAGE 0)
 endif()
 
-# Our usage of mmap is Linux-specific (flag MAP_ANONYMOUS), but kFreeBSD uses a GNU libc
-IF(HAVE_MMAP AND
-   NOT "${CMAKE_SYSTEM}" MATCHES "Linux" AND 
-   NOT "${CMAKE_SYSTEM}" MATCHES "kFreeBSD" AND 
-   NOT "${CMAKE_SYSTEM}" MATCHES "GNU" AND 
-   NOT  "${CMAKE_SYSTEM}" MATCHES "Darwin")
-  SET(HAVE_MMAP 0)
-  message(STATUS "Warning: MMAP is thought as non functional on this architecture (${CMAKE_SYSTEM})")
-ENDIF()
+if(enable_model-checking AND NOT "${CMAKE_SYSTEM}" MATCHES "Linux|FreeBSD")
+  message(WARNING "Support for model-checking has not been enabled on ${CMAKE_SYSTEM}: disabling it")
+  set(enable_model-checking FALSE)
+endif()
 
 if(HAVE_MMAP AND HAVE_THREAD_LOCAL_STORAGE)
   SET(HAVE_MMALLOC 1)
 else()
   SET(HAVE_MMALLOC 0)
+  if(enable_model-checking)
+    message(STATUS "Warning: support for model-checking has been disabled because you are missing either mmap or __thread.")
+  endif()
+  SET(enable_model-checking 0)
 endif()
 
 if(enable_jedule)
@@ -386,16 +359,44 @@ else()
   SET(HAVE_MALLOCATOR 0)
 endif()
 
-if(enable_model-checking AND HAVE_MMALLOC)
-  SET(HAVE_MC 1)
-  include(FindLibunwind)
-  include(FindLibdw)
+include(FindLibunwind)
+if(HAVE_LIBUNWIND)
+  if(NOT APPLE)
+    SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind")
+  else()
+    # Apple forbids to link directly against its libunwind implementation
+    # So let's comply and link against the System framework
+    SET(SIMGRID_DEP "${SIMGRID_DEP} -lSystem")
+  endif()
+  if("${CMAKE_SYSTEM}" MATCHES "Linux|FreeBSD")
+    set(SIMGRID_DEP "${SIMGRID_DEP} -lunwind-ptrace")
+    # This supposes that the host machine is either an AMD or a X86.
+    # This is deeply wrong, and should be fixed by manually loading -lunwind-PLAT (FIXME)
+    if(PROCESSOR_x86_64)
+      SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind-x86_64")
+    else()
+      SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind-x86")
+    endif()
+  endif()
 else()
   if(enable_model-checking)
-    message(STATUS "Warning: support for model-checking has been disabled because you are missing either mmap or __thread.")
+    message(FATAL_ERROR "Please either install the libunwind7-dev package (or equivalent) or turn off the model-checking option of SimGrid.")
   endif()
-  SET(HAVE_MC 0)
-  SET(HAVE_MMALLOC 0)
+endif()
+
+if(enable_model-checking)
+  find_package(Libdw REQUIRED)
+  find_package(Libevent REQUIRED)
+  include_directories(${LIBDW_INCLUDE_DIRS} ${LIBEVENT_INCLUDE_DIRS})
+  set(SIMGRID_DEP "${SIMGRID_DEP} ${LIBEVENT_LIBRARIES} ${LIBDW_LIBRARIES}")
+  set(HAVE_MC 1)
+  if("${CMAKE_SYSTEM}" MATCHES "FreeBSD" AND enable_java)
+    message(WARNING "FreeBSD + Model-Checking + Java = too much for now. Disabling java")
+    set(enable_java FALSE)
+  endif()
+else()
+  SET(HAVE_MC 0)  
+  set(HAVE_MMALLOC 0)
 endif()
 
 if (enable_model-checking AND enable_ns3)
@@ -404,12 +405,9 @@ endif()
 
 if(enable_smpi)
   SET(HAVE_SMPI 1)
-  if("${CMAKE_SYSTEM}" MATCHES "Linux")
+  if("${CMAKE_SYSTEM}" MATCHES "Linux|FreeBSD")
     SET(USE_LIBUTIL 0)
     SET(HAVE_PRIVATIZATION 1)
-  elseif("${CMAKE_SYSTEM}" MATCHES "^FreeBSD")
-    SET(USE_LIBUTIL 0)
-    SET(HAVE_PRIVATIZATION 0)
   else()
     message (STATUS "Warning:  no support for SMPI automatic privatization on this platform")
     SET(HAVE_PRIVATIZATION 0)
@@ -422,7 +420,7 @@ endif()
 ### Check for GNU dynamic linker
 CHECK_INCLUDE_FILE("dlfcn.h" HAVE_DLFCN_H)
 if (HAVE_DLFCN_H)
-  execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_gnu_dynlinker.c -ldl -o test_gnu_ld
+  execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_gnu_dynlinker.c ${DL_LIBRARY} -o test_gnu_ld
                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                   OUTPUT_VARIABLE HAVE_GNU_LD_compil
   )
@@ -539,6 +537,8 @@ if(HAVE_PTHREAD)
       endif()
     endif()
     file(REMOVE sem_init)
+  else() 
+    set(HAVE_SEM_INIT 0)  
   endif()
 
   if(NOT HAVE_SEM_OPEN AND NOT HAVE_SEM_INIT)
@@ -664,7 +664,7 @@ endif()
 # So we have to make sure that everything got a decent value before generating the files.
 foreach(var HAVE_BACKTRACE HAVE_EXECINFO_H HAVE_FUTEX_H HAVE_GETDTABLESIZE HAVE_GETTIMEOFDAY HAVE_MMAP HAVE_NANOSLEEP HAVE_POPEN
             HAVE_POSIX_GETTIME HAVE_PROCESS_VM_READV HAVE_SIGNAL_H HAVE_SYS_PARAM_H HAVE_SYS_SYSCTL_H HAVE_SYSCONF 
-            HAVE_UCONTEXT_H HAVE_UNISTD_H HAVE_VALGRIND_H HAVE_VASPRINTF)
+            HAVE_UCONTEXT_H HAVE_UNISTD_H HAVE_VALGRIND_H HAVE_VASPRINTF HAVE_MREMAP HAVE_DLFUNC)
   if(${var})
     set(${var} 1)
   else()
@@ -893,21 +893,8 @@ endforeach()
 ### Setup the distrib
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Distrib.cmake)
 
-### Build the doc (Windows downloads the doc instead of regenerating)
-#
-if(NOT WIN32)
-  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Documentation.cmake)
-else()
-  find_program(WGET_PROGRAM  NAMES wget)
-  message(STATUS "wget: ${WGET_PROGRAM}")
-  if(WGET_PROGRAM)
-    ADD_CUSTOM_TARGET(documentation
-      COMMENT "Downloading the SimGrid documentation..."
-      COMMAND ${WGET_PROGRAM} -r -np -nH -nd http://simgrid.gforge.inria.fr/simgrid/${release_version}/doc/
-      WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/html
-    )
-  endif()
-endif()
+### Build the docs if asked to
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Documentation.cmake)
 
 ### Print the result of configuration
 message("")
@@ -958,7 +945,7 @@ else()
 endif()
 endif()
 if(CMAKE_Fortran_COMPILER)
-  message("        Compiler: Fortran ...........: ${CMAKE_Fortran_COMPILER} (id: ${CMAKE_Fortran_COMPILER_ID})")
+  message("        Compiler: Fortran ...........: ${SAVED_Fortran_COMPILER} (id: ${CMAKE_Fortran_COMPILER_ID})")
   message("                version .............: ${CMAKE_Fortran_COMPILER_VERSION}")
 endif()
 message("        Linker: .....................: ${CMAKE_LINKER}")

@@ -14,6 +14,8 @@
 #include "xbt/ex.h"
 
 SG_BEGIN_DECL()
+XBT_PUBLIC_DATA(int) xbt_log_no_loc; /* Do not show the backtrace on failed backtrace when doing our tests */
+
 /**
  * @addtogroup XBT_error
  * @brief Those are the SimGrid version of the good ol' assert macro.
@@ -34,8 +36,15 @@ SG_BEGIN_DECL()
   _XBT_IF_ONE_ARG(_xbt_assert_ARG1, _xbt_assert_ARGN, __VA_ARGS__)(__VA_ARGS__)
 #define _xbt_assert_ARG1(cond) \
   _xbt_assert_ARGN(cond, "Assertion %s failed", #cond)
-#define _xbt_assert_ARGN(cond, ...) \
-  do { if (!(cond)) THROWF(0, 0, __VA_ARGS__); } while (0)
+#define _xbt_assert_ARGN(cond, ...)                                                                                    \
+  do {                                                                                                                 \
+    if (!(cond)) {                                                                                                     \
+      XBT_CCRITICAL(root, __VA_ARGS__);                                                                                \
+      if (!xbt_log_no_loc)                                                                                             \
+        xbt_backtrace_display_current();                                                                               \
+      abort();                                                                                                         \
+    }                                                                                                                  \
+  } while (0)
 #endif
 
 /** @} */

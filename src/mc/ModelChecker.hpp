@@ -9,11 +9,11 @@
 
 #include <sys/types.h>
 
-#include <poll.h>
-
 #include <memory>
 #include <set>
 #include <string>
+
+#include <event2/event.h>
 
 #include <simgrid_config.h>
 #include <xbt/base.h>
@@ -31,7 +31,8 @@ namespace mc {
 /** State of the model-checker (global variables for the model checker)
  */
 class ModelChecker {
-  struct pollfd fds_[2];
+  struct event_base *base_;
+  struct event *socket_event_, *signal_event_;
   /** String pool for host names */
   // TODO, use std::set with heterogeneous comparison lookup (C++14)?
   std::set<std::string> hostnames_;
@@ -70,7 +71,7 @@ public:
   void shutdown();
   void resume(simgrid::mc::Process& process);
   void loop();
-  bool handle_events();
+  void handle_events(int fd, short events);
   void wait_client(simgrid::mc::Process& process);
   void handle_simcall(Transition const& transition);
   void wait_for_requests()
@@ -87,9 +88,8 @@ public:
 private:
   void setup_ignore();
   bool handle_message(char* buffer, ssize_t size);
-  void handle_signals();
   void handle_waitpid();
-  void on_signal(const struct signalfd_siginfo* info);
+  void on_signal(int signo);
 
 public:
   unsigned long visited_states = 0;

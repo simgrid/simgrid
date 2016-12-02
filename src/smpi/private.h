@@ -7,15 +7,15 @@
 #ifndef SMPI_PRIVATE_H
 #define SMPI_PRIVATE_H
 
+#include "simgrid/simix.h"
+#include "smpi/smpi.h"
+#include "src/include/smpi/smpi_interface.h"
+#include "src/instr/instr_private.h"
 #include "src/internal_config.h"
 #include "xbt.h"
 #include "xbt/base.h"
+#include "xbt/synchro.h"
 #include "xbt/xbt_os_time.h"
-#include "xbt/synchro_core.h"
-#include "simgrid/simix.h"
-#include "src/include/smpi/smpi_interface.h"
-#include "smpi/smpi.h"
-#include "src/instr/instr_private.h"
 
 SG_BEGIN_DECL()
 
@@ -77,6 +77,7 @@ typedef struct s_smpi_mpi_datatype{
 #define COLL_TAG_GATHERV -2223
 #define COLL_TAG_BCAST -3334
 #define COLL_TAG_ALLREDUCE -4445
+#define SMPI_RMA_TAG -1234
 
 #define MPI_COMM_UNINITIALIZED ((MPI_Comm)-1)
 
@@ -180,7 +181,8 @@ XBT_PRIVATE int smpi_process_get_sampling();
 XBT_PRIVATE void smpi_process_set_replaying(bool s);
 XBT_PRIVATE bool smpi_process_get_replaying();
 
-XBT_PRIVATE void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm** comm, xbt_bar_t*bar);
+XBT_PRIVATE void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm** comm,
+                                                  msg_bar_t* bar);
 XBT_PRIVATE void smpi_deployment_cleanup_instances();
 
 XBT_PRIVATE void smpi_comm_copy_buffer_callback(smx_activity_t comm, void *buff, size_t buff_size);
@@ -677,6 +679,12 @@ void mpi_comm_spawn_ ( char *command, char *argv, int* maxprocs, int* info, int*
 void mpi_comm_spawn_multiple_ ( int* count, char *array_of_commands, char** array_of_argv, int* array_of_maxprocs,
                        int* array_of_info, int* root, int* comm, int*intercomm, int* array_of_errcodes, int* ierr);
 void mpi_comm_get_parent_ ( int*parent, int* ierr);
+void mpi_file_close_ ( int* file, int* ierr);
+void mpi_file_delete_ ( char* filename, int* info, int* ierr);
+void mpi_file_open_ ( int* comm, char* filename, int* amode, int* info, int* fh, int* ierr);
+void mpi_file_set_view_ ( int* fh, long long int* offset, int* etype, int* filetype, char* datarep, int* info, int* ierr);
+void mpi_file_read_ ( int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr);
+void mpi_file_write_ ( int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr);
 
 /********** Tracing **********/
 /* from instr_smpi.c */
@@ -696,8 +704,8 @@ XBT_PRIVATE void TRACE_smpi_alloc();
 XBT_PRIVATE void TRACE_smpi_release();
 XBT_PRIVATE void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation,  instr_extra_data extra);
 XBT_PRIVATE void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation);
-XBT_PRIVATE void TRACE_smpi_send(int rank, int src, int dst, int size);
-XBT_PRIVATE void TRACE_smpi_recv(int rank, int src, int dst);
+XBT_PRIVATE void TRACE_smpi_send(int rank, int src, int dst, int tag, int size);
+XBT_PRIVATE void TRACE_smpi_recv(int rank, int src, int dst, int tag);
 XBT_PRIVATE void TRACE_smpi_init(int rank);
 XBT_PRIVATE void TRACE_smpi_finalize(int rank);
 XBT_PRIVATE char *smpi_container(int rank, char *container, int n);

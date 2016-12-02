@@ -85,7 +85,7 @@ char *bvprintf(const char *fmt, va_list ap)
 
   if (vasprintf(&res, fmt, ap) < 0) {
     /* Do not want to use xbt_die() here, as it uses the logging
-     * infrastucture and may fail to allocate memory too. */
+     * infrastructure and may fail to allocate memory too. */
     fprintf(stderr, "bprintf: vasprintf failed. Aborting.\n");
     xbt_abort();
   }

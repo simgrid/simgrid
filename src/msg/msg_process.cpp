@@ -199,7 +199,7 @@ msg_process_t MSG_process_attach(const char *name, void *data, msg_host_t host, 
   simdata->last_errno = MSG_OK;
 
   /* Let's create the process: SIMIX may decide to start it right now, even before returning the flow control to us */
-  process = SIMIX_process_attach(name, simdata, sg_host_get_name(host), properties, nullptr);
+  process = SIMIX_process_attach(name, simdata, host->cname(), properties, nullptr);
   if (!process)
     xbt_die("Could not attach");
   simcall_process_on_exit(process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,process);

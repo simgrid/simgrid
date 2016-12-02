@@ -9,49 +9,43 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_waitany, "Messages specific for this msg 
 
 static int sender(int argc, char *argv[])
 {
+  xbt_assert(argc==6, "This function expects 5 parameters from the XML deployment file");
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
   double task_comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s");
   double task_comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s");
   long receivers_count = xbt_str_parse_int(argv[4], "Invalid amount of receivers: %s");
   int diff_com = xbt_str_parse_int(argv[5], "Invalid value for diff_comm: %s");
-  double coef = 0;
-  xbt_dynar_t d = xbt_dynar_new(sizeof(msg_comm_t), NULL);
-  int i;
-  msg_task_t task;
-  char mailbox[256];
-  char snprintf_buffer[256];
-  msg_comm_t comm;
 
-  for (i = 0; i < number_of_tasks; i++) {
-    if (diff_com == 0)
-      coef = 1;
-    else
-      coef = (i + 1);
+  xbt_dynar_t comms = xbt_dynar_new(sizeof(msg_comm_t), NULL);
+  /* First pack the communications in the dynar */
+  for (int i = 0; i < number_of_tasks; i++) {
+    double coef = (diff_com == 0) ? 1 : (i + 1);
 
-    snprintf(mailbox,255, "receiver-%ld", (i % receivers_count));
-    snprintf(snprintf_buffer,255, "Task_%d", i);
-    task = MSG_task_create(snprintf_buffer, task_comp_size, task_comm_size / coef, NULL);
-    comm = MSG_task_isend(task, mailbox);
-    xbt_dynar_push_as(d, msg_comm_t, comm);
-    XBT_INFO("Send to receiver-%ld %s comm_size %f", i % receivers_count, snprintf_buffer, task_comm_size / coef);
+    char mailbox[80];
+    char taskname[80];
+    snprintf(mailbox,79, "receiver-%ld", (i % receivers_count));
+    snprintf(taskname,79, "Task_%d", i);
+    msg_task_t task = MSG_task_create(taskname, task_comp_size, task_comm_size / coef, NULL);
+    msg_comm_t comm = MSG_task_isend(task, mailbox);
+    xbt_dynar_push_as(comms, msg_comm_t, comm);
+    XBT_INFO("Send to receiver-%ld %s comm_size %f", i % receivers_count, taskname, task_comm_size / coef);
   }
+   
   /* Here we are waiting for the completion of all communications */
-
-  while (xbt_dynar_is_empty(d) == 0) {
-    xbt_dynar_remove_at(d, MSG_comm_waitany(d), &comm);
+  while (xbt_dynar_is_empty(comms) == 0) {
+    msg_comm_t comm;
+    xbt_dynar_remove_at(comms, MSG_comm_waitany(comms), &comm);
     MSG_comm_destroy(comm);
   }
-  xbt_dynar_free(&d);
+  xbt_dynar_free(&comms);
 
   /* Here we are waiting for the completion of all tasks */
-  msg_comm_t res_irecv;
-  XBT_ATTRIB_UNUSED msg_error_t res_wait;
-  for (i = 0; i < receivers_count; i++) {
-    task = NULL;
-    res_irecv = MSG_task_irecv(&(task), "finalize");
-    res_wait = MSG_comm_wait(res_irecv, -1);
+  for (int i = 0; i < receivers_count; i++) {
+    msg_task_t task = NULL;
+    msg_comm_t comm = MSG_task_irecv(&task, "finalize");
+    msg_error_t res_wait = MSG_comm_wait(comm, -1);
     xbt_assert(res_wait == MSG_OK, "MSG_comm_wait failed");
-    MSG_comm_destroy(res_irecv);
+    MSG_comm_destroy(comm);
     MSG_task_destroy(task);
   }
 
@@ -61,53 +55,47 @@ static int sender(int argc, char *argv[])
 
 static int receiver(int argc, char *argv[])
 {
-  int id = -1;
-  char mailbox[80];
+  xbt_assert(argc==3, "This function expects 2 parameters from the XML deployment file");
+  int id = xbt_str_parse_int(argv[1], "ID should be numerical, not %s");
+  int task_amount = xbt_str_parse_int(argv[2], "Invalid amount of tasks: %s");
+  msg_task_t *tasks = xbt_new(msg_task_t, task_amount);
   xbt_dynar_t comms = xbt_dynar_new(sizeof(msg_comm_t), NULL);
-  int tasks = xbt_str_parse_int(argv[2], "Invalid amount of tasks: %s");
-  msg_task_t *task = xbt_new(msg_task_t, tasks);
 
-  XBT_ATTRIB_UNUSED int read;
-  read = sscanf(argv[1], "%d", &id);
-  xbt_assert(read, "Invalid argument %s\n", argv[1]);
+  char mailbox[80];
   snprintf(mailbox,79, "receiver-%d", id);
+   
   MSG_process_sleep(10);
-  msg_comm_t res_irecv;
-  for (int i = 0; i < tasks; i++) {
+  for (int i = 0; i < task_amount; i++) {
     XBT_INFO("Wait to receive task %d", i);
-    task[i] = NULL;
-    res_irecv = MSG_task_irecv(&task[i], mailbox);
-    xbt_dynar_push_as(comms, msg_comm_t, res_irecv);
+    tasks[i] = NULL;
+    msg_comm_t comm = MSG_task_irecv(&tasks[i], mailbox);
+    xbt_dynar_push_as(comms, msg_comm_t, comm);
   }
 
   /* Here we are waiting for the receiving of all communications */
-  msg_task_t task_com;
   while (!xbt_dynar_is_empty(comms)) {
-    XBT_ATTRIB_UNUSED msg_error_t err;
-    xbt_dynar_remove_at(comms, MSG_comm_waitany(comms), &res_irecv);
-    task_com = MSG_comm_get_task(res_irecv);
-    MSG_comm_destroy(res_irecv);
-    XBT_INFO("Processing \"%s\"", MSG_task_get_name(task_com));
-    MSG_task_execute(task_com);
-    XBT_INFO("\"%s\" done", MSG_task_get_name(task_com));
-    err = MSG_task_destroy(task_com);
+    msg_comm_t comm;
+    // MSG_comm_waitany returns the rank of the comm that just ended. Remove it.
+    xbt_dynar_remove_at(comms, MSG_comm_waitany(comms), &comm);
+    msg_task_t task = MSG_comm_get_task(comm);
+    MSG_comm_destroy(comm);
+    XBT_INFO("Processing \"%s\"", MSG_task_get_name(task));
+    MSG_task_execute(task);
+    XBT_INFO("\"%s\" done", MSG_task_get_name(task));
+    msg_error_t err = MSG_task_destroy(task);
     xbt_assert(err == MSG_OK, "MSG_task_destroy failed");
   }
   xbt_dynar_free(&comms);
-  xbt_free(task);
+  xbt_free(tasks);
 
   /* Here we tell to sender that all tasks are done */
-  res_irecv = MSG_task_isend(MSG_task_create(NULL, 0, 0, NULL), "finalize");
-  MSG_comm_wait(res_irecv, -1);
-  MSG_comm_destroy(res_irecv);
+  MSG_task_send(MSG_task_create(NULL, 0, 0, NULL), "finalize");
   XBT_INFO("I'm done. See you!");
   return 0;
 }
 
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
-
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
                   "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
@@ -118,7 +106,7 @@ int main(int argc, char *argv[])
   MSG_function_register("receiver", receiver);
   MSG_launch_application(argv[2]);
 
-  res = MSG_main();
+  msg_error_t res = MSG_main();
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
 

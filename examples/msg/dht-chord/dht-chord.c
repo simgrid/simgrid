@@ -563,7 +563,7 @@ void stabilize(node_t node)
     set_finger(node, 0, candidate_id);
   }
   if (successor_id != node->id) {
-    remote_notify(node, successor_id, node->id);
+    remote_notify(successor_id, node->id);
   }
 }
 
@@ -582,7 +582,7 @@ void notify(node_t node, int predecessor_candidate_id) {
 }
 
 /* Notifies a remote node that its predecessor may have changed. */
-void remote_notify(node_t node, int notify_id, int predecessor_candidate_id) {
+void remote_notify(int notify_id, int predecessor_candidate_id) {
 
       task_data_t req_data = xbt_new0(s_task_data_t, 1);
       req_data->type = TASK_NOTIFY;

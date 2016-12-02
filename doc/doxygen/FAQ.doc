@@ -142,17 +142,42 @@ MSG_comm_destroy().
 
 There is even a specific example section on \ref msg_ex_asynchronous_communications.
 
-\subsubsection faq_MIA_thread_synchronization I need to synchronize my MSG processes
+\subsubsection faq_MIA_thread_synchronization How to synchronize my user processes?
 
-You obviously cannot use pthread_mutexes of pthread_conds since we handle every
-scheduling related decision within SimGrid.
+It depends on why you want to synchronize them.  If you just want to
+have a shared state between your processes, then you probably don't
+need to do anything. User processes never get forcefully interrupted
+in SimGrid (unless you explicitly request the parallel execution of
+user processes -- see @ref options_virt_parallel).
 
-In the past (version <=3.3.4) you could do it by playing with
-MSG_process_suspend() and MSG_process_resume() or with fake communications (using MSG_task_get(),
-MSG_task_put() and MSG_task_Iprobe()).
+Even if several processes are executed at the exact same time within
+the simulation, they are linearized in reality by default: one process
+always run in an exclusive manner, atomic, uninterrupted until it does
+a simcall (until it ask a service from the simulation kernel). This is
+surprising at first, but things are much easier this way, both for the
+user (who don't have to protect her shared data) and for the kernel
+(that avoid many synchronization issues too). Processes are executed
+concurrently in the simulated realm, but you don't need to bother with
+this in the real realm.
 
-Since version 3.4, you can use classical synchronization structures. See page \ref XBT_synchro or simply check in
-include/xbt/synchro_core.h.
+If you really need to synchronize your processes (because it's what
+you are studying or to create an atomic section that spans over
+several simcalls), you obviously cannot use regular synchronization
+mechanisms (pthread_mutexes in C or the synchronized keyword in Java).
+This is because the SimGrid kernel locks all processes and unlock them
+one after the other when they are supposed to run, until they give the
+control back in their simcall. If one of them gets locked by the OS 
+before returning the control to the kernel, that's definitively a
+deadlock.
+
+Instead, you should use the synchronization mechanism provided by the
+simulation kernel. This could with a SimGrid mutex, a SimGrid
+condition variables or a SimGrid semaphore, as described in @ref
+msg_synchro (in Java, only semaphores are available). But actually,
+many synchronization patterns can be encoded with communication on
+mailboxes. Typically, if you need one process to notify another one,
+you could use a condition variable or a semphore, but sending a
+message to a specific mailbox does the trick in most cases.
 
 \subsubsection faq_MIA_host_load Where is the get_host_load function hidden in MSG?
 

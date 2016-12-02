@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -22,30 +21,30 @@ namespace simgrid{
   }
 }
 
-typedef struct ns3_node {
-  int node_num;
-} s_ns3_node_t, *ns3_node_t;
+class HostNs3 {
+public:
+  static simgrid::xbt::Extension<simgrid::s4u::Host, HostNs3> EXTENSION_ID;
 
-XBT_PUBLIC_DATA(int) NS3_EXTENSION_ID;
+  explicit HostNs3();
+  int node_num;
+};
 
 SG_BEGIN_DECL()
 
 XBT_PUBLIC(void)   ns3_initialize(const char* TcpProtocol);
 XBT_PUBLIC(void)   ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalBytes,simgrid::surf::NetworkNS3Action * action);
 XBT_PUBLIC(void)   ns3_simulator(double maxSeconds);
-XBT_PUBLIC(void *) ns3_add_host_cluster(const char * id);
 XBT_PUBLIC(void *) ns3_add_router(const char * id);
 XBT_PUBLIC(void)   ns3_add_link(int src, int dst, char * bw,char * lat);
-XBT_PUBLIC(void)   ns3_add_cluster(char * bw,char * lat,const char *id);
+XBT_PUBLIC(void) ns3_add_cluster(const char* id, char* bw, char* lat);
 
-inline
-ns3_node_t ns3_find_host(const char* id)
+inline HostNs3* ns3_find_host(const char* id)
 {
   sg_host_t host = sg_host_by_name(id);
   if (host == nullptr)
     return nullptr;
   else
-    return (ns3_node_t) host->extension(NS3_EXTENSION_ID);
+    return host->extension<HostNs3>();
 }
 
 SG_END_DECL()

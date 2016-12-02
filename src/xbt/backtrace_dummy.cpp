@@ -12,15 +12,6 @@
 
 #include <xbt/backtrace.hpp>
 
-/* Module creation/destruction */
-void xbt_backtrace_preinit(void)
-{
-}
-
-void xbt_backtrace_postexit(void)
-{
-}
-
 /* create a backtrace in the given exception */
 size_t xbt_backtrace_current(xbt_backtrace_location_t* loc, size_t count)
 {

@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,14 +10,12 @@
 #include <xbt/signal.hpp>
 
 #include "surf_interface.hpp"
-#include "src/surf/xml/platf_private.hpp" // FIXME: including this here is pure madness. KILKILKIL XML.
 #include "src/kernel/routing/AsImpl.hpp"
 
 #include <float.h>
 #include <vector>
 
 SG_BEGIN_DECL()
-XBT_PUBLIC(void) routing_model_create(Link *loopback);
 XBT_PRIVATE xbt_node_t new_xbt_graph_node (xbt_graph_t graph, const char *name, xbt_dict_t nodes);
 XBT_PRIVATE xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xbt_dict_t edges);
 SG_END_DECL()
@@ -44,10 +41,11 @@ class RoutingPlatf;
  */
 class NetCard {
 public:
-  virtual ~NetCard(){};
+  virtual ~NetCard()            = default;
   virtual unsigned int id()=0; // Our rank in the vertices_ array of our containing AS.
-  virtual char *name()=0;
-  virtual AsImpl *containingAS()=0; // This is the AS in which I am
+  virtual std::string name()    = 0;
+  virtual const char* cname()    = 0;
+  virtual AsImpl* containingAS() = 0; // This is the AS in which I am
   virtual bool isAS()=0;
   virtual bool isHost()=0;
   virtual bool isRouter()=0;
@@ -58,19 +56,18 @@ public:
 
 struct XBT_PRIVATE NetCardImpl : public NetCard {
 public:
-  NetCardImpl(const char *name, NetCard::Type componentType, AsImpl *containingAS)
-  : name_(xbt_strdup(name)),
-    componentType_(componentType),
-    containingAS_(containingAS)
+  NetCardImpl(std::string name, NetCard::Type componentType, AsImpl* containingAS)
+      : name_(name), componentType_(componentType), containingAS_(containingAS)
   {
     if (containingAS != nullptr)
       id_ = containingAS->addComponent(this);
     simgrid::kernel::routing::netcardCreatedCallbacks(this);
   }
-  ~NetCardImpl() { xbt_free(name_);};
+  ~NetCardImpl() = default;
 
   unsigned int id()  override {return id_;}
-  char *name()       override {return name_;}
+  std::string name() override { return name_; }
+  const char* cname() override { return name_.c_str(); }
   AsImpl *containingAS() override {return containingAS_;}
 
   bool isAS()        override {return componentType_ == Type::As;}
@@ -79,9 +76,17 @@ public:
 
 private:
   unsigned int id_;
-  char *name_;
+  std::string name_;
   NetCard::Type componentType_;
   AsImpl *containingAS_;
+};
+
+class AsRoute {
+public:
+  explicit AsRoute(NetCard* gwSrc, NetCard* gwDst) : gw_src(gwSrc), gw_dst(gwDst) {}
+  const NetCard* gw_src;
+  const NetCard* gw_dst;
+  std::vector<Link*> links;
 };
 
 /** @ingroup SURF_routing_interface
@@ -89,11 +94,10 @@ private:
  */
 class Onelink {
 public:
-  Onelink(void *link, NetCard *src, NetCard *dst)
-    : src_(src), dst_(dst), link_(link) {};
-  NetCard *src_;
-  NetCard *dst_;
-  void *link_;
+  Onelink(Link* link, NetCard* src, NetCard* dst) : src_(src), dst_(dst), link_(link){};
+  NetCard* src_;
+  NetCard* dst_;
+  Link* link_;
 };
 
 /** @ingroup SURF_routing_interface
@@ -101,11 +105,9 @@ public:
  */
 XBT_PUBLIC_CLASS RoutingPlatf {
 public:
-  explicit RoutingPlatf(Link *loopback);
+  explicit RoutingPlatf();
   ~RoutingPlatf();
   AsImpl *root_ = nullptr;
-  Link *loopback_;
-  xbt_dynar_t getOneLinkRoutes();
   void getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Link*> * links, double *latency);
 };
 

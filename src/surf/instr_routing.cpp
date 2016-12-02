@@ -6,10 +6,11 @@
 
 #include "src/instr/instr_private.h"
 
-#include "src/kernel/routing/AsImpl.hpp"
 #include "simgrid/s4u/engine.hpp"
-#include "surf/surf.h"
+#include "simgrid/s4u/host.hpp"
+#include "src/kernel/routing/AsImpl.hpp"
 #include "src/surf/xml/platf_private.hpp"
+#include "surf/surf.h"
 #include "xbt/graph.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarchy");
@@ -245,10 +246,10 @@ static void instr_routing_parse_start_link (sg_platf_link_cbarg_t link)
   }
 }
 
-void sg_instr_new_host(sg_platf_host_cbarg_t host)
+void sg_instr_new_host(simgrid::s4u::Host& host)
 {
   container_t father = currentContainer.back();
-  container_t container = PJ_container_new (host->id, INSTR_HOST, father);
+  container_t container = PJ_container_new(host.name().c_str(), INSTR_HOST, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (! TRACE_disable_speed())) {
     type_t speed = PJ_type_get_or_null ("power", container->type);
@@ -256,7 +257,7 @@ void sg_instr_new_host(sg_platf_host_cbarg_t host)
       speed = PJ_type_variable_new ("power", nullptr, container->type);
     }
 
-    double current_speed_state = host->speed_per_pstate[host->pstate];
+    double current_speed_state = host.getPstateSpeedCurrent();
     new_pajeSetVariable (0, container, speed, current_speed_state);
   }
   if (TRACE_uncategorized()){

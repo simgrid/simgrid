@@ -7,8 +7,6 @@
 package energy.consumption;
 
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.Comm;
-import org.simgrid.msg.Host;
 import org.simgrid.msg.Task;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;

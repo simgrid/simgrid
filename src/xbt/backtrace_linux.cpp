@@ -34,15 +34,6 @@
 
 extern char **environ;          /* the environment, as specified by the opengroup */
 
-/* Module creation/destruction: nothing to do on linux */
-void xbt_backtrace_preinit()
-{
-}
-
-void xbt_backtrace_postexit()
-{
-}
-
 #include <unwind.h>
 struct trace_arg {
   void **array;
@@ -167,7 +158,7 @@ std::vector<std::string> resolveBacktrace(
   if (binary_name.empty()) {
     for (std::size_t i = 0; i < count; i++)
       result.push_back(simgrid::xbt::string_printf("%p", loc[i]));
-    return std::move(result);
+    return result;
   }
 
   // Create the system command for add2line:
@@ -351,11 +342,8 @@ std::vector<std::string> resolveBacktrace(
 
 #if HAVE_MC
 int xbt_libunwind_backtrace(void** bt, int size){
-  int i = 0;
-  for(i=0; i < size; i++)
+  for (int i = 0; i < size; i++)
     bt[i] = nullptr;
-
-  i=0;
 
   unw_cursor_t c;
   unw_context_t uc;
@@ -363,14 +351,13 @@ int xbt_libunwind_backtrace(void** bt, int size){
   unw_getcontext (&uc);
   unw_init_local (&c, &uc);
 
-  unw_word_t ip;
-
   unw_step(&c);
 
-  while(unw_step(&c) >= 0 && i < size){
+  int i;
+  for (i = 0; unw_step(&c) >= 0 && i < size; i++) {
+    unw_word_t ip;
     unw_get_reg(&c, UNW_REG_IP, &ip);
     bt[i] = (void*)(long)ip;
-    i++;
   }
 
   return i;

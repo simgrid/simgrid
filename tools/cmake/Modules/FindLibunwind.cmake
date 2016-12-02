@@ -64,8 +64,9 @@ if(PATH_LIBUNWIND_LIB AND PATH_LIBUNWIND_H)
       
   include_directories(${PATH_LIBUNWIND_H})
   link_directories(${PATH_LIBUNWIND_LIB})
+  SET(HAVE_LIBUNWIND 1)
 else()
-  message(FATAL_ERROR "Please either install the libunwind7-dev package (or equivalent) or turn off the model-checking option of SimGrid.")
+  SET(HAVE_LIBUNWIND 0)
 endif()
 
 mark_as_advanced(PATH_LIBDW_H)

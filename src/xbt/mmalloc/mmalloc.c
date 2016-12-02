@@ -183,7 +183,7 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
 
   size_t requested_size = size; // The amount of memory requested by user, for real
 
-  /* Work even if the user was stupid enough to ask a ridicullously small block (even 0-length),
+  /* Work even if the user was stupid enough to ask a ridiculously small block (even 0-length),
    *    ie return a valid block that can be realloced and freed.
    * glibc malloc does not use this trick but return a constant pointer, but we need to enlist the free fragments later on.
    */

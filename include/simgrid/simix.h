@@ -80,6 +80,7 @@ typedef enum {
   SIMIX_FAILED,
   SIMIX_SRC_HOST_FAILURE,
   SIMIX_DST_HOST_FAILURE,
+  SIMIX_TIMEOUT,
   SIMIX_SRC_TIMEOUT,
   SIMIX_DST_TIMEOUT,
   SIMIX_LINK_FAILURE
@@ -248,13 +249,9 @@ XBT_PUBLIC(void) simcall_host_set_data(sg_host_t host, void *data);
 XBT_PUBLIC(smx_activity_t) simcall_execution_start(const char *name,
                                                 double flops_amount,
                                                 double priority, double bound);
-XBT_PUBLIC(smx_activity_t) simcall_execution_parallel_start(const char *name,
-                                                     int host_nb,
-                                                     sg_host_t *host_list,
-                                                     double *flops_amount,
-                                                     double *bytes_amount,
-                                                     double amount,
-                                                     double rate);
+XBT_PUBLIC(smx_activity_t)
+simcall_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount,
+                                 double* bytes_amount, double amount, double rate, double timeout);
 XBT_PUBLIC(void) simcall_execution_cancel(smx_activity_t execution);
 XBT_PUBLIC(void) simcall_execution_set_priority(smx_activity_t execution, double priority);
 XBT_PUBLIC(void) simcall_execution_set_bound(smx_activity_t execution, double bound);
@@ -262,18 +259,9 @@ XBT_PUBLIC(e_smx_state_t) simcall_execution_wait(smx_activity_t execution);
 
 /******************************* VM simcalls ********************************/
 // Create the vm_workstation at the SURF level
-XBT_PUBLIC(sg_host_t) simcall_vm_create(const char *name, sg_host_t host);
-XBT_PUBLIC(int) simcall_vm_get_state(sg_host_t vm);
-XBT_PUBLIC(void) simcall_vm_start(sg_host_t vm);
-XBT_PUBLIC(void) simcall_vm_migrate(sg_host_t vm, sg_host_t dst_pm);
-XBT_PUBLIC(void *) simcall_vm_get_pm(sg_host_t vm);
-XBT_PUBLIC(void) simcall_vm_set_bound(sg_host_t vm, double bound);
 XBT_PUBLIC(void) simcall_vm_resume(sg_host_t vm);
-XBT_PUBLIC(void) simcall_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst_pm);
 XBT_PUBLIC(void) simcall_vm_save(sg_host_t vm);
-XBT_PUBLIC(void) simcall_vm_restore(sg_host_t vm);
 XBT_PUBLIC(void) simcall_vm_suspend(sg_host_t vm);
-XBT_PUBLIC(void) simcall_vm_destroy(sg_host_t vm);
 XBT_PUBLIC(void) simcall_vm_shutdown(sg_host_t vm);
 
 /**************************** Process simcalls ********************************/

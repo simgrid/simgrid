@@ -27,8 +27,8 @@ int main(int argc, char **argv)
 
   /* test the estimation functions */
   const sg_host_t *hosts = sg_host_list();
-  sg_host_t h1 = hosts[0];
-  sg_host_t h2 = hosts[1];
+  sg_host_t h1           = hosts[4];
+  sg_host_t h2           = hosts[2];
   const char *name1 = sg_host_get_name(h1);
   const char *name2 = sg_host_get_name(h2);
   double comp_amount1 = 2000000;

@@ -112,7 +112,8 @@ unsigned int join(node_t node, unsigned int id_known)
   answer_t node_list;
   msg_error_t status;
   unsigned int trial = 0;
-  unsigned int i, answer_got = 0;
+  unsigned int i;
+  unsigned int answer_got = 0;
 
   /* Add the guy we know to our routing table and ourselves. */
   node_routing_table_update(node, node->id);
@@ -178,11 +179,13 @@ unsigned int join(node_t node, unsigned int id_known)
 unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_in_stats)
 {
   unsigned int i = 0;
-  unsigned int queries, answers;
+  unsigned int queries;
+  unsigned int answers;
   unsigned int destination_found = 0;
   unsigned int nodes_added = 0;
   double time_beginreceive;
-  double timeout, global_timeout = MSG_get_clock() + find_node_global_timeout;
+  double timeout;
+  double global_timeout = MSG_get_clock() + find_node_global_timeout;
   unsigned int steps = 0;
 
   xbt_assert((id_to_find >= 0), "Id supplied incorrect");
@@ -358,7 +361,8 @@ void send_find_node(node_t node, unsigned int id, unsigned int destination)
   */
 unsigned int send_find_node_to_best(node_t node, answer_t node_list)
 {
-  unsigned int i = 0, j = 0;
+  unsigned int i = 0;
+  unsigned int j = 0;
   unsigned int destination = node_list->destination_id;
   node_contact_t node_to_query;
   while (j < kademlia_alpha && i < node_list->size) {

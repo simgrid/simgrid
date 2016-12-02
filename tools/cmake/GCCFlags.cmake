@@ -23,8 +23,10 @@ if(enable_compile_warnings)
   if(CMAKE_COMPILER_IS_GNUCXX)
     set(warnCXXFLAGS "${warnCXXFLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes")
   endif()
-  if (CMAKE_CXX_COMPILER_ID MATCHES "Clang") # don't care about class that become struct
-    set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-mismatched-tags")
+  if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    # don't care about class that become struct, avoid issue of empty C structs
+    # size (coming from libunwind.h)
+    set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-mismatched-tags -Wno-extern-c-compat")
   endif()
 
   # the one specific to C but refused by C++
@@ -212,7 +214,7 @@ if(MINGW)
   set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS} -Wl,--add-stdcall-alias")
   
   # Specify the data model that we are using (yeah it may help Java)
-  if(ARCH_32_BITS) 
+  if(CMAKE_SIZEOF_VOID_P EQUAL 4) # 32 bits
     set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -m32")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
   else()

@@ -258,8 +258,6 @@ XBT_PUBLIC(int)    MSG_host_get_nb_pstates(msg_host_t h);
 #define MSG_host_set_pstate(h, pstate) sg_host_set_pstate(h, pstate)
 XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar();
 XBT_PUBLIC(int) MSG_get_host_number();
-XBT_PUBLIC(void) MSG_host_get_params(msg_host_t ind_pm, vm_params_t params);
-XBT_PUBLIC(void) MSG_host_set_params(msg_host_t ind_pm, vm_params_t params);
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_mounted_storage_list(msg_host_t host);
 XBT_PUBLIC(xbt_dynar_t) MSG_host_get_attached_storage_list(msg_host_t host);
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_storage_content(msg_host_t host);
@@ -358,6 +356,7 @@ XBT_PUBLIC(msg_error_t) MSG_task_destroy(msg_task_t task);
 
 XBT_PUBLIC(msg_error_t) MSG_task_execute(msg_task_t task);
 XBT_PUBLIC(msg_error_t) MSG_parallel_task_execute(msg_task_t task);
+XBT_PUBLIC(msg_error_t) MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeout);
 XBT_PUBLIC(void) MSG_task_set_priority(msg_task_t task, double priority);
 XBT_PUBLIC(void) MSG_task_set_bound(msg_task_t task, double bound);
 
@@ -458,7 +457,7 @@ XBT_PUBLIC(int) MSG_sem_would_block(msg_sem_t sem);
  */
 
 #define MSG_BARRIER_SERIAL_PROCESS -1
-typedef struct s_xbt_bar *msg_bar_t;
+typedef struct s_msg_bar* msg_bar_t;
 XBT_PUBLIC(msg_bar_t) MSG_barrier_init( unsigned int count);
 XBT_PUBLIC(void) MSG_barrier_destroy(msg_bar_t bar);
 XBT_PUBLIC(int) MSG_barrier_wait(msg_bar_t bar);
@@ -481,8 +480,10 @@ XBT_PUBLIC(int) MSG_vm_is_saving(msg_vm_t vm);
 XBT_PUBLIC(int) MSG_vm_is_saved(msg_vm_t vm);
 XBT_PUBLIC(int) MSG_vm_is_restoring(msg_vm_t vm);
 
+#define MSG_vm_get_name(vm) MSG_host_get_name(vm)
 
-XBT_PUBLIC(const char*) MSG_vm_get_name(msg_vm_t vm);
+XBT_PUBLIC(void) MSG_vm_get_params(msg_vm_t vm, vm_params_t params);
+XBT_PUBLIC(void) MSG_vm_set_params(msg_vm_t vm, vm_params_t params);
 
 // TODO add VDI later
 XBT_PUBLIC(msg_vm_t) MSG_vm_create_core(msg_host_t location, const char *name);
@@ -509,31 +510,8 @@ XBT_PUBLIC(void) MSG_vm_restore(msg_vm_t vm);
 XBT_PUBLIC(msg_host_t) MSG_vm_get_pm(msg_vm_t vm);
 XBT_PUBLIC(void) MSG_vm_set_bound(msg_vm_t vm, double bound);
 
-/* TODO: do we need this? */
-// XBT_PUBLIC(xbt_dynar_t) MSG_vms_as_dynar();
 
-/*
-void* MSG_process_get_property(msg_process_t, char* key)
-void MSG_process_set_property(msg_process_t, char* key, void* data)
-void MSG_vm_set_property(msg_vm_t, char* key, void* data)
-
-void MSG_vm_setMemoryUsed(msg_vm_t vm, double size);
-void MSG_vm_setCpuUsed(msg_vm_t vm, double inducedLoad);
-  // inducedLoad: a percentage (>100 if it loads more than one core;
-  //                            <100 if it's not CPU intensive)
-  // Required contraints:
-  //   HOST_Power >= CpuUsedVm (\forall VM) + CpuUsedTask (\forall Task)
-  //   VM_coreAmount >= Load of all tasks
-*/
-
-  /*
-xbt_dynar_t<msg_vm_t> MSG_vm_get_list_from_host(msg_host_t)
-xbt_dynar_t<msg_vm_t> MSG_vm_get_list_from_hosts(msg_dynar_t<msg_host_t>)
-+ filtering functions on dynars
-*/
 #include "simgrid/instr.h"
-
-
 
 /* ****************************************************************************************** */
 /* Used only by the bindings -- unclean pimple, please ignore if you're not writing a binding */

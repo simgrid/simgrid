@@ -4,19 +4,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/internal_config.h"
-#include "surf_private.h"
 #include "surf_interface.hpp"
-#include "network_interface.hpp"
 #include "cpu_interface.hpp"
-#include "src/surf/HostImpl.hpp"
-#include "src/simix/smx_host_private.h"
-#include "surf_routing.hpp"
-#include "simgrid/sg_config.h"
 #include "mc/mc.h"
-#include "virtual_machine.hpp"
-#include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
+#include "network_interface.hpp"
 #include "simgrid/s4u/engine.hpp"
+#include "simgrid/sg_config.h"
+#include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
+#include "src/internal_config.h"
+#include "src/simix/smx_host_private.h"
+#include "src/surf/HostImpl.hpp"
+#include "surf_private.h"
+#include "surf_routing.hpp"
 #include <vector>
 
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
@@ -393,35 +392,25 @@ Model::~Model(){
   delete doneActionSet_;
 }
 
-double Model::next_occuring_event(double now)
+double Model::nextOccuringEvent(double now)
 {
   //FIXME: set the good function once and for all
   if (updateMechanism_ == UM_LAZY)
-    return next_occuring_event_lazy(now);
+    return nextOccuringEventLazy(now);
   else if (updateMechanism_ == UM_FULL)
-    return next_occuring_event_full(now);
+    return nextOccuringEventFull(now);
   else
     xbt_die("Invalid cpu update mechanism!");
 }
 
-double Model::next_occuring_event_lazy(double now)
+double Model::nextOccuringEventLazy(double now)
 {
-  Action *action = nullptr;
-  double min = -1;
-  double share;
-
-  XBT_DEBUG
-      ("Before share resources, the size of modified actions set is %zd",
-       modifiedSet_->size());
-
+  XBT_DEBUG("Before share resources, the size of modified actions set is %zd", modifiedSet_->size());
   lmm_solve(maxminSystem_);
-
-  XBT_DEBUG
-      ("After share resources, The size of modified actions set is %zd",
-       modifiedSet_->size());
+  XBT_DEBUG("After share resources, The size of modified actions set is %zd", modifiedSet_->size());
 
   while(!modifiedSet_->empty()) {
-    action = &(modifiedSet_->front());
+    Action *action = &(modifiedSet_->front());
     modifiedSet_->pop_front();
     int max_dur_flag = 0;
 
@@ -434,8 +423,8 @@ double Model::next_occuring_event_lazy(double now)
 
     action->updateRemainingLazy(now);
 
-    min = -1;
-    share = lmm_variable_getvalue(action->getVariable());
+    double min = -1;
+    double share = lmm_variable_getvalue(action->getVariable());
 
     if (share > 0) {
       double time_to_completion;
@@ -471,67 +460,34 @@ double Model::next_occuring_event_lazy(double now)
   }
 
   //hereafter must have already the min value for this resource model
-  if (xbt_heap_size(actionHeap_) > 0)
-    min = xbt_heap_maxkey(actionHeap_) - now;
-  else
-    min = -1;
-
-  XBT_DEBUG("The minimum with the HEAP %f", min);
-
-  return min;
-}
-
-double Model::next_occuring_event_full(double /*now*/) {
-  THROW_UNIMPLEMENTED;
-  return 0.0;
-}
-
-double Model::shareResourcesMaxMin(ActionList *running_actions,
-                          lmm_system_t sys,
-                          void (*solve) (lmm_system_t))
-{
-  Action *action = nullptr;
-  double min = -1;
-  double value = -1;
-
-  solve(sys);
-
-  ActionList::iterator it(running_actions->begin()), itend(running_actions->end());
-  for(; it != itend ; ++it) {
-    action = &*it;
-    value = lmm_variable_getvalue(action->getVariable());
-    if ((value > 0) || (action->getMaxDuration() >= 0))
-      break;
+  if (xbt_heap_size(actionHeap_) > 0) {
+    double min = xbt_heap_maxkey(actionHeap_) - now;
+    XBT_DEBUG("minimum with the HEAP %f", min);
+    return min;
+  } else {
+    XBT_DEBUG("The HEAP is empty, thus returning -1");
+    return -1;
   }
+}
 
-  if (!action)
-    return -1.0;
+double Model::nextOccuringEventFull(double /*now*/) {
+  maxminSystem_->solve_fun(maxminSystem_);
 
-  if (value > 0) {
-    if (action->getRemains() > 0)
-      min = action->getRemainsNoUpdate() / value;
-    else
-      min = 0.0;
-    if ((action->getMaxDuration() >= 0) && (action->getMaxDuration() < min))
-      min = action->getMaxDuration();
-  } else
-    min = action->getMaxDuration();
-
-
-  for (++it; it != itend; ++it) {
-  action = &*it;
-    value = lmm_variable_getvalue(action->getVariable());
+  double min = -1;
+  for (auto it(getRunningActionSet()->begin()), itend(getRunningActionSet()->end()); it != itend ; ++it) {
+    Action *action = &*it;
+    double value = lmm_variable_getvalue(action->getVariable());
     if (value > 0) {
       if (action->getRemains() > 0)
         value = action->getRemainsNoUpdate() / value;
       else
         value = 0.0;
-      if (value < min) {
+      if (min < 0 || value < min) {
         min = value;
         XBT_DEBUG("Updating min (value) with %p: %f", action, min);
       }
     }
-    if ((action->getMaxDuration() >= 0) && (action->getMaxDuration() < min)) {
+    if ((action->getMaxDuration() >= 0) && (min<0 || action->getMaxDuration() < min)) {
       min = action->getMaxDuration();
       XBT_DEBUG("Updating min (duration) with %p: %f", action, min);
     }
@@ -544,16 +500,16 @@ double Model::shareResourcesMaxMin(ActionList *running_actions,
 void Model::updateActionsState(double now, double delta)
 {
   if (updateMechanism_ == UM_FULL)
-  updateActionsStateFull(now, delta);
+    updateActionsStateFull(now, delta);
   else if (updateMechanism_ == UM_LAZY)
-  updateActionsStateLazy(now, delta);
+    updateActionsStateLazy(now, delta);
   else
-  xbt_die("Invalid cpu update mechanism!");
+    xbt_die("Invalid cpu update mechanism!");
 }
 
 void Model::updateActionsStateLazy(double /*now*/, double /*delta*/)
 {
- THROW_UNIMPLEMENTED;
+  THROW_UNIMPLEMENTED;
 }
 
 void Model::updateActionsStateFull(double /*now*/, double /*delta*/)
@@ -571,20 +527,11 @@ void Model::updateActionsStateFull(double /*now*/, double /*delta*/)
 namespace simgrid {
 namespace surf {
 
-Resource::Resource(Model *model, const char *name)
-  : name_(xbt_strdup(name))
-  , model_(model)
+Resource::Resource(Model* model, const char* name, lmm_constraint_t constraint)
+    : name_(name), model_(model), constraint_(constraint)
 {}
 
-Resource::Resource(Model *model, const char *name, lmm_constraint_t constraint)
-  : name_(xbt_strdup(name))
-  , model_(model)
-  , constraint_(constraint)
-{}
-
-Resource::~Resource() {
-  xbt_free((void*)name_);
-}
+Resource::~Resource() = default;
 
 bool Resource::isOn() const {
   return isOn_;
@@ -608,11 +555,11 @@ Model *Resource::getModel() const {
 }
 
 const char *Resource::getName() const {
-  return name_;
+  return name_.c_str();
 }
 
 bool Resource::operator==(const Resource &other) const {
-  return strcmp(name_, other.name_);
+  return name_ == other.name_;
 }
 
 lmm_constraint_t Resource::getConstraint() const {
@@ -643,30 +590,19 @@ void surf_action_lmm_update_index_heap(void *action, int i) {
 namespace simgrid {
 namespace surf {
 
-void Action::initialize(simgrid::surf::Model *model, double cost, bool failed,
-                        lmm_variable_t var)
+Action::Action(simgrid::surf::Model* model, double cost, bool failed) : Action(model, cost, failed, nullptr)
 {
-  remains_ = cost;
-  start_ = surf_get_clock();
-  cost_ = cost;
-  model_ = model;
-  variable_ = var;
+}
+
+Action::Action(simgrid::surf::Model* model, double cost, bool failed, lmm_variable_t var)
+    : remains_(cost), start_(surf_get_clock()), cost_(cost), model_(model), variable_(var)
+{
   if (failed)
     stateSet_ = getModel()->getFailedActionSet();
   else
     stateSet_ = getModel()->getRunningActionSet();
 
   stateSet_->push_back(*this);
-}
-
-Action::Action(simgrid::surf::Model *model, double cost, bool failed)
-{
-  initialize(model, cost, failed);
-}
-
-Action::Action(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var)
-{
-  initialize(model, cost, failed, var);
 }
 
 Action::~Action() {
@@ -748,9 +684,7 @@ void Action::setData(void* data)
 
 void Action::setCategory(const char *category)
 {
-  XBT_IN("(%p,%s)", this, category);
   category_ = xbt_strdup(category);
-  XBT_OUT();
 }
 
 void Action::ref(){
@@ -759,11 +693,9 @@ void Action::ref(){
 
 void Action::setMaxDuration(double duration)
 {
-  XBT_IN("(%p,%g)", this, duration);
   maxDuration_ = duration;
   if (getModel()->getUpdateMechanism() == UM_LAZY)      // remove action from the heap
     heapRemove(getModel()->getActionHeap());
-  XBT_OUT();
 }
 
 void Action::gapRemove() {}

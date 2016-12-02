@@ -4,11 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <deque>
 #include <boost/intrusive/list.hpp>
+#include <deque>
 
 #include <xbt/base.h>
 
+#include "simgrid/s4u/VirtualMachine.hpp"
 #include "src/surf/HostImpl.hpp"
 
 #ifndef VM_INTERFACE_HPP_
@@ -18,14 +19,14 @@
                           // It corresponds to the cost of a VM running no tasks.
 
 namespace simgrid {
-namespace surf {
+namespace vm {
 
 /***********
  * Classes *
  ***********/
 
 class XBT_PRIVATE VMModel;
-class XBT_PRIVATE VirtualMachine;
+class XBT_PRIVATE VirtualMachineImpl;
 
 /*************
  * Callbacks *
@@ -34,17 +35,17 @@ class XBT_PRIVATE VirtualMachine;
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired after VM creation. Signature: `void(VirtualMachine*)`
  */
-extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> onVmCreation;
+extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> onVmCreation;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired after VM destruction. Signature: `void(VirtualMachine*)`
  */
-extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> onVmDestruction;
+extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> onVmDestruction;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks after VM State changes. Signature: `void(VirtualMachine*)`
  */
-extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> onVmStateChange;
+extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> onVmStateChange;
 
 /************
  * Resource *
@@ -54,10 +55,12 @@ extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> on
  * @brief SURF VM interface class
  * @details A VM represent a virtual machine
  */
-class VirtualMachine : public HostImpl {
+class VirtualMachineImpl : public surf::HostImpl {
+  friend simgrid::s4u::VirtualMachine;
+
 public:
-  VirtualMachine(simgrid::surf::HostModel *model, const char *name, simgrid::s4u::Host *host);
-  ~VirtualMachine();
+  explicit VirtualMachineImpl(s4u::VirtualMachine* piface, s4u::Host* host);
+  ~VirtualMachineImpl();
 
   /** @brief Suspend the VM */
   virtual void suspend();
@@ -72,25 +75,38 @@ public:
   virtual void restore();
 
   /** @brief Migrate the VM to the destination host */
-  virtual void migrate(sg_host_t dest_PM);
+  virtual void migrate(s4u::Host* dest);
 
   /** @brief Get the physical machine hosting the VM */
-  sg_host_t getPm();
+  s4u::Host* getPm();
+
+  sg_size_t getRamsize();
 
   virtual void setBound(double bound);
 
+  void getParams(vm_params_t params);
+  void setParams(vm_params_t params);
+
   /* The vm object of the lower layer */
-  CpuAction *action_ = nullptr;
+  surf::Action* action_ = nullptr;
+
+  /* Dirty pages stuff */
+  int dp_enabled                     = 0;
+  xbt_dict_t dp_objs                 = nullptr;
+  double dp_updated_by_deleted_tasks = 0;
+
 protected:
-  simgrid::s4u::Host *hostPM_;
+  simgrid::s4u::Host* hostPM_;
 
 public:
-  void turnOn() override;
-  void turnOff() override;
-
   e_surf_vm_state_t getState();
   void setState(e_surf_vm_state_t state);
-  static std::deque<VirtualMachine*> allVms_;
+  static std::deque<s4u::VirtualMachine*> allVms_;
+
+  bool isMigrating = false;
+
+private:
+  s_vm_params_t params_;
 
 protected:
   e_surf_vm_state_t vmState_ = SURF_VM_STATE_CREATED;
@@ -103,25 +119,13 @@ protected:
  * @brief SURF VM model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
  */
-class VMModel : public HostModel {
+class VMModel : public surf::HostModel {
 public:
-  VMModel() :HostModel() {}
-  ~VMModel() = default;
+  void adjustWeightOfDummyCpuActions() override{};
 
-  /**
-   * @brief Create a new VM
-   *
-   * @param name The name of the new VM
-   * @param host_PM The real machine hosting the VM
-   */
-  s4u::Host *createVM(const char *name, sg_host_t host_PM);
-  void adjustWeightOfDummyCpuActions() override {};
-
-  double next_occuring_event(double now) override;
-  void updateActionsState(double /*now*/, double /*delta*/) override {};
-
+  double nextOccuringEvent(double now) override;
+  void updateActionsState(double /*now*/, double /*delta*/) override{};
 };
-
 }
 }
 
