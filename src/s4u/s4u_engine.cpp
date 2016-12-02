@@ -35,6 +35,11 @@ Engine::Engine(int *argc, char **argv) {
   SIMIX_global_init(argc, argv);
 }
 
+Engine::~Engine()
+{
+  delete pimpl;
+}
+
 Engine *Engine::instance() {
   if (s4u::Engine::instance_ == nullptr)
     new Engine(0,nullptr);
