@@ -230,14 +230,23 @@ if(enable_smpi_papi)
   endif()
 endif()
 
-find_package(Boost 1.48 COMPONENTS unit_test_framework)
+# Not finding this is perfectly OK
+find_package(Boost COMPONENTS unit_test_framework)
+if (Boost_UNIT_TEST_FRAMEWORK_FOUND)
+  message("--   (enabling the Boost-based unit tests)")
+else()
+  message("--   (disabling the Boost-based unit tests -- please install libboost-test-dev)")
+endif()
+
+
+find_package(Boost 1.48)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 else()
   if(APPLE)
     message(FATAL_ERROR "Boost libraries not found. Try to install them with 'sudo fink install boost1.53.nopython'")
   else()
-    message(FATAL_ERROR "Boost libraries not found. Install libboost-dev libboost-test-dev (>= 1.48.0).")
+    message(FATAL_ERROR "Boost libraries not found. Install libboost-dev (>= 1.48.0).")
   endif()
 endif()
 
@@ -246,7 +255,7 @@ endif()
 find_package(Boost 1.61 COMPONENTS context)
 
 if(Boost_FOUND AND Boost_CONTEXT_FOUND)
-  message("WARNING : our implementation of Boost context factory is not compatible with Boost >=1.61 yet.")
+  message("   WARNING : our implementation of Boost context factory is not compatible with Boost >=1.61 yet.")
 
   set(Boost_FOUND 1)
   set(HAVE_BOOST_CONTEXTS 0)
