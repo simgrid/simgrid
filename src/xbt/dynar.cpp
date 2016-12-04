@@ -720,13 +720,12 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_dyn);
 XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
 {
   /* Vars_decl [doxygen cruft] */
-  xbt_dynar_t d;
-  int i, cpt;
+  int i;
   unsigned int cursor;
   int *iptr;
 
   xbt_test_add("==== Traverse the empty dynar");
-  d = xbt_dynar_new(sizeof(int), nullptr);
+  xbt_dynar_t d = xbt_dynar_new(sizeof(int), nullptr);
   xbt_dynar_foreach(d, cursor, i) {
     xbt_die( "Damnit, there is something in the empty dynar");
   }
@@ -738,7 +737,7 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
   /* Populate_ints [doxygen cruft] */
   /* 1. Populate the dynar */
   d = xbt_dynar_new(sizeof(int), nullptr);
-  for (cpt = 0; cpt < NB_ELEM; cpt++) {
+  for (int cpt = 0; cpt < NB_ELEM; cpt++) {
     xbt_dynar_push_as(d, int, cpt);     /* This is faster (and possible only with scalars) */
     /* xbt_dynar_push(d,&cpt);       This would also work */
     xbt_test_log("Push %d, length=%lu", cpt, xbt_dynar_length(d));
@@ -747,23 +746,25 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
   /* 2. Traverse manually the dynar */
   for (cursor = 0; cursor < NB_ELEM; cursor++) {
     iptr = (int*) xbt_dynar_get_ptr(d, cursor);
-    xbt_test_assert(cursor == (unsigned int) *iptr, "The retrieved value is not the same than the injected one (%u!=%d)", cursor, cpt);
+    xbt_test_assert(cursor == (unsigned int)*iptr, "The retrieved value is not the same than the injected one (%u!=%d)",
+                    cursor, *iptr);
   }
 
   /* 3. Traverse the dynar using the neat macro to that extend */
+  int cpt;
   xbt_dynar_foreach(d, cursor, cpt) {
     xbt_test_assert(cursor == (unsigned int) cpt, "The retrieved value is not the same than the injected one (%u!=%d)", cursor, cpt);
   }
   /* end_of_traversal */
 
-  for (cpt = 0; cpt < NB_ELEM; cpt++)
+  for (int cpt = 0; cpt < NB_ELEM; cpt++)
     *(int *) xbt_dynar_get_ptr(d, cpt) = cpt;
 
-  for (cpt = 0; cpt < NB_ELEM; cpt++)
+  for (int cpt = 0; cpt < NB_ELEM; cpt++)
     *(int *) xbt_dynar_get_ptr(d, cpt) = cpt;
   /*     xbt_dynar_set(d,cpt,&cpt); */
 
-  for (cpt = 0; cpt < NB_ELEM; cpt++)
+  for (int cpt = 0; cpt < NB_ELEM; cpt++)
     *(int *) xbt_dynar_get_ptr(d, cpt) = cpt;
 
   cpt = 0;
@@ -775,7 +776,7 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
 
   /* shifting [doxygen cruft] */
   /* 4. Shift all the values */
-  for (cpt = 0; cpt < NB_ELEM; cpt++) {
+  for (int cpt = 0; cpt < NB_ELEM; cpt++) {
     xbt_dynar_shift(d, &i);
     xbt_test_assert(i == cpt, "The retrieved value is not the same than the injected one (%d!=%d)", i, cpt);
     xbt_test_log("Pop %d, length=%lu", cpt, xbt_dynar_length(d));
@@ -802,11 +803,11 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
 
   xbt_test_add("==== Unshift/pop %d int", NB_ELEM);
   d = xbt_dynar_new(sizeof(int), nullptr);
-  for (cpt = 0; cpt < NB_ELEM; cpt++) {
+  for (int cpt = 0; cpt < NB_ELEM; cpt++) {
     xbt_dynar_unshift(d, &cpt);
     XBT_DEBUG("Push %d, length=%lu", cpt, xbt_dynar_length(d));
   }
-  for (cpt = 0; cpt < NB_ELEM; cpt++) {
+  for (int cpt = 0; cpt < NB_ELEM; cpt++) {
     i = xbt_dynar_pop_as(d, int);
     xbt_test_assert(i == cpt, "The retrieved value is not the same than the injected one (%d!=%d)", i, cpt);
     xbt_test_log("Pop %d, length=%lu", cpt, xbt_dynar_length(d));
@@ -865,29 +866,29 @@ XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dyn
 {
   xbt_dynar_t d = xbt_dynar_new(sizeof(unsigned int), nullptr);
   unsigned int cursor;
-  int cpt;
 
   xbt_test_add("==== Insert %d int, traverse them, remove them",NB_ELEM);
   /* Populate_ints [doxygen cruft] */
   /* 1. Populate the dynar */
-  for (cpt = 0; cpt < NB_ELEM; cpt++) {
+  for (int cpt = 0; cpt < NB_ELEM; cpt++) {
     xbt_dynar_insert_at(d, cpt, &cpt);
     xbt_test_log("Push %d, length=%lu", cpt, xbt_dynar_length(d));
   }
 
   /* 3. Traverse the dynar */
+  int cpt;
   xbt_dynar_foreach(d, cursor, cpt) {
     xbt_test_assert(cursor == (unsigned int) cpt, "The retrieved value is not the same than the injected one (%u!=%d)", cursor, cpt);
   }
   /* end_of_traversal */
 
   /* Re-fill with the same values using set_as (and re-verify) */
-  for (cpt = 0; cpt < NB_ELEM; cpt++)
+  for (int cpt = 0; cpt < NB_ELEM; cpt++)
     xbt_dynar_set_as(d, cpt, int, cpt);
   xbt_dynar_foreach(d, cursor, cpt)
     xbt_test_assert(cursor == (unsigned int) cpt, "The retrieved value is not the same than the injected one (%u!=%d)", cursor, cpt);
 
-  for (cpt = 0; cpt < NB_ELEM; cpt++) {
+  for (int cpt = 0; cpt < NB_ELEM; cpt++) {
     int val;
     xbt_dynar_remove_at(d,0,&val);
     xbt_test_assert(cpt == val, "The retrieved value is not the same than the injected one (%u!=%d)", cursor, cpt);
@@ -899,7 +900,7 @@ XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dyn
   /* ********************* */
   xbt_test_add("==== Insert %d int in reverse order, traverse them, remove them",NB_ELEM);
   d = xbt_dynar_new(sizeof(int), nullptr);
-  for (cpt = NB_ELEM-1; cpt >=0; cpt--) {
+  for (int cpt = NB_ELEM - 1; cpt >= 0; cpt--) {
     xbt_dynar_replace(d, cpt, &cpt);
     xbt_test_log("Push %d, length=%lu", cpt, xbt_dynar_length(d));
   }
@@ -1025,14 +1026,12 @@ XBT_TEST_UNIT("double", test_dynar_double, "Dynars of doubles")
 /*******************************************************************************/
 XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
 {
-  xbt_dynar_t d;
-  int cpt;
   unsigned int iter;
   char buf[1024];
   char *s1, *s2;
 
   xbt_test_add("==== Traverse the empty dynar");
-  d = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+  xbt_dynar_t d = xbt_dynar_new(sizeof(char*), &xbt_free_ref);
   xbt_dynar_foreach(d, iter, s1) {
     xbt_test_assert(FALSE, "Damnit, there is something in the empty dynar");
   }
@@ -1044,27 +1043,27 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
   /* Populate_str [doxygen cruft] */
   d = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
   /* 1. Populate the dynar */
-  for (cpt = 0; cpt < NB_ELEM; cpt++) {
+  for (int cpt = 0; cpt < NB_ELEM; cpt++) {
     snprintf(buf,1023, "%d", cpt);
     s1 = xbt_strdup(buf);
     xbt_dynar_push(d, &s1);
   }
-  for (cpt = 0; cpt < NB_ELEM; cpt++) {
+  for (int cpt = 0; cpt < NB_ELEM; cpt++) {
     snprintf(buf,1023, "%d", cpt);
     s1 = xbt_strdup(buf);
     xbt_dynar_replace(d, cpt, &s1);
   }
-  for (cpt = 0; cpt < NB_ELEM; cpt++) {
+  for (int cpt = 0; cpt < NB_ELEM; cpt++) {
     snprintf(buf,1023, "%d", cpt);
     s1 = xbt_strdup(buf);
     xbt_dynar_replace(d, cpt, &s1);
   }
-  for (cpt = 0; cpt < NB_ELEM; cpt++) {
+  for (int cpt = 0; cpt < NB_ELEM; cpt++) {
     snprintf(buf,1023, "%d", cpt);
     s1 = xbt_strdup(buf);
     xbt_dynar_replace(d, cpt, &s1);
   }
-  for (cpt = 0; cpt < NB_ELEM; cpt++) {
+  for (int cpt = 0; cpt < NB_ELEM; cpt++) {
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_shift(d, &s2);
     xbt_test_assert(!strcmp(buf, s2), "The retrieved value is not the same than the injected one (%s!=%s)", buf, s2);
@@ -1076,7 +1075,7 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
 
   xbt_test_add("==== Unshift, traverse and pop %d strings", NB_ELEM);
   d = xbt_dynar_new(sizeof(char **), &xbt_free_ref);
-  for (cpt = 0; cpt < NB_ELEM; cpt++) {
+  for (int cpt = 0; cpt < NB_ELEM; cpt++) {
     snprintf(buf,1023, "%d", cpt);
     s1 = xbt_strdup(buf);
     xbt_dynar_unshift(d, &s1);
@@ -1087,7 +1086,7 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
     xbt_test_assert(!strcmp(buf, s1), "The retrieved value is not the same than the injected one (%s!=%s)", buf, s1);
   }
   /* 3. Traverse the dynar with the macro */
-  for (cpt = 0; cpt < NB_ELEM; cpt++) {
+  for (int cpt = 0; cpt < NB_ELEM; cpt++) {
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_pop(d, &s2);
     xbt_test_assert(!strcmp(buf, s2), "The retrieved value is not the same than the injected one (%s!=%s)", buf, s2);
@@ -1100,32 +1099,32 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
 
   xbt_test_add("==== Push %d strings, insert %d strings in the middle, shift everything", NB_ELEM, NB_ELEM / 5);
   d = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-  for (cpt = 0; cpt < NB_ELEM; cpt++) {
+  for (int cpt = 0; cpt < NB_ELEM; cpt++) {
     snprintf(buf,1023, "%d", cpt);
     s1 = xbt_strdup(buf);
     xbt_dynar_push(d, &s1);
   }
-  for (cpt = 0; cpt < NB_ELEM / 5; cpt++) {
+  for (int cpt = 0; cpt < NB_ELEM / 5; cpt++) {
     snprintf(buf,1023, "%d", cpt);
     s1 = xbt_strdup(buf);
     xbt_dynar_insert_at(d, NB_ELEM / 2, &s1);
   }
 
-  for (cpt = 0; cpt < NB_ELEM / 2; cpt++) {
+  for (int cpt = 0; cpt < NB_ELEM / 2; cpt++) {
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_shift(d, &s2);
     xbt_test_assert(!strcmp(buf, s2),
                      "The retrieved value is not the same than the injected one at the begining (%s!=%s)", buf, s2);
     free(s2);
   }
-  for (cpt = (NB_ELEM / 5) - 1; cpt >= 0; cpt--) {
+  for (int cpt = (NB_ELEM / 5) - 1; cpt >= 0; cpt--) {
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_shift(d, &s2);
     xbt_test_assert(!strcmp(buf, s2),
                      "The retrieved value is not the same than the injected one in the middle (%s!=%s)", buf, s2);
     free(s2);
   }
-  for (cpt = NB_ELEM / 2; cpt < NB_ELEM; cpt++) {
+  for (int cpt = NB_ELEM / 2; cpt < NB_ELEM; cpt++) {
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_shift(d, &s2);
     xbt_test_assert(!strcmp(buf, s2), "The retrieved value is not the same than the injected one at the end (%s!=%s)",
@@ -1138,12 +1137,12 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
 
   xbt_test_add("==== Push %d strings, remove %d-%d. free the rest", NB_ELEM, 2 * (NB_ELEM / 5), 4 * (NB_ELEM / 5));
   d = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-  for (cpt = 0; cpt < NB_ELEM; cpt++) {
+  for (int cpt = 0; cpt < NB_ELEM; cpt++) {
     snprintf(buf,1023, "%d", cpt);
     s1 = xbt_strdup(buf);
     xbt_dynar_push(d, &s1);
   }
-  for (cpt = 2 * (NB_ELEM / 5); cpt < 4 * (NB_ELEM / 5); cpt++) {
+  for (int cpt = 2 * (NB_ELEM / 5); cpt < 4 * (NB_ELEM / 5); cpt++) {
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_remove_at(d, 2 * (NB_ELEM / 5), &s2);
     xbt_test_assert(!strcmp(buf, s2), "Remove a bad value. Got %s, expected %s", s2, buf);
