@@ -235,10 +235,10 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     if ((cluster->properties != nullptr) && (!xbt_dict_is_empty(cluster->properties))) {
       xbt_dict_cursor_t cursor=nullptr;
       char *key,*data;
-      host.properties = xbt_dict_new();
+      host.properties = xbt_dict_new_homogeneous(free);
 
       xbt_dict_foreach(cluster->properties,cursor,key,data) {
-        xbt_dict_set(host.properties, key, xbt_strdup(data),free);
+        xbt_dict_set(host.properties, key, xbt_strdup(data), nullptr);
       }
     }
 

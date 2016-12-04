@@ -467,7 +467,7 @@ void MSG_host_add_task(msg_host_t host, msg_task_t task)
     dp->prev_remaining = remaining;
   }
   if (!pimpl->dp_objs)
-    pimpl->dp_objs = xbt_dict_new();
+    pimpl->dp_objs = xbt_dict_new_homogeneous(nullptr);
   xbt_assert(xbt_dict_get_or_null(pimpl->dp_objs, key) == nullptr);
   xbt_dict_set(pimpl->dp_objs, key, dp, nullptr);
   XBT_DEBUG("add %s on %s (remaining %f, dp_enabled %d)", key, host->cname(), remaining, pimpl->dp_enabled);

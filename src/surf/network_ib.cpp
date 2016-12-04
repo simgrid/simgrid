@@ -21,7 +21,7 @@ static void IB_create_host_callback(simgrid::s4u::Host& host){
   static int id=0;
   // pour t->id -> rajouter une nouvelle struct dans le dict, pour stocker les comms actives
   if(((NetworkIBModel*)surf_network_model)->active_nodes==nullptr)
-    ((NetworkIBModel*)surf_network_model)->active_nodes=xbt_dict_new();
+    ((NetworkIBModel*)surf_network_model)->active_nodes = xbt_dict_new_homogeneous(nullptr);
 
   IBNode* act = new IBNode(id);
 

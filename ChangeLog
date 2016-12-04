@@ -42,7 +42,10 @@ SimGrid (3.14) UNRELEASED; urgency=low
    - MSG_storage_set_property_value()
  * VM properties. Since msg_vm_t are msg_host_t, just use
    MSG_host_get_property_value() and friends
-
+ * xbt heterogeneous dictionnaries (created with xbt_dict_new()). 
+   Well, they are still there for now, but deprecated with a warning. 
+   Please switch to xbt_dict_new_homogeneous() before this is removed
+   for real.
  * Task affinity. Its intended behavior (that was very badly tested
    and probably not really working) was deceiving what most users
    would have hoped here.

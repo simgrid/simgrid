@@ -206,8 +206,8 @@ void peer_init(peer_t peer, int id, int seed)
   peer->id = id;
   snprintf(peer->mailbox,MAILBOX_SIZE-1, "%d", id);
   snprintf(peer->mailbox_tracker,MAILBOX_SIZE-1, "tracker_%d", id);
-  peer->peers = xbt_dict_new();
-  peer->active_peers = xbt_dict_new();
+  peer->peers        = xbt_dict_new_homogeneous(NULL);
+  peer->active_peers = xbt_dict_new_homogeneous(NULL);
   peer->hostname = MSG_host_get_name(MSG_host_self());
 
   peer->bitfield = xbt_new(char, FILE_PIECES + 1);
