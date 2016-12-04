@@ -11,6 +11,8 @@
 
 SG_BEGIN_DECL()
 
+// FIXME: this header file should die
+
 XBT_PUBLIC_DATA(int) SIMIX_STORAGE_LEVEL; //Simix storage level
 
 XBT_PUBLIC_DATA(xbt_lib_t) as_router_lib;

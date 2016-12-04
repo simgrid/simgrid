@@ -21,7 +21,7 @@ $ java -classpath ${classpath:=.} cloud/migration/Main ${srcdir:=.}/../platforms
 > [PM0:Test:(1) 67.551019] [jmsg/INFO] Round trip of VM1 (load 80%)
 > [PM0:Test:(1) 67.551019] [jmsg/INFO]      - Launch migration from PM0 to PM1
 > [PM0:Test:(1) 67.551019] [jmsg/INFO] Start migration of VM vm0 to PM1
-> [PM0:Test:(1) 67.551019] [jmsg/INFO]     currentLoad:80/ramSize:2048/dpIntensity:70/remaining:4.64E+11
+> [PM0:Test:(1) 67.551019] [jmsg/INFO]     currentLoad:80/ramSize:2048/dpIntensity:70/remaining:4.65E+11
 > [PM0:Test:(1) 102.635189] [jmsg/INFO] End of migration of VM vm0 to node PM1
 > [PM0:Test:(1) 102.635189] [jmsg/INFO]      - End of Migration from PM0 to PM1 (duration:35.08417029567006)
 > [PM0:Test:(1) 102.635189] [jmsg/INFO]      - Launch migration from PM1 to PM0

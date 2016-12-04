@@ -73,7 +73,7 @@ set(EXTRA_DIST
   src/kernel/routing/AsFull.hpp
   src/kernel/routing/AsRoutedGraph.hpp
   src/kernel/routing/AsNone.hpp
-  src/kernel/routing/AsVivaldi.hpp
+  src/kernel/routing/AsVivaldi.hpp  
 
   src/surf/storage_interface.hpp
   src/surf/storage_n11.hpp
@@ -305,7 +305,10 @@ set(SURF_SRC
   src/kernel/routing/AsRoutedGraph.cpp
   src/kernel/routing/AsNone.cpp
   src/kernel/routing/AsVivaldi.cpp
-  
+
+  src/kernel/EngineImpl.cpp
+  src/kernel/EngineImpl.hpp
+
   src/surf/cpu_cas01.cpp
   src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp

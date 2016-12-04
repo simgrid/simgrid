@@ -18,12 +18,18 @@
 #include <simgrid/s4u/forward.hpp>
 
 namespace simgrid {
+namespace kernel {
+class EngineImpl;
+}
 namespace s4u {
 /** @brief Simulation engine
  *
  * This class is an interface to the simulation engine.
  */
 XBT_PUBLIC_CLASS Engine {
+private:
+  ~Engine();
+
 public:
   /** Constructor, taking the command line parameters of your main function */
   Engine(int *argc, char **argv);
@@ -85,6 +91,8 @@ public:
       });
     });
   }
+
+  simgrid::kernel::EngineImpl* pimpl;
 
 private:
   static s4u::Engine *instance_;

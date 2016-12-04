@@ -744,9 +744,14 @@ void Action::suspend()
   XBT_IN("(%p)", this);
   if (suspended_ != 2) {
     lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), 0.0);
-    suspended_ = 1;
-    if (getModel()->getUpdateMechanism() == UM_LAZY)
+    if (getModel()->getUpdateMechanism() == UM_LAZY){
       heapRemove(getModel()->getActionHeap());
+      if (getModel()->getUpdateMechanism() == UM_LAZY  && stateSet_ == getModel()->getRunningActionSet() && priority_ > 0){
+        //If we have a lazy model, we need to update the remaining value accordingly
+        updateRemainingLazy(surf_get_clock());
+      }
+    }
+    suspended_ = 1;
   }
   XBT_OUT();
 }

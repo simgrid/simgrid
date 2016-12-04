@@ -25,7 +25,7 @@ int main(int argc, char **argv)
   xbt_cfg_set_parse("network/model:CM02");
   xbt_cfg_set_parse("cpu/model:Cas01");
 
-  xbt_assert(argc >1, "Usage : %s platform.txt\n", argv[0]);
+  xbt_assert(argc > 1, "Usage: %s platform.xml\n", argv[0]);
   parse_platform_file(argv[1]);
 
   /*********************** HOST ***********************************/
@@ -48,25 +48,25 @@ int main(int argc, char **argv)
     XBT_INFO("Next Event : %g", now);
 
     for (auto model: *all_existing_models) {
-      if (surf_model_running_action_set_size((surf_model_t)model)) {
+      if (surf_model_running_action_set_size(model)) {
         XBT_DEBUG("\t Running that model");
         running = 1;
       }
 
-      action = surf_model_extract_failed_action_set(static_cast<surf_model_t>(model));
+      action = surf_model_extract_failed_action_set(model);
       while (action != nullptr) {
         XBT_INFO("   * Done Action");
         XBT_DEBUG("\t * Failed Action: %p", action);
         action->unref();
-        action = surf_model_extract_failed_action_set(static_cast<surf_model_t>(model));
+        action = surf_model_extract_failed_action_set(model);
       }
 
-      action = surf_model_extract_done_action_set(static_cast<surf_model_t>(model));
+      action = surf_model_extract_done_action_set(model);
       while (action != nullptr){
         XBT_INFO("   * Done Action");
         XBT_DEBUG("\t * Done Action: %p", action);
         action->unref();
-        action = surf_model_extract_done_action_set(static_cast<surf_model_t>(model));
+        action = surf_model_extract_done_action_set(model);
       }
     }
   } while (running && surf_solve(-1.0) >= 0.0);

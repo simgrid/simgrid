@@ -767,19 +767,16 @@ simgrid::s4u::As * sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
       break;
   }
 
-
-  if (current_routing == nullptr && routing_platf->root_ == nullptr) { /* it is the first one */
+  if (current_routing == nullptr) { /* it is the first one */
+    xbt_assert(routing_platf->root_ == nullptr, "All defined components must belong to a AS");
     routing_platf->root_ = new_as;
 
-  } else if (current_routing != nullptr && routing_platf->root_ != nullptr) {
+  } else {
     /* set the father behavior */
     if (current_routing->hierarchy_ == simgrid::kernel::routing::AsImpl::RoutingMode::unset)
       current_routing->hierarchy_ = simgrid::kernel::routing::AsImpl::RoutingMode::recursive;
     /* add to the sons dictionary */
     xbt_dict_set(current_routing->children(), AS->id, (void *) new_as, nullptr);
-
-  } else {
-    THROWF(arg_error, 0, "All defined components must belong to a AS");
   }
 
   /* set the new current component of the tree */
