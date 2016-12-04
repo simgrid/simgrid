@@ -949,8 +949,8 @@ xbt_dict_t MSG_as_router_get_properties(const char* asr)
  * \param asr the name of a router or AS
  * \param name a property name
  * \param value what to change the property to
- * \param free_ctn the freeing function to use to kill the value on need
  */
-void MSG_as_router_set_property_value(const char* asr, const char *name, char *value,void_f_pvoid_t free_ctn) {
-  xbt_dict_set(MSG_as_router_get_properties(asr), name, value,free_ctn);
+void MSG_as_router_set_property_value(const char* asr, const char* name, char* value)
+{
+  xbt_dict_set(MSG_as_router_get_properties(asr), name, value, nullptr);
 }

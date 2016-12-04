@@ -198,10 +198,10 @@ xbt_dict_t MSG_host_get_properties(msg_host_t host)
  * \param host a host
  * \param name a property name
  * \param value what to change the property to
- * \param free_ctn the freeing function to use to kill the value on need
  */
-void MSG_host_set_property_value(msg_host_t host, const char *name, char *value,void_f_pvoid_t free_ctn) {
-  xbt_dict_set(MSG_host_get_properties(host), name, value,free_ctn);
+void MSG_host_set_property_value(msg_host_t host, const char* name, char* value)
+{
+  xbt_dict_set(MSG_host_get_properties(host), name, value, nullptr);
 }
 
 /** @ingroup m_host_management
