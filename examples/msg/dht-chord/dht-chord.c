@@ -43,7 +43,7 @@ static void chord_initialize(void)
     RngStream stream;
     snprintf(descr, sizeof descr, "RngSream<%s>", MSG_host_get_name(host));
     stream = RngStream_CreateStream(descr);
-    MSG_host_set_property_value(host, "stream", (char*)stream, NULL);
+    MSG_host_set_data(host, stream);
   }
 }
 
@@ -52,8 +52,9 @@ static void chord_exit(void)
   msg_host_t host;
   unsigned i;
   xbt_dynar_foreach(host_list, i, host) {
-    RngStream stream = (RngStream)MSG_host_get_property_value(host, "stream");
+    RngStream stream = (RngStream)MSG_host_get_data(host);
     RngStream_DeleteStream(&stream);
+    MSG_host_set_data(host, NULL);
   }
   xbt_dynar_free(&host_list);
 
@@ -712,7 +713,7 @@ static int node(int argc, char *argv[])
   // initialize my node
   s_node_t node = {0};
   node.id = xbt_str_parse_int(argv[1],"Invalid ID: %s");
-  node.stream = (RngStream)MSG_host_get_property_value(MSG_host_self(), "stream");
+  node.stream   = (RngStream)MSG_host_get_data(MSG_host_self());
   get_mailbox(node.id, node.mailbox);
   node.next_finger_to_fix = 0;
   node.fingers = xbt_new0(s_finger_t, nb_bits);

@@ -227,7 +227,7 @@ void peer_init(peer_t peer, int id, int seed)
 
   peer->current_pieces = xbt_dynar_new(sizeof(int), NULL);
 
-  peer->stream = (RngStream)MSG_host_get_property_value(MSG_host_self(), "stream");
+  peer->stream        = (RngStream)MSG_host_get_data(MSG_host_self());
   peer->comm_received = NULL;
 
   peer->round = 0;

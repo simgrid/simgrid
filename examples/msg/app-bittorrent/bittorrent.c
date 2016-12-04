@@ -29,10 +29,9 @@ int main(int argc, char *argv[])
   xbt_dynar_t host_list = MSG_hosts_as_dynar();
   xbt_dynar_foreach(host_list, i, host) {
     char descr[512];
-    RngStream stream;
     snprintf(descr, sizeof descr, "RngSream<%s>", MSG_host_get_name(host));
-    stream = RngStream_CreateStream(descr);
-    MSG_host_set_property_value(host, "stream", (char*)stream, NULL);
+    RngStream stream = RngStream_CreateStream(descr);
+    MSG_host_set_data(host, stream);
   }
 
   MSG_function_register("tracker", tracker);
@@ -43,8 +42,9 @@ int main(int argc, char *argv[])
   MSG_main();
 
   xbt_dynar_foreach(host_list, i, host) {
-    RngStream stream = (RngStream) MSG_host_get_property_value(host, "stream");
+    RngStream stream = (RngStream)MSG_host_get_data(host);
     RngStream_DeleteStream(&stream);
+    MSG_host_set_data(host, NULL);
   }
   xbt_dynar_free(&host_list);
 
