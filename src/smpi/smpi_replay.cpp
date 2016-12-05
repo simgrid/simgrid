@@ -1139,11 +1139,6 @@ void smpi_replay_send_process_data(double data_size, sg_host_t host)
 void smpi_replay_process_migrate(smx_actor_t process, sg_host_t new_host,
     unsigned long size)
 {
-  /*This does not seem to be needed for smpi. It does not store the host in
-   * the process data
-  simdata_process_t simdata = simcall_process_get_data(process);
-  simdata->m_host = host;
-  */
  
   /* By rktesser: I removed the data migration from this function, because it
    * needs to be done in parallel. As this function needs to be called in a
