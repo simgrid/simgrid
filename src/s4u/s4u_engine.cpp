@@ -88,8 +88,7 @@ void Engine::run() {
 
 s4u::As *Engine::rootAs()
 {
-  return routing_platf->root_; // FIXME: get the root into the Engine directly (and kill the platf)
-  // return pimpl->rootAs_;
+  return pimpl->rootAs_;
 }
 
 static s4u::As *asByNameRecursive(s4u::As *current, const char *name)

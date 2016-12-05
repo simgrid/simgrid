@@ -107,7 +107,6 @@ XBT_PUBLIC_CLASS RoutingPlatf {
 public:
   explicit RoutingPlatf();
   ~RoutingPlatf();
-  AsImpl *root_ = nullptr;
 };
 
 }}}

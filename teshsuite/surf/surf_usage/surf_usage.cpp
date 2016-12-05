@@ -119,6 +119,5 @@ int main(int argc, char **argv)
 
   XBT_DEBUG("Simulation Terminated");
 
-  surf_exit();
   return 0;
 }

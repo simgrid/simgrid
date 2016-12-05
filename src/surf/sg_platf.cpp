@@ -14,6 +14,8 @@
 #include "src/surf/HostImpl.hpp"
 #include "surf/surf.h"
 
+#include "simgrid/s4u/engine.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/simix/smx_private.h"
 
 #include "src/include/simgrid/sg_config.h"
@@ -22,7 +24,6 @@
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
-#include "surf/surf_routing.h" // FIXME: brain dead public header
 
 #include "src/kernel/routing/AsImpl.hpp"
 #include "src/kernel/routing/AsCluster.hpp"
@@ -768,8 +769,9 @@ simgrid::s4u::As * sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
   }
 
   if (current_routing == nullptr) { /* it is the first one */
-    xbt_assert(routing_platf->root_ == nullptr, "All defined components must belong to a AS");
-    routing_platf->root_ = new_as;
+    xbt_assert(simgrid::s4u::Engine::instance()->pimpl->rootAs_ == nullptr,
+               "All defined components must belong to a AS");
+    simgrid::s4u::Engine::instance()->pimpl->rootAs_ = new_as;
 
   } else {
     /* set the father behavior */

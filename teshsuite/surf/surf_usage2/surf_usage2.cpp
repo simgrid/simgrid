@@ -72,6 +72,5 @@ int main(int argc, char **argv)
   } while (running && surf_solve(-1.0) >= 0.0);
 
   XBT_INFO("Simulation Terminated");
-  surf_exit();
   return 0;
 }

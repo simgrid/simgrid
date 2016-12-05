@@ -107,7 +107,4 @@ void routing_exit() {
 }
 
 simgrid::kernel::routing::RoutingPlatf::RoutingPlatf() = default;
-simgrid::kernel::routing::RoutingPlatf::~RoutingPlatf()
-{
-  delete root_;
-}
+simgrid::kernel::routing::RoutingPlatf::~RoutingPlatf() = default;
