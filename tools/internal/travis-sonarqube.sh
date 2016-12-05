@@ -38,4 +38,5 @@ installBuildWrapper
 
 # and finally execute the actual SonarQube analysis (the SONAR_TOKEN is set from the travis web interface, to not expose it)
 # See https://docs.travis-ci.com/user/sonarqube/ for more info on tokens
+set +x # don't show the token in the logs
 sonar-scanner -Dsonar.host.url=https://sonarqube.com -Dsonar.login=$SONAR_TOKEN
