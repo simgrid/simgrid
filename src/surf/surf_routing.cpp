@@ -75,37 +75,6 @@ void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
   xbt_dict_set(traces_set_list, trace->id, (void *) tmgr_trace, nullptr);
 }
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
-
-/**
- * \brief Find a route between hosts
- *
- * \param src the network_element_t for src host
- * \param dst the network_element_t for dst host
- * \param route where to store the list of links.
- *              If *route=nullptr, create a short lived dynar. Else, fill the provided dynar
- * \param latency where to store the latency experienced on the path (or nullptr if not interested)
- *                It is the caller responsibility to initialize latency to 0 (we add to provided route)
- * \pre route!=nullptr
- *
- * walk through the routing components tree and find a route between hosts
- * by calling each "get_route" function in each routing component.
- */
-void RoutingPlatf::getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Link*> * route, double *latency)
-{
-  AsImpl::getGlobalRoute(src, dst, route, latency);
-  if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {
-    XBT_DEBUG("Route from '%s' to '%s' (latency: %f):", src->cname(), dst->cname(),
-              (latency == nullptr ? -1 : *latency));
-    for (auto link : *route)
-      XBT_DEBUG("Link %s", link->getName());
-  }
-}
-
-}}}
-
 /* ************************************************************************** */
 /* ************************* GENERIC PARSE FUNCTIONS ************************ */
 

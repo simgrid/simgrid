@@ -68,6 +68,7 @@ public:
 
   /** @brief Retrieve the root AS, containing all others */
   simgrid::s4u::As *rootAs();
+
   /** @brief Retrieve the AS of the given name (or nullptr if not found) */
   simgrid::s4u::As *asByNameOrNull(const char *name);
 

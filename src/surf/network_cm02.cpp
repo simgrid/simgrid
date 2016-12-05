@@ -297,7 +297,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 
   XBT_IN("(%s,%s,%g,%g)", src->name().c_str(), dst->name().c_str(), size, rate);
 
-  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, route, &latency);
+  src->routeTo(dst, route, &latency);
   xbt_assert(!route->empty() || latency,
              "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
              src->name().c_str(), dst->name().c_str());
@@ -308,7 +308,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 
   if (sg_network_crosstraffic == 1) {
     back_route = new std::vector<Link*>();
-    routing_platf->getRouteAndLatency(dst->pimpl_netcard, src->pimpl_netcard, back_route, nullptr);
+    dst->routeTo(src, back_route, nullptr);
     for (auto link: *back_route)
       if (link->isOff())
         failed = 1;

@@ -102,6 +102,8 @@ public:
    */
   boost::unordered_map<std::string, Storage*> const &mountedStorages();
 
+  void routeTo(Host * dest, std::vector<Link*> * links, double* latency);
+
 private:
   simgrid::xbt::string name_ = "noname";
   boost::unordered_map<std::string, Storage*> *mounts = nullptr; // caching

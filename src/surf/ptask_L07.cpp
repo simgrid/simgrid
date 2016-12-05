@@ -172,10 +172,9 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
 
         if (bytes_amount[i * host_nb + j] > 0) {
           double lat=0.0;
-          std::vector<Link*> route;
 
-          routing_platf->getRouteAndLatency(hostList_->at(i)->pimpl_netcard, hostList_->at(j)->pimpl_netcard, &route,
-                                            &lat);
+          std::vector<Link*> route;
+          hostList_->at(i)->routeTo(hostList_->at(j), &route, &lat);
           latency = MAX(latency, lat);
 
           for (auto link : route)
@@ -214,10 +213,9 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
 
         if (bytes_amount[i * host_nb + j] == 0.0)
           continue;
-        std::vector<Link*> route;
 
-        routing_platf->getRouteAndLatency(hostList_->at(i)->pimpl_netcard, hostList_->at(j)->pimpl_netcard, &route,
-                                          nullptr);
+        std::vector<Link*> route;
+        hostList_->at(i)->routeTo(hostList_->at(j), &route, nullptr);
 
         for (auto link : route)
           lmm_expand_add(model->getMaxminSystem(), link->getConstraint(), this->getVariable(), bytes_amount[i * host_nb + j]);
@@ -411,8 +409,7 @@ void L07Action::updateBound()
         if (communicationAmount_[i * hostNb + j] > 0) {
           double lat = 0.0;
           std::vector<Link*> route;
-          routing_platf->getRouteAndLatency(hostList_->at(i)->pimpl_netcard, hostList_->at(j)->pimpl_netcard, &route,
-                                            &lat);
+          hostList_->at(i)->routeTo(hostList_->at(j), &route, &lat);
 
           lat_current = MAX(lat_current, lat * communicationAmount_[i * hostNb + j]);
         }

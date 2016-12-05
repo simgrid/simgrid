@@ -253,7 +253,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
 
       std::vector<Link*> route = std::vector<Link*>();
 
-      routing_platf->getRouteAndLatency(action->src_->pimpl_netcard, action->dst_->pimpl_netcard, &route, nullptr);
+      action->src_->routeTo(action->dst_, &route, nullptr);
       for (auto link : route)
         TRACE_surf_link_set_utilization (link->getName(), action->getCategory(), (data_delta_sent)/delta, now-delta, delta);
 

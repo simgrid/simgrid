@@ -21,16 +21,15 @@
  */
 SD_link_t *SD_route_get_list(sg_host_t src, sg_host_t dst)
 {
-  std::vector<Link*> *route = new std::vector<Link*>();
-  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, route, nullptr);
+  std::vector<Link*> route;
+  src->routeTo(dst, &route, nullptr);
 
   int cpt=0;
-  SD_link_t *list = xbt_new(SD_link_t, route->size());
-  for (auto link : *route){
+  SD_link_t* list = xbt_new(SD_link_t, route.size());
+  for (auto link : route) {
     list[cpt] = link;
     cpt++;
   }
-  delete route;
   return list;
 }
 
@@ -44,10 +43,9 @@ SD_link_t *SD_route_get_list(sg_host_t src, sg_host_t dst)
  */
 int SD_route_get_size(sg_host_t src, sg_host_t dst)
 {
-  std::vector<Link*> *route = new std::vector<Link*>();
-  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, route, nullptr);
-  int size = route->size();
-  delete route;
+  std::vector<Link*> route;
+  src->routeTo(dst, &route, nullptr);
+  int size = route.size();
   return size;
 }
 
@@ -62,9 +60,8 @@ int SD_route_get_size(sg_host_t src, sg_host_t dst)
 double SD_route_get_latency(sg_host_t src, sg_host_t dst)
 {
   double latency = 0;
-  std::vector<Link*> *route = new std::vector<Link*>();
-  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, route, &latency);
-  delete route;
+  std::vector<Link*> route;
+  src->routeTo(dst, &route, &latency);
 
   return latency;
 }
@@ -82,15 +79,14 @@ double SD_route_get_bandwidth(sg_host_t src, sg_host_t dst)
 {
   double min_bandwidth = -1.0;
 
-  std::vector<Link*> *route = new std::vector<Link*>();
-  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, route, nullptr);
+  std::vector<Link*> route;
+  src->routeTo(dst, &route, nullptr);
 
-  for (auto link : *route) {
+  for (auto link : route) {
     double bandwidth = sg_link_bandwidth(link);
     if (bandwidth < min_bandwidth || min_bandwidth < 0.0)
       min_bandwidth = bandwidth;
   }
-  delete route;
 
   return min_bandwidth;
 }

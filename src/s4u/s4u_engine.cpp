@@ -6,17 +6,20 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "instr/instr_interface.h"
-#include "simgrid/simix.h"
 #include "mc/mc.h"
 #include "simgrid/s4u/As.hpp"
-#include "simgrid/s4u/engine.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
+#include "simgrid/s4u/engine.hpp"
+#include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/storage.hpp"
 #include "simgrid/simix.h"
+#include "simgrid/simix.h"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/routing/AsImpl.hpp"
 
-#include "surf/surf.h"               // routing_platf. FIXME:KILLME. SOON
+#include "src/surf/network_interface.hpp"
 #include "src/surf/surf_routing.hpp" // routing_platf. FIXME:KILLME. SOON
+#include "surf/surf.h"               // routing_platf. FIXME:KILLME. SOON
 
 XBT_LOG_NEW_CATEGORY(s4u,"Log channels of the S4U (Simgrid for you) interface");
 

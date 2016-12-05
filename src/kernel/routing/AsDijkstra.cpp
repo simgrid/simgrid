@@ -262,7 +262,7 @@ void AsDijkstra::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_
         strcmp(gw_dst->name().c_str(), prev_gw_src->name().c_str())) {
       std::vector<Link*> *e_route_as_to_as = new std::vector<Link*>();
 
-      routing_platf->getRouteAndLatency(gw_dst_net_elm, prev_gw_src_net_elm, e_route_as_to_as, nullptr);
+      getGlobalRoute(gw_dst_net_elm, prev_gw_src_net_elm, e_route_as_to_as, nullptr);
       auto pos = route->link_list->begin();
       for (auto link : *e_route_as_to_as) {
         route->link_list->insert(pos, link);

@@ -319,11 +319,10 @@ static void instr_user_srcdst_variable(double time, const char *src, const char 
   if(!dst_elm)
     xbt_die("Element '%s' not found!",dst);
 
-  std::vector<Link*> *route = new std::vector<Link*>();
-  routing_platf->getRouteAndLatency (src_elm, dst_elm, route,nullptr);
-  for (auto link : *route)
+  std::vector<Link*> route;
+  simgrid::kernel::routing::AsImpl::getGlobalRoute(src_elm, dst_elm, &route, nullptr);
+  for (auto link : route)
     instr_user_variable (time, link->getName(), variable, father_type, value, what, nullptr, user_link_variables);
-  delete route;
 }
 
 /** \ingroup TRACE_API

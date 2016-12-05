@@ -108,7 +108,6 @@ public:
   explicit RoutingPlatf();
   ~RoutingPlatf();
   AsImpl *root_ = nullptr;
-  void getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Link*> * links, double *latency);
 };
 
 }}}

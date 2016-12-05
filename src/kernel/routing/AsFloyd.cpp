@@ -68,7 +68,7 @@ void AsFloyd::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t r
     route_stack.pop_back();
     if (hierarchy_ == RoutingMode::recursive && prev_dst_gw != nullptr &&
         strcmp(prev_dst_gw->name().c_str(), e_route->gw_src->name().c_str())) {
-      routing_platf->getRouteAndLatency(prev_dst_gw, e_route->gw_src, route->link_list, lat);
+      getGlobalRoute(prev_dst_gw, e_route->gw_src, route->link_list, lat);
     }
 
     for (auto link: *e_route->link_list) {

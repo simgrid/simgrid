@@ -20,6 +20,8 @@
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/storage.hpp"
 
+XBT_LOG_EXTERNAL_CATEGORY(surf_route);
+
 std::unordered_map<std::string, simgrid::s4u::Host*> host_list; // FIXME: move it to Engine
 
 int MSG_HOST_LEVEL = -1;
@@ -115,6 +117,29 @@ bool Host::isOn() {
 
 int Host::pstatesCount() const {
   return this->pimpl_cpu->getNbPStates();
+}
+
+/**
+ * \brief Find a route toward another host
+ *
+ * \param dest [IN] where to
+ * \param route [OUT] where to store the list of links (must exist, cannot be nullptr).
+ * \param latency [OUT] where to store the latency experienced on the path (or nullptr if not interested)
+ *                It is the caller responsibility to initialize latency to 0 (we add to provided route)
+ * \pre route!=nullptr
+ *
+ * walk through the routing components tree and find a route between hosts
+ * by calling each "get_route" function in each routing component.
+ */
+void Host::routeTo(Host* dest, std::vector<Link*>* links, double* latency)
+{
+  simgrid::kernel::routing::AsImpl::getGlobalRoute(pimpl_netcard, dest->pimpl_netcard, links, latency);
+  if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {
+    XBT_CDEBUG(surf_route, "Route from '%s' to '%s' (latency: %f):", cname(), dest->cname(),
+               (latency == nullptr ? -1 : *latency));
+    for (auto link : *links)
+      XBT_CDEBUG(surf_route, "Link %s", link->getName());
+  }
 }
 
 boost::unordered_map<std::string, Storage*> const& Host::mountedStorages() {
