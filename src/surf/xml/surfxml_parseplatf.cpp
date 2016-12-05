@@ -129,8 +129,8 @@ void parse_after_config() {
 void parse_platform_file(const char *file)
 {
 #if HAVE_LUA
-  int is_lua = (file != nullptr && strlen(file) > 3 && file[strlen(file)-3] == 'l' && file[strlen(file)-2] == 'u'
-        && file[strlen(file)-1] == 'a');
+  int len    = (file == nullptr ? 0 : strlen(file));
+  int is_lua = (file != nullptr && len > 3 && file[len - 3] == 'l' && file[len - 2] == 'u' && file[len - 1] == 'a');
 #endif
 
   sg_platf_init();
