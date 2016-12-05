@@ -447,7 +447,7 @@ typedef struct s_instr_extra_data {
   double sleep_duration;
   int src;
   int dst;
-  int tag; //rktesser: Needed for matching waits to requests.
+  int tag; // Needed for matching waits to requests.
   int root;
   const char* datatype1;
   const char* datatype2;

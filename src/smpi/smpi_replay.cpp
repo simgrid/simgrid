@@ -1140,7 +1140,7 @@ void smpi_replay_process_migrate(smx_actor_t process, sg_host_t new_host,
     unsigned long size)
 {
  
-  /* By rktesser: I removed the data migration from this function, because it
+  /* The data migration can't be done in this function, because it
    * needs to be done in parallel. As this function needs to be called in a
    * critical region (e.g. protected by a mutex), these (synchronous) data
    * migrations would become sequential.*/
