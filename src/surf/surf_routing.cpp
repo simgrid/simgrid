@@ -59,9 +59,6 @@ simgrid::kernel::routing::NetCard *sg_netcard_by_name_or_null(const char *name)
   return netcard;
 }
 
-/* Global vars */
-simgrid::kernel::routing::RoutingPlatf* routing_platf = new simgrid::kernel::routing::RoutingPlatf();
-
 void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
 {
   tmgr_trace_t tmgr_trace;
@@ -101,10 +98,3 @@ void routing_register_callbacks()
   instr_routing_define_callbacks();
 }
 
-/** \brief Frees all memory allocated by the routing module */
-void routing_exit() {
-  delete routing_platf;
-}
-
-simgrid::kernel::routing::RoutingPlatf::RoutingPlatf() = default;
-simgrid::kernel::routing::RoutingPlatf::~RoutingPlatf() = default;

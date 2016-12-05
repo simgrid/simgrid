@@ -344,7 +344,6 @@ void surf_exit()
     delete model;
   delete all_existing_models;
   xbt_dynar_free(&model_list_invoke);
-  routing_exit();
 
   simgrid::surf::surfExitCallbacks();
 

@@ -100,15 +100,6 @@ public:
   Link* link_;
 };
 
-/** @ingroup SURF_routing_interface
- * @brief The class representing a whole routing platform
- */
-XBT_PUBLIC_CLASS RoutingPlatf {
-public:
-  explicit RoutingPlatf();
-  ~RoutingPlatf();
-};
-
 }}}
 
 #endif /* NETWORK_ROUTING_HPP_ */
