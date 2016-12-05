@@ -915,7 +915,6 @@ int persistent_send(MPI_Request *request)
   int retval = 0;
   MPI_Request req = *request;
 
-  //smpi_bench_end();
   if (request == nullptr || *request == MPI_REQUEST_NULL) {
     retval = MPI_ERR_REQUEST;
   } else {
