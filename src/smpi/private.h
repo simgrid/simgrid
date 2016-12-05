@@ -176,13 +176,6 @@ XBT_PRIVATE xbt_mutex_t smpi_process_mailboxes_mutex();
 XBT_PRIVATE xbt_mutex_t smpi_process_remote_mailboxes_mutex(int index);
 XBT_PRIVATE xbt_os_timer_t smpi_process_timer();
 XBT_PRIVATE void smpi_process_simulated_start();
-
-/* 
- * By rktesser: double smpi_process_simulated_elapsed() and
- * smpi_process_get_replaying() were  moved to
- * ../include/smpi/smpi_interface.h because I need them to be public.
- */
-
 XBT_PRIVATE void smpi_process_set_sampling(int s);
 XBT_PRIVATE int smpi_process_get_sampling();
 XBT_PRIVATE void smpi_process_set_replaying(bool s);
@@ -336,11 +329,6 @@ XBT_PRIVATE int smpi_mpi_waitall(int count, MPI_Request requests[], MPI_Status s
 XBT_PRIVATE int smpi_mpi_waitsome(int incount, MPI_Request requests[], int *indices, MPI_Status status[]);
 XBT_PRIVATE int smpi_mpi_testsome(int incount, MPI_Request requests[], int *indices, MPI_Status status[]);
 XBT_PRIVATE void smpi_mpi_bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
-
-/*
- * By rktesser: smpi_mpi_barrier was moved to ../include/smpi/smpi_interface.h
- * I need it to be public.
- */
 XBT_PRIVATE void smpi_mpi_gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                      void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
 XBT_PRIVATE void smpi_mpi_reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
@@ -424,11 +412,6 @@ XBT_PRIVATE void smpi_get_executable_global_size();
 XBT_PRIVATE void smpi_initialize_global_memory_segments();
 XBT_PRIVATE void smpi_destroy_global_memory_segments();
 XBT_PRIVATE void smpi_bench_destroy();
-
-/* 
- * By rktesser: smpi_bench_begin() and smpi_bench_end() where moved to
- * ../include/smpi/smpi_interface.h, as I need them to be public.
- */
 
 XBT_PRIVATE void* smpi_get_tmp_sendbuffer(int size);
 XBT_PRIVATE void* smpi_get_tmp_recvbuffer(int size);
@@ -724,11 +707,6 @@ XBT_PRIVATE void TRACE_smpi_finalize(int rank);
 XBT_PRIVATE void TRACE_smpi_process_change_host(int rank, sg_host_t host, sg_host_t new_host, int size);
 XBT_PRIVATE void TRACE_smpi_send_process_data_in(int rank);
 XBT_PRIVATE void TRACE_smpi_send_process_data_out(int rank);
-
-/*
- * By rktesser: char *smpi_container(int rank, char *container, int n) was
- * moved to ../include/smpi/smpi_interface.h
- */ 
 
 XBT_PRIVATE const char* encode_datatype(MPI_Datatype datatype, int* known);
 
