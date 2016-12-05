@@ -480,12 +480,12 @@ long long int get_migration_counter()
 {
 
   static long long int counter = -1;
-  static unsigned fase = 0;
-  if(fase == 0){
-    fase = 1;
+  static unsigned phase = 0;
+  if(phase == 0){ // Data migration phase (smpi_replay_send_process_data)
+    phase = 1;
     counter++;
-  }else{
-    fase = 0;
+  }else{ // Process remapping phase (smpi_replay_process_migrate)
+    phase = 0;
   }
   return counter;
 }
