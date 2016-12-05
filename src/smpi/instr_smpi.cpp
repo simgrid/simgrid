@@ -459,14 +459,10 @@ void TRACE_smpi_task_migrate(int rank, sg_host_t host)
   
   char str[INSTR_DEFAULT_STR_SIZE];
   snprintf(str, INSTR_DEFAULT_STR_SIZE, "%s-rank-%d", sg_host_get_name(host), rank);
-  //smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   
   if(PJ_container_get_or_null(str)){
-    //printf("The container \"%s\" already exists.\n", str);
     return;
-  }//else{
-    //printf("Creating container \"%s\".\n", str);
-  //}
+  }
 
   container_t father;
   if (TRACE_smpi_is_grouped()){
@@ -479,19 +475,6 @@ void TRACE_smpi_task_migrate(int rank, sg_host_t host)
 	      __FUNCTION__);
   PJ_container_new(str, INSTR_SMPI, father);
 }
-
-/*
-void TRACE_smpi_task_destroy (int rank)
-{
-  char str[INSTR_DEFAULT_STR_SIZE];
-  container_t container = PJ_container_get(smpi_container(rank, str, 
-					    INSTR_DEFAULT_STR_SIZE));
-  type_t type = PJ_type_get ("MPI_STATE", container->type);
-  new_pajePopState (SIMIX_get_clock(), container, type);
-//  PJ_container_remove_from_parent(container);
-//  PJ_container_free(container);
-}
-*/
 
 long long int get_migration_counter()
 {
@@ -518,13 +501,6 @@ void TRACE_smpi_send_process_data_in(int rank)
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get(str);
   
-  /* This is not actually needed. The problem was caused by the call to
-   * new_pajePushState in the function TRACE_smpi_computing_init.*/
-  /*if(TRACE_smpi_is_computing()){
-    //type_t type = PJ_type_get ("MPI_STATE", container->type);
-    //new_pajePopState (SIMIX_get_clock(), container, type);
-  }*/
- 
   /* Now we change the container's state to indicate that the process data is
    * being transferred. */ 
   type_t type = PJ_type_get ("MIGRATE_STATE", container->type);
