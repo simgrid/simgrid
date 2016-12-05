@@ -189,7 +189,6 @@ int get_peers_data(peer_t peer)
       MSG_comm_destroy(comm_received);
       tracker_task_data_free(data);
       MSG_task_destroy(task_received);
-      comm_received = NULL;
     }
   }
 
