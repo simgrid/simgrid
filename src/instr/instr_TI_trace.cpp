@@ -26,7 +26,12 @@ xbt_dict_t tracing_files = nullptr;
 
 extern s_instr_trace_writer_t active_writer;
 
-xbt_dynar_t state_tracker;
+/* The state_tracker dynar is used to keep track of the current state of the
+ * application and store information about it. This allows us to print things
+ * to the trace when the state is popped. The state is pushed to the dynar at
+ * the end of print_TIPushState and popped at the start of print_TIPopState.*/
+xbt_dynar_t state_tracker; 
+
 
 void TRACE_TI_init()
 {
