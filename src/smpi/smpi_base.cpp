@@ -1453,13 +1453,11 @@ void smpi_send_process_data(unsigned long size, sg_host_t dest)
       smpi_group_index(smpi_comm_group(MPI_COMM_WORLD), dest_rank), 0,
       MPI_COMM_WORLD, NON_PERSISTENT | ISEND | SEND);
   
-  //FIXME I'm not sure about this sleep time thing.
   sleep_time = smpi_ois(request->size);
   if(sleep_time > 0){
     simcall_process_sleep(sleep_time);
   }
 
-  //Not sure abou this block either.
   request->detached = 0;
   request->refcount++;
   request->real_size=request->size;
