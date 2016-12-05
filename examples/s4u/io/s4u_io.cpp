@@ -77,26 +77,6 @@ public:
 
     storage.setUserdata(xbt_strdup("Some user data"));
     XBT_INFO("    Set and get data: '%s'", (char*)storage.userdata());
-
-    /*
-      // Dump disks contents
-      XBT_INFO("*** Dump content of %s ***",Host::current()->name());
-      xbt_dict_t contents = NULL;
-      contents = MSG_host_get_storage_content(MSG_host_self()); // contents is a dict of dicts
-      xbt_dict_cursor_t curs, curs2 = NULL;
-      char* mountname;
-      xbt_dict_t content;
-      char* path;
-      sg_size_t *size;
-      xbt_dict_foreach(contents, curs, mountname, content){
-        XBT_INFO("Print the content of mount point: %s",mountname);
-        xbt_dict_foreach(content,curs2,path,size){
-           XBT_INFO("%s size: %llu bytes", path,*((sg_size_t*)size));
-        }
-      xbt_dict_free(&content);
-      }
-      xbt_dict_free(&contents);
-     */
   }
 };
 

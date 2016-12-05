@@ -11,9 +11,9 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_network);
 
-simgrid::kernel::activity::Comm::Comm(e_smx_comm_type_t _type) {
+simgrid::kernel::activity::Comm::Comm(e_smx_comm_type_t _type) : type(_type)
+{
   state = SIMIX_WAITING;
-  this->type = _type;
   src_data=nullptr;
   dst_data=nullptr;
 

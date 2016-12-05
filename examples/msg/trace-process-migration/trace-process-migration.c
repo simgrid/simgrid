@@ -29,8 +29,6 @@ static int emigrant(int argc, char *argv[])
 
 static int policeman(int argc, char *argv[])
 {
-  msg_task_t task = NULL;
-
   // I am the master of emigrant process,
   // I tell it where it must emigrate to.
   xbt_dynar_t destinations = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
@@ -47,13 +45,12 @@ static int policeman(int argc, char *argv[])
   char *destination;
   unsigned int i;
   xbt_dynar_foreach(destinations, i, destination){
-    task = MSG_task_create("task", 0, 0, NULL);
+    msg_task_t task = MSG_task_create("task", 0, 0, NULL);
     if (destination != NULL){
       MSG_task_set_data(task, xbt_strdup (destination));
     }
     MSG_task_set_category(task, "migration_order");
     MSG_task_send (task, "master_mailbox");
-    task = NULL;
   }
   xbt_dynar_free (&destinations);
   return 0;
