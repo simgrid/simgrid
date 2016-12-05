@@ -101,12 +101,12 @@ XBT_PUBLIC(void) smpi_coll_cleanup_mvapich2(void);
 XBT_PUBLIC (bool) smpi_process_get_replaying(void);
 
 /************************* Tracing********************************************/
-XBT_PUBLIC (char *) (smpi_container)(int rank, char *container, int n);
+XBT_PUBLIC (char *) smpi_container(int rank, char *container, int n);
 
 
 /************************ Process migration **********************************/
-XBT_PUBLIC(void) (smpi_replay_process_migrate)(smx_actor_t process, sg_host_t new_host, unsigned long size);
-XBT_PUBLIC(void) (smpi_replay_send_process_data)(double data_size, sg_host_t host);
+XBT_PUBLIC(void) smpi_replay_process_migrate(smx_actor_t process, sg_host_t new_host, unsigned long size);
+XBT_PUBLIC(void) smpi_replay_send_process_data(double data_size, sg_host_t host);
 /*****************************************************************************/
 
 /*************************** Actions for SMPI replay *************************/
@@ -116,40 +116,40 @@ XBT_PUBLIC(void) (smpi_replay_send_process_data)(double data_size, sg_host_t hos
  * to be customized or overriden. For this, the custom action should be able to
  * call the original one.  */
 
-XBT_PUBLIC(void)(action_init)(const char *const *action);
-XBT_PUBLIC(void)(action_finalize)(const char *const *action);
-XBT_PUBLIC(void)(action_comm_size)(const char *const *action);
-XBT_PUBLIC(void)(action_comm_split)(const char *const *action);
-XBT_PUBLIC(void)(action_comm_dup)(const char *const *action);
-XBT_PUBLIC(void)(action_send)(const char *const *action);
-XBT_PUBLIC(void)(action_Isend)(const char *const *action);
-XBT_PUBLIC(void)(action_Isend)(const char *const *action);
-XBT_PUBLIC(void)(action_recv)(const char *const *action);
-XBT_PUBLIC(void)(action_Irecv)(const char *const *action);
-XBT_PUBLIC(void)(action_Irecv)(const char *const *action);
-XBT_PUBLIC(void)(action_test)(const char *const *action);
-XBT_PUBLIC(void)(action_wait)(const char *const *action);
-XBT_PUBLIC(void)(action_waitall)(const char *const *action);
-XBT_PUBLIC(void)(action_waitall)(const char *const *action);
-XBT_PUBLIC(void)(action_barrier)(const char *const *action);
-XBT_PUBLIC(void)(action_bcast)(const char *const *action);
-XBT_PUBLIC(void)(action_reduce)(const char *const *action);
-XBT_PUBLIC(void)(action_allReduce)(const char *const *action);
-XBT_PUBLIC(void)(action_allReduce)(const char *const *action);
-XBT_PUBLIC(void)(action_allToAll)(const char *const *action);
-XBT_PUBLIC(void)(action_allToAll)(const char *const *action);
-XBT_PUBLIC(void)(action_allToAllv)(const char *const *action);
-XBT_PUBLIC(void)(action_allToAllv)(const char *const *action);
-XBT_PUBLIC(void)(action_gather)(const char *const *action);
-XBT_PUBLIC(void)(action_gatherv)(const char *const *action);
-XBT_PUBLIC(void)(action_gatherv)(const char *const *action);
-XBT_PUBLIC(void)(action_allgather)(const char *const *action);
-XBT_PUBLIC(void)(action_allgather)(const char *const *action);
-XBT_PUBLIC(void)(action_allgatherv)(const char *const *action);
-XBT_PUBLIC(void)(action_allgatherv)(const char *const *action);
-XBT_PUBLIC(void)(action_reducescatter)(const char *const *action);
-XBT_PUBLIC(void)(action_reducescatter)(const char *const *action);
-XBT_PUBLIC(void)(action_compute)(const char *const *action);
+XBT_PUBLIC(void) action_init(const char *const *action);
+XBT_PUBLIC(void) action_finalize(const char *const *action);
+XBT_PUBLIC(void) action_comm_size(const char *const *action);
+XBT_PUBLIC(void) action_comm_split(const char *const *action);
+XBT_PUBLIC(void) action_comm_dup(const char *const *action);
+XBT_PUBLIC(void) action_send(const char *const *action);
+XBT_PUBLIC(void) action_Isend(const char *const *action);
+XBT_PUBLIC(void) action_Isend(const char *const *action);
+XBT_PUBLIC(void) action_recv(const char *const *action);
+XBT_PUBLIC(void) action_Irecv(const char *const *action);
+XBT_PUBLIC(void) action_Irecv(const char *const *action);
+XBT_PUBLIC(void) action_test(const char *const *action);
+XBT_PUBLIC(void) action_wait(const char *const *action);
+XBT_PUBLIC(void) action_waitall(const char *const *action);
+XBT_PUBLIC(void) action_waitall(const char *const *action);
+XBT_PUBLIC(void) action_barrier(const char *const *action);
+XBT_PUBLIC(void) action_bcast(const char *const *action);
+XBT_PUBLIC(void) action_reduce(const char *const *action);
+XBT_PUBLIC(void) action_allReduce(const char *const *action);
+XBT_PUBLIC(void) action_allReduce(const char *const *action);
+XBT_PUBLIC(void) action_allToAll(const char *const *action);
+XBT_PUBLIC(void) action_allToAll(const char *const *action);
+XBT_PUBLIC(void) action_allToAllv(const char *const *action);
+XBT_PUBLIC(void) action_allToAllv(const char *const *action);
+XBT_PUBLIC(void) action_gather(const char *const *action);
+XBT_PUBLIC(void) action_gatherv(const char *const *action);
+XBT_PUBLIC(void) action_gatherv(const char *const *action);
+XBT_PUBLIC(void) action_allgather(const char *const *action);
+XBT_PUBLIC(void) action_allgather(const char *const *action);
+XBT_PUBLIC(void) action_allgatherv(const char *const *action);
+XBT_PUBLIC(void) action_allgatherv(const char *const *action);
+XBT_PUBLIC(void) action_reducescatter(const char *const *action);
+XBT_PUBLIC(void) action_reducescatter(const char *const *action);
+XBT_PUBLIC(void) action_compute(const char *const *action);
 
 /* 
  * By rktesser: Armaud wants the LB simulation code to stay outside SimGrid.
@@ -158,15 +158,15 @@ XBT_PUBLIC(void)(action_compute)(const char *const *action);
  * PMPI_Migrate(). For this, we need a few internal smpi calls to be public. 
  */
 
-XBT_PUBLIC(void)(smpi_bench_begin)();
-XBT_PUBLIC(void)(smpi_bench_end)();
-XBT_PUBLIC(void)(smpi_mpi_barrier)(MPI_Comm comm);
-XBT_PUBLIC(double)(smpi_process_simulated_elapsed)();
+XBT_PUBLIC(void) smpi_bench_begin();
+XBT_PUBLIC(void) smpi_bench_end();
+XBT_PUBLIC(void) smpi_mpi_barrier(MPI_Comm comm);
+XBT_PUBLIC(double) smpi_process_simulated_elapsed();
 
 /*New function as I can't calll smpi_index_of_smpi_process from outside
  * SimGrid.*/
 
-XBT_PUBLIC(int)(smpi_rank_of_smx_process)(smx_actor_t process);
+XBT_PUBLIC(int) smpi_rank_of_smx_process(smx_actor_t process);
 
 SG_END_DECL()
 
