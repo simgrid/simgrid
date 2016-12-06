@@ -98,10 +98,6 @@ xbt_dynar_t sg_hosts_as_dynar()
   return res;
 }
 
-xbt_swag_t sg_host_get_process_list(sg_host_t host){
-  return host->processes();
-}
-
 xbt_dynar_t sg_host_get_processes_as_dynar(sg_host_t host)
 {
   smx_actor_t process;

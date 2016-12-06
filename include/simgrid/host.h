@@ -27,7 +27,6 @@ XBT_PUBLIC(void*) sg_host_extension_get(sg_host_t host, size_t rank);
 XBT_PUBLIC(sg_host_t) sg_host_by_name(const char *name);
 XBT_PUBLIC(const char*) sg_host_get_name(sg_host_t host);
 XBT_PUBLIC(xbt_dynar_t) sg_hosts_as_dynar();
-XBT_PUBLIC(xbt_swag_t) sg_host_get_process_list(sg_host_t host);
 XBT_PUBLIC(xbt_dynar_t) sg_host_get_processes_as_dynar(sg_host_t host);
 
 /* sg_host_get_process_count aims to avoid calling
