@@ -11,9 +11,6 @@
 
 int main(int argc, char **argv)
 {
-  /* SD initialization */
-  char *key;
-
   SD_init(&argc, argv);
   SD_create_environment(argv[1]);
 
@@ -31,6 +28,7 @@ int main(int argc, char **argv)
   xbt_dynar_free(&hosts);
 
   xbt_lib_cursor_t cursor = nullptr;
+  char* key;
   void *ignored;
   xbt_lib_foreach(as_router_lib, cursor, key, ignored) {
     simgrid::kernel::routing::NetCard * nc = sg_netcard_by_name_or_null(key);
