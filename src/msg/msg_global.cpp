@@ -42,7 +42,7 @@ void MSG_init_nocheck(int *argc, char **argv) {
 
   TRACE_global_init(argc, argv);
 
-  xbt_getpid = MSG_process_self_PID;
+  xbt_getpid = &MSG_process_self_PID;
   if (!msg_global) {
 
     msg_global = xbt_new0(s_MSG_Global_t, 1);

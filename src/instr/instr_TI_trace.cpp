@@ -1,5 +1,4 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2015. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -28,9 +27,9 @@ extern s_instr_trace_writer_t active_writer;
 
 void TRACE_TI_init()
 {
-  active_writer.print_PushState = print_TIPushState;
-  active_writer.print_CreateContainer=print_TICreateContainer;
-  active_writer.print_DestroyContainer=print_TIDestroyContainer;
+  active_writer.print_PushState        = &print_TIPushState;
+  active_writer.print_CreateContainer  = &print_TICreateContainer;
+  active_writer.print_DestroyContainer = &print_TIDestroyContainer;
 }
 
 void TRACE_TI_start()

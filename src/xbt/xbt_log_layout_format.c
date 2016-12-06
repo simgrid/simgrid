@@ -215,8 +215,8 @@ static void xbt_log_layout_format_free(xbt_log_layout_t lay)
 xbt_log_layout_t xbt_log_layout_format_new(char *arg)
 {
   xbt_log_layout_t res = xbt_new0(s_xbt_log_layout_t, 1);
-  res->do_layout = xbt_log_layout_format_doit;
-  res->free_ = xbt_log_layout_format_free;
+  res->do_layout       = &xbt_log_layout_format_doit;
+  res->free_           = &xbt_log_layout_format_free;
   res->data = xbt_strdup((char *) arg);
 
   if (format_begin_of_time < 0)

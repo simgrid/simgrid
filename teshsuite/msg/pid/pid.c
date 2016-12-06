@@ -31,10 +31,9 @@ static int sendpid(int argc, char *argv[])
 
 static int killall(int argc, char *argv[]){
   msg_task_t task = NULL;
-  XBT_ATTRIB_UNUSED int res;
 
   for (int i=0; i<3;i++) {
-    res = MSG_task_receive(&(task), mailbox);
+    MSG_task_receive(&(task), mailbox);
     int pid = *(int*)MSG_task_get_data(task);
     MSG_task_destroy(task);
     XBT_INFO("Killing process \"%d\".", pid);

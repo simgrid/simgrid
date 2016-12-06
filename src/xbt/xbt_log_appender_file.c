@@ -30,10 +30,10 @@ xbt_log_appender_t xbt_log_appender_file_new(char *arg) {
 
   xbt_log_appender_t res = xbt_new0(s_xbt_log_appender_t, 1);
   if (_XBT_LOGV(smpi).initialized) // HACK to detect if we run in SMPI mode. Relies on MAIN__ source disposition
-    res->do_append = smpi_append_file;
+    res->do_append = &smpi_append_file;
   else
-    res->do_append = append_file;
-  res->free_ = free_;
+    res->do_append = &append_file;
+  res->free_       = &free_;
   if (arg)
     res->data = (void *) fopen(arg, "w");
   else
@@ -111,10 +111,10 @@ xbt_log_appender_t xbt_log_appender2_file_new(char *arg,int roll) {
 
   xbt_log_appender_t res = xbt_new0(s_xbt_log_appender_t, 1);
   if (_XBT_LOGV(smpi).initialized) // HACK to detect if we run in SMPI mode. Relies on MAIN__ source disposition
-    res->do_append = smpi_append2_file;
+    res->do_append = &smpi_append2_file;
   else
-    res->do_append = append2_file;
-  res->free_ = free_append2_;
+    res->do_append            = &append2_file;
+  res->free_                  = &free_append2_;
   xbt_log_append2_file_t data = xbt_new0(struct xbt_log_append2_file_s, 1);
   xbt_assert(arg);
   char* buf=xbt_strdup(arg);

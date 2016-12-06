@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
 
   printf("Parmap benchmark with %d workers (modes = %#x)...\n\n", nthreads, modes);
 
-  fun_to_apply = fun_small_comp;
+  fun_to_apply = &fun_small_comp;
 
   printf("Benchmark for parmap create+apply+destroy (small comp):\n");
   bench_all_modes(bench_parmap_full, nthreads, modes);
@@ -193,7 +193,7 @@ int main(int argc, char *argv[])
   bench_all_modes(bench_parmap_apply, nthreads, modes);
   printf("\n");
 
-  fun_to_apply = fun_big_comp;
+  fun_to_apply = &fun_big_comp;
 
   printf("Benchmark for parmap create+apply+destroy (big comp):\n");
   bench_all_modes(bench_parmap_full, nthreads, modes);
