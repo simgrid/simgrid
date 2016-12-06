@@ -102,6 +102,20 @@ xbt_swag_t sg_host_get_process_list(sg_host_t host){
   return host->processes();
 }
 
+xbt_dynar_t sg_host_get_processes_as_dynar(sg_host_t host)
+{
+  smx_actor_t process;
+
+  xbt_dynar_t process_dynar = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
+  xbt_swag_t  process_swag = host->processes();
+  
+  xbt_swag_foreach(process, process_swag){
+    xbt_dynar_push(process_dynar, &process);
+  }
+  
+  return process_dynar;
+}
+
 // ========= Layering madness ==============*
 
 #include "src/surf/cpu_interface.hpp"
