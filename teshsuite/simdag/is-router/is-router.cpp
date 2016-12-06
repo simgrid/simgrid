@@ -3,11 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include "simgrid/simdag.h"
-#include "src/surf/surf_routing.hpp"
 #include "simgrid/s4u/host.hpp"
-
+#include "simgrid/simdag.h"
+#include "src/kernel/routing/NetCard.hpp"
+#include "src/surf/surf_routing.hpp"
+#include <stdio.h>
 
 int main(int argc, char **argv)
 {

@@ -5,9 +5,10 @@
 
 #include <limits>
 
-#include "xbt/log.h"
 #include "src/kernel/routing/AsFloyd.hpp"
+#include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/network_interface.hpp"
+#include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_floyd, surf, "Routing part of surf");
 

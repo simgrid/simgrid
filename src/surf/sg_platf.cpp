@@ -25,16 +25,17 @@
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 
-#include "src/kernel/routing/AsImpl.hpp"
 #include "src/kernel/routing/AsCluster.hpp"
-#include "src/kernel/routing/AsClusterTorus.hpp"
-#include "src/kernel/routing/AsClusterFatTree.hpp"
 #include "src/kernel/routing/AsClusterDragonfly.hpp"
+#include "src/kernel/routing/AsClusterFatTree.hpp"
+#include "src/kernel/routing/AsClusterTorus.hpp"
 #include "src/kernel/routing/AsDijkstra.hpp"
 #include "src/kernel/routing/AsFloyd.hpp"
 #include "src/kernel/routing/AsFull.hpp"
+#include "src/kernel/routing/AsImpl.hpp"
 #include "src/kernel/routing/AsNone.hpp"
 #include "src/kernel/routing/AsVivaldi.hpp"
+#include "src/kernel/routing/NetCard.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 

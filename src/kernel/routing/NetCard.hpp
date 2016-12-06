@@ -1,0 +1,61 @@
+/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#ifndef KERNEL_ROUTING_NETCARD_HPP_
+#define KERNEL_ROUTING_NETCARD_HPP_
+
+#include <xbt/base.h>
+#include <xbt/signal.hpp>
+
+#include "src/kernel/routing/AsImpl.hpp"
+/*
+#include <float.h>
+#include <vector>
+*/
+namespace simgrid {
+namespace kernel {
+namespace routing {
+XBT_PUBLIC_DATA(simgrid::xbt::signal<void(NetCard*)>) netcardCreatedCallbacks;
+
+/** @ingroup SURF_routing_interface
+ * @brief Network cards are the vertices in the graph representing the network, used to compute paths between nodes.
+ *
+ * @details This represents a position in the network. One can route information between two netcards
+ */
+class NetCard {
+public:
+  enum class Type { Host, Router, As };
+
+  NetCard(std::string name, NetCard::Type componentType, AsImpl* containingAS)
+      : name_(name), componentType_(componentType), containingAS_(containingAS)
+  {
+    if (containingAS != nullptr)
+      id_ = containingAS->addComponent(this);
+    simgrid::kernel::routing::netcardCreatedCallbacks(this);
+  }
+  ~NetCard() = default;
+
+  // Our rank in the vertices_ array of our containing AS.
+  unsigned int id() { return id_; }
+  std::string name() { return name_; }
+  const char* cname() { return name_.c_str(); }
+  // This is the AS in which I am
+  AsImpl* containingAS() { return containingAS_; }
+
+  bool isAS() { return componentType_ == Type::As; }
+  bool isHost() { return componentType_ == Type::Host; }
+  bool isRouter() { return componentType_ == Type::Router; }
+
+private:
+  unsigned int id_;
+  std::string name_;
+  NetCard::Type componentType_;
+  AsImpl* containingAS_;
+};
+}
+}
+}
+
+#endif /* KERNEL_ROUTING_NETCARD_HPP_ */

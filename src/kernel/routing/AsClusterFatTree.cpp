@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "src/kernel/routing/AsClusterFatTree.hpp"
+#include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/network_interface.hpp"
 
 #include "xbt/lib.h"

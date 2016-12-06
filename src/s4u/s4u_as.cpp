@@ -9,8 +9,9 @@
 #include <simgrid/s4u/host.hpp>
 #include <simgrid/s4u/As.hpp>
 
-#include "src/surf/surf_routing.hpp"
+#include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/network_interface.hpp" // Link FIXME: move to proper header
+#include "src/surf/surf_routing.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_as,"S4U autonomous systems");
 

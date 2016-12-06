@@ -12,10 +12,10 @@
 #include "simgrid/sg_config.h"
 #include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/internal_config.h"
+#include "src/kernel/routing/NetCard.hpp"
 #include "src/simix/smx_host_private.h"
 #include "src/surf/HostImpl.hpp"
 #include "surf_private.h"
-#include "surf_routing.hpp"
 #include <vector>
 
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");

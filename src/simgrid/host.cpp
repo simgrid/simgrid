@@ -11,13 +11,13 @@
 #include <xbt/Extendable.hpp>
 #include <simgrid/s4u/host.hpp>
 
+#include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/HostImpl.hpp"
-#include "surf/surf.h" // routing_get_network_element_type FIXME:killme
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sg_host, sd, "Logging specific to sg_hosts");
 
 extern std::unordered_map<std::string, simgrid::s4u::Host*>
-    host_list; // FIXME: don't dupplicate the content of s4u::Host this way
+    host_list; // FIXME: don't duplicate the content of s4u::Host this way
 
 void sg_host_exit()
 {

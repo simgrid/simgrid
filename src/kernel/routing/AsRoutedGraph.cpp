@@ -10,6 +10,7 @@
 #include "xbt/graph.h"
 
 #include "src/kernel/routing/AsRoutedGraph.hpp"
+#include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/network_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic implementation of the surf routing");

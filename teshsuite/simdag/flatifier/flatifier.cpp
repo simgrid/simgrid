@@ -18,6 +18,7 @@
 
 #include <simgrid/simdag.h>
 
+#include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/network_interface.hpp"
 
 

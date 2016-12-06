@@ -10,15 +10,16 @@
 
 #include <unordered_map>
 
+#include "simgrid/s4u/host.hpp"
+#include "simgrid/s4u/storage.hpp"
 #include "simgrid/simix.hpp"
-#include "src/surf/HostImpl.hpp"
-#include "xbt/log.h"
+#include "src/kernel/routing/NetCard.hpp"
 #include "src/msg/msg_private.h"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_private.h"
+#include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
-#include "simgrid/s4u/host.hpp"
-#include "simgrid/s4u/storage.hpp"
+#include "xbt/log.h"
 
 XBT_LOG_EXTERNAL_CATEGORY(surf_route);
 
