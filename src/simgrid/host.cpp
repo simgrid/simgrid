@@ -116,6 +116,10 @@ xbt_dynar_t sg_host_get_processes_as_dynar(sg_host_t host)
   return process_dynar;
 }
 
+int sg_host_get_process_count(sg_host_t host){
+    return xbt_swag_size(host->processes());
+}
+
 // ========= Layering madness ==============*
 
 #include "src/surf/cpu_interface.hpp"
