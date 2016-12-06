@@ -1442,12 +1442,14 @@ void smpi_send_process_data(unsigned long size, sg_host_t dest)
   MPI_Request request = nullptr; /* MC needs the comm to be set to NULL during the call */
   int dest_rank;
   double sleep_time = 0;
-  xbt_swag_t proc_list = sg_host_get_process_list(dest);
-  smx_actor_t dest_proc = (smx_actor_t) xbt_swag_extract(proc_list);
-  xbt_swag_insert(dest_proc, proc_list);
+  smx_actor_t dest_proc;
+  xbt_dynar_t proc_list = sg_host_get_processes_as_dynar(dest);
+  
+  xbt_dynar_pop(proc_list, dest_proc);
   dest_rank = smpi_process_index_of_smx_process(dest_proc);
   mailbox = smpi_process_remote_mailbox_migration(dest_rank);
-  
+  xbt_dynar_push(proc_list, dest_proc);
+
   //This call is based on smpi_mpi_isend.
   request =  build_request(nullptr, size, MPI_BYTE, smpi_process_index(),
       smpi_group_index(smpi_comm_group(MPI_COMM_WORLD), dest_rank), 0,
@@ -1474,5 +1476,6 @@ void smpi_send_process_data(unsigned long size, sg_host_t dest)
 
   TRACE_smpi_send_process_data_out(smpi_process_index());
 
+  xbt_dynar_free(&proc_list);
 }
 
