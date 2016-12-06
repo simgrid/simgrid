@@ -41,38 +41,30 @@ class RoutingPlatf;
  */
 class NetCard {
 public:
-  virtual ~NetCard()            = default;
-  virtual unsigned int id()=0; // Our rank in the vertices_ array of our containing AS.
-  virtual std::string name()    = 0;
-  virtual const char* cname()    = 0;
-  virtual AsImpl* containingAS() = 0; // This is the AS in which I am
-  virtual bool isAS()=0;
-  virtual bool isHost()=0;
-  virtual bool isRouter()=0;
   enum class Type {
     Host, Router, As
   };
-};
 
-struct XBT_PRIVATE NetCardImpl : public NetCard {
-public:
-  NetCardImpl(std::string name, NetCard::Type componentType, AsImpl* containingAS)
+  NetCard(std::string name, NetCard::Type componentType, AsImpl* containingAS)
       : name_(name), componentType_(componentType), containingAS_(containingAS)
   {
     if (containingAS != nullptr)
       id_ = containingAS->addComponent(this);
     simgrid::kernel::routing::netcardCreatedCallbacks(this);
   }
-  ~NetCardImpl() = default;
+  ~NetCard() = default;
 
-  unsigned int id()  override {return id_;}
-  std::string name() override { return name_; }
-  const char* cname() override { return name_.c_str(); }
-  AsImpl *containingAS() override {return containingAS_;}
+  // Our rank in the vertices_ array of our containing AS.
+  unsigned int id()      {return id_;}
+  std::string name()     { return name_; }
+  const char* cname()    { return name_.c_str(); }
+  // This is the AS in which I am
+  AsImpl *containingAS() {return containingAS_;}
 
-  bool isAS()        override {return componentType_ == Type::As;}
-  bool isHost()      override {return componentType_ == Type::Host;}
-  bool isRouter()    override {return componentType_ == Type::Router;}
+  bool isAS()            {return componentType_ == Type::As;}
+  bool isHost()          {return componentType_ == Type::Host;}
+  bool isRouter()        {return componentType_ == Type::Router;}
+
 
 private:
   unsigned int id_;

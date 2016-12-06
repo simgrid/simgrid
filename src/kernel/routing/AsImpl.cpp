@@ -21,7 +21,7 @@ namespace simgrid {
     xbt_assert(nullptr == xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL),
                "Refusing to create a second AS called '%s'.", name);
 
-    netcard_ = new NetCardImpl(name, NetCard::Type::As, static_cast<AsImpl*>(father));
+    netcard_ = new NetCard(name, NetCard::Type::As, static_cast<AsImpl*>(father));
     xbt_lib_set(as_router_lib, name, ROUTING_ASR_LEVEL, static_cast<void*>(netcard_));
     XBT_DEBUG("AS '%s' created with the id '%d'", name, netcard_->id());
   }
@@ -33,7 +33,7 @@ namespace simgrid {
     if (hierarchy_ == RoutingMode::unset)
       hierarchy_ = RoutingMode::base;
 
-    res->pimpl_netcard = new NetCardImpl(name, NetCard::Type::Host, this);
+    res->pimpl_netcard = new NetCard(name, NetCard::Type::Host, this);
 
     surf_cpu_model_pm->createCpu(res, speedPerPstate, coreAmount);
 

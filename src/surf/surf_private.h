@@ -49,7 +49,6 @@ XBT_PRIVATE int __surf_is_absolute_file_path(const char *file_path);
 extern XBT_PRIVATE simgrid::trace_mgr::future_evt_set *future_evt_set;
 
 
-XBT_PUBLIC(void) routing_exit();
 XBT_PUBLIC(void) storage_register_callbacks();
 
 XBT_PUBLIC(void) routing_register_callbacks(void);
