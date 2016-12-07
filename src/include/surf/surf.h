@@ -51,9 +51,6 @@ class Action;
 class ActionLmm;
 class StorageActionLmm;
 }
-namespace vm {
-class VMModel; // FIXME: KILLME
-}
 namespace kernel {	
 namespace routing {
 class RoutingPlatf;
@@ -64,7 +61,6 @@ class RoutingPlatf;
 typedef simgrid::surf::Model surf_Model;
 typedef simgrid::surf::CpuModel surf_CpuModel;
 typedef simgrid::surf::HostModel surf_HostModel;
-typedef simgrid::vm::VMModel surf_VMModel;
 typedef simgrid::surf::NetworkModel surf_NetworkModel;
 typedef simgrid::surf::StorageModel surf_StorageModel;
 typedef simgrid::surf::Resource surf_Resource;
@@ -82,7 +78,6 @@ typedef simgrid::kernel::routing::RoutingPlatf surf_RoutingPlatf;
 typedef struct surf_Model surf_Model;
 typedef struct surf_CpuModel surf_CpuModel;
 typedef struct surf_HostModel surf_HostModel;
-typedef struct surf_VMModel surf_VMModel;
 typedef struct surf_NetworkModel surf_NetworkModel;
 typedef struct surf_StorageModel surf_StorageModel;
 typedef struct surf_Resource surf_Resource;
@@ -106,7 +101,6 @@ typedef struct surf_RoutingPlatf surf_RoutingPlatf;
 typedef surf_Model *surf_model_t;
 typedef surf_CpuModel *surf_cpu_model_t;
 typedef surf_HostModel *surf_host_model_t;
-typedef surf_VMModel *surf_vm_model_t;
 typedef surf_NetworkModel *surf_network_model_t;
 typedef surf_StorageModel *surf_storage_model_t;
 
@@ -546,14 +540,6 @@ XBT_PUBLIC_DATA(surf_storage_model_t) surf_storage_model;
  *  because depending on the platform model, the network model and the CPU model may not exist.
  */
 XBT_PUBLIC_DATA(surf_host_model_t) surf_host_model;
-
-/** \ingroup SURF_models
- *  \brief The vm model
- *
- *  Note that when you create an API on top of SURF,the vm model should be the only one you use
- *  because depending on the platform model, the network model and the CPU model may not exist.
- */
-XBT_PUBLIC_DATA(surf_vm_model_t) surf_vm_model;
 
 /** \ingroup SURF_models
  *  \brief Initializes the platform with a compound host model
