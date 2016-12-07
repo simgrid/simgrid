@@ -119,8 +119,8 @@ namespace simgrid {
     AsImpl* src_as = src->containingAS();
     AsImpl* dst_as = dst->containingAS();
 
-    xbt_assert(src_as, "Host %s must be in an AS", src->name().c_str());
-    xbt_assert(dst_as, "Host %s must be in an AS", dst->name().c_str());
+    xbt_assert(src_as, "Host %s must be in an AS", src->cname());
+    xbt_assert(dst_as, "Host %s must be in an AS", dst->cname());
 
     /* (2) find the path to the root routing component */
     std::vector<AsImpl*> path_src;
@@ -298,7 +298,7 @@ namespace simgrid {
 
       common_ancestor->getLocalRoute(src_ancestor->netcard_, dst_ancestor->netcard_, &route, latency);
       xbt_assert((route.gw_src != nullptr) && (route.gw_dst != nullptr), "bad gateways for route from \"%s\" to \"%s\"",
-                 src->name().c_str(), dst->name().c_str());
+                 src->cname(), dst->cname());
 
       /* If source gateway is not our source, we have to recursively find our way up to this point */
       if (src != route.gw_src)
