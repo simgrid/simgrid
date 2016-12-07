@@ -471,8 +471,7 @@ void TRACE_smpi_task_migrate(int rank, sg_host_t host)
     father = PJ_container_get_root();
   }
   xbt_assert(father!=NULL,
-	      "Could not find a parent for mpi rank %s at function %s", str,
-	      __FUNCTION__);
+	      "Could not find a parent for mpi rank %s", str);
   PJ_container_new(str, INSTR_SMPI, father);
 }
 
