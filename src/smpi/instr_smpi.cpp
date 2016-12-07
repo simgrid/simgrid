@@ -476,19 +476,6 @@ void TRACE_smpi_task_migrate(int rank, sg_host_t host)
   PJ_container_new(str, INSTR_SMPI, father);
 }
 
-long long int get_migration_counter()
-{
-
-  static long long int counter = -1;
-  static unsigned phase = 0;
-  if(phase == 0){ // Data migration phase (smpi_replay_send_process_data)
-    phase = 1;
-    counter++;
-  }else{ // Process remapping phase (smpi_replay_process_migrate)
-    phase = 0;
-  }
-  return counter;
-}
 
 void TRACE_smpi_send_process_data_in(int rank)
 {
@@ -516,22 +503,12 @@ void TRACE_smpi_send_process_data_out(int rank)
   }
 
   char str[INSTR_DEFAULT_STR_SIZE];
-  char key[INSTR_DEFAULT_STR_SIZE];
-  long long int counter = get_migration_counter();
  
   /* Clean the process state. */ 
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get(str);
   type_t type = PJ_type_get ("MIGRATE_STATE", container->type);
   new_pajePopState(SIMIX_get_clock(), container, type);
-  
-  /* This should start a link from the original process's container to the new
-   * one. */
-  snprintf(key, INSTR_DEFAULT_STR_SIZE, "%lld", counter);
-  type = PJ_type_get ("MIGRATE_LINK", PJ_type_get_root());
-  new_pajeStartLink(SIMIX_get_clock(), PJ_container_get_root(),
-  		      type, container, "MIG", key);
-
 }
 
 void TRACE_smpi_process_change_host(int rank, sg_host_t host,
@@ -539,24 +516,7 @@ void TRACE_smpi_process_change_host(int rank, sg_host_t host,
 {
   if (!TRACE_smpi_is_enabled()) return;
   
-  long long int counter = get_migration_counter();
-
-  char key[INSTR_DEFAULT_STR_SIZE];
-  char str[INSTR_DEFAULT_STR_SIZE];
-
   //Create new container on the new_host location, if it doesn't already exist.
   TRACE_smpi_task_migrate(rank, new_host);
-
-  //This should end the link from the original to the new container.
-  snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter);
-  //We can't call smpi_cointainer() because we need the link to end on the new
-  //host.
-  snprintf(str, INSTR_DEFAULT_STR_SIZE, "%s-rank-%d",
-	    sg_host_get_name(new_host), rank);
-  container_t container = PJ_container_get(str);
-  type_t type = PJ_type_get("MIGRATE_LINK", PJ_type_get_root());
-  new_pajeEndLink(SIMIX_get_clock(), PJ_container_get_root(),
-		    type, container, "MIG", key);
-
 }
 
