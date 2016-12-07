@@ -278,7 +278,5 @@ void print_TIPopState(paje_event_t event)
   if (extra->sendcounts != nullptr)
     xbt_free(extra->sendcounts);
   xbt_free(extra);
-
-  return;
 }
 
