@@ -16,7 +16,6 @@
 namespace simgrid {
 namespace kernel {
 namespace routing {
-  class RoutingPlatf; // FIXME: KILLME
   class Onelink;
 
   /** @brief Autonomous Systems
@@ -48,8 +47,6 @@ namespace routing {
    */
   XBT_PUBLIC_CLASS AsImpl : public s4u::As
   {
-    friend simgrid::kernel::routing::RoutingPlatf;
-
   protected:
     explicit AsImpl(As * father, const char* name);
 

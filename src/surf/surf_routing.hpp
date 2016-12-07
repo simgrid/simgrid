@@ -31,7 +31,6 @@ namespace routing {
  ***********/
 
 class XBT_PRIVATE Onelink;
-class RoutingPlatf;
 
 class AsRoute {
 public:

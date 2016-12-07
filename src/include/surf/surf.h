@@ -51,11 +51,6 @@ class Action;
 class ActionLmm;
 class StorageActionLmm;
 }
-namespace kernel {	
-namespace routing {
-class RoutingPlatf;
-}
-}
 }
 
 typedef simgrid::surf::Model surf_Model;
@@ -71,7 +66,6 @@ typedef simgrid::surf::NetworkCm02Link surf_NetworkCm02Link;
 typedef simgrid::surf::Action surf_Action;
 typedef simgrid::surf::ActionLmm surf_ActionLmm;
 typedef simgrid::surf::StorageActionLmm surf_StorageActionLmm;
-typedef simgrid::kernel::routing::RoutingPlatf surf_RoutingPlatf;
 
 #else
 
@@ -88,7 +82,6 @@ typedef struct surf_NetworkCm02Link surf_NetworkCm02Link;
 typedef struct surf_Action surf_Action;
 typedef struct surf_ActionLmm surf_ActionLmm;
 typedef struct surf_StorageActionLmm surf_StorageActionLmm;
-typedef struct surf_RoutingPlatf surf_RoutingPlatf;
 
 #endif
 
@@ -118,7 +111,6 @@ typedef surf_Cpu *surf_cpu_t;
  *  \see e_surf_action_state_t
  */
 typedef surf_Action *surf_action_t;
-typedef surf_RoutingPlatf *routing_platf_t;
 
 typedef struct surf_file *surf_file_t;
 
@@ -138,8 +130,6 @@ XBT_PUBLIC(void) model_help(const char *category, s_surf_model_description_t * t
 /***************************/
 /* Generic model object */
 /***************************/
-
-XBT_PUBLIC_DATA(routing_platf_t) routing_platf;
 
 static inline void *surf_storage_resource_priv(const void *storage){
   return (void*)xbt_lib_get_level((xbt_dictelm_t)storage, SURF_STORAGE_LEVEL);
