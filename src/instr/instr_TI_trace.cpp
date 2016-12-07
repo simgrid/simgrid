@@ -258,21 +258,20 @@ void print_TIPopState(paje_event_t event)
   
   // This function is currently only used by custorm states that need to write
   // to the traces when the process leaves this state.
-  if(extra->type != TRACING_CUSTOM){
-    return;
+  if(extra->type == TRACING_CUSTOM){
+
+    if (strstr(((pushState_t) event->data)->container->name, "rank-") == NULL)
+      process_id = xbt_strdup(((pushState_t) event->data)->container->name);
+    else
+      process_id = xbt_strdup(((pushState_t) event->data)->container->name + 5);
+
+      trace_file = (FILE *)xbt_dict_get(tracing_files,
+	  ((pushState_t) event->data)->container->name);
+  
+    if(extra->print_pop)
+      extra->print_pop(trace_file, process_id, extra);
   }
 
-  if (strstr(((pushState_t) event->data)->container->name, "rank-") == NULL)
-    process_id = xbt_strdup(((pushState_t) event->data)->container->name);
-  else
-    process_id = xbt_strdup(((pushState_t) event->data)->container->name + 5);
-
-  trace_file = (FILE *)xbt_dict_get(tracing_files,
-      ((pushState_t) event->data)->container->name);
-  
-  if(extra->print_pop)
-    extra->print_pop(trace_file, process_id, extra);
-  
   if (extra->recvcounts != nullptr)
     xbt_free(extra->recvcounts);
   if (extra->sendcounts != nullptr)
