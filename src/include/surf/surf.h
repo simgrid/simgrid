@@ -595,11 +595,6 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_host_model_description[];
  */
 XBT_PUBLIC(void) surf_vm_model_init_HL13();
 
-/** \ingroup SURF_models
- *  \brief The list of all available vm model models
- */
-XBT_PUBLIC_DATA(s_surf_model_description_t) surf_vm_model_description[];
-
 /** \ingroup SURF_simulation
  *  \brief List of hosts for which one want to be notified if they ever restart.
  */

@@ -664,7 +664,6 @@ void sg_platf_end() {
 static void surf_config_models_setup()
 {
   const char* host_model_name    = xbt_cfg_get_string("host/model");
-  const char* vm_model_name      = xbt_cfg_get_string("vm/model");
   const char* network_model_name = xbt_cfg_get_string("network/model");
   const char* cpu_model_name     = xbt_cfg_get_string("cpu/model");
   const char* storage_model_name = xbt_cfg_get_string("storage/model");
@@ -693,8 +692,7 @@ static void surf_config_models_setup()
   surf_host_model_description[host_id].model_init_preparse();
 
   XBT_DEBUG("Call vm_model_init");
-  int vm_id = find_model_description(surf_vm_model_description, vm_model_name);
-  surf_vm_model_description[vm_id].model_init_preparse();
+  surf_vm_model_init_HL13();
 
   XBT_DEBUG("Call storage_model_init");
   int storage_id = find_model_description(surf_storage_model_description, storage_model_name);

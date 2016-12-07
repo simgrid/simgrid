@@ -99,11 +99,6 @@ s_surf_model_description_t surf_host_model_description[] = {
   {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
-s_surf_model_description_t surf_vm_model_description[] = {
-  {"default", "Default vm model.", &surf_vm_model_init_HL13},
-  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
-};
-
 s_surf_model_description_t surf_optimization_mode_description[] = {
   {"Lazy", "Lazy action management (partial invalidation in lmm + heap in action remaining).", nullptr},
   {"TI",   "Trace integration. Highly optimized mode when using availability traces (only available for the Cas01 CPU model for now).", nullptr},

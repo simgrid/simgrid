@@ -143,21 +143,6 @@ static void _sg_cfg_cb__host_model(const char *name)
   find_model_description(surf_host_model_description, val);
 }
 
-/* callback of the vm/model variable */
-static void _sg_cfg_cb__vm_model(const char *name)
-{
-  xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
-
-  char *val = xbt_cfg_get_string(name);
-  if (!strcmp(val, "help")) {
-    model_help("vm", surf_vm_model_description);
-    sg_cfg_exit_early();
-  }
-
-  /* Make sure that the model exists */
-  find_model_description(surf_vm_model_description, val);
-}
-
 /* callback of the cpu/model variable */
 static void _sg_cfg_cb__cpu_model(const char *name)
 {
@@ -407,9 +392,6 @@ void sg_config_init(int *argc, char **argv)
 
     describe_model(description,descsize, surf_host_model_description, "model", "The model to use for the host");
     xbt_cfg_register_string("host/model", "default", &_sg_cfg_cb__host_model, description);
-
-    describe_model(description,descsize, surf_vm_model_description, "model", "The model to use for the vm");
-    xbt_cfg_register_string("vm/model", "default", &_sg_cfg_cb__vm_model, description);
 
     sg_tcp_gamma = 4194304.0;
     simgrid::config::bindFlag(sg_tcp_gamma, { "network/TCP-gamma", "network/TCP_gamma" },
