@@ -256,8 +256,8 @@ void print_TIPopState(paje_event_t event)
   //What is the current state?
   xbt_dynar_pop(state_tracker, &extra);
   
-  //This function is actually only usefull for tracing the iterations of the
-  //application.
+  // This function is currently only used by custorm states that need to write
+  // to the traces when the process leaves this state.
   if(extra->type != TRACING_CUSTOM){
     return;
   }
