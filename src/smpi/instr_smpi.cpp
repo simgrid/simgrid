@@ -478,10 +478,7 @@ void TRACE_smpi_task_migrate(int rank, sg_host_t host)
 
 void TRACE_smpi_send_process_data_in(int rank)
 {
-  if (!TRACE_smpi_is_enabled()) {
-      return;
-  }
-
+  if (!TRACE_smpi_is_enabled()) return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
