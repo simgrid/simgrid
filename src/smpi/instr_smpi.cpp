@@ -204,7 +204,7 @@ void TRACE_smpi_init(int rank)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
 
-  container_t father, me;
+  container_t father;
   if (TRACE_smpi_is_grouped()){
     father = PJ_container_get (SIMIX_host_self_get_name());
   }else{
@@ -212,7 +212,7 @@ void TRACE_smpi_init(int rank)
   }
   xbt_assert(father!=nullptr,
       "Could not find a parent for mpi rank %s at function %s", str, __FUNCTION__);
-  me = PJ_container_new(str, INSTR_SMPI, father);
+  container_t me = PJ_container_new(str, INSTR_SMPI, father);
   type_t eventype = PJ_type_event_new("MPI_Migrate", me->type);
 
   val_t val = PJ_value_new ("migrate", "0 0 0", eventype);
