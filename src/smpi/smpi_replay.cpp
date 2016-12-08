@@ -1105,7 +1105,8 @@ void action_allToAllv(const char *const *action) {
 /*In previous versions, we called smpi_send_process_data (implemented on
  * smpi_base.c). The problem is that that function needs to have at least one
  * process in the destination host. This is not always true when using a
- * centralized LB approach.*/
+ * centralized LB approach. This alternate implementation is more flexible,
+ * since we don't need to have processes in the receiving host.*/
 void smpi_replay_send_process_data(double data_size, sg_host_t host)
 {
   smx_activity_t action;
