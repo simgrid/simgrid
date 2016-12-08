@@ -7,6 +7,7 @@
 
 #include "simgrid/s4u/host.hpp"
 #include "src/kernel/routing/AsImpl.hpp"
+#include "src/kernel/routing/BypassRoute.hpp"
 #include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
@@ -160,7 +161,7 @@ namespace simgrid {
     /* Base case, no recursion is needed */
     if (dst->containingAS() == this && src->containingAS() == this) {
       if (bypassRoutes_.find({src, dst}) != bypassRoutes_.end()) {
-        AsRoute* bypassedRoute = bypassRoutes_.at({src, dst});
+        BypassRoute* bypassedRoute = bypassRoutes_.at({src, dst});
         for (surf::Link* link : bypassedRoute->links) {
           links->push_back(link);
           if (latency)
@@ -204,7 +205,7 @@ namespace simgrid {
     int max_index = std::max(max_index_src, max_index_dst);
 
     /* (3) Search for a bypass making the path up to the ancestor useless */
-    AsRoute* bypassedRoute = nullptr;
+    BypassRoute* bypassedRoute = nullptr;
     std::pair<kernel::routing::NetCard*, kernel::routing::NetCard*> key;
     for (int max = 0; max <= max_index; max++) {
       for (int i = 0; i < max; i++) {

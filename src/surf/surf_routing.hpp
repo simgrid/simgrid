@@ -26,18 +26,6 @@ namespace routing {
 
   XBT_PUBLIC_DATA(simgrid::xbt::signal<void(s4u::As*)>) asCreatedCallbacks;
 
-/***********
- * Classes *
- ***********/
-
-class AsRoute {
-public:
-  explicit AsRoute(NetCard* gwSrc, NetCard* gwDst) : gw_src(gwSrc), gw_dst(gwDst) {}
-  const NetCard* gw_src;
-  const NetCard* gw_dst;
-  std::vector<Link*> links;
-};
-
 }}}
 
 #endif /* NETWORK_ROUTING_HPP_ */

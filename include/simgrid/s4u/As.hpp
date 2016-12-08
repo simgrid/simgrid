@@ -27,7 +27,7 @@ namespace kernel {
   namespace routing {
     class AsImpl;
     class NetCard;
-    class AsRoute;
+    class BypassRoute;
   }
 }
 namespace s4u {
@@ -73,7 +73,7 @@ private:
 
   bool sealed_ = false; // We cannot add more content when sealed
 
-  std::map<std::pair<kernel::routing::NetCard*, kernel::routing::NetCard*>, kernel::routing::AsRoute*>
+  std::map<std::pair<kernel::routing::NetCard*, kernel::routing::NetCard*>, kernel::routing::BypassRoute*>
       bypassRoutes_;                                                                      // src x dst -> route
   xbt_dict_t children_ = xbt_dict_new_homogeneous(nullptr);                               // sub-ASes
 };

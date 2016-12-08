@@ -74,6 +74,7 @@ set(EXTRA_DIST
   src/kernel/routing/AsRoutedGraph.hpp
   src/kernel/routing/AsNone.hpp
   src/kernel/routing/AsVivaldi.hpp  
+  src/kernel/routing/BypassRoute.hpp
   src/kernel/routing/NetCard.hpp
 
   src/surf/storage_interface.hpp

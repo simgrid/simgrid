@@ -9,6 +9,7 @@
 #include <simgrid/s4u/host.hpp>
 #include <simgrid/s4u/As.hpp>
 
+#include "src/kernel/routing/BypassRoute.hpp"
 #include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/network_interface.hpp" // Link FIXME: move to proper header
 #include "src/surf/surf_routing.hpp"
@@ -101,7 +102,7 @@ namespace simgrid {
     }
 
     /* Build a copy that will be stored in the dict */
-    kernel::routing::AsRoute* newRoute = new kernel::routing::AsRoute(e_route->gw_src, e_route->gw_dst);
+    kernel::routing::BypassRoute* newRoute = new kernel::routing::BypassRoute(e_route->gw_src, e_route->gw_dst);
     for (auto link : *e_route->link_list)
       newRoute->links.push_back(link);
 
