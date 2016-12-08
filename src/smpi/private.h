@@ -171,6 +171,7 @@ XBT_PRIVATE smx_mailbox_t smpi_process_mailbox();
 XBT_PRIVATE smx_mailbox_t smpi_process_remote_mailbox(int index);
 XBT_PRIVATE smx_mailbox_t smpi_process_mailbox_small();
 XBT_PRIVATE smx_mailbox_t smpi_process_remote_mailbox_small(int index);
+XBT_PRIVATE smx_mailbox_t smpi_process_mailbox_migration();
 XBT_PRIVATE smx_mailbox_t smpi_process_remote_mailbox_migration(int index);
 XBT_PRIVATE xbt_mutex_t smpi_process_mailboxes_mutex();
 XBT_PRIVATE xbt_mutex_t smpi_process_remote_mailboxes_mutex(int index);

@@ -107,6 +107,7 @@ XBT_PUBLIC (char *) smpi_container(int rank, char *container, int n);
 /************************ Process migration **********************************/
 XBT_PUBLIC(void) smpi_replay_process_migrate(smx_actor_t process, sg_host_t new_host, unsigned long size);
 XBT_PUBLIC(void) smpi_replay_send_process_data(double data_size, sg_host_t host);
+XBT_PUBLIC(void) smpi_send_process_data(unsigned long data_size, sg_host_t host);
 /*****************************************************************************/
 
 /*************************** Actions for SMPI replay *************************/
