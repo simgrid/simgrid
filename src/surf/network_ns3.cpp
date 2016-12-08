@@ -56,34 +56,26 @@ HostNs3::HostNs3()
  * Callbacks *
  *************/
 
-static void ns3_add_host(simgrid::s4u::Host& host)
+static void netcardCreation_cb(simgrid::kernel::routing::NetCard* netcard)
 {
-  host.extension_set<HostNs3>(new HostNs3());
-}
-
-static void ns3_add_netcard(simgrid::kernel::routing::NetCard* netcard)
-{
-  xbt_lib_set(as_router_lib, netcard->name().c_str(), NS3_ASR_LEVEL, new HostNs3());
+  xbt_lib_set(as_router_lib, netcard->cname(), NS3_ASR_LEVEL, new HostNs3());
 }
 
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
-static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
+static void clusterCreation_cb(sg_platf_cluster_cbarg_t cluster)
 {
   char* lat = bprintf("%fs", cluster->lat);
   char* bw  = bprintf("%fBps", cluster->bw);
 
   for (int i : *cluster->radicals) {
     char* router_id = bprintf("router_%s%d%s", cluster->prefix, i, cluster->suffix);
-
-    simgrid::s4u::Host* router = new simgrid::s4u::Host(router_id);
-    ns3_add_host(*router);
+    HostNs3* host_dst = new HostNs3();
+    xbt_lib_set(as_router_lib, router_id, NS3_ASR_LEVEL, host_dst);
 
     // Create private link
     char* host_id = bprintf("%s%d%s", cluster->prefix, i, cluster->suffix);
-    HostNs3* host_src = ns3_find_host(host_id);
-    HostNs3* host_dst = router->extension<HostNs3>();
-
-    xbt_assert(host_src && host_dst, "\tns3_add_link from %d to %d",host_src->node_num,host_dst->node_num);
+    HostNs3* host_src = static_cast<HostNs3*>(xbt_lib_get_or_null(as_router_lib, host_id, NS3_ASR_LEVEL));
+    xbt_assert(host_src, "Cannot find a NS3 host of name %s", host_id);
 
     ns3_add_link(host_src->node_num, host_dst->node_num, bw,lat);
 
@@ -117,17 +109,8 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetCard
     XBT_DEBUG("\tLink (%s) bdw:%s lat:%s", link->getName(), link_bdw, link_lat);
 
     // create link ns3
-    HostNs3* host_src = nullptr;
-    HostNs3* host_dst = nullptr;
-    if (src->isHost())
-      host_src = sg_host_by_name(src->cname())->extension<HostNs3>();
-    else
-      host_src = static_cast<HostNs3*>(xbt_lib_get_or_null(as_router_lib, src->cname(), NS3_ASR_LEVEL));
-
-    if (dst->isHost())
-      host_dst = sg_host_by_name(dst->cname())->extension<HostNs3>();
-    else
-      host_dst = static_cast<HostNs3*>(xbt_lib_get_or_null(as_router_lib, dst->cname(), NS3_ASR_LEVEL));
+    HostNs3* host_src = static_cast<HostNs3*>(xbt_lib_get_or_null(as_router_lib, src->cname(), NS3_ASR_LEVEL));
+    HostNs3* host_dst = static_cast<HostNs3*>(xbt_lib_get_or_null(as_router_lib, dst->cname(), NS3_ASR_LEVEL));
 
     xbt_assert(host_src != nullptr, "Network element %s does not seem to be NS3-ready", src->cname());
     xbt_assert(host_dst != nullptr, "Network element %s does not seem to be NS3-ready", dst->cname());
@@ -144,8 +127,6 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetCard
 /* Create the ns3 topology based on routing strategy */
 static void postparse_cb(void)
 {
-  XBT_DEBUG("Starting topology generation");
-
   xbt_dynar_shrink(IPV4addr,0);
 
   ns3::GlobalRouteManager::BuildGlobalRoutingDatabase();
@@ -168,7 +149,10 @@ static simgrid::config::Flag<std::string> ns3_tcp_model("ns3/TcpModel",
   "The ns3 tcp model can be : NewReno or Reno or Tahoe",
   "default");
 
-simgrid::xbt::Extension<simgrid::s4u::Host, HostNs3> HostNs3::EXTENSION_ID;
+static void del_netcard(void* n)
+{
+  delete static_cast<HostNs3*>(n);
+}
 
 namespace simgrid {
 namespace surf {
@@ -176,15 +160,12 @@ namespace surf {
 NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   ns3_initialize(ns3_tcp_model.get().c_str());
 
-  simgrid::s4u::Host::onCreation.connect(ns3_add_host);
-  simgrid::kernel::routing::NetCard::onCreation.connect(ns3_add_netcard);
-  simgrid::surf::on_cluster.connect (&parse_ns3_add_cluster);
+  simgrid::kernel::routing::NetCard::onCreation.connect(&netcardCreation_cb);
+  simgrid::surf::on_cluster.connect(&clusterCreation_cb);
   simgrid::surf::on_postparse.connect(&postparse_cb);
   simgrid::s4u::As::onRouteCreation.connect(&routeCreation_cb);
 
-  HostNs3::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostNs3>();
-
-  NS3_ASR_LEVEL  = xbt_lib_add_level(as_router_lib, xbt_free_f);
+  NS3_ASR_LEVEL = xbt_lib_add_level(as_router_lib, &del_netcard);
 
   LogComponentEnable("UdpEchoClientApplication", ns3::LOG_LEVEL_INFO);
   LogComponentEnable("UdpEchoServerApplication", ns3::LOG_LEVEL_INFO);
@@ -366,8 +347,8 @@ void ns3_simulator(double maxSeconds)
 void ns3_create_flow(simgrid::s4u::Host* src, simgrid::s4u::Host* dst, double startTime, u_int32_t TotalBytes,
                      simgrid::surf::NetworkNS3Action* action)
 {
-  int node1 = src->extension<HostNs3>()->node_num;
-  int node2 = dst->extension<HostNs3>()->node_num;
+  int node1 = static_cast<HostNs3*>(xbt_lib_get_or_null(as_router_lib, src->cname(), NS3_ASR_LEVEL))->node_num;
+  int node2 = static_cast<HostNs3*>(xbt_lib_get_or_null(as_router_lib, dst->cname(), NS3_ASR_LEVEL))->node_num;
 
   ns3::Ptr<ns3::Node> src_node = nodes.Get(node1);
   ns3::Ptr<ns3::Node> dst_node = nodes.Get(node2);

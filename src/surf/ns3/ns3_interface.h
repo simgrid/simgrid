@@ -23,8 +23,6 @@ namespace simgrid{
 
 class HostNs3 {
 public:
-  static simgrid::xbt::Extension<simgrid::s4u::Host, HostNs3> EXTENSION_ID;
-
   explicit HostNs3();
   int node_num;
 };
@@ -39,15 +37,6 @@ XBT_PUBLIC(void)   ns3_simulator(double maxSeconds);
 XBT_PUBLIC(void *) ns3_add_router(const char * id);
 XBT_PUBLIC(void)   ns3_add_link(int src, int dst, char * bw,char * lat);
 XBT_PUBLIC(void) ns3_add_cluster(const char* id, char* bw, char* lat);
-
-inline HostNs3* ns3_find_host(const char* id)
-{
-  sg_host_t host = sg_host_by_name(id);
-  if (host == nullptr)
-    return nullptr;
-  else
-    return host->extension<HostNs3>();
-}
 
 SG_END_DECL()
 
