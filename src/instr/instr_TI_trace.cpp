@@ -265,8 +265,8 @@ void print_TIPopState(paje_event_t event)
     else
       process_id = xbt_strdup(((pushState_t) event->data)->container->name + 5);
 
-      trace_file = (FILE *)xbt_dict_get(tracing_files,
-	  ((pushState_t) event->data)->container->name);
+    trace_file = (FILE *)xbt_dict_get(tracing_files,
+	((pushState_t) event->data)->container->name);
   
     if(extra->print_pop)
       extra->print_pop(trace_file, process_id, extra);
