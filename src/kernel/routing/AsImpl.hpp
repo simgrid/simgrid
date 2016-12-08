@@ -16,8 +16,6 @@
 namespace simgrid {
 namespace kernel {
 namespace routing {
-  class Onelink;
-
   /** @brief Autonomous Systems
    *
    * An AS is a network container, in charge of routing information between elements (hosts) and to the nearby ASes.
@@ -80,7 +78,6 @@ namespace routing {
     static void getGlobalRoute(routing::NetCard * src, routing::NetCard * dst,
                                /* OUT */ std::vector<surf::Link*> * links, double* latency);
 
-    virtual void getOneLinkRoutes(std::vector<Onelink*> * accumulator);
     virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) = 0;
     enum class RoutingMode {
       unset = 0, /**< Undefined type                                   */

@@ -41,17 +41,6 @@ namespace simgrid {
     return res;
   }
 
-  void AsImpl::getOneLinkRoutes(std::vector<Onelink*>* accumulator)
-  {
-    // recursing only. I have no route myself :)
-    char* key;
-    xbt_dict_cursor_t cursor = nullptr;
-    AsImpl* rc_child;
-    xbt_dict_foreach (children(), cursor, key, rc_child) {
-      rc_child->getOneLinkRoutes(accumulator);
-    }
-  }
-
   /** @brief Get the common ancestor and its first children in each line leading to src and dst
    *
    * In the recursive case, this sets common_ancestor, src_ancestor and dst_ancestor are set as follows.

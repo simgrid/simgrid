@@ -74,33 +74,6 @@ AsRoutedGraph::AsRoutedGraph(As* father, const char* name) : AsImpl(father, name
 {
 }
 
-void AsRoutedGraph::getOneLinkRoutes(std::vector<Onelink*>* accumulator)
-{
-  sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
-  route->link_list             = new std::vector<Link*>();
-
-  int table_size = static_cast<int>(vertices_.size());
-  for (int src = 0; src < table_size; src++) {
-    for (int dst = 0; dst < table_size; dst++) {
-      route->link_list->clear();
-      NetCard* src_elm = vertices_.at(src);
-      NetCard* dst_elm = vertices_.at(dst);
-      getLocalRoute(src_elm, dst_elm, route, nullptr);
-
-      if (route->link_list->size() == 1) {
-        Link* link = route->link_list->at(0);
-        if (hierarchy_ == RoutingMode::base)
-          accumulator->push_back(new Onelink(link, src_elm, dst_elm));
-        else if (hierarchy_ == RoutingMode::recursive)
-          accumulator->push_back(new Onelink(link, route->gw_src, route->gw_dst));
-        else
-          accumulator->push_back(new Onelink(link, nullptr, nullptr));
-      }
-    }
-  }
-  AsImpl::getOneLinkRoutes(accumulator); // Recursivly call this function on all my childs too
-}
-
 void AsRoutedGraph::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 {
   for (auto my_src: vertices_){
