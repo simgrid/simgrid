@@ -6,14 +6,7 @@
 #ifndef _NS3_INTERFACE_H
 #define _NS3_INTERFACE_H
 
-#include "xbt/log.h"
-#include "xbt/dynar.h"
-#include "xbt/misc.h"
-#include "xbt/sysdep.h"
-#include <xbt/Extendable.hpp>
-
 #include <simgrid/s4u/host.hpp>
-#include <surf/surf_routing.h>
 
 namespace simgrid{
   namespace surf{

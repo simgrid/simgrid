@@ -111,7 +111,6 @@ void sg_platf_new_host(sg_platf_host_cbarg_t args)
 /** @brief Add a "router" to the network element list */
 void sg_platf_new_router(sg_platf_router_cbarg_t router)
 {
-  using simgrid::kernel::routing::AsCluster;
   simgrid::kernel::routing::AsImpl* current_routing = routing_get_current();
 
   if (current_routing->hierarchy_ == simgrid::kernel::routing::AsImpl::RoutingMode::unset)
@@ -142,7 +141,7 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
     xbt_lib_set(as_router_lib, router->id, COORD_ASR_LEVEL, (void *) ctn);
   }
 
-  auto cluster = dynamic_cast<AsCluster*>(current_routing);
+  auto cluster = dynamic_cast<simgrid::kernel::routing::AsCluster*>(current_routing);
   if(cluster != nullptr)
     cluster->router_ = static_cast<simgrid::kernel::routing::NetCard*>(xbt_lib_get_or_null(as_router_lib, router->id, ROUTING_ASR_LEVEL));
 

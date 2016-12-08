@@ -7,21 +7,16 @@
 #ifndef _NS3_SIM_H
 #define _NS3_SIM_H
 
-#ifdef __cplusplus
-
 #include <cstdint>
 
 #include "ns3_interface.h"
-#include <ns3/core-module.h>
 
-#include <ns3/node.h>
 #include <ns3/global-route-manager.h>
 #include <ns3/csma-helper.h>
 #include <ns3/internet-stack-helper.h>
 #include <ns3/ipv4-address-helper.h>
 #include <ns3/point-to-point-helper.h>
 #include <ns3/packet-sink-helper.h>
-#include <ns3/inet-socket-address.h>
 #include <ns3/tcp-socket-factory.h>
 
 class SgFlow {
@@ -48,7 +43,5 @@ static inline const char *transformSocketPtr (ns3::Ptr<ns3::Socket> localSocket)
 
   return key;
 }
-
-#endif                          /* __cplusplus */
 
 #endif
