@@ -58,6 +58,12 @@ public:
   virtual void addRoute(sg_platf_route_cbarg_t route);
   void addBypassRoute(sg_platf_route_cbarg_t e_route);
 
+  /*** Called on each newly created regular route (not on bypass routes) */
+  static simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetCard* src, kernel::routing::NetCard* dst,
+                                   kernel::routing::NetCard* gw_src, kernel::routing::NetCard* gw_dst,
+                                   std::vector<Link*>* link_list)>
+      onRouteCreation;
+
 protected:
   std::vector<kernel::routing::NetCard*> vertices_; // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
 

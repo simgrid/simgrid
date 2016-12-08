@@ -101,52 +101,52 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
   xbt_free(bw);
 }
 
+static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetCard* src,
+                             simgrid::kernel::routing::NetCard* dst, simgrid::kernel::routing::NetCard* gw_src,
+                             simgrid::kernel::routing::NetCard* gw_dst, std::vector<Link*>* link_list)
+{
+  if (link_list->size() == 1) {
+    simgrid::surf::LinkNS3* link = static_cast<simgrid::surf::LinkNS3*>(link_list->at(0));
+
+    XBT_DEBUG("Route from '%s' to '%s' with link '%s' %s", src->cname(), dst->cname(), link->getName(),
+              (symmetrical ? "(symmetrical)" : "(not symmetrical)"));
+    char* link_bdw = bprintf("%fBps", link->bandwidth());
+    char* link_lat = bprintf("%fs", link->latency());
+
+    //   XBT_DEBUG("src (%s), dst (%s), src_id = %d, dst_id = %d",src,dst, src_id, dst_id);
+    XBT_DEBUG("\tLink (%s) bdw:%s lat:%s", link->getName(), link_bdw, link_lat);
+
+    // create link ns3
+    HostNs3* host_src = nullptr;
+    HostNs3* host_dst = nullptr;
+    if (src->isHost())
+      host_src = sg_host_by_name(src->cname())->extension<HostNs3>();
+    else
+      host_src = static_cast<HostNs3*>(xbt_lib_get_or_null(as_router_lib, src->cname(), NS3_ASR_LEVEL));
+
+    if (dst->isHost())
+      host_dst = sg_host_by_name(dst->cname())->extension<HostNs3>();
+    else
+      host_dst = static_cast<HostNs3*>(xbt_lib_get_or_null(as_router_lib, dst->cname(), NS3_ASR_LEVEL));
+
+    xbt_assert(host_src != nullptr, "Network element %s does not seem to be NS3-ready", src->cname());
+    xbt_assert(host_dst != nullptr, "Network element %s does not seem to be NS3-ready", dst->cname());
+
+    ns3_add_link(host_src->node_num, host_dst->node_num, link_bdw, link_lat);
+    if (symmetrical)
+      ns3_add_link(host_dst->node_num, host_src->node_num, link_bdw, link_lat);
+
+    xbt_free(link_bdw);
+    xbt_free(link_lat);
+  }
+}
+
 /* Create the ns3 topology based on routing strategy */
-static void create_ns3_topology(void)
+static void postparse_cb(void)
 {
   XBT_DEBUG("Starting topology generation");
 
   xbt_dynar_shrink(IPV4addr,0);
-
-  //get the onelinks from the parsed platform
-  std::vector<simgrid::kernel::routing::Onelink*> onelink_routes;
-  static_cast<simgrid::kernel::routing::AsImpl*>(simgrid::s4u::Engine::instance()->rootAs())
-      ->getOneLinkRoutes(&onelink_routes);
-
-  std::unordered_set<simgrid::surf::LinkNS3*> already_seen = std::unordered_set<simgrid::surf::LinkNS3*>();
-
-  XBT_DEBUG("There is %ld one-link routes", onelink_routes.size());
-  for (simgrid::kernel::routing::Onelink* onelink : onelink_routes) {
-    const char* src              = onelink->src_->name().c_str();
-    const char* dst              = onelink->dst_->name().c_str();
-    simgrid::surf::LinkNS3 *link = static_cast<simgrid::surf::LinkNS3 *>(onelink->link_);
-
-    if (strcmp(src,dst) && (already_seen.find(link) == already_seen.end())) {
-      already_seen.insert(link);
-      XBT_DEBUG("Route from '%s' to '%s' with link '%s'", src, dst, link->getName());
-      char* link_bdw = bprintf("%fBps", link->bandwidth());
-      char* link_lat = bprintf("%fs", link->latency());
-
-      //   XBT_DEBUG("src (%s), dst (%s), src_id = %d, dst_id = %d",src,dst, src_id, dst_id);
-      XBT_DEBUG("\tLink (%s) bdw:%s lat:%s", link->getName(), link_bdw, link_lat);
-
-      //create link ns3
-      HostNs3* host_src = ns3_find_host(src);
-      if (!host_src)
-        host_src        = static_cast<HostNs3*>(xbt_lib_get_or_null(as_router_lib, src, NS3_ASR_LEVEL));
-      HostNs3* host_dst = ns3_find_host(dst);
-      if(!host_dst)
-        host_dst = static_cast<HostNs3*>(xbt_lib_get_or_null(as_router_lib, dst, NS3_ASR_LEVEL));
-
-      if (!host_src || !host_dst)
-          xbt_die("\tns3_add_link from %d to %d",host_src->node_num,host_dst->node_num);
-
-      ns3_add_link(host_src->node_num, host_dst->node_num, link_bdw, link_lat);
-
-      xbt_free(link_bdw);
-      xbt_free(link_lat);
-    }
-  }
 
   ns3::GlobalRouteManager::BuildGlobalRoutingDatabase();
   ns3::GlobalRouteManager::InitializeRoutes();
@@ -179,7 +179,8 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   simgrid::s4u::Host::onCreation.connect(ns3_add_host);
   simgrid::kernel::routing::netcardCreatedCallbacks.connect(ns3_add_netcard);
   simgrid::surf::on_cluster.connect (&parse_ns3_add_cluster);
-  simgrid::surf::on_postparse.connect(&create_ns3_topology);
+  simgrid::surf::on_postparse.connect(&postparse_cb);
+  simgrid::s4u::As::onRouteCreation.connect(&routeCreation_cb);
 
   HostNs3::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostNs3>();
 
@@ -315,11 +316,11 @@ void LinkNS3::setLatencyTrace(tmgr_trace_t trace) {
 NetworkNS3Action::NetworkNS3Action(Model* model, double size, s4u::Host* src, s4u::Host* dst)
     : NetworkAction(model, size, false)
 {
-  XBT_DEBUG("Communicate from %s to %s", src->name().c_str(), dst->name().c_str());
+  XBT_DEBUG("Communicate from %s to %s", src->cname(), dst->cname());
 
   src_ = src;
   dst_ = dst;
-  ns3_create_flow(src->name().c_str(), dst->name().c_str(), surf_get_clock(), size, this);
+  ns3_create_flow(src, dst, surf_get_clock(), size, this);
 
   Link::onCommunicate(this, src, dst);
 }
@@ -354,17 +355,19 @@ int NetworkNS3Action::unref()
 }
 }
 
-void ns3_simulator(double maxSeconds){
+void ns3_simulator(double maxSeconds)
+{
   if (maxSeconds > 0.0) // If there is a maximum amount of time to run
     ns3::Simulator::Stop(ns3::Seconds(maxSeconds));
-  XBT_DEBUG("Start simulator for at most %fs",maxSeconds);
+  XBT_DEBUG("Start simulator for at most %fs (current time: %f)", maxSeconds, surf_get_clock());
   ns3::Simulator::Run ();
 }
 
-void ns3_create_flow(const char* a,const char *b,double startTime,u_int32_t TotalBytes,simgrid::surf::NetworkNS3Action * action)
+void ns3_create_flow(simgrid::s4u::Host* src, simgrid::s4u::Host* dst, double startTime, u_int32_t TotalBytes,
+                     simgrid::surf::NetworkNS3Action* action)
 {
-  int node1 = ns3_find_host(a)->node_num;
-  int node2 = ns3_find_host(b)->node_num;
+  int node1 = src->extension<HostNs3>()->node_num;
+  int node2 = dst->extension<HostNs3>()->node_num;
 
   ns3::Ptr<ns3::Node> src_node = nodes.Get(node1);
   ns3::Ptr<ns3::Node> dst_node = nodes.Get(node2);

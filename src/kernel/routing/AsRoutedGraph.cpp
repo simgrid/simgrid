@@ -230,6 +230,8 @@ void AsRoutedGraph::addRouteCheckParams(sg_platf_route_cbarg_t route) {
     xbt_assert(!route->link_list->empty(), "Empty route (between %s@%s and %s@%s) forbidden.", srcName,
                route->gw_src->cname(), dstName, route->gw_dst->cname());
   }
+
+  onRouteCreation(route->symmetrical, route->src, route->dst, route->gw_src, route->gw_dst, route->link_list);
 }
 
 }}}

@@ -18,6 +18,11 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_as,"S4U autonomous systems");
 namespace simgrid {
   namespace s4u {
 
+  simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetCard* src, kernel::routing::NetCard* dst,
+                            kernel::routing::NetCard* gw_src, kernel::routing::NetCard* gw_dst,
+                            std::vector<Link*>* link_list)>
+      As::onRouteCreation;
+
   As::As(As* father, const char* name) : father_(father), name_(xbt_strdup(name))
   {
   }
