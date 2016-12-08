@@ -55,7 +55,7 @@ void register_request(MPI_Request request)
 {
   char *key = key_from_request(request);
   xbt_dict_set(reqd[smpi_process_index()], key, request, NULL);
-  //FIXME Free the key?
+  free(key);
   return;
 }
 
@@ -481,8 +481,7 @@ void action_test(const char *const *action){
     //FIXME? Is this really needed? Does xbt_dict_t allow you to inser a null
     //pointer?
     register_request_with_key(request, key);
-    //FIXME free the key?
-    //free(key);
+    free(key);
   
     TRACE_smpi_testing_out(rank);
   }
