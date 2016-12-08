@@ -1148,8 +1148,6 @@ void smpi_replay_process_migrate(smx_actor_t process, sg_host_t new_host,
   
   // Now, we change the host to which this rank is mapped.
   simcall_process_set_host(process, new_host);
-
-  return;
 }
 
 
