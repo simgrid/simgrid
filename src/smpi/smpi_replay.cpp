@@ -1291,9 +1291,7 @@ void smpi_replay_start(int *argc, char ***argv)
 }
 
 /* Does the same as the original smpi_replay_run (which was previously
- * smpi_replay_init): initializes and runs the replay. Provided for
- * retrocompatibility purposes.
- */
+ * smpi_replay_init): initializes and runs the replay. */
 void smpi_replay_run(int *argc, char ***argv) {
   smpi_replay_init(argc, argv);
   smpi_replay_start(argc, argv);
