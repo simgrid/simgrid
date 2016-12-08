@@ -14,9 +14,11 @@ namespace simgrid{
   }
 }
 
-class HostNs3 {
+class NetCardNs3 {
 public:
-  explicit HostNs3();
+  static simgrid::xbt::Extension<simgrid::kernel::routing::NetCard, NetCardNs3> EXTENSION_ID;
+
+  explicit NetCardNs3();
   int node_num;
 };
 

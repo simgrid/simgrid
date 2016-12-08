@@ -6,6 +6,7 @@
 #ifndef KERNEL_ROUTING_NETCARD_HPP_
 #define KERNEL_ROUTING_NETCARD_HPP_
 
+#include <xbt/Extendable.hpp>
 #include <xbt/base.h>
 #include <xbt/signal.hpp>
 
@@ -23,7 +24,8 @@ namespace routing {
  *
  * @details This represents a position in the network. One can route information between two netcards
  */
-class NetCard {
+class NetCard : public simgrid::xbt::Extendable<NetCard> {
+
 public:
   enum class Type { Host, Router, As };
 

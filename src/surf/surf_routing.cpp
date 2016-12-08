@@ -42,7 +42,6 @@ int MSG_STORAGE_LEVEL = -1;          //Msg storage level
 xbt_lib_t as_router_lib;
 int ROUTING_ASR_LEVEL = -1;          //Routing level
 int COORD_ASR_LEVEL = -1;            //Coordinates level
-int NS3_ASR_LEVEL = -1;              //host node for ns3
 int ROUTING_PROP_ASR_LEVEL = -1;     //Where the properties are stored
 
 void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
