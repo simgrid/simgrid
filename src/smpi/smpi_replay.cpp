@@ -275,10 +275,8 @@ void action_compute(const char *const *action)
   CHECK_ACTION_PARAMS(action, 1, 1)
   double clock = smpi_process_simulated_elapsed();
   double flops= parse_double(action[2]);
-  double time_comp;
-  if (action[3]){
-    time_comp = parse_double(action[3]);
-  }
+  double time_comp = action[3] ? parse_double(action[3]) : 0;
+  
   int rank = smpi_process_index();
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type=TRACING_COMPUTING;
