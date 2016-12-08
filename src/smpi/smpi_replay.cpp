@@ -38,20 +38,20 @@ char* recvbuffer=nullptr;
  *****************************************************************************/
 
 
-char *build_request_key(int src, int dst, int tag){
+static char *build_request_key(int src, int dst, int tag){
   char *key = (char *)malloc(REQ_KEY_SIZE);
   xbt_assert(key, "failed malloc");
   snprintf(key, REQ_KEY_SIZE, "%020d%020d%020d", src, dst, tag);
   return key;
 }
 
-char *key_from_request(MPI_Request request)
+static char *key_from_request(MPI_Request request)
 {
   char *key = build_request_key(request->src, request->dst, request->tag);
   return key;
 }
 
-void register_request(MPI_Request request)
+static void register_request(MPI_Request request)
 {
   char *key = key_from_request(request);
   xbt_dict_set(reqd[smpi_process_index()], key, request, NULL);
@@ -59,13 +59,13 @@ void register_request(MPI_Request request)
   return;
 }
 
-void register_request_with_key(MPI_Request request, const char *key)
+static void register_request_with_key(MPI_Request request, const char *key)
 {
   xbt_dict_set(reqd[smpi_process_index()], key, request, NULL);
   return;
 }
 
-MPI_Request get_request(int src, int dst, int tag)
+static MPI_Request get_request(int src, int dst, int tag)
 {
   char *key = build_request_key(src, dst, tag);
   MPI_Request request = (MPI_Request)xbt_dict_get_or_null(
@@ -74,19 +74,19 @@ MPI_Request get_request(int src, int dst, int tag)
   return request;
 }
 
-MPI_Request get_request_with_key(const char *key){
+static MPI_Request get_request_with_key(const char *key){
   MPI_Request request = (MPI_Request)xbt_dict_get_or_null(
       reqd[smpi_process_index()], key);
   return request;
 }
 
-void remove_request(MPI_Request request){
+static void remove_request(MPI_Request request){
   char *key = key_from_request(request);
   xbt_dict_remove(reqd[smpi_process_index()], key);
   free(key);
 }
 
-void remove_request_with_key(const char *key){
+static void remove_request_with_key(const char *key){
   xbt_dict_remove(reqd[smpi_process_index()], key);
 }
 

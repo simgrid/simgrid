@@ -453,7 +453,7 @@ void TRACE_smpi_recv(int rank, int src, int dst, int tag)
 
 /**************** Functions to trace the migration of tasks. *****************/
 
-void TRACE_smpi_task_migrate(int rank, sg_host_t host)
+static void TRACE_smpi_task_migrate(int rank, sg_host_t host)
 {
   if (!TRACE_smpi_is_enabled()) return;
   

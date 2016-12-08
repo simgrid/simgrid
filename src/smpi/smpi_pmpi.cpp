@@ -910,7 +910,7 @@ int PMPI_Ssend_init(void* buf, int count, MPI_Datatype datatype, int dst, int ta
   return retval;
 }
 
-int persistent_send(MPI_Request *request)
+static int persistent_send(MPI_Request *request)
 {
   int retval = 0;
   MPI_Request req = *request;
@@ -943,9 +943,7 @@ int persistent_send(MPI_Request *request)
   return retval;
 }
 
-
-
-int persistent_recv(MPI_Request *request)
+static int persistent_recv(MPI_Request *request)
 {
 
   int retval = 0;
