@@ -306,6 +306,7 @@ set(SURF_SRC
   src/kernel/routing/AsRoutedGraph.cpp
   src/kernel/routing/AsNone.cpp
   src/kernel/routing/AsVivaldi.cpp
+  src/kernel/routing/NetCard.cpp
 
   src/kernel/EngineImpl.cpp
   src/kernel/EngineImpl.hpp

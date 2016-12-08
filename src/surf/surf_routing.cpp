@@ -25,7 +25,6 @@ namespace kernel {
 namespace routing {
 
   /* Callbacks */
-  simgrid::xbt::signal<void(NetCard*)> netcardCreatedCallbacks;
   simgrid::xbt::signal<void(s4u::As*)> asCreatedCallbacks;
 
 }}} // namespace simgrid::kernel::routing
@@ -45,19 +44,6 @@ int ROUTING_ASR_LEVEL = -1;          //Routing level
 int COORD_ASR_LEVEL = -1;            //Coordinates level
 int NS3_ASR_LEVEL = -1;              //host node for ns3
 int ROUTING_PROP_ASR_LEVEL = -1;     //Where the properties are stored
-
-/** @brief Retrieve a netcard from its name
- *
- * Netcards are the thing that connect host or routers to the network
- */
-simgrid::kernel::routing::NetCard *sg_netcard_by_name_or_null(const char *name)
-{
-  sg_host_t h = sg_host_by_name(name);
-  simgrid::kernel::routing::NetCard *netcard = h==nullptr ? nullptr: h->pimpl_netcard;
-  if (!netcard)
-    netcard = (simgrid::kernel::routing::NetCard*) xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL);
-  return netcard;
-}
 
 void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
 {

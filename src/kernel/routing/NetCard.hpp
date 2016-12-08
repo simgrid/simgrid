@@ -17,7 +17,6 @@
 namespace simgrid {
 namespace kernel {
 namespace routing {
-XBT_PUBLIC_DATA(simgrid::xbt::signal<void(NetCard*)>) netcardCreatedCallbacks;
 
 /** @ingroup SURF_routing_interface
  * @brief Network cards are the vertices in the graph representing the network, used to compute paths between nodes.
@@ -33,7 +32,7 @@ public:
   {
     if (containingAS != nullptr)
       id_ = containingAS->addComponent(this);
-    simgrid::kernel::routing::netcardCreatedCallbacks(this);
+    simgrid::kernel::routing::NetCard::onCreation(this);
   }
   ~NetCard() = default;
 
@@ -47,6 +46,8 @@ public:
   bool isAS() { return componentType_ == Type::As; }
   bool isHost() { return componentType_ == Type::Host; }
   bool isRouter() { return componentType_ == Type::Router; }
+
+  static simgrid::xbt::signal<void(NetCard*)> onCreation;
 
 private:
   unsigned int id_;
