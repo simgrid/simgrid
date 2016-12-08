@@ -25,7 +25,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf, "Logging specific to the SURF network NS3 module");
 
-xbt_dynar_t IPV4addr = xbt_dynar_new(sizeof(char*),free);
+std::vector<char*> IPV4addr;
 
 /*****************
  * Crude globals *
@@ -127,7 +127,7 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetCard
 /* Create the ns3 topology based on routing strategy */
 static void postparse_cb(void)
 {
-  xbt_dynar_shrink(IPV4addr,0);
+  IPV4addr.shrink_to_fit();
 
   ns3::GlobalRouteManager::BuildGlobalRoutingDatabase();
   ns3::GlobalRouteManager::InitializeRoutes();
@@ -172,7 +172,9 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
 }
 
 NetworkNS3Model::~NetworkNS3Model() {
-  xbt_dynar_free_container(&IPV4addr);
+  for (auto addr : IPV4addr)
+    free(addr);
+  IPV4addr.clear();
   xbt_dict_free(&flowFromSock);
 }
 
@@ -353,7 +355,7 @@ void ns3_create_flow(simgrid::s4u::Host* src, simgrid::s4u::Host* dst, double st
   ns3::Ptr<ns3::Node> src_node = nodes.Get(node1);
   ns3::Ptr<ns3::Node> dst_node = nodes.Get(node2);
 
-  char* addr = (char*)xbt_dynar_get_as(IPV4addr,node2,char*);
+  char* addr = IPV4addr.at(node2);
 
   XBT_DEBUG("ns3_create_flow %d Bytes from %d to %d with Interface %s",TotalBytes, node1, node2,addr);
   ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress (ns3::Ipv4Address::GetAny(), port_number));
@@ -472,13 +474,13 @@ void ns3_add_link(int src, int dst, char *bw, char *lat)
   free(adr);
   interfaces.Add(address.Assign (netA));
 
-  char *tmp = transformIpv4Address(interfaces.GetAddress(interfaces.GetN()-2));
-  xbt_dynar_set_as(IPV4addr,src,char*,tmp);
-  XBT_DEBUG("Have write '%s' for Node '%d'",(char*)xbt_dynar_get_as(IPV4addr,src,char*),src);
+  if (IPV4addr.size() <= (unsigned)src)
+    IPV4addr.resize(src + 1, nullptr);
+  IPV4addr.at(src) = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 2));
 
-  tmp = transformIpv4Address(interfaces.GetAddress(interfaces.GetN()-1));
-  xbt_dynar_set_as(IPV4addr,dst,char*,tmp);
-  XBT_DEBUG("Have write '%s' for Node '%d'",(char*)xbt_dynar_get_as(IPV4addr,dst,char*),dst);
+  if (IPV4addr.size() <= (unsigned)dst)
+    IPV4addr.resize(dst + 1, nullptr);
+  IPV4addr.at(dst) = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 1));
 
   if (number_of_links == 255){
     xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");
