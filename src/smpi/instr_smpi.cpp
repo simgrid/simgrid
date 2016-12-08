@@ -215,7 +215,7 @@ void TRACE_smpi_init(int rank)
   container_t me = PJ_container_new(str, INSTR_SMPI, father);
   type_t eventype = PJ_type_event_new("MPI_Migrate", me->type);
 
-  val_t val = PJ_value_new ("migrate", "0 0 0", eventype);
+  PJ_value_new ("migrate", "0 0 0", eventype);
 #if HAVE_PAPI
   container_t container = me;
 
