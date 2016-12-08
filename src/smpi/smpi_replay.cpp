@@ -1151,7 +1151,14 @@ void smpi_replay_process_migrate(smx_actor_t process, sg_host_t new_host,
 }
 
 
-void smpi_replay_initialize(int *argc, char***argv){
+/*
+ * This function only initializes smpi_replay. It does not start the replay.
+ * You should call this one if you want to be able to register new actions
+ * from your code.
+ * To really start the replay you must call smpi_replay_run.
+ */
+void smpi_replay_init(int *argc, char ***argv)
+{
   /* First initializes everything */
   smpi_process_init(argc, argv);
   smpi_process_mark_as_initialized();
@@ -1221,22 +1228,8 @@ void smpi_replay_initialize(int *argc, char***argv){
 
 
 /*
- * This function only initializes smpi_replay. It does not start the replay.
- * You should call this one if you want to be able to register new actions
- * from your code.
- * To really start the replay you must call smpi_replay_run.
- */
-void smpi_replay_init(int *argc, char ***argv)
-{
-  smpi_replay_initialize(argc, argv);
-}
-
-/*
  * This function starts the replay of the traces. Your custom actions must be
- * registered before calling this function.  It was previously calles
- * smpi_replay_run, but I had to rename it because someone used this name on
- * original SimGrid master branch.
- */
+ * registered before calling this function.*/
 void smpi_replay_start(int *argc, char ***argv)
 {
   xbt_replay_action_runner(*argc, *argv);
@@ -1302,7 +1295,7 @@ void smpi_replay_start(int *argc, char ***argv)
  * retrocompatibility purposes.
  */
 void smpi_replay_run(int *argc, char ***argv) {
-  smpi_replay_initialize(argc, argv);
+  smpi_replay_init(argc, argv);
   smpi_replay_start(argc, argv);
 }
 
