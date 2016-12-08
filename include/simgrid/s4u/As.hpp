@@ -27,7 +27,6 @@ namespace kernel {
   namespace routing {
     class AsImpl;
     class NetCard;
-    class BypassRoute;
   }
 }
 namespace s4u {
@@ -56,7 +55,7 @@ public:
   /* Add content to the AS, at parsing time. It should be sealed afterward. */
   virtual int addComponent(kernel::routing::NetCard *elm); /* A host, a router or an AS, whatever */
   virtual void addRoute(sg_platf_route_cbarg_t route);
-  void addBypassRoute(sg_platf_route_cbarg_t e_route);
+  virtual void addBypassRoute(sg_platf_route_cbarg_t e_route) = 0;
 
   /*** Called on each newly created regular route (not on bypass routes) */
   static simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetCard* src, kernel::routing::NetCard* dst,
@@ -73,8 +72,6 @@ private:
 
   bool sealed_ = false; // We cannot add more content when sealed
 
-  std::map<std::pair<kernel::routing::NetCard*, kernel::routing::NetCard*>, kernel::routing::BypassRoute*>
-      bypassRoutes_;                                                                      // src x dst -> route
   xbt_dict_t children_ = xbt_dict_new_homogeneous(nullptr);                               // sub-ASes
 };
 

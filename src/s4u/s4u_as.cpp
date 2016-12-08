@@ -9,7 +9,6 @@
 #include <simgrid/s4u/host.hpp>
 #include <simgrid/s4u/As.hpp>
 
-#include "src/kernel/routing/BypassRoute.hpp"
 #include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/network_interface.hpp" // Link FIXME: move to proper header
 #include "src/surf/surf_routing.hpp"
@@ -39,8 +38,6 @@ namespace simgrid {
     xbt_dict_foreach(children_, cursor, key, elem) { delete (As*)elem; }
 
     xbt_dict_free(&children_);
-    for (auto& kv : bypassRoutes_)
-      delete kv.second;
     xbt_free(name_);
   }
 
@@ -80,33 +77,4 @@ namespace simgrid {
     xbt_die("AS %s does not accept new routes (wrong class).", name_);
   }
 
-  void As::addBypassRoute(sg_platf_route_cbarg_t e_route)
-  {
-    /* Argument validity checks */
-    if (e_route->gw_dst) {
-      XBT_DEBUG("Load bypassASroute from %s@%s to %s@%s", e_route->src->name().c_str(), e_route->gw_src->name().c_str(),
-                e_route->dst->name().c_str(), e_route->gw_dst->name().c_str());
-      xbt_assert(!e_route->link_list->empty(), "Bypass route between %s@%s and %s@%s cannot be empty.",
-                 e_route->src->name().c_str(), e_route->gw_src->name().c_str(), e_route->dst->name().c_str(),
-                 e_route->gw_dst->name().c_str());
-      xbt_assert(bypassRoutes_.find({e_route->src, e_route->dst}) == bypassRoutes_.end(),
-                 "The bypass route between %s@%s and %s@%s already exists.", e_route->src->name().c_str(),
-                 e_route->gw_src->name().c_str(), e_route->dst->name().c_str(), e_route->gw_dst->name().c_str());
-    } else {
-      XBT_DEBUG("Load bypassRoute from %s to %s", e_route->src->name().c_str(), e_route->dst->name().c_str());
-      xbt_assert(!e_route->link_list->empty(), "Bypass route between %s and %s cannot be empty.",
-                 e_route->src->name().c_str(), e_route->dst->name().c_str());
-      xbt_assert(bypassRoutes_.find({e_route->src, e_route->dst}) == bypassRoutes_.end(),
-                 "The bypass route between %s and %s already exists.", e_route->src->name().c_str(),
-                 e_route->dst->name().c_str());
-    }
-
-    /* Build a copy that will be stored in the dict */
-    kernel::routing::BypassRoute* newRoute = new kernel::routing::BypassRoute(e_route->gw_src, e_route->gw_dst);
-    for (auto link : *e_route->link_list)
-      newRoute->links.push_back(link);
-
-    /* Store it */
-    bypassRoutes_.insert({{e_route->src, e_route->dst}, newRoute});
-  }
 }  }; // namespace simgrid::s4u
