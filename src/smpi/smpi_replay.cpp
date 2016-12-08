@@ -477,9 +477,6 @@ void action_test(const char *const *action){
 
     XBT_DEBUG("MPI_Test result: %d", flag);
 
-    //We can't call register_request, because request may be NULL.
-    //FIXME? Is this really needed? Does xbt_dict_t allow you to inser a null
-    //pointer?
     register_request_with_key(request, key);
     free(key);
   
