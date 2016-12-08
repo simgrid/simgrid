@@ -1269,12 +1269,13 @@ void smpi_replay_start(int *argc, char ***argv)
       active_processes--;
   }
 
+  xbt_dict_free(&reqd[smpi_process_index()]);
+  
   if(active_processes==0){
     /* Last process alive speaking */
     /* end the simulated timer */
     sim_time = smpi_process_simulated_elapsed();
-
-    xbt_dict_free(&reqd[smpi_process_index()]);
+    
 
     XBT_INFO("Simulation time %f", sim_time);
     _xbt_replay_action_exit();
