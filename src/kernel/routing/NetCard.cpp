@@ -28,6 +28,7 @@ simgrid::kernel::routing::NetCard* sg_netcard_by_name_or_null(const char* name)
   sg_host_t h                                = sg_host_by_name(name);
   simgrid::kernel::routing::NetCard* netcard = h == nullptr ? nullptr : h->pimpl_netcard;
   if (!netcard)
-    netcard = (simgrid::kernel::routing::NetCard*)xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL);
+    netcard =
+        static_cast<simgrid::kernel::routing::NetCard*>(xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL));
   return netcard;
 }
