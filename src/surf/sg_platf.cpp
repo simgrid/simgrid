@@ -100,7 +100,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t args)
   if (args->pstate != 0)
     host->pimpl_cpu->setPState(args->pstate);
   if (args->coord && strcmp(args->coord, ""))
-    new simgrid::kernel::routing::vivaldi::Coords(host, args->coord);
+    new simgrid::kernel::routing::vivaldi::Coords(host->pimpl_netcard, args->coord);
 
   simgrid::s4u::Host::onCreation(*host);
 
@@ -123,23 +123,8 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
   xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, netcard);
   XBT_DEBUG("Router '%s' has the id %d", router->id, netcard->id());
 
-  if (router->coord && strcmp(router->coord, "")) {
-    unsigned int cursor;
-    char*str;
-
-    xbt_assert(COORD_ASR_LEVEL, "To use host coordinates, please add --cfg=network/coordinates:yes to your command line");
-    /* Pre-parse the host coordinates */
-    xbt_dynar_t ctn_str = xbt_str_split_str(router->coord, " ");
-    xbt_assert(xbt_dynar_length(ctn_str)==3,"Coordinates of %s must have 3 dimensions", router->id);
-    xbt_dynar_t ctn = xbt_dynar_new(sizeof(double),nullptr);
-    xbt_dynar_foreach(ctn_str,cursor, str) {
-      double val = xbt_str_parse_double(str, "Invalid coordinate: %s");
-      xbt_dynar_push(ctn,&val);
-    }
-    xbt_dynar_free(&ctn_str);
-    xbt_dynar_shrink(ctn, 0);
-    xbt_lib_set(as_router_lib, router->id, COORD_ASR_LEVEL, (void *) ctn);
-  }
+  if (router->coord && strcmp(router->coord, ""))
+    new simgrid::kernel::routing::vivaldi::Coords(netcard, router->coord);
 
   auto cluster = dynamic_cast<simgrid::kernel::routing::AsCluster*>(current_routing);
   if(cluster != nullptr)
@@ -598,6 +583,7 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   AS.id      = peer->id;
   AS.routing = A_surfxml_AS_routing_Cluster;
   sg_platf_new_AS_begin(&AS);
+  new simgrid::kernel::routing::vivaldi::Coords(current_routing->netcard_, peer->coord);
 
   XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\"/>", host_id, peer->speed);
   s_sg_platf_host_cbarg_t host;

@@ -23,8 +23,8 @@ public:
 namespace vivaldi {
 class XBT_PRIVATE Coords {
 public:
-  static simgrid::xbt::Extension<simgrid::s4u::Host, Coords> EXTENSION_ID;
-  explicit Coords(s4u::Host* host, const char* str);
+  static simgrid::xbt::Extension<NetCard, Coords> EXTENSION_ID;
+  explicit Coords(NetCard* host, const char* str);
   virtual ~Coords();
 
   xbt_dynar_t coords;
