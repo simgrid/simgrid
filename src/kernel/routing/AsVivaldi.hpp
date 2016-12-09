@@ -27,7 +27,7 @@ public:
   explicit Coords(NetCard* host, const char* str);
   virtual ~Coords();
 
-  xbt_dynar_t coords;
+  std::vector<double> coords;
 };
 }
 }
