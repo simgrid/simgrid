@@ -998,6 +998,7 @@ set(CMAKEFILES_TXT
 
 set(CMAKE_SOURCE_FILES
   CMakeLists.txt
+  FindSimGrid.cmake
   tools/cmake/Tests.cmake
   tools/cmake/CTestConfig.cmake
   tools/cmake/CTestCustom.cmake
@@ -1017,7 +1018,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Modules/FindNS3.cmake
   tools/cmake/Modules/FindPAPI.cmake
   tools/cmake/Modules/FindRngStream.cmake
-  tools/cmake/Modules/FindSimGrid.cmake
   tools/cmake/Modules/FindValgrind.cmake
   tools/cmake/Option.cmake
   tools/cmake/scripts/my_valgrind.pl
