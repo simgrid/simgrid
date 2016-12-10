@@ -327,17 +327,6 @@ static void _sg_cfg_cb_contexts_parallel_mode(const char *name)
   }
 }
 
-static void _sg_cfg_cb__surf_network_coordinates(const char *name)
-{
-  static int already_set = 0;
-  int val = xbt_cfg_get_boolean(name);
-  if (val) {
-    already_set = 1;
-  } else
-    if (already_set)
-      xbt_die("Setting of whether to use coordinate cannot be disabled once set.");
-}
-
 static void _sg_cfg_cb__surf_network_crosstraffic(const char *name)
 {
   sg_network_crosstraffic = xbt_cfg_get_boolean(name);
@@ -521,9 +510,6 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_string("contexts/synchro", "busy_wait", _sg_cfg_cb_contexts_parallel_mode,
         "Synchronization mode to use when running contexts in parallel (either futex, posix or busy_wait)");
 #endif
-
-    xbt_cfg_register_boolean("network/coordinates", "no", _sg_cfg_cb__surf_network_coordinates,
-        "Whether we use a coordinate-based routing (as Vivaldi)");
 
     xbt_cfg_register_boolean("network/crosstraffic", "yes", _sg_cfg_cb__surf_network_crosstraffic,
         "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)");

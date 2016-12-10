@@ -265,14 +265,6 @@ can be set to 0 (disable this feature) or 1 (enable it).
 
 Note that with the default host model this option is activated by default.
 
-\subsubsection options_model_network_coord Coordinated-based network models
-
-When you want to use network coordinates, as it happens when you use
-an \<AS\> in your platform file with \c Vivaldi as a routing (see also
-Section \ref pf_routing_model_vivaldi "Vivaldi Routing Model"), you must
-set the \b network/coordinates to \c yes so that all mandatory
-initialization are done in the simulator.
-
 \subsubsection options_model_network_sendergap Simulating sender gap
 
 (this configuration item is experimental and may change or disapear)
@@ -1169,7 +1161,6 @@ silently overflow on other parts of the memory.
 - \c model-check/visited: \ref options_modelchecking_visited
 
 - \c network/bandwidth-factor: \ref options_model_network_coefs
-- \c network/coordinates: \ref options_model_network_coord
 - \c network/crosstraffic: \ref options_model_network_crosstraffic
 - \c network/latency-factor: \ref options_model_network_coefs
 - \c network/maxmin-selective-update: \ref options_model_optim

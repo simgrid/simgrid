@@ -1,10 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-  <config id="General">
-    <prop id="network/coordinates" value="yes"/>
-  </config>
-
   <AS id="AS0" routing="Vivaldi">
     <AS id="AS1_dc1" routing="Full">
       <!--small tier-1 datacenter, according to TIA-942 annex G tiers notation -->

@@ -50,6 +50,7 @@ SimGrid (3.14) UNRELEASED; urgency=low
    and probably not really working) was deceiving what most users
    would have hoped here.
  * xbt_os_sem_get_value: unused internally, deprecated on OS X El Capitan
+ * Option network/coordinates is now useless and should be dropped.
 
  XML:
  * Add Exa- and Peta- units such as EiB, EB, Eib, Eb for size, and
