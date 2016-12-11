@@ -584,8 +584,8 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   /* Change from the defaults */
   if (peer->state_trace)
     host->pimpl_cpu->setStateTrace(peer->state_trace);
-  if (peer->availability_trace)
-    host->pimpl_cpu->setSpeedTrace(peer->availability_trace);
+  if (peer->speed_trace)
+    host->pimpl_cpu->setSpeedTrace(peer->speed_trace);
 }
 
 void sg_platf_begin() { /* Do nothing: just for symmetry of user code */ }

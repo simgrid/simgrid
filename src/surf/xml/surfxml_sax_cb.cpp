@@ -642,14 +642,14 @@ void STag_surfxml_peer(){
   parse_after_config();
   s_sg_platf_peer_cbarg_t peer;
   memset(&peer,0,sizeof(peer));
-  peer.id                 = A_surfxml_peer_id;
-  peer.speed              = surf_parse_get_speed(A_surfxml_peer_speed, "speed of peer", peer.id);
-  peer.bw_in              = surf_parse_get_bandwidth(A_surfxml_peer_bw___in, "bw_in of peer", peer.id);
-  peer.bw_out             = surf_parse_get_bandwidth(A_surfxml_peer_bw___out, "bw_out of peer", peer.id);
-  peer.lat                = surf_parse_get_time(A_surfxml_peer_lat, "lat of peer", peer.id);
-  peer.coord              = A_surfxml_peer_coordinates;
-  peer.availability_trace = A_surfxml_peer_availability___file[0] ? tmgr_trace_new_from_file(A_surfxml_peer_availability___file) : nullptr;
-  peer.state_trace        = A_surfxml_peer_state___file[0] ? tmgr_trace_new_from_file(A_surfxml_peer_state___file) : nullptr;
+  peer.id          = A_surfxml_peer_id;
+  peer.speed       = surf_parse_get_speed(A_surfxml_peer_speed, "speed of peer", peer.id);
+  peer.bw_in       = surf_parse_get_bandwidth(A_surfxml_peer_bw___in, "bw_in of peer", peer.id);
+  peer.bw_out      = surf_parse_get_bandwidth(A_surfxml_peer_bw___out, "bw_out of peer", peer.id);
+  peer.lat         = surf_parse_get_time(A_surfxml_peer_lat, "lat of peer", peer.id);
+  peer.coord       = A_surfxml_peer_coordinates;
+  peer.speed_trace = A_surfxml_peer_availability___file[0] ? tmgr_trace_new_from_file(A_surfxml_peer_availability___file) : nullptr;
+  peer.state_trace = A_surfxml_peer_state___file[0] ? tmgr_trace_new_from_file(A_surfxml_peer_state___file) : nullptr;
 
   sg_platf_new_peer(&peer);
 }
