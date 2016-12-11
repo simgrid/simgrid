@@ -574,14 +574,6 @@ int MSG_comm_testany(xbt_dynar_t comms)
  */
 void MSG_comm_destroy(msg_comm_t comm)
 {
-  /* Diagnose a possible user error: destroying a comm that is not done yet, and not detached either  */
-  if ((comm->s_comm->state == SIMIX_READY || comm->s_comm->state == SIMIX_RUNNING)
-      && (!static_cast<simgrid::kernel::activity::Comm*>(comm->s_comm)->detached))
-    XBT_WARN("You are destroying a communication that is not done yet but %s. "
-             "This will lead to issues when the other side continues this communication. "
-             "Are you looking for MSG_task_dsend()?",
-             (comm->s_comm->state == SIMIX_READY ? "ready" : "running"));
-
   xbt_free(comm);
 }
 
@@ -631,10 +623,8 @@ msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
 */
 void MSG_comm_waitall(msg_comm_t * comm, int nb_elem, double timeout)
 {
-  int i = 0;
-  for (i = 0; i < nb_elem; i++) {
+  for (int i = 0; i < nb_elem; i++)
     MSG_comm_wait(comm[i], timeout);
-  }
 }
 
 /** \ingroup msg_task_usage
