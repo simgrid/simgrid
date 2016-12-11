@@ -6,7 +6,6 @@
 #include "src/kernel/routing/AsClusterDragonfly.hpp"
 #include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>

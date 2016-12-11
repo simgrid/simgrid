@@ -134,7 +134,7 @@ private:
   std::vector<FatTreeLink*> links_;
   std::vector<unsigned int> nodesByLevel_;
 
-  sg_platf_cluster_cbarg_t cluster_;
+  sg_platf_cluster_cbarg_t cluster_ = nullptr;
 
   void addLink(FatTreeNode *parent, unsigned int parentPort,
                FatTreeNode *child, unsigned int childPort);

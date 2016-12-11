@@ -7,7 +7,6 @@
 #include "src/kernel/routing/NetCard.hpp"
 
 #include "src/surf/network_interface.hpp"
-#include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster_torus, surf_route_cluster, "Torus Routing part of surf");
 

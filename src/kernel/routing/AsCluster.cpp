@@ -73,30 +73,25 @@ void AsCluster::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t
 
 void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 {
-  xbt_node_t current, previous, backboneNode = nullptr;
-  std::pair<Link*, Link*> info;
-
   xbt_assert(router_,"Malformed cluster. This may be because your platform file is a hypergraph while it must be a graph.");
 
   /* create the router */
   xbt_node_t routerNode = new_xbt_graph_node(graph, router_->cname(), nodes);
 
+  xbt_node_t backboneNode = nullptr;
   if(backbone_) {
-    const char *link_nameR = backbone_->getName();
-    backboneNode = new_xbt_graph_node(graph, link_nameR, nodes);
-
+    backboneNode = new_xbt_graph_node(graph, backbone_->getName(), nodes);
     new_xbt_graph_edge(graph, routerNode, backboneNode, edges);
   }
 
   for (auto src: vertices_){
     if (! src->isRouter()) {
-      previous = new_xbt_graph_node(graph, src->cname(), nodes);
+      xbt_node_t previous = new_xbt_graph_node(graph, src->cname(), nodes);
 
-      info = privateLinks_.at(src->id());
+      std::pair<Link*, Link*> info = privateLinks_.at(src->id());
 
       if (info.first) { // link up
-        const char* link_name = static_cast<simgrid::surf::Resource*>(info.first)->getName();
-        current = new_xbt_graph_node(graph, link_name, nodes);
+        xbt_node_t current = new_xbt_graph_node(graph, info.first->getName(), nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
         if (backbone_) {
@@ -107,8 +102,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
       }
 
       if (info.second) { // link down
-        const char* link_name = static_cast<simgrid::surf::Resource*>(info.second)->getName();
-        current = new_xbt_graph_node(graph, link_name, nodes);
+        xbt_node_t current = new_xbt_graph_node(graph, info.second->getName(), nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
         if (backbone_) {

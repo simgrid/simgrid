@@ -15,9 +15,6 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 
-#include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
-
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_fat_tree, surf, "Routing for fat trees");
 
 namespace simgrid {

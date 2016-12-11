@@ -20,14 +20,6 @@ std::vector<s_smpi_factor_t> smpi_lat_factor;
 
 xbt_dict_t gap_lookup = nullptr;
 
-static int factor_cmp(const void *pa, const void *pb)
-{
-  return (((s_smpi_factor_t*)pa)->factor > ((s_smpi_factor_t*)pb)->factor) ? 1 :
-      (((s_smpi_factor_t*)pa)->factor < ((s_smpi_factor_t*)pb)->factor) ? -1 : 0;
-}
-
-#include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
-
 /*********
  * Model *
  *********/
