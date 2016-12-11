@@ -50,7 +50,7 @@ double simgrid::kernel::activity::Exec::remains()
 
 void simgrid::kernel::activity::Exec::post()
 {
-  if (host_ && host_->isOff()) {/* FIMXE: handle resource failure for parallel tasks too */
+  if (host_ && host_->isOff()) {/* FIXME: handle resource failure for parallel tasks too */
     /* If the host running the synchro failed, notice it. This way, the asking
      * process can be killed if it runs on that host itself */
     state = SIMIX_FAILED;
