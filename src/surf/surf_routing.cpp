@@ -20,15 +20,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
-
-  /* Callbacks */
-  simgrid::xbt::signal<void(s4u::As*)> asCreatedCallbacks;
-
-}}} // namespace simgrid::kernel::routing
-
 /**
  * @ingroup SURF_build_api
  * @brief A library containing all known hosts

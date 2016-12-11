@@ -20,12 +20,4 @@ XBT_PRIVATE xbt_node_t new_xbt_graph_node (xbt_graph_t graph, const char *name, 
 XBT_PRIVATE xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xbt_dict_t edges);
 SG_END_DECL()
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
-
-  XBT_PUBLIC_DATA(simgrid::xbt::signal<void(s4u::As*)>) asCreatedCallbacks;
-
-}}}
-
 #endif /* NETWORK_ROUTING_HPP_ */

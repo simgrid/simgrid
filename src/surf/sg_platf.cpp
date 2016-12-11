@@ -717,7 +717,6 @@ simgrid::s4u::As * sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
   /* set the new current component of the tree */
   current_routing = new_as;
 
-  simgrid::kernel::routing::asCreatedCallbacks(new_as);
   if (TRACE_is_enabled())
     sg_instr_AS_begin(AS);
 
