@@ -68,7 +68,7 @@ void AsVivaldi::setPeerLink(NetCard* netcard, double bw_in, double bw_out, doubl
   char* link_down = bprintf("link_%s_DOWN", netcard->cname());
   info.linkUp     = surf_network_model->createLink(link_up, bw_out, latency, SURF_LINK_SHARED);
   info.linkDown   = surf_network_model->createLink(link_down, bw_in, latency, SURF_LINK_SHARED);
-  privateLinks_.insert({netcard->id(), info});
+  privateLinks_.insert({netcard->id(), {info.linkUp, info.linkDown}});
 
   free(link_up);
   free(link_down);
@@ -89,19 +89,19 @@ void AsVivaldi::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t
 
   /* Retrieve the private links */
   if (privateLinks_.find(src->id()) != privateLinks_.end()) {
-    s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id());
-    if (info.linkUp) {
-      route->link_list->push_back(info.linkUp);
+    std::pair<Link*, Link*> info = privateLinks_.at(src->id());
+    if (info.first) {
+      route->link_list->push_back(info.first);
       if (lat)
-        *lat += info.linkUp->latency();
+        *lat += info.first->latency();
     }
   }
   if (privateLinks_.find(dst->id()) != privateLinks_.end()) {
-    s_surf_parsing_link_up_down_t info = privateLinks_.at(dst->id());
-    if (info.linkDown) {
-      route->link_list->push_back(info.linkDown);
+    std::pair<Link*, Link*> info = privateLinks_.at(dst->id());
+    if (info.second) {
+      route->link_list->push_back(info.second);
       if (lat)
-        *lat += info.linkDown->latency();
+        *lat += info.second->latency();
     }
   }
 

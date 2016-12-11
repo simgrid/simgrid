@@ -261,7 +261,8 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       free(tmp_link);
 
       auto as_cluster = static_cast<AsCluster*>(current_as);
-      as_cluster->privateLinks_.insert({rankId*as_cluster->linkCountPerNode_, info_loop});
+      as_cluster->privateLinks_.insert(
+          {rankId * as_cluster->linkCountPerNode_, {info_loop.linkUp, info_loop.linkDown}});
     }
 
     //add a limiter link (shared link to account for maximal bandwidth of the node)
@@ -278,7 +279,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       info_lim.linkUp = info_lim.linkDown = Link::byName(tmp_link);
       free(tmp_link);
       current_as->privateLinks_.insert(
-          {rankId * current_as->linkCountPerNode_ + current_as->hasLoopback_ , info_lim});
+          {rankId * current_as->linkCountPerNode_ + current_as->hasLoopback_, {info_lim.linkUp, info_lim.linkDown}});
     }
 
     //call the cluster function that adds the others links
@@ -570,14 +571,13 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
 
 void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
 {
-  using simgrid::kernel::routing::AsVivaldi;
-
-  AsVivaldi* as = dynamic_cast<simgrid::kernel::routing::AsVivaldi*>(current_routing);
+  simgrid::kernel::routing::AsVivaldi* as = dynamic_cast<simgrid::kernel::routing::AsVivaldi*>(current_routing);
   xbt_assert(as, "<peer> tag can only be used in Vivaldi ASes");
 
   std::vector<double> speedPerPstate;
   speedPerPstate.push_back(peer->speed);
   simgrid::s4u::Host* host = as->createHost(peer->id, &speedPerPstate, 1);
+
   as->setPeerLink(host->pimpl_netcard, peer->bw_in, peer->bw_out, peer->lat, peer->coord);
   simgrid::s4u::Host::onCreation(*host);
 
@@ -760,5 +760,5 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
     surf_parse_error("Host_link for '%s' is already defined!",hostlink->id);
 
   XBT_DEBUG("Push Host_link for host '%s' to position %d", netcard->name().c_str(), netcard->id());
-  as_cluster->privateLinks_.insert({netcard->id(), link_up_down});
+  as_cluster->privateLinks_.insert({netcard->id(), {link_up_down.linkUp, link_up_down.linkDown}});
 }

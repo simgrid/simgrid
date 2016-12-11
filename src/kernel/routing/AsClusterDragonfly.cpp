@@ -249,12 +249,12 @@ void AsClusterDragonfly::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_rout
            dst->id());
 
   if ((src->id() == dst->id()) && hasLoopback_) {
-     s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id() * linkCountPerNode_);
+    std::pair<Link*, Link*> info = privateLinks_.at(src->id() * linkCountPerNode_);
 
-     route->link_list->push_back(info.linkUp);
-     if (latency)
-       *latency += info.linkUp->latency();
-     return;
+    route->link_list->push_back(info.first);
+    if (latency)
+      *latency += info.first->latency();
+    return;
   }
 
   unsigned int *myCoords = rankId_to_coords(src->id());
@@ -272,8 +272,8 @@ void AsClusterDragonfly::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_rout
     *latency += myRouter->myNodes_[myCoords[3] * numLinksperLink_]->latency();
 
   if (hasLimiter_) {    // limiter for sender
-    s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id() * linkCountPerNode_ + hasLoopback_);
-    route->link_list->push_back(info.linkUp);
+    std::pair<Link*, Link*> info = privateLinks_.at(src->id() * linkCountPerNode_ + hasLoopback_);
+    route->link_list->push_back(info.first);
   }
 
   if(targetRouter!=myRouter){
@@ -323,8 +323,8 @@ void AsClusterDragonfly::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_rout
   }
 
   if (hasLimiter_) {    // limiter for receiver
-    s_surf_parsing_link_up_down_t info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_);
-    route->link_list->push_back(info.linkUp);
+    std::pair<Link*, Link*> info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_);
+    route->link_list->push_back(info.first);
   }
 
   //router->node local link

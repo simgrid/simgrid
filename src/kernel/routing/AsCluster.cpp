@@ -28,24 +28,24 @@ void AsCluster::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t
   if (! src->isRouter()) {    // No specific link for router
 
     if((src->id() == dst->id()) && hasLoopback_ ){
-      s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id() * linkCountPerNode_);
-      route->link_list->push_back(info.linkUp);
+      std::pair<Link*, Link*> info = privateLinks_.at(src->id() * linkCountPerNode_);
+      route->link_list->push_back(info.first);
       if (lat)
-        *lat += info.linkUp->latency();
+        *lat += info.first->latency();
       return;
     }
 
     if (hasLimiter_){          // limiter for sender
-      s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0));
-      route->link_list->push_back(info.linkUp);
+      std::pair<Link*, Link*> info = privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0));
+      route->link_list->push_back(info.first);
     }
 
-    s_surf_parsing_link_up_down_t info =
+    std::pair<Link*, Link*> info =
         privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0) + (hasLimiter_ ? 1 : 0));
-    if (info.linkUp) {         // link up
-      route->link_list->push_back(info.linkUp);
+    if (info.first) { // link up
+      route->link_list->push_back(info.first);
       if (lat)
-        *lat += info.linkUp->latency();
+        *lat += info.first->latency();
     }
 
   }
@@ -57,16 +57,16 @@ void AsCluster::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t
   }
 
   if (! dst->isRouter()) {    // No specific link for router
-    s_surf_parsing_link_up_down_t info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_ + hasLimiter_);
+    std::pair<Link*, Link*> info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_ + hasLimiter_);
 
-    if (info.linkDown) {       // link down
-      route->link_list->push_back(info.linkDown);
+    if (info.second) { // link down
+      route->link_list->push_back(info.second);
       if (lat)
-        *lat += info.linkDown->latency();
+        *lat += info.second->latency();
     }
     if (hasLimiter_){          // limiter for receiver
         info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_);
-        route->link_list->push_back(info.linkUp);
+        route->link_list->push_back(info.first);
     }
   }
 }
@@ -74,7 +74,7 @@ void AsCluster::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t
 void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 {
   xbt_node_t current, previous, backboneNode = nullptr;
-  s_surf_parsing_link_up_down_t info;
+  std::pair<Link*, Link*> info;
 
   xbt_assert(router_,"Malformed cluster. This may be because your platform file is a hypergraph while it must be a graph.");
 
@@ -94,8 +94,8 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 
       info = privateLinks_.at(src->id());
 
-      if (info.linkUp) {     // link up
-        const char *link_name = static_cast<simgrid::surf::Resource*>(info.linkUp)->getName();
+      if (info.first) { // link up
+        const char* link_name = static_cast<simgrid::surf::Resource*>(info.first)->getName();
         current = new_xbt_graph_node(graph, link_name, nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
@@ -106,9 +106,8 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
         }
       }
 
-      if (info.linkDown) {    // link down
-        const char *link_name = static_cast<simgrid::surf::Resource*>(
-          info.linkDown)->getName();
+      if (info.second) { // link down
+        const char* link_name = static_cast<simgrid::surf::Resource*>(info.second)->getName();
         current = new_xbt_graph_node(graph, link_name, nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
@@ -145,7 +144,7 @@ void AsCluster::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
     info.linkUp = Link::byName(link_id);
     info.linkDown = info.linkUp;
   }
-  privateLinks_.insert({position, info});
+  privateLinks_.insert({position, {info.linkUp, info.linkDown}});
   xbt_free(link_id);
 }
 

@@ -80,7 +80,7 @@ namespace simgrid {
          * note that position rankId*(xbt_dynar_length(dimensions)+has_loopback?+has_limiter?)
          * holds the link "rankId->rankId"
          */
-        privateLinks_.insert({position + j, info});
+        privateLinks_.insert({position + j, {info.linkUp, info.linkDown}});
         dim_product *= current_dimension;
         xbt_free(link_id);
       }
@@ -121,11 +121,11 @@ namespace simgrid {
         return;
 
       if (src->id() == dst->id() && hasLoopback_) {
-        s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id() * linkCountPerNode_);
+        std::pair<Link*, Link*> info = privateLinks_.at(src->id() * linkCountPerNode_);
 
-        route->link_list->push_back(info.linkUp);
+        route->link_list->push_back(info.first);
         if (lat)
-          *lat += info.linkUp->latency();
+          *lat += info.first->latency();
         return;
       }
 
@@ -199,23 +199,23 @@ namespace simgrid {
           dim_product *= cur_dim;
         }
 
-        s_surf_parsing_link_up_down_t info;
+        std::pair<Link*, Link*> info;
 
         if (hasLimiter_) {    // limiter for sender
           info = privateLinks_.at(nodeOffset + hasLoopback_);
-          route->link_list->push_back(info.linkUp);
+          route->link_list->push_back(info.first);
         }
 
         info = privateLinks_.at(linkOffset);
 
         if (use_lnk_up == false) {
-          route->link_list->push_back(info.linkDown);
+          route->link_list->push_back(info.second);
           if (lat)
-            *lat += info.linkDown->latency();
+            *lat += info.second->latency();
         } else {
-          route->link_list->push_back(info.linkUp);
+          route->link_list->push_back(info.first);
           if (lat)
-            *lat += info.linkUp->latency();
+            *lat += info.first->latency();
         }
         current_node = next_node;
         next_node = 0;

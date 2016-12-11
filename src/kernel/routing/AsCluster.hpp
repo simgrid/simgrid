@@ -25,7 +25,8 @@ public:
   virtual void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) {}
 
   /* We use a map instead of a std::vector here because that's a sparse vector. Some values may not exist */
-  std::unordered_map<unsigned int, s_surf_parsing_link_up_down_t> privateLinks_;
+  /* The pair is {linkUp, linkDown} */
+  std::unordered_map<unsigned int, std::pair<Link*, Link*>> privateLinks_;
 
   Link* backbone_ = nullptr;
   void *loopback_ = nullptr;
