@@ -11,12 +11,12 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 
-simgrid::kernel::activity::Exec::Exec(const char*name, sg_host_t hostarg)
+simgrid::kernel::activity::Exec::Exec(const char*name, sg_host_t host) :
+    host_(host)
 {
   if (name)
     this->name = name;
   this->state = SIMIX_RUNNING;
-  this->host = hostarg;
 }
 
 simgrid::kernel::activity::Exec::~Exec()
@@ -50,7 +50,7 @@ double simgrid::kernel::activity::Exec::remains()
 
 void simgrid::kernel::activity::Exec::post()
 {
-  if (host && host->isOff()) {/* FIMXE: handle resource failure for parallel tasks too */
+  if (host_ && host_->isOff()) {/* FIMXE: handle resource failure for parallel tasks too */
     /* If the host running the synchro failed, notice it. This way, the asking
      * process can be killed if it runs on that host itself */
     state = SIMIX_FAILED;

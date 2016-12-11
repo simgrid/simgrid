@@ -13,16 +13,13 @@ namespace simgrid {
 namespace s4u {
 
 boost::unordered_map <std::string, Storage *> *Storage::storages_ = new boost::unordered_map<std::string, Storage*> ();
-Storage::Storage(std::string name, smx_storage_t inferior) {
-  name_ = name;
-  pimpl_ = inferior;
-
+Storage::Storage(std::string name, smx_storage_t inferior) :
+    name_(name), pimpl_(inferior)
+{
   storages_->insert({name, this});
 }
 
-Storage::~Storage() {
-  // TODO Auto-generated destructor stub
-}
+Storage::~Storage() = default;
 
 smx_storage_t Storage::inferior() {
   return pimpl_;

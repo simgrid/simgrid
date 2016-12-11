@@ -252,7 +252,8 @@ double CpuTiTgmr::getPowerScale(double a)
 * \param  value          Percentage of CPU speed available (useful to fixed tracing)
 * \return  Integration trace structure
 */
-CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value)
+CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value) :
+    speedTrace_(speedTrace)
 {
   double total_time = 0.0;
   trace_ = 0;
@@ -274,12 +275,11 @@ CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value)
   }
 
   type_ = TRACE_DYNAMIC;
-  speedTrace_ = speedTrace;
 
   /* count the total time of trace file */
-  for (auto val: speedTrace->event_list) {
+  for (auto val : speedTrace->event_list)
     total_time += val.delta;
-  }
+
   trace_ = new CpuTiTrace(speedTrace);
   lastTime_ = total_time;
   total_ = trace_->integrateSimple(0, total_time);
@@ -669,9 +669,8 @@ void CpuTi::modified(bool modified){
 
 CpuTiAction::CpuTiAction(CpuTiModel *model_, double cost, bool failed, CpuTi *cpu)
  : CpuAction(model_, cost, failed)
+ , cpu_(cpu)
 {
-  cpu_ = cpu;
-  indexHeap_ = -1;
   cpu_->modified(true);
 }
 

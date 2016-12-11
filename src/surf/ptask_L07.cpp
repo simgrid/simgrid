@@ -150,10 +150,12 @@ Action *HostL07Model::executeParallelTask(int host_nb, sg_host_t *host_list,
   return new L07Action(this, host_nb, host_list, flops_amount, bytes_amount, rate);
 }
 
-
 L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
                      double *flops_amount, double *bytes_amount, double rate)
   : CpuAction(model, 1, 0)
+  , computationAmount_(flops_amount)
+  , communicationAmount_(bytes_amount)
+  , rate_(rate)
 {
   int nb_link = 0;
   int nb_used_host = 0; /* Only the hosts with something to compute (>0 flops) are counted) */
@@ -191,10 +193,7 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
       nb_used_host++;
 
   XBT_DEBUG("Creating a parallel task (%p) with %d hosts and %d unique links.", this, host_nb, nb_link);
-  this->computationAmount_ = flops_amount;
-  this->communicationAmount_ = bytes_amount;
   this->latency_ = latency;
-  this->rate_ = rate;
 
   this->variable_ = lmm_variable_new(model->getMaxminSystem(), this, 1.0,
       (rate > 0 ? rate : -1.0),

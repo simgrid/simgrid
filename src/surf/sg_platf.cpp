@@ -265,7 +265,8 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     }
 
     //add a limiter link (shared link to account for maximal bandwidth of the node)
-    linkUp = linkDown = nullptr;
+    linkUp   = nullptr;
+    linkDown = nullptr;
     if(cluster->limiter_link!=0){
       char *tmp_link = bprintf("%s_limiter", link_id);
       XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", tmp_link, cluster->limiter_link);

@@ -62,7 +62,8 @@ namespace simgrid {
         link.latency = cluster->lat;
         link.policy = cluster->sharing_policy;
         sg_platf_new_link(&link);
-        Link *linkUp, *linkDown;
+        Link* linkUp;
+        Link* linkDown;
         if (link.policy == SURF_LINK_FULLDUPLEX) {
           char *tmp_link = bprintf("%s_UP", link_id);
           linkUp         = Link::byName(tmp_link);
