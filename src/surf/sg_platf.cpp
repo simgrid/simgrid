@@ -237,8 +237,6 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
 
     XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id, cluster->bw, cluster->lat);
 
-    s_surf_parsing_link_up_down_t info_lim;
-    s_surf_parsing_link_up_down_t info_loop;
     // All links are saved in a matrix;
     // every row describes a single node; every node may have multiple links.
     // the first column may store a link from x to x if p_has_loopback is set
@@ -246,6 +244,8 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     // other columns are to store one or more link for the node
 
     //add a loopback link
+    Link* linkUp   = nullptr;
+    Link* linkDown = nullptr;
     if(cluster->loopback_bw!=0 || cluster->loopback_lat!=0){
       char *tmp_link = bprintf("%s_loopback", link_id);
       XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", tmp_link, cluster->loopback_bw);
@@ -256,16 +256,16 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       link.latency   = cluster->loopback_lat;
       link.policy    = SURF_LINK_FATPIPE;
       sg_platf_new_link(&link);
-      info_loop.linkUp = Link::byName(tmp_link);
-      info_loop.linkDown = Link::byName(tmp_link);
+      linkUp   = Link::byName(tmp_link);
+      linkDown = Link::byName(tmp_link);
       free(tmp_link);
 
       auto as_cluster = static_cast<AsCluster*>(current_as);
-      as_cluster->privateLinks_.insert(
-          {rankId * as_cluster->linkCountPerNode_, {info_loop.linkUp, info_loop.linkDown}});
+      as_cluster->privateLinks_.insert({rankId * as_cluster->linkCountPerNode_, {linkUp, linkDown}});
     }
 
     //add a limiter link (shared link to account for maximal bandwidth of the node)
+    linkUp = linkDown = nullptr;
     if(cluster->limiter_link!=0){
       char *tmp_link = bprintf("%s_limiter", link_id);
       XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", tmp_link, cluster->limiter_link);
@@ -276,10 +276,10 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       link.latency = 0;
       link.policy = SURF_LINK_SHARED;
       sg_platf_new_link(&link);
-      info_lim.linkUp = info_lim.linkDown = Link::byName(tmp_link);
+      linkUp = linkDown = Link::byName(tmp_link);
       free(tmp_link);
       current_as->privateLinks_.insert(
-          {rankId * current_as->linkCountPerNode_ + current_as->hasLoopback_, {info_lim.linkUp, info_lim.linkDown}});
+          {rankId * current_as->linkCountPerNode_ + current_as->hasLoopback_, {linkUp, linkDown}});
     }
 
     //call the cluster function that adds the others links
@@ -747,12 +747,11 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
   xbt_assert(dynamic_cast<simgrid::kernel::routing::AsCluster*>(current_routing),
       "Only hosts from Cluster and Vivaldi ASes can get an host_link.");
 
-  s_surf_parsing_link_up_down_t link_up_down;
-  link_up_down.linkUp = Link::byName(hostlink->link_up);
-  link_up_down.linkDown = Link::byName(hostlink->link_down);
+  simgrid::surf::Link* linkUp   = Link::byName(hostlink->link_up);
+  simgrid::surf::Link* linkDown = Link::byName(hostlink->link_down);
 
-  xbt_assert(link_up_down.linkUp, "Link '%s' not found!",hostlink->link_up);
-  xbt_assert(link_up_down.linkDown, "Link '%s' not found!",hostlink->link_down);
+  xbt_assert(linkUp, "Link '%s' not found!", hostlink->link_up);
+  xbt_assert(linkDown, "Link '%s' not found!", hostlink->link_down);
 
   auto as_cluster = static_cast<simgrid::kernel::routing::AsCluster*>(current_routing);
 
@@ -760,5 +759,5 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
     surf_parse_error("Host_link for '%s' is already defined!",hostlink->id);
 
   XBT_DEBUG("Push Host_link for host '%s' to position %d", netcard->name().c_str(), netcard->id());
-  as_cluster->privateLinks_.insert({netcard->id(), {link_up_down.linkUp, link_up_down.linkDown}});
+  as_cluster->privateLinks_.insert({netcard->id(), {linkUp, linkDown}});
 }

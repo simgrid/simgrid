@@ -251,12 +251,6 @@ XBT_PRIVATE void sg_instr_new_router(sg_platf_router_cbarg_t router);
 XBT_PRIVATE void sg_instr_new_host(simgrid::s4u::Host& host);
 XBT_PRIVATE void sg_instr_AS_end();
 
-typedef struct s_surf_parsing_link_up_down *surf_parsing_link_up_down_t;
-typedef struct s_surf_parsing_link_up_down {
-  Link* linkUp;
-  Link* linkDown;
-} s_surf_parsing_link_up_down_t;
-
 SG_END_DECL()
 
 namespace simgrid {

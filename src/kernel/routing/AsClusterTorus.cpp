@@ -62,24 +62,24 @@ namespace simgrid {
         link.latency = cluster->lat;
         link.policy = cluster->sharing_policy;
         sg_platf_new_link(&link);
-        s_surf_parsing_link_up_down_t info;
+        Link *linkUp, *linkDown;
         if (link.policy == SURF_LINK_FULLDUPLEX) {
           char *tmp_link = bprintf("%s_UP", link_id);
-          info.linkUp = Link::byName(tmp_link);
+          linkUp         = Link::byName(tmp_link);
           free(tmp_link);
           tmp_link = bprintf("%s_DOWN", link_id);
-          info.linkDown = Link::byName(tmp_link);
+          linkDown = Link::byName(tmp_link);
           free(tmp_link);
         } else {
-          info.linkUp = Link::byName(link_id);
-          info.linkDown = info.linkUp;
+          linkUp   = Link::byName(link_id);
+          linkDown = linkUp;
         }
         /*
          * Add the link to its appropriate position;
          * note that position rankId*(xbt_dynar_length(dimensions)+has_loopback?+has_limiter?)
          * holds the link "rankId->rankId"
          */
-        privateLinks_.insert({position + j, {info.linkUp, info.linkDown}});
+        privateLinks_.insert({position + j, {linkUp, linkDown}});
         dim_product *= current_dimension;
         xbt_free(link_id);
       }

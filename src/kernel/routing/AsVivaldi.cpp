@@ -63,12 +63,11 @@ void AsVivaldi::setPeerLink(NetCard* netcard, double bw_in, double bw_out, doubl
 
   new simgrid::kernel::routing::vivaldi::Coords(netcard, coord);
 
-  s_surf_parsing_link_up_down_t info;
   char* link_up   = bprintf("link_%s_UP", netcard->cname());
   char* link_down = bprintf("link_%s_DOWN", netcard->cname());
-  info.linkUp     = surf_network_model->createLink(link_up, bw_out, latency, SURF_LINK_SHARED);
-  info.linkDown   = surf_network_model->createLink(link_down, bw_in, latency, SURF_LINK_SHARED);
-  privateLinks_.insert({netcard->id(), {info.linkUp, info.linkDown}});
+  Link* linkUp    = surf_network_model->createLink(link_up, bw_out, latency, SURF_LINK_SHARED);
+  Link* linkDown  = surf_network_model->createLink(link_down, bw_in, latency, SURF_LINK_SHARED);
+  privateLinks_.insert({netcard->id(), {linkUp, linkDown}});
 
   free(link_up);
   free(link_down);

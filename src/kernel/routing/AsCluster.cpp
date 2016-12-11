@@ -116,7 +116,6 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 }
 
 void AsCluster::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int , int position){
-  s_surf_parsing_link_up_down_t info;
   char* link_id = bprintf("%s_link_%d", cluster->id, id);
 
   s_sg_platf_link_cbarg_t link;
@@ -127,18 +126,19 @@ void AsCluster::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
   link.policy = cluster->sharing_policy;
   sg_platf_new_link(&link);
 
+  Link *linkUp, *linkDown;
   if (link.policy == SURF_LINK_FULLDUPLEX) {
     char *tmp_link = bprintf("%s_UP", link_id);
-    info.linkUp = Link::byName(tmp_link);
+    linkUp         = Link::byName(tmp_link);
     xbt_free(tmp_link);
     tmp_link = bprintf("%s_DOWN", link_id);
-    info.linkDown = Link::byName(tmp_link);
+    linkDown = Link::byName(tmp_link);
     xbt_free(tmp_link);
   } else {
-    info.linkUp = Link::byName(link_id);
-    info.linkDown = info.linkUp;
+    linkUp   = Link::byName(link_id);
+    linkDown = linkUp;
   }
-  privateLinks_.insert({position, {info.linkUp, info.linkDown}});
+  privateLinks_.insert({position, {linkUp, linkDown}});
   xbt_free(link_id);
 }
 
