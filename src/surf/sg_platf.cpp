@@ -570,73 +570,22 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
 
 void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
 {
-  using simgrid::kernel::routing::NetCard;
-  using simgrid::kernel::routing::AsCluster;
+  using simgrid::kernel::routing::AsVivaldi;
 
-  char *host_id = bprintf("peer_%s", peer->id);
-  char *router_id = bprintf("router_%s", peer->id);
+  AsVivaldi* as = dynamic_cast<simgrid::kernel::routing::AsVivaldi*>(current_routing);
+  xbt_assert(as, "<peer> tag can only be used in Vivaldi ASes");
 
-  XBT_DEBUG(" ");
+  std::vector<double> speedPerPstate;
+  speedPerPstate.push_back(peer->speed);
+  simgrid::s4u::Host* host = as->createHost(peer->id, &speedPerPstate, 1);
+  as->setPeerLink(host->pimpl_netcard, peer->bw_in, peer->bw_out, peer->lat, peer->coord);
+  simgrid::s4u::Host::onCreation(*host);
 
-  XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", peer->id);
-  s_sg_platf_AS_cbarg_t AS;
-  AS.id      = peer->id;
-  AS.routing = A_surfxml_AS_routing_Cluster;
-  sg_platf_new_AS_begin(&AS);
-  new simgrid::kernel::routing::vivaldi::Coords(current_routing->netcard_, peer->coord);
-
-  XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\"/>", host_id, peer->speed);
-  s_sg_platf_host_cbarg_t host;
-  memset(&host, 0, sizeof(host));
-  host.id = host_id;
-
-  host.speed_per_pstate.push_back(peer->speed);
-  host.pstate = 0;
-  host.speed_trace = peer->availability_trace;
-  host.state_trace = peer->state_trace;
-  host.core_amount = 1;
-  sg_platf_new_host(&host);
-
-  s_sg_platf_link_cbarg_t link;
-  memset(&link, 0, sizeof(link));
-  link.policy  = SURF_LINK_SHARED;
-  link.latency = peer->lat;
-
-  char* link_up = bprintf("link_%s_UP",peer->id);
-  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_up, peer->bw_out, peer->lat);
-  link.id = link_up;
-  link.bandwidth = peer->bw_out;
-  sg_platf_new_link(&link);
-
-  char* link_down = bprintf("link_%s_DOWN",peer->id);
-  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_down, peer->bw_in, peer->lat);
-  link.id = link_down;
-  link.bandwidth = peer->bw_in;
-  sg_platf_new_link(&link);
-
-  XBT_DEBUG("<host_link\tid=\"%s\"\tup=\"%s\"\tdown=\"%s\" />", host_id,link_up,link_down);
-  s_sg_platf_host_link_cbarg_t host_link;
-  memset(&host_link, 0, sizeof(host_link));
-  host_link.id        = host_id;
-  host_link.link_up   = link_up;
-  host_link.link_down = link_down;
-  sg_platf_new_hostlink(&host_link);
-  free(link_up);
-  free(link_down);
-
-  XBT_DEBUG("<router id=\"%s\"/>", router_id);
-  s_sg_platf_router_cbarg_t router;
-  memset(&router, 0, sizeof(router));
-  router.id = router_id;
-  router.coord = peer->coord;
-  sg_platf_new_router(&router);
-
-  XBT_DEBUG("</AS>");
-  sg_platf_new_AS_seal();
-  XBT_DEBUG(" ");
-
-  free(router_id);
-  free(host_id);
+  /* Change from the defaults */
+  if (peer->state_trace)
+    host->pimpl_cpu->setStateTrace(peer->state_trace);
+  if (peer->availability_trace)
+    host->pimpl_cpu->setSpeedTrace(peer->availability_trace);
 }
 
 void sg_platf_begin() { /* Do nothing: just for symmetry of user code */ }

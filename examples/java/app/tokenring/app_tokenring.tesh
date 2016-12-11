@@ -21,10 +21,10 @@ $ java -classpath ${classpath:=.} app/tokenring/Main ${srcdir:=.}/../platforms/r
 $ java -classpath ${classpath:=.} app/tokenring/Main ${srcdir:=.}/../platforms/two_peers.xml '--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n'
 > [    0.000000] (0:maestro@) Using regular java threads.
 > [    0.000000] (0:maestro@) Number of hosts '2'
-> [    0.000000] (1:0@peer_100030591) Host '0' send 'Token' to Host '1'
-> [    0.637910] (2:1@peer_100036570) Host '1' received 'Token'
-> [    0.637910] (2:1@peer_100036570) Host '1' send 'Token' to Host '0'
-> [    1.275820] (1:0@peer_100030591) Host '0' received 'Token'
+> [    0.000000] (1:0@100030591) Host '0' send 'Token' to Host '1'
+> [    0.637910] (2:1@100036570) Host '1' received 'Token'
+> [    0.637910] (2:1@100036570) Host '1' send 'Token' to Host '0'
+> [    1.275820] (1:0@100030591) Host '0' received 'Token'
 > [    1.275820] (0:maestro@) MSG_main finished; Cleaning up the simulation...
 > [    1.275820] (0:maestro@) Simulation time 1.2758201322136908
 

@@ -18,10 +18,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/app-token-ring ${srcdir:=.}/routing_cluster.xml "-
 
 $ $SG_TEST_EXENV ${bindir:=.}/app-token-ring ${srcdir:=.}/two_peers.xml "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
 > [    0.000000] (0:maestro@) Number of hosts '2'
-> [    0.000000] (1:0@peer_100030591) Host "0" send 'Token' to Host "1"
-> [    0.637910] (2:1@peer_100036570) Host "1" received "Token"
-> [    0.637910] (2:1@peer_100036570) Host "1" send 'Token' to Host "0"
-> [    1.275820] (1:0@peer_100030591) Host "0" received "Token"
+> [    0.000000] (1:0@100030591) Host "0" send 'Token' to Host "1"
+> [    0.637910] (2:1@100036570) Host "1" received "Token"
+> [    0.637910] (2:1@100036570) Host "1" send 'Token' to Host "0"
+> [    1.275820] (1:0@100030591) Host "0" received "Token"
 > [    1.275820] (0:maestro@) Simulation time 1.27582
 
 $ $SG_TEST_EXENV ${bindir:=.}/app-token-ring ${srcdir:=.}/meta_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"

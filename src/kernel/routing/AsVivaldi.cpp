@@ -57,6 +57,23 @@ AsVivaldi::AsVivaldi(As* father, const char* name) : AsCluster(father, name)
 {
 }
 
+void AsVivaldi::setPeerLink(NetCard* netcard, double bw_in, double bw_out, double latency, const char* coord)
+{
+  xbt_assert(netcard->containingAS() == this, "Cannot add a peer link to a netcard that is not in this AS");
+
+  new simgrid::kernel::routing::vivaldi::Coords(netcard, coord);
+
+  s_surf_parsing_link_up_down_t info;
+  char* link_up   = bprintf("link_%s_UP", netcard->cname());
+  char* link_down = bprintf("link_%s_DOWN", netcard->cname());
+  info.linkUp     = surf_network_model->createLink(link_up, bw_out, latency, SURF_LINK_SHARED);
+  info.linkDown   = surf_network_model->createLink(link_down, bw_in, latency, SURF_LINK_SHARED);
+  privateLinks_.insert({netcard->id(), info});
+
+  free(link_up);
+  free(link_down);
+}
+
 void AsVivaldi::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
 {
   XBT_DEBUG("vivaldi getLocalRoute from '%s'[%d] '%s'[%d]", src->cname(), src->id(), dst->cname(), dst->id());
@@ -71,7 +88,7 @@ void AsVivaldi::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t
   }
 
   /* Retrieve the private links */
-  if (privateLinks_.size() > src->id()) {
+  if (privateLinks_.find(src->id()) != privateLinks_.end()) {
     s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id());
     if (info.linkUp) {
       route->link_list->push_back(info.linkUp);
@@ -79,7 +96,7 @@ void AsVivaldi::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t
         *lat += info.linkUp->latency();
     }
   }
-  if (privateLinks_.size() > dst->id()) {
+  if (privateLinks_.find(dst->id()) != privateLinks_.end()) {
     s_surf_parsing_link_up_down_t info = privateLinks_.at(dst->id());
     if (info.linkDown) {
       route->link_list->push_back(info.linkDown);

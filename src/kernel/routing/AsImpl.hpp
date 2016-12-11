@@ -97,7 +97,6 @@ public:
 
 private:
   std::map<std::pair<NetCard*, NetCard*>, BypassRoute*> bypassRoutes_; // src x dst -> route
-public:
   routing::NetCard* netcard_ = nullptr;                                // Our representative in the father AS
 };
 
