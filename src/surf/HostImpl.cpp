@@ -296,11 +296,10 @@ xbt_dynar_t HostImpl::getAttachedStorageList()
     {
       /* Check if the new full path is on the same mount point */
       if (!strncmp((const char*)fd->mount, fullpath, strlen(fd->mount))) {
-        sg_size_t *psize, *new_psize;
-        psize      = (sg_size_t*)xbt_dict_get_or_null(findStorageOnMountList(fd->mount)->content_, fd->name);
-        new_psize  = xbt_new(sg_size_t, 1);
-        *new_psize = *psize;
+        sg_size_t* psize = (sg_size_t*)xbt_dict_get_or_null(findStorageOnMountList(fd->mount)->content_, fd->name);
         if (psize) { // src file exists
+          sg_size_t* new_psize = xbt_new(sg_size_t, 1);
+          *new_psize           = *psize;
           xbt_dict_remove(findStorageOnMountList(fd->mount)->content_, fd->name);
           char* path = (char*)xbt_malloc((strlen(fullpath) - strlen(fd->mount) + 1));
           strncpy(path, fullpath + strlen(fd->mount), strlen(fullpath) - strlen(fd->mount) + 1);

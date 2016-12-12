@@ -436,7 +436,11 @@ void smpi_datatype_use(MPI_Datatype type){
 #endif
 }
 
-void smpi_datatype_unuse(MPI_Datatype type){
+void smpi_datatype_unuse(MPI_Datatype type)
+{
+  if (type == MPI_DATATYPE_NULL)
+    return;
+
   if (type->in_use > 0)
     type->in_use--;
 
@@ -444,9 +448,9 @@ void smpi_datatype_unuse(MPI_Datatype type){
     static_cast<s_smpi_subtype_t *>((type)->substruct)->subtype_free(&type);  
   }
 
-  if(type != MPI_DATATYPE_NULL && type->in_use == 0){
+  if (type->in_use == 0)
     smpi_datatype_free(&type);
-  }
+
 #if HAVE_MC
   if(MC_is_active())
     MC_ignore(&(type->in_use), sizeof(type->in_use));
