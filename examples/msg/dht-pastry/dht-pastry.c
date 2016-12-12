@@ -68,7 +68,7 @@ typedef struct s_task_data {
 } s_task_data_t, *task_data_t;
 
 static void get_mailbox(int node_id, char* mailbox);
-static int domain(int a, int level);
+static int domain(unsigned int a, unsigned int level);
 static int shl(int a, int b);
 static int closest_in_namespace_set(node_t node, int dest);
 static int routing_next(node_t node, int dest);
@@ -86,7 +86,8 @@ static void get_mailbox(int node_id, char* mailbox)
 
 /** Get the specific level of a node id */
 unsigned int domain_mask = 0;
-static int domain(int a, int level) {
+static int domain(unsigned int a, unsigned int level)
+{
   if (domain_mask == 0)
     domain_mask = pow(2, DOMAIN_SIZE) - 1;
   unsigned int shift = (LEVELS_COUNT-level-1)*DOMAIN_SIZE;

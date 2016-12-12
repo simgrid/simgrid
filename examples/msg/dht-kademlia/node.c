@@ -116,7 +116,7 @@ unsigned int get_id_in_prefix(unsigned int id, unsigned int prefix)
   if (prefix == 0) {
     return 0;
   } else {
-    return (1 << (prefix - 1)) ^ id;
+    return (1 << ((unsigned int)(prefix - 1))) ^ id;
   }
 }
 
