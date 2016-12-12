@@ -2,9 +2,14 @@
 $ ${bindir:=.}/stack_overflow --cfg=contexts/stack-size:96 ${srcdir:=.}/examples/platforms/small_platform.xml
 > [Tremblay:master:(0) 0.000000] [test/INFO] Launching our nice bugged recursive function...
 > Access violation detected.
-> This can result from a programming error in your code or, although less likely,
-> from a bug in SimGrid itself.  This can also be the sign of a bug in the OS or
-> in third-party libraries.  Failing hardware can sometimes generate such errors
-> too.
-> Finally, if nothing of the above applies, this can result from a stack overflow.
-> Try to increase stack size with --cfg=contexts/stack-size (current size is 96 KiB).
+> This probably comes from a programming error in your code, or from a stack
+> overflow. If you are certain of your code, try increasing the stack size
+>    --cfg=contexts/stack-size=XXX (current size is 96 KiB).
+>
+> If it does not help, this may have one of the following causes:
+> a bug in SimGrid, a bug in the OS or a bug in a third-party libraries.
+> Failing hardware can sometimes generate such errors too.
+>
+> If you think you've found a bug in SimGrid, please report it along with a
+> Minimal Working Example (MWE) reproducing your problem and a full backtrace
+> of the fault captured with gdb or valgrind.
