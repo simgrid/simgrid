@@ -499,7 +499,7 @@ int PMPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
   } else {
     if (n == 0) {
       *newgroup = group;
-      if(group!= smpi_comm_group(MPI_COMM_WORLD) && group != MPI_GROUP_NULL
+      if (group != smpi_comm_group(MPI_COMM_WORLD)
                 && group != smpi_comm_group(MPI_COMM_SELF) && group != MPI_GROUP_EMPTY)
       smpi_group_use(group);
     } else if (n == smpi_group_size(group)) {
@@ -602,7 +602,7 @@ int PMPI_Group_range_excl(MPI_Group group, int n, int ranges[][3], MPI_Group * n
   } else {
     if (n == 0) {
       *newgroup = group;
-      if(group!= smpi_comm_group(MPI_COMM_WORLD) && group != MPI_GROUP_NULL
+      if (group!= smpi_comm_group(MPI_COMM_WORLD)
                 && group != smpi_comm_group(MPI_COMM_SELF) && group != MPI_GROUP_EMPTY)
       smpi_group_use(group);
     } else {
@@ -1346,7 +1346,7 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
     smpi_empty_status(status);
     retval = MPI_SUCCESS;
   } else {
-    int rank = (request!=nullptr && (*request)->comm != MPI_COMM_NULL) ? smpi_process_index() : -1;
+    int rank = ((*request)->comm != MPI_COMM_NULL) ? smpi_process_index() : -1;
 
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_TEST;

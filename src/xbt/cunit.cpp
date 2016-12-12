@@ -583,7 +583,7 @@ int xbt_test_run(char *selection, int verbosity)
             ? ((1 - (double) _xbt_test_unit_failed / (double) _xbt_test_nb_units) * 100.0) : 100.0, _xbt_test_nb_units);
     first = 1;
     if (_xbt_test_nb_units != _xbt_test_unit_failed) {
-      fprintf(stderr, "%s%d ok", (first ? "" : ", "), _xbt_test_nb_units - _xbt_test_unit_failed);
+      fprintf(stderr, "%d ok", _xbt_test_nb_units - _xbt_test_unit_failed);
       first = 0;
     }
     if (_xbt_test_unit_failed) {
@@ -597,7 +597,7 @@ int xbt_test_run(char *selection, int verbosity)
             ? ((1 - (double) _xbt_test_test_failed / (double) _xbt_test_nb_tests) * 100.0) : 100.0, _xbt_test_nb_tests);
     first = 1;
     if (_xbt_test_nb_tests != _xbt_test_test_failed) {
-      fprintf(stderr, "%s%d ok", (first ? "" : ", "), _xbt_test_nb_tests - _xbt_test_test_failed);
+      fprintf(stderr, "%d ok", _xbt_test_nb_tests - _xbt_test_test_failed);
       first = 0;
     }
     if (_xbt_test_test_failed) {
