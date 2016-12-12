@@ -761,3 +761,16 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
   XBT_DEBUG("Push Host_link for host '%s' to position %d", netcard->cname(), netcard->id());
   as_cluster->privateLinks_.insert({netcard->id(), {linkUp, linkDown}});
 }
+
+void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
+{
+  tmgr_trace_t tmgr_trace;
+  if (trace->file && strcmp(trace->file, "") != 0) {
+    tmgr_trace = tmgr_trace_new_from_file(trace->file);
+  } else {
+    xbt_assert(strcmp(trace->pc_data, ""),
+        "Trace '%s' must have either a content, or point to a file on disk.",trace->id);
+    tmgr_trace = tmgr_trace_new_from_string(trace->id, trace->pc_data, trace->periodicity);
+  }
+  xbt_dict_set(traces_set_list, trace->id, static_cast<void*>(tmgr_trace), nullptr);
+}

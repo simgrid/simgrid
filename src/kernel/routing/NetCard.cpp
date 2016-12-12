@@ -8,7 +8,7 @@
 #include "src/surf/surf_routing.hpp"
 #include <simgrid/s4u/host.hpp>
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_route);
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
 namespace simgrid {
 namespace kernel {
@@ -25,10 +25,7 @@ simgrid::xbt::signal<void(NetCard*)> NetCard::onCreation;
  */
 simgrid::kernel::routing::NetCard* sg_netcard_by_name_or_null(const char* name)
 {
-  sg_host_t h                                = sg_host_by_name(name);
-  simgrid::kernel::routing::NetCard* netcard = h == nullptr ? nullptr : h->pimpl_netcard;
-  if (!netcard)
-    netcard =
-        static_cast<simgrid::kernel::routing::NetCard*>(xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL));
-  return netcard;
+  sg_host_t host = sg_host_by_name(name);
+  return (host != nullptr) ? host->pimpl_netcard
+      : static_cast<simgrid::kernel::routing::NetCard*>(xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL));
 }
