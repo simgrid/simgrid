@@ -13,8 +13,7 @@ class MyHost {
 public:
 
   void show_info(boost::unordered_map <std::string, simgrid::s4u::Storage*> const&mounts) {
-    XBT_INFO("Storage info on %s:",
-      simgrid::s4u::Host::current()->name().c_str());
+    XBT_INFO("Storage info on %s:", simgrid::s4u::Host::current()->cname());
 
     for (const auto&kv : mounts) {
       const char* mountpoint = kv.first.c_str();

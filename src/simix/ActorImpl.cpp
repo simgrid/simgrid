@@ -247,10 +247,10 @@ smx_actor_t SIMIX_process_create(
 {
   smx_actor_t process = nullptr;
 
-  XBT_DEBUG("Start process %s on host '%s'", name, host->name().c_str());
+  XBT_DEBUG("Start process %s on host '%s'", name, host->cname());
 
   if (host->isOff()) {
-    XBT_WARN("Cannot launch process '%s' on failed host '%s'", name, host->name().c_str());
+    XBT_WARN("Cannot launch process '%s' on failed host '%s'", name, host->cname());
     return nullptr;
   }
   else {

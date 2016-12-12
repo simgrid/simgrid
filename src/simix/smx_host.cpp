@@ -62,7 +62,7 @@ namespace simgrid {
     void Host::turnOn()
     {
       for (auto arg : boot_processes) {
-        XBT_DEBUG("Booting Process %s(%s) right now", arg->name.c_str(), arg->host->name().c_str());
+        XBT_DEBUG("Booting Process %s(%s) right now", arg->name.c_str(), arg->host->cname());
         simix_global->create_process_function(arg->name.c_str(),
             arg->code,
             nullptr,

@@ -22,9 +22,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix, "Logging specific to SIMIX Virt
 void SIMIX_vm_suspend(sg_host_t vm, smx_actor_t issuer)
 {
   if (static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getState() != SURF_VM_STATE_RUNNING)
-    THROWF(vm_error, 0, "VM(%s) is not running", vm->name().c_str());
+    THROWF(vm_error, 0, "VM(%s) is not running", vm->cname());
 
-  XBT_DEBUG("suspend VM(%s), where %d processes exist", vm->name().c_str(), xbt_swag_size(sg_host_simix(vm)->process_list));
+  XBT_DEBUG("suspend VM(%s), where %d processes exist", vm->cname(), xbt_swag_size(sg_host_simix(vm)->process_list));
 
   /* jump to vm_ws_suspend. The state will be set. */
   static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->suspend();
@@ -57,10 +57,9 @@ void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, sg_host_t vm)
 void SIMIX_vm_resume(sg_host_t vm)
 {
   if (static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getState() != SURF_VM_STATE_SUSPENDED)
-    THROWF(vm_error, 0, "VM(%s) was not suspended", vm->name().c_str());
+    THROWF(vm_error, 0, "VM(%s) was not suspended", vm->cname());
 
-  XBT_DEBUG("resume VM(%s), where %d processes exist",
-      vm->name().c_str(), xbt_swag_size(sg_host_simix(vm)->process_list));
+  XBT_DEBUG("resume VM(%s), where %d processes exist", vm->cname(), xbt_swag_size(sg_host_simix(vm)->process_list));
 
   /* jump to vm_ws_resume() */
   static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->resume();
@@ -110,10 +109,9 @@ void simcall_HANDLER_vm_save(smx_simcall_t simcall, sg_host_t vm)
 void SIMIX_vm_shutdown(sg_host_t vm, smx_actor_t issuer)
 {
   if (static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getState() != SURF_VM_STATE_RUNNING)
-    THROWF(vm_error, 0, "VM(%s) is not running", vm->name().c_str());
+    THROWF(vm_error, 0, "VM(%s) is not running", vm->cname());
 
-  XBT_DEBUG("shutdown VM %s, that contains %d processes",
-      vm->name().c_str(),xbt_swag_size(sg_host_simix(vm)->process_list));
+  XBT_DEBUG("shutdown VM %s, that contains %d processes", vm->cname(), xbt_swag_size(sg_host_simix(vm)->process_list));
 
   smx_actor_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(vm)->process_list) {

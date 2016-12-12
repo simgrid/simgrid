@@ -103,7 +103,7 @@ void HostEnergy::update()
 
   XBT_DEBUG(
       "[update_energy of %s] period=[%.2f-%.2f]; current power peak=%.0E flop/s; consumption change: %.2f J -> %.2f J",
-      host->name().c_str(), start_time, finish_time, host->pimpl_cpu->speed_.peak, previous_energy, energy_this_step);
+      host->cname(), start_time, finish_time, host->pimpl_cpu->speed_.peak, previous_energy, energy_this_step);
 }
 
 HostEnergy::HostEnergy(simgrid::s4u::Host *ptr) : host(ptr), last_updated(surf_get_clock())
@@ -113,7 +113,7 @@ HostEnergy::HostEnergy(simgrid::s4u::Host *ptr) : host(ptr), last_updated(surf_g
   if (host->properties() != nullptr) {
     char* off_power_str = (char*)xbt_dict_get_or_null(host->properties(), "watt_off");
     if (off_power_str != nullptr) {
-      char *msg = bprintf("Invalid value for property watt_off of host %s: %%s",host->name().c_str());
+      char* msg = bprintf("Invalid value for property watt_off of host %s: %%s", host->cname());
       watts_off = xbt_str_parse_double(off_power_str, msg);
       xbt_free(msg);
     }
@@ -126,20 +126,20 @@ HostEnergy::~HostEnergy()=default;
 
 double HostEnergy::getWattMinAt(int pstate)
 {
-  xbt_assert(!power_range_watts_list.empty(), "No power range properties specified for host %s", host->name().c_str());
+  xbt_assert(!power_range_watts_list.empty(), "No power range properties specified for host %s", host->cname());
   return power_range_watts_list[pstate].min;
 }
 
 double HostEnergy::getWattMaxAt(int pstate)
 {
-  xbt_assert(!power_range_watts_list.empty(), "No power range properties specified for host %s", host->name().c_str());
+  xbt_assert(!power_range_watts_list.empty(), "No power range properties specified for host %s", host->cname());
   return power_range_watts_list[pstate].max;
 }
 
 /** @brief Computes the power consumed by the host according to the current pstate and processor load */
 double HostEnergy::getCurrentWattsValue(double cpu_load)
 {
-  xbt_assert(!power_range_watts_list.empty(), "No power range properties specified for host %s", host->name().c_str());
+  xbt_assert(!power_range_watts_list.empty(), "No power range properties specified for host %s", host->cname());
 
   /* min_power corresponds to the idle power (cpu load = 0) */
   /* max_power is the power consumed at 100% cpu load       */
@@ -206,14 +206,14 @@ void HostEnergy::initWattsRangeList()
     /* retrieve the power values associated with the current pstate */
     xbt_dynar_t current_power_values = xbt_str_split(xbt_dynar_get_as(all_power_values, i, char*), ":");
     xbt_assert(xbt_dynar_length(current_power_values) == 3,
-        "Power properties incorrectly defined - could not retrieve idle, min and max power values for host %s",
-        host->name().c_str());
+               "Power properties incorrectly defined - could not retrieve idle, min and max power values for host %s",
+               host->cname());
 
     /* min_power corresponds to the idle power (cpu load = 0) */
     /* max_power is the power consumed at 100% cpu load       */
-    char *msg_idle = bprintf("Invalid idle value for pstate %d on host %s: %%s", i, host->name().c_str());
-    char *msg_min = bprintf("Invalid min value for pstate %d on host %s: %%s", i, host->name().c_str());
-    char *msg_max = bprintf("Invalid max value for pstate %d on host %s: %%s", i, host->name().c_str());
+    char* msg_idle = bprintf("Invalid idle value for pstate %d on host %s: %%s", i, host->cname());
+    char* msg_min  = bprintf("Invalid min value for pstate %d on host %s: %%s", i, host->cname());
+    char* msg_max  = bprintf("Invalid max value for pstate %d on host %s: %%s", i, host->cname());
     PowerRange range(
       xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 0, char*), msg_idle),
       xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 1, char*), msg_min),
@@ -273,7 +273,7 @@ static void onHostDestruction(simgrid::s4u::Host& host) {
     return;
   HostEnergy *host_energy = host.extension<HostEnergy>();
   host_energy->update();
-  XBT_INFO("Total energy of host %s: %f Joules", host.name().c_str(), host_energy->getConsumedEnergy());
+  XBT_INFO("Total energy of host %s: %f Joules", host.cname(), host_energy->getConsumedEnergy());
 }
 
 /* **************************** Public interface *************************** */

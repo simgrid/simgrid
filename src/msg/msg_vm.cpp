@@ -187,7 +187,7 @@ void MSG_vm_destroy(msg_vm_t vm)
   });
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t container = PJ_container_get(vm->name().c_str());
+    container_t container = PJ_container_get(vm->cname());
     PJ_container_remove_from_parent(container);
     PJ_container_free(container);
   }
@@ -230,7 +230,7 @@ void MSG_vm_start(msg_vm_t vm)
   });
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t vm_container = PJ_container_get(vm->name().c_str());
+    container_t vm_container = PJ_container_get(vm->cname());
     type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
     val_t value              = PJ_value_get_or_new("start", "0 0 1", type); // start is blue
     new_pajePushState(MSG_get_clock(), vm_container, type, value);
@@ -354,7 +354,7 @@ static int migration_rx_fun(int argc, char *argv[])
       PJ_container_new(vm->cname(), INSTR_MSG_VM, PJ_container_get(ms->dst_pm->cname()));
 
       // end link
-      msg  = PJ_container_get(vm->name().c_str());
+      msg  = PJ_container_get(vm->cname());
       type = PJ_type_get("MSG_VM_LINK", PJ_type_get_root());
       new_pajeEndLink(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
     }
@@ -902,10 +902,9 @@ void MSG_vm_restore(msg_vm_t vm)
 {
   simgrid::simix::kernelImmediate([vm]() {
     if (static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getState() != SURF_VM_STATE_SAVED)
-      THROWF(vm_error, 0, "VM(%s) was not saved", vm->name().c_str());
+      THROWF(vm_error, 0, "VM(%s) was not saved", vm->cname());
 
-    XBT_DEBUG("restore VM(%s), where %d processes exist", vm->name().c_str(),
-              xbt_swag_size(sg_host_simix(vm)->process_list));
+    XBT_DEBUG("restore VM(%s), where %d processes exist", vm->cname(), xbt_swag_size(sg_host_simix(vm)->process_list));
 
     /* jump to vm_ws_restore() */
     static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->restore();

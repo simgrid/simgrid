@@ -112,7 +112,7 @@ simgrid::surf::Storage* HostImpl::findStorageOnMountList(const char* mount)
   s_mount_t mnt;
   unsigned int cursor;
 
-  XBT_DEBUG("Search for storage name '%s' on '%s'", mount, piface_->name().c_str());
+  XBT_DEBUG("Search for storage name '%s' on '%s'", mount, piface_->cname());
   xbt_dynar_foreach (storage_, cursor, mnt) {
     XBT_DEBUG("See '%s'", mnt.name);
     if (!strcmp(mount, mnt.name)) {
@@ -121,7 +121,7 @@ simgrid::surf::Storage* HostImpl::findStorageOnMountList(const char* mount)
     }
   }
   if (!st)
-    xbt_die("Can't find mount '%s' for '%s'", mount, piface_->name().c_str());
+    xbt_die("Can't find mount '%s' for '%s'", mount, piface_->cname());
   return st;
 }
 
@@ -150,7 +150,7 @@ xbt_dynar_t HostImpl::getAttachedStorageList()
     if (xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
       simgrid::surf::Storage* storage = static_cast<simgrid::surf::Storage*>(
           xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
-      if (!strcmp((const char*)storage->attach_, piface_->name().c_str())) {
+      if (!strcmp((const char*)storage->attach_, piface_->cname())) {
         xbt_dynar_push_as(result, void*, (void*)storage->getName());
       }
     }
@@ -169,7 +169,7 @@ xbt_dynar_t HostImpl::getAttachedStorageList()
       char* file_mount_name        = nullptr;
       char* mount_name             = nullptr;
 
-      XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath, piface_->name().c_str());
+      XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath, piface_->cname());
       xbt_dynar_foreach (storage_, cursor, mnt) {
         XBT_DEBUG("See '%s'", mnt.name);
         file_mount_name = (char*)xbt_malloc((strlen(mnt.name) + 1));
@@ -192,7 +192,7 @@ xbt_dynar_t HostImpl::getAttachedStorageList()
         path[strlen(fullpath) - longest_prefix_length] = '\0';
         mount_name[longest_prefix_length]              = '\0';
       } else
-        xbt_die("Can't find mount point for '%s' on '%s'", fullpath, piface_->name().c_str());
+        xbt_die("Can't find mount point for '%s' on '%s'", fullpath, piface_->cname());
 
       XBT_DEBUG("OPEN %s on disk '%s'", path, st->getName());
       Action* action = st->open((const char*)mount_name, (const char*)path);

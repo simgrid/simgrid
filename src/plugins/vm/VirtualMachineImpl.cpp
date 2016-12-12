@@ -77,8 +77,7 @@ double VMModel::nextOccuringEvent(double now)
     xbt_assert(cpu, "cpu-less host");
 
     double solved_value = ws_vm->pimpl_vm_->action_->getVariable()->value;
-    XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->name().c_str(),
-              ws_vm->pimpl_vm_->getPm()->name().c_str());
+    XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->cname(), ws_vm->pimpl_vm_->getPm()->cname());
 
     // TODO: check lmm_update_constraint_bound() works fine instead of the below manual substitution.
     // cpu_cas01->constraint->bound = solved_value;
@@ -111,7 +110,7 @@ VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, sim
   /* Initialize the VM parameters */
   params_.ramsize = 0;
 
-  XBT_VERB("Create VM(%s)@PM(%s)", piface->name().c_str(), hostPM_->name().c_str());
+  XBT_VERB("Create VM(%s)@PM(%s)", piface->cname(), hostPM_->cname());
 }
 
 extern "C" int
@@ -188,9 +187,9 @@ s4u::Host* VirtualMachineImpl::getPm()
 /* Update the physical host of the given VM */
 void VirtualMachineImpl::migrate(s4u::Host* host_dest)
 {
-  const char* vm_name     = piface_->name().c_str();
-  const char* pm_name_src = hostPM_->name().c_str();
-  const char* pm_name_dst = host_dest->name().c_str();
+  const char* vm_name     = piface_->cname();
+  const char* pm_name_src = hostPM_->cname();
+  const char* pm_name_dst = host_dest->cname();
 
   /* update net_elm with that of the destination physical host */
   piface_->pimpl_netcard = host_dest->pimpl_netcard;

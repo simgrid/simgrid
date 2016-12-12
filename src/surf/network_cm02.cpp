@@ -295,12 +295,12 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 
   std::vector<Link*> *route = new std::vector<Link*>();
 
-  XBT_IN("(%s,%s,%g,%g)", src->name().c_str(), dst->name().c_str(), size, rate);
+  XBT_IN("(%s,%s,%g,%g)", src->cname(), dst->cname(), size, rate);
 
   src->routeTo(dst, route, &latency);
   xbt_assert(!route->empty() || latency,
              "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
-             src->name().c_str(), dst->name().c_str());
+             src->cname(), dst->cname());
 
   for (auto link: *route)
     if (link->isOff())
@@ -341,7 +341,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
                "Using a model with a gap (e.g., SMPI) with a platform without links (e.g. vivaldi)!!!");
 
     gapAppend(size, route->at(0), action);
-    XBT_DEBUG("Comm %p: %s -> %s gap=%f (lat=%f)", action, src->name().c_str(), dst->name().c_str(), action->senderGap_,
+    XBT_DEBUG("Comm %p: %s -> %s gap=%f (lat=%f)", action, src->cname(), dst->cname(), action->senderGap_,
               action->latency_);
   }
 

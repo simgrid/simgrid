@@ -249,7 +249,7 @@ static void instr_routing_parse_start_link (sg_platf_link_cbarg_t link)
 void sg_instr_new_host(simgrid::s4u::Host& host)
 {
   container_t father = currentContainer.back();
-  container_t container = PJ_container_new(host.name().c_str(), INSTR_HOST, father);
+  container_t container = PJ_container_new(host.cname(), INSTR_HOST, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (! TRACE_disable_speed())) {
     type_t speed = PJ_type_get_or_null ("power", container->type);

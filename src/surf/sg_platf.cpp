@@ -494,7 +494,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     simgrid::s4u::Host* host;
     unsigned int cursor;
     xbt_dynar_foreach(all_hosts,cursor, host) {
-      xbt_strbuff_append(msg,host->name().c_str());
+      xbt_strbuff_append(msg, host->cname());
       xbt_strbuff_append(msg,"', '");
       if (msg->used > 1024) {
         msg->data[msg->used-3]='\0';
@@ -540,8 +540,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     arg->kill_time = kill_time;
     arg->properties = current_property_set;
 
-    XBT_DEBUG("Process %s@%s will be started at time %f",
-      arg->name.c_str(), arg->host->name().c_str(), start_time);
+    XBT_DEBUG("Process %s@%s will be started at time %f", arg->name.c_str(), arg->host->cname(), start_time);
     SIMIX_timer_set(start_time, [=]() {
       simix_global->create_process_function(
                                             arg->name.c_str(),
@@ -759,6 +758,6 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
   if (as_cluster->privateLinks_.find(netcard->id()) != as_cluster->privateLinks_.end())
     surf_parse_error("Host_link for '%s' is already defined!",hostlink->id);
 
-  XBT_DEBUG("Push Host_link for host '%s' to position %d", netcard->name().c_str(), netcard->id());
+  XBT_DEBUG("Push Host_link for host '%s' to position %d", netcard->cname(), netcard->id());
   as_cluster->privateLinks_.insert({netcard->id(), {linkUp, linkDown}});
 }

@@ -23,7 +23,7 @@ int main(int argc, char **argv)
   sg_host_t host;
   xbt_dynar_foreach(hosts, it, host) {
     simgrid::kernel::routing::NetCard * nc = host->pimpl_netcard;
-    printf("   - Seen: \"%s\". Type: %s\n", host->name().c_str(), nc->isRouter() ? "router" : (nc->isAS()?"AS":"host"));
+    printf("   - Seen: \"%s\". Type: %s\n", host->cname(), nc->isRouter() ? "router" : (nc->isAS() ? "AS" : "host"));
   }
   xbt_dynar_free(&hosts);
 

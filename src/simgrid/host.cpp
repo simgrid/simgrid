@@ -81,8 +81,8 @@ sg_host_t sg_host_by_name(const char *name)
 
 static int hostcmp_voidp(const void* pa, const void* pb)
 {
-  return strcmp((*static_cast<simgrid::s4u::Host* const*>(pa))->name().c_str(),
-                (*static_cast<simgrid::s4u::Host* const*>(pb))->name().c_str());
+  return strcmp((*static_cast<simgrid::s4u::Host* const*>(pa))->cname(),
+                (*static_cast<simgrid::s4u::Host* const*>(pb))->cname());
 }
 
 xbt_dynar_t sg_hosts_as_dynar()

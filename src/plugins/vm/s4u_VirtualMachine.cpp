@@ -46,7 +46,7 @@ VirtualMachine::~VirtualMachine()
 {
   onDestruction(*this);
 
-  XBT_DEBUG("destroy %s", name().c_str());
+  XBT_DEBUG("destroy %s", cname());
 
   /* FIXME: this is really strange that everything fails if the next line is removed.
    * This is as if we shared these data with the PM, which definitely should not be the case...
