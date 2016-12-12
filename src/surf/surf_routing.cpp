@@ -46,30 +46,3 @@ void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
   }
   xbt_dict_set(traces_set_list, trace->id, (void *) tmgr_trace, nullptr);
 }
-
-/* ************************************************************************** */
-/* ************************* GENERIC PARSE FUNCTIONS ************************ */
-
-static void check_disk_attachment()
-{
-  xbt_lib_cursor_t cursor;
-  char *key;
-  void **data;
-  xbt_lib_foreach(storage_lib, cursor, key, data) {
-    if (xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
-      simgrid::surf::Storage* storage =
-          static_cast<simgrid::surf::Storage*>(xbt_lib_get_or_null(storage_lib, key, SURF_STORAGE_LEVEL));
-      simgrid::kernel::routing::NetCard* host_elm = sg_netcard_by_name_or_null(storage->attach_);
-      if (!host_elm)
-        surf_parse_error("Unable to attach storage %s: host %s doesn't exist.", storage->getName(), storage->attach_);
-    }
-  }
-}
-
-void routing_register_callbacks()
-{
-  simgrid::surf::on_postparse.connect(check_disk_attachment);
-
-  instr_routing_define_callbacks();
-}
-

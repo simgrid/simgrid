@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "storage_n11.hpp"
+#include "src/kernel/routing/NetCard.hpp"
 #include "surf_private.h"
 #include <math.h> /*ceil*/
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_storage);
@@ -39,8 +40,28 @@ static inline void routing_storage_host_free(void *r)
   xbt_dynar_free(&dyn);
 }
 
+static void check_disk_attachment()
+{
+  xbt_lib_cursor_t cursor;
+  char* key;
+  void** data;
+  xbt_lib_foreach(storage_lib, cursor, key, data)
+  {
+    if (xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
+      simgrid::surf::Storage* storage =
+          static_cast<simgrid::surf::Storage*>(xbt_lib_get_or_null(storage_lib, key, SURF_STORAGE_LEVEL));
+      simgrid::kernel::routing::NetCard* host_elm = sg_netcard_by_name_or_null(storage->attach_);
+      if (!host_elm)
+        surf_parse_error("Unable to attach storage %s: host %s doesn't exist.", storage->getName(), storage->attach_);
+    }
+  }
+}
+
 void storage_register_callbacks()
 {
+  simgrid::surf::on_postparse.connect(check_disk_attachment);
+  instr_routing_define_callbacks();
+
   ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, xbt_free_f);
   ROUTING_STORAGE_HOST_LEVEL = xbt_lib_add_level(storage_lib, routing_storage_host_free);
   ROUTING_STORAGE_TYPE_LEVEL = xbt_lib_add_level(storage_type_lib, routing_storage_type_free);

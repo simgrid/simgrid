@@ -8,15 +8,16 @@
 #include <math.h>
 #include <stdarg.h> /* va_arg */
 
-#include "xbt/misc.h"
-#include "xbt/log.h"
-#include "xbt/str.h"
-#include "xbt/file.h"
-#include "xbt/dict.h"
-#include "src/surf/surf_private.h"
-#include "src/surf/network_interface.hpp"
-#include "simgrid/sg_config.h"
 #include "simgrid/link.h"
+#include "simgrid/sg_config.h"
+#include "src/kernel/routing/NetCard.hpp"
+#include "src/surf/network_interface.hpp"
+#include "src/surf/surf_private.h"
+#include "xbt/dict.h"
+#include "xbt/file.h"
+#include "xbt/log.h"
+#include "xbt/misc.h"
+#include "xbt/str.h"
 
 #include "src/surf/xml/platf_private.hpp"
 

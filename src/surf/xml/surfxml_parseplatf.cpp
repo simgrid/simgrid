@@ -119,7 +119,6 @@ void parse_after_config() {
 
     /* Register classical callbacks */
     storage_register_callbacks();
-    routing_register_callbacks();
 
     after_config_done = 1;
   }

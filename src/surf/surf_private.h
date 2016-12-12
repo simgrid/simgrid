@@ -51,8 +51,6 @@ extern XBT_PRIVATE simgrid::trace_mgr::future_evt_set *future_evt_set;
 
 XBT_PUBLIC(void) storage_register_callbacks();
 
-XBT_PUBLIC(void) routing_register_callbacks(void);
-
 XBT_PUBLIC(void) generic_get_graph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges, AS_t rc);
 XBT_PRIVATE void parse_after_config();
 

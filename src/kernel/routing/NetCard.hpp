@@ -61,4 +61,6 @@ private:
 }
 }
 
+XBT_PUBLIC(sg_netcard_t) sg_netcard_by_name_or_null(const char* name);
+
 #endif /* KERNEL_ROUTING_NETCARD_HPP_ */

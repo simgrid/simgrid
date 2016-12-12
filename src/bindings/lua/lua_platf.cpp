@@ -7,11 +7,12 @@
 /* SimGrid Lua bindings                                                     */
 
 #include "lua_private.h"
-#include "src/surf/xml/platf_private.hpp"
+#include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/network_interface.hpp"
+#include "src/surf/xml/platf_private.hpp"
 #include "surf/surf_routing.h"
-#include <string.h>
 #include <ctype.h>
+#include <string.h>
 
 extern "C" {
 #include <lauxlib.h>
@@ -49,7 +50,6 @@ int console_open(lua_State *L) {
   sg_platf_begin();
 
   storage_register_callbacks();
-  routing_register_callbacks();
 
   return 0;
 }
