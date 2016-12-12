@@ -368,7 +368,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   for (auto link: *route)
     lmm_expand(maxminSystem_, link->getConstraint(), action->getVariable(), 1.0);
 
-  if (sg_network_crosstraffic == 1) {
+  if (back_route != nullptr) { //  sg_network_crosstraffic was activated
     XBT_DEBUG("Fullduplex active adding backward flow using 5%%");
     for (auto link : *back_route)
       lmm_expand(maxminSystem_, link->getConstraint(), action->getVariable(), .05);
