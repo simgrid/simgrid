@@ -15,7 +15,7 @@ EngineImpl::EngineImpl()
 }
 EngineImpl::~EngineImpl()
 {
-  delete rootAs_;
+  delete netRoot_;
 }
 }
 }

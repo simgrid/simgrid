@@ -85,12 +85,12 @@ void Engine::run() {
   }
 }
 
-s4u::NetZone* Engine::rootAs()
+s4u::NetZone* Engine::netRoot()
 {
-  return pimpl->rootAs_;
+  return pimpl->netRoot_;
 }
 
-static s4u::NetZone* asByNameRecursive(s4u::NetZone* current, const char* name)
+static s4u::NetZone* netzoneByNameRecursive(s4u::NetZone* current, const char* name)
 {
   if(!strcmp(current->name(), name))
     return current;
@@ -99,17 +99,17 @@ static s4u::NetZone* asByNameRecursive(s4u::NetZone* current, const char* name)
   char *key;
   NetZone_t elem;
   xbt_dict_foreach(current->children(), cursor, key, elem) {
-    simgrid::s4u::NetZone* tmp = asByNameRecursive(elem, name);
+    simgrid::s4u::NetZone* tmp = netzoneByNameRecursive(elem, name);
     if (tmp != nullptr )
         return tmp;
   }
   return nullptr;
 }
 
-/** @brief Retrieve the AS of the given name (or nullptr if not found) */
-NetZone* Engine::asByNameOrNull(const char* name)
+/** @brief Retrieve the NetZone of the given name (or nullptr if not found) */
+NetZone* Engine::netzoneByNameOrNull(const char* name)
 {
-  return asByNameRecursive(rootAs(),name);
+  return netzoneByNameRecursive(netRoot(), name);
 }
 
 }

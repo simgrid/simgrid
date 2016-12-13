@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_SURF_AS_HPP
-#define SIMGRID_SURF_AS_HPP
+#ifndef SIMGRID_ROUTING_NETZONEIMPL_HPP
+#define SIMGRID_ROUTING_NETZONEIMPL_HPP
 
 #include "xbt/graph.h"
 
@@ -19,14 +19,14 @@ class EngineImpl;
 namespace routing {
 class BypassRoute;
 
-/** @brief Autonomous Systems
+/** @brief Networking Zones
  *
- * An AS is a network container, in charge of routing information between elements (hosts) and to the nearby ASes.
- * In SimGrid, there is a hierarchy of ASes, ie a tree with a unique root AS, that you can retrieve from the
- * s4u::Engine.
+ * A netzone is a network container, in charge of routing information between elements (hosts) and to the nearby
+ * netzones. In SimGrid, there is a hierarchy of netzones, ie a tree with a unique root NetZone, that you can retrieve
+ * from the s4u::Engine.
  *
  * The purpose of the kernel::routing module is to retrieve the routing path between two points in a time- and
- * space-efficient manner. This is done by AsImpl::getGlobalRoute(), called when creating a communication to
+ * space-efficient manner. This is done by NetZoneImpl::getGlobalRoute(), called when creating a communication to
  * retrieve both the list of links that the create communication will use, and the summed latency that these
  * links represent.
  *
@@ -34,35 +34,36 @@ class BypassRoute;
  * set traversal. This operation being on the critical path of SimGrid, the routing computes the latency on the
  * behalf of the network.
  *
- * Finding the path between two nodes is rather complex because we navigate a hierarchy of ASes, each of them
- * being a full network. In addition, the routing can declare shortcuts (called bypasses), either within an AS
- * at the route level or directly between ASes. Also, each AS can use a differing routing algorithm, depending
- * on its class. @ref{AsFull} have a full matrix giving explicitly the path between any pair of their
- * contained nodes, while @ref{AsDijkstra} or @ref{AsFloyd} rely on a shortest path algorithm. @ref{AsVivaldi}
+ * Finding the path between two nodes is rather complex because we navigate a hierarchy of netzones, each of them
+ * being a full network. In addition, the routing can declare shortcuts (called bypasses), either within a NetZone
+ * at the route level or directly between NetZones. Also, each NetZone can use a differing routing algorithm, depending
+ * on its class. @ref{FullZone} have a full matrix giving explicitly the path between any pair of their
+ * contained nodes, while @ref{DijkstraZone} or @ref{FloydZone} rely on a shortest path algorithm. @ref{VivaldiZone}
  * does not even have any link but only use only coordinate information to compute the latency.
  *
- * So AsImpl::getGlobalRoute builds the path recursively asking its specific information to each traversed AS with
- * AsImpl::getLocalRoute, that is redefined in each sub-class.
- * The algorithm for that is explained in http://hal.inria.fr/hal-00650233/
+ * So NetZoneImpl::getGlobalRoute builds the path recursively asking its specific information to each traversed NetZone
+ * with NetZoneImpl::getLocalRoute, that is redefined in each sub-class.
+ * The algorithm for that is explained in http://hal.inria.fr/hal-00650233/ (but for historical reasons, NetZones are
+ * called Autonomous Systems in this article).
  *
  */
 XBT_PUBLIC_CLASS NetZoneImpl : public s4u::NetZone
 {
-  friend simgrid::kernel::EngineImpl; // it destroys rootAs_
+  friend simgrid::kernel::EngineImpl; // it destroys netRoot_
 
 protected:
   explicit NetZoneImpl(NetZone * father, const char* name);
   virtual ~NetZoneImpl();
 
 public:
-  /** @brief Make an host within that AS */
+  /** @brief Make an host within that NetZone */
   simgrid::s4u::Host* createHost(const char* name, std::vector<double>* speedPerPstate, int coreAmount);
-  /** @brief Creates a new route in this AS */
+  /** @brief Creates a new route in this NetZone */
   void addBypassRoute(sg_platf_route_cbarg_t e_route) override;
 
 protected:
   /**
-   * @brief Probe the routing path between two points that are local to the called AS.
+   * @brief Probe the routing path between two points that are local to the called NetZone.
    *
    * @param src where from
    * @param dst where to
@@ -97,10 +98,10 @@ public:
 
 private:
   std::map<std::pair<NetCard*, NetCard*>, BypassRoute*> bypassRoutes_; // src x dst -> route
-  routing::NetCard* netcard_ = nullptr;                                // Our representative in the father AS
+  routing::NetCard* netcard_ = nullptr;                                // Our representative in the father NetZone
 };
 }
 }
 }; // Namespace simgrid::kernel::routing
 
-#endif /* SIMGRID_SURF_AS_HPP */
+#endif /* SIMGRID_ROUTING_NETZONEIMPL_HPP */

@@ -92,7 +92,7 @@ void FullZone::addRoute(sg_platf_route_cbarg_t route)
     routingTable_ = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
 
   /* Check that the route does not already exist */
-  if (route->gw_dst) // AS route (to adapt the error message, if any)
+  if (route->gw_dst) // inter-zone route (to adapt the error message, if any)
     xbt_assert(nullptr == TO_ROUTE_FULL(src->id(), dst->id()),
                "The route between %s@%s and %s@%s already exists (Rq: routes are symmetrical by default).",
                src->cname(), route->gw_src->cname(), dst->cname(), route->gw_dst->cname());
@@ -111,7 +111,7 @@ void FullZone::addRoute(sg_platf_route_cbarg_t route)
       route->gw_src   = route->gw_dst;
       route->gw_dst   = gw_tmp;
     }
-    if (route->gw_dst) // AS route (to adapt the error message, if any)
+    if (route->gw_dst) // inter-zone route (to adapt the error message, if any)
       xbt_assert(
           nullptr == TO_ROUTE_FULL(dst->id(), src->id()),
           "The route between %s@%s and %s@%s already exists. You should not declare the reverse path as symmetrical.",

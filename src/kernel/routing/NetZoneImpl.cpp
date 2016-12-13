@@ -28,11 +28,11 @@ public:
 NetZoneImpl::NetZoneImpl(NetZone* father, const char* name) : NetZone(father, name)
 {
   xbt_assert(nullptr == xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL),
-             "Refusing to create a second AS called '%s'.", name);
+             "Refusing to create a second NetZone called '%s'.", name);
 
-  netcard_ = new NetCard(name, NetCard::Type::As, static_cast<NetZoneImpl*>(father));
+  netcard_ = new NetCard(name, NetCard::Type::NetZone, static_cast<NetZoneImpl*>(father));
   xbt_lib_set(as_router_lib, name, ROUTING_ASR_LEVEL, static_cast<void*>(netcard_));
-  XBT_DEBUG("AS '%s' created with the id '%d'", name, netcard_->id());
+  XBT_DEBUG("NetZone '%s' created with the id '%d'", name, netcard_->id());
 }
 NetZoneImpl::~NetZoneImpl()
 {
@@ -98,7 +98,7 @@ void NetZoneImpl::addBypassRoute(sg_platf_route_cbarg_t e_route)
  *       /                \
  *  src_ancestor     dst_ancestor  <- must be different in the recursive case
  *      |                   |
- *     ...                 ...     <-- possibly long pathes (one hop or more)
+ *     ...                 ...     <-- possibly long paths (one hop or more)
  *      |                   |
  *     src                 dst
  *  @endverbatim
@@ -137,8 +137,8 @@ static void find_common_ancestors(NetCard* src, NetCard* dst,
                                   NetZoneImpl** dst_ancestor)
 {
   /* Deal with the easy base case */
-  if (src->containingAS() == dst->containingAS()) {
-    *common_ancestor = src->containingAS();
+  if (src->netzone() == dst->netzone()) {
+    *common_ancestor = src->netzone();
     *src_ancestor    = *common_ancestor;
     *dst_ancestor    = *common_ancestor;
     return;
@@ -147,21 +147,21 @@ static void find_common_ancestors(NetCard* src, NetCard* dst,
   /* engage the full recursive search */
 
   /* (1) find the path to root of src and dst*/
-  NetZoneImpl* src_as = src->containingAS();
-  NetZoneImpl* dst_as = dst->containingAS();
+  NetZoneImpl* src_as = src->netzone();
+  NetZoneImpl* dst_as = dst->netzone();
 
   xbt_assert(src_as, "Host %s must be in an AS", src->cname());
   xbt_assert(dst_as, "Host %s must be in an AS", dst->cname());
 
   /* (2) find the path to the root routing component */
   std::vector<NetZoneImpl*> path_src;
-  NetZoneImpl* current = src->containingAS();
+  NetZoneImpl* current = src->netzone();
   while (current != nullptr) {
     path_src.push_back(current);
     current = static_cast<NetZoneImpl*>(current->father());
   }
   std::vector<NetZoneImpl*> path_dst;
-  current = dst->containingAS();
+  current = dst->netzone();
   while (current != nullptr) {
     path_dst.push_back(current);
     current = static_cast<NetZoneImpl*>(current->father());
@@ -200,7 +200,7 @@ bool NetZoneImpl::getBypassRoute(routing::NetCard* src, routing::NetCard* dst,
     return false;
 
   /* Base case, no recursion is needed */
-  if (dst->containingAS() == this && src->containingAS() == this) {
+  if (dst->netzone() == this && src->netzone() == this) {
     if (bypassRoutes_.find({src, dst}) != bypassRoutes_.end()) {
       BypassRoute* bypassedRoute = bypassRoutes_.at({src, dst});
       for (surf::Link* link : bypassedRoute->links) {
@@ -219,14 +219,14 @@ bool NetZoneImpl::getBypassRoute(routing::NetCard* src, routing::NetCard* dst,
 
   /* (1) find the path to the root routing component */
   std::vector<NetZoneImpl*> path_src;
-  NetZone* current = src->containingAS();
+  NetZone* current = src->netzone();
   while (current != nullptr) {
     path_src.push_back(static_cast<NetZoneImpl*>(current));
     current = current->father_;
   }
 
   std::vector<NetZoneImpl*> path_dst;
-  current = dst->containingAS();
+  current = dst->netzone();
   while (current != nullptr) {
     path_dst.push_back(static_cast<NetZoneImpl*>(current));
     current = current->father_;

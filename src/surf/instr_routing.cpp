@@ -318,7 +318,7 @@ static void instr_routing_parse_end_platform ()
   currentContainer.clear();
   xbt_dict_t filter = xbt_dict_new_homogeneous(xbt_free_f);
   XBT_DEBUG ("Starting graph extraction.");
-  recursiveGraphExtraction (simgrid::s4u::Engine::instance()->rootAs(), PJ_container_get_root(), filter);
+  recursiveGraphExtraction(simgrid::s4u::Engine::instance()->netRoot(), PJ_container_get_root(), filter);
   XBT_DEBUG ("Graph extraction finished.");
   xbt_dict_free(&filter);
   platform_created = 1;
@@ -451,7 +451,7 @@ xbt_graph_t instr_routing_platform_graph ()
   xbt_graph_t ret = xbt_graph_new_graph (0, nullptr);
   xbt_dict_t nodes = xbt_dict_new_homogeneous(nullptr);
   xbt_dict_t edges = xbt_dict_new_homogeneous(nullptr);
-  recursiveXBTGraphExtraction (ret, nodes, edges, simgrid::s4u::Engine::instance()->rootAs(), PJ_container_get_root());
+  recursiveXBTGraphExtraction(ret, nodes, edges, simgrid::s4u::Engine::instance()->netRoot(), PJ_container_get_root());
   xbt_dict_free (&nodes);
   xbt_dict_free (&edges);
   return ret;

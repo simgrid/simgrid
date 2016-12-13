@@ -16,7 +16,7 @@ class EngineImpl {
 public:
   EngineImpl();
   virtual ~EngineImpl();
-  kernel::routing::NetZoneImpl* rootAs_ = nullptr;
+  kernel::routing::NetZoneImpl* netRoot_ = nullptr;
 
 protected:
   friend simgrid::s4u::Engine;

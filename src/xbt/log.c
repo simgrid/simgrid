@@ -199,7 +199,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(s4u);
   XBT_LOG_CONNECT(s4u_activity);
   XBT_LOG_CONNECT(s4u_actor);
-  XBT_LOG_CONNECT(s4u_as);
+  XBT_LOG_CONNECT(s4u_netzone);
   XBT_LOG_CONNECT(s4u_channel);
   XBT_LOG_CONNECT(s4u_comm);
   XBT_LOG_CONNECT(s4u_file);

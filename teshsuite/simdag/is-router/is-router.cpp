@@ -23,7 +23,8 @@ int main(int argc, char **argv)
   sg_host_t host;
   xbt_dynar_foreach(hosts, it, host) {
     simgrid::kernel::routing::NetCard * nc = host->pimpl_netcard;
-    printf("   - Seen: \"%s\". Type: %s\n", host->cname(), nc->isRouter() ? "router" : (nc->isAS() ? "AS" : "host"));
+    printf("   - Seen: \"%s\". Type: %s\n", host->cname(),
+           nc->isRouter() ? "router" : (nc->isNetZone() ? "netzone" : "host"));
   }
   xbt_dynar_free(&hosts);
 
@@ -32,7 +33,7 @@ int main(int argc, char **argv)
   void *ignored;
   xbt_lib_foreach(as_router_lib, cursor, key, ignored) {
     simgrid::kernel::routing::NetCard * nc = sg_netcard_by_name_or_null(key);
-    printf("   - Seen: \"%s\". Type: %s\n", key, nc->isRouter() ? "router" : (nc->isAS()?"AS":"host"));
+    printf("   - Seen: \"%s\". Type: %s\n", key, nc->isRouter() ? "router" : (nc->isNetZone() ? "netzone" : "host"));
   }
 
   SD_exit();

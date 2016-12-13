@@ -51,7 +51,7 @@ void MSG_post_create_environment() {
 }
 
 msg_as_t MSG_environment_get_routing_root() {
-  return simgrid::s4u::Engine::instance()->rootAs();
+  return simgrid::s4u::Engine::instance()->netRoot();
 }
 
 const char *MSG_environment_as_get_name(msg_as_t as) {
@@ -59,7 +59,7 @@ const char *MSG_environment_as_get_name(msg_as_t as) {
 }
 
 msg_as_t MSG_environment_as_get_by_name(const char * name) {
-  return simgrid::s4u::Engine::instance()->asByNameOrNull(name);
+  return simgrid::s4u::Engine::instance()->netzoneByNameOrNull(name);
 }
 
 xbt_dict_t MSG_environment_as_get_routing_sons(msg_as_t as) {

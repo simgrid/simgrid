@@ -27,13 +27,13 @@ namespace routing {
 class NetCard : public simgrid::xbt::Extendable<NetCard> {
 
 public:
-  enum class Type { Host, Router, As };
+  enum class Type { Host, Router, NetZone };
 
-  NetCard(std::string name, NetCard::Type componentType, NetZoneImpl* containingAS)
-      : name_(name), componentType_(componentType), containingAS_(containingAS)
+  NetCard(std::string name, NetCard::Type componentType, NetZoneImpl* netzone_p)
+      : name_(name), componentType_(componentType), netzone_(netzone_p)
   {
-    if (containingAS != nullptr)
-      id_ = containingAS->addComponent(this);
+    if (netzone_p != nullptr)
+      id_ = netzone_p->addComponent(this);
     simgrid::kernel::routing::NetCard::onCreation(this);
   }
   ~NetCard() = default;
@@ -42,10 +42,10 @@ public:
   unsigned int id() { return id_; }
   std::string name() { return name_; }
   const char* cname() { return name_.c_str(); }
-  // This is the AS in which I am
-  NetZoneImpl* containingAS() { return containingAS_; }
+  /** @brief the NetZone in which this netcard is included */
+  NetZoneImpl* netzone() { return netzone_; }
 
-  bool isAS() { return componentType_ == Type::As; }
+  bool isNetZone() { return componentType_ == Type::NetZone; }
   bool isHost() { return componentType_ == Type::Host; }
   bool isRouter() { return componentType_ == Type::Router; }
 
@@ -55,7 +55,7 @@ private:
   unsigned int id_;
   std::string name_;
   NetCard::Type componentType_;
-  NetZoneImpl* containingAS_;
+  NetZoneImpl* netzone_;
 };
 }
 }

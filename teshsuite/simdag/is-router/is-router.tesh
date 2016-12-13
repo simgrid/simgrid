@@ -18,9 +18,9 @@ $ ${bindir:=.}/is-router ../platforms/test_of_is_router.xml "--log=root.fmt:[%10
 >    - Seen: "router3". Type: router
 >    - Seen: "router4". Type: router
 >    - Seen: "router5". Type: router
->    - Seen: "AS0". Type: AS
->    - Seen: "AS1". Type: AS
->    - Seen: "AS2". Type: AS
->    - Seen: "AS3". Type: AS
->    - Seen: "AS4". Type: AS
->    - Seen: "AS". Type: AS
+>    - Seen: "AS0". Type: netzone
+>    - Seen: "AS1". Type: netzone
+>    - Seen: "AS2". Type: netzone
+>    - Seen: "AS3". Type: netzone
+>    - Seen: "AS4". Type: netzone
+>    - Seen: "AS". Type: netzone

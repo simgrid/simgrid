@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_S4U_AS_HPP
-#define SIMGRID_S4U_AS_HPP
+#ifndef SIMGRID_S4U_NETZONE_HPP
+#define SIMGRID_S4U_NETZONE_HPP
 
 #include <map>
 #include <string>
@@ -31,10 +31,11 @@ class NetCard;
 }
 namespace s4u {
 
-/** @brief Autonomous Systems
+/** @brief Networking Zones
  *
- * An AS is a network container, in charge of routing information between elements (hosts) and to the nearby ASes.
- * In SimGrid, there is a hierarchy of ASes, with a unique root AS (that you can retrieve from the s4u::Engine).
+ * A netzone is a network container, in charge of routing information between elements (hosts) and to the nearby
+ * netzones. In SimGrid, there is a hierarchy of netzones, with a unique root zone (that you can retrieve from the
+ * s4u::Engine).
  */
 XBT_PUBLIC_CLASS NetZone
 {
@@ -45,17 +46,17 @@ protected:
   virtual ~NetZone();
 
 public:
-  /** @brief Seal your AS once you're done adding content, and before routing stuff through it */
+  /** @brief Seal your netzone once you're done adding content, and before routing stuff through it */
   virtual void seal();
   char* name();
   NetZone* father();
   ;
-  xbt_dict_t children(); // Sub AS
+  xbt_dict_t children(); // Sub netzones
   xbt_dynar_t hosts();   // my content as a dynar
 
 public:
-  /* Add content to the AS, at parsing time. It should be sealed afterward. */
-  virtual int addComponent(kernel::routing::NetCard * elm); /* A host, a router or an AS, whatever */
+  /* Add content to the netzone, at parsing time. It should be sealed afterward. */
+  virtual int addComponent(kernel::routing::NetCard * elm); /* A host, a router or a netzone, whatever */
   virtual void addRoute(sg_platf_route_cbarg_t route);
   virtual void addBypassRoute(sg_platf_route_cbarg_t e_route) = 0;
 
@@ -75,9 +76,9 @@ private:
 
   bool sealed_ = false; // We cannot add more content when sealed
 
-  xbt_dict_t children_ = xbt_dict_new_homogeneous(nullptr); // sub-ASes
+  xbt_dict_t children_ = xbt_dict_new_homogeneous(nullptr); // sub-netzones
 };
 }
 }; // Namespace simgrid::s4u
 
-#endif /* SIMGRID_S4U_AS_HPP */
+#endif /* SIMGRID_S4U_NETZONE_HPP */

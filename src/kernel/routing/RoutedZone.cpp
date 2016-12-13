@@ -161,8 +161,8 @@ void RoutedZone::getRouteCheckParams(NetCard* src, NetCard* dst)
   xbt_assert(src, "Cannot find a route from nullptr to %s", dst->cname());
   xbt_assert(dst, "Cannot find a route from %s to nullptr", src->cname());
 
-  NetZone* src_as = src->containingAS();
-  NetZone* dst_as = dst->containingAS();
+  NetZone* src_as = src->netzone();
+  NetZone* dst_as = dst->netzone();
 
   xbt_assert(src_as == dst_as,
              "Internal error: %s@%s and %s@%s are not in the same AS as expected. Please report that bug.",
@@ -184,14 +184,14 @@ void RoutedZone::addRouteCheckParams(sg_platf_route_cbarg_t route)
     xbt_assert(src, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, srcName);
     xbt_assert(dst, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, dstName);
     xbt_assert(!route->link_list->empty(), "Empty route (between %s and %s) forbidden.", srcName, dstName);
-    xbt_assert(!src->isAS(),
+    xbt_assert(!src->isNetZone(),
                "When defining a route, src cannot be an AS such as '%s'. Did you meant to have an ASroute?", srcName);
-    xbt_assert(!dst->isAS(),
+    xbt_assert(!dst->isNetZone(),
                "When defining a route, dst cannot be an AS such as '%s'. Did you meant to have an ASroute?", dstName);
   } else {
     XBT_DEBUG("Load ASroute from %s@%s to %s@%s", srcName, route->gw_src->cname(), dstName, route->gw_dst->cname());
-    xbt_assert(src->isAS(), "When defining an ASroute, src must be an AS but '%s' is not", srcName);
-    xbt_assert(dst->isAS(), "When defining an ASroute, dst must be an AS but '%s' is not", dstName);
+    xbt_assert(src->isNetZone(), "When defining an ASroute, src must be an AS but '%s' is not", srcName);
+    xbt_assert(dst->isNetZone(), "When defining an ASroute, dst must be an AS but '%s' is not", dstName);
 
     xbt_assert(route->gw_src->isHost() || route->gw_src->isRouter(),
                "When defining an ASroute, gw_src must be an host or a router but '%s' is not.", srcName);
