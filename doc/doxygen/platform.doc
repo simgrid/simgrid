@@ -40,26 +40,25 @@ Nowadays, the Internet is composed of a bunch of independently managed
 networks. Within each of those networks, there are entry and exit
 points (most of the time, you can both enter and exit through the same
 point); this allows to leave the current network and reach other
-networks, possibly even in other locations.
-At the upper level, such a network is called
-<b>Autonomous System (AS)</b>, while at the lower level it is named
-sub-network, or LAN (local area network).
-They are indeed autonomous: routing is defined
-(within the limits of his network) by the administrator, and so, those
-networks can operate without a connection to other
-networks. So-called gateways allow you to go from one network to
-another, if such a (physical) connection exists. Every node in one network
-that can be directly reached (i.e., without traversing other nodes) from
-another network is called a gateway.
-Each autonomous system consists of equipment such as cables (network links),
-routers and switches as well as computers.
+networks, possibly even in other locations. At the upper level, such a
+network is called <b>Autonomous System (AS)</b>, while at the lower
+level it is named sub-network, or LAN (local area network). They are
+indeed autonomous: routing is defined (within the limits of his
+network) by the administrator, and so, those networks can operate
+without a connection to other networks. So-called gateways allow you
+to go from one network to another, if such a (physical) connection
+exists. Every node in one network that can be directly reached (i.e.,
+without traversing other nodes) from another network is called a
+gateway. Each autonomous system consists of equipment such as cables
+(network links), routers and switches as well as computers.
 
-The structure of the SimGrid platform description relies exactly on the same
-concept as a real-life platform (see above).  Every resource (computers,
-network equipment etc.) belongs to an AS, which can be defined by using the
-\<AS\> tag. Within an AS, the routing between its elements can be defined
-abitrarily. There are several modes for routing, and exactly one mode must be
-selected by specifying the routing attribute in the AS tag:
+The structure of the SimGrid platform description relies exactly on
+the same concept as a real-life platform (see above).  Every resource
+(computers, network equipment etc.) belongs to an AS, which can be
+defined by using the \<AS\> tag. Within an AS, the routing between its
+elements can be defined abitrarily. There are several modes for
+routing, and exactly one mode must be selected by specifying the
+routing attribute in the AS tag:
 
 \verbatim
 <AS id="AS0" routing="Full">
@@ -69,18 +68,19 @@ selected by specifying the routing attribute in the AS tag:
   Other supported values for the routing attribute can be found below, Section
   \ref pf_raf.
 
-There is also the ``<route>`` tag; this tag takes two attributes, ``src`` (source)
-and ``dst`` (destination). Both source and destination must be valid identifiers
-for routers (these will be introduced later). Contained by the ``<route>`` are
-network links; these links must be used in order to communicate from the source
-to the destination specified in the tag. Hence, a route merely describes
+There is also the ``<route>`` tag; this tag takes two attributes,
+``src`` (source) and ``dst`` (destination). Both source and
+destination must be valid identifiers for routers (these will be
+introduced later). Contained by the ``<route>`` are network links;
+these links must be used in order to communicate from the source to
+the destination specified in the tag. Hence, a route merely describes
 how to reach a router from another router.
 
 \remark
   More information and (code-)examples can be found in Section \ref pf_rm.
 
-An AS can also contain itself one or more AS; this allows you to
-model the hierarchy of your platform.
+An AS can also contain itself one or more AS; this allows you to model
+the hierarchy of your platform.
 
 ### Within each AS, the following types of resources exist:
 
@@ -92,14 +92,15 @@ router          | \ref pf_router        | In SimGrid, routers are used to provid
 link            | \ref pf_link          | In SimGrid, (network)links define a connection between two or potentially even more resources. Every link has a bandwidth and a latency and may potentially experience congestion.
 cluster         | \ref pf_cluster       | In SimGrid, clusters were introduced to model large and homogenous environments. They are not really a resource by themselves - technically, they are only a shortcut, as they will internally set up all the hosts, network and routing for you, i.e., using this resource, one can easily setup thousands of hosts and links in a few lines of code. Each cluster is itself an AS.
 
-%As it is desirable to interconnect these resources, a routing has to be
-defined. The AS is supposed to be Autonomous, hence this has to be done at the
-AS level. The AS handles two different types of entities (<b>host/router</b>
-and <b>AS</b>). However, the user is responsible to define routes between those resources,
-otherwise entities will be unconnected and therefore unreachable from other
-entities. Although several routing algorithms are built into SimGrid (see
-\ref pf_rm), you might encounter a case where you want to define routes
-manually (for instance, due to specific requirements of your platform).
+As it is desirable to interconnect these resources, a routing has to
+be defined. The AS is supposed to be Autonomous, hence this has to be
+done at the AS level. The AS handles two different types of entities
+(<b>host/router</b> and <b>AS</b>). However, the user is responsible
+to define routes between those resources, otherwise entities will be
+unconnected and therefore unreachable from other entities. Although
+several routing algorithms are built into SimGrid (see \ref pf_rm),
+you might encounter a case where you want to define routes manually
+(for instance, due to specific requirements of your platform).
 
 There are three tags to use:
 \li <b>ASroute</b>: to define routes between two  <b>AS</b>
@@ -502,7 +503,7 @@ several other tags that are available only in certain contexts.
 
 \subsubsection pf_router &lt;router/&gt;
 
-%As said before, <b>router</b> is used only to give some information
+As said before, <b>router</b> is used only to give some information
 for routing algorithms. So, it does not have any attributes except :
 
 #### Attributes ####
@@ -1368,7 +1369,7 @@ A route in the \ref pf_routing_model_shortest_path "Shortest-Path routing model"
 
 \subsubsection pf_routing_tag_bypassasroute bypassASroute
 
-%As said before, once you choose
+As said before, once you choose
 a model, it (most likely; the constant network model, for example, doesn't) calculates routes for you. But maybe you want to
 define some of your routes, which will be specific. You may also want
 to bypass some routes defined in lower level AS at an upper stage:
@@ -1405,7 +1406,7 @@ attribute was not given, this route is presumed to be symmetrical.
 
 \subsubsection pf_routing_tag_bypassroute bypassRoute
 
-%As said before, once you choose
+As said before, once you choose
 a model, it (most likely; the constant network model, for example, doesn't) calculates routes for you. But maybe you want to
 define some of your routes, which will be specific. You may also want
 to bypass some routes defined in lower level AS at an upper stage :
@@ -1441,7 +1442,7 @@ and AS_2. If you want to make a host (h1) from AS_1 with another one
 (h2) from AS_2 then you'll have to proceed as follows:
 \li First, you have to ensure that a route is defined from h1 to the
     AS_1's exit gateway and from h2 to AS_2's exit gateway.
-\li Then, you'll have to define a route between AS_1 to AS_2. %As those
+\li Then, you'll have to define a route between AS_1 to AS_2. As those
     AS are both resources belonging to AS_Big, then it has to be done
     at AS_big level. To define such a route, you have to give the
     source AS (AS_1), the destination AS (AS_2), and their respective
@@ -1451,18 +1452,18 @@ and AS_2. If you want to make a host (h1) from AS_1 with another one
     defined inside AS_Big. If you choose some shortest-path model,
     this route will be computed automatically.
 
-%As said before, there are mainly 2 tags for routing :
+As said before, there are mainly 2 tags for routing :
 \li <b>ASroute</b>: to define routes between two  <b>AS</b>
 \li <b>route</b>: to define routes between two <b>host/router</b>
 
-%As we are dealing with routes between AS, it means that those we'll
+As we are dealing with routes between AS, it means that those we'll
 have some definition at AS_Big level. Let consider AS_1 contains 1
 host, 1 link and one router and AS_2 3 hosts, 4 links and one router.
 There will be a central router, and a cross-like topology. At the end
 of the crosses arms, you'll find the 3 hosts and the router that will
 act as a gateway. We have to define routes inside those two AS. Let
 say that AS_1 contains full routes, and AS_2 contains some Floyd
-routing (as we don't want to bother with defining all routes). %As
+routing (as we don't want to bother with defining all routes). As
 we're using some shortest path algorithms to route into AS_2, we'll
 then have to define some <b>route</b> to gives some topological
 information to SimGrid. Here is a file doing it all :

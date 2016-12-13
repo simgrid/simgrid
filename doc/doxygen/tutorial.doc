@@ -78,7 +78,7 @@ interesting questions:
 - Although an algorithm may be more efficient than another, how
   does it interfere with other applications?
 
-    %As you can see, this very simple setting may need to evolve way
+    As you can see, this very simple setting may need to evolve way
     beyond what you initially imagined.
 
     <blockquote> Premature optimization is  the root of all evil. -- D.E.Knuth</blockquote>
@@ -165,7 +165,7 @@ cd msg-tuto/src
 make
 ~~~~
 
-%As you can see, there is already a nice Makefile that compiles
+As you can see, there is already a nice Makefile that compiles
 everything for you. Now the tiny example has been compiled and it
 can be easily run as follows:
 
@@ -429,7 +429,7 @@ void xbt_dynar_shift(xbt_dynar_t const dynar, void *const dst);
 unsigned long xbt_dynar_length(const xbt_dynar_t dynar);
 ~~~~
 
-%As you will soon realize, with such simple mechanisms, simple
+As you will soon realize, with such simple mechanisms, simple
 deadlocks will soon appear. They can easily be removed with a
 simple polling mechanism, hence the need for the following
 [function][fn:7]:
@@ -438,7 +438,7 @@ simple polling mechanism, hence the need for the following
 msg_error_t MSG_process_sleep(double nb_sec);
 ~~~~
 
-%As you should quickly realize, on the simple previous example, it
+As you should quickly realize, on the simple previous example, it
 will double the throughput of the platform but will be quite
 ineffective when input size of the tasks is not negligible anymore.
 

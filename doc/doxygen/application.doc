@@ -18,8 +18,8 @@ TBD
     Virtual Platform (link), but your application have many other ways
     to interact with the resource.  
 
-  - The resources are arranged in a hierarchy of *Autonomous Systems*,
-    with which the application can also interact. The AS knows the
+  - The resources are arranged in a hierarchy of *Networking Zones*,
+    with which the application can also interact. The netzone knows the
     networking path between one resource to another.
 
 Speak of mailboxes here? Where if not?

@@ -239,7 +239,7 @@ This option changes the way SimGrid register its platform on the trace
 file. Normally, the tracing considers all routes (no matter their
 size) on the platform file to re-create the resource topology. If this
 option is activated, only the routes with one link are used to
-register the topology within an AS.  Routes among AS continue to be
+register the topology within a netzone. Routes among netzones continue to be
 traced as usual.
 \verbatim
 --cfg=tracing/onelink-only:yes
@@ -504,7 +504,7 @@ the beggining and size of the time slice.
 
 \subsubsection tracing_viva_graph Hierarchical Graph View
 
-%As stated above (see section \ref tracing_tracing_analyzing), one
+As stated above (see section \ref tracing_tracing_analyzing), one
 possibility to analyze SimGrid traces is to use Viva's graph view with
 a graph configuration to customize the graph according to the
 traces. A valid graph configuration (we are using the non-XML <a

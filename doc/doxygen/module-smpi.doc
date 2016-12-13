@@ -485,7 +485,7 @@ SimGrid can duplicate and dynamically switch the .data and .bss
 segments of the ELF process when switching the MPI ranks, allowing
 each ranks to have its own copy of the global variables. This feature
 is expected to work correctly on Linux and BSD, so smpirun activates
-it by default. %As no copy is involved, performance should not be
+it by default. As no copy is involved, performance should not be
 altered (but memory occupation will be higher).
 
 If you want to turn it off, pass \c -no-privatize to smpirun. This may
