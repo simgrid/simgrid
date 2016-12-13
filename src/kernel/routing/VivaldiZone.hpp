@@ -13,7 +13,7 @@ namespace kernel {
 namespace routing {
 
 /* This extends cluster because each host has a private link */
-class XBT_PRIVATE AsVivaldi: public AsCluster {
+class XBT_PRIVATE AsVivaldi : public AsCluster {
 public:
   explicit AsVivaldi(As* father, const char* name);
 

@@ -14,7 +14,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-class XBT_PRIVATE AsCluster: public AsImpl {
+class XBT_PRIVATE AsCluster : public AsImpl {
 public:
   explicit AsCluster(As* father, const char* name);
 
@@ -28,15 +28,15 @@ public:
   /* The pair is {linkUp, linkDown} */
   std::unordered_map<unsigned int, std::pair<Link*, Link*>> privateLinks_;
 
-  Link* backbone_ = nullptr;
-  void *loopback_ = nullptr;
-  NetCard *router_ = nullptr;
-  bool hasLimiter_  = false;
-  bool hasLoopback_ = false;
+  Link* backbone_                = nullptr;
+  void* loopback_                = nullptr;
+  NetCard* router_               = nullptr;
+  bool hasLimiter_               = false;
+  bool hasLoopback_              = false;
   unsigned int linkCountPerNode_ = 1; /* may be 1 (if only a private link), 2 or 3 (if limiter and loopback) */
-
 };
-
-}}} // namespace
+}
+}
+} // namespace
 
 #endif /* SIMGRID_ROUTING_CLUSTER_HPP_ */

@@ -7,8 +7,8 @@
 
 #include <simgrid/s4u/host.hpp>
 
-#include "src/kernel/routing/VivaldiZone.hpp"
 #include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/VivaldiZone.hpp"
 #include "src/surf/network_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_vivaldi, surf, "Routing part of surf");

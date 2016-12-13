@@ -13,7 +13,7 @@ namespace kernel {
 namespace routing {
 
 /** Floyd routing data: slow initialization, fast lookup, lesser memory requirements, shortest path routing only */
-class XBT_PRIVATE AsFloyd: public AsRoutedGraph {
+class XBT_PRIVATE AsFloyd : public AsRoutedGraph {
 public:
   explicit AsFloyd(As* father, const char* name);
   ~AsFloyd() override;
@@ -24,11 +24,12 @@ public:
 
 private:
   /* vars to compute the Floyd algorithm. */
-  int *predecessorTable_;
-  double *costTable_;
-  sg_platf_route_cbarg_t *linkTable_;
+  int* predecessorTable_;
+  double* costTable_;
+  sg_platf_route_cbarg_t* linkTable_;
 };
-
-}}} // namespaces
+}
+}
+} // namespaces
 
 #endif /* SURF_ROUTING_FLOYD_HPP_ */

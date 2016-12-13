@@ -17,12 +17,15 @@ public:
   explicit AsRoutedGraph(As* father, const char* name);
 
   void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
-  virtual sg_platf_route_cbarg_t newExtendedRoute(RoutingMode hierarchy, sg_platf_route_cbarg_t routearg, int change_order);
+  virtual sg_platf_route_cbarg_t newExtendedRoute(RoutingMode hierarchy, sg_platf_route_cbarg_t routearg,
+                                                  int change_order);
+
 protected:
-  void getRouteCheckParams(NetCard *src, NetCard *dst);
+  void getRouteCheckParams(NetCard* src, NetCard* dst);
   void addRouteCheckParams(sg_platf_route_cbarg_t route);
 };
-
-}}} // namespace
+}
+}
+} // namespace
 
 #endif /* SIMGRID_ROUTING_GENERIC_HPP_ */

@@ -9,16 +9,17 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 
-#define TO_ROUTE_FULL(i,j) routingTable_[(i)+(j)*table_size]
+#define TO_ROUTE_FULL(i, j) routingTable_[(i) + (j)*table_size]
 
 namespace simgrid {
 namespace kernel {
 namespace routing {
 AsFull::AsFull(As* father, const char* name) : AsRoutedGraph(father, name)
 {
-  }
+}
 
-void AsFull::seal() {
+void AsFull::seal()
+{
   int i;
   sg_platf_route_cbarg_t e_route;
 
@@ -34,9 +35,9 @@ void AsFull::seal() {
     for (i = 0; i < table_size; i++) {
       e_route = TO_ROUTE_FULL(i, i);
       if (!e_route) {
-        e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
-        e_route->gw_src = nullptr;
-        e_route->gw_dst = nullptr;
+        e_route            = xbt_new0(s_sg_platf_route_cbarg_t, 1);
+        e_route->gw_src    = nullptr;
+        e_route->gw_dst    = nullptr;
         e_route->link_list = new std::vector<Link*>();
         e_route->link_list->push_back(surf_network_model->loopback_);
         TO_ROUTE_FULL(i, i) = e_route;
@@ -45,15 +46,16 @@ void AsFull::seal() {
   }
 }
 
-AsFull::~AsFull(){
+AsFull::~AsFull()
+{
   if (routingTable_) {
     int table_size = static_cast<int>(vertices_.size());
     /* Delete routing table */
     for (int i = 0; i < table_size; i++)
       for (int j = 0; j < table_size; j++) {
-        if (TO_ROUTE_FULL(i,j)){
-          delete TO_ROUTE_FULL(i,j)->link_list;
-          xbt_free(TO_ROUTE_FULL(i,j));
+        if (TO_ROUTE_FULL(i, j)) {
+          delete TO_ROUTE_FULL(i, j)->link_list;
+          xbt_free(TO_ROUTE_FULL(i, j));
         }
       }
     xbt_free(routingTable_);
@@ -64,7 +66,7 @@ void AsFull::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t re
 {
   XBT_DEBUG("full getLocalRoute from %s[%d] to %s[%d]", src->cname(), src->id(), dst->cname(), dst->id());
 
-  size_t table_size = vertices_.size();
+  size_t table_size              = vertices_.size();
   sg_platf_route_cbarg_t e_route = TO_ROUTE_FULL(src->id(), dst->id());
 
   if (e_route != nullptr) {
@@ -80,8 +82,8 @@ void AsFull::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t re
 
 void AsFull::addRoute(sg_platf_route_cbarg_t route)
 {
-  NetCard* src        = route->src;
-  NetCard* dst        = route->dst;
+  NetCard* src = route->src;
+  NetCard* dst = route->dst;
   addRouteCheckParams(route);
 
   size_t table_size = vertices_.size();
@@ -106,8 +108,8 @@ void AsFull::addRoute(sg_platf_route_cbarg_t route)
   if (route->symmetrical == true && src != dst) {
     if (route->gw_dst && route->gw_src) {
       NetCard* gw_tmp = route->gw_src;
-      route->gw_src = route->gw_dst;
-      route->gw_dst = gw_tmp;
+      route->gw_src   = route->gw_dst;
+      route->gw_dst   = gw_tmp;
     }
     if (route->gw_dst) // AS route (to adapt the error message, if any)
       xbt_assert(
@@ -123,5 +125,6 @@ void AsFull::addRoute(sg_platf_route_cbarg_t route)
     TO_ROUTE_FULL(dst->id(), src->id())->link_list->shrink_to_fit();
   }
 }
-
-}}} // namespace
+}
+}
+} // namespace

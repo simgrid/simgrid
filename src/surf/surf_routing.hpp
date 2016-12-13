@@ -9,8 +9,8 @@
 #include <xbt/base.h>
 #include <xbt/signal.hpp>
 
-#include "surf_interface.hpp"
 #include "src/kernel/routing/NetZoneImpl.hpp"
+#include "surf_interface.hpp"
 
 #include <float.h>
 #include <vector>

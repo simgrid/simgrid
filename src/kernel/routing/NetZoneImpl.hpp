@@ -8,8 +8,8 @@
 
 #include "xbt/graph.h"
 
-#include "simgrid/s4u/forward.hpp"
 #include "simgrid/s4u/As.hpp"
+#include "simgrid/s4u/forward.hpp"
 
 #include "src/surf/xml/platf_private.hpp" // FIXME: kill sg_platf_route_cbarg_t to remove that UGLY include
 
@@ -99,7 +99,8 @@ private:
   std::map<std::pair<NetCard*, NetCard*>, BypassRoute*> bypassRoutes_; // src x dst -> route
   routing::NetCard* netcard_ = nullptr;                                // Our representative in the father AS
 };
-
-}}}; // Namespace simgrid::kernel::routing
+}
+}
+}; // Namespace simgrid::kernel::routing
 
 #endif /* SIMGRID_SURF_AS_HPP */

@@ -10,7 +10,7 @@
 
 typedef struct graph_node_data {
   int id;
-  int graph_id;                 /* used for caching internal graph id's */
+  int graph_id; /* used for caching internal graph id's */
 } s_graph_node_data_t, *graph_node_data_t;
 
 typedef struct graph_node_map_element {
@@ -18,7 +18,7 @@ typedef struct graph_node_map_element {
 } s_graph_node_map_element_t, *graph_node_map_element_t;
 
 typedef struct route_cache_element {
-  int *pred_arr;
+  int* pred_arr;
   int size;
 } s_route_cache_element_t, *route_cache_element_t;
 
@@ -40,26 +40,27 @@ public:
   xbt_node_t routeGraphNewNode(int id, int graph_id);
   graph_node_map_element_t nodeMapSearch(int id);
   void newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_route);
-    /**
-     * For each vertex (node) already in the graph,
-     * make sure it also has a loopback link; this loopback
-     * can potentially already be in the graph, and in that
-     * case nothing will be done.
-     *
-     * If no loopback is specified for a node, we will use
-     * the loopback that is provided by the routing platform.
-     *
-     * After this function returns, any node in the graph
-     * will have a loopback attached to it.
-     */
+  /**
+   * For each vertex (node) already in the graph,
+   * make sure it also has a loopback link; this loopback
+   * can potentially already be in the graph, and in that
+   * case nothing will be done.
+   *
+   * If no loopback is specified for a node, we will use
+   * the loopback that is provided by the routing platform.
+   *
+   * After this function returns, any node in the graph
+   * will have a loopback attached to it.
+   */
   void getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat) override;
   void addRoute(sg_platf_route_cbarg_t route) override;
 
-  xbt_graph_t routeGraph_ = nullptr;     /* xbt_graph */
-  xbt_dict_t graphNodeMap_ = nullptr;    /* map */
-  xbt_dict_t routeCache_ = nullptr;      /* use in cache mode */
+  xbt_graph_t routeGraph_  = nullptr; /* xbt_graph */
+  xbt_dict_t graphNodeMap_ = nullptr; /* map */
+  xbt_dict_t routeCache_   = nullptr; /* use in cache mode */
 };
-
-}}} // namespaces
+}
+}
+} // namespaces
 
 #endif /* SURF_ROUTING_DIJKSTRA_HPP_ */

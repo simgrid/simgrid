@@ -7,8 +7,8 @@
 #include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/network_interface.hpp"
 
-#include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster_dragonfly, surf_route_cluster, "Dragonfly Routing part of surf");
 
@@ -20,78 +20,80 @@ AsClusterDragonfly::AsClusterDragonfly(As* father, const char* name) : AsCluster
 {
 }
 
-AsClusterDragonfly::~AsClusterDragonfly() {
-  if(this->routers_ != nullptr){
-    for (unsigned int i=0; i<this->numGroups_*this->numChassisPerGroup_*this->numBladesPerChassis_;i++)
-        delete(routers_[i]);
+AsClusterDragonfly::~AsClusterDragonfly()
+{
+  if (this->routers_ != nullptr) {
+    for (unsigned int i = 0; i < this->numGroups_ * this->numChassisPerGroup_ * this->numBladesPerChassis_; i++)
+      delete (routers_[i]);
     xbt_free(routers_);
   }
 }
 
-unsigned int *AsClusterDragonfly::rankId_to_coords(int rankId)
+unsigned int* AsClusterDragonfly::rankId_to_coords(int rankId)
 {
-  //coords : group, chassis, blade, node
-  unsigned int *coords = (unsigned int *) malloc(4 * sizeof(unsigned int));
-  coords[0] = rankId/ (numChassisPerGroup_*numBladesPerChassis_*numNodesPerBlade_);
-  rankId=rankId%(numChassisPerGroup_*numBladesPerChassis_*numNodesPerBlade_);
-  coords[1] = rankId/ (numBladesPerChassis_*numNodesPerBlade_);
-  rankId=rankId%(numBladesPerChassis_*numNodesPerBlade_);
-  coords[2] = rankId/ numNodesPerBlade_;
-  coords[3]=rankId%numNodesPerBlade_;
+  // coords : group, chassis, blade, node
+  unsigned int* coords = (unsigned int*)malloc(4 * sizeof(unsigned int));
+  coords[0]            = rankId / (numChassisPerGroup_ * numBladesPerChassis_ * numNodesPerBlade_);
+  rankId               = rankId % (numChassisPerGroup_ * numBladesPerChassis_ * numNodesPerBlade_);
+  coords[1]            = rankId / (numBladesPerChassis_ * numNodesPerBlade_);
+  rankId               = rankId % (numBladesPerChassis_ * numNodesPerBlade_);
+  coords[2]            = rankId / numNodesPerBlade_;
+  coords[3]            = rankId % numNodesPerBlade_;
 
   return coords;
 }
 
-void AsClusterDragonfly::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) {
+void AsClusterDragonfly::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
+{
   std::vector<std::string> parameters;
   std::vector<std::string> tmp;
   boost::split(parameters, cluster->topo_parameters, boost::is_any_of(";"));
 
   // TODO : we have to check for zeros and negative numbers, or it might crash
-  if (parameters.size() != 4){
+  if (parameters.size() != 4) {
     surf_parse_error(
         "Dragonfly are defined by the number of groups, chassis per groups, blades per chassis, nodes per blade");
   }
 
   // Blue network : number of groups, number of links between each group
   boost::split(tmp, parameters[0], boost::is_any_of(","));
-  if(tmp.size() != 2) {
+  if (tmp.size() != 2) {
     surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
   }
 
-  this->numGroups_=xbt_str_parse_int(tmp[0].c_str(), "Invalid number of groups: %s");
-  this->numLinksBlue_=xbt_str_parse_int(tmp[1].c_str(), "Invalid number of links for the blue level: %s");
+  this->numGroups_    = xbt_str_parse_int(tmp[0].c_str(), "Invalid number of groups: %s");
+  this->numLinksBlue_ = xbt_str_parse_int(tmp[1].c_str(), "Invalid number of links for the blue level: %s");
 
   // Black network : number of chassis/group, number of links between each router on the black network
   boost::split(tmp, parameters[1], boost::is_any_of(","));
-  if(tmp.size() != 2) {
+  if (tmp.size() != 2) {
     surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
   }
 
-  this->numChassisPerGroup_=xbt_str_parse_int(tmp[0].c_str(), "Invalid number of groups: %s");
-  this->numLinksBlack_=xbt_str_parse_int(tmp[1].c_str(), "Invalid number of links  for the black level: %s");
+  this->numChassisPerGroup_ = xbt_str_parse_int(tmp[0].c_str(), "Invalid number of groups: %s");
+  this->numLinksBlack_      = xbt_str_parse_int(tmp[1].c_str(), "Invalid number of links  for the black level: %s");
 
-
- // Green network : number of blades/chassis, number of links between each router on the green network
+  // Green network : number of blades/chassis, number of links between each router on the green network
   boost::split(tmp, parameters[2], boost::is_any_of(","));
-  if(tmp.size() != 2) {
+  if (tmp.size() != 2) {
     surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
   }
 
-  this->numBladesPerChassis_=xbt_str_parse_int(tmp[0].c_str(), "Invalid number of groups: %s");
-  this->numLinksGreen_=xbt_str_parse_int(tmp[1].c_str(), "Invalid number of links for the green level: %s");
-
+  this->numBladesPerChassis_ = xbt_str_parse_int(tmp[0].c_str(), "Invalid number of groups: %s");
+  this->numLinksGreen_       = xbt_str_parse_int(tmp[1].c_str(), "Invalid number of links for the green level: %s");
 
   // The last part of topo_parameters should be the number of nodes per blade
-  this->numNodesPerBlade_ = xbt_str_parse_int(parameters[3].c_str(), "Last parameter is not the amount of nodes per blade: %s");
+  this->numNodesPerBlade_ =
+      xbt_str_parse_int(parameters[3].c_str(), "Last parameter is not the amount of nodes per blade: %s");
   this->cluster_ = cluster;
 }
 
 /*
 * Generate the cluster once every node is created
 */
-void AsClusterDragonfly::seal(){
-  if(this->numNodesPerBlade_ == 0) {
+void AsClusterDragonfly::seal()
+{
+  if (this->numNodesPerBlade_ == 0) {
     return;
   }
 
@@ -99,146 +101,153 @@ void AsClusterDragonfly::seal(){
   this->generateLinks();
 }
 
-DragonflyRouter::DragonflyRouter(int group, int chassis, int blade):group_(group),chassis_(chassis),blade_(blade){ }
+DragonflyRouter::DragonflyRouter(int group, int chassis, int blade) : group_(group), chassis_(chassis), blade_(blade)
+{
+}
 
-DragonflyRouter::~DragonflyRouter(){
-  if(this->myNodes_!=nullptr)
+DragonflyRouter::~DragonflyRouter()
+{
+  if (this->myNodes_ != nullptr)
     xbt_free(myNodes_);
-  if(this->greenLinks_!=nullptr)
+  if (this->greenLinks_ != nullptr)
     xbt_free(greenLinks_);
-  if(this->blackLinks_!=nullptr)
+  if (this->blackLinks_ != nullptr)
     xbt_free(blackLinks_);
-  if(this->blueLinks_!=nullptr)
+  if (this->blueLinks_ != nullptr)
     xbt_free(blueLinks_);
 }
 
+void AsClusterDragonfly::generateRouters()
+{
+  this->routers_ = static_cast<DragonflyRouter**>(xbt_malloc0(this->numGroups_ * this->numChassisPerGroup_ *
+                                                              this->numBladesPerChassis_ * sizeof(DragonflyRouter*)));
 
-void AsClusterDragonfly::generateRouters() {
-  this->routers_=static_cast<DragonflyRouter**>(xbt_malloc0(this->numGroups_*this->numChassisPerGroup_*this->numBladesPerChassis_*sizeof(DragonflyRouter*)));
-
-  for(unsigned int i=0;i<this->numGroups_;i++){
-    for(unsigned int j=0;j<this->numChassisPerGroup_;j++){
-      for(unsigned int k=0;k<this->numBladesPerChassis_;k++){
-        DragonflyRouter* router = new DragonflyRouter(i,j,k);
-        this->routers_[i*this->numChassisPerGroup_*this->numBladesPerChassis_+j*this->numBladesPerChassis_+k]=router;
+  for (unsigned int i = 0; i < this->numGroups_; i++) {
+    for (unsigned int j = 0; j < this->numChassisPerGroup_; j++) {
+      for (unsigned int k = 0; k < this->numBladesPerChassis_; k++) {
+        DragonflyRouter* router = new DragonflyRouter(i, j, k);
+        this->routers_[i * this->numChassisPerGroup_ * this->numBladesPerChassis_ + j * this->numBladesPerChassis_ +
+                       k] = router;
       }
     }
   }
 }
 
-void AsClusterDragonfly::createLink(char* id, int numlinks, Link** linkup, Link** linkdown){
-  *linkup=nullptr;
-  *linkdown=nullptr;
+void AsClusterDragonfly::createLink(char* id, int numlinks, Link** linkup, Link** linkdown)
+{
+  *linkup   = nullptr;
+  *linkdown = nullptr;
   s_sg_platf_link_cbarg_t linkTemplate;
   memset(&linkTemplate, 0, sizeof(linkTemplate));
   linkTemplate.bandwidth = this->cluster_->bw * numlinks;
-  linkTemplate.latency = this->cluster_->lat;
-  linkTemplate.policy = this->cluster_->sharing_policy; // sthg to do with that ?
-  linkTemplate.id = id;
+  linkTemplate.latency   = this->cluster_->lat;
+  linkTemplate.policy    = this->cluster_->sharing_policy; // sthg to do with that ?
+  linkTemplate.id        = id;
   sg_platf_new_link(&linkTemplate);
   XBT_DEBUG("Generating link %s", id);
   Link* link;
   std::string tmpID;
   if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX) {
-    tmpID = std::string(linkTemplate.id) + "_UP";
-    link =  Link::byName(tmpID.c_str());
-    *linkup = link; // check link?
-    tmpID = std::string(linkTemplate.id) + "_DOWN";
-    link = Link::byName(tmpID.c_str());
+    tmpID     = std::string(linkTemplate.id) + "_UP";
+    link      = Link::byName(tmpID.c_str());
+    *linkup   = link; // check link?
+    tmpID     = std::string(linkTemplate.id) + "_DOWN";
+    link      = Link::byName(tmpID.c_str());
     *linkdown = link; // check link ?
-  }
-  else {
-    link = Link::byName(linkTemplate.id);
-    *linkup = link;
+  } else {
+    link      = Link::byName(linkTemplate.id);
+    *linkup   = link;
     *linkdown = link;
   }
 
   free((void*)linkTemplate.id);
 }
 
-
-void AsClusterDragonfly::generateLinks() {
+void AsClusterDragonfly::generateLinks()
+{
 
   static int uniqueId = 0;
-  char* id = nullptr;
+  char* id            = nullptr;
   Link* linkup;
-  Link *linkdown;
+  Link* linkdown;
 
-  unsigned int numRouters = this->numGroups_*this->numChassisPerGroup_*this->numBladesPerChassis_;
+  unsigned int numRouters = this->numGroups_ * this->numChassisPerGroup_ * this->numBladesPerChassis_;
 
   if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX)
-    numLinksperLink_=2;
+    numLinksperLink_ = 2;
 
-  //Links from routers to their local nodes.
-  for(unsigned int i=0; i<numRouters;i++){
-  //allocate structures
-    this->routers_[i]->myNodes_=static_cast<Link**>(xbt_malloc0(numLinksperLink_*this->numNodesPerBlade_*sizeof(Link*)));
-    this->routers_[i]->greenLinks_=static_cast<Link**>(xbt_malloc0(this->numBladesPerChassis_*sizeof(Link*)));
-    this->routers_[i]->blackLinks_=static_cast<Link**>(xbt_malloc0(this->numChassisPerGroup_*sizeof(Link*)));
+  // Links from routers to their local nodes.
+  for (unsigned int i = 0; i < numRouters; i++) {
+    // allocate structures
+    this->routers_[i]->myNodes_ =
+        static_cast<Link**>(xbt_malloc0(numLinksperLink_ * this->numNodesPerBlade_ * sizeof(Link*)));
+    this->routers_[i]->greenLinks_ = static_cast<Link**>(xbt_malloc0(this->numBladesPerChassis_ * sizeof(Link*)));
+    this->routers_[i]->blackLinks_ = static_cast<Link**>(xbt_malloc0(this->numChassisPerGroup_ * sizeof(Link*)));
 
-    for(unsigned int j=0; j< numLinksperLink_*this->numNodesPerBlade_; j+=numLinksperLink_){
-      id = bprintf("local_link_from_router_%d_to_node_%d_%d", i, j/numLinksperLink_, uniqueId);
+    for (unsigned int j = 0; j < numLinksperLink_ * this->numNodesPerBlade_; j += numLinksperLink_) {
+      id = bprintf("local_link_from_router_%d_to_node_%d_%d", i, j / numLinksperLink_, uniqueId);
       this->createLink(id, 1, &linkup, &linkdown);
       if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX) {
-        this->routers_[i]->myNodes_[j] = linkup; 
-        this->routers_[i]->myNodes_[j+1] = linkdown; 
-      }
-      else {
+        this->routers_[i]->myNodes_[j]     = linkup;
+        this->routers_[i]->myNodes_[j + 1] = linkdown;
+      } else {
         this->routers_[i]->myNodes_[j] = linkup;
       }
       uniqueId++;
     }
   }
 
-  //Green links from routers to same chassis routers - alltoall
-  for(unsigned int i=0; i<this->numGroups_*this->numChassisPerGroup_;i++){
-    for(unsigned int j=0; j<this->numBladesPerChassis_;j++){
-      for(unsigned int k=j+1;k<this->numBladesPerChassis_;k++){
-        id = bprintf("green_link_in_chassis_%d_between_routers_%d_and_%d_%d", i%numChassisPerGroup_, j, k, uniqueId);
+  // Green links from routers to same chassis routers - alltoall
+  for (unsigned int i = 0; i < this->numGroups_ * this->numChassisPerGroup_; i++) {
+    for (unsigned int j = 0; j < this->numBladesPerChassis_; j++) {
+      for (unsigned int k = j + 1; k < this->numBladesPerChassis_; k++) {
+        id = bprintf("green_link_in_chassis_%d_between_routers_%d_and_%d_%d", i % numChassisPerGroup_, j, k, uniqueId);
         this->createLink(id, this->numLinksGreen_, &linkup, &linkdown);
-        this->routers_[i*numBladesPerChassis_+j]->greenLinks_[k] = linkup;
-        this->routers_[i*numBladesPerChassis_+k]->greenLinks_[j] = linkdown; 
+        this->routers_[i * numBladesPerChassis_ + j]->greenLinks_[k] = linkup;
+        this->routers_[i * numBladesPerChassis_ + k]->greenLinks_[j] = linkdown;
         uniqueId++;
       }
     }
   }
 
-  //Black links from routers to same group routers - alltoall
-  for(unsigned int i=0; i<this->numGroups_;i++){
-    for(unsigned int j=0; j<this->numChassisPerGroup_;j++){
-      for(unsigned int k=j+1;k<this->numChassisPerGroup_;k++){
-        for(unsigned int l=0;l<this->numBladesPerChassis_;l++){
-          id = bprintf("black_link_in_group_%d_between_chassis_%d_and_%d_blade_%d_%d", i, j, k,l, uniqueId);
-          this->createLink(id, this->numLinksBlack_,&linkup, &linkdown);
-          this->routers_[i*numBladesPerChassis_*numChassisPerGroup_+j*numBladesPerChassis_+l]->blackLinks_[k] = linkup;
-          this->routers_[i*numBladesPerChassis_*numChassisPerGroup_+k*numBladesPerChassis_+l]->blackLinks_[j] = linkdown; 
+  // Black links from routers to same group routers - alltoall
+  for (unsigned int i = 0; i < this->numGroups_; i++) {
+    for (unsigned int j = 0; j < this->numChassisPerGroup_; j++) {
+      for (unsigned int k = j + 1; k < this->numChassisPerGroup_; k++) {
+        for (unsigned int l = 0; l < this->numBladesPerChassis_; l++) {
+          id = bprintf("black_link_in_group_%d_between_chassis_%d_and_%d_blade_%d_%d", i, j, k, l, uniqueId);
+          this->createLink(id, this->numLinksBlack_, &linkup, &linkdown);
+          this->routers_[i * numBladesPerChassis_ * numChassisPerGroup_ + j * numBladesPerChassis_ + l]
+              ->blackLinks_[k] = linkup;
+          this->routers_[i * numBladesPerChassis_ * numChassisPerGroup_ + k * numBladesPerChassis_ + l]
+              ->blackLinks_[j] = linkdown;
           uniqueId++;
         }
       }
     }
   }
 
-
-  //Blue links between groups - Not all routers involved, only one per group is linked to others. Let's say router n of each group is linked to group n.
-//FIXME: in reality blue links may be attached to several different routers
-  for(unsigned int i=0; i<this->numGroups_;i++){
-    for(unsigned int j=i+1; j<this->numGroups_;j++){
-      unsigned int routernumi=i*numBladesPerChassis_*numChassisPerGroup_+j;
-      unsigned int routernumj=j*numBladesPerChassis_*numChassisPerGroup_+i;
-      this->routers_[routernumi]->blueLinks_=static_cast<Link**>(xbt_malloc0(sizeof(Link*)));
-      this->routers_[routernumj]->blueLinks_=static_cast<Link**>(xbt_malloc0(sizeof(Link*)));
-        id = bprintf("blue_link_between_group_%d_and_%d_routers_%d_and_%d_%d", i, j, routernumi,routernumj, uniqueId);
-        this->createLink(id, this->numLinksBlue_, &linkup, &linkdown);
-        this->routers_[routernumi]->blueLinks_[0] = linkup;
-        this->routers_[routernumj]->blueLinks_[0] = linkdown; 
-        uniqueId++;
+  // Blue links between groups - Not all routers involved, only one per group is linked to others. Let's say router n of
+  // each group is linked to group n.
+  // FIXME: in reality blue links may be attached to several different routers
+  for (unsigned int i = 0; i < this->numGroups_; i++) {
+    for (unsigned int j = i + 1; j < this->numGroups_; j++) {
+      unsigned int routernumi                = i * numBladesPerChassis_ * numChassisPerGroup_ + j;
+      unsigned int routernumj                = j * numBladesPerChassis_ * numChassisPerGroup_ + i;
+      this->routers_[routernumi]->blueLinks_ = static_cast<Link**>(xbt_malloc0(sizeof(Link*)));
+      this->routers_[routernumj]->blueLinks_ = static_cast<Link**>(xbt_malloc0(sizeof(Link*)));
+      id = bprintf("blue_link_between_group_%d_and_%d_routers_%d_and_%d_%d", i, j, routernumi, routernumj, uniqueId);
+      this->createLink(id, this->numLinksBlue_, &linkup, &linkdown);
+      this->routers_[routernumi]->blueLinks_[0] = linkup;
+      this->routers_[routernumj]->blueLinks_[0] = linkdown;
+      uniqueId++;
     }
   }
 }
 
 void AsClusterDragonfly::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* latency)
 {
-  //Minimal routing version.
+  // Minimal routing version.
   // TODO : non-minimal random one, and adaptive ?
 
   if (dst->isRouter() || src->isRouter())
@@ -256,82 +265,88 @@ void AsClusterDragonfly::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_rout
     return;
   }
 
-  unsigned int *myCoords = rankId_to_coords(src->id());
-  unsigned int *targetCoords = rankId_to_coords(dst->id());
+  unsigned int* myCoords     = rankId_to_coords(src->id());
+  unsigned int* targetCoords = rankId_to_coords(dst->id());
   XBT_DEBUG("src : %u group, %u chassis, %u blade, %u node", myCoords[0], myCoords[1], myCoords[2], myCoords[3]);
-  XBT_DEBUG("dst : %u group, %u chassis, %u blade, %u node", targetCoords[0], targetCoords[1], targetCoords[2], targetCoords[3]);
+  XBT_DEBUG("dst : %u group, %u chassis, %u blade, %u node", targetCoords[0], targetCoords[1], targetCoords[2],
+            targetCoords[3]);
 
-  DragonflyRouter* myRouter = routers_[myCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+myCoords[1] * numBladesPerChassis_+myCoords[2]];
-  DragonflyRouter* targetRouter = routers_[targetCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+targetCoords[1] *numBladesPerChassis_ +targetCoords[2]];
-  DragonflyRouter* currentRouter=myRouter;
+  DragonflyRouter* myRouter = routers_[myCoords[0] * (numChassisPerGroup_ * numBladesPerChassis_) +
+                                       myCoords[1] * numBladesPerChassis_ + myCoords[2]];
+  DragonflyRouter* targetRouter = routers_[targetCoords[0] * (numChassisPerGroup_ * numBladesPerChassis_) +
+                                           targetCoords[1] * numBladesPerChassis_ + targetCoords[2]];
+  DragonflyRouter* currentRouter = myRouter;
 
-  //node->router local link
-  route->link_list->push_back(myRouter->myNodes_[myCoords[3]*numLinksperLink_]);
+  // node->router local link
+  route->link_list->push_back(myRouter->myNodes_[myCoords[3] * numLinksperLink_]);
   if (latency)
     *latency += myRouter->myNodes_[myCoords[3] * numLinksperLink_]->latency();
 
-  if (hasLimiter_) {    // limiter for sender
+  if (hasLimiter_) { // limiter for sender
     std::pair<Link*, Link*> info = privateLinks_.at(src->id() * linkCountPerNode_ + hasLoopback_);
     route->link_list->push_back(info.first);
   }
 
-  if(targetRouter!=myRouter){
+  if (targetRouter != myRouter) {
 
-    //are we on a different group ?
-    if(targetRouter->group_ != currentRouter->group_){
-      //go to the router of our group connected to this one.
-      if(currentRouter->blade_!=targetCoords[0]){
-        //go to the nth router in our chassis
+    // are we on a different group ?
+    if (targetRouter->group_ != currentRouter->group_) {
+      // go to the router of our group connected to this one.
+      if (currentRouter->blade_ != targetCoords[0]) {
+        // go to the nth router in our chassis
         route->link_list->push_back(currentRouter->greenLinks_[targetCoords[0]]);
         if (latency)
           *latency += currentRouter->greenLinks_[targetCoords[0]]->latency();
-        currentRouter=routers_[myCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+myCoords[1] * numBladesPerChassis_+targetCoords[0]];
+        currentRouter = routers_[myCoords[0] * (numChassisPerGroup_ * numBladesPerChassis_) +
+                                 myCoords[1] * numBladesPerChassis_ + targetCoords[0]];
       }
 
-      if(currentRouter->chassis_!=0){
-        //go to the first chassis of our group
+      if (currentRouter->chassis_ != 0) {
+        // go to the first chassis of our group
         route->link_list->push_back(currentRouter->blackLinks_[0]);
         if (latency)
           *latency += currentRouter->blackLinks_[0]->latency();
-        currentRouter=routers_[myCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+targetCoords[0]];
+        currentRouter = routers_[myCoords[0] * (numChassisPerGroup_ * numBladesPerChassis_) + targetCoords[0]];
       }
 
-      //go to destination group - the only optical hop 
+      // go to destination group - the only optical hop
       route->link_list->push_back(currentRouter->blueLinks_[0]);
       if (latency)
         *latency += currentRouter->blueLinks_[0]->latency();
-      currentRouter=routers_[targetCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+myCoords[0]];
+      currentRouter = routers_[targetCoords[0] * (numChassisPerGroup_ * numBladesPerChassis_) + myCoords[0]];
     }
 
-    
-    //same group, but same blade ?
-    if(targetRouter->blade_ != currentRouter->blade_){
+    // same group, but same blade ?
+    if (targetRouter->blade_ != currentRouter->blade_) {
       route->link_list->push_back(currentRouter->greenLinks_[targetCoords[2]]);
       if (latency)
         *latency += currentRouter->greenLinks_[targetCoords[2]]->latency();
-      currentRouter=routers_[targetCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+targetCoords[2]];
+      currentRouter = routers_[targetCoords[0] * (numChassisPerGroup_ * numBladesPerChassis_) + targetCoords[2]];
     }
 
-    //same blade, but same chassis ?
-    if(targetRouter->chassis_ != currentRouter->chassis_){
+    // same blade, but same chassis ?
+    if (targetRouter->chassis_ != currentRouter->chassis_) {
       route->link_list->push_back(currentRouter->blackLinks_[targetCoords[1]]);
       if (latency)
         *latency += currentRouter->blackLinks_[targetCoords[1]]->latency();
-      currentRouter=routers_[targetCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+targetCoords[1]*numBladesPerChassis_+targetCoords[2]];
+      currentRouter = routers_[targetCoords[0] * (numChassisPerGroup_ * numBladesPerChassis_) +
+                               targetCoords[1] * numBladesPerChassis_ + targetCoords[2]];
     }
   }
 
-  if (hasLimiter_) {    // limiter for receiver
+  if (hasLimiter_) { // limiter for receiver
     std::pair<Link*, Link*> info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_);
     route->link_list->push_back(info.first);
   }
 
-  //router->node local link
-  route->link_list->push_back(targetRouter->myNodes_[targetCoords[3]*numLinksperLink_+numLinksperLink_-1]);
+  // router->node local link
+  route->link_list->push_back(targetRouter->myNodes_[targetCoords[3] * numLinksperLink_ + numLinksperLink_ - 1]);
   if (latency)
     *latency += targetRouter->myNodes_[targetCoords[3] * numLinksperLink_ + numLinksperLink_ - 1]->latency();
 
   xbt_free(myCoords);
   xbt_free(targetCoords);
 }
-}}} // namespace
+}
+}
+} // namespace

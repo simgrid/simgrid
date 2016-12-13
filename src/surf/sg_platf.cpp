@@ -26,16 +26,16 @@
 #include "src/surf/network_interface.hpp"
 
 #include "src/kernel/routing/ClusterZone.hpp"
-#include "src/kernel/routing/DragonflyZone.hpp"
-#include "src/kernel/routing/FatTreeZone.hpp"
-#include "src/kernel/routing/TorusZone.hpp"
 #include "src/kernel/routing/DijkstraZone.hpp"
+#include "src/kernel/routing/DragonflyZone.hpp"
+#include "src/kernel/routing/EmptyZone.hpp"
+#include "src/kernel/routing/FatTreeZone.hpp"
 #include "src/kernel/routing/FloydZone.hpp"
 #include "src/kernel/routing/FullZone.hpp"
-#include "src/kernel/routing/NetZoneImpl.hpp"
-#include "src/kernel/routing/EmptyZone.hpp"
-#include "src/kernel/routing/VivaldiZone.hpp"
 #include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/NetZoneImpl.hpp"
+#include "src/kernel/routing/TorusZone.hpp"
+#include "src/kernel/routing/VivaldiZone.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 

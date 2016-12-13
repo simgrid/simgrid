@@ -21,7 +21,8 @@ public:
   void getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t into, double* latency) override;
   void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
 };
-
-}}} // namespace
+}
+}
+} // namespace
 
 #endif /* SURF_ROUTING_NONE_HPP_ */
