@@ -60,10 +60,10 @@ public:
  *    is also not realistic, as blue level can use more links than a single
  *    Aries can handle, thus it should use several routers.
  */
-class XBT_PRIVATE AsClusterDragonfly : public AsCluster {
+class XBT_PRIVATE DragonflyZone : public ClusterZone {
 public:
-  explicit AsClusterDragonfly(As* father, const char* name);
-  ~AsClusterDragonfly() override;
+  explicit DragonflyZone(NetZone* father, const char* name);
+  ~DragonflyZone() override;
   //      void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position) override;
   void getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t into, double* latency) override;
   void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) override;

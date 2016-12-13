@@ -21,13 +21,13 @@
 namespace simgrid {
 
 namespace surf {
-  class Link;
+class Link;
 }
 namespace kernel {
-  namespace routing {
-    class AsImpl;
-    class NetCard;
-  }
+namespace routing {
+class NetZoneImpl;
+class NetCard;
+}
 }
 namespace s4u {
 
@@ -36,24 +36,26 @@ namespace s4u {
  * An AS is a network container, in charge of routing information between elements (hosts) and to the nearby ASes.
  * In SimGrid, there is a hierarchy of ASes, with a unique root AS (that you can retrieve from the s4u::Engine).
  */
-XBT_PUBLIC_CLASS As {
+XBT_PUBLIC_CLASS NetZone
+{
 protected:
-  friend simgrid::kernel::routing::AsImpl;
+  friend simgrid::kernel::routing::NetZoneImpl;
 
-  explicit As(As * father, const char* name);
-  virtual ~As();
-  
+  explicit NetZone(NetZone * father, const char* name);
+  virtual ~NetZone();
+
 public:
   /** @brief Seal your AS once you're done adding content, and before routing stuff through it */
   virtual void seal();
-  char *name();
-  As *father();;
+  char* name();
+  NetZone* father();
+  ;
   xbt_dict_t children(); // Sub AS
   xbt_dynar_t hosts();   // my content as a dynar
 
 public:
   /* Add content to the AS, at parsing time. It should be sealed afterward. */
-  virtual int addComponent(kernel::routing::NetCard *elm); /* A host, a router or an AS, whatever */
+  virtual int addComponent(kernel::routing::NetCard * elm); /* A host, a router or an AS, whatever */
   virtual void addRoute(sg_platf_route_cbarg_t route);
   virtual void addBypassRoute(sg_platf_route_cbarg_t e_route) = 0;
 
@@ -64,17 +66,18 @@ public:
       onRouteCreation;
 
 protected:
-  std::vector<kernel::routing::NetCard*> vertices_; // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
+  std::vector<kernel::routing::NetCard*>
+      vertices_; // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
 
 private:
-  As* father_ = nullptr;
-  char* name_ = nullptr;
+  NetZone* father_ = nullptr;
+  char* name_      = nullptr;
 
   bool sealed_ = false; // We cannot add more content when sealed
 
-  xbt_dict_t children_ = xbt_dict_new_homogeneous(nullptr);                               // sub-ASes
+  xbt_dict_t children_ = xbt_dict_new_homogeneous(nullptr); // sub-ASes
 };
-
-}}; // Namespace simgrid::s4u
+}
+}; // Namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_AS_HPP */

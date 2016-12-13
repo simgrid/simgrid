@@ -14,11 +14,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 namespace simgrid {
 namespace kernel {
 namespace routing {
-AsFull::AsFull(As* father, const char* name) : AsRoutedGraph(father, name)
+FullZone::FullZone(NetZone* father, const char* name) : RoutedZone(father, name)
 {
 }
 
-void AsFull::seal()
+void FullZone::seal()
 {
   int i;
   sg_platf_route_cbarg_t e_route;
@@ -46,7 +46,7 @@ void AsFull::seal()
   }
 }
 
-AsFull::~AsFull()
+FullZone::~FullZone()
 {
   if (routingTable_) {
     int table_size = static_cast<int>(vertices_.size());
@@ -62,7 +62,7 @@ AsFull::~AsFull()
   }
 }
 
-void AsFull::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t res, double* lat)
+void FullZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t res, double* lat)
 {
   XBT_DEBUG("full getLocalRoute from %s[%d] to %s[%d]", src->cname(), src->id(), dst->cname(), dst->id());
 
@@ -80,7 +80,7 @@ void AsFull::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t re
   }
 }
 
-void AsFull::addRoute(sg_platf_route_cbarg_t route)
+void FullZone::addRoute(sg_platf_route_cbarg_t route)
 {
   NetCard* src = route->src;
   NetCard* dst = route->dst;

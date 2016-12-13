@@ -123,21 +123,21 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
   XBT_DEBUG ("  linkContainers %s <-> %s", src->name, dst->name);
 }
 
-static void recursiveGraphExtraction (simgrid::s4u::As *as, container_t container, xbt_dict_t filter)
+static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t container, xbt_dict_t filter)
 {
   if (!TRACE_platform_topology()){
     XBT_DEBUG("Graph extraction disabled by user.");
     return;
   }
-  XBT_DEBUG ("Graph extraction for routing_component = %s", as->name());
-  if (!xbt_dict_is_empty(as->children())){
+  XBT_DEBUG("Graph extraction for NetZone = %s", netzone->name());
+  if (!xbt_dict_is_empty(netzone->children())) {
     xbt_dict_cursor_t cursor = nullptr;
-    AS_t rc_son;
+    NetZone_t nz_son;
     char *child_name;
     //bottom-up recursion
-    xbt_dict_foreach(as->children(), cursor, child_name, rc_son) {
-      container_t child_container = (container_t) xbt_dict_get (container->children, rc_son->name());
-      recursiveGraphExtraction (rc_son, child_container, filter);
+    xbt_dict_foreach (netzone->children(), cursor, child_name, nz_son) {
+      container_t child_container = (container_t)xbt_dict_get(container->children, nz_son->name());
+      recursiveGraphExtraction(nz_son, child_container, filter);
     }
   }
 
@@ -150,7 +150,7 @@ static void recursiveGraphExtraction (simgrid::s4u::As *as, container_t containe
     xbt_dict_cursor_t cursor = nullptr;
     char *edge_name;
 
-    static_cast<simgrid::kernel::routing::AsImpl*>(as)->getGraph(graph, nodes, edges);
+    static_cast<simgrid::kernel::routing::NetZoneImpl*>(netzone)->getGraph(graph, nodes, edges);
     xbt_dict_foreach(edges,cursor,edge_name,edge) {
         linkContainers(
           PJ_container_get((const char*) edge->src->data),
@@ -429,22 +429,21 @@ int instr_platform_traced ()
 
 #define GRAPHICATOR_SUPPORT_FUNCTIONS
 
-static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges,
-    AS_t as, container_t container)
+static void recursiveXBTGraphExtraction(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges, NetZone_t netzone,
+                                        container_t container)
 {
-  if (!xbt_dict_is_empty(as->children())){
+  if (!xbt_dict_is_empty(netzone->children())) {
     xbt_dict_cursor_t cursor = nullptr;
-    AS_t as_child;
+    NetZone_t netzone_child;
     char *child_name;
     //bottom-up recursion
-    xbt_dict_foreach(as->children(), cursor, child_name, as_child) {
-      container_t child_container = (container_t) xbt_dict_get (
-        container->children, as_child->name());
-      recursiveXBTGraphExtraction (graph, nodes, edges, as_child, child_container);
+    xbt_dict_foreach (netzone->children(), cursor, child_name, netzone_child) {
+      container_t child_container = (container_t)xbt_dict_get(container->children, netzone_child->name());
+      recursiveXBTGraphExtraction(graph, nodes, edges, netzone_child, child_container);
     }
   }
 
-  static_cast<simgrid::kernel::routing::AsImpl*>(as)->getGraph(graph, nodes, edges);
+  static_cast<simgrid::kernel::routing::NetZoneImpl*>(netzone)->getGraph(graph, nodes, edges);
 }
 
 xbt_graph_t instr_routing_platform_graph ()

@@ -70,11 +70,11 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-AsRoutedGraph::AsRoutedGraph(As* father, const char* name) : AsImpl(father, name)
+RoutedZone::RoutedZone(NetZone* father, const char* name) : NetZoneImpl(father, name)
 {
 }
 
-void AsRoutedGraph::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
+void RoutedZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 {
   for (auto my_src : vertices_) {
     for (auto my_dst : vertices_) {
@@ -128,8 +128,8 @@ void AsRoutedGraph::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edg
 /* ************************************************************************** */
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
 /* change a route containing link names into a route containing link entities */
-sg_platf_route_cbarg_t AsRoutedGraph::newExtendedRoute(RoutingMode hierarchy, sg_platf_route_cbarg_t routearg,
-                                                       int change_order)
+sg_platf_route_cbarg_t RoutedZone::newExtendedRoute(RoutingMode hierarchy, sg_platf_route_cbarg_t routearg,
+                                                    int change_order)
 {
   sg_platf_route_cbarg_t result;
 
@@ -156,13 +156,13 @@ sg_platf_route_cbarg_t AsRoutedGraph::newExtendedRoute(RoutingMode hierarchy, sg
   return result;
 }
 
-void AsRoutedGraph::getRouteCheckParams(NetCard* src, NetCard* dst)
+void RoutedZone::getRouteCheckParams(NetCard* src, NetCard* dst)
 {
   xbt_assert(src, "Cannot find a route from nullptr to %s", dst->cname());
   xbt_assert(dst, "Cannot find a route from %s to nullptr", src->cname());
 
-  As* src_as = src->containingAS();
-  As* dst_as = dst->containingAS();
+  NetZone* src_as = src->containingAS();
+  NetZone* dst_as = dst->containingAS();
 
   xbt_assert(src_as == dst_as,
              "Internal error: %s@%s and %s@%s are not in the same AS as expected. Please report that bug.",
@@ -172,7 +172,7 @@ void AsRoutedGraph::getRouteCheckParams(NetCard* src, NetCard* dst)
                              "%s@%s). Please report that bug.",
              src->cname(), dst->cname(), src_as->name(), dst_as->name(), name());
 }
-void AsRoutedGraph::addRouteCheckParams(sg_platf_route_cbarg_t route)
+void RoutedZone::addRouteCheckParams(sg_platf_route_cbarg_t route)
 {
   NetCard* src        = route->src;
   NetCard* dst        = route->dst;

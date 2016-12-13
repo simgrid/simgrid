@@ -15,17 +15,17 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-AsNone::AsNone(As* father, const char* name) : AsImpl(father, name)
+EmptyZone::EmptyZone(NetZone* father, const char* name) : NetZoneImpl(father, name)
 {
 }
 
-AsNone::~AsNone() = default;
+EmptyZone::~EmptyZone() = default;
 
-void AsNone::getLocalRoute(NetCard* /*src*/, NetCard* /*dst*/, sg_platf_route_cbarg_t /*res*/, double* /*lat*/)
+void EmptyZone::getLocalRoute(NetCard* /*src*/, NetCard* /*dst*/, sg_platf_route_cbarg_t /*res*/, double* /*lat*/)
 {
 }
 
-void AsNone::getGraph(xbt_graph_t /*graph*/, xbt_dict_t /*nodes*/, xbt_dict_t /*edges*/)
+void EmptyZone::getGraph(xbt_graph_t /*graph*/, xbt_dict_t /*nodes*/, xbt_dict_t /*edges*/)
 {
   XBT_ERROR("No routing no graph");
 }

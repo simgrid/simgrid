@@ -8,7 +8,7 @@
 
 #include "xbt/graph.h"
 
-#include "simgrid/s4u/As.hpp"
+#include "simgrid/s4u/NetZone.hpp"
 #include "simgrid/s4u/forward.hpp"
 
 #include "src/surf/xml/platf_private.hpp" // FIXME: kill sg_platf_route_cbarg_t to remove that UGLY include
@@ -46,13 +46,13 @@ class BypassRoute;
  * The algorithm for that is explained in http://hal.inria.fr/hal-00650233/
  *
  */
-XBT_PUBLIC_CLASS AsImpl : public s4u::As
+XBT_PUBLIC_CLASS NetZoneImpl : public s4u::NetZone
 {
   friend simgrid::kernel::EngineImpl; // it destroys rootAs_
 
 protected:
-  explicit AsImpl(As * father, const char* name);
-  virtual ~AsImpl();
+  explicit NetZoneImpl(NetZone * father, const char* name);
+  virtual ~NetZoneImpl();
 
 public:
   /** @brief Make an host within that AS */

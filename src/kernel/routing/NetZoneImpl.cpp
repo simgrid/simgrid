@@ -25,22 +25,22 @@ public:
   std::vector<Link*> links;
 };
 
-AsImpl::AsImpl(As* father, const char* name) : As(father, name)
+NetZoneImpl::NetZoneImpl(NetZone* father, const char* name) : NetZone(father, name)
 {
   xbt_assert(nullptr == xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL),
              "Refusing to create a second AS called '%s'.", name);
 
-  netcard_ = new NetCard(name, NetCard::Type::As, static_cast<AsImpl*>(father));
+  netcard_ = new NetCard(name, NetCard::Type::As, static_cast<NetZoneImpl*>(father));
   xbt_lib_set(as_router_lib, name, ROUTING_ASR_LEVEL, static_cast<void*>(netcard_));
   XBT_DEBUG("AS '%s' created with the id '%d'", name, netcard_->id());
 }
-AsImpl::~AsImpl()
+NetZoneImpl::~NetZoneImpl()
 {
   for (auto& kv : bypassRoutes_)
     delete kv.second;
 }
 
-simgrid::s4u::Host* AsImpl::createHost(const char* name, std::vector<double>* speedPerPstate, int coreAmount)
+simgrid::s4u::Host* NetZoneImpl::createHost(const char* name, std::vector<double>* speedPerPstate, int coreAmount)
 {
   simgrid::s4u::Host* res = new simgrid::s4u::Host(name);
 
@@ -54,7 +54,7 @@ simgrid::s4u::Host* AsImpl::createHost(const char* name, std::vector<double>* sp
   return res;
 }
 
-void AsImpl::addBypassRoute(sg_platf_route_cbarg_t e_route)
+void NetZoneImpl::addBypassRoute(sg_platf_route_cbarg_t e_route)
 {
   /* Argument validity checks */
   if (e_route->gw_dst) {
@@ -133,7 +133,8 @@ void AsImpl::addBypassRoute(sg_platf_route_cbarg_t e_route)
  *  @endverbatim
  */
 static void find_common_ancestors(NetCard* src, NetCard* dst,
-                                  /* OUT */ AsImpl** common_ancestor, AsImpl** src_ancestor, AsImpl** dst_ancestor)
+                                  /* OUT */ NetZoneImpl** common_ancestor, NetZoneImpl** src_ancestor,
+                                  NetZoneImpl** dst_ancestor)
 {
   /* Deal with the easy base case */
   if (src->containingAS() == dst->containingAS()) {
@@ -146,24 +147,24 @@ static void find_common_ancestors(NetCard* src, NetCard* dst,
   /* engage the full recursive search */
 
   /* (1) find the path to root of src and dst*/
-  AsImpl* src_as = src->containingAS();
-  AsImpl* dst_as = dst->containingAS();
+  NetZoneImpl* src_as = src->containingAS();
+  NetZoneImpl* dst_as = dst->containingAS();
 
   xbt_assert(src_as, "Host %s must be in an AS", src->cname());
   xbt_assert(dst_as, "Host %s must be in an AS", dst->cname());
 
   /* (2) find the path to the root routing component */
-  std::vector<AsImpl*> path_src;
-  AsImpl* current = src->containingAS();
+  std::vector<NetZoneImpl*> path_src;
+  NetZoneImpl* current = src->containingAS();
   while (current != nullptr) {
     path_src.push_back(current);
-    current = static_cast<AsImpl*>(current->father());
+    current = static_cast<NetZoneImpl*>(current->father());
   }
-  std::vector<AsImpl*> path_dst;
+  std::vector<NetZoneImpl*> path_dst;
   current = dst->containingAS();
   while (current != nullptr) {
     path_dst.push_back(current);
-    current = static_cast<AsImpl*>(current->father());
+    current = static_cast<NetZoneImpl*>(current->father());
   }
 
   /* (3) find the common father.
@@ -172,7 +173,7 @@ static void find_common_ancestors(NetCard* src, NetCard* dst,
    *
    * This works because all SimGrid platform have a unique root element (that is the last element of both paths).
    */
-  AsImpl* father = nullptr; // the AS we dropped on the previous loop iteration
+  NetZoneImpl* father = nullptr; // the AS we dropped on the previous loop iteration
   while (path_src.size() > 1 && path_dst.size() > 1 &&
          path_src.at(path_src.size() - 1) == path_dst.at(path_dst.size() - 1)) {
     father = path_src.at(path_src.size() - 1);
@@ -191,8 +192,8 @@ static void find_common_ancestors(NetCard* src, NetCard* dst,
 }
 
 /* PRECONDITION: this is the common ancestor of src and dst */
-bool AsImpl::getBypassRoute(routing::NetCard* src, routing::NetCard* dst,
-                            /* OUT */ std::vector<surf::Link*>* links, double* latency)
+bool NetZoneImpl::getBypassRoute(routing::NetCard* src, routing::NetCard* dst,
+                                 /* OUT */ std::vector<surf::Link*>* links, double* latency)
 {
   // If never set a bypass route return nullptr without any further computations
   if (bypassRoutes_.empty())
@@ -217,17 +218,17 @@ bool AsImpl::getBypassRoute(routing::NetCard* src, routing::NetCard* dst,
   /* Engage recursive search */
 
   /* (1) find the path to the root routing component */
-  std::vector<AsImpl*> path_src;
-  As* current = src->containingAS();
+  std::vector<NetZoneImpl*> path_src;
+  NetZone* current = src->containingAS();
   while (current != nullptr) {
-    path_src.push_back(static_cast<AsImpl*>(current));
+    path_src.push_back(static_cast<NetZoneImpl*>(current));
     current = current->father_;
   }
 
-  std::vector<AsImpl*> path_dst;
+  std::vector<NetZoneImpl*> path_dst;
   current = dst->containingAS();
   while (current != nullptr) {
-    path_dst.push_back(static_cast<AsImpl*>(current));
+    path_dst.push_back(static_cast<NetZoneImpl*>(current));
     current = current->father_;
   }
 
@@ -296,8 +297,8 @@ bool AsImpl::getBypassRoute(routing::NetCard* src, routing::NetCard* dst,
   return false;
 }
 
-void AsImpl::getGlobalRoute(routing::NetCard* src, routing::NetCard* dst,
-                            /* OUT */ std::vector<surf::Link*>* links, double* latency)
+void NetZoneImpl::getGlobalRoute(routing::NetCard* src, routing::NetCard* dst,
+                                 /* OUT */ std::vector<surf::Link*>* links, double* latency)
 {
   s_sg_platf_route_cbarg_t route;
   memset(&route, 0, sizeof(route));
@@ -305,7 +306,7 @@ void AsImpl::getGlobalRoute(routing::NetCard* src, routing::NetCard* dst,
   XBT_DEBUG("Resolve route from '%s' to '%s'", src->cname(), dst->cname());
 
   /* Find how src and dst are interconnected */
-  AsImpl *common_ancestor, *src_ancestor, *dst_ancestor;
+  NetZoneImpl *common_ancestor, *src_ancestor, *dst_ancestor;
   find_common_ancestors(src, dst, &common_ancestor, &src_ancestor, &dst_ancestor);
   XBT_DEBUG("elements_father: common ancestor '%s' src ancestor '%s' dst ancestor '%s'", common_ancestor->name(),
             src_ancestor->name(), dst_ancestor->name());

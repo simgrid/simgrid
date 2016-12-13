@@ -20,14 +20,14 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-AsFloyd::AsFloyd(As* father, const char* name) : AsRoutedGraph(father, name)
+FloydZone::FloydZone(NetZone* father, const char* name) : RoutedZone(father, name)
 {
   predecessorTable_ = nullptr;
   costTable_        = nullptr;
   linkTable_        = nullptr;
 }
 
-AsFloyd::~AsFloyd()
+FloydZone::~FloydZone()
 {
   if (linkTable_ == nullptr) // Dealing with a parse error in the file?
     return;
@@ -42,7 +42,7 @@ AsFloyd::~AsFloyd()
   xbt_free(costTable_);
 }
 
-void AsFloyd::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
+void FloydZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
 {
   size_t table_size = vertices_.size();
 
@@ -83,7 +83,7 @@ void AsFloyd::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t r
   }
 }
 
-void AsFloyd::addRoute(sg_platf_route_cbarg_t route)
+void FloydZone::addRoute(sg_platf_route_cbarg_t route)
 {
   /* set the size of table routing */
   int table_size = static_cast<int>(vertices_.size());
@@ -152,7 +152,7 @@ void AsFloyd::addRoute(sg_platf_route_cbarg_t route)
   }
 }
 
-void AsFloyd::seal()
+void FloydZone::seal()
 {
   /* set the size of table routing */
   size_t table_size = vertices_.size();

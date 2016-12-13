@@ -391,15 +391,15 @@ endif()
 
 set(S4U_SRC
   src/s4u/s4u_actor.cpp
-  src/s4u/s4u_as.cpp
   src/s4u/s4u_activity.cpp
+  src/s4u/s4u_conditionVariable.cpp
   src/s4u/s4u_comm.cpp
   src/s4u/s4u_engine.cpp  
   src/s4u/s4u_file.cpp  
   src/s4u/s4u_host.cpp  
   src/s4u/s4u_mailbox.cpp
   src/s4u/s4u_mutex.cpp
-  src/s4u/s4u_conditionVariable.cpp
+  src/s4u/s4u_netzone.cpp
   src/s4u/s4u_storage.cpp
 )
 
@@ -653,14 +653,14 @@ set(headers_to_install
   include/simgrid/s4u/forward.hpp
   include/simgrid/s4u/Activity.hpp
   include/simgrid/s4u/Actor.hpp
-  include/simgrid/s4u/As.hpp
   include/simgrid/s4u/comm.hpp
+  include/simgrid/s4u/conditionVariable.hpp
   include/simgrid/s4u/engine.hpp  
   include/simgrid/s4u/file.hpp  
   include/simgrid/s4u/host.hpp  
   include/simgrid/s4u/Mailbox.hpp
   include/simgrid/s4u/Mutex.hpp
-  include/simgrid/s4u/conditionVariable.hpp
+  include/simgrid/s4u/NetZone.hpp
   include/simgrid/s4u/storage.hpp  
   include/simgrid/s4u/VirtualMachine.hpp  
   include/simgrid/s4u.hpp

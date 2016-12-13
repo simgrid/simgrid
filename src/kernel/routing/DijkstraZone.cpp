@@ -41,7 +41,7 @@ static void graph_edge_data_free(void* e) // FIXME: useless code duplication
 namespace simgrid {
 namespace kernel {
 namespace routing {
-void AsDijkstra::seal()
+void DijkstraZone::seal()
 {
   xbt_node_t node = nullptr;
   unsigned int cursor2, cursor;
@@ -83,7 +83,7 @@ void AsDijkstra::seal()
   }
 }
 
-xbt_node_t AsDijkstra::routeGraphNewNode(int id, int graph_id)
+xbt_node_t DijkstraZone::routeGraphNewNode(int id, int graph_id)
 {
   xbt_node_t node              = nullptr;
   graph_node_data_t data       = nullptr;
@@ -101,14 +101,14 @@ xbt_node_t AsDijkstra::routeGraphNewNode(int id, int graph_id)
   return node;
 }
 
-graph_node_map_element_t AsDijkstra::nodeMapSearch(int id)
+graph_node_map_element_t DijkstraZone::nodeMapSearch(int id)
 {
   return (graph_node_map_element_t)xbt_dict_get_or_null_ext(graphNodeMap_, (char*)(&id), sizeof(int));
 }
 
 /* Parsing */
 
-void AsDijkstra::newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_route)
+void DijkstraZone::newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_route)
 {
   XBT_DEBUG("Load Route from \"%d\" to \"%d\"", src_id, dst_id);
   xbt_node_t src = nullptr;
@@ -140,7 +140,7 @@ void AsDijkstra::newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_route
   xbt_graph_new_edge(routeGraph_, src, dst, e_route);
 }
 
-void AsDijkstra::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
+void DijkstraZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
 {
   getRouteCheckParams(src, dst);
   int src_id = src->id();
@@ -297,7 +297,7 @@ void AsDijkstra::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_
     xbt_free(pred_arr);
 }
 
-AsDijkstra::~AsDijkstra()
+DijkstraZone::~DijkstraZone()
 {
   xbt_graph_free_graph(routeGraph_, &xbt_free_f, &graph_edge_data_free, &xbt_free_f);
   xbt_dict_free(&graphNodeMap_);
@@ -306,13 +306,13 @@ AsDijkstra::~AsDijkstra()
 
 /* Creation routing model functions */
 
-AsDijkstra::AsDijkstra(As* father, const char* name, bool cached) : AsRoutedGraph(father, name)
+DijkstraZone::DijkstraZone(NetZone* father, const char* name, bool cached) : RoutedZone(father, name)
 {
   if (cached)
     routeCache_ = xbt_dict_new_homogeneous(&route_cache_elem_free);
 }
 
-void AsDijkstra::addRoute(sg_platf_route_cbarg_t route)
+void DijkstraZone::addRoute(sg_platf_route_cbarg_t route)
 {
   NetCard* src        = route->src;
   NetCard* dst        = route->dst;

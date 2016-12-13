@@ -54,8 +54,8 @@ simgrid::xbt::signal<void(void)> on_postparse;
 static int surf_parse_models_setup_already_called = 0;
 
 /** The current AS in the parsing */
-static simgrid::kernel::routing::AsImpl *current_routing = nullptr;
-static simgrid::kernel::routing::AsImpl *routing_get_current()
+static simgrid::kernel::routing::NetZoneImpl* current_routing = nullptr;
+static simgrid::kernel::routing::NetZoneImpl* routing_get_current()
 {
   return current_routing;
 }
@@ -111,10 +111,10 @@ void sg_platf_new_host(sg_platf_host_cbarg_t args)
 /** @brief Add a "router" to the network element list */
 void sg_platf_new_router(sg_platf_router_cbarg_t router)
 {
-  simgrid::kernel::routing::AsImpl* current_routing = routing_get_current();
+  simgrid::kernel::routing::NetZoneImpl* current_routing = routing_get_current();
 
-  if (current_routing->hierarchy_ == simgrid::kernel::routing::AsImpl::RoutingMode::unset)
-    current_routing->hierarchy_ = simgrid::kernel::routing::AsImpl::RoutingMode::base;
+  if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
+    current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::base;
   xbt_assert(nullptr == xbt_lib_get_or_null(as_router_lib, router->id, ROUTING_ASR_LEVEL),
              "Refusing to create a router named '%s': this name already describes a node.", router->id);
 
@@ -126,7 +126,7 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
   if (router->coord && strcmp(router->coord, ""))
     new simgrid::kernel::routing::vivaldi::Coords(netcard, router->coord);
 
-  auto cluster = dynamic_cast<simgrid::kernel::routing::AsCluster*>(current_routing);
+  auto cluster = dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing);
   if(cluster != nullptr)
     cluster->router_ = static_cast<simgrid::kernel::routing::NetCard*>(xbt_lib_get_or_null(as_router_lib, router->id, ROUTING_ASR_LEVEL));
 
@@ -169,10 +169,10 @@ void sg_platf_new_link(sg_platf_link_cbarg_t link){
 
 void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
 {
-  using simgrid::kernel::routing::AsCluster;
-  using simgrid::kernel::routing::AsClusterDragonfly;
-  using simgrid::kernel::routing::AsClusterFatTree;
-  using simgrid::kernel::routing::AsClusterTorus;
+  using simgrid::kernel::routing::ClusterZone;
+  using simgrid::kernel::routing::DragonflyZone;
+  using simgrid::kernel::routing::FatTreeZone;
+  using simgrid::kernel::routing::TorusZone;
 
   int rankId=0;
 
@@ -196,7 +196,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     break;
   }
   sg_platf_new_AS_begin(&AS);
-  simgrid::kernel::routing::AsCluster *current_as = static_cast<AsCluster*>(routing_get_current());
+  simgrid::kernel::routing::ClusterZone* current_as = static_cast<ClusterZone*>(routing_get_current());
   current_as->parse_specific_arguments(cluster);
 
   if(cluster->loopback_bw!=0 || cluster->loopback_lat!=0){
@@ -260,7 +260,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       linkDown = Link::byName(tmp_link);
       free(tmp_link);
 
-      auto as_cluster = static_cast<AsCluster*>(current_as);
+      auto as_cluster = static_cast<ClusterZone*>(current_as);
       as_cluster->privateLinks_.insert({rankId * as_cluster->linkCountPerNode_, {linkUp, linkDown}});
     }
 
@@ -285,7 +285,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
 
     //call the cluster function that adds the others links
     if (cluster->topology == SURF_CLUSTER_FAT_TREE) {
-      static_cast<AsClusterFatTree*>(current_as)->addProcessingNode(i);
+      static_cast<FatTreeZone*>(current_as)->addProcessingNode(i);
     }
     else {
       current_as->create_links_for_node(cluster, i, rankId,
@@ -333,7 +333,8 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   delete cluster->radicals;
 }
 void routing_cluster_add_backbone(simgrid::surf::Link* bb) {
-  simgrid::kernel::routing::AsCluster *cluster = dynamic_cast<simgrid::kernel::routing::AsCluster*>(current_routing);
+  simgrid::kernel::routing::ClusterZone* cluster =
+      dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing);
 
   xbt_assert(cluster, "Only hosts from Cluster can get a backbone.");
   xbt_assert(nullptr == cluster->backbone_, "Cluster %s already has a backbone link!", cluster->name());
@@ -571,7 +572,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
 
 void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
 {
-  simgrid::kernel::routing::AsVivaldi* as = dynamic_cast<simgrid::kernel::routing::AsVivaldi*>(current_routing);
+  simgrid::kernel::routing::VivaldiZone* as = dynamic_cast<simgrid::kernel::routing::VivaldiZone*>(current_routing);
   xbt_assert(as, "<peer> tag can only be used in Vivaldi ASes");
 
   std::vector<double> speedPerPstate;
@@ -645,7 +646,7 @@ static void surf_config_models_setup()
  *
  * @param AS the parameters defining the AS to build.
  */
-simgrid::s4u::As * sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
+simgrid::s4u::NetZone* sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
 {
   if (!surf_parse_models_setup_already_called) {
     /* Initialize the surf models. That must be done after we got all config, and before we need the models.
@@ -664,37 +665,37 @@ simgrid::s4u::As * sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
 
 
   /* search the routing model */
-  simgrid::kernel::routing::AsImpl *new_as = nullptr;
+  simgrid::kernel::routing::NetZoneImpl* new_as = nullptr;
   switch(AS->routing){
     case A_surfxml_AS_routing_Cluster:
-      new_as = new simgrid::kernel::routing::AsCluster(current_routing, AS->id);
+      new_as = new simgrid::kernel::routing::ClusterZone(current_routing, AS->id);
       break;
     case A_surfxml_AS_routing_ClusterDragonfly:
-      new_as = new simgrid::kernel::routing::AsClusterDragonfly(current_routing, AS->id);
+      new_as = new simgrid::kernel::routing::DragonflyZone(current_routing, AS->id);
       break;
     case A_surfxml_AS_routing_ClusterTorus:
-      new_as = new simgrid::kernel::routing::AsClusterTorus(current_routing, AS->id);
+      new_as = new simgrid::kernel::routing::TorusZone(current_routing, AS->id);
       break;
     case A_surfxml_AS_routing_ClusterFatTree:
-      new_as = new simgrid::kernel::routing::AsClusterFatTree(current_routing, AS->id);
+      new_as = new simgrid::kernel::routing::FatTreeZone(current_routing, AS->id);
       break;
     case A_surfxml_AS_routing_Dijkstra:
-      new_as = new simgrid::kernel::routing::AsDijkstra(current_routing, AS->id, 0);
+      new_as = new simgrid::kernel::routing::DijkstraZone(current_routing, AS->id, 0);
       break;
     case A_surfxml_AS_routing_DijkstraCache:
-      new_as = new simgrid::kernel::routing::AsDijkstra(current_routing, AS->id, 1);
+      new_as = new simgrid::kernel::routing::DijkstraZone(current_routing, AS->id, 1);
       break;
     case A_surfxml_AS_routing_Floyd:
-      new_as = new simgrid::kernel::routing::AsFloyd(current_routing, AS->id);
+      new_as = new simgrid::kernel::routing::FloydZone(current_routing, AS->id);
       break;
     case A_surfxml_AS_routing_Full:
-      new_as = new simgrid::kernel::routing::AsFull(current_routing, AS->id);
+      new_as = new simgrid::kernel::routing::FullZone(current_routing, AS->id);
       break;
     case A_surfxml_AS_routing_None:
-      new_as = new simgrid::kernel::routing::AsNone(current_routing, AS->id);
+      new_as = new simgrid::kernel::routing::EmptyZone(current_routing, AS->id);
       break;
     case A_surfxml_AS_routing_Vivaldi:
-      new_as = new simgrid::kernel::routing::AsVivaldi(current_routing, AS->id);
+      new_as = new simgrid::kernel::routing::VivaldiZone(current_routing, AS->id);
       break;
     default:
       xbt_die("Not a valid model!");
@@ -708,8 +709,8 @@ simgrid::s4u::As * sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
 
   } else {
     /* set the father behavior */
-    if (current_routing->hierarchy_ == simgrid::kernel::routing::AsImpl::RoutingMode::unset)
-      current_routing->hierarchy_ = simgrid::kernel::routing::AsImpl::RoutingMode::recursive;
+    if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
+      current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::recursive;
     /* add to the sons dictionary */
     xbt_dict_set(current_routing->children(), AS->id, (void *) new_as, nullptr);
   }
@@ -733,7 +734,7 @@ void sg_platf_new_AS_seal()
 {
   xbt_assert(current_routing, "Cannot seal the current AS: none under construction");
   current_routing->seal();
-  current_routing = static_cast<simgrid::kernel::routing::AsImpl*>(current_routing->father());
+  current_routing = static_cast<simgrid::kernel::routing::NetZoneImpl*>(current_routing->father());
 
   if (TRACE_is_enabled())
     sg_instr_AS_end();
@@ -744,8 +745,8 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
 {
   simgrid::kernel::routing::NetCard *netcard = sg_host_by_name(hostlink->id)->pimpl_netcard;
   xbt_assert(netcard, "Host '%s' not found!", hostlink->id);
-  xbt_assert(dynamic_cast<simgrid::kernel::routing::AsCluster*>(current_routing),
-      "Only hosts from Cluster and Vivaldi ASes can get an host_link.");
+  xbt_assert(dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing),
+             "Only hosts from Cluster and Vivaldi ASes can get an host_link.");
 
   simgrid::surf::Link* linkUp   = Link::byName(hostlink->link_up);
   simgrid::surf::Link* linkDown = Link::byName(hostlink->link_down);
@@ -753,7 +754,7 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
   xbt_assert(linkUp, "Link '%s' not found!", hostlink->link_up);
   xbt_assert(linkDown, "Link '%s' not found!", hostlink->link_down);
 
-  auto as_cluster = static_cast<simgrid::kernel::routing::AsCluster*>(current_routing);
+  auto as_cluster = static_cast<simgrid::kernel::routing::ClusterZone*>(current_routing);
 
   if (as_cluster->privateLinks_.find(netcard->id()) != as_cluster->privateLinks_.end())
     surf_parse_error("Host_link for '%s' is already defined!",hostlink->id);

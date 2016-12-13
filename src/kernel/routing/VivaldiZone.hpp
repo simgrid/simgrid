@@ -13,9 +13,9 @@ namespace kernel {
 namespace routing {
 
 /* This extends cluster because each host has a private link */
-class XBT_PRIVATE AsVivaldi : public AsCluster {
+class XBT_PRIVATE VivaldiZone : public ClusterZone {
 public:
-  explicit AsVivaldi(As* father, const char* name);
+  explicit VivaldiZone(NetZone* father, const char* name);
 
   void setPeerLink(NetCard* netcard, double bw_in, double bw_out, double lat, const char* coord);
   void getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t into, double* latency) override;

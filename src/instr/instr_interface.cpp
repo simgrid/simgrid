@@ -321,7 +321,7 @@ static void instr_user_srcdst_variable(double time, const char *src, const char 
     xbt_die("Element '%s' not found!",dst);
 
   std::vector<Link*> route;
-  simgrid::kernel::routing::AsImpl::getGlobalRoute(src_elm, dst_elm, &route, nullptr);
+  simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(src_elm, dst_elm, &route, nullptr);
   for (auto link : route)
     instr_user_variable (time, link->getName(), variable, father_type, value, what, nullptr, user_link_variables);
 }

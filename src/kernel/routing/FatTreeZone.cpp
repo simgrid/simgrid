@@ -21,12 +21,12 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-AsClusterFatTree::AsClusterFatTree(As* father, const char* name) : AsCluster(father, name)
+FatTreeZone::FatTreeZone(NetZone* father, const char* name) : ClusterZone(father, name)
 {
   XBT_DEBUG("Creating a new fat tree.");
 }
 
-AsClusterFatTree::~AsClusterFatTree()
+FatTreeZone::~FatTreeZone()
 {
   for (unsigned int i = 0; i < this->nodes_.size(); i++) {
     delete this->nodes_[i];
@@ -36,7 +36,7 @@ AsClusterFatTree::~AsClusterFatTree()
   }
 }
 
-bool AsClusterFatTree::isInSubTree(FatTreeNode* root, FatTreeNode* node)
+bool FatTreeZone::isInSubTree(FatTreeNode* root, FatTreeNode* node)
 {
   XBT_DEBUG("Is %d(%u,%u) in the sub tree of %d(%u,%u) ?", node->id, node->level, node->position, root->id, root->level,
             root->position);
@@ -57,7 +57,7 @@ bool AsClusterFatTree::isInSubTree(FatTreeNode* root, FatTreeNode* node)
   return true;
 }
 
-void AsClusterFatTree::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t into, double* latency)
+void FatTreeZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t into, double* latency)
 {
 
   if (dst->isRouter() || src->isRouter())
@@ -129,7 +129,7 @@ void AsClusterFatTree::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_
 /* This function makes the assumption that parse_specific_arguments() and
  * addNodes() have already been called
  */
-void AsClusterFatTree::seal()
+void FatTreeZone::seal()
 {
   if (this->levels_ == 0) {
     return;
@@ -175,7 +175,7 @@ void AsClusterFatTree::seal()
   }
 }
 
-int AsClusterFatTree::connectNodeToParents(FatTreeNode* node)
+int FatTreeZone::connectNodeToParents(FatTreeNode* node)
 {
   std::vector<FatTreeNode*>::iterator currentParentNode = this->nodes_.begin();
   int connectionsNumber                                 = 0;
@@ -199,7 +199,7 @@ int AsClusterFatTree::connectNodeToParents(FatTreeNode* node)
   return connectionsNumber;
 }
 
-bool AsClusterFatTree::areRelated(FatTreeNode* parent, FatTreeNode* child)
+bool FatTreeZone::areRelated(FatTreeNode* parent, FatTreeNode* child)
 {
   std::stringstream msgBuffer;
 
@@ -231,7 +231,7 @@ bool AsClusterFatTree::areRelated(FatTreeNode* parent, FatTreeNode* child)
   return true;
 }
 
-void AsClusterFatTree::generateSwitches()
+void FatTreeZone::generateSwitches()
 {
   XBT_DEBUG("Generating switches.");
   this->nodesByLevel_.resize(this->levels_ + 1, 0);
@@ -278,7 +278,7 @@ void AsClusterFatTree::generateSwitches()
   }
 }
 
-void AsClusterFatTree::generateLabels()
+void FatTreeZone::generateLabels()
 {
   XBT_DEBUG("Generating labels.");
   // TODO : check if nodesByLevel and nodes are filled
@@ -324,7 +324,7 @@ void AsClusterFatTree::generateLabels()
   }
 }
 
-int AsClusterFatTree::getLevelPosition(const unsigned int level)
+int FatTreeZone::getLevelPosition(const unsigned int level)
 {
   xbt_assert(level <= this->levels_, "The impossible did happen. Yet again.");
   int tempPosition = 0;
@@ -335,7 +335,7 @@ int AsClusterFatTree::getLevelPosition(const unsigned int level)
   return tempPosition;
 }
 
-void AsClusterFatTree::addProcessingNode(int id)
+void FatTreeZone::addProcessingNode(int id)
 {
   using std::make_pair;
   static int position = 0;
@@ -347,7 +347,7 @@ void AsClusterFatTree::addProcessingNode(int id)
   this->nodes_.push_back(newNode);
 }
 
-void AsClusterFatTree::addLink(FatTreeNode* parent, unsigned int parentPort, FatTreeNode* child, unsigned int childPort)
+void FatTreeZone::addLink(FatTreeNode* parent, unsigned int parentPort, FatTreeNode* child, unsigned int childPort)
 {
   FatTreeLink* newLink;
   newLink = new FatTreeLink(this->cluster_, child, parent);
@@ -359,7 +359,7 @@ void AsClusterFatTree::addLink(FatTreeNode* parent, unsigned int parentPort, Fat
   this->links_.push_back(newLink);
 }
 
-void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
+void FatTreeZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
 {
   std::vector<std::string> parameters;
   std::vector<std::string> tmp;
@@ -406,7 +406,7 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster
   this->cluster_ = cluster;
 }
 
-void AsClusterFatTree::generateDotFile(const std::string& filename) const
+void FatTreeZone::generateDotFile(const std::string& filename) const
 {
   std::ofstream file;
   file.open(filename, std::ios::out | std::ios::trunc);

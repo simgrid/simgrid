@@ -27,15 +27,15 @@ inline unsigned int* rankId_to_coords(int rankId, xbt_dynar_t dimensions)
 namespace simgrid {
 namespace kernel {
 namespace routing {
-AsClusterTorus::AsClusterTorus(As* father, const char* name) : AsCluster(father, name)
+TorusZone::TorusZone(NetZone* father, const char* name) : ClusterZone(father, name)
 {
 }
-AsClusterTorus::~AsClusterTorus()
+TorusZone::~TorusZone()
 {
   xbt_dynar_free(&dimensions_);
 }
 
-void AsClusterTorus::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position)
+void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position)
 {
   char* link_id;
   unsigned int j = 0;
@@ -88,7 +88,7 @@ void AsClusterTorus::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int
   rank++;
 }
 
-void AsClusterTorus::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
+void TorusZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
 {
 
   unsigned int iter;
@@ -112,7 +112,7 @@ void AsClusterTorus::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
   xbt_dynar_free(&dimensions);
 }
 
-void AsClusterTorus::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
+void TorusZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
 {
 
   XBT_VERB("torus getLocalRoute from '%s'[%d] to '%s'[%d]", src->name().c_str(), src->id(), dst->name().c_str(),

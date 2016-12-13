@@ -5,7 +5,7 @@
 
 #include <unordered_set>
 
-#include <xbt/config.hpp>
+#include "xbt/config.hpp"
 
 #include "ns3/core-module.h"
 #include "ns3/node.h"
@@ -20,7 +20,7 @@
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/surf_private.h"
 
-#include "simgrid/s4u/As.hpp"
+#include "simgrid/s4u/NetZone.hpp"
 #include "simgrid/s4u/engine.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf, "Logging specific to the SURF network NS3 module");
@@ -161,7 +161,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   simgrid::kernel::routing::NetCard::onCreation.connect(&netcardCreation_cb);
   simgrid::surf::on_cluster.connect(&clusterCreation_cb);
   simgrid::surf::on_postparse.connect(&postparse_cb);
-  simgrid::s4u::As::onRouteCreation.connect(&routeCreation_cb);
+  simgrid::s4u::NetZone::onRouteCreation.connect(&routeCreation_cb);
 
   LogComponentEnable("UdpEchoClientApplication", ns3::LOG_LEVEL_INFO);
   LogComponentEnable("UdpEchoServerApplication", ns3::LOG_LEVEL_INFO);

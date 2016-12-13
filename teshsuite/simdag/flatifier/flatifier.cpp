@@ -155,7 +155,7 @@ int main(int argc, char **argv)
         host2 = hosts[it_dst];
         std::vector<Link*> *route = new std::vector<Link*>();
         value2 = host2->pimpl_netcard;
-        simgrid::kernel::routing::AsImpl::getGlobalRoute(value1, value2, route, nullptr);
+        simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(value1, value2, route, nullptr);
         if (! route->empty()){
           std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->cname(), host2->cname());
           for (auto link: *route)
@@ -169,7 +169,7 @@ int main(int argc, char **argv)
         if(value2->isRouter()){
           std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->cname(), dst);
           std::vector<Link*> *route = new std::vector<Link*>();
-          simgrid::kernel::routing::AsImpl::getGlobalRoute(value1, value2, route, nullptr);
+          simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(value1, value2, route, nullptr);
           for (auto link : *route)
             std::printf("<link_ctn id=\"%s\"/>",link->getName());
           delete route;
@@ -186,7 +186,7 @@ int main(int argc, char **argv)
           if(value2->isRouter()){
             std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, dst);
             std::vector<Link*> *route = new std::vector<Link*>();
-            simgrid::kernel::routing::AsImpl::getGlobalRoute(value1, value2, route, nullptr);
+            simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(value1, value2, route, nullptr);
             for(auto link :*route)
               std::printf("<link_ctn id=\"%s\"/>",link->getName());
             delete route;
@@ -198,7 +198,7 @@ int main(int argc, char **argv)
           std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, host2->cname());
           std::vector<Link*> *route = new std::vector<Link*>();
           value2 = host2->pimpl_netcard;
-          simgrid::kernel::routing::AsImpl::getGlobalRoute(value1, value2, route, nullptr);
+          simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(value1, value2, route, nullptr);
           for(auto link : *route)
             std::printf("<link_ctn id=\"%s\"/>",link->getName());
           delete route;

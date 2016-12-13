@@ -98,10 +98,10 @@ public:
  *
  * Routing is made using a destination-mod-k scheme.
  */
-class XBT_PRIVATE AsClusterFatTree : public AsCluster {
+class XBT_PRIVATE FatTreeZone : public ClusterZone {
 public:
-  explicit AsClusterFatTree(As* father, const char* name);
-  ~AsClusterFatTree() override;
+  explicit FatTreeZone(NetZone* father, const char* name);
+  ~FatTreeZone() override;
   void getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t into, double* latency) override;
 
   /** \brief Generate the fat tree

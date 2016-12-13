@@ -12,9 +12,9 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-class XBT_PRIVATE AsRoutedGraph : public AsImpl {
+class XBT_PRIVATE RoutedZone : public NetZoneImpl {
 public:
-  explicit AsRoutedGraph(As* father, const char* name);
+  explicit RoutedZone(NetZone* father, const char* name);
 
   void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
   virtual sg_platf_route_cbarg_t newExtendedRoute(RoutingMode hierarchy, sg_platf_route_cbarg_t routearg,

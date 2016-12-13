@@ -134,7 +134,7 @@ int Host::pstatesCount() const {
  */
 void Host::routeTo(Host* dest, std::vector<Link*>* links, double* latency)
 {
-  simgrid::kernel::routing::AsImpl::getGlobalRoute(pimpl_netcard, dest->pimpl_netcard, links, latency);
+  simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(pimpl_netcard, dest->pimpl_netcard, links, latency);
   if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {
     XBT_CDEBUG(surf_route, "Route from '%s' to '%s' (latency: %f):", cname(), dest->cname(),
                (latency == nullptr ? -1 : *latency));

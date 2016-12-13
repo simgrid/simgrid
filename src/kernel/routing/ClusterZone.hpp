@@ -14,9 +14,9 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-class XBT_PRIVATE AsCluster : public AsImpl {
+class XBT_PRIVATE ClusterZone : public NetZoneImpl {
 public:
-  explicit AsCluster(As* father, const char* name);
+  explicit ClusterZone(NetZone* father, const char* name);
 
   void getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t into, double* latency) override;
   void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;

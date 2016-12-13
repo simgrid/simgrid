@@ -13,9 +13,9 @@
 
 namespace simgrid {
   namespace s4u {
-    class As;
-    class Host;
-    class Mailbox;
+  class NetZone;
+  class Host;
+  class Mailbox;
   }
   namespace kernel {
      namespace activity {
@@ -40,7 +40,7 @@ namespace simgrid {
   }
 }
 
-typedef simgrid::s4u::As simgrid_As;
+typedef simgrid::s4u::NetZone simgrid_NetZone;
 typedef simgrid::s4u::Host simgrid_Host;
 typedef simgrid::kernel::activity::ActivityImpl kernel_Activity;
 typedef simgrid::kernel::routing::NetCard routing_NetCard;
@@ -54,7 +54,7 @@ typedef simgrid::simix::Host *smx_host_priv_t;
 
 #else
 
-typedef struct simgrid_As   simgrid_As;
+typedef struct simgrid_NetZone simgrid_NetZone;
 typedef struct simgrid_Host simgrid_Host;
 typedef struct kernel_Activity kernel_Activity;
 typedef struct surf_Cpu surf_Cpu;
@@ -66,7 +66,7 @@ typedef struct Trace tmgr_Trace;
 typedef struct simix_Host *smx_host_priv_t;
 #endif
 
-typedef simgrid_As *AS_t;
+typedef simgrid_NetZone* NetZone_t;
 typedef simgrid_Host* sg_host_t;
 
 typedef kernel_Activity *smx_activity_t;

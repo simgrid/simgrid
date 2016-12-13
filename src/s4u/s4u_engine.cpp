@@ -7,12 +7,11 @@
 
 #include "instr/instr_interface.h"
 #include "mc/mc.h"
-#include "simgrid/s4u/As.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
+#include "simgrid/s4u/NetZone.hpp"
 #include "simgrid/s4u/engine.hpp"
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/storage.hpp"
-#include "simgrid/simix.h"
 #include "simgrid/simix.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/routing/NetZoneImpl.hpp"
@@ -86,21 +85,21 @@ void Engine::run() {
   }
 }
 
-s4u::As *Engine::rootAs()
+s4u::NetZone* Engine::rootAs()
 {
   return pimpl->rootAs_;
 }
 
-static s4u::As *asByNameRecursive(s4u::As *current, const char *name)
+static s4u::NetZone* asByNameRecursive(s4u::NetZone* current, const char* name)
 {
   if(!strcmp(current->name(), name))
     return current;
 
   xbt_dict_cursor_t cursor = nullptr;
   char *key;
-  AS_t elem;
+  NetZone_t elem;
   xbt_dict_foreach(current->children(), cursor, key, elem) {
-    simgrid::s4u::As *tmp = asByNameRecursive(elem, name);
+    simgrid::s4u::NetZone* tmp = asByNameRecursive(elem, name);
     if (tmp != nullptr )
         return tmp;
   }
@@ -108,7 +107,8 @@ static s4u::As *asByNameRecursive(s4u::As *current, const char *name)
 }
 
 /** @brief Retrieve the AS of the given name (or nullptr if not found) */
-As *Engine::asByNameOrNull(const char *name) {
+NetZone* Engine::asByNameOrNull(const char* name)
+{
   return asByNameRecursive(rootAs(),name);
 }
 

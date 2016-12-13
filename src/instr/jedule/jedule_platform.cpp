@@ -6,8 +6,7 @@
 
 #include "simgrid/jedule/jedule.hpp"
 #include "simgrid/jedule/jedule_platform.hpp"
-#include "simgrid/s4u/As.hpp"
-
+#include "simgrid/s4u/NetZone.hpp"
 #include "xbt/asserts.h"
 #include "xbt/dynar.h"
 #include <algorithm>

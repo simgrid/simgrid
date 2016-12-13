@@ -53,11 +53,11 @@ static std::vector<double>* getCoordsFromNetcard(NetCard* nc)
              (nc->isAS() ? "AS" : (nc->isHost() ? "Host" : "Router")), nc->cname(), nc);
   return &coords->coords;
 }
-AsVivaldi::AsVivaldi(As* father, const char* name) : AsCluster(father, name)
+VivaldiZone::VivaldiZone(NetZone* father, const char* name) : ClusterZone(father, name)
 {
 }
 
-void AsVivaldi::setPeerLink(NetCard* netcard, double bw_in, double bw_out, double latency, const char* coord)
+void VivaldiZone::setPeerLink(NetCard* netcard, double bw_in, double bw_out, double latency, const char* coord)
 {
   xbt_assert(netcard->containingAS() == this, "Cannot add a peer link to a netcard that is not in this AS");
 
@@ -73,7 +73,7 @@ void AsVivaldi::setPeerLink(NetCard* netcard, double bw_in, double bw_out, doubl
   free(link_down);
 }
 
-void AsVivaldi::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
+void VivaldiZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
 {
   XBT_DEBUG("vivaldi getLocalRoute from '%s'[%d] '%s'[%d]", src->cname(), src->id(), dst->cname(), dst->id());
 

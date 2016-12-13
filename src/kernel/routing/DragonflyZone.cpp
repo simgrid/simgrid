@@ -16,11 +16,11 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-AsClusterDragonfly::AsClusterDragonfly(As* father, const char* name) : AsCluster(father, name)
+DragonflyZone::DragonflyZone(NetZone* father, const char* name) : ClusterZone(father, name)
 {
 }
 
-AsClusterDragonfly::~AsClusterDragonfly()
+DragonflyZone::~DragonflyZone()
 {
   if (this->routers_ != nullptr) {
     for (unsigned int i = 0; i < this->numGroups_ * this->numChassisPerGroup_ * this->numBladesPerChassis_; i++)
@@ -29,7 +29,7 @@ AsClusterDragonfly::~AsClusterDragonfly()
   }
 }
 
-unsigned int* AsClusterDragonfly::rankId_to_coords(int rankId)
+unsigned int* DragonflyZone::rankId_to_coords(int rankId)
 {
   // coords : group, chassis, blade, node
   unsigned int* coords = (unsigned int*)malloc(4 * sizeof(unsigned int));
@@ -43,7 +43,7 @@ unsigned int* AsClusterDragonfly::rankId_to_coords(int rankId)
   return coords;
 }
 
-void AsClusterDragonfly::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
+void DragonflyZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
 {
   std::vector<std::string> parameters;
   std::vector<std::string> tmp;
@@ -91,7 +91,7 @@ void AsClusterDragonfly::parse_specific_arguments(sg_platf_cluster_cbarg_t clust
 /*
 * Generate the cluster once every node is created
 */
-void AsClusterDragonfly::seal()
+void DragonflyZone::seal()
 {
   if (this->numNodesPerBlade_ == 0) {
     return;
@@ -117,7 +117,7 @@ DragonflyRouter::~DragonflyRouter()
     xbt_free(blueLinks_);
 }
 
-void AsClusterDragonfly::generateRouters()
+void DragonflyZone::generateRouters()
 {
   this->routers_ = static_cast<DragonflyRouter**>(xbt_malloc0(this->numGroups_ * this->numChassisPerGroup_ *
                                                               this->numBladesPerChassis_ * sizeof(DragonflyRouter*)));
@@ -133,7 +133,7 @@ void AsClusterDragonfly::generateRouters()
   }
 }
 
-void AsClusterDragonfly::createLink(char* id, int numlinks, Link** linkup, Link** linkdown)
+void DragonflyZone::createLink(char* id, int numlinks, Link** linkup, Link** linkdown)
 {
   *linkup   = nullptr;
   *linkdown = nullptr;
@@ -163,7 +163,7 @@ void AsClusterDragonfly::createLink(char* id, int numlinks, Link** linkup, Link*
   free((void*)linkTemplate.id);
 }
 
-void AsClusterDragonfly::generateLinks()
+void DragonflyZone::generateLinks()
 {
 
   static int uniqueId = 0;
@@ -245,7 +245,7 @@ void AsClusterDragonfly::generateLinks()
   }
 }
 
-void AsClusterDragonfly::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* latency)
+void DragonflyZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* latency)
 {
   // Minimal routing version.
   // TODO : non-minimal random one, and adaptive ?

@@ -31,12 +31,12 @@ namespace routing {
  ***********/
 
 /** Dijkstra routing data: fast initialization, slow lookup, small memory requirements, shortest path routing only */
-class XBT_PRIVATE AsDijkstra : public AsRoutedGraph {
+class XBT_PRIVATE DijkstraZone : public RoutedZone {
 public:
-  AsDijkstra(As* father, const char* name, bool cached);
+  DijkstraZone(NetZone* father, const char* name, bool cached);
   void seal() override;
 
-  ~AsDijkstra() override;
+  ~DijkstraZone() override;
   xbt_node_t routeGraphNewNode(int id, int graph_id);
   graph_node_map_element_t nodeMapSearch(int id);
   void newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_route);

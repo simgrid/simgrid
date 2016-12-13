@@ -29,7 +29,7 @@ class NetCard : public simgrid::xbt::Extendable<NetCard> {
 public:
   enum class Type { Host, Router, As };
 
-  NetCard(std::string name, NetCard::Type componentType, AsImpl* containingAS)
+  NetCard(std::string name, NetCard::Type componentType, NetZoneImpl* containingAS)
       : name_(name), componentType_(componentType), containingAS_(containingAS)
   {
     if (containingAS != nullptr)
@@ -43,7 +43,7 @@ public:
   std::string name() { return name_; }
   const char* cname() { return name_.c_str(); }
   // This is the AS in which I am
-  AsImpl* containingAS() { return containingAS_; }
+  NetZoneImpl* containingAS() { return containingAS_; }
 
   bool isAS() { return componentType_ == Type::As; }
   bool isHost() { return componentType_ == Type::Host; }
@@ -55,7 +55,7 @@ private:
   unsigned int id_;
   std::string name_;
   NetCard::Type componentType_;
-  AsImpl* containingAS_;
+  NetZoneImpl* containingAS_;
 };
 }
 }

@@ -67,10 +67,10 @@ public:
   static s4u::Engine *instance();
 
   /** @brief Retrieve the root AS, containing all others */
-  simgrid::s4u::As *rootAs();
+  simgrid::s4u::NetZone* rootAs();
 
   /** @brief Retrieve the AS of the given name (or nullptr if not found) */
-  simgrid::s4u::As *asByNameOrNull(const char *name);
+  simgrid::s4u::NetZone* asByNameOrNull(const char* name);
 
   template<class F>
   void registerFunction(const char* name)

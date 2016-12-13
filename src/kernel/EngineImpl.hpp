@@ -9,14 +9,14 @@
 namespace simgrid {
 namespace kernel {
 namespace routing {
-class AsImpl;
+class NetZoneImpl;
 }
 
 class EngineImpl {
 public:
   EngineImpl();
   virtual ~EngineImpl();
-  kernel::routing::AsImpl* rootAs_ = nullptr;
+  kernel::routing::NetZoneImpl* rootAs_ = nullptr;
 
 protected:
   friend simgrid::s4u::Engine;
