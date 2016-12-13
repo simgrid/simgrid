@@ -6,7 +6,7 @@
 #ifndef SIMGRID_ROUTING_CLUSTER_FAT_TREE_HPP_
 #define SIMGRID_ROUTING_CLUSTER_FAT_TREE_HPP_
 
-#include "src/kernel/routing/AsCluster.hpp"
+#include "src/kernel/routing/ClusterZone.hpp"
 
 namespace simgrid {
 namespace kernel {

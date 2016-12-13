@@ -6,7 +6,7 @@
 #ifndef SIMGRID_ROUTING_FULL_HPP_
 #define SIMGRID_ROUTING_FULL_HPP_
 
-#include "src/kernel/routing/AsRoutedGraph.hpp"
+#include "src/kernel/routing/RoutedZone.hpp"
 
 namespace simgrid {
 namespace kernel {

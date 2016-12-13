@@ -7,7 +7,7 @@
 
 #include <simgrid/s4u/host.hpp>
 
-#include "src/kernel/routing/AsVivaldi.hpp"
+#include "src/kernel/routing/VivaldiZone.hpp"
 #include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/network_interface.hpp"
 

@@ -6,7 +6,7 @@
 #ifndef SURF_ROUTING_NONE_HPP_
 #define SURF_ROUTING_NONE_HPP_
 
-#include "src/kernel/routing/AsImpl.hpp"
+#include "src/kernel/routing/NetZoneImpl.hpp"
 
 namespace simgrid {
 namespace kernel {

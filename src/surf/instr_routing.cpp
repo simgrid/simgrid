@@ -8,7 +8,7 @@
 
 #include "simgrid/s4u/engine.hpp"
 #include "simgrid/s4u/host.hpp"
-#include "src/kernel/routing/AsImpl.hpp"
+#include "src/kernel/routing/NetZoneImpl.hpp"
 #include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.h"
 #include "xbt/graph.h"

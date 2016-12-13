@@ -5,7 +5,7 @@
 
 #include <limits>
 
-#include "src/kernel/routing/AsFloyd.hpp"
+#include "src/kernel/routing/FloydZone.hpp"
 #include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/network_interface.hpp"
 #include "xbt/log.h"

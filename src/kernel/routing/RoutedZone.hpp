@@ -6,7 +6,7 @@
 #ifndef SIMGRID_ROUTING_GENERIC_HPP_
 #define SIMGRID_ROUTING_GENERIC_HPP_
 
-#include "src/kernel/routing/AsImpl.hpp"
+#include "src/kernel/routing/NetZoneImpl.hpp"
 
 namespace simgrid {
 namespace kernel {

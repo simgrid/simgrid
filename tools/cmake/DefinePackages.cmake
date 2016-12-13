@@ -63,19 +63,6 @@ set(EXTRA_DIST
   src/surf/xml/simgrid_dtd.c
   src/surf/xml/surfxml_sax_cb.cpp
 
-  src/kernel/routing/AsImpl.hpp
-  src/kernel/routing/AsCluster.hpp
-  src/kernel/routing/AsClusterFatTree.hpp
-  src/kernel/routing/AsClusterTorus.hpp
-  src/kernel/routing/AsClusterDragonfly.hpp
-  src/kernel/routing/AsDijkstra.hpp
-  src/kernel/routing/AsFloyd.hpp
-  src/kernel/routing/AsFull.hpp
-  src/kernel/routing/AsRoutedGraph.hpp
-  src/kernel/routing/AsNone.hpp
-  src/kernel/routing/AsVivaldi.hpp  
-  src/kernel/routing/NetCard.hpp
-
   src/surf/storage_interface.hpp
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
@@ -295,19 +282,31 @@ set(NS3_SRC  src/surf/network_ns3.cpp
              src/surf/ns3/ns3_simulator.cc )
 
 set(SURF_SRC
-  src/kernel/routing/AsImpl.cpp
-  src/kernel/routing/AsCluster.cpp
-  src/kernel/routing/AsClusterFatTree.cpp
-  src/kernel/routing/AsClusterTorus.cpp
-  src/kernel/routing/AsClusterDragonfly.cpp
-  src/kernel/routing/AsDijkstra.cpp
-  src/kernel/routing/AsFloyd.cpp
-  src/kernel/routing/AsFull.cpp
-  src/kernel/routing/AsRoutedGraph.cpp
-  src/kernel/routing/AsNone.cpp
-  src/kernel/routing/AsVivaldi.cpp
+  src/kernel/routing/ClusterZone.cpp
+  src/kernel/routing/ClusterZone.hpp
+  src/kernel/routing/DijkstraZone.cpp
+  src/kernel/routing/DijkstraZone.hpp
+  src/kernel/routing/DragonflyZone.cpp
+  src/kernel/routing/DragonflyZone.hpp
+  src/kernel/routing/EmptyZone.cpp
+  src/kernel/routing/EmptyZone.hpp
+  src/kernel/routing/FatTreeZone.cpp
+  src/kernel/routing/FatTreeZone.hpp
+  src/kernel/routing/FloydZone.cpp
+  src/kernel/routing/FloydZone.hpp
+  src/kernel/routing/FullZone.cpp
+  src/kernel/routing/FullZone.hpp
   src/kernel/routing/NetCard.cpp
-
+  src/kernel/routing/NetCard.hpp
+  src/kernel/routing/NetZoneImpl.cpp
+  src/kernel/routing/NetZoneImpl.hpp
+  src/kernel/routing/RoutedZone.cpp
+  src/kernel/routing/RoutedZone.hpp
+  src/kernel/routing/TorusZone.cpp
+  src/kernel/routing/TorusZone.hpp
+  src/kernel/routing/VivaldiZone.cpp
+  src/kernel/routing/VivaldiZone.hpp  
+  
   src/kernel/EngineImpl.cpp
   src/kernel/EngineImpl.hpp
 

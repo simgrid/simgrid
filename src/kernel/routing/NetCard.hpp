@@ -10,7 +10,7 @@
 #include <xbt/base.h>
 #include <xbt/signal.hpp>
 
-#include "src/kernel/routing/AsImpl.hpp"
+#include "src/kernel/routing/NetZoneImpl.hpp"
 /*
 #include <float.h>
 #include <vector>

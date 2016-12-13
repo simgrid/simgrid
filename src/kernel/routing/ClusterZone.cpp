@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/kernel/routing/AsCluster.hpp"
+#include "src/kernel/routing/ClusterZone.hpp"
 #include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/network_interface.hpp"
 

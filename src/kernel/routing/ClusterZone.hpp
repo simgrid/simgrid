@@ -8,7 +8,7 @@
 
 #include <unordered_map>
 
-#include "src/kernel/routing/AsImpl.hpp"
+#include "src/kernel/routing/NetZoneImpl.hpp"
 
 namespace simgrid {
 namespace kernel {

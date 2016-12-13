@@ -7,7 +7,7 @@
 #include <xbt/graph.h>
 #include <xbt/log.h>
 
-#include "src/kernel/routing/AsNone.hpp"
+#include "src/kernel/routing/EmptyZone.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_none, surf, "Routing part of surf");
 

@@ -6,7 +6,7 @@
 #include "xbt/log.h"
 
 #include "simgrid/s4u/host.hpp"
-#include "src/kernel/routing/AsImpl.hpp"
+#include "src/kernel/routing/NetZoneImpl.hpp"
 #include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"

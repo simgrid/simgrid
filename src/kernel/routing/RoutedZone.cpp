@@ -9,7 +9,7 @@
 #include "xbt/dynar.h"
 #include "xbt/graph.h"
 
-#include "src/kernel/routing/AsRoutedGraph.hpp"
+#include "src/kernel/routing/RoutedZone.hpp"
 #include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/network_interface.hpp"
 

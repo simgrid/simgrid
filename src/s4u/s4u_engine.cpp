@@ -15,7 +15,7 @@
 #include "simgrid/simix.h"
 #include "simgrid/simix.h"
 #include "src/kernel/EngineImpl.hpp"
-#include "src/kernel/routing/AsImpl.hpp"
+#include "src/kernel/routing/NetZoneImpl.hpp"
 
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_routing.hpp" // routing_platf. FIXME:KILLME. SOON
