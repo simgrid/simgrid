@@ -37,8 +37,6 @@ TorusZone::~TorusZone()
 
 void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position)
 {
-  char* link_id;
-  unsigned int j = 0;
   /*
    * Create all links that exist in the torus.
    * Each rank creates @a dimensions-1 links
@@ -48,7 +46,7 @@ void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
       // we need to iterate over all dimensions
       // and create all links there
       dim_product = 1; // Needed to calculate the next neighbor_id
-  for (j = 0; j < xbt_dynar_length(dimensions_); j++) {
+  for (unsigned int j = 0; j < xbt_dynar_length(dimensions_); j++) {
 
     s_sg_platf_link_cbarg_t link;
     memset(&link, 0, sizeof(link));
@@ -57,7 +55,7 @@ void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
                            ? rank - (current_dimension - 1) * dim_product
                            : rank + dim_product;
     // name of neighbor is not right for non contiguous cluster radicals (as id != rank in this case)
-    link_id        = bprintf("%s_link_from_%i_to_%i", cluster->id, id, neighbor_rank_id);
+    char* link_id  = bprintf("%s_link_from_%i_to_%i", cluster->id, id, neighbor_rank_id);
     link.id        = link_id;
     link.bandwidth = cluster->bw;
     link.latency   = cluster->lat;

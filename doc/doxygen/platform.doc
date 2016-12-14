@@ -36,32 +36,67 @@ If you read the DTD, you should notice the following:
 
 \section pf_basics Basic concepts
 
-Nowadays, the Internet is composed of a bunch of independently managed
-networks. Within each of those networks, there are entry and exit
-points (most of the time, you can both enter and exit through the same
-point); this allows to leave the current network and reach other
-networks, possibly even in other locations. At the upper level, such a
-network is called <b>Autonomous System (AS)</b>, while at the lower
-level it is named sub-network, or LAN (local area network). They are
-indeed autonomous: routing is defined (within the limits of his
-network) by the administrator, and so, those networks can operate
-without a connection to other networks. So-called gateways allow you
-to go from one network to another, if such a (physical) connection
-exists. Every node in one network that can be directly reached (i.e.,
-without traversing other nodes) from another network is called a
-gateway. Each autonomous system consists of equipment such as cables
-(network links), routers and switches as well as computers.
+It is certainly very tempting to defining how the information is
+routed in the simulated network in a way that is very similar to how
+it is defined on real network. One would have to define the routing
+tables of each routers interconnections sub-networks, just like in the
+real life. Given the daunting amount of configuration required, we
+could complete the information given by the user with classical
+protocols such as BGP and RIP. Many network simulator take such
+configuration as an input, for good reasons.
 
-The structure of the SimGrid platform description relies exactly on
-the same concept as a real-life platform (see above).  Every resource
-(computers, network equipment etc.) belongs to an AS, which can be
-defined by using the \<AS\> tag. Within an AS, the routing between its
-elements can be defined abitrarily. There are several modes for
-routing, and exactly one mode must be selected by specifying the
-routing attribute in the AS tag:
+This is not the way it goes in SimGrid: the network routing is defined
+in a global and compact way instead. This eases the modeling of very
+large systems, and allows highly optimized datastructures and
+algorithms in the simulator. The proposed description mechanism is
+thus much more convinient and efficient. In addition, it is more
+expressive than the classical solution based on forwarding tables on
+each host and router. 
+
+The price to pay is that this representation of networks is very
+specific to SimGrid, so you will have to read further to understand
+it, even if you already know how real networks work.
+
+The central notion here are \b Networking \b Zones. NetZones represent
+network areas in which the routing is done in an homogeneous way.
+Conceptually, netzones generalize from the ideas of local networks
+(such as Ethernet switched networks) and Autonomous System. The 
+network as a whole is represented as a single hierarchy of netzones,
+meaning that every netzone is part of another netzone (but the \c
+NetRoot, which is the top-level netzone).
+
+The main goal of the routing module is to provide a list of links
+traversed by a given communication and/or a latency to apply. These
+information are then used by the network model to compute the time
+that this communication takes. This information is retrieved by three
+combined algorithms: intra-zone routing, inter-zone routing, and the
+bypass mechanism.
+
+The <b>intra-zone level</b> is naturally handled by the netzones. Each
+netzone have to specify the routing algorithm it uses for that.
+@ref{FullZone} netzones have complete matrix where matrix(a,b)
+represents the full path (the list of links) between the hosts a and
+b. @ref{FloydZone} apply the Floyd-Warshall algorithm to compute the
+paths. @ref{ClusterZone} model classical switched or hub networks,
+where each component is connected through a private link onto a common
+backbone. Many other routing algorithms are provided to model the
+classical needs, but you can naturally define your own routing if the
+provided ones do not fit your needs.
+
+The <b>inter-zone algorithm</b> is used when the communication
+traverses more than one zone. The overall path goes from the source up
+in the netzones' tree, until the first common ancestor zone, and moves
+down to the destination. It crawls the differing netzones on its path
+according to the user-defined inter-zone routes, moving from gateway
+to gateway.
+
+You can also use the <b>bypass mechanism</b> to specify manually some
+shortcuts that directly provide the list of links interconnecting two
+given processes.
+
 
 \verbatim
-<AS id="AS0" routing="Full">
+<AS id="netzone0" routing="Full">
 \endverbatim
 
 \remark
@@ -79,7 +114,7 @@ how to reach a router from another router.
 \remark
   More information and (code-)examples can be found in Section \ref pf_rm.
 
-An AS can also contain itself one or more AS; this allows you to model
+A netzone can also contain itself one or more netzone; this allows you to model
 the hierarchy of your platform.
 
 ### Within each AS, the following types of resources exist:
