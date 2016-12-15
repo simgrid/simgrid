@@ -56,49 +56,49 @@ namespace mc {
 #define VERSION_RE "-[\\.0-9-]*$"
 
 // List of library which memory segments are not considered:
-static const char *const filtered_libraries[] = {
+static const char* const filtered_libraries[] = {
 #ifdef __linux__
-  "ld",
+    "ld",
 #elif defined __FreeBSD__
-  "ld-elf",
-  "ld-elf32",
-  "libkvm", /* kernel data access library */
-  "libprocstat", /* process and file information retrieval */
-  "libthr", /* thread library */
-  "libutil",
+    "ld-elf",
+    "ld-elf32",
+    "libkvm",      /* kernel data access library */
+    "libprocstat", /* process and file information retrieval */
+    "libthr",      /* thread library */
+    "libutil",
 #endif
-  "libasan", /* gcc sanitizers */
-  "libargp", /* workarounds for glibc-less systems */
-  "libtsan",
-  "libubsan",
-  "libbz2",
-  "libboost_chrono",
-  "libboost_context",
-  "libboost_system",
-  "libboost_thread",
-  "libc",
-  "libc++",
-  "libcdt",
-  "libcgraph",
-  "libcxxrt",
-  "libdl",
-  "libdw",
-  "libelf",
-  "libevent",
-  "libgcc_s",
-  "liblua5.1",
-  "liblua5.3",
-  "liblzma",
-  "libm",
-  "libpthread",
-  "librt",
-  "libstdc++",
-  "libunwind",
-  "libunwind-x86_64",
-  "libunwind-x86",
-  "libunwind-ptrace",
-  "libz"
-};
+    "libasan", /* gcc sanitizers */
+    "libargp", /* workarounds for glibc-less systems */
+    "libtsan",
+    "libubsan",
+    "libbz2",
+    "libboost_chrono",
+    "libboost_context",
+    "libboost_context-mt",
+    "libboost_system",
+    "libboost_thread",
+    "libc",
+    "libc++",
+    "libcdt",
+    "libcgraph",
+    "libcxxrt",
+    "libdl",
+    "libdw",
+    "libelf",
+    "libevent",
+    "libgcc_s",
+    "liblua5.1",
+    "liblua5.3",
+    "liblzma",
+    "libm",
+    "libpthread",
+    "librt",
+    "libstdc++",
+    "libunwind",
+    "libunwind-x86_64",
+    "libunwind-x86",
+    "libunwind-ptrace",
+    "libz"};
 
 static bool is_simgrid_lib(const char* libname)
 {
