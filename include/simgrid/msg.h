@@ -15,7 +15,8 @@
 SG_BEGIN_DECL()
 
 /* *************************** Network Zones ******************************** */
-typedef simgrid_NetZone* msg_as_t;
+#define msg_as_t msg_netzone_t /* portability macro */
+typedef simgrid_NetZone* msg_netzone_t;
 
 /* ******************************** Host ************************************ */
 
@@ -184,12 +185,12 @@ XBT_PUBLIC(double) MSG_get_clock();
 XBT_PUBLIC(unsigned long int) MSG_get_sent_msg();
 
 /************************** Environment ***********************************/
-XBT_PUBLIC(msg_as_t) MSG_environment_get_routing_root();
-XBT_PUBLIC(const char *) MSG_environment_as_get_name(msg_as_t as);
-XBT_PUBLIC(msg_as_t) MSG_environment_as_get_by_name(const char * name);
-XBT_PUBLIC(xbt_dict_t) MSG_environment_as_get_routing_sons(msg_as_t as);
-XBT_PUBLIC(const char *) MSG_environment_as_get_property_value(msg_as_t as, const char *name);
-XBT_PUBLIC(xbt_dynar_t) MSG_environment_as_get_hosts(msg_as_t as);
+XBT_PUBLIC(msg_netzone_t) MSG_environment_get_routing_root();
+XBT_PUBLIC(const char*) MSG_environment_as_get_name(msg_netzone_t as);
+XBT_PUBLIC(msg_netzone_t) MSG_environment_as_get_by_name(const char* name);
+XBT_PUBLIC(xbt_dict_t) MSG_environment_as_get_routing_sons(msg_netzone_t as);
+XBT_PUBLIC(const char*) MSG_environment_as_get_property_value(msg_netzone_t as, const char* name);
+XBT_PUBLIC(xbt_dynar_t) MSG_environment_as_get_hosts(msg_netzone_t as);
 
 /************************** File handling ***********************************/
 XBT_PUBLIC(sg_size_t) MSG_file_read(msg_file_t fd, sg_size_t size);

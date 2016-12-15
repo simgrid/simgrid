@@ -185,7 +185,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_createEnvironment(JNIEnv * env, 
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Msg_environmentGetRoutingRoot(JNIEnv * env, jclass cls)
 {
-  msg_as_t as = MSG_environment_get_routing_root();
+  msg_netzone_t as = MSG_environment_get_routing_root();
   jobject jas = jas_new_instance(env);
   if (!jas) {
     jxbt_throw_jni(env, "java As instantiation failed");

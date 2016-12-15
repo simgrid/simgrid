@@ -36,12 +36,14 @@ void jas_unref(JNIEnv * env, jobject jas) {
   env->DeleteGlobalRef(jas);
 }
 
-void jas_bind(jobject jas, msg_as_t as, JNIEnv * env) {
+void jas_bind(jobject jas, msg_netzone_t as, JNIEnv* env)
+{
   env->SetLongField(jas, jas_field_As_bind, (jlong) (uintptr_t) (as));
 }
 
-msg_as_t jas_get_native(JNIEnv * env, jobject jas) {
-  return (msg_as_t) (uintptr_t) env->GetLongField(jas, jas_field_As_bind);
+msg_netzone_t jas_get_native(JNIEnv* env, jobject jas)
+{
+  return (msg_netzone_t)(uintptr_t)env->GetLongField(jas, jas_field_As_bind);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_As_nativeInit(JNIEnv *env, jclass cls) {
@@ -54,7 +56,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_As_nativeInit(JNIEnv *env, jclass cl
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getName(JNIEnv * env, jobject jas) {
-  msg_as_t as = jas_get_native(env, jas);
+  msg_netzone_t as = jas_get_native(env, jas);
   return env->NewStringUTF(MSG_environment_as_get_name(as));
 }
 
@@ -62,9 +64,9 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getSons(JNIEnv * env, job
   int index = 0;
   jobjectArray jtable;
   jobject tmp_jas;
-  msg_as_t tmp_as;
-  msg_as_t self_as = jas_get_native(env, jas);
-  
+  msg_netzone_t tmp_as;
+  msg_netzone_t self_as = jas_get_native(env, jas);
+
   xbt_dict_t dict = MSG_environment_as_get_routing_sons(self_as);
   int count = xbt_dict_length(dict);
   jclass cls = env->FindClass("org/simgrid/msg/As");
@@ -103,7 +105,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getSons(JNIEnv * env, job
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getProperty(JNIEnv *env, jobject jas, jobject jname) {
-  msg_as_t as = jas_get_native(env, jas);
+  msg_netzone_t as = jas_get_native(env, jas);
 
   if (!as) {
     jxbt_throw_notbound(env, "as", jas);
@@ -130,7 +132,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jo
   jobject jhost;
   jstring jname;
   msg_host_t host;
-  msg_as_t as = jas_get_native(env, jas);
+  msg_netzone_t as = jas_get_native(env, jas);
 
   xbt_dynar_t table =  MSG_environment_as_get_hosts(as);
   int count = xbt_dynar_length(table);
