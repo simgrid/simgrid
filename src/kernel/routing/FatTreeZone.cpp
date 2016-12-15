@@ -235,7 +235,6 @@ void FatTreeZone::generateSwitches()
 {
   XBT_DEBUG("Generating switches.");
   this->nodesByLevel_.resize(this->levels_ + 1, 0);
-  unsigned int nodesRequired = 0;
 
   // Take care of the number of nodes by level
   this->nodesByLevel_[0] = 1;
@@ -259,7 +258,6 @@ void FatTreeZone::generateSwitches()
       nodesInThisLevel *= this->lowerLevelNodesNumber_[j];
 
     this->nodesByLevel_[i + 1] = nodesInThisLevel;
-    nodesRequired += nodesInThisLevel;
   }
 
   // Create the switches
@@ -440,7 +438,7 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, in
     linkTemplate.id        = bprintf("limiter_%d", id);
     sg_platf_new_link(&linkTemplate);
     this->limiterLink = Link::byName(linkTemplate.id);
-    free((void*)linkTemplate.id);
+    free(const_cast<char*>(linkTemplate.id));
   }
   if (cluster->loopback_bw || cluster->loopback_lat) {
     memset(&linkTemplate, 0, sizeof(linkTemplate));
@@ -450,7 +448,7 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, in
     linkTemplate.id        = bprintf("loopback_%d", id);
     sg_platf_new_link(&linkTemplate);
     this->loopback = Link::byName(linkTemplate.id);
-    free((void*)linkTemplate.id);
+    free(const_cast<char*>(linkTemplate.id));
   }
 }
 
@@ -465,22 +463,18 @@ FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode* downNode
   linkTemplate.policy    = cluster->sharing_policy; // sthg to do with that ?
   linkTemplate.id        = bprintf("link_from_%d_to_%d_%d", downNode->id, upNode->id, uniqueId);
   sg_platf_new_link(&linkTemplate);
-  Link* link;
-  std::string tmpID;
+
   if (cluster->sharing_policy == SURF_LINK_FULLDUPLEX) {
-    tmpID          = std::string(linkTemplate.id) + "_UP";
-    link           = Link::byName(tmpID.c_str());
-    this->upLink   = link; // check link?
+    std::string tmpID = std::string(linkTemplate.id) + "_UP";
+    this->upLink      = Link::byName(tmpID.c_str()); // check link?
     tmpID          = std::string(linkTemplate.id) + "_DOWN";
-    link           = Link::byName(tmpID.c_str());
-    this->downLink = link; // check link ?
+    this->downLink    = Link::byName(tmpID.c_str()); // check link ?
   } else {
-    link           = Link::byName(linkTemplate.id);
-    this->upLink   = link;
-    this->downLink = link;
+    this->upLink   = Link::byName(linkTemplate.id);
+    this->downLink = this->upLink;
   }
+  free(const_cast<char*>(linkTemplate.id));
   uniqueId++;
-  free((void*)linkTemplate.id);
 }
 }
 }

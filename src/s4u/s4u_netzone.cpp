@@ -34,7 +34,7 @@ NetZone::~NetZone()
   char* key;
   NetZone_t elem;
   xbt_dict_foreach (children_, cursor, key, elem) {
-    delete (NetZone*)elem;
+    delete static_cast<NetZone*>(elem);
   }
 
   xbt_dict_free(&children_);

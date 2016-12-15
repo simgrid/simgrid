@@ -19,16 +19,12 @@
 #include "src/surf/xml/platf_private.hpp" // FIXME: kill sg_platf_route_cbarg_t to remove that UGLY include
 
 namespace simgrid {
-
-namespace surf {
-class Link;
-}
 namespace kernel {
 namespace routing {
 class NetZoneImpl;
-class NetCard;
 }
 }
+
 namespace s4u {
 
 /** @brief Networking Zones
@@ -50,11 +46,10 @@ public:
   virtual void seal();
   char* name();
   NetZone* father();
-  ;
+
   xbt_dict_t children(); // Sub netzones
   xbt_dynar_t hosts();   // my content as a dynar
 
-public:
   /* Add content to the netzone, at parsing time. It should be sealed afterward. */
   virtual int addComponent(kernel::routing::NetCard * elm); /* A host, a router or a netzone, whatever */
   virtual void addRoute(sg_platf_route_cbarg_t route);
