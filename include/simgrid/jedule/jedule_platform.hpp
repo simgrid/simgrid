@@ -32,7 +32,7 @@ public:
   std::vector<sg_host_t> resource_list;
   void addChild(Container* child);
   void addResources(std::vector<sg_host_t> hosts);
-  void createHierarchy(AS_t from_as);
+  void createHierarchy(NetZone_t from_as);
   std::vector<int> getHierarchy();
   std::string getHierarchyAsString();
   void print(FILE *file);

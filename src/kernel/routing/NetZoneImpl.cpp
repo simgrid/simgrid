@@ -173,7 +173,7 @@ static void find_common_ancestors(NetCard* src, NetCard* dst,
    *
    * This works because all SimGrid platform have a unique root element (that is the last element of both paths).
    */
-  NetZoneImpl* father = nullptr; // the AS we dropped on the previous loop iteration
+  NetZoneImpl* father = nullptr; // the netzone we dropped on the previous loop iteration
   while (path_src.size() > 1 && path_dst.size() > 1 &&
          path_src.at(path_src.size() - 1) == path_dst.at(path_dst.size() - 1)) {
     father = path_src.at(path_src.size() - 1);
