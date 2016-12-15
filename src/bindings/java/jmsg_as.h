@@ -17,7 +17,7 @@ jobject jas_new_instance(JNIEnv * env);
 jobject jas_ref(JNIEnv * env, jobject jas);
 void jas_unref(JNIEnv * env, jobject jas);
 void jas_bind(jobject jas, msg_netzone_t as, JNIEnv* env);
-msg_netzone_t jas_get_native(JNIEnv* env, jobject jas);
+simgrid::s4u::NetZone* jas_get_native(JNIEnv* env, jobject jas);
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_As_nativeInit(JNIEnv *env, jclass cls);
 

@@ -72,8 +72,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_nativeInit(JNIEnv *env, jclass 
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls, jstring jname) {
-  msg_host_t host;                /* native host                                          */
-  jobject jhost;                /* global reference to the java host instance returned  */
 
   /* get the C string from the java string */
   if (jname == nullptr) {
@@ -82,7 +80,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jcla
   }
   const char *name = env->GetStringUTFChars(jname, 0);
   /* get the host by name       (the hosts are created during the grid resolution) */
-  host = MSG_host_by_name(name);
+  msg_host_t host = MSG_host_by_name(name);
 
   if (!host) {                  /* invalid name */
     jxbt_throw_host_not_found(env, name);
@@ -93,7 +91,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jcla
 
   if (!host->extension(JAVA_HOST_LEVEL)) {       /* native host not associated yet with java host */
     /* Instantiate a new java host */
-    jhost = jhost_new_instance(env);
+    jobject jhost = jhost_new_instance(env);
 
     if (!jhost) {
       jxbt_throw_jni(env, "java host instantiation failed");
