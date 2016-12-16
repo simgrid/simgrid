@@ -190,7 +190,7 @@ XBT_PUBLIC(const char*) MSG_environment_as_get_name(msg_netzone_t as);
 XBT_PUBLIC(msg_netzone_t) MSG_environment_as_get_by_name(const char* name);
 XBT_PUBLIC(xbt_dict_t) MSG_environment_as_get_routing_sons(msg_netzone_t as);
 XBT_PUBLIC(const char*) MSG_environment_as_get_property_value(msg_netzone_t as, const char* name);
-XBT_PUBLIC(void) MSG_environment_as_set_property_value(const char* asr, const char* name, char* value);
+XBT_PUBLIC(void) MSG_environment_as_set_property_value(msg_netzone_t netzone, const char* name, char* value);
 XBT_PUBLIC(xbt_dynar_t) MSG_environment_as_get_hosts(msg_netzone_t as);
 
 /************************** File handling ***********************************/
