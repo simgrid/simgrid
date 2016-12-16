@@ -7,6 +7,7 @@
 
 #include "simgrid/s4u/NetZone.hpp"
 #include "simgrid/s4u/host.hpp"
+#include "simgrid/simix.hpp"
 #include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/network_interface.hpp" // Link FIXME: move to proper header
 #include "src/surf/surf_routing.hpp"
@@ -39,6 +40,20 @@ NetZone::~NetZone()
 
   xbt_dict_free(&children_);
   xbt_free(name_);
+}
+std::unordered_map<std::string, std::string>* NetZone::properties()
+{
+  return simgrid::simix::kernelImmediate([&] { return &properties_; });
+}
+
+/** Retrieve the property value (or nullptr if not set) */
+const char* NetZone::property(const char* key)
+{
+  return properties_.at(key).c_str();
+}
+void NetZone::setProperty(const char* key, const char* value)
+{
+  simgrid::simix::kernelImmediate([&] { properties_[key] = value; });
 }
 
 xbt_dict_t NetZone::children()

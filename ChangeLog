@@ -42,6 +42,10 @@ SimGrid (3.14) UNRELEASED; urgency=low
    - MSG_storage_set_property_value()
  * VM properties. Since msg_vm_t are msg_host_t, just use
    MSG_host_get_property_value() and friends
+ * MSG_as_router_get_property_value() was redundent with
+   MSG_environment_as_get_property_value(). 
+   - Removed MSG_as_router_*propert*() functions
+   - Added MSG_environment_as_set_property_value() for consistency
  * xbt heterogeneous dictionnaries (created with xbt_dict_new()). 
    Well, they are still there for now, but deprecated with a warning. 
    Please switch to xbt_dict_new_homogeneous() before this is removed

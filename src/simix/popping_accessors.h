@@ -1084,19 +1084,6 @@ static inline void simcall_storage_get_content__set__result(smx_simcall_t simcal
     simgrid::simix::marshal<xbt_dict_t>(simcall->result, result);
 }
 
-static inline const char* simcall_asr_get_properties__get__name(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<const char*>(simcall->args[0]);
-}
-static inline void simcall_asr_get_properties__set__name(smx_simcall_t simcall, const char* arg) {
-    simgrid::simix::marshal<const char*>(simcall->args[0], arg);
-}
-static inline xbt_dict_t simcall_asr_get_properties__get__result(smx_simcall_t simcall){
-    return simgrid::simix::unmarshal<xbt_dict_t>(simcall->result);
-}
-static inline void simcall_asr_get_properties__set__result(smx_simcall_t simcall, xbt_dict_t result){
-    simgrid::simix::marshal<xbt_dict_t>(simcall->result, result);
-}
-
 static inline int simcall_mc_random__get__min(smx_simcall_t simcall) {
   return simgrid::simix::unmarshal<int>(simcall->args[0]);
 }
@@ -1188,5 +1175,4 @@ XBT_PRIVATE xbt_dynar_t simcall_HANDLER_file_get_info(smx_simcall_t simcall, smx
 XBT_PRIVATE int simcall_HANDLER_file_move(smx_simcall_t simcall, smx_file_t fd, const char* fullpath);
 XBT_PRIVATE sg_size_t simcall_HANDLER_storage_get_free_size(smx_simcall_t simcall, smx_storage_t storage);
 XBT_PRIVATE sg_size_t simcall_HANDLER_storage_get_used_size(smx_simcall_t simcall, smx_storage_t name);
-XBT_PRIVATE xbt_dict_t simcall_HANDLER_asr_get_properties(smx_simcall_t simcall, const char* name);
 XBT_PRIVATE int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max);

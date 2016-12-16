@@ -55,9 +55,9 @@ msg_netzone_t MSG_environment_get_routing_root()
   return simgrid::s4u::Engine::instance()->netRoot();
 }
 
-const char* MSG_environment_as_get_name(msg_netzone_t as)
+const char* MSG_environment_as_get_name(msg_netzone_t netzone)
 {
-  return as->name();
+  return netzone->name();
 }
 
 msg_netzone_t MSG_environment_as_get_by_name(const char* name)
@@ -65,21 +65,22 @@ msg_netzone_t MSG_environment_as_get_by_name(const char* name)
   return simgrid::s4u::Engine::instance()->netzoneByNameOrNull(name);
 }
 
-xbt_dict_t MSG_environment_as_get_routing_sons(msg_netzone_t as)
+xbt_dict_t MSG_environment_as_get_routing_sons(msg_netzone_t netzone)
 {
-  return as->children();
+  return netzone->children();
 }
 
-const char* MSG_environment_as_get_property_value(msg_netzone_t as, const char* name)
+const char* MSG_environment_as_get_property_value(msg_netzone_t netzone, const char* name)
 {
-  xbt_dict_t dict = static_cast<xbt_dict_t> (xbt_lib_get_or_null(as_router_lib, MSG_environment_as_get_name(as),
-                                                                 ROUTING_PROP_ASR_LEVEL));
-  if (dict==nullptr)
-    return nullptr;
-  return static_cast<const char*>(xbt_dict_get_or_null(dict, name));
+  return netzone->property(name);
 }
 
-xbt_dynar_t MSG_environment_as_get_hosts(msg_netzone_t as)
+void MSG_environment_as_set_property_value(msg_netzone_t netzone, const char* name, char* value)
 {
-  return as->hosts();
+  netzone->setProperty(name, value);
+}
+
+xbt_dynar_t MSG_environment_as_get_hosts(msg_netzone_t netzone)
+{
+  return netzone->hosts();
 }

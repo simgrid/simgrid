@@ -6,8 +6,8 @@
 #ifndef SIMGRID_S4U_NETZONE_HPP
 #define SIMGRID_S4U_NETZONE_HPP
 
-#include <map>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -50,6 +50,13 @@ public:
   xbt_dict_t children(); // Sub netzones
   xbt_dynar_t hosts();   // my content as a dynar
 
+  /** Get the properties assigned to a host */
+  std::unordered_map<std::string, std::string>* properties();
+
+  /** Retrieve the property value (or nullptr if not set) */
+  const char* property(const char* key);
+  void setProperty(const char* key, const char* value);
+
   /* Add content to the netzone, at parsing time. It should be sealed afterward. */
   virtual int addComponent(kernel::routing::NetCard * elm); /* A host, a router or a netzone, whatever */
   virtual void addRoute(sg_platf_route_cbarg_t route);
@@ -66,6 +73,7 @@ protected:
       vertices_; // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
 
 private:
+  std::unordered_map<std::string, std::string> properties_;
   NetZone* father_ = nullptr;
   char* name_      = nullptr;
 

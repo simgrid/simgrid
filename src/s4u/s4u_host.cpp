@@ -43,7 +43,7 @@ simgrid::xbt::signal<void(Host&)> Host::onStateChange;
 Host::Host(const char* name)
   : name_(name)
 {
-  xbt_assert(sg_host_by_name(name) == nullptr, "Refusing to create a second host named '%s'.", name);
+  xbt_assert(Host::by_name_or_null(name) == nullptr, "Refusing to create a second host named '%s'.", name);
   host_list[name_] = this;
 }
 

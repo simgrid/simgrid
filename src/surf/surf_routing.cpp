@@ -13,4 +13,3 @@ int MSG_STORAGE_LEVEL = -1;          //Msg storage level
 
 xbt_lib_t as_router_lib;
 int ROUTING_ASR_LEVEL = -1;          //Routing level
-int ROUTING_PROP_ASR_LEVEL = -1;     //Where the properties are stored

@@ -693,14 +693,6 @@ void SIMIX_display_process_status()
   }
 }
 
-xbt_dict_t simcall_HANDLER_asr_get_properties(smx_simcall_t simcall, const char *name){
-  return SIMIX_asr_get_properties(name);
-}
-xbt_dict_t SIMIX_asr_get_properties(const char *name)
-{
-  return static_cast<xbt_dict_t>(xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL));
-}
-
 int SIMIX_is_maestro()
 {
   return simix_global==nullptr /*SimDag*/|| SIMIX_process_self() == simix_global->maestro_process;

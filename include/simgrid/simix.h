@@ -398,10 +398,6 @@ XBT_PUBLIC(xbt_dict_t) simcall_storage_get_content(smx_storage_t storage);
 XBT_PUBLIC(const char*) SIMIX_storage_get_name(smx_storage_t storage);
 XBT_PUBLIC(sg_size_t) SIMIX_storage_get_size(smx_storage_t storage);
 XBT_PUBLIC(const char*) SIMIX_storage_get_host(smx_storage_t storage);
-/************************** AS router   **********************************/
-XBT_PUBLIC(xbt_dict_t) SIMIX_asr_get_properties(const char *name);
-/************************** AS router simcalls ***************************/
-XBT_PUBLIC(xbt_dict_t) simcall_asr_get_properties(const char *name);
 
 /************************** MC simcalls   **********************************/
 XBT_PUBLIC(int) simcall_mc_random(int min, int max);

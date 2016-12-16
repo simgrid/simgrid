@@ -636,8 +636,6 @@ XBT_PUBLIC(void) parse_platform_file(const char *file);
 /* For the trace and trace:connect tag (store their content till the end of the parsing) */
 XBT_PUBLIC_DATA(xbt_dict_t) traces_set_list;
 
-XBT_PUBLIC(xbt_dict_t) get_as_router_properties(const char* name);
-
 /*
  * Returns the initial path. On Windows the initial path is the current directory for the current process in the other
  * case the function returns "./" that represents the current directory on Unix/Linux platforms.

@@ -17,7 +17,6 @@ XBT_PUBLIC_DATA(int) SIMIX_STORAGE_LEVEL; //Simix storage level
 
 XBT_PUBLIC_DATA(xbt_lib_t) as_router_lib;
 XBT_PUBLIC_DATA(int) ROUTING_ASR_LEVEL;  //Routing level
-XBT_PUBLIC_DATA(int) ROUTING_PROP_ASR_LEVEL; //Properties for AS and router
 
 XBT_PUBLIC_DATA(xbt_lib_t) storage_lib;
 XBT_PUBLIC_DATA(int) ROUTING_STORAGE_LEVEL;        //Routing storage level

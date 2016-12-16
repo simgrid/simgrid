@@ -6,6 +6,8 @@
 #ifndef SIMGRID_ROUTING_NETZONEIMPL_HPP
 #define SIMGRID_ROUTING_NETZONEIMPL_HPP
 
+#include <map>
+
 #include "xbt/graph.h"
 
 #include "simgrid/s4u/NetZone.hpp"

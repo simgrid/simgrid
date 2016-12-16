@@ -9,6 +9,7 @@
 #include <stdarg.h> /* va_arg */
 
 #include "simgrid/link.h"
+#include "simgrid/s4u/engine.hpp"
 #include "simgrid/sg_config.h"
 #include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/network_interface.hpp"
@@ -275,12 +276,7 @@ double surf_parse_get_speed(const char *string, const char *entity_kind, const c
 /* The default current property receiver. Setup in the corresponding opening callbacks. */
 xbt_dict_t current_property_set = nullptr;
 xbt_dict_t current_model_property_set = nullptr;
-xbt_dict_t as_current_property_set = nullptr;
-int AS_TAG = 0;
-char* as_name_tab[1024];
-void* as_dict_tab[1024];
-int as_prop_nb = 0;
-
+int AS_TAG                            = 0; // Whether we just opened an AS tag (to see what to do with the properties)
 
 /* dictionary of random generator data */
 xbt_dict_t random_data_list = nullptr;
@@ -460,23 +456,18 @@ void STag_surfxml_host(){
 
 void STag_surfxml_prop()
 {
-  if(AS_TAG){ // We need a stack here to retrieve the most recently opened AS
-    if (!as_current_property_set){
-      xbt_assert(as_prop_nb < 1024, "Number of AS property reach the limit!!!");
-      as_current_property_set = xbt_dict_new_homogeneous(xbt_free_f); // Maybe, it should raise an error
-      as_name_tab[as_prop_nb] = xbt_strdup(A_surfxml_AS_id);
-      as_dict_tab[as_prop_nb] = as_current_property_set;
-      XBT_DEBUG("PUSH prop set %p for AS '%s'",as_dict_tab[as_prop_nb],as_name_tab[as_prop_nb]);
-      as_prop_nb++;
-    }
-    XBT_DEBUG("add prop %s=%s into current AS property set", A_surfxml_prop_id, A_surfxml_prop_value);
-    xbt_dict_set(as_current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), nullptr);
+  if (AS_TAG) { // We need to retrieve the most recently opened AS
+    XBT_DEBUG("Set AS property %s -> %s", A_surfxml_prop_id, A_surfxml_prop_value);
+    simgrid::s4u::NetZone* netzone = simgrid::s4u::Engine::instance()->netzoneByNameOrNull(A_surfxml_AS_id);
+
+    netzone->setProperty(A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value));
   }
   else{
     if (!current_property_set)
       current_property_set = xbt_dict_new_homogeneous(&xbt_free_f); // Maybe, it should raise an error
     xbt_dict_set(current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), nullptr);
-    XBT_DEBUG("add prop %s=%s into current property set", A_surfxml_prop_id, A_surfxml_prop_value);
+    XBT_DEBUG("add prop %s=%s into current property set %p", A_surfxml_prop_id, A_surfxml_prop_value,
+              current_property_set);
   }
 }
 
@@ -544,7 +535,7 @@ void STag_surfxml_router(){
 void ETag_surfxml_cluster(){
   s_sg_platf_cluster_cbarg_t cluster;
   memset(&cluster,0,sizeof(cluster));
-  cluster.properties = as_current_property_set;
+  cluster.properties = current_property_set;
 
   cluster.id          = A_surfxml_cluster_id;
   cluster.prefix      = A_surfxml_cluster_prefix;
@@ -620,6 +611,7 @@ void ETag_surfxml_cluster(){
 }
 
 void STag_surfxml_cluster(){
+  AS_TAG = 0;
   parse_after_config();
   xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
 }
@@ -902,19 +894,9 @@ void STag_surfxml_AS(){
   AS_TAG                   = 1;
   s_sg_platf_AS_cbarg_t AS = { A_surfxml_AS_id, (int)A_surfxml_AS_routing};
 
-  as_current_property_set = nullptr;
-
   sg_platf_new_AS_begin(&AS);
 }
 void ETag_surfxml_AS(){
-  if(as_prop_nb){
-    char *name      = as_name_tab[as_prop_nb-1];
-    xbt_dict_t dict = (xbt_dict_t) as_dict_tab[as_prop_nb-1];
-    as_prop_nb--;
-    XBT_DEBUG("POP prop %p for AS '%s'",dict,name);
-    xbt_lib_set(as_router_lib, name, ROUTING_PROP_ASR_LEVEL, dict);
-    xbt_free(name);
-  }
   sg_platf_new_AS_seal();
 }
 
@@ -1066,12 +1048,3 @@ static int _surf_parse() {
 }
 
 int_f_void_t surf_parse = _surf_parse;
-
-/* Prop tag functions
- *
- * With XML parser
- */
-xbt_dict_t get_as_router_properties(const char* name)
-{
-  return (xbt_dict_t)xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL);
-}

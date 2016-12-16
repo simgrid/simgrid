@@ -46,20 +46,6 @@ void simcall_call(smx_actor_t process)
   }
 }
 
-// ***** AS simcalls
-
-/**
- * \ingroup simix_host_management
- * \brief Returns a dict of the properties assigned to a router or AS.
- *
- * \param name The name of the router or AS
- * \return The properties
- */
-xbt_dict_t simcall_asr_get_properties(const char *name)
-{
-  return simcall_BODY_asr_get_properties(name);
-}
-
 /**
  * \ingroup simix_process_management
  * \brief Creates a synchro that executes some computation of an host.

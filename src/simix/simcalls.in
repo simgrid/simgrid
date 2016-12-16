@@ -109,7 +109,6 @@ sg_size_t  storage_get_used_size(smx_storage_t name);
 xbt_dict_t storage_get_properties(smx_storage_t storage) [[nohandler]];
 xbt_dict_t storage_get_content(smx_storage_t storage) [[nohandler]];
 
-xbt_dict_t asr_get_properties(const char* name);
 int        mc_random(int min, int max);
 void       set_category(smx_activity_t synchro, const char* category) [[nohandler]];
 

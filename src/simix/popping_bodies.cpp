@@ -407,12 +407,6 @@ inline static xbt_dict_t simcall_BODY_storage_get_content(smx_storage_t storage)
     return simcall<xbt_dict_t, smx_storage_t>(SIMCALL_STORAGE_GET_CONTENT, storage);
   }
   
-inline static xbt_dict_t simcall_BODY_asr_get_properties(const char* name) {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_asr_get_properties(&SIMIX_process_self()->simcall, name);
-    return simcall<xbt_dict_t, const char*>(SIMCALL_ASR_GET_PROPERTIES, name);
-  }
-  
 inline static int simcall_BODY_mc_random(int min, int max) {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) simcall_HANDLER_mc_random(&SIMIX_process_self()->simcall, min, max);

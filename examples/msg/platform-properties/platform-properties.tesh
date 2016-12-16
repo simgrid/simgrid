@@ -34,7 +34,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/platform-properties$EXEEXT ${srcdir:=.}/prop.xml $
 > [  2.000000] (4:david@host2) == Print the properties of the host 'node-0.acme.org'
 > [  2.000000] (4:david@host2)   Host property: 'mem' -> '42'
 > [  2.000000] (4:david@host2)   Host property: 'bla' -> 'acme cluster'
-> [  2.000000] (4:david@host2)   Host property: 'name' -> 'AS2'
 > [  2.000000] (4:david@host2)   Host property: 'Hdd' -> '180'
 > [  2.000000] (4:david@host2) == Try to get a host property that does not exist
 > [  2.000000] (4:david@host2) == Try to get a host property that does exist

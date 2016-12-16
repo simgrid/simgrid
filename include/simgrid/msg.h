@@ -190,6 +190,7 @@ XBT_PUBLIC(const char*) MSG_environment_as_get_name(msg_netzone_t as);
 XBT_PUBLIC(msg_netzone_t) MSG_environment_as_get_by_name(const char* name);
 XBT_PUBLIC(xbt_dict_t) MSG_environment_as_get_routing_sons(msg_netzone_t as);
 XBT_PUBLIC(const char*) MSG_environment_as_get_property_value(msg_netzone_t as, const char* name);
+XBT_PUBLIC(void) MSG_environment_as_set_property_value(const char* asr, const char* name, char* value);
 XBT_PUBLIC(xbt_dynar_t) MSG_environment_as_get_hosts(msg_netzone_t as);
 
 /************************** File handling ***********************************/
@@ -225,10 +226,6 @@ XBT_PUBLIC(xbt_dict_t) MSG_storage_get_content(msg_storage_t storage);
 XBT_PUBLIC(sg_size_t) MSG_storage_get_size(msg_storage_t storage);
 XBT_PUBLIC(msg_error_t) MSG_storage_file_move(msg_file_t fd, msg_host_t dest, char* mount, char* fullname);
 XBT_PUBLIC(const char *) MSG_storage_get_host(msg_storage_t storage);
-/************************** AS Router handling ************************************/
-XBT_PUBLIC(const char *) MSG_as_router_get_property_value(const char* asr, const char *name);
-XBT_PUBLIC(xbt_dict_t) MSG_as_router_get_properties(const char* asr);
-XBT_PUBLIC(void) MSG_as_router_set_property_value(const char* asr, const char* name, char* value);
 
 /************************** Host handling ***********************************/
 XBT_PUBLIC(msg_host_t) MSG_host_by_name(const char *name);
