@@ -122,8 +122,7 @@ int main(int argc, char **argv)
     }
 
     // Routers
-    xbt_lib_foreach(as_router_lib, cursor_src, key, value1) {
-      value1 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib, key, ROUTING_ASR_LEVEL);
+    xbt_dict_foreach (netcards_dict, cursor_src, key, value1) {
       if(value1->isRouter()) {
         std::printf("  <router id=\"%s\"/>\n",key);
       }
@@ -164,8 +163,7 @@ int main(int argc, char **argv)
         }
         delete route;
       }
-      xbt_lib_foreach(as_router_lib, cursor_dst, dst, value2){ //to router
-        value2 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
+      xbt_dict_foreach (netcards_dict, cursor_dst, dst, value2) { // to router
         if(value2->isRouter()){
           std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->cname(), dst);
           std::vector<Link*> *route = new std::vector<Link*>();
@@ -178,11 +176,9 @@ int main(int argc, char **argv)
       }
     }
 
-    xbt_lib_foreach(as_router_lib, cursor_src, src, value1){ // Routes from router
-      value1 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,src,ROUTING_ASR_LEVEL);
+    xbt_dict_foreach (netcards_dict, cursor_src, src, value1) { // Routes from router
       if (value1->isRouter()){
-        xbt_lib_foreach(as_router_lib, cursor_dst, dst, value2){ //to router
-          value2 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
+        xbt_dict_foreach (netcards_dict, cursor_dst, dst, value2) { // to router
           if(value2->isRouter()){
             std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, dst);
             std::vector<Link*> *route = new std::vector<Link*>();

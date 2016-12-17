@@ -27,11 +27,11 @@ public:
 
 NetZoneImpl::NetZoneImpl(NetZone* father, const char* name) : NetZone(father, name)
 {
-  xbt_assert(nullptr == xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL),
-             "Refusing to create a second NetZone called '%s'.", name);
+  xbt_assert(nullptr == xbt_dict_get_or_null(netcards_dict, name), "Refusing to create a second NetZone called '%s'.",
+             name);
 
   netcard_ = new NetCard(name, NetCard::Type::NetZone, static_cast<NetZoneImpl*>(father));
-  xbt_lib_set(as_router_lib, name, ROUTING_ASR_LEVEL, static_cast<void*>(netcard_));
+  xbt_dict_set(netcards_dict, name, static_cast<void*>(netcard_), nullptr);
   XBT_DEBUG("NetZone '%s' created with the id '%d'", name, netcard_->id());
 }
 NetZoneImpl::~NetZoneImpl()

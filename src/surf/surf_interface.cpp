@@ -289,16 +289,13 @@ void surf_init(int *argc, char **argv)
   XBT_DEBUG("Create all Libs");
   USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(nullptr);
 
-  as_router_lib = xbt_lib_new();
+  netcards_dict = xbt_dict_new_homogeneous([](void* p) {
+    delete static_cast<simgrid::kernel::routing::NetCard*>(p);
+  });
   storage_lib = xbt_lib_new();
   storage_type_lib = xbt_lib_new();
   file_lib = xbt_lib_new();
   watched_hosts_lib = xbt_dict_new_homogeneous(nullptr);
-
-  XBT_DEBUG("Add routing levels");
-  ROUTING_ASR_LEVEL = xbt_lib_add_level(as_router_lib, [](void* p) {
-    delete static_cast<simgrid::kernel::routing::NetCard*>(p);
-  });
 
   XBT_DEBUG("Add SURF levels");
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_free);
@@ -327,7 +324,7 @@ void surf_exit()
   xbt_dynar_free(&surf_path);
 
   sg_host_exit();
-  xbt_lib_free(&as_router_lib);
+  xbt_dict_free(&netcards_dict);
   xbt_lib_free(&storage_lib);
   sg_link_exit();
   xbt_lib_free(&storage_type_lib);

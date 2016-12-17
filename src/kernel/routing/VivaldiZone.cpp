@@ -80,8 +80,8 @@ void VivaldiZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg
   if (src->isNetZone()) {
     char* srcName = bprintf("router_%s", src->cname());
     char* dstName = bprintf("router_%s", dst->cname());
-    route->gw_src = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib, srcName, ROUTING_ASR_LEVEL);
-    route->gw_dst = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib, dstName, ROUTING_ASR_LEVEL);
+    route->gw_src = (sg_netcard_t)xbt_dict_get_or_null(netcards_dict, srcName);
+    route->gw_dst = (sg_netcard_t)xbt_dict_get_or_null(netcards_dict, dstName);
     xbt_free(srcName);
     xbt_free(dstName);
   }

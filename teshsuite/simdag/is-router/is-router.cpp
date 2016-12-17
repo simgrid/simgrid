@@ -15,7 +15,7 @@ int main(int argc, char **argv)
   SD_create_environment(argv[1]);
 
   xbt_dynar_t hosts = sg_hosts_as_dynar();
-  int size = sg_host_count() + xbt_lib_length(as_router_lib);
+  int size          = sg_host_count() + xbt_dict_length(netcards_dict);
 
   printf("Host number: %zu, link number: %d, elmts number: %d\n", sg_host_count(), sg_link_count(), size);
 
@@ -31,7 +31,7 @@ int main(int argc, char **argv)
   xbt_lib_cursor_t cursor = nullptr;
   char* key;
   void *ignored;
-  xbt_lib_foreach(as_router_lib, cursor, key, ignored) {
+  xbt_dict_foreach (netcards_dict, cursor, key, ignored) {
     simgrid::kernel::routing::NetCard * nc = sg_netcard_by_name_or_null(key);
     printf("   - Seen: \"%s\". Type: %s\n", key, nc->isRouter() ? "router" : (nc->isNetZone() ? "netzone" : "host"));
   }

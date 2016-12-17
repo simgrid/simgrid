@@ -71,11 +71,11 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
       xbt_assert(newContainer->netcard, "Element '%s' not found",name);
       break;
     case INSTR_ROUTER:
-      newContainer->netcard = static_cast<sg_netcard_t>(xbt_lib_get_or_null(as_router_lib,name,ROUTING_ASR_LEVEL));
+      newContainer->netcard = static_cast<sg_netcard_t>(xbt_dict_get_or_null(netcards_dict, name));
       xbt_assert(newContainer->netcard, "Element '%s' not found",name);
       break;
     case INSTR_AS:
-      newContainer->netcard = static_cast<sg_netcard_t>(xbt_lib_get_or_null(as_router_lib,name,ROUTING_ASR_LEVEL));
+      newContainer->netcard = static_cast<sg_netcard_t>(xbt_dict_get_or_null(netcards_dict, name));
       xbt_assert(newContainer->netcard, "Element '%s' not found",name);
       break;
     default:

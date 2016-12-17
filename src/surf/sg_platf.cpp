@@ -115,12 +115,12 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
 
   if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
     current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::base;
-  xbt_assert(nullptr == xbt_lib_get_or_null(as_router_lib, router->id, ROUTING_ASR_LEVEL),
+  xbt_assert(nullptr == xbt_dict_get_or_null(netcards_dict, router->id),
              "Refusing to create a router named '%s': this name already describes a node.", router->id);
 
   simgrid::kernel::routing::NetCard* netcard =
     new simgrid::kernel::routing::NetCard(router->id, simgrid::kernel::routing::NetCard::Type::Router, current_routing);
-  xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, netcard);
+  xbt_dict_set(netcards_dict, router->id, netcard, nullptr);
   XBT_DEBUG("Router '%s' has the id %d", router->id, netcard->id());
 
   if (router->coord && strcmp(router->coord, ""))
@@ -128,7 +128,7 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
 
   auto cluster = dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing);
   if(cluster != nullptr)
-    cluster->router_ = static_cast<simgrid::kernel::routing::NetCard*>(xbt_lib_get_or_null(as_router_lib, router->id, ROUTING_ASR_LEVEL));
+    cluster->router_ = static_cast<simgrid::kernel::routing::NetCard*>(xbt_dict_get_or_null(netcards_dict, router->id));
 
   if (TRACE_is_enabled() && TRACE_needs_platform())
     sg_instr_new_router(router);
@@ -307,7 +307,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   if (!router.id || !strcmp(router.id, ""))
     router.id = newid = bprintf("%s%s_router%s", cluster->prefix, cluster->id, cluster->suffix);
   sg_platf_new_router(&router);
-  current_as->router_ = (simgrid::kernel::routing::NetCard*) xbt_lib_get_or_null(as_router_lib, router.id, ROUTING_ASR_LEVEL);
+  current_as->router_ = (simgrid::kernel::routing::NetCard*)xbt_dict_get_or_null(netcards_dict, router.id);
   free(newid);
 
   //Make the backbone
