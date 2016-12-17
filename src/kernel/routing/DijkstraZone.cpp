@@ -5,8 +5,9 @@
 
 #include "src/kernel/routing/DijkstraZone.hpp"
 #include "src/kernel/routing/NetCard.hpp"
-
 #include "src/surf/network_interface.hpp"
+
+#include <float.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_dijkstra, surf, "Routing part of surf -- dijkstra routing logic");
 

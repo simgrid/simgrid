@@ -12,7 +12,7 @@
 #include "src/surf/network_interface.hpp"
 #include "src/instr/instr_private.h" // TRACE_start(). FIXME: remove by subscribing tracing to the surf signals
 
-#include "src/surf/xml/platf.hpp"
+#include "src/surf/xml/platf_private.hpp"
 
 #if HAVE_LUA
 extern "C" {

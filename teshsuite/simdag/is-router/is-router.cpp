@@ -6,7 +6,7 @@
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/simdag.h"
 #include "src/kernel/routing/NetCard.hpp"
-#include "src/surf/surf_routing.hpp"
+#include "surf/surf_routing.h"
 #include <stdio.h>
 
 int main(int argc, char **argv)

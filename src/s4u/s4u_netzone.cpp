@@ -10,7 +10,6 @@
 #include "simgrid/simix.hpp"
 #include "src/kernel/routing/NetCard.hpp"
 #include "src/surf/network_interface.hpp" // Link FIXME: move to proper header
-#include "src/surf/surf_routing.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_netzone, "S4U Networking Zones");
 

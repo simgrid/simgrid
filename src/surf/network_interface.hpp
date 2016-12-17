@@ -14,7 +14,6 @@
 #include "xbt/fifo.h"
 #include "xbt/dict.h"
 #include "surf_interface.hpp"
-#include "surf_routing.hpp"
 #include "src/surf/PropertyHolder.hpp"
 
 #include "simgrid/link.h"

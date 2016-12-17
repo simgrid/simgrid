@@ -67,7 +67,6 @@ set(EXTRA_DIST
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
   src/surf/surf_private.h
-  src/surf/surf_routing.hpp
   src/surf/PropertyHolder.hpp
   src/surf/host_clm03.hpp
   src/surf/HostImpl.hpp

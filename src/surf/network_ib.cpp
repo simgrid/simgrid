@@ -6,11 +6,11 @@
 
 #include <utility>
 
-#include "network_ib.hpp"
-
-#include "src/surf/HostImpl.hpp"
 #include "simgrid/sg_config.h"
-#include "maxmin_private.hpp"
+#include "src/surf/HostImpl.hpp"
+#include "src/surf/maxmin_private.hpp"
+#include "src/surf/network_ib.hpp"
+#include "src/surf/xml/platf.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 

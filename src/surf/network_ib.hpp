@@ -7,9 +7,10 @@
 #ifndef SURF_NETWORK_IB_HPP_
 #define SURF_NETWORK_IB_HPP_
 
-#include <xbt/base.h>
+#include "src/surf/network_smpi.hpp"
+#include "xbt/base.h"
 
-#include "network_smpi.hpp"
+#include <map>
 
 namespace simgrid {
   namespace surf {

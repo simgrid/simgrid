@@ -101,7 +101,6 @@ xbt_dynar_t sg_hosts_as_dynar()
 // ========= Layering madness ==============*
 
 #include "src/surf/cpu_interface.hpp"
-#include "src/surf/surf_routing.hpp"
 
 // ========== User data Layer ==========
 void *sg_host_user(sg_host_t host) {

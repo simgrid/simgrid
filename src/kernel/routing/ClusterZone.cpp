@@ -5,6 +5,7 @@
 
 #include "src/kernel/routing/ClusterZone.hpp"
 #include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/RoutedZone.hpp"
 #include "src/surf/network_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf");
