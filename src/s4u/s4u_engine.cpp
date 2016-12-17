@@ -111,5 +111,10 @@ NetZone* Engine::netzoneByNameOrNull(const char* name)
   return netzoneByNameRecursive(netRoot(), name);
 }
 
+/** @brief Retrieve the netcard of the given name (or nullptr if not found) */
+simgrid::kernel::routing::NetCard* Engine::netcardByNameOrNull(const char* name)
+{
+  return static_cast<simgrid::kernel::routing::NetCard*>(xbt_dict_get_or_null(netcards_dict, name));
+}
 }
 }

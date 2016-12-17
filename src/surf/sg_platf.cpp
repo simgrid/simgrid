@@ -115,7 +115,7 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
 
   if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
     current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::base;
-  xbt_assert(nullptr == xbt_dict_get_or_null(netcards_dict, router->id),
+  xbt_assert(nullptr == simgrid::s4u::Engine::instance()->netcardByNameOrNull(router->id),
              "Refusing to create a router named '%s': this name already describes a node.", router->id);
 
   simgrid::kernel::routing::NetCard* netcard =
@@ -307,7 +307,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   if (!router.id || !strcmp(router.id, ""))
     router.id = newid = bprintf("%s%s_router%s", cluster->prefix, cluster->id, cluster->suffix);
   sg_platf_new_router(&router);
-  current_as->router_ = (simgrid::kernel::routing::NetCard*)xbt_dict_get_or_null(netcards_dict, router.id);
+  current_as->router_ = simgrid::s4u::Engine::instance()->netcardByNameOrNull(router.id);
   free(newid);
 
   //Make the backbone

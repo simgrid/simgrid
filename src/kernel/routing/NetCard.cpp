@@ -5,8 +5,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/routing/NetCard.hpp"
+#include "simgrid/s4u/engine.hpp"
+#include "simgrid/s4u/host.hpp"
 #include "surf/surf_routing.h"
-#include <simgrid/s4u/host.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
@@ -26,6 +27,5 @@ simgrid::xbt::signal<void(NetCard*)> NetCard::onCreation;
 simgrid::kernel::routing::NetCard* sg_netcard_by_name_or_null(const char* name)
 {
   sg_host_t host = sg_host_by_name(name);
-  return (host != nullptr) ? host->pimpl_netcard
-                           : static_cast<simgrid::kernel::routing::NetCard*>(xbt_dict_get_or_null(netcards_dict, name));
+  return (host != nullptr) ? host->pimpl_netcard : simgrid::s4u::Engine::instance()->netcardByNameOrNull(name);
 }

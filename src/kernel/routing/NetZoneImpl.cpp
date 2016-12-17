@@ -3,13 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/log.h"
-
+#include "src/kernel/routing/NetZoneImpl.hpp"
+#include "simgrid/s4u/engine.hpp"
 #include "simgrid/s4u/host.hpp"
 #include "src/kernel/routing/NetCard.hpp"
-#include "src/kernel/routing/NetZoneImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
+
+#include "xbt/log.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_route);
 
@@ -27,8 +28,8 @@ public:
 
 NetZoneImpl::NetZoneImpl(NetZone* father, const char* name) : NetZone(father, name)
 {
-  xbt_assert(nullptr == xbt_dict_get_or_null(netcards_dict, name), "Refusing to create a second NetZone called '%s'.",
-             name);
+  xbt_assert(nullptr == simgrid::s4u::Engine::instance()->netcardByNameOrNull(name),
+             "Refusing to create a second NetZone called '%s'.", name);
 
   netcard_ = new NetCard(name, NetCard::Type::NetZone, static_cast<NetZoneImpl*>(father));
   xbt_dict_set(netcards_dict, name, static_cast<void*>(netcard_), nullptr);

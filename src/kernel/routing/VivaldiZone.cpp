@@ -5,7 +5,8 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include <simgrid/s4u/host.hpp>
+#include "simgrid/s4u/engine.hpp"
+#include "simgrid/s4u/host.hpp"
 
 #include "src/kernel/routing/NetCard.hpp"
 #include "src/kernel/routing/VivaldiZone.hpp"
@@ -80,8 +81,8 @@ void VivaldiZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg
   if (src->isNetZone()) {
     char* srcName = bprintf("router_%s", src->cname());
     char* dstName = bprintf("router_%s", dst->cname());
-    route->gw_src = (sg_netcard_t)xbt_dict_get_or_null(netcards_dict, srcName);
-    route->gw_dst = (sg_netcard_t)xbt_dict_get_or_null(netcards_dict, dstName);
+    route->gw_src = simgrid::s4u::Engine::instance()->netcardByNameOrNull(srcName);
+    route->gw_dst = simgrid::s4u::Engine::instance()->netcardByNameOrNull(dstName);
     xbt_free(srcName);
     xbt_free(dstName);
   }

@@ -66,11 +66,14 @@ public:
   /** @brief Retrieve the engine singleton */
   static s4u::Engine *instance();
 
-  /** @brief Retrieve the root AS, containing all others */
+  /** @brief Retrieve the root netzone, containing all others */
   simgrid::s4u::NetZone* netRoot();
 
-  /** @brief Retrieve the AS of the given name (or nullptr if not found) */
+  /** @brief Retrieve the netzone of the given name (or nullptr if not found) */
   simgrid::s4u::NetZone* netzoneByNameOrNull(const char* name);
+
+  /** @brief Retrieve the netcard of the given name (or nullptr if not found) */
+  simgrid::kernel::routing::NetCard* netcardByNameOrNull(const char* name);
 
   template<class F>
   void registerFunction(const char* name)

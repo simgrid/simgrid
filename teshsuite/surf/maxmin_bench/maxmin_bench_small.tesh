@@ -5,7 +5,6 @@
 ! output sort
 $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench small  10 test
 > [0.000000]: [surf_kernel/DEBUG] Add SURF levels
-> [0.000000]: [surf_kernel/DEBUG] Add routing levels
 > [0.000000]: [surf_kernel/DEBUG] Create all Libs
 > [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
 > [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10

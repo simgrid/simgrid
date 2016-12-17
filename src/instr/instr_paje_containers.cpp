@@ -4,7 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <simgrid/s4u/host.hpp>
+#include "simgrid/s4u/engine.hpp"
+#include "simgrid/s4u/host.hpp"
 
 #include <xbt/dict.h>
 #include <xbt/lib.h>
@@ -71,11 +72,11 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
       xbt_assert(newContainer->netcard, "Element '%s' not found",name);
       break;
     case INSTR_ROUTER:
-      newContainer->netcard = static_cast<sg_netcard_t>(xbt_dict_get_or_null(netcards_dict, name));
+      newContainer->netcard = simgrid::s4u::Engine::instance()->netcardByNameOrNull(name);
       xbt_assert(newContainer->netcard, "Element '%s' not found",name);
       break;
     case INSTR_AS:
-      newContainer->netcard = static_cast<sg_netcard_t>(xbt_dict_get_or_null(netcards_dict, name));
+      newContainer->netcard = simgrid::s4u::Engine::instance()->netcardByNameOrNull(name);
       xbt_assert(newContainer->netcard, "Element '%s' not found",name);
       break;
     default:
