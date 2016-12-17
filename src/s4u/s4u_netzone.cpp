@@ -43,7 +43,9 @@ NetZone::~NetZone()
 }
 std::unordered_map<std::string, std::string>* NetZone::properties()
 {
-  return simgrid::simix::kernelImmediate([&] { return &properties_; });
+  return simgrid::simix::kernelImmediate([=] {
+      return &properties_;
+  });
 }
 
 /** Retrieve the property value (or nullptr if not set) */
@@ -53,7 +55,9 @@ const char* NetZone::property(const char* key)
 }
 void NetZone::setProperty(const char* key, const char* value)
 {
-  simgrid::simix::kernelImmediate([&] { properties_[key] = value; });
+  simgrid::simix::kernelImmediate([=] {
+    properties_[key] = value;
+  });
 }
 
 xbt_dict_t NetZone::children()
