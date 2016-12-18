@@ -29,13 +29,7 @@ class NetCard : public simgrid::xbt::Extendable<NetCard> {
 public:
   enum class Type { Host, Router, NetZone };
 
-  NetCard(std::string name, NetCard::Type componentType, NetZoneImpl* netzone_p)
-      : name_(name), componentType_(componentType), netzone_(netzone_p)
-  {
-    if (netzone_p != nullptr)
-      id_ = netzone_p->addComponent(this);
-    simgrid::kernel::routing::NetCard::onCreation(this);
-  }
+  NetCard(std::string name, NetCard::Type componentType, NetZoneImpl* netzone_p);
   ~NetCard() = default;
 
   // Our rank in the vertices_ array of our containing AS.

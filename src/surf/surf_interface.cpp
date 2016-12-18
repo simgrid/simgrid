@@ -289,9 +289,6 @@ void surf_init(int *argc, char **argv)
   XBT_DEBUG("Create all Libs");
   USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(nullptr);
 
-  netcards_dict = xbt_dict_new_homogeneous([](void* p) {
-    delete static_cast<simgrid::kernel::routing::NetCard*>(p);
-  });
   storage_lib = xbt_lib_new();
   storage_type_lib = xbt_lib_new();
   file_lib = xbt_lib_new();
@@ -324,7 +321,6 @@ void surf_exit()
   xbt_dynar_free(&surf_path);
 
   sg_host_exit();
-  xbt_dict_free(&netcards_dict);
   xbt_lib_free(&storage_lib);
   sg_link_exit();
   xbt_lib_free(&storage_type_lib);

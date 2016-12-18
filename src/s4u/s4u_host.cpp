@@ -52,8 +52,9 @@ Host::~Host()
   xbt_assert(currentlyDestroying_, "Please call h->destroy() instead of manually deleting it.");
 
   delete pimpl_;
+  if (pimpl_netcard != nullptr) // not removed yet by a children class
+    xbt_dict_remove(netcards_dict, name_.c_str());
   delete pimpl_cpu;
-  delete pimpl_netcard;
   delete mounts;
 }
 

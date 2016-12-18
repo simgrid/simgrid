@@ -120,7 +120,6 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
 
   simgrid::kernel::routing::NetCard* netcard =
     new simgrid::kernel::routing::NetCard(router->id, simgrid::kernel::routing::NetCard::Type::Router, current_routing);
-  xbt_dict_set(netcards_dict, router->id, netcard, nullptr);
   XBT_DEBUG("Router '%s' has the id %d", router->id, netcard->id());
 
   if (router->coord && strcmp(router->coord, ""))
@@ -128,7 +127,7 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
 
   auto cluster = dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing);
   if(cluster != nullptr)
-    cluster->router_ = static_cast<simgrid::kernel::routing::NetCard*>(xbt_dict_get_or_null(netcards_dict, router->id));
+    cluster->router_ = simgrid::s4u::Engine::instance()->netcardByNameOrNull(router->id);
 
   if (TRACE_is_enabled() && TRACE_needs_platform())
     sg_instr_new_router(router);

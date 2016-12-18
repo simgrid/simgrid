@@ -15,9 +15,7 @@ int main(int argc, char **argv)
   SD_create_environment(argv[1]);
 
   xbt_dynar_t hosts = sg_hosts_as_dynar();
-  int size          = sg_host_count() + xbt_dict_length(netcards_dict);
-
-  printf("Host number: %zu, link number: %d, elmts number: %d\n", sg_host_count(), sg_link_count(), size);
+  printf("Host count: %zu, link number: %d\n", sg_host_count(), sg_link_count());
 
   int it;
   sg_host_t host;
@@ -28,6 +26,7 @@ int main(int argc, char **argv)
   }
   xbt_dynar_free(&hosts);
 
+  printf("NetCards count: %d\n", xbt_dict_length(netcards_dict));
   xbt_lib_cursor_t cursor = nullptr;
   char* key;
   void *ignored;

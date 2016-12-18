@@ -16,6 +16,15 @@ namespace kernel {
 namespace routing {
 
 simgrid::xbt::signal<void(NetCard*)> NetCard::onCreation;
+
+NetCard::NetCard(std::string name, NetCard::Type componentType, NetZoneImpl* netzone_p)
+    : name_(name), componentType_(componentType), netzone_(netzone_p)
+{
+  if (netzone_p != nullptr)
+    id_ = netzone_p->addComponent(this);
+  xbt_dict_set(netcards_dict, name.c_str(), static_cast<void*>(this), nullptr);
+  simgrid::kernel::routing::NetCard::onCreation(this);
+}
 }
 }
 } // namespace simgrid::kernel::routing
@@ -26,6 +35,5 @@ simgrid::xbt::signal<void(NetCard*)> NetCard::onCreation;
  */
 simgrid::kernel::routing::NetCard* sg_netcard_by_name_or_null(const char* name)
 {
-  sg_host_t host = sg_host_by_name(name);
-  return (host != nullptr) ? host->pimpl_netcard : simgrid::s4u::Engine::instance()->netcardByNameOrNull(name);
+  return simgrid::s4u::Engine::instance()->netcardByNameOrNull(name);
 }

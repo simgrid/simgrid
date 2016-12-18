@@ -5,4 +5,3 @@
 
 #include "xbt/dict.h"
 
-xbt_dict_t netcards_dict;

@@ -32,13 +32,14 @@ NetZoneImpl::NetZoneImpl(NetZone* father, const char* name) : NetZone(father, na
              "Refusing to create a second NetZone called '%s'.", name);
 
   netcard_ = new NetCard(name, NetCard::Type::NetZone, static_cast<NetZoneImpl*>(father));
-  xbt_dict_set(netcards_dict, name, static_cast<void*>(netcard_), nullptr);
   XBT_DEBUG("NetZone '%s' created with the id '%d'", name, netcard_->id());
 }
 NetZoneImpl::~NetZoneImpl()
 {
   for (auto& kv : bypassRoutes_)
     delete kv.second;
+
+  xbt_dict_remove(netcards_dict, name_);
 }
 
 simgrid::s4u::Host* NetZoneImpl::createHost(const char* name, std::vector<double>* speedPerPstate, int coreAmount)
