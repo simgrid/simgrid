@@ -64,14 +64,11 @@ void VivaldiZone::setPeerLink(NetCard* netcard, double bw_in, double bw_out, dou
 
   new simgrid::kernel::routing::vivaldi::Coords(netcard, coord);
 
-  char* link_up   = bprintf("link_%s_UP", netcard->cname());
-  char* link_down = bprintf("link_%s_DOWN", netcard->cname());
-  Link* linkUp    = surf_network_model->createLink(link_up, bw_out, latency, SURF_LINK_SHARED);
-  Link* linkDown  = surf_network_model->createLink(link_down, bw_in, latency, SURF_LINK_SHARED);
+  std::string link_up   = "link_" + netcard->name() + "_UP";
+  std::string link_down = "link_" + netcard->name() + "_DOWN";
+  Link* linkUp          = surf_network_model->createLink(link_up.c_str(), bw_out, latency, SURF_LINK_SHARED);
+  Link* linkDown        = surf_network_model->createLink(link_down.c_str(), bw_in, latency, SURF_LINK_SHARED);
   privateLinks_.insert({netcard->id(), {linkUp, linkDown}});
-
-  free(link_up);
-  free(link_down);
 }
 
 void VivaldiZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
@@ -79,12 +76,10 @@ void VivaldiZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg
   XBT_DEBUG("vivaldi getLocalRoute from '%s'[%d] '%s'[%d]", src->cname(), src->id(), dst->cname(), dst->id());
 
   if (src->isNetZone()) {
-    char* srcName = bprintf("router_%s", src->cname());
-    char* dstName = bprintf("router_%s", dst->cname());
-    route->gw_src = simgrid::s4u::Engine::instance()->netcardByNameOrNull(srcName);
-    route->gw_dst = simgrid::s4u::Engine::instance()->netcardByNameOrNull(dstName);
-    xbt_free(srcName);
-    xbt_free(dstName);
+    std::string srcName = "router_" + src->name();
+    std::string dstName = "router_" + dst->name();
+    route->gw_src       = simgrid::s4u::Engine::instance()->netcardByNameOrNull(srcName.c_str());
+    route->gw_dst       = simgrid::s4u::Engine::instance()->netcardByNameOrNull(dstName.c_str());
   }
 
   /* Retrieve the private links */
