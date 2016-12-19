@@ -33,7 +33,7 @@
 #cmakedefine01 HAVE_NANOSLEEP
 
 /* The usable context factories */
-#cmakedefine01 HAVE_BOOST_CONTEXTS
+#define HAVE_BOOST_CONTEXTS @HAVE_BOOST_CONTEXTS@
 #cmakedefine01 HAVE_RAW_CONTEXTS
 #cmakedefine01 HAVE_THREAD_CONTEXTS
 #cmakedefine01 HAVE_UCONTEXT_CONTEXTS
@@ -56,7 +56,7 @@
 
 /* Variable for SysV, raw and Boost contexts */
 /* Does the stack growth upward, or downward? */
-#cmakedefine01 PTH_STACKGROWTH
+#define PTH_STACKGROWTH @PTH_STACKGROWTH@
 
 /* MC variables */
 /* getdtablesize: get descriptor table size */
