@@ -154,9 +154,28 @@ void VirtualMachineImpl::setState(e_surf_vm_state_t state)
 {
   vmState_ = state;
 }
-void VirtualMachineImpl::suspend()
+void VirtualMachineImpl::suspend(smx_actor_t issuer)
 {
+  if (isMigrating)
+    THROWF(vm_error, 0, "Cannot suspend VM '%s': it is migrating", piface_->cname());
+  if (getState() != SURF_VM_STATE_RUNNING)
+    THROWF(vm_error, 0, "Cannot suspend VM %s: it is not running.", piface_->cname());
+  if (issuer->host == piface_)
+    THROWF(vm_error, 0, "Actor %s cannot suspend the VM %s in which it runs", issuer->cname(), piface_->cname());
+
+  xbt_swag_t process_list = piface_->extension<simgrid::simix::Host>()->process_list;
+  XBT_DEBUG("suspend VM(%s), where %d processes exist", piface_->cname(), xbt_swag_size(process_list));
+
   action_->suspend();
+
+  smx_actor_t smx_process, smx_process_safe;
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, process_list) {
+    XBT_DEBUG("suspend %s", smx_process->name.c_str());
+    SIMIX_process_suspend(smx_process, issuer);
+  }
+
+  XBT_DEBUG("suspend all processes on the VM done done");
+
   vmState_ = SURF_VM_STATE_SUSPENDED;
 }
 
@@ -195,7 +214,6 @@ void VirtualMachineImpl::save(smx_actor_t issuer)
     THROWF(vm_error, 0, "Cannot save VM %s: it is not running.", piface_->cname());
 
   xbt_swag_t process_list = piface_->extension<simgrid::simix::Host>()->process_list;
-
   XBT_DEBUG("Save VM %s, where %d processes exist", piface_->cname(), xbt_swag_size(process_list));
 
   vmState_ = SURF_VM_STATE_SAVING;

@@ -14,13 +14,6 @@
  */
 
 #include "src/simix/popping_private.h"
-static inline sg_host_t simcall_vm_suspend__get__ind_vm(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]);
-}
-static inline void simcall_vm_suspend__set__ind_vm(smx_simcall_t simcall, sg_host_t arg) {
-    simgrid::simix::marshal<sg_host_t>(simcall->args[0], arg);
-}
-
 static inline sg_host_t simcall_vm_shutdown__get__ind_vm(smx_simcall_t simcall) {
   return simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]);
 }
@@ -1118,7 +1111,6 @@ static inline void simcall_run_blocking__set__code(smx_simcall_t simcall, std::f
 
 /* The prototype of all simcall handlers, automatically generated for you */
 
-XBT_PRIVATE void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, sg_host_t ind_vm);
 XBT_PRIVATE void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, sg_host_t ind_vm);
 XBT_PRIVATE void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_actor_t process);
 XBT_PRIVATE void simcall_HANDLER_process_killall(smx_simcall_t simcall, int reset_pid);

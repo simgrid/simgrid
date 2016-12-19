@@ -711,7 +711,10 @@ static int migration_tx_fun(int argc, char *argv[])
 
   /* Stage3: stop the VM and copy the rest of states. */
   XBT_DEBUG("mig-stage3: remaining_size %f", remaining_size);
-  simcall_vm_suspend(ms->vm);
+  simgrid::vm::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(ms->vm)->pimpl_vm_;
+  pimpl->setState(SURF_VM_STATE_RUNNING); // FIXME: this bypass of the checks in suspend() is not nice
+  pimpl->isMigrating = false;             // FIXME: this bypass of the checks in suspend() is not nice
+  pimpl->suspend(SIMIX_process_self());
   stop_dirty_page_tracking(ms->vm);
 
   try {
@@ -834,10 +837,10 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
  */
 void MSG_vm_suspend(msg_vm_t vm)
 {
-  if (MSG_vm_is_migrating(vm))
-    THROWF(vm_error, 0, "Cannot suspend VM '%s', which is migrating", vm->cname());
-
-  simcall_vm_suspend(vm);
+  smx_actor_t issuer = SIMIX_process_self();
+  simgrid::simix::kernelImmediate([vm,issuer]() {
+    static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->suspend(issuer);
+  });
 
   XBT_DEBUG("vm_suspend done");
 

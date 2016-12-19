@@ -63,7 +63,7 @@ public:
   ~VirtualMachineImpl();
 
   /** @brief Suspend the VM */
-  virtual void suspend();
+  virtual void suspend(smx_actor_t issuer);
 
   /** @brief Resume the VM */
   virtual void resume();
@@ -71,7 +71,7 @@ public:
   /** @brief Save the VM */
   virtual void save(smx_actor_t issuer);
 
-  /** @brief Restore the VM (Not yet implemented) */
+  /** @brief Restore the VM */
   virtual void restore();
 
   /** @brief Migrate the VM to the destination host */
