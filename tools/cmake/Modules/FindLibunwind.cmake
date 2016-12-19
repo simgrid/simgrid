@@ -1,4 +1,4 @@
-if(PROCESSOR_x86_64)
+if(SIMGRID_PROCESSOR_x86_64)
   find_library(PATH_LIBUNWIND_LIB
     NAMES unwind-x86_64
     HINTS

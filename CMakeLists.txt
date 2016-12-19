@@ -179,12 +179,12 @@ include(CMakeDetermineSystem)
 IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86|AMD64|amd64")
   IF(CMAKE_SIZEOF_VOID_P EQUAL 4) # 32 bits
     message(STATUS "System processor: i686 (${CMAKE_SYSTEM_PROCESSOR}, 32 bits)")
-    set(PROCESSOR_i686 1)
-    set(PROCESSOR_x86_64 0)
+    set(SIMGRID_PROCESSOR_i686 1)
+    set(SIMGRID_PROCESSOR_x86_64 0)
   ELSE()
     message(STATUS "System processor: x86_64 (${CMAKE_SYSTEM_PROCESSOR}, 64 bits)")
-    set(PROCESSOR_i686 0)
-    set(PROCESSOR_x86_64 1)
+    set(SIMGRID_PROCESSOR_i686 0)
+    set(SIMGRID_PROCESSOR_x86_64 1)
   ENDIF()
   if (WIN32)
     message(STATUS "Disable fast raw contexts on Windows.")
@@ -192,8 +192,8 @@ IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86|AMD64|amd64")
     set(HAVE_RAW_CONTEXTS 1)
   endif()
 ELSE()
-  set(PROCESSOR_i686 0)
-  set(PROCESSOR_x86_64 0)
+  set(SIMGRID_PROCESSOR_i686 0)
+  set(SIMGRID_PROCESSOR_x86_64 0)
 ENDIF()
 
 include(CheckFunctionExists)
@@ -381,7 +381,7 @@ if(HAVE_LIBUNWIND)
     set(SIMGRID_DEP "${SIMGRID_DEP} -lunwind-ptrace")
     # This supposes that the host machine is either an AMD or a X86.
     # This is deeply wrong, and should be fixed by manually loading -lunwind-PLAT (FIXME)
-    if(PROCESSOR_x86_64)
+    if(SIMGRID_PROCESSOR_x86_64)
       SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind-x86_64")
     else()
       SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind-x86")
@@ -664,22 +664,6 @@ endif()
 
 ### Generate the required headers and scripts
 #############################################
-
-# gcc makes no difference between "#define HAVE_FOOBAR" and "#define HAVE_FOOBAR 0" by default, 
-# but this too error prone. If you forget to include the config.h, you get weird segfaults.
-# If you include it everywhere, everything gets recompiled everytime.
-# So we include only where needed, and compile with -Wundef to notice the missing includes.
-# But cmake sometimes defines to the empty definition (#define HAVE_VALGRIND_H).
-# So we have to make sure that everything got a decent value before generating the files.
-foreach(var HAVE_BACKTRACE HAVE_EXECINFO_H HAVE_FUTEX_H HAVE_GETDTABLESIZE HAVE_GETTIMEOFDAY HAVE_MMAP HAVE_NANOSLEEP HAVE_POPEN
-            HAVE_POSIX_GETTIME HAVE_PROCESS_VM_READV HAVE_SIGNAL_H HAVE_SYS_PARAM_H HAVE_SYS_SYSCTL_H HAVE_SYSCONF 
-            HAVE_UCONTEXT_H HAVE_UNISTD_H HAVE_VALGRIND_H HAVE_VASPRINTF HAVE_MREMAP HAVE_DLFUNC)
-  if(${var})
-    set(${var} 1)
-  else()
-    set(${var} 0)
-  endif()
-endforeach()
 
 # Avoid triggering a (full) rebuild by touching the files if they did not really change
 configure_file("${CMAKE_HOME_DIRECTORY}/tools/cmake/src/internal_config.h.in" "${CMAKE_BINARY_DIR}/src/internal_config.h.generated"    @ONLY IMMEDIATE)
