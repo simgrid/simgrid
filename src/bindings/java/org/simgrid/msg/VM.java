@@ -71,15 +71,6 @@ public class VM extends Host {
 	/** Returns whether the given VM is currently suspended */	
 	public native int isSuspended();
 
-	/** Returns whether the given VM is currently saving */
-	public native int isSaving();
-
-	/** Returns whether the given VM is currently saved */
-	public native int isSaved();
-
-	/** Returns whether the given VM is currently restoring its state */
-	public native boolean isRestoring();
-
 	/**
 	 * Natively implemented method create the VM.
 	 * @param ramSize size of the RAM that should be allocated (in MB)
@@ -140,25 +131,6 @@ public class VM extends Host {
 	 * of VM resume to you.
 	 */
 	public native void resume();
-
-	/** Immediately suspend the execution of all processes within the given VM 
-	 *  and save its state on the persistent HDD
-	 *  Not yet implemented (for the moment it behaves like suspend)
-	 *  No suspension cost occurs. If you want to simulate this too, you want to
-	 *  use a \ref File.write() before or after, depending on the exact semantic
-	 *  of VM suspend to you.
-	 */	
-	public native void save();
-
-	/** Immediately resumes the execution of all processes previously saved 
-	 * within the given VM
-	 *  Not yet implemented (for the moment it behaves like resume)
-	 *
-	 * No resume cost occurs. If you want to simulate this too, you want to
-	 * use a \ref File.read() before or after, depending on the exact semantic
-	 * of VM resume to you.
-	 */
-	public native void restore();
 
 	/**  Class initializer (for JNI), don't do it yourself */
 	public static native void nativeInit();

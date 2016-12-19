@@ -89,30 +89,6 @@ int MSG_vm_is_suspended(msg_vm_t vm)
   return __MSG_vm_is_state(vm, SURF_VM_STATE_SUSPENDED);
 }
 
-/** @brief Returns whether the given VM is being saved (FIXME: live saving or not?).
- *  @ingroup msg_VMs
- */
-int MSG_vm_is_saving(msg_vm_t vm)
-{
-  return __MSG_vm_is_state(vm, SURF_VM_STATE_SAVING);
-}
-
-/** @brief Returns whether the given VM has been saved, not running.
- *  @ingroup msg_VMs
- */
-int MSG_vm_is_saved(msg_vm_t vm)
-{
-  return __MSG_vm_is_state(vm, SURF_VM_STATE_SAVED);
-}
-
-/** @brief Returns whether the given VM is being restored, not running.
- *  @ingroup msg_VMs
- */
-int MSG_vm_is_restoring(msg_vm_t vm)
-{
-  return __MSG_vm_is_state(vm, SURF_VM_STATE_RESTORING);
-}
-
 /* **** ******** MSG vm actions ********* **** */
 /** @brief Create a new VM with specified parameters.
  *  @ingroup msg_VMs*
@@ -858,50 +834,6 @@ void MSG_vm_suspend(msg_vm_t vm)
 void MSG_vm_resume(msg_vm_t vm)
 {
   static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->resume();
-
-  if (TRACE_msg_vm_is_enabled()) {
-    container_t vm_container = PJ_container_get(vm->cname());
-    type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
-    new_pajePopState(MSG_get_clock(), vm_container, type);
-  }
-}
-
-
-/** @brief Immediately save the execution of all processes within the given VM.
- *  @ingroup msg_VMs
- *
- * This function stops the execution of the VM. All the processes on this VM
- * will pause. The state of the VM is preserved. We can later resume it again.
- *
- * FIXME: No suspension cost occurs. If you want to simulate this too, you want to use a \ref MSG_file_write() before
- * or after, depending on the exact semantic of VM save to you.
- */
-void MSG_vm_save(msg_vm_t vm)
-{
-  smx_actor_t issuer=SIMIX_process_self();
-  simgrid::simix::kernelImmediate([vm,issuer]() {
-    static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->save(issuer);
-  });
-
-  if (TRACE_msg_vm_is_enabled()) {
-    container_t vm_container = PJ_container_get(vm->cname());
-    type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
-    val_t value              = PJ_value_get_or_new("save", "0 1 0", type); // save is green
-    new_pajePushState(MSG_get_clock(), vm_container, type, value);
-  }
-}
-
-/** @brief Restore the execution of the VM. All processes on the VM run again.
- *  @ingroup msg_VMs
- *
- * FIXME: No restore cost occurs. If you want to simulate this too, you want to use a \ref MSG_file_read() before or
- * after, depending on the exact semantic of VM restore to you.
- */
-void MSG_vm_restore(msg_vm_t vm)
-{
-  simgrid::simix::kernelImmediate([vm]() {
-    static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->restore();
-  });
 
   if (TRACE_msg_vm_is_enabled()) {
     container_t vm_container = PJ_container_get(vm->cname());

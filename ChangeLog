@@ -42,8 +42,9 @@ SimGrid (3.14) UNRELEASED; urgency=low
    - MSG_storage_set_property_value()
  * VM properties. Since msg_vm_t are msg_host_t, just use
    MSG_host_get_property_value() and friends
- * MSG_vm_create had ignored parameters, that are now dropped:
-   core_nb, disk_path and disk_size.
+ * VM I/O related things:
+   - Ignored parameter of vm_create: core_nb, disk_path and disk_size.
+   - Unimplemented save/restore methods
  * MSG_as_router_get_property_value() was redundent with
    MSG_environment_as_get_property_value(). 
    - Removed MSG_as_router_*propert*() functions

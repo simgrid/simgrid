@@ -68,12 +68,6 @@ public:
   /** @brief Resume the VM */
   virtual void resume();
 
-  /** @brief Save (suspend+store on disk) the VM */
-  virtual void save(smx_actor_t issuer);
-
-  /** @brief Restore (read from disk+resume) the VM */
-  virtual void restore();
-
   /** @brief Shutdown the VM */
   virtual void shutdown(smx_actor_t issuer);
 

@@ -469,11 +469,7 @@ XBT_PUBLIC(int) MSG_barrier_wait(msg_bar_t bar);
 XBT_PUBLIC(int) MSG_vm_is_created(msg_vm_t vm);
 XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t vm);
 XBT_PUBLIC(int) MSG_vm_is_migrating(msg_vm_t vm);
-
 XBT_PUBLIC(int) MSG_vm_is_suspended(msg_vm_t vm);
-XBT_PUBLIC(int) MSG_vm_is_saving(msg_vm_t vm);
-XBT_PUBLIC(int) MSG_vm_is_saved(msg_vm_t vm);
-XBT_PUBLIC(int) MSG_vm_is_restoring(msg_vm_t vm);
 
 #define MSG_vm_get_name(vm) MSG_host_get_name(vm)
 
@@ -497,10 +493,6 @@ XBT_PUBLIC(void) MSG_vm_migrate(msg_vm_t vm, msg_host_t destination);
 /* Suspend the execution of the VM, but keep its state on memory. */
 XBT_PUBLIC(void) MSG_vm_suspend(msg_vm_t vm);
 XBT_PUBLIC(void) MSG_vm_resume(msg_vm_t vm);
-
-/* Save the VM state to a disk. */
-XBT_PUBLIC(void) MSG_vm_save(msg_vm_t vm);
-XBT_PUBLIC(void) MSG_vm_restore(msg_vm_t vm);
 
 XBT_PUBLIC(msg_host_t) MSG_vm_get_pm(msg_vm_t vm);
 XBT_PUBLIC(void) MSG_vm_set_bound(msg_vm_t vm, double bound);

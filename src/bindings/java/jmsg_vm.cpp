@@ -63,24 +63,6 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isSuspended(JNIEnv * env, jobject
   return (jint) MSG_vm_is_suspended(vm);
 }
 
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isSaving(JNIEnv * env, jobject jvm)
-{
-  msg_vm_t vm = jvm_get_native(env,jvm);
-  return (jint) MSG_vm_is_saving(vm);
-}
-
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isSaved(JNIEnv * env, jobject jvm)
-{
-  msg_vm_t vm = jvm_get_native(env,jvm);
-  return (jint) MSG_vm_is_saved(vm);
-}
-
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isRestoring(JNIEnv * env, jobject jvm)
-{
-  msg_vm_t vm = jvm_get_native(env,jvm);
-  return (jint) MSG_vm_is_restoring(vm);
-}
-
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_setBound(JNIEnv *env, jobject jvm, jdouble bound)
 {
   msg_vm_t vm = jvm_get_native(env,jvm);
@@ -94,11 +76,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_create(JNIEnv* env, jobject jvm, 
 
   const char* name = env->GetStringUTFChars(jname, 0);
   name = xbt_strdup(name);
-
-  // TODO disk concerns are not taken into account yet
-  // const char *diskpath;
-  // disk_path = (*env)->GetStringUTFChars(env, jdiskpath, 0);
-  // disk_path = xbt_strdup(disk_path);
 
   msg_vm_t vm = MSG_vm_create(host, name, (int)jramsize, (int)jmig_netspeed, (int)jdp_intensity);
 
@@ -148,14 +125,3 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_resume(JNIEnv *env, jobject jvm)
   MSG_vm_resume(vm);
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_save(JNIEnv *env, jobject jvm)
-{
-  msg_vm_t vm = jvm_get_native(env,jvm);
-  MSG_vm_save(vm);
-}
-
-JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_restore(JNIEnv *env, jobject jvm)
-{
-  msg_vm_t vm = jvm_get_native(env,jvm);
-  MSG_vm_restore(vm);
-}
