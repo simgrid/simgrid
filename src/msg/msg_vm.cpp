@@ -324,7 +324,7 @@ static int migration_rx_fun(int argc, char *argv[])
     xbt_assert(vm->pimpl_vm_->getState() == SURF_VM_STATE_SUSPENDED);
 
     /* Update the vm location and resume it */
-    vm->pimpl_vm_->migrate(dst_pm);
+    vm->pimpl_vm_->setPm(dst_pm);
     vm->pimpl_vm_->resume();
   });
 

@@ -68,14 +68,14 @@ public:
   /** @brief Resume the VM */
   virtual void resume();
 
-  /** @brief Save the VM */
+  /** @brief Save (suspend+store on disk) the VM */
   virtual void save(smx_actor_t issuer);
 
-  /** @brief Restore the VM */
+  /** @brief Restore (read from disk+resume) the VM */
   virtual void restore();
 
-  /** @brief Migrate the VM to the destination host */
-  virtual void migrate(s4u::Host* dest);
+  /** @brief Change the physical host on which the given VM is running */
+  virtual void setPm(s4u::Host* dest);
 
   /** @brief Get the physical machine hosting the VM */
   s4u::Host* getPm();

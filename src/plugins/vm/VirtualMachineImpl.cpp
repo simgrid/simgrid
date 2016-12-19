@@ -252,21 +252,24 @@ s4u::Host* VirtualMachineImpl::getPm()
   return hostPM_;
 }
 
-/* Update the physical host of the given VM */
-void VirtualMachineImpl::migrate(s4u::Host* host_dest)
+/** @brief Change the physical host on which the given VM is running
+ *
+ * This is an instantaneous migration.
+ */
+void VirtualMachineImpl::setPm(s4u::Host* destination)
 {
   const char* vm_name     = piface_->cname();
   const char* pm_name_src = hostPM_->cname();
-  const char* pm_name_dst = host_dest->cname();
+  const char* pm_name_dst = destination->cname();
 
   /* update net_elm with that of the destination physical host */
-  piface_->pimpl_netcard = host_dest->pimpl_netcard;
+  piface_->pimpl_netcard = destination->pimpl_netcard;
 
-  hostPM_ = host_dest;
+  hostPM_ = destination;
 
   /* Update vcpu's action for the new pm */
   /* create a cpu action bound to the pm model at the destination. */
-  surf::CpuAction* new_cpu_action = static_cast<surf::CpuAction*>(host_dest->pimpl_cpu->execution_start(0));
+  surf::CpuAction* new_cpu_action = static_cast<surf::CpuAction*>(destination->pimpl_cpu->execution_start(0));
 
   surf::Action::State state = action_->getState();
   if (state != surf::Action::State::done)
