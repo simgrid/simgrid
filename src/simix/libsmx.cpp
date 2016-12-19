@@ -162,17 +162,6 @@ e_smx_state_t simcall_execution_wait(smx_activity_t execution)
 }
 
 /**
- * \ingroup simix_vm_management
- * \brief Shutdown the given VM
- *
- * \param vm VM
- */
-void simcall_vm_shutdown(sg_host_t vm)
-{
-  simcall_BODY_vm_shutdown(vm);
-}
-
-/**
  * \ingroup simix_process_management
  * \brief Kills a SIMIX process.
  *

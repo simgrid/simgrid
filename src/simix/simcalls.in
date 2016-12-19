@@ -36,8 +36,6 @@
 # ./include/simgrid/simix.h (otherwise you will get a warning at the
 # compilation time)
 
-void vm_shutdown(sg_host_t ind_vm);
-
 void process_kill(smx_actor_t process);
 void process_killall(int reset_pid);
 void process_cleanup(smx_actor_t process) [[nohandler]];

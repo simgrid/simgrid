@@ -24,7 +24,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);
 /** @brief Simcalls' names (generated from src/simix/simcalls.in) */
 const char* simcall_names[] = {
     "SIMCALL_NONE",
-    "SIMCALL_VM_SHUTDOWN",
     "SIMCALL_PROCESS_KILL",
     "SIMCALL_PROCESS_KILLALL",
     "SIMCALL_PROCESS_CLEANUP",
@@ -100,11 +99,6 @@ void SIMIX_simcall_handle(smx_simcall_t simcall, int value) {
   if (simcall->issuer->context->iwannadie && simcall->call != SIMCALL_PROCESS_CLEANUP)
     return;
   switch (simcall->call) {
-case SIMCALL_VM_SHUTDOWN:
-      simcall_HANDLER_vm_shutdown(simcall, simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
-      SIMIX_simcall_answer(simcall);
-      break;
-
 case SIMCALL_PROCESS_KILL:
       simcall_HANDLER_process_kill(simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]));
       SIMIX_simcall_answer(simcall);

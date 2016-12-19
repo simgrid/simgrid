@@ -228,7 +228,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(simix_process);
   XBT_LOG_CONNECT(simix_popping);
   XBT_LOG_CONNECT(simix_synchro);
-  XBT_LOG_CONNECT(simix_vm);
 
   /* smpi */
   /* SMPI categories are connected in smpi_global.c */

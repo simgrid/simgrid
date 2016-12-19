@@ -74,6 +74,9 @@ public:
   /** @brief Restore (read from disk+resume) the VM */
   virtual void restore();
 
+  /** @brief Shutdown the VM */
+  virtual void shutdown(smx_actor_t issuer);
+
   /** @brief Change the physical host on which the given VM is running */
   virtual void setPm(s4u::Host* dest);
 

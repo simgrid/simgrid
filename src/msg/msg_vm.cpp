@@ -237,15 +237,19 @@ void MSG_vm_start(msg_vm_t vm)
   }
 }
 
-/** @brief Immediately kills all processes within the given VM. Any memory that they allocated will be leaked.
+/** @brief Immediately kills all processes within the given VM.
  *  @ingroup msg_VMs
  *
- * FIXME: No extra delay occurs. If you want to simulate this too, you want to use a #MSG_process_sleep() or something.
- *        I'm not quite sure.
+ * Any memory that they allocated will be leaked, unless you used #MSG_process_on_exit().
+ *
+ * No extra delay occurs. If you want to simulate this too, you want to use a #MSG_process_sleep().
  */
 void MSG_vm_shutdown(msg_vm_t vm)
 {
-  simcall_vm_shutdown(vm);
+  smx_actor_t issuer=SIMIX_process_self();
+  simgrid::simix::kernelImmediate([vm,issuer]() {
+    static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->shutdown(issuer);
+  });
 
   // Make sure that the processes in the VM are killed in this scheduling round before processing
   // (eg with the VM destroy)

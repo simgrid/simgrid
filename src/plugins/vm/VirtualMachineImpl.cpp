@@ -246,6 +246,32 @@ void VirtualMachineImpl::restore()
   }
 }
 
+/** @brief Power off a VM.
+ *
+ * All hosted processes will be killed, but the VM state is preserved on memory.
+ * It can later be restarted.
+ *
+ * @param issuer the actor requesting the shutdown
+ */
+void VirtualMachineImpl::shutdown(smx_actor_t issuer)
+{
+  if (getState() != SURF_VM_STATE_RUNNING)
+    THROWF(vm_error, 0, "Cannot shutdown VM %s: it is not running", piface_->cname());
+
+  xbt_swag_t process_list = piface_->extension<simgrid::simix::Host>()->process_list;
+  XBT_DEBUG("shutdown VM %s, that contains %d processes", piface_->cname(), xbt_swag_size(process_list));
+
+  smx_actor_t smx_process, smx_process_safe;
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, process_list) {
+    XBT_DEBUG("kill %s", smx_process->cname());
+    SIMIX_process_kill(smx_process, issuer);
+  }
+
+  setState(SURF_VM_STATE_CREATED);
+
+  /* FIXME: we may have to do something at the surf layer, e.g., vcpu action */
+}
+
 /** @brief returns the physical machine on which the VM is running **/
 s4u::Host* VirtualMachineImpl::getPm()
 {

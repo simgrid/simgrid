@@ -257,9 +257,6 @@ XBT_PUBLIC(void) simcall_execution_set_priority(smx_activity_t execution, double
 XBT_PUBLIC(void) simcall_execution_set_bound(smx_activity_t execution, double bound);
 XBT_PUBLIC(e_smx_state_t) simcall_execution_wait(smx_activity_t execution);
 
-/******************************* VM simcalls ********************************/
-XBT_PUBLIC(void) simcall_vm_shutdown(sg_host_t vm);
-
 /**************************** Process simcalls ********************************/
 /* Constructor and Destructor */
 XBT_PUBLIC(smx_actor_t) simcall_process_create(const char *name,

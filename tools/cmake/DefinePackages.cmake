@@ -363,7 +363,6 @@ set(SIMIX_SRC
   src/simix/smx_network.cpp
   src/simix/ActorImpl.cpp
   src/simix/smx_synchro.cpp
-  src/simix/smx_vm.cpp
   src/simix/popping.cpp
   src/kernel/activity/ActivityImpl.cpp
   src/kernel/activity/SynchroComm.cpp
