@@ -323,11 +323,9 @@ static int migration_rx_fun(int argc, char *argv[])
     /* precopy migration makes the VM temporally paused */
     xbt_assert(vm->pimpl_vm_->getState() == SURF_VM_STATE_SUSPENDED);
 
-    /* jump to vm_ws_xigrate(). this will update the vm location. */
+    /* Update the vm location and resume it */
     vm->pimpl_vm_->migrate(dst_pm);
-
-    /* Resume the VM */
-    SIMIX_vm_resume(vm);
+    vm->pimpl_vm_->resume();
   });
 
   {
@@ -723,7 +721,7 @@ static int migration_tx_fun(int argc, char *argv[])
   catch(xbt_ex& e) {
     //hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data code)
     // Stop the dirty page tracking an return (there is no memory space to release)
-    simcall_vm_resume(ms->vm);
+    static_cast<simgrid::s4u::VirtualMachine*>(ms->vm)->pimpl_vm_->resume();
     return 0;
   }
 
@@ -858,7 +856,7 @@ void MSG_vm_suspend(msg_vm_t vm)
  */
 void MSG_vm_resume(msg_vm_t vm)
 {
-  simcall_vm_resume(vm);
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->resume();
 
   if (TRACE_msg_vm_is_enabled()) {
     container_t vm_container = PJ_container_get(vm->cname());

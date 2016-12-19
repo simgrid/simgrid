@@ -47,30 +47,6 @@ void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, sg_host_t vm)
   XBT_DEBUG("simcall_HANDLER_vm_suspend done");
 }
 
-
-/**
- * @brief Function to resume a SIMIX VM host. This function restart the execution of the
- * VM. All the processes on this VM will run again.
- *
- * @param vm the vm host to resume (a sg_host_t)
- */
-void SIMIX_vm_resume(sg_host_t vm)
-{
-  if (static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getState() != SURF_VM_STATE_SUSPENDED)
-    THROWF(vm_error, 0, "VM(%s) was not suspended", vm->cname());
-
-  XBT_DEBUG("resume VM(%s), where %d processes exist", vm->cname(), xbt_swag_size(sg_host_simix(vm)->process_list));
-
-  /* jump to vm_ws_resume() */
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->resume();
-
-  smx_actor_t smx_process, smx_process_safe;
-  xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(vm)->process_list) {
-    XBT_DEBUG("resume %s", smx_process->name.c_str());
-    SIMIX_process_resume(smx_process);
-  }
-}
-
 /**
  * @brief Function to shutdown a SIMIX VM host. This function powers off the
  * VM. All the processes on this VM will be killed. But, the state of the VM is

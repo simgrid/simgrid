@@ -174,17 +174,6 @@ void simcall_vm_suspend(sg_host_t vm)
 
 /**
  * \ingroup simix_vm_management
- * \brief Resume the given VM
- *
- * \param vm VM
- */
-void simcall_vm_resume(sg_host_t vm)
-{
-  simcall_BODY_vm_resume(vm);
-}
-
-/**
- * \ingroup simix_vm_management
  * \brief Shutdown the given VM
  *
  * \param vm VM

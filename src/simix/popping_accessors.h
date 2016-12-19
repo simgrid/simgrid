@@ -21,13 +21,6 @@ static inline void simcall_vm_suspend__set__ind_vm(smx_simcall_t simcall, sg_hos
     simgrid::simix::marshal<sg_host_t>(simcall->args[0], arg);
 }
 
-static inline sg_host_t simcall_vm_resume__get__ind_vm(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]);
-}
-static inline void simcall_vm_resume__set__ind_vm(smx_simcall_t simcall, sg_host_t arg) {
-    simgrid::simix::marshal<sg_host_t>(simcall->args[0], arg);
-}
-
 static inline sg_host_t simcall_vm_shutdown__get__ind_vm(smx_simcall_t simcall) {
   return simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]);
 }

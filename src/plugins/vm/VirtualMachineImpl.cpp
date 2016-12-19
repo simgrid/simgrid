@@ -162,7 +162,20 @@ void VirtualMachineImpl::suspend()
 
 void VirtualMachineImpl::resume()
 {
+  if (getState() != SURF_VM_STATE_SUSPENDED)
+    THROWF(vm_error, 0, "Cannot resume VM %s: it was not suspended", piface_->cname());
+
+  xbt_swag_t process_list = piface_->extension<simgrid::simix::Host>()->process_list;
+  XBT_DEBUG("Resume VM %s, containing %d processes.", piface_->cname(), xbt_swag_size(process_list));
+
   action_->resume();
+
+  smx_actor_t smx_process, smx_process_safe;
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, process_list) {
+    XBT_DEBUG("resume %s", smx_process->cname());
+    SIMIX_process_resume(smx_process);
+  }
+
   vmState_ = SURF_VM_STATE_RUNNING;
 }
 
@@ -171,7 +184,7 @@ void VirtualMachineImpl::resume()
  * This function is the same as vm_suspend, but the state of the VM is saved to the disk, and not preserved in memory.
  * We can later restore it again.
  *
- * @param vm the vm host to save (a sg_host_t)
+ * @param issuer the process requesting this operation
  */
 void VirtualMachineImpl::save(smx_actor_t issuer)
 {
