@@ -6,11 +6,12 @@ __   _____ _ __ ___(_) ___  _ __   |___ / / | || |
 
 The Chrismas Pi Release.
 
- * Documentation completely reorganized and improved
+ * Documentation reorganized and improved
 
  * S4U interface further rising, toward SimGrid 4
    - Routing code rewritten for readability
    - Virtual Machines almost changed into a plugin
+   - MSG, SimDag, MPI interfaces mostly unchanged
                     _               _____  _ _____
 __   _____ _ __ ___(_) ___  _ __   |___ / / |___ /
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | | |_ \
