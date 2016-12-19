@@ -74,8 +74,6 @@ int main(int argc, char **argv)
   xbt_dict_t props = nullptr;
   xbt_dict_cursor_t cursor = nullptr;
   char *key, *data;
-  sg_netcard_t value1;
-  sg_netcard_t value2;
 
   xbt_os_timer_t parse_time = xbt_os_timer_new();
 
@@ -148,28 +146,26 @@ int main(int argc, char **argv)
 
     for (unsigned int it_src = 0; it_src < totalHosts; it_src++) { // Routes from host
       simgrid::s4u::Host* host1 = hosts[it_src];
-      value1 = host1->pimpl_netcard;
+      simgrid::kernel::routing::NetCard* netcardSrc = host1->pimpl_netcard;
       for (unsigned int it_dst = 0; it_dst < totalHosts; it_dst++) { // Routes to host
         simgrid::s4u::Host* host2 = hosts[it_dst];
-        std::vector<Link*> *route = new std::vector<Link*>();
-        value2 = host2->pimpl_netcard;
-        simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(value1, value2, route, nullptr);
-        if (! route->empty()){
+        std::vector<Link*> route;
+        simgrid::kernel::routing::NetCard* netcardDst = host2->pimpl_netcard;
+        simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(netcardSrc, netcardDst, &route, nullptr);
+        if (!route.empty()) {
           std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->cname(), host2->cname());
-          for (auto link: *route)
+          for (auto link : route)
             std::printf("<link_ctn id=\"%s\"/>",link->getName());
           std::printf("\n  </route>\n");
         }
-        delete route;
       }
-      for (auto value2 : netcardList) { // to router
-        if(value2->isRouter()){
-          std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->cname(), value2->cname());
-          std::vector<Link*> *route = new std::vector<Link*>();
-          simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(value1, value2, route, nullptr);
-          for (auto link : *route)
+      for (auto netcardDst : netcardList) { // to router
+        if (netcardDst->isRouter()) {
+          std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->cname(), netcardDst->cname());
+          std::vector<Link*> route;
+          simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(netcardSrc, netcardDst, &route, nullptr);
+          for (auto link : route)
             std::printf("<link_ctn id=\"%s\"/>",link->getName());
-          delete route;
           std::printf("\n  </route>\n");
         }
       }
@@ -180,23 +176,21 @@ int main(int argc, char **argv)
         for (auto value2 : netcardList) { // to router
           if (value2->isRouter()) {
             std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", value1->cname(), value2->cname());
-            std::vector<Link*>* route = new std::vector<Link*>();
-            simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(value1, value2, route, nullptr);
-            for(auto link :*route)
+            std::vector<Link*> route;
+            simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(value1, value2, &route, nullptr);
+            for (auto link : route)
               std::printf("<link_ctn id=\"%s\"/>",link->getName());
-            delete route;
             std::printf("\n  </route>\n");
           }
         }
         for (unsigned int it_dst = 0; it_dst < totalHosts; it_dst++) { // Routes to host
           simgrid::s4u::Host* host2 = hosts[it_dst];
           std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", value1->cname(), host2->cname());
-          std::vector<Link*> *route = new std::vector<Link*>();
-          value2 = host2->pimpl_netcard;
-          simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(value1, value2, route, nullptr);
-          for(auto link : *route)
+          std::vector<Link*> route;
+          simgrid::kernel::routing::NetCard* netcardDst = host2->pimpl_netcard;
+          simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(value1, netcardDst, &route, nullptr);
+          for (auto link : route)
             std::printf("<link_ctn id=\"%s\"/>",link->getName());
-          delete route;
           std::printf("\n  </route>\n");
         }
       }
