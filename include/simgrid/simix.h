@@ -260,7 +260,6 @@ XBT_PUBLIC(e_smx_state_t) simcall_execution_wait(smx_activity_t execution);
 /******************************* VM simcalls ********************************/
 // Create the vm_workstation at the SURF level
 XBT_PUBLIC(void) simcall_vm_resume(sg_host_t vm);
-XBT_PUBLIC(void) simcall_vm_save(sg_host_t vm);
 XBT_PUBLIC(void) simcall_vm_suspend(sg_host_t vm);
 XBT_PUBLIC(void) simcall_vm_shutdown(sg_host_t vm);
 

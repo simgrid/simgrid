@@ -68,8 +68,8 @@ public:
   /** @brief Resume the VM */
   virtual void resume();
 
-  /** @brief Save the VM (Not yet implemented) */
-  virtual void save();
+  /** @brief Save the VM */
+  virtual void save(smx_actor_t issuer);
 
   /** @brief Restore the VM (Not yet implemented) */
   virtual void restore();

@@ -166,11 +166,34 @@ void VirtualMachineImpl::resume()
   vmState_ = SURF_VM_STATE_RUNNING;
 }
 
-void VirtualMachineImpl::save()
+/**
+ * @brief Function to save a VM.
+ * This function is the same as vm_suspend, but the state of the VM is saved to the disk, and not preserved in memory.
+ * We can later restore it again.
+ *
+ * @param vm the vm host to save (a sg_host_t)
+ */
+void VirtualMachineImpl::save(smx_actor_t issuer)
 {
+  if (isMigrating)
+    THROWF(vm_error, 0, "Cannot save VM %s: it is migrating.", piface_->cname());
+
+  if (getState() != SURF_VM_STATE_RUNNING)
+    THROWF(vm_error, 0, "Cannot save VM %s: it is not running.", piface_->cname());
+
+  xbt_swag_t process_list = piface_->extension<simgrid::simix::Host>()->process_list;
+
+  XBT_DEBUG("Save VM %s, where %d processes exist", piface_->cname(), xbt_swag_size(process_list));
+
   vmState_ = SURF_VM_STATE_SAVING;
   action_->suspend();
   vmState_ = SURF_VM_STATE_SAVED;
+
+  smx_actor_t smx_process, smx_process_safe;
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, process_list) {
+    XBT_DEBUG("suspend %s", smx_process->cname());
+    SIMIX_process_suspend(smx_process, issuer);
+  }
 }
 
 void VirtualMachineImpl::restore()

@@ -72,34 +72,6 @@ void SIMIX_vm_resume(sg_host_t vm)
 }
 
 /**
- * @brief Function to save a SIMIX VM host.
- * This function is the same as vm_suspend, but the state of the VM is saved to the disk, and not preserved on memory.
- * We can later restore it again.
- *
- * @param vm the vm host to save (a sg_host_t)
- */
-void SIMIX_vm_save(sg_host_t vm, smx_actor_t issuer)
-{
-  if (static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getState() != SURF_VM_STATE_RUNNING)
-    THROWF(vm_error, 0, "VM(%s) is not running", vm->cname());
-
-  XBT_DEBUG("save VM(%s), where %d processes exist", vm->cname(), xbt_swag_size(sg_host_simix(vm)->process_list));
-
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->save();
-
-  smx_actor_t smx_process, smx_process_safe;
-  xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(vm)->process_list) {
-    XBT_DEBUG("suspend %s", smx_process->cname());
-    SIMIX_process_suspend(smx_process, issuer);
-  }
-}
-
-void simcall_HANDLER_vm_save(smx_simcall_t simcall, sg_host_t vm)
-{
-  SIMIX_vm_save(vm, simcall->issuer);
-}
-
-/**
  * @brief Function to shutdown a SIMIX VM host. This function powers off the
  * VM. All the processes on this VM will be killed. But, the state of the VM is
  * preserved on memory. We can later start it again.

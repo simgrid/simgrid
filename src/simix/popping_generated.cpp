@@ -26,7 +26,6 @@ const char* simcall_names[] = {
    "SIMCALL_NONE",  "SIMCALL_VM_SUSPEND",
   "SIMCALL_VM_RESUME",
   "SIMCALL_VM_SHUTDOWN",
-  "SIMCALL_VM_SAVE",
   "SIMCALL_PROCESS_KILL",
   "SIMCALL_PROCESS_KILLALL",
   "SIMCALL_PROCESS_CLEANUP",
@@ -113,11 +112,6 @@ case SIMCALL_VM_RESUME:
 
 case SIMCALL_VM_SHUTDOWN:
       simcall_HANDLER_vm_shutdown(simcall, simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
-      SIMIX_simcall_answer(simcall);
-      break;
-
-case SIMCALL_VM_SAVE:
-      simcall_HANDLER_vm_save(simcall, simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
       SIMIX_simcall_answer(simcall);
       break;
 

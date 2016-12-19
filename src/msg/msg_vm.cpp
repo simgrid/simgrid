@@ -879,10 +879,10 @@ void MSG_vm_resume(msg_vm_t vm)
  */
 void MSG_vm_save(msg_vm_t vm)
 {
-  if (MSG_vm_is_migrating(vm))
-    THROWF(vm_error, 0, "Cannot save VM '%s', which is migrating.", vm->cname());
-
-  simcall_vm_save(vm);
+  smx_actor_t issuer=SIMIX_process_self();
+  simgrid::simix::kernelImmediate([vm,issuer]() {
+    static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->save(issuer);
+  });
 
   if (TRACE_msg_vm_is_enabled()) {
     container_t vm_container = PJ_container_get(vm->cname());
