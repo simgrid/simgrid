@@ -16,7 +16,7 @@ int main(int argc, char **argv)
   SD_create_environment(argv[1]);
 
   xbt_dynar_t hosts = sg_hosts_as_dynar();
-  printf("Host count: %zu, link number: %d\n", sg_host_count(), sg_link_count());
+  std::printf("Host count: %zu, link number: %d\n", sg_host_count(), sg_link_count());
 
   std::vector<simgrid::kernel::routing::NetCard*> netcardList;
   simgrid::s4u::Engine::instance()->netcardList(&netcardList);
@@ -25,15 +25,15 @@ int main(int argc, char **argv)
   sg_host_t host;
   xbt_dynar_foreach(hosts, it, host) {
     simgrid::kernel::routing::NetCard * nc = host->pimpl_netcard;
-    printf("   - Seen: \"%s\". Type: %s\n", host->cname(),
-           nc->isRouter() ? "router" : (nc->isNetZone() ? "netzone" : "host"));
+    std::printf("   - Seen: \"%s\". Type: %s\n", host->cname(),
+                nc->isRouter() ? "router" : (nc->isNetZone() ? "netzone" : (nc->isHost() ? "host" : "buggy")));
   }
   xbt_dynar_free(&hosts);
 
-  printf("NetCards count: %d\n", xbt_dict_length(netcards_dict));
+  std::printf("NetCards count: %d\n", xbt_dict_length(netcards_dict));
   for (auto nc : netcardList)
-    printf("   - Seen: \"%s\". Type: %s\n", nc->cname(),
-           nc->isRouter() ? "router" : (nc->isNetZone() ? "netzone" : "host"));
+    std::printf("   - Seen: \"%s\". Type: %s\n", nc->cname(),
+                nc->isRouter() ? "router" : (nc->isNetZone() ? "netzone" : (nc->isHost() ? "host" : "buggy")));
 
   SD_exit();
   return 0;
