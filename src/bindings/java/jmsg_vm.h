@@ -92,9 +92,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_setBound(JNIEnv *env, jobject jvm
  * Method           create
  * Signature    ()V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_create(JNIEnv *env, jobject jvm, jobject jhost, jstring jname,
-                                                      jint jncore, jint jramsize, jint jnetcap, jstring jdiskpath,
-                                                      jint jdisksize, jint dprate, jint mig_netspeed);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_create(JNIEnv* env, jobject jvm, jobject jhost, jstring jname,
+                                                      jint jramsize, jint dprate, jint mig_netspeed);
 
 /**
  * Class            org_simgrid_msg_VM

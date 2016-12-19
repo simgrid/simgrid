@@ -87,14 +87,12 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_setBound(JNIEnv *env, jobject jvm
   MSG_vm_set_bound(vm, bound);
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_create(JNIEnv *env, jobject jvm, jobject jhost, jstring jname,
-                                                      jint jncore, jint jramsize, jint jnetcap, jstring jdiskpath,
-                                                      jint jdisksize, jint jmig_netspeed, jint jdp_intensity)
+JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_create(JNIEnv* env, jobject jvm, jobject jhost, jstring jname,
+                                                      jint jramsize, jint jmig_netspeed, jint jdp_intensity)
 {
   msg_host_t host = jhost_get_native(env, jhost);
 
-  const char *name;
-  name = env->GetStringUTFChars(jname, 0);
+  const char* name = env->GetStringUTFChars(jname, 0);
   name = xbt_strdup(name);
 
   // TODO disk concerns are not taken into account yet
@@ -102,10 +100,9 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_create(JNIEnv *env, jobject jvm, 
   // disk_path = (*env)->GetStringUTFChars(env, jdiskpath, 0);
   // disk_path = xbt_strdup(disk_path);
 
-  msg_vm_t vm = MSG_vm_create(host, name, (int) jncore, (int) jramsize, (int) jnetcap, nullptr, (int) jdisksize,
-                              (int) jmig_netspeed, (int) jdp_intensity);
+  msg_vm_t vm = MSG_vm_create(host, name, (int)jramsize, (int)jmig_netspeed, (int)jdp_intensity);
 
-  jvm_bind(env,jvm,vm);
+  jvm_bind(env, jvm, vm);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeFinalize(JNIEnv *env, jobject jvm)

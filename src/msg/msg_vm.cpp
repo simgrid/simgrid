@@ -117,17 +117,12 @@ int MSG_vm_is_restoring(msg_vm_t vm)
 /** @brief Create a new VM with specified parameters.
  *  @ingroup msg_VMs*
  *  @param pm        Physical machine that will host the VM
- *  @param name      [TODO]
- *  @param ncpus     [TODO]
+ *  @param name      Must be unique
  *  @param ramsize   [TODO]
- *  @param net_cap   Maximal bandwidth that the VM can consume (in MByte/s)
- *  @param disk_path (unused) Path to the image that boots
- *  @param disksize  (unused) will represent the size of the VM (will be used during migrations)
  *  @param mig_netspeed Amount of Mbyte/s allocated to the migration (cannot be larger than net_cap). Use 0 if unsure.
  *  @param dp_intensity Dirty page percentage according to migNetSpeed, [0-100]. Use 0 if unsure.
  */
-msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int ncpus, int ramsize, int net_cap, char* disk_path,
-                       int disksize, int mig_netspeed, int dp_intensity)
+msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int ramsize, int mig_netspeed, int dp_intensity)
 {
   simgrid::vm::VmHostExt::ensureVmExtInstalled();
 
@@ -139,7 +134,6 @@ msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int ncpus, int ramsize, 
   s_vm_params_t params;
   memset(&params, 0, sizeof(params));
   params.ramsize = (sg_size_t)ramsize * 1024 * 1024;
-  //params.overcommit = 0;
   params.devsize = 0;
   params.skip_stage2 = 0;
   params.max_downtime = 0.03;

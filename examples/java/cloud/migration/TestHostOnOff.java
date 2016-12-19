@@ -58,11 +58,7 @@ public class TestHostOnOff extends Process{
     int dpRate = 70;
     XVM vm0 = null;
     vm0 = new XVM(host1, "vm0",
-        1, // Nb of vcpu
         2048, // Ramsize,
-        125, // Net Bandwidth
-        null, //VM disk image
-        -1,   //size of disk image,
         125, // Net bandwidth,
         dpRate // Memory intensity
         );
@@ -117,11 +113,7 @@ public class TestHostOnOff extends Process{
     // Create VM0
     int dpRate = 70;
     XVM vm0 = new XVM(host1, "vm0",
-        1, // Nb of vcpu
         2048, // Ramsize,
-        125, // Net Bandwidth
-        null, //VM disk image
-        -1,   //size of disk image,
         125, // Net bandwidth,
         dpRate // Memory intensity
         );
@@ -137,11 +129,7 @@ public class TestHostOnOff extends Process{
 
     Msg.info("Restart VM0");
     vm0 = new XVM(host1, "vm0",
-        1, // Nb of vcpu
         2048, // Ramsize,
-        125, // Net Bandwidth
-        null, //VM disk image
-        -1,   //size of disk image,
         125, // Net bandwidth,
         dpRate // Memory intensity
         );

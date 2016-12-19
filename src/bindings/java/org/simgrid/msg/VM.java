@@ -22,30 +22,25 @@ public class VM extends Host{
 
 	/* Constructors / destructors */
 	/**
-	 * Create a `basic' VM (i.e. 1 core, 1GB of RAM, other values are not taken into account).
+	 * Create a `basic' VM (i.e. 1GB of RAM, other values are not taken into account).
 	 */
 	public VM(Host host, String name) {
-		this(host,name,1,1024, -1, null, -1,0 , 0);
+		this(host,name,1024, 0, 0);
 	}
 
 	/**
 	 * Create a  VM
 	 * @param host  Host node
 	 * @param name name of the machine
-	 * @param nCore number of core
 	 * @param ramSize size of the RAM that should be allocated (in MBytes)
-	 * @param netCap (not used for the moment)
-	 * @param diskPath (not used for the moment)
-	 * @param diskSize (not used for the moment)
 	 * @param migNetSpeed (network bandwith allocated for migrations in MB/s, if you don't know put zero ;))
 	 * @param dpIntensity (dirty page percentage according to migNetSpeed, [0-100], if you don't know put zero ;))
 	 */
-	public VM(Host host, String name, int nCore,  int ramSize, 
-			int netCap, String diskPath, int diskSize, int migNetSpeed, int dpIntensity){
+	public VM(Host host, String name, int ramSize, int migNetSpeed, int dpIntensity){
 		super();
 		super.name = name; 
 		this.currentHost = host; 
-		create(host, name, nCore, ramSize, netCap, diskPath, diskSize, migNetSpeed, dpIntensity);
+		create(host, name, ramSize, migNetSpeed, dpIntensity);
 		vms.add(this);
 	}
 
@@ -103,16 +98,11 @@ public class VM extends Host{
 
 	/**
 	 * Natively implemented method create the VM.
-	 * @param nCore number of core
 	 * @param ramSize size of the RAM that should be allocated (in MB)
-	 * @param netCap (not used for the moment)
-	 * @param diskPath (not used for the moment)
-	 * @param diskSize (not used for the moment)
 	 * @param migNetSpeed (network bandwith allocated for migrations in MB/s, if you don't know put zero ;))
 	 * @param dpIntensity (dirty page intensity, a percentage of migNetSpeed [0-100],  if you don't know put zero ;))
 	 */
-	private native void create(Host host, String name, int nCore, int ramSize, 
-			int netCap, String diskPath, int diskSize, int migNetSpeed, int dpIntensity);
+	private native void create(Host host, String name, int ramSize, int migNetSpeed, int dpIntensity);
 
 
 	/**

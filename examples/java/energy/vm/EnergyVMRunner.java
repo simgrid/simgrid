@@ -48,10 +48,10 @@ public class EnergyVMRunner extends Process {
     Host host3 = Host.getByName("MyHost3");
 
     Msg.info("Creating and starting two VMs");
-    VM vmHost1 = new VM(host1, "vmHost1", 4, 2048, 100, null, 1024 * 20, 10,50);
+    VM vmHost1 = new VM(host1, "vmHost1", 2048, 10, 50);
     vmHost1.start();
 
-    VM vmHost3 = new VM(host3, "vmHost3", 4, 2048, 100, null, 1024 * 20, 10,50);
+    VM vmHost3 = new VM(host3, "vmHost3", 2048, 10, 50);
     vmHost3.start();
 
     Msg.info("Create two tasks on Host1: one inside a VM, the other directly on the host");
