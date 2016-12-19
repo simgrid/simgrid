@@ -4,7 +4,13 @@ __   _____ _ __ ___(_) ___  _ __   |___ / / | || |
  \ V /  __/ |  \__ \ | (_) | | | |  ___) || |__   _|
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_|  |_|
 
+The Chrismas Pi Release.
 
+ * Documentation completely reorganized and improved
+
+ * S4U interface further rising, toward SimGrid 4
+   - Routing code rewritten for readability
+   - Virtual Machines almost changed into a plugin
                     _               _____  _ _____
 __   _____ _ __ ___(_) ___  _ __   |___ / / |___ /
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | | |_ \
