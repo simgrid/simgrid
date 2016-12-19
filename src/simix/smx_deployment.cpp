@@ -7,12 +7,13 @@
 #include <string>
 #include <vector>
 
+#include "simgrid/s4u/host.hpp"
 #include "smx_private.h"
-#include <xbt/ex.hpp>
-#include "xbt/sysdep.h"
-#include "xbt/log.h"
-#include "xbt/dict.h"
 #include "src/surf/xml/platf_private.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
+#include "xbt/dict.h"
+#include "xbt/log.h"
+#include "xbt/sysdep.h"
+#include <xbt/ex.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_deployment, simix, "Logging specific to SIMIX (deployment)");
 

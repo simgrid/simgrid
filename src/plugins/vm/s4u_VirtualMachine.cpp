@@ -3,16 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/datatypes.h"
-#include "simgrid/s4u/VirtualMachine.hpp"
-#include "simgrid/s4u/host.hpp"
-#include "simgrid/simix.hpp"
 #include "src/instr/instr_private.h"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/simix/smx_host_private.h"
-#include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_cas01.hpp"
-#include "xbt/asserts.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_vm, "S4U virtual machines");
 

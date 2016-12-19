@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,11 +7,8 @@
 #include "smx_private.h"
 #include "src/mc/mc_replay.h"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
-#include "src/surf/HostImpl.hpp"
-#include "xbt/sysdep.h"
 #include <xbt/ex.hpp>
 
-#include "src/kernel/activity/SynchroExec.hpp"
 #include "src/kernel/activity/SynchroComm.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix, "SIMIX hosts");

@@ -3,14 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <simgrid/s4u/host.hpp>
-
-#include "src/simix/smx_private.h"
-#include "cpu_cas01.hpp"
 #include "src/surf/HostImpl.hpp"
-#include "simgrid/sg_config.h"
-
-#include "network_interface.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_host, surf, "Logging specific to the SURF host module");

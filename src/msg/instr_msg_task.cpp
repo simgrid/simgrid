@@ -4,11 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/instr/instr_private.h"
-#include "msg_private.h"
 #include "mc/mc.h"
+#include "src/instr/instr_private.h"
+#include "src/msg/msg_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg, instr, "MSG");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_msg, instr, "MSG instrumentation");
 
 void TRACE_msg_set_task_category(msg_task_t task, const char *category)
 {

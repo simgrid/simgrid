@@ -5,8 +5,6 @@
 
 #include "msg_private.h"
 #include "src/simix/smx_private.h"
-#include "xbt/sysdep.h"
-#include "xbt/log.h"
 
 /** @addtogroup m_task_management
  *

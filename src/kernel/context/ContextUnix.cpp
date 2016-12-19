@@ -1,20 +1,16 @@
-/* Copyright (c) 2009-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2015. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* \file UContext.cpp Context switching with ucontexts from System V         */
+/* \file UContext.cpp Context switching with ucontexts from System V        */
 
-#include <stdarg.h>
-
-#include <functional>
 #include <ucontext.h>           /* context relative declarations */
 
-#include "xbt/parmap.h"
-#include "src/simix/smx_private.h"
-#include "src/internal_config.h"
 #include "mc/mc.h"
+#include "src/simix/ActorImpl.hpp"
+#include "src/simix/smx_private.h"
+#include "xbt/parmap.h"
 
 /** Many integers are needed to store a pointer
  *

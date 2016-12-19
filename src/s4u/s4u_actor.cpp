@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/log.h"
-#include "src/msg/msg_private.h"
 
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/comm.hpp"
@@ -13,7 +12,6 @@
 #include "simgrid/s4u/Mailbox.hpp"
 
 #include "src/kernel/context/Context.hpp"
-#include "src/simix/smx_private.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor,"S4U actors");
 

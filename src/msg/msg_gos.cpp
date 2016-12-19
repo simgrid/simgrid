@@ -5,11 +5,8 @@
 
 #include <xbt/ex.hpp>
 
+#include "src/msg/msg_private.h"
 #include "src/simix/smx_private.h" /* MSG_task_listen looks inside the rdv directly. Not clean. */
-#include "msg_private.h"
-#include "mc/mc.h"
-#include "xbt/log.h"
-#include "xbt/sysdep.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg, "Logging specific to MSG (gos)");
 

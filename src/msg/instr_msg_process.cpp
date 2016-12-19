@@ -3,9 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "msg_private.h"
+#include "simgrid/s4u/host.hpp"
+#include "src/instr/instr_private.h"
+#include "src/msg/msg_private.h"
 #include "src/simix/ActorImpl.hpp"
-#include <simgrid/s4u/host.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_process, instr, "MSG process");
 

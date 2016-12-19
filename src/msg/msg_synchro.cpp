@@ -4,12 +4,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/ex.hpp>
+#include "xbt/ex.hpp"
 
 #include "msg_private.h"
-#include "xbt/log.h"
 #include "xbt/synchro.h"
-#include "xbt/sysdep.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_synchro, msg, "Logging specific to MSG (synchro)");
 

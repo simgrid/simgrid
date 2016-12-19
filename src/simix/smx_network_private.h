@@ -7,9 +7,6 @@
 #ifndef _SIMIX_NETWORK_PRIVATE_H
 #define _SIMIX_NETWORK_PRIVATE_H
 
-#include <string>
-
-#include <boost/intrusive_ptr.hpp>
 #include <boost/circular_buffer.hpp>
 
 #include <xbt/base.h>

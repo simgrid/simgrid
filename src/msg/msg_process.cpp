@@ -4,14 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <functional>
-
 #include "msg_private.h"
-#include "xbt/sysdep.h"
-#include "xbt/log.h"
-#include "xbt/functional.hpp"
+#include "simgrid/s4u/host.hpp"
 #include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (process)");
 

@@ -17,24 +17,13 @@
 #include "src/internal_config.h"
 #include "simgrid/simix.h"
 #include "surf/surf.h"
-#include "xbt/base.h"
-#include "xbt/fifo.h"
-#include "xbt/swag.h"
-#include "xbt/dict.h"
-#include "xbt/mallocator.h"
 #include "xbt/config.h"
 #include "xbt/xbt_os_time.h"
 #include "xbt/function_types.h"
 #include "src/xbt/ex_interface.h"
 #include "src/instr/instr_private.h"
-#include "smx_host_private.h"
-#include "smx_io_private.h"
-#include "smx_network_private.h"
-#include "popping_private.h"
-#include "smx_synchro_private.h"
 
 #include <signal.h>
-#include "src/simix/ActorImpl.hpp"
 #include "src/kernel/context/Context.hpp"
 
 /********************************** Simix Global ******************************/

@@ -11,21 +11,21 @@
 
 #include <xbt/ex.hpp>
 
+#include "src/instr/instr_private.h"
+#include "src/msg/msg_private.h"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/plugins/vm/VmHostExt.hpp"
-#include "src/simix/ActorImpl.hpp"
-#include <simgrid/s4u/VirtualMachine.hpp>
-#include <simgrid/s4u/host.hpp>
 
-#include "msg_private.h"
-#include "xbt/sysdep.h"
-#include "xbt/log.h"
 #include "simgrid/host.h"
+#include "simgrid/simix.hpp"
 
-#include "src/simix/smx_host_private.h" /* don't ask me why the VM functions are in there (FIXME:KILLME) */
+typedef struct dirty_page {
+  double prev_clock;
+  double prev_remaining;
+  msg_task_t task;
+} s_dirty_page, *dirty_page_t;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg, "Cloud-oriented parts of the MSG API");
-
 
 /* **** ******** GENERAL ********* **** */
 
@@ -117,8 +117,8 @@ msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int ramsize, int mig_net
   params.dp_cap = params.ramsize * 0.9; // assume working set memory is 90% of ramsize
   params.mig_speed = (double)mig_netspeed * 1024 * 1024; // mig_speed
 
-  //XBT_INFO("dp rate %f migspeed : %f intensity mem : %d, updatespeed %f, hostspeed %f",params.dp_rate,
-  //         params.mig_speed, dp_intensity, update_speed, host_speed);
+  XBT_DEBUG("dp rate %f migspeed : %f intensity mem : %d, updatespeed %f, hostspeed %f", params.dp_rate,
+            params.mig_speed, dp_intensity, update_speed, host_speed);
   static_cast<simgrid::s4u::VirtualMachine*>(vm)->setParameters(&params);
 
   return vm;

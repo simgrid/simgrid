@@ -7,19 +7,7 @@
 #ifndef METASIMGRID_PRIVATE_H
 #define METASIMGRID_PRIVATE_H
 
-#include <exception>
-#include <functional>
-
 #include "simgrid/msg.h"
-#include "simgrid/simix.h"
-#include "src/include/surf/surf.h"
-#include "xbt/base.h"
-#include "xbt/fifo.h"
-#include "xbt/dynar.h"
-#include "xbt/swag.h"
-#include "xbt/dict.h"
-#include "xbt/config.h"
-#include "src/instr/instr_private.h"
 
 #include "src/kernel/activity/SynchroExec.hpp"
 #include "src/kernel/activity/SynchroComm.hpp"
@@ -107,13 +95,6 @@ typedef struct msg_comm {
   msg_task_t *task_received;      /* where the task will be received (NULL for the sender) */
   msg_error_t status;           /* status of the communication once finished */
 } s_msg_comm_t;
-
-/******************************* VM *************************************/
-typedef struct dirty_page {
-  double prev_clock;
-  double prev_remaining;
-  msg_task_t task;
-} s_dirty_page, *dirty_page_t;
 
 /************************** Global variables ********************************/
 typedef struct MSG_Global {

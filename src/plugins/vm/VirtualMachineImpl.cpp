@@ -5,13 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
-#include "simgrid/s4u/VirtualMachine.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_host_private.h"
-
-#include <xbt/signal.hpp>
-
-#include "src/surf/cpu_cas01.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm, surf, "Logging specific to the SURF VM module");
 
