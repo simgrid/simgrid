@@ -54,7 +54,7 @@ const char* NetZone::property(const char* key)
 }
 void NetZone::setProperty(const char* key, const char* value)
 {
-  simgrid::simix::kernelImmediate([=] {
+  simgrid::simix::kernelImmediate([=,&key,&value] {
     properties_[key] = value;
   });
 }
