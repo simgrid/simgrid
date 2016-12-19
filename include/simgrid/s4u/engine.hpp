@@ -74,6 +74,7 @@ public:
 
   /** @brief Retrieve the netcard of the given name (or nullptr if not found) */
   simgrid::kernel::routing::NetCard* netcardByNameOrNull(const char* name);
+  void netcardList(std::vector<simgrid::kernel::routing::NetCard*> * list);
 
   template<class F>
   void registerFunction(const char* name)

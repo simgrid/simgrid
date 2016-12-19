@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/s4u/engine.hpp"
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/simdag.h"
 #include "src/kernel/routing/NetCard.hpp"
@@ -17,6 +18,9 @@ int main(int argc, char **argv)
   xbt_dynar_t hosts = sg_hosts_as_dynar();
   printf("Host count: %zu, link number: %d\n", sg_host_count(), sg_link_count());
 
+  std::vector<simgrid::kernel::routing::NetCard*> netcardList;
+  simgrid::s4u::Engine::instance()->netcardList(&netcardList);
+
   int it;
   sg_host_t host;
   xbt_dynar_foreach(hosts, it, host) {
@@ -27,13 +31,9 @@ int main(int argc, char **argv)
   xbt_dynar_free(&hosts);
 
   printf("NetCards count: %d\n", xbt_dict_length(netcards_dict));
-  xbt_lib_cursor_t cursor = nullptr;
-  char* key;
-  void *ignored;
-  xbt_dict_foreach (netcards_dict, cursor, key, ignored) {
-    simgrid::kernel::routing::NetCard * nc = sg_netcard_by_name_or_null(key);
-    printf("   - Seen: \"%s\". Type: %s\n", key, nc->isRouter() ? "router" : (nc->isNetZone() ? "netzone" : "host"));
-  }
+  for (auto nc : netcardList)
+    printf("   - Seen: \"%s\". Type: %s\n", nc->cname(),
+           nc->isRouter() ? "router" : (nc->isNetZone() ? "netzone" : "host"));
 
   SD_exit();
   return 0;

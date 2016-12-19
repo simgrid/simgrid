@@ -116,5 +116,14 @@ simgrid::kernel::routing::NetCard* Engine::netcardByNameOrNull(const char* name)
 {
   return static_cast<simgrid::kernel::routing::NetCard*>(xbt_dict_get_or_null(netcards_dict, name));
 }
+void Engine::netcardList(std::vector<simgrid::kernel::routing::NetCard*>* list)
+{
+  xbt_lib_cursor_t cursor = nullptr;
+  char* key;
+  void* data;
+  xbt_dict_foreach (netcards_dict, cursor, key, data) {
+    list->push_back(static_cast<simgrid::kernel::routing::NetCard*>(data));
+  }
+}
 }
 }
