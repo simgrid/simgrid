@@ -53,6 +53,7 @@ public:
   void parameters(vm_params_t params);
   void setParameters(vm_params_t params);
   double getRamsize();
+  simgrid::s4u::Host* pm();
 
   /* FIXME: protect me */
   simgrid::vm::VirtualMachineImpl* pimpl_vm_ = nullptr;

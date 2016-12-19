@@ -6,6 +6,8 @@
 
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "simgrid/s4u/VirtualMachine.hpp"
+#include "src/simix/ActorImpl.hpp"
+#include "src/simix/smx_host_private.h"
 
 #include <xbt/signal.hpp>
 
@@ -173,9 +175,21 @@ void VirtualMachineImpl::save()
 
 void VirtualMachineImpl::restore()
 {
+  if (getState() != SURF_VM_STATE_SAVED)
+    THROWF(vm_error, 0, "Cannot restore VM %s: it was not saved", piface_->cname());
+
+  xbt_swag_t process_list = piface_->extension<simgrid::simix::Host>()->process_list;
+  XBT_DEBUG("Restore VM %s, where %d processes exist", piface_->cname(), xbt_swag_size(process_list));
+
   vmState_ = SURF_VM_STATE_RESTORING;
   action_->resume();
   vmState_ = SURF_VM_STATE_RUNNING;
+
+  smx_actor_t smx_process, smx_process_safe;
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, process_list) {
+    XBT_DEBUG("resume %s", smx_process->cname());
+    SIMIX_process_resume(smx_process);
+  }
 }
 
 /** @brief returns the physical machine on which the VM is running **/

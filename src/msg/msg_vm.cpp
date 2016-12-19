@@ -901,21 +901,7 @@ void MSG_vm_save(msg_vm_t vm)
 void MSG_vm_restore(msg_vm_t vm)
 {
   simgrid::simix::kernelImmediate([vm]() {
-    simgrid::s4u::VirtualMachine* typedVm = static_cast<simgrid::s4u::VirtualMachine*>(vm);
-
-    if (typedVm->pimpl_vm_->getState() != SURF_VM_STATE_SAVED)
-      THROWF(vm_error, 0, "VM(%s) was not saved", vm->cname());
-
-    XBT_DEBUG("restore VM(%s), where %d processes exist", vm->cname(), xbt_swag_size(sg_host_simix(vm)->process_list));
-
-    /* jump to vm_ws_restore() */
-    typedVm->pimpl_vm_->restore();
-
-    smx_actor_t smx_process, smx_process_safe;
-    xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(vm)->process_list) {
-      XBT_DEBUG("resume %s", smx_process->name.c_str());
-      SIMIX_process_resume(smx_process);
-    }
+    static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->restore();
   });
 
   if (TRACE_msg_vm_is_enabled()) {
@@ -930,7 +916,7 @@ void MSG_vm_restore(msg_vm_t vm)
  */
 msg_host_t MSG_vm_get_pm(msg_vm_t vm)
 {
-  return static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getPm();
+  return static_cast<simgrid::s4u::VirtualMachine*>(vm)->pm();
 }
 
 /** @brief Set a CPU bound for a given VM.
