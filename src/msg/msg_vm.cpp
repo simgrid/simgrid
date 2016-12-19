@@ -321,10 +321,10 @@ static int migration_rx_fun(int argc, char *argv[])
   simgrid::simix::kernelImmediate([vm, src_pm, dst_pm]() {
     /* Update the vm location */
     /* precopy migration makes the VM temporally paused */
-    xbt_assert(static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getState() == SURF_VM_STATE_SUSPENDED);
+    xbt_assert(vm->pimpl_vm_->getState() == SURF_VM_STATE_SUSPENDED);
 
     /* jump to vm_ws_xigrate(). this will update the vm location. */
-    static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->migrate(dst_pm);
+    vm->pimpl_vm_->migrate(dst_pm);
 
     /* Resume the VM */
     SIMIX_vm_resume(vm);
@@ -901,17 +901,18 @@ void MSG_vm_save(msg_vm_t vm)
 void MSG_vm_restore(msg_vm_t vm)
 {
   simgrid::simix::kernelImmediate([vm]() {
-    if (static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getState() != SURF_VM_STATE_SAVED)
+    simgrid::s4u::VirtualMachine* typedVm = static_cast<simgrid::s4u::VirtualMachine*>(vm);
+
+    if (typedVm->pimpl_vm_->getState() != SURF_VM_STATE_SAVED)
       THROWF(vm_error, 0, "VM(%s) was not saved", vm->cname());
 
     XBT_DEBUG("restore VM(%s), where %d processes exist", vm->cname(), xbt_swag_size(sg_host_simix(vm)->process_list));
 
     /* jump to vm_ws_restore() */
-    static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->restore();
+    typedVm->pimpl_vm_->restore();
 
     smx_actor_t smx_process, smx_process_safe;
-    xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(vm)->process_list)
-    {
+    xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(vm)->process_list) {
       XBT_DEBUG("resume %s", smx_process->name.c_str());
       SIMIX_process_resume(smx_process);
     }
