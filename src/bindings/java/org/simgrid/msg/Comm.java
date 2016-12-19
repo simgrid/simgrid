@@ -6,10 +6,7 @@
 
 package org.simgrid.msg;
 
-/**
- * Communication action, representing an ongoing communication
- * between processes.
- */
+/** Communication action, representing an ongoing communication between processes. */
 public class Comm {
 	/** Indicates if the communication is a receiving communication */
 	protected boolean receiving;
