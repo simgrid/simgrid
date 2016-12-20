@@ -62,7 +62,7 @@ backtrace_helper (struct _Unwind_Context *ctx, void *a)
 
 /** @brief reimplementation of glibc backtrace based directly on gcc library, without implicit malloc
  *
- * See http://webloria.loria.fr/~quinson/blog/2012/0208/system_programming_fun_in_SimGrid/
+ * See http://people.irisa.fr/Martin.Quinson/blog/2012/0208/system_programming_fun_in_SimGrid/
  * for the motivation behind this function
  * */
 
