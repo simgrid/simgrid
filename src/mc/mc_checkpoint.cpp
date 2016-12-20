@@ -292,7 +292,7 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame,
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
 
-  if (!scope->range.contain(stack_frame->ip))
+  if (!scope || !scope->range.contain(stack_frame->ip))
     return;
 
   for(simgrid::mc::Variable& current_variable :
