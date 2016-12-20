@@ -77,7 +77,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_create(JNIEnv* env, jobject jvm, 
   const char* name = env->GetStringUTFChars(jname, 0);
   name = xbt_strdup(name);
 
-  msg_vm_t vm = MSG_vm_create(host, name, (int)jramsize, (int)jmig_netspeed, (int)jdp_intensity);
+  msg_vm_t vm = MSG_vm_create(host, name, static_cast<int>(jramsize), static_cast<int>(jmig_netspeed),
+                              static_cast<int>(jdp_intensity));
 
   jvm_bind(env, jvm, vm);
 }

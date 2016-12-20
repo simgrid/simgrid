@@ -19,11 +19,13 @@
 #include "simgrid/host.h"
 #include "simgrid/simix.hpp"
 
-typedef struct dirty_page {
+struct dirty_page {
   double prev_clock;
   double prev_remaining;
   msg_task_t task;
-} s_dirty_page, *dirty_page_t;
+};
+typedef struct dirty_page s_dirty_page;
+typedef struct dirty_page* dirty_page_t;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg, "Cloud-oriented parts of the MSG API");
 
