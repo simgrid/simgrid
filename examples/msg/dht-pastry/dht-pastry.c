@@ -4,8 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <math.h>
 #include "simgrid/msg.h"
+#include "xbt/fifo.h"
+#include <math.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_pastry, "Messages specific for this msg example");
 

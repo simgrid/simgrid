@@ -10,10 +10,10 @@
 
 #include <boost/unordered_map.hpp>
 
-#include <xbt/base.h>
-#include <xbt/string.hpp>
-#include <xbt/signal.hpp>
 #include <xbt/Extendable.hpp>
+#include <xbt/signal.hpp>
+#include <xbt/string.hpp>
+#include <xbt/swag.h>
 
 #include <simgrid/simix.h>
 #include <simgrid/datatypes.h>

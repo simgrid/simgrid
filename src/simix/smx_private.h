@@ -7,22 +7,6 @@
 #ifndef _SIMIX_PRIVATE_H
 #define _SIMIX_PRIVATE_H
 
-#include <functional>
-#include <memory>
-#include <unordered_map>
-#include <vector>
-
-#include <xbt/functional.hpp>
-
-#include "src/internal_config.h"
-#include "simgrid/simix.h"
-#include "surf/surf.h"
-#include "xbt/config.h"
-#include "xbt/xbt_os_time.h"
-#include "xbt/function_types.h"
-#include "src/xbt/ex_interface.h"
-#include "src/instr/instr_private.h"
-
 #include <signal.h>
 #include "src/kernel/context/Context.hpp"
 

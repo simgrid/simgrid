@@ -6,15 +6,8 @@
 #ifndef _SIMIX_SYNCHRO_PRIVATE_H
 #define _SIMIX_SYNCHRO_PRIVATE_H
 
-#include <atomic>
-
-#include <simgrid/s4u/Mutex.hpp>
-#include <simgrid/s4u/conditionVariable.hpp>
-
-#include "xbt/base.h"
+#include "simgrid/s4u/conditionVariable.hpp"
 #include "xbt/swag.h"
-#include "xbt/xbt_os_thread.h"
-#include "src/simix/popping_private.h"
 
 namespace simgrid {
 namespace simix {

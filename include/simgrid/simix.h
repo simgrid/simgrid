@@ -7,14 +7,10 @@
 #ifndef _SIMIX_SIMIX_H
 #define _SIMIX_SIMIX_H
 
-#include "xbt/misc.h"
-#include "xbt/fifo.h"
-#include "xbt/dict.h"
-#include "xbt/function_types.h"
-#include "xbt/parmap.h"
-#include "xbt/swag.h"
 #include "simgrid/datatypes.h"
 #include "simgrid/host.h"
+#include "xbt/ex.h"
+#include "xbt/parmap.h"
 
 #ifdef __cplusplus
 

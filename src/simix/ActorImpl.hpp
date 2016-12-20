@@ -6,18 +6,10 @@
 #ifndef _SIMIX_ACTORIMPL_H
 #define _SIMIX_ACTORIMPL_H
 
-#include <atomic>
-#include <functional>
-#include <string>
-
-#include <xbt/base.h>
-#include <xbt/string.hpp>
-
-#include <simgrid/simix.hpp>
-#include <simgrid/s4u/Actor.hpp>
-
-#include "simgrid/simix.h"
-#include "popping_private.h"
+#include "simgrid/s4u/Actor.hpp"
+#include "src/simix/popping_private.h"
+#include "xbt/fifo.h"
+#include "xbt/swag.h"
 
 typedef struct s_smx_process_exit_fun {
   int_f_pvoid_pvoid_t fun;

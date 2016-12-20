@@ -7,10 +7,7 @@
 #ifndef INSTR_H_
 #define INSTR_H_
 
-#include "simgrid_config.h"
-
 #include "xbt.h"
-#include "xbt/graph.h"
 #include "simgrid/msg.h"
 
 SG_BEGIN_DECL()

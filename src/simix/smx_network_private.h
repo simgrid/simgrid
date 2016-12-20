@@ -9,12 +9,8 @@
 
 #include <boost/circular_buffer.hpp>
 
-#include <xbt/base.h>
+#include "simgrid/s4u/Mailbox.hpp"
 
-#include <simgrid/s4u/Mailbox.hpp>
-
-#include "simgrid/simix.h"
-#include "popping_private.h"
 #include "src/simix/ActorImpl.hpp"
 
 

@@ -7,13 +7,10 @@
 #ifndef SIMDAG_SIMDAG_H
 #define SIMDAG_SIMDAG_H
 
-#include "xbt/misc.h"
-#include "xbt/dynar.h"
-#include "xbt/dict.h"
-#include "xbt/asserts.h"
-#include "xbt/log.h"
-#include "simgrid/link.h"
 #include "simgrid/host.h"
+#include "simgrid/link.h"
+#include "xbt/log.h"
+#include "xbt/sysdep.h"
 #ifdef __cplusplus
 #include <set>
 #endif
