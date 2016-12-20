@@ -30,7 +30,7 @@ int main(int argc, char **argv)
   }
   xbt_dynar_free(&hosts);
 
-  std::printf("NetCards count: %d\n", xbt_dict_length(netcards_dict));
+  std::printf("NetCards count: %zu\n", netcardList.size());
   for (auto nc : netcardList)
     std::printf("   - Seen: \"%s\". Type: %s\n", nc->cname(),
                 nc->isRouter() ? "router" : (nc->isNetZone() ? "netzone" : (nc->isHost() ? "host" : "buggy")));
