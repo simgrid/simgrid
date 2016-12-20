@@ -10,14 +10,14 @@
 
 #include <boost/unordered_map.hpp>
 
-#include <xbt/Extendable.hpp>
-#include <xbt/signal.hpp>
-#include <xbt/string.hpp>
-#include <xbt/swag.h>
+#include "xbt/Extendable.hpp"
+#include "xbt/dict.h"
+#include "xbt/signal.hpp"
+#include "xbt/string.hpp"
+#include "xbt/swag.h"
 
-#include <simgrid/simix.h>
-#include <simgrid/datatypes.h>
-#include <simgrid/s4u/forward.hpp>
+#include "simgrid/forward.h"
+#include "simgrid/s4u/forward.hpp"
 
 namespace simgrid {
 

@@ -6,9 +6,9 @@
 #ifndef SIMGRID_S4U_VM_HPP
 #define SIMGRID_S4U_VM_HPP
 
-#include <simgrid/s4u/forward.hpp>
-#include <simgrid/s4u/host.hpp>
-#include <xbt/base.h>
+#include "simgrid/datatypes.h"
+#include "simgrid/s4u/forward.hpp"
+#include "simgrid/s4u/host.hpp"
 
 typedef enum {
   SURF_VM_STATE_CREATED, /**< created, but not yet started */

@@ -5,9 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/instr/instr_private.h"
-#include "simgrid/sg_config.h"
 #include "surf/surf.h"
-#include <functional>
 #include <vector>
 
 XBT_LOG_NEW_CATEGORY(instr, "Logging the behavior of the tracing system (used for Visualization/Analysis of simulations)");
