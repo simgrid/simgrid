@@ -26,14 +26,6 @@ static inline void routing_storage_type_free(void *r)
   free(stype);
 }
 
-static inline void surf_storage_resource_free(void *r)
-{
-  // specific to storage
-  simgrid::surf::Storage *storage = static_cast<simgrid::surf::Storage*>(r);
-  // generic resource
-  delete storage;
-}
-
 static inline void routing_storage_host_free(void *r)
 {
   xbt_dynar_t dyn = (xbt_dynar_t) r;
@@ -45,14 +37,13 @@ static void check_disk_attachment()
   xbt_lib_cursor_t cursor;
   char* key;
   void** data;
-  xbt_lib_foreach(storage_lib, cursor, key, data)
-  {
+  xbt_lib_foreach(storage_lib, cursor, key, data) {
     if (xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
       simgrid::surf::Storage* storage =
           static_cast<simgrid::surf::Storage*>(xbt_lib_get_or_null(storage_lib, key, SURF_STORAGE_LEVEL));
       simgrid::kernel::routing::NetCard* host_elm = sg_netcard_by_name_or_null(storage->attach_);
       if (!host_elm)
-        surf_parse_error("Unable to attach storage %s: host %s doesn't exist.", storage->getName(), storage->attach_);
+        surf_parse_error("Unable to attach storage %s: host %s does not exist.", storage->getName(), storage->attach_);
     }
   }
 }
@@ -65,7 +56,9 @@ void storage_register_callbacks()
   ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, xbt_free_f);
   ROUTING_STORAGE_HOST_LEVEL = xbt_lib_add_level(storage_lib, routing_storage_host_free);
   ROUTING_STORAGE_TYPE_LEVEL = xbt_lib_add_level(storage_type_lib, routing_storage_type_free);
-  SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, surf_storage_resource_free);
+  SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, [](void *self) {
+    delete static_cast<simgrid::surf::Storage*>(self);
+  });
 }
 
 /*********
@@ -81,7 +74,6 @@ void surf_storage_model_init_default()
 namespace simgrid {
 namespace surf {
 
-#include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 Storage* StorageN11Model::createStorage(const char* id, const char* type_id, const char* content_name,
                                         const char* content_type, const char* attach)
 {

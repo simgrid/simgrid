@@ -205,29 +205,6 @@ void SIMIX_maestro_create(void (*code)(void*), void* data)
 }
 
 /**
- * \brief Stops a process.
- *
- * Stops the process, execute all the registered on_exit functions,
- * register it to the list of the process to restart if needed
- * and stops its context.
- */
-void SIMIX_process_stop(smx_actor_t arg) {
-  arg->finished = true;
-  /* execute the on_exit functions */
-  SIMIX_process_on_exit_runall(arg);
-  /* Add the process to the list of process to restart, only if the host is down */
-  if (arg->auto_restart && arg->host->isOff()) {
-    SIMIX_host_add_auto_restart_process(arg->host, arg->name.c_str(),
-                                        arg->code, arg->data,
-                                        SIMIX_timer_get_date(arg->kill_timer),
-                                        arg->properties,
-                                        arg->auto_restart);
-  }
-  XBT_DEBUG("Process %s@%s is dead", arg->cname(), arg->host->cname());
-  arg->context->stop();
-}
-
-/**
  * \brief Internal function to create a process.
  *
  * This function actually creates the process.
@@ -834,7 +811,19 @@ void SIMIX_process_yield(smx_actor_t self)
 
   if (self->context->iwannadie){
     XBT_DEBUG("I wanna die!");
-    SIMIX_process_stop(self);
+    self->finished = true;
+    /* execute the on_exit functions */
+    SIMIX_process_on_exit_runall(self);
+    /* Add the process to the list of process to restart, only if the host is down */
+    if (self->auto_restart && self->host->isOff()) {
+      SIMIX_host_add_auto_restart_process(self->host, self->cname(),
+                                          self->code, self->data,
+                                          SIMIX_timer_get_date(self->kill_timer),
+                                          self->properties,
+                                          self->auto_restart);
+    }
+    XBT_DEBUG("Process %s@%s is dead", self->cname(), self->host->cname());
+    self->context->stop();
   }
 
   if (self->suspended) {

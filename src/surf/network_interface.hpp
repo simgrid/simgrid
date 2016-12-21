@@ -31,14 +31,9 @@ namespace simgrid {
      *  Signature: `void(NetworkAction *action, simgrid::surf::Action::State old, simgrid::surf::Action::State current)` */
     XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::Action::State, simgrid::surf::Action::State)>) networkActionStateChangedCallbacks;
 
-  }
-}
 /*********
  * Model *
  *********/
-
-namespace simgrid {
-  namespace surf {
 
     /** @ingroup SURF_network_interface
      * @brief SURF network model interface class

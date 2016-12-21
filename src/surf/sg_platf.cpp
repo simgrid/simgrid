@@ -4,22 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/misc.h"
-#include "xbt/log.h"
-#include "xbt/str.h"
-#include "xbt/dict.h"
-#include "xbt/RngStream.h"
-#include <xbt/functional.hpp>
-#include <xbt/signal.hpp>
-#include "src/surf/HostImpl.hpp"
-#include "surf/surf.h"
-
 #include "simgrid/s4u/engine.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/simix/smx_private.h"
 
 #include "src/include/simgrid/sg_config.h"
-#include "src/surf/xml/platf_private.hpp"
 
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
