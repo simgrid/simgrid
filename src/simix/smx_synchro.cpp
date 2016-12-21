@@ -5,8 +5,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/surf/surf_interface.hpp"
 #include "smx_private.h"
+#include "src/surf/cpu_interface.hpp"
+#include "src/surf/surf_interface.hpp"
 #include <xbt/ex.hpp>
 #include <xbt/log.h>
 
@@ -27,7 +28,7 @@ static smx_activity_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout)
   XBT_IN("(%p, %f)",smx_host,timeout);
 
   simgrid::kernel::activity::Raw *sync = new simgrid::kernel::activity::Raw();
-  sync->sleep = surf_host_sleep(smx_host, timeout);
+  sync->sleep                          = smx_host->pimpl_cpu->sleep(timeout);
   sync->sleep->setData(sync);
   XBT_OUT();
   return sync;

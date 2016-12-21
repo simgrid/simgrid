@@ -165,9 +165,6 @@ XBT_PUBLIC(surf_action_t) surf_model_extract_failed_action_set(surf_model_t mode
  */
 XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
 
-/** @brief Create a sleep action on the given host */
-XBT_PUBLIC(surf_action_t) surf_host_sleep(sg_host_t host, double duration);
-
 /** @brief Create a file opening action on the given host */
 XBT_PUBLIC(surf_action_t) surf_host_open(sg_host_t host, const char* fullpath);
 

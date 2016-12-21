@@ -36,7 +36,7 @@ int main(int argc, char **argv)
   /* Let's do something on it */
   hostA->pimpl_cpu->execution_start(1000.0);
   hostB->pimpl_cpu->execution_start(1000.0);
-  surf_host_sleep(hostB, 7.32);
+  hostB->pimpl_cpu->sleep(7.32);
 
   surf_network_model->communicate(hostA, hostB, 150.0, -1.0);
 

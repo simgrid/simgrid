@@ -11,13 +11,14 @@
 
 #include <simgrid/s4u/host.hpp>
 
-#include "src/surf/surf_interface.hpp"
-#include "src/simix/smx_private.h"
-#include "xbt/log.h"
 #include "mc/mc.h"
-#include "src/mc/mc_replay.h"
-#include "xbt/dict.h"
 #include "simgrid/s4u/Mailbox.hpp"
+#include "src/mc/mc_replay.h"
+#include "src/simix/smx_private.h"
+#include "src/surf/cpu_interface.hpp"
+#include "src/surf/surf_interface.hpp"
+#include "xbt/dict.h"
+#include "xbt/log.h"
 
 #include "src/kernel/activity/SynchroComm.hpp"
 #include "src/surf/network_interface.hpp"
@@ -409,7 +410,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_activity_t synchro, do
   if (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING) {
     SIMIX_comm_finish(synchro);
   } else { /* if (timeout >= 0) { we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host fails */
-    surf_action_t sleep = surf_host_sleep(simcall->issuer->host, timeout);
+    surf_action_t sleep = simcall->issuer->host->pimpl_cpu->sleep(timeout);
     sleep->setData(synchro);
 
     simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);

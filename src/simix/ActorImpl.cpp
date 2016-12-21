@@ -21,14 +21,15 @@
 
 #include <mc/mc.h>
 
-#include "src/surf/surf_interface.hpp"
 #include "smx_private.h"
-#include "src/mc/mc_replay.h"
-#include "src/mc/Client.hpp"
-#include "src/msg/msg_private.h"
-#include "src/kernel/activity/SynchroSleep.hpp"
-#include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/kernel/activity/SynchroIo.hpp"
+#include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/kernel/activity/SynchroSleep.hpp"
+#include "src/mc/Client.hpp"
+#include "src/mc/mc_replay.h"
+#include "src/msg/msg_private.h"
+#include "src/surf/cpu_interface.hpp"
+#include "src/surf/surf_interface.hpp"
 
 #ifdef HAVE_SMPI
 #include "src/smpi/private.h"
@@ -789,7 +790,7 @@ smx_activity_t SIMIX_process_sleep(smx_actor_t process, double duration)
 
   simgrid::kernel::activity::Sleep *synchro = new simgrid::kernel::activity::Sleep();
   synchro->host = host;
-  synchro->surf_sleep = surf_host_sleep(host, duration);
+  synchro->surf_sleep                       = host->pimpl_cpu->sleep(duration);
   synchro->surf_sleep->setData(synchro);
   XBT_DEBUG("Create sleep synchronization %p", synchro);
 

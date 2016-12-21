@@ -164,10 +164,6 @@ int surf_model_running_action_set_size(surf_model_t model){
   return model->getRunningActionSet()->size();
 }
 
-surf_action_t surf_host_sleep(sg_host_t host, double duration){
-  return host->pimpl_cpu->sleep(duration);
-}
-
 surf_action_t surf_host_open(sg_host_t host, const char* fullpath){
   return host->pimpl_->open(fullpath);
 }
