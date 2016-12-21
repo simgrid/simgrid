@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u/VirtualMachine.hpp"
-#include "simgrid/simix.h"
+#include "src/simix/ActorImpl.hpp"
 #include "src/surf/HostImpl.hpp"
 
 #ifndef VM_INTERFACE_HPP_
@@ -58,13 +58,13 @@ public:
   ~VirtualMachineImpl();
 
   /** @brief Suspend the VM */
-  virtual void suspend(smx_actor_t issuer);
+  virtual void suspend(simgrid::simix::ActorImpl* issuer);
 
   /** @brief Resume the VM */
   virtual void resume();
 
   /** @brief Shutdown the VM */
-  virtual void shutdown(smx_actor_t issuer);
+  virtual void shutdown(simgrid::simix::ActorImpl* issuer);
 
   /** @brief Change the physical host on which the given VM is running */
   virtual void setPm(s4u::Host* dest);

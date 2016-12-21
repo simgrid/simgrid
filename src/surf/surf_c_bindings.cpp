@@ -4,12 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "plugins/energy.hpp"
 #include "src/instr/instr_private.h"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
-#include "src/surf/HostImpl.hpp"
-#include "src/surf/network_interface.hpp"
-#include "surf_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
 

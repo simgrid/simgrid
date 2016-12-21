@@ -7,8 +7,6 @@
 #ifndef _SURF_MAXMIN_PRIVATE_H
 #define _SURF_MAXMIN_PRIVATE_H
 
-#include <xbt/base.h>
-
 #include "surf/maxmin.h"
 #include "xbt/swag.h"
 #include "xbt/mallocator.h"

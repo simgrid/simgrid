@@ -1,5 +1,4 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -10,7 +9,6 @@
 #include "surf/surf.h"
 #include "surf/maxmin.h"
 #include "src/surf/trace_mgr.hpp"
-#include <stdio.h>
 
 #define NO_MAX_DURATION -1.0
 
@@ -41,10 +39,6 @@ XBT_PRIVATE FILE *surf_fopen(const char *name, const char *mode);
  * case the function returns 0.
  */
 XBT_PRIVATE int __surf_is_absolute_file_path(const char *file_path);
-
-/**
- * Routing logic
- */
 
 extern XBT_PRIVATE simgrid::trace_mgr::future_evt_set *future_evt_set;
 
