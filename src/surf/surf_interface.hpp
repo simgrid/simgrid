@@ -6,14 +6,15 @@
 #ifndef SURF_MODEL_H_
 #define SURF_MODEL_H_
 
-#include <boost/intrusive/list.hpp>
-
 #include "xbt/signal.hpp"
 
 #include "src/surf/surf_private.h"
 #include "surf/surf.h"
 #include "surf/surf_routing.h"
 #include "xbt/str.h"
+
+#include <boost/intrusive/list.hpp>
+#include <string>
 
 #define NO_MAX_DURATION -1.0
 
