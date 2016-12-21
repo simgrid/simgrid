@@ -33,7 +33,6 @@ XBT_PRIVATE xbt_dynar_t mount_list = nullptr;
 namespace simgrid {
 namespace surf {
 
-simgrid::xbt::signal<void(sg_platf_link_cbarg_t)> on_link;
 simgrid::xbt::signal<void(sg_platf_cluster_cbarg_t)> on_cluster;
 simgrid::xbt::signal<void(void)> on_postparse;
 
@@ -55,7 +54,6 @@ void sg_platf_init() {
 
 /** Module management function: frees all internal data structures */
 void sg_platf_exit() {
-  simgrid::surf::on_link.disconnect_all_slots();
   simgrid::surf::on_cluster.disconnect_all_slots();
   simgrid::surf::on_postparse.disconnect_all_slots();
 
@@ -151,8 +149,6 @@ void sg_platf_new_link(sg_platf_link_cbarg_t link){
 
     xbt_free(link_name);
   }
-
-  simgrid::surf::on_link(link);
 }
 
 void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)

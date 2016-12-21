@@ -254,7 +254,6 @@ SG_END_DECL()
 namespace simgrid {
 namespace surf {
 
-extern XBT_PRIVATE simgrid::xbt::signal<void(sg_platf_link_cbarg_t)> on_link;
 extern XBT_PRIVATE simgrid::xbt::signal<void(sg_platf_cluster_cbarg_t)> on_cluster;
 
 }

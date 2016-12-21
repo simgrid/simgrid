@@ -9,6 +9,7 @@
 #include "simgrid/s4u/engine.hpp"
 #include "simgrid/s4u/host.hpp"
 #include "src/kernel/routing/NetZoneImpl.hpp"
+#include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.h"
 #include "xbt/graph.h"
@@ -204,44 +205,33 @@ void sg_instr_AS_end()
   }
 }
 
-static void instr_routing_parse_start_link (sg_platf_link_cbarg_t link)
+static void instr_routing_parse_start_link(simgrid::surf::Link* link)
 {
+  if (currentContainer.empty()) // No ongoing parsing. Are you creating the loopback?
+    return;
   container_t father = currentContainer.back();
 
-  double bandwidth_value = link->bandwidth;
-  double latency_value = link->latency;
-  std::vector<std::string> links_to_create;
+  double bandwidth_value = link->bandwidth();
+  double latency_value   = link->latency();
 
-  if (link->policy == SURF_LINK_FULLDUPLEX){
-    std::string id (link->id);
-    std::string up = id + "_UP";
-    std::string down = id + "_DOWN";
-    links_to_create.push_back(up);
-    links_to_create.push_back(down);
-  }else{
-    links_to_create.push_back(link->id);
-  }
+  container_t container = PJ_container_new(link->getName(), INSTR_LINK, father);
 
-  for (auto link_name: links_to_create){
-    container_t container = PJ_container_new (link_name.c_str(), INSTR_LINK, father);
-
-    if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (! TRACE_disable_link())) {
-      type_t bandwidth = PJ_type_get_or_null ("bandwidth", container->type);
-      if (bandwidth == nullptr){
-        bandwidth = PJ_type_variable_new ("bandwidth", nullptr, container->type);
-      }
-      type_t latency = PJ_type_get_or_null ("latency", container->type);
-      if (latency == nullptr){
-        latency = PJ_type_variable_new ("latency", nullptr, container->type);
-      }
-      new_pajeSetVariable (0, container, bandwidth, bandwidth_value);
-      new_pajeSetVariable (0, container, latency, latency_value);
+  if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (! TRACE_disable_link())) {
+    type_t bandwidth = PJ_type_get_or_null("bandwidth", container->type);
+    if (bandwidth == nullptr) {
+      bandwidth = PJ_type_variable_new("bandwidth", nullptr, container->type);
     }
-    if (TRACE_uncategorized()){
-      type_t bandwidth_used = PJ_type_get_or_null ("bandwidth_used", container->type);
-      if (bandwidth_used == nullptr){
-        PJ_type_variable_new ("bandwidth_used", "0.5 0.5 0.5", container->type);
-      }
+    type_t latency = PJ_type_get_or_null("latency", container->type);
+    if (latency == nullptr) {
+      latency = PJ_type_variable_new("latency", nullptr, container->type);
+    }
+    new_pajeSetVariable(0, container, bandwidth, bandwidth_value);
+    new_pajeSetVariable(0, container, latency, latency_value);
+  }
+  if (TRACE_uncategorized()) {
+    type_t bandwidth_used = PJ_type_get_or_null("bandwidth_used", container->type);
+    if (bandwidth_used == nullptr) {
+      PJ_type_variable_new("bandwidth_used", "0.5 0.5 0.5", container->type);
     }
   }
 }
@@ -331,7 +321,7 @@ void instr_routing_define_callbacks ()
   //always need the call backs to ASes (we need only the root AS),
   //to create the rootContainer and the rootType properly
   if (!TRACE_needs_platform()) return;
-  simgrid::surf::on_link.connect(instr_routing_parse_start_link);
+  simgrid::surf::Link::onCreation.connect(instr_routing_parse_start_link);
   simgrid::surf::on_postparse.connect(instr_routing_parse_end_platform);
 }
 
