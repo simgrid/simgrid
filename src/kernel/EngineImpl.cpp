@@ -8,21 +8,15 @@
 #include "src/kernel/routing/NetZoneImpl.hpp"
 #include <simgrid/s4u/host.hpp>
 
-xbt_dict_t netcards_dict;
-
 namespace simgrid {
 namespace kernel {
 
-EngineImpl::EngineImpl()
-{
-  netcards_dict = xbt_dict_new_homogeneous([](void* p) {
-    delete static_cast<simgrid::kernel::routing::NetCard*>(p);
-  });
-}
+EngineImpl::EngineImpl() = default;
 EngineImpl::~EngineImpl()
 {
   delete netRoot_;
-  xbt_dict_free(&netcards_dict);
+  for (auto kv : netcards_)
+    delete kv.second;
 }
 }
 }

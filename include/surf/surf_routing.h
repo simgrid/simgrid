@@ -15,8 +15,6 @@ SG_BEGIN_DECL()
 
 XBT_PUBLIC_DATA(int) SIMIX_STORAGE_LEVEL; //Simix storage level
 
-XBT_PUBLIC_DATA(xbt_dict_t) netcards_dict;
-
 XBT_PUBLIC_DATA(xbt_lib_t) storage_lib;
 XBT_PUBLIC_DATA(int) ROUTING_STORAGE_LEVEL;        //Routing storage level
 XBT_PUBLIC_DATA(int) ROUTING_STORAGE_HOST_LEVEL;

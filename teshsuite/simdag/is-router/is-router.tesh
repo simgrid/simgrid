@@ -1,6 +1,6 @@
 #! ./tesh
 
-$ ${bindir:=.}/is-router ../platforms/test_of_is_router.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/is-router ${srcdir}/teshsuite/simdag/platforms/test_of_is_router.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > Host count: 10, link number: 1
 >    - Seen: "host01". Type: host
@@ -14,6 +14,12 @@ $ ${bindir:=.}/is-router ../platforms/test_of_is_router.xml "--log=root.fmt:[%10
 >    - Seen: "host09". Type: host
 >    - Seen: "host10". Type: host
 > NetCards count: 21
+>    - Seen: "AS". Type: netzone
+>    - Seen: "AS0". Type: netzone
+>    - Seen: "AS1". Type: netzone
+>    - Seen: "AS2". Type: netzone
+>    - Seen: "AS3". Type: netzone
+>    - Seen: "AS4". Type: netzone
 >    - Seen: "host01". Type: host
 >    - Seen: "host02". Type: host
 >    - Seen: "host03". Type: host
@@ -23,15 +29,9 @@ $ ${bindir:=.}/is-router ../platforms/test_of_is_router.xml "--log=root.fmt:[%10
 >    - Seen: "host07". Type: host
 >    - Seen: "host08". Type: host
 >    - Seen: "host09". Type: host
+>    - Seen: "host10". Type: host
 >    - Seen: "router1". Type: router
 >    - Seen: "router2". Type: router
 >    - Seen: "router3". Type: router
 >    - Seen: "router4". Type: router
 >    - Seen: "router5". Type: router
->    - Seen: "host10". Type: host
->    - Seen: "AS0". Type: netzone
->    - Seen: "AS1". Type: netzone
->    - Seen: "AS2". Type: netzone
->    - Seen: "AS3". Type: netzone
->    - Seen: "AS4". Type: netzone
->    - Seen: "AS". Type: netzone

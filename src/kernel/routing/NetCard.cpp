@@ -22,7 +22,7 @@ NetCard::NetCard(std::string name, NetCard::Type componentType, NetZoneImpl* net
 {
   if (netzone_p != nullptr)
     id_ = netzone_p->addComponent(this);
-  xbt_dict_set(netcards_dict, name.c_str(), static_cast<void*>(this), nullptr);
+  simgrid::s4u::Engine::instance()->netcardRegister(this);
   simgrid::kernel::routing::NetCard::onCreation(this);
 }
 }

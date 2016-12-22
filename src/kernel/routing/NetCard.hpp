@@ -45,6 +45,8 @@ public:
 
   static simgrid::xbt::signal<void(NetCard*)> onCreation;
 
+  bool operator<(const NetCard &rhs) const { return name_ < rhs.name_; }
+
 private:
   unsigned int id_;
   std::string name_;

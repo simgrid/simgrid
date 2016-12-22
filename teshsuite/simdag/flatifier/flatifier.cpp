@@ -89,6 +89,10 @@ int main(int argc, char **argv)
 
   std::vector<simgrid::kernel::routing::NetCard*> netcardList;
   simgrid::s4u::Engine::instance()->netcardList(&netcardList);
+  std::sort(netcardList.begin(), netcardList.end(),
+      [](simgrid::kernel::routing::NetCard* a, simgrid::kernel::routing::NetCard* b) {
+      return a->name() < b->name();
+  });
 
   if (timings) {
     XBT_INFO("Parsing time: %fs (%zu hosts, %d links)", xbt_os_timer_elapsed(parse_time),

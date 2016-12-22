@@ -10,6 +10,7 @@
 
 #include <unordered_map>
 
+#include "simgrid/s4u/engine.hpp"
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/storage.hpp"
 #include "simgrid/simix.hpp"
@@ -53,7 +54,7 @@ Host::~Host()
 
   delete pimpl_;
   if (pimpl_netcard != nullptr) // not removed yet by a children class
-    xbt_dict_remove(netcards_dict, name_.c_str());
+    simgrid::s4u::Engine::instance()->netcardUnregister(pimpl_netcard);
   delete pimpl_cpu;
   delete mounts;
 }

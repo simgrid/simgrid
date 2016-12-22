@@ -39,7 +39,7 @@ NetZoneImpl::~NetZoneImpl()
   for (auto& kv : bypassRoutes_)
     delete kv.second;
 
-  xbt_dict_remove(netcards_dict, name_);
+  simgrid::s4u::Engine::instance()->netcardUnregister(netcard_);
 }
 
 simgrid::s4u::Host* NetZoneImpl::createHost(const char* name, std::vector<double>* speedPerPstate, int coreAmount)

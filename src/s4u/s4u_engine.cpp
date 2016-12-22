@@ -15,6 +15,8 @@
 #include "simgrid/simix.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/routing/NetZoneImpl.hpp"
+#include "src/kernel/routing/NetCard.hpp"
+
 
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.h"               // routing_platf. FIXME:KILLME. SOON
@@ -114,16 +116,29 @@ NetZone* Engine::netzoneByNameOrNull(const char* name)
 /** @brief Retrieve the netcard of the given name (or nullptr if not found) */
 simgrid::kernel::routing::NetCard* Engine::netcardByNameOrNull(const char* name)
 {
-  return static_cast<simgrid::kernel::routing::NetCard*>(xbt_dict_get_or_null(netcards_dict, name));
+  if (pimpl->netcards_.find(name) == pimpl->netcards_.end())
+    return nullptr;
+  return pimpl->netcards_.at(name);
 }
+/** @brief Fill the provided vector with all existing netcards */
 void Engine::netcardList(std::vector<simgrid::kernel::routing::NetCard*>* list)
 {
-  xbt_lib_cursor_t cursor = nullptr;
-  char* key;
-  void* data;
-  xbt_dict_foreach (netcards_dict, cursor, key, data) {
-    list->push_back(static_cast<simgrid::kernel::routing::NetCard*>(data));
-  }
+  for (auto kv: pimpl->netcards_)
+    list->push_back(kv.second);
+}
+/** @brief Register a new netcard to the system */
+void Engine::netcardRegister(simgrid::kernel::routing::NetCard* card)
+{
+//  simgrid::simix::kernelImmediate([&]{ FIXME: this segfaults in set_thread
+      pimpl->netcards_[card->name()] = card;
+//  });
+}
+/** @brief Unregister a given netcard */
+void Engine::netcardUnregister(simgrid::kernel::routing::NetCard* card)
+{
+  simgrid::simix::kernelImmediate([&]{
+      pimpl->netcards_.erase(card->name());
+  });
 }
 }
 }

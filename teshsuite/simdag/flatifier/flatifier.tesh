@@ -373,8 +373,8 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_clusters.xml "--log=root.fmt:[%
 >   <host id="alice1.crepe.fr" speed="1000000000"/>
 >   <host id="bob0.hamburger.edu" speed="1000000000"/>
 >   <host id="bob1.hamburger.edu" speed="1000000000"/>
->   <router id="bobbob_cluster_router.hamburger.edu"/>
 >   <router id="alicealice_cluster_router.crepe.fr"/>
+>   <router id="bobbob_cluster_router.hamburger.edu"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
 >   <link id="alice_cluster_backbone" bandwidth="2250000000" latency="0.000500000"/>
 >   <link id="alice_cluster_link_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
@@ -399,11 +399,11 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_clusters.xml "--log=root.fmt:[%
 >   <route src="alice0.crepe.fr" dst="bob1.hamburger.edu">
 >   <link_ctn id="alice_cluster_link_0_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_1_DOWN"/>
 >   </route>
->   <route src="alice0.crepe.fr" dst="bobbob_cluster_router.hamburger.edu">
->   <link_ctn id="alice_cluster_link_0_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/>
->   </route>
 >   <route src="alice0.crepe.fr" dst="alicealice_cluster_router.crepe.fr">
 >   <link_ctn id="alice_cluster_link_0_UP"/><link_ctn id="alice_cluster_backbone"/>
+>   </route>
+>   <route src="alice0.crepe.fr" dst="bobbob_cluster_router.hamburger.edu">
+>   <link_ctn id="alice_cluster_link_0_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/>
 >   </route>
 >   <route src="alice1.crepe.fr" dst="alice0.crepe.fr">
 >   <link_ctn id="alice_cluster_link_1_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
@@ -417,11 +417,11 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_clusters.xml "--log=root.fmt:[%
 >   <route src="alice1.crepe.fr" dst="bob1.hamburger.edu">
 >   <link_ctn id="alice_cluster_link_1_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_1_DOWN"/>
 >   </route>
->   <route src="alice1.crepe.fr" dst="bobbob_cluster_router.hamburger.edu">
->   <link_ctn id="alice_cluster_link_1_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/>
->   </route>
 >   <route src="alice1.crepe.fr" dst="alicealice_cluster_router.crepe.fr">
 >   <link_ctn id="alice_cluster_link_1_UP"/><link_ctn id="alice_cluster_backbone"/>
+>   </route>
+>   <route src="alice1.crepe.fr" dst="bobbob_cluster_router.hamburger.edu">
+>   <link_ctn id="alice_cluster_link_1_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/>
 >   </route>
 >   <route src="bob0.hamburger.edu" dst="alice0.crepe.fr">
 >   <link_ctn id="bob_cluster_link_0_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
@@ -435,11 +435,11 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_clusters.xml "--log=root.fmt:[%
 >   <route src="bob0.hamburger.edu" dst="bob1.hamburger.edu">
 >   <link_ctn id="bob_cluster_link_0_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_1_DOWN"/>
 >   </route>
->   <route src="bob0.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   <link_ctn id="bob_cluster_link_0_UP"/><link_ctn id="bob_cluster_backbone"/>
->   </route>
 >   <route src="bob0.hamburger.edu" dst="alicealice_cluster_router.crepe.fr">
 >   <link_ctn id="bob_cluster_link_0_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/>
+>   </route>
+>   <route src="bob0.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+>   <link_ctn id="bob_cluster_link_0_UP"/><link_ctn id="bob_cluster_backbone"/>
 >   </route>
 >   <route src="bob1.hamburger.edu" dst="alice0.crepe.fr">
 >   <link_ctn id="bob_cluster_link_1_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
@@ -453,35 +453,17 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_clusters.xml "--log=root.fmt:[%
 >   <route src="bob1.hamburger.edu" dst="bob1.hamburger.edu">
 >   <link_ctn id="bob_cluster_link_1_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_1_DOWN"/>
 >   </route>
->   <route src="bob1.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   <link_ctn id="bob_cluster_link_1_UP"/><link_ctn id="bob_cluster_backbone"/>
->   </route>
 >   <route src="bob1.hamburger.edu" dst="alicealice_cluster_router.crepe.fr">
 >   <link_ctn id="bob_cluster_link_1_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/>
 >   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   <link_ctn id="bob_cluster_backbone"/>
->   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="alicealice_cluster_router.crepe.fr">
->   <link_ctn id="backbone"/>
->   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="alice0.crepe.fr">
->   <link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
->   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="alice1.crepe.fr">
->   <link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_1_DOWN"/>
->   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="bob0.hamburger.edu">
->   <link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_0_DOWN"/>
->   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="bob1.hamburger.edu">
->   <link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_1_DOWN"/>
->   </route>
->   <route src="alicealice_cluster_router.crepe.fr" dst="bobbob_cluster_router.hamburger.edu">
->   <link_ctn id="backbone"/>
+>   <route src="bob1.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+>   <link_ctn id="bob_cluster_link_1_UP"/><link_ctn id="bob_cluster_backbone"/>
 >   </route>
 >   <route src="alicealice_cluster_router.crepe.fr" dst="alicealice_cluster_router.crepe.fr">
 >   <link_ctn id="alice_cluster_backbone"/>
+>   </route>
+>   <route src="alicealice_cluster_router.crepe.fr" dst="bobbob_cluster_router.hamburger.edu">
+>   <link_ctn id="backbone"/>
 >   </route>
 >   <route src="alicealice_cluster_router.crepe.fr" dst="alice0.crepe.fr">
 >   <link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
@@ -494,6 +476,24 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_clusters.xml "--log=root.fmt:[%
 >   </route>
 >   <route src="alicealice_cluster_router.crepe.fr" dst="bob1.hamburger.edu">
 >   <link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_1_DOWN"/>
+>   </route>
+>   <route src="bobbob_cluster_router.hamburger.edu" dst="alicealice_cluster_router.crepe.fr">
+>   <link_ctn id="backbone"/>
+>   </route>
+>   <route src="bobbob_cluster_router.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+>   <link_ctn id="bob_cluster_backbone"/>
+>   </route>
+>   <route src="bobbob_cluster_router.hamburger.edu" dst="alice0.crepe.fr">
+>   <link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
+>   </route>
+>   <route src="bobbob_cluster_router.hamburger.edu" dst="alice1.crepe.fr">
+>   <link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_1_DOWN"/>
+>   </route>
+>   <route src="bobbob_cluster_router.hamburger.edu" dst="bob0.hamburger.edu">
+>   <link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_0_DOWN"/>
+>   </route>
+>   <route src="bobbob_cluster_router.hamburger.edu" dst="bob1.hamburger.edu">
+>   <link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_1_DOWN"/>
 >   </route>
 > </AS>
 > </platform>
@@ -559,8 +559,8 @@ $ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/bypassASroute.xm
 >   <host id="1" speed="1000000000"/>
 >   <host id="2" speed="1000000000"/>
 >   <host id="3" speed="1000000000"/>
->   <router id="my_cluster_2_router"/>
 >   <router id="my_cluster_1_router"/>
+>   <router id="my_cluster_2_router"/>
 >   <router id="my_cluster_3_router"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
 >   <link id="link1" bandwidth="1250000000" latency="0.000500000"/>
@@ -582,11 +582,11 @@ $ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/bypassASroute.xm
 >   <route src="1" dst="3">
 >   <link_ctn id="my_cluster_1_link_1_UP"/><link_ctn id="link1"/><link_ctn id="link3"/><link_ctn id="my_cluster_3_link_3_DOWN"/>
 >   </route>
->   <route src="1" dst="my_cluster_2_router">
->   <link_ctn id="my_cluster_1_link_1_UP"/><link_ctn id="link_tmp"/>
->   </route>
 >   <route src="1" dst="my_cluster_1_router">
 >   <link_ctn id="my_cluster_1_link_1_UP"/>
+>   </route>
+>   <route src="1" dst="my_cluster_2_router">
+>   <link_ctn id="my_cluster_1_link_1_UP"/><link_ctn id="link_tmp"/>
 >   </route>
 >   <route src="1" dst="my_cluster_3_router">
 >   <link_ctn id="my_cluster_1_link_1_UP"/><link_ctn id="link1"/><link_ctn id="link3"/>
@@ -600,11 +600,11 @@ $ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/bypassASroute.xm
 >   <route src="2" dst="3">
 >   <link_ctn id="my_cluster_2_link_2_UP"/><link_ctn id="link2"/><link_ctn id="link3"/><link_ctn id="my_cluster_3_link_3_DOWN"/>
 >   </route>
->   <route src="2" dst="my_cluster_2_router">
->   <link_ctn id="my_cluster_2_link_2_UP"/>
->   </route>
 >   <route src="2" dst="my_cluster_1_router">
 >   <link_ctn id="my_cluster_2_link_2_UP"/><link_ctn id="link2"/><link_ctn id="link1"/>
+>   </route>
+>   <route src="2" dst="my_cluster_2_router">
+>   <link_ctn id="my_cluster_2_link_2_UP"/>
 >   </route>
 >   <route src="2" dst="my_cluster_3_router">
 >   <link_ctn id="my_cluster_2_link_2_UP"/><link_ctn id="link2"/><link_ctn id="link3"/>
@@ -618,38 +618,20 @@ $ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/bypassASroute.xm
 >   <route src="3" dst="3">
 >   <link_ctn id="my_cluster_3_link_3_UP"/><link_ctn id="my_cluster_3_link_3_DOWN"/>
 >   </route>
->   <route src="3" dst="my_cluster_2_router">
->   <link_ctn id="my_cluster_3_link_3_UP"/><link_ctn id="link3"/><link_ctn id="link2"/>
->   </route>
 >   <route src="3" dst="my_cluster_1_router">
 >   <link_ctn id="my_cluster_3_link_3_UP"/><link_ctn id="link3"/><link_ctn id="link1"/>
+>   </route>
+>   <route src="3" dst="my_cluster_2_router">
+>   <link_ctn id="my_cluster_3_link_3_UP"/><link_ctn id="link3"/><link_ctn id="link2"/>
 >   </route>
 >   <route src="3" dst="my_cluster_3_router">
 >   <link_ctn id="my_cluster_3_link_3_UP"/>
 >   </route>
->   <route src="my_cluster_2_router" dst="my_cluster_2_router">
+>   <route src="my_cluster_1_router" dst="my_cluster_1_router">
 >   
->   </route>
->   <route src="my_cluster_2_router" dst="my_cluster_1_router">
->   <link_ctn id="link2"/><link_ctn id="link1"/>
->   </route>
->   <route src="my_cluster_2_router" dst="my_cluster_3_router">
->   <link_ctn id="link2"/><link_ctn id="link3"/>
->   </route>
->   <route src="my_cluster_2_router" dst="1">
->   <link_ctn id="link2"/><link_ctn id="link1"/><link_ctn id="my_cluster_1_link_1_DOWN"/>
->   </route>
->   <route src="my_cluster_2_router" dst="2">
->   <link_ctn id="my_cluster_2_link_2_DOWN"/>
->   </route>
->   <route src="my_cluster_2_router" dst="3">
->   <link_ctn id="link2"/><link_ctn id="link3"/><link_ctn id="my_cluster_3_link_3_DOWN"/>
 >   </route>
 >   <route src="my_cluster_1_router" dst="my_cluster_2_router">
 >   <link_ctn id="link_tmp"/>
->   </route>
->   <route src="my_cluster_1_router" dst="my_cluster_1_router">
->   
 >   </route>
 >   <route src="my_cluster_1_router" dst="my_cluster_3_router">
 >   <link_ctn id="link1"/><link_ctn id="link3"/>
@@ -663,11 +645,29 @@ $ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/bypassASroute.xm
 >   <route src="my_cluster_1_router" dst="3">
 >   <link_ctn id="link1"/><link_ctn id="link3"/><link_ctn id="my_cluster_3_link_3_DOWN"/>
 >   </route>
->   <route src="my_cluster_3_router" dst="my_cluster_2_router">
->   <link_ctn id="link3"/><link_ctn id="link2"/>
+>   <route src="my_cluster_2_router" dst="my_cluster_1_router">
+>   <link_ctn id="link2"/><link_ctn id="link1"/>
+>   </route>
+>   <route src="my_cluster_2_router" dst="my_cluster_2_router">
+>   
+>   </route>
+>   <route src="my_cluster_2_router" dst="my_cluster_3_router">
+>   <link_ctn id="link2"/><link_ctn id="link3"/>
+>   </route>
+>   <route src="my_cluster_2_router" dst="1">
+>   <link_ctn id="link2"/><link_ctn id="link1"/><link_ctn id="my_cluster_1_link_1_DOWN"/>
+>   </route>
+>   <route src="my_cluster_2_router" dst="2">
+>   <link_ctn id="my_cluster_2_link_2_DOWN"/>
+>   </route>
+>   <route src="my_cluster_2_router" dst="3">
+>   <link_ctn id="link2"/><link_ctn id="link3"/><link_ctn id="my_cluster_3_link_3_DOWN"/>
 >   </route>
 >   <route src="my_cluster_3_router" dst="my_cluster_1_router">
 >   <link_ctn id="link3"/><link_ctn id="link1"/>
+>   </route>
+>   <route src="my_cluster_3_router" dst="my_cluster_2_router">
+>   <link_ctn id="link3"/><link_ctn id="link2"/>
 >   </route>
 >   <route src="my_cluster_3_router" dst="my_cluster_3_router">
 >   
