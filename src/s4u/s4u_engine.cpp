@@ -138,6 +138,7 @@ void Engine::netcardUnregister(simgrid::kernel::routing::NetCard* card)
 {
   simgrid::simix::kernelImmediate([&]{
       pimpl->netcards_.erase(card->name());
+      delete card;
   });
 }
 }
