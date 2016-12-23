@@ -6,6 +6,7 @@
 #include <simgrid/s4u/forward.hpp>
 #include <xbt/dict.h>
 
+#include <string>
 #include <unordered_map>
 
 namespace simgrid {
