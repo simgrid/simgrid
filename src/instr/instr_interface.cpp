@@ -56,7 +56,7 @@ static xbt_dynar_t instr_dict_to_dynar (xbt_dict_t filter)
  *
  *  \param category The name of the new tracing category to be created.
  *
- *  \see TRACE_category_with_color, MSG_task_set_category, SD_task_set_category
+ *  \see TRACE_category_with_color, MSG_task_set_category
  */
 void TRACE_category(const char *category)
 {
@@ -76,7 +76,7 @@ void TRACE_category(const char *category)
  *  \param color The color of the category (see \ref outcomes_vizu to
  *  know how to correctly specify the color)
  *
- *  \see MSG_task_set_category, SD_task_set_category
+ *  \see MSG_task_set_category
  */
 void TRACE_category_with_color (const char *category, const char *color)
 {
@@ -97,10 +97,7 @@ void TRACE_category_with_color (const char *category, const char *color)
   char final_color[INSTR_DEFAULT_STR_SIZE];
   if (!color){
     //generate a random color
-    double red = drand48();
-    double green = drand48();
-    double blue = drand48();
-    snprintf (final_color, INSTR_DEFAULT_STR_SIZE, "%f %f %f", red, green, blue);
+    snprintf (final_color, INSTR_DEFAULT_STR_SIZE, "%f %f %f", /*red*/drand48(), /*green*/drand48(), /*blue*/drand48());
   }else{
     snprintf (final_color, INSTR_DEFAULT_STR_SIZE, "%s", color);
   }
@@ -114,14 +111,13 @@ void TRACE_category_with_color (const char *category, const char *color)
 /** \ingroup TRACE_category
  *  \brief Get declared categories
  *
- * This function should be used to get categories that were already declared with #TRACE_category or with
- * #TRACE_category_with_color.
+ * This function should be used to get categories declared with #TRACE_category or with #TRACE_category_with_color.
  *
  * See \ref outcomes_vizu for details on how to trace the (categorized) resource utilization.
  *
  * \return A dynar with the declared categories, must be freed with xbt_dynar_free.
  *
- *  \see MSG_task_set_category, SD_task_set_category
+ *  \see MSG_task_set_category
  */
 xbt_dynar_t TRACE_get_categories ()
 {
@@ -151,9 +147,8 @@ void TRACE_declare_mark(const char *mark_type)
     THROWF (tracing_error, 1, "mark_type is nullptr");
 
   //check if mark_type is already declared
-  if (xbt_dict_get_or_null(declared_marks, mark_type) != nullptr) {
+  if (xbt_dict_get_or_null(declared_marks, mark_type) != nullptr)
     THROWF (tracing_error, 1, "mark_type with name (%s) is already declared", mark_type);
-  }
 
   XBT_DEBUG("MARK,declare %s", mark_type);
   PJ_type_event_new(mark_type, PJ_type_get_root());
@@ -165,9 +160,8 @@ void TRACE_declare_mark(const char *mark_type)
  *
  * This function declares a new colored value for a Paje event type in the trace file that can be used by simulators to
  * declare application-level marks. This function is independent of which API is used in SimGrid. The color needs to be
- * a string with three numbers separated by spaces in the range [0,1].
- * A light-gray color can be specified using "0.7 0.7 0.7" as color. If a nullptr color is provided, the color used will
- * be white ("1 1 1").
+ * a string with three numbers separated by spaces in the range [0,1]. A light-gray color can be specified using
+ * "0.7 0.7 0.7" as color. If a nullptr color is provided, the color used will be white ("1 1 1").
  *
  * \param mark_type The name of the new type.
  * \param mark_value The name of the new value for this type.
@@ -187,9 +181,8 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
     THROWF (tracing_error, 1, "mark_value is nullptr");
 
   type_t type = PJ_type_get (mark_type, PJ_type_get_root());
-  if (!type){
+  if (!type)
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
-  }
 
   char white[INSTR_DEFAULT_STR_SIZE] = "1.0 1.0 1.0";
   if (!mark_color)
@@ -203,8 +196,7 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
  * \brief Declare a new value for a previously declared mark type.
  *
  * This function declares a new value for a Paje event type in the trace file that can be used by simulators to declare
- * application-level marks. This function is independent of which API is used in SimGrid. Calling this function is the
- * same as calling \ref TRACE_declare_mark_value_with_color with a nullptr color.
+ * application-level marks. This function is independent of which API is used in SimGrid.
  *
  * \param mark_type The name of the new type.
  * \param mark_value The name of the new value for this type.
@@ -243,9 +235,8 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
 
   //check if mark_type is already declared
   type_t type = PJ_type_get (mark_type, PJ_type_get_root());
-  if (!type){
+  if (!type)
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
-  }
 
   val_t value = PJ_value_get (mark_value, type);
   XBT_DEBUG("MARK %s %s", mark_type, mark_value);
