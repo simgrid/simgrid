@@ -13,6 +13,8 @@ The Chrismas Pi Release.
    - Routing code rewritten for readability
    - Virtual Machines almost turned into a plugin
    - MSG, SimDag, MPI interfaces mostly unchanged
+   
+ * The model-checker now works on NetBSD too.
                     _               _____  _ _____
 __   _____ _ __ ___(_) ___  _ __   |___ / / |___ /
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | | |_ \
