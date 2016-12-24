@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2016. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,12 +8,9 @@
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
 
-static void delete_mysocket(void* p)
-{
+xbt_dict_t flowFromSock = xbt_dict_new_homogeneous([](void *p) {
   delete (SgFlow*)p;
-}
-xbt_dict_t flowFromSock = xbt_dict_new_homogeneous(delete_mysocket);
-; // ns3::sock -> SgFlow
+}); // ns3::sock -> SgFlow
 
 static void receive_callback(ns3::Ptr<ns3::Socket> socket);
 static void send_callback(ns3::Ptr<ns3::Socket> sock, uint32_t txSpace);
