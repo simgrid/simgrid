@@ -1,4 +1,4 @@
-SimGrid (3.14) UNRELEASED; urgency=low
+SimGrid (3.14) stable; urgency=low
 
  Documentation
  * The whole documentation was reworked and reorganized. There is
@@ -69,7 +69,7 @@ SimGrid (3.14) UNRELEASED; urgency=low
  * ex/app_tokenring: new example, very similar to the MSG Token Ring
  * ex/async_waitAll: new example, on asynchronous communications
 
- -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Sat Dec 24 22:34:26 CET 2016 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.13) stable; urgency=low
 
