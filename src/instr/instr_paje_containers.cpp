@@ -25,9 +25,8 @@ xbt_dict_t trivaEdgeTypes = nullptr;     /* all link types defined */
 
 long long int instr_new_paje_id ()
 {
-  static long long int type_id = -1;
-  type_id++;
-  return type_id;
+  static long long int type_id = 0;
+  return type_id++;
 }
 
 void PJ_container_alloc ()

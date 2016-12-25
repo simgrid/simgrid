@@ -21,7 +21,9 @@ static void __TRACE_surf_check_variable_set_to_zero(double now, const char *vari
    */
 
   // create a key considering the resource and variable
-  char *key = bprintf ("%s%s", resource, variable);
+  int n = strlen(variable)+strlen(resource)+1;
+  char *key = (char*)xbt_malloc(n*sizeof(char));
+  snprintf (key, n, "%s%s", resource, variable);
 
   // check if key exists: if it doesn't, set the variable to zero and mark this in the dict
   if (!xbt_dict_get_or_null(platform_variables, key)) {
