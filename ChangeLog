@@ -6,6 +6,7 @@ SimGrid (3.14) stable; urgency=low
 
  Infrastructure
  * We now need python3 for our testing infrastructure.
+ * Model checking needs libevent
 
  SMPI
  * Privatization is now activated by default in smpirun
@@ -24,6 +25,16 @@ SimGrid (3.14) stable; urgency=low
 
  * smpi/cpu-threshold:-1 should become smpi/simulate-computation:no
    smpi/running-power    is renamed to smpi/host-speed
+
+ * smpi/grow-injected-times option to enable or disable multiplication of the 
+   timings injected in MPI_Iprobe, or MPI_Test. Enabled by default, which can 
+   make simulation less precise (but also much faster).
+
+ * smpirun script should be (much) faster for large deployments.
+
+ * SMPI tracing : fixed issue with poor matching of send/receives.
+
+ * Replay : Fix broken waitall
 
  New functions and features
  * MSG_parallel_task_execute_with_timeout, to timeout computations.
@@ -58,6 +69,13 @@ SimGrid (3.14) stable; urgency=low
    would have hoped here.
  * xbt_os_sem_get_value: unused internally, deprecated on OS X El Capitan
  * Option network/coordinates is now useless and should be dropped.
+ 
+ Storage: 
+ * Added option storage/max_file_descriptors to allow more than 1024 files opened
+
+ SURF:
+ * Added option maxmin/concurrency_limit to allow more than 100 processes per host
+ * Added Dragonfly topology support
 
  XML:
  * Add Exa- and Peta- units such as EiB, EB, Eib, Eb for size, and
@@ -68,6 +86,10 @@ SimGrid (3.14) stable; urgency=low
  * New functions: msg.Comm.waitAll() and msg.Comm.waitAny()
  * ex/app_tokenring: new example, very similar to the MSG Token Ring
  * ex/async_waitAll: new example, on asynchronous communications
+
+ MSG:
+ * Memory usage should be decreased for simulations with a large number 
+  of processes. This also helps for SMPI.
 
  -- Sat Dec 24 22:34:26 CET 2016 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
