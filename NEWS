@@ -5,7 +5,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / / | || |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_|  |_|
                Dec 24 2016
 
-The Chrismas Pi Release.
+The Christmas Pi Release.
 
  * Documentation reorganized and improved
 
@@ -14,7 +14,7 @@ The Chrismas Pi Release.
    - Virtual Machines almost turned into a plugin
    - MSG, SimDag, MPI interfaces mostly unchanged
    
- * The model-checker now works on NetBSD too.
+ * The model-checker now works on FreeBSD too.
                     _               _____  _ _____
 __   _____ _ __ ___(_) ___  _ __   |___ / / |___ /
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | | |_ \
