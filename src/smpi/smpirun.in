@@ -414,7 +414,7 @@ set -- $hostnames
 ##---- generate <process> tags------------------------------
 #prepare arguments at once
 for ARG in $PROC_ARGS; do
-  ARGS="$ARGS""<argument value=\"${ARG}\"/>
+  XML_ARGS="${XML_ARGS}""<argument value=\"${ARG}\"/>
 "
 done
 
@@ -438,7 +438,7 @@ do
             echo "    <argument value=\"$(echo $hosttraces|cut -d' ' -f1)\"/>" >> ${APPLICATIONTMP}
         fi
     else 
-    echo ${ARGS} >> ${APPLICATIONTMP}
+    echo ${XML_ARGS} >> ${APPLICATIONTMP}
     fi
     echo "  </process>" >> ${APPLICATIONTMP}
 done
