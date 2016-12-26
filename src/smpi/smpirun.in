@@ -513,6 +513,22 @@ wait $pid
 status=$?
 pid=""
 
+# Keep temporary files on failures to help debugging
+#
+if [ ${status} -ne 0 ] ; then
+    if [ -z ${KEEP} ] ; then
+        echo ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PRIVATIZE} ${PLATFORMTMP} ${APPLICATIONTMP}
+        if [ ${HOSTFILETMP} = 1 ] ; then
+            echo "Generated hostfile ${HOSTFILE} kept."
+        fi
+        if [ ${UNROLLEDHOSTFILETMP} = 1 ] ; then
+            echo "Generated unrolled hostfile ${UNROLLEDHOSTFILE} kept."
+        fi
+    fi
+    echo "Execution failed with code ${status}."
+    KEEP=true
+fi
+
 smpirun_cleanup
 
 exit $status
