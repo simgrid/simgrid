@@ -21,7 +21,6 @@
       - \ref XBT_fifo
       - \ref XBT_swag
       - \ref XBT_heap
-      - \ref XBT_peer
       - @ref xbt_strbuff
     - \ref XBT_misc
       - \ref XBT_graph
@@ -87,7 +86,6 @@
   @{ */
      /** @defgroup XBT_graph General purpose graph library */
      /** @defgroup XBT_parmap Parallel map */    
-     /** @defgroup XBT_peer Peer */	
      /** @defgroup XBT_synchro Simulated Synchronization */	
      /** @defgroup XBT_thread Thread stuff */	
      /** @defgroup XBT_context Portable context implementation */		
