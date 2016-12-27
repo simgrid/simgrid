@@ -72,10 +72,8 @@ public:
   FatTreeNode* downNode;
 };
 
-/**
- * \class AsClusterFatTree
- *
- * \brief Fat tree representation and routing.
+/** @ingroup ROUTING_API
+ * @brief NetZone using a Fat-Tree topology
  *
  * Generate fat trees according to the topology asked for, according to:
  * Eitan Zahavi, D-Mod-K Routing Providing Non-Blocking Traffic for Shift

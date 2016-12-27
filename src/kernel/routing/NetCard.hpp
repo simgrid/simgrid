@@ -19,8 +19,8 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-/** @ingroup SURF_routing_interface
- * @brief Network cards are the vertices in the graph representing the network, used to compute paths between nodes.
+/** @ingroup ROUTING_API
+ *  @brief Network cards are the vertices in the graph representing the network, used to compute paths between nodes.
  *
  * @details This represents a position in the network. One can route information between two netcards
  */

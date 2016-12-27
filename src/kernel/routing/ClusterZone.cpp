@@ -26,16 +26,17 @@ void ClusterZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg
   xbt_assert(!privateLinks_.empty(),
              "Cluster routing: no links attached to the source node - did you use host_link tag?");
 
-  if (!src->isRouter()) { // No specific link for router
+  if ((src->id() == dst->id()) && hasLoopback_) {
+    xbt_assert(!src->isRouter(), "Routing from a cluster private router to itself is meaningless");
 
-    if ((src->id() == dst->id()) && hasLoopback_) {
-      std::pair<Link*, Link*> info = privateLinks_.at(src->id() * linkCountPerNode_);
-      route->link_list->push_back(info.first);
-      if (lat)
-        *lat += info.first->latency();
-      return;
-    }
+    std::pair<Link*, Link*> info = privateLinks_.at(src->id() * linkCountPerNode_);
+    route->link_list->push_back(info.first);
+    if (lat)
+      *lat += info.first->latency();
+    return;
+  }
 
+  if (!src->isRouter()) { // No private link for the private router
     if (hasLimiter_) { // limiter for sender
       std::pair<Link*, Link*> info = privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0));
       route->link_list->push_back(info.first);
@@ -57,8 +58,8 @@ void ClusterZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg
   }
 
   if (!dst->isRouter()) { // No specific link for router
-    std::pair<Link*, Link*> info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_ + hasLimiter_);
 
+    std::pair<Link*, Link*> info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_ + hasLimiter_);
     if (info.second) { // link down
       route->link_list->push_back(info.second);
       if (lat)
@@ -116,7 +117,7 @@ void ClusterZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges
   }
 }
 
-void ClusterZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int, int position)
+void ClusterZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int /*rank*/, int position)
 {
   char* link_id = bprintf("%s_link_%d", cluster->id, id);
 

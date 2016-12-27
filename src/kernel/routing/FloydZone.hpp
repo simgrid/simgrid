@@ -12,7 +12,15 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-/** Floyd routing data: slow initialization, fast lookup, lesser memory requirements, shortest path routing only */
+/** @ingroup ROUTING_API
+ *  @brief NetZone with an explicit routing computed at initialization with Floyd-Warshal
+ *
+ *  The path between components is computed at creation time from every one-hop links,
+ *  using the Floyd-Warshal algorithm.
+ *
+ *  This result in rather small platform file, slow initialization time,  and intermediate memory requirements
+ *  (somewhere between the one of @{DijkstraZone} and the one of @{FullZone}).
+ */
 class XBT_PRIVATE FloydZone : public RoutedZone {
 public:
   explicit FloydZone(NetZone* father, const char* name);

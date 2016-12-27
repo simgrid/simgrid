@@ -21,20 +21,21 @@ class EngineImpl;
 namespace routing {
 class BypassRoute;
 
-/** @brief Networking Zones
+/** @ingroup ROUTING_API
+ *  @brief Private implementation of the Networking Zones
  *
- * A netzone is a network container, in charge of routing information between elements (hosts) and to the nearby
- * netzones. In SimGrid, there is a hierarchy of netzones, ie a tree with a unique root NetZone, that you can retrieve
- * from the s4u::Engine.
+ * A netzone is a network container, in charge of routing information between elements (hosts and sub-netzones)
+ * and to the nearby netzones. In SimGrid, there is a hierarchy of netzones, ie a tree with a unique root
+ * NetZone, that you can retrieve with simgrid::s4u::Engine::netRoot().
  *
  * The purpose of the kernel::routing module is to retrieve the routing path between two points in a time- and
  * space-efficient manner. This is done by NetZoneImpl::getGlobalRoute(), called when creating a communication to
  * retrieve both the list of links that the create communication will use, and the summed latency that these
  * links represent.
  *
- * The network could recompute the latency by itself from the list, but it would require an additional link
- * set traversal. This operation being on the critical path of SimGrid, the routing computes the latency on the
- * behalf of the network.
+ * The network model could recompute the latency by itself from the list, but it would require an additional
+ * traversal of the link set. This operation being on the critical path of SimGrid, the routing computes the
+ * latency on the behalf of the network while constructing the link set.
  *
  * Finding the path between two nodes is rather complex because we navigate a hierarchy of netzones, each of them
  * being a full network. In addition, the routing can declare shortcuts (called bypasses), either within a NetZone

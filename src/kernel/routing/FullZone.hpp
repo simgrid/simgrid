@@ -12,7 +12,13 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-/** Full routing: fast, large memory requirements, fully expressive */
+/** @ingroup ROUTING_API
+ *  @brief NetZone with an explicit routing provided by the user
+ *
+ *  The full communication matrix is provided at creation, so this model
+ *  has the highest expressive power and the lowest computational requirements,
+ *  but also the highest memory requirements (both in platform file and in memory).
+ */
 class XBT_PRIVATE FullZone : public RoutedZone {
 public:
   explicit FullZone(NetZone* father, const char* name);

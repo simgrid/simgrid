@@ -14,6 +14,57 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
+/** @ingroup ROUTING_API
+ *  @brief NetZone where each component is connected through a private link
+ *
+ *  Cluster zones have a collection of private links that interconnect their components.
+ *  This is particularly well adapted to model a collection of elements interconnected
+ *  through a hub or a through a switch.
+ *
+ *  In a cluster, each component are given from 1 to 3 private links at creation:
+ *   - Private link (mandatory): link connecting the component to the cluster core.
+ *   - Limiter (optional): Additional link on the way from the component to the cluster core
+ *   - Loopback (optional): non-shared link connecting the component to itself.
+ *
+ *  Then, the cluster core may be constituted of a specific backbone link or not;
+ *  A backbone can easily represent a network connected in a Hub.
+ *  If you want to model a switch, either don't use a backbone at all,
+ *  or use a fatpipe link (non-shared link) to represent the switch backplane.
+ *
+ *  \verbatim
+ *   (outer world)
+ *         |
+ *   ======+====== <--backbone
+ *   |   |   |   |
+ * l0| l1| l2| l4| <-- private links + limiters
+ *   |   |   |   |
+ *   X   X   X   X <-- cluster's hosts
+ * \endverbatim
+ *
+ * \verbatim
+ *   (outer world)
+ *         |       <-- NO backbone
+ *        /|\
+ *       / | \     <-- private links + limiters     __________
+ *      /  |  \
+ *  l0 / l1|   \l2
+ *    /    |    \
+ * host0 host1 host2
+ * \endverbatim
+
+ *  So, a communication from an host A to an host B goes through the following links (if they exist):
+ *   <tt>limiter(A)_UP, private(A)_UP, backbone, private(B)_DOWN, limiter(B)_DOWN.</tt>
+ *  link_UP and link_DOWN usually share the exact same characteristics, but their
+ *  performance are not shared, to model the fact that TCP links are full-duplex.
+ *
+ *  A cluster is connected to the outer world through a router that is connected
+ *  directly to the cluster's backbone (no private link).
+ *
+ *  A communication from an host A to the outer world goes through the following links:
+ *   <tt>limiter(A)_UP, private(A)_UP, backbone</tt>
+ *  (because the private router is directly connected to the cluster core).
+ */
+
 class XBT_PRIVATE ClusterZone : public NetZoneImpl {
 public:
   explicit ClusterZone(NetZone* father, const char* name);

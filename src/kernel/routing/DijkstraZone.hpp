@@ -30,6 +30,16 @@ namespace routing {
  * Classes *
  ***********/
 
+/** @ingroup ROUTING_API
+ *  @brief NetZone with an explicit routing computed on need with Dijsktra
+ *
+ *  The path between components is computed each time you request it,
+ *  using the Dijkstra algorithm. A cache can be used to reduce the computation.
+ *
+ *  This result in rather small platform file, very fast initialization, and intermediate memory requirements
+ *  (somewhere between the one of @{DijkstraZone} and the one of @{FullZone}).
+ */
+
 /** Dijkstra routing data: fast initialization, slow lookup, small memory requirements, shortest path routing only */
 class XBT_PRIVATE DijkstraZone : public RoutedZone {
 public:

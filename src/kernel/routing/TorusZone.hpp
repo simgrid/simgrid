@@ -12,6 +12,11 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
+/** @ingroup ROUTING_API
+ * @brief NetZone using a Torus topology
+ *
+ */
+
 class XBT_PRIVATE TorusZone : public ClusterZone {
 public:
   explicit TorusZone(NetZone* father, const char* name);

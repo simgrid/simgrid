@@ -12,7 +12,13 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-/** No specific routing. Mainly useful with the constant network model */
+/** @ingroup ROUTING_API
+ *  @brief NetZone with no routing, useful with the constant network model
+ *
+ *  Such netzones never contain any link, and the latency is always left unchanged:
+ *  the constant time network model computes this latency externally.
+ */
+
 class XBT_PRIVATE EmptyZone : public NetZoneImpl {
 public:
   explicit EmptyZone(NetZone* father, const char* name);

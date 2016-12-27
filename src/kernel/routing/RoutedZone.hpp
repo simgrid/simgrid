@@ -12,6 +12,42 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
+/** @ingroup ROUTING_API
+ *  @brief NetZone with an explicit routing (abstract class)
+ *
+ * This abstract class factorizes code between its subclasses: Full, Dijkstra and Floyd.
+ *
+ * <table>
+ * <caption>Comparison of the RoutedZone subclasses</caption>
+ * <tr><td></td><td>DijkstraZone</td><td>FloydZone</td><td>FullZone</td></tr>
+ * <tr><td><b>Platform-file content</b></td>
+ * <td>Only 1-hop routes (rather small)</td>
+ * <td>Only 1-hop routes (rather small)</td>
+ * <td>Every path, explicitly (very large)</td>
+ * </tr>
+ * <tr><td><b>Initialization time</b></td>
+ * <td>Almost nothing</td>
+ * <td>Floyd-Warshall algorithm: O(n^3)</td>
+ * <td>Almost nothing</td>
+ * </tr>
+ * <tr><td><b>Memory usage</b></td>
+ * <td>1-hop routes (+ cache of routes)</td>
+ * <td>O(n^2) data (intermediate)</td>
+ * <td>O(n^2) + sum of path lengths (very large)</td>
+ * </tr>
+ * <tr><td><b>Lookup time</b></td>
+ * <td>Dijkstra Algo: O(n^3)</td>
+ * <td>not much (reconstruction phase)</td>
+ * <td>Almost nothing</td>
+ * </tr>
+ * <tr><td><b>Expressiveness</b></td>
+ * <td>Only shortest path</td>
+ * <td>Only shortest path</td>
+ * <td>Everything</td>
+ * </tr>
+ * </table>
+ */
+
 class XBT_PRIVATE RoutedZone : public NetZoneImpl {
 public:
   explicit RoutedZone(NetZone* father, const char* name);

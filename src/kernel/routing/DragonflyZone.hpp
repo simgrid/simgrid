@@ -25,10 +25,8 @@ public:
   ~DragonflyRouter();
 };
 
-/**
- * \class AsClusterDragonfly
- *
- * \brief Dragonfly representation and routing.
+/** @ingroup ROUTING_API
+ * @brief NetZone using a Dragonfly topology
  *
  * Generate dragonfly according to the topology asked for, according to:
  * Cray Cascade: a Scalable HPC System based on a Dragonfly Network
@@ -53,7 +51,7 @@ public:
  * LIMITATIONS (for now):
  *  - Routing is only static and uses minimal routes.
  *  - When n links are used between two routers/groups, we consider only one link with n times the bandwidth (needs to
- * be validated on a real system)
+ *    be validated on a real system)
  *  - All links have the same characteristics for now
  *  - Blue links are all attached to routers in the chassis n°0. This limits
  *    the number of groups possible to the number of blades in a chassis. This
