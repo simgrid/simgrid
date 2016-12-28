@@ -101,10 +101,10 @@ Here is an illustration of these concepts:
 
 \subsection  pf_As Platform: The &lt;AS&gt; tag
 
-The concept of an AS was already outlined above (Section \ref pf_basics);
-recall that the AS is so important because it groups other resources (such
-as routers/hosts) together (in fact, these resources must be contained by
-an AS).
+For historical reasons, the XML files use the expression AS for
+NetZones. Netzones are very important because they group other resources (such
+as routers/hosts) together (in fact, any such resource must be
+contained in a NetZone).
 
 Available attributes :
 
@@ -312,7 +312,7 @@ limiter_link      | no        | int    | Bandwidth for limiter link (if any). Th
 loopback_bw       | no      | int    | Bandwidth for loopback (if any). See <b>link</b> section for syntax/details. If loopback_bw and loopback_lat (see below) attributes are omitted, no loopback link is created and all intra-node communication will use the main network link of the node. Loopback link is a \ref pf_sharing_policy_fatpipe "\b FATPIPE".
 loopback_lat      | no      | int    | Latency for loopback (if any). See <b>link</b> section for syntax/details. See loopback_bw for more info.
 topology          | no      | FLAT\|TORUS\|FAT_TREE\|DRAGONFLY (default: FLAT) | Network topology to use. SimGrid currently supports FLAT (with or without backbone, as described before), <a href="http://en.wikipedia.org/wiki/Torus_interconnect">TORUS </a>, FAT_TREE, and DRAGONFLY attributes for this tag.
-topo_parameters   | no      | string | Specific parameters to pass for the topology defined in the topology tag. For torus networks, comma-separated list of the number of nodes in each dimension of the torus. For fat trees, refer to \ref simgrid::kernel::routing::AsClusterFatTree "AsClusterFatTree documentation". For dragonfly, refer to \ref simgrid::kernel::routing::AsClusterDragonfly "AsClusterDragonfly documentation".
+topo_parameters   | no      | string | Specific parameters to pass for the topology defined in the topology tag. For torus networks, comma-separated list of the number of nodes in each dimension of the torus. Please refer to the specific documentation for \ref simgrid::kernel::routing::FatTreeZone "FatTree NetZone", \ref simgrid::kernel::routing::DragonflyZone "Dragonfly NetZone".
 
 
 the router name is defined as the resulting String in the following
@@ -404,18 +404,14 @@ etc.
 
 \subsubsection pf_peer The &lt;peer&gt; tag
 
-This tag represents a peer, as in Peer-to-Peer (P2P) networks. However, internally,
-SimGrid transforms a peer into an AS (similar to Cluster). Hence, this tag
-is virtually only a shortcut that comes with some pre-defined resources
-and values. These are:
+This tag represents a peer, as in Peer-to-Peer (P2P) networks. This
+can only be used in Vivaldi NetZones. It creates the  following
+resources to the NetZone:
 
-\li A tiny AS whose routing type is cluster is created
 \li A host
 \li Two links: One for download and one for upload. This is
     convenient to use and simulate stuff under the last mile model (e.g., ADSL peers).
 \li It connects the two links to the host
-\li It creates a router (a gateway) that serves as an entry point for this peer zone.
-    This router has coordinates.
 
 #### Attributes ####
 
@@ -423,36 +419,13 @@ Attribute name  | Mandatory | Values | Description
 --------------- | --------- | ------ | -----------
 id              | yes       | string | The identifier of the peer. Facilitates referring to this peer.
 speed           | yes       | int    | See the description of the ``host`` tag for this attribute
-bw_in           | yes       | int    | Bandwidth downstream
-bw_out          | yes       | int    | Bandwidth upstream
+bw_in           | yes       | int    | Bandwidth of the private downstream link
+bw_out          | yes       | int    | Bandwidth of the private upstream link
 lat             | yes       | double | Latency for both up- and downstream, in seconds.
 coordinates     | no        | string | Coordinates of the gateway for this peer. Example value: 12.8 14.4 6.4
 sharing_policy  | no        | SHARED\|FULLDUPLEX (default: FULLDUPLEX) | Sharing policy for links. See <b>link</b> description for details.
 availability_file| no       | string | Availability file for the peer. Same as host availability file. See <b>host</b> description for details.
 state_file      | no        | string | State file for the peer. Same as host state file. See <b>host</b> description for details.
-
-Internally, SimGrid transforms any ``\<peer/\>`` construct such as
-\verbatim
-<peer id="FOO"
-  coordinates="12.8 14.4 6.4"
-  speed="1.5Gf"
-  bw_in="2.25GBps"
-  bw_out="2.25GBps"
-  lat="500us" />
-\endverbatim
-into an ``\<AS\>`` (see Sections \ref pf_basics and \ref pf_As). In fact, this example of the ``\<peer/\>`` tag
-is completely equivalent to the following declaration:
-
-\verbatim
-<AS id="as_FOO" routing="Cluster">
-   <host id="peer_FOO" speed="1.5Gf"/>
-   <link id="link_FOO_UP" bandwidth="2.25GBps" latency="500us"/>
-   <link id="link_FOO_DOWN" bandwidth="2.25GBps" latency="500us"/>
-   <router id="router_FOO" coordinates="25.5 9.4 1.4"/>
-   <host_link id="peer_FOO" up="link_FOO_UP" down="link_FOO_DOWN"/>
-</AS>
-\endverbatim
-
 
 \subsection pf_ne Network equipments: links and routers
 
@@ -1183,12 +1156,9 @@ routing model (the path is given relative to SimGrid's source directory):
 For more information on how to use the [Vivaldi Coordinates](https://en.wikipedia.org/wiki/Vivaldi_coordinates),
 see also Section \ref pf_P2P_tags "P2P tags".
 
-For documentation on how to activate this model (as some initialization must be done
-in the simulator), see Section \ref options_model_network_coord "Activating Coordinate Based Routing".
-
 Note that it is possible to combine the Vivaldi routing model with other routing models;
 an example can be found in the file \c examples/platforms/cloud.xml. This
-examples models an AS using Vivaldi that contains other ASes that use different
+examples models a NetZone using Vivaldi that contains other NetZones that use different
 routing models.
 
 #### Example platform files ####

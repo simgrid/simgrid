@@ -43,7 +43,7 @@ documentation, but it should remain readable directly.
 @section msg_ex_async Asynchronous communications
 
 In addition to the fully documented example of @ref
-msg_ex_asynchronous_communications, there are several other examples
+MSG_ex_asynchronous_communications, there are several other examples
 shipped in the archive:
   
  - <b>Basic asynchronous communications</b>. 

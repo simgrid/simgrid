@@ -571,7 +571,7 @@ void SIMIX_run()
  *
  * Set the date to execute the function on the surf.
  *   \param date Date to execute function
- *   \param function Function to be executed
+ *   \param callback Function to be executed
  *   \param arg Parameters of the function
  *
  */

@@ -764,8 +764,8 @@ void SIMIX_comm_copy_buffer_callback(smx_activity_t synchro, void* buff, size_t 
 
 
 /**
- *  \brief Copy the communication data from the sender's buffer to the receiver's one
- *  \param comm The communication
+ *  @brief Copy the communication data from the sender's buffer to the receiver's one
+ *  @param synchro The communication
  */
 void SIMIX_comm_copy_data(smx_activity_t synchro)
 {

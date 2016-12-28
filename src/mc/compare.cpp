@@ -194,7 +194,6 @@ struct StateComparator {
 
   /** Check whether two blocks are known to be matching
    *
-   *  @param state  State used
    *  @param b1     Block of state 1
    *  @param b2     Block of state 2
    *  @return       if the blocks are known to be matching
@@ -207,7 +206,6 @@ struct StateComparator {
 
   /** Check whether two fragments are known to be matching
    *
-   *  @param state  State used
    *  @param b1     Block of state 1
    *  @param f1     Fragment of state 1
    *  @param b2     Block of state 2

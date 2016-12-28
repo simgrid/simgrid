@@ -126,10 +126,10 @@ int Host::pstatesCount() const {
  * \brief Find a route toward another host
  *
  * \param dest [IN] where to
- * \param route [OUT] where to store the list of links (must exist, cannot be nullptr).
+ * \param links [OUT] where to store the list of links (must exist, cannot be nullptr).
  * \param latency [OUT] where to store the latency experienced on the path (or nullptr if not interested)
  *                It is the caller responsibility to initialize latency to 0 (we add to provided route)
- * \pre route!=nullptr
+ * \pre links!=nullptr
  *
  * walk through the routing components tree and find a route between hosts
  * by calling each "get_route" function in each routing component.

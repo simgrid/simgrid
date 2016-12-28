@@ -508,10 +508,9 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
 
 /** Write data to a process memory
  *
- *  @param process the process
- *  @param local   local memory address (source)
- *  @param remote  target process memory address (target)
- *  @param len     data size
+ *  @param buffer   local memory address (source)
+ *  @param len      data size
+ *  @param address  target process memory address (target)
  */
 void Process::write_bytes(const void* buffer, size_t len, RemotePtr<void> address)
 {

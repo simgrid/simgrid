@@ -358,13 +358,13 @@ static bool MC_dwarf_attr_flag(Dwarf_Die * die, int attribute, bool integrate)
   return result;
 }
 
-/** \brief Find the default lower bound for a given language
+/** @brief Find the default lower bound for a given language
  *
  *  The default lower bound of an array (when DW_TAG_lower_bound
  *  is missing) depends on the language of the compilation unit.
  *
- *  \param lang Language of the compilation unit (values defined in the DWARF spec)
- *  \return     Default lower bound of an array in this compilation unit
+ *  @param lang Language of the compilation unit (values defined in the DWARF spec)
+ *  @return     Default lower bound of an array in this compilation unit
  * */
 static uint64_t MC_dwarf_default_lower_bound(int lang)
 {

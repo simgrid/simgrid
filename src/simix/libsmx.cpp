@@ -526,7 +526,7 @@ void simcall_comm_wait(smx_activity_t comm, double timeout)
  * \brief Set the category of an synchro.
  *
  * This functions changes the category only. It calls a surf function.
- * \param execution The execution synchro
+ * \param synchro The execution synchro
  * \param category The tracing category
  */
 void simcall_set_category(smx_activity_t synchro, const char *category)

@@ -483,6 +483,7 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
 
 /** @brief Ask another process to raise the given exception
  *
+ * @param process The process that should raise that exception
  * @param cat category of exception
  * @param value value associated to the exception
  * @param msg string information associated to the exception
@@ -961,7 +962,7 @@ void SIMIX_segment_index_set(smx_actor_t proc, int index){
  * \param code the main function of the process
  * \param data a pointer to any data one may want to attach to the new object. It is for user-level information and can be nullptr.
  * It can be retrieved with the function \ref simcall_process_get_data.
- * \param hostname name of the host where the new agent is executed.
+ * \param host where the new agent is executed.
  * \param kill_time time when the process is killed
  * \param argc first argument passed to \a code
  * \param argv second argument passed to \a code

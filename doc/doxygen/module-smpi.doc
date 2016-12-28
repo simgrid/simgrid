@@ -63,7 +63,7 @@ SMPI_PRETEND_CC=1 ./configure # here come the configure parameters
 make
 @endverbatim
 
-\warn
+\warning
   Again, make sure that SMPI_PRETEND_CC is not set when you actually 
   compile your application. It is just a work-around for some configure-scripts
   and replaces some internals by "return 0;". Your simulation will not

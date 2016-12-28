@@ -16,8 +16,6 @@
     - Data structures
       - \ref XBT_dynar
       - \ref XBT_dict
-      - \ref XBT_set
-        Data are associated to both an ID (0(1) search) and a name
       - \ref XBT_fifo
       - \ref XBT_swag
       - \ref XBT_heap

@@ -40,8 +40,8 @@ class BypassRoute;
  * Finding the path between two nodes is rather complex because we navigate a hierarchy of netzones, each of them
  * being a full network. In addition, the routing can declare shortcuts (called bypasses), either within a NetZone
  * at the route level or directly between NetZones. Also, each NetZone can use a differing routing algorithm, depending
- * on its class. @ref{FullZone} have a full matrix giving explicitly the path between any pair of their
- * contained nodes, while @ref{DijkstraZone} or @ref{FloydZone} rely on a shortest path algorithm. @ref{VivaldiZone}
+ * on its class. @ref FullZone have a full matrix giving explicitly the path between any pair of their
+ * contained nodes, while @ref DijkstraZone or @ref FloydZone rely on a shortest path algorithm. @ref VivaldiZone
  * does not even have any link but only use only coordinate information to compute the latency.
  *
  * So NetZoneImpl::getGlobalRoute builds the path recursively asking its specific information to each traversed NetZone

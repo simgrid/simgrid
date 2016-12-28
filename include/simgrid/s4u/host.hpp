@@ -33,7 +33,7 @@ namespace s4u {
  * An host represents some physical resource with computing and networking capabilities.
  *
  * All hosts are automatically created during the call of the method
- * @link{simgrid::s4u::Engine::loadPlatform()}.
+ * @ref simgrid::s4u::Engine::loadPlatform().
  * You cannot create a host yourself.
  *
  * You can retrieve a particular host using simgrid::s4u::Host::byName()

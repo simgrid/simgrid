@@ -141,7 +141,7 @@ MSG_task_isend() and MSG_task_irecv();
 MSG_comm_test(), MSG_comm_wait(), MSG_comm_waitall() and MSG_comm_waitany();
 MSG_comm_destroy(). 
 
-There is even a specific example section on \ref msg_ex_asynchronous_communications.
+There is even a specific example section on \ref msg_ex_async .
 
 \subsubsection faq_MIA_thread_synchronization How to synchronize my user processes?
 

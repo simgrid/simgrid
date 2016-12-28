@@ -718,7 +718,7 @@ static inline void SD_task_do_schedule(SD_task_t task)
  *
  * \param task the task you want to schedule
  * \param host_count number of hosts on which the task will be executed
- * \param workstation_list the hosts on which the task will be executed
+ * \param host_list the hosts on which the task will be executed
  * \param flops_amount computation amount for each hosts (i.e., an array of host_count doubles)
  * \param bytes_amount communication amount between each pair of hosts (i.e., a matrix of host_count*host_count doubles)
  * \param rate task execution speed rate

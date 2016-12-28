@@ -130,7 +130,7 @@ namespace s4u {
  *  @{
  */
 
-/** @brief Simulation Agent (see \ref s4u_actor)*/
+/** @brief Simulation Agent */
 XBT_PUBLIC_CLASS Actor {
   friend Mailbox;
   friend simgrid::simix::ActorImpl;

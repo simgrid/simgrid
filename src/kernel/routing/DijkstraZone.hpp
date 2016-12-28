@@ -36,8 +36,7 @@ namespace routing {
  *  The path between components is computed each time you request it,
  *  using the Dijkstra algorithm. A cache can be used to reduce the computation.
  *
- *  This result in rather small platform file, very fast initialization, and intermediate memory requirements
- *  (somewhere between the one of @DijkstraZone and the one of @FullZone).
+ *  This result in rather small platform file, very fast initialization, and very low memory requirements, but somehow long path resolution times.
  */
 class XBT_PRIVATE DijkstraZone : public RoutedZone {
 public:

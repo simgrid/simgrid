@@ -57,7 +57,7 @@ namespace mc {
 
 /** @brief Restore a region from a snapshot
  *
- *  @param reg     Target region
+ *  @param region     Target region
  */
 static void restore(mc_mem_region_t region)
 {
@@ -270,7 +270,7 @@ void find_object_address(
  *  A variable may be defined only from a given value of IP.
  *
  *  \param var   Variable description
- *  \param frame Scope description
+ *  \param scope Scope description
  *  \param ip    Instruction pointer
  *  \return      true if the variable is valid
  * */

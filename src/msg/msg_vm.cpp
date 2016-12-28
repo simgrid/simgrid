@@ -45,7 +45,7 @@ void MSG_vm_set_params(msg_vm_t vm, vm_params_t params)
 /** \ingroup m_vm_management
  * \brief Get the parameters of a given host
  *
- * \param host a host
+ * \param vm the vm you are interested into
  * \param params a prameter object
  */
 void MSG_vm_get_params(msg_vm_t vm, vm_params_t params)

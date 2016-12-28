@@ -14,7 +14,7 @@ namespace routing {
 
 class XBT_PRIVATE FatTreeLink;
 
-/** \brief A node in a fat tree (@ref AsClusterFatTree).
+/** \brief A node in a fat tree (@ref FatTreeZone).
  * A FatTreeNode can either be a switch or a processing node. Switches are
  * identified by a negative ID. This class is closely related to fat
  */
@@ -54,7 +54,7 @@ public:
   FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, int position);
 };
 
-/** \brief Link in a fat tree (@ref AsClusterFatTree).
+/** \brief Link in a fat tree (@ref FatTreeZone).
  *
  * Represents a single, duplex link in a fat tree. This is necessary to have a tree.
  * It is equivalent to a physical link.

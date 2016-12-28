@@ -915,7 +915,7 @@ SMPI implements more than 100 different algorithms for MPI collective communicat
 simulate the behavior of most of the existing MPI libraries. The \b smpi/coll-selector item can be used
  to use the decision logic of either OpenMPI or MPICH libraries (values: ompi or mpich, by default SMPI
 uses naive version of collective operations). Each collective operation can be manually selected with a
-\b smpi/collective_name:algo_name. Available algorithms are listed in \ref SMPI_collective_algorithms .
+\b smpi/collective_name:algo_name. Available algorithms are listed in \ref SMPI_use_colls .
 
 \subsection options_model_smpi_iprobe smpi/iprobe: Inject constant times for calls to MPI_Iprobe
 

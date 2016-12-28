@@ -384,7 +384,7 @@ void ETag_surfxml_include() {
  * error message in that case.
  *
  * Yeah, that's terribly hackish, but it works. A better solution should be dealed with in flexml
- * directly: a command line flag could instruct it to do the correct thing when #include is encountered
+ * directly: a command line flag could instruct it to do the correct thing when the include directive is encountered
  * on a line. One day maybe, if the maya allow it.
  */
 int ETag_surfxml_include_state()

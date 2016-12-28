@@ -72,10 +72,10 @@ bypass mechanism.
 
 The <b>intra-zone level</b> is naturally handled by the netzones. Each
 netzone have to specify the routing algorithm it uses for that.
-@ref{FullZone} netzones have complete matrix where matrix(a,b)
+@ref simgrid::kernel::routing::FullZone "FullZone" netzones have complete matrix where matrix(a,b)
 represents the full path (the list of links) between the hosts a and
-b. @ref{FloydZone} apply the Floyd-Warshall algorithm to compute the
-paths. @ref{ClusterZone} model classical switched or hub networks,
+b. @ref simgrid::kernel::routing::FloydZone "FloydZone" apply the Floyd-Warshall algorithm to compute the
+paths. @ref simgrid::kernel::routing::ClusterZone "ClusterZone" model classical switched or hub networks,
 where each component is connected through a private link onto a common
 backbone. Many other routing algorithms are provided to model the
 classical needs, but you can naturally define your own routing if the
