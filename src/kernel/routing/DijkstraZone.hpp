@@ -37,10 +37,8 @@ namespace routing {
  *  using the Dijkstra algorithm. A cache can be used to reduce the computation.
  *
  *  This result in rather small platform file, very fast initialization, and intermediate memory requirements
- *  (somewhere between the one of @{DijkstraZone} and the one of @{FullZone}).
+ *  (somewhere between the one of @DijkstraZone and the one of @FullZone).
  */
-
-/** Dijkstra routing data: fast initialization, slow lookup, small memory requirements, shortest path routing only */
 class XBT_PRIVATE DijkstraZone : public RoutedZone {
 public:
   DijkstraZone(NetZone* father, const char* name, bool cached);
@@ -50,8 +48,7 @@ public:
   xbt_node_t routeGraphNewNode(int id, int graph_id);
   graph_node_map_element_t nodeMapSearch(int id);
   void newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_route);
-  /**
-   * For each vertex (node) already in the graph,
+  /* For each vertex (node) already in the graph,
    * make sure it also has a loopback link; this loopback
    * can potentially already be in the graph, and in that
    * case nothing will be done.
