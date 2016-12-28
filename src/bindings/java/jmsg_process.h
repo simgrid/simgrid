@@ -53,7 +53,7 @@ void jprocess_delete_global_ref(jobject jprocess, JNIEnv * env);
 /**
  * This function waits for a java process to terminate.
  *
- * @param jprocess  The java process ot wait for.
+ * @param jprocess  The java process to wait for.
  * @param env       The env of the current thread
  *
  * @exception       If the class Process is not found the function throws the ClassNotFoundException. If the method
