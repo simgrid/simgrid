@@ -1,393 +1,178 @@
-Most of the SimGrid software was written internally by the team. This
-software is distributed under the GNU lesser general public license
-version 2.1, which you can find in the archive under the name
-LICENSE-LGPL-2.1.
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: SimGrid
+Source: https://gforge.inria.fr/frs/?group_id=12
 
-For any copyright year range specified as YYYY-ZZZZ in this package
-note that the range specifies every single year in that closed interval.
+Files: *
+Copyright: 2003-2016. The SimGrid Team. All rights reserved.
+License: LGPL-2.1
 
-Some perticular files distributed with the project have other
-licenses. More specifically, these files are listed below, along with
-their license.
+Files: src/xbt/snprintf.c
+Copyright: 1999, Mark Martinec <mark.martinec@ijs.si.
+License: Artistic
+Comment: Heavily adapted by the SimGrid team but remains under the original license
 
-The SimGrid logo is distributed under the CC-BY-SA license.
+Files: src/xbt/ex.cpp include/xbt/ex.h
+Copyright: 
+  Copyright (c) 2002-2004 Ralf S. Engelschall <rse@engelschall.com>
+  Copyright (c) 2002-2004 The OSSP Project <http://www.ossp.org/>
+  Copyright (c) 2002-2004 Cable & Wireless <http://www.cw.com/>
+  Copyright (c) 2005-2015. The SimGrid Team.  
+Copyright: Expat
+Comment: Adapted from code from Ralf S. Engelschall and others in the OSSP project, remains under the original license.
 
-=========================================================================
+Files: src/xbt/mmalloc/* include/xbt/mmalloc.h
+Copyright: 
+  Copyright (C) 1991, 1992 Free Software Foundation, Inc.
+  Copyright (C) 2003-2016. The SimGrid Team.
+License: LGPL-2.1
+Comment: these files used to be part of gdb, but were removed there
 
-The file src/xbt/snprintf.c contains this license text:
-
-/*
- * snprintf.c - a portable implementation of snprintf
- *
- * AUTHOR
- *   Mark Martinec <mark.martinec@ijs.si>, April 1999.
- *
- *   Copyright 1999, Mark Martinec. All rights reserved.
- *
- * TERMS AND CONDITIONS
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the "Frontier Artistic License" which comes
- *   with this Kit.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty
- *   of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *   See the Frontier Artistic License for more details.
- *
- *   You should have received a copy of the Frontier Artistic License
- *   with this Kit in the file named LICENSE.txt .
- *   If not, I'll be glad to provide one.
- *
- */
-
-=========================================================================
-
-The exception handling mechanism (mainly living in src/xbt/ex.c and
-include/xbt/ex.h) was adapted from code from Ralf S. Engelschall and
-others in the OSSP project. The OSSP version has the following license:
-
-**  OSSP ex - Exception Handling
-**  Copyright (c) 2002-2007 Ralf S. Engelschall <rse@engelschall.com>
-**  Copyright (c) 2002-2007 The OSSP Project <http://www.ossp.org/>
-**
-**  This file is part of OSSP ex, an exception handling library
-**  which can be found at http://www.ossp.org/pkg/lib/ex/.
-**
-**  Permission to use, copy, modify, and distribute this software for
-**  any purpose with or without fee is hereby granted, provided that
-**  the above copyright notice and this permission notice appear in all
-**  copies.
-**
-**  THIS SOFTWARE IS PROVIDED `AS IS'' AND ANY EXPRESSED OR IMPLIED
-**  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-**  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-**  IN NO EVENT SHALL THE AUTHORS AND COPYRIGHT HOLDERS AND THEIR
-**  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-**  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-**  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
-**  USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-**  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-**  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
-**  OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-**  SUCH DAMAGE.
-
-
-=========================================================================
-
-The xbt/mmalloc module was adapted from the mmalloc module of gdb.
-Both the simgrid version and the original version is distributed under
-the LGPL v2.1
-
-This affects the files in directory src/xbt/mmalloc and
-include/xbt/mmalloc.h
-
-=========================================================================
-
-Some examples for SMPI were borowed from an IBM test suite.
-Their copyright is the following:
-/**
- * MESSAGE PASSING INTERFACE TEST CASE SUITE
- *
- * Copyright IBM Corp. 1995
- *
- * IBM Corp. hereby grants a non-exclusive license to use, copy, modify, and
- *distribute this software for any purpose and without fee provided that the
- *above copyright notice and the following paragraphs appear in all copies.
-
- * IBM Corp. makes no representation that the test cases comprising this
- * suite are correct or are an accurate representation of any standard.
-
- * In no event shall IBM be liable to any party for direct, indirect, special
- * incidental, or consequential damage arising out of the use of this software
- * even if IBM Corp. has been advised of the possibility of such damage.
-
- * IBM CORP. SPECIFICALLY DISCLAIMS ANY WARRANTIES INCLUDING, BUT NOT LIMITED
- * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS ON AN "AS IS" BASIS AND IBM
- * CORP. HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES,
- * ENHANCEMENTS, OR MODIFICATIONS.
- * ***************************************************************************
- **/
-
-List of files:
- examples/smpi/scatter.c
- examples/smpi/reduce.c
- examples/smpi/allreduce.c
- examples/smpi/alltoall2.c
-
-
-=========================================================================
-
-The SMPI testsuite was borrowed from the MPICH3 test files. It can be found
-inside ./teshsuite/smpi/mpich3-test. Some of the collective algorithms
-available in src/smpi/colls/ were also copied from MPICH
-
-
-/*
- *  (C) 2001 by Argonne National Laboratory.
- *      See COPYRIGHT in top-level directory.
- */
-<------------- COPYRIGHT file in the top-level ----------------------->
-
+Files: 
+ teshsuite/smpi/mpich3-test/*
+Copyright: 
+ (C) 2001-2014 by Argonne National Laboratory.
+ (C) 2008 by University of Illinois.
+ (C) 2011-2012 Intel Corporation. 
+License: other
                                   COPYRIGHT
-
-The following is a notice of limited availability of the code, and disclaimer
-which must be included in the prologue of the code and in all source listings
-of the code.
-
-Copyright Notice
- + 2002 University of Chicago
-
-Permission is hereby granted to use, reproduce, prepare derivative works, and
-to redistribute to others.  This software was authored by:
-
-Mathematics and Computer Science Division
-Argonne National Laboratory, Argonne IL 60439
-
-(and)
-
-Department of Computer Science
-University of Illinois at Urbana-Champaign
-
-
+ .
+ The following is a notice of limited availability of the code, and disclaimer
+ which must be included in the prologue of the code and in all source listings
+ of the code.
+ .
+ Copyright Notice
+  + 2002 University of Chicago
+ .
+ Permission is hereby granted to use, reproduce, prepare derivative works, and
+ to redistribute to others.  This software was authored by:
+ .
+ Mathematics and Computer Science Division
+ Argonne National Laboratory, Argonne IL 60439
+ .
+ (and)
+ .
+ Department of Computer Science
+ University of Illinois at Urbana-Champaign
+ .
+ .
                               GOVERNMENT LICENSE
-
-Portions of this material resulted from work developed under a U.S.
-Government Contract and are subject to the following license: the Government
-is granted for itself and others acting on its behalf a paid-up, nonexclusive,
-irrevocable worldwide license in this computer software to reproduce, prepare
-derivative works, and perform publicly and display publicly.
-
+ .
+ Portions of this material resulted from work developed under a U.S.
+ Government Contract and are subject to the following license: the Government
+ is granted for itself and others acting on its behalf a paid-up, nonexclusive,
+ irrevocable worldwide license in this computer software to reproduce, prepare
+ derivative works, and perform publicly and display publicly.
+ .
                                   DISCLAIMER
+ .
+ This computer code material was prepared, in part, as an account of work
+ sponsored by an agency of the United States Government.  Neither the United
+ States, nor the University of Chicago, nor any of their employees, makes any
+ warranty express or implied, or assumes any legal liability or responsibility
+ for the accuracy, completeness, or usefulness of any information, apparatus,
+ product, or process disclosed, or represents that its use would not infringe
+ privately owned rights.
 
-This computer code material was prepared, in part, as an account of work
-sponsored by an agency of the United States Government.  Neither the United
-States, nor the University of Chicago, nor any of their employees, makes any
-warranty express or implied, or assumes any legal liability or responsibility
-for the accuracy, completeness, or usefulness of any information, apparatus,
-product, or process disclosed, or represents that its use would not infringe
-privately owned rights.
+Files: src/xbt/RngStream.c include/xbt/RngStream.h
+Copyright: 2001 Pierre L'Ecuyer, University of Montreal
+License: GPL-2+ and LGPL-2.1
+Comment: The author granted us the right to distribute this files under the LGPL-2.1 as long as it is bundled with SimGrid.
 
+Files:
+ src/simdag/dax_dtd.c
+ src/simdag/dax_dtd.l
+ src/simdag/dax_dtd.h
+ src/surf/xml/simgrid_dtd.c
+ src/surf/xml/simgrid_dtd.h
+Copyright:
+ FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
+ FleXML is Copyright (C) 2003-2013 Martin Quinson.  All rights reserved.
+ Copyright (C) 2003-2016. The SimGrid team.
+License: GPL-2+ and LGPL-2.1
+Comment: Generated with the FleXML XML processor generator (which is GPL-2+) using SimGrid configuration files (that are LGPL-2.1)
 
-<-------------------- end of MPICH2 COPYRIGHT file -------------------->
+Files:
+ src/smpi/colls/allgather-2dmesh.c
+ src/smpi/colls/allgather-3dmesh.c
+ src/smpi/colls/allgather-bruck.c
+ src/smpi/colls/allgather-pair.c
+ src/smpi/colls/allgather-ring.c
+ src/smpi/colls/allgather-spreading-simple.c
+ src/smpi/colls/allgatherv-pair.c
+ src/smpi/colls/allgatherv-ring.c
+ src/smpi/colls/alltoall-2dmesh.c
+ src/smpi/colls/alltoall-3dmesh.c
+ src/smpi/colls/alltoall-bruck.c
+ src/smpi/colls/alltoall-pair.c
+ src/smpi/colls/alltoall-pair-light-barrier.c
+ src/smpi/colls/alltoall-pair-mpi-barrier.c
+ src/smpi/colls/alltoall-pair-one-barrier.c
+ src/smpi/colls/alltoall-rdb.c
+ src/smpi/colls/alltoall-ring.c
+ src/smpi/colls/alltoall-ring-light-barrier.c
+ src/smpi/colls/alltoall-ring-mpi-barrier.c
+ src/smpi/colls/alltoall-ring-one-barrier.c
+ src/smpi/colls/alltoallv-pair.c
+ src/smpi/colls/alltoallv-pair-light-barrier.c
+ src/smpi/colls/alltoallv-pair-mpi-barrier.c
+ src/smpi/colls/alltoallv-pair-one-barrier.c
+ src/smpi/colls/alltoallv-ring.c
+ src/smpi/colls/alltoallv-ring-light-barrier.c
+ src/smpi/colls/alltoallv-ring-mpi-barrier.c
+ src/smpi/colls/alltoallv-ring-one-barrier.c
+ src/smpi/colls/bcast-binomial-tree.c
+ src/smpi/colls/bcast-scatter-LR-allgather.c
+ src/smpi/colls/bcast-scatter-rdb-allgather.c
+Copyright: Copyright (c) 2006, Ahmad Faraj & Xin Yuan
+License: BSD-3-clause
+Comment: Borrowed from StarMPI.
 
+Files:
+ src/smpi/colls/allgather-mvapich-smp.c
+ src/smpi/colls/allgatherv-ompi-bruck.c
+ src/smpi/colls/allgatherv-mpich-ring.c
+ src/smpi/colls/allreduce-mvapich-two-level.c
+ src/smpi/colls/allreduce-ompi-ring-segmented.c
+ src/smpi/colls/alltoall-mvapich-scatter-dest.c
+ src/smpi/colls/allreduce-mvapich-rs.c
+ src/smpi/colls/barrier-mvapich2-pair.c
+ src/smpi/colls/barrier-ompi.c
+ src/smpi/colls/bcast-mvapich-smp.c
+ src/smpi/colls/bcast-ompi-split-bintree.c
+ src/smpi/colls/coll_tuned_topo.c
+ src/smpi/colls/coll_tuned_topo.h
+ src/smpi/colls/gather-mvapich.c
+ src/smpi/colls/gather-ompi.c
+ src/smpi/colls/reduce-mvapich-knomial.c
+ src/smpi/colls/reduce-mvapich-two-level.c
+ src/smpi/colls/reduce-ompi.c
+ src/smpi/colls/reduce_scatter-ompi.c
+ src/smpi/colls/scatter-mvapich-two-level.c
+ src/smpi/colls/scatter-ompi.c
+Copyright:
+ Copyright (c) 2001 by Argonne National Laboratory.
+ Copyright (c) 2004-2005 The Trustees of Indiana University and Indiana University Research and Technology Corporation.  All rights reserved.
+ Copyright (c) 2004-2009 The University of Tennessee and The University of Tennessee Research Foundation.  All rights reserved.
+ Copyright (c) 2004-2005 High Performance Computing Center Stuttgart, University of Stuttgart.  All rights reserved.
+ Copyright (c) 2004-2005 The Regents of the University of California. All rights reserved.
+ Copyright (c) 2001-2014, The Ohio State University. All rights reserved.
+License: BSD-3-clause
+Comment: Borrowed from MVAPICH2.
 
-=========================================================================
+Files: src/smpi/colls/reduce-rab.c
+Copyright: 1997, Rolf Rabenseifner. Computing Center University of Stuttgart
+License: other
+ The usage of this software is free, but this header must not be removed.
 
+Files: src/xbt/automaton/parserPromela.tab.cacc
+Copyright:
+ Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+ Copyright (C) 2003-2016. The SimGrid team.
+License: GPL-3+ and LGPL-2.1
+Comment: Generated with the Bison processor generator (which is GPL-3+) using SimGrid configuration files (that are LGPL-2.1) 
 
-The directory examples/smpi/NAS contains a tweaked version of the
-NAS Parallel Benchmark Team. The original software were retrieved from
-here: http://www.nas.nasa.gov/Software/NPB
-
-According to [1], this code is probably distributed under the NASA
-Open Source Agreement (NOSA) version 1.3. Its text can be found at [2].
-[1] http://www.nas.nasa.gov/Resources/Software/Open-Source/opensource.html
-[2] http://www.opensource.org/licenses/nasa1.3.php
-
-The changes over the original version are minor, and can be
-distributed under the LGPL license (v2.1) or NOSA (v1.3 or higher)
-licences, at your option.
-
-==========================================================================
-
-Some of the collective algorithms inside src/smpi/colls folder are taken
-from the STAR-MPI suite. The original software was retrieved from here:
-http://star-mpi.sourceforge.net/
-
-Copyright (c) 2006, Ahmad Faraj & Xin Yuan,
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-  * Redistributions of source code must retain the above copyright notice,
-    this list of conditions and the following disclaimer.
-
-  * Redistributions in binary form must reproduce the above copyright notice,
-    this list of conditions and the following disclaimer in the documentation
-    and/or other materials provided with the distribution.
-
-  * Neither the name of the Florida State University nor the names of its
-    contributors may be used to endorse or promote products derived from this
-    software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-  ***************************************************************************
-  *     Any results obtained from executing this software require the       *
-  *     acknowledgment and citation of the software and its owners.         *
-  *     The full citation is given below:                                   *
-  *                                                                         *
-  *     A. Faraj, X. Yuan, and D. Lowenthal. "STAR-MPI: Self Tuned Adaptive *
-  *     Routines for MPI Collective Operations." The 20th ACM International *
-  *     Conference on Supercomputing (ICS), Queensland, Australia           *
-  *     June 28-July 1, 2006.                                               *
-  ***************************************************************************
-
-==========================================================================
-
-Some of the collective algorithms inside src/smpi/colls folder are taken
-from the OpenMPI. The original software was retrieved from here:
-http://www.open-mpi.org/
-
-Most files in this release are marked with the copyrights of the
-organizations who have edited them.  The copyrights below are in no
-particular order and generally reflect members of the Open MPI core
-team who have contributed code to this release.  The copyrights for
-code used under license from other parties are included in the
-corresponding files.
-
-Copyright (c) 2004-2010 The Trustees of Indiana University and Indiana
-                        University Research and Technology
-                        Corporation.  All rights reserved.
-Copyright (c) 2004-2010 The University of Tennessee and The University
-                        of Tennessee Research Foundation.  All rights
-                        reserved.
-Copyright (c) 2004-2010 High Performance Computing Center Stuttgart,
-                        University of Stuttgart.  All rights reserved.
-Copyright (c) 2004-2008 The Regents of the University of California.
-                        All rights reserved.
-Copyright (c) 2006-2010 Los Alamos National Security, LLC.  All rights
-                        reserved.
-Copyright (c) 2006-2010 Cisco Systems, Inc.  All rights reserved.
-Copyright (c) 2006-2010 Voltaire, Inc. All rights reserved.
-Copyright (c) 2006-2011 Sandia National Laboratories. All rights reserved.
-Copyright (c) 2006-2010 Sun Microsystems, Inc.  All rights reserved.
-                        Use is subject to license terms.
-Copyright (c) 2006-2010 The University of Houston. All rights reserved.
-Copyright (c) 2006-2009 Myricom, Inc.  All rights reserved.
-Copyright (c) 2007-2008 UT-Battelle, LLC. All rights reserved.
-Copyright (c) 2007-2010 IBM Corporation.  All rights reserved.
-Copyright (c) 1998-2005 Forschungszentrum Juelich, Juelich Supercomputing
-                        Centre, Federal Republic of Germany
-Copyright (c) 2005-2008 ZIH, TU Dresden, Federal Republic of Germany
-Copyright (c) 2007      Evergrid, Inc. All rights reserved.
-Copyright (c) 2008      Chelsio, Inc.  All rights reserved.
-Copyright (c) 2008-2009 Institut National de Recherche en
-                        Informatique.  All rights reserved.
-Copyright (c) 2007      Lawrence Livermore National Security, LLC.
-                        All rights reserved.
-Copyright (c) 2007-2009 Mellanox Technologies.  All rights reserved.
-Copyright (c) 2006-2010 QLogic Corporation.  All rights reserved.
-Copyright (c) 2008-2010 Oak Ridge National Labs.  All rights reserved.
-Copyright (c) 2006-2010 Oracle and/or its affiliates.  All rights reserved.
-Copyright (c) 2009      Bull SAS.  All rights reserved.
-Copyright (c) 2010      ARM ltd.  All rights reserved.
-Copyright (c) 2010-2011 Alex Brick <bricka@ccs.neu.edu>.  All rights reserved.
-Copyright (c) 2012      The University of Wisconsin-La Crosse. All rights
-                        reserved.
-
-$COPYRIGHT$
-
-Additional copyrights may follow
-
-$HEADER$
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer listed
-  in this license in the documentation and/or other materials
-  provided with the distribution.
-
-- Neither the name of the copyright holders nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-
-The copyright holders provide no reassurances that the source code
-provided does not infringe any patent, copyright, or any other
-intellectual property rights of third parties.  The copyright holders
-disclaim any liability to any recipient for claims brought against
-recipient by any third party for infringement of that parties
-intellectual property rights.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-==========================================================================
-
-Some collective algorithms and selection logic has been taken from MVAPICH2, available on http://mvapich.cse.ohio-state.edu/
-
-
-                         COPYRIGHT
-
-Copyright (c) 2001-2014, The Ohio State University. All rights
-reserved.
-
-The MVAPICH2 software package is developed by the team members of The
-Ohio State University's Network-Based Computing Laboratory (NBCL),
-headed by Professor Dhabaleswar K. (DK) Panda.
-
-Contact:
-Prof. Dhabaleswar K. (DK) Panda
-Dept. of Computer Science and Engineering
-The Ohio State University
-2015 Neil Avenue
-Columbus, OH - 43210-1277
-Tel: (614)-292-5199; Fax: (614)-292-2911
-E-mail:panda@cse.ohio-state.edu
-
-This program is available under BSD licensing.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-(1) Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
-
-(2) Redistributions in binary form must reproduce the above copyright
-notice, this list of conditions and the following disclaimer in the
-documentation and/or other materials provided with the distribution.
-
-(3) Neither the name of The Ohio State University nor the names of
-their contributors may be used to endorse or promote products derived
-from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-==========================================================================
-
-Torus Cluster support is based on the works of Christian Heinrich
-
-/* Copyright (c) 2012
- * Christian Heinrich, National Center for Supercomputing Applications
- *                     University of Illinois <cheinric@illinois.edu>
- * All rights reserved
- */
-
-/* This program is free software; you can redistribute it and/or modify it
- * under the terms of the license (GNU LGPL) which comes with this package. */
+Files: debian/*
+Copyright:
+ Copyright (2011 Lucas Nussbaum <lucas@debian.org>
+ Copyright (C) 2013-2016 Martin Quinson <mquinson@debian.org>
+License: LGPL-2.1
