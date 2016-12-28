@@ -1,3 +1,15 @@
+SimGrid (3.14.159) stable; urgency=low
+
+ The previous release was only a crude approximation of a Pi release;
+ this one should be a bit better.
+
+ - Revert a last minute change that broke on Mac OSX.
+ - Fix the changelog and NEWS files.
+ - Improve the documentation, in particular of the routing module.
+ - Integrate some patches flying around in Debian.
+
+ -- Wed Dec 28 17:14:49 CET 2016 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+
 SimGrid (3.14) stable; urgency=low
 
  Documentation
