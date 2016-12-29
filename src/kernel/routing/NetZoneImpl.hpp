@@ -13,8 +13,6 @@
 #include "simgrid/s4u/NetZone.hpp"
 #include "simgrid/s4u/forward.hpp"
 
-#include "src/surf/xml/platf_private.hpp" // FIXME: kill sg_platf_route_cbarg_t to remove that UGLY include
-
 namespace simgrid {
 namespace kernel {
 class EngineImpl;
