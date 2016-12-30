@@ -13,8 +13,8 @@
 #  - No proper find_package() integration
 
 ## ADDING A NS3 VERSION.
-#   - Add ns3.${version}-core to the NAME line of the find_library below
-#   - Add include/ns3{version} to the PATH_SUFFIXES line of the find_path below
+#   - Add "ns3.${version}-core ns3.${version}-core-debug ns3.${version}-core-optimized" to the NAME line of the find_library below
+#   - Add "include/ns3{version}" to the PATH_SUFFIXES line of the find_path below
 
 set(HAVE_NS3 0)
 set(NS3_HINT ${ns3_path} CACHE PATH "Path to search for NS3 lib and include")
