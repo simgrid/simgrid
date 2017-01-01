@@ -1,3 +1,66 @@
+/** These things are used in the header */
+.sgtabs, .sgtabs2, .sgtabs3 {
+    background-image: url('tab_b.png');
+    width: 100%;
+    z-index: 101;
+    font-size: 13px;
+    font-family: 'Lucida Grande',Geneva,Helvetica,Arial,sans-serif;
+}
+
+.sgtabs2 {
+    font-size: 10px;
+}
+.sgtabs3 {
+    font-size: 9px;
+}
+
+.sgtablist {
+    margin: 0;
+    padding: 0;
+    display: table;
+}
+
+.sgtablist li {
+    float: left;
+    display: table-cell;
+    background-image: url('tab_b.png');
+    line-height: 36px;
+    list-style: none;
+}
+
+.sgtablist a {
+    display: block;
+    padding: 0 20px;
+    font-weight: bold;
+    background-image:url('tab_s.png');
+    background-repeat:no-repeat;
+    background-position:right;
+    color: #283A5D;
+    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    outline: none;
+}
+
+.sgtabs3 .sgtablist a {
+    padding: 0 10px;
+}
+
+.sgtablist a:hover {
+    background-image: url('tab_h.png');
+    background-repeat:repeat-x;
+    color: #fff;
+    text-shadow: 0px 1px 1px rgba(0, 0, 0, 1.0);
+    text-decoration: none;
+}
+
+.sgtablist li.current a {
+    background-image: url('tab_a.png');
+    background-repeat:repeat-x;
+    color: #fff;
+    text-shadow: 0px 1px 1px rgba(0, 0, 0, 1.0);
+}
+/* End of our tabs */
+
 body, table, div, p, dl {
 	font: 400 14px/19px Roboto,sans-serif;
 }
@@ -1074,3 +1137,4 @@ tr.heading h2 {
     display:inline;
   }
 }
+
