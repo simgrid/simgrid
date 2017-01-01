@@ -228,7 +228,7 @@ XBT_PUBLIC(int) surf_parse_lex();
 XBT_PUBLIC(int) surf_parse_get_lineno();
 XBT_PUBLIC(FILE *) surf_parse_get_in();
 XBT_PUBLIC(FILE *) surf_parse_get_out();
-XBT_PUBLIC(yy_size_t) surf_parse_get_leng();
+XBT_PUBLIC(int) surf_parse_get_leng();
 XBT_PUBLIC(char *) surf_parse_get_text();
 XBT_PUBLIC(void) surf_parse_set_lineno(int line_number);
 XBT_PUBLIC(void) surf_parse_set_in(FILE * in_str);
