@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -34,14 +34,13 @@ namespace routing {
  *  links), but naturally correspond to the values provided when the peer was created.
  *  More information in the relevant section of the XML reference guide: @ref pf_peer.
  *
+ *  You can find some Coordinate-based platforms from the OptorSim project, as well as a
+ *  script to turn them into SimGrid platforms in examples/platforms/syscoord.
+ *
  *  Such Network Coordinate systems were shown to provide rather good latency estimations
  *  in a compact way. Other systems, such as
  *  <a href="https://en.wikipedia.org/wiki/Phoenix_network_coordinates"Phoenix network coordinates</a>
  *  were shown superior to the Vivaldi system and could be also implemented in SimGrid.
- *
- *
- *  @todo: we should provide a script to compute the coordinates from a matrix of latency measurements,
- *  according to the corresponding publications.
  */
 
 class XBT_PRIVATE VivaldiZone : public ClusterZone {
