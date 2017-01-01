@@ -78,7 +78,6 @@ typedef struct s_sg_platf_peer_cbarg {
   double speed;
   double bw_in;
   double bw_out;
-  double lat;
   const char* coord;
   tmgr_trace_t speed_trace;
   tmgr_trace_t state_trace;

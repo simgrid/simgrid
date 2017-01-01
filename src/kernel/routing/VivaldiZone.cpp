@@ -58,7 +58,7 @@ VivaldiZone::VivaldiZone(NetZone* father, const char* name) : ClusterZone(father
 {
 }
 
-void VivaldiZone::setPeerLink(NetCard* netcard, double bw_in, double bw_out, double latency, const char* coord)
+void VivaldiZone::setPeerLink(NetCard* netcard, double bw_in, double bw_out, const char* coord)
 {
   xbt_assert(netcard->netzone() == this, "Cannot add a peer link to a netcard that is not in this AS");
 
@@ -66,8 +66,8 @@ void VivaldiZone::setPeerLink(NetCard* netcard, double bw_in, double bw_out, dou
 
   std::string link_up   = "link_" + netcard->name() + "_UP";
   std::string link_down = "link_" + netcard->name() + "_DOWN";
-  Link* linkUp          = surf_network_model->createLink(link_up.c_str(), bw_out, latency, SURF_LINK_SHARED);
-  Link* linkDown        = surf_network_model->createLink(link_down.c_str(), bw_in, latency, SURF_LINK_SHARED);
+  Link* linkUp          = surf_network_model->createLink(link_up.c_str(), bw_out, 0, SURF_LINK_SHARED);
+  Link* linkDown        = surf_network_model->createLink(link_down.c_str(), bw_in, 0, SURF_LINK_SHARED);
   privateLinks_.insert({netcard->id(), {linkUp, linkDown}});
 }
 

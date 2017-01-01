@@ -129,7 +129,7 @@ between the hosts goes through link1.
 
 \subsection pf_Cr Computing resources: hosts, clusters and peers.
 
-\subsubsection pf_host &lt;host/&gt;
+\subsubsection pf_host &lt;host&gt;
 
 A <b>host</b> represents a computer/node card. Every host is able to execute
 code and it can send and receive data to/from other hosts. Most importantly,
@@ -402,10 +402,10 @@ The hosts generated in the above example are named host-1.cluster, host-2.cluste
 etc.
 
 
-\subsubsection pf_peer The &lt;peer&gt; tag
+\subsubsection pf_peer \<peer\> (Vivaldi netzones only)
 
 This tag represents a peer, as in Peer-to-Peer (P2P) networks. This
-can only be used in Vivaldi NetZones. It creates the  following
+can only be used in Vivaldi NetZones. It creates the following
 resources to the NetZone:
 
 \li A host
@@ -421,11 +421,20 @@ id              | yes       | string | The identifier of the peer. Facilitates r
 speed           | yes       | int    | See the description of the ``host`` tag for this attribute
 bw_in           | yes       | int    | Bandwidth of the private downstream link
 bw_out          | yes       | int    | Bandwidth of the private upstream link
-lat             | yes       | double | Latency for both up- and downstream, in seconds.
 coordinates     | no        | string | Coordinates of the gateway for this peer. Example value: 12.8 14.4 6.4
 sharing_policy  | no        | SHARED\|FULLDUPLEX (default: FULLDUPLEX) | Sharing policy for links. See <b>link</b> description for details.
 availability_file| no       | string | Availability file for the peer. Same as host availability file. See <b>host</b> description for details.
 state_file      | no        | string | State file for the peer. Same as host state file. See <b>host</b> description for details.
+
+
+The communication latency between an host A=(xA,yA,zA) and an host
+B=(xB,yB,zB) is computed as follows:
+ 
+ latency = sqrt( (xA-xB)² + (yA-yB)² ) + zA + zB
+
+See the documentation of simgrid::kernel::routing::VivaldiZone for
+details on how the latency is computed from the coordinate, and on the
+the up and down bandwidth are used.
 
 \subsection pf_ne Network equipments: links and routers
 

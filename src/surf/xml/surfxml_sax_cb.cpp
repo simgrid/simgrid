@@ -639,10 +639,13 @@ void STag_surfxml_peer(){
   peer.speed       = surf_parse_get_speed(A_surfxml_peer_speed, "speed of peer", peer.id);
   peer.bw_in       = surf_parse_get_bandwidth(A_surfxml_peer_bw___in, "bw_in of peer", peer.id);
   peer.bw_out      = surf_parse_get_bandwidth(A_surfxml_peer_bw___out, "bw_out of peer", peer.id);
-  peer.lat         = surf_parse_get_time(A_surfxml_peer_lat, "lat of peer", peer.id);
   peer.coord       = A_surfxml_peer_coordinates;
   peer.speed_trace = A_surfxml_peer_availability___file[0] ? tmgr_trace_new_from_file(A_surfxml_peer_availability___file) : nullptr;
   peer.state_trace = A_surfxml_peer_state___file[0] ? tmgr_trace_new_from_file(A_surfxml_peer_state___file) : nullptr;
+
+  if (A_surfxml_peer_lat[0] != '\0')
+    XBT_WARN("The latency parameter in <peer> is now deprecated. Use the z coordinate instead of '%s'.",
+             A_surfxml_peer_lat);
 
   sg_platf_new_peer(&peer);
 }

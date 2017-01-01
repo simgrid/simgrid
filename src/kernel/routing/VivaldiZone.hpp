@@ -30,14 +30,15 @@ namespace routing {
  *
  *  So, to go from an host A to an host B, the following links would be used:
  *  <tt>private(A)_UP, private(B)_DOWN</tt>, with the additional latency computed above.
+ *  The bandwidth of the UP and DOWN links is not symmetric (in contrary to usual SimGrid
+ *  links), but naturally correspond to the values provided when the peer was created.
+ *  More information in the relevant section of the XML reference guide: @ref pf_peer.
  *
  *  Such Network Coordinate systems were shown to provide rather good latency estimations
  *  in a compact way. Other systems, such as
  *  <a href="https://en.wikipedia.org/wiki/Phoenix_network_coordinates"Phoenix network coordinates</a>
  *  were shown superior to the Vivaldi system and could be also implemented in SimGrid.
  *
- *
- *  @todo: the third dimension of the coordinates could be dropped and integrated in the peer private links.
  *
  *  @todo: we should provide a script to compute the coordinates from a matrix of latency measurements,
  *  according to the corresponding publications.
@@ -47,7 +48,7 @@ class XBT_PRIVATE VivaldiZone : public ClusterZone {
 public:
   explicit VivaldiZone(NetZone* father, const char* name);
 
-  void setPeerLink(NetCard* netcard, double bw_in, double bw_out, double lat, const char* coord);
+  void setPeerLink(NetCard* netcard, double bw_in, double bw_out, const char* coord);
   void getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t into, double* latency) override;
 };
 

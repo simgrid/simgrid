@@ -563,7 +563,7 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   speedPerPstate.push_back(peer->speed);
   simgrid::s4u::Host* host = as->createHost(peer->id, &speedPerPstate, 1);
 
-  as->setPeerLink(host->pimpl_netcard, peer->bw_in, peer->bw_out, peer->lat, peer->coord);
+  as->setPeerLink(host->pimpl_netcard, peer->bw_in, peer->bw_out, peer->coord);
   simgrid::s4u::Host::onCreation(*host);
 
   /* Change from the defaults */
