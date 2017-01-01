@@ -5,8 +5,7 @@
 You can use the well-known 
 <a href="http://www.nsnam.org/"><b>ns-3</b></a> packet-level network
 simulator as a SimGrid model, for example to investigate the validity
-of your simulation. Once NS3 is installed, and SimGrid compiled with
-the N3 support, enabling this model is very easy.
+of your simulation. Just install ns-3 and recompile SimGrid accordingly.
 
 \section pls_ns3_install Installing ns-3
 
@@ -44,18 +43,18 @@ cmake . -Denable_ns3=ON -DNS3_HINT=/opt/ns3 # or change the path if needed
 
 By the end of the configuration, cmake reports whether ns-3 was found,
 and this information is also available in <tt>include/simgrid_config.h</tt>
-If the variable \c HAVE_NS3 is defined to 1, then NS3
+If your local copy defines the variable \c HAVE_NS3 to 1, then NS3
 was correctly detected. If it's defined to 0, then something went
 wrong. Explore <tt>CMakeFiles/CMakeOutput.log</tt> and
 <tt>CMakeFiles/CMakeError.log</tt> to diagnose the problem.
 
-You can also double-check by executing the
-tests after the compilation.
+Afterward, you can test your installation as follows:
 
 \verbatim
 $ ctest -R ns3
-(test(s) should be run)
 \endverbatim
+
+\subsection pls_ns3_config_trouble Troubleshooting
 
 If you have a ns-3 version that is not known to SimGrid yet, edit \c
 tools/cmake/Modules/FindNS3.cmake in your SimGrid tree, according to
