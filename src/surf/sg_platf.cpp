@@ -96,24 +96,26 @@ void sg_platf_new_host(sg_platf_host_cbarg_t args)
 }
 
 /** @brief Add a "router" to the network element list */
-void sg_platf_new_router(sg_platf_router_cbarg_t router)
+simgrid::kernel::routing::NetCard* sg_platf_new_router(const char* name, const char* coords)
 {
   simgrid::kernel::routing::NetZoneImpl* current_routing = routing_get_current();
 
   if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
     current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::base;
-  xbt_assert(nullptr == simgrid::s4u::Engine::instance()->netcardByNameOrNull(router->id),
-             "Refusing to create a router named '%s': this name already describes a node.", router->id);
+  xbt_assert(nullptr == simgrid::s4u::Engine::instance()->netcardByNameOrNull(name),
+             "Refusing to create a router named '%s': this name already describes a node.", name);
 
   simgrid::kernel::routing::NetCard* netcard =
-    new simgrid::kernel::routing::NetCard(router->id, simgrid::kernel::routing::NetCard::Type::Router, current_routing);
-  XBT_DEBUG("Router '%s' has the id %d", router->id, netcard->id());
+      new simgrid::kernel::routing::NetCard(name, simgrid::kernel::routing::NetCard::Type::Router, current_routing);
+  XBT_DEBUG("Router '%s' has the id %d", name, netcard->id());
 
-  if (router->coord && strcmp(router->coord, ""))
-    new simgrid::kernel::routing::vivaldi::Coords(netcard, router->coord);
+  if (coords && strcmp(coords, ""))
+    new simgrid::kernel::routing::vivaldi::Coords(netcard, coords);
 
   if (TRACE_is_enabled() && TRACE_needs_platform())
-    sg_instr_new_router(router);
+    sg_instr_new_router(name, coords);
+
+  return netcard;
 }
 
 void sg_platf_new_link(sg_platf_link_cbarg_t link){
@@ -279,15 +281,13 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   // Add a router.
   XBT_DEBUG(" ");
   XBT_DEBUG("<router id=\"%s\"/>", cluster->router_id);
-  char *newid = nullptr;
-  s_sg_platf_router_cbarg_t router;
-  memset(&router, 0, sizeof(router));
-  router.id = cluster->router_id;
-  if (!router.id || !strcmp(router.id, ""))
-    router.id = newid = bprintf("%s%s_router%s", cluster->prefix, cluster->id, cluster->suffix);
-  sg_platf_new_router(&router);
-  current_as->router_ = simgrid::s4u::Engine::instance()->netcardByNameOrNull(router.id);
-  free(newid);
+  if (!cluster->router_id || !strcmp(cluster->router_id, "")) {
+    char* newid         = bprintf("%s%s_router%s", cluster->prefix, cluster->id, cluster->suffix);
+    current_as->router_ = sg_platf_new_router(newid, NULL);
+    free(newid);
+  } else {
+    current_as->router_ = sg_platf_new_router(cluster->router_id, NULL);
+  }
 
   //Make the backbone
   if ((cluster->bb_bw != 0) || (cluster->bb_lat != 0)) {

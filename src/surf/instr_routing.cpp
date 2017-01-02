@@ -297,10 +297,10 @@ void sg_instr_new_host(simgrid::s4u::Host& host)
 
 }
 
-void sg_instr_new_router(sg_platf_router_cbarg_t router)
+void sg_instr_new_router(const char* name, const char* coords)
 {
   container_t father = currentContainer.back();
-  PJ_container_new (router->id, INSTR_ROUTER, father);
+  PJ_container_new(name, INSTR_ROUTER, father);
 }
 
 static void instr_routing_parse_end_platform ()

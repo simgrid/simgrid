@@ -286,25 +286,21 @@ int  console_add_link(lua_State *L) {
  * add Router to AS components
  */
 int console_add_router(lua_State* L) {
-  s_sg_platf_router_cbarg_t router;
-  memset(&router,0,sizeof(router));
-  int type;
-
   lua_ensure(lua_istable(L, -1),
       "Bad Arguments to create router, Should be a table with named arguments");
 
   lua_pushstring(L, "id");
-  type = lua_gettable(L, -2);
+  int type = lua_gettable(L, -2);
   lua_ensure(type == LUA_TSTRING, "Attribute 'id' must be specified for any link and must be a string.");
-  router.id = lua_tostring(L, -1);
+  const char* name = lua_tostring(L, -1);
   lua_pop(L,1);
 
   lua_pushstring(L,"coord");
   lua_gettable(L,-2);
-  router.coord = lua_tostring(L, -1);
+  const char* coords = lua_tostring(L, -1);
   lua_pop(L,1);
 
-  sg_platf_new_router(&router);
+  sg_platf_new_router(name, coords);
 
   return 0;
 }

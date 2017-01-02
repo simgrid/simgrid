@@ -58,11 +58,6 @@ typedef struct {
 
 typedef struct {
   const char* id;
-  const char* coord;
-} s_sg_platf_router_cbarg_t, *sg_platf_router_cbarg_t;
-
-typedef struct {
-  const char* id;
   double bandwidth;
   tmgr_trace_t bandwidth_trace;
   double latency;
@@ -204,7 +199,8 @@ XBT_PUBLIC(void) sg_platf_new_AS_seal();                     // That AS is fully
 
 XBT_PUBLIC(void) sg_platf_new_host   (sg_platf_host_cbarg_t   host);   // Add an host   to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_hostlink(sg_platf_host_link_cbarg_t h); // Add an host_link to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_router (sg_platf_router_cbarg_t router); // Add a router  to the currently described AS
+XBT_PUBLIC(simgrid::kernel::routing::NetCard*)
+sg_platf_new_router(const char* name, const char* coords);             // Add a router  to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_link   (sg_platf_link_cbarg_t link);     // Add a link    to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_peer   (sg_platf_peer_cbarg_t peer);     // Add a peer    to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_cluster(sg_platf_cluster_cbarg_t clust); // Add a cluster to the currently described AS
@@ -244,7 +240,7 @@ XBT_PUBLIC_DATA(int) surfxml_bufferstack_size;
 XBT_PUBLIC(void) routing_route_free(sg_platf_route_cbarg_t route);
 /********** Instr. **********/
 XBT_PRIVATE void sg_instr_AS_begin(sg_platf_AS_cbarg_t AS);
-XBT_PRIVATE void sg_instr_new_router(sg_platf_router_cbarg_t router);
+XBT_PRIVATE void sg_instr_new_router(const char* name, const char* coords);
 XBT_PRIVATE void sg_instr_new_host(simgrid::s4u::Host& host);
 XBT_PRIVATE void sg_instr_AS_end();
 

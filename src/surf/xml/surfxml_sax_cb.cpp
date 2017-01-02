@@ -523,13 +523,7 @@ void STag_surfxml_host___link(){
 }
 
 void STag_surfxml_router(){
-  s_sg_platf_router_cbarg_t router;
-  memset(&router, 0, sizeof(router));
-
-  router.id    = A_surfxml_router_id;
-  router.coord = A_surfxml_router_coordinates;
-
-  sg_platf_new_router(&router);
+  sg_platf_new_router(A_surfxml_router_id, A_surfxml_router_coordinates);
 }
 
 void ETag_surfxml_cluster(){
