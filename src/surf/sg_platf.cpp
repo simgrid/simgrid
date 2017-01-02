@@ -112,10 +112,6 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
   if (router->coord && strcmp(router->coord, ""))
     new simgrid::kernel::routing::vivaldi::Coords(netcard, router->coord);
 
-  auto cluster = dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing);
-  if(cluster != nullptr)
-    cluster->router_ = simgrid::s4u::Engine::instance()->netcardByNameOrNull(router->id);
-
   if (TRACE_is_enabled() && TRACE_needs_platform())
     sg_instr_new_router(router);
 }
@@ -280,8 +276,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     rankId++;
   }
 
-  // Add a router. It is magically used thanks to the way in which surf_routing_cluster is written,
-  // and it's very useful to connect clusters together
+  // Add a router.
   XBT_DEBUG(" ");
   XBT_DEBUG("<router id=\"%s\"/>", cluster->router_id);
   char *newid = nullptr;
@@ -557,7 +552,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
 void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
 {
   simgrid::kernel::routing::VivaldiZone* as = dynamic_cast<simgrid::kernel::routing::VivaldiZone*>(current_routing);
-  xbt_assert(as, "<peer> tag can only be used in Vivaldi ASes");
+  xbt_assert(as, "<peer> tag can only be used in Vivaldi netzones.");
 
   std::vector<double> speedPerPstate;
   speedPerPstate.push_back(peer->speed);
