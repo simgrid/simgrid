@@ -112,8 +112,7 @@ simgrid::kernel::routing::NetCard* sg_platf_new_router(const char* name, const c
   if (coords && strcmp(coords, ""))
     new simgrid::kernel::routing::vivaldi::Coords(netcard, coords);
 
-  if (TRACE_is_enabled() && TRACE_needs_platform())
-    sg_instr_new_router(name, coords);
+  sg_instr_new_router(name);
 
   return netcard;
 }
