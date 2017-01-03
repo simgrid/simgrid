@@ -60,7 +60,7 @@ void NetZoneImpl::addBypassRoute(sg_platf_route_cbarg_t e_route)
 {
   /* Argument validity checks */
   if (e_route->gw_dst) {
-    XBT_DEBUG("Load bypassASroute from %s@%s to %s@%s", e_route->src->cname(), e_route->gw_src->cname(),
+    XBT_DEBUG("Load bypassNetzoneRoute from %s@%s to %s@%s", e_route->src->cname(), e_route->gw_src->cname(),
               e_route->dst->cname(), e_route->gw_dst->cname());
     xbt_assert(!e_route->link_list->empty(), "Bypass route between %s@%s and %s@%s cannot be empty.",
                e_route->src->cname(), e_route->gw_src->cname(), e_route->dst->cname(), e_route->gw_dst->cname());
@@ -105,7 +105,7 @@ void NetZoneImpl::addBypassRoute(sg_platf_route_cbarg_t e_route)
  *     src                 dst
  *  @endverbatim
  *
- *  In the base case (when src and dst are in the same AS), things are as follows:
+ *  In the base case (when src and dst are in the same netzone), things are as follows:
  *  @verbatim
  *                  platform root
  *                        |
@@ -152,8 +152,8 @@ static void find_common_ancestors(NetCard* src, NetCard* dst,
   NetZoneImpl* src_as = src->netzone();
   NetZoneImpl* dst_as = dst->netzone();
 
-  xbt_assert(src_as, "Host %s must be in an AS", src->cname());
-  xbt_assert(dst_as, "Host %s must be in an AS", dst->cname());
+  xbt_assert(src_as, "Host %s must be in a netzone", src->cname());
+  xbt_assert(dst_as, "Host %s must be in a netzone", dst->cname());
 
   /* (2) find the path to the root routing component */
   std::vector<NetZoneImpl*> path_src;
@@ -317,14 +317,14 @@ void NetZoneImpl::getGlobalRoute(routing::NetCard* src, routing::NetCard* dst,
   if (common_ancestor->getBypassRoute(src, dst, links, latency))
     return;
 
-  /* If src and dst are in the same AS, life is good */
+  /* If src and dst are in the same netzone, life is good */
   if (src_ancestor == dst_ancestor) { /* SURF_ROUTING_BASE */
     route.link_list = links;
     common_ancestor->getLocalRoute(src, dst, &route, latency);
     return;
   }
 
-  /* Not in the same AS, no bypass. We'll have to find our path between the ASes recursively*/
+  /* Not in the same netzone, no bypass. We'll have to find our path between the netzones recursively */
 
   route.link_list = new std::vector<surf::Link*>();
 

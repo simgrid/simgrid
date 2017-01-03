@@ -51,7 +51,7 @@ static std::vector<double>* getCoordsFromNetcard(NetCard* nc)
 {
   simgrid::kernel::routing::vivaldi::Coords* coords = nc->extension<simgrid::kernel::routing::vivaldi::Coords>();
   xbt_assert(coords, "Please specify the Vivaldi coordinates of %s %s (%p)",
-             (nc->isNetZone() ? "AS" : (nc->isHost() ? "Host" : "Router")), nc->cname(), nc);
+             (nc->isNetZone() ? "Netzone" : (nc->isHost() ? "Host" : "Router")), nc->cname(), nc);
   return &coords->coords;
 }
 VivaldiZone::VivaldiZone(NetZone* father, const char* name) : ClusterZone(father, name)
@@ -60,7 +60,7 @@ VivaldiZone::VivaldiZone(NetZone* father, const char* name) : ClusterZone(father
 
 void VivaldiZone::setPeerLink(NetCard* netcard, double bw_in, double bw_out, const char* coord)
 {
-  xbt_assert(netcard->netzone() == this, "Cannot add a peer link to a netcard that is not in this AS");
+  xbt_assert(netcard->netzone() == this, "Cannot add a peer link to a netcard that is not in this netzone");
 
   new simgrid::kernel::routing::vivaldi::Coords(netcard, coord);
 

@@ -32,7 +32,7 @@ public:
   NetCard(std::string name, NetCard::Type componentType, NetZoneImpl* netzone_p);
   ~NetCard() = default;
 
-  // Our rank in the vertices_ array of our containing AS.
+  // Our rank in the vertices_ array of the netzone that contains us.
   unsigned int id() { return id_; }
   std::string name() { return name_; }
   const char* cname() { return name_.c_str(); }

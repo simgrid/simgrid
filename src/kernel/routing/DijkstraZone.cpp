@@ -340,7 +340,7 @@ void DijkstraZone::addRoute(sg_platf_route_cbarg_t route)
     if (!route->gw_dst && !route->gw_src)
       XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dstName, srcName);
     else
-      XBT_DEBUG("Load ASroute from %s@%s to %s@%s", dstName, route->gw_dst->name().c_str(), srcName,
+      XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", dstName, route->gw_dst->name().c_str(), srcName,
                 route->gw_src->name().c_str());
 
     xbt_dynar_t nodes   = xbt_graph_get_nodes(routeGraph_);

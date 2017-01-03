@@ -137,7 +137,7 @@ sg_platf_route_cbarg_t RoutedZone::newExtendedRoute(RoutingMode hierarchy, sg_pl
   result->link_list = new std::vector<Link*>();
 
   xbt_assert(hierarchy == RoutingMode::base || hierarchy == RoutingMode::recursive,
-             "The hierarchy of this AS is neither BASIC nor RECURSIVE, I'm lost here.");
+             "The hierarchy of this netzone is neither BASIC nor RECURSIVE, I'm lost here.");
 
   if (hierarchy == RoutingMode::recursive) {
     xbt_assert(routearg->gw_src && routearg->gw_dst, "nullptr is obviously a deficient gateway");
@@ -165,10 +165,10 @@ void RoutedZone::getRouteCheckParams(NetCard* src, NetCard* dst)
   NetZone* dst_as = dst->netzone();
 
   xbt_assert(src_as == dst_as,
-             "Internal error: %s@%s and %s@%s are not in the same AS as expected. Please report that bug.",
+             "Internal error: %s@%s and %s@%s are not in the same netzone as expected. Please report that bug.",
              src->cname(), src_as->name(), dst->cname(), dst_as->name());
 
-  xbt_assert(this == dst_as, "Internal error: route destination %s@%s is not in AS %s as expected (route source: "
+  xbt_assert(this == dst_as, "Internal error: route destination %s@%s is not in netzone %s as expected (route source: "
                              "%s@%s). Please report that bug.",
              src->cname(), dst->cname(), src_as->name(), dst_as->name(), name());
 }
@@ -185,20 +185,20 @@ void RoutedZone::addRouteCheckParams(sg_platf_route_cbarg_t route)
     xbt_assert(dst, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, dstName);
     xbt_assert(!route->link_list->empty(), "Empty route (between %s and %s) forbidden.", srcName, dstName);
     xbt_assert(!src->isNetZone(),
-               "When defining a route, src cannot be an AS such as '%s'. Did you meant to have an ASroute?", srcName);
+               "When defining a route, src cannot be a netzone such as '%s'. Did you meant to have an NetzoneRoute?", srcName);
     xbt_assert(!dst->isNetZone(),
-               "When defining a route, dst cannot be an AS such as '%s'. Did you meant to have an ASroute?", dstName);
+               "When defining a route, dst cannot be a netzone such as '%s'. Did you meant to have an NetzoneRoute?", dstName);
   } else {
-    XBT_DEBUG("Load ASroute from %s@%s to %s@%s", srcName, route->gw_src->cname(), dstName, route->gw_dst->cname());
-    xbt_assert(src->isNetZone(), "When defining an ASroute, src must be an AS but '%s' is not", srcName);
-    xbt_assert(dst->isNetZone(), "When defining an ASroute, dst must be an AS but '%s' is not", dstName);
+    XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", srcName, route->gw_src->cname(), dstName, route->gw_dst->cname());
+    xbt_assert(src->isNetZone(), "When defining a NetzoneRoute, src must be a netzone but '%s' is not", srcName);
+    xbt_assert(dst->isNetZone(), "When defining a NetzoneRoute, dst must be a netzone but '%s' is not", dstName);
 
     xbt_assert(route->gw_src->isHost() || route->gw_src->isRouter(),
-               "When defining an ASroute, gw_src must be an host or a router but '%s' is not.", srcName);
+               "When defining a NetzoneRoute, gw_src must be an host or a router but '%s' is not.", srcName);
     xbt_assert(route->gw_dst->isHost() || route->gw_dst->isRouter(),
-               "When defining an ASroute, gw_dst must be an host or a router but '%s' is not.", dstName);
+               "When defining a NetzoneRoute, gw_dst must be an host or a router but '%s' is not.", dstName);
 
-    xbt_assert(route->gw_src != route->gw_dst, "Cannot define an ASroute from '%s' to itself", route->gw_src->cname());
+    xbt_assert(route->gw_src != route->gw_dst, "Cannot define an NetzoneRoute from '%s' to itself", route->gw_src->cname());
 
     xbt_assert(src, "Cannot add a route from %s@%s to %s@%s: %s does not exist.", srcName, route->gw_src->cname(),
                dstName, route->gw_dst->cname(), srcName);

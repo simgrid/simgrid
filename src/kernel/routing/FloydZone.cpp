@@ -108,7 +108,7 @@ void FloydZone::addRoute(sg_platf_route_cbarg_t route)
   }
 
   /* Check that the route does not already exist */
-  if (route->gw_dst) // AS route (to adapt the error message, if any)
+  if (route->gw_dst) // netzone route (to adapt the error message, if any)
     xbt_assert(nullptr == TO_FLOYD_LINK(route->src->id(), route->dst->id()),
                "The route between %s@%s and %s@%s already exists (Rq: routes are symmetrical by default).",
                route->src->name().c_str(), route->gw_src->name().c_str(), route->dst->name().c_str(),
@@ -124,7 +124,7 @@ void FloydZone::addRoute(sg_platf_route_cbarg_t route)
       (TO_FLOYD_LINK(route->src->id(), route->dst->id()))->link_list->size();
 
   if (route->symmetrical == true) {
-    if (route->gw_dst) // AS route (to adapt the error message, if any)
+    if (route->gw_dst) // netzone route (to adapt the error message, if any)
       xbt_assert(
           nullptr == TO_FLOYD_LINK(route->dst->id(), route->src->id()),
           "The route between %s@%s and %s@%s already exists. You should not declare the reverse path as symmetrical.",
@@ -144,7 +144,7 @@ void FloydZone::addRoute(sg_platf_route_cbarg_t route)
     if (!route->gw_src && !route->gw_dst)
       XBT_DEBUG("Load Route from \"%s\" to \"%s\"", route->dst->name().c_str(), route->src->name().c_str());
     else
-      XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", route->dst->name().c_str(), route->gw_src->name().c_str(),
+      XBT_DEBUG("Load NetzoneRoute from \"%s(%s)\" to \"%s(%s)\"", route->dst->name().c_str(), route->gw_src->name().c_str(),
                 route->src->name().c_str(), route->gw_dst->name().c_str());
 
     TO_FLOYD_LINK(route->dst->id(), route->src->id()) = newExtendedRoute(hierarchy_, route, 0);
