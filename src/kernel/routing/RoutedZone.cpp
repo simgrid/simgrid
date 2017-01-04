@@ -129,7 +129,7 @@ void RoutedZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
 /* change a route containing link names into a route containing link entities */
 sg_platf_route_cbarg_t RoutedZone::newExtendedRoute(RoutingMode hierarchy, sg_platf_route_cbarg_t routearg,
-                                                    int change_order)
+                                                    bool change_order)
 {
   sg_platf_route_cbarg_t result;
 
@@ -152,6 +152,7 @@ sg_platf_route_cbarg_t RoutedZone::newExtendedRoute(RoutingMode hierarchy, sg_pl
     else
       result->link_list->insert(result->link_list->begin(), link);
   }
+  result->link_list->shrink_to_fit();
 
   return result;
 }

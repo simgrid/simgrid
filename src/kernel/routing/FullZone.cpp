@@ -20,20 +20,16 @@ FullZone::FullZone(NetZone* father, const char* name) : RoutedZone(father, name)
 
 void FullZone::seal()
 {
-  int i;
-  sg_platf_route_cbarg_t e_route;
-
-  /* set utils vars */
   int table_size = static_cast<int>(vertices_.size());
 
-  /* Create table if necessary */
+  /* Create table if needed */
   if (!routingTable_)
     routingTable_ = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
 
   /* Add the loopback if needed */
   if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
-    for (i = 0; i < table_size; i++) {
-      e_route = TO_ROUTE_FULL(i, i);
+    for (int i = 0; i < table_size; i++) {
+      sg_platf_route_cbarg_t e_route = TO_ROUTE_FULL(i, i);
       if (!e_route) {
         e_route            = xbt_new0(s_sg_platf_route_cbarg_t, 1);
         e_route->gw_src    = nullptr;
@@ -102,8 +98,7 @@ void FullZone::addRoute(sg_platf_route_cbarg_t route)
                dst->cname());
 
   /* Add the route to the base */
-  TO_ROUTE_FULL(src->id(), dst->id()) = newExtendedRoute(hierarchy_, route, 1);
-  TO_ROUTE_FULL(src->id(), dst->id())->link_list->shrink_to_fit();
+  TO_ROUTE_FULL(src->id(), dst->id()) = newExtendedRoute(hierarchy_, route, true);
 
   if (route->symmetrical == true && src != dst) {
     if (route->gw_dst && route->gw_src) {
@@ -121,8 +116,7 @@ void FullZone::addRoute(sg_platf_route_cbarg_t route)
                  "The route between %s and %s already exists. You should not declare the reverse path as symmetrical.",
                  dst->cname(), src->cname());
 
-    TO_ROUTE_FULL(dst->id(), src->id()) = newExtendedRoute(hierarchy_, route, 0);
-    TO_ROUTE_FULL(dst->id(), src->id())->link_list->shrink_to_fit();
+    TO_ROUTE_FULL(dst->id(), src->id()) = newExtendedRoute(hierarchy_, route, false);
   }
 }
 }
