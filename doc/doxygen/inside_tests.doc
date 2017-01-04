@@ -57,6 +57,11 @@ make testall                    # Rebuild the test runner on need
 
 \section inside_tests_add_units Adding unit tests
 
+\warning this section is outdated. New unit tests should be written
+using the unit_test_framework component of Boost. There is no such
+example so far in our codebase, but that's definitely the way to go
+for the future. STOP USING XBT.
+
 If you want to test a specific function or set of functions, you need
 a unit test. Edit the file tools/cmake/UnitTesting.cmake to
 add your source file to the FILES_CONTAINING_UNITTESTS list. For
@@ -248,7 +253,7 @@ refer to the <a href="https://wiki.inria.fr/ciportal/">CI documentation</a>.
 
 The result can be seen here: https://ci.inria.fr/simgrid/
 
-We have 3 projects on Jenkins:
+We have 2 interesting projects on Jenkins:
 \li <a href="https://ci.inria.fr/simgrid/job/SimGrid-Multi/">SimGrid-Multi</a>
     is the main project, running the tests that we spoke about.\n It is
     configured (on Jenkins) to run the script <tt>tools/jenkins/build.sh</tt>
@@ -256,8 +261,6 @@ We have 3 projects on Jenkins:
     runs the tests both under valgrind to find the memory errors and
     under gcovr to report the achieved test coverage.\n It is configured
     (on Jenkins) to run the script <tt>tools/jenkins/DynamicAnalysis.sh</tt>
-\li <a href="https://ci.inria.fr/simgrid/job/SimGrid-Windows/">SimGrid-Windows</a>
-    is an ongoing attempt to get Windows tested on Jenkins too.
 
 In each case, SimGrid gets built in
 /builds/workspace/$PROJECT/build_mode/$CONFIG/label/$SERVER/build 
@@ -270,10 +273,10 @@ model-checking on non-linux systems), go to your Project and click on
 interface language is English) and tick the checkbox; then add a
 groovy-expression to disable a specific configuration. For example, in
 order to disable the "ModelChecker" build on host
-"small-freebsd-64-clang", use:
+"small-netbsd-64-clang", use:
 
 \verbatim
-(label=="small-freebsd-64-clang").implies(build_mode!="ModelChecker")
+(label=="small-netbsd-64-clang").implies(build_mode!="ModelChecker")
 \endverbatim
 
 \subsection inside_tests_travis Travis
@@ -284,6 +287,10 @@ GitHub ecosystem. There is a plenty of documentation out there. Our
 configuration is in the file .travis.yml as it should be, and the
 result is here: https://travis-ci.org/simgrid/simgrid
 
+The .travis.yml configuration file can be useful if you fail to get
+SimGrid to compile on modern mac systems. We use the \c brew package
+manager there, and it works like a charm.
+
 \subsection inside_tests_appveyor AppVeyor
 
 AppVeyor aims at becoming the Travis of Windows. It is maybe less
@@ -291,15 +298,11 @@ mature than Travis, or maybe it is just that I'm less trained in
 Windows. Our configuration is in the file appveyor.yml as it should
 be, and the result is here: https://ci.appveyor.com/project/simgrid/simgrid
 
-It should be noted that I miserably failed to use the environment
-provided by AppVeyor, since SimGrid does not build with Microsoft
-Visual Studio. Instead, we download a whole development environment
-from the internet at each build. That's an archive of already compiled
-binaries that are unpacked on the appveyor systems each time we start.
-We re-use the ones from the 
-<a href="https://github.com/symengine/symengine">symengine</a>
-project. Thanks to them for compiling sane tools and constituting that
-archive, it saved my mind! 
+We use \c Choco as a package manager on AppVeyor, and it is sufficient
+for us. In the future, we will probably move to the ubuntu subsystem
+of Windows 10: SimGrid performs very well under these settings, but
+unfortunately we have no continuous integration service providing it
+yet, so we cannot drop AppVeyor yet.
 
 \subsection inside_tests_debian Debian builders
 
