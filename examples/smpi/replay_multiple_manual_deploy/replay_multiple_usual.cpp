@@ -289,19 +289,19 @@ int main(int argc, char *argv[])
 {
     MSG_init(&argc, argv);
 
-    xbt_assert(argc > 2, "Usage: %s workload_file platform_file\n"
-               "\tExample: %s workload_compute platform.xml\n",
+    xbt_assert(argc > 2, "Usage: %s platform_file workload_file\n"
+               "\tExample: %s platform.xml workload_compute\n",
                argv[0], argv[0]);
 
     //  Simulation setting
-    MSG_create_environment(argv[2]);
+    MSG_create_environment(argv[1]);
     hosts = all_hosts();
 
     xbt_assert(hosts.size() >= 4, "The given platform should contain at least "
                                   "4 hosts (found %lu).", hosts.size());
 
     // Let's retrieve all SMPI jobs
-    vector<Job*> jobs = all_jobs(argv[1]);
+    vector<Job*> jobs = all_jobs(argv[2]);
 
     // Let's register them
     for (const Job * job : jobs)
