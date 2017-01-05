@@ -2,7 +2,7 @@ CXX=clang++
 CXXFLAGS=-Wall -Wextra -g -std=c++11
 LDFLAGS=-lsimgrid
 
-all: replay_mnd_hack replay_mnd_usual
+all: replay_mnd_usual
 
 replay_mnd_hack: replay_multiple_hack.cpp
 	$(CXX) -o $@ $< $(LDFLAGS) $(CXXFLAGS)
