@@ -219,8 +219,7 @@ int SafetyChecker::backtrack()
       const smx_actor_t issuer = MC_smx_simcall_get_issuer(req);
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
         simgrid::mc::State* prev_state = i->get();
-        if (reductionMode_ != simgrid::mc::ReductionMode::none
-            && simgrid::mc::request_depend(req, &prev_state->internal_req)) {
+        if (simgrid::mc::request_depend(req, &prev_state->internal_req)) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
             int value = prev_state->transition.argument;
