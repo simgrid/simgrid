@@ -407,21 +407,7 @@ void new_pajeResetState (double timestamp, container_t container, type_t type)
 void new_pajeStartLink (double timestamp, container_t container, type_t type, container_t sourceContainer,
                         const char *value, const char *key)
 {
-  paje_event_t event = xbt_new0(s_paje_event_t, 1);
-  event->event_type = PAJE_StartLink;
-  event->timestamp = timestamp;
-  event->print = active_writer.print_StartLink;
-  event->free                                   = &free_paje_event;
-  event->data = xbt_new0(s_startLink_t, 1);
-  ((startLink_t)(event->data))->type = type;
-  ((startLink_t)(event->data))->container = container;
-  ((startLink_t)(event->data))->sourceContainer = sourceContainer;
-  ((startLink_t)(event->data))->value = xbt_strdup(value);
-  ((startLink_t)(event->data))->key = xbt_strdup(key);
-  ((startLink_t)(event->data))->size = -1;
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
-
-  insert_into_buffer (event);
+  new_pajeStartLinkWithSize(timestamp, container, type, sourceContainer, value, key, -1);
 }
 
 void new_pajeStartLinkWithSize (double timestamp, container_t container, type_t type, container_t sourceContainer,
