@@ -18,6 +18,7 @@
 #include "src/mc/mc_replay.h"
 #include "src/msg/msg_private.h"
 #include "src/simix/smx_private.h"
+#include "src/smpi/SmpiHost.hpp"
 #include "surf/surf.h"
 #include "xbt/replay.hpp"
 #include <xbt/config.hpp>
@@ -509,6 +510,10 @@ int smpi_main(const char* executable, int argc, char *argv[])
   SMPI_switch_data_segment = &smpi_switch_data_segment;
 
   smpi_init_options();
+
+  simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
+    host.extension_set(new simgrid::smpi::SmpiHost(&host));
+  });
 
   // parse the platform file: get the host list
   SIMIX_create_environment(argv[1]);

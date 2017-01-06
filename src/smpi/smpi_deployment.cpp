@@ -6,6 +6,7 @@
 
 #include "private.h"
 #include "simgrid/msg.h" /* barrier */
+#include "src/smpi/SmpiHost.hpp"
 #include "xbt/dict.h"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
@@ -37,6 +38,19 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
 
   s_smpi_mpi_instance_t* instance = (s_smpi_mpi_instance_t*)xbt_malloc(sizeof(s_smpi_mpi_instance_t));
 
+  static int already_called = 0;
+  if (!already_called) {
+    already_called = 1;
+    xbt_dynar_t hosts = MSG_hosts_as_dynar();
+    unsigned int cursor;
+    void* h;
+    xbt_dynar_foreach(hosts, cursor, h) {
+      simgrid::s4u::Host* host = static_cast<simgrid::s4u::Host*>(h);
+      host->extension_set(new simgrid::smpi::SmpiHost(host));
+    }
+    xbt_dynar_free(&hosts);
+  }
+
   instance->name = name;
   instance->size = num_processes;
   instance->present_processes = 0;
@@ -49,6 +63,7 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
   if(smpi_instances==nullptr){
     smpi_instances = xbt_dict_new_homogeneous(xbt_free_f);
   }
+
 
   xbt_dict_set(smpi_instances, name, (void*)instance, nullptr);
 }

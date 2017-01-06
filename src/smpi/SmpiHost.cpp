@@ -1,7 +1,6 @@
 #include "smpi/smpi_utils.hpp"
 #include "src/smpi/SmpiHost.hpp"
-#include "src/surf/virtual_machine.hpp"
-
+#include <simgrid/s4u/VirtualMachine.hpp>
 #include <string>
 #include <vector>
 
@@ -15,11 +14,11 @@ simgrid::xbt::Extension<simgrid::s4u::Host, SmpiHost> SmpiHost::EXTENSION_ID;
 double SmpiHost::orecv(size_t size)
 {
   if (orecv_parsed_values.empty()) {
-    if (orecv_.empty())  {
-      std::string test = xbt_cfg_get_string("smpi/or");
+    if (orecv_.empty())  { /* This is currently always true since orecv_ is not really used yet. */
+      /* Get global value */
       orecv_parsed_values = parse_factor(xbt_cfg_get_string("smpi/or"));
     }
-    else 
+    else /* Can currently not be reached, see above */
       orecv_parsed_values = parse_factor(orecv_.c_str());
   }
   
@@ -67,8 +66,7 @@ static void onCreation(simgrid::s4u::Host& host) {
 
 static void onHostDestruction(simgrid::s4u::Host& host) {
   // Ignore virtual machines
-  simgrid::surf::HostImpl* surf_host = host.extension<simgrid::surf::HostImpl>();
-  if (dynamic_cast<simgrid::surf::VirtualMachine*>(surf_host))
+  if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host))
     return;
 }
 

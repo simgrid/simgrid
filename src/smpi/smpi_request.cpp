@@ -11,6 +11,7 @@
 #include "src/simix/smx_private.h"
 #include "simgrid/sg_config.h"
 #include "smpi/smpi_utils.hpp"
+#include "src/smpi/SmpiHost.hpp"
 #include <simgrid/s4u/host.hpp>
 #include "src/kernel/activity/SynchroComm.hpp"
 
@@ -795,7 +796,7 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
   }
   if(req->detached_sender_ != nullptr){
     //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
-    double sleeptime = smpi_or(req->real_size_);
+    double sleeptime = simgrid::s4u::Actor::self()->host()->extension<simgrid::smpi::SmpiHost>()->orecv(req->real_size());
     if(sleeptime > 0.0){
       simcall_process_sleep(sleeptime);
       XBT_DEBUG("receiving size of %zu : sleep %f ", req->real_size_, sleeptime);

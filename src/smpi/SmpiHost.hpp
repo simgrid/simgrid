@@ -6,6 +6,7 @@
 #include <simgrid/s4u/host.hpp>
 #include <string>
 #include <vector>
+#include <xbt/config.hpp>
 #include <xbt/Extendable.hpp>
 
 
