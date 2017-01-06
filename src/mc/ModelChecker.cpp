@@ -161,16 +161,6 @@ void ModelChecker::resume(simgrid::mc::Process& process)
   process.clear_cache();
 }
 
-static
-void throw_socket_error(int fd)
-{
-  int error = 0;
-  socklen_t errlen = sizeof(error);
-  if (getsockopt(fd, SOL_SOCKET, SO_ERROR, (void *)&error, &errlen) == -1)
-    error = errno;
-  throw simgrid::xbt::errno_error();
-}
-
 static void MC_report_crash(int status)
 {
   XBT_INFO("**************************");
