@@ -29,8 +29,6 @@ public:
   std::vector<std::string> getTextualTrace() override;
   void logState() override;
 private:
-  // Temp
-  void init();
   bool checkNonTermination(simgrid::mc::State* current_state);
   int backtrack();
   void restoreState();

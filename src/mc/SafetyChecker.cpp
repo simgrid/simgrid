@@ -97,8 +97,6 @@ void SafetyChecker::logState() // override
 
 int SafetyChecker::run()
 {
-  this->init();
-
   while (!stack_.empty()) {
 
     /* Get current state */
@@ -304,10 +302,10 @@ void SafetyChecker::restoreState()
   }
 }
 
-void SafetyChecker::init()
+SafetyChecker::SafetyChecker(Session& session) : Checker(session)
 {
   reductionMode_ = simgrid::mc::reduction_mode;
-  if( _sg_mc_termination)
+  if (_sg_mc_termination)
     reductionMode_ = simgrid::mc::ReductionMode::none;
   else if (reductionMode_ == simgrid::mc::ReductionMode::unset)
     reductionMode_ = simgrid::mc::ReductionMode::dpor;
@@ -335,10 +333,6 @@ void SafetyChecker::init()
     }
 
   stack_.push_back(std::move(initial_state));
-}
-
-SafetyChecker::SafetyChecker(Session& session) : Checker(session)
-{
 }
 
 SafetyChecker::~SafetyChecker()
