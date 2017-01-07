@@ -233,7 +233,7 @@ static char **action_get_action(char *name)
         xbt_dynar_push(otherqueue, &evt);
       }
     }
-    goto todo_done;             // end of file reached while searching in vain for more work
+    // end of file reached while searching in vain for more work
   } else {
     // Get something from my queue and return it
     xbt_dynar_shift(myqueue, &evt);

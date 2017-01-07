@@ -426,7 +426,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
 
 void smpi_comm_null_copy_buffer_callback(smx_activity_t comm, void *buff, size_t buff_size)
 {
-  return;
+  /* nothing done in this version */
 }
 
 static void smpi_check_options(){
@@ -662,7 +662,6 @@ void smpi_global_destroy()
 void __attribute__ ((weak)) user_main_()
 {
   xbt_die("Should not be in this smpi_simulated_main");
-  return;
 }
 
 int __attribute__ ((weak)) smpi_simulated_main_(int argc, char **argv)

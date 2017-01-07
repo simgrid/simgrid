@@ -204,7 +204,6 @@ void xbt_fifo_unshift_item(xbt_fifo_t l, xbt_fifo_item_t new)
   new->next = l->head;
   new->next->prev = new;
   l->head = new;
-  return;
 }
 
 /** Shift bucket
@@ -461,7 +460,6 @@ inline void *xbt_fifo_get_item_content(xbt_fifo_item_t i)
 inline void xbt_fifo_free_item(xbt_fifo_item_t b)
 {
   xbt_mallocator_release(item_mallocator, b);
-  return;
 }
 
 /** Destructor
@@ -471,7 +469,6 @@ inline void xbt_fifo_freeitem(xbt_fifo_item_t b)
 {
   XBT_CWARN(xbt_fifo, "This function is deprecated. Use xbt_fifo_free_item.");
   xbt_fifo_free_item(b);
-  return;
 }
 
 /**

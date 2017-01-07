@@ -233,7 +233,6 @@ void xbt_test_suite_push(xbt_test_suite_t suite, const char *name, ts_test_cb_t 
   unit->tests = xbt_dynar_new(sizeof(xbt_test_test_t), xbt_test_test_free);
 
   xbt_dynar_push(suite->units, &unit);
-  return;
 }
 
 /* run test one suite */
@@ -643,7 +642,6 @@ void _xbt_test_add(const char *file, int line, const char *fmt, ...)
   test->line = line;
   test->logs = xbt_dynar_new(sizeof(xbt_test_log_t), xbt_test_log_free);
   xbt_dynar_push(unit->tests, &test);
-  return;
 }
 
 /* annotate test case with log message and failure */

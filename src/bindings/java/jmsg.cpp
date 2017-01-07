@@ -336,9 +336,7 @@ void java_main_jprocess(jobject jprocess)
   jprocess_bind(context->jprocess, process, env);
 
   // Adrien, ugly path, just to bypass creation of context at low levels (i.e such as for the VM migration for instance)
-  if (context->jprocess == nullptr)
-    return;
-  else
+  if (context->jprocess != nullptr)
     run_jprocess(env, context->jprocess);
 }
 }}}

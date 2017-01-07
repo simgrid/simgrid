@@ -71,7 +71,6 @@ void TRACE_surf_link_set_utilization(const char *resource, const char *category,
     type_t type = PJ_type_get (category_type, container->type);
     instr_event (now, delta, type, container, value);
   }
-  return;
 }
 
 /* TRACE_surf_host_set_utilization: entry point from SimGrid */
@@ -79,9 +78,7 @@ void TRACE_surf_host_set_utilization(const char *resource, const char *category,
 {
   //only trace host utilization if host is known by tracing mechanism
   container_t container = PJ_container_get_or_null(resource);
-  if (!container)
-    return;
-  if (!value)
+  if (!container || !value)
     return;
 
   //trace uncategorized host utilization
@@ -102,7 +99,6 @@ void TRACE_surf_host_set_utilization(const char *resource, const char *category,
     type_t type = PJ_type_get (category_type, container->type);
     instr_event (now, delta, type, container, value);
   }
-  return;
 }
 
 void TRACE_surf_resource_utilization_alloc()

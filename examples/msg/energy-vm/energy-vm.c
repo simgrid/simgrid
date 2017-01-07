@@ -58,7 +58,6 @@ static int dvfs(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
   sg_energy_plugin_init();
   MSG_init(&argc, argv);
 
@@ -68,7 +67,7 @@ int main(int argc, char *argv[])
 
   MSG_process_create("dvfs",dvfs,NULL,MSG_host_by_name("MyHost1"));
 
-  res = MSG_main();
+  msg_error_t res = MSG_main();
 
   XBT_INFO("Total simulation time: %.2f; All hosts must have the exact same energy consumption.", MSG_get_clock());
 

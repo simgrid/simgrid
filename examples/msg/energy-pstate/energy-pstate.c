@@ -69,8 +69,6 @@ static int dvfs(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
-
   MSG_init(&argc, argv);
 
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
@@ -80,7 +78,7 @@ int main(int argc, char *argv[])
   MSG_process_create("dvfs_test", dvfs, NULL, MSG_get_host_by_name("MyHost1"));
   MSG_process_create("dvfs_test", dvfs, NULL, MSG_get_host_by_name("MyHost2"));
 
-  res = MSG_main();
+  msg_error_t res = MSG_main();
 
   XBT_INFO("Total simulation time: %e", MSG_get_clock());
 

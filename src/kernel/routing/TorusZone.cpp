@@ -223,8 +223,6 @@ void TorusZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t
   }
   free(myCoords);
   free(targetCoords);
-
-  return;
 }
 }
 }

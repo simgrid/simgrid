@@ -321,7 +321,6 @@ void SIMIX_clean()
   surf_exit();
 
   simix_global = nullptr;
-  return;
 }
 
 

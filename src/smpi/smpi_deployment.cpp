@@ -51,7 +51,6 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
   }
 
   xbt_dict_set(smpi_instances, name, (void*)instance, nullptr);
-  return;
 }
 
 //get the index of the process in the process_data array
@@ -78,7 +77,6 @@ void smpi_deployment_register_process(const char* instance_id, int rank, int ind
   smpi_group_set_mapping(smpi_comm_group(instance->comm_world), index, rank);
   *bar = instance->finalization_barrier;
   *comm = &instance->comm_world;
-  return;
 }
 
 void smpi_deployment_cleanup_instances(){

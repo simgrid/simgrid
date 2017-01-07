@@ -45,8 +45,6 @@ static int killall(int argc, char *argv[]){
 
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
-
   MSG_init(&argc, argv);
 
   MSG_process_killall(atoi(argv[2]));
@@ -57,7 +55,5 @@ int main(int argc, char *argv[])
   MSG_process_create("sendpid", sendpid, NULL, MSG_get_host_by_name("Tremblay"));
   MSG_process_create("killall", killall, NULL, MSG_get_host_by_name("Tremblay"));
 
-  res = MSG_main();
-
-  return res != MSG_OK;
+  return MSG_main() != MSG_OK;
 }

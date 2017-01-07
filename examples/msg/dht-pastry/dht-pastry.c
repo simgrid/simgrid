@@ -137,13 +137,12 @@ static int closest_in_namespace_set(node_t node, int dest) {
 /* Find the next node to forward a message to */
 static int routing_next(node_t node, int dest) {
   int closest = closest_in_namespace_set(node, dest);
-  int res = -1;
   if (closest!=-1)
     return closest;
 
   int l = shl(node->id, dest);
-  res = node->routing_table[l][domain(dest, l)];
-  if (res!=-1)
+  int res = node->routing_table[l][domain(dest, l)];
+  if (res != -1)
     return res;
 
   //rare case

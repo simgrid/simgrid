@@ -216,7 +216,6 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
       action->gapRemove();
     }
   }
-  return;
 }
 
 

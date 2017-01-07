@@ -115,7 +115,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, job
   env->SetBooleanField(jcomm, jcomm_field_Comm_finished, JNI_TRUE);
   if (status == MSG_OK) {
     jcomm_bind_task(env,jcomm);
-    return;
   } else {
     jmsg_throw_status(env,status);
   }

@@ -64,7 +64,7 @@ int main(int argc, char** argv)
     // Currently, we need this before sg_config_init:
     _sg_do_model_check = 1;
 
-    // The initialisation function can touch argv.
+    // The initialization function can touch argv.
     // We make a copy of argv before modifying it in order to pass the original
     // value to the model-checked:
     char** argv_copy = argvdup(argc, argv);

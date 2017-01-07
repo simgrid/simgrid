@@ -79,7 +79,6 @@ void TRACE_msg_task_destroy(msg_task_t task)
   //free category
   xbt_free(task->category);
   task->category = nullptr;
-  return;
 }
 
 /* MSG_task_get related functions */

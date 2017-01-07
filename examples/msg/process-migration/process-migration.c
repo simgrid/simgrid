@@ -54,8 +54,6 @@ static int policeman(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
-
   MSG_init(&argc, argv);
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
@@ -64,9 +62,9 @@ int main(int argc, char *argv[])
   MSG_process_create("emigrant", emigrant, NULL, MSG_get_host_by_name("Jacquelin"));
   MSG_process_create("policeman", policeman, NULL, MSG_get_host_by_name("Boivin"));
 
-  checkpoint = xbt_mutex_init();     /* - Initiate the mutex and conditions */
+  checkpoint      = xbt_mutex_init(); /* - Initiate the mutex and conditions */
   identification = xbt_cond_init();
-  res = MSG_main();                  /* - Run the simulation */
+  msg_error_t res = MSG_main(); /* - Run the simulation */
   XBT_INFO("Simulation time %g", MSG_get_clock());
   xbt_cond_destroy(identification);
   xbt_mutex_destroy(checkpoint);

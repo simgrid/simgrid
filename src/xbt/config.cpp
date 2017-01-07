@@ -612,7 +612,6 @@ on_missing_key:
 on_exception:
   free(optionlist_cpy);
   THROWF(unknown_error, 0, "Could not set variables %s", options);
-  return;
 }
 
 // Horrible mess to translate C++ exceptions to C exceptions:

@@ -1133,7 +1133,6 @@ void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var, double wei
   lmm_check_concurrency(sys);
 
   XBT_OUT();
-  return;
 }
 
 double lmm_get_variable_weight(lmm_variable_t var)

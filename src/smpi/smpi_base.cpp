@@ -816,8 +816,6 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
       nsleeps++;
   }
   smpi_mpi_request_free(&request);
-
-  return;
 }
 
 void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)

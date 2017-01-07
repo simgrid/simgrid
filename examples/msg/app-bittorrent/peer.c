@@ -464,9 +464,7 @@ void update_pieces_count_from_bitfield(peer_t peer, char *bitfield)
  */
 int select_piece_to_download(peer_t peer, connection_t remote_peer)
 {
-  int piece = -1;
-
-  piece = partially_downloaded_piece(peer, remote_peer);
+  int piece = partially_downloaded_piece(peer, remote_peer);
   // strict priority policy
   if (piece != -1)
     return piece;

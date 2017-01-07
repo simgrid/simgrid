@@ -11,13 +11,10 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test_trace_integration, "Messages specific for this
 /** test the trace integration cpu model */
 static int test_trace(int argc, char *argv[])
 {
-  double task_comp_size = 2800;
-  double task_prio = 1.0;
-
   xbt_assert (argc == 3,"Wrong number of arguments!\nUsage: %s <task computational size in FLOPS> <task priority>", argv[0]);
 
-  task_comp_size = xbt_str_parse_double(argv[1],"Invalid computational size: %s");
-  task_prio = xbt_str_parse_double(argv[2], "Invalid task priority: %s");
+  double task_comp_size = xbt_str_parse_double(argv[1], "Invalid computational size: %s");
+  double task_prio      = xbt_str_parse_double(argv[2], "Invalid task priority: %s");
 
   XBT_INFO("Testing the trace integration cpu model: CpuTI");
   XBT_INFO("Task size: %f", task_comp_size);
@@ -36,8 +33,6 @@ static int test_trace(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
-
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s test_trace_integration_model.xml deployment.xml\n", argv[0]);
 
@@ -45,7 +40,5 @@ int main(int argc, char *argv[])
   MSG_create_environment(argv[1]);
   MSG_launch_application(argv[2]);
 
-  res = MSG_main();
-
-  return res != MSG_OK;
+  return MSG_main() != MSG_OK;
 }

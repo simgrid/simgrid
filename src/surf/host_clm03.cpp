@@ -68,7 +68,7 @@ double HostCLM03Model::nextOccuringEvent(double now){
 }
 
 void HostCLM03Model::updateActionsState(double /*now*/, double /*delta*/){
-  return;
+  /* I won't do what you tell me */
 }
 
 }

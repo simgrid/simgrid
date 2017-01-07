@@ -319,6 +319,5 @@ void SIMIX_set_category(smx_activity_t synchro, const char *category)
   simgrid::kernel::activity::Comm *comm = dynamic_cast<simgrid::kernel::activity::Comm *>(synchro);
   if (comm != nullptr) {
     comm->surf_comm->setCategory(category);
-    return;
   }
 }

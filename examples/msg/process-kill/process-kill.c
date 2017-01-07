@@ -36,8 +36,6 @@ static int killer(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
-
   MSG_init(&argc, argv);
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
@@ -45,7 +43,7 @@ int main(int argc, char *argv[])
   /* - Create and deploy killer process, that will create the victim process  */
   MSG_process_create("killer", killer, NULL, MSG_host_by_name("Tremblay"));
 
-  res = MSG_main();                 /* - Run the simulation */
+  msg_error_t res = MSG_main(); /* - Run the simulation */
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
   return res != MSG_OK;

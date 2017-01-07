@@ -84,7 +84,6 @@ static int onoff(int argc, char *argv[]) {
 
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
   sg_energy_plugin_init();
   MSG_init(&argc, argv);
 
@@ -94,7 +93,7 @@ int main(int argc, char *argv[])
 
   MSG_process_create("onoff_test", onoff, NULL, MSG_get_host_by_name("MyHost2"));
 
-  res = MSG_main();
+  msg_error_t res = MSG_main();
 
   XBT_INFO("Total simulation time: %.2f", MSG_get_clock());
 

@@ -135,7 +135,6 @@ static void xbt_dict_rehash(xbt_dict_t dict)
         if (!*twincell)
           dict->fill++;
         *twincell = bucklet;
-        continue;
       } else {
         pprev = &bucklet->next;
       }

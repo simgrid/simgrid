@@ -708,7 +708,6 @@ void CpuTiAction::cancel()
   this->setState(Action::State::failed);
   xbt_heap_remove(getModel()->getActionHeap(), this->indexHeap_);
   cpu_->modified(true);
-  return;
 }
 
 void CpuTiAction::suspend()

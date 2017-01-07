@@ -277,16 +277,12 @@ static void instr_user_variable(double time, const char *resource, const char *v
   //check if variable is already declared
   char *created = (char*)xbt_dict_get_or_null(filter, variable);
   if (what == INSTR_US_DECLARE){
-    if (created){//already declared
-      return;
-    }else{
+    if (!created) { // not declared yet
       xbt_dict_set (filter, variable, xbt_strdup("1"), nullptr);
       instr_new_user_variable_type (father_type, variable, color);
     }
   }else{
-    if (!created){//not declared, ignore
-      return;
-    } else {
+    if (created) { // declared, let's work
       char valuestr[100];
       snprintf(valuestr, 100, "%g", value);
       container_t container = PJ_container_get(resource);

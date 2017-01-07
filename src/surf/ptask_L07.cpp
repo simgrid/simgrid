@@ -141,7 +141,6 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
       }
     }
   }
-  return;
 }
 
 Action *HostL07Model::executeParallelTask(int host_nb, sg_host_t *host_list,
