@@ -1,5 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -22,36 +21,27 @@
 
 using simgrid::mc::remote;
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc,
-                                "Logging specific to MC (state)");
-
-/**
- * \brief Creates a state data structure used by the exploration algorithm
- */
-simgrid::mc::State* MC_state_new(unsigned long state_number)
-{
-  simgrid::mc::State* state = new simgrid::mc::State();
-  state->processStates.resize(MC_smx_get_maxpid());
-  state->num = state_number;
-  /* Stateful model checking */
-  if((_sg_mc_checkpoint > 0 && (state_number % _sg_mc_checkpoint == 0)) ||  _sg_mc_termination){
-    state->system_state = simgrid::mc::take_snapshot(state->num);
-    if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
-      MC_state_copy_incomplete_communications_pattern(state);
-      MC_state_copy_index_communications_pattern(state);
-    }
-  }
-  return state;
-}
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc, "Logging specific to MC (state)");
 
 namespace simgrid {
 namespace mc {
 
-State::State()
+State::State(unsigned long state_number)
 {
   this->internal_comm.clear();
   std::memset(&this->internal_req, 0, sizeof(this->internal_req));
   std::memset(&this->executed_req, 0, sizeof(this->executed_req));
+
+  processStates.resize(MC_smx_get_maxpid());
+  num = state_number;
+  /* Stateful model checking */
+  if ((_sg_mc_checkpoint > 0 && (state_number % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
+    system_state = simgrid::mc::take_snapshot(num);
+    if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
+      MC_state_copy_incomplete_communications_pattern(this);
+      MC_state_copy_index_communications_pattern(this);
+    }
+  }
 }
 
 std::size_t State::interleaveSize() const

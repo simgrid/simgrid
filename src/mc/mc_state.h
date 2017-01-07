@@ -145,7 +145,7 @@ struct XBT_PRIVATE State {
   std::vector<std::vector<simgrid::mc::PatternCommunication>> incomplete_comm_pattern;
   std::vector<unsigned> communicationIndices;
 
-  State();
+  State(unsigned long state_number);
 
   std::size_t interleaveSize() const;
   void interleave(smx_actor_t process)
@@ -158,7 +158,6 @@ struct XBT_PRIVATE State {
 }
 }
 
-XBT_PRIVATE simgrid::mc::State* MC_state_new(unsigned long state_number);
 XBT_PRIVATE smx_simcall_t MC_state_get_request(simgrid::mc::State* state);
 
 #endif

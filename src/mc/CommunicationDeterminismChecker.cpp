@@ -386,7 +386,7 @@ void CommunicationDeterminismChecker::prepare()
   }
 
   std::unique_ptr<simgrid::mc::State> initial_state =
-    std::unique_ptr<simgrid::mc::State>(MC_state_new(++expandedStatesCount_));
+      std::unique_ptr<simgrid::mc::State>(new simgrid::mc::State(++expandedStatesCount_));
 
   XBT_DEBUG("********* Start communication determinism verification *********");
 
@@ -516,7 +516,7 @@ int CommunicationDeterminismChecker::main(void)
 
       /* Create the new expanded state */
       std::unique_ptr<simgrid::mc::State> next_state =
-        std::unique_ptr<simgrid::mc::State>(MC_state_new(++expandedStatesCount_));
+          std::unique_ptr<simgrid::mc::State>(new simgrid::mc::State(++expandedStatesCount_));
 
       /* If comm determinism verification, we cannot stop the exploration if
          some communications are not finished (at least, data are transferred).

@@ -140,7 +140,7 @@ int SafetyChecker::run()
 
     /* Create the new expanded state */
     std::unique_ptr<simgrid::mc::State> next_state =
-      std::unique_ptr<simgrid::mc::State>(MC_state_new(++expandedStatesCount_));
+        std::unique_ptr<simgrid::mc::State>(new simgrid::mc::State(++expandedStatesCount_));
 
     if (_sg_mc_termination && this->checkNonTermination(next_state.get())) {
         MC_show_non_termination();
@@ -319,7 +319,7 @@ SafetyChecker::SafetyChecker(Session& session) : Checker(session)
   XBT_DEBUG("Starting the safety algorithm");
 
   std::unique_ptr<simgrid::mc::State> initial_state =
-    std::unique_ptr<simgrid::mc::State>(MC_state_new(++expandedStatesCount_));
+      std::unique_ptr<simgrid::mc::State>(new simgrid::mc::State(++expandedStatesCount_));
 
   XBT_DEBUG("**************************************************");
   XBT_DEBUG("Initial state");
