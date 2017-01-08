@@ -47,8 +47,7 @@ VisitedState::VisitedState(unsigned long state_number)
     process->get_heap()->heaplimit,
     process->get_malloc_info());
 
-  this->nb_processes =
-    mc_model_checker->process().simix_processes().size();
+  this->actors_count = mc_model_checker->process().actors().size();
 
   this->system_state = simgrid::mc::take_snapshot(state_number);
   this->num = state_number;
@@ -86,8 +85,8 @@ std::unique_ptr<simgrid::mc::VisitedState> VisitedStates::addVisitedState(
   XBT_DEBUG("Snapshot %p of visited state %d (exploration stack state %d)",
     new_state->system_state.get(), new_state->num, graph_state->num);
 
-  auto range = boost::range::equal_range(states_,
-    new_state.get(), simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
+  auto range =
+      boost::range::equal_range(states_, new_state.get(), simgrid::mc::DerefAndCompareByActorsCountAndUsedHeap());
 
   if (compare_snpashots)
     for (auto i = range.first; i != range.second; ++i) {

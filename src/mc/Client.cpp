@@ -103,13 +103,13 @@ void Client::handleMessages()
       {
         // Check deadlock:
         bool deadlock = false;
-        smx_actor_t process;
+        smx_actor_t actor;
         if (xbt_swag_size(simix_global->process_list)) {
           deadlock = true;
-          xbt_swag_foreach(process, simix_global->process_list)
-            if (simgrid::mc::process_is_enabled(process)) {
-              deadlock = false;
-              break;
+          xbt_swag_foreach(actor, simix_global->process_list) if (simgrid::mc::actor_is_enabled(actor))
+          {
+            deadlock = false;
+            break;
             }
         }
 

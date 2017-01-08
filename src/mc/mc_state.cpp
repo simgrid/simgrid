@@ -67,7 +67,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
 
   if (!procstate->isToInterleave())
     return nullptr;
-  if (!simgrid::mc::process_is_enabled(process))
+  if (!simgrid::mc::actor_is_enabled(process))
     return nullptr;
 
   smx_simcall_t req = nullptr;
@@ -215,7 +215,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
 
 smx_simcall_t MC_state_get_request(simgrid::mc::State* state)
 {
-  for (auto& p : mc_model_checker->process().simix_processes()) {
+  for (auto& p : mc_model_checker->process().actors()) {
     smx_simcall_t res = MC_state_get_request_for_process(state, p.copy.getBuffer());
     if (res)
       return res;

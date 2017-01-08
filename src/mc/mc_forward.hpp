@@ -26,7 +26,7 @@ class Member;
 class Type;
 class Variable;
 class Frame;
-class SimixProcessInformation;
+class ActorInformation;
 
 class Session;
 class Checker;

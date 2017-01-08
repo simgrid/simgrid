@@ -150,8 +150,8 @@ int SafetyChecker::run()
         || (visitedState_ = visitedStates_.addVisitedState(expandedStatesCount_, next_state.get(), true)) == nullptr) {
 
       /* Get an enabled process and insert it in the interleave set of the next state */
-      for (auto& p : mc_model_checker->process().simix_processes())
-        if (simgrid::mc::process_is_enabled(p.copy.getBuffer())) {
+      for (auto& p : mc_model_checker->process().actors())
+        if (simgrid::mc::actor_is_enabled(p.copy.getBuffer())) {
           next_state->interleave(p.copy.getBuffer());
           if (reductionMode_ != simgrid::mc::ReductionMode::none)
             break;
@@ -323,10 +323,10 @@ SafetyChecker::SafetyChecker(Session& session) : Checker(session)
   XBT_DEBUG("**************************************************");
   XBT_DEBUG("Initial state");
 
-  /* Get an enabled process and insert it in the interleave set of the initial state */
-  for (auto& p : mc_model_checker->process().simix_processes())
-    if (simgrid::mc::process_is_enabled(p.copy.getBuffer())) {
-      initial_state->interleave(p.copy.getBuffer());
+  /* Get an enabled actor and insert it in the interleave set of the initial state */
+  for (auto& actor : mc_model_checker->process().actors())
+    if (simgrid::mc::actor_is_enabled(actor.copy.getBuffer())) {
+      initial_state->interleave(actor.copy.getBuffer());
       if (reductionMode_ != simgrid::mc::ReductionMode::none)
         break;
     }

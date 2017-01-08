@@ -55,7 +55,7 @@ VisitedPair::VisitedPair(
     process->get_heap()->heaplimit,
     process->get_malloc_info());
 
-  this->nb_processes = mc_model_checker->process().simix_processes().size();
+  this->actors_count = mc_model_checker->process().actors().size();
 
   this->automaton_state = automaton_state;
   this->num = pair_num;
@@ -125,8 +125,8 @@ std::shared_ptr<VisitedPair> LivenessChecker::insertAcceptancePair(simgrid::mc::
     pair->num, pair->automaton_state, pair->atomic_propositions,
     pair->graph_state);
 
-  auto res = boost::range::equal_range(acceptancePairs_,
-    new_pair.get(), simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
+  auto res = boost::range::equal_range(acceptancePairs_, new_pair.get(),
+                                       simgrid::mc::DerefAndCompareByActorsCountAndUsedHeap());
 
   if (pair->search_cycle) for (auto i = res.first; i != res.second; ++i) {
     std::shared_ptr<simgrid::mc::VisitedPair> const& pair_test = *i;
@@ -246,8 +246,8 @@ int LivenessChecker::insertVisitedPair(std::shared_ptr<VisitedPair> visited_pair
       pair->num, pair->automaton_state, pair->atomic_propositions,
       pair->graph_state);
 
-  auto range = boost::range::equal_range(visitedPairs_,
-    visited_pair.get(), simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
+  auto range = boost::range::equal_range(visitedPairs_, visited_pair.get(),
+                                         simgrid::mc::DerefAndCompareByActorsCountAndUsedHeap());
 
   for (auto i = range.first; i != range.second; ++i) {
     VisitedPair* pair_test = i->get();
@@ -443,12 +443,12 @@ std::shared_ptr<Pair> LivenessChecker::newPair(Pair* current_pair, xbt_automaton
     next_pair->depth = current_pair->depth + 1;
   else
     next_pair->depth = 1;
-  /* Get enabled processes and insert them in the interleave set of the next graph_state */
-  for (auto& p : mc_model_checker->process().simix_processes())
-    if (simgrid::mc::process_is_enabled(p.copy.getBuffer()))
-      next_pair->graph_state->interleave(p.copy.getBuffer());
+  /* Get enabled actors and insert them in the interleave set of the next graph_state */
+  for (auto& actor : mc_model_checker->process().actors())
+    if (simgrid::mc::actor_is_enabled(actor.copy.getBuffer()))
+      next_pair->graph_state->interleave(actor.copy.getBuffer());
   next_pair->requests = next_pair->graph_state->interleaveSize();
-  /* FIXME : get search_cycle value for each acceptant state */
+  /* FIXME : get search_cycle value for each accepting state */
   if (next_pair->automaton_state->type == 1 ||
       (current_pair && current_pair->search_cycle))
     next_pair->search_cycle = true;

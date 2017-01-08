@@ -233,8 +233,8 @@ void Process::init()
     remote(std_heap_var->address),
     simgrid::mc::ProcessIndexDisabled);
 
-  this->smx_process_infos.clear();
-  this->smx_old_process_infos.clear();
+  this->smx_actors_infos.clear();
+  this->smx_dead_actors_infos.clear();
   this->unw_addr_space = simgrid::mc::UnwindContext::createUnwindAddressSpace();
   this->unw_underlying_addr_space = simgrid::unw::create_addr_space();
   this->unw_underlying_context = simgrid::unw::create_context(
@@ -643,16 +643,16 @@ void Process::ignore_local_variable(const char *var_name, const char *frame_name
     info->remove_local_variable(var_name, frame_name);
 }
 
-std::vector<simgrid::mc::SimixProcessInformation>& Process::simix_processes()
+std::vector<simgrid::mc::ActorInformation>& Process::actors()
 {
   this->refresh_simix();
-  return smx_process_infos;
+  return smx_actors_infos;
 }
 
-std::vector<simgrid::mc::SimixProcessInformation>& Process::old_simix_processes()
+std::vector<simgrid::mc::ActorInformation>& Process::dead_actors()
 {
   this->refresh_simix();
-  return smx_old_process_infos;
+  return smx_dead_actors_infos;
 }
 
 void Process::dumpStack()

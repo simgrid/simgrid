@@ -1,5 +1,4 @@
-/* Copyright (c) 2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -25,20 +24,18 @@
 
 using simgrid::mc::remote;
 
-/** HACK, Statically "upcast" a s_smx_actor_t into a SimixProcessInformation
+/** HACK, Statically "upcast" a s_smx_actor_t into a ActorInformation
  *
- *  This gets 'processInfo' from '&processInfo->copy'. It upcasts in the
- *  sense that we could achieve the same thing by having SimixProcessInformation
+ *  This gets 'actorInfo' from '&actorInfo->copy'. It upcasts in the
+ *  sense that we could achieve the same thing by having ActorInformation
  *  inherit from s_smx_actor_t but we don't really want to do that.
  */
-static inline
-simgrid::mc::SimixProcessInformation* process_info_cast(smx_actor_t p)
+static inline simgrid::mc::ActorInformation* actor_info_cast(smx_actor_t actor)
 {
-  simgrid::mc::SimixProcessInformation temp;
+  simgrid::mc::ActorInformation temp;
   std::size_t offset = (char*) temp.copy.getBuffer() - (char*)&temp;
 
-  simgrid::mc::SimixProcessInformation* process_info =
-    (simgrid::mc::SimixProcessInformation*) ((char*) p - offset);
+  simgrid::mc::ActorInformation* process_info = (simgrid::mc::ActorInformation*)((char*)actor - offset);
   return process_info;
 }
 
@@ -48,10 +45,9 @@ simgrid::mc::SimixProcessInformation* process_info_cast(smx_actor_t p)
  *  @param target      Local vector (to be filled with copies of `s_smx_actor_t`)
  *  @param remote_swag Address of the process SWAG in the remote list
  */
-static void MC_process_refresh_simix_process_list(
-  simgrid::mc::Process* process,
-  std::vector<simgrid::mc::SimixProcessInformation>& target,
-  simgrid::mc::RemotePtr<s_xbt_swag_t> remote_swag)
+static void MC_process_refresh_simix_process_list(simgrid::mc::Process* process,
+                                                  std::vector<simgrid::mc::ActorInformation>& target,
+                                                  simgrid::mc::RemotePtr<s_xbt_swag_t> remote_swag)
 {
   target.clear();
 
@@ -63,7 +59,7 @@ static void MC_process_refresh_simix_process_list(
   int i = 0;
   for (smx_actor_t p = (smx_actor_t) swag.head; p; ++i) {
 
-    simgrid::mc::SimixProcessInformation info;
+    simgrid::mc::ActorInformation info;
     info.address = p;
     info.hostname = nullptr;
     process->read_bytes(&info.copy, sizeof(info.copy), remote(p));
@@ -100,12 +96,9 @@ void Process::refresh_simix()
   Remote<simgrid::simix::Global> simix_global =
     this->read<simgrid::simix::Global>(simix_global_p);
 
-  MC_process_refresh_simix_process_list(
-    this, this->smx_process_infos,
-    remote(simix_global.getBuffer()->process_list));
-  MC_process_refresh_simix_process_list(
-    this, this->smx_old_process_infos,
-    remote(simix_global.getBuffer()->process_to_destroy));
+  MC_process_refresh_simix_process_list(this, this->smx_actors_infos, remote(simix_global.getBuffer()->process_list));
+  MC_process_refresh_simix_process_list(this, this->smx_dead_actors_infos,
+                                        remote(simix_global.getBuffer()->process_to_destroy));
 
   this->cache_flags_ |= Process::cache_simix_processes;
 }
@@ -116,7 +109,7 @@ void Process::refresh_simix()
 /** Get the issuer of a simcall (`req->issuer`)
  *
  *  In split-process mode, it does the black magic necessary to get an address
- *  of a (shallow) copy of the data structure the issuer SIMIX process in the local
+ *  of a (shallow) copy of the data structure the issuer SIMIX actor in the local
  *  address space.
  *
  *  @param process the MCed process
@@ -130,20 +123,20 @@ smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req)
   auto address = simgrid::mc::remote(req->issuer);
 
   // Lookup by address:
-  for (auto& p : mc_model_checker->process().simix_processes())
-    if (p.address == address)
-      return p.copy.getBuffer();
-  for (auto& p : mc_model_checker->process().old_simix_processes())
-    if (p.address == address)
-      return p.copy.getBuffer();
+  for (auto& actor : mc_model_checker->process().actors())
+    if (actor.address == address)
+      return actor.copy.getBuffer();
+  for (auto& actor : mc_model_checker->process().dead_actors())
+    if (actor.address == address)
+      return actor.copy.getBuffer();
 
   xbt_die("Issuer not found");
 }
 
-const char* MC_smx_process_get_host_name(smx_actor_t p)
+const char* MC_smx_actor_get_host_name(smx_actor_t actor)
 {
   if (mc_model_checker == nullptr)
-    return p->host->cname();
+    return actor->host->cname();
 
   simgrid::mc::Process* process = &mc_model_checker->process();
 
@@ -166,9 +159,8 @@ const char* MC_smx_process_get_host_name(smx_actor_t p)
   const size_t offset = (char*) &foo.host.name() - (char*) &foo.host;
 
   // Read the simgrid::xbt::string in the MCed process:
-  simgrid::mc::SimixProcessInformation* info = process_info_cast(p);
-  auto remote_string_address = remote(
-    (simgrid::xbt::string_data*) ((char*) p->host + offset));
+  simgrid::mc::ActorInformation* info     = actor_info_cast(actor);
+  auto remote_string_address              = remote((simgrid::xbt::string_data*)((char*)actor->host + offset));
   simgrid::xbt::string_data remote_string = process->read(remote_string_address);
   char hostname[remote_string.len];
   process->read_bytes(hostname, remote_string.len + 1, remote(remote_string.data));
@@ -176,15 +168,15 @@ const char* MC_smx_process_get_host_name(smx_actor_t p)
   return info->hostname;
 }
 
-const char* MC_smx_process_get_name(smx_actor_t p)
+const char* MC_smx_actor_get_name(smx_actor_t actor)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
   if (mc_model_checker == nullptr)
-    return p->name.c_str();
+    return actor->name.c_str();
 
-  simgrid::mc::SimixProcessInformation* info = process_info_cast(p);
+  simgrid::mc::ActorInformation* info = actor_info_cast(actor);
   if (info->name.empty()) {
-    simgrid::xbt::string_data string_data = (simgrid::xbt::string_data&)p->name;
+    simgrid::xbt::string_data string_data = (simgrid::xbt::string_data&)actor->name;
     info->name = process->read_string(remote(string_data.data), string_data.len);
   }
   return info->name.c_str();

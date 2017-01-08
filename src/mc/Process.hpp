@@ -42,7 +42,7 @@
 namespace simgrid {
 namespace mc {
 
-class SimixProcessInformation {
+class ActorInformation {
 public:
   /** MCed address of the process */
   RemotePtr<simgrid::simix::ActorImpl> address = nullptr;
@@ -219,33 +219,31 @@ public:
   void unignore_heap(void *address, size_t size);
 
   void ignore_local_variable(const char *var_name, const char *frame_name);
-  std::vector<simgrid::mc::SimixProcessInformation>& simix_processes();
-  std::vector<simgrid::mc::SimixProcessInformation>& old_simix_processes();
+  std::vector<simgrid::mc::ActorInformation>& actors();
+  std::vector<simgrid::mc::ActorInformation>& dead_actors();
 
-  /** Get a local description of a remote SIMIX process */
-  simgrid::mc::SimixProcessInformation* resolveProcessInfo(
-    simgrid::mc::RemotePtr<simgrid::simix::ActorImpl> process)
+  /** Get a local description of a remote SIMIX actor */
+  simgrid::mc::ActorInformation* resolveActorInfo(simgrid::mc::RemotePtr<simgrid::simix::ActorImpl> actor)
   {
     xbt_assert(mc_model_checker != nullptr);
-    if (!process)
+    if (!actor)
       return nullptr;
     this->refresh_simix();
-    for (auto& process_info : this->smx_process_infos)
-      if (process_info.address == process)
-        return &process_info;
-    for (auto& process_info : this->smx_old_process_infos)
-      if (process_info.address == process)
-        return &process_info;
+    for (auto& actor_info : this->smx_actors_infos)
+      if (actor_info.address == actor)
+        return &actor_info;
+    for (auto& actor_info : this->smx_dead_actors_infos)
+      if (actor_info.address == actor)
+        return &actor_info;
     return nullptr;
   }
 
-  /** Get a local copy of the SIMIX process structure */
-  simgrid::simix::ActorImpl* resolveProcess(simgrid::mc::RemotePtr<simgrid::simix::ActorImpl> process)
+  /** Get a local copy of the SIMIX actor structure */
+  simgrid::simix::ActorImpl* resolveActor(simgrid::mc::RemotePtr<simgrid::simix::ActorImpl> process)
   {
-    simgrid::mc::SimixProcessInformation* process_info =
-      this->resolveProcessInfo(process);
-    if (process_info)
-      return process_info->copy.getBuffer();
+    simgrid::mc::ActorInformation* actor_info = this->resolveActorInfo(process);
+    if (actor_info)
+      return actor_info->copy.getBuffer();
     else
       return nullptr;
   }
@@ -281,13 +279,13 @@ public: // Copies of MCed SMX data structures
    *
    *  See mc_smx.c.
    */
-  std::vector<SimixProcessInformation> smx_process_infos;
+  std::vector<ActorInformation> smx_actors_infos;
 
   /** Copy of `simix_global->process_to_destroy`
    *
    *  See mc_smx.c.
    */
-  std::vector<SimixProcessInformation> smx_old_process_infos;
+  std::vector<ActorInformation> smx_dead_actors_infos;
 
 private:
   /** State of the cache (which variables are up to date) */

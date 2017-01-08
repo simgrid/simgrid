@@ -103,14 +103,12 @@ static void update_comm_pattern(
   simgrid::kernel::activity::Comm* comm =
     static_cast<simgrid::kernel::activity::Comm*>(temp_comm.getBuffer());
 
-  smx_actor_t src_proc = mc_model_checker->process().resolveProcess(
-    simgrid::mc::remote(comm->src_proc));
-  smx_actor_t dst_proc = mc_model_checker->process().resolveProcess(
-    simgrid::mc::remote(comm->dst_proc));
+  smx_actor_t src_proc   = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->src_proc));
+  smx_actor_t dst_proc   = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_proc));
   comm_pattern->src_proc = src_proc->pid;
   comm_pattern->dst_proc = dst_proc->pid;
-  comm_pattern->src_host = MC_smx_process_get_host_name(src_proc);
-  comm_pattern->dst_host = MC_smx_process_get_host_name(dst_proc);
+  comm_pattern->src_host = MC_smx_actor_get_host_name(src_proc);
+  comm_pattern->dst_host = MC_smx_actor_get_host_name(dst_proc);
   if (comm_pattern->data.size() == 0 && comm->src_buff != nullptr) {
     size_t buff_size;
     mc_model_checker->process().read(
@@ -204,9 +202,8 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
     char* remote_name = mc_model_checker->process().read<char*>(
       (std::uint64_t)(synchro->mbox ? &synchro->mbox->name : &synchro->mbox_cpy->name));
     pattern->rdv = mc_model_checker->process().read_string(remote_name);
-    pattern->src_proc = mc_model_checker->process().resolveProcess(
-      simgrid::mc::remote(synchro->src_proc))->pid;
-    pattern->src_host = MC_smx_process_get_host_name(issuer);
+    pattern->src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(synchro->src_proc))->pid;
+    pattern->src_host = MC_smx_actor_get_host_name(issuer);
 
     struct s_smpi_mpi_request mpi_request =
       mc_model_checker->process().read<s_smpi_mpi_request>(
@@ -253,9 +250,8 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
     mc_model_checker->process().read(&remote_name,
       remote(comm->mbox ? &comm->mbox->name : &comm->mbox_cpy->name));
     pattern->rdv = mc_model_checker->process().read_string(remote_name);
-    pattern->dst_proc = mc_model_checker->process().resolveProcess(
-      simgrid::mc::remote(comm->dst_proc))->pid;
-    pattern->dst_host = MC_smx_process_get_host_name(issuer);
+    pattern->dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_proc))->pid;
+    pattern->dst_host = MC_smx_actor_get_host_name(issuer);
   } else
     xbt_die("Unexpected call_type %i", (int) call_type);
 
@@ -390,10 +386,10 @@ void CommunicationDeterminismChecker::prepare()
 
   XBT_DEBUG("********* Start communication determinism verification *********");
 
-  /* Get an enabled process and insert it in the interleave set of the initial state */
-  for (auto& p : mc_model_checker->process().simix_processes())
-    if (simgrid::mc::process_is_enabled(p.copy.getBuffer()))
-      initial_state->interleave(p.copy.getBuffer());
+  /* Get an enabled actor and insert it in the interleave set of the initial state */
+  for (auto& actor : mc_model_checker->process().actors())
+    if (simgrid::mc::actor_is_enabled(actor.copy.getBuffer()))
+      initial_state->interleave(actor.copy.getBuffer());
 
   stack_.push_back(std::move(initial_state));
 }
@@ -401,9 +397,8 @@ void CommunicationDeterminismChecker::prepare()
 static inline
 bool all_communications_are_finished()
 {
-  for (size_t current_process = 1; current_process < MC_smx_get_maxpid(); current_process++) {
-    xbt_dynar_t pattern = xbt_dynar_get_as(
-      incomplete_communications_pattern, current_process, xbt_dynar_t);
+  for (size_t current_actor = 1; current_actor < MC_smx_get_maxpid(); current_actor++) {
+    xbt_dynar_t pattern = xbt_dynar_get_as(incomplete_communications_pattern, current_actor, xbt_dynar_t);
     if (!xbt_dynar_is_empty(pattern)) {
       XBT_DEBUG("Some communications are not finished, cannot stop the exploration ! State not visited.");
       return false;
@@ -529,10 +524,10 @@ int CommunicationDeterminismChecker::main(void)
           || (visited_state = visitedStates_.addVisitedState(
             expandedStatesCount_, next_state.get(), compare_snapshots)) == nullptr) {
 
-        /* Get enabled processes and insert them in the interleave set of the next state */
-        for (auto& p : mc_model_checker->process().simix_processes())
-          if (simgrid::mc::process_is_enabled(p.copy.getBuffer()))
-            next_state->interleave(p.copy.getBuffer());
+        /* Get enabled actors and insert them in the interleave set of the next state */
+        for (auto& actor : mc_model_checker->process().actors())
+          if (simgrid::mc::actor_is_enabled(actor.copy.getBuffer()))
+            next_state->interleave(actor.copy.getBuffer());
 
         if (dot_output != nullptr)
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",

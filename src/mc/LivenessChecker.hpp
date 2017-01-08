@@ -52,7 +52,7 @@ struct XBT_PRIVATE VisitedPair {
   xbt_automaton_state_t automaton_state = nullptr;
   std::shared_ptr<const std::vector<int>> atomic_propositions;
   std::size_t heap_bytes_used = 0;
-  int nb_processes = 0;
+  int actors_count            = 0;
 
   VisitedPair(
     int pair_num, xbt_automaton_state_t automaton_state,

@@ -19,7 +19,7 @@ namespace mc {
 struct XBT_PRIVATE VisitedState {
   std::shared_ptr<simgrid::mc::Snapshot> system_state = nullptr;
   std::size_t heap_bytes_used = 0;
-  int nb_processes = 0;
+  int actors_count                                    = 0;
   int num = 0;
   int other_num = 0; // dot_output for
 
