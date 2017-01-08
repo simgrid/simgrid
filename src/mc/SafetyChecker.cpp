@@ -59,8 +59,7 @@ bool SafetyChecker::checkNonTermination(simgrid::mc::State* current_state)
 {
   for (auto i = stack_.rbegin(); i != stack_.rend(); ++i)
     if (snapshot_compare(i->get(), current_state) == 0){
-      XBT_INFO("Non-progressive cycle : state %d -> state %d",
-        (*i)->num, current_state->num);
+      XBT_INFO("Non-progressive cycle: state %d -> state %d", (*i)->num, current_state->num);
       return true;
     }
   return false;
