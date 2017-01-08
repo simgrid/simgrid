@@ -430,13 +430,10 @@ simgrid::mc::Variable* Process::find_variable(const char* name) const
 void Process::read_variable(const char* name, void* target, size_t size) const
 {
   simgrid::mc::Variable* var = this->find_variable(name);
-  if (!var->address)
-    xbt_die("No simple location for this variable");
-  if (!var->type->full_type)
-    xbt_die("Partial type for %s, cannot check size", name);
-  if ((size_t) var->type->full_type->byte_size != size)
-    xbt_die("Unexpected size for %s (expected %zi, was %zi)",
-      name, size, (size_t) var->type->full_type->byte_size);
+  xbt_assert(var->address, "No simple location for this variable");
+  xbt_assert(var->type->full_type, "Partial type for %s, cannot check size", name);
+  xbt_assert((size_t)var->type->full_type->byte_size == size, "Unexpected size for %s (expected %zi, was %zi)", name,
+             size, (size_t)var->type->full_type->byte_size);
   this->read_bytes(target, size, remote(var->address));
 }
 
