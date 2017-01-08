@@ -23,11 +23,10 @@ namespace mc {
 
 /** @brief Storage for snapshot memory pages
  *
- * The first (lower) layer of the per-page snapshot mechanism is a page
- * store: its responsibility is to store immutable shareable
- * reference-counted memory pages independently of the snapshotting
- * logic. Snapshot management and representation is
- * handled to an higher layer. READMORE
+ * The first (lower) layer of the per-page snapshot mechanism is a page store:
+ * its responsibility is to store immutable sharable reference-counted memory
+ * pages independently of the snapshotting logic. Snapshot management and
+ * representation is handled to an higher layer. READMORE
  *
  * Data structure:
  *
@@ -112,8 +111,7 @@ public: // Methods
 
   /** @brief Decrement the reference count for a given page
    *
-   * Decrement the reference count of this page. Used when a snapshot is
-   * destroyed.
+   * Decrement the reference count of this page. Used when a snapshot is destroyed.
    *
    * If the reference count reaches zero, the page is recycled:
    * it is added to the `free_pages_` list and removed from the `hash_index_`.

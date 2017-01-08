@@ -234,7 +234,7 @@ XBT_TEST_UNIT("page_snapshots", test_per_snpashots, "Test per-page snapshots")
 
 static void test_snapshot(bool sparse_checkpoint) {
 
-  xbt_test_add("Initialisation");
+  xbt_test_add("Initialization");
   _sg_mc_sparse_checkpoint = sparse_checkpoint;
   xbt_assert(xbt_pagesize == getpagesize());
   xbt_assert(1 << xbt_pagebits == xbt_pagesize);
