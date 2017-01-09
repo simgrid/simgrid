@@ -109,8 +109,7 @@ int SafetyChecker::run()
 
     mc_model_checker->visited_states++;
 
-    // The interleave set is empty or the maximum depth is reached,
-    // let's back-track.
+    // Backtrack if the interleave set is empty or the maximum depth is reached,
     smx_simcall_t req = nullptr;
     if (stack_.size() > (std::size_t) _sg_mc_max_depth
         || (req = MC_state_get_request(state)) == nullptr
@@ -150,9 +149,9 @@ int SafetyChecker::run()
         || (visitedState_ = visitedStates_.addVisitedState(expandedStatesCount_, next_state.get(), true)) == nullptr) {
 
       /* Get an enabled process and insert it in the interleave set of the next state */
-      for (auto& p : mc_model_checker->process().actors())
-        if (simgrid::mc::actor_is_enabled(p.copy.getBuffer())) {
-          next_state->interleave(p.copy.getBuffer());
+      for (auto& actor : mc_model_checker->process().actors())
+        if (simgrid::mc::actor_is_enabled(actor.copy.getBuffer())) {
+          next_state->interleave(actor.copy.getBuffer());
           if (reductionMode_ != simgrid::mc::ReductionMode::none)
             break;
         }
@@ -279,12 +278,10 @@ int SafetyChecker::backtrack()
 void SafetyChecker::restoreState()
 {
   /* Intermediate backtracking */
-  {
-    simgrid::mc::State* state = stack_.back().get();
-    if (state->system_state) {
-      simgrid::mc::restore_snapshot(state->system_state);
-      return;
-    }
+  simgrid::mc::State* state = stack_.back().get();
+  if (state->system_state) {
+    simgrid::mc::restore_snapshot(state->system_state);
+    return;
   }
 
   /* Restore the initial state */
