@@ -1239,13 +1239,10 @@ void smpi_replay_start(int *argc, char ***argv)
       requests[i] = it->second;
       i++;
     }
-  
-      smpi_mpi_waitall(count_requests, requests, status);
-      active_processes--;
-  } else {
-      active_processes--;
+    smpi_mpi_waitall(count_requests, requests, status);
   }
 
+  active_processes--;
   
   if(active_processes==0){
     /* Last process alive speaking */
