@@ -11,6 +11,8 @@
 #include <xbt/replay.h>
 #include <unordered_map>
 #include <vector>
+#include <iostream>
+#include <sstream>
 
 #define KEY_SIZE (sizeof(int) * 2 + 1)
 
@@ -22,7 +24,7 @@ int communicator_size = 0;
 static int active_processes = 0;
 
 #define REQ_KEY_SIZE 61
-xbt_dict_t *reqd;
+std::vector<std::unordered_map<std::string, MPI_Request>> reqd;
 
 MPI_Datatype MPI_DEFAULT_TYPE;
 MPI_Datatype MPI_CURRENT_TYPE;
@@ -38,56 +40,56 @@ char* recvbuffer=nullptr;
  *****************************************************************************/
 
 
-static char *build_request_key(int src, int dst, int tag){
-  char *key = (char *)malloc(REQ_KEY_SIZE);
-  xbt_assert(key, "failed malloc");
-  snprintf(key, REQ_KEY_SIZE, "%020d%020d%020d", src, dst, tag);
+static std::string build_request_key(int src, int dst, int tag){
+  std::stringstream key_stream;
+  key_stream << src << dst << tag;
+  std::string key = key_stream.str();
   return key;
 }
 
-static char *key_from_request(MPI_Request request)
+static std::string key_from_request(MPI_Request request)
 {
-  char *key = build_request_key(request->src, request->dst, request->tag);
+  std::string key = build_request_key(
+      request->src, request->dst, request->tag);
   return key;
 }
 
 static void register_request(MPI_Request request)
 {
-  char *key = key_from_request(request);
-  xbt_dict_set(reqd[smpi_process_index()], key, request, NULL);
-  free(key);
-  return;
+  std::string key = key_from_request(request);
+  reqd[smpi_process_index()].insert({key, request});
 }
 
-static void register_request_with_key(MPI_Request request, const char *key)
+static void register_request_with_key(MPI_Request request, std::string key)
 {
-  xbt_dict_set(reqd[smpi_process_index()], key, request, NULL);
-  return;
+  reqd[smpi_process_index()].insert({key, request});
+}
+
+static MPI_Request get_request_with_key(std::string key){
+  MPI_Request request = nullptr;
+  try{
+    request = reqd[smpi_process_index()].at(key);
+  }
+  catch(std::out_of_range){
+    request = nullptr;
+  }
+  return request;
 }
 
 static MPI_Request get_request(int src, int dst, int tag)
 {
-  char *key = build_request_key(src, dst, tag);
-  MPI_Request request = (MPI_Request)xbt_dict_get_or_null(
-      reqd[smpi_process_index()], key);
-  free(key);
+  std::string key = build_request_key(src, dst, tag);
+  MPI_Request request = get_request_with_key(key);
   return request;
 }
 
-static MPI_Request get_request_with_key(const char *key){
-  MPI_Request request = (MPI_Request)xbt_dict_get_or_null(
-      reqd[smpi_process_index()], key);
-  return request;
+static void remove_request_with_key(std::string key){
+  reqd[smpi_process_index()].erase(key);
 }
 
 static void remove_request(MPI_Request request){
-  char *key = key_from_request(request);
-  xbt_dict_remove(reqd[smpi_process_index()], key);
-  free(key);
-}
-
-static void remove_request_with_key(const char *key){
-  xbt_dict_remove(reqd[smpi_process_index()], key);
+  std::string key = key_from_request(request);
+  remove_request_with_key(key);
 }
 
 
@@ -224,8 +226,6 @@ void action_init(const char *const *action)
   XBT_DEBUG("Initialize the counters");
   CHECK_ACTION_PARAMS(action, 0, 1)
 
-  int i = 0;
-
   if(action[2]) 
     MPI_DEFAULT_TYPE=MPI_DOUBLE; // default MPE dataype 
   else MPI_DEFAULT_TYPE= MPI_BYTE; // default TAU datatype
@@ -234,11 +234,10 @@ void action_init(const char *const *action)
   smpi_process_simulated_start();
   /*initialize the number of active processes */
   active_processes = smpi_process_count();
-
-  if (!reqd){
-    reqd = xbt_new0(xbt_dict_t, active_processes);
-    for(i = 0; i < active_processes; i++){
-      reqd[i] = xbt_dict_new();
+  if(reqd.empty()){
+    for(int i = 0; i< active_processes; i++){ 
+      std::unordered_map<std::string, MPI_Request> req_map;
+      reqd.push_back(req_map);
     }
   }
 }
@@ -452,13 +451,12 @@ void action_test(const char *const *action){
   int tag = atoi(action[4]);
   double clock = smpi_process_simulated_elapsed();
   int flag = TRUE;
-  char *key;
   MPI_Request request;
   MPI_Status status;
 
   //request = xbt_dynar_pop_as(reqq[smpi_process_index()],MPI_Request);
 
-  key = build_request_key(src, dst, tag);
+  std::string key = build_request_key(src, dst, tag);
   request = get_request_with_key(key);
   remove_request_with_key(key);
 
@@ -476,7 +474,6 @@ void action_test(const char *const *action){
     XBT_DEBUG("MPI_Test result: %d", flag);
 
     register_request_with_key(request, key);
-    free(key);
   
     TRACE_smpi_testing_out(rank);
   }
@@ -489,15 +486,14 @@ void action_wait(const char *const *action){
   int dst = atoi(action[3]);
   int tag = atoi(action[4]);
   double clock = smpi_process_simulated_elapsed();
-  char *key = build_request_key(src, dst,tag);
+  std::string key = build_request_key(src, dst,tag);
   MPI_Request request = get_request_with_key(key);
   MPI_Status status;
 
-  xbt_assert(xbt_dict_length(reqd[smpi_process_index()]),
+  xbt_assert(!reqd[smpi_process_index()].empty(),
     "action wait not preceded by any irecv or isend: %s",
     xbt_str_join_array(action," "));
   remove_request_with_key(key);
-  free(key);
   
   if (request==nullptr){
     /* Assume that the trace is well formed, meaning the comm might have been caught by a MPI_test. Then just return.*/
@@ -524,18 +520,15 @@ void action_wait(const char *const *action){
 void action_waitall(const char *const *action){
   CHECK_ACTION_PARAMS(action, 0, 0);
   double clock = smpi_process_simulated_elapsed();
-  unsigned int count_requests = xbt_dict_length(reqd[smpi_process_index()]);
+  unsigned int count_requests = reqd[smpi_process_index()].size();
   unsigned int i=0;
 
   if (count_requests>0) {
     MPI_Request requests[count_requests];
     MPI_Status status[count_requests];
-    xbt_dict_cursor_t cursor = NULL;
-    char *key;
-    MPI_Request data;
-
-    xbt_dict_foreach(reqd[smpi_process_index()], cursor, key, data){
-      requests[i] = data;
+    int my_id = smpi_process_index();
+    for(auto it = reqd[my_id].begin(); it != reqd[my_id].end(); it++){
+      requests[i] = it->second;
       i++;
     } 
 
@@ -599,10 +592,7 @@ void action_waitall(const char *const *action){
    xbt_dynar_free(&tags);
 
    int freedrank=smpi_process_index();
-   //This would destroy the dictionay's content, but the free function for
-   //the elements is set to NULL. (Is this a problem?)
-   xbt_dict_free(&(reqd[freedrank]));
-   reqd[freedrank] = xbt_dict_new();
+   reqd[freedrank].clear();
   }
   log_timed_action (action, clock);
 }
@@ -1237,19 +1227,16 @@ void smpi_replay_start(int *argc, char ***argv)
   double sim_time= 1.;
   /* One active process will stop. Decrease the counter*/
   
-  XBT_DEBUG("There are %d elements in reqd[*]",
-            xbt_dict_length(reqd[smpi_process_index()]));
-  if (!xbt_dict_is_empty(reqd[smpi_process_index()])){
-    int count_requests=xbt_dict_length(reqd[smpi_process_index()]);
+  XBT_DEBUG("There are %lu elements in reqd[*]",
+            reqd[smpi_process_index()].size());
+  if(!reqd[smpi_process_index()].empty()){
+    int count_requests=reqd[smpi_process_index()].size();
     MPI_Request requests[count_requests];
     MPI_Status status[count_requests];
-    xbt_dict_cursor_t cursor = NULL;
-    MPI_Request data;
-    char *key;
     unsigned int i = 0;
-
-    xbt_dict_foreach(reqd[smpi_process_index()], cursor, key, data){
-      requests[i] = data;
+    int my_id = smpi_process_index();
+    for(auto it = reqd[my_id].begin(); it != reqd[my_id].end(); it++){
+      requests[i] = it->second;
       i++;
     }
   
@@ -1259,7 +1246,6 @@ void smpi_replay_start(int *argc, char ***argv)
       active_processes--;
   }
 
-  xbt_dict_free(&reqd[smpi_process_index()]);
   
   if(active_processes==0){
     /* Last process alive speaking */
@@ -1271,8 +1257,6 @@ void smpi_replay_start(int *argc, char ***argv)
     _xbt_replay_action_exit();
     xbt_free(sendbuffer);
     xbt_free(recvbuffer);
-    xbt_free(reqd);
-    reqd = NULL;
   }
   
   int rank = smpi_process_index();
