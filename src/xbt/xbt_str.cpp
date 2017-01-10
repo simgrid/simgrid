@@ -227,7 +227,7 @@ xbt_dynar_t xbt_str_split(const char *s, const char *sep)
 
 /**
  * \brief This functions splits a string after using another string as separator
- * For example A!!B!!C splitted after !! will return the dynar {A,B,C}
+ * For example A!!B!!C split after !! will return the dynar {A,B,C}
  * \return An array of dynars containing the string tokens
  */
 xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
@@ -251,7 +251,7 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
   while (!done) {
     char *to_push;
     int v = 0;
-    //get the start of the first occurence of the substring
+    // get the start of the first occurrence of the substring
     q = strstr(p, sep);
     //if substring was not found add the entire string
     if (nullptr == q) {

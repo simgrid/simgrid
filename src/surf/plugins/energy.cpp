@@ -85,7 +85,7 @@ void HostEnergy::update()
    *
    *   X/(X+Y)*W_idle + Y/(X+Y)*W_burn
    *
-   * where X is the amount of ideling cores, and Y the amount of computing cores.
+   * where X is the amount of idling cores, and Y the amount of computing cores.
    */
 
   double previous_energy = this->total_energy;
@@ -110,16 +110,13 @@ HostEnergy::HostEnergy(simgrid::s4u::Host *ptr) : host(ptr), last_updated(surf_g
 {
   initWattsRangeList();
 
-  if (host->properties() != nullptr) {
-    char* off_power_str = (char*)xbt_dict_get_or_null(host->properties(), "watt_off");
-    if (off_power_str != nullptr) {
-      char* msg = bprintf("Invalid value for property watt_off of host %s: %%s", host->cname());
-      watts_off = xbt_str_parse_double(off_power_str, msg);
-      xbt_free(msg);
-    }
-    else
-      watts_off = 0;
+  const char* off_power_str = host->property("watt_off");
+  if (off_power_str != nullptr) {
+    char* msg       = bprintf("Invalid value for property watt_off of host %s: %%s", host->cname());
+    this->watts_off = xbt_str_parse_double(off_power_str, msg);
+    xbt_free(msg);
   }
+  /* watts_off is 0 by default */
 }
 
 HostEnergy::~HostEnergy()=default;
@@ -193,9 +190,7 @@ double HostEnergy::getConsumedEnergy()
 
 void HostEnergy::initWattsRangeList()
 {
-  if (host->properties() == nullptr)
-    return;
-  char* all_power_values_str = static_cast<char*>(xbt_dict_get_or_null(host->properties(), "watt_per_state"));
+  const char* all_power_values_str = host->property("watt_per_state");
   if (all_power_values_str == nullptr)
     return;
 
@@ -240,19 +235,20 @@ static void onCreation(simgrid::s4u::Host& host) {
 }
 
 static void onActionStateChange(simgrid::surf::CpuAction *action, simgrid::surf::Action::State previous) {
-  for(simgrid::surf::Cpu* cpu : action->cpus()) {
-    const char *name = cpu->getName();
-    sg_host_t sghost = sg_host_by_name(name);
-    if(sghost == nullptr)
+  for (simgrid::surf::Cpu* cpu : action->cpus()) {
+    simgrid::s4u::Host* host = cpu->getHost();
+    if (host == nullptr)
       continue;
-    simgrid::surf::HostImpl* host     = sghost->pimpl_;
-    simgrid::s4u::VirtualMachine* vm  = dynamic_cast<simgrid::s4u::VirtualMachine*>(sghost);
+
+    // If it's a VM, take the corresponding PM
+    simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
     if (vm) // If it's a VM, take the corresponding PM
-      host = vm->pimpl_vm_->getPm()->pimpl_;
+      host = vm->pimpl_vm_->getPm();
 
-    HostEnergy *host_energy = host->piface_->extension<HostEnergy>();
+    // Get the host_energy extension for the relevant host
+    HostEnergy* host_energy = host->extension<HostEnergy>();
 
-    if(host_energy->last_updated < surf_get_clock())
+    if (host_energy->last_updated < surf_get_clock())
       host_energy->update();
   }
 }
@@ -268,9 +264,9 @@ static void onHostStateChange(simgrid::s4u::Host &host) {
 }
 
 static void onHostDestruction(simgrid::s4u::Host& host) {
-  // Ignore virtual machines
-  if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host))
+  if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
+
   HostEnergy *host_energy = host.extension<HostEnergy>();
   host_energy->update();
   XBT_INFO("Total energy of host %s: %f Joules", host.cname(), host_energy->getConsumedEnergy());
