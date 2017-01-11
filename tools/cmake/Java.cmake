@@ -37,6 +37,11 @@ endif()
 add_library(simgrid-java SHARED ${JMSG_C_SRC})
 set_target_properties(simgrid-java PROPERTIES VERSION          ${libsimgrid-java_version})
 set_target_properties(simgrid-java PROPERTIES SKIP_BUILD_RPATH ON)
+if(APPLE)
+  # add the current location of libsimgrid-java.dynlib as a location for libsimgrid.dynlib
+  # (useful when unpacking the native libraries from the jarfile)
+  set_target_properties(simgrid-java PROPERTIES CMAKE_INSTALL_RPATH "@loader_path/.")
+endif()
 
 target_link_libraries(simgrid-java simgrid)
 

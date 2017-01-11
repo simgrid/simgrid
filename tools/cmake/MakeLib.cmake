@@ -1,8 +1,8 @@
 ### Make Libs
 
-# On Mac OSX, don't specify where to look for the dependencies
-# Otherwise, the libsimgrid-java will not find libsimgrid, as it is located in a temporary directory
-set(MACOSX_RPATH OFF)
+# On Mac OSX, specify that rpath is useful to look for the dependencies
+# See https://cmake.org/Wiki/CMake_RPATH_handling and Java.cmake
+set(MACOSX_RPATH ON)
 
 ###############################
 # Declare the library content #
