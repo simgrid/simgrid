@@ -241,8 +241,14 @@ std::list<Cpu*> CpuAction::cpus() {
   lmm_system_t sys = getModel()->getMaxminSystem();
   int llen = lmm_get_number_of_cnst_from_var(sys, getVariable());
 
-  for(int i = 0; i<llen; i++)
-    retlist.push_back( (Cpu*)(lmm_constraint_id( lmm_get_cnst_from_var(sys, getVariable(), i) )) );
+  for (int i = 0; i < llen; i++) {
+    /* Beware of composite actions: ptasks put links and cpus together */
+    // extra pb: we cannot dynamic_cast from void*...
+    Resource* resource = static_cast<Resource*>(lmm_constraint_id(lmm_get_cnst_from_var(sys, getVariable(), i)));
+    Cpu* cpu           = dynamic_cast<Cpu*>(resource);
+    if (cpu != nullptr)
+      retlist.push_back(cpu);
+  }
 
   return retlist;
 }
