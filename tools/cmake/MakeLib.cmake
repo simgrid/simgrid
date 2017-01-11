@@ -2,7 +2,7 @@
 
 # On Mac OSX, don't specify where to look for the dependencies
 # Otherwise, the libsimgrid-java will not find libsimgrid, as it is located in a temporary directory
-set(MACOSX_RPATH 0)
+set(MACOSX_RPATH OFF)
 
 ###############################
 # Declare the library content #
