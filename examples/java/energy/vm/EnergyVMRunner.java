@@ -28,7 +28,7 @@ public class EnergyVMRunner extends Process {
       Task  task = new Task(this.getHost().getName()+"-task", 300E6 , 0);
       try {
         task.execute();
-      } catch (HostFailureException | TaskCancelledException e) {
+      } catch (HostFailureException | TaskCancelledException e) { // If your compiler fails on that multicatch, please proceed to Java 1.7 or higher
         Msg.error(e.getMessage());
         e.printStackTrace();
       } 

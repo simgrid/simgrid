@@ -12,7 +12,7 @@ public class Bucket {
   private int id;
 
   public Bucket(int id) {
-    this.nodes = new ArrayList<>();
+    this.nodes = new ArrayList<Integer>();
     this.id = id;
   }
 

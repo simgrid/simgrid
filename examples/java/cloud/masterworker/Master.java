@@ -25,7 +25,7 @@ public class Master extends Process {
 
   public void main(String[] args) throws MsgException {
     int workersCount = Main.NHOSTS;
-    ArrayList<VM> vms = new ArrayList<>();
+    ArrayList<VM> vms = new ArrayList<VM>();
 
     // Create one VM per host and bind a process inside each one. 
     for (int i = 0; i < workersCount; i++) {
