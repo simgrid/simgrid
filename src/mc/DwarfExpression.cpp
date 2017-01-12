@@ -225,9 +225,12 @@ void execute(
       stack.top() = - (intptr_t) stack.top();
       break;
 
-    case DW_OP_minus:
-      stack.push(stack.pop() - stack.pop());
+    case DW_OP_minus: {
+      intptr_t first = stack.pop();
+      intptr_t second = stack.pop();
+      stack.push(second - first);
       break;
+    }
 
     case DW_OP_and:
       stack.push(stack.pop() & stack.pop());
