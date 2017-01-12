@@ -102,7 +102,7 @@ foreach(x actions-comm actions-storage app-bittorrent app-chainsend app-masterwo
 endforeach()
 
 foreach (example consumption onoff pstate vm)
-  ADD_TESH_FACTORIES(msg-energy-${example} "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy-${example}/energy-${example}.tesh)
+  ADD_TESH_FACTORIES(msg-energy-${example} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy-${example}/energy-${example}.tesh)
 endforeach()
 
 foreach (x categories route-user-variables link-user-variables masterworker platform process-migration host-user-variables)
