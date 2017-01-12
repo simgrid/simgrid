@@ -275,10 +275,52 @@ void sg_version_check(int lib_version_major,int lib_version_minor,int lib_versio
     }
 }
 
-void sg_version(int *ver_major,int *ver_minor,int *ver_patch) {
+void sg_version_get(int* ver_major, int* ver_minor, int* ver_patch)
+{
   *ver_major = SIMGRID_VERSION_MAJOR;
   *ver_minor = SIMGRID_VERSION_MINOR;
   *ver_patch = SIMGRID_VERSION_PATCH;
+}
+
+void sg_version()
+{
+  std::printf("This program was linked against %s\n", SIMGRID_VERSION_STRING);
+
+#if HAVE_MC
+  std::printf("   Model-checking support compiled in.\n");
+#else
+  std::printf("   Model-checking support disabled at compilation.\n");
+#endif
+
+#if HAVE_NS3
+  std::printf("   NS3 support compiled in.\n");
+#else
+  std::printf("   NS3 support disabled at compilation.\n");
+#endif
+
+#if HAVE_JEDULE
+  std::printf("   Jedule support compiled in.\n");
+#else
+  std::printf("   Jedule support disabled at compilation.\n");
+#endif
+
+#if HAVE_LUA
+  std::printf("   Lua support compiled in.\n");
+#else
+  std::printf("   Lua support disabled at compilation.\n");
+#endif
+
+#if HAVE_MALLOCATOR
+  std::printf("   Mallocator support compiled in.\n");
+#else
+  std::printf("   Mallocator support disabled at compilation.\n");
+#endif
+
+  std::printf("\nTo cite SimGrid in a publication, please use:\n"
+              "   Henri Casanova, Arnaud Giersch, Arnaud Legrand, Martin Quinson, Frédéric Suter. \n"
+              "   Versatile, Scalable, and Accurate Simulation of Distributed Applications and Platforms. \n"
+              "   Journal of Parallel and Distributed Computing, Elsevier, 2014, 74 (10), pp.2899-2917.\n");
+  std::printf("The pdf file and a BibTeX entry for LaTeX users can be found at http://hal.inria.fr/hal-01017319\n");
 }
 
 void surf_init(int *argc, char **argv)
