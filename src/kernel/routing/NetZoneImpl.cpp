@@ -42,7 +42,8 @@ NetZoneImpl::~NetZoneImpl()
   simgrid::s4u::Engine::instance()->netcardUnregister(netcard_);
 }
 
-simgrid::s4u::Host* NetZoneImpl::createHost(const char* name, std::vector<double>* speedPerPstate, int coreAmount)
+simgrid::s4u::Host* NetZoneImpl::createHost(const char* name, std::vector<double>* speedPerPstate, int coreAmount,
+                                            std::unordered_map<std::string, std::string>* props)
 {
   simgrid::s4u::Host* res = new simgrid::s4u::Host(name);
 
@@ -52,6 +53,12 @@ simgrid::s4u::Host* NetZoneImpl::createHost(const char* name, std::vector<double
   res->pimpl_netcard = new NetCard(name, NetCard::Type::Host, this);
 
   surf_cpu_model_pm->createCpu(res, speedPerPstate, coreAmount);
+
+  if (props != nullptr)
+    for (auto kv : *props)
+      res->setProperty(kv.first.c_str(), kv.second.c_str());
+
+  simgrid::s4u::Host::onCreation(*res);
 
   return res;
 }

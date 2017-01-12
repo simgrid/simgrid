@@ -46,6 +46,7 @@ Host::Host(const char* name)
 {
   xbt_assert(Host::by_name_or_null(name) == nullptr, "Refusing to create a second host named '%s'.", name);
   host_list[name_] = this;
+  new simgrid::surf::HostImpl(this, nullptr);
 }
 
 Host::~Host()

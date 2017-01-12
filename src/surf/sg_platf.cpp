@@ -65,19 +65,21 @@ void sg_platf_exit() {
 /** @brief Add an host to the current AS */
 void sg_platf_new_host(sg_platf_host_cbarg_t args)
 {
-  simgrid::s4u::Host* host = routing_get_current()->createHost(args->id, &args->speed_per_pstate, args->core_amount);
-
-  new simgrid::surf::HostImpl(host, mount_list);
-  xbt_lib_set(storage_lib, args->id, ROUTING_STORAGE_HOST_LEVEL, static_cast<void*>(mount_list));
-  mount_list = nullptr;
-
+  std::unordered_map<std::string, std::string> props;
   if (args->properties) {
     xbt_dict_cursor_t cursor=nullptr;
     char *key,*data;
     xbt_dict_foreach (args->properties, cursor, key, data)
-      host->setProperty(key, data);
+      props[key] = data;
     xbt_dict_free(&args->properties);
   }
+
+  simgrid::s4u::Host* host =
+      routing_get_current()->createHost(args->id, &args->speed_per_pstate, args->core_amount, &props);
+
+  host->pimpl_->storage_ = mount_list;
+  xbt_lib_set(storage_lib, args->id, ROUTING_STORAGE_HOST_LEVEL, static_cast<void*>(mount_list));
+  mount_list = nullptr;
 
   /* Change from the defaults */
   if (args->state_trace)
@@ -88,8 +90,6 @@ void sg_platf_new_host(sg_platf_host_cbarg_t args)
     host->pimpl_cpu->setPState(args->pstate);
   if (args->coord && strcmp(args->coord, ""))
     new simgrid::kernel::routing::vivaldi::Coords(host->pimpl_netcard, args->coord);
-
-  simgrid::s4u::Host::onCreation(*host);
 
   if (TRACE_is_enabled() && TRACE_needs_platform())
     sg_instr_new_host(*host);
@@ -555,10 +555,9 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
 
   std::vector<double> speedPerPstate;
   speedPerPstate.push_back(peer->speed);
-  simgrid::s4u::Host* host = as->createHost(peer->id, &speedPerPstate, 1);
+  simgrid::s4u::Host* host = as->createHost(peer->id, &speedPerPstate, 1, nullptr);
 
   as->setPeerLink(host->pimpl_netcard, peer->bw_in, peer->bw_out, peer->coord);
-  simgrid::s4u::Host::onCreation(*host);
 
   /* Change from the defaults */
   if (peer->state_trace)
