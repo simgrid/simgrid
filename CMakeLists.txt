@@ -660,6 +660,8 @@ if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/)
   endif()
 elseif(EXISTS ${CMAKE_HOME_DIRECTORY}/.gitversion)
   FILE(STRINGS ${CMAKE_HOME_DIRECTORY}/.gitversion GIT_VERSION)
+else()
+  set(GIT_VERSION "none, release version")
 endif()
 
 ### Generate the required headers and scripts

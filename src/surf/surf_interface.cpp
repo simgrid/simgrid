@@ -284,7 +284,8 @@ void sg_version_get(int* ver_major, int* ver_minor, int* ver_patch)
 
 void sg_version()
 {
-  std::printf("This program was linked against %s\n", SIMGRID_VERSION_STRING);
+  std::printf("This program was linked against %s (git: %s), found in %s.\n",
+              SIMGRID_VERSION_STRING, SIMGRID_GIT_VERSION, SIMGRID_INSTALL_PREFIX);
 
 #if HAVE_MC
   std::printf("   Model-checking support compiled in.\n");
