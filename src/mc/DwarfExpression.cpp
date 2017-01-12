@@ -205,13 +205,19 @@ void execute(
       // and replace the top of the stack with the computed value
       // (stack.top() += stack.before_top()).
 
-    case DW_OP_plus:
-      stack.push(stack.pop() + stack.pop());
+    case DW_OP_plus: {
+      intptr_t first = stack.pop();
+      intptr_t second = stack.pop();
+      stack.push(first + second);
       break;
+    }
 
-    case DW_OP_mul:
-      stack.push(stack.pop() * stack.pop());
+    case DW_OP_mul: {
+      intptr_t first = stack.pop();
+      intptr_t second = stack.pop();
+      stack.push(first * second);
       break;
+    }
 
     case DW_OP_plus_uconst:
       stack.top() += op->number;
@@ -232,17 +238,26 @@ void execute(
       break;
     }
 
-    case DW_OP_and:
-      stack.push(stack.pop() & stack.pop());
+    case DW_OP_and: {
+      intptr_t first = stack.pop();
+      intptr_t second = stack.pop();
+      stack.push(first & second);
       break;
+    }
 
-    case DW_OP_or:
-      stack.push(stack.pop() | stack.pop());
+    case DW_OP_or: {
+      intptr_t first = stack.pop();
+      intptr_t second = stack.pop();
+      stack.push(first | second);
       break;
+    }
 
-    case DW_OP_xor:
-      stack.push(stack.pop() ^ stack.pop());
+    case DW_OP_xor: {
+      intptr_t first = stack.pop();
+      intptr_t second = stack.pop();
+      stack.push(first ^ second);
       break;
+    }
 
     case DW_OP_nop:
       break;
