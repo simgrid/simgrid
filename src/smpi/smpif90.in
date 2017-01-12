@@ -65,6 +65,10 @@ while [ $# -gt 0 ]; do
         '-compiler-version' | '--compiler-version')
             ${F90} --version
             ;;
+        -o)
+            list_add CMDLINE "-o$1"
+            shift
+            ;;
         *)
             list_add CMDLINE "${ARG}"
             ;;

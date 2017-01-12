@@ -81,7 +81,8 @@ while [ $# -gt 0 ]; do
             ;;
         -o)
             NEEDS_OUTPUT=0
-            list_add CMDLINE "-o"   
+            list_add CMDLINE "-o$1"
+            shift
             ;;        
         *)
             list_add CMDLINE "${ARG}"
