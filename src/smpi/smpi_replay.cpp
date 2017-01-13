@@ -1144,7 +1144,7 @@ void smpi_replay_process_migrate(smx_actor_t process, sg_host_t new_host,
  * This function only initializes smpi_replay. It does not start the replay.
  * You should call this one if you want to be able to register new actions
  * from your code.
- * To really start the replay you must call smpi_replay_run.
+ * To really start the replay you must call smpi_replay_start.
  */
 void smpi_replay_init(int *argc, char ***argv)
 {
