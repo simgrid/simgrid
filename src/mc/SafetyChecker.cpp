@@ -57,9 +57,9 @@ static int snapshot_compare(simgrid::mc::State* state1, simgrid::mc::State* stat
 
 bool SafetyChecker::checkNonTermination(simgrid::mc::State* current_state)
 {
-  for (auto i = stack_.rbegin(); i != stack_.rend(); ++i)
-    if (snapshot_compare(i->get(), current_state) == 0){
-      XBT_INFO("Non-progressive cycle: state %d -> state %d", (*i)->num, current_state->num);
+  for (auto state = stack_.rbegin(); state != stack_.rend(); ++state)
+    if (snapshot_compare(state->get(), current_state) == 0) {
+      XBT_INFO("Non-progressive cycle: state %d -> state %d", (*state)->num, current_state->num);
       return true;
     }
   return false;
@@ -96,24 +96,49 @@ void SafetyChecker::logState() // override
 
 int SafetyChecker::run()
 {
+  /* This function runs the DFS algorithm the state space.
+   * We do so iteratively instead of recursively, dealing with the call stack manually.
+   * This allows to explore the call stack when we want to. */
+
   while (!stack_.empty()) {
 
     /* Get current state */
     simgrid::mc::State* state = stack_.back().get();
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG(
-      "Exploration depth=%zi (state=%p, num %d)(%zu interleave)",
-      stack_.size(), state, state->num,
-      state->interleaveSize());
+    XBT_DEBUG("Exploration depth=%zi (state=%p, num %d)(%zu interleave)",
+      stack_.size(), state, state->num, state->interleaveSize());
 
     mc_model_checker->visited_states++;
 
-    // Backtrack if the interleave set is empty or the maximum depth is reached,
-    smx_simcall_t req = nullptr;
-    if (stack_.size() > (std::size_t) _sg_mc_max_depth
-        || (req = MC_state_get_request(state)) == nullptr
-        || visitedState_ != nullptr) {
+    // Backtrack if we reached the maximum depth
+    if (stack_.size() > (std::size_t)_sg_mc_max_depth) {
+      XBT_WARN("/!\\ Max depth reached ! /!\\ ");
+      int res = this->backtrack();
+      if (res)
+        return res;
+      else
+        continue;
+    }
+
+    // Backtrack if we are revisiting a state we saw previously
+    if (visitedState_ != nullptr) {
+      XBT_DEBUG("State already visited (equal to state %d), exploration stopped on this path.",
+                visitedState_->other_num == -1 ? visitedState_->num : visitedState_->other_num);
+
+      visitedState_ = nullptr;
+      int res       = this->backtrack();
+      if (res)
+        return res;
+      else
+        continue;
+    }
+
+    smx_simcall_t req = MC_state_get_request(state);
+    // Backtrack if the interleave set is empty
+    if (req == nullptr) {
+      XBT_DEBUG("There are no more processes to interleave. (depth %zi)", stack_.size() + 1);
+
       int res = this->backtrack();
       if (res)
         return res;
@@ -145,14 +170,18 @@ int SafetyChecker::run()
         return SIMGRID_MC_EXIT_NON_TERMINATION;
     }
 
-    if (_sg_mc_visited == 0
-        || (visitedState_ = visitedStates_.addVisitedState(expandedStatesCount_, next_state.get(), true)) == nullptr) {
+    /* Check whether we already explored next_state in the past (but only if interested in state-equality reduction) */
+    if (_sg_mc_visited == true)
+      visitedState_ = visitedStates_.addVisitedState(expandedStatesCount_, next_state.get(), true);
+
+    /* If this is a new state (or if we don't care about state-equality reduction) */
+    if (_sg_mc_visited == 0 || visitedState_ == nullptr) {
 
       /* Get an enabled process and insert it in the interleave set of the next state */
       for (auto& actor : mc_model_checker->process().actors())
         if (simgrid::mc::actor_is_enabled(actor.copy.getBuffer())) {
           next_state->interleave(actor.copy.getBuffer());
-          if (reductionMode_ != simgrid::mc::ReductionMode::none)
+          if (reductionMode_ == simgrid::mc::ReductionMode::dpor)
             break;
         }
 
@@ -175,21 +204,7 @@ int SafetyChecker::run()
 
 int SafetyChecker::backtrack()
 {
-  if (stack_.size() > (std::size_t) _sg_mc_max_depth
-      || visitedState_ != nullptr) {
-    if (visitedState_ == nullptr)
-      XBT_WARN("/!\\ Max depth reached ! /!\\ ");
-    else
-      XBT_DEBUG("State already visited (equal to state %d),"
-        " exploration stopped on this path.",
-        visitedState_->other_num == -1 ? visitedState_->num : visitedState_->other_num);
-  } else
-    XBT_DEBUG("There are no more processes to interleave. (depth %zi)",
-      stack_.size() + 1);
-
   stack_.pop_back();
-
-  visitedState_ = nullptr;
 
   /* Check for deadlocks */
   if (mc_model_checker->checkDeadlock()) {
@@ -199,8 +214,8 @@ int SafetyChecker::backtrack()
 
   /* Traverse the stack backwards until a state with a non empty interleave
      set is found, deleting all the states that have it empty in the way.
-     For each deleted state, check if the request that has generated it 
-     (from it's predecesor state), depends on any other previous request 
+     For each deleted state, check if the request that has generated it
+     (from it's predecessor state), depends on any other previous request
      executed before it. If it does then add it to the interleave set of the
      state that executed that previous request. */
 

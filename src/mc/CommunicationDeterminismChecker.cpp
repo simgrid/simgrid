@@ -100,8 +100,7 @@ static void update_comm_pattern(
   // HACK, type punning
   simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_comm;
   mc_model_checker->process().read(temp_comm, comm_addr);
-  simgrid::kernel::activity::Comm* comm =
-    static_cast<simgrid::kernel::activity::Comm*>(temp_comm.getBuffer());
+  simgrid::kernel::activity::Comm* comm = temp_comm.getBuffer();
 
   smx_actor_t src_proc   = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->src_proc));
   smx_actor_t dst_proc   = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_proc));
