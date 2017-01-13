@@ -95,7 +95,7 @@ double VMModel::nextOccuringEvent(double now)
  ************/
 
 VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, simgrid::s4u::Host* host_PM)
-    : HostImpl(piface, nullptr /*storage*/), hostPM_(host_PM)
+    : HostImpl(piface), hostPM_(host_PM)
 {
   /* Register this VM to the list of all VMs */
   allVms_.push_back(piface);
