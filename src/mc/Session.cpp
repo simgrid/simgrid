@@ -18,7 +18,7 @@
 #include "src/mc/Session.hpp"
 #include "src/mc/mc_state.h"
 #include "src/mc/mc_private.h"
-#include "src/mc/Checker.hpp"
+#include "src/mc/checker/Checker.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Session, mc, "Model-checker session");
 

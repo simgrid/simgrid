@@ -19,7 +19,7 @@
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_smx.h"
 #include "src/mc/Client.hpp"
-#include "src/mc/CommunicationDeterminismChecker.hpp"
+#include "src/mc/checker/CommunicationDeterminismChecker.hpp"
 #include "src/mc/mc_exit.h"
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/Transition.hpp"

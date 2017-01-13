@@ -8,7 +8,7 @@
 
 #include <xbt/asserts.h>
 
-#include "src/mc/Checker.hpp"
+#include "src/mc/checker/Checker.hpp"
 #include "src/mc/ModelChecker.hpp"
 
 namespace simgrid {

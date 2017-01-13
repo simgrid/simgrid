@@ -548,17 +548,21 @@ set(MC_SRC_BASE
   )
 
 set(MC_SRC
+  src/mc/checker/Checker.cpp
+  src/mc/checker/Checker.hpp
+  src/mc/checker/CommunicationDeterminismChecker.cpp
+  src/mc/checker/CommunicationDeterminismChecker.hpp
+  src/mc/checker/SafetyChecker.cpp
+  src/mc/checker/SafetyChecker.hpp
+  src/mc/checker/LivenessChecker.cpp
+  src/mc/checker/LivenessChecker.hpp
   src/mc/RemotePtr.hpp
   src/mc/AddressSpace.hpp
   src/mc/AddressSpace.cpp
   src/mc/Channel.cpp
   src/mc/Channel.hpp
-  src/mc/Checker.cpp
-  src/mc/Checker.hpp
   src/mc/Client.cpp
   src/mc/Client.hpp
-  src/mc/CommunicationDeterminismChecker.cpp
-  src/mc/CommunicationDeterminismChecker.hpp
   src/mc/Frame.hpp
   src/mc/Frame.cpp
   src/mc/ModelChecker.hpp
@@ -567,8 +571,6 @@ set(MC_SRC
   src/mc/ObjectInformation.cpp
   src/mc/PageStore.hpp
   src/mc/PageStore.cpp
-  src/mc/SafetyChecker.cpp
-  src/mc/SafetyChecker.hpp
   src/mc/ChunkedData.hpp
   src/mc/ChunkedData.cpp
   src/mc/RegionSnapshot.cpp
@@ -601,10 +603,8 @@ set(MC_SRC
   src/mc/mc_hash.cpp
   src/mc/mc_ignore.h
   src/mc/mc_mmalloc.h
-  src/mc/LivenessChecker.hpp
   src/mc/LocationList.hpp
   src/mc/LocationList.cpp
-  src/mc/LivenessChecker.cpp
   src/mc/mc_record.cpp
   src/mc/mc_member.cpp
   src/mc/mc_memory.cpp
@@ -627,7 +627,7 @@ set(MC_SRC
   src/mc/Transition.hpp
   )
 
-set(MC_SIMGRID_MC_SRC  src/mc/simgrid_mc.cpp)
+set(MC_SIMGRID_MC_SRC  src/mc/checker/simgrid_mc.cpp)
 
 set(headers_to_install
   include/msg/msg.h

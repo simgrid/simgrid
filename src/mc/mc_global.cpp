@@ -38,7 +38,7 @@
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_unw.h"
 #include "src/mc/mc_smx.h"
-#include "src/mc/Checker.hpp"
+#include "src/mc/checker/Checker.hpp"
 #endif
 
 #include "src/mc/mc_record.h"

@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/Checker.hpp"
+#include "src/mc/checker/Checker.hpp"
 #include "src/mc/VisitedState.hpp"
 
 namespace simgrid {

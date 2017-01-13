@@ -30,7 +30,7 @@
 #include "src/mc/mc_exit.h"
 #include "src/mc/mc_record.h"
 #include "src/mc/Transition.hpp"
-#include "src/mc/Checker.hpp"
+#include "src/mc/checker/Checker.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ModelChecker, mc, "ModelChecker");
 

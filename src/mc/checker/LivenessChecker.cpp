@@ -21,7 +21,7 @@
 #include <xbt/sysdep.h>
 
 #include "src/mc/mc_request.h"
-#include "src/mc/LivenessChecker.hpp"
+#include "src/mc/checker/LivenessChecker.hpp"
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_smx.h"
