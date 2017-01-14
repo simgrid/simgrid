@@ -29,7 +29,7 @@ public:
   std::vector<std::string> getTextualTrace() override;
   void logState() override;
 private:
-  bool checkNonTermination(simgrid::mc::State* current_state);
+  void checkNonTermination(simgrid::mc::State* current_state);
   void backtrack();
   void restoreState();
 private:

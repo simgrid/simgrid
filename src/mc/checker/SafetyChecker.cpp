@@ -34,17 +34,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_safety, mc,
 namespace simgrid {
 namespace mc {
 
-static void MC_show_non_termination(void)
-{
-  XBT_INFO("******************************************");
-  XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");
-  XBT_INFO("******************************************");
-  XBT_INFO("Counter-example execution trace:");
-  for (auto& s : mc_model_checker->getChecker()->getTextualTrace())
-    XBT_INFO("%s", s.c_str());
-  simgrid::mc::session->logState();
-}
-
 static int snapshot_compare(simgrid::mc::State* state1, simgrid::mc::State* state2)
 {
   simgrid::mc::Snapshot* s1 = state1->system_state.get();
@@ -54,14 +43,21 @@ static int snapshot_compare(simgrid::mc::State* state1, simgrid::mc::State* stat
   return snapshot_compare(num1, s1, num2, s2);
 }
 
-bool SafetyChecker::checkNonTermination(simgrid::mc::State* current_state)
+void SafetyChecker::checkNonTermination(simgrid::mc::State* current_state)
 {
   for (auto state = stack_.rbegin(); state != stack_.rend(); ++state)
     if (snapshot_compare(state->get(), current_state) == 0) {
       XBT_INFO("Non-progressive cycle: state %d -> state %d", (*state)->num, current_state->num);
-      return true;
+      XBT_INFO("******************************************");
+      XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");
+      XBT_INFO("******************************************");
+      XBT_INFO("Counter-example execution trace:");
+      for (auto& s : mc_model_checker->getChecker()->getTextualTrace())
+        XBT_INFO("%s", s.c_str());
+      simgrid::mc::session->logState();
+
+      throw simgrid::mc::TerminationError();
     }
-  return false;
 }
 
 RecordTrace SafetyChecker::getRecordTrace() // override
@@ -127,8 +123,8 @@ void SafetyChecker::run()
       continue;
     }
 
+    // Search an enabled transition in the current state; backtrack if the interleave set is empty
     smx_simcall_t req = MC_state_get_request(state);
-    // Backtrack if the interleave set is empty
     if (req == nullptr) {
       XBT_DEBUG("There are no more processes to interleave. (depth %zi)", stack_.size() + 1);
 
@@ -155,17 +151,15 @@ void SafetyChecker::run()
     std::unique_ptr<simgrid::mc::State> next_state =
         std::unique_ptr<simgrid::mc::State>(new simgrid::mc::State(++expandedStatesCount_));
 
-    if (_sg_mc_termination && this->checkNonTermination(next_state.get())) {
-        MC_show_non_termination();
-        throw simgrid::mc::TerminationError();
-    }
+    if (_sg_mc_termination)
+      this->checkNonTermination(next_state.get());
 
     /* Check whether we already explored next_state in the past (but only if interested in state-equality reduction) */
     if (_sg_mc_visited == true)
       visitedState_ = visitedStates_.addVisitedState(expandedStatesCount_, next_state.get(), true);
 
     /* If this is a new state (or if we don't care about state-equality reduction) */
-    if (_sg_mc_visited == 0 || visitedState_ == nullptr) {
+    if (visitedState_ == nullptr) {
 
       /* Get an enabled process and insert it in the interleave set of the next state */
       for (auto& actor : mc_model_checker->process().actors())
