@@ -1,5 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -457,7 +456,7 @@ void CommunicationDeterminismChecker::restoreState()
   }
 }
 
-int CommunicationDeterminismChecker::main(void)
+void CommunicationDeterminismChecker::main(void)
 {
   std::unique_ptr<simgrid::mc::VisitedState> visited_state = nullptr;
   smx_simcall_t req = nullptr;
@@ -561,7 +560,7 @@ int CommunicationDeterminismChecker::main(void)
       /* Check for deadlocks */
       if (mc_model_checker->checkDeadlock()) {
         MC_show_deadlock();
-        return SIMGRID_MC_EXIT_DEADLOCK;
+        throw new simgrid::mc::DeadlockError();
       }
 
       while (!stack_.empty()) {
@@ -589,10 +588,9 @@ int CommunicationDeterminismChecker::main(void)
   }
 
   simgrid::mc::session->logState();
-  return SIMGRID_MC_EXIT_SUCCESS;
 }
 
-int CommunicationDeterminismChecker::run()
+void CommunicationDeterminismChecker::run()
 {
   XBT_INFO("Check communication determinism");
   simgrid::mc::session->initialize();
@@ -605,8 +603,7 @@ int CommunicationDeterminismChecker::run()
   this->recv_diff = nullptr;
   this->send_diff = nullptr;
 
-  int res = this->main();
-  return res;
+  this->main();
 }
 
 Checker* createCommunicationDeterminismChecker(Session& session)

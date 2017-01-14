@@ -65,12 +65,12 @@ class XBT_PRIVATE LivenessChecker : public Checker {
 public:
   LivenessChecker(Session& session);
   ~LivenessChecker();
-  int run() override;
+  void run() override;
   RecordTrace getRecordTrace() override;
   std::vector<std::string> getTextualTrace() override;
   void logState() override;
 private:
-  int main();
+  void main();
   void prepare();
   int compare(simgrid::mc::VisitedPair* state1, simgrid::mc::VisitedPair* state2);
   std::shared_ptr<const std::vector<int>> getPropositionValues();

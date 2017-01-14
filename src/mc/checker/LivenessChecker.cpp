@@ -63,9 +63,7 @@ VisitedPair::VisitedPair(
   this->atomic_propositions = std::move(atomic_propositions);
 }
 
-VisitedPair::~VisitedPair()
-{
-}
+VisitedPair::~VisitedPair() = default;
 
 static bool evaluate_label(
   xbt_automaton_exp_label_t l, std::vector<int> const& values)
@@ -334,7 +332,7 @@ std::vector<std::string> LivenessChecker::getTextualTrace() // override
   return trace;
 }
 
-int LivenessChecker::main(void)
+void LivenessChecker::main(void)
 {
   while (!explorationStack_.empty()){
     std::shared_ptr<Pair> current_pair = explorationStack_.back();
@@ -357,7 +355,7 @@ int LivenessChecker::main(void)
     if (current_pair->automaton_state->type == 1 && !current_pair->exploration_started
         && (reached_pair = this->insertAcceptancePair(current_pair.get())) == nullptr) {
       this->showAcceptanceCycle(current_pair->depth);
-      return SIMGRID_MC_EXIT_LIVENESS;
+      throw simgrid::mc::LivenessError();
     }
 
     /* Pair already visited ? stop the exploration on the current path */
@@ -430,7 +428,6 @@ int LivenessChecker::main(void)
 
   XBT_INFO("No property violation found.");
   simgrid::mc::session->logState();
-  return SIMGRID_MC_EXIT_SUCCESS;
 }
 
 std::shared_ptr<Pair> LivenessChecker::newPair(Pair* current_pair, xbt_automaton_state_t state, std::shared_ptr<const std::vector<int>> propositions)
@@ -479,7 +476,7 @@ void LivenessChecker::backtrack()
   }
 }
 
-int LivenessChecker::run()
+void LivenessChecker::run()
 {
   XBT_INFO("Check the liveness property %s", _sg_mc_property_file);
   MC_automaton_load(_sg_mc_property_file);
@@ -488,9 +485,7 @@ int LivenessChecker::run()
   simgrid::mc::session->initialize();
   this->prepare();
 
-  int res = this->main();
-
-  return res;
+  this->main();
 }
 
 Checker* createLivenessChecker(Session& session)

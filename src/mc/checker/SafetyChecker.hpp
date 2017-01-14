@@ -24,13 +24,13 @@ class XBT_PRIVATE SafetyChecker : public Checker {
 public:
   SafetyChecker(Session& session);
   ~SafetyChecker();
-  int run() override;
+  void run() override;
   RecordTrace getRecordTrace() override;
   std::vector<std::string> getTextualTrace() override;
   void logState() override;
 private:
   bool checkNonTermination(simgrid::mc::State* current_state);
-  int backtrack();
+  void backtrack();
   void restoreState();
 private:
   /** Stack representing the position in the exploration graph */

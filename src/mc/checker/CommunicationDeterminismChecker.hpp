@@ -23,12 +23,12 @@ class XBT_PRIVATE CommunicationDeterminismChecker : public Checker {
 public:
   CommunicationDeterminismChecker(Session& session);
   ~CommunicationDeterminismChecker();
-  int run() override;
+  void run() override;
   RecordTrace getRecordTrace() override;
   std::vector<std::string> getTextualTrace() override;
 private:
   void prepare();
-  int main();
+  void main();
   void logState() override;
   void deterministic_comm_pattern(int process, simgrid::mc::PatternCommunication* comm, int backtracking);
   void restoreState();

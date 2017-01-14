@@ -77,7 +77,16 @@ int main(int argc, char** argv)
 
     simgrid::mc::session = session.get();
     std::unique_ptr<simgrid::mc::Checker> checker = createChecker(*session);
-    int res = checker->run();
+    int res = SIMGRID_MC_EXIT_SUCCESS;
+    try {
+      checker->run();
+    } catch (simgrid::mc::DeadlockError& de) {
+      res = SIMGRID_MC_EXIT_DEADLOCK;
+    } catch (simgrid::mc::TerminationError& te) {
+      res = SIMGRID_MC_EXIT_NON_TERMINATION;
+    } catch (simgrid::mc::LivenessError& le) {
+      res = SIMGRID_MC_EXIT_LIVENESS;
+    }
     checker = nullptr;
     session->close();
     return res;

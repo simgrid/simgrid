@@ -43,7 +43,7 @@ public:
   virtual ~Checker();
 
   /** Main function of this algorithm */
-  virtual int run() = 0;
+  virtual void run() = 0;
 
   /* These methods are callbacks called by the model-checking engine
    * to get and display information about the current state of the

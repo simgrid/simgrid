@@ -93,7 +93,7 @@ void SafetyChecker::logState() // override
   XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);
 }
 
-int SafetyChecker::run()
+void SafetyChecker::run()
 {
   /* This function runs the DFS algorithm the state space.
    * We do so iteratively instead of recursively, dealing with the call stack manually.
@@ -113,11 +113,8 @@ int SafetyChecker::run()
     // Backtrack if we reached the maximum depth
     if (stack_.size() > (std::size_t)_sg_mc_max_depth) {
       XBT_WARN("/!\\ Max depth reached ! /!\\ ");
-      int res = this->backtrack();
-      if (res)
-        return res;
-      else
-        continue;
+      this->backtrack();
+      continue;
     }
 
     // Backtrack if we are revisiting a state we saw previously
@@ -126,11 +123,8 @@ int SafetyChecker::run()
                 visitedState_->other_num == -1 ? visitedState_->num : visitedState_->other_num);
 
       visitedState_ = nullptr;
-      int res       = this->backtrack();
-      if (res)
-        return res;
-      else
-        continue;
+      this->backtrack();
+      continue;
     }
 
     smx_simcall_t req = MC_state_get_request(state);
@@ -138,11 +132,8 @@ int SafetyChecker::run()
     if (req == nullptr) {
       XBT_DEBUG("There are no more processes to interleave. (depth %zi)", stack_.size() + 1);
 
-      int res = this->backtrack();
-      if (res)
-        return res;
-      else
-        continue;
+      this->backtrack();
+      continue;
     }
 
     // If there are processes to interleave and the maximum depth has not been
@@ -166,7 +157,7 @@ int SafetyChecker::run()
 
     if (_sg_mc_termination && this->checkNonTermination(next_state.get())) {
         MC_show_non_termination();
-        return SIMGRID_MC_EXIT_NON_TERMINATION;
+        throw simgrid::mc::TerminationError();
     }
 
     /* Check whether we already explored next_state in the past (but only if interested in state-equality reduction) */
@@ -198,17 +189,16 @@ int SafetyChecker::run()
 
   XBT_INFO("No property violation found.");
   simgrid::mc::session->logState();
-  return SIMGRID_MC_EXIT_SUCCESS;
 }
 
-int SafetyChecker::backtrack()
+void SafetyChecker::backtrack()
 {
   stack_.pop_back();
 
   /* Check for deadlocks */
   if (mc_model_checker->checkDeadlock()) {
     MC_show_deadlock();
-    return SIMGRID_MC_EXIT_DEADLOCK;
+    throw simgrid::mc::DeadlockError();
   }
 
   /* Traverse the stack backwards until a state with a non empty interleave
@@ -286,7 +276,6 @@ int SafetyChecker::backtrack()
         state->num, stack_.size() + 1);
     }
   }
-  return SIMGRID_MC_EXIT_SUCCESS;
 }
 
 void SafetyChecker::restoreState()
