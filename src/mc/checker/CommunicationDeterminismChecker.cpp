@@ -307,10 +307,7 @@ CommunicationDeterminismChecker::CommunicationDeterminismChecker(Session& sessio
 
 }
 
-CommunicationDeterminismChecker::~CommunicationDeterminismChecker()
-{
-
-}
+CommunicationDeterminismChecker::~CommunicationDeterminismChecker() = default;
 
 RecordTrace CommunicationDeterminismChecker::getRecordTrace() // override
 {
@@ -361,20 +358,18 @@ void CommunicationDeterminismChecker::logState() // override
 
 void CommunicationDeterminismChecker::prepare()
 {
-
-  int i;
   const int maxpid = MC_smx_get_maxpid();
 
   // Create initial_communications_pattern elements:
   initial_communications_pattern = simgrid::xbt::newDeleteDynar<simgrid::mc::PatternCommunicationList*>();
-  for (i=0; i < maxpid; i++){
+  for (int i = 0; i < maxpid; i++) {
     simgrid::mc::PatternCommunicationList* process_list_pattern = new simgrid::mc::PatternCommunicationList();
     xbt_dynar_insert_at(initial_communications_pattern, i, &process_list_pattern);
   }
 
   // Create incomplete_communications_pattern elements:
   incomplete_communications_pattern = xbt_dynar_new(sizeof(xbt_dynar_t), xbt_dynar_free_voidp);
-  for (i=0; i < maxpid; i++){
+  for (int i = 0; i < maxpid; i++) {
     xbt_dynar_t process_pattern = xbt_dynar_new(sizeof(simgrid::mc::PatternCommunication*), nullptr);
     xbt_dynar_insert_at(incomplete_communications_pattern, i, &process_pattern);
   }
@@ -596,12 +591,6 @@ void CommunicationDeterminismChecker::run()
   simgrid::mc::session->initialize();
 
   this->prepare();
-
-  this->initial_communications_pattern_done = 0;
-  this->recv_deterministic = 1;
-  this->send_deterministic = 1;
-  this->recv_diff = nullptr;
-  this->send_diff = nullptr;
 
   this->main();
 }

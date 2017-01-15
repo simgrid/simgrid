@@ -44,9 +44,9 @@ private:
   simgrid::mc::VisitedStates visitedStates_;
   unsigned long expandedStatesCount_ = 0;
 
-  int initial_communications_pattern_done = 0;
-  int recv_deterministic = 0;
-  int send_deterministic = 0;
+  bool initial_communications_pattern_done = false;
+  bool recv_deterministic                  = true;
+  bool send_deterministic                  = true;
   char *send_diff = nullptr;
   char *recv_diff = nullptr;
 };

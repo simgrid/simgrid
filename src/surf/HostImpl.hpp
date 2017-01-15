@@ -63,7 +63,7 @@ public:
 class HostImpl : public simgrid::surf::PropertyHolder {
 
 public:
-  HostImpl(s4u::Host* host);
+  explicit HostImpl(s4u::Host* host);
   virtual ~HostImpl();
 
 public:
