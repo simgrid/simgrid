@@ -156,22 +156,6 @@ void LivenessChecker::removeAcceptancePair(int pair_num)
     }
 }
 
-void LivenessChecker::prepare(void)
-{
-  this->previousPair_ = 0;
-
-  std::shared_ptr<const std::vector<int>> propos = this->getPropositionValues();
-
-  // For each initial state of the property automaton, push a
-  // (application_state, automaton_state) pair to the exploration stack:
-  unsigned int cursor = 0;
-  xbt_automaton_state_t automaton_state;
-  xbt_dynar_foreach(simgrid::mc::property_automaton->states, cursor, automaton_state)
-    if (automaton_state->type == -1)
-      explorationStack_.push_back(this->newPair(nullptr, automaton_state, propos));
-}
-
-
 void LivenessChecker::replay()
 {
   XBT_DEBUG("**** Begin Replay ****");
@@ -332,8 +316,74 @@ std::vector<std::string> LivenessChecker::getTextualTrace() // override
   return trace;
 }
 
-void LivenessChecker::main(void)
+std::shared_ptr<Pair> LivenessChecker::newPair(Pair* current_pair, xbt_automaton_state_t state,
+                                               std::shared_ptr<const std::vector<int>> propositions)
 {
+  std::shared_ptr<Pair> next_pair = std::make_shared<Pair>(++expandedPairsCount_);
+  next_pair->automaton_state      = state;
+  next_pair->graph_state          = std::shared_ptr<simgrid::mc::State>(new simgrid::mc::State(++expandedStatesCount_));
+  next_pair->atomic_propositions  = std::move(propositions);
+  if (current_pair)
+    next_pair->depth = current_pair->depth + 1;
+  else
+    next_pair->depth = 1;
+  /* Get enabled actors and insert them in the interleave set of the next graph_state */
+  for (auto& actor : mc_model_checker->process().actors())
+    if (simgrid::mc::actor_is_enabled(actor.copy.getBuffer()))
+      next_pair->graph_state->interleave(actor.copy.getBuffer());
+  next_pair->requests = next_pair->graph_state->interleaveSize();
+  /* FIXME : get search_cycle value for each accepting state */
+  if (next_pair->automaton_state->type == 1 || (current_pair && current_pair->search_cycle))
+    next_pair->search_cycle = true;
+  else
+    next_pair->search_cycle = false;
+  return next_pair;
+}
+
+void LivenessChecker::backtrack()
+{
+  /* Traverse the stack backwards until a pair with a non empty interleave
+     set is found, deleting all the pairs that have it empty in the way. */
+  while (!explorationStack_.empty()) {
+    std::shared_ptr<simgrid::mc::Pair> current_pair = explorationStack_.back();
+    explorationStack_.pop_back();
+    if (current_pair->requests > 0) {
+      /* We found a backtracking point */
+      XBT_DEBUG("Backtracking to depth %d", current_pair->depth);
+      explorationStack_.push_back(std::move(current_pair));
+      this->replay();
+      XBT_DEBUG("Backtracking done");
+      break;
+    } else {
+      XBT_DEBUG("Delete pair %d at depth %d", current_pair->num, current_pair->depth);
+      if (current_pair->automaton_state->type == 1)
+        this->removeAcceptancePair(current_pair->num);
+    }
+  }
+}
+
+void LivenessChecker::run()
+{
+  XBT_INFO("Check the liveness property %s", _sg_mc_property_file);
+  MC_automaton_load(_sg_mc_property_file);
+
+  XBT_DEBUG("Starting the liveness algorithm");
+  simgrid::mc::session->initialize();
+
+  /* Initialize */
+  this->previousPair_ = 0;
+
+  std::shared_ptr<const std::vector<int>> propos = this->getPropositionValues();
+
+  // For each initial state of the property automaton, push a
+  // (application_state, automaton_state) pair to the exploration stack:
+  unsigned int cursor = 0;
+  xbt_automaton_state_t automaton_state;
+  xbt_dynar_foreach (simgrid::mc::property_automaton->states, cursor, automaton_state)
+    if (automaton_state->type == -1)
+      explorationStack_.push_back(this->newPair(nullptr, automaton_state, propos));
+
+  /* Actually run the double DFS search for counter-examples */
   while (!explorationStack_.empty()){
     std::shared_ptr<Pair> current_pair = explorationStack_.back();
 
@@ -428,64 +478,6 @@ void LivenessChecker::main(void)
 
   XBT_INFO("No property violation found.");
   simgrid::mc::session->logState();
-}
-
-std::shared_ptr<Pair> LivenessChecker::newPair(Pair* current_pair, xbt_automaton_state_t state, std::shared_ptr<const std::vector<int>> propositions)
-{
-  std::shared_ptr<Pair> next_pair = std::make_shared<Pair>(++expandedPairsCount_);
-  next_pair->automaton_state = state;
-  next_pair->graph_state          = std::shared_ptr<simgrid::mc::State>(new simgrid::mc::State(++expandedStatesCount_));
-  next_pair->atomic_propositions = std::move(propositions);
-  if (current_pair)
-    next_pair->depth = current_pair->depth + 1;
-  else
-    next_pair->depth = 1;
-  /* Get enabled actors and insert them in the interleave set of the next graph_state */
-  for (auto& actor : mc_model_checker->process().actors())
-    if (simgrid::mc::actor_is_enabled(actor.copy.getBuffer()))
-      next_pair->graph_state->interleave(actor.copy.getBuffer());
-  next_pair->requests = next_pair->graph_state->interleaveSize();
-  /* FIXME : get search_cycle value for each accepting state */
-  if (next_pair->automaton_state->type == 1 ||
-      (current_pair && current_pair->search_cycle))
-    next_pair->search_cycle = true;
-  else
-    next_pair->search_cycle = false;
-  return next_pair;
-}
-
-void LivenessChecker::backtrack()
-{
-  /* Traverse the stack backwards until a pair with a non empty interleave
-     set is found, deleting all the pairs that have it empty in the way. */
-  while (!explorationStack_.empty()) {
-    std::shared_ptr<simgrid::mc::Pair> current_pair = explorationStack_.back();
-    explorationStack_.pop_back();
-    if (current_pair->requests > 0) {
-      /* We found a backtracking point */
-      XBT_DEBUG("Backtracking to depth %d", current_pair->depth);
-      explorationStack_.push_back(std::move(current_pair));
-      this->replay();
-      XBT_DEBUG("Backtracking done");
-      break;
-    } else {
-      XBT_DEBUG("Delete pair %d at depth %d", current_pair->num, current_pair->depth);
-      if (current_pair->automaton_state->type == 1)
-        this->removeAcceptancePair(current_pair->num);
-    }
-  }
-}
-
-void LivenessChecker::run()
-{
-  XBT_INFO("Check the liveness property %s", _sg_mc_property_file);
-  MC_automaton_load(_sg_mc_property_file);
-
-  XBT_DEBUG("Starting the liveness algorithm");
-  simgrid::mc::session->initialize();
-  this->prepare();
-
-  this->main();
 }
 
 Checker* createLivenessChecker(Session& session)

@@ -70,8 +70,6 @@ public:
   std::vector<std::string> getTextualTrace() override;
   void logState() override;
 private:
-  void main();
-  void prepare();
   int compare(simgrid::mc::VisitedPair* state1, simgrid::mc::VisitedPair* state2);
   std::shared_ptr<const std::vector<int>> getPropositionValues();
   std::shared_ptr<VisitedPair> insertAcceptancePair(simgrid::mc::Pair* pair);
