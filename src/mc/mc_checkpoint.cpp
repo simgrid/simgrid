@@ -32,12 +32,12 @@
 #include "src/mc/mc_private.h"
 #include <mc/mc.h>
 
-#include "src/mc/mc_snapshot.h"
+#include "src/mc/mc_hash.hpp"
 #include "src/mc/mc_mmu.h"
-#include "src/mc/mc_unw.h"
-#include "src/mc/mc_protocol.h"
 #include "src/mc/mc_smx.h"
-#include "mc_hash.hpp"
+#include "src/mc/mc_snapshot.h"
+#include "src/mc/mc_unw.h"
+#include "src/mc/remote/mc_protocol.h"
 
 #include "src/mc/RegionSnapshot.hpp"
 #include "src/mc/ObjectInformation.hpp"

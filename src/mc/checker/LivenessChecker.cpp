@@ -20,18 +20,18 @@
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 
-#include "src/mc/mc_request.h"
+#include "src/mc/Session.hpp"
+#include "src/mc/Transition.hpp"
 #include "src/mc/checker/LivenessChecker.hpp"
+#include "src/mc/mc_exit.h"
+#include "src/mc/mc_private.h"
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_record.h"
-#include "src/mc/mc_smx.h"
-#include "src/mc/Client.hpp"
-#include "src/mc/mc_private.h"
 #include "src/mc/mc_replay.h"
+#include "src/mc/mc_request.h"
 #include "src/mc/mc_safety.h"
-#include "src/mc/mc_exit.h"
-#include "src/mc/Transition.hpp"
-#include "src/mc/Session.hpp"
+#include "src/mc/mc_smx.h"
+#include "src/mc/remote/Client.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
                                 "Logging specific to algorithms for liveness properties verification");

@@ -33,11 +33,9 @@
 
 #if HAVE_MC
 #include "src/mc/mc_private.h"
-#include "src/mc/mc_protocol.h"
-#include "src/mc/Client.hpp"
-
+#include "src/mc/remote/Client.hpp"
+#include "src/mc/remote/mc_protocol.h"
 #include <stdlib.h>
-#include "src/mc/mc_protocol.h"
 #endif 
 
 #include "src/mc/mc_record.h"

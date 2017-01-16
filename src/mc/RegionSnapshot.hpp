@@ -15,10 +15,10 @@
 
 #include <xbt/base.h>
 
-#include "src/mc/RemotePtr.hpp"
-#include "src/mc/PageStore.hpp"
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/ChunkedData.hpp"
+#include "src/mc/PageStore.hpp"
+#include "src/mc/remote/RemotePtr.hpp"
 
 namespace simgrid {
 namespace mc {

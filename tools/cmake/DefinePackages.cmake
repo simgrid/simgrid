@@ -556,13 +556,16 @@ set(MC_SRC
   src/mc/checker/SafetyChecker.hpp
   src/mc/checker/LivenessChecker.cpp
   src/mc/checker/LivenessChecker.hpp
-  src/mc/RemotePtr.hpp
+  src/mc/remote/Channel.cpp
+  src/mc/remote/Channel.hpp
+  src/mc/remote/Client.cpp
+  src/mc/remote/Client.hpp
+  src/mc/remote/RemotePtr.hpp
+  src/mc/remote/mc_protocol.h
+  src/mc/remote/mc_protocol.cpp
+  
   src/mc/AddressSpace.hpp
   src/mc/AddressSpace.cpp
-  src/mc/Channel.cpp
-  src/mc/Channel.hpp
-  src/mc/Client.cpp
-  src/mc/Client.hpp
   src/mc/Frame.hpp
   src/mc/Frame.cpp
   src/mc/ModelChecker.hpp
@@ -617,8 +620,6 @@ set(MC_SRC
   src/mc/VisitedState.cpp
   src/mc/VisitedState.hpp
   src/mc/mc_client_api.cpp
-  src/mc/mc_protocol.h
-  src/mc/mc_protocol.cpp
   src/mc/mc_smx.h
   src/mc/mc_smx.cpp
   src/mc/mc_xbt.hpp

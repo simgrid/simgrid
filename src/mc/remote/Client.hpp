@@ -16,8 +16,8 @@
 
 #include <simgrid/simix.h>
 
-#include "src/mc/mc_protocol.h"
-#include "src/mc/Channel.hpp"
+#include "src/mc/remote/Channel.hpp"
+#include "src/mc/remote/mc_protocol.h"
 
 namespace simgrid {
 namespace mc {
@@ -31,6 +31,7 @@ private:
   bool active_ = false;
   Channel channel_;
   static std::unique_ptr<Client> client_;
+
 public:
   Client();
   explicit Client(int fd) : active_(true), channel_(fd) {}
@@ -42,20 +43,16 @@ public:
   void ignoreMemory(void* addr, std::size_t size);
   void ignoreHeap(void* addr, std::size_t size);
   void unignoreHeap(void* addr, std::size_t size);
-  void declareSymbol(const char *name, int* value);
+  void declareSymbol(const char* name, int* value);
 #if HAVE_UCONTEXT_H
-  void declareStack(void *stack, size_t size, smx_actor_t process, ucontext_t* context);
+  void declareStack(void* stack, size_t size, smx_actor_t process, ucontext_t* context);
 #endif
 
   // Singleton :/
   // TODO, remove the singleton antipattern.
   static Client* initialize();
-  static Client* get()
-  {
-    return client_.get();
-  }
+  static Client* get() { return client_.get(); }
 };
-
 }
 }
 

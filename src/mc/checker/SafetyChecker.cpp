@@ -14,18 +14,18 @@
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 
-#include "src/mc/mc_state.h"
-#include "src/mc/mc_request.h"
-#include "src/mc/mc_safety.h"
+#include "src/mc/Session.hpp"
+#include "src/mc/Transition.hpp"
+#include "src/mc/VisitedState.hpp"
+#include "src/mc/checker/SafetyChecker.hpp"
+#include "src/mc/mc_exit.h"
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_record.h"
+#include "src/mc/mc_request.h"
+#include "src/mc/mc_safety.h"
 #include "src/mc/mc_smx.h"
-#include "src/mc/Client.hpp"
-#include "src/mc/mc_exit.h"
-#include "src/mc/checker/SafetyChecker.hpp"
-#include "src/mc/VisitedState.hpp"
-#include "src/mc/Transition.hpp"
-#include "src/mc/Session.hpp"
+#include "src/mc/mc_state.h"
+#include "src/mc/remote/Client.hpp"
 
 #include "src/xbt/mmalloc/mmprivate.h"
 

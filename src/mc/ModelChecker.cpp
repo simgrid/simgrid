@@ -22,15 +22,15 @@
 #include "simgrid/sg_config.h"
 
 #include "src/mc/ModelChecker.hpp"
-#include "src/mc/PageStore.hpp"
 #include "src/mc/ModelChecker.hpp"
-#include "src/mc/mc_protocol.h"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_ignore.h"
-#include "src/mc/mc_exit.h"
-#include "src/mc/mc_record.h"
+#include "src/mc/PageStore.hpp"
 #include "src/mc/Transition.hpp"
 #include "src/mc/checker/Checker.hpp"
+#include "src/mc/mc_exit.h"
+#include "src/mc/mc_ignore.h"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_record.h"
+#include "src/mc/remote/mc_protocol.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ModelChecker, mc, "ModelChecker");
 

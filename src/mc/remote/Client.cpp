@@ -4,25 +4,25 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstdlib>
 #include <cerrno>
+#include <cstdlib>
 
-#include <sys/types.h>
 #include <sys/ptrace.h>
 #include <sys/socket.h>
+#include <sys/types.h>
 
 #include <xbt/log.h>
-#include <xbt/sysdep.h>
 #include <xbt/mmalloc.h>
 #include <xbt/swag.h>
+#include <xbt/sysdep.h>
 
 #include <simgrid/modelchecker.h>
 
 #include "src/internal_config.h"
 
-#include "src/mc/mc_protocol.h"
-#include "src/mc/Client.hpp"
 #include "src/mc/mc_request.h"
+#include "src/mc/remote/Client.hpp"
+#include "src/mc/remote/mc_protocol.h"
 
 // We won't need those once the separation MCer/MCed is complete:
 #include "src/mc/mc_ignore.h"
@@ -52,7 +52,8 @@ Client* Client::initialize()
   char* fd_env = std::getenv(MC_ENV_SOCKET_FD);
   if (!fd_env)
     xbt_die("No MC socket passed in the environment");
-  int fd = xbt_str_parse_int(fd_env, bprintf("Variable %s should contain a number but contains '%%s'", MC_ENV_SOCKET_FD));
+  int fd =
+      xbt_str_parse_int(fd_env, bprintf("Variable %s should contain a number but contains '%%s'", MC_ENV_SOCKET_FD));
   XBT_DEBUG("Model-checked application found socket FD %i", fd);
 
   // Check the socket type/validity:
@@ -73,9 +74,9 @@ Client* Client::initialize()
 #elif defined BSD
   ptrace(PT_TRACE_ME, 0, nullptr, 0);
 #else
-# error "no ptrace equivalent coded for this platform"
+#error "no ptrace equivalent coded for this platform"
 #endif
-  if(errno != 0 || raise(SIGSTOP) != 0)
+  if (errno != 0 || raise(SIGSTOP) != 0)
     xbt_die("Could not wait for the model-checker");
 
   client_->handleMessages();
@@ -94,13 +95,12 @@ void Client::handleMessages()
       xbt_die("Could not receive commands from the model-checker");
 
     s_mc_message_t message;
-    if ((size_t) s < sizeof(message))
+    if ((size_t)s < sizeof(message))
       xbt_die("Received message is too small");
     memcpy(&message, message_buffer, sizeof(message));
     switch (message.type) {
 
-    case MC_MESSAGE_DEADLOCK_CHECK:
-      {
+      case MC_MESSAGE_DEADLOCK_CHECK: {
         // Check deadlock:
         bool deadlock = false;
         smx_actor_t actor;
@@ -110,38 +110,34 @@ void Client::handleMessages()
           {
             deadlock = false;
             break;
-            }
+          }
         }
 
         // Send result:
         s_mc_int_message_t answer;
-        answer.type = MC_MESSAGE_DEADLOCK_CHECK_REPLY;
+        answer.type  = MC_MESSAGE_DEADLOCK_CHECK_REPLY;
         answer.value = deadlock;
         if (channel_.send(answer))
           xbt_die("Could not send response");
-      }
-      break;
+      } break;
 
-    case MC_MESSAGE_CONTINUE:
-      return;
+      case MC_MESSAGE_CONTINUE:
+        return;
 
-    case MC_MESSAGE_SIMCALL_HANDLE:
-      {
+      case MC_MESSAGE_SIMCALL_HANDLE: {
         s_mc_simcall_handle_message_t message;
         if (s != sizeof(message))
           xbt_die("Unexpected size for SIMCALL_HANDLE");
         memcpy(&message, message_buffer, sizeof(message));
         smx_actor_t process = SIMIX_process_from_PID(message.pid);
         if (!process)
-          xbt_die("Invalid pid %lu", (unsigned long) message.pid);
+          xbt_die("Invalid pid %lu", (unsigned long)message.pid);
         SIMIX_simcall_handle(&process->simcall, message.value);
         if (channel_.send(MC_MESSAGE_WAITING))
           xbt_die("Could not send MESSAGE_WAITING to model-checker");
-      }
-      break;
+      } break;
 
-    case MC_MESSAGE_RESTORE:
-      {
+      case MC_MESSAGE_RESTORE: {
         s_mc_restore_message_t message;
         if (s != sizeof(message))
           xbt_die("Unexpected size for SIMCALL_HANDLE");
@@ -149,14 +145,10 @@ void Client::handleMessages()
 #if HAVE_SMPI
         smpi_really_switch_data_segment(message.index);
 #endif
-      }
-      break;
+      } break;
 
-    default:
-      xbt_die("Received unexpected message %s (%i)",
-        MC_message_type_name(message.type),
-        message.type
-      );
+      default:
+        xbt_die("Received unexpected message %s (%i)", MC_message_type_name(message.type), message.type);
     }
   }
 }
@@ -182,7 +174,7 @@ void Client::ignoreMemory(void* addr, std::size_t size)
 {
   s_mc_ignore_memory_message_t message;
   message.type = MC_MESSAGE_IGNORE_MEMORY;
-  message.addr = (std::uintptr_t) addr;
+  message.addr = (std::uintptr_t)addr;
   message.size = size;
   if (channel_.send(message))
     xbt_die("Could not send IGNORE_MEMORY mesage to model-checker");
@@ -193,19 +185,15 @@ void Client::ignoreHeap(void* address, std::size_t size)
   xbt_mheap_t heap = mmalloc_get_current_heap();
 
   s_mc_ignore_heap_message_t message;
-  message.type = MC_MESSAGE_IGNORE_HEAP;
+  message.type    = MC_MESSAGE_IGNORE_HEAP;
   message.address = address;
-  message.size = size;
-  message.block =
-   ((char *) address -
-    (char *) heap->heapbase) / BLOCKSIZE + 1;
+  message.size    = size;
+  message.block   = ((char*)address - (char*)heap->heapbase) / BLOCKSIZE + 1;
   if (heap->heapinfo[message.block].type == 0) {
     message.fragment = -1;
     heap->heapinfo[message.block].busy_block.ignore++;
   } else {
-    message.fragment =
-        ((uintptr_t) (ADDR2UINT(address) % (BLOCKSIZE))) >>
-        heap->heapinfo[message.block].type;
+    message.fragment = ((uintptr_t)(ADDR2UINT(address) % (BLOCKSIZE))) >> heap->heapinfo[message.block].type;
     heap->heapinfo[message.block].busy_frag.ignore[message.fragment]++;
   }
 
@@ -217,13 +205,13 @@ void Client::unignoreHeap(void* address, std::size_t size)
 {
   s_mc_ignore_memory_message_t message;
   message.type = MC_MESSAGE_UNIGNORE_HEAP;
-  message.addr = (std::uintptr_t) address;
+  message.addr = (std::uintptr_t)address;
   message.size = size;
   if (channel_.send(message))
     xbt_die("Could not send IGNORE_HEAP mesasge to model-checker");
 }
 
-void Client::declareSymbol(const char *name, int* value)
+void Client::declareSymbol(const char* name, int* value)
 {
   s_mc_register_symbol_message_t message;
   message.type = MC_MESSAGE_REGISTER_SYMBOL;
@@ -231,12 +219,12 @@ void Client::declareSymbol(const char *name, int* value)
     xbt_die("Symbol is too long");
   strncpy(message.name, name, sizeof(message.name));
   message.callback = nullptr;
-  message.data = value;
+  message.data     = value;
   if (channel_.send(message))
     xbt_die("Could send REGISTER_SYMBOL message to model-checker");
 }
 
-void Client::declareStack(void *stack, size_t size, smx_actor_t process, ucontext_t* context)
+void Client::declareStack(void* stack, size_t size, smx_actor_t process, ucontext_t* context)
 {
   xbt_mheap_t heap = mmalloc_get_current_heap();
 
@@ -244,23 +232,20 @@ void Client::declareStack(void *stack, size_t size, smx_actor_t process, ucontex
   memset(&region, 0, sizeof(region));
   region.address = stack;
   region.context = context;
-  region.size = size;
-  region.block =
-      ((char *) stack -
-       (char *) heap->heapbase) / BLOCKSIZE + 1;
+  region.size    = size;
+  region.block   = ((char*)stack - (char*)heap->heapbase) / BLOCKSIZE + 1;
 #if HAVE_SMPI
   if (smpi_privatize_global_variables && process)
     region.process_index = smpi_process_index_of_smx_process(process);
   else
 #endif
-  region.process_index = -1;
+    region.process_index = -1;
 
   s_mc_stack_region_message_t message;
-  message.type = MC_MESSAGE_STACK_REGION;
+  message.type         = MC_MESSAGE_STACK_REGION;
   message.stack_region = region;
   if (channel_.send(message))
     xbt_die("Coule not send STACK_REGION to model-checker");
 }
-
 }
 }

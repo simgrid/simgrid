@@ -61,7 +61,7 @@ typedef enum {
 struct s_mc_message {
   e_mc_message_type type;
 };
-typedef struct s_mc_message  s_mc_message_t;
+typedef struct s_mc_message s_mc_message_t;
 typedef struct s_mc_message* mc_message_t;
 
 struct s_mc_int_message {
@@ -75,10 +75,10 @@ struct s_mc_ignore_heap_message {
   e_mc_message_type type;
   int block;
   int fragment;
-  void *address;
+  void* address;
   size_t size;
 };
-typedef struct s_mc_ignore_heap_message  s_mc_ignore_heap_message_t;
+typedef struct s_mc_ignore_heap_message s_mc_ignore_heap_message_t;
 typedef struct s_mc_ignore_heap_message* mc_ignore_heap_message_t;
 
 struct s_mc_ignore_memory_message {
@@ -86,14 +86,14 @@ struct s_mc_ignore_memory_message {
   uint64_t addr;
   size_t size;
 };
-typedef struct s_mc_ignore_memory_message  s_mc_ignore_memory_message_t;
+typedef struct s_mc_ignore_memory_message s_mc_ignore_memory_message_t;
 typedef struct s_mc_ignore_memory_message* mc_ignore_memory_message_t;
 
 struct s_mc_stack_region_message {
   e_mc_message_type type;
   s_stack_region_t stack_region;
 };
-typedef struct s_mc_stack_region_message  s_mc_stack_region_message_t;
+typedef struct s_mc_stack_region_message s_mc_stack_region_message_t;
 typedef struct s_mc_stack_region_message* mc_stack_region_message_t;
 
 struct s_mc_simcall_handle_message {
@@ -101,7 +101,7 @@ struct s_mc_simcall_handle_message {
   unsigned long pid;
   int value;
 };
-typedef struct s_mc_simcall_handle_message  s_mc_simcall_handle_message_t;
+typedef struct s_mc_simcall_handle_message s_mc_simcall_handle_message_t;
 typedef struct s_mc_simcall_handle_message* mc_simcall_handle_message;
 
 struct s_mc_register_symbol_message {
@@ -110,14 +110,14 @@ struct s_mc_register_symbol_message {
   int (*callback)(void*);
   void* data;
 };
-typedef struct s_mc_register_symbol_message  s_mc_register_symbol_message_t;
+typedef struct s_mc_register_symbol_message s_mc_register_symbol_message_t;
 typedef struct s_mc_register_symbol_message* mc_register_symbol_message_t;
 
 struct s_mc_restore_message {
   e_mc_message_type type;
   int index;
 };
-typedef struct s_mc_restore_message  s_mc_restore_message_t;
+typedef struct s_mc_restore_message s_mc_restore_message_t;
 typedef struct s_mc_restore_message* mc_restore_message_t;
 
 XBT_PRIVATE const char* MC_message_type_name(e_mc_message_type type);

@@ -23,7 +23,9 @@
 #include <xbt/mmalloc.h>
 
 #include "src/xbt/mmalloc/mmprivate.h"
-#include "src/mc/Channel.hpp"
+
+#include "src/mc/remote/Channel.hpp"
+#include "src/mc/remote/RemotePtr.hpp"
 
 #include <simgrid/simix.h>
 #include "src/simix/popping_private.h"
@@ -31,13 +33,11 @@
 
 #include "src/xbt/memory_map.hpp"
 
-#include "src/mc/mc_forward.hpp"
-#include "src/mc/mc_base.h"
-#include "src/mc/RemotePtr.hpp"
 #include "src/mc/AddressSpace.hpp"
-#include "src/mc/mc_protocol.h"
 #include "src/mc/ObjectInformation.hpp"
-
+#include "src/mc/mc_base.h"
+#include "src/mc/mc_forward.hpp"
+#include "src/mc/remote/mc_protocol.h"
 
 namespace simgrid {
 namespace mc {

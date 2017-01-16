@@ -11,12 +11,12 @@
 
 #include <dlfcn.h>
 
-#include "src/mc/mc_base.h"
 #include "mmprivate.h"
-#include "src/xbt_modinter.h"
 #include "src/internal_config.h"
+#include "src/mc/mc_base.h"
+#include "src/mc/remote/mc_protocol.h"
+#include "src/xbt_modinter.h"
 #include <math.h>
-#include "src/mc/mc_protocol.h"
 
 /* ***** Whether to use `mmalloc` of the underlying malloc ***** */
 

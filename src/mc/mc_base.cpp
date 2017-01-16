@@ -14,11 +14,11 @@
 
 #include <simgrid/simix.h>
 
-#include "src/mc/mc_base.h"
-#include "src/simix/smx_private.h"
-#include "src/mc/mc_replay.h"
 #include "mc/mc.h"
-#include "src/mc/mc_protocol.h"
+#include "src/mc/mc_base.h"
+#include "src/mc/mc_replay.h"
+#include "src/mc/remote/mc_protocol.h"
+#include "src/simix/smx_private.h"
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/activity/SynchroIo.hpp"

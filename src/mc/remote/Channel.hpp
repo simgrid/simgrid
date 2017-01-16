@@ -11,7 +11,7 @@
 
 #include <type_traits>
 
-#include "src/mc/mc_protocol.h"
+#include "src/mc/remote/mc_protocol.h"
 
 namespace simgrid {
 namespace mc {
@@ -23,13 +23,12 @@ namespace mc {
  */
 class Channel {
   int socket_ = -1;
-  template<class M>
-  static constexpr bool messageType()
+  template <class M> static constexpr bool messageType()
   {
     return std::is_class<M>::value && std::is_trivial<M>::value;
   }
-public:
 
+public:
   Channel() {}
   explicit Channel(int sock) : socket_(sock) {}
   ~Channel();
@@ -39,14 +38,11 @@ public:
   Channel& operator=(Channel const&) = delete;
 
   // Move:
-  Channel(Channel&& that) : socket_(that.socket_)
-  {
-    that.socket_ = -1;
-  }
+  Channel(Channel&& that) : socket_(that.socket_) { that.socket_ = -1; }
   Channel& operator=(Channel&& that)
   {
     this->socket_ = that.socket_;
-    that.socket_ = -1;
+    that.socket_  = -1;
     return *this;
   }
 
@@ -54,32 +50,23 @@ public:
   int send(const void* message, size_t size) const;
   int send(e_mc_message_type type) const
   {
-    s_mc_message message = { type };
+    s_mc_message message = {type};
     return this->send(&message, sizeof(message));
   }
-  template<class M>
-  typename std::enable_if< messageType<M>(), int >::type
-  send(M const& m) const
+  template <class M> typename std::enable_if<messageType<M>(), int>::type send(M const& m) const
   {
     return this->send(&m, sizeof(M));
   }
 
   // Receive
   ssize_t receive(void* message, size_t size, bool block = true) const;
-  template<class M>
-  typename std::enable_if< messageType<M>(), ssize_t >::type
-  receive(M& m) const
+  template <class M> typename std::enable_if<messageType<M>(), ssize_t>::type receive(M& m) const
   {
     return this->receive(&m, sizeof(M));
   }
 
-  int getSocket() const
-  {
-    return socket_;
-  }
-
+  int getSocket() const { return socket_; }
 };
-
 }
 }
 
