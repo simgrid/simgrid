@@ -12,9 +12,10 @@
 #include <string>
 #include <vector>
 
-#include "src/mc/mc_forward.hpp"
-#include "src/mc/checker/Checker.hpp"
 #include "src/mc/VisitedState.hpp"
+#include "src/mc/checker/Checker.hpp"
+#include "src/mc/mc_forward.hpp"
+#include "src/mc/mc_safety.h"
 
 namespace simgrid {
 namespace mc {

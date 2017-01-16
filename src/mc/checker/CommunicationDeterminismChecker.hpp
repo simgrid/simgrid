@@ -9,9 +9,10 @@
 #include <string>
 #include <vector>
 
-#include "src/mc/mc_forward.hpp"
-#include "src/mc/checker/Checker.hpp"
 #include "src/mc/VisitedState.hpp"
+#include "src/mc/checker/Checker.hpp"
+#include "src/mc/mc_comm_pattern.h"
+#include "src/mc/mc_forward.hpp"
 
 #ifndef SIMGRID_MC_COMMUNICATION_DETERMINISM_CHECKER_HPP
 #define SIMGRID_MC_COMMUNICATION_DETERMINISM_CHECKER_HPP
