@@ -133,7 +133,7 @@ void SIMIX_process_cleanup(smx_actor_t process)
   }
 
   XBT_DEBUG("%p should not be run anymore",process);
-  xbt_swag_remove(process, simix_global->process_list);
+  simix_global->process_list.erase(process->pid);
   if (process->host)
     xbt_swag_remove(process, sg_host_simix(process->host)->process_list);
   xbt_swag_insert(process, simix_global->process_to_destroy);
@@ -279,7 +279,7 @@ smx_actor_t SIMIX_process_create(
     XBT_DEBUG("Start context '%s'", process->name.c_str());
 
     /* Now insert it in the global process list and in the process to run list */
-    xbt_swag_insert(process, simix_global->process_list);
+    simix_global->process_list[process->pid] = process;
     XBT_DEBUG("Inserting %s(%s) in the to_run list", process->cname(), host->cname());
     xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, process);
 
@@ -357,7 +357,7 @@ smx_actor_t SIMIX_process_attach(
   xbt_swag_insert(process, sg_host_simix(host)->process_list);
 
   /* Now insert it in the global process list and in the process to run list */
-  xbt_swag_insert(process, simix_global->process_list);
+  simix_global->process_list[process->pid] = process;
   XBT_DEBUG("Inserting %s(%s) in the to_run list", process->cname(), host->cname());
   xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, process);
 
@@ -540,13 +540,9 @@ void simcall_HANDLER_process_killall(smx_simcall_t simcall, int reset_pid) {
  */
 void SIMIX_process_killall(smx_actor_t issuer, int reset_pid)
 {
-  smx_actor_t p = nullptr;
-
-  while ((p = (smx_actor_t) xbt_swag_extract(simix_global->process_list))) {
-    if (p != issuer) {
-      SIMIX_process_kill(p,issuer);
-    }
-  }
+  for (auto kv : simix_global->process_list)
+    if (kv.second != issuer)
+      SIMIX_process_kill(kv.second, issuer);
 
   if (reset_pid > 0)
     simix_process_maxpid = reset_pid;
@@ -630,7 +626,7 @@ int SIMIX_process_get_maxpid() {
 
 int SIMIX_process_count()
 {
-  return xbt_swag_size(simix_global->process_list);
+  return simix_global->process_list.size();
 }
 
 int SIMIX_process_get_PID(smx_actor_t self)
@@ -681,11 +677,9 @@ const char* SIMIX_process_self_get_name() {
 
 smx_actor_t SIMIX_process_get_by_name(const char* name)
 {
-  smx_actor_t proc;
-  xbt_swag_foreach(proc, simix_global->process_list) {
-    if (proc->name == name)
-      return proc;
-  }
+  for (auto kv : simix_global->process_list)
+    if (kv.second->name == name)
+      return kv.second;
   return nullptr;
 }
 
@@ -874,19 +868,16 @@ xbt_dynar_t SIMIX_process_get_runnable()
  */
 smx_actor_t SIMIX_process_from_PID(int PID)
 {
-  smx_actor_t proc;
-  xbt_swag_foreach(proc, simix_global->process_list) {
-   if (proc->pid == static_cast<unsigned long> (PID))
-    return proc;
-  }
-  return nullptr;
+  if (simix_global->process_list.find(PID) == simix_global->process_list.end())
+    return nullptr;
+  return simix_global->process_list.at(PID);
 }
 
 /** @brief returns a dynar containing all currently existing processes */
 xbt_dynar_t SIMIX_processes_as_dynar() {
-  smx_actor_t proc;
   xbt_dynar_t res = xbt_dynar_new(sizeof(smx_actor_t),nullptr);
-  xbt_swag_foreach(proc, simix_global->process_list) {
+  for (auto kv : simix_global->process_list) {
+    smx_actor_t proc = kv.second;
     xbt_dynar_push(res,&proc);
   }
   return res;

@@ -206,7 +206,6 @@ void SIMIX_global_init(int *argc, char **argv)
     simgrid::simix::ActorImpl proc;
     simix_global->process_to_run = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
     simix_global->process_that_ran = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
-    simix_global->process_list = xbt_swag_new(xbt_swag_offset(proc, process_hookup));
     simix_global->process_to_destroy = xbt_swag_new(xbt_swag_offset(proc, destroy_hookup));
     simix_global->maestro_process = nullptr;
     simix_global->create_process_function = &SIMIX_process_create;
@@ -300,8 +299,7 @@ void SIMIX_clean()
   xbt_dynar_free(&simix_global->process_to_run);
   xbt_dynar_free(&simix_global->process_that_ran);
   xbt_swag_free(simix_global->process_to_destroy);
-  xbt_swag_free(simix_global->process_list);
-  simix_global->process_list = nullptr;
+  simix_global->process_list.clear();
   simix_global->process_to_destroy = nullptr;
 
   xbt_os_mutex_destroy(simix_global->mutex);
@@ -516,7 +514,7 @@ void SIMIX_run()
     }
 
     time = SIMIX_timer_next();
-    if (time > -1.0 || xbt_swag_size(simix_global->process_list) != 0) {
+    if (time > -1.0 || simix_global->process_list.empty() == false) {
       XBT_DEBUG("Calling surf_solve");
       time = surf_solve(time);
       XBT_DEBUG("Moving time ahead : %g", time);
@@ -548,12 +546,12 @@ void SIMIX_run()
     XBT_DEBUG("### time %f, empty %d", time, xbt_dynar_is_empty(simix_global->process_to_run));
 
     if (xbt_dynar_is_empty(simix_global->process_to_run) &&
-        xbt_swag_size(simix_global->process_list) != 0)
+        !simix_global->process_list.empty())
     simgrid::simix::onDeadlock();
 
   } while (time > -1.0 || !xbt_dynar_is_empty(simix_global->process_to_run));
 
-  if (xbt_swag_size(simix_global->process_list) != 0) {
+  if (simix_global->process_list.size() != 0) {
 
     TRACE_end();
 
@@ -637,17 +635,13 @@ void SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t function)
 
 void SIMIX_display_process_status()
 {
-  if (simix_global->process_list == nullptr) {
-    return;
-  }
-
-  smx_actor_t process = nullptr;
-  int nbprocess = xbt_swag_size(simix_global->process_list);
+  int nbprocess = simix_global->process_list.size();
 
   XBT_INFO("%d processes are still running, waiting for something.", nbprocess);
   /*  List the process and their state */
   XBT_INFO("Legend of the following listing: \"Process <pid> (<name>@<host>): <status>\"");
-  xbt_swag_foreach(process, simix_global->process_list) {
+  for (auto kv : simix_global->process_list) {
+    smx_actor_t process = kv.second;
 
     if (process->waiting_synchro) {
 

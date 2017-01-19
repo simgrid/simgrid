@@ -39,7 +39,7 @@ Client* Client::initialize()
 {
   // We are not in MC mode:
   // TODO, handle this more gracefully.
-  if (!getenv(MC_ENV_SOCKET_FD))
+  if (!std::getenv(MC_ENV_SOCKET_FD))
     return nullptr;
 
   // Do not break if we are called multiple times:
@@ -89,13 +89,13 @@ void Client::handleMessages()
     XBT_DEBUG("Waiting messages from model-checker");
 
     char message_buffer[MC_MESSAGE_LENGTH];
-    ssize_t s;
+    ssize_t received_size;
 
-    if ((s = channel_.receive(&message_buffer, sizeof(message_buffer))) < 0)
+    if ((received_size = channel_.receive(&message_buffer, sizeof(message_buffer))) < 0)
       xbt_die("Could not receive commands from the model-checker");
 
     s_mc_message_t message;
-    if ((size_t)s < sizeof(message))
+    if ((size_t)received_size < sizeof(message))
       xbt_die("Received message is too small");
     memcpy(&message, message_buffer, sizeof(message));
     switch (message.type) {
@@ -103,22 +103,20 @@ void Client::handleMessages()
       case MC_MESSAGE_DEADLOCK_CHECK: {
         // Check deadlock:
         bool deadlock = false;
-        smx_actor_t actor;
-        if (xbt_swag_size(simix_global->process_list)) {
+        if (!simix_global->process_list.empty()) {
           deadlock = true;
-          xbt_swag_foreach(actor, simix_global->process_list) if (simgrid::mc::actor_is_enabled(actor))
-          {
-            deadlock = false;
-            break;
-          }
+          for (auto kv : simix_global->process_list)
+            if (simgrid::mc::actor_is_enabled(kv.second)) {
+              deadlock = false;
+              break;
+            }
         }
 
         // Send result:
         s_mc_int_message_t answer;
         answer.type  = MC_MESSAGE_DEADLOCK_CHECK_REPLY;
         answer.value = deadlock;
-        if (channel_.send(answer))
-          xbt_die("Could not send response");
+        xbt_assert(channel_.send(answer) == 0, "Could not send response");
       } break;
 
       case MC_MESSAGE_CONTINUE:
@@ -126,7 +124,7 @@ void Client::handleMessages()
 
       case MC_MESSAGE_SIMCALL_HANDLE: {
         s_mc_simcall_handle_message_t message;
-        if (s != sizeof(message))
+        if (received_size != sizeof(message))
           xbt_die("Unexpected size for SIMCALL_HANDLE");
         memcpy(&message, message_buffer, sizeof(message));
         smx_actor_t process = SIMIX_process_from_PID(message.pid);
@@ -139,7 +137,7 @@ void Client::handleMessages()
 
       case MC_MESSAGE_RESTORE: {
         s_mc_restore_message_t message;
-        if (s != sizeof(message))
+        if (received_size != sizeof(message))
           xbt_die("Unexpected size for SIMCALL_HANDLE");
         memcpy(&message, message_buffer, sizeof(message));
 #if HAVE_SMPI
@@ -157,8 +155,7 @@ void Client::mainLoop(void)
 {
   while (1) {
     simgrid::mc::wait_for_requests();
-    if (channel_.send(MC_MESSAGE_WAITING))
-      xbt_die("Could not send WAITING mesage to model-checker");
+    xbt_assert(channel_.send(MC_MESSAGE_WAITING) == 0, "Could not send WAITING message to model-checker");
     this->handleMessages();
   }
 }
@@ -208,7 +205,7 @@ void Client::unignoreHeap(void* address, std::size_t size)
   message.addr = (std::uintptr_t)address;
   message.size = size;
   if (channel_.send(message))
-    xbt_die("Could not send IGNORE_HEAP mesasge to model-checker");
+    xbt_die("Could not send IGNORE_HEAP message to model-checker");
 }
 
 void Client::declareSymbol(const char* name, int* value)

@@ -71,6 +71,29 @@ static void MC_process_refresh_simix_process_list(simgrid::mc::Process* process,
   assert(i == swag.count);
 }
 
+static void MC_process_refresh_simix_actor_dynar(simgrid::mc::Process* process,
+                                                 std::vector<simgrid::mc::ActorInformation>& target,
+                                                 simgrid::mc::RemotePtr<s_xbt_dynar_t> remote_dynar)
+{
+  target.clear();
+
+  s_xbt_dynar_t dynar;
+  process->read_bytes(&dynar, sizeof(dynar), remote_dynar);
+
+  smx_actor_t* data = (smx_actor_t*)malloc(dynar.elmsize * dynar.used);
+  process->read_bytes(data, dynar.elmsize * dynar.used, dynar.data);
+
+  // Load each element of the vector from the MCed process:
+  for (unsigned int i = 0; i < dynar.used; ++i) {
+
+    simgrid::mc::ActorInformation info;
+    info.address  = data[i];
+    info.hostname = nullptr;
+    process->read_bytes(&info.copy, sizeof(info.copy), remote(data[i]));
+    target.push_back(std::move(info));
+  }
+  free(data);
+}
 namespace simgrid {
 namespace mc {
 
@@ -96,7 +119,7 @@ void Process::refresh_simix()
   Remote<simgrid::simix::Global> simix_global =
     this->read<simgrid::simix::Global>(simix_global_p);
 
-  MC_process_refresh_simix_process_list(this, this->smx_actors_infos, remote(simix_global.getBuffer()->process_list));
+  MC_process_refresh_simix_actor_dynar(this, this->smx_actors_infos, remote(simix_global.getBuffer()->actors_vector));
   MC_process_refresh_simix_process_list(this, this->smx_dead_actors_infos,
                                         remote(simix_global.getBuffer()->process_to_destroy));
 

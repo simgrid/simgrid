@@ -97,9 +97,10 @@ void MC_run()
   simgrid::mc::processes_time.resize(SIMIX_process_get_maxpid());
   MC_ignore_heap(simgrid::mc::processes_time.data(),
     simgrid::mc::processes_time.size() * sizeof(simgrid::mc::processes_time[0]));
-  smx_actor_t process;
-  xbt_swag_foreach(process, simix_global->process_list)
-    MC_ignore_heap(&(process->process_hookup), sizeof(process->process_hookup));
+  for (auto kv : simix_global->process_list) {
+    smx_actor_t actor = kv.second;
+    MC_ignore_heap(&(actor->process_hookup), sizeof(actor->process_hookup));
+  }
   simgrid::mc::Client::get()->mainLoop();
   simgrid::mc::processes_time.clear();
 }

@@ -10,6 +10,8 @@
 #include <signal.h>
 #include "src/kernel/context/Context.hpp"
 
+#include <map>
+
 /********************************** Simix Global ******************************/
 
 namespace simgrid {
@@ -20,7 +22,17 @@ public:
   smx_context_factory_t context_factory = nullptr;
   xbt_dynar_t process_to_run = nullptr;
   xbt_dynar_t process_that_ran = nullptr;
-  xbt_swag_t process_list = nullptr;
+  std::map<int, smx_actor_t> process_list = std::map<int, smx_actor_t>();
+#if HAVE_MC
+  /* MCer cannot read the std::map above in the remote process, so we copy the info it needs in a dynar.
+   * FIXME: This is supposed to be a temporary hack.
+   * A better solution would be to change the split between MCer and MCed, where the responsibility
+   *   to compute the list of the enabled transitions goes to the MCed.
+   * That way, the MCer would not need to have the list of actors on its side.
+   * These info could be published by the MCed to the MCer in a way inspired of vd.so
+   */
+  xbt_dynar_t actors_vector = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
+#endif
   xbt_swag_t process_to_destroy = nullptr;
   smx_actor_t maestro_process = nullptr;
 

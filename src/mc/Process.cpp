@@ -499,7 +499,7 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
   }
 
   if (pread_whole(this->memory_file, buffer, size, address.address()) < 0)
-    xbt_die("Read from process %lli failed", (long long) this->pid_);
+    xbt_die("Read at %p from process %lli failed", (void*)address.address(), (long long)this->pid_);
   return buffer;
 }
 

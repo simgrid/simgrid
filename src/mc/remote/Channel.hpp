@@ -53,6 +53,7 @@ public:
     s_mc_message message = {type};
     return this->send(&message, sizeof(message));
   }
+  /** @brief Send a message; returns 0 on success or errno on failure */
   template <class M> typename std::enable_if<messageType<M>(), int>::type send(M const& m) const
   {
     return this->send(&m, sizeof(M));

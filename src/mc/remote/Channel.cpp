@@ -25,6 +25,7 @@ Channel::~Channel()
     close(this->socket_);
 }
 
+/** @brief Send a message; returns 0 on success or errno on failure */
 int Channel::send(const void* message, size_t size) const
 {
   XBT_DEBUG("Send %s", MC_message_type_name(*(e_mc_message_type*)message));
