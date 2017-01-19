@@ -22,7 +22,7 @@ public:
   smx_context_factory_t context_factory = nullptr;
   xbt_dynar_t process_to_run = nullptr;
   xbt_dynar_t process_that_ran = nullptr;
-  std::map<int, smx_actor_t> process_list = std::map<int, smx_actor_t>();
+  std::map<int, smx_actor_t> process_list;
 #if HAVE_MC
   /* MCer cannot read the std::map above in the remote process, so we copy the info it needs in a dynar.
    * FIXME: This is supposed to be a temporary hack.
