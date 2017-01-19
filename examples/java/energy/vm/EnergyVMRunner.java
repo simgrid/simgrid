@@ -55,16 +55,16 @@ public class EnergyVMRunner extends Process {
     vmHost3.start();
 
     Msg.info("Create two tasks on Host1: one inside a VM, the other directly on the host");
-    new DummyProcess (vmHost1, "p11"); 
-    new DummyProcess (host1, "p12"); 
+    new DummyProcess (vmHost1, "p11").start(); 
+    new DummyProcess (host1, "p12").start(); 
 
     Msg.info("Create two tasks on Host2: both directly on the host");
-    new DummyProcess (host2, "p21"); 
-    new DummyProcess (host2, "p22"); 
+    new DummyProcess (host2, "p21").start(); 
+    new DummyProcess (host2, "p22").start(); 
 
     Msg.info("Create two tasks on Host3: both inside a VM");
-    new DummyProcess (vmHost3, "p31"); 
-    new DummyProcess (vmHost3, "p312"); 
+    new DummyProcess (vmHost3, "p31").start(); 
+    new DummyProcess (vmHost3, "p312").start(); 
 
     Msg.info("Wait 5 seconds. The tasks are still running (they run for 3 seconds, but 2 tasks are co-located, "
              + "so they run for 6 seconds)"); 
