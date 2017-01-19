@@ -49,6 +49,9 @@ set(trace_pingpong_sources     ${srcdir}/Main.java  ${srcdir}/PingPongTask.java 
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/energy/consumption)
 set(energy_consumption_sources ${srcdir}/Main.java  ${srcdir}/EnergyConsumer.java)
 
+set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/energy/pstate)
+set(energy_pstate_sources      ${srcdir}/Main.java  ${srcdir}/PstateRunner.java)
+
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/energy/vm)
 set(energy_vm_sources          ${srcdir}/Main.java  ${srcdir}/EnergyVMRunner.java)
 
@@ -74,7 +77,7 @@ set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/task/priority)
 set(task_priority_sources      ${srcdir}/Main.java  ${srcdir}/Test.java)
 
 foreach (example app_bittorrent app_centralizedmutex app_masterworker app_pingpong app_tokenring async_waitall async_dsend
-         cloud_migration cloud_masterworker dht_chord dht_kademlia energy_consumption energy_vm io_file io_storage 
+         cloud_migration cloud_masterworker dht_chord dht_kademlia energy_consumption energy_pstate energy_vm io_file io_storage 
          process_kill process_migration process_startkilltime process_suspend task_priority trace_pingpong)
   string (REPLACE "_" "/" example_dir ${example})
   if(enable_java)
@@ -108,10 +111,9 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/bittorrent/bi
 
 if(enable_java)
   foreach (example app_bittorrent app_centralizedmutex app_masterworker app_pingpong app_tokenring async_waitall async_dsend
-           cloud_migration cloud_masterworker dht_chord dht_kademlia energy_consumption energy_vm io_file io_storage 
+           cloud_migration cloud_masterworker dht_chord dht_kademlia energy_consumption energy_pstate energy_vm io_file io_storage 
            process_kill process_migration process_startkilltime process_suspend task_priority trace_pingpong)
     string (REPLACE "_" "/" example_dir ${example})
-    ADD_TESH(java-${example}  --setenv
-srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/${example_dir}/${example}.tesh)
+    ADD_TESH(java-${example}  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/${example_dir}/${example}.tesh)
   endforeach()
 endif()

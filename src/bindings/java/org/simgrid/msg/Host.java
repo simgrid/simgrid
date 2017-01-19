@@ -136,6 +136,17 @@ public class Host {
 
 	/** Returns the amount of Joules consumed by that host so far */
 	public native double getConsumedEnergy();
+	
+	/** Returns the current pstate */
+	public native int getPstate();
+	/** Changes the current pstate */
+	public native void setPstate(int pstate);
+	public native int getPstatesCount();
+	/** Returns the speed of the processor (in flop/s) at the current pstate. See also @ref SURF_plugin_energy. */
+	public native double getCurrentPowerPeak();
+	/** Returns the speed of the processor (in flop/s) at a given pstate. See also @ref SURF_plugin_energy. */
+	public native double getPowerPeakAt(int pstate);
+	
 
 	/** Class initializer, to initialize various JNI stuff */
 	public static native void nativeInit();

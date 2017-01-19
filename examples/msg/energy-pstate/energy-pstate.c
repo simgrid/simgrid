@@ -8,7 +8,8 @@
 
 /** @addtogroup MSG_examples
  *
- * - <b>energy/e1/e1.c</b> Shows how a set of pstates can be defined for a host and how the current pstate can be
+ * - <b>energy-pstate/energy-pstate.c</b> Shows how a set of pstates can be defined for a host and how the current
+ * pstate can be
  *     accessed/changed with @ref MSG_get_host_current_power_peak and @ref  MSG_set_host_pstate.
  *     Make sure to read the platform XML file for details on how to declare the CPU capacity for each pstate.
  */

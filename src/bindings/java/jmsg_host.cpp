@@ -379,3 +379,29 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getConsumedEnergy (JNIEnv *e
 
   return MSG_host_get_consumed_energy(host);
 }
+
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_setPstate(JNIEnv* env, jobject jhost, jint pstate)
+{
+  msg_host_t host = jhost_get_native(env, jhost);
+  MSG_host_set_pstate(host, pstate);
+}
+JNIEXPORT jint JNICALL Java_org_simgrid_msg_Host_getPstate(JNIEnv* env, jobject jhost)
+{
+  msg_host_t host = jhost_get_native(env, jhost);
+  return MSG_host_get_pstate(host);
+}
+JNIEXPORT jint JNICALL Java_org_simgrid_msg_Host_getPstatesCount(JNIEnv* env, jobject jhost)
+{
+  msg_host_t host = jhost_get_native(env, jhost);
+  return MSG_host_get_nb_pstates(host);
+}
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCurrentPowerPeak(JNIEnv* env, jobject jhost)
+{
+  msg_host_t host = jhost_get_native(env, jhost);
+  return MSG_host_get_current_power_peak(host);
+}
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getPowerPeakAt(JNIEnv* env, jobject jhost, jint pstate)
+{
+  msg_host_t host = jhost_get_native(env, jhost);
+  return MSG_host_get_power_peak_at(host, pstate);
+}

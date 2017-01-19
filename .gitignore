@@ -981,6 +981,7 @@ examples/java/dht/kademlia/java_dht_kademlia_compiled
 examples/java/cloud/masterworker/java_cloud_masterworker_compiled
 examples/java/cloud/migration/java_cloud_migration_compiled
 examples/java/energy/consumption/java_energy_consumption_compiled
+examples/java/energy/pstate/java_energy_pstate_compiled
 examples/java/energy/vm/java_energy_vm_compiled
 examples/java/io/file/java_io_file_compiled
 examples/java/io/storage/java_io_storage_compiled
