@@ -105,13 +105,18 @@ void Host::turnOn() {
     simgrid::simix::kernelImmediate([&]{
       this->extension<simgrid::simix::Host>()->turnOn();
       this->pimpl_cpu->turnOn();
+      onStateChange(*this);
     });
   }
 }
 
 void Host::turnOff() {
   if (isOn()) {
-    simgrid::simix::kernelImmediate(std::bind(SIMIX_host_off, this, SIMIX_process_self()));
+    smx_actor_t self = SIMIX_process_self();
+    simgrid::simix::kernelImmediate([&] {
+      SIMIX_host_off(this, self);
+      onStateChange(*this);
+    });
   }
 }
 
