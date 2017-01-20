@@ -56,7 +56,7 @@ public class PstateRunner extends Process {
 			Msg.info("Current power peak="+ currentPeak);
 
 			// Run a second task
-			new Task("t1", workload, 0).execute();;
+			new Task("t1", workload, 0).execute();
 
 			taskTime = Msg.getClock() - taskTime;
 			Msg.info("Task2 simulation time: "+ taskTime);
