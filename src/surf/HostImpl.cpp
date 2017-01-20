@@ -93,6 +93,8 @@ Action* HostModel::executeParallelTask(int host_nb, simgrid::s4u::Host** host_li
  ************/
 HostImpl::HostImpl(s4u::Host* host) : piface_(host)
 {
+  /* The VM wants to reinstall a new HostImpl, but we don't want to leak the previously existing one */
+  delete piface_->pimpl_;
   piface_->pimpl_ = this;
 }
 
