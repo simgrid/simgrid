@@ -108,44 +108,21 @@ provided by the [online documentation][fn:4] and by several tutorials:
 - http://simgrid.gforge.inria.fr/tutorials/simgrid-tracing-101.pdf
 - http://simgrid.gforge.inria.fr/tutorials/simgrid-platf-101.pdf
 
-\section intro_recommendation Recommended Steps
+## Installing the visualization softwares
 
-## Installing Viva
+Several tools can be used to visualize the result of SimGrid
+simulations and get a better understanding of simulations.
 
-This [software][fn:1] will be useful to make fancy graph or treemap
-visualizations and get a better understanding of simulations. You
-will first need to install pajeng:
+- [viva][fn:1] will be useful to make fancy graph or treemap visualizations.
+- [pajeng][fn:5] provides a Gantt-chart visualization.
+- [Vite][fn:6] also provides a Gantt-chart visualization.
 
-~~~~{.sh}
-sudo apt-get install git cmake build-essential libqt4-dev  libboost-dev freeglut3-dev ;
-git clone https://github.com/schnorr/pajeng.git
-cd pajeng && mkdir -p build &&  cd build && cmake ../ -DCMAKE_INSTALL_PREFIX=$HOME &&  make -j install
-cd ../../
-~~~~
-
-Then you can install viva.
+Under Debian or Ubuntu, this is really easy with apt-get, while you
+may have to install from the source on other systems. Check the
+documentation of each software for more details.
 
 ~~~~{.sh}
-sudo apt-get install libboost-dev libconfig++-dev libconfig8-dev libgtk2.0-dev freeglut3-dev
-git clone https://github.com/schnorr/viva.git
-cd viva && mkdir -p build_graph &&  cd build_graph && cmake ../ -DTUPI_LIBRARY=ON -DVIVA=ON -DCMAKE_INSTALL_PREFIX=$HOME &&  make -j install
-cd ../../
-~~~~
-
-## Installing Paje
-
-This [software][fn:5] provides a Gantt-chart visualization.
-
-~~~~{.sh}
-sudo apt-get install paje.app
-~~~~
-
-## Installing Vite
-
-This software provides a [Gantt-chart visualization][fn:6].
-
-~~~~{.sh}
-sudo apt-get install vite
+sudo apt-get install viva pajeng vite
 ~~~~
 
 \section intro_start Let's get started
@@ -201,7 +178,7 @@ For a more classical Gantt-Chart visualization, you can produce a
 ~~~~{.sh}
 ./masterworker0 platforms/platform.xml deployment0.xml --cfg=tracing:yes \
     --cfg=tracing/msg/process:yes
-LANG=C ; Paje simgrid.trace
+pajeng simgrid.trace
 ~~~~
 
 Alternatively, you can use [vite][fn:6].
@@ -394,7 +371,7 @@ Gantt-chart visualization may help:
 ~~~~{.sh}
 ./masterworker3 platforms/platform.xml deployment3.xml --cfg=tracing:yes \
     --cfg=tracing/msg/process:yes
-LANG=C; Paje simgrid.trace
+pajeng simgrid.trace
 ~~~~
 
 OK, so it should now be obvious that round robin is actually
@@ -465,7 +442,7 @@ bytes that you manage to distribute and process in one hour on
 \section intro_todo TODO: Points to improve for the next time
 
 - Propose equivalent exercises and skeleton in java.
-- Propose a virtualbox image with everything (simgrid, paje, viva,
+- Propose a virtualbox image with everything (simgrid, pajeng, viva,
   ...) already set up.
 - Ease the installation on mac OS X (binary installer) and
   windows.
@@ -475,8 +452,8 @@ bytes that you manage to distribute and process in one hour on
 [fn:1]: http://triva.gforge.inria.fr/index.html
 [fn:2]: http://hal.inria.fr/inria-00529569
 [fn:3]: http://hal.inria.fr/hal-00738321
-[fn:4]: http://simgrid.gforge.inria.fr/documentation.html
-[fn:5]: http://paje.sourceforge.net/
+[fn:4]: http://simgrid.gforge.inria.fr/simgrid/latest/doc/
+[fn:5]: https://github.com/schnorr/pajeng/
 [fn:6]: http://vite.gforge.inria.fr/
 
 
