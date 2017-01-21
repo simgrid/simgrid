@@ -51,7 +51,7 @@ VisitedState::VisitedState(unsigned long state_number)
 
   this->system_state = simgrid::mc::take_snapshot(state_number);
   this->num = state_number;
-  this->other_num = -1;
+  this->original_num = -1;
 }
 
 VisitedState::~VisitedState()
@@ -73,8 +73,7 @@ void VisitedStates::prune()
   }
 }
 
-/**
- * \brief Checks whether a given state has already been visited by the algorithm.
+/** \brief Checks whether a given state has already been visited by the algorithm.
  */
 std::unique_ptr<simgrid::mc::VisitedState> VisitedStates::addVisitedState(
   unsigned long state_number, simgrid::mc::State* graph_state, bool compare_snpashots)
@@ -97,18 +96,17 @@ std::unique_ptr<simgrid::mc::VisitedState> VisitedStates::addVisitedState(
         std::unique_ptr<simgrid::mc::VisitedState> old_state =
           std::move(visited_state);
 
-        if (old_state->other_num == -1)
-          new_state->other_num = old_state->num;
-        else
-          new_state->other_num = old_state->other_num;
+        if (old_state->original_num == -1) // I'm the copy of an original process
+          new_state->original_num = old_state->num;
+        else // I'm the copy of a copy
+          new_state->original_num = old_state->original_num;
 
         if (dot_output == nullptr)
           XBT_DEBUG("State %d already visited ! (equal to state %d)",
-            new_state->num, old_state->num);
+                    new_state->num, old_state->num);
         else
-          XBT_DEBUG(
-            "State %d already visited ! (equal to state %d (state %d in dot_output))",
-            new_state->num, old_state->num, new_state->other_num);
+          XBT_DEBUG("State %d already visited ! (equal to state %d (state %d in dot_output))",
+                    new_state->num, old_state->num, new_state->original_num);
 
         /* Replace the old state with the new one (with a bigger num)
            (when the max number of visited states is reached,  the oldest

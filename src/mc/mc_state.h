@@ -125,13 +125,13 @@ struct XBT_PRIVATE State {
 
   Transition transition;
 
-  /** The simcall which was executed */
+  /** The simcall which was executed, going out of that state */
   s_smx_simcall_t executed_req;
 
-  /* Internal translation of the simcall
+  /* Internal translation of the executed_req simcall
    *
    * SIMCALL_COMM_TESTANY is translated to a SIMCALL_COMM_TEST
-   * and SIMCALL_COMM_WAITANY to a SIMCALL_COMM_WAIT.  
+   * and SIMCALL_COMM_WAITANY to a SIMCALL_COMM_WAIT.
    */
   s_smx_simcall_t internal_req;
 
@@ -148,8 +148,7 @@ struct XBT_PRIVATE State {
   State(unsigned long state_number);
 
   std::size_t interleaveSize() const;
-  void interleave(smx_actor_t process)
-  {
+  void interleave(smx_actor_t process) {
     this->processStates[process->pid].interleave();
   }
   Transition getTransition() const;

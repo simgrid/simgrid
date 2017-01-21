@@ -93,7 +93,7 @@ void SafetyChecker::run()
 {
   /* This function runs the DFS algorithm the state space.
    * We do so iteratively instead of recursively, dealing with the call stack manually.
-   * This allows to explore the call stack when we want to. */
+   * This allows to explore the call stack at wish. */
 
   while (!stack_.empty()) {
 
@@ -116,7 +116,7 @@ void SafetyChecker::run()
     // Backtrack if we are revisiting a state we saw previously
     if (visitedState_ != nullptr) {
       XBT_DEBUG("State already visited (equal to state %d), exploration stopped on this path.",
-                visitedState_->other_num == -1 ? visitedState_->num : visitedState_->other_num);
+                visitedState_->original_num == -1 ? visitedState_->num : visitedState_->original_num);
 
       visitedState_ = nullptr;
       this->backtrack();
@@ -124,7 +124,10 @@ void SafetyChecker::run()
     }
 
     // Search an enabled transition in the current state; backtrack if the interleave set is empty
+    // get_request also sets state.transition to be the one corresponding to the returned req
     smx_simcall_t req = MC_state_get_request(state);
+    // req is now the transition of the process that was selected to be executed
+
     if (req == nullptr) {
       XBT_DEBUG("There are no more processes to interleave. (depth %zi)", stack_.size() + 1);
 
@@ -144,7 +147,7 @@ void SafetyChecker::run()
 
     mc_model_checker->executed_transitions++;
 
-    /* Answer the request */
+    /* Actually answer the request: let the remote process do execute that request */
     this->getSession().execute(state->transition);
 
     /* Create the new expanded state */
@@ -174,9 +177,9 @@ void SafetyChecker::run()
           state->num, next_state->num, req_str.c_str());
 
     } else if (dot_output != nullptr)
-      std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
-        state->num,
-        visitedState_->other_num == -1 ? visitedState_->num : visitedState_->other_num, req_str.c_str());
+      std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num,
+                   visitedState_->original_num == -1 ? visitedState_->num : visitedState_->original_num,
+                   req_str.c_str());
 
     stack_.push_back(std::move(next_state));
   }
@@ -258,8 +261,7 @@ void SafetyChecker::backtrack()
     if (state->interleaveSize()
         && stack_.size() < (std::size_t) _sg_mc_max_depth) {
       /* We found a back-tracking point, let's loop */
-      XBT_DEBUG("Back-tracking to state %d at depth %zi",
-        state->num, stack_.size() + 1);
+      XBT_DEBUG("Back-tracking to state %d at depth %zi", state->num, stack_.size() + 1);
       stack_.push_back(std::move(state));
       this->restoreState();
       XBT_DEBUG("Back-tracking to state %d at depth %zi done",

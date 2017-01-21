@@ -526,8 +526,8 @@ void CommunicationDeterminismChecker::main(void)
             state->num,  next_state->num, req_str.c_str());
 
       } else if (dot_output != nullptr)
-        fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
-          state->num, visited_state->other_num == -1 ? visited_state->num : visited_state->other_num, req_str.c_str());
+        fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num,
+                visited_state->original_num == -1 ? visited_state->num : visited_state->original_num, req_str.c_str());
 
       stack_.push_back(std::move(next_state));
 
@@ -536,7 +536,8 @@ void CommunicationDeterminismChecker::main(void)
       if (stack_.size() > (std::size_t) _sg_mc_max_depth)
         XBT_WARN("/!\\ Max depth reached ! /!\\ ");
       else if (visited_state != nullptr)
-        XBT_DEBUG("State already visited (equal to state %d), exploration stopped on this path.", visited_state->other_num == -1 ? visited_state->num : visited_state->other_num);
+        XBT_DEBUG("State already visited (equal to state %d), exploration stopped on this path.",
+            visited_state->original_num == -1 ? visited_state->num : visited_state->original_num);
       else
         XBT_DEBUG("There are no more processes to interleave. (depth %zi)",
           stack_.size());

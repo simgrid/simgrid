@@ -20,9 +20,9 @@ namespace mc {
 struct XBT_PRIVATE VisitedState {
   std::shared_ptr<simgrid::mc::Snapshot> system_state = nullptr;
   std::size_t heap_bytes_used = 0;
-  int actors_count                                    = 0;
-  int num = 0;
-  int other_num = 0; // dot_output for
+  int actors_count            = 0;
+  int num          = 0; // unique id of that state in the storage of all stored IDs
+  int original_num = 0; // num field of the VisitedState to which I was declared equal to (used for dot_output)
 
   VisitedState(unsigned long state_number);
   ~VisitedState();

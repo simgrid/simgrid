@@ -137,8 +137,8 @@ bool request_is_enabled(smx_simcall_t req)
     xbt_dynar_t comms;
     simgrid::kernel::activity::Comm *act =
         static_cast<simgrid::kernel::activity::Comm*>(simcall_comm_wait__get__comm(req));
-#if HAVE_MC
 
+#if HAVE_MC
     s_xbt_dynar_t comms_buffer;
     size_t buffer_size = 0;
     if (mc_model_checker != nullptr) {

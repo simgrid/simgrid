@@ -58,12 +58,27 @@ Transition State::getTransition() const
 }
 }
 
+/* Search an enabled transition for the given process.
+ *
+ * This can be seen as an iterator returning the next transition of the process.
+ *
+ * We only consider the processes that are both
+ *  - marked "to be interleaved" in their ProcessState (controled by the checker algo).
+ *  - which simcall can currently be executed (like a comm where the other partner is already known)
+ * Once we returned the last enabled transition of a process, it is marked done.
+ *
+ * Things can get muddled with the WAITANY and TESTANY simcalls, that are rewritten
+ * on the fly to a bunch of WAIT (resp TEST) transitions using the transition.argument
+ * field to remember what was the last returned sub-transition.
+ */
 static inline smx_simcall_t MC_state_get_request_for_process(
   simgrid::mc::State* state, smx_actor_t process)
 {
+  /* reset the outgoing transition */
   simgrid::mc::ProcessState* procstate = &state->processStates[process->pid];
-  state->transition.pid = -1;
-  state->transition.argument = -1;
+  state->transition.pid                = -1;
+  state->transition.argument           = -1;
+  state->executed_req.call             = SIMCALL_NONE;
 
   if (!procstate->isToInterleave())
     return nullptr;
@@ -215,8 +230,8 @@ static inline smx_simcall_t MC_state_get_request_for_process(
 
 smx_simcall_t MC_state_get_request(simgrid::mc::State* state)
 {
-  for (auto& p : mc_model_checker->process().actors()) {
-    smx_simcall_t res = MC_state_get_request_for_process(state, p.copy.getBuffer());
+  for (auto& actor : mc_model_checker->process().actors()) {
+    smx_simcall_t res = MC_state_get_request_for_process(state, actor.copy.getBuffer());
     if (res)
       return res;
   }
