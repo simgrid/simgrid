@@ -113,8 +113,8 @@ bool request_is_enabled(smx_simcall_t req)
 #if HAVE_MC
     // Fetch from MCed memory:
     // HACK, type puning
-    simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_comm;
     if (mc_model_checker != nullptr) {
+      simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_comm;
       mc_model_checker->process().read(temp_comm, remote(act));
       act = static_cast<simgrid::kernel::activity::Comm*>(temp_comm.getBuffer());
     }

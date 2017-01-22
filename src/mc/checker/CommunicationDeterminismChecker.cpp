@@ -512,9 +512,9 @@ void CommunicationDeterminismChecker::main(void)
       bool compare_snapshots = all_communications_are_finished()
         && this->initial_communications_pattern_done;
 
-      if (_sg_mc_visited == 0
-          || (visited_state = visitedStates_.addVisitedState(
-            expandedStatesCount_, next_state.get(), compare_snapshots)) == nullptr) {
+      if (_sg_mc_max_visited_states == 0 ||
+          (visited_state = visitedStates_.addVisitedState(expandedStatesCount_, next_state.get(), compare_snapshots)) ==
+              nullptr) {
 
         /* Get enabled actors and insert them in the interleave set of the next state */
         for (auto& actor : mc_model_checker->process().actors())

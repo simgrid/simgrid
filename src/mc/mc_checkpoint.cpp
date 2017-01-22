@@ -578,7 +578,7 @@ std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
 
   snapshot->to_ignore = mc_model_checker->process().ignored_heap();
 
-  if (_sg_mc_visited > 0 || strcmp(_sg_mc_property_file, "")) {
+  if (_sg_mc_max_visited_states > 0 || strcmp(_sg_mc_property_file, "")) {
     snapshot->stacks = take_snapshot_stacks(snapshot.get());
     if (_sg_mc_hash)
       snapshot->hash = simgrid::mc::hash(*snapshot);

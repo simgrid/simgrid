@@ -147,7 +147,7 @@ public:
       this->refresh_heap();
     return this->heap.get();
   }
-  malloc_info* get_malloc_info()
+  const malloc_info* get_malloc_info()
   {
     if (!(this->cache_flags_ & Process::cache_malloc))
       this->refresh_malloc_info();

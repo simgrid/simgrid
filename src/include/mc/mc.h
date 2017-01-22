@@ -39,7 +39,7 @@ extern XBT_PUBLIC(char*) _sg_mc_property_file;
 extern XBT_PRIVATE int _sg_mc_timeout;
 extern XBT_PRIVATE int _sg_mc_hash;
 extern XBT_PRIVATE int _sg_mc_max_depth;
-extern XBT_PUBLIC(int) _sg_mc_visited;
+extern XBT_PUBLIC(int) _sg_mc_max_visited_states;
 extern XBT_PRIVATE char* _sg_mc_dot_output_file;
 extern XBT_PUBLIC(int) _sg_mc_comms_determinism;
 extern XBT_PUBLIC(int) _sg_mc_send_determinism;

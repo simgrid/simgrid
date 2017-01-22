@@ -158,7 +158,7 @@ void SafetyChecker::run()
       this->checkNonTermination(next_state.get());
 
     /* Check whether we already explored next_state in the past (but only if interested in state-equality reduction) */
-    if (_sg_mc_visited == true)
+    if (_sg_mc_max_visited_states == true)
       visitedState_ = visitedStates_.addVisitedState(expandedStatesCount_, next_state.get(), true);
 
     /* If this is a new state (or if we don't care about state-equality reduction) */

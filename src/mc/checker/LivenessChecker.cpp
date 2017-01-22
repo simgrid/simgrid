@@ -220,7 +220,7 @@ void LivenessChecker::replay()
  */
 int LivenessChecker::insertVisitedPair(std::shared_ptr<VisitedPair> visited_pair, simgrid::mc::Pair* pair)
 {
-  if (_sg_mc_visited == 0)
+  if (_sg_mc_max_visited_states == 0)
     return -1;
 
   if (visited_pair == nullptr)
@@ -258,7 +258,7 @@ int LivenessChecker::insertVisitedPair(std::shared_ptr<VisitedPair> visited_pair
 
 void LivenessChecker::purgeVisitedPairs()
 {
-  if (_sg_mc_visited != 0 && visitedPairs_.size() > (std::size_t) _sg_mc_visited) {
+  if (_sg_mc_max_visited_states != 0 && visitedPairs_.size() > (std::size_t)_sg_mc_max_visited_states) {
     // Remove the oldest entry with a linear search:
     visitedPairs_.erase(boost::min_element(visitedPairs_,
       [](std::shared_ptr<VisitedPair> const a, std::shared_ptr<VisitedPair> const& b) {

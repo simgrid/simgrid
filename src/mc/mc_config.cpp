@@ -55,7 +55,7 @@ int _sg_mc_ksm = 0;
 char *_sg_mc_property_file = nullptr;
 int _sg_mc_hash = 0;
 int _sg_mc_max_depth = 1000;
-int _sg_mc_visited = 0;
+int _sg_mc_max_visited_states = 0;
 char *_sg_mc_dot_output_file = nullptr;
 int _sg_mc_comms_determinism = 0;
 int _sg_mc_send_determinism = 0;
@@ -144,7 +144,7 @@ void _mc_cfg_cb_visited(const char *name)
     xbt_die
         ("You are specifying a number of stored visited states after the initialization (through MSG_config?), but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
 
-  _sg_mc_visited = xbt_cfg_get_int(name);
+  _sg_mc_max_visited_states = xbt_cfg_get_int(name);
 }
 
 void _mc_cfg_cb_dot_output(const char *name)

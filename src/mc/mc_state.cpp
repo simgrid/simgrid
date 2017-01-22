@@ -165,11 +165,10 @@ static inline smx_simcall_t MC_state_get_request_for_process(
   if (!req)
     return nullptr;
 
-  // Fetch the data of the request and translate it:
-
   state->transition.pid = process->pid;
-
   state->executed_req = *req;
+  // Fetch the data of the request and translate it:
+  state->internal_req = *req;
 
   /* The waitany and testany request are transformed into a wait or test request
    * over the corresponding communication action so it can be treated later by
@@ -177,7 +176,6 @@ static inline smx_simcall_t MC_state_get_request_for_process(
   switch (req->call) {
   case SIMCALL_COMM_WAITANY: {
     state->internal_req.call = SIMCALL_COMM_WAIT;
-    state->internal_req.issuer = req->issuer;
     smx_activity_t remote_comm;
     read_element(mc_model_checker->process(),
       &remote_comm, remote(simcall_comm_waitany__get__comms(req)),
@@ -191,7 +189,6 @@ static inline smx_simcall_t MC_state_get_request_for_process(
 
   case SIMCALL_COMM_TESTANY:
     state->internal_req.call = SIMCALL_COMM_TEST;
-    state->internal_req.issuer = req->issuer;
 
     if (state->transition.argument > 0) {
       smx_activity_t remote_comm = mc_model_checker->process().read(
@@ -205,7 +202,6 @@ static inline smx_simcall_t MC_state_get_request_for_process(
     break;
 
   case SIMCALL_COMM_WAIT:
-    state->internal_req = *req;
     mc_model_checker->process().read_bytes(&state->internal_comm ,
       sizeof(state->internal_comm), remote(simcall_comm_wait__get__comm(req)));
     simcall_comm_wait__set__comm(&state->executed_req, state->internal_comm.getBuffer());
@@ -213,7 +209,6 @@ static inline smx_simcall_t MC_state_get_request_for_process(
     break;
 
   case SIMCALL_COMM_TEST:
-    state->internal_req = *req;
     mc_model_checker->process().read_bytes(&state->internal_comm,
       sizeof(state->internal_comm), remote(simcall_comm_test__get__comm(req)));
     simcall_comm_test__set__comm(&state->executed_req, state->internal_comm.getBuffer());
@@ -221,7 +216,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
     break;
 
   default:
-    state->internal_req = *req;
+    /* No translation needed */
     break;
   }
 
