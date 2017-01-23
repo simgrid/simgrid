@@ -116,7 +116,7 @@ else()
   set(LIB_EXE "so")
 endif()
 
-execute_process(COMMAND   ${CMAKE_LINKER}   -version    OUTPUT_VARIABLE LINKER_VERSION)
+execute_process(COMMAND ${CMAKE_LINKER} -version OUTPUT_VARIABLE LINKER_VERSION ERROR_VARIABLE LINKER_VERSION)
 string(REGEX MATCH "[0-9].[0-9]*" LINKER_VERSION "${LINKER_VERSION}")
 
 ### Set the library providing dlopen
@@ -414,7 +414,7 @@ endif()
 
 if(enable_smpi)
   SET(HAVE_SMPI 1)
-  if("${CMAKE_SYSTEM}" MATCHES "Linux|FreeBSD")
+  if("${CMAKE_SYSTEM}" MATCHES "Darwin|FreeBSD|Linux")
     SET(USE_LIBUTIL 0)
     SET(HAVE_PRIVATIZATION 1)
   else()

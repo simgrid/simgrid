@@ -9,9 +9,31 @@
 #include <cstring>
 
 #include <sys/types.h>
-#ifdef __linux__
+
+#if defined __APPLE__
+# include <mach/mach_init.h>
+# include <mach/mach_traps.h>
+# include <mach/mach_port.h>
+# include <mach/mach_vm.h>
 # include <sys/mman.h>
-#elif defined __FreeBSD__
+# include <sys/param.h>
+# include <libproc.h>
+# if __MAC_OS_X_VERSION_MIN_REQUIRED < 1050
+#  define mach_vm_address_t vm_address_t
+#  define mach_vm_size_t vm_size_t
+#  if defined __ppc64__ || defined __x86_64__
+#    define mach_vm_region vm_region64
+#  else
+#    define mach_vm_region vm_region
+#  endif
+# endif
+#endif
+
+#if defined __linux__
+# include <sys/mman.h>
+#endif
+
+#if defined __FreeBSD__
 # include <sys/types.h>
 # include <sys/mman.h>
 # include <sys/param.h>
@@ -45,7 +67,105 @@ namespace xbt {
 XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 {
   std::vector<VmMap> ret;
-#ifdef __linux__
+#if defined __APPLE__
+  vm_map_t map;
+
+  /* Request authorization to read mappings */
+  if (task_for_pid(mach_task_self(), pid, &map) != KERN_SUCCESS) {
+    std::perror("task_for_pid failed");
+    xbt_die("Cannot request authorization for kernel information access");
+  }
+
+  /*
+   * Darwin do not give us the number of mappings, so we read entries until
+   * we get an KERN_INVALID_ADDRESS return.
+   */
+  mach_vm_address_t address = VM_MIN_ADDRESS;
+  while (true) {
+    kern_return_t kr;
+    memory_object_name_t object;
+    mach_vm_size_t size;
+#if defined __ppc64__ || defined __x86_64__
+    vm_region_flavor_t flavor = VM_REGION_BASIC_INFO_64;
+    struct vm_region_basic_info_64 info;
+    mach_msg_type_number_t info_count = VM_REGION_BASIC_INFO_COUNT_64;
+#else
+    vm_region_flavor_t flavor = VM_REGION_BASIC_INFO;
+    struct vm_region_basic_info info;
+    mach_msg_type_number_t info_count = VM_REGION_BASIC_INFO_COUNT;
+#endif
+
+    kr =
+      mach_vm_region(
+          map,
+          &address,
+          &size,
+          flavor,
+          (vm_region_info_t)&info,
+          &info_count,
+          &object);
+    if (kr == KERN_INVALID_ADDRESS) {
+      break;
+    }
+    else if (kr != KERN_SUCCESS) {
+      std::perror("mach_vm_region failed");
+      xbt_die("Cannot request authorization for kernel information access");
+    }
+
+    VmMap memreg;
+
+    /* Addresses */
+    memreg.start_addr = address;
+    memreg.end_addr = address + size - 1;
+
+    /* Permissions */
+    memreg.prot = PROT_NONE;
+    if (info.protection & VM_PROT_READ)
+      memreg.prot |= PROT_READ;
+    if (info.protection & VM_PROT_WRITE)
+      memreg.prot |= PROT_WRITE;
+    if (info.protection & VM_PROT_EXECUTE)
+      memreg.prot |= PROT_EXEC;
+
+    /* Private (copy-on-write) or shared? */
+    if (info.shared)
+      memreg.flags |= MAP_SHARED;
+    else
+      memreg.flags |= MAP_PRIVATE;
+
+    /* Offset */
+    memreg.offset = info.offset;
+
+    /* Device : not sure this can be mapped to something outside of Linux? */
+    memreg.dev_major = 0;
+    memreg.dev_minor = 0;
+
+    /* Inode */
+    memreg.inode = 0;
+
+    /* Path */
+    char path[MAXPATHLEN];
+	int pathlen;
+    pathlen = proc_regionfilename(pid, address, path, sizeof(path));
+	path[pathlen] = '\0';
+    memreg.pathname = path;
+
+#if 0 /* Display mappings for debug */
+    fprintf(stderr,
+        "%#014llx - %#014llx | %c%c%c | %s\n",
+        memreg.start_addr, memreg.end_addr,
+        (memreg.prot & PROT_READ) ? 'r' : '-',
+        (memreg.prot & PROT_WRITE) ? 'w' : '-',
+        (memreg.prot & PROT_EXEC) ? 'x' : '-',
+        memreg.pathname.c_str());
+#endif
+
+    ret.push_back(std::move(memreg));
+    address += size;
+  }
+
+  mach_port_deallocate(mach_task_self(), map);
+#elif defined __linux__
   /* Open the actual process's proc maps file and create the memory_map_t */
   /* to be returned. */
   char* path = bprintf("/proc/%i/maps", (int) pid);
