@@ -22,15 +22,15 @@ namespace routing {
 /** @ingroup ROUTING_API
  *  @brief Network cards are the vertices in the graph representing the network, used to compute paths between nodes.
  *
- * @details This represents a position in the network. One can send information between two netcards
+ * @details This represents a position in the network. One can send information between two netpoints
  */
-class NetCard : public simgrid::xbt::Extendable<NetCard> {
+class NetPoint : public simgrid::xbt::Extendable<NetPoint> {
 
 public:
   enum class Type { Host, Router, NetZone };
 
-  NetCard(std::string name, NetCard::Type componentType, NetZoneImpl* netzone_p);
-  ~NetCard() = default;
+  NetPoint(std::string name, NetPoint::Type componentType, NetZoneImpl* netzone_p);
+  ~NetPoint() = default;
 
   // Our rank in the vertices_ array of the netzone that contains us.
   unsigned int id() { return id_; }
@@ -43,14 +43,14 @@ public:
   bool isHost() { return componentType_ == Type::Host; }
   bool isRouter() { return componentType_ == Type::Router; }
 
-  static simgrid::xbt::signal<void(NetCard*)> onCreation;
+  static simgrid::xbt::signal<void(NetPoint*)> onCreation;
 
-  bool operator<(const NetCard &rhs) const { return name_ < rhs.name_; }
+  bool operator<(const NetPoint& rhs) const { return name_ < rhs.name_; }
 
 private:
   unsigned int id_;
   std::string name_;
-  NetCard::Type componentType_;
+  NetPoint::Type componentType_;
   NetZoneImpl* netzone_;
 };
 }

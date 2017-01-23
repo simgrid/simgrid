@@ -68,7 +68,7 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
   //Search for network_element_t
   switch (kind){
     case INSTR_HOST:
-      newContainer->netcard = sg_host->pimpl_netcard;
+      newContainer->netcard = sg_host->pimpl_netpoint;
       xbt_assert(newContainer->netcard, "Element '%s' not found",name);
       break;
     case INSTR_ROUTER:

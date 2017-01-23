@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/routing/ClusterZone.hpp"
-#include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/kernel/routing/RoutedZone.hpp"
 #include "src/surf/network_interface.hpp"
 
@@ -20,7 +20,7 @@ ClusterZone::ClusterZone(NetZone* father, const char* name) : NetZoneImpl(father
 {
 }
 
-void ClusterZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
+void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
 {
   XBT_VERB("cluster getLocalRoute from '%s'[%d] to '%s'[%d]", src->cname(), src->id(), dst->cname(), dst->id());
   xbt_assert(!privateLinks_.empty(),

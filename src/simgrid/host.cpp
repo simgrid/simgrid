@@ -11,7 +11,7 @@
 #include <xbt/Extendable.hpp>
 #include <simgrid/s4u/host.hpp>
 
-#include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/HostImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sg_host, sd, "Logging specific to sg_hosts");
@@ -91,8 +91,8 @@ xbt_dynar_t sg_hosts_as_dynar()
 
   for (auto kv : host_list) {
     simgrid::s4u::Host* host = kv.second;
-    if (host && host->pimpl_netcard && host->pimpl_netcard->isHost())
-       xbt_dynar_push(res, &host);
+    if (host && host->pimpl_netpoint && host->pimpl_netpoint->isHost())
+      xbt_dynar_push(res, &host);
   }
   xbt_dynar_sort(res, hostcmp_voidp);
   return res;

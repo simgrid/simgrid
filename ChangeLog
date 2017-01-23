@@ -1,5 +1,9 @@
 SimGrid (3.15) UNRELEASED; urgency=low
 
+ - Rename NetCards to NetPoints.
+   This was intended to help NS3 users, but that's not a netcard.
+   That's a point in the routing algorithm, let's avoid do wrong simplifications.
+
  -- target_date=March 20 2017 -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.14.159) stable; urgency=low

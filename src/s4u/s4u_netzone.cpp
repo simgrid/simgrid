@@ -8,7 +8,7 @@
 #include "simgrid/s4u/NetZone.hpp"
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/simix.hpp"
-#include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp" // Link FIXME: move to proper header
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_netzone, "S4U Networking Zones");
@@ -16,8 +16,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_netzone, "S4U Networking Zones");
 namespace simgrid {
 namespace s4u {
 
-simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetCard* src, kernel::routing::NetCard* dst,
-                          kernel::routing::NetCard* gw_src, kernel::routing::NetCard* gw_dst,
+simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                          kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                           std::vector<Link*>* link_list)>
     NetZone::onRouteCreation;
 
@@ -84,7 +84,7 @@ xbt_dynar_t NetZone::hosts()
   return res;
 }
 
-int NetZone::addComponent(kernel::routing::NetCard* elm)
+int NetZone::addComponent(kernel::routing::NetPoint* elm)
 {
   vertices_.push_back(elm);
   return vertices_.size() - 1; // The rank of the newly created object

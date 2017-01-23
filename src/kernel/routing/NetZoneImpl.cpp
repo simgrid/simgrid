@@ -6,7 +6,7 @@
 #include "src/kernel/routing/NetZoneImpl.hpp"
 #include "simgrid/s4u/engine.hpp"
 #include "simgrid/s4u/host.hpp"
-#include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 
@@ -20,9 +20,9 @@ namespace routing {
 
 class BypassRoute {
 public:
-  explicit BypassRoute(NetCard* gwSrc, NetCard* gwDst) : gw_src(gwSrc), gw_dst(gwDst) {}
-  const NetCard* gw_src;
-  const NetCard* gw_dst;
+  explicit BypassRoute(NetPoint* gwSrc, NetPoint* gwDst) : gw_src(gwSrc), gw_dst(gwDst) {}
+  const NetPoint* gw_src;
+  const NetPoint* gw_dst;
   std::vector<Link*> links;
 };
 
@@ -31,7 +31,7 @@ NetZoneImpl::NetZoneImpl(NetZone* father, const char* name) : NetZone(father, na
   xbt_assert(nullptr == simgrid::s4u::Engine::instance()->netcardByNameOrNull(name),
              "Refusing to create a second NetZone called '%s'.", name);
 
-  netcard_ = new NetCard(name, NetCard::Type::NetZone, static_cast<NetZoneImpl*>(father));
+  netcard_ = new NetPoint(name, NetPoint::Type::NetZone, static_cast<NetZoneImpl*>(father));
   XBT_DEBUG("NetZone '%s' created with the id '%d'", name, netcard_->id());
 }
 NetZoneImpl::~NetZoneImpl()
@@ -50,7 +50,7 @@ simgrid::s4u::Host* NetZoneImpl::createHost(const char* name, std::vector<double
   if (hierarchy_ == RoutingMode::unset)
     hierarchy_ = RoutingMode::base;
 
-  res->pimpl_netcard = new NetCard(name, NetCard::Type::Host, this);
+  res->pimpl_netpoint = new NetPoint(name, NetPoint::Type::Host, this);
 
   surf_cpu_model_pm->createCpu(res, speedPerPstate, coreAmount);
 
@@ -141,7 +141,7 @@ void NetZoneImpl::addBypassRoute(sg_platf_route_cbarg_t e_route)
  *                 dst
  *  @endverbatim
  */
-static void find_common_ancestors(NetCard* src, NetCard* dst,
+static void find_common_ancestors(NetPoint* src, NetPoint* dst,
                                   /* OUT */ NetZoneImpl** common_ancestor, NetZoneImpl** src_ancestor,
                                   NetZoneImpl** dst_ancestor)
 {
@@ -201,7 +201,7 @@ static void find_common_ancestors(NetCard* src, NetCard* dst,
 }
 
 /* PRECONDITION: this is the common ancestor of src and dst */
-bool NetZoneImpl::getBypassRoute(routing::NetCard* src, routing::NetCard* dst,
+bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
                                  /* OUT */ std::vector<surf::Link*>* links, double* latency)
 {
   // If never set a bypass route return nullptr without any further computations
@@ -255,7 +255,7 @@ bool NetZoneImpl::getBypassRoute(routing::NetCard* src, routing::NetCard* dst,
 
   /* (3) Search for a bypass making the path up to the ancestor useless */
   BypassRoute* bypassedRoute = nullptr;
-  std::pair<kernel::routing::NetCard*, kernel::routing::NetCard*> key;
+  std::pair<kernel::routing::NetPoint*, kernel::routing::NetPoint*> key;
   for (int max = 0; max <= max_index; max++) {
     for (int i = 0; i < max; i++) {
       if (i <= max_index_src && max <= max_index_dst) {
@@ -292,21 +292,21 @@ bool NetZoneImpl::getBypassRoute(routing::NetCard* src, routing::NetCard* dst,
               "calls to getRoute",
               src->cname(), dst->cname(), bypassedRoute->links.size());
     if (src != key.first)
-      getGlobalRoute(src, const_cast<NetCard*>(bypassedRoute->gw_src), links, latency);
+      getGlobalRoute(src, const_cast<NetPoint*>(bypassedRoute->gw_src), links, latency);
     for (surf::Link* link : bypassedRoute->links) {
       links->push_back(link);
       if (latency)
         *latency += link->latency();
     }
     if (dst != key.second)
-      getGlobalRoute(const_cast<NetCard*>(bypassedRoute->gw_dst), dst, links, latency);
+      getGlobalRoute(const_cast<NetPoint*>(bypassedRoute->gw_dst), dst, links, latency);
     return true;
   }
   XBT_DEBUG("No bypass route from '%s' to '%s'.", src->cname(), dst->cname());
   return false;
 }
 
-void NetZoneImpl::getGlobalRoute(routing::NetCard* src, routing::NetCard* dst,
+void NetZoneImpl::getGlobalRoute(routing::NetPoint* src, routing::NetPoint* dst,
                                  /* OUT */ std::vector<surf::Link*>* links, double* latency)
 {
   s_sg_platf_route_cbarg_t route;

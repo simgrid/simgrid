@@ -14,7 +14,7 @@
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/storage.hpp"
 #include "simgrid/simix.hpp"
-#include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/msg/msg_private.h"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_private.h"
@@ -54,8 +54,8 @@ Host::~Host()
   xbt_assert(currentlyDestroying_, "Please call h->destroy() instead of manually deleting it.");
 
   delete pimpl_;
-  if (pimpl_netcard != nullptr) // not removed yet by a children class
-    simgrid::s4u::Engine::instance()->netcardUnregister(pimpl_netcard);
+  if (pimpl_netpoint != nullptr) // not removed yet by a children class
+    simgrid::s4u::Engine::instance()->netcardUnregister(pimpl_netpoint);
   delete pimpl_cpu;
   delete mounts;
 }
@@ -142,7 +142,7 @@ int Host::pstatesCount() const {
  */
 void Host::routeTo(Host* dest, std::vector<Link*>* links, double* latency)
 {
-  simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(pimpl_netcard, dest->pimpl_netcard, links, latency);
+  simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(pimpl_netpoint, dest->pimpl_netpoint, links, latency);
   if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {
     XBT_CDEBUG(surf_route, "Route from '%s' to '%s' (latency: %f):", cname(), dest->cname(),
                (latency == nullptr ? -1 : *latency));

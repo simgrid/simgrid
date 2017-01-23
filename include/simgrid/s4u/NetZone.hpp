@@ -58,18 +58,18 @@ public:
   void setProperty(const char* key, const char* value);
 
   /* Add content to the netzone, at parsing time. It should be sealed afterward. */
-  virtual int addComponent(kernel::routing::NetCard * elm); /* A host, a router or a netzone, whatever */
+  virtual int addComponent(kernel::routing::NetPoint * elm); /* A host, a router or a netzone, whatever */
   virtual void addRoute(sg_platf_route_cbarg_t route);
   virtual void addBypassRoute(sg_platf_route_cbarg_t e_route) = 0;
 
   /*** Called on each newly created regular route (not on bypass routes) */
-  static simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetCard* src, kernel::routing::NetCard* dst,
-                                   kernel::routing::NetCard* gw_src, kernel::routing::NetCard* gw_dst,
+  static simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                                   kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                                    std::vector<Link*>* link_list)>
       onRouteCreation;
 
 protected:
-  std::vector<kernel::routing::NetCard*>
+  std::vector<kernel::routing::NetPoint*>
       vertices_; // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
 
 private:

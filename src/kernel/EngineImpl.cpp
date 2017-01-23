@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/EngineImpl.hpp"
-#include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/kernel/routing/NetZoneImpl.hpp"
 #include <simgrid/s4u/host.hpp>
 
@@ -15,7 +15,7 @@ EngineImpl::EngineImpl() = default;
 EngineImpl::~EngineImpl()
 {
   delete netRoot_;
-  for (auto kv : netcards_)
+  for (auto kv : netpoints_)
     delete kv.second;
 }
 }

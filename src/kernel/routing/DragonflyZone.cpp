@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/routing/DragonflyZone.hpp"
-#include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
@@ -245,7 +245,7 @@ void DragonflyZone::generateLinks()
   }
 }
 
-void DragonflyZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* latency)
+void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* latency)
 {
   // Minimal routing version.
   // TODO : non-minimal random one, and adaptive ?

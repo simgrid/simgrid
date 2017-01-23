@@ -9,7 +9,7 @@
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
 
-#include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/kernel/routing/RoutedZone.hpp"
 #include "src/surf/network_interface.hpp"
 
@@ -157,7 +157,7 @@ sg_platf_route_cbarg_t RoutedZone::newExtendedRoute(RoutingMode hierarchy, sg_pl
   return result;
 }
 
-void RoutedZone::getRouteCheckParams(NetCard* src, NetCard* dst)
+void RoutedZone::getRouteCheckParams(NetPoint* src, NetPoint* dst)
 {
   xbt_assert(src, "Cannot find a route from nullptr to %s", dst->cname());
   xbt_assert(dst, "Cannot find a route from %s to nullptr", src->cname());
@@ -175,8 +175,8 @@ void RoutedZone::getRouteCheckParams(NetCard* src, NetCard* dst)
 }
 void RoutedZone::addRouteCheckParams(sg_platf_route_cbarg_t route)
 {
-  NetCard* src        = route->src;
-  NetCard* dst        = route->dst;
+  NetPoint* src       = route->src;
+  NetPoint* dst       = route->dst;
   const char* srcName = src->cname();
   const char* dstName = dst->cname();
 

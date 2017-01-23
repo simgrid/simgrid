@@ -8,7 +8,7 @@
 #include "simgrid/s4u/engine.hpp"
 #include "simgrid/s4u/host.hpp"
 
-#include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/kernel/routing/VivaldiZone.hpp"
 #include "src/surf/network_interface.hpp"
 
@@ -18,12 +18,12 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 namespace vivaldi {
-simgrid::xbt::Extension<NetCard, Coords> Coords::EXTENSION_ID;
+simgrid::xbt::Extension<NetPoint, Coords> Coords::EXTENSION_ID;
 
-Coords::Coords(NetCard* netcard, const char* coordStr)
+Coords::Coords(NetPoint* netcard, const char* coordStr)
 {
   if (!Coords::EXTENSION_ID.valid())
-    Coords::EXTENSION_ID = NetCard::extension_create<Coords>();
+    Coords::EXTENSION_ID = NetPoint::extension_create<Coords>();
 
   std::vector<std::string> string_values;
   boost::split(string_values, coordStr, boost::is_any_of(" "));
@@ -47,7 +47,7 @@ static inline double euclidean_dist_comp(int index, std::vector<double>* src, st
   return (src_coord - dst_coord) * (src_coord - dst_coord);
 }
 
-static std::vector<double>* getCoordsFromNetcard(NetCard* nc)
+static std::vector<double>* getCoordsFromNetcard(NetPoint* nc)
 {
   simgrid::kernel::routing::vivaldi::Coords* coords = nc->extension<simgrid::kernel::routing::vivaldi::Coords>();
   xbt_assert(coords, "Please specify the Vivaldi coordinates of %s %s (%p)",
@@ -58,7 +58,7 @@ VivaldiZone::VivaldiZone(NetZone* father, const char* name) : ClusterZone(father
 {
 }
 
-void VivaldiZone::setPeerLink(NetCard* netcard, double bw_in, double bw_out, const char* coord)
+void VivaldiZone::setPeerLink(NetPoint* netcard, double bw_in, double bw_out, const char* coord)
 {
   xbt_assert(netcard->netzone() == this, "Cannot add a peer link to a netcard that is not in this netzone");
 
@@ -71,7 +71,7 @@ void VivaldiZone::setPeerLink(NetCard* netcard, double bw_in, double bw_out, con
   privateLinks_.insert({netcard->id(), {linkUp, linkDown}});
 }
 
-void VivaldiZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
+void VivaldiZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
 {
   XBT_DEBUG("vivaldi getLocalRoute from '%s'[%d] '%s'[%d]", src->cname(), src->id(), dst->cname(), dst->id());
 

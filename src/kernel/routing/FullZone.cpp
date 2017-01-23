@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/routing/FullZone.hpp"
-#include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
@@ -58,7 +58,7 @@ FullZone::~FullZone()
   }
 }
 
-void FullZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t res, double* lat)
+void FullZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t res, double* lat)
 {
   XBT_DEBUG("full getLocalRoute from %s[%d] to %s[%d]", src->cname(), src->id(), dst->cname(), dst->id());
 
@@ -78,8 +78,8 @@ void FullZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t 
 
 void FullZone::addRoute(sg_platf_route_cbarg_t route)
 {
-  NetCard* src = route->src;
-  NetCard* dst = route->dst;
+  NetPoint* src = route->src;
+  NetPoint* dst = route->dst;
   addRouteCheckParams(route);
 
   size_t table_size = vertices_.size();
@@ -102,7 +102,7 @@ void FullZone::addRoute(sg_platf_route_cbarg_t route)
 
   if (route->symmetrical == true && src != dst) {
     if (route->gw_dst && route->gw_src) {
-      NetCard* gw_tmp = route->gw_src;
+      NetPoint* gw_tmp = route->gw_src;
       route->gw_src   = route->gw_dst;
       route->gw_dst   = gw_tmp;
     }

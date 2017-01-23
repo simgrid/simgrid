@@ -16,7 +16,7 @@ class NetworkNS3Action;
 
 class NetCardNs3 {
 public:
-  static simgrid::xbt::Extension<simgrid::kernel::routing::NetCard, NetCardNs3> EXTENSION_ID;
+  static simgrid::xbt::Extension<simgrid::kernel::routing::NetPoint, NetCardNs3> EXTENSION_ID;
 
   explicit NetCardNs3();
   int node_num;

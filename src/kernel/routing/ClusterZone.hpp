@@ -69,7 +69,7 @@ class XBT_PRIVATE ClusterZone : public NetZoneImpl {
 public:
   explicit ClusterZone(NetZone* father, const char* name);
 
-  void getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t into, double* latency) override;
+  void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency) override;
   void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
 
   virtual void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position);
@@ -81,7 +81,7 @@ public:
 
   Link* backbone_                = nullptr;
   void* loopback_                = nullptr;
-  NetCard* router_               = nullptr;
+  NetPoint* router_              = nullptr;
   bool hasLimiter_               = false;
   bool hasLoopback_              = false;
   unsigned int linkCountPerNode_ = 1; /* may be 1 (if only a private link), 2 or 3 (if limiter and loopback) */

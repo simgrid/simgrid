@@ -3,9 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-
 #include "src/kernel/routing/FloydZone.hpp"
-#include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
 #include "xbt/log.h"
 
@@ -44,7 +43,7 @@ FloydZone::~FloydZone()
   xbt_free(costTable_);
 }
 
-void FloydZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
+void FloydZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
 {
   size_t table_size = vertices_.size();
 
@@ -136,7 +135,7 @@ void FloydZone::addRoute(sg_platf_route_cbarg_t route)
                  route->dst->name().c_str(), route->src->name().c_str());
 
     if (route->gw_dst && route->gw_src) {
-      NetCard* gw_tmp = route->gw_src;
+      NetPoint* gw_tmp = route->gw_src;
       route->gw_src   = route->gw_dst;
       route->gw_dst   = gw_tmp;
     }

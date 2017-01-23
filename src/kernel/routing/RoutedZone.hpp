@@ -57,7 +57,7 @@ public:
                                                   bool change_order);
 
 protected:
-  void getRouteCheckParams(NetCard* src, NetCard* dst);
+  void getRouteCheckParams(NetPoint* src, NetPoint* dst);
   void addRouteCheckParams(sg_platf_route_cbarg_t route);
 };
 }

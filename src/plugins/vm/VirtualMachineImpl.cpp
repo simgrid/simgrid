@@ -236,7 +236,7 @@ void VirtualMachineImpl::setPm(s4u::Host* destination)
   const char* pm_name_dst = destination->cname();
 
   /* update net_elm with that of the destination physical host */
-  piface_->pimpl_netcard = destination->pimpl_netcard;
+  piface_->pimpl_netpoint = destination->pimpl_netpoint;
 
   hostPM_ = destination;
 

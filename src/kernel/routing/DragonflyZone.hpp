@@ -63,7 +63,7 @@ public:
   explicit DragonflyZone(NetZone* father, const char* name);
   ~DragonflyZone() override;
   //      void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position) override;
-  void getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t into, double* latency) override;
+  void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency) override;
   void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) override;
   void seal() override;
   void generateRouters();

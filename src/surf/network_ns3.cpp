@@ -16,7 +16,7 @@
 
 #include "simgrid/sg_config.h"
 #include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
-#include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/surf_private.h"
 
@@ -44,7 +44,7 @@ static int number_of_links = 1;
 static int number_of_networks = 1;
 static int port_number = 1025; //Port number is limited from 1025 to 65 000
 
-simgrid::xbt::Extension<simgrid::kernel::routing::NetCard, NetCardNs3> NetCardNs3::EXTENSION_ID;
+simgrid::xbt::Extension<simgrid::kernel::routing::NetPoint, NetCardNs3> NetCardNs3::EXTENSION_ID;
 
 NetCardNs3::NetCardNs3()
 {
@@ -58,7 +58,7 @@ NetCardNs3::NetCardNs3()
  * Callbacks *
  *************/
 
-static void netcardCreation_cb(simgrid::kernel::routing::NetCard* netcard)
+static void netcardCreation_cb(simgrid::kernel::routing::NetPoint* netcard)
 {
   netcard->extension_set<NetCardNs3>(new NetCardNs3());
 }
@@ -75,7 +75,7 @@ static void clusterCreation_cb(sg_platf_cluster_cbarg_t cluster)
 
     // Create private link
     char* host_id = bprintf("%s%d%s", cluster->prefix, i, cluster->suffix);
-    NetCardNs3* host_src = sg_host_by_name(host_id)->pimpl_netcard->extension<NetCardNs3>();
+    NetCardNs3* host_src = sg_host_by_name(host_id)->pimpl_netpoint->extension<NetCardNs3>();
     xbt_assert(host_src, "Cannot find a NS3 host of name %s", host_id);
 
     ns3_add_link(host_src->node_num, host_dst->node_num, bw,lat);
@@ -94,9 +94,9 @@ static void clusterCreation_cb(sg_platf_cluster_cbarg_t cluster)
   xbt_free(bw);
 }
 
-static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetCard* src,
-                             simgrid::kernel::routing::NetCard* dst, simgrid::kernel::routing::NetCard* gw_src,
-                             simgrid::kernel::routing::NetCard* gw_dst, std::vector<Link*>* link_list)
+static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoint* src,
+                             simgrid::kernel::routing::NetPoint* dst, simgrid::kernel::routing::NetPoint* gw_src,
+                             simgrid::kernel::routing::NetPoint* gw_dst, std::vector<Link*>* link_list)
 {
   if (link_list->size() == 1) {
     simgrid::surf::LinkNS3* link = static_cast<simgrid::surf::LinkNS3*>(link_list->at(0));
@@ -154,11 +154,11 @@ namespace simgrid {
 namespace surf {
 
 NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
-  NetCardNs3::EXTENSION_ID = simgrid::kernel::routing::NetCard::extension_create<NetCardNs3>();
+  NetCardNs3::EXTENSION_ID = simgrid::kernel::routing::NetPoint::extension_create<NetCardNs3>();
 
   ns3_initialize(ns3_tcp_model.get().c_str());
 
-  simgrid::kernel::routing::NetCard::onCreation.connect(&netcardCreation_cb);
+  simgrid::kernel::routing::NetPoint::onCreation.connect(&netcardCreation_cb);
   simgrid::surf::on_cluster.connect(&clusterCreation_cb);
   simgrid::surf::on_postparse.connect(&postparse_cb);
   simgrid::s4u::NetZone::onRouteCreation.connect(&routeCreation_cb);
@@ -343,8 +343,8 @@ void ns3_simulator(double maxSeconds)
 void ns3_create_flow(simgrid::s4u::Host* src, simgrid::s4u::Host* dst, double startTime, u_int32_t TotalBytes,
                      simgrid::surf::NetworkNS3Action* action)
 {
-  int node1 = src->pimpl_netcard->extension<NetCardNs3>()->node_num;
-  int node2 = dst->pimpl_netcard->extension<NetCardNs3>()->node_num;
+  int node1 = src->pimpl_netpoint->extension<NetCardNs3>()->node_num;
+  int node2 = dst->pimpl_netpoint->extension<NetCardNs3>()->node_num;
 
   ns3::Ptr<ns3::Node> src_node = nodes.Get(node1);
   ns3::Ptr<ns3::Node> dst_node = nodes.Get(node2);

@@ -72,10 +72,10 @@ protected:
    * @param into Container into which the traversed links and gateway informations should be pushed
    * @param latency Accumulator in which the latencies should be added (caller must set it to 0)
    */
-  virtual void getLocalRoute(NetCard * src, NetCard * dst, sg_platf_route_cbarg_t into, double* latency) = 0;
+  virtual void getLocalRoute(NetPoint * src, NetPoint * dst, sg_platf_route_cbarg_t into, double* latency) = 0;
   /** @brief retrieves the list of all routes of size 1 (of type src x dst x Link) */
   /* returns whether we found a bypass path */
-  bool getBypassRoute(routing::NetCard * src, routing::NetCard * dst,
+  bool getBypassRoute(routing::NetPoint * src, routing::NetPoint * dst,
                       /* OUT */ std::vector<surf::Link*> * links, double* latency);
 
 public:
@@ -86,7 +86,7 @@ public:
    * @param links Accumulator in which all traversed links should be pushed (caller must empty it)
    * @param latency Accumulator in which the latencies should be added (caller must set it to 0)
    */
-  static void getGlobalRoute(routing::NetCard * src, routing::NetCard * dst,
+  static void getGlobalRoute(routing::NetPoint * src, routing::NetPoint * dst,
                              /* OUT */ std::vector<surf::Link*> * links, double* latency);
 
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) = 0;
@@ -99,8 +99,8 @@ public:
   RoutingMode hierarchy_ = RoutingMode::unset;
 
 private:
-  std::map<std::pair<NetCard*, NetCard*>, BypassRoute*> bypassRoutes_; // src x dst -> route
-  routing::NetCard* netcard_ = nullptr;                                // Our representative in the father NetZone
+  std::map<std::pair<NetPoint*, NetPoint*>, BypassRoute*> bypassRoutes_; // src x dst -> route
+  routing::NetPoint* netcard_ = nullptr;                                 // Our representative in the father NetZone
 };
 }
 }

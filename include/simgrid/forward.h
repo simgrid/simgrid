@@ -22,7 +22,7 @@ namespace simgrid {
        class ActivityImpl;
      }
      namespace routing {
-       class NetCard;
+     class NetPoint;
      }
   }
   namespace simix {
@@ -43,7 +43,7 @@ namespace simgrid {
 typedef simgrid::s4u::NetZone simgrid_NetZone;
 typedef simgrid::s4u::Host simgrid_Host;
 typedef simgrid::kernel::activity::ActivityImpl kernel_Activity;
-typedef simgrid::kernel::routing::NetCard routing_NetCard;
+typedef simgrid::kernel::routing::NetPoint routing_NetPoint;
 typedef simgrid::surf::Cpu surf_Cpu;
 typedef simgrid::surf::Link Link;
 typedef simgrid::surf::Resource surf_Resource;
@@ -58,7 +58,7 @@ typedef struct simgrid_NetZone simgrid_NetZone;
 typedef struct simgrid_Host simgrid_Host;
 typedef struct kernel_Activity kernel_Activity;
 typedef struct surf_Cpu surf_Cpu;
-typedef struct routing_NetCard routing_NetCard;
+typedef struct routing_NetPoint routing_NetPoint;
 typedef struct surf_Resource surf_Resource;
 typedef struct Link Link;
 typedef struct Trace tmgr_Trace;
@@ -72,7 +72,7 @@ typedef simgrid_Host* sg_host_t;
 typedef kernel_Activity *smx_activity_t;
 
 typedef surf_Cpu *surf_cpu_t;
-typedef routing_NetCard *sg_netcard_t;
+typedef routing_NetPoint* sg_netcard_t;
 typedef surf_Resource *sg_resource_t;
 
 // Types which are in fact dictelmt:

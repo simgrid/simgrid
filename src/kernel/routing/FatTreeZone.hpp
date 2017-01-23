@@ -100,7 +100,7 @@ class XBT_PRIVATE FatTreeZone : public ClusterZone {
 public:
   explicit FatTreeZone(NetZone* father, const char* name);
   ~FatTreeZone() override;
-  void getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t into, double* latency) override;
+  void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency) override;
 
   /** \brief Generate the fat tree
    *

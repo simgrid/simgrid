@@ -4,8 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/routing/TorusZone.hpp"
-#include "src/kernel/routing/NetCard.hpp"
-
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster_torus, surf_route_cluster, "Torus Routing part of surf");
@@ -110,7 +109,7 @@ void TorusZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
   xbt_dynar_free(&dimensions);
 }
 
-void TorusZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
+void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
 {
 
   XBT_VERB("torus getLocalRoute from '%s'[%d] to '%s'[%d]", src->name().c_str(), src->id(), dst->name().c_str(),

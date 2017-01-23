@@ -25,7 +25,7 @@ public:
   void seal() override;
   ~FullZone() override;
 
-  void getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t into, double* latency) override;
+  void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency) override;
   void addRoute(sg_platf_route_cbarg_t route) override;
 
   sg_platf_route_cbarg_t* routingTable_ = nullptr;

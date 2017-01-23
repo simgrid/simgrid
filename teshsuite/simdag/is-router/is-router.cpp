@@ -6,7 +6,7 @@
 #include "simgrid/s4u/engine.hpp"
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/simdag.h"
-#include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "surf/surf_routing.h"
 #include <stdio.h>
 
@@ -18,17 +18,17 @@ int main(int argc, char **argv)
   xbt_dynar_t hosts = sg_hosts_as_dynar();
   std::printf("Host count: %zu, link number: %d\n", sg_host_count(), sg_link_count());
 
-  std::vector<simgrid::kernel::routing::NetCard*> netcardList;
+  std::vector<simgrid::kernel::routing::NetPoint*> netcardList;
   simgrid::s4u::Engine::instance()->netcardList(&netcardList);
   std::sort(netcardList.begin(), netcardList.end(),
-      [](simgrid::kernel::routing::NetCard* a, simgrid::kernel::routing::NetCard* b) {
-      return a->name() < b->name();
-  });
+            [](simgrid::kernel::routing::NetPoint* a, simgrid::kernel::routing::NetPoint* b) {
+              return a->name() < b->name();
+            });
 
   int it;
   sg_host_t host;
   xbt_dynar_foreach(hosts, it, host) {
-    simgrid::kernel::routing::NetCard * nc = host->pimpl_netcard;
+    simgrid::kernel::routing::NetPoint* nc = host->pimpl_netpoint;
     std::printf("   - Seen: \"%s\". Type: %s\n", host->cname(),
                 nc->isRouter() ? "router" : (nc->isNetZone() ? "netzone" : (nc->isHost() ? "host" : "buggy")));
   }

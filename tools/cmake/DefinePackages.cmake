@@ -295,8 +295,8 @@ set(SURF_SRC
   src/kernel/routing/FloydZone.hpp
   src/kernel/routing/FullZone.cpp
   src/kernel/routing/FullZone.hpp
-  src/kernel/routing/NetCard.cpp
-  src/kernel/routing/NetCard.hpp
+  src/kernel/routing/NetPoint.cpp
+  src/kernel/routing/NetPoint.hpp
   src/kernel/routing/NetZoneImpl.cpp
   src/kernel/routing/NetZoneImpl.hpp
   src/kernel/routing/RoutedZone.cpp

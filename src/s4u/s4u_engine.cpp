@@ -14,10 +14,8 @@
 #include "simgrid/s4u/storage.hpp"
 #include "simgrid/simix.h"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/kernel/routing/NetZoneImpl.hpp"
-#include "src/kernel/routing/NetCard.hpp"
-
-
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.h"               // routing_platf. FIXME:KILLME. SOON
 
@@ -114,31 +112,31 @@ NetZone* Engine::netzoneByNameOrNull(const char* name)
 }
 
 /** @brief Retrieve the netcard of the given name (or nullptr if not found) */
-simgrid::kernel::routing::NetCard* Engine::netcardByNameOrNull(const char* name)
+simgrid::kernel::routing::NetPoint* Engine::netcardByNameOrNull(const char* name)
 {
-  if (pimpl->netcards_.find(name) == pimpl->netcards_.end())
+  if (pimpl->netpoints_.find(name) == pimpl->netpoints_.end())
     return nullptr;
-  return pimpl->netcards_.at(name);
+  return pimpl->netpoints_.at(name);
 }
 /** @brief Fill the provided vector with all existing netcards */
-void Engine::netcardList(std::vector<simgrid::kernel::routing::NetCard*>* list)
+void Engine::netcardList(std::vector<simgrid::kernel::routing::NetPoint*>* list)
 {
-  for (auto kv: pimpl->netcards_)
+  for (auto kv : pimpl->netpoints_)
     list->push_back(kv.second);
 }
 /** @brief Register a new netcard to the system */
-void Engine::netcardRegister(simgrid::kernel::routing::NetCard* card)
+void Engine::netcardRegister(simgrid::kernel::routing::NetPoint* card)
 {
 //  simgrid::simix::kernelImmediate([&]{ FIXME: this segfaults in set_thread
-      pimpl->netcards_[card->name()] = card;
+pimpl->netpoints_[card->name()] = card;
 //  });
 }
 /** @brief Unregister a given netcard */
-void Engine::netcardUnregister(simgrid::kernel::routing::NetCard* card)
+void Engine::netcardUnregister(simgrid::kernel::routing::NetPoint* card)
 {
-  simgrid::simix::kernelImmediate([&]{
-      pimpl->netcards_.erase(card->name());
-      delete card;
+  simgrid::simix::kernelImmediate([&] {
+    pimpl->netpoints_.erase(card->name());
+    delete card;
   });
 }
 }

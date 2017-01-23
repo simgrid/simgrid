@@ -11,7 +11,7 @@
 #include "simgrid/link.h"
 #include "simgrid/s4u/engine.hpp"
 #include "simgrid/sg_config.h"
-#include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_private.h"
 #include "xbt/dict.h"

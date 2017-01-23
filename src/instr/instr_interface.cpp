@@ -6,7 +6,7 @@
 
 #include "simgrid_config.h"
 #include "src/instr/instr_private.h"
-#include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_private.h"
 #include "surf/surf.h"

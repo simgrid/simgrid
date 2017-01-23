@@ -4,7 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
+
 #include "simgrid/s4u/engine.hpp"
 #include "simgrid/s4u/host.hpp"
 #include "surf/surf_routing.h"
@@ -15,15 +16,15 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-simgrid::xbt::signal<void(NetCard*)> NetCard::onCreation;
+simgrid::xbt::signal<void(NetPoint*)> NetPoint::onCreation;
 
-NetCard::NetCard(std::string name, NetCard::Type componentType, NetZoneImpl* netzone_p)
+NetPoint::NetPoint(std::string name, NetPoint::Type componentType, NetZoneImpl* netzone_p)
     : name_(name), componentType_(componentType), netzone_(netzone_p)
 {
   if (netzone_p != nullptr)
     id_ = netzone_p->addComponent(this);
   simgrid::s4u::Engine::instance()->netcardRegister(this);
-  simgrid::kernel::routing::NetCard::onCreation(this);
+  simgrid::kernel::routing::NetPoint::onCreation(this);
 }
 }
 }
@@ -33,7 +34,7 @@ NetCard::NetCard(std::string name, NetCard::Type componentType, NetZoneImpl* net
  *
  * Netcards are the thing that connect host or routers to the network
  */
-simgrid::kernel::routing::NetCard* sg_netcard_by_name_or_null(const char* name)
+simgrid::kernel::routing::NetPoint* sg_netcard_by_name_or_null(const char* name)
 {
   return simgrid::s4u::Engine::instance()->netcardByNameOrNull(name);
 }

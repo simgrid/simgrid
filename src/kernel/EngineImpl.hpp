@@ -13,7 +13,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 class NetZoneImpl;
-class NetCard;
+class NetPoint;
 }
 
 class EngineImpl {
@@ -23,7 +23,7 @@ public:
   kernel::routing::NetZoneImpl* netRoot_ = nullptr;
 
 protected:
-  std::unordered_map<std::string,simgrid::kernel::routing::NetCard*> netcards_;
+  std::unordered_map<std::string, simgrid::kernel::routing::NetPoint*> netpoints_;
   friend simgrid::s4u::Engine;
 };
 }

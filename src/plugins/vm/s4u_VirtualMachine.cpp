@@ -19,7 +19,7 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm) : Host(name)
 
   pimpl_vm_ = new vm::VirtualMachineImpl(this, pm);
   /* Currently, a VM uses the network resource of its physical host */
-  pimpl_netcard = pm->pimpl_netcard;
+  pimpl_netpoint = pm->pimpl_netpoint;
   // Create a VCPU for this VM
   surf::CpuCas01* sub_cpu = dynamic_cast<surf::CpuCas01*>(pm->pimpl_cpu);
 
@@ -51,7 +51,7 @@ VirtualMachine::~VirtualMachine()
   extension_set<simgrid::simix::Host>(nullptr);
 
   /* Don't free these things twice: they are the ones of my physical host */
-  pimpl_netcard = nullptr;
+  pimpl_netpoint = nullptr;
 }
 
 bool VirtualMachine::isMigrating()

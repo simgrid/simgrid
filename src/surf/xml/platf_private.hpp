@@ -199,7 +199,7 @@ XBT_PUBLIC(void) sg_platf_new_AS_seal();                     // That AS is fully
 
 XBT_PUBLIC(void) sg_platf_new_host   (sg_platf_host_cbarg_t   host);   // Add an host   to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_hostlink(sg_platf_host_link_cbarg_t h); // Add an host_link to the currently described AS
-XBT_PUBLIC(simgrid::kernel::routing::NetCard*)
+XBT_PUBLIC(simgrid::kernel::routing::NetPoint*)
 sg_platf_new_router(const char* name, const char* coords);             // Add a router  to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_link   (sg_platf_link_cbarg_t link);     // Add a link    to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_peer   (sg_platf_peer_cbarg_t peer);     // Add a peer    to the currently described AS

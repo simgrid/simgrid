@@ -21,7 +21,7 @@
 #include "src/kernel/routing/FatTreeZone.hpp"
 #include "src/kernel/routing/FloydZone.hpp"
 #include "src/kernel/routing/FullZone.hpp"
-#include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/kernel/routing/NetZoneImpl.hpp"
 #include "src/kernel/routing/TorusZone.hpp"
 #include "src/kernel/routing/VivaldiZone.hpp"
@@ -89,14 +89,14 @@ void sg_platf_new_host(sg_platf_host_cbarg_t args)
   if (args->pstate != 0)
     host->pimpl_cpu->setPState(args->pstate);
   if (args->coord && strcmp(args->coord, ""))
-    new simgrid::kernel::routing::vivaldi::Coords(host->pimpl_netcard, args->coord);
+    new simgrid::kernel::routing::vivaldi::Coords(host->pimpl_netpoint, args->coord);
 
   if (TRACE_is_enabled() && TRACE_needs_platform())
     sg_instr_new_host(*host);
 }
 
 /** @brief Add a "router" to the network element list */
-simgrid::kernel::routing::NetCard* sg_platf_new_router(const char* name, const char* coords)
+simgrid::kernel::routing::NetPoint* sg_platf_new_router(const char* name, const char* coords)
 {
   simgrid::kernel::routing::NetZoneImpl* current_routing = routing_get_current();
 
@@ -105,8 +105,8 @@ simgrid::kernel::routing::NetCard* sg_platf_new_router(const char* name, const c
   xbt_assert(nullptr == simgrid::s4u::Engine::instance()->netcardByNameOrNull(name),
              "Refusing to create a router named '%s': this name already describes a node.", name);
 
-  simgrid::kernel::routing::NetCard* netcard =
-      new simgrid::kernel::routing::NetCard(name, simgrid::kernel::routing::NetCard::Type::Router, current_routing);
+  simgrid::kernel::routing::NetPoint* netcard =
+      new simgrid::kernel::routing::NetPoint(name, simgrid::kernel::routing::NetPoint::Type::Router, current_routing);
   XBT_DEBUG("Router '%s' has the id %d", name, netcard->id());
 
   if (coords && strcmp(coords, ""))
@@ -557,7 +557,7 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   speedPerPstate.push_back(peer->speed);
   simgrid::s4u::Host* host = as->createHost(peer->id, &speedPerPstate, 1, nullptr);
 
-  as->setPeerLink(host->pimpl_netcard, peer->bw_in, peer->bw_out, peer->coord);
+  as->setPeerLink(host->pimpl_netpoint, peer->bw_in, peer->bw_out, peer->coord);
 
   /* Change from the defaults */
   if (peer->state_trace)
@@ -720,7 +720,7 @@ void sg_platf_new_AS_seal()
 /** @brief Add a link connecting an host to the rest of its AS (which must be cluster or vivaldi) */
 void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
 {
-  simgrid::kernel::routing::NetCard *netcard = sg_host_by_name(hostlink->id)->pimpl_netcard;
+  simgrid::kernel::routing::NetPoint* netcard = sg_host_by_name(hostlink->id)->pimpl_netpoint;
   xbt_assert(netcard, "Host '%s' not found!", hostlink->id);
   xbt_assert(dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing),
              "Only hosts from Cluster and Vivaldi ASes can get an host_link.");

@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/routing/DijkstraZone.hpp"
-#include "src/kernel/routing/NetCard.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
 
 #include <float.h>
@@ -141,7 +141,7 @@ void DijkstraZone::newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_rou
   xbt_graph_new_edge(routeGraph_, src, dst, e_route);
 }
 
-void DijkstraZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
+void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
 {
   getRouteCheckParams(src, dst);
   int src_id = src->id();
@@ -239,8 +239,8 @@ void DijkstraZone::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbar
   }
 
   /* compose route path with links */
-  NetCard *gw_src = nullptr, *gw_dst, *prev_gw_src, *first_gw = nullptr;
-  NetCard *gw_dst_net_elm = nullptr, *prev_gw_src_net_elm = nullptr;
+  NetPoint *gw_src = nullptr, *gw_dst, *prev_gw_src, *first_gw = nullptr;
+  NetPoint *gw_dst_net_elm = nullptr, *prev_gw_src_net_elm = nullptr;
 
   for (int v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
     xbt_node_t node_pred_v = xbt_dynar_get_as(nodes, pred_arr[v], xbt_node_t);
@@ -315,8 +315,8 @@ DijkstraZone::DijkstraZone(NetZone* father, const char* name, bool cached) : Rou
 
 void DijkstraZone::addRoute(sg_platf_route_cbarg_t route)
 {
-  NetCard* src        = route->src;
-  NetCard* dst        = route->dst;
+  NetPoint* src       = route->src;
+  NetPoint* dst       = route->dst;
   const char* srcName = src->name().c_str();
   const char* dstName = dst->name().c_str();
 
@@ -353,7 +353,7 @@ void DijkstraZone::addRoute(sg_platf_route_cbarg_t route)
              route->gw_src->name().c_str());
 
     if (route->gw_dst && route->gw_src) {
-      NetCard* gw_tmp = route->gw_src;
+      NetPoint* gw_tmp = route->gw_src;
       route->gw_src   = route->gw_dst;
       route->gw_dst   = gw_tmp;
     }
