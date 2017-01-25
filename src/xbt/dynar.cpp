@@ -620,7 +620,7 @@ XBT_PUBLIC(void) xbt_dynar_three_way_partition(xbt_dynar_t const dynar, int_f_pv
   unsigned long int p = -1;
   unsigned long int q = dynar->used;
   const unsigned long elmsize = dynar->elmsize;
-  void *tmp = xbt_malloc(elmsize);
+  char* tmp[elmsize];
   void *elm;
 
   for (i = 0; i < q;) {
@@ -643,7 +643,6 @@ XBT_PUBLIC(void) xbt_dynar_three_way_partition(xbt_dynar_t const dynar, int_f_pv
       }
     }
   }
-  xbt_free(tmp);
 }
 
 /** @brief Transform a dynar into a nullptr terminated array. 
