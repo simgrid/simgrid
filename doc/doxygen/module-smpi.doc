@@ -156,6 +156,7 @@ Most of these are best described in <a href="http://www.cs.arizona.edu/~dkl/rese
  - mvapich2: use mvapich2 selector for the alltoall operations
  - impi: use intel mpi selector for the alltoall operations
  - automatic (experimental): use an automatic self-benchmarking algorithm 
+ - bruck: Described by Bruck et.al. in <a href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=642949">
  - 2dmesh: organizes the nodes as a two dimensional mesh, and perform allgather 
    along the dimensions
  - 3dmesh: adds a third dimension to the previous algorithm
