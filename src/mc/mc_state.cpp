@@ -47,7 +47,7 @@ State::State(unsigned long state_number)
 std::size_t State::interleaveSize() const
 {
   return boost::range::count_if(this->processStates,
-    [](simgrid::mc::ProcessState const& p) { return p.isToInterleave(); });
+    [](simgrid::mc::ProcessState const& p) { return p.isTodo(); });
 }
 
 Transition State::getTransition() const
@@ -63,7 +63,7 @@ Transition State::getTransition() const
  * This can be seen as an iterator returning the next transition of the process.
  *
  * We only consider the processes that are both
- *  - marked "to be interleaved" in their ProcessState (controled by the checker algo).
+ *  - marked "to be interleaved" in their ProcessState (controlled by the checker algorithm).
  *  - which simcall can currently be executed (like a comm where the other partner is already known)
  * Once we returned the last enabled transition of a process, it is marked done.
  *
@@ -72,65 +72,65 @@ Transition State::getTransition() const
  * field to remember what was the last returned sub-transition.
  */
 static inline smx_simcall_t MC_state_get_request_for_process(
-  simgrid::mc::State* state, smx_actor_t process)
+  simgrid::mc::State* state, smx_actor_t actor)
 {
   /* reset the outgoing transition */
-  simgrid::mc::ProcessState* procstate = &state->processStates[process->pid];
+  simgrid::mc::ProcessState* procstate = &state->processStates[actor->pid];
   state->transition.pid                = -1;
   state->transition.argument           = -1;
   state->executed_req.call             = SIMCALL_NONE;
 
-  if (!procstate->isToInterleave())
-    return nullptr;
-  if (!simgrid::mc::actor_is_enabled(process))
-    return nullptr;
+  if (!procstate->isTodo())
+    return nullptr; // Not considered by the checker algorithm
+  if (!simgrid::mc::actor_is_enabled(actor))
+    return nullptr; // Not executable in the application
 
   smx_simcall_t req = nullptr;
-  switch (process->simcall.call) {
+  switch (actor->simcall.call) {
       case SIMCALL_COMM_WAITANY:
         state->transition.argument = -1;
-        while (procstate->interleave_count <
+        while (procstate->times_considered <
               read_length(mc_model_checker->process(),
-                remote(simcall_comm_waitany__get__comms(&process->simcall)))) {
-          if (simgrid::mc::request_is_enabled_by_idx(&process->simcall,
-              procstate->interleave_count++)) {
-            state->transition.argument = procstate->interleave_count - 1;
+                remote(simcall_comm_waitany__get__comms(&actor->simcall)))) {
+          if (simgrid::mc::request_is_enabled_by_idx(&actor->simcall,
+              procstate->times_considered++)) {
+            state->transition.argument = procstate->times_considered - 1;
             break;
           }
         }
 
-        if (procstate->interleave_count >=
+        if (procstate->times_considered >=
             simgrid::mc::read_length(mc_model_checker->process(),
-              simgrid::mc::remote(simcall_comm_waitany__get__comms(&process->simcall))))
+              simgrid::mc::remote(simcall_comm_waitany__get__comms(&actor->simcall))))
           procstate->setDone();
         if (state->transition.argument != -1)
-          req = &process->simcall;
+          req = &actor->simcall;
         break;
 
       case SIMCALL_COMM_TESTANY: {
-        unsigned start_count = procstate->interleave_count;
+        unsigned start_count = procstate->times_considered;
         state->transition.argument = -1;
-        while (procstate->interleave_count <
-                simcall_comm_testany__get__count(&process->simcall))
-          if (simgrid::mc::request_is_enabled_by_idx(&process->simcall,
-              procstate->interleave_count++)) {
-            state->transition.argument = procstate->interleave_count - 1;
+        while (procstate->times_considered <
+                simcall_comm_testany__get__count(&actor->simcall))
+          if (simgrid::mc::request_is_enabled_by_idx(&actor->simcall,
+              procstate->times_considered++)) {
+            state->transition.argument = procstate->times_considered - 1;
             break;
           }
 
-        if (procstate->interleave_count >=
-            simcall_comm_testany__get__count(&process->simcall))
+        if (procstate->times_considered >=
+            simcall_comm_testany__get__count(&actor->simcall))
           procstate->setDone();
 
         if (state->transition.argument != -1 || start_count == 0)
-           req = &process->simcall;
+           req = &actor->simcall;
 
         break;
       }
 
       case SIMCALL_COMM_WAIT: {
         simgrid::mc::RemotePtr<simgrid::kernel::activity::Comm> remote_act = remote(
-          static_cast<simgrid::kernel::activity::Comm*>(simcall_comm_wait__get__comm(&process->simcall)));
+          static_cast<simgrid::kernel::activity::Comm*>(simcall_comm_wait__get__comm(&actor->simcall)));
         simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_act;
         mc_model_checker->process().read(temp_act, remote_act);
         simgrid::kernel::activity::Comm* act = temp_act.getBuffer();
@@ -142,30 +142,30 @@ static inline smx_simcall_t MC_state_get_request_for_process(
         else
           state->transition.argument = -1;
         procstate->setDone();
-        req = &process->simcall;
+        req = &actor->simcall;
         break;
       }
 
       case SIMCALL_MC_RANDOM: {
-        int min_value = simcall_mc_random__get__min(&process->simcall);
-        state->transition.argument = procstate->interleave_count + min_value;
-        procstate->interleave_count++;
-        if (state->transition.argument == simcall_mc_random__get__max(&process->simcall))
+        int min_value = simcall_mc_random__get__min(&actor->simcall);
+        state->transition.argument = procstate->times_considered + min_value;
+        procstate->times_considered++;
+        if (state->transition.argument == simcall_mc_random__get__max(&actor->simcall))
           procstate->setDone();
-        req = &process->simcall;
+        req = &actor->simcall;
         break;
       }
 
       default:
         procstate->setDone();
         state->transition.argument = 0;
-        req = &process->simcall;
+        req = &actor->simcall;
         break;
   }
   if (!req)
     return nullptr;
 
-  state->transition.pid = process->pid;
+  state->transition.pid = actor->pid;
   state->executed_req = *req;
   // Fetch the data of the request and translate it:
   state->internal_req = *req;

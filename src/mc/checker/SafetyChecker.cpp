@@ -147,10 +147,10 @@ void SafetyChecker::run()
 
     mc_model_checker->executed_transitions++;
 
-    /* Actually answer the request: let the remote process do execute that request */
+    /* Actually answer the request: let execute the selected request (MCed does one step) */
     this->getSession().execute(state->transition);
 
-    /* Create the new expanded state */
+    /* Create the new expanded state (copy the state of MCed into our MCer data) */
     std::unique_ptr<simgrid::mc::State> next_state =
         std::unique_ptr<simgrid::mc::State>(new simgrid::mc::State(++expandedStatesCount_));
 
@@ -211,8 +211,8 @@ void SafetyChecker::backtrack()
     if (reductionMode_ == simgrid::mc::ReductionMode::dpor) {
       smx_simcall_t req = &state->internal_req;
       if (req->call == SIMCALL_MUTEX_LOCK || req->call == SIMCALL_MUTEX_TRYLOCK)
-        xbt_die("Mutex is currently not supported with DPOR, "
-          "use --cfg=model-check/reduction:none");
+        xbt_die("Mutex is currently not supported with DPOR,  use --cfg=model-check/reduction:none");
+
       const smx_actor_t issuer = MC_smx_simcall_get_issuer(req);
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
         simgrid::mc::State* prev_state = i->get();

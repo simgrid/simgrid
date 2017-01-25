@@ -70,45 +70,45 @@ struct PatternCommunication {
 
 };
 
-/* On every state, each process has an entry of the following type */
+/* On every state, each process has an entry of the following type.
+ * This represents both the process and its transition because
+ *   a process cannot have more than one enabled transition at a given time.
+ */
 class ProcessState {
-  /* Possible exploration status of a process in a state */
+  /* Possible exploration status of a process transition in a state.
+   * Either the checker did not consider the transition, or it was considered and to do, or considered and done.
+   */
   enum class InterleavingType {
-    /** We do not have to execute this process transitions */
+    /** This process transition is not considered by the checker (yet?) */
     disabled = 0,
-    /** We still have to execute (some of) this process transitions */
-    interleave,
-    /** We have already executed this process transitions */
+    /** The checker algorithm decided that this process transitions should be done at some point */
+    todo,
+    /** The checker algorithm decided that this should be done, but it was done in the meanwhile */
     done,
   };
 
   /** Exploration control information */
   InterleavingType state = InterleavingType::disabled;
 public:
-
-  /** Number of times that the process was interleaved */
+  /** Number of times that the process was considered to be executed */
   // TODO, make this private
-  unsigned int interleave_count = 0;
+  unsigned int times_considered = 0;
 
-  bool isDisabled() const
-  {
+  bool isDisabled() const {
     return this->state == InterleavingType::disabled;
   }
-  bool isDone() const
-  {
+  bool isDone() const {
     return this->state == InterleavingType::done;
   }
-  bool isToInterleave() const
-  {
-    return this->state == InterleavingType::interleave;
+  bool isTodo() const {
+    return this->state == InterleavingType::todo;
   }
-  void interleave()
-  {
-    this->state = InterleavingType::interleave;
-    this->interleave_count = 0;
+  /** Mark that we should try executing this process at some point in the future of the checker algorithm */
+  void consider() {
+    this->state            = InterleavingType::todo;
+    this->times_considered = 0;
   }
-  void setDone()
-  {
+  void setDone() {
     this->state = InterleavingType::done;
   }
 };
@@ -149,7 +149,7 @@ struct XBT_PRIVATE State {
 
   std::size_t interleaveSize() const;
   void interleave(smx_actor_t process) {
-    this->processStates[process->pid].interleave();
+    this->processStates[process->pid].consider();
   }
   Transition getTransition() const;
 };
