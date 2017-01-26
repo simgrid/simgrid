@@ -18,7 +18,7 @@ public class Mutex {
 		init();
 	}
 
-	protected void finalize() throws Throwable{
+	protected void finalize() throws Throwable {
 		nativeFinalize();
 	}
 	private native void nativeFinalize();

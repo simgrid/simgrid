@@ -48,9 +48,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Mutex_release(JNIEnv * env, jobject 
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Mutex_nativeFinalize(JNIEnv * env, jobject obj) {
-  xbt_mutex_t mutex;
-
-  mutex = (xbt_mutex_t) (uintptr_t) env->GetLongField(obj, jsyncro_field_Mutex_bind);
+  xbt_mutex_t mutex = (xbt_mutex_t)(uintptr_t)env->GetLongField(obj, jsyncro_field_Mutex_bind);
   xbt_mutex_destroy(mutex);
 }
 

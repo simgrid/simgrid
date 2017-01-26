@@ -51,13 +51,23 @@ public class VM extends Host {
 		return null; 
 	}
 	
+	/** Kills all the actors running on that VM 
+	 * 
+	 * Actually, this strictly equivalent to shutdown().
+	 * In C and in libvirt, the destroy function also releases the memory associated to the VM, 
+	 * but this is not the way it goes in Java. The VM will only get destroyed by the garbage 
+	 * collector when it is not referenced anymore by your variables. So, to see the VM really 
+	 * destroyed, don't call this function but simply release any ref you have on it. 
+	 */
 	public void destroy() {
+		shutdown();
+	}
+
+	/* Make sure that the GC also destroys the C object */
+	protected void finalize() throws Throwable {
 		nativeFinalize();
 	}
-	private native void nativeFinalize();
-
-
-	/* JNI / Native code */
+	public native void nativeFinalize();
 
 	/** Returns whether the given VM is currently suspended */	
 	public native int isCreated();
