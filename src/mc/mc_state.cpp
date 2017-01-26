@@ -32,7 +32,7 @@ State::State(unsigned long state_number)
   std::memset(&this->internal_req, 0, sizeof(this->internal_req));
   std::memset(&this->executed_req, 0, sizeof(this->executed_req));
 
-  processStates.resize(MC_smx_get_maxpid());
+  actorStates.resize(MC_smx_get_maxpid());
   num = state_number;
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (state_number % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
@@ -46,7 +46,7 @@ State::State(unsigned long state_number)
 
 std::size_t State::interleaveSize() const
 {
-  return boost::range::count_if(this->processStates,
+  return boost::range::count_if(this->actorStates,
     [](simgrid::mc::ProcessState const& p) { return p.isTodo(); });
 }
 
@@ -75,7 +75,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
   simgrid::mc::State* state, smx_actor_t actor)
 {
   /* reset the outgoing transition */
-  simgrid::mc::ProcessState* procstate = &state->processStates[actor->pid];
+  simgrid::mc::ProcessState* procstate = &state->actorStates[actor->pid];
   state->transition.pid                = -1;
   state->transition.argument           = -1;
   state->executed_req.call             = SIMCALL_NONE;

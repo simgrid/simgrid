@@ -233,7 +233,7 @@ void SafetyChecker::backtrack()
               state->num);
           }
 
-          if (!prev_state->processStates[issuer->pid].isDone())
+          if (!prev_state->actorStates[issuer->pid].isDone())
             prev_state->interleave(issuer);
           else
             XBT_DEBUG("Process %p is in done set", req->issuer);

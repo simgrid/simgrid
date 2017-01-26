@@ -121,7 +121,7 @@ struct XBT_PRIVATE State {
   int num = 0;
 
   /** State's exploration status by process */
-  std::vector<ProcessState> processStates;
+  std::vector<ProcessState> actorStates;
 
   Transition transition;
 
@@ -148,8 +148,8 @@ struct XBT_PRIVATE State {
   State(unsigned long state_number);
 
   std::size_t interleaveSize() const;
-  void interleave(smx_actor_t process) {
-    this->processStates[process->pid].consider();
+  void interleave(smx_actor_t actor) {
+    this->actorStates[actor->pid].consider();
   }
   Transition getTransition() const;
 };

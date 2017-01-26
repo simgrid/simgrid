@@ -28,7 +28,8 @@ static int server(int argc, char *argv[])
     MSG_task_receive(&task, "mymailbox");
     count++;
   }
-  MC_assert(xbt_str_parse_int(MSG_task_get_name(task), "Task names must be integers, not '%s'") == 3);
+  int value_got = xbt_str_parse_int(MSG_task_get_name(task), "Task names must be integers, not '%s'");
+  MC_assert(value_got == 3);
 
   XBT_INFO("OK");
   return 0;
