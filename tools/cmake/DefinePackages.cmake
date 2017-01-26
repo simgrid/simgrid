@@ -869,6 +869,7 @@ set(DOC_SOURCES
   doc/msg-tuto-src/deployment2.xml
   doc/msg-tuto-src/deployment3.xml
   doc/msg-tuto-src/deployment_general.xml
+  doc/msg-tuto-src/Makefile
   doc/msg-tuto-src/masterworker0.c
   doc/msg-tuto-src/masterworker1.c
   doc/msg-tuto-src/masterworker2.c
