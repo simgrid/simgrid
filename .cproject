@@ -26,6 +26,7 @@
 									<listOptionValue builtIn="false" value="/opt/gtnets/include"/>
 									<listOptionValue builtIn="false" value="/usr/include/lua5.3"/>
 									<listOptionValue builtIn="false" value="/usr/lib/jvm/java-8-openjdk-amd64/include"/>
+									<listOptionValue builtIn="false" value="/usr/lib/jvm/java-8-openjdk-amd64/include/linux"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1641160853" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
