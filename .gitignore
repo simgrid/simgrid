@@ -121,6 +121,7 @@ doc/msg-tuto-src/masterworker3
 doc/msg-tuto-src/masterworker4
 examples/msg/actions-comm/actions-comm
 examples/msg/actions-storage/actions-storage
+examples/msg/async-yield/async-yield
 examples/msg/async-wait/async-wait
 examples/msg/async-waitall/async-waitall
 examples/msg/async-waitany/async-waitany

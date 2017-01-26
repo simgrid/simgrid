@@ -1,5 +1,5 @@
 # C examples
-foreach(x actions-comm actions-storage app-masterworker app-pingpong app-pmm app-token-ring async-wait async-waitall 
+foreach(x actions-comm actions-storage app-masterworker app-pingpong app-pmm app-token-ring async-yield async-wait async-waitall 
           async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple cloud-two-tasks
           dht-chord dht-pastry energy-consumption energy-onoff energy-pstate energy-ptask energy-vm platform-failures 
           io-file io-remote io-storage task-priority process-create process-kill process-migration process-suspend 
@@ -49,7 +49,7 @@ foreach (file answer dht-kademlia node routing_table task)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.h)
 endforeach()
 
-foreach (file actions-comm actions-storage app-bittorrent app-chainsend app-masterworker app-pingpong async-wait
+foreach (file actions-comm actions-storage app-bittorrent app-chainsend app-masterworker app-pingpong async-yield async-wait
          async-waitall async-waitany dht-chord dht-kademlia io-remote platform-properties
          task-priority)
   set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
@@ -94,7 +94,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actio
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_kill_d.xml       PARENT_SCOPE)
 
 foreach(x actions-comm actions-storage app-bittorrent app-chainsend app-masterworker app-pingpong app-token-ring
-          async-wait async-waitall async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple 
+          async-yield async-wait async-waitall async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple 
           cloud-two-tasks dht-chord dht-pastry dht-kademlia platform-failures io-file io-remote io-storage task-priority 
           process-create process-kill process-migration process-suspend platform-properties synchro-semaphore 
           process-startkilltime)
