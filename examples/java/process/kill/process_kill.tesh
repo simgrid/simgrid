@@ -1,14 +1,12 @@
 #! tesh
 
-! output sort 19
-
 $ java -classpath ${classpath:=.} process/kill/Main ${srcdir:=.}/../platforms/small_platform.xml --lof=no_loc
 > [0.000000] [jmsg/INFO] Using regular java threads.
-> [11.000000] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+> [Jacquelin:killer:(1) 0.000000] [jmsg/INFO] Hello!
 > [Boivin:victim:(2) 0.000000] [jmsg/INFO] Hello!
 > [Boivin:victim:(2) 0.000000] [jmsg/INFO] Suspending myself
-> [Boivin:victim:(2) 10.000000] [jmsg/INFO] OK, OK. Let's work
-> [Jacquelin:killer:(1) 0.000000] [jmsg/INFO] Hello!
 > [Jacquelin:killer:(1) 10.000000] [jmsg/INFO] Resume Process
+> [Boivin:victim:(2) 10.000000] [jmsg/INFO] OK, OK. Let's work
 > [Jacquelin:killer:(1) 11.000000] [jmsg/INFO] Kill Process
 > [Jacquelin:killer:(1) 11.000000] [jmsg/INFO] Ok, goodbye now.
+> [11.000000] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...

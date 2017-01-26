@@ -9,14 +9,14 @@
 #include <functional>
 #include <utility>
 
-#include <xbt/function_types.h>
+#include "JavaContext.hpp"
+#include "jxbt_utilities.h"
+#include "src/simix/smx_private.h"
+#include "xbt/dynar.h"
 #include <simgrid/simix.h>
 #include <xbt/ex.h>
 #include <xbt/ex.hpp>
-#include "JavaContext.hpp"
-#include "jxbt_utilities.h"
-#include "xbt/dynar.h"
-#include "../../simix/smx_private.h"
+#include <xbt/function_types.h>
 
 extern JavaVM *__java_vm;
 
@@ -125,19 +125,43 @@ void* JavaContext::wrapper(void *data)
 
 void JavaContext::stop()
 {
-  /* I am the current process and I am dying */
+  /* I was asked to die (either with kill() or because of a failed element) */
   if (this->iwannadie) {
     this->iwannadie = 0;
     JNIEnv *env = get_current_thread_env();
     XBT_DEBUG("Gonna launch Killed Error");
-    // TODO Adrien, if the process has not been created at the java layer, why should we raise the exception/error at the java level (this happens
-    // for instance during the migration process that creates at the C level two processes: one on the SRC node and one on the DST node, if the DST process is killed.
-    // it is not required to raise an exception at the JAVA level, the low level should be able to manage such an issue correctly but this is not the case right now unfortunately ...
-    // TODO it will be nice to have the name of the process to help the end-user to know which Process has been killed
-   // jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", bprintf("Process %s killed :) (file smx_context_java.c)", MSG_process_get_name( (msg_process_t)context) ));
+    // When the process wants to stop before its regular end, we should cut its call stack quickly.
+    // The easiest way to do so is to raise an exception that will be catched in its top calling level.
+    //
+    // For that, we raise a ProcessKilledError that is catched in Process::run() (in msg/Process.java)
+    //
+    // Throwing a Java exception to stop the actor may be an issue for pure C actors
+    // (as the ones created for the VM migration). The Java exception will not be catched anywhere.
+    // Bad things happen currently if these actors get killed, unfortunately.
     jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError",
-      bprintf("Process %s killed :) (file JavaContext.cpp)",
-          this->process()->name.c_str() ));
+                       bprintf("Process %s killed from file JavaContext.cpp)", this->process()->name.c_str()));
+
+    // (remember that throwing a java exception from C does not break the C execution path.
+    //  Instead, it marks the exception to be raised when returning to the Java world and
+    //  continues to execute the C function until it ends or returns).
+
+    // Once the Java stack is marked to be unrolled, a C cancel_error is raised to kill the simcall
+    //  on which the killed actor is blocked (if any).
+    // Not doing so would prevent the actor to notice that it's dead, leading to segfaults when it wakes up.
+    // This is dangerous: if the killed actor is not actually blocked, the cancel_error will not get catched.
+    // But it should be OK in most cases:
+    //  - If I kill myself, I must do so with Process.kill().
+    //    The binding of this function in jmsg_process.cpp adds a try/catch around the MSG_process_kill() leading to us
+    //  - If I kill someone else that is blocked, the cancel_error will unblock it.
+    //
+    // A problem remains probably if I kill a process that is ready_to_run in the same scheduling round.
+    // I guess that this will kill the whole simulation because the victim does not catch the exception.
+    // The only solution I see to that problem would be to completely rewrite the process killing sequence
+    // (also in C) so that it's based on regular C++ exceptions that would be catched anyway.
+    // In other words, we need to do in C++ what we do in Java for sake of uniformity.
+    //
+    // Plus, C++ RAII would work in that case, too.
+
     XBT_DEBUG("Trigger a cancel error at the C level");
     THROWF(cancel_error, 0, "process cancelled");
   } else {

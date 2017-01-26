@@ -15,6 +15,15 @@
 
 SG_BEGIN_DECL();
 
+/* Shut up some errors in eclipse online compiler. I wish such a pimple wouldn't be needed */
+#ifndef JNIEXPORT
+#define JNIEXPORT
+#endif
+#ifndef JNICALL
+#define JNICALL
+#endif
+/* end of eclipse-mandated pimple */
+
 //Cached java fields
 extern jfieldID jprocess_field_Process_bind;
 extern jfieldID jprocess_field_Process_host;
@@ -23,8 +32,6 @@ extern jfieldID jprocess_field_Process_id;
 extern jfieldID jprocess_field_Process_name;
 extern jfieldID jprocess_field_Process_pid;
 extern jfieldID jprocess_field_Process_ppid;
-
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_exit(JNIEnv *env, jobject);
 
 jobject native_to_java_process(msg_process_t process);
 

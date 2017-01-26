@@ -27,11 +27,6 @@ jfieldID jprocess_field_Process_name;
 jfieldID jprocess_field_Process_pid;
 jfieldID jprocess_field_Process_ppid;
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Process_exit(JNIEnv *env, jobject jprocess) {
-
-}
-
 jobject native_to_java_process(msg_process_t process)
 {
   simgrid::kernel::context::JavaContext* context = (simgrid::kernel::context::JavaContext*) MSG_process_get_smx_ctx(process);
@@ -354,7 +349,11 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_kill(JNIEnv * env, jobject j
     return;
   }
 
-  MSG_process_kill(process);
+  try {
+    MSG_process_kill(process);
+  } catch (xbt_ex& ex) {
+    XBT_VERB("This process just killed itself.");
+  }
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_migrate(JNIEnv * env, jobject jprocess, jobject jhost)

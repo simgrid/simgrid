@@ -175,7 +175,7 @@ ActorImpl::~ActorImpl()
 void create_maestro(std::function<void()> code)
 {
   smx_actor_t maestro = nullptr;
-  /* Create maestro process and intilialize it */
+  /* Create maestro process and initialize it */
   maestro = new simgrid::simix::ActorImpl();
   maestro->pid = simix_process_maxpid++;
   maestro->ppid = -1;

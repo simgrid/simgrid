@@ -26,6 +26,8 @@
 
 #include "JavaContext.hpp"
 
+#include <xbt/ex.hpp>
+
 /* Shut up some errors in eclipse online compiler. I wish such a pimple wouldn't be needed */
 #ifndef JNIEXPORT
 #define JNIEXPORT
@@ -267,16 +269,14 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_energyInit() {
  */
 static void run_jprocess(JNIEnv *env, jobject jprocess)
 {
-  xbt_assert(jprocess != nullptr, "Process not created...");
-  //wait for the process to be able to begin
-  //TODO: Cache it
+  // wait for the process's start time
   jfieldID jprocess_field_Process_startTime = jxbt_get_sfield(env, "org/simgrid/msg/Process", "startTime", "D");
   jdouble startTime = env->GetDoubleField(jprocess, jprocess_field_Process_startTime);
   if (startTime > MSG_get_clock())
     MSG_process_sleep(startTime - MSG_get_clock());
   //Execution of the "run" method.
   jmethodID id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "run", "()V");
-  xbt_assert( (id != nullptr), "Method not found...");
+  xbt_assert((id != nullptr), "Method run() not found...");
   env->CallVoidMethod(jprocess, id);
 }
 

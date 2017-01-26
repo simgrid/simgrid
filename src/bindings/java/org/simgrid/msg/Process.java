@@ -46,7 +46,7 @@ public abstract class Process implements Runnable {
 	 * a native process. Even if this attribute is public you must never
 	 * access to it. It is set automatically during the build of the object.
 	 */
-	private long bind;
+	private long bind = 0;
 	/** Indicates if the process is started */
 	boolean started;
 	/**
@@ -70,24 +70,20 @@ public abstract class Process implements Runnable {
 	 */
 	private double killTime = -1;
 
-	private String name;
+	private String name = null;
 	
 	private int pid = -1;
 	private int ppid = -1;
 	private Host host = null;
 
 	/** The arguments of the method function of the process. */
-	private ArrayList<String> args;
+	private ArrayList<String> args = new ArrayList<>();
 
 
 	/**  Default constructor */
 	protected Process() {
 		this.id = nextProcessId++;
-		this.name = null;
-		this.bind = 0;
-		this.args = new ArrayList<>();
 	}
-
 
 	/**
 	 * Constructs a new process from the name of a host and his name. The method
@@ -189,6 +185,9 @@ public abstract class Process implements Runnable {
 	 * SimGrid sometimes have issues when you kill processes that are currently communicating and such. We are working on it to fix the issues.
 	 */
 	public native void kill();
+	public static void kill(Process p) {
+		p.kill();
+	}
 	
 	/** Suspends the process. See {@link #resume()} to resume it afterward */
 	public native void suspend();
@@ -277,7 +276,7 @@ public abstract class Process implements Runnable {
 	 */
 	public native void migrate(Host host);	
 	/**
-	 * Makes the current process sleep until millis millisecondes have elapsed.
+	 * Makes the current process sleep until millis milliseconds have elapsed.
 	 * You should note that unlike "waitFor" which takes seconds, this method takes milliseconds.
 	 * FIXME: Not optimal, maybe we should have two native functions.
 	 * @param millis the length of time to sleep in milliseconds.
@@ -292,7 +291,7 @@ public abstract class Process implements Runnable {
 	 * milliseconds and nanoseconds.
 	 * Overloads Thread.sleep.
 	 * @param millis the length of time to sleep in milliseconds.
-	 * @param nanos additionnal nanoseconds to sleep.
+	 * @param nanos additional nanoseconds to sleep.
 	 */
 	public static native void sleep(long millis, int nanos) throws HostFailureException;
 	/**
@@ -325,14 +324,15 @@ public abstract class Process implements Runnable {
 			}
 
 			this.main(args);
-		} catch(MsgException e) {
+		}
+		catch(MsgException e) {
 			e.printStackTrace();
 			Msg.info("Unexpected behavior. Stopping now");
 			System.exit(1);
 		}
 		catch(ProcessKilledError pk) {
+			/* The process was killed before its end. With a kill() or something. */
 		}	
-		exit();
 	}
 
 	/**
@@ -343,7 +343,10 @@ public abstract class Process implements Runnable {
 	 */
 	public abstract void main(String[]args) throws MsgException;
 
-	public native void exit();
+	/** Stops the execution of the current actor */
+	public void exit() {
+		this.kill();
+	}
 	/**
 	 * Class initializer, to initialize various JNI stuff
 	 */
