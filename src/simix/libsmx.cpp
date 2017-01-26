@@ -35,14 +35,14 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
 #include "popping_bodies.cpp"
 
-void simcall_call(smx_actor_t process)
+void simcall_call(smx_actor_t actor)
 {
-  if (process != simix_global->maestro_process) {
-    XBT_DEBUG("Yield process '%s' on simcall %s (%d)", process->name.c_str(),
-              SIMIX_simcall_name(process->simcall.call), (int)process->simcall.call);
-    SIMIX_process_yield(process);
+  if (actor != simix_global->maestro_process) {
+    XBT_DEBUG("Yield actor '%s' on simcall %s (%d)", actor->cname(), SIMIX_simcall_name(actor->simcall.call),
+              (int)actor->simcall.call);
+    SIMIX_process_yield(actor);
   } else {
-    SIMIX_simcall_handle(&process->simcall, 0);
+    SIMIX_simcall_handle(&actor->simcall, 0);
   }
 }
 

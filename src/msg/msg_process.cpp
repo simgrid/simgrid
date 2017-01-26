@@ -219,11 +219,6 @@ void MSG_process_detach()
  */
 void MSG_process_kill(msg_process_t process)
 {
-//  /* FIXME: why do we only cancel communication actions? is this useful? */
-//  simdata_process_t p_simdata = simcall_process_get_data(process);
-//  if (p_simdata->waiting_task && p_simdata->waiting_task->simdata->comm) {
-//    simcall_comm_cancel(p_simdata->waiting_task->simdata->comm);
-//  }
   simcall_process_kill(process);
 }
 
@@ -252,6 +247,12 @@ msg_error_t MSG_process_migrate(msg_process_t process, msg_host_t host)
   TRACE_msg_process_change_host(process, now, host);
   simcall_process_set_host(process, host);
   return MSG_OK;
+}
+
+/** Yield the current actor; let the other actors execute first */
+void MSG_process_yield()
+{
+  simgrid::simix::kernelImmediate([] { /* do nothing*/ });
 }
 
 /** \ingroup m_process_management

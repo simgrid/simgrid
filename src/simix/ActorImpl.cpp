@@ -791,7 +791,7 @@ void SIMIX_process_sleep_destroy(smx_activity_t synchro)
  */
 void SIMIX_process_yield(smx_actor_t self)
 {
-  XBT_DEBUG("Yield process '%s'", self->name.c_str());
+  XBT_DEBUG("Yield actor '%s'", self->cname());
 
   /* Go into sleep and return control to maestro */
   self->context->suspend();

@@ -4,6 +4,9 @@ SimGrid (3.15) UNRELEASED; urgency=low
    This was intended to help NS3 users, but that's not a netcard.
    That's a point in the routing algorithm, let's avoid do wrong simplifications.
 
+ MSG
+ - New function: MSG_process_yield()
+
  Java
  - Ensure that an actor can kill itself with Process::exit()
 
