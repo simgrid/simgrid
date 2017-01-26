@@ -18,7 +18,10 @@ static char * build_channel_name(char *buffer, const char *sender, const char* r
   return buffer;
 }
 
-/** Master function  */
+/* forward definitions */
+static int master(int argc, char* argv[]);
+static int worker(int argc, char* argv[]);
+
 static int master(int argc, char *argv[])
 {
   int workers_count = 0;

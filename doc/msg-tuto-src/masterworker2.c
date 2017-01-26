@@ -18,7 +18,10 @@ static char * build_channel_name(char *buffer, const char *sender, const char* r
   return buffer;
 }
 
-/** Master function  */
+/* forward definitions */
+static int master(int argc, char* argv[]);
+static int worker(int argc, char* argv[]);
+
 static int master(int argc, char *argv[])
 {
   int workers_count = 0;
@@ -28,7 +31,6 @@ static int master(int argc, char *argv[])
   char *master_name = (char *) MSG_host_get_name(host_self);
   char channel[1024];
 
-  int i;
   double timeout   = xbt_str_parse_double(argv[1], "Invalid timeout: %s");             /** - timeout      */
   double comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s");  /** - Task compute cost    */
   double comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s");  /** - Task communication size */
@@ -37,39 +39,40 @@ static int master(int argc, char *argv[])
     workers_count = MSG_get_host_number();
     workers = xbt_dynar_to_array(MSG_hosts_as_dynar());
 
-    for (i = 0; i < workers_count; i++)
-      if(host_self == workers[i]) {
+    for (int i = 0; i < workers_count; i++)
+      if (host_self == workers[i]) {
         workers[i] = workers[workers_count-1];
         workers_count--;
         break;
       }
 
-    for (i = 0; i < workers_count; i++)
+    for (int i = 0; i < workers_count; i++)
       MSG_process_create("worker", worker, master_name, workers[i]);
   }
 
   XBT_INFO("Got %d workers and will send tasks for %g seconds!", workers_count, timeout);
 
-  for (i = 0; 1; i++) {
+  int task_num = 0;
+  while (1) {
     char sprintf_buffer[64];
     msg_task_t task = NULL;
 
     if(MSG_get_clock()>timeout) break;
 
-    sprintf(sprintf_buffer, "Task_%d", i);
+    sprintf(sprintf_buffer, "Task_%d", task_num);
     task = MSG_task_create(sprintf_buffer, comp_size, comm_size, NULL);
 
-    build_channel_name(channel,master_name, MSG_host_get_name(workers[i % workers_count]));
-    
+    build_channel_name(channel, master_name, MSG_host_get_name(workers[task_num % workers_count]));
+
     XBT_DEBUG("Sending \"%s\" to channel \"%s\"", task->name, channel);
     MSG_task_send(task, channel);
     XBT_DEBUG("Sent");
+    task_num++;
   }
 
-  int task_num = i;
 
   XBT_DEBUG ("All tasks have been dispatched. Let's tell everybody the computation is over.");
-  for (i = 0; i < workers_count; i++) {
+  for (int i = 0; i < workers_count; i++) {
     msg_task_t finalize = MSG_task_create("finalize", 0, 0, FINALIZE);
     MSG_task_send(finalize, build_channel_name(channel,master_name,
         MSG_host_get_name(workers[i % workers_count])));
@@ -85,7 +88,6 @@ static int master(int argc, char *argv[])
 static int worker(int argc, char *argv[])
 {
   msg_task_t task = NULL;
-  XBT_ATTRIB_UNUSED int res;
   char channel[1024];
 
   build_channel_name(channel,MSG_process_get_data(MSG_process_self()),  MSG_host_get_name(MSG_host_self()));
@@ -93,7 +95,7 @@ static int worker(int argc, char *argv[])
   XBT_DEBUG("Receiving on channel \"%s\"", channel);
 
   while (1) {
-    res = MSG_task_receive(&(task),channel);
+    int res = MSG_task_receive(&(task), channel);
     xbt_assert(res == MSG_OK, "MSG_task_receive failed");
     
     XBT_DEBUG("Received \"%s\"", MSG_task_get_name(task));
@@ -115,8 +117,6 @@ static int worker(int argc, char *argv[])
 /** Main function */
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
-
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
              "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
     MSG_function_register("worker", worker);
     MSG_launch_application(argv[2]);
   }
-  res = MSG_main();
+  msg_error_t res = MSG_main();
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
   return (res != MSG_OK);
