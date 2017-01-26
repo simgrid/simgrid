@@ -30,7 +30,10 @@ static int killer(int argc, char *argv[])
   XBT_INFO("Kill process");   /* - and then kill it */
   MSG_process_kill(poor_victim);
 
-  XBT_INFO("OK, goodbye now.");
+  XBT_INFO("OK, goodbye now. I commit a suicide.");
+  MSG_process_kill(MSG_process_self());
+
+  XBT_INFO("This line will never get displayed: I'm already dead since the previous line.");
   return 0;
 }
 
