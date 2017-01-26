@@ -20,6 +20,9 @@ set(app_tokenring_sources      ${srcdir}/Main.java ${srcdir}/RelayRunner.java)
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/async/waitall)
 set(async_waitall_sources      ${srcdir}/Main.java  ${srcdir}/Receiver.java ${srcdir}/Sender.java)
 
+set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/async/yield)
+set(async_yield_sources      ${srcdir}/Main.java  ${srcdir}/Yielder.java)
+
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/async/dsend)
 set(async_dsend_sources        ${srcdir}/Main.java  ${srcdir}/Receiver.java ${srcdir}/Sender.java)
 
@@ -76,7 +79,7 @@ set(process_suspend_sources    ${srcdir}/Main.java  ${srcdir}/DreamMaster.java  
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/task/priority)
 set(task_priority_sources      ${srcdir}/Main.java  ${srcdir}/Test.java)
 
-foreach (example app_bittorrent app_centralizedmutex app_masterworker app_pingpong app_tokenring async_waitall async_dsend
+foreach (example app_bittorrent app_centralizedmutex app_masterworker app_pingpong app_tokenring async_yield async_waitall async_dsend
          cloud_migration cloud_masterworker dht_chord dht_kademlia energy_consumption energy_pstate energy_vm io_file io_storage 
          process_kill process_migration process_startkilltime process_suspend task_priority trace_pingpong)
   string (REPLACE "_" "/" example_dir ${example})
@@ -110,7 +113,7 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/bittorrent/bi
                                    ${CMAKE_CURRENT_SOURCE_DIR}/task/priority/priority.xml                  PARENT_SCOPE)
 
 if(enable_java)
-  foreach (example app_bittorrent app_centralizedmutex app_masterworker app_pingpong app_tokenring async_waitall async_dsend
+  foreach (example app_bittorrent app_centralizedmutex app_masterworker app_pingpong app_tokenring async_yield async_waitall async_dsend
            cloud_migration cloud_masterworker dht_chord dht_kademlia energy_consumption energy_pstate energy_vm io_file io_storage 
            process_kill process_migration process_startkilltime process_suspend task_priority trace_pingpong)
     string (REPLACE "_" "/" example_dir ${example})

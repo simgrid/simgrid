@@ -200,6 +200,9 @@ public abstract class Process implements Runnable {
 	 */
 	public native boolean isSuspended();
 	
+	/** Yield the current process. All other processes that are ready at the same timestamp will be executed first */
+	public native static void yield();
+	
 	/**
 	 * Specify whether the process should restart when its host restarts after a failure
 	 * 

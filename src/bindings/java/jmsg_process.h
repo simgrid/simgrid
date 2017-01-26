@@ -235,6 +235,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_kill (JNIEnv *, jobject);
  */
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_migrate (JNIEnv *, jobject, jobject);
 
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_yield(JNIEnv* env, jclass cls);
 /*
  * Class    org_simgrid_msg_Process
  * Method    setKillTime
