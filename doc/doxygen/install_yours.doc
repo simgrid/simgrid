@@ -105,21 +105,29 @@ SimGrid.
 
 @section install_yours_trouble Troubleshooting your project setup
 
-@subsection install_yours_trouble_libpath Many undefined references
+@subsection install_yours_trouble_libpath error while loading shared libraries: libsimgrid.so
 
-Sometimes, the following error message (or similar) will be produced.
+Sometimes, the following error message (or similar) will be produced:
+@verbatim
+./masterworker1: error while loading shared libraries: libsimgrid.so:
+cannot open shared object file: No such file or directory
+@endverbatim
+
+The same problem can make the execution of your programs spit pages
+and pages of errors similar to the following. If there is only a few
+undefined references, then you want to read the next section.
 @verbatim
 masterworker.c:209: undefined reference to `sg_version_check'
 masterworker.c:209: undefined reference to `MSG_init_nocheck'
 (and many other undefined references)
 @endverbatim
 
-It means that the system does not manage to find simgrid when it tries
-to execute your programs. Specify where to search with the
-<tt>LD_LIBRARY_PATH</tt> variable. Try running the following command
-before executing your code. If it helps, you should add this line to
-your ~/.bashrc so that it gets executed each time you log into your
-computer.
+In both cases, it means that the system does not manage to find the
+simgrid library when it tries to execute your programs. Under Linux,
+specify where to search with the <tt>LD_LIBRARY_PATH</tt> variable.
+Try running the following command before executing your code. If it
+helps, you should add this line to your ~/.bashrc so that it gets
+executed each time you log into your computer.
 
 @verbatim
 export LD_LIBRARY_PATH=/opt/simgrid/lib
@@ -133,8 +141,8 @@ the SimGrid library somewhere on your disk.
 
 Under Linux, you can find which version was used with the following
 command that will display the full path to every used dynamic library.
-Once you've found the obsolete copy of SimGrid, just erase it and
-relaunch your program.
+Once you've found the obsolete copy of SimGrid, just erase it, and
+recompile and relaunch your program.
 @verbatim ldd yoursimulator
 @endverbatim
 
