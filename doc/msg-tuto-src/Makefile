@@ -10,7 +10,8 @@ CC = gcc                            # Your compiler (on Mac, use clang instead)
 # No change needed bellow for this tutorial.
 ############################################################################
 
-all: masterworker1 masterworker2 masterworker3 masterworker4
+all: masterworker0 masterworker1 masterworker2 masterworker3 masterworker4
+masterworker0: masterworker0.o
 masterworker1: masterworker1.o
 masterworker2: masterworker2.o
 masterworker3: masterworker3.o
@@ -34,8 +35,8 @@ CFLAGS = -g -O2 $(WARNINGS) # Use this line to get better performance
 	$(CC) -L$(strip $(SIMGRID_INSTALL_PATH))/lib/    $(CFLAGS) $^ -lsimgrid -o $@
 %.o: %.c
 	$(CC) -I$(strip $(SIMGRID_INSTALL_PATH))/include $(CFLAGS) -c -o $@ $<
-	
+
 clean:
-	rm -f *.o *~
+	rm -f *.o *~ masterworker0 masterworker1 masterworker2 masterworker3 masterworker4
 .PHONY: clean
-		
+

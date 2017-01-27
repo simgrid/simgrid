@@ -115,6 +115,7 @@ tags
 callgrind.out.*
 ### Examples and traces
 *.exe
+doc/msg-tuto-src/masterworker0
 doc/msg-tuto-src/masterworker1
 doc/msg-tuto-src/masterworker2
 doc/msg-tuto-src/masterworker3

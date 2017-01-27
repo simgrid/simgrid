@@ -130,32 +130,20 @@ sudo apt-get install viva pajeng vite
 \anchor intro_setup
 ## Setting up and Compiling
 
-The corresponding archive with all source files can be obtained
-[here](http://simgrid.gforge.inria.fr/tutorials/msg-tuto/msg-tuto.tgz),
-while the simgrid archive contains
-[several platform files](https://github.com/simgrid/simgrid/tree/master/examples/platforms)
-(click on the "Raw" button of files you want to download from GitHub).
+The corresponding source files can be obtained
+[online on GitLab](https://gitlab.inria.fr/simgrid/simgrid/tree/master/doc/msg-tuto-src). 
+If you find the right button on the top right of the interface, you can download the whole 
+directory in one archive file. If you wish, you can find other platform file in 
+[this GitLab directory](https://gitlab.inria.fr/simgrid/simgrid/tree/master/doc/examples/platforms).
+
+As you can see, there is already a little Makefile that compiles
+everything for you. If you struggle with the compilation, then you should double check 
+your SimGrid installation. On need, please refer to the @ref install_yours_trouble section.
+
+Once the tiny example has been compiled and it can be easily run as follows:
 
 ~~~~{.sh}
-tar zxf msg-tuto.tgz
-cd msg-tuto/src
-make
-~~~~
-
-As you can see, there is already a nice Makefile that compiles
-everything for you. Now the tiny example has been compiled and it
-can be easily run as follows:
-
-~~~~{.sh}
-./masterworker0 platforms/platform.xml deployment0.xml 2>&1
-~~~~
-
-If you create a single self-content C-file named foo.c, the
-corresponding program will be simply compiled and linked with
-SimGrid by typing:
-
-~~~~{.sh}
-make foo
+./masterworker0 platforms/platform.xml deployment0.xml
 ~~~~
 
 For a more "fancy" output, you can try:
