@@ -54,8 +54,6 @@ void jxbt_throw_by_name(JNIEnv * env, const char *name, char *msg);
 void jxbt_throw_jni(JNIEnv * env, const char *msg);
 /** Thrown when using an object not bound to a native one where it should, or reverse (kinda JNI issue) */
 void jxbt_throw_notbound(JNIEnv * env, const char *kind, void *pointer);
-/** Thrown on error in native MSG code */
-void jxbt_throw_native(JNIEnv * env, char *msg);
 /** Thrown if NULL gets used */
 void jxbt_throw_null(JNIEnv * env, char *msg);
 

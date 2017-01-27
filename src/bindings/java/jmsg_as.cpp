@@ -47,13 +47,13 @@ simgrid::s4u::NetZone* jas_get_native(JNIEnv* env, jobject jas)
   return (simgrid::s4u::NetZone*)(uintptr_t)env->GetLongField(jas, jas_field_As_bind);
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_msg_As_nativeInit(JNIEnv *env, jclass cls) {
+JNIEXPORT void JNICALL Java_org_simgrid_msg_As_nativeInit(JNIEnv* env, jclass cls)
+{
   jclass class_As = env->FindClass("org/simgrid/msg/As");
   jas_method_As_constructor = env->GetMethodID(class_As, "<init>", "()V");
   jas_field_As_bind = jxbt_get_jfield(env,class_As, "bind", "J");
-  if (!class_As || !jas_method_As_constructor || !jas_field_As_bind) {
-    jxbt_throw_native(env,bprintf("Can't find some fields in Java class. You should report this bug."));
-  }
+  xbt_assert(class_As && jas_method_As_constructor && jas_field_As_bind,
+             "Native initialization of msg/AS failed. Please report that bug");
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getName(JNIEnv * env, jobject jas) {

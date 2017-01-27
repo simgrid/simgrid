@@ -83,6 +83,7 @@ jboolean jprocess_is_valid(jobject jprocess, JNIEnv * env)
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jclass cls) {
   jclass jprocess_class_Process = env->FindClass("org/simgrid/msg/Process");
+  xbt_assert(jprocess_class_Process, "Native initialization of msg/Process failed. Please report that bug");
 
   jprocess_field_Process_name = jxbt_get_jfield(env, jprocess_class_Process, "name", "Ljava/lang/String;");
   jprocess_field_Process_bind = jxbt_get_jfield(env, jprocess_class_Process, "bind", "J");
@@ -91,10 +92,9 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jcla
   jprocess_field_Process_ppid = jxbt_get_jfield(env, jprocess_class_Process, "ppid", "I");
   jprocess_field_Process_host = jxbt_get_jfield(env, jprocess_class_Process, "host", "Lorg/simgrid/msg/Host;");
   jprocess_field_Process_killTime = jxbt_get_jfield(env, jprocess_class_Process, "killTime", "D");
-  if (!jprocess_class_Process || !jprocess_field_Process_id || !jprocess_field_Process_name ||
-      !jprocess_field_Process_pid || !jprocess_field_Process_ppid || !jprocess_field_Process_host) {
-    jxbt_throw_native(env,bprintf("Can't find some fields in Java class. You should report this bug."));
-  }
+  xbt_assert(jprocess_field_Process_id && jprocess_field_Process_name && jprocess_field_Process_pid &&
+                 jprocess_field_Process_ppid && jprocess_field_Process_host,
+             "Native initialization of msg/Process failed. Please report that bug");
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv * env, jobject jprocess_arg, jobject jhostname)

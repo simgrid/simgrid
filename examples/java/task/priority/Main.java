@@ -6,7 +6,6 @@
 
 package task.priority;
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.NativeException;
 
 /* Demonstrates the use of Task.setPriority to change the computation priority of a task */ 
 public class Main {
@@ -14,7 +13,7 @@ public class Main {
     throw new IllegalAccessError("Utility class");
   }
 
-  public static void main(String[] args) throws NativeException {
+  public static void main(String[] args) {
     Msg.init(args);
     if(args.length < 2) {
       Msg.info("Usage   : Priority platform_file deployment_file");

@@ -6,16 +6,15 @@
 
 package trace.pingpong;
 import org.simgrid.msg.Msg;
-import org.simgrid.trace.Trace;
 import org.simgrid.msg.MsgException;
-import org.simgrid.msg.NativeException;
+import org.simgrid.trace.Trace;
 
 public class Main  {
   private Main() {
     throw new IllegalAccessError("Utility class");
   }
 
-  public static void main(String[] args) throws MsgException, NativeException {
+  public static void main(String[] args) throws MsgException {
     Msg.init(args);
     if(args.length < 1) {
       Msg.info("Usage   : Main platform_file");

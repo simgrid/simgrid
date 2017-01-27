@@ -108,11 +108,9 @@ public abstract class Process implements Runnable {
 	 * @param args			The arguments of the main function of the process.
 	 *
 	 * @exception			HostNotFoundException  if no host with this name exists.
-	 *                      NativeException
-	 * @throws NativeException
 	 *
 	 */ 
-	public Process(String hostname, String name, String[] args) throws HostNotFoundException, NativeException {
+	public Process(String hostname, String name, String[] args) throws HostNotFoundException {
 		this(Host.getByName(hostname), name, args);
 	}
 	/**
@@ -201,7 +199,7 @@ public abstract class Process implements Runnable {
 	public native boolean isSuspended();
 	
 	/** Yield the current process. All other processes that are ready at the same timestamp will be executed first */
-	public native static void yield();
+	public static native void yield();
 	
 	/**
 	 * Specify whether the process should restart when its host restarts after a failure
@@ -231,10 +229,8 @@ public abstract class Process implements Runnable {
 	 * @param PID			The process identifier of the process to get.
 	 *
 	 * @return				The process with the specified PID.
-	 *
-	 * @exception			NativeException on error in the native SimGrid code
 	 */ 
-	public static native Process fromPID(int PID) throws NativeException;
+	public static native Process fromPID(int PID);
 	/**
 	 * This method returns the PID of the process.
 	 *

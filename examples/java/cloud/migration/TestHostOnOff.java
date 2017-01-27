@@ -6,8 +6,13 @@
 
 package cloud.migration;
 
-import org.simgrid.msg.*;
+import org.simgrid.msg.Host;
+import org.simgrid.msg.HostFailureException;
+import org.simgrid.msg.HostNotFoundException;
+import org.simgrid.msg.Msg;
+import org.simgrid.msg.MsgException;
 import org.simgrid.msg.Process;
+import org.simgrid.msg.VM;
 
 // This test aims at validating that the migration process is robust in face of host turning off either on the SRC 
 // node or on the DST node. 
@@ -17,7 +22,7 @@ public class TestHostOnOff extends Process{
   protected Host host1 = null;
   protected Host host2 = null;
 
-  TestHostOnOff(String hostname, String name) throws  HostNotFoundException, NativeException {
+  TestHostOnOff(String hostname, String name) throws  HostNotFoundException {
     super(hostname, name);
   }
 

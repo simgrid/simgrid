@@ -6,14 +6,13 @@
 
 package process.startkilltime;
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.NativeException;
 
 public class Main {
   private Main() {
     throw new IllegalAccessError("Utility class");
   }
 
-  public static void main(String[] args) throws NativeException {
+  public static void main(String[] args) {
     Msg.init(args);
     if(args.length < 2) {
       Msg.info("Usage   : StartKilltime platform_file deployment_file");

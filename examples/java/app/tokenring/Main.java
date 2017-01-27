@@ -7,7 +7,6 @@ package app.tokenring;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.NativeException;
 import org.simgrid.msg.Process;
 
 class Main {
@@ -16,7 +15,7 @@ class Main {
 		throw new IllegalAccessError("Utility class");
 	}
 
-	public static void main(String[] args) throws HostNotFoundException, NativeException {
+	public static void main(String[] args) throws HostNotFoundException {
 		Msg.init(args);
 		
 		String platform = "../platforms/small_platform.xml";

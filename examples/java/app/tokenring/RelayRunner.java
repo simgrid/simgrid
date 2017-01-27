@@ -4,18 +4,17 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 package app.tokenring;
-import org.simgrid.msg.Msg;
-import org.simgrid.msg.Task;
-import org.simgrid.msg.Process;
-import org.simgrid.msg.MsgException;
-import org.simgrid.msg.NativeException;
 import org.simgrid.msg.Host;
+import org.simgrid.msg.Msg;
+import org.simgrid.msg.MsgException;
+import org.simgrid.msg.Process;
+import org.simgrid.msg.Task;
 
 public class RelayRunner extends Process {
 
 	private static final int TASK_COMM_SIZE = 1000000; /* The token is 1MB long*/
 
-	public RelayRunner(Host host, String name, String[]args) throws NativeException {
+	public RelayRunner(Host host, String name, String[]args) {
 		super(host,name,args);
 	}
 

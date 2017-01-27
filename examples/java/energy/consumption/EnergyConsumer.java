@@ -13,7 +13,7 @@ import org.simgrid.msg.MsgException;
 import org.simgrid.msg.HostNotFoundException;
 
 public class EnergyConsumer extends Process {
-  public EnergyConsumer(String hostname, String name) throws HostNotFoundException{
+  public EnergyConsumer(String hostname, String name) throws HostNotFoundException {
     super(hostname,name);
   }
 

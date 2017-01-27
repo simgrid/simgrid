@@ -6,16 +6,15 @@
 
 package app.pingpong;
 import org.simgrid.msg.Task;
-import org.simgrid.msg.NativeException;
 
 public class PingPongTask extends Task {
   private double timeVal;
 
-  public PingPongTask() throws NativeException {
+  public PingPongTask() {
     this.timeVal = 0;
   }
 
-  public PingPongTask(String name, double computeDuration, double messageSize) throws NativeException {
+  public PingPongTask(String name, double computeDuration, double messageSize) {
     super(name,computeDuration,messageSize);
   }
 

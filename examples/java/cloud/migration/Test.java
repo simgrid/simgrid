@@ -8,12 +8,17 @@ package cloud.migration;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.simgrid.msg.*;
+import org.simgrid.msg.Host;
+import org.simgrid.msg.HostFailureException;
+import org.simgrid.msg.HostNotFoundException;
+import org.simgrid.msg.Msg;
+import org.simgrid.msg.MsgException;
 import org.simgrid.msg.Process;
+import org.simgrid.msg.VM;
 
 public class Test extends Process{
 
-  Test(String hostname, String name) throws HostNotFoundException, NativeException  {
+  Test(String hostname, String name) throws HostNotFoundException {
     super(hostname, name);
   }
 

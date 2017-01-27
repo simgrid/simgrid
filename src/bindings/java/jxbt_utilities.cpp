@@ -192,11 +192,6 @@ void jxbt_throw_notbound(JNIEnv * env, const char *kind, void *pointer)
   jxbt_throw_by_name(env, "org/simgrid/msg/JniException", bprintf("Internal error: %s %p not bound", kind, pointer));
 }
 
-void jxbt_throw_native(JNIEnv * env, char *msg)
-{
-  jxbt_throw_by_name(env, "org/simgrid/msg/NativeException", msg);
-}
-
 void jxbt_throw_null(JNIEnv * env, char *msg)
 {
   jxbt_throw_by_name(env, "java/lang/NullPointerException", msg);

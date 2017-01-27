@@ -9,7 +9,6 @@ import org.simgrid.msg.Host;
 import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.NativeException;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.Task;
 import org.simgrid.msg.TaskCancelledException;
@@ -71,7 +70,7 @@ public class PstateRunner extends Process {
 		}
 	}
 
-	PstateRunner(Host host, String name, String[] args) throws NativeException  {
+	PstateRunner(Host host, String name, String[] args) {
 		super(host, name, args);
 	}
 

@@ -5,17 +5,16 @@
 
 package energy.vm;
 
-import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.HostNotFoundException;
-import org.simgrid.msg.NativeException;
+import org.simgrid.msg.Msg;
 
 class Main {
   private Main() {
     throw new IllegalAccessError("Utility class");
   }
 
-  public static void main(String[] args) throws NativeException, HostNotFoundException {
+  public static void main(String[] args) throws HostNotFoundException {
     Msg.energyInit();
     Msg.init(args);
 

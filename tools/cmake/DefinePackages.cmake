@@ -479,7 +479,6 @@ set(JMSG_JAVA_SRC
   src/bindings/java/org/simgrid/msg/Msg.java
   src/bindings/java/org/simgrid/msg/MsgException.java
   src/bindings/java/org/simgrid/msg/Mutex.java
-  src/bindings/java/org/simgrid/msg/NativeException.java
   src/bindings/java/org/simgrid/msg/Process.java
   src/bindings/java/org/simgrid/msg/ProcessKilledError.java
   src/bindings/java/org/simgrid/msg/ProcessNotFoundException.java

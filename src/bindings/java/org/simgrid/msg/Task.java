@@ -196,7 +196,7 @@ public class Task {
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException 
 	 */
-	public void send(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException, NativeException {
+	public void send(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
 		send(mailbox, -1);
 	} 
 
@@ -205,12 +205,11 @@ public class Task {
 	 *
 	 * @param mailbox where to send the message
 	 * @param timeout
-	 * @exception  NativeException if the retrieval fails.
 	 * @throws TimeoutException 
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException 
 	 */
-	public native void send(String mailbox, double timeout) throws TransferFailureException, HostFailureException, TimeoutException, NativeException;
+	public native void send(String mailbox, double timeout) throws TransferFailureException, HostFailureException, TimeoutException;
 
 	/** Sends the task on the specified mailbox (capping the sending rate to \a maxrate) 
 	 *

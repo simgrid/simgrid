@@ -66,9 +66,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_nativeInit(JNIEnv *env, jclass 
   jhost_method_Host_constructor = env->GetMethodID(class_Host, "<init>", "()V");
   jhost_field_Host_bind = jxbt_get_jfield(env,class_Host, "bind", "J");
   jhost_field_Host_name = jxbt_get_jfield(env, class_Host, "name", "Ljava/lang/String;");
-  if (!class_Host || !jhost_field_Host_name || !jhost_method_Host_constructor || !jhost_field_Host_bind) {
-    jxbt_throw_native(env,bprintf("Can't find some fields in Java class. You should report this bug."));
-  }
+  xbt_assert(class_Host && jhost_field_Host_name && jhost_method_Host_constructor && jhost_field_Host_bind,
+             "Native initialization of msg/Host failed. Please report that bug");
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls, jstring jname) {

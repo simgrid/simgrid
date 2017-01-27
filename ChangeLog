@@ -9,6 +9,9 @@ SimGrid (3.15) UNRELEASED; urgency=low
 
  Java
  - Ensure that an actor can kill itself with Process::exit()
+ - Kill the obscure NativeException. Nobody want to survive the issues
+   it denotes, so use JniException that is a RuntimeException (not to
+   be catched explicitely).
 
  -- target_date=March 20 2017 -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

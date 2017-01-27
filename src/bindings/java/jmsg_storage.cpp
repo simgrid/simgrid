@@ -31,12 +31,12 @@ msg_storage_t jstorage_get_native(JNIEnv * env, jobject jstorage) {
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Storage_nativeInit(JNIEnv *env, jclass cls) {
   jclass class_Storage = env->FindClass("org/simgrid/msg/Storage");
+  xbt_assert(class_Storage, "Native initialization of msg/Storage failed. Please report that bug");
   jstorage_method_Storage_constructor = env->GetMethodID(class_Storage, "<init>", "()V");
   jstorage_field_Storage_bind = jxbt_get_jfield(env,class_Storage, "bind", "J");
   jstorage_field_Storage_name = jxbt_get_jfield(env, class_Storage, "name", "Ljava/lang/String;");
-  if (!class_Storage || !jstorage_field_Storage_name || !jstorage_method_Storage_constructor || !jstorage_field_Storage_bind) {
-    jxbt_throw_native(env,bprintf("Can't find some fields in Java class. You should report this bug."));
-  }
+  xbt_assert(jstorage_field_Storage_name && jstorage_method_Storage_constructor && jstorage_field_Storage_bind,
+             "Native initialization of msg/Storage failed. Please report that bug");
 }
 
 void jstorage_bind(jobject jstorage, msg_storage_t storage, JNIEnv * env) {

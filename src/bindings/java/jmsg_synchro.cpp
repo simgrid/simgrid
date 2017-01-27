@@ -15,23 +15,21 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
-static jfieldID jsyncro_field_Mutex_bind;
+static jfieldID jsynchro_field_Mutex_bind;
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Mutex_nativeInit(JNIEnv *env, jclass cls) {
-  jsyncro_field_Mutex_bind = jxbt_get_sfield(env, "org/simgrid/msg/Mutex", "bind", "J");
-  if (!jsyncro_field_Mutex_bind) {
-    jxbt_throw_native(env,bprintf("Can't find some fields in Java class. You should report this bug."));
-  }
+  jsynchro_field_Mutex_bind = jxbt_get_sfield(env, "org/simgrid/msg/Mutex", "bind", "J");
+  xbt_assert(jsynchro_field_Mutex_bind, "Native initialization of msg/Mutex failed. Please report that bug");
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Mutex_init(JNIEnv * env, jobject obj) {
   xbt_mutex_t mutex = xbt_mutex_init();
 
-  env->SetLongField(obj, jsyncro_field_Mutex_bind, (jlong) (uintptr_t) (mutex));
+  env->SetLongField(obj, jsynchro_field_Mutex_bind, (jlong)(uintptr_t)(mutex));
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Mutex_acquire(JNIEnv * env, jobject obj) {
-  xbt_mutex_t mutex = (xbt_mutex_t) (uintptr_t) env->GetLongField(obj, jsyncro_field_Mutex_bind);
+  xbt_mutex_t mutex = (xbt_mutex_t)(uintptr_t)env->GetLongField(obj, jsynchro_field_Mutex_bind);
   try {
     xbt_mutex_acquire(mutex);
   }
@@ -43,34 +41,32 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Mutex_acquire(JNIEnv * env, jobject 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Mutex_release(JNIEnv * env, jobject obj) {
   xbt_mutex_t mutex;
 
-  mutex = (xbt_mutex_t) (uintptr_t) env->GetLongField(obj, jsyncro_field_Mutex_bind);
+  mutex = (xbt_mutex_t)(uintptr_t)env->GetLongField(obj, jsynchro_field_Mutex_bind);
   xbt_mutex_release(mutex);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Mutex_nativeFinalize(JNIEnv * env, jobject obj) {
-  xbt_mutex_t mutex = (xbt_mutex_t)(uintptr_t)env->GetLongField(obj, jsyncro_field_Mutex_bind);
+  xbt_mutex_t mutex = (xbt_mutex_t)(uintptr_t)env->GetLongField(obj, jsynchro_field_Mutex_bind);
   xbt_mutex_destroy(mutex);
 }
 
-static jfieldID jsyncro_field_Semaphore_bind;
+static jfieldID jsynchro_field_Semaphore_bind;
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Semaphore_nativeInit(JNIEnv *env, jclass cls) {
-  jsyncro_field_Semaphore_bind = jxbt_get_sfield(env, "org/simgrid/msg/Semaphore", "bind", "J");
-  if (!jsyncro_field_Semaphore_bind) {
-    jxbt_throw_native(env,bprintf("Can't find some fields in Semaphore Java class. You should report this bug."));
-  }
+  jsynchro_field_Semaphore_bind = jxbt_get_sfield(env, "org/simgrid/msg/Semaphore", "bind", "J");
+  xbt_assert(jsynchro_field_Semaphore_bind, "Native initialization of msg/Semaphore failed. Please report that bug");
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Semaphore_init(JNIEnv * env, jobject obj, jint capacity) {
   msg_sem_t sem = MSG_sem_init((int) capacity);
 
-  env->SetLongField(obj, jsyncro_field_Semaphore_bind, (jlong) (uintptr_t) (sem));
+  env->SetLongField(obj, jsynchro_field_Semaphore_bind, (jlong)(uintptr_t)(sem));
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Semaphore_acquire(JNIEnv * env, jobject obj, jdouble timeout) {
   msg_sem_t sem;
 
-  sem = (msg_sem_t) (uintptr_t) env->GetLongField(obj, jsyncro_field_Semaphore_bind);
+  sem             = (msg_sem_t)(uintptr_t)env->GetLongField(obj, jsynchro_field_Semaphore_bind);
   msg_error_t res = MSG_sem_acquire_timeout(sem, (double) timeout);
   if (res != MSG_OK) {
     jmsg_throw_status(env, res);
@@ -80,14 +76,14 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Semaphore_acquire(JNIEnv * env, jobj
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Semaphore_release(JNIEnv * env, jobject obj) {
   msg_sem_t sem;
 
-  sem = (msg_sem_t) (uintptr_t) env->GetLongField(obj, jsyncro_field_Semaphore_bind);
+  sem = (msg_sem_t)(uintptr_t)env->GetLongField(obj, jsynchro_field_Semaphore_bind);
   MSG_sem_release(sem);
 }
 
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Semaphore_wouldBlock(JNIEnv * env, jobject obj) {
   msg_sem_t sem;
 
-  sem = (msg_sem_t) (uintptr_t) env->GetLongField(obj, jsyncro_field_Semaphore_bind);
+  sem     = (msg_sem_t)(uintptr_t)env->GetLongField(obj, jsynchro_field_Semaphore_bind);
   int res = MSG_sem_would_block(sem);
   return (jboolean) res;
 }
@@ -95,6 +91,6 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Semaphore_wouldBlock(JNIEnv * en
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Semaphore_nativeFinalize(JNIEnv * env, jobject obj) {
   msg_sem_t sem;
 
-  sem = (msg_sem_t) (uintptr_t) env->GetLongField(obj, jsyncro_field_Semaphore_bind);
+  sem = (msg_sem_t)(uintptr_t)env->GetLongField(obj, jsynchro_field_Semaphore_bind);
   MSG_sem_destroy(sem);
 }
