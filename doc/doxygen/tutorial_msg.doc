@@ -1,4 +1,4 @@
-/*! @page tutorial SimGrid First Tutorial
+/*! @page tutorial_msg SimGrid Tutorial with MSG
 
 SimGrid is a toolkit providing the core functionalities for the
 simulation of distributed applications in heterogeneous distributed
@@ -138,7 +138,8 @@ directory in one archive file. If you wish, you can find other platform file in
 
 As you can see, there is already a little Makefile that compiles
 everything for you. If you struggle with the compilation, then you should double check 
-your SimGrid installation. On need, please refer to the @ref install_yours_trouble section.
+your @ref install "SimGrid installation". 
+On need, please refer to the @ref install_yours_trouble section.
 
 Once the tiny example has been compiled and it can be easily run as follows:
 
@@ -146,11 +147,16 @@ Once the tiny example has been compiled and it can be easily run as follows:
 ./masterworker0 platforms/platform.xml deployment0.xml
 ~~~~
 
-For a more "fancy" output, you can try:
+For a more "fancy" output, you can use simgrid-colorizer. 
 
 ~~~~{.sh}
 ./masterworker0 platforms/platform.xml deployment0.xml 2>&1 | simgrid-colorizer
 ~~~~
+
+If you installed SimGrid to a non-standard path, you may have to
+specify the full path to simgrid-colorizer on the above line, such as
+\c /opt/simgrid/bin/simgrid-colorizer. If you did not install it at all,
+you can find it in <simgrid_root_directory>/bin/colorize.
 
 For a really fancy output, you should use [viva/triva][fn:1]:
 

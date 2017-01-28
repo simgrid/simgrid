@@ -1,0 +1,13 @@
+/*! @page tutorial_smpi SMPI Tutorials
+
+We regularly use SimGrid in our teachings on MPI. This way, our
+student can experiment with platforms that they do not have access to,
+and the associated visualisation tools helps them to understand their
+work.
+
+The whole material is available online, in a separate project:
+the <a href="https://simgrid.github.io/SMPI_CourseWare/">SMPI
+CourseWare</a>.
+
+
+*/

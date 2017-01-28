@@ -659,7 +659,8 @@ INPUT                  = doxygen/index.doc \
 			   doxygen/outcomes_logs.doc \
 			   doxygen/outcomes_vizu.doc \
 			   doxygen/outcomes_MC.doc \
-                         doxygen/tutorial.doc \
+                         doxygen/tutorial_msg.doc \
+                         doxygen/tutorial_smpi.doc \
                          doxygen/examples.doc \
 			 doxygen/howtos.doc \
  			 doxygen/uhood.doc \

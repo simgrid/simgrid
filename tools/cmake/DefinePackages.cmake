@@ -831,7 +831,8 @@ set(DOC_SOURCES
   doc/doxygen/install.doc
   doc/doxygen/install_yours.doc
   doc/doxygen/java.doc
-  doc/doxygen/tutorial.doc
+  doc/doxygen/tutorial_msg.doc
+  doc/doxygen/tutorial_smpi.doc
   doc/doxygen/models.doc
   doc/doxygen/module-msg.doc
   doc/doxygen/module-s4u.doc
