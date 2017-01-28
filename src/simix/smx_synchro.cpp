@@ -390,7 +390,6 @@ void intrusive_ptr_release(s_smx_cond_t *cond)
 }
 
 /******************************** Semaphores **********************************/
-#define SMX_SEM_NOLIMIT 99999
 /** @brief Initialize a semaphore */
 smx_sem_t SIMIX_sem_init(unsigned int value)
 {
@@ -436,7 +435,7 @@ void SIMIX_sem_release(smx_sem_t sem)
     delete proc->waiting_synchro;
     proc->waiting_synchro = nullptr;
     SIMIX_simcall_answer(&proc->simcall);
-  } else if (sem->value < SMX_SEM_NOLIMIT) {
+  } else {
     sem->value++;
   }
   XBT_OUT();
