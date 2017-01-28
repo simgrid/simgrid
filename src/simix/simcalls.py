@@ -51,7 +51,7 @@ class Simcall(object):
         # smx_host_t h)
         if self.simcalls_PRE is None:
             self.simcalls_PRE = set()
-            for fn in glob.glob('smx_*') + glob.glob('ActorImpl*') + glob.glob('../mc/*'):
+            for fn in glob.glob('smx_*') + glob.glob('ActorImpl*') + glob.glob('../mc/*cpp'):
                 f = open(fn)
                 self.simcalls_PRE |= set(re.findall(r'simcall_HANDLER_(.*?)\(', f.read()))
                 f.close()
