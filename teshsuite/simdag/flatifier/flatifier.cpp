@@ -88,7 +88,7 @@ int main(int argc, char **argv)
   create_environment(parse_time, platformFile);
 
   std::vector<simgrid::kernel::routing::NetPoint*> netcardList;
-  simgrid::s4u::Engine::instance()->netcardList(&netcardList);
+  simgrid::s4u::Engine::instance()->netpointList(&netcardList);
   std::sort(netcardList.begin(), netcardList.end(),
             [](simgrid::kernel::routing::NetPoint* a, simgrid::kernel::routing::NetPoint* b) {
               return a->name() < b->name();

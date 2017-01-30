@@ -55,7 +55,7 @@ Host::~Host()
 
   delete pimpl_;
   if (pimpl_netpoint != nullptr) // not removed yet by a children class
-    simgrid::s4u::Engine::instance()->netcardUnregister(pimpl_netpoint);
+    simgrid::s4u::Engine::instance()->netpointUnregister(pimpl_netpoint);
   delete pimpl_cpu;
   delete mounts;
 }

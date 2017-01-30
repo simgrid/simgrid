@@ -111,32 +111,32 @@ NetZone* Engine::netzoneByNameOrNull(const char* name)
   return netzoneByNameRecursive(netRoot(), name);
 }
 
-/** @brief Retrieve the netcard of the given name (or nullptr if not found) */
-simgrid::kernel::routing::NetPoint* Engine::netcardByNameOrNull(const char* name)
+/** @brief Retrieve the netpoint of the given name (or nullptr if not found) */
+simgrid::kernel::routing::NetPoint* Engine::netpointByNameOrNull(const char* name)
 {
   if (pimpl->netpoints_.find(name) == pimpl->netpoints_.end())
     return nullptr;
   return pimpl->netpoints_.at(name);
 }
-/** @brief Fill the provided vector with all existing netcards */
-void Engine::netcardList(std::vector<simgrid::kernel::routing::NetPoint*>* list)
+/** @brief Fill the provided vector with all existing netpoints */
+void Engine::netpointList(std::vector<simgrid::kernel::routing::NetPoint*>* list)
 {
   for (auto kv : pimpl->netpoints_)
     list->push_back(kv.second);
 }
-/** @brief Register a new netcard to the system */
-void Engine::netcardRegister(simgrid::kernel::routing::NetPoint* card)
+/** @brief Register a new netpoint to the system */
+void Engine::netpointRegister(simgrid::kernel::routing::NetPoint* point)
 {
 //  simgrid::simix::kernelImmediate([&]{ FIXME: this segfaults in set_thread
-pimpl->netpoints_[card->name()] = card;
+  pimpl->netpoints_[point->name()] = point;
 //  });
 }
-/** @brief Unregister a given netcard */
-void Engine::netcardUnregister(simgrid::kernel::routing::NetPoint* card)
+/** @brief Unregister a given netpoint */
+void Engine::netpointUnregister(simgrid::kernel::routing::NetPoint* point)
 {
   simgrid::simix::kernelImmediate([&] {
-    pimpl->netpoints_.erase(card->name());
-    delete card;
+    pimpl->netpoints_.erase(point->name());
+    delete point;
   });
 }
 }

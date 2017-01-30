@@ -28,7 +28,7 @@ public:
 
 NetZoneImpl::NetZoneImpl(NetZone* father, const char* name) : NetZone(father, name)
 {
-  xbt_assert(nullptr == simgrid::s4u::Engine::instance()->netcardByNameOrNull(name),
+  xbt_assert(nullptr == simgrid::s4u::Engine::instance()->netpointByNameOrNull(name),
              "Refusing to create a second NetZone called '%s'.", name);
 
   netcard_ = new NetPoint(name, NetPoint::Type::NetZone, static_cast<NetZoneImpl*>(father));
@@ -39,7 +39,7 @@ NetZoneImpl::~NetZoneImpl()
   for (auto& kv : bypassRoutes_)
     delete kv.second;
 
-  simgrid::s4u::Engine::instance()->netcardUnregister(netcard_);
+  simgrid::s4u::Engine::instance()->netpointUnregister(netcard_);
 }
 
 simgrid::s4u::Host* NetZoneImpl::createHost(const char* name, std::vector<double>* speedPerPstate, int coreAmount,
