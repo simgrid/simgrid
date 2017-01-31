@@ -81,10 +81,10 @@ typedef struct s_sg_platf_peer_cbarg {
 typedef struct s_sg_platf_route_cbarg *sg_platf_route_cbarg_t;
 typedef struct s_sg_platf_route_cbarg {
   bool symmetrical;
-  sg_netcard_t src;
-  sg_netcard_t dst;
-  sg_netcard_t gw_src;
-  sg_netcard_t gw_dst;
+  sg_netpoint_t src;
+  sg_netpoint_t dst;
+  sg_netpoint_t gw_src;
+  sg_netpoint_t gw_dst;
   std::vector<Link*> *link_list;
 } s_sg_platf_route_cbarg_t;
 

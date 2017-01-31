@@ -68,19 +68,19 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
   //Search for network_element_t
   switch (kind){
     case INSTR_HOST:
-      newContainer->netcard = sg_host->pimpl_netpoint;
-      xbt_assert(newContainer->netcard, "Element '%s' not found",name);
+      newContainer->netpoint = sg_host->pimpl_netpoint;
+      xbt_assert(newContainer->netpoint, "Element '%s' not found", name);
       break;
     case INSTR_ROUTER:
-      newContainer->netcard = simgrid::s4u::Engine::instance()->netpointByNameOrNull(name);
-      xbt_assert(newContainer->netcard, "Element '%s' not found",name);
+      newContainer->netpoint = simgrid::s4u::Engine::instance()->netpointByNameOrNull(name);
+      xbt_assert(newContainer->netpoint, "Element '%s' not found", name);
       break;
     case INSTR_AS:
-      newContainer->netcard = simgrid::s4u::Engine::instance()->netpointByNameOrNull(name);
-      xbt_assert(newContainer->netcard, "Element '%s' not found",name);
+      newContainer->netpoint = simgrid::s4u::Engine::instance()->netpointByNameOrNull(name);
+      xbt_assert(newContainer->netpoint, "Element '%s' not found", name);
       break;
     default:
-      newContainer->netcard = nullptr;
+      newContainer->netpoint = nullptr;
       break;
   }
 

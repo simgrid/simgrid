@@ -30,11 +30,11 @@ NetPoint::NetPoint(std::string name, NetPoint::Type componentType, NetZoneImpl* 
 }
 } // namespace simgrid::kernel::routing
 
-/** @brief Retrieve a netcard from its name
+/** @brief Retrieve a netpoint from its name
  *
- * Netcards are the thing that connect host or routers to the network
+ * Netpoints denote the location of host or routers in the network, to compute routes
  */
-simgrid::kernel::routing::NetPoint* sg_netcard_by_name_or_null(const char* name)
+simgrid::kernel::routing::NetPoint* sg_netpoint_by_name_or_null(const char* name)
 {
   return simgrid::s4u::Engine::instance()->netpointByNameOrNull(name);
 }

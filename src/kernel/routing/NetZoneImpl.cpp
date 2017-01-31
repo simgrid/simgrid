@@ -31,15 +31,15 @@ NetZoneImpl::NetZoneImpl(NetZone* father, const char* name) : NetZone(father, na
   xbt_assert(nullptr == simgrid::s4u::Engine::instance()->netpointByNameOrNull(name),
              "Refusing to create a second NetZone called '%s'.", name);
 
-  netcard_ = new NetPoint(name, NetPoint::Type::NetZone, static_cast<NetZoneImpl*>(father));
-  XBT_DEBUG("NetZone '%s' created with the id '%d'", name, netcard_->id());
+  netpoint_ = new NetPoint(name, NetPoint::Type::NetZone, static_cast<NetZoneImpl*>(father));
+  XBT_DEBUG("NetZone '%s' created with the id '%d'", name, netpoint_->id());
 }
 NetZoneImpl::~NetZoneImpl()
 {
   for (auto& kv : bypassRoutes_)
     delete kv.second;
 
-  simgrid::s4u::Engine::instance()->netpointUnregister(netcard_);
+  simgrid::s4u::Engine::instance()->netpointUnregister(netpoint_);
 }
 
 simgrid::s4u::Host* NetZoneImpl::createHost(const char* name, std::vector<double>* speedPerPstate, int coreAmount,
@@ -259,14 +259,14 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
   for (int max = 0; max <= max_index; max++) {
     for (int i = 0; i < max; i++) {
       if (i <= max_index_src && max <= max_index_dst) {
-        key = {path_src.at(i)->netcard_, path_dst.at(max)->netcard_};
+        key = {path_src.at(i)->netpoint_, path_dst.at(max)->netpoint_};
         if (bypassRoutes_.find(key) != bypassRoutes_.end()) {
           bypassedRoute = bypassRoutes_.at(key);
           break;
         }
       }
       if (max <= max_index_src && i <= max_index_dst) {
-        key = {path_src.at(max)->netcard_, path_dst.at(i)->netcard_};
+        key = {path_src.at(max)->netpoint_, path_dst.at(i)->netpoint_};
         if (bypassRoutes_.find(key) != bypassRoutes_.end()) {
           bypassedRoute = bypassRoutes_.at(key);
           break;
@@ -278,7 +278,7 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
       break;
 
     if (max <= max_index_src && max <= max_index_dst) {
-      key = {path_src.at(max)->netcard_, path_dst.at(max)->netcard_};
+      key = {path_src.at(max)->netpoint_, path_dst.at(max)->netpoint_};
       if (bypassRoutes_.find(key) != bypassRoutes_.end()) {
         bypassedRoute = bypassRoutes_.at(key);
         break;
@@ -335,7 +335,7 @@ void NetZoneImpl::getGlobalRoute(routing::NetPoint* src, routing::NetPoint* dst,
 
   route.link_list = new std::vector<surf::Link*>();
 
-  common_ancestor->getLocalRoute(src_ancestor->netcard_, dst_ancestor->netcard_, &route, latency);
+  common_ancestor->getLocalRoute(src_ancestor->netpoint_, dst_ancestor->netpoint_, &route, latency);
   xbt_assert((route.gw_src != nullptr) && (route.gw_dst != nullptr), "bad gateways for route from \"%s\" to \"%s\"",
              src->cname(), dst->cname());
 

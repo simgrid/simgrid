@@ -65,7 +65,7 @@ void FloydZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
     route->gw_dst = route_stack.front()->gw_dst;
   }
 
-  sg_netcard_t prev_dst_gw = nullptr;
+  sg_netpoint_t prev_dst_gw = nullptr;
   while (!route_stack.empty()) {
     sg_platf_route_cbarg_t e_route = route_stack.back();
     route_stack.pop_back();

@@ -308,11 +308,11 @@ static void instr_user_variable(double time, const char *resource, const char *v
 static void instr_user_srcdst_variable(double time, const char *src, const char *dst, const char *variable,
                               const char *father_type, double value, InstrUserVariable what)
 {
-  sg_netcard_t src_elm = sg_netcard_by_name_or_null(src);
+  sg_netpoint_t src_elm = sg_netpoint_by_name_or_null(src);
   if(!src_elm)
     xbt_die("Element '%s' not found!",src);
 
-  sg_netcard_t dst_elm = sg_netcard_by_name_or_null(dst);
+  sg_netpoint_t dst_elm = sg_netpoint_by_name_or_null(dst);
   if(!dst_elm)
     xbt_die("Element '%s' not found!",dst);
 

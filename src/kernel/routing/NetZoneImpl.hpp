@@ -100,7 +100,7 @@ public:
 
 private:
   std::map<std::pair<NetPoint*, NetPoint*>, BypassRoute*> bypassRoutes_; // src x dst -> route
-  routing::NetPoint* netcard_ = nullptr;                                 // Our representative in the father NetZone
+  routing::NetPoint* netpoint_ = nullptr;                                // Our representative in the father NetZone
 };
 }
 }

@@ -723,48 +723,48 @@ void ETag_surfxml_backbone(){
 }
 
 void STag_surfxml_route(){
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_route_src),
-      "Route src='%s' does name a node.", A_surfxml_route_src);
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_route_dst),
-      "Route dst='%s' does name a node.", A_surfxml_route_dst);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_route_src), "Route src='%s' does name a node.",
+                    A_surfxml_route_src);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_route_dst), "Route dst='%s' does name a node.",
+                    A_surfxml_route_dst);
 }
 
 void STag_surfxml_ASroute(){
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_ASroute_src),
-      "ASroute src='%s' does name a node.", A_surfxml_route_src);
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_ASroute_dst),
-      "ASroute dst='%s' does name a node.", A_surfxml_route_dst);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_ASroute_src), "ASroute src='%s' does name a node.",
+                    A_surfxml_route_src);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_ASroute_dst), "ASroute dst='%s' does name a node.",
+                    A_surfxml_route_dst);
 
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_ASroute_gw___src),
-      "ASroute gw_src='%s' does name a node.", A_surfxml_ASroute_gw___src);
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_ASroute_gw___dst),
-      "ASroute gw_dst='%s' does name a node.", A_surfxml_ASroute_gw___dst);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_ASroute_gw___src), "ASroute gw_src='%s' does name a node.",
+                    A_surfxml_ASroute_gw___src);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_ASroute_gw___dst), "ASroute gw_dst='%s' does name a node.",
+                    A_surfxml_ASroute_gw___dst);
 }
 
 void STag_surfxml_bypassRoute(){
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_bypassRoute_src),
-      "bypassRoute src='%s' does name a node.", A_surfxml_bypassRoute_src);
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_bypassRoute_dst),
-      "bypassRoute dst='%s' does name a node.", A_surfxml_bypassRoute_dst);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassRoute_src), "bypassRoute src='%s' does name a node.",
+                    A_surfxml_bypassRoute_src);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassRoute_dst), "bypassRoute dst='%s' does name a node.",
+                    A_surfxml_bypassRoute_dst);
 }
 
 void STag_surfxml_bypassASroute(){
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_bypassASroute_src),
-      "bypassASroute src='%s' does name a node.", A_surfxml_bypassASroute_src);
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_bypassASroute_dst),
-      "bypassASroute dst='%s' does name a node.", A_surfxml_bypassASroute_dst);
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___src),
-      "bypassASroute gw_src='%s' does name a node.", A_surfxml_bypassASroute_gw___src);
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___dst),
-      "bypassASroute gw_dst='%s' does name a node.", A_surfxml_bypassASroute_gw___dst);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_src),
+                    "bypassASroute src='%s' does name a node.", A_surfxml_bypassASroute_src);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_dst),
+                    "bypassASroute dst='%s' does name a node.", A_surfxml_bypassASroute_dst);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_gw___src),
+                    "bypassASroute gw_src='%s' does name a node.", A_surfxml_bypassASroute_gw___src);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_gw___dst),
+                    "bypassASroute gw_dst='%s' does name a node.", A_surfxml_bypassASroute_gw___dst);
 }
 
 void ETag_surfxml_route(){
   s_sg_platf_route_cbarg_t route;
   memset(&route,0,sizeof(route));
 
-  route.src       = sg_netcard_by_name_or_null(A_surfxml_route_src); // tested to not be nullptr in start tag
-  route.dst       = sg_netcard_by_name_or_null(A_surfxml_route_dst); // tested to not be nullptr in start tag
+  route.src         = sg_netpoint_by_name_or_null(A_surfxml_route_src); // tested to not be nullptr in start tag
+  route.dst         = sg_netpoint_by_name_or_null(A_surfxml_route_dst); // tested to not be nullptr in start tag
   route.gw_src    = nullptr;
   route.gw_dst    = nullptr;
   route.link_list = new std::vector<Link*>();
@@ -782,11 +782,11 @@ void ETag_surfxml_ASroute(){
   s_sg_platf_route_cbarg_t ASroute;
   memset(&ASroute,0,sizeof(ASroute));
 
-  ASroute.src    = sg_netcard_by_name_or_null(A_surfxml_ASroute_src); // tested to not be nullptr in start tag
-  ASroute.dst    = sg_netcard_by_name_or_null(A_surfxml_ASroute_dst); // tested to not be nullptr in start tag
+  ASroute.src = sg_netpoint_by_name_or_null(A_surfxml_ASroute_src); // tested to not be nullptr in start tag
+  ASroute.dst = sg_netpoint_by_name_or_null(A_surfxml_ASroute_dst); // tested to not be nullptr in start tag
 
-  ASroute.gw_src = sg_netcard_by_name_or_null(A_surfxml_ASroute_gw___src); // tested to not be nullptr in start tag
-  ASroute.gw_dst = sg_netcard_by_name_or_null(A_surfxml_ASroute_gw___dst); // tested to not be nullptr in start tag
+  ASroute.gw_src = sg_netpoint_by_name_or_null(A_surfxml_ASroute_gw___src); // tested to not be nullptr in start tag
+  ASroute.gw_dst = sg_netpoint_by_name_or_null(A_surfxml_ASroute_gw___dst); // tested to not be nullptr in start tag
 
   ASroute.link_list =  new std::vector<Link*>();
 
@@ -812,8 +812,8 @@ void ETag_surfxml_bypassRoute(){
   s_sg_platf_route_cbarg_t route;
   memset(&route,0,sizeof(route));
 
-  route.src = sg_netcard_by_name_or_null(A_surfxml_bypassRoute_src); // tested to not be nullptr in start tag
-  route.dst = sg_netcard_by_name_or_null(A_surfxml_bypassRoute_dst); // tested to not be nullptr in start tag
+  route.src         = sg_netpoint_by_name_or_null(A_surfxml_bypassRoute_src); // tested to not be nullptr in start tag
+  route.dst         = sg_netpoint_by_name_or_null(A_surfxml_bypassRoute_dst); // tested to not be nullptr in start tag
   route.gw_src = nullptr;
   route.gw_dst = nullptr;
   route.symmetrical = false;
@@ -830,8 +830,8 @@ void ETag_surfxml_bypassASroute(){
   s_sg_platf_route_cbarg_t ASroute;
   memset(&ASroute,0,sizeof(ASroute));
 
-  ASroute.src         = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_src);
-  ASroute.dst         = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_dst);
+  ASroute.src         = sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_src);
+  ASroute.dst         = sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_dst);
   ASroute.link_list   = new std::vector<Link*>();
   for (auto link: parsed_link_list)
     ASroute.link_list->push_back(link);
@@ -839,8 +839,8 @@ void ETag_surfxml_bypassASroute(){
 
   ASroute.symmetrical = false;
 
-  ASroute.gw_src = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___src);
-  ASroute.gw_dst = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___dst);
+  ASroute.gw_src = sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_gw___src);
+  ASroute.gw_dst = sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_gw___dst);
 
   sg_platf_new_bypassRoute(&ASroute);
 }

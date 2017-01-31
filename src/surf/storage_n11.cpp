@@ -42,7 +42,7 @@ static void check_disk_attachment()
     if (xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
       simgrid::surf::Storage* storage =
           static_cast<simgrid::surf::Storage*>(xbt_lib_get_or_null(storage_lib, key, SURF_STORAGE_LEVEL));
-      simgrid::kernel::routing::NetPoint* host_elm = sg_netcard_by_name_or_null(storage->attach_);
+      simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(storage->attach_);
       if (!host_elm)
         surf_parse_error("Unable to attach storage %s: host %s does not exist.", storage->getName(), storage->attach_);
     }

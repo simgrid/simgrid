@@ -105,16 +105,16 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const char* name, const 
   xbt_assert(nullptr == simgrid::s4u::Engine::instance()->netpointByNameOrNull(name),
              "Refusing to create a router named '%s': this name already describes a node.", name);
 
-  simgrid::kernel::routing::NetPoint* netcard =
+  simgrid::kernel::routing::NetPoint* netpoint =
       new simgrid::kernel::routing::NetPoint(name, simgrid::kernel::routing::NetPoint::Type::Router, current_routing);
-  XBT_DEBUG("Router '%s' has the id %d", name, netcard->id());
+  XBT_DEBUG("Router '%s' has the id %d", name, netpoint->id());
 
   if (coords && strcmp(coords, ""))
-    new simgrid::kernel::routing::vivaldi::Coords(netcard, coords);
+    new simgrid::kernel::routing::vivaldi::Coords(netpoint, coords);
 
   sg_instr_new_router(name);
 
-  return netcard;
+  return netpoint;
 }
 
 void sg_platf_new_link(sg_platf_link_cbarg_t link){
@@ -720,8 +720,8 @@ void sg_platf_new_AS_seal()
 /** @brief Add a link connecting an host to the rest of its AS (which must be cluster or vivaldi) */
 void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
 {
-  simgrid::kernel::routing::NetPoint* netcard = sg_host_by_name(hostlink->id)->pimpl_netpoint;
-  xbt_assert(netcard, "Host '%s' not found!", hostlink->id);
+  simgrid::kernel::routing::NetPoint* netpoint = sg_host_by_name(hostlink->id)->pimpl_netpoint;
+  xbt_assert(netpoint, "Host '%s' not found!", hostlink->id);
   xbt_assert(dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing),
              "Only hosts from Cluster and Vivaldi ASes can get an host_link.");
 
@@ -733,11 +733,11 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
 
   auto as_cluster = static_cast<simgrid::kernel::routing::ClusterZone*>(current_routing);
 
-  if (as_cluster->privateLinks_.find(netcard->id()) != as_cluster->privateLinks_.end())
+  if (as_cluster->privateLinks_.find(netpoint->id()) != as_cluster->privateLinks_.end())
     surf_parse_error("Host_link for '%s' is already defined!",hostlink->id);
 
-  XBT_DEBUG("Push Host_link for host '%s' to position %d", netcard->cname(), netcard->id());
-  as_cluster->privateLinks_.insert({netcard->id(), {linkUp, linkDown}});
+  XBT_DEBUG("Push Host_link for host '%s' to position %d", netpoint->cname(), netpoint->id());
+  as_cluster->privateLinks_.insert({netpoint->id(), {linkUp, linkDown}});
 }
 
 void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)

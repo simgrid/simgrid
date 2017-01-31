@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef KERNEL_ROUTING_NETCARD_HPP_
-#define KERNEL_ROUTING_NETCARD_HPP_
+#ifndef KERNEL_ROUTING_NETPOINT_HPP_
+#define KERNEL_ROUTING_NETPOINT_HPP_
 
 #include <xbt/Extendable.hpp>
 #include <xbt/base.h>
@@ -36,7 +36,7 @@ public:
   unsigned int id() { return id_; }
   std::string name() { return name_; }
   const char* cname() { return name_.c_str(); }
-  /** @brief the NetZone in which this netcard is included */
+  /** @brief the NetZone in which this NetPoint is included */
   NetZoneImpl* netzone() { return netzone_; }
 
   bool isNetZone() { return componentType_ == Type::NetZone; }
@@ -57,6 +57,6 @@ private:
 }
 }
 
-XBT_PUBLIC(sg_netcard_t) sg_netcard_by_name_or_null(const char* name);
+XBT_PUBLIC(sg_netpoint_t) sg_netpoint_by_name_or_null(const char* name);
 
-#endif /* KERNEL_ROUTING_NETCARD_HPP_ */
+#endif /* KERNEL_ROUTING_NETPOINT_HPP_ */

@@ -72,7 +72,7 @@ typedef simgrid_Host* sg_host_t;
 typedef kernel_Activity *smx_activity_t;
 
 typedef surf_Cpu *surf_cpu_t;
-typedef routing_NetPoint* sg_netcard_t;
+typedef routing_NetPoint* sg_netpoint_t;
 typedef surf_Resource *sg_resource_t;
 
 // Types which are in fact dictelmt:

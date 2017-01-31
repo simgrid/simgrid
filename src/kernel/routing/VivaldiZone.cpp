@@ -20,21 +20,21 @@ namespace routing {
 namespace vivaldi {
 simgrid::xbt::Extension<NetPoint, Coords> Coords::EXTENSION_ID;
 
-Coords::Coords(NetPoint* netcard, const char* coordStr)
+Coords::Coords(NetPoint* netpoint, const char* coordStr)
 {
   if (!Coords::EXTENSION_ID.valid())
     Coords::EXTENSION_ID = NetPoint::extension_create<Coords>();
 
   std::vector<std::string> string_values;
   boost::split(string_values, coordStr, boost::is_any_of(" "));
-  xbt_assert(string_values.size() == 3, "Coordinates of %s must have 3 dimensions", netcard->cname());
+  xbt_assert(string_values.size() == 3, "Coordinates of %s must have 3 dimensions", netpoint->cname());
 
   for (auto str : string_values)
     coords.push_back(xbt_str_parse_double(str.c_str(), "Invalid coordinate: %s"));
   coords.shrink_to_fit();
 
-  netcard->extension_set<Coords>(this);
-  XBT_DEBUG("Coords of %s %p: %s", netcard->cname(), netcard, coordStr);
+  netpoint->extension_set<Coords>(this);
+  XBT_DEBUG("Coords of %s %p: %s", netpoint->cname(), netpoint, coordStr);
 }
 Coords::~Coords() = default;
 }; // namespace vivaldi
@@ -47,28 +47,28 @@ static inline double euclidean_dist_comp(int index, std::vector<double>* src, st
   return (src_coord - dst_coord) * (src_coord - dst_coord);
 }
 
-static std::vector<double>* getCoordsFromNetcard(NetPoint* nc)
+static std::vector<double>* getCoordsFromNetpoint(NetPoint* np)
 {
-  simgrid::kernel::routing::vivaldi::Coords* coords = nc->extension<simgrid::kernel::routing::vivaldi::Coords>();
+  simgrid::kernel::routing::vivaldi::Coords* coords = np->extension<simgrid::kernel::routing::vivaldi::Coords>();
   xbt_assert(coords, "Please specify the Vivaldi coordinates of %s %s (%p)",
-             (nc->isNetZone() ? "Netzone" : (nc->isHost() ? "Host" : "Router")), nc->cname(), nc);
+             (np->isNetZone() ? "Netzone" : (np->isHost() ? "Host" : "Router")), np->cname(), np);
   return &coords->coords;
 }
 VivaldiZone::VivaldiZone(NetZone* father, const char* name) : ClusterZone(father, name)
 {
 }
 
-void VivaldiZone::setPeerLink(NetPoint* netcard, double bw_in, double bw_out, const char* coord)
+void VivaldiZone::setPeerLink(NetPoint* netpoint, double bw_in, double bw_out, const char* coord)
 {
-  xbt_assert(netcard->netzone() == this, "Cannot add a peer link to a netcard that is not in this netzone");
+  xbt_assert(netpoint->netzone() == this, "Cannot add a peer link to a netpoint that is not in this netzone");
 
-  new simgrid::kernel::routing::vivaldi::Coords(netcard, coord);
+  new simgrid::kernel::routing::vivaldi::Coords(netpoint, coord);
 
-  std::string link_up   = "link_" + netcard->name() + "_UP";
-  std::string link_down = "link_" + netcard->name() + "_DOWN";
+  std::string link_up   = "link_" + netpoint->name() + "_UP";
+  std::string link_down = "link_" + netpoint->name() + "_DOWN";
   Link* linkUp          = surf_network_model->createLink(link_up.c_str(), bw_out, 0, SURF_LINK_SHARED);
   Link* linkDown        = surf_network_model->createLink(link_down.c_str(), bw_in, 0, SURF_LINK_SHARED);
-  privateLinks_.insert({netcard->id(), {linkUp, linkDown}});
+  privateLinks_.insert({netpoint->id(), {linkUp, linkDown}});
 }
 
 void VivaldiZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
@@ -102,8 +102,8 @@ void VivaldiZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
 
   /* Compute the extra latency due to the euclidean distance if needed */
   if (lat) {
-    std::vector<double>* srcCoords = getCoordsFromNetcard(src);
-    std::vector<double>* dstCoords = getCoordsFromNetcard(dst);
+    std::vector<double>* srcCoords = getCoordsFromNetpoint(src);
+    std::vector<double>* dstCoords = getCoordsFromNetpoint(dst);
 
     double euclidean_dist =
         sqrt(euclidean_dist_comp(0, srcCoords, dstCoords) + euclidean_dist_comp(1, srcCoords, dstCoords)) +
