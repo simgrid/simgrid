@@ -588,7 +588,7 @@ void xbt_cfg_set_parse(const char *options)
     /* don't free(optionlist_cpy) if the assert fails, 'name' points inside it */
     *(val++) = '\0';
 
-    if (strncmp(name, "contexts/", strlen("contexts/")) && strncmp(name, "path", strlen("path")))
+    if (strncmp(name, "path", strlen("path")))
       XBT_INFO("Configuration change: Set '%s' to '%s'", name, val);
 
     try {

@@ -414,7 +414,8 @@ if __name__ == '__main__':
         TeshState().ignore_regexps_common = [
            re.compile("^profiling:"),
            re.compile(".*WARNING: ASan doesn\'t fully support"),
-           re.compile("Unable to clean temporary file C:.*")]
+           re.compile("Unable to clean temporary file C:.*"),
+           re.compile(".*Configuration change: Set \'contexts/")]
     
     if options.teshfile is None:
         f = FileReader(None)
