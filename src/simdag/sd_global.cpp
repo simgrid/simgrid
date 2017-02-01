@@ -56,7 +56,7 @@ std::set<SD_task_t>* simulate(double how_long){
       total_time += elapsed_time;
 
     /* let's see which tasks are done */
-    for (auto model : *all_existing_models) {
+    for (const auto& model : *all_existing_models) {
       surf_action_t action = surf_model_extract_done_action_set(model);
       while (action != nullptr) {
         SD_task_t task = static_cast<SD_task_t>(action->getData());
@@ -68,7 +68,7 @@ std::set<SD_task_t>* simulate(double how_long){
           sd_global->return_set->insert(task);
 
         /* remove the dependencies after this task */
-        for (auto succ : *task->successors) {
+        for (const auto& succ : *task->successors) {
           succ->predecessors->erase(task);
           succ->inputs->erase(task);
           XBT_DEBUG("Release dependency on %s: %zu remain(s). Becomes schedulable if %zu=0", SD_task_get_name(succ),
@@ -85,7 +85,7 @@ std::set<SD_task_t>* simulate(double how_long){
         }
         task->successors->clear();
 
-        for (auto output : *task->outputs) {
+        for (const auto& output : *task->outputs) {
           output->start_time = task->finish_time;
           output->predecessors->erase(task);
           if (SD_task_get_state(output) == SD_SCHEDULED)
@@ -120,7 +120,7 @@ std::set<SD_task_t>* simulate(double how_long){
 
   if (!sd_global->watch_point_reached && how_long < 0 && !sd_global->initial_tasks->empty()) {
     XBT_WARN("Simulation is finished but %zu tasks are still not done", sd_global->initial_tasks->size());
-    for (auto t : *sd_global->initial_tasks)
+    for (const auto& t : *sd_global->initial_tasks)
       XBT_WARN("%s is in %s state", SD_task_get_name(t), __get_state_name(SD_task_get_state(t)));
   }
 
@@ -228,7 +228,7 @@ void SD_create_environment(const char *platform_file)
 xbt_dynar_t SD_simulate(double how_long) {
   std::set<SD_task_t> *changed_tasks = simgrid::sd::simulate(how_long);
   xbt_dynar_t changed_tasks_dynar = xbt_dynar_new(sizeof(SD_task_t), nullptr);
-  for (auto task: *changed_tasks)
+  for (const auto& task : *changed_tasks)
     xbt_dynar_push(changed_tasks_dynar, &task);
   return changed_tasks_dynar;
 }

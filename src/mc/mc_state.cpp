@@ -225,7 +225,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
 
 smx_simcall_t MC_state_get_request(simgrid::mc::State* state)
 {
-  for (auto& actor : mc_model_checker->process().actors()) {
+  for (const auto& actor : mc_model_checker->process().actors()) {
     smx_simcall_t res = MC_state_get_request_for_process(state, actor.copy.getBuffer());
     if (res)
       return res;

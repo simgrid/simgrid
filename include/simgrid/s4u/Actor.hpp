@@ -143,9 +143,7 @@ XBT_PUBLIC_CLASS Actor {
     typedef decltype(f(std::move(args)...)) R;
     auto task = std::make_shared<simgrid::xbt::Task<R()>>(
       simgrid::xbt::makeTask(std::move(f), std::move(args)...));
-    return [=] {
-      (*task)();
-    };
+    return [task] { (*task)(); };
   }
 
   explicit Actor(smx_actor_t pimpl) : pimpl_(pimpl) {}
