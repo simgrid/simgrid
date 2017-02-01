@@ -560,6 +560,7 @@ void SIMIX_run()
     SIMIX_display_process_status();
     xbt_abort();
   }
+  simgrid::s4u::onSimulationEnd();
 }
 
 /**

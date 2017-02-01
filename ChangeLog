@@ -16,6 +16,7 @@ SimGrid (3.15) UNRELEASED; urgency=low
  S4U
  - New callbacks:
    - simgrid::s4u::onPlatformCreated: right before the simulation starts
+   - simgrid::s4u::onSimulationEnd: right after the main simulation loop
 
  -- target_date=March 20 2017 -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

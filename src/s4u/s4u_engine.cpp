@@ -24,6 +24,7 @@ XBT_LOG_NEW_CATEGORY(s4u,"Log channels of the S4U (Simgrid for you) interface");
 namespace simgrid {
 namespace s4u {
 xbt::signal<void(void)> onPlatformCreated;
+xbt::signal<void(void)> onSimulationEnd;
 
 Engine *Engine::instance_ = nullptr; /* That singleton is awful, but I don't see no other solution right now. */
 
