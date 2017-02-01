@@ -125,7 +125,7 @@ namespace simgrid {
         smpi_bw_factor = parse_factor(xbt_cfg_get_string("smpi/bw-factor"));
 
       double current = 1.0;
-      for (auto fact: smpi_bw_factor) {
+      for (const auto& fact : smpi_bw_factor) {
         if (size <= fact.factor) {
           XBT_DEBUG("%f <= %zu return %f", size, fact.factor, current);
           return current;
