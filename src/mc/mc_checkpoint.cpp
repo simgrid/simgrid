@@ -77,7 +77,7 @@ static void restore(mc_mem_region_t region)
     break;
 
   case simgrid::mc::StorageType::Privatized:
-    for (const auto& p : region->privatized_data())
+    for (auto& p : region->privatized_data())
       restore(&p);
     break;
   }
@@ -149,7 +149,7 @@ static void get_memory_regions(simgrid::mc::Process* process, simgrid::mc::Snaps
   const size_t n = process->object_infos.size();
   snapshot->snapshot_regions.resize(n + 1);
   int i = 0;
-  for (const auto const& object_info : process->object_infos)
+  for (auto const& object_info : process->object_infos)
     add_region(i++, snapshot, simgrid::mc::RegionType::Data,
       object_info.get(),
       object_info->start_rw, object_info->start_rw,
