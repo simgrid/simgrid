@@ -102,6 +102,18 @@ xbt_dynar_t xbt_dynar_new(const unsigned long elmsize, void_f_pvoid_t const free
   return dynar;
 }
 
+/** @brief Initialize a dynar structure that was not malloc'ed
+ * This can be useful to keep temporary dynars on the stack
+ */
+void xbt_dynar_init(xbt_dynar_t dynar, const unsigned long elmsize, void_f_pvoid_t const free_f)
+{
+  dynar->size    = 0;
+  dynar->used    = 0;
+  dynar->elmsize = elmsize;
+  dynar->data    = nullptr;
+  dynar->free_f  = free_f;
+}
+
 /** @brief Destructor of the structure not touching to the content
  *
  * \param dynar poor victim

@@ -837,7 +837,7 @@ void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
 
 int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status * status)
 {
-  xbt_dynar_t comms;
+  s_xbt_dynar_t comms; // Keep it on stack to save some extra mallocs
   int i;
   int size = 0;
   int index = MPI_UNDEFINED;
@@ -845,14 +845,14 @@ int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status * status)
 
   if(count > 0) {
     // Wait for a request to complete
-    comms = xbt_dynar_new(sizeof(smx_activity_t), nullptr);
+    xbt_dynar_init(&comms, sizeof(smx_activity_t), nullptr);
     map = xbt_new(int, count);
     XBT_DEBUG("Wait for one of %d", count);
     for(i = 0; i < count; i++) {
       if (requests[i] != MPI_REQUEST_NULL && !(requests[i]->flags & PREPARED) && !(requests[i]->flags & FINISHED)) {
         if (requests[i]->action != nullptr) {
           XBT_DEBUG("Waiting any %p ", requests[i]);
-          xbt_dynar_push(comms, &requests[i]->action);
+          xbt_dynar_push(&comms, &requests[i]->action);
           map[size] = i;
           size++;
         }else{
@@ -867,7 +867,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status * status)
       }
     }
     if(size > 0) {
-      i = simcall_comm_waitany(comms, -1);
+      i = simcall_comm_waitany(&comms, -1);
 
       // not MPI_UNDEFINED, as this is a simix return code
       if (i != -1) {
@@ -878,7 +878,6 @@ int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status * status)
       }
     }
     xbt_free(map);
-    xbt_dynar_free(&comms);
   }
 
   if (index==MPI_UNDEFINED)

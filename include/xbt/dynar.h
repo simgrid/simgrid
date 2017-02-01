@@ -66,6 +66,7 @@ SG_BEGIN_DECL()
 typedef struct xbt_dynar_s *xbt_dynar_t;
 
 XBT_PUBLIC(xbt_dynar_t) xbt_dynar_new(const unsigned long elm_size, void_f_pvoid_t const free_f);
+XBT_PUBLIC(void) xbt_dynar_init(xbt_dynar_t dynar, const unsigned long elmsize, void_f_pvoid_t const free_f);
 XBT_PUBLIC(void) xbt_dynar_free(xbt_dynar_t * dynar);
 XBT_PUBLIC(void) xbt_dynar_free_voidp(void *dynar);
 XBT_PUBLIC(void) xbt_dynar_free_container(xbt_dynar_t * dynar);
