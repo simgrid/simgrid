@@ -158,7 +158,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
 
   });
   simgrid::surf::on_cluster.connect(&clusterCreation_cb);
-  simgrid::surf::on_postparse.connect(&postparse_cb);
+  simgrid::s4u::onPlatformCreated.connect(&postparse_cb);
   simgrid::s4u::NetZone::onRouteCreation.connect(&routeCreation_cb);
 
   LogComponentEnable("UdpEchoClientApplication", ns3::LOG_LEVEL_INFO);

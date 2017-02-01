@@ -13,7 +13,8 @@
 
 #include <xbt/functional.hpp>
 
-#include <simgrid/s4u/host.hpp>
+#include "simgrid/s4u/engine.hpp"
+#include "simgrid/s4u/host.hpp"
 
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/storage_interface.hpp"
@@ -228,7 +229,7 @@ void SIMIX_global_init(int *argc, char **argv)
 #endif
     /* register a function to be called by SURF after the environment creation */
     sg_platf_init();
-    simgrid::surf::on_postparse.connect(SIMIX_post_create_environment);
+    simgrid::s4u::onPlatformCreated.connect(SIMIX_post_create_environment);
     simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
       host.extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
     });
@@ -428,7 +429,6 @@ void SIMIX_run()
   }
 
   double time = 0;
-  smx_actor_t process;
 
   do {
     XBT_DEBUG("New Schedule Round; size(queue)=%lu", xbt_dynar_length(simix_global->process_to_run));
@@ -500,6 +500,7 @@ void SIMIX_run()
        */
 
       unsigned int iter;
+      smx_actor_t process;
       xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
         if (process->simcall.call != SIMCALL_NONE) {
           SIMIX_simcall_handle(&process->simcall, 0);

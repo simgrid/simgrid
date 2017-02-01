@@ -8,6 +8,7 @@
 
 #include "simgrid/s4u/engine.hpp"
 #include "simgrid/s4u/host.hpp"
+
 #include "src/kernel/routing/NetZoneImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
@@ -324,7 +325,7 @@ void instr_routing_define_callbacks ()
   //to create the rootContainer and the rootType properly
   if (!TRACE_needs_platform()) return;
   simgrid::surf::Link::onCreation.connect(instr_routing_parse_start_link);
-  simgrid::surf::on_postparse.connect(instr_routing_parse_end_platform);
+  simgrid::s4u::onPlatformCreated.connect(instr_routing_parse_end_platform);
 }
 
 /*

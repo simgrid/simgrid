@@ -13,6 +13,10 @@ SimGrid (3.15) UNRELEASED; urgency=low
    it denotes, so use JniException that is a RuntimeException (not to
    be catched explicitely).
 
+ S4U
+ - New callbacks:
+   - simgrid::s4u::onPlatformCreated: right before the simulation starts
+
  -- target_date=March 20 2017 -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.14.159) stable; urgency=low

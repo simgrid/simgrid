@@ -143,7 +143,7 @@ namespace simgrid {
         smpi_lat_factor = parse_factor(xbt_cfg_get_string("smpi/lat-factor"));
 
       double current=1.0;
-      for (auto fact: smpi_lat_factor) {
+      for (const auto& fact : smpi_lat_factor) {
         if (size <= fact.factor) {
           XBT_DEBUG("%f <= %zu return %f", size, fact.factor, current);
           return current;

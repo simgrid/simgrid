@@ -3,12 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/s4u/engine.hpp"
 #include "simgrid/s4u/host.hpp"
 
 #include "instr/instr_interface.h"
 #include "mc/mc.h"
 #include "src/msg/msg_private.h"
-#include "src/surf/xml/platf_private.hpp" // FIXME: KILLME by removing MSG_post_create_environment()
 
 XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg, "Logging specific to MSG (kernel)");
@@ -54,7 +54,7 @@ void MSG_init_nocheck(int *argc, char **argv) {
     SIMIX_function_register_process_create(MSG_process_create_from_SIMIX);
     SIMIX_function_register_process_cleanup(MSG_process_cleanup_from_SIMIX);
 
-    simgrid::surf::on_postparse.connect(MSG_post_create_environment);
+    simgrid::s4u::onPlatformCreated.connect(MSG_post_create_environment);
     simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
       MSG_host_create_(&host);
     });

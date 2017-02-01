@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "storage_n11.hpp"
+#include "simgrid/s4u/engine.hpp"
 #include "src/kernel/routing/NetPoint.hpp"
 #include "surf_private.h"
 #include <math.h> /*ceil*/
@@ -51,7 +52,7 @@ static void check_disk_attachment()
 
 void storage_register_callbacks()
 {
-  simgrid::surf::on_postparse.connect(check_disk_attachment);
+  simgrid::s4u::onPlatformCreated.connect(check_disk_attachment);
   instr_routing_define_callbacks();
 
   ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, xbt_free_f);

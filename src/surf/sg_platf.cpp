@@ -1,10 +1,9 @@
-/* Copyright (c) 2006-2014. The SimGrid Team.
- * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u/engine.hpp"
+
 #include "src/kernel/EngineImpl.hpp"
 #include "src/simix/smx_private.h"
 
@@ -34,7 +33,6 @@ namespace simgrid {
 namespace surf {
 
 simgrid::xbt::signal<void(sg_platf_cluster_cbarg_t)> on_cluster;
-simgrid::xbt::signal<void(void)> on_postparse;
 
 }
 }
@@ -55,7 +53,7 @@ void sg_platf_init() {
 /** Module management function: frees all internal data structures */
 void sg_platf_exit() {
   simgrid::surf::on_cluster.disconnect_all_slots();
-  simgrid::surf::on_postparse.disconnect_all_slots();
+  simgrid::s4u::onPlatformCreated.disconnect_all_slots();
 
   /* make sure that we will reinit the models while loading the platf once reinited */
   surf_parse_models_setup_already_called = 0;
@@ -569,7 +567,7 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
 void sg_platf_begin() { /* Do nothing: just for symmetry of user code */ }
 
 void sg_platf_end() {
-  simgrid::surf::on_postparse();
+  simgrid::s4u::onPlatformCreated();
 }
 
 /* Pick the right models for CPU, net and host, and call their model_init_preparse */

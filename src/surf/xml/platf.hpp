@@ -35,12 +35,4 @@ XBT_PUBLIC_DATA(int_f_void_t) surf_parse;       /* Entry-point to the parser. Se
 
 SG_END_DECL()
 
-namespace simgrid {
-namespace surf {
-
-extern XBT_PRIVATE xbt::signal<void(void)> on_postparse;
-
-}
-}
-
 #endif

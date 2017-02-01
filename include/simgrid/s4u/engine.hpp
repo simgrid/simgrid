@@ -104,6 +104,11 @@ public:
 private:
   static s4u::Engine *instance_;
 };
+
+/* Callback called when the platform is created (ie, the xml file parsed),
+ * right before the actual simulation starts.
+ */
+extern XBT_PRIVATE xbt::signal<void(void)> onPlatformCreated;
 }} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_ENGINE_HPP */
