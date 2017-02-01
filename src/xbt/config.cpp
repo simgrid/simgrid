@@ -605,6 +605,7 @@ void xbt_cfg_set_parse(const char *options)
   free(optionlist_cpy);
   return;
 
+  /* Do not THROWF from a C++ exception catching context, or some cleanups will be missing */
 on_missing_key:
   free(optionlist_cpy);
   THROWF(not_found_error, 0, "Could not set variables %s", options);
