@@ -153,7 +153,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
 
   ns3_initialize(ns3_tcp_model.get().c_str());
 
-  simgrid::kernel::routing::NetPoint::onCreation.connect([](simgrid::kernel::routing::NetPoint pt) {
+  simgrid::kernel::routing::NetPoint::onCreation.connect([](simgrid::kernel::routing::NetPoint* pt) {
     pt->extension_set<NetPointNs3>(new NetPointNs3());
 
   });
