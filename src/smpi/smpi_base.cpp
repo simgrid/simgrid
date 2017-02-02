@@ -877,6 +877,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status * status)
         requests[index] = MPI_REQUEST_NULL;
       }
     }
+    xbt_dynar_free_data(&comms);
     xbt_free(map);
   }
 

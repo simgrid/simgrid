@@ -70,6 +70,7 @@ XBT_PUBLIC(void) xbt_dynar_init(xbt_dynar_t dynar, const unsigned long elmsize, 
 XBT_PUBLIC(void) xbt_dynar_free(xbt_dynar_t * dynar);
 XBT_PUBLIC(void) xbt_dynar_free_voidp(void *dynar);
 XBT_PUBLIC(void) xbt_dynar_free_container(xbt_dynar_t * dynar);
+XBT_PUBLIC(void) xbt_dynar_free_data(xbt_dynar_t dynar);
 XBT_PUBLIC(void) xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots);
 XBT_PUBLIC(void) xbt_dynar_dump(xbt_dynar_t dynar);
 

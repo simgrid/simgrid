@@ -114,6 +114,14 @@ extern "C" void xbt_dynar_init(xbt_dynar_t dynar, const unsigned long elmsize, v
   dynar->free_f  = free_f;
 }
 
+/** @brief Destroy a dynar that was created with xbt_dynar_init */
+extern "C" void xbt_dynar_free_data(xbt_dynar_t dynar)
+{
+  xbt_dynar_reset(dynar);
+  if (dynar)
+    free(dynar->data);
+}
+
 /** @brief Destructor of the structure not touching to the content
  *
  * \param dynar poor victim
