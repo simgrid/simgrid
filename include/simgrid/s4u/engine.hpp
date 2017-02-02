@@ -108,10 +108,10 @@ private:
 /** Callback called when the platform is created (ie, the xml file parsed),
  * right before the actual simulation starts.
  */
-extern XBT_PRIVATE xbt::signal<void(void)> onPlatformCreated;
+extern XBT_PRIVATE xbt::signal<void()> onPlatformCreated;
 
 /** Callback called when the main simulation loop ends, just before MSG_run (or similar) ends */
-extern XBT_PRIVATE xbt::signal<void(void)> onSimulationEnd;
+extern XBT_PRIVATE xbt::signal<void()> onSimulationEnd;
 }} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_ENGINE_HPP */
