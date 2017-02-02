@@ -466,7 +466,7 @@ consumption by trying to share memory between the different snapshots.
 When compiled against the model checker, the stacks are not
 protected with guards: if the stack size is too small for your
 application, the stack will silently overflow on other parts of the
-memory.
+memory (see \ref options_virt_guard_size).
 
 \subsection options_modelchecking_hash Hashing of the state (experimental)
 
@@ -542,25 +542,33 @@ select the one you want to use with the \b contexts/factory
 configuration item. Some of the following may not exist on your
 machine because of portability issues. In any case, the default one
 should be the most effcient one (please report bugs if the
-auto-detection fails for you). They are sorted here from the slowest
-to the most effient:
+auto-detection fails for you). They are approximately sorted here from
+the slowest to the most effient:
+
  - \b thread: very slow factory using full featured threads (either
-   pthreads or windows native threads)
- - \b ucontext: fast factory using System V contexts (or a portability
-   layer of our own on top of Windows fibers)
+   pthreads or windows native threads). They are slow but very
+   standard. Some debuggers or profilers only work with this factory.
+ - \b java: Java applications are virtualized onto java threads (that
+   are regular pthreads registered to the JVM)
+ - \b ucontext: fast factory using System V contexts (Linux and FreeBSD only)
+ - \b boost: This uses the [context implementation](http://www.boost.org/doc/libs/1_59_0/libs/context/doc/html/index.html)
+   of the boost library for a performance that is comparable to our
+   raw implementation.\nInstall the relevant library (e.g. with the
+   libboost-contexts-dev package on Debian/Ubuntu) and recompile
+   SimGrid. Note that our implementation is not compatible with recent
+   implementations of the library, and it will be hard to fix this since
+   the library's author decided to hide an API that we were using.
  - \b raw: amazingly fast factory using a context switching mechanism
    of our own, directly implemented in assembly (only available for x86
-   and amd64 platforms for now)
- - \b boost: This uses the [context implementation](http://www.boost.org/doc/libs/1_59_0/libs/context/doc/html/index.html)
-             of the boost library; you must have this library installed before
-             you compile SimGrid. (On Debian GNU/Linux based systems, this is
-             provided by the libboost-contexts-dev package.)
+   and amd64 platforms for now) and without any unneeded system call.
 
-The only reason to change this setting is when the debugging tools get
+The main reason to change this setting is when the debugging tools get
 fooled by the optimized context factories. Threads are the most
-debugging-friendly contextes, as they allow to set breakpoints anywhere with gdb
- and visualize backtraces for all processes, in order to debug concurrency issues.
-Valgrind is also more comfortable with threads, but it should be usable with all factories.
+debugging-friendly contextes, as they allow to set breakpoints
+anywhere with gdb and visualize backtraces for all processes, in order
+to debug concurrency issues. Valgrind is also more comfortable with
+threads, but it should be usable with all factories (but the callgrind
+tool that really don't like raw and ucontext factories).
 
 \subsection options_virt_stacksize Adapting the used stack size
 
@@ -575,26 +583,36 @@ If you want to push the scalability limits of your code, you might
 want to reduce the \b contexts/stack-size item. Its default value
 is 8192 (in KiB), while our Chord simulation works with stacks as small
 as 16 KiB, for example. For the thread factory, the default value
-is the one of the system, if it is too large/small, it has to be set
-with this parameter.
+is the one of the system but you can still change it with this parameter.
 
 The operating system should only allocate memory for the pages of the
 stack which are actually used and you might not need to use this in
 most cases. However, this setting is very important when using the
 model checker (see \ref options_mc_perf).
 
-In some cases, no stack guard page is used and the stack will silently
-overflow on other parts of the memory if the stack size is too small
-for your application. This happens :
+\subsection options_virt_guard_size Disabling stack guard pages
+
+A stack guard page is usually used which prevents the stack of a given
+actor from overflowing on another stack. But the performance impact
+may become prohibitive when the amount of actors increases.  The
+option \b contexts:guard-size is the number of stack guard pages used.
+By setting it to 0, no guard pages will be used: in this case, you
+should avoid using small stacks (\b stack-size) as the stack will
+silently overflow on other parts of the memory.
+
+When no stack guard page is created, stacks may then silently overflow
+on other parts of the memory if their size is too small for the
+application. This happens:
 
 - on Windows systems;
 - when the model checker is enabled;
-- when stack guard pages are explicitely disabled (see \ref  options_perf_guard_size).
+- and of course when guard pages are explicitely disabled (with \b contexts:guard-size=0).
 
 \subsection options_virt_parallel Running user code in parallel
 
 Parallel execution of the user code is only considered stable in
-SimGrid v3.7 and higher. It is described in
+SimGrid v3.7 and higher, and mostly for MSG simulations. SMPI
+simulations may well fail in parallel mode. It is described in
 <a href="http://hal.inria.fr/inria-00602216/">INRIA RR-7653</a>.
 
 If you are using the \c ucontext or \c raw context factories, you can
@@ -1094,24 +1112,6 @@ hence, the output would mismatch, causing the test to fail.
 
 It can be done by using XBT. Go to \ref XBT_log for more details.
 
-\section options_perf Performance optimizations
-
-\subsection options_perf_context Context factory
-
-In order to achieve higher performance, you might want to use the raw
-context factory which avoids any system call when switching between
-tasks. If it is not possible you might use ucontext instead.
-
-\subsection options_perf_guard_size Disabling stack guard pages
-
-A stack guard page is usually used which prevents the stack from
-overflowing on other parts of the memory. However this might have a
-performance impact if a huge number of processes is created.  The
-option \b contexts:guard-size is the number of stack guard pages
-used. By setting it to 0, no guard pages will be used: in this case,
-you should avoid using small stacks (\b stack-size) as the stack will
-silently overflow on other parts of the memory.
-
 \section options_index Index of all existing configuration options
 
 \note
@@ -1126,7 +1126,7 @@ silently overflow on other parts of the memory.
 - \c clean-atexit: \ref options_generic_clean_atexit
 
 - \c contexts/factory: \ref options_virt_factory
-- \c contexts/guard-size: \ref options_virt_parallel
+- \c contexts/guard-size: \ref options_virt_guard_size
 - \c contexts/nthreads: \ref options_virt_parallel
 - \c contexts/parallel_threshold: \ref options_virt_parallel
 - \c contexts/stack-size: \ref options_virt_stacksize

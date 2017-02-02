@@ -184,7 +184,12 @@ void *SIMIX_context_stack_new()
 
 #ifndef _WIN32
     if (mprotect(stack, smx_context_guard_size, PROT_NONE) == -1) {
-      xbt_die("Failed to protect stack %p: %s", stack, strerror(errno));
+      xbt_die(
+          "Failed to protect stack: %s.\n"
+          "If you are running a lot of actors, you may be exceeding the amount of mappings allowed per process.\n"
+          "On Linux systems, change this value with sudo sysctl -w vm.max_map_count=newvalue (default value: 65536)\n"
+          "Please see http://simgrid.gforge.inria.fr/simgrid/latest/doc/html/options.html#options_virt for more info.",
+          strerror(errno));
       /* This is fatal. We are going to fail at some point when we try reusing this. */
     }
 #endif

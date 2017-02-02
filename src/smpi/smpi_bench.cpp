@@ -1,5 +1,4 @@
-/* Copyright (c) 2007, 2009-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007, 2009-2017. The SimGrid Team. All rights reserved.    */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -165,7 +164,6 @@ static size_t shm_size(int fd) {
 
 #ifndef WIN32
 static void* shm_map(int fd, size_t size, shared_data_key_type* data) {
-  void* mem;
   char loc[PTR_STRLEN];
   shared_metadata_t meta;
 
@@ -173,9 +171,14 @@ static void* shm_map(int fd, size_t size, shared_data_key_type* data) {
       xbt_die("Could not truncate fd %d to %zu: %s", fd, size, strerror(errno));
   }
 
-  mem = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+  void* mem = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   if(mem == MAP_FAILED) {
-    xbt_die("Could not map fd %d with size %zu: %s.\n If you are running a lot of processes, you may be exceeding the amount of mappings allowed per process. \n On linux systems, this value can be set by using sudo sysctl -w vm.max_map_count=newvalue .\n Default value is 65536", fd, size, strerror(errno));
+    xbt_die(
+        "Failed to map fd %d with size %zu: %s\n"
+        "If you are running a lot of ranks, you may be exceeding the amount of mappings allowed per process.\n"
+        "On Linux systems, change this value with sudo sysctl -w vm.max_map_count=newvalue (default value: 65536)\n"
+        "Please see http://simgrid.gforge.inria.fr/simgrid/latest/doc/html/options.html#options_virt for more info.",
+        fd, size, strerror(errno));
   }
   snprintf(loc, PTR_STRLEN, "%p", mem);
   meta.size = size;
