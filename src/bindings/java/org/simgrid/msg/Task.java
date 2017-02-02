@@ -84,8 +84,7 @@ public class Task {
 	 */
 	private final native void create(String name,
 			double flopsAmount,
-			double bytesAmount)
-					throws IllegalArgumentException;		
+			double bytesAmount);
 	/**
 	 * The natively implemented method to create a MSG parallel task.
 	 *
@@ -99,8 +98,7 @@ public class Task {
 	private final native void parallelCreate(String name,
 			Host[]hosts,
 			double[]flopsAmount,
-			double[]bytesAmount)
-					throws NullPointerException, IllegalArgumentException;
+			double[]bytesAmount);
 	/* *                   * *
 	 * * Getters / Setters * *
 	 * *                   * */

@@ -71,9 +71,8 @@ public class Host {
 	 *
 	 * @return		The host object with the given name.
 	 * @exception		HostNotFoundException if the name of the host is not valid.
-	 *					NativeException if the native version of this method failed.
 	 */ 
-	public static native Host getByName(String name) throws HostNotFoundException, NullPointerException;
+	public static native Host getByName(String name) throws HostNotFoundException;
 	/** Counts the installed hosts. */ 
 	public static native int getCount();
 
