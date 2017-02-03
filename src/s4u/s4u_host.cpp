@@ -218,14 +218,14 @@ int Host::coreCount() {
 /** @brief Set the pstate at which the host should run */
 void Host::setPstate(int pstate_index)
 {
-  simgrid::simix::kernelImmediate(std::bind(
-      &simgrid::surf::Cpu::setPState, pimpl_cpu, pstate_index
-  ));
+  simgrid::simix::kernelImmediate([&](){
+      this->pimpl_cpu->setPState(pstate_index);
+  });
 }
 /** @brief Retrieve the pstate at which the host is currently running */
 int Host::pstate()
 {
-  return pimpl_cpu->getPState();
+  return this->pimpl_cpu->getPState();
 }
 
 /**
