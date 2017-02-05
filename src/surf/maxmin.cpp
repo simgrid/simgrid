@@ -22,9 +22,9 @@ typedef struct s_dyn_light {
   int size;
 } s_dyn_light_t, *dyn_light_t;
 
-double sg_maxmin_precision = 0.00001;
-double sg_surf_precision   = 0.00001;
-int    sg_concurrency_limit= 100;
+double sg_maxmin_precision = 0.00001; /* Change this with --cfg=maxmin/precision:VALUE */
+double sg_surf_precision   = 0.00001; /* Change this with --cfg=surf/precision:VALUE */
+int sg_concurrency_limit   = -1;      /* Change this with --cfg=maxmin/concurrency_limit:VALUE */
 
 static void *lmm_variable_mallocator_new_f();
 static void lmm_variable_mallocator_free_f(void *var);
@@ -198,7 +198,7 @@ lmm_constraint_t lmm_constraint_new(lmm_system_t sys, void *id, double bound_val
   cnst->bound = bound_value;
   cnst->concurrency_maximum=0;
   cnst->concurrency_current=0;
-  cnst->concurrency_limit=sg_concurrency_limit;
+  cnst->concurrency_limit  = sg_concurrency_limit;
   cnst->usage = 0;
   cnst->sharing_policy = 1; /* FIXME: don't hardcode the value */
   insert_constraint(sys, cnst);
@@ -1053,23 +1053,20 @@ void lmm_disable_var(lmm_system_t sys, lmm_variable_t var){
  * And then add it to enabled variables
  */
 void lmm_on_disabled_var(lmm_system_t sys, lmm_constraint_t cnstr){
-  lmm_element_t elem;
-  lmm_element_t nextelem;
-  int numelem;
 
   if(cnstr->concurrency_limit<0)
     return;
 
-  numelem=xbt_swag_size(&(cnstr->disabled_element_set));
+  int numelem = xbt_swag_size(&(cnstr->disabled_element_set));
   if(!numelem)
     return;
 
-  elem= (lmm_element_t) xbt_swag_getFirst(&(cnstr->disabled_element_set));
+  lmm_element_t elem = (lmm_element_t)xbt_swag_getFirst(&(cnstr->disabled_element_set));
 
   //Cannot use xbt_swag_foreach, because lmm_enable_var will modify disabled_element_set.. within the loop
-  while(numelem-- && elem ){
+  while (numelem-- && elem) {
 
-    nextelem = (lmm_element_t) xbt_swag_getNext(elem, cnstr->disabled_element_set.offset);      
+    lmm_element_t nextelem = (lmm_element_t)xbt_swag_getNext(elem, cnstr->disabled_element_set.offset);
 
     if (elem->variable->staged_weight>0 ){
       //Found a staged variable
@@ -1098,7 +1095,6 @@ void lmm_on_disabled_var(lmm_system_t sys, lmm_constraint_t cnstr){
  */
 void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var, double weight)
 {
-  int minslack;
 
   xbt_assert(weight>=0,"Variable weight should not be negative!");
 
@@ -1115,8 +1111,8 @@ void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var, double wei
   //Are we enabling this variable?
   if (enabling_var){
     var->staged_weight = weight;
-    minslack=lmm_cnstrs_min_concurrency_slack(var);
-    if(minslack<var->concurrency_share){      
+    int minslack       = lmm_cnstrs_min_concurrency_slack(var);
+    if (minslack < var->concurrency_share) {
       XBT_DEBUG("Staging var (instead of enabling) because min concurrency slack %i, with weight %f and concurrency"
                 " share %i", minslack, weight, var->concurrency_share);
       return;

@@ -384,17 +384,15 @@ void sg_config_init(int *argc, char **argv)
     simgrid::config::bindFlag(sg_tcp_gamma, { "network/TCP-gamma", "network/TCP_gamma" },
       "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; Use the last given value, which is the max window size)");
 
-    sg_surf_precision = 0.00001;
     simgrid::config::bindFlag(sg_surf_precision, "surf/precision",
       "Numerical precision used when updating simulation times (in seconds)");
 
-    sg_maxmin_precision = 0.00001;
     simgrid::config::bindFlag(sg_maxmin_precision, "maxmin/precision",
-      "Numerical precision used when computing resource sharing (in ops/sec or bytes/sec)");
+                              "Numerical precision used when computing resource sharing (in flops/sec or bytes/sec)");
 
-    sg_concurrency_limit = 100;
     simgrid::config::bindFlag(sg_concurrency_limit, "maxmin/concurrency_limit",
-      "Maximum number of concurrent variables in the maxmim system. Also limits the number of processes on each host, at higher level");
+                              "Maximum number of concurrent variables in the maxmim system. Also limits the number of "
+                              "processes on each host, at higher level. (default: -1 means no such limitation)");
 
     /* The parameters of network models */
 

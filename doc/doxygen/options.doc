@@ -201,8 +201,10 @@ price of a reduced numerical precision.
 
 \subsection options_concurrency_limit Concurrency limit
 
-The maximum number of variables in a system can be tuned through
-the \b maxmin/concurrency_limit item (default value: 100). Setting a higher value can lift some limitations, such as the number of concurrent processes running on a single host.
+The maximum number of variables per resource can be tuned through
+the \b maxmin/concurrency_limit item (default value: -1, meaning no such limitation). 
+Setting a higher value can lift some limitations, such as the number of 
+concurrent processes running on a single host.
 
 \subsection options_model_network Configuring the Network model
 
