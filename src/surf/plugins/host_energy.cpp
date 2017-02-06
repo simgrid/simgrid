@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <simgrid/s4u/engine.hpp>
 #include "simgrid/plugins/energy.h"
 #include "simgrid/simix.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
@@ -307,6 +308,32 @@ static void onHostDestruction(simgrid::s4u::Host& host)
   XBT_INFO("Total energy of host %s: %f Joules", host.cname(), host_energy->getConsumedEnergy());
 }
 
+static void onSimulationEnd()
+{
+  sg_host_t* host_list     = sg_host_list();
+  int host_count           = sg_host_count();
+  double total_energy      = 0.0; // Total energy consumption (whole plattform)
+  double used_hosts_energy = 0.0; // Energy consumed by hosts that computed something
+  for (int i = 0; i < host_count; i++) {
+    bool host_was_used = (host_list[i]->extension<HostEnergy>()->last_updated != 0);
+    double energy      = 0.0;
+    energy             = host_list[i]->extension<HostEnergy>()->getConsumedEnergy();
+    total_energy      += energy;
+    if (host_was_used)
+      used_hosts_energy += energy;
+  }
+  XBT_INFO("Summed energy consumption: %f Joules; used hosts consumed: %f Joules; unused (idle) hosts consumed: %f",
+           total_energy, used_hosts_energy, total_energy - used_hosts_energy);
+}
+  sg_host_t* host_list = sg_host_list();
+  int host_count       = sg_host_count();
+  double energy        = 0.0;
+  for (int i = 0; i < host_count; i++) {
+    energy += host_list[i]->extension<HostEnergy>()->getConsumedEnergy();
+  }
+  XBT_INFO("Summed energy consumption: %f Joules", energy);
+}
+
 /* **************************** Public interface *************************** */
 SG_BEGIN_DECL()
 
@@ -325,6 +352,7 @@ void sg_host_energy_plugin_init()
   simgrid::s4u::Host::onStateChange.connect(&onHostChange);
   simgrid::s4u::Host::onSpeedChange.connect(&onHostChange);
   simgrid::s4u::Host::onDestruction.connect(&onHostDestruction);
+  simgrid::s4u::onSimulationEnd.connect(&onSimulationEnd);
   simgrid::surf::CpuAction::onStateChange.connect(&onActionStateChange);
 }
 
