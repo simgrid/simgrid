@@ -3,9 +3,7 @@ if(enable_smpi)
 
   add_executable       (replay_multiple replay_multiple.c)
   target_link_libraries(replay_multiple simgrid)
-  IF(NOT HAVE_MC)
-    ADD_TESH(smpi-replay-multiple --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple --cd ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple ${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple/replay_multiple.tesh)
-  ENDIF()
+  ADD_TESH(smpi-replay-multiple --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple --cd ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple ${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple/replay_multiple.tesh)
 endif()
 
 set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/generate_multiple_deployment.sh
