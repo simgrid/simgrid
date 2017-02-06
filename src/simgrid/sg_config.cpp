@@ -390,9 +390,10 @@ void sg_config_init(int *argc, char **argv)
     simgrid::config::bindFlag(sg_maxmin_precision, "maxmin/precision",
                               "Numerical precision used when computing resource sharing (in flops/sec or bytes/sec)");
 
-    simgrid::config::bindFlag(sg_concurrency_limit, "maxmin/concurrency_limit",
+    simgrid::config::bindFlag(sg_concurrency_limit, "maxmin/concurrency-limit",
                               "Maximum number of concurrent variables in the maxmim system. Also limits the number of "
                               "processes on each host, at higher level. (default: -1 means no such limitation)");
+    xbt_cfg_register_alias("maxmin/concurrency-limit", "maxmin/concurrency_limit");
 
     /* The parameters of network models */
 

@@ -24,7 +24,7 @@ typedef struct s_dyn_light {
 
 double sg_maxmin_precision = 0.00001; /* Change this with --cfg=maxmin/precision:VALUE */
 double sg_surf_precision   = 0.00001; /* Change this with --cfg=surf/precision:VALUE */
-int sg_concurrency_limit   = -1;      /* Change this with --cfg=maxmin/concurrency_limit:VALUE */
+int sg_concurrency_limit   = -1;      /* Change this with --cfg=maxmin/concurrency-limit:VALUE */
 
 static void *lmm_variable_mallocator_new_f();
 static void lmm_variable_mallocator_free_f(void *var);
