@@ -76,7 +76,7 @@ protected:
   /** @brief retrieves the list of all routes of size 1 (of type src x dst x Link) */
   /* returns whether we found a bypass path */
   bool getBypassRoute(routing::NetPoint * src, routing::NetPoint * dst,
-                      /* OUT */ std::vector<surf::Link*> * links, double* latency);
+                      /* OUT */ std::vector<surf::LinkImpl*> * links, double* latency);
 
 public:
   /* @brief get the route between two nodes in the full platform
@@ -87,7 +87,7 @@ public:
    * @param latency Accumulator in which the latencies should be added (caller must set it to 0)
    */
   static void getGlobalRoute(routing::NetPoint * src, routing::NetPoint * dst,
-                             /* OUT */ std::vector<surf::Link*> * links, double* latency);
+                             /* OUT */ std::vector<surf::LinkImpl*> * links, double* latency);
 
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) = 0;
   enum class RoutingMode {

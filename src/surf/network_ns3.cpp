@@ -172,8 +172,8 @@ NetworkNS3Model::~NetworkNS3Model() {
   xbt_dict_free(&flowFromSock);
 }
 
-Link* NetworkNS3Model::createLink(const char* name, double bandwidth, double latency,
-                                  e_surf_link_sharing_policy_t policy)
+LinkImpl* NetworkNS3Model::createLink(const char* name, double bandwidth, double latency,
+                                      e_surf_link_sharing_policy_t policy)
 {
   return new LinkNS3(this, name, bandwidth, latency);
 }
@@ -230,7 +230,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
         action->getState() == Action::State::running){
       double data_delta_sent = sgFlow->sentBytes_ - action->lastSent_;
 
-      std::vector<Link*> route = std::vector<Link*>();
+      std::vector<LinkImpl*> route = std::vector<LinkImpl*>();
 
       action->src_->routeTo(action->dst_, &route, nullptr);
       for (auto link : route)
@@ -263,12 +263,12 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
  ************/
 
 LinkNS3::LinkNS3(NetworkNS3Model* model, const char* name, double bandwidth, double latency)
-    : Link(model, name, nullptr)
+    : LinkImpl(model, name, nullptr)
 {
   bandwidth_.peak = bandwidth;
   latency_.peak   = latency;
 
-  Link::onCreation(this);
+  LinkImpl::onCreation(this);
 }
 
 LinkNS3::~LinkNS3() = default;
@@ -297,7 +297,7 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double size, s4u::Host* src, s4
   dst_ = dst;
   ns3_create_flow(src, dst, surf_get_clock(), size, this);
 
-  Link::onCommunicate(this, src, dst);
+  LinkImpl::onCommunicate(this, src, dst);
 }
 
 void NetworkNS3Action::suspend() {

@@ -31,9 +31,9 @@ namespace simgrid {
      *  Signature: `void(NetworkAction *action, simgrid::surf::Action::State old, simgrid::surf::Action::State current)` */
     XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::Action::State, simgrid::surf::Action::State)>) networkActionStateChangedCallbacks;
 
-/*********
- * Model *
- *********/
+    /*********
+     * Model *
+     *********/
 
     /** @ingroup SURF_network_interface
      * @brief SURF network model interface class
@@ -55,8 +55,8 @@ namespace simgrid {
        * @param latency The initial latency of the Link in seconds
        * @param policy The sharing policy of the Link
        */
-      virtual Link* createLink(const char* name, double bandwidth, double latency,
-                               e_surf_link_sharing_policy_t policy) = 0;
+      virtual LinkImpl* createLink(const char* name, double bandwidth, double latency,
+                                   e_surf_link_sharing_policy_t policy) = 0;
 
       /**
        * @brief Create a communication between two hosts.
@@ -114,7 +114,7 @@ namespace simgrid {
       virtual double bandwidthConstraint(double rate, double bound, double size);
       double nextOccuringEventFull(double now) override;
 
-      Link* loopback_ = nullptr;
+      LinkImpl* loopback_ = nullptr;
     };
 
     /************
@@ -124,38 +124,31 @@ namespace simgrid {
      * @brief SURF network link interface class
      * @details A Link represents the link between two [hosts](\ref simgrid::surf::HostImpl)
      */
-    class Link :
-        public simgrid::surf::Resource,
-        public simgrid::surf::PropertyHolder {
-        public:
-
+    class LinkImpl : public simgrid::surf::Resource, public simgrid::surf::PropertyHolder {
+    public:
       /** @brief Constructor of LMM links */
-          Link(simgrid::surf::NetworkModel* model, const char* name, lmm_constraint_t constraint);
+      LinkImpl(simgrid::surf::NetworkModel* model, const char* name, lmm_constraint_t constraint);
 
-          /* Link destruction logic */
-          /**************************/
-        protected:
-      ~Link() override;
-        public:
+      /* Link destruction logic */
+      /**************************/
+    protected:
+      ~LinkImpl() override;
+    public:
       void destroy(); // Must be called instead of the destructor
-        private:
+    private:
       bool currentlyDestroying_ = false;
 
-        public:
-      /** @brief Callback signal fired when a new Link is created.
-       *  Signature: void(Link*) */
-      static simgrid::xbt::signal<void(surf::Link*)> onCreation;
+    public:
+      /** @brief Callback signal fired when a new Link is created */
+      static simgrid::xbt::signal<void(surf::LinkImpl*)> onCreation;
 
-      /** @brief Callback signal fired when a Link is destroyed.
-       *  Signature: void(Link*) */
-      static simgrid::xbt::signal<void(surf::Link*)> onDestruction;
+      /** @brief Callback signal fired when a Link is destroyed */
+      static simgrid::xbt::signal<void(surf::LinkImpl*)> onDestruction;
 
-      /** @brief Callback signal fired when the state of a Link changes (when it is turned on or off)
-       *  Signature: `void(Link*)` */
-      static simgrid::xbt::signal<void(surf::Link*)> onStateChange;
+      /** @brief Callback signal fired when the state of a Link changes (when it is turned on or off) */
+      static simgrid::xbt::signal<void(surf::LinkImpl*)> onStateChange;
 
-      /** @brief Callback signal fired when a communication starts
-       *  Signature: `void(NetworkAction *action, host *src, host *dst)` */
+      /** @brief Callback signal fired when a communication starts */
       static simgrid::xbt::signal<void(surf::NetworkAction*, s4u::Host* src, s4u::Host* dst)> onCommunicate;
 
       /** @brief Get the bandwidth in bytes per second of current Link */
@@ -170,7 +163,8 @@ namespace simgrid {
       /** @brief Update the latency in seconds of current Link */
       virtual void setLatency(double value) = 0;
 
-      /** @brief The sharing policy is a @{link e_surf_link_sharing_policy_t::EType} (0: FATPIPE, 1: SHARED, 2: FULLDUPLEX) */
+      /** @brief The sharing policy is a @{link e_surf_link_sharing_policy_t::EType} (0: FATPIPE, 1: SHARED, 2:
+       * FULLDUPLEX) */
       virtual int sharingPolicy();
 
       /** @brief Check if the Link is used */
@@ -179,28 +173,32 @@ namespace simgrid {
       void turnOn() override;
       void turnOff() override;
 
-      virtual void setStateTrace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain boolean values. */
-      virtual void setBandwidthTrace(tmgr_trace_t trace); /*< setup the trace file with bandwidth events (peak speed changes due to external load). Trace must contain percentages (value between 0 and 1). */
-      virtual void setLatencyTrace(tmgr_trace_t trace); /*< setup the trace file with latency events (peak latency changes due to external load). Trace must contain absolute values */
+      virtual void setStateTrace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF).
+                                                          Trace must contain boolean values. */
+      virtual void setBandwidthTrace(tmgr_trace_t trace); /*< setup the trace file with bandwidth events (peak speed changes due to external load).
+                                                              Trace must contain percentages (value between 0 and 1). */
+      virtual void setLatencyTrace(tmgr_trace_t trace); /*< setup the trace file with latency events (peak latency changes due to external load).
+                                                            Trace must contain absolute values */
 
       tmgr_trace_iterator_t stateEvent_ = nullptr;
       s_surf_metric_t latency_          = {1.0, 0, nullptr};
       s_surf_metric_t bandwidth_        = {1.0, 0, nullptr};
 
       /* User data */
-        public:
+    public:
       void *getData()        { return userData;}
       void  setData(void *d) { userData=d;}
-        private:
+    private:
       void *userData = nullptr;
 
       /* List of all links. FIXME: should move to the Engine */
-        private:
-      static std::unordered_map<std::string, Link *> *links;
-        public:
-      static Link *byName(const char* name);
+    private:
+      static std::unordered_map<std::string, LinkImpl*>* links;
+
+    public:
+      static LinkImpl* byName(const char* name);
       static int linksCount();
-      static Link **linksList();
+      static LinkImpl** linksList();
       static void linksExit();
     };
 

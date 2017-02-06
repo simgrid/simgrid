@@ -206,7 +206,7 @@ void sg_instr_AS_end()
   }
 }
 
-static void instr_routing_parse_start_link(simgrid::surf::Link* link)
+static void instr_routing_parse_start_link(simgrid::surf::LinkImpl* link)
 {
   if (currentContainer.empty()) // No ongoing parsing. Are you creating the loopback?
     return;
@@ -324,7 +324,7 @@ void instr_routing_define_callbacks ()
   //always need the call backs to ASes (we need only the root AS),
   //to create the rootContainer and the rootType properly
   if (!TRACE_needs_platform()) return;
-  simgrid::surf::Link::onCreation.connect(instr_routing_parse_start_link);
+  simgrid::surf::LinkImpl::onCreation.connect(instr_routing_parse_start_link);
   simgrid::s4u::onPlatformCreated.connect(instr_routing_parse_end_platform);
 }
 

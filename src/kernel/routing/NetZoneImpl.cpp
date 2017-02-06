@@ -202,7 +202,7 @@ static void find_common_ancestors(NetPoint* src, NetPoint* dst,
 
 /* PRECONDITION: this is the common ancestor of src and dst */
 bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
-                                 /* OUT */ std::vector<surf::Link*>* links, double* latency)
+                                 /* OUT */ std::vector<surf::LinkImpl*>* links, double* latency)
 {
   // If never set a bypass route return nullptr without any further computations
   if (bypassRoutes_.empty())
@@ -212,7 +212,7 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
   if (dst->netzone() == this && src->netzone() == this) {
     if (bypassRoutes_.find({src, dst}) != bypassRoutes_.end()) {
       BypassRoute* bypassedRoute = bypassRoutes_.at({src, dst});
-      for (surf::Link* link : bypassedRoute->links) {
+      for (surf::LinkImpl* link : bypassedRoute->links) {
         links->push_back(link);
         if (latency)
           *latency += link->latency();
@@ -293,7 +293,7 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
               src->cname(), dst->cname(), bypassedRoute->links.size());
     if (src != key.first)
       getGlobalRoute(src, const_cast<NetPoint*>(bypassedRoute->gw_src), links, latency);
-    for (surf::Link* link : bypassedRoute->links) {
+    for (surf::LinkImpl* link : bypassedRoute->links) {
       links->push_back(link);
       if (latency)
         *latency += link->latency();
@@ -307,7 +307,7 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
 }
 
 void NetZoneImpl::getGlobalRoute(routing::NetPoint* src, routing::NetPoint* dst,
-                                 /* OUT */ std::vector<surf::Link*>* links, double* latency)
+                                 /* OUT */ std::vector<surf::LinkImpl*>* links, double* latency)
 {
   s_sg_platf_route_cbarg_t route;
   memset(&route, 0, sizeof(route));
@@ -333,7 +333,7 @@ void NetZoneImpl::getGlobalRoute(routing::NetPoint* src, routing::NetPoint* dst,
 
   /* Not in the same netzone, no bypass. We'll have to find our path between the netzones recursively */
 
-  route.link_list = new std::vector<surf::Link*>();
+  route.link_list = new std::vector<surf::LinkImpl*>();
 
   common_ancestor->getLocalRoute(src_ancestor->netpoint_, dst_ancestor->netpoint_, &route, latency);
   xbt_assert((route.gw_src != nullptr) && (route.gw_dst != nullptr), "bad gateways for route from \"%s\" to \"%s\"",

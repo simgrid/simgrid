@@ -20,7 +20,8 @@ void surf_network_model_init_Constant()
 
 namespace simgrid {
   namespace surf {
-  Link* NetworkConstantModel::createLink(const char* name, double bw, double lat, e_surf_link_sharing_policy_t policy)
+  LinkImpl* NetworkConstantModel::createLink(const char* name, double bw, double lat,
+                                             e_surf_link_sharing_policy_t policy)
   {
 
     xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "
@@ -77,7 +78,7 @@ namespace simgrid {
     {
       NetworkConstantAction *action = new NetworkConstantAction(this, size, sg_latency_factor);
 
-      Link::onCommunicate(action, src, dst);
+      LinkImpl::onCommunicate(action, src, dst);
       return action;
     }
 

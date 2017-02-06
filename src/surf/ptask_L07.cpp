@@ -173,7 +173,7 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
         if (bytes_amount[i * host_nb + j] > 0) {
           double lat=0.0;
 
-          std::vector<Link*> route;
+          std::vector<LinkImpl*> route;
           hostList_->at(i)->routeTo(hostList_->at(j), &route, &lat);
           latency = MAX(latency, lat);
 
@@ -211,7 +211,7 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
         if (bytes_amount[i * host_nb + j] == 0.0)
           continue;
 
-        std::vector<Link*> route;
+        std::vector<LinkImpl*> route;
         hostList_->at(i)->routeTo(hostList_->at(j), &route, nullptr);
 
         for (auto link : route)
@@ -245,8 +245,8 @@ Cpu *CpuL07Model::createCpu(simgrid::s4u::Host *host,  std::vector<double> *spee
   return new CpuL07(this, host, speedPerPstate, core);
 }
 
-Link* NetworkL07Model::createLink(const char* name, double bandwidth, double latency,
-                                  e_surf_link_sharing_policy_t policy)
+LinkImpl* NetworkL07Model::createLink(const char* name, double bandwidth, double latency,
+                                      e_surf_link_sharing_policy_t policy)
 {
   return new LinkL07(this, name, bandwidth, latency, policy);
 }
@@ -265,7 +265,7 @@ CpuL07::~CpuL07()=default;
 
 LinkL07::LinkL07(NetworkL07Model* model, const char* name, double bandwidth, double latency,
                  e_surf_link_sharing_policy_t policy)
-    : Link(model, name, lmm_constraint_new(model->getMaxminSystem(), this, bandwidth))
+    : LinkImpl(model, name, lmm_constraint_new(model->getMaxminSystem(), this, bandwidth))
 {
   bandwidth_.peak = bandwidth;
   latency_.peak   = latency;
@@ -273,7 +273,7 @@ LinkL07::LinkL07(NetworkL07Model* model, const char* name, double bandwidth, dou
   if (policy == SURF_LINK_FATPIPE)
     lmm_constraint_shared(getConstraint());
 
-  Link::onCreation(this);
+  LinkImpl::onCreation(this);
 }
 
 Action *CpuL07::execution_start(double size)
@@ -405,7 +405,7 @@ void L07Action::updateBound()
 
         if (communicationAmount_[i * hostNb + j] > 0) {
           double lat = 0.0;
-          std::vector<Link*> route;
+          std::vector<LinkImpl*> route;
           hostList_->at(i)->routeTo(hostList_->at(j), &route, &lat);
 
           lat_current = MAX(lat_current, lat * communicationAmount_[i * hostNb + j]);

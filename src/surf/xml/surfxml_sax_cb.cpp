@@ -30,7 +30,8 @@ int ETag_surfxml_include_state();
 
 char* surf_parsed_filename = nullptr; // to locate parse error messages
 
-std::vector<simgrid::surf::Link *> parsed_link_list;   /* temporary store of current list link of a route */
+std::vector<simgrid::surf::LinkImpl*> parsed_link_list; /* temporary store of current list link of a route */
+
 /*
  * Helping functions
  */
@@ -683,7 +684,7 @@ void ETag_surfxml_link(){
 
 void STag_surfxml_link___ctn(){
 
-  simgrid::surf::Link *link;
+  simgrid::surf::LinkImpl* link;
   char *link_name=nullptr;
   switch (A_surfxml_link___ctn_direction) {
   case AU_surfxml_link___ctn_direction:

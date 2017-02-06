@@ -308,7 +308,8 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   simgrid::surf::on_cluster(cluster);
   delete cluster->radicals;
 }
-void routing_cluster_add_backbone(simgrid::surf::Link* bb) {
+void routing_cluster_add_backbone(simgrid::surf::LinkImpl* bb)
+{
   simgrid::kernel::routing::ClusterZone* cluster =
       dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing);
 
@@ -723,8 +724,8 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
   xbt_assert(dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing),
              "Only hosts from Cluster and Vivaldi ASes can get an host_link.");
 
-  simgrid::surf::Link* linkUp   = Link::byName(hostlink->link_up);
-  simgrid::surf::Link* linkDown = Link::byName(hostlink->link_down);
+  simgrid::surf::LinkImpl* linkUp   = Link::byName(hostlink->link_up);
+  simgrid::surf::LinkImpl* linkDown = Link::byName(hostlink->link_down);
 
   xbt_assert(linkUp, "Link '%s' not found!", hostlink->link_up);
   xbt_assert(linkDown, "Link '%s' not found!", hostlink->link_down);

@@ -17,10 +17,10 @@ public:
   unsigned int group_;
   unsigned int chassis_;
   unsigned int blade_;
-  surf::Link** blueLinks_  = nullptr;
-  surf::Link** blackLinks_ = nullptr;
-  surf::Link** greenLinks_ = nullptr;
-  surf::Link** myNodes_    = nullptr;
+  surf::LinkImpl** blueLinks_  = nullptr;
+  surf::LinkImpl** blackLinks_ = nullptr;
+  surf::LinkImpl** greenLinks_ = nullptr;
+  surf::LinkImpl** myNodes_    = nullptr;
   DragonflyRouter(int i, int j, int k);
   ~DragonflyRouter();
 };

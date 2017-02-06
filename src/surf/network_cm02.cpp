@@ -170,8 +170,8 @@ NetworkCm02Model::NetworkCm02Model(void (*specificSolveFun)(lmm_system_t self))
 
 NetworkCm02Model::~NetworkCm02Model() {}
 
-Link* NetworkCm02Model::createLink(const char* name, double bandwidth, double latency,
-                                   e_surf_link_sharing_policy_t policy)
+LinkImpl* NetworkCm02Model::createLink(const char* name, double bandwidth, double latency,
+                                       e_surf_link_sharing_policy_t policy)
 {
   return new NetworkCm02Link(this, name, bandwidth, latency, policy, maxminSystem_);
 }
@@ -289,10 +289,10 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   int failed = 0;
   double bandwidth_bound;
   double latency = 0.0;
-  std::vector<Link*> * back_route = nullptr;
+  std::vector<LinkImpl*>* back_route = nullptr;
   int constraints_per_variable = 0;
 
-  std::vector<Link*> *route = new std::vector<Link*>();
+  std::vector<LinkImpl*>* route = new std::vector<LinkImpl*>();
 
   XBT_IN("(%s,%s,%g,%g)", src->cname(), dst->cname(), size, rate);
 
@@ -306,7 +306,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
       failed = 1;
 
   if (sg_network_crosstraffic == 1) {
-    back_route = new std::vector<Link*>();
+    back_route = new std::vector<LinkImpl*>();
     dst->routeTo(src, back_route, nullptr);
     for (auto link: *back_route)
       if (link->isOff())
@@ -381,13 +381,12 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   delete back_route;
   XBT_OUT();
 
-  Link::onCommunicate(action, src, dst);
+  LinkImpl::onCommunicate(action, src, dst);
   return action;
 }
 
-void NetworkCm02Model::gapAppend(double size, const Link* link, NetworkAction* action)
-{
-  // Nothing
+void NetworkCm02Model::gapAppend(double size, const LinkImpl* link, NetworkAction* action){
+    // Nothing
 };
 
 /************
@@ -395,7 +394,7 @@ void NetworkCm02Model::gapAppend(double size, const Link* link, NetworkAction* a
  ************/
 NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const char* name, double bandwidth, double latency,
                                  e_surf_link_sharing_policy_t policy, lmm_system_t system)
-    : Link(model, name, lmm_constraint_new(system, this, sg_bandwidth_factor * bandwidth))
+    : LinkImpl(model, name, lmm_constraint_new(system, this, sg_bandwidth_factor * bandwidth))
 {
   bandwidth_.scale = 1.0;
   bandwidth_.peak  = bandwidth;
@@ -406,7 +405,7 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const char* name, doub
   if (policy == SURF_LINK_FATPIPE)
     lmm_constraint_shared(getConstraint());
 
-  Link::onCreation(this);
+  LinkImpl::onCreation(this);
 }
 
 
@@ -550,10 +549,8 @@ void NetworkCm02Action::updateRemainingLazy(double now)
   lastValue_ = lmm_variable_getvalue(getVariable());
 }
 
-void NetworkCm02Link::gapAppend(double size, const Link* link, NetworkAction* action)
-{
-  // Nothing
+void NetworkCm02Link::gapAppend(double size, const LinkImpl* link, NetworkAction* action){
+    // Nothing
 };
-
 }
 }

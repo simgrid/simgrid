@@ -31,7 +31,7 @@ namespace simgrid {
   namespace surf {
     class Resource;
     class Cpu;
-    class Link;
+    class LinkImpl;
     class HostImpl;
   }
   namespace trace_mgr {
@@ -45,7 +45,7 @@ typedef simgrid::s4u::Host simgrid_Host;
 typedef simgrid::kernel::activity::ActivityImpl kernel_Activity;
 typedef simgrid::kernel::routing::NetPoint routing_NetPoint;
 typedef simgrid::surf::Cpu surf_Cpu;
-typedef simgrid::surf::Link Link;
+typedef simgrid::surf::LinkImpl Link;
 typedef simgrid::surf::Resource surf_Resource;
 typedef simgrid::trace_mgr::trace tmgr_Trace;
 

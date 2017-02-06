@@ -19,7 +19,8 @@ class NetworkNS3Model : public NetworkModel {
 public:
   NetworkNS3Model();
   ~NetworkNS3Model();
-  Link* createLink(const char* name, double bandwidth, double latency, e_surf_link_sharing_policy_t policy) override;
+  LinkImpl* createLink(const char* name, double bandwidth, double latency,
+                       e_surf_link_sharing_policy_t policy) override;
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
   double nextOccuringEvent(double now) override;
   bool nextOccuringEventIsIdempotent() {return false;}
@@ -29,7 +30,7 @@ public:
 /************
  * Resource *
  ************/
-class LinkNS3 : public Link {
+class LinkNS3 : public LinkImpl {
 public:
   explicit LinkNS3(NetworkNS3Model* model, const char* name, double bandwidth, double latency);
   ~LinkNS3();

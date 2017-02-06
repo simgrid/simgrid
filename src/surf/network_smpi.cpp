@@ -59,7 +59,7 @@ namespace simgrid {
       xbt_dict_free(&gap_lookup);
     }
 
-    void NetworkSmpiModel::gapAppend(double size, Link* link, NetworkAction *act)
+    void NetworkSmpiModel::gapAppend(double size, LinkImpl* link, NetworkAction* act)
     {
       const char *src = link->getName();
       xbt_fifo_t fifo;
