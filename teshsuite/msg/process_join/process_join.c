@@ -35,6 +35,13 @@ static int master(int argc, char *argv[])
   XBT_INFO("Join the slave (timeout 2)");
   MSG_process_join(process, 2);
 
+  XBT_INFO("Start slave");
+  process = MSG_process_create("slave from master", slave, NULL, MSG_host_self());
+  XBT_INFO("Waiting 4");
+  MSG_process_sleep(4);
+  XBT_INFO("Join the slave (timeout 1)");
+  MSG_process_join(process, 1);
+
   XBT_INFO("Goodbye now!");
 
   MSG_process_sleep(1);
