@@ -244,6 +244,7 @@ done
 # check if we still have at least one parameter beyond options
 if [ $# -eq 0 ]
 then
+    echo "Error: no program to execute!"
     usage
     exit
 fi
