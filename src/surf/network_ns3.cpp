@@ -91,7 +91,8 @@ static void clusterCreation_cb(sg_platf_cluster_cbarg_t cluster)
 
 static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoint* src,
                              simgrid::kernel::routing::NetPoint* dst, simgrid::kernel::routing::NetPoint* gw_src,
-                             simgrid::kernel::routing::NetPoint* gw_dst, std::vector<Link*>* link_list)
+                             simgrid::kernel::routing::NetPoint* gw_dst,
+                             std::vector<simgrid::surf::LinkImpl*>* link_list)
 {
   if (link_list->size() == 1) {
     simgrid::surf::LinkNS3* link = static_cast<simgrid::surf::LinkNS3*>(link_list->at(0));
