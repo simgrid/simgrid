@@ -1654,15 +1654,15 @@ int PMPI_Barrier(MPI_Comm comm)
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else {
-  int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
-  extra->type = TRACING_BARRIER;
-  TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
+    int rank               = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
+    instr_extra_data extra = xbt_new0(s_instr_extra_data_t, 1);
+    extra->type            = TRACING_BARRIER;
+    TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 
-  mpi_coll_barrier_fun(comm);
-  retval = MPI_SUCCESS;
+    mpi_coll_barrier_fun(comm);
+    retval = MPI_SUCCESS;
 
-  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+    TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
   }
 
   smpi_bench_begin();
