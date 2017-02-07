@@ -85,7 +85,7 @@ typedef struct s_sg_platf_route_cbarg {
   sg_netpoint_t dst;
   sg_netpoint_t gw_src;
   sg_netpoint_t gw_dst;
-  std::vector<Link*> *link_list;
+  std::vector<simgrid::surf::LinkImpl*>* link_list;
 } s_sg_platf_route_cbarg_t;
 
 typedef struct s_sg_platf_cluster_cbarg *sg_platf_cluster_cbarg_t;
@@ -188,7 +188,7 @@ typedef struct s_sg_platf_AS_cbarg {
 #define SG_PLATF_AS_INITIALIZER {nullptr,0}
 
 /********** Routing **********/
-void routing_cluster_add_backbone(Link* bb);
+void routing_cluster_add_backbone(simgrid::surf::LinkImpl* bb);
 /*** END of the parsing cruft ***/
 
 XBT_PUBLIC(void) sg_platf_begin();  // Start a new platform

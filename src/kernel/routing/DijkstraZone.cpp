@@ -68,7 +68,7 @@ void DijkstraZone::seal()
 
       if (!found) {
         sg_platf_route_cbarg_t e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
-        e_route->link_list             = new std::vector<Link*>();
+        e_route->link_list             = new std::vector<surf::LinkImpl*>();
         e_route->link_list->push_back(surf_network_model->loopback_);
         xbt_graph_new_edge(routeGraph_, node, node, e_route);
       }
@@ -173,7 +173,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
     for (auto link : *e_route->link_list) {
       route->link_list->insert(route->link_list->begin(), link);
       if (lat)
-        *lat += static_cast<Link*>(link)->latency();
+        *lat += static_cast<surf::LinkImpl*>(link)->latency();
     }
   }
 
@@ -261,11 +261,11 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
 
     if (hierarchy_ == RoutingMode::recursive && v != dst_node_id &&
         strcmp(gw_dst->name().c_str(), prev_gw_src->name().c_str())) {
-      std::vector<Link*>* e_route_as_to_as = new std::vector<Link*>();
+      std::vector<surf::LinkImpl*> e_route_as_to_as;
 
-      getGlobalRoute(gw_dst_net_elm, prev_gw_src_net_elm, e_route_as_to_as, nullptr);
+      getGlobalRoute(gw_dst_net_elm, prev_gw_src_net_elm, &e_route_as_to_as, nullptr);
       auto pos = route->link_list->begin();
-      for (auto link : *e_route_as_to_as) {
+      for (auto link : e_route_as_to_as) {
         route->link_list->insert(pos, link);
         if (lat)
           *lat += link->latency();
@@ -276,7 +276,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
     for (auto link : *e_route->link_list) {
       route->link_list->insert(route->link_list->begin(), link);
       if (lat)
-        *lat += static_cast<Link*>(link)->latency();
+        *lat += static_cast<surf::LinkImpl*>(link)->latency();
     }
     size++;
   }

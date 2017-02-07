@@ -17,6 +17,7 @@
 #include "src/surf/PropertyHolder.hpp"
 
 #include "simgrid/link.h"
+#include "simgrid/s4u/link.hpp"
 
 /***********
  * Classes *
@@ -139,6 +140,8 @@ namespace simgrid {
       bool currentlyDestroying_ = false;
 
     public:
+      /** @brief Public interface */
+      s4u::Link piface_;
       /** @brief Callback signal fired when a new Link is created */
       static simgrid::xbt::signal<void(surf::LinkImpl*)> onCreation;
 

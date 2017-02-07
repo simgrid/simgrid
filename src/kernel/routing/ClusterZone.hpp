@@ -77,9 +77,9 @@ public:
 
   /* We use a map instead of a std::vector here because that's a sparse vector. Some values may not exist */
   /* The pair is {linkUp, linkDown} */
-  std::unordered_map<unsigned int, std::pair<Link*, Link*>> privateLinks_;
+  std::unordered_map<unsigned int, std::pair<surf::LinkImpl*, surf::LinkImpl*>> privateLinks_;
 
-  Link* backbone_                = nullptr;
+  surf::LinkImpl* backbone_      = nullptr;
   void* loopback_                = nullptr;
   NetPoint* router_              = nullptr;
   bool hasLimiter_               = false;

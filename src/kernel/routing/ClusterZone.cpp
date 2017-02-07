@@ -29,7 +29,7 @@ void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
   if ((src->id() == dst->id()) && hasLoopback_) {
     xbt_assert(!src->isRouter(), "Routing from a cluster private router to itself is meaningless");
 
-    std::pair<Link*, Link*> info = privateLinks_.at(src->id() * linkCountPerNode_);
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(src->id() * linkCountPerNode_);
     route->link_list->push_back(info.first);
     if (lat)
       *lat += info.first->latency();
@@ -38,11 +38,12 @@ void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
 
   if (!src->isRouter()) { // No private link for the private router
     if (hasLimiter_) { // limiter for sender
-      std::pair<Link*, Link*> info = privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0));
+      std::pair<surf::LinkImpl*, surf::LinkImpl*> info =
+          privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0));
       route->link_list->push_back(info.first);
     }
 
-    std::pair<Link*, Link*> info =
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info =
         privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0) + (hasLimiter_ ? 1 : 0));
     if (info.first) { // link up
       route->link_list->push_back(info.first);
@@ -59,7 +60,8 @@ void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
 
   if (!dst->isRouter()) { // No specific link for router
 
-    std::pair<Link*, Link*> info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_ + hasLimiter_);
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info =
+        privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_ + hasLimiter_);
     if (info.second) { // link down
       route->link_list->push_back(info.second);
       if (lat)
@@ -90,7 +92,7 @@ void ClusterZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges
     if (!src->isRouter()) {
       xbt_node_t previous = new_xbt_graph_node(graph, src->cname(), nodes);
 
-      std::pair<Link*, Link*> info = privateLinks_.at(src->id());
+      std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(src->id());
 
       if (info.first) { // link up
         xbt_node_t current = new_xbt_graph_node(graph, info.first->getName(), nodes);
@@ -129,16 +131,16 @@ void ClusterZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id
   link.policy    = cluster->sharing_policy;
   sg_platf_new_link(&link);
 
-  Link *linkUp, *linkDown;
+  surf::LinkImpl *linkUp, *linkDown;
   if (link.policy == SURF_LINK_FULLDUPLEX) {
     char* tmp_link = bprintf("%s_UP", link_id);
-    linkUp         = Link::byName(tmp_link);
+    linkUp         = surf::LinkImpl::byName(tmp_link);
     xbt_free(tmp_link);
     tmp_link = bprintf("%s_DOWN", link_id);
-    linkDown = Link::byName(tmp_link);
+    linkDown = surf::LinkImpl::byName(tmp_link);
     xbt_free(tmp_link);
   } else {
-    linkUp   = Link::byName(link_id);
+    linkUp   = surf::LinkImpl::byName(link_id);
     linkDown = linkUp;
   }
   privateLinks_.insert({position, {linkUp, linkDown}});

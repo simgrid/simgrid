@@ -87,7 +87,7 @@ void surf_network_model_init_IB()
   surf_network_model = new simgrid::surf::NetworkIBModel();
   all_existing_models->push_back(surf_network_model);
   networkActionStateChangedCallbacks.connect(IB_action_state_changed_callback);
-  Link::onCommunicate.connect(IB_action_init_callback);
+  simgrid::surf::LinkImpl::onCommunicate.connect(IB_action_init_callback);
   simgrid::s4u::Host::onCreation.connect(IB_create_host_callback);
   xbt_cfg_setdefault_double("network/weight-S", 8775);
 

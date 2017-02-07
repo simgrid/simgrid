@@ -23,7 +23,7 @@ public:
   explicit BypassRoute(NetPoint* gwSrc, NetPoint* gwDst) : gw_src(gwSrc), gw_dst(gwDst) {}
   const NetPoint* gw_src;
   const NetPoint* gw_dst;
-  std::vector<Link*> links;
+  std::vector<surf::LinkImpl*> links;
 };
 
 NetZoneImpl::NetZoneImpl(NetZone* father, const char* name) : NetZone(father, name)

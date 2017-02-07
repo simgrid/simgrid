@@ -689,15 +689,15 @@ void STag_surfxml_link___ctn(){
   switch (A_surfxml_link___ctn_direction) {
   case AU_surfxml_link___ctn_direction:
   case A_surfxml_link___ctn_direction_NONE:
-    link = Link::byName(A_surfxml_link___ctn_id);
+    link = simgrid::surf::LinkImpl::byName(A_surfxml_link___ctn_id);
     break;
   case A_surfxml_link___ctn_direction_UP:
     link_name = bprintf("%s_UP", A_surfxml_link___ctn_id);
-    link = Link::byName(link_name);
+    link      = simgrid::surf::LinkImpl::byName(link_name);
     break;
   case A_surfxml_link___ctn_direction_DOWN:
     link_name = bprintf("%s_DOWN", A_surfxml_link___ctn_id);
-    link = Link::byName(link_name);
+    link      = simgrid::surf::LinkImpl::byName(link_name);
     break;
   }
   xbt_free(link_name); // no-op if it's already nullptr
@@ -720,7 +720,7 @@ void ETag_surfxml_backbone(){
   link.policy = SURF_LINK_SHARED;
 
   sg_platf_new_link(&link);
-  routing_cluster_add_backbone(sg_link_by_name(A_surfxml_backbone_id));
+  routing_cluster_add_backbone(simgrid::surf::LinkImpl::byName(A_surfxml_backbone_id));
 }
 
 void STag_surfxml_route(){
@@ -768,7 +768,7 @@ void ETag_surfxml_route(){
   route.dst         = sg_netpoint_by_name_or_null(A_surfxml_route_dst); // tested to not be nullptr in start tag
   route.gw_src    = nullptr;
   route.gw_dst    = nullptr;
-  route.link_list = new std::vector<Link*>();
+  route.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
   route.symmetrical = (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES);
 
   for (auto link: parsed_link_list)
@@ -789,7 +789,7 @@ void ETag_surfxml_ASroute(){
   ASroute.gw_src = sg_netpoint_by_name_or_null(A_surfxml_ASroute_gw___src); // tested to not be nullptr in start tag
   ASroute.gw_dst = sg_netpoint_by_name_or_null(A_surfxml_ASroute_gw___dst); // tested to not be nullptr in start tag
 
-  ASroute.link_list =  new std::vector<Link*>();
+  ASroute.link_list = new std::vector<simgrid::surf::LinkImpl*>();
 
   for (auto link: parsed_link_list)
     ASroute.link_list->push_back(link);
@@ -818,7 +818,7 @@ void ETag_surfxml_bypassRoute(){
   route.gw_src = nullptr;
   route.gw_dst = nullptr;
   route.symmetrical = false;
-  route.link_list =  new std::vector<Link*>();
+  route.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
 
   for (auto link: parsed_link_list)
     route.link_list->push_back(link);
@@ -833,7 +833,7 @@ void ETag_surfxml_bypassASroute(){
 
   ASroute.src         = sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_src);
   ASroute.dst         = sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_dst);
-  ASroute.link_list   = new std::vector<Link*>();
+  ASroute.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
   for (auto link: parsed_link_list)
     ASroute.link_list->push_back(link);
   parsed_link_list.clear();

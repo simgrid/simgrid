@@ -15,6 +15,7 @@ namespace simgrid {
   namespace s4u {
   class NetZone;
   class Host;
+  class Link;
   class Mailbox;
   }
   namespace kernel {
@@ -42,10 +43,10 @@ namespace simgrid {
 
 typedef simgrid::s4u::NetZone simgrid_NetZone;
 typedef simgrid::s4u::Host simgrid_Host;
+typedef simgrid::s4u::Link Link;
 typedef simgrid::kernel::activity::ActivityImpl kernel_Activity;
 typedef simgrid::kernel::routing::NetPoint routing_NetPoint;
 typedef simgrid::surf::Cpu surf_Cpu;
-typedef simgrid::surf::LinkImpl Link;
 typedef simgrid::surf::Resource surf_Resource;
 typedef simgrid::trace_mgr::trace tmgr_Trace;
 

@@ -14,64 +14,22 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf, "Logging specific to the SURF network module");
 
-/*********
- * C API *
- *********/
-
-extern "C" {
-
-  const char* sg_link_name(Link *link) {
-    return link->getName();
-  }
-  Link * sg_link_by_name(const char* name) {
-    return Link::byName(name);
-  }
-
-  int sg_link_is_shared(Link *link){
-    return link->sharingPolicy();
-  }
-  double sg_link_bandwidth(Link *link){
-    return link->bandwidth();
-  }
-  double sg_link_latency(Link *link){
-    return link->latency();
-  }
-  void* sg_link_data(Link *link) {
-    return link->getData();
-  }
-  void sg_link_data_set(Link *link,void *data) {
-    link->setData(data);
-  }
-  int sg_link_count() {
-    return Link::linksCount();
-  }
-  Link** sg_link_list() {
-    return Link::linksList();
-  }
-  void sg_link_exit() {
-    Link::linksExit();
-  }
-
-}
-
-/*****************
- * List of links *
- *****************/
-
 namespace simgrid {
   namespace surf {
 
+  /* List of links */
   std::unordered_map<std::string, LinkImpl*>* LinkImpl::links = new std::unordered_map<std::string, LinkImpl*>();
+
   LinkImpl* LinkImpl::byName(const char* name)
   {
     if (links->find(name) == links->end())
       return nullptr;
     return links->at(name);
-    }
-    /** @brief Returns the amount of links in the platform */
-    int LinkImpl::linksCount()
-    {
-      return links->size();
+  }
+  /** @brief Returns the amount of links in the platform */
+  int LinkImpl::linksCount()
+  {
+    return links->size();
     }
     /** @brief Returns a list of all existing links */
     LinkImpl** LinkImpl::linksList()
@@ -152,8 +110,9 @@ namespace simgrid {
      ************/
 
     LinkImpl::LinkImpl(simgrid::surf::NetworkModel* model, const char* name, lmm_constraint_t constraint)
-        : Resource(model, name, constraint)
+        : Resource(model, name, constraint), piface_(Link(this))
     {
+
       if (strcmp(name,"__loopback__"))
         xbt_assert(!LinkImpl::byName(name), "Link '%s' declared several times in the platform.", name);
 

@@ -125,7 +125,8 @@ void sg_platf_new_link(sg_platf_link_cbarg_t link){
     names.push_back(xbt_strdup(link->id));
   }
   for (auto link_name : names) {
-    Link* l = surf_network_model->createLink(link_name, link->bandwidth, link->latency, link->policy);
+    simgrid::surf::LinkImpl* l =
+        surf_network_model->createLink(link_name, link->bandwidth, link->latency, link->policy);
 
     if (link->properties) {
       xbt_dict_cursor_t cursor = nullptr;
@@ -223,8 +224,8 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     // other columns are to store one or more link for the node
 
     //add a loopback link
-    Link* linkUp   = nullptr;
-    Link* linkDown = nullptr;
+    simgrid::surf::LinkImpl* linkUp   = nullptr;
+    simgrid::surf::LinkImpl* linkDown = nullptr;
     if(cluster->loopback_bw!=0 || cluster->loopback_lat!=0){
       char *tmp_link = bprintf("%s_loopback", link_id);
       XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", tmp_link, cluster->loopback_bw);
@@ -235,8 +236,8 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       link.latency   = cluster->loopback_lat;
       link.policy    = SURF_LINK_FATPIPE;
       sg_platf_new_link(&link);
-      linkUp   = Link::byName(tmp_link);
-      linkDown = Link::byName(tmp_link);
+      linkUp   = simgrid::surf::LinkImpl::byName(tmp_link);
+      linkDown = simgrid::surf::LinkImpl::byName(tmp_link);
       free(tmp_link);
 
       auto as_cluster = static_cast<ClusterZone*>(current_as);
@@ -256,7 +257,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       link.latency = 0;
       link.policy = SURF_LINK_SHARED;
       sg_platf_new_link(&link);
-      linkUp = linkDown = Link::byName(tmp_link);
+      linkUp = linkDown = simgrid::surf::LinkImpl::byName(tmp_link);
       free(tmp_link);
       current_as->privateLinks_.insert(
           {rankId * current_as->linkCountPerNode_ + current_as->hasLoopback_, {linkUp, linkDown}});
@@ -298,7 +299,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/>", link.id, cluster->bb_bw, cluster->bb_lat);
     sg_platf_new_link(&link);
 
-    routing_cluster_add_backbone(Link::byName(link.id));
+    routing_cluster_add_backbone(simgrid::surf::LinkImpl::byName(link.id));
     free((char*)link.id);
   }
 
@@ -724,8 +725,8 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
   xbt_assert(dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing),
              "Only hosts from Cluster and Vivaldi ASes can get an host_link.");
 
-  simgrid::surf::LinkImpl* linkUp   = Link::byName(hostlink->link_up);
-  simgrid::surf::LinkImpl* linkDown = Link::byName(hostlink->link_down);
+  simgrid::surf::LinkImpl* linkUp   = simgrid::surf::LinkImpl::byName(hostlink->link_up);
+  simgrid::surf::LinkImpl* linkDown = simgrid::surf::LinkImpl::byName(hostlink->link_down);
 
   xbt_assert(linkUp, "Link '%s' not found!", hostlink->link_up);
   xbt_assert(linkDown, "Link '%s' not found!", hostlink->link_down);

@@ -60,17 +60,17 @@ void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
     link.latency   = cluster->lat;
     link.policy    = cluster->sharing_policy;
     sg_platf_new_link(&link);
-    Link* linkUp;
-    Link* linkDown;
+    surf::LinkImpl* linkUp;
+    surf::LinkImpl* linkDown;
     if (link.policy == SURF_LINK_FULLDUPLEX) {
       char* tmp_link = bprintf("%s_UP", link_id);
-      linkUp         = Link::byName(tmp_link);
+      linkUp         = surf::LinkImpl::byName(tmp_link);
       free(tmp_link);
       tmp_link = bprintf("%s_DOWN", link_id);
-      linkDown = Link::byName(tmp_link);
+      linkDown = surf::LinkImpl::byName(tmp_link);
       free(tmp_link);
     } else {
-      linkUp   = Link::byName(link_id);
+      linkUp   = surf::LinkImpl::byName(link_id);
       linkDown = linkUp;
     }
     /*
@@ -119,7 +119,7 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
     return;
 
   if (src->id() == dst->id() && hasLoopback_) {
-    std::pair<Link*, Link*> info = privateLinks_.at(src->id() * linkCountPerNode_);
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(src->id() * linkCountPerNode_);
 
     route->link_list->push_back(info.first);
     if (lat)
@@ -199,7 +199,7 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
       dim_product *= cur_dim;
     }
 
-    std::pair<Link*, Link*> info;
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info;
 
     if (hasLimiter_) { // limiter for sender
       info = privateLinks_.at(nodeOffset + hasLoopback_);

@@ -181,7 +181,7 @@ void FloydZone::seal()
         e_route            = xbt_new0(s_sg_platf_route_cbarg_t, 1);
         e_route->gw_src    = nullptr;
         e_route->gw_dst    = nullptr;
-        e_route->link_list = new std::vector<Link*>();
+        e_route->link_list = new std::vector<surf::LinkImpl*>();
         e_route->link_list->push_back(surf_network_model->loopback_);
         TO_FLOYD_LINK(i, i) = e_route;
         TO_FLOYD_PRED(i, i) = i;

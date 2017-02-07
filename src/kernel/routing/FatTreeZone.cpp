@@ -437,7 +437,7 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, in
     linkTemplate.policy    = SURF_LINK_SHARED;
     linkTemplate.id        = bprintf("limiter_%d", id);
     sg_platf_new_link(&linkTemplate);
-    this->limiterLink = Link::byName(linkTemplate.id);
+    this->limiterLink = surf::LinkImpl::byName(linkTemplate.id);
     free(const_cast<char*>(linkTemplate.id));
   }
   if (cluster->loopback_bw || cluster->loopback_lat) {
@@ -447,7 +447,7 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, in
     linkTemplate.policy    = SURF_LINK_FATPIPE;
     linkTemplate.id        = bprintf("loopback_%d", id);
     sg_platf_new_link(&linkTemplate);
-    this->loopback = Link::byName(linkTemplate.id);
+    this->loopback = surf::LinkImpl::byName(linkTemplate.id);
     free(const_cast<char*>(linkTemplate.id));
   }
 }
@@ -466,11 +466,11 @@ FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode* downNode
 
   if (cluster->sharing_policy == SURF_LINK_FULLDUPLEX) {
     std::string tmpID = std::string(linkTemplate.id) + "_UP";
-    this->upLink      = Link::byName(tmpID.c_str()); // check link?
+    this->upLink      = surf::LinkImpl::byName(tmpID.c_str()); // check link?
     tmpID          = std::string(linkTemplate.id) + "_DOWN";
-    this->downLink    = Link::byName(tmpID.c_str()); // check link ?
+    this->downLink    = surf::LinkImpl::byName(tmpID.c_str()); // check link ?
   } else {
-    this->upLink   = Link::byName(linkTemplate.id);
+    this->upLink   = surf::LinkImpl::byName(linkTemplate.id);
     this->downLink = this->upLink;
   }
   free(const_cast<char*>(linkTemplate.id));

@@ -46,11 +46,11 @@ public:
 
   /** Virtual link standing for the node global capacity.
    */
-  Link* limiterLink;
+  surf::LinkImpl* limiterLink;
   /** If present, communications from this node to this node will pass through it
    * instead of passing by an upper level switch.
    */
-  Link* loopback;
+  surf::LinkImpl* loopback;
   FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, int position);
 };
 
@@ -63,9 +63,9 @@ class FatTreeLink {
 public:
   FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode* source, FatTreeNode* destination);
   /** Link going up in the tree */
-  Link* upLink;
+  surf::LinkImpl* upLink;
   /** Link going down in the tree */
-  Link* downLink;
+  surf::LinkImpl* downLink;
   /** Upper end of the link */
   FatTreeNode* upNode;
   /** Lower end of the link */

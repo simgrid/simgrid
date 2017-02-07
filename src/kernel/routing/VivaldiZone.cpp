@@ -66,8 +66,8 @@ void VivaldiZone::setPeerLink(NetPoint* netpoint, double bw_in, double bw_out, c
 
   std::string link_up   = "link_" + netpoint->name() + "_UP";
   std::string link_down = "link_" + netpoint->name() + "_DOWN";
-  Link* linkUp          = surf_network_model->createLink(link_up.c_str(), bw_out, 0, SURF_LINK_SHARED);
-  Link* linkDown        = surf_network_model->createLink(link_down.c_str(), bw_in, 0, SURF_LINK_SHARED);
+  surf::LinkImpl* linkUp   = surf_network_model->createLink(link_up.c_str(), bw_out, 0, SURF_LINK_SHARED);
+  surf::LinkImpl* linkDown = surf_network_model->createLink(link_down.c_str(), bw_in, 0, SURF_LINK_SHARED);
   privateLinks_.insert({netpoint->id(), {linkUp, linkDown}});
 }
 
@@ -84,7 +84,7 @@ void VivaldiZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
 
   /* Retrieve the private links */
   if (privateLinks_.find(src->id()) != privateLinks_.end()) {
-    std::pair<Link*, Link*> info = privateLinks_.at(src->id());
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(src->id());
     if (info.first) {
       route->link_list->push_back(info.first);
       if (lat)
@@ -92,7 +92,7 @@ void VivaldiZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
     }
   }
   if (privateLinks_.find(dst->id()) != privateLinks_.end()) {
-    std::pair<Link*, Link*> info = privateLinks_.at(dst->id());
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(dst->id());
     if (info.second) {
       route->link_list->push_back(info.second);
       if (lat)

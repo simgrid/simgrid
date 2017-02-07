@@ -82,7 +82,7 @@ void RoutedZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
         continue;
 
       sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
-      route->link_list             = new std::vector<Link*>();
+      route->link_list             = new std::vector<surf::LinkImpl*>();
 
       getLocalRoute(my_src, my_dst, route, nullptr);
 
@@ -134,7 +134,7 @@ sg_platf_route_cbarg_t RoutedZone::newExtendedRoute(RoutingMode hierarchy, sg_pl
   sg_platf_route_cbarg_t result;
 
   result            = xbt_new0(s_sg_platf_route_cbarg_t, 1);
-  result->link_list = new std::vector<Link*>();
+  result->link_list = new std::vector<surf::LinkImpl*>();
 
   xbt_assert(hierarchy == RoutingMode::base || hierarchy == RoutingMode::recursive,
              "The hierarchy of this netzone is neither BASIC nor RECURSIVE, I'm lost here.");
