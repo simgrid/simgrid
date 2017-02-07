@@ -101,7 +101,7 @@ int console_add_backbone(lua_State *L) {
   }
 
   sg_platf_new_link(&link);
-  routing_cluster_add_backbone(sg_link_by_name(link.id));
+  routing_cluster_add_backbone(simgrid::surf::LinkImpl::byName(link.id));
 
   return 0;
 }
@@ -336,18 +336,18 @@ int console_add_route(lua_State *L) {
   type = lua_gettable(L,-2);
   lua_ensure(type == LUA_TSTRING,
       "Attribute 'links' must be specified for any route and must be a string (different links separated by commas or single spaces.");
-  route.link_list = new std::vector<Link*>();
+  route.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
   xbt_dynar_t names = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
   if (xbt_dynar_is_empty(names)) {
     /* unique name */
-    route.link_list->push_back(Link::byName(lua_tostring(L, -1)));
+    route.link_list->push_back(simgrid::surf::LinkImpl::byName(lua_tostring(L, -1)));
   } else {
     // Several names separated by , \t\r\n
     unsigned int cpt;
     char *name;
     xbt_dynar_foreach(names, cpt, name) {
       if (strlen(name)>0) {
-        Link *link = Link::byName(name);
+        simgrid::surf::LinkImpl* link = simgrid::surf::LinkImpl::byName(name);
         route.link_list->push_back(link);
       }
     }
@@ -416,18 +416,18 @@ int console_add_ASroute(lua_State *L) {
 
   lua_pushstring(L,"links");
   lua_gettable(L,-2);
-  ASroute.link_list = new std::vector<Link*>();
+  ASroute.link_list = new std::vector<simgrid::surf::LinkImpl*>();
   xbt_dynar_t names = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
   if (xbt_dynar_is_empty(names)) {
     /* unique name with no comma */
-    ASroute.link_list->push_back(Link::byName(lua_tostring(L, -1)));
+    ASroute.link_list->push_back(simgrid::surf::LinkImpl::byName(lua_tostring(L, -1)));
   } else {
     // Several names separated by , \t\r\n
     unsigned int cpt;
     char *name;
     xbt_dynar_foreach(names, cpt, name) {
       if (strlen(name)>0) {
-        Link *link = Link::byName(name);
+        simgrid::surf::LinkImpl* link = simgrid::surf::LinkImpl::byName(name);
         ASroute.link_list->push_back(link);
       }
     }
