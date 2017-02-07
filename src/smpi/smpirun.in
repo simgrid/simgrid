@@ -241,6 +241,13 @@ while true; do
     esac
 done
 
+# check if we still have at least one parameter beyond options
+if [ $# -eq 0 ]
+then
+    usage
+    exit
+fi
+
 if [ -n "$WRAPPER" ]; then
     EXEC="$WRAPPER $1"
 else
