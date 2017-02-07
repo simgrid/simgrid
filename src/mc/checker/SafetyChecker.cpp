@@ -308,7 +308,9 @@ SafetyChecker::SafetyChecker(Session& session) : Checker(session)
   if (_sg_mc_termination)
     XBT_INFO("Check non progressive cycles");
   else
-    XBT_INFO("Check a safety property");
+    XBT_INFO("Check a safety property. Reduction is: %s.",
+        (reductionMode_ == simgrid::mc::ReductionMode::none ? "none":
+            (reductionMode_ == simgrid::mc::ReductionMode::dpor ? "dpor": "unknown")));
   simgrid::mc::session->initialize();
 
   XBT_DEBUG("Starting the safety algorithm");

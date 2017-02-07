@@ -382,7 +382,7 @@ For now, this configuration variable can take 2 values:
  * none: Do not apply any kind of reduction (mandatory for now for
    liveness properties)
  * dpor: Apply Dynamic Partial Ordering Reduction. Only valid if you
-   verify local safety properties.
+   verify local safety properties (default value for safety checks).
 
 \subsection options_modelchecking_visited model-check/visited, Cycle detection
 
