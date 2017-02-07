@@ -97,6 +97,8 @@ void smpi_mpi_win_get_name(MPI_Win win, char* name, int* length){
 void smpi_mpi_win_get_group(MPI_Win win, MPI_Group* group){
   if(win->comm != MPI_COMM_NULL){
     *group = smpi_comm_group(win->comm);
+  } else {
+    *group = MPI_GROUP_NULL;
   }
 }
 
