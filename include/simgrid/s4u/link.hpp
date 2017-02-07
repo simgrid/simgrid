@@ -63,9 +63,8 @@ public:
 
   void setStateTrace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain
                                              boolean values. */
-  void
-  setBandwidthTrace(tmgr_trace_t trace);    /*< setup the trace file with bandwidth events (peak speed changes due to
-                                               external load). Trace must contain percentages (value between 0 and 1). */
+  void setBandwidthTrace(tmgr_trace_t trace); /*< setup the trace file with bandwidth events (peak speed changes due to
+                                                  external load). Trace must contain percentages (value between 0 and 1). */
   void setLatencyTrace(tmgr_trace_t trace); /*< setup the trace file with latency events (peak latency changes due to
                                                external load). Trace must contain absolute values */
 };
@@ -73,22 +72,3 @@ public:
 }
 
 #endif /* SURF_NETWORK_INTERFACE_HPP_ */
-
-/* Blueprint for the s4u/kernel split
-
-namespace s4u {
-  class Link {
-  public:
-    Link(kernel::Link* pimpl) : pimpl_(pimpl) {}
-  private:
-    kernel::Link* pimpl_;
-  };
-}
-
-namespace kernel  {
-  class Link : public util::refcounted<Link> {
-  private:
-    s4u::Link user_;
-  };
-}
- */
