@@ -374,9 +374,8 @@ int smpi_nanosleep(const struct timespec *tp, struct timespec * t)
 
 int smpi_gettimeofday(struct timeval *tv, void* tz)
 {
-  double now;
   smpi_bench_end();
-  now = SIMIX_get_clock();
+  double now = SIMIX_get_clock();
   if (tv) {
     tv->tv_sec = static_cast<time_t>(now);
 #ifdef WIN32
@@ -393,9 +392,8 @@ int smpi_gettimeofday(struct timeval *tv, void* tz)
 int smpi_clock_gettime(clockid_t clk_id, struct timespec *tp)
 {
   //there is only one time in SMPI, so clk_id is ignored.
-  double now;
   smpi_bench_end();
-  now = SIMIX_get_clock();
+  double now = SIMIX_get_clock();
   if (tp) {
     tp->tv_sec = static_cast<time_t>(now);
     tp->tv_nsec = static_cast<long int>((now - tp->tv_sec) * 1e9);
@@ -461,7 +459,6 @@ static int sample_enough_benchs(local_data_t *data) {
 void smpi_sample_1(int global, const char *file, int line, int iters, double threshold)
 {
   char *loc = sample_location(global, file, line);
-  local_data_t *data;
 
   smpi_bench_end();     /* Take time from previous, unrelated computation into account */
   smpi_process_set_sampling(1);
@@ -469,7 +466,7 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
   if (samples==nullptr)
     samples = xbt_dict_new_homogeneous(free);
 
-  data = static_cast<local_data_t *>(xbt_dict_get_or_null(samples, loc));
+  local_data_t *data = static_cast<local_data_t *>(xbt_dict_get_or_null(samples, loc));
   if (data==nullptr) {
     xbt_assert(threshold>0 || iters>0,
         "You should provide either a positive amount of iterations to bench, or a positive maximal stderr (or both)");
@@ -503,11 +500,10 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
 int smpi_sample_2(int global, const char *file, int line)
 {
   char *loc = sample_location(global, file, line);
-  local_data_t *data;
   int res;
 
   xbt_assert(samples, "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
-  data = static_cast<local_data_t *>(xbt_dict_get(samples, loc));
+  local_data_t *data = static_cast<local_data_t *>(xbt_dict_get(samples, loc));
   XBT_DEBUG("sample2 %s",loc);
   xbt_free(loc);
 
@@ -532,27 +528,24 @@ int smpi_sample_2(int global, const char *file, int line)
 void smpi_sample_3(int global, const char *file, int line)
 {
   char *loc = sample_location(global, file, line);
-  local_data_t *data;
 
   xbt_assert(samples, "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
-  data = static_cast<local_data_t *>(xbt_dict_get(samples, loc));
+  local_data_t *data = static_cast<local_data_t *>(xbt_dict_get(samples, loc));
   XBT_DEBUG("sample3 %s",loc);
   xbt_free(loc);
 
-  if (data->benching==0) {
+  if (data->benching==0)
     THROW_IMPOSSIBLE;
-  }
 
   // ok, benchmarking this loop is over
   xbt_os_threadtimer_stop(smpi_process_timer());
 
   // update the stats
-  double sample, n;
   data->count++;
-  sample = xbt_os_timer_elapsed(smpi_process_timer());
+  double sample = xbt_os_timer_elapsed(smpi_process_timer());
   data->sum += sample;
   data->sum_pow2 += sample * sample;
-  n = static_cast<double>(data->count);
+  double n = static_cast<double>(data->count);
   data->mean = data->sum / n;
   data->relstderr = sqrt((data->sum_pow2 / n - data->mean * data->mean) / n) / data->mean;
   if (sample_enough_benchs(data)==0) {
@@ -665,12 +658,10 @@ int smpi_shared_known_call(const char* func, const char* input)
 
 void* smpi_shared_get_call(const char* func, const char* input) {
    char* loc = bprintf("%s:%s", func, input);
-   void* data;
 
-   if(calls==nullptr) {
+   if (calls==nullptr)
       calls = xbt_dict_new_homogeneous(nullptr);
-   }
-   data = xbt_dict_get(calls, loc);
+   void* data = xbt_dict_get(calls, loc);
    xbt_free(loc);
    return data;
 }
@@ -678,9 +669,8 @@ void* smpi_shared_get_call(const char* func, const char* input) {
 void* smpi_shared_set_call(const char* func, const char* input, void* data) {
    char* loc = bprintf("%s:%s", func, input);
 
-   if(calls==0) {
+   if (calls==nullptr)
       calls = xbt_dict_new_homogeneous(nullptr);
-   }
    xbt_dict_set(calls, loc, data, nullptr);
    xbt_free(loc);
    return data;
@@ -701,7 +691,8 @@ void smpi_switch_data_segment(int dest) {
  *  When doing a state restoration, the state of the restored variables  might not be consistent with the state of the
  *  virtual memory. In this case, we to change the data segment.
  */
-void smpi_really_switch_data_segment(int dest) {
+void smpi_really_switch_data_segment(int dest)
+{
   if(smpi_size_data_exe == 0)//no need to switch
     return;
 
@@ -728,7 +719,8 @@ int smpi_is_privatisation_file(char* file)
   return strncmp("/dev/shm/my-buffer-", file, std::strlen("/dev/shm/my-buffer-")) == 0;
 }
 
-void smpi_initialize_global_memory_segments(){
+void smpi_initialize_global_memory_segments()
+{
 
 #if !HAVE_PRIVATIZATION
   smpi_privatize_global_variables=false;
@@ -806,11 +798,9 @@ void smpi_destroy_global_memory_segments(){
   if (smpi_size_data_exe == 0)//no need to switch
     return;
 #if HAVE_PRIVATIZATION
-  int i;
-  for (i=0; i< smpi_process_count(); i++){
-    if(munmap(smpi_privatisation_regions[i].address, smpi_size_data_exe) < 0) {
+  for (int i=0; i< smpi_process_count(); i++) {
+    if (munmap(smpi_privatisation_regions[i].address, smpi_size_data_exe) < 0)
       XBT_WARN("Unmapping of fd %d failed: %s", smpi_privatisation_regions[i].file_descriptor, strerror(errno));
-    }
     close(smpi_privatisation_regions[i].file_descriptor);
   }
   xbt_free(smpi_privatisation_regions);
