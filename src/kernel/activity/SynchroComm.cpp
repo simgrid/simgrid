@@ -79,8 +79,6 @@ double simgrid::kernel::activity::Comm::remains()
   case SIMIX_RUNNING:
     return surf_comm->getRemains();
 
-  case SIMIX_WAITING:
-  case SIMIX_READY:
   default:
     return 0; /*FIXME: check what should be returned */
   }
