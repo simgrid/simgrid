@@ -179,7 +179,9 @@ boost::unordered_map<std::string, Storage*> const& Host::mountedStorages() {
 
 /** Get the properties assigned to a host */
 xbt_dict_t Host::properties() {
-  return simgrid::simix::kernelImmediate([&] { return this->pimpl_->getProperties(); });
+  return simgrid::simix::kernelImmediate([this] {
+    return this->pimpl_->getProperties();
+  });
 }
 
 /** Retrieve the property value (or nullptr if not set) */
@@ -187,13 +189,15 @@ const char*Host::property(const char*key) {
   return this->pimpl_->getProperty(key);
 }
 void Host::setProperty(const char*key, const char *value){
-  simgrid::simix::kernelImmediate([&] { this->pimpl_->setProperty(key, value); });
+  simgrid::simix::kernelImmediate([this, key, value] {
+    this->pimpl_->setProperty(key, value);
+  });
 }
 
 /** Get the processes attached to the host */
 xbt_swag_t Host::processes()
 {
-  return simgrid::simix::kernelImmediate([&]() {
+  return simgrid::simix::kernelImmediate([this]() {
     return this->extension<simgrid::simix::Host>()->process_list;
   });
 }
@@ -201,7 +205,7 @@ xbt_swag_t Host::processes()
 /** Get the peak power of a host */
 double Host::getPstateSpeedCurrent()
 {
-  return simgrid::simix::kernelImmediate([&] {
+  return simgrid::simix::kernelImmediate([this] {
     return this->pimpl_cpu->getPstateSpeedCurrent();
   });
 }
@@ -209,7 +213,7 @@ double Host::getPstateSpeedCurrent()
 /** Get one power peak (in flops/s) of a host at a given pstate */
 double Host::getPstateSpeed(int pstate_index)
 {
-  return simgrid::simix::kernelImmediate([&] {
+  return simgrid::simix::kernelImmediate([this, pstate_index] {
     return this->pimpl_cpu->getPstateSpeed(pstate_index);
   });
 }
@@ -226,7 +230,7 @@ int Host::coreCount() {
 /** @brief Set the pstate at which the host should run */
 void Host::setPstate(int pstate_index)
 {
-  simgrid::simix::kernelImmediate([&](){
+  simgrid::simix::kernelImmediate([this, pstate_index](){
       this->pimpl_cpu->setPState(pstate_index);
   });
 }
@@ -243,7 +247,9 @@ int Host::pstate()
  */
 xbt_dict_t Host::mountedStoragesAsDict()
 {
-  return simgrid::simix::kernelImmediate([&] { return this->pimpl_->getMountedStorageList(); });
+  return simgrid::simix::kernelImmediate([this] {
+    return this->pimpl_->getMountedStorageList();
+  });
 }
 
 /**
@@ -253,7 +259,9 @@ xbt_dict_t Host::mountedStoragesAsDict()
  */
 xbt_dynar_t Host::attachedStorages()
 {
-  return simgrid::simix::kernelImmediate([&] { return this->pimpl_->getAttachedStorageList(); });
+  return simgrid::simix::kernelImmediate([this] {
+    return this->pimpl_->getAttachedStorageList();
+  });
 }
 
 } // namespace simgrid

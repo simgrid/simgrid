@@ -109,13 +109,13 @@ int Link::sharingPolicy()
 
 void Link::turnOn()
 {
-  simgrid::simix::kernelImmediate([&]() {
+  simgrid::simix::kernelImmediate([this]() {
     this->pimpl_->turnOn();
   });
 }
 void Link::turnOff()
 {
-  simgrid::simix::kernelImmediate([&]() {
+  simgrid::simix::kernelImmediate([this]() {
     this->pimpl_->turnOff();
   });
 }
@@ -126,26 +126,26 @@ void* Link::getData()
 }
 void Link::setData(void* d)
 {
-  simgrid::simix::kernelImmediate([&]() {
+  simgrid::simix::kernelImmediate([this, d]() {
     this->pimpl_->setData(d);
   });
 }
 
 void Link::setStateTrace(tmgr_trace_t trace)
 {
-  simgrid::simix::kernelImmediate([&]() {
+  simgrid::simix::kernelImmediate([this, trace]() {
     this->pimpl_->setStateTrace(trace);
   });
 }
 void Link::setBandwidthTrace(tmgr_trace_t trace)
 {
-  simgrid::simix::kernelImmediate([&]() {
+  simgrid::simix::kernelImmediate([this, trace]() {
     this->pimpl_->setBandwidthTrace(trace);
   });
 }
 void Link::setLatencyTrace(tmgr_trace_t trace)
 {
-  simgrid::simix::kernelImmediate([&]() {
+  simgrid::simix::kernelImmediate([this, trace]() {
     this->pimpl_->setLatencyTrace(trace);
   });
 }

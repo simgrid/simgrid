@@ -136,7 +136,7 @@ void Engine::netpointRegister(simgrid::kernel::routing::NetPoint* point)
 /** @brief Unregister a given netpoint */
 void Engine::netpointUnregister(simgrid::kernel::routing::NetPoint* point)
 {
-  simgrid::simix::kernelImmediate([&] {
+  simgrid::simix::kernelImmediate([this, point] {
     pimpl->netpoints_.erase(point->name());
     delete point;
   });
