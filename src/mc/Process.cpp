@@ -81,6 +81,7 @@ static const char* const filtered_libraries[] = {
     "libc++",
     "libcdt",
     "libcgraph",
+    "libcrypto",
     "libcxxrt",
     "libdl",
     "libdw",
