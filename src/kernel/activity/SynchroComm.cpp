@@ -74,14 +74,11 @@ void simgrid::kernel::activity::Comm::cancel()
 /**  @brief get the amount remaining from the communication */
 double simgrid::kernel::activity::Comm::remains()
 {
-  switch (state) {
-
-  case SIMIX_RUNNING:
+  if (state == SIMIX_RUNNING)
     return surf_comm->getRemains();
 
-  default:
-    return 0; /*FIXME: check what should be returned */
-  }
+  /* FIXME: check what should be returned in the other cases */
+  return 0;
 }
 
 /** @brief This is part of the cleanup process, probably an internal command */
