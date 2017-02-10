@@ -290,11 +290,10 @@ static int migration_rx_fun(int argc, char *argv[])
   // This is clearly ugly but I (Adrien) need more time to do something cleaner (actually we should copy the whole ms
   // structure at the beginning and free it at the end of each function)
   simgrid::s4u::VirtualMachine* vm = static_cast<simgrid::s4u::VirtualMachine*>(ms->vm);
-  msg_host_t src_pm                = ms->src_pm;
   msg_host_t dst_pm                = ms->dst_pm;
 
   // Make sure that we cannot get interrupted between the migrate and the resume to not end in an inconsistent state
-  simgrid::simix::kernelImmediate([vm, src_pm, dst_pm]() {
+  simgrid::simix::kernelImmediate([vm, dst_pm]() {
     /* Update the vm location */
     /* precopy migration makes the VM temporally paused */
     xbt_assert(vm->pimpl_vm_->getState() == SURF_VM_STATE_SUSPENDED);

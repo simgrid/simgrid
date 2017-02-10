@@ -94,7 +94,7 @@ public:
     simcall_run_blocking([this, &result, self]{
       try {
         // When the kernel future is ready...
-        this->future_.then_([this, &result, self](simgrid::kernel::Future<T> value) {
+        this->future_.then_([&result, self](simgrid::kernel::Future<T> value) {
           // ... wake up the process with the result of the kernel future.
           simgrid::xbt::setPromise(result, value);
           simgrid::simix::unblock(self);
