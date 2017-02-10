@@ -20,9 +20,6 @@
  ***********/
 
 namespace simgrid {
-namespace surf {
-class LinkImpl;
-}
 namespace s4u {
 /** @brief A Link represents the network facilities between [hosts](\ref simgrid::s4u::Host) */
 class Link {

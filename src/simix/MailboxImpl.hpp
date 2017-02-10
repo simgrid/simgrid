@@ -19,7 +19,7 @@ namespace simix {
 
 class MailboxImpl {
 public:
-  MailboxImpl(const char* name)
+  explicit MailboxImpl(const char* name)
       : piface_(this), name_(xbt_strdup(name)), comm_queue(MAX_MAILBOX_SIZE), done_comm_queue(MAX_MAILBOX_SIZE)
   {
   }
