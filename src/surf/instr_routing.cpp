@@ -215,7 +215,7 @@ static void instr_routing_parse_start_link(simgrid::surf::LinkImpl* link)
   double bandwidth_value = link->bandwidth();
   double latency_value   = link->latency();
 
-  container_t container = PJ_container_new(link->getName(), INSTR_LINK, father);
+  container_t container = PJ_container_new(link->cname(), INSTR_LINK, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (! TRACE_disable_link())) {
     type_t bandwidth = PJ_type_get_or_null("bandwidth", container->type);

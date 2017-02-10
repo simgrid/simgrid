@@ -579,11 +579,13 @@ void Resource::turnOff()
   isOn_ = false;
 }
 
-Model *Resource::getModel() const {
+Model* Resource::model() const
+{
   return model_;
 }
 
-const char *Resource::getName() const {
+const char* Resource::cname() const
+{
   return name_.c_str();
 }
 
@@ -591,7 +593,8 @@ bool Resource::operator==(const Resource &other) const {
   return name_ == other.name_;
 }
 
-lmm_constraint_t Resource::getConstraint() const {
+lmm_constraint_t Resource::constraint() const
+{
   return constraint_;
 }
 
@@ -876,7 +879,7 @@ void Action::updateRemainingLazy(double now)
     if (getModel() == surf_cpu_model_pm && TRACE_is_enabled()) {
       simgrid::surf::Resource *cpu = static_cast<simgrid::surf::Resource*>(
         lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
-      TRACE_surf_host_set_utilization(cpu->getName(), getCategory(), lastValue_, lastUpdate_, now - lastUpdate_);
+      TRACE_surf_host_set_utilization(cpu->cname(), getCategory(), lastValue_, lastUpdate_, now - lastUpdate_);
     }
     XBT_DEBUG("Updating action(%p): remains is now %f", this, remains_);
   }

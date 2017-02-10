@@ -32,7 +32,7 @@ void HostModel::adjustWeightOfDummyCpuActions()
 
     Cpu* cpu = ws_vm->pimpl_cpu;
 
-    int is_active = lmm_constraint_used(cpu->getModel()->getMaxminSystem(), cpu->getConstraint());
+    int is_active = lmm_constraint_used(cpu->model()->getMaxminSystem(), cpu->constraint());
 
     if (is_active) {
       /* some tasks exist on this VM */
@@ -128,7 +128,7 @@ xbt_dict_t HostImpl::getMountedStorageList()
   char* storage_name      = nullptr;
 
   xbt_dynar_foreach (storage_, i, mnt) {
-    storage_name = (char*)static_cast<simgrid::surf::Storage*>(mnt.storage)->getName();
+    storage_name = (char*)static_cast<simgrid::surf::Storage*>(mnt.storage)->cname();
     xbt_dict_set(storage_list, mnt.name, storage_name, nullptr);
   }
   return storage_list;
@@ -146,7 +146,7 @@ xbt_dynar_t HostImpl::getAttachedStorageList()
       simgrid::surf::Storage* storage = static_cast<simgrid::surf::Storage*>(
           xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
       if (!strcmp((const char*)storage->attach_, piface_->cname())) {
-        xbt_dynar_push_as(result, void*, (void*)storage->getName());
+        xbt_dynar_push_as(result, void*, (void*)storage->cname());
       }
     }
   }
@@ -189,7 +189,7 @@ xbt_dynar_t HostImpl::getAttachedStorageList()
       } else
         xbt_die("Can't find mount point for '%s' on '%s'", fullpath, piface_->cname());
 
-      XBT_DEBUG("OPEN %s on disk '%s'", path, st->getName());
+      XBT_DEBUG("OPEN %s on disk '%s'", path, st->cname());
       Action* action = st->open((const char*)mount_name, (const char*)path);
       free((char*)path);
       free((char*)mount_name);
@@ -199,21 +199,21 @@ xbt_dynar_t HostImpl::getAttachedStorageList()
     Action* HostImpl::close(surf_file_t fd)
     {
       simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
-      XBT_DEBUG("CLOSE %s on disk '%s'", fd->name, st->getName());
+      XBT_DEBUG("CLOSE %s on disk '%s'", fd->name, st->cname());
       return st->close(fd);
     }
 
     Action* HostImpl::read(surf_file_t fd, sg_size_t size)
     {
       simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
-      XBT_DEBUG("READ %s on disk '%s'", fd->name, st->getName());
+      XBT_DEBUG("READ %s on disk '%s'", fd->name, st->cname());
       return st->read(fd, size);
     }
 
     Action* HostImpl::write(surf_file_t fd, sg_size_t size)
     {
       simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
-      XBT_DEBUG("WRITE %s on disk '%s'", fd->name, st->getName());
+      XBT_DEBUG("WRITE %s on disk '%s'", fd->name, st->cname());
       return st->write(fd, size);
     }
 
@@ -227,10 +227,10 @@ xbt_dynar_t HostImpl::getAttachedStorageList()
         simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
         /* Check if the file is on this storage */
         if (!xbt_dict_get_or_null(st->content_, fd->name)) {
-          XBT_WARN("File %s is not on disk %s. Impossible to unlink", fd->name, st->getName());
+          XBT_WARN("File %s is not on disk %s. Impossible to unlink", fd->name, st->cname());
           return -1;
         } else {
-          XBT_DEBUG("UNLINK %s on disk '%s'", fd->name, st->getName());
+          XBT_DEBUG("UNLINK %s on disk '%s'", fd->name, st->cname());
           st->usedSize_ -= fd->size;
 
           // Remove the file from storage
@@ -257,7 +257,7 @@ xbt_dynar_t HostImpl::getAttachedStorageList()
       xbt_dynar_t info           = xbt_dynar_new(sizeof(void*), nullptr);
       xbt_dynar_push_as(info, sg_size_t*, psize);
       xbt_dynar_push_as(info, void*, fd->mount);
-      xbt_dynar_push_as(info, void*, (void*)st->getName());
+      xbt_dynar_push_as(info, void*, (void*)st->cname());
       xbt_dynar_push_as(info, void*, st->typeId_);
       xbt_dynar_push_as(info, void*, st->contentType_);
 

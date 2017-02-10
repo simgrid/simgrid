@@ -72,7 +72,7 @@ void HostEnergy::update()
     // We consider that the machine is then fully loaded. That's arbitrary but it avoids a NaN
     cpu_load = 1;
   else
-    cpu_load = lmm_constraint_get_usage(host->pimpl_cpu->getConstraint()) / host->pimpl_cpu->getPstateSpeedCurrent();
+    cpu_load = lmm_constraint_get_usage(host->pimpl_cpu->constraint()) / host->pimpl_cpu->getPstateSpeedCurrent();
 
   /** Divide by the number of cores here **/
   cpu_load /= host->pimpl_cpu->coreCount();

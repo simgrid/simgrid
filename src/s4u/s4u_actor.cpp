@@ -51,34 +51,39 @@ ActorPtr Actor::createActor(const char* name, s4u::Host *host, double killTime,
 // ***** Actor methods *****
 
 void Actor::join() {
-  simcall_process_join(pimpl_, -1);
+  simcall_process_join(this->pimpl_, -1);
 }
 
 void Actor::setAutoRestart(bool autorestart) {
   simcall_process_auto_restart_set(pimpl_,autorestart);
 }
 
-s4u::Host *Actor::getHost() {
-  return pimpl_->host;
+s4u::Host* Actor::host()
+{
+  return this->pimpl_->host;
 }
 
-simgrid::xbt::string Actor::getName() {
-  return pimpl_->name;
+simgrid::xbt::string Actor::name()
+{
+  return this->pimpl_->name;
 }
 
-int Actor::getPid(){
-  return pimpl_->pid;
+int Actor::pid()
+{
+  return this->pimpl_->pid;
 }
 
-int Actor::getPpid() {
-  return pimpl_->ppid;
+int Actor::ppid()
+{
+  return this->pimpl_->ppid;
 }
 
 void Actor::setKillTime(double time) {
   simcall_process_set_kill_time(pimpl_,time);
 }
 
-double Actor::getKillTime() {
+double Actor::killTime()
+{
   return simcall_process_get_kill_time(pimpl_);
 }
 
@@ -103,7 +108,7 @@ void Actor::kill() {
 
 // ***** Static functions *****
 
-ActorPtr Actor::forPid(int pid)
+ActorPtr Actor::byPid(int pid)
 {
   smx_actor_t process = SIMIX_process_from_PID(pid);
   if (process != nullptr)
@@ -154,11 +159,13 @@ void send(MailboxPtr chan, void *payload, size_t simulatedSize) {
   c.wait();
 }
 
-int getPid() {
+int pid()
+{
   return SIMIX_process_self()->pid;
 }
 
-int getPpid() {
+int ppid()
+{
   return SIMIX_process_self()->ppid;
 }
 

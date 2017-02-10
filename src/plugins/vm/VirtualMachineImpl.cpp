@@ -78,9 +78,9 @@ double VMModel::nextOccuringEvent(double now)
 
     // TODO: check lmm_update_constraint_bound() works fine instead of the below manual substitution.
     // cpu_cas01->constraint->bound = solved_value;
-    xbt_assert(cpu->getModel() == surf_cpu_model_vm);
-    lmm_system_t vcpu_system = cpu->getModel()->getMaxminSystem();
-    lmm_update_constraint_bound(vcpu_system, cpu->getConstraint(), virt_overhead * solved_value);
+    xbt_assert(cpu->model() == surf_cpu_model_vm);
+    lmm_system_t vcpu_system = cpu->model()->getMaxminSystem();
+    lmm_update_constraint_bound(vcpu_system, cpu->constraint(), virt_overhead * solved_value);
   }
 
   /* 2. Calculate resource share at the virtual machine layer. */

@@ -45,7 +45,7 @@ static void check_disk_attachment()
           static_cast<simgrid::surf::Storage*>(xbt_lib_get_or_null(storage_lib, key, SURF_STORAGE_LEVEL));
       simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(storage->attach_);
       if (!host_elm)
-        surf_parse_error("Unable to attach storage %s: host %s does not exist.", storage->getName(), storage->attach_);
+        surf_parse_error("Unable to attach storage %s: host %s does not exist.", storage->cname(), storage->attach_);
     }
   }
 }
@@ -210,7 +210,7 @@ StorageAction *StorageN11::open(const char* mount, const char* path)
   file->mount = xbt_strdup(mount);
   file->current_position = 0;
 
-  StorageAction *action = new StorageN11Action(getModel(), 0, isOff(), this, OPEN);
+  StorageAction* action = new StorageN11Action(model(), 0, isOff(), this, OPEN);
   action->file_         = file;
 
   return action;
@@ -232,7 +232,7 @@ StorageAction *StorageN11::close(surf_file_t fd)
   free(fd->name);
   free(fd->mount);
   xbt_free(fd);
-  StorageAction *action = new StorageN11Action(getModel(), 0, isOff(), this, CLOSE);
+  StorageAction* action = new StorageN11Action(model(), 0, isOff(), this, CLOSE);
   return action;
 }
 
@@ -249,7 +249,7 @@ StorageAction *StorageN11::read(surf_file_t fd, sg_size_t size)
   else
     fd->current_position += size;
 
-  StorageAction *action = new StorageN11Action(getModel(), size, isOff(), this, READ);
+  StorageAction* action = new StorageN11Action(model(), size, isOff(), this, READ);
   return action;
 }
 
@@ -258,7 +258,7 @@ StorageAction *StorageN11::write(surf_file_t fd, sg_size_t size)
   char *filename = fd->name;
   XBT_DEBUG("\tWrite file '%s' size '%llu/%llu'",filename,size,fd->size);
 
-  StorageAction *action = new StorageN11Action(getModel(), size, isOff(), this, WRITE);
+  StorageAction* action = new StorageN11Action(model(), size, isOff(), this, WRITE);
   action->file_         = fd;
   /* Substract the part of the file that might disappear from the used sized on the storage element */
   usedSize_ -= (fd->size - fd->current_position);
@@ -277,10 +277,10 @@ StorageN11Action::StorageN11Action(Model *model, double cost, bool failed, Stora
 : StorageAction(model, cost, failed,
     lmm_variable_new(model->getMaxminSystem(), this, 1.0, -1.0 , 3),
     storage, type) {
-  XBT_IN("(%s,%g", storage->getName(), cost);
+  XBT_IN("(%s,%g", storage->cname(), cost);
 
   // Must be less than the max bandwidth for all actions
-  lmm_expand(model->getMaxminSystem(), storage->getConstraint(), getVariable(), 1.0);
+  lmm_expand(model->getMaxminSystem(), storage->constraint(), getVariable(), 1.0);
   switch(type) {
   case OPEN:
   case CLOSE:

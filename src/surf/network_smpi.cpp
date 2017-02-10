@@ -61,7 +61,7 @@ namespace simgrid {
 
     void NetworkSmpiModel::gapAppend(double size, LinkImpl* link, NetworkAction* act)
     {
-      const char *src = link->getName();
+      const char* src = link->cname();
       xbt_fifo_t fifo;
       NetworkCm02Action *action= static_cast<NetworkCm02Action*>(act);
 

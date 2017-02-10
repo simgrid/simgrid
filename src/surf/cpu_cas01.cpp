@@ -91,7 +91,7 @@ CpuCas01::CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, std::vector<d
 
 CpuCas01::~CpuCas01()
 {
-  if (getModel() == surf_cpu_model_pm)
+  if (model() == surf_cpu_model_pm)
     speedPerPstate_.clear();
 }
 
@@ -101,7 +101,7 @@ std::vector<double> * CpuCas01::getSpeedPeakList(){
 
 bool CpuCas01::isUsed()
 {
-  return lmm_constraint_used(getModel()->getMaxminSystem(), getConstraint());
+  return lmm_constraint_used(model()->getMaxminSystem(), constraint());
 }
 
 /** @brief take into account changes of speed (either load or max) */
@@ -109,12 +109,11 @@ void CpuCas01::onSpeedChange() {
   lmm_variable_t var = nullptr;
   lmm_element_t elem = nullptr;
 
-    lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(),
-                                coresAmount_ * speed_.scale * speed_.peak);
-    while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), getConstraint(), &elem))) {
-      CpuCas01Action *action = static_cast<CpuCas01Action*>(lmm_variable_id(var));
+  lmm_update_constraint_bound(model()->getMaxminSystem(), constraint(), coresAmount_ * speed_.scale * speed_.peak);
+  while ((var = lmm_get_var_from_cnst(model()->getMaxminSystem(), constraint(), &elem))) {
+    CpuCas01Action* action = static_cast<CpuCas01Action*>(lmm_variable_id(var));
 
-      lmm_update_variable_bound(getModel()->getMaxminSystem(), action->getVariable(), speed_.scale * speed_.peak);
+    lmm_update_variable_bound(model()->getMaxminSystem(), action->getVariable(), speed_.scale * speed_.peak);
     }
 
   Cpu::onSpeedChange();
@@ -139,14 +138,14 @@ void CpuCas01::apply_event(tmgr_trace_iterator_t event, double value)
         host_that_restart.push_back(getHost());
       turnOn();
     } else {
-      lmm_constraint_t cnst = getConstraint();
+      lmm_constraint_t cnst = constraint();
       lmm_variable_t var = nullptr;
       lmm_element_t elem = nullptr;
       double date = surf_get_clock();
 
       turnOff();
 
-      while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), cnst, &elem))) {
+      while ((var = lmm_get_var_from_cnst(model()->getMaxminSystem(), cnst, &elem))) {
         Action *action = static_cast<Action*>(lmm_variable_id(var));
 
         if (action->getState() == Action::State::running ||
@@ -166,7 +165,7 @@ void CpuCas01::apply_event(tmgr_trace_iterator_t event, double value)
 
 CpuAction *CpuCas01::execution_start(double size)
 {
-  return new CpuCas01Action(getModel(), size, isOff(), speed_.scale * speed_.peak, getConstraint());
+  return new CpuCas01Action(model(), size, isOff(), speed_.scale * speed_.peak, constraint());
 }
 
 CpuAction *CpuCas01::sleep(double duration)
@@ -174,8 +173,8 @@ CpuAction *CpuCas01::sleep(double duration)
   if (duration > 0)
     duration = MAX(duration, sg_surf_precision);
 
-  XBT_IN("(%s,%g)", getName(), duration);
-  CpuCas01Action *action = new CpuCas01Action(getModel(), 1.0, isOff(), speed_.scale * speed_.peak, getConstraint());
+  XBT_IN("(%s,%g)", cname(), duration);
+  CpuCas01Action* action = new CpuCas01Action(model(), 1.0, isOff(), speed_.scale * speed_.peak, constraint());
 
   // FIXME: sleep variables should not consume 1.0 in lmm_expand
   action->maxDuration_ = duration;
@@ -183,16 +182,16 @@ CpuAction *CpuCas01::sleep(double duration)
   if (duration == NO_MAX_DURATION) {
     /* Move to the *end* of the corresponding action set. This convention is used to speed up update_resource_state */
     action->getStateSet()->erase(action->getStateSet()->iterator_to(*action));
-    action->stateSet_ = static_cast<CpuCas01Model*>(getModel())->p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
+    action->stateSet_ = static_cast<CpuCas01Model*>(model())->p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
     action->getStateSet()->push_back(*action);
   }
 
-  lmm_update_variable_weight(getModel()->getMaxminSystem(), action->getVariable(), 0.0);
-  if (getModel()->getUpdateMechanism() == UM_LAZY) {     // remove action from the heap
-    action->heapRemove(getModel()->getActionHeap());
+  lmm_update_variable_weight(model()->getMaxminSystem(), action->getVariable(), 0.0);
+  if (model()->getUpdateMechanism() == UM_LAZY) { // remove action from the heap
+    action->heapRemove(model()->getActionHeap());
     // this is necessary for a variable with weight 0 since such variables are ignored in lmm and we need to set its
     // max_duration correctly at the next call to share_resources
-    getModel()->getModifiedSet()->push_front(*action);
+    model()->getModifiedSet()->push_front(*action);
   }
 
   XBT_OUT();

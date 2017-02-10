@@ -155,7 +155,7 @@ void Host::routeTo(Host* dest, std::vector<surf::LinkImpl*>* links, double* late
     XBT_CDEBUG(surf_route, "Route from '%s' to '%s' (latency: %f):", cname(), dest->cname(),
                (latency == nullptr ? -1 : *latency));
     for (auto link : *links)
-      XBT_CDEBUG(surf_route, "Link %s", link->getName());
+      XBT_CDEBUG(surf_route, "Link %s", link->cname());
   }
 }
 

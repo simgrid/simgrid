@@ -191,8 +191,8 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
         NetworkCm02Link *link = static_cast<NetworkCm02Link*>(lmm_constraint_id(constraint));
         double value = lmm_variable_getvalue(action->getVariable())*
             lmm_get_cnst_weight_from_var(maxminSystem_, action->getVariable(), i);
-        TRACE_surf_link_set_utilization(link->getName(), action->getCategory(), value,
-           action->getLastUpdate(), now - action->getLastUpdate());
+        TRACE_surf_link_set_utilization(link->cname(), action->getCategory(), value, action->getLastUpdate(),
+                                        now - action->getLastUpdate());
       }
     }
 
@@ -248,14 +248,10 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
           lmm_constraint_t constraint = lmm_get_cnst_from_var(maxminSystem_, action->getVariable(), i);
 
           NetworkCm02Link* link = static_cast<NetworkCm02Link*>(lmm_constraint_id(constraint));
-          TRACE_surf_link_set_utilization(link->getName(),
-                                        action->getCategory(),
-                                        (lmm_variable_getvalue(action->getVariable())*
-                                            lmm_get_cnst_weight_from_var(maxminSystem_,
-                                                action->getVariable(),
-                                                i)),
-                                        action->getLastUpdate(),
-                                        now - action->getLastUpdate());
+          TRACE_surf_link_set_utilization(link->cname(), action->getCategory(),
+                                          (lmm_variable_getvalue(action->getVariable()) *
+                                           lmm_get_cnst_weight_from_var(maxminSystem_, action->getVariable(), i)),
+                                          action->getLastUpdate(), now - action->getLastUpdate());
         }
       }
       if (!lmm_get_number_of_cnst_from_var (maxminSystem_, action->getVariable())) {
@@ -365,13 +361,13 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   }
 
   for (auto link: *route)
-    lmm_expand(maxminSystem_, link->getConstraint(), action->getVariable(), 1.0);
+    lmm_expand(maxminSystem_, link->constraint(), action->getVariable(), 1.0);
 
   if (back_route != nullptr) { //  sg_network_crosstraffic was activated
     XBT_DEBUG("Fullduplex active adding backward flow using 5%%");
     for (auto link : *back_route)
-      lmm_expand(maxminSystem_, link->getConstraint(), action->getVariable(), .05);
-     
+      lmm_expand(maxminSystem_, link->constraint(), action->getVariable(), .05);
+
     //Change concurrency_share here, if you want that cross-traffic is included in the SURF concurrency
     //(You would also have to change lmm_element_concurrency())
     //lmm_variable_concurrency_share_set(action->getVariable(),2);
@@ -403,7 +399,7 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const char* name, doub
   latency_.peak  = latency;
 
   if (policy == SURF_LINK_FATPIPE)
-    lmm_constraint_shared(getConstraint());
+    lmm_constraint_shared(constraint());
 
   LinkImpl::onCreation(this);
 }
@@ -431,7 +427,7 @@ void NetworkCm02Link::apply_event(tmgr_trace_iterator_t triggered, double value)
       double now = surf_get_clock();
 
       turnOff();
-      while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), getConstraint(), &elem))) {
+      while ((var = lmm_get_var_from_cnst(model()->getMaxminSystem(), constraint(), &elem))) {
         Action *action = static_cast<Action*>( lmm_variable_id(var) );
 
         if (action->getState() == Action::State::running ||
@@ -446,8 +442,7 @@ void NetworkCm02Link::apply_event(tmgr_trace_iterator_t triggered, double value)
     xbt_die("Unknown event!\n");
   }
 
-  XBT_DEBUG("There was a resource state event, need to update actions related to the constraint (%p)",
-       getConstraint());
+  XBT_DEBUG("There was a resource state event, need to update actions related to the constraint (%p)", constraint());
 }
 
 void NetworkCm02Link::setBandwidth(double value)
@@ -455,9 +450,9 @@ void NetworkCm02Link::setBandwidth(double value)
 
   bandwidth_.peak = value;
 
-  lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(),
+  lmm_update_constraint_bound(model()->getMaxminSystem(), constraint(),
                               sg_bandwidth_factor * (bandwidth_.peak * bandwidth_.scale));
-  TRACE_surf_link_set_bandwidth(surf_get_clock(), getName(), sg_bandwidth_factor * bandwidth_.peak * bandwidth_.scale);
+  TRACE_surf_link_set_bandwidth(surf_get_clock(), cname(), sg_bandwidth_factor * bandwidth_.peak * bandwidth_.scale);
 
   if (sg_weight_S_parameter > 0) {
     double delta = sg_weight_S_parameter / value - sg_weight_S_parameter / (bandwidth_.peak * bandwidth_.scale);
@@ -465,11 +460,11 @@ void NetworkCm02Link::setBandwidth(double value)
     lmm_variable_t var;
     lmm_element_t elem = nullptr, nextelem = nullptr;
     int numelem = 0;
-    while ((var = lmm_get_var_from_cnst_safe(getModel()->getMaxminSystem(), getConstraint(), &elem, &nextelem, &numelem))) {
+    while ((var = lmm_get_var_from_cnst_safe(model()->getMaxminSystem(), constraint(), &elem, &nextelem, &numelem))) {
       NetworkCm02Action *action = (NetworkCm02Action*) lmm_variable_id(var);
       action->weight_ += delta;
       if (!action->isSuspended())
-        lmm_update_variable_weight(getModel()->getMaxminSystem(), action->getVariable(), action->weight_);
+        lmm_update_variable_weight(model()->getMaxminSystem(), action->getVariable(), action->weight_);
     }
   }
 }
@@ -484,14 +479,15 @@ void NetworkCm02Link::setLatency(double value)
 
   latency_.peak = value;
 
-  while ((var = lmm_get_var_from_cnst_safe(getModel()->getMaxminSystem(), getConstraint(), &elem, &nextelem, &numelem))) {
+  while ((var = lmm_get_var_from_cnst_safe(model()->getMaxminSystem(), constraint(), &elem, &nextelem, &numelem))) {
     NetworkCm02Action *action = (NetworkCm02Action*) lmm_variable_id(var);
     action->latCurrent_ += delta;
     action->weight_ += delta;
     if (action->rate_ < 0)
-      lmm_update_variable_bound(getModel()->getMaxminSystem(), action->getVariable(), sg_tcp_gamma / (2.0 * action->latCurrent_));
+      lmm_update_variable_bound(model()->getMaxminSystem(), action->getVariable(),
+                                sg_tcp_gamma / (2.0 * action->latCurrent_));
     else {
-      lmm_update_variable_bound(getModel()->getMaxminSystem(), action->getVariable(),
+      lmm_update_variable_bound(model()->getMaxminSystem(), action->getVariable(),
                                 std::min(action->rate_, sg_tcp_gamma / (2.0 * action->latCurrent_)));
 
       if (action->rate_ < sg_tcp_gamma / (2.0 * action->latCurrent_)) {
@@ -501,7 +497,7 @@ void NetworkCm02Link::setLatency(double value)
       }
     }
     if (!action->isSuspended())
-      lmm_update_variable_weight(getModel()->getMaxminSystem(), action->getVariable(), action->weight_);
+      lmm_update_variable_weight(model()->getMaxminSystem(), action->getVariable(), action->weight_);
   }
 }
 

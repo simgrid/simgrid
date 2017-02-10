@@ -382,10 +382,10 @@ public:
   virtual ~Resource();
 
   /** @brief Get the Model of the current Resource */
-  Model *getModel() const;
+  Model* model() const;
 
   /** @brief Get the name of the current Resource */
-  const char *getName() const;
+  const char* cname() const;
 
   bool operator==(const Resource &other) const;
 
@@ -416,7 +416,8 @@ private:
 
 public: /* LMM */
   /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component (or null if none) */
-  lmm_constraint_t getConstraint() const;
+  lmm_constraint_t constraint() const;
+
 protected:
   const lmm_constraint_t constraint_ = nullptr;
 };
@@ -430,7 +431,7 @@ namespace std {
   {
     std::size_t operator()(const simgrid::surf::Resource& r) const
     {
-      return (std::size_t) xbt_str_hash(r.getName());
+      return (std::size_t) xbt_str_hash(r.cname());
     }
   };
 }

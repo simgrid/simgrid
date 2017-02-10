@@ -235,7 +235,7 @@ void SIMIX_global_init(int *argc, char **argv)
     });
 
     simgrid::surf::storageCreatedCallbacks.connect([](simgrid::surf::Storage* storage) {
-      const char* name = storage->getName();
+      const char* name = storage->cname();
       // TODO, create sg_storage_by_name
       sg_storage_t s = xbt_lib_get_elm_or_null(storage_lib, name);
       xbt_assert(s != nullptr, "Storage not found for name %s", name);

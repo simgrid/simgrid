@@ -212,39 +212,39 @@ public:
 
   // ***** Methods *****
 
-  /** Retrieves the actor that have the given PID (or NULL if not existing) */
-  //static Actor *byPid(int pid); not implemented
-
   /** Retrieves the name of that actor */
-  simgrid::xbt::string getName();
+  simgrid::xbt::string name();
   /** Retrieves the host on which that actor is running */
-  s4u::Host *getHost();
+  s4u::Host* host();
   /** Retrieves the PID of that actor */
-  int getPid();
+  int pid();
   /** Retrieves the PPID of that actor */
-  int getPpid();
+  int ppid();
 
   /** If set to true, the actor will automatically restart when its host reboots */
   void setAutoRestart(bool autorestart);
   /** Sets the time at which that actor should be killed */
   void setKillTime(double time);
   /** Retrieves the time at which that actor will be killed (or -1 if not set) */
-  double getKillTime();
+  double killTime();
 
   /** Ask the actor to die.
    *
    * It will only notice your request when doing a simcall next time (a communication or similar).
    * SimGrid sometimes have issues when you kill actors that are currently communicating and such.
-   * We are working on it to fix the issues.
+   * Still. Please report any bug that you may encounter with a minimal working example.
    */
   void kill();
 
   static void kill(int pid);
-  static ActorPtr forPid(int pid);
-  
-  /**
-   * Wait for the actor to finish.
-   */ 
+
+  /** Retrieves the actor that have the given PID (or nullptr if not existing) */
+  static ActorPtr byPid(int pid);
+
+  /** @brief Wait for the actor to finish.
+   *
+   * This blocks the calling actor until the actor on which we call join() is terminated
+   */
   void join();
   
   // Static methods on all actors:
@@ -254,7 +254,7 @@ public:
 
 protected:
   /** Returns the internal implementation of this actor */
-  smx_actor_t getImpl();
+  simix::ActorImpl* getImpl();
 };
 
 /** @ingroup s4u_api
@@ -298,17 +298,12 @@ namespace this_actor {
    * See \ref Comm for the full communication API (including non blocking communications).
   */
   XBT_PUBLIC(void) send(MailboxPtr chan, void*payload, size_t simulatedSize);
-  
-  /**
-   * Return the PID of the current actor.
-   */
-  XBT_PUBLIC(int) getPid();
-  
-  /**
-   * Return the PPID of the current actor.
-   */
-  int getPpid();
 
+  /** @brief Return the PID of the current actor. */
+  XBT_PUBLIC(int) pid();
+
+  /** @brief Return the PPID of the current actor. */
+  int ppid();
 };
 
 /** @} */

@@ -475,8 +475,8 @@ void CpuTi::apply_event(tmgr_trace_iterator_t event, double value)
           action->setFinishTime(date);
           action->setState(Action::State::failed);
           if (action->indexHeap_ >= 0) {
-            CpuTiAction *heap_act =
-                static_cast<CpuTiAction*>(xbt_heap_remove(static_cast<CpuTiModel*>(getModel())->tiActionHeap_, action->indexHeap_));
+            CpuTiAction* heap_act = static_cast<CpuTiAction*>(
+                xbt_heap_remove(static_cast<CpuTiModel*>(model())->tiActionHeap_, action->indexHeap_));
             if (heap_act != action)
               DIE_IMPOSSIBLE;
           }
@@ -547,16 +547,16 @@ void CpuTi::updateActionsFinishTime(double now)
     /* add in action heap */
     XBT_DEBUG("action(%p) index %d", action, action->indexHeap_);
     if (action->indexHeap_ >= 0) {
-      CpuTiAction *heap_act =
-          static_cast<CpuTiAction*>(xbt_heap_remove(static_cast<CpuTiModel*>(getModel())->tiActionHeap_, action->indexHeap_));
+      CpuTiAction* heap_act = static_cast<CpuTiAction*>(
+          xbt_heap_remove(static_cast<CpuTiModel*>(model())->tiActionHeap_, action->indexHeap_));
       if (heap_act != action)
         DIE_IMPOSSIBLE;
     }
     if (min_finish > NO_MAX_DURATION)
-      xbt_heap_push(static_cast<CpuTiModel*>(getModel())->tiActionHeap_, action, min_finish);
+      xbt_heap_push(static_cast<CpuTiModel*>(model())->tiActionHeap_, action, min_finish);
 
-    XBT_DEBUG("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f",
-         getName(), action, action->getStartTime(), action->finishTime_, action->getMaxDuration());
+    XBT_DEBUG("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f", cname(), action,
+              action->getStartTime(), action->finishTime_, action->getMaxDuration());
   }
   /* remove from modified cpu */
   modified(false);
@@ -588,7 +588,7 @@ void CpuTi::updateRemainingAmount(double now)
   for(ActionTiList::iterator it(actionSet_->begin()), itend(actionSet_->end()) ; it != itend ; ++it) {
     CpuTiAction *action = &*it;
     /* action not running, skip it */
-    if (action->getStateSet() != getModel()->getRunningActionSet())
+    if (action->getStateSet() != model()->getRunningActionSet())
       continue;
 
     /* bogus priority, skip it */
@@ -616,8 +616,8 @@ void CpuTi::updateRemainingAmount(double now)
 
 CpuAction *CpuTi::execution_start(double size)
 {
-  XBT_IN("(%s,%g)", getName(), size);
-  CpuTiAction *action = new CpuTiAction(static_cast<CpuTiModel*>(getModel()), size, isOff(), this);
+  XBT_IN("(%s,%g)", cname(), size);
+  CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(model()), size, isOff(), this);
 
   actionSet_->push_back(*action);
 
@@ -631,8 +631,8 @@ CpuAction *CpuTi::sleep(double duration)
   if (duration > 0)
     duration = MAX(duration, sg_surf_precision);
 
-  XBT_IN("(%s,%g)", getName(), duration);
-  CpuTiAction *action = new CpuTiAction(static_cast<CpuTiModel*>(getModel()), 1.0, isOff(), this);
+  XBT_IN("(%s,%g)", cname(), duration);
+  CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(model()), 1.0, isOff(), this);
 
   action->maxDuration_ = duration;
   action->suspended_ = 2;
@@ -640,8 +640,8 @@ CpuAction *CpuTi::sleep(double duration)
    /* Move to the *end* of the corresponding action set. This convention
       is used to speed up update_resource_state  */
   action->getStateSet()->erase(action->getStateSet()->iterator_to(*action));
-    action->stateSet_ = static_cast<CpuTiModel*>(getModel())->runningActionSetThatDoesNotNeedBeingChecked_;
-    action->getStateSet()->push_back(*action);
+  action->stateSet_ = static_cast<CpuTiModel*>(model())->runningActionSetThatDoesNotNeedBeingChecked_;
+  action->getStateSet()->push_back(*action);
   }
 
   actionSet_->push_back(*action);
@@ -651,7 +651,7 @@ CpuAction *CpuTi::sleep(double duration)
 }
 
 void CpuTi::modified(bool modified){
-  CpuTiList *modifiedCpu = static_cast<CpuTiModel*>(getModel())->modifiedCpu_;
+  CpuTiList* modifiedCpu = static_cast<CpuTiModel*>(model())->modifiedCpu_;
   if (modified) {
     if (!cpu_ti_hook.is_linked()) {
       modifiedCpu->push_back(*this);

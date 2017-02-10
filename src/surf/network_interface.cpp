@@ -144,7 +144,7 @@ namespace simgrid {
 
     bool LinkImpl::isUsed()
     {
-      return lmm_constraint_used(getModel()->getMaxminSystem(), getConstraint());
+      return lmm_constraint_used(model()->getMaxminSystem(), constraint());
     }
 
     double LinkImpl::latency()
@@ -159,7 +159,7 @@ namespace simgrid {
 
     int LinkImpl::sharingPolicy()
     {
-      return lmm_constraint_sharing_policy(getConstraint());
+      return lmm_constraint_sharing_policy(constraint());
     }
 
     void LinkImpl::turnOn()
@@ -178,17 +178,17 @@ namespace simgrid {
     }
     void LinkImpl::setStateTrace(tmgr_trace_t trace)
     {
-      xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Link %s", getName());
+      xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Link %s", cname());
       stateEvent_ = future_evt_set->add_trace(trace, 0.0, this);
     }
     void LinkImpl::setBandwidthTrace(tmgr_trace_t trace)
     {
-      xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth trace to Link %s", getName());
+      xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth trace to Link %s", cname());
       bandwidth_.event = future_evt_set->add_trace(trace, 0.0, this);
     }
     void LinkImpl::setLatencyTrace(tmgr_trace_t trace)
     {
-      xbt_assert(latency_.event == nullptr, "Cannot set a second latency trace to Link %s", getName());
+      xbt_assert(latency_.event == nullptr, "Cannot set a second latency trace to Link %s", cname());
       latency_.event = future_evt_set->add_trace(trace, 0.0, this);
     }
 
