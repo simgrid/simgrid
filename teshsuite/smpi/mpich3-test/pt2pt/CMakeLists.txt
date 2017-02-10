@@ -9,9 +9,9 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
-  foreach(file anyall bottom eagerdt inactivereq isendself isendselfprobe issendselfcancel mprobe pingping probenull
-          probe-unexp sendall sendflood sendrecv1 sendrecv2 sendrecv3 waitany-null waittestnull)
-    # not compiled files: big_count_status bsend1 bsend2 bsend3 bsend4 bsend5 bsendalign bsendfrag bsendpending
+  foreach(file anyall bottom eagerdt inactivereq isendself isendirecv isendselfprobe issendselfcancel pingping probenull
+          probe-unexp sendall sendflood sendrecv1 sendrecv2 sendrecv3 waitany-null waittestnull )
+    # not compiled files: big_count_status bsend1 bsend2 bsend3 bsend4 bsend5 bsendalign bsendfrag bsendpending mprobe
     # cancelrecv greq1 icsend large_message pscancel rcancel rqfreeb rqstatus scancel2 scancel sendself
     add_executable(${file} ${file}.c)
     target_link_libraries(${file} simgrid mtest_c)
@@ -23,7 +23,7 @@ if (enable_smpi_MPICH3_testsuite AND HAVE_RAW_CONTEXTS)
   SET_TESTS_PROPERTIES(test-smpi-mpich3-pt2pt-raw PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
 endif()
 
-foreach(file anyall bottom eagerdt inactivereq isendself isendselfprobe issendselfcancel mprobe pingping probenull
+foreach(file anyall bottom eagerdt inactivereq isendself isendirecv isendselfprobe issendselfcancel pingping probenull
           probe-unexp sendall sendflood sendrecv1 sendrecv2 sendrecv3 waitany-null waittestnull
           big_count_status bsend1 bsend2 bsend3 bsend4 bsend5 bsendalign bsendfrag bsendpending
           cancelrecv greq1 icsend large_message pscancel rcancel rqfreeb rqstatus scancel2 scancel sendself)
