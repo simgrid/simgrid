@@ -20,12 +20,13 @@ namespace simix {
 
 /** @brief Rendez-vous point datatype */
 
-class Mailbox {
+class MailboxImpl {
 public:
-  Mailbox(const char* name) : piface_(this), name(xbt_strdup(name)), comm_queue(MAX_MAILBOX_SIZE), done_comm_queue(MAX_MAILBOX_SIZE) {}
-  ~Mailbox() {
-    xbt_free(name);
+  MailboxImpl(const char* name)
+      : piface_(this), name(xbt_strdup(name)), comm_queue(MAX_MAILBOX_SIZE), done_comm_queue(MAX_MAILBOX_SIZE)
+  {
   }
+  ~MailboxImpl() { xbt_free(name); }
 
   simgrid::s4u::Mailbox piface_; // Our interface
   char* name;

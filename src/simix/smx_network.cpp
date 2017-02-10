@@ -50,7 +50,7 @@ smx_mailbox_t SIMIX_mbox_create(const char *name)
   /* two processes may have pushed the same mbox_create simcall at the same time */
   smx_mailbox_t mbox = static_cast<smx_mailbox_t>(xbt_dict_get_or_null(mailboxes, name));
   if (!mbox) {
-    mbox = new simgrid::simix::Mailbox(name);
+    mbox = new simgrid::simix::MailboxImpl(name);
     XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name);
     xbt_dict_set(mailboxes, mbox->name, mbox, nullptr);
   }

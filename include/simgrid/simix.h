@@ -32,14 +32,14 @@ namespace simix {
     @{ */
   class ActorImpl;
   class Mutex;
-  class Mailbox;
+  class MailboxImpl;
 }
 }
 
 typedef simgrid::kernel::context::Context *smx_context_t;
 typedef simgrid::simix::ActorImpl *smx_actor_t;
 typedef simgrid::simix::Mutex   *smx_mutex_t;
-typedef simgrid::simix::Mailbox *smx_mailbox_t;
+typedef simgrid::simix::MailboxImpl* smx_mailbox_t;
 
 #else
 
