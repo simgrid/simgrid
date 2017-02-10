@@ -2234,7 +2234,7 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 
-  int* recvcounts=static_cast<int*>(xbt_malloc(count));
+  int* recvcounts=static_cast<int*>(xbt_malloc(count*sizeof(int)));
     for (i=0; i<count;i++)
       recvcounts[i]=recvcount;
     mpi_coll_reduce_scatter_fun(sendbuf, recvbuf, recvcounts, datatype,  op, comm);
@@ -2462,7 +2462,7 @@ int PMPI_Type_create_indexed_block(int count, int blocklength, int* indices, MPI
   } else if (count<0){
     retval = MPI_ERR_COUNT;
   } else {
-    int* blocklens=static_cast<int*>(xbt_malloc(blocklength*count));
+    int* blocklens=static_cast<int*>(xbt_malloc(blocklength*count*sizeof(int)));
     for (i=0; i<count;i++)
       blocklens[i]=blocklength;
     retval = smpi_datatype_indexed(count, blocklens, indices, old_type, new_type);
@@ -2498,7 +2498,7 @@ int PMPI_Type_create_hindexed_block(int count, int blocklength, MPI_Aint* indice
   } else if (count<0){
     retval = MPI_ERR_COUNT;
   } else {
-    int* blocklens=(int*)xbt_malloc(blocklength*count);
+    int* blocklens=(int*)xbt_malloc(blocklength*count*sizeof(int));
     for (i=0; i<count;i++)blocklens[i]=blocklength;
     retval = smpi_datatype_hindexed(count, blocklens, indices, old_type, new_type);
     xbt_free(blocklens);
