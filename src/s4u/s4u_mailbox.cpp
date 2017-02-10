@@ -17,7 +17,7 @@ namespace simgrid {
 namespace s4u {
 
 const char *Mailbox::name() {
-  return pimpl_->name;
+  return pimpl_->name_;
 }
 
 MailboxPtr Mailbox::byName(const char*name)

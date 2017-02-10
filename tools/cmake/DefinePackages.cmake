@@ -30,7 +30,6 @@ set(EXTRA_DIST
   src/simix/smx_io_private.h
   src/simix/smx_network_private.h
   src/simix/smx_private.h
-  src/simix/ActorImpl.hpp
   src/simix/smx_synchro_private.h
   src/kernel/activity/ActivityImpl.hpp
   src/kernel/activity/SynchroComm.hpp
@@ -362,6 +361,9 @@ set(SIMIX_SRC
   src/simix/smx_io.cpp
   src/simix/smx_network.cpp
   src/simix/ActorImpl.cpp
+  src/simix/ActorImpl.hpp
+  src/simix/MailboxImpl.cpp
+  src/simix/MailboxImpl.hpp
   src/simix/smx_synchro.cpp
   src/simix/popping.cpp
   src/kernel/activity/ActivityImpl.cpp
