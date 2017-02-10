@@ -16,13 +16,21 @@ set(txt_files  ${txt_files}  ${CMAKE_CURRENT_SOURCE_DIR}/README
                              ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
                              ${CMAKE_CURRENT_SOURCE_DIR}/checktests
                              ${CMAKE_CURRENT_SOURCE_DIR}/generate_report
-                             ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest.c
                              ${CMAKE_CURRENT_SOURCE_DIR}/util/dtypes.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest.
+                             ${CMAKE_CURRENT_SOURCE_DIR}/util/mtestcheck.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest_datatype.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest_datatype_gen.c
                              ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest_manual.c
                              ${CMAKE_CURRENT_SOURCE_DIR}/f77/testlist
                              ${CMAKE_CURRENT_SOURCE_DIR}/f90/testlist
-                             ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitestconf.h
                              ${CMAKE_CURRENT_SOURCE_DIR}/include/dtypes.h
+                             ${CMAKE_CURRENT_SOURCE_DIR}/include/mpicolltest.h
+                             ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitestconf.h
+                             ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitestcxx.h
+                             ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitest.h
+                             ${CMAKE_CURRENT_SOURCE_DIR}/include/mpithreadtest.h
+                             ${CMAKE_CURRENT_SOURCE_DIR}/include/mtest_datatype.h
                              ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitest.h                            PARENT_SCOPE)
 
 #build only once files used in each test (C version compiled here at root, F77 is in f77/util, and F90 in F90/util)
@@ -39,7 +47,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/")
 if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 #C version - use automatic privatization if mmap is supported, manual through SMPI macros if not
   if(HAVE_PRIVATIZATION)
-    add_library(mtest_c STATIC util/mtest.c)
+    add_library(mtest_c STATIC util/dtypes.c util/mtest.c  util/mtestcheck.c  util/mtest_datatype.c util/mtest_datatype_gen.c)
   else()
     add_library(mtest_c STATIC util/mtest_manual.c)
   endif()
