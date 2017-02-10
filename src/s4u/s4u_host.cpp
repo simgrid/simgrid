@@ -102,7 +102,7 @@ Host *Host::current(){
 
 void Host::turnOn() {
   if (isOff()) {
-    simgrid::simix::kernelImmediate([&]{
+    simgrid::simix::kernelImmediate([this] {
       this->extension<simgrid::simix::Host>()->turnOn();
       this->pimpl_cpu->turnOn();
       onStateChange(*this);
@@ -113,7 +113,7 @@ void Host::turnOn() {
 void Host::turnOff() {
   if (isOn()) {
     smx_actor_t self = SIMIX_process_self();
-    simgrid::simix::kernelImmediate([&] {
+    simgrid::simix::kernelImmediate([this, self] {
       SIMIX_host_off(this, self);
       onStateChange(*this);
     });
@@ -197,7 +197,7 @@ void Host::setProperty(const char*key, const char *value){
 /** Get the processes attached to the host */
 xbt_swag_t Host::processes()
 {
-  return simgrid::simix::kernelImmediate([this]() {
+  return simgrid::simix::kernelImmediate([this] {
     return this->extension<simgrid::simix::Host>()->process_list;
   });
 }
@@ -230,7 +230,7 @@ int Host::coreCount() {
 /** @brief Set the pstate at which the host should run */
 void Host::setPstate(int pstate_index)
 {
-  simgrid::simix::kernelImmediate([this, pstate_index](){
+  simgrid::simix::kernelImmediate([this, pstate_index] {
       this->pimpl_cpu->setPState(pstate_index);
   });
 }
