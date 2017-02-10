@@ -184,6 +184,21 @@ int PMPI_Type_size(MPI_Datatype datatype, int *size)
   return retval;
 }
 
+int PMPI_Type_size_x(MPI_Datatype datatype, MPI_Count *size)
+{
+  int retval = 0;
+
+  if (datatype == MPI_DATATYPE_NULL) {
+    retval = MPI_ERR_TYPE;
+  } else if (size == nullptr) {
+    retval = MPI_ERR_ARG;
+  } else {
+    *size = static_cast<MPI_Count>(smpi_datatype_size(datatype));
+    retval = MPI_SUCCESS;
+  }
+  return retval;
+}
+
 int PMPI_Type_get_extent(MPI_Datatype datatype, MPI_Aint * lb, MPI_Aint * extent)
 {
   int retval = 0;

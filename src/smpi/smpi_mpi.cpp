@@ -169,6 +169,7 @@ WRAPPED_PMPI_CALL(int,MPI_Type_lb,(MPI_Datatype datatype, MPI_Aint * disp),(data
 WRAPPED_PMPI_CALL(int,MPI_Type_set_attr ,(MPI_Datatype type, int type_keyval, void *attribute_val),( type, type_keyval, attribute_val))
 WRAPPED_PMPI_CALL(int,MPI_Type_set_name,(MPI_Datatype datatype, char * name),(datatype, name))
 WRAPPED_PMPI_CALL(int,MPI_Type_size,(MPI_Datatype datatype, int *size),(datatype, size))
+WRAPPED_PMPI_CALL(int,MPI_Type_size_x,(MPI_Datatype datatype, MPI_Count *size),(datatype, size))
 WRAPPED_PMPI_CALL(int,MPI_Type_struct,(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* newtype) ,(count, blocklens, indices, old_types, newtype))
 WRAPPED_PMPI_CALL(int,MPI_Type_ub,(MPI_Datatype datatype, MPI_Aint * disp),(datatype, disp))
 WRAPPED_PMPI_CALL(int,MPI_Type_vector,(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* newtype) ,(count, blocklen, stride, old_type, newtype))

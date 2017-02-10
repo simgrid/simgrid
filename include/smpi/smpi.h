@@ -396,6 +396,7 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Address, (void *location, MPI_Aint * address));
 MPI_CALL(XBT_PUBLIC(int), MPI_Get_address, (void *location, MPI_Aint * address));
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_free, (MPI_Datatype * datatype));
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_size, (MPI_Datatype datatype, int *size));
+MPI_CALL(XBT_PUBLIC(int), MPI_Type_size_x, (MPI_Datatype datatype, MPI_Count *size));
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_get_extent, (MPI_Datatype datatype, MPI_Aint * lb, MPI_Aint * extent));
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_get_true_extent, (MPI_Datatype datatype, MPI_Aint * lb, MPI_Aint * extent));
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_extent, (MPI_Datatype datatype, MPI_Aint * extent));
