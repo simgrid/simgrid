@@ -85,26 +85,26 @@ Link* Link::byName(const char* name)
 }
 const char* Link::name()
 {
-  return pimpl_->getName();
+  return this->pimpl_->getName();
 }
 bool Link::isUsed()
 {
-  return pimpl_->isUsed();
+  return this->pimpl_->isUsed();
 }
 
 double Link::latency()
 {
-  return pimpl_->latency();
+  return this->pimpl_->latency();
 }
 
 double Link::bandwidth()
 {
-  return pimpl_->bandwidth();
+  return this->pimpl_->bandwidth();
 }
 
 int Link::sharingPolicy()
 {
-  return pimpl_->sharingPolicy();
+  return this->pimpl_->sharingPolicy();
 }
 
 void Link::turnOn()
@@ -122,7 +122,7 @@ void Link::turnOff()
 
 void* Link::getData()
 {
-  return pimpl_->getData();
+  return this->pimpl_->getData();
 }
 void Link::setData(void* d)
 {

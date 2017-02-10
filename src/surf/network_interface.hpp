@@ -126,13 +126,8 @@ namespace simgrid {
      * @details A Link represents the link between two [hosts](\ref simgrid::surf::HostImpl)
      */
     class LinkImpl : public simgrid::surf::Resource, public simgrid::surf::PropertyHolder {
-    public:
-      /** @brief Constructor of LMM links */
-      LinkImpl(simgrid::surf::NetworkModel* model, const char* name, lmm_constraint_t constraint);
-
-      /* Link destruction logic */
-      /**************************/
     protected:
+      LinkImpl(simgrid::surf::NetworkModel* model, const char* name, lmm_constraint_t constraint);
       ~LinkImpl() override;
     public:
       void destroy(); // Must be called instead of the destructor
