@@ -657,7 +657,7 @@ set(headers_to_install
   include/simgrid/s4u/engine.hpp  
   include/simgrid/s4u/file.hpp  
   include/simgrid/s4u/host.hpp  
-  include/simgrid/s4u/link.hpp  
+  include/simgrid/s4u/Link.hpp  
   include/simgrid/s4u/Mailbox.hpp
   include/simgrid/s4u/Mutex.hpp
   include/simgrid/s4u/NetZone.hpp

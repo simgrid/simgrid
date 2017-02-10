@@ -17,7 +17,7 @@
 #include "src/surf/PropertyHolder.hpp"
 
 #include "simgrid/link.h"
-#include "simgrid/s4u/link.hpp"
+#include "simgrid/s4u/Link.hpp"
 
 /***********
  * Classes *

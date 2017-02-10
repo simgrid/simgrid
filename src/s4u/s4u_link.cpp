@@ -1,12 +1,11 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <algorithm>
 
-#include "simgrid/s4u/link.hpp"
+#include "simgrid/s4u/Link.hpp"
 #include "simgrid/sg_config.h"
 #include "simgrid/simix.hpp"
 #include "src/surf/network_interface.hpp"
