@@ -5,5 +5,6 @@ infoorder 1
 #need a really working mpi_info_get_nthkey..
 #infomany 1
 #infomany2 1
+infoget 1
 infotest 1
 infoenv 1 mpiversion=3.0
