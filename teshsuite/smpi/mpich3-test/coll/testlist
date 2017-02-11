@@ -29,14 +29,15 @@ allgather3 10
 allgatherv2 10
 allgatherv3 10
 allgatherv4 4 timeLimit=600
+allgather_struct 10
 bcasttest 4
 bcasttest 8
 bcasttest 10
-bcast2 4
+bcast_full 4
 # More that 8 processes are required to get bcast to switch to the long
 # msg algorithm (see coll definitions in mpiimpl.h)
-bcast2 10 timeLimit=420
-bcast3 10 timeLimit=420
+#bcast_min_datatypes 10 timeLimit=420
+#bcast_comm_world 10 timeLimit=420
 bcastzerotype 1
 bcastzerotype 4
 bcastzerotype 5
@@ -140,7 +141,6 @@ nonblocking3 1 mpiversion=3.0
 nonblocking3 4 mpiversion=3.0
 nonblocking3 5 mpiversion=3.0
 nonblocking3 10 timeLimit=600 mpiversion=3.0
-nonblocking4 4 mpiversion=3.0
 iallred 2 mpiversion=3.0
 # ibarrier will hang forever if it fails, but will complete quickly if it
 # succeeds

@@ -17,16 +17,29 @@
 #include <stdint.h>
 #endif
 
-SMPI_VARINIT_GLOBAL(count, int);
-SMPI_VARINIT_GLOBAL(size, int);
-SMPI_VARINIT_GLOBAL(rank, int);
-SMPI_VARINIT_GLOBAL(cerrcnt, int);
+int count, size, rank;
+int cerrcnt;
 
-struct int_test { int a; int b; };
-struct long_test { long a; int b; };
-struct short_test { short a; int b; };
-struct float_test { float a; int b; };
-struct double_test { double a; int b; };
+struct int_test {
+    int a;
+    int b;
+};
+struct long_test {
+    long a;
+    int b;
+};
+struct short_test {
+    short a;
+    int b;
+};
+struct float_test {
+    float a;
+    int b;
+};
+struct double_test {
+    double a;
+    int b;
+};
 
 #define mpi_op2str(op)                   \
     ((op == MPI_SUM) ? "MPI_SUM" :       \
@@ -46,35 +59,35 @@ struct double_test { double a; int b; };
 /* calloc to avoid spurious valgrind warnings when "type" has padding bytes */
 #define DECL_MALLOC_IN_OUT_SOL(type)                 \
     type *in, *out, *sol;                            \
-    in  = (type *) calloc(SMPI_VARGET_GLOBAL(count), sizeof(type));      \
-    out = (type *) calloc(SMPI_VARGET_GLOBAL(count), sizeof(type));      \
-    sol = (type *) calloc(SMPI_VARGET_GLOBAL(count), sizeof(type));
+    in  = (type *) calloc(count, sizeof(type));      \
+    out = (type *) calloc(count, sizeof(type));      \
+    sol = (type *) calloc(count, sizeof(type));
 
 #define SET_INDEX_CONST(arr, val)               \
     {                                           \
         int i;                                  \
-        for (i = 0; i < SMPI_VARGET_GLOBAL(count); i++)             \
+        for (i = 0; i < count; i++)             \
             arr[i] = val;                       \
     }
 
 #define SET_INDEX_SUM(arr, val)                 \
     {                                           \
         int i;                                  \
-        for (i = 0; i < SMPI_VARGET_GLOBAL(count); i++)             \
+        for (i = 0; i < count; i++)             \
             arr[i] = i + val;                   \
     }
 
 #define SET_INDEX_FACTOR(arr, val)              \
     {                                           \
         int i;                                  \
-        for (i = 0; i < SMPI_VARGET_GLOBAL(count); i++)             \
+        for (i = 0; i < count; i++)             \
             arr[i] = i * (val);                 \
     }
 
 #define SET_INDEX_POWER(arr, val)               \
     {                                           \
         int i, j;                               \
-        for (i = 0; i < SMPI_VARGET_GLOBAL(count); i++) {           \
+        for (i = 0; i < count; i++) {           \
             (arr)[i] = 1;                       \
             for (j = 0; j < (val); j++)         \
                 arr[i] *= i;                    \
@@ -88,26 +101,26 @@ struct double_test { double a; int b; };
         if (lerrcnt) {                                                  \
             MPI_Type_get_name(mpi_type, name, &len);                    \
             fprintf(stderr, "(%d) Error for type %s and op %s\n",       \
-                    SMPI_VARGET_GLOBAL(rank), name, mpi_op2str(mpi_op));                    \
+                    rank, name, mpi_op2str(mpi_op));                    \
         }                                                               \
         free(in); free(out); free(sol);                                 \
-    } while(0)
+    } while (0)
 
-/* The logic on the error check on MPI_Allreduce assumes that all 
+/* The logic on the error check on MPI_Allreduce assumes that all
    MPI_Allreduce routines return a failure if any do - this is sufficient
    for MPI implementations that reject some of the valid op/datatype pairs
-   (and motivated this addition, as some versions of the IBM MPI 
+   (and motivated this addition, as some versions of the IBM MPI
    failed in just this way).
 */
 #define ALLREDUCE_AND_FREE(mpi_type, mpi_op, in, out, sol)              \
     {                                                                   \
         int i, rc, lerrcnt = 0;						\
-        rc = MPI_Allreduce(in, out, SMPI_VARGET_GLOBAL(count), mpi_type, mpi_op, MPI_COMM_WORLD); \
-	if (rc) { lerrcnt++; SMPI_VARGET_GLOBAL(cerrcnt)++; MTestPrintError( rc ); }        \
+        rc = MPI_Allreduce(in, out, count, mpi_type, mpi_op, MPI_COMM_WORLD); \
+	if (rc) { lerrcnt++; cerrcnt++; MTestPrintError(rc); }        \
 	else {                                                          \
-          for (i = 0; i < SMPI_VARGET_GLOBAL(count); i++) {                                   \
+          for (i = 0; i < count; i++) {                                   \
               if (out[i] != sol[i]) {                                     \
-                  SMPI_VARGET_GLOBAL(cerrcnt)++;                                              \
+                  cerrcnt++;                                              \
                   lerrcnt++;                                              \
               }                                                           \
 	   }                                                              \
@@ -118,12 +131,12 @@ struct double_test { double a; int b; };
 #define STRUCT_ALLREDUCE_AND_FREE(mpi_type, mpi_op, in, out, sol)       \
     {                                                                   \
         int i, rc, lerrcnt = 0;						\
-        rc = MPI_Allreduce(in, out, SMPI_VARGET_GLOBAL(count), mpi_type, mpi_op, MPI_COMM_WORLD); \
-	if (rc) { lerrcnt++; SMPI_VARGET_GLOBAL(cerrcnt)++; MTestPrintError( rc ); }        \
+        rc = MPI_Allreduce(in, out, count, mpi_type, mpi_op, MPI_COMM_WORLD); \
+	if (rc) { lerrcnt++; cerrcnt++; MTestPrintError(rc); }        \
         else {                                                            \
-          for (i = 0; i < SMPI_VARGET_GLOBAL(count); i++) {                                   \
+          for (i = 0; i < count; i++) {                                   \
               if ((out[i].a != sol[i].a) || (out[i].b != sol[i].b)) {     \
-                  SMPI_VARGET_GLOBAL(cerrcnt)++;                                              \
+                  cerrcnt++;                                              \
                   lerrcnt++;                                              \
               }                                                           \
             }                                                             \
@@ -134,14 +147,14 @@ struct double_test { double a; int b; };
 #define SET_INDEX_STRUCT_CONST(arr, val, el)                    \
     {                                                           \
         int i;                                                  \
-        for (i = 0; i < SMPI_VARGET_GLOBAL(count); i++)                             \
+        for (i = 0; i < count; i++)                             \
             arr[i].el = val;                                    \
     }
 
 #define SET_INDEX_STRUCT_SUM(arr, val, el)                      \
     {                                                           \
         int i;                                                  \
-        for (i = 0; i < SMPI_VARGET_GLOBAL(count); i++)                             \
+        for (i = 0; i < count; i++)                             \
             arr[i].el = i + (val);                              \
     }
 
@@ -149,7 +162,7 @@ struct double_test { double a; int b; };
     {                                                                   \
         DECL_MALLOC_IN_OUT_SOL(type);                                   \
         SET_INDEX_SUM(in, 0);                                           \
-        SET_INDEX_FACTOR(sol, SMPI_VARGET_GLOBAL(size));                                    \
+        SET_INDEX_FACTOR(sol, size);                                    \
         SET_INDEX_CONST(out, 0);                                        \
         ALLREDUCE_AND_FREE(mpi_type, MPI_SUM, in, out, sol);            \
     }
@@ -158,7 +171,7 @@ struct double_test { double a; int b; };
     {                                                                   \
         DECL_MALLOC_IN_OUT_SOL(type);                                   \
         SET_INDEX_SUM(in, 0);                                           \
-        SET_INDEX_POWER(sol, SMPI_VARGET_GLOBAL(size));                                     \
+        SET_INDEX_POWER(sol, size);                                     \
         SET_INDEX_CONST(out, 0);                                        \
         ALLREDUCE_AND_FREE(mpi_type, MPI_PROD, in, out, sol);           \
     }
@@ -166,8 +179,8 @@ struct double_test { double a; int b; };
 #define max_test1(type, mpi_type)                                       \
     {                                                                   \
         DECL_MALLOC_IN_OUT_SOL(type);                                   \
-        SET_INDEX_SUM(in, SMPI_VARGET_GLOBAL(rank));                                        \
-        SET_INDEX_SUM(sol, SMPI_VARGET_GLOBAL(size) - 1);                                   \
+        SET_INDEX_SUM(in, rank);                                        \
+        SET_INDEX_SUM(sol, size - 1);                                   \
         SET_INDEX_CONST(out, 0);                                        \
         ALLREDUCE_AND_FREE(mpi_type, MPI_MAX, in, out, sol);            \
     }
@@ -175,7 +188,7 @@ struct double_test { double a; int b; };
 #define min_test1(type, mpi_type)                                       \
     {                                                                   \
         DECL_MALLOC_IN_OUT_SOL(type);                                   \
-        SET_INDEX_SUM(in, SMPI_VARGET_GLOBAL(rank));                                        \
+        SET_INDEX_SUM(in, rank);                                        \
         SET_INDEX_SUM(sol, 0);                                          \
         SET_INDEX_CONST(out, 0);                                        \
         ALLREDUCE_AND_FREE(mpi_type, MPI_MIN, in, out, sol);            \
@@ -191,32 +204,32 @@ struct double_test { double a; int b; };
     }
 
 #define lor_test1(type, mpi_type)                                       \
-    const_test(type, mpi_type, MPI_LOR, (SMPI_VARGET_GLOBAL(rank) & 0x1), (SMPI_VARGET_GLOBAL(size) > 1), 0)
+    const_test(type, mpi_type, MPI_LOR, (rank & 0x1), (size > 1), 0)
 #define lor_test2(type, mpi_type)                       \
     const_test(type, mpi_type, MPI_LOR, 0, 0, 0)
 #define lxor_test1(type, mpi_type)                                      \
-    const_test(type, mpi_type, MPI_LXOR, (SMPI_VARGET_GLOBAL(rank) == 1), (SMPI_VARGET_GLOBAL(size) > 1), 0)
+    const_test(type, mpi_type, MPI_LXOR, (rank == 1), (size > 1), 0)
 #define lxor_test2(type, mpi_type)                      \
     const_test(type, mpi_type, MPI_LXOR, 0, 0, 0)
 #define lxor_test3(type, mpi_type)                      \
-    const_test(type, mpi_type, MPI_LXOR, 1, (SMPI_VARGET_GLOBAL(size) & 0x1), 0)
+    const_test(type, mpi_type, MPI_LXOR, 1, (size & 0x1), 0)
 #define land_test1(type, mpi_type)                              \
-    const_test(type, mpi_type, MPI_LAND, (SMPI_VARGET_GLOBAL(rank) & 0x1), 0, 0)
+    const_test(type, mpi_type, MPI_LAND, (rank & 0x1), 0, 0)
 #define land_test2(type, mpi_type)                      \
     const_test(type, mpi_type, MPI_LAND, 1, 1, 0)
 #define bor_test1(type, mpi_type)                                       \
-    const_test(type, mpi_type, MPI_BOR, (SMPI_VARGET_GLOBAL(rank) & 0x3), ((SMPI_VARGET_GLOBAL(size) < 3) ? SMPI_VARGET_GLOBAL(size) - 1 : 0x3), 0)
+    const_test(type, mpi_type, MPI_BOR, (rank & 0x3), ((size < 3) ? size - 1 : 0x3), 0)
 #define bxor_test1(type, mpi_type)                                      \
-    const_test(type, mpi_type, MPI_BXOR, (SMPI_VARGET_GLOBAL(rank) == 1) * 0xf0, (SMPI_VARGET_GLOBAL(size) > 1) * 0xf0, 0)
+    const_test(type, mpi_type, MPI_BXOR, (rank == 1) * 0xf0, (size > 1) * 0xf0, 0)
 #define bxor_test2(type, mpi_type)                      \
     const_test(type, mpi_type, MPI_BXOR, 0, 0, 0)
 #define bxor_test3(type, mpi_type)                      \
-    const_test(type, mpi_type, MPI_BXOR, ~0, (SMPI_VARGET_GLOBAL(size) &0x1) ? ~0 : 0, 0)
+    const_test(type, mpi_type, MPI_BXOR, ~0, (size &0x1) ? ~0 : 0, 0)
 
 #define band_test1(type, mpi_type)                                      \
     {                                                                   \
         DECL_MALLOC_IN_OUT_SOL(type);                                   \
-        if (SMPI_VARGET_GLOBAL(rank) == SMPI_VARGET_GLOBAL(size)-1) {                                           \
+        if (rank == size-1) {                                           \
             SET_INDEX_SUM(in, 0);                                       \
         }                                                               \
         else {                                                          \
@@ -230,7 +243,7 @@ struct double_test { double a; int b; };
 #define band_test2(type, mpi_type)                                      \
     {                                                                   \
         DECL_MALLOC_IN_OUT_SOL(type);                                   \
-        if (SMPI_VARGET_GLOBAL(rank) == SMPI_VARGET_GLOBAL(size)-1) {                                           \
+        if (rank == size-1) {                                           \
             SET_INDEX_SUM(in, 0);                                       \
         }                                                               \
         else {                                                          \
@@ -244,10 +257,10 @@ struct double_test { double a; int b; };
 #define maxloc_test(type, mpi_type)                                     \
     {                                                                   \
         DECL_MALLOC_IN_OUT_SOL(type);                                   \
-        SET_INDEX_STRUCT_SUM(in, SMPI_VARGET_GLOBAL(rank), a);                              \
-        SET_INDEX_STRUCT_CONST(in, SMPI_VARGET_GLOBAL(rank), b);                            \
-        SET_INDEX_STRUCT_SUM(sol, SMPI_VARGET_GLOBAL(size) - 1, a);                         \
-        SET_INDEX_STRUCT_CONST(sol, SMPI_VARGET_GLOBAL(size) - 1, b);                       \
+        SET_INDEX_STRUCT_SUM(in, rank, a);                              \
+        SET_INDEX_STRUCT_CONST(in, rank, b);                            \
+        SET_INDEX_STRUCT_SUM(sol, size - 1, a);                         \
+        SET_INDEX_STRUCT_CONST(sol, size - 1, b);                       \
         SET_INDEX_STRUCT_CONST(out, 0, a);                              \
         SET_INDEX_STRUCT_CONST(out, -1, b);                             \
         STRUCT_ALLREDUCE_AND_FREE(mpi_type, MPI_MAXLOC, in, out, sol);   \
@@ -256,8 +269,8 @@ struct double_test { double a; int b; };
 #define minloc_test(type, mpi_type)                                     \
     {                                                                   \
         DECL_MALLOC_IN_OUT_SOL(type);                                   \
-        SET_INDEX_STRUCT_SUM(in, SMPI_VARGET_GLOBAL(rank), a);                              \
-        SET_INDEX_STRUCT_CONST(in, SMPI_VARGET_GLOBAL(rank), b);                            \
+        SET_INDEX_STRUCT_SUM(in, rank, a);                              \
+        SET_INDEX_STRUCT_CONST(in, rank, b);                            \
         SET_INDEX_STRUCT_SUM(sol, 0, a);                                \
         SET_INDEX_STRUCT_CONST(sol, 0, b);                              \
         SET_INDEX_STRUCT_CONST(out, 0, a);                              \
@@ -284,7 +297,7 @@ struct double_test { double a; int b; };
 
 #if MTEST_HAVE_MIN_MPI_VERSION(3,0)
 #define test_types_set_mpi_3_0_integer(op,post) do {                \
-        op##_test##post(MPI_SMPI_VARGET_GLOBAL(count), MPI_SMPI_VARGET_GLOBAL(count));                      \
+        op##_test##post(MPI_Count, MPI_COUNT);                      \
     } while (0)
 #else
 #define test_types_set_mpi_3_0_integer(op,post) do { } while (0)
@@ -315,7 +328,7 @@ struct double_test { double a; int b; };
         op##_test##post(unsigned char, MPI_BYTE);                   \
     }
 
-/* Make sure that we test complex and double complex, even if long 
+/* Make sure that we test complex and double complex, even if long
    double complex is not available */
 #if defined(USE_LONG_DOUBLE_COMPLEX)
 
@@ -337,7 +350,7 @@ struct double_test { double a; int b; };
 #else
 
 #if MTEST_HAVE_MIN_MPI_VERSION(2,2) && defined(HAVE_FLOAT__COMPLEX) \
-    && defined(HAVE_DOUBLE__COMPLEX) 
+    && defined(HAVE_DOUBLE__COMPLEX)
 #define test_types_set4(op, post)                                         \
     do {                                                                  \
         op##_test##post(float _Complex, MPI_C_FLOAT_COMPLEX);             \
@@ -360,34 +373,32 @@ struct double_test { double a; int b; };
 #define test_types_set5(op, post) do { } while (0)
 #endif
 
-int main( int argc, char **argv )
+int main(int argc, char **argv)
 {
-    MTest_Init( &argc, &argv );
+    MTest_Init(&argc, &argv);
 
-    MPI_Comm_size(MPI_COMM_WORLD, &SMPI_VARGET_GLOBAL(size));
-    MPI_Comm_rank(MPI_COMM_WORLD, &SMPI_VARGET_GLOBAL(rank));
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    if (SMPI_VARGET_GLOBAL(size) < 2) {
-	fprintf( stderr, "At least 2 processes required\n" );
-	MPI_Abort( MPI_COMM_WORLD, 1 );
-        exit(1);
+    if (size < 2) {
+        fprintf(stderr, "At least 2 processes required\n");
+        MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
-    /* Set errors return so that we can provide better information 
-       should a routine reject one of the operand/datatype pairs */
-    MPI_Errhandler_set( MPI_COMM_WORLD, MPI_ERRORS_RETURN );
+    /* Set errors return so that we can provide better information
+     * should a routine reject one of the operand/datatype pairs */
+    MPI_Errhandler_set(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
 
-    SMPI_VARGET_GLOBAL(count) = 10;
+    count = 10;
     /* Allow an argument to override the count.
-       Note that the product tests may fail if the count is very large.
+     * Note that the product tests may fail if the count is very large.
      */
     if (argc >= 2) {
-	SMPI_VARGET_GLOBAL(count) = atoi( argv[1] );
-	if  (SMPI_VARGET_GLOBAL(count) <= 0) {
-	    fprintf( stderr, "Invalid count argument %s\n", argv[1] );
-	    MPI_Abort( MPI_COMM_WORLD, 1 );
-            exit(1);
-	}
+        count = atoi(argv[1]);
+        if (count <= 0) {
+            fprintf(stderr, "Invalid count argument %s\n", argv[1]);
+            MPI_Abort(MPI_COMM_WORLD, 1);
+        }
     }
 
     test_types_set2(sum, 1);
@@ -444,8 +455,8 @@ int main( int argc, char **argv )
     minloc_test(struct float_test, MPI_FLOAT_INT);
     minloc_test(struct double_test, MPI_DOUBLE_INT);
 
-    MPI_Errhandler_set( MPI_COMM_WORLD, MPI_ERRORS_ARE_FATAL );
-    MTest_Finalize( SMPI_VARGET_GLOBAL(cerrcnt) );
+    MPI_Errhandler_set(MPI_COMM_WORLD, MPI_ERRORS_ARE_FATAL);
+    MTest_Finalize(cerrcnt);
     MPI_Finalize();
     return 0;
 }

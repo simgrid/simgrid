@@ -11,6 +11,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 
   add_executable(allgather2 allgather2.c)
   add_executable(allgather3 allgather3.c)
+  add_executable(allgather_struct allgather_struct.c)
   add_executable(allgatherv2 allgatherv2.c)
   add_executable(allgatherv3 allgatherv3.c)
   if(HAVE_PRIVATIZATION)
@@ -31,8 +32,9 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 #  add_executable(alltoallw1 alltoallw1.c)
 #  add_executable(alltoallw2 alltoallw2.c)
 #  add_executable(alltoallw_zeros alltoallw_zeros.c)
-  add_executable(bcast2 bcast2.c)
-  add_executable(bcast3 bcast3.c)
+  add_executable(bcast_full bcast.c)
+  add_executable(bcast_min_datatypes bcast.c)
+  add_executable(bcast_comm_world bcast.c)
   add_executable(bcasttest bcasttest.c)
   add_executable(bcastzerotype bcastzerotype.c)
   add_executable(coll10 coll10.c)
@@ -50,7 +52,6 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   add_executable(exscan2 exscan2.c)
   add_executable(exscan exscan.c)
   add_executable(gather2 gather2.c)
-#  add_executable(gather2_save gather2_save.c)
   add_executable(gather gather.c)
 #  add_executable(iallred iallred.c)
 #  add_executable(ibarrier ibarrier.c)
@@ -109,6 +110,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   target_link_libraries(allgatherv2  simgrid mtest_c)
   target_link_libraries(allgatherv3  simgrid mtest_c)
   target_link_libraries(allgatherv4  simgrid mtest_c)
+  target_link_libraries(allgather_struct  simgrid mtest_c)
   target_link_libraries(allred2  simgrid mtest_c)
   target_link_libraries(allred3  simgrid mtest_c)
   target_link_libraries(allred4  simgrid mtest_c)
@@ -122,8 +124,9 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 #  target_link_libraries(alltoallw1  simgrid mtest_c)
 #  target_link_libraries(alltoallw2  simgrid mtest_c)
 #  target_link_libraries(alltoallw_zeros  simgrid mtest_c)
-  target_link_libraries(bcast2  simgrid mtest_c)
-  target_link_libraries(bcast3  simgrid mtest_c)
+  target_link_libraries(bcast_full  simgrid mtest_c)
+  target_link_libraries(bcast_min_datatypes  simgrid mtest_c)
+  target_link_libraries(bcast_comm_world  simgrid mtest_c)
   target_link_libraries(bcasttest  simgrid mtest_c)
   target_link_libraries(bcastzerotype  simgrid mtest_c)
   target_link_libraries(coll10  simgrid mtest_c)
@@ -141,7 +144,6 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   target_link_libraries(exscan2  simgrid mtest_c)
   target_link_libraries(exscan  simgrid mtest_c)
   target_link_libraries(gather2  simgrid mtest_c)
-#  target_link_libraries(gather2_save  simgrid mtest_c)
   target_link_libraries(gather  simgrid mtest_c)
 #  target_link_libraries(iallred  simgrid mtest_c)
 #  target_link_libraries(ibarrier  simgrid mtest_c)
@@ -196,6 +198,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 #  target_link_libraries(uoplong  simgrid mtest_c)
 
   set_target_properties(allred PROPERTIES COMPILE_FLAGS "-O0" LINK_FLAGS "-O0")
+  set_target_properties(bcast_min_datatypes PROPERTIES COMPILE_FLAGS "-DBCAST_MIN_DATATYPES_ONLY" LINK_FLAGS "-DBCAST_MIN_DATATYPES_ONLY")
+  set_target_properties(bcast_comm_world PROPERTIES COMPILE_FLAGS "-DBCAST_COMM_WORLD_ONLY" LINK_FLAGS "-DBCAST_COMM_WORLD_ONLY")
 
   if(HAVE_THREAD_CONTEXTS)
     ADD_TEST(test-smpi-mpich3-coll-thread      ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:thread -execarg=--cfg=smpi/privatize-global-variables:${HAVE_PRIVATIZATION})
@@ -243,8 +247,7 @@ set(examples_src  ${examples_src}
  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallw1.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallw2.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallw_zeros.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/bcast2.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/bcast3.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/bcast.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/bcasttest.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/bcastzerotype.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/coll10.c 
@@ -262,7 +265,6 @@ set(examples_src  ${examples_src}
  ${CMAKE_CURRENT_SOURCE_DIR}/exscan2.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/exscan.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/gather2.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/gather2_save.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/gather.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/iallred.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/ibarrier.c 

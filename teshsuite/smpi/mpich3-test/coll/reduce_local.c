@@ -18,13 +18,13 @@ static char MTEST_Descrip[] = "A simple test of MPI_Reduce_local";
 static int uop_errs = 0;
 
 /* prototype to keep the compiler happy */
-static void user_op(void *invec, void *inoutvec, int *len, MPI_Datatype *datatype);
+static void user_op(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype);
 
-static void user_op(void *invec, void *inoutvec, int *len, MPI_Datatype *datatype)
+static void user_op(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
 {
     int i;
-    int *invec_int = (int *)invec;
-    int *inoutvec_int = (int *)inoutvec;
+    int *invec_int = (int *) invec;
+    int *inoutvec_int = (int *) inoutvec;
 
     if (*datatype != MPI_INT) {
         ++uop_errs;
@@ -37,16 +37,14 @@ static void user_op(void *invec, void *inoutvec, int *len, MPI_Datatype *datatyp
     }
 }
 
-int main( int argc, char *argv[] )
+int main(int argc, char *argv[])
 {
     int errs = 0;
-#if MTEST_HAVE_MIN_MPI_VERSION(2,2)
     int i;
     int *inbuf = NULL;
     int *inoutbuf = NULL;
     int count = -1;
     MPI_Op uop = MPI_OP_NULL;
-#endif
 
     MTest_Init(&argc, &argv);
 #if MTEST_HAVE_MIN_MPI_VERSION(2,2)
@@ -55,7 +53,7 @@ int main( int argc, char *argv[] )
     inbuf = malloc(sizeof(int) * MAX_BUF_ELEMENTS);
     inoutbuf = malloc(sizeof(int) * MAX_BUF_ELEMENTS);
 
-    for (count = 0; count < MAX_BUF_ELEMENTS; count > 0 ? count*=2 : count++) {
+    for (count = 0; count < MAX_BUF_ELEMENTS; count > 0 ? count *= 2 : count++) {
         for (i = 0; i < count; ++i) {
             inbuf[i] = i;
             inoutbuf[i] = i;
@@ -64,14 +62,14 @@ int main( int argc, char *argv[] )
         for (i = 0; i < count; ++i)
             if (inbuf[i] != i) {
                 ++errs;
-            if (inoutbuf[i] != (2*i))
-                ++errs;
-        }
+                if (inoutbuf[i] != (2 * i))
+                    ++errs;
+            }
     }
 
     /* make sure that user-define ops work too */
-    MPI_Op_create(&user_op, 0/*!commute*/, &uop);
-    for (count = 0; count < MAX_BUF_ELEMENTS; count > 0 ? count*=2 : count++) {
+    MPI_Op_create(&user_op, 0 /*!commute */ , &uop);
+    for (count = 0; count < MAX_BUF_ELEMENTS; count > 0 ? count *= 2 : count++) {
         for (i = 0; i < count; ++i) {
             inbuf[i] = i;
             inoutbuf[i] = i;
@@ -81,9 +79,9 @@ int main( int argc, char *argv[] )
         for (i = 0; i < count; ++i)
             if (inbuf[i] != i) {
                 ++errs;
-            if (inoutbuf[i] != (3*i))
-                ++errs;
-        }
+                if (inoutbuf[i] != (3 * i))
+                    ++errs;
+            }
     }
     MPI_Op_free(&uop);
 
@@ -95,4 +93,3 @@ int main( int argc, char *argv[] )
     MPI_Finalize();
     return 0;
 }
-
