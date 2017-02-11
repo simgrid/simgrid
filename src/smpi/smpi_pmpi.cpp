@@ -2163,11 +2163,18 @@ int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
   if(known==0)
     dt_size_send = smpi_datatype_size(datatype);
   extra->send_size = count*dt_size_send;
+  void * sendtmpbuf = sendbuf;
+  if(sendbuf==MPI_IN_PLACE){
+    sendtmpbuf= static_cast<void*>(xbt_malloc(count*smpi_datatype_size(datatype)));
+    memcpy(sendtmpbuf,recvbuf, count*smpi_datatype_size(datatype));
+  }
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 
-  smpi_mpi_exscan(sendbuf, recvbuf, count, datatype, op, comm);
+  smpi_mpi_exscan(sendtmpbuf, recvbuf, count, datatype, op, comm);
     retval = MPI_SUCCESS;
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+  if(sendbuf==MPI_IN_PLACE)
+    xbt_free(sendtmpbuf);
   }
 
   smpi_bench_begin();
@@ -2274,29 +2281,44 @@ int PMPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (sendtype == MPI_DATATYPE_NULL
+  } else if ((sendbuf != MPI_IN_PLACE && sendtype == MPI_DATATYPE_NULL)
              || recvtype == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else {
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLTOALL;
+
+  void* sendtmpbuf = static_cast<char*>(sendbuf);
+  int sendtmpcount = sendcount;
+  MPI_Datatype sendtmptype = sendtype;
+  if( sendbuf == MPI_IN_PLACE ) {
+    sendtmpbuf = static_cast<void*>(xbt_malloc(recvcount*smpi_comm_size(comm)*smpi_datatype_size(recvtype)));
+    memcpy(sendtmpbuf,recvbuf, recvcount*smpi_comm_size(comm)*smpi_datatype_size(recvtype));
+    sendtmpcount = recvcount;
+    sendtmptype = recvtype;
+  }
+
   int known=0;
-  extra->datatype1 = encode_datatype(sendtype, &known);
+  extra->datatype1 = encode_datatype(sendtmptype, &known);
   if(known==0)
-    extra->send_size = sendcount*smpi_datatype_size(sendtype);
+    extra->send_size = sendtmpcount*smpi_datatype_size(sendtmptype);
   else
-    extra->send_size = sendcount;
+    extra->send_size = sendtmpcount;
   extra->datatype2 = encode_datatype(recvtype, &known);
   if(known==0)
     extra->recv_size = recvcount*smpi_datatype_size(recvtype);
   else
     extra->recv_size = recvcount;
+
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 
-  retval = mpi_coll_alltoall_fun(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
+  retval = mpi_coll_alltoall_fun(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcount, recvtype, comm);
 
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+
+  if( sendbuf == MPI_IN_PLACE ) 
+    xbt_free(sendtmpbuf);
   }
 
   smpi_bench_begin();
@@ -2314,7 +2336,7 @@ int PMPI_Alltoallv(void *sendbuf, int *sendcounts, int *senddisps,MPI_Datatype s
     retval = MPI_ERR_COMM;
   } else if (sendtype == MPI_DATATYPE_NULL || recvtype == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
-  } else if (sendcounts == nullptr || senddisps == nullptr || recvcounts == nullptr || recvdisps == nullptr) {
+  } else if ((sendbuf!= MPI_IN_PLACE && (sendcounts == nullptr || senddisps == nullptr)) || recvcounts == nullptr || recvdisps == nullptr) {
     retval = MPI_ERR_ARG;
   } else {
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
@@ -2327,27 +2349,51 @@ int PMPI_Alltoallv(void *sendbuf, int *sendcounts, int *senddisps,MPI_Datatype s
   extra->recvcounts= xbt_new(int, size);
   extra->sendcounts= xbt_new(int, size);
   int known=0;
-  extra->datatype1 = encode_datatype(sendtype, &known);
-  int dt_size_send = 1;
-  if(known==0)
-    dt_size_send = smpi_datatype_size(sendtype);
   int dt_size_recv = 1;
   extra->datatype2 = encode_datatype(recvtype, &known);
-  if(known==0)
-    dt_size_recv = smpi_datatype_size(recvtype);
-  for(i=0; i< size; i++){//copy data to avoid bad free
-    extra->send_size += sendcounts[i]*dt_size_send;
-    extra->recv_size += recvcounts[i]*dt_size_recv;
+  dt_size_recv = smpi_datatype_size(recvtype);
 
-    extra->sendcounts[i] = sendcounts[i]*dt_size_send;
+  void* sendtmpbuf = static_cast<char*>(sendbuf);
+  int * sendtmpcounts = sendcounts;
+  int *sendtmpdisps = senddisps;
+  MPI_Datatype sendtmptype = sendtype;
+  int maxsize=0;
+  for(i=0; i< size; i++){//copy data to avoid bad free
+    extra->recv_size += recvcounts[i]*dt_size_recv;
     extra->recvcounts[i] = recvcounts[i]*dt_size_recv;
+    if (((recvdisps[i]+recvcounts[i])*dt_size_recv) > maxsize)
+      maxsize=(recvdisps[i]+recvcounts[i])*dt_size_recv;
+  }
+
+  if( sendbuf == MPI_IN_PLACE ) {
+    sendtmpbuf = static_cast<void*>(xbt_malloc(maxsize));
+    memcpy(sendtmpbuf,recvbuf, maxsize);
+    sendtmpcounts= static_cast<int*>(xbt_malloc(size*sizeof(int)));
+    memcpy(sendtmpcounts,recvcounts, size*sizeof(int));
+    sendtmpdisps= static_cast<int*>(xbt_malloc(size*sizeof(int)));
+    memcpy(sendtmpdisps,recvdisps, size*sizeof(int));
+    sendtmptype=recvtype;
+  }
+
+  extra->datatype1 = encode_datatype(sendtmptype, &known);
+  int dt_size_send = 1;
+  dt_size_send = smpi_datatype_size(sendtmptype);
+
+  for(i=0; i< size; i++){//copy data to avoid bad free
+    extra->send_size += sendtmpcounts[i]*dt_size_send;
+    extra->sendcounts[i] = sendtmpcounts[i]*dt_size_send;
   }
   extra->num_processes = size;
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
-
-  retval = mpi_coll_alltoallv_fun(sendbuf, sendcounts, senddisps, sendtype, recvbuf, recvcounts, recvdisps, recvtype,
+  retval = mpi_coll_alltoallv_fun(sendtmpbuf, sendtmpcounts, sendtmpdisps, sendtmptype, recvbuf, recvcounts, recvdisps, recvtype,
                                   comm);
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+
+  if( sendbuf == MPI_IN_PLACE ) {
+    xbt_free(sendtmpbuf);
+    xbt_free(sendtmpcounts);
+    xbt_free(sendtmpdisps);
+  }
   }
 
   smpi_bench_begin();
