@@ -109,6 +109,8 @@ int smpi_group_index(MPI_Group group, int rank)
 int smpi_group_rank(MPI_Group group, int index)
 {
   int * ptr_rank = nullptr;
+  if (group==MPI_GROUP_EMPTY)
+    return MPI_UNDEFINED;
   char * key = bprintf("%d", index);
   ptr_rank = static_cast<int*>(xbt_dict_get_or_null(group->index_to_rank_map, key));
   xbt_free(key);
