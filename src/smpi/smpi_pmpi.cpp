@@ -2208,17 +2208,25 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datat
     dt_size_send = smpi_datatype_size(datatype);
   extra->send_size = 0;
   extra->recvcounts= xbt_new(int, size);
-  for(i=0; i< size; i++)//copy data to avoid bad free
+  int totalcount = 0;
+  for(i=0; i< size; i++){//copy data to avoid bad free
     extra->recvcounts[i] = recvcounts[i]*dt_size_send;
+    totalcount+= recvcounts[i];
+  }
+  void* sendtmpbuf=sendbuf;
+  if(sendbuf==MPI_IN_PLACE){
+    sendtmpbuf= static_cast<void*>(xbt_malloc(totalcount*smpi_datatype_size(datatype)));
+    memcpy(sendtmpbuf,recvbuf, totalcount*smpi_datatype_size(datatype));
+  }
+
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 
-  void* sendtmpbuf=sendbuf;
-    if(sendbuf==MPI_IN_PLACE)
-      sendtmpbuf=recvbuf;
-
-    mpi_coll_reduce_scatter_fun(sendtmpbuf, recvbuf, recvcounts, datatype,  op, comm);
-    retval = MPI_SUCCESS;
+  mpi_coll_reduce_scatter_fun(sendtmpbuf, recvbuf, recvcounts, datatype,  op, comm);
+  retval = MPI_SUCCESS;
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+
+  if(sendbuf==MPI_IN_PLACE)
+    xbt_free(sendtmpbuf);
   }
 
   smpi_bench_begin();
