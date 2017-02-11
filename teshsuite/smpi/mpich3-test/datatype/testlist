@@ -63,6 +63,8 @@ struct-verydeep 1
 #get-elements 1
 hindexed_block 1 mpiversion=3.0
 hindexed_block_contents 1 mpiversion=3.0
+vecblklen 1
+hvecblklen 1
 longdouble 1
 #We still have some alignment issues
 #dataalign 2
