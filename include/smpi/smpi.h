@@ -454,6 +454,7 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Comm_group, (MPI_Comm comm, MPI_Group * group));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_compare, (MPI_Comm comm1, MPI_Comm comm2, int *result));
 
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_create, (MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Comm_create_group, (MPI_Comm comm, MPI_Group group, int tag, MPI_Comm * newcomm));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_free, (MPI_Comm * comm));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_disconnect, (MPI_Comm * comm));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_split, (MPI_Comm comm, int color, int key, MPI_Comm* comm_out));
