@@ -35,8 +35,8 @@
       parameter(MPI_SOURCE=1)
       parameter(MPI_TAG=2)
       parameter(MPI_ERROR=3)
-      parameter(MPI_VERSION=1)
-      parameter(MPI_SUBVERSION=1)
+      parameter(MPI_VERSION=2)
+      parameter(MPI_SUBVERSION=2)
       parameter(MPI_LOCK_EXCLUSIVE=1)
       parameter(MPI_LOCK_SHARED=2)
       integer MPI_MODE_NOSTORE, MPI_MODE_NOPUT, MPI_MODE_NOPRECEDE
