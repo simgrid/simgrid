@@ -9,12 +9,12 @@
 #include <stdio.h>
 #include "mpitest.h"
 
-/* tests multiple invocations of Keyval_free on the same keyval */
+/* tests multiple invocations of MPI_Comm_free_keyval on the same keyval */
 
 int delete_fn(MPI_Comm comm, int keyval, void *attr, void *extra);
 int delete_fn(MPI_Comm comm, int keyval, void *attr, void *extra)
 {
-    MPI_Keyval_free(&keyval);
+    MPI_Comm_free_keyval(&keyval);
     return MPI_SUCCESS;
 }
 
@@ -28,16 +28,16 @@ int main(int argc, char **argv)
     MTest_Init(&argc, &argv);
     MPI_Comm_dup(MPI_COMM_SELF, &duped);
 
-    MPI_Keyval_create(MPI_NULL_COPY_FN, delete_fn, &keyval, NULL);
+    MPI_Comm_create_keyval(MPI_NULL_COPY_FN, delete_fn, &keyval, NULL);
     keyval_copy = keyval;
 
-    MPI_Attr_put(MPI_COMM_SELF, keyval, NULL);
-    MPI_Attr_put(duped, keyval, NULL);
+    MPI_Comm_set_attr(MPI_COMM_SELF, keyval, NULL);
+    MPI_Comm_set_attr(duped, keyval, NULL);
 
-    MPI_Comm_free(&duped);      /* first MPI_Keyval_free */
-    MPI_Keyval_free(&keyval);   /* second MPI_Keyval_free */
-    MPI_Keyval_free(&keyval_copy);      /* third MPI_Keyval_free */
+    MPI_Comm_free(&duped);      /* first MPI_Comm_free_keyval */
+    MPI_Comm_free_keyval(&keyval);   /* second MPI_Comm_free_keyval */
+    MPI_Comm_free_keyval(&keyval_copy);      /* third MPI_Comm_free_keyval */
     MTest_Finalize(errs);
-    MPI_Finalize();     /* fourth MPI_Keyval_free */
+    MPI_Finalize();     /* fourth MPI_Comm_free_keyval */
     return 0;
 }
