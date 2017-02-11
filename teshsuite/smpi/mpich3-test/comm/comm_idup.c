@@ -10,13 +10,6 @@
 #include "mpi.h"
 #include "mpitest.h"
 
-/* This is a temporary #ifdef to control whether we test this functionality.  A
- * configure-test or similar would be better.  Eventually the MPI-3 standard
- * will be released and this can be gated on a MPI_VERSION check */
-#if !defined(USE_STRICT_MPI) && defined(MPICH)
-#define TEST_IDUP 1
-#endif
-
 /* assert-like macro that bumps the err count and emits a message */
 #define check(x_)                                                                 \
     do {                                                                          \
@@ -45,10 +38,7 @@ int main(int argc, char **argv)
     if (size < 2) {
         printf("this test requires at least 2 processes\n");
         MPI_Abort(MPI_COMM_WORLD, 1);
-        exit(1);
     }
-
-#ifdef TEST_IDUP
 
     /* test plan: make rank 0 wait in a blocking recv until all other processes
      * have posted their MPI_Comm_idup ops, then post last.  Should ensure that
@@ -76,7 +66,7 @@ int main(int argc, char **argv)
     buf[0] = rank;
     buf[1] = 0xfeedface;
     MPI_Allreduce(&buf[0], &buf[1], 1, MPI_INT, MPI_SUM, newcomm);
-    check(buf[1] == (size * (size-1) / 2));
+    check(buf[1] == (size * (size - 1) / 2));
 
     MPI_Comm_free(&newcomm);
 
@@ -119,7 +109,7 @@ int main(int argc, char **argv)
     buf[0] = lrank;
     buf[1] = 0xfeedface;
     MPI_Allreduce(&buf[0], &buf[1], 1, MPI_INT, MPI_SUM, newcomm);
-    check(buf[1] == (rsize * (rsize-1) / 2));
+    check(buf[1] == (rsize * (rsize - 1) / 2));
 
     /* free this down here, not before idup, otherwise it will undo our
      * stagger_comm work */
@@ -130,8 +120,6 @@ int main(int argc, char **argv)
     }
     MPI_Comm_free(&newcomm);
     MPI_Comm_free(&ic);
-
-#endif /* TEST_IDUP */
 
     MPI_Reduce((rank == 0 ? MPI_IN_PLACE : &errs), &errs, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
     if (rank == 0) {
@@ -147,4 +135,3 @@ int main(int argc, char **argv)
 
     return 0;
 }
-

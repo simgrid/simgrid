@@ -7,7 +7,7 @@
 #include "mpi.h"
 #include <stdio.h>
 #include "mpitest.h"
-int run_tests(MPI_Comm comm);
+
 int run_tests(MPI_Comm comm)
 {
     int rank, size, wrank, wsize, dest, a, b, errs = 0;

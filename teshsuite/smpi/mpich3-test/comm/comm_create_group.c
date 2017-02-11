@@ -4,7 +4,6 @@
  *      See COPYRIGHT in top-level directory.
  */
 #include "mpi.h"
-/* USE_STRICT_MPI may be defined in mpitestconf.h */
 #include "mpitestconf.h"
 #include <stdio.h>
 #include <string.h>
@@ -15,7 +14,7 @@ int main(int argc, char *argv[])
 {
     int size, rank, i, *excl;
     MPI_Group world_group, even_group;
-    MPI_Comm  __attribute__((unused)) even_comm;
+    MPI_Comm even_comm;
 
     MPI_Init(&argc, &argv);
 
@@ -25,7 +24,6 @@ int main(int argc, char *argv[])
     if (size % 2) {
         fprintf(stderr, "this program requires a multiple of 2 number of processes\n");
         MPI_Abort(MPI_COMM_WORLD, 1);
-        exit(1);
     }
 
     excl = malloc((size / 2) * sizeof(int));
@@ -40,14 +38,12 @@ int main(int argc, char *argv[])
     MPI_Group_excl(world_group, size / 2, excl, &even_group);
     MPI_Group_free(&world_group);
 
-#if !defined(USE_STRICT_MPI) && defined(MPICH)
     if (rank % 2 == 0) {
         /* Even processes create a group for themselves */
         MPI_Comm_create_group(MPI_COMM_WORLD, even_group, 0, &even_comm);
         MPI_Barrier(even_comm);
         MPI_Comm_free(&even_comm);
     }
-#endif /* USE_STRICT_MPI */
 
     MPI_Group_free(&even_group);
     MPI_Barrier(MPI_COMM_WORLD);
@@ -55,6 +51,7 @@ int main(int argc, char *argv[])
     if (rank == 0)
         printf(" No errors\n");
 
+    free(excl);
     MPI_Finalize();
     return 0;
 }
