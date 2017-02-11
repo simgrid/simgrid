@@ -9,8 +9,8 @@ attrerr 1
 # SMPI does not keep a copy of comm_self at all times for memory reasons...
 #attrend 1
 #attrend 4
-attrend2 1
-attrend2 5
+#attrend2 1
+#attrend2 5
 attrerrcomm 1
 attrerrtype 1
 attr2type 1
