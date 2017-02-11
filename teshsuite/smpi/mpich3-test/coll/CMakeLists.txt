@@ -52,6 +52,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   add_executable(exscan2 exscan2.c)
   add_executable(exscan exscan.c)
   add_executable(gather2 gather2.c)
+  add_executable(gather_big gather_big.c)
   add_executable(gather gather.c)
 #  add_executable(iallred iallred.c)
 #  add_executable(ibarrier ibarrier.c)
@@ -71,7 +72,6 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   add_executable(longuser longuser.c)
 #  add_executable(nonblocking2 nonblocking2.c)
 #  add_executable(nonblocking3 nonblocking3.c)
-#  add_executable(nonblocking4 nonblocking4.c)
 #  add_executable(nonblocking nonblocking.c)
 #  add_executable(opband opband.c)
 #  add_executable(opbor opbor.c)
@@ -107,10 +107,10 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 
   target_link_libraries(allgather2  simgrid mtest_c)
   target_link_libraries(allgather3  simgrid mtest_c)
+  target_link_libraries(allgather_struct  simgrid mtest_c)
   target_link_libraries(allgatherv2  simgrid mtest_c)
   target_link_libraries(allgatherv3  simgrid mtest_c)
   target_link_libraries(allgatherv4  simgrid mtest_c)
-  target_link_libraries(allgather_struct  simgrid mtest_c)
   target_link_libraries(allred2  simgrid mtest_c)
   target_link_libraries(allred3  simgrid mtest_c)
   target_link_libraries(allred4  simgrid mtest_c)
@@ -144,6 +144,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   target_link_libraries(exscan2  simgrid mtest_c)
   target_link_libraries(exscan  simgrid mtest_c)
   target_link_libraries(gather2  simgrid mtest_c)
+  target_link_libraries(gather_big  simgrid mtest_c)
   target_link_libraries(gather  simgrid mtest_c)
 #  target_link_libraries(iallred  simgrid mtest_c)
 #  target_link_libraries(ibarrier  simgrid mtest_c)
@@ -163,7 +164,6 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   target_link_libraries(longuser  simgrid mtest_c)
 #  target_link_libraries(nonblocking2  simgrid mtest_c)
 #  target_link_libraries(nonblocking3  simgrid mtest_c)
-#  target_link_libraries(nonblocking4  simgrid mtest_c)
 #  target_link_libraries(nonblocking  simgrid mtest_c)
 #  target_link_libraries(opband  simgrid mtest_c)
 #  target_link_libraries(opbor  simgrid mtest_c)
@@ -229,6 +229,7 @@ endif()
 
 set(examples_src  ${examples_src}
  ${CMAKE_CURRENT_SOURCE_DIR}/allgather2.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/allgather_struct.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allgather3.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv2.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv3.c 
@@ -265,6 +266,7 @@ set(examples_src  ${examples_src}
  ${CMAKE_CURRENT_SOURCE_DIR}/exscan2.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/exscan.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/gather2.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/gather_big.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/gather.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/iallred.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/ibarrier.c 
@@ -285,7 +287,6 @@ set(examples_src  ${examples_src}
  ${CMAKE_CURRENT_SOURCE_DIR}/nonblocking2.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/nonblocking3.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/nonblocking.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/nonblocking4.c
  ${CMAKE_CURRENT_SOURCE_DIR}/opband.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/opbor.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/opbxor.c 

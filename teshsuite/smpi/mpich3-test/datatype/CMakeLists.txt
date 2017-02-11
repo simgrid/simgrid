@@ -10,14 +10,14 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
   foreach(file blockindexed-zero-count contigstruct contig-zero-count cxx-types dataalign gaddress hindexed_block
-          hindexed_block_contents large_vec localpack longdouble simple-commit simple-pack simple-resized simple-size-extent
+          hindexed_block_contents hvecblklen large_vec localpack longdouble simple-commit simple-pack simple-resized simple-size-extent
           struct-derived-zeros struct-ezhov struct-pack struct-verydeep struct-zero-count tfree transpose-pack tresized2
-          tresized typecommit typefree typelb typename unpack zeroblks zeroparms)
+          tresized typecommit typefree typelb typename unpack vecblklen zeroblks zeroparms)
     # not compiled files
     # blockindexed-misc contents darray-cyclic darray-pack get-elements get-elements-pairtype getpartelm get-struct
-    # hindexed-zeros hvecblklen indexed-misc large-count large_type large_type_sendrec lbub lots-of-type pairtype-pack
+    # hindexed-zeros indexed-misc large-count large_type large_type_sendrec lbub lots-of-type pairtype-pack
     # pairtype-size-extent segtest simple-pack-external simple-pack-external2 sizedtypes slice-pack slice-pack-external struct-empty-el
-    # struct-no-real-type structpack2 subarray subarray-pack tmatchsize triangular-pack unusual-noncontigs vecblklen
+    # struct-no-real-type structpack2 subarray subarray-pack tmatchsize triangular-pack unusual-noncontigs
     # zero-blklen-vector
     add_executable(${file} ${file}.c)
     target_link_libraries(${file} simgrid mtest_c)
