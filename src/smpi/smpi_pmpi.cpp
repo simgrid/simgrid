@@ -2248,7 +2248,7 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
   } else if (recvcount < 0) {
     retval = MPI_ERR_ARG;
   } else {
-    int count=smpi_comm_size(comm);
+  int count=smpi_comm_size(comm);
 
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
@@ -2263,17 +2263,25 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
   extra->recvcounts= xbt_new(int, count);
   for(i=0; i< count; i++)//copy data to avoid bad free
     extra->recvcounts[i] = recvcount*dt_size_send;
+  void* sendtmpbuf=sendbuf;
+  if(sendbuf==MPI_IN_PLACE){
+    sendtmpbuf= static_cast<void*>(xbt_malloc(recvcount*count*smpi_datatype_size(datatype)));
+    memcpy(sendtmpbuf,recvbuf, recvcount*count*smpi_datatype_size(datatype));
+  }
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 
   int* recvcounts=static_cast<int*>(xbt_malloc(count*sizeof(int)));
-    for (i=0; i<count;i++)
-      recvcounts[i]=recvcount;
-    mpi_coll_reduce_scatter_fun(sendbuf, recvbuf, recvcounts, datatype,  op, comm);
-    xbt_free(recvcounts);
-    retval = MPI_SUCCESS;
+  for (i=0; i<count;i++)
+    recvcounts[i]=recvcount;
+  mpi_coll_reduce_scatter_fun(sendtmpbuf, recvbuf, recvcounts, datatype,  op, comm);
+  xbt_free(recvcounts);
+  retval = MPI_SUCCESS;
 
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+
+  if(sendbuf==MPI_IN_PLACE)
+    xbt_free(sendtmpbuf);
   }
 
   smpi_bench_begin();
