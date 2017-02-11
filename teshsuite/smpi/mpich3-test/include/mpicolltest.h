@@ -42,7 +42,7 @@ static inline int MTest_Bcast(void *buffer, int count, MPI_Datatype datatype, in
     return mpi_errno;
 }
 
-static inline int MTest_Gather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+static inline int MTest_Gather( void *sendbuf, int sendcount, MPI_Datatype sendtype,
                                void *recvbuf, int recvcount, MPI_Datatype recvtype, int root,
                                MPI_Comm comm)
 {
@@ -57,8 +57,8 @@ static inline int MTest_Gather(const void *sendbuf, int sendcount, MPI_Datatype 
     return mpi_errno;
 }
 
-static inline int MTest_Gatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                                void *recvbuf, const int *recvcounts, const int *displs,
+static inline int MTest_Gatherv( void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                                void *recvbuf,  int *recvcounts,  int *displs,
                                 MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
     int mpi_errno;
@@ -72,7 +72,7 @@ static inline int MTest_Gatherv(const void *sendbuf, int sendcount, MPI_Datatype
     return mpi_errno;
 }
 
-static inline int MTest_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+static inline int MTest_Scatter( void *sendbuf, int sendcount, MPI_Datatype sendtype,
                                 void *recvbuf, int recvcount, MPI_Datatype recvtype, int root,
                                 MPI_Comm comm)
 {
@@ -87,7 +87,7 @@ static inline int MTest_Scatter(const void *sendbuf, int sendcount, MPI_Datatype
     return mpi_errno;
 }
 
-static inline int MTest_Scatterv(const void *sendbuf, const int *sendcounts, const int *displs,
+static inline int MTest_Scatterv( void *sendbuf,  int *sendcounts,  int *displs,
                                  MPI_Datatype sendtype, void *recvbuf, int recvcount,
                                  MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
@@ -102,7 +102,7 @@ static inline int MTest_Scatterv(const void *sendbuf, const int *sendcounts, con
     return mpi_errno;
 }
 
-static inline int MTest_Allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+static inline int MTest_Allgather( void *sendbuf, int sendcount, MPI_Datatype sendtype,
                                   void *recvbuf, int recvcount, MPI_Datatype recvtype,
                                   MPI_Comm comm)
 {
@@ -117,8 +117,8 @@ static inline int MTest_Allgather(const void *sendbuf, int sendcount, MPI_Dataty
     return mpi_errno;
 }
 
-static inline int MTest_Allgatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                                   void *recvbuf, const int *recvcounts, const int *displs,
+static inline int MTest_Allgatherv( void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                                   void *recvbuf,  int *recvcounts,  int *displs,
                                    MPI_Datatype recvtype, MPI_Comm comm)
 {
     int mpi_errno;
@@ -132,7 +132,7 @@ static inline int MTest_Allgatherv(const void *sendbuf, int sendcount, MPI_Datat
     return mpi_errno;
 }
 
-static inline int MTest_Alltoall(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+static inline int MTest_Alltoall( void *sendbuf, int sendcount, MPI_Datatype sendtype,
                                  void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
 {
     int mpi_errno;
@@ -146,9 +146,9 @@ static inline int MTest_Alltoall(const void *sendbuf, int sendcount, MPI_Datatyp
     return mpi_errno;
 }
 
-static inline int MTest_Alltoallv(const void *sendbuf, const int *sendcounts, const int *sdispls,
-                                  MPI_Datatype sendtype, void *recvbuf, const int *recvcounts,
-                                  const int *rdispls, MPI_Datatype recvtype, MPI_Comm comm)
+static inline int MTest_Alltoallv( void *sendbuf,  int *sendcounts,  int *sdispls,
+                                  MPI_Datatype sendtype, void *recvbuf,  int *recvcounts,
+                                   int *rdispls, MPI_Datatype recvtype, MPI_Comm comm)
 {
     int mpi_errno;
     MPI_Request req = MPI_REQUEST_NULL;
@@ -161,10 +161,10 @@ static inline int MTest_Alltoallv(const void *sendbuf, const int *sendcounts, co
     return mpi_errno;
 }
 
-static inline int MTest_Alltoallw(const void *sendbuf, const int *sendcounts, const int *sdispls,
-                                  const MPI_Datatype * sendtypes, void *recvbuf,
-                                  const int *recvcounts, const int *rdispls,
-                                  const MPI_Datatype * recvtypes, MPI_Comm comm)
+static inline int MTest_Alltoallw( void *sendbuf,  int *sendcounts,  int *sdispls,
+                                   MPI_Datatype * sendtypes, void *recvbuf,
+                                   int *recvcounts,  int *rdispls,
+                                   MPI_Datatype * recvtypes, MPI_Comm comm)
 {
     int mpi_errno;
     MPI_Request req = MPI_REQUEST_NULL;
@@ -177,7 +177,7 @@ static inline int MTest_Alltoallw(const void *sendbuf, const int *sendcounts, co
     return mpi_errno;
 }
 
-static inline int MTest_Reduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
+static inline int MTest_Reduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
                                MPI_Op op, int root, MPI_Comm comm)
 {
     int mpi_errno;
@@ -190,7 +190,7 @@ static inline int MTest_Reduce(const void *sendbuf, void *recvbuf, int count, MP
     return mpi_errno;
 }
 
-static inline int MTest_Allreduce(const void *sendbuf, void *recvbuf, int count,
+static inline int MTest_Allreduce( void *sendbuf, void *recvbuf, int count,
                                   MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
     int mpi_errno;
@@ -203,7 +203,7 @@ static inline int MTest_Allreduce(const void *sendbuf, void *recvbuf, int count,
     return mpi_errno;
 }
 
-static inline int MTest_Reduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcounts,
+static inline int MTest_Reduce_scatter( void *sendbuf, void *recvbuf,  int *recvcounts,
                                        MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
     int mpi_errno;
@@ -216,7 +216,7 @@ static inline int MTest_Reduce_scatter(const void *sendbuf, void *recvbuf, const
     return mpi_errno;
 }
 
-static inline int MTest_Reduce_scatter_block(const void *sendbuf, void *recvbuf, int recvcount,
+static inline int MTest_Reduce_scatter_block( void *sendbuf, void *recvbuf, int recvcount,
                                              MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
     int mpi_errno;
@@ -229,7 +229,7 @@ static inline int MTest_Reduce_scatter_block(const void *sendbuf, void *recvbuf,
     return mpi_errno;
 }
 
-static inline int MTest_Scan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
+static inline int MTest_Scan( void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
                              MPI_Op op, MPI_Comm comm)
 {
     int mpi_errno;
@@ -242,7 +242,7 @@ static inline int MTest_Scan(const void *sendbuf, void *recvbuf, int count, MPI_
     return mpi_errno;
 }
 
-static inline int MTest_Exscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
+static inline int MTest_Exscan( void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
                                MPI_Op op, MPI_Comm comm)
 {
     int mpi_errno;
@@ -269,29 +269,29 @@ static inline int MTest_Bcast(void *buffer, int count, MPI_Datatype datatype, in
     return MPI_Bcast(buffer, count, datatype, root, comm);
 }
 
-static inline int MTest_Gather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+static inline int MTest_Gather( void *sendbuf, int sendcount, MPI_Datatype sendtype,
                                void *recvbuf, int recvcount, MPI_Datatype recvtype, int root,
                                MPI_Comm comm)
 {
     return MPI_Gather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm);
 }
 
-static inline int MTest_Gatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                                void *recvbuf, const int *recvcounts, const int *displs,
+static inline int MTest_Gatherv( void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                                void *recvbuf,  int *recvcounts,  int *displs,
                                 MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
     return MPI_Gatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs,
                        recvtype, root, comm);
 }
 
-static inline int MTest_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+static inline int MTest_Scatter( void *sendbuf, int sendcount, MPI_Datatype sendtype,
                                 void *recvbuf, int recvcount, MPI_Datatype recvtype, int root,
                                 MPI_Comm comm)
 {
     return MPI_Scatter(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm);
 }
 
-static inline int MTest_Scatterv(const void *sendbuf, const int *sendcounts, const int *displs,
+static inline int MTest_Scatterv( void *sendbuf,  int *sendcounts,  int *displs,
                                  MPI_Datatype sendtype, void *recvbuf, int recvcount,
                                  MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
@@ -299,75 +299,75 @@ static inline int MTest_Scatterv(const void *sendbuf, const int *sendcounts, con
                         recvcount, recvtype, root, comm);
 }
 
-static inline int MTest_Allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+static inline int MTest_Allgather( void *sendbuf, int sendcount, MPI_Datatype sendtype,
                                   void *recvbuf, int recvcount, MPI_Datatype recvtype,
                                   MPI_Comm comm)
 {
     return MPI_Allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
 }
 
-static inline int MTest_Allgatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                                   void *recvbuf, const int *recvcounts, const int *displs,
+static inline int MTest_Allgatherv( void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                                   void *recvbuf,  int *recvcounts,  int *displs,
                                    MPI_Datatype recvtype, MPI_Comm comm)
 {
     return MPI_Allgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts,
                           displs, recvtype, comm);
 }
 
-static inline int MTest_Alltoall(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+static inline int MTest_Alltoall( void *sendbuf, int sendcount, MPI_Datatype sendtype,
                                  void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
 {
     return MPI_Alltoall(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
 }
 
-static inline int MTest_Alltoallv(const void *sendbuf, const int *sendcounts, const int *sdispls,
-                                  MPI_Datatype sendtype, void *recvbuf, const int *recvcounts,
-                                  const int *rdispls, MPI_Datatype recvtype, MPI_Comm comm)
+static inline int MTest_Alltoallv( void *sendbuf,  int *sendcounts,  int *sdispls,
+                                  MPI_Datatype sendtype, void *recvbuf,  int *recvcounts,
+                                   int *rdispls, MPI_Datatype recvtype, MPI_Comm comm)
 {
     return MPI_Alltoallv(sendbuf, sendcounts, sdispls, sendtype, recvbuf,
                          recvcounts, rdispls, recvtype, comm);
 }
 
-static inline int MTest_Alltoallw(const void *sendbuf, const int *sendcounts, const int *sdispls,
-                                  const MPI_Datatype * sendtypes, void *recvbuf,
-                                  const int *recvcounts, const int *rdispls,
-                                  const MPI_Datatype * recvtypes, MPI_Comm comm)
+static inline int MTest_Alltoallw( void *sendbuf,  int *sendcounts,  int *sdispls,
+                                   MPI_Datatype * sendtypes, void *recvbuf,
+                                   int *recvcounts,  int *rdispls,
+                                   MPI_Datatype * recvtypes, MPI_Comm comm)
 {
     return MPI_Alltoallw(sendbuf, sendcounts, sdispls, sendtypes, recvbuf,
                          recvcounts, rdispls, recvtypes, comm);
 }
 
-static inline int MTest_Reduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
+static inline int MTest_Reduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
                                MPI_Op op, int root, MPI_Comm comm)
 {
     return MPI_Reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
 }
 
-static inline int MTest_Allreduce(const void *sendbuf, void *recvbuf, int count,
+static inline int MTest_Allreduce( void *sendbuf, void *recvbuf, int count,
                                   MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
     return MPI_Allreduce(sendbuf, recvbuf, count, datatype, op, comm);
 }
 
-static inline int MTest_Reduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcounts,
+static inline int MTest_Reduce_scatter( void *sendbuf, void *recvbuf,  int *recvcounts,
                                        MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
     return MPI_Reduce_scatter(sendbuf, recvbuf, recvcounts, datatype, op, comm);
 }
 
-static inline int MTest_Reduce_scatter_block(const void *sendbuf, void *recvbuf, int recvcount,
+static inline int MTest_Reduce_scatter_block( void *sendbuf, void *recvbuf, int recvcount,
                                              MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
     return MPI_Reduce_scatter_block(sendbuf, recvbuf, recvcount, datatype, op, comm);
 }
 
-static inline int MTest_Scan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
+static inline int MTest_Scan( void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
                              MPI_Op op, MPI_Comm comm)
 {
     return MPI_Scan(sendbuf, recvbuf, count, datatype, op, comm);
 }
 
-static inline int MTest_Exscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
+static inline int MTest_Exscan( void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
                                MPI_Op op, MPI_Comm comm)
 {
     return MPI_Exscan(sendbuf, recvbuf, count, datatype, op, comm);

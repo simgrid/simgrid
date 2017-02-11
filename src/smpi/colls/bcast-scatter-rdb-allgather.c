@@ -329,6 +329,4 @@ smpi_coll_tuned_bcast_scatter_rdb_allgather (
 fn_exit:
 /*    xbt_free(tmp_buf);*/
     return mpi_errno;
-fn_fail:
-    goto fn_exit;
 }

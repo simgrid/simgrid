@@ -348,7 +348,7 @@ int MTestDatatype2Check(void *inbuf, void *outbuf, int size_bytes)
 /*
  * This is a version of CheckData that prints error messages
  */
-int MtestDatatype2CheckAndPrint(void *inbuf, void *outbuf, int size_bytes,
+static int MtestDatatype2CheckAndPrint(void *inbuf, void *outbuf, int size_bytes,
                                 char *typename, int typenum)
 {
     int errloc, world_rank;

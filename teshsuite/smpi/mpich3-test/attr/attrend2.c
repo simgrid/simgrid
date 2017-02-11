@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &wrank);
 
 #if MTEST_HAVE_MIN_MPI_VERSION(2,2)
-    int errs = 0, wrank;
+    int errs = 0;
     int i;
     for (i = 0; i < NUM_TEST_ATTRS; ++i) {
         exit_keys[i] = MPI_KEYVAL_INVALID;

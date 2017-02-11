@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     int rank, size, verbose = 0, errs=0, tot_errs=0;
     int wrank;
     MPI_Comm comm;
-    MPI_Info info;
+    MPI_Info __attribute__((unused)) info;
 
     MPI_Init(&argc, &argv);
 
