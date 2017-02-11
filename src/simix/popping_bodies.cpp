@@ -143,12 +143,6 @@ inline static smx_actor_t simcall_BODY_process_restart(smx_actor_t process) {
     return simcall<smx_actor_t, smx_actor_t>(SIMCALL_PROCESS_RESTART, process);
   }
   
-inline static smx_mailbox_t simcall_BODY_mbox_create(const char* name) {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_mbox_create(name);
-    return simcall<smx_mailbox_t, const char*>(SIMCALL_MBOX_CREATE, name);
-  }
-  
 inline static void simcall_BODY_mbox_set_receiver(smx_mailbox_t mbox, smx_actor_t receiver) {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) SIMIX_mbox_set_receiver(mbox, receiver);

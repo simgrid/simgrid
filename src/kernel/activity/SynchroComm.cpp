@@ -35,8 +35,7 @@ simgrid::kernel::activity::Comm::~Comm()
   }
 
   if(mbox)
-    SIMIX_mbox_remove(mbox, this);
-
+    mbox->remove(this);
 }
 void simgrid::kernel::activity::Comm::suspend()
 {
@@ -60,7 +59,7 @@ void simgrid::kernel::activity::Comm::cancel()
   /* if the synchro is a waiting state means that it is still in a mbox */
   /* so remove from it and delete it */
   if (state == SIMIX_WAITING) {
-    SIMIX_mbox_remove(mbox, this);
+    mbox->remove(this);
     state = SIMIX_CANCELED;
   }
   else if (!MC_is_active() /* when running the MC there are no surf actions */

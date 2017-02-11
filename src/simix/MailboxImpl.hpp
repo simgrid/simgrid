@@ -18,28 +18,29 @@ namespace simix {
 /** @brief Rendez-vous point datatype */
 
 class MailboxImpl {
-public:
   explicit MailboxImpl(const char* name)
       : piface_(this), name_(xbt_strdup(name)), comm_queue(MAX_MAILBOX_SIZE), done_comm_queue(MAX_MAILBOX_SIZE)
   {
   }
+
+public:
   ~MailboxImpl() { xbt_free(name_); }
 
+  static MailboxImpl* byNameOrNull(const char* name);
+  static MailboxImpl* byNameOrCreate(const char* name);
+  void push(smx_activity_t synchro);
+  void remove(smx_activity_t activity);
   simgrid::s4u::Mailbox piface_; // Our interface
   char* name_;
-  boost::circular_buffer_space_optimized<smx_activity_t> comm_queue;
+
   boost::intrusive_ptr<simgrid::simix::ActorImpl> permanent_receiver; //process which the mailbox is attached to
+  boost::circular_buffer_space_optimized<smx_activity_t> comm_queue;
   boost::circular_buffer_space_optimized<smx_activity_t> done_comm_queue;//messages already received in the permanent receive mode
 };
 }
 }
 
 XBT_PRIVATE void SIMIX_mailbox_exit();
-
-XBT_PRIVATE smx_mailbox_t SIMIX_mbox_create(const char* name);
-XBT_PRIVATE smx_mailbox_t SIMIX_mbox_get_by_name(const char* name);
-XBT_PRIVATE void SIMIX_mbox_remove(smx_mailbox_t mbox, smx_activity_t comm);
-XBT_PRIVATE void SIMIX_mbox_push(smx_mailbox_t mbox, smx_activity_t synchro);
 
 XBT_PRIVATE void SIMIX_mbox_set_receiver(smx_mailbox_t mbox, smx_actor_t proc);
 

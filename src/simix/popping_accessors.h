@@ -284,19 +284,6 @@ static inline void simcall_process_restart__set__result(smx_simcall_t simcall, s
     simgrid::simix::marshal<smx_actor_t>(simcall->result, result);
 }
 
-static inline const char* simcall_mbox_create__get__name(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<const char*>(simcall->args[0]);
-}
-static inline void simcall_mbox_create__set__name(smx_simcall_t simcall, const char* arg) {
-    simgrid::simix::marshal<const char*>(simcall->args[0], arg);
-}
-static inline smx_mailbox_t simcall_mbox_create__get__result(smx_simcall_t simcall){
-    return simgrid::simix::unmarshal<smx_mailbox_t>(simcall->result);
-}
-static inline void simcall_mbox_create__set__result(smx_simcall_t simcall, smx_mailbox_t result){
-    simgrid::simix::marshal<smx_mailbox_t>(simcall->result, result);
-}
-
 static inline smx_mailbox_t simcall_mbox_set_receiver__get__mbox(smx_simcall_t simcall) {
   return simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[0]);
 }

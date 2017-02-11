@@ -121,7 +121,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx
       XBT_DEBUG("pushing a message into the permanent receive fifo %p, comm %p", mbox, &(other_comm));
 
     }else{
-      SIMIX_mbox_push(mbox, this_synchro);
+      mbox->push(this_synchro);
     }
   } else {
     XBT_DEBUG("Receive already pushed");
@@ -201,7 +201,7 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
     if (!other_synchro)  {
       XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request into fifo");
       other_synchro = this_synchro;
-      SIMIX_mbox_push(mbox, this_synchro);
+      mbox->push(this_synchro);
     } else {
       simgrid::kernel::activity::Comm *other_comm = static_cast<simgrid::kernel::activity::Comm*>(other_synchro);
 
@@ -226,7 +226,7 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
     if (!other_synchro) {
       XBT_DEBUG("Receive pushed first %zu", mbox->comm_queue.size());
       other_synchro = this_synchro;
-      SIMIX_mbox_push(mbox, this_synchro);
+      mbox->push(this_synchro);
     } else {
       this_synchro->unref();
       simgrid::kernel::activity::Comm *other_comm = static_cast<simgrid::kernel::activity::Comm*>(other_synchro);
@@ -531,7 +531,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
 
     /* If the synchro is still in a rendez-vous point then remove from it */
     if (comm->mbox)
-      SIMIX_mbox_remove(comm->mbox, synchro);
+      comm->mbox->remove(synchro);
 
     XBT_DEBUG("SIMIX_comm_finish: synchro state = %d", (int)synchro->state);
 

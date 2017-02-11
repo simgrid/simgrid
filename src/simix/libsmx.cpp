@@ -367,17 +367,6 @@ e_smx_state_t simcall_process_sleep(double duration)
   return (e_smx_state_t) simcall_BODY_process_sleep(duration);
 }
 
-/**
- *  \ingroup simix_mbox_management
- *  \brief Creates a new rendez-vous point
- *  \param name The name of the rendez-vous point
- *  \return The created rendez-vous point
- */
-smx_mailbox_t simcall_mbox_create(const char *name)
-{
-  return simcall_BODY_mbox_create(name);
-}
-
 void simcall_mbox_set_receiver(smx_mailbox_t mbox, smx_actor_t process)
 {
   simcall_BODY_mbox_set_receiver(mbox, process);

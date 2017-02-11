@@ -22,15 +22,12 @@ const char *Mailbox::name() {
 
 MailboxPtr Mailbox::byName(const char*name)
 {
-  // FIXME: there is a race condition here where two actors run Mailbox::byName
-  // on a non-existent mailbox during the same scheduling round. Both will be
-  // interrupted in the simcall creating the underlying simix mbox.
-  // Only one simix object will be created, but two S4U objects will be created.
-  // Only one S4U object will be stored in the hashmap and used, and the other
-  // one will be leaked.
-  smx_mailbox_t mbox = SIMIX_mbox_get_by_name(name);
-  if (mbox == nullptr)
-    mbox = simcall_mbox_create(name);
+  simix::MailboxImpl* mbox = simix::MailboxImpl::byNameOrNull(name);
+  if (mbox == nullptr) {
+    mbox = simix::kernelImmediate([name] {
+      return simix::MailboxImpl::byNameOrCreate(name);
+    });
+  }
   return MailboxPtr(&mbox->piface_, true);
 }
 

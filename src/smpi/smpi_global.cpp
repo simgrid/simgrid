@@ -4,18 +4,19 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "mc/mc.h"
 #include "private.h"
 #include "private.hpp"
-#include "smpi_mpi_dt_private.h"
-#include "mc/mc.h"
-#include "src/mc/mc_record.h"
-#include "xbt/replay.h"
-#include "surf/surf.h"
-#include "src/simix/smx_private.h"
+#include "simgrid/s4u/Mailbox.hpp"
 #include "simgrid/sg_config.h"
+#include "smpi_mpi_dt_private.h"
+#include "src/kernel/activity/SynchroComm.hpp"
+#include "src/mc/mc_record.h"
 #include "src/mc/mc_replay.h"
 #include "src/msg/msg_private.h"
-#include "src/kernel/activity/SynchroComm.hpp"
+#include "src/simix/smx_private.h"
+#include "surf/surf.h"
+#include "xbt/replay.h"
 
 #include <float.h> /* DBL_MAX */
 #include <fstream>
@@ -46,8 +47,8 @@ typedef struct s_smpi_process_data {
   double simulated;
   int *argc;
   char ***argv;
-  smx_mailbox_t mailbox;
-  smx_mailbox_t mailbox_small;
+  simgrid::s4u::MailboxPtr mailbox;
+  simgrid::s4u::MailboxPtr mailbox_small;
   xbt_mutex_t mailboxes_mutex;
   xbt_os_timer_t timer;
   MPI_Comm comm_self;
@@ -144,7 +145,7 @@ void smpi_process_init(int *argc, char ***argv)
     data->argc = argc;
     data->argv = argv;
     // set the process attached to the mailbox
-    simcall_mbox_set_receiver(data->mailbox_small, proc);
+    simcall_mbox_set_receiver(data->mailbox_small->getImpl(), proc);
     XBT_DEBUG("<%d> New process in the game: %p", index, proc);
   }
   xbt_assert(smpi_process_data(),
@@ -281,13 +282,13 @@ MPI_Comm smpi_process_comm_world()
 smx_mailbox_t smpi_process_mailbox()
 {
   smpi_process_data_t data = smpi_process_data();
-  return data->mailbox;
+  return data->mailbox->getImpl();
 }
 
 smx_mailbox_t smpi_process_mailbox_small()
 {
   smpi_process_data_t data = smpi_process_data();
-  return data->mailbox_small;
+  return data->mailbox_small->getImpl();
 }
 
 xbt_mutex_t smpi_process_mailboxes_mutex()
@@ -299,13 +300,13 @@ xbt_mutex_t smpi_process_mailboxes_mutex()
 smx_mailbox_t smpi_process_remote_mailbox(int index)
 {
   smpi_process_data_t data = smpi_process_remote_data(index);
-  return data->mailbox;
+  return data->mailbox->getImpl();
 }
 
 smx_mailbox_t smpi_process_remote_mailbox_small(int index)
 {
   smpi_process_data_t data = smpi_process_remote_data(index);
-  return data->mailbox_small;
+  return data->mailbox_small->getImpl();
 }
 
 xbt_mutex_t smpi_process_remote_mailboxes_mutex(int index)
@@ -562,8 +563,8 @@ void smpi_global_init()
     process_data[i]                       = new s_smpi_process_data_t;
     process_data[i]->argc                 = nullptr;
     process_data[i]->argv                 = nullptr;
-    process_data[i]->mailbox              = simcall_mbox_create(get_mailbox_name(name, i));
-    process_data[i]->mailbox_small        = simcall_mbox_create(get_mailbox_name_small(name, i));
+    process_data[i]->mailbox              = simgrid::s4u::Mailbox::byName(get_mailbox_name(name, i));
+    process_data[i]->mailbox_small        = simgrid::s4u::Mailbox::byName(get_mailbox_name_small(name, i));
     process_data[i]->mailboxes_mutex      = xbt_mutex_init();
     process_data[i]->timer                = xbt_os_timer_new();
     if (MC_is_active())
