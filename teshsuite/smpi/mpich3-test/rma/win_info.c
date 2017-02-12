@@ -7,29 +7,58 @@
 
 #include <stdio.h>
 #include <mpi.h>
+#include <string.h>
 #include "mpitest.h"
 
 #define VERBOSE 0
 
-int main(int argc, char **argv) {
-    int      i, j, rank, nproc;
+int main(int argc, char **argv)
+{
+    int rank, nproc;
     MPI_Info info_in, info_out;
-    int      errors = 0, all_errors = 0;
-    MPI_Win  win;
-    void    *base;
-    char     invalid_key[] = "invalid_test_key";
-    char     buf[MPI_MAX_INFO_VAL];
-    int      flag;
+    int errors = 0, all_errors = 0;
+    MPI_Win win;
+    void *base;
+    char invalid_key[] = "invalid_test_key";
+    char buf[MPI_MAX_INFO_VAL];
+    int flag;
 
     MPI_Init(&argc, &argv);
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 
+    /* Test#1: setting a valid key at window-create time */
+
+    MPI_Info_create(&info_in);
+    MPI_Info_set(info_in, "no_locks", "true");
+
+    MPI_Win_allocate(sizeof(int), sizeof(int), info_in, MPI_COMM_WORLD, &base, &win);
+
+    MPI_Win_get_info(win, &info_out);
+
+    MPI_Info_get(info_out, "no_locks", MPI_MAX_INFO_VAL, buf, &flag);
+    if (!flag || strncmp(buf, "true", strlen("true")) != 0) {
+        if (!flag)
+            printf("%d: no_locks is not defined\n", rank);
+        else
+            printf("%d: no_locks = %s, expected true\n", rank, buf);
+        errors++;
+    }
+
+    MPI_Info_free(&info_in);
+    MPI_Info_free(&info_out);
+
+    /* We create a new window with no info argument for the next text to ensure that we have the
+     * default settings */
+
+    MPI_Win_free(&win);
+    MPI_Win_allocate(sizeof(int), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &base, &win);
+
+    /* Test#2: setting and getting invalid key */
+
     MPI_Info_create(&info_in);
     MPI_Info_set(info_in, invalid_key, "true");
-
-    MPI_Win_allocate(sizeof(int), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &base, &win);
 
     MPI_Win_set_info(win, info_in);
     MPI_Win_get_info(win, &info_out);
@@ -45,22 +74,73 @@ int main(int argc, char **argv) {
     }
 #endif
 
+    MPI_Info_free(&info_in);
+    MPI_Info_free(&info_out);
+
+    /* Test#3: setting info key "no_lock" to false and getting the key */
+
+    MPI_Info_create(&info_in);
+    MPI_Info_set(info_in, "no_locks", "false");
+
+    MPI_Win_set_info(win, info_in);
+    MPI_Win_get_info(win, &info_out);
+
     MPI_Info_get(info_out, "no_locks", MPI_MAX_INFO_VAL, buf, &flag);
-    if (flag && VERBOSE) printf("%d: no_locks = %s\n", rank, buf);
-
-    MPI_Info_get(info_out, "accumulate_ordering", MPI_MAX_INFO_VAL, buf, &flag);
-    if (flag && VERBOSE) printf("%d: accumulate_ordering = %s\n", rank, buf);
-
-    MPI_Info_get(info_out, "accumulate_ops", MPI_MAX_INFO_VAL, buf, &flag);
-    if (flag && VERBOSE) printf("%d: accumulate_ops = %s\n", rank, buf);
-
-    MPI_Info_get(info_out, "same_size", MPI_MAX_INFO_VAL, buf, &flag);
-    if (flag && VERBOSE) printf("%d: same_size = %s\n", rank, buf);
-
-    MPI_Info_get(info_out, "alloc_shm", MPI_MAX_INFO_VAL, buf, &flag);
-    if (flag && VERBOSE) printf("%d: alloc_shm = %s\n", rank, buf);
+    if (!flag || strncmp(buf, "false", strlen("false")) != 0) {
+        if (!flag)
+            printf("%d: no_locks is not defined\n", rank);
+        else
+            printf("%d: no_locks = %s, expected false\n", rank, buf);
+        errors++;
+    }
+    if (flag && VERBOSE)
+        printf("%d: no_locks = %s\n", rank, buf);
 
     MPI_Info_free(&info_in);
+    MPI_Info_free(&info_out);
+
+    /* Test#4: setting info key "no_lock" to true and getting the key */
+
+    MPI_Info_create(&info_in);
+    MPI_Info_set(info_in, "no_locks", "true");
+
+    MPI_Win_set_info(win, info_in);
+    MPI_Win_get_info(win, &info_out);
+
+    MPI_Info_get(info_out, "no_locks", MPI_MAX_INFO_VAL, buf, &flag);
+    if (!flag || strncmp(buf, "true", strlen("true")) != 0) {
+        if (!flag)
+            printf("%d: no_locks is not defined\n", rank);
+        else
+            printf("%d: no_locks = %s, expected true\n", rank, buf);
+        errors++;
+    }
+    if (flag && VERBOSE)
+        printf("%d: no_locks = %s\n", rank, buf);
+
+    MPI_Info_free(&info_in);
+    MPI_Info_free(&info_out);
+
+    /* Test#4: getting other info keys */
+
+    MPI_Win_get_info(win, &info_out);
+
+    MPI_Info_get(info_out, "accumulate_ordering", MPI_MAX_INFO_VAL, buf, &flag);
+    if (flag && VERBOSE)
+        printf("%d: accumulate_ordering = %s\n", rank, buf);
+
+    MPI_Info_get(info_out, "accumulate_ops", MPI_MAX_INFO_VAL, buf, &flag);
+    if (flag && VERBOSE)
+        printf("%d: accumulate_ops = %s\n", rank, buf);
+
+    MPI_Info_get(info_out, "same_size", MPI_MAX_INFO_VAL, buf, &flag);
+    if (flag && VERBOSE)
+        printf("%d: same_size = %s\n", rank, buf);
+
+    MPI_Info_get(info_out, "alloc_shm", MPI_MAX_INFO_VAL, buf, &flag);
+    if (flag && VERBOSE)
+        printf("%d: alloc_shm = %s\n", rank, buf);
+
     MPI_Info_free(&info_out);
     MPI_Win_free(&win);
 
