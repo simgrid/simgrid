@@ -20,7 +20,7 @@ int main(int argc, char **argv)
     MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
     MPI_Comm_rank(MPI_COMM_WORLD, &myid);
 
-    for (i = 0; i < 10000; i++) {
+    for (i = 0; i < 1000; i++) {
         MPI_Allreduce(&wscale, &scale, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
     }
 

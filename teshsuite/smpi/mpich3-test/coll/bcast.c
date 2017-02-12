@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 #endif /* BCAST_MIN_DATATYPES_ONLY */
 
             while (MTestGetDatatypes(&sendtype, &recvtype, count)) {
-                for (root = 0; root < size; root++) {
+                for (root = 0; root < size; root+=2) {
                     if (rank == root) {
                         sendtype.InitBuf(&sendtype);
                         err = MPI_Bcast(sendtype.buf, sendtype.count,

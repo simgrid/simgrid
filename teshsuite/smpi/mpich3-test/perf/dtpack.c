@@ -25,7 +25,7 @@
 
 static int verbose = 0;
 
-#define N_REPS 1000
+#define N_REPS 50
 #define THRESHOLD 0.10
 #define VARIANCE_THRESHOLD ((THRESHOLD * THRESHOLD) / 2)
 #define NTRIALS 10

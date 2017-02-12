@@ -74,7 +74,7 @@ nullpscw 7
 #Needs lock, unlock
 #selfrma 1
 #mixedsync 4
-epochtest 4
+epochtest 3
 #Needs lock, unlock
 #locknull 2
 #Needs MPI_Rput, rget, racumulate,  MPI_Fetch_and_op, MPI_Compare_and_swap
