@@ -24,7 +24,11 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   add_executable(allred4 allred4.c)
   add_executable(allred5 allred5.c)
   add_executable(allred6 allred6.c)
+  if(HAVE_PRIVATIZATION)
   add_executable(allred allred.c)
+  else()
+    add_executable(allred allred_manual.c)
+  endif()
   add_executable(allredmany allredmany.c)
   add_executable(alltoall1 alltoall1.c)
   add_executable(alltoallv0 alltoallv0.c)
@@ -241,6 +245,7 @@ set(examples_src  ${examples_src}
  ${CMAKE_CURRENT_SOURCE_DIR}/allred5.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allred6.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allred.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/allred_manual.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allredmany.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/alltoall1.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallv0.c 
