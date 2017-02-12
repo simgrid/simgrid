@@ -278,7 +278,7 @@ struct double_test {
         STRUCT_ALLREDUCE_AND_FREE(mpi_type, MPI_MINLOC, in, out, sol);  \
     }
 
-#if MTEST_HAVE_MIN_MPI_VERSION(3,2)
+#if MTEST_HAVE_MIN_MPI_VERSION(2,2)
 #define test_types_set_mpi_2_2_integer(op,post) do {                \
         op##_test##post(int8_t, MPI_INT8_T);                        \
         op##_test##post(int16_t, MPI_INT16_T);                      \
