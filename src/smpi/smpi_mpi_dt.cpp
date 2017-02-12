@@ -1184,364 +1184,149 @@ typedef struct s_smpi_mpi_op {
   }                                        \
 }
 
+#define APPLY_OP_LOOP(dtype, type, op) \
+  if (*datatype == dtype) {\
+    APPLY_FUNC(a, b, length, type, op)\
+  } else \
+
+
+#define APPLY_BASIC_OP_LOOP(op)\
+APPLY_OP_LOOP(MPI_CHAR, char,op)\
+APPLY_OP_LOOP(MPI_SHORT, short,op)\
+APPLY_OP_LOOP(MPI_INT, int,op)\
+APPLY_OP_LOOP(MPI_LONG, long,op)\
+APPLY_OP_LOOP(MPI_LONG_LONG, long long,op)\
+APPLY_OP_LOOP(MPI_SIGNED_CHAR, signed char,op)\
+APPLY_OP_LOOP(MPI_UNSIGNED_CHAR, unsigned char,op)\
+APPLY_OP_LOOP(MPI_UNSIGNED_SHORT, unsigned short,op)\
+APPLY_OP_LOOP(MPI_UNSIGNED, unsigned int,op)\
+APPLY_OP_LOOP(MPI_UNSIGNED_LONG, unsigned long,op)\
+APPLY_OP_LOOP(MPI_UNSIGNED_LONG_LONG, unsigned long long,op)\
+APPLY_OP_LOOP(MPI_WCHAR, wchar_t,op)\
+APPLY_OP_LOOP(MPI_C_BOOL, bool,op)\
+APPLY_OP_LOOP(MPI_BYTE, int8_t,op)\
+APPLY_OP_LOOP(MPI_INT8_T, int8_t,op)\
+APPLY_OP_LOOP(MPI_INT16_T, int16_t,op)\
+APPLY_OP_LOOP(MPI_INT32_T, int32_t,op)\
+APPLY_OP_LOOP(MPI_INT64_T, int64_t,op)\
+APPLY_OP_LOOP(MPI_UINT8_T, uint8_t,op)\
+APPLY_OP_LOOP(MPI_UINT16_T, uint16_t,op)\
+APPLY_OP_LOOP(MPI_UINT32_T, uint32_t,op)\
+APPLY_OP_LOOP(MPI_UINT64_T, uint64_t,op)\
+APPLY_OP_LOOP(MPI_AINT, MPI_Aint,op)\
+APPLY_OP_LOOP(MPI_OFFSET, MPI_Offset,op)\
+APPLY_OP_LOOP(MPI_INTEGER1, int,op)\
+APPLY_OP_LOOP(MPI_INTEGER2, int16_t,op)\
+APPLY_OP_LOOP(MPI_INTEGER4, int32_t,op)\
+APPLY_OP_LOOP(MPI_INTEGER8, int64_t,op)
+
+#define APPLY_FLOAT_OP_LOOP(op)\
+APPLY_OP_LOOP(MPI_FLOAT, float,op)\
+APPLY_OP_LOOP(MPI_DOUBLE, double,op)\
+APPLY_OP_LOOP(MPI_LONG_DOUBLE, long double,op)\
+APPLY_OP_LOOP(MPI_REAL, float,op)\
+APPLY_OP_LOOP(MPI_REAL4, float,op)\
+APPLY_OP_LOOP(MPI_REAL8, float,op)\
+APPLY_OP_LOOP(MPI_REAL16, double,op)
+
+#define APPLY_COMPLEX_OP_LOOP(op)\
+APPLY_OP_LOOP(MPI_C_FLOAT_COMPLEX, float _Complex,op)\
+APPLY_OP_LOOP(MPI_C_DOUBLE_COMPLEX, double _Complex,op)\
+APPLY_OP_LOOP(MPI_C_LONG_DOUBLE_COMPLEX, long double _Complex,op)
+
+#define APPLY_PAIR_OP_LOOP(op)\
+APPLY_OP_LOOP(MPI_FLOAT_INT, float_int,op)\
+APPLY_OP_LOOP(MPI_LONG_INT, long_int,op)\
+APPLY_OP_LOOP(MPI_DOUBLE_INT, double_int,op)\
+APPLY_OP_LOOP(MPI_SHORT_INT, short_int,op)\
+APPLY_OP_LOOP(MPI_2INT, int_int,op)\
+APPLY_OP_LOOP(MPI_2FLOAT, float_float,op)\
+APPLY_OP_LOOP(MPI_2DOUBLE, double_double,op)\
+APPLY_OP_LOOP(MPI_LONG_DOUBLE_INT, long_double_int,op)\
+APPLY_OP_LOOP(MPI_2LONG, long_long,op)
+
+#define APPLY_END_OP_LOOP(op)\
+  {\
+    xbt_die("Failed to apply " #op " to type %s", (*datatype)->name);\
+  }
+
+
 static void max_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
-  if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, MAX_OP)
-  } else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, MAX_OP)
-  } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, MAX_OP)
-  } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, MAX_OP)
-  } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, MAX_OP)
-  } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, MAX_OP)
-  } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, MAX_OP)
-  } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, MAX_OP)
-  } else if (*datatype == MPI_FLOAT) {
-    APPLY_FUNC(a, b, length, float, MAX_OP)
-  } else if (*datatype == MPI_DOUBLE) {
-    APPLY_FUNC(a, b, length, double, MAX_OP)
-  } else if (*datatype == MPI_LONG_DOUBLE) {
-    APPLY_FUNC(a, b, length, long double, MAX_OP)
-  } else {
-    xbt_die("Failed to apply MAX_OP to type %s", (*datatype)->name);
-  }
+  APPLY_BASIC_OP_LOOP(MAX_OP)
+  APPLY_FLOAT_OP_LOOP(MAX_OP)
+  APPLY_END_OP_LOOP(MAX_OP)
 }
 
 static void min_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
-  if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, MIN_OP)
-  } else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, MIN_OP)
-  } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, MIN_OP)
-  } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, MIN_OP)
-  } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, MIN_OP)
-  } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, MIN_OP)
-  } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, MIN_OP)
-  } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, MIN_OP)
-  } else if (*datatype == MPI_FLOAT) {
-    APPLY_FUNC(a, b, length, float, MIN_OP)
-  } else if (*datatype == MPI_DOUBLE) {
-    APPLY_FUNC(a, b, length, double, MIN_OP)
-  } else if (*datatype == MPI_LONG_DOUBLE) {
-    APPLY_FUNC(a, b, length, long double, MIN_OP)
-  } else {
-    xbt_die("Failed to apply MIN_OP to type %s", (*datatype)->name);
-  }
+  APPLY_BASIC_OP_LOOP(MIN_OP)
+  APPLY_FLOAT_OP_LOOP(MIN_OP)
+  APPLY_END_OP_LOOP(MIN_OP)
 }
 
 static void sum_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
-  if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, SUM_OP)
-  } else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, SUM_OP)
-  } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, SUM_OP)
-  } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, SUM_OP)
-  } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, SUM_OP)
-  } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, SUM_OP)
-  } else if (*datatype == MPI_UNSIGNED_LONG_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long long, SUM_OP)
-  } else if (*datatype == MPI_LONG_LONG) {
-    APPLY_FUNC(a, b, length, long long, SUM_OP)
-  } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, SUM_OP)
-  } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, SUM_OP)
-  } else if (*datatype == MPI_FLOAT) {
-    APPLY_FUNC(a, b, length, float, SUM_OP)
-  } else if (*datatype == MPI_DOUBLE) {
-    APPLY_FUNC(a, b, length, double, SUM_OP)
-  } else if (*datatype == MPI_LONG_DOUBLE) {
-    APPLY_FUNC(a, b, length, long double, SUM_OP)
-  } else if (*datatype == MPI_C_FLOAT_COMPLEX) {
-    APPLY_FUNC(a, b, length, float _Complex, SUM_OP)
-  } else if (*datatype == MPI_C_DOUBLE_COMPLEX) {
-    APPLY_FUNC(a, b, length, double _Complex, SUM_OP)
-  } else if (*datatype == MPI_C_LONG_DOUBLE_COMPLEX) {
-    APPLY_FUNC(a, b, length, long double _Complex, SUM_OP)
-  } else {
-    xbt_die("Failed to apply SUM_OP to type %s", (*datatype)->name);
-  }
+  APPLY_BASIC_OP_LOOP(SUM_OP)
+  APPLY_FLOAT_OP_LOOP(SUM_OP)
+  APPLY_COMPLEX_OP_LOOP(SUM_OP)
+  APPLY_END_OP_LOOP(SUM_OP)
 }
 
 static void prod_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
-  if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, PROD_OP)
-  } else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, PROD_OP)
-  } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, PROD_OP)
-  } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, PROD_OP)
-  } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, PROD_OP)
-  } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, PROD_OP)
-  } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, PROD_OP)
-  } else if (*datatype == MPI_UNSIGNED_LONG_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long long, PROD_OP)
-  } else if (*datatype == MPI_LONG_LONG) {
-    APPLY_FUNC(a, b, length, long long, PROD_OP)
-  } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, PROD_OP)
-  } else if (*datatype == MPI_FLOAT) {
-    APPLY_FUNC(a, b, length, float, PROD_OP)
-  } else if (*datatype == MPI_DOUBLE) {
-    APPLY_FUNC(a, b, length, double, PROD_OP)
-  } else if (*datatype == MPI_LONG_DOUBLE) {
-    APPLY_FUNC(a, b, length, long double, PROD_OP)
-  } else if (*datatype == MPI_C_FLOAT_COMPLEX) {
-    APPLY_FUNC(a, b, length, float _Complex, PROD_OP)
-  } else if (*datatype == MPI_C_DOUBLE_COMPLEX) {
-    APPLY_FUNC(a, b, length, double _Complex, PROD_OP)
-  } else if (*datatype == MPI_C_LONG_DOUBLE_COMPLEX) {
-    APPLY_FUNC(a, b, length, long double _Complex, PROD_OP)
-  } else {
-    xbt_die("Failed to apply PROD_OP to type %s", (*datatype)->name);
-  }
+  APPLY_BASIC_OP_LOOP(PROD_OP)
+  APPLY_FLOAT_OP_LOOP(PROD_OP)
+  APPLY_COMPLEX_OP_LOOP(PROD_OP)
+  APPLY_END_OP_LOOP(PROD_OP)
 }
 
 static void land_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
-  if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, LAND_OP)
-  } else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, LAND_OP)
-  } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, LAND_OP)
-  } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, LAND_OP)
-  } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, LAND_OP)
-  } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, LAND_OP)
-  } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, LAND_OP)
-  } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, LAND_OP)
-  } else if (*datatype == MPI_UNSIGNED_LONG_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long long, LAND_OP)
-  } else if (*datatype == MPI_LONG_LONG) {
-    APPLY_FUNC(a, b, length, long long, LAND_OP)
-  } else if (*datatype == MPI_C_BOOL) {
-    APPLY_FUNC(a, b, length, bool, LAND_OP)
-  } else {
-    xbt_die("Failed to apply LAND_OP to type %s", (*datatype)->name);
-  }
+  APPLY_BASIC_OP_LOOP(LAND_OP)
+  APPLY_END_OP_LOOP(LAND_OP)
 }
 
 static void lor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
-  if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, LOR_OP)
-  } else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, LOR_OP)
-  } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, LOR_OP)
-  } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, LOR_OP)
-  } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, LOR_OP)
-  } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, LOR_OP)
-  } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, LOR_OP)
-  } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, LOR_OP)
-  } else if (*datatype == MPI_UNSIGNED_LONG_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long long, LOR_OP)
-  } else if (*datatype == MPI_LONG_LONG) {
-    APPLY_FUNC(a, b, length, long long, LOR_OP)
-  } else if (*datatype == MPI_C_BOOL) {
-    APPLY_FUNC(a, b, length, bool, LOR_OP)
-  } else {
-    xbt_die("Failed to apply LOR_OP to type %s", (*datatype)->name);
-  }
+  APPLY_BASIC_OP_LOOP(LOR_OP)
+  APPLY_END_OP_LOOP(LOR_OP)
 }
 
 static void lxor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
-  if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, LXOR_OP)
-  } else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, LXOR_OP)
-  } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, LXOR_OP)
-  } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, LXOR_OP)
-  } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, LXOR_OP)
-  } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, LXOR_OP)
-  } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, LXOR_OP)
-  } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, LXOR_OP)
-  } else if (*datatype == MPI_UNSIGNED_LONG_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long long, LXOR_OP)
-  } else if (*datatype == MPI_LONG_LONG) {
-    APPLY_FUNC(a, b, length, long long, LXOR_OP)
-  } else if (*datatype == MPI_C_BOOL) {
-    APPLY_FUNC(a, b, length, bool, LXOR_OP)
-  } else {
-    xbt_die("Failed to apply LXOR_OP to type %s", (*datatype)->name);
-  }
+  APPLY_BASIC_OP_LOOP(LXOR_OP)
+  APPLY_END_OP_LOOP(LXOR_OP)
 }
 
 static void band_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
-  if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, BAND_OP)
-  }else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, BAND_OP)
-  } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, BAND_OP)
-  } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, BAND_OP)
-  } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, BAND_OP)
-  } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, BAND_OP)
-  } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, BAND_OP)
-  } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, BAND_OP)
-  } else if (*datatype == MPI_UNSIGNED_LONG_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long long, BAND_OP)
-  } else if (*datatype == MPI_LONG_LONG) {
-    APPLY_FUNC(a, b, length, long long, BAND_OP)
-  } else if (*datatype == MPI_BYTE) {
-    APPLY_FUNC(a, b, length, uint8_t, BAND_OP)
-  } else {
-    xbt_die("Failed to apply BAND_OP to type %s", (*datatype)->name);
-  }
+  APPLY_BASIC_OP_LOOP(BAND_OP)
+  APPLY_END_OP_LOOP(BAND_OP)
 }
 
 static void bor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
-  if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, BOR_OP)
-  } else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, BOR_OP)
-  } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, BOR_OP)
-  } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, BOR_OP)
-  } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, BOR_OP)
-  } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, BOR_OP)
-  } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, BOR_OP)
-  } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, BOR_OP)
-  } else if (*datatype == MPI_UNSIGNED_LONG_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long long, BOR_OP)
-  } else if (*datatype == MPI_LONG_LONG) {
-    APPLY_FUNC(a, b, length, long long, BOR_OP)
-  } else if (*datatype == MPI_BYTE) {
-    APPLY_FUNC(a, b, length, uint8_t, BOR_OP)
-  } else {
-    xbt_die("Failed to apply BOR_OP to type %s", (*datatype)->name);
-  }
+  APPLY_BASIC_OP_LOOP(BOR_OP)
+  APPLY_END_OP_LOOP(BOR_OP)
 }
 
 static void bxor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
-  if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, BXOR_OP)
-  } else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, BXOR_OP)
-  } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, BXOR_OP)
-  } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, BXOR_OP)
-  } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, BXOR_OP)
-  } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, BXOR_OP)
-  } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, BXOR_OP)
-  } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, BXOR_OP)
-  } else if (*datatype == MPI_UNSIGNED_LONG_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long long, BXOR_OP)
-  } else if (*datatype == MPI_LONG_LONG) {
-    APPLY_FUNC(a, b, length, long long, BXOR_OP)
-  } else if (*datatype == MPI_BYTE) {
-    APPLY_FUNC(a, b, length, uint8_t, BXOR_OP)
-  } else {
-    xbt_die("Failed to apply BXOR_OP to type %s", (*datatype)->name);
-  }
+  APPLY_BASIC_OP_LOOP(BXOR_OP)
+  APPLY_END_OP_LOOP(BXOR_OP)
 }
 
 static void minloc_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
-  if (*datatype == MPI_FLOAT_INT) {
-    APPLY_FUNC(a, b, length, float_int, MINLOC_OP)
-  } else if (*datatype == MPI_LONG_INT) {
-    APPLY_FUNC(a, b, length, long_int, MINLOC_OP)
-  } else if (*datatype == MPI_DOUBLE_INT) {
-    APPLY_FUNC(a, b, length, double_int, MINLOC_OP)
-  } else if (*datatype == MPI_SHORT_INT) {
-    APPLY_FUNC(a, b, length, short_int, MINLOC_OP)
-  } else if (*datatype == MPI_2LONG) {
-    APPLY_FUNC(a, b, length, long_long, MINLOC_OP)
-  } else if (*datatype == MPI_2INT) {
-    APPLY_FUNC(a, b, length, int_int, MINLOC_OP)
-  } else if (*datatype == MPI_LONG_DOUBLE_INT) {
-    APPLY_FUNC(a, b, length, long_double_int, MINLOC_OP)
-  } else if (*datatype == MPI_2FLOAT) {
-    APPLY_FUNC(a, b, length, float_float, MINLOC_OP)
-  } else if (*datatype == MPI_2DOUBLE) {
-    APPLY_FUNC(a, b, length, double_double, MINLOC_OP)
-  } else {
-    xbt_die("Failed to apply MINLOC_OP to type %s", (*datatype)->name);
-  }
+  APPLY_PAIR_OP_LOOP(MINLOC_OP)
+  APPLY_END_OP_LOOP(MINLOC_OP)
 }
 
 static void maxloc_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
-  if (*datatype == MPI_FLOAT_INT) {
-    APPLY_FUNC(a, b, length, float_int, MAXLOC_OP)
-  } else if (*datatype == MPI_LONG_INT) {
-    APPLY_FUNC(a, b, length, long_int, MAXLOC_OP)
-  } else if (*datatype == MPI_DOUBLE_INT) {
-    APPLY_FUNC(a, b, length, double_int, MAXLOC_OP)
-  } else if (*datatype == MPI_SHORT_INT) {
-    APPLY_FUNC(a, b, length, short_int, MAXLOC_OP)
-  } else if (*datatype == MPI_2LONG) {
-    APPLY_FUNC(a, b, length, long_long, MAXLOC_OP)
-  } else if (*datatype == MPI_2INT) {
-    APPLY_FUNC(a, b, length, int_int, MAXLOC_OP)
-  } else if (*datatype == MPI_LONG_DOUBLE_INT) {
-    APPLY_FUNC(a, b, length, long_double_int, MAXLOC_OP)
-  } else if (*datatype == MPI_2FLOAT) {
-    APPLY_FUNC(a, b, length, float_float, MAXLOC_OP)
-  } else if (*datatype == MPI_2DOUBLE) {
-    APPLY_FUNC(a, b, length, double_double, MAXLOC_OP)
-  } else {
-    xbt_die("Failed to apply MAXLOC_OP to type %s", (*datatype)->name);
-  }
+  APPLY_PAIR_OP_LOOP(MAXLOC_OP)
+  APPLY_END_OP_LOOP(MAXLOC_OP)
 }
 
 static void replace_func(void *a, void *b, int *length, MPI_Datatype * datatype)
