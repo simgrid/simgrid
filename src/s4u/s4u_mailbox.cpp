@@ -47,7 +47,9 @@ smx_activity_t Mailbox::front()
 }
 
 void Mailbox::setReceiver(ActorPtr actor) {
-  simcall_mbox_set_receiver(pimpl_, actor == nullptr ? nullptr : actor->pimpl_);
+  simix::kernelImmediate([this, actor]() {
+    this->pimpl_->setReceiver(actor);
+  });
 }
 
 /** @brief get the receiver (process associated to the mailbox) */

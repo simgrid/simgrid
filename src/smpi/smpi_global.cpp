@@ -145,7 +145,7 @@ void smpi_process_init(int *argc, char ***argv)
     data->argc = argc;
     data->argv = argv;
     // set the process attached to the mailbox
-    simcall_mbox_set_receiver(data->mailbox_small->getImpl(), proc);
+    data->mailbox_small->setReceiver(simgrid::s4u::Actor::self());
     XBT_DEBUG("<%d> New process in the game: %p", index, proc);
   }
   xbt_assert(smpi_process_data(),

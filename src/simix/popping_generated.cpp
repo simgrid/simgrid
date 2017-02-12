@@ -42,7 +42,6 @@ const char* simcall_names[] = {
     "SIMCALL_PROCESS_ON_EXIT",
     "SIMCALL_PROCESS_AUTO_RESTART_SET",
     "SIMCALL_PROCESS_RESTART",
-    "SIMCALL_MBOX_SET_RECEIVER",
     "SIMCALL_COMM_IPROBE",
     "SIMCALL_COMM_SEND",
     "SIMCALL_COMM_ISEND",
@@ -181,11 +180,6 @@ case SIMCALL_PROCESS_AUTO_RESTART_SET:
 
 case SIMCALL_PROCESS_RESTART:
       simgrid::simix::marshal<smx_actor_t>(simcall->result, simcall_HANDLER_process_restart(simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0])));
-      SIMIX_simcall_answer(simcall);
-      break;
-
-case SIMCALL_MBOX_SET_RECEIVER:
-      SIMIX_mbox_set_receiver(simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[0]), simgrid::simix::unmarshal<smx_actor_t>(simcall->args[1]));
       SIMIX_simcall_answer(simcall);
       break;
 

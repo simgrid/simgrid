@@ -8,33 +8,18 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_mailbox, simix, "Mailbox implementation");
 
-static void SIMIX_mbox_free(void* data);
-static xbt_dict_t mailboxes = xbt_dict_new_homogeneous(SIMIX_mbox_free);
+static xbt_dict_t mailboxes = xbt_dict_new_homogeneous([](void* data) {
+  delete static_cast<smx_mailbox_t>(data);
+});
 
 void SIMIX_mailbox_exit()
 {
   xbt_dict_free(&mailboxes);
 }
-void SIMIX_mbox_free(void* data)
-{
-  XBT_DEBUG("mbox free %p", data);
-  smx_mailbox_t mbox = static_cast<smx_mailbox_t>(data);
-  delete mbox;
-}
 
 /******************************************************************************/
 /*                           Rendez-Vous Points                               */
 /******************************************************************************/
-
-/**
- *  \brief set the receiver of the rendez vous point to allow eager sends
- *  \param mbox The rendez-vous point
- *  \param process The receiving process
- */
-void SIMIX_mbox_set_receiver(smx_mailbox_t mbox, smx_actor_t process)
-{
-  mbox->permanent_receiver = process;
-}
 
 namespace simgrid {
 namespace simix {
@@ -55,6 +40,13 @@ MailboxImpl* MailboxImpl::byNameOrCreate(const char* name)
     xbt_dict_set(mailboxes, mbox->name_, mbox, nullptr);
   }
   return mbox;
+}
+/** @brief set the receiver of the mailbox to allow eager sends
+ *  \param actor The receiving dude
+ */
+void MailboxImpl::setReceiver(s4u::ActorPtr actor)
+{
+  this->permanent_receiver = actor.get()->getImpl();
 }
 /** @brief Pushes a communication activity into a mailbox
  *  @param activity What to add

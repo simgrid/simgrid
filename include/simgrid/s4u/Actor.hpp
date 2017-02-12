@@ -134,6 +134,7 @@ namespace s4u {
 XBT_PUBLIC_CLASS Actor {
   friend Mailbox;
   friend simgrid::simix::ActorImpl;
+  friend simgrid::simix::MailboxImpl;
   simix::ActorImpl* pimpl_ = nullptr;
 
   /** Wrap a (possibly non-copyable) single-use task into a `std::function` */

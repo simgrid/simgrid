@@ -57,8 +57,6 @@ void          process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void
 void          process_auto_restart_set(smx_actor_t process, int auto_restart) [[nohandler]];
 smx_actor_t process_restart(smx_actor_t process);
 
-void          mbox_set_receiver(smx_mailbox_t mbox, smx_actor_t receiver) [[nohandler]];
-
 smx_activity_t comm_iprobe(smx_mailbox_t mbox, int type, int src, int tag, simix_match_func_t match_fun, void* data);
 void          comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout) [[block]];
 smx_activity_t comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, int detached);

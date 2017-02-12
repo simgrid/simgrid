@@ -28,6 +28,7 @@ public:
 
   static MailboxImpl* byNameOrNull(const char* name);
   static MailboxImpl* byNameOrCreate(const char* name);
+  void setReceiver(s4u::ActorPtr actor);
   void push(smx_activity_t synchro);
   void remove(smx_activity_t activity);
   simgrid::s4u::Mailbox piface_; // Our interface
@@ -41,7 +42,5 @@ public:
 }
 
 XBT_PRIVATE void SIMIX_mailbox_exit();
-
-XBT_PRIVATE void SIMIX_mbox_set_receiver(smx_mailbox_t mbox, smx_actor_t proc);
 
 #endif /* SIMIX_MAILBOXIMPL_H */

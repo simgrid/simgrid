@@ -367,11 +367,6 @@ e_smx_state_t simcall_process_sleep(double duration)
   return (e_smx_state_t) simcall_BODY_process_sleep(duration);
 }
 
-void simcall_mbox_set_receiver(smx_mailbox_t mbox, smx_actor_t process)
-{
-  simcall_BODY_mbox_set_receiver(mbox, process);
-}
-
 /**
  * \ingroup simix_comm_management
  */
