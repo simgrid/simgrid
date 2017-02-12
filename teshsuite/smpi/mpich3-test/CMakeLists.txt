@@ -22,7 +22,7 @@ set(txt_files  ${txt_files}  ${CMAKE_CURRENT_SOURCE_DIR}/README
                              ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest_datatype.c
                              ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest_datatype_gen.c
                              ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest_manual.c
-                             ${CMAKE_CURRENT_SOURCE_DIR}/util/mtestt_datatype_gen_manual.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest_datatype_gen_manual.c
                              ${CMAKE_CURRENT_SOURCE_DIR}/util/dtypes_manual.c
                              ${CMAKE_CURRENT_SOURCE_DIR}/f77/testlist
                              ${CMAKE_CURRENT_SOURCE_DIR}/f90/testlist
