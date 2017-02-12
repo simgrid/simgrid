@@ -152,7 +152,7 @@ static int MTestTypeContigCheckbuf(MTestDatatype * mtype)
             if (p[i] != expected) {
                 err++;
                 if (mtype->printErrors && err < 10) {
-                    printf("Data expected = %x but got p[%ld] = %x\n", expected, i, p[i]);
+                    printf("Data expected = %x but got p[%zd] = %x\n", expected, i, p[i]);
                     fflush(stdout);
                 }
             }
@@ -255,7 +255,7 @@ static int MTestTypeVectorCheckbuf(MTestDatatype * mtype)
                     if (p[byte_offset + j] != expected) {
                         err++;
                         if (mtype->printErrors && err < 10) {
-                            printf("Data expected = %x but got p[%d,%ld] = %x\n", expected, i, j,
+                            printf("Data expected = %x but got p[%d,%zd] = %x\n", expected, i, j,
                                    p[byte_offset + j]);
                             fflush(stdout);
                         }
@@ -486,7 +486,7 @@ static int MTestTypeIndexedBlockCheckbuf(MTestDatatype * mtype)
                     if (p[offset + j] != expected) {
                         err++;
                         if (mtype->printErrors && err < 10) {
-                            printf("Data expected = %x but got p[%d,%ld] = %x\n",
+                            printf("Data expected = %x but got p[%d,%zd] = %x\n",
                                    expected, i, j, p[offset + j]);
                             fflush(stdout);
                         }
@@ -672,7 +672,7 @@ static int MTestTypeContiguousCreate(MPI_Aint nblock, MPI_Aint blocklen, MPI_Ain
         MTestPrintError(merr);
 
     memset(type_name, 0, sizeof(type_name));
-    sprintf(type_name, "%s %s (%ld count)", typename_prefix, "contiguous", nblock * blocklen);
+    sprintf(type_name, "%s %s (%zd count)", typename_prefix, "contiguous", nblock * blocklen);
     merr = MPI_Type_set_name(mtype->datatype, (char *) type_name);
     if (merr)
         MTestPrintError(merr);
@@ -720,7 +720,7 @@ static int MTestTypeVectorCreate(MPI_Aint nblock, MPI_Aint blocklen, MPI_Aint st
         MTestPrintError(merr);
 
     memset(type_name, 0, sizeof(type_name));
-    sprintf(type_name, "%s %s (%ld nblock %ld blocklen %ld stride)", typename_prefix, "vector",
+    sprintf(type_name, "%s %s (%zd nblock %zd blocklen %zd stride)", typename_prefix, "vector",
             nblock, blocklen, stride);
     merr = MPI_Type_set_name(mtype->datatype, (char *) type_name);
     if (merr)
@@ -769,7 +769,7 @@ static int MTestTypeHvectorCreate(MPI_Aint nblock, MPI_Aint blocklen, MPI_Aint s
         MTestPrintError(merr);
 
     memset(type_name, 0, sizeof(type_name));
-    sprintf(type_name, "%s %s (%ld nblock %ld blocklen %ld stride)", typename_prefix, "hvector",
+    sprintf(type_name, "%s %s (%zd nblock %zd blocklen %zd stride)", typename_prefix, "hvector",
             nblock, blocklen, stride);
     merr = MPI_Type_set_name(mtype->datatype, (char *) type_name);
     if (merr)
@@ -833,7 +833,7 @@ static int MTestTypeIndexedCreate(MPI_Aint nblock, MPI_Aint blocklen, MPI_Aint s
         MTestPrintError(merr);
 
     memset(type_name, 0, sizeof(type_name));
-    sprintf(type_name, "%s %s (%ld nblock %ld blocklen %ld stride %ld lb)", typename_prefix,
+    sprintf(type_name, "%s %s (%zd nblock %zd blocklen %zd stride %zd lb)", typename_prefix,
             "index", nblock, blocklen, stride, lb);
     merr = MPI_Type_set_name(mtype->datatype, (char *) type_name);
     if (merr)
@@ -895,7 +895,7 @@ static inline int MTestTypeHindexedCreate(MPI_Aint nblock, MPI_Aint blocklen, MP
         MTestPrintError(merr);
 
     memset(type_name, 0, sizeof(type_name));
-    sprintf(type_name, "%s %s (%ld nblock %ld blocklen %ld stride %ld lb)", typename_prefix,
+    sprintf(type_name, "%s %s (%zd nblock %zd blocklen %zd stride %zd lb)", typename_prefix,
             "hindex", nblock, blocklen, stride, lb);
     merr = MPI_Type_set_name(mtype->datatype, (char *) type_name);
     if (merr)
@@ -960,7 +960,7 @@ static int MTestTypeIndexedBlockCreate(MPI_Aint nblock, MPI_Aint blocklen, MPI_A
         MTestPrintError(merr);
 
     memset(type_name, 0, sizeof(type_name));
-    sprintf(type_name, "%s %s (%ld nblock %ld blocklen %ld stride %ld lb)", typename_prefix,
+    sprintf(type_name, "%s %s (%zd nblock %zd blocklen %zd stride %zd lb)", typename_prefix,
             "index_block", nblock, blocklen, stride, lb);
     merr = MPI_Type_set_name(mtype->datatype, (char *) type_name);
     if (merr)
@@ -1021,7 +1021,7 @@ static int MTestTypeHindexedBlockCreate(MPI_Aint nblock, MPI_Aint blocklen, MPI_
         MTestPrintError(merr);
 
     memset(type_name, 0, sizeof(type_name));
-    sprintf(type_name, "%s %s (%ld nblock %ld blocklen %ld stride %ld lb)", typename_prefix,
+    sprintf(type_name, "%s %s (%zd nblock %zd blocklen %zd stride %zd lb)", typename_prefix,
             "hindex_block", nblock, blocklen, stride, lb);
     merr = MPI_Type_set_name(mtype->datatype, (char *) type_name);
     if (merr)
@@ -1087,7 +1087,7 @@ static int MTestTypeStructCreate(MPI_Aint nblock, MPI_Aint blocklen, MPI_Aint st
         MTestPrintError(merr);
 
     memset(type_name, 0, sizeof(type_name));
-    sprintf(type_name, "%s %s (%ld nblock %ld blocklen %ld stride %ld lb)", typename_prefix,
+    sprintf(type_name, "%s %s (%zd nblock %zd blocklen %zd stride %zd lb)", typename_prefix,
             "struct", nblock, blocklen, stride, lb);
     merr = MPI_Type_set_name(mtype->datatype, (char *) type_name);
     if (merr)
