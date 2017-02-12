@@ -13,7 +13,7 @@
 int main(int argc, char **argv)
 {
     int i, rank, size;
-    MPI_Request *req;
+    MPI_Request *req=NULL;
     MPI_Datatype newtype;
     int snd_buf[3], rcv_buf[3];
     int count = 2;
