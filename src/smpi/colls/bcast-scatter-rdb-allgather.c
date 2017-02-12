@@ -107,7 +107,7 @@ smpi_coll_tuned_bcast_scatter_rdb_allgather (
     int mpi_errno = MPI_SUCCESS;
     int scatter_size, curr_size, recv_size = 0;
     int j, k, i, tmp_mask, is_contig, is_homogeneous;
-    MPI_Aint type_size, nbytes = 0;
+    MPI_Aint type_size = 0, nbytes = 0;
     int relative_dst, dst_tree_root, my_tree_root, send_offset;
     int recv_offset, tree_root, nprocs_completed, offset;
     int position;

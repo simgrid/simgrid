@@ -12,7 +12,7 @@ allred6 7
 reduce_mpich 5
 reduce_mpich 10
 reduce_local 2 mpiversion=2.2
-op_commutative 2
+#op_commutative 2
 red3 10
 red4 10
 alltoall1 8

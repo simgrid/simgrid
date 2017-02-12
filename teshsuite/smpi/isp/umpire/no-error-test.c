@@ -19,7 +19,6 @@ main (int argc, char **argv)
   int flag = 0;
   MPI_Status status;
   MPI_Request req;
-	int i;
   /* init */
   MPI_Init (&argc, &argv);
   MPI_Comm_size (MPI_COMM_WORLD, &nprocs);
