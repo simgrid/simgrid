@@ -93,7 +93,7 @@ static int verbose = 0;         /* Message level (0 is none) */
  *    Full      : MTestInitFullDatatypes
  */
 
-static int datatype_index = 0;
+SMPI_VARINIT_GLOBAL_AND_SET(datatype_index,int,0);
 
 /* ------------------------------------------------------------------------ */
 /* Routine and internal parameters to define the range of datatype tests */
@@ -333,9 +333,9 @@ static inline int MTestGetBasicDatatypes(MTestDatatype * sendtype,
                                          MTestDatatype * recvtype, MPI_Aint tot_count)
 {
     int merr = 0;
-    int bdt_index = datatype_index - MTEST_BDT_START_IDX;
+    int bdt_index = SMPI_VARGET_GLOBAL(datatype_index) - MTEST_BDT_START_IDX;
     if (bdt_index >= MTEST_BDT_MAX) {
-        printf("Wrong index:  global %d, bst %d in %s\n", datatype_index, bdt_index, __FUNCTION__);
+        printf("Wrong index:  global %d, bst %d in %s\n", SMPI_VARGET_GLOBAL(datatype_index), bdt_index, __FUNCTION__);
         merr++;
         return merr;
     }
@@ -397,11 +397,11 @@ static inline int MTestGetSendDerivedDatatypes(MTestDatatype * sendtype,
     MPI_Datatype old_type = MPI_DOUBLE;
 
     /* Check index */
-    ddt_datatype_index = datatype_index - MTEST_SEND_DDT_START_IDX;
+    ddt_datatype_index = SMPI_VARGET_GLOBAL(datatype_index) - MTEST_SEND_DDT_START_IDX;
     ddt_c_dt = ddt_datatype_index / MTEST_DDT_NUM_SUBTESTS;
     if (ddt_c_dt >= MTEST_DDT_MAX || !mtestDdtCreators[ddt_c_dt]) {
         printf("Wrong index:  global %d, send %d send-ddt %d, or undefined creator in %s\n",
-               datatype_index, ddt_datatype_index, ddt_c_dt, __FUNCTION__);
+               SMPI_VARGET_GLOBAL(datatype_index), ddt_datatype_index, ddt_c_dt, __FUNCTION__);
         merr++;
         return merr;
     }
@@ -411,7 +411,7 @@ static inline int MTestGetSendDerivedDatatypes(MTestDatatype * sendtype,
                                 &stride, &align_tot_count, &lb);
     if (merr) {
         printf("Wrong index:  global %d, send %d send-ddt %d, or undefined ddt structure in %s\n",
-               datatype_index, ddt_datatype_index, ddt_c_dt, __FUNCTION__);
+               SMPI_VARGET_GLOBAL(datatype_index), ddt_datatype_index, ddt_c_dt, __FUNCTION__);
         merr++;
         return merr;
     }
@@ -442,11 +442,11 @@ static inline int MTestGetRecvDerivedDatatypes(MTestDatatype * sendtype,
     MPI_Datatype old_type = MPI_DOUBLE;
 
     /* Check index */
-    ddt_datatype_index = datatype_index - MTEST_RECV_DDT_START_IDX;
+    ddt_datatype_index = SMPI_VARGET_GLOBAL(datatype_index) - MTEST_RECV_DDT_START_IDX;
     ddt_c_dt = ddt_datatype_index / MTEST_DDT_NUM_SUBTESTS;
     if (ddt_c_dt >= MTEST_DDT_MAX || !mtestDdtCreators[ddt_c_dt]) {
         printf("Wrong index:  global %d, recv %d recv-ddt %d, or undefined creator in %s\n",
-               datatype_index, ddt_datatype_index, ddt_c_dt, __FUNCTION__);
+               SMPI_VARGET_GLOBAL(datatype_index), ddt_datatype_index, ddt_c_dt, __FUNCTION__);
         merr++;
         return merr;
     }
@@ -456,7 +456,7 @@ static inline int MTestGetRecvDerivedDatatypes(MTestDatatype * sendtype,
                                 &stride, &align_tot_count, &lb);
     if (merr) {
         printf("Wrong index:  global %d, recv %d recv-ddt %d, or undefined ddt structure in %s\n",
-               datatype_index, ddt_datatype_index, ddt_c_dt, __FUNCTION__);
+               SMPI_VARGET_GLOBAL(datatype_index), ddt_datatype_index, ddt_c_dt, __FUNCTION__);
         return merr;
     }
 
@@ -493,42 +493,42 @@ int MTestGetDatatypes(MTestDatatype * sendtype, MTestDatatype * recvtype, MPI_Ai
         MTestInitDefaultTestFunc();
     }
 
-    if (datatype_index == 0) {
+    if (SMPI_VARGET_GLOBAL(datatype_index) == 0) {
         MTestPrintDatatypeGen();
     }
 
     /* Start generating tests */
-    if (datatype_index < MTEST_BDT_RANGE) {
+    if (SMPI_VARGET_GLOBAL(datatype_index) < MTEST_BDT_RANGE) {
         merr = MTestGetBasicDatatypes(sendtype, recvtype, tot_count);
 
     }
-    else if (datatype_index < MTEST_SEND_DDT_RANGE) {
+    else if (SMPI_VARGET_GLOBAL(datatype_index) < MTEST_SEND_DDT_RANGE) {
         merr = MTestGetSendDerivedDatatypes(sendtype, recvtype, tot_count);
 
     }
-    else if (datatype_index < MTEST_RECV_DDT_RANGE) {
+    else if (SMPI_VARGET_GLOBAL(datatype_index) < MTEST_RECV_DDT_RANGE) {
         merr = MTestGetRecvDerivedDatatypes(sendtype, recvtype, tot_count);
 
     }
     else {
         /* out of range */
-        datatype_index = -1;
+        SMPI_VARGET_GLOBAL(datatype_index) = -1;
         MTestResetDatatypeGen();
     }
 
     /* stop if error reported */
     if (merr) {
-        datatype_index = -1;
+        SMPI_VARGET_GLOBAL(datatype_index) = -1;
     }
 
-    if (datatype_index > 0) {
+    if (SMPI_VARGET_GLOBAL(datatype_index) > 0) {
         /* general initialization for receive buffer. */
         recvtype->InitBuf = MTestTypeInitRecv;
     }
 
-    datatype_index++;
+    SMPI_VARGET_GLOBAL(datatype_index)++;
 
-    if (verbose >= 2 && datatype_index > 0) {
+    if (verbose >= 2 && SMPI_VARGET_GLOBAL(datatype_index) > 0) {
         MPI_Count ssize, rsize;
         MPI_Aint slb, rlb, sextent, rextent;
         const char *sendtype_nm = MTestGetDatatypeName(sendtype);
@@ -547,7 +547,7 @@ int MTestGetDatatypes(MTestDatatype * sendtype, MTestDatatype * recvtype, MPI_Ai
         fflush(stdout);
     }
 
-    return datatype_index;
+    return SMPI_VARGET_GLOBAL(datatype_index);
 }
 
 /* Reset the datatype index (start from the initial data type.
@@ -556,7 +556,7 @@ int MTestGetDatatypes(MTestDatatype * sendtype, MTestDatatype * recvtype, MPI_Ai
 */
 void MTestResetDatatypes(void)
 {
-    datatype_index = 0;
+    SMPI_VARGET_GLOBAL(datatype_index) = 0;
     MTestResetDatatypeGen();
 }
 
@@ -564,7 +564,7 @@ void MTestResetDatatypes(void)
    is provided mostly to enable debugging of the MTest package itself */
 int MTestGetDatatypeIndex(void)
 {
-    return datatype_index;
+    return SMPI_VARGET_GLOBAL(datatype_index);
 }
 
 /* Free the storage associated with a datatype */
