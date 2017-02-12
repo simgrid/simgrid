@@ -835,6 +835,12 @@ void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
     *request = MPI_REQUEST_NULL;
 }
 
+static int sort_accumulates(const void* pa, const void* pb)
+{
+  return (*static_cast<MPI_Request const*>(pa))->tag>
+                (*static_cast<MPI_Request const*>(pb))->tag;
+}
+
 int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status * status)
 {
   s_xbt_dynar_t comms; // Keep it on stack to save some extra mallocs
@@ -872,11 +878,18 @@ int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status * status)
       // not MPI_UNDEFINED, as this is a simix return code
       if (i != -1) {
         index = map[i];
-        finish_wait(&requests[index], status);
-        if (requests[i] != MPI_REQUEST_NULL && (requests[i]->flags & NON_PERSISTENT))
-        requests[index] = MPI_REQUEST_NULL;
+        //in case of an accumulate, we have to wait the end of all requests to apply the operation, ordered correctly.
+        if ((requests[index] == MPI_REQUEST_NULL)
+             ||  (!((requests[index]->flags & ACCUMULATE) && (requests[index]->flags & RECV)))){
+          finish_wait(&requests[index], status);
+          if (requests[i] != MPI_REQUEST_NULL && (requests[i]->flags & NON_PERSISTENT))
+            requests[index] = MPI_REQUEST_NULL;
+        }else{
+            XBT_WARN("huu?");
+        }
       }
     }
+
     xbt_dynar_free_data(&comms);
     xbt_free(map);
   }
@@ -889,6 +902,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status * status)
 
 int smpi_mpi_waitall(int count, MPI_Request requests[], MPI_Status status[])
 {
+  s_xbt_dynar_t accumulates;
   int  index, c;
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
@@ -904,6 +918,7 @@ int smpi_mpi_waitall(int count, MPI_Request requests[], MPI_Status status[])
       }
     }
   }
+  xbt_dynar_init(&accumulates, sizeof(MPI_Request), nullptr);
   for(c = 0; c < count; c++) {
 
     if (MC_is_active() || MC_record_replay_is_active()) {
@@ -913,8 +928,14 @@ int smpi_mpi_waitall(int count, MPI_Request requests[], MPI_Status status[])
       index = smpi_mpi_waitany(count, requests, pstat);
       if (index == MPI_UNDEFINED)
         break;
+
+      if (requests[index] != MPI_REQUEST_NULL
+           && (requests[index]->flags & RECV)
+           && (requests[index]->flags & ACCUMULATE))
+        xbt_dynar_push(&accumulates, &requests[index]);
       if (requests[index] != MPI_REQUEST_NULL && (requests[index]->flags & NON_PERSISTENT))
       requests[index]=MPI_REQUEST_NULL;
+
     }
     if (status != MPI_STATUSES_IGNORE) {
       status[index] = *pstat;
@@ -922,6 +943,16 @@ int smpi_mpi_waitall(int count, MPI_Request requests[], MPI_Status status[])
         retvalue = MPI_ERR_IN_STATUS;
     }
   }
+
+  if(!xbt_dynar_is_empty(&accumulates)){
+    xbt_dynar_sort(&accumulates, sort_accumulates);
+    MPI_Request req;
+    unsigned int cursor;
+    xbt_dynar_foreach(&accumulates, cursor, req) {
+      finish_wait(&req, status);
+    }
+  }
+  xbt_dynar_free_data(&accumulates);
 
   return retvalue;
 }

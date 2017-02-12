@@ -24,6 +24,7 @@ typedef struct s_smpi_mpi_win{
   char* name;
   int opened;
   MPI_Group group;
+  int count; //for ordering the accs
 } s_smpi_mpi_win_t;
 
 
@@ -49,7 +50,7 @@ MPI_Win smpi_mpi_win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info 
   win->requests = new std::vector<MPI_Request>();
   win->connected_wins = xbt_new0(MPI_Win, comm_size);
   win->connected_wins[rank] = win;
-
+  win->count = 0;
   if(rank==0){
     win->bar = MSG_barrier_init(comm_size);
   }
@@ -123,6 +124,7 @@ int smpi_mpi_win_fence( int assert,  MPI_Win win){
 
     MPI_Request* treqs = &(*reqs)[0];
     smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
+    win->count=0;
   }
   win->assert = assert;
 
@@ -219,14 +221,16 @@ int smpi_mpi_accumulate( void *origin_addr, int origin_count, MPI_Datatype origi
 
   void* recv_addr = static_cast<void*>(static_cast<char*>(recv_win->base) + target_disp * recv_win->disp_unit);
   XBT_DEBUG("Entering MPI_Accumulate to %d", target_rank);
-
+    //As the tag will be used for ordering of the operations, add count to it
     //prepare send_request
     MPI_Request sreq = smpi_rma_send_init(origin_addr, origin_count, origin_datatype,
-        smpi_process_index(), smpi_group_index(smpi_comm_group(win->comm),target_rank), SMPI_RMA_TAG+3, win->comm, op);
+        smpi_process_index(), smpi_group_index(smpi_comm_group(win->comm),target_rank), SMPI_RMA_TAG+3+win->count, win->comm, op);
 
     //prepare receiver request
     MPI_Request rreq = smpi_rma_recv_init(recv_addr, target_count, target_datatype,
-        smpi_process_index(), smpi_group_index(smpi_comm_group(win->comm),target_rank), SMPI_RMA_TAG+3, recv_win->comm, op);
+        smpi_process_index(), smpi_group_index(smpi_comm_group(win->comm),target_rank), SMPI_RMA_TAG+3+win->count, recv_win->comm, op);
+
+    win->count++;
     //push request to receiver's win
     recv_win->requests->push_back(rreq);
     //start send
