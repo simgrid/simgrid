@@ -17,7 +17,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
           lock_nested)
     # not compiled files: acc-loc adlb_mimic1 attrorderwin badrma baseattrwin compare_and_swap contention_put
     # contention_putget contig_displ fence_shm fetchandadd_am fetchandadd fetchandadd_tree_am fetchandadd_tree 
-    # fetch_and_op fkeyvalwin flush get_acc_local get_accumulate ircpi linked_list_bench_lock_all 
+    # fetch_and_op fkeyvalwin flush get_acc_local get_accumulate linked_list_bench_lock_all 
     # linked_list_bench_lock_excl linked_list_bench_lock_shr linked_list linked_list_fop linked_list_lockall 
     # lockcontention2 lockcontention3 lockcontention locknull lockopts manyrma2 mcs-mutex mixedsync mutex_bench 
     # pscw_ordering put_base put_bottom req_example reqops rmanull rmazero rma-contig selfrma strided_acc_indexed 
@@ -25,7 +25,10 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
     # strided_putget_indexed strided_putget_indexed_shared test3_am test4_am test4 transpose4 transpose5 wincall 
     # win_dynamic_acc win_flavors win_info winname win_shared win_shared_noncontig win_shared_noncontig_put 
     # win_large_shm win_zero wintest get-struct atomic_rmw_fop atomic_rmw_gacc rget-unlock atomic_get atomic_rmw_cas
-    # win_shared_zerobyte aint
+    # win_shared_zerobyte aint derived-acc-flush_local large-acc-flush_local lockall_dt lockall_dt_flushall
+    # lockall_dt_flushlocalall lockall_dt_flushlocal lock_contention_dt lock_dt lock_dt_flush lock_dt_flushlocal 
+    #racc_local_comp rput_local_comp win_shared_create win_shared_put_flush_get win_shared_rma_flush_load
+    # wrma_flush_get
     add_executable(${file} ${file}.c)
     target_link_libraries(${file} simgrid mtest_c)
     set_target_properties(${file} PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
@@ -42,7 +45,7 @@ foreach(file accfence1 accfence2_am accfence2 accpscw1 allocmem epochtest getfen
           transpose3 transpose6 transpose7 window_creation
           acc-loc adlb_mimic1 attrorderwin badrma baseattrwin compare_and_swap contention_put contention_putget 
           contig_displ fence_shm fetchandadd_am fetchandadd fetchandadd_tree_am fetchandadd_tree fetch_and_op
-          fkeyvalwin flush get_acc_local get_accumulate ircpi linked_list_bench_lock_all linked_list_bench_lock_excl
+          fkeyvalwin flush get_acc_local get_accumulate linked_list_bench_lock_all linked_list_bench_lock_excl
           linked_list_bench_lock_shr linked_list linked_list_fop linked_list_lockall lockcontention2 lockcontention3 
           lockcontention locknull lockopts manyrma2 mcs-mutex mixedsync mutex_bench pscw_ordering put_base put_bottom 
           req_example reqops rmanull rmazero rma-contig selfrma strided_acc_indexed strided_acc_onelock 
@@ -51,7 +54,10 @@ foreach(file accfence1 accfence2_am accfence2 accpscw1 allocmem epochtest getfen
           win_dynamic_acc win_flavors win_info winname win_shared win_shared_noncontig win_shared_noncontig_put 
           win_large_shm win_zero wintest win_shared_zerobyte get-struct
           at_complete atomic_rmw_fop atomic_rmw_cas atomic_rmw_gacc atomic_get aint acc-pairtype manyget large-small-acc  
-          rget-unlock overlap_wins_rma lock_nested)
+          rget-unlock overlap_wins_rma lock_nested derived-acc-flush_local large-acc-flush_local lockall_dt lockall_dt_flushall
+          lockall_dt_flush nb_test lockall_dt_flushlocal lockall_dt_flushlocalall lock_contention_dt lock_dt lock_dt_flush lock_dt_flushlocal 
+          racc_local_comp rput_local_comp win_shared_create win_shared_put_flush_get win_shared_rma_flush_load
+          wrma_flush_get)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c)
 endforeach()
 
