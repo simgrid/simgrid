@@ -271,10 +271,10 @@ void MTestGetDbgInfo(int *_dbgflag, int *_verbose)
  * that return value as well.
  *
  */
-static int interCommIdx = 0;
-static int intraCommIdx = 0;
-static const char *intraCommName = 0;
-static const char *interCommName = 0;
+SMPI_VARINIT_GLOBAL_AND_SET(interCommIdx, int, 0);
+SMPI_VARINIT_GLOBAL_AND_SET(intraCommIdx, int, 0);
+SMPI_VARINIT_GLOBAL_AND_SET(intraCommName, const char *, 0);
+SMPI_VARINIT_GLOBAL_AND_SET(interCommName, const char *, 0);
 
 /*
  * Get an intracommunicator with at least min_size members.  If "allowSmaller"
@@ -292,19 +292,19 @@ int MTestGetIntracommGeneral(MPI_Comm * comm, int min_size, int allowSmaller)
      * MPI_COMM_NULL is always considered large enough */
     while (!done) {
         isBasic = 0;
-        intraCommName = "";
-        switch (intraCommIdx) {
+        SMPI_VARGET_GLOBAL(intraCommName) = "";
+        switch (SMPI_VARGET_GLOBAL(intraCommIdx)) {
         case 0:
             *comm = MPI_COMM_WORLD;
             isBasic = 1;
-            intraCommName = "MPI_COMM_WORLD";
+            SMPI_VARGET_GLOBAL(intraCommName) = "MPI_COMM_WORLD";
             break;
         case 1:
             /* dup of world */
             merr = MPI_Comm_dup(MPI_COMM_WORLD, comm);
             if (merr)
                 MTestPrintError(merr);
-            intraCommName = "Dup of MPI_COMM_WORLD";
+            SMPI_VARGET_GLOBAL(intraCommName) = "Dup of MPI_COMM_WORLD";
             break;
         case 2:
             /* reverse ranks */
@@ -317,7 +317,7 @@ int MTestGetIntracommGeneral(MPI_Comm * comm, int min_size, int allowSmaller)
             merr = MPI_Comm_split(MPI_COMM_WORLD, 0, size - rank, comm);
             if (merr)
                 MTestPrintError(merr);
-            intraCommName = "Rank reverse of MPI_COMM_WORLD";
+            SMPI_VARGET_GLOBAL(intraCommName) = "Rank reverse of MPI_COMM_WORLD";
             break;
         case 3:
             /* subset of world, with reversed ranks */
@@ -331,12 +331,12 @@ int MTestGetIntracommGeneral(MPI_Comm * comm, int min_size, int allowSmaller)
                                   size - rank, comm);
             if (merr)
                 MTestPrintError(merr);
-            intraCommName = "Rank reverse of half of MPI_COMM_WORLD";
+            SMPI_VARGET_GLOBAL(intraCommName) = "Rank reverse of half of MPI_COMM_WORLD";
             break;
         case 4:
             *comm = MPI_COMM_SELF;
             isBasic = 1;
-            intraCommName = "MPI_COMM_SELF";
+            SMPI_VARGET_GLOBAL(intraCommName) = "MPI_COMM_SELF";
             break;
         case 5:
             {
@@ -370,7 +370,7 @@ int MTestGetIntracommGeneral(MPI_Comm * comm, int min_size, int allowSmaller)
                         MTestPrintError(merr);
                     MPI_Comm_free(&inter_comm);
                     MPI_Comm_free(&local_comm);
-                    intraCommName = "Dup of WORLD created by MPI_Intercomm_merge";
+                    SMPI_VARGET_GLOBAL(intraCommName) = "Dup of WORLD created by MPI_Intercomm_merge";
                 }
                 else {
                     *comm = MPI_COMM_NULL;
@@ -400,7 +400,7 @@ int MTestGetIntracommGeneral(MPI_Comm * comm, int min_size, int allowSmaller)
                     if (rank % 2 == 0) {
                         /* Even processes create a comm. for themselves */
                         MPI_Comm_create_group(MPI_COMM_WORLD, even_group, 0, comm);
-                        intraCommName = "Even of WORLD created by MPI_Comm_create_group";
+                        SMPI_VARGET_GLOBAL(intraCommName) = "Even of WORLD created by MPI_Comm_create_group";
                     }
                     else {
                         *comm = MPI_COMM_NULL;
@@ -437,7 +437,7 @@ int MTestGetIntracommGeneral(MPI_Comm * comm, int min_size, int allowSmaller)
                         MTestPrintError(merr);
                     MPI_Group_free(&world_group);
                     MPI_Group_free(&high_group);
-                    intraCommName = "High half of WORLD created by MPI_Comm_create";
+                    SMPI_VARGET_GLOBAL(intraCommName) = "High half of WORLD created by MPI_Comm_create";
                 }
                 else {
                     *comm = MPI_COMM_NULL;
@@ -455,7 +455,7 @@ int MTestGetIntracommGeneral(MPI_Comm * comm, int min_size, int allowSmaller)
                 merr = MPI_Comm_size(MPI_COMM_WORLD, &size);
                 if (merr)
                     MTestPrintError(merr);
-                newsize = size - (intraCommIdx - 7);
+                newsize = size - (SMPI_VARGET_GLOBAL(intraCommIdx) - 7);
 
                 if (allowSmaller && newsize >= min_size) {
                     merr = MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -471,13 +471,13 @@ int MTestGetIntracommGeneral(MPI_Comm * comm, int min_size, int allowSmaller)
                         *comm = MPI_COMM_NULL;
                     }
                     else {
-                        intraCommName = "Split of WORLD";
+                        SMPI_VARGET_GLOBAL(intraCommName) = "Split of WORLD";
                     }
                 }
                 else {
                     /* Act like default */
                     *comm = MPI_COMM_NULL;
-                    intraCommIdx = -1;
+                    SMPI_VARGET_GLOBAL(intraCommIdx) = -1;
                 }
             }
             break;
@@ -485,7 +485,7 @@ int MTestGetIntracommGeneral(MPI_Comm * comm, int min_size, int allowSmaller)
             /* Other ideas: dup of self, cart comm, graph comm */
         default:
             *comm = MPI_COMM_NULL;
-            intraCommIdx = -1;
+            SMPI_VARGET_GLOBAL(intraCommIdx) = -1;
             break;
         }
 
@@ -497,7 +497,7 @@ int MTestGetIntracommGeneral(MPI_Comm * comm, int min_size, int allowSmaller)
                 done = 1;
         }
         else {
-            intraCommName = "MPI_COMM_NULL";
+            SMPI_VARGET_GLOBAL(intraCommName) = "MPI_COMM_NULL";
             isBasic = 1;
             done = 1;
         }
@@ -508,7 +508,7 @@ int MTestGetIntracommGeneral(MPI_Comm * comm, int min_size, int allowSmaller)
         /* Advance the comm index whether we are done or not, otherwise we could
          * spin forever trying to allocate a too-small communicator over and
          * over again. */
-        intraCommIdx++;
+        SMPI_VARGET_GLOBAL(intraCommIdx)++;
 
         if (!done && !isBasic && *comm != MPI_COMM_NULL) {
             /* avoid leaking communicators */
@@ -518,7 +518,7 @@ int MTestGetIntracommGeneral(MPI_Comm * comm, int min_size, int allowSmaller)
         }
     }
 
-    return intraCommIdx;
+    return SMPI_VARGET_GLOBAL(intraCommIdx);
 }
 
 /*
@@ -532,7 +532,7 @@ int MTestGetIntracomm(MPI_Comm * comm, int min_size)
 /* Return the name of an intra communicator */
 const char *MTestGetIntracommName(void)
 {
-    return intraCommName;
+    return SMPI_VARGET_GLOBAL(intraCommName);
 }
 
 /*
@@ -553,9 +553,9 @@ int MTestGetIntercomm(MPI_Comm * comm, int *isLeftGroup, int min_size)
     while (!done) {
         *comm = MPI_COMM_NULL;
         *isLeftGroup = 0;
-        interCommName = "MPI_COMM_NULL";
+        SMPI_VARGET_GLOBAL(interCommName) = "MPI_COMM_NULL";
 
-        switch (interCommIdx) {
+        switch (SMPI_VARGET_GLOBAL(interCommIdx)) {
         case 0:
             /* Split comm world in half */
             merr = MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -583,7 +583,7 @@ int MTestGetIntercomm(MPI_Comm * comm, int *isLeftGroup, int min_size)
                 merr = MPI_Intercomm_create(mcomm, 0, MPI_COMM_WORLD, rleader, 12345, comm);
                 if (merr)
                     MTestPrintError(merr);
-                interCommName = "Intercomm by splitting MPI_COMM_WORLD";
+                SMPI_VARGET_GLOBAL(interCommName) = "Intercomm by splitting MPI_COMM_WORLD";
             }
             else
                 *comm = MPI_COMM_NULL;
@@ -615,7 +615,7 @@ int MTestGetIntercomm(MPI_Comm * comm, int *isLeftGroup, int min_size)
                 merr = MPI_Intercomm_create(mcomm, 0, MPI_COMM_WORLD, rleader, 12346, comm);
                 if (merr)
                     MTestPrintError(merr);
-                interCommName = "Intercomm by splitting MPI_COMM_WORLD into 1, rest";
+                SMPI_VARGET_GLOBAL(interCommName) = "Intercomm by splitting MPI_COMM_WORLD into 1, rest";
             }
             else
                 *comm = MPI_COMM_NULL;
@@ -648,7 +648,7 @@ int MTestGetIntercomm(MPI_Comm * comm, int *isLeftGroup, int min_size)
                 merr = MPI_Intercomm_create(mcomm, 0, MPI_COMM_WORLD, rleader, 12347, comm);
                 if (merr)
                     MTestPrintError(merr);
-                interCommName = "Intercomm by splitting MPI_COMM_WORLD into 2, rest";
+                SMPI_VARGET_GLOBAL(interCommName) = "Intercomm by splitting MPI_COMM_WORLD into 2, rest";
             }
             else
                 *comm = MPI_COMM_NULL;
@@ -691,7 +691,7 @@ int MTestGetIntercomm(MPI_Comm * comm, int *isLeftGroup, int min_size)
                 merr = MPI_Comm_dup(mcomm, comm);
                 if (merr)
                     MTestPrintError(merr);
-                interCommName = "Intercomm by splitting MPI_COMM_WORLD then dup'ing";
+                SMPI_VARGET_GLOBAL(interCommName) = "Intercomm by splitting MPI_COMM_WORLD then dup'ing";
             }
             else
                 *comm = MPI_COMM_NULL;
@@ -738,7 +738,7 @@ int MTestGetIntercomm(MPI_Comm * comm, int *isLeftGroup, int min_size)
                 merr = MPI_Comm_split(mcomm, 0, rank, comm);
                 if (merr)
                     MTestPrintError(merr);
-                interCommName = "Intercomm by splitting MPI_COMM_WORLD then then splitting again";
+                SMPI_VARGET_GLOBAL(interCommName) = "Intercomm by splitting MPI_COMM_WORLD then then splitting again";
             }
             else
                 *comm = MPI_COMM_NULL;
@@ -779,7 +779,7 @@ int MTestGetIntercomm(MPI_Comm * comm, int *isLeftGroup, int min_size)
                     if (merr)
                         MTestPrintError(merr);
                 }
-                interCommName =
+                SMPI_VARGET_GLOBAL(interCommName) =
                     "Intercomm by splitting MPI_COMM_WORLD (discarding rank 0 in the left group) then MPI_Intercomm_create'ing";
             }
             else {
@@ -842,7 +842,7 @@ int MTestGetIntercomm(MPI_Comm * comm, int *isLeftGroup, int min_size)
                 if (merr)
                     MTestPrintError(merr);
 
-                interCommName =
+                SMPI_VARGET_GLOBAL(interCommName) =
                     "Intercomm by splitting MPI_COMM_WORLD then discarding 0 ranks with MPI_Comm_create";
             }
             else {
@@ -852,7 +852,7 @@ int MTestGetIntercomm(MPI_Comm * comm, int *isLeftGroup, int min_size)
 
         default:
             *comm = MPI_COMM_NULL;
-            interCommIdx = -1;
+            SMPI_VARGET_GLOBAL(interCommIdx) = -1;
             break;
         }
 
@@ -867,7 +867,7 @@ int MTestGetIntercomm(MPI_Comm * comm, int *isLeftGroup, int min_size)
                 done = 1;
         }
         else {
-            interCommName = "MPI_COMM_NULL";
+            SMPI_VARGET_GLOBAL(interCommName) = "MPI_COMM_NULL";
             done = 1;
         }
 
@@ -877,7 +877,7 @@ int MTestGetIntercomm(MPI_Comm * comm, int *isLeftGroup, int min_size)
         /* Advance the comm index whether we are done or not, otherwise we could
          * spin forever trying to allocate a too-small communicator over and
          * over again. */
-        interCommIdx++;
+        SMPI_VARGET_GLOBAL(interCommIdx)++;
 
         if (!done && *comm != MPI_COMM_NULL) {
             /* avoid leaking communicators */
@@ -899,7 +899,7 @@ int MTestGetIntercomm(MPI_Comm * comm, int *isLeftGroup, int min_size)
         }
     }
 
-    return interCommIdx;
+    return SMPI_VARGET_GLOBAL(interCommIdx);
 }
 
 int MTestTestIntercomm(MPI_Comm comm)
@@ -1021,7 +1021,7 @@ int MTestTestComm(MPI_Comm comm)
 /* Return the name of an intercommunicator */
 const char *MTestGetIntercommName(void)
 {
-    return interCommName;
+    return SMPI_VARGET_GLOBAL(interCommName);
 }
 
 /* Get a communicator of a given minimum size.  Both intra and inter
@@ -1154,11 +1154,11 @@ static void MTestResourceSummary(FILE * fp)
 /*
  * Create MPI Windows
  */
-static int win_index = 0;
-static const char *winName;
+SMPI_VARINIT_GLOBAL_AND_SET(win_index, int, 0);
+SMPI_VARINIT_GLOBAL(winName, const char *);
 /* Use an attribute to remember the type of memory allocation (static,
    malloc, or MPI_Alloc_mem) */
-static int mem_keyval = MPI_KEYVAL_INVALID;
+SMPI_VARINIT_GLOBAL_AND_SET(mem_keyval, int, MPI_KEYVAL_INVALID);
 int MTestGetWin(MPI_Win * win, int mustBePassive)
 {
     static char actbuf[1024];
@@ -1167,22 +1167,22 @@ int MTestGetWin(MPI_Win * win, int mustBePassive)
     int n, rank, merr;
     MPI_Info info;
 
-    if (mem_keyval == MPI_KEYVAL_INVALID) {
+    if (SMPI_VARGET_GLOBAL(mem_keyval) == MPI_KEYVAL_INVALID) {
         /* Create the keyval */
-        merr = MPI_Win_create_keyval(MPI_WIN_NULL_COPY_FN, MPI_WIN_NULL_DELETE_FN, &mem_keyval, 0);
+        merr = MPI_Win_create_keyval(MPI_WIN_NULL_COPY_FN, MPI_WIN_NULL_DELETE_FN, &SMPI_VARGET_GLOBAL(mem_keyval), 0);
         if (merr)
             MTestPrintError(merr);
 
     }
 
-    switch (win_index) {
+    switch (SMPI_VARGET_GLOBAL(win_index)) {
     case 0:
         /* Active target window */
         merr = MPI_Win_create(actbuf, 1024, 1, MPI_INFO_NULL, MPI_COMM_WORLD, win);
         if (merr)
             MTestPrintError(merr);
-        winName = "active-window";
-        merr = MPI_Win_set_attr(*win, mem_keyval, (void *) 0);
+        SMPI_VARGET_GLOBAL(winName) = "active-window";
+        merr = MPI_Win_set_attr(*win, SMPI_VARGET_GLOBAL(mem_keyval), (void *) 0);
         if (merr)
             MTestPrintError(merr);
         break;
@@ -1194,8 +1194,8 @@ int MTestGetWin(MPI_Win * win, int mustBePassive)
         merr = MPI_Win_create(pasbuf, 1024, 1, MPI_INFO_NULL, MPI_COMM_WORLD, win);
         if (merr)
             MTestPrintError(merr);
-        winName = "passive-window";
-        merr = MPI_Win_set_attr(*win, mem_keyval, (void *) 2);
+        SMPI_VARGET_GLOBAL(winName) = "passive-window";
+        merr = MPI_Win_set_attr(*win, SMPI_VARGET_GLOBAL(mem_keyval), (void *) 2);
         if (merr)
             MTestPrintError(merr);
         break;
@@ -1212,8 +1212,8 @@ int MTestGetWin(MPI_Win * win, int mustBePassive)
         merr = MPI_Win_create(buf, n, 1, MPI_INFO_NULL, MPI_COMM_WORLD, win);
         if (merr)
             MTestPrintError(merr);
-        winName = "active-all-different-win";
-        merr = MPI_Win_set_attr(*win, mem_keyval, (void *) 1);
+        SMPI_VARGET_GLOBAL(winName) = "active-all-different-win";
+        merr = MPI_Win_set_attr(*win, SMPI_VARGET_GLOBAL(mem_keyval), (void *) 1);
         if (merr)
             MTestPrintError(merr);
         break;
@@ -1239,22 +1239,22 @@ int MTestGetWin(MPI_Win * win, int mustBePassive)
         merr = MPI_Info_free(&info);
         if (merr)
             MTestPrintError(merr);
-        winName = "active-nolocks-all-different-win";
-        merr = MPI_Win_set_attr(*win, mem_keyval, (void *) 1);
+        SMPI_VARGET_GLOBAL(winName) = "active-nolocks-all-different-win";
+        merr = MPI_Win_set_attr(*win, SMPI_VARGET_GLOBAL(mem_keyval), (void *) 1);
         if (merr)
             MTestPrintError(merr);
         break;
     default:
-        win_index = -1;
+        SMPI_VARGET_GLOBAL(win_index) = -1;
     }
-    win_index++;
-    return win_index;
+    SMPI_VARGET_GLOBAL(win_index)++;
+    return SMPI_VARGET_GLOBAL(win_index);
 }
 
 /* Return a pointer to the name associated with a window object */
 const char *MTestGetWinName(void)
 {
-    return winName;
+    return SMPI_VARGET_GLOBAL(winName);
 }
 
 /* Free the storage associated with a window object */
@@ -1271,7 +1271,7 @@ void MTestFreeWin(MPI_Win * win)
     }
     if (addr) {
         void *val;
-        merr = MPI_Win_get_attr(*win, mem_keyval, &val, &flag);
+        merr = MPI_Win_get_attr(*win, SMPI_VARGET_GLOBAL(mem_keyval), &val, &flag);
         if (merr)
             MTestPrintError(merr);
         if (flag) {
@@ -1293,8 +1293,8 @@ void MTestFreeWin(MPI_Win * win)
 
 static void MTestRMACleanup(void)
 {
-    if (mem_keyval != MPI_KEYVAL_INVALID) {
-        MPI_Win_free_keyval(&mem_keyval);
+    if (SMPI_VARGET_GLOBAL(mem_keyval) != MPI_KEYVAL_INVALID) {
+        MPI_Win_free_keyval(&SMPI_VARGET_GLOBAL(mem_keyval));
     }
 }
 #else
