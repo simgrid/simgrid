@@ -424,8 +424,9 @@ void smpi_datatype_free(MPI_Datatype* type){
 
 void smpi_datatype_use(MPI_Datatype type){
 
-  if(type != MPI_DATATYPE_NULL)
-    type->in_use++;
+  if(type == MPI_DATATYPE_NULL)
+    return;
+  type->in_use++;
 
   if(type->sizeof_substruct!=0){
     static_cast<s_smpi_subtype_t *>((type)->substruct)->subtype_use(&type);  

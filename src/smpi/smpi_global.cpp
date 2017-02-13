@@ -790,7 +790,7 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
   SIMIX_global_init(&argc, argv);
   MSG_init(&argc,argv);
 
-  SMPI_switch_data_segment = smpi_switch_data_segment;
+  SMPI_switch_data_segment = &smpi_switch_data_segment;
 
   smpi_init_options();
 
