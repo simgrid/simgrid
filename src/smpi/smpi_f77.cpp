@@ -66,44 +66,44 @@ static void smpi_init_fortran_types(){
      datatype_lookup = xbt_dict_new_homogeneous(nullptr);
      win_lookup = xbt_dict_new_homogeneous(nullptr);
      info_lookup = xbt_dict_new_homogeneous(nullptr);
-     smpi_type_c2f(MPI_BYTE);//MPI_BYTE
-     smpi_type_c2f(MPI_CHAR);//MPI_CHARACTER
+     smpi_type_add_f(MPI_BYTE);//MPI_BYTE
+     smpi_type_add_f(MPI_CHAR);//MPI_CHARACTER
 #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
-     smpi_type_c2f(MPI_INT);//MPI_LOGICAL
-     smpi_type_c2f(MPI_INT);//MPI_INTEGER
+     smpi_type_add_f(MPI_C_BOOL);//MPI_LOGICAL
+     smpi_type_add_f(MPI_INT);//MPI_INTEGER
 #else
-     smpi_type_c2f(MPI_LONG);//MPI_LOGICAL
-     smpi_type_c2f(MPI_LONG);//MPI_INTEGER
+     smpi_type_add_f(MPI_C_BOOL);//MPI_LOGICAL
+     smpi_type_add_f(MPI_LONG);//MPI_INTEGER
 #endif
-     smpi_type_c2f(MPI_INT8_T);//MPI_INTEGER1
-     smpi_type_c2f(MPI_INT16_T);//MPI_INTEGER2
-     smpi_type_c2f(MPI_INT32_T);//MPI_INTEGER4
-     smpi_type_c2f(MPI_INT64_T);//MPI_INTEGER8
-     smpi_type_c2f(MPI_FLOAT);//MPI_REAL
-     smpi_type_c2f(MPI_FLOAT);//MPI_REAL4
-     smpi_type_c2f(MPI_DOUBLE);//MPI_REAL8
-     smpi_type_c2f(MPI_DOUBLE);//MPI_DOUBLE_PRECISION
-     smpi_type_c2f(MPI_C_FLOAT_COMPLEX);//MPI_COMPLEX
-     smpi_type_c2f(MPI_C_DOUBLE_COMPLEX);//MPI_DOUBLE_COMPLEX
+     smpi_type_add_f(MPI_INT8_T);//MPI_INTEGER1
+     smpi_type_add_f(MPI_INT16_T);//MPI_INTEGER2
+     smpi_type_add_f(MPI_INT32_T);//MPI_INTEGER4
+     smpi_type_add_f(MPI_INT64_T);//MPI_INTEGER8
+     smpi_type_add_f(MPI_REAL);//MPI_REAL
+     smpi_type_add_f(MPI_REAL4);//MPI_REAL4
+     smpi_type_add_f(MPI_REAL8);//MPI_REAL8
+     smpi_type_add_f(MPI_DOUBLE);//MPI_DOUBLE_PRECISION
+     smpi_type_add_f(MPI_C_FLOAT_COMPLEX);//MPI_COMPLEX
+     smpi_type_add_f(MPI_C_DOUBLE_COMPLEX);//MPI_DOUBLE_COMPLEX
 #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
-     smpi_type_c2f(MPI_2INT);//MPI_2INTEGER
+     smpi_type_add_f(MPI_2INT);//MPI_2INTEGER
 #else
-     smpi_type_c2f(MPI_2LONG);//MPI_2INTEGER
+     smpi_type_add_f(MPI_2LONG);//MPI_2INTEGER
 #endif
-     smpi_type_c2f(MPI_UINT8_T);//MPI_LOGICAL1
-     smpi_type_c2f(MPI_UINT16_T);//MPI_LOGICAL2
-     smpi_type_c2f(MPI_UINT32_T);//MPI_LOGICAL4
-     smpi_type_c2f(MPI_UINT64_T);//MPI_LOGICAL8
-     smpi_type_c2f(MPI_2FLOAT);//MPI_2REAL
-     smpi_type_c2f(MPI_2DOUBLE);//MPI_2DOUBLE_PRECISION
-     smpi_type_c2f(MPI_PTR);//MPI_AINT
-     smpi_type_c2f(MPI_UINT64_T);//MPI_OFFSET
-     smpi_type_c2f(MPI_UINT64_T);//MPI_COUNT
-     smpi_type_c2f(MPI_DATATYPE_NULL);//MPI_REAL16
-     smpi_type_c2f(MPI_DATATYPE_NULL);//MPI_COMPLEX8
-     smpi_type_c2f(MPI_DATATYPE_NULL);//MPI_COMPLEX16
-     smpi_type_c2f(MPI_DATATYPE_NULL);//MPI_COMPLEX32
-     smpi_type_c2f(MPI_DATATYPE_NULL);//MPI_PACKED
+     smpi_type_add_f(MPI_UINT8_T);//MPI_LOGICAL1
+     smpi_type_add_f(MPI_UINT16_T);//MPI_LOGICAL2
+     smpi_type_add_f(MPI_UINT32_T);//MPI_LOGICAL4
+     smpi_type_add_f(MPI_UINT64_T);//MPI_LOGICAL8
+     smpi_type_add_f(MPI_2FLOAT);//MPI_2REAL
+     smpi_type_add_f(MPI_2DOUBLE);//MPI_2DOUBLE_PRECISION
+     smpi_type_add_f(MPI_PTR);//MPI_AINT
+     smpi_type_add_f(MPI_OFFSET);//MPI_OFFSET
+     smpi_type_add_f(MPI_AINT);//MPI_COUNT
+     smpi_type_add_f(MPI_DATATYPE_NULL);//MPI_REAL16
+     smpi_type_add_f(MPI_DATATYPE_NULL);//MPI_COMPLEX8
+     smpi_type_add_f(MPI_DATATYPE_NULL);//MPI_COMPLEX16
+     smpi_type_add_f(MPI_DATATYPE_NULL);//MPI_COMPLEX32
+     smpi_type_add_f(MPI_DATATYPE_NULL);//MPI_PACKED
      op_lookup = xbt_dict_new_homogeneous(nullptr);
      smpi_op_c2f(MPI_MAX);
      smpi_op_c2f(MPI_MIN);
@@ -195,12 +195,17 @@ static void free_request(int request) {
   xbt_dict_remove(request_lookup, get_key_id(key, request));
 }
 
-int smpi_type_c2f(MPI_Datatype datatype) {
+int smpi_type_add_f(MPI_Datatype datatype){
   static int datatype_id = 0;
   char key[KEY_SIZE];
   xbt_dict_set(datatype_lookup, get_key(key, datatype_id), datatype, nullptr);
   datatype_id++;
   return datatype_id-1;
+}
+
+int smpi_type_c2f(MPI_Datatype datatype) {
+  char* existing_key = xbt_dict_get_key(datatype_lookup, datatype);
+  return atoi(existing_key);
 }
 
 MPI_Datatype smpi_type_f2c(int datatype) {
@@ -640,7 +645,7 @@ void mpi_type_vector_(int* count, int* blocklen, int* stride, int* old_type, int
   MPI_Datatype tmp;
   *ierr= MPI_Type_vector(*count, *blocklen, *stride, smpi_type_f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = smpi_type_c2f(tmp);
+    *newtype = smpi_type_add_f(tmp);
   }
 }
 
@@ -648,7 +653,7 @@ void mpi_type_create_vector_(int* count, int* blocklen, int* stride, int* old_ty
   MPI_Datatype tmp;
   *ierr= MPI_Type_vector(*count, *blocklen, *stride, smpi_type_f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = smpi_type_c2f(tmp);
+    *newtype = smpi_type_add_f(tmp);
   }
 }
 
@@ -656,7 +661,7 @@ void mpi_type_hvector_(int* count, int* blocklen, MPI_Aint* stride, int* old_typ
   MPI_Datatype tmp;
   *ierr= MPI_Type_hvector (*count, *blocklen, *stride, smpi_type_f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = smpi_type_c2f(tmp);
+    *newtype = smpi_type_add_f(tmp);
   }
 }
 
@@ -664,7 +669,7 @@ void mpi_type_create_hvector_(int* count, int* blocklen, MPI_Aint* stride, int* 
   MPI_Datatype tmp;
   *ierr= MPI_Type_hvector(*count, *blocklen, *stride, smpi_type_f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = smpi_type_c2f(tmp);
+    *newtype = smpi_type_add_f(tmp);
   }
 }
 
@@ -871,7 +876,7 @@ void mpi_type_dup_ (int*  datatype, int* newdatatype, int* ierr){
  MPI_Datatype tmp;
  *ierr = MPI_Type_dup(smpi_type_f2c(*datatype), &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *newdatatype = smpi_type_c2f(tmp);
+   *newdatatype = smpi_type_add_f(tmp);
  }
 }
 
@@ -1239,7 +1244,7 @@ void mpi_type_contiguous_ (int* count, int* old_type, int*  newtype, int* ierr) 
   MPI_Datatype tmp;
   *ierr = MPI_Type_contiguous(*count, smpi_type_f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = smpi_type_c2f(tmp);
+    *newtype = smpi_type_add_f(tmp);
   }
 }
 
@@ -1302,7 +1307,7 @@ void mpi_type_hindexed_ (int* count, int* blocklens, MPI_Aint* indices, int* old
   MPI_Datatype tmp;
   *ierr = MPI_Type_hindexed(*count, blocklens, indices, smpi_type_f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = smpi_type_c2f(tmp);
+    *newtype = smpi_type_add_f(tmp);
   }
 }
 
@@ -1310,7 +1315,7 @@ void mpi_type_create_hindexed_(int* count, int* blocklens, MPI_Aint* indices, in
   MPI_Datatype tmp;
   *ierr = MPI_Type_create_hindexed(*count, blocklens, indices, smpi_type_f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = smpi_type_c2f(tmp);
+    *newtype = smpi_type_add_f(tmp);
   }
 }
 
@@ -1319,7 +1324,7 @@ void mpi_type_create_hindexed_block_ (int* count, int* blocklength, MPI_Aint* in
   MPI_Datatype tmp;
   *ierr = MPI_Type_create_hindexed_block(*count, *blocklength, indices, smpi_type_f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = smpi_type_c2f(tmp);
+    *newtype = smpi_type_add_f(tmp);
   }
 }
 
@@ -1327,7 +1332,7 @@ void mpi_type_indexed_ (int* count, int* blocklens, int* indices, int* old_type,
   MPI_Datatype tmp;
   *ierr = MPI_Type_indexed(*count, blocklens, indices, smpi_type_f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = smpi_type_c2f(tmp);
+    *newtype = smpi_type_add_f(tmp);
   }
 }
 
@@ -1336,7 +1341,7 @@ void mpi_type_create_indexed_block_ (int* count, int* blocklength, int* indices,
   MPI_Datatype tmp;
   *ierr = MPI_Type_create_indexed_block(*count, *blocklength, indices, smpi_type_f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = smpi_type_c2f(tmp);
+    *newtype = smpi_type_add_f(tmp);
   }
 }
 
@@ -1349,7 +1354,7 @@ void mpi_type_struct_ (int* count, int* blocklens, MPI_Aint* indices, int* old_t
   }
   *ierr = MPI_Type_struct(*count, blocklens, indices, types, &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = smpi_type_c2f(tmp);
+    *newtype = smpi_type_add_f(tmp);
   }
   xbt_free(types);
 }
@@ -1363,7 +1368,7 @@ void mpi_type_create_struct_(int* count, int* blocklens, MPI_Aint* indices, int*
   }
   *ierr = MPI_Type_create_struct(*count, blocklens, indices, types, &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = smpi_type_c2f(tmp);
+    *newtype = smpi_type_add_f(tmp);
   }
   xbt_free(types);
 }
@@ -1507,7 +1512,7 @@ void mpi_type_create_darray_ (int* size, int* rank, int* ndims, int* array_of_gs
   array_of_distribs,  array_of_dargs,  array_of_psizes,
   *order,  smpi_type_f2c(*oldtype), &tmp) ;
   if(*ierr == MPI_SUCCESS) {
-    *newtype = smpi_type_c2f(tmp);
+    *newtype = smpi_type_add_f(tmp);
   }
 }
 
@@ -1515,7 +1520,7 @@ void mpi_type_create_resized_ (int* oldtype,MPI_Aint* lb, MPI_Aint* extent, int*
   MPI_Datatype tmp;
   *ierr = MPI_Type_create_resized(smpi_type_f2c(*oldtype),*lb, *extent, &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = smpi_type_c2f(tmp);
+    *newtype = smpi_type_add_f(tmp);
   }
 }
 
@@ -1525,7 +1530,7 @@ void mpi_type_create_subarray_ (int* ndims,int *array_of_sizes, int *array_of_su
   *ierr = MPI_Type_create_subarray(*ndims,array_of_sizes, array_of_subsizes, array_of_starts, *order,
                                    smpi_type_f2c(*oldtype), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = smpi_type_c2f(tmp);
+    *newtype = smpi_type_add_f(tmp);
   }
 }
 

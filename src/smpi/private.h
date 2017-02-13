@@ -240,6 +240,7 @@ XBT_PRIVATE void smpi_empty_status(MPI_Status * status);
 XBT_PRIVATE MPI_Op smpi_op_new(MPI_User_function * function, bool commute);
 XBT_PRIVATE bool smpi_op_is_commute(MPI_Op op);
 XBT_PRIVATE void smpi_op_destroy(MPI_Op op);
+XBT_PRIVATE void smpi_op_set_fortran(MPI_Op op);
 XBT_PRIVATE void smpi_op_apply(MPI_Op op, const void *invec, void *inoutvec, int *len, MPI_Datatype * datatype);
 
 XBT_PRIVATE MPI_Group smpi_group_new(int size);
@@ -284,6 +285,7 @@ XBT_PRIVATE MPI_Group smpi_group_f2c(int group);
 XBT_PRIVATE int smpi_request_c2f(MPI_Request req);
 XBT_PRIVATE MPI_Request smpi_request_f2c(int req);
 XBT_PRIVATE int smpi_type_c2f(MPI_Datatype datatype);
+XBT_PRIVATE int smpi_type_add_f(MPI_Datatype datatype);
 XBT_PRIVATE MPI_Datatype smpi_type_f2c(int datatype);
 XBT_PRIVATE int smpi_op_c2f(MPI_Op op);
 XBT_PRIVATE MPI_Op smpi_op_f2c(int op);
