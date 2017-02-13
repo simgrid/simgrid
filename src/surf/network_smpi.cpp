@@ -97,17 +97,12 @@ namespace simgrid {
 
     void NetworkSmpiModel::gapRemove(Action *lmm_action)
     {
-      xbt_fifo_t fifo;
-      size_t size;
       NetworkCm02Action *action = static_cast<NetworkCm02Action*>(lmm_action);
 
-      if (sg_sender_gap > 0.0 && action->senderLinkName_
-          && action->senderFifoItem_) {
-        fifo =
-            (xbt_fifo_t) xbt_dict_get_or_null(gap_lookup,
-                action->senderLinkName_);
+      if (sg_sender_gap > 0.0 && action->senderLinkName_ && action->senderFifoItem_) {
+        xbt_fifo_t fifo = (xbt_fifo_t)xbt_dict_get_or_null(gap_lookup, action->senderLinkName_);
         xbt_fifo_remove_item(fifo, action->senderFifoItem_);
-        size = xbt_fifo_size(fifo);
+        size_t size = xbt_fifo_size(fifo);
         if (size == 0) {
           xbt_fifo_free(fifo);
           xbt_dict_remove(gap_lookup, action->senderLinkName_);
