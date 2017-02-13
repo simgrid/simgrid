@@ -60,7 +60,7 @@ static char* get_key_id(char* key, int id) {
 static void smpi_init_fortran_types(){
    if(comm_lookup == nullptr){
      comm_lookup = xbt_dict_new_homogeneous(nullptr);
-     smpi_comm_c2f(MPI_COMM_WORLD);
+     smpi_comm_add_f(MPI_COMM_WORLD);
      group_lookup = xbt_dict_new_homogeneous(nullptr);
      request_lookup = xbt_dict_new_homogeneous(nullptr);
      datatype_lookup = xbt_dict_new_homogeneous(nullptr);
@@ -105,27 +105,35 @@ static void smpi_init_fortran_types(){
      smpi_type_add_f(MPI_DATATYPE_NULL);//MPI_COMPLEX32
      smpi_type_add_f(MPI_DATATYPE_NULL);//MPI_PACKED
      op_lookup = xbt_dict_new_homogeneous(nullptr);
-     smpi_op_c2f(MPI_MAX);
-     smpi_op_c2f(MPI_MIN);
-     smpi_op_c2f(MPI_MAXLOC);
-     smpi_op_c2f(MPI_MINLOC);
-     smpi_op_c2f(MPI_SUM);
-     smpi_op_c2f(MPI_PROD);
-     smpi_op_c2f(MPI_LAND);
-     smpi_op_c2f(MPI_LOR);
-     smpi_op_c2f(MPI_LXOR);
-     smpi_op_c2f(MPI_BAND);
-     smpi_op_c2f(MPI_BOR);
-     smpi_op_c2f(MPI_BXOR);
+     smpi_op_add_f(MPI_MAX);
+     smpi_op_add_f(MPI_MIN);
+     smpi_op_add_f(MPI_MAXLOC);
+     smpi_op_add_f(MPI_MINLOC);
+     smpi_op_add_f(MPI_SUM);
+     smpi_op_add_f(MPI_PROD);
+     smpi_op_add_f(MPI_LAND);
+     smpi_op_add_f(MPI_LOR);
+     smpi_op_add_f(MPI_LXOR);
+     smpi_op_add_f(MPI_BAND);
+     smpi_op_add_f(MPI_BOR);
+     smpi_op_add_f(MPI_BXOR);
    }
 }
 
-int smpi_comm_c2f(MPI_Comm comm) {
+int smpi_comm_add_f(MPI_Comm comm) {
   static int comm_id = 0;
   char key[KEY_SIZE];
   xbt_dict_set(comm_lookup, comm==MPI_COMM_WORLD? get_key(key, comm_id) : get_key_id(key, comm_id), comm, nullptr);
   comm_id++;
   return comm_id-1;
+}
+
+int smpi_comm_c2f(MPI_Comm comm) {
+  char* existing_key = xbt_dict_get_key(comm_lookup, comm);
+  if(existing_key!=nullptr)
+    return atoi(existing_key);
+  else
+    return smpi_comm_add_f(comm);
 }
 
 static void free_comm(int comm) {
@@ -148,12 +156,20 @@ MPI_Comm smpi_comm_f2c(int comm) {
   }
 }
 
-int smpi_group_c2f(MPI_Group group) {
+int smpi_group_add_f(MPI_Group group) {
   static int group_id = 0;
   char key[KEY_SIZE];
   xbt_dict_set(group_lookup, get_key(key, group_id), group, nullptr);
   group_id++;
   return group_id-1;
+}
+
+int smpi_group_c2f(MPI_Group group) {
+  char* existing_key = xbt_dict_get_key(group_lookup, group);
+  if(existing_key!=nullptr)
+    return atoi(existing_key);
+  else
+    return smpi_group_add_f(group);
 }
 
 MPI_Group smpi_group_f2c(int group) {
@@ -173,20 +189,28 @@ static void free_group(int group) {
   xbt_dict_remove(group_lookup, get_key(key, group));
 }
 
-int smpi_request_c2f(MPI_Request req) {
+int smpi_request_add_f(MPI_Request request) {
   static int request_id = 0;
   char key[KEY_SIZE];
-  xbt_dict_set(request_lookup, get_key_id(key, request_id), req, nullptr);
+  xbt_dict_set(request_lookup, get_key_id(key, request_id), request, nullptr);
   request_id++;
   return request_id-1;
 }
 
-MPI_Request smpi_request_f2c(int req) {
+int smpi_request_c2f(MPI_Request request) {
+  char* existing_key = xbt_dict_get_key(request_lookup, request);
+  if(existing_key!=nullptr)
+    return atoi(existing_key);
+  else
+    return smpi_request_add_f(request);
+}
+
+MPI_Request smpi_request_f2c(int request) {
   smpi_init_fortran_types();
   char key[KEY_SIZE];
-  if(req==MPI_FORTRAN_REQUEST_NULL)
+  if(request==MPI_FORTRAN_REQUEST_NULL)
     return MPI_REQUEST_NULL;
-  return static_cast<MPI_Request>(xbt_dict_get(request_lookup, get_key_id(key, req)));
+  return static_cast<MPI_Request>(xbt_dict_get(request_lookup, get_key_id(key, request)));
 }
 
 static void free_request(int request) {
@@ -205,7 +229,10 @@ int smpi_type_add_f(MPI_Datatype datatype){
 
 int smpi_type_c2f(MPI_Datatype datatype) {
   char* existing_key = xbt_dict_get_key(datatype_lookup, datatype);
-  return atoi(existing_key);
+  if(existing_key!=nullptr)
+    return atoi(existing_key);
+  else
+    return smpi_type_add_f(datatype);
 }
 
 MPI_Datatype smpi_type_f2c(int datatype) {
@@ -219,12 +246,20 @@ static void free_datatype(int datatype) {
   xbt_dict_remove(datatype_lookup, get_key(key, datatype));
 }
 
-int smpi_op_c2f(MPI_Op op) {
+int smpi_op_add_f(MPI_Op op) {
   static int op_id = 0;
   char key[KEY_SIZE];
   xbt_dict_set(op_lookup, get_key(key, op_id), op, nullptr);
   op_id++;
   return op_id-1;
+}
+
+int smpi_op_c2f(MPI_Op op) {
+  char* existing_key = xbt_dict_get_key(op_lookup, op);
+  if(existing_key!=nullptr)
+    return atoi(existing_key);
+  else
+    return smpi_op_add_f(op);
 }
 
 MPI_Op smpi_op_f2c(int op) {
@@ -238,12 +273,20 @@ static void free_op(int op) {
   xbt_dict_remove(op_lookup, get_key(key, op));
 }
 
-int smpi_win_c2f(MPI_Win win) {
+int smpi_win_add_f(MPI_Win win) {
   static int win_id = 0;
   char key[KEY_SIZE];
   xbt_dict_set(win_lookup, get_key(key, win_id), win, nullptr);
   win_id++;
   return win_id-1;
+}
+
+int smpi_win_c2f(MPI_Win win) {
+  char* existing_key = xbt_dict_get_key(win_lookup, win);
+  if(existing_key!=nullptr)
+    return atoi(existing_key);
+  else
+    return smpi_win_add_f(win);
 }
 
 MPI_Win smpi_win_f2c(int win) {
@@ -257,12 +300,20 @@ static void free_win(int win) {
   xbt_dict_remove(win_lookup, get_key(key, win));
 }
 
-int smpi_info_c2f(MPI_Info info) {
+int smpi_info_add_f(MPI_Info info) {
   static int info_id = 0;
   char key[KEY_SIZE];
   xbt_dict_set(info_lookup, get_key(key, info_id), info, nullptr);
   info_id++;
   return info_id-1;
+}
+
+int smpi_info_c2f(MPI_Info info) {
+  char* existing_key = xbt_dict_get_key(info_lookup, info);
+  if(existing_key!=nullptr)
+    return atoi(existing_key);
+  else
+    return smpi_info_add_f(info);
 }
 
 MPI_Info smpi_info_f2c(int info) {
@@ -321,7 +372,7 @@ void mpi_comm_dup_(int* comm, int* newcomm, int* ierr) {
 
   *ierr = MPI_Comm_dup(smpi_comm_f2c(*comm), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newcomm = smpi_comm_c2f(tmp);
+    *newcomm = smpi_comm_add_f(tmp);
   }
 }
 
@@ -330,7 +381,7 @@ void mpi_comm_create_(int* comm, int* group, int* newcomm, int* ierr) {
 
   *ierr = MPI_Comm_create(smpi_comm_f2c(*comm),smpi_group_f2c(*group), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newcomm = smpi_comm_c2f(tmp);
+    *newcomm = smpi_comm_add_f(tmp);
   }
 }
 
@@ -349,7 +400,7 @@ void mpi_comm_split_(int* comm, int* color, int* key, int* comm_out, int* ierr) 
 
   *ierr = MPI_Comm_split(smpi_comm_f2c(*comm), *color, *key, &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *comm_out = smpi_comm_c2f(tmp);
+    *comm_out = smpi_comm_add_f(tmp);
   }
 }
 
@@ -358,7 +409,7 @@ void mpi_group_incl_(int* group, int* n, int* ranks, int* group_out, int* ierr) 
 
   *ierr = MPI_Group_incl(smpi_group_f2c(*group), *n, ranks, &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *group_out = smpi_group_c2f(tmp);
+    *group_out = smpi_group_add_f(tmp);
   }
 }
 
@@ -380,7 +431,7 @@ void mpi_send_init_(void *buf, int* count, int* datatype, int* dst, int* tag, in
   buf = static_cast<char *>(FORT_BOTTOM(buf));
   *ierr = MPI_Send_init(buf, *count, smpi_type_f2c(*datatype), *dst, *tag, smpi_comm_f2c(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
-    *request = smpi_request_c2f(req);
+    *request = smpi_request_add_f(req);
   }
 }
 
@@ -389,7 +440,7 @@ void mpi_isend_(void *buf, int* count, int* datatype, int* dst, int* tag, int* c
   buf = static_cast<char *>(FORT_BOTTOM(buf));
   *ierr = MPI_Isend(buf, *count, smpi_type_f2c(*datatype), *dst, *tag, smpi_comm_f2c(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
-    *request = smpi_request_c2f(req);
+    *request = smpi_request_add_f(req);
   }
 }
 
@@ -398,7 +449,7 @@ void mpi_irsend_(void *buf, int* count, int* datatype, int* dst, int* tag, int* 
   buf = static_cast<char *>(FORT_BOTTOM(buf));
   *ierr = MPI_Irsend(buf, *count, smpi_type_f2c(*datatype), *dst, *tag, smpi_comm_f2c(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
-    *request = smpi_request_c2f(req);
+    *request = smpi_request_add_f(req);
   }
 }
 
@@ -425,7 +476,7 @@ void mpi_recv_init_(void *buf, int* count, int* datatype, int* src, int* tag, in
   buf = static_cast<char *>( FORT_BOTTOM(buf));
   *ierr = MPI_Recv_init(buf, *count, smpi_type_f2c(*datatype), *src, *tag, smpi_comm_f2c(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
-    *request = smpi_request_c2f(req);
+    *request = smpi_request_add_f(req);
   }
 }
 
@@ -434,7 +485,7 @@ void mpi_irecv_(void *buf, int* count, int* datatype, int* src, int* tag, int* c
   buf = static_cast<char *>( FORT_BOTTOM(buf));
   *ierr = MPI_Irecv(buf, *count, smpi_type_f2c(*datatype), *src, *tag, smpi_comm_f2c(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
-    *request = smpi_request_c2f(req);
+    *request = smpi_request_add_f(req);
   }
 }
 
@@ -714,7 +765,7 @@ void mpi_win_create_( int *base, MPI_Aint* size, int* disp_unit, int* info, int*
   MPI_Win tmp;
   *ierr =  MPI_Win_create( static_cast<void*>(base), *size, *disp_unit, smpi_info_f2c(*info), smpi_comm_f2c(*comm),&tmp);
  if(*ierr == MPI_SUCCESS) {
-   *win = smpi_win_c2f(tmp);
+   *win = smpi_win_add_f(tmp);
  }
 }
 
@@ -759,7 +810,7 @@ void mpi_info_create_( int *info, int* ierr){
   MPI_Info tmp;
   *ierr =  MPI_Info_create(&tmp);
   if(*ierr == MPI_SUCCESS) {
-    *info = smpi_info_c2f(tmp);
+    *info = smpi_info_add_f(tmp);
   }
 }
 
@@ -938,7 +989,7 @@ void mpi_op_create_ (void * function, int* commute, int* op, int* ierr){
  *ierr = MPI_Op_create(reinterpret_cast<MPI_User_function*>(function),*commute, &tmp);
  if(*ierr == MPI_SUCCESS) {
    smpi_op_set_fortran(tmp);
-   *op = smpi_op_c2f(tmp);
+   *op = smpi_op_add_f(tmp);
  }
 }
 
@@ -983,7 +1034,7 @@ void mpi_group_union_ (int* group1, int* group2, int* newgroup, int* ierr){
  MPI_Group tmp;
  *ierr = MPI_Group_union(smpi_group_f2c(*group1), smpi_group_f2c(*group2), &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *newgroup = smpi_group_c2f(tmp);
+   *newgroup = smpi_group_add_f(tmp);
  }
 }
 
@@ -991,7 +1042,7 @@ void mpi_group_intersection_ (int* group1, int* group2, int* newgroup, int* ierr
  MPI_Group tmp;
  *ierr = MPI_Group_intersection(smpi_group_f2c(*group1), smpi_group_f2c(*group2), &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *newgroup = smpi_group_c2f(tmp);
+   *newgroup = smpi_group_add_f(tmp);
  }
 }
 
@@ -999,7 +1050,7 @@ void mpi_group_difference_ (int* group1, int* group2, int* newgroup, int* ierr){
  MPI_Group tmp;
  *ierr = MPI_Group_difference(smpi_group_f2c(*group1), smpi_group_f2c(*group2), &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *newgroup = smpi_group_c2f(tmp);
+   *newgroup = smpi_group_add_f(tmp);
  }
 }
 
@@ -1007,7 +1058,7 @@ void mpi_group_excl_ (int* group, int* n, int *ranks, int* newgroup, int* ierr){
   MPI_Group tmp;
  *ierr = MPI_Group_excl(smpi_group_f2c(*group), *n, ranks, &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *newgroup = smpi_group_c2f(tmp);
+   *newgroup = smpi_group_add_f(tmp);
  }
 }
 
@@ -1016,7 +1067,7 @@ void mpi_group_range_incl_ (int* group, int* n, int ranges[][3], int* newgroup, 
   MPI_Group tmp;
  *ierr = MPI_Group_range_incl(smpi_group_f2c(*group), *n, ranges, &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *newgroup = smpi_group_c2f(tmp);
+   *newgroup = smpi_group_add_f(tmp);
  }
 }
 
@@ -1025,7 +1076,7 @@ void mpi_group_range_excl_ (int* group, int* n, int ranges[][3], int* newgroup, 
  MPI_Group tmp;
  *ierr = MPI_Group_range_excl(smpi_group_f2c(*group), *n, ranges, &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *newgroup = smpi_group_c2f(tmp);
+   *newgroup = smpi_group_add_f(tmp);
  }
 }
 
@@ -1149,7 +1200,7 @@ void mpi_cart_create_ (int* comm_old, int* ndims, int* dims, int* periods, int* 
   MPI_Comm tmp;
  *ierr = MPI_Cart_create(smpi_comm_f2c(*comm_old), *ndims, dims, periods, *reorder, &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *comm_cart = smpi_comm_c2f(tmp);
+   *comm_cart = smpi_comm_add_f(tmp);
  }
 }
 
@@ -1173,7 +1224,7 @@ void mpi_cart_sub_ (int* comm, int* remain_dims, int*  comm_new, int* ierr) {
  MPI_Comm tmp;
  *ierr = MPI_Cart_sub(smpi_comm_f2c(*comm), remain_dims, &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *comm_new = smpi_comm_c2f(tmp);
+   *comm_new = smpi_comm_add_f(tmp);
  }
 }
 
@@ -1185,7 +1236,7 @@ void mpi_graph_create_ (int* comm_old, int* nnodes, int* index, int* edges, int*
   MPI_Comm tmp;
  *ierr = MPI_Graph_create(smpi_comm_f2c(*comm_old), *nnodes, index, edges, *reorder, &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *comm_graph = smpi_comm_c2f(tmp);
+   *comm_graph = smpi_comm_add_f(tmp);
  }
 }
 
@@ -1382,7 +1433,7 @@ void mpi_ssend_init_ (void* buf, int* count, int* datatype, int* dest, int* tag,
   MPI_Request tmp;
  *ierr = MPI_Ssend_init(buf, *count, smpi_type_f2c(*datatype), *dest, *tag, smpi_comm_f2c(*comm), &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *request = smpi_request_c2f(tmp);
+   *request = smpi_request_add_f(tmp);
  }
 }
 
@@ -1392,7 +1443,7 @@ void mpi_intercomm_create_ (int* local_comm, int *local_leader, int* peer_comm, 
   *ierr = MPI_Intercomm_create(smpi_comm_f2c(*local_comm), *local_leader,smpi_comm_f2c(*peer_comm), *remote_leader,
                                *tag, &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *comm_out = smpi_comm_c2f(tmp);
+    *comm_out = smpi_comm_add_f(tmp);
   }
 }
 
@@ -1400,7 +1451,7 @@ void mpi_intercomm_merge_ (int* comm, int* high, int*  comm_out, int* ierr) {
  MPI_Comm tmp;
  *ierr = MPI_Intercomm_merge(smpi_comm_f2c(*comm), *high, &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *comm_out = smpi_comm_c2f(tmp);
+   *comm_out = smpi_comm_add_f(tmp);
  }
 }
 
@@ -1412,7 +1463,7 @@ void mpi_bsend_init_ (void* buf, int* count, int* datatype, int *dest, int* tag,
   MPI_Request tmp;
   *ierr = MPI_Bsend_init(buf, *count, smpi_type_f2c(*datatype), *dest, *tag, smpi_comm_f2c(*comm), &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *request = smpi_request_c2f(tmp);
+   *request = smpi_request_add_f(tmp);
  }
 }
 
@@ -1420,7 +1471,7 @@ void mpi_ibsend_ (void* buf, int* count, int* datatype, int *dest, int* tag, int
   MPI_Request tmp;
   *ierr = MPI_Ibsend(buf, *count, smpi_type_f2c(*datatype), *dest, *tag, smpi_comm_f2c(*comm), &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *request = smpi_request_c2f(tmp);
+   *request = smpi_request_add_f(tmp);
  }
 }
 
@@ -1440,7 +1491,7 @@ void mpi_issend_ (void* buf, int* count, int* datatype, int *dest, int* tag, int
   MPI_Request tmp;
   *ierr = MPI_Issend(buf, *count, smpi_type_f2c(*datatype), *dest, *tag, smpi_comm_f2c(*comm), &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *request = smpi_request_c2f(tmp);
+   *request = smpi_request_add_f(tmp);
  }
 }
 
@@ -1460,7 +1511,7 @@ void mpi_rsend_init_ (void* buf, int* count, int* datatype, int *dest, int* tag,
   MPI_Request tmp;
   *ierr = MPI_Rsend_init(buf, *count, smpi_type_f2c(*datatype), *dest, *tag, smpi_comm_f2c(*comm), &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *request = smpi_request_c2f(tmp);
+   *request = smpi_request_add_f(tmp);
  }
 }
 
@@ -1565,7 +1616,7 @@ void mpi_comm_dup_with_info_ (int* comm, int* info, int* newcomm, int* ierr){
   MPI_Comm tmp;
   *ierr = MPI_Comm_dup_with_info(smpi_comm_f2c(*comm),smpi_info_f2c(*info),&tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newcomm = smpi_comm_c2f(tmp);
+    *newcomm = smpi_comm_add_f(tmp);
   }
 }
 
@@ -1573,7 +1624,7 @@ void mpi_comm_split_type_ (int* comm, int* split_type, int* key, int* info, int*
   MPI_Comm tmp;
   *ierr = MPI_Comm_split_type(smpi_comm_f2c(*comm), *split_type, *key, smpi_info_f2c(*info), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newcomm = smpi_comm_c2f(tmp);
+    *newcomm = smpi_comm_add_f(tmp);
   }
 }
 
@@ -1613,7 +1664,7 @@ void mpi_info_dup_ (int* info, int* newinfo, int* ierr){
  MPI_Info tmp;
  *ierr = MPI_Info_dup(smpi_info_f2c(*info), &tmp);
  if(*ierr==MPI_SUCCESS){
-   *newinfo= smpi_info_c2f(tmp);
+   *newinfo= smpi_info_add_f(tmp);
  }
 }
 
@@ -1673,7 +1724,7 @@ void mpi_grequest_start_ ( void *query_fn, void *free_fn, void *cancel_fn, void 
   *ierr = MPI_Grequest_start( reinterpret_cast<MPI_Grequest_query_function*>(query_fn), reinterpret_cast<MPI_Grequest_free_function*>(free_fn),
                               reinterpret_cast<MPI_Grequest_cancel_function*>(cancel_fn), extra_state, &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *request = smpi_request_c2f(tmp);
+   *request = smpi_request_add_f(tmp);
  }
 }
 
@@ -1693,7 +1744,7 @@ void mpi_comm_connect_ ( char *port_name, int* info, int* root, int* comm, int*n
   MPI_Comm tmp;
   *ierr = MPI_Comm_connect( port_name, *reinterpret_cast<MPI_Info*>(info), *root, smpi_comm_f2c(*comm), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newcomm = smpi_comm_c2f(tmp);
+    *newcomm = smpi_comm_add_f(tmp);
   }
 }
 
@@ -1713,7 +1764,7 @@ void mpi_comm_join_ ( int* fd, int* intercomm, int* ierr){
   MPI_Comm tmp;
   *ierr = MPI_Comm_join( *fd, &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *intercomm = smpi_comm_c2f(tmp);
+    *intercomm = smpi_comm_add_f(tmp);
   }
 }
 
@@ -1729,7 +1780,7 @@ void mpi_comm_accept_ ( char *port_name, int* info, int* root, int* comm, int*ne
   MPI_Comm tmp;
   *ierr = MPI_Comm_accept( port_name, *reinterpret_cast<MPI_Info*>(info), *root, smpi_comm_f2c(*comm), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newcomm = smpi_comm_c2f(tmp);
+    *newcomm = smpi_comm_add_f(tmp);
   }
 }
 
@@ -1739,7 +1790,7 @@ void mpi_comm_spawn_ ( char *command, char *argv, int* maxprocs, int* info, int*
   *ierr = MPI_Comm_spawn( command, nullptr, *maxprocs, *reinterpret_cast<MPI_Info*>(info), *root, smpi_comm_f2c(*comm), &tmp,
                           array_of_errcodes);
   if(*ierr == MPI_SUCCESS) {
-    *intercomm = smpi_comm_c2f(tmp);
+    *intercomm = smpi_comm_add_f(tmp);
   }
 }
 
@@ -1750,7 +1801,7 @@ void mpi_comm_spawn_multiple_ ( int* count, char *array_of_commands, char** arra
  *ierr = MPI_Comm_spawn_multiple(* count, &array_of_commands, &array_of_argv, array_of_maxprocs,
  reinterpret_cast<MPI_Info*>(array_of_info), *root, smpi_comm_f2c(*comm), &tmp, array_of_errcodes);
  if(*ierr == MPI_SUCCESS) {
-   *intercomm = smpi_comm_c2f(tmp);
+   *intercomm = smpi_comm_add_f(tmp);
  }
 }
 

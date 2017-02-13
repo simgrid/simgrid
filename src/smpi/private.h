@@ -279,19 +279,25 @@ XBT_PRIVATE int smpi_comm_is_blocked(MPI_Comm comm);
 XBT_PRIVATE void smpi_comm_init_smp(MPI_Comm comm);
 
 XBT_PRIVATE int smpi_comm_c2f(MPI_Comm comm);
+XBT_PRIVATE int smpi_comm_add_f(MPI_Comm comm);
 XBT_PRIVATE MPI_Comm smpi_comm_f2c(int comm);
 XBT_PRIVATE int smpi_group_c2f(MPI_Group group);
+XBT_PRIVATE int smpi_group_add_f(MPI_Group group);
 XBT_PRIVATE MPI_Group smpi_group_f2c(int group);
 XBT_PRIVATE int smpi_request_c2f(MPI_Request req);
+XBT_PRIVATE int smpi_request_add_f(MPI_Request req);
 XBT_PRIVATE MPI_Request smpi_request_f2c(int req);
 XBT_PRIVATE int smpi_type_c2f(MPI_Datatype datatype);
 XBT_PRIVATE int smpi_type_add_f(MPI_Datatype datatype);
 XBT_PRIVATE MPI_Datatype smpi_type_f2c(int datatype);
 XBT_PRIVATE int smpi_op_c2f(MPI_Op op);
+XBT_PRIVATE int smpi_op_add_f(MPI_Op op);
 XBT_PRIVATE MPI_Op smpi_op_f2c(int op);
 XBT_PRIVATE int smpi_win_c2f(MPI_Win win);
+XBT_PRIVATE int smpi_win_add_f(MPI_Win win);
 XBT_PRIVATE MPI_Win smpi_win_f2c(int win);
 XBT_PRIVATE int smpi_info_c2f(MPI_Info info);
+XBT_PRIVATE int smpi_info_add_f(MPI_Info info);
 XBT_PRIVATE MPI_Info smpi_info_f2c(int info);
 
 XBT_PRIVATE MPI_Request smpi_mpi_send_init(void *buf, int count, MPI_Datatype datatype, int dst, int tag,
