@@ -1160,6 +1160,7 @@ void smpi_datatype_commit(MPI_Datatype *datatype)
 typedef struct s_smpi_mpi_op {
   MPI_User_function *func;
   bool is_commute;
+  bool is_fortran_op;
 } s_smpi_mpi_op_t;
 
 #define MAX_OP(a, b)  (b) = (a) < (b) ? (b) : (a)
@@ -1344,7 +1345,7 @@ static void replace_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 }
 
 #define CREATE_MPI_OP(name, func)                             \
-  static s_smpi_mpi_op_t mpi_##name = { &(func) /* func */, true }; \
+  static s_smpi_mpi_op_t mpi_##name = { &(func) /* func */, true, false }; \
 MPI_Op name = &mpi_##name;
 
 CREATE_MPI_OP(MPI_MAX, max_func);
@@ -1367,6 +1368,7 @@ MPI_Op smpi_op_new(MPI_User_function * function, bool commute)
   op = xbt_new(s_smpi_mpi_op_t, 1);
   op->func = function;
   op-> is_commute = commute;
+  op-> is_fortran_op = false;
   return op;
 }
 
@@ -1380,6 +1382,12 @@ void smpi_op_destroy(MPI_Op op)
   xbt_free(op);
 }
 
+void smpi_op_set_fortran(MPI_Op op)
+{
+  //tell that we were created from fortran, so we need to translate the type to fortran when called
+  op->is_fortran_op = true;
+}
+
 void smpi_op_apply(MPI_Op op, const void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
 {
   if(op==MPI_OP_NULL)
@@ -1390,8 +1398,14 @@ void smpi_op_apply(MPI_Op op, const void *invec, void *inoutvec, int *len, MPI_D
     smpi_switch_data_segment(smpi_process_index());
   }
 
-  if(!smpi_process_get_replaying())
-    op->func(const_cast<void*>(invec), inoutvec, len, datatype);
+  if(!smpi_process_get_replaying()){
+    if(! op->is_fortran_op)
+      op->func(const_cast<void*>(invec), inoutvec, len, datatype);
+    else{
+      int tmp = smpi_type_c2f(*datatype);
+      op->func(const_cast<void*>(invec), inoutvec, len, reinterpret_cast<MPI_Datatype*>(&tmp) );
+    }
+  }
 }
 
 int smpi_type_attr_delete(MPI_Datatype type, int keyval){
