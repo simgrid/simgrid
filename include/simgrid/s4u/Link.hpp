@@ -70,13 +70,13 @@ public:
 
   /* The signals */
   /** @brief Callback signal fired when a new Link is created */
-  static simgrid::xbt::signal<void(surf::LinkImpl*)> onCreation;
+  static simgrid::xbt::signal<void(s4u::Link&)> onCreation;
 
   /** @brief Callback signal fired when a Link is destroyed */
-  static simgrid::xbt::signal<void(surf::LinkImpl*)> onDestruction;
+  static simgrid::xbt::signal<void(s4u::Link&)> onDestruction;
 
   /** @brief Callback signal fired when the state of a Link changes (when it is turned on or off) */
-  static simgrid::xbt::signal<void(surf::LinkImpl*)> onStateChange;
+  static simgrid::xbt::signal<void(s4u::Link&)> onStateChange;
 
   /** @brief Callback signal fired when a communication starts */
   static simgrid::xbt::signal<void(surf::NetworkAction*, s4u::Host* src, s4u::Host* dst)> onCommunicate;

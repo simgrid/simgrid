@@ -152,9 +152,9 @@ void Link::setLatencyTrace(tmgr_trace_t trace)
 /*************
  * Callbacks *
  *************/
-simgrid::xbt::signal<void(surf::LinkImpl*)> Link::onCreation;
-simgrid::xbt::signal<void(surf::LinkImpl*)> Link::onDestruction;
-simgrid::xbt::signal<void(surf::LinkImpl*)> Link::onStateChange;
+simgrid::xbt::signal<void(s4u::Link&)> Link::onCreation;
+simgrid::xbt::signal<void(s4u::Link&)> Link::onDestruction;
+simgrid::xbt::signal<void(s4u::Link&)> Link::onStateChange;
 simgrid::xbt::signal<void(surf::NetworkAction*, s4u::Host* src, s4u::Host* dst)> Link::onCommunicate;
 simgrid::xbt::signal<void(surf::NetworkAction*)> Link::onCommunicationStateChange;
 }

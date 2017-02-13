@@ -126,7 +126,7 @@ namespace simgrid {
     {
       if (!currentlyDestroying_) {
         currentlyDestroying_ = true;
-        s4u::Link::onDestruction(this);
+        s4u::Link::onDestruction(this->piface_);
         delete this;
       }
     }
@@ -155,14 +155,14 @@ namespace simgrid {
     {
       if (isOff()) {
         Resource::turnOn();
-        s4u::Link::onStateChange(this);
+        s4u::Link::onStateChange(this->piface_);
       }
     }
     void LinkImpl::turnOff()
     {
       if (isOn()) {
         Resource::turnOff();
-        s4u::Link::onStateChange(this);
+        s4u::Link::onStateChange(this->piface_);
       }
     }
     void LinkImpl::setStateTrace(tmgr_trace_t trace)

@@ -401,7 +401,7 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const char* name, doub
   if (policy == SURF_LINK_FATPIPE)
     lmm_constraint_shared(constraint());
 
-  simgrid::s4u::Link::onCreation(this);
+  simgrid::s4u::Link::onCreation(this->piface_);
 }
 
 void NetworkCm02Link::apply_event(tmgr_trace_iterator_t triggered, double value)
