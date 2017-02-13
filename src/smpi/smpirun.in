@@ -384,7 +384,6 @@ APPLICATIONHEAD
 ##---- cache hostnames of hostfile---------------
 if [ -n "${HOSTFILE}" ] && [ -f ${HOSTFILE} ]; then
     hostnames=$(cat ${HOSTFILE} | tr '\n\r' '  ')
-    NUMHOSTS=$(cat ${HOSTFILE} | wc -l)
 fi
 
 if [ "${EXTOPT}" = "smpi_replay" ]; then
@@ -428,7 +427,7 @@ done
 
 for i in ${SEQ}
 do
-    j=$(( $i % ${NUMHOSTS} + 1 ))
+    j=$(( $i % ${hostfile_procs} + 1 ))
     host=$(eval "echo \${$j}")
 
     ##---- optional display of ranks to process mapping
