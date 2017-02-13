@@ -8,8 +8,8 @@
 #define _SIMIX_NETWORK_PRIVATE_H
 
 #include "simgrid/s4u/Mailbox.hpp"
+#include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/simix/ActorImpl.hpp"
-#include "src/simix/MailboxImpl.hpp"
 
 XBT_PRIVATE smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox,
                               void *dst_buff, size_t *dst_buff_size,

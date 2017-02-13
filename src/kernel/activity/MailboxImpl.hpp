@@ -13,9 +13,10 @@
 
 #define MAX_MAILBOX_SIZE 10000000
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace activity {
 
-/** @brief Rendez-vous point datatype */
+/** @brief Implementation of the simgrid::s4u::Mailbox */
 
 class MailboxImpl {
   explicit MailboxImpl(const char* name)
@@ -34,10 +35,11 @@ public:
   simgrid::s4u::Mailbox piface_; // Our interface
   char* name_;
 
-  boost::intrusive_ptr<simgrid::simix::ActorImpl> permanent_receiver; //process which the mailbox is attached to
+  boost::intrusive_ptr<simgrid::simix::ActorImpl> permanent_receiver; // process which the mailbox is attached to
   boost::circular_buffer_space_optimized<smx_activity_t> comm_queue;
-  boost::circular_buffer_space_optimized<smx_activity_t> done_comm_queue;//messages already received in the permanent receive mode
+  boost::circular_buffer_space_optimized<smx_activity_t> done_comm_queue; // messages already received in the permanent receive mode
 };
+}
 }
 }
 

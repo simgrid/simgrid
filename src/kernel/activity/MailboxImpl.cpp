@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/simix/MailboxImpl.hpp"
+#include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/activity/SynchroComm.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_mailbox, simix, "Mailbox implementation");
@@ -22,7 +22,8 @@ void SIMIX_mailbox_exit()
 /******************************************************************************/
 
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace activity {
 /** @brief Returns the mailbox of that name, or nullptr */
 MailboxImpl* MailboxImpl::byNameOrNull(const char* name)
 {
@@ -35,7 +36,7 @@ MailboxImpl* MailboxImpl::byNameOrCreate(const char* name)
   /* two processes may have pushed the same mbox_create simcall at the same time */
   smx_mailbox_t mbox = static_cast<smx_mailbox_t>(xbt_dict_get_or_null(mailboxes, name));
   if (!mbox) {
-    mbox = new simgrid::simix::MailboxImpl(name);
+    mbox = new MailboxImpl(name);
     XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name);
     xbt_dict_set(mailboxes, mbox->name_, mbox, nullptr);
   }
@@ -72,6 +73,7 @@ void MailboxImpl::remove(smx_activity_t activity)
       return;
     }
   xbt_die("Cannot remove the comm %p that is not part of the mailbox %s", comm, this->name_);
+}
 }
 }
 }

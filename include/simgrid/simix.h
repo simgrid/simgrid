@@ -19,9 +19,13 @@ namespace kernel {
 namespace context {
   class Context;
   class ContextFactory;
-}}
+  }
+  namespace activity {
+  class MailboxImpl;
+  }
+  }
 
-namespace simix {
+  namespace simix {
 
   /** @brief Process datatype
       @ingroup simix_process_management
@@ -32,14 +36,13 @@ namespace simix {
     @{ */
   class ActorImpl;
   class Mutex;
-  class MailboxImpl;
 }
 }
 
 typedef simgrid::kernel::context::Context *smx_context_t;
 typedef simgrid::simix::ActorImpl *smx_actor_t;
 typedef simgrid::simix::Mutex   *smx_mutex_t;
-typedef simgrid::simix::MailboxImpl* smx_mailbox_t;
+typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
 
 #else
 

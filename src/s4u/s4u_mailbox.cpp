@@ -22,10 +22,10 @@ const char *Mailbox::name() {
 
 MailboxPtr Mailbox::byName(const char*name)
 {
-  simix::MailboxImpl* mbox = simix::MailboxImpl::byNameOrNull(name);
+  kernel::activity::MailboxImpl* mbox = kernel::activity::MailboxImpl::byNameOrNull(name);
   if (mbox == nullptr) {
     mbox = simix::kernelImmediate([name] {
-      return simix::MailboxImpl::byNameOrCreate(name);
+      return kernel::activity::MailboxImpl::byNameOrCreate(name);
     });
   }
   return MailboxPtr(&mbox->piface_, true);
