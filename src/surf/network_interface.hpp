@@ -25,9 +25,6 @@
 
 namespace simgrid {
   namespace surf {
-
-    class NetworkAction;
-
     /*********
      * Model *
      *********/

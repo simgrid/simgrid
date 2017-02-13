@@ -21,7 +21,6 @@
 namespace simgrid {
 namespace surf {
 class NetworkAction;
-class Action;
 };
 namespace s4u {
 /** @brief A Link represents the network facilities between [hosts](\ref simgrid::s4u::Host) */
