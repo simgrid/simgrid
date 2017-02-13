@@ -148,5 +148,14 @@ void Link::setLatencyTrace(tmgr_trace_t trace)
     this->pimpl_->setLatencyTrace(trace);
   });
 }
+
+/*************
+ * Callbacks *
+ *************/
+simgrid::xbt::signal<void(surf::LinkImpl*)> Link::onCreation;
+simgrid::xbt::signal<void(surf::LinkImpl*)> Link::onDestruction;
+simgrid::xbt::signal<void(surf::LinkImpl*)> Link::onStateChange;
+simgrid::xbt::signal<void(surf::NetworkAction*, s4u::Host* src, s4u::Host* dst)> Link::onCommunicate;
+simgrid::xbt::signal<void(surf::NetworkAction*)> Link::onCommunicationStateChange;
 }
 }

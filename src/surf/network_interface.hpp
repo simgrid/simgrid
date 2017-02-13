@@ -28,10 +28,6 @@ namespace simgrid {
 
     class NetworkAction;
 
-    /** @brief Callback signal fired when the state of a NetworkAction changes
-     *  Signature: `void(NetworkAction *action, simgrid::surf::Action::State old, simgrid::surf::Action::State current)` */
-    XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::Action::State, simgrid::surf::Action::State)>) networkActionStateChangedCallbacks;
-
     /*********
      * Model *
      *********/
@@ -137,17 +133,6 @@ namespace simgrid {
     public:
       /** @brief Public interface */
       s4u::Link piface_;
-      /** @brief Callback signal fired when a new Link is created */
-      static simgrid::xbt::signal<void(surf::LinkImpl*)> onCreation;
-
-      /** @brief Callback signal fired when a Link is destroyed */
-      static simgrid::xbt::signal<void(surf::LinkImpl*)> onDestruction;
-
-      /** @brief Callback signal fired when the state of a Link changes (when it is turned on or off) */
-      static simgrid::xbt::signal<void(surf::LinkImpl*)> onStateChange;
-
-      /** @brief Callback signal fired when a communication starts */
-      static simgrid::xbt::signal<void(surf::NetworkAction*, s4u::Host* src, s4u::Host* dst)> onCommunicate;
 
       /** @brief Get the bandwidth in bytes per second of current Link */
       virtual double bandwidth();

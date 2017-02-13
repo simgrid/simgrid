@@ -324,7 +324,7 @@ void instr_routing_define_callbacks ()
   //always need the call backs to ASes (we need only the root AS),
   //to create the rootContainer and the rootType properly
   if (!TRACE_needs_platform()) return;
-  simgrid::surf::LinkImpl::onCreation.connect(instr_routing_parse_start_link);
+  simgrid::s4u::Link::onCreation.connect(instr_routing_parse_start_link);
   simgrid::s4u::onPlatformCreated.connect(instr_routing_parse_end_platform);
 }
 

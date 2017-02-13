@@ -273,7 +273,7 @@ LinkL07::LinkL07(NetworkL07Model* model, const char* name, double bandwidth, dou
   if (policy == SURF_LINK_FATPIPE)
     lmm_constraint_shared(constraint());
 
-  LinkImpl::onCreation(this);
+  s4u::Link::onCreation(this);
 }
 
 Action *CpuL07::execution_start(double size)

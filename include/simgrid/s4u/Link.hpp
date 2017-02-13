@@ -10,8 +10,7 @@
 
 #include <unordered_map>
 
-#include "xbt/dict.h"
-#include "xbt/fifo.h"
+#include "xbt/signal.hpp"
 
 #include "simgrid/link.h"
 
@@ -20,6 +19,10 @@
  ***********/
 
 namespace simgrid {
+namespace surf {
+class NetworkAction;
+class Action;
+};
 namespace s4u {
 /** @brief A Link represents the network facilities between [hosts](\ref simgrid::s4u::Host) */
 class Link {
@@ -64,6 +67,22 @@ public:
                                                   external load). Trace must contain percentages (value between 0 and 1). */
   void setLatencyTrace(tmgr_trace_t trace); /*< setup the trace file with latency events (peak latency changes due to
                                                external load). Trace must contain absolute values */
+
+  /* The signals */
+  /** @brief Callback signal fired when a new Link is created */
+  static simgrid::xbt::signal<void(surf::LinkImpl*)> onCreation;
+
+  /** @brief Callback signal fired when a Link is destroyed */
+  static simgrid::xbt::signal<void(surf::LinkImpl*)> onDestruction;
+
+  /** @brief Callback signal fired when the state of a Link changes (when it is turned on or off) */
+  static simgrid::xbt::signal<void(surf::LinkImpl*)> onStateChange;
+
+  /** @brief Callback signal fired when a communication starts */
+  static simgrid::xbt::signal<void(surf::NetworkAction*, s4u::Host* src, s4u::Host* dst)> onCommunicate;
+
+  /** @brief Callback signal fired when a communication changes it state (ready/done/cancel) */
+  static simgrid::xbt::signal<void(surf::NetworkAction*)> onCommunicationStateChange;
 };
 }
 }

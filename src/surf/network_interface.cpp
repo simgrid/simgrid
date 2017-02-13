@@ -48,17 +48,6 @@ namespace simgrid {
         (kv.second)->destroy();
       delete links;
     }
-
-    /*************
-     * Callbacks *
-     *************/
-
-    simgrid::xbt::signal<void(LinkImpl*)> LinkImpl::onCreation;
-    simgrid::xbt::signal<void(LinkImpl*)> LinkImpl::onDestruction;
-    simgrid::xbt::signal<void(LinkImpl*)> LinkImpl::onStateChange;
-
-    simgrid::xbt::signal<void(NetworkAction*, Action::State, Action::State)> networkActionStateChangedCallbacks;
-    simgrid::xbt::signal<void(NetworkAction*, s4u::Host* src, s4u::Host* dst)> LinkImpl::onCommunicate;
   }
 }
 
@@ -137,7 +126,7 @@ namespace simgrid {
     {
       if (!currentlyDestroying_) {
         currentlyDestroying_ = true;
-        onDestruction(this);
+        s4u::Link::onDestruction(this);
         delete this;
       }
     }
@@ -166,14 +155,14 @@ namespace simgrid {
     {
       if (isOff()) {
         Resource::turnOn();
-        onStateChange(this);
+        s4u::Link::onStateChange(this);
       }
     }
     void LinkImpl::turnOff()
     {
       if (isOn()) {
         Resource::turnOff();
-        onStateChange(this);
+        s4u::Link::onStateChange(this);
       }
     }
     void LinkImpl::setStateTrace(tmgr_trace_t trace)
@@ -198,9 +187,8 @@ namespace simgrid {
      **********/
 
     void NetworkAction::setState(Action::State state){
-      Action::State old = getState();
       Action::setState(state);
-      networkActionStateChangedCallbacks(this, old, state);
+      s4u::Link::onCommunicationStateChange(this);
     }
 
   }

@@ -78,7 +78,7 @@ namespace simgrid {
     {
       NetworkConstantAction *action = new NetworkConstantAction(this, size, sg_latency_factor);
 
-      LinkImpl::onCommunicate(action, src, dst);
+      simgrid::s4u::Link::onCommunicate(action, src, dst);
       return action;
     }
 

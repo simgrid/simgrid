@@ -29,14 +29,12 @@ static void IB_create_host_callback(simgrid::s4u::Host& host){
   xbt_dict_set(((NetworkIBModel*)surf_network_model)->active_nodes, host.cname(), act, nullptr);
 }
 
-static void IB_action_state_changed_callback(
-    simgrid::surf::NetworkAction *action,
-    simgrid::surf::Action::State statein, simgrid::surf::Action::State stateout)
+static void IB_action_state_changed_callback(simgrid::surf::NetworkAction* action)
 {
   using simgrid::surf::NetworkIBModel;
   using simgrid::surf::IBNode;
 
-  if(statein!=simgrid::surf::Action::State::running || stateout!=simgrid::surf::Action::State::done)
+  if (action->getState() != simgrid::surf::Action::State::done)
     return;
   std::pair<IBNode*,IBNode*> pair = ((NetworkIBModel*)surf_network_model)->active_comms[action];
   XBT_DEBUG("IB callback - action %p finished", action);
@@ -79,15 +77,13 @@ static void IB_action_init_callback(simgrid::surf::NetworkAction* action, simgri
 /*  } */
 void surf_network_model_init_IB()
 {
-  using simgrid::surf::networkActionStateChangedCallbacks;
-
   if (surf_network_model)
     return;
 
   surf_network_model = new simgrid::surf::NetworkIBModel();
   all_existing_models->push_back(surf_network_model);
-  networkActionStateChangedCallbacks.connect(IB_action_state_changed_callback);
-  simgrid::surf::LinkImpl::onCommunicate.connect(IB_action_init_callback);
+  simgrid::s4u::Link::onCommunicationStateChange.connect(IB_action_state_changed_callback);
+  simgrid::s4u::Link::onCommunicate.connect(IB_action_init_callback);
   simgrid::s4u::Host::onCreation.connect(IB_create_host_callback);
   xbt_cfg_setdefault_double("network/weight-S", 8775);
 

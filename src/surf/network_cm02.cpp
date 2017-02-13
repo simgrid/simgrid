@@ -377,7 +377,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   delete back_route;
   XBT_OUT();
 
-  LinkImpl::onCommunicate(action, src, dst);
+  simgrid::s4u::Link::onCommunicate(action, src, dst);
   return action;
 }
 
@@ -401,10 +401,8 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const char* name, doub
   if (policy == SURF_LINK_FATPIPE)
     lmm_constraint_shared(constraint());
 
-  LinkImpl::onCreation(this);
+  simgrid::s4u::Link::onCreation(this);
 }
-
-
 
 void NetworkCm02Link::apply_event(tmgr_trace_iterator_t triggered, double value)
 {
