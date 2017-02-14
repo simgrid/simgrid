@@ -28,9 +28,9 @@
 #endif
 #include <errno.h>
 
-static int dbgflag = 0;         /* Flag used for debugging */
+SMPI_VARINIT_GLOBAL_AND_SET(dbgflag2, int, 0);         /* Flag used for debugging */
 SMPI_VARINIT_GLOBAL_AND_SET(wrank2, int, -1);  /* World rank */
-static int verbose = 0;         /* Message level (0 is none) */
+SMPI_VARINIT_GLOBAL_AND_SET(verbose2,int, 0);         /* Message level (0 is none) */
 
 /*
  * Utility routines for writing MPI datatype communication tests.
@@ -100,20 +100,20 @@ SMPI_VARINIT_GLOBAL_AND_SET(datatype_index,int,0);
 /* ------------------------------------------------------------------------ */
 
 #define MTEST_DDT_NUM_SUBTESTS 7        /* 7 kinds of derived datatype structure */
-static MTestDdtCreator mtestDdtCreators[MTEST_DDT_MAX];
+SMPI_VARINIT_GLOBAL_AND_SET( mtestDdtCreators, MTestDdtCreator*,NULL);
 
-static int MTEST_BDT_START_IDX = -1;
-static int MTEST_BDT_NUM_TESTS = 0;
-static int MTEST_BDT_RANGE = 0;
+SMPI_VARINIT_GLOBAL_AND_SET(MTEST_BDT_START_IDX, int, -1);
+SMPI_VARINIT_GLOBAL_AND_SET(MTEST_BDT_NUM_TESTS, int, 0);
+SMPI_VARINIT_GLOBAL_AND_SET(MTEST_BDT_RANGE, int, 0);
 
-static int MTEST_DDT_NUM_TYPES = 0;
-static int MTEST_SEND_DDT_START_IDX = 0;
-static int MTEST_SEND_DDT_NUM_TESTS = 0;
-static int MTEST_SEND_DDT_RANGE = 0;
+SMPI_VARINIT_GLOBAL_AND_SET(MTEST_DDT_NUM_TYPES, int, 0);
+SMPI_VARINIT_GLOBAL_AND_SET(MTEST_SEND_DDT_START_IDX, int, 0);
+SMPI_VARINIT_GLOBAL_AND_SET(MTEST_SEND_DDT_NUM_TESTS, int, 0);
+SMPI_VARINIT_GLOBAL_AND_SET(MTEST_SEND_DDT_RANGE, int, 0);
 
-static int MTEST_RECV_DDT_START_IDX = 0;
-static int MTEST_RECV_DDT_NUM_TESTS = 0;
-static int MTEST_RECV_DDT_RANGE = 0;
+SMPI_VARINIT_GLOBAL_AND_SET(MTEST_RECV_DDT_START_IDX, int, 0);
+SMPI_VARINIT_GLOBAL_AND_SET(MTEST_RECV_DDT_NUM_TESTS, int, 0);
+SMPI_VARINIT_GLOBAL_AND_SET(MTEST_RECV_DDT_RANGE, int, 0);
 
 enum {
     MTEST_DATATYPE_TEST_LEVEL_FULL,
@@ -122,53 +122,55 @@ enum {
 };
 
 /* current datatype test level */
-static int MTEST_DATATYPE_TEST_LEVEL = MTEST_DATATYPE_TEST_LEVEL_FULL;
+SMPI_VARINIT_GLOBAL_AND_SET(MTEST_DATATYPE_TEST_LEVEL,int, MTEST_DATATYPE_TEST_LEVEL_FULL);
 /* default datatype test level specified by environment variable */
-static int MTEST_DATATYPE_TEST_LEVEL_ENV = -1;
+SMPI_VARINIT_GLOBAL_AND_SET(MTEST_DATATYPE_TEST_LEVEL_ENV, int, -1);
 /* default datatype initialization function */
 static void (*MTestInitDefaultTestFunc) (void) = NULL;
 
 static void MTestInitDatatypeGen(int basic_dt_num, int derived_dt_num)
 {
-    MTEST_BDT_START_IDX = 0;
-    MTEST_BDT_NUM_TESTS = basic_dt_num;
-    MTEST_BDT_RANGE = MTEST_BDT_START_IDX + MTEST_BDT_NUM_TESTS;
-    MTEST_DDT_NUM_TYPES = derived_dt_num;
-    MTEST_SEND_DDT_START_IDX = MTEST_BDT_NUM_TESTS;
-    MTEST_SEND_DDT_NUM_TESTS = MTEST_DDT_NUM_TYPES * MTEST_DDT_NUM_SUBTESTS;
-    MTEST_SEND_DDT_RANGE = MTEST_SEND_DDT_START_IDX + MTEST_SEND_DDT_NUM_TESTS;
-    MTEST_RECV_DDT_START_IDX = MTEST_SEND_DDT_START_IDX + MTEST_SEND_DDT_NUM_TESTS;
-    MTEST_RECV_DDT_NUM_TESTS = MTEST_DDT_NUM_TYPES * MTEST_DDT_NUM_SUBTESTS;
-    MTEST_RECV_DDT_RANGE = MTEST_RECV_DDT_START_IDX + MTEST_RECV_DDT_NUM_TESTS;
+    SMPI_VARGET_GLOBAL(MTEST_BDT_START_IDX) = 0;
+    SMPI_VARGET_GLOBAL(MTEST_BDT_NUM_TESTS) = basic_dt_num;
+    SMPI_VARGET_GLOBAL(MTEST_BDT_RANGE) = SMPI_VARGET_GLOBAL(MTEST_BDT_START_IDX) + SMPI_VARGET_GLOBAL(MTEST_BDT_NUM_TESTS);
+    SMPI_VARGET_GLOBAL(MTEST_DDT_NUM_TYPES) = derived_dt_num;
+    SMPI_VARGET_GLOBAL(MTEST_SEND_DDT_START_IDX) = SMPI_VARGET_GLOBAL(MTEST_BDT_NUM_TESTS);
+    SMPI_VARGET_GLOBAL(MTEST_SEND_DDT_NUM_TESTS) = SMPI_VARGET_GLOBAL(MTEST_DDT_NUM_TYPES) * MTEST_DDT_NUM_SUBTESTS;
+    SMPI_VARGET_GLOBAL(MTEST_SEND_DDT_RANGE) = SMPI_VARGET_GLOBAL(MTEST_SEND_DDT_START_IDX) + SMPI_VARGET_GLOBAL(MTEST_SEND_DDT_NUM_TESTS);
+    SMPI_VARGET_GLOBAL(MTEST_RECV_DDT_START_IDX) = SMPI_VARGET_GLOBAL(MTEST_SEND_DDT_START_IDX) + SMPI_VARGET_GLOBAL(MTEST_SEND_DDT_NUM_TESTS);
+    SMPI_VARGET_GLOBAL(MTEST_RECV_DDT_NUM_TESTS) = SMPI_VARGET_GLOBAL(MTEST_DDT_NUM_TYPES) * MTEST_DDT_NUM_SUBTESTS;
+    SMPI_VARGET_GLOBAL(MTEST_RECV_DDT_RANGE) = SMPI_VARGET_GLOBAL(MTEST_RECV_DDT_START_IDX) + SMPI_VARGET_GLOBAL(MTEST_RECV_DDT_NUM_TESTS);
 }
 
 static int MTestIsDatatypeGenInited()
 {
-    return (MTEST_BDT_START_IDX < 0) ? 0 : 1;
+    return (SMPI_VARGET_GLOBAL(MTEST_BDT_START_IDX) < 0) ? 0 : 1;
 }
 
 static void MTestPrintDatatypeGen()
 {
     MTestPrintfMsg(1, "MTest datatype test level : %s. %d basic datatype tests, "
                    "%d derived datatype tests will be generated\n",
-                   (MTEST_DATATYPE_TEST_LEVEL == MTEST_DATATYPE_TEST_LEVEL_FULL) ? "FULL" : "MIN",
-                   MTEST_BDT_NUM_TESTS, MTEST_SEND_DDT_NUM_TESTS + MTEST_RECV_DDT_NUM_TESTS);
+                   (SMPI_VARGET_GLOBAL(MTEST_DATATYPE_TEST_LEVEL) == MTEST_DATATYPE_TEST_LEVEL_FULL) ? "FULL" : "MIN",
+                   SMPI_VARGET_GLOBAL(MTEST_BDT_NUM_TESTS), SMPI_VARGET_GLOBAL(MTEST_SEND_DDT_NUM_TESTS) + SMPI_VARGET_GLOBAL(MTEST_RECV_DDT_NUM_TESTS));
 }
 
 static void MTestResetDatatypeGen()
 {
-    MTEST_BDT_START_IDX = -1;
+    SMPI_VARGET_GLOBAL(MTEST_BDT_START_IDX) = -1;
 }
 
 void MTestInitFullDatatypes(void)
 {
+    if(SMPI_VARGET_GLOBAL(mtestDdtCreators)==NULL)
+      SMPI_VARGET_GLOBAL(mtestDdtCreators)= (MTestDdtCreator*)malloc(sizeof(MTestDdtCreator)*MTEST_DDT_MAX);
     /* Do not allow to change datatype test level during loop.
      * Otherwise indexes will be wrong.
      * Test must explicitly call reset or wait for current datatype loop being
      * done before changing to another test level. */
     if (!MTestIsDatatypeGenInited()) {
-        MTEST_DATATYPE_TEST_LEVEL = MTEST_DATATYPE_TEST_LEVEL_FULL;
-        MTestTypeCreatorInit((MTestDdtCreator *) mtestDdtCreators);
+        SMPI_VARGET_GLOBAL(MTEST_DATATYPE_TEST_LEVEL) = MTEST_DATATYPE_TEST_LEVEL_FULL;
+        MTestTypeCreatorInit((MTestDdtCreator *) SMPI_VARGET_GLOBAL(mtestDdtCreators));
         MTestInitDatatypeGen(MTEST_BDT_MAX, MTEST_DDT_MAX);
     }
     else {
@@ -178,13 +180,15 @@ void MTestInitFullDatatypes(void)
 
 void MTestInitMinDatatypes(void)
 {
+    if(SMPI_VARGET_GLOBAL(mtestDdtCreators)==NULL)
+      SMPI_VARGET_GLOBAL(mtestDdtCreators)= (MTestDdtCreator*)malloc(sizeof(MTestDdtCreator)*MTEST_DDT_MAX);
     /* Do not allow to change datatype test level during loop.
      * Otherwise indexes will be wrong.
      * Test must explicitly call reset or wait for current datatype loop being
      * done before changing to another test level. */
     if (!MTestIsDatatypeGenInited()) {
-        MTEST_DATATYPE_TEST_LEVEL = MTEST_DATATYPE_TEST_LEVEL_MIN;
-        MTestTypeMinCreatorInit((MTestDdtCreator *) mtestDdtCreators);
+        SMPI_VARGET_GLOBAL(MTEST_DATATYPE_TEST_LEVEL) = MTEST_DATATYPE_TEST_LEVEL_MIN;
+        MTestTypeMinCreatorInit((MTestDdtCreator *) SMPI_VARGET_GLOBAL(mtestDdtCreators));
         MTestInitDatatypeGen(MTEST_BDT_MAX, MTEST_MIN_DDT_MAX);
     }
     else {
@@ -194,12 +198,14 @@ void MTestInitMinDatatypes(void)
 
 void MTestInitBasicDatatypes(void)
 {
+    if(SMPI_VARGET_GLOBAL(mtestDdtCreators)==NULL)
+      SMPI_VARGET_GLOBAL(mtestDdtCreators)= (MTestDdtCreator*)malloc(sizeof(MTestDdtCreator)*MTEST_DDT_MAX);
     /* Do not allow to change datatype test level during loop.
      * Otherwise indexes will be wrong.
      * Test must explicitly call reset or wait for current datatype loop being
      * done before changing to another test level. */
     if (!MTestIsDatatypeGenInited()) {
-        MTEST_DATATYPE_TEST_LEVEL = MTEST_DATATYPE_TEST_LEVEL_BASIC;
+        SMPI_VARGET_GLOBAL(MTEST_DATATYPE_TEST_LEVEL) = MTEST_DATATYPE_TEST_LEVEL_BASIC;
         MTestInitDatatypeGen(MTEST_BDT_MAX, 0);
     }
     else {
@@ -213,21 +219,21 @@ static inline void MTestInitDatatypeEnv()
 
     /* Read global test level specified by user environment variable.
      * Only initialize once at the first time that test calls datatype routine. */
-    if (MTEST_DATATYPE_TEST_LEVEL_ENV > -1)
+    if (SMPI_VARGET_GLOBAL(MTEST_DATATYPE_TEST_LEVEL_ENV) > -1)
         return;
 
     /* default full */
-    MTEST_DATATYPE_TEST_LEVEL_ENV = MTEST_DATATYPE_TEST_LEVEL_FULL;
+    SMPI_VARGET_GLOBAL(MTEST_DATATYPE_TEST_LEVEL_ENV) = MTEST_DATATYPE_TEST_LEVEL_FULL;
     MTestInitDefaultTestFunc = MTestInitFullDatatypes;
 
     envval = getenv("MPITEST_DATATYPE_TEST_LEVEL");
     if (envval && strlen(envval)) {
         if (!strncmp(envval, "min", strlen("min"))) {
-            MTEST_DATATYPE_TEST_LEVEL_ENV = MTEST_DATATYPE_TEST_LEVEL_MIN;
+            SMPI_VARGET_GLOBAL(MTEST_DATATYPE_TEST_LEVEL_ENV) = MTEST_DATATYPE_TEST_LEVEL_MIN;
             MTestInitDefaultTestFunc = MTestInitMinDatatypes;
         }
         else if (!strncmp(envval, "basic", strlen("basic"))) {
-            MTEST_DATATYPE_TEST_LEVEL_ENV = MTEST_DATATYPE_TEST_LEVEL_BASIC;
+            SMPI_VARGET_GLOBAL(MTEST_DATATYPE_TEST_LEVEL_ENV) = MTEST_DATATYPE_TEST_LEVEL_BASIC;
             MTestInitDefaultTestFunc = MTestInitBasicDatatypes;
         }
         else if (strncmp(envval, "full", strlen("full"))) {
@@ -333,7 +339,7 @@ static inline int MTestGetBasicDatatypes(MTestDatatype * sendtype,
                                          MTestDatatype * recvtype, MPI_Aint tot_count)
 {
     int merr = 0;
-    int bdt_index = SMPI_VARGET_GLOBAL(datatype_index) - MTEST_BDT_START_IDX;
+    int bdt_index = SMPI_VARGET_GLOBAL(datatype_index) - SMPI_VARGET_GLOBAL(MTEST_BDT_START_IDX);
     if (bdt_index >= MTEST_BDT_MAX) {
         printf("Wrong index:  global %d, bst %d in %s\n", SMPI_VARGET_GLOBAL(datatype_index), bdt_index, __FUNCTION__);
         merr++;
@@ -397,9 +403,9 @@ static inline int MTestGetSendDerivedDatatypes(MTestDatatype * sendtype,
     MPI_Datatype old_type = MPI_DOUBLE;
 
     /* Check index */
-    ddt_datatype_index = SMPI_VARGET_GLOBAL(datatype_index) - MTEST_SEND_DDT_START_IDX;
+    ddt_datatype_index = SMPI_VARGET_GLOBAL(datatype_index) - SMPI_VARGET_GLOBAL(MTEST_SEND_DDT_START_IDX);
     ddt_c_dt = ddt_datatype_index / MTEST_DDT_NUM_SUBTESTS;
-    if (ddt_c_dt >= MTEST_DDT_MAX || !mtestDdtCreators[ddt_c_dt]) {
+    if (ddt_c_dt >= MTEST_DDT_MAX || !SMPI_VARGET_GLOBAL(mtestDdtCreators)[ddt_c_dt]) {
         printf("Wrong index:  global %d, send %d send-ddt %d, or undefined creator in %s\n",
                SMPI_VARGET_GLOBAL(datatype_index), ddt_datatype_index, ddt_c_dt, __FUNCTION__);
         merr++;
@@ -417,7 +423,7 @@ static inline int MTestGetSendDerivedDatatypes(MTestDatatype * sendtype,
     }
 
     /* Create send datatype */
-    merr = mtestDdtCreators[ddt_c_dt] (count, blen, stride, lb, old_type, "send", sendtype);
+    merr = SMPI_VARGET_GLOBAL(mtestDdtCreators)[ddt_c_dt] (count, blen, stride, lb, old_type, "send", sendtype);
     if (merr)
         return merr;
 
@@ -442,9 +448,9 @@ static inline int MTestGetRecvDerivedDatatypes(MTestDatatype * sendtype,
     MPI_Datatype old_type = MPI_DOUBLE;
 
     /* Check index */
-    ddt_datatype_index = SMPI_VARGET_GLOBAL(datatype_index) - MTEST_RECV_DDT_START_IDX;
+    ddt_datatype_index = SMPI_VARGET_GLOBAL(datatype_index) - SMPI_VARGET_GLOBAL(MTEST_RECV_DDT_START_IDX);
     ddt_c_dt = ddt_datatype_index / MTEST_DDT_NUM_SUBTESTS;
-    if (ddt_c_dt >= MTEST_DDT_MAX || !mtestDdtCreators[ddt_c_dt]) {
+    if (ddt_c_dt >= MTEST_DDT_MAX || !SMPI_VARGET_GLOBAL(mtestDdtCreators)[ddt_c_dt]) {
         printf("Wrong index:  global %d, recv %d recv-ddt %d, or undefined creator in %s\n",
                SMPI_VARGET_GLOBAL(datatype_index), ddt_datatype_index, ddt_c_dt, __FUNCTION__);
         merr++;
@@ -461,7 +467,7 @@ static inline int MTestGetRecvDerivedDatatypes(MTestDatatype * sendtype,
     }
 
     /* Create receive datatype */
-    merr = mtestDdtCreators[ddt_c_dt] (count, blen, stride, lb, old_type, "recv", recvtype);
+    merr = SMPI_VARGET_GLOBAL(mtestDdtCreators)[ddt_c_dt] (count, blen, stride, lb, old_type, "recv", recvtype);
     if (merr)
         return merr;
 
@@ -484,7 +490,7 @@ int MTestGetDatatypes(MTestDatatype * sendtype, MTestDatatype * recvtype, MPI_Ai
 {
     int merr = 0;
 
-    MTestGetDbgInfo(&dbgflag, &verbose);
+    MTestGetDbgInfo(&SMPI_VARGET_GLOBAL(dbgflag2), &SMPI_VARGET_GLOBAL(verbose2));
     MTestInitDatatypeEnv();
     MPI_Comm_rank(MPI_COMM_WORLD, &SMPI_VARGET_GLOBAL(wrank2));
 
@@ -498,15 +504,15 @@ int MTestGetDatatypes(MTestDatatype * sendtype, MTestDatatype * recvtype, MPI_Ai
     }
 
     /* Start generating tests */
-    if (SMPI_VARGET_GLOBAL(datatype_index) < MTEST_BDT_RANGE) {
+    if (SMPI_VARGET_GLOBAL(datatype_index) < SMPI_VARGET_GLOBAL(MTEST_BDT_RANGE)) {
         merr = MTestGetBasicDatatypes(sendtype, recvtype, tot_count);
 
     }
-    else if (SMPI_VARGET_GLOBAL(datatype_index) < MTEST_SEND_DDT_RANGE) {
+    else if (SMPI_VARGET_GLOBAL(datatype_index) < SMPI_VARGET_GLOBAL(MTEST_SEND_DDT_RANGE)) {
         merr = MTestGetSendDerivedDatatypes(sendtype, recvtype, tot_count);
 
     }
-    else if (SMPI_VARGET_GLOBAL(datatype_index) < MTEST_RECV_DDT_RANGE) {
+    else if (SMPI_VARGET_GLOBAL(datatype_index) < SMPI_VARGET_GLOBAL(MTEST_RECV_DDT_RANGE)) {
         merr = MTestGetRecvDerivedDatatypes(sendtype, recvtype, tot_count);
 
     }
@@ -528,7 +534,7 @@ int MTestGetDatatypes(MTestDatatype * sendtype, MTestDatatype * recvtype, MPI_Ai
 
     SMPI_VARGET_GLOBAL(datatype_index)++;
 
-    if (verbose >= 2 && SMPI_VARGET_GLOBAL(datatype_index) > 0) {
+    if (SMPI_VARGET_GLOBAL(verbose2) >= 2 && SMPI_VARGET_GLOBAL(datatype_index) > 0) {
         MPI_Count ssize, rsize;
         MPI_Aint slb, rlb, sextent, rextent;
         const char *sendtype_nm = MTestGetDatatypeName(sendtype);
@@ -609,18 +615,20 @@ int MTestCheckRecv(MPI_Status * status, MTestDatatype * recvtype)
     return errs;
 }
 
+    SMPI_VARINIT_GLOBAL_AND_SET(name , char*,NULL);
+    SMPI_VARINIT_GLOBAL_AND_SET(sp,int,0);
+
 /* This next routine uses a circular buffer of static name arrays just to
    simplify the use of the routine */
 const char *MTestGetDatatypeName(MTestDatatype * dtype)
 {
-    static char name[4][MPI_MAX_OBJECT_NAME];
-    static int sp = 0;
+    if(SMPI_VARGET_GLOBAL(name)==NULL) SMPI_VARGET_GLOBAL(name)=(char*)malloc(4*MPI_MAX_OBJECT_NAME*sizeof(char));
     int rlen, merr;
 
-    if (sp >= 4)
-        sp = 0;
-    merr = MPI_Type_get_name(dtype->datatype, name[sp], &rlen);
+    if (SMPI_VARGET_GLOBAL(sp) >= 4)
+        SMPI_VARGET_GLOBAL(sp) = 0;
+    merr = MPI_Type_get_name(dtype->datatype, &SMPI_VARGET_GLOBAL(name)[SMPI_VARGET_GLOBAL(sp)*MPI_MAX_OBJECT_NAME], &rlen);
     if (merr)
         MTestPrintError(merr);
-    return (const char *) name[sp++];
+    return (const char *) &SMPI_VARGET_GLOBAL(name)[(SMPI_VARGET_GLOBAL(sp)++) *MPI_MAX_OBJECT_NAME];
 }

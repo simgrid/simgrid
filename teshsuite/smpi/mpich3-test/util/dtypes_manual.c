@@ -43,7 +43,7 @@
  */
 
 /* Change this to test only the basic, predefined types */
-static int basic_only = 0;
+SMPI_VARINIT_GLOBAL_AND_SET(basic_only, int, 0);
 
 /*
    Arrays types, inbufs, outbufs, and counts are allocated by the
@@ -194,7 +194,7 @@ static int basic_only = 0;
  */
 void MTestDatatype2BasicOnly(void)
 {
-    basic_only = 1;
+    SMPI_VARGET_GLOBAL(basic_only) = 1;
 }
 
 SMPI_VARINIT_GLOBAL_AND_SET(nbasic_types, int, 0);  /* World rank */
@@ -228,7 +228,7 @@ void MTestDatatype2Generate(MPI_Datatype * types, void **inbufs, void **outbufs,
 #endif
     SMPI_VARGET_GLOBAL(nbasic_types) = cnt;
 
-    if (basic_only) {
+    if (SMPI_VARGET_GLOBAL(basic_only)) {
         *n = cnt;
         return;
     }
