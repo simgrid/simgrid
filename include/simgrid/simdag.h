@@ -181,6 +181,8 @@ XBT_PUBLIC(std::set<SD_task_t>*) simulate(double how_long);
 #define SD_workstation_get_property_value sg_host_get_property_value
 #define SD_workstation_get_power sg_host_speed
 #define SD_workstation_get_available_power sg_host_get_available_speed
+#define SD_route_get_latency sg_host_route_latency
+#define SD_route_get_bandwidth sg_host_route_bandwidth
 
 #define SD_workstation_get_mounted_storage_list sg_host_get_mounted_storage_list
 // Lost functions
@@ -189,7 +191,8 @@ XBT_PUBLIC(std::set<SD_task_t>*) simulate(double how_long);
 //SD_workstation_get_current_task
 //SD_route_get_communication_time => SG_route_get_latency() + amount / SD_route_get_bandwidth()
 //SD_workstation_get_computation_time => amount / sg_host_speed()
+//SD_route_get_size
+//SD_route_get_list
 //TRACE_sd_set_task_category
-
 SG_END_DECL()
 #endif
