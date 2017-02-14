@@ -7,8 +7,7 @@
 #include "messages.h"
 #include "bittorrent.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_messages,
-                             "Messages specific for the message factory");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_messages, "Messages specific for the message factory");
 
 #define BITS_TO_BYTES(x) ((x / 8) + (x % 8) ? 1 : 0)
 

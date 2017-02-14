@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,23 +13,19 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_peers, "Messages specific for the peers");
 
-//TODO: Let users change this
 /*
- * File transfered data
- * For the test, default values are :
+ * User parameters for transferred file data. For the test, the default values are :
  * File size: 10 pieces * 5 blocks/piece * 16384 bytes/block = 819200 bytes
  */
-
 #define FILE_PIECES  10
 #define PIECES_BLOCKS 5
 #define BLOCK_SIZE  16384
-#define ENABLE_END_GAME_MODE 1
+static const unsigned long int FILE_SIZE = FILE_PIECES * PIECES_BLOCKS * BLOCK_SIZE;
 
 /** Number of blocks asked by each request */
 #define BLOCKS_REQUESTED 2
 
-static const unsigned long int FILE_SIZE = FILE_PIECES * PIECES_BLOCKS * BLOCK_SIZE;
-
+#define ENABLE_END_GAME_MODE 1
 #define SLEEP_DURATION 1
 
 /** Peer main function */
@@ -47,11 +43,11 @@ int peer(int argc, char *argv[])
   //Retrieve deadline
   double deadline = xbt_str_parse_double(argv[2],"Invalid deadline: %s");
   xbt_assert(deadline > 0, "Wrong deadline supplied");
+
   XBT_INFO("Hi, I'm joining the network with id %d", peer.id);
   //Getting peer data from the tracker.
   if (get_peers_data(&peer)) {
-    XBT_DEBUG("Got %d peers from the tracker", xbt_dict_length(peer.peers));
-    XBT_DEBUG("Here is my current status: %s", peer.bitfield);
+    XBT_DEBUG("Got %d peers from the tracker. Current status is: %s", xbt_dict_length(peer.peers), peer.bitfield);
     peer.begin_receive_time = MSG_get_clock();
     MSG_mailbox_set_async(peer.mailbox);
     if (has_finished(peer.bitfield)) {
@@ -83,10 +79,8 @@ void leech_loop(peer_t peer, double deadline)
 {
   double next_choked_update = MSG_get_clock() + UPDATE_CHOKED_INTERVAL;
   XBT_DEBUG("Start downloading.");
-  /*
-   * Send a "handshake" message to all the peers it got
-   * (since it couldn't have gotten more than 50 peers)
-   */
+
+  /* Send a "handshake" message to all the peers it got (since it couldn't have gotten more than 50 peers) */
   send_handshake_all(peer);
   XBT_DEBUG("Starting main leech loop");
 
@@ -114,7 +108,6 @@ void leech_loop(peer_t peer, double deadline)
   }
   if (peer->pieces == FILE_PIECES)
     XBT_DEBUG("%d becomes a seeder", peer->id);
-
 }
 
 /** @brief Peer main loop when it is seeding
@@ -156,24 +149,24 @@ void seed_loop(peer_t peer, double deadline)
 int get_peers_data(peer_t peer)
 {
   int success = 0;
-  int send_success = 0;
   double timeout = MSG_get_clock() + GET_PEERS_TIMEOUT;
+
   //Build the task to send to the tracker
   tracker_task_data_t data = tracker_task_data_new(MSG_host_get_name(MSG_host_self()), peer->mailbox_tracker,
                                                    peer->id, 0, 0, FILE_SIZE);
-  //Build the task to send.
   msg_task_t task_send = MSG_task_create(NULL, 0, TRACKER_COMM_SIZE, data);
-  msg_task_t task_received = NULL;
-  msg_comm_t comm_received;
-  while ((send_success == 0) && MSG_get_clock() < timeout) {
+  while ((success == 0) && MSG_get_clock() < timeout) {
     XBT_DEBUG("Sending a peer request to the tracker.");
     msg_error_t status = MSG_task_send_with_timeout(task_send, TRACKER_MAILBOX, GET_PEERS_TIMEOUT);
     if (status == MSG_OK) {
-      send_success = 1;
+      success = 1;
     }
   }
-  while ((success ==0) && MSG_get_clock() < timeout) {
-    comm_received = MSG_task_irecv(&task_received, peer->mailbox_tracker);
+
+  success = 0;
+  msg_task_t task_received = NULL;
+  while ((success == 0) && MSG_get_clock() < timeout) {
+    msg_comm_t comm_received = MSG_task_irecv(&task_received, peer->mailbox_tracker);
     msg_error_t status = MSG_comm_wait(comm_received, GET_PEERS_TIMEOUT);
     if (status == MSG_OK) {
       tracker_task_data_t data = MSG_task_get_data(task_received);
@@ -286,12 +279,17 @@ void update_active_peers_set(peer_t peer, connection_t remote_peer)
  */
 void handle_message(peer_t peer, msg_task_t task)
 {
+  const char* type_names[10] =
+  {"HANDSHAKE","CHOKE","UNCHOKE","INTERESTED","NOTINTERESTED","HAVE","BITFIELD","REQUEST", "PIECE", "CANCEL" };
   message_t message = MSG_task_get_data(task);
+  XBT_DEBUG("Received a %s message from %s (%s)", type_names[message->type], message->mailbox,
+                                                  message->issuer_host_name);
+
   connection_t remote_peer;
   remote_peer = xbt_dict_get_or_null_ext(peer->peers, (char *) &message->peer_id, sizeof(int));
+
   switch (message->type) {
   case MESSAGE_HANDSHAKE:
-    XBT_DEBUG("Received a HANDSHAKE from %s (%s)", message->mailbox, message->issuer_host_name);
     //Check if the peer is in our connection list.
     if (remote_peer == 0) {
       xbt_dict_set_ext(peer->peers, (char *) &message->peer_id, sizeof(int), connection_new(message->peer_id), NULL);
@@ -301,7 +299,6 @@ void handle_message(peer_t peer, msg_task_t task)
     send_bitfield(peer, message->mailbox);
     break;
   case MESSAGE_BITFIELD:
-    XBT_DEBUG("Recieved a BITFIELD message from %s (%s)", message->mailbox, message->issuer_host_name);
     //Update the pieces list
     update_pieces_count_from_bitfield(peer, message->bitfield);
     //Store the bitfield
@@ -313,21 +310,18 @@ void handle_message(peer_t peer, msg_task_t task)
     }
     break;
   case MESSAGE_INTERESTED:
-    XBT_DEBUG("Recieved an INTERESTED message from %s (%s)", message->mailbox, message->issuer_host_name);
     xbt_assert((remote_peer != NULL), "A non-in-our-list peer has sent us a message. WTH ?");
     //Update the interested state of the peer.
     remote_peer->interested = 1;
     update_active_peers_set(peer, remote_peer);
     break;
   case MESSAGE_NOTINTERESTED:
-    XBT_DEBUG("Received a NOTINTERESTED message from %s (%s)", message->mailbox, message->issuer_host_name);
     xbt_assert((remote_peer != NULL), "A non-in-our-list peer has sent us a message. WTH ?");
     remote_peer->interested = 0;
     update_active_peers_set(peer, remote_peer);
     break;
   case MESSAGE_UNCHOKE:
     xbt_assert((remote_peer != NULL), "A non-in-our-list peer has sent us a message. WTH ?");
-    XBT_DEBUG("Received a UNCHOKE message from %s (%s)", message->mailbox, message->issuer_host_name);
     xbt_assert(remote_peer->choked_download);
     remote_peer->choked_download = 0;
     //Send requests to the peer, since it has unchoked us
@@ -336,21 +330,18 @@ void handle_message(peer_t peer, msg_task_t task)
     break;
   case MESSAGE_CHOKE:
     xbt_assert((remote_peer != NULL), "A non-in-our-list peer has sent us a message. WTH ?");
-    XBT_DEBUG("Received a CHOKE message from %s (%s)", message->mailbox, message->issuer_host_name);
     xbt_assert(!remote_peer->choked_download);
     remote_peer->choked_download = 1;
     remove_current_piece(peer, remote_peer, remote_peer->current_piece);
     break;
   case MESSAGE_HAVE:
-    XBT_DEBUG("Received a HAVE message from %s (%s) of piece %d", message->mailbox, message->issuer_host_name,
-              message->index);
+    XBT_DEBUG("\t for piece %d", message->index);
     xbt_assert(remote_peer->bitfield, "bitfield not received");
     xbt_assert((message->index >= 0 && message->index < FILE_PIECES), "Wrong HAVE message received");
     remote_peer->bitfield[message->index] = '1';
     peer->pieces_count[message->index]++;
     //If the piece is in our pieces, we tell the peer that we are interested.
-    if ((remote_peer->am_interested == 0) &&
-         peer->bitfield[message->index] == '0') {
+    if ((remote_peer->am_interested == 0) && peer->bitfield[message->index] == '0') {
       remote_peer->am_interested = 1;
       send_interested(peer, message->mailbox);
       if (remote_peer->choked_download == 0)
@@ -359,22 +350,20 @@ void handle_message(peer_t peer, msg_task_t task)
     break;
   case MESSAGE_REQUEST:
     xbt_assert(remote_peer->interested);
-
     xbt_assert((message->index >= 0 && message->index < FILE_PIECES), "Wrong request received");
     if (remote_peer->choked_upload == 0) {
-      XBT_DEBUG("Received a REQUEST from %s (%s) for %d (%d,%d)", message->mailbox, message->issuer_host_name,
-                message->index, message->block_index, message->block_index + message->block_length);
+      XBT_DEBUG("\t for piece %d (%d,%d)", message->index, message->block_index,
+                                           message->block_index + message->block_length);
       if (peer->bitfield[message->index] == '1') {
         send_piece(peer, message->mailbox, message->index, message->block_index, message->block_length);
       }
     } else {
-      XBT_DEBUG("Received a REQUEST from %s (%s) for %d but he is choked.", message->mailbox,
-                message->issuer_host_name, message->peer_id);
+      XBT_DEBUG("\t for piece %d but he is choked.",  message->peer_id);
     }
     break;
   case MESSAGE_PIECE:
-    XBT_DEBUG("Received piece %d (%d,%d) from %s (%s)", message->index, message->block_index,
-              message->block_index + message->block_length, message->mailbox, message->issuer_host_name);
+    XBT_DEBUG(" \for piece %d (%d,%d)", message->index, message->block_index,
+                                        message->block_index + message->block_length);
     xbt_assert(!remote_peer->choked_download);
     xbt_assert(remote_peer->am_interested || ENABLE_END_GAME_MODE,
                "Can't received a piece if I'm not interested wihtout end-game mode!"
@@ -382,30 +371,29 @@ void handle_message(peer_t peer, msg_task_t task)
     xbt_assert(remote_peer->choked_download != 1, "Can't received a piece if I'm choked !");
     xbt_assert((message->index >= 0 && message->index < FILE_PIECES), "Wrong piece received");
     //TODO: Execute à computation.
-      if (peer->bitfield[message->index] == '0') {
-        update_bitfield_blocks(peer, message->index, message->block_index, message->block_length);
-        if (piece_complete(peer, message->index)) {
-          //Removing the piece from our piece list
-          remove_current_piece(peer, remote_peer, message->index);
-          //Setting the fact that we have the piece
-          peer->bitfield[message->index] = '1';
-          peer->pieces++;
-          XBT_DEBUG("My status is now %s", peer->bitfield);
-          //Sending the information to all the peers we are connected to
-          send_have(peer, message->index);
-          //sending UNINTERSTED to peers that doesn't have what we want.
-          update_interested_after_receive(peer);
-        } else {                // piece not completed
-          send_request_to_peer(peer, remote_peer, message->index);      // ask for the next block
-        }
-      } else {
-        XBT_DEBUG("However, we already have it");
-        xbt_assert(ENABLE_END_GAME_MODE, "Should not happen because we don't use end game mode !");
-        request_new_piece_to_peer(peer, remote_peer);
+    if (peer->bitfield[message->index] == '0') {
+      update_bitfield_blocks(peer, message->index, message->block_index, message->block_length);
+      if (piece_complete(peer, message->index)) {
+        //Removing the piece from our piece list
+        remove_current_piece(peer, remote_peer, message->index);
+        //Setting the fact that we have the piece
+        peer->bitfield[message->index] = '1';
+        peer->pieces++;
+        XBT_DEBUG("My status is now %s", peer->bitfield);
+        //Sending the information to all the peers we are connected to
+        send_have(peer, message->index);
+        //sending UNINTERESTED to peers that do not have what we want.
+        update_interested_after_receive(peer);
+      } else {                // piece not completed
+        send_request_to_peer(peer, remote_peer, message->index);      // ask for the next block
       }
+    } else {
+      XBT_DEBUG("However, we already have it");
+      xbt_assert(ENABLE_END_GAME_MODE, "Should not happen because we don't use end game mode !");
+      request_new_piece_to_peer(peer, remote_peer);
+    }
     break;
   case MESSAGE_CANCEL:
-    XBT_DEBUG("The received CANCEL from %s (%s)", message->mailbox, message->issuer_host_name);
     break;
   default:
     THROW_IMPOSSIBLE;
@@ -444,8 +432,7 @@ void remove_current_piece(peer_t peer, connection_t remote_peer, int current_pie
  */
 void update_pieces_count_from_bitfield(peer_t peer, char *bitfield)
 {
-  int i;
-  for (i = 0; i < FILE_PIECES; i++) {
+  for (int i = 0; i < FILE_PIECES; i++) {
     if (bitfield[i] == '1') {
       peer->pieces_count[i]++;
     }
@@ -475,11 +462,9 @@ int select_piece_to_download(peer_t peer, connection_t remote_peer)
 #if ENABLE_END_GAME_MODE == 0
       return -1;
 #endif
-    int i;
     int nb_interesting_pieces = 0;
-    int current_index = 0;
     // compute the number of interesting pieces
-    for (i = 0; i < FILE_PIECES; i++) {
+    for (int i = 0; i < FILE_PIECES; i++) {
       if (peer->bitfield[i] == '0' && remote_peer->bitfield[i] == '1') {
         nb_interesting_pieces++;
       }
@@ -487,7 +472,8 @@ int select_piece_to_download(peer_t peer, connection_t remote_peer)
     xbt_assert(nb_interesting_pieces != 0);
     // get a random interesting piece
     int random_piece_index = RngStream_RandInt(peer->stream, 0, nb_interesting_pieces - 1);
-    for (i = 0; i < FILE_PIECES; i++) {
+    int current_index = 0;
+    for (int i = 0; i < FILE_PIECES; i++) {
       if (peer->bitfield[i] == '0' && remote_peer->bitfield[i] == '1') {
         if (random_piece_index == current_index) {
           piece = i;
@@ -501,11 +487,9 @@ int select_piece_to_download(peer_t peer, connection_t remote_peer)
   }
   // Random first policy
   if (peer->pieces < 4 && (is_interested_and_free(peer, remote_peer) != 0)) {
-    int i;
     int nb_interesting_pieces = 0;
-    int current_index = 0;
     // compute the number of interesting pieces
-    for (i = 0; i < FILE_PIECES; i++) {
+    for (int i = 0; i < FILE_PIECES; i++) {
       if (peer->bitfield[i] == '0' && remote_peer->bitfield[i] == '1' &&
           (in_current_pieces(peer, i) == 0)) {
         nb_interesting_pieces++;
@@ -514,7 +498,8 @@ int select_piece_to_download(peer_t peer, connection_t remote_peer)
     xbt_assert(nb_interesting_pieces != 0);
     // get a random interesting piece
     int random_piece_index = RngStream_RandInt(peer->stream, 0, nb_interesting_pieces - 1);
-    for (i = 0; i < FILE_PIECES; i++) {
+    int current_index = 0;
+    for (int i = 0; i < FILE_PIECES; i++) {
       if (peer->bitfield[i] == '0' && remote_peer->bitfield[i] == '1' &&
           (in_current_pieces(peer, i) == 0)) {
         if (random_piece_index == current_index) {
@@ -527,29 +512,26 @@ int select_piece_to_download(peer_t peer, connection_t remote_peer)
     xbt_assert(piece != -1);
     return piece;
   } else {                      // Rarest first policy
-    int i;
     short min = SHRT_MAX;
     int nb_min_pieces = 0;
     int current_index = 0;
     // compute the smallest number of copies of available pieces
-    for (i = 0; i < FILE_PIECES; i++) {
+    for (int i = 0; i < FILE_PIECES; i++) {
       if (peer->pieces_count[i] < min && peer->bitfield[i] == '0' &&
           remote_peer->bitfield[i] == '1' && (in_current_pieces(peer, i) == 0))
         min = peer->pieces_count[i];
     }
-    xbt_assert(min != SHRT_MAX ||
-               (is_interested_and_free(peer, remote_peer) ==0));
+    xbt_assert(min != SHRT_MAX || (is_interested_and_free(peer, remote_peer) ==0));
     // compute the number of rarest pieces
-    for (i = 0; i < FILE_PIECES; i++) {
+    for (int i = 0; i < FILE_PIECES; i++) {
       if (peer->pieces_count[i] == min && peer->bitfield[i] == '0' &&
           remote_peer->bitfield[i] == '1' && (in_current_pieces(peer, i) ==0))
         nb_min_pieces++;
     }
-    xbt_assert(nb_min_pieces != 0 ||
-               (is_interested_and_free(peer, remote_peer)==0));
+    xbt_assert(nb_min_pieces != 0 || (is_interested_and_free(peer, remote_peer)==0));
     // get a random rarest piece
     int random_rarest_index = RngStream_RandInt(peer->stream, 0, nb_min_pieces - 1);
-    for (i = 0; i < FILE_PIECES; i++) {
+    for (int i = 0; i < FILE_PIECES; i++) {
       if (peer->pieces_count[i] == min && peer->bitfield[i] == '0' &&
           remote_peer->bitfield[i] == '1' && (in_current_pieces(peer, i)==0)) {
         if (random_rarest_index == current_index) {
@@ -677,8 +659,7 @@ void update_interested_after_receive(peer_t peer)
     if (connection->am_interested != 0) {
       xbt_assert(connection->bitfield, "Bitfield not received");
       //Check if the peer still has a piece we want.
-      int i;
-      for (i = 0; i < FILE_PIECES; i++) {
+      for (int i = 0; i < FILE_PIECES; i++) {
         if (connection->bitfield[i] == '1' && peer->bitfield[i] == '0') {
           interested = 1;
           break;
@@ -694,10 +675,9 @@ void update_interested_after_receive(peer_t peer)
 
 void update_bitfield_blocks(peer_t peer, int index, int block_index, int block_length)
 {
-  int i;
   xbt_assert((index >= 0 && index <= FILE_PIECES), "Wrong piece.");
   xbt_assert((block_index >= 0 && block_index <= PIECES_BLOCKS), "Wrong block : %d.", block_index);
-  for (i = block_index; i < (block_index + block_length); i++) {
+  for (int i = block_index; i < (block_index + block_length); i++) {
     peer->bitfield_blocks[index * PIECES_BLOCKS + i] = '1';
   }
 }
@@ -705,8 +685,7 @@ void update_bitfield_blocks(peer_t peer, int index, int block_index, int block_l
 /** Returns if a peer has completed the download of a piece */
 int piece_complete(peer_t peer, int index)
 {
-  int i;
-  for (i = 0; i < PIECES_BLOCKS; i++) {
+  for (int i = 0; i < PIECES_BLOCKS; i++) {
     if (peer->bitfield_blocks[index * PIECES_BLOCKS + i] == '0') {
       return 0;
     }
@@ -717,8 +696,7 @@ int piece_complete(peer_t peer, int index)
 /** Returns the first block that a peer doesn't have in a piece. If the peer has all blocks of the piece, returns -1. */
 int get_first_block(peer_t peer, int piece)
 {
-  int i;
-  for (i = 0; i < PIECES_BLOCKS; i++) {
+  for (int i = 0; i < PIECES_BLOCKS; i++) {
     if (peer->bitfield_blocks[piece * PIECES_BLOCKS + i] == '0') {
       return i;
     }
@@ -776,8 +754,7 @@ void send_request_to_peer(peer_t peer, connection_t remote_peer, int piece)
   xbt_assert(remote_peer->bitfield[piece] == '1');
   int block_index = get_first_block(peer, piece);
   if (block_index != -1) {
-    int block_length = PIECES_BLOCKS - block_index;
-    block_length = MIN(BLOCKS_REQUESTED, block_length);
+    int block_length = MIN(BLOCKS_REQUESTED, PIECES_BLOCKS - block_index);
     send_request(peer, remote_peer->mailbox, piece, block_index, block_length);
   }
 }
@@ -840,10 +817,10 @@ void send_handshake_all(peer_t peer)
  */
 void send_handshake(peer_t peer, const char *mailbox)
 {
+  XBT_DEBUG("Sending a HANDSHAKE to %s", mailbox);
   msg_task_t task = task_message_new(MESSAGE_HANDSHAKE, peer->hostname, peer->mailbox, peer->id,
                                      task_message_size(MESSAGE_HANDSHAKE));
   MSG_task_dsend(task, mailbox, task_message_free);
-  XBT_DEBUG("Sending a HANDSHAKE to %s", mailbox);
 }
 
 /** Send a "choked" message to a peer. */

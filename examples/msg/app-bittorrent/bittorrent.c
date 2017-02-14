@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2016. The SimGrid Team.
+/* Copyright (c) 2012-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -21,10 +21,7 @@ int main(int argc, char *argv[])
   /* Check the arguments */
   xbt_assert (argc > 2, "Usage: %s platform_file deployment_file", argv[0]);
 
-  const char *platform_file = argv[1];
-  const char *deployment_file = argv[2];
-
-  MSG_create_environment(platform_file);
+  MSG_create_environment(argv[1]);
 
   xbt_dynar_t host_list = MSG_hosts_as_dynar();
   xbt_dynar_foreach(host_list, i, host) {
@@ -37,7 +34,7 @@ int main(int argc, char *argv[])
   MSG_function_register("tracker", tracker);
   MSG_function_register("peer", peer);
 
-  MSG_launch_application(deployment_file);
+  MSG_launch_application(argv[2]);
 
   MSG_main();
 
