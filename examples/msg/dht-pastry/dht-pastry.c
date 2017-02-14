@@ -235,6 +235,7 @@ static void handle_task(node_t node, msg_task_t task) {
   int min;
   int max;
   int d;
+  int next;
   msg_task_t task_sent;
   task_data_t req_data;
   task_data_t task_data = (task_data_t) MSG_task_get_data(task);
@@ -247,8 +248,8 @@ static void handle_task(node_t node, msg_task_t task) {
   }
   switch (type) {
     /* Try to join the ring */
-    case TASK_JOIN: {
-      int next = routing_next(node, task_data->answer_id);
+    case TASK_JOIN:
+      next = routing_next(node, task_data->answer_id);
       XBT_DEBUG("Join request from %08x forwarding to %08x", task_data->answer_id, next);      
       type = TASK_JOIN_LAST_REPLY;
 
@@ -280,11 +281,10 @@ static void handle_task(node_t node, msg_task_t task) {
         task_free(task_sent);
       }
       break;
-    }
     /* Join reply from all the node touched by the join  */
     case TASK_JOIN_LAST_REPLY:
       // if last node touched reply, copy its namespace set
-      // TODO: it's work only if the two nodes are side to side (is it really the case ?)
+      // TODO: it works only if the two nodes are side to side (is it really the case ?)
       j = (task_data->sender_id < node->id) ? -1 : 0;
       for (i=0; i<NAMESPACE_SIZE/2; i++) {
         node->namespace_set[i] = task_data->state->namespace_set[i-j];

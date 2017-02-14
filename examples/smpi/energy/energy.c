@@ -11,14 +11,11 @@
 
 int main(int argc, char *argv[])
 {
-  int rank, pstates;
+  int rank;
   int i;
   char buf[1024];
-  char *s;
-  size_t sz, x;
-  int err;
 
-  err = MPI_Init(&argc, &argv);
+  int err = MPI_Init(&argc, &argv);
   if (err != MPI_SUCCESS) {
     fprintf(stderr, "MPI_init failed: %d\n", err);
     exit(EXIT_FAILURE);
@@ -31,11 +28,11 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  pstates = smpi_get_host_nb_pstates();
+  int pstates = smpi_get_host_nb_pstates();
 
-  s = buf;
-  sz = sizeof buf;
-  x = snprintf(s, sz,
+  char *s = buf;
+  size_t sz = sizeof buf;
+  size_t x = snprintf(s, sz,
                "[%.6f] [rank %d] Pstates: %d; Powers: %.0f",
                MPI_Wtime(), rank, pstates, smpi_get_host_power_peak_at(0));
   if (x < sz) {

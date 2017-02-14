@@ -50,7 +50,8 @@ static double format_begin_of_time = -1;
 
 #define show_it(data, letter)                                           \
   if (1) {                                                              \
-    int len, wd;                                                        \
+    int len;                                                            \
+    int wd;                                                             \
     if (length == -1) {                                                 \
       wd = 0;                                                           \
     } else {                                                            \
@@ -80,9 +81,8 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
   int rem_size = ev->buffer_size;
   int precision = -1;
   int length = -1;
-  char *q;
 
-  for (q = l->data ; *q != '\0' ; q++) {
+  for (char* q = l->data ; *q != '\0' ; q++) {
     if (*q == '%') {
       q++;
     handle_modifier:
@@ -140,9 +140,9 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
         show_string(ev->fileName);
         break;
       case 'l': {               /* location; LOG4J compliant */
-        int len, sz;
+        int sz;
         set_sz_from_precision();
-        len = snprintf(p, sz, "%s:%d", ev->fileName, ev->lineNum);
+        int len = snprintf(p, sz, "%s:%d", ev->fileName, ev->lineNum);
         check_overflow(MIN(sz, len));
         break;
       }
@@ -187,9 +187,9 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
         show_double(surf_get_clock() - format_begin_of_time);
         break;
       case 'm': {               /* user-provided message; LOG4J compliant */
-        int len, sz;
+        int sz;
         set_sz_from_precision();
-        len = vsnprintf(p, sz, msg_fmt, ev->ap);
+        int len = vsnprintf(p, sz, msg_fmt, ev->ap);
         check_overflow(MIN(sz, len));
         break;
       }

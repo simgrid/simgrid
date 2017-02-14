@@ -12,7 +12,8 @@ static void test_host(const char*hostname)
   msg_host_t thehost = MSG_host_by_name(hostname);
   xbt_dict_t props = MSG_host_get_properties(thehost);
   xbt_dict_cursor_t cursor = NULL;
-  char *key, *data;
+  char *key;
+  char *data;
   const char *noexist = "Unknown";
   const char *value;
   char exist[] = "Hdd";
@@ -66,7 +67,8 @@ static int bob(int argc, char *argv[])
   /* Get the property list of current bob process */
   xbt_dict_t props = MSG_process_get_properties(MSG_process_self());
   xbt_dict_cursor_t cursor = NULL;
-  char *key, *data;
+  char *key;
+  char *data;
   const char *noexist = "UnknownProcessProp";
   XBT_ATTRIB_UNUSED const char *value;
 

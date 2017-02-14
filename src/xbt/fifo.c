@@ -23,8 +23,7 @@ static xbt_mallocator_t item_mallocator = NULL;
  */
 xbt_fifo_t xbt_fifo_new(void)
 {
-  xbt_fifo_t fifo;
-  fifo = xbt_new0(struct xbt_fifo, 1);
+  xbt_fifo_t fifo = xbt_new0(struct xbt_fifo, 1);
 
   return fifo;
 }
@@ -68,9 +67,7 @@ void xbt_fifo_reset(xbt_fifo_t l)
  */
 xbt_fifo_item_t xbt_fifo_push(xbt_fifo_t l, void *t)
 {
-  xbt_fifo_item_t new;
-
-  new = xbt_fifo_new_item();
+  xbt_fifo_item_t new = xbt_fifo_new_item();
   new->content = t;
 
   xbt_fifo_push_item(l, new);
@@ -86,15 +83,13 @@ xbt_fifo_item_t xbt_fifo_push(xbt_fifo_t l, void *t)
  */
 void *xbt_fifo_pop(xbt_fifo_t l)
 {
-  void *content;
-
   if (l == NULL)
     return NULL;
   xbt_fifo_item_t item = xbt_fifo_pop_item(l);
   if (!item)
     return NULL;
 
-  content = item->content;
+  void *content = item->content;
   xbt_fifo_free_item(item);
   return content;
 }
@@ -108,9 +103,7 @@ void *xbt_fifo_pop(xbt_fifo_t l)
  */
 xbt_fifo_item_t xbt_fifo_unshift(xbt_fifo_t l, void *t)
 {
-  xbt_fifo_item_t new;
-
-  new = xbt_fifo_new_item();
+  xbt_fifo_item_t new = xbt_fifo_new_item();
   new->content = t;
   xbt_fifo_unshift_item(l, new);
   return new;
@@ -125,15 +118,13 @@ xbt_fifo_item_t xbt_fifo_unshift(xbt_fifo_t l, void *t)
  */
 void *xbt_fifo_shift(xbt_fifo_t l)
 {
-  void *content;
-
   if (l == NULL)
     return NULL;
   xbt_fifo_item_t item = xbt_fifo_shift_item(l);
   if (!item)
     return NULL;
 
-  content = item->content;
+  void *content = item->content;
   xbt_fifo_free_item(item);
   return content;
 }
@@ -166,12 +157,10 @@ void xbt_fifo_push_item(xbt_fifo_t l, xbt_fifo_item_t new)
  */
 xbt_fifo_item_t xbt_fifo_pop_item(xbt_fifo_t l)
 {
-  xbt_fifo_item_t item;
-
   if (l->tail == NULL)
     return NULL;
 
-  item = l->tail;
+  xbt_fifo_item_t item = l->tail;
 
   l->tail = item->prev;
   if (l->tail == NULL)
@@ -214,12 +203,10 @@ void xbt_fifo_unshift_item(xbt_fifo_t l, xbt_fifo_item_t new)
  */
 xbt_fifo_item_t xbt_fifo_shift_item(xbt_fifo_t l)
 {
-  xbt_fifo_item_t item;
-
   if (l->head == NULL)
     return NULL;
 
-  item = l->head;
+  xbt_fifo_item_t item = l->head;
 
   l->head = item->next;
   if (l->head == NULL)
@@ -244,7 +231,8 @@ xbt_fifo_item_t xbt_fifo_shift_item(xbt_fifo_t l)
  */
 int xbt_fifo_remove(xbt_fifo_t l, void *t)
 {
-  xbt_fifo_item_t current, current_next;
+  xbt_fifo_item_t current;
+  xbt_fifo_item_t current_next;
 
   for (current = l->head; current; current = current_next) {
     current_next = current->next;
@@ -268,7 +256,8 @@ int xbt_fifo_remove(xbt_fifo_t l, void *t)
  */
 int xbt_fifo_remove_all(xbt_fifo_t l, void *t)
 {
-  xbt_fifo_item_t current, current_next;
+  xbt_fifo_item_t current;
+  xbt_fifo_item_t current_next;
   int res = 0;
 
   for (current = l->head; current; current = current_next) {
@@ -393,10 +382,8 @@ void **xbt_fifo_to_array(xbt_fifo_t f)
  */
 xbt_fifo_t xbt_fifo_copy(xbt_fifo_t f)
 {
-  xbt_fifo_t copy = NULL;
+  xbt_fifo_t copy = xbt_fifo_new();
   xbt_fifo_item_t b;
-
-  copy = xbt_fifo_new();
 
   for (b = xbt_fifo_get_first_item(f); b; b = b->next) {
     xbt_fifo_push(copy, b->content);

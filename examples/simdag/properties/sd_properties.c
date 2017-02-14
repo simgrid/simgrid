@@ -11,7 +11,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Property test");
 int main(int argc, char **argv)
 {
   xbt_dict_cursor_t cursor = NULL;
-  char *key, *data;
+  char *key;
+  char *data;
   char noexist[] = "NoProp";
   const char *value;
   char exist[] = "Hdd";

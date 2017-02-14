@@ -394,14 +394,12 @@ L07Action::~L07Action(){
 void L07Action::updateBound()
 {
   double lat_current = 0.0;
-  double lat_bound = -1.0;
-  int i, j;
 
   int hostNb = hostList_->size();
 
   if (communicationAmount_ != nullptr) {
-    for (i = 0; i < hostNb; i++) {
-      for (j = 0; j < hostNb; j++) {
+    for (int i = 0; i < hostNb; i++) {
+      for (int j = 0; j < hostNb; j++) {
 
         if (communicationAmount_[i * hostNb + j] > 0) {
           double lat = 0.0;
@@ -413,7 +411,7 @@ void L07Action::updateBound()
       }
     }
   }
-  lat_bound = sg_tcp_gamma / (2.0 * lat_current);
+  double lat_bound = sg_tcp_gamma / (2.0 * lat_current);
   XBT_DEBUG("action (%p) : lat_bound = %g", this, lat_bound);
   if ((latency_ == 0.0) && (suspended_ == 0)) {
     if (rate_ < 0)

@@ -39,12 +39,10 @@ static int host(int argc, char *argv[]){
 
   /* - Create a 200,000 bytes file named './tmp/data.txt' on /sd1 */
   char* file_name = xbt_strdup("/home/tmp/data.txt");
-  msg_file_t file = NULL;
-  sg_size_t write, read, file_size;
 
   /* - Open an non-existing file which amounts to create it. */
-  file = MSG_file_open(file_name, NULL);
-  write = MSG_file_write(file, 200000);  // Write 200,000 bytes
+  msg_file_t file = MSG_file_open(file_name, NULL);
+  sg_size_t write = MSG_file_write(file, 200000);  // Write 200,000 bytes
   XBT_INFO("Create a %llu bytes file named '%s' on /sd1", write, file_name);
   MSG_file_dump(file);
 
@@ -53,9 +51,9 @@ static int host(int argc, char *argv[]){
   XBT_INFO("Used size: %llu bytes", MSG_storage_get_used_size(storage));
 
   /*  - Retrieve the size of created file and read it completely */
-  file_size = MSG_file_get_size(file);
+  sg_size_t file_size = MSG_file_get_size(file);
   MSG_file_seek(file, 0, SEEK_SET);
-  read = MSG_file_read(file, file_size);
+  sg_size_t read = MSG_file_read(file, file_size);
   XBT_INFO("Read %llu bytes on %s", read, file_name);
 
   /* - Then write 100,000 bytes in tmp/data.txt */
@@ -96,7 +94,8 @@ static int host(int argc, char *argv[]){
   XBT_INFO("*** Dump content of %s ***",MSG_host_get_name(MSG_host_self()));
   xbt_dict_t contents = NULL;
   contents = MSG_host_get_storage_content(MSG_host_self()); // contents is a dict of dicts
-  xbt_dict_cursor_t curs, curs2 = NULL;
+  xbt_dict_cursor_t curs;
+  xbt_dict_cursor_t curs2 = NULL;
   char* mountname;
   xbt_dict_t content;
   char* path;
@@ -106,7 +105,7 @@ static int host(int argc, char *argv[]){
     xbt_dict_foreach(content,curs2,path,size){
        XBT_INFO("%s size: %llu bytes", path,*((sg_size_t*)size));
     }
-  xbt_dict_free(&content);
+    xbt_dict_free(&content);
   }
   xbt_dict_free(&contents);
   return 1;

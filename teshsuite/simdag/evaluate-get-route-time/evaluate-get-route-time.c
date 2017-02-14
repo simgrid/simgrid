@@ -15,7 +15,8 @@
 
 int main(int argc, char **argv)
 {
-  int i, j;
+  int i;
+  int j;
   xbt_os_timer_t timer = xbt_os_timer_new();
 
   SD_init(&argc, argv);

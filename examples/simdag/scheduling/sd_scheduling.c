@@ -134,7 +134,8 @@ int main(int argc, char **argv)
 {
   unsigned int cursor;
   double min_finish_time = -1.0;
-  SD_task_t task, selected_task = NULL;
+  SD_task_t task;
+  SD_task_t selected_task = NULL;
   xbt_dynar_t ready_tasks;
   sg_host_t selected_host = NULL;
   char * tracefilename = NULL;
