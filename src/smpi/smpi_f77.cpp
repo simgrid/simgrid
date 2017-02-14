@@ -10,13 +10,23 @@
 #include "private.h"
 #include "xbt.h"
 
+
+//TODO : remove all this.
 static xbt_dict_t comm_lookup = nullptr;
 static xbt_dict_t group_lookup = nullptr;
 static xbt_dict_t request_lookup = nullptr;
-static xbt_dict_t datatype_lookup = nullptr;
+static xbt_dict_t type_lookup = nullptr;
 static xbt_dict_t op_lookup = nullptr;
 static xbt_dict_t win_lookup = nullptr;
 static xbt_dict_t info_lookup = nullptr;
+static int comm_id=0;
+static int group_id=0;
+static int request_id=0;
+static int type_id=0;
+static int op_id=0;
+static int win_id=0;
+static int info_id=0;
+
 
 static int running_processes = 0;
 
@@ -63,7 +73,7 @@ static void smpi_init_fortran_types(){
      smpi_comm_add_f(MPI_COMM_WORLD);
      group_lookup = xbt_dict_new_homogeneous(nullptr);
      request_lookup = xbt_dict_new_homogeneous(nullptr);
-     datatype_lookup = xbt_dict_new_homogeneous(nullptr);
+     type_lookup = xbt_dict_new_homogeneous(nullptr);
      win_lookup = xbt_dict_new_homogeneous(nullptr);
      info_lookup = xbt_dict_new_homogeneous(nullptr);
      smpi_type_add_f(MPI_BYTE);//MPI_BYTE
@@ -120,212 +130,135 @@ static void smpi_init_fortran_types(){
    }
 }
 
-int smpi_comm_add_f(MPI_Comm comm) {
-  static int comm_id = 0;
+template <typename T> int smpi_add_f(T t, xbt_dict_t dict, int* id) {
   char key[KEY_SIZE];
-  xbt_dict_set(comm_lookup, comm==MPI_COMM_WORLD? get_key(key, comm_id) : get_key_id(key, comm_id), comm, nullptr);
-  comm_id++;
-  return comm_id-1;
+  xbt_dict_set(dict, get_key(key, *id), t, nullptr);
+  (*id)++;
+  return *id-1;
 }
 
-int smpi_comm_c2f(MPI_Comm comm) {
-  char* existing_key = xbt_dict_get_key(comm_lookup, comm);
+template <> int smpi_add_f<MPI_Comm>(MPI_Comm comm, xbt_dict_t dict, int* id) {
+  char key[KEY_SIZE];
+  xbt_dict_set(dict, comm==MPI_COMM_WORLD? get_key(key, *id) : get_key_id(key, *id), comm, nullptr);
+  (*id)++;
+  return *id-1;
+}
+
+template <> int smpi_add_f<MPI_Request>(MPI_Request request, xbt_dict_t dict, int* id) {
+  char key[KEY_SIZE];
+  xbt_dict_set(dict, get_key_id(key, *id), request, nullptr);
+  (*id)++;
+  return *id-1;
+}
+
+template <typename T> int smpi_c2f(T t, xbt_dict_t dict, int* id) {
+  char* existing_key = xbt_dict_get_key(dict, t);
   if(existing_key!=nullptr)
     return atoi(existing_key);
   else
-    return smpi_comm_add_f(comm);
+    return smpi_add_f<T>(t,dict,id);
 }
 
-static void free_comm(int comm) {
+template <typename T> void free_f(int id, xbt_dict_t dict) {
   char key[KEY_SIZE];
-  xbt_dict_remove(comm_lookup, comm==0? get_key(key, comm) : get_key_id(key, comm));
+  xbt_dict_remove(dict, get_key(key, id));
 }
 
-MPI_Comm smpi_comm_f2c(int comm) {
+template <> void free_f<MPI_Comm>(int id, xbt_dict_t dict) {
+  char key[KEY_SIZE];
+  xbt_dict_remove(dict, id==0? get_key(key, id) : get_key_id(key, id));
+}
+
+template <> void free_f<MPI_Request>(int id, xbt_dict_t dict) {
+  char key[KEY_SIZE];
+  if(id!=MPI_FORTRAN_REQUEST_NULL)
+  xbt_dict_remove(dict, get_key_id(key, id));
+}
+
+template <typename T> T smpi_f2c(int , xbt_dict_t ) {
+  return NULL;
+}
+
+template <> MPI_Datatype smpi_f2c<MPI_Datatype>(int id, xbt_dict_t dict) {
+  smpi_init_fortran_types();
+  char key[KEY_SIZE];
+  return id >= 0 ? static_cast<MPI_Datatype>(xbt_dict_get_or_null(dict, get_key(key, id))): MPI_DATATYPE_NULL;
+}
+
+template <> MPI_Op smpi_f2c<MPI_Op> (int id, xbt_dict_t dict) {
+  smpi_init_fortran_types();
+  char key[KEY_SIZE];
+  return id >= 0 ? static_cast<MPI_Op>(xbt_dict_get_or_null(dict, get_key(key, id))): MPI_OP_NULL;
+}
+
+template <> MPI_Info smpi_f2c<MPI_Info>(int id, xbt_dict_t dict) {
+  smpi_init_fortran_types();
+  char key[KEY_SIZE];
+  return id >= 0 ? static_cast<MPI_Info>(xbt_dict_get_or_null(dict, get_key(key, id))): MPI_INFO_NULL;
+}
+
+template <> MPI_Win smpi_f2c<MPI_Win>(int id, xbt_dict_t dict) {
+  smpi_init_fortran_types();
+  char key[KEY_SIZE];
+  return id >= 0 ? static_cast<MPI_Win>(xbt_dict_get_or_null(dict, get_key(key, id))): MPI_WIN_NULL;
+}
+
+template <> MPI_Comm smpi_f2c<MPI_Comm>(int comm, xbt_dict_t dict) {
   smpi_init_fortran_types();
   if(comm == -2) {
     return MPI_COMM_SELF;
   } else if(comm==0){
     return MPI_COMM_WORLD;
-  } else if(comm_lookup != nullptr && comm >= 0) {
+  } else if(dict != nullptr && comm >= 0) {
       char key[KEY_SIZE];
-      MPI_Comm tmp =  static_cast<MPI_Comm>(xbt_dict_get_or_null(comm_lookup,get_key_id(key, comm)));
+      MPI_Comm tmp =  static_cast<MPI_Comm>(xbt_dict_get_or_null(dict,get_key_id(key, comm)));
       return tmp != nullptr ? tmp : MPI_COMM_NULL ;
   } else {
     return MPI_COMM_NULL;
   }
 }
 
-int smpi_group_add_f(MPI_Group group) {
-  static int group_id = 0;
-  char key[KEY_SIZE];
-  xbt_dict_set(group_lookup, get_key(key, group_id), group, nullptr);
-  group_id++;
-  return group_id-1;
-}
-
-int smpi_group_c2f(MPI_Group group) {
-  char* existing_key = xbt_dict_get_key(group_lookup, group);
-  if(existing_key!=nullptr)
-    return atoi(existing_key);
-  else
-    return smpi_group_add_f(group);
-}
-
-MPI_Group smpi_group_f2c(int group) {
+template <> MPI_Group smpi_f2c<MPI_Group>(int group, xbt_dict_t dict) {
   smpi_init_fortran_types();
   if(group == -2) {
     return MPI_GROUP_EMPTY;
-  } else if(group_lookup != nullptr && group >= 0) {
+  } else if(dict != nullptr && group >= 0) {
     char key[KEY_SIZE];
-    return static_cast<MPI_Group>(xbt_dict_get_or_null(group_lookup, get_key(key, group)));
+    return static_cast<MPI_Group>(xbt_dict_get_or_null(dict, get_key(key, group)));
   } else {
     return MPI_GROUP_NULL;
   }
 }
 
-static void free_group(int group) {
-  char key[KEY_SIZE];
-  xbt_dict_remove(group_lookup, get_key(key, group));
-}
-
-int smpi_request_add_f(MPI_Request request) {
-  static int request_id = 0;
-  char key[KEY_SIZE];
-  xbt_dict_set(request_lookup, get_key_id(key, request_id), request, nullptr);
-  request_id++;
-  return request_id-1;
-}
-
-int smpi_request_c2f(MPI_Request request) {
-  char* existing_key = xbt_dict_get_key(request_lookup, request);
-  if(existing_key!=nullptr)
-    return atoi(existing_key);
-  else
-    return smpi_request_add_f(request);
-}
-
-MPI_Request smpi_request_f2c(int request) {
+template <> MPI_Request smpi_f2c<MPI_Request>(int request, xbt_dict_t dict) {
   smpi_init_fortran_types();
   char key[KEY_SIZE];
   if(request==MPI_FORTRAN_REQUEST_NULL)
     return MPI_REQUEST_NULL;
-  return static_cast<MPI_Request>(xbt_dict_get(request_lookup, get_key_id(key, request)));
+  return static_cast<MPI_Request>(xbt_dict_get(dict, get_key_id(key, request)));
 }
 
-static void free_request(int request) {
-  char key[KEY_SIZE];
-  if(request!=MPI_FORTRAN_REQUEST_NULL)
-  xbt_dict_remove(request_lookup, get_key_id(key, request));
+#define SMPI_F2C_C2F(type, name)\
+int smpi_##name##_add_f(type name){\
+  return smpi_add_f<type>(name, name##_lookup, &name##_id);\
+}\
+int smpi_##name##_c2f(type name){\
+  return smpi_c2f<type>(name, name##_lookup, &name##_id);\
+}\
+static void free_##name(int id) {\
+  free_f<type>(id, name##_lookup);\
+}\
+type smpi_##name##_f2c(int id){\
+  return smpi_f2c<type>(id, name##_lookup);\
 }
 
-int smpi_type_add_f(MPI_Datatype datatype){
-  static int datatype_id = 0;
-  char key[KEY_SIZE];
-  xbt_dict_set(datatype_lookup, get_key(key, datatype_id), datatype, nullptr);
-  datatype_id++;
-  return datatype_id-1;
-}
-
-int smpi_type_c2f(MPI_Datatype datatype) {
-  char* existing_key = xbt_dict_get_key(datatype_lookup, datatype);
-  if(existing_key!=nullptr)
-    return atoi(existing_key);
-  else
-    return smpi_type_add_f(datatype);
-}
-
-MPI_Datatype smpi_type_f2c(int datatype) {
-  smpi_init_fortran_types();
-  char key[KEY_SIZE];
-  return datatype >= 0 ? static_cast<MPI_Datatype>(xbt_dict_get_or_null(datatype_lookup, get_key(key, datatype))): MPI_DATATYPE_NULL;
-}
-
-static void free_datatype(int datatype) {
-  char key[KEY_SIZE];
-  xbt_dict_remove(datatype_lookup, get_key(key, datatype));
-}
-
-int smpi_op_add_f(MPI_Op op) {
-  static int op_id = 0;
-  char key[KEY_SIZE];
-  xbt_dict_set(op_lookup, get_key(key, op_id), op, nullptr);
-  op_id++;
-  return op_id-1;
-}
-
-int smpi_op_c2f(MPI_Op op) {
-  char* existing_key = xbt_dict_get_key(op_lookup, op);
-  if(existing_key!=nullptr)
-    return atoi(existing_key);
-  else
-    return smpi_op_add_f(op);
-}
-
-MPI_Op smpi_op_f2c(int op) {
-  smpi_init_fortran_types();
-  char key[KEY_SIZE];
-   return op >= 0 ? static_cast<MPI_Op>(xbt_dict_get_or_null(op_lookup,  get_key(key, op))): MPI_OP_NULL;
-}
-
-static void free_op(int op) {
-  char key[KEY_SIZE];
-  xbt_dict_remove(op_lookup, get_key(key, op));
-}
-
-int smpi_win_add_f(MPI_Win win) {
-  static int win_id = 0;
-  char key[KEY_SIZE];
-  xbt_dict_set(win_lookup, get_key(key, win_id), win, nullptr);
-  win_id++;
-  return win_id-1;
-}
-
-int smpi_win_c2f(MPI_Win win) {
-  char* existing_key = xbt_dict_get_key(win_lookup, win);
-  if(existing_key!=nullptr)
-    return atoi(existing_key);
-  else
-    return smpi_win_add_f(win);
-}
-
-MPI_Win smpi_win_f2c(int win) {
-  smpi_init_fortran_types();
-  char key[KEY_SIZE];
-   return win >= 0 ? static_cast<MPI_Win>(xbt_dict_get_or_null(win_lookup,  get_key(key, win))) : MPI_WIN_NULL;
-}
-
-static void free_win(int win) {
-  char key[KEY_SIZE];
-  xbt_dict_remove(win_lookup, get_key(key, win));
-}
-
-int smpi_info_add_f(MPI_Info info) {
-  static int info_id = 0;
-  char key[KEY_SIZE];
-  xbt_dict_set(info_lookup, get_key(key, info_id), info, nullptr);
-  info_id++;
-  return info_id-1;
-}
-
-int smpi_info_c2f(MPI_Info info) {
-  char* existing_key = xbt_dict_get_key(info_lookup, info);
-  if(existing_key!=nullptr)
-    return atoi(existing_key);
-  else
-    return smpi_info_add_f(info);
-}
-
-MPI_Info smpi_info_f2c(int info) {
-  smpi_init_fortran_types();
-  char key[KEY_SIZE];
-   return info >= 0 ? static_cast<MPI_Info>(xbt_dict_get_or_null(info_lookup,  get_key(key, info))) : MPI_INFO_NULL;
-}
-
-static void free_info(int info) {
-  char key[KEY_SIZE];
-  xbt_dict_remove(info_lookup, get_key(key, info));
-}
+SMPI_F2C_C2F(MPI_Comm, comm)
+SMPI_F2C_C2F(MPI_Group, group)
+SMPI_F2C_C2F(MPI_Request, request)
+SMPI_F2C_C2F(MPI_Datatype, type)
+SMPI_F2C_C2F(MPI_Win, win)
+SMPI_F2C_C2F(MPI_Op, op)
+SMPI_F2C_C2F(MPI_Info, info)
 
 void mpi_init_(int* ierr) {
     smpi_init_fortran_types();
@@ -338,7 +271,7 @@ void mpi_finalize_(int* ierr) {
    running_processes--;
    if(running_processes==0){
      xbt_dict_free(&op_lookup);
-     xbt_dict_free(&datatype_lookup);
+     xbt_dict_free(&type_lookup);
      xbt_dict_free(&request_lookup);
      xbt_dict_free(&group_lookup);
      xbt_dict_free(&comm_lookup);
@@ -728,7 +661,7 @@ void mpi_type_free_(int* datatype, int* ierr){
   MPI_Datatype tmp= smpi_type_f2c(*datatype);
   *ierr= MPI_Type_free (&tmp);
   if(*ierr == MPI_SUCCESS) {
-    free_datatype(*datatype);
+    free_type(*datatype);
   }
 }
 
