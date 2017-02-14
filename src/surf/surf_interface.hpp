@@ -216,7 +216,7 @@ public:
 
   s_xbt_swag_hookup_t stateHookup_ = {nullptr,nullptr};
 
-  simgrid::surf::Model *getModel() {return model_;}
+  simgrid::surf::Model* getModel() { return model_; }
 
 protected:
   ActionList* stateSet_;

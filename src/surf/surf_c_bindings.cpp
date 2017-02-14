@@ -143,21 +143,22 @@ double surf_solve(double max_date)
 /*********
  * MODEL *
  *********/
-
-surf_action_t surf_model_extract_done_action_set(surf_model_t model){
-  if (model->getDoneActionSet()->empty())
+static surf_action_t ActionListExtract(simgrid::surf::ActionList* list)
+{
+  if (list->empty())
     return nullptr;
-  surf_action_t res = &model->getDoneActionSet()->front();
-  model->getDoneActionSet()->pop_front();
+  surf_action_t res = &list->front();
+  list->pop_front();
   return res;
 }
 
+surf_action_t surf_model_extract_done_action_set(surf_model_t model)
+{
+  return ActionListExtract(model->getDoneActionSet());
+}
+
 surf_action_t surf_model_extract_failed_action_set(surf_model_t model){
-  if (model->getFailedActionSet()->empty())
-    return nullptr;
-  surf_action_t res = &model->getFailedActionSet()->front();
-  model->getFailedActionSet()->pop_front();
-  return res;
+  return ActionListExtract(model->getFailedActionSet());
 }
 
 int surf_model_running_action_set_size(surf_model_t model){

@@ -11,12 +11,10 @@
 
 #include <unordered_map>
 
-#include "xbt/fifo.h"
-#include "xbt/dict.h"
-#include "surf_interface.hpp"
 #include "src/surf/PropertyHolder.hpp"
+#include "src/surf/surf_interface.hpp"
+#include "xbt/fifo.h"
 
-#include "simgrid/link.h"
 #include "simgrid/s4u/Link.hpp"
 
 /***********

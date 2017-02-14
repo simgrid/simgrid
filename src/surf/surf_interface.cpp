@@ -647,13 +647,13 @@ void Action::finish() {
 
 Action::State Action::getState()
 {
-  if (stateSet_ ==  getModel()->getReadyActionSet())
+  if (stateSet_ == model_->getReadyActionSet())
     return Action::State::ready;
-  if (stateSet_ ==  getModel()->getRunningActionSet())
+  if (stateSet_ == model_->getRunningActionSet())
     return Action::State::running;
-  if (stateSet_ ==  getModel()->getFailedActionSet())
+  if (stateSet_ == model_->getFailedActionSet())
     return Action::State::failed;
-  if (stateSet_ ==  getModel()->getDoneActionSet())
+  if (stateSet_ == model_->getDoneActionSet())
     return Action::State::done;
   return Action::State::not_in_the_system;
 }
@@ -663,16 +663,16 @@ void Action::setState(Action::State state)
   stateSet_->erase(stateSet_->iterator_to(*this));
   switch (state) {
   case Action::State::ready:
-    stateSet_ = getModel()->getReadyActionSet();
+    stateSet_ = model_->getReadyActionSet();
     break;
   case Action::State::running:
-    stateSet_ = getModel()->getRunningActionSet();
+    stateSet_ = model_->getRunningActionSet();
     break;
   case Action::State::failed:
-    stateSet_ = getModel()->getFailedActionSet();
+    stateSet_ = model_->getFailedActionSet();
     break;
   case Action::State::done:
-    stateSet_ = getModel()->getDoneActionSet();
+    stateSet_ = model_->getDoneActionSet();
     break;
   default:
     stateSet_ = nullptr;
