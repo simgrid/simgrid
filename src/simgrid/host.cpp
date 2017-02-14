@@ -189,6 +189,48 @@ const char *sg_host_get_property_value(sg_host_t host, const char *name)
 {
   return (const char*) xbt_dict_get_or_null(sg_host_get_properties(host), name);
 }
+/**
+ * \brief Find a route between two hosts
+ *
+ * \param from where from
+ * \param to where to
+ * \param links [OUT] where to store the list of links (must exist, cannot be nullptr).
+ */
+void sg_host_route(sg_host_t from, sg_host_t to, xbt_dynar_t links)
+{
+  std::vector<simgrid::s4u::Link*> vlinks;
+  from->routeTo(to, &vlinks, nullptr);
+  for (auto link : vlinks)
+    xbt_dynar_push(links, &link);
+}
+/**
+ * \brief Find the latency of the route between two hosts
+ *
+ * \param from where from
+ * \param to where to
+ */
+double sg_host_route_latency(sg_host_t from, sg_host_t to)
+{
+  std::vector<simgrid::s4u::Link*> vlinks;
+  double res = 0;
+  from->routeTo(to, &vlinks, &res);
+  return res;
+}
+/**
+ * \brief Find the bandwitdh of the route between two hosts
+ *
+ * \param from where from
+ * \param to where to
+ */
+double sg_host_route_bandwidth(sg_host_t from, sg_host_t to)
+{
+  std::vector<simgrid::s4u::Link*> vlinks;
+  from->routeTo(to, &vlinks, nullptr);
+  double res = 0;
+  for (auto link : vlinks)
+    res += link->bandwidth();
+  return res;
+}
 
 /** @brief Displays debugging information about a host */
 void sg_host_dump(sg_host_t host)
