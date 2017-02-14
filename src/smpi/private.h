@@ -44,8 +44,8 @@ enum smpi_process_state{
 // for each such structure these function should be implemented (vector
 // index hvector hindex struct)
 typedef struct s_smpi_subtype{
-  void (*serialize)(const void * input, void *output, int count, void* subtype);
-  void (*unserialize)(const void * input, void *output, int count, void* subtype, MPI_Op op);
+  void (*serialize)(void * input, void *output, int count, void* subtype);
+  void (*unserialize)(void * input, void *output, int count, void* subtype, MPI_Op op);
   void (*subtype_free)(MPI_Datatype* type);
   void (*subtype_use)(MPI_Datatype* type);
 } s_smpi_subtype_t;
@@ -241,7 +241,7 @@ XBT_PRIVATE MPI_Op smpi_op_new(MPI_User_function * function, bool commute);
 XBT_PRIVATE bool smpi_op_is_commute(MPI_Op op);
 XBT_PRIVATE void smpi_op_destroy(MPI_Op op);
 XBT_PRIVATE void smpi_op_set_fortran(MPI_Op op);
-XBT_PRIVATE void smpi_op_apply(MPI_Op op, const void *invec, void *inoutvec, int *len, MPI_Datatype * datatype);
+XBT_PRIVATE void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len, MPI_Datatype * datatype);
 
 XBT_PRIVATE MPI_Group smpi_group_new(int size);
 XBT_PRIVATE MPI_Group smpi_group_copy(MPI_Group origin);

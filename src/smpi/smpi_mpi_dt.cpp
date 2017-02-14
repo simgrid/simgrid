@@ -293,12 +293,12 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
  *      - block_length - the width or height of blocked matrix
  *      - count - the number of rows of matrix
  */
-void serialize_vector( const void *noncontiguous_vector, void *contiguous_vector, int count, void *type)
+void serialize_vector( void* noncontiguous_vector, void *contiguous_vector, int count, void *type)
 {
   s_smpi_mpi_vector_t* type_c = reinterpret_cast<s_smpi_mpi_vector_t*>(type);
   int i;
   char* contiguous_vector_char = static_cast<char*>(contiguous_vector);
-  const char* noncontiguous_vector_char = static_cast<const char*>(noncontiguous_vector);
+  char* noncontiguous_vector_char = static_cast<char*>(noncontiguous_vector);
 
   for (i = 0; i < type_c->block_count * count; i++) {
       if (type_c->old_type->sizeof_substruct == 0)
@@ -325,12 +325,12 @@ void serialize_vector( const void *noncontiguous_vector, void *contiguous_vector
  *      - block_length - the width or height of blocked matrix
  *      - count - the number of rows of matrix
  */
-void unserialize_vector( const void *contiguous_vector, void *noncontiguous_vector, int count, void *type, MPI_Op op)
+void unserialize_vector( void* contiguous_vector, void *noncontiguous_vector, int count, void *type, MPI_Op op)
 {
   s_smpi_mpi_vector_t* type_c = reinterpret_cast<s_smpi_mpi_vector_t*>(type);
   int i;
 
-  const char* contiguous_vector_char = static_cast<const char*>(contiguous_vector);
+  char* contiguous_vector_char = static_cast<char*>(contiguous_vector);
   char* noncontiguous_vector_char = static_cast<char*>(noncontiguous_vector);
 
   for (i = 0; i < type_c->block_count * count; i++) {
@@ -468,11 +468,11 @@ void smpi_datatype_unuse(MPI_Datatype type)
  *      - block_length - the width or height of blocked matrix
  *      - count - the number of rows of matrix
  */
-void serialize_contiguous( const void *noncontiguous_hvector, void *contiguous_hvector, int count, void *type)
+void serialize_contiguous( void* noncontiguous_hvector, void *contiguous_hvector, int count, void *type)
 {
   s_smpi_mpi_contiguous_t* type_c = reinterpret_cast<s_smpi_mpi_contiguous_t*>(type);
   char* contiguous_vector_char = static_cast<char*>(contiguous_hvector);
-  const char* noncontiguous_vector_char = static_cast<const char*>(noncontiguous_hvector)+type_c->lb;
+  char* noncontiguous_vector_char = static_cast<char*>(noncontiguous_hvector)+type_c->lb;
   memcpy(contiguous_vector_char, noncontiguous_vector_char, count* type_c->block_count * type_c->size_oldtype);
 }
 /* Copies contiguous data into noncontiguous memory.
@@ -483,10 +483,10 @@ void serialize_contiguous( const void *noncontiguous_hvector, void *contiguous_h
  *      - block_length - the width or height of blocked matrix
  *      - count - the number of rows of matrix
  */
-void unserialize_contiguous(const void *contiguous_vector, void *noncontiguous_vector, int count, void *type, MPI_Op op)
+void unserialize_contiguous(void* contiguous_vector, void *noncontiguous_vector, int count, void *type, MPI_Op op)
 {
   s_smpi_mpi_contiguous_t* type_c = reinterpret_cast<s_smpi_mpi_contiguous_t*>(type);
-  const char* contiguous_vector_char = static_cast<const char*>(contiguous_vector);
+  char* contiguous_vector_char = static_cast<char*>(contiguous_vector);
   char* noncontiguous_vector_char = static_cast<char*>(noncontiguous_vector)+type_c->lb;
   int n= count* type_c->block_count;
   smpi_op_apply(op, contiguous_vector_char, noncontiguous_vector_char, &n, &type_c->old_type);
@@ -581,12 +581,12 @@ void use_vector(MPI_Datatype* d){
  *      - block_length - the width or height of blocked matrix
  *      - count - the number of rows of matrix
  */
-void serialize_hvector( const void *noncontiguous_hvector, void *contiguous_hvector, int count, void *type)
+void serialize_hvector( void* noncontiguous_hvector, void *contiguous_hvector, int count, void *type)
 {
   s_smpi_mpi_hvector_t* type_c = reinterpret_cast<s_smpi_mpi_hvector_t*>(type);
   int i;
   char* contiguous_vector_char = static_cast<char*>(contiguous_hvector);
-  const char* noncontiguous_vector_char = static_cast<const char*>(noncontiguous_hvector);
+  char* noncontiguous_vector_char = static_cast<char*>(noncontiguous_hvector);
 
   for (i = 0; i < type_c->block_count * count; i++) {
     if (type_c->old_type->sizeof_substruct == 0)
@@ -611,12 +611,12 @@ void serialize_hvector( const void *noncontiguous_hvector, void *contiguous_hvec
  *      - block_length - the width or height of blocked matrix
  *      - count - the number of rows of matrix
  */
-void unserialize_hvector( const void *contiguous_vector, void *noncontiguous_vector, int count, void *type, MPI_Op op)
+void unserialize_hvector( void* contiguous_vector, void *noncontiguous_vector, int count, void *type, MPI_Op op)
 {
   s_smpi_mpi_hvector_t* type_c = reinterpret_cast<s_smpi_mpi_hvector_t*>(type);
   int i;
 
-  const char* contiguous_vector_char = static_cast<const char*>(contiguous_vector);
+  char* contiguous_vector_char = static_cast<char*>(contiguous_vector);
   char* noncontiguous_vector_char = static_cast<char*>(noncontiguous_vector);
 
   for (i = 0; i < type_c->block_count * count; i++) {
@@ -698,12 +698,12 @@ int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype
  *      - block_indices - indices of each data, in element
  *      - count - the number of rows of matrix
  */
-void serialize_indexed( const void *noncontiguous_indexed, void *contiguous_indexed, int count, void *type)
+void serialize_indexed( void* noncontiguous_indexed, void *contiguous_indexed, int count, void *type)
 {
   s_smpi_mpi_indexed_t* type_c = reinterpret_cast<s_smpi_mpi_indexed_t*>(type);
   int i,j;
   char* contiguous_indexed_char = static_cast<char*>(contiguous_indexed);
-  const char* noncontiguous_indexed_char = static_cast<const char*>(noncontiguous_indexed)+type_c->block_indices[0] * type_c->size_oldtype;
+  char* noncontiguous_indexed_char = static_cast<char*>(noncontiguous_indexed)+type_c->block_indices[0] * type_c->size_oldtype;
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
       if (type_c->old_type->sizeof_substruct == 0)
@@ -717,11 +717,11 @@ void serialize_indexed( const void *noncontiguous_indexed, void *contiguous_inde
       contiguous_indexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
       if (i<type_c->block_count-1)
         noncontiguous_indexed_char =
-          static_cast<const char*>(noncontiguous_indexed) + type_c->block_indices[i+1]*smpi_datatype_get_extent(type_c->old_type);
+          static_cast<char*>(noncontiguous_indexed) + type_c->block_indices[i+1]*smpi_datatype_get_extent(type_c->old_type);
       else
         noncontiguous_indexed_char += type_c->block_lengths[i]*smpi_datatype_get_extent(type_c->old_type);
     }
-    noncontiguous_indexed=static_cast<const void*>(noncontiguous_indexed_char);
+    noncontiguous_indexed=static_cast< void*>(noncontiguous_indexed_char);
   }
 }
 /* Copies contiguous data into noncontiguous memory.
@@ -732,11 +732,11 @@ void serialize_indexed( const void *noncontiguous_indexed, void *contiguous_inde
  *      - block_indices - indices of each data, in element
  *      - count - the number of rows of matrix
  */
-void unserialize_indexed( const void *contiguous_indexed, void *noncontiguous_indexed, int count, void *type, MPI_Op op)
+void unserialize_indexed( void* contiguous_indexed, void *noncontiguous_indexed, int count, void *type, MPI_Op op)
 {
   s_smpi_mpi_indexed_t* type_c = reinterpret_cast<s_smpi_mpi_indexed_t*>(type);
   int i,j;
-  const char* contiguous_indexed_char = static_cast<const char*>(contiguous_indexed);
+  char* contiguous_indexed_char = static_cast<char*>(contiguous_indexed);
   char* noncontiguous_indexed_char =
     static_cast<char*>(noncontiguous_indexed)+type_c->block_indices[0]*smpi_datatype_get_extent(type_c->old_type);
   for(j=0; j<count;j++){
@@ -849,12 +849,12 @@ int smpi_datatype_indexed(int count, int* blocklens, int* indices, MPI_Datatype 
  *      - block_indices - indices of each data, in bytes
  *      - count - the number of rows of matrix
  */
-void serialize_hindexed( const void *noncontiguous_hindexed, void *contiguous_hindexed, int count, void *type)
+void serialize_hindexed( void* noncontiguous_hindexed, void *contiguous_hindexed, int count, void *type)
 {
   s_smpi_mpi_hindexed_t* type_c = reinterpret_cast<s_smpi_mpi_hindexed_t*>(type);
   int i,j;
   char* contiguous_hindexed_char = static_cast<char*>(contiguous_hindexed);
-  const char* noncontiguous_hindexed_char = static_cast<const char*>(noncontiguous_hindexed)+ type_c->block_indices[0];
+  char* noncontiguous_hindexed_char = static_cast<char*>(noncontiguous_hindexed)+ type_c->block_indices[0];
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
       if (type_c->old_type->sizeof_substruct == 0)
@@ -867,11 +867,11 @@ void serialize_hindexed( const void *noncontiguous_hindexed, void *contiguous_hi
 
       contiguous_hindexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
       if (i<type_c->block_count-1)
-        noncontiguous_hindexed_char = static_cast<const char*>(noncontiguous_hindexed) + type_c->block_indices[i+1];
+        noncontiguous_hindexed_char = static_cast<char*>(noncontiguous_hindexed) + type_c->block_indices[i+1];
       else
         noncontiguous_hindexed_char += type_c->block_lengths[i]*smpi_datatype_get_extent(type_c->old_type);
     }
-    noncontiguous_hindexed=reinterpret_cast<const void*>(noncontiguous_hindexed_char);
+    noncontiguous_hindexed=static_cast<void*>(noncontiguous_hindexed_char);
   }
 }
 /* Copies contiguous data into noncontiguous memory.
@@ -882,13 +882,13 @@ void serialize_hindexed( const void *noncontiguous_hindexed, void *contiguous_hi
  *      - block_indices - indices of each data, in bytes
  *      - count - the number of rows of matrix
  */
-void unserialize_hindexed( const void *contiguous_hindexed, void *noncontiguous_hindexed, int count, void *type,
+void unserialize_hindexed( void* contiguous_hindexed, void *noncontiguous_hindexed, int count, void *type,
                          MPI_Op op)
 {
   s_smpi_mpi_hindexed_t* type_c = reinterpret_cast<s_smpi_mpi_hindexed_t*>(type);
   int i,j;
 
-  const char* contiguous_hindexed_char = static_cast<const char*>(contiguous_hindexed);
+  char* contiguous_hindexed_char = static_cast<char*>(contiguous_hindexed);
   char* noncontiguous_hindexed_char = static_cast<char*>(noncontiguous_hindexed)+ type_c->block_indices[0];
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
@@ -907,7 +907,7 @@ void unserialize_hindexed( const void *contiguous_hindexed, void *noncontiguous_
       else
         noncontiguous_hindexed_char += type_c->block_lengths[i]*smpi_datatype_get_extent(type_c->old_type);
     }
-    noncontiguous_hindexed=reinterpret_cast<void*>(noncontiguous_hindexed_char);
+    noncontiguous_hindexed=static_cast<void*>(noncontiguous_hindexed_char);
   }
 }
 
@@ -997,12 +997,12 @@ int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Dat
  *      - block_length - the width or height of blocked matrix
  *      - count - the number of rows of matrix
  */
-void serialize_struct( const void *noncontiguous_struct, void *contiguous_struct, int count, void *type)
+void serialize_struct( void* noncontiguous_struct, void *contiguous_struct, int count, void *type)
 {
   s_smpi_mpi_struct_t* type_c = reinterpret_cast<s_smpi_mpi_struct_t*>(type);
   int i,j;
   char* contiguous_struct_char = static_cast<char*>(contiguous_struct);
-  const char* noncontiguous_struct_char = static_cast<const char*>(noncontiguous_struct)+ type_c->block_indices[0];
+  char* noncontiguous_struct_char = static_cast<char*>(noncontiguous_struct)+ type_c->block_indices[0];
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
       if (type_c->old_types[i]->sizeof_substruct == 0)
@@ -1017,11 +1017,11 @@ void serialize_struct( const void *noncontiguous_struct, void *contiguous_struct
 
       contiguous_struct_char += type_c->block_lengths[i]*smpi_datatype_size(type_c->old_types[i]);
       if (i<type_c->block_count-1)
-        noncontiguous_struct_char = static_cast<const char*>(noncontiguous_struct) + type_c->block_indices[i+1];
+        noncontiguous_struct_char = static_cast<char*>(noncontiguous_struct) + type_c->block_indices[i+1];
       else //let's hope this is MPI_UB ?
         noncontiguous_struct_char += type_c->block_lengths[i]*smpi_datatype_get_extent(type_c->old_types[i]);
     }
-    noncontiguous_struct=reinterpret_cast<const void*>(noncontiguous_struct_char);
+    noncontiguous_struct=static_cast<void*>(noncontiguous_struct_char);
   }
 }
 
@@ -1033,12 +1033,12 @@ void serialize_struct( const void *noncontiguous_struct, void *contiguous_struct
  *      - block_length - the width or height of blocked matrix
  *      - count - the number of rows of matrix
  */
-void unserialize_struct( const void *contiguous_struct, void *noncontiguous_struct, int count, void *type, MPI_Op op)
+void unserialize_struct( void* contiguous_struct, void *noncontiguous_struct, int count, void *type, MPI_Op op)
 {
   s_smpi_mpi_struct_t* type_c = reinterpret_cast<s_smpi_mpi_struct_t*>(type);
   int i,j;
 
-  const char* contiguous_struct_char = static_cast<const char*>(contiguous_struct);
+  char* contiguous_struct_char = static_cast<char*>(contiguous_struct);
   char* noncontiguous_struct_char = static_cast<char*>(noncontiguous_struct)+ type_c->block_indices[0];
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
@@ -1388,7 +1388,7 @@ void smpi_op_set_fortran(MPI_Op op)
   op->is_fortran_op = true;
 }
 
-void smpi_op_apply(MPI_Op op, const void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
+void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
 {
   if(op==MPI_OP_NULL)
     return;
@@ -1400,10 +1400,10 @@ void smpi_op_apply(MPI_Op op, const void *invec, void *inoutvec, int *len, MPI_D
 
   if(!smpi_process_get_replaying()){
     if(! op->is_fortran_op)
-      op->func(const_cast<void*>(invec), inoutvec, len, datatype);
+      op->func(invec, inoutvec, len, datatype);
     else{
       int tmp = smpi_type_c2f(*datatype);
-      op->func(const_cast<void*>(invec), inoutvec, len, reinterpret_cast<MPI_Datatype*>(&tmp) );
+      op->func(invec, inoutvec, len, reinterpret_cast<MPI_Datatype*>(&tmp) );
     }
   }
 }
