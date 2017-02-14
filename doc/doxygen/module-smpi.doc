@@ -528,7 +528,7 @@ area between processes does not seem very wise. You cannot use the
 SMPI_SHARED_MALLOC macro in this case, sorry.
 
 This feature is demoed by the example file
-<tt>examples/smpi/NAS/DT-folding/dt.c</tt>
+<tt>examples/smpi/NAS/dt.c</tt>
 
 @subsection SMPI_adapting_speed Toward faster simulations
 
@@ -542,7 +542,7 @@ SMPI_SAMPLE_GLOBAL. Of course, none of this will work if the execution
 time of your loop iteration are not stable.
 
 This feature is demoed by the example file 
-<tt>examples/smpi/NAS/EP-sampling/ep.c</tt>
+<tt>examples/smpi/NAS/ep.c</tt>
 
 @section SMPI_accuracy Ensuring accurate simulations
 
