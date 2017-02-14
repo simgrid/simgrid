@@ -17,8 +17,6 @@ namespace simgrid {
       ~NetworkSmpiModel();
 
       using NetworkCm02Model::gapAppend; // Explicit about overloaded method (silence Woverloaded-virtual from clang)
-      void gapAppend(double size, LinkImpl* link, NetworkAction* action);
-      void gapRemove(Action *action);
       double latencyFactor(double size);
       double bandwidthFactor(double size);
       double bandwidthConstraint(double rate, double bound, double size);
