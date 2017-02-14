@@ -1403,7 +1403,8 @@ void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len, MPI_Datatyp
       op->func(invec, inoutvec, len, datatype);
     else{
       int tmp = smpi_type_c2f(*datatype);
-      op->func(invec, inoutvec, len, reinterpret_cast<MPI_Datatype*>(&tmp) );
+      void* tmpptr=static_cast<void*>(&tmp);
+      op->func(invec, inoutvec, len, static_cast<MPI_Datatype*>(tmpptr) );
     }
   }
 }
