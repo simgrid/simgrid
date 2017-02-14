@@ -270,7 +270,7 @@ LinkNS3::LinkNS3(NetworkNS3Model* model, const char* name, double bandwidth, dou
   bandwidth_.peak = bandwidth;
   latency_.peak   = latency;
 
-  LinkImpl::onCreation(this);
+  s4u::Link::onCreation(this->piface_);
 }
 
 LinkNS3::~LinkNS3() = default;
@@ -299,7 +299,7 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double size, s4u::Host* src, s4
   dst_ = dst;
   ns3_create_flow(src, dst, surf_get_clock(), size, this);
 
-  LinkImpl::onCommunicate(this, src, dst);
+  s4u::Link::onCommunicate(this, src, dst);
 }
 
 void NetworkNS3Action::suspend() {
