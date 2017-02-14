@@ -1,6 +1,5 @@
 /* smpi_mpi_dt.c -- MPI primitives to handle datatypes                      */
-/* Copyright (c) 2009-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -1403,8 +1402,9 @@ void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len, MPI_Datatyp
       op->func(invec, inoutvec, len, datatype);
     else{
       int tmp = smpi_type_c2f(*datatype);
-      void* tmpptr=static_cast<void*>(&tmp);
-      op->func(invec, inoutvec, len, static_cast<MPI_Datatype*>(tmpptr) );
+      /* Unfortunately, the C and Fortran version of the MPI standard do not agree on the type here,
+         thus the reinterpret_cast. */
+      op->func(invec, inoutvec, len, reinterpret_cast<MPI_Datatype*>(&tmp) );
     }
   }
 }
