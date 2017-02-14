@@ -12,12 +12,15 @@
 #include <simgrid/s4u/host.hpp>
 
 #include "src/kernel/routing/NetPoint.hpp"
+#include "src/simix/smx_host_private.h"
 #include "src/surf/HostImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sg_host, sd, "Logging specific to sg_hosts");
 
-extern std::unordered_map<std::string, simgrid::s4u::Host*>
-    host_list; // FIXME: don't duplicate the content of s4u::Host this way
+// FIXME: The following duplicates the content of s4u::Host
+extern std::unordered_map<std::string, simgrid::s4u::Host*> host_list;
+
+extern "C" {
 
 void sg_host_exit()
 {
@@ -122,7 +125,6 @@ void sg_host_msg_set(sg_host_t host, msg_host_priv_t smx_host) {
 }
 
 // ========== Simix layer =============
-#include "src/simix/smx_host_private.h"
 smx_host_priv_t sg_host_simix(sg_host_t host){
   return host->extension<simgrid::simix::Host>();
 }
@@ -252,3 +254,5 @@ void sg_host_dump(sg_host_t host)
     }
   }
 }
+
+} // extern "C"
