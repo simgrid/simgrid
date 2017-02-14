@@ -57,24 +57,6 @@ typedef enum {
   SD_TASK_COMM_PAR_MXN_1D_BLOCK = 4 /**< @brief MxN data redistribution (1D Block distribution) */
 } e_SD_task_kind_t;
 
-
-/************************** Workstation handling ****************************/
-/** @addtogroup SD_host_api
- *
- *  A host is a place where a task can be executed.
- *  A host is represented as a <em>physical resource with computing capabilities</em> and has a <em>name</em>.
- *
- *  The hosts are created from the description file when you call the function SD_create_environment.
- *
- *  @see sg_host_t
- *  @{
- */
-XBT_PUBLIC(SD_link_t *) SD_route_get_list(sg_host_t src, sg_host_t dst);
-XBT_PUBLIC(int) SD_route_get_size(sg_host_t src, sg_host_t dst);
-XBT_PUBLIC(double) SD_route_get_latency(sg_host_t src, sg_host_t dst);
-XBT_PUBLIC(double) SD_route_get_bandwidth(sg_host_t src, sg_host_t dst);
-/** @} */
-
 /************************** Task handling ************************************/
 /** @defgroup SD_task_api Tasks
  *  @brief Functions for managing the tasks

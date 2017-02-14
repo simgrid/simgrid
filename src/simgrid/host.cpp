@@ -226,12 +226,16 @@ double sg_host_route_latency(sg_host_t from, sg_host_t to)
  */
 double sg_host_route_bandwidth(sg_host_t from, sg_host_t to)
 {
+  double min_bandwidth = -1.0;
+
   std::vector<simgrid::s4u::Link*> vlinks;
   from->routeTo(to, &vlinks, nullptr);
-  double res = 0;
-  for (auto link : vlinks)
-    res += link->bandwidth();
-  return res;
+  for (auto link : vlinks) {
+    double bandwidth = link->bandwidth();
+    if (bandwidth < min_bandwidth || min_bandwidth < 0.0)
+      min_bandwidth = bandwidth;
+  }
+  return min_bandwidth;
 }
 
 /** @brief Displays debugging information about a host */

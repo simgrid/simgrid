@@ -35,10 +35,13 @@ int main(int argc, char **argv)
   sg_host_t h1 = hosts[i];
   sg_host_t h2 = hosts[j];
   printf("%d\tand\t%d\t\t",i,j);
+  xbt_dynar_t route = xbt_dynar_new(sizeof(SD_link_t), NULL);
 
   xbt_os_cputimer_start(timer);
-  SD_route_get_list(h1, h2);
+  sg_host_route(h1, h2, route);
   xbt_os_cputimer_stop(timer);
+
+  xbt_dynar_free(&route);
 
   printf("%f\n", xbt_os_timer_elapsed(timer) );
 

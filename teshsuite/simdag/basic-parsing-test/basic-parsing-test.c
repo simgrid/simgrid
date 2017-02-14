@@ -24,15 +24,17 @@ int main(int argc, char **argv)
       const char *name2 = sg_host_get_name(h2);
 
       fprintf(stderr, "Route between %s and %s\n", name1, name2);
-      SD_link_t *route = SD_route_get_list(h1, h2);
-      int route_size = SD_route_get_size(h1, h2);
-      fprintf(stderr, "Route size %d\n", route_size);
-      for (int i = 0; i < route_size; i++)
-        fprintf(stderr, "  Link %s: latency = %f, bandwidth = %f\n", sg_link_name(route[i]),
-               sg_link_latency(route[i]), sg_link_bandwidth(route[i]));
+      xbt_dynar_t route = xbt_dynar_new(sizeof(SD_link_t), NULL);
+      sg_host_route(h1, h2, route);
+      fprintf(stderr, "Route size %lu\n", xbt_dynar_length(route));
+      unsigned int i;
+      SD_link_t link;
+      xbt_dynar_foreach(route, i, link)
+        fprintf(stderr, "  Link %s: latency = %f, bandwidth = %f\n", sg_link_name(link),
+               sg_link_latency(link), sg_link_bandwidth(link));
       fprintf(stderr, "Route latency = %f, route bandwidth = %f\n",
-             SD_route_get_latency(h1, h2), SD_route_get_bandwidth(h1, h2));
-      xbt_free(route);
+             sg_host_route_latency(h1, h2), sg_host_route_bandwidth(h1, h2));
+      xbt_dynar_free_container(&route);
     }
     if (!strcmp(argv[2], "FULL_LINK")) {
       int list_size = sg_host_count();
@@ -43,16 +45,17 @@ int main(int argc, char **argv)
           sg_host_t h2 = hosts[j];
           const char *name2 = sg_host_get_name(h2);
           fprintf(stderr, "Route between %s and %s\n", name1, name2);
-          SD_link_t *route = SD_route_get_list(h1, h2);
-          int route_size = SD_route_get_size(h1, h2);
-          fprintf(stderr, "  Route size %d\n", route_size);
-          for (int k = 0; k < route_size; k++) {
+          xbt_dynar_t route = xbt_dynar_new(sizeof(SD_link_t), NULL);
+          sg_host_route(h1, h2, route);
+          fprintf(stderr, "  Route size %lu\n", xbt_dynar_length(route));
+          unsigned int k;
+          SD_link_t link;
+          xbt_dynar_foreach(route, k, link)
             fprintf(stderr, "  Link %s: latency = %f, bandwidth = %f\n",
-                sg_link_name(route[k]), sg_link_latency(route[k]), sg_link_bandwidth(route[k]));
-          }
+                sg_link_name(link), sg_link_latency(link), sg_link_bandwidth(link));
           fprintf(stderr, "  Route latency = %f, route bandwidth = %f\n",
-                 SD_route_get_latency(h1, h2), SD_route_get_bandwidth(h1, h2));
-          xbt_free(route);
+                 sg_host_route_latency(h1, h2), sg_host_route_bandwidth(h1, h2));
+          xbt_dynar_free_container(&route);
         }
       }
     }

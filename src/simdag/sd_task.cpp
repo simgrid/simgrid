@@ -690,8 +690,8 @@ double SD_task_get_execution_time(SD_task_t task, int host_count, const sg_host_
     if (bytes_amount != nullptr)
       for (int j = 0; j < host_count; j++)
         if (bytes_amount[i * host_count + j] != 0)
-          time += (SD_route_get_latency(host_list[i], host_list[j]) +
-                   bytes_amount[i * host_count + j] / SD_route_get_bandwidth(host_list[i], host_list[j]));
+          time += (sg_host_route_latency(host_list[i], host_list[j]) +
+                   bytes_amount[i * host_count + j] / sg_host_route_bandwidth(host_list[i], host_list[j]));
 
     if (time > max_time)
       max_time = time;

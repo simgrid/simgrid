@@ -84,8 +84,8 @@ static double finish_on_at(SD_task_t task, sg_host_t host)
         if (SD_task_get_amount(parent) <= 1e-6){
           redist_time= 0;
         } else {
-          redist_time = SD_route_get_latency(parent_host[0], host) +
-                        SD_task_get_amount(parent) / SD_route_get_bandwidth(parent_host[0], host);
+          redist_time = sg_host_route_latency(parent_host[0], host) +
+                        SD_task_get_amount(parent) / sg_host_route_bandwidth(parent_host[0], host);
         }
         data_available = SD_task_get_start_time(parent) + redist_time;
       }

@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/simdag.h"
+#include "simgrid/s4u.hpp"
 #include "xbt/ex.h"
 #include <xbt/ex.hpp>
 #include "xbt/log.h"
@@ -27,29 +28,29 @@ int main(int argc, char **argv)
 
   /* test the estimation functions */
   const sg_host_t *hosts = sg_host_list();
-  sg_host_t h1           = hosts[4];
-  sg_host_t h2           = hosts[2];
-  const char *name1 = sg_host_get_name(h1);
-  const char *name2 = sg_host_get_name(h2);
+  simgrid::s4u::Host* h1           = hosts[4];
+  simgrid::s4u::Host* h2           = hosts[2];
   double comp_amount1 = 2000000;
   double comp_amount2 = 1000000;
   double comm_amount12 = 2000000;
   double comm_amount21 = 3000000;
-  XBT_INFO("Computation time for %f flops on %s: %f", comp_amount1, name1, comp_amount1/sg_host_speed(h1));
-  XBT_INFO("Computation time for %f flops on %s: %f", comp_amount2, name2, comp_amount2/sg_host_speed(h2));
+  XBT_INFO("Computation time for %f flops on %s: %f", comp_amount1, h1->cname(), comp_amount1/h1->speed());
+  XBT_INFO("Computation time for %f flops on %s: %f", comp_amount2, h2->cname(), comp_amount2/h2->speed());
 
-  XBT_INFO("Route between %s and %s:", name1, name2);
-  SD_link_t *route = SD_route_get_list(h1, h2);
-  int route_size = SD_route_get_size(h1, h2);
-  for (int i = 0; i < route_size; i++)
-    XBT_INFO("   Link %s: latency = %f, bandwidth = %f", sg_link_name(route[i]), sg_link_latency(route[i]),
-             sg_link_bandwidth(route[i]));
-  xbt_free(route);
-  XBT_INFO("Route latency = %f, route bandwidth = %f", SD_route_get_latency(h1, h2), SD_route_get_bandwidth(h1, h2));
-  XBT_INFO("Communication time for %f bytes between %s and %s: %f", comm_amount12, name1, name2,
-        SD_route_get_latency(h1, h2) + comm_amount12 / SD_route_get_bandwidth(h1, h2));
-  XBT_INFO("Communication time for %f bytes between %s and %s: %f", comm_amount21, name2, name1,
-        SD_route_get_latency(h2, h1) + comm_amount21 / SD_route_get_bandwidth(h2, h1));
+  XBT_INFO("Route between %s and %s:", h1->cname(), h2->cname());
+  std::vector<Link*> route;
+  double latency = 0;
+  h1->routeTo(h2, &route, &latency);
+
+  for (auto link : route)
+    XBT_INFO("   Link %s: latency = %f, bandwidth = %f", sg_link_name(link), sg_link_latency(link),
+             sg_link_bandwidth(link));
+
+  XBT_INFO("Route latency = %f, route bandwidth = %f", latency, sg_host_route_bandwidth(h1, h2));
+  XBT_INFO("Communication time for %f bytes between %s and %s: %f", comm_amount12,  h1->cname(), h2->cname(),
+        sg_host_route_latency(h1, h2) + comm_amount12 / sg_host_route_bandwidth(h1, h2));
+  XBT_INFO("Communication time for %f bytes between %s and %s: %f", comm_amount21,  h2->cname(), h1->cname(),
+        sg_host_route_latency(h2, h1) + comm_amount21 / sg_host_route_bandwidth(h2, h1));
 
   /* creation of the tasks and their dependencies */
   SD_task_t taskA = SD_task_create("Task A", NULL, 10.0);
