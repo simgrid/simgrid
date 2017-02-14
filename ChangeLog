@@ -2,7 +2,7 @@ SimGrid (3.15) UNRELEASED; urgency=low
 
  - Rename NetCards to NetPoints.
    This was intended to help NS3 users, but that's not a netcard.
-   That's a point in the routing algorithm, let's avoid do wrong simplifications.
+   That's a point in the routing algorithm, let's avoid wrong simplifications.
 
  MSG
  - New function: MSG_process_yield()
@@ -17,6 +17,7 @@ SimGrid (3.15) UNRELEASED; urgency=low
  - New callbacks:
    - simgrid::s4u::onPlatformCreated: right before the simulation starts
    - simgrid::s4u::onSimulationEnd: right after the main simulation loop
+ - Links are now usable from s4u
 
  -- target_date=March 20 2017 -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
