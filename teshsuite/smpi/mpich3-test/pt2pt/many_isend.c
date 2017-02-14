@@ -11,11 +11,11 @@
 #define ITER 5
 #define BUF_COUNT (16*1024)
 
-int rank, nprocs;
-char recvbuf[BUF_COUNT], sendbuf[BUF_COUNT];
-
 int main(int argc, char *argv[])
 {
+
+    int rank, nprocs;
+    char recvbuf[BUF_COUNT], sendbuf[BUF_COUNT];
     int x, i;
     MPI_Status *sendstats = NULL;
     MPI_Request *sendreqs = NULL;
