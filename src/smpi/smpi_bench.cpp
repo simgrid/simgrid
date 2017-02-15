@@ -83,7 +83,7 @@ double smpi_host_speed;
 
 int smpi_loaded_page = -1;
 char* smpi_start_data_exe = nullptr;
-uint64_t smpi_size_data_exe = 0;
+int smpi_size_data_exe = 0;
 bool smpi_privatize_global_variables;
 double smpi_total_benched_time = 0;
 smpi_privatisation_region_t smpi_privatisation_regions;
@@ -730,7 +730,7 @@ void smpi_initialize_global_memory_segments()
 
   smpi_get_executable_global_size();
 
-  XBT_DEBUG ("bss+data segment found : size %zu starting at %p", smpi_size_data_exe, smpi_start_data_exe );
+  XBT_DEBUG ("bss+data segment found : size %d starting at %p", smpi_size_data_exe, smpi_start_data_exe );
 
   if (smpi_size_data_exe == 0){//no need to switch
     smpi_privatize_global_variables=false;
