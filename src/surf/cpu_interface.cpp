@@ -129,6 +129,7 @@ Cpu::Cpu(Model* model, simgrid::s4u::Host* host, lmm_constraint_t constraint, st
 
 Cpu::~Cpu() = default;
 
+/** @brief The amount of flop per second that this CPU can compute at its current DVFS level */
 double Cpu::getPstateSpeedCurrent()
 {
   return speed_.peak;
@@ -231,6 +232,7 @@ void CpuAction::setState(Action::State state){
   Action::setState(state);
   onStateChange(this, previous);
 }
+/** @brief returns a list of all CPUs that this action is using */
 std::list<Cpu*> CpuAction::cpus() {
   std::list<Cpu*> retlist;
   lmm_system_t sys = getModel()->getMaxminSystem();

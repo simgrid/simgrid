@@ -10,6 +10,7 @@
 #include "src/surf/PropertyHolder.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "xbt/base.h"
+#include <list>
 #include <unordered_map>
 
 /***********
@@ -206,6 +207,7 @@ namespace simgrid {
       : simgrid::surf::Action(model, cost, failed, var) {};
 
       void setState(simgrid::surf::Action::State state) override;
+      std::list<LinkImpl*> links();
 
       double latency_;
       double latCurrent_;
