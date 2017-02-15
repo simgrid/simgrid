@@ -18,6 +18,7 @@
 
 #include <boost/intrusive_ptr.hpp>
 
+#include <xbt/Extendable.hpp>
 #include <xbt/base.h>
 #include <xbt/functional.hpp>
 #include <xbt/string.hpp>
@@ -131,7 +132,9 @@ namespace s4u {
  */
 
 /** @brief Simulation Agent */
-XBT_PUBLIC_CLASS Actor {
+XBT_PUBLIC_CLASS Actor : public simgrid::xbt::Extendable<Actor>
+{
+
   friend Mailbox;
   friend simgrid::simix::ActorImpl;
   friend simgrid::kernel::activity::MailboxImpl;
