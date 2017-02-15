@@ -75,7 +75,7 @@ namespace simgrid {
 /** @brief Stop the host if it is on */
 void SIMIX_host_off(sg_host_t h, smx_actor_t issuer)
 {
-  smx_host_priv_t host = sg_host_simix(h);
+  smx_host_priv_t host = h->extension<simgrid::simix::Host>();
 
   xbt_assert((host != nullptr), "Invalid parameters");
 
@@ -140,17 +140,15 @@ void SIMIX_host_add_auto_restart_process(
     xbt_dict_set(watched_hosts_lib, host->cname(), host, nullptr);
     XBT_DEBUG("Push host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF", host->cname());
   }
-  sg_host_simix(host)->auto_restart_processes.push_back(arg);
+  host->extension<simgrid::simix::Host>()->auto_restart_processes.push_back(arg);
 }
 /** @brief Restart the list of processes that have been registered to the host */
 void SIMIX_host_autorestart(sg_host_t host)
 {
-  std::vector<simgrid::simix::ProcessArg*> process_list = sg_host_simix(host)->auto_restart_processes;
-  if (process_list.empty())
-    return;
+  std::vector<simgrid::simix::ProcessArg*> process_list =
+      host->extension<simgrid::simix::Host>()->auto_restart_processes;
 
   for (auto arg : process_list) {
-
     XBT_DEBUG("Restarting Process %s@%s right now", arg->name.c_str(), arg->host->cname());
     simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host, arg->kill_time,
         arg->properties, arg->auto_restart, nullptr);

@@ -116,11 +116,6 @@ void sg_host_user_destroy(sg_host_t host) {
   host->extension_set(USER_HOST_LEVEL, nullptr);
 }
 
-// ========== Simix layer =============
-smx_host_priv_t sg_host_simix(sg_host_t host){
-  return host->extension<simgrid::simix::Host>();
-}
-
 // ========= storage related functions ============
 xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host){
   return host->pimpl_->getMountedStorageList();

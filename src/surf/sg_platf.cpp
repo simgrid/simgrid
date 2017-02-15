@@ -507,7 +507,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   arg->kill_time = kill_time;
   arg->properties = current_property_set;
 
-  sg_host_simix(host)->boot_processes.push_back(arg);
+  host->extension<simgrid::simix::Host>()->boot_processes.push_back(arg);
 
   if (start_time > SIMIX_get_clock()) {
 

@@ -135,7 +135,7 @@ void SIMIX_process_cleanup(smx_actor_t process)
   XBT_DEBUG("%p should not be run anymore",process);
   simix_global->process_list.erase(process->pid);
   if (process->host)
-    xbt_swag_remove(process, sg_host_simix(process->host)->process_list);
+    xbt_swag_remove(process, process->host->extension<simgrid::simix::Host>()->process_list);
   xbt_swag_insert(process, simix_global->process_to_destroy);
   process->context->iwannadie = 0;
 
@@ -274,7 +274,7 @@ smx_actor_t SIMIX_process_create(
     process->properties = properties;
 
     /* Add the process to it's host process list */
-    xbt_swag_insert(process, sg_host_simix(host)->process_list);
+    xbt_swag_insert(process, host->extension<simgrid::simix::Host>()->process_list);
 
     XBT_DEBUG("Start context '%s'", process->name.c_str());
 
@@ -354,7 +354,7 @@ smx_actor_t SIMIX_process_attach(
   process->properties = properties;
 
   /* Add the process to it's host process list */
-  xbt_swag_insert(process, sg_host_simix(host)->process_list);
+  xbt_swag_insert(process, host->extension<simgrid::simix::Host>()->process_list);
 
   /* Now insert it in the global process list and in the process to run list */
   simix_global->process_list[process->pid] = process;
@@ -559,9 +559,9 @@ void simcall_HANDLER_process_set_host(smx_simcall_t simcall, smx_actor_t process
 void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest)
 {
   xbt_assert((process != nullptr), "Invalid parameters");
-  xbt_swag_remove(process, sg_host_simix(process->host)->process_list);
+  xbt_swag_remove(process, process->host->extension<simgrid::simix::Host>()->process_list);
   process->host = dest;
-  xbt_swag_insert(process, sg_host_simix(dest)->process_list);
+  xbt_swag_insert(process, dest->extension<simgrid::simix::Host>()->process_list);
 }
 
 
