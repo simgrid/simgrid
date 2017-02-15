@@ -57,8 +57,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_energy, surf, "Logging specific to the SURF
 namespace simgrid {
 namespace energy {
 
-class XBT_PRIVATE HostEnergy;
-
 class PowerRange {
 public:
   double idle;
@@ -286,7 +284,9 @@ static void onActionStateChange(simgrid::surf::CpuAction* action, simgrid::surf:
   }
 }
 
-static void onHostStateChange(simgrid::s4u::Host& host)
+/* This callback is fired either when the host change its state (on/off) or its speed
+ * (because the user changed the pstate, or because of external trace events) */
+static void onHostChange(simgrid::s4u::Host& host)
 {
   if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
@@ -309,9 +309,8 @@ static void onHostDestruction(simgrid::s4u::Host& host)
 
 /* **************************** Public interface *************************** */
 /** \ingroup SURF_plugin_energy
- * \brief Enable energy plugin
- * \details Enable energy plugin to get joules consumption of each cpu. You should call this function before
- * #MSG_init().
+ * \brief Enable host energy plugin
+ * \details Enable energy plugin to get joules consumption of each cpu. Call this function before #MSG_init().
  */
 void sg_host_energy_plugin_init()
 {
@@ -321,7 +320,8 @@ void sg_host_energy_plugin_init()
   HostEnergy::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostEnergy>();
 
   simgrid::s4u::Host::onCreation.connect(&onCreation);
-  simgrid::s4u::Host::onStateChange.connect(&onHostStateChange);
+  simgrid::s4u::Host::onStateChange.connect(&onHostChange);
+  simgrid::s4u::Host::onSpeedChange.connect(&onHostChange);
   simgrid::s4u::Host::onDestruction.connect(&onHostDestruction);
   simgrid::surf::CpuAction::onStateChange.connect(&onActionStateChange);
 }

@@ -124,6 +124,9 @@ public:
   static simgrid::xbt::signal<void(Host&)> onDestruction;
   /*** Called when the machine is turned on or off */
   static simgrid::xbt::signal<void(Host&)> onStateChange;
+  /*** Called when the speed of the machine is changed
+   * (either because of a pstate switch or because of an external load event coming from the profile) */
+  static simgrid::xbt::signal<void(Host&)> onSpeedChange;
 };
 
 }} // namespace simgrid::s4u

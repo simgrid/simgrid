@@ -177,6 +177,7 @@ double Cpu::getAvailableSpeed()
 
 void Cpu::onSpeedChange() {
   TRACE_surf_host_set_speed(surf_get_clock(), cname(), coresAmount_ * speed_.scale * speed_.peak);
+  s4u::Host::onSpeedChange(*host_);
 }
 
 int Cpu::coreCount()
