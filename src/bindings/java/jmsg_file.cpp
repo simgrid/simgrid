@@ -14,7 +14,7 @@ void jfile_bind(JNIEnv *env, jobject jfile, msg_file_t fd) {
 }
 
 msg_file_t jfile_get_native(JNIEnv *env, jobject jfile) {
-  return reinterpret_cast<msg_file_t>(static_cast<std::intptr_t>(env->GetLongField(jfile, jfile_field_bind)));
+  return reinterpret_cast<msg_file_t>(env->GetLongField(jfile, jfile_field_bind));
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_File_nativeInit(JNIEnv *env, jclass cls) {
