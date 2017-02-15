@@ -56,7 +56,6 @@ set(EXTRA_DIST
   src/surf/network_ib.hpp
   src/surf/ns3/ns3_interface.h
   src/surf/ns3/ns3_simulator.h
-  src/surf/plugins/energy.hpp
   src/surf/xml/simgrid.dtd
   src/surf/xml/simgrid_dtd.h
   src/surf/xml/simgrid_dtd.c
@@ -319,7 +318,7 @@ set(SURF_SRC
   src/surf/network_cm02.cpp
   src/surf/network_constant.cpp
   src/surf/network_interface.cpp
-  src/surf/plugins/energy.cpp
+  src/surf/plugins/host_energy.cpp
   src/surf/PropertyHolder.cpp
   src/surf/sg_platf.cpp
   src/surf/storage_interface.cpp

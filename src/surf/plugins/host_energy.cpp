@@ -7,7 +7,6 @@
 #include "simgrid/simix.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
-#include "src/surf/plugins/energy.hpp"
 #include <utility>
 
 /** @addtogroup SURF_plugin_energy
@@ -16,7 +15,8 @@
 This is the energy plugin, enabling to account not only for computation time,
 but also for the dissipated energy in the simulated platform.
 
-The energy consumption of a CPU depends directly of its current load. Specify that consumption in your platform file as follows:
+The energy consumption of a CPU depends directly of its current load. Specify that consumption in your platform file as
+follows:
 
 \verbatim
 <host id="HostA" power="100.0Mf" >
@@ -54,17 +54,50 @@ and then use the following function to retrieve the consumption of a given host:
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_energy, surf, "Logging specific to the SURF energy plugin");
 
-using simgrid::energy::HostEnergy;
-
 namespace simgrid {
 namespace energy {
+
+class XBT_PRIVATE HostEnergy;
+
+class PowerRange {
+public:
+  double idle;
+  double min;
+  double max;
+
+  PowerRange(double idle, double min, double max) : idle(idle), min(min), max(max) {}
+};
+
+class HostEnergy {
+public:
+  static simgrid::xbt::Extension<simgrid::s4u::Host, HostEnergy> EXTENSION_ID;
+
+  explicit HostEnergy(simgrid::s4u::Host* ptr);
+  ~HostEnergy();
+
+  double getCurrentWattsValue(double cpu_load);
+  double getConsumedEnergy();
+  double getWattMinAt(int pstate);
+  double getWattMaxAt(int pstate);
+  void update();
+
+private:
+  void initWattsRangeList();
+  simgrid::s4u::Host* host = nullptr;
+  std::vector<PowerRange>
+      power_range_watts_list; /*< List of (min_power,max_power) pairs corresponding to each cpu pstate */
+public:
+  double watts_off    = 0.0; /*< Consumption when the machine is turned off (shutdown) */
+  double total_energy = 0.0; /*< Total energy consumed by the host */
+  double last_updated;       /*< Timestamp of the last energy update event*/
+};
 
 simgrid::xbt::Extension<simgrid::s4u::Host, HostEnergy> HostEnergy::EXTENSION_ID;
 
 /* Computes the consumption so far.  Called lazily on need. */
 void HostEnergy::update()
 {
-  double start_time = this->last_updated;
+  double start_time  = this->last_updated;
   double finish_time = surf_get_clock();
   double cpu_load;
   if (host->pimpl_cpu->getPstateSpeedCurrent() <= 0)
@@ -96,7 +129,7 @@ void HostEnergy::update()
   else
     instantaneous_consumption = this->getCurrentWattsValue(cpu_load);
 
-  double energy_this_step = instantaneous_consumption*(finish_time-start_time);
+  double energy_this_step = instantaneous_consumption * (finish_time - start_time);
 
   this->total_energy = previous_energy + energy_this_step;
   this->last_updated = finish_time;
@@ -106,7 +139,7 @@ void HostEnergy::update()
       host->cname(), start_time, finish_time, host->pimpl_cpu->speed_.peak, previous_energy, energy_this_step);
 }
 
-HostEnergy::HostEnergy(simgrid::s4u::Host *ptr) : host(ptr), last_updated(surf_get_clock())
+HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host(ptr), last_updated(surf_get_clock())
 {
   initWattsRangeList();
 
@@ -119,7 +152,7 @@ HostEnergy::HostEnergy(simgrid::s4u::Host *ptr) : host(ptr), last_updated(surf_g
   /* watts_off is 0 by default */
 }
 
-HostEnergy::~HostEnergy()=default;
+HostEnergy::~HostEnergy() = default;
 
 double HostEnergy::getWattMinAt(int pstate)
 {
@@ -161,7 +194,7 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
      * (maxCpuLoad is by definition 1)
      */
     double power_slope;
-    int coreCount = host->coreCount();
+    int coreCount         = host->coreCount();
     double coreReciprocal = static_cast<double>(1) / static_cast<double>(coreCount);
     if (coreCount > 1)
       power_slope = (max_power - min_power) / (1 - coreReciprocal);
@@ -169,8 +202,7 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
       power_slope = 0; // Should be 0, since max_power == min_power (in this case)
 
     current_power = min_power + (cpu_load - coreReciprocal) * power_slope;
-  }
-  else { /* Our machine is idle, take the dedicated value! */
+  } else { /* Our machine is idle, take the dedicated value! */
     current_power = range.idle;
   }
 
@@ -195,9 +227,9 @@ void HostEnergy::initWattsRangeList()
     return;
 
   xbt_dynar_t all_power_values = xbt_str_split(all_power_values_str, ",");
-  int pstate_nb = xbt_dynar_length(all_power_values);
+  int pstate_nb                = xbt_dynar_length(all_power_values);
 
-  for (int i=0; i< pstate_nb; i++) {
+  for (int i = 0; i < pstate_nb; i++) {
     /* retrieve the power values associated with the current pstate */
     xbt_dynar_t current_power_values = xbt_str_split(xbt_dynar_get_as(all_power_values, i, char*), ":");
     xbt_assert(xbt_dynar_length(current_power_values) == 3,
@@ -209,11 +241,9 @@ void HostEnergy::initWattsRangeList()
     char* msg_idle = bprintf("Invalid idle value for pstate %d on host %s: %%s", i, host->cname());
     char* msg_min  = bprintf("Invalid min value for pstate %d on host %s: %%s", i, host->cname());
     char* msg_max  = bprintf("Invalid max value for pstate %d on host %s: %%s", i, host->cname());
-    PowerRange range(
-      xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 0, char*), msg_idle),
-      xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 1, char*), msg_min),
-      xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 2, char*), msg_max)
-    );
+    PowerRange range(xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 0, char*), msg_idle),
+                     xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 1, char*), msg_min),
+                     xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 2, char*), msg_max));
     power_range_watts_list.push_back(range);
     xbt_free(msg_idle);
     xbt_free(msg_min);
@@ -223,18 +253,21 @@ void HostEnergy::initWattsRangeList()
   }
   xbt_dynar_free(&all_power_values);
 }
+}
+}
 
-}
-}
+using simgrid::energy::HostEnergy;
 
 /* **************************** events  callback *************************** */
-static void onCreation(simgrid::s4u::Host& host) {
+static void onCreation(simgrid::s4u::Host& host)
+{
   if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
   host.extension_set(new HostEnergy(&host));
 }
 
-static void onActionStateChange(simgrid::surf::CpuAction *action, simgrid::surf::Action::State previous) {
+static void onActionStateChange(simgrid::surf::CpuAction* action, simgrid::surf::Action::State previous)
+{
   for (simgrid::surf::Cpu* cpu : action->cpus()) {
     simgrid::s4u::Host* host = cpu->getHost();
     if (host == nullptr)
@@ -253,21 +286,23 @@ static void onActionStateChange(simgrid::surf::CpuAction *action, simgrid::surf:
   }
 }
 
-static void onHostStateChange(simgrid::s4u::Host &host) {
+static void onHostStateChange(simgrid::s4u::Host& host)
+{
   if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
 
-  HostEnergy *host_energy = host.extension<HostEnergy>();
+  HostEnergy* host_energy = host.extension<HostEnergy>();
 
-  if(host_energy->last_updated < surf_get_clock())
+  if (host_energy->last_updated < surf_get_clock())
     host_energy->update();
 }
 
-static void onHostDestruction(simgrid::s4u::Host& host) {
+static void onHostDestruction(simgrid::s4u::Host& host)
+{
   if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
 
-  HostEnergy *host_energy = host.extension<HostEnergy>();
+  HostEnergy* host_energy = host.extension<HostEnergy>();
   host_energy->update();
   XBT_INFO("Total energy of host %s: %f Joules", host.cname(), host_energy->getConsumedEnergy());
 }
@@ -275,7 +310,8 @@ static void onHostDestruction(simgrid::s4u::Host& host) {
 /* **************************** Public interface *************************** */
 /** \ingroup SURF_plugin_energy
  * \brief Enable energy plugin
- * \details Enable energy plugin to get joules consumption of each cpu. You should call this function before #MSG_init().
+ * \details Enable energy plugin to get joules consumption of each cpu. You should call this function before
+ * #MSG_init().
  */
 void sg_host_energy_plugin_init()
 {
@@ -294,21 +330,24 @@ void sg_host_energy_plugin_init()
  *
  *  See also @ref SURF_plugin_energy.
  */
-double sg_host_get_consumed_energy(sg_host_t host) {
+double sg_host_get_consumed_energy(sg_host_t host)
+{
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
-    "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
+             "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
   return host->extension<HostEnergy>()->getConsumedEnergy();
 }
 
 /** @brief Get the amount of watt dissipated at the given pstate when the host is idling */
-double sg_host_get_wattmin_at(sg_host_t host, int pstate) {
+double sg_host_get_wattmin_at(sg_host_t host, int pstate)
+{
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
-    "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
+             "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
   return host->extension<HostEnergy>()->getWattMinAt(pstate);
 }
 /** @brief  Returns the amount of watt dissipated at the given pstate when the host burns CPU at 100% */
-double sg_host_get_wattmax_at(sg_host_t host, int pstate) {
+double sg_host_get_wattmax_at(sg_host_t host, int pstate)
+{
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
-    "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
+             "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
   return host->extension<HostEnergy>()->getWattMaxAt(pstate);
 }
