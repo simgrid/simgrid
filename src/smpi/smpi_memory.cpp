@@ -48,8 +48,8 @@ void smpi_get_executable_global_size()
          following the rw- area is the end of the data segment. It would
          be better to check with the size of the data segment. */
       if (i != map.end() && i->pathname.empty() && (i->prot & PROT_RWX) == PROT_RW
-          && i->start_addr == (std::uint64_t) smpi_start_data_exe + smpi_size_data_exe) {
-        smpi_size_data_exe = i->end_addr - (std::uint64_t) smpi_start_data_exe;
+          && (char*)i->start_addr ==  smpi_start_data_exe + smpi_size_data_exe) {
+        smpi_size_data_exe = (char*)i->end_addr - smpi_start_data_exe;
       }
       return;
     }
