@@ -59,61 +59,6 @@ namespace simgrid {
       xbt_dict_free(&gap_lookup);
     }
 
-    void NetworkSmpiModel::gapAppend(double size, LinkImpl* link, NetworkAction* act)
-    {
-      const char* src = link->cname();
-      xbt_fifo_t fifo;
-      NetworkCm02Action *action= static_cast<NetworkCm02Action*>(act);
-
-      if (sg_sender_gap > 0.0) {
-        if (!gap_lookup) {
-          gap_lookup = xbt_dict_new_homogeneous(nullptr);
-        }
-        fifo = (xbt_fifo_t) xbt_dict_get_or_null(gap_lookup, src);
-        action->senderGap_ = 0.0;
-        if (fifo && xbt_fifo_size(fifo) > 0) {
-          /* Compute gap from last send */
-          /*last_action =
-          (surf_action_network_CM02_t)
-          xbt_fifo_get_item_content(xbt_fifo_get_last_item(fifo));*/
-          // bw = net_get_link_bandwidth(link);
-          action->senderGap_ = sg_sender_gap;
-          /*  max(sg_sender_gap,last_action->sender.size / bw);*/
-          action->latency_ += action->senderGap_;
-        }
-        /* Append action as last send */
-        /*action->sender.link_name = link->lmm_resource.generic_resource.name;
-    fifo =
-        (xbt_fifo_t) xbt_dict_get_or_null(gap_lookup,
-                                          action->sender.link_name);
-    if (!fifo) {
-      fifo = xbt_fifo_new();
-      xbt_dict_set(gap_lookup, action->sender.link_name, fifo, nullptr);
-    }
-    action->sender.fifo_item = xbt_fifo_push(fifo, action);*/
-        action->senderSize_ = size;
-      }
-    }
-
-    void NetworkSmpiModel::gapRemove(Action *lmm_action)
-    {
-      NetworkCm02Action *action = static_cast<NetworkCm02Action*>(lmm_action);
-
-      if (sg_sender_gap > 0.0 && action->senderLinkName_ && action->senderFifoItem_) {
-        xbt_fifo_t fifo = (xbt_fifo_t)xbt_dict_get_or_null(gap_lookup, action->senderLinkName_);
-        xbt_fifo_remove_item(fifo, action->senderFifoItem_);
-        size_t size = xbt_fifo_size(fifo);
-        if (size == 0) {
-          xbt_fifo_free(fifo);
-          xbt_dict_remove(gap_lookup, action->senderLinkName_);
-          size = xbt_dict_length(gap_lookup);
-          if (size == 0) {
-            xbt_dict_free(&gap_lookup);
-          }
-        }
-      }
-    }
-
     double NetworkSmpiModel::bandwidthFactor(double size)
     {
       if (smpi_bw_factor.empty())

@@ -105,13 +105,15 @@ private:
   static s4u::Engine *instance_;
 };
 
-/** Callback called when the platform is created (ie, the xml file parsed),
- * right before the actual simulation starts.
- */
+/** Callback fired when the platform is created (ie, the xml file parsed),
+ * right before the actual simulation starts. */
 extern XBT_PRIVATE xbt::signal<void()> onPlatformCreated;
 
-/** Callback called when the main simulation loop ends, just before MSG_run (or similar) ends */
+/** Callback fired when the main simulation loop ends, just before MSG_run (or similar) ends */
 extern XBT_PRIVATE xbt::signal<void()> onSimulationEnd;
+
+/** Callback fired when the time jumps into the future */
+extern XBT_PRIVATE xbt::signal<void(double)> onTimeAdvance;
 }} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_ENGINE_HPP */

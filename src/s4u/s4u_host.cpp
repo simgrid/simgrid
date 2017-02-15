@@ -40,6 +40,7 @@ namespace s4u {
 simgrid::xbt::signal<void(Host&)> Host::onCreation;
 simgrid::xbt::signal<void(Host&)> Host::onDestruction;
 simgrid::xbt::signal<void(Host&)> Host::onStateChange;
+simgrid::xbt::signal<void(Host&)> Host::onSpeedChange;
 
 Host::Host(const char* name)
   : name_(name)

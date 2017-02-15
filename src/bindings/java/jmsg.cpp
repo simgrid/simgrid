@@ -258,7 +258,7 @@ Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls, jstring jde
 SG_END_DECL()
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_energyInit() {
-  sg_energy_plugin_init();
+  sg_host_energy_plugin_init();
 }
 
 /** Run a Java org.simgrid.msg.Process

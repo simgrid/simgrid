@@ -6,7 +6,6 @@
 
 #include <xbt/dynar.h>
 #include "cpu_interface.hpp"
-#include "plugins/energy.hpp"
 #include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 
 XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
@@ -129,6 +128,7 @@ Cpu::Cpu(Model* model, simgrid::s4u::Host* host, lmm_constraint_t constraint, st
 
 Cpu::~Cpu() = default;
 
+/** @brief The amount of flop per second that this CPU can compute at its current DVFS level */
 double Cpu::getPstateSpeedCurrent()
 {
   return speed_.peak;
@@ -177,6 +177,7 @@ double Cpu::getAvailableSpeed()
 
 void Cpu::onSpeedChange() {
   TRACE_surf_host_set_speed(surf_get_clock(), cname(), coresAmount_ * speed_.scale * speed_.peak);
+  s4u::Host::onSpeedChange(*host_);
 }
 
 int Cpu::coreCount()
@@ -231,6 +232,7 @@ void CpuAction::setState(Action::State state){
   Action::setState(state);
   onStateChange(this, previous);
 }
+/** @brief returns a list of all CPUs that this action is using */
 std::list<Cpu*> CpuAction::cpus() {
   std::list<Cpu*> retlist;
   lmm_system_t sys = getModel()->getMaxminSystem();

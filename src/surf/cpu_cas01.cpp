@@ -114,7 +114,7 @@ void CpuCas01::onSpeedChange() {
     CpuCas01Action* action = static_cast<CpuCas01Action*>(lmm_variable_id(var));
 
     lmm_update_variable_bound(model()->getMaxminSystem(), action->getVariable(), speed_.scale * speed_.peak);
-    }
+  }
 
   Cpu::onSpeedChange();
 }

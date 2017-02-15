@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
   xbt_assert(argc >= 2, "2Usage: %s <platform file> [--energy]", argv[0]);
 
   if(argc == 3 && argv[2][2] == 'e')
-    sg_energy_plugin_init();
+    sg_host_energy_plugin_init();
 
   MSG_create_environment(argv[1]);
 

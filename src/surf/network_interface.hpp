@@ -1,5 +1,4 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,15 +6,12 @@
 #ifndef SURF_NETWORK_INTERFACE_HPP_
 #define SURF_NETWORK_INTERFACE_HPP_
 
-#include <xbt/base.h>
-
-#include <unordered_map>
-
+#include "simgrid/s4u/Link.hpp"
 #include "src/surf/PropertyHolder.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "xbt/fifo.h"
-
-#include "simgrid/s4u/Link.hpp"
+#include "xbt/base.h"
+#include <list>
+#include <unordered_map>
 
 /***********
  * Classes *
@@ -211,14 +207,12 @@ namespace simgrid {
       : simgrid::surf::Action(model, cost, failed, var) {};
 
       void setState(simgrid::surf::Action::State state) override;
+      std::list<LinkImpl*> links();
 
       double latency_;
       double latCurrent_;
       double weight_;
       double rate_;
-      const char* senderLinkName_;
-      double senderSize_;
-      xbt_fifo_item_t senderFifoItem_;
     };
   }
 }
