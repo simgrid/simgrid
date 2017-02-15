@@ -19,6 +19,7 @@ SimGrid (3.15) UNRELEASED; urgency=low
  - New callbacks:
    - s4u::onPlatformCreated: right before the simulation starts
    - s4u::onSimulationEnd: right after the main simulation loop
+   - s4u::onTimeAdvance: right after a clock change (time is discrete)
    - s4u::Host::onSpeedChange: when the pstate is changed, or when an
      event from the availability_file changes the avail speed.
  - Links are now usable from s4u
