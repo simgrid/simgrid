@@ -6,6 +6,8 @@ SimGrid (3.15) UNRELEASED; urgency=low
 
  MSG
  - New function: MSG_process_yield()
+ - Renamed MSG_energy_plugin_init() -> MSG_host_energy_plugin_init()
+   to make room for the upcoming network energy plugin.
 
  Java
  - Ensure that an actor can kill itself with Process::exit()
