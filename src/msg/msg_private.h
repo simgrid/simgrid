@@ -77,7 +77,6 @@ typedef struct simdata_file {
 
 typedef struct simdata_process {
   msg_host_t m_host;              /* the host on which the process is running */
-  msg_host_t put_host;            /* used for debugging purposes */
   smx_activity_t waiting_action;
   msg_task_t waiting_task;
   msg_error_t last_errno;       /* the last value returned by a MSG_function */
