@@ -7,8 +7,6 @@
 #include "simgrid/s4u/host.hpp"
 #include "src/msg/msg_private.h"
 
-#include <numeric>
-
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 
 simgrid::xbt::Extension<simgrid::s4u::Host, simgrid::MsgHostExt> simgrid::MsgHostExt::EXTENSION_ID;
@@ -282,20 +280,4 @@ xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
   }
   xbt_dict_free(&storage_list);
   return contents;
-}
-
-int __MSG_host_get_file_descriptor_id(msg_host_t host){
-  simgrid::MsgHostExt* priv = host->extension<simgrid::MsgHostExt>();
-  if (priv->file_descriptor_table == nullptr) {
-    priv->file_descriptor_table = new std::vector<int>(sg_storage_max_file_descriptors);
-    std::iota (priv->file_descriptor_table->rbegin(), priv->file_descriptor_table->rend(), 0); // Fill with ..., 1, 0.
-  }
-  xbt_assert(!priv->file_descriptor_table->empty(), "Too much files are opened! Some have to be closed.");
-  int desc = priv->file_descriptor_table->back();
-  priv->file_descriptor_table->pop_back();
-  return desc;
-}
-
-void __MSG_host_release_file_descriptor_id(msg_host_t host, int id){
-  host->extension<simgrid::MsgHostExt>()->file_descriptor_table->push_back(id);
 }

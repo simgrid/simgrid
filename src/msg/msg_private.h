@@ -73,9 +73,6 @@ typedef struct simdata_file {
   smx_file_t smx_file;
 } s_simdata_file_t;
 
-XBT_PRIVATE int __MSG_host_get_file_descriptor_id(msg_host_t host);
-XBT_PRIVATE void __MSG_host_release_file_descriptor_id(msg_host_t host, int id);
-
 /******************************* Process *************************************/
 
 typedef struct simdata_process {

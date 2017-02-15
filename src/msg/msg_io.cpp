@@ -5,6 +5,7 @@
 
 #include "simgrid/s4u/host.hpp"
 #include "src/msg/msg_private.h"
+#include <numeric>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg, "Logging specific to MSG (io)");
 
@@ -29,6 +30,24 @@ void __MSG_file_get_info(msg_file_t fd){
   priv->size = *psize;
   xbt_free(psize);
   xbt_dynar_free_container(&info);
+}
+
+static int MSG_host_get_file_descriptor_id(msg_host_t host)
+{
+  simgrid::MsgHostExt* priv = host->extension<simgrid::MsgHostExt>();
+  if (priv->file_descriptor_table == nullptr) {
+    priv->file_descriptor_table = new std::vector<int>(sg_storage_max_file_descriptors);
+    std::iota(priv->file_descriptor_table->rbegin(), priv->file_descriptor_table->rend(), 0); // Fill with ..., 1, 0.
+  }
+  xbt_assert(!priv->file_descriptor_table->empty(), "Too much files are opened! Some have to be closed.");
+  int desc = priv->file_descriptor_table->back();
+  priv->file_descriptor_table->pop_back();
+  return desc;
+}
+
+static void MSG_host_release_file_descriptor_id(msg_host_t host, int id)
+{
+  host->extension<simgrid::MsgHostExt>()->file_descriptor_table->push_back(id);
 }
 
 /** \ingroup msg_file
@@ -196,7 +215,7 @@ msg_file_t MSG_file_open(const char* fullpath, void* data)
   priv->fullpath = xbt_strdup(fullpath);
   priv->simdata = xbt_new0(s_simdata_file_t,1);
   priv->simdata->smx_file = simcall_file_open(fullpath, MSG_host_self());
-  priv->desc_id = __MSG_host_get_file_descriptor_id(MSG_host_self());
+  priv->desc_id           = MSG_host_get_file_descriptor_id(MSG_host_self());
 
   name = bprintf("%s:%s:%d", priv->fullpath, MSG_host_self()->cname(), priv->desc_id);
 
@@ -223,7 +242,7 @@ int MSG_file_close(msg_file_t fd)
 
   int res = simcall_file_close(priv->simdata->smx_file, MSG_host_self());
   name    = bprintf("%s:%s:%d", priv->fullpath, MSG_host_self()->cname(), priv->desc_id);
-  __MSG_host_release_file_descriptor_id(MSG_host_self(), priv->desc_id);
+  MSG_host_release_file_descriptor_id(MSG_host_self(), priv->desc_id);
   xbt_lib_unset(file_lib, name, MSG_FILE_LEVEL, 1);
   xbt_free(name);
   return res;
