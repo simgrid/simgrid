@@ -308,6 +308,8 @@ static void onHostDestruction(simgrid::s4u::Host& host)
 }
 
 /* **************************** Public interface *************************** */
+SG_BEGIN_DECL()
+
 /** \ingroup SURF_plugin_energy
  * \brief Enable host energy plugin
  * \details Enable energy plugin to get joules consumption of each cpu. Call this function before #MSG_init().
@@ -351,3 +353,5 @@ double sg_host_get_wattmax_at(sg_host_t host, int pstate)
              "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
   return host->extension<HostEnergy>()->getWattMaxAt(pstate);
 }
+
+SG_END_DECL()
