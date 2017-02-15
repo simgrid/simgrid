@@ -362,7 +362,7 @@ void handle_message(peer_t peer, msg_task_t task)
     }
     break;
   case MESSAGE_PIECE:
-    XBT_DEBUG(" \for piece %d (%d,%d)", message->index, message->block_index,
+    XBT_DEBUG(" \t for piece %d (%d,%d)", message->index, message->block_index,
                                         message->block_index + message->block_length);
     xbt_assert(!remote_peer->choked_download);
     xbt_assert(remote_peer->am_interested || ENABLE_END_GAME_MODE,
