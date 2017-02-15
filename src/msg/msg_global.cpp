@@ -23,11 +23,6 @@ static void _sg_cfg_cb_msg_debug_multiple_use(const char *name)
   msg_global->debug_multiple_use = xbt_cfg_get_boolean(name);
 }
 
-static void MSG_host_create_(sg_host_t host)
-{
-  __MSG_host_create(host);
-}
-
 /**
  * \ingroup msg_simulation
  * \brief Initialize MSG with less verifications
@@ -55,13 +50,11 @@ void MSG_init_nocheck(int *argc, char **argv) {
     SIMIX_function_register_process_cleanup(MSG_process_cleanup_from_SIMIX);
 
     simgrid::s4u::onPlatformCreated.connect(MSG_post_create_environment);
-    simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
-      MSG_host_create_(&host);
-    });
-    MSG_HOST_LEVEL = simgrid::s4u::Host::extension_create([](void *p) {
-      __MSG_host_priv_free((msg_host_priv_t) p);
-    });
 
+    simgrid::MsgHostExt::EXTENSION_ID = simgrid::s4u::Host::extension_create<simgrid::MsgHostExt>();
+    simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
+      host.extension_set<simgrid::MsgHostExt>(new simgrid::MsgHostExt());
+    });
   }
 
   if(MC_is_active()){

@@ -12,13 +12,23 @@
 #include "src/kernel/activity/SynchroExec.hpp"
 #include "src/kernel/activity/SynchroComm.hpp"
 
+#include <xbt/Extendable.hpp>
+
 SG_BEGIN_DECL()
 
 /**************** datatypes **********************************/
-/********************************* Host **************************************/
-typedef struct s_msg_host_priv {
-  std::vector<int> *file_descriptor_table;
-} s_msg_host_priv_t;
+/**************************** Host Extension *********************************/
+namespace simgrid {
+class MsgHostExt {
+public:
+  static simgrid::xbt::Extension<s4u::Host, MsgHostExt> EXTENSION_ID;
+
+  ~MsgHostExt() {
+    delete file_descriptor_table;
+  }
+  std::vector<int>* file_descriptor_table = nullptr; // Created lazily on need
+};
+}
 /********************************* Task **************************************/
 
 typedef struct simdata_task {
@@ -109,7 +119,6 @@ XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 /*************************************************************/
 XBT_PRIVATE msg_host_t __MSG_host_create(sg_host_t host);
 XBT_PRIVATE msg_storage_t __MSG_storage_create(smx_storage_t storage);
-XBT_PRIVATE void __MSG_host_priv_free(msg_host_priv_t priv);
 XBT_PRIVATE void __MSG_storage_destroy(msg_storage_priv_t host);
 XBT_PRIVATE void __MSG_file_destroy(msg_file_priv_t host);
 

@@ -116,14 +116,6 @@ void sg_host_user_destroy(sg_host_t host) {
   host->extension_set(USER_HOST_LEVEL, nullptr);
 }
 
-// ========== MSG Layer ==============
-msg_host_priv_t sg_host_msg(sg_host_t host) {
-  return (msg_host_priv_t) host->extension(MSG_HOST_LEVEL);
-}
-void sg_host_msg_set(sg_host_t host, msg_host_priv_t smx_host) {
-  host->extension_set(MSG_HOST_LEVEL, smx_host);
-}
-
 // ========== Simix layer =============
 smx_host_priv_t sg_host_simix(sg_host_t host){
   return host->extension<simgrid::simix::Host>();

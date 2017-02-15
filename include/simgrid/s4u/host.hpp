@@ -131,7 +131,6 @@ public:
 
 }} // namespace simgrid::s4u
 
-extern int MSG_HOST_LEVEL;
 extern int USER_HOST_LEVEL;
 
 #endif /* SIMGRID_S4U_HOST_HPP */

@@ -26,7 +26,6 @@ XBT_LOG_EXTERNAL_CATEGORY(surf_route);
 
 std::unordered_map<std::string, simgrid::s4u::Host*> host_list; // FIXME: move it to Engine
 
-int MSG_HOST_LEVEL = -1;
 int USER_HOST_LEVEL = -1;
 
 namespace simgrid {

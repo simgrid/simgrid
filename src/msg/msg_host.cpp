@@ -11,6 +11,8 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 
+simgrid::xbt::Extension<simgrid::s4u::Host, simgrid::MsgHostExt> simgrid::MsgHostExt::EXTENSION_ID;
+
 int sg_storage_max_file_descriptors = 1024;
 
 /** @addtogroup m_host_management
@@ -23,17 +25,6 @@ int sg_storage_max_file_descriptors = 1024;
  */
 
 /********************************* Host **************************************/
-msg_host_t __MSG_host_create(sg_host_t host) // FIXME: don't return our parameter
-{
-  msg_host_priv_t priv = xbt_new0(s_msg_host_priv_t, 1);
-
-  priv->file_descriptor_table = nullptr;
-
-  sg_host_msg_set(host,priv);
-
-  return host;
-}
-
 /** \ingroup m_host_management
  * \brief Finds a msg_host_t using its name.
  *
@@ -98,17 +89,6 @@ void MSG_host_on(msg_host_t host)
 void MSG_host_off(msg_host_t host)
 {
   host->turnOff();
-}
-
-/*
- * \brief Frees private data of a host (internal call only)
- */
-void __MSG_host_priv_free(msg_host_priv_t priv)
-{
-  if (priv == nullptr)
-    return;
-  delete priv->file_descriptor_table;
-  free(priv);
 }
 
 /** \ingroup m_host_management
@@ -305,8 +285,8 @@ xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
 }
 
 int __MSG_host_get_file_descriptor_id(msg_host_t host){
-  msg_host_priv_t priv = sg_host_msg(host);
-  if(!priv->file_descriptor_table){
+  simgrid::MsgHostExt* priv = host->extension<simgrid::MsgHostExt>();
+  if (priv->file_descriptor_table == nullptr) {
     priv->file_descriptor_table = new std::vector<int>(sg_storage_max_file_descriptors);
     std::iota (priv->file_descriptor_table->rbegin(), priv->file_descriptor_table->rend(), 0); // Fill with ..., 1, 0.
   }
@@ -317,6 +297,5 @@ int __MSG_host_get_file_descriptor_id(msg_host_t host){
 }
 
 void __MSG_host_release_file_descriptor_id(msg_host_t host, int id){
-  msg_host_priv_t priv = sg_host_msg(host);
-  priv->file_descriptor_table->push_back(id);
+  host->extension<simgrid::MsgHostExt>()->file_descriptor_table->push_back(id);
 }
