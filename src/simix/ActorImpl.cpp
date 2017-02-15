@@ -644,7 +644,7 @@ void* SIMIX_process_self_get_data()
   if (!self) {
     return nullptr;
   }
-  return SIMIX_process_get_data(self);
+  return self->data;
 }
 
 void SIMIX_process_self_set_data(void *data)
@@ -652,11 +652,6 @@ void SIMIX_process_self_set_data(void *data)
   smx_actor_t self = SIMIX_process_self();
 
   SIMIX_process_set_data(self, data);
-}
-
-void* SIMIX_process_get_data(smx_actor_t process)
-{
-  return process->data;
 }
 
 void SIMIX_process_set_data(smx_actor_t process, void *data)

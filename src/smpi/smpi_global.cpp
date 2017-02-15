@@ -133,8 +133,7 @@ void smpi_process_init(int *argc, char ***argv)
     data->instance_id = instance_id;
     data->replaying   = false;
 
-    simdata_process_t simdata = static_cast<simdata_process_t>(simcall_process_get_data(proc));
-    simdata->data             = data;
+    static_cast<simdata_process_t>(proc->data)->data = data;
 
     if (*argc > 3) {
       memmove(&(*argv)[0], &(*argv)[2], sizeof(char *) * (*argc - 2));
@@ -227,7 +226,7 @@ int smpi_global_size()
 
 smpi_process_data_t smpi_process_data()
 {
-  simdata_process_t simdata = static_cast<simdata_process_t>(SIMIX_process_self_get_data());
+  simdata_process_t simdata = static_cast<simdata_process_t>(SIMIX_process_self()->data);
   return static_cast<smpi_process_data_t>(simdata->data);
 }
 
@@ -400,8 +399,8 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
     ){
        XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
 
-
-       smpi_switch_data_segment((static_cast<smpi_process_data_t>((static_cast<simdata_process_t>(SIMIX_process_get_data(comm->src_proc))->data))->index));
+       smpi_switch_data_segment(
+           (static_cast<smpi_process_data_t>((static_cast<simdata_process_t>(comm->src_proc->data)->data))->index));
        tmpbuff = static_cast<void*>(xbt_malloc(buff_size));
        memcpy(tmpbuff, buff, buff_size);
   }
@@ -409,7 +408,8 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
   if((smpi_privatize_global_variables) && ((char*)comm->dst_buff >= smpi_start_data_exe)
       && ((char*)comm->dst_buff < smpi_start_data_exe + smpi_size_data_exe )){
        XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
-       smpi_switch_data_segment((static_cast<smpi_process_data_t>((static_cast<simdata_process_t>(SIMIX_process_get_data(comm->dst_proc))->data))->index));
+       smpi_switch_data_segment(
+           (static_cast<smpi_process_data_t>((static_cast<simdata_process_t>(comm->dst_proc->data)->data))->index));
   }
 
   memcpy(comm->dst_buff, tmpbuff, buff_size);

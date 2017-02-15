@@ -253,17 +253,6 @@ int simcall_process_count()
 
 /**
  * \ingroup simix_process_management
- * \brief Return the user data of a #smx_actor_t.
- * \param process a SIMIX process
- * \return the user data of this process
- */
-void* simcall_process_get_data(smx_actor_t process)
-{
-  return SIMIX_process_get_data(process);
-}
-
-/**
- * \ingroup simix_process_management
  * \brief Set the user data of a #smx_actor_t.
  *
  * This functions sets the user data associated to \a process.
