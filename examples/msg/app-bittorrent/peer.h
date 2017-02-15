@@ -18,7 +18,7 @@ typedef struct s_peer {
   int id;                       //peer id
 
   unsigned int bitfield;        //list of pieces the peer has.
-  unsigned long bitfield_blocks; //list of blocks the peer has.
+  unsigned long long bitfield_blocks; //list of blocks the peer has.
   short *pieces_count;          //number of peers that have each piece.
 
   unsigned int current_pieces;   //current pieces the peer is downloading

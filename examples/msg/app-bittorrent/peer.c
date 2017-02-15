@@ -229,7 +229,7 @@ peer_t peer_init(int id, int seed)
 
   if (seed) {
     peer->bitfield = (1<<FILE_PIECES)-1;
-    peer->bitfield_blocks = (1L<<(FILE_PIECES * PIECES_BLOCKS))-1;
+    peer->bitfield_blocks = (1ULL<<(FILE_PIECES * PIECES_BLOCKS))-1;
   } else {
     peer->bitfield = 0;
     peer->bitfield_blocks = 0;
@@ -694,7 +694,7 @@ void update_bitfield_blocks(peer_t peer, int index, int block_index, int block_l
   xbt_assert((index >= 0 && index <= FILE_PIECES), "Wrong piece.");
   xbt_assert((block_index >= 0 && block_index <= PIECES_BLOCKS), "Wrong block : %d.", block_index);
   for (int i = block_index; i < (block_index + block_length); i++) {
-    peer->bitfield_blocks |= (1L<<(index * PIECES_BLOCKS + i));
+    peer->bitfield_blocks |= (1ULL<<(index * PIECES_BLOCKS + i));
   }
 }
 
@@ -702,7 +702,7 @@ void update_bitfield_blocks(peer_t peer, int index, int block_index, int block_l
 int piece_complete(peer_t peer, int index)
 {
   for (int i = 0; i < PIECES_BLOCKS; i++) {
-    if (!(peer->bitfield_blocks & 1L<<(index * PIECES_BLOCKS + i))) {
+    if (!(peer->bitfield_blocks & 1ULL<<(index * PIECES_BLOCKS + i))) {
       return 0;
     }
   }
@@ -713,7 +713,7 @@ int piece_complete(peer_t peer, int index)
 int get_first_block(peer_t peer, int piece)
 {
   for (int i = 0; i < PIECES_BLOCKS; i++) {
-    if (!(peer->bitfield_blocks & 1L<<(piece * PIECES_BLOCKS + i))) {
+    if (!(peer->bitfield_blocks & 1ULL<<(piece * PIECES_BLOCKS + i))) {
       return i;
     }
   }
