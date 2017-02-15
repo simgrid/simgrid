@@ -22,6 +22,7 @@ void TRACE_smpi_set_category(const char *category)
 }
 
 /* PMPI User level calls */
+extern "C" { // Obviously, the C MPI interface should use the C linkage
 
 int PMPI_Init(int *argc, char ***argv)
 {
@@ -3345,3 +3346,4 @@ int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size)
   return MPI_SUCCESS;
 }
 
+} // extern "C"

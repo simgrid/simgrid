@@ -10,7 +10,6 @@
 #include "private.h"
 #include "xbt.h"
 
-
 //TODO : remove all this.
 static xbt_dict_t comm_lookup = nullptr;
 static xbt_dict_t group_lookup = nullptr;
@@ -251,6 +250,8 @@ static void free_##name(int id) {\
 type smpi_##name##_f2c(int id){\
   return smpi_f2c<type>(id, name##_lookup);\
 }
+
+extern "C" { // This should really use the C linkage to be usable from Fortran
 
 SMPI_F2C_C2F(MPI_Comm, comm)
 SMPI_F2C_C2F(MPI_Group, group)
@@ -1770,3 +1771,4 @@ void mpi_file_write_ ( int* fh, void* buf, int* count, int* datatype, MPI_Status
   *ierr=  MPI_File_write(reinterpret_cast<MPI_File>(*fh), buf, *count, smpi_type_f2c(*datatype), status);
 }
 
+} // extern "C"

@@ -30,6 +30,7 @@ return P##name args2 ; \
 
 
 /* MPI User level calls */
+extern "C" { // Obviously, the C MPI interface should use the C linkage
 
 WRAPPED_PMPI_CALL(double, MPI_Wtick,(void),())
 WRAPPED_PMPI_CALL(double, MPI_Wtime,(void),())
@@ -316,3 +317,4 @@ UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Win_unlock,(int rank, MPI_Win win),(rank
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(MPI_Errhandler, MPI_Errhandler_f2c,(MPI_Fint errhandler),(errhandler))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(MPI_Fint, MPI_Errhandler_c2f,(MPI_Errhandler errhandler),(errhandler))
 
+} // extern "C"
