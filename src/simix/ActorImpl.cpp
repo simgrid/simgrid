@@ -221,7 +221,6 @@ smx_actor_t SIMIX_process_create(
                           xbt_dict_t properties,
                           smx_actor_t parent_process)
 {
-  smx_actor_t process = nullptr;
 
   XBT_DEBUG("Start process %s on host '%s'", name, host->cname());
 
@@ -229,67 +228,63 @@ smx_actor_t SIMIX_process_create(
     XBT_WARN("Cannot launch process '%s' on failed host '%s'", name, host->cname());
     return nullptr;
   }
-  else {
-    process = new simgrid::simix::ActorImpl();
 
-    xbt_assert(code && host != nullptr, "Invalid parameters");
-    /* Process data */
-    process->pid = simix_process_maxpid++;
-    process->name = simgrid::xbt::string(name);
-    process->host = host;
-    process->data = data;
-    process->comms = xbt_fifo_new();
-    process->simcall.issuer = process;
-    /* Initiliaze data segment to default value */
-    SIMIX_segment_index_set(process, -1);
+  smx_actor_t process = new simgrid::simix::ActorImpl();
 
-    if (parent_process != nullptr) {
-      process->ppid = parent_process->pid;
-      /* SMPI process have their own data segment and each other inherit from their father */
+  xbt_assert(code && host != nullptr, "Invalid parameters");
+  /* Process data */
+  process->pid            = simix_process_maxpid++;
+  process->name           = simgrid::xbt::string(name);
+  process->host           = host;
+  process->data           = data;
+  process->comms          = xbt_fifo_new();
+  process->simcall.issuer = process;
+  /* Initiliaze data segment to default value */
+  SIMIX_segment_index_set(process, -1);
+
+  if (parent_process != nullptr) {
+    process->ppid = parent_process->pid;
+/* SMPI process have their own data segment and each other inherit from their father */
 #if HAVE_SMPI
-       if( smpi_privatize_global_variables) {
-         if (parent_process->pid != 0) {
-           SIMIX_segment_index_set(process, parent_process->segment_index);
-         } else {
-           SIMIX_segment_index_set(process, process->pid - 1);
-         }
-       }
+    if (smpi_privatize_global_variables) {
+      if (parent_process->pid != 0) {
+        SIMIX_segment_index_set(process, parent_process->segment_index);
+      } else {
+        SIMIX_segment_index_set(process, process->pid - 1);
+      }
+    }
 #endif
-     } else {
-       process->ppid = -1;
-     }
-
-     process->auto_restart = false;
-     process->code         = code;
-
-     XBT_VERB("Create context %s", process->name.c_str());
-     process->context = SIMIX_context_new(std::move(code), simix_global->cleanup_process_function, process);
-
-     /* Add properties */
-     process->properties = properties;
-
-     /* Add the process to it's host process list */
-     xbt_swag_insert(process, host->extension<simgrid::simix::Host>()->process_list);
-
-     XBT_DEBUG("Start context '%s'", process->name.c_str());
-
-     /* Now insert it in the global process list and in the process to run list */
-     simix_global->process_list[process->pid] = process;
-     XBT_DEBUG("Inserting %s(%s) in the to_run list", process->cname(), host->cname());
-     xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, process);
-
-     /* Tracing the process creation */
-     TRACE_msg_process_create(process->cname(), process->pid, process->host);
+  } else {
+    process->ppid = -1;
   }
+
+  process->auto_restart = false;
+  process->code         = code;
+
+  XBT_VERB("Create context %s", process->name.c_str());
+  process->context = SIMIX_context_new(std::move(code), simix_global->cleanup_process_function, process);
+
+  /* Add properties */
+  process->properties = properties;
+
+  /* Add the process to it's host process list */
+  xbt_swag_insert(process, host->extension<simgrid::simix::Host>()->process_list);
+
+  XBT_DEBUG("Start context '%s'", process->name.c_str());
+
+  /* Now insert it in the global process list and in the process to run list */
+  simix_global->process_list[process->pid] = process;
+  XBT_DEBUG("Inserting %s(%s) in the to_run list", process->cname(), host->cname());
+  xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, process);
+
+  /* Tracing the process creation */
+  TRACE_msg_process_create(process->cname(), process->pid, process->host);
+
   return process;
 }
 
-smx_actor_t SIMIX_process_attach(
-  const char* name,
-  void *data,
-  const char* hostname,
-  xbt_dict_t properties,
-  smx_actor_t parent_process)
+smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostname, xbt_dict_t properties,
+                                 smx_actor_t parent_process)
 {
   // This is mostly a copy/paste from SIMIX_process_new(),
   // it'd be nice to share some code between those two functions.
