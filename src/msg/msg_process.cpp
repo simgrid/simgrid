@@ -144,7 +144,7 @@ msg_process_t MSG_process_create_with_environment(
   MsgActorExt* simdata = new MsgActorExt();
 
   /* Simulator data for MSG */
-  simdata->m_host = host;
+  simdata->host_ = host;
   simdata->data = data;
 
   /* Let's create the process: SIMIX may decide to start it right now,
@@ -175,7 +175,7 @@ msg_process_t MSG_process_attach(const char *name, void *data, msg_host_t host, 
   MsgActorExt* msgExt = new MsgActorExt();
 
   /* Simulator data for MSG */
-  msgExt->m_host = host;
+  msgExt->host_  = host;
   msgExt->data   = data;
 
   /* Let's create the process: SIMIX may decide to start it right now, even before returning the flow control to us */
@@ -227,8 +227,8 @@ msg_error_t MSG_process_join(msg_process_t process, double timeout){
 msg_error_t MSG_process_migrate(msg_process_t process, msg_host_t host)
 {
   MsgActorExt* msgExt = (MsgActorExt*)process->data;
-  msgExt->m_host      = host;
-  msg_host_t now      = msgExt->m_host;
+  msgExt->host_       = host;
+  msg_host_t now      = msgExt->host_;
   TRACE_msg_process_change_host(process, now, host);
   simcall_process_set_host(process, host);
   return MSG_OK;
@@ -294,7 +294,7 @@ msg_host_t MSG_process_get_host(msg_process_t process)
   else {
     msgExt = (MsgActorExt*)process->data;
   }
-  return msgExt ? msgExt->m_host : nullptr;
+  return msgExt ? msgExt->host_ : nullptr;
 }
 
 /** \ingroup m_process_management
