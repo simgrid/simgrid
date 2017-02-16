@@ -44,8 +44,7 @@ void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
     msg_global->process_data_cleanup(msg_actor->data);
   }
 
-  // free the MSG process
-  xbt_free(msg_actor);
+  delete msg_actor;
   SIMIX_process_cleanup(smx_actor);
 }
 
