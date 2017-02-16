@@ -410,7 +410,7 @@ Benchmark results on CRAY T3E
 #endif
 
 typedef enum {MPIM_SHORT, MPIM_INT, MPIM_LONG, MPIM_UNSIGNED_SHORT,
-              MPIM_UNSIGNED, MPIM_UNSIGNED_LONG, MPIM_FLOAT,
+              MPIM_UNSIGNED, MPIM_UNSIGNED_LONG, MPIM_UNSIGNED_LONG_LONG, MPIM_FLOAT,
               MPIM_DOUBLE, MPIM_BYTE} MPIM_Datatype;
 
 typedef enum {MPIM_MAX, MPIM_MIN, MPIM_SUM, MPIM_PROD,
@@ -467,6 +467,7 @@ MPI_I_DO_OP_C_INTEGER( MPI_I_do_op_long,   long)
 MPI_I_DO_OP_C_INTEGER( MPI_I_do_op_ushort, unsigned short)
 MPI_I_DO_OP_C_INTEGER( MPI_I_do_op_uint,   unsigned int)
 MPI_I_DO_OP_C_INTEGER( MPI_I_do_op_ulong,  unsigned long)
+MPI_I_DO_OP_C_INTEGER( MPI_I_do_op_ulonglong,  unsigned long long)
 MPI_I_DO_OP_FP(        MPI_I_do_op_float,  float)
 MPI_I_DO_OP_FP(        MPI_I_do_op_double, double)
 MPI_I_DO_OP_BYTE(      MPI_I_do_op_byte,   char)
@@ -487,6 +488,8 @@ static void MPI_I_do_op(void* b1, void* b2, void* rslt, int cnt,
                    MPI_I_DO_OP_CALL(MPI_I_do_op_uint,   unsigned int)
   case MPIM_UNSIGNED_LONG:
                    MPI_I_DO_OP_CALL(MPI_I_do_op_ulong,  unsigned long)
+  case MPIM_UNSIGNED_LONG_LONG:
+                   MPI_I_DO_OP_CALL(MPI_I_do_op_ulonglong,  unsigned long long)
   case MPIM_FLOAT : MPI_I_DO_OP_CALL(MPI_I_do_op_float,  float)
   case MPIM_DOUBLE: MPI_I_DO_OP_CALL(MPI_I_do_op_double, double)
   case MPIM_BYTE  : MPI_I_DO_OP_CALL(MPI_I_do_op_byte,   char)
@@ -513,9 +516,12 @@ static int MPI_I_anyReduce(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype
   else if(mpi_datatype==MPI_UNSIGNED_SHORT) datatype=MPIM_UNSIGNED_SHORT;
   else if(mpi_datatype==MPI_UNSIGNED      ) datatype=MPIM_UNSIGNED;
   else if(mpi_datatype==MPI_UNSIGNED_LONG ) datatype=MPIM_UNSIGNED_LONG;
+  else if(mpi_datatype==MPI_UNSIGNED_LONG_LONG ) datatype=MPIM_UNSIGNED_LONG_LONG;
   else if(mpi_datatype==MPI_FLOAT         ) datatype=MPIM_FLOAT;
   else if(mpi_datatype==MPI_DOUBLE        ) datatype=MPIM_DOUBLE;
   else if(mpi_datatype==MPI_BYTE          ) datatype=MPIM_BYTE;
+  else
+   THROWF(arg_error,0, "reduce rab algorithm can't be used with this datatype ! ");
 
   if     (mpi_op==MPI_MAX     ) op=MPIM_MAX;
   else if(mpi_op==MPI_MIN     ) op=MPIM_MIN;
@@ -546,7 +552,7 @@ static int MPI_I_anyReduce(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype
          new_prot = count >= Lsh[is_all][ss]; break;
         case MPIM_INT:    case MPIM_UNSIGNED:
          new_prot = count >= Lin[is_all][ss]; break;
-        case MPIM_LONG:   case MPIM_UNSIGNED_LONG:
+        case MPIM_LONG:   case MPIM_UNSIGNED_LONG: case MPIM_UNSIGNED_LONG_LONG:
          new_prot = count >= Llg[is_all][ss]; break;
      default:
         break;
