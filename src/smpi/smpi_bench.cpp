@@ -613,7 +613,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
       char* dumb = (char*)calloc(1, smpi_shared_malloc_blocksize);
       ssize_t err = write(smpi_shared_malloc_bogusfile, dumb, smpi_shared_malloc_blocksize);
       if(err<0)
-        xbt_die("could ot write bogus file for shared malloc");
+        xbt_die("Could not write bogus file for shared malloc");
       free(dumb);
     }
 
