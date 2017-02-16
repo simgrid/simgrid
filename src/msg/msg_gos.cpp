@@ -45,7 +45,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
 msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeout)
 {
   simdata_task_t simdata = task->simdata;
-  simdata_process_t p_simdata = static_cast<simdata_process_t>(SIMIX_process_self_get_data());
+  MsgActorExt* p_simdata = static_cast<MsgActorExt*>(SIMIX_process_self_get_data());
   e_smx_state_t comp_state;
   msg_error_t status = MSG_OK;
 
@@ -310,7 +310,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *al
   /* Prepare the task to send */
   t_simdata = task->simdata;
   t_simdata->sender = myself;
-  t_simdata->source = (static_cast<simdata_process_t>(SIMIX_process_self_get_data()))->m_host;
+  t_simdata->source = (static_cast<MsgActorExt*>(SIMIX_process_self_get_data()))->m_host;
   t_simdata->setUsed();
   t_simdata->comm = nullptr;
   msg_global->sent_msg++;
@@ -775,7 +775,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   msg_error_t ret = MSG_OK;
   simdata_task_t t_simdata = nullptr;
   msg_process_t process = MSG_process_self();
-  simdata_process_t p_simdata = static_cast<simdata_process_t>(SIMIX_process_self_get_data());
+  MsgActorExt* p_simdata           = static_cast<MsgActorExt*>(process->data);
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(alias);
 
   int call_end = TRACE_msg_task_put_start(task);    //must be after CHECK_HOST()
@@ -783,7 +783,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   /* Prepare the task to send */
   t_simdata = task->simdata;
   t_simdata->sender = process;
-  t_simdata->source = (static_cast<simdata_process_t>(SIMIX_process_self_get_data()))   ->m_host;
+  t_simdata->source = (static_cast<MsgActorExt*>(SIMIX_process_self_get_data()))->m_host;
 
   t_simdata->setUsed();
 

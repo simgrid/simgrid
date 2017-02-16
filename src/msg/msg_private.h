@@ -75,14 +75,15 @@ typedef struct simdata_file {
 
 /******************************* Process *************************************/
 
-typedef struct simdata_process {
-  msg_host_t m_host;              /* the host on which the process is running */
-  smx_activity_t waiting_action;
-  msg_task_t waiting_task;
-  msg_error_t last_errno;       /* the last value returned by a MSG_function */
+class MsgActorExt {
+public:
+  msg_host_t m_host; /* the host on which the process is running */
+  smx_activity_t waiting_action = nullptr;
+  msg_task_t waiting_task       = nullptr;
+  msg_error_t last_errno        = MSG_OK; /* the last value returned by a MSG_function */
 
-  void* data;                   /* user data */
-} s_simdata_process_t, *simdata_process_t;
+  void* data = nullptr; /* user data */
+};
 
 typedef struct process_arg {
   const char *name;

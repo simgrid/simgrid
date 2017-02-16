@@ -24,29 +24,29 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (proc
  * \brief Cleans the MSG data of a process.
  * \param smx_proc a SIMIX process
  */
-void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_proc)
+void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
 {
-  simdata_process_t msg_proc;
+  MsgActorExt* msg_actor;
 
   // get the MSG process from the SIMIX process
-  if (smx_proc == SIMIX_process_self()) {
+  if (smx_actor == SIMIX_process_self()) {
     /* avoid a SIMIX request if this function is called by the process itself */
-    msg_proc = (simdata_process_t) SIMIX_process_self_get_data();
+    msg_actor = (MsgActorExt*)SIMIX_process_self_get_data();
     SIMIX_process_self_set_data(nullptr);
   } else {
-    msg_proc = (simdata_process_t)smx_proc->data;
-    simcall_process_set_data(smx_proc, nullptr);
+    msg_actor = (MsgActorExt*)smx_actor->data;
+    simcall_process_set_data(smx_actor, nullptr);
   }
 
-  TRACE_msg_process_destroy(smx_proc->name.c_str(), smx_proc->pid);
+  TRACE_msg_process_destroy(smx_actor->name.c_str(), smx_actor->pid);
   // free the data if a function was provided
-  if (msg_proc && msg_proc->data && msg_global->process_data_cleanup) {
-    msg_global->process_data_cleanup(msg_proc->data);
+  if (msg_actor && msg_actor->data && msg_global->process_data_cleanup) {
+    msg_global->process_data_cleanup(msg_actor->data);
   }
 
   // free the MSG process
-  xbt_free(msg_proc);
-  SIMIX_process_cleanup(smx_proc);
+  xbt_free(msg_actor);
+  SIMIX_process_cleanup(smx_actor);
 }
 
 /* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
@@ -141,20 +141,16 @@ msg_process_t MSG_process_create_with_environment(
   msg_host_t host, xbt_dict_t properties)
 {
   xbt_assert(code != nullptr && host != nullptr, "Invalid parameters: host and code params must not be nullptr");
-  simdata_process_t simdata = xbt_new0(s_simdata_process_t, 1);
-  msg_process_t process;
+  MsgActorExt* simdata = new MsgActorExt();
 
   /* Simulator data for MSG */
-  simdata->waiting_action = nullptr;
-  simdata->waiting_task = nullptr;
   simdata->m_host = host;
   simdata->data = data;
   simdata->last_errno = MSG_OK;
 
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
-  process = simcall_process_create(
-    name, std::move(code), simdata, host, -1,  properties, 0);
+  msg_process_t process = simcall_process_create(name, std::move(code), simdata, host, -1, properties, 0);
 
   if (!process) {
     /* Undo everything we have just changed */
@@ -183,18 +179,14 @@ static int MSG_maestro(int argc, char** argv)
 msg_process_t MSG_process_attach(const char *name, void *data, msg_host_t host, xbt_dict_t properties)
 {
   xbt_assert(host != nullptr, "Invalid parameters: host and code params must not be nullptr");
-  simdata_process_t simdata = xbt_new0(s_simdata_process_t, 1);
-  msg_process_t process;
+  MsgActorExt* msgExt = new MsgActorExt();
 
   /* Simulator data for MSG */
-  simdata->waiting_action = nullptr;
-  simdata->waiting_task = nullptr;
-  simdata->m_host = host;
-  simdata->data = data;
-  simdata->last_errno = MSG_OK;
+  msgExt->m_host = host;
+  msgExt->data   = data;
 
   /* Let's create the process: SIMIX may decide to start it right now, even before returning the flow control to us */
-  process = SIMIX_process_attach(name, simdata, host->cname(), properties, nullptr);
+  msg_process_t process = SIMIX_process_attach(name, msgExt, host->cname(), properties, nullptr);
   if (!process)
     xbt_die("Could not attach");
   simcall_process_on_exit(process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,process);
@@ -241,9 +233,9 @@ msg_error_t MSG_process_join(msg_process_t process, double timeout){
  */
 msg_error_t MSG_process_migrate(msg_process_t process, msg_host_t host)
 {
-  simdata_process_t simdata = (simdata_process_t)process->data;
-  simdata->m_host = host;
-  msg_host_t now = simdata->m_host;
+  MsgActorExt* msgExt = (MsgActorExt*)process->data;
+  msgExt->m_host      = host;
+  msg_host_t now      = msgExt->m_host;
   TRACE_msg_process_change_host(process, now, host);
   simcall_process_set_host(process, host);
   return MSG_OK;
@@ -265,9 +257,9 @@ void* MSG_process_get_data(msg_process_t process)
   xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
 
   /* get from SIMIX the MSG process data, and then the user data */
-  simdata_process_t simdata = (simdata_process_t)process->data;
-  if (simdata)
-    return simdata->data;
+  MsgActorExt* msgExt = (MsgActorExt*)process->data;
+  if (msgExt)
+    return msgExt->data;
   else
     return nullptr;
 }
@@ -281,8 +273,8 @@ msg_error_t MSG_process_set_data(msg_process_t process, void *data)
 {
   xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
 
-  simdata_process_t simdata = (simdata_process_t)process->data;
-  simdata->data = data;
+  MsgActorExt* msgExt = (MsgActorExt*)process->data;
+  msgExt->data        = data;
 
   return MSG_OK;
 }
@@ -302,14 +294,14 @@ XBT_PUBLIC(void) MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup) {
  */
 msg_host_t MSG_process_get_host(msg_process_t process)
 {
-  simdata_process_t simdata;
+  MsgActorExt* msgExt;
   if (process == nullptr) {
-    simdata = (simdata_process_t) SIMIX_process_self_get_data();
+    msgExt = (MsgActorExt*)SIMIX_process_self_get_data();
   }
   else {
-    simdata = (simdata_process_t)process->data;
+    msgExt = (MsgActorExt*)process->data;
   }
-  return simdata ? simdata->m_host : nullptr;
+  return msgExt ? msgExt->m_host : nullptr;
 }
 
 /** \ingroup m_process_management
