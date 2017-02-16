@@ -847,8 +847,8 @@ static void action_allToAllv(const char *const *action) {
   CHECK_ACTION_PARAMS(action, 2*comm_size+2, 2)
   int sendcounts[comm_size];
   int recvcounts[comm_size];
-  int senddisps[comm_size];;
-  int recvdisps[comm_size];;
+  int senddisps[comm_size];
+  int recvdisps[comm_size];
 
   MPI_Datatype MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;
 
