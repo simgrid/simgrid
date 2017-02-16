@@ -146,7 +146,6 @@ msg_process_t MSG_process_create_with_environment(
   /* Simulator data for MSG */
   simdata->m_host = host;
   simdata->data = data;
-  simdata->last_errno = MSG_OK;
 
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
@@ -161,12 +160,6 @@ msg_process_t MSG_process_create_with_environment(
     simcall_process_on_exit(process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,process);
   }
   return process;
-}
-
-static int MSG_maestro(int argc, char** argv)
-{
-  int res = MSG_main();
-  return res;
 }
 
 /* Become a process in the simulation

@@ -111,11 +111,6 @@ const char* SIMIX_host_self_get_name()
   return host->cname();
 }
 
-void _SIMIX_host_free_process_arg(void *data)
-{
-  smx_process_arg_t arg = *(static_cast<smx_process_arg_t*>(data));
-  delete arg;
-}
 /**
  * \brief Add a process to the list of the processes that the host will restart when it comes back
  * This function add a process to the list of the processes that will be restarted when the host comes
