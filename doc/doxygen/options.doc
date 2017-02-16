@@ -1046,7 +1046,7 @@ Here is an example:
 
 \subsection options_model_smpi_shared_malloc smpi/shared-malloc: Factorize malloc()s
 
-\b Default: yes
+\b Default: global
 
 If your simulation consumes too much memory, you may want to modify
 your code so that the working areas are shared by all MPI ranks. For
@@ -1057,14 +1057,25 @@ lot of memory so this is still desirable for some studies. For more on
 the motivation for that feature, please refer to the 
 <a href="https://simgrid.github.io/SMPI_CourseWare/topic_understanding_performance/matrixmultiplication/">relevant
 section</a> of the SMPI CourseWare (see Activity #2.2 of the pointed
-assignment).
+assignment). In practice, change the call to malloc() and free() into
+SMPI_SHARED_MALLOC() and SMPI_SHARED_FREE().
 
-SMPI can use shared memory by calling shm_* functions; this might speed up the simulation.
-This opens or creates a new POSIX shared memory object, kept in RAM, in /dev/shm.
+SMPI provides 2 algorithms for this feature. The first one, called \c
+local, allocates one bloc per call to SMPI_SHARED_MALLOC() in your
+code (each call location gets its own bloc) and this bloc is shared
+amongst all MPI ranks.  This is implemented with the shm_* functions
+to create a new POSIX shared memory object (kept in RAM, in /dev/shm)
+for each shared bloc.
 
-If you want to disable this behavior (for example for debugging
-purposes), set its value to "no" or "0".
+With the \c global algorithm, each call to SMPI_SHARED_MALLOC()
+returns a new adress, but it only points to a shadow bloc: its memory
+area is mapped on a 1MiB file on disk. If the returned bloc is of size
+N MiB, then the same file is mapped N times to cover the whole bloc. 
+At the end, no matter how many SMPI_SHARED_MALLOC you do, this will
+only consume 1 MiB in memory.
 
+You can disable this behavior and come back to regular mallocs (for
+example for debugging purposes) using \c "no" as a value.
 
 \subsection options_model_smpi_wtime smpi/wtime: Inject constant times for calls to MPI_Wtime
 

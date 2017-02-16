@@ -770,7 +770,18 @@ static void smpi_init_options(){
     smpi_privatize_global_variables = xbt_cfg_get_boolean("smpi/privatize-global-variables");
     if (smpi_cpu_threshold < 0)
       smpi_cpu_threshold = DBL_MAX;
-    smpi_cfg_shared_malloc = xbt_cfg_get_boolean("smpi/shared-malloc");
+
+    char* val = xbt_cfg_get_string("smpi/shared-malloc");
+    if (!strcasecmp(val, "yes") || !strcmp(val, "1") || !strcasecmp(val, "on") || !strcasecmp(val, "global")) {
+      smpi_cfg_shared_malloc = shmalloc_global;
+    } else if (!strcasecmp(val, "local")) {
+      smpi_cfg_shared_malloc = shmalloc_local;
+    } else if (!strcasecmp(val, "no") || !strcmp(val, "0") || !strcasecmp(val, "off")) {
+      smpi_cfg_shared_malloc = shmalloc_none;
+    } else {
+      xbt_die("Invalid value '%s' for option smpi/shared-malloc. Possible values: 'on' or 'global', 'local', 'off'",
+              val);
+    }
 }
 
 int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
