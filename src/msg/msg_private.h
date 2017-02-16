@@ -75,6 +75,7 @@ typedef struct simdata_file {
 
 class MsgActorExt {
 public:
+  explicit MsgActorExt(void* d) : data(d) {}
   msg_error_t errno_ = MSG_OK;  /* the last value returned by a MSG_function */
   void* data = nullptr; /* user data */
 };

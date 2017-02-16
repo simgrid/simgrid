@@ -141,10 +141,7 @@ msg_process_t MSG_process_create_with_environment(
   msg_host_t host, xbt_dict_t properties)
 {
   xbt_assert(code != nullptr && host != nullptr, "Invalid parameters: host and code params must not be nullptr");
-  MsgActorExt* msgExt = new MsgActorExt();
-
-  /* Simulator data for MSG */
-  msgExt->data = data;
+  MsgActorExt* msgExt = new MsgActorExt(data);
 
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
@@ -170,13 +167,9 @@ msg_process_t MSG_process_create_with_environment(
 msg_process_t MSG_process_attach(const char *name, void *data, msg_host_t host, xbt_dict_t properties)
 {
   xbt_assert(host != nullptr, "Invalid parameters: host and code params must not be nullptr");
-  MsgActorExt* msgExt = new MsgActorExt();
-
-  /* Simulator data for MSG */
-  msgExt->data   = data;
 
   /* Let's create the process: SIMIX may decide to start it right now, even before returning the flow control to us */
-  msg_process_t process = SIMIX_process_attach(name, msgExt, host->cname(), properties, nullptr);
+  msg_process_t process = SIMIX_process_attach(name, new MsgActorExt(data), host->cname(), properties, nullptr);
   if (!process)
     xbt_die("Could not attach");
   simcall_process_on_exit(process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,process);
