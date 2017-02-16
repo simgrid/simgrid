@@ -307,7 +307,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *al
   /* Prepare the task to send */
   t_simdata = task->simdata;
   t_simdata->sender = myself;
-  t_simdata->source = (static_cast<MsgActorExt*>(SIMIX_process_self_get_data()))->host_;
+  t_simdata->source = MSG_host_self();
   t_simdata->setUsed();
   t_simdata->comm = nullptr;
   msg_global->sent_msg++;
@@ -779,7 +779,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   /* Prepare the task to send */
   t_simdata = task->simdata;
   t_simdata->sender = process;
-  t_simdata->source = (static_cast<MsgActorExt*>(SIMIX_process_self_get_data()))->host_;
+  t_simdata->source = MSG_host_self();
 
   t_simdata->setUsed();
 

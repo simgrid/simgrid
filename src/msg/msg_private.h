@@ -75,7 +75,6 @@ typedef struct simdata_file {
 
 class MsgActorExt {
 public:
-  msg_host_t host_; /* the host on which the process is running */
   msg_error_t errno_ = MSG_OK;  /* the last value returned by a MSG_function */
   void* data = nullptr; /* user data */
 };

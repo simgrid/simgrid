@@ -141,19 +141,17 @@ msg_process_t MSG_process_create_with_environment(
   msg_host_t host, xbt_dict_t properties)
 {
   xbt_assert(code != nullptr && host != nullptr, "Invalid parameters: host and code params must not be nullptr");
-  MsgActorExt* simdata = new MsgActorExt();
+  MsgActorExt* msgExt = new MsgActorExt();
 
   /* Simulator data for MSG */
-  simdata->host_ = host;
-  simdata->data = data;
+  msgExt->data = data;
 
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
-  msg_process_t process = simcall_process_create(name, std::move(code), simdata, host, -1, properties, 0);
+  msg_process_t process = simcall_process_create(name, std::move(code), msgExt, host, -1, properties, 0);
 
-  if (!process) {
-    /* Undo everything we have just changed */
-    xbt_free(simdata);
+  if (!process) { /* Undo everything */
+    delete msgExt;
     return nullptr;
   }
   else {
@@ -175,7 +173,6 @@ msg_process_t MSG_process_attach(const char *name, void *data, msg_host_t host, 
   MsgActorExt* msgExt = new MsgActorExt();
 
   /* Simulator data for MSG */
-  msgExt->host_  = host;
   msgExt->data   = data;
 
   /* Let's create the process: SIMIX may decide to start it right now, even before returning the flow control to us */
@@ -226,10 +223,7 @@ msg_error_t MSG_process_join(msg_process_t process, double timeout){
  */
 msg_error_t MSG_process_migrate(msg_process_t process, msg_host_t host)
 {
-  MsgActorExt* msgExt = (MsgActorExt*)process->data;
-  msgExt->host_       = host;
-  msg_host_t now      = msgExt->host_;
-  TRACE_msg_process_change_host(process, now, host);
+  TRACE_msg_process_change_host(process, MSG_process_get_host(process), host);
   simcall_process_set_host(process, host);
   return MSG_OK;
 }
@@ -287,14 +281,11 @@ XBT_PUBLIC(void) MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup) {
  */
 msg_host_t MSG_process_get_host(msg_process_t process)
 {
-  MsgActorExt* msgExt;
   if (process == nullptr) {
-    msgExt = (MsgActorExt*)SIMIX_process_self_get_data();
+    return MSG_process_self()->host;
+  } else {
+    return process->host;
   }
-  else {
-    msgExt = (MsgActorExt*)process->data;
-  }
-  return msgExt ? msgExt->host_ : nullptr;
 }
 
 /** \ingroup m_process_management
