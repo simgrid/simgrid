@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
-#include <stdio.h>
 #include <xbt.h>
 #include <xbt/replay.h>
 #include <unordered_map>
@@ -60,7 +59,7 @@ void* smpi_get_tmp_sendbuffer(int size)
 //allocate a single buffer for all recv
 void* smpi_get_tmp_recvbuffer(int size){
   if (!smpi_process_get_replaying())
-  return xbt_malloc(size);
+    return xbt_malloc(size);
   if (recvbuffer_size<size){
     recvbuffer=static_cast<char*>(xbt_realloc(recvbuffer,size));
     recvbuffer_size=size;
@@ -76,9 +75,8 @@ void smpi_free_tmp_buffer(void* buf){
 /* Helper function */
 static double parse_double(const char *string)
 {
-  double value;
   char *endptr;
-  value = strtod(string, &endptr);
+  double value = strtod(string, &endptr);
   if (*endptr != '\0')
     THROWF(unknown_error, 0, "%s is not a double", string);
   return value;
@@ -86,7 +84,6 @@ static double parse_double(const char *string)
 
 static MPI_Datatype decode_datatype(const char *const action)
 {
-// Declared datatypes,
   switch(atoi(action)) {
     case 0:
       MPI_CURRENT_TYPE=MPI_DOUBLE;
@@ -115,16 +112,14 @@ static MPI_Datatype decode_datatype(const char *const action)
    return MPI_CURRENT_TYPE;
 }
 
-
 const char* encode_datatype(MPI_Datatype datatype, int* known)
 {
   //default type for output is set to MPI_BYTE
   // MPI_DEFAULT_TYPE is not set for output, use directly MPI_BYTE
   if(known!=nullptr)
     *known=1;
-  if (datatype==MPI_BYTE){
+  if (datatype==MPI_BYTE)
       return "";
-  }
   if(datatype==MPI_DOUBLE)
       return "0";
   if(datatype==MPI_INT)
@@ -179,24 +174,18 @@ static void action_finalize(const char *const *action)
 
 static void action_comm_size(const char *const *action)
 {
-  double clock = smpi_process_simulated_elapsed();
-
   communicator_size = parse_double(action[2]);
-  log_timed_action (action, clock);
+  log_timed_action (action, smpi_process_simulated_elapsed());
 }
 
 static void action_comm_split(const char *const *action)
 {
-  double clock = smpi_process_simulated_elapsed();
-
-  log_timed_action (action, clock);
+  log_timed_action (action, smpi_process_simulated_elapsed());
 }
 
 static void action_comm_dup(const char *const *action)
 {
-  double clock = smpi_process_simulated_elapsed();
-
-  log_timed_action (action, clock);
+  log_timed_action (action, smpi_process_simulated_elapsed());
 }
 
 static void action_compute(const char *const *action)
@@ -238,9 +227,8 @@ static void action_send(const char *const *action)
   extra->dst = dst_traced;
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
-  if (!TRACE_smpi_view_internals()) {
+  if (!TRACE_smpi_view_internals())
     TRACE_smpi_send(rank, rank, dst_traced, 0, size*smpi_datatype_size(MPI_CURRENT_TYPE));
-  }
 
   smpi_mpi_send(nullptr, size, MPI_CURRENT_TYPE, to , 0, MPI_COMM_WORLD);
 
@@ -255,7 +243,6 @@ static void action_Isend(const char *const *action)
   int to = atoi(action[2]);
   double size=parse_double(action[3]);
   double clock = smpi_process_simulated_elapsed();
-  MPI_Request request;
 
   if(action[4]) 
     MPI_CURRENT_TYPE=decode_datatype(action[4]);
@@ -271,11 +258,10 @@ static void action_Isend(const char *const *action)
   extra->dst = dst_traced;
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
-  if (!TRACE_smpi_view_internals()) {
+  if (!TRACE_smpi_view_internals())
     TRACE_smpi_send(rank, rank, dst_traced, 0, size*smpi_datatype_size(MPI_CURRENT_TYPE));
-  }
 
-  request = smpi_mpi_isend(nullptr, size, MPI_CURRENT_TYPE, to, 0,MPI_COMM_WORLD);
+  MPI_Request request = smpi_mpi_isend(nullptr, size, MPI_CURRENT_TYPE, to, 0,MPI_COMM_WORLD);
 
   TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
   request->send = 1;
@@ -330,7 +316,6 @@ static void action_Irecv(const char *const *action)
   int from = atoi(action[2]);
   double size=parse_double(action[3]);
   double clock = smpi_process_simulated_elapsed();
-  MPI_Request request;
 
   if(action[4]) 
     MPI_CURRENT_TYPE=decode_datatype(action[4]);
@@ -353,7 +338,7 @@ static void action_Irecv(const char *const *action)
       size=status.count;
   }
 
-  request = smpi_mpi_irecv(nullptr, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD);
+  MPI_Request request = smpi_mpi_irecv(nullptr, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD);
 
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
   request->recv = 1;
@@ -366,7 +351,6 @@ static void action_test(const char *const *action){
   CHECK_ACTION_PARAMS(action, 0, 0)
   double clock = smpi_process_simulated_elapsed();
   MPI_Status status;
-  int flag = true;
 
   MPI_Request request = get_reqq_self()->back();
   get_reqq_self()->pop_back();
@@ -379,7 +363,7 @@ static void action_test(const char *const *action){
     extra->type=TRACING_TEST;
     TRACE_smpi_testing_in(rank, extra);
 
-    flag = smpi_mpi_test(&request, &status);
+    int flag = smpi_mpi_test(&request, &status);
 
     XBT_DEBUG("MPI_Test result: %d", flag);
     /* push back request in vector to be caught by a subsequent wait. if the test did succeed, the request is now nullptr.*/
@@ -436,8 +420,8 @@ static void action_waitall(const char *const *action){
    extra->type = TRACING_WAITALL;
    extra->send_size=count_requests;
    TRACE_smpi_ptp_in(rank_traced, -1, -1, __FUNCTION__,extra);
-   int* recvs_snd= xbt_new0(int,count_requests);
-   int* recvs_rcv= xbt_new0(int,count_requests);
+   int recvs_snd[count_requests];
+   int recvs_rcv[count_requests];
    unsigned int i=0;
    for (auto req : *(get_reqq_self())){
      if (req && req->recv){
@@ -453,8 +437,6 @@ static void action_waitall(const char *const *action){
      if (recvs_snd[i]!=-100)
        TRACE_smpi_recv(rank_traced, recvs_snd[i], recvs_rcv[i],0);
    }
-   xbt_free(recvs_rcv);
-   xbt_free(recvs_snd);
    TRACE_smpi_ptp_out(rank_traced, -1, -1, __FUNCTION__);
   }
   log_timed_action (action, clock);
@@ -577,7 +559,7 @@ static void action_allToAll(const char *const *action) {
   int comm_size = smpi_comm_size(MPI_COMM_WORLD);
   int send_size = parse_double(action[2]);
   int recv_size = parse_double(action[3]);
-  MPI_Datatype MPI_CURRENT_TYPE2;
+  MPI_Datatype MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;
 
   if(action[4] && action[5]) {
     MPI_CURRENT_TYPE=decode_datatype(action[4]);
@@ -585,7 +567,6 @@ static void action_allToAll(const char *const *action) {
   }
   else{
     MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
-    MPI_CURRENT_TYPE2=MPI_DEFAULT_TYPE;
   }
 
   void *send = smpi_get_tmp_sendbuffer(send_size*comm_size* smpi_datatype_size(MPI_CURRENT_TYPE));
@@ -609,27 +590,25 @@ static void action_allToAll(const char *const *action) {
 
 static void action_gather(const char *const *action) {
   /* The structure of the gather action for the rank 0 (total 4 processes) is the following:
- 0 gather 68 68 0 0 0
-
-  where: 
-  1) 68 is the sendcounts
-  2) 68 is the recvcounts
-  3) 0 is the root node
-  4) 0 is the send datatype id, see decode_datatype()
-  5) 0 is the recv datatype id, see decode_datatype()
+        0 gather 68 68 0 0 0
+      where:
+        1) 68 is the sendcounts
+        2) 68 is the recvcounts
+        3) 0 is the root node
+        4) 0 is the send datatype id, see decode_datatype()
+        5) 0 is the recv datatype id, see decode_datatype()
   */
   CHECK_ACTION_PARAMS(action, 2, 3)
   double clock = smpi_process_simulated_elapsed();
   int comm_size = smpi_comm_size(MPI_COMM_WORLD);
   int send_size = parse_double(action[2]);
   int recv_size = parse_double(action[3]);
-  MPI_Datatype MPI_CURRENT_TYPE2;
+  MPI_Datatype MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;
   if(action[4] && action[5]) {
     MPI_CURRENT_TYPE=decode_datatype(action[5]);
     MPI_CURRENT_TYPE2=decode_datatype(action[6]);
   } else {
     MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
-    MPI_CURRENT_TYPE2=MPI_DEFAULT_TYPE;
   }
   void *send = smpi_get_tmp_sendbuffer(send_size* smpi_datatype_size(MPI_CURRENT_TYPE));
   void *recv = nullptr;
@@ -659,38 +638,35 @@ static void action_gather(const char *const *action) {
 
 static void action_gatherv(const char *const *action) {
   /* The structure of the gatherv action for the rank 0 (total 4 processes) is the following:
- 0 gather 68 68 10 10 10 0 0 0
-
-  where:
-  1) 68 is the sendcount
-  2) 68 10 10 10 is the recvcounts
-  3) 0 is the root node
-  4) 0 is the send datatype id, see decode_datatype()
-  5) 0 is the recv datatype id, see decode_datatype()
+       0 gather 68 68 10 10 10 0 0 0
+     where:
+       1) 68 is the sendcount
+       2) 68 10 10 10 is the recvcounts
+       3) 0 is the root node
+       4) 0 is the send datatype id, see decode_datatype()
+       5) 0 is the recv datatype id, see decode_datatype()
   */
 
   double clock = smpi_process_simulated_elapsed();
   int comm_size = smpi_comm_size(MPI_COMM_WORLD);
   CHECK_ACTION_PARAMS(action, comm_size+1, 2)
   int send_size = parse_double(action[2]);
-  int *disps = xbt_new0(int, comm_size);
-  int *recvcounts = xbt_new0(int, comm_size);
+  int disps[comm_size] = { 0 };
+  int recvcounts[comm_size];
   int i=0,recv_sum=0;
 
-  MPI_Datatype MPI_CURRENT_TYPE2;
+  MPI_Datatype MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;
   if(action[4+comm_size] && action[5+comm_size]) {
     MPI_CURRENT_TYPE=decode_datatype(action[4+comm_size]);
     MPI_CURRENT_TYPE2=decode_datatype(action[5+comm_size]);
   } else {
     MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
-    MPI_CURRENT_TYPE2=MPI_DEFAULT_TYPE;
   }
   void *send = smpi_get_tmp_sendbuffer(send_size* smpi_datatype_size(MPI_CURRENT_TYPE));
   void *recv = nullptr;
   for(i=0;i<comm_size;i++) {
     recvcounts[i] = atoi(action[i+3]);
     recv_sum=recv_sum+recvcounts[i];
-    disps[i] = 0;
   }
 
   int root=atoi(action[3+comm_size]);
@@ -716,27 +692,21 @@ static void action_gatherv(const char *const *action) {
 
   TRACE_smpi_collective_out(smpi_process_index(), -1, __FUNCTION__);
   log_timed_action (action, clock);
-  xbt_free(recvcounts);
-  xbt_free(disps);
 }
 
 static void action_reducescatter(const char *const *action) {
  /* The structure of the reducescatter action for the rank 0 (total 4 processes) is the following:
-0 reduceScatter 275427 275427 275427 204020 11346849 0
-
-  where: 
-  1) The first four values after the name of the action declare the recvcounts array
-  2) The value 11346849 is the amount of instructions
-  3) The last value corresponds to the datatype, see decode_datatype().
-
-  We analyze a MPI_Reduce_scatter call to one MPI_Reduce and one MPI_Scatterv. */
+      0 reduceScatter 275427 275427 275427 204020 11346849 0
+    where:
+      1) The first four values after the name of the action declare the recvcounts array
+      2) The value 11346849 is the amount of instructions
+      3) The last value corresponds to the datatype, see decode_datatype().
+*/
   double clock = smpi_process_simulated_elapsed();
   int comm_size = smpi_comm_size(MPI_COMM_WORLD);
   CHECK_ACTION_PARAMS(action, comm_size+1, 1)
   int comp_size = parse_double(action[2+comm_size]);
-  int *recvcounts = xbt_new0(int, comm_size);  
-  int *disps = xbt_new0(int, comm_size);  
-  int i=0;
+  int recvcounts[comm_size];
   int rank = smpi_process_index();
   int size = 0;
   if(action[3+comm_size])
@@ -744,9 +714,8 @@ static void action_reducescatter(const char *const *action) {
   else
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
-  for(i=0;i<comm_size;i++) {
+  for(int i=0;i<comm_size;i++) {
     recvcounts[i] = atoi(action[i+2]);
-    disps[i] = 0;
     size+=recvcounts[i];
   }
 
@@ -754,7 +723,7 @@ static void action_reducescatter(const char *const *action) {
   extra->type = TRACING_REDUCE_SCATTER;
   extra->send_size = 0;
   extra->recvcounts= xbt_new(int, comm_size);
-  for(i=0; i< comm_size; i++)//copy data to avoid bad free
+  for(int i=0; i< comm_size; i++)//copy data to avoid bad free
     extra->recvcounts[i] = recvcounts[i];
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   extra->comp_size = comp_size;
@@ -764,38 +733,35 @@ static void action_reducescatter(const char *const *action) {
 
   void *sendbuf = smpi_get_tmp_sendbuffer(size* smpi_datatype_size(MPI_CURRENT_TYPE));
   void *recvbuf = smpi_get_tmp_recvbuffer(size* smpi_datatype_size(MPI_CURRENT_TYPE));
-   
-   mpi_coll_reduce_scatter_fun(sendbuf, recvbuf, recvcounts, MPI_CURRENT_TYPE, MPI_OP_NULL, MPI_COMM_WORLD);
-   smpi_execute_flops(comp_size);
+
+  mpi_coll_reduce_scatter_fun(sendbuf, recvbuf, recvcounts, MPI_CURRENT_TYPE, MPI_OP_NULL, MPI_COMM_WORLD);
+  smpi_execute_flops(comp_size);
 
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
-  xbt_free(recvcounts);
-  xbt_free(disps);
   log_timed_action (action, clock);
 }
 
 static void action_allgather(const char *const *action) {
   /* The structure of the allgather action for the rank 0 (total 4 processes) is the following:
-  0 allGather 275427 275427
-
-  where: 
-  1) 275427 is the sendcount
-  2) 275427 is the recvcount
-  3) No more values mean that the datatype for sent and receive buffer is the default one, see decode_datatype().  */
+        0 allGather 275427 275427
+    where:
+        1) 275427 is the sendcount
+        2) 275427 is the recvcount
+        3) No more values mean that the datatype for sent and receive buffer is the default one, see decode_datatype().
+  */
   double clock = smpi_process_simulated_elapsed();
 
   CHECK_ACTION_PARAMS(action, 2, 2)
   int sendcount=atoi(action[2]); 
   int recvcount=atoi(action[3]); 
 
-  MPI_Datatype MPI_CURRENT_TYPE2;
+  MPI_Datatype MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;
 
   if(action[4] && action[5]) {
     MPI_CURRENT_TYPE = decode_datatype(action[4]);
     MPI_CURRENT_TYPE2 = decode_datatype(action[5]);
   } else {
     MPI_CURRENT_TYPE = MPI_DEFAULT_TYPE;
-    MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;
   }
   void *sendbuf = smpi_get_tmp_sendbuffer(sendcount* smpi_datatype_size(MPI_CURRENT_TYPE));
   void *recvbuf = smpi_get_tmp_recvbuffer(recvcount* smpi_datatype_size(MPI_CURRENT_TYPE2));
@@ -819,34 +785,31 @@ static void action_allgather(const char *const *action) {
 
 static void action_allgatherv(const char *const *action) {
   /* The structure of the allgatherv action for the rank 0 (total 4 processes) is the following:
-0 allGatherV 275427 275427 275427 275427 204020
-
-  where: 
-  1) 275427 is the sendcount
-  2) The next four elements declare the recvcounts array
-  3) No more values mean that the datatype for sent and receive buffer
-  is the default one, see decode_datatype(). */
+        0 allGatherV 275427 275427 275427 275427 204020
+     where:
+        1) 275427 is the sendcount
+        2) The next four elements declare the recvcounts array
+        3) No more values mean that the datatype for sent and receive buffer is the default one, see decode_datatype().
+  */
   double clock = smpi_process_simulated_elapsed();
 
   int comm_size = smpi_comm_size(MPI_COMM_WORLD);
   CHECK_ACTION_PARAMS(action, comm_size+1, 2)
-  int i=0;
   int sendcount=atoi(action[2]);
-  int *recvcounts = xbt_new0(int, comm_size);  
-  int *disps = xbt_new0(int, comm_size);  
-  int recv_sum=0;  
-  MPI_Datatype MPI_CURRENT_TYPE2;
+  int recvcounts[comm_size];
+  int disps[comm_size] = { 0 };
+  int recv_sum=0;
+  MPI_Datatype MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;
 
   if(action[3+comm_size] && action[4+comm_size]) {
     MPI_CURRENT_TYPE = decode_datatype(action[3+comm_size]);
     MPI_CURRENT_TYPE2 = decode_datatype(action[4+comm_size]);
   } else {
     MPI_CURRENT_TYPE = MPI_DEFAULT_TYPE;
-    MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;    
   }
   void *sendbuf = smpi_get_tmp_sendbuffer(sendcount* smpi_datatype_size(MPI_CURRENT_TYPE));
 
-  for(i=0;i<comm_size;i++) {
+  for(int i=0;i<comm_size;i++) {
     recvcounts[i] = atoi(action[i+3]);
     recv_sum=recv_sum+recvcounts[i];
   }
@@ -857,7 +820,7 @@ static void action_allgatherv(const char *const *action) {
   extra->type = TRACING_ALLGATHERV;
   extra->send_size = sendcount;
   extra->recvcounts= xbt_new(int, comm_size);
-  for(i=0; i< comm_size; i++)//copy data to avoid bad free
+  for(int i=0; i< comm_size; i++)//copy data to avoid bad free
     extra->recvcounts[i] = recvcounts[i];
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2, nullptr);
@@ -870,29 +833,27 @@ static void action_allgatherv(const char *const *action) {
 
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
   log_timed_action (action, clock);
-  xbt_free(recvcounts);
-  xbt_free(disps);
 }
 
 static void action_allToAllv(const char *const *action) {
   /* The structure of the allToAllV action for the rank 0 (total 4 processes) is the following:
-  0 allToAllV 100 1 7 10 12 100 1 70 10 5
-
-  where: 
-  1) 100 is the size of the send buffer *sizeof(int),
-  2) 1 7 10 12 is the sendcounts array
-  3) 100*sizeof(int) is the size of the receiver buffer
-  4)  1 70 10 5 is the recvcounts array */
+        0 allToAllV 100 1 7 10 12 100 1 70 10 5
+     where:
+        1) 100 is the size of the send buffer *sizeof(int),
+        2) 1 7 10 12 is the sendcounts array
+        3) 100*sizeof(int) is the size of the receiver buffer
+        4)  1 70 10 5 is the recvcounts array
+  */
   double clock = smpi_process_simulated_elapsed();
 
   int comm_size = smpi_comm_size(MPI_COMM_WORLD);
   CHECK_ACTION_PARAMS(action, 2*comm_size+2, 2)
-  int *sendcounts = xbt_new0(int, comm_size);  
-  int *recvcounts = xbt_new0(int, comm_size);  
-  int *senddisps = xbt_new0(int, comm_size);  
-  int *recvdisps = xbt_new0(int, comm_size);  
+  int sendcounts[comm_size];
+  int recvcounts[comm_size];
+  int senddisps[comm_size] = { 0 };
+  int recvdisps[comm_size] = { 0 };
 
-  MPI_Datatype MPI_CURRENT_TYPE2;
+  MPI_Datatype MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;
 
   int send_buf_size=parse_double(action[2]);
   int recv_buf_size=parse_double(action[3+comm_size]);
@@ -902,7 +863,6 @@ static void action_allToAllv(const char *const *action) {
   }
   else{
     MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
-    MPI_CURRENT_TYPE2=MPI_DEFAULT_TYPE;
   }
 
   void *sendbuf = smpi_get_tmp_sendbuffer(send_buf_size* smpi_datatype_size(MPI_CURRENT_TYPE));
@@ -936,10 +896,6 @@ static void action_allToAllv(const char *const *action) {
 
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
   log_timed_action (action, clock);
-  xbt_free(sendcounts);
-  xbt_free(recvcounts);
-  xbt_free(senddisps);
-  xbt_free(recvdisps);
 }
 
 void smpi_replay_run(int *argc, char***argv){
@@ -1003,7 +959,6 @@ void smpi_replay_run(int *argc, char***argv){
   xbt_replay_action_runner(*argc, *argv);
 
   /* and now, finalize everything */
-  double sim_time= 1.;
   /* One active process will stop. Decrease the counter*/
   XBT_DEBUG("There are %zu elements in reqq[*]", get_reqq_self()->size());
   if (!get_reqq_self()->empty()){
@@ -1017,16 +972,12 @@ void smpi_replay_run(int *argc, char***argv){
       i++;
     }
     smpi_mpi_waitall(count_requests, requests, status);
-    active_processes--;
-  } else {
-    active_processes--;
   }
+  active_processes--;
 
   if(active_processes==0){
-    /* Last process alive speaking */
-    /* end the simulated timer */
-    sim_time = smpi_process_simulated_elapsed();
-    XBT_INFO("Simulation time %f", sim_time);
+    /* Last process alive speaking: end the simulated timer */
+    XBT_INFO("Simulation time %f", smpi_process_simulated_elapsed());
     _xbt_replay_action_exit();
     xbt_free(sendbuffer);
     xbt_free(recvbuffer);
