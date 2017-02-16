@@ -466,9 +466,8 @@ static void action_bcast(const char *const *action)
 
   if(action[3]) {
     root= atoi(action[3]);
-    if(action[4]) {
+    if(action[4])
       MPI_CURRENT_TYPE=decode_datatype(action[4]);   
-    }
   }
 
   int rank = smpi_process_index();
@@ -499,9 +498,8 @@ static void action_reduce(const char *const *action)
 
   if(action[4]) {
     root= atoi(action[4]);
-    if(action[5]) {
+    if(action[5])
       MPI_CURRENT_TYPE=decode_datatype(action[5]);
-    }
   }
 
   int rank = smpi_process_index();
@@ -553,8 +551,7 @@ static void action_allReduce(const char *const *action) {
 }
 
 static void action_allToAll(const char *const *action) {
-  CHECK_ACTION_PARAMS(action, 2, 2) //two mandatory (send and recv volumes)
-                                     //two optional (corresponding datatypes)
+  CHECK_ACTION_PARAMS(action, 2, 2) //two mandatory (send and recv volumes) and two optional (corresponding datatypes)
   double clock = smpi_process_simulated_elapsed();
   int comm_size = smpi_comm_size(MPI_COMM_WORLD);
   int send_size = parse_double(action[2]);
@@ -565,9 +562,8 @@ static void action_allToAll(const char *const *action) {
     MPI_CURRENT_TYPE=decode_datatype(action[4]);
     MPI_CURRENT_TYPE2=decode_datatype(action[5]);
   }
-  else{
+  else
     MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
-  }
 
   void *send = smpi_get_tmp_sendbuffer(send_size*comm_size* smpi_datatype_size(MPI_CURRENT_TYPE));
   void *recv = smpi_get_tmp_recvbuffer(recv_size*comm_size* smpi_datatype_size(MPI_CURRENT_TYPE2));
@@ -646,27 +642,27 @@ static void action_gatherv(const char *const *action) {
        4) 0 is the send datatype id, see decode_datatype()
        5) 0 is the recv datatype id, see decode_datatype()
   */
-
   double clock = smpi_process_simulated_elapsed();
   int comm_size = smpi_comm_size(MPI_COMM_WORLD);
   CHECK_ACTION_PARAMS(action, comm_size+1, 2)
   int send_size = parse_double(action[2]);
-  int disps[comm_size] = { 0 };
+  int disps[comm_size];
   int recvcounts[comm_size];
-  int i=0,recv_sum=0;
+  int recv_sum=0;
 
   MPI_Datatype MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;
   if(action[4+comm_size] && action[5+comm_size]) {
     MPI_CURRENT_TYPE=decode_datatype(action[4+comm_size]);
     MPI_CURRENT_TYPE2=decode_datatype(action[5+comm_size]);
-  } else {
+  } else
     MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
-  }
+
   void *send = smpi_get_tmp_sendbuffer(send_size* smpi_datatype_size(MPI_CURRENT_TYPE));
   void *recv = nullptr;
-  for(i=0;i<comm_size;i++) {
+  for(int i=0;i<comm_size;i++) {
     recvcounts[i] = atoi(action[i+3]);
     recv_sum=recv_sum+recvcounts[i];
+    disps[i]=0;
   }
 
   int root=atoi(action[3+comm_size]);
@@ -679,7 +675,7 @@ static void action_gatherv(const char *const *action) {
   extra->type = TRACING_GATHERV;
   extra->send_size = send_size;
   extra->recvcounts= xbt_new(int,comm_size);
-  for(i=0; i< comm_size; i++)//copy data to avoid bad free
+  for(int i=0; i< comm_size; i++)//copy data to avoid bad free
     extra->recvcounts[i] = recvcounts[i];
   extra->root = root;
   extra->num_processes = comm_size;
@@ -760,9 +756,9 @@ static void action_allgather(const char *const *action) {
   if(action[4] && action[5]) {
     MPI_CURRENT_TYPE = decode_datatype(action[4]);
     MPI_CURRENT_TYPE2 = decode_datatype(action[5]);
-  } else {
+  } else
     MPI_CURRENT_TYPE = MPI_DEFAULT_TYPE;
-  }
+
   void *sendbuf = smpi_get_tmp_sendbuffer(sendcount* smpi_datatype_size(MPI_CURRENT_TYPE));
   void *recvbuf = smpi_get_tmp_recvbuffer(recvcount* smpi_datatype_size(MPI_CURRENT_TYPE2));
 
@@ -797,21 +793,22 @@ static void action_allgatherv(const char *const *action) {
   CHECK_ACTION_PARAMS(action, comm_size+1, 2)
   int sendcount=atoi(action[2]);
   int recvcounts[comm_size];
-  int disps[comm_size] = { 0 };
+  int disps[comm_size];
   int recv_sum=0;
   MPI_Datatype MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;
 
   if(action[3+comm_size] && action[4+comm_size]) {
     MPI_CURRENT_TYPE = decode_datatype(action[3+comm_size]);
     MPI_CURRENT_TYPE2 = decode_datatype(action[4+comm_size]);
-  } else {
+  } else
     MPI_CURRENT_TYPE = MPI_DEFAULT_TYPE;
-  }
+
   void *sendbuf = smpi_get_tmp_sendbuffer(sendcount* smpi_datatype_size(MPI_CURRENT_TYPE));
 
   for(int i=0;i<comm_size;i++) {
     recvcounts[i] = atoi(action[i+3]);
     recv_sum=recv_sum+recvcounts[i];
+    disps[i] = 0;
   }
   void *recvbuf = smpi_get_tmp_recvbuffer(recv_sum* smpi_datatype_size(MPI_CURRENT_TYPE2));
 
@@ -850,8 +847,8 @@ static void action_allToAllv(const char *const *action) {
   CHECK_ACTION_PARAMS(action, 2*comm_size+2, 2)
   int sendcounts[comm_size];
   int recvcounts[comm_size];
-  int senddisps[comm_size] = { 0 };
-  int recvdisps[comm_size] = { 0 };
+  int senddisps[comm_size];;
+  int recvdisps[comm_size];;
 
   MPI_Datatype MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;
 
@@ -861,9 +858,8 @@ static void action_allToAllv(const char *const *action) {
     MPI_CURRENT_TYPE=decode_datatype(action[4+2*comm_size]);
     MPI_CURRENT_TYPE2=decode_datatype(action[5+2*comm_size]);
   }
-  else{
+  else
     MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
-  }
 
   void *sendbuf = smpi_get_tmp_sendbuffer(send_buf_size* smpi_datatype_size(MPI_CURRENT_TYPE));
   void *recvbuf  = smpi_get_tmp_recvbuffer(recv_buf_size* smpi_datatype_size(MPI_CURRENT_TYPE2));
@@ -871,6 +867,8 @@ static void action_allToAllv(const char *const *action) {
   for(int i=0;i<comm_size;i++) {
     sendcounts[i] = atoi(action[i+3]);
     recvcounts[i] = atoi(action[i+4+comm_size]);
+    senddisps[i] = 0;
+    recvdisps[i] = 0;
   }
 
   int rank = smpi_process_index();
