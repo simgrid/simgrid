@@ -294,9 +294,9 @@ void xbt_log_init(int *argc, char **argv)
       xbt_log_control_set(opt);
       XBT_DEBUG("Did apply '%s' as log setting", opt);
     } else if (!strcmp(argv[i], "--help-logs")) {
-      help_requested |= 1;
+      help_requested |= 1U;
     } else if (!strcmp(argv[i], "--help-log-categories")) {
-      help_requested |= 2;
+      help_requested |= 2U;
     } else {
       argv[j++] = argv[i];
     }
@@ -481,7 +481,8 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
     xbt_log_parent_set(category, category->parent);
 
     if (XBT_LOG_ISENABLED(log, xbt_log_priority_debug)) {
-      char *buf, *res = NULL;
+      char *buf;
+      char *res = NULL;
       xbt_log_category_t cpp = category->parent->firstChild;
       while (cpp) {
         if (res) {
@@ -893,10 +894,9 @@ static void xbt_log_help_categories_rec(xbt_log_category_t category, const char 
 
   xbt_dynar_sort(dynar, xbt_log_cat_cmp);
 
-  for (i = 0; i < xbt_dynar_length(dynar); i++) {
+  xbt_dynar_foreach(dynar, i, cat){
     if (i == xbt_dynar_length(dynar) - 1 && category->parent)
       *strrchr(child_prefix, '|') = ' ';
-    cat = xbt_dynar_get_as(dynar, i, xbt_log_category_t);
     printf("%s%s: %s\n", this_prefix, cat->name, cat->description);
     xbt_log_help_categories_rec(cat->firstChild, child_prefix);
   }

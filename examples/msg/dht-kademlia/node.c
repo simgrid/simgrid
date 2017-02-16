@@ -116,13 +116,13 @@ unsigned int get_id_in_prefix(unsigned int id, unsigned int prefix)
   if (prefix == 0) {
     return 0;
   } else {
-    return (1 << ((unsigned int)(prefix - 1))) ^ id;
+    return (1U << ((unsigned int)(prefix - 1))) ^ id;
   }
 }
 
 /** @brief Returns the prefix of an identifier.
   * The prefix is the id of the bucket in which the remote identifier xor our identifier should be stored.
-  * @param id : bigunsigned int id to test
+  * @param id : big unsigned int id to test
   * @param nb_bits : key size
   */
 unsigned int get_node_prefix(unsigned int id, unsigned int nb_bits)
