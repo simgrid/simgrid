@@ -770,6 +770,7 @@ static void smpi_init_options(){
     smpi_privatize_global_variables = xbt_cfg_get_boolean("smpi/privatize-global-variables");
     if (smpi_cpu_threshold < 0)
       smpi_cpu_threshold = DBL_MAX;
+    smpi_cfg_shared_malloc = xbt_cfg_get_boolean("smpi/shared-malloc");
 }
 
 int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])

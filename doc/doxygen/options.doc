@@ -1044,14 +1044,27 @@ Here is an example:
     also disable this behavior for MPI_Iprobe.
 
 
-\subsection options_model_smpi_use_shared_malloc smpi/use-shared-malloc: Factorize malloc()s
+\subsection options_model_smpi_shared_malloc smpi/shared-malloc: Factorize malloc()s
 
-\b Default: 1
+\b Default: yes
+
+If your simulation consumes too much memory, you may want to modify
+your code so that the working areas are shared by all MPI ranks. For
+example, in a bloc-cyclic matrix multiplication, you will only
+allocate one set of blocs, and every processes will share them.
+Naturally, this will lead to very wrong results, but this will save a
+lot of memory so this is still desirable for some studies. For more on
+the motivation for that feature, please refer to the 
+<a href="https://simgrid.github.io/SMPI_CourseWare/topic_understanding_performance/matrixmultiplication/">relevant
+section</a> of the SMPI CourseWare (see Activity #2.2 of the pointed
+assignment).
 
 SMPI can use shared memory by calling shm_* functions; this might speed up the simulation.
 This opens or creates a new POSIX shared memory object, kept in RAM, in /dev/shm.
 
-If you want to disable this behavior, set the value to 0.
+If you want to disable this behavior (for example for debugging
+purposes), set its value to "no" or "0".
+
 
 \subsection options_model_smpi_wtime smpi/wtime: Inject constant times for calls to MPI_Wtime
 
@@ -1208,9 +1221,9 @@ It can be done by using XBT. Go to \ref XBT_log for more details.
 - \c smpi/papi-events: \ref options_smpi_papi_events
 - \c smpi/privatize-global-variables: \ref options_smpi_global
 - \c smpi/send-is-detached-thresh: \ref options_model_smpi_detached
+- \c smpi/shared-malloc: \ref options_model_smpi_shared_malloc
 - \c smpi/simulate-computation: \ref options_smpi_bench
 - \c smpi/test: \ref options_model_smpi_test
-- \c smpi/use-shared-malloc: \ref options_model_smpi_use_shared_malloc
 - \c smpi/wtime: \ref options_model_smpi_wtime
 
 - \c <b>Tracing configuration options can be found in Section \ref tracing_tracing_options</b>.

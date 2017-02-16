@@ -413,6 +413,7 @@ extern XBT_PRIVATE double smpi_host_speed;
 extern XBT_PRIVATE bool smpi_privatize_global_variables;
 extern XBT_PRIVATE char* smpi_start_data_exe; //start of the data+bss segment of the executable
 extern XBT_PRIVATE int smpi_size_data_exe; //size of the data+bss segment of the executable
+extern XBT_PRIVATE bool smpi_cfg_shared_malloc; // Whether to activate shared malloc
 
 XBT_PRIVATE void smpi_switch_data_segment(int dest);
 XBT_PRIVATE void smpi_really_switch_data_segment(int dest);

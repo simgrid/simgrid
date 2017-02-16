@@ -539,8 +539,10 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_boolean("smpi/simulate-computation", "yes", nullptr, "Whether the computational part of the simulated application should be simulated.");
     xbt_cfg_register_alias("smpi/simulate-computation","smpi/simulate_computation");
 
-    xbt_cfg_register_boolean("smpi/use-shared-malloc", "yes", nullptr, "Whether SMPI_SHARED_MALLOC is enabled. Disable it for debugging purposes.");
-    xbt_cfg_register_alias("smpi/use-shared-malloc", "smpi/use_shared_malloc");
+    xbt_cfg_register_boolean("smpi/shared-malloc", "yes", nullptr,
+                             "Whether SMPI_SHARED_MALLOC is enabled. Disable it for debugging purposes.");
+    xbt_cfg_register_alias("smpi/shared-malloc", "smpi/use-shared-malloc");
+    xbt_cfg_register_alias("smpi/shared-malloc", "smpi/use_shared_malloc");
 
     xbt_cfg_register_double("smpi/cpu-threshold", 1e-6, nullptr, "Minimal computation time (in seconds) not discarded, or -1 for infinity.");
     xbt_cfg_register_alias("smpi/cpu-threshold", "smpi/cpu_threshold");

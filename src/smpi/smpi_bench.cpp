@@ -85,6 +85,7 @@ int smpi_loaded_page = -1;
 char* smpi_start_data_exe = nullptr;
 int smpi_size_data_exe = 0;
 bool smpi_privatize_global_variables;
+bool smpi_cfg_shared_malloc    = true;
 double smpi_total_benched_time = 0;
 smpi_privatisation_region_t smpi_privatisation_regions;
 
@@ -564,7 +565,7 @@ void smpi_sample_3(int global, const char *file, int line)
 void *smpi_shared_malloc(size_t size, const char *file, int line)
 {
   void* mem;
-  if (size > 0 && xbt_cfg_get_boolean("smpi/use-shared-malloc")){
+  if (size > 0 && smpi_cfg_shared_malloc) {
     int fd;
     smpi_source_location loc(file, line);
     auto res = allocs.insert(std::make_pair(loc, shared_data_t()));
@@ -605,7 +606,7 @@ void smpi_shared_free(void *ptr)
 {
   char loc[PTR_STRLEN];
 
-  if (xbt_cfg_get_boolean("smpi/use-shared-malloc")){
+  if (smpi_cfg_shared_malloc) {
     snprintf(loc, PTR_STRLEN, "%p", ptr);
     auto meta = allocs_metadata.find(ptr);
     if (meta == allocs_metadata.end()) {
