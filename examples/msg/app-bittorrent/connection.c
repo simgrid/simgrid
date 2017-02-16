@@ -40,5 +40,5 @@ void connection_free(void *data)
 }
 
 int connection_has_piece(connection_t connection, unsigned int piece){
-  return !!(connection->bitfield & 1<<piece);
+  return (connection->bitfield & 1U<<piece);
 }

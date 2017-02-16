@@ -30,20 +30,21 @@ static const unsigned long int FILE_SIZE = FILE_PIECES * PIECES_BLOCKS * BLOCK_S
 
 int count_pieces(unsigned int bitfield){
   int count=0;
-  while (bitfield){
-    count += bitfield & 1;
-    bitfield >>= 1 ;
+  unsigned int n = bitfield;
+  while (n){
+    count += n & 1U;
+    n >>= 1U ;
   }
   return count;
 }
 
 int peer_has_not_piece(peer_t peer, unsigned int piece){
-  return !(peer->bitfield & 1<<piece);
+  return !(peer->bitfield & 1U<<piece);
 }
 
 /** Check that a piece is not currently being download by the peer. */
 int peer_is_not_downloading_piece(peer_t peer, unsigned int piece){
-  return !(peer->current_pieces & 1<<piece);
+  return !(peer->current_pieces & 1U<<piece);
 }
 
 void get_status(char **status, unsigned int bitfield){
@@ -228,8 +229,8 @@ peer_t peer_init(int id, int seed)
   peer->active_peers = xbt_dict_new_homogeneous(NULL);
 
   if (seed) {
-    peer->bitfield = (1<<FILE_PIECES)-1;
-    peer->bitfield_blocks = (1ULL<<(FILE_PIECES * PIECES_BLOCKS))-1;
+    peer->bitfield = (1U<<FILE_PIECES)-1U;
+    peer->bitfield_blocks = (1ULL<<(FILE_PIECES * PIECES_BLOCKS))-1ULL  ;
   } else {
     peer->bitfield = 0;
     peer->bitfield_blocks = 0;
@@ -267,7 +268,7 @@ void peer_free(peer_t peer)
  */
 int has_finished(unsigned int bitfield)
 {
-  return bitfield == (1<<FILE_PIECES)-1;
+  return bitfield == (1U<<FILE_PIECES)-1U;
 }
 
 int nb_interested_peers(peer_t peer)
@@ -357,7 +358,7 @@ void handle_message(peer_t peer, msg_task_t task)
   case MESSAGE_HAVE:
     XBT_DEBUG("\t for piece %d", message->index);
     xbt_assert((message->index >= 0 && message->index < FILE_PIECES), "Wrong HAVE message received");
-    remote_peer->bitfield = remote_peer->bitfield | (1<<message->index);
+    remote_peer->bitfield = remote_peer->bitfield | (1U<<message->index);
     peer->pieces_count[message->index]++;
     //If the piece is in our pieces, we tell the peer that we are interested.
     if ((remote_peer->am_interested == 0) && peer_has_not_piece(peer,message->index)) {
@@ -396,7 +397,7 @@ void handle_message(peer_t peer, msg_task_t task)
         //Removing the piece from our piece list
         remove_current_piece(peer, remote_peer, message->index);
         //Setting the fact that we have the piece
-        peer->bitfield = peer->bitfield | (1<<message->index);
+        peer->bitfield = peer->bitfield | (1U<<message->index);
         char* status = xbt_malloc0(FILE_PIECES+1);
         get_status(&status, peer->bitfield);
         XBT_DEBUG("My status is now %s", status);
@@ -433,15 +434,15 @@ void request_new_piece_to_peer(peer_t peer, connection_t remote_peer)
 {
   int piece = select_piece_to_download(peer, remote_peer);
   if (piece != -1) {
-    peer->current_pieces|= (1 << (unsigned int) piece);
+    peer->current_pieces|= (1U << (unsigned int) piece);
     send_request_to_peer(peer, remote_peer, piece);
   }
 }
 
 /** remove current_piece from the list of currently downloaded pieces. */
-void remove_current_piece(peer_t peer, connection_t remote_peer, int current_piece)
+void remove_current_piece(peer_t peer, connection_t remote_peer, unsigned int current_piece)
 {
-  peer->current_pieces &= ~(1 << (unsigned int) current_piece);
+  peer->current_pieces &= ~(1U << current_piece);
   remote_peer->current_piece = -1;
 }
 
@@ -694,7 +695,7 @@ void update_bitfield_blocks(peer_t peer, int index, int block_index, int block_l
   xbt_assert((index >= 0 && index <= FILE_PIECES), "Wrong piece.");
   xbt_assert((block_index >= 0 && block_index <= PIECES_BLOCKS), "Wrong block : %d.", block_index);
   for (int i = block_index; i < (block_index + block_length); i++) {
-    peer->bitfield_blocks |= (1ULL<<(index * PIECES_BLOCKS + i));
+    peer->bitfield_blocks |= (1ULL<<(unsigned int)(index * PIECES_BLOCKS + i));
   }
 }
 
@@ -723,7 +724,7 @@ int get_first_block(peer_t peer, int piece)
 /** Indicates if the remote peer has a piece not stored by the local peer */
 int is_interested(peer_t peer, connection_t remote_peer)
 {
-  return !!(remote_peer->bitfield & (peer->bitfield^((1<<FILE_PIECES)-1)));
+  return remote_peer->bitfield & (peer->bitfield^((1<<FILE_PIECES)-1));
 }
 
 /** Indicates if the remote peer has a piece not stored by the local peer nor requested by the local peer */

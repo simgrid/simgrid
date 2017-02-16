@@ -76,7 +76,7 @@ int partially_downloaded_piece(peer_t peer, connection_t remote_peer);
 
 void request_new_piece_to_peer(peer_t peer, connection_t remote_peer);
 void send_request_to_peer(peer_t peer, connection_t remote_peer, int piece);
-void remove_current_piece(peer_t peer, connection_t remote_peer, int current_piece);
+void remove_current_piece(peer_t peer, connection_t remote_peer, unsigned int current_piece);
 
 void update_active_peers_set(peer_t peer, connection_t remote_peer);
 int select_piece_to_download(peer_t peer, connection_t remote_peer);
