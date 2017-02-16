@@ -178,7 +178,6 @@ void create_maestro(std::function<void()> code)
   /* Create maestro process and initialize it */
   maestro = new simgrid::simix::ActorImpl();
   maestro->pid = simix_process_maxpid++;
-  maestro->ppid = -1;
   maestro->name = "";
   maestro->data = nullptr;
 
@@ -237,10 +236,7 @@ smx_actor_t SIMIX_process_create(
   process->name           = simgrid::xbt::string(name);
   process->host           = host;
   process->data           = data;
-  process->comms          = xbt_fifo_new();
   process->simcall.issuer = process;
-  /* Initiliaze data segment to default value */
-  SIMIX_segment_index_set(process, -1);
 
   if (parent_process != nullptr) {
     process->ppid = parent_process->pid;
@@ -254,11 +250,8 @@ smx_actor_t SIMIX_process_create(
       }
     }
 #endif
-  } else {
-    process->ppid = -1;
   }
 
-  process->auto_restart = false;
   process->code         = code;
 
   XBT_VERB("Create context %s", process->name.c_str());
@@ -304,11 +297,8 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   process->name = std::string(name);
   process->host = host;
   process->data = data;
-  process->comms = xbt_fifo_new();
   process->simcall.issuer = process;
-  process->ppid = -1;
-  /* Initiliaze data segment to default value */
-  SIMIX_segment_index_set(process, -1);
+
   if (parent_process != nullptr) {
     process->ppid = parent_process->pid;
     /* SMPI process have their own data segment and each other inherit from their father */
@@ -324,7 +314,6 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   }
 
   /* Process data for auto-restart */
-  process->auto_restart = false;
   process->code = nullptr;
 
   XBT_VERB("Create context %s", process->name.c_str());

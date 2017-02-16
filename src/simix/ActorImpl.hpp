@@ -41,7 +41,7 @@ public:
   s_xbt_swag_hookup_t destroy_hookup   = { nullptr, nullptr }; /* simix_global->process_to_destroy */
 
   unsigned long pid  = 0;
-  unsigned long ppid = 0;
+  unsigned long ppid = -1;
   simgrid::xbt::string name;
   const char* cname() { return name.c_str(); }
   sg_host_t host        = nullptr; /* the host on which the process is running */
@@ -56,7 +56,7 @@ public:
 
   sg_host_t new_host            = nullptr; /* if not null, the host on which the process must migrate to */
   smx_activity_t waiting_synchro = nullptr; /* the current blocking synchro if any */
-  xbt_fifo_t comms              = nullptr; /* the current non-blocking communication synchros */
+  xbt_fifo_t comms               = xbt_fifo_new(); /* the current non-blocking communication synchros */
   xbt_dict_t properties         = nullptr;
   s_smx_simcall_t simcall;
   void *data          = nullptr; /* kept for compatibility, it should be replaced with moddata */
@@ -64,7 +64,7 @@ public:
 
   std::function<void()> code;
   smx_timer_t kill_timer = nullptr;
-  int segment_index      = 0; /* Reference to an SMPI process' data segment. Default value is -1 if not in SMPI context*/
+  int segment_index = -1; /* Reference to an SMPI process' data segment. Default value is -1 if not in SMPI context*/
 
   friend void intrusive_ptr_add_ref(ActorImpl* process)
   {
