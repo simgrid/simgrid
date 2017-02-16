@@ -50,9 +50,6 @@ typedef simgrid::surf::Cpu surf_Cpu;
 typedef simgrid::surf::Resource surf_Resource;
 typedef simgrid::trace_mgr::trace tmgr_Trace;
 
-typedef simgrid::simix::Host *smx_host_priv_t;
-
-
 #else
 
 typedef struct simgrid_NetZone simgrid_NetZone;
@@ -64,7 +61,6 @@ typedef struct surf_Resource surf_Resource;
 typedef struct Link Link;
 typedef struct Trace tmgr_Trace;
 
-typedef struct simix_Host *smx_host_priv_t;
 #endif
 
 typedef simgrid_NetZone* NetZone_t;

@@ -75,7 +75,7 @@ namespace simgrid {
 /** @brief Stop the host if it is on */
 void SIMIX_host_off(sg_host_t h, smx_actor_t issuer)
 {
-  smx_host_priv_t host = h->extension<simgrid::simix::Host>();
+  simgrid::simix::Host* host = h->extension<simgrid::simix::Host>();
 
   xbt_assert((host != nullptr), "Invalid parameters");
 

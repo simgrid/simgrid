@@ -48,7 +48,7 @@ int peer_is_not_downloading_piece(peer_t peer, unsigned int piece){
 
 void get_status(char **status, unsigned int bitfield){
   for(int i=FILE_PIECES-1; i>=0; i--)
-    (*status)[i] = (bitfield&(1u<<i))? '1': '0';
+    (*status)[i]         = (bitfield & (1U << i)) ? '1' : '0';
   (*status)[FILE_PIECES] = '\0';
 }
 
@@ -452,7 +452,7 @@ void remove_current_piece(peer_t peer, connection_t remote_peer, int current_pie
 void update_pieces_count_from_bitfield(peer_t peer, unsigned int bitfield)
 {
   for (int i = 0; i < FILE_PIECES; i++) {
-    if ((bitfield&(1u<<i))) {
+    if ((bitfield & (1U << i))) {
       peer->pieces_count[i]++;
     }
   }
