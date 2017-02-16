@@ -192,12 +192,9 @@ int smpi_coll_tuned_bcast_arrival_scatter(void *buf, int count,
              0, tag, comm, &status);
 
     /* at this point all nodes in this set perform all-gather operation */
-    to = header_buf[myordering + 1];
-    from = header_buf[myordering - 1];
-    if (myordering == 0)
-      from = header_buf[total_nodes - 1];
-    if (myordering == (total_nodes - 1))
-      to = header_buf[0];
+    
+    to = (myordering == (total_nodes - 1)) ? header_buf[0] : header_buf[myordering + 1];
+    from = (myordering == 0) ? header_buf[total_nodes - 1] : header_buf[myordering - 1];
 
 
     /* last segment may have a larger size since it also include the remainder */
