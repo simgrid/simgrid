@@ -639,13 +639,18 @@ void SIMIX_comm_finish(smx_activity_t synchro)
         if(comm->dst_proc)
           xbt_fifo_remove(comm->dst_proc->comms, synchro);
       }
-      if(simcall->issuer == comm->dst_proc){
+      else if(simcall->issuer == comm->dst_proc){
         if(comm->src_proc)
           xbt_fifo_remove(comm->src_proc->comms, synchro);
         //in case of a detached comm we have an extra ref to remove, as the sender won't do it
         destroy_count++;
       }
+      else{
+        xbt_fifo_remove(comm->dst_proc->comms, synchro);
+        xbt_fifo_remove(comm->src_proc->comms, synchro);
+      }
     }
+
     SIMIX_simcall_answer(simcall);
     destroy_count++;
   }
