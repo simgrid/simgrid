@@ -172,12 +172,12 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_killAll(JNIEnv * env, jclass
   return (jint) MSG_process_killall((int) jresetPID);
 }
 
-JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID(JNIEnv * env, jclass cls, jint PID)
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID(JNIEnv * env, jclass cls, jint pid)
 {
-  msg_process_t process = MSG_process_from_PID(PID);
+  msg_process_t process = MSG_process_from_PID(pid);
 
   if (!process) {
-    jxbt_throw_process_not_found(env, bprintf("PID = %d",(int) PID));
+    jxbt_throw_process_not_found(env, bprintf("PID = %d",static_cast<int>(pid)));
     return nullptr;
   }
 

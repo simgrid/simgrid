@@ -226,11 +226,11 @@ public abstract class Process implements Runnable {
 	/**
 	 * This static method gets a process from a PID.
 	 *
-	 * @param PID			The process identifier of the process to get.
+	 * @param pid			The process identifier of the process to get.
 	 *
 	 * @return				The process with the specified PID.
 	 */ 
-	public static native Process fromPID(int PID);
+	public static native Process fromPID(int pid);
 	/**
 	 * This method returns the PID of the process.
 	 *
