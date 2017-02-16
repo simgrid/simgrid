@@ -23,6 +23,10 @@ SimGrid (3.15) UNRELEASED; urgency=low
    - s4u::Host::onSpeedChange: when the pstate is changed, or when an
      event from the availability_file changes the avail speed.
  - Links are now usable from s4u
+ 
+ SMPI:
+ - New algorithm for SMPI_SHARED_MALLOC: global, where all blocks are
+   mapped onto a unique file.
 
  XBT
  - Kill the fifo data container: we don't use it anymore.
