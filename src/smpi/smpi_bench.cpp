@@ -40,6 +40,10 @@
 #define MAP_ANONYMOUS MAP_ANON
 #endif
 
+#ifndef MAP_POPULATE
+#define MAP_POPULATE 0
+#endif
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi, "Logging specific to SMPI (benchmarking)");
 
 /* Shared allocations are handled through shared memory segments.
@@ -607,7 +611,9 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
       unlink(name);
       free(name);
       char* dumb = (char*)calloc(1, smpi_shared_malloc_blocksize);
-      write(smpi_shared_malloc_bogusfile, dumb, smpi_shared_malloc_blocksize);
+      ssize_t err = write(smpi_shared_malloc_bogusfile, dumb, smpi_shared_malloc_blocksize);
+      if(err<0)
+        xbt_die("could ot write bogus file for shared malloc");
       free(dumb);
     }
 
