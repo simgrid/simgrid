@@ -117,13 +117,16 @@ int smpi_mpi_win_fence( int assert,  MPI_Win win){
     std::vector<MPI_Request> *reqs = win->requests;
     int size = static_cast<int>(reqs->size());
     // start all requests that have been prepared by another process
-    for(auto req: *reqs){
-      if (req && (req->flags & PREPARED))
-        smpi_mpi_start(req);
-    }
+    if(size>0){
+        for(auto req: *reqs){
+          if (req && (req->flags & PREPARED))
+            smpi_mpi_start(req);
+        }
 
-    MPI_Request* treqs = &(*reqs)[0];
-    smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
+        MPI_Request* treqs = &(*reqs)[0];
+
+        smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
+    }
     win->count=0;
   }
   win->assert = assert;
