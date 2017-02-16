@@ -74,7 +74,7 @@ smx_actor_t SIMIX_process_self()
  */
 int SIMIX_process_has_pending_comms(smx_actor_t process) {
 
-  return xbt_fifo_size(process->comms) > 0;
+  return process->comms.size() > 0;
 }
 
 /**
@@ -95,8 +95,8 @@ void SIMIX_process_cleanup(smx_actor_t process)
   xbt_os_mutex_acquire(simix_global->mutex);
 
   /* cancel non-blocking communications */
-  smx_activity_t synchro = static_cast<smx_activity_t>(xbt_fifo_pop(process->comms));
-  while (synchro != nullptr) {
+  smx_activity_t synchro = static_cast<smx_activity_t>(process->comms.front());
+  while (!process->comms.empty()) {
     simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
 
     /* make sure no one will finish the comm after this process is destroyed,
@@ -122,14 +122,15 @@ void SIMIX_process_cleanup(smx_actor_t process)
 
       if (comm->detached && comm->src_proc != nullptr) {
         /* the comm will be freed right now, remove it from the sender */
-        xbt_fifo_remove(comm->src_proc->comms, comm);
+        comm->src_proc->comms.remove(comm);
       }
       
       comm->unref();
     } else {
       xbt_die("Communication synchro %p is in my list but I'm not the sender nor the receiver", synchro);
     }
-    synchro = static_cast<smx_activity_t>(xbt_fifo_pop(process->comms));
+    process->comms.pop_front();
+    synchro = static_cast<smx_activity_t>(process->comms.front());
   }
 
   XBT_DEBUG("%p should not be run anymore",process);
@@ -166,8 +167,6 @@ ActorImpl::~ActorImpl()
   delete this->context;
   if (this->properties)
     xbt_dict_free(&this->properties);
-  if (this->comms != nullptr)
-    xbt_fifo_free(this->comms);
   if (this->on_exit)
     xbt_dynar_free(&this->on_exit);
 }
@@ -415,7 +414,7 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
       exec->unref();
 
     } else if (comm != nullptr) {
-      xbt_fifo_remove(process->comms, process->waiting_synchro);
+      process->comms.remove(process->waiting_synchro);
       comm->cancel();
 
       // Remove first occurrence of &process->simcall:
@@ -476,7 +475,7 @@ void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const
 
     simgrid::kernel::activity::Comm *comm = dynamic_cast<simgrid::kernel::activity::Comm*>(process->waiting_synchro);
     if (comm != nullptr) {
-      xbt_fifo_remove(process->comms, comm);
+      process->comms.remove(comm);
       comm->cancel();
     }
 

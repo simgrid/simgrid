@@ -131,7 +131,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx
     other_comm->type = SIMIX_COMM_READY;
 
   }
-  xbt_fifo_push(src_proc->comms, other_synchro);
+  src_proc->comms.push_back(other_synchro);
 
 
   if (detached) {
@@ -234,7 +234,7 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
       other_comm->state = SIMIX_READY;
       other_comm->type = SIMIX_COMM_READY;
     }
-    xbt_fifo_push(dst_proc->comms, other_synchro);
+    dst_proc->comms.push_back(other_synchro);
   }
 
   /* Setup communication synchro */
@@ -633,21 +633,21 @@ void SIMIX_comm_finish(smx_activity_t synchro)
     }
 
     simcall->issuer->waiting_synchro = nullptr;
-    xbt_fifo_remove(simcall->issuer->comms, synchro);
+    simcall->issuer->comms.remove(synchro);
     if(comm->detached){
       if(simcall->issuer == comm->src_proc){
         if(comm->dst_proc)
-          xbt_fifo_remove(comm->dst_proc->comms, synchro);
+          comm->dst_proc->comms.remove(synchro);
       }
       else if(simcall->issuer == comm->dst_proc){
         if(comm->src_proc)
-          xbt_fifo_remove(comm->src_proc->comms, synchro);
+          comm->src_proc->comms.remove(synchro);
         //in case of a detached comm we have an extra ref to remove, as the sender won't do it
         destroy_count++;
       }
       else{
-        xbt_fifo_remove(comm->dst_proc->comms, synchro);
-        xbt_fifo_remove(comm->src_proc->comms, synchro);
+        comm->dst_proc->comms.remove(synchro);
+        comm->src_proc->comms.remove(synchro);
       }
     }
 
