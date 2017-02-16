@@ -111,7 +111,6 @@ typedef smx_actor_t (*smx_creation_func_t) (
                                       std::function<void()> code,
                                       /* userdata */ void*,
                                       /* hostname */ sg_host_t,
-                                      /* kill_time */ double,
                                       /* props */ xbt_dict_t,
                                       /* auto_restart */ int,
                                       /* parent_process */ smx_actor_t);
@@ -123,7 +122,6 @@ XBT_PUBLIC(smx_actor_t) simcall_process_create(const char *name,
                                           std::function<void()> code,
                                           void *data,
                                           sg_host_t host,
-                                          double kill_time,
                                           xbt_dict_t properties,
                                           int auto_restart);
 

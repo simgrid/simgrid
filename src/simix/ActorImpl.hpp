@@ -104,7 +104,6 @@ XBT_PRIVATE smx_actor_t SIMIX_process_create(
                           std::function<void()> code,
                           void *data,
                           sg_host_t host,
-                          double kill_time,
                           xbt_dict_t properties,
                           int auto_restart,
                           smx_actor_t parent_process);

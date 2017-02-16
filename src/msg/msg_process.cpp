@@ -50,14 +50,11 @@ void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
 }
 
 /* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
-smx_actor_t MSG_process_create_from_SIMIX(
-  const char *name, std::function<void()> code, void *data, sg_host_t host,
-  double kill_time, xbt_dict_t properties,
-  int auto_restart, smx_actor_t parent_process)
+smx_actor_t MSG_process_create_from_SIMIX(const char* name, std::function<void()> code, void* data, sg_host_t host,
+                                          xbt_dict_t properties, int auto_restart, smx_actor_t parent_process)
 {
   msg_process_t p = MSG_process_create_with_environment(name, std::move(code), data, host, properties);
   if (p) {
-    MSG_process_set_kill_time(p,kill_time);
     MSG_process_auto_restart_set(p,auto_restart);
   }
   return p;
@@ -145,7 +142,7 @@ msg_process_t MSG_process_create_with_environment(
 
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
-  msg_process_t process = simcall_process_create(name, std::move(code), msgExt, host, -1, properties, 0);
+  msg_process_t process = simcall_process_create(name, std::move(code), msgExt, host, properties, 0);
 
   if (!process) { /* Undo everything */
     delete msgExt;

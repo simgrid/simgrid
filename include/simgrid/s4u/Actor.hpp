@@ -180,12 +180,7 @@ public:
    *
    *  If the actor is restarted, the actor has a fresh copy of the function.
    */
-  static ActorPtr createActor(const char* name, s4u::Host *host, double killTime, std::function<void()> code);
-
-  static ActorPtr createActor(const char* name, s4u::Host *host, std::function<void()> code)
-  {
-    return createActor(name, host, -1.0, std::move(code));
-  }
+  static ActorPtr createActor(const char* name, s4u::Host* host, std::function<void()> code);
 
   /** Create an actor using code
    *
@@ -205,14 +200,7 @@ public:
 
   // Create actor from function name:
 
-  static ActorPtr createActor(const char* name, s4u::Host *host, double killTime,
-    const char* function, std::vector<std::string> args);
-
-  static ActorPtr createActor(const char* name, s4u::Host *host, const char* function,
-      std::vector<std::string> args)
-  {
-    return createActor(name, host, -1.0, function, std::move(args));
-  }
+  static ActorPtr createActor(const char* name, s4u::Host* host, const char* function, std::vector<std::string> args);
 
   // ***** Methods *****
 

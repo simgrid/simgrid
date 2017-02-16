@@ -520,30 +520,25 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     arg->properties = current_property_set;
 
     XBT_DEBUG("Process %s@%s will be started at time %f", arg->name.c_str(), arg->host->cname(), start_time);
-    SIMIX_timer_set(start_time, [=]() {
-      simix_global->create_process_function(
-                                            arg->name.c_str(),
-                                            std::move(arg->code),
-                                            arg->data,
-                                            arg->host,
-                                            arg->kill_time,
-                                            arg->properties,
-                                            arg->auto_restart,
-                                            nullptr);
+    SIMIX_timer_set(start_time, [arg]() {
+      smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), std::move(arg->code), arg->data,
+                                                                arg->host, arg->properties, arg->auto_restart, nullptr);
+      if (arg->kill_time >= 0)
+        simcall_process_set_kill_time(actor, arg->kill_time);
       delete arg;
     });
   } else {                      // start_time <= SIMIX_get_clock()
     XBT_DEBUG("Starting Process %s(%s) right now", arg->name.c_str(), host->cname());
 
-    process_created = simix_global->create_process_function(
-        arg->name.c_str(), std::move(code), nullptr,
-        host, kill_time,
-        current_property_set, auto_restart, nullptr);
+    process_created = simix_global->create_process_function(arg->name.c_str(), std::move(code), nullptr, host,
+                                                            current_property_set, auto_restart, nullptr);
 
     /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
-    if (!process_created) {
+    if (!process_created)
       return;
-    }
+
+    if (arg->kill_time >= 0)
+      simcall_process_set_kill_time(process_created, arg->kill_time);
   }
   current_property_set = nullptr;
 }

@@ -116,11 +116,9 @@ XBT_PRIVATE void __MSG_storage_destroy(msg_storage_priv_t host);
 XBT_PRIVATE void __MSG_file_destroy(msg_file_priv_t host);
 
 XBT_PRIVATE void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_proc);
-XBT_PRIVATE smx_actor_t MSG_process_create_from_SIMIX(const char *name,
-                                   std::function<void()> code, void *data,
-                                   sg_host_t host, double kill_time,
-                                   xbt_dict_t properties, int auto_restart,
-                                   smx_actor_t parent_process);
+XBT_PRIVATE smx_actor_t MSG_process_create_from_SIMIX(const char* name, std::function<void()> code, void* data,
+                                                      sg_host_t host, xbt_dict_t properties, int auto_restart,
+                                                      smx_actor_t parent_process);
 XBT_PRIVATE void MSG_comm_copy_data_from_SIMIX(smx_activity_t comm, void* buff, size_t buff_size);
 
 XBT_PRIVATE void MSG_post_create_environment();
