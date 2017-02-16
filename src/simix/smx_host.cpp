@@ -60,9 +60,11 @@ namespace simgrid {
       for (auto arg : boot_processes) {
         XBT_DEBUG("Booting Process %s(%s) right now", arg->name.c_str(), arg->host->cname());
         smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host,
-                                                                  arg->properties, arg->auto_restart, nullptr);
+                                                                  arg->properties, nullptr);
         if (arg->kill_time >= 0)
           simcall_process_set_kill_time(actor, arg->kill_time);
+        if (arg->auto_restart)
+          simcall_process_auto_restart_set(actor, arg->auto_restart);
       }
     }
 
@@ -142,9 +144,11 @@ void SIMIX_host_autorestart(sg_host_t host)
   for (auto arg : process_list) {
     XBT_DEBUG("Restarting Process %s@%s right now", arg->name.c_str(), arg->host->cname());
     smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host,
-                                                              arg->properties, arg->auto_restart, nullptr);
+                                                              arg->properties, nullptr);
     if (arg->kill_time >= 0)
       simcall_process_set_kill_time(actor, arg->kill_time);
+    if (arg->auto_restart)
+      simcall_process_auto_restart_set(actor, arg->auto_restart);
   }
   process_list.clear();
 }

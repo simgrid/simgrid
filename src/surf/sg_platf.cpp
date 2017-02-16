@@ -497,7 +497,6 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   std::function<void()> code = factory(std::move(args));
 
   smx_process_arg_t arg = nullptr;
-  smx_actor_t process_created = nullptr;
 
   arg = new simgrid::simix::ProcessArg();
   arg->name = std::string(process->argv[0]);
@@ -520,25 +519,28 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     arg->properties = current_property_set;
 
     XBT_DEBUG("Process %s@%s will be started at time %f", arg->name.c_str(), arg->host->cname(), start_time);
-    SIMIX_timer_set(start_time, [arg]() {
+    SIMIX_timer_set(start_time, [arg, auto_restart]() {
       smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), std::move(arg->code), arg->data,
-                                                                arg->host, arg->properties, arg->auto_restart, nullptr);
+                                                                arg->host, arg->properties, nullptr);
       if (arg->kill_time >= 0)
         simcall_process_set_kill_time(actor, arg->kill_time);
+      if (auto_restart)
+        SIMIX_process_auto_restart_set(actor, auto_restart);
       delete arg;
     });
   } else {                      // start_time <= SIMIX_get_clock()
     XBT_DEBUG("Starting Process %s(%s) right now", arg->name.c_str(), host->cname());
 
-    process_created = simix_global->create_process_function(arg->name.c_str(), std::move(code), nullptr, host,
-                                                            current_property_set, auto_restart, nullptr);
+    smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), std::move(code), nullptr, host,
+                                                              current_property_set, nullptr);
 
-    /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
-    if (!process_created)
-      return;
-
-    if (arg->kill_time >= 0)
-      simcall_process_set_kill_time(process_created, arg->kill_time);
+    /* The actor creation will fail if the host is currently dead, but that's fine */
+    if (actor != nullptr) {
+      if (arg->kill_time >= 0)
+        simcall_process_set_kill_time(actor, arg->kill_time);
+      if (auto_restart)
+        SIMIX_process_auto_restart_set(actor, auto_restart);
+    }
   }
   current_property_set = nullptr;
 }

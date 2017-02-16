@@ -258,13 +258,9 @@ XBT_PUBLIC(e_smx_state_t) simcall_execution_wait(smx_activity_t execution);
 
 /**************************** Process simcalls ********************************/
 /* Constructor and Destructor */
-XBT_PUBLIC(smx_actor_t) simcall_process_create(const char *name,
-                                          xbt_main_func_t code,
-                                          void *data,
-                                          sg_host_t host,
-                                          int argc, char **argv,
-                                          xbt_dict_t properties,
-                                          int auto_restart);
+XBT_PUBLIC(smx_actor_t)
+simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_host_t host, int argc, char** argv,
+                       xbt_dict_t properties);
 
 XBT_PUBLIC(void) simcall_process_kill(smx_actor_t process);
 XBT_PUBLIC(void) simcall_process_killall(int reset_pid);

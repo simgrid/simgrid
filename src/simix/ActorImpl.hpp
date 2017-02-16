@@ -105,7 +105,6 @@ XBT_PRIVATE smx_actor_t SIMIX_process_create(
                           void *data,
                           sg_host_t host,
                           xbt_dict_t properties,
-                          int auto_restart,
                           smx_actor_t parent_process);
 
 XBT_PRIVATE void SIMIX_process_runall();

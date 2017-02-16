@@ -30,18 +30,16 @@ ActorPtr Actor::self()
 
 ActorPtr Actor::createActor(const char* name, s4u::Host* host, std::function<void()> code)
 {
-  // TODO, when autorestart is used, the std::function is copied so the new
-  // instance will get a fresh (reinitialized) state. Is this what we want?
-  smx_actor_t process = simcall_process_create(name, std::move(code), nullptr, host, nullptr, 0);
-  return ActorPtr(&process->getIface());
+  smx_actor_t actor = simcall_process_create(name, std::move(code), nullptr, host, nullptr);
+  return ActorPtr(&actor->getIface());
 }
 
 ActorPtr Actor::createActor(const char* name, s4u::Host* host, const char* function, std::vector<std::string> args)
 {
   simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(function);
   simgrid::simix::ActorCode code = factory(std::move(args));
-  smx_actor_t process                       = simcall_process_create(name, std::move(code), nullptr, host, nullptr, 0);
-  return ActorPtr(&process->getIface());
+  smx_actor_t actor                         = simcall_process_create(name, std::move(code), nullptr, host, nullptr);
+  return ActorPtr(&actor->getIface());
 }
 
 // ***** Actor methods *****
