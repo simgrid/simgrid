@@ -10,7 +10,6 @@
 #include <xbt/base.h>
 
 #include "network_interface.hpp"
-#include "xbt/fifo.h"
 #include "xbt/graph.h"
 
 

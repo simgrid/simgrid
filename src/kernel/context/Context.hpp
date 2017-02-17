@@ -17,7 +17,6 @@
 #include "simgrid/simix.h"
 #include "surf/surf.h"
 #include "xbt/base.h"
-#include "xbt/fifo.h"
 #include "xbt/swag.h"
 #include "xbt/dict.h"
 #include "xbt/mallocator.h"

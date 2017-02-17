@@ -24,6 +24,9 @@ SimGrid (3.15) UNRELEASED; urgency=low
      event from the availability_file changes the avail speed.
  - Links are now usable from s4u
 
+ XBT
+ - Kill the fifo data container: we don't use it anymore.
+ 
  -- target_date=March 20 2017 -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.14.159) stable; urgency=low

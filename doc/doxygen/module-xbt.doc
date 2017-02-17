@@ -16,7 +16,6 @@
     - Data structures
       - \ref XBT_dynar
       - \ref XBT_dict
-      - \ref XBT_fifo
       - \ref XBT_swag
       - \ref XBT_heap
       - @ref xbt_strbuff
@@ -67,7 +66,6 @@
   @{ */
      /** @defgroup XBT_dynar  Dynar: generic dynamic array */
      /** @defgroup XBT_dict   Dict: generic dictionnary */
-     /** @defgroup XBT_fifo   Fifo: generic workqueue */
      /** @defgroup XBT_swag   Swag: O(1) set datatype */
      /** @defgroup XBT_heap Heap: generic heap data structure */
 /** @} */

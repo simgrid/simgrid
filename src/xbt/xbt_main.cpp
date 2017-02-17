@@ -96,7 +96,6 @@ static void xbt_preinit(void) {
 #endif
   xbt_log_preinit();
   xbt_os_thread_mod_preinit();
-  xbt_fifo_preinit();
   xbt_dict_preinit();
    
   srand(seed);
@@ -110,7 +109,6 @@ static void xbt_postexit(void)
 {
   if(!_sg_do_clean_atexit) return;
   xbt_initialized--;
-  xbt_fifo_postexit();
   xbt_dict_postexit();
   xbt_os_thread_mod_postexit();
   xbt_dynar_free(&xbt_cmdline);

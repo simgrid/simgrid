@@ -78,7 +78,6 @@ set(EXTRA_DIST
   src/xbt/backtrace_linux.cpp
   src/xbt/dict_private.h
   src/xbt/ex_interface.h
-  src/xbt/fifo_private.h
   src/xbt/graph_private.h
   src/xbt/heap_private.h
   src/xbt/log_private.h
@@ -244,7 +243,6 @@ set(XBT_SRC
   src/xbt/dynar.cpp
   src/xbt/ex.cpp
   src/xbt/exception.cpp
-  src/xbt/fifo.c
   src/xbt/graph.c
   src/xbt/heap.c
   src/xbt/lib.c
@@ -690,7 +688,6 @@ set(headers_to_install
   include/xbt/exception.hpp
   include/xbt/backtrace.h
   include/xbt/backtrace.hpp
-  include/xbt/fifo.h
   include/xbt/file.h
   include/xbt/function_types.h
   include/xbt/functional.hpp

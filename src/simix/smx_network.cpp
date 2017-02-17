@@ -118,7 +118,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx
       other_comm->dst_proc=mbox->permanent_receiver.get();
       other_comm->ref();
       mbox->done_comm_queue.push_back(other_synchro);
-      XBT_DEBUG("pushing a message into the permanent receive fifo %p, comm %p", mbox, &(other_comm));
+      XBT_DEBUG("pushing a message into the permanent receive list %p, comm %p", mbox, &(other_comm));
 
     }else{
       mbox->push(this_synchro);
@@ -191,15 +191,15 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
   simgrid::kernel::activity::Comm* this_synchro = new simgrid::kernel::activity::Comm(SIMIX_COMM_RECEIVE);
 
   smx_activity_t other_synchro;
-  //communication already done, get it inside the fifo of completed comms
+  //communication already done, get it inside the list of completed comms
   if (mbox->permanent_receiver != nullptr && ! mbox->done_comm_queue.empty()) {
 
     XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
-    //find a match in the already received fifo
+    //find a match in the list of already received comms
     other_synchro = _find_matching_comm(&mbox->done_comm_queue, SIMIX_COMM_SEND, match_fun, data, this_synchro,/*remove_matching*/true);
     //if not found, assume the receiver came first, register it to the mailbox in the classical way
     if (!other_synchro)  {
-      XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request into fifo");
+      XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request into list");
       other_synchro = this_synchro;
       mbox->push(this_synchro);
     } else {

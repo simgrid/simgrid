@@ -18,8 +18,6 @@ void xbt_log_preinit(void);
 void xbt_log_init(int *argc, char **argv);
 void xbt_log_postexit(void);
 
-void xbt_fifo_preinit(void);
-void xbt_fifo_postexit(void);
 void xbt_dict_preinit(void);
 void xbt_dict_postexit(void);
 

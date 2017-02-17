@@ -109,7 +109,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(xbt_ex);
   XBT_LOG_CONNECT(xbt_backtrace);
   XBT_LOG_CONNECT(xbt_exception);
-  XBT_LOG_CONNECT(xbt_fifo);
   XBT_LOG_CONNECT(xbt_graph);
   XBT_LOG_CONNECT(xbt_heap);
   XBT_LOG_CONNECT(xbt_lib);
