@@ -14,7 +14,7 @@ import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
 
 public class Coordinator extends Process {
-  LinkedList<RequestTask> waitingQueue=new LinkedList<RequestTask>();
+  LinkedList<RequestTask> waitingQueue=new LinkedList<>();
   int csToServe;
 
   public Coordinator(Host host, String name, String[]args) {

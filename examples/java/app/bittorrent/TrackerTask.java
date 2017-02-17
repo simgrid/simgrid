@@ -39,6 +39,6 @@ public class TrackerTask extends Task {
     this.uploaded = uploaded;
     this.downloaded = downloaded;
     this.left = left;
-    this.peers = new ArrayList<Integer>();
+    this.peers = new ArrayList<>();
   }
 }

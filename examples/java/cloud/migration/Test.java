@@ -42,7 +42,7 @@ public class Test extends Process{
       e.printStackTrace();
     }
 
-    List<VM> vms = new ArrayList<VM>();
+    List<VM> vms = new ArrayList<>();
 
     /* Create VM1 */
     int dpRate = 70;

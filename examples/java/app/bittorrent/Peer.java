@@ -33,10 +33,10 @@ public class Peer extends Process {
   protected char[][] bitfieldBlocks = new char[Common.FILE_PIECES][Common.PIECES_BLOCKS];
   protected short[] piecesCount = new short[Common.FILE_PIECES];
   protected int piecesRequested = 0;
-  protected ArrayList<Integer> currentPieces = new ArrayList<Integer>();
+  protected ArrayList<Integer> currentPieces = new ArrayList<>();
   protected int currentPiece = -1;
-  protected HashMap<Integer, Connection> activePeers = new HashMap<Integer, Connection>();
-  protected HashMap<Integer, Connection> peers = new HashMap<Integer, Connection>();
+  protected HashMap<Integer, Connection> activePeers = new HashMap<>();
+  protected HashMap<Integer, Connection> peers = new HashMap<>();
   protected Comm commReceived = null;
 
   public Peer(Host host, String name, String[]args) {
