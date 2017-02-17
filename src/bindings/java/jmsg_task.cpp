@@ -70,12 +70,12 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_create(JNIEnv * env, jobject jt
   const char *name = nullptr;      /* the name of the task                                 */
 
   if (jflopsAmount < 0) {
-    jxbt_throw_illegal(env, bprintf("Task flopsAmount (%f) cannot be negative", (double) jflopsAmount));
+    jxbt_throw_illegal(env, bprintf("Task flopsAmount (%f) cannot be negative", static_cast<double>(jflopsAmount)));
     return;
   }
 
   if (jbytesAmount < 0) {
-    jxbt_throw_illegal(env, bprintf("Task bytesAmount (%f) cannot be negative", (double) jbytesAmount));
+    jxbt_throw_illegal(env, bprintf("Task bytesAmount (%f) cannot be negative", static_cast<double>(jbytesAmount)));
     return;
   }
 
@@ -85,7 +85,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_create(JNIEnv * env, jobject jt
   }
 
   /* create the task */
-  task = MSG_task_create(name, (double) jflopsAmount, (double) jbytesAmount, nullptr);
+  task = MSG_task_create(name, static_cast<double>(jflopsAmount), static_cast<double>(jbytesAmount), nullptr);
   if (jname)
     env->ReleaseStringUTFChars(jname, name);
   /* sets the task name */
@@ -125,7 +125,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_parallelCreate(JNIEnv * env, jo
     return;
   }
 
-  host_count = (int) env->GetArrayLength(jhosts);
+  host_count = static_cast<int>(env->GetArrayLength(jhosts));
 
   hosts = xbt_new0(msg_host_t, host_count);
   computeDurations = xbt_new0(double, host_count);
@@ -289,7 +289,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setPriority(JNIEnv * env, jobje
     jxbt_throw_notbound(env, "task", jtask);
     return;
   }
-  MSG_task_set_priority(task, (double) priority);
+  MSG_task_set_priority(task, static_cast<double>(priority));
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setFlopsAmount (JNIEnv *env, jobject jtask, jdouble computationAmount)
@@ -300,7 +300,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setFlopsAmount (JNIEnv *env, jo
     jxbt_throw_notbound(env, "task", jtask);
     return;
   }
-  MSG_task_set_flops_amount(task, (double) computationAmount);
+  MSG_task_set_flops_amount(task, static_cast<double>(computationAmount));
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setBytesAmount (JNIEnv *env, jobject jtask, jdouble dataSize)
@@ -312,7 +312,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setBytesAmount (JNIEnv *env, jo
     return;
   }
   env->SetDoubleField(jtask, jtask_field_Task_messageSize, dataSize);
-  MSG_task_set_bytes_amount(task, (double) dataSize);
+  MSG_task_set_bytes_amount(task, static_cast<double>(dataSize));
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_send(JNIEnv * env,jobject jtask, jstring jalias, jdouble jtimeout)
@@ -330,7 +330,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_send(JNIEnv * env,jobject jtask
 
   /* Pass a global ref to the Jtask into the Ctask so that the receiver can use it */
   MSG_task_set_data(task, (void *) env->NewGlobalRef(jtask));
-  rv = MSG_task_send_with_timeout(task, alias, (double) jtimeout);
+  rv = MSG_task_send_with_timeout(task, alias, static_cast<double>(jtimeout));
   env->ReleaseStringUTFChars(jalias, alias);
 
   if (rv != MSG_OK) {
@@ -354,7 +354,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_sendBounded(JNIEnv * env,jobjec
 
   /* Pass a global ref to the Jtask into the Ctask so that the receiver can use it */
   MSG_task_set_data(task, (void *) env->NewGlobalRef(jtask));
-  rv = MSG_task_send_with_timeout_bounded(task, alias, (double) jtimeout, (double) maxrate);
+  rv = MSG_task_send_with_timeout_bounded(task, alias, static_cast<double>(jtimeout), static_cast<double>(maxrate));
   env->ReleaseStringUTFChars(jalias, alias);
 
   if (rv != MSG_OK) {
@@ -366,9 +366,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass
                                                             jobject jhost)
 {
   msg_task_t task = nullptr;
-
   msg_host_t host = nullptr;
-  jobject jtask_global, jtask_local;
 
   if (jhost) {
     host = jhost_get_native(env, jhost);
@@ -387,10 +385,10 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass
     jmsg_throw_status(env,rv);
     return nullptr;
   }
-  jtask_global = (jobject) MSG_task_get_data(task);
+  jobject jtask_global = (jobject) MSG_task_get_data(task);
 
   /* Convert the global ref into a local ref so that the JVM can free the stuff */
-  jtask_local = env->NewLocalRef(jtask_global);
+  jobject jtask_local = env->NewLocalRef(jtask_global);
   env->DeleteGlobalRef(jtask_global);
   MSG_task_set_data(task, nullptr);
 
@@ -434,8 +432,6 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receiveBounded(JNIEnv * env,
   *task = nullptr;
 
   msg_host_t host = nullptr;
-  jobject jtask_global, jtask_local;
-  const char *alias;
 
   if (jhost) {
     host = jhost_get_native(env, jhost);
@@ -446,18 +442,18 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receiveBounded(JNIEnv * env,
     }
   }
 
-  alias = env->GetStringUTFChars(jalias, 0);
-  rv = MSG_task_receive_ext_bounded(task, alias, (double) jtimeout, host, (double) rate);
+  const char *alias = env->GetStringUTFChars(jalias, 0);
+  rv = MSG_task_receive_ext_bounded(task, alias, static_cast<double>(jtimeout), host, static_cast<double>(rate));
   if (env->ExceptionOccurred())
     return nullptr;
   if (rv != MSG_OK) {
     jmsg_throw_status(env,rv);
     return nullptr;
   }
-  jtask_global = (jobject) MSG_task_get_data(*task);
+  jobject jtask_global = (jobject) MSG_task_get_data(*task);
 
   /* Convert the global ref into a local ref so that the JVM can free the stuff */
-  jtask_local = env->NewLocalRef(jtask_global);
+  jobject jtask_local = env->NewLocalRef(jtask_global);
   env->DeleteGlobalRef(jtask_global);
   MSG_task_set_data(*task, nullptr);
 
@@ -485,7 +481,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_irecvBounded(JNIEnv * env, j
   }
 
   const char* mailbox = env->GetStringUTFChars(jmailbox, 0);
-  msg_comm_t comm     = MSG_task_irecv_bounded(task, mailbox, (double)rate);
+  msg_comm_t comm     = MSG_task_irecv_bounded(task, mailbox, static_cast<double>(rate));
   env->ReleaseStringUTFChars(jmailbox, mailbox);
 
   env->SetLongField(jcomm, jtask_field_Comm_bind, (jlong) (uintptr_t)(comm));
@@ -620,18 +616,15 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_dsendBounded(JNIEnv * env, jobj
 
   /* Pass a global ref to the Jtask into the Ctask so that the receiver can use it */
   MSG_task_set_data(task, (void *) env->NewGlobalRef(jtask));
-  MSG_task_dsend_bounded(task, alias, msg_task_cancel_on_failed_dsend,(double)maxrate);
+  MSG_task_dsend_bounded(task, alias, msg_task_cancel_on_failed_dsend,static_cast<double>(maxrate));
 
   env->ReleaseStringUTFChars(jalias, alias);
 }
 
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Task_listen(JNIEnv * env, jclass cls, jstring jalias)
 {
-  const char *alias;
-  int rv;
-
-  alias = env->GetStringUTFChars(jalias, 0);
-  rv = MSG_task_listen(alias);
+  const char *alias = env->GetStringUTFChars(jalias, 0);
+  int rv = MSG_task_listen(alias);
   env->ReleaseStringUTFChars(jalias, alias);
 
   return (jboolean) rv;
@@ -639,9 +632,8 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Task_listen(JNIEnv * env, jclass
 
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Task_listenFrom(JNIEnv * env, jclass cls, jstring jalias)
 {
-  int rv;
   const char *alias = env->GetStringUTFChars(jalias, 0);
-  rv = MSG_task_listen_from(alias);
+  int rv = MSG_task_listen_from(alias);
   env->ReleaseStringUTFChars(jalias, alias);
 
   return (jint) rv;

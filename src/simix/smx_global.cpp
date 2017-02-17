@@ -119,7 +119,8 @@ char sigsegv_stack[SIGSTKSZ];   /* alternate stack for SIGSEGV handler */
  */
 static void install_segvhandler()
 {
-  stack_t stack, old_stack;
+  stack_t stack;
+  stack_t old_stack;
   stack.ss_sp = sigsegv_stack;
   stack.ss_size = sizeof sigsegv_stack;
   stack.ss_flags = 0;
@@ -134,7 +135,8 @@ static void install_segvhandler()
     sigaltstack(&old_stack, nullptr);
   }
 
-  struct sigaction action, old_action;
+  struct sigaction action;
+  struct sigaction old_action;
   action.sa_sigaction = &segvhandler;
   action.sa_flags = SA_ONSTACK | SA_RESETHAND | SA_SIGINFO;
   sigemptyset(&action.sa_mask);

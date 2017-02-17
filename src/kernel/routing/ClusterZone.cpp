@@ -131,7 +131,8 @@ void ClusterZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id
   link.policy    = cluster->sharing_policy;
   sg_platf_new_link(&link);
 
-  surf::LinkImpl *linkUp, *linkDown;
+  surf::LinkImpl *linkUp;
+  surf::LinkImpl *linkDown;
   if (link.policy == SURF_LINK_FULLDUPLEX) {
     char* tmp_link = bprintf("%s_UP", link_id);
     linkUp         = surf::LinkImpl::byName(tmp_link);

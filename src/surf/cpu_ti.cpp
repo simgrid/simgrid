@@ -69,11 +69,7 @@ CpuTiTgmr::~CpuTiTgmr()
 */
 double CpuTiTgmr::integrate(double a, double b)
 {
-  double first_chunk;
-  double middle_chunk;
-  double last_chunk;
   int a_index;
-  int b_index;
 
   if ((a < 0.0) || (a > b)) {
     xbt_die("Error, invalid integration interval [%.2f,%.2f]. "
@@ -91,15 +87,15 @@ double CpuTiTgmr::integrate(double a, double b)
   else
     a_index = static_cast<int> (ceil(a / lastTime_));
 
-  b_index = static_cast<int> (floor(b / lastTime_));
+  int b_index = static_cast<int> (floor(b / lastTime_));
 
   if (a_index > b_index) {      /* Same chunk */
     return trace_->integrateSimple(a - (a_index - 1) * lastTime_, b - (b_index) * lastTime_);
   }
 
-  first_chunk = trace_->integrateSimple(a - (a_index - 1) * lastTime_, lastTime_);
-  middle_chunk = (b_index - a_index) * total_;
-  last_chunk = trace_->integrateSimple(0.0, b - (b_index) * lastTime_);
+  double first_chunk = trace_->integrateSimple(a - (a_index - 1) * lastTime_, lastTime_);
+  double middle_chunk = (b_index - a_index) * total_;
+  double last_chunk = trace_->integrateSimple(0.0, b - (b_index) * lastTime_);
 
   XBT_DEBUG("first_chunk=%.2f  middle_chunk=%.2f  last_chunk=%.2f\n", first_chunk, middle_chunk, last_chunk);
 
@@ -124,10 +120,10 @@ double CpuTiTrace::integrateSimple(double a, double b)
 double CpuTiTrace::integrateSimplePoint(double a)
 {
   double integral = 0;
-  int ind;
   double a_aux = a;
-  ind = binarySearch(timePoints_, a, 0, nbPoints_ - 1);
+  int ind = binarySearch(timePoints_, a, 0, nbPoints_ - 1);
   integral += integral_[ind];
+
   XBT_DEBUG("a %f ind %d integral %f ind + 1 %f ind %f time +1 %f time %f",
        a, ind, integral, integral_[ind + 1], integral_[ind], timePoints_[ind + 1], timePoints_[ind]);
   double_update(&a_aux, timePoints_[ind], sg_maxmin_precision*sg_surf_precision);

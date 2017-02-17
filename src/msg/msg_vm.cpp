@@ -106,18 +106,18 @@ msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int ramsize, int mig_net
 
   /* For the moment, intensity_rate is the percentage against the migration bandwidth */
   double host_speed = MSG_host_get_speed(pm);
-  double update_speed = ((double)dp_intensity/100) * mig_netspeed;
+  double update_speed = (static_cast<double>(dp_intensity)/100) * mig_netspeed;
 
   msg_vm_t vm = MSG_vm_create_core(pm, name);
   s_vm_params_t params;
   memset(&params, 0, sizeof(params));
-  params.ramsize = (sg_size_t)ramsize * 1024 * 1024;
+  params.ramsize = static_cast<sg_size_t>(ramsize) * 1024 * 1024;
   params.devsize = 0;
   params.skip_stage2 = 0;
   params.max_downtime = 0.03;
   params.dp_rate = (update_speed * 1024 * 1024) / host_speed;
   params.dp_cap = params.ramsize * 0.9; // assume working set memory is 90% of ramsize
-  params.mig_speed = (double)mig_netspeed * 1024 * 1024; // mig_speed
+  params.mig_speed = static_cast<double>(mig_netspeed) * 1024 * 1024; // mig_speed
 
   XBT_DEBUG("dp rate %f migspeed : %f intensity mem : %d, updatespeed %f, hostspeed %f", params.dp_rate,
             params.mig_speed, dp_intensity, update_speed, host_speed);
@@ -303,52 +303,51 @@ static int migration_rx_fun(int argc, char *argv[])
     vm->pimpl_vm_->resume();
   });
 
-  {
-    // Now the VM is running on the new host (the migration is completed) (even if the SRC crash)
-    vm->pimpl_vm_->isMigrating = false;
-    XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", ms->vm->cname(), ms->src_pm->cname(), ms->dst_pm->cname());
 
-    if (TRACE_msg_vm_is_enabled()) {
-      static long long int counter = 0;
-      char key[INSTR_DEFAULT_STR_SIZE];
-      snprintf(key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);
+  // Now the VM is running on the new host (the migration is completed) (even if the SRC crash)
+  vm->pimpl_vm_->isMigrating = false;
+  XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", ms->vm->cname(), ms->src_pm->cname(), ms->dst_pm->cname());
 
-      // start link
-      container_t msg = PJ_container_get(vm->cname());
-      type_t type     = PJ_type_get("MSG_VM_LINK", PJ_type_get_root());
-      new_pajeStartLink(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
+  if (TRACE_msg_vm_is_enabled()) {
+    static long long int counter = 0;
+    char key[INSTR_DEFAULT_STR_SIZE];
+    snprintf(key, INSTR_DEFAULT_STR_SIZE, "%lld", counter);
+    counter++;
 
-      // destroy existing container of this vm
-      container_t existing_container = PJ_container_get(vm->cname());
-      PJ_container_remove_from_parent(existing_container);
-      PJ_container_free(existing_container);
+    // start link
+    container_t msg = PJ_container_get(vm->cname());
+    type_t type     = PJ_type_get("MSG_VM_LINK", PJ_type_get_root());
+    new_pajeStartLink(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
 
-      // create new container on the new_host location
-      PJ_container_new(vm->cname(), INSTR_MSG_VM, PJ_container_get(ms->dst_pm->cname()));
+    // destroy existing container of this vm
+    container_t existing_container = PJ_container_get(vm->cname());
+    PJ_container_remove_from_parent(existing_container);
+    PJ_container_free(existing_container);
 
-      // end link
-      msg  = PJ_container_get(vm->cname());
-      type = PJ_type_get("MSG_VM_LINK", PJ_type_get_root());
-      new_pajeEndLink(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
-    }
+    // create new container on the new_host location
+    PJ_container_new(vm->cname(), INSTR_MSG_VM, PJ_container_get(ms->dst_pm->cname()));
+
+    // end link
+    msg  = PJ_container_get(vm->cname());
+    type = PJ_type_get("MSG_VM_LINK", PJ_type_get_root());
+    new_pajeEndLink(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
   }
+
   // Inform the SRC that the migration has been correctly performed
-  {
-    char *task_name = get_mig_task_name(ms->vm, ms->src_pm, ms->dst_pm, 4);
-    msg_task_t task = MSG_task_create(task_name, 0, 0, nullptr);
-    msg_error_t ret = MSG_task_send(task, ms->mbox_ctl);
-    // xbt_assert(ret == MSG_OK);
-    if(ret == MSG_HOST_FAILURE){
-      // The DST has crashed, this is a problem has the VM since we are not sure whether SRC is considering that the VM
-      // has been correctly migrated on the DST node
-      // TODO What does it mean ? What should we do ?
-      MSG_task_destroy(task);
-    } else if(ret == MSG_TRANSFER_FAILURE){
-      // The SRC has crashed, this is not a problem has the VM has been correctly migrated on the DST node
-      MSG_task_destroy(task);
-    }
-    xbt_free(task_name);
+  char *task_name = get_mig_task_name(ms->vm, ms->src_pm, ms->dst_pm, 4);
+  msg_task_t task = MSG_task_create(task_name, 0, 0, nullptr);
+  msg_error_t ret = MSG_task_send(task, ms->mbox_ctl);
+  // xbt_assert(ret == MSG_OK);
+  if(ret == MSG_HOST_FAILURE){
+    // The DST has crashed, this is a problem has the VM since we are not sure whether SRC is considering that the VM
+    // has been correctly migrated on the DST node
+    // TODO What does it mean ? What should we do ?
+    MSG_task_destroy(task);
+  } else if(ret == MSG_TRANSFER_FAILURE){
+    // The SRC has crashed, this is not a problem has the VM has been correctly migrated on the DST node
+    MSG_task_destroy(task);
   }
+  xbt_free(task_name);
 
   XBT_DEBUG("mig: rx_done");
   return 0;
@@ -482,7 +481,7 @@ static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t 
 {
   sg_size_t sent = 0;
   char *task_name = get_mig_task_name(vm, src_pm, dst_pm, stage);
-  msg_task_t task = MSG_task_create(task_name, 0, (double)size, nullptr);
+  msg_task_t task = MSG_task_create(task_name, 0, static_cast<double>(size), nullptr);
 
   /* TODO: clean up */
 
@@ -499,18 +498,18 @@ static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t 
   if (ret == MSG_OK) {
     sent = size;
   } else if (ret == MSG_TIMEOUT) {
-    sg_size_t remaining = (sg_size_t)MSG_task_get_remaining_communication(task);
+    sg_size_t remaining = static_cast<sg_size_t>(MSG_task_get_remaining_communication(task));
     sent = size - remaining;
     XBT_VERB("timeout (%lf s) in sending_migration_data, remaining %llu bytes of %llu", timeout, remaining, size);
   }
 
   /* FIXME: why try-and-catch is used here? */
   if(ret == MSG_HOST_FAILURE){
-    //XBT_DEBUG("SRC host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
+    XBT_DEBUG("SRC host failed during migration of %s (stage %d)", vm->cname(), stage);
     MSG_task_destroy(task);
     THROWF(host_error, 0, "SRC host failed during migration of %s (stage %d)", vm->cname(), stage);
   }else if(ret == MSG_TRANSFER_FAILURE){
-    //XBT_DEBUG("DST host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
+    XBT_DEBUG("DST host failed during migration of %s (stage %d)", vm->cname(), stage);
     MSG_task_destroy(task);
     THROWF(host_error, 0, "DST host failed during migration of %s (stage %d)", vm->cname(), stage);
   }
@@ -539,7 +538,7 @@ static sg_size_t get_updated_size(double computed, double dp_rate, double dp_cap
     updated_size = dp_cap;
   }
 
-  return (sg_size_t) updated_size;
+  return static_cast<sg_size_t>(updated_size);
 }
 
 static int migration_tx_fun(int argc, char *argv[])
@@ -547,7 +546,7 @@ static int migration_tx_fun(int argc, char *argv[])
   XBT_DEBUG("mig: tx_start");
 
   // Note that the ms structure has been allocated in do_migration and hence should be freed in the same function ;)
-  migration_session *ms = (migration_session *) MSG_process_get_data(MSG_process_self());
+  migration_session *ms = static_cast<migration_session *>(MSG_process_get_data(MSG_process_self()));
 
   s_vm_params_t params;
   static_cast<simgrid::s4u::VirtualMachine*>(ms->vm)->parameters(&params);
@@ -562,7 +561,7 @@ static int migration_tx_fun(int argc, char *argv[])
 
   double mig_timeout = 10000000.0;
 
-  double remaining_size = (double) (ramsize + devsize);
+  double remaining_size = static_cast<double>(ramsize + devsize);
   double threshold = 0.0;
 
   /* check parameters */
@@ -694,7 +693,8 @@ static int migration_tx_fun(int argc, char *argv[])
 
   try {
     XBT_DEBUG("Stage 3: Gonna send %f", remaining_size);
-    send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, (sg_size_t)remaining_size, ms->mbox, 3, 0, mig_speed, -1);
+    send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, static_cast<sg_size_t>(remaining_size), ms->mbox, 3, 0,
+                        mig_speed, -1);
   }
   catch(xbt_ex& e) {
     //hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data code)

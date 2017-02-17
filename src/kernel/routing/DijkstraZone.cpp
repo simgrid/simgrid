@@ -45,7 +45,8 @@ namespace routing {
 void DijkstraZone::seal()
 {
   xbt_node_t node = nullptr;
-  unsigned int cursor2, cursor;
+  unsigned int cursor2;
+  unsigned int cursor;
 
   /* Create the topology graph */
   if (!routeGraph_)
@@ -86,16 +87,12 @@ void DijkstraZone::seal()
 
 xbt_node_t DijkstraZone::routeGraphNewNode(int id, int graph_id)
 {
-  xbt_node_t node              = nullptr;
-  graph_node_data_t data       = nullptr;
-  graph_node_map_element_t elm = nullptr;
-
-  data           = xbt_new0(struct graph_node_data, 1);
+  graph_node_data_t data         = xbt_new0(struct graph_node_data, 1);
   data->id       = id;
   data->graph_id = graph_id;
-  node           = xbt_graph_new_node(routeGraph_, data);
 
-  elm       = xbt_new0(struct graph_node_map_element, 1);
+  xbt_node_t node                = xbt_graph_new_node(routeGraph_, data);
+  graph_node_map_element_t elm   = xbt_new0(struct graph_node_map_element, 1);
   elm->node = node;
   xbt_dict_set_ext(graphNodeMap_, (char*)(&id), sizeof(int), (xbt_dictelm_t)elm, nullptr);
 
@@ -209,7 +206,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
 
     /* apply dijkstra using the indexes from the graph's node array */
     while (xbt_heap_size(pqueue) > 0) {
-      int* v_id         = (int*)xbt_heap_pop(pqueue);
+      int* v_id         = static_cast<int*>(xbt_heap_pop(pqueue));
       xbt_node_t v_node = xbt_dynar_get_as(nodes, *v_id, xbt_node_t);
       xbt_edge_t edge   = nullptr;
       unsigned int cursor;
@@ -239,7 +236,10 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
   }
 
   /* compose route path with links */
-  NetPoint *gw_src = nullptr, *gw_dst, *prev_gw_src, *first_gw = nullptr;
+  NetPoint *gw_src = nullptr;
+  NetPoint *gw_dst;
+  NetPoint *prev_gw_src;
+  NetPoint *first_gw = nullptr;
   NetPoint *gw_dst_net_elm = nullptr, *prev_gw_src_net_elm = nullptr;
 
   for (int v = dst_node_id; v != src_node_id; v = pred_arr[v]) {

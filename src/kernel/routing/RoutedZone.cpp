@@ -88,8 +88,10 @@ void RoutedZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 
       XBT_DEBUG("get_route_and_latency %s -> %s", my_src->cname(), my_dst->cname());
 
-      xbt_node_t current, previous;
-      const char *previous_name, *current_name;
+      xbt_node_t current;
+      xbt_node_t previous;
+      const char *previous_name;
+      const char *current_name;
 
       if (route->gw_src) {
         previous      = new_xbt_graph_node(graph, route->gw_src->cname(), nodes);

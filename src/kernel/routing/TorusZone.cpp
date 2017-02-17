@@ -12,9 +12,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster_torus, surf_route_cluster, "T
 inline unsigned int* rankId_to_coords(int rankId, xbt_dynar_t dimensions)
 {
 
-  unsigned int i = 0, cur_dim_size = 1, dim_size_product = 1;
+  unsigned int cur_dim_size = 1;
+  unsigned int dim_size_product = 1;
   unsigned int* coords = (unsigned int*)malloc(xbt_dynar_length(dimensions) * sizeof(unsigned int));
-  for (i = 0; i < xbt_dynar_length(dimensions); i++) {
+  for (unsigned int i = 0; i < xbt_dynar_length(dimensions); i++) {
     cur_dim_size = xbt_dynar_get_as(dimensions, i, int);
     coords[i]    = (rankId / dim_size_product) % cur_dim_size;
     dim_size_product *= cur_dim_size;
@@ -41,16 +42,16 @@ void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
    * Each rank creates @a dimensions-1 links
    */
   int neighbor_rank_id  = 0; // The other node the link connects
-  int current_dimension = 0, // which dimension are we currently in?
+  int current_dimension = 0; // which dimension are we currently in?
       // we need to iterate over all dimensions
       // and create all links there
-      dim_product = 1; // Needed to calculate the next neighbor_id
+  int dim_product = 1; // Needed to calculate the next neighbor_id
   for (unsigned int j = 0; j < xbt_dynar_length(dimensions_); j++) {
 
     s_sg_platf_link_cbarg_t link;
     memset(&link, 0, sizeof(link));
     current_dimension = xbt_dynar_get_as(dimensions_, j, int);
-    neighbor_rank_id  = (((int)rank / dim_product) % current_dimension == current_dimension - 1)
+    neighbor_rank_id  = ((static_cast<int>(rank) / dim_product) % current_dimension == current_dimension - 1)
                            ? rank - (current_dimension - 1) * dim_product
                            : rank + dim_product;
     // name of neighbor is not right for non contiguous cluster radicals (as id != rank in this case)
@@ -131,7 +132,8 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
    * Dimension based routing routes through each dimension consecutively
    * TODO Change to dynamic assignment
    */
-  unsigned int j, cur_dim, dim_product = 1;
+  unsigned int cur_dim;
+  unsigned int dim_product = 1;
   unsigned int current_node = src->id();
   unsigned int next_node    = 0;
   /*
@@ -156,7 +158,7 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
   // false means: next -> cur
   while (current_node != dst->id()) {
     dim_product = 1; // First, we will route in x-dimension
-    for (j = 0; j < xbt_dynar_length(dimensions_); j++) {
+    for (unsigned int j = 0; j < xbt_dynar_length(dimensions_); j++) {
       cur_dim = xbt_dynar_get_as(dimensions_, j, int);
 
       // current_node/dim_product = position in current dimension

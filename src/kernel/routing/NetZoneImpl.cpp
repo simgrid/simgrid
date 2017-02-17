@@ -315,7 +315,9 @@ void NetZoneImpl::getGlobalRoute(routing::NetPoint* src, routing::NetPoint* dst,
   XBT_DEBUG("Resolve route from '%s' to '%s'", src->cname(), dst->cname());
 
   /* Find how src and dst are interconnected */
-  NetZoneImpl *common_ancestor, *src_ancestor, *dst_ancestor;
+  NetZoneImpl *common_ancestor;
+  NetZoneImpl *src_ancestor;
+  NetZoneImpl *dst_ancestor;
   find_common_ancestors(src, dst, &common_ancestor, &src_ancestor, &dst_ancestor);
   XBT_DEBUG("elements_father: common ancestor '%s' src ancestor '%s' dst ancestor '%s'", common_ancestor->name(),
             src_ancestor->name(), dst_ancestor->name());

@@ -163,7 +163,8 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
 
   action_->suspend();
 
-  smx_actor_t smx_process, smx_process_safe;
+  smx_actor_t smx_process;
+  smx_actor_t smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, process_list) {
     XBT_DEBUG("suspend %s", smx_process->name.c_str());
     SIMIX_process_suspend(smx_process, issuer);
@@ -184,7 +185,8 @@ void VirtualMachineImpl::resume()
 
   action_->resume();
 
-  smx_actor_t smx_process, smx_process_safe;
+  smx_actor_t smx_process;
+  smx_actor_t smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, process_list) {
     XBT_DEBUG("resume %s", smx_process->cname());
     SIMIX_process_resume(smx_process);
@@ -208,7 +210,8 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
   xbt_swag_t process_list = piface_->extension<simgrid::simix::Host>()->process_list;
   XBT_DEBUG("shutdown VM %s, that contains %d processes", piface_->cname(), xbt_swag_size(process_list));
 
-  smx_actor_t smx_process, smx_process_safe;
+  smx_actor_t smx_process;
+  smx_actor_t smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, process_list) {
     XBT_DEBUG("kill %s", smx_process->cname());
     SIMIX_process_kill(smx_process, issuer);
