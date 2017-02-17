@@ -132,16 +132,16 @@ int main(int argc, char **argv)
 
     // Links
     unsigned int totalLinks = sg_link_count();
-    SD_link_t *links = sg_link_list();
+    simgrid::s4u::Link** links = sg_link_list();
 
     std::qsort((void *) links, totalLinks, sizeof(SD_link_t), name_compare_links);
 
     for (i = 0; i < totalLinks; i++) {
+      simgrid::s4u::Link* link = links[i];
       std::printf("  <link id=\"");
 
-      std::printf("%s\" bandwidth=\"%.0f\" latency=\"%.9f\"", sg_link_name(links[i]),
-             sg_link_bandwidth(links[i]), sg_link_latency(links[i]));
-      if (sg_link_is_shared(links[i])) {
+      std::printf("%s\" bandwidth=\"%.0f\" latency=\"%.9f\"", link->name(), link->bandwidth(), link->latency());
+      if (sg_link_is_shared(link)) {
         std::printf("/>\n");
       } else {
         std::printf(" sharing_policy=\"FATPIPE\"/>\n");
