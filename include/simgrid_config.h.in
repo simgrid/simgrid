@@ -23,7 +23,7 @@ SG_BEGIN_DECL()
 XBT_PUBLIC(void) sg_version_get(int *major,int *minor,int *patch);
 
 /** Display the version information and some additional blurb. */
-XBT_PUBLIC(void) sg_version(void);
+XBT_PUBLIC(void) sg_version();
 SG_END_DECL()
 
 
