@@ -54,20 +54,21 @@ void HostModel::adjustWeightOfDummyCpuActions()
 Action* HostModel::executeParallelTask(int host_nb, simgrid::s4u::Host** host_list, double* flops_amount,
                                        double* bytes_amount, double rate)
 {
-#define cost_or_zero(array,pos) ((array)?(array)[pos]:0.0)
+#ifndef has_cost
+#define has_cost(array,pos) ((array)?(array)[pos]:-1.0)
   Action* action = nullptr;
-  if ((host_nb == 1) && (cost_or_zero(bytes_amount, 0) == 0.0)) {
+  if ((host_nb == 1) && (has_cost(bytes_amount, 0) <= 0)) {
     action = host_list[0]->pimpl_cpu->execution_start(flops_amount[0]);
-  } else if ((host_nb == 1) && (cost_or_zero(flops_amount, 0) == 0.0)) {
+  } else if ((host_nb == 1) && (has_cost(flops_amount, 0) <= 0)) {
     action = surf_network_model->communicate(host_list[0], host_list[0], bytes_amount[0], rate);
-  } else if ((host_nb == 2) && (cost_or_zero(flops_amount, 0) == 0.0) && (cost_or_zero(flops_amount, 1) == 0.0)) {
-    int i, nb = 0;
+  } else if ((host_nb == 2) && (has_cost(flops_amount, 0) <= 0) && (has_cost(flops_amount, 1) <= 0)) {
+    int nb = 0;
     double value = 0.0;
 
-    for (i = 0; i < host_nb * host_nb; i++) {
-      if (cost_or_zero(bytes_amount, i) > 0.0) {
+    for (int i = 0; i < host_nb * host_nb; i++) {
+      if (has_cost(bytes_amount, i) > 0.0) {
         nb++;
-        value = cost_or_zero(bytes_amount, i);
+        value = has_cost(bytes_amount, i);
       }
     }
     if (nb == 1) {
@@ -83,7 +84,8 @@ Action* HostModel::executeParallelTask(int host_nb, simgrid::s4u::Host** host_li
     xbt_die("This model only accepts one of the following. You should consider using the ptask model for the other "
             "cases.\n - execution with one host only and no communication\n - Self-comms with one host only\n - "
             "Communications with two hosts and no computation");
-#undef cost_or_zero
+#undef has_cost
+#endif
   xbt_free(host_list);
   return action;
 }
