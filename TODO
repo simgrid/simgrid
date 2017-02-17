@@ -26,5 +26,4 @@
 * Replace XBT with the C++ standard library
 
 * Some XBT datacontainers seem to overlap. Kill some/all of them.
-    - replace fifo with dynars
     - replace set with SWAG
