@@ -51,11 +51,17 @@ void HostModel::adjustWeightOfDummyCpuActions()
   }
 }
 
+/* Helper function for executeParallelTask */
+static inline double has_cost(double* array, int pos)
+{
+  if (array)
+    return array[pos];
+  else
+    return -1.0;
+}
 Action* HostModel::executeParallelTask(int host_nb, simgrid::s4u::Host** host_list, double* flops_amount,
                                        double* bytes_amount, double rate)
 {
-#ifndef has_cost
-#define has_cost(array,pos) ((array)?(array)[pos]:-1.0)
   Action* action = nullptr;
   if ((host_nb == 1) && (has_cost(bytes_amount, 0) <= 0)) {
     action = host_list[0]->pimpl_cpu->execution_start(flops_amount[0]);
@@ -81,11 +87,11 @@ Action* HostModel::executeParallelTask(int host_nb, simgrid::s4u::Host** host_li
               "using the ptask model");
     }
   } else
-    xbt_die("This model only accepts one of the following. You should consider using the ptask model for the other "
-            "cases.\n - execution with one host only and no communication\n - Self-comms with one host only\n - "
-            "Communications with two hosts and no computation");
-#undef has_cost
-#endif
+    xbt_die(
+        "This model only accepts one of the following. You should consider using the ptask model for the other cases.\n"
+        " - execution with one host only and no communication\n"
+        " - Self-comms with one host only\n"
+        " - Communications with two hosts and no computation");
   xbt_free(host_list);
   return action;
 }
