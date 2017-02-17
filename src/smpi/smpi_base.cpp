@@ -357,7 +357,7 @@ void smpi_mpi_start(MPI_Request request)
       if(request->old_type->sizeof_substruct == 0){
         oldbuf = request->buf;
         if (!smpi_process_get_replaying() && oldbuf != nullptr && request->size!=0){
-          if((smpi_privatize_global_variables != 0)
+          if((smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP)
             && (static_cast<char*>(request->buf) >= smpi_start_data_exe)
             && (static_cast<char*>(request->buf) < smpi_start_data_exe + smpi_size_data_exe )){
             XBT_DEBUG("Privatization : We are sending from a zone inside global memory. Switch data segment ");
@@ -620,7 +620,7 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
 
     if(((req->flags & ACCUMULATE) != 0) || (datatype->sizeof_substruct != 0)){
       if (!smpi_process_get_replaying()){
-        if( smpi_privatize_global_variables != 0 && (static_cast<char*>(req->old_buf) >= smpi_start_data_exe)
+        if( smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP && (static_cast<char*>(req->old_buf) >= smpi_start_data_exe)
             && ((char*)req->old_buf < smpi_start_data_exe + smpi_size_data_exe )){
             XBT_VERB("Privatization : We are unserializing to a zone in global memory - Switch data segment ");
             smpi_switch_data_segment(smpi_process_index());

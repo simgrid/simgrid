@@ -4,6 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <spawn.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <dlfcn.h>
+
 #include "mc/mc.h"
 #include "private.h"
 #include "private.hpp"
@@ -25,7 +30,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <utility>
 #include <vector>
+#include <memory>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (kernel)");
 #include <boost/tokenizer.hpp>
@@ -115,7 +122,7 @@ void smpi_process_init(int *argc, char ***argv)
       index_to_process_data=static_cast<int*>(xbt_malloc(SIMIX_process_count()*sizeof(int)));
     }
 
-    if(smpi_privatize_global_variables){
+    if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
       /* Now using segment index of the process  */
       index = proc->segment_index;
       /* Done at the process's creation */
@@ -155,7 +162,7 @@ void smpi_process_init(int *argc, char ***argv)
 void smpi_process_destroy()
 {
   int index = smpi_process_index();
-  if(smpi_privatize_global_variables){
+  if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
     smpi_switch_data_segment(index);
   }
   process_data[index_to_process_data[index]]->state = SMPI_FINALIZED;
@@ -394,7 +401,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
   void* tmpbuff=buff;
   simgrid::kernel::activity::Comm *comm = dynamic_cast<simgrid::kernel::activity::Comm*>(synchro);
 
-  if((smpi_privatize_global_variables) && (static_cast<char*>(buff) >= smpi_start_data_exe)
+  if((smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) && (static_cast<char*>(buff) >= smpi_start_data_exe)
       && (static_cast<char*>(buff) < smpi_start_data_exe + smpi_size_data_exe )
     ){
        XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
@@ -405,7 +412,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
        memcpy(tmpbuff, buff, buff_size);
   }
 
-  if((smpi_privatize_global_variables) && ((char*)comm->dst_buff >= smpi_start_data_exe)
+  if((smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) && ((char*)comm->dst_buff >= smpi_start_data_exe)
       && ((char*)comm->dst_buff < smpi_start_data_exe + smpi_size_data_exe )){
        XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
        smpi_switch_data_segment(
@@ -653,7 +660,7 @@ void smpi_global_destroy()
     xbt_dict_free(&smpi_type_keyvals);
   if(smpi_comm_keyvals!=nullptr) 
     xbt_dict_free(&smpi_comm_keyvals);
-  if(smpi_privatize_global_variables)
+  if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP)
     smpi_destroy_global_memory_segments();
   smpi_free_static();
 }
@@ -679,11 +686,6 @@ inline static int smpi_main_wrapper(int argc, char **argv){
     smpi_process_data()->return_value=ret;
   }
   return 0;
-}
-
-int __attribute__ ((weak)) main(int argc, char **argv)
-{
-  return smpi_main(smpi_main_wrapper, argc, argv);
 }
 
 #endif
@@ -767,7 +769,20 @@ static void smpi_init_options(){
     smpi_coll_cleanup_callback=nullptr;
     smpi_cpu_threshold = xbt_cfg_get_double("smpi/cpu-threshold");
     smpi_host_speed = xbt_cfg_get_double("smpi/host-speed");
-    smpi_privatize_global_variables = xbt_cfg_get_boolean("smpi/privatize-global-variables");
+
+    const char* smpi_privatize_option = xbt_cfg_get_string("smpi/privatize-global-variables");
+    if (std::strcmp(smpi_privatize_option, "no") == 0)
+      smpi_privatize_global_variables = SMPI_PRIVATIZE_NONE;
+    else if (std::strcmp(smpi_privatize_option, "yes") == 0)
+      smpi_privatize_global_variables = SMPI_PRIVATIZE_MMAP;
+    else if (std::strcmp(smpi_privatize_option, "mmap") == 0)
+      smpi_privatize_global_variables = SMPI_PRIVATIZE_MMAP;
+    else if (std::strcmp(smpi_privatize_option, "dlopen") == 0)
+      smpi_privatize_global_variables = SMPI_PRIVATIZE_DLOPEN;
+    else
+      xbt_die("Invalid value for smpi/privatize-global-variables: %s",
+        smpi_privatize_option);
+
     if (smpi_cpu_threshold < 0)
       smpi_cpu_threshold = DBL_MAX;
 
@@ -784,7 +799,36 @@ static void smpi_init_options(){
     }
 }
 
-int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
+static int execute_command(const char * const argv[])
+{
+  pid_t pid;
+  int status;
+  if (posix_spawnp(&pid, argv[0], nullptr, nullptr, (char* const*) argv, environ) != 0)
+    return 127;
+  if (waitpid(status, &status, 0) != pid)
+    return 127;
+  return status;
+}
+
+typedef int (* smpi_entry_point_type)(int argc, char **argv);
+
+static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<std::string> args)
+{
+  const int argc = args.size();
+  std::unique_ptr<char*[]> argv(new char*[argc + 1]);
+  for (int i = 0; i != argc; ++i)
+    argv[i] = args[i].empty() ? const_cast<char*>(""): &args[i].front();
+  argv[argc] = nullptr;
+
+  int res = entry_point(argc, argv.get());
+  if (res != 0){
+    XBT_WARN("SMPI process did not return 0. Return value : %d", res);
+    smpi_process_data()->return_value = res;
+  }
+  return 0;
+}
+
+int smpi_main(const char* executable, int argc, char *argv[])
 {
   srand(SMPI_RAND_SEED);
 
@@ -809,14 +853,73 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
   // parse the platform file: get the host list
   SIMIX_create_environment(argv[1]);
   SIMIX_comm_set_copy_data_callback(&smpi_comm_copy_buffer_callback);
-  SIMIX_function_register_default(realmain);
+
+  static std::size_t rank = 0;
+
+  if (smpi_privatize_global_variables == SMPI_PRIVATIZE_DLOPEN) {
+
+    std::string executable_copy = executable;
+    simix_global->default_function = [executable_copy](std::vector<std::string> args) {
+      return std::function<void()>([executable_copy, args] {
+
+        // Copy the dynamic library:
+        std::string target_executable = executable_copy
+          + "_" + std::to_string(getpid())
+          + "_" + std::to_string(rank++) + ".so";
+        // TODO, execute directly instead of relying on cp
+        const char* command1 [] = {
+          "cp", "--reflink=auto", "--", executable_copy.c_str(), target_executable.c_str(),
+          nullptr
+        };
+        const char* command2 [] = {
+          "cp", "--", executable_copy.c_str(), target_executable.c_str(),
+          nullptr
+        };
+        if (execute_command(command1) != 0 && execute_command(command2) != 0)
+          xbt_die("copy failed");
+
+        // Load the copy and resolve the entry point:
+        void* handle = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL);
+        unlink(target_executable.c_str());
+        if (handle == nullptr)
+          xbt_die("dlopen failed");
+        smpi_entry_point_type entry_point = (int (*)(int, char**)) dlsym(handle, "main");
+        // fprintf(stderr, "%s EP=%p\n", target_executable.c_str(), (void*) entry_point);
+        if (entry_point == nullptr)
+          xbt_die("Could not resolve entry point");
+
+        smpi_run_entry_point(entry_point, args);
+      });
+    };
+
+  }
+  else {
+
+    // Load the dynamic library and resolve the entry point:
+    void* handle = dlopen(executable, RTLD_LAZY | RTLD_LOCAL);
+    if (handle == nullptr)
+      xbt_die("dlopen failed for %s", executable);
+    smpi_entry_point_type entry_point = (int (*)(int, char**)) dlsym(handle, "main");
+    if (entry_point == nullptr)
+      xbt_die("main not found in %s", executable);
+    // TODO, register the executable for SMPI privatization
+
+    // Execute the same entry point for each simulated process:
+    simix_global->default_function = [entry_point](std::vector<std::string> args) {
+      return std::function<void()>([entry_point, args] {
+        smpi_run_entry_point(entry_point, args);
+      });
+    };
+
+  }
+
   SIMIX_launch_application(argv[2]);
 
   smpi_global_init();
 
   smpi_check_options();
 
-  if(smpi_privatize_global_variables)
+  if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP)
     smpi_initialize_global_memory_segments();
 
   /* Clean IO before the run */
@@ -866,7 +969,7 @@ void SMPI_init(){
   smpi_check_options();
   if (TRACE_is_enabled() && TRACE_is_configured())
     TRACE_smpi_alloc();
-  if(smpi_privatize_global_variables)
+  if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP)
     smpi_initialize_global_memory_segments();
 }
 

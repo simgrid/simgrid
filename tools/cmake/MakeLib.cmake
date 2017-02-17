@@ -97,6 +97,12 @@ endif()
 
 # Compute the dependencies of SMPI
 ##################################
+
+if(enable_smpi)
+  add_executable(smpi_main src/smpi/smpi_main.c)
+  target_link_libraries(smpi_main simgrid)
+endif()
+
 if(enable_smpi AND APPLE)
   set(SIMGRID_DEP "${SIMGRID_DEP} -Wl,-U -Wl,_smpi_simulated_main")
 endif()

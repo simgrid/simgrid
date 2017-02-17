@@ -244,7 +244,7 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        void *recvbuf, int recvcount, MPI_Datatype recvtype)
 {
   int count;
-  if(smpi_privatize_global_variables){
+  if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
     smpi_switch_data_segment(smpi_process_index());
   }
   /* First check if we really have something to do */
@@ -1392,7 +1392,8 @@ void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len, MPI_Datatyp
   if(op==MPI_OP_NULL)
     return;
 
-  if(smpi_privatize_global_variables){//we need to switch as the called function may silently touch global variables
+  if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
+    // We need to switch as the called function may silently touch global variables
     XBT_DEBUG("Applying operation, switch to the right data frame ");
     smpi_switch_data_segment(smpi_process_index());
   }

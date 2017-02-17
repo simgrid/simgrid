@@ -89,7 +89,8 @@ void smpi_comm_destroy(MPI_Comm comm)
 }
 
 int smpi_comm_dup(MPI_Comm comm, MPI_Comm* newcomm){
-  if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
+  if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
+      // We need to switch as the called function may silently touch global variables
      smpi_switch_data_segment(smpi_process_index());
    }
   MPI_Group cp=smpi_group_copy(smpi_comm_group(comm));
@@ -365,9 +366,10 @@ void smpi_comm_init_smp(MPI_Comm comm){
    smpi_process_set_replaying(false);
   }
 
-  if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
-     smpi_switch_data_segment(smpi_process_index());
-   }
+  if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
+    //we need to switch as the called function may silently touch global variables
+    smpi_switch_data_segment(smpi_process_index());
+  }
   //identify neighbours in comm
   //get the indexes of all processes sharing the same simix host
   xbt_swag_t process_list = SIMIX_host_self()->processes();
@@ -409,7 +411,8 @@ void smpi_comm_init_smp(MPI_Comm comm){
 
   smpi_coll_tuned_allgather_mpich(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, comm);
 
-  if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
+  if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
+     //we need to switch as the called function may silently touch global variables
      smpi_switch_data_segment(smpi_process_index());
    }
 
@@ -483,7 +486,8 @@ void smpi_comm_init_smp(MPI_Comm comm){
   }
   smpi_coll_tuned_bcast_mpich(&(comm->is_uniform),1, MPI_INT, 0, comm_intra );
 
-  if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
+  if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
+     // We need to switch as the called function may silently touch global variables
      smpi_switch_data_segment(smpi_process_index());
    }
   // Are the ranks blocked ? = allocated contiguously on the SMP nodes
