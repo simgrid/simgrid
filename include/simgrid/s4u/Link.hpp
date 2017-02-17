@@ -6,13 +6,11 @@
 #ifndef S4U_LINK_HPP_
 #define S4U_LINK_HPP_
 
+#include <simgrid/link.h>
 #include <xbt/base.h>
+#include <xbt/signal.hpp>
 
 #include <unordered_map>
-
-#include "xbt/signal.hpp"
-
-#include "simgrid/link.h"
 
 /***********
  * Classes *
@@ -24,7 +22,8 @@ class NetworkAction;
 };
 namespace s4u {
 /** @brief A Link represents the network facilities between [hosts](\ref simgrid::s4u::Host) */
-class Link {
+XBT_PUBLIC_CLASS Link
+{
   friend simgrid::surf::LinkImpl;
 
 private:
