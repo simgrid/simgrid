@@ -212,17 +212,14 @@ void xbt_floyd_algorithm(xbt_graph_t g, double *adj, double *d, xbt_node_t * p)
   unsigned long k;
   unsigned long n = xbt_dynar_length(g->nodes);
 
-# define D(u,v) d[(u)*n+(v)]
-# define P(u,v) p[(u)*n+(v)]
-
   for (i = 0; i < n * n; i++) {
     d[i] = adj[i];
   }
 
   for (i = 0; i < n; i++) {
     for (j = 0; j < n; j++) {
-      if (D(i, j) != -1) {
-        P(i, j) = *((xbt_node_t *) xbt_dynar_get_ptr(g->nodes, i));
+      if (d[i*n+j] > -1) {
+        p[i*n+j] = *((xbt_node_t *) xbt_dynar_get_ptr(g->nodes, i));
       }
     }
   }
@@ -230,17 +227,15 @@ void xbt_floyd_algorithm(xbt_graph_t g, double *adj, double *d, xbt_node_t * p)
   for (k = 0; k < n; k++) {
     for (i = 0; i < n; i++) {
       for (j = 0; j < n; j++) {
-        if ((D(i, k) != -1) && (D(k, j) != -1)) {
-          if ((D(i, j) == -1) || (D(i, j) > D(i, k) + D(k, j))) {
-            D(i, j) = D(i, k) + D(k, j);
-            P(i, j) = P(k, j);
+        if ((d[i*n+k] > -1) && (d[k*n+j] > -1)) {
+          if ((d[i*n+j] < 0) || (d[i*n+j] > d[i*n+k] + d[k*n+j])) {
+            d[i*n+j] = d[i*n+k] + d[k*n+j];
+            p[i*n+j] = p[k*n+j];
           }
         }
       }
     }
   }
-# undef P
-# undef D
 }
 
 /** @brief Export the given graph in the GraphViz formatting for visualization */
@@ -289,8 +284,11 @@ void xbt_graph_export_graphviz(xbt_graph_t g, const char *filename, const char *
       fprintf(file, "  \"%p\" %s \"%p\"", edge->src, c, edge->dst);
     }
 
-    if ((edge_name) && ((name = edge_name(edge))))
-      fprintf(file, "[label=\"%s\"]", name);
+    if (edge_name){
+      name = edge_name(edge);
+      if (name)
+        fprintf(file, "[label=\"%s\"]", name);
+    }
     fprintf(file, ";\n");
   }
   fprintf(file, "}\n");
