@@ -23,8 +23,18 @@ SimGrid (3.15) UNRELEASED; urgency=low
    - s4u::Host::onSpeedChange: when the pstate is changed, or when an
      event from the availability_file changes the avail speed.
  - Links are now usable from s4u
- 
- SMPI:
+
+SimDag
+ - Backwards Compatibility breaks
+    - The SD_route_get_list and SD_route_get_size functions have been removed. 
+      They are replaced by the unique 
+         void sg_host_route(sg_host_t src, sg_host_t dst, xbt_dynar_t links)
+      The route from src to dst is built in the links dynar whose size can 
+      be obtained with xbt_dynar_length.
+ - The SD_route_bandwidth and SD_route_latency functions have been replaced by
+      sg_host_route_bandwidth and sg_host_route_latency. Macros ensure the 
+      backwards compatibility, but the new functions have to be preferred.
+ SMPI
  - New algorithm for SMPI_SHARED_MALLOC: global, where all blocks are
    mapped onto a unique file.
 
