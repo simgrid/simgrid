@@ -143,12 +143,12 @@ static char* get_lib_name(const char* pathname, struct s_mc_memory_map_re* res)
   return libname;
 }
 
-static ssize_t pread_whole(int fd, void *buf, size_t count, std::uint64_t offset)
+static ssize_t pread_whole(int fd, void *buf, size_t count, off_t offset)
 {
   char* buffer = (char*) buf;
   ssize_t real_count = count;
   while (count) {
-    ssize_t res = pread(fd, buffer, count, (std::int64_t) offset);
+    ssize_t res = pread(fd, buffer, count, offset);
     if (res > 0) {
       count  -= res;
       buffer += res;
@@ -499,7 +499,7 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
 #endif
   }
 
-  if (pread_whole(this->memory_file, buffer, size, address.address()) < 0)
+  if (pread_whole(this->memory_file, buffer, size, (off_t) address.address()) < 0)
     xbt_die("Read at %p from process %lli failed", (void*)address.address(), (long long)this->pid_);
   return buffer;
 }
