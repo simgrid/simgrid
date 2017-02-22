@@ -37,22 +37,12 @@ typedef long int integer;
 typedef unsigned long int uinteger;
 #endif
 
-/* Bindings for MPI special values */
-  struct s_smpi_common {
-    integer _MPI_IN_PLACE;
-    integer _MPI_BOTTOM;
-    integer _MPI_STATUS_IGNORE;
-    integer _MPI_STATUSES_IGNORE;
-  } smpi_;
-
 /* Convert between Fortran and C */
-#define FORT_ADDR(addr, val)                                         \
-  (((void *)(addr) == (void*) &(smpi_._ ## val))                  \
-   ? (val) : (void *)(addr))
-#define FORT_BOTTOM(addr)          FORT_ADDR(addr, MPI_BOTTOM)
-#define FORT_IN_PLACE(addr)        FORT_ADDR(addr, MPI_IN_PLACE)
-#define FORT_STATUS_IGNORE(addr)   static_cast<MPI_Status*>(FORT_ADDR(addr, MPI_STATUS_IGNORE))
-#define FORT_STATUSES_IGNORE(addr) static_cast<MPI_Status*>(FORT_ADDR(addr, MPI_STATUSES_IGNORE))
+
+#define FORT_BOTTOM(addr)          ((*(int*)addr) == -200 ? MPI_BOTTOM : (void*)addr)
+#define FORT_IN_PLACE(addr)        ((*(int*)addr) == -100 ? MPI_IN_PLACE : (void*)addr)
+#define FORT_STATUS_IGNORE(addr)   (static_cast<MPI_Status*>((*(int*)addr) == -300 ? MPI_STATUS_IGNORE : (void*)addr))
+#define FORT_STATUSES_IGNORE(addr) (static_cast<MPI_Status*>((*(int*)addr) == -400 ? MPI_STATUS_IGNORE : (void*)addr))
 
 #define KEY_SIZE (sizeof(int) * 2 + 1)
 
@@ -534,7 +524,7 @@ void mpi_scatterv_(void* sendbuf, int* sendcounts, int* displs, int* sendtype,
 void mpi_gather_(void* sendbuf, int* sendcount, int* sendtype, void* recvbuf, int* recvcount, int* recvtype,
                   int* root, int* comm, int* ierr) {
   sendbuf = static_cast<char *>( FORT_IN_PLACE(sendbuf));
-  sendbuf = static_cast<char *>( FORT_BOTTOM(sendbuf));
+  sendbuf = sendbuf!=MPI_IN_PLACE ? static_cast<char *>( FORT_BOTTOM(sendbuf)) : MPI_IN_PLACE;
   recvbuf = static_cast<char *>( FORT_BOTTOM(recvbuf));
   *ierr = MPI_Gather(sendbuf, *sendcount, smpi_type_f2c(*sendtype),
                      recvbuf, *recvcount, smpi_type_f2c(*recvtype), *root, smpi_comm_f2c(*comm));
@@ -543,7 +533,7 @@ void mpi_gather_(void* sendbuf, int* sendcount, int* sendtype, void* recvbuf, in
 void mpi_gatherv_(void* sendbuf, int* sendcount, int* sendtype,
                   void* recvbuf, int* recvcounts, int* displs, int* recvtype, int* root, int* comm, int* ierr) {
   sendbuf = static_cast<char *>( FORT_IN_PLACE(sendbuf));
-  sendbuf = static_cast<char *>( FORT_BOTTOM(sendbuf));
+  sendbuf = sendbuf!=MPI_IN_PLACE ? static_cast<char *>( FORT_BOTTOM(sendbuf)) : MPI_IN_PLACE;
   recvbuf = static_cast<char *>( FORT_BOTTOM(recvbuf));
   *ierr = MPI_Gatherv(sendbuf, *sendcount, smpi_type_f2c(*sendtype),
                      recvbuf, recvcounts, displs, smpi_type_f2c(*recvtype), *root, smpi_comm_f2c(*comm));
