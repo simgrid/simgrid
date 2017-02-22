@@ -9,8 +9,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_rma, smpi, "Logging specific to SMPI (RMA operations)");
 
-msg_bar_t creation_bar = nullptr;
-
 typedef struct s_smpi_mpi_win{
   void* base;
   MPI_Aint size;
@@ -112,25 +110,31 @@ void smpi_mpi_win_set_name(MPI_Win win, char* name){
   win->name = xbt_strdup(name);
 }
 
-int smpi_mpi_win_fence( int assert,  MPI_Win win){
+int smpi_mpi_win_fence(int assert, MPI_Win win)
+{
   XBT_DEBUG("Entering fence");
-  if(win->opened==0)
+  if (win->opened == 0)
     win->opened=1;
-  if(assert != MPI_MODE_NOPRECEDE){
+  if (assert != MPI_MODE_NOPRECEDE) {
+    // This is not the first fence => finalize what came before
     MSG_barrier_wait(win->bar);
     xbt_mutex_acquire(win->mut);
+    // This (simulated) mutex ensures that no process pushes to the vector of requests during the waitall.
+    // Without this, the vector could get redimensionned when another process pushes.
+    // This would result in the array used by smpi_mpi_waitall() to be invalidated.
+    // Another solution would be to copy the data and cleanup the vector *before* smpi_mpi_waitall
     std::vector<MPI_Request> *reqs = win->requests;
     int size = static_cast<int>(reqs->size());
     // start all requests that have been prepared by another process
-    if(size>0){
-        for(auto req: *reqs){
-          if (req && (req->flags & PREPARED))
-            smpi_mpi_start(req);
-        }
+    if (size > 0) {
+      for (const auto& req : *reqs) {
+        if (req && (req->flags & PREPARED))
+          smpi_mpi_start(req);
+      }
 
-        MPI_Request* treqs = &(*reqs)[0];
+      MPI_Request* treqs = &(*reqs)[0];
 
-        smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
+      smpi_mpi_waitall(size, treqs, MPI_STATUSES_IGNORE);
     }
     win->count=0;
     xbt_mutex_release(win->mut);
@@ -138,7 +142,7 @@ int smpi_mpi_win_fence( int assert,  MPI_Win win){
   win->assert = assert;
 
   MSG_barrier_wait(win->bar);
-  XBT_DEBUG("Leaving fence ");
+  XBT_DEBUG("Leaving fence");
 
   return MPI_SUCCESS;
 }
