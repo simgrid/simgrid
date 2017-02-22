@@ -92,10 +92,6 @@ static void segvhandler(int signum, siginfo_t *siginfo, void *context)
                     "Minimal Working Example (MWE) reproducing your problem and a full backtrace\n"
                     "of the fault captured with gdb or valgrind.\n",
             smx_context_stack_size / 1024);
-    if (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_debug)) {
-      fprintf(stderr, "siginfo = {si_signo = %d, si_errno = %d, si_code = %d, si_addr = %p}\n",
-              siginfo->si_signo, siginfo->si_errno, siginfo->si_code, siginfo->si_addr);
-    }
   } else  if (siginfo->si_signo == SIGSEGV) {
     fprintf(stderr, "Segmentation fault.\n");
 #if HAVE_SMPI
