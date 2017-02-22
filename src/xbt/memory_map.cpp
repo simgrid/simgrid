@@ -116,7 +116,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 
     /* Addresses */
     memreg.start_addr = address;
-    memreg.end_addr = address + size - 1;
+    memreg.end_addr = address + size;
 
     /* Permissions */
     memreg.prot = PROT_NONE;
