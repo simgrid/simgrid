@@ -498,8 +498,7 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
     }
 #endif
   }
-
-  if (pread_whole(this->memory_file, buffer, size, (off_t) address.address()) < 0)
+  if (pread_whole(this->memory_file, buffer, size, (size_t) address.address()) < 0)
     xbt_die("Read at %p from process %lli failed", (void*)address.address(), (long long)this->pid_);
   return buffer;
 }
@@ -512,7 +511,7 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
  */
 void Process::write_bytes(const void* buffer, size_t len, RemotePtr<void> address)
 {
-  if (pwrite_whole(this->memory_file, buffer, len, address.address()) < 0)
+  if (pwrite_whole(this->memory_file, buffer, len,  (size_t)address.address()) < 0)
     xbt_die("Write to process %lli failed", (long long) this->pid_);
 }
 
