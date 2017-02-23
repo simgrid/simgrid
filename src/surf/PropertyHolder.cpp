@@ -19,7 +19,7 @@ PropertyHolder::~PropertyHolder() {
 const char *PropertyHolder::getProperty(const char*key) {
   if (properties_ == nullptr)
     return nullptr;
-  return (const char*) xbt_dict_get_or_null(properties_,key);
+  return static_cast<const char*>(xbt_dict_get_or_null(properties_,key));
 }
 
 /** @brief Change the value of a given key in the property set */
