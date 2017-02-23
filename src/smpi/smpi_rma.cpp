@@ -370,7 +370,7 @@ int smpi_mpi_win_complete(MPI_Win win){
       smpi_mpi_start(req);
   }
 
-  MPI_Request* treqs = &(*reqqs)[0];
+  MPI_Request* treqs = size > 0 ? &(*reqqs)[0] : nullptr;
   smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
   reqqs->clear();
   xbt_mutex_release(win->mut);
@@ -415,7 +415,7 @@ int smpi_mpi_win_wait(MPI_Win win){
       smpi_mpi_start(req);
   }
 
-  MPI_Request* treqs = &(*reqqs)[0];
+  MPI_Request* treqs = size > 0 ? &(*reqqs)[0] : nullptr;
   smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
   reqqs->clear();
   xbt_mutex_release(win->mut);
