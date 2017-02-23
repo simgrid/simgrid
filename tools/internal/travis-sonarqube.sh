@@ -36,7 +36,11 @@ installBuildWrapper
 # triggers the compilation through the build wrapper to gather compilation database
 ./build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-outputs "$@"
 
-# and finally execute the actual SonarQube analysis (the SONAR_TOKEN is set from the travis web interface, to not expose it)
+# Run ctest before sonar to gather coverage some information
+ctest --output-on-failure --timeout 100
+
+# and finally execute the actual SonarQube analysis 
+# (the SONAR_TOKEN is set from the travis web interface, to not expose it with an ongoing "set -x")
 # See https://docs.travis-ci.com/user/sonarqube/ for more info on tokens
 # don't show the token in the logs
 set +x
