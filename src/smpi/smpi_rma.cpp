@@ -364,15 +364,17 @@ int smpi_mpi_win_complete(MPI_Win win){
   size = static_cast<int>(reqqs->size());
 
   XBT_DEBUG("Win_complete - Finishing %d RMA calls", size);
-  // start all requests that have been prepared by another process
-  for (auto req: *reqqs){
-    if (req && (req->flags & PREPARED))
-      smpi_mpi_start(req);
-  }
+  if (size > 0) {
+    // start all requests that have been prepared by another process
+    for (const auto& req : *reqqs) {
+      if (req && (req->flags & PREPARED))
+        smpi_mpi_start(req);
+    }
 
-  MPI_Request* treqs = size > 0 ? &(*reqqs)[0] : nullptr;
-  smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
-  reqqs->clear();
+    MPI_Request* treqs = &(*reqqs)[0];
+    smpi_mpi_waitall(size, treqs, MPI_STATUSES_IGNORE);
+    reqqs->clear();
+  }
   xbt_mutex_release(win->mut);
 
   smpi_group_unuse(win->group);
@@ -408,16 +410,17 @@ int smpi_mpi_win_wait(MPI_Win win){
   size = static_cast<int>(reqqs->size());
 
   XBT_DEBUG("Win_wait - Finishing %d RMA calls", size);
+  if (size > 0) {
+    // start all requests that have been prepared by another process
+    for (const auto& req : *reqqs) {
+      if (req && (req->flags & PREPARED))
+        smpi_mpi_start(req);
+    }
 
-  // start all requests that have been prepared by another process
-  for(auto req: *reqqs){
-    if (req && (req->flags & PREPARED))
-      smpi_mpi_start(req);
+    MPI_Request* treqs = &(*reqqs)[0];
+    smpi_mpi_waitall(size, treqs, MPI_STATUSES_IGNORE);
+    reqqs->clear();
   }
-
-  MPI_Request* treqs = size > 0 ? &(*reqqs)[0] : nullptr;
-  smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
-  reqqs->clear();
   xbt_mutex_release(win->mut);
 
   smpi_group_unuse(win->group);
