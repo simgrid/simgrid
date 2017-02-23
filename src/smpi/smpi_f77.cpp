@@ -164,35 +164,13 @@ template <> void free_f<MPI_Request>(int id, xbt_dict_t dict) {
   xbt_dict_remove(dict, get_key_id(key, id));
 }
 
-template <typename T> T smpi_f2c(int , xbt_dict_t ) {
-  return NULL;
-}
-
-template <> MPI_Datatype smpi_f2c<MPI_Datatype>(int id, xbt_dict_t dict) {
+template <typename T> T smpi_f2c(int id, xbt_dict_t dict, void* null_id ) {
   smpi_init_fortran_types();
   char key[KEY_SIZE];
-  return id >= 0 ? static_cast<MPI_Datatype>(xbt_dict_get_or_null(dict, get_key(key, id))): MPI_DATATYPE_NULL;
+  return id >= 0 ? static_cast<T>(xbt_dict_get_or_null(dict, get_key(key, id))): static_cast<T>(null_id);
 }
 
-template <> MPI_Op smpi_f2c<MPI_Op> (int id, xbt_dict_t dict) {
-  smpi_init_fortran_types();
-  char key[KEY_SIZE];
-  return id >= 0 ? static_cast<MPI_Op>(xbt_dict_get_or_null(dict, get_key(key, id))): MPI_OP_NULL;
-}
-
-template <> MPI_Info smpi_f2c<MPI_Info>(int id, xbt_dict_t dict) {
-  smpi_init_fortran_types();
-  char key[KEY_SIZE];
-  return id >= 0 ? static_cast<MPI_Info>(xbt_dict_get_or_null(dict, get_key(key, id))): MPI_INFO_NULL;
-}
-
-template <> MPI_Win smpi_f2c<MPI_Win>(int id, xbt_dict_t dict) {
-  smpi_init_fortran_types();
-  char key[KEY_SIZE];
-  return id >= 0 ? static_cast<MPI_Win>(xbt_dict_get_or_null(dict, get_key(key, id))): MPI_WIN_NULL;
-}
-
-template <> MPI_Comm smpi_f2c<MPI_Comm>(int comm, xbt_dict_t dict) {
+template <> MPI_Comm smpi_f2c<MPI_Comm>(int comm, xbt_dict_t dict, void* null_id) {
   smpi_init_fortran_types();
   if(comm == -2) {
     return MPI_COMM_SELF;
@@ -201,13 +179,13 @@ template <> MPI_Comm smpi_f2c<MPI_Comm>(int comm, xbt_dict_t dict) {
   } else if(dict != nullptr && comm >= 0) {
       char key[KEY_SIZE];
       MPI_Comm tmp =  static_cast<MPI_Comm>(xbt_dict_get_or_null(dict,get_key_id(key, comm)));
-      return tmp != nullptr ? tmp : MPI_COMM_NULL ;
+      return tmp != nullptr ? tmp : static_cast<MPI_Comm>(null_id) ;
   } else {
-    return MPI_COMM_NULL;
+    return static_cast<MPI_Comm>(null_id);
   }
 }
 
-template <> MPI_Group smpi_f2c<MPI_Group>(int group, xbt_dict_t dict) {
+template <> MPI_Group smpi_f2c<MPI_Group>(int group, xbt_dict_t dict, void* null_id) {
   smpi_init_fortran_types();
   if(group == -2) {
     return MPI_GROUP_EMPTY;
@@ -215,19 +193,19 @@ template <> MPI_Group smpi_f2c<MPI_Group>(int group, xbt_dict_t dict) {
     char key[KEY_SIZE];
     return static_cast<MPI_Group>(xbt_dict_get_or_null(dict, get_key(key, group)));
   } else {
-    return MPI_GROUP_NULL;
+    return static_cast<MPI_Group>(null_id);
   }
 }
 
-template <> MPI_Request smpi_f2c<MPI_Request>(int request, xbt_dict_t dict) {
+template <> MPI_Request smpi_f2c<MPI_Request>(int request, xbt_dict_t dict, void* null_id) {
   smpi_init_fortran_types();
   char key[KEY_SIZE];
   if(request==MPI_FORTRAN_REQUEST_NULL)
-    return MPI_REQUEST_NULL;
+    return static_cast<MPI_Request>(null_id);
   return static_cast<MPI_Request>(xbt_dict_get(dict, get_key_id(key, request)));
 }
 
-#define SMPI_F2C_C2F(type, name)\
+#define SMPI_F2C_C2F(type, name, null_id)\
 int smpi_##name##_add_f(type name){\
   return smpi_add_f<type>(name, name##_lookup, &name##_id);\
 }\
@@ -238,18 +216,18 @@ static void free_##name(int id) {\
   free_f<type>(id, name##_lookup);\
 }\
 type smpi_##name##_f2c(int id){\
-  return smpi_f2c<type>(id, name##_lookup);\
+  return smpi_f2c<type>(id, name##_lookup, static_cast<void*>(null_id));\
 }
 
 extern "C" { // This should really use the C linkage to be usable from Fortran
 
-SMPI_F2C_C2F(MPI_Comm, comm)
-SMPI_F2C_C2F(MPI_Group, group)
-SMPI_F2C_C2F(MPI_Request, request)
-SMPI_F2C_C2F(MPI_Datatype, type)
-SMPI_F2C_C2F(MPI_Win, win)
-SMPI_F2C_C2F(MPI_Op, op)
-SMPI_F2C_C2F(MPI_Info, info)
+SMPI_F2C_C2F(MPI_Comm, comm, MPI_COMM_NULL)
+SMPI_F2C_C2F(MPI_Group, group, MPI_GROUP_NULL)
+SMPI_F2C_C2F(MPI_Request, request, MPI_REQUEST_NULL)
+SMPI_F2C_C2F(MPI_Datatype, type, MPI_DATATYPE_NULL)
+SMPI_F2C_C2F(MPI_Win, win, MPI_WIN_NULL)
+SMPI_F2C_C2F(MPI_Op, op, MPI_OP_NULL)
+SMPI_F2C_C2F(MPI_Info, info, MPI_INFO_NULL)
 
 void mpi_init_(int* ierr) {
     smpi_init_fortran_types();
