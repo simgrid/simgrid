@@ -42,7 +42,7 @@ typedef unsigned long int uinteger;
 #define FORT_BOTTOM(addr)          ((*(int*)addr) == -200 ? MPI_BOTTOM : (void*)addr)
 #define FORT_IN_PLACE(addr)        ((*(int*)addr) == -100 ? MPI_IN_PLACE : (void*)addr)
 #define FORT_STATUS_IGNORE(addr)   (static_cast<MPI_Status*>((*(int*)addr) == -300 ? MPI_STATUS_IGNORE : (void*)addr))
-#define FORT_STATUSES_IGNORE(addr) (static_cast<MPI_Status*>((*(int*)addr) == -400 ? MPI_STATUS_IGNORE : (void*)addr))
+#define FORT_STATUSES_IGNORE(addr) (static_cast<MPI_Status*>((*(int*)addr) == -400 ? MPI_STATUSES_IGNORE : (void*)addr))
 
 #define KEY_SIZE (sizeof(int) * 2 + 1)
 
