@@ -15,12 +15,11 @@ static void* hash(char *str, uint64_t* ans)
 {
   char *tohash = str;
   *ans=5381;
-  int c;
   printf("hashing !\n");
-  c = *tohash++;
-  while (c!=0){
+  int c = *(tohash++);
+  while (c != 0) {
     *ans = ((*ans << 5) + *ans) + c; /* hash * 33 + c */
-    c = *tohash++;
+    c    = *(tohash++);
   }
   return NULL;
 }
