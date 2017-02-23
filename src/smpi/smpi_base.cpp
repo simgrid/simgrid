@@ -903,13 +903,13 @@ int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status * status)
 int smpi_mpi_waitall(int count, MPI_Request requests[], MPI_Status status[])
 {
   s_xbt_dynar_t accumulates;
-  int  index, c;
+  int index;
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
   int retvalue = MPI_SUCCESS;
   //tag invalid requests in the set
   if (status != MPI_STATUSES_IGNORE) {
-    for (c = 0; c < count; c++) {
+    for (int c = 0; c < count; c++) {
       if (requests[c] == MPI_REQUEST_NULL || requests[c]->dst == MPI_PROC_NULL || (requests[c]->flags & PREPARED)) {
         smpi_empty_status(&status[c]);
       } else if (requests[c]->src == MPI_PROC_NULL) {
@@ -919,7 +919,7 @@ int smpi_mpi_waitall(int count, MPI_Request requests[], MPI_Status status[])
     }
   }
   xbt_dynar_init(&accumulates, sizeof(MPI_Request), nullptr);
-  for(c = 0; c < count; c++) {
+  for (int c = 0; c < count; c++) {
 
     if (MC_is_active() || MC_record_replay_is_active()) {
       smpi_mpi_wait(&requests[c], pstat);
