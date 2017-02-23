@@ -695,6 +695,7 @@ static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_activ
     sleep->surf_sleep = nullptr;
   }
   sleep->unref();
+  // intrusive_ptr_release(process); // FIXME: We are leaking here. See comment in SIMIX_process_join()
   return 0;
 }
 
@@ -702,6 +703,12 @@ smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, doubl
 {
   smx_activity_t res = SIMIX_process_sleep(issuer, timeout);
   static_cast<simgrid::kernel::activity::ActivityImpl*>(res)->ref();
+  /* We are leaking the process here, but if we don't take the ref, we get a "use after free".
+   * The correct solution would be to derivate the type SynchroSleep into a SynchroProcessJoin,
+   * but the code is not clean enough for now for this.
+   * The C API should first be properly replaced with the C++ one, which is a fair amount of work.
+   */
+  intrusive_ptr_add_ref(process);
   SIMIX_process_on_exit(process, (int_f_pvoid_pvoid_t)SIMIX_process_join_finish, res);
   return res;
 }
