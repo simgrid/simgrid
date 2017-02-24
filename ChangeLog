@@ -34,9 +34,24 @@ SimDag
  - The SD_route_bandwidth and SD_route_latency functions have been replaced by
       sg_host_route_bandwidth and sg_host_route_latency. Macros ensure the 
       backwards compatibility, but the new functions have to be preferred.
+
  SMPI
+ - Bump our claim of support from MPI 1.1 to MPI 2.2. We don't support 100% of 
+   it, but it should be enough. Contact us if not.
  - New algorithm for SMPI_SHARED_MALLOC: global, where all blocks are
    mapped onto a unique file.
+ - Privatization now works on FreeBSD
+ - Bugfix : smpirun was sometimes misusing hostfile when wrongly terminated
+ - Fortran : cleanups, fixes, support of user-added operations
+ - RMA : MPI_Accumulate are applied in correct order, and 
+   MPI_Win_complete or MPI_Win_post shouldn't miss messages anymore.
+ - Better support for MPI_IN_PLACE
+ - Support MPI_Comm_group_create, MPI_Type_size_x
+ - Replace implementation of MPI_Bcast "scatter followed by rdb allgather"
+   algorithm by a non failing one from mpich.
+
+ MC
+ - now works on FreeBSD
 
  XBT
  - Kill the fifo data container: we don't use it anymore.
