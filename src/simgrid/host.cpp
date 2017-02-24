@@ -14,6 +14,7 @@
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/simix/smx_host_private.h"
 #include "src/surf/HostImpl.hpp"
+#include "src/surf/cpu_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sg_host, sd, "Logging specific to sg_hosts");
 
@@ -102,8 +103,6 @@ xbt_dynar_t sg_hosts_as_dynar()
 }
 
 // ========= Layering madness ==============*
-
-#include "src/surf/cpu_interface.hpp"
 
 // ========== User data Layer ==========
 void *sg_host_user(sg_host_t host) {
