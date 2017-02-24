@@ -24,7 +24,7 @@
 #include "src/kernel/routing/NetZoneImpl.hpp"
 #include "src/kernel/routing/TorusZone.hpp"
 #include "src/kernel/routing/VivaldiZone.hpp"
-
+#include <string>
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 
 XBT_PRIVATE xbt_dynar_t mount_list = nullptr;

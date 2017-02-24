@@ -5,6 +5,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <string>
 
 #include "src/kernel/routing/FatTreeZone.hpp"
 #include "src/kernel/routing/NetPoint.hpp"

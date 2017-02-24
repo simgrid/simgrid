@@ -19,6 +19,7 @@
 #include "xbt/log.h"
 #include "xbt/misc.h"
 #include "xbt/str.h"
+#include <string>
 
 #include "src/surf/xml/platf_private.hpp"
 
@@ -657,7 +658,7 @@ void ETag_surfxml_link(){
   link.properties          = current_property_set;
   current_property_set     = nullptr;
 
-  link.id                  = A_surfxml_link_id;
+  link.id                  = std::string(A_surfxml_link_id);
   link.bandwidth           = surf_parse_get_bandwidth(A_surfxml_link_bandwidth, "bandwidth of link", link.id.c_str());
   link.bandwidth_trace     = A_surfxml_link_bandwidth___file[0] ? tmgr_trace_new_from_file(A_surfxml_link_bandwidth___file) : nullptr;
   link.latency             = surf_parse_get_time(A_surfxml_link_latency, "latency of link", link.id.c_str());
@@ -714,7 +715,7 @@ void ETag_surfxml_backbone(){
   memset(&link,0,sizeof(link));
 
   link.properties = nullptr;
-  link.id = A_surfxml_backbone_id;
+  link.id = std::string(A_surfxml_backbone_id);
   link.bandwidth = surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth, "bandwidth of backbone", link.id.c_str());
   link.latency = surf_parse_get_time(A_surfxml_backbone_latency, "latency of backbone", link.id.c_str());
   link.policy = SURF_LINK_SHARED;
