@@ -299,14 +299,15 @@ void ETag_surfxml_storage()
   s_sg_platf_storage_cbarg_t storage;
   memset(&storage,0,sizeof(storage));
 
+  storage.properties   = current_property_set;
+  current_property_set = nullptr;
+
   storage.id           = A_surfxml_storage_id;
   storage.type_id      = A_surfxml_storage_typeId;
   storage.content      = A_surfxml_storage_content;
   storage.content_type = A_surfxml_storage_content___type;
-  storage.properties   = current_property_set;
   storage.attach       = A_surfxml_storage_attach;
   sg_platf_new_storage(&storage);
-  current_property_set = nullptr;
 }
 void STag_surfxml_storage___type()
 {
@@ -320,17 +321,19 @@ void ETag_surfxml_storage___type()
   s_sg_platf_storage_type_cbarg_t storage_type;
   memset(&storage_type,0,sizeof(storage_type));
 
+  storage_type.properties = current_property_set;
+  current_property_set    = nullptr;
+
+  storage_type.model_properties = current_model_property_set;
+  current_model_property_set    = nullptr;
+
   storage_type.content          = A_surfxml_storage___type_content;
   storage_type.content_type     = A_surfxml_storage___type_content___type;
   storage_type.id               = A_surfxml_storage___type_id;
   storage_type.model            = A_surfxml_storage___type_model;
-  storage_type.properties       = current_property_set;
-  storage_type.model_properties = current_model_property_set;
   storage_type.size             = surf_parse_get_size(A_surfxml_storage___type_size,
         "size of storage type", storage_type.id);
   sg_platf_new_storage_type(&storage_type);
-  current_property_set       = nullptr;
-  current_model_property_set = nullptr;
 }
 void STag_surfxml_mount()
 {
@@ -475,14 +478,13 @@ void STag_surfxml_prop()
 void ETag_surfxml_host()    {
   s_sg_platf_host_cbarg_t host;
   memset(&host,0,sizeof(host));
-  char* buf;
-
 
   host.properties = current_property_set;
+  current_property_set = nullptr;
 
   host.id = A_surfxml_host_id;
 
-  buf = A_surfxml_host_speed;
+  char* buf = A_surfxml_host_speed;
   XBT_DEBUG("Buffer: %s", buf);
   if (strchr(buf, ',') == nullptr){
     double speed = surf_parse_get_speed(A_surfxml_host_speed,"speed of host", host.id);
@@ -509,7 +511,6 @@ void ETag_surfxml_host()    {
   host.coord       = A_surfxml_host_coordinates;
 
   sg_platf_new_host(&host);
-  current_property_set = nullptr;
 }
 
 void STag_surfxml_host___link(){
@@ -531,6 +532,7 @@ void ETag_surfxml_cluster(){
   s_sg_platf_cluster_cbarg_t cluster;
   memset(&cluster,0,sizeof(cluster));
   cluster.properties = current_property_set;
+  current_property_set = nullptr;
 
   cluster.id          = A_surfxml_cluster_id;
   cluster.prefix      = A_surfxml_cluster_prefix;
@@ -601,8 +603,6 @@ void ETag_surfxml_cluster(){
   }
 
   sg_platf_new_cluster(&cluster);
-
-  current_property_set = nullptr;
 }
 
 void STag_surfxml_cluster(){
@@ -655,6 +655,8 @@ void ETag_surfxml_link(){
   memset(&link,0,sizeof(link));
 
   link.properties          = current_property_set;
+  current_property_set     = nullptr;
+
   link.id                  = A_surfxml_link_id;
   link.bandwidth           = surf_parse_get_bandwidth(A_surfxml_link_bandwidth, "bandwidth of link", link.id);
   link.bandwidth_trace     = A_surfxml_link_bandwidth___file[0] ? tmgr_trace_new_from_file(A_surfxml_link_bandwidth___file) : nullptr;
@@ -678,8 +680,6 @@ void ETag_surfxml_link(){
   }
 
   sg_platf_new_link(&link);
-
-  current_property_set = nullptr;
 }
 
 void STag_surfxml_link___ctn(){
@@ -910,14 +910,13 @@ void ETag_surfxml_config(){
   xbt_dict_cursor_t cursor = nullptr;
   char *key;
   char *elem;
-  char *cfg;
   xbt_dict_foreach(current_property_set, cursor, key, elem) {
-    cfg = bprintf("%s:%s",key,elem);
-    if(xbt_cfg_is_default_value(key))
+    if (xbt_cfg_is_default_value(key)) {
+      char* cfg = bprintf("%s:%s", key, elem);
       xbt_cfg_set_parse(cfg);
-    else
+      free(cfg);
+    } else
       XBT_INFO("The custom configuration '%s' is already defined by user!",key);
-    free(cfg);
   }
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
 
