@@ -1,5 +1,10 @@
 SimGrid (3.15) UNRELEASED; urgency=low
 
+ The Ever Green Release. 
+ We fixed even the transient bugs on all target architectures:
+   Linux (CentOS, Debian, Ubuntu, Fedora), Mac OSX (Mavericks, El Capitan)
+   Windows, FreeBSD, NetBSD.
+
  - Rename NetCards to NetPoints.
    This was intended to help NS3 users, but that's not a netcard.
    That's a point in the routing algorithm, let's avoid wrong simplifications.
@@ -24,23 +29,22 @@ SimGrid (3.15) UNRELEASED; urgency=low
      event from the availability_file changes the avail speed.
  - Links are now usable from s4u
 
-SimDag
+ SimDag
  - Backwards Compatibility breaks
     - The SD_route_get_list and SD_route_get_size functions have been removed. 
       They are replaced by the unique 
          void sg_host_route(sg_host_t src, sg_host_t dst, xbt_dynar_t links)
       The route from src to dst is built in the links dynar whose size can 
       be obtained with xbt_dynar_length.
- - The SD_route_bandwidth and SD_route_latency functions have been replaced by
-      sg_host_route_bandwidth and sg_host_route_latency. Macros ensure the 
-      backwards compatibility, but the new functions have to be preferred.
+    - The SD_route_bandwidth and SD_route_latency functions have been replaced by
+        sg_host_route_bandwidth and sg_host_route_latency. 
+      Macros ensure the backwards compatibility, but you should fix your code
 
  SMPI
  - Bump our claim of support from MPI 1.1 to MPI 2.2. We don't support 100% of 
    it, but it should be enough. Contact us if not.
  - New algorithm for SMPI_SHARED_MALLOC: global, where all blocks are
    mapped onto a unique file.
- - Privatization now works on FreeBSD
  - Bugfix : smpirun was sometimes misusing hostfile when wrongly terminated
  - Fortran : cleanups, fixes, support of user-added operations
  - RMA : MPI_Accumulate are applied in correct order, and 
@@ -49,9 +53,6 @@ SimDag
  - Support MPI_Comm_group_create, MPI_Type_size_x
  - Replace implementation of MPI_Bcast "scatter followed by rdb allgather"
    algorithm by a non failing one from mpich.
-
- MC
- - now works on FreeBSD
 
  XBT
  - Kill the fifo data container: we don't use it anymore.
@@ -80,7 +81,12 @@ SimGrid (3.14) stable; urgency=low
  * We now need python3 for our testing infrastructure.
  * Model checking needs libevent
 
+ MC
+ * Now works on FreeBSD
+
  SMPI
+ * Privatization now works on FreeBSD
+ 
  * Privatization is now activated by default in smpirun
    You can turn it off with -no-privatize if something goes wrong.
 
@@ -161,7 +167,7 @@ SimGrid (3.14) stable; urgency=low
 
  MSG:
  * Memory usage should be decreased for simulations with a large number 
-  of processes. This also helps for SMPI.
+   of processes. This also helps for SMPI.
 
  -- Sat Dec 24 22:34:26 CET 2016 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
