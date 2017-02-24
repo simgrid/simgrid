@@ -272,22 +272,13 @@ XBT_PUBLIC(void) MSG_create_environment(const char *file);
 XBT_PUBLIC(msg_process_t) MSG_process_create(const char *name,
                                            xbt_main_func_t code,
                                            void *data, msg_host_t host);
-XBT_PUBLIC(msg_process_t) MSG_process_create_with_arguments(const char *name,
-                                                          xbt_main_func_t
-                                                          code, void *data,
-                                                          msg_host_t host,
-                                                          int argc,
-                                                          char **argv);
-XBT_PUBLIC(msg_process_t) MSG_process_create_with_environment(const char
-                                                            *name,
-                                                            xbt_main_func_t
-                                                            code,
-                                                            void *data,
-                                                            msg_host_t host,
-                                                            int argc,
-                                                            char **argv,
-                                                            xbt_dict_t
-                                                            properties);
+XBT_PUBLIC(msg_process_t)
+MSG_process_create_with_arguments(const char* name, xbt_main_func_t code, void* data, msg_host_t host, int argc,
+                                  char** argv);
+XBT_PUBLIC(msg_process_t)
+MSG_process_create_with_environment(const char* name, xbt_main_func_t code, void* data, msg_host_t host, int argc,
+                                    char** argv, xbt_dict_t properties);
+
 XBT_PUBLIC(msg_process_t) MSG_process_attach(
   const char *name, void *data,
   msg_host_t host, xbt_dict_t properties);

@@ -18,7 +18,6 @@ class Activity;
 class Comm;
 class Engine;
 class Host;
-class Link;
 class Mailbox;
 using MailboxPtr = boost::intrusive_ptr<Mailbox>;
 class Mutex;
