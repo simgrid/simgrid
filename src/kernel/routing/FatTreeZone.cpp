@@ -435,20 +435,18 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, in
     linkTemplate.bandwidth = cluster->limiter_link;
     linkTemplate.latency   = 0;
     linkTemplate.policy    = SURF_LINK_SHARED;
-    linkTemplate.id        = bprintf("limiter_%d", id);
+    linkTemplate.id        = "limiter_"+std::to_string(id);
     sg_platf_new_link(&linkTemplate);
-    this->limiterLink = surf::LinkImpl::byName(linkTemplate.id);
-    free(const_cast<char*>(linkTemplate.id));
+    this->limiterLink = surf::LinkImpl::byName(linkTemplate.id.c_str());
   }
   if (cluster->loopback_bw || cluster->loopback_lat) {
     memset(&linkTemplate, 0, sizeof(linkTemplate));
     linkTemplate.bandwidth = cluster->loopback_bw;
     linkTemplate.latency   = cluster->loopback_lat;
     linkTemplate.policy    = SURF_LINK_FATPIPE;
-    linkTemplate.id        = bprintf("loopback_%d", id);
+    linkTemplate.id        = "loopback_"+ std::to_string(id);
     sg_platf_new_link(&linkTemplate);
-    this->loopback = surf::LinkImpl::byName(linkTemplate.id);
-    free(const_cast<char*>(linkTemplate.id));
+    this->loopback = surf::LinkImpl::byName(linkTemplate.id.c_str());
   }
 }
 
@@ -461,7 +459,8 @@ FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode* downNode
   linkTemplate.bandwidth = cluster->bw;
   linkTemplate.latency   = cluster->lat;
   linkTemplate.policy    = cluster->sharing_policy; // sthg to do with that ?
-  linkTemplate.id        = bprintf("link_from_%d_to_%d_%d", downNode->id, upNode->id, uniqueId);
+  linkTemplate.id        =
+      "link_from_" + std::to_string( downNode->id) + "_" + std::to_string(upNode->id) + "_" + std::to_string(uniqueId);
   sg_platf_new_link(&linkTemplate);
 
   if (cluster->sharing_policy == SURF_LINK_FULLDUPLEX) {
@@ -470,10 +469,9 @@ FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode* downNode
     tmpID          = std::string(linkTemplate.id) + "_DOWN";
     this->downLink    = surf::LinkImpl::byName(tmpID.c_str()); // check link ?
   } else {
-    this->upLink   = surf::LinkImpl::byName(linkTemplate.id);
+    this->upLink   = surf::LinkImpl::byName(linkTemplate.id.c_str());
     this->downLink = this->upLink;
   }
-  free(const_cast<char*>(linkTemplate.id));
   uniqueId++;
 }
 }

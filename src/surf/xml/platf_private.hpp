@@ -12,6 +12,7 @@
 #include "simgrid/host.h"
 #include "src/surf/xml/platf.hpp"
 #include <vector>
+#include <string>
 
 SG_BEGIN_DECL()
 #include "src/surf/xml/simgrid_dtd.h"
@@ -57,7 +58,7 @@ typedef struct {
 } s_sg_platf_host_link_cbarg_t, *sg_platf_host_link_cbarg_t;
 
 typedef struct {
-  const char* id;
+  std::string id;
   double bandwidth;
   tmgr_trace_t bandwidth_trace;
   double latency;

@@ -142,7 +142,7 @@ void DragonflyZone::createLink(char* id, int numlinks, surf::LinkImpl** linkup, 
   linkTemplate.bandwidth = this->cluster_->bw * numlinks;
   linkTemplate.latency   = this->cluster_->lat;
   linkTemplate.policy    = this->cluster_->sharing_policy; // sthg to do with that ?
-  linkTemplate.id        = id;
+  linkTemplate.id        = std::string(id);
   sg_platf_new_link(&linkTemplate);
   XBT_DEBUG("Generating link %s", id);
   surf::LinkImpl* link;
@@ -155,17 +155,14 @@ void DragonflyZone::createLink(char* id, int numlinks, surf::LinkImpl** linkup, 
     link      = surf::LinkImpl::byName(tmpID.c_str());
     *linkdown = link; // check link ?
   } else {
-    link      = surf::LinkImpl::byName(linkTemplate.id);
+    link      = surf::LinkImpl::byName(linkTemplate.id.c_str());
     *linkup   = link;
     *linkdown = link;
   }
-
-  free((void*)linkTemplate.id);
 }
 
 void DragonflyZone::generateLinks()
 {
-
   static int uniqueId = 0;
   char* id            = nullptr;
   surf::LinkImpl* linkup;

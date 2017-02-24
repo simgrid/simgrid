@@ -116,17 +116,17 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const char* name, const 
 }
 
 void sg_platf_new_link(sg_platf_link_cbarg_t link){
-  std::vector<char*> names;
+  std::vector<std::string> names;
 
   if (link->policy == SURF_LINK_FULLDUPLEX) {
-    names.push_back(bprintf("%s_UP", link->id));
-    names.push_back(bprintf("%s_DOWN", link->id));
+    names.push_back(link->id+ "_UP");
+    names.push_back(link->id+ "_DOWN");
   } else {
-    names.push_back(xbt_strdup(link->id));
+    names.push_back(link->id);
   }
   for (auto link_name : names) {
     simgrid::surf::LinkImpl* l =
-        surf_network_model->createLink(link_name, link->bandwidth, link->latency, link->policy);
+        surf_network_model->createLink(link_name.c_str(), link->bandwidth, link->latency, link->policy);
 
     if (link->properties) {
       xbt_dict_cursor_t cursor = nullptr;
@@ -142,8 +142,6 @@ void sg_platf_new_link(sg_platf_link_cbarg_t link){
       l->setBandwidthTrace(link->bandwidth_trace);
     if (link->state_trace)
       l->setStateTrace(link->state_trace);
-
-    xbt_free(link_name);
   }
 }
 
@@ -291,16 +289,15 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   if ((cluster->bb_bw != 0) || (cluster->bb_lat != 0)) {
 
     memset(&link, 0, sizeof(link));
-    link.id        = bprintf("%s_backbone", cluster->id);
+    link.id        = std::string(cluster->id)+ "_backbone";
     link.bandwidth = cluster->bb_bw;
     link.latency   = cluster->bb_lat;
     link.policy    = cluster->bb_sharing_policy;
 
-    XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/>", link.id, cluster->bb_bw, cluster->bb_lat);
+    XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/>", link.id.c_str(), cluster->bb_bw, cluster->bb_lat);
     sg_platf_new_link(&link);
 
-    routing_cluster_add_backbone(simgrid::surf::LinkImpl::byName(link.id));
-    free((char*)link.id);
+    routing_cluster_add_backbone(simgrid::surf::LinkImpl::byName(link.id.c_str()));
   }
 
   XBT_DEBUG("</AS>");
@@ -309,6 +306,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   simgrid::surf::on_cluster(cluster);
   delete cluster->radicals;
 }
+
 void routing_cluster_add_backbone(simgrid::surf::LinkImpl* bb)
 {
   simgrid::kernel::routing::ClusterZone* cluster =
@@ -324,12 +322,12 @@ void routing_cluster_add_backbone(simgrid::surf::LinkImpl* bb)
 void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
 {
   for (int radical : *cabinet->radicals) {
-    char *hostname = bprintf("%s%d%s", cabinet->prefix, radical, cabinet->suffix);
+    std::string hostname = std::string(cabinet->prefix) + std::to_string(radical) + std::string(cabinet->suffix);
     s_sg_platf_host_cbarg_t host;
     memset(&host, 0, sizeof(host));
     host.pstate           = 0;
     host.core_amount      = 1;
-    host.id               = hostname;
+    host.id               = hostname.c_str();
     host.speed_per_pstate.push_back(cabinet->speed);
     sg_platf_new_host(&host);
 
@@ -338,20 +336,17 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
     link.policy    = SURF_LINK_FULLDUPLEX;
     link.latency   = cabinet->lat;
     link.bandwidth = cabinet->bw;
-    link.id        = bprintf("link_%s",hostname);
+    link.id        = "link_" + hostname;
     sg_platf_new_link(&link);
-    free((char*)link.id);
 
     s_sg_platf_host_link_cbarg_t host_link;
     memset(&host_link, 0, sizeof(host_link));
-    host_link.id        = hostname;
-    host_link.link_up   = bprintf("link_%s_UP",hostname);
-    host_link.link_down = bprintf("link_%s_DOWN",hostname);
+    host_link.id        = hostname.c_str();
+    host_link.link_up   = bprintf("link_%s_UP",hostname.c_str());
+    host_link.link_down = bprintf("link_%s_DOWN",hostname.c_str());
     sg_platf_new_hostlink(&host_link);
     free((char*)host_link.link_up);
     free((char*)host_link.link_down);
-
-    free(hostname);
   }
   delete cabinet->radicals;
 }

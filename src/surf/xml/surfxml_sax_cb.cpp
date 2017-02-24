@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2015. The SimGrid Team.
+  /* Copyright (c) 2006-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -658,9 +658,9 @@ void ETag_surfxml_link(){
   current_property_set     = nullptr;
 
   link.id                  = A_surfxml_link_id;
-  link.bandwidth           = surf_parse_get_bandwidth(A_surfxml_link_bandwidth, "bandwidth of link", link.id);
+  link.bandwidth           = surf_parse_get_bandwidth(A_surfxml_link_bandwidth, "bandwidth of link", link.id.c_str());
   link.bandwidth_trace     = A_surfxml_link_bandwidth___file[0] ? tmgr_trace_new_from_file(A_surfxml_link_bandwidth___file) : nullptr;
-  link.latency             = surf_parse_get_time(A_surfxml_link_latency, "latency of link", link.id);
+  link.latency             = surf_parse_get_time(A_surfxml_link_latency, "latency of link", link.id.c_str());
   link.latency_trace       = A_surfxml_link_latency___file[0] ? tmgr_trace_new_from_file(A_surfxml_link_latency___file) : nullptr;
   link.state_trace         = A_surfxml_link_state___file[0] ? tmgr_trace_new_from_file(A_surfxml_link_state___file):nullptr;
 
@@ -675,7 +675,7 @@ void ETag_surfxml_link(){
      link.policy = SURF_LINK_FULLDUPLEX;
      break;
   default:
-    surf_parse_error("Invalid sharing policy in link %s", link.id);
+    surf_parse_error("Invalid sharing policy in link %s", link.id.c_str());
     break;
   }
 
@@ -715,8 +715,8 @@ void ETag_surfxml_backbone(){
 
   link.properties = nullptr;
   link.id = A_surfxml_backbone_id;
-  link.bandwidth = surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth, "bandwidth of backbone", link.id);
-  link.latency = surf_parse_get_time(A_surfxml_backbone_latency, "latency of backbone", link.id);
+  link.bandwidth = surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth, "bandwidth of backbone", link.id.c_str());
+  link.latency = surf_parse_get_time(A_surfxml_backbone_latency, "latency of backbone", link.id.c_str());
   link.policy = SURF_LINK_SHARED;
 
   sg_platf_new_link(&link);
