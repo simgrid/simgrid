@@ -102,8 +102,10 @@ static s4u::NetZone* netzoneByNameRecursive(s4u::NetZone* current, const char* n
   NetZone_t elem;
   xbt_dict_foreach(current->children(), cursor, key, elem) {
     simgrid::s4u::NetZone* tmp = netzoneByNameRecursive(elem, name);
-    if (tmp != nullptr )
-        return tmp;
+    if (tmp != nullptr) {
+      xbt_dict_cursor_free(&cursor);
+      return tmp;
+    }
   }
   return nullptr;
 }
