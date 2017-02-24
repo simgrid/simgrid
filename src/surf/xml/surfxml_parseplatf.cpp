@@ -147,9 +147,10 @@ void parse_platform_file(const char *file)
 
     /* Run the script */
     if (lua_pcall(L, 0, 0, 0)) {
-        XBT_ERROR("FATAL ERROR:\n  %s: %s\n\n", "Lua call failed. Errormessage:", lua_tostring(L, -1));
-        xbt_die("Lua call failed. See Log");
+      XBT_ERROR("FATAL ERROR:\n  %s: %s\n\n", "Lua call failed. Error message:", lua_tostring(L, -1));
+      xbt_die("Lua call failed. See Log");
     }
+    lua_close(L);
   }
   else
 #endif

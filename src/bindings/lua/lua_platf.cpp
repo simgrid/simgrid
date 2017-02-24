@@ -311,9 +311,6 @@ int console_add_route(lua_State *L) {
   memset(&route,0,sizeof(route));
   int type;
 
-  /* allocating memory for the buffer, I think 2kB should be enough */
-  surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
-
   lua_ensure(lua_istable(L, -1), "Bad Arguments to add a route. Should be a table with named arguments");
 
   lua_pushstring(L,"src");
@@ -352,6 +349,7 @@ int console_add_route(lua_State *L) {
       }
     }
   }
+  xbt_dynar_free(&names);
   lua_pop(L,1);
 
   /* We are relying on the XML bypassing mechanism since the corresponding sg_platf does not exist yet.
@@ -378,6 +376,7 @@ int console_add_route(lua_State *L) {
   route.gw_dst = nullptr;
 
   sg_platf_new_route(&route);
+  delete route.link_list;
 
   return 0;
 }
@@ -449,6 +448,7 @@ int console_add_ASroute(lua_State *L) {
   lua_pop(L,1);
 
   sg_platf_new_route(&ASroute);
+  delete ASroute.link_list;
 
   return 0;
 }
