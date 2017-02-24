@@ -652,8 +652,7 @@ void STag_surfxml_link(){
 }
 
 void ETag_surfxml_link(){
-  s_sg_platf_link_cbarg_t link;
-  memset(&link,0,sizeof(link));
+  LinkCreationArgs link;
 
   link.properties          = current_property_set;
   current_property_set     = nullptr;
@@ -711,8 +710,7 @@ void STag_surfxml_link___ctn(){
 }
 
 void ETag_surfxml_backbone(){
-  s_sg_platf_link_cbarg_t link;
-  memset(&link,0,sizeof(link));
+  LinkCreationArgs link;
 
   link.properties = nullptr;
   link.id = std::string(A_surfxml_backbone_id);

@@ -48,8 +48,7 @@ void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
   int dim_product = 1; // Needed to calculate the next neighbor_id
   for (unsigned int j = 0; j < xbt_dynar_length(dimensions_); j++) {
 
-    s_sg_platf_link_cbarg_t link;
-    memset(&link, 0, sizeof(link));
+    LinkCreationArgs link;
     current_dimension = xbt_dynar_get_as(dimensions_, j, int);
     neighbor_rank_id  = ((static_cast<int>(rank) / dim_product) % current_dimension == current_dimension - 1)
                            ? rank - (current_dimension - 1) * dim_product

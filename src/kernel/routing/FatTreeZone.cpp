@@ -430,9 +430,8 @@ void FatTreeZone::generateDotFile(const std::string& filename) const
 FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, int position)
     : id(id), level(level), position(position)
 {
-  s_sg_platf_link_cbarg_t linkTemplate;
+  LinkCreationArgs linkTemplate;
   if (cluster->limiter_link) {
-    memset(&linkTemplate, 0, sizeof(linkTemplate));
     linkTemplate.bandwidth = cluster->limiter_link;
     linkTemplate.latency   = 0;
     linkTemplate.policy    = SURF_LINK_SHARED;
@@ -441,7 +440,6 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, in
     this->limiterLink = surf::LinkImpl::byName(linkTemplate.id.c_str());
   }
   if (cluster->loopback_bw || cluster->loopback_lat) {
-    memset(&linkTemplate, 0, sizeof(linkTemplate));
     linkTemplate.bandwidth = cluster->loopback_bw;
     linkTemplate.latency   = cluster->loopback_lat;
     linkTemplate.policy    = SURF_LINK_FATPIPE;
@@ -455,13 +453,12 @@ FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode* downNode
     : upNode(upNode), downNode(downNode)
 {
   static int uniqueId = 0;
-  s_sg_platf_link_cbarg_t linkTemplate;
-  memset(&linkTemplate, 0, sizeof(linkTemplate));
+  LinkCreationArgs linkTemplate;
   linkTemplate.bandwidth = cluster->bw;
   linkTemplate.latency   = cluster->lat;
   linkTemplate.policy    = cluster->sharing_policy; // sthg to do with that ?
-  linkTemplate.id        =
-      "link_from_" + std::to_string( downNode->id) + "_" + std::to_string(upNode->id) + "_" + std::to_string(uniqueId);
+  linkTemplate.id =
+      "link_from_" + std::to_string(downNode->id) + "_" + std::to_string(upNode->id) + "_" + std::to_string(uniqueId);
   sg_platf_new_link(&linkTemplate);
 
   if (cluster->sharing_policy == SURF_LINK_FULLDUPLEX) {

@@ -115,7 +115,8 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const char* name, const 
   return netpoint;
 }
 
-void sg_platf_new_link(sg_platf_link_cbarg_t link){
+void sg_platf_new_link(LinkCreationArgs* link)
+{
   std::vector<std::string> names;
 
   if (link->policy == SURF_LINK_FULLDUPLEX) {
@@ -154,7 +155,6 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
 
   int rankId=0;
 
-  s_sg_platf_link_cbarg_t link;
 
   // What an inventive way of initializing the AS that I have as ancestor :-(
   s_sg_platf_AS_cbarg_t AS;
@@ -228,7 +228,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       char *tmp_link = bprintf("%s_loopback", link_id);
       XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", tmp_link, cluster->loopback_bw);
 
-      memset(&link, 0, sizeof(link));
+      LinkCreationArgs link;
       link.id        = tmp_link;
       link.bandwidth = cluster->loopback_bw;
       link.latency   = cluster->loopback_lat;
@@ -249,7 +249,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       char *tmp_link = bprintf("%s_limiter", link_id);
       XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", tmp_link, cluster->limiter_link);
 
-      memset(&link, 0, sizeof(link));
+      LinkCreationArgs link;
       link.id = tmp_link;
       link.bandwidth = cluster->limiter_link;
       link.latency = 0;
@@ -288,7 +288,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   //Make the backbone
   if ((cluster->bb_bw != 0) || (cluster->bb_lat != 0)) {
 
-    memset(&link, 0, sizeof(link));
+    LinkCreationArgs link;
     link.id        = std::string(cluster->id)+ "_backbone";
     link.bandwidth = cluster->bb_bw;
     link.latency   = cluster->bb_lat;
@@ -331,8 +331,7 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
     host.speed_per_pstate.push_back(cabinet->speed);
     sg_platf_new_host(&host);
 
-    s_sg_platf_link_cbarg_t link;
-    memset(&link, 0, sizeof(link));
+    LinkCreationArgs link;
     link.policy    = SURF_LINK_FULLDUPLEX;
     link.latency   = cabinet->lat;
     link.bandwidth = cabinet->bw;

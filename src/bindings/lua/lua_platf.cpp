@@ -61,16 +61,14 @@ int console_close(lua_State *L) {
 }
 
 int console_add_backbone(lua_State *L) {
-  s_sg_platf_link_cbarg_t link;
-  memset(&link,0,sizeof(link));
-  int type;
+  LinkCreationArgs link;
 
   link.properties = nullptr;
 
   lua_ensure(lua_istable(L, -1),"Bad Arguments to create backbone in Lua. Should be a table with named arguments.");
 
   lua_pushstring(L, "id");
-  type = lua_gettable(L, -2);
+  int type = lua_gettable(L, -2);
   lua_ensure(type == LUA_TSTRING, "Attribute 'id' must be specified for backbone and must be a string.");
   link.id = lua_tostring(L, -1);
   lua_pop(L, 1);
@@ -79,14 +77,14 @@ int console_add_backbone(lua_State *L) {
   type = lua_gettable(L, -2);
   lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
       "Attribute 'bandwidth' must be specified for backbone and must either be a string (in the right format; see docs) or a number.");
-  link.bandwidth = surf_parse_get_bandwidth(lua_tostring(L, -1),"bandwidth of backbone",link.id);
+  link.bandwidth = surf_parse_get_bandwidth(lua_tostring(L, -1), "bandwidth of backbone", link.id.c_str());
   lua_pop(L, 1);
 
   lua_pushstring(L, "lat");
   type = lua_gettable(L, -2);
   lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
       "Attribute 'lat' must be specified for backbone and must either be a string (in the right format; see docs) or a number.");
-  link.latency = surf_parse_get_time(lua_tostring(L, -1),"latency of backbone",link.id);
+  link.latency = surf_parse_get_time(lua_tostring(L, -1), "latency of backbone", link.id.c_str());
   lua_pop(L, 1);
 
   lua_pushstring(L, "sharing_policy");
@@ -101,7 +99,7 @@ int console_add_backbone(lua_State *L) {
   }
 
   sg_platf_new_link(&link);
-  routing_cluster_add_backbone(simgrid::surf::LinkImpl::byName(link.id));
+  routing_cluster_add_backbone(simgrid::surf::LinkImpl::byName(link.id.c_str()));
 
   return 0;
 }
@@ -201,17 +199,15 @@ int console_add_host(lua_State *L) {
 }
 
 int  console_add_link(lua_State *L) {
-  s_sg_platf_link_cbarg_t link;
-  memset(&link,0,sizeof(link));
+  LinkCreationArgs link;
 
-  int type;
   const char* policy;
 
   lua_ensure(lua_istable(L, -1), "Bad Arguments to create link, Should be a table with named arguments");
 
   // get Id Value
   lua_pushstring(L, "id");
-  type = lua_gettable(L, -2);
+  int type = lua_gettable(L, -2);
   lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
       "Attribute 'id' must be specified for any link and must be a string.");
   link.id = lua_tostring(L, -1);
@@ -225,7 +221,7 @@ int  console_add_link(lua_State *L) {
   if (type == LUA_TNUMBER)
     link.bandwidth = lua_tonumber(L, -1);
   else // LUA_TSTRING
-    link.bandwidth = surf_parse_get_bandwidth(lua_tostring(L, -1),"bandwidth of link", link.id);
+    link.bandwidth = surf_parse_get_bandwidth(lua_tostring(L, -1), "bandwidth of link", link.id.c_str());
   lua_pop(L, 1);
 
   //get latency value
@@ -236,7 +232,7 @@ int  console_add_link(lua_State *L) {
   if (type == LUA_TNUMBER)
     link.latency = lua_tonumber(L, -1);
   else // LUA_TSTRING
-    link.latency = surf_parse_get_time(lua_tostring(L, -1),"latency of link", link.id);
+    link.latency = surf_parse_get_time(lua_tostring(L, -1), "latency of link", link.id.c_str());
   lua_pop(L, 1);
 
   /*Optional Arguments  */

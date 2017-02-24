@@ -123,8 +123,7 @@ void ClusterZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id
 {
   char* link_id = bprintf("%s_link_%d", cluster->id, id);
 
-  s_sg_platf_link_cbarg_t link;
-  memset(&link, 0, sizeof(link));
+  LinkCreationArgs link;
   link.id        = link_id;
   link.bandwidth = cluster->bw;
   link.latency   = cluster->lat;
@@ -145,7 +144,6 @@ void ClusterZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id
     linkDown = linkUp;
   }
   privateLinks_.insert({position, {linkUp, linkDown}});
-  xbt_free(link_id);
 }
 }
 }

@@ -138,8 +138,7 @@ void DragonflyZone::createLink(char* id, int numlinks, surf::LinkImpl** linkup, 
 {
   *linkup   = nullptr;
   *linkdown = nullptr;
-  s_sg_platf_link_cbarg_t linkTemplate;
-  memset(&linkTemplate, 0, sizeof(linkTemplate));
+  LinkCreationArgs linkTemplate;
   linkTemplate.bandwidth = this->cluster_->bw * numlinks;
   linkTemplate.latency   = this->cluster_->lat;
   linkTemplate.policy    = this->cluster_->sharing_policy; // sthg to do with that ?
