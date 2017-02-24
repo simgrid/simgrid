@@ -825,6 +825,7 @@ void ETag_surfxml_bypassRoute(){
   parsed_link_list.clear();
 
   sg_platf_new_bypassRoute(&route);
+  delete route.link_list;
 }
 
 void ETag_surfxml_bypassASroute(){
@@ -844,6 +845,7 @@ void ETag_surfxml_bypassASroute(){
   ASroute.gw_dst = sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_gw___dst);
 
   sg_platf_new_bypassRoute(&ASroute);
+  delete ASroute.link_list;
 }
 
 void ETag_surfxml_trace(){
