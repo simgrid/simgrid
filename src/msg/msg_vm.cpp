@@ -19,6 +19,8 @@
 #include "simgrid/host.h"
 #include "simgrid/simix.hpp"
 
+SG_BEGIN_DECL()
+
 struct dirty_page {
   double prev_clock;
   double prev_remaining;
@@ -882,3 +884,5 @@ void MSG_vm_set_bound(msg_vm_t vm, double bound)
   simgrid::simix::kernelImmediate(
       [vm, bound]() { static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->setBound(bound); });
 }
+
+SG_END_DECL()

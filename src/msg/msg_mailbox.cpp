@@ -10,6 +10,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_mailbox, msg, "Logging specific to MSG (mailbox)");
 
+SG_BEGIN_DECL()
+
 /** \ingroup msg_mailbox_management
  * \brief Set the mailbox to receive in asynchronous mode
  *
@@ -25,3 +27,4 @@ void MSG_mailbox_set_async(const char *alias){
   XBT_VERB("%s mailbox set to receive eagerly for myself\n",alias);
 }
 
+SG_END_DECL()

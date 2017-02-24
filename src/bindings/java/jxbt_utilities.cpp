@@ -12,6 +12,8 @@
 #include "xbt/str.h"
 #include "jxbt_utilities.h"
 
+SG_BEGIN_DECL()
+
 jclass jxbt_get_class(JNIEnv * env, const char *name)
 {
   jclass cls = env->FindClass(name);
@@ -236,3 +238,5 @@ void jxbt_throw_task_cancelled(JNIEnv * env, char *details)
 {
   jxbt_throw_by_name(env, "org/simgrid/msg/TaskCancelledException", details);
 }
+
+SG_END_DECL()

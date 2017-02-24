@@ -24,6 +24,8 @@
 // Define a new category
 XBT_LOG_NEW_DEFAULT_CATEGORY (jtrace, "TRACE for Java(TM)");
 
+SG_BEGIN_DECL()
+
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostStateDeclare(JNIEnv * env, jclass cls, jstring js)
 {
   const char *s = env->GetStringUTFChars(js, 0);
@@ -191,3 +193,5 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSetWithTim
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcdstVariableAddWithTime (JNIEnv *env, jclass cls, jdouble, jstring, jstring, jstring, jdouble);
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSubWithTime (JNIEnv *env, jclass cls, jdouble, jstring, jstring, jstring, jdouble);
 */
+
+SG_END_DECL()

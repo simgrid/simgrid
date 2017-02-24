@@ -9,6 +9,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg, "Logging specific to MSG (io)");
 
+SG_BEGIN_DECL()
+
 /** @addtogroup msg_file
  * (#msg_file_t) and the functions for managing it.
  *
@@ -606,3 +608,5 @@ const char *MSG_storage_get_host(msg_storage_t storage) {
   msg_storage_priv_t priv = MSG_storage_priv(storage);
   return priv->hostname;
 }
+
+SG_END_DECL()

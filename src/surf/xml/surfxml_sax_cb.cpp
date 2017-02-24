@@ -24,7 +24,9 @@
 #include "src/surf/xml/platf_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf, "Logging specific to the SURF parsing module");
-#undef CLEANUP
+
+SG_BEGIN_DECL()
+
 int ETag_surfxml_include_state();
 
 #include "simgrid_dtd.c"
@@ -1046,3 +1048,5 @@ static int _surf_parse() {
 }
 
 int_f_void_t surf_parse = _surf_parse;
+
+SG_END_DECL()

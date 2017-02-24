@@ -21,6 +21,8 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
+SG_BEGIN_DECL()
+
 static jmethodID jtask_method_Comm_constructor;
 
 static jfieldID jtask_field_Task_bind;
@@ -638,3 +640,5 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_Task_listenFrom(JNIEnv * env, jclass
 
   return (jint) rv;
 }
+
+SG_END_DECL()

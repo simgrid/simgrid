@@ -10,6 +10,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg, "Logging specific to MSG (gos)");
 
+SG_BEGIN_DECL()
+
 /** \ingroup msg_task_usage
  * \brief Executes a task and waits for its termination.
  *
@@ -906,3 +908,5 @@ const char *MSG_task_get_category (msg_task_t task)
 {
   return task->category;
 }
+
+SG_END_DECL()

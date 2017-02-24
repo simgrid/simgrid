@@ -26,6 +26,8 @@ extern "C" {
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 
+SG_BEGIN_DECL()
+
 /*
  *  Allow the cluster tag to mess with the parsing buffer.
  * (this will probably become obsolete once the cluster tag do not mess with the parsing callbacks directly)
@@ -239,8 +241,7 @@ void parse_platform_file(const char *file)
 
     if (parse_status)
       surf_parse_error("Parse error in %s", file);
-
   }
-
-
 }
+
+SG_END_DECL()

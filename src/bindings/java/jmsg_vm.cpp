@@ -18,6 +18,8 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
+SG_BEGIN_DECL()
+
 static jfieldID jvm_field_bind;
 
 void jvm_bind(JNIEnv *env, jobject jvm, msg_vm_t vm)
@@ -124,3 +126,4 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_resume(JNIEnv *env, jobject jvm)
   MSG_vm_resume(vm);
 }
 
+SG_END_DECL()

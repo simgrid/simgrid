@@ -107,10 +107,11 @@ typedef struct MSG_Global {
   void_f_pvoid_t process_data_cleanup;
 } s_MSG_Global_t, *MSG_Global_t;
 
+SG_BEGIN_DECL()
+
 XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 
 /*************************************************************/
-SG_BEGIN_DECL()
 
 XBT_PRIVATE msg_host_t __MSG_host_create(sg_host_t host);
 XBT_PRIVATE msg_storage_t __MSG_storage_create(smx_storage_t storage);

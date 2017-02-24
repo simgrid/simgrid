@@ -11,6 +11,8 @@
 #include "jmsg_rngstream.h"
 #include "jxbt_utilities.h"
 
+SG_BEGIN_DECL()
+
 jfieldID jrngstream_bind;
 
 RngStream jrngstream_to_native(JNIEnv *env, jobject jrngstream) {
@@ -144,3 +146,5 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_RngStream_randInt(JNIEnv *env, jobje
 
   return (jint)RngStream_RandInt(rngstream, (int)i, (int)j);
 }
+
+SG_END_DECL()

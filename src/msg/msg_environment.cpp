@@ -13,6 +13,8 @@
 #include <lualib.h>
 #endif
 
+SG_BEGIN_DECL()
+
 /********************************* MSG **************************************/
 
 /** \ingroup msg_simulation
@@ -80,3 +82,5 @@ xbt_dynar_t MSG_environment_as_get_hosts(msg_netzone_t netzone)
 {
   return netzone->hosts();
 }
+
+SG_END_DECL()

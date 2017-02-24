@@ -16,6 +16,8 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
+SG_BEGIN_DECL()
+
 static jmethodID jstorage_method_Storage_constructor;
 static jfieldID jstorage_field_Storage_bind;
 static jfieldID jstorage_field_Storage_name;
@@ -233,3 +235,5 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Storage_all(JNIEnv * env, jc
   xbt_dynar_free(&table);
   return jtable;
 }
+
+SG_END_DECL()

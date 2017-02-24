@@ -17,7 +17,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
-extern "C" {
+SG_BEGIN_DECL()
 
 jfieldID jprocess_field_Process_bind;
 jfieldID jprocess_field_Process_host;
@@ -396,4 +396,4 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_getCount(JNIEnv * env, jclas
   return (jint) MSG_process_get_number();
 }
 
-} // extern C
+SG_END_DECL()

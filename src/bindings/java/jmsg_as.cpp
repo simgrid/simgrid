@@ -21,6 +21,8 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
+SG_BEGIN_DECL()
+
 static jmethodID jas_method_As_constructor;
 static jfieldID jas_field_As_bind;
 
@@ -165,3 +167,5 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jo
   xbt_dynar_free(&table);
   return jtable;
 }
+
+SG_END_DECL()

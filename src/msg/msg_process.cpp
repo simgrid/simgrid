@@ -10,6 +10,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (process)");
 
+SG_BEGIN_DECL()
+
 /** @addtogroup m_process_management
  *
  *  Processes (#msg_process_t) are independent agents that can do stuff on their own. They are in charge of executing
@@ -128,6 +130,8 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
   return res;
 }
 
+SG_END_DECL()
+
 msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<void()> code, void* data, msg_host_t host,
                                               xbt_dict_t properties)
 {
@@ -144,6 +148,8 @@ msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<vo
   simcall_process_on_exit(process, (int_f_pvoid_pvoid_t)TRACE_msg_process_kill, process);
   return process;
 }
+
+SG_BEGIN_DECL()
 
 /* Become a process in the simulation
  *
@@ -459,3 +465,5 @@ XBT_PUBLIC(void) MSG_process_auto_restart_set(msg_process_t process, int auto_re
 XBT_PUBLIC(msg_process_t) MSG_process_restart(msg_process_t process) {
   return simcall_process_restart(process);
 }
+
+SG_END_DECL()
