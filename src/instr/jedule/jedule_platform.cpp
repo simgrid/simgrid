@@ -59,11 +59,11 @@ void Container::addResources(std::vector<sg_host_t> hosts)
   }
 }
 
-void Container::createHierarchy(NetZone_t from_as)
+void Container::createHierarchy(sg_netzone_t from_as)
 {
   xbt_dict_cursor_t cursor = nullptr;
-  char *key;
-  NetZone_t elem;
+  char* key;
+  sg_netzone_t elem;
   xbt_dict_t routing_sons = from_as->children();
 
   if (xbt_dict_is_empty(routing_sons)) {

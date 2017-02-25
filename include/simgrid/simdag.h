@@ -22,7 +22,7 @@ SG_BEGIN_DECL()
     A link is a network node represented as a <em>name</em>, a <em>bandwidth</em> and a <em>latency</em>.
     A route is a list of links between two hosts.
  */
-typedef Link *SD_link_t;
+typedef sg_link_t SD_link_t;
 
 /** @brief Task opaque datatype
     @ingroup SD_task_api

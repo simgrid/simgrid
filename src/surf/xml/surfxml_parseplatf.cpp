@@ -207,7 +207,7 @@ void parse_platform_file(const char *file)
     xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
       tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
       xbt_assert(trace, "Trace %s undefined", trace_name);
-      Link *link = Link::byName(elm);
+      sg_link_t link = simgrid::s4u::Link::byName(elm);
       xbt_assert(link, "Link %s undefined", elm);
       link->setStateTrace(trace);
     }
@@ -215,7 +215,7 @@ void parse_platform_file(const char *file)
     xbt_dict_foreach(trace_connect_list_link_bw, cursor, trace_name, elm) {
       tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
       xbt_assert(trace, "Trace %s undefined", trace_name);
-      Link *link = Link::byName(elm);
+      sg_link_t link = simgrid::s4u::Link::byName(elm);
       xbt_assert(link, "Link %s undefined", elm);
       link->setBandwidthTrace(trace);
     }
@@ -223,7 +223,7 @@ void parse_platform_file(const char *file)
     xbt_dict_foreach(trace_connect_list_link_lat, cursor, trace_name, elm) {
       tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
       xbt_assert(trace, "Trace %s undefined", trace_name);
-      Link *link = Link::byName(elm);
+      sg_link_t link = simgrid::s4u::Link::byName(elm);
       xbt_assert(link, "Link %s undefined", elm);
       link->setLatencyTrace(trace);
     }

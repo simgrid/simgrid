@@ -16,7 +16,7 @@ SG_BEGIN_DECL()
 
 /* *************************** Network Zones ******************************** */
 #define msg_as_t msg_netzone_t /* portability macro */
-typedef simgrid_NetZone* msg_netzone_t;
+typedef s4u_NetZone* msg_netzone_t;
 
 /* ******************************** Host ************************************ */
 
@@ -279,9 +279,7 @@ XBT_PUBLIC(msg_process_t)
 MSG_process_create_with_environment(const char* name, xbt_main_func_t code, void* data, msg_host_t host, int argc,
                                     char** argv, xbt_dict_t properties);
 
-XBT_PUBLIC(msg_process_t) MSG_process_attach(
-  const char *name, void *data,
-  msg_host_t host, xbt_dict_t properties);
+XBT_PUBLIC(msg_process_t) MSG_process_attach(const char* name, void* data, msg_host_t host, xbt_dict_t properties);
 XBT_PUBLIC(void) MSG_process_detach();
 
 XBT_PUBLIC(void) MSG_process_kill(msg_process_t process);

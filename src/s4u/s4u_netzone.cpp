@@ -32,7 +32,7 @@ NetZone::~NetZone()
 {
   xbt_dict_cursor_t cursor = nullptr;
   char* key;
-  NetZone_t elem;
+  NetZone* elem;
   xbt_dict_foreach (children_, cursor, key, elem) {
     delete static_cast<NetZone*>(elem);
   }

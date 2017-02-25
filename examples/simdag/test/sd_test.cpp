@@ -38,7 +38,7 @@ int main(int argc, char **argv)
   XBT_INFO("Computation time for %f flops on %s: %f", comp_amount2, h2->cname(), comp_amount2/h2->speed());
 
   XBT_INFO("Route between %s and %s:", h1->cname(), h2->cname());
-  std::vector<Link*> route;
+  std::vector<sg_link_t> route;
   double latency = 0;
   h1->routeTo(h2, &route, &latency);
 

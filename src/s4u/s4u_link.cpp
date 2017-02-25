@@ -19,32 +19,32 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_link, s4u, "Logging specific to the S4U link
 
 extern "C" {
 
-const char* sg_link_name(Link* link)
+const char* sg_link_name(sg_link_t link)
 {
   return link->name();
 }
-Link* sg_link_by_name(const char* name)
+sg_link_t sg_link_by_name(const char* name)
 {
-  return Link::byName(name);
+  return simgrid::s4u::Link::byName(name);
 }
 
-int sg_link_is_shared(Link* link)
+int sg_link_is_shared(sg_link_t link)
 {
   return link->sharingPolicy();
 }
-double sg_link_bandwidth(Link* link)
+double sg_link_bandwidth(sg_link_t link)
 {
   return link->bandwidth();
 }
-double sg_link_latency(Link* link)
+double sg_link_latency(sg_link_t link)
 {
   return link->latency();
 }
-void* sg_link_data(Link* link)
+void* sg_link_data(sg_link_t link)
 {
   return link->getData();
 }
-void sg_link_data_set(Link* link, void* data)
+void sg_link_data_set(sg_link_t link, void* data)
 {
   link->setData(data);
 }
@@ -52,10 +52,10 @@ int sg_link_count()
 {
   return simgrid::surf::LinkImpl::linksCount();
 }
-Link** sg_link_list()
+sg_link_t* sg_link_list()
 {
   simgrid::surf::LinkImpl** list = simgrid::surf::LinkImpl::linksList();
-  Link** res                     = (Link**)list; // Use the same memory area
+  sg_link_t* res                 = (sg_link_t*)list; // Use the same memory area
 
   int size = sg_link_count();
   for (int i = 0; i < size; i++)

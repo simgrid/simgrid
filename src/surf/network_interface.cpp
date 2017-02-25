@@ -99,7 +99,7 @@ namespace simgrid {
      ************/
 
     LinkImpl::LinkImpl(simgrid::surf::NetworkModel* model, const char* name, lmm_constraint_t constraint)
-        : Resource(model, name, constraint), piface_(Link(this))
+        : Resource(model, name, constraint), piface_(this)
     {
 
       if (strcmp(name,"__loopback__"))

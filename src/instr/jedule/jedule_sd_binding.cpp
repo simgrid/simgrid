@@ -33,7 +33,7 @@ void jedule_log_sd_event(SD_task_t task)
 
 void jedule_sd_init()
 {
-  NetZone_t root_comp = simgrid::s4u::Engine::instance()->netRoot();
+  sg_netzone_t root_comp = simgrid::s4u::Engine::instance()->netRoot();
   XBT_DEBUG("root name %s\n", root_comp->name());
 
   my_jedule = new simgrid::jedule::Jedule();

@@ -136,7 +136,7 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
   XBT_DEBUG("Graph extraction for NetZone = %s", netzone->name());
   if (!xbt_dict_is_empty(netzone->children())) {
     xbt_dict_cursor_t cursor = nullptr;
-    NetZone_t nz_son;
+    sg_netzone_t nz_son;
     char *child_name;
     //bottom-up recursion
     xbt_dict_foreach (netzone->children(), cursor, child_name, nz_son) {
@@ -423,12 +423,12 @@ int instr_platform_traced ()
 
 #define GRAPHICATOR_SUPPORT_FUNCTIONS
 
-static void recursiveXBTGraphExtraction(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges, NetZone_t netzone,
+static void recursiveXBTGraphExtraction(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges, sg_netzone_t netzone,
                                         container_t container)
 {
   if (!xbt_dict_is_empty(netzone->children())) {
     xbt_dict_cursor_t cursor = nullptr;
-    NetZone_t netzone_child;
+    sg_netzone_t netzone_child;
     char *child_name;
     //bottom-up recursion
     xbt_dict_foreach (netzone->children(), cursor, child_name, netzone_child) {
