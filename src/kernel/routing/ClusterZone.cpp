@@ -143,6 +143,7 @@ void ClusterZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id
     linkUp   = surf::LinkImpl::byName(link_id);
     linkDown = linkUp;
   }
+  xbt_free(link_id);
   privateLinks_.insert({position, {linkUp, linkDown}});
 }
 }
