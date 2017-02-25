@@ -1,21 +1,13 @@
 /* Functions related to the java host instances.                            */
 
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/dict.h>
-#include <xbt/dynar.h>
-#include <xbt/log.h>
-#include <xbt/str.h>
+#include "simgrid/plugins/energy.h"
+#include "simgrid/s4u/host.hpp"
 
-#include <surf/surf_routing.h>
-
-#include <simgrid/s4u/host.hpp>
-
-#include "simgrid/msg.h"
 #include "jmsg.h"
 #include "jmsg_host.h"
 #include "jxbt_utilities.h"
@@ -48,19 +40,6 @@ void jhost_bind(jobject jhost, msg_host_t host, JNIEnv * env) {
 
 msg_host_t jhost_get_native(JNIEnv * env, jobject jhost) {
   return (msg_host_t) (uintptr_t) env->GetLongField(jhost, jhost_field_Host_bind);
-}
-
-const char *jhost_get_name(jobject jhost, JNIEnv * env) {
-  msg_host_t host = jhost_get_native(env, jhost);
-  return host->cname();
-}
-
-jboolean jhost_is_valid(jobject jhost, JNIEnv * env) {
-  if (env->GetLongField(jhost, jhost_field_Host_bind)) {
-    return JNI_TRUE;
-  } else {
-    return JNI_FALSE;
-  }
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_nativeInit(JNIEnv *env, jclass cls) {
@@ -368,7 +347,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_setAsyncMailbox(JNIEnv * env, j
   env->ReleaseStringUTFChars((jstring) jname, name);
 }
 
-#include "simgrid/plugins/energy.h"
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getConsumedEnergy (JNIEnv *env, jobject jhost)
 {
   msg_host_t host = jhost_get_native(env, jhost);

@@ -1,20 +1,14 @@
-/* Functions related to the MSG VM API. */
+/* Functions related to the Virtual Machines.                               */
 
-/* Copyright (c) 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/ex.hpp>
-
-#include "jmsg.h"
 #include "jmsg_vm.h"
 #include "jmsg_host.h"
-#include "jmsg_process.h"
 #include "jxbt_utilities.h"
-#include "simgrid/msg.h"
-#include <surf/surf_routing.h>
+#include "xbt/ex.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 

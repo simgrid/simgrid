@@ -1,5 +1,6 @@
-/* Copyright (c) 2009-2010, 2012-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Context switching within the JVM.                                        */
+
+/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,17 +9,13 @@
 #define SIMGRID_JAVA_JAVA_CONTEXT_HPP
 
 #include <functional>
-
 #include <jni.h>
 
-#include <xbt/misc.h>
-#include <simgrid/simix.h>
-#include <xbt/xbt_os_thread.h>
-
+#include "simgrid/simix.h"
 #include "src/simix/smx_private.h"
+#include "xbt/xbt_os_thread.h"
 
 #include "jmsg.h"
-#include "jmsg_process.h"
 
 namespace simgrid {
 namespace kernel {

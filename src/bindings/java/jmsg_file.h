@@ -1,7 +1,6 @@
-/* Functions related to the java file API.                            */
+/* Java bindings of the file API.                                           */
 
-/* Copyright (c) 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2015. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -12,6 +11,15 @@
 #include "simgrid/msg.h"
 
 SG_BEGIN_DECL()
+
+/* Shut up some errors in eclipse online compiler. I wish such a pimple wouldn't be needed */
+#ifndef JNIEXPORT
+#define JNIEXPORT
+#endif
+#ifndef JNICALL
+#define JNICALL
+#endif
+/* end of eclipse-mandated pimple */
 
 jfieldID jfile_field_bind;
 

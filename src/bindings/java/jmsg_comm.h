@@ -1,17 +1,26 @@
-/* Functions related to the java comm instances                             */
+/* Java bindings to the Comm API                                            */
 
-/* Copyright (c) 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef MSG_JCOMM_H
 #define MSG_JCOMM_H
+
+#include "simgrid/msg.h"
 #include <jni.h>
-#include <simgrid/msg.h>
 
 SG_BEGIN_DECL()
+
+/* Shut up some errors in eclipse online compiler. I wish such a pimple wouldn't be needed */
+#ifndef JNIEXPORT
+#define JNIEXPORT
+#endif
+#ifndef JNICALL
+#define JNICALL
+#endif
+/* end of eclipse-mandated pimple */
 
 /** This function binds the task associated with the communication to the java communication object. */
 void jcomm_bind_task(JNIEnv *env, jobject jcomm);

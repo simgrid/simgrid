@@ -1,4 +1,6 @@
-/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
+/* Java bindings of the Trace API.                                          */
+
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,6 +10,16 @@
 
 #ifndef _Included_org_simgrid_trace_Trace
 #define _Included_org_simgrid_trace_Trace
+
+/* Shut up some errors in eclipse online compiler. I wish such a pimple wouldn't be needed */
+#ifndef JNIEXPORT
+#define JNIEXPORT
+#endif
+#ifndef JNICALL
+#define JNICALL
+#endif
+/* end of eclipse-mandated pimple */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -1,16 +1,14 @@
 /* Various JNI helper functions                                             */
 
-/* Copyright (c) 2007-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdlib.h>             /* abort */
-#include "xbt/misc.h"
 #include "xbt/sysdep.h"
-#include "xbt/str.h"
 #include "jxbt_utilities.h"
+
+#include <stdlib.h> /* abort */
 
 SG_BEGIN_DECL()
 

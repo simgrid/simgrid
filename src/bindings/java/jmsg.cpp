@@ -1,7 +1,6 @@
 /* Java Wrappers to the MSG API.                                            */
 
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -187,17 +186,17 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_createEnvironment(JNIEnv * env, 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Msg_environmentGetRoutingRoot(JNIEnv * env, jclass cls)
 {
   msg_netzone_t as = MSG_environment_get_routing_root();
-  jobject jas = jas_new_instance(env);
+  jobject jas      = jnetzone_new_instance(env);
   if (!jas) {
     jxbt_throw_jni(env, "java As instantiation failed");
     return nullptr;
   }
-  jas = jas_ref(env, jas);
+  jas = jnetzone_ref(env, jas);
   if (!jas) {
     jxbt_throw_jni(env, "new global ref allocation failed");
     return nullptr;
   }
-  jas_bind(jas, as, env);
+  jnetzone_bind(jas, as, env);
 
   return (jobject) jas;
 }

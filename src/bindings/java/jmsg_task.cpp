@@ -1,16 +1,10 @@
 /* Functions related to the java task instances.                            */
 
-/* Copyright (c) 2007, 2009-2010, 2013-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/log.h>
-#include <xbt/str.h>
-#include <xbt/sysdep.h>
-
-#include <simgrid/msg.h>
 #include <simgrid/s4u/host.hpp>
 
 #include "jmsg.h"
@@ -37,14 +31,9 @@ void jtask_bind(jobject jtask, msg_task_t task, JNIEnv * env)
   env->SetLongField(jtask, jtask_field_Task_bind, (intptr_t)task);
 }
 
-msg_task_t jtask_to_native_task(jobject jtask, JNIEnv * env)
+msg_task_t jtask_to_native(jobject jtask, JNIEnv* env)
 {
   return (msg_task_t)(intptr_t)env->GetLongField(jtask, jtask_field_Task_bind);
-}
-
-jboolean jtask_is_valid(jobject jtask, JNIEnv * env)
-{
-  return env->GetLongField(jtask, jtask_field_Task_bind) ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_nativeInit(JNIEnv *env, jclass cls) {
@@ -167,7 +156,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_parallelCreate(JNIEnv * env, jo
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_cancel(JNIEnv * env, jobject jtask)
 {
-  msg_task_t ptask = jtask_to_native_task(jtask, env);
+  msg_task_t ptask = jtask_to_native(jtask, env);
 
   if (!ptask) {
     jxbt_throw_notbound(env, "task", jtask);
@@ -181,7 +170,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_cancel(JNIEnv * env, jobject jt
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_execute(JNIEnv * env, jobject jtask)
 {
-  msg_task_t task = jtask_to_native_task(jtask, env);
+  msg_task_t task = jtask_to_native(jtask, env);
 
   if (!task) {
     jxbt_throw_notbound(env, "task", jtask);
@@ -198,7 +187,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_execute(JNIEnv * env, jobject j
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setBound(JNIEnv * env, jobject jtask, jdouble bound)
 {
-  msg_task_t task = jtask_to_native_task(jtask, env);
+  msg_task_t task = jtask_to_native(jtask, env);
 
   if (!task) {
     jxbt_throw_notbound(env, "task", jtask);
@@ -208,7 +197,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setBound(JNIEnv * env, jobject 
 }
 
 JNIEXPORT jstring JNICALL Java_org_simgrid_msg_Task_getName(JNIEnv * env, jobject jtask) {
-  msg_task_t task = jtask_to_native_task(jtask, env);
+  msg_task_t task = jtask_to_native(jtask, env);
 
   if (!task) {
     jxbt_throw_notbound(env, "task", jtask);
@@ -221,7 +210,7 @@ JNIEXPORT jstring JNICALL Java_org_simgrid_msg_Task_getName(JNIEnv * env, jobjec
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSender(JNIEnv * env, jobject jtask) {
   msg_process_t process;
 
-  msg_task_t task = jtask_to_native_task(jtask, env);
+  msg_task_t task = jtask_to_native(jtask, env);
 
   if (!task) {
     jxbt_throw_notbound(env, "task", jtask);
@@ -232,13 +221,13 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSender(JNIEnv * env, jobj
   if (process == nullptr) {
     return nullptr;
   }
-  return (jobject) native_to_java_process(process);
+  return (jobject)jprocess_from_native(process);
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSource(JNIEnv * env, jobject jtask)
 {
   msg_host_t host;
-  msg_task_t task = jtask_to_native_task(jtask, env);
+  msg_task_t task = jtask_to_native(jtask, env);
 
   if (!task) {
     jxbt_throw_notbound(env, "task", jtask);
@@ -259,7 +248,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSource(JNIEnv * env, jobj
 
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Task_getFlopsAmount(JNIEnv * env, jobject jtask)
 {
-  msg_task_t ptask = jtask_to_native_task(jtask, env);
+  msg_task_t ptask = jtask_to_native(jtask, env);
 
   if (!ptask) {
     jxbt_throw_notbound(env, "task", jtask);
@@ -269,7 +258,7 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Task_getFlopsAmount(JNIEnv * env,
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setName(JNIEnv *env, jobject jtask, jobject jname) {
-  msg_task_t task = jtask_to_native_task(jtask, env);
+  msg_task_t task = jtask_to_native(jtask, env);
 
   if (!task) {
     jxbt_throw_notbound(env, "task", jtask);
@@ -285,7 +274,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setName(JNIEnv *env, jobject jt
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setPriority(JNIEnv * env, jobject jtask, jdouble priority)
 {
-  msg_task_t task = jtask_to_native_task(jtask, env);
+  msg_task_t task = jtask_to_native(jtask, env);
 
   if (!task) {
     jxbt_throw_notbound(env, "task", jtask);
@@ -296,7 +285,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setPriority(JNIEnv * env, jobje
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setFlopsAmount (JNIEnv *env, jobject jtask, jdouble computationAmount)
 {
-  msg_task_t task = jtask_to_native_task(jtask, env);
+  msg_task_t task = jtask_to_native(jtask, env);
 
   if (!task) {
     jxbt_throw_notbound(env, "task", jtask);
@@ -307,7 +296,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setFlopsAmount (JNIEnv *env, jo
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setBytesAmount (JNIEnv *env, jobject jtask, jdouble dataSize)
 {
-  msg_task_t task = jtask_to_native_task(jtask, env);
+  msg_task_t task = jtask_to_native(jtask, env);
 
   if (!task) {
     jxbt_throw_notbound(env, "task", jtask);
@@ -322,7 +311,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_send(JNIEnv * env,jobject jtask
   msg_error_t rv;
   const char *alias = env->GetStringUTFChars(jalias, 0);
 
-  msg_task_t task = jtask_to_native_task(jtask, env);
+  msg_task_t task = jtask_to_native(jtask, env);
 
   if (!task) {
     env->ReleaseStringUTFChars(jalias, alias);
@@ -346,7 +335,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_sendBounded(JNIEnv * env,jobjec
   msg_error_t rv;
   const char *alias = env->GetStringUTFChars(jalias, 0);
 
-  msg_task_t task = jtask_to_native_task(jtask, env);
+  msg_task_t task = jtask_to_native(jtask, env);
 
   if (!task) {
     env->ReleaseStringUTFChars(jalias, alias);
@@ -504,7 +493,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_isend(JNIEnv *env, jobject j
   jobject jcomm       = env->NewObject(comm_class, jtask_method_Comm_constructor);
   const char* mailbox = env->GetStringUTFChars(jmailbox, 0);
 
-  msg_task_t task = jtask_to_native_task(jtask, env);
+  msg_task_t task = jtask_to_native(jtask, env);
 
   if (!task) {
     env->ReleaseStringUTFChars(jmailbox, mailbox);
@@ -540,7 +529,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_isendBounded(JNIEnv *env, jo
   jcomm = env->NewObject(comm_class, jtask_method_Comm_constructor);
   mailbox = env->GetStringUTFChars(jmailbox, 0);
 
-  task = jtask_to_native_task(jtask, env);
+  task = jtask_to_native(jtask, env);
 
   if (!task) {
     env->ReleaseStringUTFChars(jmailbox, mailbox);
@@ -563,11 +552,11 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_isendBounded(JNIEnv *env, jo
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_nativeFinalize(JNIEnv * env, jobject jtask)
 {
-    msg_task_t task = jtask_to_native_task(jtask, env);
+  msg_task_t task = jtask_to_native(jtask, env);
 
-    if (!task) {
-      jxbt_throw_notbound(env, "task", jtask);
-      return;
+  if (!task) {
+    jxbt_throw_notbound(env, "task", jtask);
+    return;
     }
 
     MSG_task_destroy(task);
@@ -588,7 +577,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_dsend(JNIEnv * env, jobject jta
 {
   const char *alias = env->GetStringUTFChars(jalias, 0);
 
-  msg_task_t task = jtask_to_native_task(jtask, env);
+  msg_task_t task = jtask_to_native(jtask, env);
 
   if (!task) {
     env->ReleaseStringUTFChars(jalias, alias);
@@ -608,7 +597,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_dsendBounded(JNIEnv * env, jobj
 {
   const char *alias = env->GetStringUTFChars(jalias, 0);
 
-  msg_task_t task = jtask_to_native_task(jtask, env);
+  msg_task_t task = jtask_to_native(jtask, env);
 
   if (!task) {
     env->ReleaseStringUTFChars(jalias, alias);
