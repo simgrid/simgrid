@@ -329,7 +329,7 @@ class Cmd(object):
             while len(stdouta) > 0 and stdouta[-1] == "":
                 del stdouta[-1]
             stdouta = self.remove_ignored_lines(stdouta)
-            stdcpy = self.output_pipe_stdout[:]
+            stdcpy = stdouta[:]
 
             # Mimic the "sort" bash command, which is case unsensitive.
             if self.sort == 0:
@@ -342,18 +342,21 @@ class Cmd(object):
             diff = list(difflib.unified_diff(self.output_pipe_stdout, stdouta,lineterm="",fromfile='expected', tofile='obtained'))
             if len(diff) > 0: 
                 print("Output of <"+cmdName+"> mismatch:")
-                difflen = 0;
-                for line in diff:
-                    if difflen<250:
-                        print(line)
-                    difflen += 1
-                if difflen > 100:
-                    print("(diff truncated after 250 lines)")
-                if self.sort >= 0:
+                if self.sort >= 0: # If sorted, truncate the diff output and show the unsorted version
+                    difflen = 0;
+                    for line in diff:
+                        if difflen<250:
+                            print(line)
+                        difflen += 1
+                    if difflen > 100:
+                        print("(diff truncated after 250 lines)")
                     print("Unsorted observed output:\n")
                     for line in stdcpy:
                         print(line)
-                
+                else: # If not sorted, just display the diff
+                    for line in diff:
+                        print(line)
+                        
                 print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> output mismatch)")
                 if lock is not None: lock.release()
                 if TeshState().keep:
