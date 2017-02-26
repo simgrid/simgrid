@@ -99,8 +99,10 @@ endif()
 ##################################
 
 if(enable_smpi)
-  add_executable(smpi_main src/smpi/smpi_main.c)
-  target_link_libraries(smpi_main simgrid)
+  add_executable(smpimain src/smpi/smpi_main.c)
+  target_link_libraries(smpimain simgrid)
+  set_target_properties(smpimain
+    PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 endif()
 
 if(enable_smpi AND APPLE)
