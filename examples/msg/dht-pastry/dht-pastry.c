@@ -399,19 +399,21 @@ static void handle_task(node_t node, msg_task_t task) {
         if (min<0 || max>=NAMESPACE_SIZE) {
          node->namespace_set[i] = curr_namespace_set[j];
          j++;
-        } else if (curr_namespace_set[j] == -1) {
-          node->namespace_set[i] = task_namespace_set[max];
-          max++;
-        } else if (curr_namespace_set[j] == task_namespace_set[max]) {
-          node->namespace_set[i] = curr_namespace_set[j];
-          j++;
-          max++;
-        } else if (curr_namespace_set[j] < task_namespace_set[max]) {
-          node->namespace_set[i] = curr_namespace_set[j];
-          j++;
-        } else {
-          node->namespace_set[i] = task_namespace_set[max];
-          max++;
+        } else if (max >= 0){
+          if (curr_namespace_set[j] == -1) {
+            node->namespace_set[i] = task_namespace_set[max];
+            max++;
+          } else if (curr_namespace_set[j] == task_namespace_set[max]) {
+            node->namespace_set[i] = curr_namespace_set[j];
+            j++;
+            max++;
+          } else if (curr_namespace_set[j] < task_namespace_set[max]) {
+            node->namespace_set[i] = curr_namespace_set[j];
+            j++;
+          } else {
+            node->namespace_set[i] = task_namespace_set[max];
+            max++;
+          }
         }
       }
 
