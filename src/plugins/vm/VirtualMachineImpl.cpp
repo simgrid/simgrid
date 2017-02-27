@@ -101,7 +101,7 @@ VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, sim
   allVms_.push_back(piface);
 
   /* We create cpu_action corresponding to a VM process on the host operating system. */
-  /* FIXME: TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
+  /* TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
   action_ = host_PM->pimpl_cpu->execution_start(0);
 
   /* Initialize the VM parameters */
@@ -255,7 +255,7 @@ void VirtualMachineImpl::setPm(s4u::Host* destination)
 
   /* keep the bound value of the cpu action of the VM. */
   double old_bound = action_->getBound();
-  if (old_bound != 0) {
+  if (old_bound > 0) {
     XBT_DEBUG("migrate VM(%s): set bound (%f) at %s", vm_name, old_bound, pm_name_dst);
     new_cpu_action->setBound(old_bound);
   }
