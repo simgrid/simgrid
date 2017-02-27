@@ -21,7 +21,6 @@ SG_BEGIN_DECL()
 jfieldID jprocess_field_Process_bind;
 jfieldID jprocess_field_Process_host;
 jfieldID jprocess_field_Process_killTime;
-// jfieldID jprocess_field_Process_id;
 jfieldID jprocess_field_Process_name;
 jfieldID jprocess_field_Process_pid;
 jfieldID jprocess_field_Process_ppid;

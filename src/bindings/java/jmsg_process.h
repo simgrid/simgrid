@@ -33,7 +33,7 @@ jobject jprocess_ref(jobject jprocess, JNIEnv* env);
 void jprocess_unref(jobject jprocess, JNIEnv* env);
 
 /** Binds a native instance to a java instance. */
-void jprocess_bind(jobject jprocess, msg_process_t process, JNIEnv * env);
+void jprocess_bind(jobject jprocess, msg_process_t process, JNIEnv* env);
 
 /** Extract the java instance from the native one */
 jobject jprocess_from_native(msg_process_t process);
@@ -42,7 +42,7 @@ jobject jprocess_from_native(msg_process_t process);
 msg_process_t jprocess_to_native(jobject jprocess, JNIEnv* env);
 
 /** Get the name of a java instance. */
-jstring jprocess_get_name(jobject jprocess, JNIEnv * env);
+jstring jprocess_get_name(jobject jprocess, JNIEnv* env);
 
 /** Initialize the native world, called from the Java world at startup */
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jclass cls);
@@ -59,7 +59,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_resume(JNIEnv* env, jobject 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_setAutoRestart(JNIEnv* env, jobject jprocess, jboolean jauto_restart);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_restart(JNIEnv* env, jobject jprocess);
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Process_isSuspended(JNIEnv* env, jobject jprocess);
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv* env, jclass cls , jlong jmillis, jint jnanos);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv* env, jclass cls, jlong jmillis, jint jnanos);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_waitFor(JNIEnv* env, jobject jprocess, jdouble jseconds);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_kill(JNIEnv* env, jobject jprocess);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_migrate(JNIEnv* env, jobject jprocess, jobject jhost);
