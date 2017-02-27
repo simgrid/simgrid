@@ -36,9 +36,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableAdd (JNIEnv *env
                                                                      jstring jvar, jdouble value);
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSub (JNIEnv *env, jclass cls, jstring js_host,
                                                                      jstring jvar, jdouble value);
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSetWithTime (JNIEnv *env, jclass cls, jdouble, jstring, jstring, jdouble);
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableAddWithTime (JNIEnv *env, jclass cls, jdouble, jstring, jstring, jdouble);
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSubWithTime (JNIEnv *env, jclass cls, jdouble, jstring, jstring, jdouble);
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_trace_Trace_getHostVariablesName (JNIEnv *env, jclass cls);
 
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableDeclare (JNIEnv *env, jclass cls, jstring jvar);

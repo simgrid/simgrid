@@ -31,18 +31,18 @@ JNIEnv *get_current_thread_env();
  */
 void jmsg_throw_status(JNIEnv *env, msg_error_t status);
 
-JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Msg_getClock(JNIEnv *, jclass);
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Msg_getClock(JNIEnv * env, jclass cls);
 JNIEXPORT void JNICALL JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass cls);
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_energyInit();
 
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_debug(JNIEnv *, jclass, jstring);
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_verb(JNIEnv *, jclass, jstring);
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_info(JNIEnv *, jclass, jstring);
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_warn(JNIEnv *, jclass, jstring);
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_error(JNIEnv *, jclass, jstring);
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_critical(JNIEnv *, jclass, jstring);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_debug(JNIEnv * env, jclass cls, jstring jargs);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_verb(JNIEnv * env, jclass cls, jstring jargs);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_info(JNIEnv * env, jclass cls, jstring jargs);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_warn(JNIEnv * env, jclass cls, jstring jargs);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_error(JNIEnv * env, jclass cls, jstring jargs);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_critical(JNIEnv * env, jclass cls, jstring jargs);
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_createEnvironment(JNIEnv * env, jclass cls, jstring jplatformFile);
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Msg_environmentGetRoutingRoot(JNIEnv * env, jclass cls);

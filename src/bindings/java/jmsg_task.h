@@ -27,23 +27,26 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_nativeInit(JNIEnv* env, jclass 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_create(JNIEnv* env, jobject jtask, jstring jname,
                                                         jdouble jcomputeDuration, jdouble jmessageSize);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_nativeFinalize(JNIEnv* env, jobject jtask);
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_parallelCreate(JNIEnv* env, jobject, jstring, jobjectArray,
-                                                                jdoubleArray, jdoubleArray);
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_cancel(JNIEnv* env, jobject);
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_execute(JNIEnv* env, jobject);
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setBound(JNIEnv* env, jobject, jdouble);
-JNIEXPORT jstring JNICALL Java_org_simgrid_msg_Task_getName(JNIEnv* env, jobject);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_parallelCreate(JNIEnv* env, jobject jtask,  jstring jname,
+                                                                jobjectArray jhosts, jdoubleArray jcomputeDurations_arg,
+                                                                jdoubleArray jmessageSizes);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_cancel(JNIEnv* env, jobject jtask);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_execute(JNIEnv* env, jobject jtask);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setBound(JNIEnv* env, jobject jtask, jdouble bound);
+JNIEXPORT jstring JNICALL Java_org_simgrid_msg_Task_getName(JNIEnv* env, jobject jtask);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setName(JNIEnv* env, jobject jtask, jobject jname);
-JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSender(JNIEnv* env, jobject);
-JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSource(JNIEnv* env, jobject);
-JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Task_getFlopsAmount(JNIEnv* env, jobject);
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setPriority(JNIEnv* env, jobject, jdouble);
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSender(JNIEnv* env, jobject jtask);
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSource(JNIEnv* env, jobject jtask);
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Task_getFlopsAmount(JNIEnv* env, jobject jtask);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setPriority(JNIEnv* env, jobject jtask, jdouble prioriy);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setFlopsAmount(JNIEnv* env, jobject jtask, jdouble computationAmount);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setBytesAmount(JNIEnv* env, jobject jtask, jdouble dataSize);
 
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_send(JNIEnv* env, jobject, jstring, jdouble);
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_sendBounded(JNIEnv* env, jobject, jstring, jdouble, jdouble);
-JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receive(JNIEnv* env, jclass, jstring, jdouble, jobject);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_send(JNIEnv* env, jobject jtask, jstring jalias, jdouble jtimeout);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_sendBounded(JNIEnv* env, jobject jtask, jstring jalias,
+                                                             jdouble  jtimeout, jdouble maxrate);
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receive(JNIEnv* env, jclass cls, jstring jalias, jdouble jtimeout,
+                                                            jobject jhost);
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_irecv(JNIEnv* env, jclass cls, jstring jmailbox);
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receiveBounded(JNIEnv* env, jclass cls, jstring jalias,
                                                                    jdouble jtimeout, jobject jhost, jdouble rate);
@@ -55,9 +58,9 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_isendBounded(JNIEnv* env, jo
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_dsend(JNIEnv* env, jobject jtask, jstring jalias);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_dsendBounded(JNIEnv* env, jobject jtask, jstring jalias,
                                                               jdouble maxrate);
-JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Task_listen(JNIEnv* env, jclass, jstring);
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_Task_listenFromHost(JNIEnv* env, jclass, jstring, jobject);
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_Task_listenFrom(JNIEnv* env, jclass, jstring);
+JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Task_listen(JNIEnv* env, jclass cls, jstring jalias);
+JNIEXPORT jint JNICALL Java_org_simgrid_msg_Task_listenFromHost(JNIEnv* env, jclass cls, jstring jalias, jobject jhost);
+JNIEXPORT jint JNICALL Java_org_simgrid_msg_Task_listenFrom(JNIEnv* env, jclass cls, jstring jalias);
 
 SG_END_DECL()
 #endif                          /* !MSG_JTASK_H */

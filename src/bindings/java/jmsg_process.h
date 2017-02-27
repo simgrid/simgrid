@@ -50,21 +50,21 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jcla
 /* Implement the Java API */
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv* env, jobject jprocess_arg, jobject jhostname);
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_killAll(JNIEnv* env, jclass, jint);
-JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID(JNIEnv* env, jclass, jint);
+JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_killAll(JNIEnv* env, jclass cls, jint jresetPID);
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID(JNIEnv* env, jclass cls, jint pid);
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_getProperty(JNIEnv* env, jobject jprocess, jobject jname);
-JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_getCurrentProcess(JNIEnv* env, jclass);
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_getCurrentProcess(JNIEnv* env, jclass cls);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_suspend(JNIEnv* env, jobject jprocess);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_resume(JNIEnv* env, jobject jprocess);
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_setAutoRestart(JNIEnv* env, jobject jprocess, jboolean);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_setAutoRestart(JNIEnv* env, jobject jprocess, jboolean jauto_restart);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_restart(JNIEnv* env, jobject jprocess);
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Process_isSuspended(JNIEnv* env, jobject jprocess);
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv* env, jclass, jlong, jint);
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_waitFor(JNIEnv* env, jobject jprocess, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv* env, jclass cls , jlong jmillis, jint jnanos);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_waitFor(JNIEnv* env, jobject jprocess, jdouble jseconds);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_kill(JNIEnv* env, jobject jprocess);
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_migrate(JNIEnv* env, jobject jprocess, jobject);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_migrate(JNIEnv* env, jobject jprocess, jobject jhost);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_yield(JNIEnv* env, jclass cls);
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_setKillTime(JNIEnv* env, jobject jprocess, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_setKillTime(JNIEnv* env, jobject jprocess, jdouble jkilltime);
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_getCount(JNIEnv * env, jclass cls);
 
 SG_END_DECL();

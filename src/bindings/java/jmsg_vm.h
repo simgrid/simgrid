@@ -21,7 +21,7 @@ msg_vm_t jvm_get_native(JNIEnv *env, jobject jvm);
  * Method      nativeInit
  * Signature  ()V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeInit(JNIEnv *env, jclass);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeInit(JNIEnv *env, jclass cls);
 
 /**
  * Class      org_simgrid_msg_VM
