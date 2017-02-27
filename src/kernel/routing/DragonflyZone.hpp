@@ -68,7 +68,7 @@ public:
   void seal() override;
   void generateRouters();
   void generateLinks();
-  void createLink(char* id, int numlinks, surf::LinkImpl** linkup, surf::LinkImpl** linkdown);
+  void createLink(std::string id, int numlinks, surf::LinkImpl** linkup, surf::LinkImpl** linkdown);
   unsigned int* rankId_to_coords(int rankId);
 
 private:

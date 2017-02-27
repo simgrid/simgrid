@@ -12,11 +12,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster_torus, surf_route_cluster, "T
 inline unsigned int* rankId_to_coords(int rankId, xbt_dynar_t dimensions)
 {
 
-  unsigned int cur_dim_size = 1;
+  unsigned int cur_dim_size;
   unsigned int dim_size_product = 1;
-  unsigned int* coords = (unsigned int*)malloc(xbt_dynar_length(dimensions) * sizeof(unsigned int));
-  for (unsigned int i = 0; i < xbt_dynar_length(dimensions); i++) {
-    cur_dim_size = xbt_dynar_get_as(dimensions, i, int);
+  unsigned int* coords =  new unsigned int[xbt_dynar_length(dimensions)];
+  unsigned int i;
+  xbt_dynar_foreach(dimensions,i, cur_dim_size) {
     coords[i]    = (rankId / dim_size_product) % cur_dim_size;
     dim_size_product *= cur_dim_size;
   }
@@ -221,8 +221,8 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
     current_node = next_node;
     next_node    = 0;
   }
-  free(myCoords);
-  free(targetCoords);
+  delete[] myCoords;
+  delete[] targetCoords;
 }
 }
 }

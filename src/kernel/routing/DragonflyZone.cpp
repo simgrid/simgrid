@@ -33,7 +33,7 @@ DragonflyZone::~DragonflyZone()
 unsigned int* DragonflyZone::rankId_to_coords(int rankId)
 {
   // coords : group, chassis, blade, node
-  unsigned int* coords = (unsigned int*)malloc(4 * sizeof(unsigned int));
+  unsigned int* coords =  new unsigned int[4];
   coords[0]            = rankId / (numChassisPerGroup_ * numBladesPerChassis_ * numNodesPerBlade_);
   rankId               = rankId % (numChassisPerGroup_ * numBladesPerChassis_ * numNodesPerBlade_);
   coords[1]            = rankId / (numBladesPerChassis_ * numNodesPerBlade_);
@@ -134,7 +134,7 @@ void DragonflyZone::generateRouters()
   }
 }
 
-void DragonflyZone::createLink(char* id, int numlinks, surf::LinkImpl** linkup, surf::LinkImpl** linkdown)
+void DragonflyZone::createLink(std::string id, int numlinks, surf::LinkImpl** linkup, surf::LinkImpl** linkdown)
 {
   *linkup   = nullptr;
   *linkdown = nullptr;
@@ -142,16 +142,16 @@ void DragonflyZone::createLink(char* id, int numlinks, surf::LinkImpl** linkup, 
   linkTemplate.bandwidth = this->cluster_->bw * numlinks;
   linkTemplate.latency   = this->cluster_->lat;
   linkTemplate.policy    = this->cluster_->sharing_policy; // sthg to do with that ?
-  linkTemplate.id        = std::string(id);
+  linkTemplate.id        = id;
   sg_platf_new_link(&linkTemplate);
-  XBT_DEBUG("Generating link %s", id);
+  XBT_DEBUG("Generating link %s", id.c_str());
   surf::LinkImpl* link;
   std::string tmpID;
   if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX) {
-    tmpID     = std::string(linkTemplate.id) + "_UP";
+    tmpID     = linkTemplate.id + "_UP";
     link      = surf::LinkImpl::byName(tmpID.c_str());
     *linkup   = link; // check link?
-    tmpID     = std::string(linkTemplate.id) + "_DOWN";
+    tmpID     = linkTemplate.id + "_DOWN";
     link      = surf::LinkImpl::byName(tmpID.c_str());
     *linkdown = link; // check link ?
   } else {
@@ -183,9 +183,10 @@ void DragonflyZone::generateLinks()
         static_cast<surf::LinkImpl**>(xbt_malloc0(this->numChassisPerGroup_ * sizeof(surf::LinkImpl*)));
 
     for (unsigned int j = 0; j < numLinksperLink_ * this->numNodesPerBlade_; j += numLinksperLink_) {
-      char* id = bprintf("local_link_from_router_%d_to_node_%d_%d", i, j / numLinksperLink_, uniqueId);
+      std::string id = "local_link_from_router_"+ std::to_string(i) + "_to_node_" +
+          std::to_string(j / numLinksperLink_) + "_" + std::to_string(uniqueId);
       this->createLink(id, 1, &linkup, &linkdown);
-      xbt_free(id);
+
       if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX) {
         this->routers_[i]->myNodes_[j]     = linkup;
         this->routers_[i]->myNodes_[j + 1] = linkdown;
@@ -200,9 +201,10 @@ void DragonflyZone::generateLinks()
   for (unsigned int i = 0; i < this->numGroups_ * this->numChassisPerGroup_; i++) {
     for (unsigned int j = 0; j < this->numBladesPerChassis_; j++) {
       for (unsigned int k = j + 1; k < this->numBladesPerChassis_; k++) {
-        char* id = bprintf("green_link_in_chassis_%d_between_routers_%d_and_%d_%d", i % numChassisPerGroup_, j, k, uniqueId);
+        std::string id = "green_link_in_chassis_" + std::to_string(i % numChassisPerGroup_) +"_between_routers_" +
+            std::to_string(j) + "_and_" + std::to_string(k) + "_" + std::to_string(uniqueId);
         this->createLink(id, this->numLinksGreen_, &linkup, &linkdown);
-        xbt_free(id);
+
         this->routers_[i * numBladesPerChassis_ + j]->greenLinks_[k] = linkup;
         this->routers_[i * numBladesPerChassis_ + k]->greenLinks_[j] = linkdown;
         uniqueId++;
@@ -215,9 +217,10 @@ void DragonflyZone::generateLinks()
     for (unsigned int j = 0; j < this->numChassisPerGroup_; j++) {
       for (unsigned int k = j + 1; k < this->numChassisPerGroup_; k++) {
         for (unsigned int l = 0; l < this->numBladesPerChassis_; l++) {
-          char* id = bprintf("black_link_in_group_%d_between_chassis_%d_and_%d_blade_%d_%d", i, j, k, l, uniqueId);
+          std::string id = "black_link_in_group_" + std::to_string(i) + "_between_chassis_" + std::to_string(j) +
+              "_and_" + std::to_string(k) +"_blade_" + std::to_string(l) + "_" + std::to_string(uniqueId);
           this->createLink(id, this->numLinksBlack_, &linkup, &linkdown);
-          xbt_free(id);
+
           this->routers_[i * numBladesPerChassis_ * numChassisPerGroup_ + j * numBladesPerChassis_ + l]
               ->blackLinks_[k] = linkup;
           this->routers_[i * numBladesPerChassis_ * numChassisPerGroup_ + k * numBladesPerChassis_ + l]
@@ -237,9 +240,10 @@ void DragonflyZone::generateLinks()
       unsigned int routernumj                = j * numBladesPerChassis_ * numChassisPerGroup_ + i;
       this->routers_[routernumi]->blueLinks_ = static_cast<surf::LinkImpl**>(xbt_malloc0(sizeof(surf::LinkImpl*)));
       this->routers_[routernumj]->blueLinks_ = static_cast<surf::LinkImpl**>(xbt_malloc0(sizeof(surf::LinkImpl*)));
-      char* id = bprintf("blue_link_between_group_%d_and_%d_routers_%d_and_%d_%d", i, j, routernumi, routernumj, uniqueId);
+      std::string id = "blue_link_between_group_"+ std::to_string(i) +"_and_" + std::to_string(j) +"_routers_" +
+          std::to_string(routernumi) + "_and_" + std::to_string(routernumj) + "_" + std::to_string(uniqueId);
       this->createLink(id, this->numLinksBlue_, &linkup, &linkdown);
-      xbt_free(id);
+
       this->routers_[routernumi]->blueLinks_[0] = linkup;
       this->routers_[routernumj]->blueLinks_[0] = linkdown;
       uniqueId++;
@@ -346,8 +350,8 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
   if (latency)
     *latency += targetRouter->myNodes_[targetCoords[3] * numLinksperLink_ + numLinksperLink_ - 1]->latency();
 
-  xbt_free(myCoords);
-  xbt_free(targetCoords);
+  delete[] myCoords;
+  delete[] targetCoords;
 }
 }
 }
