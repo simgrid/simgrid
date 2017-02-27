@@ -353,7 +353,8 @@ void handle_message(peer_t peer, msg_task_t task)
     xbt_assert((remote_peer != NULL), "A non-in-our-list peer has sent us a message. WTH ?");
     xbt_assert(!remote_peer->choked_download);
     remote_peer->choked_download = 1;
-    remove_current_piece(peer, remote_peer, remote_peer->current_piece);
+    if (remote_peer->current_piece != -1)
+      remove_current_piece(peer, remote_peer, remote_peer->current_piece);
     break;
   case MESSAGE_HAVE:
     XBT_DEBUG("\t for piece %d", message->index);
