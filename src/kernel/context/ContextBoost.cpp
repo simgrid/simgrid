@@ -92,14 +92,12 @@ smx_context_t BoostContextFactory::create_context(std::function<void()>  code,
   BoostContext* context = nullptr;
   if (BoostContext::parallel_)
 #if HAVE_THREAD_CONTEXTS
-    context = this->new_context<BoostParallelContext>(
-      std::move(code), cleanup_func, process);
+    context = this->new_context<BoostParallelContext>(std::move(code), cleanup_func, process);
 #else
     xbt_die("No support for parallel execution");
 #endif
   else
-    context = this->new_context<BoostSerialContext>(
-      std::move(code), cleanup_func, process);
+    context = this->new_context<BoostSerialContext>(std::move(code), cleanup_func, process);
   return context;
 }
 
@@ -120,8 +118,7 @@ void BoostContextFactory::run_all()
   {
     if (xbt_dynar_is_empty(simix_global->process_to_run))
       return;
-    smx_actor_t first_process =
-        xbt_dynar_get_as(simix_global->process_to_run, 0, smx_actor_t);
+    smx_actor_t first_process = xbt_dynar_get_as(simix_global->process_to_run, 0, smx_actor_t);
     BoostContext::process_index_ = 1;
     /* execute the first process */
     static_cast<BoostContext*>(first_process->context)->resume();
@@ -133,7 +130,7 @@ void BoostContextFactory::run_all()
 
 static void smx_ctx_boost_wrapper(std::intptr_t arg)
 {
-  BoostContext* context = (BoostContext*) arg;
+  BoostContext* context = (BoostContext*)(arg);
   (*context)();
   context->stop();
 }
@@ -149,19 +146,19 @@ BoostContext::BoostContext(std::function<void()> code,
     this->stack_ = SIMIX_context_stack_new();
     // We need to pass the bottom of the stack to make_fcontext,
     // depending on the stack direction it may be the lower or higher address:
-  #if PTH_STACKGROWTH == -1
-    void* stack = (char*) this->stack_ + smx_context_usable_stack_size - 1;
-  #else
+#if PTH_STACKGROWTH == -1
+    void* stack = static_cast<char*>(this->stack_) + smx_context_usable_stack_size - 1;
+#else
     void* stack = this->stack_;
-  #endif
+#endif
     this->fc_ = boost::context::make_fcontext(
                       stack,
                       smx_context_usable_stack_size,
                       smx_ctx_boost_wrapper);
   } else {
-    #if HAVE_BOOST_CONTEXTS == 1
+#if HAVE_BOOST_CONTEXTS == 1
     this->fc_ = new boost::context::fcontext_t();
-    #endif
+#endif
     if (BoostContext::maestro_context_ == nullptr)
       BoostContext::maestro_context_ = this;
   }
@@ -184,13 +181,9 @@ void BoostContext::resume()
 {
   SIMIX_context_set_current(this);
 #if HAVE_BOOST_CONTEXTS == 1
-  boost::context::jump_fcontext(
-    maestro_context_->fc_, this->fc_,
-    (intptr_t) this);
+  boost::context::jump_fcontext(maestro_context_->fc_, this->fc_, (intptr_t) this);
 #else
-  boost::context::jump_fcontext(
-    &maestro_context_->fc_, this->fc_,
-    (intptr_t) this);
+  boost::context::jump_fcontext(&maestro_context_->fc_, this->fc_, (intptr_t) this);
 #endif
 }
 
@@ -209,17 +202,14 @@ void BoostSerialContext::suspend()
   else {
     /* all processes were run, return to maestro */
     XBT_DEBUG("No more process to run");
-    next_context = static_cast<BoostSerialContext*>(
-      maestro_context_);
+    next_context = static_cast<BoostSerialContext*>(maestro_context_);
   }
   SIMIX_context_set_current((smx_context_t) next_context);
-  #if HAVE_BOOST_CONTEXTS == 1
-  boost::context::jump_fcontext(
-    this->fc_, next_context->fc_, (intptr_t) next_context);
-  #else
-  boost::context::jump_fcontext(
-    &this->fc_, next_context->fc_, (intptr_t) next_context);
-  #endif
+#if HAVE_BOOST_CONTEXTS == 1
+  boost::context::jump_fcontext(this->fc_, next_context->fc_, (intptr_t) next_context);
+#else
+  boost::context::jump_fcontext(&this->fc_, next_context->fc_, (intptr_t) next_context);
+#endif
 }
 
 void BoostSerialContext::stop()
@@ -234,7 +224,7 @@ void BoostSerialContext::stop()
 
 void BoostParallelContext::suspend()
 {
-  smx_actor_t next_work = (smx_actor_t) xbt_parmap_next(parmap_);
+  smx_actor_t next_work = static_cast<smx_actor_t>(xbt_parmap_next(parmap_));
   BoostParallelContext* next_context = nullptr;
 
   if (next_work != nullptr) {
@@ -245,17 +235,14 @@ void BoostParallelContext::suspend()
     XBT_DEBUG("No more processes to run");
     uintptr_t worker_id =
       (uintptr_t) xbt_os_thread_get_specific(worker_id_key_);
-    next_context = static_cast<BoostParallelContext*>(
-      workers_context_[worker_id]);
+    next_context = static_cast<BoostParallelContext*>(workers_context_[worker_id]);
   }
 
-  SIMIX_context_set_current((smx_context_t) next_context);
+  SIMIX_context_set_current(static_cast<smx_context_t> (next_context));
 #if HAVE_BOOST_CONTEXTS == 1
-  boost::context::jump_fcontext(
-    this->fc_, next_context->fc_, (intptr_t)next_context);
+  boost::context::jump_fcontext(this->fc_, next_context->fc_, (intptr_t)(next_context));
 #else
-  boost::context::jump_fcontext(
-    &this->fc_, next_context->fc_, (intptr_t)next_context);
+  boost::context::jump_fcontext(&this->fc_, next_context->fc_, (intptr_t)(next_context));
 #endif
 }
 
@@ -270,17 +257,14 @@ void BoostParallelContext::resume()
   uintptr_t worker_id = __sync_fetch_and_add(&threads_working_, 1);
   xbt_os_thread_set_specific(worker_id_key_, (void*) worker_id);
 
-  BoostParallelContext* worker_context =
-    static_cast<BoostParallelContext*>(SIMIX_context_self());
+  BoostParallelContext* worker_context = static_cast<BoostParallelContext*>(SIMIX_context_self());
   workers_context_[worker_id] = worker_context;
 
   SIMIX_context_set_current(this);
 #if HAVE_BOOST_CONTEXTS == 1
-  boost::context::jump_fcontext(
-    worker_context->fc_, this->fc_, (intptr_t) this);
+  boost::context::jump_fcontext(worker_context->fc_, this->fc_, (intptr_t) this);
 #else
-  boost::context::jump_fcontext(
-    &worker_context->fc_, this->fc_, (intptr_t) this);
+  boost::context::jump_fcontext(&worker_context->fc_, this->fc_, (intptr_t) this);
 #endif
 }
 

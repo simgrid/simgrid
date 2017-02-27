@@ -157,7 +157,7 @@ UContextFactory::~UContextFactory()
 void UContextFactory::run_all()
 {
   if (sysv_parallel) {
-    #if HAVE_THREAD_CONTEXTS
+#if HAVE_THREAD_CONTEXTS
       sysv_threads_working = 0;
       // Parmap_apply ensures that every working thread get an index in the
       // process_to_run array (through an atomic fetch_and_add),
@@ -177,19 +177,17 @@ void UContextFactory::run_all()
           context->resume();
         },
         simix_global->process_to_run);
-    #else
+#else
       xbt_die("You asked for a parallel execution, but you don't have any threads.");
-    #endif
+#endif
   } else {
     // Serial:
     if (xbt_dynar_is_empty(simix_global->process_to_run))
       return;
 
-    smx_actor_t first_process =
-        xbt_dynar_get_as(simix_global->process_to_run, 0, smx_actor_t);
+    smx_actor_t first_process = xbt_dynar_get_as(simix_global->process_to_run, 0, smx_actor_t);
     sysv_process_index = 1;
-    SerialUContext* context =
-        static_cast<SerialUContext*>(first_process->context);
+    SerialUContext* context = static_cast<SerialUContext*>(first_process->context);
     context->resume();
   }
 }
@@ -275,8 +273,7 @@ void SerialUContext::suspend()
     XBT_DEBUG("Run next process");
     next_context = (SerialUContext*) xbt_dynar_get_as(
         simix_global->process_to_run,i, smx_actor_t)->context;
-  }
-  else {
+  } else {
     /* all processes were run, return to maestro */
     XBT_DEBUG("No more process to run");
     next_context = (SerialUContext*) sysv_maestro_context;
@@ -355,8 +352,7 @@ void ParallelUContext::suspend()
     // There is a next soul to embody (ie, a next process to resume)
     XBT_DEBUG("Run next process");
     next_context = (ParallelUContext*) next_work->context;
-  }
-  else {
+  } else {
     // All processes were run, go to the barrier
     XBT_DEBUG("No more processes to run");
     // Get back the identity of my body that was stored when starting
