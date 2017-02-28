@@ -39,6 +39,9 @@ installBuildWrapper
 # Run ctest before sonar to gather coverage some information
 ctest --output-on-failure --timeout 100
 
+# generate the gcov files
+ctest -D ExperimentalCoverage
+
 # and finally execute the actual SonarQube analysis 
 # (the SONAR_TOKEN is set from the travis web interface, to not expose it with an ongoing "set -x")
 # See https://docs.travis-ci.com/user/sonarqube/ for more info on tokens
