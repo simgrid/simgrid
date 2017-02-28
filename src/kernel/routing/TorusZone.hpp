@@ -7,6 +7,7 @@
 #define SURF_ROUTING_CLUSTER_TORUS_HPP_
 
 #include "src/kernel/routing/ClusterZone.hpp"
+#include <vector>
 
 namespace simgrid {
 namespace kernel {
@@ -20,13 +21,12 @@ namespace routing {
 class XBT_PRIVATE TorusZone : public ClusterZone {
 public:
   explicit TorusZone(NetZone* father, const char* name);
-  ~TorusZone() override;
   void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position) override;
   void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency) override;
   void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) override;
 
 private:
-  xbt_dynar_t dimensions_ = nullptr;
+  std::vector<unsigned int> dimensions_;
 };
 }
 }

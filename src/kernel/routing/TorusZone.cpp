@@ -9,16 +9,16 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster_torus, surf_route_cluster, "Torus Routing part of surf");
 
-inline unsigned int* rankId_to_coords(int rankId, xbt_dynar_t dimensions)
+inline unsigned int* rankId_to_coords(int rankId, std::vector<unsigned int> dimensions)
 {
 
-  unsigned int cur_dim_size;
   unsigned int dim_size_product = 1;
-  unsigned int* coords =  new unsigned int[xbt_dynar_length(dimensions)];
-  unsigned int i;
-  xbt_dynar_foreach(dimensions,i, cur_dim_size) {
+  unsigned int* coords =  new unsigned int[dimensions.size()];
+  unsigned int i = 0;
+  for (auto cur_dim_size: dimensions) {
     coords[i]    = (rankId / dim_size_product) % cur_dim_size;
     dim_size_product *= cur_dim_size;
+    i++;
   }
 
   return coords;
@@ -29,10 +29,6 @@ namespace kernel {
 namespace routing {
 TorusZone::TorusZone(NetZone* father, const char* name) : ClusterZone(father, name)
 {
-}
-TorusZone::~TorusZone()
-{
-  xbt_dynar_free(&dimensions_);
 }
 
 void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position)
@@ -46,10 +42,10 @@ void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
       // we need to iterate over all dimensions
       // and create all links there
   int dim_product = 1; // Needed to calculate the next neighbor_id
-  for (unsigned int j = 0; j < xbt_dynar_length(dimensions_); j++) {
+  for (unsigned int j = 0; j < dimensions_.size(); j++) {
 
     LinkCreationArgs link;
-    current_dimension = xbt_dynar_get_as(dimensions_, j, int);
+    current_dimension = dimensions_.at(j);
     neighbor_rank_id  = ((static_cast<int>(rank) / dim_product) % current_dimension == current_dimension - 1)
                            ? rank - (current_dimension - 1) * dim_product
                            : rank + dim_product;
@@ -93,7 +89,6 @@ void TorusZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
   xbt_dynar_t dimensions = xbt_str_split(cluster->topo_parameters, ",");
 
   if (!xbt_dynar_is_empty(dimensions)) {
-    dimensions_ = xbt_dynar_new(sizeof(int), nullptr);
     /* We are in a torus cluster
      * Parse attribute dimensions="dim1,dim2,dim3,...,dimN"
      * and safe it in a dynarray.
@@ -101,10 +96,10 @@ void TorusZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
      */
     xbt_dynar_foreach (dimensions, iter, groups) {
       int tmp = surf_parse_get_int(xbt_dynar_get_as(dimensions, iter, char*));
-      xbt_dynar_set_as(dimensions_, iter, int, tmp);
+      dimensions_.push_back(tmp);
     }
 
-    linkCountPerNode_ = xbt_dynar_length(dimensions_);
+    linkCountPerNode_ = dimensions_.size();
   }
   xbt_dynar_free(&dimensions);
 }
@@ -131,7 +126,6 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
    * Dimension based routing routes through each dimension consecutively
    * TODO Change to dynamic assignment
    */
-  unsigned int cur_dim;
   unsigned int dim_product = 1;
   unsigned int current_node = src->id();
   unsigned int next_node    = 0;
@@ -150,16 +144,15 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
    * which can only be the case if src->m_id == dst->m_id -- see above
    * for this special case)
    */
-  int nodeOffset = (xbt_dynar_length(dimensions_) + 1) * src->id();
+  int nodeOffset = (dimensions_.size() + 1) * src->id();
 
   int linkOffset  = nodeOffset;
   bool use_lnk_up = false; // Is this link of the form "cur -> next" or "next -> cur"?
   // false means: next -> cur
   while (current_node != dst->id()) {
     dim_product = 1; // First, we will route in x-dimension
-    for (unsigned int j = 0; j < xbt_dynar_length(dimensions_); j++) {
-      cur_dim = xbt_dynar_get_as(dimensions_, j, int);
-
+    int j=0;
+    for (auto cur_dim : dimensions_){
       // current_node/dim_product = position in current dimension
       if ((current_node / dim_product) % cur_dim != (dst->id() / dim_product) % cur_dim) {
 
@@ -193,10 +186,10 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
         }
         XBT_DEBUG("torus_get_route_and_latency - current_node: %i, next_node: %u, linkOffset is %i", current_node,
                   next_node, linkOffset);
-
         break;
       }
 
+      j++;
       dim_product *= cur_dim;
     }
 
