@@ -60,7 +60,7 @@ static inline double has_cost(double* array, int pos)
     return -1.0;
 }
 Action* HostModel::executeParallelTask(int host_nb, simgrid::s4u::Host** host_list, double* flops_amount,
-                                       double* bytes_amount, double rate)
+    double* bytes_amount, double rate)
 {
   Action* action = nullptr;
   if ((host_nb == 1) && (has_cost(bytes_amount, 0) <= 0)) {
@@ -81,10 +81,10 @@ Action* HostModel::executeParallelTask(int host_nb, simgrid::s4u::Host** host_li
       action = surf_network_model->communicate(host_list[0], host_list[1], value, rate);
     } else if (nb == 0) {
       xbt_die("Cannot have a communication with no flop to exchange in this model. You should consider using the "
-              "ptask model");
+          "ptask model");
     } else {
       xbt_die("Cannot have a communication that is not a simple point-to-point in this model. You should consider "
-              "using the ptask model");
+          "using the ptask model");
     }
   } else
     xbt_die(
@@ -159,166 +159,166 @@ xbt_dynar_t HostImpl::getAttachedStorageList()
     }
   }
   return result;
-    }
+}
 
-    Action* HostImpl::open(const char* fullpath)
-    {
+Action* HostImpl::open(const char* fullpath)
+{
 
-      simgrid::surf::Storage* st = nullptr;
-      s_mount_t mnt;
-      unsigned int cursor;
-      size_t longest_prefix_length = 0;
-      char* path                   = nullptr;
-      char* file_mount_name        = nullptr;
-      char* mount_name             = nullptr;
+  simgrid::surf::Storage* st = nullptr;
+  s_mount_t mnt;
+  unsigned int cursor;
+  size_t longest_prefix_length = 0;
+  char* path                   = nullptr;
+  char* file_mount_name        = nullptr;
+  char* mount_name             = nullptr;
 
-      XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath, piface_->cname());
-      xbt_dynar_foreach (storage_, cursor, mnt) {
-        XBT_DEBUG("See '%s'", mnt.name);
-        file_mount_name = (char*)xbt_malloc((strlen(mnt.name) + 1));
-        strncpy(file_mount_name, fullpath, strlen(mnt.name) + 1);
-        file_mount_name[strlen(mnt.name)] = '\0';
+  XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath, piface_->cname());
+  xbt_dynar_foreach (storage_, cursor, mnt) {
+    XBT_DEBUG("See '%s'", mnt.name);
+    file_mount_name = (char*)xbt_malloc((strlen(mnt.name) + 1));
+    strncpy(file_mount_name, fullpath, strlen(mnt.name) + 1);
+    file_mount_name[strlen(mnt.name)] = '\0';
 
-        if (!strcmp(file_mount_name, mnt.name) &&
-            strlen(mnt.name) > longest_prefix_length) { /* The current mount name is found in the full path and is
+    if (!strcmp(file_mount_name, mnt.name) &&
+        strlen(mnt.name) > longest_prefix_length) { /* The current mount name is found in the full path and is
                                                            bigger than the previous*/
-          longest_prefix_length = strlen(mnt.name);
-          st                    = static_cast<simgrid::surf::Storage*>(mnt.storage);
-        }
-        free(file_mount_name);
-      }
-      if (longest_prefix_length > 0) { /* Mount point found, split fullpath into mount_name and path+filename*/
-        path       = (char*)xbt_malloc((strlen(fullpath) - longest_prefix_length + 1));
-        mount_name = (char*)xbt_malloc((longest_prefix_length + 1));
-        strncpy(mount_name, fullpath, longest_prefix_length + 1);
-        strncpy(path, fullpath + longest_prefix_length, strlen(fullpath) - longest_prefix_length + 1);
-        path[strlen(fullpath) - longest_prefix_length] = '\0';
-        mount_name[longest_prefix_length]              = '\0';
-      } else
-        xbt_die("Can't find mount point for '%s' on '%s'", fullpath, piface_->cname());
-
-      XBT_DEBUG("OPEN %s on disk '%s'", path, st->cname());
-      Action* action = st->open((const char*)mount_name, (const char*)path);
-      free((char*)path);
-      free((char*)mount_name);
-      return action;
+      longest_prefix_length = strlen(mnt.name);
+      st                    = static_cast<simgrid::surf::Storage*>(mnt.storage);
     }
+    free(file_mount_name);
+  }
+  if (longest_prefix_length > 0) { /* Mount point found, split fullpath into mount_name and path+filename*/
+    path       = (char*)xbt_malloc((strlen(fullpath) - longest_prefix_length + 1));
+    mount_name = (char*)xbt_malloc((longest_prefix_length + 1));
+    strncpy(mount_name, fullpath, longest_prefix_length + 1);
+    strncpy(path, fullpath + longest_prefix_length, strlen(fullpath) - longest_prefix_length + 1);
+    path[strlen(fullpath) - longest_prefix_length] = '\0';
+    mount_name[longest_prefix_length]              = '\0';
+  } else
+    xbt_die("Can't find mount point for '%s' on '%s'", fullpath, piface_->cname());
 
-    Action* HostImpl::close(surf_file_t fd)
-    {
-      simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
-      XBT_DEBUG("CLOSE %s on disk '%s'", fd->name, st->cname());
-      return st->close(fd);
+  XBT_DEBUG("OPEN %s on disk '%s'", path, st->cname());
+  Action* action = st->open((const char*)mount_name, (const char*)path);
+  free((char*)path);
+  free((char*)mount_name);
+  return action;
+}
+
+Action* HostImpl::close(surf_file_t fd)
+{
+  simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
+  XBT_DEBUG("CLOSE %s on disk '%s'", fd->name, st->cname());
+  return st->close(fd);
+}
+
+Action* HostImpl::read(surf_file_t fd, sg_size_t size)
+{
+  simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
+  XBT_DEBUG("READ %s on disk '%s'", fd->name, st->cname());
+  return st->read(fd, size);
+}
+
+Action* HostImpl::write(surf_file_t fd, sg_size_t size)
+{
+  simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
+  XBT_DEBUG("WRITE %s on disk '%s'", fd->name, st->cname());
+  return st->write(fd, size);
+}
+
+int HostImpl::unlink(surf_file_t fd)
+{
+  if (!fd) {
+    XBT_WARN("No such file descriptor. Impossible to unlink");
+    return -1;
+  } else {
+
+    simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
+    /* Check if the file is on this storage */
+    if (!xbt_dict_get_or_null(st->content_, fd->name)) {
+      XBT_WARN("File %s is not on disk %s. Impossible to unlink", fd->name, st->cname());
+      return -1;
+    } else {
+      XBT_DEBUG("UNLINK %s on disk '%s'", fd->name, st->cname());
+      st->usedSize_ -= fd->size;
+
+      // Remove the file from storage
+      xbt_dict_remove(st->content_, fd->name);
+
+      xbt_free(fd->name);
+      xbt_free(fd->mount);
+      xbt_free(fd);
+      return 0;
     }
+  }
+}
 
-    Action* HostImpl::read(surf_file_t fd, sg_size_t size)
-    {
-      simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
-      XBT_DEBUG("READ %s on disk '%s'", fd->name, st->cname());
-      return st->read(fd, size);
+sg_size_t HostImpl::getSize(surf_file_t fd)
+{
+  return fd->size;
+}
+
+xbt_dynar_t HostImpl::getInfo(surf_file_t fd)
+{
+  simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
+  sg_size_t* psize           = xbt_new(sg_size_t, 1);
+  *psize                     = fd->size;
+  xbt_dynar_t info           = xbt_dynar_new(sizeof(void*), nullptr);
+  xbt_dynar_push_as(info, sg_size_t*, psize);
+  xbt_dynar_push_as(info, void*, fd->mount);
+  xbt_dynar_push_as(info, void*, (void*)st->cname());
+  xbt_dynar_push_as(info, void*, st->typeId_);
+  xbt_dynar_push_as(info, void*, st->contentType_);
+
+  return info;
+}
+
+sg_size_t HostImpl::fileTell(surf_file_t fd)
+{
+  return fd->current_position;
+}
+
+int HostImpl::fileSeek(surf_file_t fd, sg_offset_t offset, int origin)
+{
+
+  switch (origin) {
+  case SEEK_SET:
+    fd->current_position = offset;
+    return 0;
+  case SEEK_CUR:
+    fd->current_position += offset;
+    return 0;
+  case SEEK_END:
+    fd->current_position = fd->size + offset;
+    return 0;
+  default:
+    return -1;
+  }
+}
+
+int HostImpl::fileMove(surf_file_t fd, const char* fullpath)
+{
+  /* Check if the new full path is on the same mount point */
+  if (!strncmp((const char*)fd->mount, fullpath, strlen(fd->mount))) {
+    sg_size_t* psize = (sg_size_t*)xbt_dict_get_or_null(findStorageOnMountList(fd->mount)->content_, fd->name);
+    if (psize) { // src file exists
+      sg_size_t* new_psize = xbt_new(sg_size_t, 1);
+      *new_psize           = *psize;
+      xbt_dict_remove(findStorageOnMountList(fd->mount)->content_, fd->name);
+      char* path = (char*)xbt_malloc((strlen(fullpath) - strlen(fd->mount) + 1));
+      strncpy(path, fullpath + strlen(fd->mount), strlen(fullpath) - strlen(fd->mount) + 1);
+      xbt_dict_set(findStorageOnMountList(fd->mount)->content_, path, new_psize, nullptr);
+      XBT_DEBUG("Move file from %s to %s, size '%llu'", fd->name, fullpath, *psize);
+      free(path);
+      return 0;
+    } else {
+      XBT_WARN("File %s doesn't exist", fd->name);
+      return -1;
     }
+  } else {
+    XBT_WARN("New full path %s is not on the same mount point: %s. Action has been canceled.", fullpath, fd->mount);
+    return -1;
+  }
+}
 
-    Action* HostImpl::write(surf_file_t fd, sg_size_t size)
-    {
-      simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
-      XBT_DEBUG("WRITE %s on disk '%s'", fd->name, st->cname());
-      return st->write(fd, size);
-    }
-
-    int HostImpl::unlink(surf_file_t fd)
-    {
-      if (!fd) {
-        XBT_WARN("No such file descriptor. Impossible to unlink");
-        return -1;
-      } else {
-
-        simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
-        /* Check if the file is on this storage */
-        if (!xbt_dict_get_or_null(st->content_, fd->name)) {
-          XBT_WARN("File %s is not on disk %s. Impossible to unlink", fd->name, st->cname());
-          return -1;
-        } else {
-          XBT_DEBUG("UNLINK %s on disk '%s'", fd->name, st->cname());
-          st->usedSize_ -= fd->size;
-
-          // Remove the file from storage
-          xbt_dict_remove(st->content_, fd->name);
-
-          xbt_free(fd->name);
-          xbt_free(fd->mount);
-          xbt_free(fd);
-          return 0;
-        }
-      }
-    }
-
-    sg_size_t HostImpl::getSize(surf_file_t fd)
-    {
-      return fd->size;
-    }
-
-    xbt_dynar_t HostImpl::getInfo(surf_file_t fd)
-    {
-      simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
-      sg_size_t* psize           = xbt_new(sg_size_t, 1);
-      *psize                     = fd->size;
-      xbt_dynar_t info           = xbt_dynar_new(sizeof(void*), nullptr);
-      xbt_dynar_push_as(info, sg_size_t*, psize);
-      xbt_dynar_push_as(info, void*, fd->mount);
-      xbt_dynar_push_as(info, void*, (void*)st->cname());
-      xbt_dynar_push_as(info, void*, st->typeId_);
-      xbt_dynar_push_as(info, void*, st->contentType_);
-
-      return info;
-    }
-
-    sg_size_t HostImpl::fileTell(surf_file_t fd)
-    {
-      return fd->current_position;
-    }
-
-    int HostImpl::fileSeek(surf_file_t fd, sg_offset_t offset, int origin)
-    {
-
-      switch (origin) {
-        case SEEK_SET:
-          fd->current_position = offset;
-          return 0;
-        case SEEK_CUR:
-          fd->current_position += offset;
-          return 0;
-        case SEEK_END:
-          fd->current_position = fd->size + offset;
-          return 0;
-        default:
-          return -1;
-      }
-    }
-
-    int HostImpl::fileMove(surf_file_t fd, const char* fullpath)
-    {
-      /* Check if the new full path is on the same mount point */
-      if (!strncmp((const char*)fd->mount, fullpath, strlen(fd->mount))) {
-        sg_size_t* psize = (sg_size_t*)xbt_dict_get_or_null(findStorageOnMountList(fd->mount)->content_, fd->name);
-        if (psize) { // src file exists
-          sg_size_t* new_psize = xbt_new(sg_size_t, 1);
-          *new_psize           = *psize;
-          xbt_dict_remove(findStorageOnMountList(fd->mount)->content_, fd->name);
-          char* path = (char*)xbt_malloc((strlen(fullpath) - strlen(fd->mount) + 1));
-          strncpy(path, fullpath + strlen(fd->mount), strlen(fullpath) - strlen(fd->mount) + 1);
-          xbt_dict_set(findStorageOnMountList(fd->mount)->content_, path, new_psize, nullptr);
-          XBT_DEBUG("Move file from %s to %s, size '%llu'", fd->name, fullpath, *psize);
-          free(path);
-          return 0;
-        } else {
-          XBT_WARN("File %s doesn't exist", fd->name);
-          return -1;
-        }
-      } else {
-        XBT_WARN("New full path %s is not on the same mount point: %s. Action has been canceled.", fullpath, fd->mount);
-        return -1;
-      }
-    }
-
-    }
-    }
+}
+}
