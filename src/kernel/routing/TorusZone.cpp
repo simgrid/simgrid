@@ -90,13 +90,11 @@ void TorusZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
 
   if (!xbt_dynar_is_empty(dimensions)) {
     /* We are in a torus cluster
-     * Parse attribute dimensions="dim1,dim2,dim3,...,dimN"
-     * and safe it in a dynarray.
+     * Parse attribute dimensions="dim1,dim2,dim3,...,dimN" and safe it in a vector.
      * Additionally, we need to know how many ranks we have in total
      */
     xbt_dynar_foreach (dimensions, iter, groups) {
-      int tmp = surf_parse_get_int(xbt_dynar_get_as(dimensions, iter, char*));
-      dimensions_.push_back(tmp);
+      dimensions_.push_back(surf_parse_get_int(groups));
     }
 
     linkCountPerNode_ = dimensions_.size();
