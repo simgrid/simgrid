@@ -66,7 +66,8 @@ void sg_platf_new_host(sg_platf_host_cbarg_t args)
   std::unordered_map<std::string, std::string> props;
   if (args->properties) {
     xbt_dict_cursor_t cursor=nullptr;
-    char *key,*data;
+    char *key;
+    char* data;
     xbt_dict_foreach (args->properties, cursor, key, data)
       props[key] = data;
     xbt_dict_free(&args->properties);
@@ -131,7 +132,8 @@ void sg_platf_new_link(LinkCreationArgs* link)
 
     if (link->properties) {
       xbt_dict_cursor_t cursor = nullptr;
-      char *key, *data;
+      char* key;
+      char* data;
       xbt_dict_foreach (link->properties, cursor, key, data)
         l->setProperty(key, data);
       xbt_dict_free(&link->properties);
@@ -177,12 +179,12 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   simgrid::kernel::routing::ClusterZone* current_as = static_cast<ClusterZone*>(routing_get_current());
   current_as->parse_specific_arguments(cluster);
 
-  if(cluster->loopback_bw!=0 || cluster->loopback_lat!=0){
+  if(cluster->loopback_bw > 0 || cluster->loopback_lat > 0){
     current_as->linkCountPerNode_++;
     current_as->hasLoopback_ = 1;
   }
 
-  if(cluster->limiter_link!=0){
+  if(cluster->limiter_link > 0){
     current_as->linkCountPerNode_++;
     current_as->hasLimiter_ = 1;
   }
@@ -198,7 +200,8 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     host.id = host_id;
     if ((cluster->properties != nullptr) && (!xbt_dict_is_empty(cluster->properties))) {
       xbt_dict_cursor_t cursor=nullptr;
-      char *key,*data;
+      char *key;
+      char* data;
       host.properties = xbt_dict_new_homogeneous(free);
 
       xbt_dict_foreach(cluster->properties,cursor,key,data) {
@@ -224,7 +227,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     //add a loopback link
     simgrid::surf::LinkImpl* linkUp   = nullptr;
     simgrid::surf::LinkImpl* linkDown = nullptr;
-    if(cluster->loopback_bw!=0 || cluster->loopback_lat!=0){
+    if(cluster->loopback_bw > 0 || cluster->loopback_lat > 0){
       char *tmp_link = bprintf("%s_loopback", link_id);
       XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", tmp_link, cluster->loopback_bw);
 
@@ -245,7 +248,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     //add a limiter link (shared link to account for maximal bandwidth of the node)
     linkUp   = nullptr;
     linkDown = nullptr;
-    if(cluster->limiter_link!=0){
+    if(cluster->limiter_link > 0){
       char *tmp_link = bprintf("%s_limiter", link_id);
       XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", tmp_link, cluster->limiter_link);
 
@@ -286,7 +289,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   }
 
   //Make the backbone
-  if ((cluster->bb_bw != 0) || (cluster->bb_lat != 0)) {
+  if ((cluster->bb_bw > 0) || (cluster->bb_lat > 0)) {
 
     LinkCreationArgs link;
     link.id        = std::string(cluster->id)+ "_backbone";
@@ -389,7 +392,8 @@ void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)
 
   if (storage->properties) {
     xbt_dict_cursor_t cursor = nullptr;
-    char *key, *data;
+    char *key;
+    char* data;
     xbt_dict_foreach (storage->properties, cursor, key, data)
       s->setProperty(key, data);
     xbt_dict_free(&storage->properties);
