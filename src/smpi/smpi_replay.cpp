@@ -1,12 +1,10 @@
-/* Copyright (c) 2009-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
-#include <xbt.h>
-#include <xbt/replay.h>
+#include "xbt/replay.h"
 #include <unordered_map>
 #include <vector>
 
@@ -169,7 +167,7 @@ static void action_init(const char *const *action)
 
 static void action_finalize(const char *const *action)
 {
-  /* do nothing */
+  /* Nothing to do */
 }
 
 static void action_comm_size(const char *const *action)
@@ -971,6 +969,7 @@ void smpi_replay_run(int *argc, char***argv){
     }
     smpi_mpi_waitall(count_requests, requests, status);
   }
+  delete get_reqq_self();
   active_processes--;
 
   if(active_processes==0){

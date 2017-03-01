@@ -109,6 +109,9 @@ void xbt_replay_reader_free(xbt_replay_reader_t *reader)
  */
 void xbt_replay_action_register(const char *action_name, action_fun function)
 {
+  if (xbt_action_funs == nullptr) // If the user registers a function before the start
+    _xbt_replay_action_init();
+
   char* lowername = str_tolower (action_name);
   xbt_dict_set(xbt_action_funs, lowername, (void*) function, nullptr);
   xbt_free(lowername);
