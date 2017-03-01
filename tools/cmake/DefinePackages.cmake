@@ -1077,6 +1077,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/data_center.xml
   examples/platforms/dogbone.xml
   examples/platforms/energy_platform.xml
+  examples/platforms/energy_cluster.xml
   examples/platforms/faulty_host.xml
   examples/platforms/g5k.xml
   examples/platforms/griffon.xml
