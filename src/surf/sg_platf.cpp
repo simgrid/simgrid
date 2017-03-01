@@ -191,7 +191,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     char * host_id = bprintf("%s%d%s", cluster->prefix, i, cluster->suffix);
     char * link_id = bprintf("%s_link_%d", cluster->id, i);
 
-    XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, cluster->speed);
+    XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, cluster->speeds.front());
 
     s_sg_platf_host_cbarg_t host;
     memset(&host, 0, sizeof(host));
@@ -206,7 +206,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       }
     }
 
-    host.speed_per_pstate.push_back(cluster->speed);
+    host.speed_per_pstate = cluster->speeds;
     host.pstate = 0;
     host.core_amount = cluster->core_amount;
     host.coord = "";

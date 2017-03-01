@@ -270,6 +270,28 @@ double surf_parse_get_speed(const char *string, const char *entity_kind, const c
       "Append 'f' or 'flops' to your speed to get flop per second", "f");
 }
 
+static std::vector<double> surf_parse_get_all_speeds(char* speeds, const char* entity_kind, const char* id){
+
+  std::vector<double> speed_per_pstate;
+
+  if (strchr(speeds, ',') == nullptr){
+    double speed = surf_parse_get_speed(speeds, entity_kind, id);
+    speed_per_pstate.push_back(speed);
+  } else {
+    xbt_dynar_t pstate_list = xbt_str_split(speeds, ",");
+    unsigned int i;
+    char* speed_str;
+    xbt_dynar_foreach(pstate_list, i, speed_str) {
+      xbt_str_trim(speed_str, nullptr);
+      double speed = surf_parse_get_speed(speed_str,entity_kind, id);
+      speed_per_pstate.push_back(speed);
+      XBT_DEBUG("Speed value: %f", speed);
+    }
+    xbt_dynar_free(&pstate_list);
+  }
+  return speed_per_pstate;
+}
+
 /*
  * All the callback lists that can be overridden anywhere.
  * (this list should probably be reduced to the bare minimum to allow the models to work)
@@ -487,24 +509,7 @@ void ETag_surfxml_host()    {
 
   host.id = A_surfxml_host_id;
 
-  char* buf = A_surfxml_host_speed;
-  XBT_DEBUG("Buffer: %s", buf);
-  if (strchr(buf, ',') == nullptr){
-    double speed = surf_parse_get_speed(A_surfxml_host_speed,"speed of host", host.id);
-    host.speed_per_pstate.push_back(speed);
-  }
-  else {
-    xbt_dynar_t pstate_list = xbt_str_split(buf, ",");
-    unsigned int i;
-    char* speed_str;
-    xbt_dynar_foreach(pstate_list, i, speed_str) {
-      xbt_str_trim(speed_str, nullptr);
-      double speed = surf_parse_get_speed(speed_str,"speed of host", host.id);
-      host.speed_per_pstate.push_back(speed);
-      XBT_DEBUG("Speed value: %f", speed);
-    }
-    xbt_dynar_free(&pstate_list);
-  }
+  host.speed_per_pstate = surf_parse_get_all_speeds(A_surfxml_host_speed, "speed of host", host.id);
 
   XBT_DEBUG("pstate: %s", A_surfxml_host_pstate);
   host.core_amount = surf_parse_get_int(A_surfxml_host_core);
@@ -541,7 +546,7 @@ void ETag_surfxml_cluster(){
   cluster.prefix      = A_surfxml_cluster_prefix;
   cluster.suffix      = A_surfxml_cluster_suffix;
   cluster.radicals    = explodesRadical(A_surfxml_cluster_radical);
-  cluster.speed       = surf_parse_get_speed(A_surfxml_cluster_speed, "speed of cluster", cluster.id);
+  cluster.speeds      = surf_parse_get_all_speeds(A_surfxml_cluster_speed, "speed of cluster", cluster.id);
   cluster.core_amount = surf_parse_get_int(A_surfxml_cluster_core);
   cluster.bw          = surf_parse_get_bandwidth(A_surfxml_cluster_bw, "bw of cluster", cluster.id);
   cluster.lat         = surf_parse_get_time(A_surfxml_cluster_lat, "lat of cluster", cluster.id);
@@ -588,8 +593,7 @@ void ETag_surfxml_cluster(){
     cluster.sharing_policy = SURF_LINK_FATPIPE;
     break;
   default:
-    surf_parse_error("Invalid cluster sharing policy for cluster %s",
-                     cluster.id);
+    surf_parse_error("Invalid cluster sharing policy for cluster %s", cluster.id);
     break;
   }
   switch (AX_surfxml_cluster_bb___sharing___policy) {
@@ -600,8 +604,7 @@ void ETag_surfxml_cluster(){
     cluster.bb_sharing_policy = SURF_LINK_SHARED;
     break;
   default:
-    surf_parse_error("Invalid bb sharing policy in cluster %s",
-                     cluster.id);
+    surf_parse_error("Invalid bb sharing policy in cluster %s", cluster.id);
     break;
   }
 

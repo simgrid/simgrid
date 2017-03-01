@@ -96,7 +96,7 @@ typedef struct s_sg_platf_cluster_cbarg {
   const char* prefix;
   const char* suffix;
   std::vector<int>* radicals;
-  double speed;
+  std::vector<double> speeds;
   int core_amount;
   double bw;
   double lat;
