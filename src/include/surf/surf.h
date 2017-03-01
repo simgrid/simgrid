@@ -55,6 +55,7 @@ class StorageActionLmm;
 
 typedef simgrid::surf::Model surf_Model;
 typedef simgrid::surf::CpuModel surf_CpuModel;
+typedef simgrid::surf::Cpu surf_Cpu;
 typedef simgrid::surf::HostModel surf_HostModel;
 typedef simgrid::surf::NetworkModel surf_NetworkModel;
 typedef simgrid::surf::StorageModel surf_StorageModel;
@@ -71,6 +72,7 @@ typedef simgrid::surf::StorageActionLmm surf_StorageActionLmm;
 
 typedef struct surf_Model surf_Model;
 typedef struct surf_CpuModel surf_CpuModel;
+typedef struct surf_Cpu surf_Cpu;
 typedef struct surf_HostModel surf_HostModel;
 typedef struct surf_NetworkModel surf_NetworkModel;
 typedef struct surf_StorageModel surf_StorageModel;
@@ -93,6 +95,7 @@ typedef struct surf_StorageActionLmm surf_StorageActionLmm;
  */
 typedef surf_Model *surf_model_t;
 typedef surf_CpuModel *surf_cpu_model_t;
+typedef surf_Cpu* surf_cpu_t;
 typedef surf_HostModel *surf_host_model_t;
 typedef surf_NetworkModel *surf_network_model_t;
 typedef surf_StorageModel *surf_storage_model_t;

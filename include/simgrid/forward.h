@@ -48,7 +48,6 @@ typedef simgrid::s4u::Link s4u_Link;
 typedef simgrid::s4u::NetZone s4u_NetZone;
 typedef simgrid::kernel::activity::ActivityImpl kernel_Activity;
 typedef simgrid::kernel::routing::NetPoint routing_NetPoint;
-typedef simgrid::surf::Cpu surf_Cpu;
 typedef simgrid::surf::Resource surf_Resource;
 typedef simgrid::trace_mgr::trace tmgr_Trace;
 
@@ -59,7 +58,6 @@ typedef struct s4u_Host s4u_Host;
 typedef struct s4u_Link s4u_Link;
 typedef struct s4u_NetZone s4u_NetZone;
 typedef struct kernel_Activity kernel_Activity;
-typedef struct surf_Cpu surf_Cpu;
 typedef struct routing_NetPoint routing_NetPoint;
 typedef struct surf_Resource surf_Resource;
 typedef struct Trace tmgr_Trace;
@@ -72,7 +70,6 @@ typedef s4u_Link* sg_link_t;
 
 typedef kernel_Activity *smx_activity_t;
 
-typedef surf_Cpu *surf_cpu_t;
 typedef routing_NetPoint* sg_netpoint_t;
 typedef surf_Resource *sg_resource_t;
 
