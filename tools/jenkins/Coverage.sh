@@ -72,9 +72,9 @@ if [ -f Testing/TAG ] ; then
   do
     sourcepath=`dirname $file`
     #convert jacoco reports in xml ones
-    ant -f $WORKSPACE/tools/jenkins/jacoco.xml -Dexamplesrcdir=$WORKSPACE/${sourcepath} -Dsimgridsrcdir=$WORKSPACE/src/bindings/java -Dbuilddir=$BUILDFOLDER/${sourcepath} -Djarfile=$BUILDFOLDER/simgrid.jar -Djacocodir=${JACOCO_PATH}/lib
+    ant -f $WORKSPACE/tools/jenkins/jacoco.xml -Dexamplesrcdir=$WORKSPACE -Dbuilddir=$BUILDFOLDER/${sourcepath} -Djarfile=$BUILDFOLDER/simgrid.jar -Djacocodir=${JACOCO_PATH}/lib
     #convert jacoco xml reports in cobertura xml reports
-    cover2cover.py $BUILDFOLDER/${sourcepath}/report.xml $WORKSPACE > $WORKSPACE/java_coverage_${i}.xml
+    cover2cover.py $BUILDFOLDER/${sourcepath}/report.xml .. ../src/bindings/java src/bindings/java > $WORKSPACE/java_coverage_${i}.xml
     i=$(($i + 1))
   done
 

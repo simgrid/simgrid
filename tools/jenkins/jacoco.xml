@@ -17,7 +17,6 @@
         </classfiles>
         <sourcefiles encoding="UTF-8">
             <fileset dir="${examplesrcdir}"/>
-            <fileset dir="${simgridsrcdir}"/>
         </sourcefiles>
     </structure>
                         
