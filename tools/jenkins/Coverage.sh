@@ -2,13 +2,15 @@
 
 set -e
 
+BUILDFOLDER=$WORKSPACE/build
+
 die() {
     echo "$@"
     exit 1
 }
 
 do_cleanup() {
-  for d in "$WORKSPACE/build"
+  for d in "$BUILDFOLDER"
   do
     if [ -d "$d" ]
     then
@@ -36,7 +38,7 @@ done
 
 do_cleanup
 
-for d in "$WORKSPACE/build"
+for d in "$BUILDFOLDER"
 do
   mkdir "$d" || die "Could not create $d"
 done
@@ -44,7 +46,7 @@ done
 NUMPROC="$(nproc)" || NUMPROC=1
 
 
-cd $WORKSPACE/build
+cd $BUILDFOLDER
 
 ctest -D ExperimentalStart || true
 
@@ -62,16 +64,20 @@ ctest -D ExperimentalTest -j$NUMPROC || true
 ctest -D ExperimentalCoverage || true
 
 unset JAVA_TOOL_OPTIONS
-i=0
 if [ -f Testing/TAG ] ; then
-  for example in app/bittorrent app/centralizedmutex app/masterworker app/pingpong app/tokenring async/yield async/waitall async/dsend cloud/migration cloud/masterworker dht/chord dht/kademlia energy/consumption energy/pstate energy/vm io/file io/storage process/kill process/migration process/startkilltime process/suspend task/priority trace/pingpong
+
+  files=`find . -name "jacoco.exec"`
+  i=0
+  for file in $files
   do
+    sourcepath=`dirname $file`
     #convert jacoco reports in xml ones
-    ant -f $WORKSPACE/tools/jenkins/jacoco.xml -Dsrcdir=$WORKSPACE/examples/java/${example} -Dbuilddir=$WORKSPACE/build/examples/java/${example} -Djacocodir=${JACOCO_PATH}/lib
+    ant -f $WORKSPACE/tools/jenkins/jacoco.xml -Dexamplesrcdir=$WORKSPACE/${sourcepath} -Dsimgridsrcdir=$WORKSPACE/src/bindings/java -Dbuilddir=$BUILDFOLDER/${sourcepath} -Djarfile=$BUILDFOLDER/simgrid.jar -Djacocodir=${JACOCO_PATH}/lib
     #convert jacoco xml reports in cobertura xml reports
-    cover2cover.py $WORKSPACE/build/examples/java/${example}/report.xml $WORKSPACE/examples/java/ > $WORKSPACE/java_coverage_${i}.xml
-  i=$(($i + 1))
+    cover2cover.py $BUILDFOLDER/${sourcepath}/report.xml $WORKSPACE > $WORKSPACE/java_coverage_${i}.xml
+    i=$(($i + 1))
   done
+
    #convert all gcov reports to xml cobertura reports
    gcovr -r .. --xml-pretty -e teshsuite.* -u -o $WORKSPACE/xml_coverage.xml
    xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml > CTestResults_memcheck.xml
