@@ -157,6 +157,8 @@ XBT_PRIVATE int smpi_mpi_cart_rank(MPI_Comm comm, int* coords, int* rank);
 XBT_PRIVATE int smpi_mpi_cart_shift(MPI_Comm comm, int direction, int disp, int *rank_source, int *rank_dest);
 XBT_PRIVATE int smpi_mpi_cartdim_get(MPI_Comm comm, int *ndims);
 XBT_PRIVATE int smpi_mpi_dims_create(int nnodes, int ndims, int dims[]);
+XBT_PRIVATE void smpi_graph_topo_destroy(MPIR_Graph_Topology cart);
+XBT_PRIVATE void smpi_dist_graph_topo_destroy(MPIR_Dist_Graph_Topology cart);
 
 XBT_PRIVATE smpi_process_data_t smpi_process_data();
 XBT_PRIVATE smpi_process_data_t smpi_process_remote_data(int index);
