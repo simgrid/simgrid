@@ -428,7 +428,8 @@ if __name__ == '__main__':
            re.compile("^profiling:"),
            re.compile(".*WARNING: ASan doesn\'t fully support"),
            re.compile("Unable to clean temporary file C:.*"),
-           re.compile(".*Configuration change: Set \'contexts/")]
+           re.compile(".*Configuration change: Set \'contexts/"),
+           re.compile(".*Picked up JAVA_TOOL_OPTIONS.*")]
     
     if options.teshfile is None:
         f = FileReader(None)
