@@ -68,6 +68,6 @@ if(enable_java)
            cloud_migration cloud_masterworker dht_chord dht_kademlia energy_consumption energy_pstate energy_vm io_file io_storage 
            process_kill process_migration process_startkilltime process_suspend task_priority trace_pingpong)
     string (REPLACE "_" "/" example_dir ${example})
-    ADD_TESH(java-${example}  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/${example_dir}/${example}.tesh)
+    ADD_TESH(java-${example}  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java/${example_dir} ${CMAKE_HOME_DIRECTORY}/examples/java/${example_dir}/${example}.tesh)
   endforeach()
 endif()
