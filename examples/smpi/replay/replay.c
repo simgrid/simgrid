@@ -15,7 +15,7 @@ static void action_blah(const char* const* args)
 }
 
 int main(int argc, char *argv[]) {
-  /* Connect your calllback function to the "blah" event in the trace files */
+  /* Connect your callback function to the "blah" event in the trace files */
   xbt_replay_action_register("blah", action_blah);
 
   /* The regular run of the replayer */
