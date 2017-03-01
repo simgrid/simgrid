@@ -11,7 +11,6 @@
 
 #include <xbt/dict.h>
 #include <xbt/dynar.h>
-#include <xbt/swag.h>
 
 #include <simgrid/forward.h>
 
