@@ -11,6 +11,8 @@
 
 #include "xbt/dict.h"
 
+#include <stdio.h>
+
 SG_BEGIN_DECL()
 
 typedef struct s_replay_reader *xbt_replay_reader_t;
