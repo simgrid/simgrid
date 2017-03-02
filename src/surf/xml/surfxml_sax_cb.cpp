@@ -377,23 +377,23 @@ void ETag_surfxml_mount()
 /*
  * Stuff relative to the <include> tag
  */
-static xbt_dynar_t surf_input_buffer_stack    = nullptr;
-static xbt_dynar_t surf_file_to_parse_stack   = nullptr;
-static xbt_dynar_t surf_parsed_filename_stack = nullptr;
+static std::vector<YY_BUFFER_STATE> surf_input_buffer_stack;
+static std::vector<FILE*> surf_file_to_parse_stack;
+static std::vector<char*> surf_parsed_filename_stack;
 
 void STag_surfxml_include()
 {
   parse_after_config();
   XBT_DEBUG("STag_surfxml_include '%s'",A_surfxml_include_file);
-  xbt_dynar_push(surf_parsed_filename_stack,&surf_parsed_filename); // save old file name
+  surf_parsed_filename_stack.push_back(surf_parsed_filename); // save old file name
   surf_parsed_filename = xbt_strdup(A_surfxml_include_file);
 
-  xbt_dynar_push(surf_file_to_parse_stack, &surf_file_to_parse); //save old file descriptor
+  surf_file_to_parse_stack.push_back(surf_file_to_parse); // save old file descriptor
 
   surf_file_to_parse = surf_fopen(A_surfxml_include_file, "r"); // read new file descriptor
   xbt_assert((surf_file_to_parse), "Unable to open \"%s\"\n", A_surfxml_include_file);
 
-  xbt_dynar_push(surf_input_buffer_stack,&surf_input_buffer);
+  surf_input_buffer_stack.push_back(surf_input_buffer);
   surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, YY_BUF_SIZE);
   surf_parse_push_buffer_state(surf_input_buffer);
 
@@ -421,18 +421,18 @@ int ETag_surfxml_include_state()
   fflush(nullptr);
   XBT_DEBUG("ETag_surfxml_include_state '%s'",A_surfxml_include_file);
 
-  if(xbt_dynar_is_empty(surf_input_buffer_stack)) // nope, that's a true premature EOF. Let the parser die verbosely.
+  if (surf_input_buffer_stack.empty()) // nope, that's a true premature EOF. Let the parser die verbosely.
     return 0;
 
   // Yeah, we were in an <include> Restore state and proceed.
   fclose(surf_file_to_parse);
-  xbt_dynar_pop(surf_file_to_parse_stack, &surf_file_to_parse);
+  surf_file_to_parse_stack.pop_back();
   surf_parse_pop_buffer_state();
-  xbt_dynar_pop(surf_input_buffer_stack,&surf_input_buffer);
+  surf_input_buffer_stack.pop_back();
 
   // Restore the filename for error messages
   free(surf_parsed_filename);
-  xbt_dynar_pop(surf_parsed_filename_stack,&surf_parsed_filename);
+  surf_parsed_filename_stack.pop_back();
 
   return 1;
 }
@@ -1005,14 +1005,6 @@ void surf_parse_open(const char *file)
 {
   xbt_assert(file, "Cannot parse the nullptr file. Bypassing the parser is strongly deprecated nowadays.");
 
-  if (!surf_input_buffer_stack)
-    surf_input_buffer_stack = xbt_dynar_new(sizeof(YY_BUFFER_STATE), nullptr);
-  if (!surf_file_to_parse_stack)
-    surf_file_to_parse_stack = xbt_dynar_new(sizeof(FILE *), nullptr);
-
-  if (!surf_parsed_filename_stack)
-    surf_parsed_filename_stack = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-
   surf_parsed_filename = xbt_strdup(file);
   char *dir = xbt_dirname(file);
   xbt_dynar_push(surf_path, &dir);
@@ -1026,9 +1018,6 @@ void surf_parse_open(const char *file)
 
 void surf_parse_close()
 {
-  xbt_dynar_free(&surf_input_buffer_stack);
-  xbt_dynar_free(&surf_file_to_parse_stack);
-  xbt_dynar_free(&surf_parsed_filename_stack);
   if (surf_parsed_filename) {
     char *dir = nullptr;
     xbt_dynar_pop(surf_path, &dir);
