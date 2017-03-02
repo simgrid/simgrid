@@ -835,10 +835,9 @@ void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
     *request = MPI_REQUEST_NULL;
 }
 
-static int sort_accumulates(const void* pa, const void* pb)
+static int sort_accumulates(MPI_Request a, MPI_Request b)
 {
-  return (*static_cast<MPI_Request const*>(pa))->tag>
-                (*static_cast<MPI_Request const*>(pb))->tag;
+  return (a->tag < b->tag);
 }
 
 int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status * status)
