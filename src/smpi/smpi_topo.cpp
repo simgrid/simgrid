@@ -425,9 +425,7 @@ static int assignnodes(int ndim, int nfactor, int *pfacts, int **pdims)
 
   /* Allocate and initialize the bins */
   int *bins = new int[ndim];
-  if (nullptr == bins) {
-    return MPI_ERR_NO_MEM;
-  }
+
   *pdims = bins;
   int *p = bins;
 
