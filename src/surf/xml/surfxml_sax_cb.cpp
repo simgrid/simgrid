@@ -707,10 +707,18 @@ void STag_surfxml_link___ctn(){
   }
   xbt_free(link_name); // no-op if it's already nullptr
 
-  surf_parse_assert(link!=nullptr,"No such link: '%s'%s", A_surfxml_link___ctn_id,
-      A_surfxml_link___ctn_direction==A_surfxml_link___ctn_direction_UP?" (upward)":
-          ( A_surfxml_link___ctn_direction==A_surfxml_link___ctn_direction_DOWN?" (downward)":
-              ""));
+  const char* dirname = "";
+  switch (A_surfxml_link___ctn_direction) {
+    case A_surfxml_link___ctn_direction_UP:
+      dirname = " (upward)";
+      break;
+    case A_surfxml_link___ctn_direction_DOWN:
+      dirname = " (downward)";
+      break;
+    default:
+      dirname = "";
+  }
+  surf_parse_assert(link != nullptr, "No such link: '%s'%s", A_surfxml_link___ctn_id, dirname);
   parsed_link_list.push_back(link);
 }
 

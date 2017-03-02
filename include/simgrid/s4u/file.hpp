@@ -13,7 +13,6 @@
 namespace simgrid {
 namespace s4u {
 
-class Actor;
 class Storage;
 
 /** @brief A simulated file

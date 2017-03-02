@@ -322,8 +322,21 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
         xbt_dynar_foreach(unit->tests, it_test, test) {
           file = (test->file != nullptr ? test->file : unit->file);
           line = (test->line != 0 ? test->line : unit->line);
-          fprintf(stderr, "      %s: %s [%s:%d]\n", (test->ignored ? " SKIP" : (test->expected_failure
-                  ? (test-> failed ? "EFAIL" : "EPASS") : (test->failed ? " FAIL" : " PASS"))),test->title, file, line);
+          const char* resname;
+          if (test->ignored)
+            resname = " SKIP";
+          else if (test->expected_failure) {
+            if (test->failed)
+              resname = "EFAIL";
+            else
+              resname = "EPASS";
+          } else {
+            if (test->failed)
+              resname = " FAIL";
+            else
+              resname = " PASS";
+          }
+          fprintf(stderr, "      %s: %s [%s:%d]\n", resname, test->title, file, line);
 
           if ((test->expected_failure && !test->failed) || (!test->expected_failure && test->failed)) {
             xbt_dynar_foreach(test->logs, it_log, log) {
