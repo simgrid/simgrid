@@ -861,15 +861,15 @@ int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status * status)
           xbt_dynar_push(&comms, &requests[i]->action);
           map[size] = i;
           size++;
-        }else{
-         //This is a finished detached request, let's return this one
-         size=0;//so we free the dynar but don't do the waitany call
-         index=i;
-         finish_wait(&requests[i], status);//cleanup if refcount = 0
-         if (requests[i] != MPI_REQUEST_NULL && (requests[i]->flags & NON_PERSISTENT))
-         requests[i]=MPI_REQUEST_NULL;//set to null
-         break;
-         }
+        } else {
+          // This is a finished detached request, let's return this one
+          size  = 0; // so we free the dynar but don't do the waitany call
+          index = i;
+          finish_wait(&requests[i], status); // cleanup if refcount = 0
+          if (requests[i] != MPI_REQUEST_NULL && (requests[i]->flags & NON_PERSISTENT))
+            requests[i] = MPI_REQUEST_NULL; // set to null
+          break;
+        }
       }
     }
     if(size > 0) {
@@ -902,7 +902,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status * status)
 
 int smpi_mpi_waitall(int count, MPI_Request requests[], MPI_Status status[])
 {
-  s_xbt_dynar_t accumulates;
+  std::vector<MPI_Request> accumulates;
   int index;
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
@@ -918,9 +918,7 @@ int smpi_mpi_waitall(int count, MPI_Request requests[], MPI_Status status[])
       }
     }
   }
-  xbt_dynar_init(&accumulates, sizeof(MPI_Request), nullptr);
   for (int c = 0; c < count; c++) {
-
     if (MC_is_active() || MC_record_replay_is_active()) {
       smpi_mpi_wait(&requests[c], pstat);
       index = c;
@@ -932,10 +930,9 @@ int smpi_mpi_waitall(int count, MPI_Request requests[], MPI_Status status[])
       if (requests[index] != MPI_REQUEST_NULL
            && (requests[index]->flags & RECV)
            && (requests[index]->flags & ACCUMULATE))
-        xbt_dynar_push(&accumulates, &requests[index]);
+        accumulates.push_back(requests[index]);
       if (requests[index] != MPI_REQUEST_NULL && (requests[index]->flags & NON_PERSISTENT))
-      requests[index]=MPI_REQUEST_NULL;
-
+        requests[index] = MPI_REQUEST_NULL;
     }
     if (status != MPI_STATUSES_IGNORE) {
       status[index] = *pstat;
@@ -944,15 +941,12 @@ int smpi_mpi_waitall(int count, MPI_Request requests[], MPI_Status status[])
     }
   }
 
-  if(!xbt_dynar_is_empty(&accumulates)){
-    xbt_dynar_sort(&accumulates, sort_accumulates);
-    MPI_Request req;
-    unsigned int cursor;
-    xbt_dynar_foreach(&accumulates, cursor, req) {
+  if (!accumulates.empty()) {
+    std::sort(accumulates.begin(), accumulates.end(), sort_accumulates);
+    for (auto req : accumulates) {
       finish_wait(&req, status);
     }
   }
-  xbt_dynar_free_data(&accumulates);
 
   return retvalue;
 }
