@@ -192,8 +192,8 @@ StorageAction *StorageN11::open(const char* mount, const char* path)
 {
   XBT_DEBUG("\tOpen file '%s'",path);
 
-  sg_size_t size, *psize;
-  psize = (sg_size_t*) xbt_dict_get_or_null(content_, path);
+  sg_size_t size;
+  sg_size_t* psize = (sg_size_t*)xbt_dict_get_or_null(content_, path);
   // if file does not exist create an empty file
   if(psize)
     size = *psize;
@@ -297,6 +297,8 @@ StorageN11Action::StorageN11Action(Model *model, double cost, bool failed, Stora
     //    storage->p_writeActions->push_back(action);
     //    ref();
     break;
+  default:
+    THROW_UNIMPLEMENTED;
   }
   XBT_OUT();
 }

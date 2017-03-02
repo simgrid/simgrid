@@ -42,8 +42,8 @@ static char **action_get_action(char *name);
 static char *str_tolower (const char *str)
 {
   char *ret = xbt_strdup (str);
-  int i, n = strlen (ret);
-  for (i = 0; i < n; i++)
+  int n     = strlen(ret);
+  for (int i = 0; i < n; i++)
     ret[i] = tolower (str[i]);
   return ret;
 }
@@ -63,10 +63,8 @@ xbt_replay_reader_t xbt_replay_reader_new(const char *filename)
 
 const char **xbt_replay_reader_get(xbt_replay_reader_t reader)
 {
-  ssize_t read;
-  xbt_dynar_t d;
-  read = xbt_getline(&reader->line, &reader->line_len, reader->fp);
-  //XBT_INFO("got from trace: %s",reader->line);
+  ssize_t read = xbt_getline(&reader->line, &reader->line_len, reader->fp);
+  XBT_DEBUG("got from trace: %s", reader->line);
   reader->linenum++;
   if (read==-1)
     return nullptr; /* end of file */
@@ -77,7 +75,7 @@ const char **xbt_replay_reader_get(xbt_replay_reader_t reader)
   if (reader->line[0] == '\0')
     return xbt_replay_reader_get(reader); /* Get next line */
 
-  d=xbt_str_split_quoted_in_place(reader->line);
+  xbt_dynar_t d = xbt_str_split_quoted_in_place(reader->line);
   if (xbt_dynar_is_empty(d)) {
     xbt_dynar_free(&d);
     return xbt_replay_reader_get(reader); /* Get next line */
