@@ -426,12 +426,15 @@ int ETag_surfxml_include_state()
 
   // Yeah, we were in an <include> Restore state and proceed.
   fclose(surf_file_to_parse);
+  surf_file_to_parse = surf_file_to_parse_stack.back();
   surf_file_to_parse_stack.pop_back();
   surf_parse_pop_buffer_state();
+  surf_input_buffer = surf_input_buffer_stack.back();
   surf_input_buffer_stack.pop_back();
 
   // Restore the filename for error messages
   free(surf_parsed_filename);
+  surf_parsed_filename = surf_parsed_filename_stack.back();
   surf_parsed_filename_stack.pop_back();
 
   return 1;
