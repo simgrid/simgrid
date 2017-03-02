@@ -9,19 +9,15 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster_torus, surf_route_cluster, "Torus Routing part of surf");
 
-inline unsigned int* rankId_to_coords(int rankId, std::vector<unsigned int> dimensions)
+inline void rankId_to_coords(int rankId, std::vector<unsigned int> dimensions, unsigned int (*coords)[4])
 {
-
   unsigned int dim_size_product = 1;
-  unsigned int* coords =  new unsigned int[dimensions.size()];
   unsigned int i = 0;
   for (auto cur_dim_size: dimensions) {
-    coords[i]    = (rankId / dim_size_product) % cur_dim_size;
+    (*coords)[i] = (rankId / dim_size_product) % cur_dim_size;
     dim_size_product *= cur_dim_size;
     i++;
   }
-
-  return coords;
 }
 
 namespace simgrid {
@@ -133,8 +129,10 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
    * both arrays, we can easily assess whether we need to route
    * into this dimension or not.
    */
-  unsigned int* myCoords     = rankId_to_coords(src->id(), dimensions_);
-  unsigned int* targetCoords = rankId_to_coords(dst->id(), dimensions_);
+  unsigned int myCoords[4];
+  rankId_to_coords(src->id(), dimensions_, &myCoords);
+  unsigned int targetCoords[4];
+  rankId_to_coords(dst->id(), dimensions_, &targetCoords);
   /*
    * linkOffset describes the offset where the link
    * we want to use is stored
@@ -212,8 +210,6 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
     current_node = next_node;
     next_node    = 0;
   }
-  delete[] myCoords;
-  delete[] targetCoords;
 }
 }
 }

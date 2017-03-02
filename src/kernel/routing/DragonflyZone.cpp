@@ -30,18 +30,15 @@ DragonflyZone::~DragonflyZone()
   }
 }
 
-unsigned int* DragonflyZone::rankId_to_coords(int rankId)
+void DragonflyZone::rankId_to_coords(int rankId, unsigned int (*coords)[4])
 {
   // coords : group, chassis, blade, node
-  unsigned int* coords =  new unsigned int[4];
-  coords[0]            = rankId / (numChassisPerGroup_ * numBladesPerChassis_ * numNodesPerBlade_);
+  (*coords)[0]         = rankId / (numChassisPerGroup_ * numBladesPerChassis_ * numNodesPerBlade_);
   rankId               = rankId % (numChassisPerGroup_ * numBladesPerChassis_ * numNodesPerBlade_);
-  coords[1]            = rankId / (numBladesPerChassis_ * numNodesPerBlade_);
+  (*coords)[1]         = rankId / (numBladesPerChassis_ * numNodesPerBlade_);
   rankId               = rankId % (numBladesPerChassis_ * numNodesPerBlade_);
-  coords[2]            = rankId / numNodesPerBlade_;
-  coords[3]            = rankId % numNodesPerBlade_;
-
-  return coords;
+  (*coords)[2]         = rankId / numNodesPerBlade_;
+  (*coords)[3]         = rankId % numNodesPerBlade_;
 }
 
 void DragonflyZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
@@ -271,8 +268,10 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
     return;
   }
 
-  unsigned int* myCoords     = rankId_to_coords(src->id());
-  unsigned int* targetCoords = rankId_to_coords(dst->id());
+  unsigned int myCoords[4];
+  rankId_to_coords(src->id(), &myCoords);
+  unsigned int targetCoords[4];
+  rankId_to_coords(dst->id(), &targetCoords);
   XBT_DEBUG("src : %u group, %u chassis, %u blade, %u node", myCoords[0], myCoords[1], myCoords[2], myCoords[3]);
   XBT_DEBUG("dst : %u group, %u chassis, %u blade, %u node", targetCoords[0], targetCoords[1], targetCoords[2],
             targetCoords[3]);
@@ -349,9 +348,6 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
   route->link_list->push_back(targetRouter->myNodes_[targetCoords[3] * numLinksperLink_ + numLinksperLink_ - 1]);
   if (latency)
     *latency += targetRouter->myNodes_[targetCoords[3] * numLinksperLink_ + numLinksperLink_ - 1]->latency();
-
-  delete[] myCoords;
-  delete[] targetCoords;
 }
 }
 }
