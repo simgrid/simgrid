@@ -25,10 +25,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf, "Logging specific to SURF (ke
  * Utils *
  *********/
 
-/* model_list_invoke contains only surf_host and surf_vm.
- * The callback functions of cpu_model and network_model will be called from those of these host models. */
 std::vector<surf_model_t> * all_existing_models = nullptr; /* to destroy models correctly */
-xbt_dynar_t model_list_invoke = nullptr;  /* to invoke callbacks */
 
 simgrid::trace_mgr::future_evt_set *future_evt_set = nullptr;
 xbt_dynar_t surf_path = nullptr;
@@ -343,8 +340,6 @@ void surf_init(int *argc, char **argv)
   xbt_init(argc, argv);
   if (!all_existing_models)
     all_existing_models = new std::vector<simgrid::surf::Model*>();
-  if (!model_list_invoke)
-    model_list_invoke = xbt_dynar_new(sizeof(simgrid::surf::Model*), nullptr);
   if (!future_evt_set)
     future_evt_set = new simgrid::trace_mgr::future_evt_set();
 
@@ -373,7 +368,6 @@ void surf_exit()
   for (auto model : *all_existing_models)
     delete model;
   delete all_existing_models;
-  xbt_dynar_free(&model_list_invoke);
 
   simgrid::surf::surfExitCallbacks();
 
@@ -465,12 +459,10 @@ double Model::nextOccuringEventLazy(double now)
       min = now + time_to_completion; // when the task will complete if nothing changes
     }
 
-    if ((action->getMaxDuration() != NO_MAX_DURATION)
-        && (min == -1
-            || action->getStartTime() +
-            action->getMaxDuration() < min)) {
-      min = action->getStartTime() +
-          action->getMaxDuration();  // when the task will complete anyway because of the deadline if any
+    if ((action->getMaxDuration() != NO_MAX_DURATION) &&
+        (min == -1 || action->getStartTime() + action->getMaxDuration() < min)) {
+      // when the task will complete anyway because of the deadline if any
+      min          = action->getStartTime() + action->getMaxDuration();
       max_dur_flag = 1;
     }
 
