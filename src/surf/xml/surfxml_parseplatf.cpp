@@ -4,13 +4,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/misc.h"
-#include "xbt/log.h"
-#include "xbt/str.h"
-#include "xbt/dict.h"
+#include "src/instr/instr_private.h" // TRACE_start(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/instr/instr_private.h" // TRACE_start(). FIXME: remove by subscribing tracing to the surf signals
+#include "xbt/dict.h"
+#include "xbt/log.h"
+#include "xbt/misc.h"
+#include "xbt/str.h"
+#include <vector>
 
 #include "src/surf/xml/platf_private.hpp"
 
@@ -34,7 +35,7 @@ SG_BEGIN_DECL()
  */
 
 /* This buffer is used to store the original buffer before substituting it by out own buffer. Useful for the cluster tag */
-static xbt_dynar_t surfxml_bufferstack_stack = nullptr;
+static std::vector<char*> surfxml_bufferstack_stack;
 int surfxml_bufferstack_size = 2048;
 
 static char *old_buff = nullptr;
@@ -47,7 +48,7 @@ void surfxml_bufferstack_push(int new_one)
   if (!new_one)
     old_buff = surfxml_bufferstack;
   else {
-    xbt_dynar_push(surfxml_bufferstack_stack, &surfxml_bufferstack);
+    surfxml_bufferstack_stack.push_back(surfxml_bufferstack);
     surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
   }
 }
@@ -58,7 +59,8 @@ void surfxml_bufferstack_pop(int new_one)
     surfxml_bufferstack = old_buff;
   else {
     free(surfxml_bufferstack);
-    xbt_dynar_pop(surfxml_bufferstack_stack, &surfxml_bufferstack);
+    surfxml_bufferstack = surfxml_bufferstack_stack.back();
+    surfxml_bufferstack_stack.pop_back();
   }
 }
 
@@ -173,10 +175,6 @@ void parse_platform_file(const char *file)
     trace_connect_list_link_bw = xbt_dict_new_homogeneous(free);
     trace_connect_list_link_lat = xbt_dict_new_homogeneous(free);
 
-    /* Init my data */
-    if (!surfxml_bufferstack_stack)
-      surfxml_bufferstack_stack = xbt_dynar_new(sizeof(char *), nullptr);
-
     /* Do the actual parsing */
     parse_status = surf_parse();
 
@@ -235,7 +233,6 @@ void parse_platform_file(const char *file)
     xbt_dict_free(&trace_connect_list_link_bw);
     xbt_dict_free(&trace_connect_list_link_lat);
     xbt_dict_free(&traces_set_list);
-    xbt_dynar_free(&surfxml_bufferstack_stack);
 
     surf_parse_close();
 
