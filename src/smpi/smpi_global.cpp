@@ -388,6 +388,11 @@ void print_request(const char *message, MPI_Request request)
        message, request, request->buf, request->size, request->src, request->dst, request->tag, request->flags);
 }
 
+void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, size_t))
+{
+  smpi_comm_copy_data_callback = callback;
+}
+
 void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t buff_size)
 {
   XBT_DEBUG("Copy the data over");
@@ -808,7 +813,7 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
 
   // parse the platform file: get the host list
   SIMIX_create_environment(argv[1]);
-  SIMIX_comm_set_copy_data_callback(&smpi_comm_copy_buffer_callback);
+  SIMIX_comm_set_copy_data_callback(smpi_comm_copy_data_callback);
   SIMIX_function_register_default(realmain);
   SIMIX_launch_application(argv[2]);
 

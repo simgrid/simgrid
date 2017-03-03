@@ -332,7 +332,7 @@ void smpi_mpi_start(MPI_Request request)
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     request->real_size=request->size;
     request->action = simcall_comm_irecv(SIMIX_process_self(), mailbox, request->buf, &request->real_size, &match_recv,
-                                         ! smpi_process_get_replaying()? &smpi_comm_copy_buffer_callback
+                                         ! smpi_process_get_replaying()? smpi_comm_copy_data_callback
                                          : &smpi_comm_null_copy_buffer_callback, request, -1.0);
     XBT_DEBUG("recv simcall posted");
 
@@ -422,7 +422,7 @@ void smpi_mpi_start(MPI_Request request)
     request->action = simcall_comm_isend(SIMIX_process_from_PID(request->src+1), mailbox, request->size, -1.0,
                                          buf, request->real_size, &match_send,
                          &xbt_free_f, // how to free the userdata if a detached send fails
-                         !smpi_process_get_replaying() ? &smpi_comm_copy_buffer_callback
+                         !smpi_process_get_replaying() ? smpi_comm_copy_data_callback
                          : &smpi_comm_null_copy_buffer_callback, request,
                          // detach if msg size < eager/rdv switch limit
                          request->detached);
