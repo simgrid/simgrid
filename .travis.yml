@@ -49,8 +49,8 @@ script:
    - cmake -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=OFF -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON . 
    # run make in the sonar wrapper && run the tests before sonar to get coverage info
    - ./tools/internal/travis-sonarqube.sh make VERBOSE=1
-   # if sonar was not run, run the tests manually
-   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ctest --output-on-failure --timeout 100 ; fi
+   # if sonar was not run (and if the build succeeded), run the tests manually
+   - if [[ "$TRAVIS_OS_NAME" == "osx" && -e bin/graphicator ]]; then ctest --output-on-failure --timeout 100 ; fi
 notifications:
   recipients:
     - martin.quinson@ens-rennes.fr
