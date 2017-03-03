@@ -1338,7 +1338,8 @@ void smpi_mpi_allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype da
 void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   int system_tag = -888;
-  MPI_Aint lb = 0, dataext = 0;
+  MPI_Aint lb      = 0;
+  MPI_Aint dataext = 0;
 
   int rank = smpi_comm_rank(comm);
   int size = smpi_comm_size(comm);
@@ -1397,7 +1398,8 @@ void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
 void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   int system_tag = -888;
-  MPI_Aint lb = 0, dataext = 0;
+  MPI_Aint lb         = 0;
+  MPI_Aint dataext    = 0;
   int recvbuf_is_empty=1;
   int rank = smpi_comm_rank(comm);
   int size = smpi_comm_size(comm);
@@ -1419,6 +1421,7 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   }
   // Wait for completion of all comms.
   smpi_mpi_startall(size - 1, requests);
+
   if(smpi_op_is_commute(op)){
     for (int other = 0; other < size - 1; other++) {
       index = smpi_mpi_waitany(size - 1, requests, MPI_STATUS_IGNORE);
@@ -1439,11 +1442,11 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
     for (int other = 0; other < size - 1; other++) {
       smpi_mpi_wait(&(requests[other]), MPI_STATUS_IGNORE);
       if(index < rank) {
-          if(recvbuf_is_empty){
-            smpi_datatype_copy(tmpbufs[other], count, datatype, recvbuf, count, datatype);
-            recvbuf_is_empty=0;
-          } else
-            smpi_op_apply(op, tmpbufs[other], recvbuf, &count, &datatype);
+        if (recvbuf_is_empty) {
+          smpi_datatype_copy(tmpbufs[other], count, datatype, recvbuf, count, datatype);
+          recvbuf_is_empty = 0;
+        } else
+          smpi_op_apply(op, tmpbufs[other], recvbuf, &count, &datatype);
       }
     }
   }

@@ -28,13 +28,11 @@ typedef struct s_smpi_mpi_win{
 
 
 MPI_Win smpi_mpi_win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm){
-  MPI_Win win;
-
   int comm_size = smpi_comm_size(comm);
-  int rank=smpi_comm_rank(comm);
+  int rank      = smpi_comm_rank(comm);
   XBT_DEBUG("Creating window");
 
-  win = xbt_new(s_smpi_mpi_win_t, 1);
+  MPI_Win win    = xbt_new(s_smpi_mpi_win_t, 1);
   win->base = base;
   win->size = size;
   win->disp_unit = disp_unit;
@@ -278,17 +276,18 @@ int smpi_mpi_win_start(MPI_Group group, int assert, MPI_Win win){
     must complete, without further dependencies.  */
 
   //naive, blocking implementation.
-  int i=0,j=0;
-  int size = smpi_group_size(group);
-  MPI_Request* reqs = xbt_new0(MPI_Request, size);
+    int i             = 0;
+    int j             = 0;
+    int size          = smpi_group_size(group);
+    MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
-  while(j!=size){
-    int src=smpi_group_index(group,j);
-    if(src!=smpi_process_index()&& src!=MPI_UNDEFINED){
-      reqs[i]=smpi_irecv_init(nullptr, 0, MPI_CHAR, src,SMPI_RMA_TAG+4, MPI_COMM_WORLD);
-      i++;
-    }
-    j++;
+    while (j != size) {
+      int src = smpi_group_index(group, j);
+      if (src != smpi_process_index() && src != MPI_UNDEFINED) {
+        reqs[i] = smpi_irecv_init(nullptr, 0, MPI_CHAR, src, SMPI_RMA_TAG + 4, MPI_COMM_WORLD);
+        i++;
+      }
+      j++;
   }
   size=i;
   smpi_mpi_startall(size, reqs);
@@ -305,7 +304,8 @@ int smpi_mpi_win_start(MPI_Group group, int assert, MPI_Win win){
 
 int smpi_mpi_win_post(MPI_Group group, int assert, MPI_Win win){
   //let's make a synchronous send here
-  int i=0,j=0;
+  int i             = 0;
+  int j             = 0;
   int size = smpi_group_size(group);
   MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
@@ -336,7 +336,8 @@ int smpi_mpi_win_complete(MPI_Win win){
     xbt_die("Complete called on already opened MPI_Win");
 
   XBT_DEBUG("Entering MPI_Win_Complete");
-  int i=0,j=0;
+  int i             = 0;
+  int j             = 0;
   int size = smpi_group_size(win->group);
   MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
