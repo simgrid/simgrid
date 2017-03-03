@@ -267,7 +267,7 @@ smx_actor_t SIMIX_process_create(
     process->ppid = parent_process->pid;
 /* SMPI process have their own data segment and each other inherit from their father */
 #if HAVE_SMPI
-    if (smpi_privatize_global_variables) {
+    if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
       if (parent_process->pid != 0) {
         SIMIX_segment_index_set(process, parent_process->segment_index);
       } else {
@@ -328,7 +328,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
     process->ppid = parent_process->pid;
     /* SMPI process have their own data segment and each other inherit from their father */
 #if HAVE_SMPI
-    if (smpi_privatize_global_variables) {
+    if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
       if (parent_process->pid != 0) {
         SIMIX_segment_index_set(process, parent_process->segment_index);
       } else {

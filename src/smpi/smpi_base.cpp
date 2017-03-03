@@ -55,7 +55,6 @@ double smpi_mpi_wtime(){
   return time;
 }
 
-
 void smpi_mpi_bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm)
 {
   smpi_coll_tuned_bcast_binomial_tree(buf, count, datatype, root, comm);
