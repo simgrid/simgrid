@@ -39,6 +39,11 @@ installBuildWrapper
 # Run ctest before sonar to gather coverage some information
 ctest --output-on-failure --timeout 100
 
+# Only run sonar on master (not on pull requests)
+if [ `git rev-parse --abbrev-ref HEAD` != "master" ] ; then
+  exit 0
+fi
+
 # generate the gcov files
 ctest -D ExperimentalCoverage
 
@@ -47,4 +52,6 @@ ctest -D ExperimentalCoverage
 # See https://docs.travis-ci.com/user/sonarqube/ for more info on tokens
 # don't show the token in the logs
 set +x
-sonar-scanner -Dsonar.host.url=https://sonarqube.com -Dsonar.login=$SONAR_TOKEN
+sonar-scanner -Dsonar.host.url=https://sonarqube.com -Dsonar.login=$SONAR_TOKEN     \
+  | grep -v 'INFO: Parsing /home/travis/build/simgrid/simgrid/Testing/CoverageInfo' \
+  | grep -v 'WARN: File not analysed by Sonar, so ignoring coverage: /usr/include/'
