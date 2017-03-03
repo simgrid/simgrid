@@ -64,8 +64,10 @@ void CpuModel::updateActionsStateFull(double now, double delta)
   CpuAction *action = nullptr;
   ActionList *running_actions = getRunningActionSet();
   ActionList::iterator it(running_actions->begin());
-  ActionList::iterator itend(running_actions->end()) for (; it != itend; ++it)
-  {
+  ActionList::iterator itNext = it;
+  ActionList::iterator itend(running_actions->end());
+  for (; it != itend; it = itNext) {
+    ++itNext;
     action = static_cast<CpuAction*>(&*it);
     if (TRACE_is_enabled()) {
       Cpu *cpu = static_cast<Cpu*> (lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)) );
