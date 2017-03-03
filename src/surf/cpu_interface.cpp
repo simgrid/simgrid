@@ -46,16 +46,12 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     //without losing the event ascending order (considering all CPU's)
     double smaller = -1;
     ActionList *actionSet = getRunningActionSet();
-    for(ActionList::iterator it(actionSet->begin()), itend(actionSet->end())
-       ; it != itend ; ++it) {
+    ActionList::iterator it(actionSet->begin());
+    ActionList::iterator itend(actionSet->end());
+    for (; it != itend; ++it) {
       CpuAction *action = static_cast<CpuAction*>(&*it);
-        if (smaller < 0) {
-          smaller = action->getLastUpdate();
-          continue;
-        }
-        if (action->getLastUpdate() < smaller) {
-          smaller = action->getLastUpdate();
-        }
+      if (smaller < 0 || action->getLastUpdate() < smaller)
+        smaller = action->getLastUpdate();
     }
     if (smaller > 0) {
       TRACE_last_timestamp_to_dump = smaller;
@@ -67,10 +63,9 @@ void CpuModel::updateActionsStateFull(double now, double delta)
 {
   CpuAction *action = nullptr;
   ActionList *running_actions = getRunningActionSet();
-
-  for(ActionList::iterator it(running_actions->begin()), itNext=it, itend(running_actions->end())
-     ; it != itend ; it=itNext) {
-    ++itNext;
+  ActionList::iterator it(running_actions->begin());
+  ActionList::iterator itend(running_actions->end()) for (; it != itend; ++it)
+  {
     action = static_cast<CpuAction*>(&*it);
     if (TRACE_is_enabled()) {
       Cpu *cpu = static_cast<Cpu*> (lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)) );
