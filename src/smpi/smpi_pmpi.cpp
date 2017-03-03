@@ -3099,10 +3099,10 @@ int PMPI_Info_dup(MPI_Info info, MPI_Info *newinfo){
   (*newinfo)->info_dict= xbt_dict_new_homogeneous(xbt_free_f);
   (*newinfo)->refcount=1;
   xbt_dict_cursor_t cursor = nullptr;
-  int *key;
+  char* key;
   void* data;
   xbt_dict_foreach(info->info_dict,cursor,key,data){
-    xbt_dict_set((*newinfo)->info_dict, reinterpret_cast<char*>(key), xbt_strdup(reinterpret_cast<char*>(data)), nullptr);
+    xbt_dict_set((*newinfo)->info_dict, key, xbt_strdup(static_cast<char*>(data)), nullptr);
   }
   return MPI_SUCCESS;
 }
