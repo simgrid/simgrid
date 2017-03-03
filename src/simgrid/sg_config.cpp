@@ -572,6 +572,8 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_string("smpi/ois", "0:0:0:0:0", nullptr, "Small messages timings (MPI_Isend minimum time for small messages)");
     xbt_cfg_register_string("smpi/or", "0:0:0:0:0", nullptr,  "Small messages timings (MPI_Recv minimum time for small messages)");
 
+    xbt_cfg_register_double("smpi/iprobe-cpu-usage", 1, nullptr, "Maximum usage of CPUs by MPI_Iprobe() calls. We've observed that MPI_Iprobes consume significantly less power than the maximum of a specific application. This value is then (Iprobe_Usage/Max_Application_Usage).");
+
     xbt_cfg_register_string("smpi/coll-selector", "default", nullptr, "Which collective selector to use");
     xbt_cfg_register_alias("smpi/coll-selector","smpi/coll_selector");
     xbt_cfg_register_string("smpi/gather",        nullptr, &_check_coll_gather, "Which collective to use for gather");

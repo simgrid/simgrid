@@ -19,14 +19,14 @@ The energy consumption of a CPU depends directly of its current load. Specify th
 follows:
 
 \verbatim
-<host id="HostA" power="100.0Mf" >
-    <prop id="watt_per_state" value="100.0:200.0" />
+<host id="HostA" power="100.0Mf" cores="8">
+    <prop id="watt_per_state" value="100.0:120.0:200.0" />
     <prop id="watt_off" value="10" />
 </host>
 \endverbatim
 
 The first property means that when your host is up and running, but without anything to do, it will dissipate 100 Watts.
-If it's fully loaded, it will dissipate 200 Watts. If its load is at 50%, then it will dissipate 150 Watts.
+If only one care is active, it will dissipate 120 Watts. If it's fully loaded, it will dissipate 200 Watts. If its load is at 50%, then it will dissipate 153.33 Watts.
 The second property means that when your host is turned off, it will dissipate only 10 Watts (please note that these
 values are arbitrary).
 
@@ -34,7 +34,7 @@ If your CPU is using pstates, then you can provide one consumption interval per 
 
 \verbatim
 <host id="HostB" power="100.0Mf,50.0Mf,20.0Mf" pstate="0" >
-    <prop id="watt_per_state" value="95.0:200.0, 93.0:170.0, 90.0:150.0" />
+    <prop id="watt_per_state" value="95.0:120.0:200.0, 93.0:115.0:170.0, 90.0:110.0:150.0" />
     <prop id="watt_off" value="10" />
 </host>
 \endverbatim
@@ -43,7 +43,7 @@ That host has 3 levels of performance with the following performance: 100 Mflop/
 It starts at pstate 0 (ie, at 100 Mflop/s). In this case, you have to specify one interval per pstate in the
 watt_per_state property.
 In this example, the idle consumption is 95 Watts, 93 Watts and 90 Watts in each pstate while the CPU burn consumption
-are at 200 Watts, 170 Watts, and 150 Watts respectively.
+are at 200 Watts, 170 Watts, and 150 Watts respectively. If only one core is active, this machine consumes 120 / 115 / 110 watts.
 
 To change the pstate of a given CPU, use the following functions:
 #MSG_host_get_nb_pstates(), simgrid#s4u#Host#setPstate(), #MSG_host_get_power_peak_at().
