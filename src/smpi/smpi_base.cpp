@@ -23,6 +23,9 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi, "Logging specific to SMPI (base)");
 
+extern void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t);
+
+
 static int match_recv(void* a, void* b, smx_activity_t ignored) {
   MPI_Request ref = static_cast<MPI_Request>(a);
   MPI_Request req = static_cast<MPI_Request>(b);

@@ -83,6 +83,8 @@ MPI_Errhandler *MPI_ERRORS_RETURN = nullptr;
 MPI_Errhandler *MPI_ERRORS_ARE_FATAL = nullptr;
 MPI_Errhandler *MPI_ERRHANDLER_NULL = nullptr;
 
+void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t) = &smpi_comm_copy_buffer_callback;
+
 #define MAILBOX_NAME_MAXLEN (5 + sizeof(int) * 2 + 1)
 
 static char *get_mailbox_name(char *str, int index)

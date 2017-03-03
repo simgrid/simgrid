@@ -16,6 +16,7 @@
 #include <stddef.h>
 #include <xbt/misc.h>
 #include <xbt/function_types.h>
+#include "simgrid/datatypes.h"
 
 #ifdef _WIN32
 #define MPI_CALL(type,name,args) \
@@ -828,7 +829,8 @@ XBT_PUBLIC(void) smpi_sample_3(int global, const char *file, int line);
  * Need a public setter for SMPI copy_callback function, so users can define 
  * their own while still using default SIMIX_copy_callback for MSG copies.
  */
-XBT_PUBLIC(void) smpi_comm_set_copy_data_callback(void (*callback));
+XBT_PUBLIC(void) smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, size_t));
+
 
 /** 
  * Functions for call location tracing. These functions will be
