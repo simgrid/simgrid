@@ -18,6 +18,7 @@
 #include "simgrid/sg_config.h"
 #include "smpi/smpi_utils.hpp"
 #include "colls/colls.h"
+#include <simgrid/s4u/host.hpp>
 
 #include "src/kernel/activity/SynchroComm.hpp"
 
@@ -780,7 +781,7 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   // (especially when used as a break condition, such as while(MPI_Iprobe(...)) ... )
   // multiplier to the sleeptime, to increase speed of execution, each failed iprobe will increase it
   static int nsleeps = 1;
-  double speed = simgrid::s4u::Actor::self()->getHost()->speed();
+  double speed       = simgrid::s4u::Actor::self()->host()->speed();
   double maxrate = xbt_cfg_get_double("smpi/iprobe-cpu-usage");
   if (smpi_iprobe_sleep > 0) {
     smx_activity_t iprobe_sleep = simcall_execution_start("iprobe", /* flops to executek*/nsleeps*smpi_iprobe_sleep*speed*maxrate, /* priority */1.0, /* performance bound */maxrate*speed);
