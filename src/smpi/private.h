@@ -191,8 +191,6 @@ XBT_PRIVATE void smpi_comm_copy_buffer_callback(smx_activity_t comm, void *buff,
 
 XBT_PRIVATE void smpi_comm_null_copy_buffer_callback(smx_activity_t comm, void *buff, size_t buff_size);
 
-static void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t) = &smpi_comm_copy_buffer_callback;
-
 XBT_PRIVATE void print_request(const char *message, MPI_Request request);
 
 XBT_PRIVATE int smpi_enabled();
