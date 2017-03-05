@@ -141,6 +141,7 @@ int smpi_comm_size(MPI_Comm comm)
   if (comm == MPI_COMM_UNINITIALIZED)
     comm = smpi_process_comm_world();
   return smpi_comm_group(comm)->getsize();
+  return smpi_comm_group(this)->size();
 }
 
 int smpi_comm_rank(MPI_Comm comm)

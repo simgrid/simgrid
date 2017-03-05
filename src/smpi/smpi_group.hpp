@@ -31,7 +31,7 @@ class Group {
     int rank(int index);
     int use();
     int unuse();
-    int getsize();
+    int size();
     int compare(MPI_Group group2);
     int incl(int n, int* ranks, MPI_Group* newgroup);
     int excl(int n, int *ranks, MPI_Group * newgroup);

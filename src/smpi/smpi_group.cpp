@@ -45,7 +45,7 @@ Group::Group(MPI_Group origin)
   if(origin != MPI_GROUP_NULL
             && origin != MPI_GROUP_EMPTY)
     {
-      m_size = origin->getsize();
+      m_size = origin->size();
       m_rank_to_index_map = xbt_new(int, m_size);
       m_index_to_rank_map = xbt_dict_new_homogeneous(xbt_free_f);
       m_refcount = 1;
@@ -132,7 +132,7 @@ int Group::unuse()
   return m_refcount;
 }
 
-int Group::getsize()
+int Group::size()
 {
   return m_size;
 }
@@ -143,10 +143,10 @@ int Group::compare(MPI_Group group2)
   int i, index, rank, sz;
 
   result = MPI_IDENT;
-  if (m_size != group2->getsize()) {
+  if (m_size != group2->size()) {
     result = MPI_UNEQUAL;
   } else {
-    sz = group2->getsize();
+    sz = group2->size();
     for (i = 0; i < sz; i++) {
       index = this->index(i);
       rank = group2->rank(index);
@@ -187,7 +187,7 @@ int Group::incl(int n, int* ranks, MPI_Group* newgroup)
 int Group::group_union(MPI_Group group2, MPI_Group* newgroup)
 {
   int size1 = m_size;
-  int size2 = group2->getsize();
+  int size2 = group2->size();
   for (int i = 0; i < size2; i++) {
     int proc2 = group2->index(i);
     int proc1 = this->rank(proc2);
@@ -199,7 +199,7 @@ int Group::group_union(MPI_Group group2, MPI_Group* newgroup)
     *newgroup = MPI_GROUP_EMPTY;
   } else {
     *newgroup = new simgrid::SMPI::Group(size1);
-    size2 = this->getsize();
+    size2 = this->size();
     for (int i = 0; i < size2; i++) {
       int proc1 = this->index(i);
       (*newgroup)->set_mapping(proc1, i);
@@ -214,7 +214,7 @@ int Group::group_union(MPI_Group group2, MPI_Group* newgroup)
 
 int Group::intersection(MPI_Group group2, MPI_Group* newgroup)
 {
-  int size2 = group2->getsize();
+  int size2 = group2->size();
   for (int i = 0; i < size2; i++) {
     int proc2 = group2->index(i);
     int proc1 = this->rank(proc2);
@@ -227,7 +227,7 @@ int Group::intersection(MPI_Group group2, MPI_Group* newgroup)
   } else {
     *newgroup = new simgrid::SMPI::Group(size2);
     int j=0;
-    for (int i = 0; i < group2->getsize(); i++) {
+    for (int i = 0; i < group2->size(); i++) {
       int proc2 = group2->index(i);
       int proc1 = this->rank(proc2);
       if (proc1 != MPI_UNDEFINED) {

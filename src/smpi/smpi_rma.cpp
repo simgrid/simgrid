@@ -279,7 +279,7 @@ int smpi_mpi_win_start(MPI_Group group, int assert, MPI_Win win){
   //naive, blocking implementation.
     int i             = 0;
     int j             = 0;
-    int size          = group->getsize();
+    int size          = group->size();
     MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
     while (j != size) {
@@ -307,7 +307,7 @@ int smpi_mpi_win_post(MPI_Group group, int assert, MPI_Win win){
   //let's make a synchronous send here
   int i             = 0;
   int j             = 0;
-  int size = group->getsize();
+  int size = group->size();
   MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
   while(j!=size){
@@ -339,7 +339,7 @@ int smpi_mpi_win_complete(MPI_Win win){
   XBT_DEBUG("Entering MPI_Win_Complete");
   int i             = 0;
   int j             = 0;
-  int size = win->group->getsize();
+  int size = win->group->size();
   MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
   while(j!=size){
@@ -388,7 +388,7 @@ int smpi_mpi_win_wait(MPI_Win win){
   //naive, blocking implementation.
   XBT_DEBUG("Entering MPI_Win_Wait");
   int i=0,j=0;
-  int size = win->group->getsize();
+  int size = win->group->size();
   MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
   while(j!=size){

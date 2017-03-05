@@ -284,7 +284,7 @@ int PMPI_Group_size(MPI_Group group, int *size)
   } else if (size == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    *size = group->getsize();
+    *size = group->size();
     return MPI_SUCCESS;
   }
 }
@@ -389,7 +389,7 @@ int PMPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
                 && group != smpi_comm_group(MPI_COMM_SELF) && group != MPI_GROUP_EMPTY)
       group->use();
       return MPI_SUCCESS;
-    } else if (n == group->getsize()) {
+    } else if (n == group->size()) {
       *newgroup = MPI_GROUP_EMPTY;
       return MPI_SUCCESS;
     } else {
@@ -726,7 +726,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
   } else if (src == MPI_PROC_NULL) {
     *request = MPI_REQUEST_NULL;
     retval = MPI_SUCCESS;
-  } else if (src!=MPI_ANY_SOURCE && (src >= smpi_comm_group(comm)->getsize() || src <0)){
+  } else if (src!=MPI_ANY_SOURCE && (src >= smpi_comm_group(comm)->size() || src <0)){
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
@@ -777,7 +777,7 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MP
   } else if (dst == MPI_PROC_NULL) {
     *request = MPI_REQUEST_NULL;
     retval = MPI_SUCCESS;
-  } else if (dst >= smpi_comm_group(comm)->getsize() || dst <0){
+  } else if (dst >= smpi_comm_group(comm)->size() || dst <0){
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
@@ -826,7 +826,7 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, M
   } else if (dst == MPI_PROC_NULL) {
     *request = MPI_REQUEST_NULL;
     retval = MPI_SUCCESS;
-  } else if (dst >= smpi_comm_group(comm)->getsize() || dst <0){
+  } else if (dst >= smpi_comm_group(comm)->size() || dst <0){
     retval = MPI_ERR_RANK;
   } else if ((count < 0)|| (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
@@ -874,7 +874,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     smpi_empty_status(status);
     status->MPI_SOURCE = MPI_PROC_NULL;
     retval = MPI_SUCCESS;
-  } else if (src!=MPI_ANY_SOURCE && (src >= smpi_comm_group(comm)->getsize() || src <0)){
+  } else if (src!=MPI_ANY_SOURCE && (src >= smpi_comm_group(comm)->size() || src <0)){
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
@@ -924,7 +924,7 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
     retval = MPI_ERR_COMM;
   } else if (dst == MPI_PROC_NULL) {
     retval = MPI_SUCCESS;
-  } else if (dst >= smpi_comm_group(comm)->getsize() || dst <0){
+  } else if (dst >= smpi_comm_group(comm)->size() || dst <0){
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf == nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
@@ -970,7 +970,7 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     retval = MPI_ERR_COMM;
   } else if (dst == MPI_PROC_NULL) {
     retval = MPI_SUCCESS;
-  } else if (dst >= smpi_comm_group(comm)->getsize() || dst <0){
+  } else if (dst >= smpi_comm_group(comm)->size() || dst <0){
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
@@ -1020,8 +1020,8 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
     smpi_empty_status(status);
     status->MPI_SOURCE = MPI_PROC_NULL;
     retval             = MPI_SUCCESS;
-  }else if (dst >= smpi_comm_group(comm)->getsize() || dst <0 ||
-      (src!=MPI_ANY_SOURCE && (src >= smpi_comm_group(comm)->getsize() || src <0))){
+  }else if (dst >= smpi_comm_group(comm)->size() || dst <0 ||
+      (src!=MPI_ANY_SOURCE && (src >= smpi_comm_group(comm)->size() || src <0))){
     retval = MPI_ERR_RANK;
   } else if ((sendcount < 0 || recvcount<0) || 
       (sendbuf==nullptr && sendcount > 0) || (recvbuf==nullptr && recvcount>0)) {
