@@ -22,7 +22,7 @@ int smpi_coll_tuned_alltoall_mvapich2( void *sendbuf, int sendcount,
   if(mv2_alltoall_table_ppn_conf==NULL)
     init_mv2_alltoall_tables_stampede();
 
-  int sendtype_size, recvtype_size, nbytes, comm_size;
+  int sendtype_size, recvtype_size, comm_size;
   char * tmp_buf = NULL;
   int mpi_errno=MPI_SUCCESS;
   int range = 0;
@@ -32,7 +32,7 @@ int smpi_coll_tuned_alltoall_mvapich2( void *sendbuf, int sendcount,
 
   sendtype_size=smpi_datatype_size(sendtype);
   recvtype_size=smpi_datatype_size(recvtype);
-  nbytes = sendtype_size * sendcount;
+  long nbytes = sendtype_size * sendcount;
 
   /* check if safe to use partial subscription mode */
 
@@ -88,7 +88,7 @@ int smpi_coll_tuned_allgather_mvapich2(void *sendbuf, int sendcount, MPI_Datatyp
 {
 
   int mpi_errno = MPI_SUCCESS;
-  int nbytes = 0, comm_size, recvtype_size;
+  long nbytes = 0, comm_size, recvtype_size;
   int range = 0;
   int partial_sub_ok = 0;
   int conf_index = 0;
@@ -201,7 +201,7 @@ int smpi_coll_tuned_gather_mvapich2(void *sendbuf,
   int range = 0;
   int range_threshold = 0;
   int range_intra_threshold = 0;
-  int nbytes = 0;
+  long nbytes = 0;
   int comm_size = 0;
   int recvtype_size, sendtype_size;
   int rank = -1;
@@ -271,7 +271,7 @@ int smpi_coll_tuned_allgatherv_mvapich2(void *sendbuf, int sendcount, MPI_Dataty
   int mpi_errno = MPI_SUCCESS;
   int range = 0, comm_size, total_count, recvtype_size, i;
   int range_threshold = 0;
-  int nbytes = 0;
+  long nbytes = 0;
 
   if(mv2_allgatherv_thresholds_table==NULL)
     init_mv2_allgatherv_tables_stampede();
@@ -354,7 +354,7 @@ int smpi_coll_tuned_allreduce_mvapich2(void *sendbuf,
   /* check if multiple threads are calling this collective function */
 
   MPI_Aint sendtype_size = 0;
-  int nbytes = 0;
+  long nbytes = 0;
   int range = 0, range_threshold = 0, range_threshold_intra = 0;
   int is_two_level = 0;
   int is_commutative = 0;
@@ -484,7 +484,7 @@ int smpi_coll_tuned_bcast_mvapich2(void *buffer,
     int mpi_errno = MPI_SUCCESS;
     int comm_size/*, rank*/;
     int two_level_bcast = 1;
-    size_t nbytes = 0; 
+    long nbytes = 0; 
     int range = 0;
     int range_threshold = 0;
     int range_threshold_intra = 0;
@@ -528,7 +528,7 @@ int smpi_coll_tuned_bcast_mvapich2(void *buffer,
    /* } else {
         MPIR_Pack_size_impl(1, datatype, &type_size);
     }*/
-    nbytes = (size_t) (count) * (type_size);
+    nbytes =  (count) * (type_size);
 
     /* Search for the corresponding system size inside the tuning table */
     while ((range < (mv2_size_bcast_tuning_table - 1)) &&
@@ -693,7 +693,7 @@ int smpi_coll_tuned_reduce_mvapich2( void *sendbuf,
   int range_intra_threshold = 0;
   int is_commutative, pof2;
   int comm_size = 0;
-  int nbytes = 0;
+  long nbytes = 0;
   int sendtype_size;
   int is_two_level = 0;
 
@@ -806,7 +806,7 @@ int smpi_coll_tuned_reduce_scatter_mvapich2(void *sendbuf, void *recvbuf, int *r
   int range = 0;
   int range_threshold = 0;
   int is_commutative = 0;
-  int *disps = xbt_malloc(comm_size * sizeof (int));
+  int *disps = static_cast<int*>(xbt_malloc(comm_size * sizeof (int)));
 
   if(mv2_red_scat_thresholds_table==NULL)
     init_mv2_reduce_scatter_tables_stampede();

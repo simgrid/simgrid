@@ -21,7 +21,7 @@ smpi_coll_tuned_allgather_rhv(void *sbuf, int send_count,
   int i, dst, send_base_offset, recv_base_offset, send_chunk, recv_chunk,
       send_offset, recv_offset;
   int tag = COLL_TAG_ALLGATHER;
-  int mask;
+  unsigned int mask;
   int curr_count;
 
   // get size of the communicator, followed by rank 

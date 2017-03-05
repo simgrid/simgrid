@@ -11,15 +11,15 @@ int smpi_coll_tuned_allreduce_rab_rdb(void *sbuff, void *rbuff, int count,
                                       MPI_Comm comm)
 {
   int tag = COLL_TAG_ALLREDUCE;
-  unsigned int mask, pof2;
-  int dst, newrank, rem, newdst, i,
-      send_idx, recv_idx, last_idx, send_cnt, recv_cnt, *cnts, *disps;
+  unsigned int mask, pof2, i, recv_idx, last_idx, send_idx, send_cnt;
+  int dst, newrank, rem, newdst,
+      recv_cnt, *cnts, *disps;
   MPI_Aint extent;
   MPI_Status status;
   void *tmp_buf = NULL;
 
   unsigned int nprocs = smpi_comm_size(comm);
-  unsigned int rank = smpi_comm_rank(comm);
+  int rank = smpi_comm_rank(comm);
 
   extent = smpi_datatype_get_extent(dtype);
   tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);

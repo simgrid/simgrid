@@ -66,7 +66,7 @@ smpi_coll_tuned_bcast_ompi_split_bintree ( void* buffer,
                                             int root,
                                             MPI_Comm comm)
 {
-    int segsize ;
+    unsigned int segsize ;
     int rank, size;
     int segindex, i, lr, pair;
     int segcount[2];       /* Number ompi_request_wait_allof elements sent with each segment */

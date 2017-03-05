@@ -15,7 +15,7 @@
 #define INTEL_MAX_NB_PPN  5  /* 1 2 4 8 16 ppn */
 
 typedef struct {
-  int max_size;
+  unsigned int max_size;
   int algo;
 } intel_tuning_table_size_element;
 

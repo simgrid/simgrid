@@ -20,7 +20,7 @@ int smpi_coll_tuned_allreduce_rab1(void *sbuff, void *rbuff,
 
   void *recv, *tmp_buf;
 
-  unsigned int rank = smpi_comm_rank(comm);
+  int rank = smpi_comm_rank(comm);
   unsigned int nprocs = smpi_comm_size(comm);
 
   if((nprocs&(nprocs-1)))

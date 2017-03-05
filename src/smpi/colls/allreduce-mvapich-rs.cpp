@@ -31,9 +31,9 @@ int smpi_coll_tuned_allreduce_mvapich2_rs(void *sendbuf,
 {
     int mpi_errno = MPI_SUCCESS;
     int newrank = 0;
-    unsigned int mask, pof2;
-    int dst, is_commutative, rem, newdst, i,
-        send_idx, recv_idx, last_idx, send_cnt, recv_cnt, *cnts, *disps;
+    int mask, pof2, i, send_idx, recv_idx, last_idx, send_cnt;
+    int dst, is_commutative, rem, newdst,
+        recv_cnt, *cnts, *disps;
     MPI_Aint true_lb, true_extent, extent;
     void *tmp_buf, *tmp_buf_free;
 
@@ -43,8 +43,8 @@ int smpi_coll_tuned_allreduce_mvapich2_rs(void *sendbuf,
 
     /* homogeneous */
 
-    unsigned int comm_size =  smpi_comm_size(comm);
-    unsigned int rank = smpi_comm_rank(comm);
+    int comm_size =  smpi_comm_size(comm);
+    int rank = smpi_comm_rank(comm);
 
     is_commutative = smpi_op_is_commute(op);
 

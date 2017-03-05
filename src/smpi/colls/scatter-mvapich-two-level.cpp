@@ -147,8 +147,8 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_direct(void *sendbuf,
 
                 if (root != leader_of_root) {
                     if (leader_comm_rank == leader_root) {
-                        displs = xbt_malloc(sizeof (int) * leader_comm_size);
-                        sendcnts = xbt_malloc(sizeof (int) * leader_comm_size);
+                        displs = static_cast<int*>(xbt_malloc(sizeof (int) * leader_comm_size));
+                        sendcnts = static_cast<int*>(xbt_malloc(sizeof (int) * leader_comm_size));
                         sendcnts[0] = node_sizes[0] * nbytes;
                         displs[0] = 0;
 
@@ -163,8 +163,8 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_direct(void *sendbuf,
                                       MPI_BYTE, leader_root, leader_comm);
                 } else {
                     if (leader_comm_rank == leader_root) {
-                        displs = xbt_malloc(sizeof (int) * leader_comm_size);
-                        sendcnts = xbt_malloc(sizeof (int) * leader_comm_size);
+                        displs = static_cast<int*>(xbt_malloc(sizeof (int) * leader_comm_size));
+                        sendcnts = static_cast<int*>(xbt_malloc(sizeof (int) * leader_comm_size));
                         sendcnts[0] = node_sizes[0] * sendcnt;
                         displs[0] = 0;
 
@@ -328,8 +328,8 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_binomial(void *sendbuf,
 
                 if (root != leader_of_root) {
                     if (leader_comm_rank == leader_root) {
-                        displs = xbt_malloc(sizeof (int) * leader_comm_size);
-                        sendcnts = xbt_malloc(sizeof (int) * leader_comm_size);
+                        displs = static_cast<int*>(xbt_malloc(sizeof (int) * leader_comm_size));
+                        sendcnts = static_cast<int*>(xbt_malloc(sizeof (int) * leader_comm_size));
                         sendcnts[0] = node_sizes[0] * nbytes;
                         displs[0] = 0;
 
@@ -344,8 +344,8 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_binomial(void *sendbuf,
                                       MPI_BYTE, leader_root, leader_comm);
                 } else {
                     if (leader_comm_rank == leader_root) {
-                        displs = xbt_malloc(sizeof (int) * leader_comm_size);
-                        sendcnts = xbt_malloc(sizeof (int) * leader_comm_size);
+                        displs = static_cast<int*>(xbt_malloc(sizeof (int) * leader_comm_size));
+                        sendcnts = static_cast<int*>(xbt_malloc(sizeof (int) * leader_comm_size));
                         sendcnts[0] = node_sizes[0] * sendcnt;
                         displs[0] = 0;
 

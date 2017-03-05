@@ -112,8 +112,8 @@ int smpi_coll_tuned_allgather_mvapich2_smp(void *sendbuf,int sendcnt, MPI_Dataty
 
             node_sizes = smpi_comm_get_non_uniform_map(comm);
 
-            displs = xbt_malloc(sizeof (int) * leader_comm_size);
-            recvcnts = xbt_malloc(sizeof (int) * leader_comm_size);
+            displs =  static_cast<int *>(xbt_malloc(sizeof (int) * leader_comm_size));
+            recvcnts =  static_cast<int *>(xbt_malloc(sizeof (int) * leader_comm_size));
             if (!displs || !recvcnts) {
                 return MPI_ERR_OTHER;
             }

@@ -142,8 +142,8 @@ int smpi_coll_tuned_alltoall_mpich( void *sbuf, int scount,
     size_t dsize, block_dsize;
     communicator_size = smpi_comm_size(comm);
 
-    int short_size=256;
-    int medium_size=32768;
+    unsigned int short_size=256;
+    unsigned int medium_size=32768;
     //short size and comm_size >=8   -> bruck
     
 //     medium size messages and (short messages for comm_size < 8), we

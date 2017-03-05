@@ -18,7 +18,7 @@ int smpi_coll_tuned_bcast_ompi_pipeline( void* buffer,
 {
     int count_by_segment = original_count;
     size_t type_size;
-    int segsize =1024  << 7;
+    size_t segsize =1024  << 7;
     //mca_coll_tuned_module_t *tuned_module = (mca_coll_tuned_module_t*) module;
     //mca_coll_tuned_comm_t *data = tuned_module->tuned_data;
     
@@ -71,7 +71,7 @@ int smpi_coll_tuned_bcast_ompi_pipeline( void* buffer,
 
     COLL_TUNED_COMPUTED_SEGCOUNT( segsize, type_size, count_by_segment );
 
-    XBT_DEBUG("coll:tuned:bcast_intra_pipeline rank %d ss %5d type_size %lu count_by_segment %d",
+    XBT_DEBUG("coll:tuned:bcast_intra_pipeline rank %d ss %5zu type_size %lu count_by_segment %d",
                  smpi_comm_rank(comm), segsize, (unsigned long)type_size, count_by_segment);
 
 

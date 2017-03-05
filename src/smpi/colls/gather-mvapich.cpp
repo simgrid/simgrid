@@ -305,8 +305,8 @@ int smpi_coll_tuned_gather_mvapich2_two_level(void *sendbuf,
             node_sizes = smpi_comm_get_non_uniform_map(comm);
 
             if (leader_comm_rank == leader_root) {
-                displs = xbt_malloc(sizeof (int) * leader_comm_size);
-                recvcnts = xbt_malloc(sizeof (int) * leader_comm_size);
+                displs =  static_cast<int *>(xbt_malloc(sizeof (int) * leader_comm_size));
+                recvcnts =  static_cast<int *>(xbt_malloc(sizeof (int) * leader_comm_size));
                 if (!displs || !recvcnts) {
                     mpi_errno = MPI_ERR_OTHER;
                     return mpi_errno;

@@ -17,10 +17,10 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
   MPI_Datatype recvtype,
   MPI_Comm comm)
 {
-  int  j, i;
+  unsigned int  j, i;
   MPI_Status status;
   MPI_Aint  recvtype_extent, recvtype_true_extent, recvtype_true_lb;
-  int curr_cnt, dst, total_count;
+  unsigned int curr_cnt, dst, total_count;
   void *tmp_buf, *tmp_buf_rl;
   unsigned int mask, dst_tree_root, my_tree_root, position,
     send_offset, recv_offset, last_recv_cnt=0, nprocs_completed, k,

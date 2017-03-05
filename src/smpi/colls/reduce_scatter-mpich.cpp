@@ -209,8 +209,8 @@ int smpi_coll_tuned_reduce_scatter_mpich_noncomm(void *sendbuf, void *recvbuf, i
     size = total_count;
     for (k = 0; k < log2_comm_size; ++k) {
         /* use a double-buffering scheme to avoid local copies */
-        char *incoming_data = (buf0_was_inout ? tmp_buf1 : tmp_buf0);
-        char *outgoing_data = (buf0_was_inout ? tmp_buf0 : tmp_buf1);
+        char *incoming_data = static_cast<char*>(buf0_was_inout ? tmp_buf1 : tmp_buf0);
+        char *outgoing_data = static_cast<char*>(buf0_was_inout ? tmp_buf0 : tmp_buf1);
         int peer = rank ^ (0x1 << k);
         size /= 2;
 

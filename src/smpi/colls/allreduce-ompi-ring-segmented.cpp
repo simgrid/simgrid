@@ -175,8 +175,8 @@ smpi_coll_tuned_allreduce_ompi_ring_segmented(void *sbuf, void *rbuf, int count,
    ptrdiff_t block_offset, max_real_segsize;
    MPI_Request reqs[2] = {NULL, NULL};
    const size_t segsize = 1 << 20; /* 1 MB */
-   unsigned int size = smpi_comm_size(comm);
-   unsigned int rank = smpi_comm_rank(comm);
+   int size = smpi_comm_size(comm);
+   int rank = smpi_comm_rank(comm);
 
    XBT_DEBUG("coll:tuned:allreduce_intra_ring_segmented rank %d, count %d", rank, count);
 

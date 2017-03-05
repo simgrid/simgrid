@@ -49,7 +49,7 @@ smpi_coll_tuned_reduce_flat_tree(void *sbuf, void *rbuf, int count,
 
   for (i = size - 2; i >= 0; --i) {
     if (rank == i)
-      inbuf = sbuf;
+      inbuf = static_cast<char*>(sbuf);
     else {
       smpi_mpi_recv(origin, count, dtype, i, tag, comm, &status);
       inbuf = origin;
