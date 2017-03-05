@@ -35,6 +35,7 @@
  *      See COPYRIGHT in top-level directory.
  */
 #include "colls_private.h"
+#include "src/smpi/smpi_group.hpp"
 
 
 extern int (*MV2_Bcast_function) (void *buffer, int count, MPI_Datatype datatype,
@@ -113,8 +114,8 @@ int smpi_coll_tuned_bcast_mvapich2_inter_node(void *buffer,
     }
 
     int* leaders_map = smpi_comm_get_leaders_map(comm);
-    leader_of_root = smpi_group_rank(smpi_comm_group(comm),leaders_map[root]);
-    leader_root = smpi_group_rank(smpi_comm_group(leader_comm),leaders_map[root]);
+    leader_of_root = smpi_comm_group(comm)->rank(leaders_map[root]);
+    leader_root = smpi_comm_group(leader_comm)->rank(leaders_map[root]);
     
     
     if (local_size > 1) {

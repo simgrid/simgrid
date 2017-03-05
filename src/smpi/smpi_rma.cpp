@@ -6,6 +6,7 @@
 
 #include "private.h"
 #include <vector>
+#include "src/smpi/smpi_group.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_rma, smpi, "Logging specific to SMPI (RMA operations)");
 
@@ -159,11 +160,11 @@ int smpi_mpi_put( void *origin_addr, int origin_count, MPI_Datatype origin_datat
   if(target_rank != smpi_comm_rank(win->comm)){
     //prepare send_request
     MPI_Request sreq = smpi_rma_send_init(origin_addr, origin_count, origin_datatype, smpi_process_index(),
-        smpi_group_index(smpi_comm_group(win->comm),target_rank), SMPI_RMA_TAG+1, win->comm, MPI_OP_NULL);
+        smpi_comm_group(win->comm)->index(target_rank), SMPI_RMA_TAG+1, win->comm, MPI_OP_NULL);
 
     //prepare receiver request
     MPI_Request rreq = smpi_rma_recv_init(recv_addr, target_count, target_datatype, smpi_process_index(),
-        smpi_group_index(smpi_comm_group(win->comm),target_rank), SMPI_RMA_TAG+1, recv_win->comm, MPI_OP_NULL);
+        smpi_comm_group(win->comm)->index(target_rank), SMPI_RMA_TAG+1, recv_win->comm, MPI_OP_NULL);
 
     //push request to receiver's win
     xbt_mutex_acquire(recv_win->mut);
@@ -197,12 +198,12 @@ int smpi_mpi_get( void *origin_addr, int origin_count, MPI_Datatype origin_datat
   if(target_rank != smpi_comm_rank(win->comm)){
     //prepare send_request
     MPI_Request sreq = smpi_rma_send_init(send_addr, target_count, target_datatype,
-        smpi_group_index(smpi_comm_group(win->comm),target_rank), smpi_process_index(), SMPI_RMA_TAG+2, send_win->comm,
+        smpi_comm_group(win->comm)->index(target_rank), smpi_process_index(), SMPI_RMA_TAG+2, send_win->comm,
         MPI_OP_NULL);
 
     //prepare receiver request
     MPI_Request rreq = smpi_rma_recv_init(origin_addr, origin_count, origin_datatype,
-        smpi_group_index(smpi_comm_group(win->comm),target_rank), smpi_process_index(), SMPI_RMA_TAG+2, win->comm,
+        smpi_comm_group(win->comm)->index(target_rank), smpi_process_index(), SMPI_RMA_TAG+2, win->comm,
         MPI_OP_NULL);
 
     //start the send, with another process than us as sender. 
@@ -240,11 +241,11 @@ int smpi_mpi_accumulate( void *origin_addr, int origin_count, MPI_Datatype origi
     //As the tag will be used for ordering of the operations, add count to it
     //prepare send_request
     MPI_Request sreq = smpi_rma_send_init(origin_addr, origin_count, origin_datatype,
-        smpi_process_index(), smpi_group_index(smpi_comm_group(win->comm),target_rank), SMPI_RMA_TAG+3+win->count, win->comm, op);
+        smpi_process_index(), smpi_comm_group(win->comm)->index(target_rank), SMPI_RMA_TAG+3+win->count, win->comm, op);
 
     //prepare receiver request
     MPI_Request rreq = smpi_rma_recv_init(recv_addr, target_count, target_datatype,
-        smpi_process_index(), smpi_group_index(smpi_comm_group(win->comm),target_rank), SMPI_RMA_TAG+3+win->count, recv_win->comm, op);
+        smpi_process_index(), smpi_comm_group(win->comm)->index(target_rank), SMPI_RMA_TAG+3+win->count, recv_win->comm, op);
 
     win->count++;
     //push request to receiver's win
@@ -278,11 +279,11 @@ int smpi_mpi_win_start(MPI_Group group, int assert, MPI_Win win){
   //naive, blocking implementation.
     int i             = 0;
     int j             = 0;
-    int size          = smpi_group_size(group);
+    int size          = group->getsize();
     MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
     while (j != size) {
-      int src = smpi_group_index(group, j);
+      int src = group->index(j);
       if (src != smpi_process_index() && src != MPI_UNDEFINED) {
         reqs[i] = smpi_irecv_init(nullptr, 0, MPI_CHAR, src, SMPI_RMA_TAG + 4, MPI_COMM_WORLD);
         i++;
@@ -298,7 +299,7 @@ int smpi_mpi_win_start(MPI_Group group, int assert, MPI_Win win){
   xbt_free(reqs);
   win->opened++; //we're open for business !
   win->group=group;
-  smpi_group_use(group);
+  group->use();
   return MPI_SUCCESS;
 }
 
@@ -306,11 +307,11 @@ int smpi_mpi_win_post(MPI_Group group, int assert, MPI_Win win){
   //let's make a synchronous send here
   int i             = 0;
   int j             = 0;
-  int size = smpi_group_size(group);
+  int size = group->getsize();
   MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
   while(j!=size){
-    int dst=smpi_group_index(group,j);
+    int dst=group->index(j);
     if(dst!=smpi_process_index() && dst!=MPI_UNDEFINED){
       reqs[i]=smpi_mpi_send_init(nullptr, 0, MPI_CHAR, dst, SMPI_RMA_TAG+4, MPI_COMM_WORLD);
       i++;
@@ -327,7 +328,7 @@ int smpi_mpi_win_post(MPI_Group group, int assert, MPI_Win win){
   xbt_free(reqs);
   win->opened++; //we're open for business !
   win->group=group;
-  smpi_group_use(group);
+  group->use();
   return MPI_SUCCESS;
 }
 
@@ -338,11 +339,11 @@ int smpi_mpi_win_complete(MPI_Win win){
   XBT_DEBUG("Entering MPI_Win_Complete");
   int i             = 0;
   int j             = 0;
-  int size = smpi_group_size(win->group);
+  int size = win->group->getsize();
   MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
   while(j!=size){
-    int dst=smpi_group_index(win->group,j);
+    int dst=win->group->index(j);
     if(dst!=smpi_process_index() && dst!=MPI_UNDEFINED){
       reqs[i]=smpi_mpi_send_init(nullptr, 0, MPI_CHAR, dst, SMPI_RMA_TAG+5, MPI_COMM_WORLD);
       i++;
@@ -378,7 +379,7 @@ int smpi_mpi_win_complete(MPI_Win win){
   }
   xbt_mutex_release(win->mut);
 
-  smpi_group_unuse(win->group);
+  win->group->unuse();
   win->opened--; //we're closed for business !
   return MPI_SUCCESS;
 }
@@ -387,11 +388,11 @@ int smpi_mpi_win_wait(MPI_Win win){
   //naive, blocking implementation.
   XBT_DEBUG("Entering MPI_Win_Wait");
   int i=0,j=0;
-  int size = smpi_group_size(win->group);
+  int size = win->group->getsize();
   MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
   while(j!=size){
-    int src=smpi_group_index(win->group,j);
+    int src=win->group->index(j);
     if(src!=smpi_process_index() && src!=MPI_UNDEFINED){
       reqs[i]=smpi_irecv_init(nullptr, 0, MPI_CHAR, src,SMPI_RMA_TAG+5, MPI_COMM_WORLD);
       i++;
@@ -424,7 +425,7 @@ int smpi_mpi_win_wait(MPI_Win win){
   }
   xbt_mutex_release(win->mut);
 
-  smpi_group_unuse(win->group);
+  win->group->unuse();
   win->opened--; //we're opened for business !
   return MPI_SUCCESS;
 }

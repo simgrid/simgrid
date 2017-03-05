@@ -18,6 +18,8 @@
 #include <xbt/function_types.h>
 #include "simgrid/datatypes.h"
 
+#include "forward.hpp"
+
 #ifdef _WIN32
 #define MPI_CALL(type,name,args) \
   type name args; \
@@ -363,9 +365,8 @@ XBT_PUBLIC_DATA( MPI_Op ) MPI_REPLACE;
 
 struct s_smpi_mpi_topology;
 typedef struct s_smpi_mpi_topology *MPI_Topology;
-                                   
-struct s_smpi_mpi_group;
-typedef struct s_smpi_mpi_group *MPI_Group;
+
+typedef SMPI_Group* MPI_Group;
 
 #define MPI_GROUP_NULL ((MPI_Group)NULL)
 

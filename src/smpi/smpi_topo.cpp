@@ -6,6 +6,7 @@
 
 #include "xbt/sysdep.h"
 #include "smpi/smpi.h"
+#include "src/smpi/smpi_group.hpp"
 #include "private.h"
 #include <vector>
 #include <math.h>
@@ -137,9 +138,9 @@ int smpi_mpi_cart_create(MPI_Comm comm_old, int ndims, int dims[], int periods[]
     }
     newCart = smpi_cart_topo_create(ndims);
     oldGroup = smpi_comm_group(comm_old);
-    newGroup = smpi_group_new(newSize);
+    newGroup = new simgrid::SMPI::Group(newSize);
     for (int i = 0 ; i < newSize ; i++) {
-      smpi_group_set_mapping(newGroup, smpi_group_index(oldGroup, i), i);
+      newGroup->set_mapping(oldGroup->index(i), i);
     }
 
     newCart->topo.cart->nnodes = newSize;
@@ -159,7 +160,7 @@ int smpi_mpi_cart_create(MPI_Comm comm_old, int ndims, int dims[], int periods[]
   } else {
     if (rank == 0) {
       newCart = smpi_cart_topo_create(ndims);
-      *comm_cart = smpi_comm_new(smpi_group_copy(smpi_comm_group(MPI_COMM_SELF)), newCart);
+      *comm_cart = smpi_comm_new(new simgrid::SMPI::Group(smpi_comm_group(MPI_COMM_SELF)), newCart);
     } else {
       *comm_cart = MPI_COMM_NULL;
     }

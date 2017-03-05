@@ -5,6 +5,7 @@
 
 #include "private.h"
 #include "xbt/replay.h"
+#include "src/smpi/smpi_group.hpp"
 #include <unordered_map>
 #include <vector>
 
@@ -217,7 +218,7 @@ static void action_send(const char *const *action)
 
   int rank = smpi_process_index();
 
-  int dst_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), to);
+  int dst_traced = smpi_comm_group(MPI_COMM_WORLD)->rank(to);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_SEND;
   extra->send_size = size;
@@ -248,7 +249,7 @@ static void action_Isend(const char *const *action)
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
   int rank = smpi_process_index();
-  int dst_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), to);
+  int dst_traced = smpi_comm_group(MPI_COMM_WORLD)->rank(to);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ISEND;
   extra->send_size = size;
@@ -282,7 +283,7 @@ static void action_recv(const char *const *action) {
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
   int rank = smpi_process_index();
-  int src_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), from);
+  int src_traced = smpi_comm_group(MPI_COMM_WORLD)->rank(from);
 
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_RECV;
@@ -321,7 +322,7 @@ static void action_Irecv(const char *const *action)
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
   int rank = smpi_process_index();
-  int src_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), from);
+  int src_traced = smpi_comm_group(MPI_COMM_WORLD)->rank(from);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_IRECV;
   extra->send_size = size;
@@ -390,8 +391,8 @@ static void action_wait(const char *const *action){
   int rank = request->comm != MPI_COMM_NULL ? smpi_comm_rank(request->comm) : -1;
 
   MPI_Group group = smpi_comm_group(request->comm);
-  int src_traced = smpi_group_rank(group, request->src);
-  int dst_traced = smpi_group_rank(group, request->dst);
+  int src_traced = group->rank(request->src);
+  int dst_traced = group->rank(request->dst);
   int is_wait_for_receive = request->recv;
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_WAIT;
@@ -469,7 +470,7 @@ static void action_bcast(const char *const *action)
   }
 
   int rank = smpi_process_index();
-  int root_traced = smpi_group_index(smpi_comm_group(MPI_COMM_WORLD), root);
+  int root_traced = smpi_comm_group(MPI_COMM_WORLD)->index(root);
 
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_BCAST;
@@ -501,7 +502,7 @@ static void action_reduce(const char *const *action)
   }
 
   int rank = smpi_process_index();
-  int root_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), root);
+  int root_traced = smpi_comm_group(MPI_COMM_WORLD)->rank(root);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_REDUCE;
   extra->send_size = comm_size;

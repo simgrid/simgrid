@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <simgrid/s4u/host.hpp>
+#include <src/smpi/smpi_group.hpp>
 #include <xbt/ex.hpp>
 
 #include "private.h"
@@ -270,7 +271,7 @@ int PMPI_Group_free(MPI_Group * group)
   if (group == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    smpi_group_destroy(*group);
+    (*group)->destroy();
     *group = MPI_GROUP_NULL;
     return MPI_SUCCESS;
   }
@@ -283,7 +284,7 @@ int PMPI_Group_size(MPI_Group group, int *size)
   } else if (size == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    *size = smpi_group_size(group);
+    *size = group->getsize();
     return MPI_SUCCESS;
   }
 }
@@ -295,7 +296,7 @@ int PMPI_Group_rank(MPI_Group group, int *rank)
   } else if (rank == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    *rank = smpi_group_rank(group, smpi_process_index());
+    *rank = group->rank(smpi_process_index());
     return MPI_SUCCESS;
   }
 }
@@ -309,8 +310,8 @@ int PMPI_Group_translate_ranks(MPI_Group group1, int n, int *ranks1, MPI_Group g
       if(ranks1[i]==MPI_PROC_NULL){
         ranks2[i]=MPI_PROC_NULL;
       }else{
-        int index = smpi_group_index(group1, ranks1[i]);
-        ranks2[i] = smpi_group_rank(group2, index);
+        int index = group1->index(ranks1[i]);
+        ranks2[i] = group2->rank(index);
       }
     }
     return MPI_SUCCESS;
@@ -324,7 +325,7 @@ int PMPI_Group_compare(MPI_Group group1, MPI_Group group2, int *result)
   } else if (result == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    *result = smpi_group_compare(group1, group2);
+    *result = group1->compare(group2);
     return MPI_SUCCESS;
   }
 }
@@ -337,30 +338,7 @@ int PMPI_Group_union(MPI_Group group1, MPI_Group group2, MPI_Group * newgroup)
   } else if (newgroup == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    int size  = smpi_group_size(group1);
-    int size2 = smpi_group_size(group2);
-    for (int i = 0; i < size2; i++) {
-      int proc2 = smpi_group_index(group2, i);
-      int proc1 = smpi_group_rank(group1, proc2);
-      if (proc1 == MPI_UNDEFINED) {
-        size++;
-      }
-    }
-    if (size == 0) {
-      *newgroup = MPI_GROUP_EMPTY;
-    } else {
-      *newgroup = smpi_group_new(size);
-      size2 = smpi_group_size(group1);
-      for (int i = 0; i < size2; i++) {
-        int proc1 = smpi_group_index(group1, i);
-        smpi_group_set_mapping(*newgroup, proc1, i);
-      }
-      for (int i = size2; i < size; i++) {
-        int proc2 = smpi_group_index(group2, i - size2);
-        smpi_group_set_mapping(*newgroup, proc2, i);
-      }
-    }
-    return MPI_SUCCESS;
+    return group1->group_union(group2, newgroup);
   }
 }
 
@@ -372,29 +350,7 @@ int PMPI_Group_intersection(MPI_Group group1, MPI_Group group2, MPI_Group * newg
   } else if (newgroup == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    int size = smpi_group_size(group2);
-    for (int i = 0; i < size; i++) {
-      int proc2 = smpi_group_index(group2, i);
-      int proc1 = smpi_group_rank(group1, proc2);
-      if (proc1 == MPI_UNDEFINED) {
-        size--;
-      }
-    }
-    if (size == 0) {
-      *newgroup = MPI_GROUP_EMPTY;
-    } else {
-      *newgroup = smpi_group_new(size);
-      int j=0;
-      for (int i = 0; i < smpi_group_size(group2); i++) {
-        int proc2 = smpi_group_index(group2, i);
-        int proc1 = smpi_group_rank(group1, proc2);
-        if (proc1 != MPI_UNDEFINED) {
-          smpi_group_set_mapping(*newgroup, proc2, j);
-          j++;
-        }
-      }
-    }
-    return MPI_SUCCESS;
+    return group1->intersection(group2,newgroup);
   }
 }
 
@@ -405,28 +361,7 @@ int PMPI_Group_difference(MPI_Group group1, MPI_Group group2, MPI_Group * newgro
   } else if (newgroup == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    int size  = smpi_group_size(group1);
-    int size2 = size;
-    for (int i = 0; i < size2; i++) {
-      int proc1 = smpi_group_index(group1, i);
-      int proc2 = smpi_group_rank(group2, proc1);
-      if (proc2 != MPI_UNDEFINED) {
-        size--;
-      }
-    }
-    if (size == 0) {
-      *newgroup = MPI_GROUP_EMPTY;
-    } else {
-      *newgroup = smpi_group_new(size);
-      for (int i = 0; i < size2; i++) {
-        int proc1 = smpi_group_index(group1, i);
-        int proc2 = smpi_group_rank(group2, proc1);
-        if (proc2 == MPI_UNDEFINED) {
-          smpi_group_set_mapping(*newgroup, proc1, i);
-        }
-      }
-    }
-    return MPI_SUCCESS;
+    return group1->difference(group2,newgroup);
   }
 }
 
@@ -437,7 +372,7 @@ int PMPI_Group_incl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
   } else if (newgroup == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    return smpi_group_incl(group, n, ranks, newgroup);
+    return group->incl(n, ranks, newgroup);
   }
 }
 
@@ -452,32 +387,14 @@ int PMPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
       *newgroup = group;
       if (group != smpi_comm_group(MPI_COMM_WORLD)
                 && group != smpi_comm_group(MPI_COMM_SELF) && group != MPI_GROUP_EMPTY)
-      smpi_group_use(group);
-    } else if (n == smpi_group_size(group)) {
+      group->use();
+      return MPI_SUCCESS;
+    } else if (n == group->getsize()) {
       *newgroup = MPI_GROUP_EMPTY;
+      return MPI_SUCCESS;
     } else {
-      int oldsize = smpi_group_size(group);
-      int newsize = oldsize - n;
-      *newgroup = smpi_group_new(newsize);
-
-      int* to_exclude=xbt_new0(int, smpi_group_size(group));
-      for (int i     = 0; i < oldsize; i++)
-        to_exclude[i]=0;
-      for (int i            = 0; i < n; i++)
-        to_exclude[ranks[i]]=1;
-
-      int j = 0;
-      for (int i = 0; i < oldsize; i++) {
-        if(to_exclude[i]==0){
-          int index = smpi_group_index(group, i);
-          smpi_group_set_mapping(*newgroup, index, j);
-          j++;
-        }
-      }
-
-      xbt_free(to_exclude);
+      return group->excl(n,ranks,newgroup);
     }
-    return MPI_SUCCESS;
   }
 }
 
@@ -490,51 +407,10 @@ int PMPI_Group_range_incl(MPI_Group group, int n, int ranges[][3], MPI_Group * n
   } else {
     if (n == 0) {
       *newgroup = MPI_GROUP_EMPTY;
+      return MPI_SUCCESS;
     } else {
-      int size = 0;
-      for (int i = 0; i < n; i++) {
-        for (int rank = ranges[i][0];                    /* First */
-             rank >= 0 && rank < smpi_group_size(group); /* Last */
-             ) {
-          size++;
-          if(rank == ranges[i][1]){/*already last ?*/
-            break;
-          }
-          rank += ranges[i][2]; /* Stride */
-          if (ranges[i][0] < ranges[i][1]) {
-            if (rank > ranges[i][1])
-              break;
-          } else {
-            if (rank < ranges[i][1])
-              break;
-          }
-        }
-      }
-
-      *newgroup = smpi_group_new(size);
-      int j     = 0;
-      for (int i = 0; i < n; i++) {
-        for (int rank = ranges[i][0];                    /* First */
-             rank >= 0 && rank < smpi_group_size(group); /* Last */
-             ) {
-          int index = smpi_group_index(group, rank);
-          smpi_group_set_mapping(*newgroup, index, j);
-          j++;
-          if(rank == ranges[i][1]){/*already last ?*/
-            break;
-          }
-          rank += ranges[i][2]; /* Stride */
-          if (ranges[i][0] < ranges[i][1]) {
-            if (rank > ranges[i][1])
-              break;
-          } else {
-            if (rank < ranges[i][1])
-              break;
-          }
-        }
-      }
+      return group->range_incl(n,ranges,newgroup);
     }
-    return MPI_SUCCESS;
   }
 }
 
@@ -549,64 +425,11 @@ int PMPI_Group_range_excl(MPI_Group group, int n, int ranges[][3], MPI_Group * n
       *newgroup = group;
       if (group != smpi_comm_group(MPI_COMM_WORLD) && group != smpi_comm_group(MPI_COMM_SELF) &&
           group != MPI_GROUP_EMPTY)
-        smpi_group_use(group);
+        group->use();
+      return MPI_SUCCESS;
     } else {
-      int size = smpi_group_size(group);
-      for (int i = 0; i < n; i++) {
-        for (int rank = ranges[i][0];                    /* First */
-             rank >= 0 && rank < smpi_group_size(group); /* Last */
-             ) {
-          size--;
-          if(rank == ranges[i][1]){/*already last ?*/
-            break;
-          }
-          rank += ranges[i][2]; /* Stride */
-          if (ranges[i][0] < ranges[i][1]) {
-            if (rank > ranges[i][1])
-              break;
-          } else {
-            if (rank < ranges[i][1])
-              break;
-          }
-        }
-      }
-      if (size == 0) {
-        *newgroup = MPI_GROUP_EMPTY;
-      } else {
-        *newgroup = smpi_group_new(size);
-        int newrank = 0;
-        int oldrank = 0;
-        while (newrank < size) {
-          int add = 1;
-          for (int i = 0; i < n; i++) {
-            for (int rank = ranges[i][0]; rank >= 0 && rank < smpi_group_size(group);) {
-              if(rank==oldrank){
-                add = 0;
-                break;
-              }
-              if(rank == ranges[i][1]){/*already last ?*/
-                break;
-              }
-              rank += ranges[i][2]; /* Stride */
-              if (ranges[i][0]<ranges[i][1]){
-                if (rank > ranges[i][1])
-                  break;
-              }else{
-                if (rank < ranges[i][1])
-                  break;
-              }
-            }
-          }
-          if(add==1){
-            int index = smpi_group_index(group, oldrank);
-            smpi_group_set_mapping(*newgroup, index, newrank);
-            newrank++;
-          }
-          oldrank++;
-        }
-      }
+      return group->range_excl(n,ranges,newgroup);
     }
-    return MPI_SUCCESS;
   }
 }
 
@@ -655,7 +478,7 @@ int PMPI_Comm_group(MPI_Comm comm, MPI_Group * group)
   } else {
     *group = smpi_comm_group(comm);
     if (*group != smpi_comm_group(MPI_COMM_WORLD) && *group != MPI_GROUP_NULL && *group != MPI_GROUP_EMPTY)
-      smpi_group_use(*group);
+      (*group)->use();
     return MPI_SUCCESS;
   }
 }
@@ -670,7 +493,7 @@ int PMPI_Comm_compare(MPI_Comm comm1, MPI_Comm comm2, int *result)
     if (comm1 == comm2) {       /* Same communicators means same groups */
       *result = MPI_IDENT;
     } else {
-      *result = smpi_group_compare(smpi_comm_group(comm1), smpi_comm_group(comm2));
+      *result = smpi_comm_group(comm1)->compare(smpi_comm_group(comm2));
       if (*result == MPI_IDENT) {
         *result = MPI_CONGRUENT;
       }
@@ -698,11 +521,11 @@ int PMPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm)
     return MPI_ERR_GROUP;
   } else if (newcomm == nullptr) {
     return MPI_ERR_ARG;
-  } else if(smpi_group_rank(group,smpi_process_index())==MPI_UNDEFINED){
+  } else if(group->rank(smpi_process_index())==MPI_UNDEFINED){
     *newcomm= MPI_COMM_NULL;
     return MPI_SUCCESS;
   }else{
-    smpi_group_use(group);
+    group->use();
     *newcomm = smpi_comm_new(group, nullptr);
     return MPI_SUCCESS;
   }
@@ -903,7 +726,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
   } else if (src == MPI_PROC_NULL) {
     *request = MPI_REQUEST_NULL;
     retval = MPI_SUCCESS;
-  } else if (src!=MPI_ANY_SOURCE && (src >= smpi_group_size(smpi_comm_group(comm)) || src <0)){
+  } else if (src!=MPI_ANY_SOURCE && (src >= smpi_comm_group(comm)->getsize() || src <0)){
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
@@ -914,7 +737,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
   } else {
 
     int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-    int src_traced = smpi_group_index(smpi_comm_group(comm), src);
+    int src_traced = smpi_comm_group(comm)->index(src);
 
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_IRECV;
@@ -954,7 +777,7 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MP
   } else if (dst == MPI_PROC_NULL) {
     *request = MPI_REQUEST_NULL;
     retval = MPI_SUCCESS;
-  } else if (dst >= smpi_group_size(smpi_comm_group(comm)) || dst <0){
+  } else if (dst >= smpi_comm_group(comm)->getsize() || dst <0){
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
@@ -964,7 +787,7 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     retval = MPI_ERR_TAG;
   } else {
     int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-    int dst_traced = smpi_group_index(smpi_comm_group(comm), dst);
+    int dst_traced = smpi_comm_group(comm)->index(dst);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_ISEND;
     extra->src = rank;
@@ -1003,7 +826,7 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, M
   } else if (dst == MPI_PROC_NULL) {
     *request = MPI_REQUEST_NULL;
     retval = MPI_SUCCESS;
-  } else if (dst >= smpi_group_size(smpi_comm_group(comm)) || dst <0){
+  } else if (dst >= smpi_comm_group(comm)->getsize() || dst <0){
     retval = MPI_ERR_RANK;
   } else if ((count < 0)|| (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
@@ -1013,7 +836,7 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, M
     retval = MPI_ERR_TAG;
   } else {
     int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-    int dst_traced = smpi_group_index(smpi_comm_group(comm), dst);
+    int dst_traced = smpi_comm_group(comm)->index(dst);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_ISSEND;
     extra->src = rank;
@@ -1051,7 +874,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     smpi_empty_status(status);
     status->MPI_SOURCE = MPI_PROC_NULL;
     retval = MPI_SUCCESS;
-  } else if (src!=MPI_ANY_SOURCE && (src >= smpi_group_size(smpi_comm_group(comm)) || src <0)){
+  } else if (src!=MPI_ANY_SOURCE && (src >= smpi_comm_group(comm)->getsize() || src <0)){
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
@@ -1061,7 +884,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     retval = MPI_ERR_TAG;
   } else {
     int rank               = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-    int src_traced         = smpi_group_index(smpi_comm_group(comm), src);
+    int src_traced         = smpi_comm_group(comm)->index(src);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t, 1);
     extra->type            = TRACING_RECV;
     extra->src             = src_traced;
@@ -1079,7 +902,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
 
     // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
     if (status != MPI_STATUS_IGNORE) {
-      src_traced = smpi_group_index(smpi_comm_group(comm), status->MPI_SOURCE);
+      src_traced = smpi_comm_group(comm)->index(status->MPI_SOURCE);
       if (!TRACE_smpi_view_internals()) {
         TRACE_smpi_recv(rank, src_traced, rank, tag);
       }
@@ -1101,7 +924,7 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
     retval = MPI_ERR_COMM;
   } else if (dst == MPI_PROC_NULL) {
     retval = MPI_SUCCESS;
-  } else if (dst >= smpi_group_size(smpi_comm_group(comm)) || dst <0){
+  } else if (dst >= smpi_comm_group(comm)->getsize() || dst <0){
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf == nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
@@ -1111,7 +934,7 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
     retval = MPI_ERR_TAG;
   } else {
     int rank               = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-    int dst_traced         = smpi_group_index(smpi_comm_group(comm), dst);
+    int dst_traced         = smpi_comm_group(comm)->index(dst);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type            = TRACING_SEND;
     extra->src             = rank;
@@ -1147,7 +970,7 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     retval = MPI_ERR_COMM;
   } else if (dst == MPI_PROC_NULL) {
     retval = MPI_SUCCESS;
-  } else if (dst >= smpi_group_size(smpi_comm_group(comm)) || dst <0){
+  } else if (dst >= smpi_comm_group(comm)->getsize() || dst <0){
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
@@ -1157,7 +980,7 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     retval = MPI_ERR_TAG;
   } else {
     int rank               = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-    int dst_traced         = smpi_group_index(smpi_comm_group(comm), dst);
+    int dst_traced         = smpi_comm_group(comm)->index(dst);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type            = TRACING_SSEND;
     extra->src             = rank;
@@ -1197,8 +1020,8 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
     smpi_empty_status(status);
     status->MPI_SOURCE = MPI_PROC_NULL;
     retval             = MPI_SUCCESS;
-  }else if (dst >= smpi_group_size(smpi_comm_group(comm)) || dst <0 ||
-      (src!=MPI_ANY_SOURCE && (src >= smpi_group_size(smpi_comm_group(comm)) || src <0))){
+  }else if (dst >= smpi_comm_group(comm)->getsize() || dst <0 ||
+      (src!=MPI_ANY_SOURCE && (src >= smpi_comm_group(comm)->getsize() || src <0))){
     retval = MPI_ERR_RANK;
   } else if ((sendcount < 0 || recvcount<0) || 
       (sendbuf==nullptr && sendcount > 0) || (recvbuf==nullptr && recvcount>0)) {
@@ -1208,8 +1031,8 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
   } else {
 
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-  int dst_traced = smpi_group_index(smpi_comm_group(comm), dst);
-  int src_traced = smpi_group_index(smpi_comm_group(comm), src);
+  int dst_traced = smpi_comm_group(comm)->index(dst);
+  int src_traced = smpi_comm_group(comm)->index(src);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_SENDRECV;
   extra->src = src_traced;
@@ -1392,7 +1215,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
     if (is_wait_for_receive) {
       if(src_traced==MPI_ANY_SOURCE)
         src_traced = (status!=MPI_STATUS_IGNORE) ?
-          smpi_group_rank(smpi_comm_group(comm), status->MPI_SOURCE) :
+          smpi_comm_group(comm)->rank(status->MPI_SOURCE) :
           src_traced;
       TRACE_smpi_recv(rank, src_traced, dst_traced, tag_traced);
     }
@@ -1442,7 +1265,7 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
     if (is_wait_for_receive) {
       if(savedvals[*index].src==MPI_ANY_SOURCE)
         src_traced = (status != MPI_STATUSES_IGNORE)
-                         ? smpi_group_rank(smpi_comm_group(savedvals[*index].comm), status->MPI_SOURCE)
+                         ? smpi_comm_group(savedvals[*index].comm)->rank(status->MPI_SOURCE)
                          : savedvals[*index].src;
       TRACE_smpi_recv(rank_traced, src_traced, dst_traced, savedvals[*index].tag);
     }
@@ -1493,7 +1316,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
       if (is_wait_for_receive) {
         if(src_traced==MPI_ANY_SOURCE)
         src_traced = (status!=MPI_STATUSES_IGNORE) ?
-                          smpi_group_rank(smpi_comm_group(savedvals[i].comm), status[i].MPI_SOURCE) : savedvals[i].src;
+                          smpi_comm_group(savedvals[i].comm)->rank(status[i].MPI_SOURCE) : savedvals[i].src;
         TRACE_smpi_recv(rank_traced, src_traced, dst_traced,savedvals[i].tag);
       }
     }
@@ -1548,7 +1371,7 @@ int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm c
     retval = MPI_ERR_ARG;
   } else {
     int rank        = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-    int root_traced = smpi_group_index(smpi_comm_group(comm), root);
+    int root_traced = smpi_comm_group(comm)->index(root);
 
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t, 1);
     extra->type            = TRACING_BCAST;
@@ -1618,7 +1441,7 @@ int PMPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,void *recvbu
       sendtmptype=recvtype;
     }
     int rank               = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-    int root_traced        = smpi_group_index(smpi_comm_group(comm), root);
+    int root_traced        = smpi_comm_group(comm)->index(root);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t, 1);
     extra->type            = TRACING_GATHER;
     extra->root            = root_traced;
@@ -1672,7 +1495,7 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recv
     }
 
     int rank               = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-    int root_traced        = smpi_group_index(smpi_comm_group(comm), root);
+    int root_traced        = smpi_comm_group(comm)->index(root);
     int i                  = 0;
     int size               = smpi_comm_size(comm);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t, 1);
@@ -1826,7 +1649,7 @@ int PMPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
       recvcount = sendcount;
     }
     int rank               = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-    int root_traced        = smpi_group_index(smpi_comm_group(comm), root);
+    int root_traced        = smpi_comm_group(comm)->index(root);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t, 1);
     extra->type            = TRACING_SCATTER;
     extra->root            = root_traced;
@@ -1872,7 +1695,7 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
       recvcount = sendcounts[smpi_comm_rank(comm)];
     }
     int rank               = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-    int root_traced        = smpi_group_index(smpi_comm_group(comm), root);
+    int root_traced        = smpi_comm_group(comm)->index(root);
     int i                  = 0;
     int size               = smpi_comm_size(comm);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t, 1);
@@ -1918,7 +1741,7 @@ int PMPI_Reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
     retval = MPI_ERR_ARG;
   } else {
     int rank               = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-    int root_traced        = smpi_group_index(smpi_comm_group(comm), root);
+    int root_traced        = smpi_comm_group(comm)->index(root);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t, 1);
     extra->type            = TRACING_REDUCE;
     int known              = 0;
@@ -2636,7 +2459,7 @@ int PMPI_Win_get_group(MPI_Win  win, MPI_Group * group){
     return MPI_ERR_WIN;
   }else {
     smpi_mpi_win_get_group(win, group);
-    smpi_group_use(*group);
+    (*group)->use();
     return MPI_SUCCESS;
   }
 }
@@ -2677,7 +2500,7 @@ int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     int rank = smpi_process_index();
     MPI_Group group;
     smpi_mpi_win_get_group(win, &group);
-    int src_traced = smpi_group_index(group, target_rank);
+    int src_traced = group->index(target_rank);
     TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, nullptr);
 
     retval = smpi_mpi_get( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
@@ -2710,7 +2533,7 @@ int PMPI_Put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     int rank = smpi_process_index();
     MPI_Group group;
     smpi_mpi_win_get_group(win, &group);
-    int dst_traced = smpi_group_index(group, target_rank);
+    int dst_traced = group->index(target_rank);
     TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, nullptr);
     TRACE_smpi_send(rank, rank, dst_traced, SMPI_RMA_TAG, origin_count*smpi_datatype_size(origin_datatype));
 
@@ -2747,7 +2570,7 @@ int PMPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
     int rank = smpi_process_index();
     MPI_Group group;
     smpi_mpi_win_get_group(win, &group);
-    int src_traced = smpi_group_index(group, target_rank);
+    int src_traced = group->index(target_rank);
     TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, nullptr);
 
     retval = smpi_mpi_accumulate( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,

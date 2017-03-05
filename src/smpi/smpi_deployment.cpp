@@ -9,6 +9,7 @@
 #include "xbt/dict.h"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
+#include <src/smpi/smpi_group.hpp>
 
 static xbt_dict_t smpi_instances = nullptr;
 extern int process_count;
@@ -69,12 +70,12 @@ void smpi_deployment_register_process(const char* instance_id, int rank, int ind
   xbt_assert(instance, "Error, unknown instance %s", instance_id);
 
   if(instance->comm_world == MPI_COMM_NULL){
-    MPI_Group group = smpi_group_new(instance->size);
+    MPI_Group group = new simgrid::SMPI::Group(instance->size);
     instance->comm_world = smpi_comm_new(group, nullptr);
   }
   instance->present_processes++;
   index_to_process_data[index]=instance->index+rank;
-  smpi_group_set_mapping(smpi_comm_group(instance->comm_world), index, rank);
+  smpi_comm_group(instance->comm_world)->set_mapping(index, rank);
   *bar = instance->finalization_barrier;
   *comm = &instance->comm_world;
 }
@@ -85,7 +86,7 @@ void smpi_deployment_cleanup_instances(){
   char *name = nullptr;
   xbt_dict_foreach(smpi_instances, cursor, name, instance) {
     if(instance->comm_world!=MPI_COMM_NULL)
-      while (smpi_group_unuse(smpi_comm_group(instance->comm_world)) > 0);
+      while (smpi_comm_group(instance->comm_world)->unuse() > 0);
     xbt_free(instance->comm_world);
     MSG_barrier_destroy(instance->finalization_barrier);
   }

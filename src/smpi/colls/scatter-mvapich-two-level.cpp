@@ -35,6 +35,7 @@
  *      See COPYRIGHT in top-level directory.
  */
 #include "colls_private.h"
+#include "src/smpi/smpi_group.hpp"
 
 #define MPIR_Scatter_MV2_Binomial smpi_coll_tuned_scatter_ompi_binomial
 #define MPIR_Scatter_MV2_Direct smpi_coll_tuned_scatter_ompi_basic_linear
@@ -113,8 +114,8 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_direct(void *sendbuf,
 
         leader_comm = smpi_comm_get_leaders_comm(comm);
         int* leaders_map = smpi_comm_get_leaders_map(comm);
-        leader_of_root = smpi_group_rank(smpi_comm_group(comm),leaders_map[root]);
-        leader_root = smpi_group_rank(smpi_comm_group(leader_comm),leaders_map[root]);
+        leader_of_root = smpi_comm_group(comm)->rank(leaders_map[root]);
+        leader_root = smpi_comm_group(leader_comm)->rank(leaders_map[root]);
         /* leader_root is the rank of the leader of the root in leader_comm.
          * leader_root is to be used as the root of the inter-leader gather ops
          */
@@ -296,8 +297,8 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_binomial(void *sendbuf,
         }
         leader_comm = smpi_comm_get_leaders_comm(comm);
         int* leaders_map = smpi_comm_get_leaders_map(comm);
-        leader_of_root = smpi_group_rank(smpi_comm_group(comm),leaders_map[root]);
-        leader_root = smpi_group_rank(smpi_comm_group(leader_comm),leaders_map[root]);
+        leader_of_root = smpi_comm_group(comm)->rank(leaders_map[root]);
+        leader_root = smpi_comm_group(leader_comm)->rank(leaders_map[root]);
         /* leader_root is the rank of the leader of the root in leader_comm.
          * leader_root is to be used as the root of the inter-leader gather ops
          */

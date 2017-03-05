@@ -36,6 +36,7 @@
  */
 
 #include "colls_private.h"
+#include "src/smpi/smpi_group.hpp"
 #define MV2_INTRA_SHMEM_REDUCE_MSG 2048
 
 #define mv2_g_shmem_coll_max_msg_size (1 << 17)
@@ -108,8 +109,8 @@ int smpi_coll_tuned_reduce_mvapich2_two_level( void *sendbuf,
     
     leader_comm = smpi_comm_get_leaders_comm(comm);
     int* leaders_map = smpi_comm_get_leaders_map(comm);
-    leader_of_root = smpi_group_rank(smpi_comm_group(comm),leaders_map[root]);
-    leader_root = smpi_group_rank(smpi_comm_group(leader_comm),leaders_map[root]);
+    leader_of_root = smpi_comm_group(comm)->rank(leaders_map[root]);
+    leader_root = smpi_comm_group(leader_comm)->rank(leaders_map[root]);
 
     is_commutative=smpi_op_is_commute(op);
 

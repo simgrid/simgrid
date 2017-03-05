@@ -12,6 +12,7 @@
 #include <xbt/ex.hpp>
 
 #include <simgrid/s4u/host.hpp>
+#include <src/smpi/smpi_group.hpp>
 
 #include "private.h"
 #include "smpi_mpi_dt_private.h"
@@ -92,7 +93,7 @@ int smpi_comm_dup(MPI_Comm comm, MPI_Comm* newcomm){
   if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
      smpi_switch_data_segment(smpi_process_index());
    }
-  MPI_Group cp=smpi_group_copy(smpi_comm_group(comm));
+  MPI_Group cp=new simgrid::SMPI::Group(smpi_comm_group(comm));
   (*newcomm) = smpi_comm_new(cp, smpi_comm_topo(comm));
   int ret = MPI_SUCCESS;
 
@@ -139,14 +140,14 @@ int smpi_comm_size(MPI_Comm comm)
 {
   if (comm == MPI_COMM_UNINITIALIZED)
     comm = smpi_process_comm_world();
-  return smpi_group_size(smpi_comm_group(comm));
+  return smpi_comm_group(comm)->getsize();
 }
 
 int smpi_comm_rank(MPI_Comm comm)
 {
   if (comm == MPI_COMM_UNINITIALIZED)
     comm = smpi_process_comm_world();
-  return smpi_group_rank(smpi_comm_group(comm), smpi_process_index());
+  return smpi_comm_group(comm)->rank(smpi_process_index());
 }
 
 void smpi_comm_get_name (MPI_Comm comm, char* name, int* len)
@@ -251,25 +252,25 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
         rankmap[2 * count + 1] = recvbuf[2 * i + 1];
         count++;
         qsort(rankmap, count, 2 * sizeof(int), &smpi_compare_rankmap);
-        group_out = smpi_group_new(count);
+        group_out = new simgrid::SMPI::Group(count);
         if (i == 0) {
           group_root = group_out; /* Save root's group */
         }
         for (int j = 0; j < count; j++) {
-          int index = smpi_group_index(group, rankmap[2 * j]);
-          smpi_group_set_mapping(group_out, index, j);
+          int index = group->index(rankmap[2 * j]);
+          group_out->set_mapping(index, j);
         }
         MPI_Request* requests = xbt_new(MPI_Request, count);
         int reqs              = 0;
         for (int j = 0; j < count; j++) {
           if(rankmap[2 * j] != 0) {
-            group_snd[reqs]=smpi_group_copy(group_out);
+            group_snd[reqs]=new simgrid::SMPI::Group(group_out);
             requests[reqs] = smpi_mpi_isend(&(group_snd[reqs]), 1, MPI_PTR, rankmap[2 * j], system_tag, comm);
             reqs++;
           }
         }
         if(i != 0) {
-          smpi_group_destroy(group_out);
+          group_out->destroy();
         }
         smpi_mpi_waitall(reqs, requests, MPI_STATUS_IGNORE);
         xbt_free(requests);
@@ -290,7 +291,7 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
 void smpi_comm_use(MPI_Comm comm){
   if (comm == MPI_COMM_UNINITIALIZED)
     comm = smpi_process_comm_world();
-  smpi_group_use(comm->group);
+  comm->group->use();
   comm->refcount++;
 }
 
@@ -324,7 +325,7 @@ void smpi_comm_unuse(MPI_Comm comm){
   if (comm == MPI_COMM_UNINITIALIZED)
     comm = smpi_process_comm_world();
   comm->refcount--;
-  smpi_group_unuse(comm->group);
+  comm->group->unuse();
 
   if(comm->refcount==0){
     smpi_comm_cleanup_smp(comm);
@@ -370,7 +371,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
   xbt_swag_foreach(process, process_list) {
     int index = process->pid -1;
 
-    if(smpi_group_rank(smpi_comm_group(comm),  index)!=MPI_UNDEFINED){
+    if(smpi_comm_group(comm)->rank(index)!=MPI_UNDEFINED){
         intra_comm_size++;
       //the process is in the comm
       if(index < min_index)
@@ -379,13 +380,13 @@ void smpi_comm_init_smp(MPI_Comm comm){
     }
   }
   XBT_DEBUG("number of processes deployed on my node : %d", intra_comm_size);
-  MPI_Group group_intra = smpi_group_new(intra_comm_size);
+  MPI_Group group_intra = new simgrid::SMPI::Group(intra_comm_size);
   i=0;
   process = nullptr;
   xbt_swag_foreach(process, process_list) {
     int index = process->pid -1;
-    if(smpi_group_rank(smpi_comm_group(comm),  index)!=MPI_UNDEFINED){
-      smpi_group_set_mapping(group_intra, index, i);
+    if(smpi_comm_group(comm)->rank(index)!=MPI_UNDEFINED){
+      group_intra->set_mapping(index, i);
       i++;
     }
   }
@@ -426,13 +427,13 @@ void smpi_comm_init_smp(MPI_Comm comm){
   }
   qsort(leader_list, leader_group_size, sizeof(int),compare_ints);
 
-  MPI_Group leaders_group = smpi_group_new(leader_group_size);
+  MPI_Group leaders_group = new simgrid::SMPI::Group(leader_group_size);
 
   MPI_Comm leader_comm = MPI_COMM_NULL;
   if(MPI_COMM_WORLD!=MPI_COMM_UNINITIALIZED && comm!=MPI_COMM_WORLD){
     //create leader_communicator
     for (i=0; i< leader_group_size;i++)
-      smpi_group_set_mapping(leaders_group, leader_list[i], i);
+      leaders_group->set_mapping(leader_list[i], i);
     leader_comm = smpi_comm_new(leaders_group, nullptr);
     smpi_comm_set_leaders_comm(comm, leader_comm);
     smpi_comm_set_intra_comm(comm, comm_intra);
@@ -440,14 +441,14 @@ void smpi_comm_init_smp(MPI_Comm comm){
    //create intracommunicator
   }else{
     for (i=0; i< leader_group_size;i++)
-      smpi_group_set_mapping(leaders_group, leader_list[i], i);
+      leaders_group->set_mapping(leader_list[i], i);
 
     if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
       leader_comm = smpi_comm_new(leaders_group, nullptr);
       smpi_comm_set_leaders_comm(comm, leader_comm);
     }else{
       leader_comm=smpi_comm_get_leaders_comm(comm);
-      smpi_group_unuse(leaders_group);
+      leaders_group->unuse();
     }
     smpi_process_set_comm_intra(comm_intra);
   }
@@ -480,9 +481,9 @@ void smpi_comm_init_smp(MPI_Comm comm){
    }
   // Are the ranks blocked ? = allocated contiguously on the SMP nodes
   int is_blocked=1;
-  int prev=smpi_group_rank(smpi_comm_group(comm), smpi_group_index(smpi_comm_group(comm_intra), 0));
+  int prev=smpi_comm_group(comm)->rank(smpi_comm_group(comm_intra)->index(0));
     for (i=1; i<my_local_size; i++){
-      int that=smpi_group_rank(smpi_comm_group(comm),smpi_group_index(smpi_comm_group(comm_intra), i));
+      int that=smpi_comm_group(comm)->rank(smpi_comm_group(comm_intra)->index(i));
       if(that!=prev+1){
         is_blocked=0;
         break;

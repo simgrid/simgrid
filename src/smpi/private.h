@@ -245,17 +245,6 @@ XBT_PRIVATE void smpi_op_destroy(MPI_Op op);
 XBT_PRIVATE void smpi_op_set_fortran(MPI_Op op);
 XBT_PRIVATE void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len, MPI_Datatype * datatype);
 
-XBT_PRIVATE MPI_Group smpi_group_new(int size);
-XBT_PRIVATE MPI_Group smpi_group_copy(MPI_Group origin);
-XBT_PRIVATE void smpi_group_destroy(MPI_Group group);
-XBT_PRIVATE void smpi_group_set_mapping(MPI_Group group, int index, int rank);
-XBT_PRIVATE int smpi_group_index(MPI_Group group, int rank);
-XBT_PRIVATE int smpi_group_rank(MPI_Group group, int index);
-XBT_PRIVATE int smpi_group_use(MPI_Group group);
-XBT_PRIVATE int smpi_group_unuse(MPI_Group group);
-XBT_PRIVATE int smpi_group_size(MPI_Group group);
-XBT_PRIVATE int smpi_group_compare(MPI_Group group1, MPI_Group group2);
-XBT_PRIVATE int smpi_group_incl(MPI_Group group, int n, int* ranks, MPI_Group* newgroup);
 
 XBT_PRIVATE MPI_Topology smpi_comm_topo(MPI_Comm comm);
 XBT_PRIVATE MPI_Comm smpi_comm_new(MPI_Group group, MPI_Topology topo);
