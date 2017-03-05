@@ -207,16 +207,19 @@ set(SMPI_SRC
   src/smpi/colls/smpi_openmpi_selector.cpp
   src/smpi/colls/smpi_mvapich2_selector.cpp
   src/smpi/instr_smpi.cpp
+  src/smpi/forward.hpp
   src/smpi/smpi_base.cpp
   src/smpi/smpi_bench.cpp
   src/smpi/smpi_memory.cpp
   src/smpi/smpi_static_variables.cpp
   src/smpi/smpi_coll.cpp
   src/smpi/smpi_comm.cpp
+  src/smpi/smpi_comm.hpp
   src/smpi/smpi_deployment.cpp
   src/smpi/smpi_dvfs.cpp
   src/smpi/smpi_global.cpp
   src/smpi/smpi_group.cpp
+  src/smpi/smpi_group.hpp
   src/smpi/smpi_mpi.cpp
   src/smpi/smpi_mpi_dt.cpp
   src/smpi/smpi_pmpi.cpp
