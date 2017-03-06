@@ -310,27 +310,26 @@ static void onHostDestruction(simgrid::s4u::Host& host)
 
   HostEnergy* host_energy = host.extension<HostEnergy>();
   host_energy->update();
-  XBT_INFO("Total energy of host %s: %f Joules", host.cname(), host_energy->getConsumedEnergy());
+  XBT_INFO("Energy consumption of host %s: %f Joules", host.cname(), host_energy->getConsumedEnergy());
 }
 
 static void onSimulationEnd()
 {
   sg_host_t* host_list     = sg_host_list();
   int host_count           = sg_host_count();
-  double total_energy      = 0.0; // Total energy consumption (whole plattform)
+  double total_energy      = 0.0; // Total energy consumption (whole platform)
   double used_hosts_energy = 0.0; // Energy consumed by hosts that computed something
   for (int i = 0; i < host_count; i++) {
     if (dynamic_cast<simgrid::s4u::VirtualMachine*>(host_list[i]) == nullptr) { // Ignore virtual machines
 
       bool host_was_used = (host_list[i]->extension<HostEnergy>()->last_updated != 0);
-      double energy      = 0.0;
-      energy             = host_list[i]->extension<HostEnergy>()->getConsumedEnergy();
+      double energy      = host_list[i]->extension<HostEnergy>()->getConsumedEnergy();
       total_energy      += energy;
       if (host_was_used)
         used_hosts_energy += energy;
     }
   }
-  XBT_INFO("Summed energy consumption: %f Joules; used hosts consumed: %f Joules; unused (idle) hosts consumed: %f",
+  XBT_INFO("Total energy consumption: %f Joules (used hosts: %f Joules; unused/idle hosts: %f)",
            total_energy, used_hosts_energy, total_energy - used_hosts_energy);
 }
 
