@@ -69,7 +69,6 @@ Group::~Group()
 void Group::destroy()
 {
   if(this != MPI_COMM_WORLD->group()
-          && this != MPI_GROUP_NULL
           && this != MPI_GROUP_EMPTY)
   this->unuse();
 }
@@ -169,7 +168,6 @@ int Group::incl(int n, int* ranks, MPI_Group* newgroup)
   } else if (n == m_size) {
     *newgroup = this;
     if(this!= MPI_COMM_WORLD->group()
-              && this != MPI_GROUP_NULL
               && this != MPI_COMM_SELF->group()
               && this != MPI_GROUP_EMPTY)
     this->use();
