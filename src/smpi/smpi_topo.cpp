@@ -124,7 +124,7 @@ int smpi_mpi_cart_create(MPI_Comm comm_old, int ndims, int dims[], int periods[]
   MPI_Group oldGroup;
   int nranks;
 
-  int rank = smpi_comm_rank(comm_old);
+  int rank = comm_old->rank();
 
   int newSize = 1;
   if(ndims != 0) {
@@ -136,10 +136,10 @@ int smpi_mpi_cart_create(MPI_Comm comm_old, int ndims, int dims[], int periods[]
       return retval;
     }
     newCart = smpi_cart_topo_create(ndims);
-    oldGroup = smpi_comm_group(comm_old);
-    newGroup = smpi_group_new(newSize);
+    oldGroup = comm_old->group();
+    newGroup = new simgrid::SMPI::Group(newSize);
     for (int i = 0 ; i < newSize ; i++) {
-      smpi_group_set_mapping(newGroup, smpi_group_index(oldGroup, i), i);
+      newGroup->set_mapping(oldGroup->index(i), i);
     }
 
     newCart->topo.cart->nnodes = newSize;
@@ -155,11 +155,11 @@ int smpi_mpi_cart_create(MPI_Comm comm_old, int ndims, int dims[], int periods[]
       rank = rank % nranks;
     }
 
-    *comm_cart = smpi_comm_new(newGroup, newCart);
+    *comm_cart = new simgrid::SMPI::Comm(newGroup, newCart);
   } else {
     if (rank == 0) {
       newCart = smpi_cart_topo_create(ndims);
-      *comm_cart = smpi_comm_new(smpi_group_copy(smpi_comm_group(MPI_COMM_SELF)), newCart);
+      *comm_cart = new simgrid::SMPI::Comm(new simgrid::SMPI::Group(MPI_COMM_SELF->group()), newCart);
     } else {
       *comm_cart = MPI_COMM_NULL;
     }
@@ -168,7 +168,7 @@ int smpi_mpi_cart_create(MPI_Comm comm_old, int ndims, int dims[], int periods[]
 }
 
 int smpi_mpi_cart_sub(MPI_Comm comm, const int remain_dims[], MPI_Comm *newcomm) {
-  MPI_Topology oldTopo = smpi_comm_topo(comm);
+  MPI_Topology oldTopo = comm->topo();
   int oldNDims = oldTopo->topo.cart->ndims;
   int j = 0;
   int *newDims = nullptr;
@@ -200,7 +200,7 @@ int smpi_mpi_cart_sub(MPI_Comm comm, const int remain_dims[], MPI_Comm *newcomm)
 }
 
 int smpi_mpi_cart_coords(MPI_Comm comm, int rank, int maxdims, int coords[]) {
-  MPI_Topology topo = smpi_comm_topo(comm);
+  MPI_Topology topo = comm->topo();
   int nnodes = topo->topo.cart->nnodes;
   for (int i = 0; i< topo->topo.cart->ndims; i++ ) {
     nnodes    = nnodes / topo->topo.cart->dims[i];
@@ -211,7 +211,7 @@ int smpi_mpi_cart_coords(MPI_Comm comm, int rank, int maxdims, int coords[]) {
 }
 
 int smpi_mpi_cart_get(MPI_Comm comm, int maxdims, int* dims, int* periods, int* coords) {
-  MPI_Topology topo = smpi_comm_topo(comm);
+  MPI_Topology topo = comm->topo();
   int ndims=topo->topo.cart->ndims < maxdims ? topo->topo.cart->ndims : maxdims;
   for(int i = 0 ; i < ndims ; i++) {
     dims[i] = topo->topo.cart->dims[i];
@@ -222,7 +222,7 @@ int smpi_mpi_cart_get(MPI_Comm comm, int maxdims, int* dims, int* periods, int* 
 }
 
 int smpi_mpi_cart_rank(MPI_Comm comm, int* coords, int* rank) {
-  MPI_Topology topo = smpi_comm_topo(comm);
+  MPI_Topology topo = comm->topo();
   int ndims = topo->topo.cart->ndims;
   int coord;
   *rank = 0;
@@ -260,7 +260,7 @@ int smpi_mpi_cart_rank(MPI_Comm comm, int* coords, int* rank) {
 }
 
 int smpi_mpi_cart_shift(MPI_Comm comm, int direction, int disp, int *rank_source, int *rank_dest) {
-  MPI_Topology topo = smpi_comm_topo(comm);
+  MPI_Topology topo = comm->topo();
   int position[topo->topo.cart->ndims];
 
   if(topo->topo.cart->ndims == 0) {
@@ -270,7 +270,7 @@ int smpi_mpi_cart_shift(MPI_Comm comm, int direction, int disp, int *rank_source
     return MPI_ERR_DIMS;
   }
 
-  smpi_mpi_cart_coords(comm, smpi_comm_rank(comm), topo->topo.cart->ndims, position);
+  smpi_mpi_cart_coords(comm, comm->rank(), topo->topo.cart->ndims, position);
   position[direction] += disp;
 
   if(position[direction] < 0 ||
@@ -301,7 +301,7 @@ int smpi_mpi_cart_shift(MPI_Comm comm, int direction, int disp, int *rank_source
 }
 
 int smpi_mpi_cartdim_get(MPI_Comm comm, int *ndims) {
-  MPI_Topology topo = smpi_comm_topo(comm);
+  MPI_Topology topo = comm->topo();
 
   *ndims = topo->topo.cart->ndims;
   return MPI_SUCCESS;

@@ -9,6 +9,8 @@
 
 #include "simgrid/simix.h"
 #include "smpi/smpi.h"
+#include "src/smpi/smpi_group.hpp"
+#include "src/smpi/smpi_comm.hpp"
 #include "src/include/smpi/smpi_interface.h"
 #include "src/instr/instr_private.h"
 #include "src/internal_config.h"
@@ -186,7 +188,7 @@ XBT_PRIVATE bool smpi_process_get_replaying();
 XBT_PRIVATE void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm** comm,
                                                   msg_bar_t* bar);
 XBT_PRIVATE void smpi_deployment_cleanup_instances();
-
+ 
 XBT_PRIVATE void smpi_comm_copy_buffer_callback(smx_activity_t comm, void *buff, size_t buff_size);
 
 XBT_PRIVATE void smpi_comm_null_copy_buffer_callback(smx_activity_t comm, void *buff, size_t buff_size);
@@ -245,40 +247,6 @@ XBT_PRIVATE void smpi_op_destroy(MPI_Op op);
 XBT_PRIVATE void smpi_op_set_fortran(MPI_Op op);
 XBT_PRIVATE void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len, MPI_Datatype * datatype);
 
-XBT_PRIVATE MPI_Group smpi_group_new(int size);
-XBT_PRIVATE MPI_Group smpi_group_copy(MPI_Group origin);
-XBT_PRIVATE void smpi_group_destroy(MPI_Group group);
-XBT_PRIVATE void smpi_group_set_mapping(MPI_Group group, int index, int rank);
-XBT_PRIVATE int smpi_group_index(MPI_Group group, int rank);
-XBT_PRIVATE int smpi_group_rank(MPI_Group group, int index);
-XBT_PRIVATE int smpi_group_use(MPI_Group group);
-XBT_PRIVATE int smpi_group_unuse(MPI_Group group);
-XBT_PRIVATE int smpi_group_size(MPI_Group group);
-XBT_PRIVATE int smpi_group_compare(MPI_Group group1, MPI_Group group2);
-XBT_PRIVATE int smpi_group_incl(MPI_Group group, int n, int* ranks, MPI_Group* newgroup);
-
-XBT_PRIVATE MPI_Topology smpi_comm_topo(MPI_Comm comm);
-XBT_PRIVATE MPI_Comm smpi_comm_new(MPI_Group group, MPI_Topology topo);
-XBT_PRIVATE void smpi_comm_destroy(MPI_Comm comm);
-XBT_PRIVATE MPI_Group smpi_comm_group(MPI_Comm comm);
-XBT_PRIVATE int smpi_comm_size(MPI_Comm comm);
-XBT_PRIVATE void smpi_comm_get_name(MPI_Comm comm, char* name, int* len);
-XBT_PRIVATE int smpi_comm_rank(MPI_Comm comm);
-XBT_PRIVATE MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key);
-XBT_PRIVATE int smpi_comm_dup(MPI_Comm comm, MPI_Comm* newcomm);
-XBT_PRIVATE void smpi_comm_use(MPI_Comm comm);
-XBT_PRIVATE void smpi_comm_unuse(MPI_Comm comm);
-XBT_PRIVATE void smpi_comm_cleanup_attributes(MPI_Comm comm);
-XBT_PRIVATE void smpi_comm_cleanup_smp(MPI_Comm comm);
-XBT_PRIVATE void smpi_comm_set_leaders_comm(MPI_Comm comm, MPI_Comm leaders);
-XBT_PRIVATE void smpi_comm_set_intra_comm(MPI_Comm comm, MPI_Comm leaders);
-XBT_PRIVATE int* smpi_comm_get_non_uniform_map(MPI_Comm comm);
-XBT_PRIVATE int* smpi_comm_get_leaders_map(MPI_Comm comm);
-XBT_PRIVATE MPI_Comm smpi_comm_get_leaders_comm(MPI_Comm comm);
-XBT_PRIVATE MPI_Comm smpi_comm_get_intra_comm(MPI_Comm comm);
-XBT_PRIVATE int smpi_comm_is_uniform(MPI_Comm comm);
-XBT_PRIVATE int smpi_comm_is_blocked(MPI_Comm comm);
-XBT_PRIVATE void smpi_comm_init_smp(MPI_Comm comm);
 
 XBT_PRIVATE int smpi_comm_c2f(MPI_Comm comm);
 XBT_PRIVATE int smpi_comm_add_f(MPI_Comm comm);
@@ -396,13 +364,10 @@ XBT_PRIVATE int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcou
                                           void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm);
 XBT_PRIVATE int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts, int *senddisps, MPI_Datatype sendtype,
                               void *recvbuf, int *recvcounts, int *recvdisps, MPI_Datatype recvtype, MPI_Comm comm);
-
 XBT_PRIVATE int smpi_comm_keyval_create(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn,
                                         int* keyval, void* extra_state);
 XBT_PRIVATE int smpi_comm_keyval_free(int* keyval);
-XBT_PRIVATE int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag);
-XBT_PRIVATE int smpi_comm_attr_delete(MPI_Comm comm, int keyval);
-XBT_PRIVATE int smpi_comm_attr_put(MPI_Comm comm, int keyval, void* attr_value);
+
 XBT_PRIVATE int smpi_type_attr_delete(MPI_Datatype type, int keyval);
 XBT_PRIVATE int smpi_type_attr_get(MPI_Datatype type, int keyval, void* attr_value, int* flag);
 XBT_PRIVATE int smpi_type_attr_put(MPI_Datatype type, int keyval, void* attr_value);
@@ -434,9 +399,6 @@ XBT_PRIVATE void* smpi_get_tmp_sendbuffer(int size);
 XBT_PRIVATE void* smpi_get_tmp_recvbuffer(int size);
 XBT_PRIVATE void  smpi_free_tmp_buffer(void* buf);
 
-XBT_PRIVATE int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag);
-XBT_PRIVATE XBT_PRIVATE int smpi_comm_attr_delete(MPI_Comm comm, int keyval);
-XBT_PRIVATE int smpi_comm_attr_put(MPI_Comm comm, int keyval, void* attr_value);
 
 // f77 wrappers
 void mpi_init_(int* ierr);
