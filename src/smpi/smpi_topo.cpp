@@ -6,7 +6,6 @@
 
 #include "xbt/sysdep.h"
 #include "smpi/smpi.h"
-#include "src/smpi/smpi_group.hpp"
 #include "private.h"
 #include <vector>
 #include <math.h>

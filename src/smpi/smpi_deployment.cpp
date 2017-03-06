@@ -9,7 +9,6 @@
 #include "xbt/dict.h"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
-#include <src/smpi/smpi_group.hpp>
 
 static xbt_dict_t smpi_instances = nullptr;
 extern int process_count;

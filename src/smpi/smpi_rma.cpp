@@ -6,7 +6,6 @@
 
 #include "private.h"
 #include <vector>
-#include "src/smpi/smpi_group.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_rma, smpi, "Logging specific to SMPI (RMA operations)");
 

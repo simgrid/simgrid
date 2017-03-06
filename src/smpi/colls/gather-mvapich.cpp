@@ -36,7 +36,6 @@
  */
 
 #include "colls_private.h"
-#include "src/smpi/smpi_group.hpp"
 
 #define MPIR_Gather_MV2_Direct smpi_coll_tuned_gather_ompi_basic_linear
 #define MPIR_Gather_MV2_two_level_Direct smpi_coll_tuned_gather_ompi_basic_linear

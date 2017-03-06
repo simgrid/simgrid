@@ -35,7 +35,6 @@
  *      See COPYRIGHT in top-level directory.
  */
 #include "colls_private.h"
-#include "src/smpi/smpi_group.hpp"
 
 #define MPIR_Scatter_MV2_Binomial smpi_coll_tuned_scatter_ompi_binomial
 #define MPIR_Scatter_MV2_Direct smpi_coll_tuned_scatter_ompi_basic_linear

@@ -12,8 +12,6 @@
 #include <xbt/ex.hpp>
 
 #include <simgrid/s4u/host.hpp>
-#include <src/smpi/smpi_comm.hpp>
-#include <src/smpi/smpi_group.hpp>
 
 #include "private.h"
 #include "smpi_mpi_dt_private.h"

@@ -5,7 +5,6 @@
 
 #include "private.h"
 #include "xbt/replay.h"
-#include "src/smpi/smpi_group.hpp"
 #include <unordered_map>
 #include <vector>
 

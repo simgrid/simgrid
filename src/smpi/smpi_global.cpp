@@ -15,7 +15,6 @@
 #include "src/mc/mc_replay.h"
 #include "src/msg/msg_private.h"
 #include "src/simix/smx_private.h"
-#include "src/smpi/smpi_group.hpp"
 #include "surf/surf.h"
 #include "xbt/replay.h"
 

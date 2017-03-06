@@ -36,7 +36,6 @@
  */
 
 #include "colls_private.h"
-#include "src/smpi/smpi_group.hpp"
 #define MV2_INTRA_SHMEM_REDUCE_MSG 2048
 
 #define mv2_g_shmem_coll_max_msg_size (1 << 17)

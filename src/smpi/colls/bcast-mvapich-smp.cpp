@@ -35,7 +35,6 @@
  *      See COPYRIGHT in top-level directory.
  */
 #include "colls_private.h"
-#include "src/smpi/smpi_group.hpp"
 
 
 extern int (*MV2_Bcast_function) (void *buffer, int count, MPI_Datatype datatype,
