@@ -170,7 +170,7 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
 {
   xbt_assert(!power_range_watts_list.empty(), "No power range properties specified for host %s", host->cname());
 
-  /* min_power corresponds to the idle power (cpu load = 0) */
+  /* min_power corresponds to the power consumed when only one core is active */
   /* max_power is the power consumed at 100% cpu load       */
   auto range           = power_range_watts_list.at(host->pstate());
   double current_power = 0;
@@ -325,13 +325,25 @@ static void onSimulationEnd()
   XBT_INFO("Summed energy consumption: %f Joules; used hosts consumed: %f Joules; unused (idle) hosts consumed: %f",
            total_energy, used_hosts_energy, total_energy - used_hosts_energy);
 }
+
+static int monitor_DVFS(int argc, char **argv);
+static int monitor_DVFS(int argc, char **argv) 
+{
+  while (1) {
+    MSG_process_sleep(5);
+  }
+
+  return 0;
+}
+
+static void onPlatformCreated() 
+{
   sg_host_t* host_list = sg_host_list();
   int host_count       = sg_host_count();
-  double energy        = 0.0;
   for (int i = 0; i < host_count; i++) {
-    energy += host_list[i]->extension<HostEnergy>()->getConsumedEnergy();
+    MSG_process_create("dvfs", &monitor_DVFS, NULL, host_list[i]);
+    XBT_INFO("Created new MSG processes!");
   }
-  XBT_INFO("Summed energy consumption: %f Joules", energy);
 }
 
 /* **************************** Public interface *************************** */
@@ -352,6 +364,7 @@ void sg_host_energy_plugin_init()
   simgrid::s4u::Host::onStateChange.connect(&onHostChange);
   simgrid::s4u::Host::onSpeedChange.connect(&onHostChange);
   simgrid::s4u::Host::onDestruction.connect(&onHostDestruction);
+  simgrid::s4u::onPlatformCreated.connect(&onPlatformCreated);
   simgrid::s4u::onSimulationEnd.connect(&onSimulationEnd);
   simgrid::surf::CpuAction::onStateChange.connect(&onActionStateChange);
 }
