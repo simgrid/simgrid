@@ -30,8 +30,8 @@ smpi_coll_tuned_allgather_rdb(void *sbuf, int send_count,
   char *recv_ptr = (char *) rbuf;
 
   // get size of the communicator, followed by rank 
-  unsigned int num_procs = smpi_comm_size(comm);
-  unsigned int rank = smpi_comm_rank(comm);
+  unsigned int num_procs = comm->size();
+  unsigned int rank = comm->rank();
 
   // get size of single element's type for send buffer and recv buffer
   send_chunk = smpi_datatype_get_extent(send_type);

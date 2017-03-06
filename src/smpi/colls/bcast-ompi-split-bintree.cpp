@@ -84,8 +84,8 @@ smpi_coll_tuned_bcast_ompi_split_bintree ( void* buffer,
 //    mca_coll_tuned_module_t *tuned_module = (mca_coll_tuned_module_t*) module;
 //    mca_coll_tuned_comm_t *data = tuned_module->tuned_data;
 
-    size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    size = comm->size();
+    rank = comm->rank();
 
 
     //compute again segsize

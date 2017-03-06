@@ -17,20 +17,20 @@ int smpi_coll_tuned_allgather_loosely_lr(void *sbuf, int scount,
   int intra_rank, inter_rank, inter_comm_size, intra_comm_size;
   int inter_dst, inter_src;
 
-  comm_size = smpi_comm_size(comm);
+  comm_size = comm->size();
 
-if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
-    smpi_comm_init_smp(comm);
+if(comm->get_leaders_comm()==MPI_COMM_NULL){
+    comm->init_smp();
   }
   int num_core=1;
-  if (smpi_comm_is_uniform(comm)){
-    num_core = smpi_comm_size(smpi_comm_get_intra_comm(comm));
+  if (comm->is_uniform()){
+    num_core = comm->get_intra_comm()->size();
   }
 
   if(comm_size%num_core)
     THROWF(arg_error,0, "allgather loosely lr algorithm can't be used with non multiple of NUM_CORE=%d number of processes ! ",num_core);
 
-  rank = smpi_comm_rank(comm);
+  rank = comm->rank();
   MPI_Aint rextent, sextent;
   rextent = smpi_datatype_get_extent(rtype);
   sextent = smpi_datatype_get_extent(stype);

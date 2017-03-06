@@ -69,7 +69,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
 
     XBT_DEBUG( "coll:tuned:reduce_generic count %d, msg size %ld, segsize %ld, max_requests %d", original_count, (unsigned long)(num_segments * segment_increment), (unsigned long)segment_increment, max_outstanding_reqs);
 
-    rank = smpi_comm_rank(comm);
+    rank = comm->rank();
 
     /* non-leaf nodes - wait for children to send me data & forward up 
        (if needed) */
@@ -333,9 +333,9 @@ int smpi_coll_tuned_reduce_ompi_chain( void *sendbuf, void *recvbuf, int count,
     uint32_t segsize=64*1024;
     int segcount = count;
     size_t typelng;
-    int fanout = smpi_comm_size(comm)/2;
+    int fanout = comm->size()/2;
 
-    XBT_DEBUG("coll:tuned:reduce_intra_chain rank %d fo %d ss %5d", smpi_comm_rank(comm), fanout, segsize);
+    XBT_DEBUG("coll:tuned:reduce_intra_chain rank %d fo %d ss %5d", comm->rank(), fanout, segsize);
 
     /**
      * Determine number of segments and number of elements
@@ -372,7 +372,7 @@ int smpi_coll_tuned_reduce_ompi_pipeline( void *sendbuf, void *recvbuf,
     const double a4 =  0.0033 / 1024.0; /* [1/B] */
     const double b4 =  1.6761;
     typelng= smpi_datatype_size( datatype);
-    int communicator_size = smpi_comm_size(comm);
+    int communicator_size = comm->size();
     size_t message_size = typelng * count; 
 
     if (communicator_size > (a2 * message_size + b2)) {
@@ -387,7 +387,7 @@ int smpi_coll_tuned_reduce_ompi_pipeline( void *sendbuf, void *recvbuf,
     }
 
     XBT_DEBUG("coll:tuned:reduce_intra_pipeline rank %d ss %5d",
-                 smpi_comm_rank(comm), segsize);
+                 comm->rank(), segsize);
 
     COLL_TUNED_COMPUTED_SEGCOUNT( segsize, typelng, segcount );
 
@@ -418,7 +418,7 @@ int smpi_coll_tuned_reduce_ompi_binary( void *sendbuf, void *recvbuf,
     segsize = 32*1024;
 
     XBT_DEBUG("coll:tuned:reduce_intra_binary rank %d ss %5d",
-                 smpi_comm_rank(comm), segsize);
+                 comm->rank(), segsize);
 
     COLL_TUNED_COMPUTED_SEGCOUNT( segsize, typelng, segcount );
 
@@ -448,7 +448,7 @@ int smpi_coll_tuned_reduce_ompi_binomial( void *sendbuf, void *recvbuf,
      * sent per operation
      */
     typelng= smpi_datatype_size( datatype);
-    int communicator_size = smpi_comm_size(comm);
+    int communicator_size = comm->size();
     size_t message_size = typelng * count; 
     if (((communicator_size < 8) && (message_size < 20480)) ||
                (message_size < 2048) || (count <= 1)) {
@@ -460,7 +460,7 @@ int smpi_coll_tuned_reduce_ompi_binomial( void *sendbuf, void *recvbuf,
     }
 
     XBT_DEBUG("coll:tuned:reduce_intra_binomial rank %d ss %5d",
-                 smpi_comm_rank(comm), segsize);
+                 comm->rank(), segsize);
     COLL_TUNED_COMPUTED_SEGCOUNT( segsize, typelng, segcount );
 
     return smpi_coll_tuned_ompi_reduce_generic( sendbuf, recvbuf, count, datatype, 
@@ -489,8 +489,8 @@ int smpi_coll_tuned_reduce_ompi_in_order_binary( void *sendbuf, void *recvbuf,
     void *use_this_sendbuf = NULL, *use_this_recvbuf = NULL;
     size_t typelng;
 
-    rank = smpi_comm_rank(comm);
-    size = smpi_comm_size(comm);
+    rank = comm->rank();
+    size = comm->size();
     XBT_DEBUG("coll:tuned:reduce_intra_in_order_binary rank %d ss %5d",
                  rank, segsize);
 
@@ -604,8 +604,8 @@ smpi_coll_tuned_reduce_ompi_basic_linear(void *sbuf, void *rbuf, int count,
 
     /* Initialize */
 
-    rank = smpi_comm_rank(comm);
-    size = smpi_comm_size(comm);
+    rank = comm->rank();
+    size = comm->size();
 
     XBT_DEBUG("coll:tuned:reduce_intra_basic_linear rank %d", rank);
 

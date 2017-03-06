@@ -95,8 +95,8 @@ ompi_coll_tuned_topo_build_tree( int fanout,
     /* 
      * Get size and rank of the process in this communicator 
      */
-    size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    size = comm->size();
+    rank = comm->rank();
 
     tree = (ompi_coll_tree_t*)malloc(sizeof(ompi_coll_tree_t));
     if (!tree) {
@@ -195,8 +195,8 @@ ompi_coll_tuned_topo_build_in_order_bintree( MPI_Comm comm )
     /* 
      * Get size and rank of the process in this communicator 
      */
-    size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    size = comm->size();
+    rank = comm->rank();
 
     tree = (ompi_coll_tree_t*)malloc(sizeof(ompi_coll_tree_t));
     if (!tree) {
@@ -338,8 +338,8 @@ ompi_coll_tuned_topo_build_bmtree( MPI_Comm comm,
     /* 
      * Get size and rank of the process in this communicator 
      */
-    size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    size = comm->size();
+    rank = comm->rank();
 
     index = rank -root;
 
@@ -419,8 +419,8 @@ ompi_coll_tuned_topo_build_in_order_bmtree( MPI_Comm comm,
     /* 
      * Get size and rank of the process in this communicator 
      */
-    size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    size = comm->size();
+    rank = comm->rank();
 
     vrank = (rank - root + size) % size;
 
@@ -481,8 +481,8 @@ ompi_coll_tuned_topo_build_chain( int fanout,
     /* 
      * Get size and rank of the process in this communicator 
      */
-    size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    size = comm->size();
+    rank = comm->rank();
 
     if( fanout < 1 ) {
         XBT_DEBUG("coll:tuned:topo:build_chain WARNING invalid fanout of ZERO, forcing to 1 (pipeline)!");

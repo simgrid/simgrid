@@ -16,8 +16,8 @@ smpi_coll_tuned_bcast_flattree(void *buff, int count, MPI_Datatype data_type,
   int i, rank, num_procs;
   int tag = COLL_TAG_BCAST;
 
-  rank = smpi_comm_rank(comm);
-  num_procs = smpi_comm_size(comm);
+  rank = comm->rank();
+  num_procs = comm->size();
 
   if (rank != root) {
     smpi_mpi_recv(buff, count, data_type, root, tag, comm, MPI_STATUS_IGNORE);

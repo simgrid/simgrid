@@ -91,8 +91,8 @@ int smpi_coll_tuned_allgatherv_ompi_bruck(void *sbuf, int scount,
    char *tmpsend = NULL, *tmprecv = NULL;
    MPI_Datatype new_rdtype = MPI_DATATYPE_NULL, new_sdtype = MPI_DATATYPE_NULL;
 
-   unsigned int size = smpi_comm_size(comm);
-   unsigned int rank = smpi_comm_rank(comm);
+   unsigned int size = comm->size();
+   unsigned int rank = comm->rank();
 
    XBT_DEBUG(
                 "coll:tuned:allgather_ompi_bruck rank %d", rank);

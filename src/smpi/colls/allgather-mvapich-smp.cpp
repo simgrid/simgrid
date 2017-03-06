@@ -49,34 +49,34 @@ int smpi_coll_tuned_allgather_mvapich2_smp(void *sendbuf,int sendcnt, MPI_Dataty
     MPI_Aint recvtype_extent = 0;  /* Datatype extent */
     MPI_Comm shmem_comm, leader_comm;
 
-  if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
-    smpi_comm_init_smp(comm);
+  if(comm->get_leaders_comm()==MPI_COMM_NULL){
+    comm->init_smp();
   }
   
-    if(!smpi_comm_is_uniform(comm) || !smpi_comm_is_blocked(comm))
+    if(!comm->is_uniform() || !comm->is_blocked())
     THROWF(arg_error,0, "allgather MVAPICH2 smp algorithm can't be used with irregular deployment. Please insure that processes deployed on the same node are contiguous and that each node has the same number of processes");
   
     if (recvcnt == 0) {
         return MPI_SUCCESS;
     }
 
-    rank = smpi_comm_rank(comm);
-    size = smpi_comm_size(comm);
+    rank = comm->rank();
+    size = comm->size();
 
     /* extract the rank,size information for the intra-node communicator */
     recvtype_extent=smpi_datatype_get_extent(recvtype);
     
-    shmem_comm = smpi_comm_get_intra_comm(comm);
-    local_rank = smpi_comm_rank(shmem_comm);
-    local_size = smpi_comm_size(shmem_comm);
+    shmem_comm = comm->get_intra_comm();
+    local_rank = shmem_comm->rank();
+    local_size = shmem_comm->size();
 
     if (local_rank == 0) {
         /* Node leader. Extract the rank, size information for the leader communicator */
-        leader_comm = smpi_comm_get_leaders_comm(comm);
+        leader_comm = comm->get_leaders_comm();
         if(leader_comm==MPI_COMM_NULL){
           leader_comm = MPI_COMM_WORLD;
         }
-        leader_comm_size = smpi_comm_size(leader_comm);
+        leader_comm_size = leader_comm->size();
     }
 
     /*If there is just one node, after gather itself,
@@ -103,14 +103,14 @@ int smpi_coll_tuned_allgather_mvapich2_smp(void *sendbuf,int sendcnt, MPI_Dataty
     /* Exchange the data between the node leaders*/
     if (local_rank == 0 && (leader_comm_size > 1)) {
         /*When data in each socket is different*/
-        if (smpi_comm_is_uniform(comm) != 1) {
+        if (comm->is_uniform() != 1) {
 
             int *displs = NULL;
             int *recvcnts = NULL;
             int *node_sizes = NULL;
             int i = 0;
 
-            node_sizes = smpi_comm_get_non_uniform_map(comm);
+            node_sizes = comm->get_non_uniform_map();
 
             displs =  static_cast<int *>(xbt_malloc(sizeof (int) * leader_comm_size));
             recvcnts =  static_cast<int *>(xbt_malloc(sizeof (int) * leader_comm_size));
@@ -126,7 +126,7 @@ int smpi_coll_tuned_allgather_mvapich2_smp(void *sendbuf,int sendcnt, MPI_Dataty
             }
 
 
-            void* sendbuf=((char*)recvbuf)+smpi_datatype_get_extent(recvtype)*displs[smpi_comm_rank(leader_comm)];
+            void* sendbuf=((char*)recvbuf)+smpi_datatype_get_extent(recvtype)*displs[leader_comm->rank()];
 
             mpi_errno = mpi_coll_allgatherv_fun(sendbuf,
                                        (recvcnt*local_size),
@@ -137,7 +137,7 @@ int smpi_coll_tuned_allgather_mvapich2_smp(void *sendbuf,int sendcnt, MPI_Dataty
             xbt_free(displs);
             xbt_free(recvcnts);
         } else {
-        void* sendtmpbuf=((char*)recvbuf)+smpi_datatype_get_extent(recvtype)*(recvcnt*local_size)*smpi_comm_rank(leader_comm);
+        void* sendtmpbuf=((char*)recvbuf)+smpi_datatype_get_extent(recvtype)*(recvcnt*local_size)*leader_comm->rank();
         
           
 

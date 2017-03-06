@@ -56,8 +56,8 @@ static int MPIR_Reduce_knomial_trace(int root, int reduce_knomial_factor,
     int orig_mask=0x1; 
     int recv_iter=0, send_iter=0;
     int *knomial_reduce_src_array=NULL;
-    comm_size =  smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    comm_size =  comm->size();
+    rank = comm->rank();
 
     lroot = root;
     relative_rank = (rank - lroot + comm_size) % comm_size;
@@ -138,7 +138,7 @@ int smpi_coll_tuned_reduce_mvapich2_knomial (
 
     if (count == 0) return MPI_SUCCESS;
 
-    rank = smpi_comm_rank(comm);
+    rank = comm->rank();
 
     /* Create a temporary buffer */
 

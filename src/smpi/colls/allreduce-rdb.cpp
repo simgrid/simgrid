@@ -25,8 +25,8 @@ int smpi_coll_tuned_allreduce_rdb(void *sbuff, void *rbuff, int count,
      uop  = op_ptr->op;
      #endif
    */
-  nprocs=smpi_comm_size(comm);
-  rank=smpi_comm_rank(comm);
+  nprocs=comm->size();
+  rank=comm->rank();
 
   smpi_datatype_extent(dtype, &lb, &extent);
   tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);

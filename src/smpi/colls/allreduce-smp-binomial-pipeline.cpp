@@ -48,16 +48,16 @@ int smpi_coll_tuned_allreduce_smp_binomial_pipeline(void *send_buf,
   int tag = COLL_TAG_ALLREDUCE;
   int mask, src, dst;
   MPI_Status status;
-  if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
-    smpi_comm_init_smp(comm);
+  if(comm->get_leaders_comm()==MPI_COMM_NULL){
+    comm->init_smp();
   }
   int num_core=1;
-  if (smpi_comm_is_uniform(comm)){
-    num_core = smpi_comm_size(smpi_comm_get_intra_comm(comm));
+  if (comm->is_uniform()){
+    num_core = comm->get_intra_comm()->size();
   }
 
-  comm_size = smpi_comm_size(comm);
-  rank = smpi_comm_rank(comm);
+  comm_size = comm->size();
+  rank = comm->rank();
   MPI_Aint extent;
   extent = smpi_datatype_get_extent(dtype);
   tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);

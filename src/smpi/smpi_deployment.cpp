@@ -71,11 +71,11 @@ void smpi_deployment_register_process(const char* instance_id, int rank, int ind
 
   if(instance->comm_world == MPI_COMM_NULL){
     MPI_Group group = new simgrid::SMPI::Group(instance->size);
-    instance->comm_world = smpi_comm_new(group, nullptr);
+    instance->comm_world = new simgrid::SMPI::Comm(group, nullptr);
   }
   instance->present_processes++;
   index_to_process_data[index]=instance->index+rank;
-  smpi_comm_group(instance->comm_world)->set_mapping(index, rank);
+  instance->comm_world->group()->set_mapping(index, rank);
   *bar = instance->finalization_barrier;
   *comm = &instance->comm_world;
 }
@@ -86,7 +86,7 @@ void smpi_deployment_cleanup_instances(){
   char *name = nullptr;
   xbt_dict_foreach(smpi_instances, cursor, name, instance) {
     if(instance->comm_world!=MPI_COMM_NULL)
-      while (smpi_comm_group(instance->comm_world)->unuse() > 0);
+      while (instance->comm_world->group()->unuse() > 0);
     xbt_free(instance->comm_world);
     MSG_barrier_destroy(instance->finalization_barrier);
   }

@@ -207,7 +207,6 @@ set(SMPI_SRC
   src/smpi/colls/smpi_openmpi_selector.cpp
   src/smpi/colls/smpi_mvapich2_selector.cpp
   src/smpi/instr_smpi.cpp
-  src/smpi/forward.hpp
   src/smpi/smpi_base.cpp
   src/smpi/smpi_bench.cpp
   src/smpi/smpi_memory.cpp
@@ -671,6 +670,7 @@ set(headers_to_install
   include/smpi/smpi_main.h
   include/smpi/smpi_extended_traces.h
   include/smpi/smpi_extended_traces_fortran.h
+  include/smpi/forward.hpp
   include/surf/surf_routing.h
   include/xbt.h
   include/xbt/RngStream.h

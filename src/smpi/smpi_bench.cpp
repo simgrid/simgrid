@@ -340,7 +340,7 @@ static unsigned int private_sleep(double secs)
   smpi_bench_end();
 
   XBT_DEBUG("Sleep for: %lf secs", secs);
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = MPI_COMM_WORLD->rank();
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type=TRACING_SLEEPING;
   extra->sleep_duration=secs;

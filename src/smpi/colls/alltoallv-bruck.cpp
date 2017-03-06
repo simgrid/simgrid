@@ -26,8 +26,8 @@ int smpi_coll_tuned_alltoallv_bruck(void *sendbuf, int *sendcounts, int *senddis
   MPI_Request *requests;
 
   // FIXME: check implementation
-  rank = smpi_comm_rank(comm);
-  size = smpi_comm_size(comm);
+  rank = comm->rank();
+  size = comm->size();
   XBT_DEBUG("<%d> algorithm alltoall_bruck() called.", rank);
 
   smpi_datatype_extent(sendtype, &lb, &sendext);

@@ -25,12 +25,12 @@ smpi_coll_tuned_allgather_rhv(void *sbuf, int send_count,
   int curr_count;
 
   // get size of the communicator, followed by rank 
-  unsigned int num_procs = smpi_comm_size(comm);
+  unsigned int num_procs = comm->size();
 
   if((num_procs&(num_procs-1)))
     THROWF(arg_error,0, "allgather rhv algorithm can't be used with non power of two number of processes ! ");
 
-  unsigned int rank = smpi_comm_rank(comm);
+  unsigned int rank = comm->rank();
 
   // get size of single element's type for send buffer and recv buffer
   s_extent = smpi_datatype_get_extent(send_type);

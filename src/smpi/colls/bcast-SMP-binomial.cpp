@@ -16,15 +16,15 @@ int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
   MPI_Status status;
   int tag = COLL_TAG_BCAST;
 
-  size = smpi_comm_size(comm);
-  rank = smpi_comm_rank(comm);
+  size = comm->size();
+  rank = comm->rank();
 
-  if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
-    smpi_comm_init_smp(comm);
+  if(comm->get_leaders_comm()==MPI_COMM_NULL){
+    comm->init_smp();
   }
   int num_core=1;
-  if (smpi_comm_is_uniform(comm)){
-    num_core = smpi_comm_size(smpi_comm_get_intra_comm(comm));
+  if (comm->is_uniform()){
+    num_core = comm->get_intra_comm()->size();
   }else{
     //implementation buggy in this case
     return smpi_coll_tuned_bcast_mpich( buf , count, datatype,

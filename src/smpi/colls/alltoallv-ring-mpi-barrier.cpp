@@ -40,8 +40,8 @@ smpi_coll_tuned_alltoallv_ring_mpi_barrier(void *send_buff, int *send_counts, in
   char *send_ptr = (char *) send_buff;
   char *recv_ptr = (char *) recv_buff;
 
-  rank = smpi_comm_rank(comm);
-  num_procs = smpi_comm_size(comm);
+  rank = comm->rank();
+  num_procs = comm->size();
   send_chunk = smpi_datatype_get_extent(send_type);
   recv_chunk = smpi_datatype_get_extent(recv_type);
 

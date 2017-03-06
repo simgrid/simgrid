@@ -2246,13 +2246,13 @@ intel_tuning_table_element intel_alltoallv_table[] =
     size_t block_dsize = total_message_size*smpi_datatype_size(recv_type);
     
 #define SIZECOMP_gather\
-  int rank = smpi_comm_rank(comm);\
+  int rank = comm->rank();\
   size_t block_dsize = (send_buff == MPI_IN_PLACE || rank ==root) ?\
                 recv_count * smpi_datatype_size(recv_type) :\
                 send_count * smpi_datatype_size(send_type);
 
 #define SIZECOMP_scatter\
-  int rank = smpi_comm_rank(comm);\
+  int rank = comm->rank();\
   size_t block_dsize = (sendbuf == MPI_IN_PLACE || rank !=root ) ?\
                 recvcount * smpi_datatype_size(recvtype) :\
                 sendcount * smpi_datatype_size(sendtype);
@@ -2263,17 +2263,17 @@ intel_tuning_table_element intel_alltoallv_table[] =
 #define IMPI_COLL_SELECT(cat, ret, args, args2)\
 ret smpi_coll_tuned_ ## cat ## _impi (COLL_UNPAREN args)\
 {\
-    int comm_size = smpi_comm_size(comm);\
+    int comm_size = comm->size();\
     int i =0;\
     SIZECOMP_ ## cat\
     i=0;\
     int j =0, k=0;\
-    if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){\
-      smpi_comm_init_smp(comm);\
+    if(comm->get_leaders_comm()==MPI_COMM_NULL){\
+      comm->init_smp();\
     }\
     int local_size=1;\
-    if (smpi_comm_is_uniform(comm)) {\
-        local_size = smpi_comm_size(smpi_comm_get_intra_comm(comm));\
+    if (comm->is_uniform()) {\
+        local_size = comm->get_intra_comm()->size();\
     }\
     while(i < INTEL_MAX_NB_PPN &&\
     local_size!=intel_ ## cat ## _table[i].ppn)\

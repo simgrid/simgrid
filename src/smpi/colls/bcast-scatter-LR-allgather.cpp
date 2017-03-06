@@ -79,8 +79,8 @@ smpi_coll_tuned_bcast_scatter_LR_allgather(void *buff, int count,
   int scatter_size, left, right, next_src, *recv_counts, *disps;
   int tag = COLL_TAG_BCAST;
 
-  rank = smpi_comm_rank(comm);
-  num_procs = smpi_comm_size(comm);
+  rank = comm->rank();
+  num_procs = comm->size();
   extent = smpi_datatype_get_extent(data_type);
 
 

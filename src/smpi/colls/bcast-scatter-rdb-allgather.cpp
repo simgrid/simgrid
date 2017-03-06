@@ -13,8 +13,8 @@ static int scatter_for_bcast(
     int mpi_errno = MPI_SUCCESS;
     int scatter_size, curr_size, recv_size = 0, send_size;
 
-    comm_size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    comm_size = comm->size();
+    rank = comm->rank();
     relative_rank = (rank >= root) ? rank - root : rank - root + comm_size;
 
     /* use long message algorithm: binomial tree scatter followed by an allgather */
@@ -114,8 +114,8 @@ smpi_coll_tuned_bcast_scatter_rdb_allgather (
     MPI_Aint true_extent, true_lb;
     void *tmp_buf;
 
-    comm_size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    comm_size = comm->size();
+    rank = comm->rank();
     relative_rank = (rank >= root) ? rank - root : rank - root + comm_size;
 
     /* If there is only one process, return */

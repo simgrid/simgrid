@@ -26,8 +26,8 @@ smpi_coll_tuned_alltoallv_ompi_basic_linear(void *sbuf, int *scounts, int *sdisp
     int nreqs;
     ptrdiff_t sext, rext;
     MPI_Request *preq;
-    size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    size = comm->size();
+    rank = comm->rank();
     MPI_Request *ireqs= static_cast<MPI_Request*>(xbt_malloc(sizeof(MPI_Request) * size * 2));
     XBT_DEBUG(
                  "coll:tuned:alltoallv_intra_basic_linear rank %d", rank);

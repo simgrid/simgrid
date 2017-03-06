@@ -28,7 +28,7 @@ int smpi_coll_tuned_alltoall_mvapich2( void *sendbuf, int sendcount,
   int range = 0;
   int range_threshold = 0;
   int conf_index = 0;
-  comm_size =  smpi_comm_size(comm);
+  comm_size =  comm->size();
 
   sendtype_size=smpi_datatype_size(sendtype);
   recvtype_size=smpi_datatype_size(recvtype);
@@ -98,21 +98,21 @@ int smpi_coll_tuned_allgather_mvapich2(void *sendbuf, int sendcount, MPI_Datatyp
   MPI_Comm shmem_comm;
   //MPI_Comm *shmem_commptr=NULL;
   /* Get the size of the communicator */
-  comm_size = smpi_comm_size(comm);
+  comm_size = comm->size();
   recvtype_size=smpi_datatype_size(recvtype);
   nbytes = recvtype_size * recvcount;
 
   if(mv2_allgather_table_ppn_conf==NULL)
     init_mv2_allgather_tables_stampede();
     
-  if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
-    smpi_comm_init_smp(comm);
+  if(comm->get_leaders_comm()==MPI_COMM_NULL){
+    comm->init_smp();
   }
 
   int i;
-  if (smpi_comm_is_uniform(comm)){
-    shmem_comm = smpi_comm_get_intra_comm(comm);
-    local_size = smpi_comm_size(shmem_comm);
+  if (comm->is_uniform()){
+    shmem_comm = comm->get_intra_comm();
+    local_size = shmem_comm->size();
     i = 0;
     if (mv2_allgather_table_ppn_conf[0] == -1) {
       // Indicating user defined tuning
@@ -158,7 +158,7 @@ int smpi_coll_tuned_allgather_mvapich2(void *sendbuf, int sendcount, MPI_Datatyp
   /* intracommunicator */
   if(is_two_level ==1){
     if(partial_sub_ok ==1){
-      if (smpi_comm_is_blocked(comm)){
+      if (comm->is_blocked()){
       mpi_errno = MPIR_2lvl_Allgather_MV2(sendbuf, sendcount, sendtype,
                             recvbuf, recvcount, recvtype,
                             comm);
@@ -205,8 +205,8 @@ int smpi_coll_tuned_gather_mvapich2(void *sendbuf,
   int comm_size = 0;
   int recvtype_size, sendtype_size;
   int rank = -1;
-  comm_size = smpi_comm_size(comm);
-  rank = smpi_comm_rank(comm);
+  comm_size = comm->size();
+  rank = comm->rank();
 
   if (rank == root) {
       recvtype_size=smpi_datatype_size(recvtype);
@@ -239,7 +239,7 @@ int smpi_coll_tuned_gather_mvapich2(void *sendbuf,
       range_intra_threshold++;
   }
   
-    if (smpi_comm_is_blocked(comm) ) {
+    if (comm->is_blocked() ) {
         // Set intra-node function pt for gather_two_level 
         MV2_Gather_intra_node_function = 
                               mv2_gather_thresholds_table[range].intra_node[range_intra_threshold].
@@ -276,7 +276,7 @@ int smpi_coll_tuned_allgatherv_mvapich2(void *sendbuf, int sendcount, MPI_Dataty
   if(mv2_allgatherv_thresholds_table==NULL)
     init_mv2_allgatherv_tables_stampede();
 
-  comm_size = smpi_comm_size(comm);
+  comm_size = comm->size();
   total_count = 0;
   for (i = 0; i < comm_size; i++)
     total_count += recvcounts[i];
@@ -341,8 +341,8 @@ int smpi_coll_tuned_allreduce_mvapich2(void *sendbuf,
   //int rank = 0,
   int comm_size = 0;
 
-  comm_size = smpi_comm_size(comm);
-  //rank = smpi_comm_rank(comm);
+  comm_size = comm->size();
+  //rank = comm->rank();
 
   if (count == 0) {
       return MPI_SUCCESS;
@@ -426,8 +426,8 @@ int smpi_coll_tuned_allreduce_mvapich2(void *sendbuf,
     if(is_two_level == 1){
         // check if shm is ready, if not use other algorithm first
         if (is_commutative) {
-          if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
-            smpi_comm_init_smp(comm);
+          if(comm->get_leaders_comm()==MPI_COMM_NULL){
+            comm->init_smp();
           }
           mpi_errno = MPIR_Allreduce_two_level_MV2(sendbuf, recvbuf, count,
                                                      datatype, op, comm);
@@ -497,13 +497,13 @@ int smpi_coll_tuned_bcast_mvapich2(void *buffer,
 
     if (count == 0)
         return MPI_SUCCESS;
-    if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
-      smpi_comm_init_smp(comm);
+    if(comm->get_leaders_comm()==MPI_COMM_NULL){
+      comm->init_smp();
     }
     if(!mv2_bcast_thresholds_table)
       init_mv2_bcast_tables_stampede();
-    comm_size = smpi_comm_size(comm);
-    //rank = smpi_comm_rank(comm);
+    comm_size = comm->size();
+    //rank = comm->rank();
 
     is_contig=1;
 /*    if (HANDLE_GET_KIND(datatype) == HANDLE_KIND_BUILTIN)*/
@@ -625,7 +625,7 @@ int smpi_coll_tuned_bcast_mvapich2(void *buffer,
         } else 
 #endif /* defined(CHANNEL_MRAIL_GEN2) */
         { 
-            shmem_comm = smpi_comm_get_intra_comm(comm);
+            shmem_comm = comm->get_intra_comm();
             if (!is_contig || !is_homogeneous) {
                 mpi_errno =
                     MPIR_Bcast_tune_inter_node_helper_MV2(tmp_buf, nbytes, MPI_BYTE,
@@ -697,7 +697,7 @@ int smpi_coll_tuned_reduce_mvapich2( void *sendbuf,
   int sendtype_size;
   int is_two_level = 0;
 
-  comm_size = smpi_comm_size(comm);
+  comm_size = comm->size();
   sendtype_size=smpi_datatype_size(datatype);
   nbytes = count * sendtype_size;
 
@@ -758,8 +758,8 @@ int smpi_coll_tuned_reduce_mvapich2( void *sendbuf,
   if(is_two_level == 1)
     {
        if (is_commutative == 1) {
-         if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
-           smpi_comm_init_smp(comm);
+         if(comm->get_leaders_comm()==MPI_COMM_NULL){
+           comm->init_smp();
          }
          mpi_errno = MPIR_Reduce_two_level_helper_MV2(sendbuf, recvbuf, count, 
                                            datatype, op, root, comm);
@@ -801,7 +801,7 @@ int smpi_coll_tuned_reduce_scatter_mvapich2(void *sendbuf, void *recvbuf, int *r
     MPI_Comm comm)
 {
   int mpi_errno = MPI_SUCCESS;
-  int i = 0, comm_size = smpi_comm_size(comm), total_count = 0, type_size =
+  int i = 0, comm_size = comm->size(), total_count = 0, type_size =
       0, nbytes = 0;
   int range = 0;
   int range_threshold = 0;
@@ -893,13 +893,13 @@ int smpi_coll_tuned_scatter_mvapich2(void *sendbuf,
   if(mv2_scatter_thresholds_table==NULL)
     init_mv2_scatter_tables_stampede();
 
-  if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
-    smpi_comm_init_smp(comm);
+  if(comm->get_leaders_comm()==MPI_COMM_NULL){
+    comm->init_smp();
   }
   
-  comm_size = smpi_comm_size(comm);
+  comm_size = comm->size();
 
-  rank = smpi_comm_rank(comm);
+  rank = comm->rank();
 
   if (rank == root) {
       sendtype_size=smpi_datatype_size(sendtype);
@@ -910,10 +910,10 @@ int smpi_coll_tuned_scatter_mvapich2(void *sendbuf,
   }
   
     // check if safe to use partial subscription mode 
-    if (smpi_comm_is_uniform(comm)) {
+    if (comm->is_uniform()) {
 
-        shmem_comm = smpi_comm_get_intra_comm(comm);
-        local_size = smpi_comm_size(shmem_comm);
+        shmem_comm = comm->get_intra_comm();
+        local_size = shmem_comm->size();
         i = 0;
         if (mv2_scatter_table_ppn_conf[0] == -1) {
             // Indicating user defined tuning 
@@ -982,7 +982,7 @@ int smpi_coll_tuned_scatter_mvapich2(void *sendbuf,
 
   if( (MV2_Scatter_function == &MPIR_Scatter_MV2_two_level_Direct) ||
       (MV2_Scatter_function == &MPIR_Scatter_MV2_two_level_Binomial)) {
-       if( smpi_comm_is_blocked(comm)) {
+       if( comm->is_blocked()) {
              MV2_Scatter_intra_function = mv2_scatter_thresholds_table[conf_index][range].intra_node[range_threshold_intra]
                                 .MV2_pt_Scatter_function;
 

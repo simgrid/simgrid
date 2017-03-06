@@ -87,8 +87,8 @@ int smpi_coll_tuned_bcast_mvapich2_inter_node(void *buffer,
     int leader_root, leader_of_root;
 
 
-    rank = smpi_comm_rank(comm);
-    //comm_size = smpi_comm_size(comm);
+    rank = comm->rank();
+    //comm_size = comm->size();
 
 
     if (MV2_Bcast_function==NULL){
@@ -99,23 +99,23 @@ int smpi_coll_tuned_bcast_mvapich2_inter_node(void *buffer,
       MV2_Bcast_intra_node_function= smpi_coll_tuned_bcast_mpich;
     }
     
-    if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
-      smpi_comm_init_smp(comm);
+    if(comm->get_leaders_comm()==MPI_COMM_NULL){
+      comm->init_smp();
     }
     
-    shmem_comm = smpi_comm_get_intra_comm(comm);
-    local_rank = smpi_comm_rank(shmem_comm);
-    local_size = smpi_comm_size(shmem_comm);
+    shmem_comm = comm->get_intra_comm();
+    local_rank = shmem_comm->rank();
+    local_size = shmem_comm->size();
 
-    leader_comm = smpi_comm_get_leaders_comm(comm);
+    leader_comm = comm->get_leaders_comm();
 
     if ((local_rank == 0) && (local_size > 1)) {
-      global_rank = smpi_comm_rank(leader_comm);
+      global_rank = leader_comm->rank();
     }
 
-    int* leaders_map = smpi_comm_get_leaders_map(comm);
-    leader_of_root = smpi_comm_group(comm)->rank(leaders_map[root]);
-    leader_root = smpi_comm_group(leader_comm)->rank(leaders_map[root]);
+    int* leaders_map = comm->get_leaders_map();
+    leader_of_root = comm->group()->rank(leaders_map[root]);
+    leader_root = leader_comm->group()->rank(leaders_map[root]);
     
     
     if (local_size > 1) {
@@ -141,7 +141,7 @@ int smpi_coll_tuned_bcast_mvapich2_inter_node(void *buffer,
 #endif
 /*
     if (local_rank == 0) {
-        leader_comm = smpi_comm_get_leaders_comm(comm);
+        leader_comm = comm->get_leaders_comm();
         root = leader_root;
     }
 
@@ -188,12 +188,12 @@ int smpi_coll_tuned_bcast_mvapich2_knomial_intra_node(void *buffer,
       MV2_Bcast_intra_node_function= smpi_coll_tuned_bcast_mpich;
     }
     
-    if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
-      smpi_comm_init_smp(comm);
+    if(comm->get_leaders_comm()==MPI_COMM_NULL){
+      comm->init_smp();
     }
     
-    local_size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    local_size = comm->size();
+    rank = comm->rank();
 
 
     reqarray=(MPI_Request *)xbt_malloc(2 * mv2_intra_node_knomial_factor * sizeof (MPI_Request));
@@ -269,12 +269,12 @@ int smpi_coll_tuned_bcast_mvapich2_intra_node(void *buffer,
       MV2_Bcast_intra_node_function= smpi_coll_tuned_bcast_mpich;
     }
     
-    if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
-      smpi_comm_init_smp(comm);
+    if(comm->get_leaders_comm()==MPI_COMM_NULL){
+      comm->init_smp();
     }
     
-    comm_size = smpi_comm_size(comm);
-   // rank = smpi_comm_rank(comm);
+    comm_size = comm->size();
+   // rank = comm->rank();
 /*
     if (HANDLE_GET_KIND(datatype) == HANDLE_KIND_BUILTIN)*/
         is_contig = 1;
@@ -330,7 +330,7 @@ int smpi_coll_tuned_bcast_mvapich2_intra_node(void *buffer,
 /*            }*/
         }
 
-        shmem_comm = smpi_comm_get_intra_comm(comm);
+        shmem_comm = comm->get_intra_comm();
         if (!is_contig || !is_homogeneous) {
             mpi_errno =
                 MPIR_Bcast_inter_node_helper_MV2(tmp_buf, nbytes, MPI_BYTE,

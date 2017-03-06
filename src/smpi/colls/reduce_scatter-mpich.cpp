@@ -32,8 +32,8 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
     int mpi_errno = MPI_SUCCESS;
     int total_count, dst, src;
     int is_commutative;
-    comm_size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    comm_size = comm->size();
+    rank = comm->rank();
 
     extent =smpi_datatype_get_extent(datatype);
     smpi_datatype_extent(datatype, &true_lb, &true_extent);
@@ -152,8 +152,8 @@ int smpi_coll_tuned_reduce_scatter_mpich_noncomm(void *sendbuf, void *recvbuf, i
                               MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
     int mpi_errno = MPI_SUCCESS;
-    int comm_size = smpi_comm_size(comm) ;
-    int rank = smpi_comm_rank(comm);
+    int comm_size = comm->size() ;
+    int rank = comm->rank();
     int pof2;
     int log2_comm_size;
     int i, k;
@@ -279,8 +279,8 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
     int received;
     MPI_Datatype sendtype, recvtype;
     int nprocs_completed, tmp_mask, tree_root, is_commutative=0;
-    comm_size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    comm_size = comm->size();
+    rank = comm->rank();
 
     extent =smpi_datatype_get_extent(datatype);
     smpi_datatype_extent(datatype, &true_lb, &true_extent);

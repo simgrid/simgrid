@@ -87,8 +87,8 @@ int smpi_coll_tuned_allgather_bruck(void *send_buff, int send_count,
   char *recv_ptr = (char *) recv_buff;
 
   // get size of the communicator, followed by rank 
-  num_procs = smpi_comm_size(comm);
-  rank = smpi_comm_rank(comm);
+  num_procs = comm->size();
+  rank = comm->rank();
 
   // get size of single element's type for recv buffer
   recv_extent = smpi_datatype_get_extent(recv_type);

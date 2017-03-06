@@ -43,8 +43,8 @@ smpi_coll_tuned_alltoall_pair_light_barrier(void *send_buff, int send_count,
   char *send_ptr = (char *) send_buff;
   char *recv_ptr = (char *) recv_buff;
 
-  rank = smpi_comm_rank(comm);
-  num_procs = smpi_comm_size(comm);
+  rank = comm->rank();
+  num_procs = comm->size();
 
   if((num_procs&(num_procs-1)))
     THROWF(arg_error,0, "alltoall pair algorithm can't be used with non power of two number of processes ! ");

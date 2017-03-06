@@ -43,8 +43,8 @@ int smpi_coll_tuned_allreduce_mvapich2_rs(void *sendbuf,
 
     /* homogeneous */
 
-    int comm_size =  smpi_comm_size(comm);
-    int rank = smpi_comm_rank(comm);
+    int comm_size =  comm->size();
+    int rank = comm->rank();
 
     is_commutative = smpi_op_is_commute(op);
 

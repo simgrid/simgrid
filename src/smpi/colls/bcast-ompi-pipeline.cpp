@@ -42,8 +42,8 @@ int smpi_coll_tuned_bcast_ompi_pipeline( void* buffer,
      */
     type_size = smpi_datatype_size(datatype);
 
-    size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    size = comm->size();
+    rank = comm->rank();
     if(size==1)return MPI_SUCCESS;
 
 
@@ -72,7 +72,7 @@ int smpi_coll_tuned_bcast_ompi_pipeline( void* buffer,
     COLL_TUNED_COMPUTED_SEGCOUNT( segsize, type_size, count_by_segment );
 
     XBT_DEBUG("coll:tuned:bcast_intra_pipeline rank %d ss %5zu type_size %lu count_by_segment %d",
-                 smpi_comm_rank(comm), segsize, (unsigned long)type_size, count_by_segment);
+                 comm->rank(), segsize, (unsigned long)type_size, count_by_segment);
 
 
 

@@ -66,11 +66,11 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_direct(void *sendbuf,
     if(MV2_Scatter_intra_function==NULL)
       MV2_Scatter_intra_function=smpi_coll_tuned_scatter_mpich;
     
-    if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
-      smpi_comm_init_smp(comm);
+    if(comm->get_leaders_comm()==MPI_COMM_NULL){
+      comm->init_smp();
     }
-    comm_size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    comm_size = comm->size();
+    rank = comm->rank();
 
     if (((rank == root) && (recvcnt == 0))
         || ((rank != root) && (sendcnt == 0))) {
@@ -79,16 +79,16 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_direct(void *sendbuf,
 
     /* extract the rank,size information for the intra-node
      * communicator */
-    shmem_comm = smpi_comm_get_intra_comm(comm);
-    local_rank = smpi_comm_rank(shmem_comm);
-    local_size = smpi_comm_size(shmem_comm);
+    shmem_comm = comm->get_intra_comm();
+    local_rank = shmem_comm->rank();
+    local_size = shmem_comm->size();
 
     if (local_rank == 0) {
         /* Node leader. Extract the rank, size information for the leader
          * communicator */
-        leader_comm = smpi_comm_get_leaders_comm(comm);
-        leader_comm_size = smpi_comm_size(leader_comm);
-        leader_comm_rank = smpi_comm_rank(leader_comm);
+        leader_comm = comm->get_leaders_comm();
+        leader_comm_size = leader_comm->size();
+        leader_comm_rank = leader_comm->rank();
     }
 
     if (local_size == comm_size) {
@@ -112,10 +112,10 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_direct(void *sendbuf,
             tmp_buf = smpi_get_tmp_sendbuffer(nbytes * local_size);
         }
 
-        leader_comm = smpi_comm_get_leaders_comm(comm);
-        int* leaders_map = smpi_comm_get_leaders_map(comm);
-        leader_of_root = smpi_comm_group(comm)->rank(leaders_map[root]);
-        leader_root = smpi_comm_group(leader_comm)->rank(leaders_map[root]);
+        leader_comm = comm->get_leaders_comm();
+        int* leaders_map = comm->get_leaders_map();
+        leader_of_root = comm->group()->rank(leaders_map[root]);
+        leader_root = leader_comm->group()->rank(leaders_map[root]);
         /* leader_root is the rank of the leader of the root in leader_comm.
          * leader_root is to be used as the root of the inter-leader gather ops
          */
@@ -139,12 +139,12 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_direct(void *sendbuf,
         }
 
         if (leader_comm_size > 1 && local_rank == 0) {
-            if (!smpi_comm_is_uniform(comm)) {
+            if (!comm->is_uniform()) {
                 int *displs = NULL;
                 int *sendcnts = NULL;
                 int *node_sizes;
                 int i = 0;
-                node_sizes = smpi_comm_get_non_uniform_map(comm);
+                node_sizes = comm->get_non_uniform_map();
 
                 if (root != leader_of_root) {
                     if (leader_comm_rank == leader_root) {
@@ -250,11 +250,11 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_binomial(void *sendbuf,
     if(MV2_Scatter_intra_function==NULL)
       MV2_Scatter_intra_function=smpi_coll_tuned_scatter_mpich;
     
-    if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
-      smpi_comm_init_smp(comm);
+    if(comm->get_leaders_comm()==MPI_COMM_NULL){
+      comm->init_smp();
     }
-    comm_size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    comm_size = comm->size();
+    rank = comm->rank();
 
     if (((rank == root) && (recvcnt == 0))
         || ((rank != root) && (sendcnt == 0))) {
@@ -263,16 +263,16 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_binomial(void *sendbuf,
 
     /* extract the rank,size information for the intra-node
      * communicator */
-    shmem_comm = smpi_comm_get_intra_comm(comm);
-    local_rank = smpi_comm_rank(shmem_comm);
-    local_size = smpi_comm_size(shmem_comm);
+    shmem_comm = comm->get_intra_comm();
+    local_rank = shmem_comm->rank();
+    local_size = shmem_comm->size();
 
     if (local_rank == 0) {
         /* Node leader. Extract the rank, size information for the leader
          * communicator */
-        leader_comm = smpi_comm_get_leaders_comm(comm);
-        leader_comm_size = smpi_comm_size(leader_comm);
-        leader_comm_rank = smpi_comm_rank(leader_comm);
+        leader_comm = comm->get_leaders_comm();
+        leader_comm_size = leader_comm->size();
+        leader_comm_rank = leader_comm->rank();
     }
 
     if (local_size == comm_size) {
@@ -295,10 +295,10 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_binomial(void *sendbuf,
             /* Node leader, allocate tmp_buffer */
             tmp_buf = smpi_get_tmp_sendbuffer(nbytes * local_size);
         }
-        leader_comm = smpi_comm_get_leaders_comm(comm);
-        int* leaders_map = smpi_comm_get_leaders_map(comm);
-        leader_of_root = smpi_comm_group(comm)->rank(leaders_map[root]);
-        leader_root = smpi_comm_group(leader_comm)->rank(leaders_map[root]);
+        leader_comm = comm->get_leaders_comm();
+        int* leaders_map = comm->get_leaders_map();
+        leader_of_root = comm->group()->rank(leaders_map[root]);
+        leader_root = leader_comm->group()->rank(leaders_map[root]);
         /* leader_root is the rank of the leader of the root in leader_comm.
          * leader_root is to be used as the root of the inter-leader gather ops
          */
@@ -320,12 +320,12 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_binomial(void *sendbuf,
         }
 
         if (leader_comm_size > 1 && local_rank == 0) {
-            if (!smpi_comm_is_uniform(comm)) {
+            if (!comm->is_uniform()) {
                 int *displs = NULL;
                 int *sendcnts = NULL;
                 int *node_sizes;
                 int i = 0;
-                node_sizes = smpi_comm_get_non_uniform_map(comm);
+                node_sizes = comm->get_non_uniform_map();
 
                 if (root != leader_of_root) {
                     if (leader_comm_rank == leader_root) {

@@ -60,7 +60,7 @@ int smpi_coll_tuned_allreduce_mpich(void *sbuf, void *rbuf, int count,
                         MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
 {
     size_t dsize, block_dsize;
-    int comm_size = smpi_comm_size(comm);
+    int comm_size = comm->size();
     const size_t large_message = 2048; //MPIR_PARAM_ALLREDUCE_SHORT_MSG_SIZE
 
     dsize = smpi_datatype_size(dtype);
@@ -140,7 +140,7 @@ int smpi_coll_tuned_alltoall_mpich( void *sbuf, int scount,
 {
     int communicator_size;
     size_t dsize, block_dsize;
-    communicator_size = smpi_comm_size(comm);
+    communicator_size = comm->size();
 
     unsigned int short_size=256;
     unsigned int medium_size=32768;
@@ -257,7 +257,7 @@ int smpi_coll_tuned_bcast_mpich(void *buff, int count,
     //int segsize = 0;
     size_t message_size, dsize;
 
-    communicator_size = smpi_comm_size(comm);
+    communicator_size = comm->size();
 
     /* else we need data size for decision function */
     dsize = smpi_datatype_size(datatype);
@@ -348,7 +348,7 @@ int smpi_coll_tuned_reduce_mpich( void *sendbuf, void *recvbuf,
     int communicator_size=0;
     //int segsize = 0;
     size_t message_size, dsize;
-    communicator_size = smpi_comm_size(comm);
+    communicator_size = comm->size();
 
     /* need data size for decision function */
     dsize=smpi_datatype_size(datatype);
@@ -430,7 +430,7 @@ int smpi_coll_tuned_reduce_scatter_mpich( void *sbuf, void *rbuf,
 
     XBT_DEBUG("smpi_coll_tuned_reduce_scatter_mpich");
     
-    comm_size = smpi_comm_size(comm);
+    comm_size = comm->size();
     // We need data size for decision function 
     total_message_size = 0;
     for (i = 0; i < comm_size; i++) { 
@@ -521,7 +521,7 @@ int smpi_coll_tuned_allgather_mpich(void *sbuf, int scount,
     int communicator_size, pow2_size;
     size_t dsize, total_dsize;
 
-    communicator_size = smpi_comm_size(comm);
+    communicator_size = comm->size();
 
     /* Determine complete data size */
     dsize=smpi_datatype_size(sdtype);
@@ -600,7 +600,7 @@ int smpi_coll_tuned_allgatherv_mpich(void *sbuf, int scount,
     int communicator_size, pow2_size,i;
     size_t total_dsize;
 
-    communicator_size = smpi_comm_size(comm);
+    communicator_size = comm->size();
 
     /* Determine complete data size */
     total_dsize = 0;
@@ -689,7 +689,7 @@ int smpi_coll_tuned_scatter_mpich(void *sbuf, int scount,
                                             int root, MPI_Comm  comm
                                             )
 {
-  if(smpi_comm_rank(comm)!=root){
+  if(comm->rank()!=root){
       sbuf=xbt_malloc(rcount*smpi_datatype_get_extent(rdtype));
       scount=rcount;
       sdtype=rdtype;
@@ -697,7 +697,7 @@ int smpi_coll_tuned_scatter_mpich(void *sbuf, int scount,
   int ret= smpi_coll_tuned_scatter_ompi_binomial (sbuf, scount, sdtype,
                                                        rbuf, rcount, rdtype, 
                                                        root, comm);
-  if(smpi_comm_rank(comm)!=root){
+  if(comm->rank()!=root){
       xbt_free(sbuf);
   }
   return ret;

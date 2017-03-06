@@ -80,8 +80,8 @@ smpi_coll_tuned_allgather_spreading_simple(void *send_buff, int send_count,
   MPI_Status status;
   char *recv_ptr = (char *) recv_buff;
 
-  rank = smpi_comm_rank(comm);
-  num_procs = smpi_comm_size(comm);
+  rank = comm->rank();
+  num_procs = comm->size();
   extent = smpi_datatype_get_extent(send_type);
 
   num_reqs = (2 * num_procs) - 2;

@@ -26,8 +26,8 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
     send_offset, recv_offset, last_recv_cnt=0, nprocs_completed, k,
     offset, tmp_mask, tree_root;
 
-  unsigned int comm_size = smpi_comm_size(comm);
-  unsigned int rank = smpi_comm_rank(comm);
+  unsigned int comm_size = comm->size();
+  unsigned int rank = comm->rank();
 
   total_count = 0;
   for (i=0; i<comm_size; i++)

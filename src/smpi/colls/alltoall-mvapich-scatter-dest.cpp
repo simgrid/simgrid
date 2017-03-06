@@ -61,8 +61,8 @@ int smpi_coll_tuned_alltoall_mvapich2_scatter_dest(
     
     if (recvcount == 0) return MPI_SUCCESS;
     
-    comm_size =  smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    comm_size =  comm->size();
+    rank = comm->rank();
     
     /* Get extent of send and recv types */
     recvtype_extent = smpi_datatype_get_extent(recvtype);

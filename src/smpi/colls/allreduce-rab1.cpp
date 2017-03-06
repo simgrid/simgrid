@@ -20,8 +20,8 @@ int smpi_coll_tuned_allreduce_rab1(void *sbuff, void *rbuff,
 
   void *recv, *tmp_buf;
 
-  int rank = smpi_comm_rank(comm);
-  unsigned int nprocs = smpi_comm_size(comm);
+  int rank = comm->rank();
+  unsigned int nprocs = comm->size();
 
   if((nprocs&(nprocs-1)))
     THROWF(arg_error,0, "allreduce rab1 algorithm can't be used with non power of two number of processes ! ");

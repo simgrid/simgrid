@@ -50,8 +50,8 @@ int smpi_coll_tuned_barrier_ompi_doublering(MPI_Comm comm
     int left, right;
 
 
-    rank = smpi_comm_rank(comm);
-    size = smpi_comm_size(comm);
+    rank = comm->rank();
+    size = comm->size();
 
     XBT_DEBUG("ompi_coll_tuned_barrier_ompi_doublering rank %d", rank);
 
@@ -110,8 +110,8 @@ int smpi_coll_tuned_barrier_ompi_recursivedoubling(MPI_Comm comm
     int rank, size, adjsize;
     int mask, remote;
 
-    rank = smpi_comm_rank(comm);
-    size = smpi_comm_size(comm);
+    rank = comm->rank();
+    size = comm->size();
     XBT_DEBUG(
                  "ompi_coll_tuned_barrier_ompi_recursivedoubling rank %d", 
                  rank);
@@ -185,8 +185,8 @@ int smpi_coll_tuned_barrier_ompi_bruck(MPI_Comm comm
     int rank, size;
     int distance, to, from;
 
-    rank = smpi_comm_rank(comm);
-    size = smpi_comm_size(comm);
+    rank = comm->rank();
+    size = comm->size();
     XBT_DEBUG(
                  "ompi_coll_tuned_barrier_ompi_bruck rank %d", rank);
 
@@ -217,7 +217,7 @@ int smpi_coll_tuned_barrier_ompi_two_procs(MPI_Comm comm
 {
     int remote;
 
-    remote = smpi_comm_rank(comm);
+    remote = comm->rank();
     XBT_DEBUG(
                  "ompi_coll_tuned_barrier_ompi_two_procs rank %d", remote);
     remote = (remote + 1) & 0x1;
@@ -248,8 +248,8 @@ int smpi_coll_tuned_barrier_ompi_two_procs(MPI_Comm comm
 int smpi_coll_tuned_barrier_ompi_basic_linear(MPI_Comm comm)
 {
     int i;
-    int size = smpi_comm_size(comm);
-    int rank = smpi_comm_rank(comm);
+    int size = comm->size();
+    int rank = comm->rank();
 
     /* All non-root send & receive zero-length message. */
 
@@ -302,8 +302,8 @@ int smpi_coll_tuned_barrier_ompi_tree(MPI_Comm comm)
     int rank, size, depth;
     int jump, partner;
 
-    rank = smpi_comm_rank(comm);
-    size = smpi_comm_size(comm);
+    rank = comm->rank();
+    size = comm->size();
     XBT_DEBUG(
                  "ompi_coll_tuned_barrier_ompi_tree %d", 
                  rank);

@@ -18,8 +18,8 @@ smpi_coll_tuned_allgather_NTSLR(void *sbuf, int scount, MPI_Datatype stype,
   int send_offset, recv_offset;
   int tag = COLL_TAG_ALLGATHER;
 
-  rank = smpi_comm_rank(comm);
-  size = smpi_comm_size(comm);
+  rank = comm->rank();
+  size = comm->size();
   rextent = smpi_datatype_get_extent(rtype);
   sextent = smpi_datatype_get_extent(stype);
 

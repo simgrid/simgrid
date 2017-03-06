@@ -43,8 +43,8 @@ smpi_coll_tuned_alltoall_bruck(void *send_buff, int send_count,
   char *send_ptr = (char *) send_buff;
   char *recv_ptr = (char *) recv_buff;
 
-  num_procs = smpi_comm_size(comm);
-  rank = smpi_comm_rank(comm);
+  num_procs = comm->size();
+  rank = comm->rank();
 
   extent = smpi_datatype_get_extent(recv_type);
 

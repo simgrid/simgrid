@@ -118,8 +118,8 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
   int my_row_base, my_col_base, src_row_base, block_size, num_reqs;
   int tag = COLL_TAG_ALLGATHER;
 
-  rank = smpi_comm_rank(comm);
-  num_procs = smpi_comm_size(comm);
+  rank = comm->rank();
+  num_procs = comm->size();
 
   extent = smpi_datatype_get_extent(send_type);
 

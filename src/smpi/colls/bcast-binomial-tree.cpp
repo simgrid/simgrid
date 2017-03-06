@@ -76,8 +76,8 @@ smpi_coll_tuned_bcast_binomial_tree(void *buff, int count,
   int src, dst, rank, num_procs, mask, relative_rank;
   int tag = COLL_TAG_BCAST;
 
-  rank = smpi_comm_rank(comm);
-  num_procs = smpi_comm_size(comm);
+  rank = comm->rank();
+  num_procs = comm->size();
 
   relative_rank = (rank >= root) ? rank - root : rank - root + num_procs;
 

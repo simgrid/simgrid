@@ -15,7 +15,7 @@ int smpi_coll_tuned_allgatherv_GB(void *send_buff, int send_count,
   smpi_mpi_gatherv(send_buff, send_count, send_type, recv_buff, recv_counts,
 		   recv_disps, recv_type, 0, comm);
   int num_procs, i, current, max = 0;
-  num_procs = smpi_comm_size(comm);
+  num_procs = comm->size();
   for (i = 0; i < num_procs; i++) {
     current = recv_disps[i] + recv_counts[i];
     if (current > max)

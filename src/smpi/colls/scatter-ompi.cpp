@@ -47,8 +47,8 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
     MPI_Aint sextent, slb, strue_lb, strue_extent; 
     MPI_Aint rextent, rlb, rtrue_lb, rtrue_extent;
 
-    size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    size = comm->size();
+    rank = comm->rank();
 
     XBT_DEBUG(
                  "smpi_coll_tuned_scatter_ompi_binomial rank %d", rank);
@@ -205,8 +205,8 @@ smpi_coll_tuned_scatter_ompi_basic_linear(void *sbuf, int scount,
 
     /* Initialize */
 
-    rank = smpi_comm_rank(comm);
-    size = smpi_comm_size(comm);
+    rank = comm->rank();
+    size = comm->size();
 
     /* If not root, receive data. */
 

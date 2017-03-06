@@ -27,8 +27,8 @@ smpi_coll_tuned_bcast_flattree_pipeline(void *buff, int count,
     XBT_WARN("MPI_bcast_flattree_pipeline use default MPI_bcast_flattree.");
     return smpi_coll_tuned_bcast_flattree(buff, count, data_type, root, comm);
   }
-  rank = smpi_comm_rank(comm);
-  num_procs = smpi_comm_size(comm);
+  rank = comm->rank();
+  num_procs = comm->size();
 
   MPI_Request *request_array;
   MPI_Status *status_array;

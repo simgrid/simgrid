@@ -29,8 +29,8 @@ typedef struct s_smpi_mpi_win{
 
 
 MPI_Win smpi_mpi_win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm){
-  int comm_size = smpi_comm_size(comm);
-  int rank      = smpi_comm_rank(comm);
+  int comm_size = comm->size();
+  int rank      = comm->rank();
   XBT_DEBUG("Creating window");
 
   MPI_Win win    = xbt_new(s_smpi_mpi_win_t, 1);
@@ -78,7 +78,7 @@ int smpi_mpi_win_free( MPI_Win* win){
   }
 
   mpi_coll_barrier_fun((*win)->comm);
-  int rank=smpi_comm_rank((*win)->comm);
+  int rank=(*win)->comm->rank();
   if(rank == 0)
     MSG_barrier_destroy((*win)->bar);
   xbt_mutex_destroy((*win)->mut);
@@ -99,7 +99,7 @@ void smpi_mpi_win_get_name(MPI_Win win, char* name, int* length){
 
 void smpi_mpi_win_get_group(MPI_Win win, MPI_Group* group){
   if(win->comm != MPI_COMM_NULL){
-    *group = smpi_comm_group(win->comm);
+    *group = win->comm->group();
   } else {
     *group = MPI_GROUP_NULL;
   }
@@ -157,14 +157,14 @@ int smpi_mpi_put( void *origin_addr, int origin_count, MPI_Datatype origin_datat
   void* recv_addr = static_cast<void*> ( static_cast<char*>(recv_win->base) + target_disp * recv_win->disp_unit);
   XBT_DEBUG("Entering MPI_Put to %d", target_rank);
 
-  if(target_rank != smpi_comm_rank(win->comm)){
+  if(target_rank != win->comm->rank()){
     //prepare send_request
     MPI_Request sreq = smpi_rma_send_init(origin_addr, origin_count, origin_datatype, smpi_process_index(),
-        smpi_comm_group(win->comm)->index(target_rank), SMPI_RMA_TAG+1, win->comm, MPI_OP_NULL);
+        win->comm->group()->index(target_rank), SMPI_RMA_TAG+1, win->comm, MPI_OP_NULL);
 
     //prepare receiver request
     MPI_Request rreq = smpi_rma_recv_init(recv_addr, target_count, target_datatype, smpi_process_index(),
-        smpi_comm_group(win->comm)->index(target_rank), SMPI_RMA_TAG+1, recv_win->comm, MPI_OP_NULL);
+        win->comm->group()->index(target_rank), SMPI_RMA_TAG+1, recv_win->comm, MPI_OP_NULL);
 
     //push request to receiver's win
     xbt_mutex_acquire(recv_win->mut);
@@ -195,15 +195,15 @@ int smpi_mpi_get( void *origin_addr, int origin_count, MPI_Datatype origin_datat
   void* send_addr = static_cast<void*>(static_cast<char*>(send_win->base) + target_disp * send_win->disp_unit);
   XBT_DEBUG("Entering MPI_Get from %d", target_rank);
 
-  if(target_rank != smpi_comm_rank(win->comm)){
+  if(target_rank != win->comm->rank()){
     //prepare send_request
     MPI_Request sreq = smpi_rma_send_init(send_addr, target_count, target_datatype,
-        smpi_comm_group(win->comm)->index(target_rank), smpi_process_index(), SMPI_RMA_TAG+2, send_win->comm,
+        win->comm->group()->index(target_rank), smpi_process_index(), SMPI_RMA_TAG+2, send_win->comm,
         MPI_OP_NULL);
 
     //prepare receiver request
     MPI_Request rreq = smpi_rma_recv_init(origin_addr, origin_count, origin_datatype,
-        smpi_comm_group(win->comm)->index(target_rank), smpi_process_index(), SMPI_RMA_TAG+2, win->comm,
+        win->comm->group()->index(target_rank), smpi_process_index(), SMPI_RMA_TAG+2, win->comm,
         MPI_OP_NULL);
 
     //start the send, with another process than us as sender. 
@@ -241,11 +241,11 @@ int smpi_mpi_accumulate( void *origin_addr, int origin_count, MPI_Datatype origi
     //As the tag will be used for ordering of the operations, add count to it
     //prepare send_request
     MPI_Request sreq = smpi_rma_send_init(origin_addr, origin_count, origin_datatype,
-        smpi_process_index(), smpi_comm_group(win->comm)->index(target_rank), SMPI_RMA_TAG+3+win->count, win->comm, op);
+        smpi_process_index(), win->comm->group()->index(target_rank), SMPI_RMA_TAG+3+win->count, win->comm, op);
 
     //prepare receiver request
     MPI_Request rreq = smpi_rma_recv_init(recv_addr, target_count, target_datatype,
-        smpi_process_index(), smpi_comm_group(win->comm)->index(target_rank), SMPI_RMA_TAG+3+win->count, recv_win->comm, op);
+        smpi_process_index(), win->comm->group()->index(target_rank), SMPI_RMA_TAG+3+win->count, recv_win->comm, op);
 
     win->count++;
     //push request to receiver's win

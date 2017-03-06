@@ -218,7 +218,7 @@ static void action_send(const char *const *action)
 
   int rank = smpi_process_index();
 
-  int dst_traced = smpi_comm_group(MPI_COMM_WORLD)->rank(to);
+  int dst_traced = MPI_COMM_WORLD->group()->rank(to);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_SEND;
   extra->send_size = size;
@@ -249,7 +249,7 @@ static void action_Isend(const char *const *action)
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
   int rank = smpi_process_index();
-  int dst_traced = smpi_comm_group(MPI_COMM_WORLD)->rank(to);
+  int dst_traced = MPI_COMM_WORLD->group()->rank(to);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ISEND;
   extra->send_size = size;
@@ -283,7 +283,7 @@ static void action_recv(const char *const *action) {
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
   int rank = smpi_process_index();
-  int src_traced = smpi_comm_group(MPI_COMM_WORLD)->rank(from);
+  int src_traced = MPI_COMM_WORLD->group()->rank(from);
 
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_RECV;
@@ -322,7 +322,7 @@ static void action_Irecv(const char *const *action)
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
   int rank = smpi_process_index();
-  int src_traced = smpi_comm_group(MPI_COMM_WORLD)->rank(from);
+  int src_traced = MPI_COMM_WORLD->group()->rank(from);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_IRECV;
   extra->send_size = size;
@@ -388,9 +388,9 @@ static void action_wait(const char *const *action){
     return;
   }
 
-  int rank = request->comm != MPI_COMM_NULL ? smpi_comm_rank(request->comm) : -1;
+  int rank = request->comm != MPI_COMM_NULL ? request->comm->rank() : -1;
 
-  MPI_Group group = smpi_comm_group(request->comm);
+  MPI_Group group = request->comm->group();
   int src_traced = group->rank(request->src);
   int dst_traced = group->rank(request->dst);
   int is_wait_for_receive = request->recv;
@@ -470,7 +470,7 @@ static void action_bcast(const char *const *action)
   }
 
   int rank = smpi_process_index();
-  int root_traced = smpi_comm_group(MPI_COMM_WORLD)->index(root);
+  int root_traced = MPI_COMM_WORLD->group()->index(root);
 
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_BCAST;
@@ -502,7 +502,7 @@ static void action_reduce(const char *const *action)
   }
 
   int rank = smpi_process_index();
-  int root_traced = smpi_comm_group(MPI_COMM_WORLD)->rank(root);
+  int root_traced = MPI_COMM_WORLD->group()->rank(root);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_REDUCE;
   extra->send_size = comm_size;
@@ -552,7 +552,7 @@ static void action_allReduce(const char *const *action) {
 static void action_allToAll(const char *const *action) {
   CHECK_ACTION_PARAMS(action, 2, 2) //two mandatory (send and recv volumes) and two optional (corresponding datatypes)
   double clock = smpi_process_simulated_elapsed();
-  int comm_size = smpi_comm_size(MPI_COMM_WORLD);
+  int comm_size = MPI_COMM_WORLD->size();
   int send_size = parse_double(action[2]);
   int recv_size = parse_double(action[3]);
   MPI_Datatype MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;
@@ -595,7 +595,7 @@ static void action_gather(const char *const *action) {
   */
   CHECK_ACTION_PARAMS(action, 2, 3)
   double clock = smpi_process_simulated_elapsed();
-  int comm_size = smpi_comm_size(MPI_COMM_WORLD);
+  int comm_size = MPI_COMM_WORLD->size();
   int send_size = parse_double(action[2]);
   int recv_size = parse_double(action[3]);
   MPI_Datatype MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;
@@ -610,7 +610,7 @@ static void action_gather(const char *const *action) {
   int root=0;
   if(action[4])
     root=atoi(action[4]);
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = MPI_COMM_WORLD->rank();
 
   if(rank==root)
     recv = smpi_get_tmp_recvbuffer(recv_size*comm_size* smpi_datatype_size(MPI_CURRENT_TYPE2));
@@ -642,7 +642,7 @@ static void action_gatherv(const char *const *action) {
        5) 0 is the recv datatype id, see decode_datatype()
   */
   double clock = smpi_process_simulated_elapsed();
-  int comm_size = smpi_comm_size(MPI_COMM_WORLD);
+  int comm_size = MPI_COMM_WORLD->size();
   CHECK_ACTION_PARAMS(action, comm_size+1, 2)
   int send_size = parse_double(action[2]);
   int disps[comm_size];
@@ -665,7 +665,7 @@ static void action_gatherv(const char *const *action) {
   }
 
   int root=atoi(action[3+comm_size]);
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = MPI_COMM_WORLD->rank();
 
   if(rank==root)
     recv = smpi_get_tmp_recvbuffer(recv_sum* smpi_datatype_size(MPI_CURRENT_TYPE2));
@@ -698,7 +698,7 @@ static void action_reducescatter(const char *const *action) {
       3) The last value corresponds to the datatype, see decode_datatype().
 */
   double clock = smpi_process_simulated_elapsed();
-  int comm_size = smpi_comm_size(MPI_COMM_WORLD);
+  int comm_size = MPI_COMM_WORLD->size();
   CHECK_ACTION_PARAMS(action, comm_size+1, 1)
   int comp_size = parse_double(action[2+comm_size]);
   int recvcounts[comm_size];
@@ -768,7 +768,7 @@ static void action_allgather(const char *const *action) {
   extra->recv_size= recvcount;
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2, nullptr);
-  extra->num_processes = smpi_comm_size(MPI_COMM_WORLD);
+  extra->num_processes = MPI_COMM_WORLD->size();
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 
@@ -788,7 +788,7 @@ static void action_allgatherv(const char *const *action) {
   */
   double clock = smpi_process_simulated_elapsed();
 
-  int comm_size = smpi_comm_size(MPI_COMM_WORLD);
+  int comm_size = MPI_COMM_WORLD->size();
   CHECK_ACTION_PARAMS(action, comm_size+1, 2)
   int sendcount=atoi(action[2]);
   int recvcounts[comm_size];
@@ -842,7 +842,7 @@ static void action_allToAllv(const char *const *action) {
   */
   double clock = smpi_process_simulated_elapsed();
 
-  int comm_size = smpi_comm_size(MPI_COMM_WORLD);
+  int comm_size = MPI_COMM_WORLD->size();
   CHECK_ACTION_PARAMS(action, 2*comm_size+2, 2)
   int sendcounts[comm_size];
   int recvcounts[comm_size];

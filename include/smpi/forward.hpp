@@ -14,15 +14,18 @@ namespace simgrid {
 namespace SMPI {
 
 class Group;
+class Comm;
 
 }
 }
 
 typedef simgrid::SMPI::Group SMPI_Group;
+typedef simgrid::SMPI::Comm SMPI_Comm;
 
 #else
 
 typedef struct SMPI_Group SMPI_Group;
+typedef struct SMPI_Comm SMPI_Comm;
 
 #endif
 

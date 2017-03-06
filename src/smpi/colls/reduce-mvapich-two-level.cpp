@@ -97,20 +97,20 @@ int smpi_coll_tuned_reduce_mvapich2_two_level( void *sendbuf,
     if(MV2_Reduce_intra_function==NULL)
       MV2_Reduce_intra_function=smpi_coll_tuned_reduce_mpich;
 
-    if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
-      smpi_comm_init_smp(comm);
+    if(comm->get_leaders_comm()==MPI_COMM_NULL){
+      comm->init_smp();
     }
   
-    my_rank = smpi_comm_rank(comm);
-    total_size = smpi_comm_size(comm);
-    shmem_comm = smpi_comm_get_intra_comm(comm);
-    local_rank = smpi_comm_rank(shmem_comm);
-    local_size = smpi_comm_size(shmem_comm);
+    my_rank = comm->rank();
+    total_size = comm->size();
+    shmem_comm = comm->get_intra_comm();
+    local_rank = shmem_comm->rank();
+    local_size = shmem_comm->size();
     
-    leader_comm = smpi_comm_get_leaders_comm(comm);
-    int* leaders_map = smpi_comm_get_leaders_map(comm);
-    leader_of_root = smpi_comm_group(comm)->rank(leaders_map[root]);
-    leader_root = smpi_comm_group(leader_comm)->rank(leaders_map[root]);
+    leader_comm = comm->get_leaders_comm();
+    int* leaders_map = comm->get_leaders_map();
+    leader_of_root = comm->group()->rank(leaders_map[root]);
+    leader_root = leader_comm->group()->rank(leaders_map[root]);
 
     is_commutative=smpi_op_is_commute(op);
 
@@ -188,12 +188,12 @@ int smpi_coll_tuned_reduce_mvapich2_two_level( void *sendbuf,
     
 
     if (local_rank == 0) {
-        leader_comm = smpi_comm_get_leaders_comm(comm);
+        leader_comm = comm->get_leaders_comm();
         if(leader_comm==MPI_COMM_NULL){
           leader_comm = MPI_COMM_WORLD;
         }
-        leader_comm_size = smpi_comm_size(leader_comm);
-        leader_comm_rank = smpi_comm_rank(leader_comm);
+        leader_comm_size = leader_comm->size();
+        leader_comm_rank = leader_comm->rank();
         tmp_buf=(void *)smpi_get_tmp_sendbuffer(count *
                             (MAX(extent, true_extent)));
         tmp_buf = (void *) ((char *) tmp_buf - true_lb);

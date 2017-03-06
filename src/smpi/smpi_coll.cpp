@@ -125,7 +125,7 @@ void (*smpi_coll_cleanup_callback)();
 int smpi_coll_tuned_alltoall_ompi2(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf,
                                    int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
 {
-  int size = smpi_comm_size(comm);
+  int size = comm->size();
   int sendsize = smpi_datatype_size(sendtype) * sendcount;
   if (sendsize < 200 && size > 12) {
     return smpi_coll_tuned_alltoall_bruck(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
@@ -154,8 +154,8 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount, MPI_Datatype se
   MPI_Request *requests;
 
   // FIXME: check implementation
-  int rank = smpi_comm_rank(comm);
-  int size = smpi_comm_size(comm);
+  int rank = comm->rank();
+  int size = comm->size();
   XBT_DEBUG("<%d> algorithm alltoall_bruck() called.", rank);
   smpi_datatype_extent(sendtype, &lb, &sendext);
   smpi_datatype_extent(recvtype, &lb, &recvext);
@@ -212,8 +212,8 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount, MPI_Data
   MPI_Request *requests;
 
   /* Initialize. */
-  int rank = smpi_comm_rank(comm);
-  int size = smpi_comm_size(comm);
+  int rank = comm->rank();
+  int size = comm->size();
   XBT_DEBUG("<%d> algorithm alltoall_basic_linear() called.", rank);
   smpi_datatype_extent(sendtype, &lb, &sendext);
   smpi_datatype_extent(recvtype, &lb, &recvext);
@@ -265,8 +265,8 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts, int *senddisps, MP
   MPI_Request *requests;
 
   /* Initialize. */
-  int rank = smpi_comm_rank(comm);
-  int size = smpi_comm_size(comm);
+  int rank = comm->rank();
+  int size = comm->size();
   XBT_DEBUG("<%d> algorithm basic_alltoallv() called.", rank);
   smpi_datatype_extent(sendtype, &lb, &sendext);
   smpi_datatype_extent(recvtype, &lb, &recvext);

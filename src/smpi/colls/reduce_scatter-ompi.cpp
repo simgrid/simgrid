@@ -58,8 +58,8 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
     char *result_buf = NULL, *result_buf_free = NULL;
    
     /* Initialize */
-    rank = smpi_comm_rank(comm);
-    size = smpi_comm_size(comm);
+    rank = comm->rank();
+    size = comm->size();
    
     XBT_DEBUG("coll:tuned:reduce_scatter_ompi_basic_recursivehalving, rank %d", rank);
     if(!smpi_op_is_commute(op))
@@ -374,8 +374,8 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
     ptrdiff_t true_lb, true_extent, lb, extent, max_real_segsize;
     MPI_Request reqs[2] = {NULL, NULL};
 
-    size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    size = comm->size();
+    rank = comm->rank();
 
     XBT_DEBUG(  "coll:tuned:reduce_scatter_ompi_ring rank %d, size %d", 
                  rank, size);

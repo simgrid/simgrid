@@ -47,8 +47,8 @@ smpi_coll_tuned_gather_ompi_binomial(void *sbuf, int scount,
     MPI_Aint rextent, rlb, rtrue_lb, rtrue_extent;
 
 
-    size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    size = comm->size();
+    rank = comm->rank();
 
     XBT_DEBUG(
 		 "smpi_coll_tuned_gather_ompi_binomial rank %d", rank);
@@ -211,8 +211,8 @@ smpi_coll_tuned_gather_ompi_linear_sync(void *sbuf, int scount,
     MPI_Aint lb;
 
     int first_segment_size=0;
-    size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    size = comm->size();
+    rank = comm->rank();
     
     size_t dsize, block_size;
     if (rank == root) {
@@ -370,8 +370,8 @@ smpi_coll_tuned_gather_ompi_basic_linear(void *sbuf, int scount,
     MPI_Aint extent;
     MPI_Aint lb;
 
-    size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    size = comm->size();
+    rank = comm->rank();
 
     /* Everyone but root sends data and returns. */
     XBT_DEBUG(

@@ -105,8 +105,8 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
   int two_dsize, my_row_base, my_col_base, src_row_base, src_z_base, num_reqs;
   int tag = COLL_TAG_ALLGATHER;
 
-  rank = smpi_comm_rank(comm);
-  num_procs = smpi_comm_size(comm);
+  rank = comm->rank();
+  num_procs = comm->size();
   extent = smpi_datatype_get_extent(send_type);
 
   if (!is_3dmesh(num_procs, &X, &Y, &Z))

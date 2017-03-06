@@ -18,7 +18,7 @@
 #include <xbt/function_types.h>
 #include "simgrid/datatypes.h"
 
-#include "forward.hpp"
+#include "include/smpi/forward.hpp"
 
 #ifdef _WIN32
 #define MPI_CALL(type,name,args) \
@@ -372,8 +372,7 @@ typedef SMPI_Group* MPI_Group;
 
 XBT_PUBLIC_DATA( MPI_Group ) MPI_GROUP_EMPTY;
 
-struct s_smpi_mpi_communicator;
-typedef struct s_smpi_mpi_communicator *MPI_Comm;
+typedef SMPI_Comm *MPI_Comm;
 
 #define MPI_COMM_NULL ((MPI_Comm)NULL)
 XBT_PUBLIC_DATA( MPI_Comm ) MPI_COMM_WORLD;

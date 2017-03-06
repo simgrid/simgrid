@@ -78,8 +78,8 @@ smpi_coll_tuned_allgatherv_ring(void *send_buff, int send_count,
   char *sendptr = (char *) send_buff;
   char *recvptr = (char *) recv_buff;
 
-  rank = smpi_comm_rank(comm);
-  num_procs = smpi_comm_size(comm);
+  rank = comm->rank();
+  num_procs = comm->size();
   extent = smpi_datatype_get_extent(send_type);
 
   // local send/recv

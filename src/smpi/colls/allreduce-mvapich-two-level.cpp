@@ -93,8 +93,8 @@ int smpi_coll_tuned_allreduce_mvapich2_two_level(void *sendbuf,
     if(MV2_Allreduce_function==NULL)
       MV2_Allreduce_function = smpi_coll_tuned_allreduce_rdb;
     
-    if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
-      smpi_comm_init_smp(comm);
+    if(comm->get_leaders_comm()==MPI_COMM_NULL){
+      comm->init_smp();
     }
   
     if (count == 0) {
@@ -103,12 +103,12 @@ int smpi_coll_tuned_allreduce_mvapich2_two_level(void *sendbuf,
     smpi_datatype_extent(datatype, &true_lb,
                                        &true_extent);
 
-    total_size = smpi_comm_size(comm);
-    shmem_comm = smpi_comm_get_intra_comm(comm);
-    local_rank = smpi_comm_rank(shmem_comm);
-    local_size = smpi_comm_size(shmem_comm);
+    total_size = comm->size();
+    shmem_comm = comm->get_intra_comm();
+    local_rank = shmem_comm->rank();
+    local_size = shmem_comm->size();
 
-    leader_comm = smpi_comm_get_leaders_comm(comm);
+    leader_comm = comm->get_leaders_comm();
 
     if (local_rank == 0) {
         if (sendbuf != MPI_IN_PLACE) {

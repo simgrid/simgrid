@@ -49,12 +49,12 @@ int smpi_coll_tuned_barrier_mvapich2_pair(MPI_Comm comm)
     int d, dst, src;
     int mpi_errno = MPI_SUCCESS;
 
-    size = smpi_comm_size(comm);
+    size = comm->size();
     /* Trivial barriers return immediately */
     if (size == 1)
         return MPI_SUCCESS;
 
-    rank =  smpi_comm_rank(comm);
+    rank =  comm->rank();
     int N2_prev = 1;
     /*  N2_prev = greatest power of two < size of Comm  */
     for( N2_prev = 1; N2_prev <= size; N2_prev <<= 1 );

@@ -31,8 +31,8 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
 
   if (count == 0)
     return 0;
-  rank = smpi_comm_rank(comm);
-  comm_size = smpi_comm_size(comm);
+  rank = comm->rank();
+  comm_size = comm->size();
   
 
 

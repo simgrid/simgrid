@@ -23,14 +23,14 @@ int smpi_coll_tuned_bcast_SMP_binary(void *buf, int count,
   MPI_Aint extent;
   extent = smpi_datatype_get_extent(datatype);
 
-  rank = smpi_comm_rank(comm);
-  size = smpi_comm_size(comm);
-  if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
-    smpi_comm_init_smp(comm);
+  rank = comm->rank();
+  size = comm->size();
+  if(comm->get_leaders_comm()==MPI_COMM_NULL){
+    comm->init_smp();
   }
   int host_num_core=1;
-  if (smpi_comm_is_uniform(comm)){
-    host_num_core = smpi_comm_size(smpi_comm_get_intra_comm(comm));
+  if (comm->is_uniform()){
+    host_num_core = comm->get_intra_comm()->size();
   }else{
     //implementation buggy in this case
     return smpi_coll_tuned_bcast_mpich( buf , count, datatype,

@@ -354,7 +354,7 @@ MPI_Comm smpi_process_comm_self()
   smpi_process_data_t data = smpi_process_data();
   if(data->comm_self==MPI_COMM_NULL){
     MPI_Group group = new simgrid::SMPI::Group(1);
-    data->comm_self = smpi_comm_new(group, nullptr);
+    data->comm_self = new simgrid::SMPI::Comm(group, nullptr);
     group->set_mapping(smpi_process_index(), 0);
   }
 
@@ -606,7 +606,7 @@ void smpi_global_init()
   //if not, we let MPI_COMM_NULL, and the comm world will be private to each mpi instance
   if(smpirun){
     group = new simgrid::SMPI::Group(process_count);
-    MPI_COMM_WORLD = smpi_comm_new(group, nullptr);
+    MPI_COMM_WORLD = new simgrid::SMPI::Comm(group, nullptr);
     MPI_Attr_put(MPI_COMM_WORLD, MPI_UNIVERSE_SIZE, reinterpret_cast<void *>(process_count));
     msg_bar_t bar = MSG_barrier_init(process_count);
 
@@ -623,17 +623,17 @@ void smpi_global_destroy()
 
   smpi_bench_destroy();
   if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED){
-      while (smpi_comm_group(MPI_COMM_WORLD)->unuse() > 0);
+      while (MPI_COMM_WORLD->group()->unuse() > 0);
       MSG_barrier_destroy(process_data[0]->finalization_barrier);
   }else{
       smpi_deployment_cleanup_instances();
   }
   for (int i = 0; i < count; i++) {
     if(process_data[i]->comm_self!=MPI_COMM_NULL){
-      smpi_comm_destroy(process_data[i]->comm_self);
+      process_data[i]->comm_self->destroy();
     }
     if(process_data[i]->comm_intra!=MPI_COMM_NULL){
-      smpi_comm_destroy(process_data[i]->comm_intra);
+      process_data[i]->comm_intra->destroy();
     }
     xbt_os_timer_free(process_data[i]->timer);
     xbt_mutex_destroy(process_data[i]->mailboxes_mutex);
@@ -643,8 +643,8 @@ void smpi_global_destroy()
   process_data = nullptr;
 
   if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED){
-    smpi_comm_cleanup_smp(MPI_COMM_WORLD);
-    smpi_comm_cleanup_attributes(MPI_COMM_WORLD);
+    MPI_COMM_WORLD->cleanup_smp();
+    MPI_COMM_WORLD->cleanup_attributes();
     if(smpi_coll_cleanup_callback!=nullptr)
       smpi_coll_cleanup_callback();
     xbt_free(MPI_COMM_WORLD);

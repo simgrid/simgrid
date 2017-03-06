@@ -39,8 +39,8 @@ smpi_coll_tuned_allgatherv_mpich_ring(void *sendbuf, int sendcount,
   MPI_Status status;
   MPI_Aint recvtype_extent;
   int right, left, total_count, i;
-  rank= smpi_comm_rank(comm);
-  comm_size=smpi_comm_size(comm);
+  rank= comm->rank();
+  comm_size=comm->size();
 
   recvtype_extent= smpi_datatype_get_extent( recvtype);
   total_count = 0;

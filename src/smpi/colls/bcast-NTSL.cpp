@@ -26,8 +26,8 @@ int smpi_coll_tuned_bcast_NTSL(void *buf, int count, MPI_Datatype datatype,
   MPI_Aint extent;
   extent = smpi_datatype_get_extent(datatype);
 
-  rank = smpi_comm_rank(comm);
-  size = smpi_comm_size(comm);
+  rank = comm->rank();
+  size = comm->size();
 
   /* source node and destination nodes (same through out the functions) */
   int to = (rank + 1) % size;

@@ -53,8 +53,8 @@ int smpi_coll_tuned_bcast_arrival_scatter(void *buf, int count,
   /* source and destination */
   int to, from;
 
-  rank = smpi_comm_rank(comm);
-  size = smpi_comm_size(comm);
+  rank = comm->rank();
+  size = comm->size();
 
   /* message too small */
   if (count < size) {

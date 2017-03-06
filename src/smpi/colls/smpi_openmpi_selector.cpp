@@ -13,7 +13,7 @@ int smpi_coll_tuned_allreduce_ompi(void *sbuf, void *rbuf, int count,
                         MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
 {
     size_t dsize, block_dsize;
-    int comm_size = smpi_comm_size(comm);
+    int comm_size = comm->size();
     const size_t intermediate_message = 10000;
 
     /**
@@ -61,7 +61,7 @@ int smpi_coll_tuned_alltoall_ompi( void *sbuf, int scount,
 {
     int communicator_size;
     size_t dsize, block_dsize;
-    communicator_size = smpi_comm_size(comm);
+    communicator_size = comm->size();
 
     /* Decision function based on measurement on Grig cluster at 
        the University of Tennessee (2GB MX) up to 64 nodes.
@@ -101,7 +101,7 @@ int smpi_coll_tuned_alltoallv_ompi(void *sbuf, int *scounts, int *sdisps,
 
 
 int smpi_coll_tuned_barrier_ompi(MPI_Comm  comm)
-{    int communicator_size = smpi_comm_size(comm);
+{    int communicator_size = comm->size();
 
     if( 2 == communicator_size )
         return smpi_coll_tuned_barrier_ompi_two_procs(comm);
@@ -141,7 +141,7 @@ int smpi_coll_tuned_bcast_ompi(void *buff, int count,
     //int segsize = 0;
     size_t message_size, dsize;
 
-    communicator_size = smpi_comm_size(comm);
+    communicator_size = comm->size();
 
     /* else we need data size for decision function */
     dsize = smpi_datatype_size(datatype);
@@ -243,7 +243,7 @@ int smpi_coll_tuned_reduce_ompi( void *sendbuf, void *recvbuf,
     /* no limit on # of outstanding requests */
     //const int max_requests = 0;
 
-    communicator_size = smpi_comm_size(comm);
+    communicator_size = comm->size();
 
     /* need data size for decision function */
     dsize=smpi_datatype_size(datatype);
@@ -342,7 +342,7 @@ int smpi_coll_tuned_reduce_scatter_ompi( void *sbuf, void *rbuf,
 
     XBT_DEBUG("smpi_coll_tuned_reduce_scatter_ompi");
     
-    comm_size = smpi_comm_size(comm);
+    comm_size = comm->size();
     // We need data size for decision function 
     dsize=smpi_datatype_size(dtype);
     total_message_size = 0;
@@ -391,7 +391,7 @@ int smpi_coll_tuned_allgather_ompi(void *sbuf, int scount,
     int communicator_size, pow2_size;
     size_t dsize, total_dsize;
 
-    communicator_size = smpi_comm_size(comm);
+    communicator_size = comm->size();
 
     /* Special case for 2 processes */
     if (communicator_size == 2) {
@@ -473,7 +473,7 @@ int smpi_coll_tuned_allgatherv_ompi(void *sbuf, int scount,
     int communicator_size;
     size_t dsize, total_dsize;
     
-    communicator_size = smpi_comm_size(comm);
+    communicator_size = comm->size();
     
     /* Special case for 2 processes */
     if (communicator_size == 2) {
@@ -534,8 +534,8 @@ int smpi_coll_tuned_gather_ompi(void *sbuf, int scount,
 
     XBT_DEBUG("smpi_coll_tuned_gather_ompi");
 
-    communicator_size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    communicator_size = comm->size();
+    rank = comm->rank();
 
     // Determine block size 
     if (rank == root) {
@@ -584,8 +584,8 @@ int smpi_coll_tuned_scatter_ompi(void *sbuf, int scount,
 
     XBT_DEBUG("smpi_coll_tuned_scatter_ompi");
 
-    communicator_size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    communicator_size = comm->size();
+    rank = comm->rank();
     // Determine block size 
     if (root == rank) {
         dsize=smpi_datatype_size(sdtype);

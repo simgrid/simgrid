@@ -18,8 +18,8 @@ int smpi_coll_tuned_allreduce_rab_rdb(void *sbuff, void *rbuff, int count,
   MPI_Status status;
   void *tmp_buf = NULL;
 
-  unsigned int nprocs = smpi_comm_size(comm);
-  int rank = smpi_comm_rank(comm);
+  unsigned int nprocs = comm->size();
+  int rank = comm->rank();
 
   extent = smpi_datatype_get_extent(dtype);
   tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);

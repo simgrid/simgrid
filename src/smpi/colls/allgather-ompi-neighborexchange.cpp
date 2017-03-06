@@ -79,8 +79,8 @@ smpi_coll_tuned_allgather_ompi_neighborexchange(void *sbuf, int scount,
    ptrdiff_t slb, rlb, sext, rext;
    char *tmpsend = NULL, *tmprecv = NULL;
 
-   size = smpi_comm_size(comm);
-   rank = smpi_comm_rank(comm);
+   size = comm->size();
+   rank = comm->rank();
 
    if (size % 2) {
       XBT_DEBUG(

@@ -29,8 +29,8 @@ smpi_coll_tuned_allreduce_lr(void *sbuf, void *rbuf, int rcount,
   int send_offset, recv_offset;
   int remainder, remainder_flag, remainder_offset;
 
-  rank = smpi_comm_rank(comm);
-  size = smpi_comm_size(comm);
+  rank = comm->rank();
+  size = comm->size();
 
   /* make it compatible with all data type */
   MPI_Aint extent;

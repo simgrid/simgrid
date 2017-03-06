@@ -22,8 +22,8 @@ int smpi_coll_tuned_reduce_binomial(void *sendbuf, void *recvbuf, int count,
   MPI_Aint true_lb, true_extent;
   if (count == 0)
     return 0;
-  rank = smpi_comm_rank(comm);
-  comm_size = smpi_comm_size(comm);
+  rank = comm->rank();
+  comm_size = comm->size();
 
   extent = smpi_datatype_get_extent(datatype);
 

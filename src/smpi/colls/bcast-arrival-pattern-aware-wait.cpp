@@ -55,8 +55,8 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware_wait(void *buf, int count,
 
 
 
-  rank = smpi_comm_rank(comm);
-  size = smpi_comm_size(comm);
+  rank = comm->rank();
+  size = comm->size();
 
 
   /* segment is segment size in number of elements (not bytes) */

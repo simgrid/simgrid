@@ -26,8 +26,8 @@ int smpi_coll_tuned_allreduce_rab2(void *sbuff, void *rbuff,
      uop  = op_ptr->op;
      #endif
    */
-  rank = smpi_comm_rank(comm);
-  nprocs = smpi_comm_size(comm);
+  rank = comm->rank();
+  nprocs = comm->size();
 
 
   s_extent = smpi_datatype_get_extent(dtype);
