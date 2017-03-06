@@ -114,9 +114,7 @@ MPI_Group Comm::group()
 }
 
 MPI_Topology Comm::topo() {
-  if (this != MPI_COMM_NULL)
-    return m_topo;
-  return nullptr;
+  return m_topo;
 }
 
 int Comm::size()
