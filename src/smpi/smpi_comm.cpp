@@ -68,7 +68,7 @@ void Comm::destroy()
 {
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process_comm_world()->destroy();
-  smpi_topo_destroy(m_topo); // there's no use count on topos
+  delete m_topo; // there's no use count on topos
   this->unuse();
 }
 

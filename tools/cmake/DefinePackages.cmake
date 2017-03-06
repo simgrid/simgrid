@@ -224,6 +224,7 @@ set(SMPI_SRC
   src/smpi/smpi_replay.cpp
   src/smpi/smpi_rma.cpp
   src/smpi/smpi_topo.cpp
+  src/smpi/smpi_topo.hpp
   src/smpi/smpi_utils.cpp
   src/smpi/smpi_f77.cpp
   

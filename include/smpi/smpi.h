@@ -363,8 +363,7 @@ XBT_PUBLIC_DATA( MPI_Op ) MPI_BXOR;
 //For accumulate
 XBT_PUBLIC_DATA( MPI_Op ) MPI_REPLACE;
 
-struct s_smpi_mpi_topology;
-typedef struct s_smpi_mpi_topology *MPI_Topology;
+typedef SMPI_Topology *MPI_Topology;
 
 typedef SMPI_Group* MPI_Group;
 
