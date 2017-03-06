@@ -320,12 +320,15 @@ static void onSimulationEnd()
   double total_energy      = 0.0; // Total energy consumption (whole plattform)
   double used_hosts_energy = 0.0; // Energy consumed by hosts that computed something
   for (int i = 0; i < host_count; i++) {
-    bool host_was_used = (host_list[i]->extension<HostEnergy>()->last_updated != 0);
-    double energy      = 0.0;
-    energy             = host_list[i]->extension<HostEnergy>()->getConsumedEnergy();
-    total_energy      += energy;
-    if (host_was_used)
-      used_hosts_energy += energy;
+    if (dynamic_cast<simgrid::s4u::VirtualMachine*>(host_list[i]) == nullptr) { // Ignore virtual machines
+
+      bool host_was_used = (host_list[i]->extension<HostEnergy>()->last_updated != 0);
+      double energy      = 0.0;
+      energy             = host_list[i]->extension<HostEnergy>()->getConsumedEnergy();
+      total_energy      += energy;
+      if (host_was_used)
+        used_hosts_energy += energy;
+    }
   }
   XBT_INFO("Summed energy consumption: %f Joules; used hosts consumed: %f Joules; unused (idle) hosts consumed: %f",
            total_energy, used_hosts_energy, total_energy - used_hosts_energy);
