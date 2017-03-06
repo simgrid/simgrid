@@ -15,6 +15,7 @@ $ ${bindir:=.}/energy-vm/energy-vm$EXEEXT ${srcdir:=.}/../platforms/energy_platf
 > [  6.000000] (2:p11@vm_host1) This worker is done.
 > [  6.000000] (6:p31@vm_host3) This worker is done.
 > [  6.000000] (7:p32@vm_host3) This worker is done.
+> [ 10.000000] (0:maestro@) Summed energy consumption: 3360.000000 Joules; used hosts consumed: 3360.000000 Joules; unused (idle) hosts consumed: 0.000000
 > [ 10.000000] (0:maestro@) Total simulation time: 10.00; All hosts must have the exact same energy consumption.
 > [ 10.000000] (0:maestro@) Total energy of host MyHost1: 1120.000000 Joules
 > [ 10.000000] (0:maestro@) Total energy of host MyHost2: 1120.000000 Joules

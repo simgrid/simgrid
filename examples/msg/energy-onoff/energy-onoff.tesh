@@ -18,6 +18,7 @@ $ ${bindir:=.}/energy-onoff/energy-onoff$EXEEXT ${srcdir:=.}/energy-onoff/platfo
 > [ 26.997901] (1:onoff_test@MyHost2) Switch to virtual pstate 3, that encodes the shutting down state in the XML file of that example
 > [ 26.997901] (1:onoff_test@MyHost2) Actually start the host
 > [ 26.997901] (1:onoff_test@MyHost2) Simulate the boot up by executing one flop on that host
+> [176.997893] (0:maestro@) Summed energy consumption: 37519.557482 Joules; used hosts consumed: 37519.557482 Joules; unused (idle) hosts consumed: 0.000000
 > [176.997893] (0:maestro@) Total simulation time: 177.00
 > [176.997893] (0:maestro@) Total energy of host MyHost1: 19819.768169 Joules
 > [176.997893] (0:maestro@) Total energy of host MyHost2: 17699.789313 Joules

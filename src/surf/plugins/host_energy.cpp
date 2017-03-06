@@ -3,11 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <simgrid/s4u/engine.hpp>
 #include "simgrid/plugins/energy.h"
 #include "simgrid/simix.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
+#include <simgrid/s4u/engine.hpp>
 #include <utility>
 
 /** @addtogroup SURF_plugin_energy
@@ -326,26 +326,6 @@ static void onSimulationEnd()
            total_energy, used_hosts_energy, total_energy - used_hosts_energy);
 }
 
-static int monitor_DVFS(int argc, char **argv);
-static int monitor_DVFS(int argc, char **argv) 
-{
-  while (1) {
-    MSG_process_sleep(5);
-  }
-
-  return 0;
-}
-
-static void onPlatformCreated() 
-{
-  sg_host_t* host_list = sg_host_list();
-  int host_count       = sg_host_count();
-  for (int i = 0; i < host_count; i++) {
-    MSG_process_create("dvfs", &monitor_DVFS, NULL, host_list[i]);
-    XBT_INFO("Created new MSG processes!");
-  }
-}
-
 /* **************************** Public interface *************************** */
 SG_BEGIN_DECL()
 
@@ -364,7 +344,6 @@ void sg_host_energy_plugin_init()
   simgrid::s4u::Host::onStateChange.connect(&onHostChange);
   simgrid::s4u::Host::onSpeedChange.connect(&onHostChange);
   simgrid::s4u::Host::onDestruction.connect(&onHostDestruction);
-  simgrid::s4u::onPlatformCreated.connect(&onPlatformCreated);
   simgrid::s4u::onSimulationEnd.connect(&onSimulationEnd);
   simgrid::surf::CpuAction::onStateChange.connect(&onActionStateChange);
 }
