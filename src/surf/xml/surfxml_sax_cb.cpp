@@ -19,9 +19,12 @@
 #include "xbt/log.h"
 #include "xbt/misc.h"
 #include "xbt/str.h"
-#include <string>
 
 #include "src/surf/xml/platf_private.hpp"
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf, "Logging specific to the SURF parsing module");
 
@@ -91,35 +94,30 @@ int surf_parse_get_int(const char *string) {
 static std::vector<int>* explodesRadical(const char* radicals)
 {
   std::vector<int>* exploded = new std::vector<int>();
-  char* groups;
-  unsigned int iter;
 
   // Make all hosts
-  xbt_dynar_t radical_elements = xbt_str_split(radicals, ",");
-  xbt_dynar_foreach (radical_elements, iter, groups) {
-
-    xbt_dynar_t radical_ends = xbt_str_split(groups, "-");
-    int start                = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char*));
+  std::vector<std::string> radical_elements;
+  boost::split(radical_elements, radicals, boost::is_any_of(","));
+  for (auto group : radical_elements) {
+    std::vector<std::string> radical_ends;
+    boost::split(radical_ends, group, boost::is_any_of("-"));
+    int start                = surf_parse_get_int((radical_ends.front()).c_str());
     int end                  = 0;
 
-    switch (xbt_dynar_length(radical_ends)) {
+    switch (radical_ends.size()) {
       case 1:
         end = start;
         break;
       case 2:
-        end = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char*));
+        end = surf_parse_get_int((radical_ends.back()).c_str());
         break;
       default:
-        surf_parse_error("Malformed radical: %s", groups);
+        surf_parse_error("Malformed radical: %s", group.c_str());
         break;
     }
-
     for (int i = start; i <= end; i++)
       exploded->push_back(i);
-
-    xbt_dynar_free(&radical_ends);
   }
-  xbt_dynar_free(&radical_elements);
 
   return exploded;
 }
@@ -278,16 +276,14 @@ static std::vector<double> surf_parse_get_all_speeds(char* speeds, const char* e
     double speed = surf_parse_get_speed(speeds, entity_kind, id);
     speed_per_pstate.push_back(speed);
   } else {
-    xbt_dynar_t pstate_list = xbt_str_split(speeds, ",");
-    unsigned int i;
-    char* speed_str;
-    xbt_dynar_foreach(pstate_list, i, speed_str) {
-      xbt_str_trim(speed_str, nullptr);
-      double speed = surf_parse_get_speed(speed_str,entity_kind, id);
+    std::vector<std::string> pstate_list;
+    boost::split(pstate_list, speeds, boost::is_any_of(","));
+    for (auto speed_str : pstate_list) {
+      boost::trim(speed_str);
+      double speed = surf_parse_get_speed(speed_str.c_str(), entity_kind, id);
       speed_per_pstate.push_back(speed);
       XBT_DEBUG("Speed value: %f", speed);
     }
-    xbt_dynar_free(&pstate_list);
   }
   return speed_per_pstate;
 }

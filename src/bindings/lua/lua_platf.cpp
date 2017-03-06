@@ -18,8 +18,12 @@ extern "C" {
 #include <lauxlib.h>
 }
 
-#include <simgrid/host.h>
 #include "src/surf/surf_private.h"
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <simgrid/host.h>
+#include <string>
+#include <vector>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(lua_platf, "Lua bindings (platform module)");
 
@@ -330,22 +334,20 @@ int console_add_route(lua_State *L) {
   lua_ensure(type == LUA_TSTRING,
       "Attribute 'links' must be specified for any route and must be a string (different links separated by commas or single spaces.");
   route.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
-  xbt_dynar_t names = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
-  if (xbt_dynar_is_empty(names)) {
+  std::vector<std::string> names;
+  boost::split(names, lua_tostring(L, -1), boost::is_any_of(", \t\r\n"));
+  if (names.empty()) {
     /* unique name */
     route.link_list->push_back(simgrid::surf::LinkImpl::byName(lua_tostring(L, -1)));
   } else {
     // Several names separated by , \t\r\n
-    unsigned int cpt;
-    char *name;
-    xbt_dynar_foreach(names, cpt, name) {
-      if (strlen(name)>0) {
-        simgrid::surf::LinkImpl* link = simgrid::surf::LinkImpl::byName(name);
+    for (auto name : names) {
+      if (name.length() > 0) {
+        simgrid::surf::LinkImpl* link = simgrid::surf::LinkImpl::byName(name.c_str());
         route.link_list->push_back(link);
       }
     }
   }
-  xbt_dynar_free(&names);
   lua_pop(L,1);
 
   /* We are relying on the XML bypassing mechanism since the corresponding sg_platf does not exist yet.
@@ -412,17 +414,16 @@ int console_add_ASroute(lua_State *L) {
   lua_pushstring(L,"links");
   lua_gettable(L,-2);
   ASroute.link_list = new std::vector<simgrid::surf::LinkImpl*>();
-  xbt_dynar_t names = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
-  if (xbt_dynar_is_empty(names)) {
+  std::vector<std::string> names;
+  boost::split(names, lua_tostring(L, -1), boost::is_any_of(", \t\r\n"));
+  if (names.empty()) {
     /* unique name with no comma */
     ASroute.link_list->push_back(simgrid::surf::LinkImpl::byName(lua_tostring(L, -1)));
   } else {
     // Several names separated by , \t\r\n
-    unsigned int cpt;
-    char *name;
-    xbt_dynar_foreach(names, cpt, name) {
-      if (strlen(name)>0) {
-        simgrid::surf::LinkImpl* link = simgrid::surf::LinkImpl::byName(name);
+    for (auto name : names) {
+      if (name.length() > 0) {
+        simgrid::surf::LinkImpl* link = simgrid::surf::LinkImpl::byName(name.c_str());
         ASroute.link_list->push_back(link);
       }
     }

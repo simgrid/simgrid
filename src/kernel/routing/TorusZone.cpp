@@ -6,6 +6,10 @@
 #include "src/kernel/routing/TorusZone.hpp"
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <string>
+#include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster_torus, surf_route_cluster, "Torus Routing part of surf");
 
@@ -79,23 +83,20 @@ void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
 
 void TorusZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
 {
+  std::vector<std::string> dimensions;
+  boost::split(dimensions, cluster->topo_parameters, boost::is_any_of(","));
 
-  unsigned int iter;
-  char* groups;
-  xbt_dynar_t dimensions = xbt_str_split(cluster->topo_parameters, ",");
-
-  if (!xbt_dynar_is_empty(dimensions)) {
+  if (!dimensions.empty()) {
     /* We are in a torus cluster
      * Parse attribute dimensions="dim1,dim2,dim3,...,dimN" and safe it in a vector.
      * Additionally, we need to know how many ranks we have in total
      */
-    xbt_dynar_foreach (dimensions, iter, groups) {
-      dimensions_.push_back(surf_parse_get_int(groups));
+    for (auto group : dimensions) {
+      dimensions_.push_back(surf_parse_get_int(group.c_str()));
     }
 
     linkCountPerNode_ = dimensions_.size();
   }
-  xbt_dynar_free(&dimensions);
 }
 
 void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)

@@ -11,6 +11,8 @@
 #include "src/surf/maxmin_private.hpp"
 #include "src/surf/network_ib.hpp"
 #include "src/surf/xml/platf.hpp"
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
@@ -98,16 +100,18 @@ namespace simgrid {
       active_nodes=nullptr;
 
       const char* IB_factors_string=xbt_cfg_get_string("smpi/IB-penalty-factors");
-      xbt_dynar_t radical_elements = xbt_str_split(IB_factors_string, ";");
+      std::vector<std::string> radical_elements;
+      boost::split(radical_elements, IB_factors_string, boost::is_any_of(";"));
 
-      surf_parse_assert(xbt_dynar_length(radical_elements)==3,
-          "smpi/IB-penalty-factors should be provided and contain 3 elements, semi-colon separated. Example: 0.965;0.925;1.35");
+      surf_parse_assert(radical_elements.size() == 3, "smpi/IB-penalty-factors should be provided and contain 3 "
+                                                      "elements, semi-colon separated. Example: 0.965;0.925;1.35");
 
-      Be = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 0, char *), "First part of smpi/IB-penalty-factors is not numerical: %s");
-      Bs = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 1, char *), "Second part of smpi/IB-penalty-factors is not numerical: %s");
-      ys = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 2, char *), "Third part of smpi/IB-penalty-factors is not numerical: %s");
-
-      xbt_dynar_free(&radical_elements);
+      Be = xbt_str_parse_double(radical_elements.front().c_str(),
+                                "First part of smpi/IB-penalty-factors is not numerical: %s");
+      Bs = xbt_str_parse_double((radical_elements.at(1)).c_str(),
+                                "Second part of smpi/IB-penalty-factors is not numerical: %s");
+      ys = xbt_str_parse_double(radical_elements.back().c_str(),
+                                "Third part of smpi/IB-penalty-factors is not numerical: %s");
     }
 
     NetworkIBModel::~NetworkIBModel()

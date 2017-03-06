@@ -7,8 +7,13 @@
 #include "simgrid/simix.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
+
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <simgrid/s4u/engine.hpp>
+#include <string>
 #include <utility>
+#include <vector>
 
 /** @addtogroup SURF_plugin_energy
 
@@ -225,14 +230,16 @@ void HostEnergy::initWattsRangeList()
   if (all_power_values_str == nullptr)
     return;
 
-  xbt_dynar_t all_power_values = xbt_str_split(all_power_values_str, ",");
-  int pstate_nb                = xbt_dynar_length(all_power_values);
+  std::vector<std::string> all_power_values;
+  boost::split(all_power_values, all_power_values_str, boost::is_any_of(","));
 
-  for (int i = 0; i < pstate_nb; i++) {
+  int i = 0;
+  for (auto current_power_values_str : all_power_values) {
     /* retrieve the power values associated with the current pstate */
-    xbt_dynar_t current_power_values = xbt_str_split(xbt_dynar_get_as(all_power_values, i, char*), ":");
-    xbt_assert(xbt_dynar_length(current_power_values) == 3,
-               "Power properties incorrectly defined - could not retrieve idle, min and max power values for host %s",
+    std::vector<std::string> current_power_values;
+    boost::split(current_power_values, current_power_values_str, boost::is_any_of(":"));
+    xbt_assert(current_power_values.size() == 3, "Power properties incorrectly defined - "
+                                                 "could not retrieve idle, min and max power values for host %s",
                host->cname());
 
     /* min_power corresponds to the idle power (cpu load = 0) */
@@ -240,17 +247,15 @@ void HostEnergy::initWattsRangeList()
     char* msg_idle = bprintf("Invalid idle value for pstate %d on host %s: %%s", i, host->cname());
     char* msg_min  = bprintf("Invalid min value for pstate %d on host %s: %%s", i, host->cname());
     char* msg_max  = bprintf("Invalid max value for pstate %d on host %s: %%s", i, host->cname());
-    PowerRange range(xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 0, char*), msg_idle),
-                     xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 1, char*), msg_min),
-                     xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 2, char*), msg_max));
+    PowerRange range(xbt_str_parse_double((current_power_values.at(0)).c_str(), msg_idle),
+                     xbt_str_parse_double((current_power_values.at(1)).c_str(), msg_min),
+                     xbt_str_parse_double((current_power_values.at(2)).c_str(), msg_max));
     power_range_watts_list.push_back(range);
     xbt_free(msg_idle);
     xbt_free(msg_min);
     xbt_free(msg_max);
-
-    xbt_dynar_free(&current_power_values);
+    i++;
   }
-  xbt_dynar_free(&all_power_values);
 }
 }
 }
