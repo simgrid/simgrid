@@ -18,6 +18,7 @@ $ java -classpath ${classpath:=.} energy/pstate/Main ${srcdir:=.}/../platforms/e
 > [MyHost2:dvfs_test:(3) 6.000000] [jmsg/INFO] Count of Processor states=3
 > [MyHost1:dvfs_test:(2) 6.000000] [jmsg/INFO] Current power peak=2.0E7
 > [MyHost2:dvfs_test:(3) 6.000000] [jmsg/INFO] Current power peak=2.0E7
+> [6.000000] [surf_energy/INFO] Summed energy consumption: 1890.000000 Joules; used hosts consumed: 1290.000000 Joules; unused (idle) hosts consumed: 600.000000
 > [6.000000] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [6.000000] [surf_energy/INFO] Total energy of host MyHost1: 645.000000 Joules
 > [6.000000] [surf_energy/INFO] Total energy of host MyHost2: 645.000000 Joules
