@@ -54,9 +54,9 @@ void Mailbox::setReceiver(ActorPtr actor) {
 
 /** @brief get the receiver (process associated to the mailbox) */
 ActorPtr Mailbox::receiver() {
-  if(pimpl_->permanent_receiver == nullptr)
+  if (pimpl_->permanent_receiver == nullptr)
     return ActorPtr();
-  return ActorPtr(&pimpl_->permanent_receiver->getIface());
+  return pimpl_->permanent_receiver->iface();
 }
 
 }
