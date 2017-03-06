@@ -779,7 +779,8 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
 
   // to avoid deadlock, we have to sleep some time here, or the timer won't advance and we will only do iprobe simcalls
   // (especially when used as a break condition, such as while(MPI_Iprobe(...)) ... )
-  // multiplier to the sleeptime, to increase speed of execution, each failed iprobe will increase it
+  // nsleeps is a multiplier to the sleeptime, to increase speed of execution, each failed iprobe will increase it
+  // (This can speed up the execution of certain applications by an order of magnitude, such as HPL)
   static int nsleeps = 1;
   double speed       = simgrid::s4u::Actor::self()->host()->speed();
   double maxrate = xbt_cfg_get_double("smpi/iprobe-cpu-usage");
