@@ -13,8 +13,7 @@
 static double compute(double d0)
 {
   double d = d0;
-  int j;
-  for (j = 0; j < 100 * 1000 * 1000; j++) { /* 100 kflop */
+  for (int j = 0; j < 100 * 1000 * 1000; j++) { /* 100 kflop */
     if (d < 100000) {
       d = d * d;
     } else {
@@ -26,14 +25,12 @@ static double compute(double d0)
 
 int main(int argc, char *argv[])
 {
-  int verbose;
-  int i, n;
-  double d;
+  int n;
   MPI_Init(&argc, &argv);
-  verbose = argc <= 1;
+  int verbose = argc <= 1;
   MPI_Comm_size(MPI_COMM_WORLD, &n);
-  d = 2.0;
-  for (i = 0; i < 5; i++) {
+  double d = 2.0;
+  for (int i = 0; i < 5; i++) {
     /* I want no more than n + 1 benchs (thres < 0) */
     SMPI_SAMPLE_GLOBAL(n + 1, -1) {
       if (verbose)
@@ -47,7 +44,7 @@ int main(int argc, char *argv[])
   }
 
   n = 0;
-  for (i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; i++) {
     /* I want the standard error to go below 0.1 second.
      * Two tests at least will be run (count is not > 0) */
     SMPI_SAMPLE_LOCAL(0, 0.1) {

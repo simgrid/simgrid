@@ -14,8 +14,8 @@ int main(int argc, char **argv)
     MPI_Datatype mystruct;
     int          blocklens[3];
     MPI_Aint     indices[3];
-    MPI_Datatype old_types[3], type2;
-    int i,j;
+    MPI_Datatype old_types[3];
+    MPI_Datatype type2;
 
     MPI_Init( &argc, &argv );
 
@@ -57,14 +57,14 @@ int main(int argc, char **argv)
 
     printf( "Process %d got %d (-2?) and %f (8.0?), tab (should be all 0): ", rank, value.a, value.b );
 
-    for(j=0; j<2;j++ )
-      for(i=0; i<3;i++ )
+    for (int j = 0; j < 2; j++)
+      for (int i = 0; i < 3; i++)
         printf("%d ", tab[j][i]);
     printf("\n");
 
     /* Clean up the type */
-    MPI_Type_free( &mystruct );
-    MPI_Type_free( &type2 );
-    MPI_Finalize( );
+    MPI_Type_free(&mystruct);
+    MPI_Type_free(&type2);
+    MPI_Finalize();
     return 0;
 }

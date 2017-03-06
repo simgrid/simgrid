@@ -9,7 +9,7 @@
 #define SIZE 4
 
 int main(int argc, char **argv) {
-  int rank, i, j;
+  int rank;
   double a[SIZE][SIZE] = {{0}};
 
   MPI_Datatype columntype;
@@ -21,16 +21,16 @@ int main(int argc, char **argv) {
   MPI_Type_commit(&columntype);
 
     if (rank == 0) {
-      for(i=0; i <SIZE;i++)
-        for(j=0; j <SIZE;j++)
-          a[i][j] = i*SIZE+j;
+      for (int i = 0; i < SIZE; i++)
+        for (int j = 0; j < SIZE; j++)
+          a[i][j] = i * SIZE + j;
     }
 
     /* only one column is send this is an exemple for non-contignous data*/
     MPI_Bcast(a, 1, columntype, 0, MPI_COMM_WORLD);
 
-    for(i=0; i<SIZE; i++){
-      for (j=0; j < SIZE; j++) {
+    for (int i = 0; i < SIZE; i++) {
+      for (int j = 0; j < SIZE; j++) {
         printf("rank= %d, a[%d][%d]=%f\n", rank, i, j, a[i][j]);
       }
       printf("\n");
@@ -40,4 +40,3 @@ int main(int argc, char **argv) {
   MPI_Finalize();
   return 0;
 }
-
