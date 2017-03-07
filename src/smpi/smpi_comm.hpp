@@ -15,18 +15,18 @@ namespace smpi{
 class Comm {
 
   private:
-    MPI_Group m_group;
-    MPIR_Topo_type m_topoType; 
-    MPI_Topology m_topo; // to be replaced by an union
-    int m_refcount;
-    MPI_Comm m_leaders_comm;//inter-node communicator
-    MPI_Comm m_intra_comm;//intra-node communicator . For MPI_COMM_WORLD this can't be used, as var is global.
+    MPI_Group group_;
+    MPIR_Topo_type topoType_; 
+    MPI_Topology topo_; // to be replaced by an union
+    int refcount_;
+    MPI_Comm leaders_comm_;//inter-node communicator
+    MPI_Comm intra_comm_;//intra-node communicator . For MPI_COMM_WORLD this can't be used, as var is global.
     //use an intracomm stored in the process data instead
-    int* m_leaders_map; //who is the leader of each process
-    int m_is_uniform;
-    int* m_non_uniform_map; //set if smp nodes have a different number of processes allocated
-    int m_is_blocked;// are ranks allocated on the same smp node contiguous ?
-    xbt_dict_t m_attributes;
+    int* leaders_map_; //who is the leader of each process
+    int is_uniform_;
+    int* non_uniform_map_; //set if smp nodes have a different number of processes allocated
+    int is_blocked_;// are ranks allocated on the same smp node contiguous ?
+    xbt_dict_t attributes_;
 
   public:
     Comm();

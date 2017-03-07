@@ -21,16 +21,16 @@ namespace smpi{
 
 Graph::~Graph() 
 {
-  delete[] m_index;
-  delete[] m_edges;
+  delete[] index_;
+  delete[] edges_;
 }
 
 Dist_Graph::~Dist_Graph() 
 {
-  delete[] m_in;
-  delete[] m_in_weights;
-  delete[] m_out;
-  delete[] m_out_weights;
+  delete[] in_;
+  delete[] in_weights_;
+  delete[] out_;
+  delete[] out_weights_;
 }
 
 /*******************************************************************************
@@ -38,18 +38,18 @@ Dist_Graph::~Dist_Graph()
  ******************************************************************************/
 Cart::~Cart() 
 {
-  delete[] m_dims;
-  delete[] m_periodic;
-  delete[] m_position;
+  delete[] dims_;
+  delete[] periodic_;
+  delete[] position_;
 }
 
 Cart::Cart(int ndims)
 {
-  m_nnodes = 0;
-  m_ndims = ndims;
-  m_dims = new int[ndims];
-  m_periodic = new int[ndims];
-  m_position = new int[ndims];
+  nnodes_ = 0;
+  ndims_ = ndims;
+  dims_ = new int[ndims];
+  periodic_ = new int[ndims];
+  position_ = new int[ndims];
 }
 
 /* reorder is ignored, don't know what would be the consequences of a dumb reordering but neither do I see the point of
@@ -76,16 +76,16 @@ Cart::Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], int reorder,
       newGroup->set_mapping(oldGroup->index(i), i);
     }
 
-    m_nnodes = newSize;
+    nnodes_ = newSize;
 
     //  FIXME : code duplication... See coords
     nranks = newSize;
     for (int i=0; i<ndims; i++) {
-      m_dims[i] = dims[i];
-     m_periodic[i] = periods[i];
+      dims_[i] = dims[i];
+     periodic_[i] = periods[i];
       nranks = nranks / dims[i];
       /* FIXME: nranks could be zero (?) */
-      m_position[i] = rank / nranks;
+      position_[i] = rank / nranks;
       rank = rank % nranks;
     }
 
@@ -97,11 +97,11 @@ Cart::Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], int reorder,
       *comm_cart = MPI_COMM_NULL;
     }
   }
-  m_comm=*comm_cart;
+  comm_=*comm_cart;
 }
 
 Cart* Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
-  int oldNDims = m_ndims;
+  int oldNDims = ndims_;
   int j = 0;
   int *newDims = nullptr;
   int *newPeriodic = nullptr;
@@ -122,19 +122,19 @@ Cart* Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
     // that should not segfault
     for (int i = 0 ; j < newNDims ; i++) {
       if(remain_dims[i]) {
-        newDims[j] =m_dims[i];
-        newPeriodic[j] =m_periodic[i];
+        newDims[j] =dims_[i];
+        newPeriodic[j] =periodic_[i];
         j++;
       }
     }
   }
-  return new Cart(m_comm, newNDims, newDims, newPeriodic, 0, newcomm);
+  return new Cart(comm_, newNDims, newDims, newPeriodic, 0, newcomm);
 }
 
 int Cart::coords(int rank, int maxdims, int coords[]) {
-  int nnodes = m_nnodes;
-  for (int i = 0; i< m_ndims; i++ ) {
-    nnodes    = nnodes /m_dims[i];
+  int nnodes = nnodes_;
+  for (int i = 0; i< ndims_; i++ ) {
+    nnodes    = nnodes /dims_[i];
     coords[i] = rank / nnodes;
     rank      = rank % nnodes;
   }
@@ -142,17 +142,17 @@ int Cart::coords(int rank, int maxdims, int coords[]) {
 }
 
 int Cart::get(int maxdims, int* dims, int* periods, int* coords) {
-  int ndims=m_ndims < maxdims ?m_ndims : maxdims;
+  int ndims=ndims_ < maxdims ?ndims_ : maxdims;
   for(int i = 0 ; i < ndims ; i++) {
-    dims[i] =m_dims[i];
-    periods[i] =m_periodic[i];
-    coords[i] =m_position[i];
+    dims[i] =dims_[i];
+    periods[i] =periodic_[i];
+    coords[i] =position_[i];
   }
   return MPI_SUCCESS;
 }
 
 int Cart::rank(int* coords, int* rank) {
-  int ndims =m_ndims;
+  int ndims =ndims_;
   int coord;
   *rank = 0;
   int multiplier = 1;
@@ -163,19 +163,19 @@ int Cart::rank(int* coords, int* rank) {
     /* The user can give us whatever coordinates he wants. If one of them is out of range, either this dimension is
      * periodic, and we consider the equivalent coordinate inside the bounds, or it's not and then it's an error
      */
-    if (coord >=m_dims[i]) {
-      if (m_periodic[i] ) {
-        coord = coord %m_dims[i];
+    if (coord >=dims_[i]) {
+      if (periodic_[i] ) {
+        coord = coord %dims_[i];
       } else {
         // Should I do that ?
         *rank = -1;
         return MPI_ERR_ARG;
       }
     } else if (coord <  0) {
-      if(m_periodic[i]) {
-        coord = coord %m_dims[i];
+      if(periodic_[i]) {
+        coord = coord %dims_[i];
         if (coord)
-          coord =m_dims[i] + coord;
+          coord =dims_[i] + coord;
       } else {
         *rank = -1;
         return MPI_ERR_ARG;
@@ -183,29 +183,29 @@ int Cart::rank(int* coords, int* rank) {
     }
 
     *rank += multiplier * coord;
-    multiplier *=m_dims[i];
+    multiplier *=dims_[i];
   }
   return MPI_SUCCESS;
 }
 
 int Cart::shift(int direction, int disp, int *rank_source, int *rank_dest) {
 
-  int position[m_ndims];
+  int position[ndims_];
 
-  if(m_ndims == 0) {
+  if(ndims_ == 0) {
     return MPI_ERR_ARG;
   }
-  if (m_ndims < direction) {
+  if (ndims_ < direction) {
     return MPI_ERR_DIMS;
   }
 
-  this->coords(m_comm->rank(),m_ndims, position);
+  this->coords(comm_->rank(),ndims_, position);
   position[direction] += disp;
 
   if(position[direction] < 0 ||
-      position[direction] >=m_dims[direction]) {
-    if(m_periodic[direction]) {
-      position[direction] %=m_dims[direction];
+      position[direction] >=dims_[direction]) {
+    if(periodic_[direction]) {
+      position[direction] %=dims_[direction];
       this->rank(position, rank_dest);
     } else {
       *rank_dest = MPI_PROC_NULL;
@@ -214,10 +214,10 @@ int Cart::shift(int direction, int disp, int *rank_source, int *rank_dest) {
     this->rank(position, rank_dest);
   }
 
-  position[direction] = m_position[direction] - disp;
-  if(position[direction] < 0 || position[direction] >=m_dims[direction]) {
-    if(m_periodic[direction]) {
-      position[direction] %=m_dims[direction];
+  position[direction] = position_[direction] - disp;
+  if(position[direction] < 0 || position[direction] >=dims_[direction]) {
+    if(periodic_[direction]) {
+      position[direction] %=dims_[direction];
       this->rank(position, rank_source);
     } else {
       *rank_source = MPI_PROC_NULL;
@@ -230,7 +230,7 @@ int Cart::shift(int direction, int disp, int *rank_source, int *rank_dest) {
 }
 
 int Cart::dim_get(int *ndims) {
-  *ndims =m_ndims;
+  *ndims =ndims_;
   return MPI_SUCCESS;
 }
 
