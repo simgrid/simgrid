@@ -109,7 +109,7 @@ The I<expect signal> construct applies only to the next command block.
 
 =head2 Timeouts
 
-By default, no command is allowed to run more than 5 seconds. You can
+By default, no command is allowed to run more than 10 seconds. You can
 change this value as follows:
 
     # Allow some more time to the command

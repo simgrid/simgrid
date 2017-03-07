@@ -5,8 +5,7 @@
 tesh -- testing shell
 ========================
 
-Copyright (c) 2012-2016. The SimGrid Team.
-All rights reserved.
+Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the license (GNU LGPL) which comes with this package.
@@ -180,7 +179,7 @@ class Cmd(object):
         self.input_pipe = []
         self.output_pipe_stdout = []
         self.output_pipe_stderr = []
-        self.timeout = 5
+        self.timeout = 10
         self.args = None
         self.linenumber = -1
         
