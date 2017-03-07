@@ -5,13 +5,14 @@
 
 #include "xbt/str.h"
 #include <simgrid/s4u.hpp>
+#include <algorithm>
 #include <string>
-#include <unordered_map>
+#include <map>
 #include <vector>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_app_token_ring, "Messages specific for this s4u example");
 // FIXME: The following duplicates the content of s4u::Host
-extern std::unordered_map<std::string, simgrid::s4u::Host*> host_list;
+extern std::map<std::string, simgrid::s4u::Host*> host_list;
 
 class RelayRunner {
 public:
@@ -54,8 +55,7 @@ int main(int argc, char** argv)
   xbt_assert(argc > 1, "Usage: %s platform.xml\n", argv[0]);
   e->loadPlatform(argv[1]);
 
-  XBT_INFO("Number of hosts '%lu'", host_list.size());
-
+  XBT_INFO("Number of hosts '%zu'", host_list.size());
   int id = 0;
   for (auto h : host_list) {
     simgrid::s4u::Host* host = h.second;

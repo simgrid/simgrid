@@ -8,7 +8,7 @@
 #include <functional>
 #include <stdexcept>
 
-#include <unordered_map>
+#include <map>
 
 #include "simgrid/s4u/engine.hpp"
 #include "simgrid/s4u/host.hpp"
@@ -24,7 +24,7 @@
 
 XBT_LOG_EXTERNAL_CATEGORY(surf_route);
 
-std::unordered_map<std::string, simgrid::s4u::Host*> host_list; // FIXME: move it to Engine
+std::map<std::string, simgrid::s4u::Host*> host_list; // FIXME: move it to Engine
 
 int USER_HOST_LEVEL = -1;
 
