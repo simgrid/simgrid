@@ -82,7 +82,7 @@ typedef struct s_smpi_mpi_datatype{
 #define COLL_TAG_ALLREDUCE -4445
 #define SMPI_RMA_TAG -1234
 
-#define MPI_COMM_UNINITIALIZED ((MPI_Comm)-1)
+extern XBT_PRIVATE MPI_Comm MPI_COMM_UNINITIALIZED;
 
 typedef struct s_smpi_mpi_request {
   void *buf;

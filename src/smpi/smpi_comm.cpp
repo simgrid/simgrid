@@ -23,6 +23,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi, "Logging specific to SMPI (comm
 xbt_dict_t smpi_comm_keyvals = nullptr;
 int comm_keyval_id = 0;//avoid collisions
 
+
+simgrid::SMPI::Comm mpi_MPI_COMM_UNINITIALIZED;
+MPI_Comm MPI_COMM_UNINITIALIZED=&mpi_MPI_COMM_UNINITIALIZED;
+
 /* Support for cartesian topology was added, but there are 2 other types of topology, graph et dist graph. In order to
  * support them, we have to add a field MPIR_Topo_type, and replace the MPI_Topology field by an union. */
 
@@ -48,6 +52,8 @@ static int smpi_compare_rankmap(const void *a, const void *b)
 
 namespace simgrid{
 namespace SMPI{
+
+Comm::Comm(){}
 
 Comm::Comm(MPI_Group group, MPI_Topology topo)
 {
