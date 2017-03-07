@@ -125,6 +125,9 @@ int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   //get receiver pointer
   MPI_Win recv_win = connected_wins_[target_rank];
 
+  if(target_count*smpi_datatype_get_extent(target_datatype)>recv_win->size_)
+    return MPI_ERR_ARG;
+
   void* recv_addr = static_cast<void*> ( static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_);
   XBT_DEBUG("Entering MPI_Put to %d", target_rank);
 
@@ -162,6 +165,9 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     return MPI_ERR_WIN;
   //get sender pointer
   MPI_Win send_win = connected_wins_[target_rank];
+
+  if(target_count*smpi_datatype_get_extent(target_datatype)>send_win->size_)
+    return MPI_ERR_ARG;
 
   void* send_addr = static_cast<void*>(static_cast<char*>(send_win->base_) + target_disp * send_win->disp_unit_);
   XBT_DEBUG("Entering MPI_Get from %d", target_rank);
@@ -206,6 +212,9 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
   //FIXME: local version 
   //get receiver pointer
   MPI_Win recv_win = connected_wins_[target_rank];
+
+  if(target_count*smpi_datatype_get_extent(target_datatype)>recv_win->size_)
+    return MPI_ERR_ARG;
 
   void* recv_addr = static_cast<void*>(static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_);
   XBT_DEBUG("Entering MPI_Accumulate to %d", target_rank);
