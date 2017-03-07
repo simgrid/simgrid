@@ -646,7 +646,7 @@ void smpi_global_destroy()
     MPI_COMM_WORLD->cleanup_attributes();
     if(smpi_coll_cleanup_callback!=nullptr)
       smpi_coll_cleanup_callback();
-    xbt_free(MPI_COMM_WORLD);
+    delete MPI_COMM_WORLD;
   }
 
   MPI_COMM_WORLD = MPI_COMM_NULL;

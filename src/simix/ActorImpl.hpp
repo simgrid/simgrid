@@ -44,7 +44,7 @@ public:
   unsigned long ppid = -1;
   simgrid::xbt::string name;
   const char* cname() { return name.c_str(); }
-  sg_host_t host        = nullptr; /* the host on which the process is running */
+  s4u::Host* host       = nullptr; /* the host on which the process is running */
   smx_context_t context = nullptr; /* the context (uctx/raw/thread) that executes the user function */
 
   // TODO, pack them
@@ -83,11 +83,11 @@ public:
 
   ~ActorImpl();
 
-  simgrid::s4u::Actor& getIface() { return piface_; }
+  simgrid::s4u::ActorPtr iface() { return s4u::ActorPtr(&piface_); }
 
 private:
   std::atomic_int_fast32_t refcount_ { 1 };
-  simgrid::s4u::Actor piface_;
+  simgrid::s4u::Actor piface_; // Our interface is part of ourselves
 };
 
 }

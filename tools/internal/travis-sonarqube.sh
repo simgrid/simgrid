@@ -40,7 +40,7 @@ installBuildWrapper
 ctest --output-on-failure --timeout 100
 
 # Only run sonar on master (not on pull requests)
-if [ `git rev-parse --abbrev-ref HEAD` != "master" ] ; then
+if [ "$TRAVIS_PULL_REQUEST" != "false" ] ; then
   exit 0
 fi
 

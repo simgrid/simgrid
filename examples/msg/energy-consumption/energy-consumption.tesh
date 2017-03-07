@@ -16,8 +16,8 @@ $ ${bindir:=.}/energy-consumption/energy-consumption$EXEEXT ${srcdir:=.}/../plat
 > [ 20.000000] (1:dvfs_test@MyHost1) Done sleeping (duration: 4.00 s). Current peak speed=2E+07 flop/s; Energy dissipated=2005 J
 > [ 20.000000] (1:dvfs_test@MyHost1) Turning MyHost2 off, and sleeping another 10 seconds. MyHost2 dissipated 2000 J so far.
 > [ 30.000000] (1:dvfs_test@MyHost1) Done sleeping (duration: 10.00 s). Current peak speed=2E+07 flop/s; Energy dissipated=2905 J
-> [ 30.000000] (0:maestro@) Summed energy consumption: 8005.000000 Joules; used hosts consumed: 5005.000000 Joules; unused (idle) hosts consumed: 3000.000000
+> [ 30.000000] (0:maestro@) Total energy consumption: 8005.000000 Joules (used hosts: 5005.000000 Joules; unused/idle hosts: 3000.000000)
 > [ 30.000000] (0:maestro@) Total simulation time: 30.00
-> [ 30.000000] (0:maestro@) Total energy of host MyHost1: 2905.000000 Joules
-> [ 30.000000] (0:maestro@) Total energy of host MyHost2: 2100.000000 Joules
-> [ 30.000000] (0:maestro@) Total energy of host MyHost3: 3000.000000 Joules
+> [ 30.000000] (0:maestro@) Energy consumption of host MyHost1: 2905.000000 Joules
+> [ 30.000000] (0:maestro@) Energy consumption of host MyHost2: 2100.000000 Joules
+> [ 30.000000] (0:maestro@) Energy consumption of host MyHost3: 3000.000000 Joules

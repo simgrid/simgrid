@@ -165,10 +165,8 @@ namespace simix {
 ActorImpl::~ActorImpl()
 {
   delete this->context;
-  if (this->properties)
-    xbt_dict_free(&this->properties);
-  if (this->on_exit)
-    xbt_dynar_free(&this->on_exit);
+  xbt_dict_free(&this->properties);
+  xbt_dynar_free(&this->on_exit);
 }
 
 void create_maestro(std::function<void()> code)

@@ -335,7 +335,8 @@ int console_add_route(lua_State *L) {
       "Attribute 'links' must be specified for any route and must be a string (different links separated by commas or single spaces.");
   route.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
   std::vector<std::string> names;
-  boost::split(names, lua_tostring(L, -1), boost::is_any_of(", \t\r\n"));
+  const char* str = lua_tostring(L, -1);
+  boost::split(names, str, boost::is_any_of(", \t\r\n"));
   if (names.empty()) {
     /* unique name */
     route.link_list->push_back(simgrid::surf::LinkImpl::byName(lua_tostring(L, -1)));
@@ -415,7 +416,8 @@ int console_add_ASroute(lua_State *L) {
   lua_gettable(L,-2);
   ASroute.link_list = new std::vector<simgrid::surf::LinkImpl*>();
   std::vector<std::string> names;
-  boost::split(names, lua_tostring(L, -1), boost::is_any_of(", \t\r\n"));
+  const char* str = lua_tostring(L, -1);
+  boost::split(names, str, boost::is_any_of(", \t\r\n"));
   if (names.empty()) {
     /* unique name with no comma */
     ASroute.link_list->push_back(simgrid::surf::LinkImpl::byName(lua_tostring(L, -1)));
