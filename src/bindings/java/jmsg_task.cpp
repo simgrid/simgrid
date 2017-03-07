@@ -370,6 +370,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass
 
   const char *alias = env->GetStringUTFChars(jalias, 0);
   msg_error_t rv = MSG_task_receive_ext(&task, alias, (double) jtimeout, host);
+  env->ReleaseStringUTFChars(jalias, alias);
   if (env->ExceptionOccurred())
     return nullptr;
   if (rv != MSG_OK) {
@@ -383,7 +384,6 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass
   env->DeleteGlobalRef(jtask_global);
   MSG_task_set_data(task, nullptr);
 
-  env->ReleaseStringUTFChars(jalias, alias);
 
   return (jobject) jtask_local;
 }

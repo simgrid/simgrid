@@ -106,10 +106,9 @@ void* JavaContext::wrapper(void *data)
   //Attach the thread to the JVM
 
   JNIEnv *env;
-  XBT_ATTRIB_UNUSED jint error =
-    __java_vm->AttachCurrentThread((void **)&env, nullptr);
+  XBT_ATTRIB_UNUSED jint error = __java_vm->AttachCurrentThread((void**)&env, nullptr);
   xbt_assert((error == JNI_OK), "The thread could not be attached to the JVM");
-  context->jenv = get_current_thread_env();
+  context->jenv = env;
   //Wait for the first scheduling round to happen.
   xbt_os_sem_acquire(context->begin);
   //Create the "Process" object if needed.

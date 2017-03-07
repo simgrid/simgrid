@@ -116,7 +116,10 @@ extern "C" int
 VirtualMachineImpl::~VirtualMachineImpl()
 {
   onVmDestruction(this);
-  allVms_.erase(find(allVms_.begin(), allVms_.end(), piface_));
+  /* I was already removed from the allVms set if the VM was destroyed cleanly */
+  auto iter = find(allVms_.begin(), allVms_.end(), piface_);
+  if (iter != allVms_.end())
+    allVms_.erase(iter);
 
   /* dirty page tracking */
   unsigned int size          = xbt_dict_size(dp_objs);

@@ -52,10 +52,9 @@ JavaVM *get_java_VM()
 
 JNIEnv *get_current_thread_env()
 {
-  JNIEnv *env;
-
-  __java_vm->AttachCurrentThread((void **) &env, nullptr);
-  return env;
+  using simgrid::kernel::context::JavaContext;
+  JavaContext* ctx = static_cast<JavaContext*>(xbt_os_thread_get_extra_data());
+  return ctx->jenv;
 }
 
 void jmsg_throw_status(JNIEnv *env, msg_error_t status) {

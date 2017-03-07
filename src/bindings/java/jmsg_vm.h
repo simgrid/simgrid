@@ -13,6 +13,15 @@
 
 SG_BEGIN_DECL()
 
+/* Shut up some errors in eclipse online compiler. I wish such a pimple wouldn't be needed */
+#ifndef JNIEXPORT
+#define JNIEXPORT
+#endif
+#ifndef JNICALL
+#define JNICALL
+#endif
+/* end of eclipse-mandated pimple */
+
 void jvm_bind(JNIEnv *env, jobject jvm, msg_vm_t vm);
 msg_vm_t jvm_get_native(JNIEnv *env, jobject jvm);
 

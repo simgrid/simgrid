@@ -306,7 +306,7 @@ public abstract class Process implements Runnable {
 		}
 	}
 
-	/** This method runs the process. Il calls the method function that you must overwrite. */
+	/** This method runs the process. It calls the method function that you must overwrite. */
 	@Override
 	public void run() {
 

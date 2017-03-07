@@ -21,7 +21,7 @@ namespace vm {
  ***********/
 
 class XBT_PRIVATE VMModel;
-class XBT_PRIVATE VirtualMachineImpl;
+XBT_PUBLIC_CLASS VirtualMachineImpl; // Made visible to the Java plugin
 
 /*************
  * Callbacks *
@@ -50,7 +50,8 @@ extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> 
  * @brief SURF VM interface class
  * @details A VM represent a virtual machine
  */
-class VirtualMachineImpl : public surf::HostImpl {
+XBT_PUBLIC_CLASS VirtualMachineImpl : public surf::HostImpl
+{
   friend simgrid::s4u::VirtualMachine;
 
 public:

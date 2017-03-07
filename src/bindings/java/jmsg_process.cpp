@@ -79,7 +79,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv * env, jobject
   msg_process_t process;          /* the native process to create                         */
   msg_host_t host;                /* Where that process lives */
 
-  const char* hostname = env->GetStringUTFChars((jstring)jhostname, 0);
 
   /* get the name of the java process */
   jname = jprocess_get_name(jprocess_arg, env);
@@ -88,15 +87,15 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv * env, jobject
     return;
   }
   const char* name = env->GetStringUTFChars(jname, 0);
-  name             = xbt_strdup(name);
 
   /* bind/retrieve the msg host */
+  const char* hostname = env->GetStringUTFChars((jstring)jhostname, 0);
   host = MSG_host_by_name(hostname);
-
   if (!(host)) {    /* not bound */
     jxbt_throw_host_not_found(env, hostname);
     return;
   }
+  env->ReleaseStringUTFChars((jstring)jhostname, hostname);
 
   /* create a global java process instance */
   jprocess = jprocess_ref(jprocess_arg, env);
@@ -105,8 +104,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv * env, jobject
     return;
   }
 
-  /* Retrieve the kill time from the process */
-  jdouble jkill = env->GetDoubleField(jprocess, jprocess_field_Process_killTime);
   /* Actually build the MSG process */
   process = MSG_process_create_with_environment(name, [](int argc, char** argv) -> int {
               smx_actor_t process = SIMIX_process_self();
@@ -119,14 +116,13 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv * env, jobject
             host,
             /*argc, argv, properties*/
             0, nullptr, nullptr);
-  MSG_process_set_kill_time(process, (double)jkill);
+  env->ReleaseStringUTFChars(jname, name);
   /* bind the java process instance to the native process */
   jprocess_bind(jprocess, process, env);
 
-  /* release our reference to the process name (variable name becomes invalid) */
-  //FIXME : This line should be uncommented but with mac it doesn't work. BIG WARNING
-  //env->ReleaseStringUTFChars(jname, name);
-  env->ReleaseStringUTFChars((jstring) jhostname, hostname);
+  /* Retrieve the kill time from the process */
+  jdouble jkill = env->GetDoubleField(jprocess, jprocess_field_Process_killTime);
+  MSG_process_set_kill_time(process, (double)jkill);
 
   /* sets the PID and the PPID of the process */
   env->SetIntField(jprocess, jprocess_field_Process_pid,(jint) MSG_process_get_PID(process));

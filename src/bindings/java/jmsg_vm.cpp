@@ -8,6 +8,7 @@
 #include "jmsg_vm.h"
 #include "jmsg_host.h"
 #include "jxbt_utilities.h"
+#include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "xbt/ex.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
@@ -36,7 +37,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeInit(JNIEnv *env, jclass cl
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isCreated(JNIEnv * env, jobject jvm)
 {
   msg_vm_t vm = jvm_get_native(env,jvm);
-  return (jint) MSG_vm_is_created(vm);
+  return MSG_vm_is_created(vm);
 }
 
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isRunning(JNIEnv * env, jobject jvm)
@@ -69,10 +70,9 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_create(JNIEnv* env, jobject jvm, 
   msg_host_t host = jhost_get_native(env, jhost);
 
   const char* name = env->GetStringUTFChars(jname, 0);
-  name = xbt_strdup(name);
-
   msg_vm_t vm = MSG_vm_create(host, name, static_cast<int>(jramsize), static_cast<int>(jmig_netspeed),
                               static_cast<int>(jdp_intensity));
+  env->ReleaseStringUTFChars(jname, name);
 
   jvm_bind(env, jvm, vm);
 }
@@ -92,7 +92,13 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_start(JNIEnv *env, jobject jvm)
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_shutdown(JNIEnv *env, jobject jvm)
 {
   msg_vm_t vm = jvm_get_native(env,jvm);
-  MSG_vm_shutdown(vm);
+  if (vm) {
+    MSG_vm_shutdown(vm);
+    auto vmList = &simgrid::vm::VirtualMachineImpl::allVms_;
+    vmList->erase(
+        std::remove_if(vmList->begin(), vmList->end(), [vm](simgrid::s4u::VirtualMachine* it) { return vm == it; }),
+        vmList->end());
+  }
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_internalmig(JNIEnv *env, jobject jvm, jobject jhost)
