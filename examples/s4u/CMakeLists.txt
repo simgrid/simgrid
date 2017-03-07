@@ -1,4 +1,4 @@
-foreach (example io launching mutex actions-comm)
+foreach (example app-token-ring io launching mutex actions-comm)
   add_executable       (s4u_${example}  ${example}/s4u_${example}.cpp)
   target_link_libraries(s4u_${example}  simgrid)
   set_target_properties(s4u_${example}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
@@ -17,6 +17,6 @@ set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u_a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u_actions-comm.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/README.doc                                   PARENT_SCOPE)
 
-foreach(example io launching mutex actions-comm)
+foreach(example app-token-ring io launching mutex actions-comm)
   ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example} s4u_${example}.tesh)
 endforeach()
