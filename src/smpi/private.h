@@ -9,9 +9,6 @@
 
 #include "simgrid/simix.h"
 #include "smpi/smpi.h"
-#include "src/smpi/smpi_group.hpp"
-#include "src/smpi/smpi_comm.hpp"
-#include "src/smpi/smpi_topo.hpp"
 #include "src/include/smpi/smpi_interface.h"
 #include "src/instr/instr_private.h"
 #include "src/internal_config.h"
@@ -19,7 +16,10 @@
 #include "xbt/base.h"
 #include "xbt/synchro.h"
 #include "xbt/xbt_os_time.h"
-
+#include "src/smpi/smpi_group.hpp"
+#include "src/smpi/smpi_comm.hpp"
+#include "src/smpi/smpi_topo.hpp"
+#include "src/smpi/smpi_win.hpp"
 SG_BEGIN_DECL()
 
 struct s_smpi_process_data;
@@ -310,31 +310,6 @@ XBT_PRIVATE void smpi_mpi_allreduce(void *sendbuf, void *recvbuf, int count,MPI_
 XBT_PRIVATE void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count,MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
 XBT_PRIVATE void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op,
                       MPI_Comm comm);
-
-XBT_PRIVATE int smpi_mpi_win_free( MPI_Win* win);
-
-XBT_PRIVATE MPI_Win smpi_mpi_win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm);
-
-XBT_PRIVATE void smpi_mpi_win_get_name(MPI_Win win, char* name, int* length);
-XBT_PRIVATE void smpi_mpi_win_get_group(MPI_Win win, MPI_Group* group);
-XBT_PRIVATE void smpi_mpi_win_set_name(MPI_Win win, char* name);
-
-XBT_PRIVATE int smpi_mpi_win_fence( int assert,  MPI_Win win);
-
-XBT_PRIVATE int smpi_mpi_win_post(MPI_Group group, int assert, MPI_Win win);
-XBT_PRIVATE int smpi_mpi_win_start(MPI_Group group, int assert, MPI_Win win);
-XBT_PRIVATE int smpi_mpi_win_complete(MPI_Win win);
-XBT_PRIVATE int smpi_mpi_win_wait(MPI_Win win);
-
-XBT_PRIVATE int smpi_mpi_get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
-              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win);
-XBT_PRIVATE int smpi_mpi_put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
-              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win);
-XBT_PRIVATE int smpi_mpi_accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
-              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win);
-
-XBT_PRIVATE void nary_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm, int arity);
-XBT_PRIVATE void nary_tree_barrier(MPI_Comm comm, int arity);
 
 XBT_PRIVATE int smpi_coll_tuned_alltoall_ompi2(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf,
                                       int recvcount, MPI_Datatype recvtype, MPI_Comm comm);

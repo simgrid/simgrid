@@ -45,19 +45,19 @@ int smpi_coll_tuned_alltoall_pair_rma(void *send_buff, int send_count, MPI_Datat
   send_chunk = smpi_datatype_get_extent(send_type);
   recv_chunk = smpi_datatype_get_extent(recv_type);
 
-  win=smpi_mpi_win_create(recv_buff, num_procs * recv_chunk * send_count, recv_chunk, 0,
+  win=new simgrid::smpi::Win(recv_buff, num_procs * recv_chunk * send_count, recv_chunk, 0,
                  comm);
   send_chunk *= send_count;
   recv_chunk *= recv_count;
 
-  smpi_mpi_win_fence(assert, win);
+  win->fence(assert);
   for (i = 0; i < num_procs; i++) {
     dst = rank ^ i;
-    smpi_mpi_put(send_ptr + dst * send_chunk, send_count, send_type, dst,
-            rank /* send_chunk*/, send_count, send_type, win);
+    win->put(send_ptr + dst * send_chunk, send_count, send_type, dst,
+            rank /* send_chunk*/, send_count, send_type);
   }
-  smpi_mpi_win_fence(assert, win);
-  smpi_mpi_win_free(&win);
+  win->fence(assert);
+  delete win;
   return 0;
 }
 

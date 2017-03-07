@@ -2437,7 +2437,7 @@ int PMPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MP
   }else if ((base == nullptr && size != 0) || disp_unit <= 0 || size < 0 ){
     retval= MPI_ERR_OTHER;
   }else{
-    *win = smpi_mpi_win_create( base, size, disp_unit, info, comm);
+    *win = new simgrid::smpi::Win( base, size, disp_unit, info, comm);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -2450,7 +2450,8 @@ int PMPI_Win_free( MPI_Win* win){
   if (win == nullptr || *win == MPI_WIN_NULL) {
     retval = MPI_ERR_WIN;
   }else{
-    retval=smpi_mpi_win_free(win);
+    delete(*win);
+    retval=MPI_SUCCESS;
   }
   smpi_bench_begin();
   return retval;
@@ -2463,7 +2464,7 @@ int PMPI_Win_set_name(MPI_Win  win, char * name)
   } else if (name == nullptr)  {
     return MPI_ERR_ARG;
   } else {
-    smpi_mpi_win_set_name(win, name);
+    win->set_name(name);
     return MPI_SUCCESS;
   }
 }
@@ -2475,7 +2476,7 @@ int PMPI_Win_get_name(MPI_Win  win, char * name, int* len)
   } else if (name == nullptr)  {
     return MPI_ERR_ARG;
   } else {
-    smpi_mpi_win_get_name(win, name, len);
+    win->get_name(name, len);
     return MPI_SUCCESS;
   }
 }
@@ -2484,7 +2485,7 @@ int PMPI_Win_get_group(MPI_Win  win, MPI_Group * group){
   if (win == MPI_WIN_NULL)  {
     return MPI_ERR_WIN;
   }else {
-    smpi_mpi_win_get_group(win, group);
+    win->get_group(group);
     (*group)->use();
     return MPI_SUCCESS;
   }
@@ -2498,7 +2499,7 @@ int PMPI_Win_fence( int assert,  MPI_Win win){
   } else {
   int rank = smpi_process_index();
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__, nullptr);
-  retval = smpi_mpi_win_fence(assert, win);
+  retval = win->fence(assert);
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
   }
   smpi_bench_begin();
@@ -2525,12 +2526,12 @@ int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   } else {
     int rank = smpi_process_index();
     MPI_Group group;
-    smpi_mpi_win_get_group(win, &group);
+    win->get_group(&group);
     int src_traced = group->index(target_rank);
     TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, nullptr);
 
-    retval = smpi_mpi_get( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
-                           target_datatype, win);
+    retval = win->get( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
+                           target_datatype);
 
     TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
   }
@@ -2558,13 +2559,13 @@ int PMPI_Put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   } else {
     int rank = smpi_process_index();
     MPI_Group group;
-    smpi_mpi_win_get_group(win, &group);
+    win->get_group(&group);
     int dst_traced = group->index(target_rank);
     TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, nullptr);
     TRACE_smpi_send(rank, rank, dst_traced, SMPI_RMA_TAG, origin_count*smpi_datatype_size(origin_datatype));
 
-    retval = smpi_mpi_put( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
-                           target_datatype, win);
+    retval = win->put( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
+                           target_datatype);
 
     TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
   }
@@ -2595,12 +2596,12 @@ int PMPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
   } else {
     int rank = smpi_process_index();
     MPI_Group group;
-    smpi_mpi_win_get_group(win, &group);
+    win->get_group(&group);
     int src_traced = group->index(target_rank);
     TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, nullptr);
 
-    retval = smpi_mpi_accumulate( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
-                                  target_datatype, op, win);
+    retval = win->accumulate( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
+                                  target_datatype, op);
 
     TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
   }
@@ -2618,7 +2619,7 @@ int PMPI_Win_post(MPI_Group group, int assert, MPI_Win win){
   } else {
     int rank = smpi_process_index();
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, nullptr);
-    retval = smpi_mpi_win_post(group,assert,win);
+    retval = win->post(group,assert);
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
   }
   smpi_bench_begin();
@@ -2635,7 +2636,7 @@ int PMPI_Win_start(MPI_Group group, int assert, MPI_Win win){
   } else {
     int rank = smpi_process_index();
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, nullptr);
-    retval = smpi_mpi_win_start(group,assert,win);
+    retval = win->start(group,assert);
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
   }
   smpi_bench_begin();
@@ -2651,7 +2652,7 @@ int PMPI_Win_complete(MPI_Win win){
     int rank = smpi_process_index();
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, nullptr);
 
-    retval = smpi_mpi_win_complete(win);
+    retval = win->complete();
 
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
   }
@@ -2668,7 +2669,7 @@ int PMPI_Win_wait(MPI_Win win){
     int rank = smpi_process_index();
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, nullptr);
 
-    retval = smpi_mpi_win_wait(win);
+    retval = win->wait();
 
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
   }

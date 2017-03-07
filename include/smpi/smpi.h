@@ -248,8 +248,7 @@ typedef struct {
   int count;
 } MPI_Status;
 
-struct s_smpi_mpi_win;
-typedef struct s_smpi_mpi_win* MPI_Win;
+typedef SMPI_Win* MPI_Win;
 struct s_smpi_mpi_info;
 typedef struct s_smpi_mpi_info *MPI_Info;
 
