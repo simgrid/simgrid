@@ -10,7 +10,7 @@
 #include "private.h"
 
 namespace simgrid{
-namespace SMPI{
+namespace smpi{
 
 class Group {
   private:

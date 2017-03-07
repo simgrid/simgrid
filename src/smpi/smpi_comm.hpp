@@ -10,7 +10,7 @@
 #include "private.h"
 
 namespace simgrid{
-namespace SMPI{
+namespace smpi{
 
 class Comm {
 
@@ -29,7 +29,7 @@ class Comm {
     xbt_dict_t m_attributes;
 
   public:
-
+    Comm();
     Comm(MPI_Group group, MPI_Topology topo);
 
     void destroy();

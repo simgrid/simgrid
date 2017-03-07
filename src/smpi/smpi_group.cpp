@@ -7,11 +7,11 @@
 #include "private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_group, smpi, "Logging specific to SMPI (group)");
-simgrid::SMPI::Group mpi_MPI_GROUP_EMPTY;
+simgrid::smpi::Group mpi_MPI_GROUP_EMPTY;
 MPI_Group MPI_GROUP_EMPTY=&mpi_MPI_GROUP_EMPTY;
 
 namespace simgrid{
-namespace SMPI{
+namespace smpi{
 
 Group::Group()
 {
@@ -21,11 +21,9 @@ Group::Group()
   m_refcount=1;                            /* m_refcount: start > 0 so that this group never gets freed */
 }
 
-Group::Group(int n)
+Group::Group(int n) : m_size(n)
 {
   int i;
-
-  m_size = n;
   m_rank_to_index_map = xbt_new(int, m_size);
   m_index_to_rank_map = xbt_dict_new_homogeneous(xbt_free_f);
   m_refcount = 1;
@@ -138,7 +136,10 @@ int Group::size()
 int Group::compare(MPI_Group group2)
 {
   int result;
-  int i, index, rank, sz;
+  int i;
+  int index;
+  int rank;
+  int sz;
 
   result = MPI_IDENT;
   if (m_size != group2->size()) {
@@ -162,7 +163,8 @@ int Group::compare(MPI_Group group2)
 
 int Group::incl(int n, int* ranks, MPI_Group* newgroup)
 {
-  int i=0, index=0;
+  int i=0;
+  int index=0;
   if (n == 0) {
     *newgroup = MPI_GROUP_EMPTY;
   } else if (n == m_size) {
@@ -195,7 +197,7 @@ int Group::group_union(MPI_Group group2, MPI_Group* newgroup)
   if (size1 == 0) {
     *newgroup = MPI_GROUP_EMPTY;
   } else {
-    *newgroup = new simgrid::SMPI::Group(size1);
+    *newgroup = new simgrid::smpi::Group(size1);
     size2 = this->size();
     for (int i = 0; i < size2; i++) {
       int proc1 = this->index(i);
@@ -222,7 +224,7 @@ int Group::intersection(MPI_Group group2, MPI_Group* newgroup)
   if (size2 == 0) {
     *newgroup = MPI_GROUP_EMPTY;
   } else {
-    *newgroup = new simgrid::SMPI::Group(size2);
+    *newgroup = new simgrid::smpi::Group(size2);
     int j=0;
     for (int i = 0; i < group2->size(); i++) {
       int proc2 = group2->index(i);
@@ -250,7 +252,7 @@ int Group::difference(MPI_Group group2, MPI_Group* newgroup)
   if (newsize == 0) {
     *newgroup = MPI_GROUP_EMPTY;
   } else {
-    *newgroup = new simgrid::SMPI::Group(newsize);
+    *newgroup = new simgrid::smpi::Group(newsize);
     for (int i = 0; i < size2; i++) {
       int proc1 = this->index(i);
       int proc2 = group2->rank(proc1);
@@ -265,7 +267,7 @@ int Group::difference(MPI_Group group2, MPI_Group* newgroup)
 int Group::excl(int n, int *ranks, MPI_Group * newgroup){
   int oldsize = m_size;
   int newsize = oldsize - n;
-  *newgroup = new simgrid::SMPI::Group(newsize);
+  *newgroup = new simgrid::smpi::Group(newsize);
   int* to_exclude=xbt_new0(int, m_size);
   for (int i     = 0; i < oldsize; i++)
     to_exclude[i]=0;
@@ -304,7 +306,7 @@ int Group::range_incl(int n, int ranges[][3], MPI_Group * newgroup){
       }
     }
   }
-  *newgroup = new simgrid::SMPI::Group(newsize);
+  *newgroup = new simgrid::smpi::Group(newsize);
   int j     = 0;
   for (int i = 0; i < n; i++) {
     for (int rank = ranges[i][0];                    /* First */
@@ -352,7 +354,7 @@ int Group::range_excl(int n, int ranges[][3], MPI_Group * newgroup){
   if (newsize == 0) {
     *newgroup = MPI_GROUP_EMPTY;
   } else {
-    *newgroup = new simgrid::SMPI::Group(newsize);
+    *newgroup = new simgrid::smpi::Group(newsize);
     int newrank = 0;
     int oldrank = 0;
     while (newrank < newsize) {

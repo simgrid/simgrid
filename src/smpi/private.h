@@ -11,6 +11,7 @@
 #include "smpi/smpi.h"
 #include "src/smpi/smpi_group.hpp"
 #include "src/smpi/smpi_comm.hpp"
+#include "src/smpi/smpi_topo.hpp"
 #include "src/include/smpi/smpi_interface.h"
 #include "src/instr/instr_private.h"
 #include "src/internal_config.h"
@@ -81,7 +82,7 @@ typedef struct s_smpi_mpi_datatype{
 #define COLL_TAG_ALLREDUCE -4445
 #define SMPI_RMA_TAG -1234
 
-#define MPI_COMM_UNINITIALIZED ((MPI_Comm)-1)
+extern XBT_PRIVATE MPI_Comm MPI_COMM_UNINITIALIZED;
 
 typedef struct s_smpi_mpi_request {
   void *buf;
@@ -135,32 +136,11 @@ XBT_PRIVATE int smpi_process_finalized();
 XBT_PRIVATE int smpi_process_initialized();
 XBT_PRIVATE void smpi_process_mark_as_initialized();
 
-struct s_smpi_mpi_cart_topology;
-typedef struct s_smpi_mpi_cart_topology *MPIR_Cart_Topology;
+typedef SMPI_Cart_topology *MPIR_Cart_Topology;
 
-struct s_smpi_mpi_graph_topology;
-typedef struct s_smpi_mpi_graph_topology *MPIR_Graph_Topology;
+typedef SMPI_Graph_topology *MPIR_Graph_Topology;
 
-struct s_smpi_dist_graph_topology;
-typedef struct s_smpi_dist_graph_topology *MPIR_Dist_Graph_Topology;
-
-// MPI_Topology defined in smpi.h, as it is public
-
-XBT_PRIVATE void smpi_topo_destroy(MPI_Topology topo);
-XBT_PRIVATE MPI_Topology smpi_topo_create(MPIR_Topo_type kind);
-XBT_PRIVATE void smpi_cart_topo_destroy(MPIR_Cart_Topology cart);
-XBT_PRIVATE MPI_Topology smpi_cart_topo_create(int ndims);
-XBT_PRIVATE int smpi_mpi_cart_create(MPI_Comm comm_old, int ndims, int dims[], int periods[], int reorder,
-                                     MPI_Comm *comm_cart);
-XBT_PRIVATE int smpi_mpi_cart_sub(MPI_Comm comm, const int remain_dims[], MPI_Comm *newcomm);
-XBT_PRIVATE int smpi_mpi_cart_coords(MPI_Comm comm, int rank, int maxdims, int coords[]);
-XBT_PRIVATE int smpi_mpi_cart_get(MPI_Comm comm, int maxdims, int* dims, int* periods, int* coords);
-XBT_PRIVATE int smpi_mpi_cart_rank(MPI_Comm comm, int* coords, int* rank);
-XBT_PRIVATE int smpi_mpi_cart_shift(MPI_Comm comm, int direction, int disp, int *rank_source, int *rank_dest);
-XBT_PRIVATE int smpi_mpi_cartdim_get(MPI_Comm comm, int *ndims);
-XBT_PRIVATE int smpi_mpi_dims_create(int nnodes, int ndims, int dims[]);
-XBT_PRIVATE void smpi_graph_topo_destroy(MPIR_Graph_Topology cart);
-XBT_PRIVATE void smpi_dist_graph_topo_destroy(MPIR_Dist_Graph_Topology cart);
+typedef SMPI_Dist_Graph_topology *MPIR_Dist_Graph_Topology;
 
 XBT_PRIVATE smpi_process_data_t smpi_process_data();
 XBT_PRIVATE smpi_process_data_t smpi_process_remote_data(int index);

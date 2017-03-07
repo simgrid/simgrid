@@ -525,7 +525,7 @@ int PMPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm)
     return MPI_SUCCESS;
   }else{
     group->use();
-    *newcomm = new simgrid::SMPI::Comm(group, nullptr);
+    *newcomm = new simgrid::smpi::Comm(group, nullptr);
     return MPI_SUCCESS;
   }
 }
@@ -2306,7 +2306,8 @@ int PMPI_Cart_create(MPI_Comm comm_old, int ndims, int* dims, int* periodic, int
   } else if (ndims < 0 || (ndims > 0 && (dims == nullptr || periodic == nullptr)) || comm_cart == nullptr) {
     return MPI_ERR_ARG;
   } else{
-    return smpi_mpi_cart_create(comm_old, ndims, dims, periodic, reorder, comm_cart);
+    new simgrid::smpi::Cart(comm_old, ndims, dims, periodic, reorder, comm_cart);
+    return MPI_SUCCESS;
   }
 }
 
@@ -2317,7 +2318,11 @@ int PMPI_Cart_rank(MPI_Comm comm, int* coords, int* rank) {
   if (coords == nullptr) {
     return MPI_ERR_ARG;
   }
-  return smpi_mpi_cart_rank(comm, coords, rank);
+  simgrid::smpi::Cart* topo = static_cast<simgrid::smpi::Cart*>(comm->topo());
+  if (topo==nullptr) {
+    return MPI_ERR_ARG;
+  }
+  return topo->rank(coords, rank);
 }
 
 int PMPI_Cart_shift(MPI_Comm comm, int direction, int displ, int* source, int* dest) {
@@ -2327,7 +2332,11 @@ int PMPI_Cart_shift(MPI_Comm comm, int direction, int displ, int* source, int* d
   if (source == nullptr || dest == nullptr || direction < 0 ) {
     return MPI_ERR_ARG;
   }
-  return smpi_mpi_cart_shift(comm, direction, displ, source, dest);
+  simgrid::smpi::Cart* topo = static_cast<simgrid::smpi::Cart*>(comm->topo());
+  if (topo==nullptr) {
+    return MPI_ERR_ARG;
+  }
+  return topo->shift(direction, displ, source, dest);
 }
 
 int PMPI_Cart_coords(MPI_Comm comm, int rank, int maxdims, int* coords) {
@@ -2343,7 +2352,11 @@ int PMPI_Cart_coords(MPI_Comm comm, int rank, int maxdims, int* coords) {
   if(coords == nullptr) {
     return MPI_ERR_ARG;
   }
-  return smpi_mpi_cart_coords(comm, rank, maxdims, coords);
+  simgrid::smpi::Cart* topo = static_cast<simgrid::smpi::Cart*>(comm->topo());
+  if (topo==nullptr) {
+    return MPI_ERR_ARG;
+  }
+  return topo->coords(rank, maxdims, coords);
 }
 
 int PMPI_Cart_get(MPI_Comm comm, int maxdims, int* dims, int* periods, int* coords) {
@@ -2353,7 +2366,11 @@ int PMPI_Cart_get(MPI_Comm comm, int maxdims, int* dims, int* periods, int* coor
   if(maxdims <= 0 || dims == nullptr || periods == nullptr || coords == nullptr) {
     return MPI_ERR_ARG;
   }
-  return smpi_mpi_cart_get(comm, maxdims, dims, periods, coords);
+  simgrid::smpi::Cart* topo = static_cast<simgrid::smpi::Cart*>(comm->topo());
+  if (topo==nullptr) {
+    return MPI_ERR_ARG;
+  }
+  return topo->get(maxdims, dims, periods, coords);
 }
 
 int PMPI_Cartdim_get(MPI_Comm comm, int* ndims) {
@@ -2363,7 +2380,11 @@ int PMPI_Cartdim_get(MPI_Comm comm, int* ndims) {
   if (ndims == nullptr) {
     return MPI_ERR_ARG;
   }
-  return smpi_mpi_cartdim_get(comm, ndims);
+  simgrid::smpi::Cart* topo = static_cast<simgrid::smpi::Cart*>(comm->topo());
+  if (topo==nullptr) {
+    return MPI_ERR_ARG;
+  }
+  return topo->dim_get(ndims);
 }
 
 int PMPI_Dims_create(int nnodes, int ndims, int* dims) {
@@ -2373,8 +2394,7 @@ int PMPI_Dims_create(int nnodes, int ndims, int* dims) {
   if (ndims < 1 || nnodes < 1) {
     return MPI_ERR_DIMS;
   }
-
-  return smpi_mpi_dims_create(nnodes, ndims, dims);
+  return simgrid::smpi::Dims_create(nnodes, ndims, dims);
 }
 
 int PMPI_Cart_sub(MPI_Comm comm, int* remain_dims, MPI_Comm* comm_new) {
@@ -2384,7 +2404,14 @@ int PMPI_Cart_sub(MPI_Comm comm, int* remain_dims, MPI_Comm* comm_new) {
   if (comm_new == nullptr) {
     return MPI_ERR_ARG;
   }
-  return smpi_mpi_cart_sub(comm, remain_dims, comm_new);
+  simgrid::smpi::Cart* topo = static_cast<simgrid::smpi::Cart*>(comm->topo());
+  if (topo==nullptr) {
+    return MPI_ERR_ARG;
+  }
+  simgrid::smpi::Cart* cart = topo->sub(remain_dims, comm_new);
+  if(cart==nullptr)
+    return  MPI_ERR_ARG;
+  return MPI_SUCCESS;
 }
 
 int PMPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, MPI_Datatype *newtype){

@@ -23,6 +23,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi, "Logging specific to SMPI (comm
 xbt_dict_t smpi_comm_keyvals = nullptr;
 int comm_keyval_id = 0;//avoid collisions
 
+
+simgrid::smpi::Comm mpi_MPI_COMM_UNINITIALIZED;
+MPI_Comm MPI_COMM_UNINITIALIZED=&mpi_MPI_COMM_UNINITIALIZED;
+
 /* Support for cartesian topology was added, but there are 2 other types of topology, graph et dist graph. In order to
  * support them, we have to add a field MPIR_Topo_type, and replace the MPI_Topology field by an union. */
 
@@ -47,14 +51,14 @@ static int smpi_compare_rankmap(const void *a, const void *b)
 }
 
 namespace simgrid{
-namespace SMPI{
+namespace smpi{
 
-Comm::Comm(MPI_Group group, MPI_Topology topo)
+Comm::Comm(){}
+
+Comm::Comm(MPI_Group group, MPI_Topology topo) : m_group(group), m_topo(topo)
 {
-  m_group = group;
   m_refcount=1;
   m_topoType = MPI_INVALID_TOPO;
-  m_topo = topo;
   m_intra_comm = MPI_COMM_NULL;
   m_leaders_comm = MPI_COMM_NULL;
   m_is_uniform=1;
@@ -67,8 +71,8 @@ Comm::Comm(MPI_Group group, MPI_Topology topo)
 void Comm::destroy()
 {
   if (this == MPI_COMM_UNINITIALIZED)
-    return smpi_process_comm_world()->destroy();
-  smpi_topo_destroy(m_topo); // there's no use count on topos
+    smpi_process_comm_world()->destroy();
+  delete m_topo; // there's no use count on topos
   this->unuse();
 }
 
@@ -76,8 +80,8 @@ int Comm::dup(MPI_Comm* newcomm){
   if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
      smpi_switch_data_segment(smpi_process_index());
    }
-  MPI_Group cp = new simgrid::SMPI::Group(this->group());
-  (*newcomm) = new simgrid::SMPI::Comm(cp, this->topo());
+  MPI_Group cp = new simgrid::smpi::Group(this->group());
+  (*newcomm) = new simgrid::smpi::Comm(cp, this->topo());
   int ret = MPI_SUCCESS;
 
   if(m_attributes !=nullptr){
@@ -134,7 +138,7 @@ int Comm::rank()
 void Comm::get_name (char* name, int* len)
 {
   if (this == MPI_COMM_UNINITIALIZED)
-    return smpi_process_comm_world()->get_name(name, len);
+    smpi_process_comm_world()->get_name(name, len);
   if(this == MPI_COMM_WORLD) {
     strncpy(name, "WORLD",5);
     *len = 5;
@@ -145,7 +149,7 @@ void Comm::get_name (char* name, int* len)
 
 void Comm::set_leaders_comm(MPI_Comm leaders){
   if (this == MPI_COMM_UNINITIALIZED)
-    return smpi_process_comm_world()->set_leaders_comm(leaders);
+    smpi_process_comm_world()->set_leaders_comm(leaders);
   m_leaders_comm=leaders;
 }
 
@@ -233,7 +237,7 @@ MPI_Comm Comm::split(int color, int key)
         rankmap[2 * count + 1] = recvbuf[2 * i + 1];
         count++;
         qsort(rankmap, count, 2 * sizeof(int), &smpi_compare_rankmap);
-        group_out = new simgrid::SMPI::Group(count);
+        group_out = new simgrid::smpi::Group(count);
         if (i == 0) {
           group_root = group_out; /* Save root's group */
         }
@@ -245,7 +249,7 @@ MPI_Comm Comm::split(int color, int key)
         int reqs              = 0;
         for (int j = 0; j < count; j++) {
           if(rankmap[2 * j] != 0) {
-            group_snd[reqs]=new simgrid::SMPI::Group(group_out);
+            group_snd[reqs]=new simgrid::smpi::Group(group_out);
             requests[reqs] = smpi_mpi_isend(&(group_snd[reqs]), 1, MPI_PTR, rankmap[2 * j], system_tag, this);
             reqs++;
           }
@@ -266,12 +270,12 @@ MPI_Comm Comm::split(int color, int key)
       smpi_mpi_recv(&group_out, 1, MPI_PTR, 0, system_tag, this, MPI_STATUS_IGNORE);
     } /* otherwise, exit with group_out == nullptr */
   }
-  return group_out!=nullptr ? new simgrid::SMPI::Comm(group_out, nullptr) : MPI_COMM_NULL;
+  return group_out!=nullptr ? new simgrid::smpi::Comm(group_out, nullptr) : MPI_COMM_NULL;
 }
 
 void Comm::use(){
   if (this == MPI_COMM_UNINITIALIZED)
-    return smpi_process_comm_world()->use();
+    smpi_process_comm_world()->use();
   m_group->use();
   m_refcount++;
 }
@@ -304,7 +308,7 @@ void Comm::cleanup_smp(){
 
 void Comm::unuse(){
   if (this == MPI_COMM_UNINITIALIZED)
-    return smpi_process_comm_world()->unuse();
+    smpi_process_comm_world()->unuse();
   m_refcount--;
   m_group->unuse();
 
@@ -327,7 +331,7 @@ void Comm::init_smp(){
   int leader = -1;
 
   if (this == MPI_COMM_UNINITIALIZED)
-    return smpi_process_comm_world()->init_smp();
+    smpi_process_comm_world()->init_smp();
 
   int comm_size = this->size();
   
@@ -361,7 +365,7 @@ void Comm::init_smp(){
     }
   }
   XBT_DEBUG("number of processes deployed on my node : %d", intra_comm_size);
-  MPI_Group group_intra = new simgrid::SMPI::Group(intra_comm_size);
+  MPI_Group group_intra = new simgrid::smpi::Group(intra_comm_size);
   i=0;
   process = nullptr;
   xbt_swag_foreach(process, process_list) {
@@ -372,7 +376,7 @@ void Comm::init_smp(){
     }
   }
 
-  MPI_Comm comm_intra = new simgrid::SMPI::Comm(group_intra, nullptr);
+  MPI_Comm comm_intra = new simgrid::smpi::Comm(group_intra, nullptr);
   leader=min_index;
 
   int * leaders_map= static_cast<int*>(xbt_malloc0(sizeof(int)*comm_size));
@@ -408,14 +412,14 @@ void Comm::init_smp(){
   }
   qsort(leader_list, leader_group_size, sizeof(int),compare_ints);
 
-  MPI_Group leaders_group = new simgrid::SMPI::Group(leader_group_size);
+  MPI_Group leaders_group = new simgrid::smpi::Group(leader_group_size);
 
   MPI_Comm leader_comm = MPI_COMM_NULL;
   if(MPI_COMM_WORLD!=MPI_COMM_UNINITIALIZED && this!=MPI_COMM_WORLD){
     //create leader_communicator
     for (i=0; i< leader_group_size;i++)
       leaders_group->set_mapping(leader_list[i], i);
-    leader_comm = new simgrid::SMPI::Comm(leaders_group, nullptr);
+    leader_comm = new simgrid::smpi::Comm(leaders_group, nullptr);
     this->set_leaders_comm(leader_comm);
     this->set_intra_comm(comm_intra);
 
@@ -425,7 +429,7 @@ void Comm::init_smp(){
       leaders_group->set_mapping(leader_list[i], i);
 
     if(this->get_leaders_comm()==MPI_COMM_NULL){
-      leader_comm = new simgrid::SMPI::Comm(leaders_group, nullptr);
+      leader_comm = new simgrid::smpi::Comm(leaders_group, nullptr);
       this->set_leaders_comm(leader_comm);
     }else{
       leader_comm=this->get_leaders_comm();
