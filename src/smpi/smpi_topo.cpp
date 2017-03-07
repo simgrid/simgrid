@@ -16,7 +16,7 @@ static int getfactors(int num, int *nfators, int **factors);
 
 
 namespace simgrid{
-namespace SMPI{
+namespace smpi{
 
 
 Graph::~Graph() 
@@ -71,7 +71,7 @@ Cart::Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], int reorder,
       return;
     }
     oldGroup = comm_old->group();
-    newGroup = new simgrid::SMPI::Group(newSize);
+    newGroup = new simgrid::smpi::Group(newSize);
     for (int i = 0 ; i < newSize ; i++) {
       newGroup->set_mapping(oldGroup->index(i), i);
     }
@@ -89,10 +89,10 @@ Cart::Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], int reorder,
       rank = rank % nranks;
     }
 
-    *comm_cart = new simgrid::SMPI::Comm(newGroup, this);
+    *comm_cart = new simgrid::smpi::Comm(newGroup, this);
   } else {
     if (rank == 0) {
-      *comm_cart = new simgrid::SMPI::Comm(new simgrid::SMPI::Group(MPI_COMM_SELF->group()), this);
+      *comm_cart = new simgrid::smpi::Comm(new simgrid::smpi::Group(MPI_COMM_SELF->group()), this);
     } else {
       *comm_cart = MPI_COMM_NULL;
     }

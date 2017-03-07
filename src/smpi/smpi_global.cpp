@@ -352,8 +352,8 @@ MPI_Comm smpi_process_comm_self()
 {
   smpi_process_data_t data = smpi_process_data();
   if(data->comm_self==MPI_COMM_NULL){
-    MPI_Group group = new simgrid::SMPI::Group(1);
-    data->comm_self = new simgrid::SMPI::Comm(group, nullptr);
+    MPI_Group group = new simgrid::smpi::Group(1);
+    data->comm_self = new simgrid::smpi::Comm(group, nullptr);
     group->set_mapping(smpi_process_index(), 0);
   }
 
@@ -604,8 +604,8 @@ void smpi_global_init()
   //if the process was launched through smpirun script we generate a global mpi_comm_world
   //if not, we let MPI_COMM_NULL, and the comm world will be private to each mpi instance
   if(smpirun){
-    group = new simgrid::SMPI::Group(process_count);
-    MPI_COMM_WORLD = new simgrid::SMPI::Comm(group, nullptr);
+    group = new simgrid::smpi::Group(process_count);
+    MPI_COMM_WORLD = new simgrid::smpi::Comm(group, nullptr);
     MPI_Attr_put(MPI_COMM_WORLD, MPI_UNIVERSE_SIZE, reinterpret_cast<void *>(process_count));
     msg_bar_t bar = MSG_barrier_init(process_count);
 

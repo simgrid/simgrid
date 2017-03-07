@@ -11,7 +11,7 @@
 
 
 namespace simgrid{
-namespace SMPI{
+namespace smpi{
 
 class Topo {
   protected:
