@@ -41,7 +41,7 @@ SG_BEGIN_DECL()
 int JAVA_HOST_LEVEL = -1;
 int JAVA_STORAGE_LEVEL = -1;
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
 JavaVM *__java_vm = nullptr;
 
@@ -101,7 +101,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, j
   jstring jval;
   const char *tmp;
 
-  XBT_LOG_CONNECT(jmsg);
+  XBT_LOG_CONNECT(java);
   XBT_LOG_CONNECT(jtrace);
 
   env->GetJavaVM(&__java_vm);

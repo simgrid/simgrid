@@ -11,7 +11,7 @@
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "xbt/ex.hpp"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
 SG_BEGIN_DECL()
 

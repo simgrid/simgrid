@@ -15,7 +15,7 @@
 
 extern "C" JavaVM* __java_vm;
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(jmsg, "MSG for Java(TM)");
+XBT_LOG_NEW_DEFAULT_CATEGORY(java, "MSG for Java(TM)");
 
 namespace simgrid {
 namespace kernel {

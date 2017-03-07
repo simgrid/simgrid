@@ -28,7 +28,7 @@ public class Master extends Process {
 	public void main(String[] args) throws MsgException {
 		int workersCount = Main.NHOSTS;
 
-		for (int step = 0; step < 100000 ; step++) {
+		for (int step = 1; step <= 1/*00000*/ ; step++) {
 			//Plumbr.startTransaction("Migration");
 			ArrayList<VM> vms = new ArrayList<>();
 			// Create one VM per host and bind a process inside each one. 
@@ -62,7 +62,7 @@ public class Master extends Process {
 			}
 
 			Msg.verb("Sleep long enough for everyone to be done with previous batch of work");
-			waitFor(1000*(step+1) - Msg.getClock());
+			waitFor(1000*step - Msg.getClock());
 
 			/*    Msg.info("Add one more process per VM.");
     for (int i = 0; i < vms.size(); i++) {

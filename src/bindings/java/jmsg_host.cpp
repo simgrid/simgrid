@@ -13,7 +13,7 @@
 #include "jxbt_utilities.h"
 #include "jmsg_storage.h"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
 SG_BEGIN_DECL()
 

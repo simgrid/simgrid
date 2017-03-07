@@ -12,7 +12,7 @@
 #include "jxbt_utilities.h"
 #include "xbt/synchro.h"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
 SG_BEGIN_DECL()
 
