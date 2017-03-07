@@ -70,8 +70,10 @@ Comm::Comm(MPI_Group group, MPI_Topology topo) : _group(group), _topo(topo)
 
 void Comm::destroy()
 {
-  if (this == MPI_COMM_UNINITIALIZED)
+  if (this == MPI_COMM_UNINITIALIZED){
     smpi_process_comm_world()->destroy();
+    return;
+  }
   delete _topo; // there's no use count on topos
   this->unuse();
 }
@@ -137,8 +139,10 @@ int Comm::rank()
 
 void Comm::get_name (char* name, int* len)
 {
-  if (this == MPI_COMM_UNINITIALIZED)
+  if (this == MPI_COMM_UNINITIALIZED){
     smpi_process_comm_world()->get_name(name, len);
+    return;
+  }
   if(this == MPI_COMM_WORLD) {
     strncpy(name, "WORLD",5);
     *len = 5;
@@ -148,8 +152,10 @@ void Comm::get_name (char* name, int* len)
 }
 
 void Comm::set_leaders_comm(MPI_Comm leaders){
-  if (this == MPI_COMM_UNINITIALIZED)
+  if (this == MPI_COMM_UNINITIALIZED){
     smpi_process_comm_world()->set_leaders_comm(leaders);
+    return;
+  }
   _leaders_comm=leaders;
 }
 
@@ -274,8 +280,10 @@ MPI_Comm Comm::split(int color, int key)
 }
 
 void Comm::use(){
-  if (this == MPI_COMM_UNINITIALIZED)
+  if (this == MPI_COMM_UNINITIALIZED){
     smpi_process_comm_world()->use();
+    return;
+  }
   _group->use();
   _refcount++;
 }
@@ -307,8 +315,10 @@ void Comm::cleanup_smp(){
 }
 
 void Comm::unuse(){
-  if (this == MPI_COMM_UNINITIALIZED)
+  if (this == MPI_COMM_UNINITIALIZED){
     smpi_process_comm_world()->unuse();
+    return;
+  }
   _refcount--;
   _group->unuse();
 
