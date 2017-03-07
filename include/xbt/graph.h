@@ -79,8 +79,9 @@ XBT_PUBLIC(xbt_dynar_t) xbt_graph_node_get_outedges(xbt_node_t n);
 XBT_PUBLIC(xbt_node_t) xbt_graph_edge_get_source(xbt_edge_t e);
 XBT_PUBLIC(xbt_node_t) xbt_graph_edge_get_target(xbt_edge_t e);
 
-XBT_PUBLIC(void) xbt_graph_export_graphviz(xbt_graph_t g, const char *filename,
-    const char *(node_name) (xbt_node_t), const char *(edge_name) (xbt_edge_t));
+XBT_PUBLIC(void)
+xbt_graph_export_graphviz(xbt_graph_t g, const char* filename, const char*(node_name)(xbt_node_t n),
+                          const char*(edge_name)(xbt_edge_t e));
 
 SG_END_DECL()
 #endif /* XBT_GRAPH_H */

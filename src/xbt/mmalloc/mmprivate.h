@@ -10,7 +10,7 @@
    Written May 1989 by Mike Haertel.
    Heavily modified Mar 1992 by Fred Fish. (fnf@cygnus.com) */
 
-#ifndef XBR_MMPRIVATE_H
+#ifndef XBT_MMPRIVATE_H
 #define XBT_MMPRIVATE_H 1
 
 #include <xbt/base.h>
