@@ -1,13 +1,12 @@
-/* virtu - virtualization layer for XBT to choose between GRAS and MSG implementation */
+/* virtu - virtualization layer for the logging to know about the actors    */
 
-/* Copyright (c) 2007, 2009-2010, 2012-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2014. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef __XBT_VIRTU_H__
-#define __XBT_VIRTU_H__
+#ifndef XBT_VIRTU_H
+#define XBT_VIRTU_H
 
 #include "xbt/misc.h"
 #include "xbt/base.h"
@@ -26,4 +25,4 @@ XBT_PUBLIC_DATA(char*) xbt_binary_name;
 XBT_PUBLIC_DATA(xbt_dynar_t) xbt_cmdline;
 
 SG_END_DECL()
-#endif                          /* __XBT_VIRTU_H__ */
+#endif /* XBT_VIRTU_H */

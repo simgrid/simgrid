@@ -1,7 +1,6 @@
 /* ex - Exception Handling                                                  */
 
-/* Copyright (c) 2005-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2005-2017. The SimGrid Team. All rights reserved.          */
 
 /*  Copyright (c) 2002-2004 Ralf S. Engelschall <rse@engelschall.com>       */
 /*  Copyright (c) 2002-2004 The OSSP Project <http://www.ossp.org/>         */
@@ -56,7 +55,6 @@
 #include "xbt/str.h"
 #include "src/xbt_modinter.h"       /* backtrace initialization headers */
 
-#include "src/xbt/ex_interface.h"
 #include "simgrid/sg_config.h"  /* Configuration mechanism of SimGrid */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex, xbt, "Exception mechanism");

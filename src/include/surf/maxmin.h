@@ -1,11 +1,10 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SURF_MAXMIN_H
-#define _SURF_MAXMIN_H
+#ifndef SURF_MAXMIN_H
+#define SURF_MAXMIN_H
 
 #include "src/internal_config.h"
 #include "xbt/misc.h"
@@ -453,4 +452,4 @@ XBT_PUBLIC(double func_vegas_fpi) (lmm_variable_t var, double x);
 /** @} */
 SG_END_DECL()
 
-#endif                          /* _SURF_MAXMIN_H */
+#endif /* SURF_MAXMIN_H */

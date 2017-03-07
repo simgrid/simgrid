@@ -8,8 +8,8 @@
 #include <jni.h>
 /* Header for class org_simgrid_trace_Trace */
 
-#ifndef _Included_org_simgrid_trace_Trace
-#define _Included_org_simgrid_trace_Trace
+#ifndef Included_org_simgrid_trace_Trace
+#define Included_org_simgrid_trace_Trace
 
 /* Shut up some errors in eclipse online compiler. I wish such a pimple wouldn't be needed */
 #ifndef JNIEXPORT

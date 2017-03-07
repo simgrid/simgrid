@@ -1,14 +1,13 @@
 /* dict_elm - elements of generic dictionnaries                             */
-/* This file is not to be loaded from anywhere but dict.cpp                   */
+/* This file is not to be loaded from anywhere but dict.cpp                 */
 
-/* Copyright (c) 2004-2011, 2013-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_DICT_PRIVATE_H__
-#define _XBT_DICT_PRIVATE_H__
+#ifndef XBT_DICT_PRIVATE_H
+#define XBT_DICT_PRIVATE_H
 
 #include "xbt/base.h"
 #include "xbt/sysdep.h"
@@ -56,4 +55,4 @@ XBT_PRIVATE void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element, vo
 
 SG_END_DECL()
 
-#endif                          /* _XBT_DICT_PRIVATE_H_ */
+#endif /* XBT_DICT_PRIVATE_H */

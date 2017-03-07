@@ -1,11 +1,10 @@
-/* Copyright (c) 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SMPI_INTERFACE_H
-#define _SMPI_INTERFACE_H
+#ifndef SMPI_INTERFACE_H
+#define SMPI_INTERFACE_H
 #include "smpi/smpi.h"
 
 SG_BEGIN_DECL()
@@ -99,4 +98,4 @@ XBT_PUBLIC(void) smpi_coll_cleanup_mvapich2(void);
 
 SG_END_DECL()
 
-#endif                          /* _SMPI_INTERFAC_H */
+#endif /* SMPI_INTERFACE_H */

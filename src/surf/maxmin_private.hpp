@@ -1,11 +1,10 @@
-/* Copyright (c) 2004-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SURF_MAXMIN_PRIVATE_H
-#define _SURF_MAXMIN_PRIVATE_H
+#ifndef SURF_MAXMIN_PRIVATE_H
+#define SURF_MAXMIN_PRIVATE_H
 
 #include "surf/maxmin.h"
 #include "xbt/swag.h"
@@ -146,6 +145,4 @@ extern XBT_PRIVATE double (*func_f_def) (lmm_variable_t, double);
 extern XBT_PRIVATE double (*func_fp_def) (lmm_variable_t, double);
 extern XBT_PRIVATE double (*func_fpi_def) (lmm_variable_t, double);
 
-#endif                          /* _SURF_MAXMIN_PRIVATE_H */
-
-
+#endif /* SURF_MAXMIN_PRIVATE_H */

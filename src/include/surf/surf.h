@@ -1,11 +1,10 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SURF_SURF_H
-#define _SURF_SURF_H
+#ifndef SURF_SURF_H
+#define SURF_SURF_H
 
 #include "xbt/swag.h"
 #include "xbt/dynar.h"
@@ -659,4 +658,4 @@ xbt_graph_t instr_routing_platform_graph ();
 void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *filename);
 
 SG_END_DECL()
-#endif                          /* _SURF_SURF_H */
+#endif /* SURF_SURF_H */

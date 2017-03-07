@@ -1,10 +1,10 @@
-/* Copyright (c) 2004-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SURF_SURF_PRIVATE_H
-#define _SURF_SURF_PRIVATE_H
+#ifndef SURF_SURF_PRIVATE_H
+#define SURF_SURF_PRIVATE_H
 
 #include "surf/surf.h"
 #include "surf/maxmin.h"
@@ -55,4 +55,4 @@ void TRACE_surf_link_set_bandwidth(double date, const char *resource, double ban
 
 SG_END_DECL()
 
-#endif                          /* _SURF_SURF_PRIVATE_H */
+#endif /* SURF_SURF_PRIVATE_H */

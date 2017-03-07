@@ -1,13 +1,12 @@
 /* mallocator - recycle objects to avoid malloc() / free()                  */
 
-/* Copyright (c) 2006-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_MALLOCATOR_PRIVATE_H__
-#define _XBT_MALLOCATOR_PRIVATE_H__
+#ifndef XBT_MALLOCATOR_PRIVATE_H
+#define XBT_MALLOCATOR_PRIVATE_H
 
 #include <xbt/function_types.h>
 
@@ -21,4 +20,4 @@ typedef struct s_xbt_mallocator {
   int lock;                     /* lock to ensure the mallocator is thread-safe */
 } s_xbt_mallocator_t;
 
-#endif                          /* _XBT_MALLOCATOR_PRIVATE_H__ */
+#endif /* XBT_MALLOCATOR_PRIVATE_H */

@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -23,7 +23,6 @@
 #include "src/internal_config.h"
 
 #include "src/xbt/mmalloc/mmprivate.h"
-#include "src/xbt/ex_interface.h"
 
 #if HAVE_SMPI
 #include "src/smpi/private.h"
