@@ -15,17 +15,17 @@ namespace smpi{
 
 class Topo {
   protected:
-  MPI_Comm m_comm;
+  MPI_Comm _comm;
 };
 
 
 class Cart: public Topo {
   private:
-    int m_nnodes;
-    int m_ndims;
-    int *m_dims;
-    int *m_periodic;
-    int *m_position;
+    int _nnodes;
+    int _ndims;
+    int *_dims;
+    int *_periodic;
+    int *_position;
   public:
     Cart(int ndims);
     ~Cart();
@@ -41,10 +41,10 @@ class Cart: public Topo {
 
 class Graph: public Topo {
   private:
-    int m_nnodes;
-    int m_nedges;
-    int *m_index;
-    int *m_edges;
+    int _nnodes;
+    int _nedges;
+    int *_index;
+    int *_edges;
   public:
     Graph();
     ~Graph();
@@ -52,13 +52,13 @@ class Graph: public Topo {
 
 class Dist_Graph: public Topo {
   private:
-    int m_indegree;
-    int *m_in;
-    int *m_in_weights;
-    int m_outdegree;
-    int *m_out;
-    int *m_out_weights;
-    int m_is_weighted;
+    int _indegree;
+    int *_in;
+    int *_in_weights;
+    int _outdegree;
+    int *_out;
+    int *_out_weights;
+    int _is_weighted;
   public:
     Dist_Graph();
     ~Dist_Graph();
