@@ -77,7 +77,6 @@ set(EXTRA_DIST
   src/xbt/backtrace_dummy.cpp
   src/xbt/backtrace_linux.cpp
   src/xbt/dict_private.h
-  src/xbt/ex_interface.h
   src/xbt/graph_private.h
   src/xbt/heap_private.h
   src/xbt/log_private.h
@@ -325,7 +324,6 @@ set(SURF_SRC
   src/surf/storage_n11.cpp
   src/surf/surf_c_bindings.cpp
   src/surf/surf_interface.cpp
-  src/surf/surf_routing.cpp
   src/surf/xml/platf.hpp
   src/surf/xml/platf_private.hpp
   src/surf/xml/surfxml_sax_cb.cpp

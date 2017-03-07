@@ -1,14 +1,12 @@
 /* backtrace_dummy -- stubs of this module for non-supported archs          */
 
-/* Copyright (c) 2008-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/ex.h"
 #include "src/xbt_modinter.h"
-#include "src/xbt/ex_interface.h"
 
 #include <xbt/backtrace.hpp>
 

@@ -1,11 +1,10 @@
-/* Copyright (c) 2006-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SURF_SURFXML_PARSE_H
-#define _SURF_SURFXML_PARSE_H
+#ifndef SURF_SURFXML_PARSE_H
+#define SURF_SURFXML_PARSE_H
 
 #include <xbt/dict.h>
 #include <xbt/function_types.h>

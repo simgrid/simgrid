@@ -1,18 +1,17 @@
 /* dynar - a generic dynamic array                                          */
 
-/* Copyright (c) 2004-2007, 2009-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_DYNAR_H
-#define _XBT_DYNAR_H
+#ifndef XBT_DYNAR_H
+#define XBT_DYNAR_H
 
 #include <string.h>             /* memcpy */
 
-#include "xbt/base.h"           /* SG_BEGIN_DECL */
-#include "xbt/function_types.h"
+#include <xbt/base.h> /* SG_BEGIN_DECL */
+#include <xbt/function_types.h>
 
 SG_BEGIN_DECL()
 
@@ -262,4 +261,4 @@ xbt_dynar_foreach (dyn,cpt,str) {
 /** @} */
 SG_END_DECL()
 
-#endif                          /* _XBT_DYNAR_H */
+#endif /* XBT_DYNAR_H */

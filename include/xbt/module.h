@@ -1,7 +1,6 @@
 /* module - modularize the code                                             */
 
-/* Copyright (c) 2004-2007, 2009-2010, 2012-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,4 +16,4 @@ XBT_PUBLIC(void) xbt_init(int *argc, char **argv);
 
 SG_END_DECL()
 
-#endif                          /* _XBT_MODULE_H */
+#endif /* XBT_MODULE_H */

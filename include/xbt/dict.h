@@ -1,13 +1,12 @@
 /* xbt/dict.h -- api to a generic dictionary                                */
 
-/* Copyright (c) 2004-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_DICT_H
-#define _XBT_DICT_H
+#ifndef XBT_DICT_H
+#define XBT_DICT_H
 
 #include "xbt/misc.h"           /* SG_BEGIN_DECL */
 #include "xbt/dynar.h"          /* void_f_pvoid_t */
@@ -175,4 +174,4 @@ xbt_dict_foreach(head, cursor, key, data) {
 
 SG_END_DECL()
 
-#endif                          /* _XBT_DICT_H */
+#endif /* XBT_DICT_H */
