@@ -331,6 +331,7 @@ static void onSimulationEnd()
   }
   XBT_INFO("Total energy consumption: %f Joules (used hosts: %f Joules; unused/idle hosts: %f)",
            total_energy, used_hosts_energy, total_energy - used_hosts_energy);
+  xbt_free(host_list);
 }
 
 /* **************************** Public interface *************************** */
