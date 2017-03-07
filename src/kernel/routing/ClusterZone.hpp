@@ -73,7 +73,10 @@ public:
   void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
 
   virtual void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position);
-  virtual void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) {}
+  virtual void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
+  {
+    /* this routing method does not require any specific argument */
+  }
 
   /* We use a map instead of a std::vector here because that's a sparse vector. Some values may not exist */
   /* The pair is {linkUp, linkDown} */

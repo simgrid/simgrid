@@ -24,7 +24,11 @@ public:
   explicit EmptyZone(NetZone* father, const char* name);
   ~EmptyZone() override;
 
-  void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency) override;
+  void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency)
+  {
+    /* There can't be route in an Empty zone */
+  }
+
   void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
 };
 }
