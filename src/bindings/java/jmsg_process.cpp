@@ -76,20 +76,19 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv * env, jobject
 {
   jobject jprocess;             /* the global reference to the java process instance    */
   jstring jname;                /* the name of the java process instance                */
-  const char *name;             /* the C name of the process                            */
-  const char *hostname;
   msg_process_t process;          /* the native process to create                         */
   msg_host_t host;                /* Where that process lives */
 
-  hostname = env->GetStringUTFChars((jstring) jhostname, 0);
+  const char* hostname = env->GetStringUTFChars((jstring)jhostname, 0);
 
   /* get the name of the java process */
   jname = jprocess_get_name(jprocess_arg, env);
   if (!jname) {
-    jxbt_throw_null(env,
-            xbt_strdup("Internal error: Process name cannot be nullptr"));
+    jxbt_throw_null(env, xbt_strdup("Process name cannot be nullptr"));
     return;
   }
+  const char* name = env->GetStringUTFChars(jname, 0);
+  name             = xbt_strdup(name);
 
   /* bind/retrieve the msg host */
   host = MSG_host_by_name(hostname);
@@ -106,17 +105,13 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv * env, jobject
     return;
   }
 
-  /* build the C name of the process */
-  name = env->GetStringUTFChars(jname, 0);
-  name = xbt_strdup(name);
-
   /* Retrieve the kill time from the process */
   jdouble jkill = env->GetDoubleField(jprocess, jprocess_field_Process_killTime);
   /* Actually build the MSG process */
   process = MSG_process_create_with_environment(name, [](int argc, char** argv) -> int {
               smx_actor_t process = SIMIX_process_self();
               // This is the jprocess passed as environment.
-              // It would be simplet if we could use a closure.
+              // It would be simpler if we could use a closure.
               jobject jprocess = (jobject) MSG_process_get_data(process);
               simgrid::kernel::context::java_main_jprocess(jprocess);
               return 0;

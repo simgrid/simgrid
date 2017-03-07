@@ -79,17 +79,11 @@ public abstract class Process implements Runnable {
 	/** The arguments of the method function of the process. */
 	private ArrayList<String> args = new ArrayList<>();
 
-
-	/**  Default constructor */
-	protected Process() {
-		this.id = nextProcessId++;
-	}
-
 	/**
 	 * Constructs a new process from the name of a host and his name. The method
 	 * function of the process doesn't have argument.
 	 *
-	 * @param hostname		The name of the host of the process to create.
+	 * @param hostname		Where to create the process.
 	 * @param name			The name of the process.
 	 *
 	 * @exception			HostNotFoundException  if no host with this name exists.
@@ -103,7 +97,7 @@ public abstract class Process implements Runnable {
 	 * Constructs a new process from the name of a host and his name. The arguments
 	 * of the method function of the process are specified by the parameter args.
 	 *
-	 * @param hostname		The name of the host of the process to create.
+	 * @param hostname		Where to create the process.
 	 * @param name			The name of the process.
 	 * @param args			The arguments of the main function of the process.
 	 *
@@ -117,7 +111,7 @@ public abstract class Process implements Runnable {
 	 * Constructs a new process from a host and his name. The method function of the 
 	 * process doesn't have argument.
 	 *
-	 * @param host			The host of the process to create.
+	 * @param host			Where to create the process.
 	 * @param name			The name of the process.
 	 *
 	 */
@@ -128,17 +122,19 @@ public abstract class Process implements Runnable {
 	 * Constructs a new process from a host and his name, the arguments of here method function are
 	 * specified by the parameter args.
 	 *
-	 * @param host			The host of the process to create.
+	 * @param host			Where to create the process.
 	 * @param name			The name of the process.
 	 * @param args			The arguments of main method of the process.
 	 */	
-	public Process(Host host, String name, String[]args) {
-		this();
-		this.host = host;
+	public Process(Host host, String name, String[]args) 
+	{
 		if (host == null)
-			throw new NullPointerException("Host cannot be NULL");
+			throw new NullPointerException("Cannot create a process on the null host");
 		if (name == null)
-			throw new NullPointerException("Process name cannot be NULL");
+			throw new NullPointerException("Process name cannot be null");
+		
+		this.id = nextProcessId++;
+		this.host = host;
 		this.name = name;
 
 		this.args = new ArrayList<>();
@@ -149,7 +145,7 @@ public abstract class Process implements Runnable {
 	 * Constructs a new process from a host and his name, the arguments of here method function are
 	 * specified by the parameter args.
 	 *
-	 * @param host			The host of the process to create.
+	 * @param host			Where to create the process.
 	 * @param name			The name of the process.
 	 * @param args			The arguments of main method of the process.
 	 * @param startTime		Start time of the process
