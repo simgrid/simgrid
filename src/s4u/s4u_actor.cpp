@@ -163,6 +163,10 @@ int ppid()
   return SIMIX_process_self()->ppid;
 }
 
+std::string name()
+{
+  return SIMIX_process_self()->name;
+}
 }
 }
 }

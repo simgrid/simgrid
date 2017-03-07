@@ -289,11 +289,14 @@ namespace this_actor {
   */
   XBT_PUBLIC(void) send(MailboxPtr chan, void*payload, size_t simulatedSize);
 
-  /** @brief Return the PID of the current actor. */
+  /** @brief Returns the PID of the current actor. */
   XBT_PUBLIC(int) pid();
 
-  /** @brief Return the PPID of the current actor. */
+  /** @brief Returns the PPID of the current actor. */
   int ppid();
+
+  /** @brief Returns the name of the current actor. */
+  std::string name();
 };
 
 /** @} */
