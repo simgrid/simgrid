@@ -143,7 +143,7 @@ set(SMPI_SRC
   src/smpi/colls/allreduce-mvapich-two-level.cpp
   src/smpi/colls/alltoall-2dmesh.cpp
   src/smpi/colls/alltoall-3dmesh.cpp
-  src/smpi/colls/alltoall-bruck.cpp
+#  src/smpi/colls/alltoall-bruck.cpp
   src/smpi/colls/alltoall-pair-light-barrier.cpp
   src/smpi/colls/alltoall-pair-mpi-barrier.cpp
   src/smpi/colls/alltoall-pair-one-barrier.cpp
