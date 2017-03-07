@@ -37,7 +37,7 @@ smpi_coll_tuned_allgather_NTSLR(void *sbuf, int scount, MPI_Datatype stype,
   //copy a single segment from sbuf to rbuf
   send_offset = rank * scount * sextent;
 
-  smpi_mpi_sendrecv(sbuf, scount, stype, rank, tag,
+  Request::sendrecv(sbuf, scount, stype, rank, tag,
                (char *)rbuf + send_offset, rcount, rtype, rank, tag,
                comm, &status);
 
@@ -47,7 +47,7 @@ smpi_coll_tuned_allgather_NTSLR(void *sbuf, int scount, MPI_Datatype stype,
   for (i = 0; i < size - 1; i++) {
     send_offset = ((rank - i + size) % size) * increment;
     recv_offset = ((rank - i - 1 + size) % size) * increment;
-    smpi_mpi_sendrecv((char *) rbuf + send_offset, scount, stype, to, tag + i,
+    Request::sendrecv((char *) rbuf + send_offset, scount, stype, to, tag + i,
                  (char *) rbuf + recv_offset, rcount, rtype, from, tag + i,
                  comm, &status);
   }

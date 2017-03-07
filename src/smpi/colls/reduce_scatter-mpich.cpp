@@ -74,14 +74,14 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
             /* send the data that dst needs. recv data that this process
                needs from src into tmp_recvbuf */
             if (sendbuf != MPI_IN_PLACE) 
-                smpi_mpi_sendrecv(((char *)sendbuf+disps[dst]*extent), 
+                Request::sendrecv(((char *)sendbuf+disps[dst]*extent), 
                                              recvcounts[dst], datatype, dst,
                                              COLL_TAG_SCATTER, tmp_recvbuf,
                                              recvcounts[rank], datatype, src,
                                              COLL_TAG_SCATTER, comm,
                                              MPI_STATUS_IGNORE);
             else
-                smpi_mpi_sendrecv(((char *)recvbuf+disps[dst]*extent), 
+                Request::sendrecv(((char *)recvbuf+disps[dst]*extent), 
                                              recvcounts[dst], datatype, dst,
                                              COLL_TAG_SCATTER, tmp_recvbuf,
                                              recvcounts[rank], datatype, src,
@@ -223,7 +223,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_noncomm(void *sendbuf, void *recvbuf, i
             send_offset += size;
         }
 
-        smpi_mpi_sendrecv(outgoing_data + send_offset*true_extent,
+        Request::sendrecv(outgoing_data + send_offset*true_extent,
                                      size, datatype, peer, COLL_TAG_SCATTER,
                                      incoming_data + recv_offset*true_extent,
                                      size, datatype, peer, COLL_TAG_SCATTER,
@@ -380,7 +380,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
                        received in tmp_recvbuf and then accumulated into
                        tmp_results. accumulation is done later below.   */ 
 
-                    smpi_mpi_sendrecv(tmp_results, 1, sendtype, dst,
+                    Request::sendrecv(tmp_results, 1, sendtype, dst,
                                                  COLL_TAG_SCATTER,
                                                  tmp_recvbuf, 1, recvtype, dst,
                                                  COLL_TAG_SCATTER, comm,
@@ -424,7 +424,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
                             (rank < tree_root + nprocs_completed)
                             && (dst >= tree_root + nprocs_completed)) {
                             /* send the current result */
-                            smpi_mpi_send(tmp_recvbuf, 1, recvtype,
+                            Request::send(tmp_recvbuf, 1, recvtype,
                                                      dst, COLL_TAG_SCATTER,
                                                      comm);
                         }
@@ -433,7 +433,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
                         else if ((dst < rank) && 
                                  (dst < tree_root + nprocs_completed) &&
                                  (rank >= tree_root + nprocs_completed)) {
-                            smpi_mpi_recv(tmp_recvbuf, 1, recvtype, dst,
+                            Request::recv(tmp_recvbuf, 1, recvtype, dst,
                                                      COLL_TAG_SCATTER,
                                                      comm, MPI_STATUS_IGNORE); 
                             received = 1;

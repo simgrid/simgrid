@@ -144,7 +144,7 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
     if (src == rank)
       continue;
     recv_offset = src * block_size;
-    *(req_ptr++) = smpi_mpi_irecv((char *)recv_buff + recv_offset, send_count, recv_type, src, tag,
+    *(req_ptr++) = Request::irecv((char *)recv_buff + recv_offset, send_count, recv_type, src, tag,
                comm);
   }
 
@@ -152,10 +152,10 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
     dst = i + my_row_base;
     if (dst == rank)
       continue;
-    smpi_mpi_send(send_buff, send_count, send_type, dst, tag, comm);
+    Request::send(send_buff, send_count, send_type, dst, tag, comm);
   }
 
-  smpi_mpi_waitall(Y - 1, req, MPI_STATUSES_IGNORE);
+  Request::waitall(Y - 1, req, MPI_STATUSES_IGNORE);
   req_ptr = req;
 
   // do colwise comm, it does not matter here if i*X or i *Y since X == Y
@@ -167,7 +167,7 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
 
     src_row_base = (src / X) * X;
     recv_offset = src_row_base * block_size;
-    *(req_ptr++) = smpi_mpi_irecv((char *)recv_buff + recv_offset, recv_count * Y, recv_type, src, tag,
+    *(req_ptr++) = Request::irecv((char *)recv_buff + recv_offset, recv_count * Y, recv_type, src, tag,
                comm);
   }
 
@@ -177,11 +177,11 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
     dst = (i * Y + my_col_base);
     if (dst == rank)
       continue;
-    smpi_mpi_send((char *)recv_buff + send_offset, send_count * Y, send_type, dst, tag,
+    Request::send((char *)recv_buff + send_offset, send_count * Y, send_type, dst, tag,
               comm);
   }
 
-  smpi_mpi_waitall(X - 1, req, MPI_STATUSES_IGNORE);
+  Request::waitall(X - 1, req, MPI_STATUSES_IGNORE);
   req_ptr = req;
 
   for (i = 1; i < Z; i++) {
@@ -190,17 +190,17 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
 
     recv_offset = (src_z_base * block_size);
 
-    *(req_ptr++) = smpi_mpi_irecv((char *)recv_buff + recv_offset, recv_count * two_dsize, recv_type,
+    *(req_ptr++) = Request::irecv((char *)recv_buff + recv_offset, recv_count * two_dsize, recv_type,
                src, tag, comm);
   }
 
   for (i = 1; i < Z; i++) {
     dst = (rank + i * two_dsize) % num_procs;
     send_offset = my_z_base * block_size;
-    smpi_mpi_send((char *)recv_buff + send_offset, send_count * two_dsize, send_type,
+    Request::send((char *)recv_buff + send_offset, send_count * two_dsize, send_type,
               dst, tag, comm);
   }
-  smpi_mpi_waitall(Z - 1, req, MPI_STATUSES_IGNORE);
+  Request::waitall(Z - 1, req, MPI_STATUSES_IGNORE);
 
   free(req);
 

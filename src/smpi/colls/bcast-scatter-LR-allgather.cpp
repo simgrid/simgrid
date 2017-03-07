@@ -103,7 +103,7 @@ smpi_coll_tuned_bcast_scatter_LR_allgather(void *buff, int count,
         curr_size = 0;          // this process doesn't receive any data
       // because of uneven division 
       else {
-        smpi_mpi_recv((char *) buff + relative_rank * scatter_size, recv_size,
+        Request::recv((char *) buff + relative_rank * scatter_size, recv_size,
                  MPI_BYTE, src, tag, comm, &status);
         curr_size = smpi_mpi_get_count(&status, MPI_BYTE);
       }
@@ -127,7 +127,7 @@ smpi_coll_tuned_bcast_scatter_LR_allgather(void *buff, int count,
         dst = rank + mask;
         if (dst >= num_procs)
           dst -= num_procs;
-        smpi_mpi_send((char *) buff + scatter_size * (relative_rank + mask),
+        Request::send((char *) buff + scatter_size * (relative_rank + mask),
                  send_size, MPI_BYTE, dst, tag, comm);
 
         curr_size -= send_size;
@@ -159,7 +159,7 @@ smpi_coll_tuned_bcast_scatter_LR_allgather(void *buff, int count,
   next_src = left;
 
   for (i = 1; i < num_procs; i++) {
-    smpi_mpi_sendrecv((char *) buff + disps[(src - root + num_procs) % num_procs],
+    Request::sendrecv((char *) buff + disps[(src - root + num_procs) % num_procs],
                  recv_counts[(src - root + num_procs) % num_procs],
                  MPI_BYTE, right, tag,
                  (char *) buff +

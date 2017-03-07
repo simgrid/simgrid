@@ -93,17 +93,17 @@ smpi_coll_tuned_allgatherv_mpich_ring(void *sendbuf, int sendcount,
            * consecutive processes contribute 0 bytes each. */
       }
       else if (!sendnow) { /* If there's no data to send, just do a recv call */
-          smpi_mpi_recv(rbuf, recvnow, recvtype, left, COLL_TAG_ALLGATHERV, comm, &status);
+          Request::recv(rbuf, recvnow, recvtype, left, COLL_TAG_ALLGATHERV, comm, &status);
 
           torecv -= recvnow;
       }
       else if (!recvnow) { /* If there's no data to receive, just do a send call */
-          smpi_mpi_send(sbuf, sendnow, recvtype, right, COLL_TAG_ALLGATHERV, comm);
+          Request::send(sbuf, sendnow, recvtype, right, COLL_TAG_ALLGATHERV, comm);
 
           tosend -= sendnow;
       }
       else { /* There's data to be sent and received */
-          smpi_mpi_sendrecv(sbuf, sendnow, recvtype, right, COLL_TAG_ALLGATHERV,
+          Request::sendrecv(sbuf, sendnow, recvtype, right, COLL_TAG_ALLGATHERV,
               rbuf, recvnow, recvtype, left, COLL_TAG_ALLGATHERV,
               comm, &status);
           tosend -= sendnow;

@@ -121,13 +121,13 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
        two procs to do the rest of the algorithm */
     if (rank < 2 * remain) {
         if ((rank & 1) == 0) {
-            smpi_mpi_send(result_buf, count, dtype, rank + 1, 
+            Request::send(result_buf, count, dtype, rank + 1, 
                                     COLL_TAG_REDUCE_SCATTER,
                                     comm);
             /* we don't participate from here on out */
             tmp_rank = -1;
         } else {
-            smpi_mpi_recv(recv_buf, count, dtype, rank - 1,
+            Request::recv(recv_buf, count, dtype, rank - 1,
                                     COLL_TAG_REDUCE_SCATTER,
                                     comm, MPI_STATUS_IGNORE);
          
@@ -215,7 +215,7 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
             /* actual data transfer.  Send from result_buf,
                receive into recv_buf */
             if (send_count > 0 && recv_count != 0) {
-                request=smpi_mpi_irecv(recv_buf + (ptrdiff_t)tmp_disps[recv_index] * extent,
+                request=Request::irecv(recv_buf + (ptrdiff_t)tmp_disps[recv_index] * extent,
                                          recv_count, dtype, peer,
                                          COLL_TAG_REDUCE_SCATTER,
                                          comm);
@@ -226,7 +226,7 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
                 }                                             
             }
             if (recv_count > 0 && send_count != 0) {
-                smpi_mpi_send(result_buf + (ptrdiff_t)tmp_disps[send_index] * extent,
+                Request::send(result_buf + (ptrdiff_t)tmp_disps[send_index] * extent,
                                         send_count, dtype, peer, 
                                         COLL_TAG_REDUCE_SCATTER,
                                         comm);
@@ -237,7 +237,7 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
                 }                                             
             }
             if (send_count > 0 && recv_count != 0) {
-                smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
+                Request::wait(&request, MPI_STATUS_IGNORE);
             }
 
             /* if we received something on this step, push it into
@@ -276,13 +276,13 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
     if (rank < (2 * remain)) {
         if ((rank & 1) == 0) {
             if (rcounts[rank]) {
-                smpi_mpi_recv(rbuf, rcounts[rank], dtype, rank + 1,
+                Request::recv(rbuf, rcounts[rank], dtype, rank + 1,
                                         COLL_TAG_REDUCE_SCATTER,
                                         comm, MPI_STATUS_IGNORE);
             }
         } else {
             if (rcounts[rank - 1]) {
-                smpi_mpi_send(result_buf + disps[rank - 1] * extent,
+                Request::send(result_buf + disps[rank - 1] * extent,
                                         rcounts[rank - 1], dtype, rank - 1,
                                         COLL_TAG_REDUCE_SCATTER,
                                         comm);
@@ -457,11 +457,11 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
 
     inbi = 0;
     /* Initialize first receive from the neighbor on the left */
-    reqs[inbi]=smpi_mpi_irecv(inbuf[inbi], max_block_count, dtype, recv_from,
+    reqs[inbi]=Request::irecv(inbuf[inbi], max_block_count, dtype, recv_from,
                              COLL_TAG_REDUCE_SCATTER, comm
                              );
     tmpsend = accumbuf + (ptrdiff_t)displs[recv_from] * extent;
-    smpi_mpi_send(tmpsend, rcounts[recv_from], dtype, send_to,
+    Request::send(tmpsend, rcounts[recv_from], dtype, send_to,
                             COLL_TAG_REDUCE_SCATTER,
                              comm);
 
@@ -471,12 +471,12 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
         inbi = inbi ^ 0x1;
 
         /* Post irecv for the current block */
-        reqs[inbi]=smpi_mpi_irecv(inbuf[inbi], max_block_count, dtype, recv_from,
+        reqs[inbi]=Request::irecv(inbuf[inbi], max_block_count, dtype, recv_from,
                                  COLL_TAG_REDUCE_SCATTER, comm
                                  );
       
         /* Wait on previous block to arrive */
-        smpi_mpi_wait(&reqs[inbi ^ 0x1], MPI_STATUS_IGNORE);
+        Request::wait(&reqs[inbi ^ 0x1], MPI_STATUS_IGNORE);
       
         /* Apply operation on previous block: result goes to rbuf
            rbuf[prevblock] = inbuf[inbi ^ 0x1] (op) rbuf[prevblock]
@@ -485,13 +485,13 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
         smpi_op_apply(op, inbuf[inbi ^ 0x1], tmprecv, &(rcounts[prevblock]), &dtype);
       
         /* send previous block to send_to */
-        smpi_mpi_send(tmprecv, rcounts[prevblock], dtype, send_to,
+        Request::send(tmprecv, rcounts[prevblock], dtype, send_to,
                                 COLL_TAG_REDUCE_SCATTER,
                                  comm);
     }
 
     /* Wait on the last block to arrive */
-    smpi_mpi_wait(&reqs[inbi], MPI_STATUS_IGNORE);
+    Request::wait(&reqs[inbi], MPI_STATUS_IGNORE);
 
     /* Apply operation on the last block (my block)
        rbuf[rank] = inbuf[inbi] (op) rbuf[rank] */

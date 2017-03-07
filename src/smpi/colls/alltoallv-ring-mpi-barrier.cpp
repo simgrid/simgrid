@@ -50,7 +50,7 @@ smpi_coll_tuned_alltoallv_ring_mpi_barrier(void *send_buff, int *send_counts, in
     dst = (rank + i) % num_procs;
 
     smpi_mpi_barrier(comm);
-    smpi_mpi_sendrecv(send_ptr + send_disps[dst] * send_chunk, send_counts[dst], send_type, dst,
+    Request::sendrecv(send_ptr + send_disps[dst] * send_chunk, send_counts[dst], send_type, dst,
                  tag, recv_ptr + recv_disps[src] * recv_chunk, recv_counts[src], recv_type,
                  src, tag, comm, &s);
   }

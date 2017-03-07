@@ -161,11 +161,11 @@ int smpi_coll_tuned_reduce_mvapich2_two_level( void *sendbuf,
 	    }
 	    
             if (local_rank == 0 && root != my_rank) {
-                smpi_mpi_send(out_buf, count, datatype, root,
+                Request::send(out_buf, count, datatype, root,
                                          COLL_TAG_REDUCE+1, comm);
             }
             if ((local_rank != 0) && (root == my_rank)) {
-                smpi_mpi_recv(recvbuf, count, datatype,
+                Request::recv(recvbuf, count, datatype,
                                          leader_of_root, COLL_TAG_REDUCE+1, comm,
                                          MPI_STATUS_IGNORE);
             }
@@ -286,11 +286,11 @@ int smpi_coll_tuned_reduce_mvapich2_two_level( void *sendbuf,
          * root of the reduce operation. The reduced data is in tmp_buf */
         if ((local_rank == 0) && (root != my_rank)
             && (leader_root == leader_comm_rank)) {
-            smpi_mpi_send(tmp_buf, count, datatype, root,
+            Request::send(tmp_buf, count, datatype, root,
                                      COLL_TAG_REDUCE+1, comm);
         }
         if ((local_rank != 0) && (root == my_rank)) {
-            smpi_mpi_recv(recvbuf, count, datatype,
+            Request::recv(recvbuf, count, datatype,
                                      leader_of_root,
                                      COLL_TAG_REDUCE+1, comm,
                                      MPI_STATUS_IGNORE);

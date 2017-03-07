@@ -13,19 +13,23 @@
 namespace simgrid {
 namespace smpi {
 
-class Group;
 class Comm;
+class Group;
+class Request;
 class Topo;
 class Win;
+//TODO : rename these
 class Cart;
 class Graph;
 class Dist_Graph;
 
+
 }
 }
 
-typedef simgrid::smpi::Group SMPI_Group;
 typedef simgrid::smpi::Comm SMPI_Comm;
+typedef simgrid::smpi::Group SMPI_Group;
+typedef simgrid::smpi::Request SMPI_Request;
 typedef simgrid::smpi::Topo SMPI_Topology;
 typedef simgrid::smpi::Win SMPI_Win;
 typedef simgrid::smpi::Graph SMPI_Graph_topology;
@@ -34,8 +38,9 @@ typedef simgrid::smpi::Dist_Graph SMPI_Dist_Graph_topology;
 
 #else
 
-typedef struct SMPI_Group SMPI_Group;
 typedef struct SMPI_Comm SMPI_Comm;
+typedef struct SMPI_Group SMPI_Group;
+typedef struct SMPI_Request SMPI_Request;
 typedef struct SMPI_Topology SMPI_Topology;
 typedef struct SMPI_Win SMPI_Win;
 typedef struct SMPI_Graph_topology SMPI_Graph_topology;

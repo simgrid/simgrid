@@ -67,7 +67,7 @@ smpi_coll_tuned_allreduce_lr(void *sbuf, void *rbuf, int rcount,
   // copy partial data
   send_offset = ((rank - 1 + size) % size) * count * extent;
   recv_offset = ((rank - 1 + size) % size) * count * extent;
-  smpi_mpi_sendrecv((char *) sbuf + send_offset, count, dtype, rank, tag - 1,
+  Request::sendrecv((char *) sbuf + send_offset, count, dtype, rank, tag - 1,
                (char *) rbuf + recv_offset, count, dtype, rank, tag - 1, comm,
                &status);
 
@@ -76,7 +76,7 @@ smpi_coll_tuned_allreduce_lr(void *sbuf, void *rbuf, int rcount,
     send_offset = ((rank - 1 - i + 2 * size) % size) * count * extent;
     recv_offset = ((rank - 2 - i + 2 * size) % size) * count * extent;
     //    recv_offset = ((rank-i+2*size)%size)*count*extent;
-    smpi_mpi_sendrecv((char *) rbuf + send_offset, count, dtype, ((rank + 1) % size),
+    Request::sendrecv((char *) rbuf + send_offset, count, dtype, ((rank + 1) % size),
                  tag + i, (char *) rbuf + recv_offset, count, dtype,
                  ((rank + size - 1) % size), tag + i, comm, &status);
 
@@ -89,7 +89,7 @@ smpi_coll_tuned_allreduce_lr(void *sbuf, void *rbuf, int rcount,
   for (i = 0; i < (size - 1); i++) {
     send_offset = ((rank - i + 2 * size) % size) * count * extent;
     recv_offset = ((rank - 1 - i + 2 * size) % size) * count * extent;
-    smpi_mpi_sendrecv((char *) rbuf + send_offset, count, dtype, ((rank + 1) % size),
+    Request::sendrecv((char *) rbuf + send_offset, count, dtype, ((rank + 1) % size),
                  tag + i, (char *) rbuf + recv_offset, count, dtype,
                  ((rank + size - 1) % size), tag + i, comm, &status);
   }

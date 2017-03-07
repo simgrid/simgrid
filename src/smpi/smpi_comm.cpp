@@ -256,14 +256,14 @@ MPI_Comm Comm::split(int color, int key)
         for (int j = 0; j < count; j++) {
           if(rankmap[2 * j] != 0) {
             group_snd[reqs]=new simgrid::smpi::Group(group_out);
-            requests[reqs] = smpi_mpi_isend(&(group_snd[reqs]), 1, MPI_PTR, rankmap[2 * j], system_tag, this);
+            requests[reqs] = Request::isend(&(group_snd[reqs]), 1, MPI_PTR, rankmap[2 * j], system_tag, this);
             reqs++;
           }
         }
         if(i != 0) {
           group_out->destroy();
         }
-        smpi_mpi_waitall(reqs, requests, MPI_STATUS_IGNORE);
+        Request::waitall(reqs, requests, MPI_STATUS_IGNORE);
         xbt_free(requests);
       }
     }
@@ -273,7 +273,7 @@ MPI_Comm Comm::split(int color, int key)
     group_out = group_root; /* exit with root's group */
   } else {
     if(color != MPI_UNDEFINED) {
-      smpi_mpi_recv(&group_out, 1, MPI_PTR, 0, system_tag, this, MPI_STATUS_IGNORE);
+      Request::recv(&group_out, 1, MPI_PTR, 0, system_tag, this, MPI_STATUS_IGNORE);
     } /* otherwise, exit with group_out == nullptr */
   }
   return group_out!=nullptr ? new simgrid::smpi::Comm(group_out, nullptr) : MPI_COMM_NULL;

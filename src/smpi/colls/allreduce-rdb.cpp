@@ -31,7 +31,7 @@ int smpi_coll_tuned_allreduce_rdb(void *sbuff, void *rbuff, int count,
   smpi_datatype_extent(dtype, &lb, &extent);
   tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
 
-  smpi_mpi_sendrecv(sbuff, count, dtype, rank, 500,
+  Request::sendrecv(sbuff, count, dtype, rank, 500,
                rbuff, count, dtype, rank, 500, comm, &status);
 
   // find nearest power-of-two less than or equal to comm_size
@@ -52,7 +52,7 @@ int smpi_coll_tuned_allreduce_rdb(void *sbuff, void *rbuff, int count,
     // even       
     if (rank % 2 == 0) {
 
-      smpi_mpi_send(rbuff, count, dtype, rank + 1, tag, comm);
+      Request::send(rbuff, count, dtype, rank + 1, tag, comm);
 
       // temporarily set the rank to -1 so that this
       // process does not pariticipate in recursive
@@ -60,7 +60,7 @@ int smpi_coll_tuned_allreduce_rdb(void *sbuff, void *rbuff, int count,
       newrank = -1;
     } else                      // odd
     {
-      smpi_mpi_recv(tmp_buf, count, dtype, rank - 1, tag, comm, &status);
+      Request::recv(tmp_buf, count, dtype, rank - 1, tag, comm, &status);
       // do the reduction on received data. since the
       // ordering is right, it doesn't matter whether
       // the operation is commutative or not.
@@ -92,7 +92,7 @@ int smpi_coll_tuned_allreduce_rdb(void *sbuff, void *rbuff, int count,
 
       // Send the most current data, which is in recvbuf. Recv
       // into tmp_buf 
-      smpi_mpi_sendrecv(rbuff, count, dtype, dst, tag, tmp_buf, count, dtype,
+      Request::sendrecv(rbuff, count, dtype, dst, tag, tmp_buf, count, dtype,
                    dst, tag, comm, &status);
 
       // tmp_buf contains data received in this step.
@@ -108,7 +108,7 @@ int smpi_coll_tuned_allreduce_rdb(void *sbuff, void *rbuff, int count,
         smpi_op_apply(op, rbuff, tmp_buf, &count, &dtype);
 
         // copy result back into recvbuf
-        smpi_mpi_sendrecv(tmp_buf, count, dtype, rank, tag, rbuff, count,
+        Request::sendrecv(tmp_buf, count, dtype, rank, tag, rbuff, count,
                      dtype, rank, tag, comm, &status);
       }
       mask <<= 1;
@@ -120,9 +120,9 @@ int smpi_coll_tuned_allreduce_rdb(void *sbuff, void *rbuff, int count,
 
   if (rank < 2 * rem) {
     if (rank % 2)               // odd 
-      smpi_mpi_send(rbuff, count, dtype, rank - 1, tag, comm);
+      Request::send(rbuff, count, dtype, rank - 1, tag, comm);
     else                        // even 
-      smpi_mpi_recv(rbuff, count, dtype, rank + 1, tag, comm, &status);
+      Request::recv(rbuff, count, dtype, rank + 1, tag, comm, &status);
   }
 
   smpi_free_tmp_buffer(tmp_buf);

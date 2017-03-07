@@ -54,10 +54,10 @@ int smpi_coll_tuned_reduce_NTSL(void *buf, void *rbuf, int count,
   /*
      if (root != 0) {
      if (rank == root){
-     smpi_mpi_send(buf,count,datatype,0,tag,comm);
+     Request::send(buf,count,datatype,0,tag,comm);
      }
      else if (rank == 0) {
-     smpi_mpi_recv(buf,count,datatype,root,tag,comm,&status);        
+     Request::recv(buf,count,datatype,root,tag,comm,&status);        
      }
      }
    */
@@ -65,20 +65,20 @@ int smpi_coll_tuned_reduce_NTSL(void *buf, void *rbuf, int count,
   char *tmp_buf;
   tmp_buf = (char *) smpi_get_tmp_sendbuffer(count * extent);
 
-  smpi_mpi_sendrecv(buf, count, datatype, rank, tag, rbuf, count, datatype, rank,
+  Request::sendrecv(buf, count, datatype, rank, tag, rbuf, count, datatype, rank,
                tag, comm, &status);
 
   /* when a message is smaller than a block size => no pipeline */
   if (count <= segment) {
     if (rank == root) {
-      smpi_mpi_recv(tmp_buf, count, datatype, from, tag, comm, &status);
+      Request::recv(tmp_buf, count, datatype, from, tag, comm, &status);
       smpi_op_apply(op, tmp_buf, rbuf, &count, &datatype);
     } else if (rank == ((root - 1 + size) % size)) {
-      smpi_mpi_send(rbuf, count, datatype, to, tag, comm);
+      Request::send(rbuf, count, datatype, to, tag, comm);
     } else {
-      smpi_mpi_recv(tmp_buf, count, datatype, from, tag, comm, &status);
+      Request::recv(tmp_buf, count, datatype, from, tag, comm, &status);
       smpi_op_apply(op, tmp_buf, rbuf, &count, &datatype);
-      smpi_mpi_send(rbuf, count, datatype, to, tag, comm);
+      Request::send(rbuf, count, datatype, to, tag, comm);
     }
     smpi_free_tmp_buffer(tmp_buf);
     return MPI_SUCCESS;
@@ -98,11 +98,11 @@ int smpi_coll_tuned_reduce_NTSL(void *buf, void *rbuf, int count,
     /* root recv data */
     if (rank == root) {
       for (i = 0; i < pipe_length; i++) {
-        recv_request_array[i] = smpi_mpi_irecv((char *) tmp_buf + (i * increment), segment, datatype, from,
+        recv_request_array[i] = Request::irecv((char *) tmp_buf + (i * increment), segment, datatype, from,
                   (tag + i), comm);
       }
       for (i = 0; i < pipe_length; i++) {
-        smpi_mpi_wait(&recv_request_array[i], &status);
+        Request::wait(&recv_request_array[i], &status);
         smpi_op_apply(op, tmp_buf + (i * increment), (char *)rbuf + (i * increment),
                        &segment, &datatype);
       }
@@ -111,26 +111,26 @@ int smpi_coll_tuned_reduce_NTSL(void *buf, void *rbuf, int count,
     /* last node only sends data */
     else if (rank == ((root - 1 + size) % size)) {
       for (i = 0; i < pipe_length; i++) {
-        send_request_array[i] = smpi_mpi_isend((char *)rbuf + (i * increment), segment, datatype, to, (tag + i),
+        send_request_array[i] = Request::isend((char *)rbuf + (i * increment), segment, datatype, to, (tag + i),
                   comm);
       }
-      smpi_mpi_waitall((pipe_length), send_request_array, send_status_array);
+      Request::waitall((pipe_length), send_request_array, send_status_array);
     }
 
     /* intermediate nodes relay (receive, reduce, then send) data */
     else {
       for (i = 0; i < pipe_length; i++) {
-        recv_request_array[i] = smpi_mpi_irecv((char *) tmp_buf + (i * increment), segment, datatype, from,
+        recv_request_array[i] = Request::irecv((char *) tmp_buf + (i * increment), segment, datatype, from,
                   (tag + i), comm);
       }
       for (i = 0; i < pipe_length; i++) {
-        smpi_mpi_wait(&recv_request_array[i], &status);
+        Request::wait(&recv_request_array[i], &status);
         smpi_op_apply(op, tmp_buf + (i * increment), (char *)rbuf + (i * increment),
                        &segment, &datatype);
-        send_request_array[i] = smpi_mpi_isend((char *) rbuf + (i * increment), segment, datatype, to,
+        send_request_array[i] = Request::isend((char *) rbuf + (i * increment), segment, datatype, to,
                   (tag + i), comm);
       }
-      smpi_mpi_waitall((pipe_length), send_request_array, send_status_array);
+      Request::waitall((pipe_length), send_request_array, send_status_array);
     }
 
     free(send_request_array);

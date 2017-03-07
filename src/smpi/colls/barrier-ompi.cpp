@@ -59,38 +59,38 @@ int smpi_coll_tuned_barrier_ompi_doublering(MPI_Comm comm
     right = ((rank+1)%size);
 
     if (rank > 0) { /* receive message from the left */
-        smpi_mpi_recv((void*)NULL, 0, MPI_BYTE, left, 
+        Request::recv((void*)NULL, 0, MPI_BYTE, left, 
                                 COLL_TAG_BARRIER, comm,
                                 MPI_STATUS_IGNORE);
     }
 
     /* Send message to the right */
-    smpi_mpi_send((void*)NULL, 0, MPI_BYTE, right, 
+    Request::send((void*)NULL, 0, MPI_BYTE, right, 
                             COLL_TAG_BARRIER,
                              comm);
 
     /* root needs to receive from the last node */
     if (rank == 0) {
-        smpi_mpi_recv((void*)NULL, 0, MPI_BYTE, left, 
+        Request::recv((void*)NULL, 0, MPI_BYTE, left, 
                                 COLL_TAG_BARRIER, comm,
                                 MPI_STATUS_IGNORE);
     }
 
     /* Allow nodes to exit */
     if (rank > 0) { /* post Receive from left */
-        smpi_mpi_recv((void*)NULL, 0, MPI_BYTE, left, 
+        Request::recv((void*)NULL, 0, MPI_BYTE, left, 
                                 COLL_TAG_BARRIER, comm,
                                 MPI_STATUS_IGNORE);
     }
 
     /* send message to the right one */
-    smpi_mpi_send((void*)NULL, 0, MPI_BYTE, right, 
+    Request::send((void*)NULL, 0, MPI_BYTE, right, 
                             COLL_TAG_BARRIER,
                              comm);
  
     /* rank 0 post receive from the last node */
     if (rank == 0) {
-        smpi_mpi_recv((void*)NULL, 0, MPI_BYTE, left, 
+        Request::recv((void*)NULL, 0, MPI_BYTE, left, 
                                 COLL_TAG_BARRIER, comm,
                                 MPI_STATUS_IGNORE);
     }
@@ -125,7 +125,7 @@ int smpi_coll_tuned_barrier_ompi_recursivedoubling(MPI_Comm comm
         if (rank >= adjsize) {
             /* send message to lower ranked node */
             remote = rank - adjsize;
-            smpi_mpi_sendrecv(NULL, 0, MPI_BYTE, remote,
+            Request::sendrecv(NULL, 0, MPI_BYTE, remote,
                                                   COLL_TAG_BARRIER,
                                                   NULL, 0, MPI_BYTE, remote,
                                                   COLL_TAG_BARRIER,
@@ -134,7 +134,7 @@ int smpi_coll_tuned_barrier_ompi_recursivedoubling(MPI_Comm comm
         } else if (rank < (size - adjsize)) {
 
             /* receive message from high level rank */
-            smpi_mpi_recv((void*)NULL, 0, MPI_BYTE, rank+adjsize,
+            Request::recv((void*)NULL, 0, MPI_BYTE, rank+adjsize,
                                     COLL_TAG_BARRIER, comm,
                                     MPI_STATUS_IGNORE);
 
@@ -150,7 +150,7 @@ int smpi_coll_tuned_barrier_ompi_recursivedoubling(MPI_Comm comm
             if (remote >= adjsize) continue;
 
             /* post receive from the remote node */
-            smpi_mpi_sendrecv(NULL, 0, MPI_BYTE, remote,
+            Request::sendrecv(NULL, 0, MPI_BYTE, remote,
                                                   COLL_TAG_BARRIER,
                                                   NULL, 0, MPI_BYTE, remote,
                                                   COLL_TAG_BARRIER,
@@ -163,7 +163,7 @@ int smpi_coll_tuned_barrier_ompi_recursivedoubling(MPI_Comm comm
         if (rank < (size - adjsize)) {
             /* send enter message to higher ranked node */
             remote = rank + adjsize;
-            smpi_mpi_send((void*)NULL, 0, MPI_BYTE, remote, 
+            Request::send((void*)NULL, 0, MPI_BYTE, remote, 
                                     COLL_TAG_BARRIER,
                                      comm);
 
@@ -196,7 +196,7 @@ int smpi_coll_tuned_barrier_ompi_bruck(MPI_Comm comm
         to   = (rank + distance) % size;
 
         /* send message to lower ranked node */
-        smpi_mpi_sendrecv(NULL, 0, MPI_BYTE, to, 
+        Request::sendrecv(NULL, 0, MPI_BYTE, to, 
                                               COLL_TAG_BARRIER,
                                               NULL, 0, MPI_BYTE, from, 
                                               COLL_TAG_BARRIER,
@@ -222,7 +222,7 @@ int smpi_coll_tuned_barrier_ompi_two_procs(MPI_Comm comm
                  "ompi_coll_tuned_barrier_ompi_two_procs rank %d", remote);
     remote = (remote + 1) & 0x1;
 
-    smpi_mpi_sendrecv(NULL, 0, MPI_BYTE, remote, 
+    Request::sendrecv(NULL, 0, MPI_BYTE, remote, 
                                           COLL_TAG_BARRIER,
                                           NULL, 0, MPI_BYTE, remote, 
                                           COLL_TAG_BARRIER,
@@ -254,11 +254,11 @@ int smpi_coll_tuned_barrier_ompi_basic_linear(MPI_Comm comm)
     /* All non-root send & receive zero-length message. */
 
     if (rank > 0) {
-        smpi_mpi_send (NULL, 0, MPI_BYTE, 0, 
+        Request::send (NULL, 0, MPI_BYTE, 0, 
                                  COLL_TAG_BARRIER,
                                   comm);
 
-        smpi_mpi_recv (NULL, 0, MPI_BYTE, 0, 
+        Request::recv (NULL, 0, MPI_BYTE, 0, 
                                  COLL_TAG_BARRIER,
                                  comm, MPI_STATUS_IGNORE);
     }
@@ -270,19 +270,19 @@ int smpi_coll_tuned_barrier_ompi_basic_linear(MPI_Comm comm)
 
         requests = (MPI_Request*)malloc( size * sizeof(MPI_Request) );
         for (i = 1; i < size; ++i) {
-            requests[i] = smpi_mpi_irecv(NULL, 0, MPI_BYTE, MPI_ANY_SOURCE,
+            requests[i] = Request::irecv(NULL, 0, MPI_BYTE, MPI_ANY_SOURCE,
                                      COLL_TAG_BARRIER, comm
                                      );
         }
-        smpi_mpi_waitall( size-1, requests+1, MPI_STATUSES_IGNORE );
+        Request::waitall( size-1, requests+1, MPI_STATUSES_IGNORE );
 
         for (i = 1; i < size; ++i) {
-            requests[i] = smpi_mpi_isend(NULL, 0, MPI_BYTE, i,
+            requests[i] = Request::isend(NULL, 0, MPI_BYTE, i,
                                      COLL_TAG_BARRIER,
                                       comm
                                      );
         }
-        smpi_mpi_waitall( size-1, requests+1, MPI_STATUSES_IGNORE );
+        Request::waitall( size-1, requests+1, MPI_STATUSES_IGNORE );
         free( requests );
     }
 
@@ -315,11 +315,11 @@ int smpi_coll_tuned_barrier_ompi_tree(MPI_Comm comm)
         partner = rank ^ jump;
         if (!(partner & (jump-1)) && partner < size) {
             if (partner > rank) {
-                smpi_mpi_recv (NULL, 0, MPI_BYTE, partner, 
+                Request::recv (NULL, 0, MPI_BYTE, partner, 
                                          COLL_TAG_BARRIER, comm,
                                          MPI_STATUS_IGNORE);
             } else if (partner < rank) {
-                smpi_mpi_send (NULL, 0, MPI_BYTE, partner,
+                Request::send (NULL, 0, MPI_BYTE, partner,
                                          COLL_TAG_BARRIER,
                                           comm);
             }
@@ -331,11 +331,11 @@ int smpi_coll_tuned_barrier_ompi_tree(MPI_Comm comm)
         partner = rank ^ jump;
         if (!(partner & (jump-1)) && partner < size) {
             if (partner > rank) {
-                smpi_mpi_send (NULL, 0, MPI_BYTE, partner,
+                Request::send (NULL, 0, MPI_BYTE, partner,
                                          COLL_TAG_BARRIER,
                                           comm);
             } else if (partner < rank) {
-                smpi_mpi_recv (NULL, 0, MPI_BYTE, partner, 
+                Request::recv (NULL, 0, MPI_BYTE, partner, 
                                          COLL_TAG_BARRIER, comm,
                                          MPI_STATUS_IGNORE);
             }

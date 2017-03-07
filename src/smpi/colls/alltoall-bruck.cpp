@@ -52,12 +52,12 @@ smpi_coll_tuned_alltoall_bruck(void *send_buff, int send_count,
   disps = (int *) xbt_malloc(sizeof(int) * num_procs);
   blocks_length = (int *) xbt_malloc(sizeof(int) * num_procs);
 
-  smpi_mpi_sendrecv(send_ptr + rank * send_count * extent,
+  Request::sendrecv(send_ptr + rank * send_count * extent,
                (num_procs - rank) * send_count, send_type, rank, tag,
                recv_ptr, (num_procs - rank) * recv_count, recv_type, rank,
                tag, comm, &status);
 
-  smpi_mpi_sendrecv(send_ptr, rank * send_count, send_type, rank, tag,
+  Request::sendrecv(send_ptr, rank * send_count, send_type, rank, tag,
                recv_ptr + (num_procs - rank) * recv_count * extent,
                rank * recv_count, recv_type, rank, tag, comm, &status);
 
@@ -84,7 +84,7 @@ smpi_coll_tuned_alltoall_bruck(void *send_buff, int send_count,
     position = 0;
     MPI_Pack(recv_buff, 1, new_type, tmp_buff, pack_size, &position, comm);
 
-    smpi_mpi_sendrecv(tmp_buff, position, MPI_PACKED, dst, tag, recv_buff, 1,
+    Request::sendrecv(tmp_buff, position, MPI_PACKED, dst, tag, recv_buff, 1,
                  new_type, src, tag, comm, &status);
     smpi_datatype_unuse(new_type);
 
@@ -94,18 +94,18 @@ smpi_coll_tuned_alltoall_bruck(void *send_buff, int send_count,
   free(disps);
   free(blocks_length);
 
-  smpi_mpi_sendrecv(recv_ptr + (rank + 1) * recv_count * extent,
+  Request::sendrecv(recv_ptr + (rank + 1) * recv_count * extent,
                (num_procs - rank - 1) * recv_count, send_type,
                rank, tag, tmp_buff, (num_procs - rank - 1) * recv_count,
                recv_type, rank, tag, comm, &status);
 
-  smpi_mpi_sendrecv(recv_ptr, (rank + 1) * recv_count, send_type, rank, tag,
+  Request::sendrecv(recv_ptr, (rank + 1) * recv_count, send_type, rank, tag,
                tmp_buff + (num_procs - rank - 1) * recv_count * extent,
                (rank + 1) * recv_count, recv_type, rank, tag, comm, &status);
 
 
   for (i = 0; i < num_procs; i++)
-    smpi_mpi_sendrecv(tmp_buff + i * recv_count * extent, recv_count, send_type,
+    Request::sendrecv(tmp_buff + i * recv_count * extent, recv_count, send_type,
                  rank, tag,
                  recv_ptr + (num_procs - i - 1) * recv_count * extent,
                  recv_count, recv_type, rank, tag, comm, &status);

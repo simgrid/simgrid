@@ -151,7 +151,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
                         }
                     }
 
-                    reqs[inbi]=smpi_mpi_irecv(local_recvbuf, recvcount, datatype,
+                    reqs[inbi]=Request::irecv(local_recvbuf, recvcount, datatype,
                                              tree->tree_next[i], 
                                              COLL_TAG_REDUCE, comm
                                              );
@@ -160,7 +160,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
                    if there are no requests reqs[inbi ^1] will be 
                    MPI_REQUEST_NULL. */
                 /* wait on data from last child for previous segment */
-                smpi_mpi_waitall( 1, &reqs[inbi ^ 1], 
+                Request::waitall( 1, &reqs[inbi ^ 1], 
                                              MPI_STATUSES_IGNORE );
                 local_op_buffer = inbuf[inbi ^ 1];
                 if( i > 0 ) {
@@ -195,7 +195,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
                      */
                     if (rank != tree->tree_root) {
                         /* send combined/accumulated data to parent */
-                        smpi_mpi_send( accumulator, prevcount, 
+                        Request::send( accumulator, prevcount, 
                                                   datatype, tree->tree_prev, 
                                                   COLL_TAG_REDUCE,
                                                   comm);
@@ -240,7 +240,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
                 if (original_count < count_by_segment) {
                     count_by_segment = original_count;
                 }
-                smpi_mpi_send((char*)sendbuf + 
+                Request::send((char*)sendbuf + 
                                          segindex * segment_increment,
                                          count_by_segment, datatype,
                                          tree->tree_prev, 
@@ -268,7 +268,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
 
             /* post first group of requests */
             for (segindex = 0; segindex < max_outstanding_reqs; segindex++) {
-                sreq[segindex]=smpi_mpi_isend((char*)sendbuf +
+                sreq[segindex]=Request::isend((char*)sendbuf +
                                           segindex * segment_increment,
                                           count_by_segment, datatype,
                                           tree->tree_prev, 
@@ -280,13 +280,13 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
             creq = 0;
             while ( original_count > 0 ) {
                 /* wait on a posted request to complete */
-                smpi_mpi_wait(&sreq[creq], MPI_STATUS_IGNORE);
+                Request::wait(&sreq[creq], MPI_STATUS_IGNORE);
                 sreq[creq] = MPI_REQUEST_NULL;
 
                 if( original_count < count_by_segment ) {
                     count_by_segment = original_count;
                 }
-                sreq[creq]=smpi_mpi_isend((char*)sendbuf + 
+                sreq[creq]=Request::isend((char*)sendbuf + 
                                           segindex * segment_increment, 
                                           count_by_segment, datatype, 
                                           tree->tree_prev, 
@@ -298,7 +298,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
             }
 
             /* Wait on the remaining request to complete */
-            smpi_mpi_waitall( max_outstanding_reqs, sreq, 
+            Request::waitall( max_outstanding_reqs, sreq, 
                                          MPI_STATUSES_IGNORE );
 
             /* free requests */
@@ -547,7 +547,7 @@ int smpi_coll_tuned_reduce_ompi_in_order_binary( void *sendbuf, void *recvbuf,
     if (io_root != root) {
         if (root == rank) {
             /* Receive result from rank io_root to recvbuf */
-            smpi_mpi_recv(recvbuf, count, datatype, io_root,
+            Request::recv(recvbuf, count, datatype, io_root,
                                     COLL_TAG_REDUCE, comm,
                                     MPI_STATUS_IGNORE);
             if (MPI_IN_PLACE == sendbuf) {
@@ -556,7 +556,7 @@ int smpi_coll_tuned_reduce_ompi_in_order_binary( void *sendbuf, void *recvbuf,
           
         } else if (io_root == rank) {
             /* Send result from use_this_recvbuf to root */
-            smpi_mpi_send(use_this_recvbuf, count, datatype, root,
+            Request::send(use_this_recvbuf, count, datatype, root,
                                     COLL_TAG_REDUCE,
                                     comm);
             smpi_free_tmp_buffer(use_this_recvbuf);
@@ -612,7 +612,7 @@ smpi_coll_tuned_reduce_ompi_basic_linear(void *sbuf, void *rbuf, int count,
     /* If not root, send data to the root. */
 
     if (rank != root) {
-        smpi_mpi_send(sbuf, count, dtype, root,
+        Request::send(sbuf, count, dtype, root,
                                 COLL_TAG_REDUCE,
                                 comm);
         return MPI_SUCCESS;
@@ -644,7 +644,7 @@ smpi_coll_tuned_reduce_ompi_basic_linear(void *sbuf, void *rbuf, int count,
     if (rank == (size - 1)) {
         smpi_datatype_copy((char*)sbuf, count, dtype,(char*)rbuf, count, dtype);
     } else {
-        smpi_mpi_recv(rbuf, count, dtype, size - 1,
+        Request::recv(rbuf, count, dtype, size - 1,
                                 COLL_TAG_REDUCE, comm,
                                 MPI_STATUS_IGNORE);
     }
@@ -655,7 +655,7 @@ smpi_coll_tuned_reduce_ompi_basic_linear(void *sbuf, void *rbuf, int count,
         if (rank == i) {
             inbuf = (char*)sbuf;
         } else {
-            smpi_mpi_recv(pml_buffer, count, dtype, i,
+            Request::recv(pml_buffer, count, dtype, i,
                                     COLL_TAG_REDUCE, comm,
                                     MPI_STATUS_IGNORE);
             inbuf = pml_buffer;

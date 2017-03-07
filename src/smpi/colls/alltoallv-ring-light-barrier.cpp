@@ -48,7 +48,7 @@ smpi_coll_tuned_alltoallv_ring_light_barrier(void *send_buff, int *send_counts, 
   send_chunk = smpi_datatype_get_extent(send_type);
   recv_chunk = smpi_datatype_get_extent(recv_type);
 
-  smpi_mpi_sendrecv(send_ptr + send_disps[rank] * send_chunk, send_counts[rank], send_type, rank, tag,
+  Request::sendrecv(send_ptr + send_disps[rank] * send_chunk, send_counts[rank], send_type, rank, tag,
                recv_ptr + recv_disps[rank] * recv_chunk, recv_counts[rank], recv_type, rank, tag,
                comm, &s);
 
@@ -56,14 +56,14 @@ smpi_coll_tuned_alltoallv_ring_light_barrier(void *send_buff, int *send_counts, 
     src = (rank - i + num_procs) % num_procs;
     dst = (rank + i) % num_procs;
 
-    smpi_mpi_sendrecv(send_ptr + send_disps[dst] * send_chunk, send_counts[dst], send_type,
+    Request::sendrecv(send_ptr + send_disps[dst] * send_chunk, send_counts[dst], send_type,
                  dst, tag, recv_ptr + recv_disps[src] * recv_chunk, recv_counts[src],
                  recv_type, src, tag, comm, &s);
 
     if ((i + 1) < num_procs) {
       next_src = (rank - (i + 1) + num_procs) % num_procs;
       next_dst = (rank + (i + 1) + num_procs) % num_procs;
-      smpi_mpi_sendrecv(&send_sync, 1, MPI_CHAR, next_src, tag,
+      Request::sendrecv(&send_sync, 1, MPI_CHAR, next_src, tag,
                    &recv_sync, 1, MPI_CHAR, next_dst, tag, comm, &s);
 
     }

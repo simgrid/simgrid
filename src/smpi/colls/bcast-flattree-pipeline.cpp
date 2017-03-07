@@ -38,9 +38,9 @@ smpi_coll_tuned_bcast_flattree_pipeline(void *buff, int count,
 
   if (rank != root) {
     for (i = 0; i < pipe_length; i++) {
-      request_array[i] = smpi_mpi_irecv((char *)buff + (i * increment), segment, data_type, root, tag, comm);
+      request_array[i] = Request::irecv((char *)buff + (i * increment), segment, data_type, root, tag, comm);
     }
-    smpi_mpi_waitall(pipe_length, request_array, status_array);
+    Request::waitall(pipe_length, request_array, status_array);
   }
 
   else {
@@ -50,7 +50,7 @@ smpi_coll_tuned_bcast_flattree_pipeline(void *buff, int count,
         continue;
       else {
         for (i = 0; i < pipe_length; i++) {
-          smpi_mpi_send((char *)buff + (i * increment), segment, data_type, j, tag, comm);
+          Request::send((char *)buff + (i * increment), segment, data_type, j, tag, comm);
         }
       }
     }

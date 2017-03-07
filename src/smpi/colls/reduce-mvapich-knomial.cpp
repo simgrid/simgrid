@@ -182,7 +182,7 @@ int smpi_coll_tuned_reduce_mvapich2_knomial (
         while(recv_iter  < expected_recv_count) {
             src = src_array[expected_recv_count - (recv_iter+1)];
 
-            requests[recv_iter]=smpi_mpi_irecv (tmp_buf[recv_iter], count, datatype ,src,
+            requests[recv_iter]=Request::irecv (tmp_buf[recv_iter], count, datatype ,src,
                     COLL_TAG_REDUCE, comm);
             recv_iter++;
 
@@ -190,7 +190,7 @@ int smpi_coll_tuned_reduce_mvapich2_knomial (
 
         recv_iter=0;
         while(recv_iter < expected_recv_count) {
-            index=smpi_mpi_waitany(expected_recv_count, requests,
+            index=Request::waitany(expected_recv_count, requests,
                     &status);
             recv_iter++;
 
@@ -211,10 +211,10 @@ int smpi_coll_tuned_reduce_mvapich2_knomial (
     } 
 
     if(rank != root) {
-        send_request=smpi_mpi_isend(recvbuf,count, datatype, dst,
+        send_request=Request::isend(recvbuf,count, datatype, dst,
                 COLL_TAG_REDUCE,comm);
 
-        smpi_mpi_waitall(1, &send_request, &status);
+        Request::waitall(1, &send_request, &status);
 
         smpi_free_tmp_buffer((void *)((char*)recvbuf + true_lb));
     }

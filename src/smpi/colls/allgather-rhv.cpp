@@ -64,7 +64,7 @@ smpi_coll_tuned_allgather_rhv(void *sbuf, int send_count,
   //perform a remote copy
 
   dst = base_offset;
-  smpi_mpi_sendrecv(sbuf, send_count, send_type, dst, tag,
+  Request::sendrecv(sbuf, send_count, send_type, dst, tag,
                (char *)rbuf + base_offset * recv_chunk, recv_count, recv_type, dst, tag,
                comm, &status);
 
@@ -90,7 +90,7 @@ smpi_coll_tuned_allgather_rhv(void *sbuf, int send_count,
 
     //  printf("node %d send to %d in phase %d s_offset = %d r_offset = %d count = %d\n",rank,dst,phase, send_base_offset, recv_base_offset, curr_count);
 
-    smpi_mpi_sendrecv((char *)rbuf + send_offset, curr_count, recv_type, dst, tag,
+    Request::sendrecv((char *)rbuf + send_offset, curr_count, recv_type, dst, tag,
 		 (char *)rbuf + recv_offset, curr_count, recv_type, dst, tag,
                  comm, &status);
 

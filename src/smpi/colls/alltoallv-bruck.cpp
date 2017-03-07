@@ -63,7 +63,7 @@ int smpi_coll_tuned_alltoallv_bruck(void *sendbuf, int *sendcounts, int *senddis
                 continue;
               }
 
-              requests[count]=smpi_mpi_irecv((char *)recvbuf + recvdisps[dst] * recvext, recvcounts[dst],
+              requests[count]=Request::irecv((char *)recvbuf + recvdisps[dst] * recvext, recvcounts[dst],
                                   recvtype, dst, system_tag, comm );
               count++;
             }
@@ -75,14 +75,14 @@ int smpi_coll_tuned_alltoallv_bruck(void *sendbuf, int *sendcounts, int *senddis
                        rank, i, sendcounts[dst]);
                 continue;
               }
-              requests[count]=smpi_mpi_isend((char *)sendbuf + senddisps[dst] * sendext, sendcounts[dst],
+              requests[count]=Request::isend((char *)sendbuf + senddisps[dst] * sendext, sendcounts[dst],
                                   sendtype, dst, system_tag, comm);
               count++;
             }
             /* Wait for them all. */
             //smpi_mpi_startall(count, requests);
             XBT_DEBUG("<%d> wait for %d requests", rank, count);
-            smpi_mpi_waitall(count, requests, MPI_STATUSES_IGNORE);
+            Request::waitall(count, requests, MPI_STATUSES_IGNORE);
             xbt_free(requests);
 
           }

@@ -145,7 +145,7 @@ smpi_coll_tuned_allgatherv_ompi_neighborexchange(void *sbuf, int scount,
     */
     tmprecv = (char*)rbuf + rdispls[neighbor[0]] * rext;
     tmpsend = (char*)rbuf + rdispls[rank] * rext;
-    smpi_mpi_sendrecv(tmpsend, rcounts[rank], rdtype, 
+    Request::sendrecv(tmpsend, rcounts[rank], rdtype, 
                                    neighbor[0], COLL_TAG_ALLGATHERV,
                                    tmprecv, rcounts[neighbor[0]], rdtype, 
                                    neighbor[0], COLL_TAG_ALLGATHERV,
@@ -197,7 +197,7 @@ smpi_coll_tuned_allgatherv_ompi_neighborexchange(void *sbuf, int scount,
         tmpsend = (char*)rbuf;
       
         /* Sendreceive */
-        smpi_mpi_sendrecv(tmpsend, 1, new_sdtype, neighbor[i_parity],
+        Request::sendrecv(tmpsend, 1, new_sdtype, neighbor[i_parity],
                                        COLL_TAG_ALLGATHERV,
                                        tmprecv, 1, new_rdtype, neighbor[i_parity],
                                        COLL_TAG_ALLGATHERV,

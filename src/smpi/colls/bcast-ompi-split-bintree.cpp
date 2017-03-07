@@ -173,7 +173,7 @@ smpi_coll_tuned_bcast_ompi_split_bintree ( void* buffer,
                 if(segindex == (num_segments[i] - 1)) 
                     sendcount[i] = counts[i] - segindex*segcount[i];
                 /* send data */
-                smpi_mpi_send(tmpbuf[i], sendcount[i], datatype,
+                Request::send(tmpbuf[i], sendcount[i], datatype,
                                   tree->tree_next[i], COLL_TAG_BCAST, comm);
                 /* update tmp buffer */
                 tmpbuf[i] += realsegsize[i];
@@ -195,7 +195,7 @@ smpi_coll_tuned_bcast_ompi_split_bintree ( void* buffer,
          * and we disseminating the data to all children.
          */
         sendcount[lr] = segcount[lr];
-        base_req=smpi_mpi_irecv(tmpbuf[lr], sendcount[lr], datatype,
+        base_req=Request::irecv(tmpbuf[lr], sendcount[lr], datatype,
                            tree->tree_prev, COLL_TAG_BCAST,
                            comm);
 
@@ -204,14 +204,14 @@ smpi_coll_tuned_bcast_ompi_split_bintree ( void* buffer,
             if( segindex == (num_segments[lr] - 1)) 
                 sendcount[lr] = counts[lr] - segindex*segcount[lr];
             /* post new irecv */
-            new_req = smpi_mpi_irecv( tmpbuf[lr] + realsegsize[lr], sendcount[lr],
+            new_req = Request::irecv( tmpbuf[lr] + realsegsize[lr], sendcount[lr],
                                 datatype, tree->tree_prev, COLL_TAG_BCAST,
                                 comm);
 
             /* wait for and forward current segment */
-            smpi_mpi_waitall( 1, &base_req, MPI_STATUSES_IGNORE );
+            Request::waitall( 1, &base_req, MPI_STATUSES_IGNORE );
             for( i = 0; i < tree->tree_nextsize; i++ ) {  /* send data to children (segcount[lr]) */
-                smpi_mpi_send( tmpbuf[lr], segcount[lr], datatype,
+                Request::send( tmpbuf[lr], segcount[lr], datatype,
                                    tree->tree_next[i], COLL_TAG_BCAST,
                                    comm);
             } /* end of for each child */
@@ -223,9 +223,9 @@ smpi_coll_tuned_bcast_ompi_split_bintree ( void* buffer,
         } /* end of for segindex */
 
         /* wait for the last segment and forward current segment */
-        smpi_mpi_waitall( 1, &base_req, MPI_STATUSES_IGNORE );
+        Request::waitall( 1, &base_req, MPI_STATUSES_IGNORE );
         for( i = 0; i < tree->tree_nextsize; i++ ) {  /* send data to children */
-            smpi_mpi_send(tmpbuf[lr], sendcount[lr], datatype,
+            Request::send(tmpbuf[lr], sendcount[lr], datatype,
                               tree->tree_next[i], COLL_TAG_BCAST, comm);
         } /* end of for each child */
     } 
@@ -238,7 +238,7 @@ smpi_coll_tuned_bcast_ompi_split_bintree ( void* buffer,
             /* determine how many elements to expect in this round */
             if (segindex == (num_segments[lr] - 1)) sendcount[lr] = counts[lr] - segindex*segcount[lr];
             /* receive segments */
-            smpi_mpi_recv(tmpbuf[lr], sendcount[lr], datatype,
+            Request::recv(tmpbuf[lr], sendcount[lr], datatype,
                               tree->tree_prev, COLL_TAG_BCAST,
                               comm, MPI_STATUS_IGNORE);
             /* update the initial pointer to the buffer */
@@ -267,7 +267,7 @@ smpi_coll_tuned_bcast_ompi_split_bintree ( void* buffer,
 
     if ( (size%2) != 0 && rank != root) { 
 
-        smpi_mpi_sendrecv( tmpbuf[lr], counts[lr], datatype,
+        Request::sendrecv( tmpbuf[lr], counts[lr], datatype,
                                         pair, COLL_TAG_BCAST,
                                         tmpbuf[(lr+1)%2], counts[(lr+1)%2], datatype,
                                         pair, COLL_TAG_BCAST,
@@ -275,19 +275,19 @@ smpi_coll_tuned_bcast_ompi_split_bintree ( void* buffer,
     } else if ( (size%2) == 0 ) {
         /* root sends right buffer to the last node */
         if( rank == root ) {
-            smpi_mpi_send(tmpbuf[1], counts[1], datatype,
+            Request::send(tmpbuf[1], counts[1], datatype,
                               (root+size-1)%size, COLL_TAG_BCAST, comm);
 
         } 
         /* last node receives right buffer from the root */
         else if (rank == (root+size-1)%size) {
-            smpi_mpi_recv(tmpbuf[1], counts[1], datatype,
+            Request::recv(tmpbuf[1], counts[1], datatype,
                               root, COLL_TAG_BCAST,
                               comm, MPI_STATUS_IGNORE);
         } 
         /* everyone else exchanges buffers */
         else {
-            smpi_mpi_sendrecv( tmpbuf[lr], counts[lr], datatype,
+            Request::sendrecv( tmpbuf[lr], counts[lr], datatype,
                                             pair, COLL_TAG_BCAST,
                                             tmpbuf[(lr+1)%2], counts[(lr+1)%2], datatype,
                                             pair, COLL_TAG_BCAST,

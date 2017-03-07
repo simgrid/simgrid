@@ -67,9 +67,9 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
    */
   if (root != 0) {
     if (rank == root) {
-      smpi_mpi_send(buf, count, datatype, 0, tag, comm);
+      Request::send(buf, count, datatype, 0, tag, comm);
     } else if (rank == 0) {
-      smpi_mpi_recv(buf, count, datatype, root, tag, comm, &status);
+      Request::recv(buf, count, datatype, root, tag, comm, &status);
     }
   }
 
@@ -86,7 +86,7 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
 
       while (sent_count < (size - 1)) {
         for (i = 1; i < size; i++) {
-          smpi_mpi_iprobe(i, MPI_ANY_TAG, comm, &flag_array[i],
+          Request::iprobe(i, MPI_ANY_TAG, comm, &flag_array[i],
                      MPI_STATUSES_IGNORE);
         }
 
@@ -96,7 +96,7 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
 
           /* message arrive */
           if ((flag_array[i] == 1) && (already_sent[i] == 0)) {
-            smpi_mpi_recv(temp_buf, 1, MPI_CHAR, i, tag, comm, &status);
+            Request::recv(temp_buf, 1, MPI_CHAR, i, tag, comm, &status);
             header_buf[header_index] = i;
             header_index++;
             sent_count++;
@@ -110,8 +110,8 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
         if (header_index != 0) {
           header_buf[header_index] = -1;
           to = header_buf[0];
-          smpi_mpi_send(header_buf, HEADER_SIZE, MPI_INT, to, tag, comm);
-          smpi_mpi_send(buf, count, datatype, to, tag, comm);
+          Request::send(header_buf, HEADER_SIZE, MPI_INT, to, tag, comm);
+          Request::send(buf, count, datatype, to, tag, comm);
         }
 
         /* randomly MPI_Send to one */
@@ -121,8 +121,8 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
             if (already_sent[i] == 0) {
               header_buf[0] = i;
               header_buf[1] = -1;
-              smpi_mpi_send(header_buf, HEADER_SIZE, MPI_INT, i, tag, comm);
-              smpi_mpi_send(buf, count, datatype, i, tag, comm);
+              Request::send(header_buf, HEADER_SIZE, MPI_INT, i, tag, comm);
+              Request::send(buf, count, datatype, i, tag, comm);
               already_sent[i] = 1;
               sent_count++;
               break;
@@ -138,12 +138,12 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
     else {
 
       /* send 1-byte message to root */
-      smpi_mpi_send(temp_buf, 1, MPI_CHAR, 0, tag, comm);
+      Request::send(temp_buf, 1, MPI_CHAR, 0, tag, comm);
 
       /* wait for header and data, forward when required */
-      smpi_mpi_recv(header_buf, HEADER_SIZE, MPI_INT, MPI_ANY_SOURCE, tag, comm,
+      Request::recv(header_buf, HEADER_SIZE, MPI_INT, MPI_ANY_SOURCE, tag, comm,
                &status);
-      smpi_mpi_recv(buf, count, datatype, MPI_ANY_SOURCE, tag, comm, &status);
+      Request::recv(buf, count, datatype, MPI_ANY_SOURCE, tag, comm, &status);
 
       /* search for where it is */
       int myordering = 0;
@@ -153,9 +153,9 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
 
       /* send header followed by data */
       if (header_buf[myordering + 1] != -1) {
-        smpi_mpi_send(header_buf, HEADER_SIZE, MPI_INT, header_buf[myordering + 1],
+        Request::send(header_buf, HEADER_SIZE, MPI_INT, header_buf[myordering + 1],
                  tag, comm);
-        smpi_mpi_send(buf, count, datatype, header_buf[myordering + 1], tag, comm);
+        Request::send(buf, count, datatype, header_buf[myordering + 1], tag, comm);
       }
     }
   }
@@ -178,7 +178,7 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
         //iteration++;
         //start = MPI_Wtime();
         for (i = 1; i < size; i++) {
-          smpi_mpi_iprobe(i, MPI_ANY_TAG, comm, &flag_array[i],
+          Request::iprobe(i, MPI_ANY_TAG, comm, &flag_array[i],
                      &temp_status_array[i]);
         }
         //total = MPI_Wtime() - start;
@@ -191,7 +191,7 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
         for (i = 1; i < size; i++) {
           /* message arrive */
           if ((flag_array[i] == 1) && (already_sent[i] == 0)) {
-            smpi_mpi_recv(&temp_buf[i], 1, MPI_CHAR, i, tag, comm,
+            Request::recv(&temp_buf[i], 1, MPI_CHAR, i, tag, comm,
                      &status);
             header_buf[header_index] = i;
             header_index++;
@@ -223,7 +223,7 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
           //start = MPI_Wtime();
 
           /* send header */
-          smpi_mpi_send(header_buf, HEADER_SIZE, MPI_INT, to, tag, comm);
+          Request::send(header_buf, HEADER_SIZE, MPI_INT, to, tag, comm);
 
           //total = MPI_Wtime() - start;
           //total *= 1000;
@@ -235,16 +235,16 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
 
           if (0 == 1) {
             //if (header_index == 1) {
-            smpi_mpi_send(buf, count, datatype, to, tag, comm);
+            Request::send(buf, count, datatype, to, tag, comm);
           }
 
 
           /* send data - pipeline */
           else {
             for (i = 0; i < pipe_length; i++) {
-              smpi_mpi_send((char *)buf + (i * increment), segment, datatype, to, tag, comm);
+              Request::send((char *)buf + (i * increment), segment, datatype, to, tag, comm);
             }
-            //smpi_mpi_waitall((pipe_length), send_request_array, send_status_array);
+            //Request::waitall((pipe_length), send_request_array, send_status_array);
           }
           //total = MPI_Wtime() - start;
           //total *= 1000;
@@ -264,16 +264,16 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
               to = i;
 
               //start = MPI_Wtime();
-              smpi_mpi_send(header_buf, HEADER_SIZE, MPI_INT, to, tag, comm);
+              Request::send(header_buf, HEADER_SIZE, MPI_INT, to, tag, comm);
 
               /* still need to chop data so that we can use the same non-root code */
               for (j = 0; j < pipe_length; j++) {
-                smpi_mpi_send((char *)buf + (j * increment), segment, datatype, to, tag,
+                Request::send((char *)buf + (j * increment), segment, datatype, to, tag,
                          comm);
               }
 
-              //smpi_mpi_send(buf,count,datatype,to,tag,comm);
-              //smpi_mpi_wait(&request,MPI_STATUS_IGNORE);
+              //Request::send(buf,count,datatype,to,tag,comm);
+              //Request::wait(&request,MPI_STATUS_IGNORE);
 
               //total = MPI_Wtime() - start;
               //total *= 1000;
@@ -291,7 +291,7 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
       }                         /* while loop */
 
       for(i=0; i<size; i++)
-        if(to_clean[i]!=0)smpi_mpi_recv(&temp_buf[i], 1, MPI_CHAR, i, tag, comm,
+        if(to_clean[i]!=0)Request::recv(&temp_buf[i], 1, MPI_CHAR, i, tag, comm,
                      &status);
       //total = MPI_Wtime() - start2;
       //total *= 1000;
@@ -302,11 +302,11 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
     /* none root */
     else {
       /* send 1-byte message to root */
-      smpi_mpi_send(temp_buf, 1, MPI_CHAR, 0, tag, comm);
+      Request::send(temp_buf, 1, MPI_CHAR, 0, tag, comm);
 
       /* wait for header forward when required */
-      request = smpi_mpi_irecv(header_buf, HEADER_SIZE, MPI_INT, MPI_ANY_SOURCE, tag, comm);
-      smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
+      request = Request::irecv(header_buf, HEADER_SIZE, MPI_INT, MPI_ANY_SOURCE, tag, comm);
+      Request::wait(&request, MPI_STATUS_IGNORE);
 
       /* search for where it is */
       int myordering = 0;
@@ -316,7 +316,7 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
 
       /* send header when required */
       if (header_buf[myordering + 1] != -1) {
-        smpi_mpi_send(header_buf, HEADER_SIZE, MPI_INT, header_buf[myordering + 1],
+        Request::send(header_buf, HEADER_SIZE, MPI_INT, header_buf[myordering + 1],
                  tag, comm);
       }
 
@@ -324,12 +324,12 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
 
       if (0 == -1) {
         //if (header_buf[1] == -1) {
-        request = smpi_mpi_irecv(buf, count, datatype, 0, tag, comm);
-        smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
+        request = Request::irecv(buf, count, datatype, 0, tag, comm);
+        Request::wait(&request, MPI_STATUS_IGNORE);
         //printf("\t\tnode %d ordering = %d receive data from root\n",rank,myordering);
       } else {
         for (i = 0; i < pipe_length; i++) {
-          recv_request_array[i] = smpi_mpi_irecv((char *)buf + (i * increment), segment, datatype, MPI_ANY_SOURCE,
+          recv_request_array[i] = Request::irecv((char *)buf + (i * increment), segment, datatype, MPI_ANY_SOURCE,
                                                  tag, comm);
         }
       }
@@ -337,13 +337,13 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
       /* send data */
       if (header_buf[myordering + 1] != -1) {
         for (i = 0; i < pipe_length; i++) {
-          smpi_mpi_wait(&recv_request_array[i], MPI_STATUS_IGNORE);
-          send_request_array[i] = smpi_mpi_isend((char *)buf + (i * increment), segment, datatype,
+          Request::wait(&recv_request_array[i], MPI_STATUS_IGNORE);
+          send_request_array[i] = Request::isend((char *)buf + (i * increment), segment, datatype,
                     header_buf[myordering + 1], tag, comm);
         }
-        smpi_mpi_waitall((pipe_length), send_request_array, send_status_array);
+        Request::waitall((pipe_length), send_request_array, send_status_array);
       }else{
-          smpi_mpi_waitall(pipe_length, recv_request_array, recv_status_array);
+          Request::waitall(pipe_length, recv_request_array, recv_status_array);
           }
     
     }

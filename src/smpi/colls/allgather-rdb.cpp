@@ -42,7 +42,7 @@ smpi_coll_tuned_allgather_rdb(void *sbuf, int send_count,
   recv_chunk *= recv_count;
 
   // perform a local copy
-  smpi_mpi_sendrecv(send_ptr, send_count, send_type, rank, tag,
+  Request::sendrecv(send_ptr, send_count, send_type, rank, tag,
                recv_ptr + rank * recv_chunk, recv_count, recv_type, rank, tag,
                comm, &status);
 
@@ -57,7 +57,7 @@ smpi_coll_tuned_allgather_rdb(void *sbuf, int send_count,
     recv_offset = dst_tree_root * recv_chunk;
 
     if (dst < num_procs) {
-      smpi_mpi_sendrecv(recv_ptr + send_offset, curr_count, send_type, dst,
+      Request::sendrecv(recv_ptr + send_offset, curr_count, send_type, dst,
                    tag, recv_ptr + recv_offset, mask * recv_count,
                    recv_type, dst, tag, comm, &status);
       last_recv_count = smpi_mpi_get_count(&status, recv_type);
@@ -96,7 +96,7 @@ smpi_coll_tuned_allgather_rdb(void *sbuf, int send_count,
         if ((dst > rank)
             && (rank < tree_root + num_procs_completed)
             && (dst >= tree_root + num_procs_completed)) {
-          smpi_mpi_send(recv_ptr + offset, last_recv_count, recv_type, dst,
+          Request::send(recv_ptr + offset, last_recv_count, recv_type, dst,
                    tag, comm);
 
           /* last_recv_cnt was set in the previous
@@ -108,7 +108,7 @@ smpi_coll_tuned_allgather_rdb(void *sbuf, int send_count,
         else if ((dst < rank)
                  && (dst < tree_root + num_procs_completed)
                  && (rank >= tree_root + num_procs_completed)) {
-          smpi_mpi_recv(recv_ptr + offset,
+          Request::recv(recv_ptr + offset,
                    recv_count * num_procs_completed,
                    recv_type, dst, tag, comm, &status);
           // num_procs_completed is also equal to the no. of processes

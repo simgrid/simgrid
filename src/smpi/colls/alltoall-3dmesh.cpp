@@ -92,7 +92,7 @@ int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
 
   recv_offset = (rank % two_dsize) * block_size * num_procs;
 
-  smpi_mpi_sendrecv(send_buff, send_count * num_procs, send_type, rank, tag,
+  Request::sendrecv(send_buff, send_count * num_procs, send_type, rank, tag,
                tmp_buff1 + recv_offset, num_procs * recv_count,
                recv_type, rank, tag, comm, &status);
 
@@ -103,17 +103,17 @@ int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
     if (src == rank)
       continue;
     recv_offset = (src % two_dsize) * block_size * num_procs;
-    *(req_ptr++) = smpi_mpi_irecv(tmp_buff1 + recv_offset, count, recv_type, src, tag, comm);
+    *(req_ptr++) = Request::irecv(tmp_buff1 + recv_offset, count, recv_type, src, tag, comm);
   }
 
   for (i = 0; i < Y; i++) {
     dst = i + my_row_base;
     if (dst == rank)
       continue;
-    smpi_mpi_send(send_buff, count, send_type, dst, tag, comm);
+    Request::send(send_buff, count, send_type, dst, tag, comm);
   }
 
-  smpi_mpi_waitall(Y - 1, reqs, statuses);
+  Request::waitall(Y - 1, reqs, statuses);
   req_ptr = reqs;
 
 
@@ -125,7 +125,7 @@ int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
     src_row_base = (src / X) * X;
 
     recv_offset = (src_row_base % two_dsize) * block_size * num_procs;
-    *(req_ptr++) = smpi_mpi_irecv(tmp_buff1 + recv_offset, recv_count * num_procs * Y,
+    *(req_ptr++) = Request::irecv(tmp_buff1 + recv_offset, recv_count * num_procs * Y,
               recv_type, src, tag, comm);
   }
 
@@ -134,17 +134,17 @@ int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
     dst = (i * Y + my_col_base);
     if (dst == rank)
       continue;
-    smpi_mpi_send(tmp_buff1 + send_offset, send_count * num_procs * Y, send_type,
+    Request::send(tmp_buff1 + send_offset, send_count * num_procs * Y, send_type,
              dst, tag, comm);
   }
 
-  smpi_mpi_waitall(X - 1, reqs, statuses);
+  Request::waitall(X - 1, reqs, statuses);
   req_ptr = reqs;
 
   for (i = 0; i < two_dsize; i++) {
     send_offset = (rank * block_size) + (i * block_size * num_procs);
     recv_offset = (my_z_base * block_size) + (i * block_size);
-    smpi_mpi_sendrecv(tmp_buff1 + send_offset, send_count, send_type, rank, tag,
+    Request::sendrecv(tmp_buff1 + send_offset, send_count, send_type, rank, tag,
                  (char *) recv_buff + recv_offset, recv_count, recv_type,
                  rank, tag, comm, &status);
   }
@@ -155,7 +155,7 @@ int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
 
     recv_offset = (src_z_base * block_size);
 
-    *(req_ptr++) = smpi_mpi_irecv((char *) recv_buff + recv_offset, recv_count * two_dsize,
+    *(req_ptr++) = Request::irecv((char *) recv_buff + recv_offset, recv_count * two_dsize,
               recv_type, src, tag, comm);
   }
 
@@ -165,18 +165,18 @@ int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
     recv_offset = 0;
     for (j = 0; j < two_dsize; j++) {
       send_offset = (dst + j * num_procs) * block_size;
-      smpi_mpi_sendrecv(tmp_buff1 + send_offset, send_count, send_type,
+      Request::sendrecv(tmp_buff1 + send_offset, send_count, send_type,
                    rank, tag, tmp_buff2 + recv_offset, recv_count,
                    recv_type, rank, tag, comm, &status);
 
       recv_offset += block_size;
     }
 
-    smpi_mpi_send(tmp_buff2, send_count * two_dsize, send_type, dst, tag, comm);
+    Request::send(tmp_buff2, send_count * two_dsize, send_type, dst, tag, comm);
 
   }
 
-  smpi_mpi_waitall(Z - 1, reqs, statuses);
+  Request::waitall(Z - 1, reqs, statuses);
 
   free(reqs);
   free(statuses);

@@ -385,7 +385,7 @@ int smpi_coll_tuned_gather_mvapich2_two_level(void *sendbuf,
     }
     if ((local_rank == 0) && (root != rank)
         && (leader_of_root == rank)) {
-        smpi_mpi_send(leader_gather_buf,
+        Request::send(leader_gather_buf,
                                  nbytes * comm_size, MPI_BYTE,
                                  root, COLL_TAG_GATHER, comm);
     }
@@ -393,7 +393,7 @@ int smpi_coll_tuned_gather_mvapich2_two_level(void *sendbuf,
     if (rank == root && local_rank != 0) {
         /* The root of the gather operation is not the node leader. Receive
          y* data from the node leader */
-        smpi_mpi_recv(recvbuf, recvcnt * comm_size, recvtype,
+        Request::recv(recvbuf, recvcnt * comm_size, recvtype,
                                  leader_of_root, COLL_TAG_GATHER, comm,
                                  &status);
     }

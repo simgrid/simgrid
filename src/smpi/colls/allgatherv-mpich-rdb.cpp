@@ -96,7 +96,7 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
       for (j=0; j<dst_tree_root; j++)
         recv_offset += recvcounts[j];
 
-      smpi_mpi_sendrecv(((char *)tmp_buf + send_offset * recvtype_extent),
+      Request::sendrecv(((char *)tmp_buf + send_offset * recvtype_extent),
                         curr_cnt, recvtype, dst,
                         COLL_TAG_ALLGATHERV,
                         ((char *)tmp_buf + recv_offset * recvtype_extent),
@@ -160,7 +160,7 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
             offset += recvcounts[j];
           offset *= recvtype_extent;
 
-          smpi_mpi_send(((char *)tmp_buf + offset),
+          Request::send(((char *)tmp_buf + offset),
                         last_recv_cnt,
                         recvtype, dst,
                         COLL_TAG_ALLGATHERV, comm);
@@ -178,7 +178,7 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
           for (j=0; j<(my_tree_root+mask); j++)
             offset += recvcounts[j];
 
-          smpi_mpi_recv(((char *)tmp_buf + offset * recvtype_extent),
+          Request::recv(((char *)tmp_buf + offset * recvtype_extent),
                         total_count - offset, recvtype,
                         dst, COLL_TAG_ALLGATHERV,
                         comm, &status);

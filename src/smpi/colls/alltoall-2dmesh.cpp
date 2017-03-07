@@ -100,17 +100,17 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
       continue;
 
     recv_offset = (src % Y) * block_size * num_procs;
-    *(req_ptr++) = smpi_mpi_irecv(tmp_buff1 + recv_offset, count, recv_type, src, tag, comm);
+    *(req_ptr++) = Request::irecv(tmp_buff1 + recv_offset, count, recv_type, src, tag, comm);
   }
 
   for (i = 0; i < Y; i++) {
     dst = i + my_row_base;
     if (dst == rank)
       continue;
-    smpi_mpi_send(send_buff, count, send_type, dst, tag, comm);
+    Request::send(send_buff, count, send_type, dst, tag, comm);
   }
 
-  smpi_mpi_waitall(Y - 1, reqs, statuses);
+  Request::waitall(Y - 1, reqs, statuses);
   req_ptr = reqs;
 
   for (i = 0; i < Y; i++) {
@@ -118,13 +118,13 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
     recv_offset = (my_row_base * block_size) + (i * block_size);
 
     if (i + my_row_base == rank)
-      smpi_mpi_sendrecv((char *) send_buff + recv_offset, send_count, send_type,
+      Request::sendrecv((char *) send_buff + recv_offset, send_count, send_type,
                    rank, tag,
                    (char *) recv_buff + recv_offset, recv_count, recv_type,
                    rank, tag, comm, &s);
 
     else
-      smpi_mpi_sendrecv(tmp_buff1 + send_offset, send_count, send_type,
+      Request::sendrecv(tmp_buff1 + send_offset, send_count, send_type,
                    rank, tag,
                    (char *) recv_buff + recv_offset, recv_count, recv_type,
                    rank, tag, comm, &s);
@@ -137,7 +137,7 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
       continue;
     src_row_base = (src / Y) * Y;
 
-    *(req_ptr++) = smpi_mpi_irecv((char *) recv_buff + src_row_base * block_size, recv_count * Y,
+    *(req_ptr++) = Request::irecv((char *) recv_buff + src_row_base * block_size, recv_count * Y,
               recv_type, src, tag, comm);
   }
 
@@ -151,11 +151,11 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
       send_offset = (dst + j * num_procs) * block_size;
 
       if (j + my_row_base == rank)
-        smpi_mpi_sendrecv((char *) send_buff + dst * block_size, send_count,
+        Request::sendrecv((char *) send_buff + dst * block_size, send_count,
                      send_type, rank, tag, tmp_buff2 + recv_offset, recv_count,
                      recv_type, rank, tag, comm, &s);
       else
-        smpi_mpi_sendrecv(tmp_buff1 + send_offset, send_count, send_type,
+        Request::sendrecv(tmp_buff1 + send_offset, send_count, send_type,
                      rank, tag,
                      tmp_buff2 + recv_offset, recv_count, recv_type,
                      rank, tag, comm, &s);
@@ -163,9 +163,9 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
       recv_offset += block_size;
     }
 
-    smpi_mpi_send(tmp_buff2, send_count * Y, send_type, dst, tag, comm);
+    Request::send(tmp_buff2, send_count * Y, send_type, dst, tag, comm);
   }
-  smpi_mpi_waitall(X - 1, reqs, statuses);
+  Request::waitall(X - 1, reqs, statuses);
   free(reqs);
   free(statuses);
   smpi_free_tmp_buffer(tmp_buff1);

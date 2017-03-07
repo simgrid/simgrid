@@ -20,7 +20,7 @@ smpi_coll_tuned_bcast_flattree(void *buff, int count, MPI_Datatype data_type,
   num_procs = comm->size();
 
   if (rank != root) {
-    smpi_mpi_recv(buff, count, data_type, root, tag, comm, MPI_STATUS_IGNORE);
+    Request::recv(buff, count, data_type, root, tag, comm, MPI_STATUS_IGNORE);
   }
 
   else {
@@ -31,11 +31,11 @@ smpi_coll_tuned_bcast_flattree(void *buff, int count, MPI_Datatype data_type,
     for (i = 0; i < num_procs; i++) {
       if (i == rank)
         continue;
-      *(req_ptr++) = smpi_mpi_isend(buff, count, data_type, i, tag, comm);
+      *(req_ptr++) = Request::isend(buff, count, data_type, i, tag, comm);
     }
 
     // wait on all requests
-    smpi_mpi_waitall(num_procs - 1, reqs, MPI_STATUSES_IGNORE);
+    Request::waitall(num_procs - 1, reqs, MPI_STATUSES_IGNORE);
 
     free(reqs);
   }

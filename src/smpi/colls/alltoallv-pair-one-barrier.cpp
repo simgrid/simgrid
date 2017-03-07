@@ -52,7 +52,7 @@ smpi_coll_tuned_alltoallv_pair_one_barrier(void *send_buff, int *send_counts, in
   smpi_mpi_barrier(comm);
   for (i = 0; i < num_procs; i++) {
     src = dst = rank ^ i;
-    smpi_mpi_sendrecv(send_ptr + send_disps[dst] * send_chunk, send_counts[dst], send_type, dst,
+    Request::sendrecv(send_ptr + send_disps[dst] * send_chunk, send_counts[dst], send_type, dst,
                  tag, recv_ptr + recv_disps[src] * recv_chunk, recv_counts[src], recv_type,
                  src, tag, comm, &s);
   }

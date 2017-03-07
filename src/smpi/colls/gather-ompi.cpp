@@ -138,7 +138,7 @@ smpi_coll_tuned_gather_ompi_binomial(void *sbuf, int scount,
 			 "smpi_coll_tuned_gather_ompi_binomial rank %d recv %d mycount = %d",
 			 rank, bmtree->tree_next[i], mycount);
 
-	    smpi_mpi_recv(ptmp + total_recv*rextent, mycount, rdtype,
+	    Request::recv(ptmp + total_recv*rextent, mycount, rdtype,
 				    bmtree->tree_next[i], COLL_TAG_GATHER,
 				    comm, &status);
 
@@ -152,7 +152,7 @@ smpi_coll_tuned_gather_ompi_binomial(void *sbuf, int scount,
 		     "smpi_coll_tuned_gather_ompi_binomial rank %d send %d count %d\n",
 		     rank, bmtree->tree_prev, total_recv);
 
-	smpi_mpi_send(ptmp, total_recv, sdtype,
+	Request::send(ptmp, total_recv, sdtype,
 				bmtree->tree_prev,
 				COLL_TAG_GATHER,
 				 comm);
@@ -245,15 +245,15 @@ smpi_coll_tuned_gather_ompi_linear_sync(void *sbuf, int scount,
         COLL_TUNED_COMPUTED_SEGCOUNT( (size_t) first_segment_size, typelng, 
                                       first_segment_count );
 
-        smpi_mpi_recv(sbuf, 0, MPI_BYTE, root, 
+        Request::recv(sbuf, 0, MPI_BYTE, root, 
                                 COLL_TAG_GATHER,
                                 comm, MPI_STATUS_IGNORE);
 
-        smpi_mpi_send(sbuf, first_segment_count, sdtype, root,
+        Request::send(sbuf, first_segment_count, sdtype, root,
                                 COLL_TAG_GATHER,
                                  comm);
 
-        smpi_mpi_send((char*)sbuf + extent * first_segment_count, 
+        Request::send((char*)sbuf + extent * first_segment_count, 
                                 (scount - first_segment_count), sdtype, 
                                 root, COLL_TAG_GATHER,
                                  comm);
@@ -289,23 +289,23 @@ smpi_coll_tuned_gather_ompi_linear_sync(void *sbuf, int scount,
 
             /* irecv for the first segment from i */
             ptmp = (char*)rbuf + i * rcount * extent;
-            first_segment_req = smpi_mpi_irecv(ptmp, first_segment_count, rdtype, i,
+            first_segment_req = Request::irecv(ptmp, first_segment_count, rdtype, i,
                                      COLL_TAG_GATHER, comm
                                      );
             
             /* send sync message */
-            smpi_mpi_send(rbuf, 0, MPI_BYTE, i,
+            Request::send(rbuf, 0, MPI_BYTE, i,
                                     COLL_TAG_GATHER,
                                      comm);
 
             /* irecv for the second segment */
             ptmp = (char*)rbuf + (i * rcount + first_segment_count) * extent;
-            reqs[i]=smpi_mpi_irecv(ptmp, (rcount - first_segment_count), 
+            reqs[i]=Request::irecv(ptmp, (rcount - first_segment_count), 
                                      rdtype, i, COLL_TAG_GATHER, comm
                                      );
 
             /* wait on the first segment to complete */
-            smpi_mpi_wait(&first_segment_req, MPI_STATUS_IGNORE);
+            Request::wait(&first_segment_req, MPI_STATUS_IGNORE);
         }
 
         /* copy local data if necessary */
@@ -317,7 +317,7 @@ smpi_coll_tuned_gather_ompi_linear_sync(void *sbuf, int scount,
         }
         
         /* wait all second segments to complete */
-        ret = smpi_mpi_waitall(size, reqs, MPI_STATUSES_IGNORE);
+        ret = Request::waitall(size, reqs, MPI_STATUSES_IGNORE);
         if (ret != MPI_SUCCESS) { line = __LINE__; goto error_hndl; }
 
         free(reqs);
@@ -378,7 +378,7 @@ smpi_coll_tuned_gather_ompi_basic_linear(void *sbuf, int scount,
 		 "ompi_coll_tuned_gather_intra_basic_linear rank %d", rank);
 
     if (rank != root) {
-        smpi_mpi_send(sbuf, scount, sdtype, root,
+        Request::send(sbuf, scount, sdtype, root,
                                  COLL_TAG_GATHER,
                                   comm);
         return MPI_SUCCESS;
@@ -397,7 +397,7 @@ smpi_coll_tuned_gather_ompi_basic_linear(void *sbuf, int scount,
                 err = MPI_SUCCESS;
             }
         } else {
-            smpi_mpi_recv(ptmp, rcount, rdtype, i,
+            Request::recv(ptmp, rcount, rdtype, i,
                                     COLL_TAG_GATHER,
                                     comm, MPI_STATUS_IGNORE);
             err = MPI_SUCCESS;

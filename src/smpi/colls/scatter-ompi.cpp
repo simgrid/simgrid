@@ -124,7 +124,7 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
     if (!(vrank % 2)) {
 	if (rank != root) {
 	    /* recv from parent on non-root */
-	    smpi_mpi_recv(ptmp, rcount*size, rdtype, bmtree->tree_prev,
+	    Request::recv(ptmp, rcount*size, rdtype, bmtree->tree_prev,
 				    COLL_TAG_SCATTER, comm, &status);
 	    /* local copy to rbuf */
 	    smpi_datatype_copy(ptmp, scount, sdtype, rbuf, rcount, rdtype);
@@ -139,7 +139,7 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
 		mycount = size - vkid;
 	    mycount *= scount;
 
-	    smpi_mpi_send(ptmp + total_send*sextent, mycount, sdtype,
+	    Request::send(ptmp + total_send*sextent, mycount, sdtype,
 				    bmtree->tree_next[i],
 				    COLL_TAG_SCATTER,
 				     comm);
@@ -150,7 +150,7 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
 
     } else {
 	/* recv from parent on leaf nodes */
-	smpi_mpi_recv(ptmp, rcount, rdtype, bmtree->tree_prev,
+	Request::recv(ptmp, rcount, rdtype, bmtree->tree_prev,
 				COLL_TAG_SCATTER, comm, &status);
     }
 
@@ -211,7 +211,7 @@ smpi_coll_tuned_scatter_ompi_basic_linear(void *sbuf, int scount,
     /* If not root, receive data. */
 
     if (rank != root) {
-        smpi_mpi_recv(rbuf, rcount, rdtype, root,
+        Request::recv(rbuf, rcount, rdtype, root,
                                 COLL_TAG_SCATTER,
                                 comm, MPI_STATUS_IGNORE);
         return MPI_SUCCESS;
@@ -236,7 +236,7 @@ smpi_coll_tuned_scatter_ompi_basic_linear(void *sbuf, int scount,
                                     rdtype);
             }
         } else {
-            smpi_mpi_send(ptmp, scount, sdtype, i,
+            Request::send(ptmp, scount, sdtype, i,
                                     COLL_TAG_SCATTER,
                                      comm);
         }

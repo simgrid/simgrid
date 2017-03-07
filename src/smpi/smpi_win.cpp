@@ -91,20 +91,20 @@ int Win::fence(int assert)
     xbt_mutex_acquire(mut_);
     // This (simulated) mutex ensures that no process pushes to the vector of requests during the waitall.
     // Without this, the vector could get redimensionned when another process pushes.
-    // This would result in the array used by smpi_mpi_waitall() to be invalidated.
-    // Another solution would be to copy the data and cleanup the vector *before* smpi_mpi_waitall
+    // This would result in the array used by Request::waitall() to be invalidated.
+    // Another solution would be to copy the data and cleanup the vector *before* Request::waitall
     std::vector<MPI_Request> *reqs = requests_;
     int size = static_cast<int>(reqs->size());
     // start all requests that have been prepared by another process
     if (size > 0) {
       for (const auto& req : *reqs) {
-        if (req && (req->flags & PREPARED))
-          smpi_mpi_start(req);
+        if (req && (req->flags() & PREPARED))
+          req->start();
       }
 
       MPI_Request* treqs = &(*reqs)[0];
 
-      smpi_mpi_waitall(size, treqs, MPI_STATUSES_IGNORE);
+      Request::waitall(size, treqs, MPI_STATUSES_IGNORE);
     }
     count_=0;
     xbt_mutex_release(mut_);
@@ -130,11 +130,11 @@ int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
 
   if(target_rank != comm_->rank()){
     //prepare send_request
-    MPI_Request sreq = smpi_rma_send_init(origin_addr, origin_count, origin_datatype, smpi_process_index(),
+    MPI_Request sreq = Request::rma_send_init(origin_addr, origin_count, origin_datatype, smpi_process_index(),
         comm_->group()->index(target_rank), SMPI_RMA_TAG+1, comm_, MPI_OP_NULL);
 
     //prepare receiver request
-    MPI_Request rreq = smpi_rma_recv_init(recv_addr, target_count, target_datatype, smpi_process_index(),
+    MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype, smpi_process_index(),
         comm_->group()->index(target_rank), SMPI_RMA_TAG+1, recv_win->comm_, MPI_OP_NULL);
 
     //push request to receiver's win
@@ -142,7 +142,7 @@ int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     recv_win->requests_->push_back(rreq);
     xbt_mutex_release(recv_win->mut_);
     //start send
-    smpi_mpi_start(sreq);
+    sreq->start();
 
     //push request to sender's win
     xbt_mutex_acquire(mut_);
@@ -168,24 +168,24 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
 
   if(target_rank != comm_->rank()){
     //prepare send_request
-    MPI_Request sreq = smpi_rma_send_init(send_addr, target_count, target_datatype,
+    MPI_Request sreq = Request::rma_send_init(send_addr, target_count, target_datatype,
         comm_->group()->index(target_rank), smpi_process_index(), SMPI_RMA_TAG+2, send_win->comm_,
         MPI_OP_NULL);
 
     //prepare receiver request
-    MPI_Request rreq = smpi_rma_recv_init(origin_addr, origin_count, origin_datatype,
+    MPI_Request rreq = Request::rma_recv_init(origin_addr, origin_count, origin_datatype,
         comm_->group()->index(target_rank), smpi_process_index(), SMPI_RMA_TAG+2, comm_,
         MPI_OP_NULL);
 
     //start the send, with another process than us as sender. 
-    smpi_mpi_start(sreq);
+    sreq->start();
     //push request to receiver's win
     xbt_mutex_acquire(send_win->mut_);
     send_win->requests_->push_back(sreq);
     xbt_mutex_release(send_win->mut_);
 
     //start recv
-    smpi_mpi_start(rreq);
+    rreq->start();
     //push request to sender's win
     xbt_mutex_acquire(mut_);
     requests_->push_back(rreq);
@@ -211,11 +211,11 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
   XBT_DEBUG("Entering MPI_Accumulate to %d", target_rank);
     //As the tag will be used for ordering of the operations, add count to it
     //prepare send_request
-    MPI_Request sreq = smpi_rma_send_init(origin_addr, origin_count, origin_datatype,
+    MPI_Request sreq = Request::rma_send_init(origin_addr, origin_count, origin_datatype,
         smpi_process_index(), comm_->group()->index(target_rank), SMPI_RMA_TAG+3+count_, comm_, op);
 
     //prepare receiver request
-    MPI_Request rreq = smpi_rma_recv_init(recv_addr, target_count, target_datatype,
+    MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype,
         smpi_process_index(), comm_->group()->index(target_rank), SMPI_RMA_TAG+3+count_, recv_win->comm_, op);
 
     count_++;
@@ -224,7 +224,7 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
     recv_win->requests_->push_back(rreq);
     xbt_mutex_release(recv_win->mut_);
     //start send
-    smpi_mpi_start(sreq);
+    sreq->start();
 
     //push request to sender's win
     xbt_mutex_acquire(mut_);
@@ -256,16 +256,16 @@ int Win::start(MPI_Group group, int assert){
     while (j != size) {
       int src = group->index(j);
       if (src != smpi_process_index() && src != MPI_UNDEFINED) {
-        reqs[i] = smpi_irecv_init(nullptr, 0, MPI_CHAR, src, SMPI_RMA_TAG + 4, MPI_COMM_WORLD);
+        reqs[i] = Request::irecv_init(nullptr, 0, MPI_CHAR, src, SMPI_RMA_TAG + 4, MPI_COMM_WORLD);
         i++;
       }
       j++;
   }
   size=i;
-  smpi_mpi_startall(size, reqs);
-  smpi_mpi_waitall(size, reqs, MPI_STATUSES_IGNORE);
+  Request::startall(size, reqs);
+  Request::waitall(size, reqs, MPI_STATUSES_IGNORE);
   for(i=0;i<size;i++){
-    smpi_mpi_request_free(&reqs[i]);
+    Request::unuse(&reqs[i]);
   }
   xbt_free(reqs);
   opened_++; //we're open for business !
@@ -284,17 +284,17 @@ int Win::post(MPI_Group group, int assert){
   while(j!=size){
     int dst=group->index(j);
     if(dst!=smpi_process_index() && dst!=MPI_UNDEFINED){
-      reqs[i]=smpi_mpi_send_init(nullptr, 0, MPI_CHAR, dst, SMPI_RMA_TAG+4, MPI_COMM_WORLD);
+      reqs[i]=Request::send_init(nullptr, 0, MPI_CHAR, dst, SMPI_RMA_TAG+4, MPI_COMM_WORLD);
       i++;
     }
     j++;
   }
   size=i;
 
-  smpi_mpi_startall(size, reqs);
-  smpi_mpi_waitall(size, reqs, MPI_STATUSES_IGNORE);
+  Request::startall(size, reqs);
+  Request::waitall(size, reqs, MPI_STATUSES_IGNORE);
   for(i=0;i<size;i++){
-    smpi_mpi_request_free(&reqs[i]);
+    Request::unuse(&reqs[i]);
   }
   xbt_free(reqs);
   opened_++; //we're open for business !
@@ -316,18 +316,18 @@ int Win::complete(){
   while(j!=size){
     int dst=group_->index(j);
     if(dst!=smpi_process_index() && dst!=MPI_UNDEFINED){
-      reqs[i]=smpi_mpi_send_init(nullptr, 0, MPI_CHAR, dst, SMPI_RMA_TAG+5, MPI_COMM_WORLD);
+      reqs[i]=Request::send_init(nullptr, 0, MPI_CHAR, dst, SMPI_RMA_TAG+5, MPI_COMM_WORLD);
       i++;
     }
     j++;
   }
   size=i;
   XBT_DEBUG("Win_complete - Sending sync messages to %d processes", size);
-  smpi_mpi_startall(size, reqs);
-  smpi_mpi_waitall(size, reqs, MPI_STATUSES_IGNORE);
+  Request::startall(size, reqs);
+  Request::waitall(size, reqs, MPI_STATUSES_IGNORE);
 
   for(i=0;i<size;i++){
-    smpi_mpi_request_free(&reqs[i]);
+    Request::unuse(&reqs[i]);
   }
   xbt_free(reqs);
 
@@ -340,12 +340,12 @@ int Win::complete(){
   if (size > 0) {
     // start all requests that have been prepared by another process
     for (const auto& req : *reqqs) {
-      if (req && (req->flags & PREPARED))
-        smpi_mpi_start(req);
+      if (req && (req->flags() & PREPARED))
+        req->start();
     }
 
     MPI_Request* treqs = &(*reqqs)[0];
-    smpi_mpi_waitall(size, treqs, MPI_STATUSES_IGNORE);
+    Request::waitall(size, treqs, MPI_STATUSES_IGNORE);
     reqqs->clear();
   }
   xbt_mutex_release(mut_);
@@ -365,17 +365,17 @@ int Win::wait(){
   while(j!=size){
     int src=group_->index(j);
     if(src!=smpi_process_index() && src!=MPI_UNDEFINED){
-      reqs[i]=smpi_irecv_init(nullptr, 0, MPI_CHAR, src,SMPI_RMA_TAG+5, MPI_COMM_WORLD);
+      reqs[i]=Request::irecv_init(nullptr, 0, MPI_CHAR, src,SMPI_RMA_TAG+5, MPI_COMM_WORLD);
       i++;
     }
     j++;
   }
   size=i;
   XBT_DEBUG("Win_wait - Receiving sync messages from %d processes", size);
-  smpi_mpi_startall(size, reqs);
-  smpi_mpi_waitall(size, reqs, MPI_STATUSES_IGNORE);
+  Request::startall(size, reqs);
+  Request::waitall(size, reqs, MPI_STATUSES_IGNORE);
   for(i=0;i<size;i++){
-    smpi_mpi_request_free(&reqs[i]);
+    Request::unuse(&reqs[i]);
   }
   xbt_free(reqs);
   xbt_mutex_acquire(mut_);
@@ -386,12 +386,12 @@ int Win::wait(){
   if (size > 0) {
     // start all requests that have been prepared by another process
     for (const auto& req : *reqqs) {
-      if (req && (req->flags & PREPARED))
-        smpi_mpi_start(req);
+      if (req && (req->flags() & PREPARED))
+        req->start();
     }
 
     MPI_Request* treqs = &(*reqqs)[0];
-    smpi_mpi_waitall(size, treqs, MPI_STATUSES_IGNORE);
+    Request::waitall(size, treqs, MPI_STATUSES_IGNORE);
     reqqs->clear();
   }
   xbt_mutex_release(mut_);

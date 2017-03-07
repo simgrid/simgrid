@@ -51,23 +51,23 @@ int smpi_coll_tuned_bcast_NTSL_Isend(void *buf, int count, MPI_Datatype datatype
    */
   if (root != 0) {
     if (rank == root) {
-      smpi_mpi_send(buf, count, datatype, 0, tag, comm);
+      Request::send(buf, count, datatype, 0, tag, comm);
     } else if (rank == 0) {
-      smpi_mpi_recv(buf, count, datatype, root, tag, comm, &status);
+      Request::recv(buf, count, datatype, root, tag, comm, &status);
     }
   }
 
   /* when a message is smaller than a block size => no pipeline */
   if (count <= segment) {
     if (rank == 0) {
-      smpi_mpi_send(buf, count, datatype, to, tag, comm);
+      Request::send(buf, count, datatype, to, tag, comm);
     } else if (rank == (size - 1)) {
-      request = smpi_mpi_irecv(buf, count, datatype, from, tag, comm);
-      smpi_mpi_wait(&request, &status);
+      request = Request::irecv(buf, count, datatype, from, tag, comm);
+      Request::wait(&request, &status);
     } else {
-      request = smpi_mpi_irecv(buf, count, datatype, from, tag, comm);
-      smpi_mpi_wait(&request, &status);
-      smpi_mpi_send(buf, count, datatype, to, tag, comm);
+      request = Request::irecv(buf, count, datatype, from, tag, comm);
+      Request::wait(&request, &status);
+      Request::send(buf, count, datatype, to, tag, comm);
     }
     return MPI_SUCCESS;
   }
@@ -86,33 +86,33 @@ int smpi_coll_tuned_bcast_NTSL_Isend(void *buf, int count, MPI_Datatype datatype
     /* root send data */
     if (rank == 0) {
       for (i = 0; i < pipe_length; i++) {
-        send_request_array[i] = smpi_mpi_isend((char *) buf + (i * increment), segment, datatype, to,
+        send_request_array[i] = Request::isend((char *) buf + (i * increment), segment, datatype, to,
                   (tag + i), comm);
       }
-      smpi_mpi_waitall((pipe_length), send_request_array, send_status_array);
+      Request::waitall((pipe_length), send_request_array, send_status_array);
     }
 
     /* last node only receive data */
     else if (rank == (size - 1)) {
       for (i = 0; i < pipe_length; i++) {
-        recv_request_array[i] = smpi_mpi_irecv((char *) buf + (i * increment), segment, datatype, from,
+        recv_request_array[i] = Request::irecv((char *) buf + (i * increment), segment, datatype, from,
                   (tag + i), comm);
       }
-      smpi_mpi_waitall((pipe_length), recv_request_array, recv_status_array);
+      Request::waitall((pipe_length), recv_request_array, recv_status_array);
     }
 
     /* intermediate nodes relay (receive, then send) data */
     else {
       for (i = 0; i < pipe_length; i++) {
-        recv_request_array[i] = smpi_mpi_irecv((char *) buf + (i * increment), segment, datatype, from,
+        recv_request_array[i] = Request::irecv((char *) buf + (i * increment), segment, datatype, from,
                   (tag + i), comm);
       }
       for (i = 0; i < pipe_length; i++) {
-        smpi_mpi_wait(&recv_request_array[i], &status);
-        send_request_array[i] = smpi_mpi_isend((char *) buf + (i * increment), segment, datatype, to,
+        Request::wait(&recv_request_array[i], &status);
+        send_request_array[i] = Request::isend((char *) buf + (i * increment), segment, datatype, to,
                   (tag + i), comm);
       }
-      smpi_mpi_waitall((pipe_length), send_request_array, send_status_array);
+      Request::waitall((pipe_length), send_request_array, send_status_array);
     }
 
     free(send_request_array);

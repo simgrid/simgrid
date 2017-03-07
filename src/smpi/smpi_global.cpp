@@ -384,12 +384,6 @@ int smpi_process_get_sampling()
   return data->sampling;
 }
 
-void print_request(const char *message, MPI_Request request)
-{
-  XBT_VERB("%s  request %p  [buf = %p, size = %zu, src = %d, dst = %d, tag = %d, flags = %x]",
-       message, request, request->buf, request->size, request->src, request->dst, request->tag, request->flags);
-}
-
 void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, size_t))
 {
   smpi_comm_copy_data_callback = callback;

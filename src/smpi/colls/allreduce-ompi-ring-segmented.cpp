@@ -269,7 +269,7 @@ smpi_coll_tuned_allreduce_ompi_ring_segmented(void *sbuf, void *rbuf, int count,
       
       inbi = 0;
       /* Initialize first receive from the neighbor on the left */
-      reqs[inbi] = smpi_mpi_irecv(inbuf[inbi], max_segcount, dtype, recv_from,
+      reqs[inbi] = Request::irecv(inbuf[inbi], max_segcount, dtype, recv_from,
                                666, comm);
       /* Send first block (my block) to the neighbor on the right:
          - compute my block and phase offset
@@ -286,7 +286,7 @@ smpi_coll_tuned_allreduce_ompi_ring_segmented(void *sbuf, void *rbuf, int count,
                       (phase * early_phase_segcount) : 
                       (phase * late_phase_segcount + split_phase));
       tmpsend = ((char*)rbuf) + (block_offset + phase_offset) * extent;
-      smpi_mpi_send(tmpsend, phase_count, dtype, send_to,
+      Request::send(tmpsend, phase_count, dtype, send_to,
                               666, comm);
       
       for (k = 2; k < size; k++) {
@@ -295,12 +295,12 @@ smpi_coll_tuned_allreduce_ompi_ring_segmented(void *sbuf, void *rbuf, int count,
          inbi = inbi ^ 0x1;
          
          /* Post irecv for the current block */
-         reqs[inbi] = smpi_mpi_irecv(inbuf[inbi], max_segcount, dtype, recv_from,
+         reqs[inbi] = Request::irecv(inbuf[inbi], max_segcount, dtype, recv_from,
                                666, comm);
          if (MPI_SUCCESS != ret) { line = __LINE__; goto error_hndl; }
          
          /* Wait on previous block to arrive */
-         smpi_mpi_wait(&reqs[inbi ^ 0x1], MPI_STATUS_IGNORE);
+         Request::wait(&reqs[inbi ^ 0x1], MPI_STATUS_IGNORE);
          
          /* Apply operation on previous block: result goes to rbuf
             rbuf[prevblock] = inbuf[inbi ^ 0x1] (op) rbuf[prevblock]
@@ -320,12 +320,12 @@ smpi_coll_tuned_allreduce_ompi_ring_segmented(void *sbuf, void *rbuf, int count,
          tmprecv = ((char*)rbuf) + (block_offset + phase_offset) * extent;
          smpi_op_apply(op, inbuf[inbi ^ 0x1], tmprecv, &phase_count, &dtype);
          /* send previous block to send_to */
-         smpi_mpi_send(tmprecv, phase_count, dtype, send_to,
+         Request::send(tmprecv, phase_count, dtype, send_to,
                               666, comm);
       }
       
       /* Wait on the last block to arrive */
-      smpi_mpi_wait(&reqs[inbi], MPI_STATUS_IGNORE);
+      Request::wait(&reqs[inbi], MPI_STATUS_IGNORE);
 
       
       /* Apply operation on the last block (from neighbor (rank + 1) 
@@ -367,7 +367,7 @@ smpi_coll_tuned_allreduce_ompi_ring_segmented(void *sbuf, void *rbuf, int count,
       tmprecv = (char*)rbuf + recv_block_offset * extent;
       tmpsend = (char*)rbuf + send_block_offset * extent;
 
-      smpi_mpi_sendrecv(tmpsend, block_count, dtype, send_to,
+      Request::sendrecv(tmpsend, block_count, dtype, send_to,
                                      666,
                                      tmprecv, early_blockcount, dtype, recv_from,
                                      666,

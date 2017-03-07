@@ -44,7 +44,7 @@ int smpi_coll_tuned_allgather_smp_simple(void *send_buf, int scount,
   }
   //INTRA-SMP-ALLGATHER
   recv_offset = rank * rextent * rcount;
-  smpi_mpi_sendrecv(send_buf, scount, stype, rank, tag,
+  Request::sendrecv(send_buf, scount, stype, rank, tag,
                ((char *) recv_buf + recv_offset), rcount, rtype, rank, tag,
                comm, &status);
   for (i = 1; i < num_core_in_current_smp; i++) {
@@ -57,7 +57,7 @@ int smpi_coll_tuned_allgather_smp_simple(void *send_buf, int scount,
         (num_core_in_current_smp);
     recv_offset = src * rextent * rcount;
 
-    smpi_mpi_sendrecv(send_buf, scount, stype, dst, tag,
+    Request::sendrecv(send_buf, scount, stype, dst, tag,
                  ((char *) recv_buf + recv_offset), rcount, rtype, src, tag,
                  comm, &status);
 
@@ -82,10 +82,10 @@ int smpi_coll_tuned_allgather_smp_simple(void *send_buf, int scount,
       src = ((inter_rank - i + inter_comm_size) % inter_comm_size) * num_core;
       //send_offset = (rank * sextent * scount);
       recv_offset = (src * sextent * scount);
-      //      smpi_mpi_sendrecv((recv_buf+send_offset), (scount * num_core), stype, dst, tag, 
+      //      Request::sendrecv((recv_buf+send_offset), (scount * num_core), stype, dst, tag, 
       //             (recv_buf+recv_offset), (rcount * num_core), rtype, src, tag, comm, &status);
       //MPIC_Isend((recv_buf+send_offset), (scount * num_core), stype, dst, tag, comm, req_ptr++);
-      *(req_ptr++) = smpi_mpi_irecv(((char *) recv_buf + recv_offset), (rcount * num_core), rtype,
+      *(req_ptr++) = Request::irecv(((char *) recv_buf + recv_offset), (rcount * num_core), rtype,
                 src, tag, comm);
     }
     for (i = 1; i < inter_comm_size; i++) {
@@ -94,13 +94,13 @@ int smpi_coll_tuned_allgather_smp_simple(void *send_buf, int scount,
       //src = ((inter_rank-i+inter_comm_size)%inter_comm_size) * num_core;
       send_offset = (rank * sextent * scount);
       //recv_offset = (src * sextent * scount);
-      //      smpi_mpi_sendrecv((recv_buf+send_offset), (scount * num_core), stype, dst, tag, 
+      //      Request::sendrecv((recv_buf+send_offset), (scount * num_core), stype, dst, tag, 
       //             (recv_buf+recv_offset), (rcount * num_core), rtype, src, tag, comm, &status);
-      *(req_ptr++) = smpi_mpi_isend(((char *) recv_buf + send_offset), (scount * num_core), stype,
+      *(req_ptr++) = Request::isend(((char *) recv_buf + send_offset), (scount * num_core), stype,
                 dst, tag, comm);
       //MPIC_Irecv((recv_buf+recv_offset), (rcount * num_core), rtype, src, tag, comm, req_ptr++);
     }
-    smpi_mpi_waitall(num_req, reqs, stat);
+    Request::waitall(num_req, reqs, stat);
     free(reqs);
     free(stat);
 
@@ -110,11 +110,11 @@ int smpi_coll_tuned_allgather_smp_simple(void *send_buf, int scount,
   if (intra_rank == 0) {
     for (i = 1; i < num_core_in_current_smp; i++) {
       //printf("rank = %d, num = %d send to %d\n",rank, num_core_in_current_smp, (rank + i));
-      smpi_mpi_send(recv_buf, (scount * comm_size), stype, (rank + i), tag, comm);
+      Request::send(recv_buf, (scount * comm_size), stype, (rank + i), tag, comm);
     }
   } else {
     //printf("rank = %d recv from %d\n",rank, (inter_rank * num_core));
-    smpi_mpi_recv(recv_buf, (rcount * comm_size), rtype, (inter_rank * num_core),
+    Request::recv(recv_buf, (rcount * comm_size), rtype, (inter_rank * num_core),
              tag, comm, &status);
   }
 

@@ -67,14 +67,14 @@ int smpi_coll_tuned_barrier_mvapich2_pair(MPI_Comm comm)
         if (rank < surfeit) {
             /* get the fanin letter from the upper "half" process: */
             dst = N2_prev + rank;
-            smpi_mpi_recv(NULL, 0, MPI_BYTE, dst, COLL_TAG_BARRIER,
+            Request::recv(NULL, 0, MPI_BYTE, dst, COLL_TAG_BARRIER,
                                      comm, MPI_STATUS_IGNORE);
         }
 
         /* combine on embedded N2_prev power-of-two processes */
         for (d = 1; d < N2_prev; d <<= 1) {
             dst = (rank ^ d);
-            smpi_mpi_sendrecv(NULL, 0, MPI_BYTE, dst, COLL_TAG_BARRIER, NULL,
+            Request::sendrecv(NULL, 0, MPI_BYTE, dst, COLL_TAG_BARRIER, NULL,
                                  0, MPI_BYTE, dst, COLL_TAG_BARRIER, comm,
                                  MPI_STATUS_IGNORE);
         }
@@ -82,13 +82,13 @@ int smpi_coll_tuned_barrier_mvapich2_pair(MPI_Comm comm)
         /* fanout data to nodes above N2_prev... */
         if (rank < surfeit) {
             dst = N2_prev + rank;
-            smpi_mpi_send(NULL, 0, MPI_BYTE, dst, COLL_TAG_BARRIER,
+            Request::send(NULL, 0, MPI_BYTE, dst, COLL_TAG_BARRIER,
                                      comm);
         }
     } else {
         /* fanin data to power of 2 subset */
         src = rank - N2_prev;
-        smpi_mpi_sendrecv(NULL, 0, MPI_BYTE, src, COLL_TAG_BARRIER,
+        Request::sendrecv(NULL, 0, MPI_BYTE, src, COLL_TAG_BARRIER,
                                      NULL, 0, MPI_BYTE, src, COLL_TAG_BARRIER,
                                      comm, MPI_STATUS_IGNORE);
     }

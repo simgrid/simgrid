@@ -43,9 +43,9 @@ int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
   // if root is not zero send to rank zero first
   if (root != 0) {
     if (rank == root)
-      smpi_mpi_send(buf, count, datatype, 0, tag, comm);
+      Request::send(buf, count, datatype, 0, tag, comm);
     else if (rank == 0)
-      smpi_mpi_recv(buf, count, datatype, root, tag, comm, &status);
+      Request::recv(buf, count, datatype, root, tag, comm, &status);
   }
   //FIRST STEP node 0 send to every root-of-each-SMP with binomial tree
 
@@ -57,7 +57,7 @@ int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
       if (inter_rank & mask) {
         from_inter = (inter_rank - mask) * num_core;
         //printf("Node %d recv from node %d when mask is %d\n", rank, from_inter, mask);
-        smpi_mpi_recv(buf, count, datatype, from_inter, tag, comm, &status);
+        Request::recv(buf, count, datatype, from_inter, tag, comm, &status);
         break;
       }
       mask <<= 1;
@@ -71,7 +71,7 @@ int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
         to_inter = (inter_rank + mask) * num_core;
         if (to_inter < size) {
           //printf("Node %d send to node %d when mask is %d\n", rank, to_inter, mask);
-          smpi_mpi_send(buf, count, datatype, to_inter, tag, comm);
+          Request::send(buf, count, datatype, to_inter, tag, comm);
         }
       }
       mask >>= 1;
@@ -85,7 +85,7 @@ int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
     if (intra_rank & mask) {
       from_intra = base + (intra_rank - mask);
       //printf("Node %d recv from node %d when mask is %d\n", rank, from_inter, mask);
-      smpi_mpi_recv(buf, count, datatype, from_intra, tag, comm, &status);
+      Request::recv(buf, count, datatype, from_intra, tag, comm, &status);
       break;
     }
     mask <<= 1;
@@ -100,7 +100,7 @@ int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
       to_intra = base + (intra_rank + mask);
       if (to_intra < size) {
         //printf("Node %d send to node %d when mask is %d\n", rank, to_inter, mask);
-        smpi_mpi_send(buf, count, datatype, to_intra, tag, comm);
+        Request::send(buf, count, datatype, to_intra, tag, comm);
       }
     }
     mask >>= 1;

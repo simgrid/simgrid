@@ -57,17 +57,17 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
     memcpy(send_ptr, sendbuf != MPI_IN_PLACE ? sendbuf : recvbuf, extent * count);
 
     //if ((rank != root))
-    smpi_mpi_sendrecv(send_ptr, new_count, datatype, rank, tag,
+    Request::sendrecv(send_ptr, new_count, datatype, rank, tag,
                  recv_ptr, new_count, datatype, rank, tag, comm, &status);
 
     rem = comm_size - pof2;
     if (rank < 2 * rem) {
       if (rank % 2 != 0) {
         /* odd */
-        smpi_mpi_send(recv_ptr, new_count, datatype, rank - 1, tag, comm);
+        Request::send(recv_ptr, new_count, datatype, rank - 1, tag, comm);
         newrank = -1;
       } else {
-        smpi_mpi_recv(tmp_buf, count, datatype, rank + 1, tag, comm, &status);
+        Request::recv(tmp_buf, count, datatype, rank + 1, tag, comm, &status);
         smpi_op_apply(op, tmp_buf, recv_ptr, &new_count, &datatype);
         newrank = rank / 2;
       }
@@ -110,7 +110,7 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
         }
 
         /* Send data from recvbuf. Recv into tmp_buf */
-        smpi_mpi_sendrecv((char *) recv_ptr +
+        Request::sendrecv((char *) recv_ptr +
                      disps[send_idx] * extent,
                      send_cnt, datatype,
                      dst, tag,
@@ -148,13 +148,13 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
           for (i = 1; i < pof2; i++)
             disps[i] = disps[i - 1] + cnts[i - 1];
 
-          smpi_mpi_recv(recv_ptr, cnts[0], datatype, 0, tag, comm, &status);
+          Request::recv(recv_ptr, cnts[0], datatype, 0, tag, comm, &status);
 
           newrank = 0;
           send_idx = 0;
           last_idx = 2;
         } else if (newrank == 0) {
-          smpi_mpi_send(recv_ptr, cnts[0], datatype, root, tag, comm);
+          Request::send(recv_ptr, cnts[0], datatype, root, tag, comm);
           newrank = -1;
         }
         newroot = 0;
@@ -206,12 +206,12 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
         }
 
         if (newdst_tree_root == newroot_tree_root) {
-          smpi_mpi_send((char *) recv_ptr +
+          Request::send((char *) recv_ptr +
                    disps[send_idx] * extent,
                    send_cnt, datatype, dst, tag, comm);
           break;
         } else {
-          smpi_mpi_recv((char *) recv_ptr +
+          Request::recv((char *) recv_ptr +
                    disps[recv_idx] * extent,
                    recv_cnt, datatype, dst, tag, comm, &status);
         }
@@ -233,18 +233,18 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
     tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
 
     //if ((rank != root))
-    smpi_mpi_sendrecv(sendbuf != MPI_IN_PLACE ? sendbuf : recvbuf, count, datatype, rank, tag,
+    Request::sendrecv(sendbuf != MPI_IN_PLACE ? sendbuf : recvbuf, count, datatype, rank, tag,
                  recvbuf, count, datatype, rank, tag, comm, &status);
 
     rem = comm_size - pof2;
     if (rank < 2 * rem) {
       if (rank % 2 != 0) {      /* odd */
-        smpi_mpi_send(recvbuf, count, datatype, rank - 1, tag, comm);
+        Request::send(recvbuf, count, datatype, rank - 1, tag, comm);
         newrank = -1;
       }
 
       else {
-        smpi_mpi_recv(tmp_buf, count, datatype, rank + 1, tag, comm, &status);
+        Request::recv(tmp_buf, count, datatype, rank + 1, tag, comm, &status);
         smpi_op_apply(op, tmp_buf, recvbuf, &count, &datatype);
         newrank = rank / 2;
       }
@@ -287,7 +287,7 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
         }
 
         /* Send data from recvbuf. Recv into tmp_buf */
-        smpi_mpi_sendrecv((char *) recvbuf +
+        Request::sendrecv((char *) recvbuf +
                      disps[send_idx] * extent,
                      send_cnt, datatype,
                      dst, tag,
@@ -324,13 +324,13 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
           for (i = 1; i < pof2; i++)
             disps[i] = disps[i - 1] + cnts[i - 1];
 
-          smpi_mpi_recv(recvbuf, cnts[0], datatype, 0, tag, comm, &status);
+          Request::recv(recvbuf, cnts[0], datatype, 0, tag, comm, &status);
 
           newrank = 0;
           send_idx = 0;
           last_idx = 2;
         } else if (newrank == 0) {
-          smpi_mpi_send(recvbuf, cnts[0], datatype, root, tag, comm);
+          Request::send(recvbuf, cnts[0], datatype, root, tag, comm);
           newrank = -1;
         }
         newroot = 0;
@@ -382,12 +382,12 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
         }
 
         if (newdst_tree_root == newroot_tree_root) {
-          smpi_mpi_send((char *) recvbuf +
+          Request::send((char *) recvbuf +
                    disps[send_idx] * extent,
                    send_cnt, datatype, dst, tag, comm);
           break;
         } else {
-          smpi_mpi_recv((char *) recvbuf +
+          Request::recv((char *) recvbuf +
                    disps[recv_idx] * extent,
                    recv_cnt, datatype, dst, tag, comm, &status);
         }

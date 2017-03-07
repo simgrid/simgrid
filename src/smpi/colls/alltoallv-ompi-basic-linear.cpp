@@ -60,7 +60,7 @@ smpi_coll_tuned_alltoallv_ompi_basic_linear(void *sbuf, int *scounts, int *sdisp
 
         prcv = ((char *) rbuf) + (rdisps[i] * rext);
 
-        *preq = smpi_irecv_init(prcv, rcounts[i], rdtype,
+        *preq = Request::irecv_init(prcv, rcounts[i], rdtype,
                                       i, COLL_TAG_ALLTOALLV, comm
                                       );
         preq++;
@@ -75,7 +75,7 @@ smpi_coll_tuned_alltoallv_ompi_basic_linear(void *sbuf, int *scounts, int *sdisp
         }
 
         psnd = ((char *) sbuf) + (sdisps[i] * sext);
-        *preq=smpi_isend_init(psnd, scounts[i], sdtype,
+        *preq=Request::isend_init(psnd, scounts[i], sdtype,
                                       i, COLL_TAG_ALLTOALLV, comm
                                       );
         preq++;
@@ -83,7 +83,7 @@ smpi_coll_tuned_alltoallv_ompi_basic_linear(void *sbuf, int *scounts, int *sdisp
     }
 
     /* Start your engines.  This will never return an error. */
-    smpi_mpi_startall(nreqs, ireqs);
+    Request::startall(nreqs, ireqs);
 
     /* Wait for them all.  If there's an error, note that we don't care
      * what the error was -- just that there *was* an error.  The PML
@@ -91,12 +91,13 @@ smpi_coll_tuned_alltoallv_ompi_basic_linear(void *sbuf, int *scounts, int *sdisp
      * i.e., by the end of this call, all the requests are free-able.
      * So free them anyway -- even if there was an error, and return the
      * error after we free everything. */
-    smpi_mpi_waitall(nreqs, ireqs,
+    Request::waitall(nreqs, ireqs,
                                 MPI_STATUSES_IGNORE);
 
     /* Free the requests. */
     for (i = 0; i < nreqs; ++i) {
-      if(ireqs[i]!=MPI_REQUEST_NULL)smpi_mpi_request_free(&ireqs[i]);
+      if(ireqs[i]!=MPI_REQUEST_NULL)
+        Request::unuse(&ireqs[i]);
     }
     free(ireqs);
 

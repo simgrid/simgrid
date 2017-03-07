@@ -18,9 +18,13 @@
 #include "xbt/xbt_os_time.h"
 #include "src/smpi/smpi_group.hpp"
 #include "src/smpi/smpi_comm.hpp"
+#include "src/smpi/smpi_request.hpp"
 #include "src/smpi/smpi_topo.hpp"
 #include "src/smpi/smpi_win.hpp"
 SG_BEGIN_DECL()
+
+
+using namespace simgrid::smpi;
 
 struct s_smpi_process_data;
 typedef struct s_smpi_process_data *smpi_process_data_t;
@@ -84,34 +88,7 @@ typedef struct s_smpi_mpi_datatype{
 
 extern XBT_PRIVATE MPI_Comm MPI_COMM_UNINITIALIZED;
 
-typedef struct s_smpi_mpi_request {
-  void *buf;
-  /* in the case of non-contiguous memory the user address should be keep
-   * to unserialize the data inside the user memory*/
-  void *old_buf;
-  /* this let us know how to unserialize at the end of
-   * the communication*/
-  MPI_Datatype old_type;
-  size_t size;
-  int src;
-  int dst;
-  int tag;
-  //to handle cases where we have an unknown sender
-  //We can't override src, tag, and size, because the request may be reused later
-  int real_src;
-  int real_tag;
-  int truncated;
-  size_t real_size;
-  MPI_Comm comm;
-  smx_activity_t action;
-  unsigned flags;
-  int detached;
-  MPI_Request detached_sender;
-  int refcount;
-  MPI_Op op;
-  int send;
-  int recv;
-} s_smpi_mpi_request_t;
+
 
 typedef struct s_smpi_mpi_comm_key_elem {
   MPI_Comm_copy_attr_function* copy_fn;
@@ -221,6 +198,7 @@ XBT_PRIVATE int smpi_mpi_pack(void* inbuf, int incount, MPI_Datatype type, void*
                        MPI_Comm comm);
 
 XBT_PRIVATE void smpi_empty_status(MPI_Status * status);
+XBT_PRIVATE int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype);
 XBT_PRIVATE MPI_Op smpi_op_new(MPI_User_function * function, bool commute);
 XBT_PRIVATE bool smpi_op_is_commute(MPI_Op op);
 XBT_PRIVATE void smpi_op_destroy(MPI_Op op);
@@ -250,43 +228,7 @@ XBT_PRIVATE int smpi_info_c2f(MPI_Info info);
 XBT_PRIVATE int smpi_info_add_f(MPI_Info info);
 XBT_PRIVATE MPI_Info smpi_info_f2c(int info);
 
-XBT_PRIVATE MPI_Request smpi_mpi_send_init(void *buf, int count, MPI_Datatype datatype, int dst, int tag,
-                                           MPI_Comm comm);
-XBT_PRIVATE MPI_Request smpi_mpi_recv_init(void *buf, int count, MPI_Datatype datatype, int src, int tag,
-                                           MPI_Comm comm);
-XBT_PRIVATE MPI_Request smpi_mpi_ssend_init(void *buf, int count, MPI_Datatype datatype, int dst, int tag,
-                                            MPI_Comm comm);
-XBT_PRIVATE void smpi_mpi_start(MPI_Request request);
-XBT_PRIVATE void smpi_mpi_startall(int count, MPI_Request * requests);
-XBT_PRIVATE void smpi_mpi_request_free(MPI_Request * request);
-XBT_PRIVATE MPI_Request smpi_isend_init(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
-XBT_PRIVATE MPI_Request smpi_mpi_isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
-XBT_PRIVATE MPI_Request smpi_issend_init(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
-XBT_PRIVATE MPI_Request smpi_mpi_issend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
-XBT_PRIVATE MPI_Request smpi_irecv_init(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm);
-XBT_PRIVATE MPI_Request smpi_mpi_irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm);
-XBT_PRIVATE MPI_Request smpi_rma_send_init(void *buf, int count, MPI_Datatype datatype, int src, int dst, int tag,
-                                           MPI_Comm comm, MPI_Op op);
-XBT_PRIVATE MPI_Request smpi_rma_recv_init(void *buf, int count, MPI_Datatype datatype, int src, int dst, int tag,
-                                           MPI_Comm comm, MPI_Op op);
-XBT_PRIVATE void smpi_mpi_recv(void *buf, int count, MPI_Datatype datatype, int src,int tag, MPI_Comm comm,
-                               MPI_Status * status);
-XBT_PRIVATE void smpi_mpi_send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
-XBT_PRIVATE void smpi_mpi_ssend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
-XBT_PRIVATE void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dst, int sendtag,
-                                   void *recvbuf, int recvcount, MPI_Datatype recvtype, int src, int recvtag,
-                                   MPI_Comm comm, MPI_Status * status);
-XBT_PRIVATE int smpi_mpi_test(MPI_Request * request, MPI_Status * status);
-XBT_PRIVATE int smpi_mpi_testany(int count, MPI_Request requests[], int *index, MPI_Status * status);
-XBT_PRIVATE int smpi_mpi_testall(int count, MPI_Request requests[], MPI_Status status[]);
-XBT_PRIVATE void smpi_mpi_probe(int source, int tag, MPI_Comm comm, MPI_Status* status);
-XBT_PRIVATE void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* status);
-XBT_PRIVATE int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype);
-XBT_PRIVATE void smpi_mpi_wait(MPI_Request * request, MPI_Status * status);
-XBT_PRIVATE int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status * status);
-XBT_PRIVATE int smpi_mpi_waitall(int count, MPI_Request requests[], MPI_Status status[]);
-XBT_PRIVATE int smpi_mpi_waitsome(int incount, MPI_Request requests[], int *indices, MPI_Status status[]);
-XBT_PRIVATE int smpi_mpi_testsome(int incount, MPI_Request requests[], int *indices, MPI_Status status[]);
+
 XBT_PRIVATE void smpi_mpi_bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
 XBT_PRIVATE void smpi_mpi_barrier(MPI_Comm comm);
 XBT_PRIVATE void smpi_mpi_gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,

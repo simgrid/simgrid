@@ -55,7 +55,7 @@ if(comm->get_leaders_comm()==MPI_COMM_NULL){
 
   //copy corresponding message from sbuf to rbuf
   recv_offset = rank * rextent * rcount;
-  smpi_mpi_sendrecv(sbuf, scount, stype, rank, tag,
+  Request::sendrecv(sbuf, scount, stype, rank, tag,
                (char *)rbuf + recv_offset, rcount, rtype, rank, tag, comm, &status);
 
   int dst, src;
@@ -88,9 +88,9 @@ if(comm->get_leaders_comm()==MPI_COMM_NULL){
       if (intra_rank == j) {
         if (i != inter_comm_size - 1) {
 
-          inter_rrequest = smpi_mpi_irecv((char *)rbuf + inter_recv_offset, rcount, rtype,
+          inter_rrequest = Request::irecv((char *)rbuf + inter_recv_offset, rcount, rtype,
 	                                  inter_src, tag, comm);
-          inter_srequest_array[inter_srequest_count++] = smpi_mpi_isend((char *)rbuf + inter_send_offset, scount, stype,
+          inter_srequest_array[inter_srequest_count++] = Request::isend((char *)rbuf + inter_send_offset, scount, stype,
 			                                                inter_dst, tag, comm);
         }
       }
@@ -111,8 +111,8 @@ if(comm->get_leaders_comm()==MPI_COMM_NULL){
 
       if (j != intra_rank) {
 
-        rrequest_array[rrequest_count++] = smpi_mpi_irecv((char *)rbuf + recv_offset, rcount, rtype, src, tag, comm);
-        srequest_array[srequest_count++] = smpi_mpi_isend((char *)rbuf + send_offset, scount, stype, dst, tag, comm);
+        rrequest_array[rrequest_count++] = Request::irecv((char *)rbuf + recv_offset, rcount, rtype, src, tag, comm);
+        srequest_array[srequest_count++] = Request::isend((char *)rbuf + send_offset, scount, stype, dst, tag, comm);
 
       }
     }                           // intra loop
@@ -120,14 +120,14 @@ if(comm->get_leaders_comm()==MPI_COMM_NULL){
 
     // wait for inter communication to finish for these rounds (# of round equals num_core)
     if (i != inter_comm_size - 1) {
-      smpi_mpi_wait(&inter_rrequest, &status);
+      Request::wait(&inter_rrequest, &status);
     }
 
   }                             //inter loop
 
-  smpi_mpi_waitall(rrequest_count, rrequest_array, MPI_STATUSES_IGNORE);
-  smpi_mpi_waitall(srequest_count, srequest_array, MPI_STATUSES_IGNORE);
-  smpi_mpi_waitall(inter_srequest_count, inter_srequest_array, MPI_STATUSES_IGNORE);
+  Request::waitall(rrequest_count, rrequest_array, MPI_STATUSES_IGNORE);
+  Request::waitall(srequest_count, srequest_array, MPI_STATUSES_IGNORE);
+  Request::waitall(inter_srequest_count, inter_srequest_array, MPI_STATUSES_IGNORE);
 
   return MPI_SUCCESS;
 }

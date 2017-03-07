@@ -59,7 +59,7 @@ int smpi_coll_tuned_reduce_binomial(void *sendbuf, void *recvbuf, int count,
       source = (relrank | mask);
       if (source < comm_size) {
         source = (source + lroot) % comm_size;
-        smpi_mpi_recv(tmp_buf, count, datatype, source, tag, comm, &status);
+        Request::recv(tmp_buf, count, datatype, source, tag, comm, &status);
         
         if (is_commutative) {
           smpi_op_apply(op, tmp_buf, recvbuf, &count, &datatype);
@@ -70,7 +70,7 @@ int smpi_coll_tuned_reduce_binomial(void *sendbuf, void *recvbuf, int count,
       }
     } else {
       dst = ((relrank & (~mask)) + lroot) % comm_size;
-      smpi_mpi_send(recvbuf, count, datatype, dst, tag, comm);
+      Request::send(recvbuf, count, datatype, dst, tag, comm);
       break;
     }
     mask <<= 1;
@@ -78,9 +78,9 @@ int smpi_coll_tuned_reduce_binomial(void *sendbuf, void *recvbuf, int count,
 
   if (!is_commutative && (root != 0)){
     if (rank == 0){
-      smpi_mpi_send(recvbuf, count, datatype, root,tag, comm);
+      Request::send(recvbuf, count, datatype, root,tag, comm);
     }else if (rank == root){
-      smpi_mpi_recv(recvbuf, count, datatype, 0, tag, comm, &status);
+      Request::recv(recvbuf, count, datatype, 0, tag, comm, &status);
     }
   }
 

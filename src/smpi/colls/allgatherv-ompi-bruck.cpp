@@ -157,7 +157,7 @@ int smpi_coll_tuned_allgatherv_ompi_bruck(void *sbuf, int scount,
       smpi_datatype_commit(&new_rdtype);
 
       /* Sendreceive */
-      smpi_mpi_sendrecv(rbuf, 1, new_sdtype, sendto,
+      Request::sendrecv(rbuf, 1, new_sdtype, sendto,
                                      COLL_TAG_ALLGATHERV,
                                      rbuf, 1, new_rdtype, recvfrom,
                                      COLL_TAG_ALLGATHERV,

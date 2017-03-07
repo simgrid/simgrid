@@ -44,7 +44,7 @@ int smpi_coll_tuned_allreduce_rab_rdb(void *sbuff, void *rbuff, int count,
     // even       
     if (rank % 2 == 0) {
 
-      smpi_mpi_send(rbuff, count, dtype, rank + 1, tag, comm);
+      Request::send(rbuff, count, dtype, rank + 1, tag, comm);
 
       // temporarily set the rank to -1 so that this
       // process does not pariticipate in recursive
@@ -52,7 +52,7 @@ int smpi_coll_tuned_allreduce_rab_rdb(void *sbuff, void *rbuff, int count,
       newrank = -1;
     } else                      // odd
     {
-      smpi_mpi_recv(tmp_buf, count, dtype, rank - 1, tag, comm, &status);
+      Request::recv(tmp_buf, count, dtype, rank - 1, tag, comm, &status);
       // do the reduction on received data. since the
       // ordering is right, it doesn't matter whether
       // the operation is commutative or not.
@@ -115,7 +115,7 @@ int smpi_coll_tuned_allreduce_rab_rdb(void *sbuff, void *rbuff, int count,
       }
 
       // Send data from recvbuf. Recv into tmp_buf 
-      smpi_mpi_sendrecv((char *) rbuff + disps[send_idx] * extent, send_cnt,
+      Request::sendrecv((char *) rbuff + disps[send_idx] * extent, send_cnt,
                    dtype, dst, tag,
                    (char *) tmp_buf + disps[recv_idx] * extent, recv_cnt,
                    dtype, dst, tag, comm, &status);
@@ -165,7 +165,7 @@ int smpi_coll_tuned_allreduce_rab_rdb(void *sbuff, void *rbuff, int count,
           recv_cnt += cnts[i];
       }
 
-      smpi_mpi_sendrecv((char *) rbuff + disps[send_idx] * extent, send_cnt,
+      Request::sendrecv((char *) rbuff + disps[send_idx] * extent, send_cnt,
                    dtype, dst, tag,
                    (char *) rbuff + disps[recv_idx] * extent, recv_cnt,
                    dtype, dst, tag, comm, &status);
@@ -186,9 +186,9 @@ int smpi_coll_tuned_allreduce_rab_rdb(void *sbuff, void *rbuff, int count,
 
   if (rank < 2 * rem) {
     if (rank % 2)               // odd 
-      smpi_mpi_send(rbuff, count, dtype, rank - 1, tag, comm);
+      Request::send(rbuff, count, dtype, rank - 1, tag, comm);
     else                        // even 
-      smpi_mpi_recv(rbuff, count, dtype, rank + 1, tag, comm, &status);
+      Request::recv(rbuff, count, dtype, rank + 1, tag, comm, &status);
   }
 
   smpi_free_tmp_buffer(tmp_buf);

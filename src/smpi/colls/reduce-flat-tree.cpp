@@ -27,7 +27,7 @@ smpi_coll_tuned_reduce_flat_tree(void *sbuf, void *rbuf, int count,
   extent = smpi_datatype_get_extent(dtype);
 
   if (rank != root) {
-    smpi_mpi_send(sbuf, count, dtype, root, tag, comm);
+    Request::send(sbuf, count, dtype, root, tag, comm);
     return 0;
   }
 
@@ -40,10 +40,10 @@ smpi_coll_tuned_reduce_flat_tree(void *sbuf, void *rbuf, int count,
 
   /* Initialize the receive buffer. */
   if (rank == (size - 1))
-    smpi_mpi_sendrecv(sbuf, count, dtype, rank, tag,
+    Request::sendrecv(sbuf, count, dtype, rank, tag,
                  rbuf, count, dtype, rank, tag, comm, &status);
   else
-    smpi_mpi_recv(rbuf, count, dtype, size - 1, tag, comm, &status);
+    Request::recv(rbuf, count, dtype, size - 1, tag, comm, &status);
 
   /* Loop receiving and calling reduction function (C or Fortran). */
 
@@ -51,7 +51,7 @@ smpi_coll_tuned_reduce_flat_tree(void *sbuf, void *rbuf, int count,
     if (rank == i)
       inbuf = static_cast<char*>(sbuf);
     else {
-      smpi_mpi_recv(origin, count, dtype, i, tag, comm, &status);
+      Request::recv(origin, count, dtype, i, tag, comm, &status);
       inbuf = origin;
     }
 

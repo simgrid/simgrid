@@ -93,7 +93,7 @@ smpi_coll_tuned_allgather_spreading_simple(void *send_buff, int send_count,
   }
 
   req_ptr = reqs;
-  smpi_mpi_sendrecv(send_buff, send_count, send_type, rank, tag,
+  Request::sendrecv(send_buff, send_count, send_type, rank, tag,
                (char *) recv_buff + rank * recv_count * extent, recv_count,
                recv_type, rank, tag, comm, &status);
 
@@ -101,7 +101,7 @@ smpi_coll_tuned_allgather_spreading_simple(void *send_buff, int send_count,
     src = (rank + i) % num_procs;
     if (src == rank)
       continue;
-    *(req_ptr++) = smpi_mpi_irecv(recv_ptr + src * recv_count * extent, recv_count, recv_type,
+    *(req_ptr++) = Request::irecv(recv_ptr + src * recv_count * extent, recv_count, recv_type,
               src, tag, comm);
   }
 
@@ -109,10 +109,10 @@ smpi_coll_tuned_allgather_spreading_simple(void *send_buff, int send_count,
     dst = (rank + i) % num_procs;
     if (dst == rank)
       continue;
-    *(req_ptr++) = smpi_mpi_isend(send_buff, send_count, send_type, dst, tag, comm);
+    *(req_ptr++) = Request::isend(send_buff, send_count, send_type, dst, tag, comm);
   }
 
-  smpi_mpi_waitall(num_reqs, reqs, MPI_STATUSES_IGNORE);
+  Request::waitall(num_reqs, reqs, MPI_STATUSES_IGNORE);
   free(reqs);
 
   return MPI_SUCCESS;

@@ -119,11 +119,11 @@ int smpi_coll_tuned_bcast_mvapich2_inter_node(void *buffer,
     
     if (local_size > 1) {
         if ((local_rank == 0) && (root != rank) && (leader_root == global_rank)) {
-            smpi_mpi_recv(buffer, count, datatype, root,
+            Request::recv(buffer, count, datatype, root,
                                      COLL_TAG_BCAST, comm, MPI_STATUS_IGNORE);
         }
         if ((local_rank != 0) && (root == rank)) {
-            smpi_mpi_send(buffer, count, datatype,
+            Request::send(buffer, count, datatype,
                                      leader_of_root, COLL_TAG_BCAST, comm);
         }
     }
@@ -212,7 +212,7 @@ int smpi_coll_tuned_bcast_mvapich2_knomial_intra_node(void *buffer,
                     src -= local_size;
                 }
 
-                smpi_mpi_recv(buffer, count, datatype, src,
+                Request::recv(buffer, count, datatype, src,
                                          COLL_TAG_BCAST, comm,
                                          MPI_STATUS_IGNORE);
                 break;
@@ -229,11 +229,11 @@ int smpi_coll_tuned_bcast_mvapich2_knomial_intra_node(void *buffer,
                     if (dst >= local_size) {
                         dst -= local_size;
                     }
-                    reqarray[reqs++]=smpi_mpi_isend(buffer, count, datatype, dst,
+                    reqarray[reqs++]=Request::isend(buffer, count, datatype, dst,
                                               COLL_TAG_BCAST, comm);
                 }
             }
-            smpi_mpi_waitall(reqs, reqarray, starray);
+            Request::waitall(reqs, reqarray, starray);
 
             mask /= mv2_intra_node_knomial_factor;
         }

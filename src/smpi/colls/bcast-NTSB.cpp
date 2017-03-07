@@ -52,9 +52,9 @@ int smpi_coll_tuned_bcast_NTSB(void *buf, int count, MPI_Datatype datatype,
   /* if root is not zero send to rank zero first */
   if (root != 0) {
     if (rank == root) {
-      smpi_mpi_send(buf, count, datatype, 0, tag, comm);
+      Request::send(buf, count, datatype, 0, tag, comm);
     } else if (rank == 0) {
-      smpi_mpi_recv(buf, count, datatype, root, tag, comm, &status);
+      Request::recv(buf, count, datatype, root, tag, comm, &status);
     }
   }
 
@@ -65,31 +65,31 @@ int smpi_coll_tuned_bcast_NTSB(void *buf, int count, MPI_Datatype datatype,
     if (rank == 0) {
       /* case root has only a left child */
       if (to_right == -1) {
-        smpi_mpi_send(buf, count, datatype, to_left, tag, comm);
+        Request::send(buf, count, datatype, to_left, tag, comm);
       }
       /* case root has both left and right children */
       else {
-        smpi_mpi_send(buf, count, datatype, to_left, tag, comm);
-        smpi_mpi_send(buf, count, datatype, to_right, tag, comm);
+        Request::send(buf, count, datatype, to_left, tag, comm);
+        Request::send(buf, count, datatype, to_right, tag, comm);
       }
     }
 
     /* case: leaf ==> receive only */
     else if (to_left == -1) {
-      smpi_mpi_recv(buf, count, datatype, from, tag, comm, &status);
+      Request::recv(buf, count, datatype, from, tag, comm, &status);
     }
 
     /* case: intermidiate node with only left child ==> relay message */
     else if (to_right == -1) {
-      smpi_mpi_recv(buf, count, datatype, from, tag, comm, &status);
-      smpi_mpi_send(buf, count, datatype, to_left, tag, comm);
+      Request::recv(buf, count, datatype, from, tag, comm, &status);
+      Request::send(buf, count, datatype, to_left, tag, comm);
     }
 
     /* case: intermidiate node with both left and right children ==> relay message */
     else {
-      smpi_mpi_recv(buf, count, datatype, from, tag, comm, &status);
-      smpi_mpi_send(buf, count, datatype, to_left, tag, comm);
-      smpi_mpi_send(buf, count, datatype, to_right, tag, comm);
+      Request::recv(buf, count, datatype, from, tag, comm, &status);
+      Request::send(buf, count, datatype, to_left, tag, comm);
+      Request::send(buf, count, datatype, to_right, tag, comm);
     }
     return MPI_SUCCESS;
   }
@@ -112,60 +112,60 @@ int smpi_coll_tuned_bcast_NTSB(void *buf, int count, MPI_Datatype datatype,
       /* case root has only a left child */
       if (to_right == -1) {
         for (i = 0; i < pipe_length; i++) {
-          send_request_array[i] = smpi_mpi_isend((char *) buf + (i * increment), segment, datatype, to_left,
+          send_request_array[i] = Request::isend((char *) buf + (i * increment), segment, datatype, to_left,
                     tag + i, comm);
         }
-        smpi_mpi_waitall((pipe_length), send_request_array, send_status_array);
+        Request::waitall((pipe_length), send_request_array, send_status_array);
       }
       /* case root has both left and right children */
       else {
         for (i = 0; i < pipe_length; i++) {
-          send_request_array[i] = smpi_mpi_isend((char *) buf + (i * increment), segment, datatype, to_left,
+          send_request_array[i] = Request::isend((char *) buf + (i * increment), segment, datatype, to_left,
                     tag + i, comm);
-          send_request_array[i + pipe_length] = smpi_mpi_isend((char *) buf + (i * increment), segment, datatype, to_right,
+          send_request_array[i + pipe_length] = Request::isend((char *) buf + (i * increment), segment, datatype, to_right,
                     tag + i, comm);
         }
-        smpi_mpi_waitall((2 * pipe_length), send_request_array, send_status_array);
+        Request::waitall((2 * pipe_length), send_request_array, send_status_array);
       }
     }
 
     /* case: leaf ==> receive only */
     else if (to_left == -1) {
       for (i = 0; i < pipe_length; i++) {
-        recv_request_array[i] = smpi_mpi_irecv((char *) buf + (i * increment), segment, datatype, from,
+        recv_request_array[i] = Request::irecv((char *) buf + (i * increment), segment, datatype, from,
                   tag + i, comm);
       }
-      smpi_mpi_waitall((pipe_length), recv_request_array, recv_status_array);
+      Request::waitall((pipe_length), recv_request_array, recv_status_array);
     }
 
     /* case: intermidiate node with only left child ==> relay message */
     else if (to_right == -1) {
       for (i = 0; i < pipe_length; i++) {
-        recv_request_array[i] = smpi_mpi_irecv((char *) buf + (i * increment), segment, datatype, from,
+        recv_request_array[i] = Request::irecv((char *) buf + (i * increment), segment, datatype, from,
                   tag + i, comm);
       }
       for (i = 0; i < pipe_length; i++) {
-        smpi_mpi_wait(&recv_request_array[i], &status);
-        send_request_array[i] = smpi_mpi_isend((char *) buf + (i * increment), segment, datatype, to_left,
+        Request::wait(&recv_request_array[i], &status);
+        send_request_array[i] = Request::isend((char *) buf + (i * increment), segment, datatype, to_left,
                   tag + i, comm);
       }
-      smpi_mpi_waitall(pipe_length, send_request_array, send_status_array);
+      Request::waitall(pipe_length, send_request_array, send_status_array);
 
     }
     /* case: intermidiate node with both left and right children ==> relay message */
     else {
       for (i = 0; i < pipe_length; i++) {
-        recv_request_array[i] = smpi_mpi_irecv((char *) buf + (i * increment), segment, datatype, from,
+        recv_request_array[i] = Request::irecv((char *) buf + (i * increment), segment, datatype, from,
                   tag + i, comm);
       }
       for (i = 0; i < pipe_length; i++) {
-        smpi_mpi_wait(&recv_request_array[i], &status);
-        send_request_array[i] = smpi_mpi_isend((char *) buf + (i * increment), segment, datatype, to_left,
+        Request::wait(&recv_request_array[i], &status);
+        send_request_array[i] = Request::isend((char *) buf + (i * increment), segment, datatype, to_left,
                   tag + i, comm);
-        send_request_array[i + pipe_length] = smpi_mpi_isend((char *) buf + (i * increment), segment, datatype, to_right,
+        send_request_array[i + pipe_length] = Request::isend((char *) buf + (i * increment), segment, datatype, to_right,
                   tag + i, comm);
       }
-      smpi_mpi_waitall((2 * pipe_length), send_request_array, send_status_array);
+      Request::waitall((2 * pipe_length), send_request_array, send_status_array);
     }
 
     free(send_request_array);

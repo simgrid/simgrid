@@ -101,7 +101,7 @@ int smpi_coll_tuned_alltoall_mvapich2_scatter_dest(
         /* do the communication -- post ss sends and receives: */
         for ( i=0; i<ss; i++ ) {
             dst = (rank+i+ii) % comm_size;
-            reqarray[i]=smpi_mpi_irecv((char *)recvbuf +
+            reqarray[i]=Request::irecv((char *)recvbuf +
                                       dst*recvcount*recvtype_extent,
                                       recvcount, recvtype, dst,
                                       COLL_TAG_ALLTOALL, comm);
@@ -109,7 +109,7 @@ int smpi_coll_tuned_alltoall_mvapich2_scatter_dest(
         }
         for ( i=0; i<ss; i++ ) {
             dst = (rank-i-ii+comm_size) % comm_size;
-            reqarray[i+ss]=smpi_mpi_isend((char *)sendbuf +
+            reqarray[i+ss]=Request::isend((char *)sendbuf +
                                           dst*sendcount*sendtype_extent,
                                           sendcount, sendtype, dst,
                                           COLL_TAG_ALLTOALL, comm);
@@ -117,7 +117,7 @@ int smpi_coll_tuned_alltoall_mvapich2_scatter_dest(
         }
         
         /* ... then wait for them to finish: */
-        smpi_mpi_waitall(2*ss,reqarray,starray);
+        Request::waitall(2*ss,reqarray,starray);
         
        
         /* --BEGIN ERROR HANDLING-- */

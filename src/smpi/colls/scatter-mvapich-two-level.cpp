@@ -124,7 +124,7 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_direct(void *sendbuf,
             /* The root of the scatter operation is not the node leader. Recv
              * data from the node leader */
             leader_scatter_buf = smpi_get_tmp_sendbuffer(nbytes * comm_size);
-            smpi_mpi_recv(leader_scatter_buf, nbytes * comm_size, MPI_BYTE,
+            Request::recv(leader_scatter_buf, nbytes * comm_size, MPI_BYTE,
                              root, COLL_TAG_SCATTER, comm, &status);
 
         }
@@ -132,7 +132,7 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_direct(void *sendbuf,
         if (rank == root && local_rank != 0) {
             /* The root of the scatter operation is not the node leader. Send
              * data to the node leader */
-            smpi_mpi_send(sendbuf, sendcnt * comm_size, sendtype,
+            Request::send(sendbuf, sendcnt * comm_size, sendtype,
                                      leader_of_root, COLL_TAG_SCATTER, comm
                                      );
         }
@@ -307,14 +307,14 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_binomial(void *sendbuf,
             /* The root of the scatter operation is not the node leader. Recv
              * data from the node leader */
             leader_scatter_buf = smpi_get_tmp_sendbuffer(nbytes * comm_size);
-            smpi_mpi_recv(leader_scatter_buf, nbytes * comm_size, MPI_BYTE,
+            Request::recv(leader_scatter_buf, nbytes * comm_size, MPI_BYTE,
                              root, COLL_TAG_SCATTER, comm, &status);
         }
 
         if (rank == root && local_rank != 0) {
             /* The root of the scatter operation is not the node leader. Send
              * data to the node leader */
-            smpi_mpi_send(sendbuf, sendcnt * comm_size, sendtype,
+            Request::send(sendbuf, sendcnt * comm_size, sendtype,
                                      leader_of_root, COLL_TAG_SCATTER, comm);
         }
 

@@ -376,8 +376,7 @@ typedef SMPI_Comm *MPI_Comm;
 XBT_PUBLIC_DATA( MPI_Comm ) MPI_COMM_WORLD;
 #define MPI_COMM_SELF smpi_process_comm_self()
 
-struct s_smpi_mpi_request;
-typedef struct s_smpi_mpi_request *MPI_Request;
+typedef SMPI_Request *MPI_Request;
 
 #define MPI_REQUEST_NULL ((MPI_Request)NULL)
 #define MPI_FORTRAN_REQUEST_NULL -1

@@ -88,13 +88,13 @@ smpi_coll_tuned_allgather_pair(void *send_buff, int send_count,
   extent = smpi_datatype_get_extent(send_type);
 
   // local send/recv
-  smpi_mpi_sendrecv(send_ptr, send_count, send_type, rank, tag,
+  Request::sendrecv(send_ptr, send_count, send_type, rank, tag,
                recv_ptr + rank * recv_count * extent,
                recv_count, recv_type, rank, tag, comm, &status);
 
   for (i = 1; i < num_procs; i++) {
     src = dst = rank ^ i;
-    smpi_mpi_sendrecv(send_ptr, send_count, send_type, dst, tag,
+    Request::sendrecv(send_ptr, send_count, send_type, dst, tag,
                  recv_ptr + src * recv_count * extent, recv_count, recv_type,
                  src, tag, comm, &status);
   }

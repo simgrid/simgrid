@@ -87,7 +87,7 @@ smpi_coll_tuned_bcast_binomial_tree(void *buff, int count,
       src = rank - mask;
       if (src < 0)
         src += num_procs;
-      smpi_mpi_recv(buff, count, data_type, src, tag, comm, MPI_STATUS_IGNORE);
+      Request::recv(buff, count, data_type, src, tag, comm, MPI_STATUS_IGNORE);
       break;
     }
     mask <<= 1;
@@ -99,7 +99,7 @@ smpi_coll_tuned_bcast_binomial_tree(void *buff, int count,
       dst = rank + mask;
       if (dst >= num_procs)
         dst -= num_procs;
-      smpi_mpi_send(buff, count, data_type, dst, tag, comm);
+      Request::send(buff, count, data_type, dst, tag, comm);
     }
     mask >>= 1;
   }

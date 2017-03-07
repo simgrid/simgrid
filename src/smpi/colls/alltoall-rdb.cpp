@@ -60,7 +60,7 @@ int smpi_coll_tuned_alltoall_rdb(void *send_buff, int send_count,
 
   curr_size = send_count * num_procs;
 
-  smpi_mpi_sendrecv(send_ptr, curr_size, send_type, rank, tag,
+  Request::sendrecv(send_ptr, curr_size, send_type, rank, tag,
                tmp_buff + (rank * recv_increment),
                curr_size, recv_type, rank, tag, comm, &status);
 
@@ -74,7 +74,7 @@ int smpi_coll_tuned_alltoall_rdb(void *send_buff, int send_count,
     recv_offset = dst_tree_root * recv_increment;
 
     if (dst < num_procs) {
-      smpi_mpi_sendrecv(tmp_buff + send_offset, curr_size, send_type, dst, tag,
+      Request::sendrecv(tmp_buff + send_offset, curr_size, send_type, dst, tag,
                    tmp_buff + recv_offset, mask * recv_count * num_procs,
                    recv_type, dst, tag, comm, &status);
 
@@ -116,7 +116,7 @@ int smpi_coll_tuned_alltoall_rdb(void *send_buff, int send_count,
         if ((dst > rank)
             && (rank < tree_root + num_procs_completed)
             && (dst >= tree_root + num_procs_completed)) {
-          smpi_mpi_send(tmp_buff + dst_tree_root * send_increment,
+          Request::send(tmp_buff + dst_tree_root * send_increment,
                    last_recv_count, send_type, dst, tag, comm);
 
         }
@@ -127,7 +127,7 @@ int smpi_coll_tuned_alltoall_rdb(void *send_buff, int send_count,
         else if ((dst < rank)
                  && (dst < tree_root + num_procs_completed)
                  && (rank >= tree_root + num_procs_completed)) {
-          smpi_mpi_recv(tmp_buff + dst_tree_root * send_increment,
+          Request::recv(tmp_buff + dst_tree_root * send_increment,
                    mask * num_procs * send_count, send_type, dst,
                    tag, comm, &status);
 
@@ -145,7 +145,7 @@ int smpi_coll_tuned_alltoall_rdb(void *send_buff, int send_count,
   }
 
   for (i = 0; i < num_procs; i++)
-    smpi_mpi_sendrecv(tmp_buff + (rank + i * num_procs) * send_count * extent,
+    Request::sendrecv(tmp_buff + (rank + i * num_procs) * send_count * extent,
                  send_count, send_type, rank, tag,
                  recv_ptr + (i * recv_count * extent),
                  recv_count, recv_type, rank, tag, comm, &status);

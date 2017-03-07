@@ -51,7 +51,7 @@ static int scatter_for_bcast(
             }
             else
             {
-                smpi_mpi_recv(((char *)tmp_buf +
+                Request::recv(((char *)tmp_buf +
                                           relative_rank*scatter_size),
                                          recv_size, MPI_BYTE, src,
                                          COLL_TAG_BCAST, comm, &status);
@@ -80,7 +80,7 @@ static int scatter_for_bcast(
             {
                 dst = rank + mask;
                 if (dst >= comm_size) dst -= comm_size;
-                smpi_mpi_send(((char *)tmp_buf +
+                Request::send(((char *)tmp_buf +
                                           scatter_size*(relative_rank+mask)),
                                          send_size, MPI_BYTE, dst,
                                          COLL_TAG_BCAST, comm);
@@ -206,7 +206,7 @@ smpi_coll_tuned_bcast_scatter_rdb_allgather (
 
         if (relative_dst < comm_size)
         {
-            smpi_mpi_sendrecv(((char *)tmp_buf + send_offset),
+            Request::sendrecv(((char *)tmp_buf + send_offset),
                                          curr_size, MPI_BYTE, dst, COLL_TAG_BCAST, 
                                          ((char *)tmp_buf + recv_offset),
                                          (nbytes-recv_offset < 0 ? 0 : nbytes-recv_offset), 
@@ -273,7 +273,7 @@ smpi_coll_tuned_bcast_scatter_rdb_allgather (
 
                     /* printf("Rank %d, send to %d, offset %d, size %d\n", rank, dst, offset, recv_size);
                        fflush(stdout); */
-                    smpi_mpi_send(((char *)tmp_buf + offset),
+                    Request::send(((char *)tmp_buf + offset),
                                              recv_size, MPI_BYTE, dst,
                                              COLL_TAG_BCAST, comm);
                     /* recv_size was set in the previous
@@ -288,7 +288,7 @@ smpi_coll_tuned_bcast_scatter_rdb_allgather (
                 {
                     /* printf("Rank %d waiting to recv from rank %d\n",
                        relative_rank, dst); */
-                    smpi_mpi_recv(((char *)tmp_buf + offset),
+                    Request::recv(((char *)tmp_buf + offset),
                                              nbytes - offset, 
                                              MPI_BYTE, dst, COLL_TAG_BCAST,
                                              comm, &status);

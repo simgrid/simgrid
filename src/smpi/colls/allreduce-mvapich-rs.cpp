@@ -79,7 +79,7 @@ int smpi_coll_tuned_allreduce_mvapich2_rs(void *sendbuf,
     if (rank < 2 * rem) {
         if (rank % 2 == 0) {
             /* even */
-            smpi_mpi_send(recvbuf, count, datatype, rank + 1,
+            Request::send(recvbuf, count, datatype, rank + 1,
                                      COLL_TAG_ALLREDUCE, comm);
 
             /* temporarily set the rank to -1 so that this
@@ -88,7 +88,7 @@ int smpi_coll_tuned_allreduce_mvapich2_rs(void *sendbuf,
             newrank = -1;
         } else {
             /* odd */
-            smpi_mpi_recv(tmp_buf, count, datatype, rank - 1,
+            Request::recv(tmp_buf, count, datatype, rank - 1,
                                      COLL_TAG_ALLREDUCE, comm,
                                      MPI_STATUS_IGNORE);
             /* do the reduction on received data. since the
@@ -121,7 +121,7 @@ int smpi_coll_tuned_allreduce_mvapich2_rs(void *sendbuf,
 
                 /* Send the most current data, which is in recvbuf. Recv
                    into tmp_buf */
-                smpi_mpi_sendrecv(recvbuf, count, datatype,
+                Request::sendrecv(recvbuf, count, datatype,
                                              dst, COLL_TAG_ALLREDUCE,
                                              tmp_buf, count, datatype, dst,
                                              COLL_TAG_ALLREDUCE, comm,
@@ -186,7 +186,7 @@ int smpi_coll_tuned_allreduce_mvapich2_rs(void *sendbuf,
                 }
 
                 /* Send data from recvbuf. Recv into tmp_buf */
-                smpi_mpi_sendrecv((char *) recvbuf +
+                Request::sendrecv((char *) recvbuf +
                                              disps[send_idx] * extent,
                                              send_cnt, datatype,
                                              dst, COLL_TAG_ALLREDUCE,
@@ -249,7 +249,7 @@ int smpi_coll_tuned_allreduce_mvapich2_rs(void *sendbuf,
                     }
                 }
 
-               smpi_mpi_sendrecv((char *) recvbuf +
+               Request::sendrecv((char *) recvbuf +
                                              disps[send_idx] * extent,
                                              send_cnt, datatype,
                                              dst, COLL_TAG_ALLREDUCE,
@@ -274,11 +274,11 @@ int smpi_coll_tuned_allreduce_mvapich2_rs(void *sendbuf,
        (rank-1), the ranks who didn't participate above. */
     if (rank < 2 * rem) {
         if (rank % 2) {     /* odd */
-            smpi_mpi_send(recvbuf, count,
+            Request::send(recvbuf, count,
                                      datatype, rank - 1,
                                      COLL_TAG_ALLREDUCE, comm);
         } else {            /* even */
-            smpi_mpi_recv(recvbuf, count,
+            Request::recv(recvbuf, count,
                                   datatype, rank + 1,
                                   COLL_TAG_ALLREDUCE, comm,
                                   MPI_STATUS_IGNORE);

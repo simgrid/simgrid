@@ -79,7 +79,7 @@ int smpi_coll_tuned_allreduce_smp_binomial_pipeline(void *send_buf,
   int inter_comm_size = (comm_size + num_core - 1) / num_core;
 
   /* copy input buffer to output buffer */
-  smpi_mpi_sendrecv(send_buf, count, dtype, rank, tag,
+  Request::sendrecv(send_buf, count, dtype, rank, tag,
                recv_buf, count, dtype, rank, tag, comm, &status);
 
   /* compute pipe length */
@@ -98,13 +98,13 @@ int smpi_coll_tuned_allreduce_smp_binomial_pipeline(void *send_buf,
           src = (inter_rank * num_core) + (intra_rank | mask);
           if (src < comm_size) {
             recv_offset = phase * pcount * extent;
-            smpi_mpi_recv(tmp_buf, pcount, dtype, src, tag, comm, &status);
+            Request::recv(tmp_buf, pcount, dtype, src, tag, comm, &status);
             smpi_op_apply(op, tmp_buf, (char *)recv_buf + recv_offset, &pcount, &dtype);
           }
         } else {
           send_offset = phase * pcount * extent;
           dst = (inter_rank * num_core) + (intra_rank & (~mask));
-          smpi_mpi_send((char *)recv_buf + send_offset, pcount, dtype, dst, tag, comm);
+          Request::send((char *)recv_buf + send_offset, pcount, dtype, dst, tag, comm);
           break;
         }
         mask <<= 1;
@@ -122,13 +122,13 @@ int smpi_coll_tuned_allreduce_smp_binomial_pipeline(void *send_buf,
             src = (inter_rank | mask) * num_core;
             if (src < comm_size) {
               recv_offset = (phase - 1) * pcount * extent;
-              smpi_mpi_recv(tmp_buf, pcount, dtype, src, tag, comm, &status);
+              Request::recv(tmp_buf, pcount, dtype, src, tag, comm, &status);
               smpi_op_apply(op, tmp_buf, (char *)recv_buf + recv_offset, &pcount, &dtype);
             }
           } else {
             dst = (inter_rank & (~mask)) * num_core;
             send_offset = (phase - 1) * pcount * extent;
-            smpi_mpi_send((char *)recv_buf + send_offset, pcount, dtype, dst, tag, comm);
+            Request::send((char *)recv_buf + send_offset, pcount, dtype, dst, tag, comm);
             break;
           }
           mask <<= 1;
@@ -145,7 +145,7 @@ int smpi_coll_tuned_allreduce_smp_binomial_pipeline(void *send_buf,
           if (inter_rank & mask) {
             src = (inter_rank - mask) * num_core;
             recv_offset = (phase - 2) * pcount * extent;
-            smpi_mpi_recv((char *)recv_buf + recv_offset, pcount, dtype, src, tag, comm,
+            Request::recv((char *)recv_buf + recv_offset, pcount, dtype, src, tag, comm,
                      &status);
             break;
           }
@@ -159,7 +159,7 @@ int smpi_coll_tuned_allreduce_smp_binomial_pipeline(void *send_buf,
             if (dst < comm_size) {
               //printf("Node %d send to node %d when mask is %d\n", rank, dst, mask);
               send_offset = (phase - 2) * pcount * extent;
-              smpi_mpi_send((char *)recv_buf + send_offset, pcount, dtype, dst, tag, comm);
+              Request::send((char *)recv_buf + send_offset, pcount, dtype, dst, tag, comm);
             }
           }
           mask >>= 1;
@@ -178,7 +178,7 @@ int smpi_coll_tuned_allreduce_smp_binomial_pipeline(void *send_buf,
         if (intra_rank & mask) {
           src = (inter_rank * num_core) + (intra_rank - mask);
           recv_offset = (phase - 3) * pcount * extent;
-          smpi_mpi_recv((char *)recv_buf + recv_offset, pcount, dtype, src, tag, comm,
+          Request::recv((char *)recv_buf + recv_offset, pcount, dtype, src, tag, comm,
                    &status);
           break;
         }
@@ -190,7 +190,7 @@ int smpi_coll_tuned_allreduce_smp_binomial_pipeline(void *send_buf,
         dst = (inter_rank * num_core) + (intra_rank + mask);
         if (dst < comm_size) {
           send_offset = (phase - 3) * pcount * extent;
-          smpi_mpi_send((char *)recv_buf + send_offset, pcount, dtype, dst, tag, comm);
+          Request::send((char *)recv_buf + send_offset, pcount, dtype, dst, tag, comm);
         }
         mask >>= 1;
       }

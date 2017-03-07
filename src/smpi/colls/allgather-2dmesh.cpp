@@ -150,7 +150,7 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
     if (src == rank)
       continue;
     recv_offset = src * block_size;
-    *(req_ptr++) = smpi_mpi_irecv((char *)recv_buff + recv_offset, recv_count, recv_type, src, tag,
+    *(req_ptr++) = Request::irecv((char *)recv_buff + recv_offset, recv_count, recv_type, src, tag,
                comm);
   }
 
@@ -159,10 +159,10 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
     dst = i + my_row_base;
     if (dst == rank)
       continue;
-    smpi_mpi_send(send_buff, send_count, send_type, dst, tag, comm);
+    Request::send(send_buff, send_count, send_type, dst, tag, comm);
   }
 
-  smpi_mpi_waitall(Y - 1, req, MPI_STATUSES_IGNORE);
+  Request::waitall(Y - 1, req, MPI_STATUSES_IGNORE);
 
   req_ptr = req;
 
@@ -173,7 +173,7 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
       continue;
     src_row_base = (src / Y) * Y;
     recv_offset = src_row_base * block_size;
-    *(req_ptr++) = smpi_mpi_irecv((char *)recv_buff + recv_offset, recv_count * Y, recv_type, src, tag,
+    *(req_ptr++) = Request::irecv((char *)recv_buff + recv_offset, recv_count * Y, recv_type, src, tag,
                comm);
   }
 
@@ -182,11 +182,11 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
     if (dst == rank)
       continue;
     send_offset = my_row_base * block_size;
-    smpi_mpi_send((char *)recv_buff + send_offset, send_count * Y, send_type, dst, tag,
+    Request::send((char *)recv_buff + send_offset, send_count * Y, send_type, dst, tag,
               comm);
   }
 
-  smpi_mpi_waitall(X - 1, req, MPI_STATUSES_IGNORE);
+  Request::waitall(X - 1, req, MPI_STATUSES_IGNORE);
 
   free(req);
 

@@ -391,21 +391,21 @@ Benchmark results on CRAY T3E
 #ifdef USE_Irecv
 #define  MPI_I_Sendrecv(sb,sc,sd,dest,st,rb,rc,rd,source,rt,comm,stat) \
            { MPI_Request req;                                          \
-             req=smpi_mpi_irecv(rb,rc,rd,source,rt,comm);                  \
-             smpi_mpi_send(sb,sc,sd,dest,st,comm);                          \
-             smpi_mpi_wait(&req,stat);                                      \
+             req=Request::irecv(rb,rc,rd,source,rt,comm);                  \
+             Request::send(sb,sc,sd,dest,st,comm);                          \
+             Request::wait(&req,stat);                                      \
            }
 #else
 #ifdef USE_Isend
 #define  MPI_I_Sendrecv(sb,sc,sd,dest,st,rb,rc,rd,source,rt,comm,stat) \
            { MPI_Request req;                                          \
              req=mpi_mpi_isend(sb,sc,sd,dest,st,comm);                    \
-             smpi_mpi_recv(rb,rc,rd,source,rt,comm,stat);                   \
-             smpi_mpi_wait(&req,stat);                                      \
+             Request::recv(rb,rc,rd,source,rt,comm,stat);                   \
+             Request::wait(&req,stat);                                      \
            }
 #else
 #define  MPI_I_Sendrecv(sb,sc,sd,dest,st,rb,rc,rd,source,rt,comm,stat) \
-           smpi_mpi_sendrecv(sb,sc,sd,dest,st,rb,rc,rd,source,rt,comm,stat)
+           Request::sendrecv(sb,sc,sd,dest,st,rb,rc,rd,source,rt,comm,stat)
 #endif
 #endif
 
@@ -634,7 +634,7 @@ static int MPI_I_anyReduce(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype
                        comm, &status);
         MPI_I_do_op(sendbuf, scr2buf, scr1buf,
                     count/2, datatype, op);
-        smpi_mpi_recv(scr1buf + (count/2)*typelng, count - count/2,
+        Request::recv(scr1buf + (count/2)*typelng, count - count/2,
                  mpi_datatype, myrank+1, 1223, comm, &status);
         computed = 1;
 #       ifdef DEBUG
@@ -656,7 +656,7 @@ static int MPI_I_anyReduce(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype
                     sendbuf + (count/2)*typelng,
                     scr1buf + (count/2)*typelng,
                     count - count/2, datatype, op);
-        smpi_mpi_send(scr1buf + (count/2)*typelng, count - count/2,
+        Request::send(scr1buf + (count/2)*typelng, count - count/2,
                  mpi_datatype, myrank-1, 1223, comm);
       }
     }
@@ -812,9 +812,9 @@ static int MPI_I_anyReduce(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype
           printf("[%2d] step 7 begin\n",myrank); fflush(stdout);
 #       endif
         if (myrank%2 == 0 /*even*/)
-          smpi_mpi_send(recvbuf, count, mpi_datatype, myrank+1, 1253, comm);
+          Request::send(recvbuf, count, mpi_datatype, myrank+1, 1253, comm);
         else /*odd*/
-          smpi_mpi_recv(recvbuf, count, mpi_datatype, myrank-1, 1253, comm, &status);
+          Request::recv(recvbuf, count, mpi_datatype, myrank-1, 1253, comm, &status);
       }
 
     }
@@ -831,7 +831,7 @@ static int MPI_I_anyReduce(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype
         if (myrank == 0) /* then mynewrank==0, x_start==0
                                  x_count == count/x_size  */
         {
-          smpi_mpi_send(scr1buf,x_count,mpi_datatype,root,1241,comm);
+          Request::send(scr1buf,x_count,mpi_datatype,root,1241,comm);
           mynewrank = -1;
         }
 
@@ -850,7 +850,7 @@ static int MPI_I_anyReduce(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype
             x_start = start_even[idx];
             x_count = count_even[idx];
           }
-          smpi_mpi_recv(recvbuf,x_count,mpi_datatype,0,1241,comm,&status);
+          Request::recv(recvbuf,x_count,mpi_datatype,0,1241,comm,&status);
         }
         newroot = 0;
       }
@@ -880,7 +880,7 @@ static int MPI_I_anyReduce(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype
             else
             { x_start = start_odd[idx]; x_count = count_odd[idx];
               partner = mynewrank-x_base; }
-            smpi_mpi_send(scr1buf + x_start*typelng, x_count, mpi_datatype,
+            Request::send(scr1buf + x_start*typelng, x_count, mpi_datatype,
                      OLDRANK(partner), 1244, comm);
           }
           else /*odd*/
@@ -891,7 +891,7 @@ static int MPI_I_anyReduce(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype
             else
             { x_start = start_even[idx]; x_count = count_even[idx];
               partner = mynewrank-x_base; }
-            smpi_mpi_recv((myrank==root ? recvbuf : scr1buf)
+            Request::recv((myrank==root ? recvbuf : scr1buf)
                      + x_start*typelng, x_count, mpi_datatype,
                      OLDRANK(partner), 1244, comm, &status);
 #           ifdef DEBUG

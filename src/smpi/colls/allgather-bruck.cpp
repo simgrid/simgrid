@@ -104,7 +104,7 @@ int smpi_coll_tuned_allgather_bruck(void *send_buff, int send_count,
     src = (rank + pof2) % num_procs;
     dst = (rank - pof2 + num_procs) % num_procs;
 
-    smpi_mpi_sendrecv(tmp_buff, count, recv_type, dst, tag,
+    Request::sendrecv(tmp_buff, count, recv_type, dst, tag,
                   tmp_buff + count * recv_extent, count, recv_type,
                   src, tag, comm, &status);
     count *= 2;
@@ -116,18 +116,18 @@ int smpi_coll_tuned_allgather_bruck(void *send_buff, int send_count,
     src = (rank + pof2) % num_procs;
     dst = (rank - pof2 + num_procs) % num_procs;
 
-    smpi_mpi_sendrecv(tmp_buff, remainder * recv_count, recv_type, dst, tag,
+    Request::sendrecv(tmp_buff, remainder * recv_count, recv_type, dst, tag,
                   tmp_buff + count * recv_extent, remainder * recv_count,
                   recv_type, src, tag, comm, &status);
   }
 
-  smpi_mpi_sendrecv(tmp_buff, (num_procs - rank) * recv_count, recv_type, rank,
+  Request::sendrecv(tmp_buff, (num_procs - rank) * recv_count, recv_type, rank,
                 tag, recv_ptr + rank * recv_count * recv_extent,
                 (num_procs - rank) * recv_count, recv_type, rank, tag, comm,
                 &status);
 
   if (rank)
-    smpi_mpi_sendrecv(tmp_buff + (num_procs - rank) * recv_count * recv_extent,
+    Request::sendrecv(tmp_buff + (num_procs - rank) * recv_count * recv_extent,
                   rank * recv_count, recv_type, rank, tag, recv_ptr,
                   rank * recv_count, recv_type, rank, tag, comm, &status);
   smpi_free_tmp_buffer(tmp_buff);

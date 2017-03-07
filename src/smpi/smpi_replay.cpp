@@ -228,7 +228,7 @@ static void action_send(const char *const *action)
   if (!TRACE_smpi_view_internals())
     TRACE_smpi_send(rank, rank, dst_traced, 0, size*smpi_datatype_size(MPI_CURRENT_TYPE));
 
-  smpi_mpi_send(nullptr, size, MPI_CURRENT_TYPE, to , 0, MPI_COMM_WORLD);
+  Request::send(nullptr, size, MPI_CURRENT_TYPE, to , 0, MPI_COMM_WORLD);
 
   log_timed_action (action, clock);
 
@@ -259,10 +259,9 @@ static void action_Isend(const char *const *action)
   if (!TRACE_smpi_view_internals())
     TRACE_smpi_send(rank, rank, dst_traced, 0, size*smpi_datatype_size(MPI_CURRENT_TYPE));
 
-  MPI_Request request = smpi_mpi_isend(nullptr, size, MPI_CURRENT_TYPE, to, 0,MPI_COMM_WORLD);
+  MPI_Request request = Request::isend(nullptr, size, MPI_CURRENT_TYPE, to, 0,MPI_COMM_WORLD);
 
   TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
-  request->send = 1;
 
   get_reqq_self()->push_back(request);
 
@@ -294,11 +293,11 @@ static void action_recv(const char *const *action) {
 
   //unknown size from the receiver point of view
   if(size<=0.0){
-    smpi_mpi_probe(from, 0, MPI_COMM_WORLD, &status);
+    Request::probe(from, 0, MPI_COMM_WORLD, &status);
     size=status.count;
   }
 
-  smpi_mpi_recv(nullptr, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD, &status);
+  Request::recv(nullptr, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD, &status);
 
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
   if (!TRACE_smpi_view_internals()) {
@@ -332,14 +331,13 @@ static void action_Irecv(const char *const *action)
   MPI_Status status;
   //unknow size from the receiver pov
   if(size<=0.0){
-      smpi_mpi_probe(from, 0, MPI_COMM_WORLD, &status);
+      Request::probe(from, 0, MPI_COMM_WORLD, &status);
       size=status.count;
   }
 
-  MPI_Request request = smpi_mpi_irecv(nullptr, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD);
+  MPI_Request request = Request::irecv(nullptr, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD);
 
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
-  request->recv = 1;
   get_reqq_self()->push_back(request);
 
   log_timed_action (action, clock);
@@ -361,7 +359,7 @@ static void action_test(const char *const *action){
     extra->type=TRACING_TEST;
     TRACE_smpi_testing_in(rank, extra);
 
-    int flag = smpi_mpi_test(&request, &status);
+    int flag = Request::test(&request, &status);
 
     XBT_DEBUG("MPI_Test result: %d", flag);
     /* push back request in vector to be caught by a subsequent wait. if the test did succeed, the request is now nullptr.*/
@@ -387,17 +385,17 @@ static void action_wait(const char *const *action){
     return;
   }
 
-  int rank = request->comm != MPI_COMM_NULL ? request->comm->rank() : -1;
+  int rank = request->comm() != MPI_COMM_NULL ? request->comm()->rank() : -1;
 
-  MPI_Group group = request->comm->group();
-  int src_traced = group->rank(request->src);
-  int dst_traced = group->rank(request->dst);
-  int is_wait_for_receive = request->recv;
+  MPI_Group group = request->comm()->group();
+  int src_traced = group->rank(request->src());
+  int dst_traced = group->rank(request->dst());
+  int is_wait_for_receive = (request->flags() & RECV);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_WAIT;
   TRACE_smpi_ptp_in(rank, src_traced, dst_traced, __FUNCTION__, extra);
 
-  smpi_mpi_wait(&request, &status);
+  Request::wait(&request, &status);
 
   TRACE_smpi_ptp_out(rank, src_traced, dst_traced, __FUNCTION__);
   if (is_wait_for_receive)
@@ -422,14 +420,14 @@ static void action_waitall(const char *const *action){
    int recvs_rcv[count_requests];
    unsigned int i=0;
    for (auto req : *(get_reqq_self())){
-     if (req && req->recv){
-       recvs_snd[i]=req->src;
-       recvs_rcv[i]=req->dst;
+     if (req && (req->flags () & RECV)){
+       recvs_snd[i]=req->src();
+       recvs_rcv[i]=req->dst();
      }else
        recvs_snd[i]=-100;
      i++;
    }
-   smpi_mpi_waitall(count_requests, &(*get_reqq_self())[0], status);
+   Request::waitall(count_requests, &(*get_reqq_self())[0], status);
 
    for (i=0; i<count_requests;i++){
      if (recvs_snd[i]!=-100)
@@ -967,7 +965,7 @@ void smpi_replay_run(int *argc, char***argv){
       requests[i] = req;
       i++;
     }
-    smpi_mpi_waitall(count_requests, requests, status);
+    Request::waitall(count_requests, requests, status);
   }
   delete get_reqq_self();
   active_processes--;

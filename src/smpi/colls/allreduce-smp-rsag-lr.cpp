@@ -60,7 +60,7 @@ int smpi_coll_tuned_allreduce_smp_rsag_lr(void *send_buf, void *recv_buf,
   }
 
 
-  smpi_mpi_sendrecv(send_buf, count, dtype, rank, tag,
+  Request::sendrecv(send_buf, count, dtype, rank, tag,
                recv_buf, count, dtype, rank, tag, comm, &status);
 
 
@@ -71,14 +71,14 @@ int smpi_coll_tuned_allreduce_smp_rsag_lr(void *send_buf, void *recv_buf,
       src = (inter_rank * num_core) + (intra_rank | mask);
       //      if (src < ((inter_rank + 1) * num_core)) {
       if (src < comm_size) {
-        smpi_mpi_recv(tmp_buf, count, dtype, src, tag, comm, &status);
+        Request::recv(tmp_buf, count, dtype, src, tag, comm, &status);
         smpi_op_apply(op, tmp_buf, recv_buf, &count, &dtype);
         //printf("Node %d recv from node %d when mask is %d\n", rank, src, mask);
       }
     } else {
 
       dst = (inter_rank * num_core) + (intra_rank & (~mask));
-      smpi_mpi_send(recv_buf, count, dtype, dst, tag, comm);
+      Request::send(recv_buf, count, dtype, dst, tag, comm);
       //printf("Node %d send to node %d when mask is %d\n", rank, dst, mask);
       break;
     }
@@ -125,7 +125,7 @@ int smpi_coll_tuned_allreduce_smp_rsag_lr(void *send_buf, void *recv_buf,
       else
         recv_count = curr_size + curr_remainder;
 
-      smpi_mpi_sendrecv((char *) recv_buf + send_offset, send_count, dtype, to,
+      Request::sendrecv((char *) recv_buf + send_offset, send_count, dtype, to,
                    tag + i, tmp_buf, recv_count, dtype, from, tag + i, comm,
                    &status);
 
@@ -155,7 +155,7 @@ int smpi_coll_tuned_allreduce_smp_rsag_lr(void *send_buf, void *recv_buf,
       else
         recv_count = curr_size + curr_remainder;
 
-      smpi_mpi_sendrecv((char *) recv_buf + send_offset, send_count, dtype, to,
+      Request::sendrecv((char *) recv_buf + send_offset, send_count, dtype, to,
                    tag + i, (char *) recv_buf + recv_offset, recv_count, dtype,
                    from, tag + i, comm, &status);
 
@@ -175,14 +175,14 @@ int smpi_coll_tuned_allreduce_smp_rsag_lr(void *send_buf, void *recv_buf,
      if ((mask & inter_rank) == 0) {
      src = (inter_rank | mask) * num_core;
      if (src < comm_size) {
-     smpi_mpi_recv(tmp_buf, count, dtype, src, tag, comm, &status);
+     Request::recv(tmp_buf, count, dtype, src, tag, comm, &status);
      (* uop) (tmp_buf, recv_buf, &count, &dtype);
      //printf("Node %d recv from node %d when mask is %d\n", rank, src, mask);
      }
      }
      else {
      dst = (inter_rank & (~mask)) * num_core;
-     smpi_mpi_send(recv_buf, count, dtype, dst, tag, comm);
+     Request::send(recv_buf, count, dtype, dst, tag, comm);
      //printf("Node %d send to node %d when mask is %d\n", rank, dst, mask);
      break;
      }
@@ -200,7 +200,7 @@ int smpi_coll_tuned_allreduce_smp_rsag_lr(void *send_buf, void *recv_buf,
 //     if (inter_rank & mask) {
 //     src = (inter_rank - mask) * num_core;
      //printf("Node %d recv from node %d when mask is %d\n", rank, src, mask);
-//     smpi_mpi_recv(recv_buf, count, dtype, src, tag, comm, &status);
+//     Request::recv(recv_buf, count, dtype, src, tag, comm, &status);
 //     break;
 //     }
 //     mask <<= 1;
@@ -214,7 +214,7 @@ int smpi_coll_tuned_allreduce_smp_rsag_lr(void *send_buf, void *recv_buf,
 //     dst = (inter_rank + mask) * num_core;
 //     if (dst < comm_size) {
 //     //printf("Node %d send to node %d when mask is %d\n", rank, dst, mask);
-//     smpi_mpi_send(recv_buf, count, dtype, dst, tag, comm);
+//     Request::send(recv_buf, count, dtype, dst, tag, comm);
 //     }
 //     }
 //     mask >>= 1;
@@ -233,7 +233,7 @@ int smpi_coll_tuned_allreduce_smp_rsag_lr(void *send_buf, void *recv_buf,
     if (intra_rank & mask) {
       src = (inter_rank * num_core) + (intra_rank - mask);
       //printf("Node %d recv from node %d when mask is %d\n", rank, src, mask);
-      smpi_mpi_recv(recv_buf, count, dtype, src, tag, comm, &status);
+      Request::recv(recv_buf, count, dtype, src, tag, comm, &status);
       break;
     }
     mask <<= 1;
@@ -246,7 +246,7 @@ int smpi_coll_tuned_allreduce_smp_rsag_lr(void *send_buf, void *recv_buf,
     dst = (inter_rank * num_core) + (intra_rank + mask);
     if (dst < comm_size) {
       //printf("Node %d send to node %d when mask is %d\n", rank, dst, mask);
-      smpi_mpi_send(recv_buf, count, dtype, dst, tag, comm);
+      Request::send(recv_buf, count, dtype, dst, tag, comm);
     }
     mask >>= 1;
   }

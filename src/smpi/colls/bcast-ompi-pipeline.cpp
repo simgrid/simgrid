@@ -100,13 +100,13 @@ int smpi_coll_tuned_bcast_ompi_pipeline( void* buffer,
                 sendcount = original_count - segindex * count_by_segment;
             }
             for( i = 0; i < tree->tree_nextsize; i++ ) { 
-                send_reqs[i] = smpi_mpi_isend(tmpbuf, sendcount, datatype,
+                send_reqs[i] = Request::isend(tmpbuf, sendcount, datatype,
                                          tree->tree_next[i], 
                                          COLL_TAG_BCAST, comm);
            } 
 
             /* complete the sends before starting the next sends */
-            smpi_mpi_waitall( tree->tree_nextsize, send_reqs, 
+            Request::waitall( tree->tree_nextsize, send_reqs, 
                                          MPI_STATUSES_IGNORE );
 
             /* update tmp buffer */
@@ -129,7 +129,7 @@ int smpi_coll_tuned_bcast_ompi_pipeline( void* buffer,
            5) Send the last segment to children
          */
         req_index = 0;
-        recv_reqs[req_index]=smpi_mpi_irecv(tmpbuf, count_by_segment, datatype,
+        recv_reqs[req_index]=Request::irecv(tmpbuf, count_by_segment, datatype,
                            tree->tree_prev, COLL_TAG_BCAST,
                            comm);
         
@@ -138,23 +138,23 @@ int smpi_coll_tuned_bcast_ompi_pipeline( void* buffer,
             req_index = req_index ^ 0x1;
             
             /* post new irecv */
-            recv_reqs[req_index]= smpi_mpi_irecv( tmpbuf + realsegsize, count_by_segment,
+            recv_reqs[req_index]= Request::irecv( tmpbuf + realsegsize, count_by_segment,
                                 datatype, tree->tree_prev, 
                                 COLL_TAG_BCAST,
                                 comm);
             
             /* wait for and forward the previous segment to children */
-            smpi_mpi_wait( &recv_reqs[req_index ^ 0x1], 
+            Request::wait( &recv_reqs[req_index ^ 0x1], 
                                      MPI_STATUSES_IGNORE );
             
             for( i = 0; i < tree->tree_nextsize; i++ ) { 
-                send_reqs[i]=smpi_mpi_isend(tmpbuf, count_by_segment, datatype,
+                send_reqs[i]=Request::isend(tmpbuf, count_by_segment, datatype,
                                          tree->tree_next[i], 
                                          COLL_TAG_BCAST, comm );
             } 
             
             /* complete the sends before starting the next iteration */
-            smpi_mpi_waitall( tree->tree_nextsize, send_reqs, 
+            Request::waitall( tree->tree_nextsize, send_reqs, 
                                          MPI_STATUSES_IGNORE );
             
             /* Update the receive buffer */
@@ -162,15 +162,15 @@ int smpi_coll_tuned_bcast_ompi_pipeline( void* buffer,
         }
 
         /* Process the last segment */
-        smpi_mpi_wait( &recv_reqs[req_index], MPI_STATUSES_IGNORE );
+        Request::wait( &recv_reqs[req_index], MPI_STATUSES_IGNORE );
         sendcount = original_count - (num_segments - 1) * count_by_segment;
         for( i = 0; i < tree->tree_nextsize; i++ ) {
-            send_reqs[i] = smpi_mpi_isend(tmpbuf, sendcount, datatype,
+            send_reqs[i] = Request::isend(tmpbuf, sendcount, datatype,
                                      tree->tree_next[i], 
                                      COLL_TAG_BCAST, comm);
         }
         
-        smpi_mpi_waitall( tree->tree_nextsize, send_reqs, 
+        Request::waitall( tree->tree_nextsize, send_reqs, 
                                      MPI_STATUSES_IGNORE );
     }
   
@@ -185,7 +185,7 @@ int smpi_coll_tuned_bcast_ompi_pipeline( void* buffer,
            3) wait for the last segment
         */
         req_index = 0;
-        recv_reqs[req_index] = smpi_mpi_irecv(tmpbuf, count_by_segment, datatype,
+        recv_reqs[req_index] = Request::irecv(tmpbuf, count_by_segment, datatype,
                                  tree->tree_prev, COLL_TAG_BCAST,
                                  comm);
 
@@ -193,15 +193,15 @@ int smpi_coll_tuned_bcast_ompi_pipeline( void* buffer,
             req_index = req_index ^ 0x1;
             tmpbuf += realsegsize;
             /* post receive for the next segment */
-            recv_reqs[req_index] = smpi_mpi_irecv(tmpbuf, count_by_segment, datatype, 
+            recv_reqs[req_index] = Request::irecv(tmpbuf, count_by_segment, datatype, 
                                      tree->tree_prev, COLL_TAG_BCAST,
                                      comm);
             /* wait on the previous segment */
-            smpi_mpi_wait( &recv_reqs[req_index ^ 0x1], 
+            Request::wait( &recv_reqs[req_index ^ 0x1], 
                                      MPI_STATUS_IGNORE );
         }
 
-        smpi_mpi_wait( &recv_reqs[req_index], MPI_STATUS_IGNORE );
+        Request::wait( &recv_reqs[req_index], MPI_STATUS_IGNORE );
     }
 
     if( NULL != send_reqs ) free(send_reqs);
