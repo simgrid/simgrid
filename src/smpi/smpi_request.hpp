@@ -39,12 +39,14 @@ class Request {
     int refcount_;
     MPI_Op op_;
   public:
+    Request();
     Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags);
     MPI_Comm comm();
     int src();
     int dst();
     int tag();
     int flags();
+    int detached();
     void print_request(const char *message);
     void start();
 

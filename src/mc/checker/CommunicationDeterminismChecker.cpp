@@ -202,10 +202,10 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
     pattern->src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(synchro->src_proc))->pid;
     pattern->src_host = MC_smx_actor_get_host_name(issuer);
 
-    struct s_smpi_mpi_request mpi_request =
-      mc_model_checker->process().read<s_smpi_mpi_request>(
+    simgrid::smpi::Request mpi_request =
+      mc_model_checker->process().read<simgrid::smpi::Request>(
         (std::uint64_t) simcall_comm_isend__get__data(request));
-    pattern->tag = mpi_request.tag;
+    pattern->tag = mpi_request.tag();
 
     if (synchro->src_buff != nullptr){
       pattern->data.resize(synchro->src_buff_size);
@@ -213,7 +213,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
         pattern->data.data(), pattern->data.size(),
         remote(synchro->src_buff));
     }
-    if(mpi_request.detached){
+    if(mpi_request.detached()){
       if (!this->initial_communications_pattern_done) {
         /* Store comm pattern */
         simgrid::mc::PatternCommunicationList* list = xbt_dynar_get_as(
@@ -233,10 +233,10 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
     pattern->type = simgrid::mc::PatternCommunicationType::receive;
     pattern->comm_addr = simcall_comm_irecv__get__result(request);
 
-    struct s_smpi_mpi_request mpi_request;
+    simgrid::smpi::Request mpi_request;
     mc_model_checker->process().read(
-      &mpi_request, remote((struct s_smpi_mpi_request*)simcall_comm_irecv__get__data(request)));
-    pattern->tag = mpi_request.tag;
+      &mpi_request, remote((simgrid::smpi::Request*)simcall_comm_irecv__get__data(request)));
+    pattern->tag = mpi_request.tag();
 
     simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_comm;
     mc_model_checker->process().read(temp_comm, remote(

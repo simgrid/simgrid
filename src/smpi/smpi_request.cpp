@@ -109,7 +109,7 @@ static double smpi_or(size_t size)
 
 namespace simgrid{
 namespace smpi{
-
+Request::Request(){}
 Request::Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags) : src_(src), dst_(dst), tag_(tag), comm_(comm), flags_(flags)
 {
   void *old_buf = nullptr;
@@ -170,6 +170,11 @@ int Request::tag(){
 int Request::flags(){
   return flags_;
 }
+
+int Request::detached(){
+  return detached_;
+}
+
 
 void Request::unuse(MPI_Request* request)
 {
