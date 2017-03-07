@@ -14,10 +14,10 @@ namespace smpi{
 
 class Group {
   private:
-    int _size;
-    int *_rank_to_index_map;
-    xbt_dict_t _index_to_rank_map;
-    int _refcount;
+    int size_;
+    int *rank_to_index_map_;
+    xbt_dict_t index_to_rank_map_;
+    int refcount_;
   public:
 
     Group();
