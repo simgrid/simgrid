@@ -40,6 +40,7 @@ protected:
 
   explicit NetZone(NetZone * father, const char* name);
   virtual ~NetZone();
+  std::vector<Host*>* hosts_ = nullptr;
 
 public:
   /** @brief Seal your netzone once you're done adding content, and before routing stuff through it */
@@ -48,7 +49,7 @@ public:
   NetZone* father();
 
   xbt_dict_t children(); // Sub netzones
-  std::vector<Host*> hosts(); // my content as a vector of hosts
+  std::vector<Host*>* hosts(); // my content as a vector of hosts
 
   /** Get the properties assigned to a host */
   std::unordered_map<std::string, std::string>* properties();

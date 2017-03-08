@@ -82,7 +82,7 @@ xbt_dynar_t MSG_environment_as_get_hosts(msg_netzone_t netzone)
 {
   xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t), nullptr);
 
-  for (auto host : netzone->hosts()) {
+  for (auto host : *netzone->hosts()) {
     xbt_dynar_push(res, &host);
   }
 

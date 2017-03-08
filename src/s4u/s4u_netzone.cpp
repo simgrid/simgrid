@@ -23,7 +23,13 @@ simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kern
 
 NetZone::NetZone(NetZone* father, const char* name) : father_(father), name_(xbt_strdup(name))
 {
+  for (auto card : vertices_) {
+    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->name());
+    if (host != nullptr)
+      hosts_->push_back(host);
+  }
 }
+
 void NetZone::seal()
 {
   sealed_ = true;
@@ -72,16 +78,9 @@ NetZone* NetZone::father()
   return father_;
 }
 
-std::vector<s4u::Host*> NetZone::hosts()
+std::vector<s4u::Host*>* NetZone::hosts()
 {
-  std::vector<s4u::Host*> res;
-
-  for (auto card : vertices_) {
-    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->name());
-    if (host != nullptr)
-      res.push_back(host);
-  }
-  return res;
+  return hosts_;
 }
 
 int NetZone::addComponent(kernel::routing::NetPoint* elm)
