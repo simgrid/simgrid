@@ -69,8 +69,8 @@ void smpi_deployment_register_process(const char* instance_id, int rank, int ind
   xbt_assert(instance, "Error, unknown instance %s", instance_id);
 
   if(instance->comm_world == MPI_COMM_NULL){
-    MPI_Group group = new simgrid::smpi::Group(instance->size);
-    instance->comm_world = new simgrid::smpi::Comm(group, nullptr);
+    MPI_Group group = new  Group(instance->size);
+    instance->comm_world = new  Comm(group, nullptr);
   }
   instance->present_processes++;
   index_to_process_data[index]=instance->index+rank;

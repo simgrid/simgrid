@@ -24,7 +24,7 @@ xbt_dict_t smpi_comm_keyvals = nullptr;
 int comm_keyval_id = 0;//avoid collisions
 
 
-simgrid::smpi::Comm mpi_MPI_COMM_UNINITIALIZED;
+ Comm mpi_MPI_COMM_UNINITIALIZED;
 MPI_Comm MPI_COMM_UNINITIALIZED=&mpi_MPI_COMM_UNINITIALIZED;
 
 /* Support for cartesian topology was added, but there are 2 other types of topology, graph et dist graph. In order to
@@ -82,8 +82,8 @@ int Comm::dup(MPI_Comm* newcomm){
   if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
      smpi_switch_data_segment(smpi_process_index());
    }
-  MPI_Group cp = new simgrid::smpi::Group(this->group());
-  (*newcomm) = new simgrid::smpi::Comm(cp, this->topo());
+  MPI_Group cp = new  Group(this->group());
+  (*newcomm) = new  Comm(cp, this->topo());
   int ret = MPI_SUCCESS;
 
   if(attributes_ !=nullptr){
@@ -243,7 +243,7 @@ MPI_Comm Comm::split(int color, int key)
         rankmap[2 * count + 1] = recvbuf[2 * i + 1];
         count++;
         qsort(rankmap, count, 2 * sizeof(int), &smpi_compare_rankmap);
-        group_out = new simgrid::smpi::Group(count);
+        group_out = new  Group(count);
         if (i == 0) {
           group_root = group_out; /* Save root's group */
         }
@@ -255,7 +255,7 @@ MPI_Comm Comm::split(int color, int key)
         int reqs              = 0;
         for (int j = 0; j < count; j++) {
           if(rankmap[2 * j] != 0) {
-            group_snd[reqs]=new simgrid::smpi::Group(group_out);
+            group_snd[reqs]=new  Group(group_out);
             requests[reqs] = Request::isend(&(group_snd[reqs]), 1, MPI_PTR, rankmap[2 * j], system_tag, this);
             reqs++;
           }
@@ -276,7 +276,7 @@ MPI_Comm Comm::split(int color, int key)
       Request::recv(&group_out, 1, MPI_PTR, 0, system_tag, this, MPI_STATUS_IGNORE);
     } /* otherwise, exit with group_out == nullptr */
   }
-  return group_out!=nullptr ? new simgrid::smpi::Comm(group_out, nullptr) : MPI_COMM_NULL;
+  return group_out!=nullptr ? new  Comm(group_out, nullptr) : MPI_COMM_NULL;
 }
 
 void Comm::use(){
@@ -375,7 +375,7 @@ void Comm::init_smp(){
     }
   }
   XBT_DEBUG("number of processes deployed on my node : %d", intra_comm_size);
-  MPI_Group group_intra = new simgrid::smpi::Group(intra_comm_size);
+  MPI_Group group_intra = new  Group(intra_comm_size);
   i=0;
   process = nullptr;
   xbt_swag_foreach(process, process_list) {
@@ -386,7 +386,7 @@ void Comm::init_smp(){
     }
   }
 
-  MPI_Comm comm_intra = new simgrid::smpi::Comm(group_intra, nullptr);
+  MPI_Comm comm_intra = new  Comm(group_intra, nullptr);
   leader=min_index;
 
   int * leaders_map= static_cast<int*>(xbt_malloc0(sizeof(int)*comm_size));
@@ -422,14 +422,14 @@ void Comm::init_smp(){
   }
   qsort(leader_list, leader_group_size, sizeof(int),compare_ints);
 
-  MPI_Group leaders_group = new simgrid::smpi::Group(leader_group_size);
+  MPI_Group leaders_group = new  Group(leader_group_size);
 
   MPI_Comm leader_comm = MPI_COMM_NULL;
   if(MPI_COMM_WORLD!=MPI_COMM_UNINITIALIZED && this!=MPI_COMM_WORLD){
     //create leader_communicator
     for (i=0; i< leader_group_size;i++)
       leaders_group->set_mapping(leader_list[i], i);
-    leader_comm = new simgrid::smpi::Comm(leaders_group, nullptr);
+    leader_comm = new  Comm(leaders_group, nullptr);
     this->set_leaders_comm(leader_comm);
     this->set_intra_comm(comm_intra);
 
@@ -439,7 +439,7 @@ void Comm::init_smp(){
       leaders_group->set_mapping(leader_list[i], i);
 
     if(this->get_leaders_comm()==MPI_COMM_NULL){
-      leader_comm = new simgrid::smpi::Comm(leaders_group, nullptr);
+      leader_comm = new  Comm(leaders_group, nullptr);
       this->set_leaders_comm(leader_comm);
     }else{
       leader_comm=this->get_leaders_comm();

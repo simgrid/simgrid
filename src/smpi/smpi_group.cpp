@@ -7,7 +7,7 @@
 #include "private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_group, smpi, "Logging specific to SMPI (group)");
-simgrid::smpi::Group mpi_MPI_GROUP_EMPTY;
+ Group mpi_MPI_GROUP_EMPTY;
 MPI_Group MPI_GROUP_EMPTY=&mpi_MPI_GROUP_EMPTY;
 
 namespace simgrid{
@@ -197,7 +197,7 @@ int Group::group_union(MPI_Group group2, MPI_Group* newgroup)
   if (size1 == 0) {
     *newgroup = MPI_GROUP_EMPTY;
   } else {
-    *newgroup = new simgrid::smpi::Group(size1);
+    *newgroup = new  Group(size1);
     size2 = this->size();
     for (int i = 0; i < size2; i++) {
       int proc1 = this->index(i);
@@ -224,7 +224,7 @@ int Group::intersection(MPI_Group group2, MPI_Group* newgroup)
   if (size2 == 0) {
     *newgroup = MPI_GROUP_EMPTY;
   } else {
-    *newgroup = new simgrid::smpi::Group(size2);
+    *newgroup = new  Group(size2);
     int j=0;
     for (int i = 0; i < group2->size(); i++) {
       int proc2 = group2->index(i);
@@ -252,7 +252,7 @@ int Group::difference(MPI_Group group2, MPI_Group* newgroup)
   if (newsize == 0) {
     *newgroup = MPI_GROUP_EMPTY;
   } else {
-    *newgroup = new simgrid::smpi::Group(newsize);
+    *newgroup = new  Group(newsize);
     for (int i = 0; i < size2; i++) {
       int proc1 = this->index(i);
       int proc2 = group2->rank(proc1);
@@ -267,7 +267,7 @@ int Group::difference(MPI_Group group2, MPI_Group* newgroup)
 int Group::excl(int n, int *ranks, MPI_Group * newgroup){
   int oldsize = size_;
   int newsize = oldsize - n;
-  *newgroup = new simgrid::smpi::Group(newsize);
+  *newgroup = new  Group(newsize);
   int* to_exclude=xbt_new0(int, size_);
   for (int i     = 0; i < oldsize; i++)
     to_exclude[i]=0;
@@ -306,7 +306,7 @@ int Group::range_incl(int n, int ranges[][3], MPI_Group * newgroup){
       }
     }
   }
-  *newgroup = new simgrid::smpi::Group(newsize);
+  *newgroup = new  Group(newsize);
   int j     = 0;
   for (int i = 0; i < n; i++) {
     for (int rank = ranges[i][0];                    /* First */
@@ -354,7 +354,7 @@ int Group::range_excl(int n, int ranges[][3], MPI_Group * newgroup){
   if (newsize == 0) {
     *newgroup = MPI_GROUP_EMPTY;
   } else {
-    *newgroup = new simgrid::smpi::Group(newsize);
+    *newgroup = new  Group(newsize);
     int newrank = 0;
     int oldrank = 0;
     while (newrank < newsize) {
