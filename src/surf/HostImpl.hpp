@@ -73,7 +73,7 @@ public:
   virtual xbt_dict_t getMountedStorageList();
 
   /** @brief Get the xbt_dynar_t of storages attached to the Host */
-  virtual xbt_dynar_t getAttachedStorageList();
+  virtual std::vector<const char*> getAttachedStorageList();
 
   /**
    * @brief Open a file

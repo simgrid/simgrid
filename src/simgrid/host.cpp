@@ -121,9 +121,11 @@ xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host){
 }
 
 xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t host){
-  return host->pimpl_->getAttachedStorageList();
+  xbt_dynar_t storage_dynar = xbt_dynar_new(sizeof(const char*), nullptr);
+  for (auto name : host->attachedStorages())
+    xbt_dynar_push(storage_dynar, &name);
+  return storage_dynar;
 }
-
 
 // =========== user-level functions ===============
 // ================================================

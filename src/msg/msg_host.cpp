@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u/host.hpp"
+#include "simgrid/s4u/storage.hpp"
 #include "src/msg/msg_private.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
@@ -255,8 +256,7 @@ xbt_dict_t MSG_host_get_mounted_storage_list(msg_host_t host)
  */
 xbt_dynar_t MSG_host_get_attached_storage_list(msg_host_t host)
 {
-  xbt_assert((host != nullptr), "Invalid parameters");
-  return host->attachedStorages();
+  return sg_host_get_attached_storage_list(host);
 }
 
 /** \ingroup m_host_management
