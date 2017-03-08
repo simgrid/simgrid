@@ -19,7 +19,7 @@ class Topo {
 };
 
 
-class Cart: public Topo {
+class Topo_Cart: public Topo {
   private:
     int nnodes_;
     int ndims_;
@@ -27,10 +27,10 @@ class Cart: public Topo {
     int *periodic_;
     int *position_;
   public:
-    Cart(int ndims);
-    ~Cart();
-    Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], int reorder, MPI_Comm *comm_cart);
-    Cart* sub(const int remain_dims[], MPI_Comm *newcomm) ;
+    Topo_Cart(int ndims);
+    ~Topo_Cart();
+    Topo_Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], int reorder, MPI_Comm *comm_cart);
+    Topo_Cart* sub(const int remain_dims[], MPI_Comm *newcomm) ;
     int coords(int rank, int maxdims, int coords[]) ;
     int get(int maxdims, int* dims, int* periods, int* coords);
     int rank(int* coords, int* rank);
@@ -39,18 +39,18 @@ class Cart: public Topo {
 };
 
 
-class Graph: public Topo {
+class Topo_Graph: public Topo {
   private:
     int nnodes_;
     int nedges_;
     int *index_;
     int *edges_;
   public:
-    Graph();
-    ~Graph();
+    Topo_Graph();
+    ~Topo_Graph();
 };
 
-class Dist_Graph: public Topo {
+class Topo_Dist_Graph: public Topo {
   private:
     int indegree_;
     int *in_;
@@ -60,8 +60,8 @@ class Dist_Graph: public Topo {
     int *out_weights_;
     int is_weighted_;
   public:
-    Dist_Graph();
-    ~Dist_Graph();
+    Topo_Dist_Graph();
+    ~Topo_Dist_Graph();
 };
 
 /*

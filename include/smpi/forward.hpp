@@ -18,11 +18,11 @@ class Group;
 class Op;
 class Request;
 class Topo;
+class Topo_Cart;
+class Topo_Graph;
+class Topo_Dist_Graph;
 class Win;
-//TODO : rename these
-class Cart;
-class Graph;
-class Dist_Graph;
+
 
 
 }
@@ -33,10 +33,10 @@ typedef simgrid::smpi::Group SMPI_Group;
 typedef simgrid::smpi::Op SMPI_Op;
 typedef simgrid::smpi::Request SMPI_Request;
 typedef simgrid::smpi::Topo SMPI_Topology;
+typedef simgrid::smpi::Topo_Cart SMPI_Cart_topology;
+typedef simgrid::smpi::Topo_Dist_Graph SMPI_Dist_Graph_topology;
+typedef simgrid::smpi::Topo_Graph SMPI_Graph_topology;
 typedef simgrid::smpi::Win SMPI_Win;
-typedef simgrid::smpi::Graph SMPI_Graph_topology;
-typedef simgrid::smpi::Cart SMPI_Cart_topology;
-typedef simgrid::smpi::Dist_Graph SMPI_Dist_Graph_topology;
 
 #else
 

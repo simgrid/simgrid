@@ -19,13 +19,13 @@ namespace simgrid{
 namespace smpi{
 
 
-Graph::~Graph() 
+Topo_Graph::~Topo_Graph() 
 {
   delete[] index_;
   delete[] edges_;
 }
 
-Dist_Graph::~Dist_Graph() 
+Topo_Dist_Graph::~Topo_Dist_Graph() 
 {
   delete[] in_;
   delete[] in_weights_;
@@ -36,14 +36,14 @@ Dist_Graph::~Dist_Graph()
 /*******************************************************************************
  * Cartesian topologies
  ******************************************************************************/
-Cart::~Cart() 
+Topo_Cart::~Topo_Cart() 
 {
   delete[] dims_;
   delete[] periodic_;
   delete[] position_;
 }
 
-Cart::Cart(int ndims)
+Topo_Cart::Topo_Cart(int ndims)
 {
   nnodes_ = 0;
   ndims_ = ndims;
@@ -54,7 +54,7 @@ Cart::Cart(int ndims)
 
 /* reorder is ignored, don't know what would be the consequences of a dumb reordering but neither do I see the point of
  * reordering*/
-Cart::Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], int reorder, MPI_Comm *comm_cart) : Cart(ndims) {
+Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], int reorder, MPI_Comm *comm_cart) : Topo_Cart(ndims) {
   MPI_Group newGroup;
   MPI_Group oldGroup;
   int nranks;
@@ -100,7 +100,7 @@ Cart::Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], int reorder,
   comm_=*comm_cart;
 }
 
-Cart* Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
+Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
   int oldNDims = ndims_;
   int j = 0;
   int *newDims = nullptr;
@@ -128,10 +128,10 @@ Cart* Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
       }
     }
   }
-  return new Cart(comm_, newNDims, newDims, newPeriodic, 0, newcomm);
+  return new Topo_Cart(comm_, newNDims, newDims, newPeriodic, 0, newcomm);
 }
 
-int Cart::coords(int rank, int maxdims, int coords[]) {
+int Topo_Cart::coords(int rank, int maxdims, int coords[]) {
   int nnodes = nnodes_;
   for (int i = 0; i< ndims_; i++ ) {
     nnodes    = nnodes /dims_[i];
@@ -141,7 +141,7 @@ int Cart::coords(int rank, int maxdims, int coords[]) {
   return MPI_SUCCESS;
 }
 
-int Cart::get(int maxdims, int* dims, int* periods, int* coords) {
+int Topo_Cart::get(int maxdims, int* dims, int* periods, int* coords) {
   int ndims=ndims_ < maxdims ?ndims_ : maxdims;
   for(int i = 0 ; i < ndims ; i++) {
     dims[i] =dims_[i];
@@ -151,7 +151,7 @@ int Cart::get(int maxdims, int* dims, int* periods, int* coords) {
   return MPI_SUCCESS;
 }
 
-int Cart::rank(int* coords, int* rank) {
+int Topo_Cart::rank(int* coords, int* rank) {
   int ndims =ndims_;
   int coord;
   *rank = 0;
@@ -188,7 +188,7 @@ int Cart::rank(int* coords, int* rank) {
   return MPI_SUCCESS;
 }
 
-int Cart::shift(int direction, int disp, int *rank_source, int *rank_dest) {
+int Topo_Cart::shift(int direction, int disp, int *rank_source, int *rank_dest) {
 
   int position[ndims_];
 
@@ -229,7 +229,7 @@ int Cart::shift(int direction, int disp, int *rank_source, int *rank_dest) {
   return MPI_SUCCESS;
 }
 
-int Cart::dim_get(int *ndims) {
+int Topo_Cart::dim_get(int *ndims) {
   *ndims =ndims_;
   return MPI_SUCCESS;
 }
