@@ -117,7 +117,6 @@ public:
   /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
   kernel::routing::NetPoint* pimpl_netpoint = nullptr;
 
-public:
   /*** Called on each newly created object */
   static simgrid::xbt::signal<void(Host&)> onCreation;
   /*** Called just before destructing an object */

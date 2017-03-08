@@ -108,7 +108,6 @@ public:
     not_in_the_system /**< Not in the system anymore. Why did you ask ? */
   };
 
-public:
   /**
    * @brief Action constructor
    *

@@ -66,7 +66,6 @@ public:
   explicit HostImpl(s4u::Host* host);
   virtual ~HostImpl();
 
-public:
   /** @brief Return the storage of corresponding mount point */
   virtual simgrid::surf::Storage* findStorageOnMountList(const char* storage);
 
@@ -174,7 +173,6 @@ public:
    */
   virtual int fileMove(surf_file_t fd, const char* fullpath);
 
-public:
   xbt_dynar_t storage_        = nullptr;
   simgrid::s4u::Host* piface_ = nullptr;
 

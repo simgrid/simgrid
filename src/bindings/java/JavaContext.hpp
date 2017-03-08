@@ -35,7 +35,7 @@ public:
   xbt_os_sem_t begin = nullptr;
   // Semaphore used to schedule/unschedule the process:
   xbt_os_sem_t end = nullptr;
-public:
+
   friend class JavaContextFactory;
   JavaContext(std::function<void()> code,
           void_pfn_smxprocess_t cleanup_func,

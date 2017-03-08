@@ -26,7 +26,6 @@ XBT_PUBLIC_CLASS Link
 {
   friend simgrid::surf::LinkImpl;
 
-private:
   // Links are created from the NetZone, and destroyed by their private implementation when the simulation ends
   explicit Link(surf::LinkImpl* pimpl) : pimpl_(pimpl) {}
   virtual ~Link() = default;

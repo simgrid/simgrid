@@ -83,7 +83,7 @@ namespace context {
     smx_actor_t process_ = nullptr;
   public:
     bool iwannadie;
-  public:
+
     Context(std::function<void()> code,
             void_pfn_smxprocess_t cleanup_func,
             smx_actor_t process);

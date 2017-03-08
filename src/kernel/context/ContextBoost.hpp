@@ -33,7 +33,7 @@ protected: // static
   static xbt_os_thread_key_t worker_id_key_;
   static unsigned long process_index_;
   static BoostContext* maestro_context_;
-protected:
+
 #if HAVE_BOOST_CONTEXTS == 1
   boost::context::fcontext_t* fc_ = nullptr;
 #else

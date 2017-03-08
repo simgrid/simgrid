@@ -45,7 +45,7 @@ public:
           void_pfn_smxprocess_t cleanup_func,
           smx_actor_t process);
   ~RawContext() override;
-public:
+
   static void wrapper(void* arg);
   void stop() override;
   void suspend() override;

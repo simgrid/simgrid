@@ -22,7 +22,6 @@ namespace s4u {
 XBT_PUBLIC_CLASS Storage {
   friend s4u::Engine;
 
-private:
   Storage(std::string name, smx_storage_t inferior);
   virtual ~Storage();
 
