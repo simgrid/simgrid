@@ -113,16 +113,16 @@ Request::Request(){}
 Request::Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags) : buf_(buf), old_type_(datatype), src_(src), dst_(dst), tag_(tag), comm_(comm), flags_(flags) 
 {
   void *old_buf = nullptr;
-  s_smpi_subtype_t *subtype = static_cast<s_smpi_subtype_t*>(datatype->substruct);
+//  s_smpi_subtype_t *subtype = static_cast<s_smpi_subtype_t*>(datatype->substruct);
 
-  if((((flags & RECV) != 0) && ((flags & ACCUMULATE) !=0)) || (datatype->sizeof_substruct != 0)){
-    // This part handles the problem of non-contiguous memory
-    old_buf = buf;
-    buf_ = count==0 ? nullptr : xbt_malloc(count*smpi_datatype_size(datatype));
-    if ((datatype->sizeof_substruct != 0) && ((flags & SEND) != 0)) {
-      subtype->serialize(old_buf, buf_, count, datatype->substruct);
-    }
-  }
+//  if((((flags & RECV) != 0) && ((flags & ACCUMULATE) !=0)) || (datatype->sizeof_substruct != 0)){
+//    // This part handles the problem of non-contiguous memory
+//    old_buf = buf;
+//    buf_ = count==0 ? nullptr : xbt_malloc(count*smpi_datatype_size(datatype));
+//    if ((datatype->sizeof_substruct != 0) && ((flags & SEND) != 0)) {
+//      subtype->serialize(old_buf, buf_, count, datatype->substruct);
+//    }
+//  }
   // This part handles the problem of non-contiguous memory (for the unserialisation at the reception)
   old_buf_  = old_buf;
   size_ = smpi_datatype_size(datatype) * count;
@@ -482,24 +482,24 @@ void Request::start()
     void* buf = buf_;
     if ((flags_ & SSEND) == 0 && ( (flags_ & RMA) != 0
         || static_cast<int>(size_) < xbt_cfg_get_int("smpi/send-is-detached-thresh") ) ) {
-      void *oldbuf = nullptr;
+//      void *oldbuf = nullptr;
       detached_ = 1;
       XBT_DEBUG("Send request %p is detached", this);
       refcount_++;
-      if(old_type_->sizeof_substruct == 0){
-        oldbuf = buf_;
-        if (!smpi_process_get_replaying() && oldbuf != nullptr && size_!=0){
-          if((smpi_privatize_global_variables != 0)
-            && (static_cast<char*>(buf_) >= smpi_start_data_exe)
-            && (static_cast<char*>(buf_) < smpi_start_data_exe + smpi_size_data_exe )){
-            XBT_DEBUG("Privatization : We are sending from a zone inside global memory. Switch data segment ");
-            smpi_switch_data_segment(src_);
-          }
-          buf = xbt_malloc(size_);
-          memcpy(buf,oldbuf,size_);
-          XBT_DEBUG("buf %p copied into %p",oldbuf,buf);
-        }
-      }
+//      if(old_type_->sizeof_substruct == 0){
+//        oldbuf = buf_;
+//        if (!smpi_process_get_replaying() && oldbuf != nullptr && size_!=0){
+//          if((smpi_privatize_global_variables != 0)
+//            && (static_cast<char*>(buf_) >= smpi_start_data_exe)
+//            && (static_cast<char*>(buf_) < smpi_start_data_exe + smpi_size_data_exe )){
+//            XBT_DEBUG("Privatization : We are sending from a zone inside global memory. Switch data segment ");
+//            smpi_switch_data_segment(src_);
+//          }
+//          buf = xbt_malloc(size_);
+//          memcpy(buf,oldbuf,size_);
+//          XBT_DEBUG("buf %p copied into %p",oldbuf,buf);
+//        }
+//      }
     }
 
     //if we are giving back the control to the user without waiting for completion, we have to inject timings
@@ -792,7 +792,7 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
     req->print_request("Finishing");
     MPI_Datatype datatype = req->old_type_;
 
-    if(((req->flags_ & ACCUMULATE) != 0) || (datatype->sizeof_substruct != 0)){
+    if(((req->flags_ & ACCUMULATE) != 0)/* || (datatype->sizeof_substruct != 0)*/){
       if (!smpi_process_get_replaying()){
         if( smpi_privatize_global_variables != 0 && (static_cast<char*>(req->old_buf_) >= smpi_start_data_exe)
             && ((char*)req->old_buf_ < smpi_start_data_exe + smpi_size_data_exe )){
@@ -801,16 +801,17 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
         }
       }
 
-      if(datatype->sizeof_substruct != 0){
-        // This part handles the problem of non-contignous memory the unserialization at the reception
-        s_smpi_subtype_t *subtype = static_cast<s_smpi_subtype_t*>(datatype->substruct);
-        if(req->flags_ & RECV)
-          subtype->unserialize(req->buf_, req->old_buf_, req->real_size_/smpi_datatype_size(datatype) ,
-                               datatype->substruct, req->op_);
-        xbt_free(req->buf_);
-      }else if(req->flags_ & RECV){//apply op on contiguous buffer for accumulate
+//      if(datatype->sizeof_substruct != 0){
+//        // This part handles the problem of non-contignous memory the unserialization at the reception
+//        s_smpi_subtype_t *subtype = static_cast<s_smpi_subtype_t*>(datatype->substruct);
+//        if(req->flags_ & RECV)
+//          subtype->unserialize(req->buf_, req->old_buf_, req->real_size_/smpi_datatype_size(datatype) ,
+//                               datatype->substruct, req->op_);
+//        xbt_free(req->buf_);
+//      }else 
+    if(req->flags_ & RECV){//apply op on contiguous buffer for accumulate
           int n =req->real_size_/smpi_datatype_size(datatype);
-          req->op_->apply(req->buf_, req->old_buf_, &n, &datatype);
+          req->op_->apply(req->buf_, req->old_buf_, &n, datatype);
           xbt_free(req->buf_);
       }
     }

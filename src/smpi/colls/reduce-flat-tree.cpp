@@ -56,7 +56,7 @@ smpi_coll_tuned_reduce_flat_tree(void *sbuf, void *rbuf, int count,
     }
 
     /* Call reduction function. */
-    if(op!=MPI_OP_NULL) op->apply( inbuf, rbuf, &count, &dtype);
+    if(op!=MPI_OP_NULL) op->apply( inbuf, rbuf, &count, dtype);
 
   }
 

@@ -14,6 +14,7 @@ namespace simgrid {
 namespace smpi {
 
 class Comm;
+class Datatype;
 class Group;
 class Op;
 class Request;
@@ -29,6 +30,7 @@ class Win;
 }
 
 typedef simgrid::smpi::Comm SMPI_Comm;
+typedef simgrid::smpi::Datatype SMPI_Datatype;
 typedef simgrid::smpi::Group SMPI_Group;
 typedef simgrid::smpi::Op SMPI_Op;
 typedef simgrid::smpi::Request SMPI_Request;
@@ -41,6 +43,7 @@ typedef simgrid::smpi::Win SMPI_Win;
 #else
 
 typedef struct SMPI_Comm SMPI_Comm;
+typedef struct SMPI_Datatype SMPI_Datatype;
 typedef struct SMPI_Group SMPI_Group;
 typedef struct SMPI_Op SMPI_Op;
 typedef struct SMPI_Request SMPI_Request;

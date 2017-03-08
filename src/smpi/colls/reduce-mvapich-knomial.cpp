@@ -195,7 +195,7 @@ int smpi_coll_tuned_reduce_mvapich2_knomial (
             recv_iter++;
 
             if (is_commutative) {
-              if(op!=MPI_OP_NULL) op->apply( tmp_buf[index], recvbuf, &count, &datatype);
+              if(op!=MPI_OP_NULL) op->apply( tmp_buf[index], recvbuf, &count, datatype);
             }
         }
 

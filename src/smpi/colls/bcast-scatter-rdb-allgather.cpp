@@ -122,7 +122,7 @@ smpi_coll_tuned_bcast_scatter_rdb_allgather (
     if (comm_size == 1) goto fn_exit;
 
     //if (HANDLE_GET_KIND(datatype) == HANDLE_KIND_BUILTIN)
-    if(datatype->flags & DT_FLAG_CONTIGUOUS)
+    if(datatype->flags() & DT_FLAG_CONTIGUOUS)
         is_contig = 1;
     else {
         is_contig = 0;

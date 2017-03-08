@@ -132,7 +132,7 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
                                     comm, MPI_STATUS_IGNORE);
          
             /* integrate their results into our temp results */
-            if(op!=MPI_OP_NULL) op->apply( recv_buf, result_buf, &count, &dtype);
+            if(op!=MPI_OP_NULL) op->apply( recv_buf, result_buf, &count, dtype);
          
             /* adjust rank to be the bottom "remain" ranks */
             tmp_rank = rank / 2;
@@ -246,7 +246,7 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
                 if(op!=MPI_OP_NULL) op->apply( 
                                recv_buf + (ptrdiff_t)tmp_disps[recv_index] * extent, 
                                result_buf + (ptrdiff_t)tmp_disps[recv_index] * extent,
-                               &recv_count, &dtype);
+                               &recv_count, dtype);
             }
 
             /* update for next iteration */
@@ -482,7 +482,7 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
            rbuf[prevblock] = inbuf[inbi ^ 0x1] (op) rbuf[prevblock]
         */
         tmprecv = accumbuf + (ptrdiff_t)displs[prevblock] * extent;
-        if(op!=MPI_OP_NULL) op->apply( inbuf[inbi ^ 0x1], tmprecv, &(rcounts[prevblock]), &dtype);
+        if(op!=MPI_OP_NULL) op->apply( inbuf[inbi ^ 0x1], tmprecv, &(rcounts[prevblock]), dtype);
       
         /* send previous block to send_to */
         Request::send(tmprecv, rcounts[prevblock], dtype, send_to,
@@ -496,7 +496,7 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
     /* Apply operation on the last block (my block)
        rbuf[rank] = inbuf[inbi] (op) rbuf[rank] */
     tmprecv = accumbuf + (ptrdiff_t)displs[rank] * extent;
-    if(op!=MPI_OP_NULL) op->apply( inbuf[inbi], tmprecv, &(rcounts[rank]), &dtype);
+    if(op!=MPI_OP_NULL) op->apply( inbuf[inbi], tmprecv, &(rcounts[rank]), dtype);
    
     /* Copy result from tmprecv to rbuf */
     ret = smpi_datatype_copy(tmprecv, rcounts[rank], dtype, (char*)rbuf, rcounts[rank], dtype);

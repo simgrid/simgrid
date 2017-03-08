@@ -92,12 +92,12 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
                 if (sendbuf != MPI_IN_PLACE) {
 		     if(op!=MPI_OP_NULL) op->apply(
 			                          tmp_recvbuf, recvbuf, &recvcounts[rank],
-                               &datatype); 
+                               datatype); 
                 }
                 else {
 		    if(op!=MPI_OP_NULL) op->apply( 
 			tmp_recvbuf, ((char *)recvbuf+disps[rank]*extent), 
-			&recvcounts[rank], &datatype);
+			&recvcounts[rank], datatype);
                     /* we can't store the result at the beginning of
                        recvbuf right here because there is useful data
                        there that other process/processes need. at the
@@ -108,7 +108,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
             else {
                 if (sendbuf != MPI_IN_PLACE) {
 		    if(op!=MPI_OP_NULL) op->apply( 
-		       recvbuf, tmp_recvbuf, &recvcounts[rank], &datatype);
+		       recvbuf, tmp_recvbuf, &recvcounts[rank], datatype);
                     /* copy result back into recvbuf */
                     mpi_errno = smpi_datatype_copy(tmp_recvbuf, recvcounts[rank],
                                                datatype, recvbuf,
@@ -118,7 +118,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
                 else {
 		    if(op!=MPI_OP_NULL) op->apply( 
                         ((char *)recvbuf+disps[rank]*extent),
-			tmp_recvbuf, &recvcounts[rank], &datatype);
+			tmp_recvbuf, &recvcounts[rank], datatype);
                     /* copy result back into recvbuf */
                     mpi_errno = smpi_datatype_copy(tmp_recvbuf, recvcounts[rank],
                                                datatype, 
@@ -235,7 +235,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_noncomm(void *sendbuf, void *recvbuf, i
             if(op!=MPI_OP_NULL) op->apply( 
                    incoming_data + recv_offset*true_extent,
                      outgoing_data + recv_offset*true_extent,
-                     &size, &datatype );
+                     &size, datatype );
             /* buf0_was_inout = buf0_was_inout; */
         }
         else {
@@ -243,7 +243,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_noncomm(void *sendbuf, void *recvbuf, i
 	    if(op!=MPI_OP_NULL) op->apply(
 		     outgoing_data + recv_offset*true_extent,
                      incoming_data + recv_offset*true_extent,
-                     &size, &datatype);
+                     &size, datatype);
             buf0_was_inout = !buf0_was_inout;
         }
 
@@ -456,22 +456,22 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
                         {
 			         if(op!=MPI_OP_NULL) op->apply( 
                                tmp_recvbuf, tmp_results, &blklens[0],
-			       &datatype); 
+			       datatype); 
 			        if(op!=MPI_OP_NULL) op->apply( 
                                ((char *)tmp_recvbuf + dis[1]*extent),
 			       ((char *)tmp_results + dis[1]*extent),
-			       &blklens[1], &datatype); 
+			       &blklens[1], datatype); 
                         }
                     }
                     else {
                         {
 			         if(op!=MPI_OP_NULL) op->apply(
                                    tmp_results, tmp_recvbuf, &blklens[0],
-                                   &datatype); 
+                                   datatype); 
 			         if(op!=MPI_OP_NULL) op->apply(
                                    ((char *)tmp_results + dis[1]*extent),
                                    ((char *)tmp_recvbuf + dis[1]*extent),
-                                   &blklens[1], &datatype); 
+                                   &blklens[1], datatype); 
                         }
                         /* copy result back into tmp_results */
                         mpi_errno = smpi_datatype_copy(tmp_recvbuf, 1, recvtype, 

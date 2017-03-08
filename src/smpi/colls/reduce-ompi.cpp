@@ -178,7 +178,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
                     /* apply operation */
                     if(op!=MPI_OP_NULL) op->apply( local_op_buffer, 
                                    accumbuf + segindex * segment_increment, 
-                                   &recvcount, &datatype );
+                                   &recvcount, datatype );
                 } else if ( segindex > 0 ) {
                     void* accumulator = accumbuf + (segindex-1) * segment_increment;
                     if( tree->tree_nextsize <= 1 ) {
@@ -188,7 +188,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
                         }
                     }
                     if(op!=MPI_OP_NULL) op->apply( local_op_buffer, accumulator, &prevcount, 
-                                   &datatype );
+                                   datatype );
 
                     /* all reduced on available data this step (i) complete, 
                      * pass to the next process unless you are the root.
@@ -662,7 +662,7 @@ smpi_coll_tuned_reduce_ompi_basic_linear(void *sbuf, void *rbuf, int count,
         }
 
         /* Perform the reduction */
-        if(op!=MPI_OP_NULL) op->apply( inbuf, rbuf, &count, &dtype);
+        if(op!=MPI_OP_NULL) op->apply( inbuf, rbuf, &count, dtype);
     }
 
     if (NULL != inplace_temp) {

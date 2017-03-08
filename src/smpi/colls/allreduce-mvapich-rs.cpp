@@ -94,7 +94,7 @@ int smpi_coll_tuned_allreduce_mvapich2_rs(void *sendbuf,
             /* do the reduction on received data. since the
                ordering is right, it doesn't matter whether
                the operation is commutative or not. */
-               if(op!=MPI_OP_NULL) op->apply( tmp_buf, recvbuf, &count, &datatype);
+               if(op!=MPI_OP_NULL) op->apply( tmp_buf, recvbuf, &count, datatype);
                 /* change the rank */
                 newrank = rank / 2;
         }
@@ -132,10 +132,10 @@ int smpi_coll_tuned_allreduce_mvapich2_rs(void *sendbuf,
 
                 if (is_commutative || (dst < rank)) {
                     /* op is commutative OR the order is already right */
-                     if(op!=MPI_OP_NULL) op->apply( tmp_buf, recvbuf, &count, &datatype);
+                     if(op!=MPI_OP_NULL) op->apply( tmp_buf, recvbuf, &count, datatype);
                 } else {
                     /* op is noncommutative and the order is not right */
-                    if(op!=MPI_OP_NULL) op->apply( recvbuf, tmp_buf, &count, &datatype);
+                    if(op!=MPI_OP_NULL) op->apply( recvbuf, tmp_buf, &count, datatype);
                     /* copy result back into recvbuf */
                     mpi_errno = smpi_datatype_copy(tmp_buf, count, datatype,
                                                recvbuf, count, datatype);
@@ -204,7 +204,7 @@ int smpi_coll_tuned_allreduce_mvapich2_rs(void *sendbuf,
 
                 if(op!=MPI_OP_NULL) op->apply( (char *) tmp_buf + disps[recv_idx] * extent,
                         (char *) recvbuf + disps[recv_idx] * extent,
-                        &recv_cnt, &datatype);
+                        &recv_cnt, datatype);
 
                 /* update send_idx for next iteration */
                 send_idx = recv_idx;

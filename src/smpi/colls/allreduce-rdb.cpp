@@ -64,7 +64,7 @@ int smpi_coll_tuned_allreduce_rdb(void *sbuff, void *rbuff, int count,
       // do the reduction on received data. since the
       // ordering is right, it doesn't matter whether
       // the operation is commutative or not.
-      if(op!=MPI_OP_NULL) op->apply( tmp_buf, rbuff, &count, &dtype);
+      if(op!=MPI_OP_NULL) op->apply( tmp_buf, rbuff, &count, dtype);
 
       // change the rank 
       newrank = rank / 2;
@@ -102,10 +102,10 @@ int smpi_coll_tuned_allreduce_rdb(void *sbuff, void *rbuff, int count,
       // we assume it is commuttive op
       //      if (op -> op_commute  || (dst < rank))
       if ((dst < rank)) {
-        if(op!=MPI_OP_NULL) op->apply( tmp_buf, rbuff, &count, &dtype);
+        if(op!=MPI_OP_NULL) op->apply( tmp_buf, rbuff, &count, dtype);
       } else                    // op is noncommutative and the order is not right
       {
-        if(op!=MPI_OP_NULL) op->apply( rbuff, tmp_buf, &count, &dtype);
+        if(op!=MPI_OP_NULL) op->apply( rbuff, tmp_buf, &count, dtype);
 
         // copy result back into recvbuf
         Request::sendrecv(tmp_buf, count, dtype, rank, tag, rbuff, count,

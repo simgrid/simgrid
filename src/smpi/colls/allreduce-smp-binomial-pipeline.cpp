@@ -99,7 +99,7 @@ int smpi_coll_tuned_allreduce_smp_binomial_pipeline(void *send_buf,
           if (src < comm_size) {
             recv_offset = phase * pcount * extent;
             Request::recv(tmp_buf, pcount, dtype, src, tag, comm, &status);
-            if(op!=MPI_OP_NULL) op->apply( tmp_buf, (char *)recv_buf + recv_offset, &pcount, &dtype);
+            if(op!=MPI_OP_NULL) op->apply( tmp_buf, (char *)recv_buf + recv_offset, &pcount, dtype);
           }
         } else {
           send_offset = phase * pcount * extent;
@@ -123,7 +123,7 @@ int smpi_coll_tuned_allreduce_smp_binomial_pipeline(void *send_buf,
             if (src < comm_size) {
               recv_offset = (phase - 1) * pcount * extent;
               Request::recv(tmp_buf, pcount, dtype, src, tag, comm, &status);
-              if(op!=MPI_OP_NULL) op->apply( tmp_buf, (char *)recv_buf + recv_offset, &pcount, &dtype);
+              if(op!=MPI_OP_NULL) op->apply( tmp_buf, (char *)recv_buf + recv_offset, &pcount, dtype);
             }
           } else {
             dst = (inter_rank & (~mask)) * num_core;

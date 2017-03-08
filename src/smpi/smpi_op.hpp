@@ -24,7 +24,7 @@ class Op {
     bool is_commutative();
     bool is_fortran_op();
     void set_fortran_op();
-    void apply(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype);
+    void apply(void *invec, void *inoutvec, int *len, MPI_Datatype datatype);
 };
 
 }

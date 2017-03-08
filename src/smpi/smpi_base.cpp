@@ -367,7 +367,7 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
         Request::unuse(&requests[index]);
       }
       if(op) /* op can be MPI_OP_NULL that does nothing */
-        if(op!=MPI_OP_NULL) op->apply( tmpbufs[index], recvbuf, &count, &datatype);
+        if(op!=MPI_OP_NULL) op->apply( tmpbufs[index], recvbuf, &count, datatype);
     }
       for(index = 0; index < size - 1; index++) {
         smpi_free_tmp_buffer(tmpbufs[index]);
@@ -425,7 +425,7 @@ void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
       }
       if(index < rank) {
         // #Request is below rank: it's a irecv
-        if(op!=MPI_OP_NULL) op->apply( tmpbufs[index], recvbuf, &count, &datatype);
+        if(op!=MPI_OP_NULL) op->apply( tmpbufs[index], recvbuf, &count, datatype);
       }
     }
   }else{
@@ -433,7 +433,7 @@ void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
     for (int other = 0; other < size - 1; other++) {
       Request::wait(&(requests[other]), MPI_STATUS_IGNORE);
       if(index < rank) {
-        if(op!=MPI_OP_NULL) op->apply( tmpbufs[other], recvbuf, &count, &datatype);
+        if(op!=MPI_OP_NULL) op->apply( tmpbufs[other], recvbuf, &count, datatype);
       }
     }
   }
@@ -486,7 +486,7 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
           recvbuf_is_empty=0;
         } else
           // #Request is below rank: it's a irecv
-          if(op!=MPI_OP_NULL) op->apply( tmpbufs[index], recvbuf, &count, &datatype);
+          if(op!=MPI_OP_NULL) op->apply( tmpbufs[index], recvbuf, &count, datatype);
       }
     }
   }else{
@@ -498,7 +498,7 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
           smpi_datatype_copy(tmpbufs[other], count, datatype, recvbuf, count, datatype);
           recvbuf_is_empty = 0;
         } else
-          if(op!=MPI_OP_NULL) op->apply( tmpbufs[other], recvbuf, &count, &datatype);
+          if(op!=MPI_OP_NULL) op->apply( tmpbufs[other], recvbuf, &count, datatype);
       }
     }
   }

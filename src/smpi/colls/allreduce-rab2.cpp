@@ -51,7 +51,7 @@ int smpi_coll_tuned_allreduce_rab2(void *sbuff, void *rbuff,
     memcpy(tmp, recv, nbytes);
 
     for (i = 1, s_offset = nbytes; i < nprocs; i++, s_offset = i * nbytes)
-      if(op!=MPI_OP_NULL) op->apply( (char *) recv + s_offset, tmp, &send_size, &dtype);
+      if(op!=MPI_OP_NULL) op->apply( (char *) recv + s_offset, tmp, &send_size, dtype);
 
     mpi_coll_allgather_fun(tmp, send_size, dtype, recv, send_size, dtype, comm);
     memcpy(rbuff, recv, count * s_extent);
@@ -73,7 +73,7 @@ int smpi_coll_tuned_allreduce_rab2(void *sbuff, void *rbuff,
 
     for (i = 1, s_offset = nbytes; i < nprocs; i++, s_offset = i * nbytes)
       if(op!=MPI_OP_NULL) op->apply( (char *) recv + s_offset, (char *) rbuff + r_offset,
-                     &send_size, &dtype);
+                     &send_size, dtype);
 
     mpi_coll_allgather_fun((char *) rbuff + r_offset, send_size, dtype, rbuff, send_size,
                   dtype, comm);

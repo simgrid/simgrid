@@ -82,7 +82,7 @@ smpi_coll_tuned_allreduce_lr(void *sbuf, void *rbuf, int rcount,
 
     // compute result to rbuf+recv_offset
     if(op!=MPI_OP_NULL) op->apply( (char *) sbuf + recv_offset, (char *) rbuf + recv_offset,
-                   &count, &dtype);
+                   &count, dtype);
   }
 
   // all-gather

@@ -97,7 +97,7 @@ APPLY_OP_LOOP(MPI_2LONG, long_long,op)
 
 #define APPLY_END_OP_LOOP(op)\
   {\
-    xbt_die("Failed to apply " #op " to type %s", (*datatype)->name);\
+    xbt_die("Failed to apply " #op " to type %s", (*datatype)->name());\
   }
 
 static void max_func(void *a, void *b, int *length, MPI_Datatype * datatype)
@@ -231,7 +231,7 @@ void Op::set_fortran_op()
   is_fortran_op_ = true;
 }
 
-void Op::apply(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
+void Op::apply(void *invec, void *inoutvec, int *len, MPI_Datatype datatype)
 {
   if(smpi_privatize_global_variables){//we need to switch as the called function may silently touch global variables
     XBT_DEBUG("Applying operation, switch to the right data frame ");
@@ -240,9 +240,9 @@ void Op::apply(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
 
   if(!smpi_process_get_replaying()){
     if(! is_fortran_op_)
-      this->func_(invec, inoutvec, len, datatype);
+      this->func_(invec, inoutvec, len, &datatype);
     else{
-      int tmp = smpi_type_c2f(*datatype);
+      int tmp = smpi_type_c2f(datatype);
       /* Unfortunately, the C and Fortran version of the MPI standard do not agree on the type here,
          thus the reinterpret_cast. */
       this->func_(invec, inoutvec, len, reinterpret_cast<MPI_Datatype*>(&tmp) );

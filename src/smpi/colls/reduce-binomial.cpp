@@ -62,9 +62,9 @@ int smpi_coll_tuned_reduce_binomial(void *sendbuf, void *recvbuf, int count,
         Request::recv(tmp_buf, count, datatype, source, tag, comm, &status);
         
         if (is_commutative) {
-          if(op!=MPI_OP_NULL) op->apply( tmp_buf, recvbuf, &count, &datatype);
+          if(op!=MPI_OP_NULL) op->apply( tmp_buf, recvbuf, &count, datatype);
         } else {
-          if(op!=MPI_OP_NULL) op->apply( recvbuf, tmp_buf, &count, &datatype);
+          if(op!=MPI_OP_NULL) op->apply( recvbuf, tmp_buf, &count, datatype);
           smpi_datatype_copy(tmp_buf, count, datatype,recvbuf, count, datatype);
         }
       }

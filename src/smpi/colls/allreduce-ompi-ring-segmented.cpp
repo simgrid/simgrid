@@ -318,7 +318,7 @@ smpi_coll_tuned_allreduce_ompi_ring_segmented(void *sbuf, void *rbuf, int count,
                          (phase * early_phase_segcount) : 
                          (phase * late_phase_segcount + split_phase));
          tmprecv = ((char*)rbuf) + (block_offset + phase_offset) * extent;
-         if(op!=MPI_OP_NULL) op->apply( inbuf[inbi ^ 0x1], tmprecv, &phase_count, &dtype);
+         if(op!=MPI_OP_NULL) op->apply( inbuf[inbi ^ 0x1], tmprecv, &phase_count, dtype);
          /* send previous block to send_to */
          Request::send(tmprecv, phase_count, dtype, send_to,
                               666, comm);
@@ -344,7 +344,7 @@ smpi_coll_tuned_allreduce_ompi_ring_segmented(void *sbuf, void *rbuf, int count,
                       (phase * early_phase_segcount) : 
                       (phase * late_phase_segcount + split_phase));
       tmprecv = ((char*)rbuf) + (block_offset + phase_offset) * extent;
-      if(op!=MPI_OP_NULL) op->apply( inbuf[inbi], tmprecv, &phase_count, &dtype);
+      if(op!=MPI_OP_NULL) op->apply( inbuf[inbi], tmprecv, &phase_count, dtype);
    }
 
    /* Distribution loop - variation of ring allgather */

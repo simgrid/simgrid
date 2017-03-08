@@ -238,8 +238,8 @@ typedef long long MPI_Offset;
 struct s_MPI_File;
 typedef struct s_MPI_File *MPI_File;
 
-struct s_smpi_mpi_datatype;
-typedef struct s_smpi_mpi_datatype *MPI_Datatype;
+
+typedef SMPI_Datatype *MPI_Datatype;
 
 typedef struct {
   int MPI_SOURCE;

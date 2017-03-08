@@ -18,6 +18,7 @@
 #include "src/smpi/smpi_group.hpp"
 #include "src/smpi/smpi_comm.hpp"
 #include "src/smpi/smpi_op.hpp"
+#include "src/smpi/smpi_datatype.hpp"
 #include "src/smpi/smpi_request.hpp"
 #include "src/smpi/smpi_topo.hpp"
 #include "src/smpi/smpi_win.hpp"
@@ -149,8 +150,6 @@ XBT_PRIVATE void smpi_deployment_cleanup_instances();
 XBT_PRIVATE void smpi_comm_copy_buffer_callback(smx_activity_t comm, void *buff, size_t buff_size);
 
 XBT_PRIVATE void smpi_comm_null_copy_buffer_callback(smx_activity_t comm, void *buff, size_t buff_size);
-
-XBT_PRIVATE void print_request(const char *message, MPI_Request request);
 
 XBT_PRIVATE int smpi_enabled();
 XBT_PRIVATE void smpi_global_init();
