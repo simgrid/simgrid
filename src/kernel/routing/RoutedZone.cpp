@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -29,13 +29,12 @@ void routing_route_free(sg_platf_route_cbarg_t route)
 static const char* instr_node_name(xbt_node_t node)
 {
   void* data = xbt_graph_node_get_data(node);
-  char* str  = (char*)data;
-  return str;
+  return static_cast<const char*>(data);
 }
 
 xbt_node_t new_xbt_graph_node(xbt_graph_t graph, const char* name, xbt_dict_t nodes)
 {
-  xbt_node_t ret = (xbt_node_t)xbt_dict_get_or_null(nodes, name);
+  xbt_node_t ret = static_cast<xbt_node_t>(xbt_dict_get_or_null(nodes, name));
   if (ret)
     return ret;
 
@@ -48,21 +47,18 @@ xbt_edge_t new_xbt_graph_edge(xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xbt
 {
   const char* sn = instr_node_name(s);
   const char* dn = instr_node_name(d);
-  int len        = strlen(sn) + strlen(dn) + 1;
-  char* name     = (char*)xbt_malloc(len * sizeof(char));
+  std::string name = std::string(sn) + dn;
 
-  snprintf(name, len, "%s%s", sn, dn);
-  xbt_edge_t ret = (xbt_edge_t)xbt_dict_get_or_null(edges, name);
+  xbt_edge_t ret = static_cast<xbt_edge_t>(xbt_dict_get_or_null(edges, name.c_str()));
   if (ret == nullptr) {
-    snprintf(name, len, "%s%s", dn, sn);
-    ret = (xbt_edge_t)xbt_dict_get_or_null(edges, name);
+    name = std::string(dn) + sn;
+    ret  = static_cast<xbt_edge_t>(xbt_dict_get_or_null(edges, name.c_str()));
   }
 
   if (ret == nullptr) {
     ret = xbt_graph_new_edge(graph, s, d, nullptr);
-    xbt_dict_set(edges, name, ret, nullptr);
+    xbt_dict_set(edges, name.c_str(), ret, nullptr);
   }
-  free(name);
   return ret;
 }
 
