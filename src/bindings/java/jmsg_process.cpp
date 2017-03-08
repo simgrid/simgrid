@@ -290,7 +290,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cl
     // is a cancelled_error, see bindings/java/smx_context_java.c, function void smx_ctx_java_stop(smx_context_t context) and src/msg/msg_gos.c
     // function  msg_error_t MSG_process_sleep(double nb_sec)
 
-    jxbt_throw_host_failure(env,nullptr);
+    jxbt_throw_host_failure(env, "");
   }
 }
 

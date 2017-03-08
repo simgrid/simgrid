@@ -10,6 +10,7 @@
 
 #include <jni.h>
 #include <stdint.h>
+#include <string>
 
 SG_BEGIN_DECL()
 
@@ -48,30 +49,30 @@ jfieldID jxbt_get_sfield(JNIEnv * env, const char *classname, const char *name, 
    } } while (0)
 
 /* Throws an exception according to its name */
-void jxbt_throw_by_name(JNIEnv * env, const char *name, char *msg);
+void jxbt_throw_by_name(JNIEnv* env, const char* name, std::string msg);
 /** Thrown on internal error of this layer, or on problem with JNI */
-void jxbt_throw_jni(JNIEnv * env, const char *msg);
+void jxbt_throw_jni(JNIEnv* env, std::string msg);
 /** Thrown when using an object not bound to a native one where it should, or reverse (kinda JNI issue) */
-void jxbt_throw_notbound(JNIEnv * env, const char *kind, void *pointer);
+void jxbt_throw_notbound(JNIEnv* env, std::string kind, void* pointer);
 /** Thrown if NULL gets used */
-void jxbt_throw_null(JNIEnv * env, char *msg);
+void jxbt_throw_null(JNIEnv* env, std::string msg);
 
 /** Thrown on illegal arguments */
-void jxbt_throw_illegal(JNIEnv * env, char *msg);
+void jxbt_throw_illegal(JNIEnv* env, std::string msg);
 /** Thrown when looking for an host from name does not lead to anything */
-void jxbt_throw_host_not_found(JNIEnv * env, const char *invalid_name);
+void jxbt_throw_host_not_found(JNIEnv* env, std::string invalid_name);
 /** Thrown when looking for an host from name does not lead to anything */
-void jxbt_throw_process_not_found(JNIEnv * env, const char *invalid_name);
+void jxbt_throw_process_not_found(JNIEnv* env, std::string invalid_name);
 /** Thrown when a transfer failure accure while Sending task */
-void jxbt_throw_transfer_failure(JNIEnv * env, char *detail);
+void jxbt_throw_transfer_failure(JNIEnv* env, std::string detail);
 /** Thrown when a host failure occurs while Sending a task*/
-void jxbt_throw_host_failure(JNIEnv * env, char *details);
+void jxbt_throw_host_failure(JNIEnv* env, std::string details);
 /** Thrown when a timeout occurs while Sending a task */
-void jxbt_throw_time_out_failure(JNIEnv * env, char *details);
+void jxbt_throw_time_out_failure(JNIEnv* env, std::string details);
 /**Thrown when a task is canceled */
-void jxbt_throw_task_cancelled(JNIEnv * env, char *details);
+void jxbt_throw_task_cancelled(JNIEnv* env, std::string details);
 /** Thrown when looking for a storage from name does not lead to anything */
-void jxbt_throw_storage_not_found(JNIEnv * env, const char *invalid_name);
+void jxbt_throw_storage_not_found(JNIEnv* env, std::string invalid_name);
 
 SG_END_DECL()
 #endif                          /* ! JXBT_UTILITY_H */

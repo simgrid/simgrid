@@ -60,17 +60,17 @@ JNIEnv *get_current_thread_env()
 void jmsg_throw_status(JNIEnv *env, msg_error_t status) {
   switch (status) {
     case MSG_TIMEOUT:
-        jxbt_throw_time_out_failure(env,nullptr);
-    break;
+      jxbt_throw_time_out_failure(env, "");
+      break;
     case MSG_TRANSFER_FAILURE:
-        jxbt_throw_transfer_failure(env,nullptr);
-    break;
+      jxbt_throw_transfer_failure(env, "");
+      break;
     case MSG_HOST_FAILURE:
-        jxbt_throw_host_failure(env,nullptr);
-    break;
+      jxbt_throw_host_failure(env, "");
+      break;
     case MSG_TASK_CANCELED:
-        jxbt_throw_task_cancelled(env,nullptr);
-    break;
+      jxbt_throw_task_cancelled(env, "");
+      break;
     default:
       xbt_die("undefined message failed (please see jmsg_throw_status function in jmsg.cpp)");
   }
