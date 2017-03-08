@@ -138,23 +138,21 @@ xbt_dict_t HostImpl::getMountedStorageList()
   return storage_list;
 }
 
-std::vector<const char*> HostImpl::getAttachedStorageList()
+void HostImpl::getAttachedStorageList(std::vector<const char*>* storages)
 {
   xbt_lib_cursor_t cursor;
   char* key;
   void** data;
-  std::vector<const char*> result;
   xbt_lib_foreach(storage_lib, cursor, key, data)
   {
     if (xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
       simgrid::surf::Storage* storage = static_cast<simgrid::surf::Storage*>(
           xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
       if (!strcmp(static_cast<const char*>(storage->attach_), piface_->cname())) {
-        result.push_back(storage->cname());
+        storages->push_back(storage->cname());
       }
     }
   }
-  return result;
 }
 
 Action* HostImpl::open(const char* fullpath)

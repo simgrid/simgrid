@@ -257,11 +257,9 @@ xbt_dict_t Host::mountedStoragesAsDict()
  * \brief Returns the list of storages attached to an host.
  * \return a dict containing all storages attached to the host
  */
-std::vector<const char*> Host::attachedStorages()
+void Host::attachedStorages(std::vector<const char*>* storages)
 {
-  return simgrid::simix::kernelImmediate([this] {
-    return this->pimpl_->getAttachedStorageList();
-  });
+  simgrid::simix::kernelImmediate([this, storages] { this->pimpl_->getAttachedStorageList(storages); });
 }
 
 } // namespace simgrid

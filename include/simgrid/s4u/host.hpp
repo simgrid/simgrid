@@ -94,7 +94,7 @@ public:
   void setPstate(int pstate_index);
   int pstate();
   xbt_dict_t mountedStoragesAsDict(); // HACK
-  std::vector<const char*> attachedStorages();
+  void attachedStorages(std::vector<const char*> * storages);
 
   /** Get an associative list [mount point]->[Storage] of all local mount points.
    *
