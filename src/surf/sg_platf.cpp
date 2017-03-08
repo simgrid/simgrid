@@ -27,7 +27,7 @@
 #include <string>
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 
-XBT_PRIVATE xbt_dynar_t mount_list = nullptr;
+XBT_PRIVATE std::vector<s_mount_t> mount_list;
 
 namespace simgrid {
 namespace surf {
@@ -77,8 +77,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t args)
       routing_get_current()->createHost(args->id, &args->speed_per_pstate, args->core_amount, &props);
 
   host->pimpl_->storage_ = mount_list;
-  xbt_lib_set(storage_lib, args->id, ROUTING_STORAGE_HOST_LEVEL, static_cast<void*>(mount_list));
-  mount_list = nullptr;
+  mount_list.clear();
 
   /* Change from the defaults */
   if (args->state_trace)
@@ -442,11 +441,9 @@ void sg_platf_new_mount(sg_platf_mount_cbarg_t mount){
   mnt.storage = surf_storage_resource_priv(surf_storage_resource_by_name(mount->storageId));
   mnt.name = xbt_strdup(mount->name);
 
-  if(!mount_list){
-    XBT_DEBUG("Create a Mount list for %s",A_surfxml_host_id);
-    mount_list = xbt_dynar_new(sizeof(s_mount_t), mount_free);
-  }
-  xbt_dynar_push(mount_list, &mnt);
+  if (mount_list.empty())
+    XBT_DEBUG("Create a Mount list for %s", A_surfxml_host_id);
+  mount_list.push_back(mnt);
 }
 
 void sg_platf_new_route(sg_platf_route_cbarg_t route)

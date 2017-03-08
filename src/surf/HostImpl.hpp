@@ -173,7 +173,7 @@ public:
    */
   virtual int fileMove(surf_file_t fd, const char* fullpath);
 
-  xbt_dynar_t storage_        = nullptr;
+  std::vector<s_mount_t> storage_;
   simgrid::s4u::Host* piface_ = nullptr;
 
   simgrid::s4u::Host* getHost() { return piface_; }

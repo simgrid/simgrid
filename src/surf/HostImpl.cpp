@@ -3,7 +3,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/surf/HostImpl.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include <string>
 
@@ -113,11 +112,9 @@ HostImpl::~HostImpl() = default;
 simgrid::surf::Storage* HostImpl::findStorageOnMountList(const char* mount)
 {
   simgrid::surf::Storage* st = nullptr;
-  s_mount_t mnt;
-  unsigned int cursor;
 
   XBT_DEBUG("Search for storage name '%s' on '%s'", mount, piface_->cname());
-  xbt_dynar_foreach (storage_, cursor, mnt) {
+  for (auto mnt : storage_) {
     XBT_DEBUG("See '%s'", mnt.name);
     if (!strcmp(mount, mnt.name)) {
       st = static_cast<simgrid::surf::Storage*>(mnt.storage);
@@ -131,12 +128,10 @@ simgrid::surf::Storage* HostImpl::findStorageOnMountList(const char* mount)
 
 xbt_dict_t HostImpl::getMountedStorageList()
 {
-  s_mount_t mnt;
-  unsigned int i;
   xbt_dict_t storage_list = xbt_dict_new_homogeneous(nullptr);
   char* storage_name      = nullptr;
 
-  xbt_dynar_foreach (storage_, i, mnt) {
+  for (auto mnt : storage_) {
     storage_name = (char*)static_cast<simgrid::surf::Storage*>(mnt.storage)->cname();
     xbt_dict_set(storage_list, mnt.name, storage_name, nullptr);
   }
@@ -166,14 +161,12 @@ Action* HostImpl::open(const char* fullpath)
 {
 
   simgrid::surf::Storage* st = nullptr;
-  s_mount_t mnt;
-  unsigned int cursor;
   size_t longest_prefix_length = 0;
   std::string path;
   std::string mount_name;
 
   XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath, piface_->cname());
-  xbt_dynar_foreach (storage_, cursor, mnt) {
+  for (auto mnt : storage_) {
     XBT_DEBUG("See '%s'", mnt.name);
     std::string file_mount_name = std::string(fullpath).substr(0, strlen(mnt.name));
 

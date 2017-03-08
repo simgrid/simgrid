@@ -17,7 +17,6 @@ xbt_lib_t storage_lib;
 int SIMIX_STORAGE_LEVEL        = -1; // Simix storage level
 int MSG_STORAGE_LEVEL          = -1; // Msg storage level
 int ROUTING_STORAGE_LEVEL      = -1; // Routing for storage level
-int ROUTING_STORAGE_HOST_LEVEL = -1;
 int SURF_STORAGE_LEVEL = -1;
 xbt_lib_t storage_type_lib;
 int ROUTING_STORAGE_TYPE_LEVEL = -1; //Routing for storage_type level

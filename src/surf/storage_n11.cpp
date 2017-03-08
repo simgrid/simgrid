@@ -28,12 +28,6 @@ static inline void routing_storage_type_free(void *r)
   free(stype);
 }
 
-static inline void routing_storage_host_free(void *r)
-{
-  xbt_dynar_t dyn = (xbt_dynar_t) r;
-  xbt_dynar_free(&dyn);
-}
-
 static void check_disk_attachment()
 {
   xbt_lib_cursor_t cursor;
@@ -56,7 +50,6 @@ void storage_register_callbacks()
   instr_routing_define_callbacks();
 
   ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, xbt_free_f);
-  ROUTING_STORAGE_HOST_LEVEL = xbt_lib_add_level(storage_lib, routing_storage_host_free);
   ROUTING_STORAGE_TYPE_LEVEL = xbt_lib_add_level(storage_type_lib, routing_storage_type_free);
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, [](void *self) {
     delete static_cast<simgrid::surf::Storage*>(self);
