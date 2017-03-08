@@ -48,7 +48,7 @@ public:
   NetZone* father();
 
   xbt_dict_t children(); // Sub netzones
-  xbt_dynar_t hosts();   // my content as a dynar
+  std::vector<Host*> hosts(); // my content as a vector of hosts
 
   /** Get the properties assigned to a host */
   std::unordered_map<std::string, std::string>* properties();

@@ -72,14 +72,14 @@ NetZone* NetZone::father()
   return father_;
 }
 
-xbt_dynar_t NetZone::hosts()
+std::vector<s4u::Host*> NetZone::hosts()
 {
-  xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t), nullptr);
+  std::vector<s4u::Host*> res;
 
   for (auto card : vertices_) {
     s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->name());
     if (host != nullptr)
-      xbt_dynar_push(res, &host);
+      res.push_back(host);
   }
   return res;
 }

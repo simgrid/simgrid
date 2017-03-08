@@ -80,7 +80,13 @@ void MSG_environment_as_set_property_value(msg_netzone_t netzone, const char* na
 
 xbt_dynar_t MSG_environment_as_get_hosts(msg_netzone_t netzone)
 {
-  return netzone->hosts();
+  xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t), nullptr);
+
+  for (auto host : netzone->hosts()) {
+    xbt_dynar_push(res, &host);
+  }
+
+  return res;
 }
 
 SG_END_DECL()
