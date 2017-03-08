@@ -98,4 +98,4 @@ XBT_PUBLIC(void) smpi_coll_cleanup_mvapich2(void);
 
 SG_END_DECL()
 
-#endif /* SMPI_INTERFACE_H */
+#endif

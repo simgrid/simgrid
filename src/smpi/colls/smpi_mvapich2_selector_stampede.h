@@ -1,11 +1,10 @@
 /* selector for collective algorithms based on mvapich decision logic, with calibration from Stampede cluster at TACC*/
-
-/* Copyright (c) 2009-2010, 2013-2014. The SimGrid Team.
- * All rights reserved.                                                     */
-
 /* This is the tuning used by MVAPICH for Stampede platform based on (MV2_ARCH_INTEL_XEON_E5_2680_16, MV2_HCA_MLX_CX_FDR) */
 
+/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
 
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /************ Alltoall variables and initializers                        */
 

@@ -32,4 +32,4 @@ typedef struct xbt_heap {
 
 #define MIN_KEY_VALUE -DBL_MAX
 
-#endif /* XBT_HEAP_PRIVATE_H */
+#endif

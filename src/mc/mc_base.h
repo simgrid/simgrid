@@ -1,5 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,14 +6,13 @@
 #ifndef SIMGRID_MC_BASE_H
 #define SIMGRID_MC_BASE_H
 
-#ifdef __cplusplus
-#include <vector>
-#endif
 
 #include <xbt/base.h>
 #include <simgrid/forward.h>
 
 #ifdef __cplusplus
+
+#include <vector>
 
 namespace simgrid {
 namespace mc {

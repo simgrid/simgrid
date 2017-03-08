@@ -36,4 +36,4 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitAll(JNIEnv *env, jclass cls
 JNIEXPORT int JNICALL Java_org_simgrid_msg_Comm_waitAny(JNIEnv *env, jclass cls, jobjectArray jcomms);
 
 SG_END_DECL()
-#endif /* MSG_JCOMM_H */
+#endif

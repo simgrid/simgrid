@@ -25,4 +25,4 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Semaphore_wouldBlock(JNIEnv * en
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Semaphore_nativeFinalize(JNIEnv * env, jobject obj);
 
 SG_END_DECL()
-#endif                          /* !MSG_JPROCESS_H */
+#endif

@@ -34,4 +34,4 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getProperty(JNIEnv *env, jobje
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getHosts(JNIEnv* env, jobject jnetzone);
 
 SG_END_DECL()
-#endif                          /*!MSG_JAS_H */
+#endif

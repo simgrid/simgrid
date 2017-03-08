@@ -47,4 +47,4 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getHost(JNIEnv * env,jobj
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Storage_all(JNIEnv *env, jclass cls);
 
 SG_END_DECL()
-#endif                          /*!MSG_JSTORAGE_H */
+#endif

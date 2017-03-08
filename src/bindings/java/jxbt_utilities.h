@@ -74,5 +74,4 @@ void jxbt_throw_task_cancelled(JNIEnv * env, char *details);
 void jxbt_throw_storage_not_found(JNIEnv * env, const char *invalid_name);
 
 SG_END_DECL()
-#endif                          /* ! JXBT_UTILITY_H */
-
+#endif

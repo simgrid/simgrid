@@ -658,4 +658,5 @@ xbt_graph_t instr_routing_platform_graph ();
 void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *filename);
 
 SG_END_DECL()
-#endif /* SURF_SURF_H */
+
+#endif

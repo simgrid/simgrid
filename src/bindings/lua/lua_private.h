@@ -1,5 +1,4 @@
-/* Copyright (c) 2010, 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2015. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -30,5 +29,4 @@ const char* sglua_get_msg_error(msg_error_t err);
 #define _lua_ensure_ARGN(cond, ...) \
   do { if (!(cond)) { luaL_error(L, __VA_ARGS__); return -1;} } while (0)
 
-
-#endif /* LUA_PRIVATE_H */
+#endif

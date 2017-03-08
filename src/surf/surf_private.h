@@ -55,4 +55,4 @@ void TRACE_surf_link_set_bandwidth(double date, const char *resource, double ban
 
 SG_END_DECL()
 
-#endif /* SURF_SURF_PRIVATE_H */
+#endif

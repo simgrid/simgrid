@@ -20,4 +20,4 @@ typedef struct s_xbt_mallocator {
   int lock;                     /* lock to ensure the mallocator is thread-safe */
 } s_xbt_mallocator_t;
 
-#endif /* XBT_MALLOCATOR_PRIVATE_H */
+#endif

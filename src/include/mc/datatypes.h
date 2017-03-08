@@ -1,5 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,7 +10,7 @@
 #include <xbt/base.h>
 
 #if HAVE_UCONTEXT_H
-#include <ucontext.h>           /* context relative declarations */
+#include <ucontext.h>
 #endif
 
 SG_BEGIN_DECL()
@@ -30,4 +29,4 @@ typedef struct s_stack_region* stack_region_t;
 
 SG_END_DECL()
 
-#endif                          /* _MC_MC_H */
+#endif

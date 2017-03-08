@@ -82,4 +82,4 @@ XBT_PUBLIC(void) MC_memory_init_server();
 
 SG_END_DECL()
 
-#endif /* MC_MC_H */
+#endif

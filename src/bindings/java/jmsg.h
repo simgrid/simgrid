@@ -49,4 +49,4 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Msg_environmentGetRoutingRoot(JNI
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls, jstring jdeploymentFile);
 
 SG_END_DECL()
-#endif                          /* !MSG4JAVA_H */
+#endif

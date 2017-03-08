@@ -12,4 +12,4 @@
 
 XBT_PRIVATE void xbt_floyd_algorithm(xbt_graph_t g, double *adj, double *d, xbt_node_t * p);
 
-#endif /* XBT_GRAPH_PRIVATE_H */
+#endif

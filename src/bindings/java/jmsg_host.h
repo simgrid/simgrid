@@ -68,5 +68,4 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCurrentPowerPeak(JNIEnv* 
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getPowerPeakAt(JNIEnv* env, jobject jhost, jint pstate);
 
 SG_END_DECL()
-#endif                          /*!MSG_JHOST_H */
-
+#endif
