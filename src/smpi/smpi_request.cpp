@@ -110,7 +110,7 @@ static double smpi_or(size_t size)
 namespace simgrid{
 namespace smpi{
 Request::Request(){}
-Request::Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags) : src_(src), dst_(dst), tag_(tag), comm_(comm), flags_(flags)
+Request::Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags) : buf_(buf), old_type_(datatype), src_(src), dst_(dst), tag_(tag), comm_(comm), flags_(flags) 
 {
   void *old_buf = nullptr;
   s_smpi_subtype_t *subtype = static_cast<s_smpi_subtype_t*>(datatype->substruct);
@@ -118,15 +118,13 @@ Request::Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, 
   if((((flags & RECV) != 0) && ((flags & ACCUMULATE) !=0)) || (datatype->sizeof_substruct != 0)){
     // This part handles the problem of non-contiguous memory
     old_buf = buf;
-    buf = count==0 ? nullptr : xbt_malloc(count*smpi_datatype_size(datatype));
+    buf_ = count==0 ? nullptr : xbt_malloc(count*smpi_datatype_size(datatype));
     if ((datatype->sizeof_substruct != 0) && ((flags & SEND) != 0)) {
-      subtype->serialize(old_buf, buf, count, datatype->substruct);
+      subtype->serialize(old_buf, buf_, count, datatype->substruct);
     }
   }
-  buf_      = buf;
   // This part handles the problem of non-contiguous memory (for the unserialisation at the reception)
   old_buf_  = old_buf;
-  old_type_ = datatype;
   size_ = smpi_datatype_size(datatype) * count;
   smpi_datatype_use(datatype);
   comm_->use();
@@ -812,7 +810,7 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
         xbt_free(req->buf_);
       }else if(req->flags_ & RECV){//apply op on contiguous buffer for accumulate
           int n =req->real_size_/smpi_datatype_size(datatype);
-          smpi_op_apply(req->op_, req->buf_, req->old_buf_, &n, &datatype);
+          req->op_->apply(req->buf_, req->old_buf_, &n, &datatype);
           xbt_free(req->buf_);
       }
     }

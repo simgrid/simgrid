@@ -92,7 +92,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
 
         /* If this is a non-commutative operation we must copy
            sendbuf to the accumbuf, in order to simplfy the loops */
-        if (!smpi_op_is_commute(op)) {
+        if ( (op!=MPI_OP_NULL && !op->is_commutative())) {
             smpi_datatype_copy(
                                                 (char*)sendtmpbuf, original_count, datatype,
                                                 (char*)accumbuf, original_count, datatype);
@@ -145,7 +145,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
                          * BUT if the operation is non-commutative or 
                          * we are root and are USING MPI_IN_PLACE this is wrong!
                          */
-                        if( (smpi_op_is_commute(op)) &&
+                        if(  (op==MPI_OP_NULL || op->is_commutative()) &&
                             !((MPI_IN_PLACE == sendbuf) && (rank == tree->tree_root)) ) {
                             local_recvbuf = accumbuf + segindex * segment_increment;
                         }
@@ -170,24 +170,24 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
                      * not using MPI_IN_PLACE)
                      */
                     if( 1 == i ) {
-                        if( (smpi_op_is_commute(op)) && 
+                        if( (op==MPI_OP_NULL || op->is_commutative())&& 
                             !((MPI_IN_PLACE == sendbuf) && (rank == tree->tree_root)) ) {
                             local_op_buffer = sendtmpbuf + segindex * segment_increment;
                         }
                     }
                     /* apply operation */
-                    smpi_op_apply(op, local_op_buffer, 
+                    if(op!=MPI_OP_NULL) op->apply( local_op_buffer, 
                                    accumbuf + segindex * segment_increment, 
                                    &recvcount, &datatype );
                 } else if ( segindex > 0 ) {
                     void* accumulator = accumbuf + (segindex-1) * segment_increment;
                     if( tree->tree_nextsize <= 1 ) {
-                        if( (smpi_op_is_commute(op)) &&
+                        if(  (op==MPI_OP_NULL || op->is_commutative()) &&
                             !((MPI_IN_PLACE == sendbuf) && (rank == tree->tree_root)) ) {
                             local_op_buffer = sendtmpbuf + (segindex-1) * segment_increment;
                         }
                     }
-                    smpi_op_apply(op, local_op_buffer, accumulator, &prevcount, 
+                    if(op!=MPI_OP_NULL) op->apply( local_op_buffer, accumulator, &prevcount, 
                                    &datatype );
 
                     /* all reduced on available data this step (i) complete, 
@@ -662,7 +662,7 @@ smpi_coll_tuned_reduce_ompi_basic_linear(void *sbuf, void *rbuf, int count,
         }
 
         /* Perform the reduction */
-        smpi_op_apply(op, inbuf, rbuf, &count, &dtype);
+        if(op!=MPI_OP_NULL) op->apply( inbuf, rbuf, &count, &dtype);
     }
 
     if (NULL != inplace_temp) {

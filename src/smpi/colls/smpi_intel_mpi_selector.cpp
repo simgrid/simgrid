@@ -1069,7 +1069,7 @@ static  int  intel_reduce_scatter_recursivehalving(void *sbuf, void *rbuf,
                                                     MPI_Op  op,
                                                     MPI_Comm  comm)
 {
-  if(smpi_op_is_commute(op))
+  if(op==MPI_OP_NULL || op->is_commutative())
     return smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(sbuf, rbuf, rcounts,dtype, op,comm);
   else
     return smpi_coll_tuned_reduce_scatter_mvapich2(sbuf, rbuf, rcounts,dtype, op,comm);

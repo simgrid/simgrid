@@ -365,7 +365,7 @@ int smpi_coll_tuned_allreduce_mvapich2(void *sendbuf,
 
   smpi_datatype_extent(datatype, &true_lb, &true_extent);
   //MPI_Op *op_ptr;
-  //is_commutative = smpi_op_is_commute(op);
+  //is_commutative = op->is_commutative();
 
   {
     /* Search for the corresponding system size inside the tuning table */
@@ -704,7 +704,7 @@ int smpi_coll_tuned_reduce_mvapich2( void *sendbuf,
   if (count == 0)
     return MPI_SUCCESS;
 
-  is_commutative = smpi_op_is_commute(op);
+  is_commutative = (op==MPI_OP_NULL || op->is_commutative());
 
   /* find nearest power-of-two less than or equal to comm_size */
   for( pof2 = 1; pof2 <= comm_size; pof2 <<= 1 );
@@ -811,7 +811,7 @@ int smpi_coll_tuned_reduce_scatter_mvapich2(void *sendbuf, void *recvbuf, int *r
   if(mv2_red_scat_thresholds_table==NULL)
     init_mv2_reduce_scatter_tables_stampede();
 
-  is_commutative=smpi_op_is_commute(op);
+  is_commutative=(op==MPI_OP_NULL || op->is_commutative());
   for (i = 0; i < comm_size; i++) {
       disps[i] = total_count;
       total_count += recvcnts[i];

@@ -56,7 +56,7 @@ int smpi_coll_tuned_allreduce_rab_rdb(void *sbuff, void *rbuff, int count,
       // do the reduction on received data. since the
       // ordering is right, it doesn't matter whether
       // the operation is commutative or not.
-       smpi_op_apply(op, tmp_buf, rbuff, &count, &dtype);
+       if(op!=MPI_OP_NULL) op->apply( tmp_buf, rbuff, &count, &dtype);
 
       // change the rank 
       newrank = rank / 2;
@@ -125,7 +125,7 @@ int smpi_coll_tuned_allreduce_rab_rdb(void *sbuff, void *rbuff, int count,
 
       // This algorithm is used only for predefined ops
       // and predefined ops are always commutative.
-      smpi_op_apply(op, (char *) tmp_buf + disps[recv_idx] * extent,
+      if(op!=MPI_OP_NULL) op->apply( (char *) tmp_buf + disps[recv_idx] * extent,
                         (char *) rbuff + disps[recv_idx] * extent, &recv_cnt, &dtype);
 
       // update send_idx for next iteration 

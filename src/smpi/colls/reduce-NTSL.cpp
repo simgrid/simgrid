@@ -72,12 +72,12 @@ int smpi_coll_tuned_reduce_NTSL(void *buf, void *rbuf, int count,
   if (count <= segment) {
     if (rank == root) {
       Request::recv(tmp_buf, count, datatype, from, tag, comm, &status);
-      smpi_op_apply(op, tmp_buf, rbuf, &count, &datatype);
+      if(op!=MPI_OP_NULL) op->apply( tmp_buf, rbuf, &count, &datatype);
     } else if (rank == ((root - 1 + size) % size)) {
       Request::send(rbuf, count, datatype, to, tag, comm);
     } else {
       Request::recv(tmp_buf, count, datatype, from, tag, comm, &status);
-      smpi_op_apply(op, tmp_buf, rbuf, &count, &datatype);
+      if(op!=MPI_OP_NULL) op->apply( tmp_buf, rbuf, &count, &datatype);
       Request::send(rbuf, count, datatype, to, tag, comm);
     }
     smpi_free_tmp_buffer(tmp_buf);
@@ -103,7 +103,7 @@ int smpi_coll_tuned_reduce_NTSL(void *buf, void *rbuf, int count,
       }
       for (i = 0; i < pipe_length; i++) {
         Request::wait(&recv_request_array[i], &status);
-        smpi_op_apply(op, tmp_buf + (i * increment), (char *)rbuf + (i * increment),
+        if(op!=MPI_OP_NULL) op->apply( tmp_buf + (i * increment), (char *)rbuf + (i * increment),
                        &segment, &datatype);
       }
     }
@@ -125,7 +125,7 @@ int smpi_coll_tuned_reduce_NTSL(void *buf, void *rbuf, int count,
       }
       for (i = 0; i < pipe_length; i++) {
         Request::wait(&recv_request_array[i], &status);
-        smpi_op_apply(op, tmp_buf + (i * increment), (char *)rbuf + (i * increment),
+        if(op!=MPI_OP_NULL) op->apply( tmp_buf + (i * increment), (char *)rbuf + (i * increment),
                        &segment, &datatype);
         send_request_array[i] = Request::isend((char *) rbuf + (i * increment), segment, datatype, to,
                   (tag + i), comm);

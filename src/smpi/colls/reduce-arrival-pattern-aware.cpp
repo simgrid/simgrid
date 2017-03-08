@@ -129,7 +129,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
 
           Request::send(header_buf, HEADER_SIZE, MPI_INT, to, tag, comm);
           Request::recv(tmp_buf, count, datatype, from, tag, comm, &status);
-          smpi_op_apply(op, tmp_buf, rbuf, &count, &datatype);
+          if(op!=MPI_OP_NULL) op->apply( tmp_buf, rbuf, &count, &datatype);
         }
       }                         /* while loop */
     }
@@ -180,7 +180,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
         }
         from = header_buf[myordering - 1];
         Request::recv(tmp_buf, count, datatype, from, tag, comm, &status);
-        smpi_op_apply(op, tmp_buf, rbuf, &count, &datatype);
+        if(op!=MPI_OP_NULL) op->apply( tmp_buf, rbuf, &count, &datatype);
         Request::send(rbuf, count, datatype, to, tag, comm);
       }
     }                           /* non-root */
@@ -256,7 +256,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
           for (i = 0; i < pipe_length; i++) {
             Request::recv(tmp_buf + (i * increment), segment, datatype, from, tag,
                      comm, &status);
-            smpi_op_apply(op, tmp_buf + (i * increment),
+            if(op!=MPI_OP_NULL) op->apply( tmp_buf + (i * increment),
                            (char *)rbuf + (i * increment), &segment, &datatype);
           }
         }
@@ -310,7 +310,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
         }
         for (i = 0; i < pipe_length; i++) {
           Request::wait(&recv_request_array[i], MPI_STATUS_IGNORE);
-          smpi_op_apply(op, tmp_buf + (i * increment), (char *)rbuf + (i * increment),
+          if(op!=MPI_OP_NULL) op->apply( tmp_buf + (i * increment), (char *)rbuf + (i * increment),
                          &segment, &datatype);
           send_request_array[i]=Request::isend((char *)rbuf + (i * increment), segment, datatype, to, tag, comm);
         }

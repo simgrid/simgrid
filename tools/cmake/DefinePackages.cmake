@@ -220,6 +220,8 @@ set(SMPI_SRC
   src/smpi/smpi_group.hpp
   src/smpi/smpi_mpi.cpp
   src/smpi/smpi_mpi_dt.cpp
+  src/smpi/smpi_op.cpp
+  src/smpi/smpi_op.hpp
   src/smpi/smpi_pmpi.cpp
   src/smpi/smpi_replay.cpp
   src/smpi/smpi_request.cpp

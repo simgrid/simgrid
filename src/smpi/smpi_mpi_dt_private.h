@@ -90,6 +90,49 @@ typedef struct s_smpi_mpi_struct{
   MPI_Datatype* old_types;
 } s_smpi_mpi_struct_t;
 
+//The following are datatypes for the MPI functions MPI_MAXLOC and MPI_MINLOC.
+typedef struct {
+  float value;
+  int index;
+} float_int;
+typedef struct {
+  float value;
+  float index;
+} float_float;
+typedef struct {
+  long value;
+  long index;
+} long_long;
+typedef struct {
+  double value;
+  double index;
+} double_double;
+typedef struct {
+  long value;
+  int index;
+} long_int;
+typedef struct {
+  double value;
+  int index;
+} double_int;
+typedef struct {
+  short value;
+  int index;
+} short_int;
+typedef struct {
+  int value;
+  int index;
+} int_int;
+typedef struct {
+  long double value;
+  int index;
+} long_double_int;
+typedef struct {
+  int64_t value;
+  int64_t index;
+} integer128_t;
+
+
 /*
   Functions to handle serialization/unserialization of messages, 3 for each type of MPI_Type
   One for creating the substructure to handle, one for serialization, one for unserialization

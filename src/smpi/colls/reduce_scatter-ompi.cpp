@@ -62,7 +62,7 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
     size = comm->size();
    
     XBT_DEBUG("coll:tuned:reduce_scatter_ompi_basic_recursivehalving, rank %d", rank);
-    if(!smpi_op_is_commute(op))
+    if( (op!=MPI_OP_NULL && !op->is_commutative()))
       THROWF(arg_error,0, " reduce_scatter ompi_basic_recursivehalving can only be used for commutative operations! ");
 
     /* Find displacements and the like */
@@ -132,7 +132,7 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
                                     comm, MPI_STATUS_IGNORE);
          
             /* integrate their results into our temp results */
-            smpi_op_apply(op, recv_buf, result_buf, &count, &dtype);
+            if(op!=MPI_OP_NULL) op->apply( recv_buf, result_buf, &count, &dtype);
          
             /* adjust rank to be the bottom "remain" ranks */
             tmp_rank = rank / 2;
@@ -243,7 +243,7 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
             /* if we received something on this step, push it into
                the results buffer */
             if (recv_count > 0) {
-                smpi_op_apply(op, 
+                if(op!=MPI_OP_NULL) op->apply( 
                                recv_buf + (ptrdiff_t)tmp_disps[recv_index] * extent, 
                                result_buf + (ptrdiff_t)tmp_disps[recv_index] * extent,
                                &recv_count, &dtype);
@@ -482,7 +482,7 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
            rbuf[prevblock] = inbuf[inbi ^ 0x1] (op) rbuf[prevblock]
         */
         tmprecv = accumbuf + (ptrdiff_t)displs[prevblock] * extent;
-        smpi_op_apply(op, inbuf[inbi ^ 0x1], tmprecv, &(rcounts[prevblock]), &dtype);
+        if(op!=MPI_OP_NULL) op->apply( inbuf[inbi ^ 0x1], tmprecv, &(rcounts[prevblock]), &dtype);
       
         /* send previous block to send_to */
         Request::send(tmprecv, rcounts[prevblock], dtype, send_to,
@@ -496,7 +496,7 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
     /* Apply operation on the last block (my block)
        rbuf[rank] = inbuf[inbi] (op) rbuf[rank] */
     tmprecv = accumbuf + (ptrdiff_t)displs[rank] * extent;
-    smpi_op_apply(op, inbuf[inbi], tmprecv, &(rcounts[rank]), &dtype);
+    if(op!=MPI_OP_NULL) op->apply( inbuf[inbi], tmprecv, &(rcounts[rank]), &dtype);
    
     /* Copy result from tmprecv to rbuf */
     ret = smpi_datatype_copy(tmprecv, rcounts[rank], dtype, (char*)rbuf, rcounts[rank], dtype);

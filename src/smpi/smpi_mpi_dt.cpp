@@ -49,47 +49,7 @@ const MPI_Datatype name = &mpi_##name;
   };                                                  \
 const MPI_Datatype name = &mpi_##name;
 
-//The following are datatypes for the MPI functions MPI_MAXLOC and MPI_MINLOC.
-typedef struct {
-  float value;
-  int index;
-} float_int;
-typedef struct {
-  float value;
-  float index;
-} float_float;
-typedef struct {
-  long value;
-  long index;
-} long_long;
-typedef struct {
-  double value;
-  double index;
-} double_double;
-typedef struct {
-  long value;
-  int index;
-} long_int;
-typedef struct {
-  double value;
-  int index;
-} double_int;
-typedef struct {
-  short value;
-  int index;
-} short_int;
-typedef struct {
-  int value;
-  int index;
-} int_int;
-typedef struct {
-  long double value;
-  int index;
-} long_double_int;
-typedef struct {
-  int64_t value;
-  int64_t index;
-} integer128_t;
+
 // Predefined data types
 CREATE_MPI_DATATYPE(MPI_CHAR, char);
 CREATE_MPI_DATATYPE(MPI_SHORT, short);
@@ -334,10 +294,11 @@ void unserialize_vector( void* contiguous_vector, void *noncontiguous_vector, in
   char* noncontiguous_vector_char = static_cast<char*>(noncontiguous_vector);
 
   for (i = 0; i < type_c->block_count * count; i++) {
-    if (type_c->old_type->sizeof_substruct == 0)
-      smpi_op_apply(op, contiguous_vector_char, noncontiguous_vector_char, &type_c->block_length,
+    if (type_c->old_type->sizeof_substruct == 0){
+      if(op!=MPI_OP_NULL)
+        op->apply( contiguous_vector_char, noncontiguous_vector_char, &type_c->block_length,
           &type_c->old_type);
-    else
+    }else
       static_cast<s_smpi_subtype_t*>(type_c->old_type->substruct)->unserialize(contiguous_vector_char, noncontiguous_vector_char,
                                                                     type_c->block_length,type_c->old_type->substruct,
                                                                     op);
@@ -489,7 +450,8 @@ void unserialize_contiguous(void* contiguous_vector, void *noncontiguous_vector,
   char* contiguous_vector_char = static_cast<char*>(contiguous_vector);
   char* noncontiguous_vector_char = static_cast<char*>(noncontiguous_vector)+type_c->lb;
   int n= count* type_c->block_count;
-  smpi_op_apply(op, contiguous_vector_char, noncontiguous_vector_char, &n, &type_c->old_type);
+  if(op!=MPI_OP_NULL)
+    op->apply( contiguous_vector_char, noncontiguous_vector_char, &n, &type_c->old_type);
 }
 
 void free_contiguous(MPI_Datatype* d){
@@ -620,9 +582,10 @@ void unserialize_hvector( void* contiguous_vector, void *noncontiguous_vector, i
   char* noncontiguous_vector_char = static_cast<char*>(noncontiguous_vector);
 
   for (i = 0; i < type_c->block_count * count; i++) {
-    if (type_c->old_type->sizeof_substruct == 0)
-      smpi_op_apply(op, contiguous_vector_char, noncontiguous_vector_char, &type_c->block_length, &type_c->old_type);
-    else
+    if (type_c->old_type->sizeof_substruct == 0){
+      if(op!=MPI_OP_NULL) 
+        op->apply( contiguous_vector_char, noncontiguous_vector_char, &type_c->block_length, &type_c->old_type);
+    }else
       static_cast<s_smpi_subtype_t*>(type_c->old_type->substruct)->unserialize( contiguous_vector_char, noncontiguous_vector_char,
                                                                      type_c->block_length, type_c->old_type->substruct,
                                                                      op);
@@ -739,10 +702,11 @@ void unserialize_indexed( void* contiguous_indexed, void *noncontiguous_indexed,
     static_cast<char*>(noncontiguous_indexed)+type_c->block_indices[0]*smpi_datatype_get_extent(type_c->old_type);
   for (int j = 0; j < count; j++) {
     for (int i = 0; i < type_c->block_count; i++) {
-      if (type_c->old_type->sizeof_substruct == 0)
-        smpi_op_apply(op, contiguous_indexed_char, noncontiguous_indexed_char, &type_c->block_lengths[i],
+      if (type_c->old_type->sizeof_substruct == 0){
+        if(op!=MPI_OP_NULL) 
+          op->apply( contiguous_indexed_char, noncontiguous_indexed_char, &type_c->block_lengths[i],
                     &type_c->old_type);
-      else
+      }else
         static_cast<s_smpi_subtype_t*>(type_c->old_type->substruct)->unserialize( contiguous_indexed_char,
                                                                        noncontiguous_indexed_char,
                                                                        type_c->block_lengths[i],
@@ -884,10 +848,11 @@ void unserialize_hindexed( void* contiguous_hindexed, void *noncontiguous_hindex
   char* noncontiguous_hindexed_char = static_cast<char*>(noncontiguous_hindexed)+ type_c->block_indices[0];
   for (int j = 0; j < count; j++) {
     for (int i = 0; i < type_c->block_count; i++) {
-      if (type_c->old_type->sizeof_substruct == 0)
-        smpi_op_apply(op, contiguous_hindexed_char, noncontiguous_hindexed_char, &type_c->block_lengths[i],
+      if (type_c->old_type->sizeof_substruct == 0){
+        if(op!=MPI_OP_NULL) 
+          op->apply( contiguous_hindexed_char, noncontiguous_hindexed_char, &type_c->block_lengths[i],
                             &type_c->old_type);
-      else
+      }else
         static_cast<s_smpi_subtype_t*>(type_c->old_type->substruct)->unserialize( contiguous_hindexed_char,
                                                                        noncontiguous_hindexed_char,
                                                                        type_c->block_lengths[i],
@@ -1029,10 +994,11 @@ void unserialize_struct( void* contiguous_struct, void *noncontiguous_struct, in
   char* noncontiguous_struct_char = static_cast<char*>(noncontiguous_struct)+ type_c->block_indices[0];
   for (int j = 0; j < count; j++) {
     for (int i = 0; i < type_c->block_count; i++) {
-      if (type_c->old_types[i]->sizeof_substruct == 0)
-        smpi_op_apply(op, contiguous_struct_char, noncontiguous_struct_char, &type_c->block_lengths[i],
+      if (type_c->old_types[i]->sizeof_substruct == 0){
+        if(op!=MPI_OP_NULL) 
+          op->apply( contiguous_struct_char, noncontiguous_struct_char, &type_c->block_lengths[i],
            & type_c->old_types[i]);
-      else
+      }else
         static_cast<s_smpi_subtype_t*>(type_c->old_types[i]->substruct)->unserialize( contiguous_struct_char,
                                                                            noncontiguous_struct_char,
                                                                            type_c->block_lengths[i],
@@ -1140,257 +1106,6 @@ void smpi_datatype_commit(MPI_Datatype *datatype)
   (*datatype)->flags=  ((*datatype)->flags | DT_FLAG_COMMITED);
 }
 
-typedef struct s_smpi_mpi_op {
-  MPI_User_function *func;
-  bool is_commute;
-  bool is_fortran_op;
-} s_smpi_mpi_op_t;
-
-#define MAX_OP(a, b)  (b) = (a) < (b) ? (b) : (a)
-#define MIN_OP(a, b)  (b) = (a) < (b) ? (a) : (b)
-#define SUM_OP(a, b)  (b) += (a)
-#define PROD_OP(a, b) (b) *= (a)
-#define LAND_OP(a, b) (b) = (a) && (b)
-#define LOR_OP(a, b)  (b) = (a) || (b)
-#define LXOR_OP(a, b) (b) = (!(a) && (b)) || ((a) && !(b))
-#define BAND_OP(a, b) (b) &= (a)
-#define BOR_OP(a, b)  (b) |= (a)
-#define BXOR_OP(a, b) (b) ^= (a)
-#define MAXLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (b) : (a)
-#define MINLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (a) : (b)
-
-#define APPLY_FUNC(a, b, length, type, func) \
-{                                          \
-  int i;                                   \
-  type* x = (type*)(a);                    \
-  type* y = (type*)(b);                    \
-  for(i = 0; i < *(length); i++) {         \
-    func(x[i], y[i]);                      \
-  }                                        \
-}
-
-#define APPLY_OP_LOOP(dtype, type, op) \
-  if (*datatype == dtype) {\
-    APPLY_FUNC(a, b, length, type, op)\
-  } else \
-
-
-#define APPLY_BASIC_OP_LOOP(op)\
-APPLY_OP_LOOP(MPI_CHAR, char,op)\
-APPLY_OP_LOOP(MPI_SHORT, short,op)\
-APPLY_OP_LOOP(MPI_INT, int,op)\
-APPLY_OP_LOOP(MPI_LONG, long,op)\
-APPLY_OP_LOOP(MPI_LONG_LONG, long long,op)\
-APPLY_OP_LOOP(MPI_SIGNED_CHAR, signed char,op)\
-APPLY_OP_LOOP(MPI_UNSIGNED_CHAR, unsigned char,op)\
-APPLY_OP_LOOP(MPI_UNSIGNED_SHORT, unsigned short,op)\
-APPLY_OP_LOOP(MPI_UNSIGNED, unsigned int,op)\
-APPLY_OP_LOOP(MPI_UNSIGNED_LONG, unsigned long,op)\
-APPLY_OP_LOOP(MPI_UNSIGNED_LONG_LONG, unsigned long long,op)\
-APPLY_OP_LOOP(MPI_WCHAR, wchar_t,op)\
-APPLY_OP_LOOP(MPI_BYTE, int8_t,op)\
-APPLY_OP_LOOP(MPI_INT8_T, int8_t,op)\
-APPLY_OP_LOOP(MPI_INT16_T, int16_t,op)\
-APPLY_OP_LOOP(MPI_INT32_T, int32_t,op)\
-APPLY_OP_LOOP(MPI_INT64_T, int64_t,op)\
-APPLY_OP_LOOP(MPI_UINT8_T, uint8_t,op)\
-APPLY_OP_LOOP(MPI_UINT16_T, uint16_t,op)\
-APPLY_OP_LOOP(MPI_UINT32_T, uint32_t,op)\
-APPLY_OP_LOOP(MPI_UINT64_T, uint64_t,op)\
-APPLY_OP_LOOP(MPI_AINT, MPI_Aint,op)\
-APPLY_OP_LOOP(MPI_OFFSET, MPI_Offset,op)\
-APPLY_OP_LOOP(MPI_INTEGER1, int,op)\
-APPLY_OP_LOOP(MPI_INTEGER2, int16_t,op)\
-APPLY_OP_LOOP(MPI_INTEGER4, int32_t,op)\
-APPLY_OP_LOOP(MPI_INTEGER8, int64_t,op)
-
-#define APPLY_BOOL_OP_LOOP(op)\
-APPLY_OP_LOOP(MPI_C_BOOL, bool,op)
-
-#define APPLY_FLOAT_OP_LOOP(op)\
-APPLY_OP_LOOP(MPI_FLOAT, float,op)\
-APPLY_OP_LOOP(MPI_DOUBLE, double,op)\
-APPLY_OP_LOOP(MPI_LONG_DOUBLE, long double,op)\
-APPLY_OP_LOOP(MPI_REAL, float,op)\
-APPLY_OP_LOOP(MPI_REAL4, float,op)\
-APPLY_OP_LOOP(MPI_REAL8, float,op)\
-APPLY_OP_LOOP(MPI_REAL16, double,op)
-
-#define APPLY_COMPLEX_OP_LOOP(op)\
-APPLY_OP_LOOP(MPI_C_FLOAT_COMPLEX, float _Complex,op)\
-APPLY_OP_LOOP(MPI_C_DOUBLE_COMPLEX, double _Complex,op)\
-APPLY_OP_LOOP(MPI_C_LONG_DOUBLE_COMPLEX, long double _Complex,op)
-
-#define APPLY_PAIR_OP_LOOP(op)\
-APPLY_OP_LOOP(MPI_FLOAT_INT, float_int,op)\
-APPLY_OP_LOOP(MPI_LONG_INT, long_int,op)\
-APPLY_OP_LOOP(MPI_DOUBLE_INT, double_int,op)\
-APPLY_OP_LOOP(MPI_SHORT_INT, short_int,op)\
-APPLY_OP_LOOP(MPI_2INT, int_int,op)\
-APPLY_OP_LOOP(MPI_2FLOAT, float_float,op)\
-APPLY_OP_LOOP(MPI_2DOUBLE, double_double,op)\
-APPLY_OP_LOOP(MPI_LONG_DOUBLE_INT, long_double_int,op)\
-APPLY_OP_LOOP(MPI_2LONG, long_long,op)
-
-#define APPLY_END_OP_LOOP(op)\
-  {\
-    xbt_die("Failed to apply " #op " to type %s", (*datatype)->name);\
-  }
-
-
-static void max_func(void *a, void *b, int *length, MPI_Datatype * datatype)
-{
-  APPLY_BASIC_OP_LOOP(MAX_OP)
-  APPLY_FLOAT_OP_LOOP(MAX_OP)
-  APPLY_END_OP_LOOP(MAX_OP)
-}
-
-static void min_func(void *a, void *b, int *length, MPI_Datatype * datatype)
-{
-  APPLY_BASIC_OP_LOOP(MIN_OP)
-  APPLY_FLOAT_OP_LOOP(MIN_OP)
-  APPLY_END_OP_LOOP(MIN_OP)
-}
-
-static void sum_func(void *a, void *b, int *length, MPI_Datatype * datatype)
-{
-  APPLY_BASIC_OP_LOOP(SUM_OP)
-  APPLY_FLOAT_OP_LOOP(SUM_OP)
-  APPLY_COMPLEX_OP_LOOP(SUM_OP)
-  APPLY_END_OP_LOOP(SUM_OP)
-}
-
-static void prod_func(void *a, void *b, int *length, MPI_Datatype * datatype)
-{
-  APPLY_BASIC_OP_LOOP(PROD_OP)
-  APPLY_FLOAT_OP_LOOP(PROD_OP)
-  APPLY_COMPLEX_OP_LOOP(PROD_OP)
-  APPLY_END_OP_LOOP(PROD_OP)
-}
-
-static void land_func(void *a, void *b, int *length, MPI_Datatype * datatype)
-{
-  APPLY_BASIC_OP_LOOP(LAND_OP)
-  APPLY_BOOL_OP_LOOP(LAND_OP)
-  APPLY_END_OP_LOOP(LAND_OP)
-}
-
-static void lor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
-{
-  APPLY_BASIC_OP_LOOP(LOR_OP)
-  APPLY_BOOL_OP_LOOP(LOR_OP)
-  APPLY_END_OP_LOOP(LOR_OP)
-}
-
-static void lxor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
-{
-  APPLY_BASIC_OP_LOOP(LXOR_OP)
-  APPLY_BOOL_OP_LOOP(LXOR_OP)
-  APPLY_END_OP_LOOP(LXOR_OP)
-}
-
-static void band_func(void *a, void *b, int *length, MPI_Datatype * datatype)
-{
-  APPLY_BASIC_OP_LOOP(BAND_OP)
-  APPLY_BOOL_OP_LOOP(BAND_OP)
-  APPLY_END_OP_LOOP(BAND_OP)
-}
-
-static void bor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
-{
-  APPLY_BASIC_OP_LOOP(BOR_OP)
-  APPLY_BOOL_OP_LOOP(BOR_OP)
-  APPLY_END_OP_LOOP(BOR_OP)
-}
-
-static void bxor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
-{
-  APPLY_BASIC_OP_LOOP(BXOR_OP)
-  APPLY_BOOL_OP_LOOP(BXOR_OP)
-  APPLY_END_OP_LOOP(BXOR_OP)
-}
-
-static void minloc_func(void *a, void *b, int *length, MPI_Datatype * datatype)
-{
-  APPLY_PAIR_OP_LOOP(MINLOC_OP)
-  APPLY_END_OP_LOOP(MINLOC_OP)
-}
-
-static void maxloc_func(void *a, void *b, int *length, MPI_Datatype * datatype)
-{
-  APPLY_PAIR_OP_LOOP(MAXLOC_OP)
-  APPLY_END_OP_LOOP(MAXLOC_OP)
-}
-
-static void replace_func(void *a, void *b, int *length, MPI_Datatype * datatype)
-{
-  memcpy(b, a, *length * smpi_datatype_size(*datatype));
-}
-
-#define CREATE_MPI_OP(name, func)                             \
-  static s_smpi_mpi_op_t mpi_##name = { &(func) /* func */, true, false }; \
-MPI_Op name = &mpi_##name;
-
-CREATE_MPI_OP(MPI_MAX, max_func);
-CREATE_MPI_OP(MPI_MIN, min_func);
-CREATE_MPI_OP(MPI_SUM, sum_func);
-CREATE_MPI_OP(MPI_PROD, prod_func);
-CREATE_MPI_OP(MPI_LAND, land_func);
-CREATE_MPI_OP(MPI_LOR, lor_func);
-CREATE_MPI_OP(MPI_LXOR, lxor_func);
-CREATE_MPI_OP(MPI_BAND, band_func);
-CREATE_MPI_OP(MPI_BOR, bor_func);
-CREATE_MPI_OP(MPI_BXOR, bxor_func);
-CREATE_MPI_OP(MPI_MAXLOC, maxloc_func);
-CREATE_MPI_OP(MPI_MINLOC, minloc_func);
-CREATE_MPI_OP(MPI_REPLACE, replace_func);
-
-MPI_Op smpi_op_new(MPI_User_function * function, bool commute)
-{
-  MPI_Op op          = xbt_new(s_smpi_mpi_op_t, 1);
-  op->func = function;
-  op-> is_commute = commute;
-  op-> is_fortran_op = false;
-  return op;
-}
-
-bool smpi_op_is_commute(MPI_Op op)
-{
-  return (op==MPI_OP_NULL) ? true : op-> is_commute;
-}
-
-void smpi_op_destroy(MPI_Op op)
-{
-  xbt_free(op);
-}
-
-void smpi_op_set_fortran(MPI_Op op)
-{
-  //tell that we were created from fortran, so we need to translate the type to fortran when called
-  op->is_fortran_op = true;
-}
-
-void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
-{
-  if(op==MPI_OP_NULL)
-    return;
-
-  if(smpi_privatize_global_variables){//we need to switch as the called function may silently touch global variables
-    XBT_DEBUG("Applying operation, switch to the right data frame ");
-    smpi_switch_data_segment(smpi_process_index());
-  }
-
-  if(!smpi_process_get_replaying()){
-    if(! op->is_fortran_op)
-      op->func(invec, inoutvec, len, datatype);
-    else{
-      int tmp = smpi_type_c2f(*datatype);
-      /* Unfortunately, the C and Fortran version of the MPI standard do not agree on the type here,
-         thus the reinterpret_cast. */
-      op->func(invec, inoutvec, len, reinterpret_cast<MPI_Datatype*>(&tmp) );
-    }
-  }
-}
 
 int smpi_type_attr_delete(MPI_Datatype type, int keyval){
   smpi_type_key_elem elem =
