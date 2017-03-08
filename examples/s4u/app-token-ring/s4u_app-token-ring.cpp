@@ -40,6 +40,7 @@ public:
       simgrid::s4u::this_actor::send(neighbor_mailbox, xbt_strdup("Token"), task_comm_size);
       char* res = static_cast<char*>(simgrid::s4u::this_actor::recv(my_mailbox));
       XBT_INFO("Host \"%u\" received \"%s\"", rank, res);
+      xbt_free(res);
     } else {
       char* res = static_cast<char*>(simgrid::s4u::this_actor::recv(my_mailbox));
       XBT_INFO("Host \"%u\" received \"%s\"", rank, res);
