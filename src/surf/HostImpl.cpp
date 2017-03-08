@@ -5,6 +5,7 @@
 
 #include "src/surf/HostImpl.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_host, surf, "Logging specific to the SURF host module");
 
@@ -153,7 +154,7 @@ xbt_dynar_t HostImpl::getAttachedStorageList()
     if (xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
       simgrid::surf::Storage* storage = static_cast<simgrid::surf::Storage*>(
           xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
-      if (!strcmp((const char*)storage->attach_, piface_->cname())) {
+      if (!strcmp(static_cast<const char*>(storage->attach_), piface_->cname())) {
         xbt_dynar_push_as(result, void*, (void*)storage->cname());
       }
     }
@@ -168,39 +169,29 @@ Action* HostImpl::open(const char* fullpath)
   s_mount_t mnt;
   unsigned int cursor;
   size_t longest_prefix_length = 0;
-  char* path                   = nullptr;
-  char* file_mount_name        = nullptr;
-  char* mount_name             = nullptr;
+  std::string path;
+  std::string mount_name;
 
   XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath, piface_->cname());
   xbt_dynar_foreach (storage_, cursor, mnt) {
     XBT_DEBUG("See '%s'", mnt.name);
-    file_mount_name = (char*)xbt_malloc((strlen(mnt.name) + 1));
-    strncpy(file_mount_name, fullpath, strlen(mnt.name) + 1);
-    file_mount_name[strlen(mnt.name)] = '\0';
+    std::string file_mount_name = std::string(fullpath).substr(0, strlen(mnt.name));
 
-    if (!strcmp(file_mount_name, mnt.name) &&
+    if (!strcmp(file_mount_name.c_str(), mnt.name) &&
         strlen(mnt.name) > longest_prefix_length) { /* The current mount name is found in the full path and is
                                                            bigger than the previous*/
       longest_prefix_length = strlen(mnt.name);
       st                    = static_cast<simgrid::surf::Storage*>(mnt.storage);
     }
-    free(file_mount_name);
   }
   if (longest_prefix_length > 0) { /* Mount point found, split fullpath into mount_name and path+filename*/
-    path       = (char*)xbt_malloc((strlen(fullpath) - longest_prefix_length + 1));
-    mount_name = (char*)xbt_malloc((longest_prefix_length + 1));
-    strncpy(mount_name, fullpath, longest_prefix_length + 1);
-    strncpy(path, fullpath + longest_prefix_length, strlen(fullpath) - longest_prefix_length + 1);
-    path[strlen(fullpath) - longest_prefix_length] = '\0';
-    mount_name[longest_prefix_length]              = '\0';
+    mount_name = std::string(fullpath).substr(0, longest_prefix_length);
+    path       = std::string(fullpath).substr(longest_prefix_length, strlen(fullpath));
   } else
     xbt_die("Can't find mount point for '%s' on '%s'", fullpath, piface_->cname());
 
-  XBT_DEBUG("OPEN %s on disk '%s'", path, st->cname());
-  Action* action = st->open((const char*)mount_name, (const char*)path);
-  free((char*)path);
-  free((char*)mount_name);
+  XBT_DEBUG("OPEN %s on disk '%s'", path.c_str(), st->cname());
+  Action* action = st->open(mount_name.c_str(), path.c_str());
   return action;
 }
 
@@ -304,11 +295,9 @@ int HostImpl::fileMove(surf_file_t fd, const char* fullpath)
       sg_size_t* new_psize = xbt_new(sg_size_t, 1);
       *new_psize           = *psize;
       xbt_dict_remove(findStorageOnMountList(fd->mount)->content_, fd->name);
-      char* path = (char*)xbt_malloc((strlen(fullpath) - strlen(fd->mount) + 1));
-      strncpy(path, fullpath + strlen(fd->mount), strlen(fullpath) - strlen(fd->mount) + 1);
-      xbt_dict_set(findStorageOnMountList(fd->mount)->content_, path, new_psize, nullptr);
+      std::string path = std::string(fullpath).substr(strlen(fd->mount), strlen(fullpath));
+      xbt_dict_set(findStorageOnMountList(fd->mount)->content_, path.c_str(), new_psize, nullptr);
       XBT_DEBUG("Move file from %s to %s, size '%llu'", fd->name, fullpath, *psize);
-      free(path);
       return 0;
     } else {
       XBT_WARN("File %s doesn't exist", fd->name);
