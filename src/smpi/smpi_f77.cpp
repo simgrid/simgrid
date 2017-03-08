@@ -890,7 +890,7 @@ void mpi_op_create_ (void * function, int* commute, int* op, int* ierr){
   MPI_Op tmp;
  *ierr = MPI_Op_create(reinterpret_cast<MPI_User_function*>(function),*commute, &tmp);
  if(*ierr == MPI_SUCCESS) {
-   smpi_op_set_fortran(tmp);
+   tmp->set_fortran_op();
    *op = smpi_op_add_f(tmp);
  }
 }

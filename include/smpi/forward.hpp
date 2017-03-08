@@ -15,6 +15,7 @@ namespace smpi {
 
 class Comm;
 class Group;
+class Op;
 class Request;
 class Topo;
 class Win;
@@ -29,6 +30,7 @@ class Dist_Graph;
 
 typedef simgrid::smpi::Comm SMPI_Comm;
 typedef simgrid::smpi::Group SMPI_Group;
+typedef simgrid::smpi::Op SMPI_Op;
 typedef simgrid::smpi::Request SMPI_Request;
 typedef simgrid::smpi::Topo SMPI_Topology;
 typedef simgrid::smpi::Win SMPI_Win;
@@ -40,6 +42,7 @@ typedef simgrid::smpi::Dist_Graph SMPI_Dist_Graph_topology;
 
 typedef struct SMPI_Comm SMPI_Comm;
 typedef struct SMPI_Group SMPI_Group;
+typedef struct SMPI_Op SMPI_Op;
 typedef struct SMPI_Request SMPI_Request;
 typedef struct SMPI_Topology SMPI_Topology;
 typedef struct SMPI_Win SMPI_Win;

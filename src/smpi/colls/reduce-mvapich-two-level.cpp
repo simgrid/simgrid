@@ -111,7 +111,7 @@ int smpi_coll_tuned_reduce_mvapich2_two_level( void *sendbuf,
     leader_of_root = comm->group()->rank(leaders_map[root]);
     leader_root = leader_comm->group()->rank(leaders_map[root]);
 
-    is_commutative=smpi_op_is_commute(op);
+    is_commutative= (op==MPI_OP_NULL || op->is_commutative());
 
     smpi_datatype_extent(datatype, &true_lb,
                                        &true_extent);

@@ -38,7 +38,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
     extent =smpi_datatype_get_extent(datatype);
     smpi_datatype_extent(datatype, &true_lb, &true_extent);
     
-    if (smpi_op_is_commute(op)) {
+    if (op->is_commutative()) {
         is_commutative = 1;
     }
 
@@ -90,12 +90,12 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
             
             if (is_commutative || (src < rank)) {
                 if (sendbuf != MPI_IN_PLACE) {
-		     smpi_op_apply( op,
+		     if(op!=MPI_OP_NULL) op->apply(
 			                          tmp_recvbuf, recvbuf, &recvcounts[rank],
                                &datatype); 
                 }
                 else {
-		    smpi_op_apply(op, 
+		    if(op!=MPI_OP_NULL) op->apply( 
 			tmp_recvbuf, ((char *)recvbuf+disps[rank]*extent), 
 			&recvcounts[rank], &datatype);
                     /* we can't store the result at the beginning of
@@ -107,7 +107,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
             }
             else {
                 if (sendbuf != MPI_IN_PLACE) {
-		    smpi_op_apply(op, 
+		    if(op!=MPI_OP_NULL) op->apply( 
 		       recvbuf, tmp_recvbuf, &recvcounts[rank], &datatype);
                     /* copy result back into recvbuf */
                     mpi_errno = smpi_datatype_copy(tmp_recvbuf, recvcounts[rank],
@@ -116,7 +116,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
                     if (mpi_errno) return(mpi_errno);
                 }
                 else {
-		    smpi_op_apply(op, 
+		    if(op!=MPI_OP_NULL) op->apply( 
                         ((char *)recvbuf+disps[rank]*extent),
 			tmp_recvbuf, &recvcounts[rank], &datatype);
                     /* copy result back into recvbuf */
@@ -232,7 +232,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_noncomm(void *sendbuf, void *recvbuf, i
            is now our peer's responsibility */
         if (rank > peer) {
             /* higher ranked value so need to call op(received_data, my_data) */
-            smpi_op_apply(op, 
+            if(op!=MPI_OP_NULL) op->apply( 
                    incoming_data + recv_offset*true_extent,
                      outgoing_data + recv_offset*true_extent,
                      &size, &datatype );
@@ -240,7 +240,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_noncomm(void *sendbuf, void *recvbuf, i
         }
         else {
             /* lower ranked value so need to call op(my_data, received_data) */
-	    smpi_op_apply( op,
+	    if(op!=MPI_OP_NULL) op->apply(
 		     outgoing_data + recv_offset*true_extent,
                      incoming_data + recv_offset*true_extent,
                      &size, &datatype);
@@ -285,7 +285,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
     extent =smpi_datatype_get_extent(datatype);
     smpi_datatype_extent(datatype, &true_lb, &true_extent);
     
-    if (smpi_op_is_commute(op)) {
+    if ((op==MPI_OP_NULL) || op->is_commutative()) {
         is_commutative = 1;
     }
 
@@ -454,10 +454,10 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
                 if (received) {
                     if (is_commutative || (dst_tree_root < my_tree_root)) {
                         {
-			         smpi_op_apply(op, 
+			         if(op!=MPI_OP_NULL) op->apply( 
                                tmp_recvbuf, tmp_results, &blklens[0],
 			       &datatype); 
-			        smpi_op_apply(op, 
+			        if(op!=MPI_OP_NULL) op->apply( 
                                ((char *)tmp_recvbuf + dis[1]*extent),
 			       ((char *)tmp_results + dis[1]*extent),
 			       &blklens[1], &datatype); 
@@ -465,10 +465,10 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
                     }
                     else {
                         {
-			         smpi_op_apply(op,
+			         if(op!=MPI_OP_NULL) op->apply(
                                    tmp_results, tmp_recvbuf, &blklens[0],
                                    &datatype); 
-			         smpi_op_apply(op,
+			         if(op!=MPI_OP_NULL) op->apply(
                                    ((char *)tmp_results + dis[1]*extent),
                                    ((char *)tmp_recvbuf + dis[1]*extent),
                                    &blklens[1], &datatype); 

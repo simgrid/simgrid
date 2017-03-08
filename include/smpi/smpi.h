@@ -343,8 +343,7 @@ XBT_PUBLIC_DATA( const MPI_Datatype ) MPI_INTEGER16;
 #define MPI_2DOUBLE_PRECISION MPI_2DOUBLE
 
 typedef void MPI_User_function(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype);
-struct s_smpi_mpi_op;
-typedef struct s_smpi_mpi_op *MPI_Op;
+typedef SMPI_Op *MPI_Op;
 
 #define MPI_OP_NULL ((MPI_Op)NULL)
 XBT_PUBLIC_DATA( MPI_Op ) MPI_MAX;

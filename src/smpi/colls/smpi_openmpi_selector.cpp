@@ -32,7 +32,7 @@ int smpi_coll_tuned_allreduce_ompi(void *sbuf, void *rbuf, int count,
                                                                    op, comm));
     } 
 
-    if( smpi_op_is_commute(op) && (count > comm_size) ) {
+    if( ((op==MPI_OP_NULL) || op->is_commutative()) && (count > comm_size) ) {
         const size_t segment_size = 1 << 20; /* 1 MB */
         if ((comm_size * segment_size >= block_dsize)) {
             //FIXME: ok, these are not the right algorithms, try to find closer ones
@@ -253,7 +253,7 @@ int smpi_coll_tuned_reduce_ompi( void *sendbuf, void *recvbuf,
      * If the operation is non commutative we currently have choice of linear 
      * or in-order binary tree algorithm.
      */
-    if( !smpi_op_is_commute(op) ) {
+    if(  (op!=MPI_OP_NULL) && !op->is_commutative() ) {
         if ((communicator_size < 12) && (message_size < 2048)) {
             return smpi_coll_tuned_reduce_ompi_basic_linear (sendbuf, recvbuf, count, datatype, op, root, comm/*, module*/); 
         } 
@@ -353,7 +353,7 @@ int smpi_coll_tuned_reduce_scatter_ompi( void *sbuf, void *rbuf,
         }
     }
 
-    if( !smpi_op_is_commute(op) || (zerocounts)) {
+    if(  ((op!=MPI_OP_NULL) && !op->is_commutative()) || (zerocounts)) {
         smpi_mpi_reduce_scatter (sbuf, rbuf, rcounts, 
                                                                     dtype, op, 
                                                                     comm); 

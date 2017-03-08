@@ -17,6 +17,7 @@
 #include "xbt/xbt_os_time.h"
 #include "src/smpi/smpi_group.hpp"
 #include "src/smpi/smpi_comm.hpp"
+#include "src/smpi/smpi_op.hpp"
 #include "src/smpi/smpi_request.hpp"
 #include "src/smpi/smpi_topo.hpp"
 #include "src/smpi/smpi_win.hpp"
@@ -198,12 +199,6 @@ XBT_PRIVATE int smpi_mpi_pack(void* inbuf, int incount, MPI_Datatype type, void*
 
 XBT_PRIVATE void smpi_empty_status(MPI_Status * status);
 XBT_PRIVATE int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype);
-XBT_PRIVATE MPI_Op smpi_op_new(MPI_User_function * function, bool commute);
-XBT_PRIVATE bool smpi_op_is_commute(MPI_Op op);
-XBT_PRIVATE void smpi_op_destroy(MPI_Op op);
-XBT_PRIVATE void smpi_op_set_fortran(MPI_Op op);
-XBT_PRIVATE void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len, MPI_Datatype * datatype);
-
 
 XBT_PRIVATE int smpi_comm_c2f(MPI_Comm comm);
 XBT_PRIVATE int smpi_comm_add_f(MPI_Comm comm);

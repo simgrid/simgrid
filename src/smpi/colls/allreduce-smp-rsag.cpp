@@ -71,7 +71,7 @@ int smpi_coll_tuned_allreduce_smp_rsag(void *send_buf, void *recv_buf,
       //      if (src < ((inter_rank + 1) * num_core)) {
       if (src < comm_size) {
         Request::recv(tmp_buf, count, dtype, src, tag, comm, &status);
-        smpi_op_apply(op, tmp_buf, recv_buf, &count, &dtype);
+        if(op!=MPI_OP_NULL) op->apply( tmp_buf, recv_buf, &count, &dtype);
         //printf("Node %d recv from node %d when mask is %d\n", rank, src, mask);
       }
     } else {
@@ -111,7 +111,7 @@ int smpi_coll_tuned_allreduce_smp_rsag(void *send_buf, void *recv_buf,
                    &status);
 
       // result is in rbuf
-      smpi_op_apply(op, tmp_buf, (char *) recv_buf + recv_offset, &seg_count,
+      if(op!=MPI_OP_NULL) op->apply( tmp_buf, (char *) recv_buf + recv_offset, &seg_count,
                      &dtype);
     }
 

@@ -145,7 +145,7 @@ int smpi_coll_tuned_reduce_mvapich2_knomial (
     smpi_datatype_extent(datatype, &true_lb, &true_extent);
     extent = smpi_datatype_get_extent(datatype);
 
-    is_commutative = smpi_op_is_commute(op);
+    is_commutative =  (op==MPI_OP_NULL || op->is_commutative());
 
     if (rank != root) {
         recvbuf=(void *)smpi_get_tmp_recvbuffer(count*(MAX(extent,true_extent)));
@@ -195,7 +195,7 @@ int smpi_coll_tuned_reduce_mvapich2_knomial (
             recv_iter++;
 
             if (is_commutative) {
-              smpi_op_apply(op, tmp_buf[index], recvbuf, &count, &datatype);
+              if(op!=MPI_OP_NULL) op->apply( tmp_buf[index], recvbuf, &count, &datatype);
             }
         }
 

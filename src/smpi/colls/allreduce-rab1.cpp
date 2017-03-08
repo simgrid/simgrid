@@ -59,7 +59,7 @@ int smpi_coll_tuned_allreduce_rab1(void *sbuff, void *rbuff,
       Request::sendrecv((char *) recv + send_idx * extent, send_cnt, dtype, dst, tag,
                    tmp_buf, recv_cnt, dtype, dst, tag, comm, &status);
 
-      smpi_op_apply(op, tmp_buf, (char *) recv + recv_idx * extent, &recv_cnt,
+      if(op!=MPI_OP_NULL) op->apply( tmp_buf, (char *) recv + recv_idx * extent, &recv_cnt,
                      &dtype);
 
       // update send_idx for next iteration 
@@ -93,7 +93,7 @@ int smpi_coll_tuned_allreduce_rab1(void *sbuff, void *rbuff,
       Request::sendrecv((char *) rbuff + send_idx * extent, send_cnt, dtype, dst,
                    tag, tmp_buf, recv_cnt, dtype, dst, tag, comm, &status);
 
-      smpi_op_apply(op, tmp_buf, (char *) rbuff + recv_idx * extent, &recv_cnt,
+      if(op!=MPI_OP_NULL) op->apply( tmp_buf, (char *) rbuff + recv_idx * extent, &recv_cnt,
                      &dtype);
 
       // update send_idx for next iteration 

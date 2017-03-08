@@ -72,7 +72,7 @@ int smpi_coll_tuned_allreduce_mpich(void *sbuf, void *rbuf, int count,
     while (pof2 <= comm_size) pof2 <<= 1;
     pof2 >>=1;
 
-    if (block_dsize > large_message && count >= pof2 && smpi_op_is_commute(op)) {
+    if (block_dsize > large_message && count >= pof2 && (op==MPI_OP_NULL || op->is_commutative())) {
       //for long messages
        return (smpi_coll_tuned_allreduce_rab_rdb (sbuf, rbuf, 
                                                                    count, dtype,
@@ -359,7 +359,7 @@ int smpi_coll_tuned_reduce_mpich( void *sendbuf, void *recvbuf,
     pof2 >>= 1;
 
 
-    if ((count < pof2) || (message_size < 2048) || !smpi_op_is_commute(op)) {
+    if ((count < pof2) || (message_size < 2048) || (op!=MPI_OP_NULL && !op->is_commutative())) {
         return smpi_coll_tuned_reduce_binomial (sendbuf, recvbuf, count, datatype, op, root, comm); 
     }
         return smpi_coll_tuned_reduce_scatter_gather(sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
@@ -437,11 +437,11 @@ int smpi_coll_tuned_reduce_scatter_mpich( void *sbuf, void *rbuf,
         total_message_size += rcounts[i];
     }
 
-    if( smpi_op_is_commute(op) &&  total_message_size > 524288) { 
+    if( (op==MPI_OP_NULL || op->is_commutative()) &&  total_message_size > 524288) { 
         return smpi_coll_tuned_reduce_scatter_mpich_pair (sbuf, rbuf, rcounts, 
                                                                     dtype, op, 
                                                                     comm); 
-    }else if (!smpi_op_is_commute(op)) {
+    }else if ((op!=MPI_OP_NULL && !op->is_commutative())) {
         int is_block_regular = 1;
         for (i = 0; i < (comm_size - 1); ++i) {
             if (rcounts[i] != rcounts[i+1]) {
