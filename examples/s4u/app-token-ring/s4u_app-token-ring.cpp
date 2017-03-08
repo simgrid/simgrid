@@ -26,13 +26,13 @@ public:
   {
     rank = xbt_str_parse_int(simgrid::s4u::this_actor::name().c_str(),
                              "Any process of this example must have a numerical name, not %s");
-    my_mailbox = simgrid::s4u::Mailbox::byName((std::to_string(rank)).c_str());
+    my_mailbox = simgrid::s4u::Mailbox::byName(std::to_string(rank));
     if (rank + 1 == host_list.size())
       /* The last process, which sends the token back to rank 0 */
       neighbor_mailbox = simgrid::s4u::Mailbox::byName("0");
     else
       /* The others processes send to their right neighbor (rank+1) */
-      neighbor_mailbox = simgrid::s4u::Mailbox::byName((std::to_string(rank + 1)).c_str());
+      neighbor_mailbox = simgrid::s4u::Mailbox::byName(std::to_string(rank + 1));
 
     if (rank == 0) {
       /* The root process (rank 0) first sends the token then waits to receive it back */
