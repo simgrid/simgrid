@@ -39,4 +39,4 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_RngStream_randU01(JNIEnv *env, jo
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_RngStream_randInt(JNIEnv *env, jobject jrngstream, jint i, jint j);
 
 SG_END_DECL()
-#endif                          /* MSG_RNGSTREAM_H */
+#endif

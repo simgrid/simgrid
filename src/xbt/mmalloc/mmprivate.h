@@ -321,4 +321,4 @@ XBT_PRIVATE size_t mmalloc_get_bytes_used_remote(size_t heaplimit, const malloc_
 
 SG_END_DECL()
 
-#endif /* XBT_MMPRIVATE_H */
+#endif

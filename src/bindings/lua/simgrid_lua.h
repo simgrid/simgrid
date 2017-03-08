@@ -1,5 +1,4 @@
-/* Copyright (c) 2010-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -29,4 +28,4 @@ int console_AS_seal(lua_State *L);
 int console_set_function(lua_State*);
 int console_host_set_property(lua_State*);
 }
-#endif  /* SIMGRID_LUA_H */
+#endif

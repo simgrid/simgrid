@@ -452,4 +452,4 @@ XBT_PUBLIC(double func_vegas_fpi) (lmm_variable_t var, double x);
 /** @} */
 SG_END_DECL()
 
-#endif /* SURF_MAXMIN_H */
+#endif

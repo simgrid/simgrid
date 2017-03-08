@@ -55,4 +55,4 @@ XBT_PRIVATE void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element, vo
 
 SG_END_DECL()
 
-#endif /* XBT_DICT_PRIVATE_H */
+#endif

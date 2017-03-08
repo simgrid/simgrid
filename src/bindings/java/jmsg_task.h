@@ -63,4 +63,4 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_Task_listenFromHost(JNIEnv* env, jcl
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Task_listenFrom(JNIEnv* env, jclass cls, jstring jalias);
 
 SG_END_DECL()
-#endif                          /* !MSG_JTASK_H */
+#endif
