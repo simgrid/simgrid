@@ -86,7 +86,7 @@ void smpi_deployment_cleanup_instances(){
   xbt_dict_foreach(smpi_instances, cursor, name, instance) {
     if(instance->comm_world!=MPI_COMM_NULL)
       while (instance->comm_world->group()->unuse() > 0);
-    xbt_free(instance->comm_world);
+    delete instance->comm_world;
     MSG_barrier_destroy(instance->finalization_barrier);
   }
   xbt_dict_free(&smpi_instances);
