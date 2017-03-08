@@ -1,7 +1,7 @@
 /* Copyright (c) 2005-2016. The SimGrid Team. All rights reserved.          */
 
-#ifndef SIMGRIX_XBT_BACKTRACE_H
-#define SIMGRIX_XBT_BACKTRACE_H
+#ifndef XBT_BACKTRACE_H
+#define XBT_BACKTRACE_H
 
 #include <cstddef>
 

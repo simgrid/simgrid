@@ -6,8 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_ASSERTS_H
-#define _XBT_ASSERTS_H
+#ifndef XBT_ASSERTS_H
+#define XBT_ASSERTS_H
 
 #include "xbt/misc.h"
 #include "xbt/log.h"
@@ -49,4 +49,4 @@ XBT_PUBLIC_DATA(int) xbt_log_no_loc; /* Do not show the backtrace on failed back
 
 /** @} */
 SG_END_DECL()
-#endif                          /* _XBT_ASSERTS_H */
+#endif                          /* XBT_ASSERTS_H */

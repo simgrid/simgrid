@@ -6,8 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef xbt_H
-#define xbt_H
+#ifndef XBT_H
+#define XBT_H
 
 #include <xbt/misc.h>
 #include <xbt/sysdep.h>

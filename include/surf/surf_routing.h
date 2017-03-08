@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SURF_SURF_ROUTING_H
-#define _SURF_SURF_ROUTING_H
+#ifndef SURF_SURF_ROUTING_H
+#define SURF_SURF_ROUTING_H
 
 #include "xbt/lib.h"
 

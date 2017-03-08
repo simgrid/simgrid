@@ -5,8 +5,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_OS_TIMER_H
-#define _XBT_OS_TIMER_H
+#ifndef XBT_OS_TIMER_H
+#define XBT_OS_TIMER_H
 
 #include <xbt/misc.h>           /* XBT_PUBLIC */
 #include <stddef.h>             /* size_t */

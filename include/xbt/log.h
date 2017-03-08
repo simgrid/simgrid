@@ -25,8 +25,8 @@
    printf function. Useful to debug the logging facilities themselves, or to not make source analysis tools mad */
 //#define XBT_LOG_MAYDAY
 
-#ifndef _XBT_LOG_H_
-#define _XBT_LOG_H_
+#ifndef XBT_LOG_H
+#define XBT_LOG_H
 
 #include "xbt/misc.h"
 #include <stdarg.h>

@@ -5,8 +5,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_THREAD_H
-#define _XBT_THREAD_H
+#ifndef XBT_THREAD_H
+#define XBT_THREAD_H
 
 #include <simgrid/simix.h>
 
