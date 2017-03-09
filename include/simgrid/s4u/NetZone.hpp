@@ -40,7 +40,7 @@ protected:
 
   explicit NetZone(NetZone * father, const char* name);
   virtual ~NetZone();
-  std::vector<Host*>* hosts_ = nullptr;
+  std::vector<Host*>* hosts_ = new std::vector<Host*>();
 
 public:
   /** @brief Seal your netzone once you're done adding content, and before routing stuff through it */

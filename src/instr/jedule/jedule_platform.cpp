@@ -69,17 +69,7 @@ void Container::createHierarchy(sg_netzone_t from_as)
   if (xbt_dict_is_empty(routing_sons)) {
     // I am no AS
     // add hosts to jedule platform
-    xbt_dynar_t table = from_as->hosts();
-    unsigned int dynar_cursor;
-    sg_host_t host;
-
-    std::vector<sg_host_t> hosts;
-
-    xbt_dynar_foreach(table, dynar_cursor, host) {
-      hosts.push_back(host);
-    }
-    this->addResources(hosts);
-    xbt_dynar_free(&table);
+    this->addResources(*from_as->hosts());
   } else {
     xbt_dict_foreach(routing_sons, cursor, key, elem) {
       jed_container_t child_container = new simgrid::jedule::Container(std::string(elem->name()));
