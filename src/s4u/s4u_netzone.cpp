@@ -38,7 +38,6 @@ NetZone::~NetZone()
     delete static_cast<NetZone*>(elem);
   }
 
-  delete hosts_;
   xbt_dict_free(&children_);
   xbt_free(name_);
 }
@@ -76,12 +75,13 @@ NetZone* NetZone::father()
 
 std::vector<s4u::Host*>* NetZone::hosts()
 {
-  for (auto card : vertices_) {
-    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->name());
-    if (host != nullptr)
-      hosts_->push_back(host);
-  }
-  return hosts_;
+  if (hosts_.empty()) // Lazy initialization
+    for (auto card : vertices_) {
+      s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->name());
+      if (host != nullptr)
+        hosts_.push_back(host);
+    }
+  return &hosts_;
 }
 
 int NetZone::addComponent(kernel::routing::NetPoint* elm)
