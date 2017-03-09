@@ -107,7 +107,7 @@ CREATE_MPI_DATATYPE(MPI_PTR, void*);
 namespace simgrid{
 namespace smpi{
 
-Datatype::Datatype(int size,int lb, int ub, int flags) : name_(nullptr), lb_(lb), ub_(ub), flags_(flags), attributes_(nullptr), in_use_(1){
+Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr), size_(size), lb_(lb), ub_(ub), flags_(flags), attributes_(nullptr), in_use_(1){
 #if HAVE_MC
   if(MC_is_active())
     MC_ignore(&(in_use_), sizeof(in_use_));
@@ -115,18 +115,17 @@ Datatype::Datatype(int size,int lb, int ub, int flags) : name_(nullptr), lb_(lb)
 }
 
 //for predefined types, so in_use = 0.
-Datatype::Datatype(char* name, int size,int lb, int ub, int flags) : name_(name), lb_(lb), ub_(ub), flags_(flags), attributes_(nullptr), in_use_(0){
+Datatype::Datatype(char* name, int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(name), size_(size), lb_(lb), ub_(ub), flags_(flags), attributes_(nullptr), in_use_(0){
 #if HAVE_MC
   if(MC_is_active())
     MC_ignore(&(in_use_), sizeof(in_use_));
 #endif
 }
 
-
-//TODO : subtypes ?
-Datatype::Datatype(Datatype *datatype) : lb_(datatype->lb_), ub_(datatype->ub_), flags_(datatype->flags_), in_use_(1)
+Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), lb_(datatype->lb_), ub_(datatype->ub_), flags_(datatype->flags_), attributes_(nullptr), in_use_(1)
 {
   flags_ &= ~DT_FLAG_PREDEFINED;
+  *ret = MPI_SUCCESS;
   if(datatype->name_)
     name_ = xbt_strdup(datatype->name_);
   if(datatype->attributes_ !=nullptr){
@@ -140,11 +139,10 @@ Datatype::Datatype(Datatype *datatype) : lb_(datatype->lb_), ub_(datatype->ub_),
       smpi_type_key_elem elem =
           static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, key, sizeof(int)));
       if (elem != nullptr && elem->copy_fn != MPI_NULL_COPY_FN) {
-        int ret = elem->copy_fn(datatype, atoi(key), nullptr, value_in, &value_out, &flag);
-        if (ret != MPI_SUCCESS) {
-//          smpi_datatype_unuse(*new_t);
-//          *new_t = MPI_DATATYPE_NULL;
+        *ret = elem->copy_fn(datatype, atoi(key), nullptr, value_in, &value_out, &flag);
+        if (*ret != MPI_SUCCESS) {
           xbt_dict_cursor_free(&cursor);
+          break;
         }
         if (flag)
           xbt_dict_set_ext(attributes_, key, sizeof(int), value_out, nullptr);
@@ -372,41 +370,36 @@ int Datatype::unpack(void* inbuf, int insize, int* position, void* outbuf, int o
 
 int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        void *recvbuf, int recvcount, MPI_Datatype recvtype){
-//  int count;
+  int count;
   if(smpi_privatize_global_variables){
     smpi_switch_data_segment(smpi_process_index());
   }
   /* First check if we really have something to do */
   if (recvcount > 0 && recvbuf != sendbuf) {
-    /* FIXME: treat packed cases */
     sendcount *= sendtype->size();
     recvcount *= recvtype->size();
-//    count = sendcount < recvcount ? sendcount : recvcount;
+    count = sendcount < recvcount ? sendcount : recvcount;
 
-//    if(sendtype->sizeof_substruct == 0 && recvtype->sizeof_substruct == 0) {
-//      if(!smpi_process_get_replaying()) 
-//        memcpy(recvbuf, sendbuf, count);
-//    }
-//    else if (sendtype->sizeof_substruct == 0)
-//    {
-//      s_smpi_subtype_t *subtype =  recvtype->substruct);
-//      subtype->unserialize( sendbuf, recvbuf, recvcount/recvtype->size(), subtype, MPI_REPLACE);
-//    }
-//    else if (recvtype->sizeof_substruct == 0)
-//    {
-//      s_smpi_subtype_t *subtype =  sendtype->substruct);
-//      subtype->serialize(sendbuf, recvbuf, sendcount/sendtype->size(), subtype);
-//    }else{
-//      s_smpi_subtype_t *subtype =  sendtype->substruct);
+    if(!(sendtype->flags() & DT_FLAG_DERIVED) && !(recvtype->flags() & DT_FLAG_DERIVED)) {
+      if(!smpi_process_get_replaying()) 
+        memcpy(recvbuf, sendbuf, count);
+    }
+    else if (!(sendtype->flags() & DT_FLAG_DERIVED))
+    {
+      recvtype->unserialize( sendbuf, recvbuf, recvcount/recvtype->size(), MPI_REPLACE);
+    }
+    else if (!(recvtype->flags() & DT_FLAG_DERIVED))
+    {
+      sendtype->serialize(sendbuf, recvbuf, sendcount/sendtype->size());
+    }else{
 
-//      void * buf_tmp = xbt_malloc(count);
+      void * buf_tmp = xbt_malloc(count);
 
-//      subtype->serialize( sendbuf, buf_tmp,count/sendtype->size(), subtype);
-//      subtype =  recvtype->substruct);
-//      subtype->unserialize( buf_tmp, recvbuf,count/recvtype->size(), subtype, MPI_REPLACE);
+      sendtype->serialize( sendbuf, buf_tmp,count/sendtype->size());
+      recvtype->unserialize( buf_tmp, recvbuf,count/recvtype->size(), MPI_REPLACE);
 
-//      xbt_free(buf_tmp);
-//    }
+      xbt_free(buf_tmp);
+    }
   }
 
   return sendcount > recvcount ? MPI_ERR_TRUNCATE : MPI_SUCCESS;
@@ -441,24 +434,24 @@ int Datatype::create_contiguous(int count, MPI_Datatype old_type, MPI_Aint lb, M
   return MPI_SUCCESS;
 }
 
-int Datatype::create_vector(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* new_type)
+int Datatype::create_vector(int count, int block_length, int stride, MPI_Datatype old_type, MPI_Datatype* new_type)
 {
   int retval;
-  if (blocklen<0) 
+  if (block_length<0) 
     return MPI_ERR_ARG;
   MPI_Aint lb = 0;
   MPI_Aint ub = 0;
   if(count>0){
     lb=old_type->lb();
-    ub=((count-1)*stride+blocklen-1)*old_type->get_extent()+old_type->ub();
+    ub=((count-1)*stride+block_length-1)*old_type->get_extent()+old_type->ub();
   }
-  if(old_type->flags() & DT_FLAG_DERIVED || stride != blocklen){
-    *new_type = new Type_Vector(count * (blocklen) * old_type->size(), lb, ub,
-                                   DT_FLAG_DERIVED, count, blocklen, stride, old_type);
+  if(old_type->flags() & DT_FLAG_DERIVED || stride != block_length){
+    *new_type = new Type_Vector(count * (block_length) * old_type->size(), lb, ub,
+                                   DT_FLAG_DERIVED, count, block_length, stride, old_type);
     retval=MPI_SUCCESS;
   }else{
     /* in this situation the data are contiguous thus it's not required to serialize and unserialize it*/
-    *new_type = new Datatype(count * blocklen * old_type->size(), 0, ((count -1) * stride + blocklen)*
+    *new_type = new Datatype(count * block_length * old_type->size(), 0, ((count -1) * stride + block_length)*
                          old_type->size(), DT_FLAG_CONTIGUOUS);
     retval=MPI_SUCCESS;
   }
@@ -466,50 +459,50 @@ int Datatype::create_vector(int count, int blocklen, int stride, MPI_Datatype ol
 }
 
 
-int Datatype::create_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type)
+int Datatype::create_hvector(int count, int block_length, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type)
 {
   int retval;
-  if (blocklen<0) 
+  if (block_length<0) 
     return MPI_ERR_ARG;
   MPI_Aint lb = 0;
   MPI_Aint ub = 0;
   if(count>0){
     lb=old_type->lb();
-    ub=((count-1)*stride+blocklen-1)*old_type->get_extent()+old_type->ub();
+    ub=((count-1)*stride)+(block_length-1)*old_type->get_extent()+old_type->ub();
   }
-  if(old_type->flags() & DT_FLAG_DERIVED || stride != blocklen*old_type->get_extent()){
-    *new_type = new Type_Hvector(count * (blocklen) * old_type->size(), lb, ub,
-                                   DT_FLAG_DERIVED, count, blocklen, stride, old_type);
+  if(old_type->flags() & DT_FLAG_DERIVED || stride != block_length*old_type->get_extent()){
+    *new_type = new Type_Hvector(count * (block_length) * old_type->size(), lb, ub,
+                                   DT_FLAG_DERIVED, count, block_length, stride, old_type);
     retval=MPI_SUCCESS;
   }else{
     /* in this situation the data are contiguous thus it's not required to serialize and unserialize it*/
-    *new_type = new Datatype(count * blocklen * old_type->size(), 0, count * blocklen * old_type->size(), DT_FLAG_CONTIGUOUS);
+    *new_type = new Datatype(count * block_length * old_type->size(), 0, count * block_length * old_type->size(), DT_FLAG_CONTIGUOUS);
     retval=MPI_SUCCESS;
   }
   return retval;
 }
 
-int Datatype::create_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type){
+int Datatype::create_indexed(int count, int* block_lengths, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type){
   int size = 0;
   bool contiguous=true;
   MPI_Aint lb = 0;
   MPI_Aint ub = 0;
   if(count>0){
     lb=indices[0]*old_type->get_extent();
-    ub=indices[0]*old_type->get_extent() + blocklens[0]*old_type->ub();
+    ub=indices[0]*old_type->get_extent() + block_lengths[0]*old_type->ub();
   }
 
   for (int i = 0; i < count; i++) {
-    if (blocklens[i] < 0)
+    if (block_lengths[i] < 0)
       return MPI_ERR_ARG;
-    size += blocklens[i];
+    size += block_lengths[i];
 
     if(indices[i]*old_type->get_extent()+old_type->lb()<lb)
       lb = indices[i]*old_type->get_extent()+old_type->lb();
-    if(indices[i]*old_type->get_extent()+blocklens[i]*old_type->ub()>ub)
-      ub = indices[i]*old_type->get_extent()+blocklens[i]*old_type->ub();
+    if(indices[i]*old_type->get_extent()+block_lengths[i]*old_type->ub()>ub)
+      ub = indices[i]*old_type->get_extent()+block_lengths[i]*old_type->ub();
 
-    if ( (i< count -1) && (indices[i]+blocklens[i] != indices[i+1]) )
+    if ( (i< count -1) && (indices[i]+block_lengths[i] != indices[i+1]) )
       contiguous=false;
   }
   if(old_type->flags_ & DT_FLAG_DERIVED)
@@ -517,34 +510,33 @@ int Datatype::create_indexed(int count, int* blocklens, int* indices, MPI_Dataty
 
   if(!contiguous){
     *new_type = new Type_Indexed(size * old_type->size(),lb,ub,
-                                 DT_FLAG_DERIVED|DT_FLAG_DATA, count, blocklens, indices, old_type);
+                                 DT_FLAG_DERIVED|DT_FLAG_DATA, count, block_lengths, indices, old_type);
   }else{
-    *new_type = new Type_Contiguous(size * old_type->size(), lb, ub,
-                                    DT_FLAG_DERIVED|DT_FLAG_CONTIGUOUS, size, old_type);
+    Datatype::create_contiguous(size, old_type, lb, new_type);
   }
   return MPI_SUCCESS;
 }
 
-int Datatype::create_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type){
+int Datatype::create_hindexed(int count, int* block_lengths, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type){
   int size = 0;
   bool contiguous=true;
   MPI_Aint lb = 0;
   MPI_Aint ub = 0;
   if(count>0){
     lb=indices[0] + old_type->lb();
-    ub=indices[0] + blocklens[0]*old_type->ub();
+    ub=indices[0] + block_lengths[0]*old_type->ub();
   }
   for (int i = 0; i < count; i++) {
-    if (blocklens[i] < 0)
+    if (block_lengths[i] < 0)
       return MPI_ERR_ARG;
-    size += blocklens[i];
+    size += block_lengths[i];
 
     if(indices[i]+old_type->lb()<lb) 
       lb = indices[i]+old_type->lb();
-    if(indices[i]+blocklens[i]*old_type->ub()>ub) 
-      ub = indices[i]+blocklens[i]*old_type->ub();
+    if(indices[i]+block_lengths[i]*old_type->ub()>ub) 
+      ub = indices[i]+block_lengths[i]*old_type->ub();
 
-    if ( (i< count -1) && (indices[i]+blocklens[i]*(static_cast<int>(old_type->size())) != indices[i+1]) )
+    if ( (i< count -1) && (indices[i]+block_lengths[i]*(static_cast<int>(old_type->size())) != indices[i+1]) )
       contiguous=false;
   }
   if (old_type->flags_ & DT_FLAG_DERIVED || lb!=0)
@@ -552,15 +544,14 @@ int Datatype::create_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_
 
   if(!contiguous){
     *new_type = new Type_Hindexed(size * old_type->size(),lb,ub,
-                                   DT_FLAG_DERIVED|DT_FLAG_DATA, count, blocklens, indices, old_type);
+                                   DT_FLAG_DERIVED|DT_FLAG_DATA, count, block_lengths, indices, old_type);
   }else{
-    *new_type = new Type_Contiguous(size * old_type->size(), lb, ub,
-                                   DT_FLAG_DERIVED|DT_FLAG_CONTIGUOUS, size, old_type);
+    Datatype::create_contiguous(size, old_type, lb, new_type);
   }
   return MPI_SUCCESS;
 }
 
-int Datatype::create_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* new_type){
+int Datatype::create_struct(int count, int* block_lengths, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* new_type){
   size_t size = 0;
   bool contiguous=true;
   size = 0;
@@ -568,17 +559,17 @@ int Datatype::create_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Da
   MPI_Aint ub = 0;
   if(count>0){
     lb=indices[0] + old_types[0]->lb();
-    ub=indices[0] + blocklens[0]*old_types[0]->ub();
+    ub=indices[0] + block_lengths[0]*old_types[0]->ub();
   }
   bool forced_lb=false;
   bool forced_ub=false;
   for (int i = 0; i < count; i++) {
-    if (blocklens[i]<0)
+    if (block_lengths[i]<0)
       return MPI_ERR_ARG;
     if (old_types[i]->flags_ & DT_FLAG_DERIVED)
       contiguous=false;
 
-    size += blocklens[i]*old_types[i]->size();
+    size += block_lengths[i]*old_types[i]->size();
     if (old_types[i]==MPI_LB){
       lb=indices[i];
       forced_lb=true;
@@ -590,25 +581,24 @@ int Datatype::create_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Da
 
     if(!forced_lb && indices[i]+old_types[i]->lb()<lb) 
       lb = indices[i];
-    if(!forced_ub &&  indices[i]+blocklens[i]*old_types[i]->ub()>ub)
-      ub = indices[i]+blocklens[i]*old_types[i]->ub();
+    if(!forced_ub &&  indices[i]+block_lengths[i]*old_types[i]->ub()>ub)
+      ub = indices[i]+block_lengths[i]*old_types[i]->ub();
 
-    if ( (i< count -1) && (indices[i]+blocklens[i]*static_cast<int>(old_types[i]->size()) != indices[i+1]) )
+    if ( (i< count -1) && (indices[i]+block_lengths[i]*static_cast<int>(old_types[i]->size()) != indices[i+1]) )
       contiguous=false;
   }
   if(!contiguous){
     *new_type = new Type_Struct(size, lb,ub, DT_FLAG_DERIVED|DT_FLAG_DATA, 
-                                count, blocklens, indices, old_types);
+                                count, block_lengths, indices, old_types);
   }else{
-    *new_type = new Type_Contiguous(size, lb, ub,
-                                   DT_FLAG_DERIVED|DT_FLAG_CONTIGUOUS, size, MPI_CHAR);
+    Datatype::create_contiguous(size, MPI_CHAR, lb, new_type);
   }
   return MPI_SUCCESS;
 }
 
 
 
-Type_Contiguous::Type_Contiguous(int size, int lb, int ub, int flags, int block_count, MPI_Datatype old_type): Datatype(size, lb, ub, flags), block_count_(block_count), old_type_(old_type){
+Type_Contiguous::Type_Contiguous(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, MPI_Datatype old_type): Datatype(size, lb, ub, flags), block_count_(block_count), old_type_(old_type){
   old_type_->use();
 }
 
@@ -638,7 +628,7 @@ void Type_Contiguous::unserialize( void* contiguous_buf, void *noncontiguous_buf
 
 
 
-Type_Vector::Type_Vector(int size,int lb, int ub, int flags, int count, int blocklen, int stride, MPI_Datatype old_type): Datatype(size, lb, ub, flags), block_count_(count), block_length_(blocklen),block_stride_(stride),  old_type_(old_type){
+Type_Vector::Type_Vector(int size,MPI_Aint lb, MPI_Aint ub, int flags, int count, int block_length, int stride, MPI_Datatype old_type): Datatype(size, lb, ub, flags), block_count_(count), block_length_(block_length),block_stride_(stride),  old_type_(old_type){
 old_type_->use();
 }
 
@@ -693,7 +683,7 @@ void Type_Vector::unserialize( void* contiguous_buf, void *noncontiguous_buf,
   }
 }
 
-Type_Hvector::Type_Hvector(int size,int lb, int ub, int flags, int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type): Datatype(size, lb, ub, flags), block_count_(count), block_length_(blocklen), block_stride_(stride), old_type_(old_type){
+Type_Hvector::Type_Hvector(int size,MPI_Aint lb, MPI_Aint ub, int flags, int count, int block_length, MPI_Aint stride, MPI_Datatype old_type): Datatype(size, lb, ub, flags), block_count_(count), block_length_(block_length), block_stride_(stride), old_type_(old_type){
   old_type->use();
 }
 Type_Hvector::~Type_Hvector(){
@@ -744,15 +734,21 @@ void Type_Hvector::unserialize( void* contiguous_buf, void *noncontiguous_buf,
   }
 }
 
-Type_Indexed::Type_Indexed(int size,int lb, int ub, int flags, int count, int* blocklens, int* indices, MPI_Datatype old_type): Datatype(size, lb, ub, flags), block_count_(count), block_lengths_(blocklens), block_indices_(indices), old_type_(old_type){
+Type_Indexed::Type_Indexed(int size,MPI_Aint lb, MPI_Aint ub, int flags, int count, int* block_lengths, int* block_indices, MPI_Datatype old_type): Datatype(size, lb, ub, flags), block_count_(count), old_type_(old_type){
   old_type->use();
+  block_lengths_ = new int[count];
+  block_indices_ = new int[count];
+  for (int i = 0; i < count; i++) {
+    block_lengths_[i]=block_lengths[i];
+    block_indices_[i]=block_indices[i];
+  }
 }
 
 Type_Indexed::~Type_Indexed(){
   old_type_->unuse();
   if(in_use_==0){
-    xbt_free(block_lengths_);
-    xbt_free(block_indices_);
+    delete[] block_lengths_;
+    delete[] block_indices_;
   }
 }
 
@@ -808,15 +804,23 @@ void Type_Indexed::unserialize( void* contiguous_buf, void *noncontiguous_buf,
   }
 }
 
-Type_Hindexed::Type_Hindexed(int size,int lb, int ub, int flags, int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type): Datatype(size, lb, ub, flags), block_count_(count), block_lengths_(blocklens), block_indices_(indices), old_type_(old_type){
+Type_Hindexed::Type_Hindexed(int size,MPI_Aint lb, MPI_Aint ub, int flags, int count, int* block_lengths, MPI_Aint* block_indices, MPI_Datatype old_type)
+: Datatype(size, lb, ub, flags), block_count_(count), old_type_(old_type)
+{
   old_type_->use();
+  block_lengths_ = new int[count];
+  block_indices_ = new MPI_Aint[count];
+  for (int i = 0; i < count; i++) {
+    block_lengths_[i]=block_lengths[i];
+    block_indices_[i]=block_indices[i];
+  }
 }
 
     Type_Hindexed::~Type_Hindexed(){
   old_type_->unuse();
   if(in_use_==0){
-    xbt_free(block_lengths_);
-    xbt_free(block_indices_);
+    delete[] block_lengths_;
+    delete[] block_indices_;
   }
 }
 
@@ -867,8 +871,14 @@ void Type_Hindexed::unserialize( void* contiguous_buf, void *noncontiguous_buf,
   }
 }
 
-Type_Struct::Type_Struct(int size,int lb, int ub, int flags, int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types): Datatype(size, lb, ub, flags), block_count_(count), block_lengths_(blocklens), block_indices_(indices), old_types_(old_types){
+Type_Struct::Type_Struct(int size,MPI_Aint lb, MPI_Aint ub, int flags, int count, int* block_lengths, MPI_Aint* block_indices, MPI_Datatype* old_types): Datatype(size, lb, ub, flags), block_count_(count), block_lengths_(block_lengths), block_indices_(block_indices), old_types_(old_types){
+  block_lengths_= new int[count];
+  block_indices_= new MPI_Aint[count];
+  old_types_=  new MPI_Datatype[count];
   for (int i = 0; i < count; i++) {
+    block_lengths_[i]=block_lengths[i];
+    block_indices_[i]=block_indices[i];
+    old_types_[i]=old_types[i];
     old_types_[i]->use();
   }
 }
@@ -878,9 +888,9 @@ Type_Struct::~Type_Struct(){
     old_types_[i]->unuse();
   }
   if(in_use_==0){
-    xbt_free(block_lengths_);
-    xbt_free(block_indices_);
-    xbt_free(old_types_);
+    delete[] block_lengths_;
+    delete[] block_indices_;
+    delete[] old_types_;
   }
 }
 

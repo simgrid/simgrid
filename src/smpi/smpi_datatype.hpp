@@ -78,8 +78,7 @@ namespace simgrid{
 namespace smpi{
 
 class Datatype{
-//TODO: remove
-  public:
+  protected:
     char* name_;
     size_t size_;
     MPI_Aint lb_;
@@ -89,9 +88,9 @@ class Datatype{
     int in_use_;
 
   public:
-    Datatype(int size,int lb, int ub, int flags);
-    Datatype(char* name, int size,int lb, int ub, int flags);
-    Datatype(Datatype *datatype);
+    Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags);
+    Datatype(char* name, int size,MPI_Aint lb, MPI_Aint ub, int flags);
+    Datatype(Datatype *datatype, int* ret);
     virtual ~Datatype();
     void use();
     void unuse();
@@ -135,7 +134,7 @@ class Type_Contiguous: public Datatype{
     int block_count_;
     MPI_Datatype old_type_;
   public:
-    Type_Contiguous(int size, int lb, int ub, int flags, int block_count, MPI_Datatype old_type);
+    Type_Contiguous(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, MPI_Datatype old_type);
     ~Type_Contiguous();
     void use();
     void serialize( void* noncontiguous, void *contiguous, 
@@ -151,7 +150,7 @@ class Type_Vector: public Datatype{
     int block_stride_;
     MPI_Datatype old_type_;
   public:
-    Type_Vector(int size,int lb, int ub, int flags, int count, int blocklen, int stride, MPI_Datatype old_type);
+    Type_Vector(int size,MPI_Aint lb, MPI_Aint ub, int flags, int count, int blocklen, int stride, MPI_Datatype old_type);
     ~Type_Vector();
     void use();
     void serialize( void* noncontiguous, void *contiguous, 
@@ -167,7 +166,7 @@ class Type_Hvector: public Datatype{
     MPI_Aint block_stride_;
     MPI_Datatype old_type_;
   public:
-    Type_Hvector(int size,int lb, int ub, int flags, int block_count, int block_length, MPI_Aint block_stride, MPI_Datatype old_type);
+    Type_Hvector(int size,MPI_Aint lb, MPI_Aint ub, int flags, int block_count, int block_length, MPI_Aint block_stride, MPI_Datatype old_type);
     ~Type_Hvector();
     void use();
     void serialize( void* noncontiguous, void *contiguous, 
@@ -183,7 +182,7 @@ class Type_Indexed: public Datatype{
     int* block_indices_;
     MPI_Datatype old_type_;
   public:
-    Type_Indexed(int size,int lb, int ub, int flags, int block_count, int* block_lengths, int* block_indices, MPI_Datatype old_type);
+    Type_Indexed(int size,MPI_Aint lb, MPI_Aint ub, int flags, int block_count, int* block_lengths, int* block_indices, MPI_Datatype old_type);
     ~Type_Indexed();
     void use();
     void serialize( void* noncontiguous, void *contiguous, 
@@ -199,7 +198,7 @@ class Type_Hindexed: public Datatype{
     MPI_Aint* block_indices_;
     MPI_Datatype old_type_;
   public:
-    Type_Hindexed(int size,int lb, int ub, int flags, int block_count, int* block_lengths, MPI_Aint* block_indices, MPI_Datatype old_type);
+    Type_Hindexed(int size,MPI_Aint lb, MPI_Aint ub, int flags, int block_count, int* block_lengths, MPI_Aint* block_indices, MPI_Datatype old_type);
     ~Type_Hindexed();
     void use();
     void serialize( void* noncontiguous, void *contiguous, 
@@ -215,7 +214,7 @@ class Type_Struct: public Datatype{
     MPI_Aint* block_indices_;
     MPI_Datatype* old_types_;
   public:
-    Type_Struct(int size,int lb, int ub, int flags, int block_count, int* block_lengths, MPI_Aint* block_indices, MPI_Datatype* old_types);
+    Type_Struct(int size,MPI_Aint lb, MPI_Aint ub, int flags, int block_count, int* block_lengths, MPI_Aint* block_indices, MPI_Datatype* old_types);
     ~Type_Struct();
     void use();
     void serialize( void* noncontiguous, void *contiguous, 

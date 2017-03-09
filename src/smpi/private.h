@@ -48,30 +48,6 @@ enum smpi_process_state{
   SMPI_FINALIZED
 };
 
-// this struct is here to handle the problem of non-contignous data
-// for each such structure these function should be implemented (vector
-// index hvector hindex struct)
-typedef struct s_smpi_subtype{
-  void (*serialize)(void * input, void *output, int count, void* subtype);
-  void (*unserialize)(void * input, void *output, int count, void* subtype, MPI_Op op);
-  void (*subtype_free)(MPI_Datatype* type);
-  void (*subtype_use)(MPI_Datatype* type);
-} s_smpi_subtype_t;
-
-typedef struct s_smpi_mpi_datatype{
-  char* name;
-  size_t size;
-  /* this let us know if a serialization is required*/
-  size_t sizeof_substruct;
-  MPI_Aint lb;
-  MPI_Aint ub;
-  int flags;
-  xbt_dict_t attributes;
-  /* this let us know how to serialize and unserialize*/
-  void *substruct;
-  int in_use;
-} s_smpi_mpi_datatype_t;
-
 #define COLL_TAG_REDUCE -112
 #define COLL_TAG_SCATTER -223
 #define COLL_TAG_SCATTERV -334

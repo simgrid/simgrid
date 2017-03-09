@@ -234,12 +234,18 @@ int PMPI_Type_ub(MPI_Datatype datatype, MPI_Aint * disp)
 }
 
 int PMPI_Type_dup(MPI_Datatype datatype, MPI_Datatype *newtype){
+  int retval = MPI_SUCCESS;
   if (datatype == MPI_DATATYPE_NULL) {
-    return MPI_ERR_TYPE;
+    retval=MPI_ERR_TYPE;
   } else {
-    *newtype = new Datatype(datatype);
-    return MPI_SUCCESS;
+    *newtype = new Datatype(datatype, &retval);
+    //error when duplicating, free the new datatype
+    if(retval!=MPI_SUCCESS){
+      (*newtype)->unuse();
+      *newtype = MPI_DATATYPE_NULL;
+    }
   }
+  return retval;
 }
 
 int PMPI_Op_create(MPI_User_function * function, int commute, MPI_Op * op)
