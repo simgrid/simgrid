@@ -42,8 +42,8 @@ int smpi_coll_tuned_alltoall_pair_rma(void *send_buff, int send_count, MPI_Datat
 
   rank = comm->rank();
   num_procs = comm->size();
-  send_chunk = smpi_datatype_get_extent(send_type);
-  recv_chunk = smpi_datatype_get_extent(recv_type);
+  send_chunk = send_type->get_extent();
+  recv_chunk = recv_type->get_extent();
 
   win=new  Win(recv_buff, num_procs * recv_chunk * send_count, recv_chunk, 0,
                  comm);
@@ -81,8 +81,8 @@ int smpi_coll_tuned_alltoall_pair(void *send_buff, int send_count,
   if((num_procs&(num_procs-1)))
     THROWF(arg_error,0, "alltoall pair algorithm can't be used with non power of two number of processes ! ");
 
-  send_chunk = smpi_datatype_get_extent(send_type);
-  recv_chunk = smpi_datatype_get_extent(recv_type);
+  send_chunk = send_type->get_extent();
+  recv_chunk = recv_type->get_extent();
 
   send_chunk *= send_count;
   recv_chunk *= recv_count;

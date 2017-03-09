@@ -46,7 +46,7 @@ smpi_coll_tuned_alltoall_bruck(void *send_buff, int send_count,
   num_procs = comm->size();
   rank = comm->rank();
 
-  extent = smpi_datatype_get_extent(recv_type);
+  extent = recv_type->get_extent();
 
   tmp_buff = (char *) smpi_get_tmp_sendbuffer(num_procs * recv_count * extent);
   disps = (int *) xbt_malloc(sizeof(int) * num_procs);

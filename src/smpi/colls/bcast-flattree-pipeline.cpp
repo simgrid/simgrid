@@ -17,7 +17,7 @@ smpi_coll_tuned_bcast_flattree_pipeline(void *buff, int count,
   int tag = COLL_TAG_BCAST;
 
   MPI_Aint extent;
-  extent = smpi_datatype_get_extent(data_type);
+  extent = data_type->get_extent();
 
   int segment = flattree_segment_in_byte / extent;
   segment =  segment == 0 ? 1 :segment; 

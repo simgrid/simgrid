@@ -58,19 +58,19 @@ smpi_coll_tuned_gather_ompi_binomial(void *sbuf, int scount,
     bmtree = ompi_coll_tuned_topo_build_in_order_bmtree(comm, root);
     // data->cached_in_order_bmtree;
 
-    smpi_datatype_extent(sdtype, &slb, &sextent);
-    smpi_datatype_extent(sdtype, &strue_lb, &strue_extent);
+    sdtype->extent(&slb, &sextent);
+    sdtype->extent(&strue_lb, &strue_extent);
 
     vrank = (rank - root + size) % size;
 
     if (rank == root) {
-        smpi_datatype_extent(rdtype, &rlb, &rextent);
-        smpi_datatype_extent(rdtype, &rtrue_lb, &rtrue_extent);
+        rdtype->extent(&rlb, &rextent);
+        rdtype->extent(&rtrue_lb, &rtrue_extent);
 	if (0 == root){
 	    /* root on 0, just use the recv buffer */
 	    ptmp = (char *) rbuf;
 	    if (sbuf != MPI_IN_PLACE) {
-		err = smpi_datatype_copy(sbuf, scount, sdtype,
+		err = Datatype::copy(sbuf, scount, sdtype,
 				      ptmp, rcount, rdtype);
 		if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
 	    }
@@ -85,12 +85,12 @@ smpi_coll_tuned_gather_ompi_binomial(void *sbuf, int scount,
 	    ptmp = tempbuf - rlb;
 	    if (sbuf != MPI_IN_PLACE) {
 		/* copy from sbuf to temp buffer */
-		err = smpi_datatype_copy(sbuf, scount, sdtype,
+		err = Datatype::copy(sbuf, scount, sdtype,
 				      ptmp, rcount, rdtype);
 		if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
 	    } else {
 		/* copy from rbuf to temp buffer  */
-		err = smpi_datatype_copy((char *) rbuf + rank*rextent*rcount, rcount, rdtype, ptmp, rcount, rdtype );
+		err = Datatype::copy((char *) rbuf + rank*rextent*rcount, rcount, rdtype, ptmp, rcount, rdtype );
 		if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
 	    }
 	}
@@ -106,7 +106,7 @@ smpi_coll_tuned_gather_ompi_binomial(void *sbuf, int scount,
 
 	ptmp = tempbuf - slb;
 	/* local copy to tempbuf */
-	err = smpi_datatype_copy(sbuf, scount, sdtype,
+	err = Datatype::copy(sbuf, scount, sdtype,
                                    ptmp, scount, sdtype);
 	if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
 
@@ -160,12 +160,12 @@ smpi_coll_tuned_gather_ompi_binomial(void *sbuf, int scount,
     if (rank == root) {
 	if (root != 0) {
 	    /* rotate received data on root if root != 0 */
-	    err = smpi_datatype_copy(ptmp, rcount*(size - root), rdtype,
+	    err = Datatype::copy(ptmp, rcount*(size - root), rdtype,
 						 (char *) rbuf + rextent*root*rcount, rcount*(size - root), rdtype );
 	    if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
 
 
-	    err = smpi_datatype_copy( ptmp + rextent*rcount*(size-root), rcount*root,rdtype, 
+	    err = Datatype::copy( ptmp + rextent*rcount*(size-root), rcount*root,rdtype, 
 						 (char *) rbuf,rcount*root,rdtype);
 	    if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
 
@@ -216,10 +216,10 @@ smpi_coll_tuned_gather_ompi_linear_sync(void *sbuf, int scount,
     
     size_t dsize, block_size;
     if (rank == root) {
-        dsize= smpi_datatype_size(rdtype);
+        dsize= rdtype->size();
         block_size = dsize * rcount;
     } else {
-        dsize=smpi_datatype_size(sdtype);
+        dsize=sdtype->size();
         block_size = dsize * scount;
     }
     
@@ -239,8 +239,8 @@ smpi_coll_tuned_gather_ompi_linear_sync(void *sbuf, int scount,
            - send the second segment of the data.
         */
 
-        typelng= smpi_datatype_size(sdtype);
-        smpi_datatype_extent(sdtype, &lb, &extent);
+        typelng= sdtype->size();
+        sdtype->extent(&lb, &extent);
         first_segment_count = scount;
         COLL_TUNED_COMPUTED_SEGCOUNT( (size_t) first_segment_size, typelng, 
                                       first_segment_count );
@@ -274,8 +274,8 @@ smpi_coll_tuned_gather_ompi_linear_sync(void *sbuf, int scount,
         reqs = (MPI_Request *) calloc(size, sizeof(MPI_Request ));
         if (NULL == reqs) { ret = -1; line = __LINE__; goto error_hndl; }
         
-        typelng=smpi_datatype_size(rdtype);
-        smpi_datatype_extent(rdtype, &lb, &extent);
+        typelng=rdtype->size();
+        rdtype->extent(&lb, &extent);
         first_segment_count = rcount;
         COLL_TUNED_COMPUTED_SEGCOUNT( (size_t)first_segment_size, typelng, 
                                       first_segment_count );
@@ -310,7 +310,7 @@ smpi_coll_tuned_gather_ompi_linear_sync(void *sbuf, int scount,
 
         /* copy local data if necessary */
         if (MPI_IN_PLACE != sbuf) {
-            ret = smpi_datatype_copy(sbuf, scount, sdtype,
+            ret = Datatype::copy(sbuf, scount, sdtype,
                                   (char*)rbuf + rank * rcount * extent, 
                                   rcount, rdtype);
             if (ret != MPI_SUCCESS) { line = __LINE__; goto error_hndl; }
@@ -386,12 +386,12 @@ smpi_coll_tuned_gather_ompi_basic_linear(void *sbuf, int scount,
 
     /* I am the root, loop receiving the data. */
 
-    smpi_datatype_extent(rdtype, &lb, &extent);
+    rdtype->extent(&lb, &extent);
     incr = extent * rcount;
     for (i = 0, ptmp = (char *) rbuf; i < size; ++i, ptmp += incr) {
         if (i == rank) {
             if (MPI_IN_PLACE != sbuf) {
-                err = smpi_datatype_copy(sbuf, scount, sdtype,
+                err = Datatype::copy(sbuf, scount, sdtype,
                                       ptmp, rcount, rdtype);
             } else {
                 err = MPI_SUCCESS;

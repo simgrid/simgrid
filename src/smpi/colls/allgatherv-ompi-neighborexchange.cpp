@@ -98,10 +98,10 @@ smpi_coll_tuned_allgatherv_ompi_neighborexchange(void *sbuf, int scount,
     XBT_DEBUG(
                  "coll:tuned:allgatherv_ompi_neighborexchange rank %d", rank);
 
-    err = smpi_datatype_extent (sdtype, &slb, &sext);
+    err = sdtype->extent(&slb, &sext);
     if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
 
-    err = smpi_datatype_extent (rdtype, &rlb, &rext);
+    err = rdtype->extent(&rlb, &rext);
     if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
 
     /* Initialization step:
@@ -111,7 +111,7 @@ smpi_coll_tuned_allgatherv_ompi_neighborexchange(void *sbuf, int scount,
     tmprecv = (char*) rbuf + rdispls[rank] * rext;
     if (MPI_IN_PLACE != sbuf) {
         tmpsend = (char*) sbuf;
-        err = smpi_datatype_copy(tmpsend, scount, sdtype, 
+        err = Datatype::copy(tmpsend, scount, sdtype, 
                               tmprecv, rcounts[rank], rdtype);
         if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl;  }
     } 
@@ -179,19 +179,19 @@ smpi_coll_tuned_allgatherv_ompi_neighborexchange(void *sbuf, int scount,
         new_scounts[1] = rcounts[(send_data_from + 1)];
         new_sdispls[0] = rdispls[send_data_from];
         new_sdispls[1] = rdispls[(send_data_from + 1)];
-        err = smpi_datatype_indexed(2, new_scounts, new_sdispls, rdtype, 
+        err = Datatype::create_indexed(2, new_scounts, new_sdispls, rdtype, 
                                       &new_sdtype);
         if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
-        smpi_datatype_commit(&new_sdtype);
+        new_sdtype->commit();
 
         new_rcounts[0] = rcounts[recv_data_from[i_parity]];
         new_rcounts[1] = rcounts[(recv_data_from[i_parity] + 1)];
         new_rdispls[0] = rdispls[recv_data_from[i_parity]];
         new_rdispls[1] = rdispls[(recv_data_from[i_parity] + 1)];
-        err = smpi_datatype_indexed(2, new_rcounts, new_rdispls, rdtype, 
+        err = Datatype::create_indexed(2, new_rcounts, new_rdispls, rdtype, 
                                       &new_rdtype);
         if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
-        smpi_datatype_commit(&new_rdtype);
+        new_rdtype->commit();
       
         tmprecv = (char*)rbuf;
         tmpsend = (char*)rbuf;
@@ -205,8 +205,8 @@ smpi_coll_tuned_allgatherv_ompi_neighborexchange(void *sbuf, int scount,
 
         send_data_from = recv_data_from[i_parity];
       
-        smpi_datatype_unuse(new_sdtype);
-        smpi_datatype_unuse(new_rdtype);
+        new_sdtype->unuse();
+        new_rdtype->unuse();
     }
 
     return MPI_SUCCESS;

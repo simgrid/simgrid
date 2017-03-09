@@ -121,7 +121,7 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
   rank = comm->rank();
   num_procs = comm->size();
 
-  extent = smpi_datatype_get_extent(send_type);
+  extent = send_type->get_extent();
 
   block_size = extent * send_count;
 
@@ -141,7 +141,7 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
 
   // do local allgather/local copy 
   recv_offset = rank * block_size;
-  smpi_datatype_copy(send_buff, send_count, send_type, (char *)recv_buff + recv_offset,
+  Datatype::copy(send_buff, send_count, send_type, (char *)recv_buff + recv_offset,
                  recv_count, recv_type);
 
   // do row-wise comm

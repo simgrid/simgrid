@@ -24,7 +24,7 @@ smpi_coll_tuned_reduce_flat_tree(void *sbuf, void *rbuf, int count,
   size = comm->size();
 
   /* If not root, send data to the root. */
-  extent = smpi_datatype_get_extent(dtype);
+  extent = dtype->get_extent();
 
   if (rank != root) {
     Request::send(sbuf, count, dtype, root, tag, comm);

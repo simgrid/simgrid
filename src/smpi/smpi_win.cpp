@@ -125,7 +125,7 @@ int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   //get receiver pointer
   MPI_Win recv_win = connected_wins_[target_rank];
 
-  if(target_count*smpi_datatype_get_extent(target_datatype)>recv_win->size_)
+  if(target_count*target_datatype->get_extent()>recv_win->size_)
     return MPI_ERR_ARG;
 
   void* recv_addr = static_cast<void*> ( static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_);
@@ -152,7 +152,7 @@ int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     requests_->push_back(sreq);
     xbt_mutex_release(mut_);
   }else{
-    smpi_datatype_copy(origin_addr, origin_count, origin_datatype, recv_addr, target_count, target_datatype);
+    Datatype::copy(origin_addr, origin_count, origin_datatype, recv_addr, target_count, target_datatype);
   }
 
   return MPI_SUCCESS;
@@ -166,7 +166,7 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   //get sender pointer
   MPI_Win send_win = connected_wins_[target_rank];
 
-  if(target_count*smpi_datatype_get_extent(target_datatype)>send_win->size_)
+  if(target_count*target_datatype->get_extent()>send_win->size_)
     return MPI_ERR_ARG;
 
   void* send_addr = static_cast<void*>(static_cast<char*>(send_win->base_) + target_disp * send_win->disp_unit_);
@@ -197,7 +197,7 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     requests_->push_back(rreq);
     xbt_mutex_release(mut_);
   }else{
-    smpi_datatype_copy(send_addr, target_count, target_datatype, origin_addr, origin_count, origin_datatype);
+    Datatype::copy(send_addr, target_count, target_datatype, origin_addr, origin_count, origin_datatype);
   }
 
   return MPI_SUCCESS;
@@ -213,7 +213,7 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
   //get receiver pointer
   MPI_Win recv_win = connected_wins_[target_rank];
 
-  if(target_count*smpi_datatype_get_extent(target_datatype)>recv_win->size_)
+  if(target_count*target_datatype->get_extent()>recv_win->size_)
     return MPI_ERR_ARG;
 
   void* recv_addr = static_cast<void*>(static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_);

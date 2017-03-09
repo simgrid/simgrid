@@ -62,7 +62,7 @@ int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
 
   rank = comm->rank();
   num_procs = comm->size();
-  extent = smpi_datatype_get_extent(send_type);
+  extent = send_type->get_extent();
 
   if (!alltoall_check_is_3dmesh(num_procs, &X, &Y, &Z))
     return MPI_ERR_OTHER;

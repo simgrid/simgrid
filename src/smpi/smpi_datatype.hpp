@@ -22,13 +22,57 @@
 #define DT_FLAG_DATA          0x0100  /**< data or control structure */
 #define DT_FLAG_ONE_SIDED     0x0200  /**< datatype can be used for one sided operations */
 #define DT_FLAG_UNAVAILABLE   0x0400  /**< datatypes unavailable on the build (OS or compiler dependant) */
-#define DT_FLAG_VECTOR        0x0800  /**< valid only for loops. The loop contain only one element
-                                       **< without extent. It correspond to the vector type. */
+#define DT_FLAG_DERIVED       0x0800  /**< is the datatype derived ? */
 /*
  * We should make the difference here between the predefined contiguous and non contiguous
  * datatypes. The DT_FLAG_BASIC is held by all predefined contiguous datatypes.
  */
 #define DT_FLAG_BASIC      (DT_FLAG_PREDEFINED | DT_FLAG_CONTIGUOUS | DT_FLAG_NO_GAPS | DT_FLAG_DATA | DT_FLAG_COMMITED)
+
+extern const MPI_Datatype MPI_PTR;
+
+//The following are datatypes for the MPI functions MPI_MAXLOC and MPI_MINLOC.
+typedef struct {
+  float value;
+  int index;
+} float_int;
+typedef struct {
+  float value;
+  float index;
+} float_float;
+typedef struct {
+  long value;
+  long index;
+} long_long;
+typedef struct {
+  double value;
+  double index;
+} double_double;
+typedef struct {
+  long value;
+  int index;
+} long_int;
+typedef struct {
+  double value;
+  int index;
+} double_int;
+typedef struct {
+  short value;
+  int index;
+} short_int;
+typedef struct {
+  int value;
+  int index;
+} int_int;
+typedef struct {
+  long double value;
+  int index;
+} long_double_int;
+typedef struct {
+  int64_t value;
+  int64_t index;
+} integer128_t;
+
 
 namespace simgrid{
 namespace smpi{
@@ -47,8 +91,8 @@ class Datatype{
   public:
     Datatype(int size,int lb, int ub, int flags);
     Datatype(char* name, int size,int lb, int ub, int flags);
-    Datatype(Datatype &datatype);
-    ~Datatype();
+    Datatype(Datatype *datatype);
+    virtual ~Datatype();
     void use();
     void unuse();
     void commit();
@@ -65,10 +109,10 @@ class Datatype{
     void set_name(char* name);
     static int copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                     void *recvbuf, int recvcount, MPI_Datatype recvtype);
-    virtual void serialize( void* noncontiguous_vector, void *contiguous_vector, 
-                            int count, void *type);
-    virtual void unserialize( void* contiguous_vector, void *noncontiguous_vector, 
-                              int count, void *type, MPI_Op op);
+    virtual void serialize( void* noncontiguous, void *contiguous, 
+                            int count);
+    virtual void unserialize( void* contiguous, void *noncontiguous, 
+                              int count, MPI_Op op);
     int attr_delete(int keyval);
     int attr_get(int keyval, void* attr_value, int* flag);
     int attr_put(int keyval, void* attr_value);
@@ -76,24 +120,108 @@ class Datatype{
     static int keyval_free(int* keyval);
     int pack(void* inbuf, int incount, void* outbuf, int outcount, int* position, MPI_Comm comm);
     int unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Comm comm);
+
+
+    static int create_contiguous(int count, MPI_Datatype old_type, MPI_Aint lb, MPI_Datatype* new_type);
+    static int create_vector(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* new_type);
+    static int create_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type);
+    static int create_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type);
+    static int create_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type);
+    static int create_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* new_type);
 };
 
-class Type_Contiguous:Datatype{
+class Type_Contiguous: public Datatype{
+  private:
+    int block_count_;
+    MPI_Datatype old_type_;
+  public:
+    Type_Contiguous(int size, int lb, int ub, int flags, int block_count, MPI_Datatype old_type);
+    ~Type_Contiguous();
+    void use();
+    void serialize( void* noncontiguous, void *contiguous, 
+                            int count);
+    void unserialize( void* contiguous_vector, void *noncontiguous_vector, 
+                              int count, MPI_Op op);
 };
 
-class Type_Vector:Datatype{
+class Type_Vector: public Datatype{
+  private:
+    int block_count_;
+    int block_length_;
+    int block_stride_;
+    MPI_Datatype old_type_;
+  public:
+    Type_Vector(int size,int lb, int ub, int flags, int count, int blocklen, int stride, MPI_Datatype old_type);
+    ~Type_Vector();
+    void use();
+    void serialize( void* noncontiguous, void *contiguous, 
+                            int count);
+    void unserialize( void* contiguous_vector, void *noncontiguous_vector, 
+                              int count, MPI_Op op);
 };
 
-class Type_Hvector:Datatype{
+class Type_Hvector: public Datatype{
+  private:
+    int block_count_;
+    int block_length_;
+    MPI_Aint block_stride_;
+    MPI_Datatype old_type_;
+  public:
+    Type_Hvector(int size,int lb, int ub, int flags, int block_count, int block_length, MPI_Aint block_stride, MPI_Datatype old_type);
+    ~Type_Hvector();
+    void use();
+    void serialize( void* noncontiguous, void *contiguous, 
+                            int count);
+    void unserialize( void* contiguous_vector, void *noncontiguous_vector, 
+                              int count, MPI_Op op);
 };
 
-class Type_Indexed:Datatype{
+class Type_Indexed: public Datatype{
+  private:
+    int block_count_;
+    int* block_lengths_;
+    int* block_indices_;
+    MPI_Datatype old_type_;
+  public:
+    Type_Indexed(int size,int lb, int ub, int flags, int block_count, int* block_lengths, int* block_indices, MPI_Datatype old_type);
+    ~Type_Indexed();
+    void use();
+    void serialize( void* noncontiguous, void *contiguous, 
+                            int count);
+    void unserialize( void* contiguous_vector, void *noncontiguous_vector, 
+                              int count, MPI_Op op);
 };
 
-class Type_Hindexed:Datatype{
+class Type_Hindexed: public Datatype{
+  private:
+    int block_count_;
+    int* block_lengths_;
+    MPI_Aint* block_indices_;
+    MPI_Datatype old_type_;
+  public:
+    Type_Hindexed(int size,int lb, int ub, int flags, int block_count, int* block_lengths, MPI_Aint* block_indices, MPI_Datatype old_type);
+    ~Type_Hindexed();
+    void use();
+    void serialize( void* noncontiguous, void *contiguous, 
+                            int count);
+    void unserialize( void* contiguous_vector, void *noncontiguous_vector, 
+                              int count, MPI_Op op);
 };
 
-class Type_Struct:Datatype{
+class Type_Struct: public Datatype{
+  private:
+    int block_count_;
+    int* block_lengths_;
+    MPI_Aint* block_indices_;
+    MPI_Datatype* old_types_;
+  public:
+    Type_Struct(int size,int lb, int ub, int flags, int block_count, int* block_lengths, MPI_Aint* block_indices, MPI_Datatype* old_types);
+    ~Type_Struct();
+    void use();
+    void serialize( void* noncontiguous, void *contiguous, 
+                            int count);
+    void unserialize( void* contiguous_vector, void *noncontiguous_vector, 
+                              int count, MPI_Op op);
 };
 
 

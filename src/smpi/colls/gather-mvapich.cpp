@@ -89,12 +89,12 @@ static int MPIR_pt_pt_intra_gather( void *sendbuf, int sendcnt, MPI_Datatype sen
 
 
     if (sendtype != MPI_DATATYPE_NULL) {
-        smpi_datatype_extent(sendtype, &true_lb,
+        sendtype->extent(&true_lb,
                                        &sendtype_true_extent);
     }
     if (recvtype != MPI_DATATYPE_NULL) {
-        recvtype_extent=smpi_datatype_get_extent(recvtype);
-        smpi_datatype_extent(recvtype, &true_lb,
+        recvtype_extent=recvtype->get_extent();
+        recvtype->extent(&true_lb,
                                        &recvtype_true_extent);
     }
     
@@ -160,15 +160,15 @@ int smpi_coll_tuned_gather_mvapich2_two_level(void *sendbuf,
     }
 
     if (sendtype != MPI_DATATYPE_NULL) {
-        sendtype_extent=smpi_datatype_get_extent(sendtype);
-        sendtype_size=smpi_datatype_size(sendtype);
-        smpi_datatype_extent(sendtype, &true_lb,
+        sendtype_extent=sendtype->get_extent();
+        sendtype_size=sendtype->size();
+        sendtype->extent(&true_lb,
                                        &sendtype_true_extent);
     }
     if (recvtype != MPI_DATATYPE_NULL) {
-        recvtype_extent=smpi_datatype_get_extent(recvtype);
-        recvtype_size=smpi_datatype_size(recvtype);
-        smpi_datatype_extent(recvtype, &true_lb,
+        recvtype_extent=recvtype->get_extent();
+        recvtype_size=recvtype->size();
+        recvtype->extent(&true_lb,
                                        &recvtype_true_extent);
     }
 

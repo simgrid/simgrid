@@ -49,8 +49,8 @@ int smpi_coll_tuned_allreduce_mvapich2_rs(void *sendbuf,
     is_commutative = (op==MPI_OP_NULL || op->is_commutative());
 
     /* need to allocate temporary buffer to store incoming data */
-    smpi_datatype_extent(datatype, &true_lb, &true_extent);
-    extent = smpi_datatype_get_extent(datatype);
+    datatype->extent(&true_lb, &true_extent);
+    extent = datatype->get_extent();
 
     tmp_buf_free= smpi_get_tmp_recvbuffer(count * (MAX(extent, true_extent)));
 
@@ -60,7 +60,7 @@ int smpi_coll_tuned_allreduce_mvapich2_rs(void *sendbuf,
     /* copy local data into recvbuf */
     if (sendbuf != MPI_IN_PLACE) {
         mpi_errno =
-            smpi_datatype_copy(sendbuf, count, datatype, recvbuf, count,
+            Datatype::copy(sendbuf, count, datatype, recvbuf, count,
                            datatype);
     }
 
@@ -137,7 +137,7 @@ int smpi_coll_tuned_allreduce_mvapich2_rs(void *sendbuf,
                     /* op is noncommutative and the order is not right */
                     if(op!=MPI_OP_NULL) op->apply( recvbuf, tmp_buf, &count, datatype);
                     /* copy result back into recvbuf */
-                    mpi_errno = smpi_datatype_copy(tmp_buf, count, datatype,
+                    mpi_errno = Datatype::copy(tmp_buf, count, datatype,
                                                recvbuf, count, datatype);
                 }
                 mask <<= 1;

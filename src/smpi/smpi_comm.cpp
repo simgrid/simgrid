@@ -14,7 +14,6 @@
 #include <simgrid/s4u/host.hpp>
 
 #include "private.h"
-#include "smpi_mpi_dt_private.h"
 #include "src/simix/smx_private.h"
 #include "colls/colls.h"
 

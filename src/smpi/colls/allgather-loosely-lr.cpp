@@ -32,8 +32,8 @@ if(comm->get_leaders_comm()==MPI_COMM_NULL){
 
   rank = comm->rank();
   MPI_Aint rextent, sextent;
-  rextent = smpi_datatype_get_extent(rtype);
-  sextent = smpi_datatype_get_extent(stype);
+  rextent = rtype->get_extent();
+  sextent = stype->get_extent();
   MPI_Request inter_rrequest;
   MPI_Request rrequest_array[128];
   MPI_Request srequest_array[128];

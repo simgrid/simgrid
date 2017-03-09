@@ -34,8 +34,8 @@ smpi_coll_tuned_allgather_rdb(void *sbuf, int send_count,
   unsigned int rank = comm->rank();
 
   // get size of single element's type for send buffer and recv buffer
-  send_chunk = smpi_datatype_get_extent(send_type);
-  recv_chunk = smpi_datatype_get_extent(recv_type);
+  send_chunk = send_type->get_extent();
+  recv_chunk = recv_type->get_extent();
 
   // multiply size of each element by number of elements to send or recv
   send_chunk *= send_count;

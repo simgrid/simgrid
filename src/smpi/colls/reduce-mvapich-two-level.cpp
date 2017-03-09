@@ -113,9 +113,9 @@ int smpi_coll_tuned_reduce_mvapich2_two_level( void *sendbuf,
 
     is_commutative= (op==MPI_OP_NULL || op->is_commutative());
 
-    smpi_datatype_extent(datatype, &true_lb,
+    datatype->extent(&true_lb,
                                        &true_extent);
-    extent =smpi_datatype_get_extent(datatype);
+    extent =datatype->get_extent();
     stride = count * MAX(extent, true_extent);
 
     if (local_size == total_size) {
@@ -255,16 +255,16 @@ int smpi_coll_tuned_reduce_mvapich2_two_level( void *sendbuf,
                 } else { 
 
                      in_buf = (char *)smpi_get_tmp_sendbuffer(count*
-                                       smpi_datatype_get_extent(datatype));
-                     smpi_datatype_copy(tmp_buf, count, datatype,
+                                       datatype->get_extent());
+                     Datatype::copy(tmp_buf, count, datatype,
                                         in_buf, count, datatype);
                     //in_buf = MPI_IN_PLACE; 
                     out_buf = recvbuf; 
                 } 
             } else {
                 in_buf = (char *)smpi_get_tmp_sendbuffer(count*
-                                       smpi_datatype_get_extent(datatype));
-                smpi_datatype_copy(tmp_buf, count, datatype,
+                                       datatype->get_extent());
+                Datatype::copy(tmp_buf, count, datatype,
                                         in_buf, count, datatype);
                 //in_buf = MPI_IN_PLACE;
                 out_buf = tmp_buf;

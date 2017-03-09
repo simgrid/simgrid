@@ -15,8 +15,8 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
   comm_size = comm->size();
   rank = comm->rank();
   MPI_Aint rextent, sextent;
-  rextent = smpi_datatype_get_extent(rtype);
-  sextent = smpi_datatype_get_extent(stype);
+  rextent = rtype->get_extent();
+  sextent = stype->get_extent();
   int tag = COLL_TAG_ALLGATHER;
 
   int i, send_offset, recv_offset;

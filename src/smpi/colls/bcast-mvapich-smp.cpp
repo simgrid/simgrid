@@ -296,7 +296,7 @@ int smpi_coll_tuned_bcast_mvapich2_intra_node(void *buffer,
      * possible, and MPI_Pack_size() in other places.
      */
     //if (is_homogeneous) {
-        type_size=smpi_datatype_size(datatype);
+        type_size=datatype->size();
     //}
 /*    else {*/
 /*        MPIR_Pack_size_impl(1, datatype, &type_size);*/

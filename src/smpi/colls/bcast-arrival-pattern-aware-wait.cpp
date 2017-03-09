@@ -48,7 +48,7 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware_wait(void *buf, int count,
   int header_size = BCAST_ARRIVAL_PATTERN_AWARE_HEADER_SIZE;
 
   MPI_Aint extent;
-  extent = smpi_datatype_get_extent(datatype);
+  extent = datatype->get_extent();
 
   /* source and destination */
   int to, from;

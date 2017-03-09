@@ -79,9 +79,9 @@ void smpi_mpi_gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     // Send buffer to root
     Request::send(sendbuf, sendcount, sendtype, root, system_tag, comm);
   } else {
-    smpi_datatype_extent(recvtype, &lb, &recvext);
+    recvtype->extent(&lb, &recvext);
     // Local copy from root
-    smpi_datatype_copy(sendbuf, sendcount, sendtype, static_cast<char*>(recvbuf) + root * recvcount * recvext,
+    Datatype::copy(sendbuf, sendcount, sendtype, static_cast<char*>(recvbuf) + root * recvcount * recvext,
                        recvcount, recvtype);
     // Receive buffers from senders
     MPI_Request *requests = xbt_new(MPI_Request, size - 1);
@@ -116,7 +116,7 @@ void smpi_mpi_reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_
     displs[i] = count;
     count += recvcounts[i];
   }
-  void *tmpbuf = static_cast<void*>(smpi_get_tmp_sendbuffer(count*smpi_datatype_get_extent(datatype)));
+  void *tmpbuf = static_cast<void*>(smpi_get_tmp_sendbuffer(count*datatype->get_extent()));
 
   mpi_coll_reduce_fun(sendbuf, tmpbuf, count, datatype, op, 0, comm);
   smpi_mpi_scatterv(tmpbuf, recvcounts, displs, datatype, recvbuf, recvcounts[rank], datatype, 0, comm);
@@ -137,9 +137,9 @@ void smpi_mpi_gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void 
     // Send buffer to root
     Request::send(sendbuf, sendcount, sendtype, root, system_tag, comm);
   } else {
-    smpi_datatype_extent(recvtype, &lb, &recvext);
+    recvtype->extent(&lb, &recvext);
     // Local copy from root
-    smpi_datatype_copy(sendbuf, sendcount, sendtype, static_cast<char*>(recvbuf) + displs[root] * recvext,
+    Datatype::copy(sendbuf, sendcount, sendtype, static_cast<char*>(recvbuf) + displs[root] * recvext,
                        recvcounts[root], recvtype);
     // Receive buffers from senders
     MPI_Request *requests = xbt_new(MPI_Request, size - 1);
@@ -172,9 +172,9 @@ void smpi_mpi_allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int rank = comm->rank();
   int size = comm->size();
   // FIXME: check for errors
-  smpi_datatype_extent(recvtype, &lb, &recvext);
+  recvtype->extent(&lb, &recvext);
   // Local copy from self
-  smpi_datatype_copy(sendbuf, sendcount, sendtype, static_cast<char *>(recvbuf) + rank * recvcount * recvext, recvcount,
+  Datatype::copy(sendbuf, sendcount, sendtype, static_cast<char *>(recvbuf) + rank * recvcount * recvext, recvcount,
                      recvtype);
   // Send/Recv buffers to/from others;
   requests = xbt_new(MPI_Request, 2 * (size - 1));
@@ -206,9 +206,9 @@ void smpi_mpi_allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, vo
 
   int rank = comm->rank();
   int size = comm->size();
-  smpi_datatype_extent(recvtype, &lb, &recvext);
+  recvtype->extent(&lb, &recvext);
   // Local copy from self
-  smpi_datatype_copy(sendbuf, sendcount, sendtype,
+  Datatype::copy(sendbuf, sendcount, sendtype,
                      static_cast<char *>(recvbuf) + displs[rank] * recvext,recvcounts[rank], recvtype);
   // Send buffers to others;
   MPI_Request *requests = xbt_new(MPI_Request, 2 * (size - 1));
@@ -246,10 +246,10 @@ void smpi_mpi_scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     // Recv buffer from root
     Request::recv(recvbuf, recvcount, recvtype, root, system_tag, comm, MPI_STATUS_IGNORE);
   } else {
-    smpi_datatype_extent(sendtype, &lb, &sendext);
+    sendtype->extent(&lb, &sendext);
     // Local copy from root
     if(recvbuf!=MPI_IN_PLACE){
-        smpi_datatype_copy(static_cast<char *>(sendbuf) + root * sendcount * sendext,
+        Datatype::copy(static_cast<char *>(sendbuf) + root * sendcount * sendext,
                            sendcount, sendtype, recvbuf, recvcount, recvtype);
     }
     // Send buffers to receivers
@@ -285,10 +285,10 @@ void smpi_mpi_scatterv(void *sendbuf, int *sendcounts, int *displs, MPI_Datatype
     // Recv buffer from root
     Request::recv(recvbuf, recvcount, recvtype, root, system_tag, comm, MPI_STATUS_IGNORE);
   } else {
-    smpi_datatype_extent(sendtype, &lb, &sendext);
+    sendtype->extent(&lb, &sendext);
     // Local copy from root
     if(recvbuf!=MPI_IN_PLACE){
-      smpi_datatype_copy(static_cast<char *>(sendbuf) + displs[root] * sendext, sendcounts[root],
+      Datatype::copy(static_cast<char *>(sendbuf) + displs[root] * sendext, sendcounts[root],
                        sendtype, recvbuf, recvcount, recvtype);
     }
     // Send buffers to receivers
@@ -329,18 +329,18 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   }
 
   if( sendbuf == MPI_IN_PLACE ) {
-    sendtmpbuf = static_cast<char *>(smpi_get_tmp_sendbuffer(count*smpi_datatype_get_extent(datatype)));
-    smpi_datatype_copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
+    sendtmpbuf = static_cast<char *>(smpi_get_tmp_sendbuffer(count*datatype->get_extent()));
+    Datatype::copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
   }
   
   if(rank != root) {
     // Send buffer to root
     Request::send(sendtmpbuf, count, datatype, root, system_tag, comm);
   } else {
-    smpi_datatype_extent(datatype, &lb, &dataext);
+    datatype->extent(&lb, &dataext);
     // Local copy from root
     if (sendtmpbuf != nullptr && recvbuf != nullptr)
-      smpi_datatype_copy(sendtmpbuf, count, datatype, recvbuf, count, datatype);
+      Datatype::copy(sendtmpbuf, count, datatype, recvbuf, count, datatype);
     // Receive buffers from senders
     MPI_Request *requests = xbt_new(MPI_Request, size - 1);
     void **tmpbufs = xbt_new(void *, size - 1);
@@ -396,10 +396,10 @@ void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
   int rank = comm->rank();
   int size = comm->size();
 
-  smpi_datatype_extent(datatype, &lb, &dataext);
+  datatype->extent(&lb, &dataext);
 
   // Local copy from self
-  smpi_datatype_copy(sendbuf, count, datatype, recvbuf, count, datatype);
+  Datatype::copy(sendbuf, count, datatype, recvbuf, count, datatype);
 
   // Send/Recv buffers to/from others;
   MPI_Request *requests = xbt_new(MPI_Request, size - 1);
@@ -456,7 +456,7 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   int rank = comm->rank();
   int size = comm->size();
 
-  smpi_datatype_extent(datatype, &lb, &dataext);
+  datatype->extent(&lb, &dataext);
 
   // Send/Recv buffers to/from others;
   MPI_Request *requests = xbt_new(MPI_Request, size - 1);
@@ -482,7 +482,7 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
       }
       if(index < rank) {
         if(recvbuf_is_empty){
-          smpi_datatype_copy(tmpbufs[index], count, datatype, recvbuf, count, datatype);
+          Datatype::copy(tmpbufs[index], count, datatype, recvbuf, count, datatype);
           recvbuf_is_empty=0;
         } else
           // #Request is below rank: it's a irecv
@@ -495,7 +495,7 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
      Request::wait(&(requests[other]), MPI_STATUS_IGNORE);
       if(index < rank) {
         if (recvbuf_is_empty) {
-          smpi_datatype_copy(tmpbufs[other], count, datatype, recvbuf, count, datatype);
+          Datatype::copy(tmpbufs[other], count, datatype, recvbuf, count, datatype);
           recvbuf_is_empty = 0;
         } else
           if(op!=MPI_OP_NULL) op->apply( tmpbufs[other], recvbuf, &count, datatype);
@@ -524,7 +524,7 @@ void smpi_empty_status(MPI_Status * status)
 
 int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype)
 {
-  return status->count / smpi_datatype_size(datatype);
+  return status->count / datatype->size();
 }
 
 

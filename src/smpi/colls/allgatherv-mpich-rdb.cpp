@@ -36,12 +36,12 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
   if (total_count == 0)
     return MPI_ERR_COUNT;
 
-  recvtype_extent=smpi_datatype_get_extent( recvtype);
+  recvtype_extent=recvtype->get_extent();
 
   /* need to receive contiguously into tmp_buf because
      displs could make the recvbuf noncontiguous */
 
-  smpi_datatype_extent(recvtype, &recvtype_true_lb, &recvtype_true_extent);
+  recvtype->extent(&recvtype_true_lb, &recvtype_true_extent);
 
   tmp_buf_rl= (void*)smpi_get_tmp_sendbuffer(total_count*(MAX(recvtype_true_extent,recvtype_extent)));
 
@@ -54,7 +54,7 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
     position += recvcounts[i];
   if (sendbuf != MPI_IN_PLACE)
   {
-    smpi_datatype_copy(sendbuf, sendcount, sendtype,
+    Datatype::copy(sendbuf, sendcount, sendtype,
                        ((char *)tmp_buf + position*
                         recvtype_extent),
                        recvcounts[rank], recvtype);
@@ -62,7 +62,7 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
   else
   {
     /* if in_place specified, local data is found in recvbuf */
-    smpi_datatype_copy(((char *)recvbuf +
+    Datatype::copy(((char *)recvbuf +
                         displs[rank]*recvtype_extent),
                        recvcounts[rank], recvtype,
                        ((char *)tmp_buf + position*
@@ -203,7 +203,7 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
     if ((sendbuf != MPI_IN_PLACE) || (j != rank)) {
       /* not necessary to copy if in_place and
          j==rank. otherwise copy. */
-      smpi_datatype_copy(((char *)tmp_buf + position*recvtype_extent),
+      Datatype::copy(((char *)tmp_buf + position*recvtype_extent),
                          recvcounts[j], recvtype,
                          ((char *)recvbuf + displs[j]*recvtype_extent),
                          recvcounts[j], recvtype);

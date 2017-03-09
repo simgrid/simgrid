@@ -97,9 +97,9 @@ int smpi_coll_tuned_allgatherv_ompi_bruck(void *sbuf, int scount,
    XBT_DEBUG(
                 "coll:tuned:allgather_ompi_bruck rank %d", rank);
    
-   smpi_datatype_extent (sdtype, &slb, &sext);
+   sdtype->extent(&slb, &sext);
 
-   smpi_datatype_extent (rdtype, &rlb, &rext);
+   rdtype->extent(&rlb, &rext);
 
    /* Initialization step:
       - if send buffer is not MPI_IN_PLACE, copy send buffer to block rank of 
@@ -108,7 +108,7 @@ int smpi_coll_tuned_allgatherv_ompi_bruck(void *sbuf, int scount,
    tmprecv = (char*) rbuf + rdispls[rank] * rext;
    if (MPI_IN_PLACE != sbuf) {
       tmpsend = (char*) sbuf;
-      smpi_datatype_copy(tmpsend, scount, sdtype, 
+      Datatype::copy(tmpsend, scount, sdtype, 
                             tmprecv, rcounts[rank], rdtype);
    }
    
@@ -148,13 +148,13 @@ int smpi_coll_tuned_allgatherv_ompi_bruck(void *sbuf, int scount,
           new_rcounts[i] = rcounts[tmp_rrank];
           new_rdispls[i] = rdispls[tmp_rrank];
       }
-      smpi_datatype_indexed(blockcount, new_scounts, new_sdispls, 
+      Datatype::create_indexed(blockcount, new_scounts, new_sdispls, 
                                     rdtype, &new_sdtype);
-      smpi_datatype_indexed(blockcount, new_rcounts, new_rdispls,
+      Datatype::create_indexed(blockcount, new_rcounts, new_rdispls,
                                     rdtype, &new_rdtype);
 
-      smpi_datatype_commit(&new_sdtype);
-      smpi_datatype_commit(&new_rdtype);
+      new_sdtype->commit();
+      new_rdtype->commit();
 
       /* Sendreceive */
       Request::sendrecv(rbuf, 1, new_sdtype, sendto,
@@ -162,8 +162,8 @@ int smpi_coll_tuned_allgatherv_ompi_bruck(void *sbuf, int scount,
                                      rbuf, 1, new_rdtype, recvfrom,
                                      COLL_TAG_ALLGATHERV,
                                      comm, MPI_STATUS_IGNORE);
-      smpi_datatype_unuse(new_sdtype);
-      smpi_datatype_unuse(new_rdtype);
+      new_sdtype->unuse();
+      new_rdtype->unuse();
 
    }
 

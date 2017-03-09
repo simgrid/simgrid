@@ -34,7 +34,7 @@ smpi_coll_tuned_allreduce_lr(void *sbuf, void *rbuf, int rcount,
 
   /* make it compatible with all data type */
   MPI_Aint extent;
-  extent = smpi_datatype_get_extent(dtype);
+  extent = dtype->get_extent();
 
   /* when communication size is smaller than number of process (not support) */
   if (rcount < size) {

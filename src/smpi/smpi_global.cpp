@@ -9,7 +9,6 @@
 #include "private.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "simgrid/sg_config.h"
-#include "smpi_mpi_dt_private.h"
 #include "src/kernel/activity/SynchroComm.hpp"
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_replay.h"

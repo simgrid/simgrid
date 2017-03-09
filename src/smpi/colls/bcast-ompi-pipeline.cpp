@@ -40,7 +40,7 @@ int smpi_coll_tuned_bcast_ompi_pipeline( void* buffer,
     /**
      * Determine number of elements sent per operation.
      */
-    type_size = smpi_datatype_size(datatype);
+    type_size = datatype->size();
 
     size = comm->size();
     rank = comm->rank();
@@ -76,7 +76,7 @@ int smpi_coll_tuned_bcast_ompi_pipeline( void* buffer,
 
 
 
-    extent = smpi_datatype_get_extent (datatype);
+    extent = datatype->get_extent();
     num_segments = (original_count + count_by_segment - 1) / count_by_segment;
     realsegsize = count_by_segment * extent;
     

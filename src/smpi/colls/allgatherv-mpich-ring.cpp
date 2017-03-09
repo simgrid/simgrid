@@ -42,14 +42,14 @@ smpi_coll_tuned_allgatherv_mpich_ring(void *sendbuf, int sendcount,
   rank= comm->rank();
   comm_size=comm->size();
 
-  recvtype_extent= smpi_datatype_get_extent( recvtype);
+  recvtype_extent= recvtype->get_extent();
   total_count = 0;
   for (i=0; i<comm_size; i++)
     total_count += recvcounts[i];
 
   if (sendbuf != MPI_IN_PLACE) {
       /* First, load the "local" version in the recvbuf. */
-      smpi_datatype_copy(sendbuf, sendcount, send_type,
+      Datatype::copy(sendbuf, sendcount, send_type,
           ((char *)recvbuf + displs[rank]*recvtype_extent),
           recvcounts[rank], recvtype);
   }

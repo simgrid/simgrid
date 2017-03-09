@@ -47,9 +47,9 @@ int smpi_coll_tuned_alltoall_rdb(void *send_buff, int send_count,
 
   num_procs = comm->size();
   rank = comm->rank();
-  send_increment = smpi_datatype_get_extent(send_type);
-  recv_increment = smpi_datatype_get_extent(recv_type);
-  extent = smpi_datatype_get_extent(recv_type);
+  send_increment = send_type->get_extent();
+  recv_increment = recv_type->get_extent();
+  extent = recv_type->get_extent();
 
   send_increment *= (send_count * num_procs);
   recv_increment *= (recv_count * num_procs);

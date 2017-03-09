@@ -58,7 +58,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
      * Determine number of segments and number of elements
      * sent per operation
      */
-    smpi_datatype_extent( datatype, &lower_bound, &extent);
+    datatype->extent(&lower_bound, &extent);
     num_segments = (original_count + count_by_segment - 1) / count_by_segment;
     segment_increment = count_by_segment * extent;
 
@@ -75,7 +75,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
        (if needed) */
     if( tree->tree_nextsize > 0 ) {
         ptrdiff_t true_extent, real_segment_size;
-        true_extent=smpi_datatype_get_extent( datatype);
+        true_extent=datatype->get_extent();
 
         /* handle non existant recv buffer (i.e. its NULL) and 
            protect the recv buffer on non-root nodes */
@@ -93,7 +93,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
         /* If this is a non-commutative operation we must copy
            sendbuf to the accumbuf, in order to simplfy the loops */
         if ( (op!=MPI_OP_NULL && !op->is_commutative())) {
-            smpi_datatype_copy(
+            Datatype::copy(
                                                 (char*)sendtmpbuf, original_count, datatype,
                                                 (char*)accumbuf, original_count, datatype);
         }
@@ -341,7 +341,7 @@ int smpi_coll_tuned_reduce_ompi_chain( void *sendbuf, void *recvbuf, int count,
      * Determine number of segments and number of elements
      * sent per operation
      */
-    typelng = smpi_datatype_size( datatype);
+    typelng = datatype->size();
     
     COLL_TUNED_COMPUTED_SEGCOUNT( segsize, typelng, segcount );
 
@@ -371,7 +371,7 @@ int smpi_coll_tuned_reduce_ompi_pipeline( void *sendbuf, void *recvbuf,
     const double b2 =  9.7128;
     const double a4 =  0.0033 / 1024.0; /* [1/B] */
     const double b4 =  1.6761;
-    typelng= smpi_datatype_size( datatype);
+    typelng= datatype->size();
     int communicator_size = comm->size();
     size_t message_size = typelng * count; 
 
@@ -412,7 +412,7 @@ int smpi_coll_tuned_reduce_ompi_binary( void *sendbuf, void *recvbuf,
      * Determine number of segments and number of elements
      * sent per operation
      */
-    typelng=smpi_datatype_size( datatype );
+    typelng=datatype->size();
 
         // Binary_32K 
     segsize = 32*1024;
@@ -447,7 +447,7 @@ int smpi_coll_tuned_reduce_ompi_binomial( void *sendbuf, void *recvbuf,
      * Determine number of segments and number of elements
      * sent per operation
      */
-    typelng= smpi_datatype_size( datatype);
+    typelng= datatype->size();
     int communicator_size = comm->size();
     size_t message_size = typelng * count; 
     if (((communicator_size < 8) && (message_size < 20480)) ||
@@ -498,7 +498,7 @@ int smpi_coll_tuned_reduce_ompi_in_order_binary( void *sendbuf, void *recvbuf,
      * Determine number of segments and number of elements
      * sent per operation
      */
-    typelng=smpi_datatype_size( datatype);
+    typelng=datatype->size();
     COLL_TUNED_COMPUTED_SEGCOUNT( segsize, typelng, segcount );
 
     /* An in-order binary tree must use root (size-1) to preserve the order of
@@ -515,15 +515,15 @@ int smpi_coll_tuned_reduce_ompi_in_order_binary( void *sendbuf, void *recvbuf,
         ptrdiff_t text, ext;
         char *tmpbuf = NULL;
     
-        ext=smpi_datatype_get_extent(datatype);
-        text=smpi_datatype_get_extent(datatype);
+        ext=datatype->get_extent();
+        text=datatype->get_extent();
 
         if ((root == rank) && (MPI_IN_PLACE == sendbuf)) {
             tmpbuf = (char *) smpi_get_tmp_sendbuffer(text + (count - 1) * ext);
             if (NULL == tmpbuf) {
                 return MPI_ERR_INTERN;
             }
-            smpi_datatype_copy (
+            Datatype::copy (
                                                 (char*)recvbuf, count, datatype,
                                                 (char*)tmpbuf, count, datatype);
             use_this_sendbuf = tmpbuf;
@@ -622,8 +622,8 @@ smpi_coll_tuned_reduce_ompi_basic_linear(void *sbuf, void *rbuf, int count,
        extent and true extent */
     /* for reducing buffer allocation lengths.... */
 
-    smpi_datatype_extent(dtype, &lb, &extent);
-    true_extent = smpi_datatype_get_extent(dtype);
+    dtype->extent(&lb, &extent);
+    true_extent = dtype->get_extent();
 
     if (MPI_IN_PLACE == sbuf) {
         sbuf = rbuf;
@@ -642,7 +642,7 @@ smpi_coll_tuned_reduce_ompi_basic_linear(void *sbuf, void *rbuf, int count,
     /* Initialize the receive buffer. */
 
     if (rank == (size - 1)) {
-        smpi_datatype_copy((char*)sbuf, count, dtype,(char*)rbuf, count, dtype);
+        Datatype::copy((char*)sbuf, count, dtype,(char*)rbuf, count, dtype);
     } else {
         Request::recv(rbuf, count, dtype, size - 1,
                                 COLL_TAG_REDUCE, comm,
@@ -666,7 +666,7 @@ smpi_coll_tuned_reduce_ompi_basic_linear(void *sbuf, void *rbuf, int count,
     }
 
     if (NULL != inplace_temp) {
-        smpi_datatype_copy(inplace_temp, count, dtype,(char*)sbuf
+        Datatype::copy(inplace_temp, count, dtype,(char*)sbuf
                                                   ,count , dtype);
         smpi_free_tmp_buffer(inplace_temp);
     }

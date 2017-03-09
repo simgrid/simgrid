@@ -65,8 +65,8 @@ int smpi_coll_tuned_alltoall_mvapich2_scatter_dest(
     rank = comm->rank();
     
     /* Get extent of send and recv types */
-    recvtype_extent = smpi_datatype_get_extent(recvtype);
-    sendtype_extent = smpi_datatype_get_extent(sendtype);
+    recvtype_extent = recvtype->get_extent();
+    sendtype_extent = sendtype->get_extent();
     
     /* Medium-size message. Use isend/irecv with scattered
      destinations. Use Tony Ladd's modification to post only

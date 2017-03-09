@@ -63,7 +63,7 @@ int smpi_coll_tuned_allreduce_mpich(void *sbuf, void *rbuf, int count,
     int comm_size = comm->size();
     const size_t large_message = 2048; //MPIR_PARAM_ALLREDUCE_SHORT_MSG_SIZE
 
-    dsize = smpi_datatype_size(dtype);
+    dsize = dtype->size();
     block_dsize = dsize * count;
 
 
@@ -158,7 +158,7 @@ int smpi_coll_tuned_alltoall_mpich( void *sbuf, int scount,
 //   and sends to (rank+i). 
 
 
-    dsize = smpi_datatype_size(sdtype);
+    dsize = sdtype->size();
     block_dsize = dsize * scount;
 
     if ((block_dsize < short_size) && (communicator_size >= 8)) {
@@ -260,7 +260,7 @@ int smpi_coll_tuned_bcast_mpich(void *buff, int count,
     communicator_size = comm->size();
 
     /* else we need data size for decision function */
-    dsize = smpi_datatype_size(datatype);
+    dsize = datatype->size();
     message_size = dsize * (unsigned long)count;   /* needed for decision */
 
     /* Handle messages of small and intermediate size, and 
@@ -351,7 +351,7 @@ int smpi_coll_tuned_reduce_mpich( void *sendbuf, void *recvbuf,
     communicator_size = comm->size();
 
     /* need data size for decision function */
-    dsize=smpi_datatype_size(datatype);
+    dsize=datatype->size();
     message_size = dsize * count;   /* needed for decision */
 
     int pof2 = 1;
@@ -524,7 +524,7 @@ int smpi_coll_tuned_allgather_mpich(void *sbuf, int scount,
     communicator_size = comm->size();
 
     /* Determine complete data size */
-    dsize=smpi_datatype_size(sdtype);
+    dsize=sdtype->size();
     total_dsize = dsize * scount * communicator_size;   
    
     for (pow2_size  = 1; pow2_size < communicator_size; pow2_size <<=1); 
@@ -690,7 +690,7 @@ int smpi_coll_tuned_scatter_mpich(void *sbuf, int scount,
                                             )
 {
   if(comm->rank()!=root){
-      sbuf=xbt_malloc(rcount*smpi_datatype_get_extent(rdtype));
+      sbuf=xbt_malloc(rcount*rdtype->get_extent());
       scount=rcount;
       sdtype=rdtype;
   }

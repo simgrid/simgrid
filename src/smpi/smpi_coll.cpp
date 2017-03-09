@@ -126,7 +126,7 @@ int smpi_coll_tuned_alltoall_ompi2(void *sendbuf, int sendcount, MPI_Datatype se
                                    int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
 {
   int size = comm->size();
-  int sendsize = smpi_datatype_size(sendtype) * sendcount;
+  int sendsize = sendtype->size() * sendcount;
   if (sendsize < 200 && size > 12) {
     return smpi_coll_tuned_alltoall_bruck(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
   } else if (sendsize < 3000) {
@@ -157,10 +157,10 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount, MPI_Datatype se
   int rank = comm->rank();
   int size = comm->size();
   XBT_DEBUG("<%d> algorithm alltoall_bruck() called.", rank);
-  smpi_datatype_extent(sendtype, &lb, &sendext);
-  smpi_datatype_extent(recvtype, &lb, &recvext);
+  sendtype->extent(&lb, &sendext);
+  recvtype->extent(&lb, &recvext);
   /* Local copy from self */
-  int err =  smpi_datatype_copy(static_cast<char *>(sendbuf) + rank * sendcount * sendext, sendcount, sendtype,
+  int err =  Datatype::copy(static_cast<char *>(sendbuf) + rank * sendcount * sendext, sendcount, sendtype,
                                 static_cast<char *>(recvbuf) + rank * recvcount * recvext, recvcount, recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
@@ -215,10 +215,10 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount, MPI_Data
   int rank = comm->rank();
   int size = comm->size();
   XBT_DEBUG("<%d> algorithm alltoall_basic_linear() called.", rank);
-  smpi_datatype_extent(sendtype, &lb, &sendext);
-  smpi_datatype_extent(recvtype, &lb, &recvext);
+  sendtype->extent(&lb, &sendext);
+  recvtype->extent(&lb, &recvext);
   /* simple optimization */
-  int err = smpi_datatype_copy(static_cast<char *>(sendbuf) + rank * sendcount * sendext, sendcount, sendtype,
+  int err = Datatype::copy(static_cast<char *>(sendbuf) + rank * sendcount * sendext, sendcount, sendtype,
                                static_cast<char *>(recvbuf) + rank * recvcount * recvext, recvcount, recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
@@ -268,10 +268,10 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts, int *senddisps, MP
   int rank = comm->rank();
   int size = comm->size();
   XBT_DEBUG("<%d> algorithm basic_alltoallv() called.", rank);
-  smpi_datatype_extent(sendtype, &lb, &sendext);
-  smpi_datatype_extent(recvtype, &lb, &recvext);
+  sendtype->extent(&lb, &sendext);
+  recvtype->extent(&lb, &recvext);
   /* Local copy from self */
-  int err = smpi_datatype_copy(static_cast<char *>(sendbuf) + senddisps[rank] * sendext, sendcounts[rank], sendtype,
+  int err = Datatype::copy(static_cast<char *>(sendbuf) + senddisps[rank] * sendext, sendcounts[rank], sendtype,
                                static_cast<char *>(recvbuf) + recvdisps[rank] * recvext, recvcounts[rank], recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */

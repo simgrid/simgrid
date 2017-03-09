@@ -100,7 +100,7 @@ int smpi_coll_tuned_allreduce_mvapich2_two_level(void *sendbuf,
     if (count == 0) {
         return MPI_SUCCESS;
     }
-    smpi_datatype_extent(datatype, &true_lb,
+    datatype->extent(&true_lb,
                                        &true_extent);
 
     total_size = comm->size();
@@ -112,7 +112,7 @@ int smpi_coll_tuned_allreduce_mvapich2_two_level(void *sendbuf,
 
     if (local_rank == 0) {
         if (sendbuf != MPI_IN_PLACE) {
-            smpi_datatype_copy(sendbuf, count, datatype, recvbuf,
+            Datatype::copy(sendbuf, count, datatype, recvbuf,
                                        count, datatype);
         }
     }
@@ -132,8 +132,8 @@ int smpi_coll_tuned_allreduce_mvapich2_two_level(void *sendbuf,
         }
 
         if (local_size != total_size) {
-          void* sendtmpbuf = (char *)smpi_get_tmp_sendbuffer(count*smpi_datatype_get_extent(datatype));
-          smpi_datatype_copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
+          void* sendtmpbuf = (char *)smpi_get_tmp_sendbuffer(count*datatype->get_extent());
+          Datatype::copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
             /* inter-node allreduce */
             if(MV2_Allreduce_function == &MPIR_Allreduce_pt2pt_rd_MV2){
                 mpi_errno =

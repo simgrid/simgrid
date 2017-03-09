@@ -23,7 +23,7 @@ int smpi_coll_tuned_allreduce_ompi(void *sbuf, void *rbuf, int count,
      * can handle both commutative and non-commutative operations.
      * Ring algorithm does not support non-commutative operations.
      */
-    dsize = smpi_datatype_size(dtype);
+    dsize = dtype->size();
     block_dsize = dsize * count;
 
     if (block_dsize < intermediate_message) {
@@ -67,7 +67,7 @@ int smpi_coll_tuned_alltoall_ompi( void *sbuf, int scount,
        the University of Tennessee (2GB MX) up to 64 nodes.
        Has better performance for messages of intermediate sizes than the old one */
     /* determine block size */
-    dsize = smpi_datatype_size(sdtype);
+    dsize = sdtype->size();
     block_dsize = dsize * scount;
 
     if ((block_dsize < 200) && (communicator_size > 12)) {
@@ -144,7 +144,7 @@ int smpi_coll_tuned_bcast_ompi(void *buff, int count,
     communicator_size = comm->size();
 
     /* else we need data size for decision function */
-    dsize = smpi_datatype_size(datatype);
+    dsize = datatype->size();
     message_size = dsize * (unsigned long)count;   /* needed for decision */
 
     /* Handle messages of small and intermediate size, and 
@@ -246,7 +246,7 @@ int smpi_coll_tuned_reduce_ompi( void *sendbuf, void *recvbuf,
     communicator_size = comm->size();
 
     /* need data size for decision function */
-    dsize=smpi_datatype_size(datatype);
+    dsize=datatype->size();
     message_size = dsize * count;   /* needed for decision */
 
     /**
@@ -344,7 +344,7 @@ int smpi_coll_tuned_reduce_scatter_ompi( void *sbuf, void *rbuf,
     
     comm_size = comm->size();
     // We need data size for decision function 
-    dsize=smpi_datatype_size(dtype);
+    dsize=dtype->size();
     total_message_size = 0;
     for (i = 0; i < comm_size; i++) { 
         total_message_size += rcounts[i];
@@ -401,7 +401,7 @@ int smpi_coll_tuned_allgather_ompi(void *sbuf, int scount,
     }
 
     /* Determine complete data size */
-    dsize=smpi_datatype_size(sdtype);
+    dsize=sdtype->size();
     total_dsize = dsize * scount * communicator_size;   
    
     for (pow2_size  = 1; pow2_size < communicator_size; pow2_size <<=1); 
@@ -483,7 +483,7 @@ int smpi_coll_tuned_allgatherv_ompi(void *sbuf, int scount,
     }
     
     /* Determine complete data size */
-    dsize=smpi_datatype_size(sdtype);
+    dsize=sdtype->size();
     total_dsize = 0;
     for (i = 0; i < communicator_size; i++) {
         total_dsize += dsize * rcounts[i];
@@ -539,10 +539,10 @@ int smpi_coll_tuned_gather_ompi(void *sbuf, int scount,
 
     // Determine block size 
     if (rank == root) {
-        dsize = smpi_datatype_size(rdtype);
+        dsize = rdtype->size();
         block_size = dsize * rcount;
     } else {
-        dsize = smpi_datatype_size(sdtype);
+        dsize = sdtype->size();
         block_size = dsize * scount;
     }
 
@@ -588,17 +588,17 @@ int smpi_coll_tuned_scatter_ompi(void *sbuf, int scount,
     rank = comm->rank();
     // Determine block size 
     if (root == rank) {
-        dsize=smpi_datatype_size(sdtype);
+        dsize=sdtype->size();
         block_size = dsize * scount;
     } else {
-        dsize=smpi_datatype_size(rdtype);
+        dsize=rdtype->size();
         block_size = dsize * rcount;
     } 
 
     if ((communicator_size > small_comm_size) &&
         (block_size < small_block_size)) {
         if(rank!=root){
-            sbuf=xbt_malloc(rcount*smpi_datatype_get_extent(rdtype));
+            sbuf=xbt_malloc(rcount*rdtype->get_extent());
             scount=rcount;
             sdtype=rdtype;
         }

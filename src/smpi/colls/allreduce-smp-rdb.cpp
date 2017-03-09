@@ -55,7 +55,7 @@ int smpi_coll_tuned_allreduce_smp_rdb(void *send_buf, void *recv_buf, int count,
   comm_size = comm->size();
   rank = comm->rank();
   MPI_Aint extent;
-  extent = smpi_datatype_get_extent(dtype);
+  extent = dtype->get_extent();
   tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
 
   /* compute intra and inter ranking */

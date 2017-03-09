@@ -41,8 +41,8 @@ smpi_coll_tuned_alltoall_ring_one_barrier(void *send_buff, int send_count,
 
   rank = comm->rank();
   num_procs = comm->size();
-  send_chunk = smpi_datatype_get_extent(send_type);
-  recv_chunk = smpi_datatype_get_extent(recv_type);
+  send_chunk = send_type->get_extent();
+  recv_chunk = recv_type->get_extent();
 
   send_chunk *= send_count;
   recv_chunk *= recv_count;

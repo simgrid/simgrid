@@ -20,8 +20,8 @@ smpi_coll_tuned_allgather_NTSLR_NB(void *sbuf, int scount, MPI_Datatype stype,
 
   rank = comm->rank();
   size = comm->size();
-  rextent = smpi_datatype_get_extent(rtype);
-  sextent = smpi_datatype_get_extent(stype);
+  rextent = rtype->get_extent();
+  sextent = stype->get_extent();
   MPI_Request *rrequest_array;
   MPI_Request *srequest_array;
   rrequest_array = (MPI_Request *) xbt_malloc(size * sizeof(MPI_Request));

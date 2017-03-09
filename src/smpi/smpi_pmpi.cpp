@@ -7,7 +7,6 @@
 #include <xbt/ex.hpp>
 
 #include "private.h"
-#include "smpi_mpi_dt_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_pmpi, smpi, "Logging specific to SMPI (pmpi)");
 
@@ -153,7 +152,7 @@ int PMPI_Type_free(MPI_Datatype * datatype)
   if (*datatype == MPI_DATATYPE_NULL) {
     return MPI_ERR_ARG;
   } else {
-    smpi_datatype_unuse(*datatype);
+    (*datatype)->unuse();
     return MPI_SUCCESS;
   }
 }
@@ -165,7 +164,7 @@ int PMPI_Type_size(MPI_Datatype datatype, int *size)
   } else if (size == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    *size = static_cast<int>(smpi_datatype_size(datatype));
+    *size = static_cast<int>(datatype->size());
     return MPI_SUCCESS;
   }
 }
@@ -177,7 +176,7 @@ int PMPI_Type_size_x(MPI_Datatype datatype, MPI_Count *size)
   } else if (size == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    *size = static_cast<MPI_Count>(smpi_datatype_size(datatype));
+    *size = static_cast<MPI_Count>(datatype->size());
     return MPI_SUCCESS;
   }
 }
@@ -189,7 +188,7 @@ int PMPI_Type_get_extent(MPI_Datatype datatype, MPI_Aint * lb, MPI_Aint * extent
   } else if (lb == nullptr || extent == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    return smpi_datatype_extent(datatype, lb, extent);
+    return datatype->extent(lb, extent);
   }
 }
 
@@ -205,7 +204,7 @@ int PMPI_Type_extent(MPI_Datatype datatype, MPI_Aint * extent)
   } else if (extent == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    *extent = smpi_datatype_get_extent(datatype);
+    *extent = datatype->get_extent();
     return MPI_SUCCESS;
   }
 }
@@ -217,7 +216,7 @@ int PMPI_Type_lb(MPI_Datatype datatype, MPI_Aint * disp)
   } else if (disp == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    *disp = smpi_datatype_lb(datatype);
+    *disp = datatype->lb();
     return MPI_SUCCESS;
   }
 }
@@ -229,7 +228,7 @@ int PMPI_Type_ub(MPI_Datatype datatype, MPI_Aint * disp)
   } else if (disp == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    *disp = smpi_datatype_ub(datatype);
+    *disp = datatype->ub();
     return MPI_SUCCESS;
   }
 }
@@ -238,7 +237,8 @@ int PMPI_Type_dup(MPI_Datatype datatype, MPI_Datatype *newtype){
   if (datatype == MPI_DATATYPE_NULL) {
     return MPI_ERR_TYPE;
   } else {
-    return smpi_datatype_dup(datatype, newtype);
+    *newtype = new Datatype(datatype);
+    return MPI_SUCCESS;
   }
 }
 
@@ -601,7 +601,7 @@ int PMPI_Send_init(void *buf, int count, MPI_Datatype datatype, int dst, int tag
       retval = MPI_ERR_ARG;
   } else if (comm == MPI_COMM_NULL) {
       retval = MPI_ERR_COMM;
-  } else if (!is_datatype_valid(datatype)) {
+  } else if (!datatype->is_valid()) {
       retval = MPI_ERR_TYPE;
   } else if (dst == MPI_PROC_NULL) {
       retval = MPI_SUCCESS;
@@ -624,7 +624,7 @@ int PMPI_Recv_init(void *buf, int count, MPI_Datatype datatype, int src, int tag
     retval = MPI_ERR_ARG;
   } else if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (!is_datatype_valid(datatype)) {
+  } else if (!datatype->is_valid()) {
       retval = MPI_ERR_TYPE;
   } else if (src == MPI_PROC_NULL) {
     retval = MPI_SUCCESS;
@@ -647,7 +647,7 @@ int PMPI_Ssend_init(void* buf, int count, MPI_Datatype datatype, int dst, int ta
     retval = MPI_ERR_ARG;
   } else if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (!is_datatype_valid(datatype)) {
+  } else if (!datatype->is_valid()) {
       retval = MPI_ERR_TYPE;
   } else if (dst == MPI_PROC_NULL) {
     retval = MPI_SUCCESS;
@@ -729,7 +729,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
-  } else if (!is_datatype_valid(datatype)) {
+  } else if (!datatype->is_valid()) {
       retval = MPI_ERR_TYPE;
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
@@ -746,7 +746,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
     extra->datatype1 = encode_datatype(datatype, &known);
     int dt_size_send = 1;
     if(known==0)
-      dt_size_send = smpi_datatype_size(datatype);
+      dt_size_send = datatype->size();
     extra->send_size = count*dt_size_send;
     TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
 
@@ -779,7 +779,7 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
-  } else if (!is_datatype_valid(datatype)) {
+  } else if (!datatype->is_valid()) {
       retval = MPI_ERR_TYPE;
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
@@ -794,10 +794,10 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     extra->datatype1 = encode_datatype(datatype, &known);
     int dt_size_send = 1;
     if(known==0)
-      dt_size_send = smpi_datatype_size(datatype);
+      dt_size_send = datatype->size();
     extra->send_size = count*dt_size_send;
     TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
-    TRACE_smpi_send(rank, rank, dst_traced, tag, count*smpi_datatype_size(datatype));
+    TRACE_smpi_send(rank, rank, dst_traced, tag, count*datatype->size());
 
     *request = Request::isend(buf, count, datatype, dst, tag, comm);
     retval = MPI_SUCCESS;
@@ -827,7 +827,7 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, M
     retval = MPI_ERR_RANK;
   } else if ((count < 0)|| (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
-  } else if (!is_datatype_valid(datatype)) {
+  } else if (!datatype->is_valid()) {
       retval = MPI_ERR_TYPE;
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
@@ -842,10 +842,10 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, M
     extra->datatype1 = encode_datatype(datatype, &known);
     int dt_size_send = 1;
     if(known==0)
-      dt_size_send = smpi_datatype_size(datatype);
+      dt_size_send = datatype->size();
     extra->send_size = count*dt_size_send;
     TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
-    TRACE_smpi_send(rank, rank, dst_traced, tag, count*smpi_datatype_size(datatype));
+    TRACE_smpi_send(rank, rank, dst_traced, tag, count*datatype->size());
 
     *request = Request::issend(buf, count, datatype, dst, tag, comm);
     retval = MPI_SUCCESS;
@@ -874,7 +874,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
-  } else if (!is_datatype_valid(datatype)) {
+  } else if (!datatype->is_valid()) {
       retval = MPI_ERR_TYPE;
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
@@ -889,7 +889,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     extra->datatype1       = encode_datatype(datatype, &known);
     int dt_size_send       = 1;
     if (known == 0)
-      dt_size_send   = smpi_datatype_size(datatype);
+      dt_size_send   = datatype->size();
     extra->send_size = count * dt_size_send;
     TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
 
@@ -924,7 +924,7 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf == nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
-  } else if (!is_datatype_valid(datatype)) {
+  } else if (!datatype->is_valid()) {
     retval = MPI_ERR_TYPE;
   } else if(tag < 0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
@@ -939,12 +939,12 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
     extra->datatype1       = encode_datatype(datatype, &known);
     int dt_size_send       = 1;
     if (known == 0) {
-      dt_size_send = smpi_datatype_size(datatype);
+      dt_size_send = datatype->size();
     }
     extra->send_size = count*dt_size_send;
     TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
     if (!TRACE_smpi_view_internals()) {
-      TRACE_smpi_send(rank, rank, dst_traced, tag,count*smpi_datatype_size(datatype));
+      TRACE_smpi_send(rank, rank, dst_traced, tag,count*datatype->size());
     }
 
     Request::send(buf, count, datatype, dst, tag, comm);
@@ -970,7 +970,7 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
-  } else if (!is_datatype_valid(datatype)){
+  } else if (!datatype->is_valid()){
     retval = MPI_ERR_TYPE;
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
@@ -985,11 +985,11 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     extra->datatype1       = encode_datatype(datatype, &known);
     int dt_size_send       = 1;
     if(known == 0) {
-      dt_size_send = smpi_datatype_size(datatype);
+      dt_size_send = datatype->size();
     }
     extra->send_size = count*dt_size_send;
     TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
-    TRACE_smpi_send(rank, rank, dst_traced, tag,count*smpi_datatype_size(datatype));
+    TRACE_smpi_send(rank, rank, dst_traced, tag,count*datatype->size());
   
     Request::ssend(buf, count, datatype, dst, tag, comm);
     retval = MPI_SUCCESS;
@@ -1010,7 +1010,7 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
 
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (!is_datatype_valid(sendtype) || !is_datatype_valid(recvtype)) {
+  } else if (!sendtype->is_valid() || !recvtype->is_valid()) {
     retval = MPI_ERR_TYPE;
   } else if (src == MPI_PROC_NULL || dst == MPI_PROC_NULL) {
     smpi_empty_status(status);
@@ -1037,16 +1037,16 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
   extra->datatype1 = encode_datatype(sendtype, &known);
   int dt_size_send = 1;
   if(known==0)
-    dt_size_send = smpi_datatype_size(sendtype);
+    dt_size_send = sendtype->size();
   extra->send_size = sendcount*dt_size_send;
   extra->datatype2 = encode_datatype(recvtype, &known);
   int dt_size_recv = 1;
   if(known==0)
-    dt_size_recv = smpi_datatype_size(recvtype);
+    dt_size_recv = recvtype->size();
   extra->recv_size = recvcount*dt_size_recv;
 
   TRACE_smpi_ptp_in(rank, src_traced, dst_traced, __FUNCTION__, extra);
-  TRACE_smpi_send(rank, rank, dst_traced, sendtag,sendcount*smpi_datatype_size(sendtype));
+  TRACE_smpi_send(rank, rank, dst_traced, sendtag,sendcount*sendtype->size());
 
   Request::sendrecv(sendbuf, sendcount, sendtype, dst, sendtag, recvbuf, recvcount, recvtype, src, recvtag, comm,
                     status);
@@ -1064,16 +1064,16 @@ int PMPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, 
                           MPI_Comm comm, MPI_Status* status)
 {
   int retval = 0;
-  if (!is_datatype_valid(datatype)) {
+  if (!datatype->is_valid()) {
     return MPI_ERR_TYPE;
   } else if (count < 0) {
     return MPI_ERR_COUNT;
   } else {
-    int size = smpi_datatype_get_extent(datatype) * count;
+    int size = datatype->get_extent() * count;
     void* recvbuf = xbt_new0(char, size);
     retval = MPI_Sendrecv(buf, count, datatype, dst, sendtag, recvbuf, count, datatype, src, recvtag, comm, status);
     if(retval==MPI_SUCCESS){
-        smpi_datatype_copy(recvbuf, count, datatype, buf, count, datatype);
+        Datatype::copy(recvbuf, count, datatype, buf, count, datatype);
     }
     xbt_free(recvbuf);
 
@@ -1363,7 +1363,7 @@ int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm c
 
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (!is_datatype_valid(datatype)) {
+  } else if (!datatype->is_valid()) {
     retval = MPI_ERR_ARG;
   } else {
     int rank        = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
@@ -1376,7 +1376,7 @@ int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm c
     extra->datatype1       = encode_datatype(datatype, &known);
     int dt_size_send       = 1;
     if (known == 0)
-      dt_size_send   = smpi_datatype_size(datatype);
+      dt_size_send   = datatype->size();
     extra->send_size = count * dt_size_send;
     TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
     if (comm->size() > 1)
@@ -1445,12 +1445,12 @@ int PMPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,void *recvbu
     extra->datatype1       = encode_datatype(sendtmptype, &known);
     int dt_size_send       = 1;
     if (known == 0)
-      dt_size_send   = smpi_datatype_size(sendtmptype);
+      dt_size_send   = sendtmptype->size();
     extra->send_size = sendtmpcount * dt_size_send;
     extra->datatype2 = encode_datatype(recvtype, &known);
     int dt_size_recv = 1;
     if ((comm->rank() == root) && known == 0)
-      dt_size_recv   = smpi_datatype_size(recvtype);
+      dt_size_recv   = recvtype->size();
     extra->recv_size = recvcount * dt_size_recv;
 
     TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
@@ -1502,12 +1502,12 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recv
     extra->datatype1       = encode_datatype(sendtmptype, &known);
     int dt_size_send       = 1;
     if (known == 0)
-      dt_size_send   = smpi_datatype_size(sendtype);
+      dt_size_send   = sendtype->size();
     extra->send_size = sendtmpcount * dt_size_send;
     extra->datatype2 = encode_datatype(recvtype, &known);
     int dt_size_recv = 1;
     if (known == 0)
-      dt_size_recv = smpi_datatype_size(recvtype);
+      dt_size_recv = recvtype->size();
     if ((comm->rank() == root)) {
       extra->recvcounts = xbt_new(int, size);
       for (i                 = 0; i < size; i++) // copy data to avoid bad free
@@ -1541,7 +1541,7 @@ int PMPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     retval = MPI_ERR_COUNT;
   } else {
     if(sendbuf == MPI_IN_PLACE) {
-      sendbuf=static_cast<char*>(recvbuf)+smpi_datatype_get_extent(recvtype)*recvcount*comm->rank();
+      sendbuf=static_cast<char*>(recvbuf)+recvtype->get_extent()*recvcount*comm->rank();
       sendcount=recvcount;
       sendtype=recvtype;
     }
@@ -1552,12 +1552,12 @@ int PMPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     extra->datatype1       = encode_datatype(sendtype, &known);
     int dt_size_send       = 1;
     if (known == 0)
-      dt_size_send   = smpi_datatype_size(sendtype);
+      dt_size_send   = sendtype->size();
     extra->send_size = sendcount * dt_size_send;
     extra->datatype2 = encode_datatype(recvtype, &known);
     int dt_size_recv = 1;
     if (known == 0)
-      dt_size_recv   = smpi_datatype_size(recvtype);
+      dt_size_recv   = recvtype->size();
     extra->recv_size = recvcount * dt_size_recv;
 
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
@@ -1588,7 +1588,7 @@ int PMPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   } else {
 
     if(sendbuf == MPI_IN_PLACE) {
-      sendbuf=static_cast<char*>(recvbuf)+smpi_datatype_get_extent(recvtype)*displs[comm->rank()];
+      sendbuf=static_cast<char*>(recvbuf)+recvtype->get_extent()*displs[comm->rank()];
       sendcount=recvcounts[comm->rank()];
       sendtype=recvtype;
     }
@@ -1602,12 +1602,12 @@ int PMPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     extra->datatype1       = encode_datatype(sendtype, &known);
     int dt_size_send       = 1;
     if (known == 0)
-      dt_size_send   = smpi_datatype_size(sendtype);
+      dt_size_send   = sendtype->size();
     extra->send_size = sendcount * dt_size_send;
     extra->datatype2 = encode_datatype(recvtype, &known);
     int dt_size_recv = 1;
     if (known == 0)
-      dt_size_recv    = smpi_datatype_size(recvtype);
+      dt_size_recv    = recvtype->size();
     extra->recvcounts = xbt_new(int, size);
     for (i                 = 0; i < size; i++) // copy data to avoid bad free
       extra->recvcounts[i] = recvcounts[i] * dt_size_recv;
@@ -1632,8 +1632,8 @@ int PMPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (((comm->rank() == root) && (!is_datatype_valid(sendtype))) ||
-             ((recvbuf != MPI_IN_PLACE) && (!is_datatype_valid(recvtype)))) {
+  } else if (((comm->rank() == root) && (!sendtype->is_valid())) ||
+             ((recvbuf != MPI_IN_PLACE) && (!recvtype->is_valid()))) {
     retval = MPI_ERR_TYPE;
   } else if ((sendbuf == recvbuf) ||
       ((comm->rank()==root) && sendcount>0 && (sendbuf == nullptr))){
@@ -1653,12 +1653,12 @@ int PMPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     extra->datatype1       = encode_datatype(sendtype, &known);
     int dt_size_send       = 1;
     if ((comm->rank() == root) && known == 0)
-      dt_size_send   = smpi_datatype_size(sendtype);
+      dt_size_send   = sendtype->size();
     extra->send_size = sendcount * dt_size_send;
     extra->datatype2 = encode_datatype(recvtype, &known);
     int dt_size_recv = 1;
     if (known == 0)
-      dt_size_recv   = smpi_datatype_size(recvtype);
+      dt_size_recv   = recvtype->size();
     extra->recv_size = recvcount * dt_size_recv;
     TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
 
@@ -1702,7 +1702,7 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
     extra->datatype1       = encode_datatype(sendtype, &known);
     int dt_size_send       = 1;
     if (known == 0)
-      dt_size_send = smpi_datatype_size(sendtype);
+      dt_size_send = sendtype->size();
     if ((comm->rank() == root)) {
       extra->sendcounts = xbt_new(int, size);
       for (i                 = 0; i < size; i++) // copy data to avoid bad free
@@ -1711,7 +1711,7 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
     extra->datatype2 = encode_datatype(recvtype, &known);
     int dt_size_recv = 1;
     if (known == 0)
-      dt_size_recv   = smpi_datatype_size(recvtype);
+      dt_size_recv   = recvtype->size();
     extra->recv_size = recvcount * dt_size_recv;
     TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
 
@@ -1733,7 +1733,7 @@ int PMPI_Reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
 
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (!is_datatype_valid(datatype) || op == MPI_OP_NULL) {
+  } else if (!datatype->is_valid() || op == MPI_OP_NULL) {
     retval = MPI_ERR_ARG;
   } else {
     int rank               = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
@@ -1744,7 +1744,7 @@ int PMPI_Reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
     extra->datatype1       = encode_datatype(datatype, &known);
     int dt_size_send       = 1;
     if (known == 0)
-      dt_size_send   = smpi_datatype_size(datatype);
+      dt_size_send   = datatype->size();
     extra->send_size = count * dt_size_send;
     extra->root      = root_traced;
 
@@ -1764,7 +1764,7 @@ int PMPI_Reduce_local(void *inbuf, void *inoutbuf, int count, MPI_Datatype datat
   int retval = 0;
 
   smpi_bench_end();
-  if (!is_datatype_valid(datatype) || op == MPI_OP_NULL) {
+  if (!datatype->is_valid() || op == MPI_OP_NULL) {
     retval = MPI_ERR_ARG;
   } else {
     if(op!=MPI_OP_NULL) op->apply( inbuf, inoutbuf, &count, datatype);
@@ -1782,7 +1782,7 @@ int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
 
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (!is_datatype_valid(datatype)) {
+  } else if (!datatype->is_valid()) {
     retval = MPI_ERR_TYPE;
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
@@ -1790,8 +1790,8 @@ int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
 
     char* sendtmpbuf = static_cast<char*>(sendbuf);
     if( sendbuf == MPI_IN_PLACE ) {
-      sendtmpbuf = static_cast<char*>(xbt_malloc(count*smpi_datatype_get_extent(datatype)));
-      smpi_datatype_copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
+      sendtmpbuf = static_cast<char*>(xbt_malloc(count*datatype->get_extent()));
+      Datatype::copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
     }
     int rank               = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t, 1);
@@ -1800,7 +1800,7 @@ int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
     extra->datatype1       = encode_datatype(datatype, &known);
     int dt_size_send       = 1;
     if (known == 0)
-      dt_size_send   = smpi_datatype_size(datatype);
+      dt_size_send   = datatype->size();
     extra->send_size = count * dt_size_send;
 
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
@@ -1826,7 +1826,7 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MP
 
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (!is_datatype_valid(datatype)) {
+  } else if (!datatype->is_valid()) {
     retval = MPI_ERR_TYPE;
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
@@ -1838,7 +1838,7 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MP
     extra->datatype1       = encode_datatype(datatype, &known);
     int dt_size_send       = 1;
     if (known == 0)
-      dt_size_send   = smpi_datatype_size(datatype);
+      dt_size_send   = datatype->size();
     extra->send_size = count * dt_size_send;
 
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
@@ -1860,7 +1860,7 @@ int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
 
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (!is_datatype_valid(datatype)) {
+  } else if (!datatype->is_valid()) {
     retval = MPI_ERR_TYPE;
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
@@ -1872,12 +1872,12 @@ int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
     extra->datatype1       = encode_datatype(datatype, &known);
     int dt_size_send       = 1;
     if (known == 0)
-      dt_size_send   = smpi_datatype_size(datatype);
+      dt_size_send   = datatype->size();
     extra->send_size = count * dt_size_send;
     void* sendtmpbuf = sendbuf;
     if (sendbuf == MPI_IN_PLACE) {
-      sendtmpbuf = static_cast<void*>(xbt_malloc(count * smpi_datatype_size(datatype)));
-      memcpy(sendtmpbuf, recvbuf, count * smpi_datatype_size(datatype));
+      sendtmpbuf = static_cast<void*>(xbt_malloc(count * datatype->size()));
+      memcpy(sendtmpbuf, recvbuf, count * datatype->size());
     }
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 
@@ -1899,7 +1899,7 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datat
 
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (!is_datatype_valid(datatype)) {
+  } else if (!datatype->is_valid()) {
     retval = MPI_ERR_TYPE;
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
@@ -1916,7 +1916,7 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datat
     extra->datatype1       = encode_datatype(datatype, &known);
     int dt_size_send       = 1;
     if (known == 0)
-      dt_size_send    = smpi_datatype_size(datatype);
+      dt_size_send    = datatype->size();
     extra->send_size  = 0;
     extra->recvcounts = xbt_new(int, size);
     int totalcount    = 0;
@@ -1926,8 +1926,8 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datat
     }
     void* sendtmpbuf = sendbuf;
     if (sendbuf == MPI_IN_PLACE) {
-      sendtmpbuf = static_cast<void*>(xbt_malloc(totalcount * smpi_datatype_size(datatype)));
-      memcpy(sendtmpbuf, recvbuf, totalcount * smpi_datatype_size(datatype));
+      sendtmpbuf = static_cast<void*>(xbt_malloc(totalcount * datatype->size()));
+      memcpy(sendtmpbuf, recvbuf, totalcount * datatype->size());
     }
 
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
@@ -1952,7 +1952,7 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
 
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (!is_datatype_valid(datatype)) {
+  } else if (!datatype->is_valid()) {
     retval = MPI_ERR_TYPE;
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
@@ -1969,15 +1969,15 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
     extra->datatype1       = encode_datatype(datatype, &known);
     int dt_size_send       = 1;
     if (known == 0)
-      dt_size_send    = smpi_datatype_size(datatype);
+      dt_size_send    = datatype->size();
     extra->send_size  = 0;
     extra->recvcounts = xbt_new(int, count);
     for (int i             = 0; i < count; i++) // copy data to avoid bad free
       extra->recvcounts[i] = recvcount * dt_size_send;
     void* sendtmpbuf       = sendbuf;
     if (sendbuf == MPI_IN_PLACE) {
-      sendtmpbuf = static_cast<void*>(xbt_malloc(recvcount * count * smpi_datatype_size(datatype)));
-      memcpy(sendtmpbuf, recvbuf, recvcount * count * smpi_datatype_size(datatype));
+      sendtmpbuf = static_cast<void*>(xbt_malloc(recvcount * count * datatype->size()));
+      memcpy(sendtmpbuf, recvbuf, recvcount * count * datatype->size());
     }
 
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
@@ -2018,8 +2018,8 @@ int PMPI_Alltoall(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* rec
     int sendtmpcount         = sendcount;
     MPI_Datatype sendtmptype = sendtype;
     if (sendbuf == MPI_IN_PLACE) {
-      sendtmpbuf = static_cast<void*>(xbt_malloc(recvcount * comm->size() * smpi_datatype_size(recvtype)));
-      memcpy(sendtmpbuf, recvbuf, recvcount * comm->size() * smpi_datatype_size(recvtype));
+      sendtmpbuf = static_cast<void*>(xbt_malloc(recvcount * comm->size() * recvtype->size()));
+      memcpy(sendtmpbuf, recvbuf, recvcount * comm->size() * recvtype->size());
       sendtmpcount = recvcount;
       sendtmptype  = recvtype;
     }
@@ -2027,12 +2027,12 @@ int PMPI_Alltoall(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* rec
     int known        = 0;
     extra->datatype1 = encode_datatype(sendtmptype, &known);
     if (known == 0)
-      extra->send_size = sendtmpcount * smpi_datatype_size(sendtmptype);
+      extra->send_size = sendtmpcount * sendtmptype->size();
     else
       extra->send_size = sendtmpcount;
     extra->datatype2   = encode_datatype(recvtype, &known);
     if (known == 0)
-      extra->recv_size = recvcount * smpi_datatype_size(recvtype);
+      extra->recv_size = recvcount * recvtype->size();
     else
       extra->recv_size = recvcount;
 
@@ -2077,7 +2077,7 @@ int PMPI_Alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype 
     int known              = 0;
     int dt_size_recv       = 1;
     extra->datatype2       = encode_datatype(recvtype, &known);
-    dt_size_recv           = smpi_datatype_size(recvtype);
+    dt_size_recv           = recvtype->size();
 
     void* sendtmpbuf         = static_cast<char*>(sendbuf);
     int* sendtmpcounts       = sendcounts;
@@ -2103,7 +2103,7 @@ int PMPI_Alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype 
 
     extra->datatype1 = encode_datatype(sendtmptype, &known);
     int dt_size_send = 1;
-    dt_size_send     = smpi_datatype_size(sendtmptype);
+    dt_size_send     = sendtmptype->size();
 
     for (i = 0; i < size; i++) { // copy data to avoid bad free
       extra->send_size += sendtmpcounts[i] * dt_size_send;
@@ -2141,10 +2141,10 @@ int PMPI_Get_count(MPI_Status * status, MPI_Datatype datatype, int *count)
 {
   if (status == nullptr || count == nullptr) {
     return MPI_ERR_ARG;
-  } else if (!is_datatype_valid(datatype)) {
+  } else if (!datatype->is_valid()) {
     return MPI_ERR_TYPE;
   } else {
-    size_t size = smpi_datatype_size(datatype);
+    size_t size = datatype->size();
     if (size == 0) {
       *count = 0;
       return MPI_SUCCESS;
@@ -2163,7 +2163,7 @@ int PMPI_Type_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new_typ
   } else if (count<0){
     return MPI_ERR_COUNT;
   } else {
-    return smpi_datatype_contiguous(count, old_type, new_type, 0);
+    return Datatype::create_contiguous(count, old_type, 0, new_type);
   }
 }
 
@@ -2171,7 +2171,7 @@ int PMPI_Type_commit(MPI_Datatype* datatype) {
   if (datatype == nullptr || *datatype == MPI_DATATYPE_NULL) {
     return MPI_ERR_TYPE;
   } else {
-    smpi_datatype_commit(datatype);
+    (*datatype)->commit();
     return MPI_SUCCESS;
   }
 }
@@ -2182,7 +2182,7 @@ int PMPI_Type_vector(int count, int blocklen, int stride, MPI_Datatype old_type,
   } else if (count<0 || blocklen<0){
     return MPI_ERR_COUNT;
   } else {
-    return smpi_datatype_vector(count, blocklen, stride, old_type, new_type);
+    return Datatype::create_vector(count, blocklen, stride, old_type, new_type);
   }
 }
 
@@ -2192,7 +2192,7 @@ int PMPI_Type_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old
   } else if (count<0 || blocklen<0){
     return MPI_ERR_COUNT;
   } else {
-    return smpi_datatype_hvector(count, blocklen, stride, old_type, new_type);
+    return Datatype::create_hvector(count, blocklen, stride, old_type, new_type);
   }
 }
 
@@ -2206,7 +2206,7 @@ int PMPI_Type_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_
   } else if (count<0){
     return MPI_ERR_COUNT;
   } else {
-    return smpi_datatype_indexed(count, blocklens, indices, old_type, new_type);
+    return Datatype::create_indexed(count, blocklens, indices, old_type, new_type);
   }
 }
 
@@ -2216,7 +2216,7 @@ int PMPI_Type_create_indexed(int count, int* blocklens, int* indices, MPI_Dataty
   } else if (count<0){
     return MPI_ERR_COUNT;
   } else {
-    return smpi_datatype_indexed(count, blocklens, indices, old_type, new_type);
+    return Datatype::create_indexed(count, blocklens, indices, old_type, new_type);
   }
 }
 
@@ -2231,7 +2231,7 @@ int PMPI_Type_create_indexed_block(int count, int blocklength, int* indices, MPI
     int* blocklens=static_cast<int*>(xbt_malloc(blocklength*count*sizeof(int)));
     for (int i    = 0; i < count; i++)
       blocklens[i]=blocklength;
-    int retval    = smpi_datatype_indexed(count, blocklens, indices, old_type, new_type);
+    int retval    = Datatype::create_indexed(count, blocklens, indices, old_type, new_type);
     xbt_free(blocklens);
     return retval;
   }
@@ -2244,7 +2244,7 @@ int PMPI_Type_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatyp
   } else if (count<0){
     return MPI_ERR_COUNT;
   } else {
-    return smpi_datatype_hindexed(count, blocklens, indices, old_type, new_type);
+    return Datatype::create_hindexed(count, blocklens, indices, old_type, new_type);
   }
 }
 
@@ -2263,7 +2263,7 @@ int PMPI_Type_create_hindexed_block(int count, int blocklength, MPI_Aint* indice
     int* blocklens=(int*)xbt_malloc(blocklength*count*sizeof(int));
     for (int i     = 0; i < count; i++)
       blocklens[i] = blocklength;
-    int retval     = smpi_datatype_hindexed(count, blocklens, indices, old_type, new_type);
+    int retval     = Datatype::create_hindexed(count, blocklens, indices, old_type, new_type);
     xbt_free(blocklens);
     return retval;
   }
@@ -2273,7 +2273,7 @@ int PMPI_Type_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype*
   if (count<0){
     return MPI_ERR_COUNT;
   } else {
-    return smpi_datatype_struct(count, blocklens, indices, old_types, new_type);
+    return Datatype::create_struct(count, blocklens, indices, old_types, new_type);
   }
 }
 
@@ -2419,8 +2419,7 @@ int PMPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, 
   MPI_Aint disps[3]     = {lb, 0, lb + extent};
   MPI_Datatype types[3] = {MPI_LB, oldtype, MPI_UB};
 
-  s_smpi_mpi_struct_t* subtype = smpi_datatype_struct_create(blocks, disps, 3, types);
-  smpi_datatype_create(newtype, oldtype->size(), lb, lb + extent, sizeof(s_smpi_mpi_struct_t), subtype, DT_FLAG_VECTOR);
+  *newtype = new Type_Struct(oldtype->size(), lb, lb + extent, DT_FLAG_DERIVED, 3, blocks, disps, types);
 
   (*newtype)->addflag(~DT_FLAG_COMMITED);
   return MPI_SUCCESS;
@@ -2518,7 +2517,7 @@ int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   } else if ((origin_count < 0 || target_count < 0) ||
              (origin_addr==nullptr && origin_count > 0)){
     retval = MPI_ERR_COUNT;
-  } else if ((!is_datatype_valid(origin_datatype)) || (!is_datatype_valid(target_datatype))) {
+  } else if ((!origin_datatype->is_valid()) || (!target_datatype->is_valid())) {
     retval = MPI_ERR_TYPE;
   } else {
     int rank = smpi_process_index();
@@ -2551,7 +2550,7 @@ int PMPI_Put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   } else if ((origin_count < 0 || target_count < 0) ||
             (origin_addr==nullptr && origin_count > 0)){
     retval = MPI_ERR_COUNT;
-  } else if ((!is_datatype_valid(origin_datatype)) || (!is_datatype_valid(target_datatype))) {
+  } else if ((!origin_datatype->is_valid()) || (!target_datatype->is_valid())) {
     retval = MPI_ERR_TYPE;
   } else {
     int rank = smpi_process_index();
@@ -2559,7 +2558,7 @@ int PMPI_Put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     win->get_group(&group);
     int dst_traced = group->index(target_rank);
     TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, nullptr);
-    TRACE_smpi_send(rank, rank, dst_traced, SMPI_RMA_TAG, origin_count*smpi_datatype_size(origin_datatype));
+    TRACE_smpi_send(rank, rank, dst_traced, SMPI_RMA_TAG, origin_count*origin_datatype->size());
 
     retval = win->put( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
                            target_datatype);
@@ -2585,8 +2584,8 @@ int PMPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
   } else if ((origin_count < 0 || target_count < 0) ||
              (origin_addr==nullptr && origin_count > 0)){
     retval = MPI_ERR_COUNT;
-  } else if ((!is_datatype_valid(origin_datatype)) ||
-            (!is_datatype_valid(target_datatype))) {
+  } else if ((!origin_datatype->is_valid()) ||
+            (!target_datatype->is_valid())) {
     retval = MPI_ERR_TYPE;
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
@@ -2696,7 +2695,7 @@ int PMPI_Type_set_name(MPI_Datatype  datatype, char * name)
   } else if (name == nullptr)  {
     return MPI_ERR_ARG;
   } else {
-    smpi_datatype_set_name(datatype, name);
+    datatype->set_name(name);
     return MPI_SUCCESS;
   }
 }
@@ -2708,7 +2707,7 @@ int PMPI_Type_get_name(MPI_Datatype  datatype, char * name, int* len)
   } else if (name == nullptr)  {
     return MPI_ERR_ARG;
   } else {
-    smpi_datatype_get_name(datatype, name, len);
+    datatype->get_name(name, len);
     return MPI_SUCCESS;
   }
 }
@@ -2866,7 +2865,7 @@ int PMPI_Type_get_attr (MPI_Datatype type, int type_keyval, void *attribute_val,
   if (type==MPI_DATATYPE_NULL)
     return MPI_ERR_TYPE;
   else
-    return smpi_type_attr_get(type, type_keyval, attribute_val, flag);
+    return type->attr_get(type_keyval, attribute_val, flag);
 }
 
 int PMPI_Type_set_attr (MPI_Datatype type, int type_keyval, void *attribute_val)
@@ -2874,7 +2873,7 @@ int PMPI_Type_set_attr (MPI_Datatype type, int type_keyval, void *attribute_val)
   if (type==MPI_DATATYPE_NULL)
     return MPI_ERR_TYPE;
   else
-    return smpi_type_attr_put(type, type_keyval, attribute_val);
+    return type->attr_put(type_keyval, attribute_val);
 }
 
 int PMPI_Type_delete_attr (MPI_Datatype type, int type_keyval)
@@ -2882,17 +2881,17 @@ int PMPI_Type_delete_attr (MPI_Datatype type, int type_keyval)
   if (type==MPI_DATATYPE_NULL)
     return MPI_ERR_TYPE;
   else
-    return smpi_type_attr_delete(type, type_keyval);
+    return type->attr_delete(type_keyval);
 }
 
 int PMPI_Type_create_keyval(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval,
                             void* extra_state)
 {
-  return smpi_type_keyval_create(copy_fn, delete_fn, keyval, extra_state);
+  return Datatype::keyval_create(copy_fn, delete_fn, keyval, extra_state);
 }
 
 int PMPI_Type_free_keyval(int* keyval) {
-  return smpi_type_keyval_free(keyval);
+  return Datatype::keyval_free(keyval);
 }
 
 int PMPI_Info_create( MPI_Info *info){
@@ -3007,32 +3006,32 @@ int PMPI_Info_get_valuelen( MPI_Info info, char *key, int *valuelen, int *flag){
 int PMPI_Unpack(void* inbuf, int incount, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm) {
   if(incount<0 || outcount < 0 || inbuf==nullptr || outbuf==nullptr)
     return MPI_ERR_ARG;
-  if(!is_datatype_valid(type))
+  if(!type->is_valid())
     return MPI_ERR_TYPE;
   if(comm==MPI_COMM_NULL)
     return MPI_ERR_COMM;
-  return smpi_mpi_unpack(inbuf, incount, position, outbuf,outcount,type, comm);
+  return type->unpack(inbuf, incount, position, outbuf,outcount, comm);
 }
 
 int PMPI_Pack(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position, MPI_Comm comm) {
   if(incount<0 || outcount < 0|| inbuf==nullptr || outbuf==nullptr)
     return MPI_ERR_ARG;
-  if(!is_datatype_valid(type))
+  if(!type->is_valid())
     return MPI_ERR_TYPE;
   if(comm==MPI_COMM_NULL)
     return MPI_ERR_COMM;
-  return smpi_mpi_pack(inbuf, incount, type, outbuf,outcount,position, comm);
+  return type->pack(inbuf, incount, outbuf,outcount,position, comm);
 }
 
 int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size) {
   if(incount<0)
     return MPI_ERR_ARG;
-  if(!is_datatype_valid(datatype))
+  if(!datatype->is_valid())
     return MPI_ERR_TYPE;
   if(comm==MPI_COMM_NULL)
     return MPI_ERR_COMM;
 
-  *size=incount*smpi_datatype_size(datatype);
+  *size=incount*datatype->size();
 
   return MPI_SUCCESS;
 }

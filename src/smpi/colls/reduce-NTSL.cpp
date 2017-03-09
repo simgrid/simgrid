@@ -25,7 +25,7 @@ int smpi_coll_tuned_reduce_NTSL(void *buf, void *rbuf, int count,
   int rank, size;
   int i;
   MPI_Aint extent;
-  extent = smpi_datatype_get_extent(datatype);
+  extent = datatype->get_extent();
 
   rank = comm->rank();
   size = comm->size();

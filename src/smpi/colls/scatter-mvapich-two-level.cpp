@@ -97,8 +97,8 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_direct(void *sendbuf,
                                             root, comm);
 
     } else {
-        recvtype_size=smpi_datatype_size(recvtype);
-        sendtype_size=smpi_datatype_size(sendtype);
+        recvtype_size=recvtype->size();
+        sendtype_size=sendtype->size();
 
         if (rank == root) {
             nbytes = sendcnt * sendtype_size;
@@ -281,8 +281,8 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_binomial(void *sendbuf,
                                             root, comm);
 
     } else {
-        recvtype_size=smpi_datatype_size(recvtype);
-        sendtype_size=smpi_datatype_size(sendtype);
+        recvtype_size=recvtype->size();
+        sendtype_size=sendtype->size();
 
         if (rank == root) {
             nbytes = sendcnt * sendtype_size;

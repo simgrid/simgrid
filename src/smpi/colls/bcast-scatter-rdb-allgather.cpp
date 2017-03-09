@@ -1,5 +1,4 @@
 #include "colls_private.h"
-#include "src/smpi/smpi_mpi_dt_private.h"
 
 static int scatter_for_bcast(
     int root,
@@ -138,7 +137,7 @@ smpi_coll_tuned_bcast_scatter_rdb_allgather (
      * possible, and MPI_Pack_size() in other places.
      */
     if (is_homogeneous)
-        type_size=smpi_datatype_size(datatype);
+        type_size=datatype->size();
 
     nbytes = type_size * count;
     if (nbytes == 0)
@@ -147,7 +146,7 @@ smpi_coll_tuned_bcast_scatter_rdb_allgather (
     if (is_contig && is_homogeneous)
     {
         /* contiguous and homogeneous. no need to pack. */
-        smpi_datatype_extent(datatype, &true_lb, &true_extent);
+        datatype->extent(&true_lb, &true_extent);
 
         tmp_buf = (char *) buffer + true_lb;
     }
@@ -158,7 +157,7 @@ smpi_coll_tuned_bcast_scatter_rdb_allgather (
         /* TODO: Pipeline the packing and communication */
         position = 0;
         if (rank == root) {
-            mpi_errno = smpi_mpi_pack(buffer, count, datatype, tmp_buf, nbytes,
+            mpi_errno = datatype->pack(buffer, count, tmp_buf, nbytes,
                                        &position, comm);
             if (mpi_errno) xbt_die("crash while packing %d", mpi_errno);
         }

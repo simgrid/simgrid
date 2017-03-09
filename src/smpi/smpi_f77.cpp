@@ -6,7 +6,6 @@
 
 #include <limits.h>
 #include <stdio.h>
-#include "smpi_mpi_dt_private.h"
 #include "private.h"
 #include "xbt.h"
 

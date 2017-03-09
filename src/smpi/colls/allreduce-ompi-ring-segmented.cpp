@@ -183,18 +183,18 @@ smpi_coll_tuned_allreduce_ompi_ring_segmented(void *sbuf, void *rbuf, int count,
    /* Special case for size == 1 */
    if (1 == size) {
       if (MPI_IN_PLACE != sbuf) {
-      ret= smpi_datatype_copy(sbuf, count, dtype,rbuf, count, dtype);
+      ret= Datatype::copy(sbuf, count, dtype,rbuf, count, dtype);
          if (ret < 0) { line = __LINE__; goto error_hndl; }
       }
       return MPI_SUCCESS;
    }
    
    /* Determine segment count based on the suggested segment size */
-   extent = smpi_datatype_get_extent(dtype);
+   extent = dtype->get_extent();
    if (MPI_SUCCESS != ret) { line = __LINE__; goto error_hndl; }
-   true_extent = smpi_datatype_get_extent(dtype);
+   true_extent = dtype->get_extent();
    if (MPI_SUCCESS != ret) { line = __LINE__; goto error_hndl; }
-   typelng = smpi_datatype_size(dtype);
+   typelng = dtype->size();
    if (MPI_SUCCESS != ret) { line = __LINE__; goto error_hndl; }
    segcount = count;
    COLL_TUNED_COMPUTED_SEGCOUNT(segsize, typelng, segcount)
@@ -238,7 +238,7 @@ smpi_coll_tuned_allreduce_ompi_ring_segmented(void *sbuf, void *rbuf, int count,
 
    /* Handle MPI_IN_PLACE */
    if (MPI_IN_PLACE != sbuf) {
-      ret= smpi_datatype_copy(sbuf, count, dtype,rbuf, count, dtype);
+      ret= Datatype::copy(sbuf, count, dtype,rbuf, count, dtype);
       if (ret < 0) { line = __LINE__; goto error_hndl; }
    }
 

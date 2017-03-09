@@ -90,7 +90,7 @@ smpi_coll_tuned_bcast_ompi_split_bintree ( void* buffer,
 
     //compute again segsize
     const size_t intermediate_message_size = 370728;
-    size_t message_size = smpi_datatype_size(datatype) * (unsigned long)count;
+    size_t message_size = datatype->size() * (unsigned long)count;
     if(message_size < intermediate_message_size) 
       segsize = 1024 ;
     else
@@ -105,7 +105,7 @@ smpi_coll_tuned_bcast_ompi_split_bintree ( void* buffer,
     /* setup the binary tree topology. */
     tree = ompi_coll_tuned_topo_build_tree(2,comm,root);
 
-    type_size = smpi_datatype_size( datatype );
+    type_size = datatype->size();
 
     /* Determine number of segments and number of elements per segment */
     counts[0] = count/2;
@@ -137,7 +137,7 @@ smpi_coll_tuned_bcast_ompi_split_bintree ( void* buffer,
         return (smpi_coll_tuned_bcast_SMP_linear ( buffer, count, datatype, 
                                                     root, comm));
     }
-    type_extent = smpi_datatype_get_extent(datatype);
+    type_extent = datatype->get_extent();
 
     
     /* Determine real segment size */

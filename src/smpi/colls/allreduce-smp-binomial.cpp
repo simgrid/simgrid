@@ -48,7 +48,7 @@ int smpi_coll_tuned_allreduce_smp_binomial(void *send_buf, void *recv_buf,
   comm_size=comm->size();
   rank=comm->rank();
   MPI_Aint extent, lb;
-  smpi_datatype_extent(dtype, &lb, &extent);
+  dtype->extent(&lb, &extent);
   tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
 
   /* compute intra and inter ranking */

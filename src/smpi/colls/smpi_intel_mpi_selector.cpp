@@ -2218,44 +2218,44 @@ intel_tuning_table_element intel_alltoallv_table[] =
     for (i = 0; i < comm_size; i++) { \
         total_message_size += rcounts[i];\
     }\
-    size_t block_dsize = total_message_size*smpi_datatype_size(dtype);\
+    size_t block_dsize = total_message_size*dtype->size();\
     
 #define SIZECOMP_allreduce\
-  size_t block_dsize =rcount * smpi_datatype_size(dtype);
+  size_t block_dsize =rcount * dtype->size();
   
 #define SIZECOMP_alltoall\
-  size_t block_dsize =send_count * smpi_datatype_size(send_type);
+  size_t block_dsize =send_count * send_type->size();
 
 #define SIZECOMP_bcast\
-  size_t block_dsize =count * smpi_datatype_size(datatype);
+  size_t block_dsize =count * datatype->size();
 
 #define SIZECOMP_reduce\
-  size_t block_dsize =count * smpi_datatype_size(datatype);
+  size_t block_dsize =count * datatype->size();
 
 #define SIZECOMP_barrier\
   size_t block_dsize = 1;
 
 #define SIZECOMP_allgather\
-  size_t block_dsize =recv_count * smpi_datatype_size(recv_type);
+  size_t block_dsize =recv_count * recv_type->size();
 
 #define SIZECOMP_allgatherv\
     int total_message_size = 0;\
     for (i = 0; i < comm_size; i++) { \
         total_message_size += recv_count[i];\
     }\
-    size_t block_dsize = total_message_size*smpi_datatype_size(recv_type);
+    size_t block_dsize = total_message_size*recv_type->size();
     
 #define SIZECOMP_gather\
   int rank = comm->rank();\
   size_t block_dsize = (send_buff == MPI_IN_PLACE || rank ==root) ?\
-                recv_count * smpi_datatype_size(recv_type) :\
-                send_count * smpi_datatype_size(send_type);
+                recv_count * recv_type->size() :\
+                send_count * send_type->size();
 
 #define SIZECOMP_scatter\
   int rank = comm->rank();\
   size_t block_dsize = (sendbuf == MPI_IN_PLACE || rank !=root ) ?\
-                recvcount * smpi_datatype_size(recvtype) :\
-                sendcount * smpi_datatype_size(sendtype);
+                recvcount * recvtype->size() :\
+                sendcount * sendtype->size();
 
 #define SIZECOMP_alltoallv\
   size_t block_dsize = 1;

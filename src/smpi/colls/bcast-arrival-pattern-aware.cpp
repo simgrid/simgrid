@@ -38,7 +38,7 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
   char temp_buf[MAX_NODE];
 
   MPI_Aint extent;
-  extent = smpi_datatype_get_extent(datatype);
+  extent = datatype->get_extent();
 
   /* destination */
   int to;

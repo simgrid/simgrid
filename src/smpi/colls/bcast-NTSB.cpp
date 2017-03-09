@@ -22,7 +22,7 @@ int smpi_coll_tuned_bcast_NTSB(void *buf, int count, MPI_Datatype datatype,
   MPI_Status *recv_status_array;
 
   MPI_Aint extent;
-  extent = smpi_datatype_get_extent(datatype);
+  extent = datatype->get_extent();
 
   rank = comm->rank();
   size = comm->size();

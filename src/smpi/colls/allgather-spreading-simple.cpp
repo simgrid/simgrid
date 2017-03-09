@@ -82,7 +82,7 @@ smpi_coll_tuned_allgather_spreading_simple(void *send_buff, int send_count,
 
   rank = comm->rank();
   num_procs = comm->size();
-  extent = smpi_datatype_get_extent(send_type);
+  extent = send_type->get_extent();
 
   num_reqs = (2 * num_procs) - 2;
   reqs = (MPI_Request *) xbt_malloc(num_reqs * sizeof(MPI_Request));

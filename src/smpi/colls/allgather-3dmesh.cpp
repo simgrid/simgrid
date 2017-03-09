@@ -107,7 +107,7 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
 
   rank = comm->rank();
   num_procs = comm->size();
-  extent = smpi_datatype_get_extent(send_type);
+  extent = send_type->get_extent();
 
   if (!is_3dmesh(num_procs, &X, &Y, &Z))
     THROWF(arg_error,0, "allgather_3dmesh algorithm can't be used with this number of processes! ");
@@ -135,7 +135,7 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
 
   // do local allgather/local copy 
   recv_offset = rank * block_size;
-  smpi_datatype_copy(send_buff, send_count, send_type, (char *)recv_buff + recv_offset,
+  Datatype::copy(send_buff, send_count, send_type, (char *)recv_buff + recv_offset,
                  recv_count, recv_type);
 
   // do rowwise comm 

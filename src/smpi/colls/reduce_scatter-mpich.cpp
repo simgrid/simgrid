@@ -35,8 +35,8 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
     comm_size = comm->size();
     rank = comm->rank();
 
-    extent =smpi_datatype_get_extent(datatype);
-    smpi_datatype_extent(datatype, &true_lb, &true_extent);
+    extent =datatype->get_extent();
+    datatype->extent(&true_lb, &true_extent);
     
     if (op->is_commutative()) {
         is_commutative = 1;
@@ -57,7 +57,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
 
         if (sendbuf != MPI_IN_PLACE) {
             /* copy local data into recvbuf */
-            smpi_datatype_copy(((char *)sendbuf+disps[rank]*extent),
+            Datatype::copy(((char *)sendbuf+disps[rank]*extent),
                                        recvcounts[rank], datatype, recvbuf,
                                        recvcounts[rank], datatype);
         }
@@ -110,7 +110,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
 		    if(op!=MPI_OP_NULL) op->apply( 
 		       recvbuf, tmp_recvbuf, &recvcounts[rank], datatype);
                     /* copy result back into recvbuf */
-                    mpi_errno = smpi_datatype_copy(tmp_recvbuf, recvcounts[rank],
+                    mpi_errno = Datatype::copy(tmp_recvbuf, recvcounts[rank],
                                                datatype, recvbuf,
                                                recvcounts[rank], datatype);
                     if (mpi_errno) return(mpi_errno);
@@ -120,7 +120,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
                         ((char *)recvbuf+disps[rank]*extent),
 			tmp_recvbuf, &recvcounts[rank], datatype);
                     /* copy result back into recvbuf */
-                    mpi_errno = smpi_datatype_copy(tmp_recvbuf, recvcounts[rank],
+                    mpi_errno = Datatype::copy(tmp_recvbuf, recvcounts[rank],
                                                datatype, 
                                                ((char *)recvbuf +
                                                 disps[rank]*extent), 
@@ -133,7 +133,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
         /* if MPI_IN_PLACE, move output data to the beginning of
            recvbuf. already done for rank 0. */
         if ((sendbuf == MPI_IN_PLACE) && (rank != 0)) {
-            mpi_errno = smpi_datatype_copy(((char *)recvbuf +
+            mpi_errno = Datatype::copy(((char *)recvbuf +
                                         disps[rank]*extent),  
                                        recvcounts[rank], datatype,
                                        recvbuf, 
@@ -165,7 +165,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_noncomm(void *sendbuf, void *recvbuf, i
     void *tmp_buf1;
     void *result_ptr;
 
-    smpi_datatype_extent(datatype, &true_lb, &true_extent);
+    datatype->extent(&true_lb, &true_extent);
 
     pof2 = 1;
     log2_comm_size = 0;
@@ -198,7 +198,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_noncomm(void *sendbuf, void *recvbuf, i
     /* Copy our send data to tmp_buf0.  We do this one block at a time and
        permute the blocks as we go according to the mirror permutation. */
     for (i = 0; i < comm_size; ++i) {
-        mpi_errno = smpi_datatype_copy((char *)(sendbuf == MPI_IN_PLACE ? recvbuf : sendbuf) + (i * true_extent * block_size), block_size, datatype,
+        mpi_errno = Datatype::copy((char *)(sendbuf == MPI_IN_PLACE ? recvbuf : sendbuf) + (i * true_extent * block_size), block_size, datatype,
                                    (char *)tmp_buf0 + (MPIU_Mirror_permutation(i, log2_comm_size) * true_extent * block_size), block_size, datatype);
         if (mpi_errno) return(mpi_errno);
     }
@@ -256,7 +256,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_noncomm(void *sendbuf, void *recvbuf, i
 
     /* copy the reduced data to the recvbuf */
     result_ptr = (char *)(buf0_was_inout ? tmp_buf0 : tmp_buf1) + recv_offset * true_extent;
-    mpi_errno = smpi_datatype_copy(result_ptr, size, datatype,
+    mpi_errno = Datatype::copy(result_ptr, size, datatype,
                                recvbuf, size, datatype);
     smpi_free_tmp_buffer(tmp_buf0_save);
     smpi_free_tmp_buffer(tmp_buf1_save);
@@ -282,8 +282,8 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
     comm_size = comm->size();
     rank = comm->rank();
 
-    extent =smpi_datatype_get_extent(datatype);
-    smpi_datatype_extent(datatype, &true_lb, &true_extent);
+    extent =datatype->get_extent();
+    datatype->extent(&true_lb, &true_extent);
     
     if ((op==MPI_OP_NULL) || op->is_commutative()) {
         is_commutative = 1;
@@ -312,10 +312,10 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
 
             /* copy sendbuf into tmp_results */
             if (sendbuf != MPI_IN_PLACE)
-                mpi_errno = smpi_datatype_copy(sendbuf, total_count, datatype,
+                mpi_errno = Datatype::copy(sendbuf, total_count, datatype,
                                            tmp_results, total_count, datatype);
             else
-                mpi_errno = smpi_datatype_copy(recvbuf, total_count, datatype,
+                mpi_errno = Datatype::copy(recvbuf, total_count, datatype,
                                            tmp_results, total_count, datatype);
 
             if (mpi_errno) return(mpi_errno);
@@ -352,10 +352,10 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
                 for (j=my_tree_root; (j<my_tree_root+mask) && (j<comm_size); j++)
                     dis[1] += recvcounts[j];
 
-                mpi_errno = smpi_datatype_indexed(2, blklens, dis, datatype, &sendtype);
+                mpi_errno = Datatype::create_indexed(2, blklens, dis, datatype, &sendtype);
                 if (mpi_errno) return(mpi_errno);
                 
-                smpi_datatype_commit(&sendtype);
+                sendtype->commit();
 
                 /* calculate recvtype */
                 blklens[0] = blklens[1] = 0;
@@ -369,10 +369,10 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
                 for (j=dst_tree_root; (j<dst_tree_root+mask) && (j<comm_size); j++)
                     dis[1] += recvcounts[j];
 
-                mpi_errno = smpi_datatype_indexed(2, blklens, dis, datatype, &recvtype);
+                mpi_errno = Datatype::create_indexed(2, blklens, dis, datatype, &recvtype);
                 if (mpi_errno) return(mpi_errno);
                 
-                smpi_datatype_commit(&recvtype);
+                recvtype->commit();
 
                 received = 0;
                 if (dst < comm_size) {
@@ -474,21 +474,21 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
                                    &blklens[1], datatype); 
                         }
                         /* copy result back into tmp_results */
-                        mpi_errno = smpi_datatype_copy(tmp_recvbuf, 1, recvtype, 
+                        mpi_errno = Datatype::copy(tmp_recvbuf, 1, recvtype, 
                                                    tmp_results, 1, recvtype);
                         if (mpi_errno) return(mpi_errno);
                     }
                 }
 
-                smpi_datatype_unuse(sendtype);
-                smpi_datatype_unuse(recvtype);
+                sendtype->unuse();
+                recvtype->unuse();
 
                 mask <<= 1;
                 i++;
             }
 
             /* now copy final results from tmp_results to recvbuf */
-            mpi_errno = smpi_datatype_copy(((char *)tmp_results+disps[rank]*extent),
+            mpi_errno = Datatype::copy(((char *)tmp_results+disps[rank]*extent),
                                        recvcounts[rank], datatype, recvbuf,
                                        recvcounts[rank], datatype);
             if (mpi_errno) return(mpi_errno);

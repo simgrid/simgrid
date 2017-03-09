@@ -46,8 +46,8 @@ smpi_coll_tuned_alltoallv_pair_one_barrier(void *send_buff, int *send_counts, in
   if((num_procs&(num_procs-1)))
     THROWF(arg_error,0, "alltoallv pair algorithm can't be used with non power of two number of processes ! ");
 
-  send_chunk = smpi_datatype_get_extent(send_type);
-  recv_chunk = smpi_datatype_get_extent(recv_type);
+  send_chunk = send_type->get_extent();
+  recv_chunk = recv_type->get_extent();
 
   smpi_mpi_barrier(comm);
   for (i = 0; i < num_procs; i++) {

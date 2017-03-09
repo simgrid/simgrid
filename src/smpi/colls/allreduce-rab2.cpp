@@ -30,7 +30,7 @@ int smpi_coll_tuned_allreduce_rab2(void *sbuff, void *rbuff,
   nprocs = comm->size();
 
 
-  s_extent = smpi_datatype_get_extent(dtype);
+  s_extent = dtype->get_extent();
 
   // uneven count
   if (count % nprocs) {

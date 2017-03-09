@@ -42,8 +42,8 @@ smpi_coll_tuned_alltoallv_ring(void *send_buff, int *send_counts, int *send_disp
 
   rank = comm->rank();
   num_procs = comm->size();
-  send_chunk = smpi_datatype_get_extent(send_type);
-  recv_chunk = smpi_datatype_get_extent(recv_type);
+  send_chunk = send_type->get_extent();
+  recv_chunk = recv_type->get_extent();
   int pof2 = ((num_procs != 0) && ((num_procs & (~num_procs + 1)) == num_procs));
   for (i = 0; i < num_procs; i++) {
   

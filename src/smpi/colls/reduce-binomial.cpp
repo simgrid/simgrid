@@ -25,7 +25,7 @@ int smpi_coll_tuned_reduce_binomial(void *sendbuf, void *recvbuf, int count,
   rank = comm->rank();
   comm_size = comm->size();
 
-  extent = smpi_datatype_get_extent(datatype);
+  extent = datatype->get_extent();
 
   tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
   int is_commutative =  (op==MPI_OP_NULL || op->is_commutative());
@@ -38,7 +38,7 @@ int smpi_coll_tuned_reduce_binomial(void *sendbuf, void *recvbuf, int count,
         lroot   = 0;
   relrank = (rank - lroot + comm_size) % comm_size;
 
-  smpi_datatype_extent(datatype, &true_lb, &true_extent);
+  datatype->extent(&true_lb, &true_extent);
 
   /* adjust for potential negative lower bound in datatype */
   tmp_buf = (void *)((char*)tmp_buf - true_lb);
@@ -50,7 +50,7 @@ int smpi_coll_tuned_reduce_binomial(void *sendbuf, void *recvbuf, int count,
       recvbuf = (void *)((char*)recvbuf - true_lb);
   }
    if ((rank != root) || (sendbuf != MPI_IN_PLACE)) {
-      smpi_datatype_copy(sendbuf, count, datatype, recvbuf,count, datatype);
+      Datatype::copy(sendbuf, count, datatype, recvbuf,count, datatype);
   }
 
   while (mask < comm_size) {
@@ -65,7 +65,7 @@ int smpi_coll_tuned_reduce_binomial(void *sendbuf, void *recvbuf, int count,
           if(op!=MPI_OP_NULL) op->apply( tmp_buf, recvbuf, &count, datatype);
         } else {
           if(op!=MPI_OP_NULL) op->apply( recvbuf, tmp_buf, &count, datatype);
-          smpi_datatype_copy(tmp_buf, count, datatype,recvbuf, count, datatype);
+          Datatype::copy(tmp_buf, count, datatype,recvbuf, count, datatype);
         }
       }
     } else {

@@ -27,8 +27,8 @@ int smpi_coll_tuned_allgather_smp_simple(void *send_buf, int scount,
 
   rank = comm->rank();
   MPI_Aint rextent, sextent;
-  rextent = smpi_datatype_get_extent(rtype);
-  sextent = smpi_datatype_get_extent(stype);
+  rextent = rtype->get_extent();
+  sextent = stype->get_extent();
   int tag = COLL_TAG_ALLGATHER;
   MPI_Status status;
   int i, send_offset, recv_offset;

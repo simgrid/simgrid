@@ -81,7 +81,7 @@ smpi_coll_tuned_bcast_scatter_LR_allgather(void *buff, int count,
 
   rank = comm->rank();
   num_procs = comm->size();
-  extent = smpi_datatype_get_extent(data_type);
+  extent = data_type->get_extent();
 
 
   nbytes = extent * count;

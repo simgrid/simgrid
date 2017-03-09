@@ -91,14 +91,14 @@ int smpi_coll_tuned_allgather_bruck(void *send_buff, int send_count,
   rank = comm->rank();
 
   // get size of single element's type for recv buffer
-  recv_extent = smpi_datatype_get_extent(recv_type);
+  recv_extent = recv_type->get_extent();
 
   count = recv_count;
 
   tmp_buff = (char *) smpi_get_tmp_sendbuffer(num_procs * recv_count * recv_extent);
 
   // perform a local copy
-  smpi_datatype_copy(send_ptr, send_count, send_type,
+  Datatype::copy(send_ptr, send_count, send_type,
 		     tmp_buff, recv_count, recv_type);
   while (pof2 <= (num_procs / 2)) {
     src = (rank + pof2) % num_procs;

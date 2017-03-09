@@ -118,15 +118,15 @@ Request::Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, 
 //  if((((flags & RECV) != 0) && ((flags & ACCUMULATE) !=0)) || (datatype->sizeof_substruct != 0)){
 //    // This part handles the problem of non-contiguous memory
 //    old_buf = buf;
-//    buf_ = count==0 ? nullptr : xbt_malloc(count*smpi_datatype_size(datatype));
+//    buf_ = count==0 ? nullptr : xbt_malloc(count*datatype->size());
 //    if ((datatype->sizeof_substruct != 0) && ((flags & SEND) != 0)) {
 //      subtype->serialize(old_buf, buf_, count, datatype->substruct);
 //    }
 //  }
   // This part handles the problem of non-contiguous memory (for the unserialisation at the reception)
   old_buf_  = old_buf;
-  size_ = smpi_datatype_size(datatype) * count;
-  smpi_datatype_use(datatype);
+  size_ = datatype->size() * count;
+  datatype->use();
   comm_->use();
   action_          = nullptr;
   detached_        = 0;
@@ -181,7 +181,7 @@ void Request::unuse(MPI_Request* request)
     if((*request)->refcount_<0) xbt_die("wrong refcount");
 
     if((*request)->refcount_==0){
-        smpi_datatype_unuse((*request)->old_type_);
+        (*request)->old_type_->unuse();
         (*request)->comm_->unuse();
         (*request)->print_request("Destroying");
         delete *request;
@@ -391,7 +391,7 @@ void Request::sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,int d
   MPI_Status stats[2];
   int myid=smpi_process_index();
   if ((comm->group()->index(dst) == myid) && (comm->group()->index(src) == myid)){
-      smpi_datatype_copy(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype);
+      Datatype::copy(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype);
       return;
   }
   requests[0] = isend_init(sendbuf, sendcount, sendtype, dst, sendtag, comm);
@@ -805,12 +805,12 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
 //        // This part handles the problem of non-contignous memory the unserialization at the reception
 //        s_smpi_subtype_t *subtype = static_cast<s_smpi_subtype_t*>(datatype->substruct);
 //        if(req->flags_ & RECV)
-//          subtype->unserialize(req->buf_, req->old_buf_, req->real_size_/smpi_datatype_size(datatype) ,
+//          subtype->unserialize(req->buf_, req->old_buf_, req->real_size_/datatype->size() ,
 //                               datatype->substruct, req->op_);
 //        xbt_free(req->buf_);
 //      }else 
     if(req->flags_ & RECV){//apply op on contiguous buffer for accumulate
-          int n =req->real_size_/smpi_datatype_size(datatype);
+          int n =req->real_size_/datatype->size();
           req->op_->apply(req->buf_, req->old_buf_, &n, datatype);
           xbt_free(req->buf_);
       }

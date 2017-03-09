@@ -64,7 +64,7 @@ int smpi_coll_tuned_allgather_mvapich2_smp(void *sendbuf,int sendcnt, MPI_Dataty
     size = comm->size();
 
     /* extract the rank,size information for the intra-node communicator */
-    recvtype_extent=smpi_datatype_get_extent(recvtype);
+    recvtype_extent=recvtype->get_extent();
     
     shmem_comm = comm->get_intra_comm();
     local_rank = shmem_comm->rank();
@@ -126,7 +126,7 @@ int smpi_coll_tuned_allgather_mvapich2_smp(void *sendbuf,int sendcnt, MPI_Dataty
             }
 
 
-            void* sendbuf=((char*)recvbuf)+smpi_datatype_get_extent(recvtype)*displs[leader_comm->rank()];
+            void* sendbuf=((char*)recvbuf)+recvtype->get_extent()*displs[leader_comm->rank()];
 
             mpi_errno = mpi_coll_allgatherv_fun(sendbuf,
                                        (recvcnt*local_size),
@@ -137,7 +137,7 @@ int smpi_coll_tuned_allgather_mvapich2_smp(void *sendbuf,int sendcnt, MPI_Dataty
             xbt_free(displs);
             xbt_free(recvcnts);
         } else {
-        void* sendtmpbuf=((char*)recvbuf)+smpi_datatype_get_extent(recvtype)*(recvcnt*local_size)*leader_comm->rank();
+        void* sendtmpbuf=((char*)recvbuf)+recvtype->get_extent()*(recvcnt*local_size)*leader_comm->rank();
         
           
 

@@ -58,10 +58,10 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
 //    COLL_TUNED_UPDATE_IN_ORDER_BMTREE( comm, tuned_module, root );
     bmtree =  ompi_coll_tuned_topo_build_in_order_bmtree( comm, root);//ompi_ data->cached_in_order_bmtree;
 
-    smpi_datatype_extent(sdtype, &slb, &sextent);
-    smpi_datatype_extent(sdtype, &strue_lb, &strue_extent);
-    smpi_datatype_extent(rdtype, &rlb, &rextent);
-    smpi_datatype_extent(rdtype, &rtrue_lb, &rtrue_extent);
+    sdtype->extent(&slb, &sextent);
+    sdtype->extent(&strue_lb, &strue_extent);
+    rdtype->extent(&rlb, &rextent);
+    rdtype->extent(&rtrue_lb, &rtrue_extent);
 
     vrank = (rank - root + size) % size;
 
@@ -71,7 +71,7 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
 	    ptmp = (char *) sbuf;
 	    if (rbuf != MPI_IN_PLACE) {
 		/* local copy to rbuf */
-		err = smpi_datatype_copy(sbuf, scount, sdtype,
+		err = Datatype::copy(sbuf, scount, sdtype,
 				      rbuf, rcount, rdtype);
 		if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
 	    }
@@ -85,18 +85,18 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
 	    ptmp = tempbuf - slb;
 
 	    /* and rotate data so they will eventually in the right place */
-	    err = smpi_datatype_copy((char *) sbuf + sextent*root*scount, scount*(size-root), sdtype,
+	    err = Datatype::copy((char *) sbuf + sextent*root*scount, scount*(size-root), sdtype,
             ptmp, scount*(size-root), sdtype);
 	    if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
 
 
-	    err = smpi_datatype_copy((char*)sbuf, scount*root, sdtype,
+	    err = Datatype::copy((char*)sbuf, scount*root, sdtype,
 						 ptmp + sextent*scount*(size - root), scount*root, sdtype);
 	    if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
 
 	    if (rbuf != MPI_IN_PLACE) {
 		/* local copy to rbuf */
-		err = smpi_datatype_copy(ptmp, scount, sdtype,
+		err = Datatype::copy(ptmp, scount, sdtype,
 				      rbuf, rcount, rdtype);
 		if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
 	    }
@@ -127,7 +127,7 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
 	    Request::recv(ptmp, rcount*size, rdtype, bmtree->tree_prev,
 				    COLL_TAG_SCATTER, comm, &status);
 	    /* local copy to rbuf */
-	    smpi_datatype_copy(ptmp, scount, sdtype, rbuf, rcount, rdtype);
+	    Datatype::copy(ptmp, scount, sdtype, rbuf, rcount, rdtype);
 	}
 	/* send to children on all non-leaf */
 	for (i = 0; i < bmtree->tree_nextsize; i++) {
@@ -219,7 +219,7 @@ smpi_coll_tuned_scatter_ompi_basic_linear(void *sbuf, int scount,
 
     /* I am the root, loop sending data. */
 
-    err = smpi_datatype_extent(sdtype, &lb, &incr);
+    err = sdtype->extent(&lb, &incr);
     if (MPI_SUCCESS != err) {
         return MPI_ERR_OTHER;
     }
@@ -232,7 +232,7 @@ smpi_coll_tuned_scatter_ompi_basic_linear(void *sbuf, int scount,
         if (i == rank) {
             if (MPI_IN_PLACE != rbuf) {
                 err =
-                    smpi_datatype_copy(ptmp, scount, sdtype, rbuf, rcount,
+                    Datatype::copy(ptmp, scount, sdtype, rbuf, rcount,
                                     rdtype);
             }
         } else {

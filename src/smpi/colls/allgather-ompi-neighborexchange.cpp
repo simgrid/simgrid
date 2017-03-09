@@ -94,10 +94,10 @@ smpi_coll_tuned_allgather_ompi_neighborexchange(void *sbuf, int scount,
    XBT_DEBUG(
                 "coll:tuned:allgather_intra_neighborexchange rank %d", rank);
 
-   err = smpi_datatype_extent (sdtype, &slb, &sext);
+   err = sdtype->extent(&slb, &sext);
    if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
 
-   err = smpi_datatype_extent (rdtype, &rlb, &rext);
+   err = rdtype->extent(&rlb, &rext);
    if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
 
    /* Initialization step:
@@ -107,7 +107,7 @@ smpi_coll_tuned_allgather_ompi_neighborexchange(void *sbuf, int scount,
    tmprecv = (char*) rbuf + rank * rcount * rext;
    if (MPI_IN_PLACE != sbuf) {
       tmpsend = (char*) sbuf;
-      smpi_datatype_copy (tmpsend, scount, sdtype, tmprecv, rcount, rdtype);
+      Datatype::copy (tmpsend, scount, sdtype, tmprecv, rcount, rdtype);
    } 
 
    /* Determine neighbors, order in which blocks will arrive, etc. */

@@ -47,7 +47,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
   char temp_buf[MAX_NODE];
 
   MPI_Aint extent, lb;
-  smpi_datatype_extent(datatype, &lb, &extent);
+  datatype->extent(&lb, &extent);
 
   /* source and destination */
   int to, from;

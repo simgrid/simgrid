@@ -82,8 +82,8 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
     }
 
     /* get datatype information */
-    smpi_datatype_extent(dtype, &lb, &extent);
-    smpi_datatype_extent(dtype, &true_lb, &true_extent);
+    dtype->extent(&lb, &extent);
+    dtype->extent(&true_lb, &true_extent);
     buf_size = true_extent + (ptrdiff_t)(count - 1) * extent;
 
     /* Handle MPI_IN_PLACE */
@@ -106,7 +106,7 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
     result_buf = result_buf_free - lb;
    
     /* copy local buffer into the temporary results */
-    err =smpi_datatype_copy(sbuf, count, dtype, result_buf, count, dtype);
+    err =Datatype::copy(sbuf, count, dtype, result_buf, count, dtype);
     if (MPI_SUCCESS != err) goto cleanup;
    
     /* figure out power of two mapping: grow until larger than
@@ -257,7 +257,7 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
 
         /* copy local results from results buffer into real receive buffer */
         if (0 != rcounts[rank]) {
-            err = smpi_datatype_copy(result_buf + disps[rank] * extent,
+            err = Datatype::copy(result_buf + disps[rank] * extent,
                                        rcounts[rank], dtype, 
                                        rbuf, rcounts[rank], dtype);
             if (MPI_SUCCESS != err) {
@@ -397,7 +397,7 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
     /* Special case for size == 1 */
     if (1 == size) {
         if (MPI_IN_PLACE != sbuf) {
-            ret = smpi_datatype_copy((char*)sbuf, total_count, dtype, (char*)rbuf, total_count, dtype);
+            ret = Datatype::copy((char*)sbuf, total_count, dtype, (char*)rbuf, total_count, dtype);
             if (ret < 0) { line = __LINE__; goto error_hndl; }
         }
         xbt_free(displs);
@@ -409,8 +409,8 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
        rbuf can be of rcounts[rank] size.
        - up to two temporary buffers used for communication/computation overlap.
     */
-    smpi_datatype_extent(dtype, &lb, &extent);
-    smpi_datatype_extent(dtype, &true_lb, &true_extent);
+    dtype->extent(&lb, &extent);
+    dtype->extent(&true_lb, &true_extent);
 
     max_real_segsize = true_extent + (ptrdiff_t)(max_block_count - 1) * extent;
 
@@ -432,7 +432,7 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
         sbuf = rbuf;
     }
 
-    ret = smpi_datatype_copy((char*)sbuf, total_count, dtype, accumbuf, total_count, dtype);
+    ret = Datatype::copy((char*)sbuf, total_count, dtype, accumbuf, total_count, dtype);
     if (ret < 0) { line = __LINE__; goto error_hndl; }
 
     /* Computation loop */
@@ -499,7 +499,7 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
     if(op!=MPI_OP_NULL) op->apply( inbuf[inbi], tmprecv, &(rcounts[rank]), dtype);
    
     /* Copy result from tmprecv to rbuf */
-    ret = smpi_datatype_copy(tmprecv, rcounts[rank], dtype, (char*)rbuf, rcounts[rank], dtype);
+    ret = Datatype::copy(tmprecv, rcounts[rank], dtype, (char*)rbuf, rcounts[rank], dtype);
     if (ret < 0) { line = __LINE__; goto error_hndl; }
 
     if (NULL != displs) xbt_free(displs);

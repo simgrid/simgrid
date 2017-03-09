@@ -142,8 +142,8 @@ int smpi_coll_tuned_reduce_mvapich2_knomial (
 
     /* Create a temporary buffer */
 
-    smpi_datatype_extent(datatype, &true_lb, &true_extent);
-    extent = smpi_datatype_get_extent(datatype);
+    datatype->extent(&true_lb, &true_extent);
+    extent = datatype->get_extent();
 
     is_commutative =  (op==MPI_OP_NULL || op->is_commutative());
 
@@ -153,7 +153,7 @@ int smpi_coll_tuned_reduce_mvapich2_knomial (
     }
 
     if ((rank != root) || (sendbuf != MPI_IN_PLACE)) {
-        mpi_errno = smpi_datatype_copy(sendbuf, count, datatype, recvbuf,
+        mpi_errno = Datatype::copy(sendbuf, count, datatype, recvbuf,
                 count, datatype);
     }
 

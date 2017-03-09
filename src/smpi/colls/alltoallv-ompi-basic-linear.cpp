@@ -32,14 +32,14 @@ smpi_coll_tuned_alltoallv_ompi_basic_linear(void *sbuf, int *scounts, int *sdisp
     XBT_DEBUG(
                  "coll:tuned:alltoallv_intra_basic_linear rank %d", rank);
 
-    sext=smpi_datatype_get_extent(sdtype);
-    rext=smpi_datatype_get_extent(rdtype);
+    sext=sdtype->get_extent();
+    rext=rdtype->get_extent();
 
     /* Simple optimization - handle send to self first */
     psnd = ((char *) sbuf) + (sdisps[rank] * sext);
     prcv = ((char *) rbuf) + (rdisps[rank] * rext);
     if (0 != scounts[rank]) {
-        smpi_datatype_copy(psnd, scounts[rank], sdtype,
+        Datatype::copy(psnd, scounts[rank], sdtype,
                               prcv, rcounts[rank], rdtype);
     }
 

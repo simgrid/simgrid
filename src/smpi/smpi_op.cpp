@@ -5,7 +5,6 @@
 
 #include "mc/mc.h"
 #include "private.h"
-#include "smpi_mpi_dt_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_op, smpi, "Logging specific to SMPI (op)");
 
@@ -186,7 +185,7 @@ static void maxloc_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 
 static void replace_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
-  memcpy(b, a, *length * smpi_datatype_size(*datatype));
+  memcpy(b, a, *length * (*datatype)->size());
 }
 
 #define CREATE_MPI_OP(name, func)                             \

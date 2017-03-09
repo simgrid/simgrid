@@ -85,7 +85,7 @@ smpi_coll_tuned_allgatherv_pair(void *send_buff, int send_count,
   if((num_procs&(num_procs-1)))
     THROWF(arg_error,0, "allgatherv pair algorithm can't be used with non power of two number of processes ! ");
 
-  extent = smpi_datatype_get_extent(send_type);
+  extent = send_type->get_extent();
 
   // local send/recv
   Request::sendrecv(send_ptr, send_count, send_type, rank, tag,

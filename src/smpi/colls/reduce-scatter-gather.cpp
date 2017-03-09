@@ -36,7 +36,7 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
   
 
 
-  extent = smpi_datatype_get_extent(datatype);
+  extent = datatype->get_extent();
   /* If I'm not the root, then my recvbuf may not be valid, therefore
   I have to allocate a temporary one */
   if (rank != root && !recvbuf) {

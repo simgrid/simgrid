@@ -26,7 +26,7 @@ int smpi_coll_tuned_allreduce_rab1(void *sbuff, void *rbuff,
   if((nprocs&(nprocs-1)))
     THROWF(arg_error,0, "allreduce rab1 algorithm can't be used with non power of two number of processes ! ");
 
-  extent = smpi_datatype_get_extent(dtype);
+  extent = dtype->get_extent();
 
   pof2 = 1;
   while (pof2 <= nprocs)

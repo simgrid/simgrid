@@ -30,8 +30,8 @@ int smpi_coll_tuned_alltoall_mvapich2( void *sendbuf, int sendcount,
   int conf_index = 0;
   comm_size =  comm->size();
 
-  sendtype_size=smpi_datatype_size(sendtype);
-  recvtype_size=smpi_datatype_size(recvtype);
+  sendtype_size=sendtype->size();
+  recvtype_size=recvtype->size();
   long nbytes = sendtype_size * sendcount;
 
   /* check if safe to use partial subscription mode */
@@ -62,7 +62,7 @@ int smpi_coll_tuned_alltoall_mvapich2( void *sendbuf, int sendcount,
           ||nbytes > mv2_alltoall_thresholds_table[conf_index][range].in_place_algo_table[range_threshold].max
       ) {
           tmp_buf = (char *)smpi_get_tmp_sendbuffer( comm_size * recvcount * recvtype_size );
-          mpi_errno = smpi_datatype_copy((char *)recvbuf,
+          mpi_errno = Datatype::copy((char *)recvbuf,
               comm_size*recvcount, recvtype,
               (char *)tmp_buf,
               comm_size*recvcount, recvtype);
@@ -99,7 +99,7 @@ int smpi_coll_tuned_allgather_mvapich2(void *sendbuf, int sendcount, MPI_Datatyp
   //MPI_Comm *shmem_commptr=NULL;
   /* Get the size of the communicator */
   comm_size = comm->size();
-  recvtype_size=smpi_datatype_size(recvtype);
+  recvtype_size=recvtype->size();
   nbytes = recvtype_size * recvcount;
 
   if(mv2_allgather_table_ppn_conf==NULL)
@@ -209,10 +209,10 @@ int smpi_coll_tuned_gather_mvapich2(void *sendbuf,
   rank = comm->rank();
 
   if (rank == root) {
-      recvtype_size=smpi_datatype_size(recvtype);
+      recvtype_size=recvtype->size();
       nbytes = recvcnt * recvtype_size;
   } else {
-      sendtype_size=smpi_datatype_size(sendtype);
+      sendtype_size=sendtype->size();
       nbytes = sendcnt * sendtype_size;
   }
 
@@ -281,7 +281,7 @@ int smpi_coll_tuned_allgatherv_mvapich2(void *sendbuf, int sendcount, MPI_Dataty
   for (i = 0; i < comm_size; i++)
     total_count += recvcounts[i];
 
-  recvtype_size=smpi_datatype_size(recvtype);
+  recvtype_size=recvtype->size();
   nbytes = total_count * recvtype_size;
 
   /* Search for the corresponding system size inside the tuning table */
@@ -360,10 +360,10 @@ int smpi_coll_tuned_allreduce_mvapich2(void *sendbuf,
   int is_commutative = 0;
   MPI_Aint true_lb, true_extent;
 
-  sendtype_size=smpi_datatype_size(datatype);
+  sendtype_size=datatype->size();
   nbytes = count * sendtype_size;
 
-  smpi_datatype_extent(datatype, &true_lb, &true_extent);
+  datatype->extent(&true_lb, &true_extent);
   //MPI_Op *op_ptr;
   //is_commutative = op->is_commutative();
 
@@ -523,7 +523,7 @@ int smpi_coll_tuned_bcast_mvapich2(void *buffer,
      * possible, and MPI_Pack_size() in other places.
      */
     //if (is_homogeneous) {
-        type_size=smpi_datatype_size(datatype);
+        type_size=datatype->size();
 
    /* } else {
         MPIR_Pack_size_impl(1, datatype, &type_size);
@@ -698,7 +698,7 @@ int smpi_coll_tuned_reduce_mvapich2( void *sendbuf,
   int is_two_level = 0;
 
   comm_size = comm->size();
-  sendtype_size=smpi_datatype_size(datatype);
+  sendtype_size=datatype->size();
   nbytes = count * sendtype_size;
 
   if (count == 0)
@@ -817,7 +817,7 @@ int smpi_coll_tuned_reduce_scatter_mvapich2(void *sendbuf, void *recvbuf, int *r
       total_count += recvcnts[i];
   }
 
-  type_size=smpi_datatype_size(datatype);
+  type_size=datatype->size();
   nbytes = total_count * type_size;
 
   if (is_commutative) {
@@ -902,10 +902,10 @@ int smpi_coll_tuned_scatter_mvapich2(void *sendbuf,
   rank = comm->rank();
 
   if (rank == root) {
-      sendtype_size=smpi_datatype_size(sendtype);
+      sendtype_size=sendtype->size();
       nbytes = sendcnt * sendtype_size;
   } else {
-      recvtype_size=smpi_datatype_size(recvtype);
+      recvtype_size=recvtype->size();
       nbytes = recvcnt * recvtype_size;
   }
   

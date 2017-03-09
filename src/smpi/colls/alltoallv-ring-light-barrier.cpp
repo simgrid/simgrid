@@ -45,8 +45,8 @@ smpi_coll_tuned_alltoallv_ring_light_barrier(void *send_buff, int *send_counts, 
 
   rank = comm->rank();
   num_procs = comm->size();
-  send_chunk = smpi_datatype_get_extent(send_type);
-  recv_chunk = smpi_datatype_get_extent(recv_type);
+  send_chunk = send_type->get_extent();
+  recv_chunk = recv_type->get_extent();
 
   Request::sendrecv(send_ptr + send_disps[rank] * send_chunk, send_counts[rank], send_type, rank, tag,
                recv_ptr + recv_disps[rank] * recv_chunk, recv_counts[rank], recv_type, rank, tag,

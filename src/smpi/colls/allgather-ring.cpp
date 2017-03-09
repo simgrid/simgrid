@@ -80,7 +80,7 @@ smpi_coll_tuned_allgather_ring(void *send_buff, int send_count,
 
   rank = comm->rank();
   num_procs = comm->size();
-  extent = smpi_datatype_get_extent(send_type);
+  extent = send_type->get_extent();
 
   // local send/recv
   Request::sendrecv(sendptr, send_count, send_type, rank, tag,

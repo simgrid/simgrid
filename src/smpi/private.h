@@ -157,45 +157,6 @@ XBT_PRIVATE void smpi_global_destroy();
 XBT_PRIVATE double smpi_mpi_wtime();
 XBT_PRIVATE void smpi_mpi_init();
 
-XBT_PRIVATE bool is_datatype_valid(MPI_Datatype datatype);
-
-XBT_PRIVATE size_t smpi_datatype_size(MPI_Datatype datatype);
-XBT_PRIVATE MPI_Aint smpi_datatype_lb(MPI_Datatype datatype);
-XBT_PRIVATE MPI_Aint smpi_datatype_ub(MPI_Datatype datatype);
-XBT_PRIVATE int smpi_datatype_dup(MPI_Datatype datatype, MPI_Datatype* new_t);
-XBT_PRIVATE int smpi_datatype_extent(MPI_Datatype datatype, MPI_Aint * lb, MPI_Aint * extent);
-XBT_PRIVATE MPI_Aint smpi_datatype_get_extent(MPI_Datatype datatype);
-XBT_PRIVATE void smpi_datatype_get_name(MPI_Datatype datatype, char* name, int* length);
-XBT_PRIVATE void smpi_datatype_set_name(MPI_Datatype datatype, char* name);
-XBT_PRIVATE int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount,
-                       MPI_Datatype recvtype);
-XBT_PRIVATE void smpi_datatype_use(MPI_Datatype type);
-XBT_PRIVATE void smpi_datatype_unuse(MPI_Datatype type);
-
-XBT_PRIVATE int smpi_datatype_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new_type, MPI_Aint lb);
-XBT_PRIVATE int smpi_datatype_vector(int count, int blocklen, int stride, MPI_Datatype old_type,
-                       MPI_Datatype* new_type);
-
-XBT_PRIVATE int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride,MPI_Datatype old_type,
-                       MPI_Datatype* new_type);
-XBT_PRIVATE int smpi_datatype_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type,
-                       MPI_Datatype* new_type);
-XBT_PRIVATE int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type,
-                       MPI_Datatype* new_type);
-XBT_PRIVATE int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types,
-                       MPI_Datatype* new_type);
-
-XBT_PRIVATE void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int sizeof_substruct,
-                       void *struct_type, int flags);
-
-XBT_PRIVATE void smpi_datatype_free(MPI_Datatype* type);
-XBT_PRIVATE void smpi_datatype_commit(MPI_Datatype* datatype);
-
-XBT_PRIVATE int smpi_mpi_unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Datatype type,
-                       MPI_Comm comm);
-XBT_PRIVATE int smpi_mpi_pack(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position,
-                       MPI_Comm comm);
-
 XBT_PRIVATE void smpi_empty_status(MPI_Status * status);
 XBT_PRIVATE int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype);
 

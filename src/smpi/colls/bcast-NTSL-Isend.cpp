@@ -24,7 +24,7 @@ int smpi_coll_tuned_bcast_NTSL_Isend(void *buf, int count, MPI_Datatype datatype
   int rank, size;
   int i;
   MPI_Aint extent;
-  extent = smpi_datatype_get_extent(datatype);
+  extent = datatype->get_extent();
 
   rank = comm->rank();
   size = comm->size();

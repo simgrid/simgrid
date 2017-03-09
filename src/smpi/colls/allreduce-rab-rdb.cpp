@@ -21,10 +21,10 @@ int smpi_coll_tuned_allreduce_rab_rdb(void *sbuff, void *rbuff, int count,
   unsigned int nprocs = comm->size();
   int rank = comm->rank();
 
-  extent = smpi_datatype_get_extent(dtype);
+  extent = dtype->get_extent();
   tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
 
-  smpi_datatype_copy(sbuff, count, dtype, rbuff, count, dtype);
+  Datatype::copy(sbuff, count, dtype, rbuff, count, dtype);
 
   // find nearest power-of-two less than or equal to comm_size
   pof2 = 1;
