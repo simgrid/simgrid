@@ -33,9 +33,12 @@ void NetZone::seal()
 
 NetZone::~NetZone()
 {
+  for (auto nz : *children_)
+    delete nz;
   delete children_;
   xbt_free(name_);
 }
+
 std::unordered_map<std::string, std::string>* NetZone::properties()
 {
   return simgrid::simix::kernelImmediate([this] {

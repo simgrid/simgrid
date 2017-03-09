@@ -80,7 +80,7 @@ private:
 
   bool sealed_ = false; // We cannot add more content when sealed
 
-  std::vector<NetZone*>* children_; // sub-netzones
+  std::vector<NetZone*>* children_ = nullptr; // sub-netzones
 };
 }
 }; // Namespace simgrid::s4u
