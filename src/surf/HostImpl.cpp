@@ -107,7 +107,11 @@ HostImpl::HostImpl(s4u::Host* host) : piface_(host)
 }
 
 /** @brief use destroy() instead of this destructor */
-HostImpl::~HostImpl() = default;
+HostImpl::~HostImpl()
+{
+  for (auto mnt : storage_)
+    xbt_free(mnt.name);
+}
 
 simgrid::surf::Storage* HostImpl::findStorageOnMountList(const char* mount)
 {
