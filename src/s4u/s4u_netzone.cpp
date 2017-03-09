@@ -23,22 +23,17 @@ simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kern
 
 NetZone::NetZone(NetZone* father, const char* name) : father_(father), name_(xbt_strdup(name))
 {
+  children_ = new std::vector<NetZone*>();
 }
 
 void NetZone::seal()
 {
   sealed_ = true;
 }
+
 NetZone::~NetZone()
 {
-  xbt_dict_cursor_t cursor = nullptr;
-  char* key;
-  NetZone* elem;
-  xbt_dict_foreach (children_, cursor, key, elem) {
-    delete static_cast<NetZone*>(elem);
-  }
-
-  xbt_dict_free(&children_);
+  delete children_;
   xbt_free(name_);
 }
 std::unordered_map<std::string, std::string>* NetZone::properties()
@@ -60,7 +55,7 @@ void NetZone::setProperty(const char* key, const char* value)
   });
 }
 
-xbt_dict_t NetZone::children()
+std::vector<NetZone*>* NetZone::children()
 {
   return children_;
 }

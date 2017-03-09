@@ -48,7 +48,7 @@ public:
   char* name();
   NetZone* father();
 
-  xbt_dict_t children(); // Sub netzones
+  std::vector<NetZone*>* children(); // Sub netzones
   std::vector<Host*>* hosts(); // my content as a vector of hosts
 
   /** Get the properties assigned to a host */
@@ -80,7 +80,7 @@ private:
 
   bool sealed_ = false; // We cannot add more content when sealed
 
-  xbt_dict_t children_ = xbt_dict_new_homogeneous(nullptr); // sub-netzones
+  std::vector<NetZone*>* children_; // sub-netzones
 };
 }
 }; // Namespace simgrid::s4u

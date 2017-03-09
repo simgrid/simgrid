@@ -8,7 +8,6 @@
 
 #include "simgrid/s4u/engine.hpp"
 #include "simgrid/s4u/host.hpp"
-
 #include "src/kernel/routing/NetZoneImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
@@ -134,12 +133,9 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
     return;
   }
   XBT_DEBUG("Graph extraction for NetZone = %s", netzone->name());
-  if (!xbt_dict_is_empty(netzone->children())) {
-    xbt_dict_cursor_t cursor = nullptr;
-    sg_netzone_t nz_son;
-    char *child_name;
+  if (!netzone->children()->empty()) {
     //bottom-up recursion
-    xbt_dict_foreach (netzone->children(), cursor, child_name, nz_son) {
+    for (auto nz_son : *netzone->children()) {
       container_t child_container = static_cast<container_t>(xbt_dict_get(container->children, nz_son->name()));
       recursiveGraphExtraction(nz_son, child_container, filter);
     }
@@ -426,12 +422,9 @@ int instr_platform_traced ()
 static void recursiveXBTGraphExtraction(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges, sg_netzone_t netzone,
                                         container_t container)
 {
-  if (!xbt_dict_is_empty(netzone->children())) {
-    xbt_dict_cursor_t cursor = nullptr;
-    sg_netzone_t netzone_child;
-    char *child_name;
+  if (!netzone->children()->empty()) {
     //bottom-up recursion
-    xbt_dict_foreach (netzone->children(), cursor, child_name, netzone_child) {
+    for (auto netzone_child : *netzone->children()) {
       container_t child_container = static_cast<container_t>(xbt_dict_get(container->children, netzone_child->name()));
       recursiveXBTGraphExtraction(graph, nodes, edges, netzone_child, child_container);
     }

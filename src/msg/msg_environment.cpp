@@ -65,7 +65,11 @@ msg_netzone_t MSG_environment_as_get_by_name(const char* name)
 
 xbt_dict_t MSG_environment_as_get_routing_sons(msg_netzone_t netzone)
 {
-  return netzone->children();
+  xbt_dict_t res = xbt_dict_new_homogeneous(nullptr);
+  for (auto elem : *netzone->children()) {
+    xbt_dict_set(res, elem->name(), static_cast<void*>(elem), nullptr);
+  }
+  return res;
 }
 
 const char* MSG_environment_as_get_property_value(msg_netzone_t netzone, const char* name)

@@ -675,7 +675,7 @@ simgrid::s4u::NetZone* sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
     if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
       current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::recursive;
     /* add to the sons dictionary */
-    xbt_dict_set(current_routing->children(), AS->id, (void *) new_as, nullptr);
+    current_routing->children()->push_back(static_cast<simgrid::s4u::NetZone*>(new_as));
   }
 
   /* set the new current component of the tree */

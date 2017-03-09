@@ -7,6 +7,7 @@
 
 #include "simgrid/s4u/NetZone.hpp"
 #include "simgrid/s4u/host.hpp"
+#include "src/kernel/routing/NetZoneImpl.hpp"
 
 #include "jmsg_as.h"
 #include "jmsg_host.h"
@@ -63,29 +64,22 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getName(JNIEnv * env, jobject 
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getSons(JNIEnv * env, jobject jas) {
   int index = 0;
   jobjectArray jtable;
-  jobject tmp_jas;
-  simgrid::s4u::NetZone* tmp_as;
-  simgrid::s4u::NetZone* self_as = jnetzone_get_native(env, jas);
+  sg_netzone_t self_as = jnetzone_get_native(env, jas);
 
-  xbt_dict_t dict = self_as->children();
-  int count = xbt_dict_length(dict);
   jclass cls = env->FindClass("org/simgrid/msg/As");
 
   if (!cls)
     return nullptr;
 
-  jtable = env->NewObjectArray(static_cast<jsize>(count), cls, nullptr);
+  jtable = env->NewObjectArray(static_cast<jsize>(self_as->children()->size()), cls, nullptr);
 
   if (!jtable) {
     jxbt_throw_jni(env, "Hosts table allocation failed");
     return nullptr;
   }
 
-  xbt_dict_cursor_t cursor=nullptr;
-  char *key;
-
-  xbt_dict_foreach(dict,cursor,key,tmp_as) {
-    tmp_jas = jnetzone_new_instance(env);
+  for (auto tmp_as : *self_as->children()) {
+    jobject tmp_jas = jnetzone_new_instance(env);
     if (!tmp_jas) {
       jxbt_throw_jni(env, "java As instantiation failed");
       return nullptr;
