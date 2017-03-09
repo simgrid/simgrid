@@ -7,6 +7,7 @@
 #include "storage_interface.hpp"
 #include "surf_private.h"
 #include "xbt/file.h" /* xbt_getline */
+#include <boost/algorithm/string/join.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf, "Logging specific to the SURF storage module");
 
@@ -87,7 +88,7 @@ xbt_dict_t Storage::parseContent(const char *filename)
   xbt_dict_t parse_content = xbt_dict_new_homogeneous(xbt_free_f);
 
   FILE *file =  surf_fopen(filename, "r");
-  xbt_assert(file, "Cannot open file '%s' (path=%s)", filename, xbt_str_join(surf_path, ":"));
+  xbt_assert(file, "Cannot open file '%s' (path=%s)", filename, (boost::join(surf_path, ":")).c_str());
 
   char *line = nullptr;
   size_t len = 0;

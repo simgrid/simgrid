@@ -9,10 +9,12 @@
 #include "xbt/str.h"
 #include "xbt/dict.h"
 #include "src/surf/trace_mgr.hpp"
+#include "src/surf/surf_interface.hpp"
 #include "surf_private.h"
 #include "xbt/RngStream.h"
 #include <math.h>
 #include <unordered_map>
+#include <boost/algorithm/string/join.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf, "Surf trace management");
 
@@ -85,8 +87,7 @@ tmgr_trace_t tmgr_trace_new_from_file(const char *filename)
   xbt_assert(trace_list.find(filename) == trace_list.end(), "Refusing to define trace %s twice", filename);
 
   FILE *f = surf_fopen(filename, "r");
-  xbt_assert(f != nullptr,
-      "Cannot open file '%s' (path=%s)", filename, xbt_str_join(surf_path, ":"));
+  xbt_assert(f != nullptr, "Cannot open file '%s' (path=%s)", filename, (boost::join(surf_path, ":")).c_str());
 
   char *tstr = xbt_str_from_file(f);
   fclose(f);

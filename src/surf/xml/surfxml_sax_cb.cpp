@@ -1010,8 +1010,9 @@ void surf_parse_open(const char *file)
   xbt_assert(file, "Cannot parse the nullptr file. Bypassing the parser is strongly deprecated nowadays.");
 
   surf_parsed_filename = xbt_strdup(file);
-  char *dir = xbt_dirname(file);
-  xbt_dynar_push(surf_path, &dir);
+  char* dir            = xbt_dirname(file);
+  surf_path.push_back(std::string(dir));
+  xbt_free(dir);
 
   surf_file_to_parse = surf_fopen(file, "r");
   xbt_assert((surf_file_to_parse), "Unable to open \"%s\"\n", file);
@@ -1023,9 +1024,7 @@ void surf_parse_open(const char *file)
 void surf_parse_close()
 {
   if (surf_parsed_filename) {
-    char *dir = nullptr;
-    xbt_dynar_pop(surf_path, &dir);
-    free(dir);
+    surf_path.pop_back();
   }
 
   free(surf_parsed_filename);

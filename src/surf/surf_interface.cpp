@@ -28,7 +28,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf, "Logging specific to SURF (ke
 std::vector<surf_model_t> * all_existing_models = nullptr; /* to destroy models correctly */
 
 simgrid::trace_mgr::future_evt_set *future_evt_set = nullptr;
-xbt_dynar_t surf_path = nullptr;
+std::vector<std::string> surf_path;
 std::vector<simgrid::s4u::Host*> host_that_restart;
 xbt_dict_t watched_hosts_lib;
 
@@ -127,8 +127,6 @@ double surf_get_clock()
 
 FILE *surf_fopen(const char *name, const char *mode)
 {
-  unsigned int cpt;
-  char *path_elm = nullptr;
   char *buff;
   FILE *file = nullptr;
 
@@ -138,8 +136,8 @@ FILE *surf_fopen(const char *name, const char *mode)
     return fopen(name, mode);
 
   /* search relative files in the path */
-  xbt_dynar_foreach(surf_path, cpt, path_elm) {
-    buff = bprintf("%s" FILE_DELIM "%s", path_elm, name);
+  for (auto path_elm : surf_path) {
+    buff = bprintf("%s" FILE_DELIM "%s", path_elm.c_str(), name);
     file = fopen(buff, mode);
     free(buff);
 
@@ -355,8 +353,6 @@ void surf_init(int *argc, char **argv)
 void surf_exit()
 {
   TRACE_end();                  /* Just in case it was not called by the upper layer (or there is no upper layer) */
-
-  xbt_dynar_free(&surf_path);
 
   sg_host_exit();
   xbt_lib_free(&storage_lib);

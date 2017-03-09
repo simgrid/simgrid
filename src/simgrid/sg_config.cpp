@@ -26,6 +26,7 @@
 #include "mc/mc.h"
 #include "simgrid/instr.h"
 #include "src/mc/mc_replay.h"
+#include "src/surf/surf_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf, "About the configuration of SimGrid");
 
@@ -421,8 +422,7 @@ void sg_config_init(int *argc, char **argv)
       "",
       [](std::string const& path) {
         if (path[0] != '\0') {
-          char* copy = xbt_strdup(path.c_str());
-          xbt_dynar_push(surf_path, &copy);
+          surf_path.push_back(path);
         }
       });
 
@@ -605,12 +605,11 @@ void sg_config_init(int *argc, char **argv)
         "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.");
     xbt_cfg_register_alias("clean-atexit","clean_atexit");
 
-    if (!surf_path) {
+    if (surf_path.empty()) {
       /* retrieves the current directory of the current process */
       const char *initial_path = __surf_get_initial_path();
       xbt_assert((initial_path), "__surf_get_initial_path() failed! Can't resolve current Windows directory");
 
-      surf_path = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
       xbt_cfg_setdefault_string("path", initial_path);
     }
 
