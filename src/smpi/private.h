@@ -19,6 +19,7 @@
 #include "src/smpi/smpi_comm.hpp"
 #include "src/smpi/smpi_op.hpp"
 #include "src/smpi/smpi_datatype.hpp"
+#include "src/smpi/smpi_datatype_derived.hpp"
 #include "src/smpi/smpi_request.hpp"
 #include "src/smpi/smpi_topo.hpp"
 #include "src/smpi/smpi_win.hpp"

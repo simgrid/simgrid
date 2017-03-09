@@ -220,6 +220,8 @@ set(SMPI_SRC
   src/smpi/smpi_mpi.cpp
   src/smpi/smpi_datatype.cpp
   src/smpi/smpi_datatype.hpp
+  src/smpi/smpi_datatype_derived.cpp
+  src/smpi/smpi_datatype_derived.hpp
   src/smpi/smpi_op.cpp
   src/smpi/smpi_op.hpp
   src/smpi/smpi_pmpi.cpp
