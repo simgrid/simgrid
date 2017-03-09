@@ -166,7 +166,6 @@ ActorImpl::~ActorImpl()
 {
   delete this->context;
   xbt_dict_free(&this->properties);
-  xbt_dynar_free(&this->on_exit);
 }
 
 void create_maestro(std::function<void()> code)
@@ -857,22 +856,19 @@ xbt_dynar_t SIMIX_processes_as_dynar() {
 void SIMIX_process_on_exit_runall(smx_actor_t process) {
   s_smx_process_exit_fun_t exit_fun;
   smx_process_exit_status_t exit_status = (process->context->iwannadie) ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
-  while (!xbt_dynar_is_empty(process->on_exit)) {
-    exit_fun = xbt_dynar_pop_as(process->on_exit,s_smx_process_exit_fun_t);
+  while (!process->on_exit.empty()) {
+    exit_fun = process->on_exit.back();
     (exit_fun.fun)((void*)exit_status, exit_fun.arg);
+    process->on_exit.pop_back();
   }
 }
 
 void SIMIX_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void *data) {
   xbt_assert(process, "current process not found: are you in maestro context ?");
 
-  if (!process->on_exit) {
-    process->on_exit = xbt_dynar_new(sizeof(s_smx_process_exit_fun_t), nullptr);
-  }
-
   s_smx_process_exit_fun_t exit_fun = {fun, data};
 
-  xbt_dynar_push_as(process->on_exit,s_smx_process_exit_fun_t,exit_fun);
+  process->on_exit.push_back(exit_fun);
 }
 
 /**

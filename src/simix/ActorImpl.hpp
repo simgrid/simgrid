@@ -60,7 +60,7 @@ public:
   xbt_dict_t properties         = nullptr;
   s_smx_simcall_t simcall;
   void *data          = nullptr; /* kept for compatibility, it should be replaced with moddata */
-  xbt_dynar_t on_exit = nullptr; /* list of functions executed when the process dies */
+  std::vector<s_smx_process_exit_fun_t> on_exit; /* list of functions executed when the process dies */
 
   std::function<void()> code;
   smx_timer_t kill_timer = nullptr;
