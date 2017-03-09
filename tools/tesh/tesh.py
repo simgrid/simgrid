@@ -428,7 +428,12 @@ if __name__ == '__main__':
            re.compile(".*WARNING: ASan doesn\'t fully support"),
            re.compile("Unable to clean temporary file C:.*"),
            re.compile(".*Configuration change: Set \'contexts/"),
-           re.compile(".*Picked up JAVA_TOOL_OPTIONS.*")]
+           re.compile(".*Picked up JAVA_TOOL_OPTIONS.*"),
+
+           re.compile("==WARNING: ASan is ignoring requested __asan_handle_no_return: stack top:"),
+           re.compile("False positive error reports may follow"),
+           re.compile("For details see http://code.google.com/p/address-sanitizer/issues/detail?id=189"),
+           ]
     
     if options.teshfile is None:
         f = FileReader(None)
