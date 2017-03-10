@@ -42,7 +42,7 @@ public:
 
       /* - Send the task to the @ref worker */
       char* payload = bprintf("%f", comp_size);
-      simgrid::s4u::this_actor::send(mailbox, (void*)(payload), comm_size);
+      simgrid::s4u::this_actor::send(mailbox, payload, comm_size);
     }
 
     XBT_INFO("All tasks have been dispatched. Let's tell everybody the computation is over.");

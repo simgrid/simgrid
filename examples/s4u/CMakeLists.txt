@@ -12,7 +12,7 @@ set(tesh_files    ${tesh_files}                                       PARENT_SCO
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/launching/deployment.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u_actions-comm_split_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u_actions-comm_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker_d.xml      PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/s4u_app-masterworker_d.xml      PARENT_SCOPE)
 set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u_actions-comm_split_p0.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u_actions-comm_split_p1.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u_actions-comm.txt
