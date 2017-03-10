@@ -541,7 +541,7 @@ void SIMIX_run()
     /* Clean processes to destroy */
     SIMIX_process_empty_trash();
 
-    XBT_DEBUG("### time %f, #processes %zu, #to_run %zu", time, simix_global->process_list.size(),
+    XBT_DEBUG("### time %f, #processes %zu, #to_run %lu", time, simix_global->process_list.size(),
               xbt_dynar_length(simix_global->process_to_run));
 
     /* If only daemon processes remain, cancel their actions, mark them to die and reschedule them */
