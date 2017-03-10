@@ -174,7 +174,7 @@ SG_BEGIN_DECL()
 #define MPI_TYPECLASS_INTEGER 1
 #define MPI_TYPECLASS_COMPLEX 2
 #define MPI_ROOT 0
-#define MPI_INFO_NULL NULL
+#define MPI_INFO_NULL ((MPI_Info)NULL)
 #define MPI_COMM_TYPE_SHARED    1
 #define MPI_WIN_NULL ((MPI_Win)NULL)
 
@@ -249,8 +249,7 @@ typedef struct {
 } MPI_Status;
 
 typedef SMPI_Win* MPI_Win;
-struct s_smpi_mpi_info;
-typedef struct s_smpi_mpi_info *MPI_Info;
+typedef SMPI_Info* MPI_Info;
 
 #define MPI_STATUS_IGNORE ((MPI_Status*)NULL)
 #define MPI_STATUSES_IGNORE ((MPI_Status*)NULL)

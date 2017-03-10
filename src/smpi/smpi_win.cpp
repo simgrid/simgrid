@@ -17,7 +17,7 @@ Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm)
   int rank      = comm->rank();
   XBT_DEBUG("Creating window");
   if(info!=MPI_INFO_NULL)
-    info->refcount++;
+    Info::ref(info);
   name_ = nullptr;
   opened_ = 0;
   group_ = MPI_GROUP_NULL;

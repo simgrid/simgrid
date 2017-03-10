@@ -17,6 +17,7 @@
 #include "xbt/xbt_os_time.h"
 #include "src/smpi/smpi_group.hpp"
 #include "src/smpi/smpi_comm.hpp"
+#include "src/smpi/smpi_info.hpp"
 #include "src/smpi/smpi_op.hpp"
 #include "src/smpi/smpi_datatype.hpp"
 #include "src/smpi/smpi_datatype_derived.hpp"
@@ -79,11 +80,6 @@ typedef struct s_smpi_mpi_type_key_elem {
   MPI_Type_delete_attr_function* delete_fn;
 } s_smpi_mpi_type_key_elem_t; 
 typedef struct s_smpi_mpi_type_key_elem *smpi_type_key_elem;
-
-typedef struct s_smpi_mpi_info {
-  xbt_dict_t info_dict;
-  int refcount;
-} s_smpi_mpi_info_t; 
 
 XBT_PRIVATE void smpi_process_destroy();
 XBT_PRIVATE void smpi_process_finalize();

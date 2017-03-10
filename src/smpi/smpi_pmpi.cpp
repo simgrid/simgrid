@@ -2903,28 +2903,21 @@ int PMPI_Type_free_keyval(int* keyval) {
 int PMPI_Info_create( MPI_Info *info){
   if (info == nullptr)
     return MPI_ERR_ARG;
-  *info = xbt_new(s_smpi_mpi_info_t, 1);
-  (*info)->info_dict= xbt_dict_new_homogeneous(xbt_free_f);
-  (*info)->refcount=1;
+  *info = new Info();
   return MPI_SUCCESS;
 }
 
 int PMPI_Info_set( MPI_Info info, char *key, char *value){
   if (info == nullptr || key == nullptr || value == nullptr)
     return MPI_ERR_ARG;
-
-  xbt_dict_set(info->info_dict, key, xbt_strdup(value), nullptr);
+  info->set(key, value);
   return MPI_SUCCESS;
 }
 
 int PMPI_Info_free( MPI_Info *info){
   if (info == nullptr || *info==nullptr)
     return MPI_ERR_ARG;
-  (*info)->refcount--;
-  if((*info)->refcount==0){
-    xbt_dict_free(&((*info)->info_dict));
-    xbt_free(*info);
-  }
+  Info::unref(*info);
   *info=MPI_INFO_NULL;
   return MPI_SUCCESS;
 }
@@ -2935,78 +2928,39 @@ int PMPI_Info_get(MPI_Info info,char *key,int valuelen, char *value, int *flag){
     return MPI_ERR_ARG;
   if (value == nullptr)
     return MPI_ERR_INFO_VALUE;
-  char* tmpvalue=static_cast<char*>(xbt_dict_get_or_null(info->info_dict, key));
-  if(tmpvalue){
-    memset(value, 0, valuelen);
-    memcpy(value,tmpvalue, (strlen(tmpvalue) + 1 < static_cast<size_t>(valuelen)) ? strlen(tmpvalue) + 1 : valuelen);
-    *flag=true;
-  }
-  return MPI_SUCCESS;
+  return info->get(key, valuelen, value, flag);
 }
 
 int PMPI_Info_dup(MPI_Info info, MPI_Info *newinfo){
   if (info == nullptr || newinfo==nullptr)
     return MPI_ERR_ARG;
-  *newinfo = xbt_new(s_smpi_mpi_info_t, 1);
-  (*newinfo)->info_dict= xbt_dict_new_homogeneous(xbt_free_f);
-  (*newinfo)->refcount=1;
-  xbt_dict_cursor_t cursor = nullptr;
-  char* key;
-  void* data;
-  xbt_dict_foreach(info->info_dict,cursor,key,data){
-    xbt_dict_set((*newinfo)->info_dict, key, xbt_strdup(static_cast<char*>(data)), nullptr);
-  }
+  *newinfo = new Info(info);
   return MPI_SUCCESS;
 }
 
 int PMPI_Info_delete(MPI_Info info, char *key){
   if (info == nullptr || key==nullptr)
     return MPI_ERR_ARG;
-  try {
-    xbt_dict_remove(info->info_dict, key);
-  }
-  catch(xbt_ex& e){
-    return MPI_ERR_INFO_NOKEY;
-  }
-  return MPI_SUCCESS;
+  return info->remove(key);
 }
 
 int PMPI_Info_get_nkeys( MPI_Info info, int *nkeys){
   if (info == nullptr || nkeys==nullptr)
     return MPI_ERR_ARG;
-  *nkeys=xbt_dict_size(info->info_dict);
-  return MPI_SUCCESS;
+  return info->get_nkeys(nkeys);
 }
 
 int PMPI_Info_get_nthkey( MPI_Info info, int n, char *key){
   if (info == nullptr || key==nullptr || n<0 || n> MPI_MAX_INFO_KEY)
     return MPI_ERR_ARG;
-
-  xbt_dict_cursor_t cursor = nullptr;
-  char *keyn;
-  void* data;
-  int num=0;
-  xbt_dict_foreach(info->info_dict,cursor,keyn,data){
-    if(num==n){
-      strncpy(key,keyn,strlen(keyn)+1);
-      xbt_dict_cursor_free(&cursor);
-      return MPI_SUCCESS;
-    }
-    num++;
-  }
-  return MPI_ERR_ARG;
+  return info->get_nthkey(n, key);
 }
 
 int PMPI_Info_get_valuelen( MPI_Info info, char *key, int *valuelen, int *flag){
   *flag=false;
   if (info == nullptr || key == nullptr || valuelen==nullptr)
     return MPI_ERR_ARG;
-  char* tmpvalue=(char*)xbt_dict_get_or_null(info->info_dict, key);
-  if(tmpvalue){
-    *valuelen=strlen(tmpvalue);
-    *flag=true;
-  }
-  return MPI_SUCCESS;
+  return info->get_valuelen(key, valuelen, flag);
 }
 
 int PMPI_Unpack(void* inbuf, int incount, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm) {
