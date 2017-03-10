@@ -14,11 +14,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <string>
+#include <unordered_map>
 #include <xbt/ex.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_datatype, smpi, "Logging specific to SMPI (datatype)");
 
-xbt_dict_t smpi_type_keyvals = nullptr;
+std::unordered_map<int, smpi_type_key_elem> smpi_type_keyvals;
 int type_keyval_id=0;//avoid collisions
 
 
@@ -136,8 +137,7 @@ Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), lb_(datatype-
     void* value_in;
     void* value_out;
     xbt_dict_foreach (datatype->attributes_, cursor, key, value_in) {
-      smpi_type_key_elem elem =
-          static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, key, sizeof(int)));
+      smpi_type_key_elem elem = smpi_type_keyvals.at(atoi(key));
       if (elem != nullptr && elem->copy_fn != MPI_NULL_COPY_FN) {
         *ret = elem->copy_fn(datatype, atoi(key), nullptr, value_in, &value_out, &flag);
         if (*ret != MPI_SUCCESS) {
@@ -169,8 +169,7 @@ Datatype::~Datatype(){
     void * value;
     int flag;
     xbt_dict_foreach(attributes_, cursor, key, value){
-      smpi_type_key_elem elem =
-          static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, key, sizeof(int)));
+      smpi_type_key_elem elem = smpi_type_keyvals.at(atoi(key));
       if(elem!=nullptr && elem->delete_fn!=nullptr)
         elem->delete_fn(this,*key, value, &flag);
     }
@@ -262,8 +261,7 @@ void Datatype::set_name(char* name){
 }
 
 int Datatype::attr_delete(int keyval){
-  smpi_type_key_elem elem =
-    static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, reinterpret_cast<const char*>(&keyval), sizeof(int)));
+  smpi_type_key_elem elem = smpi_type_keyvals.at(keyval);
   if(elem==nullptr)
     return MPI_ERR_ARG;
   if(elem->delete_fn!=MPI_NULL_DELETE_FN){
@@ -284,8 +282,7 @@ int Datatype::attr_delete(int keyval){
 
 
 int Datatype::attr_get(int keyval, void* attr_value, int* flag){
-  smpi_type_key_elem elem =
-    static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, reinterpret_cast<const char*>(&keyval), sizeof(int)));
+  smpi_type_key_elem elem = smpi_type_keyvals.at(keyval);
   if(elem==nullptr)
     return MPI_ERR_ARG;
   if(attributes_==nullptr){
@@ -303,10 +300,7 @@ int Datatype::attr_get(int keyval, void* attr_value, int* flag){
 }
 
 int Datatype::attr_put(int keyval, void* attr_value){
-  if(smpi_type_keyvals==nullptr)
-    smpi_type_keyvals = xbt_dict_new_homogeneous(nullptr);
-  smpi_type_key_elem elem =
-     static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, reinterpret_cast<const char*>(&keyval), sizeof(int)));
+  smpi_type_key_elem elem = smpi_type_keyvals.at(keyval);
   if(elem==nullptr)
     return MPI_ERR_ARG;
   int flag;
@@ -325,8 +319,6 @@ int Datatype::attr_put(int keyval, void* attr_value){
 }
 
 int Datatype::keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval, void* extra_state){
-  if(smpi_type_keyvals==nullptr)
-    smpi_type_keyvals = xbt_dict_new_homogeneous(nullptr);
 
   smpi_type_key_elem value = (smpi_type_key_elem) xbt_new0(s_smpi_mpi_type_key_elem_t,1);
 
@@ -334,18 +326,17 @@ int Datatype::keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delet
   value->delete_fn=delete_fn;
 
   *keyval = type_keyval_id;
-  xbt_dict_set_ext(smpi_type_keyvals,reinterpret_cast<const char*>(keyval), sizeof(int),reinterpret_cast<void*>(value), nullptr);
+  smpi_type_keyvals.insert({*keyval, value});
   type_keyval_id++;
   return MPI_SUCCESS;
 }
 
 int Datatype::keyval_free(int* keyval){
-  smpi_type_key_elem elem =
-    static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, reinterpret_cast<const char*>(keyval), sizeof(int)));
+  smpi_type_key_elem elem = smpi_type_keyvals.at(*keyval);
   if(elem==0){
     return MPI_ERR_ARG;
   }
-  xbt_dict_remove_ext(smpi_type_keyvals, reinterpret_cast<const char*>(keyval), sizeof(int));
+  smpi_type_keyvals.erase(*keyval);
   xbt_free(elem);
   return MPI_SUCCESS;
 }
