@@ -168,8 +168,12 @@ int Request::flags(){
   return flags_;
 }
 
-int Request::detached(){
-  return detached_;
+size_t Request::size(){
+  return size_;
+}
+
+size_t Request::real_size(){
+  return real_size_;
 }
 
 
