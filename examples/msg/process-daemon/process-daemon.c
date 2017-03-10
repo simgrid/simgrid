@@ -20,7 +20,7 @@ static int worker(int argc, char* argv[])
 }
 
 /* The daemon, displaying a message every 3 seconds until all other processes stop */
-static int daemon(int argc, char* argv[])
+static int daemon_process(int argc, char* argv[])
 {
   MSG_process_daemonize(MSG_process_self());
 
@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
   MSG_create_environment(argv[1]);
   xbt_dynar_t hosts = MSG_hosts_as_dynar();
   MSG_process_create("worker", worker, NULL, xbt_dynar_getfirst_as(hosts, msg_host_t));
-  MSG_process_create("daemon", daemon, NULL, xbt_dynar_getlast_as(hosts, msg_host_t));
+  MSG_process_create("daemon", daemon_process, NULL, xbt_dynar_getlast_as(hosts, msg_host_t));
   xbt_dynar_free(&hosts);
   msg_error_t res = MSG_main();
 
