@@ -15,11 +15,12 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_app_token_ring, "Messages specific for this s4u
 extern std::map<std::string, simgrid::s4u::Host*> host_list;
 
 class RelayRunner {
-public:
   size_t task_comm_size = 1000000; /* The token is 1MB long*/
   simgrid::s4u::MailboxPtr my_mailbox;
   simgrid::s4u::MailboxPtr neighbor_mailbox;
   unsigned int rank      = 0;
+
+public:
   explicit RelayRunner() = default;
 
   void operator()()
