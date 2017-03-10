@@ -104,12 +104,13 @@ void HostEnergy::update()
   double start_time  = this->last_updated;
   double finish_time = surf_get_clock();
   double cpu_load;
-  if (host->pimpl_cpu->getPstateSpeedCurrent() <= 0)
+  double current_speed = host->pimpl_cpu->getPstateSpeedCurrent();
+  if (current_speed <= 0)
     // Some users declare a pstate of speed 0 flops (e.g., to model boot time).
     // We consider that the machine is then fully loaded. That's arbitrary but it avoids a NaN
     cpu_load = 1;
   else
-    cpu_load = lmm_constraint_get_usage(host->pimpl_cpu->constraint()) / host->pimpl_cpu->getPstateSpeedCurrent();
+    cpu_load = lmm_constraint_get_usage(host->pimpl_cpu->constraint()) / current_speed;
 
   /** Divide by the number of cores here **/
   cpu_load /= host->pimpl_cpu->coreCount();
