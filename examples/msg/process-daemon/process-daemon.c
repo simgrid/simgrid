@@ -8,7 +8,7 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_process_daemon, "Messages specific for this msg example");
 
 /* The worker process, working for a while before leaving */
-static int worker(int argc, char* argv[])
+static int worker_process(int argc, char* argv[])
 {
   XBT_INFO("Let's do some work (for 10 sec on Boivin).");
   msg_task_t task = MSG_task_create("easy work", 980.95e6, 0, NULL);
@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 
   MSG_create_environment(argv[1]);
   xbt_dynar_t hosts = MSG_hosts_as_dynar();
-  MSG_process_create("worker", worker, NULL, xbt_dynar_getfirst_as(hosts, msg_host_t));
+  MSG_process_create("worker", worker_process, NULL, xbt_dynar_getfirst_as(hosts, msg_host_t));
   MSG_process_create("daemon", daemon_process, NULL, xbt_dynar_getlast_as(hosts, msg_host_t));
   xbt_dynar_free(&hosts);
   msg_error_t res = MSG_main();
