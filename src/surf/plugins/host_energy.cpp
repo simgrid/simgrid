@@ -90,6 +90,13 @@ private:
   simgrid::s4u::Host* host = nullptr;
   std::vector<PowerRange>
       power_range_watts_list; /*< List of (min_power,max_power) pairs corresponding to each cpu pstate */
+
+  /* We need to keep track of what pstate has been used, as we will sometimes
+   * be notified only *after* a pstate has been used (but we need to update the energy consumption
+   * with the old pstate!)
+   */
+  int pstate = 0;
+
 public:
   double watts_off    = 0.0; /*< Consumption when the machine is turned off (shutdown) */
   double total_energy = 0.0; /*< Total energy consumed by the host */
@@ -138,7 +145,7 @@ void HostEnergy::update()
 
   this->total_energy = previous_energy + energy_this_step;
   this->last_updated = finish_time;
-
+  this->pstate       = host->pstate();
   XBT_DEBUG(
       "[update_energy of %s] period=[%.2f-%.2f]; current power peak=%.0E flop/s; consumption change: %.2f J -> %.2f J",
       host->cname(), start_time, finish_time, host->pimpl_cpu->speed_.peak, previous_energy, energy_this_step);
@@ -178,7 +185,7 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
 
   /* min_power corresponds to the power consumed when only one core is active */
   /* max_power is the power consumed at 100% cpu load       */
-  auto range           = power_range_watts_list.at(host->pstate());
+  auto range           = power_range_watts_list.at(this->pstate);
   double current_power = 0;
   double min_power     = 0;
   double max_power     = 0;
@@ -291,8 +298,8 @@ static void onActionStateChange(simgrid::surf::CpuAction* action, simgrid::surf:
   }
 }
 
-/* This callback is fired either when the host change its state (on/off) or its speed
- * (because the user changed the pstate, or because of external trace events) */
+/* This callback is fired either when the host changes its state (on/off) ("onStateChange") or its speed
+ * (because the user changed the pstate, or because of external trace events) ("onSpeedChange") */
 static void onHostChange(simgrid::s4u::Host& host)
 {
   if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
@@ -300,8 +307,7 @@ static void onHostChange(simgrid::s4u::Host& host)
 
   HostEnergy* host_energy = host.extension<HostEnergy>();
 
-  if (host_energy->last_updated < surf_get_clock())
-    host_energy->update();
+  host_energy->update();
 }
 
 static void onHostDestruction(simgrid::s4u::Host& host)
