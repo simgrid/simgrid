@@ -49,6 +49,8 @@ public:
 
   std::vector<simgrid::xbt::Task<void()>> tasks;
   std::vector<simgrid::xbt::Task<void()>> tasksTemp;
+
+  std::vector<simgrid::simix::ActorImpl*> daemons;
 };
 
 }

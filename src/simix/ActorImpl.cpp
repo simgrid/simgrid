@@ -168,6 +168,35 @@ ActorImpl::~ActorImpl()
   xbt_dict_free(&this->properties);
 }
 
+static int dying_daemon(void* exit_status, void* data)
+{
+  std::vector<ActorImpl*>* vect = &simix_global->daemons;
+
+  auto it = std::find(vect->begin(), vect->end(), static_cast<ActorImpl*>(data));
+  xbt_assert(it != vect->end(), "The dying daemon is not a daemon after all. Please report that bug.");
+
+  /* Don't move the whole content since we don't really care about the order */
+  std::swap(*it, vect->back());
+  vect->pop_back();
+
+  return 0;
+}
+/** This process will be terminated automatically when the last non-daemon process finishes */
+void ActorImpl::daemonize()
+{
+  if (!daemon) {
+    daemon = true;
+    simix_global->daemons.push_back(this);
+    SIMIX_process_on_exit(this, dying_daemon, this);
+  }
+}
+
+/** Whether this process is daemonized */
+bool ActorImpl::isDaemon()
+{
+  return daemon;
+}
+
 void create_maestro(std::function<void()> code)
 {
   smx_actor_t maestro = nullptr;

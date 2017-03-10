@@ -458,12 +458,22 @@ void MSG_process_on_exit(int_f_pvoid_pvoid_t fun, void *data) {
 XBT_PUBLIC(void) MSG_process_auto_restart_set(msg_process_t process, int auto_restart) {
   simcall_process_auto_restart_set(process,auto_restart);
 }
-/*
+/**
  * \ingroup m_process_management
  * \brief Restarts a process from the beginning.
  */
 XBT_PUBLIC(msg_process_t) MSG_process_restart(msg_process_t process) {
   return simcall_process_restart(process);
+}
+
+/** @ingroup m_process_management
+ * @brief This process will be terminated automatically when the last non-daemon process finishes
+ */
+XBT_PUBLIC(void) MSG_process_daemonize(msg_process_t process)
+{
+  simgrid::simix::kernelImmediate([process]() {
+    process->daemonize();
+  });
 }
 
 SG_END_DECL()

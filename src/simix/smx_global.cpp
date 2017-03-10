@@ -541,7 +541,15 @@ void SIMIX_run()
     /* Clean processes to destroy */
     SIMIX_process_empty_trash();
 
-    XBT_DEBUG("### time %f, empty %d", time, xbt_dynar_is_empty(simix_global->process_to_run));
+    XBT_DEBUG("### time %f, #processes %zu, #to_run %zu", time, simix_global->process_list.size(),
+              xbt_dynar_length(simix_global->process_to_run));
+
+    /* If only daemon processes remain, cancel their actions, mark them to die and reschedule them */
+    if (simix_global->process_list.size() == simix_global->daemons.size())
+      for (const auto& dmon : simix_global->daemons) {
+        XBT_DEBUG("Kill %s", dmon->cname());
+        SIMIX_process_kill(dmon, simix_global->maestro_process);
+      }
 
     if (xbt_dynar_is_empty(simix_global->process_to_run) &&
         !simix_global->process_list.empty())

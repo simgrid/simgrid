@@ -85,7 +85,11 @@ public:
 
   simgrid::s4u::ActorPtr iface() { return s4u::ActorPtr(&piface_); }
 
+  void daemonize();
+  bool isDaemon();
+
 private:
+  bool daemon = false;
   std::atomic_int_fast32_t refcount_ { 1 };
   simgrid::s4u::Actor piface_; // Our interface is part of ourselves
 };

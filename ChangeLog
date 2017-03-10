@@ -10,7 +10,9 @@ SimGrid (3.15) UNRELEASED; urgency=low
    That's a point in the routing algorithm, let's avoid wrong simplifications.
 
  MSG
- - New function: MSG_process_yield()
+ - New: MSG_process_yield()
+ - New: MSG_process_daemon(). Daemon processes are automatically killed 
+   when the last non-daemon process terminates
  - Renamed MSG_energy_plugin_init() -> MSG_host_energy_plugin_init()
    to make room for the upcoming network energy plugin.
 
