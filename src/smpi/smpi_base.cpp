@@ -97,7 +97,7 @@ void smpi_mpi_gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     Request::startall(size - 1, requests);
     Request::waitall(size - 1, requests, MPI_STATUS_IGNORE);
     for (int src = 0; src < size-1; src++) {
-      Request::unuse(&requests[src]);
+      Request::unref(&requests[src]);
     }
     xbt_free(requests);
   }
@@ -155,7 +155,7 @@ void smpi_mpi_gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void 
     Request::startall(size - 1, requests);
     Request::waitall(size - 1, requests, MPI_STATUS_IGNORE);
     for (int src = 0; src < size-1; src++) {
-      Request::unuse(&requests[src]);
+      Request::unref(&requests[src]);
     }
     xbt_free(requests);
   }
@@ -192,7 +192,7 @@ void smpi_mpi_allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   Request::startall(2 * (size - 1), requests);
   Request::waitall(2 * (size - 1), requests, MPI_STATUS_IGNORE);
   for (int other = 0; other < 2*(size-1); other++) {
-    Request::unuse(&requests[other]);
+    Request::unref(&requests[other]);
   }
   xbt_free(requests);
 }
@@ -227,7 +227,7 @@ void smpi_mpi_allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, vo
   Request::startall(2 * (size - 1), requests);
   Request::waitall(2 * (size - 1), requests, MPI_STATUS_IGNORE);
   for (int other = 0; other < 2*(size-1); other++) {
-    Request::unuse(&requests[other]);
+    Request::unref(&requests[other]);
   }
   xbt_free(requests);
 }
@@ -266,7 +266,7 @@ void smpi_mpi_scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     Request::startall(size - 1, requests);
     Request::waitall(size - 1, requests, MPI_STATUS_IGNORE);
     for (int dst = 0; dst < size-1; dst++) {
-      Request::unuse(&requests[dst]);
+      Request::unref(&requests[dst]);
     }
     xbt_free(requests);
   }
@@ -305,7 +305,7 @@ void smpi_mpi_scatterv(void *sendbuf, int *sendcounts, int *displs, MPI_Datatype
     Request::startall(size - 1, requests);
     Request::waitall(size - 1, requests, MPI_STATUS_IGNORE);
     for (int dst = 0; dst < size-1; dst++) {
-      Request::unuse(&requests[dst]);
+      Request::unref(&requests[dst]);
     }
     xbt_free(requests);
   }
@@ -364,7 +364,7 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
       if(index == MPI_UNDEFINED) {
         break;
       }else{
-        Request::unuse(&requests[index]);
+        Request::unref(&requests[index]);
       }
       if(op) /* op can be MPI_OP_NULL that does nothing */
         if(op!=MPI_OP_NULL) op->apply( tmpbufs[index], recvbuf, &count, datatype);
@@ -441,7 +441,7 @@ void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
     smpi_free_tmp_buffer(tmpbufs[index]);
   }
   for(index = 0; index < size-1; index++) {
-    Request::unuse(&requests[index]);
+    Request::unref(&requests[index]);
   }
   xbt_free(tmpbufs);
   xbt_free(requests);
@@ -506,7 +506,7 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
     smpi_free_tmp_buffer(tmpbufs[index]);
   }
   for(index = 0; index < size-1; index++) {
-    Request::unuse(&requests[index]);
+    Request::unref(&requests[index]);
   }
   xbt_free(tmpbufs);
   xbt_free(requests);

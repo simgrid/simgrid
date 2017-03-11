@@ -192,7 +192,7 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount, MPI_Datatype se
     Request::waitall(count, requests, MPI_STATUS_IGNORE);
     for(i = 0; i < count; i++) {
       if(requests[i]!=MPI_REQUEST_NULL)
-        Request::unuse(&requests[i]);
+        Request::unref(&requests[i]);
     }
     xbt_free(requests);
   }
@@ -246,7 +246,7 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount, MPI_Data
     Request::waitall(count, requests, MPI_STATUS_IGNORE);
     for(i = 0; i < count; i++) {
       if(requests[i]!=MPI_REQUEST_NULL)
-        Request::unuse(&requests[i]);
+        Request::unref(&requests[i]);
     }
     xbt_free(requests);
   }
@@ -303,7 +303,7 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts, int *senddisps, MP
     Request::waitall(count, requests, MPI_STATUS_IGNORE);
     for(i = 0; i < count; i++) {
       if(requests[i]!=MPI_REQUEST_NULL) 
-        Request::unuse(&requests[i]);
+        Request::unref(&requests[i]);
     }
     xbt_free(requests);
   }

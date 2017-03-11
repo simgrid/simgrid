@@ -85,7 +85,7 @@ class Datatype : public F2C{
     MPI_Aint ub_;
     int flags_;
     xbt_dict_t attributes_;
-    int in_use_;
+    int refcount_;
   public:
     static MPI_Datatype null_id_;
 
@@ -93,8 +93,8 @@ class Datatype : public F2C{
     Datatype(char* name, int size,MPI_Aint lb, MPI_Aint ub, int flags);
     Datatype(Datatype *datatype, int* ret);
     virtual ~Datatype();
-    void use();
-    void unuse();
+    void ref();
+    static void unref(MPI_Datatype datatype);
     void commit();
     bool is_valid();
     size_t size();

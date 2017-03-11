@@ -205,8 +205,8 @@ smpi_coll_tuned_allgatherv_ompi_neighborexchange(void *sbuf, int scount,
 
         send_data_from = recv_data_from[i_parity];
       
-        new_sdtype->unuse();
-        new_rdtype->unuse();
+        Datatype::unref(new_sdtype);
+        Datatype::unref(new_rdtype);
     }
 
     return MPI_SUCCESS;

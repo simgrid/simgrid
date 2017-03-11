@@ -86,7 +86,7 @@ smpi_coll_tuned_alltoall_bruck(void *send_buff, int send_count,
 
     Request::sendrecv(tmp_buff, position, MPI_PACKED, dst, tag, recv_buff, 1,
                  new_type, src, tag, comm, &status);
-    smpi_datatype_unuse(new_type);
+    Datatype::unref(new_type);
 
     pof2 *= 2;
   }

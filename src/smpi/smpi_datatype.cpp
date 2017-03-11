@@ -110,22 +110,22 @@ namespace smpi{
 
 MPI_Datatype Datatype::null_id_=MPI_DATATYPE_NULL;
 
-Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr), size_(size), lb_(lb), ub_(ub), flags_(flags), attributes_(nullptr), in_use_(1){
+Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr), size_(size), lb_(lb), ub_(ub), flags_(flags), attributes_(nullptr), refcount_(1){
 #if HAVE_MC
   if(MC_is_active())
-    MC_ignore(&(in_use_), sizeof(in_use_));
+    MC_ignore(&(refcount_), sizeof(refcount_));
 #endif
 }
 
 //for predefined types, so in_use = 0.
-Datatype::Datatype(char* name, int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(name), size_(size), lb_(lb), ub_(ub), flags_(flags), attributes_(nullptr), in_use_(0){
+Datatype::Datatype(char* name, int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(name), size_(size), lb_(lb), ub_(ub), flags_(flags), attributes_(nullptr), refcount_(0){
 #if HAVE_MC
   if(MC_is_active())
-    MC_ignore(&(in_use_), sizeof(in_use_));
+    MC_ignore(&(refcount_), sizeof(refcount_));
 #endif
 }
 
-Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), lb_(datatype->lb_), ub_(datatype->ub_), flags_(datatype->flags_), attributes_(nullptr), in_use_(1)
+Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), lb_(datatype->lb_), ub_(datatype->ub_), flags_(datatype->flags_), attributes_(nullptr), refcount_(1)
 {
   flags_ &= ~DT_FLAG_PREDEFINED;
   *ret = MPI_SUCCESS;
@@ -154,13 +154,13 @@ Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), lb_(datatype-
 }
 
 Datatype::~Datatype(){
-  xbt_assert(in_use_ >= 0);
+  xbt_assert(refcount_ >= 0);
 
   if(flags_ & DT_FLAG_PREDEFINED)
     return;
 
   //if still used, mark for deletion
-  if(in_use_!=0){
+  if(refcount_!=0){
       flags_ |=DT_FLAG_DESTROYED;
       return;
   }
@@ -182,27 +182,27 @@ Datatype::~Datatype(){
 }
 
 
-void Datatype::use(){
+void Datatype::ref(){
 
-  in_use_++;
+  refcount_++;
 
 #if HAVE_MC
   if(MC_is_active())
-    MC_ignore(&(in_use_), sizeof(in_use_));
+    MC_ignore(&(refcount_), sizeof(refcount_));
 #endif
 }
 
-void Datatype::unuse()
+void Datatype::unref(MPI_Datatype datatype)
 {
-  if (in_use_ > 0)
-    in_use_--;
+  if (datatype->refcount_ > 0)
+    datatype->refcount_--;
 
-  if (in_use_ == 0)
-    this->~Datatype();
+  if (datatype->refcount_ == 0  && !(datatype->flags_ & DT_FLAG_PREDEFINED))
+    delete datatype;
 
 #if HAVE_MC
   if(MC_is_active())
-    MC_ignore(&(in_use_), sizeof(in_use_));
+    MC_ignore(&(datatype->refcount_), sizeof(datatype->refcount_));
 #endif
 }
 

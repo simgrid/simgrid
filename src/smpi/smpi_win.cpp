@@ -274,7 +274,7 @@ int Win::start(MPI_Group group, int assert){
   Request::startall(size, reqs);
   Request::waitall(size, reqs, MPI_STATUSES_IGNORE);
   for(i=0;i<size;i++){
-    Request::unuse(&reqs[i]);
+    Request::unref(&reqs[i]);
   }
   xbt_free(reqs);
   opened_++; //we're open for business !
@@ -303,7 +303,7 @@ int Win::post(MPI_Group group, int assert){
   Request::startall(size, reqs);
   Request::waitall(size, reqs, MPI_STATUSES_IGNORE);
   for(i=0;i<size;i++){
-    Request::unuse(&reqs[i]);
+    Request::unref(&reqs[i]);
   }
   xbt_free(reqs);
   opened_++; //we're open for business !
@@ -336,7 +336,7 @@ int Win::complete(){
   Request::waitall(size, reqs, MPI_STATUSES_IGNORE);
 
   for(i=0;i<size;i++){
-    Request::unuse(&reqs[i]);
+    Request::unref(&reqs[i]);
   }
   xbt_free(reqs);
 
@@ -384,7 +384,7 @@ int Win::wait(){
   Request::startall(size, reqs);
   Request::waitall(size, reqs, MPI_STATUSES_IGNORE);
   for(i=0;i<size;i++){
-    Request::unuse(&reqs[i]);
+    Request::unref(&reqs[i]);
   }
   xbt_free(reqs);
   xbt_mutex_acquire(mut_);

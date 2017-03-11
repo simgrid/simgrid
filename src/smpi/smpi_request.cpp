@@ -126,7 +126,7 @@ Request::Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, 
   // This part handles the problem of non-contiguous memory (for the unserialisation at the reception)
   old_buf_  = old_buf;
   size_ = datatype->size() * count;
-  datatype->use();
+  datatype->ref();
   comm_->ref();
   action_          = nullptr;
   detached_        = 0;
@@ -182,14 +182,14 @@ size_t Request::real_size(){
 }
 
 
-void Request::unuse(MPI_Request* request)
+void Request::unref(MPI_Request* request)
 {
   if((*request) != MPI_REQUEST_NULL){
     (*request)->refcount_--;
     if((*request)->refcount_<0) xbt_die("wrong refcount");
 
     if((*request)->refcount_==0){
-        (*request)->old_type_->unuse();
+        Datatype::unref((*request)->old_type_);
         Comm::unref((*request)->comm_);
         (*request)->print_request("Destroying");
         delete *request;
@@ -406,8 +406,8 @@ void Request::sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,int d
   requests[1] = irecv_init(recvbuf, recvcount, recvtype, src, recvtag, comm);
   startall(2, requests);
   waitall(2, requests, stats);
-  unuse(&requests[0]);
-  unuse(&requests[1]);
+  unref(&requests[0]);
+  unref(&requests[1]);
   if(status != MPI_STATUS_IGNORE) {
     // Copy receive status
     *status = stats[1];
@@ -778,7 +778,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
     if (xbt_cfg_get_boolean("smpi/grow-injected-times"))
       nsleeps++;
   }
-  unuse(&request);
+  unref(&request);
 }
 
 
@@ -834,12 +834,12 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
       simcall_process_sleep(sleeptime);
       XBT_DEBUG("receiving size of %zu : sleep %f ", req->real_size_, sleeptime);
     }
-    unuse(&(req->detached_sender_));
+    unref(&(req->detached_sender_));
   }
   if(req->flags_ & PERSISTENT)
     req->action_ = nullptr;
   req->flags_ |= FINISHED;
-  unuse(request);
+  unref(request);
 }
 
 

@@ -151,7 +151,7 @@ int PMPI_Type_free(MPI_Datatype * datatype)
   if (*datatype == MPI_DATATYPE_NULL) {
     return MPI_ERR_ARG;
   } else {
-    (*datatype)->unuse();
+    Datatype::unref(*datatype);
     return MPI_SUCCESS;
   }
 }
@@ -240,7 +240,7 @@ int PMPI_Type_dup(MPI_Datatype datatype, MPI_Datatype *newtype){
     *newtype = new Datatype(datatype, &retval);
     //error when duplicating, free the new datatype
     if(retval!=MPI_SUCCESS){
-      (*newtype)->unuse();
+      Datatype::unref(*newtype);
       *newtype = MPI_DATATYPE_NULL;
     }
   }
@@ -711,7 +711,7 @@ int PMPI_Request_free(MPI_Request * request)
   if (*request == MPI_REQUEST_NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    Request::unuse(request);
+    Request::unref(request);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();

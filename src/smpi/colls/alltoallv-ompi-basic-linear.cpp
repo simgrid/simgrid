@@ -97,7 +97,7 @@ smpi_coll_tuned_alltoallv_ompi_basic_linear(void *sbuf, int *scounts, int *sdisp
     /* Free the requests. */
     for (i = 0; i < nreqs; ++i) {
       if(ireqs[i]!=MPI_REQUEST_NULL)
-        Request::unuse(&ireqs[i]);
+        Request::unref(&ireqs[i]);
     }
     free(ireqs);
 

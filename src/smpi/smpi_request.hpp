@@ -53,7 +53,7 @@ class Request : public F2C{
     void start();
 
     static void finish_wait(MPI_Request* request, MPI_Status * status);
-    static void unuse(MPI_Request* request);
+    static void unref(MPI_Request* request);
     static void wait(MPI_Request* req, MPI_Status * status);
     static MPI_Request send_init(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
     static MPI_Request isend_init(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
