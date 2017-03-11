@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <simgrid/s4u/host.hpp>
-#include <xbt/ex.hpp>
 
 #include "private.h"
 
@@ -276,7 +275,8 @@ int PMPI_Group_free(MPI_Group * group)
   if (group == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    (*group)->destroy();
+    if(*group != MPI_COMM_WORLD->group() && *group != MPI_GROUP_EMPTY)
+      Group::unref(*group);
     *group = MPI_GROUP_NULL;
     return MPI_SUCCESS;
   }
@@ -392,7 +392,7 @@ int PMPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
       *newgroup = group;
       if (group != MPI_COMM_WORLD->group()
                 && group != MPI_COMM_SELF->group() && group != MPI_GROUP_EMPTY)
-      group->use();
+      group->ref();
       return MPI_SUCCESS;
     } else if (n == group->size()) {
       *newgroup = MPI_GROUP_EMPTY;
@@ -430,7 +430,7 @@ int PMPI_Group_range_excl(MPI_Group group, int n, int ranges[][3], MPI_Group * n
       *newgroup = group;
       if (group != MPI_COMM_WORLD->group() && group != MPI_COMM_SELF->group() &&
           group != MPI_GROUP_EMPTY)
-        group->use();
+        group->ref();
       return MPI_SUCCESS;
     } else {
       return group->range_excl(n,ranges,newgroup);
@@ -483,7 +483,7 @@ int PMPI_Comm_group(MPI_Comm comm, MPI_Group * group)
   } else {
     *group = comm->group();
     if (*group != MPI_COMM_WORLD->group() && *group != MPI_GROUP_NULL && *group != MPI_GROUP_EMPTY)
-      (*group)->use();
+      (*group)->ref();
     return MPI_SUCCESS;
   }
 }
@@ -530,7 +530,7 @@ int PMPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm)
     *newcomm= MPI_COMM_NULL;
     return MPI_SUCCESS;
   }else{
-    group->use();
+    group->ref();
     *newcomm = new Comm(group, nullptr);
     return MPI_SUCCESS;
   }
@@ -543,7 +543,7 @@ int PMPI_Comm_free(MPI_Comm * comm)
   } else if (*comm == MPI_COMM_NULL) {
     return MPI_ERR_COMM;
   } else {
-    (*comm)->destroy();
+    Comm::destroy(*comm);
     *comm = MPI_COMM_NULL;
     return MPI_SUCCESS;
   }
@@ -557,7 +557,7 @@ int PMPI_Comm_disconnect(MPI_Comm * comm)
   } else if (*comm == MPI_COMM_NULL) {
     return MPI_ERR_COMM;
   } else {
-    (*comm)->destroy();
+    Comm::destroy(*comm);
     *comm = MPI_COMM_NULL;
     return MPI_SUCCESS;
   }
@@ -2452,7 +2452,7 @@ int PMPI_Win_free( MPI_Win* win){
   if (win == nullptr || *win == MPI_WIN_NULL) {
     retval = MPI_ERR_WIN;
   }else{
-    delete(*win);
+    delete *win;
     retval=MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -2488,7 +2488,7 @@ int PMPI_Win_get_group(MPI_Win  win, MPI_Group * group){
     return MPI_ERR_WIN;
   }else {
     win->get_group(group);
-    (*group)->use();
+    (*group)->ref();
     return MPI_SUCCESS;
   }
 }
@@ -2719,59 +2719,59 @@ int PMPI_Type_get_name(MPI_Datatype  datatype, char * name, int* len)
 }
 
 MPI_Datatype PMPI_Type_f2c(MPI_Fint datatype){
-  return smpi_type_f2c(datatype);
+  return static_cast<MPI_Datatype>(F2C::f2c(datatype));
 }
 
 MPI_Fint PMPI_Type_c2f(MPI_Datatype datatype){
-  return smpi_type_c2f( datatype);
+  return datatype->c2f();
 }
 
 MPI_Group PMPI_Group_f2c(MPI_Fint group){
-  return smpi_group_f2c( group);
+  return Group::f2c(group);
 }
 
 MPI_Fint PMPI_Group_c2f(MPI_Group group){
-  return smpi_group_c2f(group);
+  return group->c2f();
 }
 
 MPI_Request PMPI_Request_f2c(MPI_Fint request){
-  return smpi_request_f2c(request);
+  return static_cast<MPI_Request>(Request::f2c(request));
 }
 
 MPI_Fint PMPI_Request_c2f(MPI_Request request) {
-  return smpi_request_c2f(request);
+  return request->c2f();
 }
 
 MPI_Win PMPI_Win_f2c(MPI_Fint win){
-  return smpi_win_f2c(win);
+  return static_cast<MPI_Win>(Win::f2c(win));
 }
 
 MPI_Fint PMPI_Win_c2f(MPI_Win win){
-  return smpi_win_c2f(win);
+  return win->c2f();
 }
 
 MPI_Op PMPI_Op_f2c(MPI_Fint op){
-  return smpi_op_f2c(op);
+  return static_cast<MPI_Op>(Op::f2c(op));
 }
 
 MPI_Fint PMPI_Op_c2f(MPI_Op op){
-  return smpi_op_c2f(op);
+  return op->c2f();
 }
 
 MPI_Comm PMPI_Comm_f2c(MPI_Fint comm){
-  return smpi_comm_f2c(comm);
+  return static_cast<MPI_Comm>(Comm::f2c(comm));
 }
 
 MPI_Fint PMPI_Comm_c2f(MPI_Comm comm){
-  return smpi_comm_c2f(comm);
+  return comm->c2f();
 }
 
 MPI_Info PMPI_Info_f2c(MPI_Fint info){
-  return smpi_info_f2c(info);
+  return static_cast<MPI_Info>(Info::f2c(info));
 }
 
 MPI_Fint PMPI_Info_c2f(MPI_Info info){
-  return smpi_info_c2f(info);
+  return info->c2f();
 }
 
 int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state) {

@@ -15,6 +15,7 @@ namespace smpi {
 
 class Comm;
 class Datatype;
+class F2C;
 class Group;
 class Info;
 class Op;

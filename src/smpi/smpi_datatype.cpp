@@ -108,6 +108,8 @@ CREATE_MPI_DATATYPE(MPI_PTR, void*);
 namespace simgrid{
 namespace smpi{
 
+MPI_Datatype Datatype::null_id_=MPI_DATATYPE_NULL;
+
 Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr), size_(size), lb_(lb), ub_(ub), flags_(flags), attributes_(nullptr), in_use_(1){
 #if HAVE_MC
   if(MC_is_active())
@@ -585,6 +587,10 @@ int Datatype::create_struct(int count, int* block_lengths, MPI_Aint* indices, MP
     Datatype::create_contiguous(size, MPI_CHAR, lb, new_type);
   }
   return MPI_SUCCESS;
+}
+
+Datatype* Datatype::f2c(int id){
+  return static_cast<Datatype*>(F2C::f2c(id));
 }
 
 

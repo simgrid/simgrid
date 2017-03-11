@@ -241,12 +241,16 @@ void Op::apply(void *invec, void *inoutvec, int *len, MPI_Datatype datatype)
     if(! is_fortran_op_)
       this->func_(invec, inoutvec, len, &datatype);
     else{
-      int tmp = smpi_type_c2f(datatype);
+      int tmp = datatype->c2f();
       /* Unfortunately, the C and Fortran version of the MPI standard do not agree on the type here,
          thus the reinterpret_cast. */
       this->func_(invec, inoutvec, len, reinterpret_cast<MPI_Datatype*>(&tmp) );
     }
   }
+}
+
+Op* Op::f2c(int id){
+  return static_cast<Op*>(F2C::f2c(id));
 }
 
 }

@@ -12,7 +12,7 @@
 namespace simgrid{
 namespace smpi{
 
-class Comm {
+class Comm : public F2C{
 
   private:
     MPI_Group group_;
@@ -32,7 +32,7 @@ class Comm {
     Comm();
     Comm(MPI_Group group, MPI_Topology topo);
 
-    void destroy();
+
     int dup(MPI_Comm* newcomm);
     MPI_Group group();
     MPI_Topology topo();
@@ -48,14 +48,19 @@ class Comm {
     int is_uniform();
     int is_blocked();
     MPI_Comm split(int color, int key);
-    void use();
     void cleanup_attributes();
     void cleanup_smp();
-    void unuse();
+    void ref();
+    static void unref(MPI_Comm comm);
+    static void destroy(MPI_Comm comm);
     void init_smp();
     int attr_delete(int keyval);
     int attr_get(int keyval, void* attr_value, int* flag);
     int attr_put(int keyval, void* attr_value);
+
+    int add_f();
+    static void free_f(int id);
+    static Comm* f2c(int);
 
 };
 

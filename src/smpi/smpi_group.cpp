@@ -64,13 +64,6 @@ Group::~Group()
   xbt_dict_free(&index_to_rank_map_);
 }
 
-void Group::destroy()
-{
-  if(this != MPI_COMM_WORLD->group()
-          && this != MPI_GROUP_EMPTY)
-  this->unuse();
-}
-
 void Group::set_mapping(int index, int rank)
 {
   int * val_rank;
@@ -112,20 +105,17 @@ int Group::rank(int index)
   return *ptr_rank;
 }
 
-int Group::use()
+void Group::ref()
 {
   refcount_++;
-  return refcount_;
 }
 
-int Group::unuse()
+void Group::unref(Group* group)
 {
-  refcount_--;
-  if (refcount_ <= 0) {
-    delete this;
-    return 0;
+  group->refcount_--;
+  if (group->refcount_ <= 0) {
+    delete group;
   }
-  return refcount_;
 }
 
 int Group::size()
@@ -172,7 +162,7 @@ int Group::incl(int n, int* ranks, MPI_Group* newgroup)
     if(this!= MPI_COMM_WORLD->group()
               && this != MPI_COMM_SELF->group()
               && this != MPI_GROUP_EMPTY)
-    this->use();
+    this->ref();
   } else {
     *newgroup = new Group(n);
     for (i = 0; i < n; i++) {
@@ -387,6 +377,17 @@ int Group::range_excl(int n, int ranges[][3], MPI_Group * newgroup){
     }
   }
   return MPI_SUCCESS;
+}
+
+MPI_Group Group::f2c(int id) {
+  if(id == -2) {
+    return MPI_GROUP_EMPTY;
+  } else if(f2c_lookup_ != nullptr && id >= 0) {
+    char key[KEY_SIZE];
+    return static_cast<MPI_Group>(xbt_dict_get_or_null(f2c_lookup_, get_key(key, id)));
+  } else {
+    return static_cast<MPI_Group>(MPI_GROUP_NULL);
+  }
 }
 
 }

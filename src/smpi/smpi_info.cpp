@@ -11,8 +11,6 @@
 namespace simgrid{
 namespace smpi{
 
-MPI_Info Info::null_id_=MPI_INFO_NULL;
-
 Info::Info():refcount_(1){
   dict_= xbt_dict_new_homogeneous(xbt_free_f);
 }
@@ -31,8 +29,8 @@ Info::~Info(){
   xbt_dict_free(&dict_);
 }
 
-void Info::ref(Info* info){
-  info->refcount_++;
+void Info::ref(){
+  refcount_++;
 }
 
 void Info::unref(Info* info){
@@ -99,6 +97,10 @@ int Info::get_valuelen(char *key, int *valuelen, int *flag){
     *flag=true;
   }
   return MPI_SUCCESS;
+}
+
+Info* Info::f2c(int id){
+  return static_cast<Info*>(F2C::f2c(id));
 }
 
 }

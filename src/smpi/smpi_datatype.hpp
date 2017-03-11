@@ -77,7 +77,7 @@ typedef struct {
 namespace simgrid{
 namespace smpi{
 
-class Datatype{
+class Datatype : public F2C{
   protected:
     char* name_;
     size_t size_;
@@ -86,8 +86,9 @@ class Datatype{
     int flags_;
     xbt_dict_t attributes_;
     int in_use_;
-
   public:
+    static MPI_Datatype null_id_;
+
     Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags);
     Datatype(char* name, int size,MPI_Aint lb, MPI_Aint ub, int flags);
     Datatype(Datatype *datatype, int* ret);
@@ -127,8 +128,9 @@ class Datatype{
     static int create_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type);
     static int create_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type);
     static int create_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* new_type);
-};
 
+    static Datatype* f2c(int id);
+};
 
 }
 }

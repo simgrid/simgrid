@@ -13,7 +13,7 @@
 namespace simgrid{
 namespace smpi{
 
-class Win {
+class Win : public F2C {
   private :
   void* base_;
   MPI_Aint size_;
@@ -47,6 +47,7 @@ public:
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype);
   int accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op);
+  static Win* f2c(int id);
 };
 
 

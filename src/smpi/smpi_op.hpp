@@ -14,17 +14,19 @@
 namespace simgrid{
 namespace smpi{
 
-class Op {
+class Op : public F2C{
   private:
     MPI_User_function *func_;
     bool is_commutative_;
     bool is_fortran_op_;
   public:
+
     Op(MPI_User_function * function, bool commutative);
     bool is_commutative();
     bool is_fortran_op();
     void set_fortran_op();
     void apply(void *invec, void *inoutvec, int *len, MPI_Datatype datatype);
+    static Op* f2c(int id);
 };
 
 }

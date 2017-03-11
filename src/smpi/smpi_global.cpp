@@ -614,17 +614,17 @@ void smpi_global_destroy()
 
   smpi_bench_destroy();
   if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED){
-      while (MPI_COMM_WORLD->group()->unuse() > 0);
+      delete MPI_COMM_WORLD->group();
       MSG_barrier_destroy(process_data[0]->finalization_barrier);
   }else{
       smpi_deployment_cleanup_instances();
   }
   for (int i = 0; i < count; i++) {
     if(process_data[i]->comm_self!=MPI_COMM_NULL){
-      process_data[i]->comm_self->destroy();
+      Comm::destroy(process_data[i]->comm_self);
     }
     if(process_data[i]->comm_intra!=MPI_COMM_NULL){
-      process_data[i]->comm_intra->destroy();
+      Comm::destroy(process_data[i]->comm_intra);
     }
     xbt_os_timer_free(process_data[i]->timer);
     xbt_mutex_destroy(process_data[i]->mailboxes_mutex);

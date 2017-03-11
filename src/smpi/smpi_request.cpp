@@ -109,6 +109,7 @@ static double smpi_or(size_t size)
 
 namespace simgrid{
 namespace smpi{
+
 Request::Request(){}
 Request::Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags) : buf_(buf), old_type_(datatype), src_(src), dst_(dst), tag_(tag), comm_(comm), flags_(flags) 
 {
@@ -126,7 +127,7 @@ Request::Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, 
   old_buf_  = old_buf;
   size_ = datatype->size() * count;
   datatype->use();
-  comm_->use();
+  comm_->ref();
   action_          = nullptr;
   detached_        = 0;
   detached_sender_ = nullptr;
@@ -189,7 +190,7 @@ void Request::unuse(MPI_Request* request)
 
     if((*request)->refcount_==0){
         (*request)->old_type_->unuse();
-        (*request)->comm_->unuse();
+        Comm::unref((*request)->comm_);
         (*request)->print_request("Destroying");
         delete *request;
         *request = MPI_REQUEST_NULL;
@@ -999,6 +1000,30 @@ int Request::waitsome(int incount, MPI_Request requests[], int *indices, MPI_Sta
   }
   return count;
 }
+
+MPI_Request Request::f2c(int id) {
+  char key[KEY_SIZE];
+  if(id==MPI_FORTRAN_REQUEST_NULL)
+    return static_cast<MPI_Request>(MPI_REQUEST_NULL);
+  return static_cast<MPI_Request>(xbt_dict_get(Request::f2c_lookup_, get_key_id(key, id)));
+}
+
+int Request::add_f() {
+  if(Request::f2c_lookup_==nullptr){
+    Request::f2c_lookup_=xbt_dict_new_homogeneous(nullptr);
+  }
+  char key[KEY_SIZE];
+  xbt_dict_set(Request::f2c_lookup_, get_key_id(key, Request::f2c_id_), this, nullptr);
+  Request::f2c_id_++;
+  return Request::f2c_id_-1;
+}
+
+void Request::free_f(int id) {
+  char key[KEY_SIZE];
+  if(id!=MPI_FORTRAN_REQUEST_NULL)
+    xbt_dict_remove(Request::f2c_lookup_, get_key_id(key, id));
+}
+
 
 
 }

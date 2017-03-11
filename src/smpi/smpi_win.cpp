@@ -17,7 +17,7 @@ Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm)
   int rank      = comm->rank();
   XBT_DEBUG("Creating window");
   if(info!=MPI_INFO_NULL)
-    Info::ref(info);
+    info->ref();
   name_ = nullptr;
   opened_ = 0;
   group_ = MPI_GROUP_NULL;
@@ -279,7 +279,7 @@ int Win::start(MPI_Group group, int assert){
   xbt_free(reqs);
   opened_++; //we're open for business !
   group_=group;
-  group->use();
+  group->ref();
   return MPI_SUCCESS;
 }
 
@@ -308,7 +308,7 @@ int Win::post(MPI_Group group, int assert){
   xbt_free(reqs);
   opened_++; //we're open for business !
   group_=group;
-  group->use();
+  group->ref();
   return MPI_SUCCESS;
 }
 
@@ -359,7 +359,7 @@ int Win::complete(){
   }
   xbt_mutex_release(mut_);
 
-  group_->unuse();
+  Group::unref(group_);
   opened_--; //we're closed for business !
   return MPI_SUCCESS;
 }
@@ -405,9 +405,13 @@ int Win::wait(){
   }
   xbt_mutex_release(mut_);
 
-  group_->unuse();
+  Group::unref(group_);
   opened_--; //we're opened for business !
   return MPI_SUCCESS;
+}
+
+Win* Win::f2c(int id){
+  return static_cast<Win*>(F2C::f2c(id));
 }
 
 }

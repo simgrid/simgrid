@@ -19,12 +19,10 @@ class Info : public F2C{
     xbt_dict_t dict_;
     int refcount_;
   public:
-    static MPI_Info null_id_;
-
     Info();
     Info(Info* orig);
     ~Info();
-    static void ref(MPI_Info info);
+    void ref();
     static void unref(MPI_Info info);
     void set(char *key, char *value);
     int get(char *key,int valuelen, char *value, int *flag);
@@ -32,6 +30,7 @@ class Info : public F2C{
     int get_nkeys(int *nkeys);
     int get_nthkey(int n, char *key);
     int get_valuelen(char *key, int *valuelen, int *flag);
+    static Info* f2c(int id);
 };
 
 }

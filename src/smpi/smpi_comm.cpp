@@ -67,14 +67,14 @@ Comm::Comm(MPI_Group group, MPI_Topology topo) : group_(group), topo_(topo)
   attributes_=nullptr;
 }
 
-void Comm::destroy()
+void Comm::destroy(Comm* comm)
 {
-  if (this == MPI_COMM_UNINITIALIZED){
-    smpi_process_comm_world()->destroy();
+  if (comm == MPI_COMM_UNINITIALIZED){
+    Comm::destroy(smpi_process_comm_world());
     return;
   }
-  delete topo_; // there's no use count on topos
-  this->unuse();
+  delete comm->topo_; // there's no use count on topos
+  Comm::unref(comm);
 }
 
 int Comm::dup(MPI_Comm* newcomm){
@@ -98,7 +98,7 @@ int Comm::dup(MPI_Comm* newcomm){
       if (elem != nullptr && elem->copy_fn != MPI_NULL_COPY_FN) {
         ret = elem->copy_fn(this, atoi(key), nullptr, value_in, &value_out, &flag);
         if (ret != MPI_SUCCESS) {
-          (*newcomm)->destroy();
+          Comm::destroy(*newcomm);
           *newcomm = MPI_COMM_NULL;
           xbt_dict_cursor_free(&cursor);
           return ret;
@@ -260,7 +260,8 @@ MPI_Comm Comm::split(int color, int key)
           }
         }
         if(i != 0) {
-          group_out->destroy();
+          if(group_out != MPI_COMM_WORLD->group() && group_out != MPI_GROUP_EMPTY)
+            Group::unref(group_out);
         }
         Request::waitall(reqs, requests, MPI_STATUS_IGNORE);
         xbt_free(requests);
@@ -278,12 +279,12 @@ MPI_Comm Comm::split(int color, int key)
   return group_out!=nullptr ? new  Comm(group_out, nullptr) : MPI_COMM_NULL;
 }
 
-void Comm::use(){
+void Comm::ref(){
   if (this == MPI_COMM_UNINITIALIZED){
-    smpi_process_comm_world()->use();
+    smpi_process_comm_world()->ref();
     return;
   }
-  group_->use();
+  group_->ref();
   refcount_++;
 }
 
@@ -304,27 +305,27 @@ void Comm::cleanup_attributes(){
 
 void Comm::cleanup_smp(){
   if (intra_comm_ != MPI_COMM_NULL)
-    intra_comm_->unuse();
+    Comm::unref(intra_comm_);
   if (leaders_comm_ != MPI_COMM_NULL)
-    leaders_comm_->unuse();
+    Comm::unref(leaders_comm_);
   if (non_uniform_map_ != nullptr)
     xbt_free(non_uniform_map_);
   if (leaders_map_ != nullptr)
     xbt_free(leaders_map_);
 }
 
-void Comm::unuse(){
-  if (this == MPI_COMM_UNINITIALIZED){
-    smpi_process_comm_world()->unuse();
+void Comm::unref(Comm* comm){
+  if (comm == MPI_COMM_UNINITIALIZED){
+    Comm::unref(smpi_process_comm_world());
     return;
   }
-  refcount_--;
-  group_->unuse();
+  comm->refcount_--;
+  Group::unref(comm->group_);
 
-  if(refcount_==0){
-    this->cleanup_smp();
-    this->cleanup_attributes();
-    delete this;
+  if(comm->refcount_==0){
+    comm->cleanup_smp();
+    comm->cleanup_attributes();
+    delete comm;
   }
 }
 
@@ -442,7 +443,7 @@ void Comm::init_smp(){
       this->set_leaders_comm(leader_comm);
     }else{
       leader_comm=this->get_leaders_comm();
-      leaders_group->unuse();
+      Group::unref(leaders_group);
     }
     smpi_process_set_comm_intra(comm_intra);
   }
@@ -563,6 +564,36 @@ int Comm::attr_put(int keyval, void* attr_value){
   xbt_dict_set_ext(attributes_,  reinterpret_cast<const char*>(&keyval), sizeof(int), attr_value, nullptr);
   return MPI_SUCCESS;
 }
+
+MPI_Comm Comm::f2c(int id) {
+  if(id == -2) {
+    return MPI_COMM_SELF;
+  } else if(id==0){
+    return MPI_COMM_WORLD;
+  } else if(Comm::f2c_lookup_ != nullptr && id >= 0) {
+      char key[KEY_SIZE];
+      MPI_Comm tmp =  static_cast<MPI_Comm>(xbt_dict_get_or_null(Comm::f2c_lookup_,get_key_id(key, id)));
+      return tmp != nullptr ? tmp : MPI_COMM_NULL ;
+  } else {
+    return MPI_COMM_NULL;
+  }
+}
+
+void Comm::free_f(int id) {
+  char key[KEY_SIZE];
+  xbt_dict_remove(Comm::f2c_lookup_, id==0? get_key(key, id) : get_key_id(key, id));
+}
+
+int Comm::add_f() {
+  if(Comm::f2c_lookup_==nullptr){
+    Comm::f2c_lookup_=xbt_dict_new_homogeneous(nullptr);
+  }
+  char key[KEY_SIZE];
+  xbt_dict_set(Comm::f2c_lookup_, this==MPI_COMM_WORLD? get_key(key, Comm::f2c_id_) : get_key_id(key,Comm::f2c_id_), this, nullptr);
+  Comm::f2c_id_++;
+  return Comm::f2c_id_-1;
+}
+
 
 }
 }

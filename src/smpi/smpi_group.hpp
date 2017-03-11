@@ -12,25 +12,23 @@
 namespace simgrid{
 namespace smpi{
 
-class Group {
+class Group : public F2C{
   private:
     int size_;
     int *rank_to_index_map_;
     xbt_dict_t index_to_rank_map_;
     int refcount_;
   public:
-
     Group();
     Group(int size);
     Group(Group* origin);
     ~Group();
 
-    void destroy();
     void set_mapping(int index, int rank);
     int index(int rank);
     int rank(int index);
-    int use();
-    int unuse();
+    void ref();
+    static void unref(MPI_Group group);
     int size();
     int compare(MPI_Group group2);
     int incl(int n, int* ranks, MPI_Group* newgroup);
@@ -40,6 +38,9 @@ class Group {
     int difference(MPI_Group group2, MPI_Group* newgroup);
     int range_incl(int n, int ranges[][3], MPI_Group * newgroup);
     int range_excl(int n, int ranges[][3], MPI_Group * newgroup);
+
+    static Group* f2c(int id);
+
 };
 }
 }

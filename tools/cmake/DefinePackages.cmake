@@ -215,11 +215,15 @@ set(SMPI_SRC
   src/smpi/smpi_deployment.cpp
   src/smpi/smpi_dvfs.cpp
   src/smpi/smpi_global.cpp
+  src/smpi/smpi_f2c.cpp
+  src/smpi/smpi_f2c.hpp
   src/smpi/smpi_group.cpp
   src/smpi/smpi_group.hpp
   src/smpi/smpi_mpi.cpp
   src/smpi/smpi_datatype.cpp
   src/smpi/smpi_datatype.hpp
+  src/smpi/smpi_info.cpp
+  src/smpi/smpi_info.hpp
   src/smpi/smpi_datatype_derived.cpp
   src/smpi/smpi_datatype_derived.hpp
   src/smpi/smpi_op.cpp

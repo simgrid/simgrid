@@ -12,7 +12,7 @@
 namespace simgrid{
 namespace smpi{
 
-class Request {
+class Request : public F2C{
   private :
     void *buf_;
     /* in the case of non-contiguous memory the user address should be keep
@@ -90,7 +90,13 @@ class Request {
 
     static int match_send(void* a, void* b,smx_activity_t ignored);
     static int match_recv(void* a, void* b,smx_activity_t ignored);
+
+    int add_f();
+    static void free_f(int id);
+    static Request* f2c(int);
+
 };
+
 
 }
 }
