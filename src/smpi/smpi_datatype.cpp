@@ -364,7 +364,7 @@ int Datatype::unpack(void* inbuf, int insize, int* position, void* outbuf, int o
 int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        void *recvbuf, int recvcount, MPI_Datatype recvtype){
   int count;
-  if(smpi_privatize_global_variables){
+  if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
     smpi_switch_data_segment(smpi_process_index());
   }
   /* First check if we really have something to do */

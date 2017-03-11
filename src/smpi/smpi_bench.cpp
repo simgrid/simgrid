@@ -88,7 +88,7 @@ double smpi_host_speed;
 int smpi_loaded_page = -1;
 char* smpi_start_data_exe = nullptr;
 int smpi_size_data_exe = 0;
-bool smpi_privatize_global_variables;
+int smpi_privatize_global_variables;
 shared_malloc_type smpi_cfg_shared_malloc = shmalloc_global;
 double smpi_total_benched_time = 0;
 smpi_privatisation_region_t smpi_privatisation_regions;
@@ -239,7 +239,7 @@ void smpi_execute(double duration)
 
 void smpi_bench_begin()
 {
-  if (smpi_privatize_global_variables) {
+  if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
     smpi_switch_data_segment(smpi_process_index());
   }
 
@@ -769,8 +769,8 @@ void smpi_initialize_global_memory_segments()
 {
 
 #if !HAVE_PRIVATIZATION
-  smpi_privatize_global_variables=false;
-  xbt_die("You are trying to use privatization on a system that does not support it. Don't.");
+  smpi_privatize_global_variables = SMPI_PRIVATIZE_NONE;
+  xbt_die("You are trying to use privatization on a system that does not support it. Please don't.");
   return;
 #else
 
@@ -779,7 +779,7 @@ void smpi_initialize_global_memory_segments()
   XBT_DEBUG ("bss+data segment found : size %d starting at %p", smpi_size_data_exe, smpi_start_data_exe );
 
   if (smpi_size_data_exe == 0){//no need to switch
-    smpi_privatize_global_variables=false;
+    smpi_privatize_global_variables = SMPI_PRIVATIZE_NONE;
     return;
   }
 

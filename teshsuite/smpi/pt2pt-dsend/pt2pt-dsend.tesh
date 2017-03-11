@@ -1,7 +1,7 @@
 p Test dsend
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 2 ${bindir:=.}/pt2pt-dsend -q --log=smpi_kernel.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 2 ${bindir:=.}/pt2pt-dsend -q --log=smpi_kernel.thres:warning
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
@@ -16,7 +16,7 @@ p process 1 will finish at 0.5+2*4 (send) + 1+0.1*4 (isend) = 9.9s
 p process 2 will finish at 0.5+2*4 (time before first send) + 2*(1+0.5*4) (recv+irecv) + 0.005890 (network time, same as before) = 14.505890s
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 2 ${bindir:=.}/pt2pt-dsend -q --log=smpi_kernel.thres:warning --cfg=smpi/or:0:1:0.5 --cfg=smpi/os:0:0.5:2 --cfg=smpi/ois:0:1:0.1
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 2 ${bindir:=.}/pt2pt-dsend -q --log=smpi_kernel.thres:warning --cfg=smpi/or:0:1:0.5 --cfg=smpi/os:0:0.5:2 --cfg=smpi/ois:0:1:0.1
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/ois' to '0:1:0.1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/or' to '0:1:0.5'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/os' to '0:0.5:2'
