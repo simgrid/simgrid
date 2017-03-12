@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -366,8 +365,8 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
       }else{
         Request::unref(&requests[index]);
       }
-      if(op) /* op can be MPI_OP_NULL that does nothing */
-        if(op!=MPI_OP_NULL) op->apply( tmpbufs[index], recvbuf, &count, datatype);
+      if (op != MPI_OP_NULL) /* op can be MPI_OP_NULL that does nothing */
+        op->apply(tmpbufs[index], recvbuf, &count, datatype);
     }
       for(index = 0; index < size - 1; index++) {
         smpi_free_tmp_buffer(tmpbufs[index]);
@@ -423,18 +422,16 @@ void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
       if(index == MPI_UNDEFINED) {
         break;
       }
-      if(index < rank) {
-        // #Request is below rank: it's a irecv
-        if(op!=MPI_OP_NULL) op->apply( tmpbufs[index], recvbuf, &count, datatype);
-      }
+      if (index < rank)
+        // #Request is below rank: it's a irecv.
+        op->apply(tmpbufs[index], recvbuf, &count, datatype);
     }
   }else{
     //non commutative case, wait in order
     for (int other = 0; other < size - 1; other++) {
       Request::wait(&(requests[other]), MPI_STATUS_IGNORE);
-      if(index < rank) {
-        if(op!=MPI_OP_NULL) op->apply( tmpbufs[other], recvbuf, &count, datatype);
-      }
+      if (index < rank && op != MPI_OP_NULL)
+        op->apply(tmpbufs[other], recvbuf, &count, datatype);
     }
   }
   for(index = 0; index < rank; index++) {
