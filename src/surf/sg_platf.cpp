@@ -1,3 +1,4 @@
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -206,6 +207,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       xbt_dict_foreach(cluster->properties,cursor,key,data) {
         xbt_dict_set(host.properties, key, xbt_strdup(data), nullptr);
       }
+      xbt_dict_free(&cluster->properties);
     }
 
     host.speed_per_pstate = cluster->speeds;
