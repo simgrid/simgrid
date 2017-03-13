@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -122,8 +122,7 @@ msg_error_t MSG_process_sleep(double nb_sec)
     simcall_process_sleep(nb_sec);
   }
   catch(xbt_ex& e) {
-    switch (e.category) {
-    case cancel_error:
+    if (e.category == cancel_error) {
       XBT_DEBUG("According to the JAVA API, a sleep call should only deal with HostFailureException, I'm lost."); 
       // adsein: MSG_TASK_CANCELED is assigned when someone kills the process that made the sleep, this is not
       // correct. For instance, when the node is turned off, the error should be MSG_HOST_FAILURE, which is by the way
@@ -132,10 +131,8 @@ msg_error_t MSG_process_sleep(double nb_sec)
       // and did not change anythings at the C level.
       // See comment in the jmsg_process.c file, function JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cls, jlong jmillis, jint jnanos) 
       status = MSG_TASK_CANCELED;
-      break;
-    default:
+    } else
       throw;
-    }
   }
 
   TRACE_msg_process_sleep_out(MSG_process_self());
