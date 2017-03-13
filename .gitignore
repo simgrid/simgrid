@@ -147,7 +147,12 @@ examples/msg/io-file-unlink/io-file-unlink
 examples/msg/io-remote/io-remote
 examples/msg/io-storage/io-storage
 examples/msg/platform-failures/platform-failures
+examples/msg/process-create/process-create
 examples/msg/process-kill/process-kill
+examples/msg/process-join/process-join
+examples/msg/process-migration/process-migration
+examples/msg/process-startkilltime/process-startkilltime
+examples/msg/process-suspend/process-suspend
 examples/msg/app-masterworker/app-masterworker
 examples/msg/mc/bugged1
 examples/msg/mc/bugged1_liveness
@@ -164,7 +169,6 @@ examples/msg/mc/test/snapshot_comparison2
 examples/msg/mc/test/snapshot_comparison3
 examples/msg/mc/test/snapshot_comparison4
 examples/msg/mc/test/snapshot_comparison5
-examples/msg/process-migration/process-migration
 examples/msg/ms.trace
 examples/msg/network-ns3/network-ns3
 examples/msg/app-pmm/app-pmm
@@ -175,9 +179,6 @@ examples/msg/synchro-semaphore/synchro-semaphore
 examples/msg/app-pingpong/app-pingpong
 examples/msg/maestro-set/maestro-set
 examples/msg/simulation.trace
-examples/msg/process-create/process-create
-examples/msg/process-startkilltime/process-startkilltime
-examples/msg/process-suspend/process-suspend
 examples/msg/app-token-ring/app-token-ring
 examples/msg/trace-categories/trace-categories
 examples/msg/trace-route-user-variables/trace-route-user-variables
@@ -248,7 +249,6 @@ teshsuite/msg/host_on_off_recv/host_on_off_recv
 teshsuite/msg/host_on_off_wait/host_on_off_wait
 teshsuite/msg/listen_async/listen_async
 teshsuite/msg/pid/pid
-teshsuite/msg/process_join/process_join
 teshsuite/msg/process/process
 teshsuite/msg/storage_client_server/storage_client_server
 teshsuite/msg/task_destroy_cancel/task_destroy_cancel

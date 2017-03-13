@@ -8,7 +8,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-static int slave(int argc, char *argv[])
+static int slave(int argc, char* argv[])
 {
   XBT_INFO("Slave started");
   MSG_process_sleep(3);
@@ -16,22 +16,22 @@ static int slave(int argc, char *argv[])
   return 0;
 }
 
-static int master(int argc, char *argv[])
+static int master(int argc, char* argv[])
 {
   msg_process_t process;
 
   XBT_INFO("Start slave");
-  process =  MSG_process_create("slave from master", slave, NULL, MSG_host_self());
+  process = MSG_process_create("slave from master", slave, NULL, MSG_host_self());
   XBT_INFO("Join the slave (timeout 2)");
   MSG_process_join(process, 2);
 
   XBT_INFO("Start slave");
-  process =  MSG_process_create("slave from master", slave, NULL, MSG_host_self());
+  process = MSG_process_create("slave from master", slave, NULL, MSG_host_self());
   XBT_INFO("Join the slave (timeout 4)");
   MSG_process_join(process, 4);
 
   XBT_INFO("Start slave");
-  process =  MSG_process_create("slave from master", slave, NULL, MSG_host_self());
+  process = MSG_process_create("slave from master", slave, NULL, MSG_host_self());
   XBT_INFO("Join the slave (timeout 2)");
   MSG_process_join(process, 2);
 
@@ -50,7 +50,7 @@ static int master(int argc, char *argv[])
   return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   msg_error_t res;
 
