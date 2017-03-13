@@ -202,7 +202,9 @@ public:
 
   // ***** Methods *****
 
-  /** Retrieves the name of that actor */
+  /** Retrieves the name of that actor as a C string */
+  const char* cname();
+  /** Retrieves the name of that actor as a C++ string */
   simgrid::xbt::string name();
   /** Retrieves the host on which that actor is running */
   s4u::Host* host();

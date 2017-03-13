@@ -57,6 +57,11 @@ s4u::Host* Actor::host()
   return this->pimpl_->host;
 }
 
+const char* Actor::cname()
+{
+  return this->pimpl_->name.c_str();
+}
+
 simgrid::xbt::string Actor::name()
 {
   return this->pimpl_->name;
