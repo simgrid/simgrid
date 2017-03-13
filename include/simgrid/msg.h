@@ -245,15 +245,13 @@ XBT_PUBLIC(void) MSG_host_get_process_list(msg_host_t h, xbt_dynar_t whereto);
 XBT_PUBLIC(int) MSG_host_is_on(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_off(msg_host_t h);
 
-// deprecated
-XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h);
-
+XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h); /* deprecated */
 
 XBT_PUBLIC(double) MSG_host_get_power_peak_at(msg_host_t h, int pstate);
-XBT_PUBLIC(double) MSG_host_get_current_power_peak(msg_host_t h);
+#define MSG_host_get_current_power_peak(h) MSG_host_get_speed(h) /* deprecated */
 XBT_PUBLIC(int)    MSG_host_get_nb_pstates(msg_host_t h);
-#define MSG_host_get_pstate(h)         sg_host_get_pstate(h)
-#define MSG_host_set_pstate(h, pstate) sg_host_set_pstate(h, pstate)
+#define MSG_host_get_pstate(h)         sg_host_get_pstate(h)         /* deprecated */
+#define MSG_host_set_pstate(h, pstate) sg_host_set_pstate(h, pstate) /* deprecated */
 XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar();
 XBT_PUBLIC(int) MSG_get_host_number();
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_mounted_storage_list(msg_host_t host);

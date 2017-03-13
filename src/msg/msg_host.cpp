@@ -224,17 +224,6 @@ double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
 }
 
 /** \ingroup m_host_management
- * \brief Return the current speed of the processor (in flop/s)
- *
- * \param  host host to test
- * \return Returns the current processor speed
- */
-double MSG_host_get_current_power_peak(msg_host_t host) {
-  xbt_assert((host != nullptr), "Invalid parameters (host is nullptr)");
-  return host->getPstateSpeedCurrent();
-}
-
-/** \ingroup m_host_management
  * \brief Return the total count of pstates defined for a host. See also @ref SURF_plugin_energy.
  *
  * \param  host host to test

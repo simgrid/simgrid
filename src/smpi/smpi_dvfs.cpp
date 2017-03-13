@@ -35,7 +35,7 @@ double smpi_get_host_power_peak_at(int pstate_index)
  */
 double smpi_get_host_current_power_peak()
 {
-  return SIMIX_host_self()->getPstateSpeedCurrent();
+  return SIMIX_host_self()->speed();
 }
 
 /**

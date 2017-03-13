@@ -119,12 +119,6 @@ Cpu::Cpu(Model* model, simgrid::s4u::Host* host, lmm_constraint_t constraint, st
 
 Cpu::~Cpu() = default;
 
-/** @brief The amount of flop per second that this CPU can compute at its current DVFS level */
-double Cpu::getPstateSpeedCurrent()
-{
-  return speed_.peak;
-}
-
 int Cpu::getNbPStates()
 {
   return speedPerPstate_.size();

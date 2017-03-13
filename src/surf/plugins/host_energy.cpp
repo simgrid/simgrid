@@ -111,7 +111,7 @@ void HostEnergy::update()
   double start_time  = this->last_updated;
   double finish_time = surf_get_clock();
   double cpu_load;
-  double current_speed = host->pimpl_cpu->getPstateSpeedCurrent();
+  double current_speed = host->speed();
   if (current_speed <= 0)
     // Some users declare a pstate of speed 0 flops (e.g., to model boot time).
     // We consider that the machine is then fully loaded. That's arbitrary but it avoids a NaN

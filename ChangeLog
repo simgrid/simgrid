@@ -16,6 +16,7 @@ SimGrid (3.15) UNRELEASED; urgency=low
  - New: MSG_process_ref/unref(). Fiddle with the process refcounting.
  - Renamed MSG_energy_plugin_init() -> MSG_host_energy_plugin_init()
    to make room for the upcoming network energy plugin.
+ - Drop MSG_host_get_current_power_peak: dupplicates MSG_host_get_speed
 
  Java
  - Ensure that an actor can kill itself with Process::exit()
@@ -31,6 +32,7 @@ SimGrid (3.15) UNRELEASED; urgency=low
    - s4u::Host::onSpeedChange: when the pstate is changed, or when an
      event from the availability_file changes the avail speed.
  - Links are now usable from s4u
+ - Drop Host::getPstateSpeedCurrent() which dupplicates Host::speed()
 
  SimDag
  - Backwards Compatibility breaks

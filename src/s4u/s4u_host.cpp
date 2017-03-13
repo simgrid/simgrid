@@ -202,15 +202,7 @@ xbt_swag_t Host::processes()
   });
 }
 
-/** Get the peak power of a host */
-double Host::getPstateSpeedCurrent()
-{
-  return simgrid::simix::kernelImmediate([this] {
-    return this->pimpl_cpu->getPstateSpeedCurrent();
-  });
-}
-
-/** Get one power peak (in flops/s) of a host at a given pstate */
+/** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
 double Host::getPstateSpeed(int pstate_index)
 {
   return simgrid::simix::kernelImmediate([this, pstate_index] {
@@ -218,10 +210,11 @@ double Host::getPstateSpeed(int pstate_index)
   });
 }
 
-/** @brief Get the speed of the cpu associated to a host */
+/** @brief Get the peak processor speed (in flops/s), at the current pstate */
 double Host::speed() {
   return pimpl_cpu->getSpeed(1.0);
 }
+
 /** @brief Returns the number of core of the processor. */
 int Host::coreCount() {
   return pimpl_cpu->coreCount();
