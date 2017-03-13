@@ -194,23 +194,27 @@ To add a new integration test, you thus have 3 things to do:
    details.\n
    Tesh is sometimes annoying as you have to ensure that the expected
    output will always be exactly the same. In particular, your should
-   not output machine dependent informations such as absolute data path, nor memory adresses as
-   they would change on each run. Several steps can be used here, such
-   as the obfucation of the memory adresses unless the verbose logs
-   are displayed (using the #XBT_LOG_ISENABLED() macro), or the
-   modification of the log formats to hide the timings when they
-   depend on the host machine.\n
+   not output machine dependent informations such as absolute data
+   path, nor memory adresses as they would change on each run. Several
+   steps can be used here, such as the obfucation of the memory
+   adresses unless the verbose logs are displayed (using the
+   #XBT_LOG_ISENABLED() macro), or the modification of the log formats
+   to hide the timings when they depend on the host machine.\n
    The script located in <project/directory>/tools/tesh/generate_tesh can
    help you a lot in particular if the output is large (though a smaller output is preferable). 
    There are also example tesh files in the <project/directory>/tools/tesh/ directory, that can be useful to understand the tesh syntax.
    
  - <b>Add your test in the cmake infrastructure</b>. For that, modify
-   the file <project/directory>/tools/cmake/Tests.cmake. Make sure to
-   pick a wise name for your test. It is often useful to check a
-   category of tests together. The only way to do so in ctest is to
-   use the -R argument that specifies a regular expression that the
-   test names must match. For example, you can run all MSG test with
-   "ctest -R msg". That explains the importance of the test names.
+   the following file:
+   @verbatim
+   <project/directory>/teshsuite/<interface eg msg>/CMakeLists.txt
+   @endverbatim   
+   Make sure to pick a wise name for your test. It is often useful to
+   check a category of tests together. The only way to do so in ctest
+   is to use the -R argument that specifies a regular expression that
+   the test names must match. For example, you can run all MSG test
+   with "ctest -R msg". That explains the importance of the test
+   names.
 
 Once the name is chosen, create a new test by adding a line similar to
 the following (assuming that you use tesh as expected).
