@@ -79,17 +79,11 @@ void CpuModel::updateActionsStateFull(double now, double delta)
 
     action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
 
-
     if (action->getMaxDuration() != NO_MAX_DURATION)
       action->updateMaxDuration(delta);
 
-
-    if ((action->getRemainsNoUpdate() <= 0) &&
-        (lmm_get_variable_weight(action->getVariable()) > 0)) {
-      action->finish();
-      action->setState(Action::State::done);
-    } else if ((action->getMaxDuration() != NO_MAX_DURATION) &&
-               (action->getMaxDuration() <= 0)) {
+    if (((action->getRemainsNoUpdate() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||
+        ((action->getMaxDuration() != NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
       action->finish();
       action->setState(Action::State::done);
     }

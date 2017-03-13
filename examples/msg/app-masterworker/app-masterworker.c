@@ -7,7 +7,6 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_app_masterworker, "Messages specific for this msg example");
 
-
 /* Main function of the master process */
 static int master(int argc, char *argv[])
 {

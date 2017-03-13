@@ -69,7 +69,9 @@ NetworkL07Model::~NetworkL07Model()
 double HostL07Model::nextOccuringEvent(double now)
 {
   double min = HostModel::nextOccuringEventFull(now);
-  for (auto it(getRunningActionSet()->begin()), itend(getRunningActionSet()->end()); it != itend ; ++it) {
+  ActionList::iterator it(getRunningActionSet()->begin());
+  ActionList::iterator itend(getRunningActionSet()->end());
+  for (; it != itend; ++it) {
     L07Action *action = static_cast<L07Action*>(&*it);
     if (action->latency_ > 0 && (min < 0 || action->latency_ < min)) {
       min = action->latency_;
@@ -85,11 +87,12 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
 
   L07Action *action;
   ActionList *actionSet = getRunningActionSet();
+  ActionList::iterator it(actionSet->begin());
+  ActionList::iterator itNext = it;
+  ActionList::iterator itend(actionSet->end());
 
-  for(ActionList::iterator it = actionSet->begin(), itNext = it
-   ; it != actionSet->end()
-   ; it =  itNext) {
-  ++itNext;
+  for (; it != itend; it = itNext) {
+    ++itNext;
     action = static_cast<L07Action*>(&*it);
     if (action->latency_ > 0) {
       if (action->latency_ > delta) {
@@ -117,20 +120,16 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
      * If it's not done, it may have failed.
      */
 
-    if ((action->getRemains() <= 0) &&
-        (lmm_get_variable_weight(action->getVariable()) > 0)) {
-      action->finish();
-      action->setState(Action::State::done);
-    } else if ((action->getMaxDuration() != NO_MAX_DURATION) &&
-               (action->getMaxDuration() <= 0)) {
+    if (((action->getRemains() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||
+        ((action->getMaxDuration() != NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
       action->finish();
       action->setState(Action::State::done);
     } else {
       /* Need to check that none of the model has failed */
-      lmm_constraint_t cnst = nullptr;
       int i = 0;
-
-      while ((cnst = lmm_get_cnst_from_var(maxminSystem_, action->getVariable(), i++))) {
+      lmm_constraint_t cnst = lmm_get_cnst_from_var(maxminSystem_, action->getVariable(), i);
+      while (cnst != nullptr) {
+        i++;
         void *constraint_id = lmm_constraint_id(cnst);
         if (static_cast<simgrid::surf::Resource*>(constraint_id)->isOff()) {
           XBT_DEBUG("Action (%p) Failed!!", action);
@@ -138,6 +137,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
           action->setState(Action::State::failed);
           break;
         }
+        cnst = lmm_get_cnst_from_var(maxminSystem_, action->getVariable(), i);
       }
     }
   }
@@ -206,16 +206,14 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
   if(bytes_amount != nullptr) {
     for (int i = 0; i < host_nb; i++) {
       for (int j = 0; j < host_nb; j++) {
+        if (bytes_amount[i * host_nb + j] > 0.0) {
+          std::vector<LinkImpl*> route;
+          hostList_->at(i)->routeTo(hostList_->at(j), &route, nullptr);
 
-        if (bytes_amount[i * host_nb + j] == 0.0)
-          continue;
-
-        std::vector<LinkImpl*> route;
-        hostList_->at(i)->routeTo(hostList_->at(j), &route, nullptr);
-
-        for (auto link : route)
-          lmm_expand_add(model->getMaxminSystem(), link->constraint(), this->getVariable(),
-                         bytes_amount[i * host_nb + j]);
+          for (auto link : route)
+            lmm_expand_add(model->getMaxminSystem(), link->constraint(), this->getVariable(),
+                           bytes_amount[i * host_nb + j]);
+        }
       }
     }
   }

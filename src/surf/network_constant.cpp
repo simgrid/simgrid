@@ -19,83 +19,82 @@ void surf_network_model_init_Constant()
 }
 
 namespace simgrid {
-  namespace surf {
-  LinkImpl* NetworkConstantModel::createLink(const char* name, double bw, double lat,
-                                             e_surf_link_sharing_policy_t policy)
-  {
+namespace surf {
+LinkImpl* NetworkConstantModel::createLink(const char* name, double bw, double lat, e_surf_link_sharing_policy_t policy)
+{
 
-    xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "
-            "Please remove any link from your platform (and switch to routing='None')",
-            name);
-    return nullptr;
-    }
+  xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "
+          "Please remove any link from your platform (and switch to routing='None')",
+          name);
+  return nullptr;
+}
 
-    double NetworkConstantModel::nextOccuringEvent(double /*now*/)
-    {
-      double min = -1.0;
+double NetworkConstantModel::nextOccuringEvent(double /*now*/)
+{
+  double min = -1.0;
 
-      ActionList *actionSet = getRunningActionSet();
-      for(auto it(actionSet->begin()), itend(actionSet->end()) ; it != itend ; ++it) {
-        NetworkConstantAction *action = static_cast<NetworkConstantAction*>(&*it);
-        if (action->latency_ > 0 && (min < 0 || action->latency_ < min))
-          min = action->latency_;
-      }
-
-      return min;
-    }
-
-    void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
-    {
-      NetworkConstantAction *action = nullptr;
-      ActionList *actionSet = getRunningActionSet();
-      for(ActionList::iterator it(actionSet->begin()), itNext=it, itend(actionSet->end())
-          ; it != itend ; it=itNext) {
-        ++itNext;
-        action = static_cast<NetworkConstantAction*>(&*it);
-        if (action->latency_ > 0) {
-          if (action->latency_ > delta) {
-            double_update(&(action->latency_), delta, sg_surf_precision);
-          } else {
-            action->latency_ = 0.0;
-          }
-        }
-        action->updateRemains(action->getCost() * delta / action->initialLatency_);
-        if (action->getMaxDuration() != NO_MAX_DURATION)
-          action->updateMaxDuration(delta);
-
-        if (action->getRemainsNoUpdate() <= 0) {
-          action->finish();
-          action->setState(Action::State::done);
-        } else if ((action->getMaxDuration() != NO_MAX_DURATION)
-            && (action->getMaxDuration() <= 0)) {
-          action->finish();
-          action->setState(Action::State::done);
-        }
-      }
-    }
-
-    Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
-    {
-      NetworkConstantAction *action = new NetworkConstantAction(this, size, sg_latency_factor);
-
-      simgrid::s4u::Link::onCommunicate(action, src, dst);
-      return action;
-    }
-
-    /**********
-     * Action *
-     **********/
-    NetworkConstantAction::NetworkConstantAction(NetworkConstantModel *model_, double size, double latency)
-    : NetworkAction(model_, size, false)
-    , initialLatency_(latency)
-    {
-      latency_ = latency;
-      if (latency_ <= 0.0) {
-        stateSet_ = model_->getDoneActionSet();
-        stateSet_->push_back(*this);
-      }
-    };
-
-    NetworkConstantAction::~NetworkConstantAction() = default;
+  ActionList* actionSet = getRunningActionSet();
+  ActionList::iterator it(actionSet->begin());
+  ActionList::iterator itend(actionSet->end());
+  for (; it != itend; ++it) {
+    NetworkConstantAction* action = static_cast<NetworkConstantAction*>(&*it);
+    if (action->latency_ > 0 && (min < 0 || action->latency_ < min))
+      min = action->latency_;
   }
+
+  return min;
+}
+
+void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
+{
+  NetworkConstantAction* action = nullptr;
+  ActionList* actionSet         = getRunningActionSet();
+  ActionList::iterator it(actionSet->begin());
+  ActionList::iterator itNext = it;
+  ActionList::iterator itend(actionSet->end());
+  for (; it != itend; it = itNext) {
+    ++itNext;
+    action = static_cast<NetworkConstantAction*>(&*it);
+    if (action->latency_ > 0) {
+      if (action->latency_ > delta) {
+        double_update(&(action->latency_), delta, sg_surf_precision);
+      } else {
+        action->latency_ = 0.0;
+      }
+    }
+    action->updateRemains(action->getCost() * delta / action->initialLatency_);
+    if (action->getMaxDuration() != NO_MAX_DURATION)
+      action->updateMaxDuration(delta);
+
+    if (((action->getRemainsNoUpdate() <= 0) ||
+         ((action->getMaxDuration() != NO_MAX_DURATION) && (action->getMaxDuration() <= 0)))) {
+      action->finish();
+      action->setState(Action::State::done);
+    }
+  }
+}
+
+Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
+{
+  NetworkConstantAction* action = new NetworkConstantAction(this, size, sg_latency_factor);
+
+  simgrid::s4u::Link::onCommunicate(action, src, dst);
+  return action;
+}
+
+/**********
+ * Action *
+ **********/
+NetworkConstantAction::NetworkConstantAction(NetworkConstantModel* model_, double size, double latency)
+    : NetworkAction(model_, size, false), initialLatency_(latency)
+{
+  latency_ = latency;
+  if (latency_ <= 0.0) {
+    stateSet_ = model_->getDoneActionSet();
+    stateSet_->push_back(*this);
+  }
+};
+
+NetworkConstantAction::~NetworkConstantAction() = default;
+}
 }
