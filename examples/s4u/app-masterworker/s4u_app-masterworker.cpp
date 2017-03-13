@@ -22,10 +22,10 @@ public:
   {
     xbt_assert(args.size() == 5, "The master function expects 4 arguments from the XML deployment file");
 
-    number_of_tasks = xbt_str_parse_int(args[1].c_str(), "Invalid amount of tasks: %s"); /* - Number of tasks */
-    comp_size       = xbt_str_parse_double(args[2].c_str(), "Invalid computational size: %s"); /* - Task compute cost */
-    comm_size       = xbt_str_parse_double(args[3].c_str(), "Invalid communication size: %s"); /* - Communication size */
-    workers_count   = xbt_str_parse_int(args[4  ].c_str(), "Invalid amount of workers: %s"); /* - Number of workers */
+    number_of_tasks = std::stol(args[1]);
+    comp_size       = std::stod(args[2]);
+    comm_size       = std::stod(args[3]);
+    workers_count   = std::stol(args[4]);
 
     XBT_INFO("Got %ld workers and %ld tasks to process", workers_count, number_of_tasks);
   }
@@ -63,7 +63,7 @@ public:
   {
     xbt_assert(args.size() == 2, "The worker expects a single argument from the XML deployment file: "
                                  "its worker ID (its numerical rank)");
-    id      = xbt_str_parse_int(args[1].c_str(), "Invalid argument %s");
+    id      = std::stol(args[1]);
     mailbox = simgrid::s4u::Mailbox::byName(std::string("worker-") + std::to_string(id));
   }
 
