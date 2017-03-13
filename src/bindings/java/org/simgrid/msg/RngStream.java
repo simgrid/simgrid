@@ -42,6 +42,7 @@ public class RngStream {
 	 */
 	private native void create(String name);
 
+	@Override
 	protected void finalize() throws Throwable{
 		nativeFinalize();
 	}

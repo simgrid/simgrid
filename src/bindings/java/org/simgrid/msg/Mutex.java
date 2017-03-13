@@ -18,6 +18,7 @@ public class Mutex {
 		init();
 	}
 
+	@Override
 	protected void finalize() throws Throwable {
 		nativeFinalize();
 	}
