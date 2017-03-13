@@ -12,11 +12,58 @@
 #include "xbt/file.h"
 #include "xbt/replay.h"
 
-#include <errno.h>
+#include <boost/algorithm/string.hpp>
 #include <ctype.h>
+#include <errno.h>
+#include <fstream>
 #include <wchar.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(replay,xbt,"Replay trace reader");
+
+namespace simgrid {
+namespace xbt {
+
+class ReplayReader {
+  std::ifstream* fs;
+  std::string line;
+
+public:
+  char* filename_;
+  int linenum = 0;
+
+  ReplayReader(const char* filename)
+  {
+    filename_ = xbt_strdup(filename);
+    fs        = new std::ifstream(filename, std::ifstream::in);
+  }
+  ~ReplayReader()
+  {
+    free(filename_);
+    delete fs;
+  }
+  bool get(std::vector<std::string>* evt);
+};
+
+bool ReplayReader::get(std::vector<std::string>* evt)
+{
+  std::getline(*fs, line);
+  boost::trim(line);
+  XBT_DEBUG("got from trace: %s", line.c_str());
+  linenum++;
+
+  if (line.length() > 0 && line.find("#") == std::string::npos) {
+    std::vector<std::string> res;
+    boost::split(*evt, line, boost::is_any_of(" \t"), boost::token_compress_on);
+    return !fs->eof();
+  } else {
+    if (fs->eof())
+      return false;
+    else
+      return this->get(evt);
+  }
+}
+}
+}
 
 typedef struct s_replay_reader {
   FILE *fp;
@@ -50,47 +97,6 @@ static char *str_tolower (const char *str)
 
 int _xbt_replay_is_active(){
   return is_replay_active;
-}
-
-xbt_replay_reader_t xbt_replay_reader_new(const char *filename)
-{
-  xbt_replay_reader_t res = xbt_new0(s_xbt_replay_reader_t,1);
-  res->fp = fopen(filename, "r");
-  xbt_assert(res->fp != nullptr, "Cannot open %s: %s", filename, strerror(errno));
-  res->filename = xbt_strdup(filename);
-  return res;
-}
-
-const char **xbt_replay_reader_get(xbt_replay_reader_t reader)
-{
-  ssize_t read = xbt_getline(&reader->line, &reader->line_len, reader->fp);
-  XBT_DEBUG("got from trace: %s", reader->line);
-  reader->linenum++;
-  if (read==-1)
-    return nullptr; /* end of file */
-  char *comment = strchr(reader->line, '#');
-  if (comment != nullptr)
-    *comment = '\0';
-  xbt_str_trim(reader->line, nullptr);
-  if (reader->line[0] == '\0')
-    return xbt_replay_reader_get(reader); /* Get next line */
-
-  xbt_dynar_t d = xbt_str_split_quoted_in_place(reader->line);
-  if (xbt_dynar_is_empty(d)) {
-    xbt_dynar_free(&d);
-    return xbt_replay_reader_get(reader); /* Get next line */
-  }
-  return (const char**) xbt_dynar_to_array(d);
-}
-
-void xbt_replay_reader_free(xbt_replay_reader_t *reader)
-{
-  free((*reader)->filename);
-  free((*reader)->position);
-  fclose((*reader)->fp);
-  free((*reader)->line);
-  free(*reader);
-  *reader=nullptr;
 }
 
 /**
@@ -168,29 +174,43 @@ int xbt_replay_action_runner(int argc, char *argv[])
       free(evt);
     }
   } else {                      // Should have got my trace file in argument
-    const char **evt;
+    std::vector<std::string>* evt = new std::vector<std::string>();
     xbt_assert(argc >= 2,
                 "No '%s' agent function provided, no simulation-wide trace file provided, "
                 "and no process-wide trace file provided in deployment file. Aborting.", argv[0]
         );
-    xbt_replay_reader_t reader = xbt_replay_reader_new(argv[1]);
-    while ((evt=xbt_replay_reader_get(reader))) {
-      if (!strcmp(argv[0],evt[0])) {
-        char* lowername = str_tolower (evt[1]);
-        action_fun function = (action_fun)xbt_dict_get(xbt_action_funs, lowername);
-        xbt_free(lowername);
-        try {
-          function(evt);
-        } catch(xbt_ex& e) {
-          free(evt);
-          xbt_die("Replay error on line %d of file %s :\n %s" , reader->linenum,reader->filename, e.what());
+    simgrid::xbt::ReplayReader* reader = new simgrid::xbt::ReplayReader(argv[1]);
+    while (reader->get(evt)) {
+      if (evt->at(0).compare(argv[0]) == 0) {
+        std::string lowername = evt->at(1);
+        boost::algorithm::to_lower(lowername);
+        char** args = new char*[evt->size() + 1];
+        int i       = 0;
+        for (auto arg : *evt) {
+          args[i] = xbt_strdup(arg.c_str());
+          i++;
         }
+        args[i]             = nullptr;
+        action_fun function = (action_fun)xbt_dict_get(xbt_action_funs, lowername.c_str());
+        try {
+          function(args);
+        } catch(xbt_ex& e) {
+          for (unsigned int j = 0; j < evt->size(); j++)
+            xbt_free(args[j]);
+          delete args;
+          evt->clear();
+          xbt_die("Replay error on line %d of file %s :\n %s", reader->linenum, reader->filename_, e.what());
+        }
+        for (unsigned int j = 0; j < evt->size(); j++)
+          xbt_free(args[j]);
+        delete[] args;
       } else {
-        XBT_WARN("%s:%d: Ignore trace element not for me", reader->filename, reader->linenum);
+        XBT_WARN("%s:%d: Ignore trace element not for me", reader->filename_, reader->linenum);
       }
-      free(evt);
+      evt->clear();
     }
-    xbt_replay_reader_free(&reader);
+    delete evt;
+    delete reader;
   }
   return 0;
 }
