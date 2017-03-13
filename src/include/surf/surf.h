@@ -42,12 +42,8 @@ class HostModel;
 class NetworkModel;
 class StorageModel;
 class Resource;
-class ResourceLmm;
-class HostCLM03;
 class NetworkCm02Link;
 class Action;
-class ActionLmm;
-class StorageActionLmm;
 }
 }
 
@@ -58,13 +54,8 @@ typedef simgrid::surf::HostModel surf_HostModel;
 typedef simgrid::surf::NetworkModel surf_NetworkModel;
 typedef simgrid::surf::StorageModel surf_StorageModel;
 typedef simgrid::surf::Resource surf_Resource;
-typedef simgrid::surf::ResourceLmm surf_ResourceLmm;
 typedef simgrid::surf::HostImpl surf_Host;
-typedef simgrid::surf::HostCLM03 surf_HostCLM03;
-typedef simgrid::surf::NetworkCm02Link surf_NetworkCm02Link;
 typedef simgrid::surf::Action surf_Action;
-typedef simgrid::surf::ActionLmm surf_ActionLmm;
-typedef simgrid::surf::StorageActionLmm surf_StorageActionLmm;
 
 #else
 
@@ -75,13 +66,8 @@ typedef struct surf_HostModel surf_HostModel;
 typedef struct surf_NetworkModel surf_NetworkModel;
 typedef struct surf_StorageModel surf_StorageModel;
 typedef struct surf_Resource surf_Resource;
-typedef struct surf_ResourceLmm surf_ResourceLmm;
-typedef struct surf_HostCLM03 surf_HostCLM03;
 typedef struct surf_Host surf_Host;
-typedef struct surf_NetworkCm02Link surf_NetworkCm02Link;
 typedef struct surf_Action surf_Action;
-typedef struct surf_ActionLmm surf_ActionLmm;
-typedef struct surf_StorageActionLmm surf_StorageActionLmm;
 
 #endif
 
@@ -93,15 +79,11 @@ typedef struct surf_StorageActionLmm surf_StorageActionLmm;
  */
 typedef surf_Model *surf_model_t;
 typedef surf_CpuModel *surf_cpu_model_t;
-typedef surf_Cpu* surf_cpu_t;
 typedef surf_HostModel *surf_host_model_t;
 typedef surf_NetworkModel *surf_network_model_t;
 typedef surf_StorageModel *surf_storage_model_t;
 
 typedef xbt_dictelm_t surf_resource_t;
-typedef surf_Resource *surf_cpp_resource_t;
-typedef surf_Host *surf_host_t;
-typedef surf_Cpu *surf_cpu_t;
 
 /** @ingroup SURF_c_bindings
  *  \brief Action structure
