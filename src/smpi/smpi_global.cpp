@@ -654,6 +654,8 @@ void smpi_global_destroy()
   smpi_free_static();
 }
 
+extern "C" {
+
 #ifndef WIN32
 
 void __attribute__ ((weak)) user_main_()
@@ -684,7 +686,6 @@ int __attribute__ ((weak)) main(int argc, char **argv)
 
 #endif
 
-extern "C" {
 static void smpi_init_logs(){
 
   /* Connect log categories.  See xbt/log.c */
