@@ -318,6 +318,8 @@ XBT_PUBLIC(void) MSG_process_auto_restart_set(msg_process_t process, int auto_re
 
 XBT_PUBLIC(void) MSG_process_daemonize(msg_process_t process);
 XBT_PUBLIC(msg_process_t) MSG_process_restart(msg_process_t process);
+XBT_PUBLIC(void) MSG_process_ref(msg_process_t process);
+XBT_PUBLIC(void) MSG_process_unref(msg_process_t process);
 
 /************************** Task handling ************************************/
 XBT_PUBLIC(msg_task_t) MSG_task_create(const char *name,

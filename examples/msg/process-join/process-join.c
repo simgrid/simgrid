@@ -37,10 +37,12 @@ static int master(int argc, char* argv[])
 
   XBT_INFO("Start slave");
   process = MSG_process_create("slave from master", slave, NULL, MSG_host_self());
+  MSG_process_ref(process); // We have to take that ref because the process will stop before we join it
   XBT_INFO("Waiting 4");
   MSG_process_sleep(4);
-  XBT_INFO("Join the slave (timeout 1)");
+  XBT_INFO("Join the slave after its end (timeout 1)");
   MSG_process_join(process, 1);
+  MSG_process_unref(process); // Avoid to leak memory
 
   XBT_INFO("Goodbye now!");
 

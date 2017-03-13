@@ -13,6 +13,7 @@ SimGrid (3.15) UNRELEASED; urgency=low
  - New: MSG_process_yield(). Stop and yield to other processes.
  - New: MSG_process_daemon(). Daemon processes are automatically killed 
    when the last non-daemon process terminates
+ - New: MSG_process_ref/unref(). Fiddle with the process refcounting.
  - Renamed MSG_energy_plugin_init() -> MSG_host_energy_plugin_init()
    to make room for the upcoming network energy plugin.
 

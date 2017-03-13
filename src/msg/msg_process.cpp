@@ -476,4 +476,19 @@ XBT_PUBLIC(void) MSG_process_daemonize(msg_process_t process)
   });
 }
 
+/** @ingroup m_process_management
+ * @brief Take an extra reference on that process to prevent it to be garbage-collected
+ */
+XBT_PUBLIC(void) MSG_process_ref(msg_process_t process)
+{
+  intrusive_ptr_add_ref(process);
+}
+/** @ingroup m_process_management
+ * @brief Release a reference on that process so that it can get be garbage-collected
+ */
+XBT_PUBLIC(void) MSG_process_unref(msg_process_t process)
+{
+  intrusive_ptr_release(process);
+}
+
 SG_END_DECL()

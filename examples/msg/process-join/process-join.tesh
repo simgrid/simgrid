@@ -16,7 +16,7 @@ $ ./process-join$EXEEXT ${srcdir:=.}/small_platform.xml
 > [Tremblay:master:(1) 7.000000] [msg_test/INFO] Waiting 4
 > [Tremblay:slave from master:(4) 8.000000] [msg_test/INFO] I'm done. See you!
 > [Tremblay:slave from master:(5) 10.000000] [msg_test/INFO] I'm done. See you!
-> [Tremblay:master:(1) 11.000000] [msg_test/INFO] Join the slave (timeout 1)
+> [Tremblay:master:(1) 11.000000] [msg_test/INFO] Join the slave after its end (timeout 1)
 > [Tremblay:master:(1) 11.000000] [msg_test/INFO] Goodbye now!
 > [Tremblay:master:(1) 12.000000] [msg_test/INFO] Goodbye now!
 > [12.000000] [msg_test/INFO] Simulation time 12
