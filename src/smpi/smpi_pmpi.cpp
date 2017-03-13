@@ -1773,7 +1773,7 @@ int PMPI_Reduce_local(void *inbuf, void *inoutbuf, int count, MPI_Datatype datat
   if (!datatype->is_valid() || op == MPI_OP_NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    if(op!=MPI_OP_NULL) op->apply( inbuf, inoutbuf, &count, datatype);
+    op->apply(inbuf, inoutbuf, &count, datatype);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();

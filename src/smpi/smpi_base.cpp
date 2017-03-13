@@ -483,7 +483,7 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
           recvbuf_is_empty=0;
         } else
           // #Request is below rank: it's a irecv
-          if(op!=MPI_OP_NULL) op->apply( tmpbufs[index], recvbuf, &count, datatype);
+          op->apply(tmpbufs[index], recvbuf, &count, datatype);
       }
     }
   }else{

@@ -21,7 +21,7 @@ class Topo {
 
 class Topo_Cart: public Topo {
   private:
-    int nnodes_;
+    int nnodes_ = 0;
     int ndims_;
     int *dims_;
     int *periodic_;
