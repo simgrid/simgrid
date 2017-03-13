@@ -197,7 +197,7 @@ int xbt_replay_action_runner(int argc, char *argv[])
         } catch(xbt_ex& e) {
           for (unsigned int j = 0; j < evt->size(); j++)
             xbt_free(args[j]);
-          delete args;
+          delete[] args;
           evt->clear();
           xbt_die("Replay error on line %d of file %s :\n %s", reader->linenum, reader->filename_, e.what());
         }
