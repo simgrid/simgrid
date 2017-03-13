@@ -259,7 +259,9 @@ xbt_dict_t Host::mountedStoragesAsDict()
  */
 void Host::attachedStorages(std::vector<const char*>* storages)
 {
-  simgrid::simix::kernelImmediate([this, storages] { this->pimpl_->getAttachedStorageList(storages); });
+  simgrid::simix::kernelImmediate([this, storages] { 
+     this->pimpl_->getAttachedStorageList(storages); 
+  });
 }
 
 } // namespace simgrid

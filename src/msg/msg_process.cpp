@@ -54,7 +54,7 @@ smx_actor_t MSG_process_create_from_SIMIX(const char* name, std::function<void()
                                           xbt_dict_t properties, smx_actor_t parent_process)
 {
   msg_process_t p = MSG_process_create_from_stdfunc(name, std::move(code), data, host, properties);
-  return p ? p->getImpl() : nullptr;
+  return p == nullptr ? nullptr : p->getImpl();
 }
 
 /** \ingroup m_process_management

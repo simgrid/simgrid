@@ -19,7 +19,7 @@ class Info : public F2C{
     xbt_dict_t dict_;
     int refcount_;
   public:
-    Info();
+    explicit Info();
     Info(Info* orig);
     ~Info();
     void ref();
