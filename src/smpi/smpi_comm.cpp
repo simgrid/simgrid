@@ -358,28 +358,26 @@ void Comm::init_smp(){
    }
   //identify neighbours in comm
   //get the indexes of all processes sharing the same simix host
-  xbt_swag_t process_list = SIMIX_host_self()->processes();
-  int intra_comm_size = 0;
-  int i =0;
-  int min_index=INT_MAX;//the minimum index will be the leader
-  smx_actor_t process = nullptr;
-  xbt_swag_foreach(process, process_list) {
-    int index = process->pid -1;
+  xbt_swag_t process_list = SIMIX_host_self()->extension<simgrid::simix::Host>()->process_list;
+  int intra_comm_size     = 0;
+  int min_index           = INT_MAX;//the minimum index will be the leader
+  smx_actor_t actor       = nullptr;
+  xbt_swag_foreach(actor, process_list) {
+    int index = actor->pid -1;
 
     if(this->group()->rank(index)!=MPI_UNDEFINED){
-        intra_comm_size++;
+      intra_comm_size++;
       //the process is in the comm
       if(index < min_index)
         min_index=index;
-      i++;
     }
   }
   XBT_DEBUG("number of processes deployed on my node : %d", intra_comm_size);
   MPI_Group group_intra = new  Group(intra_comm_size);
-  i=0;
-  process = nullptr;
-  xbt_swag_foreach(process, process_list) {
-    int index = process->pid -1;
+  int i = 0;
+  actor = nullptr;
+  xbt_swag_foreach(actor, process_list) {
+    int index = actor->pid -1;
     if(this->group()->rank(index)!=MPI_UNDEFINED){
       group_intra->set_mapping(index, i);
       i++;

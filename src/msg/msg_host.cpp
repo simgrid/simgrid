@@ -8,6 +8,8 @@
 #include "simgrid/s4u/storage.hpp"
 #include "src/msg/msg_private.h"
 #include "src/simix/ActorImpl.hpp"
+#include "src/simix/smx_host_private.h"
+
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 
@@ -146,7 +148,7 @@ void MSG_host_get_process_list(msg_host_t host, xbt_dynar_t whereto)
 {
   xbt_assert((host != nullptr), "Invalid parameters");
   smx_actor_t actor = NULL;
-  xbt_swag_foreach(actor, host->processes()) {
+  xbt_swag_foreach(actor, host->extension<simgrid::simix::Host>()->process_list) {
     msg_process_t p = actor->ciface();
     xbt_dynar_push(whereto, &p);
   }

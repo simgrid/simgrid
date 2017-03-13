@@ -87,7 +87,7 @@ public:
   xbt_dict_t properties();
   const char*property(const char*key);
   void setProperty(const char*key, const char *value);
-  xbt_swag_t processes();
+  void processes(std::vector<ActorPtr>* list);
   double getPstateSpeed(int pstate_index);
   int pstatesCount() const;
   void setPstate(int pstate_index);

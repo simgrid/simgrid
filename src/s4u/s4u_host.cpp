@@ -1,5 +1,4 @@
-/* Copyright (c) 2006-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -195,11 +194,12 @@ void Host::setProperty(const char*key, const char *value){
 }
 
 /** Get the processes attached to the host */
-xbt_swag_t Host::processes()
+void Host::processes(std::vector<ActorPtr>* list)
 {
-  return simgrid::simix::kernelImmediate([this] {
-    return this->extension<simgrid::simix::Host>()->process_list;
-  });
+  smx_actor_t actor = NULL;
+  xbt_swag_foreach(actor, this->extension<simgrid::simix::Host>()->process_list) {
+    list->push_back(actor->iface());
+  }
 }
 
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
