@@ -43,9 +43,11 @@ static int killall(int argc, char *argv[]){
   return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   MSG_init(&argc, argv);
+
+  xbt_assert(argc >= 2, "Usage: pid platform pid_to_kill");
 
   MSG_process_killall(atoi(argv[2]));
 

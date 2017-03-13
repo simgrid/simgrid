@@ -87,7 +87,7 @@ double Actor::killTime()
 }
 
 void Actor::kill(int pid) {
-  msg_process_t process = SIMIX_process_from_PID(pid);
+  smx_actor_t process = SIMIX_process_from_PID(pid);
   if(process != nullptr) {
     simcall_process_kill(process);
   } else {

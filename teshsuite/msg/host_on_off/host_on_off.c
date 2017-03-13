@@ -57,11 +57,15 @@ static int master(int argc, char *argv[])
     MSG_task_destroy(task);
 
   MSG_host_on(jupiter);
-  xbt_swag_t jupi_processes = MSG_host_get_process_list(jupiter);
-  void *process;
-  xbt_swag_foreach(process, jupi_processes) {
+
+  xbt_dynar_t jupi_processes = xbt_dynar_new(sizeof(msg_process_t), NULL);
+  MSG_host_get_process_list(jupiter, jupi_processes);
+  msg_process_t process = NULL;
+  unsigned int cursor;
+  xbt_dynar_foreach (jupi_processes, cursor, process) {
     MSG_process_kill(process);
   }
+  xbt_dynar_free(&jupi_processes);
 
   task = MSG_task_create("task on without proc", task_comp_size, task_comm_size, NULL);
   XBT_INFO("Sending \"%s\"", task->name);

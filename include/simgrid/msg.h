@@ -134,7 +134,7 @@ typedef struct msg_comm *msg_comm_t;
     structure, but always use the provided API to interact with
     processes.
  */
-typedef smx_actor_t msg_process_t;
+typedef s4u_Actor* msg_process_t;
 
 /** @brief Return code of most MSG functions
     @ingroup msg_simulation
@@ -241,7 +241,7 @@ XBT_PUBLIC(void) MSG_host_off(msg_host_t host);
 XBT_PUBLIC(msg_host_t) MSG_host_self();
 XBT_PUBLIC(double) MSG_host_get_speed(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_get_core_number(msg_host_t h);
-XBT_PUBLIC(xbt_swag_t) MSG_host_get_process_list(msg_host_t h);
+XBT_PUBLIC(void) MSG_host_get_process_list(msg_host_t h, xbt_dynar_t whereto);
 XBT_PUBLIC(int) MSG_host_is_on(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_off(msg_host_t h);
 

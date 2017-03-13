@@ -84,6 +84,7 @@ public:
   ~ActorImpl();
 
   simgrid::s4u::ActorPtr iface() { return s4u::ActorPtr(&piface_); }
+  simgrid::s4u::Actor* ciface() { return &piface_; }
 
   void daemonize();
   bool isDaemon();

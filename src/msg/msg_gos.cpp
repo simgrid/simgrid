@@ -269,7 +269,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
 
   /* Try to receive it by calling SIMIX network layer */
   try {
-    simcall_comm_recv(MSG_process_self(), mailbox->getImpl(), task, nullptr, nullptr, nullptr, nullptr, timeout, rate);
+    simcall_comm_recv(MSG_process_self()->getImpl(), mailbox->getImpl(), task, nullptr, nullptr, nullptr, nullptr, timeout, rate);
     XBT_DEBUG("Got task %s from %s",(*task)->name,mailbox->name());
     (*task)->simdata->setNotUsed();
   }
@@ -302,7 +302,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *al
                                                      void *match_data, void_f_pvoid_t cleanup, int detached)
 {
   simdata_task_t t_simdata = nullptr;
-  msg_process_t myself = SIMIX_process_self();
+  msg_process_t myself = MSG_process_self();
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(alias);
   int call_end = TRACE_msg_task_put_start(task);
 
@@ -315,7 +315,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *al
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
-  smx_activity_t act = simcall_comm_isend(myself, mailbox->getImpl(), t_simdata->bytes_amount, t_simdata->rate,
+  smx_activity_t act = simcall_comm_isend(myself->getImpl(), mailbox->getImpl(), t_simdata->bytes_amount, t_simdata->rate,
                                          task, sizeof(void *), match_fun, cleanup, nullptr, match_data,detached);
   t_simdata->comm = static_cast<simgrid::kernel::activity::Comm*>(act);
 
@@ -469,7 +469,7 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rat
   comm->task_sent = nullptr;
   comm->task_received = task;
   comm->status = MSG_OK;
-  comm->s_comm = simcall_comm_irecv(MSG_process_self(), mbox->getImpl(), task, nullptr, nullptr, nullptr, nullptr, rate);
+  comm->s_comm = simcall_comm_irecv(SIMIX_process_self(), mbox->getImpl(), task, nullptr, nullptr, nullptr, nullptr, rate);
 
   return comm;
 }
@@ -715,7 +715,7 @@ void MSG_comm_copy_data_from_SIMIX(smx_activity_t synchro, void* buff, size_t bu
   // notify the user callback if any
   if (msg_global->task_copy_callback) {
     msg_task_t task = static_cast<msg_task_t>(buff);
-    msg_global->task_copy_callback(task, comm->src_proc, comm->dst_proc);
+    msg_global->task_copy_callback(task, comm->src_proc->ciface(), comm->dst_proc->ciface());
   }
 }
 

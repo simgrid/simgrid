@@ -106,7 +106,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv * env, jobject
 
   /* Actually build the MSG process */
   process = MSG_process_create_with_environment(name, [](int argc, char** argv) -> int {
-              smx_actor_t process = SIMIX_process_self();
+              msg_process_t process = MSG_process_self();
               // This is the jprocess passed as environment.
               // It would be simpler if we could use a closure.
               jobject jprocess = (jobject) MSG_process_get_data(process);

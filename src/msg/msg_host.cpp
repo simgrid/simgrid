@@ -7,6 +7,7 @@
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/storage.hpp"
 #include "src/msg/msg_private.h"
+#include "src/simix/ActorImpl.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 
@@ -139,12 +140,16 @@ int MSG_host_get_core_number(msg_host_t host) {
  * \brief Return the list of processes attached to an host.
  *
  * \param host a host
- * \return a swag with the attached processes
+ * \param whereto a dynar in which we should push processes living on that host
  */
-xbt_swag_t MSG_host_get_process_list(msg_host_t host)
+void MSG_host_get_process_list(msg_host_t host, xbt_dynar_t whereto)
 {
   xbt_assert((host != nullptr), "Invalid parameters");
-  return host->processes();
+  smx_actor_t actor = NULL;
+  xbt_swag_foreach(actor, host->processes()) {
+    msg_process_t p = actor->ciface();
+    xbt_dynar_push(whereto, &p);
+  }
 }
 
 /** \ingroup m_host_management

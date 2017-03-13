@@ -1,5 +1,4 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,11 +7,11 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-static int slave(int argc, char *argv[])
+static int slave(int argc, char* argv[])
 {
   MSG_process_sleep(.5);
   XBT_INFO("Slave started (PID:%d, PPID:%d)", MSG_process_self_PID(), MSG_process_self_PPID());
-  while(1){
+  while (1) {
     XBT_INFO("Plop i am %ssuspended", (MSG_process_is_suspended(MSG_process_self())) ? "" : "not ");
     MSG_process_sleep(1);
   }
@@ -20,17 +19,22 @@ static int slave(int argc, char *argv[])
   return 0;
 }
 
-static int master(int argc, char *argv[])
+static int master(int argc, char* argv[])
 {
-  xbt_swag_t process_list = MSG_host_get_process_list(MSG_host_self());
-  msg_process_t process = NULL;
   MSG_process_sleep(1);
-  xbt_swag_foreach(process, process_list) {
+  xbt_dynar_t process_list = xbt_dynar_new(sizeof(msg_process_t), nullptr);
+  MSG_host_get_process_list(MSG_host_self(), process_list);
+
+  msg_process_t process = NULL;
+  unsigned int cursor;
+  xbt_dynar_foreach (process_list, cursor, process) {
     XBT_INFO("Process(pid=%d, ppid=%d, name=%s)", MSG_process_get_PID(process), MSG_process_get_PPID(process),
              MSG_process_get_name(process));
     if (MSG_process_self_PID() != MSG_process_get_PID(process))
       MSG_process_kill(process);
   }
+  xbt_dynar_free(&process_list);
+
   process = MSG_process_create("slave from master", slave, NULL, MSG_host_self());
   MSG_process_sleep(2);
 
@@ -53,10 +57,8 @@ static int master(int argc, char *argv[])
   return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-  msg_error_t res;
-
   MSG_init(&argc, argv);
   xbt_assert(argc == 2, "Usage: %s platform_file\n\t Example: %s msg_platform.xml\n", argv[0], argv[0]);
 
@@ -65,7 +67,7 @@ int main(int argc, char *argv[])
   MSG_process_create("master", master, NULL, MSG_get_host_by_name("Tremblay"));
   MSG_process_create("slave", slave, NULL, MSG_get_host_by_name("Tremblay"));
 
-  res = MSG_main();
+  msg_error_t res = MSG_main();
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
 

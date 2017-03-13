@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_process, instr, "MSG process");
 
 char *instr_process_id (msg_process_t proc, char *str, int len)
 {
-  return instr_process_id_2 (proc->name.c_str(), proc->pid, str, len);//MSG_process_get_name(proc), MSG_process_get_PID(proc), str, len);
+  return instr_process_id_2 (proc->cname(), proc->pid(), str, len);
 }
 
 char *instr_process_id_2 (const char *process_name, int process_pid, char *str, int len)
@@ -82,7 +82,7 @@ void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t proc
 {
   if (TRACE_msg_process_is_enabled() && status==SMX_EXIT_FAILURE){
     //kill means that this process no longer exists, let's destroy it
-    TRACE_msg_process_destroy(process->name.c_str(), process->pid);
+    TRACE_msg_process_destroy(process->cname(), process->pid());
   }
 }
 
