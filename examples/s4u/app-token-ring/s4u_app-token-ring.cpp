@@ -11,8 +11,6 @@
 #include <vector>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_app_token_ring, "Messages specific for this s4u example");
-// FIXME: The following duplicates the content of s4u::Host
-extern std::map<std::string, simgrid::s4u::Host*> host_list;
 
 class RelayRunner {
   size_t task_comm_size = 1000000; /* The token is 1MB long*/
@@ -28,7 +26,7 @@ public:
     rank = xbt_str_parse_int(simgrid::s4u::this_actor::name().c_str(),
                              "Any process of this example must have a numerical name, not %s");
     my_mailbox = simgrid::s4u::Mailbox::byName(std::to_string(rank));
-    if (rank + 1 == host_list.size())
+    if (rank + 1 == simgrid::s4u::Engine::instance()->hostCount())
       /* The last process, which sends the token back to rank 0 */
       neighbor_mailbox = simgrid::s4u::Mailbox::byName("0");
     else
@@ -57,10 +55,11 @@ int main(int argc, char** argv)
   xbt_assert(argc > 1, "Usage: %s platform.xml\n", argv[0]);
   e->loadPlatform(argv[1]);
 
-  XBT_INFO("Number of hosts '%zu'", host_list.size());
+  XBT_INFO("Number of hosts '%zu'", e->hostCount());
   int id = 0;
-  for (auto h : host_list) {
-    simgrid::s4u::Host* host = h.second;
+  std::vector<simgrid::s4u::Host*> list;
+  e->hostList(&list);
+  for (auto host : list) {
     /* - Give a unique rank to each host and create a @ref relay_runner process on each */
     simgrid::s4u::Actor::createActor((std::to_string(id)).c_str(), host, RelayRunner());
     id++;

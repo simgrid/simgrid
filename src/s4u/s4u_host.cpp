@@ -23,8 +23,6 @@
 
 XBT_LOG_EXTERNAL_CATEGORY(surf_route);
 
-std::map<std::string, simgrid::s4u::Host*> host_list; // FIXME: move it to Engine
-
 int USER_HOST_LEVEL = -1;
 
 namespace simgrid {
@@ -34,6 +32,8 @@ template class Extendable<simgrid::s4u::Host>;
 }
 
 namespace s4u {
+
+std::map<std::string, simgrid::s4u::Host*> host_list; // FIXME: move it to Engine
 
 simgrid::xbt::signal<void(Host&)> Host::onCreation;
 simgrid::xbt::signal<void(Host&)> Host::onDestruction;
