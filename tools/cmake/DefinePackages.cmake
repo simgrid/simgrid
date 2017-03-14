@@ -718,7 +718,7 @@ set(headers_to_install
   include/xbt/module.h
   include/xbt/parmap.h
   include/xbt/range.hpp
-  include/xbt/replay.h
+  include/xbt/replay.hpp
   include/xbt/str.h
   include/xbt/strbuff.h
   include/xbt/swag.h

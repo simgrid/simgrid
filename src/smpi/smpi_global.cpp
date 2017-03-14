@@ -14,7 +14,7 @@
 #include "src/msg/msg_private.h"
 #include "src/simix/smx_private.h"
 #include "surf/surf.h"
-#include "xbt/replay.h"
+#include "xbt/replay.hpp"
 
 #include <float.h> /* DBL_MAX */
 #include <fstream>
@@ -212,7 +212,8 @@ bool smpi_process_get_replaying(){
   int index = smpi_process_index();
   if (index != MPI_UNDEFINED)
     return process_data[index_to_process_data[index]]->replaying;
-  else return (_xbt_replay_is_active() != 0);
+  else
+    return !simgrid::xbt::replay_is_active();
 }
 
 int smpi_global_size()

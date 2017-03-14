@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
-#include "xbt/replay.h"
+#include "xbt/replay.hpp"
 #include <unordered_map>
 #include <vector>
 
@@ -907,33 +907,31 @@ void smpi_replay_run(int *argc, char***argv){
   TRACE_smpi_collective_in(rank, -1, operation, extra);
   TRACE_smpi_collective_out(rank, -1, operation);
   xbt_free(operation);
-
-  if (_xbt_replay_action_init()==0) {
-    xbt_replay_action_register("init",       action_init);
-    xbt_replay_action_register("finalize",   action_finalize);
-    xbt_replay_action_register("comm_size",  action_comm_size);
-    xbt_replay_action_register("comm_split", action_comm_split);
-    xbt_replay_action_register("comm_dup",   action_comm_dup);
-    xbt_replay_action_register("send",       action_send);
-    xbt_replay_action_register("Isend",      action_Isend);
-    xbt_replay_action_register("recv",       action_recv);
-    xbt_replay_action_register("Irecv",      action_Irecv);
-    xbt_replay_action_register("test",       action_test);
-    xbt_replay_action_register("wait",       action_wait);
-    xbt_replay_action_register("waitAll",    action_waitall);
-    xbt_replay_action_register("barrier",    action_barrier);
-    xbt_replay_action_register("bcast",      action_bcast);
-    xbt_replay_action_register("reduce",     action_reduce);
-    xbt_replay_action_register("allReduce",  action_allReduce);
-    xbt_replay_action_register("allToAll",   action_allToAll);
-    xbt_replay_action_register("allToAllV",  action_allToAllv);
-    xbt_replay_action_register("gather",  action_gather);
-    xbt_replay_action_register("gatherV",  action_gatherv);
-    xbt_replay_action_register("allGather",  action_allgather);
-    xbt_replay_action_register("allGatherV",  action_allgatherv);
-    xbt_replay_action_register("reduceScatter",  action_reducescatter);
-    xbt_replay_action_register("compute",    action_compute);
-  }
+  _xbt_replay_action_init();
+  xbt_replay_action_register("init",       action_init);
+  xbt_replay_action_register("finalize",   action_finalize);
+  xbt_replay_action_register("comm_size",  action_comm_size);
+  xbt_replay_action_register("comm_split", action_comm_split);
+  xbt_replay_action_register("comm_dup",   action_comm_dup);
+  xbt_replay_action_register("send",       action_send);
+  xbt_replay_action_register("Isend",      action_Isend);
+  xbt_replay_action_register("recv",       action_recv);
+  xbt_replay_action_register("Irecv",      action_Irecv);
+  xbt_replay_action_register("test",       action_test);
+  xbt_replay_action_register("wait",       action_wait);
+  xbt_replay_action_register("waitAll",    action_waitall);
+  xbt_replay_action_register("barrier",    action_barrier);
+  xbt_replay_action_register("bcast",      action_bcast);
+  xbt_replay_action_register("reduce",     action_reduce);
+  xbt_replay_action_register("allReduce",  action_allReduce);
+  xbt_replay_action_register("allToAll",   action_allToAll);
+  xbt_replay_action_register("allToAllV",  action_allToAllv);
+  xbt_replay_action_register("gather",  action_gather);
+  xbt_replay_action_register("gatherV",  action_gatherv);
+  xbt_replay_action_register("allGather",  action_allgather);
+  xbt_replay_action_register("allGatherV",  action_allgatherv);
+  xbt_replay_action_register("reduceScatter",  action_reducescatter);
+  xbt_replay_action_register("compute",    action_compute);
 
   //if we have a delayed start, sleep here.
   if(*argc>2){

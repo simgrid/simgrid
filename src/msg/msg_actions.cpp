@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/msg/msg_private.h"
-#include "xbt/replay.h"
+#include "xbt/replay.hpp"
 
 #include <errno.h>
 
@@ -36,10 +36,8 @@ msg_error_t MSG_action_trace_run(char *path)
   xbt_dynar_t todo;
   xbt_dict_cursor_t cursor;
 
-  xbt_action_fp=nullptr;
   if (path) {
-    xbt_action_fp = fopen(path, "r");
-    xbt_assert(xbt_action_fp != nullptr, "Cannot open %s: %s", path, strerror(errno));
+    simgrid::xbt::action_fs = new std::ifstream(path, std::ifstream::in);
   }
   res = MSG_main();
 
@@ -52,8 +50,11 @@ msg_error_t MSG_action_trace_run(char *path)
     }
   }
 
-  if (path)
-    fclose(xbt_action_fp);
+  if (path) {
+    delete simgrid::xbt::action_fs;
+    simgrid::xbt::action_fs = nullptr;
+  }
+
   xbt_dict_free(&xbt_action_queues);
   xbt_action_queues = xbt_dict_new_homogeneous(nullptr);
 
