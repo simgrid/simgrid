@@ -43,7 +43,7 @@
  * synchronous gurantee made by last ring of sends are synchronous
  *
  */
-int smpi_coll_tuned_barrier_ompi_doublering(MPI_Comm comm
+int Coll_barrier_ompi_doublering::barrier(MPI_Comm comm
 					     )
 {
     int rank, size;
@@ -104,7 +104,7 @@ int smpi_coll_tuned_barrier_ompi_doublering(MPI_Comm comm
  * To make synchronous, uses sync sends and sync sendrecvs
  */
 
-int smpi_coll_tuned_barrier_ompi_recursivedoubling(MPI_Comm comm
+int Coll_barrier_ompi_recursivedoubling::barrier(MPI_Comm comm
 						    )
 {
     int rank, size, adjsize;
@@ -179,7 +179,7 @@ int smpi_coll_tuned_barrier_ompi_recursivedoubling(MPI_Comm comm
  * To make synchronous, uses sync sends and sync sendrecvs
  */
 
-int smpi_coll_tuned_barrier_ompi_bruck(MPI_Comm comm
+int Coll_barrier_ompi_bruck::barrier(MPI_Comm comm
 					)
 {
     int rank, size;
@@ -212,7 +212,7 @@ int smpi_coll_tuned_barrier_ompi_bruck(MPI_Comm comm
  * To make synchronous, uses sync sends and sync sendrecvs
  */
 /* special case for two processes */
-int smpi_coll_tuned_barrier_ompi_two_procs(MPI_Comm comm
+int Coll_barrier_ompi_two_procs::barrier(MPI_Comm comm
 					    )
 {
     int remote;
@@ -245,7 +245,7 @@ int smpi_coll_tuned_barrier_ompi_two_procs(MPI_Comm comm
 
 /* copied function (with appropriate renaming) starts here */
 
-int smpi_coll_tuned_barrier_ompi_basic_linear(MPI_Comm comm)
+int Coll_barrier_ompi_basic_linear::barrier(MPI_Comm comm)
 {
     int i;
     int size = comm->size();
@@ -297,7 +297,7 @@ int smpi_coll_tuned_barrier_ompi_basic_linear(MPI_Comm comm)
  * Another recursive doubling type algorithm, but in this case
  * we go up the tree and back down the tree.  
  */
-int smpi_coll_tuned_barrier_ompi_tree(MPI_Comm comm)
+int Coll_barrier_ompi_tree::barrier(MPI_Comm comm)
 {
     int rank, size, depth;
     int jump, partner;

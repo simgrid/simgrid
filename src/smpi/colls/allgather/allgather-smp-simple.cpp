@@ -6,7 +6,11 @@
 
 #include "../colls_private.h"
 
-int smpi_coll_tuned_allgather_smp_simple(void *send_buf, int scount,
+namespace simgrid{
+namespace smpi{
+
+
+int Coll_allgather_smp_simple::allgather(void *send_buf, int scount,
                                          MPI_Datatype stype, void *recv_buf,
                                          int rcount, MPI_Datatype rtype,
                                          MPI_Comm comm)
@@ -120,4 +124,8 @@ int smpi_coll_tuned_allgather_smp_simple(void *send_buf, int scount,
 
 
   return MPI_SUCCESS;
+}
+
+
+}
 }

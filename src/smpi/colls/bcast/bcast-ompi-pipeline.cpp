@@ -10,7 +10,7 @@
 #define MAXTREEFANOUT 32
 
 
-int smpi_coll_tuned_bcast_ompi_pipeline( void* buffer,
+int Coll_bcast_ompi_pipeline::bcast( void* buffer,
                                       int original_count, 
                                       MPI_Datatype datatype, 
                                       int root,

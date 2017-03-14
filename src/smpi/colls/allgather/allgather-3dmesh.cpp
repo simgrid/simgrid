@@ -92,7 +92,11 @@ static int is_3dmesh(int num, int *i, int *j, int *k)
  * follows "simple"
  * Auther: Ahmad Faraj
 ****************************************************************************/
-int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
+namespace simgrid{
+namespace smpi{
+
+
+int Coll_allgather_3dmesh::allgather(void *send_buff, int send_count,
                                      MPI_Datatype send_type, void *recv_buff,
                                      int recv_count, MPI_Datatype recv_type,
                                      MPI_Comm comm)
@@ -205,4 +209,8 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
   free(req);
 
   return MPI_SUCCESS;
+}
+
+
+}
 }

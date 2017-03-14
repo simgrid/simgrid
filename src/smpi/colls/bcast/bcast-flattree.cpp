@@ -7,7 +7,7 @@
 #include "../colls_private.h"
 
 int
-smpi_coll_tuned_bcast_flattree(void *buff, int count, MPI_Datatype data_type,
+Coll_bcast_flattree::bcast(void *buff, int count, MPI_Datatype data_type,
                                int root, MPI_Comm comm)
 {
   MPI_Request *req_ptr;

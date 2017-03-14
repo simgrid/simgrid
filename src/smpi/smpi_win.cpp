@@ -29,12 +29,12 @@ Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm)
   if(rank==0){
     bar_ = MSG_barrier_init(comm_size);
   }
-  mpi_coll_allgather_fun(&(connected_wins_[rank]), sizeof(MPI_Win), MPI_BYTE, connected_wins_, sizeof(MPI_Win),
+  Colls::allgather(&(connected_wins_[rank]), sizeof(MPI_Win), MPI_BYTE, connected_wins_, sizeof(MPI_Win),
                          MPI_BYTE, comm);
 
-  mpi_coll_bcast_fun(&(bar_), sizeof(msg_bar_t), MPI_BYTE, 0, comm);
+  Colls::bcast(&(bar_), sizeof(msg_bar_t), MPI_BYTE, 0, comm);
 
-  mpi_coll_barrier_fun(comm);
+  Colls::barrier(comm);
 }
 
 Win::~Win(){
@@ -51,7 +51,7 @@ Win::~Win(){
     MPI_Info_free(&info_);
   }
 
-  mpi_coll_barrier_fun(comm_);
+  Colls::barrier(comm_);
   int rank=comm_->rank();
   if(rank == 0)
     MSG_barrier_destroy(bar_);

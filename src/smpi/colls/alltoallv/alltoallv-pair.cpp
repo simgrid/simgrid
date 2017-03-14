@@ -27,7 +27,7 @@
  * Auther: Ahmad Faraj
 
  ****************************************************************************/
-int smpi_coll_tuned_alltoallv_pair(void *send_buff, int *send_counts, int *send_disps,
+int Coll_alltoallv_pair::alltoallv(void *send_buff, int *send_counts, int *send_disps,
                                   MPI_Datatype send_type,
                                   void *recv_buff, int *recv_counts, int *recv_disps,
                                   MPI_Datatype recv_type, MPI_Comm comm)

@@ -105,8 +105,13 @@ static int is_2dmesh(int num, int *i, int *j)
  * "simple"
  * Auther: Ahmad Faraj
 ****************************************************************************/
+
+namespace simgrid{
+namespace smpi{
+
+
 int
-smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
+Coll_allgather_2dmesh::allgather(void *send_buff, int send_count, MPI_Datatype
                                  send_type, void *recv_buff, int recv_count,
                                  MPI_Datatype recv_type, MPI_Comm comm)
 {
@@ -191,4 +196,7 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
   free(req);
 
   return MPI_SUCCESS;
+}
+
+}
 }

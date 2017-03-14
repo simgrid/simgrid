@@ -1386,7 +1386,7 @@ int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm c
     extra->send_size = count * dt_size_send;
     TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
     if (comm->size() > 1)
-      mpi_coll_bcast_fun(buf, count, datatype, root, comm);
+      Colls::bcast(buf, count, datatype, root, comm);
     retval = MPI_SUCCESS;
 
     TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
@@ -1409,7 +1409,7 @@ int PMPI_Barrier(MPI_Comm comm)
     extra->type            = TRACING_BARRIER;
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 
-    mpi_coll_barrier_fun(comm);
+    Colls::barrier(comm);
     retval = MPI_SUCCESS;
 
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
@@ -1461,7 +1461,7 @@ int PMPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,void *recvbu
 
     TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
 
-    mpi_coll_gather_fun(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcount, recvtype, root, comm);
+    Colls::gather(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcount, recvtype, root, comm);
 
     retval = MPI_SUCCESS;
     TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
@@ -1521,8 +1521,7 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recv
     }
     TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
 
-    smpi_mpi_gatherv(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcounts, displs, recvtype, root, comm);
-    retval = MPI_SUCCESS;
+    retval = Colls::gatherv(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcounts, displs, recvtype, root, comm);
     TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
   }
 
@@ -1568,7 +1567,7 @@ int PMPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 
-    mpi_coll_allgather_fun(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
+    Colls::allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
     retval = MPI_SUCCESS;
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
   }
@@ -1620,7 +1619,7 @@ int PMPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 
-    mpi_coll_allgatherv_fun(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm);
+    Colls::allgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm);
     retval = MPI_SUCCESS;
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
   }
@@ -1668,7 +1667,7 @@ int PMPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     extra->recv_size = recvcount * dt_size_recv;
     TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
 
-    mpi_coll_scatter_fun(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm);
+    Colls::scatter(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm);
     retval = MPI_SUCCESS;
     TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
   }
@@ -1721,9 +1720,8 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
     extra->recv_size = recvcount * dt_size_recv;
     TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
 
-    smpi_mpi_scatterv(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm);
+    retval = Colls::scatterv(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm);
 
-    retval = MPI_SUCCESS;
     TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
   }
 
@@ -1756,7 +1754,7 @@ int PMPI_Reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
 
     TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
 
-    mpi_coll_reduce_fun(sendbuf, recvbuf, count, datatype, op, root, comm);
+    Colls::reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
 
     retval = MPI_SUCCESS;
     TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
@@ -1811,7 +1809,7 @@ int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
 
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 
-    mpi_coll_allreduce_fun(sendtmpbuf, recvbuf, count, datatype, op, comm);
+    Colls::allreduce(sendtmpbuf, recvbuf, count, datatype, op, comm);
 
     if( sendbuf == MPI_IN_PLACE )
       xbt_free(sendtmpbuf);
@@ -1849,9 +1847,8 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MP
 
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 
-    smpi_mpi_scan(sendbuf, recvbuf, count, datatype, op, comm);
+    retval = Colls::scan(sendbuf, recvbuf, count, datatype, op, comm);
 
-    retval = MPI_SUCCESS;
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
   }
 
@@ -1887,8 +1884,8 @@ int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
     }
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 
-    smpi_mpi_exscan(sendtmpbuf, recvbuf, count, datatype, op, comm);
-    retval = MPI_SUCCESS;
+    retval = Colls::exscan(sendtmpbuf, recvbuf, count, datatype, op, comm);
+
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
     if (sendbuf == MPI_IN_PLACE)
       xbt_free(sendtmpbuf);
@@ -1938,7 +1935,7 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datat
 
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 
-    mpi_coll_reduce_scatter_fun(sendtmpbuf, recvbuf, recvcounts, datatype, op, comm);
+    Colls::reduce_scatter(sendtmpbuf, recvbuf, recvcounts, datatype, op, comm);
     retval = MPI_SUCCESS;
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
 
@@ -1991,7 +1988,7 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
     int* recvcounts = static_cast<int*>(xbt_malloc(count * sizeof(int)));
     for (int i      = 0; i < count; i++)
       recvcounts[i] = recvcount;
-    mpi_coll_reduce_scatter_fun(sendtmpbuf, recvbuf, recvcounts, datatype, op, comm);
+    Colls::reduce_scatter(sendtmpbuf, recvbuf, recvcounts, datatype, op, comm);
     xbt_free(recvcounts);
     retval = MPI_SUCCESS;
 
@@ -2044,7 +2041,7 @@ int PMPI_Alltoall(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* rec
 
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 
-    retval = mpi_coll_alltoall_fun(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcount, recvtype, comm);
+    retval = Colls::alltoall(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcount, recvtype, comm);
 
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
 
@@ -2117,7 +2114,7 @@ int PMPI_Alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype 
     }
     extra->num_processes = size;
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
-    retval = mpi_coll_alltoallv_fun(sendtmpbuf, sendtmpcounts, sendtmpdisps, sendtmptype, recvbuf, recvcounts,
+    retval = Colls::alltoallv(sendtmpbuf, sendtmpcounts, sendtmpdisps, sendtmptype, recvbuf, recvcounts,
                                     recvdisps, recvtype, comm);
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
 

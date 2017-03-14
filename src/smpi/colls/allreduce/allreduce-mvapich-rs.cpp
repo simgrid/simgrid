@@ -23,7 +23,7 @@
 
 #include "../colls_private.h"
 
-int smpi_coll_tuned_allreduce_mvapich2_rs(void *sendbuf,
+int Coll_allreduce_mvapich2_rs::allreduce(void *sendbuf,
                             void *recvbuf,
                             int count,
                             MPI_Datatype datatype,

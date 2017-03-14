@@ -715,57 +715,8 @@ static void smpi_init_logs(){
 }
 
 static void smpi_init_options(){
-  int gather_id = find_coll_description(mpi_coll_gather_description, xbt_cfg_get_string("smpi/gather"),"gather");
-    mpi_coll_gather_fun = reinterpret_cast<int (*)(void *, int, MPI_Datatype, void *, int, MPI_Datatype, int, MPI_Comm)>
-        (mpi_coll_gather_description[gather_id].coll);
 
-    int allgather_id = find_coll_description(mpi_coll_allgather_description,
-                                             xbt_cfg_get_string("smpi/allgather"),"allgather");
-    mpi_coll_allgather_fun = reinterpret_cast<int (*)(void *, int, MPI_Datatype, void *, int, MPI_Datatype, MPI_Comm)>
-        (mpi_coll_allgather_description[allgather_id].coll);
-
-    int allgatherv_id = find_coll_description(mpi_coll_allgatherv_description,
-                                              xbt_cfg_get_string("smpi/allgatherv"),"allgatherv");
-    mpi_coll_allgatherv_fun = reinterpret_cast<int (*)(void *, int, MPI_Datatype, void *, int *, int *, MPI_Datatype, MPI_Comm)>
-        (mpi_coll_allgatherv_description[allgatherv_id].coll);
-
-    int allreduce_id = find_coll_description(mpi_coll_allreduce_description,
-                                             xbt_cfg_get_string("smpi/allreduce"),"allreduce");
-    mpi_coll_allreduce_fun = reinterpret_cast<int (*)(void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)>
-        (mpi_coll_allreduce_description[allreduce_id].coll);
-
-    int alltoall_id = find_coll_description(mpi_coll_alltoall_description,
-                                            xbt_cfg_get_string("smpi/alltoall"),"alltoall");
-    mpi_coll_alltoall_fun = reinterpret_cast<int (*)(void *, int, MPI_Datatype, void *, int, MPI_Datatype, MPI_Comm)>
-        (mpi_coll_alltoall_description[alltoall_id].coll);
-
-    int alltoallv_id = find_coll_description(mpi_coll_alltoallv_description,
-                                             xbt_cfg_get_string("smpi/alltoallv"),"alltoallv");
-    mpi_coll_alltoallv_fun = reinterpret_cast<int (*)(void *, int *, int *, MPI_Datatype, void *, int *, int *, MPI_Datatype, MPI_Comm)>
-        (mpi_coll_alltoallv_description[alltoallv_id].coll);
-
-    int bcast_id = find_coll_description(mpi_coll_bcast_description, xbt_cfg_get_string("smpi/bcast"),"bcast");
-    mpi_coll_bcast_fun = reinterpret_cast<int (*)(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm com)>
-        (mpi_coll_bcast_description[bcast_id].coll);
-
-    int reduce_id = find_coll_description(mpi_coll_reduce_description, xbt_cfg_get_string("smpi/reduce"),"reduce");
-    mpi_coll_reduce_fun = reinterpret_cast<int (*)(void *buf, void *rbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)>
-        (mpi_coll_reduce_description[reduce_id].coll);
-
-    int reduce_scatter_id =
-        find_coll_description(mpi_coll_reduce_scatter_description,
-                              xbt_cfg_get_string("smpi/reduce-scatter"),"reduce_scatter");
-    mpi_coll_reduce_scatter_fun = reinterpret_cast<int (*)(void *sbuf, void *rbuf, int *rcounts,MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)>
-        (mpi_coll_reduce_scatter_description[reduce_scatter_id].coll);
-
-    int scatter_id = find_coll_description(mpi_coll_scatter_description, xbt_cfg_get_string("smpi/scatter"),"scatter");
-    mpi_coll_scatter_fun = reinterpret_cast<int (*)(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf,int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)>
-        (mpi_coll_scatter_description[scatter_id].coll);
-
-    int barrier_id = find_coll_description(mpi_coll_barrier_description, xbt_cfg_get_string("smpi/barrier"),"barrier");
-    mpi_coll_barrier_fun = reinterpret_cast<int (*)(MPI_Comm comm)>
-        (mpi_coll_barrier_description[barrier_id].coll);
-
+    Colls::set_collectives();
     smpi_coll_cleanup_callback=nullptr;
     smpi_cpu_threshold = xbt_cfg_get_double("smpi/cpu-threshold");
     smpi_host_speed = xbt_cfg_get_double("smpi/host-speed");

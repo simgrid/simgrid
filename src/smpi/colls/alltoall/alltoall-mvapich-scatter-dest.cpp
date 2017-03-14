@@ -43,7 +43,7 @@
  
 #include "../colls_private.h"
 
-int smpi_coll_tuned_alltoall_mvapich2_scatter_dest(
+int Coll_alltoall_mvapich2_scatter_dest::alltoall(
                             void *sendbuf,
                             int sendcount,
                             MPI_Datatype sendtype,

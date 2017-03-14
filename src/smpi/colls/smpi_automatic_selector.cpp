@@ -23,9 +23,8 @@
          new_pajeNewEvent (SIMIX_get_clock(), PJ_container_get(cont_name), type, value);\
       }
 
-
 #define AUTOMATIC_COLL_BENCH(cat, ret, args, args2)\
-    ret smpi_coll_tuned_ ## cat ## _ ## automatic(COLL_UNPAREN args)\
+    ret Coll_ ## cat ## _automatic:: cat (COLL_UNPAREN args)\
 {\
   double time1, time2, time_min=DBL_MAX;\
   int min_coll=-1, global_coll=-1;\
@@ -34,7 +33,7 @@
   for (i = 0; mpi_coll_##cat##_description[i].name; i++){\
       if(!strcmp(mpi_coll_##cat##_description[i].name, "automatic"))continue;\
       if(!strcmp(mpi_coll_##cat##_description[i].name, "default"))continue;\
-      smpi_mpi_barrier(comm);\
+      Coll_barrier_default::barrier(comm);\
       TRACE_AUTO_COLL(cat)\
       time1 = SIMIX_get_clock();\
       try {\
@@ -46,7 +45,7 @@
       }\
       time2 = SIMIX_get_clock();\
       buf_out=time2-time1;\
-      smpi_mpi_reduce((void*)&buf_out,(void*)&buf_in, 1, MPI_DOUBLE, MPI_MAX, 0,comm );\
+      Coll_reduce_default::reduce((void*)&buf_out,(void*)&buf_in, 1, MPI_DOUBLE, MPI_MAX, 0,comm );\
       if(time2-time1<time_min){\
           min_coll=i;\
           time_min=time2-time1;\
@@ -63,8 +62,10 @@
   }else\
   XBT_WARN("The quickest %s was %s on rank %d and took %f",#cat,mpi_coll_##cat##_description[min_coll].name, comm->rank(), time_min);\
   return (min_coll!=-1)?MPI_SUCCESS:MPI_ERR_INTERN;\
-}\
+}
 
+namespace simgrid{
+namespace smpi{
 
 COLL_APPLY(AUTOMATIC_COLL_BENCH, COLL_ALLGATHERV_SIG, (send_buff, send_count, send_type, recv_buff, recv_count, recv_disps, recv_type, comm));
 COLL_APPLY(AUTOMATIC_COLL_BENCH, COLL_ALLREDUCE_SIG, (sbuf, rbuf, rcount, dtype, op, comm));
@@ -77,3 +78,6 @@ COLL_APPLY(AUTOMATIC_COLL_BENCH, COLL_REDUCE_SIG,(buf,rbuf, count, datatype, op,
 COLL_APPLY(AUTOMATIC_COLL_BENCH, COLL_REDUCE_SCATTER_SIG ,(sbuf,rbuf, rcounts,dtype,op,comm));
 COLL_APPLY(AUTOMATIC_COLL_BENCH, COLL_SCATTER_SIG ,(sendbuf, sendcount, sendtype,recvbuf, recvcount, recvtype,root, comm));
 COLL_APPLY(AUTOMATIC_COLL_BENCH, COLL_BARRIER_SIG,(comm));
+
+}
+}

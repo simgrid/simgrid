@@ -8,7 +8,7 @@
 
 int bcast_SMP_linear_segment_byte = 8192;
 
-int smpi_coll_tuned_bcast_SMP_linear(void *buf, int count,
+int Coll_bcast_SMP_linear::bcast(void *buf, int count,
                                      MPI_Datatype datatype, int root,
                                      MPI_Comm comm)
 {
@@ -32,7 +32,7 @@ int smpi_coll_tuned_bcast_SMP_linear(void *buf, int count,
     num_core = comm->get_intra_comm()->size();
   }else{
     //implementation buggy in this case
-    return smpi_coll_tuned_bcast_mpich( buf , count, datatype,
+    return Coll_bcast_mpich::bcast( buf , count, datatype,
               root, comm);
   }
 
@@ -53,7 +53,7 @@ int smpi_coll_tuned_bcast_SMP_linear(void *buf, int count,
   // call native when MPI communication size is too small
   if (size <= num_core) {
     XBT_WARN("MPI_bcast_SMP_linear use default MPI_bcast.");	  	  
-    smpi_mpi_bcast(buf, count, datatype, root, comm);
+    Coll_bcast_default::bcast(buf, count, datatype, root, comm);
     return MPI_SUCCESS;            
   }
   // if root is not zero send to rank zero first
@@ -170,7 +170,7 @@ int smpi_coll_tuned_bcast_SMP_linear(void *buf, int count,
   // when count is not divisible by block size, use default BCAST for the remainder
   if ((remainder != 0) && (count > segment)) {
     XBT_WARN("MPI_bcast_SMP_linear use default MPI_bcast.");	  	  	 
-    smpi_mpi_bcast((char *) buf + (pipe_length * increment), remainder, datatype,
+    Colls::bcast((char *) buf + (pipe_length * increment), remainder, datatype,
               root, comm);
   }
 

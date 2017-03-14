@@ -46,7 +46,7 @@ static int alltoall_check_is_3dmesh(int num, int *i, int *j, int *k)
   return 0;
 }
 
-int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
+int Coll_alltoall_3dmesh::alltoall(void *send_buff, int send_count,
                                     MPI_Datatype send_type,
                                     void *recv_buff, int recv_count,
                                     MPI_Datatype recv_type, MPI_Comm comm)

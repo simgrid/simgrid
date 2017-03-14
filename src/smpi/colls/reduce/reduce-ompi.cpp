@@ -324,7 +324,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
      meaning that at least one datatype must fit in the segment !
 */
 
-int smpi_coll_tuned_reduce_ompi_chain( void *sendbuf, void *recvbuf, int count,
+int Coll_reduce_ompi_chain::reduce( void *sendbuf, void *recvbuf, int count,
                                         MPI_Datatype datatype, 
                                         MPI_Op  op, int root, 
                                         MPI_Comm  comm
@@ -352,7 +352,7 @@ int smpi_coll_tuned_reduce_ompi_chain( void *sendbuf, void *recvbuf, int count,
 }
 
 
-int smpi_coll_tuned_reduce_ompi_pipeline( void *sendbuf, void *recvbuf,
+int Coll_reduce_ompi_pipeline::reduce( void *sendbuf, void *recvbuf,
                                            int count, MPI_Datatype datatype,
                                            MPI_Op  op, int root,
                                            MPI_Comm  comm  )
@@ -397,7 +397,7 @@ int smpi_coll_tuned_reduce_ompi_pipeline( void *sendbuf, void *recvbuf,
                                            segcount, 0);
 }
 
-int smpi_coll_tuned_reduce_ompi_binary( void *sendbuf, void *recvbuf,
+int Coll_reduce_ompi_binary::reduce( void *sendbuf, void *recvbuf,
                                          int count, MPI_Datatype datatype,
                                          MPI_Op  op, int root,
                                          MPI_Comm  comm)
@@ -428,7 +428,7 @@ int smpi_coll_tuned_reduce_ompi_binary( void *sendbuf, void *recvbuf,
                                            segcount, 0);
 }
 
-int smpi_coll_tuned_reduce_ompi_binomial( void *sendbuf, void *recvbuf,
+int Coll_reduce_ompi_binomial::reduce( void *sendbuf, void *recvbuf,
                                            int count, MPI_Datatype datatype,
                                            MPI_Op  op, int root,
                                            MPI_Comm  comm)
@@ -476,7 +476,7 @@ int smpi_coll_tuned_reduce_ompi_binomial( void *sendbuf, void *recvbuf,
  * Acecpts:       same as MPI_Reduce()
  * Returns:       MPI_SUCCESS or error code
  */
-int smpi_coll_tuned_reduce_ompi_in_order_binary( void *sendbuf, void *recvbuf,
+int Coll_reduce_ompi_in_order_binary::reduce( void *sendbuf, void *recvbuf,
                                                   int count, 
                                                   MPI_Datatype datatype,
                                                   MPI_Op  op, int root,
@@ -589,7 +589,7 @@ int smpi_coll_tuned_reduce_ompi_in_order_binary( void *sendbuf, void *recvbuf,
  */
 
 int
-smpi_coll_tuned_reduce_ompi_basic_linear(void *sbuf, void *rbuf, int count,
+Coll_reduce_ompi_basic_linear::reduce(void *sbuf, void *rbuf, int count,
                                           MPI_Datatype dtype,
                                           MPI_Op op,
                                           int root,

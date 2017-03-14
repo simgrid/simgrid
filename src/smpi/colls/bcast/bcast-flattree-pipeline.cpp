@@ -9,7 +9,7 @@
 int flattree_segment_in_byte = 8192;
 
 int
-smpi_coll_tuned_bcast_flattree_pipeline(void *buff, int count,
+Coll_bcast_flattree_pipeline::bcast(void *buff, int count,
                                         MPI_Datatype data_type, int root,
                                         MPI_Comm comm)
 {
@@ -25,7 +25,7 @@ smpi_coll_tuned_bcast_flattree_pipeline(void *buff, int count,
   int increment = segment * extent;
   if (pipe_length==0) {
     XBT_WARN("MPI_bcast_flattree_pipeline use default MPI_bcast_flattree.");
-    return smpi_coll_tuned_bcast_flattree(buff, count, data_type, root, comm);
+    return Coll_bcast_flattree::bcast(buff, count, data_type, root, comm);
   }
   rank = comm->rank();
   num_procs = comm->size();

@@ -6,10 +6,14 @@
 
 #include "../colls_private.h"
 
+namespace simgrid{
+namespace smpi{
+
+
 // now only work with power of two processes
 
 int
-smpi_coll_tuned_allgather_rhv(void *sbuf, int send_count,
+Coll_allgather_rhv::allgather(void *sbuf, int send_count,
                               MPI_Datatype send_type, void *rbuf,
                               int recv_count, MPI_Datatype recv_type,
                               MPI_Comm comm)
@@ -42,7 +46,7 @@ smpi_coll_tuned_allgather_rhv(void *sbuf, int send_count,
 
   if (send_chunk != recv_chunk) {
     XBT_WARN("MPI_allgather_rhv use default MPI_allgather.");  
-    smpi_mpi_allgather(sbuf, send_count, send_type, rbuf, recv_count,
+    Coll_allgather_default::allgather(sbuf, send_count, send_type, rbuf, recv_count,
                               recv_type, comm);
     return MPI_SUCCESS;        
   }
@@ -102,4 +106,8 @@ smpi_coll_tuned_allgather_rhv(void *sbuf, int send_count,
   }
 
   return MPI_SUCCESS;
+}
+
+
+}
 }

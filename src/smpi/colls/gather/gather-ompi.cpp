@@ -22,10 +22,11 @@
 #include "../colls_private.h"
 #include "../coll_tuned_topo.h"
 
-/* Todo: gather_intra_generic, gather_intra_binary, gather_intra_chain,
- * gather_intra_pipeline, segmentation? */
-int
-smpi_coll_tuned_gather_ompi_binomial(void *sbuf, int scount,
+namespace simgrid{
+namespace smpi{
+
+
+int Coll_gather_ompi_binomial::gather(void *sbuf, int scount,
 				      MPI_Datatype sdtype,
 				      void *rbuf, int rcount,
 				      MPI_Datatype rdtype,
@@ -194,8 +195,7 @@ smpi_coll_tuned_gather_ompi_binomial(void *sbuf, int scount,
  *	Accepts:	- same arguments as MPI_Gather(), first segment size
  *	Returns:	- MPI_SUCCESS or error code
  */
-int
-smpi_coll_tuned_gather_ompi_linear_sync(void *sbuf, int scount,
+int Coll_gather_ompi_linear_sync::gather(void *sbuf, int scount,
                                          MPI_Datatype sdtype,
                                          void *rbuf, int rcount,
                                          MPI_Datatype rdtype,
@@ -353,8 +353,7 @@ smpi_coll_tuned_gather_ompi_linear_sync(void *sbuf, int scount,
  *	Accepts:	- same arguments as MPI_Gather()
  *	Returns:	- MPI_SUCCESS or error code
  */
-int
-smpi_coll_tuned_gather_ompi_basic_linear(void *sbuf, int scount,
+int Coll_gather_ompi_basic_linear::gather(void *sbuf, int scount,
 					  MPI_Datatype sdtype,
 					  void *rbuf, int rcount,
 					  MPI_Datatype rdtype,
@@ -410,4 +409,7 @@ smpi_coll_tuned_gather_ompi_basic_linear(void *sbuf, int scount,
     /* All done */
 
     return MPI_SUCCESS;
+}
+
+}
 }

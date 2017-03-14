@@ -26,7 +26,7 @@ This fucntion performs all-reduce operation as follow.
 2) Recursive doubling intra-communication between root of each SMP node
 3) binomial_tree bcast inside each SMP node
 */
-int smpi_coll_tuned_allreduce_smp_rdb(void *send_buf, void *recv_buf, int count,
+int Coll_allreduce_smp_rdb::allreduce(void *send_buf, void *recv_buf, int count,
                                       MPI_Datatype dtype, MPI_Op op,
                                       MPI_Comm comm)
 {

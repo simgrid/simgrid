@@ -219,7 +219,7 @@ MPI_Comm Comm::split(int color, int key)
   } else {
     recvbuf = nullptr;
   }
-  smpi_mpi_gather(sendbuf, 2, MPI_INT, recvbuf, 2, MPI_INT, 0, this);
+  Coll_gather_default::gather(sendbuf, 2, MPI_INT, recvbuf, 2, MPI_INT, 0, this);
   xbt_free(sendbuf);
   /* Do the actual job */
   if(rank == 0) {
@@ -393,7 +393,7 @@ void Comm::init_smp(){
       leader_list[i]=-1;
   }
 
-  smpi_coll_tuned_allgather_mpich(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, this);
+  Coll_allgather_mpich::allgather(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, this);
 
   if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
      smpi_switch_data_segment(smpi_process_index());
@@ -452,7 +452,7 @@ void Comm::init_smp(){
   int my_local_size=comm_intra->size();
   if(comm_intra->rank()==0) {
     int* non_uniform_map = xbt_new0(int,leader_group_size);
-    smpi_coll_tuned_allgather_mpich(&my_local_size, 1, MPI_INT,
+    Coll_allgather_mpich::allgather(&my_local_size, 1, MPI_INT,
         non_uniform_map, 1, MPI_INT, leader_comm);
     for(i=0; i < leader_group_size; i++) {
       if(non_uniform_map[0] != non_uniform_map[i]) {
@@ -467,7 +467,7 @@ void Comm::init_smp(){
     }
     is_uniform_=is_uniform;
   }
-  smpi_coll_tuned_bcast_mpich(&(is_uniform_),1, MPI_INT, 0, comm_intra );
+  Coll_bcast_mpich::bcast(&(is_uniform_),1, MPI_INT, 0, comm_intra );
 
   if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
      smpi_switch_data_segment(smpi_process_index());
@@ -485,7 +485,7 @@ void Comm::init_smp(){
   }
 
   int global_blocked;
-  smpi_mpi_allreduce(&is_blocked, &(global_blocked), 1, MPI_INT, MPI_LAND, this);
+  Coll_allreduce_default::allreduce(&is_blocked, &(global_blocked), 1, MPI_INT, MPI_LAND, this);
 
   if(MPI_COMM_WORLD==MPI_COMM_UNINITIALIZED || this==MPI_COMM_WORLD){
     if(this->rank()==0){

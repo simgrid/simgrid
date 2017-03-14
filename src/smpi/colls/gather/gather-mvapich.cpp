@@ -37,9 +37,13 @@
 
 #include "../colls_private.h"
 
-#define MPIR_Gather_MV2_Direct smpi_coll_tuned_gather_ompi_basic_linear
-#define MPIR_Gather_MV2_two_level_Direct smpi_coll_tuned_gather_ompi_basic_linear
-#define MPIR_Gather_intra smpi_coll_tuned_gather_mpich
+
+
+
+
+#define MPIR_Gather_MV2_Direct Coll_gather_ompi_basic_linear::gather
+#define MPIR_Gather_MV2_two_level_Direct Coll_gather_ompi_basic_linear::gather
+#define MPIR_Gather_intra Coll_gather_mpich::gather
 typedef int (*MV2_Gather_function_ptr) (void *sendbuf,
     int sendcnt,
     MPI_Datatype sendtype,
@@ -53,6 +57,10 @@ extern MV2_Gather_function_ptr MV2_Gather_intra_node_function;
 
 #define TEMP_BUF_HAS_NO_DATA (0)
 #define TEMP_BUF_HAS_DATA (1)
+
+
+namespace simgrid{
+namespace smpi{
 
 /* sendbuf           - (in) sender's buffer
  * sendcnt           - (in) sender's element count
@@ -121,7 +129,8 @@ static int MPIR_pt_pt_intra_gather( void *sendbuf, int sendcnt, MPI_Datatype sen
 }
 
 
-int smpi_coll_tuned_gather_mvapich2_two_level(void *sendbuf,
+
+int Coll_gather_mvapich2_two_level::gather(void *sendbuf,
                                             int sendcnt,
                                             MPI_Datatype sendtype,
                                             void *recvbuf,
@@ -146,7 +155,7 @@ int smpi_coll_tuned_gather_mvapich2_two_level(void *sendbuf,
 
     //if not set (use of the algo directly, without mvapich2 selector)
     if(MV2_Gather_intra_node_function==NULL)
-      MV2_Gather_intra_node_function=smpi_coll_tuned_gather_mpich;
+      MV2_Gather_intra_node_function= Coll_gather_mpich::gather;
     
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
       comm->init_smp();
@@ -324,7 +333,7 @@ int smpi_coll_tuned_gather_mvapich2_two_level(void *sendbuf,
                         recvcnts[i] = node_sizes[i] * recvcnt;
                     }
                 } 
-                smpi_mpi_gatherv(tmp_buf,
+                Colls::gatherv(tmp_buf,
                                          local_size * nbytes,
                                          MPI_BYTE, recvbuf, recvcnts,
                                          displs, recvtype,
@@ -342,7 +351,7 @@ int smpi_coll_tuned_gather_mvapich2_two_level(void *sendbuf,
                         recvcnts[i] = node_sizes[i] * nbytes;
                     }
                 } 
-                smpi_mpi_gatherv(tmp_buf, local_size * nbytes,
+                Colls::gatherv(tmp_buf, local_size * nbytes,
                                          MPI_BYTE, leader_gather_buf,
                                          recvcnts, displs, MPI_BYTE,
                                          leader_root, leader_comm);
@@ -409,5 +418,7 @@ int smpi_coll_tuned_gather_mvapich2_two_level(void *sendbuf,
     }
 
     return (mpi_errno);
+}
+}
 }
 

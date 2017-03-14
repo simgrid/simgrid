@@ -66,8 +66,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * Auther: Ahmad Faraj
  ****************************************************************************/
+
+namespace simgrid{
+namespace smpi{
+
+
 int
-smpi_coll_tuned_allgather_spreading_simple(void *send_buff, int send_count,
+Coll_allgather_spreading_simple::allgather(void *send_buff, int send_count,
                                            MPI_Datatype send_type,
                                            void *recv_buff, int recv_count,
                                            MPI_Datatype recv_type,
@@ -116,4 +121,7 @@ smpi_coll_tuned_allgather_spreading_simple(void *send_buff, int send_count,
   free(reqs);
 
   return MPI_SUCCESS;
+}
+
+}
 }

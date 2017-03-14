@@ -65,7 +65,7 @@
 
    Exa.: size=13 ==> n=3, r=5  (i.e. size == 13 == 2**n+r ==  2**3 + 5)
 
-   The algoritm needs for the execution of one mpi_coll_reduce_fun
+   The algoritm needs for the execution of one Colls::reduce
 
    - for r==0
      exec_time = n*(L1+L2)     + buf_lng * (1-1/2**n) * (T1 + T2 + O/d)
@@ -207,7 +207,7 @@ Step 5.n)
      7: { [(a+b)+(c+d)] + [(e+f)+(g+h)] } + { [(i+j)+k] + [l+m] } for H
 
 
-For mpi_coll_allreduce_fun:
+For Colls::allreduce:
 ------------------
 
 Step 6.1)
@@ -249,7 +249,7 @@ Step 7)
      on all nodes 0..12
 
 
-For mpi_coll_reduce_fun:
+For Colls::reduce:
 ---------------
 
 Step 6.0)
@@ -921,19 +921,19 @@ static int MPI_I_anyReduce(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype
   } /* new_prot */
   /*otherwise:*/
   if (is_all)
-   return( mpi_coll_allreduce_fun(Sendbuf, Recvbuf, count, mpi_datatype, mpi_op, comm) );
+   return( Colls::allreduce(Sendbuf, Recvbuf, count, mpi_datatype, mpi_op, comm) );
   else
-   return( mpi_coll_reduce_fun(Sendbuf,Recvbuf, count,mpi_datatype,mpi_op, root, comm) );
+   return( Colls::reduce(Sendbuf,Recvbuf, count,mpi_datatype,mpi_op, root, comm) );
 }
 #endif /*REDUCE_LIMITS*/
 
 
-int smpi_coll_tuned_reduce_rab(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
+int Coll_reduce_rab::reduce(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
 {
   return( MPI_I_anyReduce(Sendbuf, Recvbuf, count, datatype, op, root, comm, 0) );
 }
 
-int smpi_coll_tuned_allreduce_rab(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int Coll_allreduce_rab::allreduce(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   return( MPI_I_anyReduce(Sendbuf, Recvbuf, count, datatype, op,   -1, comm, 1) );
 }

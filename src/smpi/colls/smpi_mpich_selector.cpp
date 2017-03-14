@@ -56,7 +56,7 @@
 
    End Algorithm: MPI_Allreduce
 */
-int smpi_coll_tuned_allreduce_mpich(void *sbuf, void *rbuf, int count,
+int Coll_allreduce_mpich::allreduce(void *sbuf, void *rbuf, int count,
                         MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
 {
     size_t dsize, block_dsize;
@@ -74,12 +74,12 @@ int smpi_coll_tuned_allreduce_mpich(void *sbuf, void *rbuf, int count,
 
     if (block_dsize > large_message && count >= pof2 && (op==MPI_OP_NULL || op->is_commutative())) {
       //for long messages
-       return (smpi_coll_tuned_allreduce_rab_rdb (sbuf, rbuf, 
+       return (Coll_allreduce_rab_rdb::allreduce (sbuf, rbuf, 
                                                                    count, dtype,
                                                                    op, comm));
     }else {
       //for short ones and count < pof2
-      return (smpi_coll_tuned_allreduce_rdb (sbuf, rbuf, 
+      return (Coll_allreduce_rdb::allreduce (sbuf, rbuf, 
                                                                    count, dtype,
                                                                    op, comm));
     }
@@ -132,7 +132,7 @@ int smpi_coll_tuned_allreduce_mpich(void *sbuf, void *rbuf, int count,
    End Algorithm: MPI_Alltoall
 */
 
-int smpi_coll_tuned_alltoall_mpich( void *sbuf, int scount, 
+int Coll_alltoall_mpich::alltoall( void *sbuf, int scount, 
                                              MPI_Datatype sdtype,
                                              void* rbuf, int rcount, 
                                              MPI_Datatype rdtype, 
@@ -162,26 +162,26 @@ int smpi_coll_tuned_alltoall_mpich( void *sbuf, int scount,
     block_dsize = dsize * scount;
 
     if ((block_dsize < short_size) && (communicator_size >= 8)) {
-        return smpi_coll_tuned_alltoall_bruck(sbuf, scount, sdtype, 
+        return Coll_alltoall_bruck::alltoall(sbuf, scount, sdtype, 
                                                     rbuf, rcount, rdtype,
                                                     comm);
 
     } else if (block_dsize < medium_size) {
-        return smpi_coll_tuned_alltoall_basic_linear(sbuf, scount, sdtype, 
+        return Coll_alltoall_basic_linear::alltoall(sbuf, scount, sdtype, 
                                                            rbuf, rcount, rdtype, 
                                                            comm);
     }else if (communicator_size%2){
-        return smpi_coll_tuned_alltoall_ring(sbuf, scount, sdtype, 
+        return Coll_alltoall_ring::alltoall(sbuf, scount, sdtype, 
                                                            rbuf, rcount, rdtype, 
                                                            comm);
     }
 
-    return smpi_coll_tuned_alltoall_ring (sbuf, scount, sdtype,
+    return Coll_alltoall_ring::alltoall (sbuf, scount, sdtype,
                                                     rbuf, rcount, rdtype,
                                                     comm);
 }
 
-int smpi_coll_tuned_alltoallv_mpich(void *sbuf, int *scounts, int *sdisps,
+int Coll_alltoallv_mpich::alltoallv(void *sbuf, int *scounts, int *sdisps,
                                               MPI_Datatype sdtype,
                                               void *rbuf, int *rcounts, int *rdisps,
                                               MPI_Datatype rdtype,
@@ -189,15 +189,15 @@ int smpi_coll_tuned_alltoallv_mpich(void *sbuf, int *scounts, int *sdisps,
                                               )
 {
     /* For starters, just keep the original algorithm. */
-    return smpi_coll_tuned_alltoallv_bruck(sbuf, scounts, sdisps, sdtype, 
+    return Coll_alltoallv_bruck::alltoallv(sbuf, scounts, sdisps, sdtype, 
                                                         rbuf, rcounts, rdisps,rdtype,
                                                         comm);
 }
 
 
-int smpi_coll_tuned_barrier_mpich(MPI_Comm  comm)
+int Coll_barrier_mpich::barrier(MPI_Comm  comm)
 {   
-    return smpi_coll_tuned_barrier_ompi_bruck(comm);
+    return Coll_barrier_ompi_bruck::barrier(comm);
 }
 
 /* This is the default implementation of broadcast. The algorithm is:
@@ -243,7 +243,7 @@ int smpi_coll_tuned_barrier_mpich(MPI_Comm  comm)
 */
 
 
-int smpi_coll_tuned_bcast_mpich(void *buff, int count,
+int Coll_bcast_mpich::bcast(void *buff, int count,
                                           MPI_Datatype datatype, int root,
                                           MPI_Comm  comm
                                           )
@@ -267,17 +267,17 @@ int smpi_coll_tuned_bcast_mpich(void *buff, int count,
        single-element broadcasts */
     if ((message_size < small_message_size) || (communicator_size <= 8)) {
         /* Binomial without segmentation */
-        return  smpi_coll_tuned_bcast_binomial_tree (buff, count, datatype, 
+        return  Coll_bcast_binomial_tree::bcast (buff, count, datatype, 
                                                       root, comm);
 
     } else if (message_size < intermediate_message_size && !(communicator_size%2)) {
         // SplittedBinary with 1KB segments
-        return smpi_coll_tuned_bcast_scatter_rdb_allgather(buff, count, datatype, 
+        return Coll_bcast_scatter_rdb_allgather::bcast(buff, count, datatype, 
                                                          root, comm);
 
     }
      //Handle large message sizes 
-     return smpi_coll_tuned_bcast_scatter_LR_allgather (buff, count, datatype, 
+     return Coll_bcast_scatter_LR_allgather::bcast (buff, count, datatype, 
                                                      root, comm);
                                                          
 }
@@ -339,7 +339,7 @@ int smpi_coll_tuned_bcast_mpich(void *buff, int count,
 */
 
 
-int smpi_coll_tuned_reduce_mpich( void *sendbuf, void *recvbuf,
+int Coll_reduce_mpich::reduce( void *sendbuf, void *recvbuf,
                                             int count, MPI_Datatype  datatype,
                                             MPI_Op   op, int root,
                                             MPI_Comm   comm
@@ -360,9 +360,9 @@ int smpi_coll_tuned_reduce_mpich( void *sendbuf, void *recvbuf,
 
 
     if ((count < pof2) || (message_size < 2048) || (op!=MPI_OP_NULL && !op->is_commutative())) {
-        return smpi_coll_tuned_reduce_binomial (sendbuf, recvbuf, count, datatype, op, root, comm); 
+        return Coll_reduce_binomial::reduce (sendbuf, recvbuf, count, datatype, op, root, comm); 
     }
-        return smpi_coll_tuned_reduce_scatter_gather(sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
+        return Coll_reduce_scatter_gather::reduce(sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
                                                      segsize, max_requests*/);
 }
 
@@ -416,7 +416,7 @@ int smpi_coll_tuned_reduce_mpich( void *sendbuf, void *recvbuf,
 */
 
 
-int smpi_coll_tuned_reduce_scatter_mpich( void *sbuf, void *rbuf,
+int Coll_reduce_scatter_mpich::reduce_scatter( void *sbuf, void *rbuf,
                                                     int *rcounts,
                                                     MPI_Datatype dtype,
                                                     MPI_Op  op,
@@ -428,7 +428,7 @@ int smpi_coll_tuned_reduce_scatter_mpich( void *sbuf, void *rbuf,
 
     if(sbuf==rbuf)sbuf=MPI_IN_PLACE; //restore MPI_IN_PLACE as these algorithms handle it
 
-    XBT_DEBUG("smpi_coll_tuned_reduce_scatter_mpich");
+    XBT_DEBUG("Coll_reduce_scatter_mpich::reduce");
     
     comm_size = comm->size();
     // We need data size for decision function 
@@ -438,7 +438,7 @@ int smpi_coll_tuned_reduce_scatter_mpich( void *sbuf, void *rbuf,
     }
 
     if( (op==MPI_OP_NULL || op->is_commutative()) &&  total_message_size > 524288) { 
-        return smpi_coll_tuned_reduce_scatter_mpich_pair (sbuf, rbuf, rcounts, 
+        return Coll_reduce_scatter_mpich_pair::reduce_scatter (sbuf, rbuf, rcounts, 
                                                                     dtype, op, 
                                                                     comm); 
     }else if ((op!=MPI_OP_NULL && !op->is_commutative())) {
@@ -456,12 +456,12 @@ int smpi_coll_tuned_reduce_scatter_mpich( void *sbuf, void *rbuf,
 
         if (pof2 == comm_size && is_block_regular) {
             /* noncommutative, pof2 size, and block regular */
-            return smpi_coll_tuned_reduce_scatter_mpich_noncomm(sbuf, rbuf, rcounts, dtype, op, comm);
+            return Coll_reduce_scatter_mpich_noncomm::reduce_scatter(sbuf, rbuf, rcounts, dtype, op, comm);
         }
 
-       return smpi_coll_tuned_reduce_scatter_mpich_rdb(sbuf, rbuf, rcounts, dtype, op, comm);
+       return Coll_reduce_scatter_mpich_rdb::reduce_scatter(sbuf, rbuf, rcounts, dtype, op, comm);
     }else{      
-       return smpi_coll_tuned_reduce_scatter_mpich_rdb(sbuf, rbuf, rcounts, dtype, op, comm);
+       return Coll_reduce_scatter_mpich_rdb::reduce_scatter(sbuf, rbuf, rcounts, dtype, op, comm);
     }
 }
 
@@ -511,7 +511,7 @@ int smpi_coll_tuned_reduce_scatter_mpich( void *sbuf, void *rbuf,
    End Algorithm: MPI_Allgather
 */
 
-int smpi_coll_tuned_allgather_mpich(void *sbuf, int scount, 
+int Coll_allgather_mpich::allgather(void *sbuf, int scount, 
                                               MPI_Datatype sdtype,
                                               void* rbuf, int rcount, 
                                               MPI_Datatype rdtype, 
@@ -539,15 +539,15 @@ int smpi_coll_tuned_allgather_mpich(void *sbuf, int scount,
        - for everything else use ring.
     */
     if ((pow2_size == communicator_size) && (total_dsize < 524288)) {
-        return smpi_coll_tuned_allgather_rdb(sbuf, scount, sdtype, 
+        return Coll_allgather_rdb::allgather(sbuf, scount, sdtype, 
                                                                  rbuf, rcount, rdtype, 
                                                                  comm);
     } else if (total_dsize <= 81920) { 
-        return smpi_coll_tuned_allgather_bruck(sbuf, scount, sdtype, 
+        return Coll_allgather_bruck::allgather(sbuf, scount, sdtype, 
                                                      rbuf, rcount, rdtype,
                                                      comm);
     } 
-    return smpi_coll_tuned_allgather_ring(sbuf, scount, sdtype, 
+    return Coll_allgather_ring::allgather(sbuf, scount, sdtype, 
                                                 rbuf, rcount, rdtype,
                                                 comm);
 }
@@ -589,7 +589,7 @@ int smpi_coll_tuned_allgather_mpich(void *sbuf, int scount,
 
    End Algorithm: MPI_Allgatherv
 */
-int smpi_coll_tuned_allgatherv_mpich(void *sbuf, int scount, 
+int Coll_allgatherv_mpich::allgatherv(void *sbuf, int scount, 
                                                MPI_Datatype sdtype,
                                                void* rbuf, int *rcounts, 
                                                int *rdispls,
@@ -612,15 +612,15 @@ int smpi_coll_tuned_allgatherv_mpich(void *sbuf, int scount,
     for (pow2_size  = 1; pow2_size < communicator_size; pow2_size <<=1); 
 
     if ((pow2_size == communicator_size) && (total_dsize < 524288)) {
-        return smpi_coll_tuned_allgatherv_mpich_rdb(sbuf, scount, sdtype, 
+        return Coll_allgatherv_mpich_rdb::allgatherv(sbuf, scount, sdtype, 
                                                                  rbuf, rcounts, rdispls, rdtype, 
                                                                  comm);
     } else if (total_dsize <= 81920) { 
-        return smpi_coll_tuned_allgatherv_ompi_bruck(sbuf, scount, sdtype, 
+        return Coll_allgatherv_ompi_bruck::allgatherv(sbuf, scount, sdtype, 
                                                      rbuf, rcounts, rdispls, rdtype,
                                                      comm);
     } 
-    return smpi_coll_tuned_allgatherv_mpich_ring(sbuf, scount, sdtype,
+    return Coll_allgatherv_mpich_ring::allgatherv(sbuf, scount, sdtype,
                                                 rbuf, rcounts, rdispls, rdtype,
                                                 comm);
 }
@@ -646,8 +646,10 @@ int smpi_coll_tuned_allgatherv_mpich(void *sbuf, int scount,
 
    End Algorithm: MPI_Gather
 */
+namespace simgrid{
+namespace smpi{
 
-int smpi_coll_tuned_gather_mpich(void *sbuf, int scount, 
+int Coll_gather_mpich::gather(void *sbuf, int scount, 
                                            MPI_Datatype sdtype,
                                            void* rbuf, int rcount, 
                                            MPI_Datatype rdtype, 
@@ -655,9 +657,12 @@ int smpi_coll_tuned_gather_mpich(void *sbuf, int scount,
                                            MPI_Comm  comm
                                            )
 {
-        return smpi_coll_tuned_gather_ompi_binomial (sbuf, scount, sdtype, 
+        return Coll_gather_ompi_binomial::gather (sbuf, scount, sdtype, 
                                                       rbuf, rcount, rdtype, 
                                                       root, comm);
+}
+
+}
 }
 
 /* This is the default implementation of scatter. The algorithm is:
@@ -682,7 +687,7 @@ int smpi_coll_tuned_gather_mpich(void *sbuf, int scount,
 */
 
 
-int smpi_coll_tuned_scatter_mpich(void *sbuf, int scount, 
+int Coll_scatter_mpich::scatter(void *sbuf, int scount, 
                                             MPI_Datatype sdtype,
                                             void* rbuf, int rcount, 
                                             MPI_Datatype rdtype, 
@@ -694,7 +699,7 @@ int smpi_coll_tuned_scatter_mpich(void *sbuf, int scount,
       scount=rcount;
       sdtype=rdtype;
   }
-  int ret= smpi_coll_tuned_scatter_ompi_binomial (sbuf, scount, sdtype,
+  int ret= Coll_scatter_ompi_binomial::scatter (sbuf, scount, sdtype,
                                                        rbuf, rcount, rdtype, 
                                                        root, comm);
   if(comm->rank()!=root){

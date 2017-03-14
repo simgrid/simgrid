@@ -93,7 +93,7 @@ static int scatter_for_bcast(
 }
 
 int
-smpi_coll_tuned_bcast_scatter_rdb_allgather (
+Coll_bcast_scatter_rdb_allgather::bcast (
     void *buffer, 
     int count, 
     MPI_Datatype datatype, 

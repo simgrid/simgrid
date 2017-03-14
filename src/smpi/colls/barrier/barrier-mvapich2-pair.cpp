@@ -42,7 +42,7 @@
 #include "../colls_private.h"
 #include "../coll_tuned_topo.h"
 
-int smpi_coll_tuned_barrier_mvapich2_pair(MPI_Comm comm)
+int Coll_barrier_mvapich2_pair::barrier(MPI_Comm comm)
 {
 
     int size, rank;

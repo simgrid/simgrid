@@ -6,9 +6,14 @@
 
 #include "../colls_private.h"
 
+namespace simgrid{
+namespace smpi{
+
+
+
 // Allgather-Non-Topoloty-Scecific-Logical-Ring algorithm
 int
-smpi_coll_tuned_allgather_NTSLR(void *sbuf, int scount, MPI_Datatype stype,
+Coll_allgather_NTSLR::allgather(void *sbuf, int scount, MPI_Datatype stype,
                                 void *rbuf, int rcount, MPI_Datatype rtype,
                                 MPI_Comm comm)
 {
@@ -26,7 +31,7 @@ smpi_coll_tuned_allgather_NTSLR(void *sbuf, int scount, MPI_Datatype stype,
   // irregular case use default MPI fucntions
   if (scount * sextent != rcount * rextent) {
     XBT_WARN("MPI_allgather_NTSLR use default MPI_allgather.");  
-    smpi_mpi_allgather(sbuf, scount, stype, rbuf, rcount, rtype, comm);
+    Coll_allgather_default::allgather(sbuf, scount, stype, rbuf, rcount, rtype, comm);
     return MPI_SUCCESS;    
   }
 
@@ -53,4 +58,8 @@ smpi_coll_tuned_allgather_NTSLR(void *sbuf, int scount, MPI_Datatype stype,
   }
 
   return MPI_SUCCESS;
+}
+
+
+}
 }

@@ -17,6 +17,7 @@
 #include "xbt/xbt_os_time.h"
 #include "src/smpi/smpi_f2c.hpp"
 #include "src/smpi/smpi_group.hpp"
+#include "src/smpi/smpi_coll.hpp"
 #include "src/smpi/smpi_comm.hpp"
 #include "src/smpi/smpi_info.hpp"
 #include "src/smpi/smpi_op.hpp"
@@ -134,43 +135,7 @@ XBT_PRIVATE void smpi_mpi_init();
 XBT_PRIVATE void smpi_empty_status(MPI_Status * status);
 XBT_PRIVATE int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype);
 
-XBT_PRIVATE int smpi_info_c2f(MPI_Info info);
-XBT_PRIVATE int smpi_info_add_f(MPI_Info info);
-XBT_PRIVATE MPI_Info smpi_info_f2c(int info);
 
-
-XBT_PRIVATE void smpi_mpi_bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
-XBT_PRIVATE void smpi_mpi_barrier(MPI_Comm comm);
-XBT_PRIVATE void smpi_mpi_gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                     void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
-XBT_PRIVATE void smpi_mpi_reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
-                       MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
-XBT_PRIVATE void smpi_mpi_gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                      void *recvbuf, int *recvcounts, int *displs, MPI_Datatype recvtype, int root, MPI_Comm comm);
-XBT_PRIVATE void smpi_mpi_allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf,
-                        int recvcount, MPI_Datatype recvtype, MPI_Comm comm);
-XBT_PRIVATE void smpi_mpi_allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf,
-                         int *recvcounts, int *displs, MPI_Datatype recvtype, MPI_Comm comm);
-XBT_PRIVATE void smpi_mpi_scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                      void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
-XBT_PRIVATE void smpi_mpi_scatterv(void *sendbuf, int *sendcounts, int *displs, MPI_Datatype sendtype,
-                      void *recvbuf, int recvcount,MPI_Datatype recvtype, int root, MPI_Comm comm);
-XBT_PRIVATE void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
-                      MPI_Comm comm);
-XBT_PRIVATE void smpi_mpi_allreduce(void *sendbuf, void *recvbuf, int count,MPI_Datatype datatype, MPI_Op op,
-                      MPI_Comm comm);
-XBT_PRIVATE void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count,MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
-XBT_PRIVATE void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op,
-                      MPI_Comm comm);
-
-XBT_PRIVATE int smpi_coll_tuned_alltoall_ompi2(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf,
-                                      int recvcount, MPI_Datatype recvtype, MPI_Comm comm);
-XBT_PRIVATE int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf,
-                                   int recvcount, MPI_Datatype recvtype, MPI_Comm comm);
-XBT_PRIVATE int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                                          void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm);
-XBT_PRIVATE int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts, int *senddisps, MPI_Datatype sendtype,
-                              void *recvbuf, int *recvcounts, int *recvdisps, MPI_Datatype recvtype, MPI_Comm comm);
 XBT_PRIVATE int smpi_comm_keyval_create(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn,
                                         int* keyval, void* extra_state);
 XBT_PRIVATE int smpi_comm_keyval_free(int* keyval);

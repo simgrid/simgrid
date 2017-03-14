@@ -15,7 +15,7 @@
 #endif
 
 /* Non-topology-specific pipelined linear-bcast function */
-int smpi_coll_tuned_bcast_arrival_scatter(void *buf, int count,
+int Coll_bcast_arrival_scatter::bcast(void *buf, int count,
                                           MPI_Datatype datatype, int root,
                                           MPI_Comm comm)
 {
@@ -59,7 +59,7 @@ int smpi_coll_tuned_bcast_arrival_scatter(void *buf, int count,
   /* message too small */
   if (count < size) {
     XBT_WARN("MPI_bcast_arrival_scatter use default MPI_bcast.");
-    smpi_mpi_bcast(buf, count, datatype, root, comm);
+    Colls::bcast(buf, count, datatype, root, comm);
     return MPI_SUCCESS;        
   }
 

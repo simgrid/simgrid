@@ -7,7 +7,11 @@
         /* Short or medium size message and power-of-two no. of processes. Use
          * recursive doubling algorithm */
 #include "../colls_private.h"
-int smpi_coll_tuned_allgatherv_mpich_rdb (
+
+namespace simgrid{
+namespace smpi{
+
+int Coll_allgatherv_mpich_rdb::allgatherv (
   void *sendbuf,
   int sendcount,
   MPI_Datatype sendtype,
@@ -213,4 +217,7 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
 
   smpi_free_tmp_buffer(tmp_buf_rl);
   return MPI_SUCCESS;
+}
+
+}
 }

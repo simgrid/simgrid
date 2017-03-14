@@ -6,13 +6,16 @@
 
 #include "../colls_private.h"
 
+namespace simgrid{
+namespace smpi{
+
 // Allgather - gather/bcast algorithm
-int smpi_coll_tuned_allgatherv_GB(void *send_buff, int send_count,
+int Coll_allgatherv_GB::allgatherv(void *send_buff, int send_count,
                                  MPI_Datatype send_type, void *recv_buff,
                                  int *recv_counts, int *recv_disps, MPI_Datatype recv_type,
                                  MPI_Comm comm)
 {
-  smpi_mpi_gatherv(send_buff, send_count, send_type, recv_buff, recv_counts,
+  Colls::gatherv(send_buff, send_count, send_type, recv_buff, recv_counts,
 		   recv_disps, recv_type, 0, comm);
   int num_procs, i, current, max = 0;
   num_procs = comm->size();
@@ -21,7 +24,10 @@ int smpi_coll_tuned_allgatherv_GB(void *send_buff, int send_count,
     if (current > max)
       max = current;
   }
-  mpi_coll_bcast_fun(recv_buff, max, recv_type, 0, comm);
+  Colls::bcast(recv_buff, max, recv_type, 0, comm);
 
   return MPI_SUCCESS;
+}
+
+}
 }

@@ -6,8 +6,12 @@
 
 #include "../colls_private.h"
 
+namespace simgrid{
+namespace smpi{
+
+
 int
-smpi_coll_tuned_allgather_rdb(void *sbuf, int send_count,
+Coll_allgather_rdb::allgather(void *sbuf, int send_count,
                               MPI_Datatype send_type, void *rbuf,
                               int recv_count, MPI_Datatype recv_type,
                               MPI_Comm comm)
@@ -126,4 +130,8 @@ smpi_coll_tuned_allgather_rdb(void *sbuf, int send_count,
   }
 
   return success;
+}
+
+
+}
 }

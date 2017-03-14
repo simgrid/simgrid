@@ -140,9 +140,10 @@ set(SMPI_SRC
   src/smpi/colls/allreduce/allreduce-smp-rsag.cpp
   src/smpi/colls/allreduce/allreduce-mvapich-rs.cpp
   src/smpi/colls/allreduce/allreduce-mvapich-two-level.cpp
+  src/smpi/colls/alltoall/alltoall-basic-linear.cpp
   src/smpi/colls/alltoall/alltoall-2dmesh.cpp
   src/smpi/colls/alltoall/alltoall-3dmesh.cpp
-#  src/smpi/colls/alltoall/alltoall-bruck.cpp
+  src/smpi/colls/alltoall/alltoall-bruck.cpp
   src/smpi/colls/alltoall/alltoall-pair-light-barrier.cpp
   src/smpi/colls/alltoall/alltoall-pair-mpi-barrier.cpp
   src/smpi/colls/alltoall/alltoall-pair-one-barrier.cpp
@@ -200,6 +201,7 @@ set(SMPI_SRC
   src/smpi/colls/scatter/scatter-ompi.cpp
   src/smpi/colls/scatter/scatter-mvapich-two-level.cpp
   src/smpi/colls/smpi_automatic_selector.cpp
+  src/smpi/colls/smpi_default_selector.cpp
   src/smpi/colls/smpi_mpich_selector.cpp
   src/smpi/colls/smpi_intel_mpi_selector.cpp
   src/smpi/colls/smpi_openmpi_selector.cpp

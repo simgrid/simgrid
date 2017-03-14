@@ -6,7 +6,7 @@
 
 #include "../colls_private.h"
 
-int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
+int Coll_bcast_SMP_binomial::bcast(void *buf, int count,
                                        MPI_Datatype datatype, int root,
                                        MPI_Comm comm)
 {
@@ -27,7 +27,7 @@ int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
     num_core = comm->get_intra_comm()->size();
   }else{
     //implementation buggy in this case
-    return smpi_coll_tuned_bcast_mpich( buf , count, datatype,
+    return Coll_bcast_mpich::bcast( buf , count, datatype,
               root, comm);
   }
 

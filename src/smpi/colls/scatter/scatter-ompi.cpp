@@ -25,7 +25,7 @@
 
 
 int
-smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
+Coll_scatter_ompi_binomial::scatter(void *sbuf, int scount,
 				       MPI_Datatype sdtype,
 				       void *rbuf, int rcount,
 				       MPI_Datatype rdtype,
@@ -51,7 +51,7 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
     rank = comm->rank();
 
     XBT_DEBUG(
-                 "smpi_coll_tuned_scatter_ompi_binomial rank %d", rank);
+                 "Coll_scatter_ompi_binomial::scatter rank %d", rank);
 
     /* create the binomial tree */
     
@@ -191,7 +191,7 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
  *	Returns:	- MPI_SUCCESS or error code
  */
 int
-smpi_coll_tuned_scatter_ompi_basic_linear(void *sbuf, int scount,
+Coll_scatter_ompi_basic_linear::scatter(void *sbuf, int scount,
 					   MPI_Datatype sdtype,
 					   void *rbuf, int rcount,
 					   MPI_Datatype rdtype,

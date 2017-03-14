@@ -36,9 +36,9 @@
  */
  #include "../colls_private.h"
 
+using namespace simgrid::smpi;
 
-
-int smpi_coll_tuned_allgather_mvapich2_smp(void *sendbuf,int sendcnt, MPI_Datatype sendtype,
+int Coll_allgather_mvapich2_smp::allgather(void *sendbuf,int sendcnt, MPI_Datatype sendtype,
                             void *recvbuf, int recvcnt,MPI_Datatype recvtype,
                             MPI_Comm  comm)
 {
@@ -82,7 +82,7 @@ int smpi_coll_tuned_allgather_mvapich2_smp(void *sendbuf,int sendcnt, MPI_Dataty
     /*If there is just one node, after gather itself,
      * root has all the data and it can do bcast*/
     if(local_rank == 0) {
-        mpi_errno = mpi_coll_gather_fun(sendbuf, sendcnt,sendtype, 
+        mpi_errno = Colls::gather(sendbuf, sendcnt,sendtype, 
                                     (void*)((char*)recvbuf + (rank * recvcnt * recvtype_extent)), 
                                      recvcnt, recvtype,
                                      0, shmem_comm);
@@ -90,12 +90,12 @@ int smpi_coll_tuned_allgather_mvapich2_smp(void *sendbuf,int sendcnt, MPI_Dataty
         /*Since in allgather all the processes could have 
          * its own data in place*/
         if(sendbuf == MPI_IN_PLACE) {
-            mpi_errno = mpi_coll_gather_fun((void*)((char*)recvbuf + (rank * recvcnt * recvtype_extent)), 
+            mpi_errno = Colls::gather((void*)((char*)recvbuf + (rank * recvcnt * recvtype_extent)), 
                                          recvcnt , recvtype, 
                                          recvbuf, recvcnt, recvtype,
                                          0, shmem_comm);
         } else {
-            mpi_errno = mpi_coll_gather_fun(sendbuf, sendcnt,sendtype, 
+            mpi_errno = Colls::gather(sendbuf, sendcnt,sendtype, 
                                          recvbuf, recvcnt, recvtype,
                                          0, shmem_comm);
         }
@@ -128,7 +128,7 @@ int smpi_coll_tuned_allgather_mvapich2_smp(void *sendbuf,int sendcnt, MPI_Dataty
 
             void* sendbuf=((char*)recvbuf)+recvtype->get_extent()*displs[leader_comm->rank()];
 
-            mpi_errno = mpi_coll_allgatherv_fun(sendbuf,
+            mpi_errno = Colls::allgatherv(sendbuf,
                                        (recvcnt*local_size),
                                        recvtype, 
                                        recvbuf, recvcnts,
@@ -141,7 +141,7 @@ int smpi_coll_tuned_allgather_mvapich2_smp(void *sendbuf,int sendcnt, MPI_Dataty
         
           
 
-            mpi_errno = smpi_coll_tuned_allgather_mpich(sendtmpbuf, 
+            mpi_errno = Coll_allgather_mpich::allgather(sendtmpbuf, 
                                                (recvcnt*local_size),
                                                recvtype,
                                                recvbuf, (recvcnt*local_size), recvtype,
@@ -151,6 +151,6 @@ int smpi_coll_tuned_allgather_mvapich2_smp(void *sendbuf,int sendcnt, MPI_Dataty
     }
 
     /*Bcast the entire data from node leaders to all other cores*/
-    mpi_errno = mpi_coll_bcast_fun (recvbuf, recvcnt * size, recvtype, 0, shmem_comm);
+    mpi_errno = Colls::bcast (recvbuf, recvcnt * size, recvtype, 0, shmem_comm);
     return mpi_errno;
 }

@@ -26,7 +26,7 @@
 
  ****************************************************************************/
 int
-smpi_coll_tuned_alltoallv_ring_one_barrier(void *send_buff, int *send_counts, int *send_disps,
+Coll_alltoallv_ring_one_barrier::alltoallv(void *send_buff, int *send_counts, int *send_disps,
                                           MPI_Datatype send_type,
                                           void *recv_buff, int *recv_counts, int *recv_disps,
                                           MPI_Datatype recv_type, MPI_Comm comm)
@@ -44,7 +44,7 @@ smpi_coll_tuned_alltoallv_ring_one_barrier(void *send_buff, int *send_counts, in
   send_chunk = send_type->get_extent();
   recv_chunk = recv_type->get_extent();
 
-  smpi_mpi_barrier(comm);
+  Colls::barrier(comm);
   for (i = 0; i < num_procs; i++) {
     src = (rank - i + num_procs) % num_procs;
     dst = (rank + i) % num_procs;

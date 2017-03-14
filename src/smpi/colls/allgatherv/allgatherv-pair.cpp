@@ -64,8 +64,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *         phases, nodes in pair communicate their data.
  * Auther: Ahmad Faraj
  ****************************************************************************/
+
+namespace simgrid{
+namespace smpi{
+
 int
-smpi_coll_tuned_allgatherv_pair(void *send_buff, int send_count,
+Coll_allgatherv_pair::allgatherv(void *send_buff, int send_count,
                                MPI_Datatype send_type, void *recv_buff,
                                int *recv_counts, int *recv_disps, MPI_Datatype recv_type,
                                MPI_Comm comm)
@@ -99,4 +103,7 @@ smpi_coll_tuned_allgatherv_pair(void *send_buff, int send_count,
   }
 
   return MPI_SUCCESS;
+}
+
+}
 }

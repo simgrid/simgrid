@@ -63,8 +63,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Descrp: Function works in P - 1 steps. In step i, node j - i -> j -> j+ i.
  * Auther: Ahmad Faraj
  ****************************************************************************/
+
+namespace simgrid{
+namespace smpi{
+
 int
-smpi_coll_tuned_allgatherv_ring(void *send_buff, int send_count,
+Coll_allgatherv_ring::allgatherv(void *send_buff, int send_count,
                                MPI_Datatype send_type, void *recv_buff,
                                int *recv_counts, int *recv_disps, MPI_Datatype recv_type,
                                MPI_Comm comm)
@@ -97,4 +101,7 @@ smpi_coll_tuned_allgatherv_ring(void *send_buff, int send_count,
   }
 
   return MPI_SUCCESS;
+}
+
+}
 }

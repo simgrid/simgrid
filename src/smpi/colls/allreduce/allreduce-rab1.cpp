@@ -6,9 +6,10 @@
 
 #include "../colls_private.h"
 //#include <star-reduction.c>
+using namespace simgrid::smpi;
 
 // NP pow of 2 for now
-int smpi_coll_tuned_allreduce_rab1(void *sbuff, void *rbuff,
+int Coll_allreduce_rab1::allreduce(void *sbuff, void *rbuff,
                                    int count, MPI_Datatype dtype,
                                    MPI_Op op, MPI_Comm comm)
 {
@@ -68,7 +69,7 @@ int smpi_coll_tuned_allreduce_rab1(void *sbuff, void *rbuff,
     }
 
     memcpy(tmp_buf, (char *) recv + recv_idx * extent, recv_cnt * extent);
-    mpi_coll_allgather_fun(tmp_buf, recv_cnt, dtype, recv, recv_cnt, dtype, comm);
+    Colls::allgather(tmp_buf, recv_cnt, dtype, recv, recv_cnt, dtype, comm);
 
     memcpy(rbuff, recv, count * extent);
     smpi_free_tmp_buffer(recv);
@@ -102,7 +103,7 @@ int smpi_coll_tuned_allreduce_rab1(void *sbuff, void *rbuff,
     }
 
     memcpy(tmp_buf, (char *) rbuff + recv_idx * extent, recv_cnt * extent);
-    mpi_coll_allgather_fun(tmp_buf, recv_cnt, dtype, rbuff, recv_cnt, dtype, comm);
+    Colls::allgather(tmp_buf, recv_cnt, dtype, rbuff, recv_cnt, dtype, comm);
     smpi_free_tmp_buffer(tmp_buf);
   }
 

@@ -14,13 +14,21 @@
 
 SG_BEGIN_DECL()
 
+
+namespace simgrid{
+namespace smpi{
+
 #define COLL_DESCRIPTION(cat, ret, args, name) \
   {# name,\
    # cat " " # name " collective",\
-   (void*)smpi_coll_tuned_ ## cat ## _ ## name}
+   (void*) Coll_ ## cat ## _ ## name::cat }
 
 #define COLL_PROTO(cat, ret, args, name) \
-  ret smpi_coll_tuned_ ## cat ## _ ## name(COLL_UNPAREN args);
+class Coll_ ## cat ## _ ## name : public Coll_ ## cat { \
+public: \
+static ret cat  (COLL_UNPAREN args); \
+};
+
 #define COLL_UNPAREN(...)  __VA_ARGS__
 
 #define COLL_APPLY(action, sig, name) action(sig, name)
@@ -31,12 +39,14 @@ SG_BEGIN_DECL()
 /*************
  * GATHER *
  *************/
+
 #define COLL_GATHER_SIG gather, int, \
 	                  (void *send_buff, int send_count, MPI_Datatype send_type, \
 	                   void *recv_buff, int recv_count, MPI_Datatype recv_type, \
                            int root, MPI_Comm comm)
 
 #define COLL_GATHERS(action, COLL_sep) \
+COLL_APPLY(action, COLL_GATHER_SIG, default) COLL_sep \
 COLL_APPLY(action, COLL_GATHER_SIG, ompi) COLL_sep \
 COLL_APPLY(action, COLL_GATHER_SIG, ompi_basic_linear) COLL_sep \
 COLL_APPLY(action, COLL_GATHER_SIG, ompi_binomial) COLL_sep \
@@ -46,8 +56,6 @@ COLL_APPLY(action, COLL_GATHER_SIG, mvapich2) COLL_sep \
 COLL_APPLY(action, COLL_GATHER_SIG, mvapich2_two_level) COLL_sep \
 COLL_APPLY(action, COLL_GATHER_SIG, impi) COLL_sep \
 COLL_APPLY(action, COLL_GATHER_SIG, automatic)
-
-
 
 COLL_GATHERS(COLL_PROTO, COLL_NOsep)
 
@@ -60,6 +68,7 @@ COLL_GATHERS(COLL_PROTO, COLL_NOsep)
                            MPI_Comm comm)
 
 #define COLL_ALLGATHERS(action, COLL_sep) \
+COLL_APPLY(action, COLL_ALLGATHER_SIG, default) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, 2dmesh) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, 3dmesh) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, bruck) COLL_sep \
@@ -82,7 +91,6 @@ COLL_APPLY(action, COLL_ALLGATHER_SIG, mpich) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, impi) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, automatic)
 
-
 COLL_ALLGATHERS(COLL_PROTO, COLL_NOsep)
 
 /**************
@@ -94,6 +102,7 @@ COLL_ALLGATHERS(COLL_PROTO, COLL_NOsep)
 			   MPI_Datatype recv_type, MPI_Comm comm)
 
 #define COLL_ALLGATHERVS(action, COLL_sep) \
+COLL_APPLY(action, COLL_ALLGATHERV_SIG, default) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHERV_SIG, GB) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHERV_SIG, pair) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHERV_SIG, ring) COLL_sep \
@@ -117,6 +126,7 @@ COLL_ALLGATHERVS(COLL_PROTO, COLL_NOsep)
                            MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
 
 #define COLL_ALLREDUCES(action, COLL_sep) \
+COLL_APPLY(action, COLL_ALLREDUCE_SIG, default) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, lr) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, rab1) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, rab2) COLL_sep \
@@ -141,7 +151,6 @@ COLL_APPLY(action, COLL_ALLREDUCE_SIG, automatic)
 
 COLL_ALLREDUCES(COLL_PROTO, COLL_NOsep)
 
-
 /************
  * ALLTOALL *
  ************/
@@ -151,6 +160,7 @@ COLL_ALLREDUCES(COLL_PROTO, COLL_NOsep)
                           MPI_Comm comm)
 
 #define COLL_ALLTOALLS(action, COLL_sep) \
+COLL_APPLY(action, COLL_ALLTOALL_SIG, default) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, 2dmesh) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, 3dmesh) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, basic_linear) COLL_sep \
@@ -183,6 +193,7 @@ COLL_ALLTOALLS(COLL_PROTO, COLL_NOsep)
                           MPI_Comm comm)
 
 #define COLL_ALLTOALLVS(action, COLL_sep) \
+COLL_APPLY(action, COLL_ALLTOALLV_SIG, default) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALLV_SIG, bruck) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALLV_SIG, pair) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALLV_SIG, pair_light_barrier) COLL_sep \
@@ -209,6 +220,7 @@ COLL_ALLTOALLVS(COLL_PROTO, COLL_NOsep)
 	               int root, MPI_Comm comm)
 
 #define COLL_BCASTS(action, COLL_sep) \
+COLL_APPLY(action, COLL_BCAST_SIG, default) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, arrival_pattern_aware) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, arrival_pattern_aware_wait) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, arrival_scatter) COLL_sep \
@@ -245,6 +257,7 @@ COLL_BCASTS(COLL_PROTO, COLL_NOsep)
                         MPI_Op op, int root, MPI_Comm comm)
 
 #define COLL_REDUCES(action, COLL_sep) \
+COLL_APPLY(action, COLL_REDUCE_SIG, default) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, arrival_pattern_aware) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, binomial) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, flat_tree) COLL_sep \
@@ -275,6 +288,7 @@ COLL_REDUCES(COLL_PROTO, COLL_NOsep)
                     MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm)
 
 #define COLL_REDUCE_SCATTERS(action, COLL_sep) \
+COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, default) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, ompi) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, ompi_basic_recursivehalving) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, ompi_ring)  COLL_sep \
@@ -300,6 +314,7 @@ COLL_REDUCE_SCATTERS(COLL_PROTO, COLL_NOsep)
                 int root, MPI_Comm comm)
 
 #define COLL_SCATTERS(action, COLL_sep) \
+COLL_APPLY(action, COLL_SCATTER_SIG, default) COLL_sep \
 COLL_APPLY(action, COLL_SCATTER_SIG, ompi) COLL_sep \
 COLL_APPLY(action, COLL_SCATTER_SIG, ompi_basic_linear) COLL_sep \
 COLL_APPLY(action, COLL_SCATTER_SIG, ompi_binomial)  COLL_sep \
@@ -319,6 +334,7 @@ COLL_SCATTERS(COLL_PROTO, COLL_NOsep)
                 (MPI_Comm comm)
 
 #define COLL_BARRIERS(action, COLL_sep) \
+COLL_APPLY(action, COLL_BARRIER_SIG, default) COLL_sep \
 COLL_APPLY(action, COLL_BARRIER_SIG, ompi) COLL_sep \
 COLL_APPLY(action, COLL_BARRIER_SIG, ompi_basic_linear) COLL_sep \
 COLL_APPLY(action, COLL_BARRIER_SIG, ompi_two_procs)  COLL_sep \
@@ -333,6 +349,9 @@ COLL_APPLY(action, COLL_BARRIER_SIG, impi)   COLL_sep \
 COLL_APPLY(action, COLL_BARRIER_SIG, automatic)
 
 COLL_BARRIERS(COLL_PROTO, COLL_NOsep)
+
+}
+}
 
 SG_END_DECL()
 

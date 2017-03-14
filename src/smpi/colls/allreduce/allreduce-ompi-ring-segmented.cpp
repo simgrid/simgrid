@@ -155,7 +155,7 @@
 
 #include "../colls_private.h"
 int 
-smpi_coll_tuned_allreduce_ompi_ring_segmented(void *sbuf, void *rbuf, int count,
+Coll_allreduce_ompi_ring_segmented::allreduce(void *sbuf, void *rbuf, int count,
                                                MPI_Datatype dtype,
                                                MPI_Op op,
                                                MPI_Comm comm) 
@@ -202,7 +202,7 @@ smpi_coll_tuned_allreduce_ompi_ring_segmented(void *sbuf, void *rbuf, int count,
    /* Special case for count less than size * segcount - use regular ring */
    if (count < size * segcount) {
       XBT_DEBUG( "coll:tuned:allreduce_ring_segmented rank %d/%d, count %d, switching to regular ring", rank, size, count);
-      return (smpi_coll_tuned_allreduce_lr(sbuf, rbuf, count, dtype, op, 
+      return (Coll_allreduce_lr::allreduce(sbuf, rbuf, count, dtype, op, 
                                                    comm));
    }
 

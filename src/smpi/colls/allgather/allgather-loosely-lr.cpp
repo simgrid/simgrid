@@ -6,7 +6,11 @@
 
 #include "../colls_private.h"
 
-int smpi_coll_tuned_allgather_loosely_lr(void *sbuf, int scount,
+namespace simgrid{
+namespace smpi{
+
+
+int Coll_allgather_loosely_lr::allgather(void *sbuf, int scount,
                                          MPI_Datatype stype, void *rbuf,
                                          int rcount, MPI_Datatype rtype,
                                          MPI_Comm comm)
@@ -130,4 +134,8 @@ if(comm->get_leaders_comm()==MPI_COMM_NULL){
   Request::waitall(inter_srequest_count, inter_srequest_array, MPI_STATUSES_IGNORE);
 
   return MPI_SUCCESS;
+}
+
+
+}
 }

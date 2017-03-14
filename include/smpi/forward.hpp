@@ -32,6 +32,8 @@ class Type_Struct;
 class Type_Vector;
 class Win;
 
+class Colls;
+
 }
 }
 

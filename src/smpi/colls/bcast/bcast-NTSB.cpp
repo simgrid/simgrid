@@ -8,7 +8,7 @@
 
 int bcast_NTSB_segment_size_in_byte = 8192;
 
-int smpi_coll_tuned_bcast_NTSB(void *buf, int count, MPI_Datatype datatype,
+int Coll_bcast_NTSB::bcast(void *buf, int count, MPI_Datatype datatype,
                                int root, MPI_Comm comm)
 {
   int tag = COLL_TAG_BCAST;
@@ -177,7 +177,7 @@ int smpi_coll_tuned_bcast_NTSB(void *buf, int count, MPI_Datatype datatype,
   /* when count is not divisible by block size, use default BCAST for the remainder */
   if ((remainder != 0) && (count > segment)) {
     XBT_WARN("MPI_bcast_NTSB use default MPI_bcast.");	  	  
-    smpi_mpi_bcast((char *) buf + (pipe_length * increment), remainder, datatype,
+    Colls::bcast((char *) buf + (pipe_length * increment), remainder, datatype,
               root, comm);
   }
 

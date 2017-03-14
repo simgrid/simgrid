@@ -27,7 +27,7 @@
 
  ****************************************************************************/
 int
-smpi_coll_tuned_alltoallv_ring_mpi_barrier(void *send_buff, int *send_counts, int *send_disps,
+Coll_alltoallv_ring_mpi_barrier::alltoallv(void *send_buff, int *send_counts, int *send_disps,
                                           MPI_Datatype send_type,
                                           void *recv_buff, int *recv_counts, int *recv_disps,
                                           MPI_Datatype recv_type, MPI_Comm comm)
@@ -49,7 +49,7 @@ smpi_coll_tuned_alltoallv_ring_mpi_barrier(void *send_buff, int *send_counts, in
     src = (rank - i + num_procs) % num_procs;
     dst = (rank + i) % num_procs;
 
-    smpi_mpi_barrier(comm);
+    Colls::barrier(comm);
     Request::sendrecv(send_ptr + send_disps[dst] * send_chunk, send_counts[dst], send_type, dst,
                  tag, recv_ptr + recv_disps[src] * recv_chunk, recv_counts[src], recv_type,
                  src, tag, comm, &s);

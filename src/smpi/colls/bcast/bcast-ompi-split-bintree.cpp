@@ -60,7 +60,7 @@
   #define MAXTREEFANOUT 32
  
 int
-smpi_coll_tuned_bcast_ompi_split_bintree ( void* buffer,
+Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
                                             int count, 
                                             MPI_Datatype datatype, 
                                             int root,
@@ -134,7 +134,7 @@ smpi_coll_tuned_bcast_ompi_split_bintree ( void* buffer,
         (segsize > counts[0] * type_size) ||
         (segsize > counts[1] * type_size) ) {
         /* call linear version here ! */
-        return (smpi_coll_tuned_bcast_SMP_linear ( buffer, count, datatype, 
+        return (Coll_bcast_SMP_linear::bcast ( buffer, count, datatype, 
                                                     root, comm));
     }
     type_extent = datatype->get_extent();

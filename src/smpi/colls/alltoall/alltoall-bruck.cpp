@@ -24,8 +24,15 @@
  * Auther: MPICH / modified by Ahmad Faraj
 
  ****************************************************************************/
+
+#include "../colls_private.h"
+
+namespace simgrid{
+namespace smpi{
+
+
 int
-smpi_coll_tuned_alltoall_bruck(void *send_buff, int send_count,
+Coll_alltoall_bruck::alltoall(void *send_buff, int send_count,
                                MPI_Datatype send_type, void *recv_buff,
                                int recv_count, MPI_Datatype recv_type,
                                MPI_Comm comm)
@@ -35,7 +42,7 @@ smpi_coll_tuned_alltoall_bruck(void *send_buff, int send_count,
   MPI_Datatype new_type;
 
   int *blocks_length, *disps;
-  int i, src, dst, rank, num_procs, count, remainder, block, position;
+  int i, src, dst, rank, num_procs, count, block, position;
   int pack_size, tag = COLL_TAG_ALLTOALL, pof2 = 1;
 
 
@@ -79,7 +86,7 @@ smpi_coll_tuned_alltoall_bruck(void *send_buff, int send_count,
       }
 
     MPI_Type_indexed(count, blocks_length, disps, recv_type, &new_type);
-    smpi_datatype_commit(&new_type);
+    new_type->commit();
 
     position = 0;
     MPI_Pack(recv_buff, 1, new_type, tmp_buff, pack_size, &position, comm);
@@ -112,4 +119,7 @@ smpi_coll_tuned_alltoall_bruck(void *send_buff, int send_count,
 
   smpi_free_tmp_buffer(tmp_buff);
   return MPI_SUCCESS;
+}
+
+}
 }

@@ -7,7 +7,7 @@
 #include "../colls_private.h"
 //#include <star-reduction.c>
 
-int smpi_coll_tuned_allreduce_rdb(void *sbuff, void *rbuff, int count,
+int Coll_allreduce_rdb::allreduce(void *sbuff, void *rbuff, int count,
                                   MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
 {
   int nprocs, rank, tag = COLL_TAG_ALLREDUCE;

@@ -67,7 +67,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Comment: Original bruck algorithm from MPICH is slightly modified by
  *          Ahmad Faraj.  
  ****************************************************************************/
-int smpi_coll_tuned_allgather_bruck(void *send_buff, int send_count,
+
+namespace simgrid{
+namespace smpi{
+
+
+
+int Coll_allgather_bruck::allgather(void *send_buff, int send_count,
                                     MPI_Datatype send_type, void *recv_buff,
                                     int recv_count, MPI_Datatype recv_type,
                                     MPI_Comm comm)
@@ -132,4 +138,8 @@ int smpi_coll_tuned_allgather_bruck(void *send_buff, int send_count,
                   rank * recv_count, recv_type, rank, tag, comm, &status);
   smpi_free_tmp_buffer(tmp_buff);
   return MPI_SUCCESS;
+}
+
+
+}
 }

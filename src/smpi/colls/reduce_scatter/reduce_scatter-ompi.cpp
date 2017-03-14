@@ -42,7 +42,7 @@
  *  Limitation: - Works only for commutative operations.
  */
 int
-smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf, 
+Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(void *sbuf, 
                                                             void *rbuf, 
                                                             int *rcounts,
                                                             MPI_Datatype dtype,
@@ -301,7 +301,7 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
 
 
 /*
- *   smpi_coll_tuned_reduce_scatter_ompi_ring
+ *   Coll_reduce_scatter_ompi_ring::reduce_scatter
  *
  *   Function:       Ring algorithm for reduce_scatter operation
  *   Accepts:        Same as MPI_Reduce_scatter()
@@ -360,7 +360,7 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
  *
  */
 int 
-smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
+Coll_reduce_scatter_ompi_ring::reduce_scatter(void *sbuf, void *rbuf, int *rcounts,
                                           MPI_Datatype dtype,
                                           MPI_Op op,
                                           MPI_Comm comm

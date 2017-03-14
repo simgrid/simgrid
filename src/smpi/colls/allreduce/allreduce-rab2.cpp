@@ -6,9 +6,10 @@
 
 #include "../colls_private.h"
 //#include <star-reduction.c>
+using namespace simgrid::smpi;
 
 // this requires that count >= NP
-int smpi_coll_tuned_allreduce_rab2(void *sbuff, void *rbuff,
+int Coll_allreduce_rab2::allreduce(void *sbuff, void *rbuff,
                                    int count, MPI_Datatype dtype,
                                    MPI_Op op, MPI_Comm comm)
 {
@@ -46,14 +47,14 @@ int smpi_coll_tuned_allreduce_rab2(void *sbuff, void *rbuff,
 
     memcpy(send, sbuff, s_extent * count);
 
-    mpi_coll_alltoall_fun(send, send_size, dtype, recv, send_size, dtype, comm);
+    Colls::alltoall(send, send_size, dtype, recv, send_size, dtype, comm);
 
     memcpy(tmp, recv, nbytes);
 
     for (i = 1, s_offset = nbytes; i < nprocs; i++, s_offset = i * nbytes)
       if(op!=MPI_OP_NULL) op->apply( (char *) recv + s_offset, tmp, &send_size, dtype);
 
-    mpi_coll_allgather_fun(tmp, send_size, dtype, recv, send_size, dtype, comm);
+    Colls::allgather(tmp, send_size, dtype, recv, send_size, dtype, comm);
     memcpy(rbuff, recv, count * s_extent);
 
     smpi_free_tmp_buffer(recv);
@@ -67,7 +68,7 @@ int smpi_coll_tuned_allreduce_rab2(void *sbuff, void *rbuff,
 
     recv = (void *) smpi_get_tmp_recvbuffer(s_extent * send_size * nprocs);
 
-    mpi_coll_alltoall_fun(send, send_size, dtype, recv, send_size, dtype, comm);
+    Colls::alltoall(send, send_size, dtype, recv, send_size, dtype, comm);
 
     memcpy((char *) rbuff + r_offset, recv, nbytes);
 
@@ -75,7 +76,7 @@ int smpi_coll_tuned_allreduce_rab2(void *sbuff, void *rbuff,
       if(op!=MPI_OP_NULL) op->apply( (char *) recv + s_offset, (char *) rbuff + r_offset,
                      &send_size, dtype);
 
-    mpi_coll_allgather_fun((char *) rbuff + r_offset, send_size, dtype, rbuff, send_size,
+    Colls::allgather((char *) rbuff + r_offset, send_size, dtype, rbuff, send_size,
                   dtype, comm);
     smpi_free_tmp_buffer(recv);
   }

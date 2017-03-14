@@ -24,8 +24,12 @@
  *   recv_type: data type of elements being received
  *   comm: communication
  ****************************************************************************/
+
+namespace simgrid{
+namespace smpi{
+
 int
-smpi_coll_tuned_allgatherv_mpich_ring(void *sendbuf, int sendcount,
+Coll_allgatherv_mpich_ring::allgatherv(void *sendbuf, int sendcount,
     MPI_Datatype send_type, void *recvbuf,
     int *recvcounts, int *displs, MPI_Datatype recvtype,
     MPI_Comm comm)
@@ -123,4 +127,7 @@ smpi_coll_tuned_allgatherv_mpich_ring(void *sendbuf, int sendcount,
   }
 
   return MPI_SUCCESS;
+}
+
+}
 }

@@ -18,7 +18,7 @@ int reduce_arrival_pattern_aware_segment_size_in_byte = 8192;
 #endif
 
 /* Non-topology-specific pipelined linear-reduce function */
-int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
+int Coll_reduce_arrival_pattern_aware::reduce(void *buf, void *rbuf,
                                                  int count,
                                                  MPI_Datatype datatype,
                                                  MPI_Op op, int root,
@@ -344,7 +344,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
 
   /* when count is not divisible by block size, use default BCAST for the remainder */
   if ((remainder != 0) && (count > segment)) {
-    smpi_mpi_reduce((char *)buf + (pipe_length * increment),
+    Coll_reduce_default::reduce((char *)buf + (pipe_length * increment),
 	       (char *)rbuf + (pipe_length * increment), remainder, datatype, op, root,
                comm);
   }

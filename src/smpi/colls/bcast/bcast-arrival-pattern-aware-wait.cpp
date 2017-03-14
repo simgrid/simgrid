@@ -17,7 +17,7 @@ int bcast_arrival_pattern_aware_wait_segment_size_in_byte = 8192;
 #endif
 
 /* Non-topology-specific pipelined linear-bcast function */
-int smpi_coll_tuned_bcast_arrival_pattern_aware_wait(void *buf, int count,
+int Coll_bcast_arrival_pattern_aware_wait::bcast(void *buf, int count,
                                                      MPI_Datatype datatype,
                                                      int root, MPI_Comm comm)
 {
@@ -247,7 +247,7 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware_wait(void *buf, int count,
   /* when count is not divisible by block size, use default BCAST for the remainder */
   if ((remainder != 0) && (count > segment)) {
     XBT_WARN("MPI_bcast_arrival_pattern_aware_wait use default MPI_bcast.");	  	  
-    smpi_mpi_bcast((char *)buf + (pipe_length * increment), remainder, datatype, root, comm);
+    Colls::bcast((char *)buf + (pipe_length * increment), remainder, datatype, root, comm);
   }
 
   return MPI_SUCCESS;

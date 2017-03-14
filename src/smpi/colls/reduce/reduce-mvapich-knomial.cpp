@@ -114,7 +114,7 @@ static int MPIR_Reduce_knomial_trace(int root, int reduce_knomial_factor,
     return 0; 
 }
         
-int smpi_coll_tuned_reduce_mvapich2_knomial (
+int Coll_reduce_mvapich2_knomial::reduce (
         void *sendbuf,
         void *recvbuf,
         int count,

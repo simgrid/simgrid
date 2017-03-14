@@ -76,7 +76,11 @@
  *         [5]    [5]    [5]    [5]    [5]    [5]    [5]
  *         [6]    [6]    [6]    [6]    [6]    [6]    [6]
  */
-int smpi_coll_tuned_allgatherv_ompi_bruck(void *sbuf, int scount,
+
+namespace simgrid{
+namespace smpi{
+
+int Coll_allgatherv_ompi_bruck::allgatherv(void *sbuf, int scount,
                                            MPI_Datatype sdtype,
                                            void *rbuf, int *rcounts,
                                            int *rdispls, 
@@ -173,3 +177,6 @@ int smpi_coll_tuned_allgatherv_ompi_bruck(void *sbuf, int scount,
 
 }
 
+
+}
+}

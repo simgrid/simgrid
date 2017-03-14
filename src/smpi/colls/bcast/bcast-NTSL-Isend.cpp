@@ -11,7 +11,7 @@ static int bcast_NTSL_segment_size_in_byte = 8192;
 /* Non-topology-specific pipelined linear-bcast function 
    0->1, 1->2 ,2->3, ....., ->last node : in a pipeline fashion
 */
-int smpi_coll_tuned_bcast_NTSL_Isend(void *buf, int count, MPI_Datatype datatype,
+int Coll_bcast_NTSL_Isend::bcast(void *buf, int count, MPI_Datatype datatype,
                                int root, MPI_Comm comm)
 {
   int tag = COLL_TAG_BCAST;
@@ -124,7 +124,7 @@ int smpi_coll_tuned_bcast_NTSL_Isend(void *buf, int count, MPI_Datatype datatype
   /* when count is not divisible by block size, use default BCAST for the remainder */
   if ((remainder != 0) && (count > segment)) {
     XBT_WARN("MPI_bcast_NTSL_Isend_nb use default MPI_bcast.");	  	  
-    smpi_mpi_bcast((char *) buf + (pipe_length * increment), remainder, datatype,
+    Colls::bcast((char *) buf + (pipe_length * increment), remainder, datatype,
               root, comm);
   }
 

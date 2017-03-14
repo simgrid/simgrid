@@ -63,8 +63,12 @@
  */
  
  #include "../colls_private.h"
+
+namespace simgrid{
+namespace smpi{
+
 int 
-smpi_coll_tuned_allgather_ompi_neighborexchange(void *sbuf, int scount,
+Coll_allgather_ompi_neighborexchange::allgather(void *sbuf, int scount,
                                                  MPI_Datatype sdtype,
                                                  void* rbuf, int rcount,
                                                  MPI_Datatype rdtype,
@@ -86,7 +90,7 @@ smpi_coll_tuned_allgather_ompi_neighborexchange(void *sbuf, int scount,
       XBT_DEBUG(
                    "coll:tuned:allgather_intra_neighborexchange WARNING: odd size %d, switching to ring algorithm", 
                    size);
-      return smpi_coll_tuned_allgather_ring(sbuf, scount, sdtype,
+      return Coll_allgather_ring::allgather(sbuf, scount, sdtype,
                                                   rbuf, rcount, rdtype,
                                                   comm);
    }
@@ -177,4 +181,8 @@ smpi_coll_tuned_allgather_ompi_neighborexchange(void *sbuf, int scount,
    XBT_DEBUG( "%s:%4d\tError occurred %d, rank %2d",
                 __FILE__, line, err, rank);
    return err;
+}
+
+
+}
 }

@@ -13,7 +13,7 @@
  * FIXME: uh, check smpi_pmpi again, but this routine is called for > 12, not
  * less...
  **/
-int smpi_coll_tuned_alltoallv_bruck(void *sendbuf, int *sendcounts, int *senddisps,
+int Coll_alltoallv_bruck::alltoallv(void *sendbuf, int *sendcounts, int *senddisps,
                                    MPI_Datatype sendtype, void *recvbuf,
                                    int *recvcounts, int *recvdisps, MPI_Datatype recvtype,
                                    MPI_Comm comm)
@@ -80,7 +80,7 @@ int smpi_coll_tuned_alltoallv_bruck(void *sendbuf, int *sendcounts, int *senddis
               count++;
             }
             /* Wait for them all. */
-            //smpi_mpi_startall(count, requests);
+            //Colls::startall(count, requests);
             XBT_DEBUG("<%d> wait for %d requests", rank, count);
             Request::waitall(count, requests, MPI_STATUSES_IGNORE);
             xbt_free(requests);

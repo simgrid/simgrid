@@ -69,7 +69,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ****************************************************************************/
 
 int
-smpi_coll_tuned_bcast_binomial_tree(void *buff, int count,
+Coll_bcast_binomial_tree::bcast(void *buff, int count,
                                     MPI_Datatype data_type, int root,
                                     MPI_Comm comm)
 {

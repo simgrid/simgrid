@@ -27,7 +27,7 @@
 
  ****************************************************************************/
 int
-smpi_coll_tuned_alltoall_pair_one_barrier(void *send_buff, int send_count,
+Coll_alltoall_pair_one_barrier::alltoall(void *send_buff, int send_count,
                                           MPI_Datatype send_type,
                                           void *recv_buff, int recv_count,
                                           MPI_Datatype recv_type, MPI_Comm comm)
@@ -53,7 +53,7 @@ smpi_coll_tuned_alltoall_pair_one_barrier(void *send_buff, int send_count,
   send_chunk *= send_count;
   recv_chunk *= recv_count;
 
-  mpi_coll_barrier_fun(comm);
+  Colls::barrier(comm);
   for (i = 0; i < num_procs; i++) {
     src = dst = rank ^ i;
     Request::sendrecv(send_ptr + dst * send_chunk, send_count, send_type, dst,

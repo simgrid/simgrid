@@ -15,7 +15,7 @@
  * GEF Oct05 after asking Jeff.  
  */
 int
-smpi_coll_tuned_alltoallv_ompi_basic_linear(void *sbuf, int *scounts, int *sdisps,
+Coll_alltoallv_ompi_basic_linear::alltoallv(void *sbuf, int *scounts, int *sdisps,
                                             MPI_Datatype sdtype,
                                             void *rbuf, int *rcounts, int *rdisps,
                                             MPI_Datatype rdtype,

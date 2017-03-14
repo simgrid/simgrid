@@ -36,14 +36,14 @@
  */
 #include "../colls_private.h"
 
-#define MPIR_Scatter_MV2_Binomial smpi_coll_tuned_scatter_ompi_binomial
-#define MPIR_Scatter_MV2_Direct smpi_coll_tuned_scatter_ompi_basic_linear
+#define MPIR_Scatter_MV2_Binomial Coll_scatter_ompi_binomial::scatter
+#define MPIR_Scatter_MV2_Direct Coll_scatter_ompi_basic_linear::scatter
 
 extern int (*MV2_Scatter_intra_function) (void *sendbuf, int sendcount, MPI_Datatype sendtype,
     void *recvbuf, int recvcount, MPI_Datatype recvtype,
     int root, MPI_Comm comm);
 
-int smpi_coll_tuned_scatter_mvapich2_two_level_direct(void *sendbuf,
+int Coll_scatter_mvapich2_two_level_direct::scatter(void *sendbuf,
                                       int sendcnt,
                                       MPI_Datatype sendtype,
                                       void *recvbuf,
@@ -63,7 +63,7 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_direct(void *sendbuf,
     MPI_Comm shmem_comm, leader_comm;
     //if not set (use of the algo directly, without mvapich2 selector)
     if(MV2_Scatter_intra_function==NULL)
-      MV2_Scatter_intra_function=smpi_coll_tuned_scatter_mpich;
+      MV2_Scatter_intra_function=Coll_scatter_mpich::scatter;
     
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
       comm->init_smp();
@@ -158,7 +158,7 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_direct(void *sendbuf,
                             sendcnts[i] = node_sizes[i] * nbytes;
                         }
                     }
-                        smpi_mpi_scatterv(leader_scatter_buf, sendcnts, displs,
+                        Colls::scatterv(leader_scatter_buf, sendcnts, displs,
                                       MPI_BYTE, tmp_buf, nbytes * local_size,
                                       MPI_BYTE, leader_root, leader_comm);
                 } else {
@@ -174,7 +174,7 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_direct(void *sendbuf,
                             sendcnts[i] = node_sizes[i] * sendcnt;
                         }
                     }
-                    smpi_mpi_scatterv(sendbuf, sendcnts, displs,
+                    Colls::scatterv(sendbuf, sendcnts, displs,
                                               sendtype, tmp_buf,
                                               nbytes * local_size, MPI_BYTE,
                                               leader_root, leader_comm);
@@ -225,7 +225,7 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_direct(void *sendbuf,
 }
 
 
-int smpi_coll_tuned_scatter_mvapich2_two_level_binomial(void *sendbuf,
+int Coll_scatter_mvapich2_two_level_binomial::scatter(void *sendbuf,
                                         int sendcnt,
                                         MPI_Datatype sendtype,
                                         void *recvbuf,
@@ -247,7 +247,7 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_binomial(void *sendbuf,
 
     //if not set (use of the algo directly, without mvapich2 selector)
     if(MV2_Scatter_intra_function==NULL)
-      MV2_Scatter_intra_function=smpi_coll_tuned_scatter_mpich;
+      MV2_Scatter_intra_function=Coll_scatter_mpich::scatter;
     
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
       comm->init_smp();
@@ -339,7 +339,7 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_binomial(void *sendbuf,
                             sendcnts[i] = node_sizes[i] * nbytes;
                         }
                     }
-                        smpi_mpi_scatterv(leader_scatter_buf, sendcnts, displs,
+                        Colls::scatterv(leader_scatter_buf, sendcnts, displs,
                                       MPI_BYTE, tmp_buf, nbytes * local_size,
                                       MPI_BYTE, leader_root, leader_comm);
                 } else {
@@ -355,7 +355,7 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_binomial(void *sendbuf,
                             sendcnts[i] = node_sizes[i] * sendcnt;
                         }
                     }
-                    smpi_mpi_scatterv(sendbuf, sendcnts, displs,
+                    Colls::scatterv(sendbuf, sendcnts, displs,
                                               sendtype, tmp_buf,
                                               nbytes * local_size, MPI_BYTE,
                                               leader_root, leader_comm);

@@ -8,7 +8,7 @@
 
 //#include <star-reduction.c>
 
-int smpi_coll_tuned_reduce_binomial(void *sendbuf, void *recvbuf, int count,
+int Coll_reduce_binomial::reduce(void *sendbuf, void *recvbuf, int count,
                                     MPI_Datatype datatype, MPI_Op op, int root,
                                     MPI_Comm comm)
 {

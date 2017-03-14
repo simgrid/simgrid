@@ -6,7 +6,11 @@
 
 #include "../colls_private.h"
 
-int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
+namespace simgrid{
+namespace smpi{
+
+
+int Coll_allgather_SMP_NTS::allgather(void *sbuf, int scount,
                                       MPI_Datatype stype, void *rbuf,
                                       int rcount, MPI_Datatype rtype,
                                       MPI_Comm comm)
@@ -42,7 +46,7 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
   /* for too small number of processes, use default implementation */
   if (comm_size <= num_core) {
     XBT_WARN("MPI_allgather_SMP_NTS use default MPI_allgather.");  	  
-    smpi_mpi_allgather(sbuf, scount, stype, rbuf, rcount, rtype, comm);
+    Coll_allgather_default::allgather(sbuf, scount, stype, rbuf, rcount, rtype, comm);
     return MPI_SUCCESS;    
   }
 
@@ -156,4 +160,8 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
   }
 
   return MPI_SUCCESS;
+}
+
+
+}
 }

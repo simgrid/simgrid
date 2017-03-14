@@ -20,7 +20,7 @@
 //#include <star-reduction.c>
 
 int
-smpi_coll_tuned_allreduce_lr(void *sbuf, void *rbuf, int rcount,
+Coll_allreduce_lr::allreduce(void *sbuf, void *rbuf, int rcount,
                              MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
 {
   int tag = COLL_TAG_ALLREDUCE;
@@ -39,7 +39,7 @@ smpi_coll_tuned_allreduce_lr(void *sbuf, void *rbuf, int rcount,
   /* when communication size is smaller than number of process (not support) */
   if (rcount < size) {
     XBT_WARN("MPI_allreduce_lr use default MPI_allreduce.");	  
-    smpi_mpi_allreduce(sbuf, rbuf, rcount, dtype, op, comm);
+    Coll_allreduce_default::allreduce(sbuf, rbuf, rcount, dtype, op, comm);
     return MPI_SUCCESS; 
   }
 
@@ -97,7 +97,7 @@ smpi_coll_tuned_allreduce_lr(void *sbuf, void *rbuf, int rcount,
   /* when communication size is not divisible by number of process: 
      call the native implementation for the remain chunk at the end of the operation */
   if (remainder_flag) {
-    return mpi_coll_allreduce_fun((char *) sbuf + remainder_offset,
+    return Colls::allreduce((char *) sbuf + remainder_offset,
                          (char *) rbuf + remainder_offset, remainder, dtype, op,
                          comm);
   }

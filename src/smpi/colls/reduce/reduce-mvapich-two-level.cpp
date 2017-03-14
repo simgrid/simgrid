@@ -42,11 +42,11 @@
 #define SHMEM_COLL_BLOCK_SIZE (local_size * mv2_g_shmem_coll_max_msg_size)
 #define mv2_use_knomial_reduce 1
 
-#define MPIR_Reduce_inter_knomial_wrapper_MV2 smpi_coll_tuned_reduce_mvapich2_knomial
-#define MPIR_Reduce_intra_knomial_wrapper_MV2 smpi_coll_tuned_reduce_mvapich2_knomial
-#define MPIR_Reduce_binomial_MV2 smpi_coll_tuned_reduce_binomial
-#define MPIR_Reduce_redscat_gather_MV2 smpi_coll_tuned_reduce_scatter_gather
-#define MPIR_Reduce_shmem_MV2 smpi_coll_tuned_reduce_ompi_basic_linear
+#define MPIR_Reduce_inter_knomial_wrapper_MV2 Coll_reduce_mvapich2_knomial::reduce
+#define MPIR_Reduce_intra_knomial_wrapper_MV2 Coll_reduce_mvapich2_knomial::reduce
+#define MPIR_Reduce_binomial_MV2 Coll_reduce_binomial::reduce
+#define MPIR_Reduce_redscat_gather_MV2 Coll_reduce_scatter_gather::reduce
+#define MPIR_Reduce_shmem_MV2 Coll_reduce_ompi_basic_linear::reduce
 
 extern int (*MV2_Reduce_function)( void *sendbuf,
     void *recvbuf,
@@ -72,7 +72,7 @@ static int (*reduce_fn)(void *sendbuf,
                              MPI_Datatype datatype,
                              MPI_Op op, int root, MPI_Comm  comm);
 
-int smpi_coll_tuned_reduce_mvapich2_two_level( void *sendbuf,
+int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
                                      void *recvbuf,
                                      int count,
                                      MPI_Datatype datatype,
@@ -92,9 +92,9 @@ int smpi_coll_tuned_reduce_mvapich2_two_level( void *sendbuf,
     
     //if not set (use of the algo directly, without mvapich2 selector)
     if(MV2_Reduce_function==NULL)
-      MV2_Reduce_function=smpi_coll_tuned_reduce_mpich;
+      MV2_Reduce_function=Coll_reduce_mpich::reduce;
     if(MV2_Reduce_intra_function==NULL)
-      MV2_Reduce_intra_function=smpi_coll_tuned_reduce_mpich;
+      MV2_Reduce_intra_function=Coll_reduce_mpich::reduce;
 
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
       comm->init_smp();

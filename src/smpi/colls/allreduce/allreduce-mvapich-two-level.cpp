@@ -37,10 +37,10 @@
 
 #include "../colls_private.h"
 
-#define MPIR_Allreduce_pt2pt_rd_MV2 smpi_coll_tuned_allreduce_rdb
-#define MPIR_Allreduce_pt2pt_rs_MV2 smpi_coll_tuned_allreduce_mvapich2_rs
+#define MPIR_Allreduce_pt2pt_rd_MV2 Coll_allreduce_rdb::allreduce
+#define MPIR_Allreduce_pt2pt_rs_MV2 Coll_allreduce_mvapich2_rs::allreduce
 
-extern int (*MV2_Allreduce_function)(void *sendbuf,
+extern int (*MV2_Allreducection)(void *sendbuf,
     void *recvbuf,
     int count,
     MPI_Datatype datatype,
@@ -59,7 +59,7 @@ static  int MPIR_Allreduce_reduce_p2p_MV2( void *sendbuf,
     MPI_Datatype datatype,
     MPI_Op op, MPI_Comm  comm)
 {
-  mpi_coll_reduce_fun(sendbuf,recvbuf,count,datatype,op,0,comm);
+  Colls::reduce(sendbuf,recvbuf,count,datatype,op,0,comm);
   return MPI_SUCCESS;
 }
 
@@ -69,13 +69,13 @@ static  int MPIR_Allreduce_reduce_shmem_MV2( void *sendbuf,
     MPI_Datatype datatype,
     MPI_Op op, MPI_Comm  comm)
 {
-  mpi_coll_reduce_fun(sendbuf,recvbuf,count,datatype,op,0,comm);
+  Colls::reduce(sendbuf,recvbuf,count,datatype,op,0,comm);
   return MPI_SUCCESS;
 }
     
     
 /* general two level allreduce helper function */
-int smpi_coll_tuned_allreduce_mvapich2_two_level(void *sendbuf,
+int Coll_allreduce_mvapich2_two_level::allreduce(void *sendbuf,
                              void *recvbuf,
                              int count,
                              MPI_Datatype datatype,
@@ -89,9 +89,9 @@ int smpi_coll_tuned_allreduce_mvapich2_two_level(void *sendbuf,
 
     //if not set (use of the algo directly, without mvapich2 selector)
     if(MV2_Allreduce_intra_function==NULL)
-      MV2_Allreduce_intra_function = smpi_coll_tuned_allreduce_mpich;
-    if(MV2_Allreduce_function==NULL)
-      MV2_Allreduce_function = smpi_coll_tuned_allreduce_rdb;
+      MV2_Allreduce_intra_function = Coll_allreduce_mpich::allreduce;
+    if(MV2_Allreducection==NULL)
+      MV2_Allreducection = Coll_allreduce_rdb::allreduce;
     
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
       comm->init_smp();
@@ -135,7 +135,7 @@ int smpi_coll_tuned_allreduce_mvapich2_two_level(void *sendbuf,
           void* sendtmpbuf = (char *)smpi_get_tmp_sendbuffer(count*datatype->get_extent());
           Datatype::copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
             /* inter-node allreduce */
-            if(MV2_Allreduce_function == &MPIR_Allreduce_pt2pt_rd_MV2){
+            if(MV2_Allreducection == &MPIR_Allreduce_pt2pt_rd_MV2){
                 mpi_errno =
                     MPIR_Allreduce_pt2pt_rd_MV2(sendtmpbuf, recvbuf, count, datatype, op,
                                       leader_comm);
@@ -163,7 +163,7 @@ int smpi_coll_tuned_allreduce_mvapich2_two_level(void *sendbuf,
 
     /* Broadcasting the mesage from leader to the rest */
     /* Note: shared memory broadcast could improve the performance */
-    mpi_errno = mpi_coll_bcast_fun(recvbuf, count, datatype, 0, shmem_comm);
+    mpi_errno = Colls::bcast(recvbuf, count, datatype, 0, shmem_comm);
 
     return (mpi_errno);
 

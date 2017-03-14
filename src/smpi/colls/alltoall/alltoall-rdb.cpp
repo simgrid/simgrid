@@ -27,7 +27,7 @@
  * Auther: MPICH / slightly modified by Ahmad Faraj.  
 
  ****************************************************************************/
-int smpi_coll_tuned_alltoall_rdb(void *send_buff, int send_count,
+int Coll_alltoall_rdb::alltoall(void *send_buff, int send_count,
                                  MPI_Datatype send_type,
                                  void *recv_buff, int recv_count,
                                  MPI_Datatype recv_type, MPI_Comm comm)

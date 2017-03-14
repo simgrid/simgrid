@@ -2,7 +2,7 @@
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
 
-p Test all to all
+p Test allgather
 $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allgather --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
 > [rank 0] -> Tremblay
 > [rank 1] -> Tremblay
