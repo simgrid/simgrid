@@ -10,7 +10,6 @@
 
 #define MV2_MAX_NB_THRESHOLDS  32
 
-using namespace simgrid::smpi;
 
 XBT_PUBLIC(void) smpi_coll_cleanup_mvapich2(void);
 

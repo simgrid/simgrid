@@ -6,7 +6,6 @@
 
 #include "../colls_private.h"
 //#include <star-reduction.c>
-using namespace simgrid::smpi;
 
 // this requires that count >= NP
 int Coll_allreduce_rab2::allreduce(void *sbuff, void *rbuff,

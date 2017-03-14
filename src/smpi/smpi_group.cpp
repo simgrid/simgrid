@@ -382,9 +382,9 @@ int Group::range_excl(int n, int ranges[][3], MPI_Group * newgroup){
 MPI_Group Group::f2c(int id) {
   if(id == -2) {
     return MPI_GROUP_EMPTY;
-  } else if(f2c_lookup_ != nullptr && id >= 0) {
+  } else if(F2C::f2c_lookup_ != nullptr && id >= 0) {
     char key[KEY_SIZE];
-    return static_cast<MPI_Group>(xbt_dict_get_or_null(f2c_lookup_, get_key(key, id)));
+    return static_cast<MPI_Group>(xbt_dict_get_or_null(F2C::f2c_lookup_, get_key(key, id)));
   } else {
     return static_cast<MPI_Group>(MPI_GROUP_NULL);
   }

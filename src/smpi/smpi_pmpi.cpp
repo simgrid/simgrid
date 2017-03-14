@@ -2772,11 +2772,11 @@ MPI_Fint PMPI_Info_c2f(MPI_Info info){
 }
 
 int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state) {
-  return smpi_comm_keyval_create(copy_fn, delete_fn, keyval, extra_state);
+  return Comm::keyval_create(copy_fn, delete_fn, keyval, extra_state);
 }
 
 int PMPI_Keyval_free(int* keyval) {
-  return smpi_comm_keyval_free(keyval);
+  return Comm::keyval_free(keyval);
 }
 
 int PMPI_Attr_delete(MPI_Comm comm, int keyval) {

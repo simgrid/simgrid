@@ -24,15 +24,10 @@ class Topo;
 class Topo_Cart;
 class Topo_Graph;
 class Topo_Dist_Graph;
-class Type_Contiguous;
-class Type_Hindexed;
-class Type_Hvector;
-class Type_Indexed;
-class Type_Struct;
-class Type_Vector;
 class Win;
 
 class Colls;
+class Coll;
 
 }
 }
@@ -48,12 +43,6 @@ typedef simgrid::smpi::Topo_Cart SMPI_Cart_topology;
 typedef simgrid::smpi::Topo_Dist_Graph SMPI_Dist_Graph_topology;
 typedef simgrid::smpi::Topo_Graph SMPI_Graph_topology;
 typedef simgrid::smpi::Win SMPI_Win;
-typedef simgrid::smpi::Type_Contiguous SMPI_Type_Contiguous;
-typedef simgrid::smpi::Type_Hindexed SMPI_Type_Hindexed;
-typedef simgrid::smpi::Type_Hvector SMPI_Type_Hvector;
-typedef simgrid::smpi::Type_Indexed SMPI_Type_Indexed;
-typedef simgrid::smpi::Type_Struct SMPI_Type_Struct;
-typedef simgrid::smpi::Type_Vector SMPI_Type_Vector;
 
 #else
 
@@ -65,15 +54,6 @@ typedef struct SMPI_Op SMPI_Op;
 typedef struct SMPI_Request SMPI_Request;
 typedef struct SMPI_Topology SMPI_Topology;
 typedef struct SMPI_Win SMPI_Win;
-typedef struct SMPI_Graph_topology SMPI_Graph_topology;
-typedef struct SMPI_Cart_topology SMPI_Cart_topology;
-typedef struct SMPI_Dist_Graph_topology SMPI_Dist_Graph_topology;
-typedef struct SMPI_Type_Contiguous SMPI_Type_Contiguous;
-typedef struct SMPI_Type_Hindexed SMPI_Type_Hindexed;
-typedef struct SMPI_Type_Hvector SMPI_Type_Hvector;
-typedef struct SMPI_Type_Indexed SMPI_Type_Indexed;
-typedef struct SMPI_Type_Struct SMPI_Type_Struct;
-typedef struct SMPI_Type_Vector SMPI_Type_Vector;
 
 #endif
 

@@ -81,76 +81,18 @@ class Colls{
     static void (*smpi_coll_cleanup_callback)();
 };
 
-class Coll_algo{
-  private:
-    char* description_;
-  public:
-    char* description();
-};
-
-class Coll_gather : public Coll_algo {
-  private:
+class Coll {
   public:
     static int gather (void *, int, MPI_Datatype, void*, int, MPI_Datatype, int root, MPI_Comm);
-};
-
-class Coll_allgather : public Coll_algo {
-  private:
-  public:
     static int allgather (void *, int, MPI_Datatype, void*, int, MPI_Datatype, MPI_Comm);
-};
-
-class Coll_allgatherv : public Coll_algo {
-  private:
-  public:
     static int allgatherv (void *, int, MPI_Datatype, void*, int*, int*, MPI_Datatype, MPI_Comm);
-};
-
-class Coll_allreduce : public Coll_algo {
-  private:
-  public:
     static int allreduce (void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm);
-};
-
-class Coll_alltoall : public Coll_algo {
-  private:
-  public:
     static int alltoall (void *, int, MPI_Datatype, void*, int, MPI_Datatype, MPI_Comm);
-};
-
-class Coll_alltoallv : public Coll_algo {
-  private:
-  public:
     static int alltoallv (void *, int*, int*, MPI_Datatype, void*, int*, int*, MPI_Datatype, MPI_Comm);
-};
-
-class Coll_bcast : public Coll_algo {
-  private:
-  public:
     static int bcast (void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm com);
-};
-
-class Coll_reduce : public Coll_algo {
-  private:
-  public:
     static int reduce (void *buf, void *rbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
-};
-
-class Coll_reduce_scatter : public Coll_algo {
-  private:
-  public:
     static int reduce_scatter (void *sbuf, void *rbuf, int *rcounts,MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
-};
-
-class Coll_scatter : public Coll_algo {
-  private:
-  public:
     static int scatter (void *sendbuf, int sendcount, MPI_Datatype sendtype,void *recvbuf, int recvcount, MPI_Datatype recvtype,int root, MPI_Comm comm);
-};
-
-class Coll_barrier : public Coll_algo {
-  private:
-  public:
     static int barrier (MPI_Comm);
 };
 
@@ -162,7 +104,7 @@ class Coll_barrier : public Coll_algo {
    (void*) Coll_ ## cat ## _ ## name::cat }
 
 #define COLL_PROTO(cat, ret, args, name) \
-class Coll_ ## cat ## _ ## name : public Coll_ ## cat { \
+class Coll_ ## cat ## _ ## name : public Coll { \
 public: \
 static ret cat  (COLL_UNPAREN args); \
 };

@@ -68,20 +68,6 @@ enum smpi_process_state{
 
 extern XBT_PRIVATE MPI_Comm MPI_COMM_UNINITIALIZED;
 
-
-
-typedef struct s_smpi_mpi_comm_key_elem {
-  MPI_Comm_copy_attr_function* copy_fn;
-  MPI_Comm_delete_attr_function* delete_fn;
-} s_smpi_mpi_comm_key_elem_t; 
-typedef struct s_smpi_mpi_comm_key_elem *smpi_comm_key_elem;
-
-typedef struct s_smpi_mpi_type_key_elem {
-  MPI_Type_copy_attr_function* copy_fn;
-  MPI_Type_delete_attr_function* delete_fn;
-} s_smpi_mpi_type_key_elem_t; 
-typedef struct s_smpi_mpi_type_key_elem *smpi_type_key_elem;
-
 XBT_PRIVATE void smpi_process_destroy();
 XBT_PRIVATE void smpi_process_finalize();
 XBT_PRIVATE int smpi_process_finalized();

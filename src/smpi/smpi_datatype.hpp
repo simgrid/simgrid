@@ -10,6 +10,7 @@
 #include <xbt/base.h>
 
 #include "private.h"
+#include <unordered_map>
 
 #define DT_FLAG_DESTROYED     0x0001  /**< user destroyed but some other layers still have a reference */
 #define DT_FLAG_COMMITED      0x0002  /**< ready to be used for a send/recv operation */
@@ -30,6 +31,12 @@
 #define DT_FLAG_BASIC      (DT_FLAG_PREDEFINED | DT_FLAG_CONTIGUOUS | DT_FLAG_NO_GAPS | DT_FLAG_DATA | DT_FLAG_COMMITED)
 
 extern const MPI_Datatype MPI_PTR;
+
+typedef struct s_smpi_mpi_type_key_elem {
+  MPI_Type_copy_attr_function* copy_fn;
+  MPI_Type_delete_attr_function* delete_fn;
+} s_smpi_mpi_type_key_elem_t; 
+typedef struct s_smpi_mpi_type_key_elem *smpi_type_key_elem;
 
 //The following are datatypes for the MPI functions MPI_MAXLOC and MPI_MINLOC.
 typedef struct {
@@ -86,6 +93,10 @@ class Datatype : public F2C{
     int flags_;
     xbt_dict_t attributes_;
     int refcount_;
+
+    static std::unordered_map<int, smpi_type_key_elem> keyvals_;
+    static int keyval_id_;
+
   public:
     static MPI_Datatype null_id_;
 

@@ -313,13 +313,13 @@ XBT_PUBLIC_DATA( const MPI_Datatype ) MPI_INTEGER16;
 
 //defines for fortran compatibility
 #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
-  #define MPI_INTEGER MPI_INT
-  #define MPI_2INTEGER MPI_2INT
-  #define MPI_LOGICAL MPI_INT
+#define MPI_INTEGER MPI_INT
+#define MPI_2INTEGER MPI_2INT
+#define MPI_LOGICAL MPI_INT
 #else
-  #define MPI_INTEGER MPI_LONG
-  #define MPI_2INTEGER MPI_2LONG
-  #define MPI_LOGICAL MPI_LONG
+#define MPI_INTEGER MPI_LONG
+#define MPI_2INTEGER MPI_2LONG
+#define MPI_LOGICAL MPI_LONG
 #endif
 
 #define MPI_Fint int
@@ -353,8 +353,6 @@ XBT_PUBLIC_DATA( MPI_Op ) MPI_BOR;
 XBT_PUBLIC_DATA( MPI_Op ) MPI_BXOR;
 //For accumulate
 XBT_PUBLIC_DATA( MPI_Op ) MPI_REPLACE;
-
-typedef SMPI_Topology *MPI_Topology;
 
 typedef SMPI_Group* MPI_Group;
 

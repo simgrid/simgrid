@@ -36,8 +36,6 @@
  */
  #include "../colls_private.h"
 
-using namespace simgrid::smpi;
-
 int Coll_allgather_mvapich2_smp::allgather(void *sendbuf,int sendcnt, MPI_Datatype sendtype,
                             void *recvbuf, int recvcnt,MPI_Datatype recvtype,
                             MPI_Comm  comm)

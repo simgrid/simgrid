@@ -16,6 +16,8 @@ typedef enum MPIR_Topo_type {
   MPI_INVALID_TOPO=-1
 } MPIR_Topo_type;
 
+typedef SMPI_Topology *MPI_Topology;
+
 namespace simgrid{
 namespace smpi{
 

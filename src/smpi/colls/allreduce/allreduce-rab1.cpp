@@ -6,7 +6,6 @@
 
 #include "../colls_private.h"
 //#include <star-reduction.c>
-using namespace simgrid::smpi;
 
 // NP pow of 2 for now
 int Coll_allreduce_rab1::allreduce(void *sbuff, void *rbuff,
