@@ -7,8 +7,8 @@
 
 #include "simgrid/msg.h"
 #include "simgrid/simix.h"      /* semaphores for the barrier */
-#include <xbt/replay.h>
 #include "simgrid/s4u.hpp"
+#include "xbt/replay.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actions, "Messages specific for this msg example");
 int communicator_size = 0;

@@ -10,7 +10,6 @@
 #include "xbt/virtu.h"
 #include "mc/mc.h"
 #include "src/mc/mc_replay.h"
-#include "xbt/replay.h"
 #include <errno.h>
 #include "src/simix/smx_private.h"
 #include "surf/surf.h"
@@ -22,7 +21,6 @@
 #include "src/kernel/activity/SynchroComm.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi, "Logging specific to SMPI (base)");
-
 
 static simgrid::config::Flag<double> smpi_wtime_sleep(
   "smpi/wtime", "Minimum time to inject inside a call to MPI_Wtime", 0.0);
@@ -53,7 +51,6 @@ double smpi_mpi_wtime(){
   }
   return time;
 }
-
 
 void smpi_mpi_bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm)
 {
@@ -523,5 +520,3 @@ int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype)
 {
   return status->count / datatype->size();
 }
-
-

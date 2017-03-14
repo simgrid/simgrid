@@ -23,7 +23,6 @@
 
 #include "colls_private.h"
 #include "coll_tuned_topo.h"
-#include "xbt/replay.h"
 
 /*
  * Recursive-halving function is (*mostly*) copied from the BASIC coll module.

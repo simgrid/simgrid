@@ -8,7 +8,6 @@
 #include <algorithm>
 
 #include "private.h"
-#include "xbt/replay.h"
 #include "mc/mc.h"
 #include "src/mc/mc_replay.h"
 #include "src/simix/smx_private.h"

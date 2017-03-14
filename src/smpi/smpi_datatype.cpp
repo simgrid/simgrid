@@ -8,7 +8,6 @@
 #include "mc/mc.h"
 #include "private.h"
 #include "simgrid/modelchecker.h"
-#include "xbt/replay.h"
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
