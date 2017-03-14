@@ -15,7 +15,6 @@
 
 #include "private.h"
 #include "src/simix/smx_private.h"
-#include "colls/colls.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi, "Logging specific to SMPI (comm)");
 

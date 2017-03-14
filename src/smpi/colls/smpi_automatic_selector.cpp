@@ -19,7 +19,7 @@
          }\
          char cont_name[25];\
          snprintf(cont_name,25, "rank-%d", smpi_process_index());\
-         val_t value = PJ_value_get_or_new(mpi_coll_##cat##_description[i].name,"1.0 1.0 1.0", type);\
+         val_t value = PJ_value_get_or_new(Colls::mpi_coll_##cat##_description[i].name,"1.0 1.0 1.0", type);\
          new_pajeNewEvent (SIMIX_get_clock(), PJ_container_get(cont_name), type, value);\
       }
 
@@ -30,15 +30,15 @@
   int min_coll=-1, global_coll=-1;\
   int i;\
   double buf_in, buf_out, max_min=DBL_MAX;\
-  for (i = 0; mpi_coll_##cat##_description[i].name; i++){\
-      if(!strcmp(mpi_coll_##cat##_description[i].name, "automatic"))continue;\
-      if(!strcmp(mpi_coll_##cat##_description[i].name, "default"))continue;\
+  for (i = 0; Colls::mpi_coll_##cat##_description[i].name; i++){\
+      if(!strcmp(Colls::mpi_coll_##cat##_description[i].name, "automatic"))continue;\
+      if(!strcmp(Colls::mpi_coll_##cat##_description[i].name, "default"))continue;\
       Coll_barrier_default::barrier(comm);\
       TRACE_AUTO_COLL(cat)\
       time1 = SIMIX_get_clock();\
       try {\
       ((int (*) args)\
-          mpi_coll_##cat##_description[i].coll) args2 ;\
+          Colls::mpi_coll_##cat##_description[i].coll) args2 ;\
       }\
       catch (std::exception& ex) {\
         continue;\
@@ -58,9 +58,9 @@
       }\
   }\
   if(comm->rank()==0){\
-      XBT_WARN("For rank 0, the quickest was %s : %f , but global was %s : %f at max",mpi_coll_##cat##_description[min_coll].name, time_min,mpi_coll_##cat##_description[global_coll].name, max_min);\
+      XBT_WARN("For rank 0, the quickest was %s : %f , but global was %s : %f at max",Colls::mpi_coll_##cat##_description[min_coll].name, time_min,Colls::mpi_coll_##cat##_description[global_coll].name, max_min);\
   }else\
-  XBT_WARN("The quickest %s was %s on rank %d and took %f",#cat,mpi_coll_##cat##_description[min_coll].name, comm->rank(), time_min);\
+  XBT_WARN("The quickest %s was %s on rank %d and took %f",#cat,Colls::mpi_coll_##cat##_description[min_coll].name, comm->rank(), time_min);\
   return (min_coll!=-1)?MPI_SUCCESS:MPI_ERR_INTERN;\
 }
 

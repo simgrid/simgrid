@@ -636,8 +636,8 @@ void smpi_global_destroy()
   if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED){
     MPI_COMM_WORLD->cleanup_smp();
     MPI_COMM_WORLD->cleanup_attributes();
-    if(smpi_coll_cleanup_callback!=nullptr)
-      smpi_coll_cleanup_callback();
+    if(Colls::smpi_coll_cleanup_callback!=nullptr)
+      Colls::smpi_coll_cleanup_callback();
     delete MPI_COMM_WORLD;
   }
 
@@ -717,7 +717,7 @@ static void smpi_init_logs(){
 static void smpi_init_options(){
 
     Colls::set_collectives();
-    smpi_coll_cleanup_callback=nullptr;
+    Colls::smpi_coll_cleanup_callback=nullptr;
     smpi_cpu_threshold = xbt_cfg_get_double("smpi/cpu-threshold");
     smpi_host_speed = xbt_cfg_get_double("smpi/host-speed");
     smpi_privatize_global_variables = xbt_cfg_get_boolean("smpi/privatize-global-variables");

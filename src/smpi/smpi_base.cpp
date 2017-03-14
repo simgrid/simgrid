@@ -15,7 +15,6 @@
 #include "surf/surf.h"
 #include "simgrid/sg_config.h"
 #include "smpi/smpi_utils.hpp"
-#include "colls/colls.h"
 #include <simgrid/s4u/host.hpp>
 
 #include "src/kernel/activity/SynchroComm.hpp"

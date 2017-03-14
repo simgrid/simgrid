@@ -8,7 +8,6 @@
 
 #include "simgrid/simix.h"
 #include "smpi/smpi.h"
-#include "src/include/smpi/smpi_interface.h"
 #include "src/instr/instr_private.h"
 #include "src/internal_config.h"
 #include "xbt.h"

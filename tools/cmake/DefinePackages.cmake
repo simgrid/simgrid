@@ -9,7 +9,6 @@ set(EXTRA_DIST
   src/mc/PageStore.hpp
   src/mc/mc_record.h
   src/include/simgrid/sg_config.h
-  src/include/smpi/smpi_interface.h
   src/include/smpi/smpi_utils.hpp
   src/include/surf/datatypes.h
   src/include/surf/maxmin.h
@@ -38,7 +37,6 @@ set(EXTRA_DIST
   src/kernel/activity/SynchroSleep.hpp
   src/kernel/activity/SynchroRaw.hpp
   src/smpi/colls/coll_tuned_topo.h
-  src/smpi/colls/colls.h
   src/smpi/colls/colls_private.h
   src/smpi/colls/smpi_mvapich2_selector_stampede.h
   src/smpi/private.h
@@ -212,6 +210,7 @@ set(SMPI_SRC
   src/smpi/smpi_memory.cpp
   src/smpi/smpi_static_variables.cpp
   src/smpi/smpi_coll.cpp
+  src/smpi/smpi_coll.hpp
   src/smpi/smpi_comm.cpp
   src/smpi/smpi_comm.hpp
   src/smpi/smpi_deployment.cpp

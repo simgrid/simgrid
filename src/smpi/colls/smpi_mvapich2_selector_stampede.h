@@ -12,6 +12,8 @@
 
 using namespace simgrid::smpi;
 
+XBT_PUBLIC(void) smpi_coll_cleanup_mvapich2(void);
+
 typedef struct {
   int min;
   int max;
@@ -49,8 +51,8 @@ static void init_mv2_alltoall_tables_stampede(){
   int agg_table_sum = 0;
   mv2_alltoall_tuning_table **table_ptrs = NULL;
   mv2_alltoall_num_ppn_conf = 3;
-  if(smpi_coll_cleanup_callback==NULL)
-    smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
+  if(Colls::smpi_coll_cleanup_callback==NULL)
+    Colls::smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
   mv2_alltoall_thresholds_table = static_cast<mv2_alltoall_tuning_table**>(xbt_malloc(sizeof(mv2_alltoall_tuning_table *)
       * mv2_alltoall_num_ppn_conf));
   table_ptrs = static_cast<mv2_alltoall_tuning_table**>(xbt_malloc(sizeof(mv2_alltoall_tuning_table *)
@@ -341,8 +343,8 @@ static void init_mv2_allgather_tables_stampede(){
   int i;
   int agg_table_sum = 0;
 
-  if(smpi_coll_cleanup_callback==NULL)
-    smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
+  if(Colls::smpi_coll_cleanup_callback==NULL)
+    Colls::smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
   mv2_allgather_tuning_table **table_ptrs = NULL;
   mv2_allgather_num_ppn_conf = 3;
   mv2_allgather_thresholds_table
@@ -599,8 +601,8 @@ MV2_Gather_function_ptr MV2_Gather_intra_node_function = NULL;
 
 static void init_mv2_gather_tables_stampede(){
 
-  if(smpi_coll_cleanup_callback==NULL)
-    smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
+  if(Colls::smpi_coll_cleanup_callback==NULL)
+    Colls::smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
   mv2_size_gather_tuning_table=7;
   mv2_gather_thresholds_table = static_cast<mv2_gather_tuning_table*>(xbt_malloc(mv2_size_gather_tuning_table*
       sizeof (mv2_gather_tuning_table)));
@@ -686,8 +688,8 @@ mv2_allgatherv_tuning_table *mv2_allgatherv_thresholds_table = NULL;
 
 
 static void init_mv2_allgatherv_tables_stampede(){
-  if(smpi_coll_cleanup_callback==NULL)
-    smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
+  if(Colls::smpi_coll_cleanup_callback==NULL)
+    Colls::smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
   mv2_size_allgatherv_tuning_table = 6;
   mv2_allgatherv_thresholds_table = static_cast<mv2_allgatherv_tuning_table*>(xbt_malloc(mv2_size_allgatherv_tuning_table *
       sizeof (mv2_allgatherv_tuning_table)));
@@ -834,8 +836,8 @@ static  int MPIR_Allreduce_reduce_shmem_MV2( void *sendbuf,
 
 
 static void init_mv2_allreduce_tables_stampede(){
-  if(smpi_coll_cleanup_callback==NULL)
-    smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
+  if(Colls::smpi_coll_cleanup_callback==NULL)
+    Colls::smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
   mv2_size_allreduce_tuning_table = 8;
   mv2_allreduce_thresholds_table = static_cast<mv2_allreduce_tuning_table*>(xbt_malloc(mv2_size_allreduce_tuning_table *
       sizeof (mv2_allreduce_tuning_table)));
@@ -1034,8 +1036,8 @@ int mv2_intra_node_knomial_factor = 4;
 
 static void init_mv2_bcast_tables_stampede(){
  //Stampede,
-  if(smpi_coll_cleanup_callback==NULL)
-    smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
+  if(Colls::smpi_coll_cleanup_callback==NULL)
+    Colls::smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
   mv2_size_bcast_tuning_table=8;
   mv2_bcast_thresholds_table = static_cast<mv2_bcast_tuning_table*>(xbt_malloc(mv2_size_bcast_tuning_table *
   sizeof (mv2_bcast_tuning_table)));
@@ -1302,8 +1304,8 @@ int (*MV2_Reduce_intra_function)( void *sendbuf,
 
 
 static void init_mv2_reduce_tables_stampede(){
-  if(smpi_coll_cleanup_callback==NULL)
-    smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
+  if(Colls::smpi_coll_cleanup_callback==NULL)
+    Colls::smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
   /*Stampede*/
   mv2_size_reduce_tuning_table = 8;
   mv2_reduce_thresholds_table = static_cast<mv2_reduce_tuning_table*>(xbt_malloc(mv2_size_reduce_tuning_table *
@@ -1546,8 +1548,8 @@ static  int MPIR_Reduce_Scatter_Basic_MV2(void *sendbuf,
 
 
 static void init_mv2_reduce_scatter_tables_stampede(){
-  if(smpi_coll_cleanup_callback==NULL)
-    smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
+  if(Colls::smpi_coll_cleanup_callback==NULL)
+    Colls::smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
   mv2_size_red_scat_tuning_table = 6;
   mv2_red_scat_thresholds_table = static_cast<mv2_red_scat_tuning_table*>(xbt_malloc(mv2_size_red_scat_tuning_table *
       sizeof (mv2_red_scat_tuning_table)));
@@ -1672,8 +1674,8 @@ int MPIR_Scatter_mcst_wrap_MV2(void *sendbuf,
 
 
 static void init_mv2_scatter_tables_stampede(){
-    if(smpi_coll_cleanup_callback==NULL)
-      smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
+    if(Colls::smpi_coll_cleanup_callback==NULL)
+      Colls::smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
 
     int agg_table_sum = 0;
     int i;

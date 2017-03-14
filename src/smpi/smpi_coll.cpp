@@ -11,64 +11,51 @@
 #include <assert.h>
 
 #include "private.h"
-#include "colls/colls.h"
 #include "simgrid/sg_config.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi, "Logging specific to SMPI (coll)");
 
-s_mpi_coll_description_t mpi_coll_gather_description[] = {
-   COLL_GATHERS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr}  /* this array must be nullptr terminated */
-};
 
-s_mpi_coll_description_t mpi_coll_allgather_description[] = {
-   COLL_ALLGATHERS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr}
-};
+namespace simgrid{
+namespace smpi{
 
-s_mpi_coll_description_t mpi_coll_allgatherv_description[] = { COLL_ALLGATHERVS(COLL_DESCRIPTION, COLL_COMMA),
-   {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
-};
+void (*Colls::smpi_coll_cleanup_callback)();
 
-s_mpi_coll_description_t mpi_coll_allreduce_description[] ={ COLL_ALLREDUCES(COLL_DESCRIPTION, COLL_COMMA),
-  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
-};
-
-s_mpi_coll_description_t mpi_coll_reduce_scatter_description[] = {COLL_REDUCE_SCATTERS(COLL_DESCRIPTION, COLL_COMMA),
-    {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
-};
-
-s_mpi_coll_description_t mpi_coll_scatter_description[] ={COLL_SCATTERS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr}};
-
-s_mpi_coll_description_t mpi_coll_barrier_description[] ={COLL_BARRIERS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr}};
-
-s_mpi_coll_description_t mpi_coll_alltoall_description[] = {COLL_ALLTOALLS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr}};
-
-s_mpi_coll_description_t mpi_coll_alltoallv_description[] = {COLL_ALLTOALLVS(COLL_DESCRIPTION, COLL_COMMA),
-   {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
-};
-
-s_mpi_coll_description_t mpi_coll_bcast_description[] = {COLL_BCASTS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr}};
-
-s_mpi_coll_description_t mpi_coll_reduce_description[] = {COLL_REDUCES(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr} };
-
-
+/* these arrays must be nullptr terminated */
+s_mpi_coll_description_t Colls::mpi_coll_gather_description[] = {
+    COLL_GATHERS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr} };
+s_mpi_coll_description_t Colls::mpi_coll_allgather_description[] = {
+    COLL_ALLGATHERS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr} };
+s_mpi_coll_description_t Colls::mpi_coll_allgatherv_description[] = {
+    COLL_ALLGATHERVS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr} };
+s_mpi_coll_description_t Colls::mpi_coll_allreduce_description[] ={
+    COLL_ALLREDUCES(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr} };
+s_mpi_coll_description_t Colls::mpi_coll_reduce_scatter_description[] = {
+    COLL_REDUCE_SCATTERS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr} };
+s_mpi_coll_description_t Colls::mpi_coll_scatter_description[] ={
+    COLL_SCATTERS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr} };
+s_mpi_coll_description_t Colls::mpi_coll_barrier_description[] ={
+    COLL_BARRIERS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr} };
+s_mpi_coll_description_t Colls::mpi_coll_alltoall_description[] = {
+    COLL_ALLTOALLS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr} };
+s_mpi_coll_description_t Colls::mpi_coll_alltoallv_description[] = {
+    COLL_ALLTOALLVS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr} };
+s_mpi_coll_description_t Colls::mpi_coll_bcast_description[] = {
+    COLL_BCASTS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr} };
+s_mpi_coll_description_t Colls::mpi_coll_reduce_description[] = {
+    COLL_REDUCES(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr} };
 
 /** Displays the long description of all registered models, and quit */
-void coll_help(const char *category, s_mpi_coll_description_t * table)
+void Colls::coll_help(const char *category, s_mpi_coll_description_t * table)
 {
   printf("Long description of the %s models accepted by this simulator:\n", category);
   for (int i = 0; table[i].name; i++)
     printf("  %s: %s\n", table[i].name, table[i].description);
 }
 
-int find_coll_description(s_mpi_coll_description_t * table, const char *name, const char *desc)
+int Colls::find_coll_description(s_mpi_coll_description_t * table, const char *name, const char *desc)
 {
   char *name_list = nullptr;
-  int selector_on=0;
-  if (name==nullptr || name[0] == '\0') {
-    //no argument provided, use active selector's algorithm
-    name=static_cast<char*>(xbt_cfg_get_string("smpi/coll-selector"));
-    selector_on=1;
-  }
   for (int i = 0; table[i].name; i++)
     if (!strcmp(name, table[i].name)) {
       if (strcmp(table[i].name,"default"))
@@ -76,13 +63,6 @@ int find_coll_description(s_mpi_coll_description_t * table, const char *name, co
       return i;
     }
 
-  if(selector_on){
-    // collective seems not handled by the active selector, try with default one
-    for (int i = 0; table[i].name; i++)
-      if (!strcmp("default", table[i].name)) {
-        return i;
-    }
-  }
   if (!table[0].name)
     xbt_die("No collective is valid for '%s'! This is a bug.",name);
   name_list = xbt_strdup(table[0].name);
@@ -95,25 +75,10 @@ int find_coll_description(s_mpi_coll_description_t * table, const char *name, co
   return -1;
 }
 
-void (*smpi_coll_cleanup_callback)();
-
-namespace simgrid{
-namespace smpi{
-
-int (*Colls::gather)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, int root, MPI_Comm);
-int (*Colls::allgather)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, MPI_Comm);
-int (*Colls::allgatherv)(void *, int, MPI_Datatype, void*, int*, int*, MPI_Datatype, MPI_Comm);
-int (*Colls::allreduce)(void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm);
-int (*Colls::alltoall)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, MPI_Comm);
-int (*Colls::alltoallv)(void *, int*, int*, MPI_Datatype, void*, int*, int*, MPI_Datatype, MPI_Comm);
-int (*Colls::bcast)(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm com);
-int (*Colls::reduce)(void *buf, void *rbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
-int (*Colls::reduce_scatter)(void *sbuf, void *rbuf, int *rcounts,MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
-int (*Colls::scatter)(void *sendbuf, int sendcount, MPI_Datatype sendtype,void *recvbuf, int recvcount, MPI_Datatype recvtype,int root, MPI_Comm comm);
-int (*Colls::barrier)(MPI_Comm comm);
 
 
 #define COLL_SETTER(cat, ret, args, args2)\
+int (*Colls::cat ) args;\
 void Colls::set_##cat (const char * name){\
     int id = find_coll_description(mpi_coll_## cat ##_description,\
                                              name,#cat);\
@@ -206,6 +171,8 @@ void Colls::set_collectives(){
     set_barrier(name);
 }
 
+
+//Implementations of the single algorith collectives
 
 int Colls::gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int *recvcounts, int *displs,
                       MPI_Datatype recvtype, int root, MPI_Comm comm)

@@ -20,9 +20,6 @@
 #include "simgrid/simix.h"
 #include "simgrid/sg_config.h"
 #include "simgrid_config.h" /* what was compiled in? */
-#if HAVE_SMPI
-#include "smpi/smpi_interface.h"
-#endif
 #include "mc/mc.h"
 #include "simgrid/instr.h"
 #include "src/mc/mc_replay.h"
@@ -202,64 +199,6 @@ static void _sg_cfg_cb__network_model(const char *name)
   /* New Module missing */
   find_model_description(surf_network_model_description, val);
 }
-
-#if HAVE_SMPI
-/* callback of the mpi collectives: simply check that this is a valid name. It will be picked up in smpi_global.cpp */
-static void _check_coll(const char *category,
-                             s_mpi_coll_description_t * table,
-                             const char *name)
-{
-  xbt_assert(_sg_cfg_init_status < 2, "Cannot change the collective algorithm after the initialization");
-
-  char *val = xbt_cfg_get_string(name);
-  if (val && !strcmp(val, "help")) {
-    coll_help(category, table);
-    sg_cfg_exit_early();
-  }
-
-  find_coll_description(table, val, category);
-}
-static void _check_coll_gather(const char *name){
-  _check_coll("gather", mpi_coll_gather_description, name);
-}
-static void _check_coll_allgather(const char *name){
-  _check_coll("allgather", mpi_coll_allgather_description, name);
-}
-static void _check_coll_allgatherv(const char *name){
-  _check_coll("allgatherv", mpi_coll_allgatherv_description, name);
-}
-static void _check_coll_allreduce(const char *name)
-{
-  _check_coll("allreduce", mpi_coll_allreduce_description, name);
-}
-static void _check_coll_alltoall(const char *name)
-{
-  _check_coll("alltoall", mpi_coll_alltoall_description, name);
-}
-static void _check_coll_alltoallv(const char *name)
-{
-  _check_coll("alltoallv", mpi_coll_alltoallv_description, name);
-}
-static void _check_coll_bcast(const char *name)
-{
-  _check_coll("bcast", mpi_coll_bcast_description, name);
-}
-static void _check_coll_reduce(const char *name)
-{
-  _check_coll("reduce", mpi_coll_reduce_description, name);
-}
-static void _check_coll_reduce_scatter(const char *name){
-  _check_coll("reduce_scatter", mpi_coll_reduce_scatter_description, name);
-}
-static void _check_coll_scatter(const char *name){
-  _check_coll("scatter", mpi_coll_scatter_description, name);
-}
-static void _check_coll_barrier(const char *name){
-  _check_coll("barrier", mpi_coll_barrier_description, name);
-}
-
-#endif
-
 /* callback to decide if we want to use the model-checking */
 #include "src/xbt_modinter.h"
 
@@ -576,18 +515,18 @@ void sg_config_init(int *argc, char **argv)
 
     xbt_cfg_register_string("smpi/coll-selector", "default", nullptr, "Which collective selector to use");
     xbt_cfg_register_alias("smpi/coll-selector","smpi/coll_selector");
-    xbt_cfg_register_string("smpi/gather",        nullptr, &_check_coll_gather, "Which collective to use for gather");
-    xbt_cfg_register_string("smpi/allgather",     nullptr, &_check_coll_allgather, "Which collective to use for allgather");
-    xbt_cfg_register_string("smpi/barrier",       nullptr, &_check_coll_barrier, "Which collective to use for barrier");
-    xbt_cfg_register_string("smpi/reduce-scatter",nullptr, &_check_coll_reduce_scatter, "Which collective to use for reduce_scatter");
+    xbt_cfg_register_string("smpi/gather",        nullptr, nullptr, "Which collective to use for gather");
+    xbt_cfg_register_string("smpi/allgather",     nullptr, nullptr, "Which collective to use for allgather");
+    xbt_cfg_register_string("smpi/barrier",       nullptr, nullptr, "Which collective to use for barrier");
+    xbt_cfg_register_string("smpi/reduce-scatter",nullptr, nullptr, "Which collective to use for reduce_scatter");
     xbt_cfg_register_alias("smpi/reduce-scatter","smpi/reduce_scatter");
-    xbt_cfg_register_string("smpi/scatter",       nullptr, &_check_coll_scatter, "Which collective to use for scatter");
-    xbt_cfg_register_string("smpi/allgatherv",    nullptr, &_check_coll_allgatherv, "Which collective to use for allgatherv");
-    xbt_cfg_register_string("smpi/allreduce",     nullptr, &_check_coll_allreduce, "Which collective to use for allreduce");
-    xbt_cfg_register_string("smpi/alltoall",      nullptr, &_check_coll_alltoall, "Which collective to use for alltoall");
-    xbt_cfg_register_string("smpi/alltoallv",     nullptr, &_check_coll_alltoallv,"Which collective to use for alltoallv");
-    xbt_cfg_register_string("smpi/bcast",         nullptr, &_check_coll_bcast, "Which collective to use for bcast");
-    xbt_cfg_register_string("smpi/reduce",        nullptr, &_check_coll_reduce, "Which collective to use for reduce");
+    xbt_cfg_register_string("smpi/scatter",       nullptr, nullptr, "Which collective to use for scatter");
+    xbt_cfg_register_string("smpi/allgatherv",    nullptr, nullptr, "Which collective to use for allgatherv");
+    xbt_cfg_register_string("smpi/allreduce",     nullptr, nullptr, "Which collective to use for allreduce");
+    xbt_cfg_register_string("smpi/alltoall",      nullptr, nullptr, "Which collective to use for alltoall");
+    xbt_cfg_register_string("smpi/alltoallv",     nullptr, nullptr,"Which collective to use for alltoallv");
+    xbt_cfg_register_string("smpi/bcast",         nullptr, nullptr, "Which collective to use for bcast");
+    xbt_cfg_register_string("smpi/reduce",        nullptr, nullptr, "Which collective to use for reduce");
 #endif // HAVE_SMPI
 
     /* Storage */
