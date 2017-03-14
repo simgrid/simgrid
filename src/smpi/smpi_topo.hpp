@@ -9,6 +9,12 @@
 
 #include "private.h"
 
+typedef enum MPIR_Topo_type {
+  MPI_GRAPH=1,
+  MPI_CART=2,
+  MPI_DIST_GRAPH=3,
+  MPI_INVALID_TOPO=-1
+} MPIR_Topo_type;
 
 namespace simgrid{
 namespace smpi{

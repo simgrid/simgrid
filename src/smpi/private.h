@@ -16,6 +16,7 @@
 #include "xbt/xbt_os_time.h"
 #include "src/smpi/smpi_f2c.hpp"
 #include "src/smpi/smpi_group.hpp"
+#include "src/smpi/smpi_topo.hpp"
 #include "src/smpi/smpi_coll.hpp"
 #include "src/smpi/smpi_comm.hpp"
 #include "src/smpi/smpi_info.hpp"
@@ -23,7 +24,6 @@
 #include "src/smpi/smpi_datatype.hpp"
 #include "src/smpi/smpi_datatype_derived.hpp"
 #include "src/smpi/smpi_request.hpp"
-#include "src/smpi/smpi_topo.hpp"
 #include "src/smpi/smpi_win.hpp"
 SG_BEGIN_DECL()
 
