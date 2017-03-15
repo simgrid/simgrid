@@ -288,7 +288,7 @@ namespace this_actor {
    *
    * See \ref Comm for the full communication API (including non blocking communications).
   */
-  XBT_PUBLIC(void) send(MailboxPtr chan, void*payload, size_t simulatedSize);
+  XBT_PUBLIC(void) send(MailboxPtr chan, void* payload, double simulatedSize);
 
   /** @brief Returns the PID of the current actor. */
   XBT_PUBLIC(int) pid();

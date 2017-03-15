@@ -150,7 +150,8 @@ void* recv(MailboxPtr chan) {
   return res;
 }
 
-void send(MailboxPtr chan, void *payload, size_t simulatedSize) {
+void send(MailboxPtr chan, void* payload, double simulatedSize)
+{
   Comm& c = Comm::send_init(chan);
   c.setRemains(simulatedSize);
   c.setSrcData(payload);
