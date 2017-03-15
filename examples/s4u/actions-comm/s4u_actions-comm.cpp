@@ -31,17 +31,20 @@ public:
   {
     int argc;
     char* argv[2];
-    argv[0] = (char*)(args.at(0).c_str());
+    argv[0] = &args.at(0)[0];
     if (args.size() == 1) {
       argc = 1;
     } else {
       argc    = 2;
-      argv[1] = (char*)(args.at(1).c_str());
+      argv[1] = &args.at(1)[0];
     }
     xbt_replay_action_runner(argc, argv);
   }
 
-  void operator()() {}
+  void operator()()
+  {
+    // Nothing to do here
+  }
 
   /* My actions */
   static void compute(const char* const* action)
