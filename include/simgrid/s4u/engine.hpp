@@ -57,7 +57,7 @@ public:
   /** @brief Load a deployment file and launch the actors that it contains */
   void loadDeployment(const char *deploy);
 
-  unsigned int hostCount();
+  size_t hostCount();
   void hostList(std::vector<Host*>*);
 
   /** @brief Run the simulation */

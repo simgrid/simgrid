@@ -81,7 +81,7 @@ void Engine::loadDeployment(const char *deploy)
 // FIXME: The following duplicates the content of s4u::Host
 extern std::map<std::string, simgrid::s4u::Host*> host_list;
 /** @brief Returns the amount of hosts in the platform */
-unsigned int Engine::hostCount()
+size_t Engine::hostCount()
 {
   return host_list.size();
 }
