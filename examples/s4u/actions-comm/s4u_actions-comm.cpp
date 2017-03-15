@@ -3,27 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <mutex>
-
-#include "simgrid/msg.h"
-#include "simgrid/simix.h"      /* semaphores for the barrier */
 #include "simgrid/s4u.hpp"
 #include "xbt/replay.hpp"
+#include "xbt/str.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actions, "Messages specific for this msg example");
-int communicator_size = 0;
-
-static void action_Isend(const char *const *action);
-
-typedef struct {
-  int last_Irecv_sender_id;
-  int bcast_counter;
-  /* Used to implement irecv+wait */
-  xbt_dynar_t isends;           /* of msg_comm_t */
-  xbt_dynar_t irecvs;           /* of msg_comm_t */
-  std::vector<msg_task_t> tasks;
-} s_process_globals_t, *process_globals_t;
-
 
 #define ACT_DEBUG(...) \
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose)) {  \
@@ -41,264 +25,99 @@ static void log_action(const char *const *action, double date)
   }
 }
 
-static void asynchronous_cleanup()
-{
-  process_globals_t globals = static_cast<process_globals_t>( MSG_process_get_data(MSG_process_self()) );
-
-  /* Destroy any isend which correspond to completed communications */
-  msg_comm_t comm;
-  while (true) {
-    int pos_found = MSG_comm_testany(globals->isends);
-    if (pos_found == -1) /* none remaining */
-      break;
-    xbt_dynar_remove_at(globals->isends, pos_found, &comm);
-    MSG_comm_destroy(comm);
-  }
-}
-
-/* My actions */
-static void action_send(const char *const *action)
-{
-  char to[250];
-  double size  = xbt_str_parse_double(action[3], "%s is not a double");
-  double clock = MSG_get_clock();
-
-  snprintf(to,249, "%s_%s", MSG_process_get_name(MSG_process_self()), action[2]);
-
-  ACT_DEBUG("Entering Send: %s (size: %g)", NAME, size);
-  if (size < 65536) {
-    action_Isend(action);
-  } else {
-    MSG_task_send(MSG_task_create(to, 0, size, NULL), to);
-  }
-
-  log_action(action, MSG_get_clock() - clock);
-  asynchronous_cleanup();
-}
-
-static void action_Isend(const char *const *action)
-{
-  char to[250];
-  double size               = xbt_str_parse_double(action[3], "%s is not a double");
-  double clock = MSG_get_clock();
-  process_globals_t globals = static_cast<process_globals_t>( MSG_process_get_data(MSG_process_self()) );
-
-  snprintf(to,249, "%s_%s", MSG_process_get_name(MSG_process_self()), action[2]);
-  msg_comm_t comm = MSG_task_isend(MSG_task_create(to, 0, size, NULL), to);
-  xbt_dynar_push(globals->isends, &comm);
-
-  XBT_DEBUG("Isend on %s", MSG_process_get_name(MSG_process_self()));
-  log_action(action, MSG_get_clock() - clock);
-  asynchronous_cleanup();
-}
-
-static void action_recv(const char *const *action)
-{
-  char mailbox_name[250];
-  msg_task_t task = NULL;
-  double clock = MSG_get_clock();
-
-  snprintf(mailbox_name,249, "%s_%s", action[2], MSG_process_get_name(MSG_process_self()));
-
-  ACT_DEBUG("Receiving: %s", NAME);
-  msg_error_t res = MSG_task_receive(&task, mailbox_name);
-  log_action(action, MSG_get_clock() - clock);
-
-  if (res == MSG_OK) {
-    MSG_task_destroy(task);
-  }
-  asynchronous_cleanup();
-}
-
-static void action_Irecv(const char *const *action)
-{
-  char mailbox[250];
-  double clock = MSG_get_clock();
-  process_globals_t globals = static_cast<process_globals_t>( MSG_process_get_data(MSG_process_self()) );
-
-  XBT_DEBUG("Irecv on %s", MSG_process_get_name(MSG_process_self()));
-
-  snprintf(mailbox,249, "%s_%s", action[2], MSG_process_get_name(MSG_process_self()));
-  globals->tasks.push_back(nullptr);
-  msg_comm_t c = MSG_task_irecv(&globals->tasks.back(), mailbox);
-  xbt_dynar_push(globals->irecvs, &c);
-  log_action(action, MSG_get_clock() - clock);
-  asynchronous_cleanup();
-}
-
-static void action_wait(const char *const *action)
-{
-  msg_comm_t comm;
-  double clock = MSG_get_clock();
-  process_globals_t globals = static_cast<process_globals_t>( MSG_process_get_data(MSG_process_self()) );
-
-  xbt_assert(xbt_dynar_length(globals->irecvs), "action wait not preceded by any irecv: %s",
-             xbt_str_join_array(action, " "));
-
-  ACT_DEBUG("Entering %s", NAME);
-  comm = xbt_dynar_pop_as(globals->irecvs, msg_comm_t);
-  MSG_comm_wait(comm, -1);
-  msg_task_t task = globals->tasks.back();
-  MSG_task_destroy(task);
-  globals->tasks.pop_back();
-  MSG_comm_destroy(comm);
-
-  log_action(action, MSG_get_clock() - clock);
-}
-
-/* FIXME: that's a poor man's implementation: we should take the message exchanges into account */
-static void action_barrier(const char *const *action)
-{
-  static simgrid::s4u::MutexPtr mutex = nullptr;
-  static simgrid::s4u::ConditionVariablePtr cond = nullptr;
-  static int processes_arrived_sofar = 0;
-  if (mutex == nullptr) {          // first arriving on the barrier
-    mutex = simgrid::s4u::Mutex::createMutex();
-    cond = simgrid::s4u::ConditionVariable::createConditionVariable();
-    processes_arrived_sofar = 0;
-  }
-  ACT_DEBUG("Entering barrier: %s (%d already there)", NAME, processes_arrived_sofar);
-
+class Replayer {
+public:
+  explicit Replayer(std::vector<std::string> args)
   {
-    std::unique_lock<simgrid::s4u::Mutex> lock(*mutex);
-    if (++processes_arrived_sofar == communicator_size) {
-      // We can notify without the lock:
-      lock.unlock();
-      cond->notify_all();
+    int argc;
+    char* argv[2];
+    argv[0] = (char*)(args.at(0).c_str());
+    if (args.size() == 1) {
+      argc = 1;
     } else {
-      cond->wait(lock);
+      argc    = 2;
+      argv[1] = (char*)(args.at(1).c_str());
     }
+    xbt_replay_action_runner(argc, argv);
   }
 
-  ACT_DEBUG("Exiting barrier: %s", NAME);
+  void operator()() {}
 
-  processes_arrived_sofar--;
-  if (processes_arrived_sofar<=0) {
-    cond = nullptr;
-    mutex = nullptr;
-  }
-}
-
-static void action_bcast(const char *const *action)
-{
-  char mailbox[80];
-  double comm_size = xbt_str_parse_double(action[2], "%s is not a double");
-  msg_task_t task = NULL;
-  double clock = MSG_get_clock();
-
-  process_globals_t counters = static_cast<process_globals_t>( MSG_process_get_data(MSG_process_self()) );
-
-  xbt_assert(communicator_size, "Size of Communicator is not defined, can't use collective operations");
-
-  const char * process_name = MSG_process_get_name(MSG_process_self());
-
-  char *bcast_identifier = bprintf("bcast_%d", counters->bcast_counter++);
-
-  if (!strcmp(process_name, "p0")) {
-    XBT_DEBUG("%s: %s is the Root", bcast_identifier, process_name);
-
-    msg_comm_t *comms = xbt_new0(msg_comm_t, communicator_size - 1);
-
-    for (int i = 1; i < communicator_size; i++) {
-      snprintf(mailbox,79, "%s_p0_p%d", bcast_identifier, i);
-      comms[i - 1] = MSG_task_isend(MSG_task_create(mailbox, 0, comm_size, NULL), mailbox);
-    }
-    MSG_comm_waitall(comms, communicator_size - 1, -1);
-    for (int i = 1; i < communicator_size; i++)
-      MSG_comm_destroy(comms[i - 1]);
-    xbt_free(comms);
-
-    XBT_DEBUG("%s: all messages sent by %s have been received", bcast_identifier, process_name);
-  } else {
-    snprintf(mailbox,79, "%s_p0_%s", bcast_identifier, process_name);
-    MSG_task_receive(&task, mailbox);
-    MSG_task_destroy(task);
-    XBT_DEBUG("%s: %s has received", bcast_identifier, process_name);
+  /* My actions */
+  static void compute(const char* const* action)
+  {
+    double amount = std::stod(action[2]);
+    double clock  = simgrid::s4u::Engine::instance()->getClock();
+    ACT_DEBUG("Entering %s", NAME);
+    simgrid::s4u::this_actor::execute(amount);
+    log_action(action, simgrid::s4u::Engine::instance()->getClock() - clock);
   }
 
-  log_action(action, MSG_get_clock() - clock);
-  xbt_free(bcast_identifier);
-}
+  static void send(const char* const* action)
+  {
+    double size                 = std::stod(action[3]);
+    char* payload               = xbt_strdup(action[3]);
+    double clock                = simgrid::s4u::Engine::instance()->getClock();
+    simgrid::s4u::MailboxPtr to = simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::name() + "_" + action[2]);
+    ACT_DEBUG("Entering Send: %s (size: %g) -- Actor %s on mailbox %s", NAME, size,
+              simgrid::s4u::this_actor::name().c_str(), to->name());
+    simgrid::s4u::this_actor::send(to, payload, size);
+    xbt_free(payload);
 
-static void action_comm_size(const char *const *action)
-{
-  double clock = MSG_get_clock();
-
-  communicator_size = xbt_str_parse_int(action[2], "%s is not an int");
-  log_action(action, MSG_get_clock() - clock);
-}
-
-static void action_compute(const char *const *action)
-{
-  double amount   = xbt_str_parse_double(action[2], "%s is not a double");
-  msg_task_t task = MSG_task_create("task", amount, 0, NULL);
-  double clock = MSG_get_clock();
-
-  ACT_DEBUG("Entering %s", NAME);
-  MSG_task_execute(task);
-  MSG_task_destroy(task);
-  log_action(action, MSG_get_clock() - clock);
-}
-
-static void action_init(const char *const *action)
-{
-  XBT_DEBUG("Initialize the counters");
-  process_globals_t globals = static_cast<process_globals_t>( calloc(1, sizeof(s_process_globals_t)) );
-  globals->isends = xbt_dynar_new(sizeof(msg_comm_t), NULL);
-  globals->irecvs = xbt_dynar_new(sizeof(msg_comm_t), NULL);
-  MSG_process_set_data(MSG_process_self(), globals);
-}
-
-static void action_finalize(const char *const *action)
-{
-  process_globals_t globals = static_cast<process_globals_t>( MSG_process_get_data(MSG_process_self()) );
-  if (globals) {
-    asynchronous_cleanup();
-    xbt_dynar_free_container(&(globals->isends));
-    xbt_dynar_free_container(&(globals->irecvs));
-    xbt_free(globals);
+    log_action(action, simgrid::s4u::Engine::instance()->getClock() - clock);
   }
-}
+
+  static void recv(const char* const* action)
+  {
+    double clock = simgrid::s4u::Engine::instance()->getClock();
+    simgrid::s4u::MailboxPtr from =
+        simgrid::s4u::Mailbox::byName(std::string(action[2]) + "_" + simgrid::s4u::this_actor::name());
+
+    ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME, simgrid::s4u::this_actor::name().c_str(), from->name());
+    simgrid::s4u::this_actor::recv(from);
+    log_action(action, simgrid::s4u::Engine::instance()->getClock() - clock);
+  }
+};
 
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
-
-  /* Check the given arguments */
-  MSG_init(&argc, argv);
+  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
   /* Explicit initialization of the action module is required now*/
-  MSG_action_init();
+  _xbt_replay_action_init();
 
-  xbt_assert(argc > 2,
-       "Usage: %s platform_file deployment_file [action_files]\n"
-       "\t# if all actions are in the same file\n"
-       "\tExample: %s msg_platform.xml msg_deployment.xml actions\n"
-       "\t# if actions are in separate files, specified in deployment\n"
-       "\tExample: %s msg_platform.xml msg_deployment.xml ",
-       argv[0],argv[0],argv[0]);
+  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file [action_files]\n"
+                       "\t# if all actions are in the same file\n"
+                       "\tExample: %s msg_platform.xml msg_deployment.xml actions\n"
+                       "\t# if actions are in separate files, specified in deployment\n"
+                       "\tExample: %s msg_platform.xml msg_deployment.xml ",
+             argv[0], argv[0], argv[0]);
 
-  MSG_create_environment(argv[1]);
-  MSG_launch_application(argv[2]);
+  e->loadPlatform(argv[1]);
+  e->registerDefault(xbt_replay_action_runner);
+  e->registerFunction<Replayer>("p0");
+  e->registerFunction<Replayer>("p1");
+  e->loadDeployment(argv[2]);
 
   /*   Action registration */
-  xbt_replay_action_register("init", action_init);
-  xbt_replay_action_register("finalize", action_finalize);
-  xbt_replay_action_register("comm_size", action_comm_size);
-  xbt_replay_action_register("send", action_send);
-  xbt_replay_action_register("Isend", action_Isend);
-  xbt_replay_action_register("recv", action_recv);
-  xbt_replay_action_register("Irecv", action_Irecv);
-  xbt_replay_action_register("wait", action_wait);
-  xbt_replay_action_register("barrier", action_barrier);
-  xbt_replay_action_register("bcast", action_bcast);
-  xbt_replay_action_register("compute", action_compute);
+  xbt_replay_action_register("compute", Replayer::compute);
+  xbt_replay_action_register("send", Replayer::send);
+  xbt_replay_action_register("recv", Replayer::recv);
 
   /* Actually do the simulation using MSG_action_trace_run */
-  res = MSG_action_trace_run(argv[3]);  // it's ok to pass a NULL argument here
+  if (argv[3]) {
+    simgrid::xbt::action_fs = new std::ifstream(argv[3], std::ifstream::in);
+  }
 
-  XBT_INFO("Simulation time %g", MSG_get_clock());
+  e->run();
 
-  MSG_action_exit(); /* Explicit finalization of the action module */
+  if (argv[3]) {
+    delete simgrid::xbt::action_fs;
+    simgrid::xbt::action_fs = nullptr;
+  }
 
-  return res != MSG_OK;
+  XBT_INFO("Simulation time %g", e->getClock());
+
+  _xbt_replay_action_exit(); /* Explicit finalization of the action module */
+
+  return 0;
 }

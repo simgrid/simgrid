@@ -206,6 +206,7 @@ static simgrid::xbt::ReplayAction* action_get_action(char* name)
       std::getline(*simgrid::xbt::action_fs, action_line);
       // cleanup and split the string I just read
       boost::trim(action_line);
+      XBT_DEBUG("got from trace: %s", action_line.c_str());
       if (action_line.length() > 0 && action_line.find("#") == std::string::npos) {
         /* we cannot split in place here because we parse&store several lines for the colleagues... */
         action = new simgrid::xbt::ReplayAction();
