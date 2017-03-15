@@ -634,7 +634,7 @@ void smpi_global_destroy()
 
   if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED){
     MPI_COMM_WORLD->cleanup_smp();
-    MPI_COMM_WORLD->cleanup_attributes();
+    MPI_COMM_WORLD->cleanup_attr<Comm>();
     if(Colls::smpi_coll_cleanup_callback!=nullptr)
       Colls::smpi_coll_cleanup_callback();
     delete MPI_COMM_WORLD;

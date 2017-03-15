@@ -59,19 +59,7 @@ Win::~Win(){
     MSG_barrier_destroy(bar_);
   xbt_mutex_destroy(mut_);
 
-  if(!attributes_.empty()){
-    int flag;
-    for(auto it = attributes_.begin(); it != attributes_.end(); it++){
-      try{
-        smpi_key_elem elem = keyvals_.at((*it).first);
-        if (elem != nullptr && elem->delete_fn.win_delete_fn != nullptr)
-          elem->delete_fn.win_delete_fn(this, (*it).first, (*it).second, &flag);
-      }catch(const std::out_of_range& oor) {
-        //already deleted, not a problem;
-      }
-    }
-  }
-
+  cleanup_attr<Win>();
 }
 
 void Win::get_name(char* name, int* length){
