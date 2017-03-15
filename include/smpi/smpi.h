@@ -13,12 +13,11 @@
 #include <time.h>
 #endif
 
+#include <simgrid/datatypes.h>
+#include <smpi/forward.hpp>
 #include <stddef.h>
-#include <xbt/misc.h>
 #include <xbt/function_types.h>
-#include "simgrid/datatypes.h"
-
-#include "include/smpi/forward.hpp"
+#include <xbt/misc.h>
 
 #ifdef _WIN32
 #define MPI_CALL(type,name,args) \
