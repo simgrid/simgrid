@@ -1,5 +1,6 @@
 #! ./tesh
 
+! timeout 300
 ! expect return 0
 ! output sort
 $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench big 1
