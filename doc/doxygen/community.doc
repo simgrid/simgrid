@@ -25,7 +25,8 @@ and say hello! We love earing about how people use SimGrid.
    framework, and you never know who have the time and knowledge to
    answer your question, so please keep messages on the public mailing list.
  - Join us on IRC and ask your question directly on the channel \#simgrid at
-   \b irc.debian.org. Be warned that even if many people are connected to
+   \b irc.debian.org (or use the <a href="https://webchat.oftc.net/?channels=%23simgrid">web interface</a>). 
+   Be warned that even if many people are connected to
    the chanel, they may not be staring at their IRC windows.
    So don't be surprised if you don't get an answer in the 
    second, and turn to the mailing lists if nobody seems to be there.
