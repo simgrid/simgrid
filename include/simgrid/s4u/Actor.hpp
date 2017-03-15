@@ -294,10 +294,10 @@ namespace this_actor {
   XBT_PUBLIC(int) pid();
 
   /** @brief Returns the PPID of the current actor. */
-  int ppid();
+  XBT_PUBLIC(int) ppid();
 
   /** @brief Returns the name of the current actor. */
-  std::string name();
+  XBT_PUBLIC(std::string) name();
 };
 
 /** @} */
