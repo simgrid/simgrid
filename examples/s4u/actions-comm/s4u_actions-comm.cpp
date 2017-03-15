@@ -55,11 +55,11 @@ public:
 
   static void send(const char* const* action)
   {
-    double size                 = std::stod(action[3]);
+    size_t size                 = static_cast<size_t>(std::stod(action[3]));
     char* payload               = xbt_strdup(action[3]);
     double clock                = simgrid::s4u::Engine::instance()->getClock();
     simgrid::s4u::MailboxPtr to = simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::name() + "_" + action[2]);
-    ACT_DEBUG("Entering Send: %s (size: %g) -- Actor %s on mailbox %s", NAME, size,
+    ACT_DEBUG("Entering Send: %s (size: %zu) -- Actor %s on mailbox %s", NAME, size,
               simgrid::s4u::this_actor::name().c_str(), to->name());
     simgrid::s4u::this_actor::send(to, payload, size);
     xbt_free(payload);
