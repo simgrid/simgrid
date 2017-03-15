@@ -106,7 +106,7 @@ namespace smpi{
 std::unordered_map<int, smpi_key_elem> Datatype::keyvals_;
 int Datatype::keyval_id_=0;
 
-Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr), size_(size), lb_(lb), ub_(ub), flags_(flags), attributes_(nullptr), refcount_(1){
+Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(1){
 #if HAVE_MC
   if(MC_is_active())
     MC_ignore(&(refcount_), sizeof(refcount_));
@@ -114,36 +114,34 @@ Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr
 }
 
 //for predefined types, so in_use = 0.
-Datatype::Datatype(char* name, int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(name), size_(size), lb_(lb), ub_(ub), flags_(flags), attributes_(nullptr), refcount_(0){
+Datatype::Datatype(char* name, int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(name), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(0){
 #if HAVE_MC
   if(MC_is_active())
     MC_ignore(&(refcount_), sizeof(refcount_));
 #endif
 }
 
-Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), lb_(datatype->lb_), ub_(datatype->ub_), flags_(datatype->flags_), attributes_(nullptr), refcount_(1)
+Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), lb_(datatype->lb_), ub_(datatype->ub_), flags_(datatype->flags_), refcount_(1)
 {
   flags_ &= ~DT_FLAG_PREDEFINED;
   *ret = MPI_SUCCESS;
   if(datatype->name_)
     name_ = xbt_strdup(datatype->name_);
-  if(datatype->attributes_ !=nullptr){
-    attributes_ = xbt_dict_new_homogeneous(nullptr);
-    xbt_dict_cursor_t cursor = nullptr;
-    char* key;
+  if(!(datatype->attributes_.empty())){
     int flag;
-    void* value_in;
     void* value_out;
-    xbt_dict_foreach (datatype->attributes_, cursor, key, value_in) {
-      smpi_key_elem elem = keyvals_.at(atoi(key));
+    for(auto it = datatype->attributes_.begin(); it != datatype->attributes_.end(); it++){
+      smpi_key_elem elem = keyvals_.at((*it).first);
+      
       if (elem != nullptr && elem->copy_fn.type_copy_fn != MPI_NULL_COPY_FN) {
-        *ret = elem->copy_fn.type_copy_fn(datatype, atoi(key), nullptr, value_in, &value_out, &flag);
+        *ret = elem->copy_fn.type_copy_fn(datatype, (*it).first, nullptr, (*it).second, &value_out, &flag);
         if (*ret != MPI_SUCCESS) {
-          xbt_dict_cursor_free(&cursor);
           break;
         }
-        if (flag)
-          xbt_dict_set_ext(attributes_, key, sizeof(int), value_out, nullptr);
+        if (flag){
+          elem->refcount++;
+          attributes_.insert({(*it).first, value_out});
+        }
       }
     }
   }
@@ -161,21 +159,17 @@ Datatype::~Datatype(){
       return;
   }
 
-  if(attributes_ !=nullptr){
-    xbt_dict_cursor_t cursor = nullptr;
-    char* key;
-    void * value;
+  if(!attributes_.empty()){
     int flag;
-    xbt_dict_foreach(attributes_, cursor, key, value){
+    for(auto it = attributes_.begin(); it != attributes_.end(); it++){
       try{
-        smpi_key_elem elem = keyvals_.at(atoi(key));
-        if(elem!=nullptr && elem->delete_fn.type_delete_fn!=nullptr)
-          elem->delete_fn.type_delete_fn(this,*key, value, &flag);
+        smpi_key_elem elem = keyvals_.at((*it).first);
+        if (elem != nullptr && elem->delete_fn.type_delete_fn != nullptr)
+          elem->delete_fn.type_delete_fn(this, (*it).first, (*it).second, &flag);
       }catch(const std::out_of_range& oor) {
         //already deleted, not a problem;
       }
     }
-    xbt_dict_free(&attributes_);
   }
 
   xbt_free(name_);
@@ -260,64 +254,6 @@ void Datatype::set_name(char* name){
   if(name_!=nullptr &&  (flags_ & DT_FLAG_PREDEFINED) == 0)
     xbt_free(name_);
   name_ = xbt_strdup(name);
-}
-
-int Datatype::attr_delete(int keyval){
-  smpi_key_elem elem = keyvals_.at(keyval);
-  if(elem==nullptr)
-    return MPI_ERR_ARG;
-  if(elem->delete_fn.type_delete_fn!=MPI_NULL_DELETE_FN){
-    void * value = nullptr;
-    int flag;
-    if(this->attr_get(keyval, &value, &flag)==MPI_SUCCESS){
-      int ret = elem->delete_fn.type_delete_fn(this, keyval, value, &flag);
-      if(ret!=MPI_SUCCESS) 
-        return ret;
-    }
-  }  
-  if(attributes_==nullptr)
-    return MPI_ERR_ARG;
-
-  xbt_dict_remove_ext(attributes_, reinterpret_cast<const char*>(&keyval), sizeof(int));
-  return MPI_SUCCESS;
-}
-
-
-int Datatype::attr_get(int keyval, void* attr_value, int* flag){
-  smpi_key_elem elem = keyvals_.at(keyval);
-  if(elem==nullptr)
-    return MPI_ERR_ARG;
-  if(attributes_==nullptr){
-    *flag=0;
-    return MPI_SUCCESS;
-  }
-  try {
-    *static_cast<void**>(attr_value) = xbt_dict_get_ext(attributes_, reinterpret_cast<const char*>(&keyval), sizeof(int));
-    *flag=1;
-  }
-  catch (xbt_ex& ex) {
-    *flag=0;
-  }
-  return MPI_SUCCESS;
-}
-
-int Datatype::attr_put(int keyval, void* attr_value){
-  smpi_key_elem elem = keyvals_.at(keyval);
-  if(elem==nullptr)
-    return MPI_ERR_ARG;
-  int flag;
-  void* value = nullptr;
-  this->attr_get(keyval, &value, &flag);
-  if(flag!=0 && elem->delete_fn.type_delete_fn!=MPI_NULL_DELETE_FN){
-    int ret = elem->delete_fn.type_delete_fn(this, keyval, value, &flag);
-    if(ret!=MPI_SUCCESS) 
-      return ret;
-  }
-  if(attributes_==nullptr)
-    attributes_ = xbt_dict_new_homogeneous(nullptr);
-
-  xbt_dict_set_ext(attributes_, reinterpret_cast<const char*>(&keyval), sizeof(int), attr_value, nullptr);
-  return MPI_SUCCESS;
 }
 
 int Datatype::pack(void* inbuf, int incount, void* outbuf, int outcount, int* position,MPI_Comm comm){

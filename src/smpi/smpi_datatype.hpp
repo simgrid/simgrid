@@ -85,7 +85,6 @@ class Datatype : public F2C, public Keyval{
     MPI_Aint lb_;
     MPI_Aint ub_;
     int flags_;
-    xbt_dict_t attributes_;
     int refcount_;
 
   public:
@@ -116,9 +115,6 @@ class Datatype : public F2C, public Keyval{
                             int count);
     virtual void unserialize( void* contiguous, void *noncontiguous, 
                               int count, MPI_Op op);
-    int attr_delete(int keyval);
-    int attr_get(int keyval, void* attr_value, int* flag);
-    int attr_put(int keyval, void* attr_value);
     static int keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval, void* extra_state);
     static int keyval_free(int* keyval);
     int pack(void* inbuf, int incount, void* outbuf, int outcount, int* position, MPI_Comm comm);

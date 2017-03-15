@@ -370,6 +370,20 @@ typedef SMPI_Request *MPI_Request;
 #define MPI_REQUEST_NULL ((MPI_Request)NULL)
 #define MPI_FORTRAN_REQUEST_NULL -1
 
+typedef int MPI_Copy_function(MPI_Comm oldcomm, int keyval, void* extra_state, void* attribute_val_in,
+                              void* attribute_val_out, int* flag);
+typedef int MPI_Delete_function(MPI_Comm comm, int keyval, void* attribute_val, void* extra_state);
+#define MPI_Comm_copy_attr_function MPI_Copy_function
+#define MPI_Comm_delete_attr_function MPI_Delete_function
+typedef int MPI_Type_copy_attr_function(MPI_Datatype type, int keyval, void* extra_state, void* attribute_val_in,
+                              void* attribute_val_out, int* flag);
+typedef int MPI_Type_delete_attr_function(MPI_Datatype type, int keyval, void* attribute_val, void* extra_state);
+#define MPI_COMM_NULL_COPY_FN ((MPI_Comm_copy_attr_function*)0)
+#define MPI_COMM_NULL_DELETE_FN ((MPI_Comm_delete_attr_function*)0)
+#define MPI_TYPE_NULL_COPY_FN ((MPI_Type_copy_attr_function*)0)
+#define MPI_TYPE_NULL_DELETE_FN ((MPI_Type_delete_attr_function*)0)
+
+
 MPI_CALL(XBT_PUBLIC(int), MPI_Init, (int *argc, char ***argv));
 MPI_CALL(XBT_PUBLIC(int), MPI_Finalize, (void));
 MPI_CALL(XBT_PUBLIC(int), MPI_Finalized, (int* flag));
@@ -545,25 +559,11 @@ typedef void MPI_Handler_function(MPI_Comm*, int*, ...);
 
 typedef void* MPI_Errhandler;
 
-typedef int MPI_Copy_function(MPI_Comm oldcomm, int keyval, void* extra_state, void* attribute_val_in,
-                              void* attribute_val_out, int* flag);
-typedef int MPI_Delete_function(MPI_Comm comm, int keyval, void* attribute_val, void* extra_state);
-#define MPI_Comm_copy_attr_function MPI_Copy_function
-#define MPI_Comm_delete_attr_function MPI_Delete_function
-typedef int MPI_Type_copy_attr_function(MPI_Datatype type, int keyval, void* extra_state, void* attribute_val_in,
-                              void* attribute_val_out, int* flag);
-typedef int MPI_Type_delete_attr_function(MPI_Datatype type, int keyval, void* attribute_val, void* extra_state);
 typedef void MPI_Comm_errhandler_function(MPI_Comm *, int *, ...);
 typedef int MPI_Grequest_query_function(void *extra_state, MPI_Status *status); 
 typedef int MPI_Grequest_free_function(void *extra_state); 
 typedef int MPI_Grequest_cancel_function(void *extra_state, int complete); 
 #define MPI_DUP_FN MPI_Comm_dup
-#define MPI_COMM_NULL_COPY_FN ((MPI_Comm_copy_attr_function*)0)
-#define MPI_COMM_NULL_DELETE_FN ((MPI_Comm_delete_attr_function*)0)
-#define MPI_COMM_DUP_FN  ((MPI_Comm_copy_attr_function *)MPI_DUP_FN)
-#define MPI_TYPE_NULL_COPY_FN ((MPI_Type_copy_attr_function*)0)
-#define MPI_TYPE_NULL_DELETE_FN ((MPI_Type_delete_attr_function*)0)
-#define MPI_TYPE_DUP_FN ((MPI_Type_copy_attr_function*)MPI_DUP_FN)
 
 typedef MPI_Comm_errhandler_function MPI_Comm_errhandler_fn;
 #define MPI_INFO_ENV 1

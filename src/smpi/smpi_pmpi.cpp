@@ -2790,7 +2790,7 @@ int PMPI_Attr_delete(MPI_Comm comm, int keyval) {
   else if (comm==MPI_COMM_NULL)
     return MPI_ERR_COMM;
   else
-    return comm->attr_delete(keyval);
+    return comm->attr_delete<Comm>(keyval);
 }
 
 int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
@@ -2828,7 +2828,7 @@ int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
     *static_cast<int**>(attr_value) = &one;
     return MPI_SUCCESS;
   default:
-    return comm->attr_get(keyval, attr_value, flag);
+    return comm->attr_get<Comm>(keyval, attr_value, flag);
   }
 }
 
@@ -2839,7 +2839,7 @@ int PMPI_Attr_put(MPI_Comm comm, int keyval, void* attr_value) {
   else if (comm==MPI_COMM_NULL)
     return MPI_ERR_COMM;
   else
-  return comm->attr_put(keyval, attr_value);
+  return comm->attr_put<Comm>(keyval, attr_value);
 }
 
 int PMPI_Comm_get_attr (MPI_Comm comm, int comm_keyval, void *attribute_val, int *flag)
@@ -2872,7 +2872,7 @@ int PMPI_Type_get_attr (MPI_Datatype type, int type_keyval, void *attribute_val,
   if (type==MPI_DATATYPE_NULL)
     return MPI_ERR_TYPE;
   else
-    return type->attr_get(type_keyval, attribute_val, flag);
+    return type->attr_get<Datatype>(type_keyval, attribute_val, flag);
 }
 
 int PMPI_Type_set_attr (MPI_Datatype type, int type_keyval, void *attribute_val)
@@ -2880,7 +2880,7 @@ int PMPI_Type_set_attr (MPI_Datatype type, int type_keyval, void *attribute_val)
   if (type==MPI_DATATYPE_NULL)
     return MPI_ERR_TYPE;
   else
-    return type->attr_put(type_keyval, attribute_val);
+    return type->attr_put<Datatype>(type_keyval, attribute_val);
 }
 
 int PMPI_Type_delete_attr (MPI_Datatype type, int type_keyval)
@@ -2888,7 +2888,7 @@ int PMPI_Type_delete_attr (MPI_Datatype type, int type_keyval)
   if (type==MPI_DATATYPE_NULL)
     return MPI_ERR_TYPE;
   else
-    return type->attr_delete(type_keyval);
+    return type->attr_delete<Datatype>(type_keyval);
 }
 
 int PMPI_Type_create_keyval(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval,

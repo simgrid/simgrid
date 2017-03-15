@@ -122,16 +122,6 @@ XBT_PRIVATE void smpi_empty_status(MPI_Status * status);
 XBT_PRIVATE int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype);
 
 
-XBT_PRIVATE int smpi_comm_keyval_create(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn,
-                                        int* keyval, void* extra_state);
-XBT_PRIVATE int smpi_comm_keyval_free(int* keyval);
-
-XBT_PRIVATE int smpi_type_attr_delete(MPI_Datatype type, int keyval);
-XBT_PRIVATE int smpi_type_attr_get(MPI_Datatype type, int keyval, void* attr_value, int* flag);
-XBT_PRIVATE int smpi_type_attr_put(MPI_Datatype type, int keyval, void* attr_value);
-XBT_PRIVATE int smpi_type_keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn,
-                                        int* keyval, void* extra_state);
-XBT_PRIVATE int smpi_type_keyval_free(int* keyval);
 // utilities
 extern XBT_PRIVATE double smpi_cpu_threshold;
 extern XBT_PRIVATE double smpi_host_speed;

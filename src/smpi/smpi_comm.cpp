@@ -60,7 +60,6 @@ Comm::Comm(MPI_Group group, MPI_Topology topo) : group_(group), topo_(topo)
   non_uniform_map_ = nullptr;
   leaders_map_ = nullptr;
   is_blocked_=0;
-  attributes_=nullptr;
 }
 
 void Comm::destroy(Comm* comm)
@@ -81,25 +80,22 @@ int Comm::dup(MPI_Comm* newcomm){
   (*newcomm) = new  Comm(cp, this->topo());
   int ret = MPI_SUCCESS;
 
-  if(attributes_ !=nullptr){
-    (*newcomm)->attributes_   = xbt_dict_new_homogeneous(nullptr);
-    xbt_dict_cursor_t cursor = nullptr;
-    char* key;
+  if(!attributes_.empty()){
     int flag;
-    void* value_in;
     void* value_out;
-    xbt_dict_foreach (attributes_, cursor, key, value_in) {
-      smpi_key_elem elem = keyvals_.at(*key);
+    for(auto it = attributes_.begin(); it != attributes_.end(); it++){
+      smpi_key_elem elem = keyvals_.at((*it).first);
       if (elem != nullptr && elem->copy_fn.comm_copy_fn != MPI_NULL_COPY_FN) {
-        ret = elem->copy_fn.comm_copy_fn(this, *key, nullptr, value_in, &value_out, &flag);
+        ret = elem->copy_fn.comm_copy_fn(this, (*it).first, nullptr, (*it).second, &value_out, &flag);
         if (ret != MPI_SUCCESS) {
           Comm::destroy(*newcomm);
           *newcomm = MPI_COMM_NULL;
-          xbt_dict_cursor_free(&cursor);
           return ret;
         }
-        if (flag)
-          xbt_dict_set_ext((*newcomm)->attributes_, key, sizeof(int), value_out, nullptr);
+        if (flag){
+          elem->refcount++;
+          (*newcomm)->attributes_.insert({(*it).first, value_out});
+        }
       }
       }
     }
@@ -284,21 +280,17 @@ void Comm::ref(){
 }
 
 void Comm::cleanup_attributes(){
-  if(attributes_ !=nullptr){
-    xbt_dict_cursor_t cursor = nullptr;
-    char* key;
-    void* value;
+  if(!attributes_.empty()){
     int flag;
-    xbt_dict_foreach (attributes_, cursor, key, value) {
+    for(auto it = attributes_.begin(); it != attributes_.end(); it++){
       try{
-        smpi_key_elem elem = keyvals_.at(*key);
+        smpi_key_elem elem = keyvals_.at((*it).first);
         if (elem != nullptr && elem->delete_fn.comm_delete_fn != nullptr)
-          elem->delete_fn.comm_delete_fn(this, *key, value, &flag);
+          elem->delete_fn.comm_delete_fn(this, (*it).first, (*it).second, &flag);
       }catch(const std::out_of_range& oor) {
         //already deleted, not a problem;
       }
     }
-    xbt_dict_free(&attributes_);
   }
 }
 
@@ -497,64 +489,6 @@ void Comm::init_smp(){
   
   if(replaying)
     smpi_process_set_replaying(true); 
-}
-
-int Comm::attr_delete(int keyval){
-  smpi_key_elem elem = keyvals_.at(keyval);
-  if(elem==nullptr)
-    return MPI_ERR_ARG;
-  if(elem->delete_fn.comm_delete_fn!=MPI_NULL_DELETE_FN){
-    void* value = nullptr;
-    int flag;
-    if(this->attr_get(keyval, &value, &flag)==MPI_SUCCESS){
-      int ret = elem->delete_fn.comm_delete_fn(this, keyval, value, &flag);
-      if(ret!=MPI_SUCCESS) 
-        return ret;
-    }
-  }
-  if(attributes_==nullptr)
-    return MPI_ERR_ARG;
-
-  xbt_dict_remove_ext(attributes_, reinterpret_cast<const char*>(&keyval), sizeof(int));
-  return MPI_SUCCESS;
-}
-
-int Comm::attr_get(int keyval, void* attr_value, int* flag){
-  smpi_key_elem elem = keyvals_.at(keyval);
-  if(elem==nullptr)
-    return MPI_ERR_ARG;
-  if(attributes_==nullptr){
-    *flag=0;
-    return MPI_SUCCESS;
-  }
-  try {
-    *static_cast<void**>(attr_value) =
-        xbt_dict_get_ext(attributes_, reinterpret_cast<const char*>(&keyval), sizeof(int));
-    *flag=1;
-  }
-  catch (xbt_ex& ex) {
-    *flag=0;
-  }
-  return MPI_SUCCESS;
-}
-
-int Comm::attr_put(int keyval, void* attr_value){
-  smpi_key_elem elem = keyvals_.at(keyval);
-  if(elem==nullptr)
-    return MPI_ERR_ARG;
-  int flag;
-  void* value = nullptr;
-  this->attr_get(keyval, &value, &flag);
-  if(flag!=0 && elem->delete_fn.comm_delete_fn!=MPI_NULL_DELETE_FN){
-    int ret = elem->delete_fn.comm_delete_fn(this, keyval, value, &flag);
-    if(ret!=MPI_SUCCESS) 
-      return ret;
-  }
-  if(attributes_==nullptr)
-    attributes_ = xbt_dict_new_homogeneous(nullptr);
-
-  xbt_dict_set_ext(attributes_,  reinterpret_cast<const char*>(&keyval), sizeof(int), attr_value, nullptr);
-  return MPI_SUCCESS;
 }
 
 MPI_Comm Comm::f2c(int id) {

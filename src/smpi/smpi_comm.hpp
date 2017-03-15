@@ -33,7 +33,6 @@ class Comm : public F2C, public Keyval{
     int is_uniform_;
     int* non_uniform_map_; //set if smp nodes have a different number of processes allocated
     int is_blocked_;// are ranks allocated on the same smp node contiguous ?
-    xbt_dict_t attributes_;
 
   public:
     static std::unordered_map<int, smpi_key_elem> keyvals_;
@@ -63,9 +62,6 @@ class Comm : public F2C, public Keyval{
     static void unref(MPI_Comm comm);
     static void destroy(MPI_Comm comm);
     void init_smp();
-    int attr_delete(int keyval);
-    int attr_get(int keyval, void* attr_value, int* flag);
-    int attr_put(int keyval, void* attr_value);
 
     int add_f();
     static void free_f(int id);
