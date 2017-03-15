@@ -11,6 +11,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_rma, smpi, "Logging specific to SMPI (RMA o
 
 namespace simgrid{
 namespace smpi{
+std::unordered_map<int, smpi_key_elem> Win::keyvals_;
+int Win::keyval_id_=0;
 
 Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm): base_(base), size_(size), disp_unit_(disp_unit), assert_(0), info_(info), comm_(comm){
   int comm_size = comm->size();
@@ -56,6 +58,20 @@ Win::~Win(){
   if(rank == 0)
     MSG_barrier_destroy(bar_);
   xbt_mutex_destroy(mut_);
+
+  if(!attributes_.empty()){
+    int flag;
+    for(auto it = attributes_.begin(); it != attributes_.end(); it++){
+      try{
+        smpi_key_elem elem = keyvals_.at((*it).first);
+        if (elem != nullptr && elem->delete_fn.win_delete_fn != nullptr)
+          elem->delete_fn.win_delete_fn(this, (*it).first, (*it).second, &flag);
+      }catch(const std::out_of_range& oor) {
+        //already deleted, not a problem;
+      }
+    }
+  }
+
 }
 
 void Win::get_name(char* name, int* length){
@@ -75,6 +91,19 @@ void Win::get_group(MPI_Group* group){
     *group = MPI_GROUP_NULL;
   }
 }
+
+MPI_Aint Win::size(){
+  return size_;
+}
+
+void* Win::base(){
+  return base_;
+}
+
+int Win::disp_unit(){
+  return disp_unit_;
+}
+
 
 void Win::set_name(char* name){
   name_ = xbt_strdup(name);

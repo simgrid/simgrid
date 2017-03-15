@@ -2905,6 +2905,65 @@ int PMPI_Type_free_keyval(int* keyval) {
   return Keyval::keyval_free<Datatype>(keyval);
 }
 
+int PMPI_Win_get_attr (MPI_Win win, int keyval, void *attribute_val, int* flag)
+{
+  static MPI_Aint size;
+  static int disp_unit;
+  if (win==MPI_WIN_NULL)
+    return MPI_ERR_TYPE;
+  else{
+  switch (keyval) {
+    case MPI_WIN_BASE :
+      *static_cast<void**>(attribute_val)  = win->base();
+      *flag = 1;
+      return MPI_SUCCESS;
+    case MPI_WIN_SIZE :
+      size = win->size();
+      *static_cast<MPI_Aint**>(attribute_val)  = &size;
+      *flag = 1;
+      return MPI_SUCCESS;
+    case MPI_WIN_DISP_UNIT :
+      disp_unit=win->disp_unit();
+      *static_cast<int**>(attribute_val)  = &disp_unit;
+      *flag = 1;
+      return MPI_SUCCESS;
+    default:
+      return win->attr_get<Win>(keyval, attribute_val, flag);
+  }
+}
+
+}
+
+int PMPI_Win_set_attr (MPI_Win win, int type_keyval, void *attribute_val)
+{
+  if (win==MPI_WIN_NULL)
+    return MPI_ERR_TYPE;
+  else
+    return win->attr_put<Win>(type_keyval, attribute_val);
+}
+
+int PMPI_Win_delete_attr (MPI_Win win, int type_keyval)
+{
+  if (win==MPI_WIN_NULL)
+    return MPI_ERR_TYPE;
+  else
+    return win->attr_delete<Win>(type_keyval);
+}
+
+int PMPI_Win_create_keyval(MPI_Win_copy_attr_function* copy_fn, MPI_Win_delete_attr_function* delete_fn, int* keyval,
+                            void* extra_state)
+{
+  smpi_copy_fn _copy_fn;
+  smpi_delete_fn _delete_fn;
+  _copy_fn.win_copy_fn = copy_fn;
+  _delete_fn.win_delete_fn = delete_fn;
+  return Keyval::keyval_create<Win>(_copy_fn, _delete_fn, keyval, extra_state);
+}
+
+int PMPI_Win_free_keyval(int* keyval) {
+  return Keyval::keyval_free<Win>(keyval);
+}
+
 int PMPI_Info_create( MPI_Info *info){
   if (info == nullptr)
     return MPI_ERR_ARG;

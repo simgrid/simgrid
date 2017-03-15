@@ -190,6 +190,12 @@ WRAPPED_PMPI_CALL(int,MPI_Win_post,(MPI_Group group, int assert, MPI_Win win),(g
 WRAPPED_PMPI_CALL(int,MPI_Win_set_name,(MPI_Win win, char * name),(win, name))
 WRAPPED_PMPI_CALL(int,MPI_Win_start,(MPI_Group group, int assert, MPI_Win win),(group, assert, win))
 WRAPPED_PMPI_CALL(int,MPI_Win_wait,(MPI_Win win),(win))
+WRAPPED_PMPI_CALL(int,MPI_Win_get_attr, (MPI_Win type, int type_keyval, void *attribute_val, int* flag), (type, type_keyval, attribute_val, flag))
+WRAPPED_PMPI_CALL(int,MPI_Win_set_attr, (MPI_Win type, int type_keyval, void *att), (type, type_keyval, att))
+WRAPPED_PMPI_CALL(int,MPI_Win_delete_attr, (MPI_Win type, int comm_keyval), (type, comm_keyval))
+WRAPPED_PMPI_CALL(int,MPI_Win_create_keyval,(MPI_Win_copy_attr_function* copy_fn,
+                              MPI_Win_delete_attr_function* delete_fn, int* keyval, void* extra_state), (copy_fn, delete_fn, keyval, extra_state))
+WRAPPED_PMPI_CALL(int,MPI_Win_free_keyval,(int* keyval), (keyval))
 WRAPPED_PMPI_CALL(MPI_Comm, MPI_Comm_f2c,(MPI_Fint comm),(comm))
 WRAPPED_PMPI_CALL(MPI_Datatype, MPI_Type_f2c,(MPI_Fint datatype),(datatype))
 WRAPPED_PMPI_CALL(MPI_Fint, MPI_Comm_c2f,(MPI_Comm comm),(comm))

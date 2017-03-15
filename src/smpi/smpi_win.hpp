@@ -13,7 +13,7 @@
 namespace simgrid{
 namespace smpi{
 
-class Win : public F2C {
+class Win : public F2C, public Keyval {
   private :
   void* base_;
   MPI_Aint size_;
@@ -31,6 +31,9 @@ class Win : public F2C {
   int count_; //for ordering the accs
 
 public:
+  static std::unordered_map<int, smpi_key_elem> keyvals_;
+  static int keyval_id_;
+
   Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm);
   ~Win();
   void get_name( char* name, int* length);
@@ -40,6 +43,9 @@ public:
   int post(MPI_Group group, int assert);
   int complete();
   int wait();
+  MPI_Aint size();
+  void* base();
+  int disp_unit();
   int fence(int assert);
   int put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype);
