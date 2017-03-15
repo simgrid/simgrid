@@ -10,7 +10,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
   foreach(file attr2type attrdeleteget attrend2 attrend attrerr attrerrcomm attrerrtype attrorder attrordercomm attrordertype attrt
-          baseattr2 baseattrcomm fkeyval) #attric fkeyvalcomm fkeyvaltype keyval_double_free
+          baseattr2 baseattrcomm fkeyval fkeyvalcomm fkeyvaltype keyval_double_free) #attric 
     add_executable(${file} ${file}.c)
     target_link_libraries(${file} simgrid mtest_c)
   endforeach()

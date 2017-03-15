@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 
         /* We create some dummy keyvals here in case the same keyval
          * is reused */
-        for (i = 0; i < 32; i++) {
+        for (i = 0; i < 1; i++) {
             MPI_Type_create_keyval(MPI_NULL_COPY_FN, MPI_NULL_DELETE_FN, &key[i], (void *) 0);
         }
 
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
             }
         }
         /* Free those other keyvals */
-        for (i = 0; i < 32; i++) {
+        for (i = 0; i < 1; i++) {
             MPI_Type_free_keyval(&key[i]);
         }
         MTestFreeDatatype(&mrtype);

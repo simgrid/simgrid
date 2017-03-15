@@ -1,5 +1,4 @@
-#Needs win_create_keyval win_set_attr, win_get_attr
-#winname 2
+winname 2
 allocmem 2
 putfence1 4
 putfidx 4
@@ -63,14 +62,11 @@ accfence2_am 4
 test1_dt 2 timeLimit=30
 #Needs post/start
 nullpscw 7
-#Needs win_attr
-#attrorderwin 1
+attrorderwin 1
 #Needs MPI_Win_call_errhandler
 #wincall 2
-#Needs win_attr
-#baseattrwin 1
-#Needs MPI_Win_create_keyval
-#fkeyvalwin 1
+baseattrwin 1
+fkeyvalwin 1
 #Needs lock, unlock
 #selfrma 1
 #mixedsync 4
