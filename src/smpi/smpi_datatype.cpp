@@ -103,7 +103,7 @@ CREATE_MPI_DATATYPE(MPI_PTR, void*);
 namespace simgrid{
 namespace smpi{
 
-std::unordered_map<int, smpi_type_key_elem> Datatype::keyvals_;
+std::unordered_map<int, smpi_key_elem> Datatype::keyvals_;
 int Datatype::keyval_id_=0;
 
 Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr), size_(size), lb_(lb), ub_(ub), flags_(flags), attributes_(nullptr), refcount_(1){
@@ -135,9 +135,9 @@ Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), lb_(datatype-
     void* value_in;
     void* value_out;
     xbt_dict_foreach (datatype->attributes_, cursor, key, value_in) {
-      smpi_type_key_elem elem = keyvals_.at(atoi(key));
-      if (elem != nullptr && elem->copy_fn != MPI_NULL_COPY_FN) {
-        *ret = elem->copy_fn(datatype, atoi(key), nullptr, value_in, &value_out, &flag);
+      smpi_key_elem elem = keyvals_.at(atoi(key));
+      if (elem != nullptr && elem->copy_fn.type_copy_fn != MPI_NULL_COPY_FN) {
+        *ret = elem->copy_fn.type_copy_fn(datatype, atoi(key), nullptr, value_in, &value_out, &flag);
         if (*ret != MPI_SUCCESS) {
           xbt_dict_cursor_free(&cursor);
           break;
@@ -167,9 +167,13 @@ Datatype::~Datatype(){
     void * value;
     int flag;
     xbt_dict_foreach(attributes_, cursor, key, value){
-      smpi_type_key_elem elem = keyvals_.at(atoi(key));
-      if(elem!=nullptr && elem->delete_fn!=nullptr)
-        elem->delete_fn(this,*key, value, &flag);
+      try{
+        smpi_key_elem elem = keyvals_.at(atoi(key));
+        if(elem!=nullptr && elem->delete_fn.type_delete_fn!=nullptr)
+          elem->delete_fn.type_delete_fn(this,*key, value, &flag);
+      }catch(const std::out_of_range& oor) {
+        //already deleted, not a problem;
+      }
     }
     xbt_dict_free(&attributes_);
   }
@@ -259,14 +263,14 @@ void Datatype::set_name(char* name){
 }
 
 int Datatype::attr_delete(int keyval){
-  smpi_type_key_elem elem = keyvals_.at(keyval);
+  smpi_key_elem elem = keyvals_.at(keyval);
   if(elem==nullptr)
     return MPI_ERR_ARG;
-  if(elem->delete_fn!=MPI_NULL_DELETE_FN){
+  if(elem->delete_fn.type_delete_fn!=MPI_NULL_DELETE_FN){
     void * value = nullptr;
     int flag;
     if(this->attr_get(keyval, &value, &flag)==MPI_SUCCESS){
-      int ret = elem->delete_fn(this, keyval, value, &flag);
+      int ret = elem->delete_fn.type_delete_fn(this, keyval, value, &flag);
       if(ret!=MPI_SUCCESS) 
         return ret;
     }
@@ -280,7 +284,7 @@ int Datatype::attr_delete(int keyval){
 
 
 int Datatype::attr_get(int keyval, void* attr_value, int* flag){
-  smpi_type_key_elem elem = keyvals_.at(keyval);
+  smpi_key_elem elem = keyvals_.at(keyval);
   if(elem==nullptr)
     return MPI_ERR_ARG;
   if(attributes_==nullptr){
@@ -298,14 +302,14 @@ int Datatype::attr_get(int keyval, void* attr_value, int* flag){
 }
 
 int Datatype::attr_put(int keyval, void* attr_value){
-  smpi_type_key_elem elem = keyvals_.at(keyval);
+  smpi_key_elem elem = keyvals_.at(keyval);
   if(elem==nullptr)
     return MPI_ERR_ARG;
   int flag;
   void* value = nullptr;
   this->attr_get(keyval, &value, &flag);
-  if(flag!=0 && elem->delete_fn!=MPI_NULL_DELETE_FN){
-    int ret = elem->delete_fn(this, keyval, value, &flag);
+  if(flag!=0 && elem->delete_fn.type_delete_fn!=MPI_NULL_DELETE_FN){
+    int ret = elem->delete_fn.type_delete_fn(this, keyval, value, &flag);
     if(ret!=MPI_SUCCESS) 
       return ret;
   }
@@ -315,30 +319,6 @@ int Datatype::attr_put(int keyval, void* attr_value){
   xbt_dict_set_ext(attributes_, reinterpret_cast<const char*>(&keyval), sizeof(int), attr_value, nullptr);
   return MPI_SUCCESS;
 }
-
-int Datatype::keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval, void* extra_state){
-
-  smpi_type_key_elem value = (smpi_type_key_elem) xbt_new0(s_smpi_mpi_type_key_elem_t,1);
-
-  value->copy_fn=copy_fn;
-  value->delete_fn=delete_fn;
-
-  *keyval = keyval_id_;
-  keyvals_.insert({*keyval, value});
-  keyval_id_++;
-  return MPI_SUCCESS;
-}
-
-int Datatype::keyval_free(int* keyval){
-  smpi_type_key_elem elem = keyvals_.at(*keyval);
-  if(elem==0){
-    return MPI_ERR_ARG;
-  }
-  keyvals_.erase(*keyval);
-  xbt_free(elem);
-  return MPI_SUCCESS;
-}
-
 
 int Datatype::pack(void* inbuf, int incount, void* outbuf, int outcount, int* position,MPI_Comm comm){
   if (outcount - *position < incount*static_cast<int>(size_))

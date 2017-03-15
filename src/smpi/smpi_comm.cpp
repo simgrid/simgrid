@@ -47,8 +47,8 @@ static int smpi_compare_rankmap(const void *a, const void *b)
 namespace simgrid{
 namespace smpi{
 
-xbt_dict_t Comm::keyvals_ = nullptr;
-int Comm::keyval_id_ = 0;//avoid collisions
+std::unordered_map<int, smpi_key_elem> Comm::keyvals_;
+int Comm::keyval_id_=0;
 
 Comm::Comm(MPI_Group group, MPI_Topology topo) : group_(group), topo_(topo)
 {
@@ -89,10 +89,9 @@ int Comm::dup(MPI_Comm* newcomm){
     void* value_in;
     void* value_out;
     xbt_dict_foreach (attributes_, cursor, key, value_in) {
-      smpi_comm_key_elem elem =
-          static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(keyvals_, key, sizeof(int)));
-      if (elem != nullptr && elem->copy_fn != MPI_NULL_COPY_FN) {
-        ret = elem->copy_fn(this, atoi(key), nullptr, value_in, &value_out, &flag);
+      smpi_key_elem elem = keyvals_.at(*key);
+      if (elem != nullptr && elem->copy_fn.comm_copy_fn != MPI_NULL_COPY_FN) {
+        ret = elem->copy_fn.comm_copy_fn(this, *key, nullptr, value_in, &value_out, &flag);
         if (ret != MPI_SUCCESS) {
           Comm::destroy(*newcomm);
           *newcomm = MPI_COMM_NULL;
@@ -291,9 +290,13 @@ void Comm::cleanup_attributes(){
     void* value;
     int flag;
     xbt_dict_foreach (attributes_, cursor, key, value) {
-      smpi_comm_key_elem elem = static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null(keyvals_, key));
-      if (elem != nullptr && elem->delete_fn != nullptr)
-        elem->delete_fn(this, atoi(key), value, &flag);
+      try{
+        smpi_key_elem elem = keyvals_.at(*key);
+        if (elem != nullptr && elem->delete_fn.comm_delete_fn != nullptr)
+          elem->delete_fn.comm_delete_fn(this, *key, value, &flag);
+      }catch(const std::out_of_range& oor) {
+        //already deleted, not a problem;
+      }
     }
     xbt_dict_free(&attributes_);
   }
@@ -497,15 +500,14 @@ void Comm::init_smp(){
 }
 
 int Comm::attr_delete(int keyval){
-  smpi_comm_key_elem elem =
-     static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(keyvals_, reinterpret_cast<const char*>(&keyval), sizeof(int)));
+  smpi_key_elem elem = keyvals_.at(keyval);
   if(elem==nullptr)
     return MPI_ERR_ARG;
-  if(elem->delete_fn!=MPI_NULL_DELETE_FN){
+  if(elem->delete_fn.comm_delete_fn!=MPI_NULL_DELETE_FN){
     void* value = nullptr;
     int flag;
     if(this->attr_get(keyval, &value, &flag)==MPI_SUCCESS){
-      int ret = elem->delete_fn(this, keyval, value, &flag);
+      int ret = elem->delete_fn.comm_delete_fn(this, keyval, value, &flag);
       if(ret!=MPI_SUCCESS) 
         return ret;
     }
@@ -518,8 +520,7 @@ int Comm::attr_delete(int keyval){
 }
 
 int Comm::attr_get(int keyval, void* attr_value, int* flag){
-  smpi_comm_key_elem elem =
-    static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(keyvals_, reinterpret_cast<const char*>(&keyval), sizeof(int)));
+  smpi_key_elem elem = keyvals_.at(keyval);
   if(elem==nullptr)
     return MPI_ERR_ARG;
   if(attributes_==nullptr){
@@ -538,17 +539,14 @@ int Comm::attr_get(int keyval, void* attr_value, int* flag){
 }
 
 int Comm::attr_put(int keyval, void* attr_value){
-  if(keyvals_==nullptr)
-    keyvals_ = xbt_dict_new_homogeneous(nullptr);
-  smpi_comm_key_elem elem =
-    static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(keyvals_,  reinterpret_cast<const char*>(&keyval), sizeof(int)));
+  smpi_key_elem elem = keyvals_.at(keyval);
   if(elem==nullptr)
     return MPI_ERR_ARG;
   int flag;
   void* value = nullptr;
   this->attr_get(keyval, &value, &flag);
-  if(flag!=0 && elem->delete_fn!=MPI_NULL_DELETE_FN){
-    int ret = elem->delete_fn(this, keyval, value, &flag);
+  if(flag!=0 && elem->delete_fn.comm_delete_fn!=MPI_NULL_DELETE_FN){
+    int ret = elem->delete_fn.comm_delete_fn(this, keyval, value, &flag);
     if(ret!=MPI_SUCCESS) 
       return ret;
   }
@@ -586,37 +584,6 @@ int Comm::add_f() {
   xbt_dict_set(F2C::f2c_lookup_, this==MPI_COMM_WORLD? get_key(key, F2C::f2c_id_) : get_key_id(key,F2C::f2c_id_), this, nullptr);
   F2C::f2c_id_++;
   return F2C::f2c_id_-1;
-}
-
-int Comm::keyval_create(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn, int* keyval,
-                            void* extra_state){
-  if(keyvals_==nullptr)
-    keyvals_ = xbt_dict_new_homogeneous(nullptr);
-
-  smpi_comm_key_elem value = static_cast<smpi_comm_key_elem>(xbt_new0(s_smpi_mpi_comm_key_elem_t,1));
-
-  value->copy_fn=copy_fn;
-  value->delete_fn=delete_fn;
-
-  *keyval = keyval_id_;
-  xbt_dict_set_ext(keyvals_, reinterpret_cast<const char*>(keyval), sizeof(int),static_cast<void*>(value), nullptr);
-  keyval_id_++;
-  return MPI_SUCCESS;
-}
-
-int Comm::keyval_free(int* keyval){
-  smpi_comm_key_elem elem =
-     static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(keyvals_,  reinterpret_cast<const char*>(keyval), sizeof(int)));
-  if(elem==nullptr)
-    return MPI_ERR_ARG;
-  xbt_dict_remove_ext(keyvals_,  reinterpret_cast<const char*>(keyval), sizeof(int));
-  xbt_free(elem);
-  return MPI_SUCCESS;
-}
-
-void Comm::keyval_cleanup(){
-  if(Comm::keyvals_!=nullptr) 
-    xbt_dict_free(&Comm::keyvals_);
 }
 
 

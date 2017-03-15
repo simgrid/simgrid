@@ -225,6 +225,7 @@ set(SMPI_SRC
   src/smpi/smpi_datatype.hpp
   src/smpi/smpi_info.cpp
   src/smpi/smpi_info.hpp
+  src/smpi/smpi_keyvals.hpp
   src/smpi/smpi_datatype_derived.cpp
   src/smpi/smpi_datatype_derived.hpp
   src/smpi/smpi_op.cpp

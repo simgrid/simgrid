@@ -19,7 +19,7 @@ typedef struct s_smpi_mpi_comm_key_elem *smpi_comm_key_elem;
 namespace simgrid{
 namespace smpi{
 
-class Comm : public F2C{
+class Comm : public F2C, public Keyval{
 
   private:
     MPI_Group group_;
@@ -35,13 +35,12 @@ class Comm : public F2C{
     int is_blocked_;// are ranks allocated on the same smp node contiguous ?
     xbt_dict_t attributes_;
 
-    static xbt_dict_t keyvals_;
+  public:
+    static std::unordered_map<int, smpi_key_elem> keyvals_;
     static int keyval_id_;
 
-  public:
     Comm() = default;
     Comm(MPI_Group group, MPI_Topology topo);
-
 
     int dup(MPI_Comm* newcomm);
     MPI_Group group();

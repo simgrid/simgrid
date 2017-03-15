@@ -13,11 +13,14 @@
 namespace simgrid {
 namespace smpi {
 
+class Coll;
+class Colls;
 class Comm;
 class Datatype;
 class F2C;
 class Group;
 class Info;
+class Keyval;
 class Op;
 class Request;
 class Topo;
@@ -25,9 +28,6 @@ class Topo_Cart;
 class Topo_Graph;
 class Topo_Dist_Graph;
 class Win;
-
-class Colls;
-class Coll;
 
 }
 }

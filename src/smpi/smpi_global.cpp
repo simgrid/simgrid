@@ -647,7 +647,6 @@ void smpi_global_destroy()
   }
 
   xbt_free(index_to_process_data);
-  Comm::keyval_cleanup();
   if(smpi_privatize_global_variables)
     smpi_destroy_global_memory_segments();
   smpi_free_static();

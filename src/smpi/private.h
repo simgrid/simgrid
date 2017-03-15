@@ -15,6 +15,7 @@
 #include "xbt/synchro.h"
 #include "xbt/xbt_os_time.h"
 #include "src/smpi/smpi_f2c.hpp"
+#include "src/smpi/smpi_keyvals.hpp"
 #include "src/smpi/smpi_group.hpp"
 #include "src/smpi/smpi_topo.hpp"
 #include "src/smpi/smpi_coll.hpp"

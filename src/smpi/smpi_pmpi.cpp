@@ -2772,11 +2772,15 @@ MPI_Fint PMPI_Info_c2f(MPI_Info info){
 }
 
 int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state) {
-  return Comm::keyval_create(copy_fn, delete_fn, keyval, extra_state);
+  smpi_copy_fn _copy_fn;
+  smpi_delete_fn _delete_fn;
+  _copy_fn.comm_copy_fn = copy_fn;
+  _delete_fn.comm_delete_fn = delete_fn;
+  return Keyval::keyval_create<Comm>(_copy_fn, _delete_fn, keyval, extra_state);
 }
 
 int PMPI_Keyval_free(int* keyval) {
-  return Comm::keyval_free(keyval);
+  return Keyval::keyval_free<Comm>(keyval);
 }
 
 int PMPI_Attr_delete(MPI_Comm comm, int keyval) {
@@ -2890,11 +2894,15 @@ int PMPI_Type_delete_attr (MPI_Datatype type, int type_keyval)
 int PMPI_Type_create_keyval(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval,
                             void* extra_state)
 {
-  return Datatype::keyval_create(copy_fn, delete_fn, keyval, extra_state);
+  smpi_copy_fn _copy_fn;
+  smpi_delete_fn _delete_fn;
+  _copy_fn.type_copy_fn = copy_fn;
+  _delete_fn.type_delete_fn = delete_fn;
+  return Keyval::keyval_create<Datatype>(_copy_fn, _delete_fn, keyval, extra_state);
 }
 
 int PMPI_Type_free_keyval(int* keyval) {
-  return Datatype::keyval_free(keyval);
+  return Keyval::keyval_free<Datatype>(keyval);
 }
 
 int PMPI_Info_create( MPI_Info *info){
