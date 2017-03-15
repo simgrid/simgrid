@@ -56,7 +56,6 @@ class Comm : public F2C, public Keyval{
     int is_uniform();
     int is_blocked();
     MPI_Comm split(int color, int key);
-    void cleanup_attributes();
     void cleanup_smp();
     void ref();
     static void unref(MPI_Comm comm);

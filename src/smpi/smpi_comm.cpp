@@ -279,21 +279,6 @@ void Comm::ref(){
   refcount_++;
 }
 
-void Comm::cleanup_attributes(){
-  if(!attributes_.empty()){
-    int flag;
-    for(auto it = attributes_.begin(); it != attributes_.end(); it++){
-      try{
-        smpi_key_elem elem = keyvals_.at((*it).first);
-        if (elem != nullptr && elem->delete_fn.comm_delete_fn != nullptr)
-          elem->delete_fn.comm_delete_fn(this, (*it).first, (*it).second, &flag);
-      }catch(const std::out_of_range& oor) {
-        //already deleted, not a problem;
-      }
-    }
-  }
-}
-
 void Comm::cleanup_smp(){
   if (intra_comm_ != MPI_COMM_NULL)
     Comm::unref(intra_comm_);
@@ -315,7 +300,7 @@ void Comm::unref(Comm* comm){
 
   if(comm->refcount_==0){
     comm->cleanup_smp();
-    comm->cleanup_attributes();
+    comm->cleanup_attr<Comm>();
     delete comm;
   }
 }

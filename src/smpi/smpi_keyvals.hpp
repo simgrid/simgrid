@@ -47,6 +47,7 @@ class Keyval{
     template <typename T> int attr_get(int keyval, void* attr_value, int* flag);
     template <typename T> int attr_put(int keyval, void* attr_value);
     template <typename T> static int call_deleter(T* obj, smpi_key_elem elem, int keyval, void * value, int* flag);
+    template <typename T> void cleanup_attr();
 };
 
 template <typename T> int Keyval::keyval_create(smpi_copy_fn copy_fn, smpi_delete_fn delete_fn, int* keyval, void* extra_state){
@@ -136,6 +137,22 @@ template <typename T> int Keyval::attr_put(int keyval, void* attr_value){
   }
   attributes_.insert({keyval, attr_value});
   return MPI_SUCCESS;
+}
+
+template <typename T> void Keyval::cleanup_attr(){
+  if(!attributes_.empty()){
+    int flag;
+    for(auto it = attributes_.begin(); it != attributes_.end(); it++){
+      try{
+        smpi_key_elem elem = T::keyvals_.at((*it).first);
+        if(elem != nullptr){
+          call_deleter<T>((T*)this, elem, (*it).first,(*it).second,&flag);
+        }
+      }catch(const std::out_of_range& oor) {
+        //already deleted, not a problem;
+      }
+    }
+  }
 }
 
 }
