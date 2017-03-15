@@ -47,35 +47,35 @@ public:
   static void compute(const char* const* action)
   {
     double amount = std::stod(action[2]);
-    double clock  = simgrid::s4u::Engine::instance()->getClock();
+    double clock  = simgrid::s4u::Engine::getClock();
     ACT_DEBUG("Entering %s", NAME);
     simgrid::s4u::this_actor::execute(amount);
-    log_action(action, simgrid::s4u::Engine::instance()->getClock() - clock);
+    log_action(action, simgrid::s4u::Engine::getClock() - clock);
   }
 
   static void send(const char* const* action)
   {
     double size                 = std::stod(action[3]);
     char* payload               = xbt_strdup(action[3]);
-    double clock                = simgrid::s4u::Engine::instance()->getClock();
+    double clock                = simgrid::s4u::Engine::getClock();
     simgrid::s4u::MailboxPtr to = simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::name() + "_" + action[2]);
     ACT_DEBUG("Entering Send: %s (size: %g) -- Actor %s on mailbox %s", NAME, size,
               simgrid::s4u::this_actor::name().c_str(), to->name());
     simgrid::s4u::this_actor::send(to, payload, size);
     xbt_free(payload);
 
-    log_action(action, simgrid::s4u::Engine::instance()->getClock() - clock);
+    log_action(action, simgrid::s4u::Engine::getClock() - clock);
   }
 
   static void recv(const char* const* action)
   {
-    double clock = simgrid::s4u::Engine::instance()->getClock();
+    double clock = simgrid::s4u::Engine::getClock();
     simgrid::s4u::MailboxPtr from =
         simgrid::s4u::Mailbox::byName(std::string(action[2]) + "_" + simgrid::s4u::this_actor::name());
 
     ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME, simgrid::s4u::this_actor::name().c_str(), from->name());
     simgrid::s4u::this_actor::recv(from);
-    log_action(action, simgrid::s4u::Engine::instance()->getClock() - clock);
+    log_action(action, simgrid::s4u::Engine::getClock() - clock);
   }
 };
 
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
              argv[0], argv[0], argv[0]);
 
   e->loadPlatform(argv[1]);
-  e->registerDefault(xbt_replay_action_runner);
+  e->registerDefault(&xbt_replay_action_runner);
   e->registerFunction<Replayer>("p0");
   e->registerFunction<Replayer>("p1");
   e->loadDeployment(argv[2]);
