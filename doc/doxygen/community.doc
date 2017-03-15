@@ -71,7 +71,7 @@ allows us to explain the main motivations and outcomes of the project in
 order to motivate the attendees get more information on SimGrid, and
 eventually improve their scientific habits by using a sound simulation
 framework.  
-<a href="http://webloria.loria.fr/~quinson/blog/2012/1120/Simgrid_at_Louvain/">Here</a>
+<a href="http://people.irisa.fr/Martin.Quinson/blog/2012/1120/Simgrid_at_Louvain/">Here</a>
 is an example of such a presentation.
 
 @subsection contributing_bugs Reporting (and fixing) any issue you find

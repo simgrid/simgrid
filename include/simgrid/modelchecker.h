@@ -31,10 +31,10 @@ XBT_PUBLIC(int) MC_random(int min, int max);
  *
  * Please don't use directly: you should use MC_is_active. */
 extern XBT_PUBLIC(int) _sg_do_model_check;
-extern XBT_PUBLIC(int) _sg_mc_visited;
+extern XBT_PUBLIC(int) _sg_mc_max_visited_states;
 
 #define MC_is_active()                  _sg_do_model_check
-#define MC_visited_reduction()          _sg_mc_visited
+#define MC_visited_reduction() _sg_mc_max_visited_states
 
 /** Assertion for the model-checker
  *

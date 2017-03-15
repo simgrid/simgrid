@@ -6,8 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_MALLOCATOR_H
-#define _XBT_MALLOCATOR_H
+#ifndef XBT_MALLOCATOR_H
+#define XBT_MALLOCATOR_H
 
 #include "xbt/function_types.h"
 #include "xbt/misc.h"

@@ -9,7 +9,6 @@ package app.masterworker;
 import java.io.File;
 
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.NativeException;
 
 class Main {
   public static final int TASK_COMP_SIZE = 10000000;
@@ -18,7 +17,7 @@ class Main {
     throw new IllegalAccessError("Utility class");
   }
 
-  public static void main(String[] args) throws NativeException {
+  public static void main(String[] args) {
     /* initialize the MSG simulation. Must be done before anything else (even logging). */
     Msg.init(args);
 

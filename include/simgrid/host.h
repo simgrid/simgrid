@@ -38,14 +38,6 @@ XBT_PUBLIC(void*) sg_host_user(sg_host_t host);
 XBT_PUBLIC(void) sg_host_user_set(sg_host_t host, void* userdata);
 XBT_PUBLIC(void) sg_host_user_destroy(sg_host_t host);
 
-// ========== MSG Layer ==============
-typedef struct s_msg_host_priv *msg_host_priv_t;
-msg_host_priv_t sg_host_msg(sg_host_t host);
-XBT_PUBLIC(void) sg_host_msg_set(sg_host_t host, msg_host_priv_t priv);
-
-// ========== Simix layer =============
-XBT_PUBLIC(smx_host_priv_t) sg_host_simix(sg_host_t host);
-
 // ========= storage related functions ============
 XBT_PUBLIC(xbt_dict_t) sg_host_get_mounted_storage_list(sg_host_t host);
 XBT_PUBLIC(xbt_dynar_t) sg_host_get_attached_storage_list(sg_host_t host);
@@ -57,8 +49,10 @@ XBT_PUBLIC(int) sg_host_get_nb_pstates(sg_host_t host);
 XBT_PUBLIC(int) sg_host_get_pstate(sg_host_t host);
 XBT_PUBLIC(void) sg_host_set_pstate(sg_host_t host,int pstate);
 XBT_PUBLIC(xbt_dict_t) sg_host_get_properties(sg_host_t host);
-XBT_PUBLIC(const char *) sg_host_get_property_value(sg_host_t host,
-                                                     const char *name);
+XBT_PUBLIC(const char*) sg_host_get_property_value(sg_host_t host, const char* name);
+XBT_PUBLIC(void) sg_host_route(sg_host_t from, sg_host_t to, xbt_dynar_t links);
+XBT_PUBLIC(double) sg_host_route_latency(sg_host_t from, sg_host_t to);
+XBT_PUBLIC(double) sg_host_route_bandwidth(sg_host_t from, sg_host_t to);
 XBT_PUBLIC(void) sg_host_dump(sg_host_t ws);
 SG_END_DECL()
 

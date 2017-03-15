@@ -29,8 +29,8 @@ int main(int argc, char **argv) {
   int    verified;
   char   size[500]; // mind the size of the string to represent a big number
 
-  double *x = (double *) malloc (2*nk*sizeof(double));
-  double *q = (double *) malloc (nq*sizeof(double));
+  double *x = (double *) SMPI_SHARED_MALLOC (2*nk*sizeof(double));
+  double *q = (double *) SMPI_SHARED_MALLOC (nq*sizeof(double));
 
   MPI_Init( &argc, &argv );
   MPI_Comm_size( MPI_COMM_WORLD, &no_nodes);
@@ -137,7 +137,7 @@ int main(int argc, char **argv) {
     k_offset = no_large_nodes*(np+1) + (node-no_large_nodes)*np -1;
 
   int stop = FALSE;
-  for(k = 1; k <= np; k++) {// SMPI_SAMPLE_LOCAL(0.25 * np, 0.03) {
+  for(k = 1; k <= np; k++) { SMPI_SAMPLE_GLOBAL(0.25 * np, 0.03) {
     stop = FALSE;
     kk = k_offset + k ;
     t1 = s;
@@ -183,7 +183,7 @@ int main(int argc, char **argv) {
       }
     }
     timer_stop(2);
-  }
+    } }
 
   TRACE_smpi_set_category ("finalize");
 
@@ -205,7 +205,7 @@ int main(int argc, char **argv) {
   MPI_Allreduce(&tm, x, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
   tm = x[0];
 
-  free(x);
+  SMPI_SHARED_FREE(x);
 
   if(node == root) {
     nit = 0;
@@ -257,7 +257,7 @@ int main(int argc, char **argv) {
     fprintf(stdout,"Random numbers: %f\n",(timer_read(3)/1000));
   }
 
-  free(q);
+  SMPI_SHARED_FREE(q);
 
   MPI_Finalize();
   return 0;

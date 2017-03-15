@@ -1,8 +1,10 @@
-/* Copyright (c) 2012-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#ifndef SIMGRID_INSTR_INTERFACE_H
+#define SIMGRID_INSTR_INTERFACE_H
 
 #include "xbt.h"
 
@@ -18,3 +20,5 @@ XBT_PUBLIC(void) TRACE_add_start_function(void (*func)(void));
 XBT_PUBLIC(void) TRACE_add_end_function(void (*func)(void));
 
 SG_END_DECL()
+
+#endif

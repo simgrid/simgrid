@@ -1,19 +1,15 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <functional>
-
 #include "msg_private.h"
-#include "xbt/sysdep.h"
-#include "xbt/log.h"
-#include "xbt/functional.hpp"
+#include "simgrid/s4u/host.hpp"
 #include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (process)");
+
+SG_BEGIN_DECL()
 
 /** @addtogroup m_process_management
  *
@@ -29,43 +25,36 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (proc
  * \brief Cleans the MSG data of a process.
  * \param smx_proc a SIMIX process
  */
-void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_proc)
+void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
 {
-  simdata_process_t msg_proc;
+  simgrid::MsgActorExt* msg_actor;
 
   // get the MSG process from the SIMIX process
-  if (smx_proc == SIMIX_process_self()) {
+  if (smx_actor == SIMIX_process_self()) {
     /* avoid a SIMIX request if this function is called by the process itself */
-    msg_proc = (simdata_process_t) SIMIX_process_self_get_data();
+    msg_actor = (simgrid::MsgActorExt*)SIMIX_process_self_get_data();
     SIMIX_process_self_set_data(nullptr);
   } else {
-    msg_proc = (simdata_process_t) simcall_process_get_data(smx_proc);
-    simcall_process_set_data(smx_proc, nullptr);
+    msg_actor = (simgrid::MsgActorExt*)smx_actor->data;
+    simcall_process_set_data(smx_actor, nullptr);
   }
 
-  TRACE_msg_process_destroy(smx_proc->name.c_str(), smx_proc->pid);
+  TRACE_msg_process_destroy(smx_actor->name.c_str(), smx_actor->pid);
   // free the data if a function was provided
-  if (msg_proc && msg_proc->data && msg_global->process_data_cleanup) {
-    msg_global->process_data_cleanup(msg_proc->data);
+  if (msg_actor && msg_actor->data && msg_global->process_data_cleanup) {
+    msg_global->process_data_cleanup(msg_actor->data);
   }
 
-  // free the MSG process
-  xbt_free(msg_proc);
-  SIMIX_process_cleanup(smx_proc);
+  delete msg_actor;
+  SIMIX_process_cleanup(smx_actor);
 }
 
 /* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
-smx_actor_t MSG_process_create_from_SIMIX(
-  const char *name, std::function<void()> code, void *data, sg_host_t host,
-  double kill_time, xbt_dict_t properties,
-  int auto_restart, smx_actor_t parent_process)
+smx_actor_t MSG_process_create_from_SIMIX(const char* name, std::function<void()> code, void* data, sg_host_t host,
+                                          xbt_dict_t properties, smx_actor_t parent_process)
 {
-  msg_process_t p = MSG_process_create_with_environment(name, std::move(code), data, host, properties);
-  if (p) {
-    MSG_process_set_kill_time(p,kill_time);
-    MSG_process_auto_restart_set(p,auto_restart);
-  }
-  return p;
+  msg_process_t p = MSG_process_create_from_stdfunc(name, std::move(code), data, host, properties);
+  return p == nullptr ? nullptr : p->getImpl();
 }
 
 /** \ingroup m_process_management
@@ -133,50 +122,33 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
   std::function<void()> function;
   if (code)
     function = simgrid::xbt::wrapMain(code, argc, const_cast<const char*const*>(argv));
-  msg_process_t res = MSG_process_create_with_environment(name,
-    std::move(function), data, host, properties);
+  msg_process_t res = MSG_process_create_from_stdfunc(name, std::move(function), data, host, properties);
   for (int i = 0; i != argc; ++i)
     xbt_free(argv[i]);
   xbt_free(argv);
   return res;
 }
 
-msg_process_t MSG_process_create_with_environment(
-  const char *name, std::function<void()> code, void *data,
-  msg_host_t host, xbt_dict_t properties)
+SG_END_DECL()
+
+msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<void()> code, void* data, msg_host_t host,
+                                              xbt_dict_t properties)
 {
   xbt_assert(code != nullptr && host != nullptr, "Invalid parameters: host and code params must not be nullptr");
-  simdata_process_t simdata = xbt_new0(s_simdata_process_t, 1);
-  msg_process_t process;
+  simgrid::MsgActorExt* msgExt = new simgrid::MsgActorExt(data);
 
-  /* Simulator data for MSG */
-  simdata->waiting_action = nullptr;
-  simdata->waiting_task = nullptr;
-  simdata->m_host = host;
-  simdata->data = data;
-  simdata->last_errno = MSG_OK;
+  smx_actor_t process = simcall_process_create(name, std::move(code), msgExt, host, properties);
 
-  /* Let's create the process: SIMIX may decide to start it right now,
-   * even before returning the flow control to us */
-  process = simcall_process_create(
-    name, std::move(code), simdata, host, -1,  properties, 0);
-
-  if (!process) {
-    /* Undo everything we have just changed */
-    xbt_free(simdata);
+  if (!process) { /* Undo everything */
+    delete msgExt;
     return nullptr;
   }
-  else {
-    simcall_process_on_exit(process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,process);
-  }
-  return process;
+
+  simcall_process_on_exit(process, (int_f_pvoid_pvoid_t)TRACE_msg_process_kill, process);
+  return process->ciface();
 }
 
-static int MSG_maestro(int argc, char** argv)
-{
-  int res = MSG_main();
-  return res;
-}
+SG_BEGIN_DECL()
 
 /* Become a process in the simulation
  *
@@ -188,22 +160,13 @@ static int MSG_maestro(int argc, char** argv)
 msg_process_t MSG_process_attach(const char *name, void *data, msg_host_t host, xbt_dict_t properties)
 {
   xbt_assert(host != nullptr, "Invalid parameters: host and code params must not be nullptr");
-  simdata_process_t simdata = xbt_new0(s_simdata_process_t, 1);
-  msg_process_t process;
-
-  /* Simulator data for MSG */
-  simdata->waiting_action = nullptr;
-  simdata->waiting_task = nullptr;
-  simdata->m_host = host;
-  simdata->data = data;
-  simdata->last_errno = MSG_OK;
 
   /* Let's create the process: SIMIX may decide to start it right now, even before returning the flow control to us */
-  process = SIMIX_process_attach(name, simdata, host->cname(), properties, nullptr);
+  smx_actor_t process = SIMIX_process_attach(name, new simgrid::MsgActorExt(data), host->cname(), properties, nullptr);
   if (!process)
     xbt_die("Could not attach");
   simcall_process_on_exit(process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,process);
-  return process;
+  return process->ciface();
 }
 
 /** Detach a process attached with `MSG_process_attach()`
@@ -224,12 +187,7 @@ void MSG_process_detach()
  */
 void MSG_process_kill(msg_process_t process)
 {
-//  /* FIXME: why do we only cancel communication actions? is this useful? */
-//  simdata_process_t p_simdata = simcall_process_get_data(process);
-//  if (p_simdata->waiting_task && p_simdata->waiting_task->simdata->comm) {
-//    simcall_comm_cancel(p_simdata->waiting_task->simdata->comm);
-//  }
-  simcall_process_kill(process);
+  simcall_process_kill(process->getImpl());
 }
 
 /**
@@ -239,7 +197,7 @@ void MSG_process_kill(msg_process_t process)
 * \param timeout wait until the process is over, or the timeout occurs
 */
 msg_error_t MSG_process_join(msg_process_t process, double timeout){
-  simcall_process_join(process, timeout);
+  simcall_process_join(process->getImpl(), timeout);
   return MSG_OK;
 }
 
@@ -251,12 +209,15 @@ msg_error_t MSG_process_join(msg_process_t process, double timeout){
  */
 msg_error_t MSG_process_migrate(msg_process_t process, msg_host_t host)
 {
-  simdata_process_t simdata = (simdata_process_t) simcall_process_get_data(process);
-  simdata->m_host = host;
-  msg_host_t now = simdata->m_host;
-  TRACE_msg_process_change_host(process, now, host);
-  simcall_process_set_host(process, host);
+  TRACE_msg_process_change_host(process, MSG_process_get_host(process), host);
+  simcall_process_set_host(process->getImpl(), host);
   return MSG_OK;
+}
+
+/** Yield the current actor; let the other actors execute first */
+void MSG_process_yield()
+{
+  simgrid::simix::kernelImmediate([] { /* do nothing*/ });
 }
 
 /** \ingroup m_process_management
@@ -269,9 +230,9 @@ void* MSG_process_get_data(msg_process_t process)
   xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
 
   /* get from SIMIX the MSG process data, and then the user data */
-  simdata_process_t simdata = (simdata_process_t) simcall_process_get_data(process);
-  if (simdata)
-    return simdata->data;
+  simgrid::MsgActorExt* msgExt = (simgrid::MsgActorExt*)process->getImpl()->data;
+  if (msgExt)
+    return msgExt->data;
   else
     return nullptr;
 }
@@ -285,8 +246,7 @@ msg_error_t MSG_process_set_data(msg_process_t process, void *data)
 {
   xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
 
-  simdata_process_t simdata = (simdata_process_t) simcall_process_get_data(process);
-  simdata->data = data;
+  static_cast<simgrid::MsgActorExt*>(process->getImpl()->data)->data = data;
 
   return MSG_OK;
 }
@@ -306,14 +266,11 @@ XBT_PUBLIC(void) MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup) {
  */
 msg_host_t MSG_process_get_host(msg_process_t process)
 {
-  simdata_process_t simdata;
   if (process == nullptr) {
-    simdata = (simdata_process_t) SIMIX_process_self_get_data();
+    return SIMIX_process_self()->host;
+  } else {
+    return process->getImpl()->host;
   }
-  else {
-    simdata = (simdata_process_t) simcall_process_get_data(process);
-  }
-  return simdata ? simdata->m_host : nullptr;
 }
 
 /** \ingroup m_process_management
@@ -326,7 +283,7 @@ msg_host_t MSG_process_get_host(msg_process_t process)
  */
 msg_process_t MSG_process_from_PID(int PID)
 {
-  return SIMIX_process_from_PID(PID);
+  return SIMIX_process_from_PID(PID)->ciface();
 }
 
 /** @brief returns a list of all currently existing processes */
@@ -348,7 +305,7 @@ int MSG_process_get_number()
  */
 msg_error_t MSG_process_set_kill_time(msg_process_t process, double kill_time)
 {
-  simcall_process_set_kill_time(process,kill_time);
+  simcall_process_set_kill_time(process->getImpl(), kill_time);
   return MSG_OK;
 }
 
@@ -361,9 +318,9 @@ int MSG_process_get_PID(msg_process_t process)
 {
   /* Do not raise an exception here: this function is called by the logs
    * and the exceptions, so it would be called back again and again */
-  if (process == nullptr)
+  if (process == nullptr || process->getImpl() == nullptr)
     return 0;
-  return process->pid;
+  return process->getImpl()->pid;
 }
 
 /** \ingroup m_process_management
@@ -374,7 +331,7 @@ int MSG_process_get_PID(msg_process_t process)
  */
 int MSG_process_get_PPID(msg_process_t process)
 {
-  return process->ppid;
+  return process->getImpl()->ppid;
 }
 
 /** \ingroup m_process_management
@@ -384,7 +341,7 @@ int MSG_process_get_PPID(msg_process_t process)
  */
 const char *MSG_process_get_name(msg_process_t process)
 {
-  return process->name.c_str();
+  return process->cname();
 }
 
 /** \ingroup m_process_management
@@ -407,7 +364,7 @@ const char *MSG_process_get_property_value(msg_process_t process, const char *na
 xbt_dict_t MSG_process_get_properties(msg_process_t process)
 {
   xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
-  return simcall_process_get_properties(process);
+  return simcall_process_get_properties(process->getImpl());
 }
 
 /** \ingroup m_process_management
@@ -417,7 +374,8 @@ xbt_dict_t MSG_process_get_properties(msg_process_t process)
  */
 int MSG_process_self_PID()
 {
-  return MSG_process_get_PID(MSG_process_self());
+  smx_actor_t self = SIMIX_process_self();
+  return self == nullptr ? 0 : self->pid;
 }
 
 /** \ingroup m_process_management
@@ -437,7 +395,7 @@ int MSG_process_self_PPID()
  */
 msg_process_t MSG_process_self()
 {
-  return SIMIX_process_self();
+  return SIMIX_process_self()->ciface();
 }
 
 /** \ingroup m_process_management
@@ -450,7 +408,7 @@ msg_error_t MSG_process_suspend(msg_process_t process)
   xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
 
   TRACE_msg_process_suspend(process);
-  simcall_process_suspend(process);
+  simcall_process_suspend(process->getImpl());
   return MSG_OK;
 }
 
@@ -464,7 +422,7 @@ msg_error_t MSG_process_resume(msg_process_t process)
   xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
 
   TRACE_msg_process_resume(process);
-  simcall_process_resume(process);
+  simcall_process_resume(process->getImpl());
   return MSG_OK;
 }
 
@@ -475,12 +433,11 @@ msg_error_t MSG_process_resume(msg_process_t process)
  */
 int MSG_process_is_suspended(msg_process_t process)
 {
-  xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
-  return simcall_process_is_suspended(process);
+  return simcall_process_is_suspended(process->getImpl());
 }
 
 smx_context_t MSG_process_get_smx_ctx(msg_process_t process) {
-  return SIMIX_process_get_context(process);
+  return SIMIX_process_get_context(process->getImpl());
 }
 /**
  * \ingroup m_process_management
@@ -489,7 +446,7 @@ smx_context_t MSG_process_get_smx_ctx(msg_process_t process) {
  * You should use them to free the data used by your process.
  */
 void MSG_process_on_exit(int_f_pvoid_pvoid_t fun, void *data) {
-  simcall_process_on_exit(MSG_process_self(),fun,data);
+  simcall_process_on_exit(SIMIX_process_self(), fun, data);
 }
 /**
  * \ingroup m_process_management
@@ -497,12 +454,39 @@ void MSG_process_on_exit(int_f_pvoid_pvoid_t fun, void *data) {
  * If the flag is set to 1, the process will be automatically restarted when its host comes back up.
  */
 XBT_PUBLIC(void) MSG_process_auto_restart_set(msg_process_t process, int auto_restart) {
-  simcall_process_auto_restart_set(process,auto_restart);
+  simcall_process_auto_restart_set(process->getImpl(), auto_restart);
 }
-/*
+/**
  * \ingroup m_process_management
  * \brief Restarts a process from the beginning.
  */
 XBT_PUBLIC(msg_process_t) MSG_process_restart(msg_process_t process) {
-  return simcall_process_restart(process);
+  return simcall_process_restart(process->getImpl())->ciface();
 }
+
+/** @ingroup m_process_management
+ * @brief This process will be terminated automatically when the last non-daemon process finishes
+ */
+XBT_PUBLIC(void) MSG_process_daemonize(msg_process_t process)
+{
+  simgrid::simix::kernelImmediate([process]() {
+    process->getImpl()->daemonize();
+  });
+}
+
+/** @ingroup m_process_management
+ * @brief Take an extra reference on that process to prevent it to be garbage-collected
+ */
+XBT_PUBLIC(void) MSG_process_ref(msg_process_t process)
+{
+  intrusive_ptr_add_ref(process);
+}
+/** @ingroup m_process_management
+ * @brief Release a reference on that process so that it can get be garbage-collected
+ */
+XBT_PUBLIC(void) MSG_process_unref(msg_process_t process)
+{
+  intrusive_ptr_release(process);
+}
+
+SG_END_DECL()

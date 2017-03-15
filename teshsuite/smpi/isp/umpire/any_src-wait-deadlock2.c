@@ -16,7 +16,6 @@ main (int argc, char **argv)
   int namelen = 128;
   int buf0[buf_size];
   int buf1[buf_size];
-  int i;
   MPI_Status status;
   MPI_Request req;
 

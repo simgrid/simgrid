@@ -37,7 +37,7 @@ private:
   xbt_os_sem_t begin_ = nullptr;
   /** Semaphore used to schedule/unschedule */
   xbt_os_sem_t end_ = nullptr;
-private:
+
   static void* wrapper(void *param);
   static void* maestro_wrapper(void *param);
 public:

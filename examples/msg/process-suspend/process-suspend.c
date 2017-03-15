@@ -73,8 +73,6 @@ static int dream_master(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
-
   MSG_init(&argc, argv);
   xbt_assert(argc > 1, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
@@ -83,7 +81,7 @@ int main(int argc, char *argv[])
   xbt_dynar_t hosts = MSG_hosts_as_dynar();
   MSG_process_create("dream_master", dream_master, NULL, xbt_dynar_getfirst_as(hosts, msg_host_t));
   xbt_dynar_free(&hosts);
-  res = MSG_main();                 /* - Run the simulation */
+  msg_error_t res = MSG_main(); /* - Run the simulation */
 
   return res != MSG_OK;
 }

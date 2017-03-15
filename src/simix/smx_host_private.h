@@ -1,11 +1,10 @@
-/* Copyright (c) 2007-2010, 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SIMIX_HOST_PRIVATE_H
-#define _SIMIX_HOST_PRIVATE_H
+#ifndef SIMIX_HOST_PRIVATE_H
+#define SIMIX_HOST_PRIVATE_H
 
 #include <vector>
 #include <functional>
@@ -16,7 +15,6 @@
 #include "simgrid/simix.h"
 #include "popping_private.h"
 
-#include "simgrid/s4u/VirtualMachine.hpp"
 #include "src/kernel/activity/SynchroExec.hpp"
 
 /** @brief Host datatype from SIMIX POV */
@@ -42,8 +40,6 @@ namespace simgrid {
 typedef simgrid::simix::Host s_smx_host_priv_t;
 
 SG_BEGIN_DECL()
-XBT_PRIVATE void _SIMIX_host_free_process_arg(void *);
-
 XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host,
                                          const char *name,
                                          std::function<void()> code,
@@ -65,16 +61,6 @@ XBT_PRIVATE void SIMIX_execution_set_bound(smx_activity_t synchro, double bound)
 XBT_PRIVATE void SIMIX_execution_finish(simgrid::kernel::activity::Exec *exec);
 
 XBT_PRIVATE void SIMIX_set_category(smx_activity_t synchro, const char *category);
-
-/* vm related stuff */
-XBT_PRIVATE void SIMIX_vm_resume(sg_host_t ind_vm);
-
-XBT_PRIVATE void SIMIX_vm_suspend(sg_host_t ind_vm, smx_actor_t issuer);
-// --
-XBT_PRIVATE void SIMIX_vm_save(sg_host_t ind_vm, smx_actor_t issuer);
-
-XBT_PRIVATE void SIMIX_vm_shutdown(sg_host_t ind_vm, smx_actor_t issuer);
-// --
 
 SG_END_DECL()
 

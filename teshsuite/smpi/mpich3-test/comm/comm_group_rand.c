@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi.h>
-/* USE_STRICT_MPI may be defined in mpitestconf.h */
 #include "mpitestconf.h"
 
 #define LOOPS 100
@@ -17,7 +16,7 @@ int main(int argc, char **argv)
     int rank, size, i, j, count;
     MPI_Group full_group, sub_group;
     int *included, *ranks;
-    MPI_Comm __attribute__((unused)) comm;
+    MPI_Comm comm;
 
     MPI_Init(NULL, NULL);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -28,11 +27,11 @@ int main(int argc, char **argv)
     MPI_Comm_group(MPI_COMM_WORLD, &full_group);
 
     for (j = 0; j < LOOPS; j++) {
-        srand(j); /* Deterministic seed */
+        srand(j);       /* Deterministic seed */
 
         count = 0;
         for (i = 0; i < size; i++) {
-            if (rand() % 2) { /* randomly include a rank */
+            if (rand() % 2) {   /* randomly include a rank */
                 included[i] = 1;
                 ranks[count++] = i;
             }
@@ -42,13 +41,11 @@ int main(int argc, char **argv)
 
         MPI_Group_incl(full_group, count, ranks, &sub_group);
 
-#if !defined(USE_STRICT_MPI) && defined(MPICH)
         if (included[rank]) {
             MPI_Comm_create_group(MPI_COMM_WORLD, sub_group, 0, &comm);
             MPI_Barrier(comm);
             MPI_Comm_free(&comm);
         }
-#endif /* USE_STRICT_MPI */
 
         MPI_Group_free(&sub_group);
     }
@@ -58,6 +55,8 @@ int main(int argc, char **argv)
     if (rank == 0)
         printf(" No Errors\n");
 
+    free(ranks);
+    free(included);
     MPI_Finalize();
 
     return 0;

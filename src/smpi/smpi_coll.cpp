@@ -125,8 +125,8 @@ void (*smpi_coll_cleanup_callback)();
 int smpi_coll_tuned_alltoall_ompi2(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf,
                                    int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
 {
-  int size = smpi_comm_size(comm);
-  int sendsize = smpi_datatype_size(sendtype) * sendcount;
+  int size = comm->size();
+  int sendsize = sendtype->size() * sendcount;
   if (sendsize < 200 && size > 12) {
     return smpi_coll_tuned_alltoall_bruck(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
   } else if (sendsize < 3000) {
@@ -154,13 +154,13 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount, MPI_Datatype se
   MPI_Request *requests;
 
   // FIXME: check implementation
-  int rank = smpi_comm_rank(comm);
-  int size = smpi_comm_size(comm);
+  int rank = comm->rank();
+  int size = comm->size();
   XBT_DEBUG("<%d> algorithm alltoall_bruck() called.", rank);
-  smpi_datatype_extent(sendtype, &lb, &sendext);
-  smpi_datatype_extent(recvtype, &lb, &recvext);
+  sendtype->extent(&lb, &sendext);
+  recvtype->extent(&lb, &recvext);
   /* Local copy from self */
-  int err =  smpi_datatype_copy(static_cast<char *>(sendbuf) + rank * sendcount * sendext, sendcount, sendtype,
+  int err =  Datatype::copy(static_cast<char *>(sendbuf) + rank * sendcount * sendext, sendcount, sendtype,
                                 static_cast<char *>(recvbuf) + rank * recvcount * recvext, recvcount, recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
@@ -169,7 +169,7 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount, MPI_Datatype se
     /* Create all receives that will be posted first */
     for (i = 0; i < size; ++i) {
       if (i != rank) {
-        requests[count] = smpi_irecv_init(static_cast<char *>(recvbuf) + i * recvcount * recvext, recvcount,
+        requests[count] = Request::irecv_init(static_cast<char *>(recvbuf) + i * recvcount * recvext, recvcount,
                                           recvtype, i, system_tag, comm);
       count++;
       }else{
@@ -179,7 +179,7 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount, MPI_Datatype se
     /* Now create all sends  */
     for (i = 0; i < size; ++i) {
       if (i != rank) {
-        requests[count] = smpi_isend_init(static_cast<char *>(sendbuf) + i * sendcount * sendext, sendcount,
+        requests[count] = Request::isend_init(static_cast<char *>(sendbuf) + i * sendcount * sendext, sendcount,
                                           sendtype, i, system_tag, comm);
       count++;
       }else{
@@ -187,12 +187,12 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount, MPI_Datatype se
       }
     }
     /* Wait for them all. */
-    smpi_mpi_startall(count, requests);
+    Request::startall(count, requests);
     XBT_DEBUG("<%d> wait for %d requests", rank, count);
-    smpi_mpi_waitall(count, requests, MPI_STATUS_IGNORE);
+    Request::waitall(count, requests, MPI_STATUS_IGNORE);
     for(i = 0; i < count; i++) {
       if(requests[i]!=MPI_REQUEST_NULL)
-        smpi_mpi_request_free(&requests[i]);
+        Request::unref(&requests[i]);
     }
     xbt_free(requests);
   }
@@ -212,13 +212,13 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount, MPI_Data
   MPI_Request *requests;
 
   /* Initialize. */
-  int rank = smpi_comm_rank(comm);
-  int size = smpi_comm_size(comm);
+  int rank = comm->rank();
+  int size = comm->size();
   XBT_DEBUG("<%d> algorithm alltoall_basic_linear() called.", rank);
-  smpi_datatype_extent(sendtype, &lb, &sendext);
-  smpi_datatype_extent(recvtype, &lb, &recvext);
+  sendtype->extent(&lb, &sendext);
+  recvtype->extent(&lb, &recvext);
   /* simple optimization */
-  int err = smpi_datatype_copy(static_cast<char *>(sendbuf) + rank * sendcount * sendext, sendcount, sendtype,
+  int err = Datatype::copy(static_cast<char *>(sendbuf) + rank * sendcount * sendext, sendcount, sendtype,
                                static_cast<char *>(recvbuf) + rank * recvcount * recvext, recvcount, recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
@@ -226,7 +226,7 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount, MPI_Data
     /* Post all receives first -- a simple optimization */
     count = 0;
     for (i = (rank + 1) % size; i != rank; i = (i + 1) % size) {
-      requests[count] = smpi_irecv_init(static_cast<char *>(recvbuf) + i * recvcount * recvext, recvcount,
+      requests[count] = Request::irecv_init(static_cast<char *>(recvbuf) + i * recvcount * recvext, recvcount,
                                         recvtype, i, system_tag, comm);
       count++;
     }
@@ -236,17 +236,17 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount, MPI_Data
      * TODO: check the previous assertion
      */
     for (i = (rank + size - 1) % size; i != rank; i = (i + size - 1) % size) {
-      requests[count] = smpi_isend_init(static_cast<char *>(sendbuf) + i * sendcount * sendext, sendcount,
+      requests[count] = Request::isend_init(static_cast<char *>(sendbuf) + i * sendcount * sendext, sendcount,
                                         sendtype, i, system_tag, comm);
       count++;
     }
     /* Wait for them all. */
-    smpi_mpi_startall(count, requests);
+    Request::startall(count, requests);
     XBT_DEBUG("<%d> wait for %d requests", rank, count);
-    smpi_mpi_waitall(count, requests, MPI_STATUS_IGNORE);
+    Request::waitall(count, requests, MPI_STATUS_IGNORE);
     for(i = 0; i < count; i++) {
       if(requests[i]!=MPI_REQUEST_NULL)
-        smpi_mpi_request_free(&requests[i]);
+        Request::unref(&requests[i]);
     }
     xbt_free(requests);
   }
@@ -265,13 +265,13 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts, int *senddisps, MP
   MPI_Request *requests;
 
   /* Initialize. */
-  int rank = smpi_comm_rank(comm);
-  int size = smpi_comm_size(comm);
+  int rank = comm->rank();
+  int size = comm->size();
   XBT_DEBUG("<%d> algorithm basic_alltoallv() called.", rank);
-  smpi_datatype_extent(sendtype, &lb, &sendext);
-  smpi_datatype_extent(recvtype, &lb, &recvext);
+  sendtype->extent(&lb, &sendext);
+  recvtype->extent(&lb, &recvext);
   /* Local copy from self */
-  int err = smpi_datatype_copy(static_cast<char *>(sendbuf) + senddisps[rank] * sendext, sendcounts[rank], sendtype,
+  int err = Datatype::copy(static_cast<char *>(sendbuf) + senddisps[rank] * sendext, sendcounts[rank], sendtype,
                                static_cast<char *>(recvbuf) + recvdisps[rank] * recvext, recvcounts[rank], recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
@@ -280,7 +280,7 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts, int *senddisps, MP
     /* Create all receives that will be posted first */
     for (i = 0; i < size; ++i) {
       if (i != rank && recvcounts[i] != 0) {
-        requests[count] = smpi_irecv_init(static_cast<char *>(recvbuf) + recvdisps[i] * recvext,
+        requests[count] = Request::irecv_init(static_cast<char *>(recvbuf) + recvdisps[i] * recvext,
                                           recvcounts[i], recvtype, i, system_tag, comm);
         count++;
       }else{
@@ -290,7 +290,7 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts, int *senddisps, MP
     /* Now create all sends  */
     for (i = 0; i < size; ++i) {
       if (i != rank && sendcounts[i] != 0) {
-      requests[count] = smpi_isend_init(static_cast<char *>(sendbuf) + senddisps[i] * sendext,
+      requests[count] = Request::isend_init(static_cast<char *>(sendbuf) + senddisps[i] * sendext,
                                         sendcounts[i], sendtype, i, system_tag, comm);
       count++;
       }else{
@@ -298,12 +298,12 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts, int *senddisps, MP
       }
     }
     /* Wait for them all. */
-    smpi_mpi_startall(count, requests);
+    Request::startall(count, requests);
     XBT_DEBUG("<%d> wait for %d requests", rank, count);
-    smpi_mpi_waitall(count, requests, MPI_STATUS_IGNORE);
+    Request::waitall(count, requests, MPI_STATUS_IGNORE);
     for(i = 0; i < count; i++) {
       if(requests[i]!=MPI_REQUEST_NULL) 
-        smpi_mpi_request_free(&requests[i]);
+        Request::unref(&requests[i]);
     }
     xbt_free(requests);
   }

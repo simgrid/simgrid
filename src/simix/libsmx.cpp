@@ -35,29 +35,15 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
 #include "popping_bodies.cpp"
 
-void simcall_call(smx_actor_t process)
+void simcall_call(smx_actor_t actor)
 {
-  if (process != simix_global->maestro_process) {
-    XBT_DEBUG("Yield process '%s' on simcall %s (%d)", process->name.c_str(),
-              SIMIX_simcall_name(process->simcall.call), (int)process->simcall.call);
-    SIMIX_process_yield(process);
+  if (actor != simix_global->maestro_process) {
+    XBT_DEBUG("Yield actor '%s' on simcall %s (%d)", actor->cname(), SIMIX_simcall_name(actor->simcall.call),
+              (int)actor->simcall.call);
+    SIMIX_process_yield(actor);
   } else {
-    SIMIX_simcall_handle(&process->simcall, 0);
+    SIMIX_simcall_handle(&actor->simcall, 0);
   }
-}
-
-// ***** AS simcalls
-
-/**
- * \ingroup simix_host_management
- * \brief Returns a dict of the properties assigned to a router or AS.
- *
- * \param name The name of the router or AS
- * \return The properties
- */
-xbt_dict_t simcall_asr_get_properties(const char *name)
-{
-  return simcall_BODY_asr_get_properties(name);
 }
 
 /**
@@ -104,12 +90,11 @@ smx_activity_t simcall_execution_parallel_start(const char* name, int host_nb, s
                                                 double* flops_amount, double* bytes_amount, double amount, double rate,
                                                 double timeout)
 {
-  int i,j;
   /* checking for infinite values */
-  for (i = 0 ; i < host_nb ; ++i) {
+  for (int i = 0 ; i < host_nb ; ++i) {
     xbt_assert(std::isfinite(flops_amount[i]), "flops_amount[%d] is not finite!", i);
     if (bytes_amount != nullptr) {
-      for (j = 0 ; j < host_nb ; ++j) {
+      for (int j = 0 ; j < host_nb ; ++j) {
         xbt_assert(std::isfinite(bytes_amount[i + host_nb * j]),
                    "bytes_amount[%d+%d*%d] is not finite!", i, host_nb, j);
       }
@@ -173,50 +158,6 @@ void simcall_execution_set_bound(smx_activity_t execution, double bound)
 e_smx_state_t simcall_execution_wait(smx_activity_t execution)
 {
   return (e_smx_state_t) simcall_BODY_execution_wait(execution);
-}
-
-/**
- * \ingroup simix_vm_management
- * \brief Suspend the given VM
- *
- * \param vm VM
- */
-void simcall_vm_suspend(sg_host_t vm)
-{
-  simcall_BODY_vm_suspend(vm);
-}
-
-/**
- * \ingroup simix_vm_management
- * \brief Resume the given VM
- *
- * \param vm VM
- */
-void simcall_vm_resume(sg_host_t vm)
-{
-  simcall_BODY_vm_resume(vm);
-}
-
-/**
- * \ingroup simix_vm_management
- * \brief Save the given VM
- *
- * \param vm VM
- */
-void simcall_vm_save(sg_host_t vm)
-{
-  simcall_BODY_vm_save(vm);
-}
-
-/**
- * \ingroup simix_vm_management
- * \brief Shutdown the given VM
- *
- * \param vm VM
- */
-void simcall_vm_shutdown(sg_host_t vm)
-{
-  simcall_BODY_vm_shutdown(vm);
 }
 
 /**
@@ -307,17 +248,6 @@ void simcall_process_resume(smx_actor_t process)
 int simcall_process_count()
 {
   return simgrid::simix::kernelImmediate(SIMIX_process_count);
-}
-
-/**
- * \ingroup simix_process_management
- * \brief Return the user data of a #smx_actor_t.
- * \param process a SIMIX process
- * \return the user data of this process
- */
-void* simcall_process_get_data(smx_actor_t process)
-{
-  return SIMIX_process_get_data(process);
 }
 
 /**
@@ -423,22 +353,6 @@ e_smx_state_t simcall_process_sleep(double duration)
   /* checking for infinite values */
   xbt_assert(std::isfinite(duration), "duration is not finite!");
   return (e_smx_state_t) simcall_BODY_process_sleep(duration);
-}
-
-/**
- *  \ingroup simix_mbox_management
- *  \brief Creates a new rendez-vous point
- *  \param name The name of the rendez-vous point
- *  \return The created rendez-vous point
- */
-smx_mailbox_t simcall_mbox_create(const char *name)
-{
-  return simcall_BODY_mbox_create(name);
-}
-
-void simcall_mbox_set_receiver(smx_mailbox_t mbox, smx_actor_t process)
-{
-  simcall_BODY_mbox_set_receiver(mbox, process);
 }
 
 /**
@@ -584,7 +498,7 @@ void simcall_comm_wait(smx_activity_t comm, double timeout)
  * \brief Set the category of an synchro.
  *
  * This functions changes the category only. It calls a surf function.
- * \param execution The execution synchro
+ * \param synchro The execution synchro
  * \param category The tracing category
  */
 void simcall_set_category(smx_activity_t synchro, const char *category)

@@ -25,8 +25,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_graph, xbt, "Graph");
  */
 xbt_graph_t xbt_graph_new_graph(unsigned short int directed, void *data)
 {
-  xbt_graph_t graph = NULL;
-  graph = xbt_new0(struct xbt_graph, 1);
+  xbt_graph_t graph = xbt_new0(struct xbt_graph, 1);
   graph->directed = directed;
   graph->data = data;
   graph->nodes = xbt_dynar_new(sizeof(xbt_node_t), NULL);
@@ -38,8 +37,7 @@ xbt_graph_t xbt_graph_new_graph(unsigned short int directed, void *data)
 /** @brief add a node to the given graph */
 xbt_node_t xbt_graph_new_node(xbt_graph_t g, void *data)
 {
-  xbt_node_t node = NULL;
-  node = xbt_new0(struct xbt_node, 1);
+  xbt_node_t node= xbt_new0(struct xbt_node, 1);
   node->data = data;
   if (g->directed)
     /* only the "out" field is used */
@@ -57,9 +55,7 @@ xbt_node_t xbt_graph_new_node(xbt_graph_t g, void *data)
 /** @brief add an edge to the given graph */
 xbt_edge_t xbt_graph_new_edge(xbt_graph_t g, xbt_node_t src, xbt_node_t dst, void *data)
 {
-  xbt_edge_t edge = NULL;
-
-  edge = xbt_new0(struct xbt_edge, 1);
+  xbt_edge_t edge = xbt_new0(struct xbt_edge, 1);
   xbt_dynar_push(src->out, &edge);
   if (g->directed)
     xbt_dynar_push(dst->in, &edge);
@@ -211,12 +207,10 @@ double xbt_graph_edge_get_length(xbt_edge_t edge)
  */
 void xbt_floyd_algorithm(xbt_graph_t g, double *adj, double *d, xbt_node_t * p)
 {
-  unsigned long i, j, k;
-  unsigned long n;
-  n = xbt_dynar_length(g->nodes);
-
-# define D(u,v) d[(u)*n+(v)]
-# define P(u,v) p[(u)*n+(v)]
+  unsigned long i;
+  unsigned long j;
+  unsigned long k;
+  unsigned long n = xbt_dynar_length(g->nodes);
 
   for (i = 0; i < n * n; i++) {
     d[i] = adj[i];
@@ -224,8 +218,8 @@ void xbt_floyd_algorithm(xbt_graph_t g, double *adj, double *d, xbt_node_t * p)
 
   for (i = 0; i < n; i++) {
     for (j = 0; j < n; j++) {
-      if (D(i, j) != -1) {
-        P(i, j) = *((xbt_node_t *) xbt_dynar_get_ptr(g->nodes, i));
+      if (d[i*n+j] > -1) {
+        p[i*n+j] = *((xbt_node_t *) xbt_dynar_get_ptr(g->nodes, i));
       }
     }
   }
@@ -233,17 +227,15 @@ void xbt_floyd_algorithm(xbt_graph_t g, double *adj, double *d, xbt_node_t * p)
   for (k = 0; k < n; k++) {
     for (i = 0; i < n; i++) {
       for (j = 0; j < n; j++) {
-        if ((D(i, k) != -1) && (D(k, j) != -1)) {
-          if ((D(i, j) == -1) || (D(i, j) > D(i, k) + D(k, j))) {
-            D(i, j) = D(i, k) + D(k, j);
-            P(i, j) = P(k, j);
+        if ((d[i*n+k] > -1) && (d[k*n+j] > -1)) {
+          if ((d[i*n+j] < 0) || (d[i*n+j] > d[i*n+k] + d[k*n+j])) {
+            d[i*n+j] = d[i*n+k] + d[k*n+j];
+            p[i*n+j] = p[k*n+j];
           }
         }
       }
     }
   }
-# undef P
-# undef D
 }
 
 /** @brief Export the given graph in the GraphViz formatting for visualization */
@@ -253,10 +245,9 @@ void xbt_graph_export_graphviz(xbt_graph_t g, const char *filename, const char *
   unsigned int cursor = 0;
   xbt_node_t node = NULL;
   xbt_edge_t edge = NULL;
-  FILE *file = NULL;
   const char *name = NULL;
 
-  file = fopen(filename, "w");
+  FILE *file = fopen(filename, "w");
   xbt_assert(file, "Failed to open %s \n", filename);
 
   if (g->directed)
@@ -285,17 +276,19 @@ void xbt_graph_export_graphviz(xbt_graph_t g, const char *filename, const char *
     }else{
       c = c_ndir;
     }
-    const char *src_name, *dst_name;
     if (node_name){
-      src_name = node_name(edge->src);
-      dst_name = node_name(edge->dst);
+      const char *src_name = node_name(edge->src);
+      const char *dst_name = node_name(edge->dst);
       fprintf(file, "  \"%s\" %s \"%s\"", src_name, c, dst_name);
     }else{
       fprintf(file, "  \"%p\" %s \"%p\"", edge->src, c, edge->dst);
     }
 
-    if ((edge_name) && ((name = edge_name(edge))))
-      fprintf(file, "[label=\"%s\"]", name);
+    if (edge_name){
+      name = edge_name(edge);
+      if (name)
+        fprintf(file, "[label=\"%s\"]", name);
+    }
     fprintf(file, ";\n");
   }
   fprintf(file, "}\n");

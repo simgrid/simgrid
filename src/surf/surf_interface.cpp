@@ -12,10 +12,10 @@
 #include "simgrid/sg_config.h"
 #include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/internal_config.h"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/simix/smx_host_private.h"
 #include "src/surf/HostImpl.hpp"
 #include "surf_private.h"
-#include "surf_routing.hpp"
 #include <vector>
 
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
@@ -25,13 +25,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf, "Logging specific to SURF (ke
  * Utils *
  *********/
 
-/* model_list_invoke contains only surf_host and surf_vm.
- * The callback functions of cpu_model and network_model will be called from those of these host models. */
 std::vector<surf_model_t> * all_existing_models = nullptr; /* to destroy models correctly */
-xbt_dynar_t model_list_invoke = nullptr;  /* to invoke callbacks */
 
 simgrid::trace_mgr::future_evt_set *future_evt_set = nullptr;
-xbt_dynar_t surf_path = nullptr;
+std::vector<std::string> surf_path;
 std::vector<simgrid::s4u::Host*> host_that_restart;
 xbt_dict_t watched_hosts_lib;
 
@@ -46,8 +43,8 @@ simgrid::xbt::signal<void(void)> surfExitCallbacks;
 #include <simgrid/plugins/energy.h> // FIXME: this plugin should not be linked to the core
 
 s_surf_model_description_t surf_plugin_description[] = {
-    {"Energy", "Cpu energy consumption.", &sg_energy_plugin_init},
-     {nullptr, nullptr,  nullptr}      /* this array must be nullptr terminated */
+    {"Energy", "Cpu energy consumption.", &sg_host_energy_plugin_init},
+    {nullptr, nullptr, nullptr} /* this array must be nullptr terminated */
 };
 
 /* Don't forget to update the option description in smx_config when you change this */
@@ -99,11 +96,6 @@ s_surf_model_description_t surf_host_model_description[] = {
   {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
-s_surf_model_description_t surf_vm_model_description[] = {
-  {"default", "Default vm model.", &surf_vm_model_init_HL13},
-  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
-};
-
 s_surf_model_description_t surf_optimization_mode_description[] = {
   {"Lazy", "Lazy action management (partial invalidation in lmm + heap in action remaining).", nullptr},
   {"TI",   "Trace integration. Highly optimized mode when using availability traces (only available for the Cas01 CPU model for now).", nullptr},
@@ -135,8 +127,6 @@ double surf_get_clock()
 
 FILE *surf_fopen(const char *name, const char *mode)
 {
-  unsigned int cpt;
-  char *path_elm = nullptr;
   char *buff;
   FILE *file = nullptr;
 
@@ -146,8 +136,8 @@ FILE *surf_fopen(const char *name, const char *mode)
     return fopen(name, mode);
 
   /* search relative files in the path */
-  xbt_dynar_foreach(surf_path, cpt, path_elm) {
-    buff = bprintf("%s" FILE_DELIM "%s", path_elm, name);
+  for (auto path_elm : surf_path) {
+    buff = bprintf("%s" FILE_DELIM "%s", path_elm.c_str(), name);
     file = fopen(buff, mode);
     free(buff);
 
@@ -280,10 +270,53 @@ void sg_version_check(int lib_version_major,int lib_version_minor,int lib_versio
     }
 }
 
-void sg_version(int *ver_major,int *ver_minor,int *ver_patch) {
+void sg_version_get(int* ver_major, int* ver_minor, int* ver_patch)
+{
   *ver_major = SIMGRID_VERSION_MAJOR;
   *ver_minor = SIMGRID_VERSION_MINOR;
   *ver_patch = SIMGRID_VERSION_PATCH;
+}
+
+void sg_version()
+{
+  std::printf("This program was linked against %s (git: %s), found in %s.\n",
+              SIMGRID_VERSION_STRING, SIMGRID_GIT_VERSION, SIMGRID_INSTALL_PREFIX);
+
+#if HAVE_MC
+  std::printf("   Model-checking support compiled in.\n");
+#else
+  std::printf("   Model-checking support disabled at compilation.\n");
+#endif
+
+#if HAVE_NS3
+  std::printf("   NS3 support compiled in.\n");
+#else
+  std::printf("   NS3 support disabled at compilation.\n");
+#endif
+
+#if HAVE_JEDULE
+  std::printf("   Jedule support compiled in.\n");
+#else
+  std::printf("   Jedule support disabled at compilation.\n");
+#endif
+
+#if HAVE_LUA
+  std::printf("   Lua support compiled in.\n");
+#else
+  std::printf("   Lua support disabled at compilation.\n");
+#endif
+
+#if HAVE_MALLOCATOR
+  std::printf("   Mallocator support compiled in.\n");
+#else
+  std::printf("   Mallocator support disabled at compilation.\n");
+#endif
+
+  std::printf("\nTo cite SimGrid in a publication, please use:\n"
+              "   Henri Casanova, Arnaud Giersch, Arnaud Legrand, Martin Quinson, Frédéric Suter. \n"
+              "   Versatile, Scalable, and Accurate Simulation of Distributed Applications and Platforms. \n"
+              "   Journal of Parallel and Distributed Computing, Elsevier, 2014, 74 (10), pp.2899-2917.\n");
+  std::printf("The pdf file and a BibTeX entry for LaTeX users can be found at http://hal.inria.fr/hal-01017319\n");
 }
 
 void surf_init(int *argc, char **argv)
@@ -294,17 +327,10 @@ void surf_init(int *argc, char **argv)
   XBT_DEBUG("Create all Libs");
   USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(nullptr);
 
-  as_router_lib = xbt_lib_new();
   storage_lib = xbt_lib_new();
   storage_type_lib = xbt_lib_new();
   file_lib = xbt_lib_new();
   watched_hosts_lib = xbt_dict_new_homogeneous(nullptr);
-
-  XBT_DEBUG("Add routing levels");
-  ROUTING_PROP_ASR_LEVEL = xbt_lib_add_level(as_router_lib, nullptr);
-  ROUTING_ASR_LEVEL = xbt_lib_add_level(as_router_lib, [](void* p) {
-    delete static_cast<simgrid::kernel::routing::NetCard*>(p);
-  });
 
   XBT_DEBUG("Add SURF levels");
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_free);
@@ -312,8 +338,6 @@ void surf_init(int *argc, char **argv)
   xbt_init(argc, argv);
   if (!all_existing_models)
     all_existing_models = new std::vector<simgrid::surf::Model*>();
-  if (!model_list_invoke)
-    model_list_invoke = xbt_dynar_new(sizeof(simgrid::surf::Model*), nullptr);
   if (!future_evt_set)
     future_evt_set = new simgrid::trace_mgr::future_evt_set();
 
@@ -330,10 +354,7 @@ void surf_exit()
 {
   TRACE_end();                  /* Just in case it was not called by the upper layer (or there is no upper layer) */
 
-  xbt_dynar_free(&surf_path);
-
   sg_host_exit();
-  xbt_lib_free(&as_router_lib);
   xbt_lib_free(&storage_lib);
   sg_link_exit();
   xbt_lib_free(&storage_type_lib);
@@ -343,8 +364,6 @@ void surf_exit()
   for (auto model : *all_existing_models)
     delete model;
   delete all_existing_models;
-  xbt_dynar_free(&model_list_invoke);
-  routing_exit();
 
   simgrid::surf::surfExitCallbacks();
 
@@ -436,12 +455,10 @@ double Model::nextOccuringEventLazy(double now)
       min = now + time_to_completion; // when the task will complete if nothing changes
     }
 
-    if ((action->getMaxDuration() != NO_MAX_DURATION)
-        && (min == -1
-            || action->getStartTime() +
-            action->getMaxDuration() < min)) {
-      min = action->getStartTime() +
-          action->getMaxDuration();  // when the task will complete anyway because of the deadline if any
+    if ((action->getMaxDuration() != NO_MAX_DURATION) &&
+        (min == -1 || action->getStartTime() + action->getMaxDuration() < min)) {
+      // when the task will complete anyway because of the deadline if any
+      min          = action->getStartTime() + action->getMaxDuration();
       max_dur_flag = 1;
     }
 
@@ -550,11 +567,13 @@ void Resource::turnOff()
   isOn_ = false;
 }
 
-Model *Resource::getModel() const {
+Model* Resource::model() const
+{
   return model_;
 }
 
-const char *Resource::getName() const {
+const char* Resource::cname() const
+{
   return name_.c_str();
 }
 
@@ -562,7 +581,8 @@ bool Resource::operator==(const Resource &other) const {
   return name_ == other.name_;
 }
 
-lmm_constraint_t Resource::getConstraint() const {
+lmm_constraint_t Resource::constraint() const
+{
   return constraint_;
 }
 
@@ -615,13 +635,13 @@ void Action::finish() {
 
 Action::State Action::getState()
 {
-  if (stateSet_ ==  getModel()->getReadyActionSet())
+  if (stateSet_ == model_->getReadyActionSet())
     return Action::State::ready;
-  if (stateSet_ ==  getModel()->getRunningActionSet())
+  if (stateSet_ == model_->getRunningActionSet())
     return Action::State::running;
-  if (stateSet_ ==  getModel()->getFailedActionSet())
+  if (stateSet_ == model_->getFailedActionSet())
     return Action::State::failed;
-  if (stateSet_ ==  getModel()->getDoneActionSet())
+  if (stateSet_ == model_->getDoneActionSet())
     return Action::State::done;
   return Action::State::not_in_the_system;
 }
@@ -631,16 +651,16 @@ void Action::setState(Action::State state)
   stateSet_->erase(stateSet_->iterator_to(*this));
   switch (state) {
   case Action::State::ready:
-    stateSet_ = getModel()->getReadyActionSet();
+    stateSet_ = model_->getReadyActionSet();
     break;
   case Action::State::running:
-    stateSet_ = getModel()->getRunningActionSet();
+    stateSet_ = model_->getRunningActionSet();
     break;
   case Action::State::failed:
-    stateSet_ = getModel()->getFailedActionSet();
+    stateSet_ = model_->getFailedActionSet();
     break;
   case Action::State::done:
-    stateSet_ = getModel()->getDoneActionSet();
+    stateSet_ = model_->getDoneActionSet();
     break;
   default:
     stateSet_ = nullptr;
@@ -847,7 +867,7 @@ void Action::updateRemainingLazy(double now)
     if (getModel() == surf_cpu_model_pm && TRACE_is_enabled()) {
       simgrid::surf::Resource *cpu = static_cast<simgrid::surf::Resource*>(
         lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
-      TRACE_surf_host_set_utilization(cpu->getName(), getCategory(), lastValue_, lastUpdate_, now - lastUpdate_);
+      TRACE_surf_host_set_utilization(cpu->cname(), getCategory(), lastValue_, lastUpdate_, now - lastUpdate_);
     }
     XBT_DEBUG("Updating action(%p): remains is now %f", this, remains_);
   }

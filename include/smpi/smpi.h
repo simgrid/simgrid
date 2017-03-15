@@ -16,6 +16,9 @@
 #include <stddef.h>
 #include <xbt/misc.h>
 #include <xbt/function_types.h>
+#include "simgrid/datatypes.h"
+
+#include "smpi/forward.hpp"
 
 #ifdef _WIN32
 #define MPI_CALL(type,name,args) \
@@ -171,12 +174,12 @@ SG_BEGIN_DECL()
 #define MPI_TYPECLASS_INTEGER 1
 #define MPI_TYPECLASS_COMPLEX 2
 #define MPI_ROOT 0
-#define MPI_INFO_NULL NULL
+#define MPI_INFO_NULL ((MPI_Info)NULL)
 #define MPI_COMM_TYPE_SHARED    1
 #define MPI_WIN_NULL ((MPI_Win)NULL)
 
-#define MPI_VERSION 1
-#define MPI_SUBVERSION 1
+#define MPI_VERSION 2
+#define MPI_SUBVERSION 2
 #define MPI_UNWEIGHTED      (int *)0
 #define MPI_ARGV_NULL (char **)0
 #define MPI_ARGVS_NULL (char ***)0
@@ -235,8 +238,8 @@ typedef long long MPI_Offset;
 struct s_MPI_File;
 typedef struct s_MPI_File *MPI_File;
 
-struct s_smpi_mpi_datatype;
-typedef struct s_smpi_mpi_datatype *MPI_Datatype;
+
+typedef SMPI_Datatype *MPI_Datatype;
 
 typedef struct {
   int MPI_SOURCE;
@@ -245,10 +248,8 @@ typedef struct {
   int count;
 } MPI_Status;
 
-struct s_smpi_mpi_win;
-typedef struct s_smpi_mpi_win* MPI_Win;
-struct s_smpi_mpi_info;
-typedef struct s_smpi_mpi_info *MPI_Info;
+typedef SMPI_Win* MPI_Win;
+typedef SMPI_Info* MPI_Info;
 
 #define MPI_STATUS_IGNORE ((MPI_Status*)NULL)
 #define MPI_STATUSES_IGNORE ((MPI_Status*)NULL)
@@ -341,8 +342,7 @@ XBT_PUBLIC_DATA( const MPI_Datatype ) MPI_INTEGER16;
 #define MPI_2DOUBLE_PRECISION MPI_2DOUBLE
 
 typedef void MPI_User_function(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype);
-struct s_smpi_mpi_op;
-typedef struct s_smpi_mpi_op *MPI_Op;
+typedef SMPI_Op *MPI_Op;
 
 #define MPI_OP_NULL ((MPI_Op)NULL)
 XBT_PUBLIC_DATA( MPI_Op ) MPI_MAX;
@@ -360,25 +360,21 @@ XBT_PUBLIC_DATA( MPI_Op ) MPI_BXOR;
 //For accumulate
 XBT_PUBLIC_DATA( MPI_Op ) MPI_REPLACE;
 
-struct s_smpi_mpi_topology;
-typedef struct s_smpi_mpi_topology *MPI_Topology;
-                                   
-struct s_smpi_mpi_group;
-typedef struct s_smpi_mpi_group *MPI_Group;
+typedef SMPI_Topology *MPI_Topology;
+
+typedef SMPI_Group* MPI_Group;
 
 #define MPI_GROUP_NULL ((MPI_Group)NULL)
 
 XBT_PUBLIC_DATA( MPI_Group ) MPI_GROUP_EMPTY;
 
-struct s_smpi_mpi_communicator;
-typedef struct s_smpi_mpi_communicator *MPI_Comm;
+typedef SMPI_Comm *MPI_Comm;
 
 #define MPI_COMM_NULL ((MPI_Comm)NULL)
 XBT_PUBLIC_DATA( MPI_Comm ) MPI_COMM_WORLD;
 #define MPI_COMM_SELF smpi_process_comm_self()
 
-struct s_smpi_mpi_request;
-typedef struct s_smpi_mpi_request *MPI_Request;
+typedef SMPI_Request *MPI_Request;
 
 #define MPI_REQUEST_NULL ((MPI_Request)NULL)
 #define MPI_FORTRAN_REQUEST_NULL -1
@@ -396,6 +392,7 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Address, (void *location, MPI_Aint * address));
 MPI_CALL(XBT_PUBLIC(int), MPI_Get_address, (void *location, MPI_Aint * address));
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_free, (MPI_Datatype * datatype));
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_size, (MPI_Datatype datatype, int *size));
+MPI_CALL(XBT_PUBLIC(int), MPI_Type_size_x, (MPI_Datatype datatype, MPI_Count *size));
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_get_extent, (MPI_Datatype datatype, MPI_Aint * lb, MPI_Aint * extent));
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_get_true_extent, (MPI_Datatype datatype, MPI_Aint * lb, MPI_Aint * extent));
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_extent, (MPI_Datatype datatype, MPI_Aint * extent));
@@ -453,6 +450,7 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Comm_group, (MPI_Comm comm, MPI_Group * group));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_compare, (MPI_Comm comm1, MPI_Comm comm2, int *result));
 
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_create, (MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Comm_create_group, (MPI_Comm comm, MPI_Group group, int tag, MPI_Comm * newcomm));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_free, (MPI_Comm * comm));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_disconnect, (MPI_Comm * comm));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_split, (MPI_Comm comm, int color, int key, MPI_Comm* comm_out));
@@ -822,6 +820,13 @@ XBT_PUBLIC(unsigned long long) smpi_rastro_timestamp ();
 XBT_PUBLIC(void) smpi_sample_1(int global, const char *file, int line, int iters, double threshold);
 XBT_PUBLIC(int) smpi_sample_2(int global, const char *file, int line);
 XBT_PUBLIC(void) smpi_sample_3(int global, const char *file, int line);
+
+/** 
+ * Need a public setter for SMPI copy_callback function, so users can define 
+ * their own while still using default SIMIX_copy_callback for MSG copies.
+ */
+XBT_PUBLIC(void) smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, size_t));
+
 
 /** 
  * Functions for call location tracing. These functions will be

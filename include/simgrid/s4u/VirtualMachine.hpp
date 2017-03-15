@@ -6,18 +6,14 @@
 #ifndef SIMGRID_S4U_VM_HPP
 #define SIMGRID_S4U_VM_HPP
 
-#include <simgrid/s4u/forward.hpp>
-#include <simgrid/s4u/host.hpp>
-#include <xbt/base.h>
+#include "simgrid/datatypes.h"
+#include "simgrid/s4u/forward.hpp"
+#include "simgrid/s4u/host.hpp"
 
 typedef enum {
   SURF_VM_STATE_CREATED, /**< created, but not yet started */
   SURF_VM_STATE_RUNNING,
   SURF_VM_STATE_SUSPENDED, /**< Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
-
-  SURF_VM_STATE_SAVING, /**< Save/restore involves disk I/O, so there should be transition states. */
-  SURF_VM_STATE_SAVED,
-  SURF_VM_STATE_RESTORING,
 } e_surf_vm_state_t;
 
 namespace simgrid {
@@ -53,6 +49,7 @@ public:
   void parameters(vm_params_t params);
   void setParameters(vm_params_t params);
   double getRamsize();
+  simgrid::s4u::Host* pm();
 
   /* FIXME: protect me */
   simgrid::vm::VirtualMachineImpl* pimpl_vm_ = nullptr;

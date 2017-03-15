@@ -6,19 +6,24 @@
 #include <simgrid/s4u/forward.hpp>
 #include <xbt/dict.h>
 
+#include <string>
+#include <unordered_map>
+
 namespace simgrid {
 namespace kernel {
 namespace routing {
-class AsImpl;
+class NetZoneImpl;
+class NetPoint;
 }
 
 class EngineImpl {
 public:
   EngineImpl();
   virtual ~EngineImpl();
-  kernel::routing::AsImpl* rootAs_ = nullptr;
+  kernel::routing::NetZoneImpl* netRoot_ = nullptr;
 
 protected:
+  std::unordered_map<std::string, simgrid::kernel::routing::NetPoint*> netpoints_;
   friend simgrid::s4u::Engine;
 };
 }

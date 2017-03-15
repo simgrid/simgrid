@@ -19,14 +19,14 @@ $ $SG_TEST_EXENV ${bindir:=.}/dht-kademlia ${srcdir:=.}/cluster.xml ${srcdir:=.}
 > [  0.000000] (13:node@node-12.acme.org) Hi, I'm going to join the network with id 4095
 > [780.000000] ( 7:node@node-6.acme.org) 5/5 FIND_NODE have succeeded
 > [780.000000] ( 9:node@node-8.acme.org) 5/5 FIND_NODE have succeeded
-> [780.000000] ( 3:node@node-2.acme.org) 5/5 FIND_NODE have succeeded
+> [780.000000] ( 3:node@node-2.acme.org) 6/6 FIND_NODE have succeeded
 > [780.000000] ( 2:node@node-1.acme.org) 6/6 FIND_NODE have succeeded
-> [780.000000] (11:node@node-10.acme.org) 6/6 FIND_NODE have succeeded
+> [780.000000] (11:node@node-10.acme.org) 5/5 FIND_NODE have succeeded
 > [780.000000] ( 1:node@node-0.acme.org) 7/7 FIND_NODE have succeeded
 > [780.000000] ( 5:node@node-4.acme.org) 6/6 FIND_NODE have succeeded
 > [780.000000] (13:node@node-12.acme.org) 6/6 FIND_NODE have succeeded
-> [780.000000] ( 8:node@node-7.acme.org) 6/6 FIND_NODE have succeeded
-> [780.000000] ( 6:node@node-5.acme.org) 6/6 FIND_NODE have succeeded
+> [780.000000] ( 8:node@node-7.acme.org) 5/5 FIND_NODE have succeeded
+> [780.000000] ( 6:node@node-5.acme.org) 5/5 FIND_NODE have succeeded
 > [780.000000] (10:node@node-9.acme.org) 5/5 FIND_NODE have succeeded
 > [780.000000] (12:node@node-11.acme.org) 6/6 FIND_NODE have succeeded
 > [780.000000] ( 4:node@node-3.acme.org) 5/5 FIND_NODE have succeeded

@@ -6,12 +6,13 @@
 
 #include "xbt/asserts.h"
 #include "simgrid/jedule/jedule_sd_binding.h"
+
 #include "simgrid/forward.h"
 
-#include "simgrid/s4u/As.hpp"
-#include "simgrid/s4u/engine.hpp"
-#include "simgrid/jedule/jedule.hpp"
 #include "../../simdag/simdag_private.hpp"
+#include "simgrid/jedule/jedule.hpp"
+#include "simgrid/s4u/NetZone.hpp"
+#include "simgrid/s4u/engine.hpp"
 
 #if HAVE_JEDULE
 
@@ -32,7 +33,7 @@ void jedule_log_sd_event(SD_task_t task)
 
 void jedule_sd_init()
 {
-  AS_t root_comp = simgrid::s4u::Engine::instance()->rootAs();
+  sg_netzone_t root_comp = simgrid::s4u::Engine::instance()->netRoot();
   XBT_DEBUG("root name %s\n", root_comp->name());
 
   my_jedule = new simgrid::jedule::Jedule();

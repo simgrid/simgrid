@@ -5,7 +5,6 @@
 
 #include "src/kernel/activity/SynchroIo.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "src/simix/popping_private.h"
 #include "src/simix/smx_private.h"
 
 void simgrid::kernel::activity::Io::suspend()

@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_AUTOMATON_H
-#define _XBT_AUTOMATON_H
+#ifndef XBT_AUTOMATON_H
+#define XBT_AUTOMATON_H
 
 #include <xbt/dynar.h>
 #include <xbt/sysdep.h>

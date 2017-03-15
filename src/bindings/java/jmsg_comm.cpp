@@ -1,7 +1,6 @@
-/* Functions related to the java comm instances                             */
+/* Java bindings to the Comm API                                            */
 
-/* Copyright (c) 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,7 +10,9 @@
 #include "jmsg.h"
 
 #include <simgrid/msg.h>
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
+
+SG_BEGIN_DECL()
 
 static jfieldID jcomm_field_Comm_bind;
 static jfieldID jcomm_field_Comm_finished;
@@ -45,19 +46,16 @@ void jcomm_bind_task(JNIEnv *env, jobject jcomm) {
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls) {
   jclass jfield_class_Comm = env->FindClass("org/simgrid/msg/Comm");
-  if (!jfield_class_Comm) {
-    jxbt_throw_native(env,bprintf("Can't find the org/simgrid/msg/Comm class."));
-    return;
-  }
+  xbt_assert(jfield_class_Comm, "Native initialization of msg/Comm failed. Please report that bug");
+
   jcomm_field_Comm_bind = jxbt_get_jfield(env, jfield_class_Comm, "bind", "J");
   jcomm_field_Comm_taskBind  = jxbt_get_jfield(env, jfield_class_Comm, "taskBind", "J");
   jcomm_field_Comm_receiving = jxbt_get_jfield(env, jfield_class_Comm, "receiving", "Z");
   jtask_field_Comm_task = jxbt_get_jfield(env, jfield_class_Comm, "task", "Lorg/simgrid/msg/Task;");
   jcomm_field_Comm_finished = jxbt_get_jfield(env, jfield_class_Comm, "finished", "Z");
-  if (!jcomm_field_Comm_bind || !jcomm_field_Comm_taskBind || !jcomm_field_Comm_receiving || !jtask_field_Comm_task ||
-      !jcomm_field_Comm_finished) {
-    jxbt_throw_native(env,bprintf("Can't find some fields in Java class."));
-  }
+  xbt_assert(jcomm_field_Comm_bind && jcomm_field_Comm_taskBind && jcomm_field_Comm_receiving &&
+                 jtask_field_Comm_task && jcomm_field_Comm_finished,
+             "Native initialization of msg/Comm failed. Please report that bug");
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_nativeFinalize(JNIEnv *env, jobject jcomm) {
@@ -81,7 +79,7 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject j
   }
 
   if (!comm) {
-    jxbt_throw_native(env,bprintf("comm is null"));
+    jxbt_throw_null(env, bprintf("comm is null"));
     return JNI_FALSE;
   }
 
@@ -101,7 +99,7 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject j
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble timeout) {
   msg_comm_t comm = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
   if (!comm) {
-    jxbt_throw_native(env,bprintf("comm is null"));
+    jxbt_throw_null(env, bprintf("comm is null"));
     return;
   }
 
@@ -115,7 +113,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, job
   env->SetBooleanField(jcomm, jcomm_field_Comm_finished, JNI_TRUE);
   if (status == MSG_OK) {
     jcomm_bind_task(env,jcomm);
-    return;
   } else {
     jmsg_throw_status(env,status);
   }
@@ -133,7 +130,7 @@ static msg_comm_t* jarray_to_commArray(JNIEnv *env, jobjectArray jcomms, /* OUT 
 
      comms[i] = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
      if (!comms[i]) {
-       jxbt_throw_native(env,bprintf("comm at rank %d is null",i));
+       jxbt_throw_null(env, bprintf("comm at rank %d is null", i));
        return nullptr;
      }
 
@@ -167,3 +164,5 @@ JNIEXPORT int JNICALL Java_org_simgrid_msg_Comm_waitAny(JNIEnv *env, jclass cls,
   xbt_dynar_free(&dyn);
   return rank;
 }
+
+SG_END_DECL()

@@ -1,9 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-  <config id="General">
-    <prop id="network/coordinates" value="yes"/>
-  </config>
   <AS id="AS0" routing="Vivaldi">
     <AS id="dataCenter1" routing="Full">
       <!-- 3 cabinets, no zone dist area, 1 horiz dist area, no multi-homing, telecom and operation rooms omitted -->

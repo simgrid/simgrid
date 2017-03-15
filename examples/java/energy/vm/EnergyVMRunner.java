@@ -5,15 +5,14 @@
 
 package energy.vm;
 
-import org.simgrid.msg.Msg;
-import org.simgrid.msg.VM;
 import org.simgrid.msg.Host;
-import org.simgrid.msg.Task;
-import org.simgrid.msg.Process;
 import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.HostNotFoundException;
+import org.simgrid.msg.Msg;
+import org.simgrid.msg.Process;
+import org.simgrid.msg.Task;
 import org.simgrid.msg.TaskCancelledException;
-import org.simgrid.msg.NativeException;
+import org.simgrid.msg.VM;
 
 /* This class is a process in charge of running the test. It creates and starts the VMs, and fork processes within VMs */
 public class EnergyVMRunner extends Process {
@@ -36,7 +35,7 @@ public class EnergyVMRunner extends Process {
     }
   }
 
-  EnergyVMRunner(Host host, String name, String[] args) throws HostNotFoundException, NativeException  {
+  EnergyVMRunner(Host host, String name, String[] args) throws HostNotFoundException {
     super(host, name, args);
   }
 
@@ -48,23 +47,23 @@ public class EnergyVMRunner extends Process {
     Host host3 = Host.getByName("MyHost3");
 
     Msg.info("Creating and starting two VMs");
-    VM vmHost1 = new VM(host1, "vmHost1", 4, 2048, 100, null, 1024 * 20, 10,50);
+    VM vmHost1 = new VM(host1, "vmHost1", 2048, 10, 50);
     vmHost1.start();
 
-    VM vmHost3 = new VM(host3, "vmHost3", 4, 2048, 100, null, 1024 * 20, 10,50);
+    VM vmHost3 = new VM(host3, "vmHost3", 2048, 10, 50);
     vmHost3.start();
 
     Msg.info("Create two tasks on Host1: one inside a VM, the other directly on the host");
-    new DummyProcess (vmHost1, "p11"); 
-    new DummyProcess (host1, "p12"); 
+    new DummyProcess (vmHost1, "p11").start(); 
+    new DummyProcess (host1, "p12").start(); 
 
     Msg.info("Create two tasks on Host2: both directly on the host");
-    new DummyProcess (host2, "p21"); 
-    new DummyProcess (host2, "p22"); 
+    new DummyProcess (host2, "p21").start(); 
+    new DummyProcess (host2, "p22").start(); 
 
     Msg.info("Create two tasks on Host3: both inside a VM");
-    new DummyProcess (vmHost3, "p31"); 
-    new DummyProcess (vmHost3, "p312"); 
+    new DummyProcess (vmHost3, "p31").start(); 
+    new DummyProcess (vmHost3, "p312").start(); 
 
     Msg.info("Wait 5 seconds. The tasks are still running (they run for 3 seconds, but 2 tasks are co-located, "
              + "so they run for 6 seconds)"); 

@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 
+#include <algorithm>
 #include <cerrno>
 #include <cstring>
 #include <climits>
@@ -14,6 +15,7 @@
 #include <string>
 #include <typeinfo>
 #include <type_traits>
+#include <vector>
 
 #include <xbt/ex.hpp>
 #include <xbt/config.h>
@@ -151,7 +153,7 @@ public:
   ConfigurationElement(const char* key, const char* desc, xbt_cfg_cb_t cb)
     : key(key ? key : ""), desc(desc ? desc : ""), old_callback(cb) {}
 
-  virtual ~ConfigurationElement();
+  virtual ~ConfigurationElement()=default;
 
   virtual std::string getStringValue() = 0;
   virtual void setStringValue(const char* value) = 0;
@@ -177,8 +179,6 @@ public:
   std::string const& getDescription() const { return desc; }
 };
 
-ConfigurationElement::~ConfigurationElement() {}
-
 // **** TypedConfigurationElement<T> ****
 
 // TODO, could we use boost::any with some Type* reference?
@@ -201,7 +201,7 @@ public:
     : ConfigurationElement(key, desc), content(std::move(value)),
       callback(std::move(callback))
   {}
-  ~TypedConfigurationElement() override;
+  ~TypedConfigurationElement()=default;
 
   std::string getStringValue() override;
   const char* getTypeName() override;
@@ -254,10 +254,6 @@ const char* TypedConfigurationElement<T>::getTypeName() // override
 {
   return ConfigType<T>::type_name;
 }
-
-template<class T>
-TypedConfigurationElement<T>::~TypedConfigurationElement()
-{}
 
 } // end of anonymous namespace
 
@@ -390,16 +386,15 @@ void Config::dump(const char *name, const char *indent)
 void Config::showAliases()
 {
   xbt_dict_cursor_t dict_cursor;
-  unsigned int dynar_cursor;
   xbt_dictelm_t dictel;
   char *name;
-  xbt_dynar_t names = xbt_dynar_new(sizeof(char *), nullptr);
+  std::vector<char*> names;
 
   xbt_dict_foreach(this->aliases, dict_cursor, name, dictel)
-    xbt_dynar_push(names, &name);
-  xbt_dynar_sort_strings(names);
+    names.push_back(name);
+  std::sort(names.begin(), names.end());
 
-  xbt_dynar_foreach(names, dynar_cursor, name)
+  for (auto name : names)
     printf("   %s: %s\n", name, (*this)[name].getDescription().c_str());
 }
 
@@ -407,22 +402,20 @@ void Config::showAliases()
 void Config::help()
 {
   xbt_dict_cursor_t dict_cursor;
-  unsigned int dynar_cursor;
   simgrid::config::ConfigurationElement* variable;
   char *name;
-  xbt_dynar_t names = xbt_dynar_new(sizeof(char *), nullptr);
+  std::vector<char*> names;
 
   xbt_dict_foreach(this->options, dict_cursor, name, variable)
-    xbt_dynar_push(names, &name);
-  xbt_dynar_sort_strings(names);
+    names.push_back(name);
+  std::sort(names.begin(), names.end());
 
-  xbt_dynar_foreach(names, dynar_cursor, name) {
+  for (auto name : names) {
     variable = (simgrid::config::ConfigurationElement*) xbt_dict_get(this->options, name);
     printf("   %s: %s\n", name, variable->getDescription().c_str());
     printf("       Type: %s; ", variable->getTypeName());
     printf("Current value: %s\n", variable->getStringValue().c_str());
   }
-  xbt_dynar_free(&names);
 }
 
 // ***** getConfig *****
@@ -588,7 +581,7 @@ void xbt_cfg_set_parse(const char *options)
     /* don't free(optionlist_cpy) if the assert fails, 'name' points inside it */
     *(val++) = '\0';
 
-    if (strncmp(name, "contexts/", strlen("contexts/")) && strncmp(name, "path", strlen("path")))
+    if (strncmp(name, "path", strlen("path")))
       XBT_INFO("Configuration change: Set '%s' to '%s'", name, val);
 
     try {
@@ -605,6 +598,7 @@ void xbt_cfg_set_parse(const char *options)
   free(optionlist_cpy);
   return;
 
+  /* Do not THROWF from a C++ exception catching context, or some cleanups will be missing */
 on_missing_key:
   free(optionlist_cpy);
   THROWF(not_found_error, 0, "Could not set variables %s", options);
@@ -612,7 +606,6 @@ on_missing_key:
 on_exception:
   free(optionlist_cpy);
   THROWF(unknown_error, 0, "Could not set variables %s", options);
-  return;
 }
 
 // Horrible mess to translate C++ exceptions to C exceptions:

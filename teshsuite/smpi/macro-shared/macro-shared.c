@@ -13,18 +13,23 @@
 
 static void* hash(char *str, uint64_t* ans)
 {
+  char *tohash = str;
   *ans=5381;
-  int c;
   printf("hashing !\n");
-  while ((c = *str++)!=0)
+  int c = *tohash;
+  while (c != 0) {
     *ans = ((*ans << 5) + *ans) + c; /* hash * 33 + c */
+    tohash++;
+    c = *tohash;
+  }
   return NULL;
 }
 
 int main(int argc, char *argv[])
 {
   MPI_Init(&argc, &argv);
-  int rank, size;
+  int rank;
+  int size;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   //Let's Allocate a shared memory buffer
@@ -50,7 +55,6 @@ int main(int argc, char *argv[])
   printf("[%d] After change, the value in the shared buffer is: %" PRIu64"\n", rank, *buf);
 
   SMPI_SHARED_FREE(buf);
-  buf=NULL;
   free(str);
 
   MPI_Finalize();

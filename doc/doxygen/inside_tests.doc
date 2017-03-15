@@ -57,6 +57,11 @@ make testall                    # Rebuild the test runner on need
 
 \section inside_tests_add_units Adding unit tests
 
+\warning this section is outdated. New unit tests should be written
+using the unit_test_framework component of Boost. There is no such
+example so far in our codebase, but that's definitely the way to go
+for the future. STOP USING XBT.
+
 If you want to test a specific function or set of functions, you need
 a unit test. Edit the file tools/cmake/UnitTesting.cmake to
 add your source file to the FILES_CONTAINING_UNITTESTS list. For
@@ -189,23 +194,27 @@ To add a new integration test, you thus have 3 things to do:
    details.\n
    Tesh is sometimes annoying as you have to ensure that the expected
    output will always be exactly the same. In particular, your should
-   not output machine dependent informations such as absolute data path, nor memory adresses as
-   they would change on each run. Several steps can be used here, such
-   as the obfucation of the memory adresses unless the verbose logs
-   are displayed (using the #XBT_LOG_ISENABLED() macro), or the
-   modification of the log formats to hide the timings when they
-   depend on the host machine.\n
+   not output machine dependent informations such as absolute data
+   path, nor memory adresses as they would change on each run. Several
+   steps can be used here, such as the obfucation of the memory
+   adresses unless the verbose logs are displayed (using the
+   #XBT_LOG_ISENABLED() macro), or the modification of the log formats
+   to hide the timings when they depend on the host machine.\n
    The script located in <project/directory>/tools/tesh/generate_tesh can
    help you a lot in particular if the output is large (though a smaller output is preferable). 
    There are also example tesh files in the <project/directory>/tools/tesh/ directory, that can be useful to understand the tesh syntax.
    
  - <b>Add your test in the cmake infrastructure</b>. For that, modify
-   the file <project/directory>/tools/cmake/Tests.cmake. Make sure to
-   pick a wise name for your test. It is often useful to check a
-   category of tests together. The only way to do so in ctest is to
-   use the -R argument that specifies a regular expression that the
-   test names must match. For example, you can run all MSG test with
-   "ctest -R msg". That explains the importance of the test names.
+   the following file:
+   @verbatim
+   <project/directory>/teshsuite/<interface eg msg>/CMakeLists.txt
+   @endverbatim   
+   Make sure to pick a wise name for your test. It is often useful to
+   check a category of tests together. The only way to do so in ctest
+   is to use the -R argument that specifies a regular expression that
+   the test names must match. For example, you can run all MSG test
+   with "ctest -R msg". That explains the importance of the test
+   names.
 
 Once the name is chosen, create a new test by adding a line similar to
 the following (assuming that you use tesh as expected).
@@ -248,7 +257,7 @@ refer to the <a href="https://wiki.inria.fr/ciportal/">CI documentation</a>.
 
 The result can be seen here: https://ci.inria.fr/simgrid/
 
-We have 3 projects on Jenkins:
+We have 2 interesting projects on Jenkins:
 \li <a href="https://ci.inria.fr/simgrid/job/SimGrid-Multi/">SimGrid-Multi</a>
     is the main project, running the tests that we spoke about.\n It is
     configured (on Jenkins) to run the script <tt>tools/jenkins/build.sh</tt>
@@ -256,8 +265,6 @@ We have 3 projects on Jenkins:
     runs the tests both under valgrind to find the memory errors and
     under gcovr to report the achieved test coverage.\n It is configured
     (on Jenkins) to run the script <tt>tools/jenkins/DynamicAnalysis.sh</tt>
-\li <a href="https://ci.inria.fr/simgrid/job/SimGrid-Windows/">SimGrid-Windows</a>
-    is an ongoing attempt to get Windows tested on Jenkins too.
 
 In each case, SimGrid gets built in
 /builds/workspace/$PROJECT/build_mode/$CONFIG/label/$SERVER/build 
@@ -270,10 +277,10 @@ model-checking on non-linux systems), go to your Project and click on
 interface language is English) and tick the checkbox; then add a
 groovy-expression to disable a specific configuration. For example, in
 order to disable the "ModelChecker" build on host
-"small-freebsd-64-clang", use:
+"small-netbsd-64-clang", use:
 
 \verbatim
-(label=="small-freebsd-64-clang").implies(build_mode!="ModelChecker")
+(label=="small-netbsd-64-clang").implies(build_mode!="ModelChecker")
 \endverbatim
 
 \subsection inside_tests_travis Travis
@@ -284,6 +291,10 @@ GitHub ecosystem. There is a plenty of documentation out there. Our
 configuration is in the file .travis.yml as it should be, and the
 result is here: https://travis-ci.org/simgrid/simgrid
 
+The .travis.yml configuration file can be useful if you fail to get
+SimGrid to compile on modern mac systems. We use the \c brew package
+manager there, and it works like a charm.
+
 \subsection inside_tests_appveyor AppVeyor
 
 AppVeyor aims at becoming the Travis of Windows. It is maybe less
@@ -291,15 +302,11 @@ mature than Travis, or maybe it is just that I'm less trained in
 Windows. Our configuration is in the file appveyor.yml as it should
 be, and the result is here: https://ci.appveyor.com/project/simgrid/simgrid
 
-It should be noted that I miserably failed to use the environment
-provided by AppVeyor, since SimGrid does not build with Microsoft
-Visual Studio. Instead, we download a whole development environment
-from the internet at each build. That's an archive of already compiled
-binaries that are unpacked on the appveyor systems each time we start.
-We re-use the ones from the 
-<a href="https://github.com/symengine/symengine">symengine</a>
-project. Thanks to them for compiling sane tools and constituting that
-archive, it saved my mind! 
+We use \c Choco as a package manager on AppVeyor, and it is sufficient
+for us. In the future, we will probably move to the ubuntu subsystem
+of Windows 10: SimGrid performs very well under these settings, but
+unfortunately we have no continuous integration service providing it
+yet, so we cannot drop AppVeyor yet.
 
 \subsection inside_tests_debian Debian builders
 

@@ -18,23 +18,12 @@ static void action_Isend(const char *const *action);
 typedef struct {
   int last_Irecv_sender_id;
   int bcast_counter;
-  xbt_dynar_t isends;           /* of msg_comm_t */
   /* Used to implement irecv+wait */
+  xbt_dynar_t isends;           /* of msg_comm_t */
   xbt_dynar_t irecvs;           /* of msg_comm_t */
-  xbt_dynar_t tasks;            /* of msg_task_t */
+  std::vector<msg_task_t> tasks;
 } s_process_globals_t, *process_globals_t;
 
-/* Helper function */
-static double parse_double(const char *string)
-{
-  double value;
-  char *endptr;
-
-  value = strtod(string, &endptr);
-  if (*endptr != '\0')
-    THROWF(unknown_error, 0, "%s is not a double", string);
-  return value;
-}
 
 #define ACT_DEBUG(...) \
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose)) {  \
@@ -71,8 +60,7 @@ static void asynchronous_cleanup()
 static void action_send(const char *const *action)
 {
   char to[250];
-  const char *size_str = action[3];
-  double size = parse_double(size_str);
+  double size  = xbt_str_parse_double(action[3], "%s is not a double");
   double clock = MSG_get_clock();
 
   snprintf(to,249, "%s_%s", MSG_process_get_name(MSG_process_self()), action[2]);
@@ -91,12 +79,12 @@ static void action_send(const char *const *action)
 static void action_Isend(const char *const *action)
 {
   char to[250];
-  const char *size = action[3];
+  double size               = xbt_str_parse_double(action[3], "%s is not a double");
   double clock = MSG_get_clock();
   process_globals_t globals = static_cast<process_globals_t>( MSG_process_get_data(MSG_process_self()) );
 
   snprintf(to,249, "%s_%s", MSG_process_get_name(MSG_process_self()), action[2]);
-  msg_comm_t comm = MSG_task_isend(MSG_task_create(to, 0, parse_double(size), NULL), to);
+  msg_comm_t comm = MSG_task_isend(MSG_task_create(to, 0, size, NULL), to);
   xbt_dynar_push(globals->isends, &comm);
 
   XBT_DEBUG("Isend on %s", MSG_process_get_name(MSG_process_self()));
@@ -131,18 +119,15 @@ static void action_Irecv(const char *const *action)
   XBT_DEBUG("Irecv on %s", MSG_process_get_name(MSG_process_self()));
 
   snprintf(mailbox,249, "%s_%s", action[2], MSG_process_get_name(MSG_process_self()));
-  msg_task_t t = NULL;
-  xbt_dynar_push(globals->tasks, &t);
-  msg_comm_t c = MSG_task_irecv((msg_task**)xbt_dynar_get_ptr(globals->tasks, xbt_dynar_length(globals->tasks) - 1), mailbox);
+  globals->tasks.push_back(nullptr);
+  msg_comm_t c = MSG_task_irecv(&globals->tasks.back(), mailbox);
   xbt_dynar_push(globals->irecvs, &c);
-
   log_action(action, MSG_get_clock() - clock);
   asynchronous_cleanup();
 }
 
 static void action_wait(const char *const *action)
 {
-  msg_task_t task = NULL;
   msg_comm_t comm;
   double clock = MSG_get_clock();
   process_globals_t globals = static_cast<process_globals_t>( MSG_process_get_data(MSG_process_self()) );
@@ -153,9 +138,10 @@ static void action_wait(const char *const *action)
   ACT_DEBUG("Entering %s", NAME);
   comm = xbt_dynar_pop_as(globals->irecvs, msg_comm_t);
   MSG_comm_wait(comm, -1);
-  task = xbt_dynar_pop_as(globals->tasks, msg_task_t);
-  MSG_comm_destroy(comm);
+  msg_task_t task = globals->tasks.back();
   MSG_task_destroy(task);
+  globals->tasks.pop_back();
+  MSG_comm_destroy(comm);
 
   log_action(action, MSG_get_clock() - clock);
 }
@@ -196,7 +182,7 @@ static void action_barrier(const char *const *action)
 static void action_bcast(const char *const *action)
 {
   char mailbox[80];
-  double comm_size = parse_double(action[2]);
+  double comm_size = xbt_str_parse_double(action[2], "%s is not a double");
   msg_task_t task = NULL;
   double clock = MSG_get_clock();
 
@@ -236,17 +222,16 @@ static void action_bcast(const char *const *action)
 
 static void action_comm_size(const char *const *action)
 {
-  const char *size = action[2];
   double clock = MSG_get_clock();
 
-  communicator_size = parse_double(size);
+  communicator_size = xbt_str_parse_int(action[2], "%s is not an int");
   log_action(action, MSG_get_clock() - clock);
 }
 
 static void action_compute(const char *const *action)
 {
-  const char *amount = action[2];
-  msg_task_t task = MSG_task_create("task", parse_double(amount), 0, NULL);
+  double amount   = xbt_str_parse_double(action[2], "%s is not a double");
+  msg_task_t task = MSG_task_create("task", amount, 0, NULL);
   double clock = MSG_get_clock();
 
   ACT_DEBUG("Entering %s", NAME);
@@ -261,7 +246,6 @@ static void action_init(const char *const *action)
   process_globals_t globals = static_cast<process_globals_t>( calloc(1, sizeof(s_process_globals_t)) );
   globals->isends = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   globals->irecvs = xbt_dynar_new(sizeof(msg_comm_t), NULL);
-  globals->tasks = xbt_dynar_new(sizeof(msg_task_t), NULL);
   MSG_process_set_data(MSG_process_self(), globals);
 }
 
@@ -272,7 +256,6 @@ static void action_finalize(const char *const *action)
     asynchronous_cleanup();
     xbt_dynar_free_container(&(globals->isends));
     xbt_dynar_free_container(&(globals->irecvs));
-    xbt_dynar_free_container(&(globals->tasks));
     xbt_free(globals);
   }
 }

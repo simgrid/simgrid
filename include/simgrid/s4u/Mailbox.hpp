@@ -106,11 +106,11 @@ namespace s4u {
 XBT_PUBLIC_CLASS Mailbox {
   friend Comm;
   friend simgrid::s4u::Engine;
-  friend simgrid::simix::Mailbox;
+  friend simgrid::kernel::activity::MailboxImpl;
 
-  simgrid::simix::Mailbox *pimpl_;
+  simgrid::kernel::activity::MailboxImpl* pimpl_;
 
-  explicit Mailbox(smx_mailbox_t mbox): pimpl_(mbox) {}
+  explicit Mailbox(kernel::activity::MailboxImpl * mbox) : pimpl_(mbox) {}
 
   /** private function to manage the mailboxes' lifetime (see @ref s4u_raii) */
   friend void intrusive_ptr_add_ref(Mailbox*) {}
@@ -118,7 +118,7 @@ XBT_PUBLIC_CLASS Mailbox {
   friend void intrusive_ptr_release(Mailbox*) {}
 public:
   /** private function, do not use. FIXME: make me protected */
-  smx_mailbox_t getImpl() { return pimpl_; }
+  kernel::activity::MailboxImpl* getImpl() { return pimpl_; }
 
   /** Gets the name of that mailbox */
   const char *name();

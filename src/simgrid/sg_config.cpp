@@ -26,6 +26,7 @@
 #include "mc/mc.h"
 #include "simgrid/instr.h"
 #include "src/mc/mc_replay.h"
+#include "src/surf/surf_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf, "About the configuration of SimGrid");
 
@@ -141,21 +142,6 @@ static void _sg_cfg_cb__host_model(const char *name)
 
   /* Make sure that the model exists */
   find_model_description(surf_host_model_description, val);
-}
-
-/* callback of the vm/model variable */
-static void _sg_cfg_cb__vm_model(const char *name)
-{
-  xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
-
-  char *val = xbt_cfg_get_string(name);
-  if (!strcmp(val, "help")) {
-    model_help("vm", surf_vm_model_description);
-    sg_cfg_exit_early();
-  }
-
-  /* Make sure that the model exists */
-  find_model_description(surf_vm_model_description, val);
 }
 
 /* callback of the cpu/model variable */
@@ -342,19 +328,6 @@ static void _sg_cfg_cb_contexts_parallel_mode(const char *name)
   }
 }
 
-static void _sg_cfg_cb__surf_network_coordinates(const char *name)
-{
-  static int already_set = 0;
-  int val = xbt_cfg_get_boolean(name);
-  if (val) {
-    if (!already_set)
-      COORD_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_dynar_free_voidp);
-    already_set = 1;
-  } else
-    if (already_set)
-      xbt_die("Setting of whether to use coordinate cannot be disabled once set.");
-}
-
 static void _sg_cfg_cb__surf_network_crosstraffic(const char *name)
 {
   sg_network_crosstraffic = xbt_cfg_get_boolean(name);
@@ -408,24 +381,20 @@ void sg_config_init(int *argc, char **argv)
     describe_model(description,descsize, surf_host_model_description, "model", "The model to use for the host");
     xbt_cfg_register_string("host/model", "default", &_sg_cfg_cb__host_model, description);
 
-    describe_model(description,descsize, surf_vm_model_description, "model", "The model to use for the vm");
-    xbt_cfg_register_string("vm/model", "default", &_sg_cfg_cb__vm_model, description);
-
     sg_tcp_gamma = 4194304.0;
     simgrid::config::bindFlag(sg_tcp_gamma, { "network/TCP-gamma", "network/TCP_gamma" },
       "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; Use the last given value, which is the max window size)");
 
-    sg_surf_precision = 0.00001;
     simgrid::config::bindFlag(sg_surf_precision, "surf/precision",
       "Numerical precision used when updating simulation times (in seconds)");
 
-    sg_maxmin_precision = 0.00001;
     simgrid::config::bindFlag(sg_maxmin_precision, "maxmin/precision",
-      "Numerical precision used when computing resource sharing (in ops/sec or bytes/sec)");
+                              "Numerical precision used when computing resource sharing (in flops/sec or bytes/sec)");
 
-    sg_concurrency_limit = 100;
-    simgrid::config::bindFlag(sg_concurrency_limit, "maxmin/concurrency_limit",
-      "Maximum number of concurrent variables in the maxmim system. Also limits the number of processes on each host, at higher level");
+    simgrid::config::bindFlag(sg_concurrency_limit, "maxmin/concurrency-limit",
+                              "Maximum number of concurrent variables in the maxmim system. Also limits the number of "
+                              "processes on each host, at higher level. (default: -1 means no such limitation)");
+    xbt_cfg_register_alias("maxmin/concurrency-limit", "maxmin/concurrency_limit");
 
     /* The parameters of network models */
 
@@ -453,8 +422,7 @@ void sg_config_init(int *argc, char **argv)
       "",
       [](std::string const& path) {
         if (path[0] != '\0') {
-          char* copy = xbt_strdup(path.c_str());
-          xbt_dynar_push(surf_path, &copy);
+          surf_path.push_back(path);
         }
       });
 
@@ -542,9 +510,6 @@ void sg_config_init(int *argc, char **argv)
         "Synchronization mode to use when running contexts in parallel (either futex, posix or busy_wait)");
 #endif
 
-    xbt_cfg_register_boolean("network/coordinates", "no", _sg_cfg_cb__surf_network_coordinates,
-        "Whether we use a coordinate-based routing (as Vivaldi)");
-
     xbt_cfg_register_boolean("network/crosstraffic", "yes", _sg_cfg_cb__surf_network_crosstraffic,
         "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)");
 
@@ -574,8 +539,10 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_boolean("smpi/simulate-computation", "yes", nullptr, "Whether the computational part of the simulated application should be simulated.");
     xbt_cfg_register_alias("smpi/simulate-computation","smpi/simulate_computation");
 
-    xbt_cfg_register_boolean("smpi/use-shared-malloc", "yes", nullptr, "Whether SMPI_SHARED_MALLOC is enabled. Disable it for debugging purposes.");
-    xbt_cfg_register_alias("smpi/use-shared-malloc", "smpi/use_shared_malloc");
+    xbt_cfg_register_string("smpi/shared-malloc", "global", nullptr,
+                            "Whether SMPI_SHARED_MALLOC is enabled. Disable it for debugging purposes.");
+    xbt_cfg_register_alias("smpi/shared-malloc", "smpi/use-shared-malloc");
+    xbt_cfg_register_alias("smpi/shared-malloc", "smpi/use_shared_malloc");
 
     xbt_cfg_register_double("smpi/cpu-threshold", 1e-6, nullptr, "Minimal computation time (in seconds) not discarded, or -1 for infinity.");
     xbt_cfg_register_alias("smpi/cpu-threshold", "smpi/cpu_threshold");
@@ -604,6 +571,8 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_string("smpi/os", "0:0:0:0:0", nullptr,  "Small messages timings (MPI_Send minimum time for small messages)");
     xbt_cfg_register_string("smpi/ois", "0:0:0:0:0", nullptr, "Small messages timings (MPI_Isend minimum time for small messages)");
     xbt_cfg_register_string("smpi/or", "0:0:0:0:0", nullptr,  "Small messages timings (MPI_Recv minimum time for small messages)");
+
+    xbt_cfg_register_double("smpi/iprobe-cpu-usage", 1, nullptr, "Maximum usage of CPUs by MPI_Iprobe() calls. We've observed that MPI_Iprobes consume significantly less power than the maximum of a specific application. This value is then (Iprobe_Usage/Max_Application_Usage).");
 
     xbt_cfg_register_string("smpi/coll-selector", "default", nullptr, "Which collective selector to use");
     xbt_cfg_register_alias("smpi/coll-selector","smpi/coll_selector");
@@ -636,12 +605,11 @@ void sg_config_init(int *argc, char **argv)
         "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.");
     xbt_cfg_register_alias("clean-atexit","clean_atexit");
 
-    if (!surf_path) {
+    if (surf_path.empty()) {
       /* retrieves the current directory of the current process */
       const char *initial_path = __surf_get_initial_path();
       xbt_assert((initial_path), "__surf_get_initial_path() failed! Can't resolve current Windows directory");
 
-      surf_path = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
       xbt_cfg_setdefault_string("path", initial_path);
     }
 

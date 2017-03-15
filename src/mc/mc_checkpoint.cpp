@@ -32,12 +32,12 @@
 #include "src/mc/mc_private.h"
 #include <mc/mc.h>
 
-#include "src/mc/mc_snapshot.h"
+#include "src/mc/mc_hash.hpp"
 #include "src/mc/mc_mmu.h"
-#include "src/mc/mc_unw.h"
-#include "src/mc/mc_protocol.h"
 #include "src/mc/mc_smx.h"
-#include "mc_hash.hpp"
+#include "src/mc/mc_snapshot.h"
+#include "src/mc/mc_unw.h"
+#include "src/mc/remote/mc_protocol.h"
 
 #include "src/mc/RegionSnapshot.hpp"
 #include "src/mc/ObjectInformation.hpp"
@@ -57,7 +57,7 @@ namespace mc {
 
 /** @brief Restore a region from a snapshot
  *
- *  @param reg     Target region
+ *  @param region     Target region
  */
 static void restore(mc_mem_region_t region)
 {
@@ -270,7 +270,7 @@ void find_object_address(
  *  A variable may be defined only from a given value of IP.
  *
  *  \param var   Variable description
- *  \param frame Scope description
+ *  \param scope Scope description
  *  \param ip    Instruction pointer
  *  \return      true if the variable is valid
  * */
@@ -292,7 +292,7 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame,
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
 
-  if (!scope->range.contain(stack_frame->ip))
+  if (!scope || !scope->range.contain(stack_frame->ip))
     return;
 
   for(simgrid::mc::Variable& current_variable :
@@ -563,12 +563,9 @@ std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
 
   simgrid::mc::Process* mc_process = &mc_model_checker->process();
 
-  std::shared_ptr<simgrid::mc::Snapshot> snapshot =
-    std::make_shared<simgrid::mc::Snapshot>(mc_process);
+  std::shared_ptr<simgrid::mc::Snapshot> snapshot = std::make_shared<simgrid::mc::Snapshot>(mc_process, num_state);
 
-  snapshot->num_state = num_state;
-
-  for (auto& p : mc_model_checker->process().simix_processes())
+  for (auto& p : mc_model_checker->process().actors())
     snapshot->enabled_processes.insert(p.copy.getBuffer()->pid);
 
   snapshot_handle_ignore(snapshot.get());
@@ -581,7 +578,7 @@ std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
 
   snapshot->to_ignore = mc_model_checker->process().ignored_heap();
 
-  if (_sg_mc_visited > 0 || strcmp(_sg_mc_property_file, "")) {
+  if (_sg_mc_max_visited_states > 0 || strcmp(_sg_mc_property_file, "")) {
     snapshot->stacks = take_snapshot_stacks(snapshot.get());
     if (_sg_mc_hash)
       snapshot->hash = simgrid::mc::hash(*snapshot);

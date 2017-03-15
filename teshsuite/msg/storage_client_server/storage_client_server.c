@@ -10,7 +10,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(storage,"Messages specific for this simulation");
 
 static void display_storage_properties(msg_storage_t storage){
   xbt_dict_cursor_t cursor = NULL;
-  char *key, *data;
+  char *key;
+  char *data;
   xbt_dict_t props = MSG_storage_get_properties(storage);
   if (xbt_dict_length(props) > 0){
     XBT_INFO("\tProperties of mounted storage: %s", MSG_storage_get_name(storage));
@@ -23,9 +24,8 @@ static void display_storage_properties(msg_storage_t storage){
 
 static sg_size_t write_local_file(const char *dest, sg_size_t file_size)
 {
-  sg_size_t written;
   msg_file_t file = MSG_file_open(dest, NULL);
-  written = MSG_file_write(file, file_size);
+  sg_size_t written = MSG_file_write(file, file_size);
   XBT_INFO("%llu bytes on %llu bytes have been written by %s on /sd1",written, file_size,
            MSG_host_get_name(MSG_host_self()));
   MSG_file_close(file);
@@ -34,11 +34,10 @@ static sg_size_t write_local_file(const char *dest, sg_size_t file_size)
 
 static sg_size_t read_local_file(const char *src)
 {
-  sg_size_t read, file_size;
   msg_file_t file = MSG_file_open(src, NULL);
-  file_size = MSG_file_get_size(file);
+  sg_size_t file_size = MSG_file_get_size(file);
 
-  read = MSG_file_read(file, file_size);
+  sg_size_t read = MSG_file_read(file, file_size);
   XBT_INFO("%s has read %llu on %s",MSG_host_get_name(MSG_host_self()),read,src);
   MSG_file_close(file);
 
@@ -103,7 +102,7 @@ static void dump_platform_storages(void){
   msg_storage_t storage;
   xbt_dynar_foreach(storages, cursor, storage){
     XBT_INFO("Storage %s is attached to %s", MSG_storage_get_name(storage), MSG_storage_get_host(storage));
-    MSG_storage_set_property_value(storage, "other usage", xbt_strdup("gpfs"), xbt_free_f);
+    MSG_storage_set_property_value(storage, "other usage", xbt_strdup("gpfs"));
   }
   xbt_dynar_free(&storages);
 }

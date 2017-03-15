@@ -210,7 +210,7 @@ xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new(xbt_
   xbt_automaton_propositional_symbol_t prop_symb = NULL;
   prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
   prop_symb->pred = xbt_strdup(id);
-  prop_symb->callback = call_simple_function;
+  prop_symb->callback                            = &call_simple_function;
   prop_symb->data = fct;
   prop_symb->free_function = NULL;
   xbt_dynar_push(a->propositional_symbols, &prop_symb);
@@ -344,12 +344,11 @@ static void xbt_automaton_exp_label_free(xbt_automaton_exp_label_t e);
 static void xbt_automaton_propositional_symbol_free(xbt_automaton_propositional_symbol_t ps);
 
 void xbt_automaton_state_free(xbt_automaton_state_t s){
-  if(s){
+  if (s != NULL) {
     xbt_free(s->id);
     xbt_dynar_free(&(s->in));
     xbt_dynar_free(&(s->out));
     xbt_free(s);
-    s = NULL;
   }
 }
 

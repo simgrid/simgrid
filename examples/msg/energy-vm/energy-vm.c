@@ -25,9 +25,9 @@ static int dvfs(int argc, char *argv[])
 
   /* Host 1 */
   XBT_INFO("Creating and starting two VMs");
-  msg_vm_t vm_host1 = MSG_vm_create(host1, "vm_host1", 4, 2048, 100, NULL, 1024 * 20, 10,50);
+  msg_vm_t vm_host1 = MSG_vm_create(host1, "vm_host1", 2048, 10, 50);
   MSG_vm_start(vm_host1);
-  msg_vm_t vm_host3 = MSG_vm_create(host3, "vm_host3", 4, 2048, 100, NULL, 1024 * 20, 10,50);
+  msg_vm_t vm_host3 = MSG_vm_create(host3, "vm_host3", 2048, 10, 50);
   MSG_vm_start(vm_host3);
 
   XBT_INFO("Create two tasks on Host1: one inside a VM, the other directly on the host");
@@ -58,8 +58,7 @@ static int dvfs(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
-  sg_energy_plugin_init();
+  sg_host_energy_plugin_init();
   MSG_init(&argc, argv);
 
   xbt_assert(argc > 1, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
@@ -68,7 +67,7 @@ int main(int argc, char *argv[])
 
   MSG_process_create("dvfs",dvfs,NULL,MSG_host_by_name("MyHost1"));
 
-  res = MSG_main();
+  msg_error_t res = MSG_main();
 
   XBT_INFO("Total simulation time: %.2f; All hosts must have the exact same energy consumption.", MSG_get_clock());
 

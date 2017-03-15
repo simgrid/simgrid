@@ -7,13 +7,17 @@
 #include "storage_interface.hpp"
 #include "surf_private.h"
 #include "xbt/file.h" /* xbt_getline */
+#include <boost/algorithm/string/join.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf, "Logging specific to the SURF storage module");
 
 xbt_lib_t file_lib;
+int MSG_FILE_LEVEL = -1; // Msg file level
+
 xbt_lib_t storage_lib;
-int ROUTING_STORAGE_LEVEL = -1;      //Routing for storagelevel
-int ROUTING_STORAGE_HOST_LEVEL = -1;
+int SIMIX_STORAGE_LEVEL        = -1; // Simix storage level
+int MSG_STORAGE_LEVEL          = -1; // Msg storage level
+int ROUTING_STORAGE_LEVEL      = -1; // Routing for storage level
 int SURF_STORAGE_LEVEL = -1;
 xbt_lib_t storage_type_lib;
 int ROUTING_STORAGE_TYPE_LEVEL = -1; //Routing for storage_type level
@@ -84,7 +88,7 @@ xbt_dict_t Storage::parseContent(const char *filename)
   xbt_dict_t parse_content = xbt_dict_new_homogeneous(xbt_free_f);
 
   FILE *file =  surf_fopen(filename, "r");
-  xbt_assert(file, "Cannot open file '%s' (path=%s)", filename, xbt_str_join(surf_path, ":"));
+  xbt_assert(file, "Cannot open file '%s' (path=%s)", filename, (boost::join(surf_path, ":")).c_str());
 
   char *line = nullptr;
   size_t len = 0;

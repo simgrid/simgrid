@@ -13,7 +13,7 @@
       integer count, datatype
       integer i
       
-      if (datatype .eq. MPI_INTEGER) then
+      if (datatype .ne. MPI_INTEGER) then
          print *, 'Invalid datatype (',datatype,') passed to user_op()'
          return
       endif

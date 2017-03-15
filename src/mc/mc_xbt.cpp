@@ -6,9 +6,9 @@
 
 #include <cstddef>
 
-#include "src/mc/RemotePtr.hpp"
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/mc_xbt.hpp"
+#include "src/mc/remote/RemotePtr.hpp"
 
 #include <xbt/dynar.h>
 #include <xbt/sysdep.h>

@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2016. The SimGrid Team.  All rights reserved.         */
+/* Copyright (c) 2009-2017. The SimGrid Team.  All rights reserved.         */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,102 +11,25 @@
 
 #include <simgrid/s4u/host.hpp>
 
-#include "src/surf/surf_interface.hpp"
-#include "src/simix/smx_private.h"
-#include "xbt/log.h"
 #include "mc/mc.h"
-#include "src/mc/mc_replay.h"
-#include "xbt/dict.h"
 #include "simgrid/s4u/Mailbox.hpp"
+#include "src/mc/mc_replay.h"
+#include "src/simix/smx_private.h"
+#include "src/surf/cpu_interface.hpp"
+#include "src/surf/surf_interface.hpp"
+#include "xbt/dict.h"
+#include "xbt/log.h"
 
 #include "src/kernel/activity/SynchroComm.hpp"
 #include "src/surf/network_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix, "SIMIX network-related synchronization");
 
-static void SIMIX_mbox_free(void *data);
-static xbt_dict_t mailboxes = xbt_dict_new_homogeneous(SIMIX_mbox_free);
-
 static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall);
 static void SIMIX_comm_copy_data(smx_activity_t comm);
-static inline void SIMIX_mbox_push(smx_mailbox_t mbox, smx_activity_t comm);
+static void SIMIX_comm_start(smx_activity_t synchro);
 static smx_activity_t _find_matching_comm(boost::circular_buffer_space_optimized<smx_activity_t> *deque, e_smx_comm_type_t type,
     int (*match_fun)(void *, void *,smx_activity_t), void *user_data, smx_activity_t my_synchro, bool remove_matching);
-static void SIMIX_comm_start(smx_activity_t synchro);
-
-void SIMIX_mailbox_exit()
-{
-  xbt_dict_free(&mailboxes);
-}
-
-/******************************************************************************/
-/*                           Rendez-Vous Points                               */
-/******************************************************************************/
-
-smx_mailbox_t SIMIX_mbox_create(const char *name)
-{
-  xbt_assert(name, "Mailboxes must have a name");
-  /* two processes may have pushed the same mbox_create simcall at the same time */
-  smx_mailbox_t mbox = static_cast<smx_mailbox_t>(xbt_dict_get_or_null(mailboxes, name));
-  if (!mbox) {
-    mbox = new simgrid::simix::Mailbox(name);
-    XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name);
-    xbt_dict_set(mailboxes, mbox->name, mbox, nullptr);
-  }
-  return mbox;
-}
-
-void SIMIX_mbox_free(void *data)
-{
-  XBT_DEBUG("mbox free %p", data);
-  smx_mailbox_t mbox = static_cast<smx_mailbox_t>(data);
-  delete mbox;
-}
-
-smx_mailbox_t SIMIX_mbox_get_by_name(const char *name)
-{
-  return static_cast<smx_mailbox_t>(xbt_dict_get_or_null(mailboxes, name));
-}
-
-/**
- *  \brief set the receiver of the rendez vous point to allow eager sends
- *  \param mbox The rendez-vous point
- *  \param process The receiving process
- */
-void SIMIX_mbox_set_receiver(smx_mailbox_t mbox, smx_actor_t process)
-{
-  mbox->permanent_receiver = process;
-}
-
-/**
- *  \brief Pushes a communication synchro into a rendez-vous point
- *  \param mbox The mailbox
- *  \param synchro The communication synchro
- */
-static inline void SIMIX_mbox_push(smx_mailbox_t mbox, smx_activity_t synchro)
-{
-  simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
-  mbox->comm_queue.push_back(comm);
-  comm->mbox = mbox;
-}
-
-/**
- *  \brief Removes a communication synchro from a rendez-vous point
- *  \param mbox The rendez-vous point
- *  \param synchro The communication synchro
- */
-void SIMIX_mbox_remove(smx_mailbox_t mbox, smx_activity_t synchro)
-{
-  simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
-
-  comm->mbox = nullptr;
-  for (auto it = mbox->comm_queue.begin(); it != mbox->comm_queue.end(); it++)
-    if (*it == comm) {
-      mbox->comm_queue. erase(it);
-      return;
-    }
-  xbt_die("Cannot remove the comm %p that is not part of the mailbox %s",comm, mbox->name);
-}
 
 /**
  *  \brief Checks if there is a communication synchro queued in a deque matching our needs
@@ -195,10 +118,10 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx
       other_comm->dst_proc=mbox->permanent_receiver.get();
       other_comm->ref();
       mbox->done_comm_queue.push_back(other_synchro);
-      XBT_DEBUG("pushing a message into the permanent receive fifo %p, comm %p", mbox, &(other_comm));
+      XBT_DEBUG("pushing a message into the permanent receive list %p, comm %p", mbox, &(other_comm));
 
     }else{
-      SIMIX_mbox_push(mbox, this_synchro);
+      mbox->push(this_synchro);
     }
   } else {
     XBT_DEBUG("Receive already pushed");
@@ -208,7 +131,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx
     other_comm->type = SIMIX_COMM_READY;
 
   }
-  xbt_fifo_push(src_proc->comms, other_synchro);
+  src_proc->comms.push_back(other_synchro);
 
 
   if (detached) {
@@ -268,17 +191,17 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
   simgrid::kernel::activity::Comm* this_synchro = new simgrid::kernel::activity::Comm(SIMIX_COMM_RECEIVE);
 
   smx_activity_t other_synchro;
-  //communication already done, get it inside the fifo of completed comms
+  //communication already done, get it inside the list of completed comms
   if (mbox->permanent_receiver != nullptr && ! mbox->done_comm_queue.empty()) {
 
     XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
-    //find a match in the already received fifo
+    //find a match in the list of already received comms
     other_synchro = _find_matching_comm(&mbox->done_comm_queue, SIMIX_COMM_SEND, match_fun, data, this_synchro,/*remove_matching*/true);
     //if not found, assume the receiver came first, register it to the mailbox in the classical way
     if (!other_synchro)  {
-      XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request into fifo");
+      XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request into list");
       other_synchro = this_synchro;
-      SIMIX_mbox_push(mbox, this_synchro);
+      mbox->push(this_synchro);
     } else {
       simgrid::kernel::activity::Comm *other_comm = static_cast<simgrid::kernel::activity::Comm*>(other_synchro);
 
@@ -303,7 +226,7 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
     if (!other_synchro) {
       XBT_DEBUG("Receive pushed first %zu", mbox->comm_queue.size());
       other_synchro = this_synchro;
-      SIMIX_mbox_push(mbox, this_synchro);
+      mbox->push(this_synchro);
     } else {
       this_synchro->unref();
       simgrid::kernel::activity::Comm *other_comm = static_cast<simgrid::kernel::activity::Comm*>(other_synchro);
@@ -311,7 +234,7 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
       other_comm->state = SIMIX_READY;
       other_comm->type = SIMIX_COMM_READY;
     }
-    xbt_fifo_push(dst_proc->comms, other_synchro);
+    dst_proc->comms.push_back(other_synchro);
   }
 
   /* Setup communication synchro */
@@ -409,7 +332,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_activity_t synchro, do
   if (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING) {
     SIMIX_comm_finish(synchro);
   } else { /* if (timeout >= 0) { we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host fails */
-    surf_action_t sleep = surf_host_sleep(simcall->issuer->host, timeout);
+    surf_action_t sleep = simcall->issuer->host->pimpl_cpu->sleep(timeout);
     sleep->setData(synchro);
 
     simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
@@ -608,7 +531,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
 
     /* If the synchro is still in a rendez-vous point then remove from it */
     if (comm->mbox)
-      SIMIX_mbox_remove(comm->mbox, synchro);
+      comm->mbox->remove(synchro);
 
     XBT_DEBUG("SIMIX_comm_finish: synchro state = %d", (int)synchro->state);
 
@@ -710,19 +633,24 @@ void SIMIX_comm_finish(smx_activity_t synchro)
     }
 
     simcall->issuer->waiting_synchro = nullptr;
-    xbt_fifo_remove(simcall->issuer->comms, synchro);
+    simcall->issuer->comms.remove(synchro);
     if(comm->detached){
       if(simcall->issuer == comm->src_proc){
         if(comm->dst_proc)
-          xbt_fifo_remove(comm->dst_proc->comms, synchro);
+          comm->dst_proc->comms.remove(synchro);
       }
-      if(simcall->issuer == comm->dst_proc){
+      else if(simcall->issuer == comm->dst_proc){
         if(comm->src_proc)
-          xbt_fifo_remove(comm->src_proc->comms, synchro);
+          comm->src_proc->comms.remove(synchro);
         //in case of a detached comm we have an extra ref to remove, as the sender won't do it
         destroy_count++;
       }
+      else{
+        comm->dst_proc->comms.remove(synchro);
+        comm->src_proc->comms.remove(synchro);
+      }
     }
+
     SIMIX_simcall_answer(simcall);
     destroy_count++;
   }
@@ -763,8 +691,8 @@ void SIMIX_comm_copy_buffer_callback(smx_activity_t synchro, void* buff, size_t 
 
 
 /**
- *  \brief Copy the communication data from the sender's buffer to the receiver's one
- *  \param comm The communication
+ *  @brief Copy the communication data from the sender's buffer to the receiver's one
+ *  @param synchro The communication
  */
 void SIMIX_comm_copy_data(smx_activity_t synchro)
 {

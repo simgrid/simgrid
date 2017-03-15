@@ -19,16 +19,16 @@ int main(int argc, char *argv[])
 {
   int rank, size;
   int i;
-  long int *sb;
-  long int *rb;
+  unsigned long long *sb;
+  unsigned long long *rb;
   int status;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-  sb = (long int *) xbt_malloc(size * sizeof(long int));
-  rb = (long int *) xbt_malloc(size * sizeof(long int));
+  sb = (unsigned long long *) xbt_malloc(size * sizeof(unsigned long long));
+  rb = (unsigned long long *) xbt_malloc(size * sizeof(unsigned long long));
 
   for (i = 0; i < size; ++i) {
     sb[i] = rank*size + i;
@@ -36,17 +36,17 @@ int main(int argc, char *argv[])
   }
   printf("[%d] sndbuf=[", rank);
   for (i = 0; i < size; i++)
-    printf("%ld ", sb[i]);
+    printf("%llu ", sb[i]);
   printf("]\n");
 
   int root=0;
-  status = MPI_Reduce(sb, rb, size, MPI_LONG, MPI_SUM, root, MPI_COMM_WORLD);
+  status = MPI_Reduce(sb, rb, size, MPI_UNSIGNED_LONG_LONG, MPI_SUM, root, MPI_COMM_WORLD);
   MPI_Barrier(MPI_COMM_WORLD);
 
   if (rank == root) {
     printf("[%d] rcvbuf=[", rank);
     for (i = 0; i < size; i++)
-      printf("%ld ", rb[i]);
+      printf("%llu ", rb[i]);
     printf("]\n");
     if (status != MPI_SUCCESS) {
       printf("all_to_all returned %d\n", status);
@@ -56,17 +56,17 @@ int main(int argc, char *argv[])
 
   printf("[%d] second sndbuf=[", rank);
   for (i = 0; i < 1; i++)
-    printf("%ld ", sb[i]);
+    printf("%llu ", sb[i]);
   printf("]\n");
 
   root=size-1;
-  status = MPI_Reduce(sb, rb, 1, MPI_LONG, MPI_PROD, root, MPI_COMM_WORLD);
+  status = MPI_Reduce(sb, rb, 1, MPI_UNSIGNED_LONG_LONG, MPI_PROD, root, MPI_COMM_WORLD);
   MPI_Barrier(MPI_COMM_WORLD);
 
   if (rank == root) {
     printf("[%d] rcvbuf=[", rank);
     for (i = 0; i < 1; i++)
-      printf("%ld ", rb[i]);
+      printf("%llu ", rb[i]);
     printf("]\n");
     if (status != MPI_SUCCESS) {
       printf("all_to_all returned %d\n", status);

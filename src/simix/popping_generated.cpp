@@ -23,73 +23,68 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);
 
 /** @brief Simcalls' names (generated from src/simix/simcalls.in) */
 const char* simcall_names[] = {
-   "SIMCALL_NONE",  "SIMCALL_VM_SUSPEND",
-  "SIMCALL_VM_RESUME",
-  "SIMCALL_VM_SHUTDOWN",
-  "SIMCALL_VM_SAVE",
-  "SIMCALL_PROCESS_KILL",
-  "SIMCALL_PROCESS_KILLALL",
-  "SIMCALL_PROCESS_CLEANUP",
-  "SIMCALL_PROCESS_SUSPEND",
-  "SIMCALL_PROCESS_RESUME",
-  "SIMCALL_PROCESS_SET_HOST",
-  "SIMCALL_PROCESS_IS_SUSPENDED",
-  "SIMCALL_PROCESS_JOIN",
-  "SIMCALL_PROCESS_SLEEP",
-  "SIMCALL_EXECUTION_START",
-  "SIMCALL_EXECUTION_PARALLEL_START",
-  "SIMCALL_EXECUTION_CANCEL",
-  "SIMCALL_EXECUTION_SET_PRIORITY",
-  "SIMCALL_EXECUTION_SET_BOUND",
-  "SIMCALL_EXECUTION_WAIT",
-  "SIMCALL_PROCESS_ON_EXIT",
-  "SIMCALL_PROCESS_AUTO_RESTART_SET",
-  "SIMCALL_PROCESS_RESTART",
-  "SIMCALL_MBOX_CREATE",
-  "SIMCALL_MBOX_SET_RECEIVER",
-  "SIMCALL_COMM_IPROBE",
-  "SIMCALL_COMM_SEND",
-  "SIMCALL_COMM_ISEND",
-  "SIMCALL_COMM_RECV",
-  "SIMCALL_COMM_IRECV",
-  "SIMCALL_COMM_WAITANY",
-  "SIMCALL_COMM_WAIT",
-  "SIMCALL_COMM_TEST",
-  "SIMCALL_COMM_TESTANY",
-  "SIMCALL_MUTEX_INIT",
-  "SIMCALL_MUTEX_LOCK",
-  "SIMCALL_MUTEX_TRYLOCK",
-  "SIMCALL_MUTEX_UNLOCK",
-  "SIMCALL_COND_INIT",
-  "SIMCALL_COND_SIGNAL",
-  "SIMCALL_COND_WAIT",
-  "SIMCALL_COND_WAIT_TIMEOUT",
-  "SIMCALL_COND_BROADCAST",
-  "SIMCALL_SEM_INIT",
-  "SIMCALL_SEM_RELEASE",
-  "SIMCALL_SEM_WOULD_BLOCK",
-  "SIMCALL_SEM_ACQUIRE",
-  "SIMCALL_SEM_ACQUIRE_TIMEOUT",
-  "SIMCALL_SEM_GET_CAPACITY",
-  "SIMCALL_FILE_READ",
-  "SIMCALL_FILE_WRITE",
-  "SIMCALL_FILE_OPEN",
-  "SIMCALL_FILE_CLOSE",
-  "SIMCALL_FILE_UNLINK",
-  "SIMCALL_FILE_GET_SIZE",
-  "SIMCALL_FILE_TELL",
-  "SIMCALL_FILE_SEEK",
-  "SIMCALL_FILE_GET_INFO",
-  "SIMCALL_FILE_MOVE",
-  "SIMCALL_STORAGE_GET_FREE_SIZE",
-  "SIMCALL_STORAGE_GET_USED_SIZE",
-  "SIMCALL_STORAGE_GET_PROPERTIES",
-  "SIMCALL_STORAGE_GET_CONTENT",
-  "SIMCALL_ASR_GET_PROPERTIES",
-  "SIMCALL_MC_RANDOM",
-  "SIMCALL_SET_CATEGORY",
-  "SIMCALL_RUN_KERNEL",
-  "SIMCALL_RUN_BLOCKING",};
+    "SIMCALL_NONE",
+    "SIMCALL_PROCESS_KILL",
+    "SIMCALL_PROCESS_KILLALL",
+    "SIMCALL_PROCESS_CLEANUP",
+    "SIMCALL_PROCESS_SUSPEND",
+    "SIMCALL_PROCESS_RESUME",
+    "SIMCALL_PROCESS_SET_HOST",
+    "SIMCALL_PROCESS_IS_SUSPENDED",
+    "SIMCALL_PROCESS_JOIN",
+    "SIMCALL_PROCESS_SLEEP",
+    "SIMCALL_EXECUTION_START",
+    "SIMCALL_EXECUTION_PARALLEL_START",
+    "SIMCALL_EXECUTION_CANCEL",
+    "SIMCALL_EXECUTION_SET_PRIORITY",
+    "SIMCALL_EXECUTION_SET_BOUND",
+    "SIMCALL_EXECUTION_WAIT",
+    "SIMCALL_PROCESS_ON_EXIT",
+    "SIMCALL_PROCESS_AUTO_RESTART_SET",
+    "SIMCALL_PROCESS_RESTART",
+    "SIMCALL_COMM_IPROBE",
+    "SIMCALL_COMM_SEND",
+    "SIMCALL_COMM_ISEND",
+    "SIMCALL_COMM_RECV",
+    "SIMCALL_COMM_IRECV",
+    "SIMCALL_COMM_WAITANY",
+    "SIMCALL_COMM_WAIT",
+    "SIMCALL_COMM_TEST",
+    "SIMCALL_COMM_TESTANY",
+    "SIMCALL_MUTEX_INIT",
+    "SIMCALL_MUTEX_LOCK",
+    "SIMCALL_MUTEX_TRYLOCK",
+    "SIMCALL_MUTEX_UNLOCK",
+    "SIMCALL_COND_INIT",
+    "SIMCALL_COND_SIGNAL",
+    "SIMCALL_COND_WAIT",
+    "SIMCALL_COND_WAIT_TIMEOUT",
+    "SIMCALL_COND_BROADCAST",
+    "SIMCALL_SEM_INIT",
+    "SIMCALL_SEM_RELEASE",
+    "SIMCALL_SEM_WOULD_BLOCK",
+    "SIMCALL_SEM_ACQUIRE",
+    "SIMCALL_SEM_ACQUIRE_TIMEOUT",
+    "SIMCALL_SEM_GET_CAPACITY",
+    "SIMCALL_FILE_READ",
+    "SIMCALL_FILE_WRITE",
+    "SIMCALL_FILE_OPEN",
+    "SIMCALL_FILE_CLOSE",
+    "SIMCALL_FILE_UNLINK",
+    "SIMCALL_FILE_GET_SIZE",
+    "SIMCALL_FILE_TELL",
+    "SIMCALL_FILE_SEEK",
+    "SIMCALL_FILE_GET_INFO",
+    "SIMCALL_FILE_MOVE",
+    "SIMCALL_STORAGE_GET_FREE_SIZE",
+    "SIMCALL_STORAGE_GET_USED_SIZE",
+    "SIMCALL_STORAGE_GET_PROPERTIES",
+    "SIMCALL_STORAGE_GET_CONTENT",
+    "SIMCALL_MC_RANDOM",
+    "SIMCALL_SET_CATEGORY",
+    "SIMCALL_RUN_KERNEL",
+    "SIMCALL_RUN_BLOCKING",
+};
 
 /** @private
  * @brief (in kernel mode) unpack the simcall and activate the handler
@@ -102,26 +97,6 @@ void SIMIX_simcall_handle(smx_simcall_t simcall, int value) {
   if (simcall->issuer->context->iwannadie && simcall->call != SIMCALL_PROCESS_CLEANUP)
     return;
   switch (simcall->call) {
-case SIMCALL_VM_SUSPEND:
-      simcall_HANDLER_vm_suspend(simcall, simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
-      SIMIX_simcall_answer(simcall);
-      break;
-
-case SIMCALL_VM_RESUME:
-      SIMIX_vm_resume(simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
-      SIMIX_simcall_answer(simcall);
-      break;
-
-case SIMCALL_VM_SHUTDOWN:
-      simcall_HANDLER_vm_shutdown(simcall, simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
-      SIMIX_simcall_answer(simcall);
-      break;
-
-case SIMCALL_VM_SAVE:
-      simcall_HANDLER_vm_save(simcall, simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
-      SIMIX_simcall_answer(simcall);
-      break;
-
 case SIMCALL_PROCESS_KILL:
       simcall_HANDLER_process_kill(simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]));
       SIMIX_simcall_answer(simcall);
@@ -205,16 +180,6 @@ case SIMCALL_PROCESS_AUTO_RESTART_SET:
 
 case SIMCALL_PROCESS_RESTART:
       simgrid::simix::marshal<smx_actor_t>(simcall->result, simcall_HANDLER_process_restart(simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0])));
-      SIMIX_simcall_answer(simcall);
-      break;
-
-case SIMCALL_MBOX_CREATE:
-      simgrid::simix::marshal<smx_mailbox_t>(simcall->result, SIMIX_mbox_create(simgrid::simix::unmarshal<const char*>(simcall->args[0])));
-      SIMIX_simcall_answer(simcall);
-      break;
-
-case SIMCALL_MBOX_SET_RECEIVER:
-      SIMIX_mbox_set_receiver(simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[0]), simgrid::simix::unmarshal<smx_actor_t>(simcall->args[1]));
       SIMIX_simcall_answer(simcall);
       break;
 
@@ -390,11 +355,6 @@ case SIMCALL_STORAGE_GET_PROPERTIES:
 
 case SIMCALL_STORAGE_GET_CONTENT:
       simgrid::simix::marshal<xbt_dict_t>(simcall->result, SIMIX_storage_get_content(simgrid::simix::unmarshal<smx_storage_t>(simcall->args[0])));
-      SIMIX_simcall_answer(simcall);
-      break;
-
-case SIMCALL_ASR_GET_PROPERTIES:
-      simgrid::simix::marshal<xbt_dict_t>(simcall->result, simcall_HANDLER_asr_get_properties(simcall, simgrid::simix::unmarshal<const char*>(simcall->args[0])));
       SIMIX_simcall_answer(simcall);
       break;
 

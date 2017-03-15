@@ -1,11 +1,10 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _MC_MC_H
-#define _MC_MC_H
+#ifndef MC_MC_H
+#define MC_MC_H
 
 #include <src/internal_config.h>
 #include <simgrid/simix.h>
@@ -39,7 +38,7 @@ extern XBT_PUBLIC(char*) _sg_mc_property_file;
 extern XBT_PRIVATE int _sg_mc_timeout;
 extern XBT_PRIVATE int _sg_mc_hash;
 extern XBT_PRIVATE int _sg_mc_max_depth;
-extern XBT_PUBLIC(int) _sg_mc_visited;
+extern XBT_PUBLIC(int) _sg_mc_max_visited_states;
 extern XBT_PRIVATE char* _sg_mc_dot_output_file;
 extern XBT_PUBLIC(int) _sg_mc_comms_determinism;
 extern XBT_PUBLIC(int) _sg_mc_send_determinism;
@@ -83,4 +82,4 @@ XBT_PUBLIC(void) MC_memory_init_server();
 
 SG_END_DECL()
 
-#endif                          /* _MC_MC_H */
+#endif

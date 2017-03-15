@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_HEAP_H
-#define _XBT_HEAP_H
+#ifndef XBT_HEAP_H
+#define XBT_HEAP_H
 
 #include "xbt/misc.h"
 #include "xbt/dynar.h"          /* void_f_pvoid_t */

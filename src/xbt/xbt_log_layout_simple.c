@@ -76,7 +76,7 @@ static int xbt_log_layout_simple_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
 xbt_log_layout_t xbt_log_layout_simple_new(char *arg)
 {
   xbt_log_layout_t res = xbt_new0(s_xbt_log_layout_t, 1);
-  res->do_layout = xbt_log_layout_simple_doit;
+  res->do_layout       = &xbt_log_layout_simple_doit;
 
   if (simple_begin_of_time < 0)
     simple_begin_of_time = surf_get_clock();

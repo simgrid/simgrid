@@ -18,7 +18,7 @@
 #include "src/mc/Session.hpp"
 #include "src/mc/mc_state.h"
 #include "src/mc/mc_private.h"
-#include "src/mc/Checker.hpp"
+#include "src/mc/checker/Checker.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Session, mc, "Model-checker session");
 
@@ -143,7 +143,7 @@ Session* Session::fork(std::function<void(void)> code)
   if (res == -1)
     throw simgrid::xbt::errno_error("Could not create socketpair");
 
-  pid_t pid = do_fork([&] {
+  pid_t pid = do_fork([sockets, &code] {
     ::close(sockets[1]);
     setup_child_environment(sockets[0]);
     code();
@@ -159,7 +159,7 @@ Session* Session::fork(std::function<void(void)> code)
 // static
 Session* Session::spawnv(const char *path, char *const argv[])
 {
-  return Session::fork([&] {
+  return Session::fork([path, argv] {
     execv(path, argv);
   });
 }
@@ -167,7 +167,7 @@ Session* Session::spawnv(const char *path, char *const argv[])
 // static
 Session* Session::spawnvp(const char *file, char *const argv[])
 {
-  return Session::fork([&] {
+  return Session::fork([file, argv] {
     execvp(file, argv);
   });
 }

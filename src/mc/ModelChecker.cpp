@@ -22,15 +22,15 @@
 #include "simgrid/sg_config.h"
 
 #include "src/mc/ModelChecker.hpp"
-#include "src/mc/PageStore.hpp"
 #include "src/mc/ModelChecker.hpp"
-#include "src/mc/mc_protocol.h"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_ignore.h"
-#include "src/mc/mc_exit.h"
-#include "src/mc/mc_record.h"
+#include "src/mc/PageStore.hpp"
 #include "src/mc/Transition.hpp"
-#include "src/mc/Checker.hpp"
+#include "src/mc/checker/Checker.hpp"
+#include "src/mc/mc_exit.h"
+#include "src/mc/mc_ignore.h"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_record.h"
+#include "src/mc/remote/mc_protocol.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ModelChecker, mc, "ModelChecker");
 
@@ -159,16 +159,6 @@ void ModelChecker::resume(simgrid::mc::Process& process)
   if (res)
     throw simgrid::xbt::errno_error();
   process.clear_cache();
-}
-
-static
-void throw_socket_error(int fd)
-{
-  int error = 0;
-  socklen_t errlen = sizeof(error);
-  if (getsockopt(fd, SOL_SOCKET, SO_ERROR, (void *)&error, &errlen) == -1)
-    error = errno;
-  throw simgrid::xbt::errno_error();
 }
 
 static void MC_report_crash(int status)

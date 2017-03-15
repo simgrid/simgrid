@@ -23,7 +23,7 @@ they produce the expected output and return the expected value.
   --cfg arg           : add parameter --cfg=arg to each command line
   --log arg           : add parameter --log=arg to each command line
   --ignore-jenkins    : ignore all cruft generated on SimGrid
-                        continous integration servers
+                        continuous integration servers
 
 
 =head1 TEST SUITE FILE SYTAX
@@ -109,7 +109,7 @@ The I<expect signal> construct applies only to the next command block.
 
 =head2 Timeouts
 
-By default, no command is allowed to run more than 5 seconds. You can
+By default, no command is allowed to run more than 10 seconds. You can
 change this value as follows:
 
     # Allow some more time to the command
@@ -182,7 +182,7 @@ by the lexicographical sort.
 
 The solution is to prefix each line of your output with temporal
 information so that lines can be grouped by timestamps. The
-lexicographical sort then only applies to lines that occured at the
+lexicographical sort then only applies to lines that occurred at the
 same timestamp. Here is a SimGrid example:
 
     # Sort only lines depending on the first 19 chars

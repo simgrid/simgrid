@@ -4,12 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "plugins/energy.hpp"
+#include "simgrid/s4u/engine.hpp"
 #include "src/instr/instr_private.h"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
-#include "src/surf/HostImpl.hpp"
-#include "src/surf/network_interface.hpp"
-#include "surf_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
 
@@ -106,7 +103,7 @@ double surf_solve(double max_date)
     XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", time_delta, NOW, next_event_date);
 
     while ((event = future_evt_set->pop_leq(next_event_date, &value, &resource))) {
-      if (resource->isUsed() || xbt_dict_get_or_null(watched_hosts_lib, resource->getName())) {
+      if (resource->isUsed() || xbt_dict_get_or_null(watched_hosts_lib, resource->cname())) {
         time_delta = next_event_date - NOW;
         XBT_DEBUG("This event invalidates the next_occuring_event() computation of models. Next event set to %f", time_delta);
       }
@@ -115,7 +112,7 @@ double surf_solve(double max_date)
       NOW = next_event_date;
       /* update state of the corresponding resource to the new value. Does not touch lmm.
          It will be modified if needed when updating actions */
-      XBT_DEBUG("Calling update_resource_state for resource %s", resource->getName());
+      XBT_DEBUG("Calling update_resource_state for resource %s", resource->cname());
       resource->apply_event(event, value);
       NOW = round_start;
     }
@@ -124,7 +121,7 @@ double surf_solve(double max_date)
   /* FIXME: Moved this test to here to avoid stopping simulation if there are actions running on cpus and all cpus are with availability = 0.
    * This may cause an infinite loop if one cpu has a trace with periodicity = 0 and the other a trace with periodicity > 0.
    * The options are: all traces with same periodicity(0 or >0) or we need to change the way how the events are managed */
-  if (time_delta == -1.0) {
+  if (time_delta < 0) {
     XBT_DEBUG("No next event at all. Bail out now.");
     return -1.0;
   }
@@ -138,6 +135,7 @@ double surf_solve(double max_date)
   for (auto model : *all_existing_models) {
     model->updateActionsState(NOW, time_delta);
   }
+  simgrid::s4u::onTimeAdvance(time_delta);
 
   TRACE_paje_dump_buffer (0);
 
@@ -147,29 +145,26 @@ double surf_solve(double max_date)
 /*********
  * MODEL *
  *********/
-
-surf_action_t surf_model_extract_done_action_set(surf_model_t model){
-  if (model->getDoneActionSet()->empty())
+static surf_action_t ActionListExtract(simgrid::surf::ActionList* list)
+{
+  if (list->empty())
     return nullptr;
-  surf_action_t res = &model->getDoneActionSet()->front();
-  model->getDoneActionSet()->pop_front();
+  surf_action_t res = &list->front();
+  list->pop_front();
   return res;
 }
 
+surf_action_t surf_model_extract_done_action_set(surf_model_t model)
+{
+  return ActionListExtract(model->getDoneActionSet());
+}
+
 surf_action_t surf_model_extract_failed_action_set(surf_model_t model){
-  if (model->getFailedActionSet()->empty())
-    return nullptr;
-  surf_action_t res = &model->getFailedActionSet()->front();
-  model->getFailedActionSet()->pop_front();
-  return res;
+  return ActionListExtract(model->getFailedActionSet());
 }
 
 int surf_model_running_action_set_size(surf_model_t model){
   return model->getRunningActionSet()->size();
-}
-
-surf_action_t surf_host_sleep(sg_host_t host, double duration){
-  return host->pimpl_cpu->sleep(duration);
 }
 
 surf_action_t surf_host_open(sg_host_t host, const char* fullpath){

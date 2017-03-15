@@ -8,12 +8,12 @@
 #include <xbt/sysdep.h>
 #include <simgrid/modelchecker.h>
 
-#include "src/mc/mc_record.h"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_ignore.h"
-#include "src/mc/mc_protocol.h"
-#include "src/mc/Client.hpp"
 #include "src/mc/ModelChecker.hpp"
+#include "src/mc/mc_ignore.h"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_record.h"
+#include "src/mc/remote/Client.hpp"
+#include "src/mc/remote/mc_protocol.h"
 
 /** @file mc_client_api.cpp
  *

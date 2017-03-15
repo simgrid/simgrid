@@ -4,8 +4,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <math.h>
 #include "simgrid/msg.h"
+#include "xbt/dynar.h"
+#include <math.h>
+
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_pastry, "Messages specific for this msg example");
 
@@ -38,7 +40,7 @@ typedef struct s_node {
   int routing_table[LEVELS_COUNT][LEVEL_SIZE];
   int ready;
   msg_comm_t comm_receive;                // current communication to receive
-  xbt_fifo_t pending_tasks;
+  xbt_dynar_t pending_tasks;
 } s_node_t, *node_t;
 
 typedef struct s_state {
@@ -58,7 +60,7 @@ typedef enum {
 
 typedef struct s_task_data {
   e_task_type_t type;                     // type of task
-  int sender_id;                          // id paramater (used by some types of tasks)
+  int sender_id;                          // id parameter (used by some types of tasks)
   //int request_finger;                     // finger parameter (used by some types of tasks)
   int answer_id;                          // answer (used by some types of tasks)
   char answer_to[MAILBOX_NAME_SIZE];      // mailbox to send an answer to (if any)
@@ -68,7 +70,7 @@ typedef struct s_task_data {
 } s_task_data_t, *task_data_t;
 
 static void get_mailbox(int node_id, char* mailbox);
-static int domain(int a, int level);
+static int domain(unsigned int a, unsigned int level);
 static int shl(int a, int b);
 static int closest_in_namespace_set(node_t node, int dest);
 static int routing_next(node_t node, int dest);
@@ -86,7 +88,8 @@ static void get_mailbox(int node_id, char* mailbox)
 
 /** Get the specific level of a node id */
 unsigned int domain_mask = 0;
-static int domain(int a, int level) {
+static int domain(unsigned int a, unsigned int level)
+{
   if (domain_mask == 0)
     domain_mask = pow(2, DOMAIN_SIZE) - 1;
   unsigned int shift = (LEVELS_COUNT-level-1)*DOMAIN_SIZE;
@@ -104,7 +107,6 @@ static int shl(int a, int b) {
 /* Frees the memory used by a task and destroy it */
 static void task_free(void* task)
 {
-  // TODO add a parameter data_free_function to MSG_task_create?
   if(task != NULL){
     s_task_data_t* data = (s_task_data_t*)MSG_task_get_data(task);
     xbt_free(data->state);
@@ -135,19 +137,17 @@ static int closest_in_namespace_set(node_t node, int dest) {
 /* Find the next node to forward a message to */
 static int routing_next(node_t node, int dest) {
   int closest = closest_in_namespace_set(node, dest);
-  int res = -1;
   if (closest!=-1)
     return closest;
 
   int l = shl(node->id, dest);
-  res = node->routing_table[l][domain(dest, l)];
-  if (res!=-1)
+  int res = node->routing_table[l][domain(dest, l)];
+  if (res != -1)
     return res;
 
   //rare case
   int dist = abs(node->id - dest);
-  int i;
-  for (i=l; i<LEVELS_COUNT; i++) {
+  for (int i=l; i<LEVELS_COUNT; i++) {
     for (int j=0; j<LEVEL_SIZE; j++) {
       res = node->routing_table[i][j];
       if (res!=-1 && abs(res - dest)<dist)
@@ -155,13 +155,13 @@ static int routing_next(node_t node, int dest) {
     }
   }
 
-  for (i=0; i<NEIGHBORHOOD_SIZE; i++) {
+  for (int i=0; i<NEIGHBORHOOD_SIZE; i++) {
     res = node->neighborhood_set[i];
     if (res!=-1 && shl(res, dest)>=l && abs(res - dest)<dist)
         return res;
   }
 
-  for (i=0; i<NAMESPACE_SIZE; i++) {
+  for (int i=0; i<NAMESPACE_SIZE; i++) {
     res = node->namespace_set[i];
     if (res!=-1 && shl(res, dest)>=l && abs(res - dest)<dist)
         return res;
@@ -172,35 +172,31 @@ static int routing_next(node_t node, int dest) {
 
 /* Get the corresponding state of a node */
 static state_t node_get_state(node_t node) {
-  int i;
   state_t state = xbt_new0(s_state_t,1);
   state->id = node->id;
-  for (i=0; i<NEIGHBORHOOD_SIZE; i++)
+  for (int i=0; i<NEIGHBORHOOD_SIZE; i++)
     state->neighborhood_set[i] = node->neighborhood_set[i];
 
-  for (i=0; i<LEVELS_COUNT; i++)
+  for (int i=0; i<LEVELS_COUNT; i++)
     for (int j=0; j<LEVEL_SIZE; j++)
       state->routing_table[i][j] = node->routing_table[i][j];
 
-  for (i=0; i<NAMESPACE_SIZE; i++)
+  for (int i=0; i<NAMESPACE_SIZE; i++)
     state->namespace_set[i] = node->namespace_set[i];
 
   return state;
 }
 
-/* Print the node id */
 static void print_node_id(node_t node) {
   XBT_INFO(" Id: %i '%08x' ", node->id, node->id);
 }
 
-/* * Print the node neighborhood set */
 static void print_node_neighborood_set(node_t node) {
   XBT_INFO(" Neighborhood:");
   for (int i=0; i<NEIGHBORHOOD_SIZE; i++)
     XBT_INFO("  %08x", node->neighborhood_set[i]);
 }
 
-/* Print the routing table */
 static void print_node_routing_table(node_t node) {
   XBT_INFO(" Routing table:");
   for (int i=0; i<LEVELS_COUNT; i++){
@@ -208,7 +204,6 @@ static void print_node_routing_table(node_t node) {
       XBT_INFO("  %08x ", node->routing_table[i][j]);
   }
 }
-
 /* Print the node namespace set */
 static void print_node_namespace_set(node_t node) {
   XBT_INFO(" Namespace:");
@@ -234,6 +229,7 @@ static void handle_task(node_t node, msg_task_t task) {
   int min;
   int max;
   int d;
+  int next;
   msg_task_t task_sent;
   task_data_t req_data;
   task_data_t task_data = (task_data_t) MSG_task_get_data(task);
@@ -241,13 +237,13 @@ static void handle_task(node_t node, msg_task_t task) {
   // If the node is not ready keep the task for later
   if (node->ready != 0 && !(type==TASK_JOIN_LAST_REPLY || type==TASK_JOIN_REPLY)) {
     XBT_DEBUG("Task pending %i", type);
-    xbt_fifo_push(node->pending_tasks, task);
+    xbt_dynar_push(node->pending_tasks, &task);
     return;
   }
   switch (type) {
     /* Try to join the ring */
-    case TASK_JOIN: {
-      int next = routing_next(node, task_data->answer_id);
+    case TASK_JOIN:
+      next = routing_next(node, task_data->answer_id);
       XBT_DEBUG("Join request from %08x forwarding to %08x", task_data->answer_id, next);      
       type = TASK_JOIN_LAST_REPLY;
 
@@ -279,11 +275,10 @@ static void handle_task(node_t node, msg_task_t task) {
         task_free(task_sent);
       }
       break;
-    }
     /* Join reply from all the node touched by the join  */
     case TASK_JOIN_LAST_REPLY:
       // if last node touched reply, copy its namespace set
-      // TODO: it's work only if the two nodes are side to side (is it really the case ?)
+      // TODO: it works only if the two nodes are side to side (is it really the case ?)
       j = (task_data->sender_id < node->id) ? -1 : 0;
       for (i=0; i<NAMESPACE_SIZE/2; i++) {
         node->namespace_set[i] = task_data->state->namespace_set[i-j];
@@ -316,9 +311,11 @@ static void handle_task(node_t node, msg_task_t task) {
       // if the node is ready, do all the pending tasks and send update to known nodes
       if (node->ready==0) {
         XBT_DEBUG("Node %i is ready!!!", node->id);
-
-        while(xbt_fifo_size(node->pending_tasks))
-          handle_task(node, xbt_fifo_pop(node->pending_tasks));
+        while(xbt_dynar_length(node->pending_tasks)){
+          msg_task_t task;
+          xbt_dynar_shift(node->pending_tasks, &task);
+          handle_task(node, task);
+        }
 
         for (i=0; i<NAMESPACE_SIZE; i++) {
           j = node->namespace_set[i];
@@ -402,19 +399,21 @@ static void handle_task(node_t node, msg_task_t task) {
         if (min<0 || max>=NAMESPACE_SIZE) {
          node->namespace_set[i] = curr_namespace_set[j];
          j++;
-        } else if (curr_namespace_set[j] == -1) {
-          node->namespace_set[i] = task_namespace_set[max];
-          max++;
-        } else if (curr_namespace_set[j] == task_namespace_set[max]) {
-          node->namespace_set[i] = curr_namespace_set[j];
-          j++;
-          max++;
-        } else if (curr_namespace_set[j] < task_namespace_set[max]) {
-          node->namespace_set[i] = curr_namespace_set[j];
-          j++;
-        } else {
-          node->namespace_set[i] = task_namespace_set[max];
-          max++;
+        } else if (max >= 0){
+          if (curr_namespace_set[j] == -1) {
+            node->namespace_set[i] = task_namespace_set[max];
+            max++;
+          } else if (curr_namespace_set[j] == task_namespace_set[max]) {
+            node->namespace_set[i] = curr_namespace_set[j];
+            j++;
+            max++;
+          } else if (curr_namespace_set[j] < task_namespace_set[max]) {
+            node->namespace_set[i] = curr_namespace_set[j];
+            j++;
+          } else {
+            node->namespace_set[i] = task_namespace_set[max];
+            max++;
+          }
         }
       }
 
@@ -430,14 +429,6 @@ static void handle_task(node_t node, msg_task_t task) {
       THROW_IMPOSSIBLE;
   }
   task_free(task);
-}
-
-/** \brief Initializes the current node as the first one of the system.
- *  \param node the current node
- */
-static void create(node_t node){
-  node->ready = 0;
-  XBT_DEBUG("Create a new Pastry ring...");
 }
 
 /* Join the ring */
@@ -481,30 +472,29 @@ static int node(int argc, char *argv[])
   node.id = xbt_str_parse_int(argv[1], "Invalid ID: %s");
   node.known_id = -1;
   node.ready = -1;
-  node.pending_tasks = xbt_fifo_new();
+  node.pending_tasks = xbt_dynar_new(sizeof(msg_task_t), NULL);
   get_mailbox(node.id, node.mailbox);
   XBT_DEBUG("New node with id %s (%08x)", node.mailbox, node.id);
-  
-  int i;
-  for (i=0; i<LEVELS_COUNT; i++){
+
+  for (int i=0; i<LEVELS_COUNT; i++){
     int d = domain(node.id, i);
     for (int j=0; j<LEVEL_SIZE; j++)
       node.routing_table[i][j] = (d==j) ? node.id : -1;
   }
 
-  for (i=0; i<NEIGHBORHOOD_SIZE; i++)
+  for (int i=0; i<NEIGHBORHOOD_SIZE; i++)
     node.neighborhood_set[i] = -1;
 
-  for (i=0; i<NAMESPACE_SIZE; i++)
+  for (int i=0; i<NAMESPACE_SIZE; i++)
     node.namespace_set[i] = -1;
 
   if (argc == 3) { // first ring
     XBT_DEBUG("Hey! Let's create the system.");
     deadline = xbt_str_parse_double(argv[2], "Invalid deadline: %s");
-    create(&node);
+    node.ready = 0;
+    XBT_DEBUG("Create a new Pastry ring...");
     join_success = 1;
-  }
-  else {
+  } else {
     node.known_id = xbt_str_parse_int(argv[2], "Invalid known ID: %s");
     double sleep_time = xbt_str_parse_double(argv[3], "Invalid sleep time: %s");
     deadline = xbt_str_parse_double(argv[4], "Invalid deadline: %s");
@@ -539,8 +529,7 @@ static int node(int argc, char *argv[])
           XBT_DEBUG("Failed to receive a task. Nevermind.");
           MSG_comm_destroy(node.comm_receive);
           node.comm_receive = NULL;
-        }
-        else {
+        } else {
           // the task was successfully received
           MSG_comm_destroy(node.comm_receive);
           node.comm_receive = NULL;
@@ -558,7 +547,7 @@ static int node(int argc, char *argv[])
   }
 
   }
-  xbt_free(node.pending_tasks);
+  xbt_dynar_free(&node.pending_tasks);
   return 1;
 }
 

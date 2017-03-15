@@ -1,4 +1,84 @@
-SimGrid (3.14) UNRELEASED; urgency=low
+SimGrid (3.15) UNRELEASED; urgency=low
+
+ The Ever Green Release. 
+ We fixed even the transient bugs on all target architectures:
+   Linux (CentOS, Debian, Ubuntu, Fedora), Mac OSX (Mavericks, El Capitan)
+   Windows, FreeBSD, NetBSD.
+
+ - Rename NetCards to NetPoints.
+   This was intended to help NS3 users, but that's not a netcard.
+   That's a point in the routing algorithm, let's avoid wrong simplifications.
+
+ MSG
+ - New: MSG_process_yield(). Stop and yield to other processes.
+ - New: MSG_process_daemon(). Daemon processes are automatically killed 
+   when the last non-daemon process terminates
+ - New: MSG_process_ref/unref(). Fiddle with the process refcounting.
+ - Renamed MSG_energy_plugin_init() -> MSG_host_energy_plugin_init()
+   to make room for the upcoming network energy plugin.
+
+ Java
+ - Ensure that an actor can kill itself with Process::exit()
+ - Kill the obscure NativeException. Nobody want to survive the issues
+   it denotes, so use JniException that is a RuntimeException (not to
+   be catched explicitely).
+
+ S4U
+ - New callbacks:
+   - s4u::onPlatformCreated: right before the simulation starts
+   - s4u::onSimulationEnd: right after the main simulation loop
+   - s4u::onTimeAdvance: right after a clock change (time is discrete)
+   - s4u::Host::onSpeedChange: when the pstate is changed, or when an
+     event from the availability_file changes the avail speed.
+ - Links are now usable from s4u
+
+ SimDag
+ - Backwards Compatibility breaks
+    - The SD_route_get_list and SD_route_get_size functions have been removed. 
+      They are replaced by the unique 
+         void sg_host_route(sg_host_t src, sg_host_t dst, xbt_dynar_t links)
+      The route from src to dst is built in the links dynar whose size can 
+      be obtained with xbt_dynar_length.
+    - The SD_route_bandwidth and SD_route_latency functions have been replaced by
+        sg_host_route_bandwidth and sg_host_route_latency. 
+      Macros ensure the backwards compatibility, but you should fix your code
+
+ SMPI
+ - Bump our claim of support from MPI 1.1 to MPI 2.2. We don't support 100% of 
+   it, but it should be enough. Contact us if not.
+ - New algorithm for SMPI_SHARED_MALLOC: global, where all blocks are
+   mapped onto a unique file.
+ - Bugfix : smpirun was sometimes misusing hostfile when wrongly terminated
+ - Fortran : cleanups, fixes, support of user-added operations
+ - RMA : MPI_Accumulate are applied in correct order, and 
+   MPI_Win_complete or MPI_Win_post shouldn't miss messages anymore.
+ - Better support for MPI_IN_PLACE
+ - Support MPI_Comm_group_create, MPI_Type_size_x
+ - Replace implementation of MPI_Bcast "scatter followed by rdb allgather"
+   algorithm by a non failing one from mpich.
+
+ XBT
+ - Kill the fifo data container: we don't use it anymore.
+
+ XML
+ - A <cluster> can now be created with different speed values to represent pstates.
+   see examples/platforms/energy_cluster.xml for an example.
+
+ -- target_date=March 20 2017 -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+
+SimGrid (3.14.159) stable; urgency=low
+
+ The previous release was only a crude approximation of a Pi release;
+ this one should be a bit better.
+
+ - Revert a last minute change that broke on Mac OSX.
+ - Fix the changelog and NEWS files.
+ - Improve the documentation, in particular of the routing module.
+ - Integrate some patches flying around in Debian.
+
+ -- Wed Dec 28 17:14:49 CET 2016 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+
+SimGrid (3.14) stable; urgency=low
 
  Documentation
  * The whole documentation was reworked and reorganized. There is
@@ -6,8 +86,14 @@ SimGrid (3.14) UNRELEASED; urgency=low
 
  Infrastructure
  * We now need python3 for our testing infrastructure.
+ * Model checking needs libevent
+
+ MC
+ * Now works on FreeBSD
 
  SMPI
+ * Privatization now works on FreeBSD
+ 
  * Privatization is now activated by default in smpirun
    You can turn it off with -no-privatize if something goes wrong.
 
@@ -25,6 +111,16 @@ SimGrid (3.14) UNRELEASED; urgency=low
  * smpi/cpu-threshold:-1 should become smpi/simulate-computation:no
    smpi/running-power    is renamed to smpi/host-speed
 
+ * smpi/grow-injected-times option to enable or disable multiplication of the 
+   timings injected in MPI_Iprobe, or MPI_Test. Enabled by default, which can 
+   make simulation less precise (but also much faster).
+
+ * smpirun script should be (much) faster for large deployments.
+
+ * SMPI tracing : fixed issue with poor matching of send/receives.
+
+ * Replay : Fix broken waitall
+
  New functions and features
  * MSG_parallel_task_execute_with_timeout, to timeout computations.
 
@@ -36,13 +132,35 @@ SimGrid (3.14) UNRELEASED; urgency=low
    - MSG_mailbox_get_task_ext() -> MSG_task_receive_ext()
    - MSG_mailbox_get_task_ext_bounded -> MSG_task_receive_ext_bounded
    - MSG_host_(get/set)_params -> MSG_vm_(get/set)_params
+ * Don't pass the free_f parameter to property related functions:
+   - MSG_host_set_property_value()
+   - MSG_as_router_set_property_value()
+   - MSG_storage_set_property_value()
  * VM properties. Since msg_vm_t are msg_host_t, just use
    MSG_host_get_property_value() and friends
-
+ * VM I/O related things:
+   - Ignored parameter of vm_create: core_nb, disk_path and disk_size.
+   - Unimplemented save/restore methods
+ * MSG_as_router_get_property_value() was redundent with
+   MSG_environment_as_get_property_value(). 
+   - Removed MSG_as_router_*propert*() functions
+   - Added MSG_environment_as_set_property_value() for consistency
+ * xbt heterogeneous dictionnaries (created with xbt_dict_new()). 
+   Well, they are still there for now, but deprecated with a warning. 
+   Please switch to xbt_dict_new_homogeneous() before this is removed
+   for real.
  * Task affinity. Its intended behavior (that was very badly tested
    and probably not really working) was deceiving what most users
    would have hoped here.
  * xbt_os_sem_get_value: unused internally, deprecated on OS X El Capitan
+ * Option network/coordinates is now useless and should be dropped.
+ 
+ Storage: 
+ * Added option storage/max_file_descriptors to allow more than 1024 files opened
+
+ SURF:
+ * Added option maxmin/concurrency_limit to allow more than 100 processes per host
+ * Added Dragonfly topology support
 
  XML:
  * Add Exa- and Peta- units such as EiB, EB, Eib, Eb for size, and
@@ -54,7 +172,11 @@ SimGrid (3.14) UNRELEASED; urgency=low
  * ex/app_tokenring: new example, very similar to the MSG Token Ring
  * ex/async_waitAll: new example, on asynchronous communications
 
- -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ MSG:
+ * Memory usage should be decreased for simulations with a large number 
+   of processes. This also helps for SMPI.
+
+ -- Sat Dec 24 22:34:26 CET 2016 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.13) stable; urgency=low
 

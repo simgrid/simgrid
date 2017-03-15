@@ -1,27 +1,21 @@
 /* Functions related to the java host instances.                            */
 
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/dict.h>
-#include <xbt/dynar.h>
-#include <xbt/log.h>
-#include <xbt/str.h>
+#include "simgrid/plugins/energy.h"
+#include "simgrid/s4u/host.hpp"
 
-#include <surf/surf_routing.h>
-
-#include <simgrid/s4u/host.hpp>
-
-#include "simgrid/msg.h"
 #include "jmsg.h"
 #include "jmsg_host.h"
 #include "jxbt_utilities.h"
 #include "jmsg_storage.h"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
+
+SG_BEGIN_DECL()
 
 static jmethodID jhost_method_Host_constructor;
 static jfieldID jhost_field_Host_bind;
@@ -48,32 +42,16 @@ msg_host_t jhost_get_native(JNIEnv * env, jobject jhost) {
   return (msg_host_t) (uintptr_t) env->GetLongField(jhost, jhost_field_Host_bind);
 }
 
-const char *jhost_get_name(jobject jhost, JNIEnv * env) {
-  msg_host_t host = jhost_get_native(env, jhost);
-  return host->cname();
-}
-
-jboolean jhost_is_valid(jobject jhost, JNIEnv * env) {
-  if (env->GetLongField(jhost, jhost_field_Host_bind)) {
-    return JNI_TRUE;
-  } else {
-    return JNI_FALSE;
-  }
-}
-
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_nativeInit(JNIEnv *env, jclass cls) {
   jclass class_Host = env->FindClass("org/simgrid/msg/Host");
   jhost_method_Host_constructor = env->GetMethodID(class_Host, "<init>", "()V");
   jhost_field_Host_bind = jxbt_get_jfield(env,class_Host, "bind", "J");
   jhost_field_Host_name = jxbt_get_jfield(env, class_Host, "name", "Ljava/lang/String;");
-  if (!class_Host || !jhost_field_Host_name || !jhost_method_Host_constructor || !jhost_field_Host_bind) {
-    jxbt_throw_native(env,bprintf("Can't find some fields in Java class. You should report this bug."));
-  }
+  xbt_assert(class_Host && jhost_field_Host_name && jhost_method_Host_constructor && jhost_field_Host_bind,
+             "Native initialization of msg/Host failed. Please report that bug");
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls, jstring jname) {
-  msg_host_t host;                /* native host                                          */
-  jobject jhost;                /* global reference to the java host instance returned  */
 
   /* get the C string from the java string */
   if (jname == nullptr) {
@@ -82,7 +60,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jcla
   }
   const char *name = env->GetStringUTFChars(jname, 0);
   /* get the host by name       (the hosts are created during the grid resolution) */
-  host = MSG_host_by_name(name);
+  msg_host_t host = MSG_host_by_name(name);
 
   if (!host) {                  /* invalid name */
     jxbt_throw_host_not_found(env, name);
@@ -93,7 +71,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jcla
 
   if (!host->extension(JAVA_HOST_LEVEL)) {       /* native host not associated yet with java host */
     /* Instantiate a new java host */
-    jhost = jhost_new_instance(env);
+    jobject jhost = jhost_new_instance(env);
 
     if (!jhost) {
       jxbt_throw_jni(env, "java host instantiation failed");
@@ -228,7 +206,7 @@ Java_org_simgrid_msg_Host_setProperty(JNIEnv *env, jobject jhost, jobject jname,
   const char *value_java = env->GetStringUTFChars((jstring) jvalue, 0);
   char *value = xbt_strdup(value_java);
 
-  MSG_host_set_property_value(host, name, value, xbt_free_f);
+  MSG_host_set_property_value(host, name, value);
 
   env->ReleaseStringUTFChars((jstring) jvalue, value_java);
   env->ReleaseStringUTFChars((jstring) jname, name);
@@ -294,15 +272,13 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getAttachedStorage(JNIE
   }
   jobjectArray jtable;
 
-  xbt_dynar_t dyn = MSG_host_get_attached_storage_list(host);
-  int count = xbt_dynar_length(dyn);
-  jclass cls = jxbt_get_class(env, "java/lang/String");
-  jtable = env->NewObjectArray((jsize) count, cls, nullptr);
-  int index;
-  char *storage_name;
+  xbt_dynar_t dyn = sg_host_get_attached_storage_list(host);
+  jclass cls      = jxbt_get_class(env, "java/lang/String");
+  jtable          = env->NewObjectArray(static_cast<jsize>(xbt_dynar_length(dyn)), cls, nullptr);
+  unsigned int index;
+  const char* storage_name;
   jstring jstorage_name;
-  for (index = 0; index < count; index++) {
-    storage_name = xbt_dynar_get_as(dyn,index,char*);
+  xbt_dynar_foreach (dyn, index, storage_name) {
     jstorage_name = env->NewStringUTF(storage_name);
     env->SetObjectArrayElement(jtable, index, jstorage_name);
   }
@@ -369,7 +345,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_setAsyncMailbox(JNIEnv * env, j
   env->ReleaseStringUTFChars((jstring) jname, name);
 }
 
-#include "simgrid/plugins/energy.h"
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getConsumedEnergy (JNIEnv *env, jobject jhost)
 {
   msg_host_t host = jhost_get_native(env, jhost);
@@ -381,3 +356,31 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getConsumedEnergy (JNIEnv *e
 
   return MSG_host_get_consumed_energy(host);
 }
+
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_setPstate(JNIEnv* env, jobject jhost, jint pstate)
+{
+  msg_host_t host = jhost_get_native(env, jhost);
+  MSG_host_set_pstate(host, pstate);
+}
+JNIEXPORT jint JNICALL Java_org_simgrid_msg_Host_getPstate(JNIEnv* env, jobject jhost)
+{
+  msg_host_t host = jhost_get_native(env, jhost);
+  return MSG_host_get_pstate(host);
+}
+JNIEXPORT jint JNICALL Java_org_simgrid_msg_Host_getPstatesCount(JNIEnv* env, jobject jhost)
+{
+  msg_host_t host = jhost_get_native(env, jhost);
+  return MSG_host_get_nb_pstates(host);
+}
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCurrentPowerPeak(JNIEnv* env, jobject jhost)
+{
+  msg_host_t host = jhost_get_native(env, jhost);
+  return MSG_host_get_current_power_peak(host);
+}
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getPowerPeakAt(JNIEnv* env, jobject jhost, jint pstate)
+{
+  msg_host_t host = jhost_get_native(env, jhost);
+  return MSG_host_get_power_peak_at(host, pstate);
+}
+
+SG_END_DECL()

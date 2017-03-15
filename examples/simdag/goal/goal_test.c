@@ -18,16 +18,17 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(goal, "The GOAL loader into SimDag");
 
 typedef struct {
-  int i, j, k;
-} s_bcast_task_t,*bcast_task_t;
-
+  int i;
+  int j;
+  int k;
+} s_bcast_task_t;
+typedef s_bcast_task_t *bcast_task_t;
 const sg_host_t* ws_list;
 int count = 0;
 
 xbt_dynar_t reclaimed;
 
 static void send_one(int from, int to) {
-  //XBT_DEBUG("send_one(%d, %d)",from,to);
 
   if (count %100000 == 0)
     XBT_INFO("Sending task #%d",count);

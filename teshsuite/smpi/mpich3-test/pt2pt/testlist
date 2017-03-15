@@ -19,6 +19,7 @@ bottom 2
 #bsendpending 2
 isendself 1
 #issendselfcancel 1
+isendirecv 10   
 #needs MPI_Buffer_attach, MPI_Bsend, MPI_Buffer_detach
 #bsendfrag 2
 #needs MPI_Intercomm_create
@@ -50,3 +51,8 @@ waitany-null 1
 #large_message 3
 mprobe 2 mpiversion=3.0
 big_count_status 1 mpiversion=3.0
+many_isend 3
+manylmt 2
+#Needs MPI_Irsend
+#dtype_send 2
+recv_any 2

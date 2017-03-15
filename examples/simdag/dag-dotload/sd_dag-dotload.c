@@ -9,7 +9,6 @@
 #include "simgrid/simdag.h"
 #include "xbt/log.h"
 #include <stdio.h>
-#include <string.h>
 #include <libgen.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Logging specific to this SimDag example");

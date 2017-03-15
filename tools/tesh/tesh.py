@@ -5,8 +5,7 @@
 tesh -- testing shell
 ========================
 
-Copyright (c) 2012-2016. The SimGrid Team.
-All rights reserved.
+Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the license (GNU LGPL) which comes with this package.
@@ -180,7 +179,7 @@ class Cmd(object):
         self.input_pipe = []
         self.output_pipe_stdout = []
         self.output_pipe_stderr = []
-        self.timeout = 5
+        self.timeout = 10
         self.args = None
         self.linenumber = -1
         
@@ -329,9 +328,9 @@ class Cmd(object):
             while len(stdouta) > 0 and stdouta[-1] == "":
                 del stdouta[-1]
             stdouta = self.remove_ignored_lines(stdouta)
+            stdcpy = stdouta[:]
 
-            #the "sort" bash command is case unsensitive,
-            # we mimic its behaviour
+            # Mimic the "sort" bash command, which is case unsensitive.
             if self.sort == 0:
                 stdouta.sort(key=lambda x: x.lower())
                 self.output_pipe_stdout.sort(key=lambda x: x.lower())
@@ -342,8 +341,21 @@ class Cmd(object):
             diff = list(difflib.unified_diff(self.output_pipe_stdout, stdouta,lineterm="",fromfile='expected', tofile='obtained'))
             if len(diff) > 0: 
                 print("Output of <"+cmdName+"> mismatch:")
-                for line in diff:
-                    print(line)
+                if self.sort >= 0: # If sorted, truncate the diff output and show the unsorted version
+                    difflen = 0;
+                    for line in diff:
+                        if difflen<250:
+                            print(line)
+                        difflen += 1
+                    if difflen > 100:
+                        print("(diff truncated after 250 lines)")
+                    print("Unsorted observed output:\n")
+                    for line in stdcpy:
+                        print(line)
+                else: # If not sorted, just display the diff
+                    for line in diff:
+                        print(line)
+                        
                 print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> output mismatch)")
                 if lock is not None: lock.release()
                 if TeshState().keep:
@@ -414,7 +426,14 @@ if __name__ == '__main__':
         TeshState().ignore_regexps_common = [
            re.compile("^profiling:"),
            re.compile(".*WARNING: ASan doesn\'t fully support"),
-           re.compile("Unable to clean temporary file C:.*")]
+           re.compile("Unable to clean temporary file C:.*"),
+           re.compile(".*Configuration change: Set \'contexts/"),
+           re.compile(".*Picked up JAVA_TOOL_OPTIONS.*"),
+
+           re.compile("==WARNING: ASan is ignoring requested __asan_handle_no_return: stack top:"),
+           re.compile("False positive error reports may follow"),
+           re.compile("For details see http://code.google.com/p/address-sanitizer/issues/detail?id=189"),
+           ]
     
     if options.teshfile is None:
         f = FileReader(None)

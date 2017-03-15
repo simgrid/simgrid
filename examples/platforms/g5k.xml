@@ -1,5 +1,17 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+
+<!--
+  This file is a manual and imperfect description of the Grid'5000 platform.
+  (see http://grid5000.fr for more information on that platform)
+
+  It was generated manually in 2011 and manually edited since then.
+  A better (and more uptodate) description file can probably be
+  retrieved using https://github.com/lpouillo/topo5k as described on
+  https://www.grid5000.fr/mediawiki/index.php/TechTeam:Topo5k
+
+-->
+
 <platform version="4">
   <AS id="AS_grid5000" routing="Floyd">
     <AS id="AS_interne" routing="Floyd">

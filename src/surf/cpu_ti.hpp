@@ -97,9 +97,9 @@ public:
   double getRemains() override;
 
   CpuTi *cpu_;
-  int indexHeap_;
+  int indexHeap_ = -1;
   int suspended_ = 0;
-public:
+
   boost::intrusive::list_member_hook<> action_ti_hook;
 };
 
@@ -134,7 +134,6 @@ public:
 
   double currentFrequency_;
 
-public:
   boost::intrusive::list_member_hook<> cpu_ti_hook;
 };
 

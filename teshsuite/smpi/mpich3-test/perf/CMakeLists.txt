@@ -9,8 +9,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
-  foreach(file commcreatep non_zero_root sendrecvl timer transp-datatype twovec)
-    #not compiled files  dtpack indexperf manyrma nestvec2 nestvec
+  foreach(file commcreatep non_zero_root sendrecvl timer transp-datatype twovec dtpack indexperf  nestvec2 nestvec)
+    #not compiled files manyrma
     add_executable(${file} ${file}.c)
     target_link_libraries(${file} simgrid mtest_c)
   endforeach()

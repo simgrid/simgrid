@@ -1,0 +1,27 @@
+<project name="Example" xmlns:jacoco="antlib:org.jacoco.ant">
+
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+        <classpath path="${jacocodir}/jacocoant.jar"/>
+    </taskdef>
+
+<jacoco:report>
+                        
+    <executiondata>
+        <file file="${builddir}/jacoco.exec"/>
+    </executiondata>
+                        
+    <structure name="Example Project">
+        <classfiles>
+            <fileset dir="${builddir}"/>
+            <fileset file="${jarfile}"/>
+        </classfiles>
+        <sourcefiles encoding="UTF-8">
+            <fileset dir="${examplesrcdir}"/>
+        </sourcefiles>
+    </structure>
+                        
+    <xml destfile="${builddir}/report.xml"/>
+                        
+</jacoco:report>
+
+</project>

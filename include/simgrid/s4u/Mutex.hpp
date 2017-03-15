@@ -33,8 +33,7 @@ class ConditionVariable;
  *
  */
 XBT_PUBLIC_CLASS Mutex {
-friend ConditionVariable;
-private:
+  friend ConditionVariable;
   friend simgrid::simix::Mutex;
   simgrid::simix::Mutex* mutex_;
   Mutex(simgrid::simix::Mutex* mutex) : mutex_(mutex) {}
@@ -62,7 +61,6 @@ public:
   /** Constructs a new mutex */
   static Ptr createMutex();
 
-public:
   void lock();
   void unlock();
   bool try_lock();

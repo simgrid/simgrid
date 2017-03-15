@@ -1,5 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -38,13 +37,13 @@
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_unw.h"
 #include "src/mc/mc_smx.h"
-#include "src/mc/Checker.hpp"
+#include "src/mc/checker/Checker.hpp"
 #endif
 
-#include "src/mc/mc_record.h"
-#include "src/mc/mc_protocol.h"
-#include "src/mc/Client.hpp"
 #include "src/mc/Transition.hpp"
+#include "src/mc/mc_record.h"
+#include "src/mc/remote/Client.hpp"
+#include "src/mc/remote/mc_protocol.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc, "Logging specific to MC (global)");
 
@@ -97,9 +96,10 @@ void MC_run()
   simgrid::mc::processes_time.resize(SIMIX_process_get_maxpid());
   MC_ignore_heap(simgrid::mc::processes_time.data(),
     simgrid::mc::processes_time.size() * sizeof(simgrid::mc::processes_time[0]));
-  smx_actor_t process;
-  xbt_swag_foreach(process, simix_global->process_list)
-    MC_ignore_heap(&(process->process_hookup), sizeof(process->process_hookup));
+  for (auto kv : simix_global->process_list) {
+    smx_actor_t actor = kv.second;
+    MC_ignore_heap(&(actor->process_hookup), sizeof(actor->process_hookup));
+  }
   simgrid::mc::Client::get()->mainLoop();
   simgrid::mc::processes_time.clear();
 }

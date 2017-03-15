@@ -133,5 +133,5 @@ examples to find one that can be adapted to your own example.
 Once you're done, you must run "make distcheck" to ensure that you did not forget to add any file to the distributed 
 archives. This ensures that everything was commited correctly, so you have to first commit before running 
 "make distcheck". If you forgot something, you want to "git commit --amend". But never amend a commit that you already 
-pushed to public repositories! Do a second commit in that case.
+pushed to public repositories, or you'll break the checkouts of your fellow co-workers! Do a second commit in that case.
 */

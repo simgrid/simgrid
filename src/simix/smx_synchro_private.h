@@ -1,20 +1,13 @@
-/* Copyright (c) 2012-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SIMIX_SYNCHRO_PRIVATE_H
-#define _SIMIX_SYNCHRO_PRIVATE_H
+#ifndef SIMIX_SYNCHRO_PRIVATE_H
+#define SIMIX_SYNCHRO_PRIVATE_H
 
-#include <atomic>
-
-#include <simgrid/s4u/Mutex.hpp>
-#include <simgrid/s4u/conditionVariable.hpp>
-
-#include "xbt/base.h"
+#include "simgrid/s4u/conditionVariable.hpp"
 #include "xbt/swag.h"
-#include "xbt/xbt_os_thread.h"
-#include "src/simix/popping_private.h"
 
 namespace simgrid {
 namespace simix {
@@ -90,4 +83,5 @@ XBT_PRIVATE XBT_PRIVATE smx_sem_t SIMIX_sem_init(unsigned int value);
 XBT_PRIVATE void SIMIX_sem_release(smx_sem_t sem);
 XBT_PRIVATE int SIMIX_sem_would_block(smx_sem_t sem);
 XBT_PRIVATE int SIMIX_sem_get_capacity(smx_sem_t sem);
+
 #endif

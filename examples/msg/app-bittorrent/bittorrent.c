@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2016. The SimGrid Team.
+/* Copyright (c) 2012-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -21,30 +21,27 @@ int main(int argc, char *argv[])
   /* Check the arguments */
   xbt_assert (argc > 2, "Usage: %s platform_file deployment_file", argv[0]);
 
-  const char *platform_file = argv[1];
-  const char *deployment_file = argv[2];
-
-  MSG_create_environment(platform_file);
+  MSG_create_environment(argv[1]);
 
   xbt_dynar_t host_list = MSG_hosts_as_dynar();
   xbt_dynar_foreach(host_list, i, host) {
     char descr[512];
-    RngStream stream;
     snprintf(descr, sizeof descr, "RngSream<%s>", MSG_host_get_name(host));
-    stream = RngStream_CreateStream(descr);
-    MSG_host_set_property_value(host, "stream", (char*)stream, NULL);
+    RngStream stream = RngStream_CreateStream(descr);
+    MSG_host_set_data(host, stream);
   }
 
   MSG_function_register("tracker", tracker);
   MSG_function_register("peer", peer);
 
-  MSG_launch_application(deployment_file);
+  MSG_launch_application(argv[2]);
 
   MSG_main();
 
   xbt_dynar_foreach(host_list, i, host) {
-    RngStream stream = (RngStream) MSG_host_get_property_value(host, "stream");
+    RngStream stream = (RngStream)MSG_host_get_data(host);
     RngStream_DeleteStream(&stream);
+    MSG_host_set_data(host, NULL);
   }
   xbt_dynar_free(&host_list);
 

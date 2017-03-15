@@ -71,9 +71,8 @@ public class Host {
 	 *
 	 * @return		The host object with the given name.
 	 * @exception		HostNotFoundException if the name of the host is not valid.
-	 *					NativeException if the native version of this method failed.
 	 */ 
-	public static native Host getByName(String name) throws HostNotFoundException, NullPointerException;
+	public static native Host getByName(String name) throws HostNotFoundException;
 	/** Counts the installed hosts. */ 
 	public static native int getCount();
 
@@ -136,6 +135,17 @@ public class Host {
 
 	/** Returns the amount of Joules consumed by that host so far */
 	public native double getConsumedEnergy();
+	
+	/** Returns the current pstate */
+	public native int getPstate();
+	/** Changes the current pstate */
+	public native void setPstate(int pstate);
+	public native int getPstatesCount();
+	/** Returns the speed of the processor (in flop/s) at the current pstate. See also @ref SURF_plugin_energy. */
+	public native double getCurrentPowerPeak();
+	/** Returns the speed of the processor (in flop/s) at a given pstate. See also @ref SURF_plugin_energy. */
+	public native double getPowerPeakAt(int pstate);
+	
 
 	/** Class initializer, to initialize various JNI stuff */
 	public static native void nativeInit();

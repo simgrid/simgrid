@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     if (size < 33) {
         printf("ERROR: this test requires at least 33 processes\n");
         MPI_Abort(MPI_COMM_WORLD, 1);
-        exit(1);
+        return 1;
     }
 
     /* group of c0
@@ -79,8 +79,7 @@ int main(int argc, char **argv)
         MPI_Comm_free(&ic);
 
 
-    MPI_Reduce((rank == 0 ? MPI_IN_PLACE : &errs), &errs,
-               1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce((rank == 0 ? MPI_IN_PLACE : &errs), &errs, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
     if (rank == 0) {
         if (errs) {
             printf("found %d errors\n", errs);
@@ -93,4 +92,3 @@ int main(int argc, char **argv)
 
     return 0;
 }
-

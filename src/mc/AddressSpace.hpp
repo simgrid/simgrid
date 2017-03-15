@@ -17,7 +17,7 @@
 #include <vector>
 
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/RemotePtr.hpp"
+#include "src/mc/remote/RemotePtr.hpp"
 
 namespace simgrid {
 namespace mc {

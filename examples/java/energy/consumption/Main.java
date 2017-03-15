@@ -28,7 +28,7 @@ public class Main {
     }
     /* Construct the platform */
     Msg.createEnvironment(args[0]);
-    /* Instanciate a process */
+    /* Instantiate a process */
     new EnergyConsumer("MyHost1","energyConsumer").start();
     /* Execute the simulation */
     Msg.run();

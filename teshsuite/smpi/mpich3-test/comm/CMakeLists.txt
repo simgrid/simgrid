@@ -25,7 +25,8 @@ endif()
 
 foreach(file cmfree cmsplit2 cmsplit cmsplit_type commcreate1 comm_create_group comm_group_half comm_group_rand 
         comm_idup comm_idup_overlap comm_idup_mul comm_info commname ctxalloc ctxsplit dup dupic dup_with_info ic1 ic2 
-        iccreate icgroup icm icsplit probe-intercomm)
+        iccreate icgroup icm icsplit probe-intercomm comm_create_group_idup comm_idup_comm comm_idup_mul comm_idup comm_idup_iallreduce comm_idup_nb comm_idup_comm2 comm_idup_isend comm_idup_overlap
+)
   set(examples_src ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c)
 endforeach()
 

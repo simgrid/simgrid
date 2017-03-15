@@ -156,7 +156,7 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST peer speed CDATA #REQUIRED>
 <!ATTLIST peer bw_in CDATA #REQUIRED>
 <!ATTLIST peer bw_out CDATA #REQUIRED>
-<!ATTLIST peer lat CDATA #REQUIRED>
+<!ATTLIST peer lat CDATA "0">
 <!ATTLIST peer coordinates CDATA "">
 <!ATTLIST peer availability_file CDATA "">
 <!ATTLIST peer state_file CDATA "">

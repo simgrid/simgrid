@@ -1,5 +1,4 @@
-/* Copyright (c) 2004-2005, 2007, 2009-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -180,10 +179,10 @@ static void xbt_parmap_set_mode(xbt_parmap_t parmap, e_xbt_parmap_mode_t mode)
 
   switch (mode) {
     case XBT_PARMAP_POSIX:
-      parmap->master_wait_f = xbt_parmap_posix_master_wait;
-      parmap->worker_signal_f = xbt_parmap_posix_worker_signal;
-      parmap->master_signal_f = xbt_parmap_posix_master_signal;
-      parmap->worker_wait_f = xbt_parmap_posix_worker_wait;
+      parmap->master_wait_f   = &xbt_parmap_posix_master_wait;
+      parmap->worker_signal_f = &xbt_parmap_posix_worker_signal;
+      parmap->master_signal_f = &xbt_parmap_posix_master_signal;
+      parmap->worker_wait_f   = &xbt_parmap_posix_worker_wait;
 
       parmap->ready_cond = xbt_os_cond_init();
       parmap->ready_mutex = xbt_os_mutex_init();
@@ -192,10 +191,10 @@ static void xbt_parmap_set_mode(xbt_parmap_t parmap, e_xbt_parmap_mode_t mode)
       break;
     case XBT_PARMAP_FUTEX:
 #if HAVE_FUTEX_H
-      parmap->master_wait_f = xbt_parmap_futex_master_wait;
-      parmap->worker_signal_f = xbt_parmap_futex_worker_signal;
-      parmap->master_signal_f = xbt_parmap_futex_master_signal;
-      parmap->worker_wait_f = xbt_parmap_futex_worker_wait;
+      parmap->master_wait_f   = &xbt_parmap_futex_master_wait;
+      parmap->worker_signal_f = &xbt_parmap_futex_worker_signal;
+      parmap->master_signal_f = &xbt_parmap_futex_master_signal;
+      parmap->worker_wait_f   = &xbt_parmap_futex_worker_wait;
 
       xbt_os_cond_destroy(parmap->ready_cond);
       xbt_os_mutex_destroy(parmap->ready_mutex);
@@ -206,10 +205,10 @@ static void xbt_parmap_set_mode(xbt_parmap_t parmap, e_xbt_parmap_mode_t mode)
       xbt_die("Futex is not available on this OS.");
 #endif
     case XBT_PARMAP_BUSY_WAIT:
-      parmap->master_wait_f = xbt_parmap_busy_master_wait;
-      parmap->worker_signal_f = xbt_parmap_busy_worker_signal;
-      parmap->master_signal_f = xbt_parmap_busy_master_signal;
-      parmap->worker_wait_f = xbt_parmap_busy_worker_wait;
+      parmap->master_wait_f   = &xbt_parmap_busy_master_wait;
+      parmap->worker_signal_f = &xbt_parmap_busy_worker_signal;
+      parmap->master_signal_f = &xbt_parmap_busy_master_signal;
+      parmap->worker_wait_f   = &xbt_parmap_busy_worker_wait;
 
       xbt_os_cond_destroy(parmap->ready_cond);
       xbt_os_mutex_destroy(parmap->ready_mutex);

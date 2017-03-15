@@ -93,7 +93,6 @@ static int master(int argc, char *argv[])
 
 static int worker(int argc, char *argv[])
 {
-  msg_task_t task = NULL;
   char mailbox[80];
 
   long id= xbt_str_parse_int(argv[1], "Invalid argument %s");
@@ -102,13 +101,13 @@ static int worker(int argc, char *argv[])
 
   while (1) {
     double time1 = MSG_get_clock();
+    msg_task_t task = NULL;
     int retcode = MSG_task_receive( &(task), mailbox);
     double time2 = MSG_get_clock();
     if (retcode == MSG_OK) {
       XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
       if (MSG_task_get_data(task) == FINALIZE) {
         MSG_task_destroy(task);
-        task = NULL;
         break;
       }
       if (time1 < *((double *) task->data))
@@ -119,11 +118,9 @@ static int worker(int argc, char *argv[])
       if (retcode == MSG_OK) {
         XBT_INFO("\"%s\" done", MSG_task_get_name(task));
         MSG_task_destroy(task);
-        task = NULL;
       } else if (retcode == MSG_HOST_FAILURE) {
         XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
         MSG_task_destroy(task);
-        task = NULL;
         return 0;
       } else {
         XBT_INFO("Hey ?! What's up ? ");
@@ -144,8 +141,6 @@ static int worker(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
-
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
              "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
@@ -156,7 +151,7 @@ int main(int argc, char *argv[])
   MSG_function_register("worker", worker);
   MSG_launch_application(argv[2]);
 
-  res = MSG_main();
+  msg_error_t res = MSG_main();
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
 

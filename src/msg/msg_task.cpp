@@ -5,8 +5,8 @@
 
 #include "msg_private.h"
 #include "src/simix/smx_private.h"
-#include "xbt/sysdep.h"
-#include "xbt/log.h"
+
+SG_BEGIN_DECL()
 
 /** @addtogroup m_task_management
  *
@@ -317,3 +317,5 @@ void MSG_task_set_bound(msg_task_t task, double bound)
   if (task->simdata->compute)
     simcall_execution_set_bound(task->simdata->compute, task->simdata->bound);
 }
+
+SG_END_DECL()

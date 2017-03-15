@@ -11,7 +11,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Property test");
 int main(int argc, char **argv)
 {
   xbt_dict_cursor_t cursor = NULL;
-  char *key, *data;
+  char *key;
+  char *data;
   char noexist[] = "NoProp";
   const char *value;
   char exist[] = "Hdd";
@@ -33,7 +34,7 @@ int main(int argc, char **argv)
   xbt_dict_t props = sg_host_get_properties(h1);
 
   /* Trying to set a new property */
-  xbt_dict_set(props, "NewProp", strdup("newValue"), xbt_free_f);
+  xbt_dict_set(props, "NewProp", strdup("newValue"), NULL);
 
   /* Print the properties of 'host1' */
   xbt_dict_foreach(props, cursor, key, data) {
@@ -61,7 +62,7 @@ int main(int argc, char **argv)
     XBT_INFO("\tProperty: %s is undefined", exist);
   else {
     XBT_INFO("\tProperty: %s old value: %s", exist, value);
-    xbt_dict_set(props, exist, strdup("250"), xbt_free_f);
+    xbt_dict_set(props, exist, strdup("250"), NULL);
   }
 
   /* Test if we have changed the value */

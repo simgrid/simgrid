@@ -241,6 +241,14 @@ while true; do
     esac
 done
 
+# check if we still have at least one parameter beyond options
+if [ $# -eq 0 ]
+then
+    echo "Error: no program to execute!"
+    usage
+    exit
+fi
+
 if [ -n "$WRAPPER" ]; then
     EXEC="$WRAPPER $1"
 else
@@ -376,7 +384,6 @@ APPLICATIONHEAD
 ##---- cache hostnames of hostfile---------------
 if [ -n "${HOSTFILE}" ] && [ -f ${HOSTFILE} ]; then
     hostnames=$(cat ${HOSTFILE} | tr '\n\r' '  ')
-    NUMHOSTS=$(cat ${HOSTFILE} | wc -l)
 fi
 
 if [ "${EXTOPT}" = "smpi_replay" ]; then
@@ -414,13 +421,13 @@ set -- $hostnames
 ##---- generate <process> tags------------------------------
 #prepare arguments at once
 for ARG in $PROC_ARGS; do
-  ARGS="$ARGS""<argument value=\"${ARG}\"/>
+  XML_ARGS="${XML_ARGS}""<argument value=\"${ARG}\"/>
 "
 done
 
 for i in ${SEQ}
 do
-    j=$(( $i % ${NUMHOSTS} + 1 ))
+    j=$(( $i % ${hostfile_procs} + 1 ))
     host=$(eval "echo \${$j}")
 
     ##---- optional display of ranks to process mapping
@@ -438,7 +445,7 @@ do
             echo "    <argument value=\"$(echo $hosttraces|cut -d' ' -f1)\"/>" >> ${APPLICATIONTMP}
         fi
     else 
-    echo ${ARGS} >> ${APPLICATIONTMP}
+    echo ${XML_ARGS} >> ${APPLICATIONTMP}
     fi
     echo "  </process>" >> ${APPLICATIONTMP}
 done
@@ -512,6 +519,22 @@ exec 3>&-
 wait $pid
 status=$?
 pid=""
+
+# Keep temporary files on failures to help debugging
+#
+if [ ${status} -ne 0 ] ; then
+    if [ -z ${KEEP} ]; then
+        echo ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PRIVATIZE} ${PLATFORMTMP} ${APPLICATIONTMP}
+        if [ ${HOSTFILETMP} = 1 ] ; then
+            echo "Generated hostfile ${HOSTFILE} kept."
+        fi
+        if [ ${UNROLLEDHOSTFILETMP} = 1 ] ; then
+            echo "Generated unrolled hostfile ${UNROLLEDHOSTFILE} kept."
+        fi
+    fi
+    echo "Execution failed with code ${status}."
+    KEEP=true
+fi
 
 smpirun_cleanup
 

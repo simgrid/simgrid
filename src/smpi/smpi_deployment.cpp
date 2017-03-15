@@ -51,7 +51,6 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
   }
 
   xbt_dict_set(smpi_instances, name, (void*)instance, nullptr);
-  return;
 }
 
 //get the index of the process in the process_data array
@@ -70,15 +69,14 @@ void smpi_deployment_register_process(const char* instance_id, int rank, int ind
   xbt_assert(instance, "Error, unknown instance %s", instance_id);
 
   if(instance->comm_world == MPI_COMM_NULL){
-    MPI_Group group = smpi_group_new(instance->size);
-    instance->comm_world = smpi_comm_new(group, nullptr);
+    MPI_Group group = new  Group(instance->size);
+    instance->comm_world = new  Comm(group, nullptr);
   }
   instance->present_processes++;
   index_to_process_data[index]=instance->index+rank;
-  smpi_group_set_mapping(smpi_comm_group(instance->comm_world), index, rank);
+  instance->comm_world->group()->set_mapping(index, rank);
   *bar = instance->finalization_barrier;
   *comm = &instance->comm_world;
-  return;
 }
 
 void smpi_deployment_cleanup_instances(){
@@ -87,8 +85,8 @@ void smpi_deployment_cleanup_instances(){
   char *name = nullptr;
   xbt_dict_foreach(smpi_instances, cursor, name, instance) {
     if(instance->comm_world!=MPI_COMM_NULL)
-      while (smpi_group_unuse(smpi_comm_group(instance->comm_world)) > 0);
-    xbt_free(instance->comm_world);
+      delete instance->comm_world->group();
+    delete instance->comm_world;
     MSG_barrier_destroy(instance->finalization_barrier);
   }
   xbt_dict_free(&smpi_instances);

@@ -9,19 +9,20 @@
 #ifndef INCLUDE_SIMGRID_LINK_H_
 #define INCLUDE_SIMGRID_LINK_H_
 
-#include <simgrid/forward.h>
+#include "simgrid/forward.h"
+#include "xbt/base.h"
 
 /* C interface */
 SG_BEGIN_DECL()
-XBT_PUBLIC(const char*) sg_link_name(Link *link);
-XBT_PUBLIC(Link *) sg_link_by_name(const char *name);
-XBT_PUBLIC(int) sg_link_is_shared(Link *link);
-XBT_PUBLIC(double) sg_link_bandwidth(Link *link);
-XBT_PUBLIC(double) sg_link_latency(Link *link);
-XBT_PUBLIC(void*) sg_link_data(Link *link);
-XBT_PUBLIC(void) sg_link_data_set(Link *link,void *data);
+XBT_PUBLIC(const char*) sg_link_name(sg_link_t link);
+XBT_PUBLIC(sg_link_t) sg_link_by_name(const char* name);
+XBT_PUBLIC(int) sg_link_is_shared(sg_link_t link);
+XBT_PUBLIC(double) sg_link_bandwidth(sg_link_t link);
+XBT_PUBLIC(double) sg_link_latency(sg_link_t link);
+XBT_PUBLIC(void*) sg_link_data(sg_link_t link);
+XBT_PUBLIC(void) sg_link_data_set(sg_link_t link, void* data);
 XBT_PUBLIC(int) sg_link_count();
-XBT_PUBLIC(Link**) sg_link_list();
+XBT_PUBLIC(sg_link_t*) sg_link_list();
 XBT_PUBLIC(void) sg_link_exit();
 SG_END_DECL()
 

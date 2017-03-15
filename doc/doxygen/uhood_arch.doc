@@ -75,7 +75,7 @@ It is a portable library providing some grounding features such as \ref
 XBT_log, \ref XBT_ex and \ref XBT_config.
 
 XBT also encompass the following convenient C data structures:
-\ref XBT_dynar, \ref XBT_fifo, \ref XBT_dict, \ref XBT_heap, \ref XBT_set and
+\ref XBT_dynar, \ref XBT_dict, \ref XBT_heap, and
 \ref XBT_swag. The code is being migrated in C++ so you should probably want
 to use standard C++ containers instead of them if possible.
 

@@ -7,7 +7,6 @@
    - \ref SURF_build_api
    - \ref SURF_c_bindings
    - \ref SURF_interface
-   - \ref SURF_routing_interface
    - \ref SURF_cpu_interface
    - \ref SURF_network_interface
    - \ref SURF_storage_interface
@@ -91,12 +90,6 @@
 @defgroup SURF_interface   SURF Interface
 @ingroup SURF_API
 @brief Describes the general interface for all components (Cpu, Network, Storage, Host, VM)
-*/
-
-/**
-@defgroup SURF_routing_interface   SURF Routing Interface
-@ingroup SURF_API
-@brief Describes the routing interface
 */
 
 /**

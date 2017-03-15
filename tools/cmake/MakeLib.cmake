@@ -1,5 +1,15 @@
 ### Make Libs
 
+# On Mac OSX, specify that rpath is useful to look for the dependencies
+# See https://cmake.org/Wiki/CMake_RPATH_handling and Java.cmake
+set(MACOSX_RPATH ON)
+if(APPLE)
+  # add the current location of libsimgrid-java.dynlib as a location for libsimgrid.dynlib
+  # (useful when unpacking the native libraries from the jarfile)
+  set(CMAKE_INSTALL_RPATH "@loader_path/.")
+  SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+endif()
+
 ###############################
 # Declare the library content #
 ###############################
@@ -74,7 +84,7 @@ if(HAVE_MC AND HAVE_GNU_LD)
 endif()
 
 if(HAVE_NS3)
-  SET(SIMGRID_DEP "${SIMGRID_DEP} -lns${NS3_VERSION}-core -lns${NS3_VERSION}-csma -lns${NS3_VERSION}-point-to-point -lns${NS3_VERSION}-internet -lns${NS3_VERSION}-applications")
+  SET(SIMGRID_DEP "${SIMGRID_DEP} -lns${NS3_VERSION}-core${NS3_SUFFIX} -lns${NS3_VERSION}-csma${NS3_SUFFIX} -lns${NS3_VERSION}-point-to-point${NS3_SUFFIX} -lns${NS3_VERSION}-internet${NS3_SUFFIX} -lns${NS3_VERSION}-applications${NS3_SUFFIX}")
 endif()
 
 if(HAVE_POSIX_GETTIME)

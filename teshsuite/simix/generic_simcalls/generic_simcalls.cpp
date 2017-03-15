@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
   xbt_assert(argc == 2, "Usage: %s platform.xml\n", argv[0]);
   SIMIX_function_register("master", example::master);
   SIMIX_create_environment(argv[1]);
-  simcall_process_create("master", example::master, NULL, sg_host_by_name("Tremblay"), -1, 0, NULL, NULL, 0);
+  simcall_process_create("master", example::master, NULL, sg_host_by_name("Tremblay"), 0, NULL, NULL);
   SIMIX_run();
   return 0;
 }

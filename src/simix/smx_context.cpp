@@ -1,7 +1,6 @@
 /* a fast and simple context switching library                              */
 
-/* Copyright (c) 2009-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -184,9 +183,13 @@ void *SIMIX_context_stack_new()
 
 #ifndef _WIN32
     if (mprotect(stack, smx_context_guard_size, PROT_NONE) == -1) {
-      xbt_die("Failed to protect stack: %s", strerror(errno));
-      /* This is fatal. We are going to fail at some point when
-         we tryi reusing this. */
+      xbt_die(
+          "Failed to protect stack: %s.\n"
+          "If you are running a lot of actors, you may be exceeding the amount of mappings allowed per process.\n"
+          "On Linux systems, change this value with sudo sysctl -w vm.max_map_count=newvalue (default value: 65536)\n"
+          "Please see http://simgrid.gforge.inria.fr/simgrid/latest/doc/html/options.html#options_virt for more info.",
+          strerror(errno));
+      /* This is fatal. We are going to fail at some point when we try reusing this. */
     }
 #endif
     stack = (char *)stack + smx_context_guard_size;

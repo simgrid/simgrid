@@ -47,7 +47,7 @@ simgrid::mc::Frame* ObjectInformation::find_function(const void *ip) const
 {
   /* This is implemented by binary search on a sorted array.
    *
-   * We do quite a lot ot those so we want this to be cache efficient.
+   * We do quite a lot of those so we want this to be cache efficient.
    * We pack the only information we need in the index entries in order
    * to successfully do the binary search. We do not need the high_pc
    * during the binary search (only at the end) so it is not included

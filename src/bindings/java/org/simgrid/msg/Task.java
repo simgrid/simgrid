@@ -1,5 +1,4 @@
-/* Copyright (c) 2006-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -85,8 +84,7 @@ public class Task {
 	 */
 	private final native void create(String name,
 			double flopsAmount,
-			double bytesAmount)
-					throws IllegalArgumentException;		
+			double bytesAmount);
 	/**
 	 * The natively implemented method to create a MSG parallel task.
 	 *
@@ -100,8 +98,7 @@ public class Task {
 	private final native void parallelCreate(String name,
 			Host[]hosts,
 			double[]flopsAmount,
-			double[]bytesAmount)
-					throws NullPointerException, IllegalArgumentException;
+			double[]bytesAmount);
 	/* *                   * *
 	 * * Getters / Setters * *
 	 * *                   * */
@@ -167,6 +164,7 @@ public class Task {
 	public native void cancel();
 
 	/** Deletes a task once the garbage collector reclaims it */
+	@Override
 	protected void finalize() throws Throwable{
 		nativeFinalize();
 		bind=0; // to avoid segfaults if the impossible happens yet again making this task surviving its finalize()
@@ -197,7 +195,7 @@ public class Task {
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException 
 	 */
-	public void send(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException, NativeException {
+	public void send(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
 		send(mailbox, -1);
 	} 
 
@@ -206,12 +204,11 @@ public class Task {
 	 *
 	 * @param mailbox where to send the message
 	 * @param timeout
-	 * @exception  NativeException if the retrieval fails.
 	 * @throws TimeoutException 
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException 
 	 */
-	public native void send(String mailbox, double timeout) throws TransferFailureException, HostFailureException, TimeoutException, NativeException;
+	public native void send(String mailbox, double timeout) throws TransferFailureException, HostFailureException, TimeoutException;
 
 	/** Sends the task on the specified mailbox (capping the sending rate to \a maxrate) 
 	 *

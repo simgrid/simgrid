@@ -1,10 +1,10 @@
-/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SIMGRID_KERNEL_CONTEXT_CONTEXT_HPP
-#define _SIMGRID_KERNEL_CONTEXT_CONTEXT_HPP
+#ifndef SIMGRID_KERNEL_CONTEXT_CONTEXT_HPP
+#define SIMGRID_KERNEL_CONTEXT_CONTEXT_HPP
 
 #include <functional>
 #include <memory>
@@ -17,14 +17,12 @@
 #include "simgrid/simix.h"
 #include "surf/surf.h"
 #include "xbt/base.h"
-#include "xbt/fifo.h"
 #include "xbt/swag.h"
 #include "xbt/dict.h"
 #include "xbt/mallocator.h"
 #include "xbt/config.h"
 #include "xbt/xbt_os_time.h"
 #include "xbt/function_types.h"
-#include "src/xbt/ex_interface.h"
 #include "src/instr/instr_private.h"
 #include "src/simix/smx_host_private.h"
 #include "src/simix/smx_io_private.h"
@@ -85,7 +83,7 @@ namespace context {
     smx_actor_t process_ = nullptr;
   public:
     bool iwannadie;
-  public:
+
     Context(std::function<void()> code,
             void_pfn_smxprocess_t cleanup_func,
             smx_actor_t process);

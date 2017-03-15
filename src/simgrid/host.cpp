@@ -11,13 +11,17 @@
 #include <xbt/Extendable.hpp>
 #include <simgrid/s4u/host.hpp>
 
+#include "src/kernel/routing/NetPoint.hpp"
+#include "src/simix/smx_host_private.h"
 #include "src/surf/HostImpl.hpp"
-#include "surf/surf.h" // routing_get_network_element_type FIXME:killme
+#include "src/surf/cpu_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sg_host, sd, "Logging specific to sg_hosts");
 
-extern std::unordered_map<std::string, simgrid::s4u::Host*>
-    host_list; // FIXME: don't dupplicate the content of s4u::Host this way
+// FIXME: The following duplicates the content of s4u::Host
+extern std::map<std::string, simgrid::s4u::Host*> host_list;
+
+extern "C" {
 
 void sg_host_exit()
 {
@@ -81,8 +85,8 @@ sg_host_t sg_host_by_name(const char *name)
 
 static int hostcmp_voidp(const void* pa, const void* pb)
 {
-  return strcmp((*static_cast<simgrid::s4u::Host* const*>(pa))->name().c_str(),
-                (*static_cast<simgrid::s4u::Host* const*>(pb))->name().c_str());
+  return strcmp((*static_cast<simgrid::s4u::Host* const*>(pa))->cname(),
+                (*static_cast<simgrid::s4u::Host* const*>(pb))->cname());
 }
 
 xbt_dynar_t sg_hosts_as_dynar()
@@ -91,8 +95,8 @@ xbt_dynar_t sg_hosts_as_dynar()
 
   for (auto kv : host_list) {
     simgrid::s4u::Host* host = kv.second;
-    if (host && host->pimpl_netcard && host->pimpl_netcard->isHost())
-       xbt_dynar_push(res, &host);
+    if (host && host->pimpl_netpoint && host->pimpl_netpoint->isHost())
+      xbt_dynar_push(res, &host);
   }
   xbt_dynar_sort(res, hostcmp_voidp);
   return res;
@@ -118,9 +122,6 @@ int sg_host_get_process_count(sg_host_t host){
 
 // ========= Layering madness ==============*
 
-#include "src/surf/cpu_interface.hpp"
-#include "src/surf/surf_routing.hpp"
-
 // ========== User data Layer ==========
 void *sg_host_user(sg_host_t host) {
   return host->extension(USER_HOST_LEVEL);
@@ -132,29 +133,20 @@ void sg_host_user_destroy(sg_host_t host) {
   host->extension_set(USER_HOST_LEVEL, nullptr);
 }
 
-// ========== MSG Layer ==============
-msg_host_priv_t sg_host_msg(sg_host_t host) {
-  return (msg_host_priv_t) host->extension(MSG_HOST_LEVEL);
-}
-void sg_host_msg_set(sg_host_t host, msg_host_priv_t smx_host) {
-  host->extension_set(MSG_HOST_LEVEL, smx_host);
-}
-
-// ========== Simix layer =============
-#include "src/simix/smx_host_private.h"
-smx_host_priv_t sg_host_simix(sg_host_t host){
-  return host->extension<simgrid::simix::Host>();
-}
-
 // ========= storage related functions ============
 xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host){
   return host->pimpl_->getMountedStorageList();
 }
 
 xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t host){
-  return host->pimpl_->getAttachedStorageList();
+  std::vector<const char*>* storage_vector = new std::vector<const char*>();
+  xbt_dynar_t storage_dynar = xbt_dynar_new(sizeof(const char*), nullptr);
+  host->attachedStorages(storage_vector);
+  for (auto name : *storage_vector)
+    xbt_dynar_push(storage_dynar, &name);
+  delete storage_vector;
+  return storage_dynar;
 }
-
 
 // =========== user-level functions ===============
 // ================================================
@@ -208,6 +200,52 @@ const char *sg_host_get_property_value(sg_host_t host, const char *name)
 {
   return (const char*) xbt_dict_get_or_null(sg_host_get_properties(host), name);
 }
+/**
+ * \brief Find a route between two hosts
+ *
+ * \param from where from
+ * \param to where to
+ * \param links [OUT] where to store the list of links (must exist, cannot be nullptr).
+ */
+void sg_host_route(sg_host_t from, sg_host_t to, xbt_dynar_t links)
+{
+  std::vector<simgrid::s4u::Link*> vlinks;
+  from->routeTo(to, &vlinks, nullptr);
+  for (auto link : vlinks)
+    xbt_dynar_push(links, &link);
+}
+/**
+ * \brief Find the latency of the route between two hosts
+ *
+ * \param from where from
+ * \param to where to
+ */
+double sg_host_route_latency(sg_host_t from, sg_host_t to)
+{
+  std::vector<simgrid::s4u::Link*> vlinks;
+  double res = 0;
+  from->routeTo(to, &vlinks, &res);
+  return res;
+}
+/**
+ * \brief Find the bandwitdh of the route between two hosts
+ *
+ * \param from where from
+ * \param to where to
+ */
+double sg_host_route_bandwidth(sg_host_t from, sg_host_t to)
+{
+  double min_bandwidth = -1.0;
+
+  std::vector<simgrid::s4u::Link*> vlinks;
+  from->routeTo(to, &vlinks, nullptr);
+  for (auto link : vlinks) {
+    double bandwidth = link->bandwidth();
+    if (bandwidth < min_bandwidth || min_bandwidth < 0.0)
+      min_bandwidth = bandwidth;
+  }
+  return min_bandwidth;
+}
 
 /** @brief Displays debugging information about a host */
 void sg_host_dump(sg_host_t host)
@@ -229,3 +267,5 @@ void sg_host_dump(sg_host_t host)
     }
   }
 }
+
+} // extern "C"

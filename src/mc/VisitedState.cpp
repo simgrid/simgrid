@@ -47,12 +47,11 @@ VisitedState::VisitedState(unsigned long state_number)
     process->get_heap()->heaplimit,
     process->get_malloc_info());
 
-  this->nb_processes =
-    mc_model_checker->process().simix_processes().size();
+  this->actors_count = mc_model_checker->process().actors().size();
 
   this->system_state = simgrid::mc::take_snapshot(state_number);
   this->num = state_number;
-  this->other_num = -1;
+  this->original_num = -1;
 }
 
 VisitedState::~VisitedState()
@@ -61,7 +60,7 @@ VisitedState::~VisitedState()
 
 void VisitedStates::prune()
 {
-  while (states_.size() > (std::size_t) _sg_mc_visited) {
+  while (states_.size() > (std::size_t)_sg_mc_max_visited_states) {
     XBT_DEBUG("Try to remove visited state (maximum number of stored states reached)");
     auto min_element = boost::range::min_element(states_,
       [](std::unique_ptr<simgrid::mc::VisitedState>& a, std::unique_ptr<simgrid::mc::VisitedState>& b) {
@@ -74,8 +73,7 @@ void VisitedStates::prune()
   }
 }
 
-/**
- * \brief Checks whether a given state has already been visited by the algorithm.
+/** \brief Checks whether a given state has already been visited by the algorithm.
  */
 std::unique_ptr<simgrid::mc::VisitedState> VisitedStates::addVisitedState(
   unsigned long state_number, simgrid::mc::State* graph_state, bool compare_snpashots)
@@ -86,8 +84,8 @@ std::unique_ptr<simgrid::mc::VisitedState> VisitedStates::addVisitedState(
   XBT_DEBUG("Snapshot %p of visited state %d (exploration stack state %d)",
     new_state->system_state.get(), new_state->num, graph_state->num);
 
-  auto range = boost::range::equal_range(states_,
-    new_state.get(), simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
+  auto range =
+      boost::range::equal_range(states_, new_state.get(), simgrid::mc::DerefAndCompareByActorsCountAndUsedHeap());
 
   if (compare_snpashots)
     for (auto i = range.first; i != range.second; ++i) {
@@ -98,18 +96,17 @@ std::unique_ptr<simgrid::mc::VisitedState> VisitedStates::addVisitedState(
         std::unique_ptr<simgrid::mc::VisitedState> old_state =
           std::move(visited_state);
 
-        if (old_state->other_num == -1)
-          new_state->other_num = old_state->num;
-        else
-          new_state->other_num = old_state->other_num;
+        if (old_state->original_num == -1) // I'm the copy of an original process
+          new_state->original_num = old_state->num;
+        else // I'm the copy of a copy
+          new_state->original_num = old_state->original_num;
 
         if (dot_output == nullptr)
           XBT_DEBUG("State %d already visited ! (equal to state %d)",
-            new_state->num, old_state->num);
+                    new_state->num, old_state->num);
         else
-          XBT_DEBUG(
-            "State %d already visited ! (equal to state %d (state %d in dot_output))",
-            new_state->num, old_state->num, new_state->other_num);
+          XBT_DEBUG("State %d already visited ! (equal to state %d (state %d in dot_output))",
+                    new_state->num, old_state->num, new_state->original_num);
 
         /* Replace the old state with the new one (with a bigger num)
            (when the max number of visited states is reached,  the oldest

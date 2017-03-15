@@ -63,8 +63,8 @@ int main(int argc, char* argv[])
   bobTimes[7] = xbt_strdup("5");
   bobTimes[8] = NULL;
 
-  MSG_process_create_with_arguments(xbt_strdup("Alice"), peer, NULL, h, 8, aliceTimes);
-  MSG_process_create_with_arguments(xbt_strdup("Bob"), peer, NULL, h, 8, bobTimes);
+  MSG_process_create_with_arguments("Alice", peer, NULL, h, 8, aliceTimes);
+  MSG_process_create_with_arguments("Bob", peer, NULL, h, 8, bobTimes);
 
   msg_error_t res = MSG_main();
   XBT_INFO("Finished\n");

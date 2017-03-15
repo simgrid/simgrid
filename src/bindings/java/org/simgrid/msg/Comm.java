@@ -6,10 +6,7 @@
 
 package org.simgrid.msg;
 
-/**
- * Communication action, representing an ongoing communication
- * between processes.
- */
+/** Communication action, representing an ongoing communication between processes. */
 public class Comm {
 	/** Indicates if the communication is a receiving communication */
 	protected boolean receiving;
@@ -33,6 +30,7 @@ public class Comm {
 
 	}
 	/** Destroy the C communication object, when the GC reclaims the java part. */
+	@Override
 	protected void finalize() throws Throwable{
 		nativeFinalize();
 	}

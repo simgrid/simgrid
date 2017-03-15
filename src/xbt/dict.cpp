@@ -31,6 +31,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt, "Dictionaries provide the same fu
  */
 xbt_dict_t xbt_dict_new()
 {
+  XBT_WARN("Function xbt_dict_new() will soon be dropped. Please switch to xbt_dict_new_homogeneous()");
   xbt_dict_t dict = xbt_dict_new_homogeneous(nullptr);
   dict->homogeneous = 0;
 
@@ -134,7 +135,6 @@ static void xbt_dict_rehash(xbt_dict_t dict)
         if (!*twincell)
           dict->fill++;
         *twincell = bucklet;
-        continue;
       } else {
         pprev = &bucklet->next;
       }
@@ -582,40 +582,38 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_dict);
 
 XBT_TEST_SUITE("dict", "Dict data container");
 
-static void debuged_add_ext(xbt_dict_t head, const char *key, const char *data_to_fill, void_f_pvoid_t free_f)
+static void debugged_add_ext(xbt_dict_t head, const char* key, const char* data_to_fill)
 {
   char *data = xbt_strdup(data_to_fill);
 
   xbt_test_log("Add %s under %s", data_to_fill, key);
 
-  xbt_dict_set(head, key, data, free_f);
+  xbt_dict_set(head, key, data, nullptr);
   if (XBT_LOG_ISENABLED(xbt_dict, xbt_log_priority_debug)) {
     xbt_dict_dump(head, (void (*)(void *)) &printf);
     fflush(stdout);
   }
 }
 
-static void debuged_add(xbt_dict_t head, const char *key, void_f_pvoid_t free_f)
+static void debugged_add(xbt_dict_t head, const char* key)
 {
-  debuged_add_ext(head, key, key, free_f);
+  debugged_add_ext(head, key, key);
 }
 
-static void fill(xbt_dict_t * head, int homogeneous)
+static xbt_dict_t new_fixture(void)
 {
-  void_f_pvoid_t free_f = homogeneous ? nullptr : &free;
-
   xbt_test_add("Fill in the dictionnary");
 
-  *head = homogeneous ? xbt_dict_new_homogeneous(&free) : xbt_dict_new();
-  debuged_add(*head, "12", free_f);
-  debuged_add(*head, "12a", free_f);
-  debuged_add(*head, "12b", free_f);
-  debuged_add(*head, "123", free_f);
-  debuged_add(*head, "123456", free_f);
-  /* Child becomes child of what to add */
-  debuged_add(*head, "1234", free_f);
-  /* Need of common ancestor */
-  debuged_add(*head, "123457", free_f);
+  xbt_dict_t head = xbt_dict_new_homogeneous(&free);
+  debugged_add(head, "12");
+  debugged_add(head, "12a");
+  debugged_add(head, "12b");
+  debugged_add(head, "123");
+  debugged_add(head, "123456");
+  debugged_add(head, "1234");
+  debugged_add(head, "123457");
+
+  return head;
 }
 
 static void search_ext(xbt_dict_t head, const char *key, const char *data)
@@ -638,7 +636,7 @@ static void search(xbt_dict_t head, const char *key)
   search_ext(head, key, key);
 }
 
-static void debuged_remove(xbt_dict_t head, const char *key)
+static void debugged_remove(xbt_dict_t head, const char* key)
 {
   xbt_test_add("Remove '%s'", key);
   xbt_dict_remove(head, key);
@@ -681,14 +679,13 @@ static void search_not_found(xbt_dict_t head, const char *data)
 
 static void count(xbt_dict_t dict, int length)
 {
+  xbt_test_add("Count elements (expecting %d)", length);
+  xbt_test_assert(xbt_dict_length(dict) == length, "Announced length(%d) != %d.", xbt_dict_length(dict), length);
+
   xbt_dict_cursor_t cursor;
   char *key;
   void *data;
   int effective = 0;
-
-  xbt_test_add("Count elements (expecting %d)", length);
-  xbt_test_assert(xbt_dict_length(dict) == length, "Announced length(%d) != %d.", xbt_dict_length(dict), length);
-
   xbt_dict_foreach(dict, cursor, key, data)
       effective++;
 
@@ -699,7 +696,6 @@ static void count_check_get_key(xbt_dict_t dict, int length)
 {
   xbt_dict_cursor_t cursor;
   char *key;
-  XBT_ATTRIB_UNUSED char *key2;
   void *data;
   int effective = 0;
 
@@ -708,29 +704,23 @@ static void count_check_get_key(xbt_dict_t dict, int length)
 
   xbt_dict_foreach(dict, cursor, key, data) {
     effective++;
-    key2 = xbt_dict_get_key(dict, data);
+    char* key2 = xbt_dict_get_key(dict, data);
     xbt_assert(!strcmp(key, key2), "The data was registered under %s instead of %s as expected", key2, key);
   }
 
   xbt_test_assert(effective == length, "Effective length(%d) != %d.", effective, length);
 }
 
-xbt_ex_t e;
-xbt_dict_t head = nullptr;
-char *data;
-
-static void basic_test(int homogeneous)
+XBT_TEST_UNIT("basic", test_dict_basic, "Basic usage: change, retrieve and traverse homogeneous dicts")
 {
-  void_f_pvoid_t free_f;
-
   xbt_test_add("Traversal the null dictionary");
-  traverse(head);
+  traverse(nullptr);
 
   xbt_test_add("Traversal and search the empty dictionary");
-  head = homogeneous ? xbt_dict_new_homogeneous(&free) : xbt_dict_new();
+  xbt_dict_t head = xbt_dict_new_homogeneous(&free);
   traverse(head);
   try {
-    debuged_remove(head, "12346");
+    debugged_remove(head, "12346");
   }
   catch(xbt_ex& e) {
     if (e.category != not_found_error)
@@ -738,15 +728,13 @@ static void basic_test(int homogeneous)
   }
   xbt_dict_free(&head);
 
-  free_f = homogeneous ? nullptr : &free;
-
   xbt_test_add("Traverse the full dictionary");
-  fill(&head, homogeneous);
+  head = new_fixture();
   count_check_get_key(head, 7);
 
-  debuged_add_ext(head, "toto", "tutu", free_f);
+  debugged_add_ext(head, "toto", "tutu");
   search_ext(head, "toto", "tutu");
-  debuged_remove(head, "toto");
+  debugged_remove(head, "toto");
 
   search(head, "12a");
   traverse(head);
@@ -756,22 +744,22 @@ static void basic_test(int homogeneous)
   xbt_dict_free(&head);
 
   /* CHANGING */
-  fill(&head, homogeneous);
+  head = new_fixture();
   count_check_get_key(head, 7);
   xbt_test_add("Change 123 to 'Changed 123'");
-  xbt_dict_set(head, "123", xbt_strdup("Changed 123"), free_f);
+  xbt_dict_set(head, "123", xbt_strdup("Changed 123"), nullptr);
   count_check_get_key(head, 7);
 
   xbt_test_add("Change 123 back to '123'");
-  xbt_dict_set(head, "123", xbt_strdup("123"), free_f);
+  xbt_dict_set(head, "123", xbt_strdup("123"), nullptr);
   count_check_get_key(head, 7);
 
   xbt_test_add("Change 12a to 'Dummy 12a'");
-  xbt_dict_set(head, "12a", xbt_strdup("Dummy 12a"), free_f);
+  xbt_dict_set(head, "12a", xbt_strdup("Dummy 12a"), nullptr);
   count_check_get_key(head, 7);
 
   xbt_test_add("Change 12a to '12a'");
-  xbt_dict_set(head, "12a", xbt_strdup("12a"), free_f);
+  xbt_dict_set(head, "12a", xbt_strdup("12a"), nullptr);
   count_check_get_key(head, 7);
 
   xbt_test_add("Traverse the resulting dictionary");
@@ -779,7 +767,7 @@ static void basic_test(int homogeneous)
 
   /* RETRIEVE */
   xbt_test_add("Search 123");
-  data = (char*) xbt_dict_get(head, "123");
+  char* data = (char*)xbt_dict_get(head, "123");
   xbt_test_assert(data);
   xbt_test_assert(!strcmp("123", data));
 
@@ -807,23 +795,13 @@ static void basic_test(int homogeneous)
   traverse(head);
 }
 
-XBT_TEST_UNIT("basic_heterogeneous", test_dict_basic_heterogeneous, "Basic usage: change, retrieve, traverse: heterogeneous dict")
+XBT_TEST_UNIT("remove_homogeneous", test_dict_remove, "Removing some values from homogeneous dicts")
 {
-  basic_test(0);
-}
-
-XBT_TEST_UNIT("basic_homogeneous", test_dict_basic_homogeneous, "Basic usage: change, retrieve, traverse: homogeneous dict")
-{
-  basic_test(1);
-}
-
-static void remove_test(int homogeneous)
-{
-  fill(&head, homogeneous);
+  xbt_dict_t head = new_fixture();
   count(head, 7);
   xbt_test_add("Remove non existing data");
   try {
-    debuged_remove(head, "Does not exist");
+    debugged_remove(head, "Does not exist");
   }
   catch(xbt_ex& e) {
     if (e.category != not_found_error)
@@ -834,35 +812,35 @@ static void remove_test(int homogeneous)
   xbt_dict_free(&head);
 
   xbt_test_add("Remove each data manually (traversing the resulting dictionary each time)");
-  fill(&head, homogeneous);
-  debuged_remove(head, "12a");
+  head = new_fixture();
+  debugged_remove(head, "12a");
   traverse(head);
   count(head, 6);
-  debuged_remove(head, "12b");
+  debugged_remove(head, "12b");
   traverse(head);
   count(head, 5);
-  debuged_remove(head, "12");
+  debugged_remove(head, "12");
   traverse(head);
   count(head, 4);
-  debuged_remove(head, "123456");
+  debugged_remove(head, "123456");
   traverse(head);
   count(head, 3);
   try {
-    debuged_remove(head, "12346");
+    debugged_remove(head, "12346");
   }
   catch(xbt_ex& e) {
     if (e.category != not_found_error)
       xbt_test_exception(e);
     traverse(head);
   }
-  debuged_remove(head, "1234");
+  debugged_remove(head, "1234");
   traverse(head);
-  debuged_remove(head, "123457");
+  debugged_remove(head, "123457");
   traverse(head);
-  debuged_remove(head, "123");
+  debugged_remove(head, "123");
   traverse(head);
   try {
-    debuged_remove(head, "12346");
+    debugged_remove(head, "12346");
   }
   catch(xbt_ex& e) {
     if (e.category != not_found_error)
@@ -872,7 +850,7 @@ static void remove_test(int homogeneous)
 
   xbt_test_add("Free dict, create new fresh one, and then reset the dict");
   xbt_dict_free(&head);
-  fill(&head, homogeneous);
+  head = new_fixture();
   xbt_dict_reset(head);
   count(head, 0);
   traverse(head);
@@ -882,19 +860,9 @@ static void remove_test(int homogeneous)
   xbt_dict_free(&head);
 }
 
-XBT_TEST_UNIT("remove_heterogeneous", test_dict_remove_heterogeneous, "Removing some values: heterogeneous dict")
-{
-  remove_test(0);
-}
-
-XBT_TEST_UNIT("remove_homogeneous", test_dict_remove_homogeneous, "Removing some values: homogeneous dict")
-{
-  remove_test(1);
-}
-
 XBT_TEST_UNIT("nulldata", test_dict_nulldata, "nullptr data management")
 {
-  fill(&head, 1);
+  xbt_dict_t head = new_fixture();
 
   xbt_test_add("Store nullptr under 'null'");
   xbt_dict_set(head, "null", nullptr, nullptr);
@@ -905,6 +873,7 @@ XBT_TEST_UNIT("nulldata", test_dict_nulldata, "nullptr data management")
     xbt_dict_cursor_t cursor = nullptr;
     char *key;
     int found = 0;
+    char* data;
 
     xbt_dict_foreach(head, cursor, key, data) {
       if (!key || !data || strcmp(key, data)) {
@@ -938,31 +907,27 @@ static int countelems(xbt_dict_t head)
 
 XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
 {
-  xbt_dict_t head = nullptr;
-  int i, j, k;
-  char *key;
-
   srand((unsigned int) time(nullptr));
 
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     xbt_test_add("CRASH test number %d (%d to go)", i + 1, 10 - i - 1);
     xbt_test_log("Fill the struct, count its elems and frees the structure");
     xbt_test_log("using 1000 elements with %d chars long randomized keys.", SIZEOFKEY);
-    head = xbt_dict_new();
+    xbt_dict_t head = xbt_dict_new_homogeneous(free);
     /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
-    for (j = 0; j < 1000; j++) {
-      char *data = nullptr;
-      key = (char*) xbt_malloc(SIZEOFKEY);
+    for (int j = 0; j < 1000; j++) {
+      char* data = nullptr;
+      char* key  = (char*)xbt_malloc(SIZEOFKEY);
 
       do {
-        for (k = 0; k < SIZEOFKEY - 1; k++)
+        for (int k         = 0; k < SIZEOFKEY - 1; k++)
           key[k] = rand() % ('z' - 'a') + 'a';
-        key[k] = '\0';
+        key[SIZEOFKEY - 1] = '\0';
         /*      printf("[%d %s]\n",j,key); */
         data = (char*) xbt_dict_get_or_null(head, key);
       } while (data != nullptr);
 
-      xbt_dict_set(head, key, key, &free);
+      xbt_dict_set(head, key, key, nullptr);
       data = (char*) xbt_dict_get(head, key);
       xbt_test_assert(!strcmp(key, data), "Retrieved value (%s) != Injected value (%s)", key, data);
 
@@ -974,29 +939,27 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
     xbt_dict_free(&head);
   }
 
-  head = xbt_dict_new();
+  xbt_dict_t head = xbt_dict_new_homogeneous(&free);
   xbt_test_add("Fill %d elements, with keys being the number of element", NB_ELM);
-  for (j = 0; j < NB_ELM; j++) {
+  for (int j = 0; j < NB_ELM; j++) {
     /* if (!(j%1000)) { printf("."); fflush(stdout); } */
-    key = (char*) xbt_malloc(10);
+    char* key = (char*)xbt_malloc(10);
 
     snprintf(key,10, "%d", j);
-    xbt_dict_set(head, key, key, &free);
+    xbt_dict_set(head, key, key, nullptr);
   }
   /*xbt_dict_dump(head,(void (*)(void*))&printf); */
 
   xbt_test_add("Count the elements (retrieving the key and data for each)");
-  i = countelems(head);
-  xbt_test_log("There is %d elements", i);
+  xbt_test_log("There is %d elements", countelems(head));
 
   xbt_test_add("Search my %d elements 20 times", NB_ELM);
-  key = (char*) xbt_malloc(10);
-  for (i = 0; i < 20; i++) {
-    void *data;
+  char* key = (char*)xbt_malloc(10);
+  for (int i = 0; i < 20; i++) {
     /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
-    for (j = 0; j < NB_ELM; j++) {
+    for (int j = 0; j < NB_ELM; j++) {
       snprintf(key,10, "%d", j);
-      data = xbt_dict_get(head, key);
+      void* data = xbt_dict_get(head, key);
       xbt_test_assert(!strcmp(key, (char *) data), "with get, key=%s != data=%s", key, (char *) data);
       data = xbt_dict_get_ext(head, key, strlen(key));
       xbt_test_assert(!strcmp(key, (char *) data), "with get_ext, key=%s != data=%s", key, (char *) data);
@@ -1006,31 +969,30 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
 
   xbt_test_add("Remove my %d elements", NB_ELM);
   key = (char*) xbt_malloc(10);
-  for (j = 0; j < NB_ELM; j++) {
+  for (int j = 0; j < NB_ELM; j++) {
     /* if (!(j%10000)) printf("."); fflush(stdout); */
     snprintf(key,10, "%d", j);
     xbt_dict_remove(head, key);
   }
   free(key);
 
-  xbt_test_add("Free the structure (twice)");
+  xbt_test_add("Free the object (twice)");
   xbt_dict_free(&head);
   xbt_dict_free(&head);
 }
 
 XBT_TEST_UNIT("ext", test_dict_int, "Test dictionnary with int keys")
 {
-  xbt_dict_t dict = xbt_dict_new();
+  xbt_dict_t dict = xbt_dict_new_homogeneous(nullptr);
   int count = 500;
 
   xbt_test_add("Insert elements");
-  int i;
-  for (i = 0; i < count; ++i)
+  for (int i = 0; i < count; ++i)
     xbt_dict_set_ext(dict, (char*) &i, sizeof(i), (void*) (intptr_t) i, nullptr);
   xbt_test_assert(xbt_dict_size(dict) == (unsigned) count, "Bad number of elements in the dictionnary");
 
   xbt_test_add("Check elements");
-  for (i = 0; i < count; ++i) {
+  for (int i = 0; i < count; ++i) {
     int res = (int) (intptr_t) xbt_dict_get_ext(dict, (char*) &i, sizeof(i));
     xbt_test_assert(xbt_dict_size(dict) == (unsigned) count, "Unexpected value at index %i, expected %i but was %i", i, i, res);
   }

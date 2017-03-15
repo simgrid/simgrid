@@ -19,11 +19,11 @@
 #include <xbt/base.h>
 #include <sys/types.h>
 
-#include "src/mc/mc_forward.hpp"
-#include "src/mc/Process.hpp"
 #include "src/mc/PageStore.hpp"
-#include "src/mc/mc_protocol.h"
+#include "src/mc/Process.hpp"
 #include "src/mc/Transition.hpp"
+#include "src/mc/mc_forward.hpp"
+#include "src/mc/remote/mc_protocol.h"
 
 namespace simgrid {
 namespace mc {

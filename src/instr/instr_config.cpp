@@ -5,9 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/instr/instr_private.h"
-#include "simgrid/sg_config.h"
 #include "surf/surf.h"
-#include <functional>
 #include <vector>
 
 XBT_LOG_NEW_CATEGORY(instr, "Logging the behavior of the tracing system (used for Visualization/Analysis of simulations)");
@@ -491,7 +489,7 @@ void TRACE_help (int detailed)
   print_line (OPT_TRACING_TOPOLOGY, "Register the platform topology as a graph",
         "  This option (enabled by default) can be used to disable the tracing of\n"
         "  the platform topology in the trace file. Sometimes, such task is really\n"
-        "  time consuming, since it must get the route from each host ot other hosts\n"
+        "  time consuming, since it must get the route from each host to other hosts\n"
         "  within the same Autonomous System (AS).", detailed);
 }
 

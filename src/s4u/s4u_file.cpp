@@ -20,10 +20,10 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_file,"S4U files");
 namespace simgrid {
 namespace s4u {
 
-File::File(const char*fullpath, void *userdata) {
+File::File(const char* fullpath, void* userdata) : path_(fullpath)
+{
   // this cannot fail because we get a xbt_die if the mountpoint does not exist
   pimpl_ = simcall_file_open(fullpath, Host::current());
-  path_ = fullpath;
 }
 
 File::~File() {

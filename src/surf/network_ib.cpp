@@ -6,11 +6,13 @@
 
 #include <utility>
 
-#include "network_ib.hpp"
-
-#include "src/surf/HostImpl.hpp"
 #include "simgrid/sg_config.h"
-#include "maxmin_private.hpp"
+#include "src/surf/HostImpl.hpp"
+#include "src/surf/maxmin_private.hpp"
+#include "src/surf/network_ib.hpp"
+#include "src/surf/xml/platf.hpp"
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
@@ -21,24 +23,20 @@ static void IB_create_host_callback(simgrid::s4u::Host& host){
   static int id=0;
   // pour t->id -> rajouter une nouvelle struct dans le dict, pour stocker les comms actives
   if(((NetworkIBModel*)surf_network_model)->active_nodes==nullptr)
-    ((NetworkIBModel*)surf_network_model)->active_nodes=xbt_dict_new();
+    ((NetworkIBModel*)surf_network_model)->active_nodes = xbt_dict_new_homogeneous(nullptr);
 
   IBNode* act = new IBNode(id);
 
   id++;
-  xbt_dict_set(((NetworkIBModel*)surf_network_model)->active_nodes,
-      host.name().c_str(), act, nullptr);
-
+  xbt_dict_set(((NetworkIBModel*)surf_network_model)->active_nodes, host.cname(), act, nullptr);
 }
 
-static void IB_action_state_changed_callback(
-    simgrid::surf::NetworkAction *action,
-    simgrid::surf::Action::State statein, simgrid::surf::Action::State stateout)
+static void IB_action_state_changed_callback(simgrid::surf::NetworkAction* action)
 {
   using simgrid::surf::NetworkIBModel;
   using simgrid::surf::IBNode;
 
-  if(statein!=simgrid::surf::Action::State::running || stateout!=simgrid::surf::Action::State::done)
+  if (action->getState() != simgrid::surf::Action::State::done)
     return;
   std::pair<IBNode*,IBNode*> pair = ((NetworkIBModel*)surf_network_model)->active_comms[action];
   XBT_DEBUG("IB callback - action %p finished", action);
@@ -54,12 +52,10 @@ static void IB_action_init_callback(simgrid::surf::NetworkAction* action, simgri
 {
   simgrid::surf::NetworkIBModel* ibModel = (simgrid::surf::NetworkIBModel*)surf_network_model;
 
-  simgrid::surf::IBNode* act_src =
-      (simgrid::surf::IBNode*)xbt_dict_get_or_null(ibModel->active_nodes, src->name().c_str());
+  simgrid::surf::IBNode* act_src = (simgrid::surf::IBNode*)xbt_dict_get_or_null(ibModel->active_nodes, src->cname());
   xbt_assert(act_src, "could not find src node active comms !");
 
-  simgrid::surf::IBNode* act_dst =
-      (simgrid::surf::IBNode*)xbt_dict_get_or_null(ibModel->active_nodes, dst->name().c_str());
+  simgrid::surf::IBNode* act_dst = (simgrid::surf::IBNode*)xbt_dict_get_or_null(ibModel->active_nodes, dst->cname());
   xbt_assert(act_dst, "could not find dst node active comms !");
 
   ibModel->active_comms[action]=std::make_pair(act_src, act_dst);
@@ -83,21 +79,17 @@ static void IB_action_init_callback(simgrid::surf::NetworkAction* action, simgri
 /*  } */
 void surf_network_model_init_IB()
 {
-  using simgrid::surf::networkActionStateChangedCallbacks;
-
   if (surf_network_model)
     return;
 
   surf_network_model = new simgrid::surf::NetworkIBModel();
   all_existing_models->push_back(surf_network_model);
-  networkActionStateChangedCallbacks.connect(IB_action_state_changed_callback);
-  Link::onCommunicate.connect(IB_action_init_callback);
+  simgrid::s4u::Link::onCommunicationStateChange.connect(IB_action_state_changed_callback);
+  simgrid::s4u::Link::onCommunicate.connect(IB_action_init_callback);
   simgrid::s4u::Host::onCreation.connect(IB_create_host_callback);
   xbt_cfg_setdefault_double("network/weight-S", 8775);
 
 }
-
-#include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 
 namespace simgrid {
   namespace surf {
@@ -108,16 +100,18 @@ namespace simgrid {
       active_nodes=nullptr;
 
       const char* IB_factors_string=xbt_cfg_get_string("smpi/IB-penalty-factors");
-      xbt_dynar_t radical_elements = xbt_str_split(IB_factors_string, ";");
+      std::vector<std::string> radical_elements;
+      boost::split(radical_elements, IB_factors_string, boost::is_any_of(";"));
 
-      surf_parse_assert(xbt_dynar_length(radical_elements)==3,
-          "smpi/IB-penalty-factors should be provided and contain 3 elements, semi-colon separated. Example: 0.965;0.925;1.35");
+      surf_parse_assert(radical_elements.size() == 3, "smpi/IB-penalty-factors should be provided and contain 3 "
+                                                      "elements, semi-colon separated. Example: 0.965;0.925;1.35");
 
-      Be = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 0, char *), "First part of smpi/IB-penalty-factors is not numerical: %s");
-      Bs = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 1, char *), "Second part of smpi/IB-penalty-factors is not numerical: %s");
-      ys = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 2, char *), "Third part of smpi/IB-penalty-factors is not numerical: %s");
-
-      xbt_dynar_free(&radical_elements);
+      Be = xbt_str_parse_double(radical_elements.front().c_str(),
+                                "First part of smpi/IB-penalty-factors is not numerical: %s");
+      Bs = xbt_str_parse_double((radical_elements.at(1)).c_str(),
+                                "Second part of smpi/IB-penalty-factors is not numerical: %s");
+      ys = xbt_str_parse_double(radical_elements.back().c_str(),
+                                "Third part of smpi/IB-penalty-factors is not numerical: %s");
     }
 
     NetworkIBModel::~NetworkIBModel()

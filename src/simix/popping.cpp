@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smx_private.h"
-#include "xbt/fifo.h"
 #include "xbt/xbt_os_thread.h"
 #if HAVE_MC
 #include "src/mc/mc_private.h"

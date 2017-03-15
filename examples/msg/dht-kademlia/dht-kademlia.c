@@ -159,8 +159,8 @@ unsigned int join(node_t node, unsigned int id_known)
   } while (answer_got == 0 && trial < max_join_trials);
   /* Second step: Send a FIND_NODE to a a random node in buckets */
   unsigned int bucket_id = routing_table_find_bucket(node->table, id_known)->id;
-  for (i = 0; ((bucket_id - i) > 0 || (bucket_id + i) <= identifier_size) && i < JOIN_BUCKETS_QUERIES; i++) {
-    if (bucket_id - i > 0) {
+  for (i = 0; ((bucket_id  > i) || (bucket_id + i) <= identifier_size) && i < JOIN_BUCKETS_QUERIES; i++) {
+    if (bucket_id  > i) {
       unsigned int id_in_bucket = get_id_in_prefix(node->id, bucket_id - i);
       find_node(node, id_in_bucket, 0);
     }

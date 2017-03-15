@@ -159,13 +159,13 @@ int MC_snapshot_memcmp(
 namespace simgrid {
 namespace mc {
 
-Snapshot::Snapshot(Process* process) :
-  AddressSpace(process),
-  num_state(0),
-  heap_bytes_used(0),
-  enabled_processes(),
-  privatization_index(0),
-  hash(0)
+Snapshot::Snapshot(Process* process, int _num_state)
+    : AddressSpace(process)
+    , num_state(_num_state)
+    , heap_bytes_used(0)
+    , enabled_processes()
+    , privatization_index(0)
+    , hash(0)
 {
 
 }
@@ -234,7 +234,7 @@ XBT_TEST_UNIT("page_snapshots", test_per_snpashots, "Test per-page snapshots")
 
 static void test_snapshot(bool sparse_checkpoint) {
 
-  xbt_test_add("Initialisation");
+  xbt_test_add("Initialization");
   _sg_mc_sparse_checkpoint = sparse_checkpoint;
   xbt_assert(xbt_pagesize == getpagesize());
   xbt_assert(1 << xbt_pagebits == xbt_pagesize);

@@ -6,7 +6,6 @@
 
 #include <xbt/dynar.h>
 #include "cpu_interface.hpp"
-#include "plugins/energy.hpp"
 #include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 
 XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
@@ -31,10 +30,8 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
     if (TRACE_is_enabled()) {
       Cpu *cpu = static_cast<Cpu*>(lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)));
-      TRACE_surf_host_set_utilization(cpu->getName(), action->getCategory(),
-                                      lmm_variable_getvalue(action->getVariable()),
-                                      action->getLastUpdate(),
-                                      now - action->getLastUpdate());
+      TRACE_surf_host_set_utilization(cpu->cname(), action->getCategory(), lmm_variable_getvalue(action->getVariable()),
+                                      action->getLastUpdate(), now - action->getLastUpdate());
     }
 
     action->finish();
@@ -49,16 +46,12 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     //without losing the event ascending order (considering all CPU's)
     double smaller = -1;
     ActionList *actionSet = getRunningActionSet();
-    for(ActionList::iterator it(actionSet->begin()), itend(actionSet->end())
-       ; it != itend ; ++it) {
+    ActionList::iterator it(actionSet->begin());
+    ActionList::iterator itend(actionSet->end());
+    for (; it != itend; ++it) {
       CpuAction *action = static_cast<CpuAction*>(&*it);
-        if (smaller < 0) {
-          smaller = action->getLastUpdate();
-          continue;
-        }
-        if (action->getLastUpdate() < smaller) {
-          smaller = action->getLastUpdate();
-        }
+      if (smaller < 0 || action->getLastUpdate() < smaller)
+        smaller = action->getLastUpdate();
     }
     if (smaller > 0) {
       TRACE_last_timestamp_to_dump = smaller;
@@ -70,35 +63,27 @@ void CpuModel::updateActionsStateFull(double now, double delta)
 {
   CpuAction *action = nullptr;
   ActionList *running_actions = getRunningActionSet();
-
-  for(ActionList::iterator it(running_actions->begin()), itNext=it, itend(running_actions->end())
-     ; it != itend ; it=itNext) {
+  ActionList::iterator it(running_actions->begin());
+  ActionList::iterator itNext = it;
+  ActionList::iterator itend(running_actions->end());
+  for (; it != itend; it = itNext) {
     ++itNext;
     action = static_cast<CpuAction*>(&*it);
     if (TRACE_is_enabled()) {
       Cpu *cpu = static_cast<Cpu*> (lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)) );
 
-      TRACE_surf_host_set_utilization(cpu->getName(),
-                                      action->getCategory(),
-                                      lmm_variable_getvalue(action->getVariable()),
-                                      now - delta,
-                                      delta);
+      TRACE_surf_host_set_utilization(cpu->cname(), action->getCategory(), lmm_variable_getvalue(action->getVariable()),
+                                      now - delta, delta);
       TRACE_last_timestamp_to_dump = now - delta;
     }
 
     action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
 
-
     if (action->getMaxDuration() != NO_MAX_DURATION)
       action->updateMaxDuration(delta);
 
-
-    if ((action->getRemainsNoUpdate() <= 0) &&
-        (lmm_get_variable_weight(action->getVariable()) > 0)) {
-      action->finish();
-      action->setState(Action::State::done);
-    } else if ((action->getMaxDuration() != NO_MAX_DURATION) &&
-               (action->getMaxDuration() <= 0)) {
+    if (((action->getRemainsNoUpdate() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||
+        ((action->getMaxDuration() != NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
       action->finish();
       action->setState(Action::State::done);
     }
@@ -113,18 +98,16 @@ Cpu::Cpu(Model *model, simgrid::s4u::Host *host, std::vector<double> *speedPerPs
 {
 }
 
-Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
-    std::vector<double> * speedPerPstate, int core)
- : Resource(model, host->name().c_str(), constraint)
- , coresAmount_(core)
- , host_(host)
+Cpu::Cpu(Model* model, simgrid::s4u::Host* host, lmm_constraint_t constraint, std::vector<double>* speedPerPstate,
+         int core)
+    : Resource(model, host->cname(), constraint), coresAmount_(core), host_(host)
 {
-  xbt_assert(core > 0, "Host %s must have at least one core, not 0.", host->name().c_str());
+  xbt_assert(core > 0, "Host %s must have at least one core, not 0.", host->cname());
 
   speed_.peak = speedPerPstate->front();
   speed_.scale = 1;
   host->pimpl_cpu = this;
-  xbt_assert(speed_.scale > 0, "Speed of host %s must be >0", host->name().c_str());
+  xbt_assert(speed_.scale > 0, "Speed of host %s must be >0", host->cname());
 
   // Copy the power peak array:
   for (double value : *speedPerPstate) {
@@ -136,6 +119,7 @@ Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
 
 Cpu::~Cpu() = default;
 
+/** @brief The amount of flop per second that this CPU can compute at its current DVFS level */
 double Cpu::getPstateSpeedCurrent()
 {
   return speed_.peak;
@@ -149,8 +133,8 @@ int Cpu::getNbPStates()
 void Cpu::setPState(int pstate_index)
 {
   xbt_assert(pstate_index <= static_cast<int>(speedPerPstate_.size()),
-      "Invalid parameters for CPU %s (pstate %d > length of pstates %d)", getName(), pstate_index,
-      static_cast<int>(speedPerPstate_.size()));
+             "Invalid parameters for CPU %s (pstate %d > length of pstates %d)", cname(), pstate_index,
+             static_cast<int>(speedPerPstate_.size()));
 
   double new_peak_speed = speedPerPstate_[pstate_index];
   pstate_ = pstate_index;
@@ -183,7 +167,8 @@ double Cpu::getAvailableSpeed()
 }
 
 void Cpu::onSpeedChange() {
-  TRACE_surf_host_set_speed(surf_get_clock(), getName(), coresAmount_ * speed_.scale * speed_.peak);
+  TRACE_surf_host_set_speed(surf_get_clock(), cname(), coresAmount_ * speed_.scale * speed_.peak);
+  s4u::Host::onSpeedChange(*host_);
 }
 
 int Cpu::coreCount()
@@ -193,13 +178,13 @@ int Cpu::coreCount()
 
 void Cpu::setStateTrace(tmgr_trace_t trace)
 {
-  xbt_assert(stateEvent_==nullptr,"Cannot set a second state trace to Host %s", host_->name().c_str());
+  xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Host %s", host_->cname());
 
   stateEvent_ = future_evt_set->add_trace(trace, 0.0, this);
 }
 void Cpu::setSpeedTrace(tmgr_trace_t trace)
 {
-  xbt_assert(speed_.event==nullptr,"Cannot set a second speed trace to Host %s", host_->name().c_str());
+  xbt_assert(speed_.event == nullptr, "Cannot set a second speed trace to Host %s", host_->cname());
 
   speed_.event = future_evt_set->add_trace(trace, 0.0, this);
 }
@@ -222,7 +207,7 @@ void CpuAction::updateRemainingLazy(double now)
 
     if (TRACE_is_enabled()) {
       Cpu *cpu = static_cast<Cpu*>(lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
-      TRACE_surf_host_set_utilization(cpu->getName(), getCategory(), lastValue_, lastUpdate_, now - lastUpdate_);
+      TRACE_surf_host_set_utilization(cpu->cname(), getCategory(), lastValue_, lastUpdate_, now - lastUpdate_);
     }
     XBT_CDEBUG(surf_kernel, "Updating action(%p): remains is now %f", this, remains_);
   }
@@ -238,13 +223,20 @@ void CpuAction::setState(Action::State state){
   Action::setState(state);
   onStateChange(this, previous);
 }
+/** @brief returns a list of all CPUs that this action is using */
 std::list<Cpu*> CpuAction::cpus() {
   std::list<Cpu*> retlist;
   lmm_system_t sys = getModel()->getMaxminSystem();
   int llen = lmm_get_number_of_cnst_from_var(sys, getVariable());
 
-  for(int i = 0; i<llen; i++)
-    retlist.push_back( (Cpu*)(lmm_constraint_id( lmm_get_cnst_from_var(sys, getVariable(), i) )) );
+  for (int i = 0; i < llen; i++) {
+    /* Beware of composite actions: ptasks put links and cpus together */
+    // extra pb: we cannot dynamic_cast from void*...
+    Resource* resource = static_cast<Resource*>(lmm_constraint_id(lmm_get_cnst_from_var(sys, getVariable(), i)));
+    Cpu* cpu           = dynamic_cast<Cpu*>(resource);
+    if (cpu != nullptr)
+      retlist.push_back(cpu);
+  }
 
   return retlist;
 }

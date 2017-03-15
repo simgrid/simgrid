@@ -13,14 +13,14 @@
 #  - No proper find_package() integration
 
 ## ADDING A NS3 VERSION.
-#   - Add ns3.${version}-core to the NAME line of the find_library below
-#   - Add include/ns3{version} to the PATH_SUFFIXES line of the find_path below
+#   - Add "ns3.${version}-core ns3.${version}-core-debug ns3.${version}-core-optimized" to the NAME line of the find_library below
+#   - Add "include/ns3{version}" to the PATH_SUFFIXES line of the find_path below
 
 set(HAVE_NS3 0)
 set(NS3_HINT ${ns3_path} CACHE PATH "Path to search for NS3 lib and include")
 
 find_library(NS3_LIBRARIES
-  NAME ns3-core ns3.14-core ns3.15-core ns3.16-core ns3.17-core ns3.18-core ns3.19-core ns3.20-core ns3.21-core ns3.22-core ns3.25-core ns3.26-core ns3.27-core ns3.28-core
+  NAME ns3-core ns3.14-core ns3.15-core ns3.16-core ns3.17-core ns3.18-core ns3.19-core ns3.20-core ns3.21-core ns3.22-core ns3.25-core ns3.26-core ns3.26-core-optimized ns3.26-core-debug ns3.27-core ns3.27-core-optimized ns3.27-core-debug ns3.28-core ns3.28-core-optimized ns3.28-core-debug
   PATH_SUFFIXES lib64 lib ns3/lib
   PATHS
   ${NS3_HINT}
@@ -51,7 +51,14 @@ mark_as_advanced(NS3_LIBRARIES)
 if(NS3_INCLUDE_DIR)
   if(NS3_LIBRARIES)
     set(HAVE_NS3 1)
-    
+    if(NS3_LIBRARIES MATCHES "-optimized")
+      set (NS3_SUFFIX "-optimized")
+    elseif(NS3_LIBRARIES MATCHES "-debug")
+      set (NS3_SUFFIX "-debug")
+    else()
+      set (NS3_SUFFIX "")
+    endif()
+
     string(REGEX REPLACE ".*ns([.0-9]+)-core.*" "\\1" NS3_VERSION "${NS3_LIBRARIES}")
     get_filename_component(NS3_LIBRARY_PATH "${NS3_LIBRARIES}" PATH)
 

@@ -6,6 +6,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf/surf.h"
+#include "simgrid/host.h"
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/sg_config.h"
 #include "src/surf/cpu_interface.hpp"
@@ -50,9 +51,9 @@ int main(int argc, char **argv)
   simgrid::s4u::Host* hostB = sg_host_by_name("Cpu B");
 
   /* Let's do something on it */
-  simgrid::surf::Action *actionA = hostA->pimpl_cpu->execution_start(1000.0);
-  simgrid::surf::Action *actionB = hostB->pimpl_cpu->execution_start(1000.0);
-  simgrid::surf::Action *actionC = surf_host_sleep(hostB, 7.32);
+  simgrid::surf::Action* actionA = hostA->pimpl_cpu->execution_start(1000.0);
+  simgrid::surf::Action* actionB = hostB->pimpl_cpu->execution_start(1000.0);
+  simgrid::surf::Action* actionC = hostB->pimpl_cpu->sleep(7.32);
 
   simgrid::surf::Action::State stateActionA = actionA->getState();
   simgrid::surf::Action::State stateActionB = actionB->getState();
@@ -119,6 +120,5 @@ int main(int argc, char **argv)
 
   XBT_DEBUG("Simulation Terminated");
 
-  surf_exit();
   return 0;
 }

@@ -176,7 +176,7 @@ static int test_launcher(int argc, char *argv[])
     msg_vm_t vm0;
     msg_process_t daemon;
 
-    vm0 = MSG_vm_create (jupiter, "vm0", 1, 2048, 125, NULL, -1, 125, dpRate);
+    vm0 = MSG_vm_create(jupiter, "vm0", 2048, 125, dpRate);
     MSG_vm_start(vm0);
 
     argvF = xbt_new(char*, 2);

@@ -1,15 +1,14 @@
 /* cunit - A little C Unit facility                                         */
 
-/* Copyright (c) 2005-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2005-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /* This is partially inspired from the OSSP ts (Test Suite Library)         */
 
-#ifndef _XBT_CUNIT_H_
-#define _XBT_CUNIT_H_
+#ifndef XBT_CUNIT_H_
+#define XBT_CUNIT_H_
 
 #include "xbt/sysdep.h"         /* XBT_GNU_PRINTF */
 #include "xbt/ex.h"
@@ -137,4 +136,4 @@ XBT_PUBLIC(void) xbt_test_skip();
 /** @} */
 
 SG_END_DECL()
-#endif                          /* _XBT_CUNIT_H_ */
+#endif /* XBT_CUNIT_H_ */

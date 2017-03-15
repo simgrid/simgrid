@@ -8,6 +8,6 @@ reducelocalf90 2 mpiversion=2.2
 redscatf90 4
 split_typef90 4 mpiversion=3.0
 #nonblockingf90 4 mpiversion=3.0
-vw_inplacef90 4 mpiversion=2.2
+#vw_inplacef90 4 mpiversion=2.2
 red_scat_blockf90 4 mpiversion=2.2
-#nonblocking_inpf90 4 mpiversion=3.0
+nonblocking_inpf90 4 mpiversion=3.0

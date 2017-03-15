@@ -8,12 +8,17 @@ package cloud.migration;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.simgrid.msg.*;
+import org.simgrid.msg.Host;
+import org.simgrid.msg.HostFailureException;
+import org.simgrid.msg.HostNotFoundException;
+import org.simgrid.msg.Msg;
+import org.simgrid.msg.MsgException;
 import org.simgrid.msg.Process;
+import org.simgrid.msg.VM;
 
 public class Test extends Process{
 
-  Test(String hostname, String name) throws HostNotFoundException, NativeException  {
+  Test(String hostname, String name) throws HostNotFoundException {
     super(hostname, name);
   }
 
@@ -52,11 +57,7 @@ public class Test extends Process{
     Msg.info("Load of collocated VMs fluctuate between 0 and 90% in order to create a starvation issue and see "
              + "whether it impacts or not the migration time");
     XVM vm1 = new XVM(host0, "vm0",
-        1, // Nb of vcpu
         2048, // Ramsize,
-        125, // Net Bandwidth
-        null, //VM disk image
-        -1,   //size of disk image,
         125, // Net bandwidth,
         dpRate // Memory intensity
         );
@@ -77,11 +78,7 @@ public class Test extends Process{
     XVM tmp;
     for (int i=1 ; i<= collocatedSrc ; i++){
       tmp = new XVM(host0, "vm"+i,
-          1, // Nb of vcpu
           2048, // Ramsize,
-          125, // Net Bandwidth
-          null, //VM disk image
-          -1,   //size of disk image,
           125, // Net bandwidth,
           dpRate // Memory intensity
           );
@@ -102,11 +99,7 @@ public class Test extends Process{
 
     for (int i=1 ; i <= collocatedDst ; i++){
       tmp = new XVM(host1, "vm"+(i+collocatedSrc),
-          1, // Nb of vcpu
           2048, // Ramsize,
-          125, // Net Bandwidth
-          null, //VM disk image
-          -1,   //size of disk image,
           125, // Net bandwidth,
           dpRate // Memory intensity
           );

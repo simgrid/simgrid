@@ -56,49 +56,50 @@ namespace mc {
 #define VERSION_RE "-[\\.0-9-]*$"
 
 // List of library which memory segments are not considered:
-static const char *const filtered_libraries[] = {
+static const char* const filtered_libraries[] = {
 #ifdef __linux__
-  "ld",
+    "ld",
 #elif defined __FreeBSD__
-  "ld-elf",
-  "ld-elf32",
-  "libkvm", /* kernel data access library */
-  "libprocstat", /* process and file information retrieval */
-  "libthr", /* thread library */
-  "libutil",
+    "ld-elf",
+    "ld-elf32",
+    "libkvm",      /* kernel data access library */
+    "libprocstat", /* process and file information retrieval */
+    "libthr",      /* thread library */
+    "libutil",
 #endif
-  "libasan", /* gcc sanitizers */
-  "libargp", /* workarounds for glibc-less systems */
-  "libtsan",
-  "libubsan",
-  "libbz2",
-  "libboost_chrono",
-  "libboost_context",
-  "libboost_system",
-  "libboost_thread",
-  "libc",
-  "libc++",
-  "libcdt",
-  "libcgraph",
-  "libcxxrt",
-  "libdl",
-  "libdw",
-  "libelf",
-  "libevent",
-  "libgcc_s",
-  "liblua5.1",
-  "liblua5.3",
-  "liblzma",
-  "libm",
-  "libpthread",
-  "librt",
-  "libstdc++",
-  "libunwind",
-  "libunwind-x86_64",
-  "libunwind-x86",
-  "libunwind-ptrace",
-  "libz"
-};
+    "libasan", /* gcc sanitizers */
+    "libargp", /* workarounds for glibc-less systems */
+    "libtsan",
+    "libubsan",
+    "libbz2",
+    "libboost_chrono",
+    "libboost_context",
+    "libboost_context-mt",
+    "libboost_system",
+    "libboost_thread",
+    "libc",
+    "libc++",
+    "libcdt",
+    "libcgraph",
+    "libcrypto",
+    "libcxxrt",
+    "libdl",
+    "libdw",
+    "libelf",
+    "libevent",
+    "libgcc_s",
+    "liblua5.1",
+    "liblua5.3",
+    "liblzma",
+    "libm",
+    "libpthread",
+    "librt",
+    "libstdc++",
+    "libunwind",
+    "libunwind-x86_64",
+    "libunwind-x86",
+    "libunwind-ptrace",
+    "libz"};
 
 static bool is_simgrid_lib(const char* libname)
 {
@@ -142,12 +143,12 @@ static char* get_lib_name(const char* pathname, struct s_mc_memory_map_re* res)
   return libname;
 }
 
-static ssize_t pread_whole(int fd, void *buf, size_t count, std::uint64_t offset)
+static ssize_t pread_whole(int fd, void *buf, size_t count, off_t offset)
 {
   char* buffer = (char*) buf;
   ssize_t real_count = count;
   while (count) {
-    ssize_t res = pread(fd, buffer, count, (std::int64_t) offset);
+    ssize_t res = pread(fd, buffer, count, offset);
     if (res > 0) {
       count  -= res;
       buffer += res;
@@ -233,8 +234,8 @@ void Process::init()
     remote(std_heap_var->address),
     simgrid::mc::ProcessIndexDisabled);
 
-  this->smx_process_infos.clear();
-  this->smx_old_process_infos.clear();
+  this->smx_actors_infos.clear();
+  this->smx_dead_actors_infos.clear();
   this->unw_addr_space = simgrid::mc::UnwindContext::createUnwindAddressSpace();
   this->unw_underlying_addr_space = simgrid::unw::create_addr_space();
   this->unw_underlying_context = simgrid::unw::create_context(
@@ -430,13 +431,10 @@ simgrid::mc::Variable* Process::find_variable(const char* name) const
 void Process::read_variable(const char* name, void* target, size_t size) const
 {
   simgrid::mc::Variable* var = this->find_variable(name);
-  if (!var->address)
-    xbt_die("No simple location for this variable");
-  if (!var->type->full_type)
-    xbt_die("Partial type for %s, cannot check size", name);
-  if ((size_t) var->type->full_type->byte_size != size)
-    xbt_die("Unexpected size for %s (expected %zi, was %zi)",
-      name, size, (size_t) var->type->full_type->byte_size);
+  xbt_assert(var->address, "No simple location for this variable");
+  xbt_assert(var->type->full_type, "Partial type for %s, cannot check size", name);
+  xbt_assert((size_t)var->type->full_type->byte_size == size, "Unexpected size for %s (expected %zi, was %zi)", name,
+             size, (size_t)var->type->full_type->byte_size);
   this->read_bytes(target, size, remote(var->address));
 }
 
@@ -500,22 +498,20 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
     }
 #endif
   }
-
-  if (pread_whole(this->memory_file, buffer, size, address.address()) < 0)
-    xbt_die("Read from process %lli failed", (long long) this->pid_);
+  if (pread_whole(this->memory_file, buffer, size, (size_t) address.address()) < 0)
+    xbt_die("Read at %p from process %lli failed", (void*)address.address(), (long long)this->pid_);
   return buffer;
 }
 
 /** Write data to a process memory
  *
- *  @param process the process
- *  @param local   local memory address (source)
- *  @param remote  target process memory address (target)
- *  @param len     data size
+ *  @param buffer   local memory address (source)
+ *  @param len      data size
+ *  @param address  target process memory address (target)
  */
 void Process::write_bytes(const void* buffer, size_t len, RemotePtr<void> address)
 {
-  if (pwrite_whole(this->memory_file, buffer, len, address.address()) < 0)
+  if (pwrite_whole(this->memory_file, buffer, len,  (size_t)address.address()) < 0)
     xbt_die("Write to process %lli failed", (long long) this->pid_);
 }
 
@@ -647,16 +643,16 @@ void Process::ignore_local_variable(const char *var_name, const char *frame_name
     info->remove_local_variable(var_name, frame_name);
 }
 
-std::vector<simgrid::mc::SimixProcessInformation>& Process::simix_processes()
+std::vector<simgrid::mc::ActorInformation>& Process::actors()
 {
   this->refresh_simix();
-  return smx_process_infos;
+  return smx_actors_infos;
 }
 
-std::vector<simgrid::mc::SimixProcessInformation>& Process::old_simix_processes()
+std::vector<simgrid::mc::ActorInformation>& Process::dead_actors()
 {
   this->refresh_simix();
-  return smx_old_process_infos;
+  return smx_dead_actors_infos;
 }
 
 void Process::dumpStack()

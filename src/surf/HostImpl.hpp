@@ -63,10 +63,9 @@ public:
 class HostImpl : public simgrid::surf::PropertyHolder {
 
 public:
-  HostImpl(s4u::Host* host, xbt_dynar_t storage);
+  explicit HostImpl(s4u::Host* host);
   virtual ~HostImpl();
 
-public:
   /** @brief Return the storage of corresponding mount point */
   virtual simgrid::surf::Storage* findStorageOnMountList(const char* storage);
 
@@ -74,7 +73,7 @@ public:
   virtual xbt_dict_t getMountedStorageList();
 
   /** @brief Get the xbt_dynar_t of storages attached to the Host */
-  virtual xbt_dynar_t getAttachedStorageList();
+  virtual void getAttachedStorageList(std::vector<const char*>* storages);
 
   /**
    * @brief Open a file
@@ -174,8 +173,7 @@ public:
    */
   virtual int fileMove(surf_file_t fd, const char* fullpath);
 
-public:
-  xbt_dynar_t storage_        = nullptr;
+  std::vector<s_mount_t> storage_;
   simgrid::s4u::Host* piface_ = nullptr;
 
   simgrid::s4u::Host* getHost() { return piface_; }

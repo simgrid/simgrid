@@ -51,7 +51,6 @@ int main(int argc, char **argv)
            SD_task_get_finish_time(task));
 
   SD_task_destroy(task);
-  task=NULL;
 
   XBT_INFO("Second test: NON TYPED task");
 

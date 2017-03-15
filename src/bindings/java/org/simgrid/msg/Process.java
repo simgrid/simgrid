@@ -46,7 +46,7 @@ public abstract class Process implements Runnable {
 	 * a native process. Even if this attribute is public you must never
 	 * access to it. It is set automatically during the build of the object.
 	 */
-	private long bind;
+	private long bind = 0;
 	/** Indicates if the process is started */
 	boolean started;
 	/**
@@ -70,30 +70,20 @@ public abstract class Process implements Runnable {
 	 */
 	private double killTime = -1;
 
-	private String name;
+	private String name = null;
 	
 	private int pid = -1;
 	private int ppid = -1;
 	private Host host = null;
 
 	/** The arguments of the method function of the process. */
-	private ArrayList<String> args;
-
-
-	/**  Default constructor */
-	protected Process() {
-		this.id = nextProcessId++;
-		this.name = null;
-		this.bind = 0;
-		this.args = new ArrayList<>();
-	}
-
+	private ArrayList<String> args = new ArrayList<>();
 
 	/**
 	 * Constructs a new process from the name of a host and his name. The method
 	 * function of the process doesn't have argument.
 	 *
-	 * @param hostname		The name of the host of the process to create.
+	 * @param hostname		Where to create the process.
 	 * @param name			The name of the process.
 	 *
 	 * @exception			HostNotFoundException  if no host with this name exists.
@@ -107,23 +97,21 @@ public abstract class Process implements Runnable {
 	 * Constructs a new process from the name of a host and his name. The arguments
 	 * of the method function of the process are specified by the parameter args.
 	 *
-	 * @param hostname		The name of the host of the process to create.
+	 * @param hostname		Where to create the process.
 	 * @param name			The name of the process.
 	 * @param args			The arguments of the main function of the process.
 	 *
 	 * @exception			HostNotFoundException  if no host with this name exists.
-	 *                      NativeException
-	 * @throws NativeException
 	 *
 	 */ 
-	public Process(String hostname, String name, String[] args) throws HostNotFoundException, NativeException {
+	public Process(String hostname, String name, String[] args) throws HostNotFoundException {
 		this(Host.getByName(hostname), name, args);
 	}
 	/**
 	 * Constructs a new process from a host and his name. The method function of the 
 	 * process doesn't have argument.
 	 *
-	 * @param host			The host of the process to create.
+	 * @param host			Where to create the process.
 	 * @param name			The name of the process.
 	 *
 	 */
@@ -134,17 +122,19 @@ public abstract class Process implements Runnable {
 	 * Constructs a new process from a host and his name, the arguments of here method function are
 	 * specified by the parameter args.
 	 *
-	 * @param host			The host of the process to create.
+	 * @param host			Where to create the process.
 	 * @param name			The name of the process.
 	 * @param args			The arguments of main method of the process.
 	 */	
-	public Process(Host host, String name, String[]args) {
-		this();
-		this.host = host;
+	public Process(Host host, String name, String[]args) 
+	{
 		if (host == null)
-			throw new NullPointerException("Host cannot be NULL");
+			throw new NullPointerException("Cannot create a process on the null host");
 		if (name == null)
-			throw new NullPointerException("Process name cannot be NULL");
+			throw new NullPointerException("Process name cannot be null");
+		
+		this.id = nextProcessId++;
+		this.host = host;
 		this.name = name;
 
 		this.args = new ArrayList<>();
@@ -155,7 +145,7 @@ public abstract class Process implements Runnable {
 	 * Constructs a new process from a host and his name, the arguments of here method function are
 	 * specified by the parameter args.
 	 *
-	 * @param host			The host of the process to create.
+	 * @param host			Where to create the process.
 	 * @param name			The name of the process.
 	 * @param args			The arguments of main method of the process.
 	 * @param startTime		Start time of the process
@@ -189,6 +179,9 @@ public abstract class Process implements Runnable {
 	 * SimGrid sometimes have issues when you kill processes that are currently communicating and such. We are working on it to fix the issues.
 	 */
 	public native void kill();
+	public static void kill(Process p) {
+		p.kill();
+	}
 	
 	/** Suspends the process. See {@link #resume()} to resume it afterward */
 	public native void suspend();
@@ -200,6 +193,9 @@ public abstract class Process implements Runnable {
 	 * @see #resume()
 	 */
 	public native boolean isSuspended();
+	
+	/** Yield the current process. All other processes that are ready at the same timestamp will be executed first */
+	public static native void yield();
 	
 	/**
 	 * Specify whether the process should restart when its host restarts after a failure
@@ -226,13 +222,11 @@ public abstract class Process implements Runnable {
 	/**
 	 * This static method gets a process from a PID.
 	 *
-	 * @param PID			The process identifier of the process to get.
+	 * @param pid			The process identifier of the process to get.
 	 *
 	 * @return				The process with the specified PID.
-	 *
-	 * @exception			NativeException on error in the native SimGrid code
 	 */ 
-	public static native Process fromPID(int PID) throws NativeException;
+	public static native Process fromPID(int pid);
 	/**
 	 * This method returns the PID of the process.
 	 *
@@ -277,7 +271,7 @@ public abstract class Process implements Runnable {
 	 */
 	public native void migrate(Host host);	
 	/**
-	 * Makes the current process sleep until millis millisecondes have elapsed.
+	 * Makes the current process sleep until millis milliseconds have elapsed.
 	 * You should note that unlike "waitFor" which takes seconds, this method takes milliseconds.
 	 * FIXME: Not optimal, maybe we should have two native functions.
 	 * @param millis the length of time to sleep in milliseconds.
@@ -292,7 +286,7 @@ public abstract class Process implements Runnable {
 	 * milliseconds and nanoseconds.
 	 * Overloads Thread.sleep.
 	 * @param millis the length of time to sleep in milliseconds.
-	 * @param nanos additionnal nanoseconds to sleep.
+	 * @param nanos additional nanoseconds to sleep.
 	 */
 	public static native void sleep(long millis, int nanos) throws HostFailureException;
 	/**
@@ -312,7 +306,7 @@ public abstract class Process implements Runnable {
 		}
 	}
 
-	/** This method runs the process. Il calls the method function that you must overwrite. */
+	/** This method runs the process. It calls the method function that you must overwrite. */
 	@Override
 	public void run() {
 
@@ -325,14 +319,15 @@ public abstract class Process implements Runnable {
 			}
 
 			this.main(args);
-		} catch(MsgException e) {
+		}
+		catch(MsgException e) {
 			e.printStackTrace();
 			Msg.info("Unexpected behavior. Stopping now");
 			System.exit(1);
 		}
 		catch(ProcessKilledError pk) {
+			/* The process was killed before its end. With a kill() or something. */
 		}	
-		exit();
 	}
 
 	/**
@@ -343,7 +338,10 @@ public abstract class Process implements Runnable {
 	 */
 	public abstract void main(String[]args) throws MsgException;
 
-	public native void exit();
+	/** Stops the execution of the current actor */
+	public void exit() {
+		this.kill();
+	}
 	/**
 	 * Class initializer, to initialize various JNI stuff
 	 */

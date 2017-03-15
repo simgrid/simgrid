@@ -1,5 +1,4 @@
-/* Copyright (c) 2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,7 +16,7 @@
 #include "src/smpi/private.h"
 
 #include "src/mc/Process.hpp"
-#include "src/mc/mc_protocol.h"
+#include "src/mc/remote/mc_protocol.h"
 
 /** @file
  *  @brief (Cross-process, MCer/MCed) Access to SMX structures
@@ -52,8 +51,8 @@ SG_BEGIN_DECL()
  */
 XBT_PRIVATE smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req);
 
-XBT_PRIVATE const char* MC_smx_process_get_name(smx_actor_t p);
-XBT_PRIVATE const char* MC_smx_process_get_host_name(smx_actor_t p);
+XBT_PRIVATE const char* MC_smx_actor_get_name(smx_actor_t p);
+XBT_PRIVATE const char* MC_smx_actor_get_host_name(smx_actor_t p);
 
 XBT_PRIVATE int MC_smpi_process_count(void);
 

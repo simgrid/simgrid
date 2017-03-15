@@ -10,14 +10,14 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
   foreach(file blockindexed-zero-count contigstruct contig-zero-count cxx-types dataalign gaddress hindexed_block
-          hindexed_block_contents localpack longdouble simple-commit simple-pack simple-resized simple-size-extent
+          hindexed_block_contents hvecblklen large_vec localpack longdouble simple-commit simple-pack simple-resized simple-size-extent
           struct-derived-zeros struct-ezhov struct-pack struct-verydeep struct-zero-count tfree transpose-pack tresized2
-          tresized typecommit typefree typelb typename unpack zeroblks zeroparms)
+          tresized typecommit typefree typelb typename unpack vecblklen zeroblks zeroparms)
     # not compiled files
     # blockindexed-misc contents darray-cyclic darray-pack get-elements get-elements-pairtype getpartelm get-struct
-    # hindexed-zeros hvecblklen indexed-misc large-count large_type large_type_sendrec lbub lots-of-type pairtype-pack
-    # pairtype-size-extent segtest simple-pack-external sizedtypes slice-pack slice-pack-external struct-empty-el
-    # struct-no-real-type structpack2 subarray subarray-pack tmatchsize triangular-pack unusual-noncontigs vecblklen
+    # hindexed-zeros indexed-misc large-count large_type large_type_sendrec lbub lots-of-type pairtype-pack
+    # pairtype-size-extent segtest simple-pack-external simple-pack-external2 sizedtypes slice-pack slice-pack-external struct-empty-el
+    # struct-no-real-type structpack2 subarray subarray-pack tmatchsize triangular-pack unusual-noncontigs
     # zero-blklen-vector
     add_executable(${file} ${file}.c)
     target_link_libraries(${file} simgrid mtest_c)
@@ -27,6 +27,9 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   add_executable(sendrecvt4 ${CMAKE_CURRENT_SOURCE_DIR}/../util/dtypes.c sendrecvt4.c)
   target_link_libraries(sendrecvt2 simgrid mtest_c)
   target_link_libraries(sendrecvt4 simgrid mtest_c)
+  set_target_properties(hindexed_block PROPERTIES COMPILE_FLAGS "-DTEST_HINDEXED_BLOCK" LINK_FLAGS "-DTEST_HINDEXED_BLOCK")
+
+
 endif()
 
 if (enable_smpi_MPICH3_testsuite AND HAVE_RAW_CONTEXTS)
@@ -35,11 +38,11 @@ if (enable_smpi_MPICH3_testsuite AND HAVE_RAW_CONTEXTS)
 endif()
 
 foreach(file blockindexed-misc blockindexed-zero-count contents contigstruct contig-zero-count cxx-types darray-cyclic 
-        darray-pack dataalign gaddress get-elements get-elements-pairtype getpartelm get-struct hindexed_block
+        darray-pack dataalign gaddress get-elements get-elements-pairtype getpartelm hindexed_block
         hindexed_block_contents hindexed-zeros hvecblklen indexed-misc large-count large_type large_type_sendrec lbub
         localpack longdouble lots-of-types pairtype-pack pairtype-size-extent segtest sendrecvt2 sendrecvt4 
-        simple-commit simple-pack simple-pack-external simple-resized simple-size-extent sizedtypes slice-pack 
-        slice-pack-external struct-derived-zeros struct-empty-el struct-ezhov struct-no-real-types struct-pack 
+        simple-commit simple-pack simple-pack-external simple-pack-external2 simple-resized simple-size-extent sizedtypes slice-pack 
+        slice-pack-external large_vec struct-derived-zeros struct-empty-el struct-ezhov struct-no-real-types struct-pack 
         structpack2 struct-verydeep struct-zero-count subarray subarray-pack tfree tmatchsize transpose-pack tresized2
         tresized triangular-pack typecommit typefree typelb typename unpack unusual-noncontigs vecblklen 
         zero-blklen-vector zeroblks zeroparms)

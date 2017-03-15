@@ -16,6 +16,8 @@ accpscw1 4
 transpose1 2
 transpose2 2
 transpose3 2
+#Needs MPI_Win_allocate
+#transpose3_shm 2
 #Needs lock/unlock
 #transpose5 2
 transpose6 1
@@ -34,6 +36,15 @@ test5 2
 #lockcontention2 8
 #lockcontention3 8
 #lockopts 2
+#lock_dt 2
+#lock_dt_flush 2
+#lock_dt_flushlocal 2
+#lockall_dt 4 timeLimit=240
+#lockall_dt_flush 4 timeLimit=240
+#lockall_dt_flushall 4 timeLimit=240
+#lockall_dt_flushlocal 4 timeLimit=240
+#lockall_dt_flushlocalall 4 timeLimit=240
+#lock_contention_dt 4 timeLimit=240
 #transpose4 2
 #fetchandadd 7
 #fetchandadd_tree 7
@@ -63,7 +74,7 @@ nullpscw 7
 #Needs lock, unlock
 #selfrma 1
 #mixedsync 4
-epochtest 4
+epochtest 3
 #Needs lock, unlock
 #locknull 2
 #Needs MPI_Rput, rget, racumulate,  MPI_Fetch_and_op, MPI_Compare_and_swap
@@ -85,11 +96,15 @@ window_creation 2
 #put_base 2
 #put_bottom 2
 #win_flavors 4 mpiversion=3.0
+#win_flavors 3 mpiversion=3.0
 #manyrma2 2 timeLimit=500
 manyrma3 2
 #win_shared 4 mpiversion=3.0
+#win_shared_create_allocshm 4 mpiversion=3.0
+#win_shared_create_no_allocshm 4 mpiversion=3.0
 #win_shared_noncontig 4 mpiversion=3.0
 #win_shared_noncontig_put 4 mpiversion=3.0
+#win_zero 4 mpiversion=3.0
 #win_dynamic_acc 4 mpiversion=3.0
 #get_acc_local 1 mpiversion=3.0
 #linked_list 4 mpiversion=3.0
@@ -119,11 +134,45 @@ manyrma3 2
 #linked_list_bench_lock_excl 4 mpiversion=3.0
 #linked_list_bench_lock_shr 4 mpiversion=3.0
 #linked_list_bench_lock_shr_nocheck 4 mpiversion=3.0
+#mutex_bench_shm 4 mpiversion=3.0
+#mutex_bench_shm_ordered 4 mpiversion=3.0
+#rma-contig 2 mpiversion=3.0 timeLimit=720
 #badrma 2 mpiversion=3.0
 #acc-loc 4
 #fence_shm 2 mpiversion=3.0
 #mutex_bench 4 mpiversion=3.0
 #mutex_bench_shared 4 mpiversion=3.0
+win_shared_zerobyte 4 mpiversion=3.0
+win_shared_put_flush_get 4 mpiversion=3.0
+#get-struct 2
+at_complete 2
+#atomic_rmw_fop 3
+#atomic_rmw_cas 3
+#atomic_rmw_gacc 3
+#atomic_get 3 mpiversion=3.0 timeLimit=300
+#aint 2 mpiversion=3.1
+#acc-pairtype 2
+manyget 2
+#derived-acc-flush_local 3 mpiversion=3.0
+#large-acc-flush_local 3 mpiversion=3.0
+large-small-acc 2
+#win_shared_put_flush_load 3 mpiversion=3.0
+#win_shared_acc_flush_load 3 mpiversion=3.0
+#win_shared_gacc_flush_load 3 mpiversion=3.0
+#win_shared_fop_flush_load 3 mpiversion=3.0
+#win_shared_cas_flush_load 3 mpiversion=3.0
+#put_flush_get 3 mpiversion=3.0
+#acc_flush_get 3 mpiversion=3.0
+#gacc_flush_get 3 mpiversion=3.0
+#fop_flush_get 3 mpiversion=3.0
+#cas_flush_get 3 mpiversion=3.0
+#rget-unlock 2 mpiversion=3.0
+#overlap_wins_put 3
+#overlap_wins_acc 3
+#overlap_wins_gacc 3
+#overlap_wins_fop 3
+#overlap_wins_cas 3
+#lock_nested 3
 
 ## This test is not strictly correct.  This was meant to test out the
 ## case when MPI_Test is not nonblocking.  However, we ended up

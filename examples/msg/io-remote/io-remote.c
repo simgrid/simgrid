@@ -32,9 +32,8 @@ static int host(int argc, char *argv[]){
     sg_size_t write = MSG_file_write(file, MSG_file_get_size(file)*1024);
     XBT_INFO("Have written %llu bytes to '%s'.",write,filename);
 
-    msg_host_t src, dest;
-    src= MSG_host_self();
-    dest = MSG_host_by_name(argv[3]);
+    msg_host_t src= MSG_host_self();
+    msg_host_t dest = MSG_host_by_name(argv[3]);
     if (xbt_str_parse_int(argv[5], "Argument 5 (move or copy) must be an int, not '%s'")) {
       XBT_INFO("Move '%s' (of size %llu) from '%s' to '%s'", filename,MSG_file_get_size(file), MSG_host_get_name(src),
                argv[3]);

@@ -109,7 +109,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(xbt_ex);
   XBT_LOG_CONNECT(xbt_backtrace);
   XBT_LOG_CONNECT(xbt_exception);
-  XBT_LOG_CONNECT(xbt_fifo);
   XBT_LOG_CONNECT(xbt_graph);
   XBT_LOG_CONNECT(xbt_heap);
   XBT_LOG_CONNECT(xbt_lib);
@@ -199,7 +198,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(s4u);
   XBT_LOG_CONNECT(s4u_activity);
   XBT_LOG_CONNECT(s4u_actor);
-  XBT_LOG_CONNECT(s4u_as);
+  XBT_LOG_CONNECT(s4u_netzone);
   XBT_LOG_CONNECT(s4u_channel);
   XBT_LOG_CONNECT(s4u_comm);
   XBT_LOG_CONNECT(s4u_file);
@@ -228,7 +227,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(simix_process);
   XBT_LOG_CONNECT(simix_popping);
   XBT_LOG_CONNECT(simix_synchro);
-  XBT_LOG_CONNECT(simix_vm);
 
   /* smpi */
   /* SMPI categories are connected in smpi_global.c */
@@ -278,7 +276,8 @@ static void xbt_log_help_categories(void);
 void xbt_log_init(int *argc, char **argv)
 {
   unsigned help_requested = 0;  /* 1: logs; 2: categories */
-  int i, j;
+  int i;
+  int j;
   char *opt;
 
   /* uncomment to set the LOG category to debug directly */
@@ -294,9 +293,9 @@ void xbt_log_init(int *argc, char **argv)
       xbt_log_control_set(opt);
       XBT_DEBUG("Did apply '%s' as log setting", opt);
     } else if (!strcmp(argv[i], "--help-logs")) {
-      help_requested |= 1;
+      help_requested |= 1U;
     } else if (!strcmp(argv[i], "--help-log-categories")) {
-      help_requested |= 2;
+      help_requested |= 2U;
     } else {
       argv[j++] = argv[i];
     }
@@ -367,11 +366,10 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
     /* First, try with a static buffer */
     if (XBT_LOG_STATIC_BUFFER_SIZE) {
       char buff[XBT_LOG_STATIC_BUFFER_SIZE];
-      int done;
       ev->buffer = buff;
       ev->buffer_size = sizeof buff;
       va_start(ev->ap, fmt);
-      done = cat->layout->do_layout(cat->layout, ev, fmt);
+      int done = cat->layout->do_layout(cat->layout, ev, fmt);
       va_end(ev->ap);
       if (done) {
         appender->do_append(appender, buff);
@@ -383,9 +381,8 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
     ev->buffer_size = XBT_LOG_DYNAMIC_BUFFER_SIZE;
     ev->buffer = xbt_malloc(ev->buffer_size);
     while (1) {
-      int done;
       va_start(ev->ap, fmt);
-      done = cat->layout->do_layout(cat->layout, ev, fmt);
+      int done = cat->layout->do_layout(cat->layout, ev, fmt);
       va_end(ev->ap);
       if (done)
         break;                  /* Got it */
@@ -483,7 +480,8 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
     xbt_log_parent_set(category, category->parent);
 
     if (XBT_LOG_ISENABLED(log, xbt_log_priority_debug)) {
-      char *buf, *res = NULL;
+      char *buf;
+      char *res = NULL;
       xbt_log_category_t cpp = category->parent->firstChild;
       while (cpp) {
         if (res) {
@@ -589,7 +587,6 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
 {
   const char *orig_control_string = control_string;
   xbt_log_setting_t set = xbt_new(s_xbt_log_setting_t, 1);
-  const char *name, *dot, *eq;
 
   set->catname = NULL;
   set->thresh = xbt_log_priority_uninitialized;
@@ -602,11 +599,11 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
   XBT_DEBUG("Parse log setting '%s'", control_string);
 
   control_string += strspn(control_string, " ");
-  name = control_string;
+  const char *name = control_string;
   control_string += strcspn(control_string, ".= ");
-  dot = control_string;
+  const char *dot = control_string;
   control_string += strcspn(control_string, ":= ");
-  eq = control_string;
+  const char *eq = control_string;
 
   if(*dot != '.' && (*eq == '=' || *eq == ':'))
     xbt_die ("Invalid control string '%s'", orig_control_string);
@@ -667,9 +664,9 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
     if (!strncmp(neweq, "file:", 5)) {
       set->appender = xbt_log_appender_file_new(neweq + 5);
     }else if (!strncmp(neweq, "rollfile:", 9)) {
-    set->appender = xbt_log_appender2_file_new(neweq + 9,1);
+      set->appender = xbt_log_appender2_file_new(neweq + 9,1);
     }else if (!strncmp(neweq, "splitfile:", 10)) {
-    set->appender = xbt_log_appender2_file_new(neweq + 10,0);
+      set->appender = xbt_log_appender2_file_new(neweq + 10,0);
     } else {
       THROWF(arg_error, 0, "Unknown appender log type: '%s'", neweq);
     }
@@ -692,7 +689,8 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
 
 static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat, char *name)
 {
-  xbt_log_category_t child, res;
+  xbt_log_category_t child;
+  xbt_log_category_t res;
 
   XBT_DEBUG("Search '%s' into '%s' (firstChild='%s'; nextSibling='%s')", name,
          cat->name, (cat->firstChild ? cat->firstChild->name : "none"),
@@ -875,7 +873,6 @@ static void xbt_log_help_categories_rec(xbt_log_category_t category, const char 
 {
   char *this_prefix;
   char *child_prefix;
-  xbt_dynar_t dynar;
   unsigned i;
   xbt_log_category_t cat;
 
@@ -890,16 +887,15 @@ static void xbt_log_help_categories_rec(xbt_log_category_t category, const char 
     child_prefix = xbt_strdup(prefix);
   }
 
-  dynar = xbt_dynar_new(sizeof(xbt_log_category_t), NULL);
+  xbt_dynar_t dynar = xbt_dynar_new(sizeof(xbt_log_category_t), NULL);
   for (cat = category ; cat != NULL; cat = cat->nextSibling)
     xbt_dynar_push_as(dynar, xbt_log_category_t, cat);
 
   xbt_dynar_sort(dynar, xbt_log_cat_cmp);
 
-  for (i = 0; i < xbt_dynar_length(dynar); i++) {
+  xbt_dynar_foreach(dynar, i, cat){
     if (i == xbt_dynar_length(dynar) - 1 && category->parent)
       *strrchr(child_prefix, '|') = ' ';
-    cat = xbt_dynar_get_as(dynar, i, xbt_log_category_t);
     printf("%s%s: %s\n", this_prefix, cat->name, cat->description);
     xbt_log_help_categories_rec(cat->firstChild, child_prefix);
   }

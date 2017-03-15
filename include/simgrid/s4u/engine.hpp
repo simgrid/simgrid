@@ -66,10 +66,17 @@ public:
   /** @brief Retrieve the engine singleton */
   static s4u::Engine *instance();
 
-  /** @brief Retrieve the root AS, containing all others */
-  simgrid::s4u::As *rootAs();
-  /** @brief Retrieve the AS of the given name (or nullptr if not found) */
-  simgrid::s4u::As *asByNameOrNull(const char *name);
+  /** @brief Retrieve the root netzone, containing all others */
+  simgrid::s4u::NetZone* netRoot();
+
+  /** @brief Retrieve the netzone of the given name (or nullptr if not found) */
+  simgrid::s4u::NetZone* netzoneByNameOrNull(const char* name);
+
+  /** @brief Retrieve the netcard of the given name (or nullptr if not found) */
+  simgrid::kernel::routing::NetPoint* netpointByNameOrNull(const char* name);
+  void netpointList(std::vector<simgrid::kernel::routing::NetPoint*> * list);
+  void netpointRegister(simgrid::kernel::routing::NetPoint * card);
+  void netpointUnregister(simgrid::kernel::routing::NetPoint * card);
 
   template<class F>
   void registerFunction(const char* name)
@@ -97,6 +104,16 @@ public:
 private:
   static s4u::Engine *instance_;
 };
+
+/** Callback fired when the platform is created (ie, the xml file parsed),
+ * right before the actual simulation starts. */
+extern XBT_PRIVATE xbt::signal<void()> onPlatformCreated;
+
+/** Callback fired when the main simulation loop ends, just before MSG_run (or similar) ends */
+extern XBT_PRIVATE xbt::signal<void()> onSimulationEnd;
+
+/** Callback fired when the time jumps into the future */
+extern XBT_PRIVATE xbt::signal<void(double)> onTimeAdvance;
 }} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_ENGINE_HPP */

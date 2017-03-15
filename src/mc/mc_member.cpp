@@ -23,10 +23,6 @@ void *resolve_member(
     const void *base, simgrid::mc::Type* type, simgrid::mc::Member* member,
     simgrid::mc::AddressSpace* address_space, int process_index)
 {
-  // TODO, get rid of this?
-  if (!member->has_offset_location())
-    return ((char *) base) + member->offset();
-
   ExpressionContext state;
   state.frame_base = nullptr;
   state.cursor = nullptr;

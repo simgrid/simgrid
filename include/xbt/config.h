@@ -1,18 +1,16 @@
-/* config - Dictionary where the type of each cell is provided.            */
-
+/* config - Dictionary where the type of each cell is provided.             */
 /* This is useful to build named structs, like option or property sets.     */
 
-/* Copyright (c) 2004-2007, 2009-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_CONFIG_H_
-#define _XBT_CONFIG_H_
+#ifndef XBT_CONFIG_H
+#define XBT_CONFIG_H
 
-#include "xbt/dynar.h"
 #include <stdarg.h>
+#include <xbt/dynar.h>
 
 SG_BEGIN_DECL()
 
@@ -145,4 +143,4 @@ XBT_PUBLIC(int)    xbt_cfg_get_boolean(const char *name);
 /** @} */
 
 SG_END_DECL()
-#endif                          /* _XBT_CONFIG_H_ */
+#endif /* XBT_CONFIG_H */

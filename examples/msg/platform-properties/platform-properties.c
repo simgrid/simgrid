@@ -12,7 +12,8 @@ static void test_host(const char*hostname)
   msg_host_t thehost = MSG_host_by_name(hostname);
   xbt_dict_t props = MSG_host_get_properties(thehost);
   xbt_dict_cursor_t cursor = NULL;
-  char *key, *data;
+  char *key;
+  char *data;
   const char *noexist = "Unknown";
   const char *value;
   char exist[] = "Hdd";
@@ -32,7 +33,7 @@ static void test_host(const char*hostname)
   XBT_INFO("   Property: %s old value: %s", exist, value);
 
   XBT_INFO("== Trying to modify a host property");
-  MSG_host_set_property_value(thehost, exist, xbt_strdup("250"), xbt_free_f);
+  MSG_host_set_property_value(thehost, exist, xbt_strdup("250"));
 
   /* Test if we have changed the value */
   value = MSG_host_get_property_value(thehost, exist);
@@ -41,7 +42,7 @@ static void test_host(const char*hostname)
   XBT_INFO("   Property: %s old value: %s", exist, value);
 
   /* Restore the value for the next test */
-  MSG_host_set_property_value(thehost, exist, xbt_strdup("180"), xbt_free_f);
+  MSG_host_set_property_value(thehost, exist, xbt_strdup("180"));
 }
 
 static int alice(int argc, char *argv[]) { /* Dump what we have on the current host */
@@ -66,7 +67,8 @@ static int bob(int argc, char *argv[])
   /* Get the property list of current bob process */
   xbt_dict_t props = MSG_process_get_properties(MSG_process_self());
   xbt_dict_cursor_t cursor = NULL;
-  char *key, *data;
+  char *key;
+  char *data;
   const char *noexist = "UnknownProcessProp";
   XBT_ATTRIB_UNUSED const char *value;
 

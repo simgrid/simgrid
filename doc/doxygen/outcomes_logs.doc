@@ -4,7 +4,7 @@
 
 Using @c printf or @c println to display information is possible, but
 quickly unpractical, as the logs of all processes get intermixed in
-your program's output. %As an answer, the SimGrid logging module allow
+your program's output. As an answer, the SimGrid logging module allow
 you to sort and filter the logs by emitter, by module and by gravity
 level. 
 

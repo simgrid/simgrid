@@ -1,15 +1,14 @@
-/* Copyright (c) 2004-2005, 2007, 2009-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_HEAP_PRIVATE_H
-#define _XBT_HEAP_PRIVATE_H
+#ifndef XBT_HEAP_PRIVATE_H
+#define XBT_HEAP_PRIVATE_H
 
-#include "xbt/dynar.h"          /* void_f_pvoid_t */
-#include "xbt/heap.h"
 #include <float.h>
+#include <xbt/dynar.h>
+#include <xbt/heap.h>
 
 typedef struct xbt_heap_item {
   void *content;
@@ -33,4 +32,4 @@ typedef struct xbt_heap {
 
 #define MIN_KEY_VALUE -DBL_MAX
 
-#endif                          /* _XBT_HEAP_PRIVATE_H */
+#endif

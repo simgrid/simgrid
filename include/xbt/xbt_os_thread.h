@@ -1,13 +1,12 @@
 /* xbt/xbt_os_thread.h -- Thread portability layer                          */
 
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_OS_THREAD_H
-#define _XBT_OS_THREAD_H
+#ifndef XBT_OS_THREAD_H
+#define XBT_OS_THREAD_H
 
 #include "xbt/base.h"
 
@@ -74,4 +73,4 @@ XBT_PUBLIC(void) xbt_os_sem_destroy(xbt_os_sem_t sem);
 /** @} */
 
 SG_END_DECL()
-#endif                          /* _XBT_OS_THREAD_H */
+#endif /* XBT_OS_THREAD_H */

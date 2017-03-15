@@ -7,8 +7,7 @@
 #include "messages.h"
 #include "bittorrent.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_messages,
-                             "Messages specific for the message factory");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_messages, "Messages specific for the message factory");
 
 #define BITS_TO_BYTES(x) ((x / 8) + (x % 8) ? 1 : 0)
 
@@ -42,8 +41,8 @@ msg_task_t task_message_index_new(e_message_type type, const char *issuer_host_n
   return task;
 }
 
-msg_task_t task_message_bitfield_new(const char *issuer_host_name, const char *mailbox, int peer_id, char *bitfield,
-                                     int bitfield_size)
+msg_task_t task_message_bitfield_new(const char *issuer_host_name, const char *mailbox, int peer_id,
+                                     unsigned int bitfield, int bitfield_size)
 {
   msg_task_t task = task_message_new(MESSAGE_BITFIELD, issuer_host_name, mailbox, peer_id,
                                      task_message_size(MESSAGE_BITFIELD) + BITS_TO_BYTES(bitfield_size));

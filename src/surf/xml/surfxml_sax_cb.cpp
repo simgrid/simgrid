@@ -1,5 +1,4 @@
-/* Copyright (c) 2006-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,27 +7,36 @@
 #include <math.h>
 #include <stdarg.h> /* va_arg */
 
-#include "xbt/misc.h"
-#include "xbt/log.h"
-#include "xbt/str.h"
-#include "xbt/file.h"
-#include "xbt/dict.h"
-#include "src/surf/surf_private.h"
-#include "src/surf/network_interface.hpp"
-#include "simgrid/sg_config.h"
 #include "simgrid/link.h"
+#include "simgrid/s4u/engine.hpp"
+#include "simgrid/sg_config.h"
+#include "src/kernel/routing/NetPoint.hpp"
+#include "src/surf/network_interface.hpp"
+#include "src/surf/surf_private.h"
+#include "xbt/dict.h"
+#include "xbt/file.h"
+#include "xbt/log.h"
+#include "xbt/misc.h"
+#include "xbt/str.h"
 
 #include "src/surf/xml/platf_private.hpp"
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf, "Logging specific to the SURF parsing module");
-#undef CLEANUP
+
+SG_BEGIN_DECL()
+
 int ETag_surfxml_include_state();
 
 #include "simgrid_dtd.c"
 
 char* surf_parsed_filename = nullptr; // to locate parse error messages
 
-std::vector<simgrid::surf::Link *> parsed_link_list;   /* temporary store of current list link of a route */
+std::vector<simgrid::surf::LinkImpl*> parsed_link_list; /* temporary store of current list link of a route */
+
 /*
  * Helping functions
  */
@@ -85,35 +93,30 @@ int surf_parse_get_int(const char *string) {
 static std::vector<int>* explodesRadical(const char* radicals)
 {
   std::vector<int>* exploded = new std::vector<int>();
-  char* groups;
-  unsigned int iter;
 
   // Make all hosts
-  xbt_dynar_t radical_elements = xbt_str_split(radicals, ",");
-  xbt_dynar_foreach (radical_elements, iter, groups) {
-
-    xbt_dynar_t radical_ends = xbt_str_split(groups, "-");
-    int start                = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char*));
+  std::vector<std::string> radical_elements;
+  boost::split(radical_elements, radicals, boost::is_any_of(","));
+  for (auto group : radical_elements) {
+    std::vector<std::string> radical_ends;
+    boost::split(radical_ends, group, boost::is_any_of("-"));
+    int start                = surf_parse_get_int((radical_ends.front()).c_str());
     int end                  = 0;
 
-    switch (xbt_dynar_length(radical_ends)) {
+    switch (radical_ends.size()) {
       case 1:
         end = start;
         break;
       case 2:
-        end = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char*));
+        end = surf_parse_get_int((radical_ends.back()).c_str());
         break;
       default:
-        surf_parse_error("Malformed radical: %s", groups);
+        surf_parse_error("Malformed radical: %s", group.c_str());
         break;
     }
-
     for (int i = start; i <= end; i++)
       exploded->push_back(i);
-
-    xbt_dynar_free(&radical_ends);
   }
-  xbt_dynar_free(&radical_elements);
 
   return exploded;
 }
@@ -264,6 +267,26 @@ double surf_parse_get_speed(const char *string, const char *entity_kind, const c
       "Append 'f' or 'flops' to your speed to get flop per second", "f");
 }
 
+static std::vector<double> surf_parse_get_all_speeds(char* speeds, const char* entity_kind, const char* id){
+
+  std::vector<double> speed_per_pstate;
+
+  if (strchr(speeds, ',') == nullptr){
+    double speed = surf_parse_get_speed(speeds, entity_kind, id);
+    speed_per_pstate.push_back(speed);
+  } else {
+    std::vector<std::string> pstate_list;
+    boost::split(pstate_list, speeds, boost::is_any_of(","));
+    for (auto speed_str : pstate_list) {
+      boost::trim(speed_str);
+      double speed = surf_parse_get_speed(speed_str.c_str(), entity_kind, id);
+      speed_per_pstate.push_back(speed);
+      XBT_DEBUG("Speed value: %f", speed);
+    }
+  }
+  return speed_per_pstate;
+}
+
 /*
  * All the callback lists that can be overridden anywhere.
  * (this list should probably be reduced to the bare minimum to allow the models to work)
@@ -274,12 +297,7 @@ double surf_parse_get_speed(const char *string, const char *entity_kind, const c
 /* The default current property receiver. Setup in the corresponding opening callbacks. */
 xbt_dict_t current_property_set = nullptr;
 xbt_dict_t current_model_property_set = nullptr;
-xbt_dict_t as_current_property_set = nullptr;
-int AS_TAG = 0;
-char* as_name_tab[1024];
-void* as_dict_tab[1024];
-int as_prop_nb = 0;
-
+int AS_TAG                            = 0; // Whether we just opened an AS tag (to see what to do with the properties)
 
 /* dictionary of random generator data */
 xbt_dict_t random_data_list = nullptr;
@@ -301,14 +319,15 @@ void ETag_surfxml_storage()
   s_sg_platf_storage_cbarg_t storage;
   memset(&storage,0,sizeof(storage));
 
+  storage.properties   = current_property_set;
+  current_property_set = nullptr;
+
   storage.id           = A_surfxml_storage_id;
   storage.type_id      = A_surfxml_storage_typeId;
   storage.content      = A_surfxml_storage_content;
   storage.content_type = A_surfxml_storage_content___type;
-  storage.properties   = current_property_set;
   storage.attach       = A_surfxml_storage_attach;
   sg_platf_new_storage(&storage);
-  current_property_set = nullptr;
 }
 void STag_surfxml_storage___type()
 {
@@ -322,17 +341,19 @@ void ETag_surfxml_storage___type()
   s_sg_platf_storage_type_cbarg_t storage_type;
   memset(&storage_type,0,sizeof(storage_type));
 
+  storage_type.properties = current_property_set;
+  current_property_set    = nullptr;
+
+  storage_type.model_properties = current_model_property_set;
+  current_model_property_set    = nullptr;
+
   storage_type.content          = A_surfxml_storage___type_content;
   storage_type.content_type     = A_surfxml_storage___type_content___type;
   storage_type.id               = A_surfxml_storage___type_id;
   storage_type.model            = A_surfxml_storage___type_model;
-  storage_type.properties       = current_property_set;
-  storage_type.model_properties = current_model_property_set;
   storage_type.size             = surf_parse_get_size(A_surfxml_storage___type_size,
         "size of storage type", storage_type.id);
   sg_platf_new_storage_type(&storage_type);
-  current_property_set       = nullptr;
-  current_model_property_set = nullptr;
 }
 void STag_surfxml_mount()
 {
@@ -351,23 +372,23 @@ void ETag_surfxml_mount()
 /*
  * Stuff relative to the <include> tag
  */
-static xbt_dynar_t surf_input_buffer_stack    = nullptr;
-static xbt_dynar_t surf_file_to_parse_stack   = nullptr;
-static xbt_dynar_t surf_parsed_filename_stack = nullptr;
+static std::vector<YY_BUFFER_STATE> surf_input_buffer_stack;
+static std::vector<FILE*> surf_file_to_parse_stack;
+static std::vector<char*> surf_parsed_filename_stack;
 
 void STag_surfxml_include()
 {
   parse_after_config();
   XBT_DEBUG("STag_surfxml_include '%s'",A_surfxml_include_file);
-  xbt_dynar_push(surf_parsed_filename_stack,&surf_parsed_filename); // save old file name
+  surf_parsed_filename_stack.push_back(surf_parsed_filename); // save old file name
   surf_parsed_filename = xbt_strdup(A_surfxml_include_file);
 
-  xbt_dynar_push(surf_file_to_parse_stack, &surf_file_to_parse); //save old file descriptor
+  surf_file_to_parse_stack.push_back(surf_file_to_parse); // save old file descriptor
 
   surf_file_to_parse = surf_fopen(A_surfxml_include_file, "r"); // read new file descriptor
   xbt_assert((surf_file_to_parse), "Unable to open \"%s\"\n", A_surfxml_include_file);
 
-  xbt_dynar_push(surf_input_buffer_stack,&surf_input_buffer);
+  surf_input_buffer_stack.push_back(surf_input_buffer);
   surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, YY_BUF_SIZE);
   surf_parse_push_buffer_state(surf_input_buffer);
 
@@ -387,7 +408,7 @@ void ETag_surfxml_include() {
  * error message in that case.
  *
  * Yeah, that's terribly hackish, but it works. A better solution should be dealed with in flexml
- * directly: a command line flag could instruct it to do the correct thing when #include is encountered
+ * directly: a command line flag could instruct it to do the correct thing when the include directive is encountered
  * on a line. One day maybe, if the maya allow it.
  */
 int ETag_surfxml_include_state()
@@ -395,18 +416,18 @@ int ETag_surfxml_include_state()
   fflush(nullptr);
   XBT_DEBUG("ETag_surfxml_include_state '%s'",A_surfxml_include_file);
 
-  if(xbt_dynar_is_empty(surf_input_buffer_stack)) // nope, that's a true premature EOF. Let the parser die verbosely.
+  if (surf_input_buffer_stack.empty()) // nope, that's a true premature EOF. Let the parser die verbosely.
     return 0;
 
   // Yeah, we were in an <include> Restore state and proceed.
   fclose(surf_file_to_parse);
-  xbt_dynar_pop(surf_file_to_parse_stack, &surf_file_to_parse);
+  surf_file_to_parse_stack.pop_back();
   surf_parse_pop_buffer_state();
-  xbt_dynar_pop(surf_input_buffer_stack,&surf_input_buffer);
+  surf_input_buffer_stack.pop_back();
 
   // Restore the filename for error messages
   free(surf_parsed_filename);
-  xbt_dynar_pop(surf_parsed_filename_stack,&surf_parsed_filename);
+  surf_parsed_filename_stack.pop_back();
 
   return 1;
 }
@@ -459,54 +480,31 @@ void STag_surfxml_host(){
 
 void STag_surfxml_prop()
 {
-  if(AS_TAG){ // We need a stack here to retrieve the most recently opened AS
-    if (!as_current_property_set){
-      xbt_assert(as_prop_nb < 1024, "Number of AS property reach the limit!!!");
-      as_current_property_set = xbt_dict_new_homogeneous(xbt_free_f); // Maybe, it should raise an error
-      as_name_tab[as_prop_nb] = xbt_strdup(A_surfxml_AS_id);
-      as_dict_tab[as_prop_nb] = as_current_property_set;
-      XBT_DEBUG("PUSH prop set %p for AS '%s'",as_dict_tab[as_prop_nb],as_name_tab[as_prop_nb]);
-      as_prop_nb++;
-    }
-    XBT_DEBUG("add prop %s=%s into current AS property set", A_surfxml_prop_id, A_surfxml_prop_value);
-    xbt_dict_set(as_current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), nullptr);
+  if (AS_TAG) { // We need to retrieve the most recently opened AS
+    XBT_DEBUG("Set AS property %s -> %s", A_surfxml_prop_id, A_surfxml_prop_value);
+    simgrid::s4u::NetZone* netzone = simgrid::s4u::Engine::instance()->netzoneByNameOrNull(A_surfxml_AS_id);
+
+    netzone->setProperty(A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value));
   }
   else{
     if (!current_property_set)
-       current_property_set = xbt_dict_new(); // Maybe, it should raise an error
-    xbt_dict_set(current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), xbt_free_f);
-    XBT_DEBUG("add prop %s=%s into current property set", A_surfxml_prop_id, A_surfxml_prop_value);
+      current_property_set = xbt_dict_new_homogeneous(&xbt_free_f); // Maybe, it should raise an error
+    xbt_dict_set(current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), nullptr);
+    XBT_DEBUG("add prop %s=%s into current property set %p", A_surfxml_prop_id, A_surfxml_prop_value,
+              current_property_set);
   }
 }
 
 void ETag_surfxml_host()    {
   s_sg_platf_host_cbarg_t host;
   memset(&host,0,sizeof(host));
-  char* buf;
-
 
   host.properties = current_property_set;
+  current_property_set = nullptr;
 
   host.id = A_surfxml_host_id;
 
-  buf = A_surfxml_host_speed;
-  XBT_DEBUG("Buffer: %s", buf);
-  if (strchr(buf, ',') == nullptr){
-    double speed = surf_parse_get_speed(A_surfxml_host_speed,"speed of host", host.id);
-    host.speed_per_pstate.push_back(speed);
-  }
-  else {
-    xbt_dynar_t pstate_list = xbt_str_split(buf, ",");
-    unsigned int i;
-    char* speed_str;
-    xbt_dynar_foreach(pstate_list, i, speed_str) {
-      xbt_str_trim(speed_str, nullptr);
-      double speed = surf_parse_get_speed(speed_str,"speed of host", host.id);
-      host.speed_per_pstate.push_back(speed);
-      XBT_DEBUG("Speed value: %f", speed);
-    }
-    xbt_dynar_free(&pstate_list);
-  }
+  host.speed_per_pstate = surf_parse_get_all_speeds(A_surfxml_host_speed, "speed of host", host.id);
 
   XBT_DEBUG("pstate: %s", A_surfxml_host_pstate);
   host.core_amount = surf_parse_get_int(A_surfxml_host_core);
@@ -516,7 +514,6 @@ void ETag_surfxml_host()    {
   host.coord       = A_surfxml_host_coordinates;
 
   sg_platf_new_host(&host);
-  current_property_set = nullptr;
 }
 
 void STag_surfxml_host___link(){
@@ -531,25 +528,20 @@ void STag_surfxml_host___link(){
 }
 
 void STag_surfxml_router(){
-  s_sg_platf_router_cbarg_t router;
-  memset(&router, 0, sizeof(router));
-
-  router.id    = A_surfxml_router_id;
-  router.coord = A_surfxml_router_coordinates;
-
-  sg_platf_new_router(&router);
+  sg_platf_new_router(A_surfxml_router_id, A_surfxml_router_coordinates);
 }
 
 void ETag_surfxml_cluster(){
   s_sg_platf_cluster_cbarg_t cluster;
   memset(&cluster,0,sizeof(cluster));
-  cluster.properties = as_current_property_set;
+  cluster.properties = current_property_set;
+  current_property_set = nullptr;
 
   cluster.id          = A_surfxml_cluster_id;
   cluster.prefix      = A_surfxml_cluster_prefix;
   cluster.suffix      = A_surfxml_cluster_suffix;
   cluster.radicals    = explodesRadical(A_surfxml_cluster_radical);
-  cluster.speed       = surf_parse_get_speed(A_surfxml_cluster_speed, "speed of cluster", cluster.id);
+  cluster.speeds      = surf_parse_get_all_speeds(A_surfxml_cluster_speed, "speed of cluster", cluster.id);
   cluster.core_amount = surf_parse_get_int(A_surfxml_cluster_core);
   cluster.bw          = surf_parse_get_bandwidth(A_surfxml_cluster_bw, "bw of cluster", cluster.id);
   cluster.lat         = surf_parse_get_time(A_surfxml_cluster_lat, "lat of cluster", cluster.id);
@@ -596,8 +588,7 @@ void ETag_surfxml_cluster(){
     cluster.sharing_policy = SURF_LINK_FATPIPE;
     break;
   default:
-    surf_parse_error("Invalid cluster sharing policy for cluster %s",
-                     cluster.id);
+    surf_parse_error("Invalid cluster sharing policy for cluster %s", cluster.id);
     break;
   }
   switch (AX_surfxml_cluster_bb___sharing___policy) {
@@ -608,17 +599,15 @@ void ETag_surfxml_cluster(){
     cluster.bb_sharing_policy = SURF_LINK_SHARED;
     break;
   default:
-    surf_parse_error("Invalid bb sharing policy in cluster %s",
-                     cluster.id);
+    surf_parse_error("Invalid bb sharing policy in cluster %s", cluster.id);
     break;
   }
 
   sg_platf_new_cluster(&cluster);
-
-  current_property_set = nullptr;
 }
 
 void STag_surfxml_cluster(){
+  AS_TAG = 0;
   parse_after_config();
   xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
 }
@@ -642,14 +631,17 @@ void STag_surfxml_peer(){
   parse_after_config();
   s_sg_platf_peer_cbarg_t peer;
   memset(&peer,0,sizeof(peer));
-  peer.id                 = A_surfxml_peer_id;
-  peer.speed              = surf_parse_get_speed(A_surfxml_peer_speed, "speed of peer", peer.id);
-  peer.bw_in              = surf_parse_get_bandwidth(A_surfxml_peer_bw___in, "bw_in of peer", peer.id);
-  peer.bw_out             = surf_parse_get_bandwidth(A_surfxml_peer_bw___out, "bw_out of peer", peer.id);
-  peer.lat                = surf_parse_get_time(A_surfxml_peer_lat, "lat of peer", peer.id);
-  peer.coord              = A_surfxml_peer_coordinates;
-  peer.availability_trace = A_surfxml_peer_availability___file[0] ? tmgr_trace_new_from_file(A_surfxml_peer_availability___file) : nullptr;
-  peer.state_trace        = A_surfxml_peer_state___file[0] ? tmgr_trace_new_from_file(A_surfxml_peer_state___file) : nullptr;
+  peer.id          = A_surfxml_peer_id;
+  peer.speed       = surf_parse_get_speed(A_surfxml_peer_speed, "speed of peer", peer.id);
+  peer.bw_in       = surf_parse_get_bandwidth(A_surfxml_peer_bw___in, "bw_in of peer", peer.id);
+  peer.bw_out      = surf_parse_get_bandwidth(A_surfxml_peer_bw___out, "bw_out of peer", peer.id);
+  peer.coord       = A_surfxml_peer_coordinates;
+  peer.speed_trace = A_surfxml_peer_availability___file[0] ? tmgr_trace_new_from_file(A_surfxml_peer_availability___file) : nullptr;
+  peer.state_trace = A_surfxml_peer_state___file[0] ? tmgr_trace_new_from_file(A_surfxml_peer_state___file) : nullptr;
+
+  if (A_surfxml_peer_lat[0] != '\0')
+    XBT_WARN("The latency parameter in <peer> is now deprecated. Use the z coordinate instead of '%s'.",
+             A_surfxml_peer_lat);
 
   sg_platf_new_peer(&peer);
 }
@@ -660,14 +652,15 @@ void STag_surfxml_link(){
 }
 
 void ETag_surfxml_link(){
-  s_sg_platf_link_cbarg_t link;
-  memset(&link,0,sizeof(link));
+  LinkCreationArgs link;
 
   link.properties          = current_property_set;
-  link.id                  = A_surfxml_link_id;
-  link.bandwidth           = surf_parse_get_bandwidth(A_surfxml_link_bandwidth, "bandwidth of link", link.id);
+  current_property_set     = nullptr;
+
+  link.id                  = std::string(A_surfxml_link_id);
+  link.bandwidth           = surf_parse_get_bandwidth(A_surfxml_link_bandwidth, "bandwidth of link", link.id.c_str());
   link.bandwidth_trace     = A_surfxml_link_bandwidth___file[0] ? tmgr_trace_new_from_file(A_surfxml_link_bandwidth___file) : nullptr;
-  link.latency             = surf_parse_get_time(A_surfxml_link_latency, "latency of link", link.id);
+  link.latency             = surf_parse_get_time(A_surfxml_link_latency, "latency of link", link.id.c_str());
   link.latency_trace       = A_surfxml_link_latency___file[0] ? tmgr_trace_new_from_file(A_surfxml_link_latency___file) : nullptr;
   link.state_trace         = A_surfxml_link_state___file[0] ? tmgr_trace_new_from_file(A_surfxml_link_state___file):nullptr;
 
@@ -682,102 +675,107 @@ void ETag_surfxml_link(){
      link.policy = SURF_LINK_FULLDUPLEX;
      break;
   default:
-    surf_parse_error("Invalid sharing policy in link %s", link.id);
+    surf_parse_error("Invalid sharing policy in link %s", link.id.c_str());
     break;
   }
 
   sg_platf_new_link(&link);
-
-  current_property_set = nullptr;
 }
 
 void STag_surfxml_link___ctn(){
 
-  simgrid::surf::Link *link;
+  simgrid::surf::LinkImpl* link = nullptr;
   char *link_name=nullptr;
   switch (A_surfxml_link___ctn_direction) {
   case AU_surfxml_link___ctn_direction:
   case A_surfxml_link___ctn_direction_NONE:
-    link = Link::byName(A_surfxml_link___ctn_id);
+    link = simgrid::surf::LinkImpl::byName(A_surfxml_link___ctn_id);
     break;
   case A_surfxml_link___ctn_direction_UP:
     link_name = bprintf("%s_UP", A_surfxml_link___ctn_id);
-    link = Link::byName(link_name);
+    link      = simgrid::surf::LinkImpl::byName(link_name);
     break;
   case A_surfxml_link___ctn_direction_DOWN:
     link_name = bprintf("%s_DOWN", A_surfxml_link___ctn_id);
-    link = Link::byName(link_name);
+    link      = simgrid::surf::LinkImpl::byName(link_name);
     break;
   }
   xbt_free(link_name); // no-op if it's already nullptr
 
-  surf_parse_assert(link!=nullptr,"No such link: '%s'%s", A_surfxml_link___ctn_id,
-      A_surfxml_link___ctn_direction==A_surfxml_link___ctn_direction_UP?" (upward)":
-          ( A_surfxml_link___ctn_direction==A_surfxml_link___ctn_direction_DOWN?" (downward)":
-              ""));
+  const char* dirname = "";
+  switch (A_surfxml_link___ctn_direction) {
+    case A_surfxml_link___ctn_direction_UP:
+      dirname = " (upward)";
+      break;
+    case A_surfxml_link___ctn_direction_DOWN:
+      dirname = " (downward)";
+      break;
+    default:
+      dirname = "";
+  }
+  surf_parse_assert(link != nullptr, "No such link: '%s'%s", A_surfxml_link___ctn_id, dirname);
   parsed_link_list.push_back(link);
 }
 
 void ETag_surfxml_backbone(){
-  s_sg_platf_link_cbarg_t link;
-  memset(&link,0,sizeof(link));
+  LinkCreationArgs link;
 
   link.properties = nullptr;
-  link.id = A_surfxml_backbone_id;
-  link.bandwidth = surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth, "bandwidth of backbone", link.id);
-  link.latency = surf_parse_get_time(A_surfxml_backbone_latency, "latency of backbone", link.id);
+  link.id = std::string(A_surfxml_backbone_id);
+  link.bandwidth = surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth, "bandwidth of backbone", link.id.c_str());
+  link.latency = surf_parse_get_time(A_surfxml_backbone_latency, "latency of backbone", link.id.c_str());
   link.policy = SURF_LINK_SHARED;
 
   sg_platf_new_link(&link);
-  routing_cluster_add_backbone(sg_link_by_name(A_surfxml_backbone_id));
+  routing_cluster_add_backbone(simgrid::surf::LinkImpl::byName(A_surfxml_backbone_id));
 }
 
 void STag_surfxml_route(){
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_route_src),
-      "Route src='%s' does name a node.", A_surfxml_route_src);
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_route_dst),
-      "Route dst='%s' does name a node.", A_surfxml_route_dst);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_route_src), "Route src='%s' does name a node.",
+                    A_surfxml_route_src);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_route_dst), "Route dst='%s' does name a node.",
+                    A_surfxml_route_dst);
 }
 
 void STag_surfxml_ASroute(){
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_ASroute_src),
-      "ASroute src='%s' does name a node.", A_surfxml_route_src);
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_ASroute_dst),
-      "ASroute dst='%s' does name a node.", A_surfxml_route_dst);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_ASroute_src), "ASroute src='%s' does name a node.",
+                    A_surfxml_route_src);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_ASroute_dst), "ASroute dst='%s' does name a node.",
+                    A_surfxml_route_dst);
 
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_ASroute_gw___src),
-      "ASroute gw_src='%s' does name a node.", A_surfxml_ASroute_gw___src);
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_ASroute_gw___dst),
-      "ASroute gw_dst='%s' does name a node.", A_surfxml_ASroute_gw___dst);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_ASroute_gw___src), "ASroute gw_src='%s' does name a node.",
+                    A_surfxml_ASroute_gw___src);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_ASroute_gw___dst), "ASroute gw_dst='%s' does name a node.",
+                    A_surfxml_ASroute_gw___dst);
 }
 
 void STag_surfxml_bypassRoute(){
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_bypassRoute_src),
-      "bypassRoute src='%s' does name a node.", A_surfxml_bypassRoute_src);
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_bypassRoute_dst),
-      "bypassRoute dst='%s' does name a node.", A_surfxml_bypassRoute_dst);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassRoute_src), "bypassRoute src='%s' does name a node.",
+                    A_surfxml_bypassRoute_src);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassRoute_dst), "bypassRoute dst='%s' does name a node.",
+                    A_surfxml_bypassRoute_dst);
 }
 
 void STag_surfxml_bypassASroute(){
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_bypassASroute_src),
-      "bypassASroute src='%s' does name a node.", A_surfxml_bypassASroute_src);
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_bypassASroute_dst),
-      "bypassASroute dst='%s' does name a node.", A_surfxml_bypassASroute_dst);
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___src),
-      "bypassASroute gw_src='%s' does name a node.", A_surfxml_bypassASroute_gw___src);
-  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___dst),
-      "bypassASroute gw_dst='%s' does name a node.", A_surfxml_bypassASroute_gw___dst);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_src),
+                    "bypassASroute src='%s' does name a node.", A_surfxml_bypassASroute_src);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_dst),
+                    "bypassASroute dst='%s' does name a node.", A_surfxml_bypassASroute_dst);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_gw___src),
+                    "bypassASroute gw_src='%s' does name a node.", A_surfxml_bypassASroute_gw___src);
+  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_gw___dst),
+                    "bypassASroute gw_dst='%s' does name a node.", A_surfxml_bypassASroute_gw___dst);
 }
 
 void ETag_surfxml_route(){
   s_sg_platf_route_cbarg_t route;
   memset(&route,0,sizeof(route));
 
-  route.src       = sg_netcard_by_name_or_null(A_surfxml_route_src); // tested to not be nullptr in start tag
-  route.dst       = sg_netcard_by_name_or_null(A_surfxml_route_dst); // tested to not be nullptr in start tag
+  route.src         = sg_netpoint_by_name_or_null(A_surfxml_route_src); // tested to not be nullptr in start tag
+  route.dst         = sg_netpoint_by_name_or_null(A_surfxml_route_dst); // tested to not be nullptr in start tag
   route.gw_src    = nullptr;
   route.gw_dst    = nullptr;
-  route.link_list = new std::vector<Link*>();
+  route.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
   route.symmetrical = (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES);
 
   for (auto link: parsed_link_list)
@@ -792,13 +790,13 @@ void ETag_surfxml_ASroute(){
   s_sg_platf_route_cbarg_t ASroute;
   memset(&ASroute,0,sizeof(ASroute));
 
-  ASroute.src    = sg_netcard_by_name_or_null(A_surfxml_ASroute_src); // tested to not be nullptr in start tag
-  ASroute.dst    = sg_netcard_by_name_or_null(A_surfxml_ASroute_dst); // tested to not be nullptr in start tag
+  ASroute.src = sg_netpoint_by_name_or_null(A_surfxml_ASroute_src); // tested to not be nullptr in start tag
+  ASroute.dst = sg_netpoint_by_name_or_null(A_surfxml_ASroute_dst); // tested to not be nullptr in start tag
 
-  ASroute.gw_src = sg_netcard_by_name_or_null(A_surfxml_ASroute_gw___src); // tested to not be nullptr in start tag
-  ASroute.gw_dst = sg_netcard_by_name_or_null(A_surfxml_ASroute_gw___dst); // tested to not be nullptr in start tag
+  ASroute.gw_src = sg_netpoint_by_name_or_null(A_surfxml_ASroute_gw___src); // tested to not be nullptr in start tag
+  ASroute.gw_dst = sg_netpoint_by_name_or_null(A_surfxml_ASroute_gw___dst); // tested to not be nullptr in start tag
 
-  ASroute.link_list =  new std::vector<Link*>();
+  ASroute.link_list = new std::vector<simgrid::surf::LinkImpl*>();
 
   for (auto link: parsed_link_list)
     ASroute.link_list->push_back(link);
@@ -822,37 +820,39 @@ void ETag_surfxml_bypassRoute(){
   s_sg_platf_route_cbarg_t route;
   memset(&route,0,sizeof(route));
 
-  route.src = sg_netcard_by_name_or_null(A_surfxml_bypassRoute_src); // tested to not be nullptr in start tag
-  route.dst = sg_netcard_by_name_or_null(A_surfxml_bypassRoute_dst); // tested to not be nullptr in start tag
+  route.src         = sg_netpoint_by_name_or_null(A_surfxml_bypassRoute_src); // tested to not be nullptr in start tag
+  route.dst         = sg_netpoint_by_name_or_null(A_surfxml_bypassRoute_dst); // tested to not be nullptr in start tag
   route.gw_src = nullptr;
   route.gw_dst = nullptr;
   route.symmetrical = false;
-  route.link_list =  new std::vector<Link*>();
+  route.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
 
   for (auto link: parsed_link_list)
     route.link_list->push_back(link);
   parsed_link_list.clear();
 
   sg_platf_new_bypassRoute(&route);
+  delete route.link_list;
 }
 
 void ETag_surfxml_bypassASroute(){
   s_sg_platf_route_cbarg_t ASroute;
   memset(&ASroute,0,sizeof(ASroute));
 
-  ASroute.src         = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_src);
-  ASroute.dst         = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_dst);
-  ASroute.link_list   = new std::vector<Link*>();
+  ASroute.src         = sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_src);
+  ASroute.dst         = sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_dst);
+  ASroute.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
   for (auto link: parsed_link_list)
     ASroute.link_list->push_back(link);
   parsed_link_list.clear();
 
   ASroute.symmetrical = false;
 
-  ASroute.gw_src = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___src);
-  ASroute.gw_dst = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___dst);
+  ASroute.gw_src = sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_gw___src);
+  ASroute.gw_dst = sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_gw___dst);
 
   sg_platf_new_bypassRoute(&ASroute);
+  delete ASroute.link_list;
 }
 
 void ETag_surfxml_trace(){
@@ -901,19 +901,9 @@ void STag_surfxml_AS(){
   AS_TAG                   = 1;
   s_sg_platf_AS_cbarg_t AS = { A_surfxml_AS_id, (int)A_surfxml_AS_routing};
 
-  as_current_property_set = nullptr;
-
   sg_platf_new_AS_begin(&AS);
 }
 void ETag_surfxml_AS(){
-  if(as_prop_nb){
-    char *name      = as_name_tab[as_prop_nb-1];
-    xbt_dict_t dict = (xbt_dict_t) as_dict_tab[as_prop_nb-1];
-    as_prop_nb--;
-    XBT_DEBUG("POP prop %p for AS '%s'",dict,name);
-    xbt_lib_set(as_router_lib, name, ROUTING_PROP_ASR_LEVEL, dict);
-    xbt_free(name);
-  }
   sg_platf_new_AS_seal();
 }
 
@@ -929,14 +919,13 @@ void ETag_surfxml_config(){
   xbt_dict_cursor_t cursor = nullptr;
   char *key;
   char *elem;
-  char *cfg;
   xbt_dict_foreach(current_property_set, cursor, key, elem) {
-    cfg = bprintf("%s:%s",key,elem);
-    if(xbt_cfg_is_default_value(key))
+    if (xbt_cfg_is_default_value(key)) {
+      char* cfg = bprintf("%s:%s", key, elem);
       xbt_cfg_set_parse(cfg);
-    else
+      free(cfg);
+    } else
       XBT_INFO("The custom configuration '%s' is already defined by user!",key);
-    free(cfg);
   }
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
 
@@ -1019,17 +1008,10 @@ void surf_parse_open(const char *file)
 {
   xbt_assert(file, "Cannot parse the nullptr file. Bypassing the parser is strongly deprecated nowadays.");
 
-  if (!surf_input_buffer_stack)
-    surf_input_buffer_stack = xbt_dynar_new(sizeof(YY_BUFFER_STATE), nullptr);
-  if (!surf_file_to_parse_stack)
-    surf_file_to_parse_stack = xbt_dynar_new(sizeof(FILE *), nullptr);
-
-  if (!surf_parsed_filename_stack)
-    surf_parsed_filename_stack = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-
   surf_parsed_filename = xbt_strdup(file);
-  char *dir = xbt_dirname(file);
-  xbt_dynar_push(surf_path, &dir);
+  char* dir            = xbt_dirname(file);
+  surf_path.push_back(std::string(dir));
+  xbt_free(dir);
 
   surf_file_to_parse = surf_fopen(file, "r");
   xbt_assert((surf_file_to_parse), "Unable to open \"%s\"\n", file);
@@ -1040,13 +1022,8 @@ void surf_parse_open(const char *file)
 
 void surf_parse_close()
 {
-  xbt_dynar_free(&surf_input_buffer_stack);
-  xbt_dynar_free(&surf_file_to_parse_stack);
-  xbt_dynar_free(&surf_parsed_filename_stack);
   if (surf_parsed_filename) {
-    char *dir = nullptr;
-    xbt_dynar_pop(surf_path, &dir);
-    free(dir);
+    surf_path.pop_back();
   }
 
   free(surf_parsed_filename);
@@ -1066,11 +1043,4 @@ static int _surf_parse() {
 
 int_f_void_t surf_parse = _surf_parse;
 
-/* Prop tag functions
- *
- * With XML parser
- */
-xbt_dict_t get_as_router_properties(const char* name)
-{
-  return (xbt_dict_t)xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL);
-}
+SG_END_DECL()

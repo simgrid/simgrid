@@ -82,7 +82,7 @@ should provide information about all models for all existing resources.
    - \b storage/model: specify the used storage model (there is currently only one such model - this option is hence only useful for future releases)
    - \b vm/model: specify the model for virtual machines (there is currently only one such model - this option is hence only useful for future releases)
 
-%As of writing, the following network models are accepted. Over
+As of writing, the following network models are accepted. Over
 the time new models can be added, and some experimental models can be
 removed; check the values on your simulators for an uptodate
 information. Note that the CM02 model is described in the research report
@@ -201,8 +201,18 @@ price of a reduced numerical precision.
 
 \subsection options_concurrency_limit Concurrency limit
 
-The maximum number of variables in a system can be tuned through
-the \b maxmin/concurrency_limit item (default value: 100). Setting a higher value can lift some limitations, such as the number of concurrent processes running on a single host.
+The maximum number of variables per resource can be tuned through
+the \b maxmin/concurrency-limit item. The default value is -1, meaning that
+there is no such limitation. You can have as many simultaneous actions per
+resources as you want. If your simulation presents a very high level of
+concurrency, it may help to use e.g. 100 as a value here. It means that at
+most 100 actions can consume a resource at a given time. The extraneous actions
+are queued and wait until the amount of concurrency of the considered resource
+lowers under the given boundary.
+
+Such limitations help both to the simulation speed and simulation accuracy
+on highly constrained scenarios, but the simulation speed suffers of this
+setting on regular (less constrained) scenarios so it is off by default.
 
 \subsection options_model_network Configuring the Network model
 
@@ -249,7 +259,7 @@ deployment of processes on nodes.
 
 \subsubsection options_model_network_crosstraffic Simulating cross-traffic
 
-%As of SimGrid v3.7, cross-traffic effects can be taken into account in
+As of SimGrid v3.7, cross-traffic effects can be taken into account in
 analytical simulations. It means that ongoing and incoming
 communication flows are treated independently. In addition, the LV08
 model adds 0.05 of usage on the opposite direction for each new
@@ -264,14 +274,6 @@ This is activated through the \b network/crosstraffic item, that
 can be set to 0 (disable this feature) or 1 (enable it).
 
 Note that with the default host model this option is activated by default.
-
-\subsubsection options_model_network_coord Coordinated-based network models
-
-When you want to use network coordinates, as it happens when you use
-an \<AS\> in your platform file with \c Vivaldi as a routing (see also
-Section \ref pf_routing_model_vivaldi "Vivaldi Routing Model"), you must
-set the \b network/coordinates to \c yes so that all mandatory
-initialization are done in the simulator.
 
 \subsubsection options_model_network_sendergap Simulating sender gap
 
@@ -380,7 +382,7 @@ For now, this configuration variable can take 2 values:
  * none: Do not apply any kind of reduction (mandatory for now for
    liveness properties)
  * dpor: Apply Dynamic Partial Ordering Reduction. Only valid if you
-   verify local safety properties.
+   verify local safety properties (default value for safety checks).
 
 \subsection options_modelchecking_visited model-check/visited, Cycle detection
 
@@ -474,7 +476,7 @@ consumption by trying to share memory between the different snapshots.
 When compiled against the model checker, the stacks are not
 protected with guards: if the stack size is too small for your
 application, the stack will silently overflow on other parts of the
-memory.
+memory (see \ref options_virt_guard_size).
 
 \subsection options_modelchecking_hash Hashing of the state (experimental)
 
@@ -550,25 +552,33 @@ select the one you want to use with the \b contexts/factory
 configuration item. Some of the following may not exist on your
 machine because of portability issues. In any case, the default one
 should be the most effcient one (please report bugs if the
-auto-detection fails for you). They are sorted here from the slowest
-to the most effient:
+auto-detection fails for you). They are approximately sorted here from
+the slowest to the most effient:
+
  - \b thread: very slow factory using full featured threads (either
-   pthreads or windows native threads)
- - \b ucontext: fast factory using System V contexts (or a portability
-   layer of our own on top of Windows fibers)
+   pthreads or windows native threads). They are slow but very
+   standard. Some debuggers or profilers only work with this factory.
+ - \b java: Java applications are virtualized onto java threads (that
+   are regular pthreads registered to the JVM)
+ - \b ucontext: fast factory using System V contexts (Linux and FreeBSD only)
+ - \b boost: This uses the [context implementation](http://www.boost.org/doc/libs/1_59_0/libs/context/doc/html/index.html)
+   of the boost library for a performance that is comparable to our
+   raw implementation.\nInstall the relevant library (e.g. with the
+   libboost-contexts-dev package on Debian/Ubuntu) and recompile
+   SimGrid. Note that our implementation is not compatible with recent
+   implementations of the library, and it will be hard to fix this since
+   the library's author decided to hide an API that we were using.
  - \b raw: amazingly fast factory using a context switching mechanism
    of our own, directly implemented in assembly (only available for x86
-   and amd64 platforms for now)
- - \b boost: This uses the [context implementation](http://www.boost.org/doc/libs/1_59_0/libs/context/doc/html/index.html)
-             of the boost library; you must have this library installed before
-             you compile SimGrid. (On Debian GNU/Linux based systems, this is
-             provided by the libboost-contexts-dev package.)
+   and amd64 platforms for now) and without any unneeded system call.
 
-The only reason to change this setting is when the debugging tools get
+The main reason to change this setting is when the debugging tools get
 fooled by the optimized context factories. Threads are the most
-debugging-friendly contextes, as they allow to set breakpoints anywhere with gdb
- and visualize backtraces for all processes, in order to debug concurrency issues.
-Valgrind is also more comfortable with threads, but it should be usable with all factories.
+debugging-friendly contextes, as they allow to set breakpoints
+anywhere with gdb and visualize backtraces for all processes, in order
+to debug concurrency issues. Valgrind is also more comfortable with
+threads, but it should be usable with all factories (but the callgrind
+tool that really don't like raw and ucontext factories).
 
 \subsection options_virt_stacksize Adapting the used stack size
 
@@ -583,26 +593,36 @@ If you want to push the scalability limits of your code, you might
 want to reduce the \b contexts/stack-size item. Its default value
 is 8192 (in KiB), while our Chord simulation works with stacks as small
 as 16 KiB, for example. For the thread factory, the default value
-is the one of the system, if it is too large/small, it has to be set
-with this parameter.
+is the one of the system but you can still change it with this parameter.
 
 The operating system should only allocate memory for the pages of the
 stack which are actually used and you might not need to use this in
 most cases. However, this setting is very important when using the
 model checker (see \ref options_mc_perf).
 
-In some cases, no stack guard page is used and the stack will silently
-overflow on other parts of the memory if the stack size is too small
-for your application. This happens :
+\subsection options_virt_guard_size Disabling stack guard pages
+
+A stack guard page is usually used which prevents the stack of a given
+actor from overflowing on another stack. But the performance impact
+may become prohibitive when the amount of actors increases.  The
+option \b contexts:guard-size is the number of stack guard pages used.
+By setting it to 0, no guard pages will be used: in this case, you
+should avoid using small stacks (\b stack-size) as the stack will
+silently overflow on other parts of the memory.
+
+When no stack guard page is created, stacks may then silently overflow
+on other parts of the memory if their size is too small for the
+application. This happens:
 
 - on Windows systems;
 - when the model checker is enabled;
-- when stack guard pages are explicitely disabled (see \ref  options_perf_guard_size).
+- and of course when guard pages are explicitely disabled (with \b contexts:guard-size=0).
 
 \subsection options_virt_parallel Running user code in parallel
 
 Parallel execution of the user code is only considered stable in
-SimGrid v3.7 and higher. It is described in
+SimGrid v3.7 and higher, and mostly for MSG simulations. SMPI
+simulations may well fail in parallel mode. It is described in
 <a href="http://hal.inria.fr/inria-00602216/">INRIA RR-7653</a>.
 
 If you are using the \c ucontext or \c raw context factories, you can
@@ -923,7 +943,7 @@ SMPI implements more than 100 different algorithms for MPI collective communicat
 simulate the behavior of most of the existing MPI libraries. The \b smpi/coll-selector item can be used
  to use the decision logic of either OpenMPI or MPICH libraries (values: ompi or mpich, by default SMPI
 uses naive version of collective operations). Each collective operation can be manually selected with a
-\b smpi/collective_name:algo_name. Available algorithms are listed in \ref SMPI_collective_algorithms .
+\b smpi/collective_name:algo_name. Available algorithms are listed in \ref SMPI_use_colls .
 
 \subsection options_model_smpi_iprobe smpi/iprobe: Inject constant times for calls to MPI_Iprobe
 
@@ -931,6 +951,18 @@ uses naive version of collective operations). Each collective operation can be m
 
 The behavior and motivation for this configuration option is identical with \a smpi/test, see
 Section \ref options_model_smpi_test for details.
+
+\subsection options_model_smpi_iprobe_cpu_usage smpi/iprobe-cpu-usage: Reduce speed for iprobe calls
+
+\b Default value: 1 (no change from default behavior)
+
+MPI_Iprobe calls can be heavily used in applications. To account correctly for the energy
+cores spend probing, it is necessary to reduce the load that these calls cause inside
+SimGrid.
+
+For instance, we measured a max power consumption of 220 W for a particular application but 
+only 180 W while this application was probing. Hence, the correct factor that should
+be passed to this option would be 180/220 = 0.81.
 
 \subsection options_model_smpi_init smpi/init: Inject constant times for calls to MPI_Init
 
@@ -986,7 +1018,7 @@ following cost inside MPI_Send:
     5+11*1
 \endverbatim
 
-%As 5 is the startup cost and 1 is the cost per byte.
+As 5 is the startup cost and 1 is the cost per byte.
 
 \note
     The order of sections can be arbitrary; they will be ordered internally.
@@ -1024,14 +1056,38 @@ Here is an example:
     also disable this behavior for MPI_Iprobe.
 
 
-\subsection options_model_smpi_use_shared_malloc smpi/use-shared-malloc: Factorize malloc()s
+\subsection options_model_smpi_shared_malloc smpi/shared-malloc: Factorize malloc()s
 
-\b Default: 1
+\b Default: global
 
-SMPI can use shared memory by calling shm_* functions; this might speed up the simulation.
-This opens or creates a new POSIX shared memory object, kept in RAM, in /dev/shm.
+If your simulation consumes too much memory, you may want to modify
+your code so that the working areas are shared by all MPI ranks. For
+example, in a bloc-cyclic matrix multiplication, you will only
+allocate one set of blocs, and every processes will share them.
+Naturally, this will lead to very wrong results, but this will save a
+lot of memory so this is still desirable for some studies. For more on
+the motivation for that feature, please refer to the 
+<a href="https://simgrid.github.io/SMPI_CourseWare/topic_understanding_performance/matrixmultiplication/">relevant
+section</a> of the SMPI CourseWare (see Activity #2.2 of the pointed
+assignment). In practice, change the call to malloc() and free() into
+SMPI_SHARED_MALLOC() and SMPI_SHARED_FREE().
 
-If you want to disable this behavior, set the value to 0.
+SMPI provides 2 algorithms for this feature. The first one, called \c
+local, allocates one bloc per call to SMPI_SHARED_MALLOC() in your
+code (each call location gets its own bloc) and this bloc is shared
+amongst all MPI ranks.  This is implemented with the shm_* functions
+to create a new POSIX shared memory object (kept in RAM, in /dev/shm)
+for each shared bloc.
+
+With the \c global algorithm, each call to SMPI_SHARED_MALLOC()
+returns a new adress, but it only points to a shadow bloc: its memory
+area is mapped on a 1MiB file on disk. If the returned bloc is of size
+N MiB, then the same file is mapped N times to cover the whole bloc. 
+At the end, no matter how many SMPI_SHARED_MALLOC you do, this will
+only consume 1 MiB in memory.
+
+You can disable this behavior and come back to regular mallocs (for
+example for debugging purposes) using \c "no" as a value.
 
 \subsection options_model_smpi_wtime smpi/wtime: Inject constant times for calls to MPI_Wtime
 
@@ -1102,24 +1158,6 @@ hence, the output would mismatch, causing the test to fail.
 
 It can be done by using XBT. Go to \ref XBT_log for more details.
 
-\section options_perf Performance optimizations
-
-\subsection options_perf_context Context factory
-
-In order to achieve higher performance, you might want to use the raw
-context factory which avoids any system call when switching between
-tasks. If it is not possible you might use ucontext instead.
-
-\subsection options_perf_guard_size Disabling stack guard pages
-
-A stack guard page is usually used which prevents the stack from
-overflowing on other parts of the memory. However this might have a
-performance impact if a huge number of processes is created.  The
-option \b contexts:guard-size is the number of stack guard pages
-used. By setting it to 0, no guard pages will be used: in this case,
-you should avoid using small stacks (\b stack-size) as the stack will
-silently overflow on other parts of the memory.
-
 \section options_index Index of all existing configuration options
 
 \note
@@ -1134,7 +1172,7 @@ silently overflow on other parts of the memory.
 - \c clean-atexit: \ref options_generic_clean_atexit
 
 - \c contexts/factory: \ref options_virt_factory
-- \c contexts/guard-size: \ref options_virt_parallel
+- \c contexts/guard-size: \ref options_virt_guard_size
 - \c contexts/nthreads: \ref options_virt_parallel
 - \c contexts/parallel_threshold: \ref options_virt_parallel
 - \c contexts/stack-size: \ref options_virt_stacksize
@@ -1149,6 +1187,7 @@ silently overflow on other parts of the memory.
 - \c host/model: \ref options_model_select
 
 - \c maxmin/precision: \ref options_model_precision
+- \c maxmin/concurrency-limit: \ref options_concurrency_limit
 
 - \c msg/debug-multiple-use: \ref options_msg_debug_multiple_use
 
@@ -1169,7 +1208,6 @@ silently overflow on other parts of the memory.
 - \c model-check/visited: \ref options_modelchecking_visited
 
 - \c network/bandwidth-factor: \ref options_model_network_coefs
-- \c network/coordinates: \ref options_model_network_coord
 - \c network/crosstraffic: \ref options_model_network_crosstraffic
 - \c network/latency-factor: \ref options_model_network_coefs
 - \c network/maxmin-selective-update: \ref options_model_optim
@@ -1198,6 +1236,7 @@ silently overflow on other parts of the memory.
 - \c smpi/host-speed: \ref options_smpi_bench
 - \c smpi/IB-penalty-factors: \ref options_model_network_coefs
 - \c smpi/iprobe: \ref options_model_smpi_iprobe
+- \c smpi/iprobe-cpu-usage: \ref options_model_smpi_iprobe_cpu_usage
 - \c smpi/init: \ref options_model_smpi_init
 - \c smpi/lat-factor: \ref options_model_smpi_lat_factor
 - \c smpi/ois: \ref options_model_smpi_ois
@@ -1206,9 +1245,9 @@ silently overflow on other parts of the memory.
 - \c smpi/papi-events: \ref options_smpi_papi_events
 - \c smpi/privatize-global-variables: \ref options_smpi_global
 - \c smpi/send-is-detached-thresh: \ref options_model_smpi_detached
+- \c smpi/shared-malloc: \ref options_model_smpi_shared_malloc
 - \c smpi/simulate-computation: \ref options_smpi_bench
 - \c smpi/test: \ref options_model_smpi_test
-- \c smpi/use-shared-malloc: \ref options_model_smpi_use_shared_malloc
 - \c smpi/wtime: \ref options_model_smpi_wtime
 
 - \c <b>Tracing configuration options can be found in Section \ref tracing_tracing_options</b>.

@@ -8,7 +8,10 @@
 
 #ifndef XBT_REPLAY_H
 #define XBT_REPLAY_H
-#include "xbt/misc.h"           /* SG_BEGIN_DECL */
+
+#include "xbt/dict.h"
+
+#include <stdio.h>
 
 SG_BEGIN_DECL()
 

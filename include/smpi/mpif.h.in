@@ -35,8 +35,8 @@
       parameter(MPI_SOURCE=1)
       parameter(MPI_TAG=2)
       parameter(MPI_ERROR=3)
-      parameter(MPI_VERSION=1)
-      parameter(MPI_SUBVERSION=1)
+      parameter(MPI_VERSION=2)
+      parameter(MPI_SUBVERSION=2)
       parameter(MPI_LOCK_EXCLUSIVE=1)
       parameter(MPI_LOCK_SHARED=2)
       integer MPI_MODE_NOSTORE, MPI_MODE_NOPUT, MPI_MODE_NOPRECEDE
@@ -83,9 +83,8 @@
       parameter(MPI_COMM_NULL_DUP_FN =0)
       parameter(MPI_COMM_DUP_FN =0)
 
-      integer MPI_ROOT, MPI_INFO_NULL,MPI_COMM_TYPE_SHARED
+      integer MPI_ROOT, MPI_COMM_TYPE_SHARED
       parameter(MPI_ROOT=0)
-      parameter(MPI_INFO_NULL=0)
       parameter(MPI_COMM_TYPE_SHARED=1)
 
 ! Attribute keys
@@ -101,19 +100,6 @@
       parameter(MPI_UNIVERSE_SIZE=-7)
       parameter(MPI_LASTUSEDCODE=-8)
 
-! These should be ordered as in smpi_f77.c
-      integer MPI_COMM_NULL, MPI_COMM_WORLD, MPI_COMM_SELF
-      parameter(MPI_COMM_NULL=-1)
-      parameter(MPI_COMM_SELF=-2)
-      parameter(MPI_COMM_WORLD=0)
-
-      integer MPI_GROUP_NULL, MPI_GROUP_EMPTY
-      parameter(MPI_GROUP_NULL=-1)
-      parameter(MPI_GROUP_EMPTY=-2)
-
-      integer MPI_WIN_NULL
-      parameter(MPI_WIN_NULL=-1)
-
       integer MPI_ERRORS_RETURN, MPI_ERRORS_ARE_FATAL
       integer MPI_ERRHANDLER_NULL
       parameter(MPI_ERRORS_RETURN=0)
@@ -124,75 +110,92 @@
       integer MPI_STATUS_SIZE
       parameter(MPI_STATUS_SIZE=4)
 
-! These should be ordered as in smpi_f77.c
-      integer MPI_IN_PLACE, MPI_BOTTOM
-      integer MPI_STATUS_IGNORE, MPI_STATUSES_IGNORE
-      common /smpi/ MPI_IN_PLACE, MPI_BOTTOM
-      common /smpi/ MPI_STATUS_IGNORE, MPI_STATUSES_IGNORE
-
-      integer MPI_REQUEST_NULL
-      parameter(MPI_REQUEST_NULL=-1)
-
       integer MPI_INTEGER_KIND
       parameter(MPI_INTEGER_KIND=4)
 
-      integer MPI_DATATYPE_NULL, MPI_BYTE, MPI_CHARACTER, MPI_LOGICAL
+      integer MPI_IN_PLACE
+      parameter(MPI_IN_PLACE=-100)
+      integer MPI_BOTTOM
+      parameter(MPI_BOTTOM=-200)
+      integer MPI_STATUS_IGNORE
+      parameter(MPI_STATUS_IGNORE=-300)
+      integer MPI_STATUSES_IGNORE
+      parameter(MPI_STATUSES_IGNORE=-400)
+
+
+      integer MPI_BYTE, MPI_CHARACTER, MPI_LOGICAL
       integer MPI_INTEGER, MPI_INTEGER1, MPI_INTEGER2, MPI_INTEGER4
       integer MPI_INTEGER8, MPI_REAL, MPI_REAL4, MPI_REAL8
       integer MPI_DOUBLE_PRECISION, MPI_COMPLEX, MPI_DOUBLE_COMPLEX
       integer MPI_2INTEGER, MPI_LOGICAL1, MPI_LOGICAL2, MPI_LOGICAL4
       integer MPI_LOGICAL8, MPI_2REAL, MPI_2DOUBLE_PRECISION
       integer MPI_AINT, MPI_OFFSET, MPI_COUNT
-      integer MPI_REAL16, MPI_COMPLEX8,MPI_COMPLEX16,MPI_COMPLEX32
-      integer MPI_PACKED
-      parameter(MPI_DATATYPE_NULL=-1)
-      parameter(MPI_BYTE=0)
-      parameter(MPI_CHARACTER=1)
-      parameter(MPI_LOGICAL=2)
-      parameter(MPI_INTEGER=3)
-      parameter(MPI_INTEGER1=4)
-      parameter(MPI_INTEGER2=5)
-      parameter(MPI_INTEGER4=6)
-      parameter(MPI_INTEGER8=7)
-      parameter(MPI_REAL=8)
-      parameter(MPI_REAL4=9)
-      parameter(MPI_REAL8=10)
-      parameter(MPI_DOUBLE_PRECISION=11)
-      parameter(MPI_COMPLEX=12)
-      parameter(MPI_DOUBLE_COMPLEX=13)
-      parameter(MPI_2INTEGER=14)
-      parameter(MPI_LOGICAL1=15)
-      parameter(MPI_LOGICAL2=16)
-      parameter(MPI_LOGICAL4=17)
-      parameter(MPI_LOGICAL8=18)
-      parameter(MPI_2REAL=19)
-      parameter(MPI_2DOUBLE_PRECISION=20)
-      parameter(MPI_AINT=21)
-      parameter(MPI_OFFSET=22)
-      parameter(MPI_COUNT=23)
-      parameter(MPI_REAL16=24)
-      parameter(MPI_COMPLEX8=25)
-      parameter(MPI_COMPLEX16=26)
-      parameter(MPI_COMPLEX32=27)
-      parameter(MPI_PACKED=28)
+      integer MPI_REAL16, MPI_PACKED
 
-! These should be ordered as in smpi_f77.c
-      integer MPI_OP_NULL,MPI_MAX, MPI_MIN, MPI_MAXLOC, MPI_MINLOC
+      integer MPI_MAX, MPI_MIN, MPI_MAXLOC, MPI_MINLOC
       integer MPI_SUM, MPI_PROD, MPI_LAND, MPI_LOR, MPI_LXOR, MPI_BAND
       integer MPI_BOR, MPI_BXOR
+
+! _NULL handles should be negative
+
+      integer MPI_REQUEST_NULL,MPI_DATATYPE_NULL,MPI_OP_NULL
+      integer MPI_COMM_NULL, MPI_COMM_WORLD, MPI_COMM_SELF
+      integer MPI_GROUP_NULL, MPI_GROUP_EMPTY, MPI_WIN_NULL
+      integer MPI_INFO_NULL
+
+      parameter(MPI_REQUEST_NULL=-1)
+      parameter(MPI_DATATYPE_NULL=-1)
       parameter(MPI_OP_NULL=-1)
-      parameter(MPI_MAX=0)
-      parameter(MPI_MIN=1)
-      parameter(MPI_MAXLOC=2)
-      parameter(MPI_MINLOC=3)
-      parameter(MPI_SUM=4)
-      parameter(MPI_PROD=5)
-      parameter(MPI_LAND=6)
-      parameter(MPI_LOR=7)
-      parameter(MPI_LXOR=8)
-      parameter(MPI_BAND=9)
-      parameter(MPI_BOR=10)
-      parameter(MPI_BXOR=11)
+      parameter(MPI_INFO_NULL=-1)
+      parameter(MPI_COMM_NULL=-1)
+      parameter(MPI_COMM_SELF=-2)
+      parameter(MPI_GROUP_NULL=-1)
+      parameter(MPI_GROUP_EMPTY=-2)
+      parameter(MPI_WIN_NULL=-1)
+
+! These IDs have to be unique, consecutive
+! and ordered as in smpi_f77.cpp. 
+      parameter(MPI_COMM_WORLD=0)
+
+      parameter(MPI_BYTE=1)
+      parameter(MPI_CHARACTER=2)
+      parameter(MPI_LOGICAL=3)
+      parameter(MPI_INTEGER=4)
+      parameter(MPI_INTEGER1=5)
+      parameter(MPI_INTEGER2=6)
+      parameter(MPI_INTEGER4=7)
+      parameter(MPI_INTEGER8=8)
+      parameter(MPI_REAL=9)
+      parameter(MPI_REAL4=10)
+      parameter(MPI_REAL8=11)
+      parameter(MPI_DOUBLE_PRECISION=12)
+      parameter(MPI_COMPLEX=13)
+      parameter(MPI_DOUBLE_COMPLEX=14)
+      parameter(MPI_2INTEGER=15)
+      parameter(MPI_LOGICAL1=16)
+      parameter(MPI_LOGICAL2=17)
+      parameter(MPI_LOGICAL4=18)
+      parameter(MPI_LOGICAL8=19)
+      parameter(MPI_2REAL=20)
+      parameter(MPI_2DOUBLE_PRECISION=21)
+      parameter(MPI_AINT=22)
+      parameter(MPI_OFFSET=23)
+      parameter(MPI_COUNT=24)
+      parameter(MPI_REAL16=25)
+      parameter(MPI_PACKED=26)
+
+      parameter(MPI_MAX=27)
+      parameter(MPI_MIN=28)
+      parameter(MPI_MAXLOC=29)
+      parameter(MPI_MINLOC=30)
+      parameter(MPI_SUM=31)
+      parameter(MPI_PROD=32)
+      parameter(MPI_LAND=33)
+      parameter(MPI_LOR=34)
+      parameter(MPI_LXOR=35)
+      parameter(MPI_BAND=36)
+      parameter(MPI_BOR=37)
+      parameter(MPI_BXOR=38)
 
       INTEGER MPI_ADDRESS_KIND, MPI_OFFSET_KIND
       PARAMETER (MPI_ADDRESS_KIND=@CMAKE_SIZEOF_VOID_P@)

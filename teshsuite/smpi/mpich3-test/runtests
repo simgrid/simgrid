@@ -40,8 +40,8 @@
 use File::Path;
 
 # Global variables
-$MPIMajorVersion = "1";
-$MPIMinorVersion = "1";
+$MPIMajorVersion = "2";
+$MPIMinorVersion = "2";
 $mpiexec = "smpirun";    # Name of mpiexec program (including path, if necessary)
 $testIsStrict = "true";
 $MPIhasMPIX   = "no";
@@ -270,6 +270,7 @@ if ($batchRun) {
 else {
     if ($err_count) {
 	print "$err_count tests failed out of $total_run\n";
+	print "Failing tests : $failed_tests\n";
 	if ($xmloutput) {
 	    print "Details in $xmlfullfile\n";
 	}
@@ -657,6 +658,8 @@ sub RunMPIProgram {
 		print STDERR "Unexpected output in $programname: $_";
 		if (!$found_error) {
 		    $found_error = 1;
+		    $failed_tests .= $programname;
+		    $failed_tests .= " ";
 		    $err_count ++;
 		}
 	    }
@@ -665,6 +668,8 @@ sub RunMPIProgram {
 	    print STDERR "Program $programname exited without No Errors\n";
 	    if (!$found_error) {
 		$found_error = 1;
+		$failed_tests .= $programname;
+		$failed_tests .= " ";
 		$err_count ++;
 	    }
 	}
@@ -680,6 +685,8 @@ sub RunMPIProgram {
 		if ($signal_num != 0) {
 		    print STDERR "Program $programname exited with signal $signal_num\n";
 		}
+		$failed_tests .= $programname;
+		$failed_tests .= " ";
 		$found_error = 1;
 		$err_count ++;
 	    }

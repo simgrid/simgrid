@@ -1,7 +1,6 @@
 /* JNI interface to virtual machine in Simgrid */
 
-/* Copyright (c) 2006-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2014. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,43 +8,32 @@
 package org.simgrid.msg;
 import java.util.ArrayList;
 
-public class VM extends Host{
-	// Please note that we are not declaring a new bind variable 
-	//(the bind variable has been inherited from the super class Host)
+public class VM extends Host {
+	// No need to declare a new bind variable: we use the one inherited from the super class Host
 
 	/* Static functions */ 
-	// GetByName is inherited from the super class Host
-
 
 	private static ArrayList<VM> vms= new ArrayList<>();
 	private Host currentHost; 
 
-	/* Constructors / destructors */
-	/**
-	 * Create a `basic' VM (i.e. 1 core, 1GB of RAM, other values are not taken into account).
-	 */
+	/** Create a `basic' VM (i.e. 1GB of RAM, other values are not taken into account). */
 	public VM(Host host, String name) {
-		this(host,name,1,1024, -1, null, -1,0 , 0);
+		this(host,name,1024, 0, 0);
 	}
 
 	/**
-	 * Create a  VM
-	 * @param host  Host node
+	 * Create a VM
+	 * @param host Host node
 	 * @param name name of the machine
-	 * @param nCore number of core
 	 * @param ramSize size of the RAM that should be allocated (in MBytes)
-	 * @param netCap (not used for the moment)
-	 * @param diskPath (not used for the moment)
-	 * @param diskSize (not used for the moment)
 	 * @param migNetSpeed (network bandwith allocated for migrations in MB/s, if you don't know put zero ;))
 	 * @param dpIntensity (dirty page percentage according to migNetSpeed, [0-100], if you don't know put zero ;))
 	 */
-	public VM(Host host, String name, int nCore,  int ramSize, 
-			int netCap, String diskPath, int diskSize, int migNetSpeed, int dpIntensity){
+	public VM(Host host, String name, int ramSize, int migNetSpeed, int dpIntensity){
 		super();
-		super.name = name; 
+		super.name = name;
 		this.currentHost = host; 
-		create(host, name, nCore, ramSize, netCap, diskPath, diskSize, migNetSpeed, dpIntensity);
+		create(host, name, ramSize, migNetSpeed, dpIntensity);
 		vms.add(this);
 	}
 
@@ -63,56 +51,43 @@ public class VM extends Host{
 		return null; 
 	}
 	
+	/** Kills all the actors running on that VM 
+	 * 
+	 * Actually, this strictly equivalent to shutdown().
+	 * In C and in libvirt, the destroy function also releases the memory associated to the VM, 
+	 * but this is not the way it goes in Java. The VM will only get destroyed by the garbage 
+	 * collector when it is not referenced anymore by your variables. So, to see the VM really 
+	 * destroyed, don't call this function but simply release any ref you have on it. 
+	 */
 	public void destroy() {
+		shutdown();
+	}
+
+	/* Make sure that the GC also destroys the C object */
+	protected void finalize() throws Throwable {
 		nativeFinalize();
 	}
-	private native void nativeFinalize();
+	public native void nativeFinalize();
 
-
-	/* JNI / Native code */
-
-	/* get/set property methods are inherited from the Host class. */
-
-	/** Returns whether the given VM is currently suspended
-	 */	
+	/** Returns whether the given VM is currently suspended */	
 	public native int isCreated();
 
-	/** Returns whether the given VM is currently running
-	 */
+	/** Returns whether the given VM is currently running */
 	public native int isRunning();
 
-	/** Returns whether the given VM is currently running
-	 */
+	/** Returns whether the given VM is currently running */
 	public native int isMigrating();
 
-	/** Returns whether the given VM is currently suspended
-	 */	
+	/** Returns whether the given VM is currently suspended */	
 	public native int isSuspended();
-
-	/** Returns whether the given VM is currently saving
-	 */
-	public native int isSaving();
-
-	/** Returns whether the given VM is currently saved
-	 */
-	public native int isSaved();
-
-	/** Returns whether the given VM is currently restoring its state
-	 */
-	public native boolean isRestoring();
 
 	/**
 	 * Natively implemented method create the VM.
-	 * @param nCore number of core
 	 * @param ramSize size of the RAM that should be allocated (in MB)
-	 * @param netCap (not used for the moment)
-	 * @param diskPath (not used for the moment)
-	 * @param diskSize (not used for the moment)
 	 * @param migNetSpeed (network bandwith allocated for migrations in MB/s, if you don't know put zero ;))
 	 * @param dpIntensity (dirty page intensity, a percentage of migNetSpeed [0-100],  if you don't know put zero ;))
 	 */
-	private native void create(Host host, String name, int nCore, int ramSize, 
-			int netCap, String diskPath, int diskSize, int migNetSpeed, int dpIntensity);
+	private native void create(Host host, String name, int ramSize, int migNetSpeed, int dpIntensity);
 
 
 	/**
@@ -121,21 +96,18 @@ public class VM extends Host{
 	 */
 	public native void setBound(double bound);
 
-	/**
-	 * start the VM
-	 */
+	/**  start the VM */
 	public native void start();
 
 
 	/**
-	 * Immediately kills all processes within the given VM. Any memory that they allocated will be leaked.
-	 * No extra delay occurs. If you want to simulate this too, you want to use a MSG_process_sleep() or something
+	 * Immediately kills all processes within the given VM. 
+	 * 
+	 * No extra delay occurs. If you want to simulate this too, you want to use a MSG_process_sleep()
 	 */
 	public native void shutdown();
 
-	/**  
-	 * Invoke native migration routine
-	 */
+	/** Invoke native migration routine */
 	public native void internalmig(Host destination) throws Exception; // TODO add throws DoubleMigrationException (i.e. when you call migrate on a VM that is already migrating);
 
 
@@ -170,29 +142,7 @@ public class VM extends Host{
 	 */
 	public native void resume();
 
-	/** Immediately suspend the execution of all processes within the given VM 
-	 *  and save its state on the persistent HDD
-	 *  Not yet implemented (for the moment it behaves like suspend)
-	 *  No suspension cost occurs. If you want to simulate this too, you want to
-	 *  use a \ref File.write() before or after, depending on the exact semantic
-	 *  of VM suspend to you.
-	 */	
-	public native void save();
-
-	/** Immediately resumes the execution of all processes previously saved 
-	 * within the given VM
-	 *  Not yet implemented (for the moment it behaves like resume)
-	 *
-	 * No resume cost occurs. If you want to simulate this too, you want to
-	 * use a \ref File.read() before or after, depending on the exact semantic
-	 * of VM resume to you.
-	 */
-	public native void restore();
-
-
-	/**
-	 * Class initializer, to initialize various JNI stuff
-	 */
+	/**  Class initializer (for JNI), don't do it yourself */
 	public static native void nativeInit();
 	static {
 		nativeInit();

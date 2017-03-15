@@ -9,7 +9,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
-  foreach(file attr2type attrend2 attrend attrerr attrerrcomm attrerrtype attrorder attrordercomm attrordertype attrt
+  foreach(file attr2type attrdeleteget attrend2 attrend attrerr attrerrcomm attrerrtype attrorder attrordercomm attrordertype attrt
           baseattr2 baseattrcomm fkeyval) #attric fkeyvalcomm fkeyvaltype keyval_double_free
     add_executable(${file} ${file}.c)
     target_link_libraries(${file} simgrid mtest_c)
@@ -21,8 +21,8 @@ if (enable_smpi_MPICH3_testsuite AND HAVE_RAW_CONTEXTS)
   SET_TESTS_PROPERTIES(test-smpi-mpich3-attr-raw PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
 endif()
 
-foreach(file attr2type attrend2 attrend attrerr attrerrcomm attrerrtype attrorder attrordercomm attrordertype attrt
-        baseattr2 baseattrcomm fkeyval attric fkeyvalcomm fkeyvaltype keyval_double_free)
+foreach(file attr2type attrdeleteget attrend2 attrend attrerr attrerrcomm attrerrtype attrorder attrordercomm attrordertype attrt
+        baseattr2 baseattrcomm fkeyval attric fkeyvalcomm fkeyvaltype keyval_double_free keyval_double_free_comm keyval_double_free_type keyval_double_free_win)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c)
 endforeach()
 set(examples_src  ${examples_src}                                        PARENT_SCOPE)

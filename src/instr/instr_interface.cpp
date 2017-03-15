@@ -5,10 +5,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid_config.h"
-#include "src/surf/network_interface.hpp"
 #include "src/instr/instr_private.h"
-#include "surf/surf.h"
+#include "src/kernel/routing/NetPoint.hpp"
+#include "src/surf/network_interface.hpp"
 #include "src/surf/surf_private.h"
+#include "surf/surf.h"
 
 typedef enum {
   INSTR_US_DECLARE,
@@ -276,16 +277,12 @@ static void instr_user_variable(double time, const char *resource, const char *v
   //check if variable is already declared
   char *created = (char*)xbt_dict_get_or_null(filter, variable);
   if (what == INSTR_US_DECLARE){
-    if (created){//already declared
-      return;
-    }else{
+    if (!created) { // not declared yet
       xbt_dict_set (filter, variable, xbt_strdup("1"), nullptr);
       instr_new_user_variable_type (father_type, variable, color);
     }
   }else{
-    if (!created){//not declared, ignore
-      return;
-    } else {
+    if (created) { // declared, let's work
       char valuestr[100];
       snprintf(valuestr, 100, "%g", value);
       container_t container = PJ_container_get(resource);
@@ -311,19 +308,18 @@ static void instr_user_variable(double time, const char *resource, const char *v
 static void instr_user_srcdst_variable(double time, const char *src, const char *dst, const char *variable,
                               const char *father_type, double value, InstrUserVariable what)
 {
-  sg_netcard_t src_elm = sg_netcard_by_name_or_null(src);
+  sg_netpoint_t src_elm = sg_netpoint_by_name_or_null(src);
   if(!src_elm)
     xbt_die("Element '%s' not found!",src);
 
-  sg_netcard_t dst_elm = sg_netcard_by_name_or_null(dst);
+  sg_netpoint_t dst_elm = sg_netpoint_by_name_or_null(dst);
   if(!dst_elm)
     xbt_die("Element '%s' not found!",dst);
 
-  std::vector<Link*> *route = new std::vector<Link*>();
-  routing_platf->getRouteAndLatency (src_elm, dst_elm, route,nullptr);
-  for (auto link : *route)
-    instr_user_variable (time, link->getName(), variable, father_type, value, what, nullptr, user_link_variables);
-  delete route;
+  std::vector<simgrid::surf::LinkImpl*> route;
+  simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(src_elm, dst_elm, &route, nullptr);
+  for (auto link : route)
+    instr_user_variable(time, link->cname(), variable, father_type, value, what, nullptr, user_link_variables);
 }
 
 /** \ingroup TRACE_API

@@ -98,7 +98,6 @@ void xbt_heap_push(xbt_heap_t H, void *content, double key)
   item->content = content;
   xbt_heap_increase_key(H, count - 1);
   XBT_DEBUG("Heap has now %d elements and max elem is %g",xbt_heap_size(H),xbt_heap_maxkey(H));
-  return;
 }
 
 /**
@@ -277,5 +276,4 @@ static void xbt_heap_increase_key(xbt_heap_t H, int i)
   }
   if (H->update_callback)
     H->update_callback(items[i].content, i);
-  return;
 }

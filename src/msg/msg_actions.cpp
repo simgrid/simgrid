@@ -1,16 +1,16 @@
-/* Copyright (c) 2009-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2015. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "msg_private.h"
-#include "xbt/dynar.h"
+#include "src/msg/msg_private.h"
 #include "xbt/replay.h"
 
 #include <errno.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_action, msg, "MSG actions for trace driven simulation");
+
+SG_BEGIN_DECL()
 
 void MSG_action_init()
 {
@@ -59,3 +59,5 @@ msg_error_t MSG_action_trace_run(char *path)
 
   return res;
 }
+
+SG_END_DECL()

@@ -1,4 +1,6 @@
-/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
+/* Java bindings of the Trace API.                                          */
+
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -6,8 +8,18 @@
 #include <jni.h>
 /* Header for class org_simgrid_trace_Trace */
 
-#ifndef _Included_org_simgrid_trace_Trace
-#define _Included_org_simgrid_trace_Trace
+#ifndef Included_org_simgrid_trace_Trace
+#define Included_org_simgrid_trace_Trace
+
+/* Shut up some errors in eclipse online compiler. I wish such a pimple wouldn't be needed */
+#ifndef JNIEXPORT
+#define JNIEXPORT
+#endif
+#ifndef JNICALL
+#define JNICALL
+#endif
+/* end of eclipse-mandated pimple */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -24,9 +36,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableAdd (JNIEnv *env
                                                                      jstring jvar, jdouble value);
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSub (JNIEnv *env, jclass cls, jstring js_host,
                                                                      jstring jvar, jdouble value);
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSetWithTime (JNIEnv *env, jclass cls, jdouble, jstring, jstring, jdouble);
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableAddWithTime (JNIEnv *env, jclass cls, jdouble, jstring, jstring, jdouble);
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSubWithTime (JNIEnv *env, jclass cls, jdouble, jstring, jstring, jdouble);
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_trace_Trace_getHostVariablesName (JNIEnv *env, jclass cls);
 
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableDeclare (JNIEnv *env, jclass cls, jstring jvar);

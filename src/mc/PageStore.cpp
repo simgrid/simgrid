@@ -16,6 +16,8 @@
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 
+#include "src/internal_config.h"
+
 #include "src/mc/PageStore.hpp"
 
 #include "src/mc/mc_mmu.h"

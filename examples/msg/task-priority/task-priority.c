@@ -24,8 +24,6 @@ static int test(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
-
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
              "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
@@ -34,7 +32,7 @@ int main(int argc, char *argv[])
   MSG_function_register("test", test);
   MSG_launch_application(argv[2]);
 
-  res = MSG_main();
+  msg_error_t res = MSG_main();
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
 

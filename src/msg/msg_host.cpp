@@ -4,14 +4,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/s4u/host.hpp"
+#include "simgrid/s4u/storage.hpp"
 #include "src/msg/msg_private.h"
-#include "xbt/sysdep.h"
-#include "xbt/log.h"
-#include "simgrid/simix.h"
-#include <simgrid/s4u/host.hpp>
-#include <numeric>
+#include "src/simix/ActorImpl.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
+
+simgrid::xbt::Extension<simgrid::s4u::Host, simgrid::MsgHostExt> simgrid::MsgHostExt::EXTENSION_ID;
+
+SG_BEGIN_DECL()
 
 int sg_storage_max_file_descriptors = 1024;
 
@@ -25,17 +27,6 @@ int sg_storage_max_file_descriptors = 1024;
  */
 
 /********************************* Host **************************************/
-msg_host_t __MSG_host_create(sg_host_t host) // FIXME: don't return our parameter
-{
-  msg_host_priv_t priv = xbt_new0(s_msg_host_priv_t, 1);
-
-  priv->file_descriptor_table = nullptr;
-
-  sg_host_msg_set(host,priv);
-
-  return host;
-}
-
 /** \ingroup m_host_management
  * \brief Finds a msg_host_t using its name.
  *
@@ -102,17 +93,6 @@ void MSG_host_off(msg_host_t host)
   host->turnOff();
 }
 
-/*
- * \brief Frees private data of a host (internal call only)
- */
-void __MSG_host_priv_free(msg_host_priv_t priv)
-{
-  if (priv == nullptr)
-    return;
-  delete priv->file_descriptor_table;
-  free(priv);
-}
-
 /** \ingroup m_host_management
  * \brief Return the current number MSG hosts.
  */
@@ -160,12 +140,16 @@ int MSG_host_get_core_number(msg_host_t host) {
  * \brief Return the list of processes attached to an host.
  *
  * \param host a host
- * \return a swag with the attached processes
+ * \param whereto a dynar in which we should push processes living on that host
  */
-xbt_swag_t MSG_host_get_process_list(msg_host_t host)
+void MSG_host_get_process_list(msg_host_t host, xbt_dynar_t whereto)
 {
   xbt_assert((host != nullptr), "Invalid parameters");
-  return host->processes();
+  smx_actor_t actor = NULL;
+  xbt_swag_foreach(actor, host->processes()) {
+    msg_process_t p = actor->ciface();
+    xbt_dynar_push(whereto, &p);
+  }
 }
 
 /** \ingroup m_host_management
@@ -198,10 +182,10 @@ xbt_dict_t MSG_host_get_properties(msg_host_t host)
  * \param host a host
  * \param name a property name
  * \param value what to change the property to
- * \param free_ctn the freeing function to use to kill the value on need
  */
-void MSG_host_set_property_value(msg_host_t host, const char *name, char *value,void_f_pvoid_t free_ctn) {
-  xbt_dict_set(MSG_host_get_properties(host), name, value,free_ctn);
+void MSG_host_set_property_value(msg_host_t host, const char* name, char* value)
+{
+  xbt_dict_set(MSG_host_get_properties(host), name, value, nullptr);
 }
 
 /** @ingroup m_host_management
@@ -277,8 +261,7 @@ xbt_dict_t MSG_host_get_mounted_storage_list(msg_host_t host)
  */
 xbt_dynar_t MSG_host_get_attached_storage_list(msg_host_t host)
 {
-  xbt_assert((host != nullptr), "Invalid parameters");
-  return host->attachedStorages();
+  return sg_host_get_attached_storage_list(host);
 }
 
 /** \ingroup m_host_management
@@ -306,19 +289,4 @@ xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
   return contents;
 }
 
-int __MSG_host_get_file_descriptor_id(msg_host_t host){
-  msg_host_priv_t priv = sg_host_msg(host);
-  if(!priv->file_descriptor_table){
-    priv->file_descriptor_table = new std::vector<int>(sg_storage_max_file_descriptors);
-    std::iota (priv->file_descriptor_table->rbegin(), priv->file_descriptor_table->rend(), 0); // Fill with ..., 1, 0.
-  }
-  xbt_assert(!priv->file_descriptor_table->empty(), "Too much files are opened! Some have to be closed.");
-  int desc = priv->file_descriptor_table->back();
-  priv->file_descriptor_table->pop_back();
-  return desc;
-}
-
-void __MSG_host_release_file_descriptor_id(msg_host_t host, int id){
-  msg_host_priv_t priv = sg_host_msg(host);
-  priv->file_descriptor_table->push_back(id);
-}
+SG_END_DECL()

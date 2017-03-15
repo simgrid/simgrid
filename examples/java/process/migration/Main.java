@@ -5,11 +5,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 package process.migration;
+import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Mutex;
 import org.simgrid.msg.Process;
-import org.simgrid.msg.NativeException;
-import org.simgrid.msg.HostNotFoundException;
 
 class Main {
   protected static Mutex mutex;
@@ -19,7 +18,7 @@ class Main {
     throw new IllegalAccessError("Utility class");
   }
 
-  public static void main(String[] args) throws NativeException {
+  public static void main(String[] args) {
     Msg.init(args);
     if(args.length < 1) {
       Msg.info("Usage   : Migration platform_file");

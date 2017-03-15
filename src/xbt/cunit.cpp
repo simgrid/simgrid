@@ -233,7 +233,6 @@ void xbt_test_suite_push(xbt_test_suite_t suite, const char *name, ts_test_cb_t 
   unit->tests = xbt_dynar_new(sizeof(xbt_test_test_t), xbt_test_test_free);
 
   xbt_dynar_push(suite->units, &unit);
-  return;
 }
 
 /* run test one suite */
@@ -323,8 +322,21 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
         xbt_dynar_foreach(unit->tests, it_test, test) {
           file = (test->file != nullptr ? test->file : unit->file);
           line = (test->line != 0 ? test->line : unit->line);
-          fprintf(stderr, "      %s: %s [%s:%d]\n", (test->ignored ? " SKIP" : (test->expected_failure
-                  ? (test-> failed ? "EFAIL" : "EPASS") : (test->failed ? " FAIL" : " PASS"))),test->title, file, line);
+          const char* resname;
+          if (test->ignored)
+            resname = " SKIP";
+          else if (test->expected_failure) {
+            if (test->failed)
+              resname = "EFAIL";
+            else
+              resname = "EPASS";
+          } else {
+            if (test->failed)
+              resname = " FAIL";
+            else
+              resname = " PASS";
+          }
+          fprintf(stderr, "      %s: %s [%s:%d]\n", resname, test->title, file, line);
 
           if ((test->expected_failure && !test->failed) || (!test->expected_failure && test->failed)) {
             xbt_dynar_foreach(test->logs, it_log, log) {
@@ -583,7 +595,7 @@ int xbt_test_run(char *selection, int verbosity)
             ? ((1 - (double) _xbt_test_unit_failed / (double) _xbt_test_nb_units) * 100.0) : 100.0, _xbt_test_nb_units);
     first = 1;
     if (_xbt_test_nb_units != _xbt_test_unit_failed) {
-      fprintf(stderr, "%s%d ok", (first ? "" : ", "), _xbt_test_nb_units - _xbt_test_unit_failed);
+      fprintf(stderr, "%d ok", _xbt_test_nb_units - _xbt_test_unit_failed);
       first = 0;
     }
     if (_xbt_test_unit_failed) {
@@ -597,7 +609,7 @@ int xbt_test_run(char *selection, int verbosity)
             ? ((1 - (double) _xbt_test_test_failed / (double) _xbt_test_nb_tests) * 100.0) : 100.0, _xbt_test_nb_tests);
     first = 1;
     if (_xbt_test_nb_tests != _xbt_test_test_failed) {
-      fprintf(stderr, "%s%d ok", (first ? "" : ", "), _xbt_test_nb_tests - _xbt_test_test_failed);
+      fprintf(stderr, "%d ok", _xbt_test_nb_tests - _xbt_test_test_failed);
       first = 0;
     }
     if (_xbt_test_test_failed) {
@@ -643,7 +655,6 @@ void _xbt_test_add(const char *file, int line, const char *fmt, ...)
   test->line = line;
   test->logs = xbt_dynar_new(sizeof(xbt_test_log_t), xbt_test_log_free);
   xbt_dynar_push(unit->tests, &test);
-  return;
 }
 
 /* annotate test case with log message and failure */

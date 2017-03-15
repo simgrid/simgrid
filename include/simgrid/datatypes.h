@@ -7,7 +7,7 @@
 #ifndef SIMGRID_DATATYPES_H_
 #define SIMGRID_DATATYPES_H_
 
-#include <simgrid/forward.h>
+#include "simgrid/forward.h"
 
 struct vm_params {
   int ncpus;

@@ -4,18 +4,19 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/EngineImpl.hpp"
-#include "src/kernel/routing/AsImpl.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
+#include "src/kernel/routing/NetZoneImpl.hpp"
 #include <simgrid/s4u/host.hpp>
 
 namespace simgrid {
 namespace kernel {
 
-EngineImpl::EngineImpl()
-{
-}
+EngineImpl::EngineImpl() = default;
 EngineImpl::~EngineImpl()
 {
-  delete rootAs_;
+  delete netRoot_;
+  for (auto kv : netpoints_)
+    delete kv.second;
 }
 }
 }

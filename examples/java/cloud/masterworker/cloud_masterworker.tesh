@@ -2,32 +2,32 @@
 
 ! output sort 19
 
-$ java -classpath ${classpath:=.} cloud/masterworker/Main ${srcdir:=.}/../platforms/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ java -classpath ${classpath:=.} cloud/masterworker/Main ${srcdir:=.}/../platforms/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --log=java.thres:verbose
 > [  0.000000] (0:maestro@) Using regular java threads.
 > [  0.000000] (0:maestro@) Start 2 hosts
-> [  0.000000] (1:Master@Boivin) create VM00
-> [  0.000000] (1:Master@Boivin) Put Worker WRK00 on VM00
-> [  0.000000] (1:Master@Boivin) create VM01
-> [  0.000000] (1:Master@Boivin) Put Worker WRK01 on VM01
+> [  0.000000] (1:Master@Boivin) create VM0-s1-0
+> [  0.000000] (1:Master@Boivin) Put Worker WK:1:0 on VM0-s1-0
+> [  0.000000] (2:WK:1:0@VM0-s1-0) WK:1:0 is listening on WK:1:0
+> [  0.000000] (1:Master@Boivin) create VM0-s1-1
+> [  0.000000] (1:Master@Boivin) Put Worker WK:1:1 on VM0-s1-1
+> [  0.000000] (3:WK:1:1@VM0-s1-1) WK:1:1 is listening on WK:1:1
 > [  0.000000] (1:Master@Boivin) Launched 2 VMs
 > [  0.000000] (1:Master@Boivin) Send a first batch of work to everyone
-> [  0.000000] (1:Master@Boivin) Sending to WRK00
-> [  0.000000] (2:WRK00@VM00) WRK00 is listening on MBOX:WRK00
-> [  0.000000] (3:WRK01@VM01) WRK01 is listening on MBOX:WRK01
-> [  0.090194] (1:Master@Boivin) Sending to WRK01
-> [  0.090194] (2:WRK00@VM00) Received "Task00". Processing it.
-> [  0.090194] (2:WRK00@VM00) WRK00 executed task (Task00)
-> [  0.754233] (1:Master@Boivin) Suspend all VMs
-> [  0.754233] (1:Master@Boivin) Suspend VM00
-> [  0.754233] (1:Master@Boivin) Suspend VM01
+> [  0.000000] (1:Master@Boivin) Sending to WK:1:0
+> [  0.090194] (2:WK:1:0@VM0-s1-0) Received "Task WK:1:0". Processing it.
+> [  0.090194] (1:Master@Boivin) Sending to WK:1:1
+> [  0.090194] (2:WK:1:0@VM0-s1-0) WK:1:0 executed task (Task WK:1:0)
+> [  0.754233] (3:WK:1:1@VM0-s1-1) Received "Task WK:1:1". Processing it.
+> [  0.754233] (1:Master@Boivin) Suspend all VMs, wait a while, resume them, migrate them and shut them down.
+> [  0.754233] (1:Master@Boivin) Suspend VM0-s1-0
+> [  0.754233] (1:Master@Boivin) Suspend VM0-s1-1
 > [  0.754233] (1:Master@Boivin) Wait a while
-> [  0.754233] (3:WRK01@VM01) Received "Task01". Processing it.
 > [  2.754233] (1:Master@Boivin) Resume all VMs.
 > [  2.754233] (1:Master@Boivin) Sleep long enough for everyone to be done with previous batch of work
-> [  2.754234] (3:WRK01@VM01) WRK01 executed task (Task01)
+> [  2.754234] (3:WK:1:1@VM0-s1-1) WK:1:1 executed task (Task WK:1:1)
 > [1000.000000] (1:Master@Boivin) Migrate everyone to Ginette
-> [1000.000000] (1:Master@Boivin) Migrate VM00fromBourassato Ginette
-> [1100.157755] (1:Master@Boivin) Migrate VM01fromFafardto Ginette
-> [1242.754111] (0:maestro@) MSG_main finished; Cleaning up the simulation...
+> [1000.000000] (1:Master@Boivin) Migrate VM0-s1-0 from Bourassato Ginette
+> [1100.157755] (1:Master@Boivin) Migrate VM0-s1-1 from Fafardto Ginette
 > [1242.754111] (1:Master@Boivin) Let's shut down the simulation and kill everyone.
-> [1242.754111] (1:Master@Boivin) Master done.
+> [1242.754111] (1:Master@Boivin) XXXXXXXXXXXXXXX Step 1 done.
+> [1242.754111] (0:maestro@) MSG_main finished; Cleaning up the simulation...

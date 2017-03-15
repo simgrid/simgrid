@@ -3,21 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SIMIX_ACTORIMPL_H
-#define _SIMIX_ACTORIMPL_H
+#ifndef SIMIX_ACTORIMPL_H
+#define SIMIX_ACTORIMPL_H
 
-#include <atomic>
-#include <functional>
-#include <string>
-
-#include <xbt/base.h>
-#include <xbt/string.hpp>
-
-#include <simgrid/simix.hpp>
-#include <simgrid/s4u/Actor.hpp>
-
-#include "simgrid/simix.h"
-#include "popping_private.h"
+#include "simgrid/s4u/Actor.hpp"
+#include "src/simix/popping_private.h"
+#include "xbt/swag.h"
+#include<list>
 
 typedef struct s_smx_process_exit_fun {
   int_f_pvoid_pvoid_t fun;
@@ -49,10 +41,10 @@ public:
   s_xbt_swag_hookup_t destroy_hookup   = { nullptr, nullptr }; /* simix_global->process_to_destroy */
 
   unsigned long pid  = 0;
-  unsigned long ppid = 0;
+  unsigned long ppid = -1;
   simgrid::xbt::string name;
   const char* cname() { return name.c_str(); }
-  sg_host_t host        = nullptr; /* the host on which the process is running */
+  s4u::Host* host       = nullptr; /* the host on which the process is running */
   smx_context_t context = nullptr; /* the context (uctx/raw/thread) that executes the user function */
 
   // TODO, pack them
@@ -64,15 +56,15 @@ public:
 
   sg_host_t new_host            = nullptr; /* if not null, the host on which the process must migrate to */
   smx_activity_t waiting_synchro = nullptr; /* the current blocking synchro if any */
-  xbt_fifo_t comms              = nullptr; /* the current non-blocking communication synchros */
+  std::list<smx_activity_t> comms               ;           /* the current non-blocking communication synchros */
   xbt_dict_t properties         = nullptr;
   s_smx_simcall_t simcall;
   void *data          = nullptr; /* kept for compatibility, it should be replaced with moddata */
-  xbt_dynar_t on_exit = nullptr; /* list of functions executed when the process dies */
+  std::vector<s_smx_process_exit_fun_t> on_exit; /* list of functions executed when the process dies */
 
   std::function<void()> code;
   smx_timer_t kill_timer = nullptr;
-  int segment_index      = 0; /* Reference to an SMPI process' data segment. Default value is -1 if not in SMPI context*/
+  int segment_index = -1; /* Reference to an SMPI process' data segment. Default value is -1 if not in SMPI context*/
 
   friend void intrusive_ptr_add_ref(ActorImpl* process)
   {
@@ -91,11 +83,16 @@ public:
 
   ~ActorImpl();
 
-  simgrid::s4u::Actor& getIface() { return piface_; }
+  simgrid::s4u::ActorPtr iface() { return s4u::ActorPtr(&piface_); }
+  simgrid::s4u::Actor* ciface() { return &piface_; }
+
+  void daemonize();
+  bool isDaemon();
 
 private:
+  bool daemon = false;
   std::atomic_int_fast32_t refcount_ { 1 };
-  simgrid::s4u::Actor piface_;
+  simgrid::s4u::Actor piface_; // Our interface is part of ourselves
 };
 
 }
@@ -112,15 +109,12 @@ XBT_PRIVATE smx_actor_t SIMIX_process_create(
                           std::function<void()> code,
                           void *data,
                           sg_host_t host,
-                          double kill_time,
                           xbt_dict_t properties,
-                          int auto_restart,
                           smx_actor_t parent_process);
 
 XBT_PRIVATE void SIMIX_process_runall();
 XBT_PRIVATE void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer);
 XBT_PRIVATE void SIMIX_process_killall(smx_actor_t issuer, int reset_pid);
-XBT_PRIVATE void SIMIX_process_stop(smx_actor_t arg);
 XBT_PRIVATE void SIMIX_process_cleanup(smx_actor_t arg);
 XBT_PRIVATE void SIMIX_process_empty_trash();
 XBT_PRIVATE void SIMIX_process_yield(smx_actor_t self);
@@ -129,7 +123,6 @@ XBT_PRIVATE void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest);
 XBT_PRIVATE smx_activity_t SIMIX_process_suspend(smx_actor_t process, smx_actor_t issuer);
 XBT_PRIVATE void SIMIX_process_resume(smx_actor_t process);
 XBT_PRIVATE int SIMIX_process_get_PID(smx_actor_t self);
-XBT_PRIVATE void* SIMIX_process_get_data(smx_actor_t process);
 XBT_PRIVATE void SIMIX_process_set_data(smx_actor_t process, void *data);
 XBT_PRIVATE smx_actor_t SIMIX_process_get_by_name(const char* name);
 XBT_PRIVATE int SIMIX_process_is_suspended(smx_actor_t process);

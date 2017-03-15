@@ -15,10 +15,6 @@ print "<platform version=\"4\">\n\n";
 
 print "<!-- This file was generated with the following command:\n          generate_peer_platform.pl $ARGV[0]\n-->\n\n";
 
-print "\t<config id=\"General\">\n";
-print "\t\t<prop id=\"coordinates\" value=\"yes\"></prop>\n";
-print "\t</config>\n\n";
-
 print "\t<AS id=\"AS0\" routing=\"Vivaldi\">\n";
 
 my $line;
@@ -28,8 +24,8 @@ while(defined($line=<INPUT>))
 {
     next if ($line =~ /^#/);
     # 278 7.2 -9.4 h 2.3 
-    if($line =~ /^(.*) (.*) (.*) h (.*)$/) {
-	print "\t\t<peer id=\"peer-$1\" coordinates=\"$2 $3 $4\" speed=\"730Mf\" bw_in=\"13.38MBps\" bw_out=\"1.024MBps\" lat=\"500us\"/>\n";
+    if($line =~ /^([^ ]*) ([^ ]*) ([^ ]*) h ([^ ]*) *$/) {
+	print "\t\t<peer id=\"peer-$1\" coordinates=\"$2 $3 $4\" speed=\"730Mf\" bw_in=\"13.38MBps\" bw_out=\"1.024MBps\"/>\n";
 	next;
     }
     die "Parse error: $line\n";

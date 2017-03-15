@@ -9,7 +9,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
-  foreach(file infodel infodup infomany2 infomany infoorder infotest infovallen) #infoenv
+  foreach(file infodel infodup infomany2 infomany infoorder infotest infoget infovallen) #infoenv
     add_executable(${file} ${file}.c)
     target_link_libraries(${file} simgrid mtest_c)
   endforeach()
@@ -20,7 +20,7 @@ if (enable_smpi_MPICH3_testsuite AND HAVE_RAW_CONTEXTS)
   SET_TESTS_PROPERTIES(test-smpi-mpich3-info-raw PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
 endif()
 
-foreach(file infodel infodup infomany2 infomany infoorder infotest infovallen infoenv)
+foreach(file infodel infodup infomany2 infomany infoorder infotest infoget infovallen infoenv)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c)
 endforeach()
 

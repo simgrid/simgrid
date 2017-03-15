@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -33,12 +32,11 @@
 namespace simgrid {
 namespace mc {
 
-struct DerefAndCompareByNbProcessesAndUsedHeap {
+struct DerefAndCompareByActorsCountAndUsedHeap {
   template<class X, class Y>
   bool operator()(X const& a, Y const& b)
   {
-    return std::make_pair(a->nb_processes, a->heap_bytes_used) <
-      std::make_pair(b->nb_processes, b->heap_bytes_used);
+    return std::make_pair(a->actors_count, a->heap_bytes_used) < std::make_pair(b->actors_count, b->heap_bytes_used);
   }
 };
 

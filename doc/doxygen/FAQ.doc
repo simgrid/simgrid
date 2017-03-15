@@ -4,14 +4,15 @@
 
 \section faq_simgrid I'm new to SimGrid. I have some questions. Where should I start?
 
-You are at the right  place... Having a look to these
-<a href="http://www.loria.fr/~quinson/blog/2010/06/28/Tutorial_at_HPCS/">the slides of the HPCS'10 tutorial</a>
-(or to these <a href="http://graal.ens-lyon.fr/~alegrand/articles/slides_g5k_simul.pdf">ancient
-slides</a>, or to these
-<a href="http://graal.ens-lyon.fr/~alegrand/articles/Simgrid-Introduction.pdf">"obsolete" slides</a>)
-may give you some insights on what SimGrid can help you to do and what
-are its limitations. Then you definitely should read the \ref
-msg_examples. 
+You are at the right place... To understand what you can do or
+cannot do with SimGrid, you should read the
+<a href="http://simgrid.gforge.inria.fr/tutorials.php">tutorial
+slides</a> from the SimGrid's website. You may find more uptodate
+material on the
+<a href="http://people.irisa.fr/Martin.Quinson/blog/SimGrid/">blog of
+Martin Quinson</a>. 
+
+Another great source of inspiration can be found in the \ref msg_examples.
 
 If you are stuck at any point and if this FAQ cannot help you, please drop us a
 mail to the user mailing list: <simgrid-user@lists.gforge.inria.fr>.
@@ -140,7 +141,7 @@ MSG_task_isend() and MSG_task_irecv();
 MSG_comm_test(), MSG_comm_wait(), MSG_comm_waitall() and MSG_comm_waitany();
 MSG_comm_destroy(). 
 
-There is even a specific example section on \ref msg_ex_asynchronous_communications.
+There is even a specific example section on \ref msg_ex_async .
 
 \subsubsection faq_MIA_thread_synchronization How to synchronize my user processes?
 

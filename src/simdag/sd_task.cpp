@@ -690,8 +690,8 @@ double SD_task_get_execution_time(SD_task_t task, int host_count, const sg_host_
     if (bytes_amount != nullptr)
       for (int j = 0; j < host_count; j++)
         if (bytes_amount[i * host_count + j] != 0)
-          time += (SD_route_get_latency(host_list[i], host_list[j]) +
-                   bytes_amount[i * host_count + j] / SD_route_get_bandwidth(host_list[i], host_list[j]));
+          time += (sg_host_route_latency(host_list[i], host_list[j]) +
+                   bytes_amount[i * host_count + j] / sg_host_route_bandwidth(host_list[i], host_list[j]));
 
     if (time > max_time)
       max_time = time;
@@ -718,7 +718,7 @@ static inline void SD_task_do_schedule(SD_task_t task)
  *
  * \param task the task you want to schedule
  * \param host_count number of hosts on which the task will be executed
- * \param workstation_list the hosts on which the task will be executed
+ * \param host_list the hosts on which the task will be executed
  * \param flops_amount computation amount for each hosts (i.e., an array of host_count doubles)
  * \param bytes_amount communication amount between each pair of hosts (i.e., a matrix of host_count*host_count doubles)
  * \param rate task execution speed rate

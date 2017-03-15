@@ -8,5 +8,5 @@ $ $SG_TEST_EXENV ${bindir:=.}/process-kill ${srcdir:=.}/small_platform.xml "--lo
 > [  0.000000] (2:victim@Fafard) Suspending myself
 > [ 10.000000] (1:killer@Tremblay) Resume process
 > [ 10.000000] (1:killer@Tremblay) Kill process
-> [ 10.000000] (1:killer@Tremblay) OK, goodbye now.
+> [ 10.000000] (1:killer@Tremblay) OK, goodbye now. I commit a suicide.
 > [ 10.000000] (0:maestro@) Simulation time 10

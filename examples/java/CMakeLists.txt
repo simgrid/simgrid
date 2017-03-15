@@ -1,82 +1,39 @@
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/app/bittorrent)
-set(app_bittorrent_sources    ${srcdir}/Main.java  ${srcdir}/Common.java  ${srcdir}/Connection.java
-                              ${srcdir}/MessageTask.java ${srcdir}/Peer.java  ${srcdir}/Tracker.java
-                              ${srcdir}/TrackerTask.java)
+set(app_bittorrent_files        Main  Common  Connection MessageTask Peer  Tracker TrackerTask)
+set(app_centralizedmutex_files  Main  Coordinator  GrantTask Node ReleaseTask  RequestTask)
+set(app_masterworker_files      Main  Master Worker) 
+set(app_pingpong_files          Main  PingPongTask Receiver Sender) 
+set(app_tokenring_files         Main RelayRunner)
+set(async_waitall_files         Main  Receiver Sender)
+set(async_yield_files           Main  Yielder)
+set(async_dsend_files           Main  Receiver Sender)
+set(cloud_masterworker_files    Main  Master Worker)
+set(cloud_migration_files       Main  Daemon Test TestHostOnOff XVM)
+set(dht_chord_files             Main  ChordTask  Common FindSuccessorAnswerTask  FindSuccessorTask
+                                      GetPredecessorAnswerTask GetPredecessorTask Node  NotifyTask)
+set(dht_kademlia_files          Main  Answer  Bucket  Common Contact FindNodeAnswerTask  FindNodeTask
+                                      KademliaTask  Node  PingAnswerTask PingTask  RoutingTable)
+set(trace_pingpong_files        Main  PingPongTask Receiver Sender) 
+set(energy_consumption_files    Main  EnergyConsumer)
+set(energy_pstate_files         Main  PstateRunner)
+set(energy_vm_files             Main  EnergyVMRunner)
+set(io_file_files               Main  Node)
+set(io_storage_files            Main  Client)
+set(process_kill_files          Main  Killer  Victim)
+set(process_migration_files     Main  Emigrant  Policeman)
+set(process_startkilltime_files Main Sleeper)
+set(process_suspend_files       Main  DreamMaster  LazyGuy)
+set(task_priority_files         Main  Test)
 
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/app/centralizedmutex)
-set(app_centralizedmutex_sources  ${srcdir}/Main.java  ${srcdir}/Coordinator.java  ${srcdir}/GrantTask.java
-                              ${srcdir}/Node.java ${srcdir}/ReleaseTask.java  ${srcdir}/RequestTask.java)
 
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/app/masterworker)
-set(app_masterworker_sources   ${srcdir}/Main.java  ${srcdir}/Master.java ${srcdir}/Worker.java) 
-
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/app/pingpong)
-set(app_pingpong_sources       ${srcdir}/Main.java  ${srcdir}/PingPongTask.java ${srcdir}/Receiver.java 
-                               ${srcdir}/Sender.java) 
-
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/app/tokenring)
-set(app_tokenring_sources      ${srcdir}/Main.java ${srcdir}/RelayRunner.java)
-
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/async/waitall)
-set(async_waitall_sources      ${srcdir}/Main.java  ${srcdir}/Receiver.java ${srcdir}/Sender.java)
-
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/async/dsend)
-set(async_dsend_sources        ${srcdir}/Main.java  ${srcdir}/Receiver.java ${srcdir}/Sender.java)
-
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/cloud/masterworker)
-set(cloud_masterworker_sources ${srcdir}/Main.java  ${srcdir}/Master.java ${srcdir}/Worker.java)
-
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/cloud/migration)
-set(cloud_migration_sources    ${srcdir}/Main.java  ${srcdir}/Daemon.java ${srcdir}/Test.java
-                               ${srcdir}/TestHostOnOff.java ${srcdir}/XVM.java)
-
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/dht/chord)
-set(dht_chord_sources          ${srcdir}/Main.java  ${srcdir}/ChordTask.java  ${srcdir}/Common.java
-                               ${srcdir}/FindSuccessorAnswerTask.java  ${srcdir}/FindSuccessorTask.java
-                               ${srcdir}/GetPredecessorAnswerTask.java ${srcdir}/GetPredecessorTask.java
-                               ${srcdir}/Node.java  ${srcdir}/NotifyTask.java)
-
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/dht/kademlia)
-set(dht_kademlia_sources       ${srcdir}/Main.java  ${srcdir}/Answer.java  ${srcdir}/Bucket.java  ${srcdir}/Common.java
-                               ${srcdir}/Contact.java  ${srcdir}/FindNodeAnswerTask.java  ${srcdir}/FindNodeTask.java
-                               ${srcdir}/KademliaTask.java  ${srcdir}/Node.java  ${srcdir}/PingAnswerTask.java
-                               ${srcdir}/PingTask.java  ${srcdir}/RoutingTable.java)
-
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/trace/pingpong)
-set(trace_pingpong_sources     ${srcdir}/Main.java  ${srcdir}/PingPongTask.java ${srcdir}/Receiver.java 
-                               ${srcdir}/Sender.java) 
-
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/energy/consumption)
-set(energy_consumption_sources ${srcdir}/Main.java  ${srcdir}/EnergyConsumer.java)
-
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/energy/vm)
-set(energy_vm_sources          ${srcdir}/Main.java  ${srcdir}/EnergyVMRunner.java)
-
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/io/file)
-set(io_file_sources            ${srcdir}/Main.java  ${srcdir}/Node.java)
-
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/io/storage)
-set(io_storage_sources         ${srcdir}/Main.java  ${srcdir}/Client.java)
-
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/process/kill)
-set(process_kill_sources       ${srcdir}/Main.java  ${srcdir}/Killer.java  ${srcdir}/Victim.java)
-
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/process/migration)
-set(process_migration_sources  ${srcdir}/Main.java  ${srcdir}/Emigrant.java  ${srcdir}/Policeman.java)
-
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/process/startkilltime)
-set(process_startkilltime_sources ${srcdir}/Main.java ${srcdir}/Sleeper.java)
-
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/process/suspend)
-set(process_suspend_sources    ${srcdir}/Main.java  ${srcdir}/DreamMaster.java  ${srcdir}/LazyGuy.java)
-
-set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/task/priority)
-set(task_priority_sources      ${srcdir}/Main.java  ${srcdir}/Test.java)
-
-foreach (example app_bittorrent app_centralizedmutex app_masterworker app_pingpong app_tokenring async_waitall async_dsend
-         cloud_migration cloud_masterworker dht_chord dht_kademlia energy_consumption energy_vm io_file io_storage 
+foreach (example app_bittorrent app_centralizedmutex app_masterworker app_pingpong app_tokenring async_yield async_waitall async_dsend
+         cloud_migration cloud_masterworker dht_chord dht_kademlia energy_consumption energy_pstate energy_vm io_file io_storage 
          process_kill process_migration process_startkilltime process_suspend task_priority trace_pingpong)
   string (REPLACE "_" "/" example_dir ${example})
+  set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/${example_dir})
+  foreach (filename ${${example}_files} )
+    set( ${example}_sources "${${example}_sources}" "${srcdir}/${filename}.java")
+  endforeach()
+
   if(enable_java)
     add_custom_command(
       COMMENT "Building java_${example}..."
@@ -107,10 +64,10 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/bittorrent/bi
                                    ${CMAKE_CURRENT_SOURCE_DIR}/task/priority/priority.xml                  PARENT_SCOPE)
 
 if(enable_java)
-  foreach (example app_bittorrent app_centralizedmutex app_masterworker app_pingpong app_tokenring async_waitall async_dsend
-           cloud_migration cloud_masterworker dht_chord dht_kademlia energy_consumption energy_vm io_file io_storage 
+  foreach (example app_bittorrent app_centralizedmutex app_masterworker app_pingpong app_tokenring async_yield async_waitall async_dsend
+           cloud_migration cloud_masterworker dht_chord dht_kademlia energy_consumption energy_pstate energy_vm io_file io_storage 
            process_kill process_migration process_startkilltime process_suspend task_priority trace_pingpong)
     string (REPLACE "_" "/" example_dir ${example})
-    ADD_TESH(java-${example}  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/${example_dir}/${example}.tesh)
+    ADD_TESH(java-${example}  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java/${example_dir} ${CMAKE_HOME_DIRECTORY}/examples/java/${example_dir}/${example}.tesh)
   endforeach()
 endif()

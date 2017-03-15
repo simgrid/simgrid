@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -23,7 +23,6 @@
 #include "src/internal_config.h"
 
 #include "src/xbt/mmalloc/mmprivate.h"
-#include "src/xbt/ex_interface.h"
 
 #if HAVE_SMPI
 #include "src/smpi/private.h"
@@ -194,7 +193,6 @@ struct StateComparator {
 
   /** Check whether two blocks are known to be matching
    *
-   *  @param state  State used
    *  @param b1     Block of state 1
    *  @param b2     Block of state 2
    *  @return       if the blocks are known to be matching
@@ -207,7 +205,6 @@ struct StateComparator {
 
   /** Check whether two fragments are known to be matching
    *
-   *  @param state  State used
    *  @param b1     Block of state 1
    *  @param f1     Fragment of state 1
    *  @param b2     Block of state 2
@@ -594,7 +591,7 @@ int mmalloc_compare_heap(
   }
 
   if (i1 == state.heaplimit)
-    XBT_DEBUG("Number of blocks/fragments not found in heap1 : %d", nb_diff1);
+    XBT_DEBUG("Number of blocks/fragments not found in heap1: %d", nb_diff1);
 
   for (i=1; i < state.heaplimit; i++) {
     const malloc_info* heapinfo2 = (const malloc_info*) MC_region_read(
@@ -623,7 +620,7 @@ int mmalloc_compare_heap(
   }
 
   if (i1 == state.heaplimit)
-    XBT_DEBUG("Number of blocks/fragments not found in heap2 : %d", nb_diff2);
+    XBT_DEBUG("Number of blocks/fragments not found in heap2: %d", nb_diff2);
 
   return nb_diff1 > 0 || nb_diff2 > 0;
 }
@@ -977,7 +974,7 @@ static simgrid::mc::Type* get_offset_type(void *real_base_address, simgrid::mc::
     return nullptr;
 
   default:
-    /* FIXME : other cases ? */
+    /* FIXME: other cases ? */
     return nullptr;
 
   }
@@ -1485,7 +1482,7 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state,
     return -1;
     break;
   default:
-    XBT_VERB("Unknown case : %d", type->type);
+    XBT_VERB("Unknown case: %d", type->type);
     break;
   }
 
@@ -1636,13 +1633,12 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
   if (_sg_mc_hash) {
     hash_result = (s1->hash != s2->hash);
     if (hash_result) {
-      XBT_VERB("(%d - %d) Different hash : 0x%" PRIx64 "--0x%" PRIx64, num1,
-               num2, s1->hash, s2->hash);
+      XBT_VERB("(%d - %d) Different hash: 0x%" PRIx64 "--0x%" PRIx64, num1, num2, s1->hash, s2->hash);
 #ifndef MC_DEBUG
       return 1;
 #endif
     } else
-      XBT_VERB("(%d - %d) Same hash : 0x%" PRIx64, num1, num2, s1->hash);
+      XBT_VERB("(%d - %d) Same hash: 0x%" PRIx64, num1, num2, s1->hash);
   }
 
   /* Compare enabled processes */
@@ -1661,14 +1657,12 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
     size_used2 = s2->stack_sizes[i];
     if (size_used1 != size_used2) {
 #ifdef MC_DEBUG
-      XBT_DEBUG("(%d - %d) Different size used in stacks : %zu - %zu", num1,
-                num2, size_used1, size_used2);
+      XBT_DEBUG("(%d - %d) Different size used in stacks: %zu - %zu", num1, num2, size_used1, size_used2);
       errors++;
       is_diff = 1;
 #else
 #ifdef MC_VERBOSE
-      XBT_VERB("(%d - %d) Different size used in stacks : %zu - %zu", num1,
-               num2, size_used1, size_used2);
+      XBT_VERB("(%d - %d) Different size used in stacks: %zu - %zu", num1, num2, size_used1, size_used2);
 #endif
       return 1;
 #endif
@@ -1702,15 +1696,13 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
   }
 
   /* Stacks comparison */
-  unsigned cursor = 0;
   int diff_local = 0;
 #ifdef MC_DEBUG
   is_diff = 0;
 #endif
-  mc_snapshot_stack_t stack1, stack2;
-  while (cursor < s1->stacks.size()) {
-    stack1 = &s1->stacks[cursor];
-    stack2 = &s2->stacks[cursor];
+  for (unsigned int cursor = 0; cursor < s1->stacks.size(); cursor++) {
+    mc_snapshot_stack_t stack1 = &s1->stacks[cursor];
+    mc_snapshot_stack_t stack2 = &s2->stacks[cursor];
 
     if (stack1->process_index != stack2->process_index) {
       diff_local = 1;
@@ -1735,7 +1727,6 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
       return 1;
 #endif
     }
-    cursor++;
   }
 
   size_t regions_count = s1->snapshot_regions.size();
@@ -1789,7 +1780,6 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
 #ifdef MC_VERBOSE
     XBT_VERB("(%d - %d) Different heap (mmalloc_compare)", num1, num2);
 #endif
-
     return 1;
 #endif
   }

@@ -5,13 +5,13 @@
  */
 #include "mpi.h"
 
-/* 
- * This is a special test to check that mpiexec handles zero/non-zero 
+/*
+ * This is a special test to check that mpiexec handles zero/non-zero
  * return status from an application
  */
-int main( int argc, char *argv[] )
+int main(int argc, char *argv[])
 {
-    MPI_Init( &argc, &argv );
-    MPI_Finalize( );
+    MPI_Init(&argc, &argv);
+    MPI_Finalize();
     return 1;
 }

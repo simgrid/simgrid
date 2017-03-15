@@ -1,5 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -14,11 +13,11 @@
 
 #include <simgrid/simix.h>
 
-#include "src/mc/mc_base.h"
-#include "src/simix/smx_private.h"
-#include "src/mc/mc_replay.h"
 #include "mc/mc.h"
-#include "src/mc/mc_protocol.h"
+#include "src/mc/mc_base.h"
+#include "src/mc/mc_replay.h"
+#include "src/mc/remote/mc_protocol.h"
+#include "src/simix/smx_private.h"
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/activity/SynchroIo.hpp"
@@ -32,9 +31,7 @@
 #include "src/mc/Process.hpp"
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/mc_smx.h"
-#endif
 
-#if HAVE_MC
 using simgrid::mc::remote;
 #endif
 
@@ -71,6 +68,12 @@ void wait_for_requests(void)
         SIMIX_simcall_handle(req, 0);
     }
   }
+#if HAVE_MC
+  xbt_dynar_reset(simix_global->actors_vector);
+  for (std::pair<int, smx_actor_t> kv : simix_global->process_list) {
+    xbt_dynar_push_as(simix_global->actors_vector, smx_actor_t, kv.second);
+  }
+#endif
 }
 
 /** @brief returns if there this transition can proceed in a finite amount of time
@@ -107,8 +110,8 @@ bool request_is_enabled(smx_simcall_t req)
 #if HAVE_MC
     // Fetch from MCed memory:
     // HACK, type puning
-    simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_comm;
     if (mc_model_checker != nullptr) {
+      simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_comm;
       mc_model_checker->process().read(temp_comm, remote(act));
       act = static_cast<simgrid::kernel::activity::Comm*>(temp_comm.getBuffer());
     }
@@ -131,8 +134,8 @@ bool request_is_enabled(smx_simcall_t req)
     xbt_dynar_t comms;
     simgrid::kernel::activity::Comm *act =
         static_cast<simgrid::kernel::activity::Comm*>(simcall_comm_wait__get__comm(req));
-#if HAVE_MC
 
+#if HAVE_MC
     s_xbt_dynar_t comms_buffer;
     size_t buffer_size = 0;
     if (mc_model_checker != nullptr) {
@@ -189,8 +192,8 @@ bool request_is_enabled(smx_simcall_t req)
     else if (mc_model_checker != nullptr) {
       simgrid::mc::Process& modelchecked = mc_model_checker->process();
       // TODO, *(mutex->owner) :/
-      return modelchecked.resolveProcess(simgrid::mc::remote(mutex->owner))->pid
-        == modelchecked.resolveProcess(simgrid::mc::remote(req->issuer))->pid;
+      return modelchecked.resolveActor(simgrid::mc::remote(mutex->owner))->pid ==
+             modelchecked.resolveActor(simgrid::mc::remote(req->issuer))->pid;
     }
 #endif
     else

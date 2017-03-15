@@ -10,14 +10,14 @@
 
 #include <boost/unordered_map.hpp>
 
-#include <xbt/base.h>
-#include <xbt/string.hpp>
-#include <xbt/signal.hpp>
-#include <xbt/Extendable.hpp>
+#include "xbt/Extendable.hpp"
+#include "xbt/dict.h"
+#include "xbt/signal.hpp"
+#include "xbt/string.hpp"
+#include "xbt/swag.h"
 
-#include <simgrid/simix.h>
-#include <simgrid/datatypes.h>
-#include <simgrid/s4u/forward.hpp>
+#include "simgrid/forward.h"
+#include "simgrid/s4u/forward.hpp"
 
 namespace simgrid {
 
@@ -33,7 +33,7 @@ namespace s4u {
  * An host represents some physical resource with computing and networking capabilities.
  *
  * All hosts are automatically created during the call of the method
- * @link{simgrid::s4u::Engine::loadPlatform()}.
+ * @ref simgrid::s4u::Engine::loadPlatform().
  * You cannot create a host yourself.
  *
  * You can retrieve a particular host using simgrid::s4u::Host::byName()
@@ -94,13 +94,16 @@ public:
   void setPstate(int pstate_index);
   int pstate();
   xbt_dict_t mountedStoragesAsDict(); // HACK
-  xbt_dynar_t attachedStorages();
+  void attachedStorages(std::vector<const char*> * storages);
 
   /** Get an associative list [mount point]->[Storage] of all local mount points.
    *
    *  This is defined in the platform file, and cannot be modified programatically (yet).
    */
   boost::unordered_map<std::string, Storage*> const &mountedStorages();
+
+  void routeTo(Host * dest, std::vector<Link*> * links, double* latency);
+  void routeTo(Host * dest, std::vector<surf::LinkImpl*> * links, double* latency);
 
 private:
   simgrid::xbt::string name_ = "noname";
@@ -112,20 +115,21 @@ public:
   /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
   surf::Cpu     *pimpl_cpu = nullptr;
   /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
-  kernel::routing::NetCard *pimpl_netcard = nullptr;
+  kernel::routing::NetPoint* pimpl_netpoint = nullptr;
 
-public:
   /*** Called on each newly created object */
   static simgrid::xbt::signal<void(Host&)> onCreation;
   /*** Called just before destructing an object */
   static simgrid::xbt::signal<void(Host&)> onDestruction;
   /*** Called when the machine is turned on or off */
   static simgrid::xbt::signal<void(Host&)> onStateChange;
+  /*** Called when the speed of the machine is changed
+   * (either because of a pstate switch or because of an external load event coming from the profile) */
+  static simgrid::xbt::signal<void(Host&)> onSpeedChange;
 };
 
 }} // namespace simgrid::s4u
 
-extern int MSG_HOST_LEVEL;
 extern int USER_HOST_LEVEL;
 
 #endif /* SIMGRID_S4U_HOST_HPP */

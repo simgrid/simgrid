@@ -14,8 +14,9 @@
 
 SG_BEGIN_DECL()
 
-/* ************************* Autonomous System ****************************** */
-typedef simgrid_As *msg_as_t;
+/* *************************** Network Zones ******************************** */
+#define msg_as_t msg_netzone_t /* portability macro */
+typedef s4u_NetZone* msg_netzone_t;
 
 /* ******************************** Host ************************************ */
 
@@ -133,7 +134,7 @@ typedef struct msg_comm *msg_comm_t;
     structure, but always use the provided API to interact with
     processes.
  */
-typedef smx_actor_t msg_process_t;
+typedef s4u_Actor* msg_process_t;
 
 /** @brief Return code of most MSG functions
     @ingroup msg_simulation
@@ -184,12 +185,13 @@ XBT_PUBLIC(double) MSG_get_clock();
 XBT_PUBLIC(unsigned long int) MSG_get_sent_msg();
 
 /************************** Environment ***********************************/
-XBT_PUBLIC(msg_as_t) MSG_environment_get_routing_root();
-XBT_PUBLIC(const char *) MSG_environment_as_get_name(msg_as_t as);
-XBT_PUBLIC(msg_as_t) MSG_environment_as_get_by_name(const char * name);
-XBT_PUBLIC(xbt_dict_t) MSG_environment_as_get_routing_sons(msg_as_t as);
-XBT_PUBLIC(const char *) MSG_environment_as_get_property_value(msg_as_t as, const char *name);
-XBT_PUBLIC(xbt_dynar_t) MSG_environment_as_get_hosts(msg_as_t as);
+XBT_PUBLIC(msg_netzone_t) MSG_environment_get_routing_root();
+XBT_PUBLIC(const char*) MSG_environment_as_get_name(msg_netzone_t as);
+XBT_PUBLIC(msg_netzone_t) MSG_environment_as_get_by_name(const char* name);
+XBT_PUBLIC(xbt_dict_t) MSG_environment_as_get_routing_sons(msg_netzone_t as);
+XBT_PUBLIC(const char*) MSG_environment_as_get_property_value(msg_netzone_t as, const char* name);
+XBT_PUBLIC(void) MSG_environment_as_set_property_value(msg_netzone_t netzone, const char* name, char* value);
+XBT_PUBLIC(xbt_dynar_t) MSG_environment_as_get_hosts(msg_netzone_t as);
 
 /************************** File handling ***********************************/
 XBT_PUBLIC(sg_size_t) MSG_file_read(msg_file_t fd, sg_size_t size);
@@ -215,7 +217,7 @@ XBT_PUBLIC(sg_size_t) MSG_storage_get_free_size(msg_storage_t storage);
 XBT_PUBLIC(sg_size_t) MSG_storage_get_used_size(msg_storage_t storage);
 XBT_PUBLIC(msg_storage_t) MSG_storage_get_by_name(const char *name);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_properties(msg_storage_t storage);
-XBT_PUBLIC(void) MSG_storage_set_property_value(msg_storage_t storage, const char *name, char *value,void_f_pvoid_t free_ctn);
+XBT_PUBLIC(void) MSG_storage_set_property_value(msg_storage_t storage, const char* name, char* value);
 XBT_PUBLIC(const char *)MSG_storage_get_property_value(msg_storage_t storage, const char *name);
 XBT_PUBLIC(xbt_dynar_t) MSG_storages_as_dynar();
 XBT_PUBLIC(msg_error_t) MSG_storage_set_data(msg_storage_t host, void *data);
@@ -224,10 +226,6 @@ XBT_PUBLIC(xbt_dict_t) MSG_storage_get_content(msg_storage_t storage);
 XBT_PUBLIC(sg_size_t) MSG_storage_get_size(msg_storage_t storage);
 XBT_PUBLIC(msg_error_t) MSG_storage_file_move(msg_file_t fd, msg_host_t dest, char* mount, char* fullname);
 XBT_PUBLIC(const char *) MSG_storage_get_host(msg_storage_t storage);
-/************************** AS Router handling ************************************/
-XBT_PUBLIC(const char *) MSG_as_router_get_property_value(const char* asr, const char *name);
-XBT_PUBLIC(xbt_dict_t) MSG_as_router_get_properties(const char* asr);
-XBT_PUBLIC(void) MSG_as_router_set_property_value(const char* asr, const char *name, char *value,void_f_pvoid_t free_ctn);
 
 /************************** Host handling ***********************************/
 XBT_PUBLIC(msg_host_t) MSG_host_by_name(const char *name);
@@ -243,7 +241,7 @@ XBT_PUBLIC(void) MSG_host_off(msg_host_t host);
 XBT_PUBLIC(msg_host_t) MSG_host_self();
 XBT_PUBLIC(double) MSG_host_get_speed(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_get_core_number(msg_host_t h);
-XBT_PUBLIC(xbt_swag_t) MSG_host_get_process_list(msg_host_t h);
+XBT_PUBLIC(void) MSG_host_get_process_list(msg_host_t h, xbt_dynar_t whereto);
 XBT_PUBLIC(int) MSG_host_is_on(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_off(msg_host_t h);
 
@@ -266,10 +264,7 @@ XBT_PUBLIC(xbt_dict_t) MSG_host_get_storage_content(msg_host_t host);
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_properties(msg_host_t host);
 XBT_PUBLIC(const char *) MSG_host_get_property_value(msg_host_t host,
                                                      const char *name);
-XBT_PUBLIC(void) MSG_host_set_property_value(msg_host_t host,
-                                             const char *name, char *value,
-                                             void_f_pvoid_t free_ctn);
-
+XBT_PUBLIC(void) MSG_host_set_property_value(msg_host_t host, const char* name, char* value);
 
 XBT_PUBLIC(void) MSG_create_environment(const char *file);
 
@@ -277,30 +272,20 @@ XBT_PUBLIC(void) MSG_create_environment(const char *file);
 XBT_PUBLIC(msg_process_t) MSG_process_create(const char *name,
                                            xbt_main_func_t code,
                                            void *data, msg_host_t host);
-XBT_PUBLIC(msg_process_t) MSG_process_create_with_arguments(const char *name,
-                                                          xbt_main_func_t
-                                                          code, void *data,
-                                                          msg_host_t host,
-                                                          int argc,
-                                                          char **argv);
-XBT_PUBLIC(msg_process_t) MSG_process_create_with_environment(const char
-                                                            *name,
-                                                            xbt_main_func_t
-                                                            code,
-                                                            void *data,
-                                                            msg_host_t host,
-                                                            int argc,
-                                                            char **argv,
-                                                            xbt_dict_t
-                                                            properties);
-XBT_PUBLIC(msg_process_t) MSG_process_attach(
-  const char *name, void *data,
-  msg_host_t host, xbt_dict_t properties);
+XBT_PUBLIC(msg_process_t)
+MSG_process_create_with_arguments(const char* name, xbt_main_func_t code, void* data, msg_host_t host, int argc,
+                                  char** argv);
+XBT_PUBLIC(msg_process_t)
+MSG_process_create_with_environment(const char* name, xbt_main_func_t code, void* data, msg_host_t host, int argc,
+                                    char** argv, xbt_dict_t properties);
+
+XBT_PUBLIC(msg_process_t) MSG_process_attach(const char* name, void* data, msg_host_t host, xbt_dict_t properties);
 XBT_PUBLIC(void) MSG_process_detach();
 
 XBT_PUBLIC(void) MSG_process_kill(msg_process_t process);
 XBT_PUBLIC(int) MSG_process_killall(int reset_PIDs);
 XBT_PUBLIC(msg_error_t) MSG_process_migrate(msg_process_t process, msg_host_t host);
+XBT_PUBLIC(void) MSG_process_yield();
 
 XBT_PUBLIC(void *) MSG_process_get_data(msg_process_t process);
 XBT_PUBLIC(msg_error_t) MSG_process_set_data(msg_process_t process,
@@ -331,7 +316,10 @@ XBT_PUBLIC(int) MSG_process_is_suspended(msg_process_t process);
 XBT_PUBLIC(void) MSG_process_on_exit(int_f_pvoid_pvoid_t fun, void *data);
 XBT_PUBLIC(void) MSG_process_auto_restart_set(msg_process_t process, int auto_restart);
 
+XBT_PUBLIC(void) MSG_process_daemonize(msg_process_t process);
 XBT_PUBLIC(msg_process_t) MSG_process_restart(msg_process_t process);
+XBT_PUBLIC(void) MSG_process_ref(msg_process_t process);
+XBT_PUBLIC(void) MSG_process_unref(msg_process_t process);
 
 /************************** Task handling ************************************/
 XBT_PUBLIC(msg_task_t) MSG_task_create(const char *name,
@@ -474,11 +462,7 @@ XBT_PUBLIC(int) MSG_barrier_wait(msg_bar_t bar);
 XBT_PUBLIC(int) MSG_vm_is_created(msg_vm_t vm);
 XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t vm);
 XBT_PUBLIC(int) MSG_vm_is_migrating(msg_vm_t vm);
-
 XBT_PUBLIC(int) MSG_vm_is_suspended(msg_vm_t vm);
-XBT_PUBLIC(int) MSG_vm_is_saving(msg_vm_t vm);
-XBT_PUBLIC(int) MSG_vm_is_saved(msg_vm_t vm);
-XBT_PUBLIC(int) MSG_vm_is_restoring(msg_vm_t vm);
 
 #define MSG_vm_get_name(vm) MSG_host_get_name(vm)
 
@@ -487,8 +471,8 @@ XBT_PUBLIC(void) MSG_vm_set_params(msg_vm_t vm, vm_params_t params);
 
 // TODO add VDI later
 XBT_PUBLIC(msg_vm_t) MSG_vm_create_core(msg_host_t location, const char *name);
-XBT_PUBLIC(msg_vm_t) MSG_vm_create(msg_host_t ind_pm, const char *name,
-    int core_nb, int mem_cap, int net_cap, char *disk_path, int disk_size, int mig_netspeed, int dp_intensity);
+XBT_PUBLIC(msg_vm_t)
+MSG_vm_create(msg_host_t ind_pm, const char* name, int ramsize, int mig_netspeed, int dp_intensity);
 
 XBT_PUBLIC(void) MSG_vm_destroy(msg_vm_t vm);
 
@@ -502,10 +486,6 @@ XBT_PUBLIC(void) MSG_vm_migrate(msg_vm_t vm, msg_host_t destination);
 /* Suspend the execution of the VM, but keep its state on memory. */
 XBT_PUBLIC(void) MSG_vm_suspend(msg_vm_t vm);
 XBT_PUBLIC(void) MSG_vm_resume(msg_vm_t vm);
-
-/* Save the VM state to a disk. */
-XBT_PUBLIC(void) MSG_vm_save(msg_vm_t vm);
-XBT_PUBLIC(void) MSG_vm_restore(msg_vm_t vm);
 
 XBT_PUBLIC(msg_host_t) MSG_vm_get_pm(msg_vm_t vm);
 XBT_PUBLIC(void) MSG_vm_set_bound(msg_vm_t vm, double bound);

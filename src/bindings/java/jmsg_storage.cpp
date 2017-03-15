@@ -1,20 +1,20 @@
-/* Functions related to the java storage API.                            */
+/* Java bindings of the Storage API.                                        */
 
-/* Copyright (c) 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/str.h>
-#include <surf/surf_routing.h>
-
 #include "simgrid/msg.h"
+#include "surf/surf_routing.h"
+
 #include "jmsg.h"
 #include "jmsg_storage.h"
 #include "jxbt_utilities.h"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
+
+SG_BEGIN_DECL()
 
 static jmethodID jstorage_method_Storage_constructor;
 static jfieldID jstorage_field_Storage_bind;
@@ -31,12 +31,12 @@ msg_storage_t jstorage_get_native(JNIEnv * env, jobject jstorage) {
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Storage_nativeInit(JNIEnv *env, jclass cls) {
   jclass class_Storage = env->FindClass("org/simgrid/msg/Storage");
+  xbt_assert(class_Storage, "Native initialization of msg/Storage failed. Please report that bug");
   jstorage_method_Storage_constructor = env->GetMethodID(class_Storage, "<init>", "()V");
   jstorage_field_Storage_bind = jxbt_get_jfield(env,class_Storage, "bind", "J");
   jstorage_field_Storage_name = jxbt_get_jfield(env, class_Storage, "name", "Ljava/lang/String;");
-  if (!class_Storage || !jstorage_field_Storage_name || !jstorage_method_Storage_constructor || !jstorage_field_Storage_bind) {
-    jxbt_throw_native(env,bprintf("Can't find some fields in Java class. You should report this bug."));
-  }
+  xbt_assert(jstorage_field_Storage_name && jstorage_method_Storage_constructor && jstorage_field_Storage_bind,
+             "Native initialization of msg/Storage failed. Please report that bug");
 }
 
 void jstorage_bind(jobject jstorage, msg_storage_t storage, JNIEnv * env) {
@@ -49,11 +49,6 @@ jobject jstorage_ref(JNIEnv * env, jobject jstorage) {
 
 void jstorage_unref(JNIEnv * env, jobject jstorage) {
   env->DeleteGlobalRef(jstorage);
-}
-
-const char *jstorage_get_name(jobject jstorage, JNIEnv * env) {
-  msg_storage_t storage = jstorage_get_native(env, jstorage);
-  return MSG_storage_get_name(storage);
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getByName(JNIEnv * env, jclass cls, jstring jname) {
@@ -172,7 +167,7 @@ Java_org_simgrid_msg_Storage_setProperty(JNIEnv *env, jobject jstorage, jobject 
   const char *value_java = env->GetStringUTFChars((jstring) jvalue, 0);
   char *value = xbt_strdup(value_java);
 
-  MSG_storage_set_property_value(storage, name, value, xbt_free_f);
+  MSG_storage_set_property_value(storage, name, value);
 
   env->ReleaseStringUTFChars((jstring) jvalue, value_java);
   env->ReleaseStringUTFChars((jstring) jname, name);
@@ -233,3 +228,5 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Storage_all(JNIEnv * env, jc
   xbt_dynar_free(&table);
   return jtable;
 }
+
+SG_END_DECL()

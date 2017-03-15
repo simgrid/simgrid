@@ -43,7 +43,7 @@ documentation, but it should remain readable directly.
 @section msg_ex_async Asynchronous communications
 
 In addition to the fully documented example of @ref
-msg_ex_asynchronous_communications, there are several other examples
+MSG_ex_asynchronous_communications, there are several other examples
 shipped in the archive:
   
  - <b>Basic asynchronous communications</b>. 
@@ -64,6 +64,12 @@ shipped in the archive:
    The @ref MSG_comm_waitany function is useful when you want to block
    until one activity of the set completes, no matter which terminates
    first.
+   
+ - <b>Yielding to other processes</b>.
+   @ref examples/msg/async-yield/async-yield.c\n
+   The @ref MSG_process_yield function interrupts the execution of the
+   current process, leaving a chance to run to the other processes
+   that are ready to run at the exact same timestamp
 
 @section msg_ex_process Acting on Processes
 
@@ -276,6 +282,7 @@ top of the example file).
 @example examples/msg/async-wait/async-wait.c
 @example examples/msg/async-waitall/async-waitall.c
 @example examples/msg/async-waitany/async-waitany.c
+@example examples/msg/async-yield/async-yield.c
 
 @example examples/msg/process-create/process-create.c
 @example examples/msg/process-suspend/process-suspend.c

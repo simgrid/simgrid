@@ -63,7 +63,7 @@ SMPI_PRETEND_CC=1 ./configure # here come the configure parameters
 make
 @endverbatim
 
-\warn
+\warning
   Again, make sure that SMPI_PRETEND_CC is not set when you actually 
   compile your application. It is just a work-around for some configure-scripts
   and replaces some internals by "return 0;". Your simulation will not
@@ -156,6 +156,7 @@ Most of these are best described in <a href="http://www.cs.arizona.edu/~dkl/rese
  - mvapich2: use mvapich2 selector for the alltoall operations
  - impi: use intel mpi selector for the alltoall operations
  - automatic (experimental): use an automatic self-benchmarking algorithm 
+ - bruck: Described by Bruck et.al. in <a href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=642949">
  - 2dmesh: organizes the nodes as a two dimensional mesh, and perform allgather 
    along the dimensions
  - 3dmesh: adds a third dimension to the previous algorithm
@@ -485,7 +486,7 @@ SimGrid can duplicate and dynamically switch the .data and .bss
 segments of the ELF process when switching the MPI ranks, allowing
 each ranks to have its own copy of the global variables. This feature
 is expected to work correctly on Linux and BSD, so smpirun activates
-it by default. %As no copy is involved, performance should not be
+it by default. As no copy is involved, performance should not be
 altered (but memory occupation will be higher).
 
 If you want to turn it off, pass \c -no-privatize to smpirun. This may
@@ -527,7 +528,7 @@ area between processes does not seem very wise. You cannot use the
 SMPI_SHARED_MALLOC macro in this case, sorry.
 
 This feature is demoed by the example file
-<tt>examples/smpi/NAS/DT-folding/dt.c</tt>
+<tt>examples/smpi/NAS/dt.c</tt>
 
 @subsection SMPI_adapting_speed Toward faster simulations
 
@@ -541,7 +542,7 @@ SMPI_SAMPLE_GLOBAL. Of course, none of this will work if the execution
 time of your loop iteration are not stable.
 
 This feature is demoed by the example file 
-<tt>examples/smpi/NAS/EP-sampling/ep.c</tt>
+<tt>examples/smpi/NAS/ep.c</tt>
 
 @section SMPI_accuracy Ensuring accurate simulations
 

@@ -4,7 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <simgrid/s4u/host.hpp>
+#include "simgrid/s4u/engine.hpp"
+#include "simgrid/s4u/host.hpp"
 
 #include <xbt/dict.h>
 #include <xbt/lib.h>
@@ -67,19 +68,19 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
   //Search for network_element_t
   switch (kind){
     case INSTR_HOST:
-      newContainer->netcard = sg_host->pimpl_netcard;
-      xbt_assert(newContainer->netcard, "Element '%s' not found",name);
+      newContainer->netpoint = sg_host->pimpl_netpoint;
+      xbt_assert(newContainer->netpoint, "Element '%s' not found", name);
       break;
     case INSTR_ROUTER:
-      newContainer->netcard = static_cast<sg_netcard_t>(xbt_lib_get_or_null(as_router_lib,name,ROUTING_ASR_LEVEL));
-      xbt_assert(newContainer->netcard, "Element '%s' not found",name);
+      newContainer->netpoint = simgrid::s4u::Engine::instance()->netpointByNameOrNull(name);
+      xbt_assert(newContainer->netpoint, "Element '%s' not found", name);
       break;
     case INSTR_AS:
-      newContainer->netcard = static_cast<sg_netcard_t>(xbt_lib_get_or_null(as_router_lib,name,ROUTING_ASR_LEVEL));
-      xbt_assert(newContainer->netcard, "Element '%s' not found",name);
+      newContainer->netpoint = simgrid::s4u::Engine::instance()->netpointByNameOrNull(name);
+      xbt_assert(newContainer->netpoint, "Element '%s' not found", name);
       break;
     default:
-      newContainer->netcard = nullptr;
+      newContainer->netpoint = nullptr;
       break;
   }
 

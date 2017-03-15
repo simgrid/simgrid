@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 
     /* a random non-zero sized buffer */
 #define NELEM (10)
-    buf = malloc(NELEM*sizeof(int));
+    buf = malloc(NELEM * sizeof(int));
     assert(buf!=NULL);
 
     for (i = 0; i < NELEM; i++) {
@@ -46,6 +46,8 @@ int main(int argc, char *argv[])
     for (i = 0; i < NELEM; i++) {
         assert(buf[i] == wrank * NELEM + i);
     }
+
+    free(buf);
 
     MPI_Type_free(&type);
     MPI_Finalize();

@@ -5,8 +5,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "storage_n11.hpp"
+#include "simgrid/s4u/engine.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "surf_private.h"
 #include <math.h> /*ceil*/
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_storage);
 
 /*************
@@ -25,26 +28,32 @@ static inline void routing_storage_type_free(void *r)
   free(stype);
 }
 
-static inline void surf_storage_resource_free(void *r)
+static void check_disk_attachment()
 {
-  // specific to storage
-  simgrid::surf::Storage *storage = static_cast<simgrid::surf::Storage*>(r);
-  // generic resource
-  delete storage;
-}
-
-static inline void routing_storage_host_free(void *r)
-{
-  xbt_dynar_t dyn = (xbt_dynar_t) r;
-  xbt_dynar_free(&dyn);
+  xbt_lib_cursor_t cursor;
+  char* key;
+  void** data;
+  xbt_lib_foreach(storage_lib, cursor, key, data) {
+    if (xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
+      simgrid::surf::Storage* storage =
+          static_cast<simgrid::surf::Storage*>(xbt_lib_get_or_null(storage_lib, key, SURF_STORAGE_LEVEL));
+      simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(storage->attach_);
+      if (!host_elm)
+        surf_parse_error("Unable to attach storage %s: host %s does not exist.", storage->cname(), storage->attach_);
+    }
+  }
 }
 
 void storage_register_callbacks()
 {
+  simgrid::s4u::onPlatformCreated.connect(check_disk_attachment);
+  instr_routing_define_callbacks();
+
   ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, xbt_free_f);
-  ROUTING_STORAGE_HOST_LEVEL = xbt_lib_add_level(storage_lib, routing_storage_host_free);
   ROUTING_STORAGE_TYPE_LEVEL = xbt_lib_add_level(storage_type_lib, routing_storage_type_free);
-  SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, surf_storage_resource_free);
+  SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, [](void *self) {
+    delete static_cast<simgrid::surf::Storage*>(self);
+  });
 }
 
 /*********
@@ -60,7 +69,6 @@ void surf_storage_model_init_default()
 namespace simgrid {
 namespace surf {
 
-#include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 Storage* StorageN11Model::createStorage(const char* id, const char* type_id, const char* content_name,
                                         const char* content_type, const char* attach)
 {
@@ -177,8 +185,8 @@ StorageAction *StorageN11::open(const char* mount, const char* path)
 {
   XBT_DEBUG("\tOpen file '%s'",path);
 
-  sg_size_t size, *psize;
-  psize = (sg_size_t*) xbt_dict_get_or_null(content_, path);
+  sg_size_t size;
+  sg_size_t* psize = (sg_size_t*)xbt_dict_get_or_null(content_, path);
   // if file does not exist create an empty file
   if(psize)
     size = *psize;
@@ -195,7 +203,7 @@ StorageAction *StorageN11::open(const char* mount, const char* path)
   file->mount = xbt_strdup(mount);
   file->current_position = 0;
 
-  StorageAction *action = new StorageN11Action(getModel(), 0, isOff(), this, OPEN);
+  StorageAction* action = new StorageN11Action(model(), 0, isOff(), this, OPEN);
   action->file_         = file;
 
   return action;
@@ -217,7 +225,7 @@ StorageAction *StorageN11::close(surf_file_t fd)
   free(fd->name);
   free(fd->mount);
   xbt_free(fd);
-  StorageAction *action = new StorageN11Action(getModel(), 0, isOff(), this, CLOSE);
+  StorageAction* action = new StorageN11Action(model(), 0, isOff(), this, CLOSE);
   return action;
 }
 
@@ -234,7 +242,7 @@ StorageAction *StorageN11::read(surf_file_t fd, sg_size_t size)
   else
     fd->current_position += size;
 
-  StorageAction *action = new StorageN11Action(getModel(), size, isOff(), this, READ);
+  StorageAction* action = new StorageN11Action(model(), size, isOff(), this, READ);
   return action;
 }
 
@@ -243,7 +251,7 @@ StorageAction *StorageN11::write(surf_file_t fd, sg_size_t size)
   char *filename = fd->name;
   XBT_DEBUG("\tWrite file '%s' size '%llu/%llu'",filename,size,fd->size);
 
-  StorageAction *action = new StorageN11Action(getModel(), size, isOff(), this, WRITE);
+  StorageAction* action = new StorageN11Action(model(), size, isOff(), this, WRITE);
   action->file_         = fd;
   /* Substract the part of the file that might disappear from the used sized on the storage element */
   usedSize_ -= (fd->size - fd->current_position);
@@ -262,10 +270,10 @@ StorageN11Action::StorageN11Action(Model *model, double cost, bool failed, Stora
 : StorageAction(model, cost, failed,
     lmm_variable_new(model->getMaxminSystem(), this, 1.0, -1.0 , 3),
     storage, type) {
-  XBT_IN("(%s,%g", storage->getName(), cost);
+  XBT_IN("(%s,%g", storage->cname(), cost);
 
   // Must be less than the max bandwidth for all actions
-  lmm_expand(model->getMaxminSystem(), storage->getConstraint(), getVariable(), 1.0);
+  lmm_expand(model->getMaxminSystem(), storage->constraint(), getVariable(), 1.0);
   switch(type) {
   case OPEN:
   case CLOSE:
@@ -282,6 +290,8 @@ StorageN11Action::StorageN11Action(Model *model, double cost, bool failed, Stora
     //    storage->p_writeActions->push_back(action);
     //    ref();
     break;
+  default:
+    THROW_UNIMPLEMENTED;
   }
   XBT_OUT();
 }

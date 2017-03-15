@@ -1,17 +1,16 @@
-/* Copyright (c) 2004-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <xbt/ex.hpp>
 
+#include "src/msg/msg_private.h"
 #include "src/simix/smx_private.h" /* MSG_task_listen looks inside the rdv directly. Not clean. */
-#include "msg_private.h"
-#include "mc/mc.h"
-#include "xbt/log.h"
-#include "xbt/sysdep.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg, "Logging specific to MSG (gos)");
+
+SG_BEGIN_DECL()
 
 /** \ingroup msg_task_usage
  * \brief Executes a task and waits for its termination.
@@ -48,7 +47,6 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
 msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeout)
 {
   simdata_task_t simdata = task->simdata;
-  simdata_process_t p_simdata = static_cast<simdata_process_t>(SIMIX_process_self_get_data());
   e_smx_state_t comp_state;
   msg_error_t status = MSG_OK;
 
@@ -76,10 +74,8 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
           simcall_execution_start(task->name, simdata->flops_amount, simdata->priority, simdata->bound));
     }
     simcall_set_category(simdata->compute, task->category);
-    p_simdata->waiting_action = simdata->compute;
     comp_state = simcall_execution_wait(simdata->compute);
 
-    p_simdata->waiting_action = nullptr;
     simdata->setNotUsed();
 
     XBT_DEBUG("Execution task '%s' finished in state %d", task->name, (int)comp_state);
@@ -126,8 +122,7 @@ msg_error_t MSG_process_sleep(double nb_sec)
     simcall_process_sleep(nb_sec);
   }
   catch(xbt_ex& e) {
-    switch (e.category) {
-    case cancel_error:
+    if (e.category == cancel_error) {
       XBT_DEBUG("According to the JAVA API, a sleep call should only deal with HostFailureException, I'm lost."); 
       // adsein: MSG_TASK_CANCELED is assigned when someone kills the process that made the sleep, this is not
       // correct. For instance, when the node is turned off, the error should be MSG_HOST_FAILURE, which is by the way
@@ -136,10 +131,8 @@ msg_error_t MSG_process_sleep(double nb_sec)
       // and did not change anythings at the C level.
       // See comment in the jmsg_process.c file, function JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cls, jlong jmillis, jint jnanos) 
       status = MSG_TASK_CANCELED;
-      break;
-    default:
+    } else
       throw;
-    }
   }
 
   TRACE_msg_process_sleep_out(MSG_process_self());
@@ -273,7 +266,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
 
   /* Try to receive it by calling SIMIX network layer */
   try {
-    simcall_comm_recv(MSG_process_self(), mailbox->getImpl(), task, nullptr, nullptr, nullptr, nullptr, timeout, rate);
+    simcall_comm_recv(MSG_process_self()->getImpl(), mailbox->getImpl(), task, nullptr, nullptr, nullptr, nullptr, timeout, rate);
     XBT_DEBUG("Got task %s from %s",(*task)->name,mailbox->name());
     (*task)->simdata->setNotUsed();
   }
@@ -306,20 +299,20 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *al
                                                      void *match_data, void_f_pvoid_t cleanup, int detached)
 {
   simdata_task_t t_simdata = nullptr;
-  msg_process_t myself = SIMIX_process_self();
+  msg_process_t myself = MSG_process_self();
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(alias);
   int call_end = TRACE_msg_task_put_start(task);
 
   /* Prepare the task to send */
   t_simdata = task->simdata;
   t_simdata->sender = myself;
-  t_simdata->source = (static_cast<simdata_process_t>(SIMIX_process_self_get_data()))->m_host;
+  t_simdata->source = MSG_host_self();
   t_simdata->setUsed();
   t_simdata->comm = nullptr;
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
-  smx_activity_t act = simcall_comm_isend(myself, mailbox->getImpl(), t_simdata->bytes_amount, t_simdata->rate,
+  smx_activity_t act = simcall_comm_isend(myself->getImpl(), mailbox->getImpl(), t_simdata->bytes_amount, t_simdata->rate,
                                          task, sizeof(void *), match_fun, cleanup, nullptr, match_data,detached);
   t_simdata->comm = static_cast<simgrid::kernel::activity::Comm*>(act);
 
@@ -473,7 +466,7 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rat
   comm->task_sent = nullptr;
   comm->task_received = task;
   comm->status = MSG_OK;
-  comm->s_comm = simcall_comm_irecv(MSG_process_self(), mbox->getImpl(), task, nullptr, nullptr, nullptr, nullptr, rate);
+  comm->s_comm = simcall_comm_irecv(SIMIX_process_self(), mbox->getImpl(), task, nullptr, nullptr, nullptr, nullptr, rate);
 
   return comm;
 }
@@ -623,10 +616,8 @@ msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
 */
 void MSG_comm_waitall(msg_comm_t * comm, int nb_elem, double timeout)
 {
-  int i = 0;
-  for (i = 0; i < nb_elem; i++) {
+  for (int i = 0; i < nb_elem; i++)
     MSG_comm_wait(comm[i], timeout);
-  }
 }
 
 /** \ingroup msg_task_usage
@@ -708,7 +699,7 @@ msg_task_t MSG_comm_get_task(msg_comm_t comm)
 
 /**
  * \brief This function is called by SIMIX in kernel mode to copy the data of a comm.
- * \param comm the comm
+ * \param synchro the comm
  * \param buff the data copied
  * \param buff_size size of the buffer
  */
@@ -721,7 +712,7 @@ void MSG_comm_copy_data_from_SIMIX(smx_activity_t synchro, void* buff, size_t bu
   // notify the user callback if any
   if (msg_global->task_copy_callback) {
     msg_task_t task = static_cast<msg_task_t>(buff);
-    msg_global->task_copy_callback(task, comm->src_proc, comm->dst_proc);
+    msg_global->task_copy_callback(task, comm->src_proc->ciface(), comm->dst_proc->ciface());
   }
 }
 
@@ -780,7 +771,6 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   msg_error_t ret = MSG_OK;
   simdata_task_t t_simdata = nullptr;
   msg_process_t process = MSG_process_self();
-  simdata_process_t p_simdata = static_cast<simdata_process_t>(SIMIX_process_self_get_data());
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(alias);
 
   int call_end = TRACE_msg_task_put_start(task);    //must be after CHECK_HOST()
@@ -788,14 +778,12 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   /* Prepare the task to send */
   t_simdata = task->simdata;
   t_simdata->sender = process;
-  t_simdata->source = (static_cast<simdata_process_t>(SIMIX_process_self_get_data()))   ->m_host;
+  t_simdata->source = MSG_host_self();
 
   t_simdata->setUsed();
 
   t_simdata->comm = nullptr;
   msg_global->sent_msg++;
-
-  p_simdata->waiting_task = task;
 
   /* Try to send it by calling SIMIX network layer */
   try {
@@ -826,7 +814,6 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
     t_simdata->setNotUsed();
   }
 
-  p_simdata->waiting_task = nullptr;
   if (call_end)
     TRACE_msg_task_put_end();
   return ret;
@@ -919,38 +906,4 @@ const char *MSG_task_get_category (msg_task_t task)
   return task->category;
 }
 
-/**
- * \brief Returns the value of a given AS or router property
- *
- * \param asr the name of a router or AS
- * \param name a property name
- * \return value of a property (or nullptr if property not set)
- */
-const char *MSG_as_router_get_property_value(const char* asr, const char *name)
-{
-  return static_cast<char*>(xbt_dict_get_or_null(MSG_as_router_get_properties(asr), name));
-}
-
-/**
- * \brief Returns a xbt_dict_t consisting of the list of properties assigned to
- * a the AS or router
- *
- * \param asr the name of a router or AS
- * \return a dict containing the properties
- */
-xbt_dict_t MSG_as_router_get_properties(const char* asr)
-{
-  return (simcall_asr_get_properties(asr));
-}
-
-/**
- * \brief Change the value of a given AS or router
- *
- * \param asr the name of a router or AS
- * \param name a property name
- * \param value what to change the property to
- * \param free_ctn the freeing function to use to kill the value on need
- */
-void MSG_as_router_set_property_value(const char* asr, const char *name, char *value,void_f_pvoid_t free_ctn) {
-  xbt_dict_set(MSG_as_router_get_properties(asr), name, value,free_ctn);
-}
+SG_END_DECL()

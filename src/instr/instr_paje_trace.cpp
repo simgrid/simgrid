@@ -76,24 +76,24 @@ template<typename T> static void print_default_pajeVariable_row(paje_event_t& ev
 }
 
 void TRACE_paje_init() {
-  active_writer.print_DefineContainerType = print_pajeDefineContainerType;
-  active_writer.print_DefineVariableType  = print_pajeDefineVariableType;
-  active_writer.print_DefineStateType     = print_pajeDefineStateType;
-  active_writer.print_DefineEventType     = print_pajeDefineEventType;
-  active_writer.print_DefineLinkType      = print_pajeDefineLinkType;
-  active_writer.print_DefineEntityValue   = print_pajeDefineEntityValue;
-  active_writer.print_CreateContainer     = print_pajeCreateContainer;
-  active_writer.print_DestroyContainer    = print_pajeDestroyContainer;
-  active_writer.print_SetVariable         = print_pajeSetVariable;
-  active_writer.print_AddVariable         = print_pajeAddVariable;
-  active_writer.print_SubVariable         = print_pajeSubVariable;
-  active_writer.print_SetState            = print_pajeSetState;
-  active_writer.print_PushState           = print_pajePushState;
-  active_writer.print_PopState            = print_pajePopState;
-  active_writer.print_ResetState          = print_pajeResetState;
-  active_writer.print_StartLink           = print_pajeStartLink;
-  active_writer.print_EndLink             = print_pajeEndLink;
-  active_writer.print_NewEvent            = print_pajeNewEvent;
+  active_writer.print_DefineContainerType = &print_pajeDefineContainerType;
+  active_writer.print_DefineVariableType  = &print_pajeDefineVariableType;
+  active_writer.print_DefineStateType     = &print_pajeDefineStateType;
+  active_writer.print_DefineEventType     = &print_pajeDefineEventType;
+  active_writer.print_DefineLinkType      = &print_pajeDefineLinkType;
+  active_writer.print_DefineEntityValue   = &print_pajeDefineEntityValue;
+  active_writer.print_CreateContainer     = &print_pajeCreateContainer;
+  active_writer.print_DestroyContainer    = &print_pajeDestroyContainer;
+  active_writer.print_SetVariable         = &print_pajeSetVariable;
+  active_writer.print_AddVariable         = &print_pajeAddVariable;
+  active_writer.print_SubVariable         = &print_pajeSubVariable;
+  active_writer.print_SetState            = &print_pajeSetState;
+  active_writer.print_PushState           = &print_pajePushState;
+  active_writer.print_PopState            = &print_pajePopState;
+  active_writer.print_ResetState          = &print_pajeResetState;
+  active_writer.print_StartLink           = &print_pajeStartLink;
+  active_writer.print_EndLink             = &print_pajeEndLink;
+  active_writer.print_NewEvent            = &print_pajeNewEvent;
 }
 
 void TRACE_paje_start() {

@@ -14,34 +14,6 @@
  */
 
 #include "src/simix/popping_private.h"
-static inline sg_host_t simcall_vm_suspend__get__ind_vm(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]);
-}
-static inline void simcall_vm_suspend__set__ind_vm(smx_simcall_t simcall, sg_host_t arg) {
-    simgrid::simix::marshal<sg_host_t>(simcall->args[0], arg);
-}
-
-static inline sg_host_t simcall_vm_resume__get__ind_vm(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]);
-}
-static inline void simcall_vm_resume__set__ind_vm(smx_simcall_t simcall, sg_host_t arg) {
-    simgrid::simix::marshal<sg_host_t>(simcall->args[0], arg);
-}
-
-static inline sg_host_t simcall_vm_shutdown__get__ind_vm(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]);
-}
-static inline void simcall_vm_shutdown__set__ind_vm(smx_simcall_t simcall, sg_host_t arg) {
-    simgrid::simix::marshal<sg_host_t>(simcall->args[0], arg);
-}
-
-static inline sg_host_t simcall_vm_save__get__ind_vm(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]);
-}
-static inline void simcall_vm_save__set__ind_vm(smx_simcall_t simcall, sg_host_t arg) {
-    simgrid::simix::marshal<sg_host_t>(simcall->args[0], arg);
-}
-
 static inline smx_actor_t simcall_process_kill__get__process(smx_simcall_t simcall) {
   return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
 }
@@ -310,32 +282,6 @@ static inline smx_actor_t simcall_process_restart__get__result(smx_simcall_t sim
 }
 static inline void simcall_process_restart__set__result(smx_simcall_t simcall, smx_actor_t result){
     simgrid::simix::marshal<smx_actor_t>(simcall->result, result);
-}
-
-static inline const char* simcall_mbox_create__get__name(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<const char*>(simcall->args[0]);
-}
-static inline void simcall_mbox_create__set__name(smx_simcall_t simcall, const char* arg) {
-    simgrid::simix::marshal<const char*>(simcall->args[0], arg);
-}
-static inline smx_mailbox_t simcall_mbox_create__get__result(smx_simcall_t simcall){
-    return simgrid::simix::unmarshal<smx_mailbox_t>(simcall->result);
-}
-static inline void simcall_mbox_create__set__result(smx_simcall_t simcall, smx_mailbox_t result){
-    simgrid::simix::marshal<smx_mailbox_t>(simcall->result, result);
-}
-
-static inline smx_mailbox_t simcall_mbox_set_receiver__get__mbox(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[0]);
-}
-static inline void simcall_mbox_set_receiver__set__mbox(smx_simcall_t simcall, smx_mailbox_t arg) {
-    simgrid::simix::marshal<smx_mailbox_t>(simcall->args[0], arg);
-}
-static inline smx_actor_t simcall_mbox_set_receiver__get__receiver(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[1]);
-}
-static inline void simcall_mbox_set_receiver__set__receiver(smx_simcall_t simcall, smx_actor_t arg) {
-    simgrid::simix::marshal<smx_actor_t>(simcall->args[1], arg);
 }
 
 static inline smx_mailbox_t simcall_comm_iprobe__get__mbox(smx_simcall_t simcall) {
@@ -1084,19 +1030,6 @@ static inline void simcall_storage_get_content__set__result(smx_simcall_t simcal
     simgrid::simix::marshal<xbt_dict_t>(simcall->result, result);
 }
 
-static inline const char* simcall_asr_get_properties__get__name(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<const char*>(simcall->args[0]);
-}
-static inline void simcall_asr_get_properties__set__name(smx_simcall_t simcall, const char* arg) {
-    simgrid::simix::marshal<const char*>(simcall->args[0], arg);
-}
-static inline xbt_dict_t simcall_asr_get_properties__get__result(smx_simcall_t simcall){
-    return simgrid::simix::unmarshal<xbt_dict_t>(simcall->result);
-}
-static inline void simcall_asr_get_properties__set__result(smx_simcall_t simcall, xbt_dict_t result){
-    simgrid::simix::marshal<xbt_dict_t>(simcall->result, result);
-}
-
 static inline int simcall_mc_random__get__min(smx_simcall_t simcall) {
   return simgrid::simix::unmarshal<int>(simcall->args[0]);
 }
@@ -1145,9 +1078,6 @@ static inline void simcall_run_blocking__set__code(smx_simcall_t simcall, std::f
 
 /* The prototype of all simcall handlers, automatically generated for you */
 
-XBT_PRIVATE void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, sg_host_t ind_vm);
-XBT_PRIVATE void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, sg_host_t ind_vm);
-XBT_PRIVATE void simcall_HANDLER_vm_save(smx_simcall_t simcall, sg_host_t ind_vm);
 XBT_PRIVATE void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_actor_t process);
 XBT_PRIVATE void simcall_HANDLER_process_killall(smx_simcall_t simcall, int reset_pid);
 XBT_PRIVATE void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t process);
@@ -1188,5 +1118,4 @@ XBT_PRIVATE xbt_dynar_t simcall_HANDLER_file_get_info(smx_simcall_t simcall, smx
 XBT_PRIVATE int simcall_HANDLER_file_move(smx_simcall_t simcall, smx_file_t fd, const char* fullpath);
 XBT_PRIVATE sg_size_t simcall_HANDLER_storage_get_free_size(smx_simcall_t simcall, smx_storage_t storage);
 XBT_PRIVATE sg_size_t simcall_HANDLER_storage_get_used_size(smx_simcall_t simcall, smx_storage_t name);
-XBT_PRIVATE xbt_dict_t simcall_HANDLER_asr_get_properties(smx_simcall_t simcall, const char* name);
 XBT_PRIVATE int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max);

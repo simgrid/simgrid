@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -32,7 +31,7 @@ XBT_PRIVATE bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx);
  *
  *  This is true if the request associated with the process is ready.
  */
-XBT_PRIVATE bool process_is_enabled(smx_actor_t process);
+XBT_PRIVATE bool actor_is_enabled(smx_actor_t process);
 
 XBT_PRIVATE std::string request_get_dot_output(smx_simcall_t req, int value);
 

@@ -1,10 +1,10 @@
-/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SIMIX_SYNCHRO_IO_HPP
-#define _SIMIX_SYNCHRO_IO_HPP
+#ifndef SIMIX_SYNCHRO_IO_HPP
+#define SIMIX_SYNCHRO_IO_HPP
 
 #include "surf/surf.h"
 #include "src/kernel/activity/ActivityImpl.hpp"

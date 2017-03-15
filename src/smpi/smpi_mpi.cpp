@@ -30,6 +30,7 @@ return P##name args2 ; \
 
 
 /* MPI User level calls */
+extern "C" { // Obviously, the C MPI interface should use the C linkage
 
 WRAPPED_PMPI_CALL(double, MPI_Wtick,(void),())
 WRAPPED_PMPI_CALL(double, MPI_Wtime,(void),())
@@ -69,6 +70,7 @@ WRAPPED_PMPI_CALL(int,MPI_Comm_rank,(MPI_Comm comm, int *rank),(comm, rank))
 WRAPPED_PMPI_CALL(int,MPI_Comm_set_attr ,(MPI_Comm comm, int comm_keyval, void *attribute_val),( comm, comm_keyval, attribute_val))
 WRAPPED_PMPI_CALL(int,MPI_Comm_size,(MPI_Comm comm, int *size),(comm, size))
 WRAPPED_PMPI_CALL(int,MPI_Comm_split,(MPI_Comm comm, int color, int key, MPI_Comm* comm_out),(comm, color, key, comm_out))
+WRAPPED_PMPI_CALL(int,MPI_Comm_create_group,(MPI_Comm comm, MPI_Group group, int tag, MPI_Comm* comm_out),(comm, group, tag, comm_out))
 WRAPPED_PMPI_CALL(int,MPI_Dims_create,(int nnodes, int ndims, int* dims) ,(nnodes, ndims, dims))
 WRAPPED_PMPI_CALL(int,MPI_Error_class,(int errorcode, int* errorclass) ,(errorcode, errorclass))
 WRAPPED_PMPI_CALL(int,MPI_Exscan,(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm),(sendbuf, recvbuf, count, datatype, op, comm))
@@ -169,6 +171,7 @@ WRAPPED_PMPI_CALL(int,MPI_Type_lb,(MPI_Datatype datatype, MPI_Aint * disp),(data
 WRAPPED_PMPI_CALL(int,MPI_Type_set_attr ,(MPI_Datatype type, int type_keyval, void *attribute_val),( type, type_keyval, attribute_val))
 WRAPPED_PMPI_CALL(int,MPI_Type_set_name,(MPI_Datatype datatype, char * name),(datatype, name))
 WRAPPED_PMPI_CALL(int,MPI_Type_size,(MPI_Datatype datatype, int *size),(datatype, size))
+WRAPPED_PMPI_CALL(int,MPI_Type_size_x,(MPI_Datatype datatype, MPI_Count *size),(datatype, size))
 WRAPPED_PMPI_CALL(int,MPI_Type_struct,(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* newtype) ,(count, blocklens, indices, old_types, newtype))
 WRAPPED_PMPI_CALL(int,MPI_Type_ub,(MPI_Datatype datatype, MPI_Aint * disp),(datatype, disp))
 WRAPPED_PMPI_CALL(int,MPI_Type_vector,(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* newtype) ,(count, blocklen, stride, old_type, newtype))
@@ -314,3 +317,4 @@ UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Win_unlock,(int rank, MPI_Win win),(rank
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(MPI_Errhandler, MPI_Errhandler_f2c,(MPI_Fint errhandler),(errhandler))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(MPI_Fint, MPI_Errhandler_c2f,(MPI_Errhandler errhandler),(errhandler))
 
+} // extern "C"

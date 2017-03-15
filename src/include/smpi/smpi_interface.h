@@ -1,11 +1,10 @@
-/* Copyright (c) 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SMPI_INTERFACE_H
-#define _SMPI_INTERFACE_H
+#ifndef SMPI_INTERFACE_H
+#define SMPI_INTERFACE_H
 #include "smpi/smpi.h"
 
 SG_BEGIN_DECL()
@@ -107,7 +106,6 @@ XBT_PUBLIC (char *) smpi_container(int rank, char *container, int n);
 /************************ Process migration **********************************/
 XBT_PUBLIC(void) smpi_replay_process_migrate(smx_actor_t process, sg_host_t new_host, unsigned long size);
 XBT_PUBLIC(void) smpi_replay_send_process_data(double data_size, sg_host_t host);
-XBT_PUBLIC(void) smpi_send_process_data(unsigned long data_size, sg_host_t host);
 /*****************************************************************************/
 
 /*************************** Actions for SMPI replay *************************/
@@ -173,4 +171,4 @@ XBT_PUBLIC(int) smpi_rank_of_smx_process(smx_actor_t process);
 
 SG_END_DECL()
 
-#endif                          /* _SMPI_INTERFAC_H */
+#endif

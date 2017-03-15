@@ -92,10 +92,8 @@ static void action_close(const char *const *action) {
 }
 
 int main(int argc, char *argv[]) {
-  msg_error_t res = MSG_OK;
-
   MSG_init(&argc, argv);
-  /* Explicit initialization of the action module is required now*/
+  /* Explicit initialization of the action module is required */
   MSG_action_init();
 
   xbt_assert(argc > 3,"Usage: %s platform_file deployment_file [action_files]\n"
@@ -114,7 +112,7 @@ int main(int argc, char *argv[]) {
   if (opened_files == NULL)
     opened_files = xbt_dict_new_homogeneous(NULL);
   /* Actually do the simulation using MSG_action_trace_run */
-  res = MSG_action_trace_run(argv[3]);  // it's ok to pass a NULL argument here
+  msg_error_t res = MSG_action_trace_run(argv[3]); // it's ok to pass a NULL argument here
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
 

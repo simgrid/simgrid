@@ -6,8 +6,7 @@
 
 #include "simgrid/jedule/jedule.hpp"
 #include "simgrid/jedule/jedule_platform.hpp"
-#include "simgrid/s4u/As.hpp"
-
+#include "simgrid/s4u/NetZone.hpp"
 #include "xbt/asserts.h"
 #include "xbt/dynar.h"
 #include <algorithm>
@@ -60,32 +59,18 @@ void Container::addResources(std::vector<sg_host_t> hosts)
   }
 }
 
-void Container::createHierarchy(AS_t from_as)
+void Container::createHierarchy(sg_netzone_t from_as)
 {
-  xbt_dict_cursor_t cursor = nullptr;
-  char *key;
-  AS_t elem;
-  xbt_dict_t routing_sons = from_as->children();
 
-  if (xbt_dict_is_empty(routing_sons)) {
+  if (from_as->children()->empty()) {
     // I am no AS
     // add hosts to jedule platform
-    xbt_dynar_t table = from_as->hosts();
-    unsigned int dynar_cursor;
-    sg_host_t host;
-
-    std::vector<sg_host_t> hosts;
-
-    xbt_dynar_foreach(table, dynar_cursor, host) {
-      hosts.push_back(host);
-    }
-    this->addResources(hosts);
-    xbt_dynar_free(&table);
+    this->addResources(*from_as->hosts());
   } else {
-    xbt_dict_foreach(routing_sons, cursor, key, elem) {
-      jed_container_t child_container = new simgrid::jedule::Container(std::string(elem->name()));
+    for (auto nz : *from_as->children()) {
+      jed_container_t child_container = new simgrid::jedule::Container(std::string(nz->name()));
       this->addChild(child_container);
-      child_container->createHierarchy(elem);
+      child_container->createHierarchy(nz);
     }
   }
 }

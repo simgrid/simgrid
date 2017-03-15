@@ -40,8 +40,8 @@
 /* The extensions made for the SimGrid project can either be distributed    */
 /* under the same license, or under the LGPL v2.1                           */
 
-#ifndef __XBT_EX_H__
-#define __XBT_EX_H__
+#ifndef XBT_EX_H
+#define XBT_EX_H
 
 #include <stdlib.h>
 

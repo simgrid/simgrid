@@ -31,10 +31,9 @@ static int sendpid(int argc, char *argv[])
 
 static int killall(int argc, char *argv[]){
   msg_task_t task = NULL;
-  XBT_ATTRIB_UNUSED int res;
 
   for (int i=0; i<3;i++) {
-    res = MSG_task_receive(&(task), mailbox);
+    MSG_task_receive(&(task), mailbox);
     int pid = *(int*)MSG_task_get_data(task);
     MSG_task_destroy(task);
     XBT_INFO("Killing process \"%d\".", pid);
@@ -44,11 +43,11 @@ static int killall(int argc, char *argv[]){
   return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-  msg_error_t res = MSG_OK;
-
   MSG_init(&argc, argv);
+
+  xbt_assert(argc >= 2, "Usage: pid platform pid_to_kill");
 
   MSG_process_killall(atoi(argv[2]));
 
@@ -58,7 +57,5 @@ int main(int argc, char *argv[])
   MSG_process_create("sendpid", sendpid, NULL, MSG_get_host_by_name("Tremblay"));
   MSG_process_create("killall", killall, NULL, MSG_get_host_by_name("Tremblay"));
 
-  res = MSG_main();
-
-  return res != MSG_OK;
+  return MSG_main() != MSG_OK;
 }

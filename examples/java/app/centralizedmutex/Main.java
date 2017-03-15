@@ -7,14 +7,13 @@
 package app.centralizedmutex;
 
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.NativeException;
 
 class Main {
   private Main() {
     throw new IllegalAccessError("Utility class");
   }
 
-  public static void main(String[] args) throws NativeException {
+  public static void main(String[] args) {
     Msg.init(args);
 
     String platf  = args.length > 1 ? args[0] : "../platforms/small_platform.xml";

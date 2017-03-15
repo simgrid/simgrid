@@ -1,11 +1,10 @@
-/* Copyright (c) 2016. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2016-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SMPI_UTILS_HPP
-#define _SMPI_UTILS_HPP
+#ifndef SMPI_UTILS_HPP
+#define SMPI_UTILS_HPP
 #include "xbt/base.h"
 #include <cstddef>
 #include <vector>

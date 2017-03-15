@@ -32,7 +32,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix, "Logging specific to S
  */
 void SIMIX_create_environment(const char *file)
 {
-  double start = 0, end = 0;
+  double start = 0;
+  double end = 0;
   if(XBT_LOG_ISENABLED(simix_environment, xbt_log_priority_debug))
     start = xbt_os_time();
   try {

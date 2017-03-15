@@ -13,16 +13,18 @@
 
 namespace simgrid {
   namespace s4u {
-    class As;
-    class Host;
-    class Mailbox;
+  class Actor;
+  class Host;
+  class Link;
+  class Mailbox;
+  class NetZone;
   }
   namespace kernel {
      namespace activity {
        class ActivityImpl;
      }
      namespace routing {
-       class NetCard;
+     class NetPoint;
      }
   }
   namespace simix {
@@ -31,7 +33,7 @@ namespace simgrid {
   namespace surf {
     class Resource;
     class Cpu;
-    class Link;
+    class LinkImpl;
     class HostImpl;
   }
   namespace trace_mgr {
@@ -40,39 +42,35 @@ namespace simgrid {
   }
 }
 
-typedef simgrid::s4u::As simgrid_As;
-typedef simgrid::s4u::Host simgrid_Host;
+typedef simgrid::s4u::Actor s4u_Actor;
+typedef simgrid::s4u::Host s4u_Host;
+typedef simgrid::s4u::Link s4u_Link;
+typedef simgrid::s4u::NetZone s4u_NetZone;
 typedef simgrid::kernel::activity::ActivityImpl kernel_Activity;
-typedef simgrid::kernel::routing::NetCard routing_NetCard;
-typedef simgrid::surf::Cpu surf_Cpu;
-typedef simgrid::surf::Link Link;
+typedef simgrid::kernel::routing::NetPoint routing_NetPoint;
 typedef simgrid::surf::Resource surf_Resource;
 typedef simgrid::trace_mgr::trace tmgr_Trace;
 
-typedef simgrid::simix::Host *smx_host_priv_t;
-
-
 #else
 
-typedef struct simgrid_As   simgrid_As;
-typedef struct simgrid_Host simgrid_Host;
+typedef struct s4u_Actor s4u_Actor;
+typedef struct s4u_Host s4u_Host;
+typedef struct s4u_Link s4u_Link;
+typedef struct s4u_NetZone s4u_NetZone;
 typedef struct kernel_Activity kernel_Activity;
-typedef struct surf_Cpu surf_Cpu;
-typedef struct routing_NetCard routing_NetCard;
+typedef struct routing_NetPoint routing_NetPoint;
 typedef struct surf_Resource surf_Resource;
-typedef struct Link Link;
 typedef struct Trace tmgr_Trace;
 
-typedef struct simix_Host *smx_host_priv_t;
 #endif
 
-typedef simgrid_As *AS_t;
-typedef simgrid_Host* sg_host_t;
+typedef s4u_NetZone* sg_netzone_t;
+typedef s4u_Host* sg_host_t;
+typedef s4u_Link* sg_link_t;
 
 typedef kernel_Activity *smx_activity_t;
 
-typedef surf_Cpu *surf_cpu_t;
-typedef routing_NetCard *sg_netcard_t;
+typedef routing_NetPoint* sg_netpoint_t;
 typedef surf_Resource *sg_resource_t;
 
 // Types which are in fact dictelmt:

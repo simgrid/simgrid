@@ -12,6 +12,7 @@
 #include "simgrid/host.h"
 #include "src/surf/xml/platf.hpp"
 #include <vector>
+#include <string>
 
 SG_BEGIN_DECL()
 #include "src/surf/xml/simgrid_dtd.h"
@@ -20,8 +21,6 @@ SG_BEGIN_DECL()
 #define YY_TYPEDEF_YY_SIZE_T
 typedef size_t yy_size_t;
 #endif
-
-XBT_PUBLIC(sg_netcard_t) sg_netcard_by_name_or_null(const char *name);
 
 typedef enum {
   SURF_CLUSTER_DRAGONFLY=3,
@@ -58,21 +57,17 @@ typedef struct {
   const char* link_down;
 } s_sg_platf_host_link_cbarg_t, *sg_platf_host_link_cbarg_t;
 
-typedef struct {
-  const char* id;
-  const char* coord;
-} s_sg_platf_router_cbarg_t, *sg_platf_router_cbarg_t;
-
-typedef struct {
-  const char* id;
-  double bandwidth;
-  tmgr_trace_t bandwidth_trace;
-  double latency;
-  tmgr_trace_t latency_trace;
-  tmgr_trace_t state_trace;
-  e_surf_link_sharing_policy_t policy;
-  xbt_dict_t properties;
-} s_sg_platf_link_cbarg_t, *sg_platf_link_cbarg_t;
+class LinkCreationArgs {
+public:
+  std::string id;
+  double bandwidth                    = 0;
+  tmgr_trace_t bandwidth_trace        = nullptr;
+  double latency                      = 0;
+  tmgr_trace_t latency_trace          = nullptr;
+  tmgr_trace_t state_trace            = nullptr;
+  e_surf_link_sharing_policy_t policy = SURF_LINK_FATPIPE;
+  xbt_dict_t properties               = nullptr;
+};
 
 typedef struct s_sg_platf_peer_cbarg *sg_platf_peer_cbarg_t;
 typedef struct s_sg_platf_peer_cbarg {
@@ -80,20 +75,19 @@ typedef struct s_sg_platf_peer_cbarg {
   double speed;
   double bw_in;
   double bw_out;
-  double lat;
   const char* coord;
-  tmgr_trace_t availability_trace;
+  tmgr_trace_t speed_trace;
   tmgr_trace_t state_trace;
 } s_sg_platf_peer_cbarg_t;
 
 typedef struct s_sg_platf_route_cbarg *sg_platf_route_cbarg_t;
 typedef struct s_sg_platf_route_cbarg {
   bool symmetrical;
-  sg_netcard_t src;
-  sg_netcard_t dst;
-  sg_netcard_t gw_src;
-  sg_netcard_t gw_dst;
-  std::vector<Link*> *link_list;
+  sg_netpoint_t src;
+  sg_netpoint_t dst;
+  sg_netpoint_t gw_src;
+  sg_netpoint_t gw_dst;
+  std::vector<simgrid::surf::LinkImpl*>* link_list;
 } s_sg_platf_route_cbarg_t;
 
 typedef struct s_sg_platf_cluster_cbarg *sg_platf_cluster_cbarg_t;
@@ -102,7 +96,7 @@ typedef struct s_sg_platf_cluster_cbarg {
   const char* prefix;
   const char* suffix;
   std::vector<int>* radicals;
-  double speed;
+  std::vector<double> speeds;
   int core_amount;
   double bw;
   double lat;
@@ -196,19 +190,20 @@ typedef struct s_sg_platf_AS_cbarg {
 #define SG_PLATF_AS_INITIALIZER {nullptr,0}
 
 /********** Routing **********/
-void routing_cluster_add_backbone(Link* bb);
+void routing_cluster_add_backbone(simgrid::surf::LinkImpl* bb);
 /*** END of the parsing cruft ***/
 
 XBT_PUBLIC(void) sg_platf_begin();  // Start a new platform
 XBT_PUBLIC(void) sg_platf_end(); // Finish the creation of the platform
 
-XBT_PUBLIC(simgrid::s4u::As*) sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS); // Begin description of new AS
+XBT_PUBLIC(simgrid::s4u::NetZone*) sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS); // Begin description of new AS
 XBT_PUBLIC(void) sg_platf_new_AS_seal();                     // That AS is fully described
 
 XBT_PUBLIC(void) sg_platf_new_host   (sg_platf_host_cbarg_t   host);   // Add an host   to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_hostlink(sg_platf_host_link_cbarg_t h); // Add an host_link to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_router (sg_platf_router_cbarg_t router); // Add a router  to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_link   (sg_platf_link_cbarg_t link);     // Add a link    to the currently described AS
+XBT_PUBLIC(simgrid::kernel::routing::NetPoint*)
+sg_platf_new_router(const char* name, const char* coords);             // Add a router  to the currently described AS
+XBT_PUBLIC(void) sg_platf_new_link(LinkCreationArgs* link);            // Add a link    to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_peer   (sg_platf_peer_cbarg_t peer);     // Add a peer    to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_cluster(sg_platf_cluster_cbarg_t clust); // Add a cluster to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet); // Add a cabinet to the currently described AS
@@ -230,7 +225,7 @@ XBT_PUBLIC(int) surf_parse_lex();
 XBT_PUBLIC(int) surf_parse_get_lineno();
 XBT_PUBLIC(FILE *) surf_parse_get_in();
 XBT_PUBLIC(FILE *) surf_parse_get_out();
-XBT_PUBLIC(yy_size_t) surf_parse_get_leng();
+XBT_PUBLIC(int) surf_parse_get_leng();
 XBT_PUBLIC(char *) surf_parse_get_text();
 XBT_PUBLIC(void) surf_parse_set_lineno(int line_number);
 XBT_PUBLIC(void) surf_parse_set_in(FILE * in_str);
@@ -247,22 +242,15 @@ XBT_PUBLIC_DATA(int) surfxml_bufferstack_size;
 XBT_PUBLIC(void) routing_route_free(sg_platf_route_cbarg_t route);
 /********** Instr. **********/
 XBT_PRIVATE void sg_instr_AS_begin(sg_platf_AS_cbarg_t AS);
-XBT_PRIVATE void sg_instr_new_router(sg_platf_router_cbarg_t router);
+XBT_PRIVATE void sg_instr_new_router(const char* name);
 XBT_PRIVATE void sg_instr_new_host(simgrid::s4u::Host& host);
 XBT_PRIVATE void sg_instr_AS_end();
-
-typedef struct s_surf_parsing_link_up_down *surf_parsing_link_up_down_t;
-typedef struct s_surf_parsing_link_up_down {
-  Link* linkUp;
-  Link* linkDown;
-} s_surf_parsing_link_up_down_t;
 
 SG_END_DECL()
 
 namespace simgrid {
 namespace surf {
 
-extern XBT_PRIVATE simgrid::xbt::signal<void(sg_platf_link_cbarg_t)> on_link;
 extern XBT_PRIVATE simgrid::xbt::signal<void(sg_platf_cluster_cbarg_t)> on_cluster;
 
 }

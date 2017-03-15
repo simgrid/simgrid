@@ -19,20 +19,20 @@ PropertyHolder::~PropertyHolder() {
 const char *PropertyHolder::getProperty(const char*key) {
   if (properties_ == nullptr)
     return nullptr;
-  return (const char*) xbt_dict_get_or_null(properties_,key);
+  return static_cast<const char*>(xbt_dict_get_or_null(properties_,key));
 }
 
 /** @brief Change the value of a given key in the property set */
 void PropertyHolder::setProperty(const char*key, const char*value) {
   if (!properties_)
-    properties_ = xbt_dict_new();
-  xbt_dict_set(properties_, key, xbt_strdup(value), &xbt_free_f);
+    properties_ = xbt_dict_new_homogeneous(xbt_free_f);
+  xbt_dict_set(properties_, key, xbt_strdup(value), nullptr);
 }
 
 /** @brief Return the whole set of properties. Don't mess with it, dude! */
 xbt_dict_t PropertyHolder::getProperties() {
   if (!properties_)
-    properties_ = xbt_dict_new();
+    properties_ = xbt_dict_new_homogeneous(xbt_free_f);
   return properties_;
 }
 

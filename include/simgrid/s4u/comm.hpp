@@ -26,8 +26,6 @@ XBT_PUBLIC_CLASS Comm : public Activity {
 public:
   ~Comm() override;
 
-public:
-  
   /*! take a range of s4u::Comm* (last excluded) and return when one of them is finished. The return value is an iterator on the finished Comms. */
   template<class I> static
   I wait_any(I first, I last)

@@ -1,6 +1,6 @@
-/* A simple example pingpong pogram to test MPI_Send and MPI_Recv */
+/* A simple example ping-pong program to test MPI_Send and MPI_Recv */
 
-/* Copyright (c) 2009-2010, 2012-2014. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2012-2014, 2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,14 +11,14 @@
 
 int main(int argc, char *argv[])
 {
-  const int tag1 = 42, tag2 = 43;       /* Message tag */
-  int rank, size;
+  const int tag1 = 42;
+  const int tag2 = 43; /* Message tag */
+  int size;
+  int rank;
   int msg = 99;
-  int err;
-  int pivot;
   MPI_Status status;
 
-  err = MPI_Init(&argc, &argv); /* Initialize MPI */
+  int err = MPI_Init(&argc, &argv); /* Initialize MPI */
   if (err != MPI_SUCCESS) {
     printf("MPI initialization failed!\n");
     exit(1);
@@ -34,8 +34,8 @@ int main(int argc, char *argv[])
     printf("\n    *** Ping-pong test (MPI_Send/MPI_Recv) ***\n\n");
   }
 
-  /* start pingpong tests between several pairs */
-  for (pivot = 0; pivot < size - 1; pivot++) {
+  /* start ping-pong tests between several pairs */
+  for (int pivot = 0; pivot < size - 1; pivot++) {
     if (pivot == rank) {
       printf("\n== pivot=%d : pingpong [%d] <--> [%d]\n", pivot, pivot, pivot + 1);
 

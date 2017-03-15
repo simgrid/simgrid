@@ -1,5 +1,4 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -88,7 +87,7 @@ typedef enum {
 
 typedef struct s_container *container_t;
 typedef struct s_container {
-  sg_netcard_t netcard;
+  sg_netpoint_t netpoint;
   char *name;     /* Unique name of this container */
   char *id;       /* Unique id of this container */
   type_t type;    /* Type of this container */
@@ -460,4 +459,4 @@ typedef struct s_instr_extra_data {
 
 SG_END_DECL()
 
-#endif /* INSTR_PRIVATE_H_ */
+#endif

@@ -1,11 +1,10 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SURF_SURF_H
-#define _SURF_SURF_H
+#ifndef SURF_SURF_H
+#define SURF_SURF_H
 
 #include "xbt/swag.h"
 #include "xbt/dynar.h"
@@ -31,7 +30,6 @@ extern XBT_PRIVATE double sg_latency_factor;
 extern XBT_PRIVATE double sg_bandwidth_factor;
 extern XBT_PRIVATE double sg_weight_S_parameter;
 extern XBT_PRIVATE int sg_network_crosstraffic;
-extern XBT_PRIVATE xbt_dynar_t surf_path;
 
 #ifdef __cplusplus
 
@@ -44,56 +42,32 @@ class HostModel;
 class NetworkModel;
 class StorageModel;
 class Resource;
-class ResourceLmm;
-class HostCLM03;
 class NetworkCm02Link;
 class Action;
-class ActionLmm;
-class StorageActionLmm;
-}
-namespace vm {
-class VMModel; // FIXME: KILLME
-}
-namespace kernel {	
-namespace routing {
-class RoutingPlatf;
-}
 }
 }
 
 typedef simgrid::surf::Model surf_Model;
 typedef simgrid::surf::CpuModel surf_CpuModel;
+typedef simgrid::surf::Cpu surf_Cpu;
 typedef simgrid::surf::HostModel surf_HostModel;
-typedef simgrid::vm::VMModel surf_VMModel;
 typedef simgrid::surf::NetworkModel surf_NetworkModel;
 typedef simgrid::surf::StorageModel surf_StorageModel;
 typedef simgrid::surf::Resource surf_Resource;
-typedef simgrid::surf::ResourceLmm surf_ResourceLmm;
 typedef simgrid::surf::HostImpl surf_Host;
-typedef simgrid::surf::HostCLM03 surf_HostCLM03;
-typedef simgrid::surf::NetworkCm02Link surf_NetworkCm02Link;
 typedef simgrid::surf::Action surf_Action;
-typedef simgrid::surf::ActionLmm surf_ActionLmm;
-typedef simgrid::surf::StorageActionLmm surf_StorageActionLmm;
-typedef simgrid::kernel::routing::RoutingPlatf surf_RoutingPlatf;
 
 #else
 
 typedef struct surf_Model surf_Model;
 typedef struct surf_CpuModel surf_CpuModel;
+typedef struct surf_Cpu surf_Cpu;
 typedef struct surf_HostModel surf_HostModel;
-typedef struct surf_VMModel surf_VMModel;
 typedef struct surf_NetworkModel surf_NetworkModel;
 typedef struct surf_StorageModel surf_StorageModel;
 typedef struct surf_Resource surf_Resource;
-typedef struct surf_ResourceLmm surf_ResourceLmm;
-typedef struct surf_HostCLM03 surf_HostCLM03;
 typedef struct surf_Host surf_Host;
-typedef struct surf_NetworkCm02Link surf_NetworkCm02Link;
 typedef struct surf_Action surf_Action;
-typedef struct surf_ActionLmm surf_ActionLmm;
-typedef struct surf_StorageActionLmm surf_StorageActionLmm;
-typedef struct surf_RoutingPlatf surf_RoutingPlatf;
 
 #endif
 
@@ -106,14 +80,10 @@ typedef struct surf_RoutingPlatf surf_RoutingPlatf;
 typedef surf_Model *surf_model_t;
 typedef surf_CpuModel *surf_cpu_model_t;
 typedef surf_HostModel *surf_host_model_t;
-typedef surf_VMModel *surf_vm_model_t;
 typedef surf_NetworkModel *surf_network_model_t;
 typedef surf_StorageModel *surf_storage_model_t;
 
 typedef xbt_dictelm_t surf_resource_t;
-typedef surf_Resource *surf_cpp_resource_t;
-typedef surf_Host *surf_host_t;
-typedef surf_Cpu *surf_cpu_t;
 
 /** @ingroup SURF_c_bindings
  *  \brief Action structure
@@ -124,7 +94,6 @@ typedef surf_Cpu *surf_cpu_t;
  *  \see e_surf_action_state_t
  */
 typedef surf_Action *surf_action_t;
-typedef surf_RoutingPlatf *routing_platf_t;
 
 typedef struct surf_file *surf_file_t;
 
@@ -144,8 +113,6 @@ XBT_PUBLIC(void) model_help(const char *category, s_surf_model_description_t * t
 /***************************/
 /* Generic model object */
 /***************************/
-
-XBT_PUBLIC_DATA(routing_platf_t) routing_platf;
 
 static inline void *surf_storage_resource_priv(const void *storage){
   return (void*)xbt_lib_get_level((xbt_dictelm_t)storage, SURF_STORAGE_LEVEL);
@@ -180,9 +147,6 @@ XBT_PUBLIC(surf_action_t) surf_model_extract_failed_action_set(surf_model_t mode
  * @return The size of the running action set
  */
 XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
-
-/** @brief Create a sleep action on the given host */
-XBT_PUBLIC(surf_action_t) surf_host_sleep(sg_host_t host, double duration);
 
 /** @brief Create a file opening action on the given host */
 XBT_PUBLIC(surf_action_t) surf_host_open(sg_host_t host, const char* fullpath);
@@ -548,14 +512,6 @@ XBT_PUBLIC_DATA(surf_storage_model_t) surf_storage_model;
 XBT_PUBLIC_DATA(surf_host_model_t) surf_host_model;
 
 /** \ingroup SURF_models
- *  \brief The vm model
- *
- *  Note that when you create an API on top of SURF,the vm model should be the only one you use
- *  because depending on the platform model, the network model and the CPU model may not exist.
- */
-XBT_PUBLIC_DATA(surf_vm_model_t) surf_vm_model;
-
-/** \ingroup SURF_models
  *  \brief Initializes the platform with a compound host model
  *
  *  This function should be called after a cpu_model and a network_model have been set up.
@@ -594,11 +550,6 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_host_model_description[];
  *  Such model is subject to modification with warning in the ChangeLog so monitor it!
  */
 XBT_PUBLIC(void) surf_vm_model_init_HL13();
-
-/** \ingroup SURF_models
- *  \brief The list of all available vm model models
- */
-XBT_PUBLIC_DATA(s_surf_model_description_t) surf_vm_model_description[];
 
 /** \ingroup SURF_simulation
  *  \brief List of hosts for which one want to be notified if they ever restart.
@@ -665,8 +616,6 @@ XBT_PUBLIC(void) parse_platform_file(const char *file);
 /* For the trace and trace:connect tag (store their content till the end of the parsing) */
 XBT_PUBLIC_DATA(xbt_dict_t) traces_set_list;
 
-XBT_PUBLIC(xbt_dict_t) get_as_router_properties(const char* name);
-
 /*
  * Returns the initial path. On Windows the initial path is the current directory for the current process in the other
  * case the function returns "./" that represents the current directory on Unix/Linux platforms.
@@ -690,4 +639,5 @@ xbt_graph_t instr_routing_platform_graph ();
 void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *filename);
 
 SG_END_DECL()
-#endif                          /* _SURF_SURF_H */
+
+#endif

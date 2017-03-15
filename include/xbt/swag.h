@@ -1,5 +1,4 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,8 +6,8 @@
 /* Warning, this module is done to be efficient and performs tons of cast and dirty things. So avoid using it unless
  * you really know what you are doing. */
 
-#ifndef _XBT_SWAG_H
-#define _XBT_SWAG_H
+#ifndef XBT_SWAG_H
+#define XBT_SWAG_H
 
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"         /* size_t */
@@ -195,4 +194,4 @@ static inline void *xbt_swag_getFirst(xbt_swag_t swag)
 
 SG_END_DECL()
 
-#endif                          /* _XBT_SWAG_H */
+#endif /* XBT_SWAG_H */

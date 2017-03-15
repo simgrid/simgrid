@@ -22,7 +22,7 @@ For sake of simplicity, we use
 everywhere in S4U. This is an idiom where resources are automatically
 managed through the context. Provided that you never manipulate
 objects of type Foo directly but always FooPtr references (which are
-[boost::intrusive_ptr](http://www.boost.org/doc/libs/1_61_0/libs/smart_ptr/intrusive_ptr.html)<Foo>),
+[boost::intrusive_ptr](http://www.boost.org/doc/libs/1_61_0/libs/smart_ptr/intrusive_ptr.html)&lt;Foo&gt;),
 you will never have to explicitely release the resource that you use
 nor to free the memory of unused objects.
 

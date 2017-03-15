@@ -19,8 +19,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chainsend, "Messages specific for chainsend");
 
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
-
   MSG_init(&argc, argv);
 
   MSG_create_environment(argv[1]);
@@ -42,7 +40,7 @@ int main(int argc, char *argv[])
 
   MSG_launch_application(argv[2]);
 
-  res = MSG_main();
+  msg_error_t res = MSG_main();
 
   XBT_INFO("Total simulation time: %e", MSG_get_clock());
 

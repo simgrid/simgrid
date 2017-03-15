@@ -6,22 +6,15 @@
 #ifndef SURF_MODEL_H_
 #define SURF_MODEL_H_
 
-#include <cstddef>
-#include <string>
+#include "xbt/signal.hpp"
 
-#include <xbt.h>
-#include <memory>
-#include <utility>
+#include "src/surf/surf_private.h"
+#include "surf/surf.h"
+#include "surf/surf_routing.h"
+#include "xbt/str.h"
 
 #include <boost/intrusive/list.hpp>
-
-#include <xbt/signal.hpp>
-
-#include "xbt/lib.h"
-#include "surf/surf_routing.h"
-#include "surf/surf.h"
-#include "src/surf/surf_private.h"
-#include "src/internal_config.h"
+#include <string>
 
 #define NO_MAX_DURATION -1.0
 
@@ -36,7 +29,7 @@ extern XBT_PRIVATE double sg_latency_factor;
 extern XBT_PRIVATE double sg_bandwidth_factor;
 extern XBT_PRIVATE double sg_weight_S_parameter;
 extern XBT_PRIVATE int sg_network_crosstraffic;
-extern XBT_PRIVATE xbt_dynar_t surf_path;
+extern XBT_PRIVATE std::vector<std::string> surf_path;
 
 extern "C" {
 XBT_PUBLIC(double) surf_get_clock(void);
@@ -115,7 +108,6 @@ public:
     not_in_the_system /**< Not in the system anymore. Why did you ask ? */
   };
 
-public:
   /**
    * @brief Action constructor
    *
@@ -223,7 +215,7 @@ public:
 
   s_xbt_swag_hookup_t stateHookup_ = {nullptr,nullptr};
 
-  simgrid::surf::Model *getModel() {return model_;}
+  simgrid::surf::Model* getModel() { return model_; }
 
 protected:
   ActionList* stateSet_;
@@ -389,10 +381,10 @@ public:
   virtual ~Resource();
 
   /** @brief Get the Model of the current Resource */
-  Model *getModel() const;
+  Model* model() const;
 
   /** @brief Get the name of the current Resource */
-  const char *getName() const;
+  const char* cname() const;
 
   bool operator==(const Resource &other) const;
 
@@ -423,7 +415,8 @@ private:
 
 public: /* LMM */
   /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component (or null if none) */
-  lmm_constraint_t getConstraint() const;
+  lmm_constraint_t constraint() const;
+
 protected:
   const lmm_constraint_t constraint_ = nullptr;
 };
@@ -437,7 +430,7 @@ namespace std {
   {
     std::size_t operator()(const simgrid::surf::Resource& r) const
     {
-      return (std::size_t) xbt_str_hash(r.getName());
+      return (std::size_t) xbt_str_hash(r.cname());
     }
   };
 }

@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/log.h"
-#include "src/msg/msg_private.h"
 
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/comm.hpp"
@@ -13,7 +12,6 @@
 #include "simgrid/s4u/Mailbox.hpp"
 
 #include "src/kernel/context/Context.hpp"
-#include "src/simix/smx_private.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor,"S4U actors");
 
@@ -27,65 +25,69 @@ ActorPtr Actor::self()
   if (self_context == nullptr)
     return simgrid::s4u::ActorPtr();
 
-  return simgrid::s4u::ActorPtr(&self_context->process()->getIface());
+  return self_context->process()->iface();
 }
 
-
-ActorPtr Actor::createActor(const char* name, s4u::Host *host, double killTime, std::function<void()> code)
+ActorPtr Actor::createActor(const char* name, s4u::Host* host, std::function<void()> code)
 {
-  // TODO, when autorestart is used, the std::function is copied so the new
-  // instance will get a fresh (reinitialized) state. Is this what we want?
-  smx_actor_t process = simcall_process_create(
-    name, std::move(code), nullptr, host, killTime, nullptr, 0);
-  return ActorPtr(&process->getIface());
+  smx_actor_t actor = simcall_process_create(name, std::move(code), nullptr, host, nullptr);
+  return actor->iface();
 }
 
-ActorPtr Actor::createActor(const char* name, s4u::Host *host, double killTime,
-  const char* function, std::vector<std::string> args)
+ActorPtr Actor::createActor(const char* name, s4u::Host* host, const char* function, std::vector<std::string> args)
 {
   simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(function);
   simgrid::simix::ActorCode code = factory(std::move(args));
-  smx_actor_t process = simcall_process_create(
-    name, std::move(code), nullptr, host, killTime, nullptr, 0);
-  return ActorPtr(&process->getIface());
+  smx_actor_t actor                         = simcall_process_create(name, std::move(code), nullptr, host, nullptr);
+  return actor->iface();
 }
 
 // ***** Actor methods *****
 
 void Actor::join() {
-  simcall_process_join(pimpl_, -1);
+  simcall_process_join(this->pimpl_, -1);
 }
 
 void Actor::setAutoRestart(bool autorestart) {
   simcall_process_auto_restart_set(pimpl_,autorestart);
 }
 
-s4u::Host *Actor::getHost() {
-  return pimpl_->host;
+s4u::Host* Actor::host()
+{
+  return this->pimpl_->host;
 }
 
-simgrid::xbt::string Actor::getName() {
-  return pimpl_->name;
+const char* Actor::cname()
+{
+  return this->pimpl_->name.c_str();
 }
 
-int Actor::getPid(){
-  return pimpl_->pid;
+simgrid::xbt::string Actor::name()
+{
+  return this->pimpl_->name;
 }
 
-int Actor::getPpid() {
-  return pimpl_->ppid;
+int Actor::pid()
+{
+  return this->pimpl_->pid;
+}
+
+int Actor::ppid()
+{
+  return this->pimpl_->ppid;
 }
 
 void Actor::setKillTime(double time) {
   simcall_process_set_kill_time(pimpl_,time);
 }
 
-double Actor::getKillTime() {
+double Actor::killTime()
+{
   return simcall_process_get_kill_time(pimpl_);
 }
 
 void Actor::kill(int pid) {
-  msg_process_t process = SIMIX_process_from_PID(pid);
+  smx_actor_t process = SIMIX_process_from_PID(pid);
   if(process != nullptr) {
     simcall_process_kill(process);
   } else {
@@ -105,13 +107,13 @@ void Actor::kill() {
 
 // ***** Static functions *****
 
-ActorPtr Actor::forPid(int pid)
+ActorPtr Actor::byPid(int pid)
 {
   smx_actor_t process = SIMIX_process_from_PID(pid);
   if (process != nullptr)
-    return ActorPtr(&process->getIface());
+    return process->iface();
   else
-    return nullptr;
+    return ActorPtr();
 }
 
 void Actor::killAll() {
@@ -156,14 +158,20 @@ void send(MailboxPtr chan, void *payload, size_t simulatedSize) {
   c.wait();
 }
 
-int getPid() {
+int pid()
+{
   return SIMIX_process_self()->pid;
 }
 
-int getPpid() {
+int ppid()
+{
   return SIMIX_process_self()->ppid;
 }
 
+std::string name()
+{
+  return SIMIX_process_self()->name;
+}
 }
 }
 }

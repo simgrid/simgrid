@@ -115,8 +115,14 @@ tags
 callgrind.out.*
 ### Examples and traces
 *.exe
+doc/msg-tuto-src/masterworker0
+doc/msg-tuto-src/masterworker1
+doc/msg-tuto-src/masterworker2
+doc/msg-tuto-src/masterworker3
+doc/msg-tuto-src/masterworker4
 examples/msg/actions-comm/actions-comm
 examples/msg/actions-storage/actions-storage
+examples/msg/async-yield/async-yield
 examples/msg/async-wait/async-wait
 examples/msg/async-waitall/async-waitall
 examples/msg/async-waitany/async-waitany
@@ -141,7 +147,12 @@ examples/msg/io-file-unlink/io-file-unlink
 examples/msg/io-remote/io-remote
 examples/msg/io-storage/io-storage
 examples/msg/platform-failures/platform-failures
+examples/msg/process-create/process-create
 examples/msg/process-kill/process-kill
+examples/msg/process-join/process-join
+examples/msg/process-migration/process-migration
+examples/msg/process-startkilltime/process-startkilltime
+examples/msg/process-suspend/process-suspend
 examples/msg/app-masterworker/app-masterworker
 examples/msg/mc/bugged1
 examples/msg/mc/bugged1_liveness
@@ -158,7 +169,6 @@ examples/msg/mc/test/snapshot_comparison2
 examples/msg/mc/test/snapshot_comparison3
 examples/msg/mc/test/snapshot_comparison4
 examples/msg/mc/test/snapshot_comparison5
-examples/msg/process-migration/process-migration
 examples/msg/ms.trace
 examples/msg/network-ns3/network-ns3
 examples/msg/app-pmm/app-pmm
@@ -169,9 +179,6 @@ examples/msg/synchro-semaphore/synchro-semaphore
 examples/msg/app-pingpong/app-pingpong
 examples/msg/maestro-set/maestro-set
 examples/msg/simulation.trace
-examples/msg/process-create/process-create
-examples/msg/process-startkilltime/process-startkilltime
-examples/msg/process-suspend/process-suspend
 examples/msg/app-token-ring/app-token-ring
 examples/msg/trace-categories/trace-categories
 examples/msg/trace-route-user-variables/trace-route-user-variables
@@ -180,6 +187,8 @@ examples/msg/trace-masterworker/trace-masterworker
 examples/msg/trace-process-migration/trace-process-migration
 examples/msg/trace-platform/trace-platform
 examples/msg/trace-host-user-variables/trace-host-user-variables
+examples/s4u/app-masterworker/s4u_app-masterworker
+examples/s4u/app-token-ring/s4u_app-token-ring
 examples/s4u/actions-comm/s4u_actions-comm
 examples/s4u/basic/s4u_basic
 examples/s4u/basic/s4u_basic_deployment
@@ -240,7 +249,6 @@ teshsuite/msg/host_on_off_recv/host_on_off_recv
 teshsuite/msg/host_on_off_wait/host_on_off_wait
 teshsuite/msg/listen_async/listen_async
 teshsuite/msg/pid/pid
-teshsuite/msg/process_join/process_join
 teshsuite/msg/process/process
 teshsuite/msg/storage_client_server/storage_client_server
 teshsuite/msg/task_destroy_cancel/task_destroy_cancel
@@ -434,6 +442,7 @@ teshsuite/smpi/isp/umpire/waitall-deadlock
 teshsuite/smpi/isp/umpire/waitany-deadlock
 teshsuite/smpi/isp/umpire/wait-deadlock
 teshsuite/smpi/mpich3-test/attr/attr2type
+teshsuite/smpi/mpich3-test/attr/attrdeleteget
 teshsuite/smpi/mpich3-test/attr/attrend
 teshsuite/smpi/mpich3-test/attr/attrend2
 teshsuite/smpi/mpich3-test/attr/attrerr
@@ -452,6 +461,7 @@ teshsuite/smpi/mpich3-test/attr/fkeyvaltype
 teshsuite/smpi/mpich3-test/attr/keyval_double_free
 teshsuite/smpi/mpich3-test/coll/allgather2
 teshsuite/smpi/mpich3-test/coll/allgather3
+teshsuite/smpi/mpich3-test/coll/allgather_struct
 teshsuite/smpi/mpich3-test/coll/allgatherv2
 teshsuite/smpi/mpich3-test/coll/allgatherv3
 teshsuite/smpi/mpich3-test/coll/allgatherv4
@@ -470,6 +480,9 @@ teshsuite/smpi/mpich3-test/coll/alltoallw2
 teshsuite/smpi/mpich3-test/coll/alltoallw_zeros
 teshsuite/smpi/mpich3-test/coll/bcast2
 teshsuite/smpi/mpich3-test/coll/bcast3
+teshsuite/smpi/mpich3-test/coll/bcast_comm_world
+teshsuite/smpi/mpich3-test/coll/bcast_full
+teshsuite/smpi/mpich3-test/coll/bcast_min_datatypes
 teshsuite/smpi/mpich3-test/coll/bcasttest
 teshsuite/smpi/mpich3-test/coll/bcastzerotype
 teshsuite/smpi/mpich3-test/coll/coll10
@@ -489,6 +502,7 @@ teshsuite/smpi/mpich3-test/coll/exscan2
 teshsuite/smpi/mpich3-test/coll/gather
 teshsuite/smpi/mpich3-test/coll/gather2
 teshsuite/smpi/mpich3-test/coll/gather2_save
+teshsuite/smpi/mpich3-test/coll/gather_big
 teshsuite/smpi/mpich3-test/coll/iallred
 teshsuite/smpi/mpich3-test/coll/ibarrier
 teshsuite/smpi/mpich3-test/coll/icallgather
@@ -578,8 +592,10 @@ teshsuite/smpi/mpich3-test/datatype/getpartelm
 teshsuite/smpi/mpich3-test/datatype/hindexed_block
 teshsuite/smpi/mpich3-test/datatype/hindexed_block_contents
 teshsuite/smpi/mpich3-test/datatype/hindexed-zeros
+teshsuite/smpi/mpich3-test/datatype/hvecblklen
 teshsuite/smpi/mpich3-test/datatype/indexed-misc
 teshsuite/smpi/mpich3-test/datatype/large-count
+teshsuite/smpi/mpich3-test/datatype/large_vec
 teshsuite/smpi/mpich3-test/datatype/lbub
 teshsuite/smpi/mpich3-test/datatype/localpack
 teshsuite/smpi/mpich3-test/datatype/longdouble
@@ -617,6 +633,7 @@ teshsuite/smpi/mpich3-test/datatype/typelb
 teshsuite/smpi/mpich3-test/datatype/typename
 teshsuite/smpi/mpich3-test/datatype/unpack
 teshsuite/smpi/mpich3-test/datatype/unusual-noncontigs
+teshsuite/smpi/mpich3-test/datatype/vecblklen
 teshsuite/smpi/mpich3-test/datatype/zero-blklen-vector
 teshsuite/smpi/mpich3-test/datatype/zeroblks
 teshsuite/smpi/mpich3-test/datatype/zeroparms
@@ -709,6 +726,7 @@ teshsuite/smpi/mpich3-test/group/gtranks
 teshsuite/smpi/mpich3-test/group/gtranksperf
 teshsuite/smpi/mpich3-test/info/infodel
 teshsuite/smpi/mpich3-test/info/infodup
+teshsuite/smpi/mpich3-test/info/infoget
 teshsuite/smpi/mpich3-test/info/infomany
 teshsuite/smpi/mpich3-test/info/infomany2
 teshsuite/smpi/mpich3-test/info/infoorder
@@ -724,6 +742,10 @@ teshsuite/smpi/mpich3-test/init/library_version
 teshsuite/smpi/mpich3-test/init/timeout
 teshsuite/smpi/mpich3-test/init/version
 teshsuite/smpi/mpich3-test/perf/commcreatep
+teshsuite/smpi/mpich3-test/perf/dtpack
+teshsuite/smpi/mpich3-test/perf/indexperf
+teshsuite/smpi/mpich3-test/perf/nestvec
+teshsuite/smpi/mpich3-test/perf/nestvec2
 teshsuite/smpi/mpich3-test/perf/non_zero_root
 teshsuite/smpi/mpich3-test/perf/sendrecvl
 teshsuite/smpi/mpich3-test/perf/timer
@@ -739,21 +761,27 @@ teshsuite/smpi/mpich3-test/pt2pt/bsend5
 teshsuite/smpi/mpich3-test/pt2pt/bsendalign
 teshsuite/smpi/mpich3-test/pt2pt/bsendfrag
 teshsuite/smpi/mpich3-test/pt2pt/bsendpending
+teshsuite/smpi/mpich3-test/pt2pt/cancelanysrc
 teshsuite/smpi/mpich3-test/pt2pt/cancelrecv
+teshsuite/smpi/mpich3-test/pt2pt/dtype_send
 teshsuite/smpi/mpich3-test/pt2pt/eagerdt
 teshsuite/smpi/mpich3-test/pt2pt/greq1
 teshsuite/smpi/mpich3-test/pt2pt/icsend
 teshsuite/smpi/mpich3-test/pt2pt/inactivereq
+teshsuite/smpi/mpich3-test/pt2pt/isendirecv
 teshsuite/smpi/mpich3-test/pt2pt/isendself
 teshsuite/smpi/mpich3-test/pt2pt/isendselfprobe
 teshsuite/smpi/mpich3-test/pt2pt/issendselfcancel
 teshsuite/smpi/mpich3-test/pt2pt/large_message
+teshsuite/smpi/mpich3-test/pt2pt/many_isend
+teshsuite/smpi/mpich3-test/pt2pt/manylmt
 teshsuite/smpi/mpich3-test/pt2pt/mprobe
 teshsuite/smpi/mpich3-test/pt2pt/pingping
 teshsuite/smpi/mpich3-test/pt2pt/probenull
 teshsuite/smpi/mpich3-test/pt2pt/probe-unexp
 teshsuite/smpi/mpich3-test/pt2pt/pscancel
 teshsuite/smpi/mpich3-test/pt2pt/rcancel
+teshsuite/smpi/mpich3-test/pt2pt/recv_any
 teshsuite/smpi/mpich3-test/pt2pt/rqfreeb
 teshsuite/smpi/mpich3-test/pt2pt/rqstatus
 teshsuite/smpi/mpich3-test/pt2pt/scancel
@@ -769,11 +797,16 @@ teshsuite/smpi/mpich3-test/pt2pt/waittestnull
 teshsuite/smpi/mpich3-test/rma/accfence1
 teshsuite/smpi/mpich3-test/rma/accfence2
 teshsuite/smpi/mpich3-test/rma/accfence2_am
+teshsuite/smpi/mpich3-test/rma/acc-pairtype
 teshsuite/smpi/mpich3-test/rma/accpscw1
 teshsuite/smpi/mpich3-test/rma/allocmem
+teshsuite/smpi/mpich3-test/rma/at_complete
 teshsuite/smpi/mpich3-test/rma/epochtest
 teshsuite/smpi/mpich3-test/rma/getfence1
 teshsuite/smpi/mpich3-test/rma/getgroup
+teshsuite/smpi/mpich3-test/rma/large-small-acc
+teshsuite/smpi/mpich3-test/rma/lock_nested
+teshsuite/smpi/mpich3-test/rma/manyget
 teshsuite/smpi/mpich3-test/rma/manyrma3
 teshsuite/smpi/mpich3-test/rma/nullpscw
 teshsuite/smpi/mpich3-test/rma/putfence1
@@ -974,6 +1007,7 @@ examples/java/app/centralizedmutex/java_app_centralizedmutex_compiled
 examples/java/app/masterworker/java_app_masterworker_compiled
 examples/java/app/pingpong/java_app_pingpong_compiled
 examples/java/app/tokenring/java_app_tokenring_compiled
+examples/java/async/yield/java_async_yield_compiled
 examples/java/async/dsend/java_async_dsend_compiled
 examples/java/async/waitall/java_async_waitall_compiled
 examples/java/dht/chord/java_dht_chord_compiled
@@ -981,6 +1015,7 @@ examples/java/dht/kademlia/java_dht_kademlia_compiled
 examples/java/cloud/masterworker/java_cloud_masterworker_compiled
 examples/java/cloud/migration/java_cloud_migration_compiled
 examples/java/energy/consumption/java_energy_consumption_compiled
+examples/java/energy/pstate/java_energy_pstate_compiled
 examples/java/energy/vm/java_energy_vm_compiled
 examples/java/io/file/java_io_file_compiled
 examples/java/io/storage/java_io_storage_compiled

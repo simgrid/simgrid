@@ -13,7 +13,7 @@ import org.simgrid.msg.MsgException;
 class Main {
   public static final double TASK_COMP_SIZE = 10;
   public static final double TASK_COMM_SIZE = 10;
-  public static final int NHOSTS = 2 ; 
+  public static final int NHOSTS = 2; 
 
   private Main() {
     throw new IllegalAccessError("Utility class");

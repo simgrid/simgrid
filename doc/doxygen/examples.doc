@@ -133,7 +133,7 @@ an external description of the deployment.
 
 \paragraph MSG_ext_async_Sender Sender function
 
-A host can send an asynchronous message with \c MSG_task_isend(). %As this function is non-blocking, we have to call 
+A host can send an asynchronous message with \c MSG_task_isend(). As this function is non-blocking, we have to call 
 \c MSG_comm_test() to know if the communication is complete and evenetually destroy it with a call to 
 \c MSG_comm_destroy(). It is also possible to call \c MSG_comm_wait() which provides a shortcut.
 
@@ -150,7 +150,7 @@ A host can send an asynchronous message with \c MSG_task_isend(). %As this funct
 
 \paragraph MSG_ext_async_Receiver Receiver function
 
-This function executes tasks when it receives them. %As the receiving is asynchronous, we have to test the completion of
+This function executes tasks when it receives them. As the receiving is asynchronous, we have to test the completion of
 the communication with \c MSG_comm_test() or wait for it with \c MSG_comm_wait().
 
   C style arguments (argc/argv) are interpreted as:

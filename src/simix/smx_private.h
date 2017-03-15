@@ -1,41 +1,15 @@
-/* Copyright (c) 2007-2010, 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SIMIX_PRIVATE_H
-#define _SIMIX_PRIVATE_H
-
-#include <functional>
-#include <memory>
-#include <unordered_map>
-#include <vector>
-
-#include <xbt/functional.hpp>
-
-#include "src/internal_config.h"
-#include "simgrid/simix.h"
-#include "surf/surf.h"
-#include "xbt/base.h"
-#include "xbt/fifo.h"
-#include "xbt/swag.h"
-#include "xbt/dict.h"
-#include "xbt/mallocator.h"
-#include "xbt/config.h"
-#include "xbt/xbt_os_time.h"
-#include "xbt/function_types.h"
-#include "src/xbt/ex_interface.h"
-#include "src/instr/instr_private.h"
-#include "smx_host_private.h"
-#include "smx_io_private.h"
-#include "smx_network_private.h"
-#include "popping_private.h"
-#include "smx_synchro_private.h"
+#ifndef SIMIX_PRIVATE_H
+#define SIMIX_PRIVATE_H
 
 #include <signal.h>
-#include "src/simix/ActorImpl.hpp"
 #include "src/kernel/context/Context.hpp"
+
+#include <map>
 
 /********************************** Simix Global ******************************/
 
@@ -47,7 +21,17 @@ public:
   smx_context_factory_t context_factory = nullptr;
   xbt_dynar_t process_to_run = nullptr;
   xbt_dynar_t process_that_ran = nullptr;
-  xbt_swag_t process_list = nullptr;
+  std::map<int, smx_actor_t> process_list;
+#if HAVE_MC
+  /* MCer cannot read the std::map above in the remote process, so we copy the info it needs in a dynar.
+   * FIXME: This is supposed to be a temporary hack.
+   * A better solution would be to change the split between MCer and MCed, where the responsibility
+   *   to compute the list of the enabled transitions goes to the MCed.
+   * That way, the MCer would not need to have the list of actors on its side.
+   * These info could be published by the MCed to the MCer in a way inspired of vd.so
+   */
+  xbt_dynar_t actors_vector = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
+#endif
   xbt_swag_t process_to_destroy = nullptr;
   smx_actor_t maestro_process = nullptr;
 
@@ -65,6 +49,8 @@ public:
 
   std::vector<simgrid::xbt::Task<void()>> tasks;
   std::vector<simgrid::xbt::Task<void()>> tasksTemp;
+
+  std::vector<simgrid::simix::ActorImpl*> daemons;
 };
 
 }

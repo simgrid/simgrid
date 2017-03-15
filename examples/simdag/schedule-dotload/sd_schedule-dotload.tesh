@@ -12,6 +12,9 @@ $ $SG_TEST_EXENV ${bindir:=.}/schedule-dotload/sd_schedule-dotload --log=no_loc 
 > [0.000000] [sd_dotparse/WARNING] The scheduling is ignored
 > [0.000000] [test/CRITICAL] The dot file with the provided scheduling is wrong, more information with the option : --log=sd_dotparse.thres:verbose
 
+# The order differ when executed with gcc's thread sanitizer
+! output sort
+
 $ $SG_TEST_EXENV ${bindir:=.}/schedule-dotload/sd_schedule-dotload --log=no_loc ${srcdir:=.}/../platforms/two_clusters.xml ${srcdir:=.}/schedule-dotload/dag_with_good_schedule.dot
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [test/INFO] ------------------- Display all tasks of the loaded DAG ---------------------------

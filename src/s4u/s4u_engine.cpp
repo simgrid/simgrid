@@ -6,22 +6,26 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "instr/instr_interface.h"
-#include "simgrid/simix.h"
 #include "mc/mc.h"
-#include "simgrid/s4u/As.hpp"
-#include "simgrid/s4u/engine.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
+#include "simgrid/s4u/NetZone.hpp"
+#include "simgrid/s4u/engine.hpp"
+#include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/storage.hpp"
 #include "simgrid/simix.h"
 #include "src/kernel/EngineImpl.hpp"
-
+#include "src/kernel/routing/NetPoint.hpp"
+#include "src/kernel/routing/NetZoneImpl.hpp"
+#include "src/surf/network_interface.hpp"
 #include "surf/surf.h"               // routing_platf. FIXME:KILLME. SOON
-#include "src/surf/surf_routing.hpp" // routing_platf. FIXME:KILLME. SOON
 
 XBT_LOG_NEW_CATEGORY(s4u,"Log channels of the S4U (Simgrid for you) interface");
 
 namespace simgrid {
 namespace s4u {
+xbt::signal<void()> onPlatformCreated;
+xbt::signal<void()> onSimulationEnd;
+xbt::signal<void(double)> onTimeAdvance;
 
 Engine *Engine::instance_ = nullptr; /* That singleton is awful, but I don't see no other solution right now. */
 
@@ -83,32 +87,58 @@ void Engine::run() {
   }
 }
 
-s4u::As *Engine::rootAs()
+s4u::NetZone* Engine::netRoot()
 {
-  return routing_platf->root_; // FIXME: get the root into the Engine directly (and kill the platf)
-  // return pimpl->rootAs_;
+  return pimpl->netRoot_;
 }
 
-static s4u::As *asByNameRecursive(s4u::As *current, const char *name)
+static s4u::NetZone* netzoneByNameRecursive(s4u::NetZone* current, const char* name)
 {
   if(!strcmp(current->name(), name))
     return current;
 
-  xbt_dict_cursor_t cursor = nullptr;
-  char *key;
-  AS_t elem;
-  xbt_dict_foreach(current->children(), cursor, key, elem) {
-    simgrid::s4u::As *tmp = asByNameRecursive(elem, name);
-    if (tmp != nullptr )
-        return tmp;
+  for (auto elem : *(current->children())) {
+    simgrid::s4u::NetZone* tmp = netzoneByNameRecursive(elem, name);
+    if (tmp != nullptr) {
+      return tmp;
+    }
   }
   return nullptr;
 }
 
-/** @brief Retrieve the AS of the given name (or nullptr if not found) */
-As *Engine::asByNameOrNull(const char *name) {
-  return asByNameRecursive(rootAs(),name);
+/** @brief Retrieve the NetZone of the given name (or nullptr if not found) */
+NetZone* Engine::netzoneByNameOrNull(const char* name)
+{
+  return netzoneByNameRecursive(netRoot(), name);
 }
 
+/** @brief Retrieve the netpoint of the given name (or nullptr if not found) */
+simgrid::kernel::routing::NetPoint* Engine::netpointByNameOrNull(const char* name)
+{
+  if (pimpl->netpoints_.find(name) == pimpl->netpoints_.end())
+    return nullptr;
+  return pimpl->netpoints_.at(name);
+}
+/** @brief Fill the provided vector with all existing netpoints */
+void Engine::netpointList(std::vector<simgrid::kernel::routing::NetPoint*>* list)
+{
+  for (auto kv : pimpl->netpoints_)
+    list->push_back(kv.second);
+}
+/** @brief Register a new netpoint to the system */
+void Engine::netpointRegister(simgrid::kernel::routing::NetPoint* point)
+{
+//  simgrid::simix::kernelImmediate([&]{ FIXME: this segfaults in set_thread
+  pimpl->netpoints_[point->name()] = point;
+//  });
+}
+/** @brief Unregister a given netpoint */
+void Engine::netpointUnregister(simgrid::kernel::routing::NetPoint* point)
+{
+  simgrid::simix::kernelImmediate([this, point] {
+    pimpl->netpoints_.erase(point->name());
+    delete point;
+  });
+}
 }
 }

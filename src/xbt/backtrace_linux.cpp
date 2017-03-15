@@ -1,8 +1,7 @@
 /* backtrace_linux - backtrace displaying on linux platform                 */
 /* This file is included by ex.cpp on need (have execinfo.h, popen & addrline)*/
 
-/* Copyright (c) 2008-2016. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -21,7 +20,6 @@
 #include <xbt/string.hpp>
 #include <xbt/backtrace.hpp>
 #include "xbt/ex.h"
-#include "src/xbt/ex_interface.h"
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/module.h"         /* xbt_binary_name */
@@ -62,7 +60,7 @@ backtrace_helper (struct _Unwind_Context *ctx, void *a)
 
 /** @brief reimplementation of glibc backtrace based directly on gcc library, without implicit malloc
  *
- * See http://webloria.loria.fr/~quinson/blog/2012/0208/system_programming_fun_in_SimGrid/
+ * See http://people.irisa.fr/Martin.Quinson/blog/2012/0208/system_programming_fun_in_SimGrid/
  * for the motivation behind this function
  * */
 

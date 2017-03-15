@@ -123,7 +123,7 @@ if(enable_model-checking AND enable_compile_optimizations)
       src/xbt/log.c src/xbt/xbt_log_appender_file.c
       src/xbt/xbt_log_layout_format.c src/xbt/xbt_log_layout_simple.c
       src/xbt/dict.cpp src/xbt/dict_elm.c src/xbt/dict_cursor.c
-      src/xbt/dynar.cpp src/xbt/fifo.c src/xbt/heap.c src/xbt/swag.c
+      src/xbt/dynar.cpp src/xbt/heap.c src/xbt/swag.c
       src/xbt/str.c src/xbt/strbuff.c src/xbt/snprintf.c
       src/xbt/queue.c
       src/xbt/xbt_os_time.c src/xbt/xbt_os_thread.c
@@ -173,9 +173,9 @@ if(enable_address_sanitizer)
 endif()
 
 if(enable_thread_sanitizer)
-    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -fsanitize=thread -fno-omit-frame-pointer")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread -fno-omit-frame-pointer")
-    set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} -fsanitize=thread")
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -fsanitize=thread -fno-omit-frame-pointer -no-pie")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread -fno-omit-frame-pointer -no-pie")
+    set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} -fsanitize=thread -no-pie")
 endif()
 
 if(enable_undefined_sanitizer)

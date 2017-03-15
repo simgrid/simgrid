@@ -6,8 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_PARMAP_H
-#define _XBT_PARMAP_H
+#ifndef XBT_PARMAP_H
+#define XBT_PARMAP_H
 
 #include "xbt/misc.h"           /* SG_BEGIN_DECL */
 #include "xbt/function_types.h"

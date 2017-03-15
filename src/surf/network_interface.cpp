@@ -14,66 +14,27 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf, "Logging specific to the SURF network module");
 
-/*********
- * C API *
- *********/
-
-extern "C" {
-
-  const char* sg_link_name(Link *link) {
-    return link->getName();
-  }
-  Link * sg_link_by_name(const char* name) {
-    return Link::byName(name);
-  }
-
-  int sg_link_is_shared(Link *link){
-    return link->sharingPolicy();
-  }
-  double sg_link_bandwidth(Link *link){
-    return link->bandwidth();
-  }
-  double sg_link_latency(Link *link){
-    return link->latency();
-  }
-  void* sg_link_data(Link *link) {
-    return link->getData();
-  }
-  void sg_link_data_set(Link *link,void *data) {
-    link->setData(data);
-  }
-  int sg_link_count() {
-    return Link::linksCount();
-  }
-  Link** sg_link_list() {
-    return Link::linksList();
-  }
-  void sg_link_exit() {
-    Link::linksExit();
-  }
-
-}
-
-/*****************
- * List of links *
- *****************/
-
 namespace simgrid {
   namespace surf {
 
-    std::unordered_map<std::string,Link *> *Link::links = new std::unordered_map<std::string,Link *>();
-    Link *Link::byName(const char* name) {
-      if (links->find(name) == links->end())
-        return nullptr;
-      return  links->at(name);
-    }
-    /** @brief Returns the amount of links in the platform */
-    int Link::linksCount() {
-      return links->size();
+  /* List of links */
+  std::unordered_map<std::string, LinkImpl*>* LinkImpl::links = new std::unordered_map<std::string, LinkImpl*>();
+
+  LinkImpl* LinkImpl::byName(const char* name)
+  {
+    if (links->find(name) == links->end())
+      return nullptr;
+    return links->at(name);
+  }
+  /** @brief Returns the amount of links in the platform */
+  int LinkImpl::linksCount()
+  {
+    return links->size();
     }
     /** @brief Returns a list of all existing links */
-    Link **Link::linksList() {
-      Link **res = xbt_new(Link*, (int)links->size());
+    LinkImpl** LinkImpl::linksList()
+    {
+      LinkImpl** res = xbt_new(LinkImpl*, (int)links->size());
       int i=0;
       for (auto kv : *links) {
         res[i++] = kv.second;
@@ -81,22 +42,12 @@ namespace simgrid {
       return res;
     }
     /** @brief destructor of the static data */
-    void Link::linksExit() {
+    void LinkImpl::linksExit()
+    {
       for (auto kv : *links)
         (kv.second)->destroy();
       delete links;
     }
-
-    /*************
-     * Callbacks *
-     *************/
-
-    simgrid::xbt::signal<void(Link*)> Link::onCreation;
-    simgrid::xbt::signal<void(Link*)> Link::onDestruction;
-    simgrid::xbt::signal<void(Link*)> Link::onStateChange;
-
-    simgrid::xbt::signal<void(NetworkAction*, Action::State, Action::State)> networkActionStateChangedCallbacks;
-    simgrid::xbt::signal<void(NetworkAction*, s4u::Host* src, s4u::Host* dst)> Link::onCommunicate;
   }
 }
 
@@ -147,11 +98,12 @@ namespace simgrid {
      * Resource *
      ************/
 
-    Link::Link(simgrid::surf::NetworkModel* model, const char* name, lmm_constraint_t constraint)
-        : Resource(model, name, constraint)
+    LinkImpl::LinkImpl(simgrid::surf::NetworkModel* model, const char* name, lmm_constraint_t constraint)
+        : Resource(model, name, constraint), piface_(this)
     {
+
       if (strcmp(name,"__loopback__"))
-        xbt_assert(!Link::byName(name), "Link '%s' declared several times in the platform.", name);
+        xbt_assert(!LinkImpl::byName(name), "Link '%s' declared several times in the platform.", name);
 
       latency_.scale   = 1;
       bandwidth_.scale = 1;
@@ -162,66 +114,70 @@ namespace simgrid {
     }
 
     /** @brief use destroy() instead of this destructor */
-    Link::~Link() {
+    LinkImpl::~LinkImpl()
+    {
       xbt_assert(currentlyDestroying_, "Don't delete Links directly. Call destroy() instead.");
     }
     /** @brief Fire the required callbacks and destroy the object
      *
      * Don't delete directly a Link, call l->destroy() instead.
      */
-    void Link::destroy()
+    void LinkImpl::destroy()
     {
       if (!currentlyDestroying_) {
         currentlyDestroying_ = true;
-        onDestruction(this);
+        s4u::Link::onDestruction(this->piface_);
         delete this;
       }
     }
 
-    bool Link::isUsed()
+    bool LinkImpl::isUsed()
     {
-      return lmm_constraint_used(getModel()->getMaxminSystem(), getConstraint());
+      return lmm_constraint_used(model()->getMaxminSystem(), constraint());
     }
 
-    double Link::latency()
+    double LinkImpl::latency()
     {
       return latency_.peak * latency_.scale;
     }
 
-    double Link::bandwidth()
+    double LinkImpl::bandwidth()
     {
       return bandwidth_.peak * bandwidth_.scale;
     }
 
-    int Link::sharingPolicy()
+    int LinkImpl::sharingPolicy()
     {
-      return lmm_constraint_sharing_policy(getConstraint());
+      return lmm_constraint_sharing_policy(constraint());
     }
 
-    void Link::turnOn(){
+    void LinkImpl::turnOn()
+    {
       if (isOff()) {
         Resource::turnOn();
-        onStateChange(this);
+        s4u::Link::onStateChange(this->piface_);
       }
     }
-    void Link::turnOff(){
+    void LinkImpl::turnOff()
+    {
       if (isOn()) {
         Resource::turnOff();
-        onStateChange(this);
+        s4u::Link::onStateChange(this->piface_);
       }
     }
-    void Link::setStateTrace(tmgr_trace_t trace) {
-      xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Link %s", getName());
+    void LinkImpl::setStateTrace(tmgr_trace_t trace)
+    {
+      xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Link %s", cname());
       stateEvent_ = future_evt_set->add_trace(trace, 0.0, this);
     }
-    void Link::setBandwidthTrace(tmgr_trace_t trace)
+    void LinkImpl::setBandwidthTrace(tmgr_trace_t trace)
     {
-      xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth trace to Link %s", getName());
+      xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth trace to Link %s", cname());
       bandwidth_.event = future_evt_set->add_trace(trace, 0.0, this);
     }
-    void Link::setLatencyTrace(tmgr_trace_t trace)
+    void LinkImpl::setLatencyTrace(tmgr_trace_t trace)
     {
-      xbt_assert(latency_.event == nullptr, "Cannot set a second latency trace to Link %s", getName());
+      xbt_assert(latency_.event == nullptr, "Cannot set a second latency trace to Link %s", cname());
       latency_.event = future_evt_set->add_trace(trace, 0.0, this);
     }
 
@@ -230,12 +186,30 @@ namespace simgrid {
      * Action *
      **********/
 
-    void NetworkAction::setState(Action::State state){
-      Action::State old = getState();
+    void NetworkAction::setState(Action::State state)
+    {
       Action::setState(state);
-      networkActionStateChangedCallbacks(this, old, state);
+      s4u::Link::onCommunicationStateChange(this);
     }
 
+    /** @brief returns a list of all Links that this action is using */
+    std::list<LinkImpl*> NetworkAction::links()
+    {
+      std::list<LinkImpl*> retlist;
+      lmm_system_t sys = getModel()->getMaxminSystem();
+      int llen         = lmm_get_number_of_cnst_from_var(sys, getVariable());
+
+      for (int i = 0; i < llen; i++) {
+        /* Beware of composite actions: ptasks put links and cpus together */
+        // extra pb: we cannot dynamic_cast from void*...
+        Resource* resource = static_cast<Resource*>(lmm_constraint_id(lmm_get_cnst_from_var(sys, getVariable(), i)));
+        LinkImpl* link     = dynamic_cast<LinkImpl*>(resource);
+        if (link != nullptr)
+          retlist.push_back(link);
+      }
+
+      return retlist;
+    }
   }
 }
 

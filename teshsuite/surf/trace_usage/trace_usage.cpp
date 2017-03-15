@@ -40,7 +40,7 @@ int main(int argc, char **argv)
   while (next_event_date > -1.0) {
     XBT_INFO("%g:", next_event_date);
     while (fes->pop_leq(next_event_date, &value, &resource)) {
-      XBT_INFO("   %s: %g", resource->getName(), value);
+      XBT_INFO("   %s: %g", resource->cname(), value);
     }
     if (next_event_date > 100)
       break;

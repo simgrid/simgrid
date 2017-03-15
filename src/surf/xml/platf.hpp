@@ -1,11 +1,10 @@
-/* Copyright (c) 2006-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SURF_SURFXML_PARSE_H
-#define _SURF_SURFXML_PARSE_H
+#ifndef SURF_SURFXML_PARSE_H
+#define SURF_SURFXML_PARSE_H
 
 #include <xbt/dict.h>
 #include <xbt/function_types.h>
@@ -34,13 +33,5 @@ XBT_PUBLIC(double) surf_parse_get_speed(const char *string, const char *entity_k
 XBT_PUBLIC_DATA(int_f_void_t) surf_parse;       /* Entry-point to the parser. Set this to your function. */
 
 SG_END_DECL()
-
-namespace simgrid {
-namespace surf {
-
-extern XBT_PRIVATE xbt::signal<void(void)> on_postparse;
-
-}
-}
 
 #endif

@@ -18,7 +18,8 @@
 #include "mpitest.h"
 #include "squelch.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     int i, rank, nproc, errors = 0;
 
     int *win_buf;
@@ -42,16 +43,16 @@ int main(int argc, char **argv) {
     /* Set up odd/even groups and buffers */
 
     odd_nproc = nproc / 2;
-    even_nproc  = nproc / 2 + ( (nproc % 2 == 0) ? 0 : 1 );
+    even_nproc = nproc / 2 + ((nproc % 2 == 0) ? 0 : 1);
 
     odd_ranks = malloc(sizeof(int) * odd_nproc);
     even_ranks = malloc(sizeof(int) * even_nproc);
 
     for (i = 0; i < even_nproc; i++)
-        even_ranks[i] = i*2;
+        even_ranks[i] = i * 2;
 
     for (i = 0; i < odd_nproc; i++)
-        odd_ranks[i] = i*2+1;
+        odd_ranks[i] = i * 2 + 1;
 
     MPI_Comm_group(MPI_COMM_WORLD, &world_group);
     MPI_Group_incl(world_group, odd_nproc, odd_ranks, &odd_group);
@@ -59,27 +60,31 @@ int main(int argc, char **argv) {
 
     /* Create the window */
 
-    MPI_Alloc_mem(nproc*sizeof(int), MPI_INFO_NULL, &win_buf);
-
+#ifdef USE_WIN_ALLOCATE
+    MPI_Win_allocate(nproc * sizeof(int), sizeof(int), MPI_INFO_NULL,
+                     MPI_COMM_WORLD, &win_buf, &win);
+#else
+    MPI_Alloc_mem(nproc * sizeof(int), MPI_INFO_NULL, &win_buf);
+    MPI_Win_create(win_buf, nproc * sizeof(int), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
+#endif
+    MPI_Win_lock(MPI_LOCK_SHARED, rank, 0, win);
     for (i = 0; i < nproc; i++)
         win_buf[i] = -1;
-
-    MPI_Win_create(win_buf, nproc*sizeof(int), sizeof(int), MPI_INFO_NULL,
-                   MPI_COMM_WORLD, &win);
+    MPI_Win_unlock(rank, win);
 
     /* Perform PSCW communication: Odd/even matchup */
 
     if (rank % 2 == 0) {
-        MPI_Win_start(odd_group, 0, win);  /* Even-numbered procs target odd procs */
-        MPI_Win_post(odd_group, 0, win);   /* Even procs are targeted by odd procs */
+        MPI_Win_start(odd_group, 0, win);       /* Even-numbered procs target odd procs */
+        MPI_Win_post(odd_group, 0, win);        /* Even procs are targeted by odd procs */
 
         /* Write to my slot at each target */
         for (i = 0; i < odd_nproc; i++)
             MPI_Put(&rank, 1, MPI_INT, odd_ranks[i], rank, 1, MPI_INT, win);
     }
     else {
-        MPI_Win_post(even_group, 0, win);  /* Odd procs are targeted by even procs */
-        MPI_Win_start(even_group, 0, win); /* Odd-numbered procs target even procs */
+        MPI_Win_post(even_group, 0, win);       /* Odd procs are targeted by even procs */
+        MPI_Win_start(even_group, 0, win);      /* Odd-numbered procs target even procs */
 
         /* Write to my slot at each target */
         for (i = 0; i < even_nproc; i++)
@@ -93,16 +98,16 @@ int main(int argc, char **argv) {
     /* Perform PSCW communication: Odd/odd and even/even matchup */
 
     if (rank % 2 == 0) {
-        MPI_Win_post(even_group, 0, win);  /* Even procs are targeted by even procs */
-        MPI_Win_start(even_group, 0, win); /* Even-numbered procs target even procs */
+        MPI_Win_post(even_group, 0, win);       /* Even procs are targeted by even procs */
+        MPI_Win_start(even_group, 0, win);      /* Even-numbered procs target even procs */
 
         /* Write to my slot at each target */
         for (i = 0; i < even_nproc; i++)
             MPI_Put(&rank, 1, MPI_INT, even_ranks[i], rank, 1, MPI_INT, win);
     }
     else {
-        MPI_Win_post(odd_group, 0, win);   /* Odd procs are targeted by odd procs */
-        MPI_Win_start(odd_group, 0, win);  /* Odd-numbered procs target odd procs */
+        MPI_Win_post(odd_group, 0, win);        /* Odd procs are targeted by odd procs */
+        MPI_Win_start(odd_group, 0, win);       /* Odd-numbered procs target odd procs */
 
         /* Write to my slot at each target */
         for (i = 0; i < odd_nproc; i++)
@@ -117,14 +122,15 @@ int main(int argc, char **argv) {
         if (win_buf[i] != i) {
             errors++;
 
-            SQUELCH( printf("%d: Error -- win_buf[%d] = %d, expected %d\n",
-                            rank, i, win_buf[i], i);
-                   );
+            SQUELCH(printf("%d: Error -- win_buf[%d] = %d, expected %d\n", rank, i, win_buf[i], i);
+);
         }
     }
 
     MPI_Win_free(&win);
+#ifndef USE_WIN_ALLOCATE
     MPI_Free_mem(win_buf);
+#endif
 
     MPI_Group_free(&world_group);
     MPI_Group_free(&odd_group);
@@ -133,7 +139,7 @@ int main(int argc, char **argv) {
     free(odd_ranks);
     free(even_ranks);
 
-    MTest_Finalize( errors );
+    MTest_Finalize(errors);
     MPI_Finalize();
-    return MTestReturnValue( errors );
+    return MTestReturnValue(errors);
 }

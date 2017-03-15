@@ -12,10 +12,9 @@ package async.dsend;
  *  and has nothing to do at the end as with Task.isend() where it must do a Comm.wait().
  */
 
-import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
-import org.simgrid.msg.NativeException;
 import org.simgrid.msg.HostNotFoundException;
+import org.simgrid.msg.Msg;
 
 class Main {
   private Main() {
@@ -23,7 +22,7 @@ class Main {
     throw new IllegalAccessError("Utility class");
   }
 
-  public static void main(String[] args) throws NativeException, HostNotFoundException {
+  public static void main(String[] args) throws HostNotFoundException {
     Msg.init(args);
 
     String platform = "../platforms/small_platform.xml";

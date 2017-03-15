@@ -11,9 +11,9 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_network);
 
-simgrid::kernel::activity::Comm::Comm(e_smx_comm_type_t _type) {
+simgrid::kernel::activity::Comm::Comm(e_smx_comm_type_t _type) : type(_type)
+{
   state = SIMIX_WAITING;
-  this->type = _type;
   src_data=nullptr;
   dst_data=nullptr;
 
@@ -35,8 +35,7 @@ simgrid::kernel::activity::Comm::~Comm()
   }
 
   if(mbox)
-    SIMIX_mbox_remove(mbox, this);
-
+    mbox->remove(this);
 }
 void simgrid::kernel::activity::Comm::suspend()
 {
@@ -60,7 +59,7 @@ void simgrid::kernel::activity::Comm::cancel()
   /* if the synchro is a waiting state means that it is still in a mbox */
   /* so remove from it and delete it */
   if (state == SIMIX_WAITING) {
-    SIMIX_mbox_remove(mbox, this);
+    mbox->remove(this);
     state = SIMIX_CANCELED;
   }
   else if (!MC_is_active() /* when running the MC there are no surf actions */
@@ -74,21 +73,11 @@ void simgrid::kernel::activity::Comm::cancel()
 /**  @brief get the amount remaining from the communication */
 double simgrid::kernel::activity::Comm::remains()
 {
-  switch (state) {
-
-  case SIMIX_RUNNING:
+  if (state == SIMIX_RUNNING)
     return surf_comm->getRemains();
-    break;
 
-  case SIMIX_WAITING:
-  case SIMIX_READY:
-    return 0; /*FIXME: check what should be returned */
-    break;
-
-  default:
-    return 0; /*FIXME: is this correct? */
-    break;
-  }
+  /* FIXME: check what should be returned in the other cases */
+  return 0;
 }
 
 /** @brief This is part of the cleanup process, probably an internal command */

@@ -1,5 +1,4 @@
-/* Copyright (c) 2007, 2009-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007, 2009-2017. The SimGrid Team. All rights reserved.    */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -39,6 +38,10 @@
 
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
+#endif
+
+#ifndef MAP_POPULATE
+#define MAP_POPULATE 0
 #endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi, "Logging specific to SMPI (benchmarking)");
@@ -86,6 +89,7 @@ int smpi_loaded_page = -1;
 char* smpi_start_data_exe = nullptr;
 int smpi_size_data_exe = 0;
 bool smpi_privatize_global_variables;
+shared_malloc_type smpi_cfg_shared_malloc = shmalloc_global;
 double smpi_total_benched_time = 0;
 smpi_privatisation_region_t smpi_privatisation_regions;
 
@@ -98,60 +102,54 @@ namespace {
 class smpi_source_location {
 public:
   smpi_source_location(const char* filename, int line)
-    : filename(xbt_strdup(filename)), filename_length(strlen(filename)), line(line) {}
+      : filename(xbt_strdup(filename)), filename_length(strlen(filename)), line(line)
+  {
+  }
 
   /** Pointer to a static string containing the file name */
-  char* filename = nullptr;
+  char* filename      = nullptr;
   int filename_length = 0;
-  int line = 0;
+  int line            = 0;
 
   bool operator==(smpi_source_location const& that) const
   {
-    return filename_length == that.filename_length
-      && line == that.line
-      && std::memcmp(filename, that.filename, filename_length) == 0;
+    return filename_length == that.filename_length && line == that.line &&
+           std::memcmp(filename, that.filename, filename_length) == 0;
   }
-  bool operator!=(smpi_source_location const& that) const
-  {
-    return !(*this == that);
-  }
+  bool operator!=(smpi_source_location const& that) const { return !(*this == that); }
 };
-
 }
 
 namespace std {
 
-template<>
-class hash<smpi_source_location> {
+template <> class hash<smpi_source_location> {
 public:
   typedef smpi_source_location argument_type;
   typedef std::size_t result_type;
   result_type operator()(smpi_source_location const& loc) const
   {
-    return xbt_str_hash_ext(loc.filename, loc.filename_length)
-      ^ xbt_str_hash_ext((const char*) &loc.line, sizeof(loc.line));
+    return xbt_str_hash_ext(loc.filename, loc.filename_length) ^
+           xbt_str_hash_ext((const char*)&loc.line, sizeof(loc.line));
   }
 };
-
 }
 
 namespace {
 
 typedef struct {
-  int fd = -1;
+  int fd    = -1;
   int count = 0;
 } shared_data_t;
 
 std::unordered_map<smpi_source_location, shared_data_t> allocs;
 typedef std::unordered_map<smpi_source_location, shared_data_t>::value_type shared_data_key_type;
 
-typedef struct  {
+typedef struct {
   size_t size;
   shared_data_key_type* data;
 } shared_metadata_t;
 
 std::unordered_map<void*, shared_metadata_t> allocs_metadata;
-
 }
 
 static size_t shm_size(int fd) {
@@ -165,17 +163,21 @@ static size_t shm_size(int fd) {
 
 #ifndef WIN32
 static void* shm_map(int fd, size_t size, shared_data_key_type* data) {
-  void* mem;
   char loc[PTR_STRLEN];
   shared_metadata_t meta;
 
   if(size > shm_size(fd) && (ftruncate(fd, static_cast<off_t>(size)) < 0)) {
-      xbt_die("Could not truncate fd %d to %zu: %s", fd, size, strerror(errno));
+    xbt_die("Could not truncate fd %d to %zu: %s", fd, size, strerror(errno));
   }
 
-  mem = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+  void* mem = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   if(mem == MAP_FAILED) {
-    xbt_die("Could not map fd %d with size %zu: %s.\n If you are running a lot of processes, you may be exceeding the amount of mappings allowed per process. \n On linux systems, this value can be set by using sudo sysctl -w vm.max_map_count=newvalue .\n Default value is 65536", fd, size, strerror(errno));
+    xbt_die(
+        "Failed to map fd %d with size %zu: %s\n"
+        "If you are running a lot of ranks, you may be exceeding the amount of mappings allowed per process.\n"
+        "On Linux systems, change this value with sudo sysctl -w vm.max_map_count=newvalue (default value: 65536)\n"
+        "Please see http://simgrid.gforge.inria.fr/simgrid/latest/doc/html/options.html#options_virt for more info.",
+        fd, size, strerror(errno));
   }
   snprintf(loc, PTR_STRLEN, "%p", mem);
   meta.size = size;
@@ -230,8 +232,8 @@ void smpi_execute(double duration)
     TRACE_smpi_computing_out(rank);
 
   } else {
-    XBT_DEBUG("Real computation took %g while option smpi/cpu_threshold is set to %g => ignore it",
-              duration, smpi_cpu_threshold);
+    XBT_DEBUG("Real computation took %g while option smpi/cpu_threshold is set to %g => ignore it", duration,
+              smpi_cpu_threshold);
   }
 }
 
@@ -300,7 +302,7 @@ void smpi_bench_end()
   }
 
   if (xbt_cfg_get_string("smpi/comp-adjustment-file")[0] != '\0') { // Maybe we need to artificially speed up or slow
-                                                         // down our computation based on our statistical analysis.
+    // down our computation based on our statistical analysis.
 
     smpi_trace_call_location_t* loc                            = smpi_process_get_call_location();
     std::string key                                            = loc->get_composed_key();
@@ -309,7 +311,7 @@ void smpi_bench_end()
       speedup = it->second;
     }
   }
-  
+
   // Simulate the benchmarked computation unless disabled via command-line argument
   if (xbt_cfg_get_boolean("smpi/simulate-computation")) {
     smpi_execute(xbt_os_timer_elapsed(timer)/speedup);
@@ -338,7 +340,7 @@ static unsigned int private_sleep(double secs)
   smpi_bench_end();
 
   XBT_DEBUG("Sleep for: %lf secs", secs);
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = MPI_COMM_WORLD->rank();
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type=TRACING_SLEEPING;
   extra->sleep_duration=secs;
@@ -371,9 +373,8 @@ int smpi_nanosleep(const struct timespec *tp, struct timespec * t)
 
 int smpi_gettimeofday(struct timeval *tv, void* tz)
 {
-  double now;
   smpi_bench_end();
-  now = SIMIX_get_clock();
+  double now = SIMIX_get_clock();
   if (tv) {
     tv->tv_sec = static_cast<time_t>(now);
 #ifdef WIN32
@@ -390,9 +391,8 @@ int smpi_gettimeofday(struct timeval *tv, void* tz)
 int smpi_clock_gettime(clockid_t clk_id, struct timespec *tp)
 {
   //there is only one time in SMPI, so clk_id is ignored.
-  double now;
   smpi_bench_end();
-  now = SIMIX_get_clock();
+  double now = SIMIX_get_clock();
   if (tp) {
     tp->tv_sec = static_cast<time_t>(now);
     tp->tv_nsec = static_cast<long int>((now - tp->tv_sec) * 1e9);
@@ -458,7 +458,6 @@ static int sample_enough_benchs(local_data_t *data) {
 void smpi_sample_1(int global, const char *file, int line, int iters, double threshold)
 {
   char *loc = sample_location(global, file, line);
-  local_data_t *data;
 
   smpi_bench_end();     /* Take time from previous, unrelated computation into account */
   smpi_process_set_sampling(1);
@@ -466,7 +465,7 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
   if (samples==nullptr)
     samples = xbt_dict_new_homogeneous(free);
 
-  data = static_cast<local_data_t *>(xbt_dict_get_or_null(samples, loc));
+  local_data_t *data = static_cast<local_data_t *>(xbt_dict_get_or_null(samples, loc));
   if (data==nullptr) {
     xbt_assert(threshold>0 || iters>0,
         "You should provide either a positive amount of iterations to bench, or a positive maximal stderr (or both)");
@@ -484,15 +483,15 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
     if (data->iters != iters || data->threshold != threshold) {
       XBT_ERROR("Asked to bench block %s with different settings %d, %f is not %d, %f. "
                 "How did you manage to give two numbers at the same line??",
-                loc, data->iters, data->threshold, iters,threshold);
+                loc, data->iters, data->threshold, iters, threshold);
       THROW_IMPOSSIBLE;
     }
 
     // if we already have some data, check whether sample_2 should get one more bench or whether it should emulate
     // the computation instead
     data->benching = (sample_enough_benchs(data) == 0);
-    XBT_DEBUG("XXXX Re-entering the benched nest %s. %s",loc,
-             (data->benching?"more benching needed":"we have enough data, skip computes"));
+    XBT_DEBUG("XXXX Re-entering the benched nest %s. %s", loc,
+              (data->benching ? "more benching needed" : "we have enough data, skip computes"));
   }
   xbt_free(loc);
 }
@@ -500,11 +499,10 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
 int smpi_sample_2(int global, const char *file, int line)
 {
   char *loc = sample_location(global, file, line);
-  local_data_t *data;
   int res;
 
   xbt_assert(samples, "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
-  data = static_cast<local_data_t *>(xbt_dict_get(samples, loc));
+  local_data_t *data = static_cast<local_data_t *>(xbt_dict_get(samples, loc));
   XBT_DEBUG("sample2 %s",loc);
   xbt_free(loc);
 
@@ -517,7 +515,8 @@ int smpi_sample_2(int global, const char *file, int line)
     // Enough data, no more bench (either we got enough data from previous visits to this benched nest, or we just
     //ran one bench and need to bail out now that our job is done). Just sleep instead
     XBT_DEBUG("No benchmark (either no need, or just ran one): count >= iter (%d >= %d) or stderr<thres (%f<=%f)."
-              " apply the %fs delay instead", data->count, data->iters, data->relstderr, data->threshold, data->mean);
+              " apply the %fs delay instead",
+              data->count, data->iters, data->relstderr, data->threshold, data->mean);
     smpi_execute(data->mean);
     smpi_process_set_sampling(0);
     res = 0; // prepare to capture future, unrelated computations
@@ -529,32 +528,29 @@ int smpi_sample_2(int global, const char *file, int line)
 void smpi_sample_3(int global, const char *file, int line)
 {
   char *loc = sample_location(global, file, line);
-  local_data_t *data;
 
   xbt_assert(samples, "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
-  data = static_cast<local_data_t *>(xbt_dict_get(samples, loc));
+  local_data_t *data = static_cast<local_data_t *>(xbt_dict_get(samples, loc));
   XBT_DEBUG("sample3 %s",loc);
   xbt_free(loc);
 
-  if (data->benching==0) {
+  if (data->benching==0)
     THROW_IMPOSSIBLE;
-  }
 
   // ok, benchmarking this loop is over
   xbt_os_threadtimer_stop(smpi_process_timer());
 
   // update the stats
-  double sample, n;
   data->count++;
-  sample = xbt_os_timer_elapsed(smpi_process_timer());
+  double sample = xbt_os_timer_elapsed(smpi_process_timer());
   data->sum += sample;
   data->sum_pow2 += sample * sample;
-  n = static_cast<double>(data->count);
+  double n = static_cast<double>(data->count);
   data->mean = data->sum / n;
   data->relstderr = sqrt((data->sum_pow2 / n - data->mean * data->mean) / n) / data->mean;
   if (sample_enough_benchs(data)==0) {
     data->mean = sample; // Still in benching process; We want sample_2 to simulate the exact time of this loop
-                         // occurrence before leaving, not the mean over the history
+    // occurrence before leaving, not the mean over the history
   }
   XBT_DEBUG("Average mean after %d steps is %f, relative standard error is %f (sample was %f)", data->count,
       data->mean, data->relstderr, sample);
@@ -564,12 +560,12 @@ void smpi_sample_3(int global, const char *file, int line)
 }
 
 #ifndef WIN32
-
+static int smpi_shared_malloc_bogusfile           = -1;
+static unsigned long smpi_shared_malloc_blocksize = 1UL << 20;
 void *smpi_shared_malloc(size_t size, const char *file, int line)
 {
   void* mem;
-  if (size > 0 && xbt_cfg_get_boolean("smpi/use-shared-malloc")){
-    int fd;
+  if (size > 0 && smpi_cfg_shared_malloc == shmalloc_local) {
     smpi_source_location loc(file, line);
     auto res = allocs.insert(std::make_pair(loc, shared_data_t()));
     auto data = res.first;
@@ -578,9 +574,9 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
       // Generate a shared memory name from the address of the shared_data:
       char shmname[32]; // cannot be longer than PSHMNAMLEN = 31 on Mac OS X (shm_open raises ENAMETOOLONG otherwise)
       snprintf(shmname, 31, "/shmalloc%p", &*data);
-      fd = shm_open(shmname, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+      int fd = shm_open(shmname, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
       if (fd < 0) {
-        if(errno==EEXIST)
+        if (errno == EEXIST)
           xbt_die("Please cleanup /dev/shm/%s", shmname);
         else
           xbt_die("An unhandled error occurred while opening %s. shm_open: %s", shmname, strerror(errno));
@@ -597,6 +593,49 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
       data->second.count++;
     }
     XBT_DEBUG("Shared malloc %zu in %p (metadata at %p)", size, mem, &*data);
+
+  } else if (smpi_cfg_shared_malloc == shmalloc_global) {
+    /* First reserve memory area */
+    mem = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+
+    xbt_assert(mem != MAP_FAILED, "Failed to allocate %luMiB of memory. Run \"sysctl vm.overcommit_memory=1\" as root "
+                                  "to allow big allocations.\n",
+               (unsigned long)(size >> 20));
+
+    /* Create bogus file if not done already */
+    if (smpi_shared_malloc_bogusfile == -1) {
+      /* Create a fd to a new file on disk, make it smpi_shared_malloc_blocksize big, and unlink it.
+       * It still exists in memory but not in the file system (thus it cannot be leaked). */
+      char* name                   = xbt_strdup("/tmp/simgrid-shmalloc-XXXXXX");
+      smpi_shared_malloc_bogusfile = mkstemp(name);
+      unlink(name);
+      free(name);
+      char* dumb = (char*)calloc(1, smpi_shared_malloc_blocksize);
+      ssize_t err = write(smpi_shared_malloc_bogusfile, dumb, smpi_shared_malloc_blocksize);
+      if(err<0)
+        xbt_die("Could not write bogus file for shared malloc");
+      free(dumb);
+    }
+
+    /* Map the bogus file in place of the anonymous memory */
+    unsigned int i;
+    for (i = 0; i < size / smpi_shared_malloc_blocksize; i++) {
+      void* pos = (void*)((unsigned long)mem + i * smpi_shared_malloc_blocksize);
+      void* res = mmap(pos, smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED | MAP_POPULATE,
+                       smpi_shared_malloc_bogusfile, 0);
+      xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
+                             "STARPU_MALLOC_SIMULATION_FOLD environment variable or the sysctl vm.max_map_count?",
+                 strerror(errno));
+    }
+    if (size % smpi_shared_malloc_blocksize) {
+      void* pos = (void*)((unsigned long)mem + i * smpi_shared_malloc_blocksize);
+      void* res = mmap(pos, size % smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE,
+                       MAP_FIXED | MAP_SHARED | MAP_POPULATE, smpi_shared_malloc_bogusfile, 0);
+      xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
+                             "STARPU_MALLOC_SIMULATION_FOLD environment variable or the sysctl vm.max_map_count?",
+                 strerror(errno));
+    }
+
   } else {
     mem = xbt_malloc(size);
     XBT_DEBUG("Classic malloc %zu in %p", size, mem);
@@ -607,9 +646,8 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
 
 void smpi_shared_free(void *ptr)
 {
-  char loc[PTR_STRLEN];
-
-  if (xbt_cfg_get_boolean("smpi/use-shared-malloc")){
+  if (smpi_cfg_shared_malloc == shmalloc_local) {
+    char loc[PTR_STRLEN];
     snprintf(loc, PTR_STRLEN, "%p", ptr);
     auto meta = allocs_metadata.find(ptr);
     if (meta == allocs_metadata.end()) {
@@ -625,10 +663,14 @@ void smpi_shared_free(void *ptr)
       close(data->fd);
       allocs.erase(allocs.find(meta->second.data->first));
       XBT_DEBUG("Shared free - with removal - of %p", ptr);
-    }else{
+    } else {
       XBT_DEBUG("Shared free - no removal - of %p, count = %d", ptr, data->count);
     }
-  }else{
+
+  } else if (smpi_cfg_shared_malloc == shmalloc_global) {
+    munmap(ptr, 0); // the POSIX says that I should not give 0 as a length, but it seems to work OK
+
+  } else {
     XBT_DEBUG("Classic free of %p", ptr);
     xbt_free(ptr);
   }
@@ -661,26 +703,23 @@ int smpi_shared_known_call(const char* func, const char* input)
 }
 
 void* smpi_shared_get_call(const char* func, const char* input) {
-   char* loc = bprintf("%s:%s", func, input);
-   void* data;
+  char* loc = bprintf("%s:%s", func, input);
 
-   if(calls==nullptr) {
-      calls = xbt_dict_new_homogeneous(nullptr);
-   }
-   data = xbt_dict_get(calls, loc);
-   xbt_free(loc);
-   return data;
+  if (calls == nullptr)
+    calls    = xbt_dict_new_homogeneous(nullptr);
+  void* data = xbt_dict_get(calls, loc);
+  xbt_free(loc);
+  return data;
 }
 
 void* smpi_shared_set_call(const char* func, const char* input, void* data) {
-   char* loc = bprintf("%s:%s", func, input);
+  char* loc = bprintf("%s:%s", func, input);
 
-   if(calls==0) {
-      calls = xbt_dict_new_homogeneous(nullptr);
-   }
-   xbt_dict_set(calls, loc, data, nullptr);
-   xbt_free(loc);
-   return data;
+  if (calls == nullptr)
+    calls = xbt_dict_new_homogeneous(nullptr);
+  xbt_dict_set(calls, loc, data, nullptr);
+  xbt_free(loc);
+  return data;
 }
 
 
@@ -698,7 +737,8 @@ void smpi_switch_data_segment(int dest) {
  *  When doing a state restoration, the state of the restored variables  might not be consistent with the state of the
  *  virtual memory. In this case, we to change the data segment.
  */
-void smpi_really_switch_data_segment(int dest) {
+void smpi_really_switch_data_segment(int dest)
+{
   if(smpi_size_data_exe == 0)//no need to switch
     return;
 
@@ -712,8 +752,8 @@ void smpi_really_switch_data_segment(int dest) {
   // FIXME, cross-process support (mmap across process when necessary)
   int current = smpi_privatisation_regions[dest].file_descriptor;
   XBT_DEBUG("Switching data frame to the one of process %d", dest);
-  void* tmp = mmap (TOPAGE(smpi_start_data_exe), smpi_size_data_exe,
-    PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);
+  void* tmp =
+      mmap(TOPAGE(smpi_start_data_exe), smpi_size_data_exe, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);
   if (tmp != TOPAGE(smpi_start_data_exe))
     xbt_die("Couldn't map the new region");
   smpi_loaded_page = dest;
@@ -725,7 +765,8 @@ int smpi_is_privatisation_file(char* file)
   return strncmp("/dev/shm/my-buffer-", file, std::strlen("/dev/shm/my-buffer-")) == 0;
 }
 
-void smpi_initialize_global_memory_segments(){
+void smpi_initialize_global_memory_segments()
+{
 
 #if !HAVE_PRIVATIZATION
   smpi_privatize_global_variables=false;
@@ -742,23 +783,23 @@ void smpi_initialize_global_memory_segments(){
     return;
   }
 
-  smpi_privatisation_regions =
-    static_cast<smpi_privatisation_region_t>( xbt_malloc(smpi_process_count() * sizeof(struct s_smpi_privatisation_region)));
+  smpi_privatisation_regions = static_cast<smpi_privatisation_region_t>(
+      xbt_malloc(smpi_process_count() * sizeof(struct s_smpi_privatisation_region)));
 
   for (int i=0; i< smpi_process_count(); i++){
-      //create SIMIX_process_count() mappings of this size with the same data inside
-      int file_descriptor;
-      void *address = nullptr;
-      char path[24];
-      int status;
+    // create SIMIX_process_count() mappings of this size with the same data inside
+    int file_descriptor;
+    void* address = nullptr;
+    char path[24];
+    int status;
 
-      do {
-        snprintf(path, sizeof(path), "/smpi-buffer-%06x", rand()%0xffffff);
-        file_descriptor = shm_open(path, O_RDWR|O_CREAT|O_EXCL, S_IRUSR|S_IWUSR);
-      } while (file_descriptor == -1 && errno == EEXIST);
-      if (file_descriptor < 0) {
-        if (errno==EMFILE) {
-          xbt_die("Impossible to create temporary file for memory mapping: %s\n\
+    do {
+      snprintf(path, sizeof(path), "/smpi-buffer-%06x", rand() % 0xffffff);
+      file_descriptor = shm_open(path, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+    } while (file_descriptor == -1 && errno == EEXIST);
+    if (file_descriptor < 0) {
+      if (errno == EMFILE) {
+        xbt_die("Impossible to create temporary file for memory mapping: %s\n\
 The open() system call failed with the EMFILE error code (too many files). \n\n\
 This means that you reached the system limits concerning the amount of files per process. \
 This is not a surprise if you are trying to virtualize many processes on top of SMPI. \
@@ -770,31 +811,30 @@ First, check what your limits are:\n\
   cat /proc/self/limits     # Displays any per-process limitation (including the one given above)\n\n\
 If one of these values is less than the amount of MPI processes that you try to run, then you got the explanation of this error. \
 Ask the Internet about tutorials on how to increase the files limit such as: https://rtcamp.com/tutorials/linux/increase-open-files-limit/",
-             strerror(errno));
-        }
-        xbt_die("Impossible to create temporary file for memory mapping: %s",
-            strerror(errno));
+                strerror(errno));
       }
+      xbt_die("Impossible to create temporary file for memory mapping: %s", strerror(errno));
+    }
 
-      status = ftruncate(file_descriptor, smpi_size_data_exe);
-      if(status)
-        xbt_die("Impossible to set the size of the temporary file for memory mapping");
+    status = ftruncate(file_descriptor, smpi_size_data_exe);
+    if (status)
+      xbt_die("Impossible to set the size of the temporary file for memory mapping");
 
-      /* Ask for a free region */
-      address = mmap (nullptr, smpi_size_data_exe, PROT_READ | PROT_WRITE, MAP_SHARED, file_descriptor, 0);
-      if (address == MAP_FAILED)
-        xbt_die("Couldn't find a free region for memory mapping");
+    /* Ask for a free region */
+    address = mmap(nullptr, smpi_size_data_exe, PROT_READ | PROT_WRITE, MAP_SHARED, file_descriptor, 0);
+    if (address == MAP_FAILED)
+      xbt_die("Couldn't find a free region for memory mapping");
 
-      status = shm_unlink(path);
-      if (status)
-        xbt_die("Impossible to unlink temporary file for memory mapping");
+    status = shm_unlink(path);
+    if (status)
+      xbt_die("Impossible to unlink temporary file for memory mapping");
 
-      //initialize the values
-      memcpy(address, TOPAGE(smpi_start_data_exe), smpi_size_data_exe);
+    // initialize the values
+    memcpy(address, TOPAGE(smpi_start_data_exe), smpi_size_data_exe);
 
-      //store the address of the mapping for further switches
-      smpi_privatisation_regions[i].file_descriptor = file_descriptor;
-      smpi_privatisation_regions[i].address = address;
+    // store the address of the mapping for further switches
+    smpi_privatisation_regions[i].file_descriptor = file_descriptor;
+    smpi_privatisation_regions[i].address         = address;
   }
 #endif
 }
@@ -803,11 +843,9 @@ void smpi_destroy_global_memory_segments(){
   if (smpi_size_data_exe == 0)//no need to switch
     return;
 #if HAVE_PRIVATIZATION
-  int i;
-  for (i=0; i< smpi_process_count(); i++){
-    if(munmap(smpi_privatisation_regions[i].address, smpi_size_data_exe) < 0) {
+  for (int i=0; i< smpi_process_count(); i++) {
+    if (munmap(smpi_privatisation_regions[i].address, smpi_size_data_exe) < 0)
       XBT_WARN("Unmapping of fd %d failed: %s", smpi_privatisation_regions[i].file_descriptor, strerror(errno));
-    }
     close(smpi_privatisation_regions[i].file_descriptor);
   }
   xbt_free(smpi_privatisation_regions);

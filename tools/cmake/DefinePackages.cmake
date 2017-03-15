@@ -30,7 +30,6 @@ set(EXTRA_DIST
   src/simix/smx_io_private.h
   src/simix/smx_network_private.h
   src/simix/smx_private.h
-  src/simix/ActorImpl.hpp
   src/simix/smx_synchro_private.h
   src/kernel/activity/ActivityImpl.hpp
   src/kernel/activity/SynchroComm.hpp
@@ -44,7 +43,6 @@ set(EXTRA_DIST
   src/smpi/colls/smpi_mvapich2_selector_stampede.h
   src/smpi/private.h
   src/smpi/private.hpp
-  src/smpi/smpi_mpi_dt_private.h
   src/surf/cpu_cas01.hpp
   src/surf/cpu_interface.hpp
   src/surf/cpu_ti.hpp
@@ -57,29 +55,15 @@ set(EXTRA_DIST
   src/surf/network_ib.hpp
   src/surf/ns3/ns3_interface.h
   src/surf/ns3/ns3_simulator.h
-  src/surf/plugins/energy.hpp
   src/surf/xml/simgrid.dtd
   src/surf/xml/simgrid_dtd.h
   src/surf/xml/simgrid_dtd.c
   src/surf/xml/surfxml_sax_cb.cpp
 
-  src/kernel/routing/AsImpl.hpp
-  src/kernel/routing/AsCluster.hpp
-  src/kernel/routing/AsClusterFatTree.hpp
-  src/kernel/routing/AsClusterTorus.hpp
-  src/kernel/routing/AsClusterDragonfly.hpp
-  src/kernel/routing/AsDijkstra.hpp
-  src/kernel/routing/AsFloyd.hpp
-  src/kernel/routing/AsFull.hpp
-  src/kernel/routing/AsRoutedGraph.hpp
-  src/kernel/routing/AsNone.hpp
-  src/kernel/routing/AsVivaldi.hpp  
-
   src/surf/storage_interface.hpp
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
   src/surf/surf_private.h
-  src/surf/surf_routing.hpp
   src/surf/PropertyHolder.hpp
   src/surf/host_clm03.hpp
   src/surf/HostImpl.hpp
@@ -92,8 +76,6 @@ set(EXTRA_DIST
   src/xbt/backtrace_dummy.cpp
   src/xbt/backtrace_linux.cpp
   src/xbt/dict_private.h
-  src/xbt/ex_interface.h
-  src/xbt/fifo_private.h
   src/xbt/graph_private.h
   src/xbt/heap_private.h
   src/xbt/log_private.h
@@ -120,108 +102,108 @@ set(EXTRA_DIST
   )
 
 set(SMPI_SRC
-  src/smpi/colls/allgather-2dmesh.c
-  src/smpi/colls/allgather-3dmesh.c
-  src/smpi/colls/allgather-GB.c
-  src/smpi/colls/allgather-NTSLR-NB.c
-  src/smpi/colls/allgather-NTSLR.c
-  src/smpi/colls/allgather-SMP-NTS.c
-  src/smpi/colls/allgather-bruck.c
-  src/smpi/colls/allgather-loosely-lr.c
-  src/smpi/colls/allgather-ompi-neighborexchange.c
-  src/smpi/colls/allgather-pair.c
-  src/smpi/colls/allgather-mvapich-smp.c
-  src/smpi/colls/allgather-rdb.c
-  src/smpi/colls/allgather-rhv.c
-  src/smpi/colls/allgather-ring.c
-  src/smpi/colls/allgather-smp-simple.c
-  src/smpi/colls/allgather-spreading-simple.c
-  src/smpi/colls/allgatherv-GB.c
-  src/smpi/colls/allgatherv-mpich-rdb.c
-  src/smpi/colls/allgatherv-mpich-ring.c
-  src/smpi/colls/allgatherv-ompi-bruck.c
-  src/smpi/colls/allgatherv-ompi-neighborexchange.c
-  src/smpi/colls/allgatherv-pair.c
-  src/smpi/colls/allgatherv-ring.c
-  src/smpi/colls/allreduce-lr.c
-  src/smpi/colls/allreduce-ompi-ring-segmented.c
-  src/smpi/colls/allreduce-rab-rdb.c
-  src/smpi/colls/allreduce-rab1.c
-  src/smpi/colls/allreduce-rab2.c
-  src/smpi/colls/allreduce-rdb.c
-  src/smpi/colls/allreduce-redbcast.c
-  src/smpi/colls/allreduce-smp-binomial-pipeline.c
-  src/smpi/colls/allreduce-smp-binomial.c
-  src/smpi/colls/allreduce-smp-rdb.c
-  src/smpi/colls/allreduce-smp-rsag-lr.c
-  src/smpi/colls/allreduce-smp-rsag-rab.c
-  src/smpi/colls/allreduce-smp-rsag.c
-  src/smpi/colls/allreduce-mvapich-rs.c
-  src/smpi/colls/allreduce-mvapich-two-level.c
-  src/smpi/colls/alltoall-2dmesh.c
-  src/smpi/colls/alltoall-3dmesh.c
-#  src/smpi/colls/alltoall-bruck.c
-  src/smpi/colls/alltoall-pair-light-barrier.c
-  src/smpi/colls/alltoall-pair-mpi-barrier.c
-  src/smpi/colls/alltoall-pair-one-barrier.c
-  src/smpi/colls/alltoall-pair.c
-  src/smpi/colls/alltoall-rdb.c
-  src/smpi/colls/alltoall-ring-light-barrier.c
-  src/smpi/colls/alltoall-ring-mpi-barrier.c
-  src/smpi/colls/alltoall-ring-one-barrier.c
-  src/smpi/colls/alltoall-ring.c
-  src/smpi/colls/alltoall-mvapich-scatter-dest.c
-  src/smpi/colls/alltoallv-bruck.c
-  src/smpi/colls/alltoallv-ompi-basic-linear.c
-  src/smpi/colls/alltoallv-pair-light-barrier.c
-  src/smpi/colls/alltoallv-pair-mpi-barrier.c
-  src/smpi/colls/alltoallv-pair-one-barrier.c
-  src/smpi/colls/alltoallv-pair.c
-  src/smpi/colls/alltoallv-ring-light-barrier.c
-  src/smpi/colls/alltoallv-ring-mpi-barrier.c
-  src/smpi/colls/alltoallv-ring-one-barrier.c
-  src/smpi/colls/alltoallv-ring.c
-  src/smpi/colls/barrier-ompi.c
-  src/smpi/colls/barrier-mvapich2-pair.c
-  src/smpi/colls/bcast-NTSB.c
-  src/smpi/colls/bcast-NTSL-Isend.c
-  src/smpi/colls/bcast-NTSL.c
-  src/smpi/colls/bcast-SMP-binary.c
-  src/smpi/colls/bcast-SMP-binomial.c
-  src/smpi/colls/bcast-SMP-linear.c
-  src/smpi/colls/bcast-arrival-pattern-aware-wait.c
-  src/smpi/colls/bcast-arrival-pattern-aware.c
-  src/smpi/colls/bcast-arrival-scatter.c
-  src/smpi/colls/bcast-binomial-tree.c
-  src/smpi/colls/bcast-flattree-pipeline.c
-  src/smpi/colls/bcast-flattree.c
-  src/smpi/colls/bcast-ompi-pipeline.c
-  src/smpi/colls/bcast-ompi-split-bintree.c
-  src/smpi/colls/bcast-mvapich-smp.c
-  src/smpi/colls/bcast-scatter-LR-allgather.c
-  src/smpi/colls/bcast-scatter-rdb-allgather.c
-  src/smpi/colls/coll_tuned_topo.c
-  src/smpi/colls/colls_global.c
-  src/smpi/colls/gather-ompi.c
-  src/smpi/colls/gather-mvapich.c
-  src/smpi/colls/reduce-NTSL.c
-  src/smpi/colls/reduce-arrival-pattern-aware.c
-  src/smpi/colls/reduce-binomial.c
-  src/smpi/colls/reduce-flat-tree.c
-  src/smpi/colls/reduce-ompi.c
-  src/smpi/colls/reduce-scatter-gather.c
-  src/smpi/colls/reduce_scatter-mpich.c
-  src/smpi/colls/reduce_scatter-ompi.c
-  src/smpi/colls/reduce-mvapich-knomial.c
-  src/smpi/colls/reduce-mvapich-two-level.c
-  src/smpi/colls/reduce-rab.c
-  src/smpi/colls/scatter-ompi.c
-  src/smpi/colls/scatter-mvapich-two-level.c
+  src/smpi/colls/allgather-2dmesh.cpp
+  src/smpi/colls/allgather-3dmesh.cpp
+  src/smpi/colls/allgather-GB.cpp
+  src/smpi/colls/allgather-NTSLR-NB.cpp
+  src/smpi/colls/allgather-NTSLR.cpp
+  src/smpi/colls/allgather-SMP-NTS.cpp
+  src/smpi/colls/allgather-bruck.cpp
+  src/smpi/colls/allgather-loosely-lr.cpp
+  src/smpi/colls/allgather-ompi-neighborexchange.cpp
+  src/smpi/colls/allgather-pair.cpp
+  src/smpi/colls/allgather-mvapich-smp.cpp
+  src/smpi/colls/allgather-rdb.cpp
+  src/smpi/colls/allgather-rhv.cpp
+  src/smpi/colls/allgather-ring.cpp
+  src/smpi/colls/allgather-smp-simple.cpp
+  src/smpi/colls/allgather-spreading-simple.cpp
+  src/smpi/colls/allgatherv-GB.cpp
+  src/smpi/colls/allgatherv-mpich-rdb.cpp
+  src/smpi/colls/allgatherv-mpich-ring.cpp
+  src/smpi/colls/allgatherv-ompi-bruck.cpp
+  src/smpi/colls/allgatherv-ompi-neighborexchange.cpp
+  src/smpi/colls/allgatherv-pair.cpp
+  src/smpi/colls/allgatherv-ring.cpp
+  src/smpi/colls/allreduce-lr.cpp
+  src/smpi/colls/allreduce-ompi-ring-segmented.cpp
+  src/smpi/colls/allreduce-rab-rdb.cpp
+  src/smpi/colls/allreduce-rab1.cpp
+  src/smpi/colls/allreduce-rab2.cpp
+  src/smpi/colls/allreduce-rdb.cpp
+  src/smpi/colls/allreduce-redbcast.cpp
+  src/smpi/colls/allreduce-smp-binomial-pipeline.cpp
+  src/smpi/colls/allreduce-smp-binomial.cpp
+  src/smpi/colls/allreduce-smp-rdb.cpp
+  src/smpi/colls/allreduce-smp-rsag-lr.cpp
+  src/smpi/colls/allreduce-smp-rsag-rab.cpp
+  src/smpi/colls/allreduce-smp-rsag.cpp
+  src/smpi/colls/allreduce-mvapich-rs.cpp
+  src/smpi/colls/allreduce-mvapich-two-level.cpp
+  src/smpi/colls/alltoall-2dmesh.cpp
+  src/smpi/colls/alltoall-3dmesh.cpp
+#  src/smpi/colls/alltoall-bruck.cpp
+  src/smpi/colls/alltoall-pair-light-barrier.cpp
+  src/smpi/colls/alltoall-pair-mpi-barrier.cpp
+  src/smpi/colls/alltoall-pair-one-barrier.cpp
+  src/smpi/colls/alltoall-pair.cpp
+  src/smpi/colls/alltoall-rdb.cpp
+  src/smpi/colls/alltoall-ring-light-barrier.cpp
+  src/smpi/colls/alltoall-ring-mpi-barrier.cpp
+  src/smpi/colls/alltoall-ring-one-barrier.cpp
+  src/smpi/colls/alltoall-ring.cpp
+  src/smpi/colls/alltoall-mvapich-scatter-dest.cpp
+  src/smpi/colls/alltoallv-bruck.cpp
+  src/smpi/colls/alltoallv-ompi-basic-linear.cpp
+  src/smpi/colls/alltoallv-pair-light-barrier.cpp
+  src/smpi/colls/alltoallv-pair-mpi-barrier.cpp
+  src/smpi/colls/alltoallv-pair-one-barrier.cpp
+  src/smpi/colls/alltoallv-pair.cpp
+  src/smpi/colls/alltoallv-ring-light-barrier.cpp
+  src/smpi/colls/alltoallv-ring-mpi-barrier.cpp
+  src/smpi/colls/alltoallv-ring-one-barrier.cpp
+  src/smpi/colls/alltoallv-ring.cpp
+  src/smpi/colls/barrier-ompi.cpp
+  src/smpi/colls/barrier-mvapich2-pair.cpp
+  src/smpi/colls/bcast-NTSB.cpp
+  src/smpi/colls/bcast-NTSL-Isend.cpp
+  src/smpi/colls/bcast-NTSL.cpp
+  src/smpi/colls/bcast-SMP-binary.cpp
+  src/smpi/colls/bcast-SMP-binomial.cpp
+  src/smpi/colls/bcast-SMP-linear.cpp
+  src/smpi/colls/bcast-arrival-pattern-aware-wait.cpp
+  src/smpi/colls/bcast-arrival-pattern-aware.cpp
+  src/smpi/colls/bcast-arrival-scatter.cpp
+  src/smpi/colls/bcast-binomial-tree.cpp
+  src/smpi/colls/bcast-flattree-pipeline.cpp
+  src/smpi/colls/bcast-flattree.cpp
+  src/smpi/colls/bcast-ompi-pipeline.cpp
+  src/smpi/colls/bcast-ompi-split-bintree.cpp
+  src/smpi/colls/bcast-mvapich-smp.cpp
+  src/smpi/colls/bcast-scatter-LR-allgather.cpp
+  src/smpi/colls/bcast-scatter-rdb-allgather.cpp
+  src/smpi/colls/coll_tuned_topo.cpp
+  src/smpi/colls/colls_global.cpp
+  src/smpi/colls/gather-ompi.cpp
+  src/smpi/colls/gather-mvapich.cpp
+  src/smpi/colls/reduce-NTSL.cpp
+  src/smpi/colls/reduce-arrival-pattern-aware.cpp
+  src/smpi/colls/reduce-binomial.cpp
+  src/smpi/colls/reduce-flat-tree.cpp
+  src/smpi/colls/reduce-ompi.cpp
+  src/smpi/colls/reduce-scatter-gather.cpp
+  src/smpi/colls/reduce_scatter-mpich.cpp
+  src/smpi/colls/reduce_scatter-ompi.cpp
+  src/smpi/colls/reduce-mvapich-knomial.cpp
+  src/smpi/colls/reduce-mvapich-two-level.cpp
+  src/smpi/colls/reduce-rab.cpp
+  src/smpi/colls/scatter-ompi.cpp
+  src/smpi/colls/scatter-mvapich-two-level.cpp
   src/smpi/colls/smpi_automatic_selector.cpp
-  src/smpi/colls/smpi_mpich_selector.c
-  src/smpi/colls/smpi_intel_mpi_selector.c
-  src/smpi/colls/smpi_openmpi_selector.c
-  src/smpi/colls/smpi_mvapich2_selector.c
+  src/smpi/colls/smpi_mpich_selector.cpp
+  src/smpi/colls/smpi_intel_mpi_selector.cpp
+  src/smpi/colls/smpi_openmpi_selector.cpp
+  src/smpi/colls/smpi_mvapich2_selector.cpp
   src/smpi/instr_smpi.cpp
   src/smpi/smpi_base.cpp
   src/smpi/smpi_bench.cpp
@@ -229,16 +211,31 @@ set(SMPI_SRC
   src/smpi/smpi_static_variables.cpp
   src/smpi/smpi_coll.cpp
   src/smpi/smpi_comm.cpp
+  src/smpi/smpi_comm.hpp
   src/smpi/smpi_deployment.cpp
   src/smpi/smpi_dvfs.cpp
   src/smpi/smpi_global.cpp
+  src/smpi/smpi_f2c.cpp
+  src/smpi/smpi_f2c.hpp
   src/smpi/smpi_group.cpp
+  src/smpi/smpi_group.hpp
   src/smpi/smpi_mpi.cpp
-  src/smpi/smpi_mpi_dt.cpp
+  src/smpi/smpi_datatype.cpp
+  src/smpi/smpi_datatype.hpp
+  src/smpi/smpi_info.cpp
+  src/smpi/smpi_info.hpp
+  src/smpi/smpi_datatype_derived.cpp
+  src/smpi/smpi_datatype_derived.hpp
+  src/smpi/smpi_op.cpp
+  src/smpi/smpi_op.hpp
   src/smpi/smpi_pmpi.cpp
   src/smpi/smpi_replay.cpp
-  src/smpi/smpi_rma.cpp
+  src/smpi/smpi_request.cpp
+  src/smpi/smpi_request.hpp
+  src/smpi/smpi_win.cpp
+  src/smpi/smpi_win.hpp
   src/smpi/smpi_topo.cpp
+  src/smpi/smpi_topo.hpp
   src/smpi/smpi_utils.cpp
   src/smpi/smpi_f77.cpp
   
@@ -259,7 +256,6 @@ set(XBT_SRC
   src/xbt/dynar.cpp
   src/xbt/ex.cpp
   src/xbt/exception.cpp
-  src/xbt/fifo.c
   src/xbt/graph.c
   src/xbt/heap.c
   src/xbt/lib.c
@@ -294,18 +290,31 @@ set(NS3_SRC  src/surf/network_ns3.cpp
              src/surf/ns3/ns3_simulator.cc )
 
 set(SURF_SRC
-  src/kernel/routing/AsImpl.cpp
-  src/kernel/routing/AsCluster.cpp
-  src/kernel/routing/AsClusterFatTree.cpp
-  src/kernel/routing/AsClusterTorus.cpp
-  src/kernel/routing/AsClusterDragonfly.cpp
-  src/kernel/routing/AsDijkstra.cpp
-  src/kernel/routing/AsFloyd.cpp
-  src/kernel/routing/AsFull.cpp
-  src/kernel/routing/AsRoutedGraph.cpp
-  src/kernel/routing/AsNone.cpp
-  src/kernel/routing/AsVivaldi.cpp
-
+  src/kernel/routing/ClusterZone.cpp
+  src/kernel/routing/ClusterZone.hpp
+  src/kernel/routing/DijkstraZone.cpp
+  src/kernel/routing/DijkstraZone.hpp
+  src/kernel/routing/DragonflyZone.cpp
+  src/kernel/routing/DragonflyZone.hpp
+  src/kernel/routing/EmptyZone.cpp
+  src/kernel/routing/EmptyZone.hpp
+  src/kernel/routing/FatTreeZone.cpp
+  src/kernel/routing/FatTreeZone.hpp
+  src/kernel/routing/FloydZone.cpp
+  src/kernel/routing/FloydZone.hpp
+  src/kernel/routing/FullZone.cpp
+  src/kernel/routing/FullZone.hpp
+  src/kernel/routing/NetPoint.cpp
+  src/kernel/routing/NetPoint.hpp
+  src/kernel/routing/NetZoneImpl.cpp
+  src/kernel/routing/NetZoneImpl.hpp
+  src/kernel/routing/RoutedZone.cpp
+  src/kernel/routing/RoutedZone.hpp
+  src/kernel/routing/TorusZone.cpp
+  src/kernel/routing/TorusZone.hpp
+  src/kernel/routing/VivaldiZone.cpp
+  src/kernel/routing/VivaldiZone.hpp  
+  
   src/kernel/EngineImpl.cpp
   src/kernel/EngineImpl.hpp
 
@@ -320,14 +329,13 @@ set(SURF_SRC
   src/surf/network_cm02.cpp
   src/surf/network_constant.cpp
   src/surf/network_interface.cpp
-  src/surf/plugins/energy.cpp
+  src/surf/plugins/host_energy.cpp
   src/surf/PropertyHolder.cpp
   src/surf/sg_platf.cpp
   src/surf/storage_interface.cpp
   src/surf/storage_n11.cpp
   src/surf/surf_c_bindings.cpp
   src/surf/surf_interface.cpp
-  src/surf/surf_routing.cpp
   src/surf/xml/platf.hpp
   src/surf/xml/platf_private.hpp
   src/surf/xml/surfxml_sax_cb.cpp
@@ -362,10 +370,12 @@ set(SIMIX_SRC
   src/simix/smx_io.cpp
   src/simix/smx_network.cpp
   src/simix/ActorImpl.cpp
+  src/simix/ActorImpl.hpp
   src/simix/smx_synchro.cpp
-  src/simix/smx_vm.cpp
   src/simix/popping.cpp
   src/kernel/activity/ActivityImpl.cpp
+  src/kernel/activity/MailboxImpl.cpp
+  src/kernel/activity/MailboxImpl.hpp
   src/kernel/activity/SynchroComm.cpp
   src/kernel/activity/SynchroExec.cpp
   src/kernel/activity/SynchroSleep.cpp
@@ -390,15 +400,16 @@ endif()
 
 set(S4U_SRC
   src/s4u/s4u_actor.cpp
-  src/s4u/s4u_as.cpp
   src/s4u/s4u_activity.cpp
+  src/s4u/s4u_conditionVariable.cpp
   src/s4u/s4u_comm.cpp
   src/s4u/s4u_engine.cpp  
   src/s4u/s4u_file.cpp  
   src/s4u/s4u_host.cpp  
+  src/s4u/s4u_link.cpp
   src/s4u/s4u_mailbox.cpp
   src/s4u/s4u_mutex.cpp
-  src/s4u/s4u_conditionVariable.cpp
+  src/s4u/s4u_netzone.cpp
   src/s4u/s4u_storage.cpp
 )
 
@@ -430,7 +441,6 @@ set(SIMDAG_SRC
   src/simdag/sd_dotloader.cpp
   src/simdag/sd_global.cpp
   src/simdag/sd_task.cpp
-  src/simdag/sd_workstation.cpp
   )
 
 set(BINDINGS_SRC
@@ -480,7 +490,6 @@ set(JMSG_JAVA_SRC
   src/bindings/java/org/simgrid/msg/Msg.java
   src/bindings/java/org/simgrid/msg/MsgException.java
   src/bindings/java/org/simgrid/msg/Mutex.java
-  src/bindings/java/org/simgrid/msg/NativeException.java
   src/bindings/java/org/simgrid/msg/Process.java
   src/bindings/java/org/simgrid/msg/ProcessKilledError.java
   src/bindings/java/org/simgrid/msg/ProcessNotFoundException.java
@@ -549,17 +558,24 @@ set(MC_SRC_BASE
   )
 
 set(MC_SRC
-  src/mc/RemotePtr.hpp
+  src/mc/checker/Checker.cpp
+  src/mc/checker/Checker.hpp
+  src/mc/checker/CommunicationDeterminismChecker.cpp
+  src/mc/checker/CommunicationDeterminismChecker.hpp
+  src/mc/checker/SafetyChecker.cpp
+  src/mc/checker/SafetyChecker.hpp
+  src/mc/checker/LivenessChecker.cpp
+  src/mc/checker/LivenessChecker.hpp
+  src/mc/remote/Channel.cpp
+  src/mc/remote/Channel.hpp
+  src/mc/remote/Client.cpp
+  src/mc/remote/Client.hpp
+  src/mc/remote/RemotePtr.hpp
+  src/mc/remote/mc_protocol.h
+  src/mc/remote/mc_protocol.cpp
+  
   src/mc/AddressSpace.hpp
   src/mc/AddressSpace.cpp
-  src/mc/Channel.cpp
-  src/mc/Channel.hpp
-  src/mc/Checker.cpp
-  src/mc/Checker.hpp
-  src/mc/Client.cpp
-  src/mc/Client.hpp
-  src/mc/CommunicationDeterminismChecker.cpp
-  src/mc/CommunicationDeterminismChecker.hpp
   src/mc/Frame.hpp
   src/mc/Frame.cpp
   src/mc/ModelChecker.hpp
@@ -568,8 +584,6 @@ set(MC_SRC
   src/mc/ObjectInformation.cpp
   src/mc/PageStore.hpp
   src/mc/PageStore.cpp
-  src/mc/SafetyChecker.cpp
-  src/mc/SafetyChecker.hpp
   src/mc/ChunkedData.hpp
   src/mc/ChunkedData.cpp
   src/mc/RegionSnapshot.cpp
@@ -601,11 +615,8 @@ set(MC_SRC
   src/mc/mc_hash.hpp
   src/mc/mc_hash.cpp
   src/mc/mc_ignore.h
-  src/mc/mc_mmalloc.h
-  src/mc/LivenessChecker.hpp
   src/mc/LocationList.hpp
   src/mc/LocationList.cpp
-  src/mc/LivenessChecker.cpp
   src/mc/mc_record.cpp
   src/mc/mc_member.cpp
   src/mc/mc_memory.cpp
@@ -618,8 +629,6 @@ set(MC_SRC
   src/mc/VisitedState.cpp
   src/mc/VisitedState.hpp
   src/mc/mc_client_api.cpp
-  src/mc/mc_protocol.h
-  src/mc/mc_protocol.cpp
   src/mc/mc_smx.h
   src/mc/mc_smx.cpp
   src/mc/mc_xbt.hpp
@@ -628,7 +637,7 @@ set(MC_SRC
   src/mc/Transition.hpp
   )
 
-set(MC_SIMGRID_MC_SRC  src/mc/simgrid_mc.cpp)
+set(MC_SIMGRID_MC_SRC  src/mc/checker/simgrid_mc.cpp)
 
 set(headers_to_install
   include/msg/msg.h
@@ -652,14 +661,15 @@ set(headers_to_install
   include/simgrid/s4u/forward.hpp
   include/simgrid/s4u/Activity.hpp
   include/simgrid/s4u/Actor.hpp
-  include/simgrid/s4u/As.hpp
   include/simgrid/s4u/comm.hpp
+  include/simgrid/s4u/conditionVariable.hpp
   include/simgrid/s4u/engine.hpp  
   include/simgrid/s4u/file.hpp  
   include/simgrid/s4u/host.hpp  
+  include/simgrid/s4u/Link.hpp  
   include/simgrid/s4u/Mailbox.hpp
   include/simgrid/s4u/Mutex.hpp
-  include/simgrid/s4u/conditionVariable.hpp
+  include/simgrid/s4u/NetZone.hpp
   include/simgrid/s4u/storage.hpp  
   include/simgrid/s4u/VirtualMachine.hpp  
   include/simgrid/s4u.hpp
@@ -669,6 +679,7 @@ set(headers_to_install
   include/smpi/smpi_main.h
   include/smpi/smpi_extended_traces.h
   include/smpi/smpi_extended_traces_fortran.h
+  include/smpi/forward.hpp
   include/surf/surf_routing.h
   include/xbt.h
   include/xbt/RngStream.h
@@ -689,7 +700,6 @@ set(headers_to_install
   include/xbt/exception.hpp
   include/xbt/backtrace.h
   include/xbt/backtrace.hpp
-  include/xbt/fifo.h
   include/xbt/file.h
   include/xbt/function_types.h
   include/xbt/functional.hpp
@@ -832,7 +842,8 @@ set(DOC_SOURCES
   doc/doxygen/install.doc
   doc/doxygen/install_yours.doc
   doc/doxygen/java.doc
-  doc/doxygen/tutorial.doc
+  doc/doxygen/tutorial_msg.doc
+  doc/doxygen/tutorial_smpi.doc
   doc/doxygen/models.doc
   doc/doxygen/module-msg.doc
   doc/doxygen/module-s4u.doc
@@ -869,6 +880,7 @@ set(DOC_SOURCES
   doc/msg-tuto-src/deployment2.xml
   doc/msg-tuto-src/deployment3.xml
   doc/msg-tuto-src/deployment_general.xml
+  doc/msg-tuto-src/Makefile
   doc/msg-tuto-src/masterworker0.c
   doc/msg-tuto-src/masterworker1.c
   doc/msg-tuto-src/masterworker2.c
@@ -996,6 +1008,7 @@ set(CMAKEFILES_TXT
 
 set(CMAKE_SOURCE_FILES
   CMakeLists.txt
+  FindSimGrid.cmake
   tools/cmake/Tests.cmake
   tools/cmake/CTestConfig.cmake
   tools/cmake/CTestCustom.cmake
@@ -1015,7 +1028,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Modules/FindNS3.cmake
   tools/cmake/Modules/FindPAPI.cmake
   tools/cmake/Modules/FindRngStream.cmake
-  tools/cmake/Modules/FindSimGrid.cmake
   tools/cmake/Modules/FindValgrind.cmake
   tools/cmake/Option.cmake
   tools/cmake/scripts/my_valgrind.pl
@@ -1077,6 +1089,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/data_center.xml
   examples/platforms/dogbone.xml
   examples/platforms/energy_platform.xml
+  examples/platforms/energy_cluster.xml
   examples/platforms/faulty_host.xml
   examples/platforms/g5k.xml
   examples/platforms/griffon.xml

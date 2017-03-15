@@ -13,6 +13,8 @@
 - @subpage getting_started
   - @subpage install
   - @subpage install_yours
+  - @subpage tutorial_msg "Tutorial with MSG"
+  - @subpage tutorial_smpi "Tutorials with SMPI"
 - @subpage application
   - @subpage s4u_api
   - @subpage MSG_API
@@ -33,7 +35,6 @@
 - @subpage howto
   - Energy, Clouds
   - Scalability Tweaks
-  - @subpage tutorial
   - @subpage examples
 - @subpage uhood
   - @subpage uhood_arch

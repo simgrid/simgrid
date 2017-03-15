@@ -71,7 +71,7 @@ Several tags were renamed:
 
 =item
 
-The AS tag were introduced. Every plaform should now contain an englobing AS
+The AS tag were introduced. Every platform should now contain an englobing AS
 tag.
 
 =item 

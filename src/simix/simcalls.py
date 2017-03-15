@@ -51,7 +51,7 @@ class Simcall(object):
         # smx_host_t h)
         if self.simcalls_PRE is None:
             self.simcalls_PRE = set()
-            for fn in glob.glob('smx_*') + glob.glob('ActorImpl*') + glob.glob('../mc/*'):
+            for fn in glob.glob('smx_*') + glob.glob('ActorImpl*') + glob.glob('../mc/*cpp'):
                 f = open(fn)
                 self.simcalls_PRE |= set(re.findall(r'simcall_HANDLER_(.*?)\(', f.read()))
                 f.close()
@@ -75,7 +75,7 @@ class Simcall(object):
         return '  SIMCALL_%s,' % (self.name.upper())
 
     def string(self):
-        return '  "SIMCALL_%s",' % self.name.upper()
+        return '    "SIMCALL_%s",' % self.name.upper()
 
     def accessors(self):
         res = []
@@ -300,10 +300,10 @@ if __name__ == '__main__':
         '/** @brief Simcalls\' names (generated from src/simix/simcalls.in) */\n')
     fd.write('const char* simcall_names[] = {\n')
 
-    fd.write('   "SIMCALL_NONE",')
+    fd.write('    "SIMCALL_NONE",\n')
     handle(fd, Simcall.string, simcalls, simcalls_dict)
 
-    fd.write('};\n\n')
+    fd.write('\n};\n\n')
 
     fd.write('/** @private\n')
     fd.write(

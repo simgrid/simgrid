@@ -17,10 +17,10 @@ set -ex
 
 # Install required software
 installSonarQubeScanner() {
-  export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-2.6
+  export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-2.8
   rm -rf $SONAR_SCANNER_HOME
   mkdir -p $SONAR_SCANNER_HOME
-  curl -sSLo $HOME/.sonar/sonar-scanner.zip http://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/2.6/sonar-scanner-cli-2.6.zip
+  curl -sSLo $HOME/.sonar/sonar-scanner.zip http://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/2.8/sonar-scanner-cli-2.8.zip
   unzip $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
   rm $HOME/.sonar/sonar-scanner.zip
   export PATH=$SONAR_SCANNER_HOME/bin:$PATH
@@ -36,6 +36,22 @@ installBuildWrapper
 # triggers the compilation through the build wrapper to gather compilation database
 ./build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-outputs "$@"
 
-# and finally execute the actual SonarQube analysis (the SONAR_TOKEN is set from the travis web interface, to not expose it)
+# Run ctest before sonar to gather coverage some information
+ctest --output-on-failure --timeout 100
+
+# Only run sonar on master (not on pull requests)
+if [ "$TRAVIS_PULL_REQUEST" != "false" ] ; then
+  exit 0
+fi
+
+# generate the gcov files
+ctest -D ExperimentalCoverage
+
+# and finally execute the actual SonarQube analysis 
+# (the SONAR_TOKEN is set from the travis web interface, to not expose it with an ongoing "set -x")
 # See https://docs.travis-ci.com/user/sonarqube/ for more info on tokens
-sonar-scanner -Dsonar.host.url=https://sonarqube.com -Dsonar.login=$SONAR_TOKEN
+# don't show the token in the logs
+set +x
+sonar-scanner -Dsonar.host.url=https://sonarqube.com -Dsonar.login=$SONAR_TOKEN     \
+  | grep -v 'INFO: Parsing /home/travis/build/simgrid/simgrid/Testing/CoverageInfo' \
+  | grep -v 'WARN: File not analysed by Sonar, so ignoring coverage: /usr/include/'

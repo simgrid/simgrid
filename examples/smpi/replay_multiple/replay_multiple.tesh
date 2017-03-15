@@ -3,16 +3,14 @@ p Test the replay with multiple instances
 p first generate the deployment file
 $ ${srcdir:=.}/generate_multiple_deployment.sh -platform ${srcdir:=.}/../../platforms/small_platform_with_routers.xml -hostfile ${srcdir:=.}/../hostfile  ${srcdir:=.}/description_file ${srcdir:=.}/deployment.xml
 
+p This test needs maxmin/concurrency-limit=100 because it stats 64 hosts on 5 machines.
 ! timeout 120
-$ ./replay_multiple description_file ${srcdir:=.}/../../platforms/small_platform_with_routers.xml ${srcdir:=.}/deployment.xml --log=smpi.:info
+$ ./replay_multiple description_file ${srcdir:=.}/../../platforms/small_platform_with_routers.xml ${srcdir:=.}/deployment.xml --log=smpi.:info --cfg=maxmin/concurrency-limit:100
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/concurrency-limit' to '100'
 > [0.000000] [msg_test/INFO] Initializing instance 1 of size 32
 > [0.000000] [msg_test/INFO] Initializing instance 2 of size 32
 > [0.000000] [smpi_kernel/INFO] You did not set the power of the host running the simulation.  The timings will certainly not be accurate.  Use the option "--cfg=smpi/host-speed:<flops>" to set its value.Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information.
 > [Jupiter:2:(52) 1140688.493796] [smpi_replay/INFO] Simulation time 1124371.141124
 > [1140688.493796] [msg_test/INFO] Simulation time 1.14069e+06
-
-
-
-
 
 $ rm -f deployment.xml

@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,7 +12,8 @@
 
 #include <xbt/functional.hpp>
 
-#include <simgrid/s4u/host.hpp>
+#include "simgrid/s4u/engine.hpp"
+#include "simgrid/s4u/host.hpp"
 
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/storage_interface.hpp"
@@ -33,11 +33,9 @@
 
 #if HAVE_MC
 #include "src/mc/mc_private.h"
-#include "src/mc/mc_protocol.h"
-#include "src/mc/Client.hpp"
-
+#include "src/mc/remote/Client.hpp"
+#include "src/mc/remote/mc_protocol.h"
 #include <stdlib.h>
-#include "src/mc/mc_protocol.h"
 #endif 
 
 #include "src/mc/mc_record.h"
@@ -81,17 +79,18 @@ static void segvhandler(int signum, siginfo_t *siginfo, void *context)
 {
   if (siginfo->si_signo == SIGSEGV && siginfo->si_code == SEGV_ACCERR) {
     fprintf(stderr, "Access violation detected.\n"
-                    "This can result from a programming error in your code or, although less likely,\n"
-                    "from a bug in SimGrid itself.  This can also be the sign of a bug in the OS or\n"
-                    "in third-party libraries.  Failing hardware can sometimes generate such errors\n"
-                    "too.\n"
-                    "Finally, if nothing of the above applies, this can result from a stack overflow.\n"
-                    "Try to increase stack size with --cfg=contexts/stack-size (current size is %d KiB).\n",
+                    "This probably comes from a programming error in your code, or from a stack\n"
+                    "overflow. If you are certain of your code, try increasing the stack size\n"
+                    "   --cfg=contexts/stack-size=XXX (current size is %d KiB).\n"
+                    "\n"
+                    "If it does not help, this may have one of the following causes:\n"
+                    "a bug in SimGrid, a bug in the OS or a bug in a third-party libraries.\n"
+                    "Failing hardware can sometimes generate such errors too.\n"
+                    "\n"
+                    "If you think you've found a bug in SimGrid, please report it along with a\n"
+                    "Minimal Working Example (MWE) reproducing your problem and a full backtrace\n"
+                    "of the fault captured with gdb or valgrind.\n",
             smx_context_stack_size / 1024);
-    if (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_debug)) {
-      fprintf(stderr, "siginfo = {si_signo = %d, si_errno = %d, si_code = %d, si_addr = %p}\n",
-              siginfo->si_signo, siginfo->si_errno, siginfo->si_code, siginfo->si_addr);
-    }
   } else  if (siginfo->si_signo == SIGSEGV) {
     fprintf(stderr, "Segmentation fault.\n");
 #if HAVE_SMPI
@@ -115,7 +114,8 @@ char sigsegv_stack[SIGSTKSZ];   /* alternate stack for SIGSEGV handler */
  */
 static void install_segvhandler()
 {
-  stack_t stack, old_stack;
+  stack_t stack;
+  stack_t old_stack;
   stack.ss_sp = sigsegv_stack;
   stack.ss_size = sizeof sigsegv_stack;
   stack.ss_flags = 0;
@@ -130,7 +130,8 @@ static void install_segvhandler()
     sigaltstack(&old_stack, nullptr);
   }
 
-  struct sigaction action, old_action;
+  struct sigaction action;
+  struct sigaction old_action;
   action.sa_sigaction = &segvhandler;
   action.sa_flags = SA_ONSTACK | SA_RESETHAND | SA_SIGINFO;
   sigemptyset(&action.sa_mask);
@@ -203,7 +204,6 @@ void SIMIX_global_init(int *argc, char **argv)
     simgrid::simix::ActorImpl proc;
     simix_global->process_to_run = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
     simix_global->process_that_ran = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
-    simix_global->process_list = xbt_swag_new(xbt_swag_offset(proc, process_hookup));
     simix_global->process_to_destroy = xbt_swag_new(xbt_swag_offset(proc, destroy_hookup));
     simix_global->maestro_process = nullptr;
     simix_global->create_process_function = &SIMIX_process_create;
@@ -226,13 +226,13 @@ void SIMIX_global_init(int *argc, char **argv)
 #endif
     /* register a function to be called by SURF after the environment creation */
     sg_platf_init();
-    simgrid::surf::on_postparse.connect(SIMIX_post_create_environment);
+    simgrid::s4u::onPlatformCreated.connect(SIMIX_post_create_environment);
     simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
       host.extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
     });
 
     simgrid::surf::storageCreatedCallbacks.connect([](simgrid::surf::Storage* storage) {
-      const char* name = storage->getName();
+      const char* name = storage->cname();
       // TODO, create sg_storage_by_name
       sg_storage_t s = xbt_lib_get_elm_or_null(storage_lib, name);
       xbt_assert(s != nullptr, "Storage not found for name %s", name);
@@ -297,8 +297,7 @@ void SIMIX_clean()
   xbt_dynar_free(&simix_global->process_to_run);
   xbt_dynar_free(&simix_global->process_that_ran);
   xbt_swag_free(simix_global->process_to_destroy);
-  xbt_swag_free(simix_global->process_list);
-  simix_global->process_list = nullptr;
+  simix_global->process_list.clear();
   simix_global->process_to_destroy = nullptr;
 
   xbt_os_mutex_destroy(simix_global->mutex);
@@ -316,7 +315,6 @@ void SIMIX_clean()
   surf_exit();
 
   simix_global = nullptr;
-  return;
 }
 
 
@@ -428,7 +426,6 @@ void SIMIX_run()
   }
 
   double time = 0;
-  smx_actor_t process;
 
   do {
     XBT_DEBUG("New Schedule Round; size(queue)=%lu", xbt_dynar_length(simix_global->process_to_run));
@@ -500,6 +497,7 @@ void SIMIX_run()
        */
 
       unsigned int iter;
+      smx_actor_t process;
       xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
         if (process->simcall.call != SIMCALL_NONE) {
           SIMIX_simcall_handle(&process->simcall, 0);
@@ -514,7 +512,7 @@ void SIMIX_run()
     }
 
     time = SIMIX_timer_next();
-    if (time > -1.0 || xbt_swag_size(simix_global->process_list) != 0) {
+    if (time > -1.0 || simix_global->process_list.empty() == false) {
       XBT_DEBUG("Calling surf_solve");
       time = surf_solve(time);
       XBT_DEBUG("Moving time ahead : %g", time);
@@ -543,15 +541,23 @@ void SIMIX_run()
     /* Clean processes to destroy */
     SIMIX_process_empty_trash();
 
-    XBT_DEBUG("### time %f, empty %d", time, xbt_dynar_is_empty(simix_global->process_to_run));
+    XBT_DEBUG("### time %f, #processes %zu, #to_run %lu", time, simix_global->process_list.size(),
+              xbt_dynar_length(simix_global->process_to_run));
+
+    /* If only daemon processes remain, cancel their actions, mark them to die and reschedule them */
+    if (simix_global->process_list.size() == simix_global->daemons.size())
+      for (const auto& dmon : simix_global->daemons) {
+        XBT_DEBUG("Kill %s", dmon->cname());
+        SIMIX_process_kill(dmon, simix_global->maestro_process);
+      }
 
     if (xbt_dynar_is_empty(simix_global->process_to_run) &&
-        xbt_swag_size(simix_global->process_list) != 0)
+        !simix_global->process_list.empty())
     simgrid::simix::onDeadlock();
 
   } while (time > -1.0 || !xbt_dynar_is_empty(simix_global->process_to_run));
 
-  if (xbt_swag_size(simix_global->process_list) != 0) {
+  if (simix_global->process_list.size() != 0) {
 
     TRACE_end();
 
@@ -559,6 +565,7 @@ void SIMIX_run()
     SIMIX_display_process_status();
     xbt_abort();
   }
+  simgrid::s4u::onSimulationEnd();
 }
 
 /**
@@ -566,7 +573,7 @@ void SIMIX_run()
  *
  * Set the date to execute the function on the surf.
  *   \param date Date to execute function
- *   \param function Function to be executed
+ *   \param callback Function to be executed
  *   \param arg Parameters of the function
  *
  */
@@ -635,17 +642,13 @@ void SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t function)
 
 void SIMIX_display_process_status()
 {
-  if (simix_global->process_list == nullptr) {
-    return;
-  }
-
-  smx_actor_t process = nullptr;
-  int nbprocess = xbt_swag_size(simix_global->process_list);
+  int nbprocess = simix_global->process_list.size();
 
   XBT_INFO("%d processes are still running, waiting for something.", nbprocess);
   /*  List the process and their state */
   XBT_INFO("Legend of the following listing: \"Process <pid> (<name>@<host>): <status>\"");
-  xbt_swag_foreach(process, simix_global->process_list) {
+  for (auto kv : simix_global->process_list) {
+    smx_actor_t process = kv.second;
 
     if (process->waiting_synchro) {
 
@@ -686,14 +689,6 @@ void SIMIX_display_process_status()
       XBT_INFO("Process %lu (%s@%s)", process->pid, process->cname(), process->host->cname());
     }
   }
-}
-
-xbt_dict_t simcall_HANDLER_asr_get_properties(smx_simcall_t simcall, const char *name){
-  return SIMIX_asr_get_properties(name);
-}
-xbt_dict_t SIMIX_asr_get_properties(const char *name)
-{
-  return static_cast<xbt_dict_t>(xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL));
 }
 
 int SIMIX_is_maestro()

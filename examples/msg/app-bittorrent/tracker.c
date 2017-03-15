@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2015. The SimGrid Team.
+/* Copyright (c) 2012-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -18,14 +18,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_tracker, "Messages specific for the tracker");
  */
 int tracker(int argc, char *argv[])
 {
-  int i;
-
-  RngStream stream = (RngStream) MSG_host_get_property_value(MSG_host_self(), "stream");
   //Checking arguments
   xbt_assert(argc == 2, "Wrong number of arguments for the tracker.");
   //Retrieving end time
   double deadline = xbt_str_parse_double(argv[1],"Invalid deadline: %s");
   xbt_assert(deadline > 0, "Wrong deadline supplied");
+
+  RngStream stream = (RngStream) MSG_host_get_data(MSG_host_self());
   //Building peers array
   xbt_dynar_t peers_list = xbt_dynar_new(sizeof(int), NULL);
 
@@ -50,12 +49,9 @@ int tracker(int argc, char *argv[])
         //Sending peers to the peer
         int next_peer;
         int peers_length = xbt_dynar_length(peers_list);
-        for (i = 0; i < MAXIMUM_PAIRS && i < peers_length; i++) {
+        for (int i = 0; i < MAXIMUM_PAIRS && i < peers_length; i++) {
           do {
-            next_peer =
-                xbt_dynar_get_as(peers_list,
-                                 RngStream_RandInt(stream, 0, peers_length - 1),
-                                 int);
+            next_peer = xbt_dynar_get_as(peers_list, RngStream_RandInt(stream, 0, peers_length - 1), int);
           } while (is_in_list(data->peers, next_peer));
           xbt_dynar_push_as(data->peers, int, next_peer);
         }
@@ -88,10 +84,8 @@ int tracker(int argc, char *argv[])
  * Build a new task for the tracker.
  * @param issuer_host_name Hostname of the issuer. For debugging purposes
  */
-tracker_task_data_t tracker_task_data_new(const char *issuer_host_name,
-                                          const char *mailbox, int peer_id,
-                                          int uploaded, int downloaded,
-                                          int left)
+tracker_task_data_t tracker_task_data_new(const char *issuer_host_name, const char *mailbox, int peer_id,
+                                          int uploaded, int downloaded, int left)
 {
   tracker_task_data_t task = xbt_new(s_tracker_task_data_t, 1);
 
@@ -109,7 +103,7 @@ tracker_task_data_t tracker_task_data_new(const char *issuer_host_name,
 }
 
 /**
- * Free a tracker task that has not succefully been sent.
+ * Free a tracker task that has not successfully been sent.
  * @param data Task to free
  */
 static void task_free(void *data)
@@ -136,12 +130,5 @@ void tracker_task_data_free(tracker_task_data_t task)
  */
 int is_in_list(xbt_dynar_t peers, int id)
 {
-  unsigned i;
-  int elm;
-  xbt_dynar_foreach(peers, i, elm) {
-    if (elm == id) {
-      return 1;
-    }
-  }
-  return 0;
+  return xbt_dynar_member(peers, &id);
 }

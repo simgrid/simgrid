@@ -7,13 +7,10 @@
 #ifndef SIMDAG_SIMDAG_H
 #define SIMDAG_SIMDAG_H
 
-#include "xbt/misc.h"
-#include "xbt/dynar.h"
-#include "xbt/dict.h"
-#include "xbt/asserts.h"
-#include "xbt/log.h"
-#include "simgrid/link.h"
 #include "simgrid/host.h"
+#include "simgrid/link.h"
+#include "xbt/log.h"
+#include "xbt/sysdep.h"
 #ifdef __cplusplus
 #include <set>
 #endif
@@ -25,7 +22,7 @@ SG_BEGIN_DECL()
     A link is a network node represented as a <em>name</em>, a <em>bandwidth</em> and a <em>latency</em>.
     A route is a list of links between two hosts.
  */
-typedef Link *SD_link_t;
+typedef sg_link_t SD_link_t;
 
 /** @brief Task opaque datatype
     @ingroup SD_task_api
@@ -59,24 +56,6 @@ typedef enum {
   SD_TASK_COMP_PAR_AMDAHL = 3, /**< @brief parallel computation (Amdahl's law) */
   SD_TASK_COMM_PAR_MXN_1D_BLOCK = 4 /**< @brief MxN data redistribution (1D Block distribution) */
 } e_SD_task_kind_t;
-
-
-/************************** Workstation handling ****************************/
-/** @addtogroup SD_host_api
- *
- *  A host is a place where a task can be executed.
- *  A host is represented as a <em>physical resource with computing capabilities</em> and has a <em>name</em>.
- *
- *  The hosts are created from the description file when you call the function SD_create_environment.
- *
- *  @see sg_host_t
- *  @{
- */
-XBT_PUBLIC(SD_link_t *) SD_route_get_list(sg_host_t src, sg_host_t dst);
-XBT_PUBLIC(int) SD_route_get_size(sg_host_t src, sg_host_t dst);
-XBT_PUBLIC(double) SD_route_get_latency(sg_host_t src, sg_host_t dst);
-XBT_PUBLIC(double) SD_route_get_bandwidth(sg_host_t src, sg_host_t dst);
-/** @} */
 
 /************************** Task handling ************************************/
 /** @defgroup SD_task_api Tasks
@@ -202,6 +181,8 @@ XBT_PUBLIC(std::set<SD_task_t>*) simulate(double how_long);
 #define SD_workstation_get_property_value sg_host_get_property_value
 #define SD_workstation_get_power sg_host_speed
 #define SD_workstation_get_available_power sg_host_get_available_speed
+#define SD_route_get_latency sg_host_route_latency
+#define SD_route_get_bandwidth sg_host_route_bandwidth
 
 #define SD_workstation_get_mounted_storage_list sg_host_get_mounted_storage_list
 // Lost functions
@@ -210,7 +191,8 @@ XBT_PUBLIC(std::set<SD_task_t>*) simulate(double how_long);
 //SD_workstation_get_current_task
 //SD_route_get_communication_time => SG_route_get_latency() + amount / SD_route_get_bandwidth()
 //SD_workstation_get_computation_time => amount / sg_host_speed()
+//SD_route_get_size
+//SD_route_get_list
 //TRACE_sd_set_task_category
-
 SG_END_DECL()
 #endif

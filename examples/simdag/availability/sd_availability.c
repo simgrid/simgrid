@@ -79,8 +79,8 @@ int main(int argc, char **argv)
     xbt_dynar_t changed_tasks = SD_simulate(-1.0);
     if (xbt_dynar_is_empty(changed_tasks))
       break;
-    XBT_INFO("link1: bw=%.0f, lat=%f", SD_route_get_bandwidth(hosts[0], hosts[1]),
-             SD_route_get_latency(hosts[0], hosts[1]));
+    XBT_INFO("link1: bw=%.0f, lat=%f", sg_host_route_bandwidth(hosts[0], hosts[1]),
+             sg_host_route_latency(hosts[0], hosts[1]));
     XBT_INFO("Jupiter: speed=%.0f", sg_host_speed(hosts[0])* sg_host_get_available_speed(hosts[0]));
     XBT_INFO("Tremblay: speed=%.0f", sg_host_speed(hosts[1])* sg_host_get_available_speed(hosts[1]));
      

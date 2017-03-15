@@ -17,7 +17,8 @@ int main(int argc, char **argv)
     MPI_Info info_in, info_out;
     int errors = 0, all_errors = 0;
     MPI_Comm comm;
-    char __attribute__((unused)) invalid_key[] = "invalid_test_key";
+    char invalid_key[] = "invalid_test_key";
+    char val[]= "true";
     char buf[MPI_MAX_INFO_VAL];
     int flag;
 
@@ -26,7 +27,7 @@ int main(int argc, char **argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     MPI_Info_create(&info_in);
-    MPI_Info_set(info_in, invalid_key, (char *) "true");
+    MPI_Info_set(info_in, invalid_key, val);
 
     MPI_Comm_dup(MPI_COMM_WORLD, &comm);
 

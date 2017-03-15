@@ -11,63 +11,95 @@
 #include "simgrid_config.h"       /* what was compiled in? */
 
 /* Non-standard header files */
-#define HAVE_EXECINFO_H @HAVE_EXECINFO_H@ /* <execinfo.h> */
-#define HAVE_FUTEX_H    @HAVE_FUTEX_H@ /* <linux/futex.h> */
-#define HAVE_SIGNAL_H   @HAVE_SIGNAL_H@ /* <signal.h> */
-#define HAVE_UNISTD_H   @HAVE_UNISTD_H@ /* <unistd.h> */
-#define HAVE_UCONTEXT_H @HAVE_UCONTEXT_H@ /* <ucontext.h> */
-#define HAVE_VALGRIND_H @HAVE_VALGRIND_H@ /* <valgrind/valgrind.h> */
+/* <execinfo.h> */
+#cmakedefine01 HAVE_EXECINFO_H
+/* <linux/futex.h> */
+#cmakedefine01 HAVE_FUTEX_H
+/* <signal.h> */
+#cmakedefine01 HAVE_SIGNAL_H
+/* <unistd.h> */
+#cmakedefine01 HAVE_UNISTD_H
+/* <ucontext.h> */
+#cmakedefine01 HAVE_UCONTEXT_H
+/* <valgrind/valgrind.h> */
+#cmakedefine01 HAVE_VALGRIND_H
 
 /* Time portability */
-#define HAVE_GETTIMEOFDAY  @HAVE_GETTIMEOFDAY@ /* Function gettimeofday */
-#define HAVE_POSIX_GETTIME @HAVE_POSIX_GETTIME@ /* Function clock_gettime */
-#define HAVE_NANOSLEEP     @HAVE_NANOSLEEP@ /* Function nanosleep */
+/* Function gettimeofday */
+#cmakedefine01 HAVE_GETTIMEOFDAY
+/* Function clock_gettime */
+#cmakedefine01 HAVE_POSIX_GETTIME
+/* Function nanosleep */
+#cmakedefine01 HAVE_NANOSLEEP
 
 /* The usable context factories */
-#define HAVE_BOOST_CONTEXTS    @HAVE_BOOST_CONTEXTS@
-#define HAVE_RAW_CONTEXTS      @HAVE_RAW_CONTEXTS@
-#define HAVE_THREAD_CONTEXTS   @HAVE_THREAD_CONTEXTS@
-#define HAVE_UCONTEXT_CONTEXTS @HAVE_UCONTEXT_CONTEXTS@
+#define HAVE_BOOST_CONTEXTS @HAVE_BOOST_CONTEXTS@
+#cmakedefine01 HAVE_RAW_CONTEXTS
+#cmakedefine01 HAVE_THREAD_CONTEXTS
+#cmakedefine01 HAVE_UCONTEXT_CONTEXTS
 
 /* Variables for the thread contexts (and parallel mode of raw contexts) */
-#define HAVE_PTHREAD              @HAVE_PTHREAD@ /* Define to 1 if threads are usable . */
-#define HAVE_PTHREAD_SETAFFINITY  @HAVE_PTHREAD_SETAFFINITY@ /* Does not seems defined on Mac nor Windows */
-#define HAVE_THREAD_LOCAL_STORAGE @HAVE_THREAD_LOCAL_STORAGE@ /* If __thread is available */
+/* Define to 1 if threads are usable . */
+#cmakedefine01 HAVE_PTHREAD
+/* Does not seems defined on Mac nor Windows */
+#cmakedefine01 HAVE_PTHREAD_SETAFFINITY
+/* If __thread is available */
+#cmakedefine01 HAVE_THREAD_LOCAL_STORAGE
 
 /* Variables for the raw contexts (to select the right assembly code) */
-#define SIMGRID_PROCESSOR_i686         @PROCESSOR_i686@
-#define SIMGRID_PROCESSOR_x86_64       @PROCESSOR_x86_64@
+#cmakedefine01 SIMGRID_PROCESSOR_i686
+#cmakedefine01 SIMGRID_PROCESSOR_x86_64
 
 /* Variables for the SysV contexts */
 @sg_makecontext_stack_addr@
 @sg_makecontext_stack_size@
 
 /* Variable for SysV, raw and Boost contexts */
-#cmakedefine PTH_STACKGROWTH @PTH_STACKGROWTH@ /* Does the stack growth upward, or downward? */
+/* Does the stack growth upward, or downward? */
+#define PTH_STACKGROWTH @PTH_STACKGROWTH@
 
 /* MC variables */
-#define HAVE_GETDTABLESIZE    @HAVE_GETDTABLESIZE@ /* getdtablesize: get descriptor table size */
-#define HAVE_MMALLOC          @HAVE_MMALLOC@ /* Did we compile mmalloc in? */
-#define HAVE_PROCESS_VM_READV @HAVE_PROCESS_VM_READV@ /* process_vm_readv: transfer data between process address spaces */
-#define HAVE_MC               @HAVE_MC@ /* Set to true if enable_model-checking is true and the dependencies available */
+/* getdtablesize: get descriptor table size */
+#cmakedefine01 HAVE_GETDTABLESIZE
+/* Did we compile mmalloc in? */
+#cmakedefine01 HAVE_MMALLOC
+/* process_vm_readv: transfer data between process address spaces */
+#cmakedefine01 HAVE_PROCESS_VM_READV
+/* Set to true if enable_model-checking is true and the dependencies available */
+#cmakedefine01 HAVE_MC
 
 /* SMPI variables */
-#define HAVE_SMPI          @HAVE_SMPI@
-#define SMPI_FORTRAN       @SMPI_FORTRAN@
-#define HAVE_PRIVATIZATION @HAVE_PRIVATIZATION@ /* We have mmap and objdump to handle privatization */
-#define HAVE_PAPI          @HAVE_PAPI@ /* We have PAPI to fine-grain trace execution time */
+/* SMPI enabled */
+#cmakedefine01 HAVE_SMPI
+/* Fortran language is available for SMPI */
+#cmakedefine01 SMPI_FORTRAN
+/* We have mmap and objdump to handle privatization */
+#cmakedefine01 HAVE_PRIVATIZATION
+/* We have PAPI to fine-grain trace execution time */
+#cmakedefine01 HAVE_PAPI
 
 /* Other function checks */
-#define HAVE_BACKTRACE @HAVE_BACKTRACE@ /* Function backtrace */
-#define HAVE_DLFUNC    @HAVE_DLFUNC@ /* Function dlfunc */
-#define HAVE_MMAP      @HAVE_MMAP@ /* Function mmap */
-#define HAVE_MREMAP    @HAVE_MREMAP@ /* Function mremap */
-#define HAVE_SEM_INIT  @HAVE_SEM_INIT@ /* Function sem_init (part of XPG6 standard only) */
-#define HAVE_POPEN     @HAVE_POPEN@ /* Function popen */
-#define HAVE_SYSCONF   @HAVE_SYSCONF@ /* Function sysconf */
-#define HAVE_VASPRINTF @HAVE_VASPRINTF@ /* Function vasprintf */
+/* Function backtrace */
+#cmakedefine01 HAVE_BACKTRACE
+/* Function dlfunc */
+#cmakedefine01 HAVE_DLFUNC
+/* Function mmap */
+#cmakedefine01 HAVE_MMAP
+/* Function mremap */
+#cmakedefine01 HAVE_MREMAP
+/* Function sem_init (part of XPG6 standard only) */
+#cmakedefine01 HAVE_SEM_INIT
+/* Function popen */
+#cmakedefine01 HAVE_POPEN
+/* Function sysconf */
+#cmakedefine01 HAVE_SYSCONF
+/* Function vasprintf */
+#cmakedefine01 HAVE_VASPRINTF
 
 /* Other checks */
-#cmakedefine ADDR2LINE       "@ADDR2LINE@" /* Path to the addr2line tool */
-#define HAVE_GRAPHVIZ   @HAVE_GRAPHVIZ@ /* The graphviz library */
-#define HAVE_LIBUNWIND  @HAVE_LIBUNWIND@ /* The lib unwind library (for MC and backtrace display) */
+/* Path to the addr2line tool */
+#cmakedefine   ADDR2LINE "@ADDR2LINE@"
+/* The graphviz library */
+#cmakedefine01 HAVE_GRAPHVIZ
+/* The lib unwind library (for MC and backtrace display) */
+#cmakedefine01 HAVE_LIBUNWIND

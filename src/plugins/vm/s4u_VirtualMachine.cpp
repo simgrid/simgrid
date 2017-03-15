@@ -3,16 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/datatypes.h"
-#include "simgrid/s4u/VirtualMachine.hpp"
-#include "simgrid/s4u/host.hpp"
-#include "simgrid/simix.hpp"
 #include "src/instr/instr_private.h"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/simix/smx_host_private.h"
-#include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_cas01.hpp"
-#include "xbt/asserts.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_vm, "S4U virtual machines");
 
@@ -25,7 +19,7 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm) : Host(name)
 
   pimpl_vm_ = new vm::VirtualMachineImpl(this, pm);
   /* Currently, a VM uses the network resource of its physical host */
-  pimpl_netcard = pm->pimpl_netcard;
+  pimpl_netpoint = pm->pimpl_netpoint;
   // Create a VCPU for this VM
   surf::CpuCas01* sub_cpu = dynamic_cast<surf::CpuCas01*>(pm->pimpl_cpu);
 
@@ -46,7 +40,7 @@ VirtualMachine::~VirtualMachine()
 {
   onDestruction(*this);
 
-  XBT_DEBUG("destroy %s", name().c_str());
+  XBT_DEBUG("destroy %s", cname());
 
   /* FIXME: this is really strange that everything fails if the next line is removed.
    * This is as if we shared these data with the PM, which definitely should not be the case...
@@ -57,7 +51,7 @@ VirtualMachine::~VirtualMachine()
   extension_set<simgrid::simix::Host>(nullptr);
 
   /* Don't free these things twice: they are the ones of my physical host */
-  pimpl_netcard = nullptr;
+  pimpl_netpoint = nullptr;
 }
 
 bool VirtualMachine::isMigrating()
@@ -67,6 +61,10 @@ bool VirtualMachine::isMigrating()
 double VirtualMachine::getRamsize()
 {
   return pimpl_vm_->params_.ramsize;
+}
+simgrid::s4u::Host* VirtualMachine::pm()
+{
+  return pimpl_vm_->getPm();
 }
 
 /** @brief Retrieve a copy of the parameters of that VM/PM

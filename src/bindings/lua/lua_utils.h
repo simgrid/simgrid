@@ -1,5 +1,4 @@
-/* Copyright (c) 2010-2011, 2013-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -34,4 +33,4 @@ int sglua_memory_writer(lua_State* L, const void* source, size_t size, void* use
 
 }
 
-#endif  /* LUA_UTILS_H */
+#endif

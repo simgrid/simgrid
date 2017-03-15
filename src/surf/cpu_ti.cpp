@@ -69,11 +69,7 @@ CpuTiTgmr::~CpuTiTgmr()
 */
 double CpuTiTgmr::integrate(double a, double b)
 {
-  double first_chunk;
-  double middle_chunk;
-  double last_chunk;
   int a_index;
-  int b_index;
 
   if ((a < 0.0) || (a > b)) {
     xbt_die("Error, invalid integration interval [%.2f,%.2f]. "
@@ -91,15 +87,15 @@ double CpuTiTgmr::integrate(double a, double b)
   else
     a_index = static_cast<int> (ceil(a / lastTime_));
 
-  b_index = static_cast<int> (floor(b / lastTime_));
+  int b_index = static_cast<int> (floor(b / lastTime_));
 
   if (a_index > b_index) {      /* Same chunk */
     return trace_->integrateSimple(a - (a_index - 1) * lastTime_, b - (b_index) * lastTime_);
   }
 
-  first_chunk = trace_->integrateSimple(a - (a_index - 1) * lastTime_, lastTime_);
-  middle_chunk = (b_index - a_index) * total_;
-  last_chunk = trace_->integrateSimple(0.0, b - (b_index) * lastTime_);
+  double first_chunk = trace_->integrateSimple(a - (a_index - 1) * lastTime_, lastTime_);
+  double middle_chunk = (b_index - a_index) * total_;
+  double last_chunk = trace_->integrateSimple(0.0, b - (b_index) * lastTime_);
 
   XBT_DEBUG("first_chunk=%.2f  middle_chunk=%.2f  last_chunk=%.2f\n", first_chunk, middle_chunk, last_chunk);
 
@@ -124,10 +120,10 @@ double CpuTiTrace::integrateSimple(double a, double b)
 double CpuTiTrace::integrateSimplePoint(double a)
 {
   double integral = 0;
-  int ind;
   double a_aux = a;
-  ind = binarySearch(timePoints_, a, 0, nbPoints_ - 1);
+  int ind = binarySearch(timePoints_, a, 0, nbPoints_ - 1);
   integral += integral_[ind];
+
   XBT_DEBUG("a %f ind %d integral %f ind + 1 %f ind %f time +1 %f time %f",
        a, ind, integral, integral_[ind + 1], integral_[ind], timePoints_[ind + 1], timePoints_[ind]);
   double_update(&a_aux, timePoints_[ind], sg_maxmin_precision*sg_surf_precision);
@@ -252,7 +248,8 @@ double CpuTiTgmr::getPowerScale(double a)
 * \param  value          Percentage of CPU speed available (useful to fixed tracing)
 * \return  Integration trace structure
 */
-CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value)
+CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value) :
+    speedTrace_(speedTrace)
 {
   double total_time = 0.0;
   trace_ = 0;
@@ -274,12 +271,11 @@ CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value)
   }
 
   type_ = TRACE_DYNAMIC;
-  speedTrace_ = speedTrace;
 
   /* count the total time of trace file */
-  for (auto val: speedTrace->event_list) {
+  for (auto val : speedTrace->event_list)
     total_time += val.delta;
-  }
+
   trace_ = new CpuTiTrace(speedTrace);
   lastTime_ = total_time;
   total_ = trace_->integrateSimple(0, total_time);
@@ -475,8 +471,8 @@ void CpuTi::apply_event(tmgr_trace_iterator_t event, double value)
           action->setFinishTime(date);
           action->setState(Action::State::failed);
           if (action->indexHeap_ >= 0) {
-            CpuTiAction *heap_act =
-                static_cast<CpuTiAction*>(xbt_heap_remove(static_cast<CpuTiModel*>(getModel())->tiActionHeap_, action->indexHeap_));
+            CpuTiAction* heap_act = static_cast<CpuTiAction*>(
+                xbt_heap_remove(static_cast<CpuTiModel*>(model())->tiActionHeap_, action->indexHeap_));
             if (heap_act != action)
               DIE_IMPOSSIBLE;
           }
@@ -547,16 +543,16 @@ void CpuTi::updateActionsFinishTime(double now)
     /* add in action heap */
     XBT_DEBUG("action(%p) index %d", action, action->indexHeap_);
     if (action->indexHeap_ >= 0) {
-      CpuTiAction *heap_act =
-          static_cast<CpuTiAction*>(xbt_heap_remove(static_cast<CpuTiModel*>(getModel())->tiActionHeap_, action->indexHeap_));
+      CpuTiAction* heap_act = static_cast<CpuTiAction*>(
+          xbt_heap_remove(static_cast<CpuTiModel*>(model())->tiActionHeap_, action->indexHeap_));
       if (heap_act != action)
         DIE_IMPOSSIBLE;
     }
     if (min_finish > NO_MAX_DURATION)
-      xbt_heap_push(static_cast<CpuTiModel*>(getModel())->tiActionHeap_, action, min_finish);
+      xbt_heap_push(static_cast<CpuTiModel*>(model())->tiActionHeap_, action, min_finish);
 
-    XBT_DEBUG("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f",
-         getName(), action, action->getStartTime(), action->finishTime_, action->getMaxDuration());
+    XBT_DEBUG("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f", cname(), action,
+              action->getStartTime(), action->finishTime_, action->getMaxDuration());
   }
   /* remove from modified cpu */
   modified(false);
@@ -588,7 +584,7 @@ void CpuTi::updateRemainingAmount(double now)
   for(ActionTiList::iterator it(actionSet_->begin()), itend(actionSet_->end()) ; it != itend ; ++it) {
     CpuTiAction *action = &*it;
     /* action not running, skip it */
-    if (action->getStateSet() != getModel()->getRunningActionSet())
+    if (action->getStateSet() != model()->getRunningActionSet())
       continue;
 
     /* bogus priority, skip it */
@@ -616,8 +612,8 @@ void CpuTi::updateRemainingAmount(double now)
 
 CpuAction *CpuTi::execution_start(double size)
 {
-  XBT_IN("(%s,%g)", getName(), size);
-  CpuTiAction *action = new CpuTiAction(static_cast<CpuTiModel*>(getModel()), size, isOff(), this);
+  XBT_IN("(%s,%g)", cname(), size);
+  CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(model()), size, isOff(), this);
 
   actionSet_->push_back(*action);
 
@@ -631,8 +627,8 @@ CpuAction *CpuTi::sleep(double duration)
   if (duration > 0)
     duration = MAX(duration, sg_surf_precision);
 
-  XBT_IN("(%s,%g)", getName(), duration);
-  CpuTiAction *action = new CpuTiAction(static_cast<CpuTiModel*>(getModel()), 1.0, isOff(), this);
+  XBT_IN("(%s,%g)", cname(), duration);
+  CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(model()), 1.0, isOff(), this);
 
   action->maxDuration_ = duration;
   action->suspended_ = 2;
@@ -640,8 +636,8 @@ CpuAction *CpuTi::sleep(double duration)
    /* Move to the *end* of the corresponding action set. This convention
       is used to speed up update_resource_state  */
   action->getStateSet()->erase(action->getStateSet()->iterator_to(*action));
-    action->stateSet_ = static_cast<CpuTiModel*>(getModel())->runningActionSetThatDoesNotNeedBeingChecked_;
-    action->getStateSet()->push_back(*action);
+  action->stateSet_ = static_cast<CpuTiModel*>(model())->runningActionSetThatDoesNotNeedBeingChecked_;
+  action->getStateSet()->push_back(*action);
   }
 
   actionSet_->push_back(*action);
@@ -651,7 +647,7 @@ CpuAction *CpuTi::sleep(double duration)
 }
 
 void CpuTi::modified(bool modified){
-  CpuTiList *modifiedCpu = static_cast<CpuTiModel*>(getModel())->modifiedCpu_;
+  CpuTiList* modifiedCpu = static_cast<CpuTiModel*>(model())->modifiedCpu_;
   if (modified) {
     if (!cpu_ti_hook.is_linked()) {
       modifiedCpu->push_back(*this);
@@ -669,9 +665,8 @@ void CpuTi::modified(bool modified){
 
 CpuTiAction::CpuTiAction(CpuTiModel *model_, double cost, bool failed, CpuTi *cpu)
  : CpuAction(model_, cost, failed)
+ , cpu_(cpu)
 {
-  cpu_ = cpu;
-  indexHeap_ = -1;
   cpu_->modified(true);
 }
 
@@ -709,7 +704,6 @@ void CpuTiAction::cancel()
   this->setState(Action::State::failed);
   xbt_heap_remove(getModel()->getActionHeap(), this->indexHeap_);
   cpu_->modified(true);
-  return;
 }
 
 void CpuTiAction::suspend()

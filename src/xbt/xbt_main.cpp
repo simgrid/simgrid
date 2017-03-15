@@ -1,7 +1,6 @@
 /* module handling                                                          */
 
-/* Copyright (c) 2006-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -96,7 +95,6 @@ static void xbt_preinit(void) {
 #endif
   xbt_log_preinit();
   xbt_os_thread_mod_preinit();
-  xbt_fifo_preinit();
   xbt_dict_preinit();
    
   srand(seed);
@@ -110,7 +108,6 @@ static void xbt_postexit(void)
 {
   if(!_sg_do_clean_atexit) return;
   xbt_initialized--;
-  xbt_fifo_postexit();
   xbt_dict_postexit();
   xbt_os_thread_mod_postexit();
   xbt_dynar_free(&xbt_cmdline);

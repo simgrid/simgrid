@@ -23,8 +23,6 @@
 namespace simgrid {
 namespace s4u {
 
-class Mutex;
-
 /** @brief A condition variable
  *  @ingroup s4u_api
  *

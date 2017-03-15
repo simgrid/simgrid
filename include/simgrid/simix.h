@@ -7,14 +7,10 @@
 #ifndef _SIMIX_SIMIX_H
 #define _SIMIX_SIMIX_H
 
-#include "xbt/misc.h"
-#include "xbt/fifo.h"
-#include "xbt/dict.h"
-#include "xbt/function_types.h"
-#include "xbt/parmap.h"
-#include "xbt/swag.h"
 #include "simgrid/datatypes.h"
 #include "simgrid/host.h"
+#include "xbt/ex.h"
+#include "xbt/parmap.h"
 
 #ifdef __cplusplus
 
@@ -23,9 +19,13 @@ namespace kernel {
 namespace context {
   class Context;
   class ContextFactory;
-}}
+  }
+  namespace activity {
+  class MailboxImpl;
+  }
+  }
 
-namespace simix {
+  namespace simix {
 
   /** @brief Process datatype
       @ingroup simix_process_management
@@ -36,14 +36,13 @@ namespace simix {
     @{ */
   class ActorImpl;
   class Mutex;
-  class Mailbox;
 }
 }
 
-typedef simgrid::kernel::context::Context *smx_context_t;
-typedef simgrid::simix::ActorImpl *smx_actor_t;
-typedef simgrid::simix::Mutex   *smx_mutex_t;
-typedef simgrid::simix::Mailbox *smx_mailbox_t;
+typedef simgrid::kernel::context::Context* smx_context_t;
+typedef simgrid::simix::ActorImpl* smx_actor_t;
+typedef simgrid::simix::Mutex* smx_mutex_t;
+typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
 
 #else
 
@@ -257,23 +256,11 @@ XBT_PUBLIC(void) simcall_execution_set_priority(smx_activity_t execution, double
 XBT_PUBLIC(void) simcall_execution_set_bound(smx_activity_t execution, double bound);
 XBT_PUBLIC(e_smx_state_t) simcall_execution_wait(smx_activity_t execution);
 
-/******************************* VM simcalls ********************************/
-// Create the vm_workstation at the SURF level
-XBT_PUBLIC(void) simcall_vm_resume(sg_host_t vm);
-XBT_PUBLIC(void) simcall_vm_save(sg_host_t vm);
-XBT_PUBLIC(void) simcall_vm_suspend(sg_host_t vm);
-XBT_PUBLIC(void) simcall_vm_shutdown(sg_host_t vm);
-
 /**************************** Process simcalls ********************************/
 /* Constructor and Destructor */
-XBT_PUBLIC(smx_actor_t) simcall_process_create(const char *name,
-                                          xbt_main_func_t code,
-                                          void *data,
-                                          sg_host_t host,
-                                          double kill_time,
-                                          int argc, char **argv,
-                                          xbt_dict_t properties,
-                                          int auto_restart);
+XBT_PUBLIC(smx_actor_t)
+simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_host_t host, int argc, char** argv,
+                       xbt_dict_t properties);
 
 XBT_PUBLIC(void) simcall_process_kill(smx_actor_t process);
 XBT_PUBLIC(void) simcall_process_killall(int reset_pid);
@@ -287,7 +274,6 @@ XBT_PUBLIC(void) simcall_process_resume(smx_actor_t process);
 
 /* Getters and Setters */
 XBT_PUBLIC(int) simcall_process_count();
-XBT_PUBLIC(void *) simcall_process_get_data(smx_actor_t process);
 XBT_PUBLIC(void) simcall_process_set_data(smx_actor_t process, void *data);
 XBT_PUBLIC(void) simcall_process_set_host(smx_actor_t process, sg_host_t dest);
 XBT_PUBLIC(int) simcall_process_is_suspended(smx_actor_t process);
@@ -302,12 +288,6 @@ XBT_PUBLIC(void) simcall_process_join(smx_actor_t process, double timeout);
 XBT_PUBLIC(e_smx_state_t) simcall_process_sleep(double duration);
 
 /************************** Comunication simcalls *****************************/
-/***** Rendez-vous points *****/
-
-XBT_PUBLIC(smx_mailbox_t) simcall_mbox_create(const char *name);
-XBT_PUBLIC(void) simcall_mbox_set_receiver(smx_mailbox_t mbox , smx_actor_t process);
-
-/***** Communication simcalls *****/
 
 XBT_PUBLIC(void) simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size,
                                      double rate, void *src_buff,
@@ -398,10 +378,6 @@ XBT_PUBLIC(xbt_dict_t) simcall_storage_get_content(smx_storage_t storage);
 XBT_PUBLIC(const char*) SIMIX_storage_get_name(smx_storage_t storage);
 XBT_PUBLIC(sg_size_t) SIMIX_storage_get_size(smx_storage_t storage);
 XBT_PUBLIC(const char*) SIMIX_storage_get_host(smx_storage_t storage);
-/************************** AS router   **********************************/
-XBT_PUBLIC(xbt_dict_t) SIMIX_asr_get_properties(const char *name);
-/************************** AS router simcalls ***************************/
-XBT_PUBLIC(xbt_dict_t) simcall_asr_get_properties(const char *name);
 
 /************************** MC simcalls   **********************************/
 XBT_PUBLIC(int) simcall_mc_random(int min, int max);

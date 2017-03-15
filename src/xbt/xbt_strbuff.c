@@ -38,7 +38,8 @@ inline xbt_strbuff_t xbt_strbuff_new_from(const char *ctn)
 {
   xbt_strbuff_t res = xbt_malloc(sizeof(s_xbt_strbuff_t));
   res->data = xbt_strdup(ctn);
-  res->used = res->size = strlen(ctn);
+  res->size = strlen(ctn);
+  res->used = res->size;
   return res;
 }
 
@@ -103,7 +104,8 @@ void xbt_strbuff_printf(xbt_strbuff_t b, const char *fmt, ...)
 void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
 {
   char *end;                    /* pointers around the parsed chunk */
-  int in_simple_quote = 0, in_double_quote = 0;
+  int in_simple_quote = 0;
+  int in_double_quote = 0;
   int done = 0;
 
   if (b->data[0] == '\0')
@@ -132,11 +134,13 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
     case '$':
       if (!in_simple_quote) {
         /* Go for the substitution. First search the variable name */
-        char *beg_var, *end_var;        /* variable name boundary */
-        char *beg_subst, *end_subst = NULL;     /* where value should be written to */
-        char *value, *default_value = NULL;
+        char *beg_var;
+        char *end_var;        /* variable name boundary */
+        char *beg_subst = end;
+        char *end_subst = NULL;     /* where value should be written to */
+        char *value;
+        char *default_value = NULL;
         int val_len;
-        beg_subst = end;
 
         if (*(++end) == '{') {
           /* the variable name is enclosed in braces. */

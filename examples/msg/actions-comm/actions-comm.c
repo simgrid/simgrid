@@ -280,8 +280,6 @@ static void action_finalize(const char *const *action)
 
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
-
   /* Check the given arguments */
   MSG_init(&argc, argv);
   /* Explicit initialization of the action module is required now*/
@@ -312,7 +310,7 @@ int main(int argc, char *argv[])
   xbt_replay_action_register("compute", action_compute);
 
   /* Actually do the simulation using MSG_action_trace_run */
-  res = MSG_action_trace_run(argv[3]);  // it's ok to pass a NULL argument here
+  msg_error_t res = MSG_action_trace_run(argv[3]); // it's ok to pass a NULL argument here
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
 

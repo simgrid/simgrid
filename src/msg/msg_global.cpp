@@ -1,22 +1,19 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2015. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <simgrid/s4u/host.hpp>
+#include "simgrid/s4u/engine.hpp"
+#include "simgrid/s4u/host.hpp"
 
-#include "simgrid/msg.h"
 #include "instr/instr_interface.h"
-#include "msg_private.h"
 #include "mc/mc.h"
-#include "xbt/sysdep.h"
-#include "xbt/log.h"
-#include "simgrid/sg_config.h" /* Configuration mechanism of SimGrid */
-#include "src/surf/xml/platf_private.hpp" // FIXME: KILLME by removing MSG_post_create_environment()
+#include "src/msg/msg_private.h"
 
 XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg, "Logging specific to MSG (kernel)");
+
+SG_BEGIN_DECL()
 
 MSG_Global_t msg_global = nullptr;
 static void MSG_exit();
@@ -28,11 +25,6 @@ static void _sg_cfg_cb_msg_debug_multiple_use(const char *name)
   msg_global->debug_multiple_use = xbt_cfg_get_boolean(name);
 }
 
-static void MSG_host_create_(sg_host_t host)
-{
-  __MSG_host_create(host);
-}
-
 /**
  * \ingroup msg_simulation
  * \brief Initialize MSG with less verifications
@@ -42,7 +34,7 @@ void MSG_init_nocheck(int *argc, char **argv) {
 
   TRACE_global_init(argc, argv);
 
-  xbt_getpid = MSG_process_self_PID;
+  xbt_getpid = &MSG_process_self_PID;
   if (!msg_global) {
 
     msg_global = xbt_new0(s_MSG_Global_t, 1);
@@ -59,14 +51,12 @@ void MSG_init_nocheck(int *argc, char **argv) {
     SIMIX_function_register_process_create(MSG_process_create_from_SIMIX);
     SIMIX_function_register_process_cleanup(MSG_process_cleanup_from_SIMIX);
 
-    simgrid::surf::on_postparse.connect(MSG_post_create_environment);
-    simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
-      MSG_host_create_(&host);
-    });
-    MSG_HOST_LEVEL = simgrid::s4u::Host::extension_create([](void *p) {
-      __MSG_host_priv_free((msg_host_priv_t) p);
-    });
+    simgrid::s4u::onPlatformCreated.connect(MSG_post_create_environment);
 
+    simgrid::MsgHostExt::EXTENSION_ID = simgrid::s4u::Host::extension_create<simgrid::MsgHostExt>();
+    simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
+      host.extension_set<simgrid::MsgHostExt>(new simgrid::MsgHostExt());
+    });
   }
 
   if(MC_is_active()){
@@ -147,3 +137,5 @@ unsigned long int MSG_get_sent_msg()
 {
   return msg_global->sent_msg;
 }
+
+SG_END_DECL()

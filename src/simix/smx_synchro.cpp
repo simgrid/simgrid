@@ -5,8 +5,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/surf/surf_interface.hpp"
 #include "smx_private.h"
+#include "src/surf/cpu_interface.hpp"
+#include "src/surf/surf_interface.hpp"
 #include <xbt/ex.hpp>
 #include <xbt/log.h>
 
@@ -27,7 +28,7 @@ static smx_activity_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout)
   XBT_IN("(%p, %f)",smx_host,timeout);
 
   simgrid::kernel::activity::Raw *sync = new simgrid::kernel::activity::Raw();
-  sync->sleep = surf_host_sleep(smx_host, timeout);
+  sync->sleep                          = smx_host->pimpl_cpu->sleep(timeout);
   sync->sleep->setData(sync);
   XBT_OUT();
   return sync;
@@ -389,7 +390,6 @@ void intrusive_ptr_release(s_smx_cond_t *cond)
 }
 
 /******************************** Semaphores **********************************/
-#define SMX_SEM_NOLIMIT 99999
 /** @brief Initialize a semaphore */
 smx_sem_t SIMIX_sem_init(unsigned int value)
 {
@@ -435,7 +435,7 @@ void SIMIX_sem_release(smx_sem_t sem)
     delete proc->waiting_synchro;
     proc->waiting_synchro = nullptr;
     SIMIX_simcall_answer(&proc->simcall);
-  } else if (sem->value < SMX_SEM_NOLIMIT) {
+  } else {
     sem->value++;
   }
   XBT_OUT();

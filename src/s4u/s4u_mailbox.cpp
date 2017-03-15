@@ -17,20 +17,17 @@ namespace simgrid {
 namespace s4u {
 
 const char *Mailbox::name() {
-  return pimpl_->name;
+  return pimpl_->name_;
 }
 
 MailboxPtr Mailbox::byName(const char*name)
 {
-  // FIXME: there is a race condition here where two actors run Mailbox::byName
-  // on a non-existent mailbox during the same scheduling round. Both will be
-  // interrupted in the simcall creating the underlying simix mbox.
-  // Only one simix object will be created, but two S4U objects will be created.
-  // Only one S4U object will be stored in the hashmap and used, and the other
-  // one will be leaked.
-  smx_mailbox_t mbox = SIMIX_mbox_get_by_name(name);
-  if (mbox == nullptr)
-    mbox = simcall_mbox_create(name);
+  kernel::activity::MailboxImpl* mbox = kernel::activity::MailboxImpl::byNameOrNull(name);
+  if (mbox == nullptr) {
+    mbox = simix::kernelImmediate([name] {
+      return kernel::activity::MailboxImpl::byNameOrCreate(name);
+    });
+  }
   return MailboxPtr(&mbox->piface_, true);
 }
 
@@ -50,14 +47,16 @@ smx_activity_t Mailbox::front()
 }
 
 void Mailbox::setReceiver(ActorPtr actor) {
-  simcall_mbox_set_receiver(pimpl_, actor == nullptr ? nullptr : actor->pimpl_);
+  simix::kernelImmediate([this, actor]() {
+    this->pimpl_->setReceiver(actor);
+  });
 }
 
 /** @brief get the receiver (process associated to the mailbox) */
 ActorPtr Mailbox::receiver() {
-  if(pimpl_->permanent_receiver == nullptr)
+  if (pimpl_->permanent_receiver == nullptr)
     return ActorPtr();
-  return ActorPtr(&pimpl_->permanent_receiver->getIface());
+  return pimpl_->permanent_receiver->iface();
 }
 
 }

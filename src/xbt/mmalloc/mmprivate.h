@@ -1,7 +1,6 @@
 /* Declarations for `mmalloc' and friends. */
 
-/* Copyright (c) 2010-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,8 +10,8 @@
    Written May 1989 by Mike Haertel.
    Heavily modified Mar 1992 by Fred Fish. (fnf@cygnus.com) */
 
-#ifndef __MMPRIVATE_H
-#define __MMPRIVATE_H 1
+#ifndef XBT_MMPRIVATE_H
+#define XBT_MMPRIVATE_H 1
 
 #include <xbt/base.h>
 #include <xbt/misc.h>
@@ -322,4 +321,4 @@ XBT_PRIVATE size_t mmalloc_get_bytes_used_remote(size_t heaplimit, const malloc_
 
 SG_END_DECL()
 
-#endif                          /* __MMPRIVATE_H */
+#endif
