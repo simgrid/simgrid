@@ -80,18 +80,13 @@ template <typename T> int Keyval::keyval_free(int* keyval){
   return MPI_SUCCESS;
 }
 
-//specialized in smpi_keyvals.cpp
-template <typename T> int Keyval::call_deleter(T* obj, smpi_key_elem elem, int keyval, void * value, int* flag){
-  return MPI_SUCCESS;
-}
-
 template <typename T> int Keyval::attr_delete(int keyval){
   smpi_key_elem elem = T::keyvals_.at(keyval);
   if(elem==nullptr)
     return MPI_ERR_ARG;
   elem->refcount--;
   void * value = nullptr;
-  int flag;
+  int flag=0;
   if(this->attr_get<T>(keyval, &value, &flag)==MPI_SUCCESS){
     int ret = call_deleter<T>((T*)this, elem, keyval,value,&flag);
     if(ret!=MPI_SUCCESS)
@@ -128,7 +123,7 @@ template <typename T> int Keyval::attr_put(int keyval, void* attr_value){
     return MPI_ERR_ARG;
   elem->refcount++;
   void * value = nullptr;
-  int flag;
+  int flag=0;
   this->attr_get<T>(keyval, &value, &flag);
   if(flag!=0){
     int ret = call_deleter<T>((T*)this, elem, keyval,value,&flag);
@@ -141,7 +136,7 @@ template <typename T> int Keyval::attr_put(int keyval, void* attr_value){
 
 template <typename T> void Keyval::cleanup_attr(){
   if(!attributes_.empty()){
-    int flag;
+    int flag=0;
     for(auto it = attributes_.begin(); it != attributes_.end(); it++){
       try{
         smpi_key_elem elem = T::keyvals_.at((*it).first);
