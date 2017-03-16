@@ -9,7 +9,6 @@
 #ifndef XBT_REPLAY_HPP
 #define XBT_REPLAY_HPP
 
-#include "xbt/dict.h"
 #ifdef __cplusplus
 #include <fstream>
 #include <queue>

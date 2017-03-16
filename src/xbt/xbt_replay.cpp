@@ -4,17 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/internal_config.h"
 #include "xbt/ex.hpp"
 #include "xbt/log.h"
 #include "xbt/replay.hpp"
-#include "xbt/str.h"
-#include "xbt/sysdep.h"
 
 #include <boost/algorithm/string.hpp>
-#include <ctype.h>
-#include <errno.h>
-#include <wchar.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(replay,xbt,"Replay trace reader");
 
@@ -36,17 +30,12 @@ class ReplayReader {
   std::string line;
 
 public:
-  char* filename_;
-  int linenum = 0;
-
   explicit ReplayReader(const char* filename)
   {
-    filename_ = xbt_strdup(filename);
     fs        = new std::ifstream(filename, std::ifstream::in);
   }
   ~ReplayReader()
   {
-    free(filename_);
     delete fs;
   }
   bool get(ReplayAction* action);
@@ -55,7 +44,6 @@ public:
 bool ReplayReader::get(ReplayAction* action)
 {
   read_and_trim_line(fs, &line);
-  linenum++;
 
   if (line.length() > 0 && line.find("#") == std::string::npos) {
     boost::split(*action, line, boost::is_any_of(" \t"), boost::token_compress_on);
@@ -174,7 +162,7 @@ int replay_runner(int argc, char* argv[])
       if (evt->at(0).compare(argv[0]) == 0) {
         simgrid::xbt::handle_action(evt);
       } else {
-        XBT_WARN("%s:%d: Ignore trace element not for me", reader->filename_, reader->linenum);
+        XBT_WARN("Ignore trace element ... not for me");
       }
       evt->clear();
     }
