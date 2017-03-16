@@ -10,12 +10,6 @@
 #include "private.h"
 
 
-typedef struct s_smpi_mpi_comm_key_elem {
-  MPI_Comm_copy_attr_function* copy_fn;
-  MPI_Comm_delete_attr_function* delete_fn;
-} s_smpi_mpi_comm_key_elem_t; 
-typedef struct s_smpi_mpi_comm_key_elem *smpi_comm_key_elem;
-
 namespace simgrid{
 namespace smpi{
 
@@ -40,7 +34,6 @@ class Comm : public F2C, public Keyval{
 
     Comm() = default;
     Comm(MPI_Group group, MPI_Topology topo);
-
     int dup(MPI_Comm* newcomm);
     MPI_Group group();
     MPI_Topology topo();

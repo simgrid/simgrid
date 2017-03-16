@@ -20,7 +20,7 @@ class Info : public F2C{
     int refcount_;
   public:
     explicit Info();
-    Info(Info* orig);
+    explicit Info(Info* orig);
     ~Info();
     void ref();
     static void unref(MPI_Info info);

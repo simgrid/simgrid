@@ -79,7 +79,7 @@ namespace simgrid{
 namespace smpi{
 
 class Datatype : public F2C, public Keyval{
-  protected:
+  private:
     char* name_;
     size_t size_;
     MPI_Aint lb_;
@@ -95,18 +95,21 @@ class Datatype : public F2C, public Keyval{
     Datatype(char* name, int size,MPI_Aint lb, MPI_Aint ub, int flags);
     Datatype(Datatype *datatype, int* ret);
     virtual ~Datatype();
+
+    char* name();
+    size_t size();
+    MPI_Aint lb();
+    MPI_Aint ub();
+    int flags();
+    int refcount();
+
     void ref();
     static void unref(MPI_Datatype datatype);
     void commit();
     bool is_valid();
-    size_t size();
-    int flags();
     void addflag(int flag);
-    MPI_Aint lb();
-    MPI_Aint ub();
     int extent(MPI_Aint * lb, MPI_Aint * extent);
     MPI_Aint get_extent();
-    char* name();
     void get_name(char* name, int* length);
     void set_name(char* name);
     static int copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,

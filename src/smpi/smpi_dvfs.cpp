@@ -73,10 +73,8 @@ double smpi_get_host_consumed_energy() {
 
 #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
 typedef int integer;
-typedef unsigned int uinteger;
 #else
 typedef long int integer;
-typedef unsigned long int uinteger;
 #endif
 typedef char *address;
 typedef short int shortint;

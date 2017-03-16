@@ -15,6 +15,22 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi, "Logging specific to SMPI (coll)");
 
+#define COLL_SETTER(cat, ret, args, args2)\
+int (*Colls::cat ) args;\
+void Colls::set_##cat (const char * name){\
+    int id = find_coll_description(mpi_coll_## cat ##_description,\
+                                             name,#cat);\
+    cat = reinterpret_cast<ret (*) args>\
+        (mpi_coll_## cat ##_description[id].coll);\
+    if (cat == nullptr)\
+      xbt_die("Collective "#cat" set to nullptr!");\
+}
+
+#define SET_COLL(coll)\
+    name = xbt_cfg_get_string("smpi/"#coll);\
+    if (name==nullptr || name[0] == '\0')\
+        name = selector_name;\
+    set_##coll(name);
 
 namespace simgrid{
 namespace smpi{
@@ -48,9 +64,9 @@ s_mpi_coll_description_t Colls::mpi_coll_reduce_description[] = {
 /** Displays the long description of all registered models, and quit */
 void Colls::coll_help(const char *category, s_mpi_coll_description_t * table)
 {
-  printf("Long description of the %s models accepted by this simulator:\n", category);
+  XBT_WARN("Long description of the %s models accepted by this simulator:\n", category);
   for (int i = 0; table[i].name; i++)
-    printf("  %s: %s\n", table[i].name, table[i].description);
+    XBT_WARN("  %s: %s\n", table[i].name, table[i].description);
 }
 
 int Colls::find_coll_description(s_mpi_coll_description_t * table, const char *name, const char *desc)
@@ -77,15 +93,6 @@ int Colls::find_coll_description(s_mpi_coll_description_t * table, const char *n
 
 
 
-#define COLL_SETTER(cat, ret, args, args2)\
-int (*Colls::cat ) args;\
-void Colls::set_##cat (const char * name){\
-    int id = find_coll_description(mpi_coll_## cat ##_description,\
-                                             name,#cat);\
-    cat = reinterpret_cast<ret (*) args>\
-        (mpi_coll_## cat ##_description[id].coll);\
-}
-
 COLL_APPLY(COLL_SETTER,COLL_GATHER_SIG,"");
 COLL_APPLY(COLL_SETTER,COLL_ALLGATHER_SIG,"");
 COLL_APPLY(COLL_SETTER,COLL_ALLGATHERV_SIG,"");
@@ -104,71 +111,19 @@ void Colls::set_collectives(){
     if (selector_name==nullptr || selector_name[0] == '\0')
         selector_name = "default";
 
-    const char* name = xbt_cfg_get_string("smpi/gather");
-    if (name==nullptr || name[0] == '\0')
-        name = selector_name;
-      
-    set_gather(name);
+    const char* name;
 
-    name = xbt_cfg_get_string("smpi/allgather");
-    if (name==nullptr || name[0] == '\0')
-        name = selector_name;
-
-    set_allgather(name);
-
-    name = xbt_cfg_get_string("smpi/allgatherv");
-    if (name==nullptr || name[0] == '\0')
-        name = selector_name;
-
-    set_allgatherv(name);
-
-    name = xbt_cfg_get_string("smpi/allreduce");
-    if (name==nullptr || name[0] == '\0')
-        name = selector_name;
-
-    set_allreduce(name);
-
-    name = xbt_cfg_get_string("smpi/alltoall");
-    if (name==nullptr || name[0] == '\0')
-        name = selector_name;
-
-    set_alltoall(name);
-
-    name = xbt_cfg_get_string("smpi/alltoallv");
-    if (name==nullptr || name[0] == '\0')
-        name = selector_name;
-
-    set_alltoallv(name);
-
-    name = xbt_cfg_get_string("smpi/reduce");
-    if (name==nullptr || name[0] == '\0')
-        name = selector_name;
-
-    set_reduce(name);
-
-    name = xbt_cfg_get_string("smpi/reduce-scatter");
-    if (name==nullptr || name[0] == '\0')
-        name = selector_name;
-
-    set_reduce_scatter(name);
-
-    name = xbt_cfg_get_string("smpi/scatter");
-    if (name==nullptr || name[0] == '\0')
-        name = selector_name;
-
-    set_scatter(name);
-
-    name = xbt_cfg_get_string("smpi/bcast");
-    if (name==nullptr || name[0] == '\0')
-        name = selector_name;
-
-    set_bcast(name);
-
-    name = xbt_cfg_get_string("smpi/barrier");
-    if (name==nullptr || name[0] == '\0')
-        name = selector_name;
-
-    set_barrier(name);
+    SET_COLL(gather);
+    SET_COLL(allgather);
+    SET_COLL(allgatherv);
+    SET_COLL(allreduce);
+    SET_COLL(alltoall);
+    SET_COLL(alltoallv);
+    SET_COLL(reduce);
+    SET_COLL(reduce_scatter);
+    SET_COLL(scatter);
+    SET_COLL(bcast);
+    SET_COLL(barrier);
 }
 
 
@@ -268,7 +223,7 @@ int Colls::scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
   // Local copy from self
   Datatype::copy(sendbuf, count, datatype, recvbuf, count, datatype);
 
-  // Send/Recv buffers to/from others;
+  // Send/Recv buffers to/from others
   MPI_Request *requests = xbt_new(MPI_Request, size - 1);
   void **tmpbufs = xbt_new(void *, rank);
   int index = 0;
@@ -292,15 +247,15 @@ int Colls::scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
       }
       if(index < rank) {
         // #Request is below rank: it's a irecv
-        if(op!=MPI_OP_NULL) op->apply( tmpbufs[index], recvbuf, &count, datatype);
+        op->apply( tmpbufs[index], recvbuf, &count, datatype);
       }
     }
   }else{
     //non commutative case, wait in order
     for (int other = 0; other < size - 1; other++) {
       Request::wait(&(requests[other]), MPI_STATUS_IGNORE);
-      if(index < rank) {
-        if(op!=MPI_OP_NULL) op->apply( tmpbufs[other], recvbuf, &count, datatype);
+      if(index < rank && op!=MPI_OP_NULL) {
+        op->apply( tmpbufs[other], recvbuf, &count, datatype);
       }
     }
   }
@@ -326,7 +281,7 @@ int Colls::exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype
 
   datatype->extent(&lb, &dataext);
 
-  // Send/Recv buffers to/from others;
+  // Send/Recv buffers to/from others
   MPI_Request *requests = xbt_new(MPI_Request, size - 1);
   void **tmpbufs = xbt_new(void *, rank);
   int index = 0;
@@ -354,7 +309,7 @@ int Colls::exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype
           recvbuf_is_empty=0;
         } else
           // #Request is below rank: it's a irecv
-          if(op!=MPI_OP_NULL) op->apply( tmpbufs[index], recvbuf, &count, datatype);
+          op->apply( tmpbufs[index], recvbuf, &count, datatype);
       }
     }
   }else{
@@ -366,7 +321,8 @@ int Colls::exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype
           Datatype::copy(tmpbufs[other], count, datatype, recvbuf, count, datatype);
           recvbuf_is_empty = 0;
         } else
-          if(op!=MPI_OP_NULL) op->apply( tmpbufs[other], recvbuf, &count, datatype);
+          if(op!=MPI_OP_NULL) 
+            op->apply( tmpbufs[other], recvbuf, &count, datatype);
       }
     }
   }

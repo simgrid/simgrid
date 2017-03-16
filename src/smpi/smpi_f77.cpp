@@ -13,10 +13,8 @@ static int running_processes = 0;
 
 #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
 typedef int integer;
-typedef unsigned int uinteger;
 #else
 typedef long int integer;
-typedef unsigned long int uinteger;
 #endif
 
 /* Convert between Fortran and C */
@@ -490,7 +488,7 @@ void mpi_type_free_(int* datatype, int* ierr){
   MPI_Datatype tmp= Datatype::f2c(*datatype);
   *ierr= MPI_Type_free (&tmp);
   if(*ierr == MPI_SUCCESS) {
-    Datatype::free_f(*datatype);
+    F2C::free_f(*datatype);
   }
 }
 
@@ -519,7 +517,7 @@ void mpi_win_free_( int* win, int* ierr){
   MPI_Win tmp = Win::f2c(*win);
   *ierr =  MPI_Win_free(&tmp);
   if(*ierr == MPI_SUCCESS) {
-    Win::free_f(*win);
+    F2C::free_f(*win);
   }
 }
 
@@ -631,7 +629,7 @@ void mpi_info_free_(int* info, int* ierr){
   MPI_Info tmp = Info::f2c(*info);
   *ierr =  MPI_Info_free(&tmp);
   if(*ierr == MPI_SUCCESS) {
-    Info::free_f(*info);
+    F2C::free_f(*info);
   }
 }
 
@@ -759,7 +757,7 @@ void mpi_op_free_ (int* op, int* ierr){
   MPI_Op tmp=Op::f2c(*op);
   *ierr = MPI_Op_free(& tmp);
   if(*ierr == MPI_SUCCESS) {
-    Op::free_f(*op);
+    F2C::free_f(*op);
   }
 }
 
@@ -767,7 +765,7 @@ void mpi_group_free_ (int* group, int* ierr){
  MPI_Group tmp=Group::f2c(*group);
  *ierr = MPI_Group_free(&tmp);
  if(*ierr == MPI_SUCCESS) {
-   Group::free_f(*group);
+   F2C::free_f(*group);
  }
 }
 
