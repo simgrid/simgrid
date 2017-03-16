@@ -518,8 +518,8 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_string("smpi/gather",        nullptr, nullptr, "Which collective to use for gather");
     xbt_cfg_register_string("smpi/allgather",     nullptr, nullptr, "Which collective to use for allgather");
     xbt_cfg_register_string("smpi/barrier",       nullptr, nullptr, "Which collective to use for barrier");
-    xbt_cfg_register_string("smpi/reduce-scatter",nullptr, nullptr, "Which collective to use for reduce_scatter");
-    xbt_cfg_register_alias("smpi/reduce-scatter","smpi/reduce_scatter");
+    xbt_cfg_register_string("smpi/reduce_scatter",nullptr, nullptr, "Which collective to use for reduce_scatter");
+    xbt_cfg_register_alias("smpi/reduce_scatter","smpi/reduce-scatter");
     xbt_cfg_register_string("smpi/scatter",       nullptr, nullptr, "Which collective to use for scatter");
     xbt_cfg_register_string("smpi/allgatherv",    nullptr, nullptr, "Which collective to use for allgatherv");
     xbt_cfg_register_string("smpi/allreduce",     nullptr, nullptr, "Which collective to use for allreduce");
