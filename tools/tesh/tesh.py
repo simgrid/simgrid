@@ -291,17 +291,21 @@ class Cmd(object):
         if TeshState().wrapper is not None:
             self.timeout *= 20
             self.args = TeshState().wrapper + self.args
-        elif TeshState().jenkins:
-            self.timeout *= 10
         elif re.match(".*smpirun.*", self.args) is not None:
             self.args = "sh " + self.args 
+        if TeshState().jenkins:
+            self.timeout *= 10
 
         self.args += TeshState().args_suffix
         
-        print("["+FileReader().filename+":"+str(self.linenumber)+"] "+self.args)
                 
         args = shlex.split(self.args)
         #print (args)
+        if not os.path.isfile(args[0]):
+            print("["+FileReader().filename+":"+str(self.linenumber)+"] Cannot start '"+args[0]+"': File not found")
+            exit(3)
+
+        print("["+FileReader().filename+":"+str(self.linenumber)+"] "+self.args)
         try:
             proc = subprocess.Popen(args, bufsize=1, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
         except OSError as e:
@@ -314,6 +318,7 @@ class Cmd(object):
             (stdout_data, stderr_data) = proc.communicate("\n".join(self.input_pipe), self.timeout)
         except subprocess.TimeoutExpired:
             print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> timeout after "+str(self.timeout)+" sec)")
+            proc.kill()
             exit(3)
 
         if self.output_display:
@@ -444,6 +449,9 @@ if __name__ == '__main__':
         f = FileReader(None)
         print("Test suite from stdin")
     else:
+        if not os.path.isfile(options.teshfile):
+            print("Cannot open teshfile '"+options.teshfile+"': File not found")
+            exit(3)
         f = FileReader(options.teshfile)
         print("Test suite '"+f.abspath+"'")
     
