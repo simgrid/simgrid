@@ -21,7 +21,6 @@ class Type_Contiguous: public Datatype{
   public:
     Type_Contiguous(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, MPI_Datatype old_type);
     ~Type_Contiguous();
-    void ref();
     void serialize( void* noncontiguous, void *contiguous, 
                             int count);
     void unserialize( void* contiguous_vector, void *noncontiguous_vector, 
@@ -37,7 +36,6 @@ class Type_Vector: public Datatype{
   public:
     Type_Vector(int size,MPI_Aint lb, MPI_Aint ub, int flags, int count, int blocklen, int stride, MPI_Datatype old_type);
     ~Type_Vector();
-    void ref();
     void serialize( void* noncontiguous, void *contiguous, 
                             int count);
     void unserialize( void* contiguous_vector, void *noncontiguous_vector, 
@@ -53,7 +51,6 @@ class Type_Hvector: public Datatype{
   public:
     Type_Hvector(int size,MPI_Aint lb, MPI_Aint ub, int flags, int block_count, int block_length, MPI_Aint block_stride, MPI_Datatype old_type);
     ~Type_Hvector();
-    void ref();
     void serialize( void* noncontiguous, void *contiguous, 
                             int count);
     void unserialize( void* contiguous_vector, void *noncontiguous_vector, 
@@ -69,7 +66,6 @@ class Type_Indexed: public Datatype{
   public:
     Type_Indexed(int size,MPI_Aint lb, MPI_Aint ub, int flags, int block_count, int* block_lengths, int* block_indices, MPI_Datatype old_type);
     ~Type_Indexed();
-    void ref();
     void serialize( void* noncontiguous, void *contiguous, 
                             int count);
     void unserialize( void* contiguous_vector, void *noncontiguous_vector, 
@@ -85,7 +81,6 @@ class Type_Hindexed: public Datatype{
   public:
     Type_Hindexed(int size,MPI_Aint lb, MPI_Aint ub, int flags, int block_count, int* block_lengths, MPI_Aint* block_indices, MPI_Datatype old_type);
     ~Type_Hindexed();
-    void ref();
     void serialize( void* noncontiguous, void *contiguous, 
                             int count);
     void unserialize( void* contiguous_vector, void *noncontiguous_vector, 
@@ -101,7 +96,6 @@ class Type_Struct: public Datatype{
   public:
     Type_Struct(int size,MPI_Aint lb, MPI_Aint ub, int flags, int block_count, int* block_lengths, MPI_Aint* block_indices, MPI_Datatype* old_types);
     ~Type_Struct();
-    void ref();
     void serialize( void* noncontiguous, void *contiguous, 
                             int count);
     void unserialize( void* contiguous_vector, void *noncontiguous_vector, 

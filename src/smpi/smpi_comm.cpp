@@ -80,13 +80,13 @@ int Comm::dup(MPI_Comm* newcomm){
   (*newcomm) = new  Comm(cp, this->topo());
   int ret = MPI_SUCCESS;
 
-  if(!attributes_.empty()){
+  if(!attributes()->empty()){
     int flag;
     void* value_out;
-    for(auto it = attributes_.begin(); it != attributes_.end(); it++){
-      smpi_key_elem elem = keyvals_.at((*it).first);
+    for(auto it : *attributes()){
+      smpi_key_elem elem = keyvals_.at(it.first);
       if (elem != nullptr && elem->copy_fn.comm_copy_fn != MPI_NULL_COPY_FN) {
-        ret = elem->copy_fn.comm_copy_fn(this, (*it).first, nullptr, (*it).second, &value_out, &flag);
+        ret = elem->copy_fn.comm_copy_fn(this, it.first, nullptr, it.second, &value_out, &flag);
         if (ret != MPI_SUCCESS) {
           Comm::destroy(*newcomm);
           *newcomm = MPI_COMM_NULL;
@@ -94,7 +94,7 @@ int Comm::dup(MPI_Comm* newcomm){
         }
         if (flag){
           elem->refcount++;
-          (*newcomm)->attributes_.insert({(*it).first, value_out});
+          (*newcomm)->attributes()->insert({it.first, value_out});
         }
       }
       }
@@ -250,10 +250,9 @@ MPI_Comm Comm::split(int color, int key)
             reqs++;
           }
         }
-        if(i != 0) {
-          if(group_out != MPI_COMM_WORLD->group() && group_out != MPI_GROUP_EMPTY)
-            Group::unref(group_out);
-        }
+        if(i != 0 && group_out != MPI_COMM_WORLD->group() && group_out != MPI_GROUP_EMPTY)
+          Group::unref(group_out);
+        
         Request::waitall(reqs, requests, MPI_STATUS_IGNORE);
         xbt_free(requests);
       }
@@ -481,9 +480,9 @@ MPI_Comm Comm::f2c(int id) {
     return MPI_COMM_SELF;
   } else if(id==0){
     return MPI_COMM_WORLD;
-  } else if(F2C::f2c_lookup_ != nullptr && id >= 0) {
+  } else if(F2C::f2c_lookup() != nullptr && id >= 0) {
       char key[KEY_SIZE];
-      MPI_Comm tmp =  static_cast<MPI_Comm>(xbt_dict_get_or_null(F2C::f2c_lookup_,get_key_id(key, id)));
+      MPI_Comm tmp =  static_cast<MPI_Comm>(xbt_dict_get_or_null(F2C::f2c_lookup(),get_key_id(key, id)));
       return tmp != nullptr ? tmp : MPI_COMM_NULL ;
   } else {
     return MPI_COMM_NULL;
@@ -492,17 +491,17 @@ MPI_Comm Comm::f2c(int id) {
 
 void Comm::free_f(int id) {
   char key[KEY_SIZE];
-  xbt_dict_remove(F2C::f2c_lookup_, id==0? get_key(key, id) : get_key_id(key, id));
+  xbt_dict_remove(F2C::f2c_lookup(), id==0? get_key(key, id) : get_key_id(key, id));
 }
 
 int Comm::add_f() {
-  if(F2C::f2c_lookup_==nullptr){
-    F2C::f2c_lookup_=xbt_dict_new_homogeneous(nullptr);
+  if(F2C::f2c_lookup()==nullptr){
+    F2C::set_f2c_lookup(xbt_dict_new_homogeneous(nullptr));
   }
   char key[KEY_SIZE];
-  xbt_dict_set(F2C::f2c_lookup_, this==MPI_COMM_WORLD? get_key(key, F2C::f2c_id_) : get_key_id(key,F2C::f2c_id_), this, nullptr);
-  F2C::f2c_id_++;
-  return F2C::f2c_id_-1;
+  xbt_dict_set(F2C::f2c_lookup(), this==MPI_COMM_WORLD? get_key(key, F2C::f2c_id()) : get_key_id(key,F2C::f2c_id()), this, nullptr);
+  f2c_id_increment();
+  return F2C::f2c_id()-1;
 }
 
 

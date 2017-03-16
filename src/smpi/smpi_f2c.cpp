@@ -14,6 +14,22 @@ namespace smpi{
 xbt_dict_t F2C::f2c_lookup_=nullptr;
 int F2C::f2c_id_=0;
 
+xbt_dict_t F2C::f2c_lookup(){
+  return f2c_lookup_;
+}
+
+void F2C::set_f2c_lookup(xbt_dict_t dict){
+  f2c_lookup_=dict;
+}
+
+void F2C::f2c_id_increment(){
+  f2c_id_++;
+};
+
+int F2C::f2c_id(){
+  return f2c_id_;
+};
+
 char* F2C::get_key(char* key, int id) {
   snprintf(key, KEY_SIZE, "%x",id);
   return key;
@@ -43,7 +59,7 @@ int F2C::add_f(){
   }
   char key[KEY_SIZE];
   xbt_dict_set(f2c_lookup_, get_key(key, f2c_id_), this, nullptr);
-  f2c_id_++;
+  f2c_id_increment();
   return f2c_id_-1;
 }
 

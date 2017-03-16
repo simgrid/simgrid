@@ -127,10 +127,11 @@ Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), lb_(datatype-
   *ret = MPI_SUCCESS;
   if(datatype->name_)
     name_ = xbt_strdup(datatype->name_);
-  if(!(datatype->attributes_.empty())){
+  
+  if(!(datatype->attributes()->empty())){
     int flag;
     void* value_out;
-    for(auto it = datatype->attributes_.begin(); it != datatype->attributes_.end(); it++){
+    for(auto it = datatype->attributes()->begin(); it != datatype->attributes()->end(); it++){
       smpi_key_elem elem = keyvals_.at((*it).first);
       
       if (elem != nullptr && elem->copy_fn.type_copy_fn != MPI_NULL_COPY_FN) {
@@ -140,7 +141,7 @@ Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), lb_(datatype-
         }
         if (flag){
           elem->refcount++;
-          attributes_.insert({(*it).first, value_out});
+          attributes()->insert({(*it).first, value_out});
         }
       }
     }
@@ -207,6 +208,10 @@ int Datatype::flags(){
   return flags_;
 }
 
+int Datatype::refcount(){
+  return refcount_;
+}
+
 void Datatype::addflag(int flag){
   flags_ &= flag;
 }
@@ -254,7 +259,7 @@ int Datatype::pack(void* inbuf, int incount, void* outbuf, int outcount, int* po
 }
 
 int Datatype::unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount,MPI_Comm comm){
-  if (outcount*(int)size_> insize)
+  if (outcount*static_cast<int>(size_)> insize)
     return MPI_ERR_BUFFER;
   Datatype::copy(static_cast<char*>(inbuf) + *position, insize, MPI_CHAR, outbuf, outcount, this);
   *position += outcount * size_;

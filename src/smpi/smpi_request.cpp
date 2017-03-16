@@ -1004,23 +1004,23 @@ MPI_Request Request::f2c(int id) {
   char key[KEY_SIZE];
   if(id==MPI_FORTRAN_REQUEST_NULL)
     return static_cast<MPI_Request>(MPI_REQUEST_NULL);
-  return static_cast<MPI_Request>(xbt_dict_get(F2C::f2c_lookup_, get_key_id(key, id)));
+  return static_cast<MPI_Request>(xbt_dict_get(F2C::f2c_lookup(), get_key_id(key, id)));
 }
 
 int Request::add_f() {
-  if(F2C::f2c_lookup_==nullptr){
-    F2C::f2c_lookup_=xbt_dict_new_homogeneous(nullptr);
+  if(F2C::f2c_lookup()==nullptr){
+    F2C::set_f2c_lookup(xbt_dict_new_homogeneous(nullptr));
   }
   char key[KEY_SIZE];
-  xbt_dict_set(F2C::f2c_lookup_, get_key_id(key, F2C::f2c_id_), this, nullptr);
-  F2C::f2c_id_++;
-  return F2C::f2c_id_-1;
+  xbt_dict_set(F2C::f2c_lookup(), get_key_id(key, F2C::f2c_id()), this, nullptr);
+  F2C::f2c_id_increment();
+  return F2C::f2c_id()-1;
 }
 
 void Request::free_f(int id) {
   char key[KEY_SIZE];
   if(id!=MPI_FORTRAN_REQUEST_NULL)
-    xbt_dict_remove(F2C::f2c_lookup_, get_key_id(key, id));
+    xbt_dict_remove(F2C::f2c_lookup(), get_key_id(key, id));
 }
 
 

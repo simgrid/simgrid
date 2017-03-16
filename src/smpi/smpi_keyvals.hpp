@@ -15,13 +15,13 @@ namespace simgrid{
 namespace smpi{
 
 
-typedef union smpi_delete_fn{
+typedef struct smpi_delete_fn{
   MPI_Comm_delete_attr_function          *comm_delete_fn;
   MPI_Type_delete_attr_function          *type_delete_fn;
   MPI_Win_delete_attr_function           *win_delete_fn;
 } smpi_delete_fn;
 
-typedef union smpi_copy_fn{
+typedef struct smpi_copy_fn{
   MPI_Comm_copy_attr_function          *comm_copy_fn;
   MPI_Type_copy_attr_function          *type_copy_fn;
   MPI_Win_copy_attr_function           *win_copy_fn;
@@ -35,8 +35,10 @@ typedef struct s_smpi_key_elem {
 typedef struct s_smpi_key_elem *smpi_key_elem;
 
 class Keyval{
-  protected:
+  private:
     std::unordered_map<int, void*> attributes_;
+  protected:
+    std::unordered_map<int, void*>* attributes();
   public:
 // Each subclass should have two members, as we want to separate the ones for Win, Comm, and Datatypes :  
 //    static std::unordered_map<int, smpi_key_elem> keyvals_;
@@ -92,9 +94,9 @@ template <typename T> int Keyval::attr_delete(int keyval){
     if(ret!=MPI_SUCCESS)
         return ret;
   }
-  if(attributes_.empty())
+  if(attributes()->empty())
     return MPI_ERR_ARG;
-  attributes_.erase(keyval);
+  attributes()->erase(keyval);
   return MPI_SUCCESS;
 }
 
@@ -103,12 +105,12 @@ template <typename T> int Keyval::attr_get(int keyval, void* attr_value, int* fl
   smpi_key_elem elem = T::keyvals_.at(keyval);
   if(elem==nullptr)
     return MPI_ERR_ARG;
-  if(attributes_.empty()){
+  if(attributes()->empty()){
     *flag=0;
     return MPI_SUCCESS;
   }
   try {
-    *static_cast<void**>(attr_value) = attributes_.at(keyval);
+    *static_cast<void**>(attr_value) = attributes()->at(keyval);
     *flag=1;
   }
   catch (const std::out_of_range& oor) {
@@ -130,21 +132,22 @@ template <typename T> int Keyval::attr_put(int keyval, void* attr_value){
     if(ret!=MPI_SUCCESS)
         return ret;
   }
-  attributes_.insert({keyval, attr_value});
+  attributes()->insert({keyval, attr_value});
   return MPI_SUCCESS;
 }
 
 template <typename T> void Keyval::cleanup_attr(){
-  if(!attributes_.empty()){
+  if(!attributes()->empty()){
     int flag=0;
-    for(auto it = attributes_.begin(); it != attributes_.end(); it++){
+    for(auto it : attributes_){
       try{
-        smpi_key_elem elem = T::keyvals_.at((*it).first);
+        smpi_key_elem elem = T::keyvals_.at(it.first);
         if(elem != nullptr){
-          call_deleter<T>((T*)this, elem, (*it).first,(*it).second,&flag);
+          call_deleter<T>((T*)this, elem, it.first,it.second,&flag);
         }
       }catch(const std::out_of_range& oor) {
         //already deleted, not a problem;
+        flag=0;
       }
     }
   }
