@@ -909,7 +909,7 @@ void smpi_replay_run(int *argc, char***argv){
   TRACE_smpi_collective_in(rank, -1, operation, extra);
   TRACE_smpi_collective_out(rank, -1, operation);
   xbt_free(operation);
-  _xbt_replay_action_init();
+  simgrid::xbt::replay_init();
   xbt_replay_action_register("init",       action_init);
   xbt_replay_action_register("finalize",   action_finalize);
   xbt_replay_action_register("comm_size",  action_comm_size);
@@ -950,7 +950,7 @@ void smpi_replay_run(int *argc, char***argv){
   }
 
   /* Actually run the replay */
-  xbt_replay_action_runner(*argc, *argv);
+  simgrid::xbt::replay_runner(*argc, *argv);
 
   /* and now, finalize everything */
   /* One active process will stop. Decrease the counter*/
@@ -973,7 +973,7 @@ void smpi_replay_run(int *argc, char***argv){
   if(active_processes==0){
     /* Last process alive speaking: end the simulated timer */
     XBT_INFO("Simulation time %f", smpi_process_simulated_elapsed());
-    _xbt_replay_action_exit();
+    simgrid::xbt::replay_exit();
     xbt_free(sendbuffer);
     xbt_free(recvbuffer);
   }

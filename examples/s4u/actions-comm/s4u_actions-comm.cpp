@@ -38,7 +38,7 @@ public:
       argc    = 2;
       argv[1] = &args.at(1)[0];
     }
-    xbt_replay_action_runner(argc, argv);
+    simgrid::xbt::replay_runner(argc, argv);
   }
 
   void operator()()
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 {
   simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
   /* Explicit initialization of the action module is required now*/
-  _xbt_replay_action_init();
+  simgrid::xbt::replay_init();
 
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file [action_files]\n"
                        "\t# if all actions are in the same file\n"
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
              argv[0], argv[0], argv[0]);
 
   e->loadPlatform(argv[1]);
-  e->registerDefault(&xbt_replay_action_runner);
+  e->registerDefault(&simgrid::xbt::replay_runner);
   e->registerFunction<Replayer>("p0");
   e->registerFunction<Replayer>("p1");
   e->loadDeployment(argv[2]);
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
 
   XBT_INFO("Simulation time %g", e->getClock());
 
-  _xbt_replay_action_exit(); /* Explicit finalization of the action module */
+  simgrid::xbt::replay_exit(); /* Explicit finalization of the action module */
 
   return 0;
 }
