@@ -293,25 +293,25 @@ class Cmd(object):
             self.args = TeshState().wrapper + self.args
         elif re.match(".*smpirun.*", self.args) is not None:
             self.args = "sh " + self.args 
-        if TeshState().jenkins:
+        if TeshState().jenkins and self.timeout != None:
             self.timeout *= 10
 
         self.args += TeshState().args_suffix
         
+        print("["+FileReader().filename+":"+str(self.linenumber)+"] "+self.args)
                 
         args = shlex.split(self.args)
         #print (args)
-        if not os.path.isfile(args[0]):
-            print("["+FileReader().filename+":"+str(self.linenumber)+"] Cannot start '"+args[0]+"': File not found")
-            exit(3)
 
-        print("["+FileReader().filename+":"+str(self.linenumber)+"] "+self.args)
         try:
             proc = subprocess.Popen(args, bufsize=1, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
         except OSError as e:
             if e.errno == 8:
                 e.strerror += "\nOSError: [Errno 8] Executed scripts should start with shebang line (like #!/bin/sh)"
             raise e
+        except FileNotFoundError:
+            print("["+FileReader().filename+":"+str(self.linenumber)+"] Cannot start '"+args[0]+"': File not found")
+            exit(3)
 
         cmdName = FileReader().filename+":"+str(self.linenumber)
         try:
