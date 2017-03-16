@@ -162,6 +162,8 @@ class TeshState(Singleton):
         self.threads = []
         self.args_suffix = ""
         self.ignore_regexps_common = []
+        self.jenkins = False # not a Jenkins run by default
+        self.timeout = 10 # default value: 10 sec
         self.wrapper = None
         self.keep = False
     
@@ -179,7 +181,7 @@ class Cmd(object):
         self.input_pipe = []
         self.output_pipe_stdout = []
         self.output_pipe_stderr = []
-        self.timeout = 10
+        self.timeout = TeshState().timeout
         self.args = None
         self.linenumber = -1
         
@@ -289,6 +291,8 @@ class Cmd(object):
         if TeshState().wrapper is not None:
             self.timeout *= 20
             self.args = TeshState().wrapper + self.args
+        elif TeshState().jenkins:
+            self.timeout *= 10
         elif re.match(".*smpirun.*", self.args) is not None:
             self.args = "sh " + self.args 
 
@@ -434,6 +438,7 @@ if __name__ == '__main__':
            re.compile("False positive error reports may follow"),
            re.compile("For details see http://code.google.com/p/address-sanitizer/issues/detail?id=189"),
            ]
+        TeshState().jenkins = True # This is a Jenkins build
     
     if options.teshfile is None:
         f = FileReader(None)
