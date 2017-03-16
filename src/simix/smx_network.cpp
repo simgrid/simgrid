@@ -642,13 +642,13 @@ void SIMIX_comm_finish(smx_activity_t synchro)
       else if(simcall->issuer == comm->dst_proc){
         if(comm->src_proc)
           comm->src_proc->comms.remove(synchro);
-        //in case of a detached comm we have an extra ref to remove, as the sender won't do it
-        destroy_count++;
       }
       else{
         comm->dst_proc->comms.remove(synchro);
         comm->src_proc->comms.remove(synchro);
       }
+      //in case of a detached comm we have an extra ref to remove, as the sender won't do it
+      destroy_count++;
     }
 
     SIMIX_simcall_answer(simcall);
