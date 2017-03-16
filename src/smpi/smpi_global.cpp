@@ -212,7 +212,7 @@ bool smpi_process_get_replaying(){
   if (index != MPI_UNDEFINED)
     return process_data[index_to_process_data[index]]->replaying;
   else
-    return !simgrid::xbt::replay_is_active();
+    return false;
 }
 
 int smpi_global_size()

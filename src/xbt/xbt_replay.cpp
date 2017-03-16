@@ -18,8 +18,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(replay,xbt,"Replay trace reader");
 
-bool is_replay_active        = false;
-
 namespace simgrid {
 namespace xbt {
 
@@ -68,22 +66,6 @@ bool ReplayReader::get(ReplayAction* action)
     else
       return this->get(action);
   }
-}
-
-void replay_init()
-{
-  if (!is_replay_active) {
-    is_replay_active  = true;
-  }
-}
-
-void replay_exit()
-{
-}
-
-bool replay_is_active()
-{
-  return is_replay_active;
 }
 
 static ReplayAction* get_action(char* name)
@@ -218,7 +200,5 @@ int replay_runner(int argc, char* argv[])
  */
 void xbt_replay_action_register(const char* action_name, action_fun function)
 {
-  if (!is_replay_active) // If the user registers a function before the start
-    simgrid::xbt::replay_init();
   simgrid::xbt::action_funs.insert({std::string(action_name), function});
 }

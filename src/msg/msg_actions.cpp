@@ -14,13 +14,12 @@ SG_BEGIN_DECL()
 
 void MSG_action_init()
 {
-  simgrid::xbt::replay_init();
   MSG_function_register_default(simgrid::xbt::replay_runner);
 }
 
 void MSG_action_exit()
 {
-  simgrid::xbt::replay_exit();
+  // Nothing to do anymore here
 }
 
 /** \ingroup msg_trace_driven

@@ -85,8 +85,6 @@ public:
 int main(int argc, char *argv[])
 {
   simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
-  /* Explicit initialization of the action module is required now*/
-  simgrid::xbt::replay_init();
 
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file [action_files]\n"
                        "\t# if all actions are in the same file\n"
@@ -119,8 +117,6 @@ int main(int argc, char *argv[])
   }
 
   XBT_INFO("Simulation time %g", e->getClock());
-
-  simgrid::xbt::replay_exit(); /* Explicit finalization of the action module */
 
   return 0;
 }
