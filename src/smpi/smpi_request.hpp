@@ -39,7 +39,7 @@ class Request : public F2C{
     int refcount_;
     MPI_Op op_;
   public:
-    Request();
+    Request()=default;
     Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags);
     MPI_Comm comm();
     size_t size();
