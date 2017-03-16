@@ -14,14 +14,10 @@
 #include <boost/algorithm/string.hpp>
 #include <ctype.h>
 #include <errno.h>
-#include <fstream>
-#include <queue>
-#include <unordered_map>
 #include <wchar.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(replay,xbt,"Replay trace reader");
 
-xbt_dict_t xbt_action_queues = nullptr;
 bool is_replay_active        = false;
 
 namespace simgrid {
@@ -29,7 +25,6 @@ namespace xbt {
 
 std::ifstream* action_fs = nullptr;
 std::unordered_map<std::string, action_fun> action_funs;
-typedef std::vector<std::string> ReplayAction;
 
 static void read_and_trim_line(std::ifstream* fs, std::string* line)
 {
@@ -78,15 +73,12 @@ bool ReplayReader::get(ReplayAction* action)
 void replay_init()
 {
   if (!is_replay_active) {
-    xbt_action_queues = xbt_dict_new_homogeneous(nullptr);
     is_replay_active  = true;
   }
 }
 
 void replay_exit()
 {
-  xbt_dict_free(&xbt_action_queues);
-  xbt_action_queues = nullptr;
 }
 
 bool replay_is_active()
@@ -98,8 +90,9 @@ static ReplayAction* get_action(char* name)
 {
   ReplayAction* action;
 
-  std::queue<ReplayAction*>* myqueue =
-      static_cast<std::queue<ReplayAction*>*>(xbt_dict_get_or_null(xbt_action_queues, name));
+  std::queue<ReplayAction*>* myqueue = nullptr;
+  if (action_queues.find(std::string(name)) != action_queues.end())
+    myqueue = action_queues.at(std::string(name));
   if (myqueue == nullptr || myqueue->empty()) { // Nothing stored for me. Read the file further
     if (action_fs == nullptr) {                 // File closed now. There's nothing more to read. I'm out of here
       goto todo_done;
@@ -119,11 +112,12 @@ static ReplayAction* get_action(char* name)
           return action;
         } else {
           // Else, I have to store it for the relevant colleague
-          std::queue<ReplayAction*>* otherqueue =
-              static_cast<std::queue<ReplayAction*>*>(xbt_dict_get_or_null(xbt_action_queues, evtname.c_str()));
+          std::queue<ReplayAction*>* otherqueue = nullptr;
+          if (action_queues.find(evtname) != action_queues.end())
+            otherqueue = action_queues.at(evtname);
           if (otherqueue == nullptr) { // Damn. Create the queue of that guy
             otherqueue = new std::queue<ReplayAction*>();
-            xbt_dict_set(xbt_action_queues, evtname.c_str(), otherqueue, nullptr);
+            action_queues.insert({evtname, otherqueue});
           }
           otherqueue->push(action);
         }
@@ -141,7 +135,7 @@ static ReplayAction* get_action(char* name)
 todo_done:
   if (myqueue != nullptr) {
     delete myqueue;
-    xbt_dict_remove(xbt_action_queues, name);
+    action_queues.erase(std::string(name));
   }
   return nullptr;
 }

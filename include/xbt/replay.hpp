@@ -12,10 +12,15 @@
 #include "xbt/dict.h"
 #ifdef __cplusplus
 #include <fstream>
+#include <queue>
+#include <unordered_map>
 
 namespace simgrid {
 namespace xbt {
 /* To split the file if a unique one is given (specific variable for the other case live in runner()) */
+typedef std::vector<std::string> ReplayAction;
+static std::unordered_map<std::string, std::queue<ReplayAction*>*> action_queues;
+
 XBT_PUBLIC_DATA(std::ifstream*) action_fs;
 XBT_PUBLIC(bool) replay_is_active();
 XBT_PUBLIC(void) replay_init();
@@ -28,7 +33,6 @@ XBT_PUBLIC(int) replay_runner(int argc, char* argv[]);
 SG_BEGIN_DECL()
 
 typedef void (*action_fun)(const char* const* args);
-XBT_PUBLIC_DATA(xbt_dict_t) xbt_action_queues;
 XBT_PUBLIC(void) xbt_replay_action_register(const char* action_name, action_fun function);
 
 SG_END_DECL()

@@ -31,22 +31,18 @@ void MSG_action_exit()
  */
 msg_error_t MSG_action_trace_run(char *path)
 {
-  msg_error_t res;
-  char *name;
-  xbt_dynar_t todo;
-  xbt_dict_cursor_t cursor;
-
   if (path) {
     simgrid::xbt::action_fs = new std::ifstream(path, std::ifstream::in);
   }
-  res = MSG_main();
 
-  if (!xbt_dict_is_empty(xbt_action_queues)) {
+  msg_error_t res = MSG_main();
+
+  if (!simgrid::xbt::action_queues.empty()) {
     XBT_WARN("Not all actions got consumed. If the simulation ended successfully (without deadlock),"
              " you may want to add new processes to your deployment file.");
 
-    xbt_dict_foreach(xbt_action_queues, cursor, name, todo) {
-      XBT_WARN("Still %lu actions for %s", xbt_dynar_length(todo), name);
+    for (auto actions_of : simgrid::xbt::action_queues) {
+      XBT_WARN("Still %zu actions for %s", actions_of.second->size(), actions_of.first.c_str());
     }
   }
 
@@ -54,9 +50,6 @@ msg_error_t MSG_action_trace_run(char *path)
     delete simgrid::xbt::action_fs;
     simgrid::xbt::action_fs = nullptr;
   }
-
-  xbt_dict_free(&xbt_action_queues);
-  xbt_action_queues = xbt_dict_new_homogeneous(nullptr);
 
   return res;
 }
