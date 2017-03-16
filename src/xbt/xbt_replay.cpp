@@ -21,11 +21,46 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(replay,xbt,"Replay trace reader");
 
+std::unordered_map<std::string, action_fun> xbt_action_funs;
+xbt_dict_t xbt_action_queues = nullptr;
+bool is_replay_active        = false;
+
 namespace simgrid {
 namespace xbt {
 
-bool is_replay_active = false;
 typedef std::vector<std::string> ReplayAction;
+
+static void read_and_trim_line(std::ifstream* fs, std::string* line)
+{
+  std::getline(*fs, *line);
+  boost::trim(*line);
+  XBT_DEBUG("got from trace: %s", line->c_str());
+}
+
+static void handle_action(ReplayAction* action)
+{
+  XBT_DEBUG("%s replays a %s action", action->at(0).c_str(), action->at(1).c_str());
+  char** c_action     = new char*[action->size() + 1];
+  action_fun function = xbt_action_funs.at(action->at(1));
+  int i = 0;
+  for (auto arg : *action) {
+    c_action[i] = xbt_strdup(arg.c_str());
+    i++;
+  }
+  c_action[i] = nullptr;
+  try {
+    function(c_action);
+  } catch (xbt_ex& e) {
+    for (unsigned int j = 0; j < action->size(); j++)
+      xbt_free(c_action[j]);
+    delete[] c_action;
+    action->clear();
+    xbt_die("Replay error:\n %s", e.what());
+  }
+  for (unsigned int j = 0; j < action->size(); j++)
+    xbt_free(c_action[j]);
+  delete[] c_action;
+}
 
 bool replay_is_active()
 {
@@ -55,9 +90,7 @@ public:
 
 bool ReplayReader::get(ReplayAction* action)
 {
-  std::getline(*fs, line);
-  boost::trim(line);
-  XBT_DEBUG("got from trace: %s", line.c_str());
+  read_and_trim_line(fs, &line);
   linenum++;
 
   if (line.length() > 0 && line.find("#") == std::string::npos) {
@@ -74,14 +107,7 @@ std::ifstream* action_fs = nullptr;
 }
 }
 
-std::unordered_map<std::string, action_fun> xbt_action_funs;
-
-xbt_dict_t xbt_action_queues = nullptr;
-
-bool is_replay_active = false;
-
 static simgrid::xbt::ReplayAction* action_get_action(char* name);
-
 /**
  * \ingroup XBT_replay
  * \brief Registers a function to handle a kind of action
@@ -129,25 +155,7 @@ int xbt_replay_action_runner(int argc, char *argv[])
       simgrid::xbt::ReplayAction* evt = action_get_action(argv[0]);
       if (evt == nullptr)
         break;
-
-      char** args = new char*[evt->size() + 1];
-      int i       = 0;
-      for (auto arg : *evt) {
-        args[i] = xbt_strdup(arg.c_str());
-        i++;
-      }
-      args[i]             = nullptr;
-      action_fun function = xbt_action_funs.at(evt->at(1));
-
-      try {
-        function(args);
-      }
-      catch(xbt_ex& e) {
-        xbt_die("Replay error :\n %s", e.what());
-      }
-      for (unsigned int j = 0; j < evt->size(); j++)
-        xbt_free(args[j]);
-      delete[] args;
+      simgrid::xbt::handle_action(evt);
       delete evt;
     }
   } else {                      // Should have got my trace file in argument
@@ -159,26 +167,7 @@ int xbt_replay_action_runner(int argc, char *argv[])
     simgrid::xbt::ReplayReader* reader = new simgrid::xbt::ReplayReader(argv[1]);
     while (reader->get(evt)) {
       if (evt->at(0).compare(argv[0]) == 0) {
-        char** args = new char*[evt->size() + 1];
-        int i       = 0;
-        for (auto arg : *evt) {
-          args[i] = xbt_strdup(arg.c_str());
-          i++;
-        }
-        args[i]             = nullptr;
-        action_fun function = xbt_action_funs.at(evt->at(1));
-        try {
-          function(args);
-        } catch(xbt_ex& e) {
-          for (unsigned int j = 0; j < evt->size(); j++)
-            xbt_free(args[j]);
-          delete[] args;
-          evt->clear();
-          xbt_die("Replay error on line %d of file %s :\n %s", reader->linenum, reader->filename_, e.what());
-        }
-        for (unsigned int j = 0; j < evt->size(); j++)
-          xbt_free(args[j]);
-        delete[] args;
+        simgrid::xbt::handle_action(evt);
       } else {
         XBT_WARN("%s:%d: Ignore trace element not for me", reader->filename_, reader->linenum);
       }
@@ -203,10 +192,7 @@ static simgrid::xbt::ReplayAction* action_get_action(char* name)
     // Read lines until I reach something for me (which breaks in loop body) or end of file reached
     while (!simgrid::xbt::action_fs->eof()) {
       std::string action_line;
-      std::getline(*simgrid::xbt::action_fs, action_line);
-      // cleanup and split the string I just read
-      boost::trim(action_line);
-      XBT_DEBUG("got from trace: %s", action_line.c_str());
+      simgrid::xbt::read_and_trim_line(simgrid::xbt::action_fs, &action_line);
       if (action_line.length() > 0 && action_line.find("#") == std::string::npos) {
         /* we cannot split in place here because we parse&store several lines for the colleagues... */
         action = new simgrid::xbt::ReplayAction();
