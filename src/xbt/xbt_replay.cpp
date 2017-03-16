@@ -3,12 +3,16 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
+#include "src/internal_config.h"
 #include "xbt/ex.hpp"
 #include "xbt/log.h"
 #include "xbt/replay.hpp"
+#include "xbt/str.h"
 
 #include <boost/algorithm/string.hpp>
+#include <ctype.h>
+#include <errno.h>
+#include <wchar.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(replay,xbt,"Replay trace reader");
 
