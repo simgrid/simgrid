@@ -98,7 +98,8 @@ static ReplayAction* get_action(char* name)
 {
   ReplayAction* action;
 
-  std::queue<ReplayAction*>* myqueue = (std::queue<ReplayAction*>*)xbt_dict_get_or_null(xbt_action_queues, name);
+  std::queue<ReplayAction*>* myqueue =
+      static_cast<std::queue<ReplayAction*>*>(xbt_dict_get_or_null(xbt_action_queues, name));
   if (myqueue == nullptr || myqueue->empty()) { // Nothing stored for me. Read the file further
     if (action_fs == nullptr) {                 // File closed now. There's nothing more to read. I'm out of here
       goto todo_done;
@@ -119,7 +120,7 @@ static ReplayAction* get_action(char* name)
         } else {
           // Else, I have to store it for the relevant colleague
           std::queue<ReplayAction*>* otherqueue =
-              (std::queue<ReplayAction*>*)xbt_dict_get_or_null(xbt_action_queues, evtname.c_str());
+              static_cast<std::queue<ReplayAction*>*>(xbt_dict_get_or_null(xbt_action_queues, evtname.c_str()));
           if (otherqueue == nullptr) { // Damn. Create the queue of that guy
             otherqueue = new std::queue<ReplayAction*>();
             xbt_dict_set(xbt_action_queues, evtname.c_str(), otherqueue, nullptr);
