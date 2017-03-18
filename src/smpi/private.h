@@ -14,6 +14,7 @@
 #include "xbt/base.h"
 #include "xbt/synchro.h"
 #include "xbt/xbt_os_time.h"
+#include "src/smpi/smpi_process.hpp"
 #include "src/smpi/smpi_f2c.hpp"
 #include "src/smpi/smpi_keyvals.hpp"
 #include "src/smpi/smpi_group.hpp"
@@ -31,8 +32,6 @@ SG_BEGIN_DECL()
 
 using namespace simgrid::smpi;
 
-struct s_smpi_process_data;
-typedef struct s_smpi_process_data *smpi_process_data_t;
 
 #define PERSISTENT     0x1
 #define NON_PERSISTENT 0x2
@@ -69,43 +68,19 @@ enum smpi_process_state{
 
 extern XBT_PRIVATE MPI_Comm MPI_COMM_UNINITIALIZED;
 
-XBT_PRIVATE void smpi_process_destroy();
-XBT_PRIVATE void smpi_process_finalize();
-XBT_PRIVATE int smpi_process_finalized();
-XBT_PRIVATE int smpi_process_initialized();
-XBT_PRIVATE void smpi_process_mark_as_initialized();
-
 typedef SMPI_Cart_topology *MPIR_Cart_Topology;
 
 typedef SMPI_Graph_topology *MPIR_Graph_Topology;
 
 typedef SMPI_Dist_Graph_topology *MPIR_Dist_Graph_Topology;
 
-XBT_PRIVATE smpi_process_data_t smpi_process_data();
-XBT_PRIVATE smpi_process_data_t smpi_process_remote_data(int index);
-// smpi_process_[set/get]_user_data must be public
-/* XBT_PRIVATE void smpi_process_set_user_data(void *); */
-/* XBT_PRIVATE void* smpi_process_get_user_data(void); */
+XBT_PRIVATE Process* smpi_process();
+XBT_PRIVATE Process* smpi_process_remote(int index);
 XBT_PRIVATE int smpi_process_count();
-XBT_PRIVATE MPI_Comm smpi_process_comm_world();
-XBT_PRIVATE MPI_Comm smpi_process_get_comm_intra();
-XBT_PRIVATE void smpi_process_set_comm_intra(MPI_Comm comm);
-XBT_PRIVATE smx_mailbox_t smpi_process_mailbox();
-XBT_PRIVATE smx_mailbox_t smpi_process_remote_mailbox(int index);
-XBT_PRIVATE smx_mailbox_t smpi_process_mailbox_small();
-XBT_PRIVATE smx_mailbox_t smpi_process_remote_mailbox_small(int index);
-XBT_PRIVATE xbt_mutex_t smpi_process_mailboxes_mutex();
-XBT_PRIVATE xbt_mutex_t smpi_process_remote_mailboxes_mutex(int index);
-XBT_PRIVATE xbt_os_timer_t smpi_process_timer();
-XBT_PRIVATE void smpi_process_simulated_start();
-XBT_PRIVATE double smpi_process_simulated_elapsed();
-XBT_PRIVATE void smpi_process_set_sampling(int s);
-XBT_PRIVATE int smpi_process_get_sampling();
-XBT_PRIVATE void smpi_process_set_replaying(bool s);
-XBT_PRIVATE bool smpi_process_get_replaying();
 
-XBT_PRIVATE void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm** comm,
-                                                  msg_bar_t* bar);
+XBT_PRIVATE void smpi_deployment_register_process(const char* instance_id, int rank, int index);
+XBT_PRIVATE MPI_Comm* smpi_deployment_comm_world(const char* instance_id);
+XBT_PRIVATE msg_bar_t smpi_deployment_finalization_barrier(const char* instance_id);
 XBT_PRIVATE void smpi_deployment_cleanup_instances();
  
 XBT_PRIVATE void smpi_comm_copy_buffer_callback(smx_activity_t comm, void *buff, size_t buff_size);

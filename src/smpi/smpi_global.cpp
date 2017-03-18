@@ -41,34 +41,7 @@ struct papi_process_data {
 #endif
 std::unordered_map<std::string, double> location2speedup;
 
-typedef struct s_smpi_process_data {
-  double simulated;
-  int *argc;
-  char ***argv;
-  simgrid::s4u::MailboxPtr mailbox;
-  simgrid::s4u::MailboxPtr mailbox_small;
-  xbt_mutex_t mailboxes_mutex;
-  xbt_os_timer_t timer;
-  MPI_Comm comm_self;
-  MPI_Comm comm_intra;
-  MPI_Comm* comm_world;
-  void *data;                   /* user data */
-  int index;
-  char state;
-  int sampling;                 /* inside an SMPI_SAMPLE_ block? */
-  char* instance_id;
-  bool replaying;                /* is the process replaying a trace */
-  msg_bar_t finalization_barrier;
-  int return_value;
-  smpi_trace_call_location_t trace_call_loc;
-#if HAVE_PAPI
-  /** Contains hardware data as read by PAPI **/
-  int papi_event_set;
-  papi_counter_t papi_counter_data;
-#endif
-} s_smpi_process_data_t;
-
-static smpi_process_data_t *process_data = nullptr;
+Process **process_data = nullptr;
 int process_count = 0;
 int smpi_universe_size = 0;
 int* index_to_process_data = nullptr;
@@ -81,139 +54,36 @@ MPI_Errhandler *MPI_ERRHANDLER_NULL = nullptr;
 
 void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t) = &smpi_comm_copy_buffer_callback;
 
-#define MAILBOX_NAME_MAXLEN (5 + sizeof(int) * 2 + 1)
 
-static char *get_mailbox_name(char *str, int index)
+
+int smpi_process_count()
 {
-  snprintf(str, MAILBOX_NAME_MAXLEN, "SMPI-%0*x", static_cast<int> (sizeof(int) * 2), index);
-  return str;
+  return process_count;
 }
 
-static char *get_mailbox_name_small(char *str, int index)
+Process* smpi_process()
 {
-  snprintf(str, MAILBOX_NAME_MAXLEN, "small%0*x", static_cast<int> (sizeof(int) * 2), index);
-  return str;
+  simgrid::MsgActorExt* msgExt = static_cast<simgrid::MsgActorExt*>(SIMIX_process_self()->data);
+  return static_cast<Process*>(msgExt->data);
 }
 
-void smpi_process_init(int *argc, char ***argv)
+Process* smpi_process_remote(int index)
 {
-
-  if (process_data == nullptr){
-    printf("SimGrid was not initialized properly before entering MPI_Init. Aborting, please check compilation process and use smpirun\n");
-    exit(1);
-  }
-  if (argc != nullptr && argv != nullptr) {
-    smx_actor_t proc = SIMIX_process_self();
-    proc->context->set_cleanup(&MSG_process_cleanup_from_SIMIX);
-    char* instance_id = (*argv)[1];
-    int rank = xbt_str_parse_int((*argv)[2], "Invalid rank: %s");
-    int index = smpi_process_index_of_smx_process(proc);
-
-    if(index_to_process_data == nullptr){
-      index_to_process_data=static_cast<int*>(xbt_malloc(SIMIX_process_count()*sizeof(int)));
-    }
-
-    if(smpi_privatize_global_variables){
-      /* Now using segment index of the process  */
-      index = proc->segment_index;
-      /* Done at the process's creation */
-      SMPI_switch_data_segment(index);
-    }
-
-    MPI_Comm* temp_comm_world;
-    msg_bar_t temp_bar;
-    smpi_deployment_register_process(instance_id, rank, index, &temp_comm_world, &temp_bar);
-    smpi_process_data_t data = smpi_process_remote_data(index);
-    data->comm_world         = temp_comm_world;
-    if(temp_bar != nullptr) 
-      data->finalization_barrier = temp_bar;
-    data->index       = index;
-    data->instance_id = instance_id;
-    data->replaying   = false;
-
-    static_cast<simgrid::MsgActorExt*>(proc->data)->data = data;
-
-    if (*argc > 3) {
-      memmove(&(*argv)[0], &(*argv)[2], sizeof(char *) * (*argc - 2));
-      (*argv)[(*argc) - 1] = nullptr;
-      (*argv)[(*argc) - 2] = nullptr;
-    }
-    (*argc)-=2;
-    data->argc = argc;
-    data->argv = argv;
-    // set the process attached to the mailbox
-    data->mailbox_small->setReceiver(simgrid::s4u::Actor::self());
-    XBT_DEBUG("<%d> New process in the game: %p", index, proc);
-  }
-  xbt_assert(smpi_process_data(),
-      "smpi_process_data() returned nullptr. You probably gave a nullptr parameter to MPI_Init. "
-      "Although it's required by MPI-2, this is currently not supported by SMPI.");
+  return process_data[index_to_process_data[index]];
 }
 
-void smpi_process_destroy()
-{
-  int index = smpi_process_index();
-  if(smpi_privatize_global_variables){
-    smpi_switch_data_segment(index);
-  }
-  process_data[index_to_process_data[index]]->state = SMPI_FINALIZED;
-  XBT_DEBUG("<%d> Process left the game", index);
+MPI_Comm smpi_process_comm_self(){
+  return smpi_process()->comm_self();
 }
 
-/** @brief Prepares the current process for termination. */
-void smpi_process_finalize()
-{
-    // This leads to an explosion of the search graph which cannot be reduced:
-    if(MC_is_active() || MC_record_replay_is_active())
-      return;
-
-    int index = smpi_process_index();
-    // wait for all pending asynchronous comms to finish
-    MSG_barrier_wait(process_data[index_to_process_data[index]]->finalization_barrier);
+void smpi_process_init(int *argc, char ***argv){
+  Process::init(argc, argv);
 }
 
-/** @brief Check if a process is finalized */
-int smpi_process_finalized()
-{
-  int index = smpi_process_index();
-    if (index != MPI_UNDEFINED)
-      return (process_data[index_to_process_data[index]]->state == SMPI_FINALIZED);
-    else
-      return 0;
+int smpi_process_index(){
+  return smpi_process()->index();
 }
 
-/** @brief Check if a process is initialized */
-int smpi_process_initialized()
-{
-  if (index_to_process_data == nullptr){
-    return false;
-  } else{
-    int index = smpi_process_index();
-    return ((index != MPI_UNDEFINED) && (process_data[index_to_process_data[index]]->state == SMPI_INITIALIZED));
-  }
-}
-
-/** @brief Mark a process as initialized (=MPI_Init called) */
-void smpi_process_mark_as_initialized()
-{
-  int index = smpi_process_index();
-  if ((index != MPI_UNDEFINED) && (process_data[index_to_process_data[index]]->state != SMPI_FINALIZED))
-    process_data[index_to_process_data[index]]->state = SMPI_INITIALIZED;
-}
-
-void smpi_process_set_replaying(bool value){
-  int index = smpi_process_index();
-  if ((index != MPI_UNDEFINED) && (process_data[index_to_process_data[index]]->state != SMPI_FINALIZED))
-    process_data[index_to_process_data[index]]->replaying = value;
-}
-
-bool smpi_process_get_replaying(){
-  int index = smpi_process_index();
-  if (index != MPI_UNDEFINED)
-    return process_data[index_to_process_data[index]]->replaying;
-  else
-    return false;
-}
 
 int smpi_global_size()
 {
@@ -221,164 +91,6 @@ int smpi_global_size()
   xbt_assert(value,"Please set env var SMPI_GLOBAL_SIZE to the expected number of processes.");
 
   return xbt_str_parse_int(value, "SMPI_GLOBAL_SIZE contains a non-numerical value: %s");
-}
-
-smpi_process_data_t smpi_process_data()
-{
-  simgrid::MsgActorExt* msgExt = static_cast<simgrid::MsgActorExt*>(SIMIX_process_self()->data);
-  return static_cast<smpi_process_data_t>(msgExt->data);
-}
-
-smpi_process_data_t smpi_process_remote_data(int index)
-{
-  return process_data[index_to_process_data[index]];
-}
-
-void smpi_process_set_user_data(void *data)
-{
-  smpi_process_data_t process_data = smpi_process_data();
-  process_data->data = data;
-}
-
-void *smpi_process_get_user_data()
-{
-  smpi_process_data_t process_data = smpi_process_data();
-  return process_data->data;
-}
-
-int smpi_process_count()
-{
-  return process_count;
-}
-
-/**
- * \brief Returns a structure that stores the location (filename + linenumber)
- *        of the last calls to MPI_* functions.
- *
- * \see smpi_trace_set_call_location
- */
-smpi_trace_call_location_t* smpi_process_get_call_location()
-{
-  smpi_process_data_t process_data = smpi_process_data();
-  return &process_data->trace_call_loc;
-}
-
-int smpi_process_index()
-{
-  smpi_process_data_t data = smpi_process_data();
-  //return -1 if not initialized
-  return data != nullptr ? data->index : MPI_UNDEFINED;
-}
-
-MPI_Comm smpi_process_comm_world()
-{
-  smpi_process_data_t data = smpi_process_data();
-  //return MPI_COMM_NULL if not initialized
-  return data != nullptr ? *data->comm_world : MPI_COMM_NULL;
-}
-
-smx_mailbox_t smpi_process_mailbox()
-{
-  smpi_process_data_t data = smpi_process_data();
-  return data->mailbox->getImpl();
-}
-
-smx_mailbox_t smpi_process_mailbox_small()
-{
-  smpi_process_data_t data = smpi_process_data();
-  return data->mailbox_small->getImpl();
-}
-
-xbt_mutex_t smpi_process_mailboxes_mutex()
-{
-  smpi_process_data_t data = smpi_process_data();
-  return data->mailboxes_mutex;
-}
-
-smx_mailbox_t smpi_process_remote_mailbox(int index)
-{
-  smpi_process_data_t data = smpi_process_remote_data(index);
-  return data->mailbox->getImpl();
-}
-
-smx_mailbox_t smpi_process_remote_mailbox_small(int index)
-{
-  smpi_process_data_t data = smpi_process_remote_data(index);
-  return data->mailbox_small->getImpl();
-}
-
-xbt_mutex_t smpi_process_remote_mailboxes_mutex(int index)
-{
-  smpi_process_data_t data = smpi_process_remote_data(index);
-  return data->mailboxes_mutex;
-}
-
-#if HAVE_PAPI
-int smpi_process_papi_event_set(void)
-{
-  smpi_process_data_t data = smpi_process_data();
-  return data->papi_event_set;
-}
-
-papi_counter_t& smpi_process_papi_counters(void)
-{
-  smpi_process_data_t data = smpi_process_data();
-  return data->papi_counter_data;
-}
-#endif
-
-xbt_os_timer_t smpi_process_timer()
-{
-  smpi_process_data_t data = smpi_process_data();
-  return data->timer;
-}
-
-void smpi_process_simulated_start()
-{
-  smpi_process_data_t data = smpi_process_data();
-  data->simulated = SIMIX_get_clock();
-}
-
-double smpi_process_simulated_elapsed()
-{
-  smpi_process_data_t data = smpi_process_data();
-  return SIMIX_get_clock() - data->simulated;
-}
-
-MPI_Comm smpi_process_comm_self()
-{
-  smpi_process_data_t data = smpi_process_data();
-  if(data->comm_self==MPI_COMM_NULL){
-    MPI_Group group = new  Group(1);
-    data->comm_self = new  Comm(group, nullptr);
-    group->set_mapping(smpi_process_index(), 0);
-  }
-
-  return data->comm_self;
-}
-
-MPI_Comm smpi_process_get_comm_intra()
-{
-  smpi_process_data_t data = smpi_process_data();
-  return data->comm_intra;
-}
-
-void smpi_process_set_comm_intra(MPI_Comm comm)
-{
-  smpi_process_data_t data = smpi_process_data();
-  data->comm_intra = comm;
-}
-
-void smpi_process_set_sampling(int s)
-{
-  smpi_process_data_t data = smpi_process_data();
-  data->sampling = s;
-}
-
-int smpi_process_get_sampling()
-{
-  smpi_process_data_t data = smpi_process_data();
-  return data->sampling;
 }
 
 void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, size_t))
@@ -398,7 +110,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
        XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
 
        smpi_switch_data_segment(
-           (static_cast<smpi_process_data_t>((static_cast<simgrid::MsgActorExt*>(comm->src_proc->data)->data))->index));
+           (static_cast<Process*>((static_cast<simgrid::MsgActorExt*>(comm->src_proc->data)->data))->index()));
        tmpbuff = static_cast<void*>(xbt_malloc(buff_size));
        memcpy(tmpbuff, buff, buff_size);
   }
@@ -407,7 +119,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
       && ((char*)comm->dst_buff < smpi_start_data_exe + smpi_size_data_exe )){
        XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
        smpi_switch_data_segment(
-           (static_cast<smpi_process_data_t>((static_cast<simgrid::MsgActorExt*>(comm->dst_proc->data)->data))->index));
+           (static_cast<Process*>((static_cast<simgrid::MsgActorExt*>(comm->dst_proc->data)->data))->index()));
   }
 
   memcpy(comm->dst_buff, tmpbuff, buff_size);
@@ -453,7 +165,6 @@ void smpi_global_init()
 {
   int i;
   MPI_Group group;
-  char name[MAILBOX_NAME_MAXLEN];
   int smpirun=0;
 
   if (!MC_is_active()) {
@@ -556,41 +267,9 @@ void smpi_global_init()
     smpirun=1;
   }
   smpi_universe_size = process_count;
-  process_data       = new smpi_process_data_t[process_count];
+  process_data       = new Process*[process_count];
   for (i = 0; i < process_count; i++) {
-    process_data[i]                       = new s_smpi_process_data_t;
-    process_data[i]->argc                 = nullptr;
-    process_data[i]->argv                 = nullptr;
-    process_data[i]->mailbox              = simgrid::s4u::Mailbox::byName(get_mailbox_name(name, i));
-    process_data[i]->mailbox_small        = simgrid::s4u::Mailbox::byName(get_mailbox_name_small(name, i));
-    process_data[i]->mailboxes_mutex      = xbt_mutex_init();
-    process_data[i]->timer                = xbt_os_timer_new();
-    if (MC_is_active())
-      MC_ignore_heap(process_data[i]->timer, xbt_os_timer_size());
-    process_data[i]->comm_self            = MPI_COMM_NULL;
-    process_data[i]->comm_intra           = MPI_COMM_NULL;
-    process_data[i]->comm_world           = nullptr;
-    process_data[i]->state                = SMPI_UNINITIALIZED;
-    process_data[i]->sampling             = 0;
-    process_data[i]->finalization_barrier = nullptr;
-    process_data[i]->return_value         = 0;
-
-#if HAVE_PAPI
-    if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0') {
-      // TODO: Implement host/process/thread based counters. This implementation
-      // just always takes the values passed via "default", like this:
-      // "default:COUNTER1:COUNTER2:COUNTER3;".
-      auto it = units2papi_setup.find(papi_default_config_name);
-      if (it != units2papi_setup.end()) {
-        process_data[i]->papi_event_set    = it->second.event_set;
-        process_data[i]->papi_counter_data = it->second.counter_data;
-        XBT_DEBUG("Setting PAPI set for process %i", i);
-      } else {
-        process_data[i]->papi_event_set = PAPI_NULL;
-        XBT_DEBUG("No PAPI set for process %i", i);
-      }
-    }
-#endif
+    process_data[i]                       = new Process(i);
   }
   //if the process was launched through smpirun script we generate a global mpi_comm_world
   //if not, we let MPI_COMM_NULL, and the comm world will be private to each mpi instance
@@ -602,7 +281,7 @@ void smpi_global_init()
 
     for (i = 0; i < process_count; i++) {
       group->set_mapping(i, i);
-      process_data[i]->finalization_barrier = bar;
+      process_data[i]->set_finalization_barrier(bar);
     }
   }
 }
@@ -614,19 +293,19 @@ void smpi_global_destroy()
   smpi_bench_destroy();
   if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED){
       delete MPI_COMM_WORLD->group();
-      MSG_barrier_destroy(process_data[0]->finalization_barrier);
+      MSG_barrier_destroy(process_data[0]->finalization_barrier());
   }else{
       smpi_deployment_cleanup_instances();
   }
   for (int i = 0; i < count; i++) {
-    if(process_data[i]->comm_self!=MPI_COMM_NULL){
-      Comm::destroy(process_data[i]->comm_self);
+    if(process_data[i]->comm_self()!=MPI_COMM_NULL){
+      Comm::destroy(process_data[i]->comm_self());
     }
-    if(process_data[i]->comm_intra!=MPI_COMM_NULL){
-      Comm::destroy(process_data[i]->comm_intra);
+    if(process_data[i]->comm_intra()!=MPI_COMM_NULL){
+      Comm::destroy(process_data[i]->comm_intra());
     }
-    xbt_os_timer_free(process_data[i]->timer);
-    xbt_mutex_destroy(process_data[i]->mailboxes_mutex);
+    xbt_os_timer_free(process_data[i]->timer());
+    xbt_mutex_destroy(process_data[i]->mailboxes_mutex());
     delete process_data[i];
   }
   delete[] process_data;
@@ -663,7 +342,7 @@ void __attribute__ ((weak)) user_main_()
 
 int __attribute__ ((weak)) smpi_simulated_main_(int argc, char **argv)
 {
-  smpi_process_init(&argc, &argv);
+  Process::init(&argc, &argv);
   user_main_();
   return 0;
 }
@@ -672,7 +351,7 @@ inline static int smpi_main_wrapper(int argc, char **argv){
   int ret = smpi_simulated_main_(argc,argv);
   if(ret !=0){
     XBT_WARN("SMPI process did not return 0. Return value : %d", ret);
-    smpi_process_data()->return_value=ret;
+    smpi_process()->set_return_value(ret);
   }
   return 0;
 }
@@ -795,8 +474,8 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
   int count = smpi_process_count();
   int i, ret=0;
   for (i = 0; i < count; i++) {
-    if(process_data[i]->return_value!=0){
-      ret=process_data[i]->return_value;//return first non 0 value
+    if(process_data[i]->return_value()!=0){
+      ret=process_data[i]->return_value();//return first non 0 value
       break;
     }
   }

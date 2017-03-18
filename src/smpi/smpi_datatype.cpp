@@ -271,7 +271,7 @@ int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        void *recvbuf, int recvcount, MPI_Datatype recvtype){
   int count;
   if(smpi_privatize_global_variables){
-    smpi_switch_data_segment(smpi_process_index());
+    smpi_switch_data_segment(smpi_process()->index());
   }
   /* First check if we really have something to do */
   if (recvcount > 0 && recvbuf != sendbuf) {
@@ -280,7 +280,7 @@ int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     count = sendcount < recvcount ? sendcount : recvcount;
 
     if(!(sendtype->flags() & DT_FLAG_DERIVED) && !(recvtype->flags() & DT_FLAG_DERIVED)) {
-      if(!smpi_process_get_replaying()) 
+      if(!smpi_process()->replaying()) 
         memcpy(recvbuf, sendbuf, count);
     }
     else if (!(sendtype->flags() & DT_FLAG_DERIVED))

@@ -236,7 +236,7 @@ int Coll_reduce_default::reduce(void *sendbuf, void *recvbuf, int count, MPI_Dat
     int index = 0;
     for (int src = 0; src < size; src++) {
       if (src != root) {
-         if (!smpi_process_get_replaying())
+         if (!smpi_process()->replaying())
           tmpbufs[index] = xbt_malloc(count * dataext);
          else
            tmpbufs[index] = smpi_get_tmp_sendbuffer(count * dataext);

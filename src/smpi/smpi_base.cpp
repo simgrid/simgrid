@@ -33,7 +33,7 @@ void smpi_mpi_init() {
 
 double smpi_mpi_wtime(){
   double time;
-  if (smpi_process_initialized() != 0 && smpi_process_finalized() == 0 && smpi_process_get_sampling() == 0) {
+  if (smpi_process()->initialized() != 0 && smpi_process()->finalized() == 0 && smpi_process()->sampling() == 0) {
     smpi_bench_end();
     time = SIMIX_get_clock();
     // to avoid deadlocks if used as a break condition, such as

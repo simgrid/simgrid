@@ -32,7 +32,7 @@ static char* get_key(char* key, int id) {
 }
 
 static char* get_key_id(char* key, int id) {
-  snprintf(key, KEY_SIZE, "%x_%d",id, smpi_process_index());
+  snprintf(key, KEY_SIZE, "%x_%d",id, smpi_process()->index());
   return key;
 }
 

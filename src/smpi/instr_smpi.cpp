@@ -208,7 +208,7 @@ void TRACE_smpi_init(int rank)
 #endif
       PJ_container_new(str, INSTR_SMPI, father);
 #if HAVE_PAPI
-  papi_counter_t counters = smpi_process_papi_counters();
+  papi_counter_t counters = smpi_process()->papi_counters();
 
   for (auto& it : counters) {
     /**

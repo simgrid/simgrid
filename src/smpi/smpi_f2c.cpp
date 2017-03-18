@@ -36,7 +36,7 @@ char* F2C::get_key(char* key, int id) {
 }
 
 char* F2C::get_key_id(char* key, int id) {
-  snprintf(key, KEY_SIZE, "%x_%d",id, smpi_process_index());
+  snprintf(key, KEY_SIZE, "%x_%d",id, smpi_process()->index());
   return key;
 }
 

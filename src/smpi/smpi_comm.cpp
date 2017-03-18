@@ -65,7 +65,7 @@ Comm::Comm(MPI_Group group, MPI_Topology topo) : group_(group), topo_(topo)
 void Comm::destroy(Comm* comm)
 {
   if (comm == MPI_COMM_UNINITIALIZED){
-    Comm::destroy(smpi_process_comm_world());
+    Comm::destroy(smpi_process()->comm_world());
     return;
   }
   delete comm->topo_; // there's no use count on topos
@@ -74,7 +74,7 @@ void Comm::destroy(Comm* comm)
 
 int Comm::dup(MPI_Comm* newcomm){
   if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
-     smpi_switch_data_segment(smpi_process_index());
+     smpi_switch_data_segment(smpi_process()->index());
    }
   MPI_Group cp = new  Group(this->group());
   (*newcomm) = new  Comm(cp, this->topo());
@@ -105,7 +105,7 @@ int Comm::dup(MPI_Comm* newcomm){
 MPI_Group Comm::group()
 {
   if (this == MPI_COMM_UNINITIALIZED)
-    return smpi_process_comm_world()->group();
+    return smpi_process()->comm_world()->group();
   return group_;
 }
 
@@ -116,21 +116,21 @@ MPI_Topology Comm::topo() {
 int Comm::size()
 {
   if (this == MPI_COMM_UNINITIALIZED)
-    return smpi_process_comm_world()->size();
+    return smpi_process()->comm_world()->size();
   return group_->size();
 }
 
 int Comm::rank()
 {
   if (this == MPI_COMM_UNINITIALIZED)
-    return smpi_process_comm_world()->rank();
-  return group_->rank(smpi_process_index());
+    return smpi_process()->comm_world()->rank();
+  return group_->rank(smpi_process()->index());
 }
 
 void Comm::get_name (char* name, int* len)
 {
   if (this == MPI_COMM_UNINITIALIZED){
-    smpi_process_comm_world()->get_name(name, len);
+    smpi_process()->comm_world()->get_name(name, len);
     return;
   }
   if(this == MPI_COMM_WORLD) {
@@ -143,7 +143,7 @@ void Comm::get_name (char* name, int* len)
 
 void Comm::set_leaders_comm(MPI_Comm leaders){
   if (this == MPI_COMM_UNINITIALIZED){
-    smpi_process_comm_world()->set_leaders_comm(leaders);
+    smpi_process()->comm_world()->set_leaders_comm(leaders);
     return;
   }
   leaders_comm_=leaders;
@@ -155,44 +155,44 @@ void Comm::set_intra_comm(MPI_Comm leaders){
 
 int* Comm::get_non_uniform_map(){
   if (this == MPI_COMM_UNINITIALIZED)
-    return smpi_process_comm_world()->get_non_uniform_map();
+    return smpi_process()->comm_world()->get_non_uniform_map();
   return non_uniform_map_;
 }
 
 int* Comm::get_leaders_map(){
   if (this == MPI_COMM_UNINITIALIZED)
-    return smpi_process_comm_world()->get_leaders_map();
+    return smpi_process()->comm_world()->get_leaders_map();
   return leaders_map_;
 }
 
 MPI_Comm Comm::get_leaders_comm(){
   if (this == MPI_COMM_UNINITIALIZED)
-    return smpi_process_comm_world()->get_leaders_comm();
+    return smpi_process()->comm_world()->get_leaders_comm();
   return leaders_comm_;
 }
 
 MPI_Comm Comm::get_intra_comm(){
   if (this == MPI_COMM_UNINITIALIZED || this==MPI_COMM_WORLD) 
-    return smpi_process_get_comm_intra();
+    return smpi_process()->comm_intra();
   else return intra_comm_;
 }
 
 int Comm::is_uniform(){
   if (this == MPI_COMM_UNINITIALIZED)
-    return smpi_process_comm_world()->is_uniform();
+    return smpi_process()->comm_world()->is_uniform();
   return is_uniform_;
 }
 
 int Comm::is_blocked(){
   if (this == MPI_COMM_UNINITIALIZED)
-    return smpi_process_comm_world()->is_blocked();
+    return smpi_process()->comm_world()->is_blocked();
   return is_blocked_;
 }
 
 MPI_Comm Comm::split(int color, int key)
 {
   if (this == MPI_COMM_UNINITIALIZED)
-    return smpi_process_comm_world()->split(color, key);
+    return smpi_process()->comm_world()->split(color, key);
   int system_tag = 123;
   int* recvbuf;
 
@@ -271,7 +271,7 @@ MPI_Comm Comm::split(int color, int key)
 
 void Comm::ref(){
   if (this == MPI_COMM_UNINITIALIZED){
-    smpi_process_comm_world()->ref();
+    smpi_process()->comm_world()->ref();
     return;
   }
   group_->ref();
@@ -291,7 +291,7 @@ void Comm::cleanup_smp(){
 
 void Comm::unref(Comm* comm){
   if (comm == MPI_COMM_UNINITIALIZED){
-    Comm::unref(smpi_process_comm_world());
+    Comm::unref(smpi_process()->comm_world());
     return;
   }
   comm->refcount_--;
@@ -316,20 +316,20 @@ void Comm::init_smp(){
   int leader = -1;
 
   if (this == MPI_COMM_UNINITIALIZED)
-    smpi_process_comm_world()->init_smp();
+    smpi_process()->comm_world()->init_smp();
 
   int comm_size = this->size();
   
   // If we are in replay - perform an ugly hack  
   // tell SimGrid we are not in replay for a while, because we need the buffers to be copied for the following calls
   bool replaying = false; //cache data to set it back again after
-  if(smpi_process_get_replaying()){
+  if(smpi_process()->replaying()){
    replaying=true;
-   smpi_process_set_replaying(false);
+   smpi_process()->set_replaying(false);
   }
 
   if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
-     smpi_switch_data_segment(smpi_process_index());
+     smpi_switch_data_segment(smpi_process()->index());
    }
   //identify neighbours in comm
   //get the indexes of all processes sharing the same simix host
@@ -371,7 +371,7 @@ void Comm::init_smp(){
   Coll_allgather_mpich::allgather(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, this);
 
   if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
-     smpi_switch_data_segment(smpi_process_index());
+     smpi_switch_data_segment(smpi_process()->index());
    }
 
   if(leaders_map_==nullptr){
@@ -418,7 +418,7 @@ void Comm::init_smp(){
       leader_comm=this->get_leaders_comm();
       Group::unref(leaders_group);
     }
-    smpi_process_set_comm_intra(comm_intra);
+    smpi_process()->set_comm_intra(comm_intra);
   }
 
   int is_uniform = 1;
@@ -445,7 +445,7 @@ void Comm::init_smp(){
   Coll_bcast_mpich::bcast(&(is_uniform_),1, MPI_INT, 0, comm_intra );
 
   if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
-     smpi_switch_data_segment(smpi_process_index());
+     smpi_switch_data_segment(smpi_process()->index());
    }
   // Are the ranks blocked ? = allocated contiguously on the SMP nodes
   int is_blocked=1;
@@ -472,7 +472,7 @@ void Comm::init_smp(){
   xbt_free(leader_list);
   
   if(replaying)
-    smpi_process_set_replaying(true); 
+    smpi_process()->set_replaying(true); 
 }
 
 MPI_Comm Comm::f2c(int id) {

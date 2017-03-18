@@ -244,19 +244,19 @@ void Request::print_request(const char *message)
 MPI_Request Request::send_init(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
 
-  return new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process_index(),
+  return new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
                           comm->group()->index(dst), tag, comm, PERSISTENT | SEND | PREPARED);
 }
 
 MPI_Request Request::ssend_init(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
-  return new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process_index(),
+  return new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
                         comm->group()->index(dst), tag, comm, PERSISTENT | SSEND | SEND | PREPARED);
 }
 
 MPI_Request Request::isend_init(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
-  return new Request(buf==MPI_BOTTOM ? nullptr : buf , count, datatype, smpi_process_index(),
+  return new Request(buf==MPI_BOTTOM ? nullptr : buf , count, datatype, smpi_process()->index(),
                           comm->group()->index(dst), tag,comm, PERSISTENT | ISEND | SEND | PREPARED);
 }
 
@@ -280,7 +280,7 @@ MPI_Request Request::recv_init(void *buf, int count, MPI_Datatype datatype, int 
 {
   return new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype,
                           src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->index(src),
-                          smpi_process_index(), tag, comm, PERSISTENT | RECV | PREPARED);
+                          smpi_process()->index(), tag, comm, PERSISTENT | RECV | PREPARED);
 }
 
 MPI_Request Request::rma_recv_init(void *buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm,
@@ -301,14 +301,14 @@ MPI_Request Request::rma_recv_init(void *buf, int count, MPI_Datatype datatype, 
 MPI_Request Request::irecv_init(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm)
 {
   return new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE :
-                          comm->group()->index(src), smpi_process_index(), tag,
+                          comm->group()->index(src), smpi_process()->index(), tag,
                           comm, PERSISTENT | RECV | PREPARED);
 }
 
 MPI_Request Request::isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
-  request =  new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process_index(),
+  request =  new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
                            comm->group()->index(dst), tag, comm, NON_PERSISTENT | ISEND | SEND);
   request->start();
   return request;
@@ -317,7 +317,7 @@ MPI_Request Request::isend(void *buf, int count, MPI_Datatype datatype, int dst,
 MPI_Request Request::issend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
-  request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process_index(),
+  request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
                         comm->group()->index(dst), tag,comm, NON_PERSISTENT | ISEND | SSEND | SEND);
   request->start();
   return request;
@@ -328,7 +328,7 @@ MPI_Request Request::irecv(void *buf, int count, MPI_Datatype datatype, int src,
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
   request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE :
-                          comm->group()->index(src), smpi_process_index(), tag, comm,
+                          comm->group()->index(src), smpi_process()->index(), tag, comm,
                           NON_PERSISTENT | RECV);
   request->start();
   return request;
@@ -345,7 +345,7 @@ void Request::recv(void *buf, int count, MPI_Datatype datatype, int src, int tag
 void Request::send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
-  request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process_index(),
+  request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
                           comm->group()->index(dst), tag, comm, NON_PERSISTENT | SEND);
 
   request->start();
@@ -356,7 +356,7 @@ void Request::send(void *buf, int count, MPI_Datatype datatype, int dst, int tag
 void Request::ssend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
-  request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process_index(),
+  request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
                           comm->group()->index(dst), tag, comm, NON_PERSISTENT | SSEND | SEND);
 
   request->start();
@@ -370,7 +370,7 @@ void Request::sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,int d
 {
   MPI_Request requests[2];
   MPI_Status stats[2];
-  int myid=smpi_process_index();
+  int myid=smpi_process()->index();
   if ((comm->group()->index(dst) == myid) && (comm->group()->index(src) == myid)){
       Datatype::copy(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype);
       return;
@@ -401,40 +401,40 @@ void Request::start()
 
     int async_small_thresh = xbt_cfg_get_int("smpi/async-small-thresh");
 
-    xbt_mutex_t mut = smpi_process_mailboxes_mutex();
+    xbt_mutex_t mut = smpi_process()->mailboxes_mutex();
     if (async_small_thresh != 0 || (flags_ & RMA) != 0)
       xbt_mutex_acquire(mut);
 
     if (async_small_thresh == 0 && (flags_ & RMA) == 0 ) {
-      mailbox = smpi_process_mailbox();
+      mailbox = smpi_process()->mailbox();
     } 
     else if (((flags_ & RMA) != 0) || static_cast<int>(size_) < async_small_thresh) {
       //We have to check both mailboxes (because SSEND messages are sent to the large mbox).
       //begin with the more appropriate one : the small one.
-      mailbox = smpi_process_mailbox_small();
+      mailbox = smpi_process()->mailbox_small();
       XBT_DEBUG("Is there a corresponding send already posted in the small mailbox %p (in case of SSEND)?", mailbox);
       smx_activity_t action = simcall_comm_iprobe(mailbox, 0, src_,tag_, &match_recv,
                                                   static_cast<void*>(this));
 
       if (action == nullptr) {
-        mailbox = smpi_process_mailbox();
+        mailbox = smpi_process()->mailbox();
         XBT_DEBUG("No, nothing in the small mailbox test the other one : %p", mailbox);
         action = simcall_comm_iprobe(mailbox, 0, src_,tag_, &match_recv, static_cast<void*>(this));
         if (action == nullptr) {
           XBT_DEBUG("Still nothing, switch back to the small mailbox : %p", mailbox);
-          mailbox = smpi_process_mailbox_small();
+          mailbox = smpi_process()->mailbox_small();
         }
       } else {
         XBT_DEBUG("yes there was something for us in the large mailbox");
       }
     } else {
-      mailbox = smpi_process_mailbox_small();
+      mailbox = smpi_process()->mailbox_small();
       XBT_DEBUG("Is there a corresponding send already posted the small mailbox?");
       smx_activity_t action = simcall_comm_iprobe(mailbox, 0, src_,tag_, &match_recv, static_cast<void*>(this));
 
       if (action == nullptr) {
         XBT_DEBUG("No, nothing in the permanent receive mailbox");
-        mailbox = smpi_process_mailbox();
+        mailbox = smpi_process()->mailbox();
       } else {
         XBT_DEBUG("yes there was something for us in the small mailbox");
       }
@@ -443,7 +443,7 @@ void Request::start()
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     real_size_=size_;
     action_ = simcall_comm_irecv(SIMIX_process_self(), mailbox, buf_, &real_size_, &match_recv,
-                                         ! smpi_process_get_replaying()? smpi_comm_copy_data_callback
+                                         ! smpi_process()->replaying()? smpi_comm_copy_data_callback
                                          : &smpi_comm_null_copy_buffer_callback, this, -1.0);
     XBT_DEBUG("recv simcall posted");
 
@@ -467,7 +467,7 @@ void Request::start()
       refcount_++;
       if(!(old_type_->flags() & DT_FLAG_DERIVED)){
         oldbuf = buf_;
-        if (!smpi_process_get_replaying() && oldbuf != nullptr && size_!=0){
+        if (!smpi_process()->replaying() && oldbuf != nullptr && size_!=0){
           if((smpi_privatize_global_variables != 0)
             && (static_cast<char*>(buf_) >= smpi_start_data_exe)
             && (static_cast<char*>(buf_) < smpi_start_data_exe + smpi_size_data_exe )){
@@ -495,36 +495,36 @@ void Request::start()
 
     int async_small_thresh = xbt_cfg_get_int("smpi/async-small-thresh");
 
-    xbt_mutex_t mut=smpi_process_remote_mailboxes_mutex(receiver);
+    xbt_mutex_t mut=smpi_process_remote(receiver)->mailboxes_mutex();
 
     if (async_small_thresh != 0 || (flags_ & RMA) != 0)
       xbt_mutex_acquire(mut);
 
     if (!(async_small_thresh != 0 || (flags_ & RMA) !=0)) {
-      mailbox = smpi_process_remote_mailbox(receiver);
+      mailbox = smpi_process_remote(receiver)->mailbox();
     } else if (((flags_ & RMA) != 0) || static_cast<int>(size_) < async_small_thresh) { // eager mode
-      mailbox = smpi_process_remote_mailbox(receiver);
+      mailbox = smpi_process_remote(receiver)->mailbox();
       XBT_DEBUG("Is there a corresponding recv already posted in the large mailbox %p?", mailbox);
       smx_activity_t action = simcall_comm_iprobe(mailbox, 1,dst_, tag_, &match_send,
                                                   static_cast<void*>(this));
       if (action == nullptr) {
         if ((flags_ & SSEND) == 0){
-          mailbox = smpi_process_remote_mailbox_small(receiver);
+          mailbox = smpi_process_remote(receiver)->mailbox_small();
           XBT_DEBUG("No, nothing in the large mailbox, message is to be sent on the small one %p", mailbox);
         } else {
-          mailbox = smpi_process_remote_mailbox_small(receiver);
+          mailbox = smpi_process_remote(receiver)->mailbox_small();
           XBT_DEBUG("SSEND : Is there a corresponding recv already posted in the small mailbox %p?", mailbox);
           action = simcall_comm_iprobe(mailbox, 1,dst_, tag_, &match_send, static_cast<void*>(this));
           if (action == nullptr) {
             XBT_DEBUG("No, we are first, send to large mailbox");
-            mailbox = smpi_process_remote_mailbox(receiver);
+            mailbox = smpi_process_remote(receiver)->mailbox();
           }
         }
       } else {
         XBT_DEBUG("Yes there was something for us in the large mailbox");
       }
     } else {
-      mailbox = smpi_process_remote_mailbox(receiver);
+      mailbox = smpi_process_remote(receiver)->mailbox();
       XBT_DEBUG("Send request %p is in the large mailbox %p (buf: %p)",mailbox, this,buf_);
     }
 
@@ -533,7 +533,7 @@ void Request::start()
     action_ = simcall_comm_isend(SIMIX_process_from_PID(src_+1), mailbox, size_, -1.0,
                                          buf, real_size_, &match_send,
                          &xbt_free_f, // how to free the userdata if a detached send fails
-                         !smpi_process_get_replaying() ? smpi_comm_copy_data_callback
+                         !smpi_process()->replaying() ? smpi_comm_copy_data_callback
                          : &smpi_comm_null_copy_buffer_callback, this,
                          // detach if msg size < eager/rdv switch limit
                          detached_);
@@ -708,14 +708,14 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   request->print_request("New iprobe");
   // We have to test both mailboxes as we don't know if we will receive one one or another
   if (xbt_cfg_get_int("smpi/async-small-thresh") > 0){
-      mailbox = smpi_process_mailbox_small();
+      mailbox = smpi_process()->mailbox_small();
       XBT_DEBUG("Trying to probe the perm recv mailbox");
       request->action_ = simcall_comm_iprobe(mailbox, 0, request->src_, request->tag_, &match_recv,
                                             static_cast<void*>(request));
   }
 
   if (request->action_ == nullptr){
-    mailbox = smpi_process_mailbox();
+    mailbox = smpi_process()->mailbox();
     XBT_DEBUG("trying to probe the other mailbox");
     request->action_ = simcall_comm_iprobe(mailbox, 0, request->src_,request->tag_, &match_recv,
                                           static_cast<void*>(request));
@@ -760,11 +760,11 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
     MPI_Datatype datatype = req->old_type_;
 
     if(((req->flags_ & ACCUMULATE) != 0) || (datatype->flags() & DT_FLAG_DERIVED)){
-      if (!smpi_process_get_replaying()){
+      if (!smpi_process()->replaying()){
         if( smpi_privatize_global_variables != 0 && (static_cast<char*>(req->old_buf_) >= smpi_start_data_exe)
             && ((char*)req->old_buf_ < smpi_start_data_exe + smpi_size_data_exe )){
             XBT_VERB("Privatization : We are unserializing to a zone in global memory  Switch data segment ");
-            smpi_switch_data_segment(smpi_process_index());
+            smpi_switch_data_segment(smpi_process()->index());
         }
       }
 
@@ -782,7 +782,7 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
   }
 
   if (TRACE_smpi_view_internals() && ((req->flags_ & RECV) != 0)){
-    int rank = smpi_process_index();
+    int rank = smpi_process()->index();
     int src_traced = (req->src_ == MPI_ANY_SOURCE ? req->real_src_ : req->src_);
     TRACE_smpi_recv(rank, src_traced, rank,req->tag_);
   }

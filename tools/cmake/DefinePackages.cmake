@@ -231,6 +231,8 @@ set(SMPI_SRC
   src/smpi/smpi_datatype_derived.hpp
   src/smpi/smpi_op.cpp
   src/smpi/smpi_op.hpp
+  src/smpi/smpi_process.cpp
+  src/smpi/smpi_process.hpp
   src/smpi/smpi_pmpi.cpp
   src/smpi/smpi_replay.cpp
   src/smpi/smpi_request.cpp

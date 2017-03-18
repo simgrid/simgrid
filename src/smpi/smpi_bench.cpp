@@ -213,7 +213,7 @@ void smpi_execute_flops(double flops) {
   smx_activity_t action = simcall_execution_start("computation", flops, 1, 0);
   simcall_set_category (action, TRACE_internal_smpi_get_category());
   simcall_execution_wait(action);
-  smpi_switch_data_segment(smpi_process_index());
+  smpi_switch_data_segment(smpi_process()->index());
 }
 
 void smpi_execute(double duration)
@@ -221,7 +221,7 @@ void smpi_execute(double duration)
   if (duration >= smpi_cpu_threshold) {
     XBT_DEBUG("Sleep for %g to handle real computation time", duration);
     double flops = duration * smpi_host_speed;
-    int rank = smpi_process_index();
+    int rank = smpi_process()->index();
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type=TRACING_COMPUTING;
     extra->comp_size=flops;
@@ -240,7 +240,7 @@ void smpi_execute(double duration)
 void smpi_bench_begin()
 {
   if (smpi_privatize_global_variables) {
-    smpi_switch_data_segment(smpi_process_index());
+    smpi_switch_data_segment(smpi_process()->index());
   }
 
   if (MC_is_active() || MC_record_replay_is_active())
@@ -248,7 +248,7 @@ void smpi_bench_begin()
 
 #if HAVE_PAPI
   if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0') {
-    int event_set = smpi_process_papi_event_set();
+    int event_set = smpi_process()->papi_event_set();
     // PAPI_start sets everything to 0! See man(3) PAPI_start
     if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized()) {
       if (PAPI_start(event_set) != PAPI_OK) {
@@ -259,7 +259,7 @@ void smpi_bench_begin()
     }
   }
 #endif
-  xbt_os_threadtimer_start(smpi_process_timer());
+  xbt_os_threadtimer_start(smpi_process()->timer());
 }
 
 void smpi_bench_end()
@@ -268,7 +268,7 @@ void smpi_bench_end()
     return;
 
   double speedup = 1;
-  xbt_os_timer_t timer = smpi_process_timer();
+  xbt_os_timer_t timer = smpi_process()->timer();
   xbt_os_threadtimer_stop(timer);
 
 #if HAVE_PAPI
@@ -277,8 +277,8 @@ void smpi_bench_end()
    * our PAPI counters for this process.
    */
   if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0') {
-    papi_counter_t& counter_data        = smpi_process_papi_counters();
-    int event_set                       = smpi_process_papi_event_set();
+    papi_counter_t& counter_data        = smpi_process()->papi_counters();
+    int event_set                       = smpi_process()->papi_event_set();
     std::vector<long long> event_values = std::vector<long long>(counter_data.size());
 
     if (PAPI_stop(event_set, &event_values[0]) != PAPI_OK) { // Error
@@ -287,14 +287,14 @@ void smpi_bench_end()
     } else {
       for (unsigned int i = 0; i < counter_data.size(); i++) {
         counter_data[i].second += event_values[i];
-        // XBT_DEBUG("[%i] PAPI: Counter %s: Value is now %lli (got increment by %lli\n", smpi_process_index(),
+        // XBT_DEBUG("[%i] PAPI: Counter %s: Value is now %lli (got increment by %lli\n", smpi_process()->index(),
         // counter_data[i].first.c_str(), counter_data[i].second, event_values[i]);
       }
     }
   }
 #endif
 
-  if (smpi_process_get_sampling()) {
+  if (smpi_process()->sampling()) {
     XBT_CRITICAL("Cannot do recursive benchmarks.");
     XBT_CRITICAL("Are you trying to make a call to MPI within a SMPI_SAMPLE_ block?");
     xbt_backtrace_display_current();
@@ -304,7 +304,7 @@ void smpi_bench_end()
   if (xbt_cfg_get_string("smpi/comp-adjustment-file")[0] != '\0') { // Maybe we need to artificially speed up or slow
     // down our computation based on our statistical analysis.
 
-    smpi_trace_call_location_t* loc                            = smpi_process_get_call_location();
+    smpi_trace_call_location_t* loc                            = smpi_process()->call_location();
     std::string key                                            = loc->get_composed_key();
     std::unordered_map<std::string, double>::const_iterator it = location2speedup.find(key);
     if (it != location2speedup.end()) {
@@ -320,9 +320,9 @@ void smpi_bench_end()
 #if HAVE_PAPI
   if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0' && TRACE_smpi_is_enabled()) {
     char container_name[INSTR_DEFAULT_STR_SIZE];
-    smpi_container(smpi_process_index(), container_name, INSTR_DEFAULT_STR_SIZE);
+    smpi_container(smpi_process()->index(), container_name, INSTR_DEFAULT_STR_SIZE);
     container_t container        = PJ_container_get(container_name);
-    papi_counter_t& counter_data = smpi_process_papi_counters();
+    papi_counter_t& counter_data = smpi_process()->papi_counters();
 
     for (auto& pair : counter_data) {
       new_pajeSetVariable(surf_get_clock(), container,
@@ -438,7 +438,7 @@ static char *sample_location(int global, const char *file, int line) {
   if (global) {
     return bprintf("%s:%d", file, line);
   } else {
-    return bprintf("%s:%d:%d", file, line, smpi_process_index());
+    return bprintf("%s:%d:%d", file, line, smpi_process()->index());
   }
 }
 
@@ -460,7 +460,7 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
   char *loc = sample_location(global, file, line);
 
   smpi_bench_end();     /* Take time from previous, unrelated computation into account */
-  smpi_process_set_sampling(1);
+  smpi_process()->set_sampling(1);
 
   if (samples==nullptr)
     samples = xbt_dict_new_homogeneous(free);
@@ -518,7 +518,7 @@ int smpi_sample_2(int global, const char *file, int line)
               " apply the %fs delay instead",
               data->count, data->iters, data->relstderr, data->threshold, data->mean);
     smpi_execute(data->mean);
-    smpi_process_set_sampling(0);
+    smpi_process()->set_sampling(0);
     res = 0; // prepare to capture future, unrelated computations
   }
   smpi_bench_begin();
@@ -538,11 +538,11 @@ void smpi_sample_3(int global, const char *file, int line)
     THROW_IMPOSSIBLE;
 
   // ok, benchmarking this loop is over
-  xbt_os_threadtimer_stop(smpi_process_timer());
+  xbt_os_threadtimer_stop(smpi_process()->timer());
 
   // update the stats
   data->count++;
-  double sample = xbt_os_timer_elapsed(smpi_process_timer());
+  double sample = xbt_os_timer_elapsed(smpi_process()->timer());
   data->sum += sample;
   data->sum_pow2 += sample * sample;
   double n = static_cast<double>(data->count);
@@ -854,11 +854,11 @@ void smpi_destroy_global_memory_segments(){
 
 extern "C" { /** These functions will be called from the user code **/
   smpi_trace_call_location_t* smpi_trace_get_call_location() {
-    return smpi_process_get_call_location();
+    return smpi_process()->call_location();
   }
 
   void smpi_trace_set_call_location(const char* file, const int line) {
-    smpi_trace_call_location_t* loc = smpi_process_get_call_location();
+    smpi_trace_call_location_t* loc = smpi_process()->call_location();
 
     loc->previous_filename   = loc->filename;
     loc->previous_linenumber = loc->linenumber;

@@ -54,13 +54,11 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
 }
 
 //get the index of the process in the process_data array
-void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm** comm, msg_bar_t* bar)
+void smpi_deployment_register_process(const char* instance_id, int rank, int index)
 {
 
   if(smpi_instances==nullptr){//no instance registered, we probably used smpirun.
     index_to_process_data[index]=index;
-    *bar = nullptr;
-    *comm = nullptr;
     return;
   }
 
@@ -75,8 +73,29 @@ void smpi_deployment_register_process(const char* instance_id, int rank, int ind
   instance->present_processes++;
   index_to_process_data[index]=instance->index+rank;
   instance->comm_world->group()->set_mapping(index, rank);
-  *bar = instance->finalization_barrier;
-  *comm = &instance->comm_world;
+}
+
+//get the index of the process in the process_data array
+MPI_Comm* smpi_deployment_comm_world(const char* instance_id)
+{
+  if(smpi_instances==nullptr){//no instance registered, we probably used smpirun.
+    return nullptr;
+  }
+  s_smpi_mpi_instance_t* instance =
+     static_cast<s_smpi_mpi_instance_t*>(xbt_dict_get_or_null(smpi_instances, instance_id));
+  xbt_assert(instance, "Error, unknown instance %s", instance_id);
+  return &instance->comm_world;
+}
+
+msg_bar_t smpi_deployment_finalization_barrier(const char* instance_id)
+{
+  if(smpi_instances==nullptr){//no instance registered, we probably used smpirun.
+    return nullptr;
+  }
+  s_smpi_mpi_instance_t* instance =
+     static_cast<s_smpi_mpi_instance_t*>(xbt_dict_get_or_null(smpi_instances, instance_id));
+  xbt_assert(instance, "Error, unknown instance %s", instance_id);
+  return instance->finalization_barrier;
 }
 
 void smpi_deployment_cleanup_instances(){
