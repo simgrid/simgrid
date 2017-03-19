@@ -773,7 +773,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   msg_process_t process = MSG_process_self();
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(alias);
 
-  int call_end = TRACE_msg_task_put_start(task);    //must be after CHECK_HOST()
+  int call_end = TRACE_msg_task_put_start(task);
 
   /* Prepare the task to send */
   t_simdata = task->simdata;

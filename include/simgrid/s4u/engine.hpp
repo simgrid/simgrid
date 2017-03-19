@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2015. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -58,7 +58,7 @@ public:
   void loadDeployment(const char *deploy);
 
   size_t hostCount();
-  void hostList(std::vector<Host*>*);
+  void hostList(std::vector<Host*> * whereTo);
 
   /** @brief Run the simulation */
   void run();
