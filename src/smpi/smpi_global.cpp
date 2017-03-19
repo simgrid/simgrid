@@ -15,6 +15,7 @@
 #include "src/simix/smx_private.h"
 #include "surf/surf.h"
 #include "xbt/replay.hpp"
+#include <xbt/config.hpp>
 
 #include <float.h> /* DBL_MAX */
 #include <fstream>
@@ -51,6 +52,10 @@ MPI_Comm MPI_COMM_WORLD = MPI_COMM_UNINITIALIZED;
 MPI_Errhandler *MPI_ERRORS_RETURN = nullptr;
 MPI_Errhandler *MPI_ERRORS_ARE_FATAL = nullptr;
 MPI_Errhandler *MPI_ERRHANDLER_NULL = nullptr;
+static simgrid::config::Flag<double> smpi_wtime_sleep(
+  "smpi/wtime", "Minimum time to inject inside a call to MPI_Wtime", 0.0);
+static simgrid::config::Flag<double> smpi_init_sleep(
+  "smpi/init", "Time to inject inside a call to MPI_Init", 0.0);
 
 void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t) = &smpi_comm_copy_buffer_callback;
 
@@ -370,7 +375,6 @@ static void smpi_init_logs(){
   XBT_LOG_CONNECT(smpi);  /* Keep this line as soon as possible in this function: xbt_log_appender_file.c depends on it
                              DO NOT connect this in XBT or so, or it will be useless to xbt_log_appender_file.c */
   XBT_LOG_CONNECT(instr_smpi);
-  XBT_LOG_CONNECT(smpi_base);
   XBT_LOG_CONNECT(smpi_bench);
   XBT_LOG_CONNECT(smpi_coll);
   XBT_LOG_CONNECT(smpi_colls);
@@ -501,4 +505,44 @@ void SMPI_init(){
 
 void SMPI_finalize(){
   smpi_global_destroy();
+}
+
+void smpi_mpi_init() {
+  if(smpi_init_sleep > 0) 
+    simcall_process_sleep(smpi_init_sleep);
+}
+
+double smpi_mpi_wtime(){
+  double time;
+  if (smpi_process()->initialized() != 0 && smpi_process()->finalized() == 0 && smpi_process()->sampling() == 0) {
+    smpi_bench_end();
+    time = SIMIX_get_clock();
+    // to avoid deadlocks if used as a break condition, such as
+    //     while (MPI_Wtime(...) < time_limit) {
+    //       ....
+    //     }
+    // because the time will not normally advance when only calls to MPI_Wtime
+    // are made -> deadlock (MPI_Wtime never reaches the time limit)
+    if(smpi_wtime_sleep > 0) 
+      simcall_process_sleep(smpi_wtime_sleep);
+    smpi_bench_begin();
+  } else {
+    time = SIMIX_get_clock();
+  }
+  return time;
+}
+
+void smpi_empty_status(MPI_Status * status)
+{
+  if(status != MPI_STATUS_IGNORE) {
+    status->MPI_SOURCE = MPI_ANY_SOURCE;
+    status->MPI_TAG = MPI_ANY_TAG;
+    status->MPI_ERROR = MPI_SUCCESS;
+    status->count=0;
+  }
+}
+
+int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype)
+{
+  return status->count / datatype->size();
 }

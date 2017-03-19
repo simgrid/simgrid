@@ -205,7 +205,6 @@ set(SMPI_SRC
   src/smpi/colls/smpi_openmpi_selector.cpp
   src/smpi/colls/smpi_mvapich2_selector.cpp
   src/smpi/instr_smpi.cpp
-  src/smpi/smpi_base.cpp
   src/smpi/smpi_bench.cpp
   src/smpi/smpi_memory.cpp
   src/smpi/smpi_static_variables.cpp
