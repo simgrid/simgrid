@@ -64,7 +64,7 @@ Coll_allgather_rdb::allgather(void *sbuf, int send_count,
       Request::sendrecv(recv_ptr + send_offset, curr_count, send_type, dst,
                    tag, recv_ptr + recv_offset, mask * recv_count,
                    recv_type, dst, tag, comm, &status);
-      last_recv_count = smpi_mpi_get_count(&status, recv_type);
+      last_recv_count = Status::get_count(&status, recv_type);
       curr_count += last_recv_count;
     }
 
@@ -117,7 +117,7 @@ Coll_allgather_rdb::allgather(void *sbuf, int send_count,
                    recv_type, dst, tag, comm, &status);
           // num_procs_completed is also equal to the no. of processes
           // whose data we don't have
-          last_recv_count = smpi_mpi_get_count(&status, recv_type);
+          last_recv_count = Status::get_count(&status, recv_type);
           curr_count += last_recv_count;
         }
         tmp_mask >>= 1;

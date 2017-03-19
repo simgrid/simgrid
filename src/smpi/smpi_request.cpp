@@ -567,7 +567,7 @@ int Request::test(MPI_Request * request, MPI_Status * status) {
   if(smpi_test_sleep > 0)  
     simcall_process_sleep(nsleeps*smpi_test_sleep);
 
-  smpi_empty_status(status);
+  Status::empty(status);
   int flag = 1;
   if (((*request)->flags_ & PREPARED) == 0) {
     if ((*request)->action_ != nullptr)
@@ -650,7 +650,7 @@ int Request::testany(int count, MPI_Request requests[], int *index, MPI_Status *
   } else {
       //all requests are null or inactive, return true
       flag = 1;
-      smpi_empty_status(status);
+      Status::empty(status);
   }
 
   return flag;
@@ -669,7 +669,7 @@ int Request::testall(int count, MPI_Request requests[], MPI_Status status[])
           requests[i]=MPI_REQUEST_NULL;
       }
     }else{
-      smpi_empty_status(pstat);
+      Status::empty(pstat);
     }
     if(status != MPI_STATUSES_IGNORE) {
       status[i] = *pstat;
@@ -744,7 +744,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
 void Request::finish_wait(MPI_Request* request, MPI_Status * status)
 {
   MPI_Request req = *request;
-  smpi_empty_status(status);
+  Status::empty(status);
 
   if(!((req->detached_ != 0) && ((req->flags_ & SEND) != 0)) && ((req->flags_ & PREPARED) == 0)){
     if(status != MPI_STATUS_IGNORE) {
@@ -805,7 +805,7 @@ void Request::wait(MPI_Request * request, MPI_Status * status)
 {
   (*request)->print_request("Waiting");
   if ((*request)->flags_ & PREPARED) {
-    smpi_empty_status(status);
+    Status::empty(status);
     return;
   }
 
@@ -872,7 +872,7 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
   }
 
   if (index==MPI_UNDEFINED)
-    smpi_empty_status(status);
+    Status::empty(status);
 
   return index;
 }
@@ -893,9 +893,9 @@ int Request::waitall(int count, MPI_Request requests[], MPI_Status status[])
   if (status != MPI_STATUSES_IGNORE) {
     for (int c = 0; c < count; c++) {
       if (requests[c] == MPI_REQUEST_NULL || requests[c]->dst_ == MPI_PROC_NULL || (requests[c]->flags_ & PREPARED)) {
-        smpi_empty_status(&status[c]);
+        Status::empty(&status[c]);
       } else if (requests[c]->src_ == MPI_PROC_NULL) {
-        smpi_empty_status(&status[c]);
+        Status::empty(&status[c]);
         status[c].MPI_SOURCE = MPI_PROC_NULL;
       }
     }

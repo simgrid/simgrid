@@ -532,17 +532,3 @@ double smpi_mpi_wtime(){
   return time;
 }
 
-void smpi_empty_status(MPI_Status * status)
-{
-  if(status != MPI_STATUS_IGNORE) {
-    status->MPI_SOURCE = MPI_ANY_SOURCE;
-    status->MPI_TAG = MPI_ANY_TAG;
-    status->MPI_ERROR = MPI_SUCCESS;
-    status->count=0;
-  }
-}
-
-int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype)
-{
-  return status->count / datatype->size();
-}

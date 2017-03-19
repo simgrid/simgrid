@@ -105,7 +105,7 @@ Coll_bcast_scatter_LR_allgather::bcast(void *buff, int count,
       else {
         Request::recv((char *) buff + relative_rank * scatter_size, recv_size,
                  MPI_BYTE, src, tag, comm, &status);
-        curr_size = smpi_mpi_get_count(&status, MPI_BYTE);
+        curr_size = Status::get_count(&status, MPI_BYTE);
       }
       break;
     }

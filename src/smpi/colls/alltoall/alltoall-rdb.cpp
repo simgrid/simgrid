@@ -78,7 +78,7 @@ int Coll_alltoall_rdb::alltoall(void *send_buff, int send_count,
                    tmp_buff + recv_offset, mask * recv_count * num_procs,
                    recv_type, dst, tag, comm, &status);
 
-      last_recv_count = smpi_mpi_get_count(&status, recv_type);
+      last_recv_count = Status::get_count(&status, recv_type);
       curr_size += last_recv_count;
     }
 
@@ -131,7 +131,7 @@ int Coll_alltoall_rdb::alltoall(void *send_buff, int send_count,
                    mask * num_procs * send_count, send_type, dst,
                    tag, comm, &status);
 
-          last_recv_count = smpi_mpi_get_count(&status, send_type);
+          last_recv_count = Status::get_count(&status, send_type);
           curr_size += last_recv_count;
         }
 

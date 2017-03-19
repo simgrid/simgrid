@@ -109,7 +109,7 @@ int Coll_allgatherv_mpich_rdb::allgatherv (
                         comm, &status);
       /* for convenience, recv is posted for a bigger amount
          than will be sent */
-      last_recv_cnt=smpi_mpi_get_count(&status, recvtype);
+      last_recv_cnt=Status::get_count(&status, recvtype);
       curr_cnt += last_recv_cnt;
     }
 
@@ -188,7 +188,7 @@ int Coll_allgatherv_mpich_rdb::allgatherv (
                         comm, &status);
           /* for convenience, recv is posted for a
              bigger amount than will be sent */
-          last_recv_cnt=smpi_mpi_get_count(&status, recvtype);
+          last_recv_cnt=Status::get_count(&status, recvtype);
           curr_cnt += last_recv_cnt;
         }
         tmp_mask >>= 1;

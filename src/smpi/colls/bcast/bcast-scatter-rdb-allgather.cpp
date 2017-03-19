@@ -55,7 +55,7 @@ static int scatter_for_bcast(
                                          recv_size, MPI_BYTE, src,
                                          COLL_TAG_BCAST, comm, &status);
                 /* query actual size of data received */
-                curr_size=smpi_mpi_get_count(&status, MPI_BYTE);
+                curr_size=Status::get_count(&status, MPI_BYTE);
             }
             break;
         }
@@ -210,7 +210,7 @@ Coll_bcast_scatter_rdb_allgather::bcast (
                                          ((char *)tmp_buf + recv_offset),
                                          (nbytes-recv_offset < 0 ? 0 : nbytes-recv_offset), 
                                          MPI_BYTE, dst, COLL_TAG_BCAST, comm, &status);
-            recv_size=smpi_mpi_get_count(&status, MPI_BYTE);
+            recv_size=Status::get_count(&status, MPI_BYTE);
             curr_size += recv_size;
         }
 
@@ -293,7 +293,7 @@ Coll_bcast_scatter_rdb_allgather::bcast (
                                              comm, &status);
                     /* nprocs_completed is also equal to the no. of processes
                        whose data we don't have */
-                    recv_size=smpi_mpi_get_count(&status, MPI_BYTE);
+                    recv_size=Status::get_count(&status, MPI_BYTE);
                     curr_size += recv_size;
                     /* printf("Rank %d, recv from %d, offset %d, size %d\n", rank, dst, offset, recv_size);
                        fflush(stdout);*/

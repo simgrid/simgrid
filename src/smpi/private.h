@@ -26,6 +26,7 @@
 #include "src/smpi/smpi_datatype.hpp"
 #include "src/smpi/smpi_datatype_derived.hpp"
 #include "src/smpi/smpi_request.hpp"
+#include "src/smpi/smpi_status.hpp"
 #include "src/smpi/smpi_win.hpp"
 SG_BEGIN_DECL()
 
@@ -92,10 +93,6 @@ XBT_PRIVATE void smpi_global_init();
 XBT_PRIVATE void smpi_global_destroy();
 XBT_PRIVATE double smpi_mpi_wtime();
 XBT_PRIVATE void smpi_mpi_init();
-
-XBT_PRIVATE void smpi_empty_status(MPI_Status * status);
-XBT_PRIVATE int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype);
-
 
 // utilities
 extern XBT_PRIVATE double smpi_cpu_threshold;

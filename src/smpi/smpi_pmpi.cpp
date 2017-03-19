@@ -873,7 +873,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if (src == MPI_PROC_NULL) {
-    smpi_empty_status(status);
+    Status::empty(status);
     status->MPI_SOURCE = MPI_PROC_NULL;
     retval = MPI_SUCCESS;
   } else if (src!=MPI_ANY_SOURCE && (src >= comm->group()->size() || src <0)){
@@ -1019,7 +1019,7 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
   } else if (!sendtype->is_valid() || !recvtype->is_valid()) {
     retval = MPI_ERR_TYPE;
   } else if (src == MPI_PROC_NULL || dst == MPI_PROC_NULL) {
-    smpi_empty_status(status);
+    Status::empty(status);
     status->MPI_SOURCE = MPI_PROC_NULL;
     retval             = MPI_SUCCESS;
   }else if (dst >= comm->group()->size() || dst <0 ||
@@ -1095,7 +1095,7 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
     retval = MPI_ERR_ARG;
   } else if (*request == MPI_REQUEST_NULL) {
     *flag= true;
-    smpi_empty_status(status);
+    Status::empty(status);
     retval = MPI_SUCCESS;
   } else {
     int rank = ((*request)->comm() != MPI_COMM_NULL) ? smpi_process()->index() : -1;
@@ -1152,7 +1152,7 @@ int PMPI_Probe(int source, int tag, MPI_Comm comm, MPI_Status* status) {
   } else if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if (source == MPI_PROC_NULL) {
-    smpi_empty_status(status);
+    Status::empty(status);
     status->MPI_SOURCE = MPI_PROC_NULL;
     retval = MPI_SUCCESS;
   } else {
@@ -1173,7 +1173,7 @@ int PMPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* statu
     retval = MPI_ERR_COMM;
   } else if (source == MPI_PROC_NULL) {
     *flag=true;
-    smpi_empty_status(status);
+    Status::empty(status);
     status->MPI_SOURCE = MPI_PROC_NULL;
     retval = MPI_SUCCESS;
   } else {
@@ -1190,7 +1190,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
 
   smpi_bench_end();
 
-  smpi_empty_status(status);
+  Status::empty(status);
 
   if (request == nullptr) {
     retval = MPI_ERR_ARG;
@@ -2154,7 +2154,7 @@ int PMPI_Get_count(MPI_Status * status, MPI_Datatype datatype, int *count)
     } else if (status->count % size != 0) {
       return MPI_UNDEFINED;
     } else {
-      *count = smpi_mpi_get_count(status, datatype);
+      *count = Status::get_count(status, datatype);
       return MPI_SUCCESS;
     }
   }
