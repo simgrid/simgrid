@@ -2306,7 +2306,9 @@ int PMPI_Cart_create(MPI_Comm comm_old, int ndims, int* dims, int* periodic, int
   } else if (ndims < 0 || (ndims > 0 && (dims == nullptr || periodic == nullptr)) || comm_cart == nullptr) {
     return MPI_ERR_ARG;
   } else{
-    new Topo_Cart(comm_old, ndims, dims, periodic, reorder, comm_cart);
+    Topo_Cart* topo = new Topo_Cart(comm_old, ndims, dims, periodic, reorder, comm_cart);
+    if(*comm_cart==MPI_COMM_NULL)
+      delete topo;
     return MPI_SUCCESS;
   }
 }
@@ -2409,6 +2411,8 @@ int PMPI_Cart_sub(MPI_Comm comm, int* remain_dims, MPI_Comm* comm_new) {
     return MPI_ERR_ARG;
   }
   MPIR_Cart_Topology cart = topo->sub(remain_dims, comm_new);
+  if(*comm_new==MPI_COMM_NULL)
+      delete cart;
   if(cart==nullptr)
     return  MPI_ERR_ARG;
   return MPI_SUCCESS;

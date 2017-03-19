@@ -22,6 +22,8 @@ namespace simgrid{
 namespace smpi{
 
 class Topo {
+  public:
+    virtual ~Topo()=default;
   protected:
   MPI_Comm comm_;
 };
