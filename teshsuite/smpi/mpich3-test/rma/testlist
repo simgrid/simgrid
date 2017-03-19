@@ -7,18 +7,15 @@ accfence1 4
 #Needs lock, unlock
 #adlb_mimic1 3
 accfence2 4
-#Needs post
 putpscw1 4
 accpscw1 4
-#Needs get_group
-#getgroup 4
+getgroup 4
 transpose1 2
 transpose2 2
 transpose3 2
 #Needs MPI_Win_allocate
 #transpose3_shm 2
-#Needs lock/unlock
-#transpose5 2
+transpose5 2
 transpose6 1
 transpose7 2
 test1 2
