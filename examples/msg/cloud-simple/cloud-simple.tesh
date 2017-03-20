@@ -54,6 +54,5 @@ $ $SG_TEST_EXENV ${bindir:=.}/cloud-simple$EXEEXT --log=no_loc ${srcdir:=.}/smal
 > [Fafard:__pr_mig_tx:VM0(Fafard-Tremblay):(38) 49.010000] [msg_vm/WARNING] use the default max_downtime value 30ms
 > [Bourassa:comm_rx:(36) 49.204993] [msg_test/INFO] VM0:comm_tx to Bourassa:comm_rx => 0.204993 sec
 > [Tremblay:__pr_mig_tx:VM0(Tremblay-Fafard):(40) 191.674258] [msg_vm/WARNING] use the default max_downtime value 30ms
-> [334.199056] [surf_vm/CRITICAL] FIXME: may need a proper handling, 1
 > [Fafard:master_:(1) 339.199251] [msg_test/INFO] ## Test 6 (ended)
 > [339.199251] [msg_test/INFO] Bye (simulation time 339.199)
