@@ -74,36 +74,15 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jcla
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv* env, jobject jprocess_arg, jobject jhost)
 {
-  jobject jprocess;             /* the global reference to the java process instance    */
-  jstring jname;                /* the name of the java process instance                */
-
-
-  /* get the name of the java process */
-  jname = jprocess_get_name(jprocess_arg, env);
-  if (!jname) {
-    jxbt_throw_null(env, xbt_strdup("Process name cannot be nullptr"));
-    return;
-  }
-  const char* name = env->GetStringUTFChars(jname, 0);
-
-  /* bind/retrieve the msg host */
-  msg_host_t host = jhost_get_native(env, jhost);
-  if (!host) {
-    jxbt_throw_notbound(env, "host", jhost);
-    return;
-  }
-
   /* create a global java process instance */
-  jprocess = jprocess_ref(jprocess_arg, env);
-  if (!jprocess) {
-    jxbt_throw_jni(env, "Can't get a global ref to the java process");
-    return;
-  }
+  jobject jprocess = jprocess_ref(jprocess_arg, env);
 
   /* Actually build the MSG process */
+  jstring jname         = jprocess_get_name(jprocess_arg, env);
+  const char* name      = env->GetStringUTFChars(jname, 0);
   msg_process_t process = MSG_process_create_from_stdfunc(
       name, [jprocess]() -> void { simgrid::kernel::context::java_main_jprocess(jprocess); },
-      /*data*/ nullptr, host, /* properties*/ nullptr);
+      /*data*/ nullptr, jhost_get_native(env, jhost), /* properties*/ nullptr);
 
   env->ReleaseStringUTFChars(jname, name);
   /* bind the java process instance to the native process */
