@@ -404,13 +404,15 @@ xbt_os_sem_t xbt_os_sem_init(unsigned int value)
 #else                           /* damn, no sem_init(). Reimplement it */
 
   xbt_os_mutex_acquire(next_sem_ID_lock);
-  res->name = bprintf("/%d", ++next_sem_ID);
+  res->name = bprintf("/sg-%d", ++next_sem_ID);
   xbt_os_mutex_release(next_sem_ID_lock);
 
+  sem_unlink(res->name);
   res->ps = sem_open(res->name, O_CREAT, 0644, value);
   if ((res->ps == (sem_t *) SEM_FAILED) && (errno == ENAMETOOLONG)) {
     /* Old darwins only allow 13 chars. Did you create *that* amount of semaphores? */
     res->name[13] = '\0';
+    sem_unlink(res->name);
     res->ps = sem_open(res->name, O_CREAT, 0644, value);
   }
   if (res->ps == (sem_t *) SEM_FAILED)
