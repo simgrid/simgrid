@@ -207,7 +207,6 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       xbt_dict_foreach(cluster->properties,cursor,key,data) {
         xbt_dict_set(host.properties, key, xbt_strdup(data), nullptr);
       }
-      xbt_dict_free(&cluster->properties);
     }
 
     host.speed_per_pstate = cluster->speeds;
@@ -277,6 +276,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     xbt_free(host_id);
     rankId++;
   }
+  xbt_dict_free(&cluster->properties);
 
   // Add a router.
   XBT_DEBUG(" ");
