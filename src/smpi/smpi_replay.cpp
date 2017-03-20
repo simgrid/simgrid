@@ -433,7 +433,6 @@ void action_test(const char *const *action){
   int dst = atoi(action[3]);
   int tag = atoi(action[4]);
   double clock = smpi_process_simulated_elapsed();
-  int flag = TRUE;
   MPI_Request request;
   MPI_Status status;
 
