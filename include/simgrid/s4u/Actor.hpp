@@ -134,7 +134,6 @@ namespace s4u {
 /** @brief Simulation Agent */
 XBT_PUBLIC_CLASS Actor : public simgrid::xbt::Extendable<Actor>
 {
-
   friend Mailbox;
   friend simgrid::simix::ActorImpl;
   friend simgrid::kernel::activity::MailboxImpl;
@@ -220,6 +219,7 @@ public:
   /** Retrieves the time at which that actor will be killed (or -1 if not set) */
   double killTime();
 
+  void migrate(Host * new_host);
   /** Ask the actor to die.
    *
    * It will only notice your request when doing a simcall next time (a communication or similar).
@@ -298,6 +298,11 @@ namespace this_actor {
 
   /** @brief Returns the name of the current actor. */
   XBT_PUBLIC(std::string) name();
+
+  /** @brief Returns the name of the host on which the process is running. */
+  XBT_PUBLIC(Host*) host();
+
+  XBT_PUBLIC(void) migrate(Host* new_host);
 };
 
 /** @} */

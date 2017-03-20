@@ -52,6 +52,11 @@ void Actor::setAutoRestart(bool autorestart) {
   simcall_process_auto_restart_set(pimpl_,autorestart);
 }
 
+void Actor::migrate(Host* new_host)
+{
+  simcall_process_set_host(pimpl_, new_host);
+}
+
 s4u::Host* Actor::host()
 {
   return this->pimpl_->host;
@@ -172,6 +177,16 @@ int ppid()
 std::string name()
 {
   return SIMIX_process_self()->name;
+}
+
+Host* host()
+{
+  return SIMIX_process_self()->host;
+}
+
+void migrate(Host* new_host)
+{
+  simcall_process_set_host(SIMIX_process_self(), new_host);
 }
 }
 }
