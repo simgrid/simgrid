@@ -437,16 +437,19 @@ int Win::wait(){
 int Win::lock(int lock_type, int rank, int assert){
   MPI_Win target_win = connected_wins_[rank];
 
-  int finished = finish_comms();
-  XBT_DEBUG("Win_lock - Finished %d RMA calls", finished);
-
   //window already locked, we have to wait
-  if (lock_type == MPI_LOCK_EXCLUSIVE)
+  if (lock_type == MPI_LOCK_EXCLUSIVE){
+  XBT_DEBUG("Win_lock - Entering lock %d", rank);
     xbt_mutex_acquire(target_win->lock_mut_);
+  XBT_DEBUG("Win_lock - Released from lock %d", rank);
+}
 
   xbt_mutex_acquire(target_win->mut_);
   target_win->lockers_.push_back(comm_->rank());
   xbt_mutex_release(target_win->mut_);  
+
+  int finished = finish_comms();
+  XBT_DEBUG("Win_lock - Finished %d RMA calls", finished);
 
   return MPI_SUCCESS;
 }
@@ -454,15 +457,19 @@ int Win::lock(int lock_type, int rank, int assert){
 int Win::unlock(int rank){
   MPI_Win target_win = connected_wins_[rank];
 
+  xbt_mutex_acquire(target_win->mut_);
+  int size=target_win->lockers_.size();
+  target_win->lockers_.remove(comm_->rank());
+
+
+  if (size<=1){//0 or 1 lockers -> exclusive assumed
+    xbt_mutex_try_acquire(target_win->lock_mut_);
+    xbt_mutex_release(target_win->lock_mut_);
+  }
+  xbt_mutex_release(target_win->mut_);
   int finished = finish_comms();
   XBT_DEBUG("Win_unlock - Finished %d RMA calls", finished);
 
-  xbt_mutex_acquire(target_win->mut_);
-  target_win->lockers_.remove(comm_->rank());
-  xbt_mutex_release(target_win->mut_);
-
-  xbt_mutex_try_acquire(target_win->lock_mut_);
-  xbt_mutex_release(target_win->lock_mut_);
   return MPI_SUCCESS;
 }
 
@@ -472,11 +479,11 @@ Win* Win::f2c(int id){
 
 
 int Win::finish_comms(){
+  xbt_mutex_acquire(mut_);
   //Finish own requests
   std::vector<MPI_Request> *reqqs = requests_;
   int size = static_cast<int>(reqqs->size());
   if (size > 0) {
-    xbt_mutex_acquire(mut_);
     // start all requests that have been prepared by another process
     for (const auto& req : *reqqs) {
       if (req && (req->flags() & PREPARED))
@@ -486,9 +493,8 @@ int Win::finish_comms(){
     MPI_Request* treqs = &(*reqqs)[0];
     Request::waitall(size, treqs, MPI_STATUSES_IGNORE);
     reqqs->clear();
-    xbt_mutex_release(mut_);
   }
-
+  xbt_mutex_release(mut_);
   return size;
 }
 
