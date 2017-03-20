@@ -3,9 +3,8 @@
 <platform version="4">
   <cluster id="cluster" prefix="MyHost" radical="1-2" suffix="" speed="100.0Mf,50.0Mf,20.0Mf"
            bw="125MBps" lat="50us" bb_bw="2.25GBps"  bb_lat="500us">
-    <!--  List of min_power:max_power pairs (in Watts) corresponding to the speed consumed when the processor is idle
-          and when it is fully loaded -->
-    <!--  The list must contain one speed pair for each previously defined pstate-->
+    <!--  List of idle_power:min_power:max_power pairs (in Watts) -->
+    <!--  The list must contain one speed tupple for each previously defined pstate-->
     <prop id="watt_per_state" value="100.0:120.0:200.0, 93.0:110.0:170.0, 90.0:105.0:150.0" />
     <prop id="watt_off" value="10" />
   </cluster>
