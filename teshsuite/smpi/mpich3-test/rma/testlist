@@ -21,17 +21,18 @@ transpose7 2
 test1 2
 test2 2
 #this example will not run if the one-sided operations are simply
-#implemented on top of MPI_Isends and Irecvs -> won't work with SMPI.
-#test3 2
-#Needs lock, unlock
-#test4 2
+#implemented on top of MPI_Isends and Irecvs
+test3 2
+test4 2
 test5 2
 #Needs lock, unlock
-#lockcontention 3
-#lockcontention2 4
-#lockcontention2 8
+lockcontention 3
+lockcontention2 4
+lockcontention2 8
+#Buggy one.
 #lockcontention3 8
-#lockopts 2
+lockopts 2
+#needs get_accumulate
 #lock_dt 2
 #lock_dt_flush 2
 #lock_dt_flushlocal 2
@@ -41,13 +42,12 @@ test5 2
 #lockall_dt_flushlocal 4 timeLimit=240
 #lockall_dt_flushlocalall 4 timeLimit=240
 #lock_contention_dt 4 timeLimit=240
-#transpose4 2
+transpose4 2
 #fetchandadd 7
 #fetchandadd_tree 7
 #Needs MPI_Win_test
 #wintest 2
-#Needs lock, unlock
-#contig_displ 1
+contig_displ 1
 test1_am 2
 test2_am 2
 #test3_am 2
@@ -64,28 +64,25 @@ attrorderwin 1
 #wincall 2
 baseattrwin 1
 fkeyvalwin 1
-#Needs lock, unlock
-#selfrma 1
+selfrma 1
 #mixedsync 4
 epochtest 3
-#Needs lock, unlock
-#locknull 2
+locknull 2
 #Needs MPI_Rput, rget, racumulate,  MPI_Fetch_and_op, MPI_Compare_and_swap
 #rmanull 2
 #rmazero 2
-#Needs lock, unlock
-#strided_acc_indexed 2
-#strided_acc_onelock 2
+strided_acc_indexed 2
+strided_acc_onelock 2
+#needs MPI_Type_create_subarray
 #strided_acc_subarray 2
-#strided_get_indexed 2
-#strided_putget_indexed 4
+strided_get_indexed 2
+strided_putget_indexed 4
 #strided_putget_indexed_shared 4 mpiversion=3.0
 #strided_getacc_indexed 4 mpiversion=3.0
 #strided_getacc_indexed_shared 4 mpiversion=3.0
 window_creation 2
-#Needs lock, unlock
-#contention_put 4
-#contention_putget 4
+contention_put 4
+contention_putget 4
 #put_base 2
 #put_bottom 2
 #win_flavors 4 mpiversion=3.0
@@ -165,7 +162,7 @@ large-small-acc 2
 #overlap_wins_gacc 3
 #overlap_wins_fop 3
 #overlap_wins_cas 3
-#lock_nested 3
+lock_nested 3
 
 ## This test is not strictly correct.  This was meant to test out the
 ## case when MPI_Test is not nonblocking.  However, we ended up

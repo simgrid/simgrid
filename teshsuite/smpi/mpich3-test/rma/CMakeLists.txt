@@ -10,19 +10,19 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
-  foreach(file accfence1 accfence2_am accfence2 accpscw1 allocmem epochtest getfence1 getgroup manyrma3 nullpscw
-          putfence1 putfidx putpscw1 test1_am test1 test1_dt test2_am test2 test3 test5_am test5 transpose1 transpose2
-          transpose3 transpose5 transpose6 transpose7 window_creation  
+  foreach(file accfence1 accfence2_am accfence2 accpscw1 allocmem epochtest getfence1 getgroup manyrma3 nullpscw lockcontention lockopts contig_displ
+          putfence1 putfidx putpscw1 test1_am test1 test1_dt test2_am test2 test3 test4 test5_am test5 transpose1 transpose2 lockcontention2
+          transpose3 transpose4 transpose5 transpose6 transpose7 window_creation selfrma locknull
           at_complete  acc-pairtype manyget large-small-acc 
-          lock_nested winname attrorderwin baseattrwin fkeyvalwin)
+          lock_nested winname attrorderwin baseattrwin fkeyvalwin strided_acc_indexed 
+     strided_acc_onelock strided_get_indexed strided_putget_indexed contention_put contention_putget)
     # not compiled files: acc-loc adlb_mimic1  badrma  compare_and_swap contention_put
     # contention_putget contig_displ fence_shm fetchandadd_am fetchandadd fetchandadd_tree_am fetchandadd_tree 
     # fetch_and_op fkeyvalwin flush get_acc_local get_accumulate linked_list_bench_lock_all 
     # linked_list_bench_lock_excl linked_list_bench_lock_shr linked_list linked_list_fop linked_list_lockall 
-    # lockcontention2 lockcontention3 lockcontention locknull lockopts manyrma2 mcs-mutex mixedsync mutex_bench 
-    # pscw_ordering put_base put_bottom req_example reqops rmanull rmazero rma-contig selfrma strided_acc_indexed 
-    # strided_acc_onelock strided_acc_subarray strided_getacc_indexed strided_getacc_indexed_shared strided_get_indexed
-    # strided_putget_indexed strided_putget_indexed_shared test3_am test4_am test4 transpose4 wincall 
+    #  manyrma2 mcs-mutex mixedsync mutex_bench lockcontention3
+    # pscw_ordering put_base put_bottom req_example reqops rmanull rmazero rma-contig selfrma  
+    # strided_acc_subarray strided_getacc_indexed strided_getacc_indexed_shared 
     # win_dynamic_acc win_flavors win_info  win_shared win_shared_noncontig win_shared_noncontig_put 
     # win_large_shm win_zero wintest get-struct atomic_rmw_fop atomic_rmw_gacc rget-unlock atomic_get atomic_rmw_cas
     # win_shared_zerobyte aint derived-acc-flush_local large-acc-flush_local lockall_dt lockall_dt_flushall
