@@ -48,7 +48,6 @@ public abstract class Process implements Runnable {
 	 */
 	private long bind = 0;
 	/** Indicates if the process is started */
-	boolean started;
 	/**
 	 * Even if this attribute is public you must never access to it.
 	 * It is used to compute the id of an MSG process.
@@ -300,10 +299,8 @@ public abstract class Process implements Runnable {
 	 * @throws HostNotFoundException
 	 */
 	public final void start() throws HostNotFoundException {
-		if (!started) {
-			started = true;
+		if (bind != 0)
 			create(host.getName());
-		}
 	}
 
 	/** This method runs the process. It calls the method function that you must overwrite. */
