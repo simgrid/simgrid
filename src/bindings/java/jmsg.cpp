@@ -329,8 +329,7 @@ void java_main_jprocess(jobject jprocess)
   JNIEnv *env = get_current_thread_env();
   simgrid::kernel::context::JavaContext* context = static_cast<simgrid::kernel::context::JavaContext*>(SIMIX_context_self());
   context->jprocess = jprocess;
-  msg_process_t process = MSG_process_self();
-  jprocess_bind(context->jprocess, process, env);
+  jprocess_bind(context->jprocess, MSG_process_self(), env);
 
   run_jprocess(env, context->jprocess);
 }
