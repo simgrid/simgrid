@@ -501,4 +501,11 @@ XBT_PUBLIC(smx_context_t) MSG_process_get_smx_ctx(msg_process_t process);
 
 
 SG_END_DECL()
+
+#ifdef __cplusplus
+XBT_PUBLIC(msg_process_t)
+MSG_process_create_from_stdfunc(const char* name, std::function<void()> code, void* data, msg_host_t host,
+                                xbt_dict_t properties);
+#endif
+
 #endif
