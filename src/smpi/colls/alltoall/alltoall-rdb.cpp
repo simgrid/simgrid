@@ -27,6 +27,8 @@
  * Auther: MPICH / slightly modified by Ahmad Faraj.  
 
  ****************************************************************************/
+namespace simgrid{
+namespace smpi{
 int Coll_alltoall_rdb::alltoall(void *send_buff, int send_count,
                                  MPI_Datatype send_type,
                                  void *recv_buff, int recv_count,
@@ -151,4 +153,6 @@ int Coll_alltoall_rdb::alltoall(void *send_buff, int send_count,
                  recv_count, recv_type, rank, tag, comm, &status);
   smpi_free_tmp_buffer(tmp_buff);
   return MPI_SUCCESS;
+}
+}
 }

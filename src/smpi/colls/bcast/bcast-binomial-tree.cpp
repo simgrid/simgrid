@@ -67,7 +67,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Auther: MPIH / modified by Ahmad Faraj
 
  ****************************************************************************/
-
+namespace simgrid{
+namespace smpi{
 int
 Coll_bcast_binomial_tree::bcast(void *buff, int count,
                                     MPI_Datatype data_type, int root,
@@ -105,4 +106,7 @@ Coll_bcast_binomial_tree::bcast(void *buff, int count,
   }
 
   return MPI_SUCCESS;
+}
+
+}
 }

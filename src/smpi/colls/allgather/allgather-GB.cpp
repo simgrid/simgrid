@@ -6,6 +6,8 @@
 
 #include "../colls_private.h"
 
+namespace simgrid{
+namespace smpi{
 // Allgather - gather/bcast algorithm
 int Coll_allgather_GB::allgather(void *send_buff, int send_count,
                                  MPI_Datatype send_type, void *recv_buff,
@@ -19,4 +21,7 @@ int Coll_allgather_GB::allgather(void *send_buff, int send_count,
   Colls::bcast(recv_buff, (recv_count * num_procs), recv_type, 0, comm);
 
   return MPI_SUCCESS;
+}
+
+}
 }

@@ -46,6 +46,7 @@ class Topo_Cart: public Topo {
     int rank(int* coords, int* rank);
     int shift(int direction, int disp, int *rank_source, int *rank_dest) ;
     int dim_get(int *ndims);
+    static int Dims_create(int nnodes, int ndims, int dims[]);
 };
 
 
@@ -73,11 +74,6 @@ class Topo_Dist_Graph: public Topo {
     Topo_Dist_Graph();
     ~Topo_Dist_Graph();
 };
-
-/*
- * This is a utility function, no need to have anything in the lower layer for this at all
- */
-extern int Dims_create(int nnodes, int ndims, int dims[]);
 
 }
 }

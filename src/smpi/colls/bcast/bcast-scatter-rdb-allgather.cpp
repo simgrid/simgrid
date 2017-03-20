@@ -1,4 +1,6 @@
 #include "../colls_private.h"
+namespace simgrid{
+namespace smpi{
 
 static int scatter_for_bcast(
     int root,
@@ -91,6 +93,7 @@ static int scatter_for_bcast(
 
     return mpi_errno;
 }
+
 
 int
 Coll_bcast_scatter_rdb_allgather::bcast (
@@ -328,4 +331,7 @@ Coll_bcast_scatter_rdb_allgather::bcast (
 fn_exit:
 /*    xbt_free(tmp_buf);*/
     return mpi_errno;
+}
+
+}
 }

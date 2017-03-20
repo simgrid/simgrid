@@ -7,7 +7,8 @@
 #include "private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_group, smpi, "Logging specific to SMPI (group)");
- Group mpi_MPI_GROUP_EMPTY;
+
+simgrid::smpi::Group mpi_MPI_GROUP_EMPTY;
 MPI_Group MPI_GROUP_EMPTY=&mpi_MPI_GROUP_EMPTY;
 
 namespace simgrid{

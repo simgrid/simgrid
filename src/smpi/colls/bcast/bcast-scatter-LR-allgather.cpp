@@ -67,6 +67,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Auther: MPIH / modified by Ahmad Faraj
 
  ****************************************************************************/
+namespace simgrid{
+namespace smpi{
 int
 Coll_bcast_scatter_LR_allgather::bcast(void *buff, int count,
                                            MPI_Datatype data_type, int root,
@@ -175,4 +177,7 @@ Coll_bcast_scatter_LR_allgather::bcast(void *buff, int count,
   free(disps);
 
   return MPI_SUCCESS;
+}
+
+}
 }

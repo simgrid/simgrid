@@ -26,6 +26,8 @@
  * Auther: Ahmad Faraj
 
  ****************************************************************************/
+namespace simgrid{
+namespace smpi{
 int
 Coll_alltoall_pair_one_barrier::alltoall(void *send_buff, int send_count,
                                           MPI_Datatype send_type,
@@ -62,4 +64,6 @@ Coll_alltoall_pair_one_barrier::alltoall(void *send_buff, int send_count,
   }
 
   return MPI_SUCCESS;
+}
+}
 }

@@ -28,7 +28,7 @@ int PMPI_Init(int *argc, char ***argv)
   int already_init;
   MPI_Initialized(&already_init);
   if(already_init == 0){
-    Process::init(argc, argv);
+    simgrid::smpi::Process::init(argc, argv);
     smpi_process()->mark_as_initialized();
     int rank = smpi_process()->index();
     TRACE_smpi_init(rank);
@@ -151,7 +151,7 @@ int PMPI_Type_free(MPI_Datatype * datatype)
   if (*datatype == MPI_DATATYPE_NULL) {
     return MPI_ERR_ARG;
   } else {
-    Datatype::unref(*datatype);
+    simgrid::smpi::Datatype::unref(*datatype);
     return MPI_SUCCESS;
   }
 }
@@ -237,10 +237,10 @@ int PMPI_Type_dup(MPI_Datatype datatype, MPI_Datatype *newtype){
   if (datatype == MPI_DATATYPE_NULL) {
     retval=MPI_ERR_TYPE;
   } else {
-    *newtype = new Datatype(datatype, &retval);
+    *newtype = new simgrid::smpi::Datatype(datatype, &retval);
     //error when duplicating, free the new datatype
     if(retval!=MPI_SUCCESS){
-      Datatype::unref(*newtype);
+      simgrid::smpi::Datatype::unref(*newtype);
       *newtype = MPI_DATATYPE_NULL;
     }
   }
@@ -252,7 +252,7 @@ int PMPI_Op_create(MPI_User_function * function, int commute, MPI_Op * op)
   if (function == nullptr || op == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    *op = new Op(function, (commute!=0));
+    *op = new simgrid::smpi::Op(function, (commute!=0));
     return MPI_SUCCESS;
   }
 }
@@ -276,7 +276,7 @@ int PMPI_Group_free(MPI_Group * group)
     return MPI_ERR_ARG;
   } else {
     if(*group != MPI_COMM_WORLD->group() && *group != MPI_GROUP_EMPTY)
-      Group::unref(*group);
+      simgrid::smpi::Group::unref(*group);
     *group = MPI_GROUP_NULL;
     return MPI_SUCCESS;
   }
@@ -531,7 +531,7 @@ int PMPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm)
     return MPI_SUCCESS;
   }else{
     group->ref();
-    *newcomm = new Comm(group, nullptr);
+    *newcomm = new simgrid::smpi::Comm(group, nullptr);
     return MPI_SUCCESS;
   }
 }
@@ -543,7 +543,7 @@ int PMPI_Comm_free(MPI_Comm * comm)
   } else if (*comm == MPI_COMM_NULL) {
     return MPI_ERR_COMM;
   } else {
-    Comm::destroy(*comm);
+    simgrid::smpi::Comm::destroy(*comm);
     *comm = MPI_COMM_NULL;
     return MPI_SUCCESS;
   }
@@ -557,7 +557,7 @@ int PMPI_Comm_disconnect(MPI_Comm * comm)
   } else if (*comm == MPI_COMM_NULL) {
     return MPI_ERR_COMM;
   } else {
-    Comm::destroy(*comm);
+    simgrid::smpi::Comm::destroy(*comm);
     *comm = MPI_COMM_NULL;
     return MPI_SUCCESS;
   }
@@ -612,7 +612,7 @@ int PMPI_Send_init(void *buf, int count, MPI_Datatype datatype, int dst, int tag
   } else if (dst == MPI_PROC_NULL) {
       retval = MPI_SUCCESS;
   } else {
-      *request = Request::send_init(buf, count, datatype, dst, tag, comm);
+      *request = simgrid::smpi::Request::send_init(buf, count, datatype, dst, tag, comm);
       retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -635,7 +635,7 @@ int PMPI_Recv_init(void *buf, int count, MPI_Datatype datatype, int src, int tag
   } else if (src == MPI_PROC_NULL) {
     retval = MPI_SUCCESS;
   } else {
-    *request = Request::recv_init(buf, count, datatype, src, tag, comm);
+    *request = simgrid::smpi::Request::recv_init(buf, count, datatype, src, tag, comm);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -658,7 +658,7 @@ int PMPI_Ssend_init(void* buf, int count, MPI_Datatype datatype, int dst, int ta
   } else if (dst == MPI_PROC_NULL) {
     retval = MPI_SUCCESS;
   } else {
-    *request = Request::ssend_init(buf, count, datatype, dst, tag, comm);
+    *request = simgrid::smpi::Request::ssend_init(buf, count, datatype, dst, tag, comm);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -696,7 +696,7 @@ int PMPI_Startall(int count, MPI_Request * requests)
       }
     }
     if(retval != MPI_ERR_REQUEST) {
-      Request::startall(count, requests);
+      simgrid::smpi::Request::startall(count, requests);
     }
   }
   smpi_bench_begin();
@@ -711,7 +711,7 @@ int PMPI_Request_free(MPI_Request * request)
   if (*request == MPI_REQUEST_NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    Request::unref(request);
+    simgrid::smpi::Request::unref(request);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -756,7 +756,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
     extra->send_size = count*dt_size_send;
     TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
 
-    *request = Request::irecv(buf, count, datatype, src, tag, comm);
+    *request = simgrid::smpi::Request::irecv(buf, count, datatype, src, tag, comm);
     retval = MPI_SUCCESS;
 
     TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
@@ -805,7 +805,7 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
     TRACE_smpi_send(rank, rank, dst_traced, tag, count*datatype->size());
 
-    *request = Request::isend(buf, count, datatype, dst, tag, comm);
+    *request = simgrid::smpi::Request::isend(buf, count, datatype, dst, tag, comm);
     retval = MPI_SUCCESS;
 
     TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
@@ -853,7 +853,7 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, M
     TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
     TRACE_smpi_send(rank, rank, dst_traced, tag, count*datatype->size());
 
-    *request = Request::issend(buf, count, datatype, dst, tag, comm);
+    *request = simgrid::smpi::Request::issend(buf, count, datatype, dst, tag, comm);
     retval = MPI_SUCCESS;
 
     TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
@@ -873,7 +873,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if (src == MPI_PROC_NULL) {
-    Status::empty(status);
+    simgrid::smpi::Status::empty(status);
     status->MPI_SOURCE = MPI_PROC_NULL;
     retval = MPI_SUCCESS;
   } else if (src!=MPI_ANY_SOURCE && (src >= comm->group()->size() || src <0)){
@@ -899,7 +899,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     extra->send_size = count * dt_size_send;
     TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
 
-    Request::recv(buf, count, datatype, src, tag, comm, status);
+    simgrid::smpi::Request::recv(buf, count, datatype, src, tag, comm, status);
     retval = MPI_SUCCESS;
 
     // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
@@ -953,7 +953,7 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
       TRACE_smpi_send(rank, rank, dst_traced, tag,count*datatype->size());
     }
 
-    Request::send(buf, count, datatype, dst, tag, comm);
+    simgrid::smpi::Request::send(buf, count, datatype, dst, tag, comm);
     retval = MPI_SUCCESS;
 
     TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
@@ -997,7 +997,7 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
     TRACE_smpi_send(rank, rank, dst_traced, tag,count*datatype->size());
   
-    Request::ssend(buf, count, datatype, dst, tag, comm);
+    simgrid::smpi::Request::ssend(buf, count, datatype, dst, tag, comm);
     retval = MPI_SUCCESS;
   
     TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
@@ -1019,7 +1019,7 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
   } else if (!sendtype->is_valid() || !recvtype->is_valid()) {
     retval = MPI_ERR_TYPE;
   } else if (src == MPI_PROC_NULL || dst == MPI_PROC_NULL) {
-    Status::empty(status);
+    simgrid::smpi::Status::empty(status);
     status->MPI_SOURCE = MPI_PROC_NULL;
     retval             = MPI_SUCCESS;
   }else if (dst >= comm->group()->size() || dst <0 ||
@@ -1054,7 +1054,7 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
   TRACE_smpi_ptp_in(rank, src_traced, dst_traced, __FUNCTION__, extra);
   TRACE_smpi_send(rank, rank, dst_traced, sendtag,sendcount*sendtype->size());
 
-  Request::sendrecv(sendbuf, sendcount, sendtype, dst, sendtag, recvbuf, recvcount, recvtype, src, recvtag, comm,
+  simgrid::smpi::Request::sendrecv(sendbuf, sendcount, sendtype, dst, sendtag, recvbuf, recvcount, recvtype, src, recvtag, comm,
                     status);
   retval = MPI_SUCCESS;
 
@@ -1079,7 +1079,7 @@ int PMPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, 
     void* recvbuf = xbt_new0(char, size);
     retval = MPI_Sendrecv(buf, count, datatype, dst, sendtag, recvbuf, count, datatype, src, recvtag, comm, status);
     if(retval==MPI_SUCCESS){
-        Datatype::copy(recvbuf, count, datatype, buf, count, datatype);
+        simgrid::smpi::Datatype::copy(recvbuf, count, datatype, buf, count, datatype);
     }
     xbt_free(recvbuf);
 
@@ -1095,7 +1095,7 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
     retval = MPI_ERR_ARG;
   } else if (*request == MPI_REQUEST_NULL) {
     *flag= true;
-    Status::empty(status);
+    simgrid::smpi::Status::empty(status);
     retval = MPI_SUCCESS;
   } else {
     int rank = ((*request)->comm() != MPI_COMM_NULL) ? smpi_process()->index() : -1;
@@ -1104,7 +1104,7 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
     extra->type = TRACING_TEST;
     TRACE_smpi_testing_in(rank, extra);
 
-    *flag = Request::test(request,status);
+    *flag = simgrid::smpi::Request::test(request,status);
 
     TRACE_smpi_testing_out(rank);
     retval = MPI_SUCCESS;
@@ -1121,7 +1121,7 @@ int PMPI_Testany(int count, MPI_Request requests[], int *index, int *flag, MPI_S
   if (index == nullptr || flag == nullptr) {
     retval = MPI_ERR_ARG;
   } else {
-    *flag = Request::testany(count, requests, index, status);
+    *flag = simgrid::smpi::Request::testany(count, requests, index, status);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -1136,7 +1136,7 @@ int PMPI_Testall(int count, MPI_Request* requests, int* flag, MPI_Status* status
   if (flag == nullptr) {
     retval = MPI_ERR_ARG;
   } else {
-    *flag = Request::testall(count, requests, statuses);
+    *flag = simgrid::smpi::Request::testall(count, requests, statuses);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -1152,11 +1152,11 @@ int PMPI_Probe(int source, int tag, MPI_Comm comm, MPI_Status* status) {
   } else if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if (source == MPI_PROC_NULL) {
-    Status::empty(status);
+    simgrid::smpi::Status::empty(status);
     status->MPI_SOURCE = MPI_PROC_NULL;
     retval = MPI_SUCCESS;
   } else {
-    Request::probe(source, tag, comm, status);
+    simgrid::smpi::Request::probe(source, tag, comm, status);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -1173,11 +1173,11 @@ int PMPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* statu
     retval = MPI_ERR_COMM;
   } else if (source == MPI_PROC_NULL) {
     *flag=true;
-    Status::empty(status);
+    simgrid::smpi::Status::empty(status);
     status->MPI_SOURCE = MPI_PROC_NULL;
     retval = MPI_SUCCESS;
   } else {
-    Request::iprobe(source, tag, comm, flag, status);
+    simgrid::smpi::Request::iprobe(source, tag, comm, flag, status);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -1190,7 +1190,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
 
   smpi_bench_end();
 
-  Status::empty(status);
+  simgrid::smpi::Status::empty(status);
 
   if (request == nullptr) {
     retval = MPI_ERR_ARG;
@@ -1209,7 +1209,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
     extra->type = TRACING_WAIT;
     TRACE_smpi_ptp_in(rank, src_traced, dst_traced, __FUNCTION__, extra);
 
-    Request::wait(request, status);
+    simgrid::smpi::Request::wait(request, status);
     retval = MPI_SUCCESS;
 
     //the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
@@ -1257,7 +1257,7 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
   extra->send_size=count;
   TRACE_smpi_ptp_in(rank_traced, -1, -1, __FUNCTION__,extra);
 
-  *index = Request::waitany(count, requests, status);
+  *index = simgrid::smpi::Request::waitany(count, requests, status);
 
   if(*index!=MPI_UNDEFINED){
     int src_traced = savedvals[*index].src;
@@ -1307,7 +1307,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
   extra->send_size=count;
   TRACE_smpi_ptp_in(rank_traced, -1, -1, __FUNCTION__,extra);
 
-  int retval =Request::waitall(count, requests, status);
+  int retval = simgrid::smpi::Request::waitall(count, requests, status);
 
   for (int i = 0; i < count; i++) {
     if(savedvals[i].valid){
@@ -1338,7 +1338,7 @@ int PMPI_Waitsome(int incount, MPI_Request requests[], int *outcount, int *indic
   if (outcount == nullptr) {
     retval = MPI_ERR_ARG;
   } else {
-    *outcount = Request::waitsome(incount, requests, indices, status);
+    *outcount = simgrid::smpi::Request::waitsome(incount, requests, indices, status);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -1353,7 +1353,7 @@ int PMPI_Testsome(int incount, MPI_Request requests[], int* outcount, int* indic
   if (outcount == nullptr) {
     retval = MPI_ERR_ARG;
   } else {
-    *outcount = Request::testsome(incount, requests, indices, status);
+    *outcount = simgrid::smpi::Request::testsome(incount, requests, indices, status);
     retval    = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -1386,7 +1386,7 @@ int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm c
     extra->send_size = count * dt_size_send;
     TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
     if (comm->size() > 1)
-      Colls::bcast(buf, count, datatype, root, comm);
+      simgrid::smpi::Colls::bcast(buf, count, datatype, root, comm);
     retval = MPI_SUCCESS;
 
     TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
@@ -1409,7 +1409,7 @@ int PMPI_Barrier(MPI_Comm comm)
     extra->type            = TRACING_BARRIER;
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 
-    Colls::barrier(comm);
+    simgrid::smpi::Colls::barrier(comm);
 
     //Barrier can be used to synchronize RMA calls. Finish all requests from comm before.
     comm->finish_rma_calls();
@@ -1465,7 +1465,7 @@ int PMPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,void *recvbu
 
     TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
 
-    Colls::gather(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcount, recvtype, root, comm);
+    simgrid::smpi::Colls::gather(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcount, recvtype, root, comm);
 
     retval = MPI_SUCCESS;
     TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
@@ -1525,7 +1525,7 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recv
     }
     TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
 
-    retval = Colls::gatherv(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcounts, displs, recvtype, root, comm);
+    retval = simgrid::smpi::Colls::gatherv(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcounts, displs, recvtype, root, comm);
     TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
   }
 
@@ -1571,7 +1571,7 @@ int PMPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 
-    Colls::allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
+    simgrid::smpi::Colls::allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
     retval = MPI_SUCCESS;
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
   }
@@ -1623,7 +1623,7 @@ int PMPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 
-    Colls::allgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm);
+    simgrid::smpi::Colls::allgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm);
     retval = MPI_SUCCESS;
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
   }
@@ -1671,7 +1671,7 @@ int PMPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     extra->recv_size = recvcount * dt_size_recv;
     TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
 
-    Colls::scatter(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm);
+    simgrid::smpi::Colls::scatter(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm);
     retval = MPI_SUCCESS;
     TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
   }
@@ -1724,7 +1724,7 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
     extra->recv_size = recvcount * dt_size_recv;
     TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
 
-    retval = Colls::scatterv(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm);
+    retval = simgrid::smpi::Colls::scatterv(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm);
 
     TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
   }
@@ -1758,7 +1758,7 @@ int PMPI_Reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
 
     TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
 
-    Colls::reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
+    simgrid::smpi::Colls::reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
 
     retval = MPI_SUCCESS;
     TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
@@ -1799,7 +1799,7 @@ int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
     char* sendtmpbuf = static_cast<char*>(sendbuf);
     if( sendbuf == MPI_IN_PLACE ) {
       sendtmpbuf = static_cast<char*>(xbt_malloc(count*datatype->get_extent()));
-      Datatype::copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
+      simgrid::smpi::Datatype::copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
     }
     int rank               = comm != MPI_COMM_NULL ? smpi_process()->index() : -1;
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t, 1);
@@ -1813,7 +1813,7 @@ int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
 
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 
-    Colls::allreduce(sendtmpbuf, recvbuf, count, datatype, op, comm);
+    simgrid::smpi::Colls::allreduce(sendtmpbuf, recvbuf, count, datatype, op, comm);
 
     if( sendbuf == MPI_IN_PLACE )
       xbt_free(sendtmpbuf);
@@ -1851,7 +1851,7 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MP
 
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 
-    retval = Colls::scan(sendbuf, recvbuf, count, datatype, op, comm);
+    retval = simgrid::smpi::Colls::scan(sendbuf, recvbuf, count, datatype, op, comm);
 
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
   }
@@ -1888,7 +1888,7 @@ int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
     }
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 
-    retval = Colls::exscan(sendtmpbuf, recvbuf, count, datatype, op, comm);
+    retval = simgrid::smpi::Colls::exscan(sendtmpbuf, recvbuf, count, datatype, op, comm);
 
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
     if (sendbuf == MPI_IN_PLACE)
@@ -1939,7 +1939,7 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datat
 
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 
-    Colls::reduce_scatter(sendtmpbuf, recvbuf, recvcounts, datatype, op, comm);
+    simgrid::smpi::Colls::reduce_scatter(sendtmpbuf, recvbuf, recvcounts, datatype, op, comm);
     retval = MPI_SUCCESS;
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
 
@@ -1992,7 +1992,7 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
     int* recvcounts = static_cast<int*>(xbt_malloc(count * sizeof(int)));
     for (int i      = 0; i < count; i++)
       recvcounts[i] = recvcount;
-    Colls::reduce_scatter(sendtmpbuf, recvbuf, recvcounts, datatype, op, comm);
+    simgrid::smpi::Colls::reduce_scatter(sendtmpbuf, recvbuf, recvcounts, datatype, op, comm);
     xbt_free(recvcounts);
     retval = MPI_SUCCESS;
 
@@ -2045,7 +2045,7 @@ int PMPI_Alltoall(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* rec
 
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 
-    retval = Colls::alltoall(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcount, recvtype, comm);
+    retval = simgrid::smpi::Colls::alltoall(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcount, recvtype, comm);
 
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
 
@@ -2118,7 +2118,7 @@ int PMPI_Alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype 
     }
     extra->num_processes = size;
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
-    retval = Colls::alltoallv(sendtmpbuf, sendtmpcounts, sendtmpdisps, sendtmptype, recvbuf, recvcounts,
+    retval = simgrid::smpi::Colls::alltoallv(sendtmpbuf, sendtmpcounts, sendtmpdisps, sendtmptype, recvbuf, recvcounts,
                                     recvdisps, recvtype, comm);
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
 
@@ -2158,7 +2158,7 @@ int PMPI_Get_count(MPI_Status * status, MPI_Datatype datatype, int *count)
     } else if (status->count % size != 0) {
       return MPI_UNDEFINED;
     } else {
-      *count = Status::get_count(status, datatype);
+      *count = simgrid::smpi::Status::get_count(status, datatype);
       return MPI_SUCCESS;
     }
   }
@@ -2170,7 +2170,7 @@ int PMPI_Type_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new_typ
   } else if (count<0){
     return MPI_ERR_COUNT;
   } else {
-    return Datatype::create_contiguous(count, old_type, 0, new_type);
+    return simgrid::smpi::Datatype::create_contiguous(count, old_type, 0, new_type);
   }
 }
 
@@ -2189,7 +2189,7 @@ int PMPI_Type_vector(int count, int blocklen, int stride, MPI_Datatype old_type,
   } else if (count<0 || blocklen<0){
     return MPI_ERR_COUNT;
   } else {
-    return Datatype::create_vector(count, blocklen, stride, old_type, new_type);
+    return simgrid::smpi::Datatype::create_vector(count, blocklen, stride, old_type, new_type);
   }
 }
 
@@ -2199,7 +2199,7 @@ int PMPI_Type_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old
   } else if (count<0 || blocklen<0){
     return MPI_ERR_COUNT;
   } else {
-    return Datatype::create_hvector(count, blocklen, stride, old_type, new_type);
+    return simgrid::smpi::Datatype::create_hvector(count, blocklen, stride, old_type, new_type);
   }
 }
 
@@ -2213,7 +2213,7 @@ int PMPI_Type_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_
   } else if (count<0){
     return MPI_ERR_COUNT;
   } else {
-    return Datatype::create_indexed(count, blocklens, indices, old_type, new_type);
+    return simgrid::smpi::Datatype::create_indexed(count, blocklens, indices, old_type, new_type);
   }
 }
 
@@ -2223,7 +2223,7 @@ int PMPI_Type_create_indexed(int count, int* blocklens, int* indices, MPI_Dataty
   } else if (count<0){
     return MPI_ERR_COUNT;
   } else {
-    return Datatype::create_indexed(count, blocklens, indices, old_type, new_type);
+    return simgrid::smpi::Datatype::create_indexed(count, blocklens, indices, old_type, new_type);
   }
 }
 
@@ -2238,7 +2238,7 @@ int PMPI_Type_create_indexed_block(int count, int blocklength, int* indices, MPI
     int* blocklens=static_cast<int*>(xbt_malloc(blocklength*count*sizeof(int)));
     for (int i    = 0; i < count; i++)
       blocklens[i]=blocklength;
-    int retval    = Datatype::create_indexed(count, blocklens, indices, old_type, new_type);
+    int retval    = simgrid::smpi::Datatype::create_indexed(count, blocklens, indices, old_type, new_type);
     xbt_free(blocklens);
     return retval;
   }
@@ -2251,7 +2251,7 @@ int PMPI_Type_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatyp
   } else if (count<0){
     return MPI_ERR_COUNT;
   } else {
-    return Datatype::create_hindexed(count, blocklens, indices, old_type, new_type);
+    return simgrid::smpi::Datatype::create_hindexed(count, blocklens, indices, old_type, new_type);
   }
 }
 
@@ -2270,7 +2270,7 @@ int PMPI_Type_create_hindexed_block(int count, int blocklength, MPI_Aint* indice
     int* blocklens=(int*)xbt_malloc(blocklength*count*sizeof(int));
     for (int i     = 0; i < count; i++)
       blocklens[i] = blocklength;
-    int retval     = Datatype::create_hindexed(count, blocklens, indices, old_type, new_type);
+    int retval     = simgrid::smpi::Datatype::create_hindexed(count, blocklens, indices, old_type, new_type);
     xbt_free(blocklens);
     return retval;
   }
@@ -2280,7 +2280,7 @@ int PMPI_Type_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype*
   if (count<0){
     return MPI_ERR_COUNT;
   } else {
-    return Datatype::create_struct(count, blocklens, indices, old_types, new_type);
+    return simgrid::smpi::Datatype::create_struct(count, blocklens, indices, old_types, new_type);
   }
 }
 
@@ -2310,7 +2310,7 @@ int PMPI_Cart_create(MPI_Comm comm_old, int ndims, int* dims, int* periodic, int
   } else if (ndims < 0 || (ndims > 0 && (dims == nullptr || periodic == nullptr)) || comm_cart == nullptr) {
     return MPI_ERR_ARG;
   } else{
-    Topo_Cart* topo = new Topo_Cart(comm_old, ndims, dims, periodic, reorder, comm_cart);
+    simgrid::smpi::Topo_Cart* topo = new simgrid::smpi::Topo_Cart(comm_old, ndims, dims, periodic, reorder, comm_cart);
     if(*comm_cart==MPI_COMM_NULL)
       delete topo;
     return MPI_SUCCESS;
@@ -2400,7 +2400,7 @@ int PMPI_Dims_create(int nnodes, int ndims, int* dims) {
   if (ndims < 1 || nnodes < 1) {
     return MPI_ERR_DIMS;
   }
-  return Dims_create(nnodes, ndims, dims);
+  return simgrid::smpi::Topo_Cart::Dims_create(nnodes, ndims, dims);
 }
 
 int PMPI_Cart_sub(MPI_Comm comm, int* remain_dims, MPI_Comm* comm_new) {
@@ -2430,7 +2430,7 @@ int PMPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, 
   MPI_Aint disps[3]     = {lb, 0, lb + extent};
   MPI_Datatype types[3] = {MPI_LB, oldtype, MPI_UB};
 
-  *newtype = new Type_Struct(oldtype->size(), lb, lb + extent, DT_FLAG_DERIVED, 3, blocks, disps, types);
+  *newtype = new simgrid::smpi::Type_Struct(oldtype->size(), lb, lb + extent, DT_FLAG_DERIVED, 3, blocks, disps, types);
 
   (*newtype)->addflag(~DT_FLAG_COMMITED);
   return MPI_SUCCESS;
@@ -2444,7 +2444,7 @@ int PMPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MP
   }else if ((base == nullptr && size != 0) || disp_unit <= 0 || size < 0 ){
     retval= MPI_ERR_OTHER;
   }else{
-    *win = new Win( base, size, disp_unit, info, comm);
+    *win = new simgrid::smpi::Win( base, size, disp_unit, info, comm);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -2761,7 +2761,7 @@ int PMPI_Type_get_name(MPI_Datatype  datatype, char * name, int* len)
 }
 
 MPI_Datatype PMPI_Type_f2c(MPI_Fint datatype){
-  return static_cast<MPI_Datatype>(F2C::f2c(datatype));
+  return static_cast<MPI_Datatype>(simgrid::smpi::F2C::f2c(datatype));
 }
 
 MPI_Fint PMPI_Type_c2f(MPI_Datatype datatype){
@@ -2769,7 +2769,7 @@ MPI_Fint PMPI_Type_c2f(MPI_Datatype datatype){
 }
 
 MPI_Group PMPI_Group_f2c(MPI_Fint group){
-  return Group::f2c(group);
+  return simgrid::smpi::Group::f2c(group);
 }
 
 MPI_Fint PMPI_Group_c2f(MPI_Group group){
@@ -2777,7 +2777,7 @@ MPI_Fint PMPI_Group_c2f(MPI_Group group){
 }
 
 MPI_Request PMPI_Request_f2c(MPI_Fint request){
-  return static_cast<MPI_Request>(Request::f2c(request));
+  return static_cast<MPI_Request>(simgrid::smpi::Request::f2c(request));
 }
 
 MPI_Fint PMPI_Request_c2f(MPI_Request request) {
@@ -2785,7 +2785,7 @@ MPI_Fint PMPI_Request_c2f(MPI_Request request) {
 }
 
 MPI_Win PMPI_Win_f2c(MPI_Fint win){
-  return static_cast<MPI_Win>(Win::f2c(win));
+  return static_cast<MPI_Win>(simgrid::smpi::Win::f2c(win));
 }
 
 MPI_Fint PMPI_Win_c2f(MPI_Win win){
@@ -2793,7 +2793,7 @@ MPI_Fint PMPI_Win_c2f(MPI_Win win){
 }
 
 MPI_Op PMPI_Op_f2c(MPI_Fint op){
-  return static_cast<MPI_Op>(Op::f2c(op));
+  return static_cast<MPI_Op>(simgrid::smpi::Op::f2c(op));
 }
 
 MPI_Fint PMPI_Op_c2f(MPI_Op op){
@@ -2801,7 +2801,7 @@ MPI_Fint PMPI_Op_c2f(MPI_Op op){
 }
 
 MPI_Comm PMPI_Comm_f2c(MPI_Fint comm){
-  return static_cast<MPI_Comm>(Comm::f2c(comm));
+  return static_cast<MPI_Comm>(simgrid::smpi::Comm::f2c(comm));
 }
 
 MPI_Fint PMPI_Comm_c2f(MPI_Comm comm){
@@ -2809,7 +2809,7 @@ MPI_Fint PMPI_Comm_c2f(MPI_Comm comm){
 }
 
 MPI_Info PMPI_Info_f2c(MPI_Fint info){
-  return static_cast<MPI_Info>(Info::f2c(info));
+  return static_cast<MPI_Info>(simgrid::smpi::Info::f2c(info));
 }
 
 MPI_Fint PMPI_Info_c2f(MPI_Info info){
@@ -2819,11 +2819,11 @@ MPI_Fint PMPI_Info_c2f(MPI_Info info){
 int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state) {
   smpi_copy_fn _copy_fn={copy_fn,nullptr,nullptr};
   smpi_delete_fn _delete_fn={delete_fn,nullptr,nullptr};
-  return Keyval::keyval_create<Comm>(_copy_fn, _delete_fn, keyval, extra_state);
+  return simgrid::smpi::Keyval::keyval_create<simgrid::smpi::Comm>(_copy_fn, _delete_fn, keyval, extra_state);
 }
 
 int PMPI_Keyval_free(int* keyval) {
-  return Keyval::keyval_free<Comm>(keyval);
+  return simgrid::smpi::Keyval::keyval_free<simgrid::smpi::Comm>(keyval);
 }
 
 int PMPI_Attr_delete(MPI_Comm comm, int keyval) {
@@ -2833,7 +2833,7 @@ int PMPI_Attr_delete(MPI_Comm comm, int keyval) {
   else if (comm==MPI_COMM_NULL)
     return MPI_ERR_COMM;
   else
-    return comm->attr_delete<Comm>(keyval);
+    return comm->attr_delete<simgrid::smpi::Comm>(keyval);
 }
 
 int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
@@ -2871,7 +2871,7 @@ int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
     *static_cast<int**>(attr_value) = &one;
     return MPI_SUCCESS;
   default:
-    return comm->attr_get<Comm>(keyval, attr_value, flag);
+    return comm->attr_get<simgrid::smpi::Comm>(keyval, attr_value, flag);
   }
 }
 
@@ -2882,7 +2882,7 @@ int PMPI_Attr_put(MPI_Comm comm, int keyval, void* attr_value) {
   else if (comm==MPI_COMM_NULL)
     return MPI_ERR_COMM;
   else
-  return comm->attr_put<Comm>(keyval, attr_value);
+  return comm->attr_put<simgrid::smpi::Comm>(keyval, attr_value);
 }
 
 int PMPI_Comm_get_attr (MPI_Comm comm, int comm_keyval, void *attribute_val, int *flag)
@@ -2915,7 +2915,7 @@ int PMPI_Type_get_attr (MPI_Datatype type, int type_keyval, void *attribute_val,
   if (type==MPI_DATATYPE_NULL)
     return MPI_ERR_TYPE;
   else
-    return type->attr_get<Datatype>(type_keyval, attribute_val, flag);
+    return type->attr_get<simgrid::smpi::Datatype>(type_keyval, attribute_val, flag);
 }
 
 int PMPI_Type_set_attr (MPI_Datatype type, int type_keyval, void *attribute_val)
@@ -2923,7 +2923,7 @@ int PMPI_Type_set_attr (MPI_Datatype type, int type_keyval, void *attribute_val)
   if (type==MPI_DATATYPE_NULL)
     return MPI_ERR_TYPE;
   else
-    return type->attr_put<Datatype>(type_keyval, attribute_val);
+    return type->attr_put<simgrid::smpi::Datatype>(type_keyval, attribute_val);
 }
 
 int PMPI_Type_delete_attr (MPI_Datatype type, int type_keyval)
@@ -2931,7 +2931,7 @@ int PMPI_Type_delete_attr (MPI_Datatype type, int type_keyval)
   if (type==MPI_DATATYPE_NULL)
     return MPI_ERR_TYPE;
   else
-    return type->attr_delete<Datatype>(type_keyval);
+    return type->attr_delete<simgrid::smpi::Datatype>(type_keyval);
 }
 
 int PMPI_Type_create_keyval(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval,
@@ -2939,11 +2939,11 @@ int PMPI_Type_create_keyval(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delet
 {
   smpi_copy_fn _copy_fn={nullptr,copy_fn,nullptr};
   smpi_delete_fn _delete_fn={nullptr,delete_fn,nullptr};
-  return Keyval::keyval_create<Datatype>(_copy_fn, _delete_fn, keyval, extra_state);
+  return simgrid::smpi::Keyval::keyval_create<simgrid::smpi::Datatype>(_copy_fn, _delete_fn, keyval, extra_state);
 }
 
 int PMPI_Type_free_keyval(int* keyval) {
-  return Keyval::keyval_free<Datatype>(keyval);
+  return simgrid::smpi::Keyval::keyval_free<simgrid::smpi::Datatype>(keyval);
 }
 
 int PMPI_Win_get_attr (MPI_Win win, int keyval, void *attribute_val, int* flag)
@@ -2969,7 +2969,7 @@ int PMPI_Win_get_attr (MPI_Win win, int keyval, void *attribute_val, int* flag)
       *flag = 1;
       return MPI_SUCCESS;
     default:
-      return win->attr_get<Win>(keyval, attribute_val, flag);
+      return win->attr_get<simgrid::smpi::Win>(keyval, attribute_val, flag);
   }
 }
 
@@ -2980,7 +2980,7 @@ int PMPI_Win_set_attr (MPI_Win win, int type_keyval, void *attribute_val)
   if (win==MPI_WIN_NULL)
     return MPI_ERR_TYPE;
   else
-    return win->attr_put<Win>(type_keyval, attribute_val);
+    return win->attr_put<simgrid::smpi::Win>(type_keyval, attribute_val);
 }
 
 int PMPI_Win_delete_attr (MPI_Win win, int type_keyval)
@@ -2988,7 +2988,7 @@ int PMPI_Win_delete_attr (MPI_Win win, int type_keyval)
   if (win==MPI_WIN_NULL)
     return MPI_ERR_TYPE;
   else
-    return win->attr_delete<Win>(type_keyval);
+    return win->attr_delete<simgrid::smpi::Win>(type_keyval);
 }
 
 int PMPI_Win_create_keyval(MPI_Win_copy_attr_function* copy_fn, MPI_Win_delete_attr_function* delete_fn, int* keyval,
@@ -2996,17 +2996,17 @@ int PMPI_Win_create_keyval(MPI_Win_copy_attr_function* copy_fn, MPI_Win_delete_a
 {
   smpi_copy_fn _copy_fn={nullptr, nullptr, copy_fn};
   smpi_delete_fn _delete_fn={nullptr, nullptr, delete_fn};
-  return Keyval::keyval_create<Win>(_copy_fn, _delete_fn, keyval, extra_state);
+  return simgrid::smpi::Keyval::keyval_create<simgrid::smpi::Win>(_copy_fn, _delete_fn, keyval, extra_state);
 }
 
 int PMPI_Win_free_keyval(int* keyval) {
-  return Keyval::keyval_free<Win>(keyval);
+  return simgrid::smpi::Keyval::keyval_free<simgrid::smpi::Win>(keyval);
 }
 
 int PMPI_Info_create( MPI_Info *info){
   if (info == nullptr)
     return MPI_ERR_ARG;
-  *info = new Info();
+  *info = new simgrid::smpi::Info();
   return MPI_SUCCESS;
 }
 
@@ -3020,7 +3020,7 @@ int PMPI_Info_set( MPI_Info info, char *key, char *value){
 int PMPI_Info_free( MPI_Info *info){
   if (info == nullptr || *info==nullptr)
     return MPI_ERR_ARG;
-  Info::unref(*info);
+  simgrid::smpi::Info::unref(*info);
   *info=MPI_INFO_NULL;
   return MPI_SUCCESS;
 }
@@ -3037,7 +3037,7 @@ int PMPI_Info_get(MPI_Info info,char *key,int valuelen, char *value, int *flag){
 int PMPI_Info_dup(MPI_Info info, MPI_Info *newinfo){
   if (info == nullptr || newinfo==nullptr)
     return MPI_ERR_ARG;
-  *newinfo = new Info(info);
+  *newinfo = new simgrid::smpi::Info(info);
   return MPI_SUCCESS;
 }
 

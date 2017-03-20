@@ -11,6 +11,8 @@ static int bcast_NTSL_segment_size_in_byte = 8192;
 #define HEADER_SIZE 1024
 #define MAX_NODE 1024
 
+namespace simgrid{
+namespace smpi{
 /* Non-topology-specific pipelined linear-bcast function */
 int Coll_bcast_arrival_pattern_aware::bcast(void *buf, int count,
                                                 MPI_Datatype datatype, int root,
@@ -361,4 +363,7 @@ int Coll_bcast_arrival_pattern_aware::bcast(void *buf, int count,
   }
 
   return MPI_SUCCESS;
+}
+
+}
 }

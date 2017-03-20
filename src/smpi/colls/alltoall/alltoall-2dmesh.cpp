@@ -52,6 +52,8 @@ static int alltoall_check_is_2dmesh(int num, int *i, int *j)
   }
   return 0;
 }
+namespace simgrid{
+namespace smpi{
 
 int Coll_alltoall_2dmesh::alltoall(void *send_buff, int send_count,
                                     MPI_Datatype send_type,
@@ -171,4 +173,6 @@ int Coll_alltoall_2dmesh::alltoall(void *send_buff, int send_count,
   smpi_free_tmp_buffer(tmp_buff1);
   smpi_free_tmp_buffer(tmp_buff2);
   return MPI_SUCCESS;
+}
+}
 }

@@ -7,6 +7,9 @@
 #include "private.h"
 #include "src/simix/smx_private.h"
 
+namespace simgrid{
+namespace smpi{
+
 void Status::empty(MPI_Status * status)
 {
   if(status != MPI_STATUS_IGNORE) {
@@ -20,4 +23,7 @@ void Status::empty(MPI_Status * status)
 int Status::get_count(MPI_Status * status, MPI_Datatype datatype)
 {
   return status->count / datatype->size();
+}
+
+}
 }

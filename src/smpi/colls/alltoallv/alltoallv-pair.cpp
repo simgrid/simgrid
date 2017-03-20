@@ -27,6 +27,8 @@
  * Auther: Ahmad Faraj
 
  ****************************************************************************/
+namespace simgrid{
+namespace smpi{
 int Coll_alltoallv_pair::alltoallv(void *send_buff, int *send_counts, int *send_disps,
                                   MPI_Datatype send_type,
                                   void *recv_buff, int *recv_counts, int *recv_disps,
@@ -56,4 +58,6 @@ int Coll_alltoallv_pair::alltoallv(void *send_buff, int *send_counts, int *send_
 		 comm, &s);
   }
   return MPI_SUCCESS;
+}
+}
 }

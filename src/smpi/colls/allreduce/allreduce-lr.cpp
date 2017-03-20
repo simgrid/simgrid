@@ -18,7 +18,8 @@
 */
 
 //#include <star-reduction.c>
-
+namespace simgrid{
+namespace smpi{
 int
 Coll_allreduce_lr::allreduce(void *sbuf, void *rbuf, int rcount,
                              MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
@@ -103,4 +104,6 @@ Coll_allreduce_lr::allreduce(void *sbuf, void *rbuf, int rcount,
   }
 
   return 0;
+}
+}
 }

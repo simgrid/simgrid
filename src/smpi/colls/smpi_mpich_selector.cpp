@@ -56,6 +56,8 @@
 
    End Algorithm: MPI_Allreduce
 */
+namespace simgrid{
+namespace smpi{
 int Coll_allreduce_mpich::allreduce(void *sbuf, void *rbuf, int count,
                         MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
 {
@@ -646,8 +648,6 @@ int Coll_allgatherv_mpich::allgatherv(void *sbuf, int scount,
 
    End Algorithm: MPI_Gather
 */
-namespace simgrid{
-namespace smpi{
 
 int Coll_gather_mpich::gather(void *sbuf, int scount, 
                                            MPI_Datatype sdtype,
@@ -660,9 +660,6 @@ int Coll_gather_mpich::gather(void *sbuf, int scount,
         return Coll_gather_ompi_binomial::gather (sbuf, scount, sdtype, 
                                                       rbuf, rcount, rdtype, 
                                                       root, comm);
-}
-
-}
 }
 
 /* This is the default implementation of scatter. The algorithm is:
@@ -706,5 +703,7 @@ int Coll_scatter_mpich::scatter(void *sbuf, int scount,
       xbt_free(sbuf);
   }
   return ret;
+}
+}
 }
 

@@ -7,7 +7,8 @@
 #include "../colls_private.h"
 
 int flattree_segment_in_byte = 8192;
-
+namespace simgrid{
+namespace smpi{
 int
 Coll_bcast_flattree_pipeline::bcast(void *buff, int count,
                                         MPI_Datatype data_type, int root,
@@ -60,4 +61,7 @@ Coll_bcast_flattree_pipeline::bcast(void *buff, int count,
   free(request_array);
   free(status_array);
   return MPI_SUCCESS;
+}
+
+}
 }

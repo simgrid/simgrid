@@ -38,6 +38,8 @@ This fucntion performs all-reduce operation as follow. ** in a pipeline fashion 
 3) binomial_tree bcast intra-communication between root of each SMP node
 4) binomial_tree bcast inside each SMP node
 */
+namespace simgrid{
+namespace smpi{
 int Coll_allreduce_smp_binomial_pipeline::allreduce(void *send_buf,
                                                     void *recv_buf, int count,
                                                     MPI_Datatype dtype,
@@ -199,4 +201,6 @@ int Coll_allreduce_smp_binomial_pipeline::allreduce(void *send_buf,
 
   smpi_free_tmp_buffer(tmp_buf);
   return MPI_SUCCESS;
+}
+}
 }

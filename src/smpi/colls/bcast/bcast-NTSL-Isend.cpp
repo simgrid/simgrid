@@ -11,6 +11,8 @@ static int bcast_NTSL_segment_size_in_byte = 8192;
 /* Non-topology-specific pipelined linear-bcast function 
    0->1, 1->2 ,2->3, ....., ->last node : in a pipeline fashion
 */
+namespace simgrid{
+namespace smpi{
 int Coll_bcast_NTSL_Isend::bcast(void *buf, int count, MPI_Datatype datatype,
                                int root, MPI_Comm comm)
 {
@@ -129,4 +131,7 @@ int Coll_bcast_NTSL_Isend::bcast(void *buf, int count, MPI_Datatype datatype,
   }
 
   return MPI_SUCCESS;
+}
+
+}
 }

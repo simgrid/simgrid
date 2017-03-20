@@ -12,7 +12,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_process, smpi, "Logging specific to SMPI (kernel)");
 
 //TODO : replace
-extern Process **process_data;
+extern simgrid::smpi::Process **process_data;
 extern int* index_to_process_data;
 
 #define MAILBOX_NAME_MAXLEN (5 + sizeof(int) * 2 + 1)

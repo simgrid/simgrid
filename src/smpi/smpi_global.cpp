@@ -42,7 +42,7 @@ struct papi_process_data {
 #endif
 std::unordered_map<std::string, double> location2speedup;
 
-Process **process_data = nullptr;
+simgrid::smpi::Process **process_data = nullptr;
 int process_count = 0;
 int smpi_universe_size = 0;
 int* index_to_process_data = nullptr;
@@ -66,13 +66,13 @@ int smpi_process_count()
   return process_count;
 }
 
-Process* smpi_process()
+simgrid::smpi::Process* smpi_process()
 {
   simgrid::MsgActorExt* msgExt = static_cast<simgrid::MsgActorExt*>(SIMIX_process_self()->data);
-  return static_cast<Process*>(msgExt->data);
+  return static_cast<simgrid::smpi::Process*>(msgExt->data);
 }
 
-Process* smpi_process_remote(int index)
+simgrid::smpi::Process* smpi_process_remote(int index)
 {
   return process_data[index_to_process_data[index]];
 }
@@ -82,7 +82,7 @@ MPI_Comm smpi_process_comm_self(){
 }
 
 void smpi_process_init(int *argc, char ***argv){
-  Process::init(argc, argv);
+  simgrid::smpi::Process::init(argc, argv);
 }
 
 int smpi_process_index(){
@@ -115,7 +115,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
        XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
 
        smpi_switch_data_segment(
-           (static_cast<Process*>((static_cast<simgrid::MsgActorExt*>(comm->src_proc->data)->data))->index()));
+           (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->src_proc->data)->data))->index()));
        tmpbuff = static_cast<void*>(xbt_malloc(buff_size));
        memcpy(tmpbuff, buff, buff_size);
   }
@@ -124,7 +124,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
       && ((char*)comm->dst_buff < smpi_start_data_exe + smpi_size_data_exe )){
        XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
        smpi_switch_data_segment(
-           (static_cast<Process*>((static_cast<simgrid::MsgActorExt*>(comm->dst_proc->data)->data))->index()));
+           (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->dst_proc->data)->data))->index()));
   }
 
   memcpy(comm->dst_buff, tmpbuff, buff_size);
@@ -272,15 +272,15 @@ void smpi_global_init()
     smpirun=1;
   }
   smpi_universe_size = process_count;
-  process_data       = new Process*[process_count];
+  process_data       = new simgrid::smpi::Process*[process_count];
   for (i = 0; i < process_count; i++) {
-    process_data[i]                       = new Process(i);
+    process_data[i]                       = new simgrid::smpi::Process(i);
   }
   //if the process was launched through smpirun script we generate a global mpi_comm_world
   //if not, we let MPI_COMM_NULL, and the comm world will be private to each mpi instance
   if(smpirun){
-    group = new  Group(process_count);
-    MPI_COMM_WORLD = new  Comm(group, nullptr);
+    group = new  simgrid::smpi::Group(process_count);
+    MPI_COMM_WORLD = new  simgrid::smpi::Comm(group, nullptr);
     MPI_Attr_put(MPI_COMM_WORLD, MPI_UNIVERSE_SIZE, reinterpret_cast<void *>(process_count));
     msg_bar_t bar = MSG_barrier_init(process_count);
 
@@ -304,10 +304,10 @@ void smpi_global_destroy()
   }
   for (int i = 0; i < count; i++) {
     if(process_data[i]->comm_self()!=MPI_COMM_NULL){
-      Comm::destroy(process_data[i]->comm_self());
+      simgrid::smpi::Comm::destroy(process_data[i]->comm_self());
     }
     if(process_data[i]->comm_intra()!=MPI_COMM_NULL){
-      Comm::destroy(process_data[i]->comm_intra());
+      simgrid::smpi::Comm::destroy(process_data[i]->comm_intra());
     }
     xbt_os_timer_free(process_data[i]->timer());
     xbt_mutex_destroy(process_data[i]->mailboxes_mutex());
@@ -318,9 +318,9 @@ void smpi_global_destroy()
 
   if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED){
     MPI_COMM_WORLD->cleanup_smp();
-    MPI_COMM_WORLD->cleanup_attr<Comm>();
-    if(Colls::smpi_coll_cleanup_callback!=nullptr)
-      Colls::smpi_coll_cleanup_callback();
+    MPI_COMM_WORLD->cleanup_attr<simgrid::smpi::Comm>();
+    if(simgrid::smpi::Colls::smpi_coll_cleanup_callback!=nullptr)
+      simgrid::smpi::Colls::smpi_coll_cleanup_callback();
     delete MPI_COMM_WORLD;
   }
 
@@ -347,7 +347,7 @@ void __attribute__ ((weak)) user_main_()
 
 int __attribute__ ((weak)) smpi_simulated_main_(int argc, char **argv)
 {
-  Process::init(&argc, &argv);
+  simgrid::smpi::Process::init(&argc, &argv);
   user_main_();
   return 0;
 }
@@ -396,8 +396,8 @@ static void smpi_init_logs(){
 
 static void smpi_init_options(){
 
-    Colls::set_collectives();
-    Colls::smpi_coll_cleanup_callback=nullptr;
+    simgrid::smpi::Colls::set_collectives();
+    simgrid::smpi::Colls::smpi_coll_cleanup_callback=nullptr;
     smpi_cpu_threshold = xbt_cfg_get_double("smpi/cpu-threshold");
     smpi_host_speed = xbt_cfg_get_double("smpi/host-speed");
     smpi_privatize_global_variables = xbt_cfg_get_boolean("smpi/privatize-global-variables");

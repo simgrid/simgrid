@@ -12,6 +12,8 @@ int reduce_NTSL_segment_size_in_byte = 8192;
 /* Non-topology-specific pipelined linear-bcast function 
    0->1, 1->2 ,2->3, ....., ->last node : in a pipeline fashion
 */
+namespace simgrid{
+namespace smpi{
 int Coll_reduce_NTSL::reduce(void *buf, void *rbuf, int count,
                                 MPI_Datatype datatype, MPI_Op op, int root,
                                 MPI_Comm comm)
@@ -149,4 +151,6 @@ int Coll_reduce_NTSL::reduce(void *buf, void *rbuf, int count,
 
   free(tmp_buf);
   return MPI_SUCCESS;
+}
+}
 }

@@ -43,6 +43,9 @@ extern int (*MV2_Scatter_intra_function) (void *sendbuf, int sendcount, MPI_Data
     void *recvbuf, int recvcount, MPI_Datatype recvtype,
     int root, MPI_Comm comm);
 
+namespace simgrid{
+namespace smpi{
+
 int Coll_scatter_mvapich2_two_level_direct::scatter(void *sendbuf,
                                       int sendcnt,
                                       MPI_Datatype sendtype,
@@ -406,5 +409,8 @@ int Coll_scatter_mvapich2_two_level_binomial::scatter(void *sendbuf,
     }
 
     return (mpi_errno);
+}
+
+}
 }
 

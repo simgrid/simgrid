@@ -5,7 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "../colls_private.h"
-
+namespace simgrid{
+namespace smpi{
 int Coll_bcast_SMP_binomial::bcast(void *buf, int count,
                                        MPI_Datatype datatype, int root,
                                        MPI_Comm comm)
@@ -107,4 +108,7 @@ int Coll_bcast_SMP_binomial::bcast(void *buf, int count,
   }
 
   return MPI_SUCCESS;
+}
+
+}
 }

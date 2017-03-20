@@ -18,7 +18,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi, "Logging specific to SMPI (comm)");
 
- Comm mpi_MPI_COMM_UNINITIALIZED;
+ simgrid::smpi::Comm mpi_MPI_COMM_UNINITIALIZED;
 MPI_Comm MPI_COMM_UNINITIALIZED=&mpi_MPI_COMM_UNINITIALIZED;
 
 /* Support for cartesian topology was added, but there are 2 other types of topology, graph et dist graph. In order to

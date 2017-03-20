@@ -8,7 +8,8 @@
 
 
 int bcast_SMP_binary_segment_byte = 8192;
-
+namespace simgrid{
+namespace smpi{
 int Coll_bcast_SMP_binary::bcast(void *buf, int count,
                                      MPI_Datatype datatype, int root,
                                      MPI_Comm comm)
@@ -227,4 +228,7 @@ int Coll_bcast_SMP_binary::bcast(void *buf, int count,
   }
 
   return 1;
+}
+
+}
 }

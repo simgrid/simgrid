@@ -53,6 +53,9 @@ extern int (*MV2_Allreduce_intra_function)( void *sendbuf,
     MPI_Datatype datatype,
     MPI_Op op, MPI_Comm comm);
     
+    
+namespace simgrid{
+namespace smpi{
 static  int MPIR_Allreduce_reduce_p2p_MV2( void *sendbuf,
     void *recvbuf,
     int count,
@@ -72,7 +75,7 @@ static  int MPIR_Allreduce_reduce_shmem_MV2( void *sendbuf,
   Colls::reduce(sendbuf,recvbuf,count,datatype,op,0,comm);
   return MPI_SUCCESS;
 }
-    
+
     
 /* general two level allreduce helper function */
 int Coll_allreduce_mvapich2_two_level::allreduce(void *sendbuf,
@@ -167,4 +170,6 @@ int Coll_allreduce_mvapich2_two_level::allreduce(void *sendbuf,
 
     return (mpi_errno);
 
+}
+}
 }

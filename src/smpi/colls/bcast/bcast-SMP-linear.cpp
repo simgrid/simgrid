@@ -7,7 +7,8 @@
 #include "../colls_private.h"
 
 int bcast_SMP_linear_segment_byte = 8192;
-
+namespace simgrid{
+namespace smpi{
 int Coll_bcast_SMP_linear::bcast(void *buf, int count,
                                      MPI_Datatype datatype, int root,
                                      MPI_Comm comm)
@@ -175,4 +176,7 @@ int Coll_bcast_SMP_linear::bcast(void *buf, int count,
   }
 
   return MPI_SUCCESS;
+}
+
+}
 }

@@ -6,7 +6,8 @@
 
 #include "../colls_private.h"
 //#include <star-reduction.c>
-
+namespace simgrid{
+namespace smpi{
 int
 Coll_reduce_flat_tree::reduce(void *sbuf, void *rbuf, int count,
                                  MPI_Datatype dtype, MPI_Op op,
@@ -65,4 +66,6 @@ Coll_reduce_flat_tree::reduce(void *sbuf, void *rbuf, int count,
 
   /* All done */
   return 0;
+}
+}
 }

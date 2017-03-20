@@ -154,6 +154,8 @@
     }                                                                        \
 
 #include "../colls_private.h"
+namespace simgrid{
+namespace smpi{
 int 
 Coll_allreduce_ompi_ring_segmented::allreduce(void *sbuf, void *rbuf, int count,
                                                MPI_Datatype dtype,
@@ -386,4 +388,6 @@ Coll_allreduce_ompi_ring_segmented::allreduce(void *sbuf, void *rbuf, int count,
    if (NULL != inbuf[0]) smpi_free_tmp_buffer(inbuf[0]);
    if (NULL != inbuf[1]) smpi_free_tmp_buffer(inbuf[1]);
    return ret;
+}
+}
 }

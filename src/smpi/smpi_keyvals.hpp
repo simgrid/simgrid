@@ -11,10 +11,6 @@
 #include <unordered_map>
 #include <xbt/ex.hpp>
 
-namespace simgrid{
-namespace smpi{
-
-
 typedef struct smpi_delete_fn{
   MPI_Comm_delete_attr_function          *comm_delete_fn;
   MPI_Type_delete_attr_function          *type_delete_fn;
@@ -32,7 +28,11 @@ typedef struct s_smpi_key_elem {
   smpi_delete_fn delete_fn;
   int refcount;
 } s_smpi_mpi_key_elem_t; 
+
 typedef struct s_smpi_key_elem *smpi_key_elem;
+
+namespace simgrid{
+namespace smpi{
 
 class Keyval{
   private:

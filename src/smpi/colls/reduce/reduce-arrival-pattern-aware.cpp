@@ -16,7 +16,8 @@ int reduce_arrival_pattern_aware_segment_size_in_byte = 8192;
 #ifndef MAX_NODE
 #define MAX_NODE 1024
 #endif
-
+namespace simgrid{
+namespace smpi{
 /* Non-topology-specific pipelined linear-reduce function */
 int Coll_reduce_arrival_pattern_aware::reduce(void *buf, void *rbuf,
                                                  int count,
@@ -352,4 +353,6 @@ int Coll_reduce_arrival_pattern_aware::reduce(void *buf, void *rbuf,
   smpi_free_tmp_buffer(tmp_buf);
 
   return MPI_SUCCESS;
+}
+}
 }

@@ -6,7 +6,8 @@
 
 #include "../colls_private.h"
 //#include <star-reduction.c>
-
+namespace simgrid{
+namespace smpi{
 int Coll_allreduce_rdb::allreduce(void *sbuff, void *rbuff, int count,
                                   MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
 {
@@ -127,4 +128,6 @@ int Coll_allreduce_rdb::allreduce(void *sbuff, void *rbuff, int count,
 
   smpi_free_tmp_buffer(tmp_buf);
   return MPI_SUCCESS;
+}
+}
 }

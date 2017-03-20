@@ -20,7 +20,8 @@ static inline int MPIU_Mirror_permutation(unsigned int x, int bits)
 
     return retval;
 }
-
+namespace simgrid{
+namespace smpi{
 
 int Coll_reduce_scatter_mpich_pair::reduce_scatter(void *sendbuf, void *recvbuf, int recvcounts[],
                               MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
@@ -498,5 +499,6 @@ int Coll_reduce_scatter_mpich_rdb::reduce_scatter(void *sendbuf, void *recvbuf, 
     smpi_free_tmp_buffer(tmp_results);
     return MPI_SUCCESS;
         }
-
+}
+}
 

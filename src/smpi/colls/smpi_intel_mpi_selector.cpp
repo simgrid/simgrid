@@ -47,6 +47,8 @@ MPI_Allreduce
   as Shumilin's ring algorithm is unknown, default to ring'
 */
 
+namespace simgrid{
+namespace smpi{
 
 int (*intel_allreduce_functions_table[])(void *sendbuf,
       void *recvbuf,
@@ -2289,8 +2291,6 @@ ret Coll_ ## cat ## _impi:: cat (COLL_UNPAREN args)\
     args2);\
 }
 
-namespace simgrid{
-namespace smpi{
 
 COLL_APPLY(IMPI_COLL_SELECT, COLL_ALLGATHERV_SIG, (send_buff, send_count, send_type, recv_buff, recv_count, recv_disps, recv_type, comm));
 COLL_APPLY(IMPI_COLL_SELECT, COLL_ALLREDUCE_SIG, (sbuf, rbuf, rcount, dtype, op, comm));

@@ -23,6 +23,9 @@
 #include "../colls_private.h"
 #include "../coll_tuned_topo.h"
 
+namespace simgrid{
+namespace smpi{
+
 
 int
 Coll_scatter_ompi_binomial::scatter(void *sbuf, int scount,
@@ -248,4 +251,7 @@ Coll_scatter_ompi_basic_linear::scatter(void *sbuf, int scount,
     /* All done */
 
     return MPI_SUCCESS;
+}
+
+}
 }

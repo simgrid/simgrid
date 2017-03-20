@@ -9,7 +9,8 @@
 
 #define MAXTREEFANOUT 32
 
-
+namespace simgrid{
+namespace smpi{
 int Coll_bcast_ompi_pipeline::bcast( void* buffer,
                                       int original_count, 
                                       MPI_Datatype datatype, 
@@ -208,4 +209,7 @@ int Coll_bcast_ompi_pipeline::bcast( void* buffer,
     xbt_free(tree);
 
     return (MPI_SUCCESS);
+}
+
+}
 }

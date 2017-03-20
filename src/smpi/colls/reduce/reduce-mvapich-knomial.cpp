@@ -114,6 +114,8 @@ static int MPIR_Reduce_knomial_trace(int root, int reduce_knomial_factor,
     return 0; 
 }
         
+namespace simgrid{
+namespace smpi{
 int Coll_reduce_mvapich2_knomial::reduce (
         void *sendbuf,
         void *recvbuf,
@@ -222,4 +224,6 @@ int Coll_reduce_mvapich2_knomial::reduce (
     /* --END ERROR HANDLING-- */
 
     return mpi_errno;
+}
+}
 }

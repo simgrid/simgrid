@@ -22,7 +22,8 @@
  */
 
 #include "../colls_private.h"
-
+namespace simgrid{
+namespace smpi{
 int Coll_allreduce_mvapich2_rs::allreduce(void *sendbuf,
                             void *recvbuf,
                             int count,
@@ -287,4 +288,7 @@ int Coll_allreduce_mvapich2_rs::allreduce(void *sendbuf,
     smpi_free_tmp_buffer(tmp_buf_free);
     return (mpi_errno);
 
+}
+
+}
 }

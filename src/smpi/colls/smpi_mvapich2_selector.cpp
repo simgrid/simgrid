@@ -10,7 +10,6 @@
 
 #include "smpi_mvapich2_selector_stampede.h"
 
-
 namespace simgrid{
 namespace smpi{
 
@@ -1007,6 +1006,8 @@ int Coll_scatter_mvapich2::scatter(void *sendbuf,
 
 }
 }
+
+
 void smpi_coll_cleanup_mvapich2(void){
 int i=0;
 if(mv2_alltoall_thresholds_table)

@@ -15,7 +15,8 @@ int bcast_arrival_pattern_aware_wait_segment_size_in_byte = 8192;
 #ifndef BCAST_ARRIVAL_PATTERN_AWARE_MAX_NODE
 #define BCAST_ARRIVAL_PATTERN_AWARE_MAX_NODE 128
 #endif
-
+namespace simgrid{
+namespace smpi{
 /* Non-topology-specific pipelined linear-bcast function */
 int Coll_bcast_arrival_pattern_aware_wait::bcast(void *buf, int count,
                                                      MPI_Datatype datatype,
@@ -251,4 +252,7 @@ int Coll_bcast_arrival_pattern_aware_wait::bcast(void *buf, int count,
   }
 
   return MPI_SUCCESS;
+}
+
+}
 }

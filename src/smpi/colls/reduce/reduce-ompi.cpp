@@ -22,7 +22,8 @@
 #include "../colls_private.h"
 #include "../coll_tuned_topo.h"
 
-
+namespace simgrid{
+namespace smpi{
 
 int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int original_count,
                                     MPI_Datatype datatype, MPI_Op  op,
@@ -323,6 +324,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
    - segment sizes which are not multiplies of the extent of the datatype
      meaning that at least one datatype must fit in the segment !
 */
+
 
 int Coll_reduce_ompi_chain::reduce( void *sendbuf, void *recvbuf, int count,
                                         MPI_Datatype datatype, 
@@ -681,3 +683,5 @@ Coll_reduce_ompi_basic_linear::reduce(void *sbuf, void *rbuf, int count,
 /* copied function (with appropriate renaming) ends here */
 
 
+}
+}

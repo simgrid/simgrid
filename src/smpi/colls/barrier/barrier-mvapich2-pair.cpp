@@ -41,7 +41,8 @@
 
 #include "../colls_private.h"
 #include "../coll_tuned_topo.h"
-
+namespace simgrid{
+namespace smpi{
 int Coll_barrier_mvapich2_pair::barrier(MPI_Comm comm)
 {
 
@@ -95,4 +96,7 @@ int Coll_barrier_mvapich2_pair::barrier(MPI_Comm comm)
 
     return mpi_errno;
 
+}
+
+}
 }

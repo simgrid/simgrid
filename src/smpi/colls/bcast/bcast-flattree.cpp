@@ -5,7 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "../colls_private.h"
-
+namespace simgrid{
+namespace smpi{
 int
 Coll_bcast_flattree::bcast(void *buff, int count, MPI_Datatype data_type,
                                int root, MPI_Comm comm)
@@ -40,4 +41,7 @@ Coll_bcast_flattree::bcast(void *buff, int count, MPI_Datatype data_type,
     free(reqs);
   }
   return MPI_SUCCESS;
+}
+
+}
 }

@@ -13,7 +13,8 @@
 #ifndef BCAST_ARRIVAL_PATTERN_AWARE_MAX_NODE
 #define BCAST_ARRIVAL_PATTERN_AWARE_MAX_NODE 128
 #endif
-
+namespace simgrid{
+namespace smpi{
 /* Non-topology-specific pipelined linear-bcast function */
 int Coll_bcast_arrival_scatter::bcast(void *buf, int count,
                                           MPI_Datatype datatype, int root,
@@ -230,4 +231,7 @@ int Coll_bcast_arrival_scatter::bcast(void *buf, int count,
   }                             /* non-root */
 
   return MPI_SUCCESS;
+}
+
+}
 }

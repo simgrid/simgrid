@@ -19,7 +19,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_datatype, smpi, "Logging specific to SMPI (datatype)");
 
 #define CREATE_MPI_DATATYPE(name, type)               \
-  static Datatype mpi_##name (         \
+  static simgrid::smpi::Datatype mpi_##name (         \
     (char*) # name,                                   \
     sizeof(type),   /* size */                        \
     0,              /* lb */                          \
@@ -29,7 +29,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_datatype, smpi, "Logging specific to SMPI (
 const MPI_Datatype name = &mpi_##name;
 
 #define CREATE_MPI_DATATYPE_NULL(name)                \
-  static Datatype mpi_##name (         \
+  static simgrid::smpi::Datatype mpi_##name (         \
     (char*) # name,                                   \
     0,              /* size */                        \
     0,              /* lb */                          \
