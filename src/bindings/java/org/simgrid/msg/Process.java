@@ -48,18 +48,6 @@ public abstract class Process implements Runnable {
 	 */
 	private long bind = 0;
 	/** Indicates if the process is started */
-	/**
-	 * Even if this attribute is public you must never access to it.
-	 * It is used to compute the id of an MSG process.
-	 */
-	private static long nextProcessId = 0;
-
-	/**
-	 * Even if this attribute is public you must never access to it.
-	 * It is compute automatically during the creation of the object. 
-	 * The native functions use this identifier to synchronize the process.
-	 */
-	private long id;
 
 	/** Time at which the process should be created  */
 	protected double startTime = 0;
@@ -132,7 +120,6 @@ public abstract class Process implements Runnable {
 		if (name == null)
 			throw new NullPointerException("Process name cannot be null");
 		
-		this.id = nextProcessId++;
 		this.host = host;
 		this.name = name;
 
