@@ -76,7 +76,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv * env, jobject
 {
   jobject jprocess;             /* the global reference to the java process instance    */
   jstring jname;                /* the name of the java process instance                */
-  msg_process_t process;          /* the native process to create                         */
   msg_host_t host;                /* Where that process lives */
 
 
@@ -105,17 +104,19 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv * env, jobject
   }
 
   /* Actually build the MSG process */
-  process = MSG_process_create_with_environment(name, [](int argc, char** argv) -> int {
-              msg_process_t process = MSG_process_self();
-              // This is the jprocess passed as process data.
-              // It would be simpler if we could use a closure.
-              jobject jprocess = (jobject) MSG_process_get_data(process);
-              simgrid::kernel::context::java_main_jprocess(jprocess);
-              return 0;
-            }, jprocess,
-            host,
-            /*argc, argv, properties*/
-            0, nullptr, nullptr);
+  msg_process_t process = MSG_process_create_with_environment(name,
+                                                              [](int argc, char** argv) -> int {
+                                                                // This is the jprocess passed as process data.
+                                                                // It would be simpler if we could use a closure.
+                                                                jobject jprocess =
+                                                                    (jobject)MSG_process_get_data(MSG_process_self());
+                                                                simgrid::kernel::context::java_main_jprocess(jprocess);
+                                                                return 0;
+                                                              },
+                                                              jprocess, host,
+                                                              /*argc, argv, properties*/
+                                                              0, nullptr, nullptr);
+
   env->ReleaseStringUTFChars(jname, name);
   /* bind the java process instance to the native process */
   jprocess_bind(jprocess, process, env);
