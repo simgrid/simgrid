@@ -1051,7 +1051,7 @@ void smpi_replay_process_migrate(smx_actor_t process, sg_host_t new_host,
  * from your code.
  * To really start the replay you must call smpi_replay_start.
  */
-void smpi_replay_init(int *argc, char ***argv)
+void smpi_replay_run(int *argc, char ***argv)
 {
   /* First initializes everything */
   smpi_process_init(argc, argv);
@@ -1106,14 +1106,8 @@ void smpi_replay_init(int *argc, char ***argv)
     XBT_DEBUG("Force context switch by smpi_execute_flops  - Sleeping for 0.0 flops ");
     smpi_execute_flops(0.0);
   }
-}
 
-
-/*
- * This function starts the replay of the traces. Your custom actions must be
- * registered before calling this function.*/
-void smpi_replay_start(int *argc, char ***argv)
-{
+  /* Actually run the replay */
   xbt_replay_action_runner(*argc, *argv);
  
   /* and now, finalize everything */
@@ -1144,11 +1138,10 @@ void smpi_replay_start(int *argc, char ***argv)
     xbt_free(recvbuffer);
   }
   
-  int rank = smpi_process_index();
-  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
-  extra->type = TRACING_FINALIZE;
-  char *operation = bprintf("%s_finalize",__FUNCTION__);
-  TRACE_smpi_collective_in(rank, -1, operation, extra);
+  instr_extra_data extra_fin = xbt_new0(s_instr_extra_data_t,1);
+  extra_fin->type = TRACING_FINALIZE;
+  operation = bprintf("%s_finalize",__FUNCTION__);
+  TRACE_smpi_collective_in(rank, -1, operation, extra_fin);
 
   smpi_process_finalize();
 
@@ -1156,12 +1149,5 @@ void smpi_replay_start(int *argc, char ***argv)
   TRACE_smpi_finalize(smpi_process_index());
   smpi_process_destroy();
   xbt_free(operation);
-}
-
-/* Does the same as the original smpi_replay_run (which was previously
- * smpi_replay_init): initializes and runs the replay. */
-void smpi_replay_run(int *argc, char ***argv) {
-  smpi_replay_init(argc, argv);
-  smpi_replay_start(argc, argv);
 }
 
