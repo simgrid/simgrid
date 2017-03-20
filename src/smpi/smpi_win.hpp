@@ -9,6 +9,7 @@
 
 #include "private.h"
 #include <vector>
+#include <list>
 
 namespace simgrid{
 namespace smpi{
@@ -29,6 +30,9 @@ class Win : public F2C, public Keyval {
   int opened_;
   MPI_Group group_;
   int count_; //for ordering the accs
+  xbt_mutex_t lock_mut_;
+  std::list<int> lockers_;
+  int rank_; // to identify owner for barriers in MPI_COMM_WORLD
 
 public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;
@@ -39,6 +43,7 @@ public:
   void get_name( char* name, int* length);
   void get_group( MPI_Group* group);
   void set_name( char* name);
+  int rank();
   int start(MPI_Group group, int assert);
   int post(MPI_Group group, int assert);
   int complete();
@@ -54,6 +59,9 @@ public:
   int accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op);
   static Win* f2c(int id);
+  int lock(int lock_type, int rank, int assert);
+  int unlock(int rank);
+  int finish_comms();
 };
 
 

@@ -16,7 +16,7 @@ int Win::keyval_id_=0;
 
 Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm): base_(base), size_(size), disp_unit_(disp_unit), assert_(0), info_(info), comm_(comm){
   int comm_size = comm->size();
-  int rank      = comm->rank();
+  rank_      = comm->rank();
   XBT_DEBUG("Creating window");
   if(info!=MPI_INFO_NULL)
     info->ref();
@@ -25,13 +25,17 @@ Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm)
   group_ = MPI_GROUP_NULL;
   requests_ = new std::vector<MPI_Request>();
   mut_=xbt_mutex_init();
+  lock_mut_=xbt_mutex_init();
   connected_wins_ = new MPI_Win[comm_size];
-  connected_wins_[rank] = this;
+  connected_wins_[rank_] = this;
   count_ = 0;
-  if(rank==0){
+  if(rank_==0){
     bar_ = MSG_barrier_init(comm_size);
   }
-  Colls::allgather(&(connected_wins_[rank]), sizeof(MPI_Win), MPI_BYTE, connected_wins_, sizeof(MPI_Win),
+
+  comm->add_rma_win(this);
+
+  Colls::allgather(&(connected_wins_[rank_]), sizeof(MPI_Win), MPI_BYTE, connected_wins_, sizeof(MPI_Win),
                          MPI_BYTE, comm);
 
   Colls::bcast(&(bar_), sizeof(msg_bar_t), MPI_BYTE, 0, comm);
@@ -42,9 +46,11 @@ Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm)
 Win::~Win(){
   //As per the standard, perform a barrier to ensure every async comm is finished
   MSG_barrier_wait(bar_);
-  xbt_mutex_acquire(mut_);
+
+  int finished = finish_comms();
+  XBT_DEBUG("Win destructor - Finished %d RMA calls", finished);
+
   delete requests_;
-  xbt_mutex_release(mut_);
   delete[] connected_wins_;
   if (name_ != nullptr){
     xbt_free(name_);
@@ -53,11 +59,14 @@ Win::~Win(){
     MPI_Info_free(&info_);
   }
 
+  comm_->remove_rma_win(this);
+
   Colls::barrier(comm_);
   int rank=comm_->rank();
   if(rank == 0)
     MSG_barrier_destroy(bar_);
   xbt_mutex_destroy(mut_);
+  xbt_mutex_destroy(lock_mut_);
 
   cleanup_attr<Win>();
 }
@@ -78,6 +87,10 @@ void Win::get_group(MPI_Group* group){
   } else {
     *group = MPI_GROUP_NULL;
   }
+}
+
+int Win::rank(){
+  return rank_;
 }
 
 MPI_Aint Win::size(){
@@ -137,10 +150,18 @@ int Win::fence(int assert)
 int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype)
 {
-  if(opened_==0)//check that post/start has been done
-    return MPI_ERR_WIN;
   //get receiver pointer
   MPI_Win recv_win = connected_wins_[target_rank];
+
+  if(opened_==0){//check that post/start has been done
+    // no fence or start .. lock ok ?
+    int locked=0;
+    for(auto it : recv_win->lockers_)
+      if (it == comm_->rank())
+        locked = 1;
+    if(locked != 1)
+      return MPI_ERR_WIN;
+  }
 
   if(target_count*target_datatype->get_extent()>recv_win->size_)
     return MPI_ERR_ARG;
@@ -178,10 +199,18 @@ int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
 int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype)
 {
-  if(opened_==0)//check that post/start has been done
-    return MPI_ERR_WIN;
   //get sender pointer
   MPI_Win send_win = connected_wins_[target_rank];
+
+  if(opened_==0){//check that post/start has been done
+    // no fence or start .. lock ok ?
+    int locked=0;
+    for(auto it : send_win->lockers_)
+      if (it == comm_->rank())
+        locked = 1;
+    if(locked != 1)
+      return MPI_ERR_WIN;
+  }
 
   if(target_count*target_datatype->get_extent()>send_win->size_)
     return MPI_ERR_ARG;
@@ -224,11 +253,20 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
 int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op)
 {
-  if(opened_==0)//check that post/start has been done
-    return MPI_ERR_WIN;
-  //FIXME: local version 
+
   //get receiver pointer
   MPI_Win recv_win = connected_wins_[target_rank];
+
+  if(opened_==0){//check that post/start has been done
+    // no fence or start .. lock ok ?
+    int locked=0;
+    for(auto it : recv_win->lockers_)
+      if (it == comm_->rank())
+        locked = 1;
+    if(locked != 1)
+      return MPI_ERR_WIN;
+  }
+  //FIXME: local version 
 
   if(target_count*target_datatype->get_extent()>recv_win->size_)
     return MPI_ERR_ARG;
@@ -357,24 +395,8 @@ int Win::complete(){
   }
   xbt_free(reqs);
 
-  //now we can finish RMA calls
-  xbt_mutex_acquire(mut_);
-  std::vector<MPI_Request> *reqqs = requests_;
-  size = static_cast<int>(reqqs->size());
-
-  XBT_DEBUG("Win_complete - Finishing %d RMA calls", size);
-  if (size > 0) {
-    // start all requests that have been prepared by another process
-    for (const auto& req : *reqqs) {
-      if (req && (req->flags() & PREPARED))
-        req->start();
-    }
-
-    MPI_Request* treqs = &(*reqqs)[0];
-    Request::waitall(size, treqs, MPI_STATUSES_IGNORE);
-    reqqs->clear();
-  }
-  xbt_mutex_release(mut_);
+  int finished = finish_comms();
+  XBT_DEBUG("Win_complete - Finished %d RMA calls", finished);
 
   Group::unref(group_);
   opened_--; //we're closed for business !
@@ -404,12 +426,57 @@ int Win::wait(){
     Request::unref(&reqs[i]);
   }
   xbt_free(reqs);
-  xbt_mutex_acquire(mut_);
-  std::vector<MPI_Request> *reqqs = requests_;
-  size = static_cast<int>(reqqs->size());
+  int finished = finish_comms();
+  XBT_DEBUG("Win_wait - Finished %d RMA calls", finished);
 
-  XBT_DEBUG("Win_wait - Finishing %d RMA calls", size);
+  Group::unref(group_);
+  opened_--; //we're opened for business !
+  return MPI_SUCCESS;
+}
+
+int Win::lock(int lock_type, int rank, int assert){
+  MPI_Win target_win = connected_wins_[rank];
+
+  int finished = finish_comms();
+  XBT_DEBUG("Win_lock - Finished %d RMA calls", finished);
+
+  //window already locked, we have to wait
+  if (lock_type == MPI_LOCK_EXCLUSIVE)
+    xbt_mutex_acquire(target_win->lock_mut_);
+
+  xbt_mutex_acquire(target_win->mut_);
+  target_win->lockers_.push_back(comm_->rank());
+  xbt_mutex_release(target_win->mut_);  
+
+  return MPI_SUCCESS;
+}
+
+int Win::unlock(int rank){
+  MPI_Win target_win = connected_wins_[rank];
+
+  int finished = finish_comms();
+  XBT_DEBUG("Win_unlock - Finished %d RMA calls", finished);
+
+  xbt_mutex_acquire(target_win->mut_);
+  target_win->lockers_.remove(comm_->rank());
+  xbt_mutex_release(target_win->mut_);
+
+  xbt_mutex_try_acquire(target_win->lock_mut_);
+  xbt_mutex_release(target_win->lock_mut_);
+  return MPI_SUCCESS;
+}
+
+Win* Win::f2c(int id){
+  return static_cast<Win*>(F2C::f2c(id));
+}
+
+
+int Win::finish_comms(){
+  //Finish own requests
+  std::vector<MPI_Request> *reqqs = requests_;
+  int size = static_cast<int>(reqqs->size());
   if (size > 0) {
+    xbt_mutex_acquire(mut_);
     // start all requests that have been prepared by another process
     for (const auto& req : *reqqs) {
       if (req && (req->flags() & PREPARED))
@@ -419,17 +486,12 @@ int Win::wait(){
     MPI_Request* treqs = &(*reqqs)[0];
     Request::waitall(size, treqs, MPI_STATUSES_IGNORE);
     reqqs->clear();
+    xbt_mutex_release(mut_);
   }
-  xbt_mutex_release(mut_);
 
-  Group::unref(group_);
-  opened_--; //we're opened for business !
-  return MPI_SUCCESS;
+  return size;
 }
 
-Win* Win::f2c(int id){
-  return static_cast<Win*>(F2C::f2c(id));
-}
 
 }
 }

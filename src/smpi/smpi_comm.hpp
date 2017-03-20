@@ -8,7 +8,7 @@
 #define SMPI_COMM_HPP_INCLUDED
 
 #include "private.h"
-
+#include <list>
 
 namespace simgrid{
 namespace smpi{
@@ -27,6 +27,8 @@ class Comm : public F2C, public Keyval{
     int is_uniform_;
     int* non_uniform_map_; //set if smp nodes have a different number of processes allocated
     int is_blocked_;// are ranks allocated on the same smp node contiguous ?
+
+    std::list<MPI_Win> rma_wins_; // attached windows for synchronization.
 
   public:
     static std::unordered_map<int, smpi_key_elem> keyvals_;
@@ -62,6 +64,10 @@ class Comm : public F2C, public Keyval{
     static int keyval_create(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn, int* keyval, void* extra_state);
     static int keyval_free(int* keyval);
     static void keyval_cleanup();
+
+    void add_rma_win(MPI_Win win);
+    void remove_rma_win(MPI_Win win);
+    void finish_rma_calls();
 
 };
 

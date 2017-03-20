@@ -860,8 +860,6 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
           finish_wait(&requests[index],status);
           if (requests[i] != MPI_REQUEST_NULL && (requests[i]->flags_ & NON_PERSISTENT))
             requests[index] = MPI_REQUEST_NULL;
-        }else{
-            XBT_WARN("huu?");
         }
       }
     }

@@ -505,6 +505,24 @@ int Comm::add_f() {
 }
 
 
+void Comm::add_rma_win(MPI_Win win){
+  rma_wins_.push_back(win);
+}
+
+void Comm::remove_rma_win(MPI_Win win){
+  rma_wins_.remove(win);
+}
+
+void Comm::finish_rma_calls(){
+  for(auto it : rma_wins_){
+    if(it->rank()==this->rank()){//is it ours (for MPI_COMM_WORLD)?
+      int finished = it->finish_comms();
+      XBT_DEBUG("Barrier for rank %d - Finished %d RMA calls",this->rank(), finished);
+    }
+  }
+}
+
+
 }
 }
 

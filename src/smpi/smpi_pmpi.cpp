@@ -1410,6 +1410,10 @@ int PMPI_Barrier(MPI_Comm comm)
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 
     Colls::barrier(comm);
+
+    //Barrier can be used to synchronize RMA calls. Finish all requests from comm before.
+    comm->finish_rma_calls();
+
     retval = MPI_SUCCESS;
 
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
@@ -2675,6 +2679,43 @@ int PMPI_Win_wait(MPI_Win win){
     retval = win->wait();
 
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Win_lock(int lock_type, int rank, int assert, MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  } else if (lock_type != MPI_LOCK_EXCLUSIVE && 
+             lock_type != MPI_LOCK_SHARED) {
+    retval = MPI_ERR_LOCKTYPE;
+  } else if (rank == MPI_PROC_NULL){ 
+    retval = MPI_SUCCESS;
+  } else {
+    int myrank = smpi_process()->index();
+    TRACE_smpi_collective_in(myrank, -1, __FUNCTION__, nullptr);
+    retval = win->lock(lock_type,rank,assert);
+    TRACE_smpi_collective_out(myrank, -1, __FUNCTION__);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Win_unlock(int rank, MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  } else if (rank == MPI_PROC_NULL){ 
+    retval = MPI_SUCCESS;
+  } else {
+    int myrank = smpi_process()->index();
+    TRACE_smpi_collective_in(myrank, -1, __FUNCTION__, nullptr);
+    retval = win->unlock(rank);
+    TRACE_smpi_collective_out(myrank, -1, __FUNCTION__);
   }
   smpi_bench_begin();
   return retval;
