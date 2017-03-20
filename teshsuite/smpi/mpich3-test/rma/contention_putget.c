@@ -18,12 +18,15 @@
 #define MAXELEMS      6400
 #define COUNT         1000
 
-static int me, nproc;
+
 static const int verbose = 0;
 
 void test_put(void);
 void test_put(void)
 {
+    int me, nproc;
+    MPI_Comm_size(MPI_COMM_WORLD, &nproc);
+    MPI_Comm_rank(MPI_COMM_WORLD, &me);
     MPI_Win dst_win;
     double *dst_buf;
     double src_buf[MAXELEMS];
@@ -77,6 +80,7 @@ void test_put(void)
 int main(int argc, char *argv[])
 {
     MPI_Init(&argc, &argv);
+    int me, nproc;
     MPI_Comm_size(MPI_COMM_WORLD, &nproc);
     MPI_Comm_rank(MPI_COMM_WORLD, &me);
 
