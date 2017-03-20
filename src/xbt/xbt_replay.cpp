@@ -111,7 +111,9 @@ void xbt_replay_action_register(const char *action_name, action_fun function)
     _xbt_replay_action_init();
 
   char* lowername = str_tolower (action_name);
-  xbt_dict_set(xbt_action_funs, lowername, (void*) function, nullptr);
+  if(xbt_dict_get_or_null(xbt_action_funs, lowername) == nullptr){// Do not replace existing actions
+    xbt_dict_set(xbt_action_funs, lowername, (void*) function, nullptr);
+  }
   xbt_free(lowername);
 }
 
