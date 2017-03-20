@@ -157,10 +157,11 @@ public abstract class Process implements Runnable {
 		this.killTime = killTime;
 	}
 	/**
-	 * The natively implemented method to create an MSG process.
-	 * @param hostName    A valid (bound) host where create the process.
+	 * The native method to create an MSG process.
+	 * @param host    where to create the process.
 	 */
-	protected native void create(String hostName) throws HostNotFoundException;
+	protected native void create(Host host);
+	
 	/**
 	 * This method kills all running process of the simulation.
 	 *
@@ -299,8 +300,8 @@ public abstract class Process implements Runnable {
 	 * @throws HostNotFoundException
 	 */
 	public final void start() throws HostNotFoundException {
-		if (bind != 0)
-			create(host.getName());
+		if (bind == 0)
+			 create(host);
 	}
 
 	/** This method runs the process. It calls the method function that you must overwrite. */

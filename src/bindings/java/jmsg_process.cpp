@@ -72,11 +72,10 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jcla
              "Native initialization of msg/Process failed. Please report that bug");
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv * env, jobject jprocess_arg, jobject jhostname)
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv* env, jobject jprocess_arg, jobject jhost)
 {
   jobject jprocess;             /* the global reference to the java process instance    */
   jstring jname;                /* the name of the java process instance                */
-  msg_host_t host;                /* Where that process lives */
 
 
   /* get the name of the java process */
@@ -88,13 +87,11 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv * env, jobject
   const char* name = env->GetStringUTFChars(jname, 0);
 
   /* bind/retrieve the msg host */
-  const char* hostname = env->GetStringUTFChars((jstring)jhostname, 0);
-  host = MSG_host_by_name(hostname);
-  if (!(host)) {    /* not bound */
-    jxbt_throw_host_not_found(env, hostname);
+  msg_host_t host = jhost_get_native(env, jhost);
+  if (!host) {
+    jxbt_throw_notbound(env, "host", jhost);
     return;
   }
-  env->ReleaseStringUTFChars((jstring)jhostname, hostname);
 
   /* create a global java process instance */
   jprocess = jprocess_ref(jprocess_arg, env);
@@ -119,10 +116,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv * env, jobject
   /* sets the PID and the PPID of the process */
   env->SetIntField(jprocess, jprocess_field_Process_pid,(jint) MSG_process_get_PID(process));
   env->SetIntField(jprocess, jprocess_field_Process_ppid, (jint) MSG_process_get_PPID(process));
-  /* sets the Host of the process */
-  jobject jhost = Java_org_simgrid_msg_Host_getByName(env,nullptr, (jstring)jhostname);
-
-  env->SetObjectField(jprocess, jprocess_field_Process_host, jhost);
 }
 
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_killAll(JNIEnv * env, jclass cls, jint jresetPID)
