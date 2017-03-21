@@ -58,22 +58,9 @@ msg_task_t MSG_task_create(const char *name, double flop_amount, double message_
   task->data = data;
 
   /* Simulator Data */
-  simdata->compute = nullptr;
-  simdata->comm = nullptr;
   simdata->bytes_amount = message_size;
   simdata->flops_amount = flop_amount;
-  simdata->sender = nullptr;
-  simdata->receiver = nullptr;
-  simdata->source = nullptr;
-  simdata->priority = 1.0;
-  simdata->bound = 0;
-  simdata->rate = -1.0;
-  simdata->isused = 0;
 
-  simdata->host_nb = 0;
-  simdata->host_list = nullptr;
-  simdata->flops_parallel_amount = nullptr;
-  simdata->bytes_parallel_amount = nullptr;
   TRACE_msg_task_create(task);
 
   return task;
