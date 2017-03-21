@@ -327,11 +327,10 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_irecv(JNIEnv * env, jclass c
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receiveBounded(JNIEnv* env, jclass cls, jstring jalias,
                                                                    jdouble jtimeout, jdouble rate)
 {
-  msg_task_t *task = xbt_new(msg_task_t,1);
-  *task = nullptr;
+  msg_task_t task = nullptr;
 
   const char *alias = env->GetStringUTFChars(jalias, 0);
-  msg_error_t res   = MSG_task_receive_ext_bounded(task, alias, static_cast<double>(jtimeout), /*host*/ nullptr,
+  msg_error_t res   = MSG_task_receive_ext_bounded(&task, alias, static_cast<double>(jtimeout), /*host*/ nullptr,
                                                  static_cast<double>(rate));
   if (env->ExceptionOccurred())
     return nullptr;
@@ -339,16 +338,14 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receiveBounded(JNIEnv* env, 
     jmsg_throw_status(env, res);
     return nullptr;
   }
-  jobject jtask_global = (jobject) MSG_task_get_data(*task);
+  jobject jtask_global = (jobject)MSG_task_get_data(task);
 
   /* Convert the global ref into a local ref so that the JVM can free the stuff */
   jobject jtask_local = env->NewLocalRef(jtask_global);
   env->DeleteGlobalRef(jtask_global);
-  MSG_task_set_data(*task, nullptr);
+  MSG_task_set_data(task, nullptr);
 
   env->ReleaseStringUTFChars(jalias, alias);
-
-  xbt_free(task);
 
   return (jobject) jtask_local;
 }
