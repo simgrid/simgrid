@@ -12,6 +12,7 @@ class Main {
   private Main() {
     throw new IllegalAccessError("Utility class");
   }
+  protected static final int TASK_COUNT = 3;
 
   public static void main(String[] args) throws HostNotFoundException {
     Msg.init(args);

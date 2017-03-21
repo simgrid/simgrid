@@ -20,16 +20,18 @@ public class Sender extends Process {
 	public void main(String[] args) throws MsgException {
 		Msg.info("Host count: " + args.length);
 
-		for(int pos = 0; pos < args.length ; pos++) {
-			String hostname = Host.getByName(args[pos]).getName(); // Make sure that this host exists
-			
-			double time = Msg.getClock(); 
-			Msg.info("sender time: " + time);
+		for (int i = 0 ; i<Main.TASK_COUNT; i++) {
 
-			PingPongTask task = new PingPongTask("no name", /* Duration: 0 flops */ 0, COMM_SIZE_LAT, time);
-			task.send(hostname);
+			for(int pos = 0; pos < args.length ; pos++) {
+				String hostname = Host.getByName(args[pos]).getName(); // Make sure that this host exists
+
+				double time = Msg.getClock(); 
+				Msg.info("sender time: " + time);
+
+				PingPongTask task = new PingPongTask("no name", /* Duration: 0 flops */ 0, COMM_SIZE_LAT, time);
+				task.send(hostname);
+			}
 		}
-
 		Msg.info("Done.");
 	}
 }
