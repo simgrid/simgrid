@@ -18,21 +18,17 @@ public class Receiver extends Process {
   }
 
   public void main(String[] args) throws MsgException {
-    Msg.info("hello!");
-
-    Msg.info("try to get a task");
+    Msg.info("Wait for a task");
 
     PingPongTask task = (PingPongTask)Task.receive(getHost().getName());
     double timeGot = Msg.getClock();
     double timeSent = task.getTime();
 
-    Msg.info("Got at time "+ timeGot);
-    Msg.info("Was sent at time "+timeSent);
-    double time = timeSent;
+    Msg.info("Got one that was sent at time "+ timeSent);
 
-    double communicationTime = timeGot - time;
+    double communicationTime = timeGot - timeSent;
     Msg.info("Communication time : " + communicationTime);
     Msg.info(" --- bw "+ COMM_SIZE_BW/communicationTime + " ----");
-    Msg.info("goodbye!");
+    Msg.info("Done.");
   }
 }

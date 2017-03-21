@@ -1,18 +1,13 @@
 #! tesh
 
-! output sort 19
-
 $ java -classpath ${classpath:=.} app/pingpong/Main ${srcdir:=.}/../platforms/small_platform.xml
 > [0.000000] [java/INFO] Using regular java threads.
-> [1.048882] [java/INFO] MSG_main finished; Cleaning up the simulation...
-> [Boivin:Receiver:(2) 0.000000] [java/INFO] hello!
-> [Boivin:Receiver:(2) 0.000000] [java/INFO] try to get a task
-> [Boivin:Receiver:(2) 1.048882] [java/INFO] Got at time 1.0488818628325232
-> [Boivin:Receiver:(2) 1.048882] [java/INFO] Was sent at time 0.0
+> [Jacquelin:Sender:(1) 0.000000] [java/INFO] Host count: 1
+> [Jacquelin:Sender:(1) 0.000000] [java/INFO] sender time: 0.0
+> [Boivin:Receiver:(2) 0.000000] [java/INFO] Wait for a task
+> [Boivin:Receiver:(2) 1.048882] [java/INFO] Got one that was sent at time 0.0
 > [Boivin:Receiver:(2) 1.048882] [java/INFO] Communication time : 1.0488818628325232
 > [Boivin:Receiver:(2) 1.048882] [java/INFO]  --- bw 9.533962169004269E7 ----
-> [Boivin:Receiver:(2) 1.048882] [java/INFO] goodbye!
-> [Jacquelin:Sender:(1) 0.000000] [java/INFO] hello!
-> [Jacquelin:Sender:(1) 0.000000] [java/INFO] host count: 1
-> [Jacquelin:Sender:(1) 0.000000] [java/INFO] sender time: 0.0
-> [Jacquelin:Sender:(1) 1.048882] [java/INFO] goodbye!
+> [Boivin:Receiver:(2) 1.048882] [java/INFO] Done.
+> [Jacquelin:Sender:(1) 1.048882] [java/INFO] Done.
+> [1.048882] [java/INFO] MSG_main finished; Cleaning up the simulation...
