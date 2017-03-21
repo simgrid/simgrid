@@ -62,7 +62,8 @@ enum smpi_process_state{
 #define COLL_TAG_GATHERV -2223
 #define COLL_TAG_BCAST -3334
 #define COLL_TAG_ALLREDUCE -4445
-#define SMPI_RMA_TAG -1234
+//SMPI_RMA_TAG has to be the smallest one, as it will be decremented for accumulate ordering.
+#define SMPI_RMA_TAG -6666
 
 extern XBT_PRIVATE MPI_Comm MPI_COMM_UNINITIALIZED;
 
