@@ -83,10 +83,10 @@ public:
   ~xbt_ex() override;
 
   /** Category (what went wrong) */
-  xbt_errcat_t category;
+  xbt_errcat_t category = unknown_error;
 
   /** Why did it went wrong */
-  int value;
+  int value = 0;
 
 };
 
