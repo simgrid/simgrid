@@ -225,7 +225,9 @@ public class Task {
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException 
 	 */
-	public native void send(String mailbox, double timeout) throws TransferFailureException, HostFailureException, TimeoutException;
+	public void send(String mailbox, double timeout) throws TransferFailureException, HostFailureException, TimeoutException {
+		sendBounded(mailbox, timeout, -1);
+	}
 
 	/** Sends the task on the specified mailbox (capping the sending rate to \a maxrate) 
 	 *
@@ -236,7 +238,7 @@ public class Task {
 	 * @throws TimeoutException
 	 */
 	public void sendBounded(String mailbox, double maxrate) throws TransferFailureException, HostFailureException, TimeoutException {
-		sendBounded(mailbox,-1,maxrate);
+		sendBounded(mailbox, -1, maxrate);
 	}
 
 

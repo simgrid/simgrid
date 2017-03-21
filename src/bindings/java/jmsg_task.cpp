@@ -253,25 +253,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setBytesAmount (JNIEnv *env, jo
   MSG_task_set_bytes_amount(task, static_cast<double>(dataSize));
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_send(JNIEnv * env,jobject jtask, jstring jalias, jdouble jtimeout)
-{
-  msg_task_t task = jtask_to_native(jtask, env);
-  if (!task) {
-    jxbt_throw_notbound(env, "task", jtask);
-    return;
-  }
-
-  /* Add a global ref into the Ctask so that the receiver can use it */
-  MSG_task_set_data(task, (void *) env->NewGlobalRef(jtask));
-
-  const char* alias = env->GetStringUTFChars(jalias, 0);
-  msg_error_t res   = MSG_task_send_with_timeout(task, alias, static_cast<double>(jtimeout));
-  env->ReleaseStringUTFChars(jalias, alias);
-
-  if (res != MSG_OK)
-    jmsg_throw_status(env, res);
-}
-
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_sendBounded(JNIEnv * env,jobject jtask, jstring jalias,
                                                              jdouble jtimeout,jdouble maxrate)
 {
