@@ -21,7 +21,7 @@
 
 #define XDIM 1024
 #define YDIM 1024
-#define ITERATIONS 10
+#define ITERATIONS 3
 
 int main(int argc, char **argv)
 {

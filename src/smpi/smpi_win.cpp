@@ -273,14 +273,15 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
 
   void* recv_addr = static_cast<void*>(static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_);
   XBT_DEBUG("Entering MPI_Accumulate to %d", target_rank);
-    //As the tag will be used for ordering of the operations, add count to it
+    //As the tag will be used for ordering of the operations, substract count from it (to avoid collisions with other SMPI tags, SMPI_RMA_TAG is set below all the other ones we use )
     //prepare send_request
+
     MPI_Request sreq = Request::rma_send_init(origin_addr, origin_count, origin_datatype,
-        smpi_process()->index(), comm_->group()->index(target_rank), SMPI_RMA_TAG+3+count_, comm_, op);
+        smpi_process()->index(), comm_->group()->index(target_rank), SMPI_RMA_TAG-3-count_, comm_, op);
 
     //prepare receiver request
     MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype,
-        smpi_process()->index(), comm_->group()->index(target_rank), SMPI_RMA_TAG+3+count_, recv_win->comm_, op);
+        smpi_process()->index(), comm_->group()->index(target_rank), SMPI_RMA_TAG-3-count_, recv_win->comm_, op);
 
     count_++;
     //push request to receiver's win

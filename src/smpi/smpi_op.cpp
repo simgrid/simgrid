@@ -241,6 +241,7 @@ void Op::apply(void *invec, void *inoutvec, int *len, MPI_Datatype datatype)
     if(! is_fortran_op_)
       this->func_(invec, inoutvec, len, &datatype);
     else{
+      XBT_DEBUG("Applying operation of length %d from %p and from/to %p", *len, invec, inoutvec);
       int tmp = datatype->c2f();
       /* Unfortunately, the C and Fortran version of the MPI standard do not agree on the type here,
          thus the reinterpret_cast. */
