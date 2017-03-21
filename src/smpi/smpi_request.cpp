@@ -876,7 +876,7 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
 
 static int sort_accumulates(MPI_Request a, MPI_Request b)
 {
-  return (a->tag() < b->tag());
+  return (a->tag() > b->tag());
 }
 
 int Request::waitall(int count, MPI_Request requests[], MPI_Status status[])

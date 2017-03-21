@@ -190,6 +190,7 @@ examples/msg/trace-host-user-variables/trace-host-user-variables
 examples/s4u/app-masterworker/s4u_app-masterworker
 examples/s4u/app-token-ring/s4u_app-token-ring
 examples/s4u/actions-comm/s4u_actions-comm
+examples/s4u/actions-storage/s4u_actions-storage
 examples/s4u/basic/s4u_basic
 examples/s4u/basic/s4u_basic_deployment
 examples/s4u/basic/s4u_basic_function

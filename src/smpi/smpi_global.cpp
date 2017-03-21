@@ -127,6 +127,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
            (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->dst_proc->data)->data))->index()));
   }
 
+  XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff,comm->dst_buff);
   memcpy(comm->dst_buff, tmpbuff, buff_size);
   if (comm->detached) {
     // if this is a detached send, the source buffer was duplicated by SMPI

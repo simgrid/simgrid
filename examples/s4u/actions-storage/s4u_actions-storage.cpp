@@ -120,7 +120,6 @@ int main(int argc, char* argv[])
   xbt_replay_action_register("read", Replayer::read);
   xbt_replay_action_register("close", Replayer::close);
 
-  /* Actually do the simulation using MSG_action_trace_run */
   if (argv[3]) {
     simgrid::xbt::action_fs = new std::ifstream(argv[3], std::ifstream::in);
   }

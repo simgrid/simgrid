@@ -52,6 +52,11 @@ void Actor::setAutoRestart(bool autorestart) {
   simcall_process_auto_restart_set(pimpl_,autorestart);
 }
 
+void Actor::migrate(Host* new_host)
+{
+  simcall_process_set_host(pimpl_, new_host);
+}
+
 s4u::Host* Actor::host()
 {
   return this->pimpl_->host;
@@ -75,6 +80,16 @@ int Actor::pid()
 int Actor::ppid()
 {
   return this->pimpl_->ppid;
+}
+
+void Actor::suspend()
+{
+  simcall_process_suspend(pimpl_);
+}
+
+void Actor::resume()
+{
+  simcall_process_resume(pimpl_);
 }
 
 void Actor::setKillTime(double time) {
@@ -172,6 +187,26 @@ int ppid()
 std::string name()
 {
   return SIMIX_process_self()->name;
+}
+
+Host* host()
+{
+  return SIMIX_process_self()->host;
+}
+
+void suspend()
+{
+  simcall_process_suspend(SIMIX_process_self());
+}
+
+void resume()
+{
+  simcall_process_resume(SIMIX_process_self());
+}
+
+void migrate(Host* new_host)
+{
+  simcall_process_set_host(SIMIX_process_self(), new_host);
 }
 }
 }

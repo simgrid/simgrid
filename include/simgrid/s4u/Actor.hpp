@@ -134,7 +134,6 @@ namespace s4u {
 /** @brief Simulation Agent */
 XBT_PUBLIC_CLASS Actor : public simgrid::xbt::Extendable<Actor>
 {
-
   friend Mailbox;
   friend simgrid::simix::ActorImpl;
   friend simgrid::kernel::activity::MailboxImpl;
@@ -213,6 +212,12 @@ public:
   /** Retrieves the PPID of that actor */
   int ppid();
 
+  /** Suspend an actor by suspending the task on which it was waiting for the completion. */
+  void suspend();
+
+  /** Resume a suspended process by resuming the task on which it was waiting for the completion. */
+  void resume();
+
   /** If set to true, the actor will automatically restart when its host reboots */
   void setAutoRestart(bool autorestart);
   /** Sets the time at which that actor should be killed */
@@ -220,6 +225,7 @@ public:
   /** Retrieves the time at which that actor will be killed (or -1 if not set) */
   double killTime();
 
+  void migrate(Host * new_host);
   /** Ask the actor to die.
    *
    * It will only notice your request when doing a simcall next time (a communication or similar).
@@ -298,6 +304,18 @@ namespace this_actor {
 
   /** @brief Returns the name of the current actor. */
   XBT_PUBLIC(std::string) name();
+
+  /** @brief Returns the name of the host on which the process is running. */
+  XBT_PUBLIC(Host*) host();
+
+  /** @brief Suspend the actor. */
+  XBT_PUBLIC(void) suspend();
+
+  /** @brief Resume the actor. */
+  XBT_PUBLIC(void) resume();
+
+  /** @brief Migrate the actor to a new host. */
+  XBT_PUBLIC(void) migrate(Host* new_host);
 };
 
 /** @} */

@@ -20,6 +20,11 @@ ConditionVariablePtr ConditionVariable::createConditionVariable()
 /**
  * Wait functions
  */
+void ConditionVariable::wait(MutexPtr lock)
+{
+  simcall_cond_wait(cond_, lock->mutex_);
+}
+
 void ConditionVariable::wait(std::unique_lock<Mutex>& lock) {
   simcall_cond_wait(cond_, lock.mutex()->mutex_);
 }

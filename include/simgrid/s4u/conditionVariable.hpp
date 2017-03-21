@@ -48,6 +48,7 @@ public:
 
   //  Wait functions without time:
 
+  void wait(MutexPtr lock);
   void wait(std::unique_lock<Mutex>& lock);
   template<class P>
   void wait(std::unique_lock<Mutex>& lock, P pred)
