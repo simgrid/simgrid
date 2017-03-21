@@ -57,7 +57,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_nativeInit(JNIEnv *env, jclass 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_create(JNIEnv * env, jobject jtask, jstring jname,
                                       jdouble jflopsAmount, jdouble jbytesAmount)
 {
-  msg_task_t task;                /* the native task to create                            */
   const char *name = nullptr;      /* the name of the task                                 */
 
   if (jflopsAmount < 0) {
@@ -70,17 +69,14 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_create(JNIEnv * env, jobject jt
     return;
   }
 
-  if (jname) {
-    /* get the C string from the java string */
+  if (jname)
     name = env->GetStringUTFChars(jname, 0);
-  }
-
   /* create the task */
-  task = MSG_task_create(name, static_cast<double>(jflopsAmount), static_cast<double>(jbytesAmount), nullptr);
+  msg_task_t task =
+      MSG_task_create(name, static_cast<double>(jflopsAmount), static_cast<double>(jbytesAmount), nullptr);
   if (jname)
     env->ReleaseStringUTFChars(jname, name);
-  /* sets the task name */
-  env->SetObjectField(jtask, jtask_field_Task_name, jname);
+
   /* bind & store the task */
   jtask_bind(jtask, task, env);
   MSG_task_set_data(task, jtask);

@@ -49,6 +49,7 @@ public class Task {
 	 */ 
 	public Task(String name, double flopsAmount, double bytesAmount) {
 		create(name, flopsAmount, bytesAmount);
+		this.name = name;
 		this.messageSize = bytesAmount;
 	}
 	/**
