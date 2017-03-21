@@ -26,19 +26,18 @@ public class Master extends Process {
 		int workersCount = Main.NHOSTS;
 
 		for (int step = 1; step <= Main.NSTEPS ; step++) {
-			ArrayList<VM> vms = new ArrayList<>();
 			// Create one VM per host and bind a process inside each one. 
 			for (int i = 0; i < workersCount; i++) {
 				Msg.verb("create VM0-s"+step+"-"+i);  
 				VM vm = new VM(hosts[i+1],"VM0-s"+step+"-"+i);
 				vm.start();
-				vms.add(vm);
 				Worker worker= new Worker(vm,"WK:"+step+":"+ i);
 				Msg.verb("Put Worker "+worker.getName()+ " on "+vm.getName());
 				worker.start();
 			}
+			VM[] vms = VM.all();
 
-			Msg.info("Launched " + vms.size() + " VMs");
+			Msg.info("Launched " + vms.length + " VMs");
 
 			Msg.info("Send some work to everyone");
 			workBatch(workersCount,"WK:"+step+":");

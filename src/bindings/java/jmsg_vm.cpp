@@ -15,6 +15,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
 SG_BEGIN_DECL()
 
+extern int JAVA_HOST_LEVEL;
 static jfieldID jvm_field_bind;
 
 void jvm_bind(JNIEnv *env, jobject jvm, msg_vm_t vm)
@@ -75,6 +76,44 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_create(JNIEnv* env, jobject jvm, 
   env->ReleaseStringUTFChars(jname, name);
 
   jvm_bind(env, jvm, vm);
+  jvm = env->NewWeakGlobalRef(jvm);
+  // We use the extension level of the host, even if that's somehow disturbing
+  vm->extension_set(JAVA_HOST_LEVEL, (void*)jvm);
+}
+
+JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_VM_all(JNIEnv* env, jclass cls_arg)
+{
+  xbt_dynar_t hosts = MSG_hosts_as_dynar();
+  std::vector<jobject> vms;
+
+  unsigned int it;
+  msg_host_t h;
+  xbt_dynar_foreach (hosts, it, h) {
+    simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(h);
+    if (vm != nullptr && vm->getState() != SURF_VM_STATE_DESTROYED) {
+      jobject jvm = static_cast<jobject>(vm->extension(JAVA_HOST_LEVEL));
+      vms.push_back(jvm);
+    }
+  }
+
+  vms.shrink_to_fit();
+  int count = vms.size();
+
+  jclass cls = jxbt_get_class(env, "org/simgrid/msg/VM");
+  if (!cls)
+    return nullptr;
+
+  jobjectArray jtable = env->NewObjectArray((jsize)count, cls, nullptr);
+  if (!jtable) {
+    jxbt_throw_jni(env, "Hosts table allocation failed");
+    return nullptr;
+  }
+
+  for (int index = 0; index < count; index++) {
+    jobject jhost = vms.at(index);
+    env->SetObjectArrayElement(jtable, index, jhost);
+  }
+  return jtable;
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeFinalize(JNIEnv *env, jobject jvm)

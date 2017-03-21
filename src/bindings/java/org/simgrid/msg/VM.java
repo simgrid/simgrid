@@ -11,8 +11,6 @@ import java.util.ArrayList;
 public class VM extends Host {
 	// No need to declare a new bind variable: we use the one inherited from the super class Host
 
-	/* Static functions */ 
-
 	private static ArrayList<VM> vms= new ArrayList<>();
 	private Host currentHost; 
 
@@ -37,11 +35,7 @@ public class VM extends Host {
 		vms.add(this);
 	}
 
-	public static VM[] all(){
-		VM[] allvms = new VM[vms.size()];
-		vms.toArray(allvms);
-		return allvms;
-	}
+	public native static VM[] all();
 
 	public static VM getVMByName(String name){
 		for (VM vm : vms){
@@ -108,9 +102,6 @@ public class VM extends Host {
 	 */
 	public native void shutdown();
 
-	/** native migration routine */
-	private native void nativeMigration(Host destination) throws Exception;
-
 	/** Change the host on which all processes are running
 	 * (pre-copy is implemented)
 	 */	
@@ -124,6 +115,7 @@ public class VM extends Host {
 		// If the migration correcly returned, then we should change the currentHost value. 
 		this.currentHost = destination; 
 	}
+	private native void nativeMigration(Host destination) throws Exception;
 
 	/** Immediately suspend the execution of all processes within the given VM
 	 *
