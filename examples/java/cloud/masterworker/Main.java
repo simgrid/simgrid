@@ -1,5 +1,4 @@
-/* Copyright (c) 2012-2014, 2016. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,7 +12,7 @@ import org.simgrid.msg.MsgException;
 class Main {
   public static final double TASK_COMP_SIZE = 10;
   public static final double TASK_COMM_SIZE = 10;
-  public static final int NHOSTS = 2; 
+  public static final int NHOSTS = 6;
 
   private Main() {
     throw new IllegalAccessError("Utility class");
@@ -36,8 +35,8 @@ class Main {
                + hosts.length + " hosts");
       System.exit(42);
     }
-    Msg.info("Start "+ NHOSTS +" hosts");
     new Master(hosts[0],"Master",hosts).start();
+    
     /* Execute the simulation */
     Msg.run();
   }

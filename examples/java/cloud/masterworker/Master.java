@@ -1,5 +1,4 @@
-/* Copyright (c) 2012-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -15,8 +14,6 @@ import org.simgrid.msg.Process;
 import org.simgrid.msg.Task;
 import org.simgrid.msg.VM;
 
-//import eu.plumbr.api.Plumbr;
-
 public class Master extends Process {
 	private Host[] hosts;
 
@@ -28,8 +25,7 @@ public class Master extends Process {
 	public void main(String[] args) throws MsgException {
 		int workersCount = Main.NHOSTS;
 
-		for (int step = 1; step <= 1/*00000*/ ; step++) {
-			//Plumbr.startTransaction("Migration");
+		for (int step = 1; step <= 50 ; step++) {
 			ArrayList<VM> vms = new ArrayList<>();
 			// Create one VM per host and bind a process inside each one. 
 			for (int i = 0; i < workersCount; i++) {
@@ -44,22 +40,20 @@ public class Master extends Process {
 
 			Msg.info("Launched " + vms.size() + " VMs");
 
-			Msg.info("Send a first batch of work to everyone");
+			Msg.info("Send some work to everyone");
 			workBatch(workersCount,"WK:"+step+":");
 
 			Msg.info("Suspend all VMs, wait a while, resume them, migrate them and shut them down.");
-			for (int i = 0; i < vms.size(); i++) {
-				Msg.verb("Suspend "+vms.get(i).getName());
-				vms.get(i).suspend();
+			for (VM vm : vms) {
+				Msg.verb("Suspend "+vm.getName());
+				vm.suspend();
 			}
 
-			Msg.verb("Wait a while");
+			Msg.verb("Wait a while, and resume all VMs.");
 			waitFor(2);
-
-			Msg.verb("Resume all VMs.");
-			for (int i = 0; i < vms.size(); i++) {
-				vms.get(i).resume();
-			}
+			for (VM vm : vms) 
+				vm.resume();
+			
 
 			Msg.verb("Sleep long enough for everyone to be done with previous batch of work");
 			waitFor(1000*step - Msg.getClock());
@@ -80,13 +74,11 @@ public class Master extends Process {
 				vms.get(i).migrate(hosts[3]);
 			}
 
-			Msg.verb("Let's shut down the simulation and kill everyone.");
+			Msg.verb("Let's kill everyone.");
 
-			for (int i = 0; i < vms.size(); i++) {
-				vms.get(i).destroy();
-			}
+			for (VM vm : vms) 
+				vm.destroy();
 			Msg.info("XXXXXXXXXXXXXXX Step "+step+" done.");
-//			Plumbr.endTransaction();
 		}
 	}
 

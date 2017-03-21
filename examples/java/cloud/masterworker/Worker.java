@@ -1,5 +1,4 @@
-/* Copyright (c) 2012-2016. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -20,17 +19,16 @@ public class Worker extends Process {
   public void main(String[] args) throws MsgException {
     Msg.verb(this.getName() +" is listening on "+ getName());
     while(true) {
-      Task task =null;
+      Task task = null;
       try {
         task = Task.receive(getName());
-        if (task == null)
-          break;
       } catch (MsgException e) {
-        Msg.debug("Received failed. I'm done. See you!");
+        Msg.info("Received failed. I'm done. See you!");
+        exit();
       }
-      Msg.verb("Received \"" + task.getName() +  "\". Processing it.");
+      Msg.verb("Received '" + task.getName() +  "'. Processing it.");
       task.execute();
-      Msg.verb(this.getName() +" executed task (" + task.getName()+")");
+      Msg.verb("Done executing task '" + task.getName() +"'");
     }
   }
 }
