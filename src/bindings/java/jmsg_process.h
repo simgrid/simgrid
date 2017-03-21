@@ -41,9 +41,6 @@ jobject jprocess_from_native(msg_process_t process);
 /** Extract the native instance from the java one */
 msg_process_t jprocess_to_native(jobject jprocess, JNIEnv* env);
 
-/** Get the name of a java instance. */
-jstring jprocess_get_name(jobject jprocess, JNIEnv* env);
-
 /** Initialize the native world, called from the Java world at startup */
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jclass cls);
 

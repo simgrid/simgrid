@@ -51,12 +51,6 @@ void jprocess_bind(jobject jprocess, msg_process_t process, JNIEnv * env)
   env->SetLongField(jprocess, jprocess_field_Process_bind, (intptr_t)process);
 }
 
-jstring jprocess_get_name(jobject jprocess, JNIEnv * env)
-{
-  jstring jname = (jstring) env->GetObjectField(jprocess, jprocess_field_Process_name);
-  return (jstring) env->NewGlobalRef(jname);
-}
-
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jclass cls) {
   jclass jprocess_class_Process = env->FindClass("org/simgrid/msg/Process");
   xbt_assert(jprocess_class_Process, "Native initialization of msg/Process failed. Please report that bug");
@@ -78,7 +72,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv* env, jobject 
   jobject jprocess = jprocess_ref(jprocess_arg, env);
 
   /* Actually build the MSG process */
-  jstring jname         = jprocess_get_name(jprocess_arg, env);
+  jstring jname         = (jstring)env->GetObjectField(jprocess, jprocess_field_Process_name);
   const char* name      = env->GetStringUTFChars(jname, 0);
   msg_process_t process = MSG_process_create_from_stdfunc(
       name, [jprocess]() -> void { simgrid::kernel::context::java_main_jprocess(jprocess); },
