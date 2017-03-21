@@ -23,8 +23,10 @@ class Main {
     	platfFile = args[0];
     
     File f = new File(platfFile); 
-    if (!f.exists())
+    if (!f.exists()) {
     	System.err.println("File "+platfFile+" does not exist in "+System.getProperty("user.dir"));
+    	System.err.println("Usage  : Main ../platforms/platform.xml");
+    }
     
     Msg.createEnvironment(platfFile);
     new Sender("Jacquelin", "Sender", new String[] {"Boivin"}).start();

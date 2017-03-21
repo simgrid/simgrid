@@ -25,7 +25,7 @@ public class Master extends Process {
 	public void main(String[] args) throws MsgException {
 		int workersCount = Main.NHOSTS;
 
-		for (int step = 1; step <= 50 ; step++) {
+		for (int step = 1; step <= Main.NSTEPS ; step++) {
 			ArrayList<VM> vms = new ArrayList<>();
 			// Create one VM per host and bind a process inside each one. 
 			for (int i = 0; i < workersCount; i++) {
@@ -69,9 +69,9 @@ public class Master extends Process {
 			 */
 
 			Msg.verb("Migrate everyone to "+hosts[3].getName());
-			for (int i = 0; i < vms.size(); i++) {
-				Msg.verb("Migrate "+vms.get(i).getName()+" from "+hosts[i+1].getName()+"to "+hosts[3].getName());
-				vms.get(i).migrate(hosts[3]);
+			for (VM vm : vms) {
+				Msg.verb("Migrate "+vm.getName()+" to "+hosts[3].getName());
+				vm.migrate(hosts[3]);
 			}
 
 			Msg.verb("Let's kill everyone.");
