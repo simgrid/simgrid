@@ -48,7 +48,13 @@ public class Task {
 	 *				This value has to be &ge; 0.
 	 */ 
 	public Task(String name, double flopsAmount, double bytesAmount) {
+		if (flopsAmount<0)
+			throw new IllegalArgumentException("Task flopsAmount (" + flopsAmount + ") cannot be negative");
+		if (bytesAmount<0)
+			throw new IllegalArgumentException("Task bytesAmount (" + bytesAmount + ") cannot be negative");
+			
 		create(name, flopsAmount, bytesAmount);
+		
 		this.name = name;
 		this.messageSize = bytesAmount;
 	}
@@ -67,7 +73,17 @@ public class Task {
 	 *                      the destination of the communications.
 	 */ 
 	public Task(String name, Host[]hosts, double[]flopsAmount, double[]bytesAmount) {
+		if (flopsAmount == null)
+			throw new NullPointerException("Parallel task flops amounts is null");
+		if (bytesAmount == null)
+			throw new NullPointerException("Parallel task bytes amounts is null");
+		if (hosts == null)
+			throw new NullPointerException("Host list is null");
+		if (name == null)
+			throw new NullPointerException("Parallel task name is null");
+		
 		parallelCreate(name, hosts, flopsAmount, bytesAmount);
+		this.name = name;
 	}
 
 	/**
