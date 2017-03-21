@@ -51,7 +51,7 @@ public class VM extends Host {
 		return null; 
 	}
 	
-	/** Kills all the actors running on that VM 
+	/** Shutdown and unref the VM. 
 	 * 
 	 * Actually, this strictly equivalent to shutdown().
 	 * In C and in libvirt, the destroy function also releases the memory associated to the VM, 
@@ -61,6 +61,7 @@ public class VM extends Host {
 	 */
 	public void destroy() {
 		shutdown();
+///		vms.remove(this);
 	}
 
 	/* Make sure that the GC also destroys the C object */
@@ -107,17 +108,15 @@ public class VM extends Host {
 	 */
 	public native void shutdown();
 
-	/** Invoke native migration routine */
-	public native void internalmig(Host destination) throws Exception; // TODO add throws DoubleMigrationException (i.e. when you call migrate on a VM that is already migrating);
-
-
+	/** native migration routine */
+	private native void nativeMigration(Host destination) throws Exception;
 
 	/** Change the host on which all processes are running
 	 * (pre-copy is implemented)
 	 */	
 	public void migrate(Host destination) throws HostFailureException{
 		try {
-			this.internalmig(destination);
+			this.nativeMigration(destination);
 		} catch (Exception e){
 		  Msg.info("Migration of VM "+this.getName()+" to "+destination.getName()+" is impossible ("+e.getMessage()+")");
 		  throw new HostFailureException();
