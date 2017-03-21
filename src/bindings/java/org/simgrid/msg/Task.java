@@ -271,49 +271,26 @@ public class Task {
 	 * @return a Comm handler
 	 */
 	public static native Comm irecv(String mailbox);
+
 	/**
-	 * Retrieves next task from the mailbox identified by the specified name
+	 * Retrieves next task on the mailbox identified by the specified alias 
 	 *
 	 * @param mailbox
 	 * @return a Task
 	 */
 
 	public static Task receive(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
-		return receive(mailbox, -1.0, null);
+		return receive(mailbox, -1.0);
 	}
 
 	/**
-	 * Retrieves next task on the mailbox identified by the specified name (wait at most \a timeout seconds)
-	 *
-	 * @param mailbox
-	 * @param timeout
-	 * @return a Task
-	 */
-	public static Task receive(String mailbox, double timeout) throws  TransferFailureException, HostFailureException, TimeoutException {
-		return receive(mailbox, timeout, null);
-	}
-
-	/**
-	 * Retrieves next task sent by a given host on the mailbox identified by the specified alias 
-	 *
-	 * @param mailbox
-	 * @param host
-	 * @return a Task
-	 */
-
-	public static Task receive(String mailbox, Host host) throws TransferFailureException, HostFailureException, TimeoutException {
-		return receive(mailbox, -1.0, host);
-	}
-
-	/**
-	 * Retrieves next task sent by a given host on the mailbox identified by the specified alias (wait at most \a timeout seconds)
+	 * Retrieves next task on the mailbox identified by the specified alias (wait at most \a timeout seconds)
 	 *
 	 * @param mailbox
 	 * @param timeout 
-	 * @param host
 	 * @return a Task
 	 */
-	public static native Task receive(String mailbox, double timeout, Host host) throws TransferFailureException, HostFailureException, TimeoutException;
+	public static native Task receive(String mailbox, double timeout) throws TransferFailureException, HostFailureException, TimeoutException;
 
 	/**
 	 * Starts listening for receiving a task from an asynchronous communication with a capped rate
@@ -329,7 +306,7 @@ public class Task {
 	 */
 
 	public static Task receiveBounded(String mailbox, double rate) throws TransferFailureException, HostFailureException, TimeoutException {
-		return receiveBounded(mailbox, -1.0, null, rate);
+		return receiveBounded(mailbox, -1.0, rate);
 	}
 
 	/**
@@ -339,32 +316,7 @@ public class Task {
 	 * @param timeout
 	 * @return a Task
 	 */
-	public static Task receiveBounded(String mailbox, double timeout, double rate) throws  TransferFailureException, HostFailureException, TimeoutException {
-		return receiveBounded(mailbox, timeout, null, rate);
-	}
-
-	/**
-	 * Retrieves next task sent by a given host on the mailbox identified by the specified alias with a capped rate
-	 *
-	 * @param mailbox
-	 * @param host
-	 * @return a Task
-	 */
-
-	public static Task receiveBounded(String mailbox, Host host, double rate) throws TransferFailureException, HostFailureException, TimeoutException {
-		return receiveBounded(mailbox, -1.0, host, rate);
-	}
-
-	/**
-	 * Retrieves next task sent by a given host on the mailbox identified by the specified alias (wait at most \a timeout seconds)
-	 * with a capped rate
-	 *
-	 * @param mailbox
-	 * @param timeout 
-	 * @param host
-	 * @return a Task
-	 */
-	public static native Task receiveBounded(String mailbox, double timeout, Host host, double rate) throws TransferFailureException, HostFailureException, TimeoutException;
+	public static native Task receiveBounded(String mailbox, double timeout, double rate) throws TransferFailureException, HostFailureException, TimeoutException;
 
 
 

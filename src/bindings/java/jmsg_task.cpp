@@ -274,23 +274,12 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_sendBounded(JNIEnv * env,jobjec
     jmsg_throw_status(env, res);
 }
 
-JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass cls, jstring jalias, jdouble jtimeout,
-                                                            jobject jhost)
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receive(JNIEnv* env, jclass cls, jstring jalias, jdouble jtimeout)
 {
   msg_task_t task = nullptr;
-  msg_host_t host = nullptr;
-
-  if (jhost) {
-    host = jhost_get_native(env, jhost);
-
-    if (!host) {
-      jxbt_throw_notbound(env, "host", jhost);
-      return nullptr;
-    }
-  }
 
   const char *alias = env->GetStringUTFChars(jalias, 0);
-  msg_error_t rv = MSG_task_receive_ext(&task, alias, (double) jtimeout, host);
+  msg_error_t rv    = MSG_task_receive_ext(&task, alias, (double)jtimeout, /*host*/ nullptr);
   env->ReleaseStringUTFChars(jalias, alias);
   if (env->ExceptionOccurred())
     return nullptr;
@@ -304,7 +293,6 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass
   jobject jtask_local = env->NewLocalRef(jtask_global);
   env->DeleteGlobalRef(jtask_global);
   MSG_task_set_data(task, nullptr);
-
 
   return (jobject) jtask_local;
 }
@@ -336,30 +324,19 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_irecv(JNIEnv * env, jclass c
   return jcomm;
 }
 
-JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receiveBounded(JNIEnv * env, jclass cls, jstring jalias,
-                                                                   jdouble jtimeout, jobject jhost, jdouble rate)
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receiveBounded(JNIEnv* env, jclass cls, jstring jalias,
+                                                                   jdouble jtimeout, jdouble rate)
 {
-  msg_error_t rv;
   msg_task_t *task = xbt_new(msg_task_t,1);
   *task = nullptr;
 
-  msg_host_t host = nullptr;
-
-  if (jhost) {
-    host = jhost_get_native(env, jhost);
-
-    if (!host) {
-      jxbt_throw_notbound(env, "host", jhost);
-      return nullptr;
-    }
-  }
-
   const char *alias = env->GetStringUTFChars(jalias, 0);
-  rv = MSG_task_receive_ext_bounded(task, alias, static_cast<double>(jtimeout), host, static_cast<double>(rate));
+  msg_error_t res   = MSG_task_receive_ext_bounded(task, alias, static_cast<double>(jtimeout), /*host*/ nullptr,
+                                                 static_cast<double>(rate));
   if (env->ExceptionOccurred())
     return nullptr;
-  if (rv != MSG_OK) {
-    jmsg_throw_status(env,rv);
+  if (res != MSG_OK) {
+    jmsg_throw_status(env, res);
     return nullptr;
   }
   jobject jtask_global = (jobject) MSG_task_get_data(*task);

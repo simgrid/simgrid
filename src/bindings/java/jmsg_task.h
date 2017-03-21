@@ -44,11 +44,10 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setBytesAmount(JNIEnv* env, job
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_sendBounded(JNIEnv* env, jobject jtask, jstring jalias,
                                                              jdouble  jtimeout, jdouble maxrate);
-JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receive(JNIEnv* env, jclass cls, jstring jalias, jdouble jtimeout,
-                                                            jobject jhost);
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receive(JNIEnv* env, jclass cls, jstring jalias, jdouble jtimeout);
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_irecv(JNIEnv* env, jclass cls, jstring jmailbox);
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receiveBounded(JNIEnv* env, jclass cls, jstring jalias,
-                                                                   jdouble jtimeout, jobject jhost, jdouble rate);
+                                                                   jdouble jtimeout, jdouble rate);
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_irecvBounded(JNIEnv* env, jclass cls, jstring jmailbox,
                                                                  jdouble rate);
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_isend(JNIEnv* env, jobject jtask, jstring jmailbox);
