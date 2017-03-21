@@ -41,7 +41,11 @@ HostL07Model::HostL07Model() : HostModel() {
   surf_cpu_model_pm = new CpuL07Model(this,maxminSystem_);
 }
 
-HostL07Model::~HostL07Model() = default;
+HostL07Model::~HostL07Model() 
+{
+  lmm_system_free(maxminSystem_);
+  maxminSystem_ = nullptr;
+}
 
 CpuL07Model::CpuL07Model(HostL07Model *hmodel,lmm_system_t sys)
   : CpuModel()
@@ -49,10 +53,8 @@ CpuL07Model::CpuL07Model(HostL07Model *hmodel,lmm_system_t sys)
   {
     maxminSystem_ = sys;
   }
-CpuL07Model::~CpuL07Model() {
-  lmm_system_free(maxminSystem_);
-  maxminSystem_ = nullptr;
-}
+CpuL07Model::~CpuL07Model() {}
+
 NetworkL07Model::NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys)
   : NetworkModel()
   , hostModel_(hmodel)
@@ -60,10 +62,7 @@ NetworkL07Model::NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys)
     maxminSystem_ = sys;
     loopback_     = createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
   }
-NetworkL07Model::~NetworkL07Model()
-{
-  maxminSystem_ = nullptr; // Avoid multi-free
-}
+NetworkL07Model::~NetworkL07Model() {}
 
 
 double HostL07Model::nextOccuringEvent(double now)
@@ -378,6 +377,7 @@ void LinkL07::setLatency(double value)
     action->updateBound();
   }
 }
+LinkL07::~LinkL07() {}
 
 /**********
  * Action *
