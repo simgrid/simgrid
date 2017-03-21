@@ -299,37 +299,28 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getStorageContent(JNIEn
 
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_all(JNIEnv * env, jclass cls_arg)
 {
-  int index;
-  jobjectArray jtable;
-  jobject jhost;
-  jstring jname;
-  msg_host_t host;
 
   xbt_dynar_t table =  MSG_hosts_as_dynar();
   int count = xbt_dynar_length(table);
 
   jclass cls = jxbt_get_class(env, "org/simgrid/msg/Host");
-
-  if (!cls) {
+  if (!cls)
     return nullptr;
-  }
 
-  jtable = env->NewObjectArray((jsize) count, cls, nullptr);
+  jobjectArray jtable = env->NewObjectArray((jsize)count, cls, nullptr);
 
   if (!jtable) {
     jxbt_throw_jni(env, "Hosts table allocation failed");
     return nullptr;
   }
 
-  for (index = 0; index < count; index++) {
-    host = xbt_dynar_get_as(table,index,msg_host_t);
-    jhost = (jobject) host->extension(JAVA_HOST_LEVEL);
+  for (int index = 0; index < count; index++) {
+    msg_host_t host = xbt_dynar_get_as(table, index, msg_host_t);
+    jobject jhost   = static_cast<jobject>(host->extension(JAVA_HOST_LEVEL));
 
     if (!jhost) {
-      jname = env->NewStringUTF(host->cname());
-
-      jhost = Java_org_simgrid_msg_Host_getByName(env, cls_arg, jname);
-      /* FIXME: leak of jname ? */
+      jstring jname = env->NewStringUTF(host->cname());
+      jhost         = Java_org_simgrid_msg_Host_getByName(env, cls_arg, jname);
     }
 
     env->SetObjectArrayElement(jtable, index, jhost);

@@ -104,7 +104,7 @@ int MSG_get_host_number()
 }
 
 /** \ingroup m_host_management
- * \brief Return a dynar containing all the hosts declared at a given point of time
+ * \brief Return a dynar containing all the hosts declared at a given point of time (including VMs)
  * \remark The host order in the returned array is generally different from the host creation/declaration order in the
  *         XML platform (we use a hash table internally)
  */
