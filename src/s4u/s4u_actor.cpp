@@ -82,6 +82,16 @@ int Actor::ppid()
   return this->pimpl_->ppid;
 }
 
+void Actor::suspend()
+{
+  simcall_process_suspend(pimpl_);
+}
+
+void Actor::resume()
+{
+  simcall_process_resume(pimpl_);
+}
+
 void Actor::setKillTime(double time) {
   simcall_process_set_kill_time(pimpl_,time);
 }
@@ -182,6 +192,16 @@ std::string name()
 Host* host()
 {
   return SIMIX_process_self()->host;
+}
+
+void suspend()
+{
+  simcall_process_suspend(SIMIX_process_self());
+}
+
+void resume()
+{
+  simcall_process_resume(SIMIX_process_self());
 }
 
 void migrate(Host* new_host)

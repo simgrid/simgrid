@@ -34,8 +34,8 @@ static void emigrant()
   identification->notify_all();
   checkpoint->unlock();
 
-  // TODO simgrid::s4u::this_actor::suspend(); to replace the sleep below
-  simgrid::s4u::this_actor::sleep_for(4);
+  simgrid::s4u::this_actor::suspend();
+
   XBT_INFO("I've been moved on this new host: %s", simgrid::s4u::this_actor::host()->cname());
   XBT_INFO("Uh, nothing to do here. Stopping now");
 }
@@ -51,7 +51,7 @@ static void policeman()
 
   controlled_process->migrate(simgrid::s4u::Host::by_name("Jacquelin")); /* - Move an emigrant to Jacquelin */
   XBT_INFO("I moved the emigrant");
-  // TODO simgrid::s4u::this_actor::resume()
+  controlled_process->resume();
 
   checkpoint->unlock();
 }
