@@ -153,7 +153,8 @@ void MSG_vm_destroy(msg_vm_t vm)
   if (MSG_vm_is_running(vm))
     MSG_vm_shutdown(vm);
 
-  xbt_assert(MSG_vm_is_created(vm), "shutdown the given VM before destroying it");
+  xbt_assert(MSG_vm_is_created(vm) || __MSG_vm_is_state(vm, SURF_VM_STATE_DESTROYED),
+             "shutdown the given VM before destroying it");
 
   /* Then, destroy the VM object */
   simgrid::simix::kernelImmediate([vm]() {

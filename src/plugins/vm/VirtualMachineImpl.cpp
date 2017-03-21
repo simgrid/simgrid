@@ -220,7 +220,7 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
     SIMIX_process_kill(smx_process, issuer);
   }
 
-  setState(SURF_VM_STATE_CREATED);
+  setState(SURF_VM_STATE_DESTROYED);
 
   /* FIXME: we may have to do something at the surf layer, e.g., vcpu action */
 }
