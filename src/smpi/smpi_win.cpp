@@ -32,6 +32,7 @@ Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm)
   if(rank_==0){
     bar_ = MSG_barrier_init(comm_size);
   }
+  mode_=0;
 
   comm->add_rma_win(this);
 
@@ -436,40 +437,42 @@ int Win::wait(){
 }
 
 int Win::lock(int lock_type, int rank, int assert){
+  if(opened_!=0)
+    return MPI_ERR_WIN;
+
   MPI_Win target_win = connected_wins_[rank];
 
-  //window already locked, we have to wait
-  if (lock_type == MPI_LOCK_EXCLUSIVE){
-  XBT_DEBUG("Win_lock - Entering lock %d", rank);
+  if ((lock_type == MPI_LOCK_EXCLUSIVE && target_win->mode_ != MPI_LOCK_SHARED)|| target_win->mode_ == MPI_LOCK_EXCLUSIVE){
     xbt_mutex_acquire(target_win->lock_mut_);
-  XBT_DEBUG("Win_lock - Released from lock %d", rank);
-}
+    target_win->mode_+= lock_type;//add the lock_type to differentiate case when we are switching from EXCLUSIVE to SHARED (no release needed in the unlock)
+    if(lock_type == MPI_LOCK_SHARED){//the window used to be exclusive, it's now shared.
+      xbt_mutex_release(target_win->lock_mut_);
+   }
+  } else if(!(target_win->mode_==MPI_LOCK_SHARED && lock_type == MPI_LOCK_EXCLUSIVE))
+        target_win->mode_+= lock_type; // don't set to exclusive if it's already shared
 
-  xbt_mutex_acquire(target_win->mut_);
   target_win->lockers_.push_back(comm_->rank());
-  xbt_mutex_release(target_win->mut_);  
 
   int finished = finish_comms();
-  XBT_DEBUG("Win_lock - Finished %d RMA calls", finished);
+  XBT_DEBUG("Win_lock %d - Finished %d RMA calls", rank, finished);
 
   return MPI_SUCCESS;
 }
 
 int Win::unlock(int rank){
+  if(opened_!=0)
+    return MPI_ERR_WIN;
+
   MPI_Win target_win = connected_wins_[rank];
-
-  xbt_mutex_acquire(target_win->mut_);
-  int size=target_win->lockers_.size();
+  int target_mode = target_win->mode_;
+  target_win->mode_= 0;
   target_win->lockers_.remove(comm_->rank());
-
-
-  if (size<=1){//0 or 1 lockers -> exclusive assumed
-    xbt_mutex_try_acquire(target_win->lock_mut_);
+  if (target_mode==MPI_LOCK_EXCLUSIVE){
     xbt_mutex_release(target_win->lock_mut_);
   }
-  xbt_mutex_release(target_win->mut_);
+
   int finished = finish_comms();
-  XBT_DEBUG("Win_unlock - Finished %d RMA calls", finished);
+  XBT_DEBUG("Win_unlock %d - Finished %d RMA calls", rank, finished);
 
   return MPI_SUCCESS;
 }

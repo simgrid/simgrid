@@ -33,6 +33,7 @@ class Win : public F2C, public Keyval {
   xbt_mutex_t lock_mut_;
   std::list<int> lockers_;
   int rank_; // to identify owner for barriers in MPI_COMM_WORLD
+  int mode_; // exclusive or shared lock
 
 public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;

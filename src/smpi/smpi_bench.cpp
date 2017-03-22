@@ -416,7 +416,7 @@ unsigned long long smpi_rastro_timestamp ()
   smpi_bench_end();
   double now = SIMIX_get_clock();
 
-  unsigned long long sec = (unsigned long long)now;
+  unsigned long long sec = static_cast<unsigned long long>(now);
   unsigned long long pre = (now - sec) * smpi_rastro_resolution();
   smpi_bench_begin();
   return static_cast<unsigned long long>(sec) * smpi_rastro_resolution() + pre;
@@ -609,12 +609,12 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
       char* name                   = xbt_strdup("/tmp/simgrid-shmalloc-XXXXXX");
       smpi_shared_malloc_bogusfile = mkstemp(name);
       unlink(name);
-      free(name);
+      xbt_free(name);
       char* dumb = (char*)calloc(1, smpi_shared_malloc_blocksize);
       ssize_t err = write(smpi_shared_malloc_bogusfile, dumb, smpi_shared_malloc_blocksize);
       if(err<0)
         xbt_die("Could not write bogus file for shared malloc");
-      free(dumb);
+      xbt_free(dumb);
     }
 
     /* Map the bogus file in place of the anonymous memory */
