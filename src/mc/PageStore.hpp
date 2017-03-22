@@ -136,7 +136,7 @@ public: // Methods
 
   /** @brief Get a page from its page number
    *
-   *  @param Number of the memory page in the store
+   *  @param pageno Number of the memory page in the store
    *  @return Start of the page
    */
   const void* get_page(std::size_t pageno) const;
