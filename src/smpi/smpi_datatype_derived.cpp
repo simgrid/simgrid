@@ -1,5 +1,5 @@
 /* smpi_datatype.cpp -- MPI primitives to handle datatypes                      */
-/* Copyright (c) 2009-2015. The SimGrid Team.
+/* Copyright (c) 2009-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
