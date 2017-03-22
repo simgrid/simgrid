@@ -136,7 +136,9 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_shutdown(JNIEnv *env, jobject jvm
     MSG_vm_shutdown(vm);
     auto vmList = &simgrid::vm::VirtualMachineImpl::allVms_;
     vmList->erase(
-        std::remove_if(vmList->begin(), vmList->end(), [vm](simgrid::s4u::VirtualMachine* it) { return vm == it; }),
+        std::remove_if(vmList->begin(), vmList->end(), [vm](simgrid::s4u::VirtualMachine* it) {
+          return vm == it;
+        }),
         vmList->end());
   }
 }
