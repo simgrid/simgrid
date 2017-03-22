@@ -16,13 +16,21 @@ SimGrid (3.15) UNRELEASED; urgency=low
  - New: MSG_process_ref/unref(). Fiddle with the process refcounting.
  - Renamed MSG_energy_plugin_init() -> MSG_host_energy_plugin_init()
    to make room for the upcoming network energy plugin.
- - Drop MSG_host_get_current_power_peak: dupplicates MSG_host_get_speed
+ - Drop MSG_host_get_current_power_peak: duplicates MSG_host_get_speed
 
  Java
  - Ensure that an actor can kill itself with Process::exit()
  - Kill the obscure NativeException. Nobody want to survive the issues
    it denotes, so use JniException that is a RuntimeException (not to
-   be catched explicitely).
+   be caught explicitly).
+ - Partial bug fix in initialization. SimGrid flags on command line were 
+   consumed at C level but stayed in the original Java String[] args. 
+   This could mess users' args[i] if SG flags were not put at the end of
+   the command line.
+   The SimGrid flags are now removed from the Java arguments. However, 
+   the number of arguments REMAINS UNCHANGED. It is then UNSAFE to test
+   if args.length is greater than the number of YOUR OWN ARGUMENTS. 
+   It might be if you have --log or --cfg flags in the command line.
 
  S4U
  - New callbacks:
@@ -33,7 +41,12 @@ SimGrid (3.15) UNRELEASED; urgency=low
      event from the availability_file changes the avail speed.
  - Links are now usable from s4u
  - New: Engine::hostList() and Engine::hostCount(). Still clumsy.
- - Drop Host::getPstateSpeedCurrent() which dupplicates Host::speed()
+ - New: Actor::suspend(), Actor::resume(), and Actor::migrate(new_host)
+ - New examples: The conversion of MSG examples to S4U has begun
+    - Actors: create, kill, migration, and suspend
+    - Applications: master-worker and token-ring
+    - Action replay: communications and storage
+ - Drop Host::getPstateSpeedCurrent() which duplicates Host::speed()
 
  SimDag
  - Backwards Compatibility breaks
