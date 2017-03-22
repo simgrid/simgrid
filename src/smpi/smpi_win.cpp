@@ -300,6 +300,37 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
   return MPI_SUCCESS;
 }
 
+int Win::get_accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr, 
+              int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count, 
+              MPI_Datatype target_datatype, MPI_Op op){
+
+  //get sender pointer
+  MPI_Win send_win = connected_wins_[target_rank];
+
+  if(opened_==0){//check that post/start has been done
+    // no fence or start .. lock ok ?
+    int locked=0;
+    for(auto it : send_win->lockers_)
+      if (it == comm_->rank())
+        locked = 1;
+    if(locked != 1)
+      return MPI_ERR_WIN;
+  }
+
+  if(target_count*target_datatype->get_extent()>send_win->size_)
+    return MPI_ERR_ARG;
+
+  XBT_DEBUG("Entering MPI_Get_accumulate from %d", target_rank);
+
+  get(result_addr, result_count, result_datatype, target_rank,
+              target_disp, target_count, target_datatype);
+  accumulate(origin_addr, origin_count, origin_datatype, target_rank,
+              target_disp, target_count, target_datatype, op);
+
+  return MPI_SUCCESS;
+
+}
+
 int Win::start(MPI_Group group, int assert){
     /* From MPI forum advices
     The call to MPI_WIN_COMPLETE does not return until the put call has completed at the origin; and the target window

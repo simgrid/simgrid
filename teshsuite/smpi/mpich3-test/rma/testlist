@@ -33,7 +33,7 @@ lockcontention2 8
 #lockcontention3 8
 lockopts 2
 #needs get_accumulate
-#lock_dt 2
+lock_dt 2
 #lock_dt_flush 2
 #lock_dt_flushlocal 2
 #lockall_dt 4 timeLimit=240
@@ -78,7 +78,7 @@ strided_acc_onelock 2
 strided_get_indexed 2
 strided_putget_indexed 4
 #strided_putget_indexed_shared 4 mpiversion=3.0
-#strided_getacc_indexed 4 mpiversion=3.0
+strided_getacc_indexed 4
 #strided_getacc_indexed_shared 4 mpiversion=3.0
 window_creation 2
 contention_put 4

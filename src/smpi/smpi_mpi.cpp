@@ -85,6 +85,7 @@ WRAPPED_PMPI_CALL(int,MPI_Get_library_version ,(char *version,int *len),(version
 WRAPPED_PMPI_CALL(int,MPI_Get_processor_name,(char *name, int *resultlen),(name, resultlen))
 WRAPPED_PMPI_CALL(int,MPI_Get_version ,(int *version,int *subversion),(version,subversion))
 WRAPPED_PMPI_CALL(int,MPI_Get,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win),(origin_addr,origin_count, origin_datatype,target_rank, target_disp, target_count,target_datatype,win))
+WRAPPED_PMPI_CALL(int,MPI_Get_accumulate, (void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr, int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win),(origin_addr, origin_count, origin_datatype, result_addr, result_count, result_datatype, target_rank, target_disp, target_count, target_datatype, op, win))
 WRAPPED_PMPI_CALL(int,MPI_Group_compare,(MPI_Group group1, MPI_Group group2, int *result),(group1, group2, result))
 WRAPPED_PMPI_CALL(int,MPI_Group_difference,(MPI_Group group1, MPI_Group group2, MPI_Group * newgroup),(group1, group2, newgroup))
 WRAPPED_PMPI_CALL(int,MPI_Group_excl,(MPI_Group group, int n, int *ranks, MPI_Group * newgroup),(group, n, ranks, newgroup))

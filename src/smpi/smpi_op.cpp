@@ -188,6 +188,10 @@ static void replace_func(void *a, void *b, int *length, MPI_Datatype * datatype)
   memcpy(b, a, *length * (*datatype)->size());
 }
 
+static void no_func(void *a, void *b, int *length, MPI_Datatype * datatype)
+{
+}
+
 #define CREATE_MPI_OP(name, func)                             \
   static SMPI_Op mpi_##name (&(func) /* func */, true ); \
 MPI_Op name = &mpi_##name;
@@ -205,6 +209,7 @@ CREATE_MPI_OP(MPI_BXOR, bxor_func);
 CREATE_MPI_OP(MPI_MAXLOC, maxloc_func);
 CREATE_MPI_OP(MPI_MINLOC, minloc_func);
 CREATE_MPI_OP(MPI_REPLACE, replace_func);
+CREATE_MPI_OP(MPI_NO_OP, no_func);
 
 namespace simgrid{
 namespace smpi{
