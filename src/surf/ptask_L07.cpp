@@ -53,7 +53,7 @@ CpuL07Model::CpuL07Model(HostL07Model *hmodel,lmm_system_t sys)
   {
     maxminSystem_ = sys;
   }
-CpuL07Model::~CpuL07Model() {}
+CpuL07Model::~CpuL07Model() = default;
 
 NetworkL07Model::NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys)
   : NetworkModel()
@@ -62,7 +62,7 @@ NetworkL07Model::NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys)
     maxminSystem_ = sys;
     loopback_     = createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
   }
-NetworkL07Model::~NetworkL07Model() {}
+NetworkL07Model::~NetworkL07Model() = default;
 
 
 double HostL07Model::nextOccuringEvent(double now)
@@ -377,7 +377,7 @@ void LinkL07::setLatency(double value)
     action->updateBound();
   }
 }
-LinkL07::~LinkL07() {}
+LinkL07::~LinkL07() = default;
 
 /**********
  * Action *

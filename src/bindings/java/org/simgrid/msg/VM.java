@@ -33,10 +33,10 @@ public class VM extends Host {
 	}
 
 	/** Retrieve the list of all existing VMs */
-	public native static VM[] all();
+	public static native VM[] all();
 
 	/** Retrieve a VM from its name */
-	public native static VM getVMByName(String name);
+	public static native VM getVMByName(String name);
 	
 	/** Shutdown and unref the VM. 
 	 * 
@@ -107,7 +107,7 @@ public class VM extends Host {
 		// If the migration correcly returned, then we should change the currentHost value. 
 		this.currentHost = destination; 
 	}
-	private native void nativeMigration(Host destination) throws Exception;
+	private native void nativeMigration(Host destination) throws MsgException;
 
 	/** Immediately suspend the execution of all processes within the given VM
 	 *
