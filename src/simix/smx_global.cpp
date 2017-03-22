@@ -302,6 +302,9 @@ void SIMIX_clean()
 
   xbt_os_mutex_destroy(simix_global->mutex);
   simix_global->mutex = nullptr;
+#if HAVE_MC
+  xbt_dynar_free(&simix_global->actors_vector);
+#endif
 
   /* Let's free maestro now */
   delete simix_global->maestro_process->context;

@@ -95,6 +95,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_VM_all(JNIEnv* env, jclass c
       vms.push_back(jvm);
     }
   }
+  xbt_dynar_free(&hosts);
 
   vms.shrink_to_fit();
   int count = vms.size();
