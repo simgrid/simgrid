@@ -1,11 +1,10 @@
 /* dict - a generic dictionary, variation over hash table                   */
 
-/* Copyright (c) 2004-2015. The SimGrid Team.
+/* Copyright (c) 2004-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
 
 #include <string.h>
 #include <stdio.h>
@@ -73,8 +72,8 @@ xbt_dict_t xbt_dict_new_homogeneous(void_f_pvoid_t free_ctn)
  */
 void xbt_dict_free(xbt_dict_t * dict)
 {
-  int i;
-  xbt_dictelm_t current, previous;
+  xbt_dictelm_t current;
+  xbt_dictelm_t previous;
   int table_size;
   xbt_dictelm_t *table;
 
@@ -85,7 +84,7 @@ void xbt_dict_free(xbt_dict_t * dict)
     table = (*dict)->table;
     /* Warning: the size of the table is 'table_size+1'...
      * This is because table_size is used as a binary mask in xbt_dict_rehash */
-    for (i = 0; (*dict)->count && i <= table_size; i++) {
+    for (int i = 0; (*dict)->count && i <= table_size; i++) {
       current = table[i];
       while (current != nullptr) {
         previous = current;
@@ -103,7 +102,7 @@ void xbt_dict_free(xbt_dict_t * dict)
 /** Returns the amount of elements in the dict */
 unsigned int xbt_dict_size(xbt_dict_t dict)
 {
-  return (dict ? (unsigned int) dict->count : (unsigned int) 0);
+  return (dict != nullptr ? static_cast<unsigned int>(dict->count) : static_cast<unsigned int>(0));
 }
 
 /* Expend the size of the dict */
@@ -161,7 +160,8 @@ void xbt_dict_set_ext(xbt_dict_t dict, const char *key, int key_len, void *data,
 {
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
 
-  xbt_dictelm_t current, previous = nullptr;
+  xbt_dictelm_t current;
+  xbt_dictelm_t previous = nullptr;
 
   XBT_CDEBUG(xbt_dict, "ADD %.*s hash = %u, size = %d, & = %u", key_len, key, hash_code,
              dict->table_size, hash_code & dict->table_size);
@@ -359,11 +359,12 @@ void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len)
 
   if (current == nullptr)
     THROWF(not_found_error, 0, "key %.*s not found", key_len, key);
-
-  if (previous != nullptr) {
-    previous->next = current->next;
-  } else {
-    dict->table[hash_code & dict->table_size] = current->next;
+  else {
+    if (previous != nullptr) {
+      previous->next = current->next;
+    } else {
+      dict->table[hash_code & dict->table_size] = current->next;
+    }
   }
 
   if (!dict->table[hash_code & dict->table_size])
@@ -515,11 +516,8 @@ void xbt_dict_dump_sizes(xbt_dict_t dict)
     }
 
     /* Report current sizes */
-    if (count == 0)
-      continue;
-    if (size == 0)
-      continue;
-    printf("%uelm x %u cells; ", count, size);
+    if (count != 0 && size != 0)
+      printf("%uelm x %u cells; ", count, size);
   }
   printf("\n");
   xbt_dynar_free(&sizes);
@@ -559,13 +557,11 @@ void xbt_dict_postexit()
     int total_count = 0;
     printf("Overall stats:");
     xbt_dynar_foreach(all_sizes, count, size) {
-      if (count == 0)
-        continue;
-      if (size == 0)
-        continue;
-      printf("%uelm x %d cells; ", count, size);
-      avg += count * size;
-      total_count += size;
+      if (count != 0 && size != 0) {
+        printf("%uelm x %d cells; ", count, size);
+        avg += count * size;
+        total_count += size;
+      }
     }
     printf("; %f elm per cell\n", avg / (double) total_count);
   }

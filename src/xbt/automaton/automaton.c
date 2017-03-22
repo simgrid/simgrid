@@ -168,33 +168,32 @@ void xbt_automaton_display(xbt_automaton_t a){
 }
 
 void xbt_automaton_exp_label_display(xbt_automaton_exp_label_t label){
+  printf("(");
   switch(label->type){
-  case 0 :
-    printf("(");
-    xbt_automaton_exp_label_display(label->u.or_and.left_exp);
-    printf(" || ");
-    xbt_automaton_exp_label_display(label->u.or_and.right_exp);
-    printf(")");
-    break;
-  case 1 : 
-    printf("(");
-    xbt_automaton_exp_label_display(label->u.or_and.left_exp);
-    printf(" && ");
-    xbt_automaton_exp_label_display(label->u.or_and.right_exp);
-    printf(")");
-    break;
-  case 2 : 
-    printf("(!");
-    xbt_automaton_exp_label_display(label->u.exp_not);
-    printf(")");
-    break;
-  case 3 :
-    printf("(%s)",label->u.predicat);
-    break;
-  case 4 :
-    printf("(1)");
-    break;
+    case 0:
+      xbt_automaton_exp_label_display(label->u.or_and.left_exp);
+      printf(" || ");
+      xbt_automaton_exp_label_display(label->u.or_and.right_exp);
+      break;
+    case 1:
+      xbt_automaton_exp_label_display(label->u.or_and.left_exp);
+      printf(" && ");
+      xbt_automaton_exp_label_display(label->u.or_and.right_exp);
+      break;
+    case 2:
+      printf("!");
+      xbt_automaton_exp_label_display(label->u.exp_not);
+      break;
+    case 3:
+      printf("%s", label->u.predicat);
+      break;
+    case 4:
+      printf("1");
+      break;
+    default:
+      break;
   }
+  printf(")");
 }
 
 xbt_automaton_state_t xbt_automaton_get_current_state(xbt_automaton_t a){
@@ -325,13 +324,11 @@ int xbt_automaton_exp_label_compare(xbt_automaton_exp_label_t l1, xbt_automaton_
 }
 
 int xbt_automaton_propositional_symbols_compare_value(xbt_dynar_t s1, xbt_dynar_t s2){
-  int *iptr1, *iptr2;
-  unsigned int cursor;
   unsigned int nb_elem = xbt_dynar_length(s1);
 
-  for(cursor=0;cursor<nb_elem;cursor++){
-    iptr1 = xbt_dynar_get_ptr(s1, cursor);
-    iptr2 = xbt_dynar_get_ptr(s2, cursor);
+  for (unsigned int cursor = 0; cursor < nb_elem; cursor++) {
+    int* iptr1 = xbt_dynar_get_ptr(s1, cursor);
+    int* iptr2 = xbt_dynar_get_ptr(s2, cursor);
     if(*iptr1 != *iptr2)
       return 1;
   } 
