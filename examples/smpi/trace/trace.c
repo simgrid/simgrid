@@ -12,7 +12,8 @@
 
 int main(int argc, char *argv[])
 {
-  int rank, numprocs, i;
+  int rank;
+  int numprocs;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
@@ -58,51 +59,51 @@ int main(int argc, char *argv[])
 
     /** Test C */
     TRACE_smpi_set_category("C");
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Isend(r, DATATOSENT, MPI_INT, 1, tag, MPI_COMM_WORLD, &req[i]);
     }
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Wait(&req[i], &sta[i]);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
     TRACE_smpi_set_category("D");
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Isend(r, DATATOSENT, MPI_INT, 1, tag, MPI_COMM_WORLD, &req[i]);
     }
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       int completed;
       MPI_Waitany(N, req, &completed, sta);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
     TRACE_smpi_set_category("E");
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Send(r, DATATOSENT, MPI_INT, 1, tag, MPI_COMM_WORLD);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
     TRACE_smpi_set_category("F");
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Send(r, DATATOSENT, MPI_INT, 1, tag, MPI_COMM_WORLD);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
     TRACE_smpi_set_category("G");
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Isend(r, DATATOSENT, MPI_INT, 1, tag, MPI_COMM_WORLD, &req[i]);
     }
     MPI_Waitall(N, req, sta);
     MPI_Barrier(MPI_COMM_WORLD);
 
     TRACE_smpi_set_category("H");
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Send(r, DATATOSENT, MPI_INT, 1, tag, MPI_COMM_WORLD);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
     TRACE_smpi_set_category("I");
-    for (i = 0; i < 2 * N; i++) {
+    for (int i = 0; i < 2 * N; i++) {
       if (i < N) {
         MPI_Send(r, DATATOSENT, MPI_INT, 2, tag, MPI_COMM_WORLD);
       } else {
@@ -110,7 +111,7 @@ int main(int argc, char *argv[])
       }
     }
     MPI_Barrier(MPI_COMM_WORLD);
-    for (i = 0; i < 2 * N; i++) {
+    for (int i = 0; i < 2 * N; i++) {
       if (i < N) {
         MPI_Irecv(r, DATATOSENT, MPI_INT, 1, tag, MPI_COMM_WORLD, &req[i]);
       } else {
@@ -121,14 +122,14 @@ int main(int argc, char *argv[])
     MPI_Barrier(MPI_COMM_WORLD);
 
     TRACE_smpi_set_category("J");
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Isend(r, DATATOSENT, MPI_INT, 1, tag, MPI_COMM_WORLD, &req[i]);
     }
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       int flag;
       MPI_Test(&req[i], &flag, &sta[i]);
     }
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Wait(&req[i], &sta[i]);
     }
     free(r);
@@ -152,71 +153,71 @@ int main(int argc, char *argv[])
     MPI_Barrier(MPI_COMM_WORLD);
 
     TRACE_smpi_set_category("C");
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Recv(r, DATATOSENT, MPI_INT, 0, tag, MPI_COMM_WORLD, &sta[i]);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
     TRACE_smpi_set_category("D");
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Recv(r, DATATOSENT, MPI_INT, 0, tag, MPI_COMM_WORLD, &sta[i]);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
     TRACE_smpi_set_category("E");
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Irecv(r, DATATOSENT, MPI_INT, 0, tag, MPI_COMM_WORLD, &req[i]);
     }
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Wait(&req[i], &sta[i]);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
     TRACE_smpi_set_category("F");
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Irecv(r, DATATOSENT, MPI_INT, 0, tag, MPI_COMM_WORLD, &req[i]);
     }
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       int completed;
       MPI_Waitany(N, req, &completed, sta);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
     TRACE_smpi_set_category("G");
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Recv(r, DATATOSENT, MPI_INT, 0, tag, MPI_COMM_WORLD, &sta[i]);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
     TRACE_smpi_set_category("H");
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Irecv(r, DATATOSENT, MPI_INT, 0, tag, MPI_COMM_WORLD, &req[i]);
     }
     MPI_Waitall(N, req, sta);
     MPI_Barrier(MPI_COMM_WORLD);
 
     TRACE_smpi_set_category("I");
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Irecv(r, DATATOSENT, MPI_INT, 0, tag, MPI_COMM_WORLD, &req[i]);
     }
     MPI_Waitall(N, req, sta);
 
     MPI_Barrier(MPI_COMM_WORLD);
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Isend(r, DATATOSENT, MPI_INT, 0, tag, MPI_COMM_WORLD, &req[i]);
     }
     MPI_Waitall(N, req, sta);
     MPI_Barrier(MPI_COMM_WORLD);
 
     TRACE_smpi_set_category("J");
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Irecv(r, DATATOSENT, MPI_INT, 0, tag, MPI_COMM_WORLD, &req[i]);
     }
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       int flag;
       MPI_Test(&req[i], &flag, &sta[i]);
     }
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Wait(&req[i], &sta[i]);
     }
     free(r);
@@ -237,16 +238,16 @@ int main(int argc, char *argv[])
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Barrier(MPI_COMM_WORLD);
     TRACE_smpi_set_category("I");
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Irecv(r, DATATOSENT, MPI_INT, 0, tag, MPI_COMM_WORLD, &req[i]);
     }
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       int completed;
       MPI_Waitany(N, req, &completed, sta);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) {
       MPI_Send(r, DATATOSENT, MPI_INT, 0, tag, MPI_COMM_WORLD);
     }
     MPI_Barrier(MPI_COMM_WORLD);

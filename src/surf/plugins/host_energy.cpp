@@ -282,19 +282,19 @@ static void onActionStateChange(simgrid::surf::CpuAction* action, simgrid::surf:
 {
   for (simgrid::surf::Cpu* cpu : action->cpus()) {
     simgrid::s4u::Host* host = cpu->getHost();
-    if (host == nullptr)
-      continue;
+    if (host != nullptr) {
 
-    // If it's a VM, take the corresponding PM
-    simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
-    if (vm) // If it's a VM, take the corresponding PM
-      host = vm->pimpl_vm_->getPm();
+      // If it's a VM, take the corresponding PM
+      simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
+      if (vm) // If it's a VM, take the corresponding PM
+        host = vm->pimpl_vm_->getPm();
 
-    // Get the host_energy extension for the relevant host
-    HostEnergy* host_energy = host->extension<HostEnergy>();
+      // Get the host_energy extension for the relevant host
+      HostEnergy* host_energy = host->extension<HostEnergy>();
 
-    if (host_energy->last_updated < surf_get_clock())
-      host_energy->update();
+      if (host_energy->last_updated < surf_get_clock())
+        host_energy->update();
+    }
   }
 }
 

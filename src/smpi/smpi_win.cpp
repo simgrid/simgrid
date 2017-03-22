@@ -408,8 +408,9 @@ int Win::complete(){
 int Win::wait(){
   //naive, blocking implementation.
   XBT_DEBUG("Entering MPI_Win_Wait");
-  int i=0,j=0;
-  int size = group_->size();
+  int i             = 0;
+  int j             = 0;
+  int size          = group_->size();
   MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
   while(j!=size){

@@ -121,7 +121,8 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
 {
   std::function<void()> function;
   if (code)
-    function = simgrid::xbt::wrapMain(code, argc, const_cast<const char*const*>(argv));
+    function = simgrid::xbt::wrapMain(code, argc, static_cast<const char* const*>(argv));
+
   msg_process_t res = MSG_process_create_from_stdfunc(name, std::move(function), data, host, properties);
   for (int i = 0; i != argc; ++i)
     xbt_free(argv[i]);

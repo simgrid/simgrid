@@ -146,16 +146,16 @@ void SIMIX_process_cleanup(smx_actor_t process)
 /**
  * Garbage collection
  *
- * Should be called some time to time to free the memory allocated for processes
- * that have finished (or killed).
+ * Should be called some time to time to free the memory allocated for processes that have finished (or killed).
  */
 void SIMIX_process_empty_trash()
 {
-  smx_actor_t process = nullptr;
+  smx_actor_t process = static_cast<smx_actor_t>(xbt_swag_extract(simix_global->process_to_destroy));
 
-  while ((process = (smx_actor_t) xbt_swag_extract(simix_global->process_to_destroy))) {
+  while (process) {
     XBT_DEBUG("Getting rid of %p",process);
     intrusive_ptr_release(process);
+    process = static_cast<smx_actor_t>(xbt_swag_extract(simix_global->process_to_destroy));
   }
 }
 
@@ -603,12 +603,13 @@ void SIMIX_process_resume(smx_actor_t process)
 {
   XBT_IN("process = %p", process);
 
-  if(process->context->iwannadie) {
+  if (process->context->iwannadie) {
     XBT_VERB("Ignoring request to suspend a process that is currently dying.");
     return;
   }
 
-  if(!process->suspended) return;
+  if (!process->suspended)
+    return;
   process->suspended = 0;
 
   /* resume the synchronization that was blocking the resumed process. */

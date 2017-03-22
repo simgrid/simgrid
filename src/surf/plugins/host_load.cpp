@@ -118,12 +118,11 @@ static void onActionStateChange(simgrid::surf::CpuAction* action, simgrid::surf:
   for (simgrid::surf::Cpu* cpu : action->cpus()) {
     simgrid::s4u::Host* host = cpu->getHost();
 
-    if (host == nullptr)
-      continue;
-
-    // Get the host_load extension for the relevant host
-    HostLoad* host_load = host->extension<HostLoad>();
-    host_load->update();
+    if (host != nullptr) {
+      // Get the host_load extension for the relevant host
+      HostLoad* host_load = host->extension<HostLoad>();
+      host_load->update();
+    }
   }
 }
 
