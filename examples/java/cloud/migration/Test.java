@@ -78,7 +78,6 @@ public class Test extends Process{
       tmp.setLoad(vmSrcLoad[i-1]);
     }
 
-    int collocatedDst = 6;
     int[] vmDstLoad = {
         0,
         40,

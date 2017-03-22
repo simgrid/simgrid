@@ -10,10 +10,11 @@ import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.Msg;
  
 class Main {
+  protected static final int TASK_COUNT = 3;
+	
   private Main() {
     throw new IllegalAccessError("Utility class");
   }
-  protected static final int TASK_COUNT = 3;
 
   public static void main(String[] args) throws HostNotFoundException {
     Msg.init(args);

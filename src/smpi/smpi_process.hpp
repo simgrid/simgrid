@@ -43,7 +43,7 @@ class Process {
     papi_counter_t papi_counter_data_;
 #endif
   public:
-    Process(int index);
+    explicit Process(int index);
     void destroy();
     void set_data(int index, int *argc, char ***argv);
     void finalize();
@@ -60,10 +60,10 @@ class Process {
     smx_mailbox_t mailbox();
     smx_mailbox_t mailbox_small();
     xbt_mutex_t mailboxes_mutex();
-    #if HAVE_PAPI
+#if HAVE_PAPI
     int papi_event_set(void);
     papi_counter_t& papi_counters(void);
-    #endif
+#endif
     xbt_os_timer_t timer();
     void simulated_start();
     double simulated_elapsed();
