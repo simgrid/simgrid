@@ -65,7 +65,8 @@ SimGrid (3.15) stable; urgency=low
    This can break codes using SMPI internals (from private.h instead of the public smpi.h).
  - Bump our claim of support from MPI 1.1 to MPI 2.2. 
    We don't support 100% of it, but it should be enough. Contact us if not.
- - MPI_Win_lock/unlock support added (as for all RMA, implementation is naive and probably inaccurate)
+ - MPI_Win_lock/unlock, MPI_Get_accumulate support added (as for all RMA, implementation is 
+   naive and probably inaccurate)
  - New algorithm for SMPI_SHARED_MALLOC: global, where all blocks are
    mapped onto a unique small file using some system magic.
  - Bugfix: smpirun was sometimes misusing hostfile when wrongly terminated
