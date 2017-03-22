@@ -1,6 +1,6 @@
 #! ./tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u_launching
+$ $SG_TEST_EXENV ${bindir:=.}/s4u_actor-create
 > [Tremblay:sender1:(0) 0.000000] [s4u_launching_test/INFO] Hello s4u, I have something to send
 > [Jupiter:sender2:(0) 0.000000] [s4u_launching_test/INFO] Hello s4u, I have something to send
 > [Fafard:receiver:(0) 0.000000] [s4u_launching_test/INFO] Hello s4u, I'm ready to get any message you'd want on mb42

@@ -204,6 +204,11 @@ void resume()
   simcall_process_resume(SIMIX_process_self());
 }
 
+void kill()
+{
+  simcall_process_kill(SIMIX_process_self());
+}
+
 void migrate(Host* new_host)
 {
   simcall_process_set_host(SIMIX_process_self(), new_host);

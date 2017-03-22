@@ -314,6 +314,9 @@ namespace this_actor {
   /** @brief Resume the actor. */
   XBT_PUBLIC(void) resume();
 
+  /** @brief kill the actor. */
+  XBT_PUBLIC(void) kill();
+
   /** @brief Migrate the actor to a new host. */
   XBT_PUBLIC(void) migrate(Host* new_host);
 };
