@@ -1,17 +1,15 @@
-/* JNI interface to virtual machine in Simgrid */
+/* Java bindings of the s4u::VirtualMachine */
 
-/* Copyright (c) 2006-2014. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 package org.simgrid.msg;
-import java.util.ArrayList;
 
 public class VM extends Host {
 	// No need to declare a new bind variable: we use the one inherited from the super class Host
 
-	private static ArrayList<VM> vms= new ArrayList<>();
 	private Host currentHost; 
 
 	/** Create a `basic' VM (i.e. 1GB of RAM, other values are not taken into account). */
@@ -32,18 +30,13 @@ public class VM extends Host {
 		super.name = name;
 		this.currentHost = host; 
 		create(host, name, ramSize, migNetSpeed, dpIntensity);
-		vms.add(this);
 	}
 
+	/** Retrieve the list of all existing VMs */
 	public native static VM[] all();
 
-	public static VM getVMByName(String name){
-		for (VM vm : vms){
-			if (vm.getName().equals(name))
-				return vm;
-		}
-		return null; 
-	}
+	/** Retrieve a VM from its name */
+	public native static VM getVMByName(String name);
 	
 	/** Shutdown and unref the VM. 
 	 * 
@@ -55,14 +48,13 @@ public class VM extends Host {
 	 */
 	public void destroy() {
 		shutdown();
-///		vms.remove(this);
 	}
 
 	/* Make sure that the GC also destroys the C object */
 	protected void finalize() throws Throwable {
 		nativeFinalize();
 	}
-	public native void nativeFinalize();
+	private native void nativeFinalize();
 
 	/** Returns whether the given VM is currently suspended */	
 	public native int isCreated();
@@ -134,7 +126,7 @@ public class VM extends Host {
 	public native void resume();
 
 	/**  Class initializer (for JNI), don't do it yourself */
-	public static native void nativeInit();
+	private static native void nativeInit();
 	static {
 		nativeInit();
 	}

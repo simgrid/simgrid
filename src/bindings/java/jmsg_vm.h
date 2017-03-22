@@ -30,14 +30,16 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeInit(JNIEnv* env, jclass cl
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_VM_all(JNIEnv* env, jclass cls_arg);
 
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isCreated(JNIEnv* env, jobject jvm);
-
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isRunning(JNIEnv* env, jobject jvm);
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isMigrating(JNIEnv* env, jobject jvm);
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isSuspended(JNIEnv* env, jobject jvm);
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isResuming(JNIEnv* env, jobject jvm);
+
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_setBound(JNIEnv* env, jobject jvm, jdouble bound);
+
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_create(JNIEnv* env, jobject jvm, jobject jhost, jstring jname,
                                                       jint jramsize, jint dprate, jint mig_netspeed);
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_VM_getVMByName(JNIEnv* env, jclass cls, jstring jname);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeFinalize(JNIEnv* env, jobject jvm);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_start(JNIEnv* env, jobject jvm);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeMigration(JNIEnv* env, jobject jvm, jobject jhost);

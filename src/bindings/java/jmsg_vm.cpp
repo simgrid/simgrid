@@ -165,4 +165,25 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_resume(JNIEnv *env, jobject jvm)
   MSG_vm_resume(vm);
 }
 
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_VM_getVMByName(JNIEnv* env, jclass cls, jstring jname)
+{
+
+  /* get the C string from the java string */
+  if (jname == nullptr) {
+    jxbt_throw_null(env, bprintf("No VM can have a null name"));
+    return nullptr;
+  }
+  const char* name = env->GetStringUTFChars(jname, 0);
+  /* get the VM by name   (VMs are just special hosts, unfortunately) */
+  msg_host_t host = MSG_host_by_name(name);
+
+  if (!host) { /* invalid name */
+    jxbt_throw_host_not_found(env, name);
+    env->ReleaseStringUTFChars(jname, name);
+    return nullptr;
+  }
+  env->ReleaseStringUTFChars(jname, name);
+
+  return static_cast<jobject>(host->extension(JAVA_HOST_LEVEL));
+}
 SG_END_DECL()
