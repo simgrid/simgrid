@@ -17,28 +17,27 @@
 
 int main(int argc, char *argv[])
 {
-  int i,rank, size;
-  int *sb, *rb;
-  int *recv_counts, *recv_disps;
-  int recv_sb_size;
+  int i;
+  int rank;
+  int size;
   int status;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-  recv_counts = (int *) xbt_malloc(size * sizeof(int));
-  recv_disps = (int *) xbt_malloc(size * sizeof(int));
+  int* recv_counts = (int *) xbt_malloc(size * sizeof(int));
+  int* recv_disps = (int *) xbt_malloc(size * sizeof(int));
 
-  recv_sb_size = 0;
+  int recv_sb_size = 0;
   for (i = 0; i < size; i++) {
     recv_counts[i] = i + 1;
     recv_disps[i] = recv_sb_size;
     recv_sb_size += i + 1;
   }
 
-  sb = (int *) xbt_malloc(recv_counts[rank] * sizeof(int));
-  rb = (int *) xbt_malloc(recv_sb_size * sizeof(int));
+  int* sb = (int *) xbt_malloc(recv_counts[rank] * sizeof(int));
+  int* rb = (int *) xbt_malloc(recv_sb_size * sizeof(int));
 
   for (i = 0; i < recv_counts[rank]; ++i)
     sb[i] = recv_disps[rank] + i;
@@ -63,10 +62,10 @@ int main(int argc, char *argv[])
       fflush(stdout);
     }
   }
-  free(sb);
-  free(rb);
-  free(recv_counts);
-  free(recv_disps);
+  xbt_free(sb);
+  xbt_free(rb);
+  xbt_free(recv_counts);
+  xbt_free(recv_disps);
   MPI_Finalize();
   return (EXIT_SUCCESS);
 }

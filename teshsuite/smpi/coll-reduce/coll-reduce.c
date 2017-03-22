@@ -17,18 +17,17 @@
 
 int main(int argc, char *argv[])
 {
-  int rank, size;
+  int rank;
+  int size;
   int i;
-  unsigned long long *sb;
-  unsigned long long *rb;
   int status;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-  sb = (unsigned long long *) xbt_malloc(size * sizeof(unsigned long long));
-  rb = (unsigned long long *) xbt_malloc(size * sizeof(unsigned long long));
+  unsigned long long* sb = (unsigned long long *) xbt_malloc(size * sizeof(unsigned long long));
+  unsigned long long* rb = (unsigned long long *) xbt_malloc(size * sizeof(unsigned long long));
 
   for (i = 0; i < size; ++i) {
     sb[i] = rank*size + i;

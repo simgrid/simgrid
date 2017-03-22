@@ -17,8 +17,8 @@
 
 int main(int argc, char *argv[])
 {
-  int i, rank, size;
-  int *sb, *rb;
+  int rank;
+  int size;
   int status;
 
   int root = 0;
@@ -28,16 +28,16 @@ int main(int argc, char *argv[])
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
   int count = 2;
-  sb = (int *) xbt_malloc(count * sizeof(int));
-  rb = (int *) xbt_malloc(count * size * sizeof(int));
+  int* sb = (int *) xbt_malloc(count * sizeof(int));
+  int* rb = (int *) xbt_malloc(count * size * sizeof(int));
   
-  for (i = 0; i < count; ++i)
+  for (int i = 0; i < count; ++i)
     sb[i] = rank * count + i;
-  for (i = 0; i < count * size; ++i)  
+  for (int i = 0; i < count * size; ++i)
     rb[i] = 0;
 
   printf("[%d] sndbuf=[", rank);
-  for (i = 0; i < count; i++)
+  for (int i = 0; i < count; i++)
     printf("%d ", sb[i]);
   printf("]\n");
 
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 
   if (rank == root) {
     printf("[%d] rcvbuf=[", rank);
-    for (i = 0; i < count * size; i++)
+    for (int i = 0; i < count * size; i++)
       printf("%d ", rb[i]);
     printf("]\n");
 
@@ -54,8 +54,8 @@ int main(int argc, char *argv[])
       fflush(stdout);
     }
   }
-  free(sb);
-  free(rb);
+  xbt_free(sb);
+  xbt_free(rb);
   MPI_Barrier(MPI_COMM_WORLD);
   MPI_Finalize();
   return (EXIT_SUCCESS);
