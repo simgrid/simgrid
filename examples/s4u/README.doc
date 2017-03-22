@@ -20,8 +20,8 @@ documentation, but it should remain readable directly.
 
 @section s4u_ex_basics Basics of SimGrid simulation
 
-  - <b>Launching actors:</b> @ref examples/s4u/launching/s4u_launching.cpp and 
-    @ref examples/s4u/launching/deployment.xml \n
+  - <b>Creating actors:</b> @ref examples/s4u/actor-create/s4u_actor-create.cpp and 
+    @ref examples/s4u/actor-create/s4u_actor-create_d.xml \n
     Shows how to start your actors to populate your simulation.
 
   - <b>Token ring:</b> @ref examples/s4u/app-token-ring/s4u_app-token-ring.cpp \n
@@ -39,12 +39,12 @@ documentation, but it should remain readable directly.
     Most actors are started from the deployment XML file, but they exist other methods.
 
   - <b>Suspend and Resume actors</b>.
-    @ref examples/s4u/actor-suspend/actor-suspend.cpp \n
+    @ref examples/s4u/actor-suspend/s4u_actor-suspend.cpp \n
     Actors can be suspended and resumed during their executions
     thanks to the @ref suspend and @ref resume methods.
 
   - <b>Kill actors</b>.
-    @ref examples/s4u/actor-kill/actor-kill.cpp \n
+    @ref examples/s4u/actor-kill/s4u_actor-kill.cpp \n
     Actors can forcefully stop other actors with the @ref kill method.
 
   - <b>Migrating Actors</b>.
@@ -90,12 +90,12 @@ also the tesh files in the example directories for details.
 @example examples/s4u/actions-comm/s4u_actions-comm.cpp
 @example examples/s4u/actions-storage/s4u_actions-storage.cpp
 @example examples/s4u/actor-create/s4u_actor-create.cpp
+@example examples/s4u/actor-create/s4u_actor-create_d.xml
 @example examples/s4u/actor-kill/actor-kill.cpp
 @example examples/s4u/actor-migration/s4u_actor-migration.cpp
 @example examples/s4u/actor-suspend/s4u_actor-suspend.cpp
 @example examples/s4u/app-token-ring/s4u_app-token-ring.cpp
-@example examples/s4u/app-master-worker/s4u_app-master-worker.cpp
-@example examples/s4u/launching/deployment.xml
+@example examples/s4u/app-masterworker/s4u_app-masterworker.cpp
 
 @example examples/s4u/launching/s4u_launching.cpp
 @example examples/s4u/mutex/s4u_mutex.cpp
