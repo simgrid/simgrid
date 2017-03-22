@@ -34,6 +34,11 @@ documentation, but it should remain readable directly.
 
 @section s4u_ex_actors Acting on Actors
 
+  - <b>Suspend and Resume actors</b>.
+    @ref examples/s4u/actor-suspend/actor-suspend.cpp \n
+    Actors can be suspended and resumed during their executions
+    thanks to the @ref suspend and @ref resume methods.
+
   - <b>Migrating Actors</b>.
     @ref examples/s4u/actor-migration/s4u_actor-migration.cpp \n
     Actors can move or be moved from a host to another with the @ref migrate method.
@@ -77,6 +82,7 @@ also the tesh files in the example directories for details.
 @example examples/s4u/actions-comm/s4u_actions-comm.cpp
 @example examples/s4u/actions-storage/s4u_actions-storage.cpp
 @example examples/s4u/actor-migration/s4u_actor-migration.cpp
+@example examples/s4u/actor-suspend/s4u_actor-suspend.cpp
 @example examples/s4u/app-token-ring/s4u_app-token-ring.cpp
 @example examples/s4u/app-master-worker/s4u_app-master-worker.cpp
 @example examples/s4u/launching/deployment.xml
