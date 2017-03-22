@@ -1,6 +1,6 @@
 SimGrid (3.15) UNRELEASED; urgency=low
 
- The Ever Green Release. 
+ The Spring Release: continuous integration servers become green
  We fixed even the transient bugs on all target architectures:
    Linux (CentOS, Debian, Ubuntu, Fedora), Mac OSX (Mavericks, El Capitan)
    Windows, FreeBSD, NetBSD.
@@ -23,6 +23,7 @@ SimGrid (3.15) UNRELEASED; urgency=low
  - Kill the obscure NativeException. Nobody want to survive the issues
    it denotes, so use JniException that is a RuntimeException (not to
    be catched explicitely).
+ - Fix numerous memleaks all around the place. In particular, around VMs.
 
  S4U
  - New callbacks:
@@ -34,6 +35,7 @@ SimGrid (3.15) UNRELEASED; urgency=low
  - Links are now usable from s4u
  - New: Engine::hostList() and Engine::hostCount(). Still clumsy.
  - Drop Host::getPstateSpeedCurrent() which dupplicates Host::speed()
+ - New examples, converted from MSG.
 
  SimDag
  - Backwards Compatibility breaks
@@ -47,16 +49,17 @@ SimGrid (3.15) UNRELEASED; urgency=low
       Macros ensure the backwards compatibility, but you should fix your code
 
  SMPI
- - Major C++ rewrite ongoing (SMPI used to be C compiled in C++). This can break codes that were using internals of SMPI (from private.h instead of the public smpi.h).
- - Bump our claim of support from MPI 1.1 to MPI 2.2. We don't support 100% of 
-   it, but it should be enough. Contact us if not.
+ - Major C++ rewrite ongoing (SMPI used to be C compiled in C++). 
+   This can break codes using SMPI internals (from private.h instead of the public smpi.h).
+ - Bump our claim of support from MPI 1.1 to MPI 2.2. 
+   We don't support 100% of it, but it should be enough. Contact us if not.
  - MPI_Win_lock/unlock support added (as for all RMA, implementation is naive and probably inaccurate)
  - New algorithm for SMPI_SHARED_MALLOC: global, where all blocks are
-   mapped onto a unique file.
- - Bugfix : smpirun was sometimes misusing hostfile when wrongly terminated
- - Fortran : cleanups, fixes, support of user-added operations
- - RMA : MPI_Accumulate are applied in correct order, and 
-   MPI_Win_complete or MPI_Win_post shouldn't miss messages anymore.
+   mapped onto a unique small file using some system magic.
+ - Bugfix: smpirun was sometimes misusing hostfile when wrongly terminated
+ - Fortran: cleanups, fixes, support of user-added operations
+ - RMA: MPI_Accumulate are applied in correct order.
+ - RMA:  MPI_Win_{complete/post} shouldn't miss messages anymore.
  - Better support for MPI_IN_PLACE
  - Support for MPI_Win attrs and keyvals.
  - Support MPI_Comm_group_create, MPI_Type_size_x

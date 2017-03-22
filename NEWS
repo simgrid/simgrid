@@ -5,11 +5,11 @@ __   _____ _ __ ___(_) ___  _ __   |___ / / | ___|
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_|____/
                (not released yet)
 
-The Ever Green Release.
+The Spring Release: continuous integration servers become green.
 
- * Continuous integration tasks are green (no more transient errors)
- * S4U pushed further, integrating more parts of SimDag.
- * Start converting the SMPI internals to C++ too. TBC.
+ * S4U: progress, integrating more parts of SimDag; New examples.
+ * SMPI: Support MPI 2.2; Convert internals to C++ (TBC).
+ * Java: Massive memleaks and performance issues fixed.
  * Plus the usual bug fixes, cleanups and documentation improvements
                     _               _____  _ _  _    _ ____  ___
 __   _____ _ __ ___(_) ___  _ __   |___ / / | || |  / | ___|/ _ \
