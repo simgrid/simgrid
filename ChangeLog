@@ -87,7 +87,7 @@ SimGrid (3.15) stable; urgency=low
  - A <cluster> can now be created with different speed values to represent pstates.
    see examples/platforms/energy_cluster.xml for an example.
 
- -- Wed Mar 22 15:36:09 CET 2017 -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Wed Mar 22 17:50:21 CET 2017 -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.14.159) stable; urgency=low
 
