@@ -91,13 +91,12 @@ also the tesh files in the example directories for details.
 @example examples/s4u/actions-storage/s4u_actions-storage.cpp
 @example examples/s4u/actor-create/s4u_actor-create.cpp
 @example examples/s4u/actor-create/s4u_actor-create_d.xml
-@example examples/s4u/actor-kill/actor-kill.cpp
+@example examples/s4u/actor-kill/s4u_actor-kill.cpp
 @example examples/s4u/actor-migration/s4u_actor-migration.cpp
 @example examples/s4u/actor-suspend/s4u_actor-suspend.cpp
 @example examples/s4u/app-token-ring/s4u_app-token-ring.cpp
 @example examples/s4u/app-masterworker/s4u_app-masterworker.cpp
 
-@example examples/s4u/launching/s4u_launching.cpp
 @example examples/s4u/mutex/s4u_mutex.cpp
 
 */
