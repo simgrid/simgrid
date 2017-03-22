@@ -48,7 +48,7 @@ public:
 class CpuL07Model : public CpuModel {
 public:
   CpuL07Model(HostL07Model *hmodel,lmm_system_t sys);
-  ~CpuL07Model();
+  ~CpuL07Model() = default;
 
   Cpu *createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core) override;
   HostL07Model *hostModel_;
@@ -57,7 +57,7 @@ public:
 class NetworkL07Model : public NetworkModel {
 public:
   NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys);
-  ~NetworkL07Model();
+  ~NetworkL07Model() = default;
   LinkImpl* createLink(const char* name, double bandwidth, double latency,
                        e_surf_link_sharing_policy_t policy) override;
 

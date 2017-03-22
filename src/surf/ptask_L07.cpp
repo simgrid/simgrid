@@ -53,7 +53,6 @@ CpuL07Model::CpuL07Model(HostL07Model *hmodel,lmm_system_t sys)
   {
     maxminSystem_ = sys;
   }
-CpuL07Model::~CpuL07Model() = default;
 
 NetworkL07Model::NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys)
   : NetworkModel()
@@ -62,8 +61,6 @@ NetworkL07Model::NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys)
     maxminSystem_ = sys;
     loopback_     = createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
   }
-NetworkL07Model::~NetworkL07Model() = default;
-
 
 double HostL07Model::nextOccuringEvent(double now)
 {
@@ -159,8 +156,11 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
   double latency = 0.0;
 
   this->hostList_->reserve(host_nb);
-  for (int i = 0; i<host_nb; i++)
+  for (int i = 0; i < host_nb; i++) {
     this->hostList_->push_back(host_list[i]);
+    if (flops_amount[i] > 0)
+      nb_used_host++;
+  }
 
   /* Compute the number of affected resources... */
   if(bytes_amount != nullptr) {
@@ -184,10 +184,6 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
 
     nb_link = affected_links.size();
   }
-
-  for (int i = 0; i < host_nb; i++)
-    if (flops_amount[i] > 0)
-      nb_used_host++;
 
   XBT_DEBUG("Creating a parallel task (%p) with %d hosts and %d unique links.", this, host_nb, nb_link);
   this->latency_ = latency;

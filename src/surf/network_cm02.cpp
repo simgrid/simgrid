@@ -167,9 +167,6 @@ NetworkCm02Model::NetworkCm02Model(void (*specificSolveFun)(lmm_system_t self))
   maxminSystem_->solve_fun = specificSolveFun;
 }
 
-
-NetworkCm02Model::~NetworkCm02Model() {}
-
 LinkImpl* NetworkCm02Model::createLink(const char* name, double bandwidth, double latency,
                                        e_surf_link_sharing_policy_t policy)
 {
