@@ -41,7 +41,7 @@ XBT_PUBLIC(void) tmgr_trace_event_unref(tmgr_trace_iterator_t *trace_event);
 XBT_PUBLIC(void) tmgr_finalize(void);
 
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_file(const char* filename);
-XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char* id, std::string, double periodicity);
+XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char* id, std::string input, double periodicity);
 
 SG_END_DECL()
 

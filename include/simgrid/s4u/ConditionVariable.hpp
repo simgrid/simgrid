@@ -35,7 +35,7 @@ XBT_PUBLIC_CLASS ConditionVariable
 private:
   friend s_smx_cond;
   smx_cond_t cond_;
-  ConditionVariable(smx_cond_t cond) : cond_(cond) {}
+  explicit ConditionVariable(smx_cond_t cond) : cond_(cond) {}
 public:
   ConditionVariable(ConditionVariable const&) = delete;
   ConditionVariable& operator=(ConditionVariable const&) = delete;

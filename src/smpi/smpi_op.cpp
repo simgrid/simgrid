@@ -190,6 +190,7 @@ static void replace_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 
 static void no_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
+  /* obviously a no-op */
 }
 
 #define CREATE_MPI_OP(name, func)                             \
