@@ -135,6 +135,7 @@ std::ifstream* surf_ifsopen(const char* name)
   if (__surf_is_absolute_file_path(name)) { /* don't mess with absolute file names */
     fs->open(name, std::ifstream::in);
   }
+
   /* search relative files in the path */
   for (auto path_elm : surf_path) {
     std::string buff = path_elm + FILE_DELIM + name;

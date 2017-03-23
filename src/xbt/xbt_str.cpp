@@ -461,25 +461,6 @@ char *xbt_str_join_array(const char *const *strs, const char *sep)
   return res;
 }
 
-/** @brief creates a new string containing what can be read on a fd */
-char *xbt_str_from_file(FILE * file)
-{
-  xbt_strbuff_t buff = xbt_strbuff_new();
-  char *res;
-  char bread[1024];
-  memset(bread, 0, 1024);
-
-  while (!feof(file)) {
-    int got = fread(bread, 1, 1023, file);
-    bread[got] = '\0';
-    xbt_strbuff_append(buff, bread);
-  }
-
-  res = buff->data;
-  xbt_strbuff_free_container(buff);
-  return res;
-}
-
 /** @brief Parse an integer out of a string, or raise an error
  *
  * The @a str is passed as argument to your @a error_msg, as follows:

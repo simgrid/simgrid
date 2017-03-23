@@ -9,19 +9,21 @@
 #include "xbt/log.h"
 #include "xbt/str.h"
 
-#include "src/surf/trace_mgr.hpp"
 #include "src/surf/surf_interface.hpp"
+#include "src/surf/trace_mgr.hpp"
 #include "surf_private.h"
 #include "xbt/RngStream.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <fstream>
 #include <math.h>
+#include <sstream>
 #include <unordered_map>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf, "Surf trace management");
 
-static std::unordered_map<const char *, simgrid::trace_mgr::trace*> trace_list;
+static std::unordered_map<const char*, simgrid::trace_mgr::trace*> trace_list;
 
 simgrid::trace_mgr::trace::trace()=default;
 simgrid::trace_mgr::trace::~trace()=default;
@@ -32,7 +34,7 @@ simgrid::trace_mgr::future_evt_set::~future_evt_set()
   xbt_heap_free(p_heap);
 }
 
-tmgr_trace_t tmgr_trace_new_from_string(const char *name, const char *input, double periodicity)
+tmgr_trace_t tmgr_trace_new_from_string(const char* name, std::string input, double periodicity)
 {
   int linecount = 0;
   tmgr_event_t last_event = nullptr;
@@ -53,13 +55,17 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *name, const char *input, dou
     if (sscanf(val.c_str(), "PERIODICITY " "%lg" "\n", &periodicity) == 1)
       continue;
 
-    xbt_assert(sscanf(val.c_str(), "%lg" " " "%lg" "\n", &event.delta, &event.value) == 2,
-        "%s:%d: Syntax error in trace\n%s", name, linecount, input);
+    xbt_assert(sscanf(val.c_str(), "%lg"
+                                   " "
+                                   "%lg"
+                                   "\n",
+                      &event.delta, &event.value) == 2,
+               "%s:%d: Syntax error in trace\n%s", name, linecount, input.c_str());
 
     if (last_event) {
       xbt_assert(last_event->delta <= event.delta,
-          "%s:%d: Invalid trace: Events must be sorted, but time %g > time %g.\n%s",
-          name, linecount, last_event->delta, event.delta, input);
+                 "%s:%d: Invalid trace: Events must be sorted, but time %g > time %g.\n%s", name, linecount,
+                 last_event->delta, event.delta, input.c_str());
 
       last_event->delta = event.delta - last_event->delta;
     } else {
@@ -86,13 +92,14 @@ tmgr_trace_t tmgr_trace_new_from_file(const char *filename)
   xbt_assert(filename && filename[0], "Cannot parse a trace from the null or empty filename");
   xbt_assert(trace_list.find(filename) == trace_list.end(), "Refusing to define trace %s twice", filename);
 
-  FILE *f = surf_fopen(filename, "r");
-  xbt_assert(f != nullptr, "Cannot open file '%s' (path=%s)", filename, (boost::join(surf_path, ":")).c_str());
+  std::ifstream* f = surf_ifsopen(filename);
+  xbt_assert(!f->fail(), "Cannot open file '%s' (path=%s)", filename, (boost::join(surf_path, ":")).c_str());
 
-  char *tstr = xbt_str_from_file(f);
-  fclose(f);
-  tmgr_trace_t trace = tmgr_trace_new_from_string(filename, tstr, 0.);
-  xbt_free(tstr);
+  std::stringstream buffer;
+  buffer << f->rdbuf();
+  tmgr_trace_t trace = tmgr_trace_new_from_string(filename, buffer.str(), 0.);
+
+  delete f;
 
   return trace;
 }
