@@ -99,9 +99,10 @@ extern int MSG_STORAGE_LEVEL;
 typedef xbt_dictelm_t msg_storage_t;
 
 struct msg_storage_priv  {
-  const char *hostname;
+  const char* name;
+  const char* hostname;
   sg_size_t size;
-  void *data;
+  void* data;
 };
 typedef struct msg_storage_priv  s_msg_storage_priv_t;
 typedef struct msg_storage_priv* msg_storage_priv_t;

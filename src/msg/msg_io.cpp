@@ -443,14 +443,14 @@ void __MSG_file_destroy(msg_file_priv_t file) {
 
 msg_storage_t __MSG_storage_create(smx_storage_t storage)
 {
-  const char* name                   = SIMIX_storage_get_name(storage);
   msg_storage_priv_t storage_private = xbt_new0(s_msg_storage_priv_t, 1);
 
+  storage_private->name     = SIMIX_storage_get_name(storage);
   storage_private->hostname = SIMIX_storage_get_host(storage);
   storage_private->size     = SIMIX_storage_get_size(storage);
 
-  xbt_lib_set(storage_lib,name,MSG_STORAGE_LEVEL,storage_private);
-  return xbt_lib_get_elm_or_null(storage_lib, name);
+  xbt_lib_set(storage_lib, storage_private->name, MSG_STORAGE_LEVEL, storage_private);
+  return xbt_lib_get_elm_or_null(storage_lib, storage_private->name);
 }
 
 /**
@@ -468,7 +468,8 @@ void __MSG_storage_destroy(msg_storage_priv_t storage) {
  */
 const char *MSG_storage_get_name(msg_storage_t storage) {
   xbt_assert((storage != nullptr), "Invalid parameters");
-  return SIMIX_storage_get_name(storage);
+  msg_storage_priv_t priv = MSG_storage_priv(storage);
+  return priv->name;
 }
 
 /** \ingroup msg_storage_management
