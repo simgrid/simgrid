@@ -1,3 +1,9 @@
+SimGrid (3.16) UNRELEASED
+
+
+
+ -- Release target: June 21 2017   -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+
 SimGrid (3.15) stable; urgency=low
 
  The Spring Release: continuous integration servers become green
