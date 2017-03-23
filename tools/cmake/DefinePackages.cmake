@@ -670,7 +670,7 @@ set(headers_to_install
   include/simgrid/s4u/Activity.hpp
   include/simgrid/s4u/Actor.hpp
   include/simgrid/s4u/comm.hpp
-  include/simgrid/s4u/conditionVariable.hpp
+  include/simgrid/s4u/ConditionVariable.hpp
   include/simgrid/s4u/engine.hpp  
   include/simgrid/s4u/file.hpp  
   include/simgrid/s4u/host.hpp  

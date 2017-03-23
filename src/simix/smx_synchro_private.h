@@ -6,7 +6,7 @@
 #ifndef SIMIX_SYNCHRO_PRIVATE_H
 #define SIMIX_SYNCHRO_PRIVATE_H
 
-#include "simgrid/s4u/conditionVariable.hpp"
+#include "simgrid/s4u/ConditionVariable.hpp"
 #include "xbt/swag.h"
 
 namespace simgrid {
