@@ -146,10 +146,12 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
       //  which becomes the new file size
       action->file_->size = action->file_->current_position;
 
-      sg_size_t *psize = xbt_new(sg_size_t,1);
-      *psize                  = action->file_->size;
-      xbt_dict_t content_dict = action->storage_->content_;
-      xbt_dict_set(content_dict, action->file_->name, psize, nullptr);
+      sg_size_t* psize = new sg_size_t;
+      *psize           = action->file_->size;
+      std::map<std::string, sg_size_t*>* content_dict = action->storage_->content_;
+      auto entry = content_dict->find(action->file_->name);
+      delete entry->second;
+      entry->second = psize;
     }
 
     action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
@@ -186,15 +188,15 @@ StorageAction *StorageN11::open(const char* mount, const char* path)
   XBT_DEBUG("\tOpen file '%s'",path);
 
   sg_size_t size;
-  sg_size_t* psize = (sg_size_t*)xbt_dict_get_or_null(content_, path);
+  sg_size_t* psize = nullptr;
   // if file does not exist create an empty file
-  if(psize)
-    size = *psize;
+  if (content_->find(path) != content_->end())
+    size = *(content_->at(path));
   else {
-    psize = xbt_new(sg_size_t,1);
-    size = 0;
+    psize  = new sg_size_t;
+    size   = 0;
     *psize = size;
-    xbt_dict_set(content_, path, psize, nullptr);
+    content_->insert({path, psize});
     XBT_DEBUG("File '%s' was not found, file created.",path);
   }
   surf_file_t file = xbt_new0(s_surf_file_t,1);

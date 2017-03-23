@@ -16,6 +16,7 @@ boost::unordered_map <std::string, Storage *> *Storage::storages_ = new boost::u
 Storage::Storage(std::string name, smx_storage_t inferior) :
     name_(name), pimpl_(inferior)
 {
+  size_ = SIMIX_storage_get_size(pimpl_);
   storages_->insert({name, this});
 }
 
@@ -49,7 +50,7 @@ sg_size_t Storage::sizeUsed() {
   return simcall_storage_get_used_size(pimpl_);
 }
 sg_size_t Storage::size() {
-  return SIMIX_storage_get_size(pimpl_);
+  return size_;
 }
 
 } /* namespace s4u */

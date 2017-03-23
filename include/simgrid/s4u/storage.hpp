@@ -54,6 +54,7 @@ private:
   static boost::unordered_map<std::string, Storage *> *storages_;
 
   std::string name_;
+  size_t size_;
   smx_storage_t pimpl_ = nullptr;
   void *userdata_ = nullptr;
 };

@@ -220,7 +220,7 @@ int HostImpl::unlink(surf_file_t fd)
 
     simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
     /* Check if the file is on this storage */
-    if (!xbt_dict_get_or_null(st->content_, fd->name)) {
+    if (st->content_->find(fd->name) == st->content_->end()) {
       XBT_WARN("File %s is not on disk %s. Impossible to unlink", fd->name, st->cname());
       return -1;
     } else {
@@ -228,7 +228,9 @@ int HostImpl::unlink(surf_file_t fd)
       st->usedSize_ -= fd->size;
 
       // Remove the file from storage
-      xbt_dict_remove(st->content_, fd->name);
+      sg_size_t* psize = st->content_->at(fd->name);
+      delete psize;
+      st->content_->erase(fd->name);
 
       xbt_free(fd->name);
       xbt_free(fd->mount);
@@ -265,7 +267,6 @@ sg_size_t HostImpl::fileTell(surf_file_t fd)
 
 int HostImpl::fileSeek(surf_file_t fd, sg_offset_t offset, int origin)
 {
-
   switch (origin) {
   case SEEK_SET:
     fd->current_position = offset;
@@ -285,13 +286,15 @@ int HostImpl::fileMove(surf_file_t fd, const char* fullpath)
 {
   /* Check if the new full path is on the same mount point */
   if (!strncmp((const char*)fd->mount, fullpath, strlen(fd->mount))) {
-    sg_size_t* psize = (sg_size_t*)xbt_dict_get_or_null(findStorageOnMountList(fd->mount)->content_, fd->name);
-    if (psize) { // src file exists
+    std::map<std::string, sg_size_t*>* content = findStorageOnMountList(fd->mount)->content_;
+    if (content->find(fd->name) != content->end()) { // src file exists
+      sg_size_t* psize     = content->at(std::string(fd->name));
       sg_size_t* new_psize = xbt_new(sg_size_t, 1);
       *new_psize           = *psize;
-      xbt_dict_remove(findStorageOnMountList(fd->mount)->content_, fd->name);
+      delete psize;
+      content->erase(fd->name);
       std::string path = std::string(fullpath).substr(strlen(fd->mount), strlen(fullpath));
-      xbt_dict_set(findStorageOnMountList(fd->mount)->content_, path.c_str(), new_psize, nullptr);
+      content->insert({path.c_str(), new_psize});
       XBT_DEBUG("Move file from %s to %s, size '%llu'", fd->name, fullpath, *psize);
       return 0;
     } else {

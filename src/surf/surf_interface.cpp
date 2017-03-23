@@ -16,6 +16,7 @@
 #include "src/simix/smx_host_private.h"
 #include "src/surf/HostImpl.hpp"
 #include "surf_private.h"
+#include <fstream>
 #include <vector>
 
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
@@ -127,6 +128,26 @@ double surf_get_clock()
 # define FILE_DELIM "/"         /* FIXME: move to better location */
 #endif
 
+std::ifstream* surf_ifsopen(const char* name)
+{
+  std::ifstream* fs = new std::ifstream();
+  xbt_assert(name);
+  if (__surf_is_absolute_file_path(name)) { /* don't mess with absolute file names */
+    fs->open(name, std::ifstream::in);
+  }
+  /* search relative files in the path */
+  for (auto path_elm : surf_path) {
+    std::string buff = path_elm + FILE_DELIM + name;
+    fs->open(buff.c_str(), std::ifstream::in);
+
+    if (!fs->fail()) {
+      XBT_DEBUG("Found file at %s", buff.c_str());
+      return fs;
+    }
+  }
+
+  return fs;
+}
 FILE *surf_fopen(const char *name, const char *mode)
 {
   char *buff;

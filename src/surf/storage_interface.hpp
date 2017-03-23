@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
+/* Copyright (c) 2004-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -7,8 +7,9 @@
 #include <xbt/base.h>
 #include <xbt/signal.hpp>
 
-#include "surf_interface.hpp"
 #include "src/surf/PropertyHolder.hpp"
+#include "surf_interface.hpp"
+#include <map>
 
 #ifndef STORAGE_INTERFACE_HPP_
 #define STORAGE_INTERFACE_HPP_
@@ -101,7 +102,7 @@ public:
   void turnOn() override;
   void turnOff() override;
 
-  xbt_dict_t content_;
+  std::map<std::string, sg_size_t*>* content_;
   char* contentType_;
   sg_size_t size_;
   sg_size_t usedSize_;
@@ -152,13 +153,6 @@ public:
   virtual xbt_dict_t getContent();
 
   /**
-   * @brief Get the size in bytes of the current Storage
-   *
-   * @return The size in bytes of the current Storage
-   */
-  virtual sg_size_t getSize();
-
-  /**
    * @brief Get the available size in bytes of the current Storage
    *
    * @return The available size in bytes of the current Storage
@@ -172,8 +166,7 @@ public:
    */
   virtual sg_size_t getUsedSize();
 
-
-  xbt_dict_t parseContent(const char *filename);
+  std::map<std::string, sg_size_t*>* parseContent(const char* filename);
 
   std::vector<StorageAction*> writeActions_;
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
+/* Copyright (c) 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -7,7 +7,10 @@
 #include "storage_interface.hpp"
 #include "surf_private.h"
 #include "xbt/file.h" /* xbt_getline */
+#include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <fstream>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf, "Logging specific to the SURF storage module");
 
@@ -64,7 +67,7 @@ Storage::Storage(Model* model, const char* name, lmm_system_t maxminSystem, doub
     , writeActions_(std::vector<StorageAction*>())
 {
   content_ = parseContent(content_name);
-  attach_ = xbt_strdup(attach);
+  attach_  = xbt_strdup(attach);
   turnOn();
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
   constraintRead_  = lmm_constraint_new(maxminSystem, this, bread);
@@ -73,41 +76,43 @@ Storage::Storage(Model* model, const char* name, lmm_system_t maxminSystem, doub
 
 Storage::~Storage(){
   storageDestructedCallbacks(this);
-  xbt_dict_free(&content_);
+  if (content_ != nullptr) {
+    for (auto entry : *content_)
+      delete entry.second;
+    delete content_;
+  }
   free(typeId_);
   free(contentType_);
   free(attach_);
 }
 
-xbt_dict_t Storage::parseContent(const char *filename)
+std::map<std::string, sg_size_t*>* Storage::parseContent(const char* filename)
 {
   usedSize_ = 0;
   if ((!filename) || (strcmp(filename, "") == 0))
     return nullptr;
 
-  xbt_dict_t parse_content = xbt_dict_new_homogeneous(xbt_free_f);
+  std::map<std::string, sg_size_t*>* parse_content = new std::map<std::string, sg_size_t*>();
 
-  FILE *file =  surf_fopen(filename, "r");
-  xbt_assert(file, "Cannot open file '%s' (path=%s)", filename, (boost::join(surf_path, ":")).c_str());
+  std::ifstream* fs = surf_ifsopen(filename);
 
-  char *line = nullptr;
-  size_t len = 0;
-  ssize_t read;
-  char path[1024];
-  sg_size_t size;
-
-  while ((read = xbt_getline(&line, &len, file)) != -1) {
-    if (read){
-      xbt_assert(sscanf(line,"%s %llu", path, &size) == 2, "Parse error in %s: %s",filename,line);
+  std::string line;
+  std::vector<std::string> tokens;
+  do {
+    std::getline(*fs, line);
+    boost::trim(line);
+    if (line.length() > 0) {
+      boost::split(tokens, line, boost::is_any_of(" \t"), boost::token_compress_on);
+      xbt_assert(tokens.size() == 2, "Parse error in %s: %s", filename, line.c_str());
+      sg_size_t size = std::stoull(tokens.at(1));
 
       usedSize_ += size;
-      sg_size_t *psize = xbt_new(sg_size_t, 1);
+      sg_size_t* psize = new sg_size_t;
       *psize = size;
-      xbt_dict_set(parse_content,path,psize,nullptr);
+      parse_content->insert({tokens.front(), psize});
     }
-  }
-  free(line);
-  fclose(file);
+  } while (!fs->eof());
+  delete fs;
   return parse_content;
 }
 
@@ -140,18 +145,11 @@ xbt_dict_t Storage::getContent()
   /* For the moment this action has no cost, but in the future we could take in account access latency of the disk */
 
   xbt_dict_t content_dict = xbt_dict_new_homogeneous(nullptr);
-  xbt_dict_cursor_t cursor = nullptr;
-  char *file;
-  sg_size_t *psize;
 
-  xbt_dict_foreach(content_, cursor, file, psize){
-    xbt_dict_set(content_dict,file,psize,nullptr);
+  for (auto entry : *content_) {
+    xbt_dict_set(content_dict, entry.first.c_str(), entry.second, nullptr);
   }
   return content_dict;
-}
-
-sg_size_t Storage::getSize(){
-  return size_;
 }
 
 sg_size_t Storage::getFreeSize(){

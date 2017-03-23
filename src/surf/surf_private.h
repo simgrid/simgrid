@@ -33,6 +33,7 @@ typedef enum {
 /* Generic functions common to all models */
 
 XBT_PRIVATE FILE *surf_fopen(const char *name, const char *mode);
+XBT_PRIVATE std::ifstream* surf_ifsopen(const char* name);
 
 /* The __surf_is_absolute_file_path() returns 1 if
  * file_path is a absolute file path, in the other
