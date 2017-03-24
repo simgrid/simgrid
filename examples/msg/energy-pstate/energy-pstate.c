@@ -37,6 +37,8 @@ static int dvfs(int argc, char *argv[])
 
   // Change power peak
   int new_pstate = 2;
+  xbt_assert(new_pstate < nb, "Cannot set the host %s at pstate %d because it only provides %d pstates.",
+             MSG_host_get_name(host), new_pstate, nb);
 
   double peak_at = MSG_host_get_power_peak_at(host, new_pstate);
   XBT_INFO("Changing power peak value to %f (at index %d)", peak_at, new_pstate);
