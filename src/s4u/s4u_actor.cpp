@@ -52,6 +52,11 @@ void Actor::setAutoRestart(bool autorestart) {
   simcall_process_auto_restart_set(pimpl_,autorestart);
 }
 
+void Actor::onExit(int_f_pvoid_pvoid_t fun, void* data)
+{
+  simcall_process_on_exit(pimpl_, fun, data);
+}
+
 void Actor::migrate(Host* new_host)
 {
   simcall_process_set_host(pimpl_, new_host);
@@ -131,8 +136,14 @@ ActorPtr Actor::byPid(int pid)
     return ActorPtr();
 }
 
-void Actor::killAll() {
+void Actor::killAll()
+{
   simcall_process_killall(1);
+}
+
+void Actor::killAll(int resetPid)
+{
+  simcall_process_killall(resetPid);
 }
 
 // ***** this_actor *****
@@ -207,6 +218,11 @@ void resume()
 void kill()
 {
   simcall_process_kill(SIMIX_process_self());
+}
+
+void onExit(int_f_pvoid_pvoid_t fun, void* data)
+{
+  simcall_process_on_exit(SIMIX_process_self(), fun, data);
 }
 
 void migrate(Host* new_host)

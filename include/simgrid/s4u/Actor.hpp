@@ -220,6 +220,12 @@ public:
 
   /** If set to true, the actor will automatically restart when its host reboots */
   void setAutoRestart(bool autorestart);
+
+  /** Add a function to the list of "on_exit" functions for the current actor. The on_exit functions are the functions
+   * executed when your actor is killed. You should use them to free the data used by your process.
+   */
+  void onExit(int_f_pvoid_pvoid_t fun, void* data);
+
   /** Sets the time at which that actor should be killed */
   void setKillTime(double time);
   /** Retrieves the time at which that actor will be killed (or -1 if not set) */
@@ -249,6 +255,7 @@ public:
 
   /** Ask kindly to all actors to die. Only the issuer will survive. */
   static void killAll();
+  static void killAll(int resetPid);
 
   /** Returns the internal implementation of this actor */
   simix::ActorImpl* getImpl();
@@ -316,6 +323,9 @@ namespace this_actor {
 
   /** @brief kill the actor. */
   XBT_PUBLIC(void) kill();
+
+  /** @brief Add a function to the list of "on_exit" functions. */
+  XBT_PUBLIC(void) onExit(int_f_pvoid_pvoid_t fun, void* data);
 
   /** @brief Migrate the actor to a new host. */
   XBT_PUBLIC(void) migrate(Host* new_host);

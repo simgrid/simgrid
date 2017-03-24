@@ -1,0 +1,27 @@
+$ ./pid ${srcdir:=.}/../../../examples/platforms/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+> [  0.000000] (sendpid@Tremblay) Sending pid of "1".
+> [  0.000000] (sendpid@Tremblay) Sending pid of "2".
+> [  0.000000] (sendpid@Tremblay) Sending pid of "3".
+> [  0.000402] (killall@Tremblay) Killing process "1".
+> [  0.000402] (sendpid@Tremblay) Send of pid "1" done.
+> [  0.000402] (sendpid@Tremblay) Process "1" killed.
+> [  0.000804] (sendpid@Tremblay) Send of pid "2" done.
+> [  0.000804] (killall@Tremblay) Killing process "2".
+> [  0.000804] (sendpid@Tremblay) Process "2" killed.
+> [  0.001206] (sendpid@Tremblay) Send of pid "3" done.
+> [  0.001206] (killall@Tremblay) Killing process "3".
+> [  0.001206] (sendpid@Tremblay) Process "3" killed.
+
+$ ./pid ${srcdir:=.}/../../../examples/platforms/small_platform.xml 2 "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+> [  0.000000] (sendpid@Tremblay) Sending pid of "2".
+> [  0.000000] (sendpid@Tremblay) Sending pid of "3".
+> [  0.000000] (sendpid@Tremblay) Sending pid of "4".
+> [  0.000402] (killall@Tremblay) Killing process "2".
+> [  0.000402] (sendpid@Tremblay) Send of pid "2" done.
+> [  0.000402] (sendpid@Tremblay) Process "2" killed.
+> [  0.000804] (sendpid@Tremblay) Send of pid "3" done.
+> [  0.000804] (killall@Tremblay) Killing process "3".
+> [  0.000804] (sendpid@Tremblay) Process "3" killed.
+> [  0.001206] (sendpid@Tremblay) Send of pid "4" done.
+> [  0.001206] (killall@Tremblay) Killing process "4".
+> [  0.001206] (sendpid@Tremblay) Process "4" killed.
