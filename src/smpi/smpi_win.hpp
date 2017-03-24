@@ -34,13 +34,17 @@ class Win : public F2C, public Keyval {
   std::list<int> lockers_;
   int rank_; // to identify owner for barriers in MPI_COMM_WORLD
   int mode_; // exclusive or shared lock
+  int allocated_;
 
 public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;
   static int keyval_id_;
 
-  Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm);
+  Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, int allocated = 0);
+  Win(MPI_Info info, MPI_Comm comm) : Win(MPI_BOTTOM, 0, 1, info, comm) {};
   ~Win();
+  int attach (void *base, MPI_Aint size);
+  int detach (void *base);
   void get_name( char* name, int* length);
   void get_group( MPI_Group* group);
   void set_name( char* name);
@@ -48,6 +52,8 @@ public:
   int start(MPI_Group group, int assert);
   int post(MPI_Group group, int assert);
   int complete();
+  MPI_Info info();
+  void set_info( MPI_Info info);
   int wait();
   MPI_Aint size();
   void* base();

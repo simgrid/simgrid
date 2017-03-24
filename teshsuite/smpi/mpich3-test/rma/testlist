@@ -14,7 +14,7 @@ transpose1 2
 transpose2 2
 transpose3 2
 #Needs MPI_Win_allocate
-#transpose3_shm 2
+transpose3_shm 2
 transpose5 2
 transpose6 1
 transpose7 2
@@ -95,7 +95,7 @@ manyrma3 2
 #win_shared_noncontig 4 mpiversion=3.0
 #win_shared_noncontig_put 4 mpiversion=3.0
 #win_zero 4 mpiversion=3.0
-#win_dynamic_acc 4 mpiversion=3.0
+win_dynamic_acc 4
 #get_acc_local 1 mpiversion=3.0
 #linked_list 4 mpiversion=3.0
 #linked_list_fop 4 mpiversion=3.0
@@ -117,7 +117,7 @@ manyrma3 2
 #flush 4 mpiversion=3.0
 #reqops 4 mpiversion=3.0
 #req_example 4 mpiversion=3.0
-#win_info 4 mpiversion=3.0
+win_info 4
 #linked_list_lockall 4 mpiversion=3.0
 #pscw_ordering 4 mpiversion=3.0
 #linked_list_bench_lock_all 4 mpiversion=3.0

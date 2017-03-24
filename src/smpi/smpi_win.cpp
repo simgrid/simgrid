@@ -14,7 +14,7 @@ namespace smpi{
 std::unordered_map<int, smpi_key_elem> Win::keyvals_;
 int Win::keyval_id_=0;
 
-Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm): base_(base), size_(size), disp_unit_(disp_unit), assert_(0), info_(info), comm_(comm){
+Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, int allocated): base_(base), size_(size), disp_unit_(disp_unit), assert_(0), info_(info), comm_(comm), allocated_(allocated){
   int comm_size = comm->size();
   rank_      = comm->rank();
   XBT_DEBUG("Creating window");
@@ -69,7 +69,24 @@ Win::~Win(){
   xbt_mutex_destroy(mut_);
   xbt_mutex_destroy(lock_mut_);
 
+  if(allocated_ !=0)
+    xbt_free(base_);
+
   cleanup_attr<Win>();
+}
+
+int Win::attach (void *base, MPI_Aint size){
+  if (!(base_ == MPI_BOTTOM || base_ == 0))
+    return MPI_ERR_ARG;
+  base_=0;//actually the address will be given in the RMA calls, as being the disp.
+  size_+=size;
+  return MPI_SUCCESS;
+}
+
+int Win::detach (void *base){
+  base_=MPI_BOTTOM;
+  size_=-1;
+  return MPI_SUCCESS;
 }
 
 void Win::get_name(char* name, int* length){
@@ -90,6 +107,13 @@ void Win::get_group(MPI_Group* group){
   }
 }
 
+MPI_Info Win::info(){
+  if(info_== MPI_INFO_NULL)
+    info_ = new Info();
+  info_->ref();
+  return info_;
+}
+
 int Win::rank(){
   return rank_;
 }
@@ -106,6 +130,11 @@ int Win::disp_unit(){
   return disp_unit_;
 }
 
+void Win::set_info(MPI_Info info){
+  if(info_!= MPI_INFO_NULL)
+    info->ref();
+  info_=info;
+}
 
 void Win::set_name(char* name){
   name_ = xbt_strdup(name);

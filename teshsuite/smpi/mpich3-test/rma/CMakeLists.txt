@@ -12,8 +12,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 
   foreach(file accfence1 accfence2_am accfence2 accpscw1 allocmem epochtest getfence1 getgroup manyrma3 nullpscw lockcontention lockopts contig_displ
           putfence1 putfidx putpscw1 test1_am test1 test1_dt test2_am test2 test3 test4 test5_am test5 transpose1 transpose2 lockcontention2
-          transpose3 transpose4 transpose5 transpose6 transpose7 window_creation selfrma locknull
-          at_complete  acc-pairtype manyget large-small-acc lock_dt
+          transpose3 transpose4 transpose5 transpose6 transpose7 window_creation selfrma locknull win_info
+          at_complete  acc-pairtype manyget large-small-acc lock_dt win_dynamic_acc
           lock_nested winname attrorderwin baseattrwin fkeyvalwin strided_acc_indexed strided_getacc_indexed
      strided_acc_onelock strided_get_indexed strided_putget_indexed contention_put contention_putget)
     # not compiled files: acc-loc adlb_mimic1  badrma  compare_and_swap contention_put
@@ -23,7 +23,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
     #  manyrma2 mcs-mutex mixedsync mutex_bench lockcontention3
     # pscw_ordering put_base put_bottom req_example reqops rmanull rmazero rma-contig selfrma  
     # strided_getacc_indexed_shared 
-    # win_dynamic_acc win_flavors win_info  win_shared win_shared_noncontig win_shared_noncontig_put 
+    # win_flavors win_shared win_shared_noncontig win_shared_noncontig_put 
     # win_large_shm win_zero wintest get-struct atomic_rmw_fop atomic_rmw_gacc rget-unlock atomic_get atomic_rmw_cas
     # win_shared_zerobyte aint derived-acc-flush_local large-acc-flush_local lockall_dt lockall_dt_flushall
     # lockall_dt_flushlocalall lockall_dt_flushlocal lock_contention_dt  lock_dt_flush lock_dt_flushlocal 
@@ -33,6 +33,10 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
     target_link_libraries(${file} simgrid mtest_c)
     set_target_properties(${file} PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
   endforeach()
+
+    add_executable(transpose3_shm transpose3.c)
+    target_link_libraries(transpose3_shm simgrid mtest_c)
+    set_target_properties(transpose3_shm PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS} -DUSE_WIN_ALLOCATE")
 endif()
 
 if (enable_smpi_MPICH3_testsuite AND HAVE_RAW_CONTEXTS)

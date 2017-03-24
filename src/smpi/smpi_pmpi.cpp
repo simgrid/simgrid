@@ -2451,6 +2451,67 @@ int PMPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MP
   return retval;
 }
 
+int PMPI_Win_allocate( MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, void *base, MPI_Win *win){
+  int retval = 0;
+  smpi_bench_end();
+  if (comm == MPI_COMM_NULL) {
+    retval= MPI_ERR_COMM;
+  }else if (disp_unit <= 0 || size < 0 ){
+    retval= MPI_ERR_OTHER;
+  }else{
+    void* ptr = xbt_malloc(size);
+    if(ptr==nullptr)
+      return MPI_ERR_NO_MEM;
+    *static_cast<void**>(base) = ptr;
+    *win = new simgrid::smpi::Win( ptr, size, disp_unit, info, comm,1);
+    retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Win_create_dynamic( MPI_Info info, MPI_Comm comm, MPI_Win *win){
+  int retval = 0;
+  smpi_bench_end();
+  if (comm == MPI_COMM_NULL) {
+    retval= MPI_ERR_COMM;
+  }else{
+    *win = new simgrid::smpi::Win(info, comm);
+    retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Win_attach(MPI_Win win, void *base, MPI_Aint size){
+  int retval = 0;
+  smpi_bench_end();
+  if(win == MPI_WIN_NULL){
+    retval = MPI_ERR_WIN;
+  } else if ((base == nullptr && size != 0) || size < 0 ){
+    retval= MPI_ERR_OTHER;
+  }else{
+    retval = win->attach(base, size);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Win_detach(MPI_Win win,  void *base){
+  int retval = 0;
+  smpi_bench_end();
+  if(win == MPI_WIN_NULL){
+    retval = MPI_ERR_WIN;
+  } else if (base == nullptr){
+    retval= MPI_ERR_OTHER;
+  }else{
+    retval = win->detach(base);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+
 int PMPI_Win_free( MPI_Win* win){
   int retval = 0;
   smpi_bench_end();
@@ -2484,6 +2545,26 @@ int PMPI_Win_get_name(MPI_Win  win, char * name, int* len)
     return MPI_ERR_ARG;
   } else {
     win->get_name(name, len);
+    return MPI_SUCCESS;
+  }
+}
+
+int PMPI_Win_get_info(MPI_Win  win, MPI_Info* info)
+{
+  if (win == MPI_WIN_NULL)  {
+    return MPI_ERR_WIN;
+  } else {
+    *info = win->info();
+    return MPI_SUCCESS;
+  }
+}
+
+int PMPI_Win_set_info(MPI_Win  win, MPI_Info info)
+{
+  if (win == MPI_WIN_NULL)  {
+    return MPI_ERR_TYPE;
+  } else {
+    win->set_info(info);
     return MPI_SUCCESS;
   }
 }

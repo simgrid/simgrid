@@ -31,13 +31,13 @@ int main(int argc, char **argv)
     /* Test#1: setting a valid key at window-create time */
 
     MPI_Info_create(&info_in);
-    MPI_Info_set(info_in, "no_locks", "true");
+    MPI_Info_set(info_in, (char *)"no_locks", (char *)"true");
 
     MPI_Win_allocate(sizeof(int), sizeof(int), info_in, MPI_COMM_WORLD, &base, &win);
 
     MPI_Win_get_info(win, &info_out);
 
-    MPI_Info_get(info_out, "no_locks", MPI_MAX_INFO_VAL, buf, &flag);
+    MPI_Info_get(info_out, (char *)"no_locks", MPI_MAX_INFO_VAL, buf, &flag);
     if (!flag || strncmp(buf, "true", strlen("true")) != 0) {
         if (!flag)
             printf("%d: no_locks is not defined\n", rank);
@@ -58,13 +58,13 @@ int main(int argc, char **argv)
     /* Test#2: setting and getting invalid key */
 
     MPI_Info_create(&info_in);
-    MPI_Info_set(info_in, invalid_key, "true");
+    MPI_Info_set(info_in, invalid_key, (char *)"true");
 
     MPI_Win_set_info(win, info_in);
     MPI_Win_get_info(win, &info_out);
 
     MPI_Info_get(info_out, invalid_key, MPI_MAX_INFO_VAL, buf, &flag);
-#ifndef USE_STRICT_MPI
+#ifdef USE_STRICT_MPI
     /* Check if our invalid key was ignored.  Note, this check's MPICH's
      * behavior, but this behavior may not be required for a standard
      * conforming MPI implementation. */
@@ -80,12 +80,12 @@ int main(int argc, char **argv)
     /* Test#3: setting info key "no_lock" to false and getting the key */
 
     MPI_Info_create(&info_in);
-    MPI_Info_set(info_in, "no_locks", "false");
+    MPI_Info_set(info_in, (char *)"no_locks", (char *)"false");
 
     MPI_Win_set_info(win, info_in);
     MPI_Win_get_info(win, &info_out);
 
-    MPI_Info_get(info_out, "no_locks", MPI_MAX_INFO_VAL, buf, &flag);
+    MPI_Info_get(info_out, (char *)"no_locks", MPI_MAX_INFO_VAL, buf, &flag);
     if (!flag || strncmp(buf, "false", strlen("false")) != 0) {
         if (!flag)
             printf("%d: no_locks is not defined\n", rank);
@@ -102,12 +102,12 @@ int main(int argc, char **argv)
     /* Test#4: setting info key "no_lock" to true and getting the key */
 
     MPI_Info_create(&info_in);
-    MPI_Info_set(info_in, "no_locks", "true");
+    MPI_Info_set(info_in, (char *)"no_locks", (char *)"true");
 
     MPI_Win_set_info(win, info_in);
     MPI_Win_get_info(win, &info_out);
 
-    MPI_Info_get(info_out, "no_locks", MPI_MAX_INFO_VAL, buf, &flag);
+    MPI_Info_get(info_out, (char *)"no_locks", MPI_MAX_INFO_VAL, buf, &flag);
     if (!flag || strncmp(buf, "true", strlen("true")) != 0) {
         if (!flag)
             printf("%d: no_locks is not defined\n", rank);
@@ -125,19 +125,19 @@ int main(int argc, char **argv)
 
     MPI_Win_get_info(win, &info_out);
 
-    MPI_Info_get(info_out, "accumulate_ordering", MPI_MAX_INFO_VAL, buf, &flag);
+    MPI_Info_get(info_out, (char *)"accumulate_ordering", MPI_MAX_INFO_VAL, buf, &flag);
     if (flag && VERBOSE)
         printf("%d: accumulate_ordering = %s\n", rank, buf);
 
-    MPI_Info_get(info_out, "accumulate_ops", MPI_MAX_INFO_VAL, buf, &flag);
+    MPI_Info_get(info_out, (char *)"accumulate_ops", MPI_MAX_INFO_VAL, buf, &flag);
     if (flag && VERBOSE)
         printf("%d: accumulate_ops = %s\n", rank, buf);
 
-    MPI_Info_get(info_out, "same_size", MPI_MAX_INFO_VAL, buf, &flag);
+    MPI_Info_get(info_out, (char *)"same_size", MPI_MAX_INFO_VAL, buf, &flag);
     if (flag && VERBOSE)
         printf("%d: same_size = %s\n", rank, buf);
 
-    MPI_Info_get(info_out, "alloc_shm", MPI_MAX_INFO_VAL, buf, &flag);
+    MPI_Info_get(info_out, (char *)"alloc_shm", MPI_MAX_INFO_VAL, buf, &flag);
     if (flag && VERBOSE)
         printf("%d: alloc_shm = %s\n", rank, buf);
 
