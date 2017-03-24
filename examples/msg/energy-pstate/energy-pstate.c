@@ -19,7 +19,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Pstate properties test");
 static int dvfs(int argc, char *argv[])
 {
   double workload = 100E6;
-  int new_pstate  = 2;
   msg_host_t host = MSG_host_self();
 
   int nb = MSG_host_get_nb_pstates(host);
@@ -37,10 +36,7 @@ static int dvfs(int argc, char *argv[])
   XBT_INFO("Task1 simulation time: %e", task_time);
 
   // Change power peak
-  if ((new_pstate >= nb) || (new_pstate < 0)) {
-    XBT_INFO("Cannot set pstate %d, host supports only %d pstates", new_pstate, nb);
-    return 0;
-  }
+  int new_pstate = 2;
 
   double peak_at = MSG_host_get_power_peak_at(host, new_pstate);
   XBT_INFO("Changing power peak value to %f (at index %d)", peak_at, new_pstate);
