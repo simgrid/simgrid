@@ -78,7 +78,7 @@ Storage::~Storage(){
   storageDestructedCallbacks(this);
   if (content_ != nullptr) {
     for (auto entry : *content_)
-      delete entry.second;
+      free(entry.second);
     delete content_;
   }
   free(typeId_);
