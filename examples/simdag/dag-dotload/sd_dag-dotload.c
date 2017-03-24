@@ -73,7 +73,8 @@ int main(int argc, char **argv)
   xbt_free(hosts);
 
   XBT_INFO("------------------- Run the schedule ---------------------------");
-  SD_simulate(-1);
+  xbt_dynar_t changed_tasks = SD_simulate(-1);
+  xbt_dynar_free(&changed_tasks);
 
   XBT_INFO("------------------- Produce the trace file---------------------------");
   XBT_INFO("Producing the trace of the run into %s", basename(tracefilename));
