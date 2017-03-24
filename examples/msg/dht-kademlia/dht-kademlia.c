@@ -280,7 +280,6 @@ unsigned int ping(node_t node, unsigned int id_to_ping)
   char mailbox[MAILBOX_NAME_SIZE];
   snprintf(mailbox,MAILBOX_NAME_SIZE, "%d", id_to_ping);
 
-  unsigned int destination_found = 0;
   double timeout = MSG_get_clock() + ping_timeout;
 
   msg_task_t ping_task = task_new_ping(node->id, node->mailbox, MSG_host_get_name(MSG_host_self()));
@@ -307,24 +306,21 @@ unsigned int ping(node_t node, unsigned int id_to_ping)
       if (data->type == TASK_PING_ANSWER && id_to_ping == data->sender_id) {
         XBT_VERB("Ping to %s succeeded", mailbox);
         node_routing_table_update(node, data->sender_id);
-        destination_found = 1;
         task_free(task_received);
+        return 1; // Destination found, ping succeeded!
       } else {
         //If it's not our answer, we answer the query anyway.
         handle_task(node, task_received);
       }
     }
-  } while (destination_found == 0 && MSG_get_clock() < timeout);
+  } while (MSG_get_clock() < timeout);
 
   if (MSG_get_clock() >= timeout) {
     XBT_DEBUG("Ping to %s has timeout.", mailbox);
     return 0;
   }
-  if (destination_found == -1) {
-    XBT_DEBUG("It seems that %s is offline...", mailbox);
-    return 0;
-  }
-  return 1;
+  XBT_DEBUG("It seems that %s is offline...", mailbox);
+  return -1;
 }
 
 /** @brief Does a pseudo-random lookup for someone in the system

@@ -144,7 +144,7 @@ unsigned int answer_contains(answer_t answer, unsigned int id)
   */
 unsigned int answer_destination_found(answer_t answer)
 {
-  if (xbt_dynar_length(answer->nodes) < 1) {
+  if (xbt_dynar_is_empty(answer->nodes)) {
     return 0;
   }
   node_contact_t contact_tail = xbt_dynar_get_as(answer->nodes, 0, node_contact_t);
