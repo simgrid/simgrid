@@ -289,7 +289,7 @@ int HostImpl::fileMove(surf_file_t fd, const char* fullpath)
     std::map<std::string, sg_size_t*>* content = findStorageOnMountList(fd->mount)->content_;
     if (content->find(fd->name) != content->end()) { // src file exists
       sg_size_t* psize     = content->at(std::string(fd->name));
-      sg_size_t* new_psize = xbt_new(sg_size_t, 1);
+      sg_size_t* new_psize = new sg_size_t;
       *new_psize           = *psize;
       delete psize;
       content->erase(fd->name);
