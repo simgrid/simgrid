@@ -235,10 +235,13 @@ public:
   double killTime();
 
   void migrate(Host * new_host);
+
   /** Ask the actor to die.
    *
-   * It will only notice your request when doing a simcall next time (a communication or similar).
-   * SimGrid sometimes have issues when you kill actors that are currently communicating and such.
+   * Any blocking activity will be canceled, and it will be rescheduled to free its memory.
+   * Being killed is not something that actors can defer or avoid.
+   *
+   * SimGrid still have sometimes issues when you kill actors that are currently communicating and such.
    * Still. Please report any bug that you may encounter with a minimal working example.
    */
   void kill();
