@@ -50,8 +50,8 @@ transpose4 2
 contig_displ 1
 test1_am 2
 test2_am 2
-#test3_am 2
-#test4_am 2
+test3_am 2
+test4_am 2
 test5_am 2
 #fetchandadd_am 7
 #fetchandadd_tree_am 7

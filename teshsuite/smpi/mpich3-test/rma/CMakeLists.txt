@@ -11,7 +11,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
   foreach(file accfence1 accfence2_am accfence2 accpscw1 allocmem epochtest getfence1 getgroup manyrma3 nullpscw lockcontention lockopts contig_displ
-          putfence1 putfidx putpscw1 test1_am test1 test1_dt test2_am test2 test3 test4 test5_am test5 transpose1 transpose2 lockcontention2
+          putfence1 putfidx putpscw1 test1_am test1 test1_dt test2_am test2 test3 test3_am test4 test4_am test5_am test5 transpose1 transpose2 lockcontention2
           transpose3 transpose4 transpose5 transpose6 transpose7 window_creation selfrma locknull win_info
           at_complete  acc-pairtype manyget large-small-acc lock_dt win_dynamic_acc
           lock_nested winname attrorderwin baseattrwin fkeyvalwin strided_acc_indexed strided_getacc_indexed
