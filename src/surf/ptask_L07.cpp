@@ -96,7 +96,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
       } else {
         action->latency_ = 0.0;
       }
-      if ((action->latency_ == 0.0) && (action->isSuspended() == 0)) {
+      if ((action->latency_ <= 0.0) && (action->isSuspended() == 0)) {
         action->updateBound();
         lmm_update_variable_weight(maxminSystem_, action->getVariable(), 1.0);
       }
@@ -105,7 +105,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
            action, action->getRemains(), lmm_variable_getvalue(action->getVariable()) * delta);
     action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
 
-    if (action->getMaxDuration() != NO_MAX_DURATION)
+    if (action->getMaxDuration() > NO_MAX_DURATION)
       action->updateMaxDuration(delta);
 
     XBT_DEBUG("Action (%p) : remains (%g).", action, action->getRemains());
@@ -117,7 +117,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
      */
 
     if (((action->getRemains() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||
-        ((action->getMaxDuration() != NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
+        ((action->getMaxDuration() > NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
       action->finish();
       action->setState(Action::State::done);
     } else {
@@ -407,7 +407,7 @@ void L07Action::updateBound()
   }
   double lat_bound = sg_tcp_gamma / (2.0 * lat_current);
   XBT_DEBUG("action (%p) : lat_bound = %g", this, lat_bound);
-  if ((latency_ == 0.0) && (suspended_ == 0)) {
+  if ((latency_ <= 0.0) && (suspended_ == 0)) {
     if (rate_ < 0)
       lmm_update_variable_bound(getModel()->getMaxminSystem(), getVariable(), lat_bound);
     else

@@ -455,7 +455,7 @@ double Model::nextOccuringEventLazy(double now)
   while(!modifiedSet_->empty()) {
     Action *action = &(modifiedSet_->front());
     modifiedSet_->pop_front();
-    int max_dur_flag = 0;
+    bool max_dur_flag = false;
 
     if (action->getStateSet() != runningActionSet_)
       continue;
@@ -479,11 +479,11 @@ double Model::nextOccuringEventLazy(double now)
       min = now + time_to_completion; // when the task will complete if nothing changes
     }
 
-    if ((action->getMaxDuration() != NO_MAX_DURATION) &&
+    if ((action->getMaxDuration() > NO_MAX_DURATION) &&
         (min == -1 || action->getStartTime() + action->getMaxDuration() < min)) {
       // when the task will complete anyway because of the deadline if any
       min          = action->getStartTime() + action->getMaxDuration();
-      max_dur_flag = 1;
+      max_dur_flag = true;
     }
 
 
@@ -495,9 +495,9 @@ double Model::nextOccuringEventLazy(double now)
 
     if (min != -1) {
       action->heapUpdate(actionHeap_, min, max_dur_flag ? MAX_DURATION : NORMAL);
-      XBT_DEBUG("Insert at heap action(%p) min %f now %f", action, min,
-                now);
-    } else DIE_IMPOSSIBLE;
+      XBT_DEBUG("Insert at heap action(%p) min %f now %f", action, min, now);
+    } else
+      DIE_IMPOSSIBLE;
   }
 
   //hereafter must have already the min value for this resource model
@@ -705,7 +705,7 @@ void Action::setBound(double bound)
   if (variable_)
     lmm_update_variable_bound(getModel()->getMaxminSystem(), variable_, bound);
 
-  if (getModel()->getUpdateMechanism() == UM_LAZY && getLastUpdate()!=surf_get_clock())
+  if (getModel()->getUpdateMechanism() == UM_LAZY && getLastUpdate() != surf_get_clock())
     heapRemove(getModel()->getActionHeap());
   XBT_OUT();
 }
@@ -718,7 +718,7 @@ double Action::getStartTime()
 double Action::getFinishTime()
 {
   /* keep the function behavior, some models (cpu_ti) change the finish time before the action end */
-  return remains_ == 0 ? finishTime_ : -1;
+  return remains_ <= 0 ? finishTime_ : -1;
 }
 
 void Action::setData(void* data)
