@@ -218,6 +218,9 @@ public:
   /** Resume a suspended process by resuming the task on which it was waiting for the completion. */
   void resume();
 
+  /** Returns true if the process is suspended. */
+  int isSuspended();
+
   /** If set to true, the actor will automatically restart when its host reboots */
   void setAutoRestart(bool autorestart);
 
@@ -320,6 +323,8 @@ namespace this_actor {
 
   /** @brief Resume the actor. */
   XBT_PUBLIC(void) resume();
+
+  XBT_PUBLIC(int) isSuspended();
 
   /** @brief kill the actor. */
   XBT_PUBLIC(void) kill();

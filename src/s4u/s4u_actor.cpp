@@ -13,7 +13,7 @@
 
 #include "src/kernel/context/Context.hpp"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor,"S4U actors");
+XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor, "S4U actors");
 
 namespace simgrid {
 namespace s4u {
@@ -95,6 +95,11 @@ void Actor::suspend()
 void Actor::resume()
 {
   simcall_process_resume(pimpl_);
+}
+
+int Actor::isSuspended()
+{
+  return simcall_process_is_suspended(pimpl_);
 }
 
 void Actor::setKillTime(double time) {
@@ -213,6 +218,11 @@ void suspend()
 void resume()
 {
   simcall_process_resume(SIMIX_process_self());
+}
+
+int isSuspended()
+{
+  return simcall_process_is_suspended(SIMIX_process_self());
 }
 
 void kill()

@@ -128,6 +128,20 @@ int Host::pstatesCount() const {
 }
 
 /**
+ * \brief Return the list of actors attached to an host.
+ *
+ * \param whereto a vector in which we should push actors living on that host
+ */
+void Host::actorList(std::vector<ActorPtr>* whereto)
+{
+  smx_actor_t actor = NULL;
+  xbt_swag_foreach(actor, this->extension<simgrid::simix::Host>()->process_list)
+  {
+    whereto->push_back(actor->ciface());
+  }
+}
+
+/**
  * \brief Find a route toward another host
  *
  * \param dest [IN] where to

@@ -69,6 +69,8 @@ public:
   simgrid::xbt::string const& name() const { return name_; }
   const char* cname() { return name_.c_str(); }
 
+  void actorList(std::vector<ActorPtr> * whereto);
+
   /** Turns that host on if it was previously off
    *
    * All actors on that host which were marked autorestart will be restarted automatically.

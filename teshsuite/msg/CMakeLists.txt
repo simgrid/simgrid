@@ -10,7 +10,7 @@ foreach(x concurrent_rw get_sender host_on_off host_on_off_recv host_on_off_proc
 endforeach()
 
 # CPP examples
-foreach(x process task_destroy_cancel)
+foreach(x task_destroy_cancel)
   add_executable       (${x}  ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -35,6 +35,6 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp2.5-hbp1.5.xml    PARENT_SCOPE)
 
 foreach(x concurrent_rw get_sender host_on_off host_on_off_processes host_on_off_recv host_on_off_wait listen_async
-          process storage_client_server task_destroy_cancel trace_integration)
+          storage_client_server task_destroy_cancel trace_integration)
   ADD_TESH_FACTORIES(tesh-msg-${x} "thread;boost;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x} --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x}/${x}.tesh)
 endforeach()
