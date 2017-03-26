@@ -236,14 +236,16 @@ typedef struct s_storage_type {
   char *content_type;
   char *type_id;
   xbt_dict_t properties;
-  xbt_dict_t model_properties;
+  std::map<std::string, std::string>* model_properties;
   sg_size_t size;
-} s_storage_type_t, *storage_type_t;
+} s_storage_type_t;
+typedef s_storage_type_t* storage_type_t;
 
 typedef struct s_mount {
   void *storage;
   char *name;
-} s_mount_t, *mount_t;
+} s_mount_t;
+typedef s_mount_t* mount_t;
 
 typedef struct surf_file {
   char *name;

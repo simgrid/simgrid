@@ -24,7 +24,7 @@ static inline void routing_storage_type_free(void *r)
   free(stype->content);
   free(stype->content_type);
   xbt_dict_free(&(stype->properties));
-  xbt_dict_free(&(stype->model_properties));
+  delete stype->model_properties;
   free(stype);
 }
 
@@ -76,14 +76,15 @@ Storage* StorageN11Model::createStorage(const char* id, const char* type_id, con
   xbt_assert(!surf_storage_resource_priv(surf_storage_resource_by_name(id)),
       "Storage '%s' declared several times in the platform file", id);
 
-  storage_type_t storage_type = (storage_type_t) xbt_lib_get_or_null(storage_type_lib, type_id,ROUTING_STORAGE_TYPE_LEVEL);
+  storage_type_t storage_type =
+      (storage_type_t)xbt_lib_get_or_null(storage_type_lib, type_id, ROUTING_STORAGE_TYPE_LEVEL);
 
-  double Bread  = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bread"),
-      "property Bread, storage",type_id);
-  double Bwrite = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bwrite"),
-      "property Bwrite, storage",type_id);
-  double Bconnection   = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bconnection"),
-      "property Bconnection, storage",type_id);
+  double Bread =
+      surf_parse_get_bandwidth(storage_type->model_properties->at("Bread").c_str(), "property Bread, storage", type_id);
+  double Bwrite = surf_parse_get_bandwidth(storage_type->model_properties->at("Bwrite").c_str(),
+                                           "property Bwrite, storage", type_id);
+  double Bconnection = surf_parse_get_bandwidth(storage_type->model_properties->at("Bconnection").c_str(),
+                                                "property Bconnection, storage", type_id);
 
   Storage* storage = new StorageN11(this, id, maxminSystem_, Bread, Bwrite, Bconnection, type_id, (char*)content_name,
                                     content_type, storage_type->size, (char*)attach);
