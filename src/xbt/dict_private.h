@@ -24,7 +24,8 @@ SG_BEGIN_DECL()
 typedef struct s_xbt_het_dictelm {
   s_xbt_dictelm_t element;
   void_f_pvoid_t free_f;
-} s_xbt_het_dictelm_t, *xbt_het_dictelm_t;
+} s_xbt_het_dictelm_t;
+typedef s_xbt_het_dictelm_t* xbt_het_dictelm_t;
 
 typedef struct s_xbt_dict {
   void_f_pvoid_t free_f;

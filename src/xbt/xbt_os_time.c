@@ -92,15 +92,22 @@ void xbt_os_sleep(double sec)
  */
 struct s_xbt_os_timer {
 #if HAVE_POSIX_GETTIME
-  struct timespec start, stop, elapse;
+  struct timespec start;
+  struct timespec stop;
+  struct timespec elapse;
 #elif HAVE_GETTIMEOFDAY || defined(_WIN32)
-  struct timeval start, stop, elapse;
+  struct timeval start;
+  struct timeval stop;
+  struct timeval elapse;
 #else
-  unsigned long int start, stop, elapse;
+  unsigned long int start;
+  unsigned long int stop;
+  unsigned long int elapse;
 #endif
 };
 
-size_t xbt_os_timer_size(void){
+size_t xbt_os_timer_size(void)
+{
   return sizeof(struct s_xbt_os_timer);
 }
 

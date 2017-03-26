@@ -30,9 +30,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_create, "The logging channel used in this
 class Sender {
 public:
   std::string msg = "GaBuZoMeu";
-  explicit Sender(){
-      /* Constructor used when no parameter is passed to the actor */
-  };
+  explicit Sender() = default;
   explicit Sender(std::vector<std::string> args)
   {
     /* This constructor is used when we pass parameters to the actor */

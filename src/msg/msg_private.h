@@ -90,7 +90,8 @@ typedef struct process_arg {
   int argc;
   char **argv;
   double kill_time;
-} s_process_arg_t, *process_arg_t;
+} s_process_arg_t;
+typedef s_process_arg_t* process_arg_t;
 
 typedef struct msg_comm {
   smx_activity_t s_comm;          /* SIMIX communication object encapsulated (the same for both processes) */
@@ -105,7 +106,8 @@ typedef struct MSG_Global {
   unsigned long int sent_msg;   /* Total amount of messages sent during the simulation */
   void (*task_copy_callback) (msg_task_t task, msg_process_t src, msg_process_t dst);
   void_f_pvoid_t process_data_cleanup;
-} s_MSG_Global_t, *MSG_Global_t;
+} s_MSG_Global_t;
+typedef s_MSG_Global_t* MSG_Global_t;
 
 SG_BEGIN_DECL()
 

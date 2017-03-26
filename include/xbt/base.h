@@ -10,75 +10,75 @@
 
 /* Define _GNU_SOURCE for getline, isfinite, etc. */
 #ifndef _GNU_SOURCE
-  #define _GNU_SOURCE
+#  define _GNU_SOURCE
 #endif
 
 // Teach the compiler that some code path is unreacheable:
 #if defined(__has_builtin)
-  #if __has_builtin(__builtin_unreachable)
-    #define XBT_UNREACHABLE() __builtin_unreachable()
-  #else
-    #include <stdlib.h>
-    #define XBT_UNREACHABLE() abort()
-  #endif
+#  if __has_builtin(__builtin_unreachable)
+#    define XBT_UNREACHABLE() __builtin_unreachable()
+#  else
+#    include <stdlib.h>
+#    define XBT_UNREACHABLE() abort()
+#  endif
 #elif (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5)
-  #define XBT_UNREACHABLE() __builtin_unreachable()
+#  define XBT_UNREACHABLE() __builtin_unreachable()
 #else
-  #include <stdlib.h>
-  #define XBT_UNREACHABLE() abort()
+#  include <stdlib.h>
+#  define XBT_UNREACHABLE() abort()
 #endif
 
 /* On MinGW, stdio.h defines __MINGW_PRINTF_FORMAT and __MINGW_SCANF_FORMAT
    which are the suitable format style (either gnu_printf or ms_printf)
    depending on which version is available (__USE_MINGW_ANSI_STDIO): */
 #ifdef __MINGW32__
-  #include <stdio.h>
+#  include <stdio.h>
 
-  # define XBT_ATTRIB_PRINTF( format_idx, arg_idx )    \
+#  define XBT_ATTRIB_PRINTF( format_idx, arg_idx )    \
      __attribute__((__format__ (__MINGW_PRINTF_FORMAT, format_idx, arg_idx)))
-  # define XBT_ATTRIB_SCANF( format_idx, arg_idx )     \
-         __attribute__((__MINGW_SCANF_FORMAT (__scanf__, format_idx, arg_idx)))
+#  define XBT_ATTRIB_SCANF( format_idx, arg_idx )     \
+     __attribute__((__MINGW_SCANF_FORMAT (__scanf__, format_idx, arg_idx)))
 #else
-  # define XBT_ATTRIB_PRINTF( format_idx, arg_idx )    \
+#  define XBT_ATTRIB_PRINTF( format_idx, arg_idx )    \
      __attribute__((__format__ (__printf__, format_idx, arg_idx)))
-  # define XBT_ATTRIB_SCANF( format_idx, arg_idx )     \
-         __attribute__((__format__ (__scanf__, format_idx, arg_idx)))
+#  define XBT_ATTRIB_SCANF( format_idx, arg_idx )     \
+     __attribute__((__format__ (__scanf__, format_idx, arg_idx)))
 #endif
 
-# define XBT_ATTRIB_NORETURN __attribute__((__noreturn__))
-# define XBT_ATTRIB_UNUSED  __attribute__((__unused__))
-# define XBT_ATTRIB_DEPRECATED(m)  __attribute__((__deprecated__(m)))
+#define XBT_ATTRIB_NORETURN __attribute__((__noreturn__))
+#define XBT_ATTRIB_UNUSED  __attribute__((__unused__))
+#define XBT_ATTRIB_DEPRECATED(m)  __attribute__((__deprecated__(m)))
 
 /* Constructor priorities exist since gcc 4.3.  Apparently, they are however not
  * supported on Macs. */
-# if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3)) && !defined(__APPLE__)
+#if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3)) && !defined(__APPLE__)
 #  define _XBT_GNUC_CONSTRUCTOR(prio) __attribute__((__constructor__ (prio)))
 #  define _XBT_GNUC_DESTRUCTOR(prio) __attribute__((__destructor__ (prio)))
-# else
+#else
 #  define _XBT_GNUC_CONSTRUCTOR(prio) __attribute__((__constructor__))
 #  define _XBT_GNUC_DESTRUCTOR(prio) __attribute__((__destructor__))
-# endif
-
-#if defined(__GNUC__)
-#   define XBT_ALWAYS_INLINE inline __attribute__ ((always_inline))
-#else
-#   define XBT_ALWAYS_INLINE inline
 #endif
 
 #if defined(__GNUC__)
-#   define XBT_THREAD_LOCAL __thread
+#  define XBT_ALWAYS_INLINE inline __attribute__ ((always_inline))
 #else
-#   define XBT_THREAD_LOCAL No thread local on this architecture
+#  define XBT_ALWAYS_INLINE inline
+#endif
+
+#if defined(__GNUC__)
+#  define XBT_THREAD_LOCAL __thread
+#else
+#  define XBT_THREAD_LOCAL No thread local on this architecture
 #endif
 
 /* improvable on gcc (by evaluating arguments only once), but wouldn't be portable */
 #ifdef MIN
-# undef MIN
+#  undef MIN
 #endif
 #define MIN(a,b) ((a)<(b)?(a):(b))
 
 #ifdef MAX
-# undef MAX
+#  undef MAX
 #endif
 #define MAX(a,b) ((a)>(b)?(a):(b))
 

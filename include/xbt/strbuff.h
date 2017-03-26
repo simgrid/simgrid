@@ -29,15 +29,15 @@ SG_BEGIN_DECL()
  */
 
 /** @brief Buffer data container **/
-struct xbt_strbuff {
+typedef struct xbt_strbuff {
   char *data;
-  int used, size;
-};
-typedef struct xbt_strbuff  s_xbt_strbuff_t;
-typedef struct xbt_strbuff* xbt_strbuff_t;
+  int used;
+  int size;
+} s_xbt_strbuff_t;
+typedef s_xbt_strbuff_t* xbt_strbuff_t;
 
 XBT_PUBLIC(void) xbt_strbuff_clear(xbt_strbuff_t b);
-XBT_PUBLIC(xbt_strbuff_t) xbt_strbuff_new(void);
+XBT_PUBLIC(xbt_strbuff_t) xbt_strbuff_new();
 XBT_PUBLIC(xbt_strbuff_t) xbt_strbuff_new_from(const char *s);
 XBT_PUBLIC(void) xbt_strbuff_free(xbt_strbuff_t b);
 XBT_PUBLIC(void) xbt_strbuff_free_container(xbt_strbuff_t b);
