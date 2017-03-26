@@ -119,6 +119,7 @@ WRAPPED_PMPI_CALL(int,MPI_Keyval_create,(MPI_Copy_function* copy_fn, MPI_Delete_
 WRAPPED_PMPI_CALL(int,MPI_Keyval_free,(int* keyval) ,(keyval))
 WRAPPED_PMPI_CALL(int,MPI_Op_create,(MPI_User_function * function, int commute, MPI_Op * op),(function, commute, op))
 WRAPPED_PMPI_CALL(int,MPI_Op_free,(MPI_Op * op),(op))
+WRAPPED_PMPI_CALL(int,MPI_Op_commutative,(MPI_Op op, int *commute), (op, commute))
 WRAPPED_PMPI_CALL(int,MPI_Pack_size,(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size) ,(incount, datatype, comm, size))
 WRAPPED_PMPI_CALL(int,MPI_Pack,(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position, MPI_Comm comm) ,(inbuf, incount, type, outbuf, outcount, position, comm))
 WRAPPED_PMPI_CALL(int,MPI_Probe,(int source, int tag, MPI_Comm comm, MPI_Status* status) ,(source, tag, comm, status))

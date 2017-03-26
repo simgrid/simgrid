@@ -270,6 +270,17 @@ int PMPI_Op_free(MPI_Op * op)
   }
 }
 
+int PMPI_Op_commutative(MPI_Op op, int* commute){
+  if (op == MPI_OP_NULL) {
+    return MPI_ERR_OP;
+  } else if (commute==nullptr){
+    return MPI_ERR_ARG;
+  } else {
+    *commute = op->is_commutative();
+    return MPI_SUCCESS;
+  }
+}
+
 int PMPI_Group_free(MPI_Group * group)
 {
   if (group == nullptr) {

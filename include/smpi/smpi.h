@@ -440,6 +440,7 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Type_contiguous, (int count, MPI_Datatype old_type
 MPI_CALL(XBT_PUBLIC(int), MPI_Testall, (int count, MPI_Request* requests, int* flag, MPI_Status* statuses));
 MPI_CALL(XBT_PUBLIC(int), MPI_Op_create, (MPI_User_function * function, int commute, MPI_Op * op));
 MPI_CALL(XBT_PUBLIC(int), MPI_Op_free, (MPI_Op * op));
+MPI_CALL(XBT_PUBLIC(int), MPI_Op_commutative, (MPI_Op op, int *commute));
 
 MPI_CALL(XBT_PUBLIC(int), MPI_Group_free, (MPI_Group * group));
 MPI_CALL(XBT_PUBLIC(int), MPI_Group_size, (MPI_Group group, int *size));
