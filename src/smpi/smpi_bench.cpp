@@ -636,12 +636,34 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
                  strerror(errno));
     }
 
+    shared_metadata_t newmeta;
+    //register metadata for memcpy avoidance
+    shared_data_key_type* data = (shared_data_key_type*)xbt_malloc(sizeof(shared_data_key_type));
+    data->second.fd = -1;
+    data->second.count = 1;
+    newmeta.size = size;
+    newmeta.data = data;
+    allocs_metadata[mem] = newmeta;
   } else {
     mem = xbt_malloc(size);
     XBT_DEBUG("Classic malloc %zu in %p", size, mem);
   }
 
   return mem;
+}
+
+int smpi_is_shared(void*ptr){
+  if ( smpi_cfg_shared_malloc == shmalloc_local || smpi_cfg_shared_malloc == shmalloc_global) {
+    if (allocs_metadata.count(ptr) != 0) 
+     return 1;
+    for(auto it : allocs_metadata){
+      if (ptr >= it.first && ptr < (char*)it.first + it.second.size)
+        return 1;
+    }
+      return 0;
+  } else {
+    return 0;
+  }
 }
 
 void smpi_shared_free(void *ptr)
@@ -662,14 +684,21 @@ void smpi_shared_free(void *ptr)
     if (data->count <= 0) {
       close(data->fd);
       allocs.erase(allocs.find(meta->second.data->first));
+      allocs_metadata.erase(ptr);
       XBT_DEBUG("Shared free - with removal - of %p", ptr);
     } else {
       XBT_DEBUG("Shared free - no removal - of %p, count = %d", ptr, data->count);
     }
 
   } else if (smpi_cfg_shared_malloc == shmalloc_global) {
-    munmap(ptr, 0); // the POSIX says that I should not give 0 as a length, but it seems to work OK
+    auto meta = allocs_metadata.find(ptr);
+    if (meta != allocs_metadata.end()){
+      meta->second.data->second.count--;
+      if(meta->second.data->second.count==0)
+        xbt_free(meta->second.data);
+    }
 
+    munmap(ptr, 0); // the POSIX says that I should not give 0 as a length, but it seems to work OK
   } else {
     XBT_DEBUG("Classic free of %p", ptr);
     xbt_free(ptr);

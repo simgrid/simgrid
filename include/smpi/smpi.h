@@ -872,6 +872,7 @@ XBT_PUBLIC(void) smpi_trace_set_call_location__(const char *file, int* line);
 #define SMPI_SAMPLE_DELAY(duration) for(smpi_execute(duration); 0; )
 #define SMPI_SAMPLE_FLOPS(flops) for(smpi_execute_flops(flops); 0; )
 
+XBT_PUBLIC(int) smpi_is_shared(void *buf);
 XBT_PUBLIC(void *) smpi_shared_malloc(size_t size, const char *file, int line);
 #define SMPI_SHARED_MALLOC(size) smpi_shared_malloc(size, __FILE__, __LINE__)
 

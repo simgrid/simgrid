@@ -105,30 +105,37 @@ void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, s
 
 void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t buff_size)
 {
-  XBT_DEBUG("Copy the data over");
   void* tmpbuff=buff;
   simgrid::kernel::activity::Comm *comm = dynamic_cast<simgrid::kernel::activity::Comm*>(synchro);
 
-  if((smpi_privatize_global_variables) && (static_cast<char*>(buff) >= smpi_start_data_exe)
-      && (static_cast<char*>(buff) < smpi_start_data_exe + smpi_size_data_exe )
-    ){
-       XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
+  XBT_DEBUG("Copy the data over");
+  if(smpi_is_shared(buff)){
+    XBT_DEBUG("Sender %p is shared. Let's ignore it.", buff);
+  }else if(smpi_is_shared((char*)comm->dst_buff)){
+    XBT_DEBUG("Receiver %p is shared. Let's ignore it.", (char*)comm->dst_buff);
+  }else{
 
-       smpi_switch_data_segment(
-           (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->src_proc->data)->data))->index()));
-       tmpbuff = static_cast<void*>(xbt_malloc(buff_size));
-       memcpy(tmpbuff, buff, buff_size);
+    if((smpi_privatize_global_variables) && (static_cast<char*>(buff) >= smpi_start_data_exe)
+        && (static_cast<char*>(buff) < smpi_start_data_exe + smpi_size_data_exe )
+      ){
+         XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
+
+         smpi_switch_data_segment(
+             (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->src_proc->data)->data))->index()));
+         tmpbuff = static_cast<void*>(xbt_malloc(buff_size));
+         memcpy(tmpbuff, buff, buff_size);
+    }
+
+    if((smpi_privatize_global_variables) && ((char*)comm->dst_buff >= smpi_start_data_exe)
+        && ((char*)comm->dst_buff < smpi_start_data_exe + smpi_size_data_exe )){
+         XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
+         smpi_switch_data_segment(
+             (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->dst_proc->data)->data))->index()));
+    }
+
+    XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff,comm->dst_buff);
+    memcpy(comm->dst_buff, tmpbuff, buff_size);
   }
-
-  if((smpi_privatize_global_variables) && ((char*)comm->dst_buff >= smpi_start_data_exe)
-      && ((char*)comm->dst_buff < smpi_start_data_exe + smpi_size_data_exe )){
-       XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
-       smpi_switch_data_segment(
-           (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->dst_proc->data)->data))->index()));
-  }
-
-  XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff,comm->dst_buff);
-  memcpy(comm->dst_buff, tmpbuff, buff_size);
   if (comm->detached) {
     // if this is a detached send, the source buffer was duplicated by SMPI
     // sender to make the original buffer available to the application ASAP
