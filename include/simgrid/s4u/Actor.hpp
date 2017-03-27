@@ -306,7 +306,7 @@ namespace this_actor {
   */
   XBT_PUBLIC(void) send(MailboxPtr chan, void* payload, double simulatedSize);
 
-  XBT_PUBLIC(void) isend(MailboxPtr chan, void* payload, double simulatedSize);
+  XBT_PUBLIC(Comm&) isend(MailboxPtr chan, void* payload, double simulatedSize);
 
   /** @brief Returns the PID of the current actor. */
   XBT_PUBLIC(int) pid();
