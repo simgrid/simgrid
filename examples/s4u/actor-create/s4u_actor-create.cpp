@@ -77,6 +77,8 @@ public:
     char* msg1 = static_cast<char*>(simgrid::s4u::this_actor::recv(mailbox));
     char* msg2 = static_cast<char*>(simgrid::s4u::this_actor::recv(mailbox));
     XBT_INFO("I received '%s' and '%s'", msg1, msg2);
+    xbt_free(msg1);
+    xbt_free(msg2);
     XBT_INFO("I'm done. See you.");
   }
 };
