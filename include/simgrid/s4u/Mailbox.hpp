@@ -132,6 +132,9 @@ public:
   /** Returns whether the mailbox contains queued communications */
   bool empty();
 
+  /** Check if there is a communication going on in a mailbox. */
+  bool listen();
+
   /** Gets the first element in the queue (without dequeuing it), or nullptr if none is there */
   smx_activity_t front();
 

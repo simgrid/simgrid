@@ -190,6 +190,11 @@ void send(MailboxPtr chan, void* payload, double simulatedSize)
   c.wait();
 }
 
+void isend(MailboxPtr chan, void* payload, double simulatedSize)
+{
+  Comm::send_async(chan, payload, simulatedSize);
+}
+
 int pid()
 {
   return SIMIX_process_self()->pid;
