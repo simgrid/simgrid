@@ -207,6 +207,7 @@ set(SMPI_SRC
   src/smpi/instr_smpi.cpp
   src/smpi/smpi_bench.cpp
   src/smpi/smpi_memory.cpp
+  src/smpi/smpi_shared.cpp
   src/smpi/smpi_static_variables.cpp
   src/smpi/smpi_coll.cpp
   src/smpi/smpi_coll.hpp
