@@ -33,32 +33,18 @@
  *                                                                    \ |  |
  *                                                                      ----
  */
-#include <cstring>
-
 #include <unordered_map>
-#include <utility>
 
-#include "src/internal_config.h"
 #include "private.h"
 #include "private.hpp"
-#include <xbt/ex.hpp>
 #include "xbt/dict.h"
-//#include "xbt/sysdep.h"
-//#include "xbt/ex.h"
-#include "surf/surf.h"
-#include "simgrid/sg_config.h"
-//#include "simgrid/modelchecker.h"
-//#include "src/mc/mc_replay.h"
 
 #include <sys/types.h>
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
 #include <sys/stat.h>
-#include <errno.h>
 #include <fcntl.h>
-//#include <math.h> // sqrt
-#include <unistd.h>
 #include <string.h>
 #include <stdio.h>
 

@@ -13,8 +13,9 @@
 #include <sys/types.h>
 #include <string.h>
 #include <stdio.h>
-#include "simgrid/sg_config.h"
 #include <fcntl.h>
+#include <sys/stat.h>
+#include <errno.h>
 
 #ifndef WIN32
 #include <sys/mman.h>

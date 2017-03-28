@@ -24,12 +24,7 @@
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
-#include <sys/stat.h>
-#include <errno.h>
-#include <fcntl.h>
 #include <math.h> // sqrt
-#include <unistd.h>
-#include <string.h>
 #include <stdio.h>
 
 #if HAVE_PAPI
