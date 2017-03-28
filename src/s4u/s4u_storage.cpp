@@ -39,18 +39,33 @@ Storage &Storage::byName(const char*name) {
   return *res;
 }
 
-const char*Storage::name() {
+const char* Storage::name()
+{
   return name_.c_str();
 }
 
-sg_size_t Storage::sizeFree() {
+sg_size_t Storage::sizeFree()
+{
   return simcall_storage_get_free_size(pimpl_);
 }
-sg_size_t Storage::sizeUsed() {
+
+sg_size_t Storage::sizeUsed()
+{
   return simcall_storage_get_used_size(pimpl_);
 }
+
 sg_size_t Storage::size() {
   return size_;
+}
+
+xbt_dict_t Storage::properties()
+{
+  return simcall_storage_get_properties(pimpl_);
+}
+
+xbt_dict_t Storage::content()
+{
+  return simcall_storage_get_content(pimpl_);
 }
 
 } /* namespace s4u */
