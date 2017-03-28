@@ -143,6 +143,8 @@ void HostEnergy::update()
 
   double energy_this_step = instantaneous_consumption * (finish_time - start_time);
 
+  //TODO Trace: Trace energy_this_step from start_time to finish_time in host->name()
+
   this->total_energy = previous_energy + energy_this_step;
   this->last_updated = finish_time;
   this->pstate       = host->pstate();
@@ -275,6 +277,9 @@ static void onCreation(simgrid::s4u::Host& host)
 {
   if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
+
+  //TODO Trace: set to zero the energy variable associated to host->name()
+
   host.extension_set(new HostEnergy(&host));
 }
 
