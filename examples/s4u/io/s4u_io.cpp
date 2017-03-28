@@ -36,8 +36,8 @@ public:
     show_info(mounts);
 
     // Open an non-existing file to create it
-    const char *filename = "/home/tmp/data.txt";
-    simgrid::s4u::File *file = new simgrid::s4u::File(filename, NULL);
+    const char* filename = "/home/tmp/data.txt";
+    simgrid::s4u::File* file = new simgrid::s4u::File(filename, nullptr);
 
     sg_size_t write = file->write(200000);  // Write 200,000 bytes
     XBT_INFO("Create a %llu bytes file named '%s' on /sd1", write, filename);
@@ -76,6 +76,8 @@ public:
 
     storage.setUserdata(xbt_strdup("Some user data"));
     XBT_INFO("    Set and get data: '%s'", (char*)storage.userdata());
+
+    xbt_free(storage.userdata());
   }
 };
 
