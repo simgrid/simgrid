@@ -235,7 +235,7 @@ def header(name):
 def handle(fd, func, simcalls, guarded_simcalls):
     def nonempty(e): 
         return e != ''
-    fd.write('\n'.join(filter(nonempty, func(simcall) for simcall in simcalls)))
+    fd.write('\n'.join(filter(nonempty, (func(simcall) for simcall in simcalls))))
 
     for guard, list in guarded_simcalls.items():
         fd.write('\n#if %s\n' % (guard))
