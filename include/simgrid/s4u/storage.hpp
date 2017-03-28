@@ -34,7 +34,7 @@ public:
   /** Retrieve the total amount of space of this storage element */
   sg_size_t size();
   xbt_dict_t properties();
-  xbt_dict_t content();
+  std::map<std::string, sg_size_t*>* content();
 
   /* TODO: missing API:
 XBT_PUBLIC(void) MSG_storage_set_property_value(msg_storage_t storage, const char *name, char *value,void_f_pvoid_t free_ctn);

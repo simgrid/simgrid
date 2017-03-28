@@ -150,7 +150,7 @@ public:
    *
    * @return A xbt_dict_t with path as keys and size in bytes as values
    */
-  virtual xbt_dict_t getContent();
+  virtual std::map<std::string, sg_size_t*>* getContent();
 
   /**
    * @brief Get the available size in bytes of the current Storage

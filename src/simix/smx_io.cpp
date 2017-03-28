@@ -244,10 +244,6 @@ const char* SIMIX_storage_get_name(smx_storage_t storage){
   return sg_storage_name(storage);
 }
 
-xbt_dict_t SIMIX_storage_get_content(smx_storage_t storage){
-  return surf_storage_get_content(storage);
-}
-
 const char* SIMIX_storage_get_host(smx_storage_t storage){
   return surf_storage_get_host(storage);
 }

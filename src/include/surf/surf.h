@@ -250,14 +250,6 @@ XBT_PUBLIC(int) surf_host_file_move(sg_host_t host, surf_file_t fd, const char* 
 XBT_PUBLIC(int) surf_host_file_seek(sg_host_t host, surf_file_t fd, sg_offset_t offset, int origin);
 
 /**
- * @brief Get the content of a storage
- *
- * @param resource The surf storage
- * @return A xbt_dict_t with path as keys and size in bytes as values
- */
-XBT_PUBLIC(xbt_dict_t) surf_storage_get_content(surf_resource_t resource);
-
-/**
  * @brief Get the size in bytes of a storage
  *
  * @param resource The surf storage

@@ -140,16 +140,10 @@ void Storage::turnOff() {
   }
 }
 
-xbt_dict_t Storage::getContent()
+std::map<std::string, sg_size_t*>* Storage::getContent()
 {
   /* For the moment this action has no cost, but in the future we could take in account access latency of the disk */
-
-  xbt_dict_t content_dict = xbt_dict_new_homogeneous(nullptr);
-
-  for (auto entry : *content_) {
-    xbt_dict_set(content_dict, entry.first.c_str(), entry.second, nullptr);
-  }
-  return content_dict;
+  return content_;
 }
 
 sg_size_t Storage::getFreeSize(){

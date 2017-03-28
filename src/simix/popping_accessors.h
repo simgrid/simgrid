@@ -1017,19 +1017,6 @@ static inline void simcall_storage_get_properties__set__result(smx_simcall_t sim
     simgrid::simix::marshal<xbt_dict_t>(simcall->result, result);
 }
 
-static inline smx_storage_t simcall_storage_get_content__get__storage(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<smx_storage_t>(simcall->args[0]);
-}
-static inline void simcall_storage_get_content__set__storage(smx_simcall_t simcall, smx_storage_t arg) {
-    simgrid::simix::marshal<smx_storage_t>(simcall->args[0], arg);
-}
-static inline xbt_dict_t simcall_storage_get_content__get__result(smx_simcall_t simcall){
-    return simgrid::simix::unmarshal<xbt_dict_t>(simcall->result);
-}
-static inline void simcall_storage_get_content__set__result(smx_simcall_t simcall, xbt_dict_t result){
-    simgrid::simix::marshal<xbt_dict_t>(simcall->result, result);
-}
-
 static inline int simcall_mc_random__get__min(smx_simcall_t simcall) {
   return simgrid::simix::unmarshal<int>(simcall->args[0]);
 }

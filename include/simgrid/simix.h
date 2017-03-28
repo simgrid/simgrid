@@ -373,8 +373,6 @@ XBT_PUBLIC(sg_size_t) simcall_storage_get_used_size (smx_storage_t storage);
 XBT_PUBLIC(xbt_dict_t) simcall_storage_get_properties(smx_storage_t storage);
 XBT_PUBLIC(void*) SIMIX_storage_get_data(smx_storage_t storage);
 XBT_PUBLIC(void) SIMIX_storage_set_data(smx_storage_t storage, void *data);
-XBT_PUBLIC(xbt_dict_t) SIMIX_storage_get_content(smx_storage_t storage);
-XBT_PUBLIC(xbt_dict_t) simcall_storage_get_content(smx_storage_t storage);
 XBT_PUBLIC(const char*) SIMIX_storage_get_name(smx_storage_t storage);
 XBT_PUBLIC(sg_size_t) SIMIX_storage_get_size(smx_storage_t storage);
 XBT_PUBLIC(const char*) SIMIX_storage_get_host(smx_storage_t storage);

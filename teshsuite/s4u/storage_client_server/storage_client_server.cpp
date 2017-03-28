@@ -66,14 +66,13 @@ static void display_storage_content(simgrid::s4u::Storage* storage)
   xbt_dict_cursor_t cursor = NULL;
   char* file;
   sg_size_t* psize;
-  xbt_dict_t content = storage->content();
-  if (content) {
-    xbt_dict_foreach (content, cursor, file, psize)
-      XBT_INFO("\t%s size: %llu bytes", file, *psize);
+  std::map<std::string, sg_size_t*>* content = storage->content();
+  if (!content->empty()) {
+    for (auto entry : *content)
+      XBT_INFO("\t%s size: %llu bytes", entry.first.c_str(), *entry.second);
   } else {
     XBT_INFO("\tNo content.");
   }
-  xbt_dict_free(&content);
 }
 
 static void dump_storage_by_name(char* name)
@@ -164,6 +163,7 @@ static void server()
       char* dest              = strtok_r(msg, " ", &saveptr);
       sg_size_t size_to_write = std::stoull(strtok_r(nullptr, " ", &saveptr));
       write_local_file(dest, size_to_write);
+      xbt_free(dest);
     }
   }
 

@@ -5,6 +5,7 @@
 
 #include "simgrid/s4u/host.hpp"
 #include "src/msg/msg_private.h"
+#include "src/surf/storage_interface.hpp"
 #include <numeric>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg, "Logging specific to MSG (io)");
@@ -586,7 +587,14 @@ void *MSG_storage_get_data(msg_storage_t storage)
  */
 xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
 {
-  return SIMIX_storage_get_content(storage);
+  std::map<std::string, sg_size_t*>* content =
+      static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(storage))->getContent();
+  xbt_dict_t content_dict = xbt_dict_new_homogeneous(nullptr);
+
+  for (auto entry : *content) {
+    xbt_dict_set(content_dict, entry.first.c_str(), entry.second, nullptr);
+  }
+  return content_dict;
 }
 
 /** \ingroup msg_storage_management

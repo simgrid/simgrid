@@ -5,6 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u/storage.hpp"
+#include "simgrid/simix.hpp"
+#include "src/surf/storage_interface.hpp"
 
 #include "xbt/lib.h"
 extern xbt_lib_t storage_lib;
@@ -63,9 +65,10 @@ xbt_dict_t Storage::properties()
   return simcall_storage_get_properties(pimpl_);
 }
 
-xbt_dict_t Storage::content()
+std::map<std::string, sg_size_t*>* Storage::content()
 {
-  return simcall_storage_get_content(pimpl_);
+  return simgrid::simix::kernelImmediate(
+      [this] { return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(this->pimpl_))->getContent(); });
 }
 
 } /* namespace s4u */

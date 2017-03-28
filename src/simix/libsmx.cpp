@@ -781,18 +781,6 @@ xbt_dict_t simcall_storage_get_properties(smx_storage_t storage)
   return simcall_BODY_storage_get_properties(storage);
 }
 
-/**
- * \ingroup simix_storage_management
- * \brief Returns a dict containing the content of a storage element.
- *
- * \param storage A storage element
- * \return The content of this storage element as a dict (full path file => size)
- */
-xbt_dict_t simcall_storage_get_content(smx_storage_t storage)
-{
-  return simcall_BODY_storage_get_content(storage);
-}
-
 void simcall_run_kernel(std::function<void()> const& code)
 {
   simcall_BODY_run_kernel(&code);

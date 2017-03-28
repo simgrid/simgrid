@@ -273,7 +273,7 @@ xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
 
   xbt_dict_foreach(storage_list,cursor,mount_name,storage_name){
     storage = static_cast<msg_storage_t>(xbt_lib_get_elm_or_null(storage_lib,storage_name));
-    xbt_dict_t content = simcall_storage_get_content(storage);
+    xbt_dict_t content = MSG_storage_get_content(storage);
     xbt_dict_set(contents,mount_name, content,nullptr);
   }
   xbt_dict_free(&storage_list);
