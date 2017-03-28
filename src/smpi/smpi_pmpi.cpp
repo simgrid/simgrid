@@ -2615,7 +2615,8 @@ int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     retval = MPI_SUCCESS;
   } else if (target_rank <0){
     retval = MPI_ERR_RANK;
-  } else if (target_disp <0){
+  } else if (win->dynamic()!=0 && target_disp <0){ 
+    //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
   } else if ((origin_count < 0 || target_count < 0) ||
              (origin_addr==nullptr && origin_count > 0)){
@@ -2648,7 +2649,8 @@ int PMPI_Put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     retval = MPI_SUCCESS;
   } else if (target_rank <0){
     retval = MPI_ERR_RANK;
-  } else if (target_disp <0){
+  } else if (win->dynamic()!=0 && target_disp <0){ 
+    //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
   } else if ((origin_count < 0 || target_count < 0) ||
             (origin_addr==nullptr && origin_count > 0)){
@@ -2682,7 +2684,8 @@ int PMPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
     retval = MPI_SUCCESS;
   } else if (target_rank <0){
     retval = MPI_ERR_RANK;
-  } else if (target_disp <0){
+  } else if (win->dynamic()!=0 && target_disp <0){ 
+    //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
   } else if ((origin_count < 0 || target_count < 0) ||
              (origin_addr==nullptr && origin_count > 0)){
@@ -2719,7 +2722,8 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
     retval = MPI_SUCCESS;
   } else if (target_rank <0){
     retval = MPI_ERR_RANK;
-  } else if (target_disp <0){
+  } else if (win->dynamic()!=0 && target_disp <0){ 
+    //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
   } else if ((origin_count < 0 || target_count < 0 || result_count <0) ||
              (origin_addr==nullptr && origin_count > 0) ||

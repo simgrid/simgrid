@@ -14,7 +14,7 @@ namespace smpi{
 std::unordered_map<int, smpi_key_elem> Win::keyvals_;
 int Win::keyval_id_=0;
 
-Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, int allocated): base_(base), size_(size), disp_unit_(disp_unit), assert_(0), info_(info), comm_(comm), allocated_(allocated){
+Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, int allocated, int dynamic): base_(base), size_(size), disp_unit_(disp_unit), assert_(0), info_(info), comm_(comm), allocated_(allocated), dynamic_(dynamic){
   int comm_size = comm->size();
   rank_      = comm->rank();
   XBT_DEBUG("Creating window");
@@ -128,6 +128,10 @@ void* Win::base(){
 
 int Win::disp_unit(){
   return disp_unit_;
+}
+
+int Win::dynamic(){
+  return dynamic_;
 }
 
 void Win::set_info(MPI_Info info){
