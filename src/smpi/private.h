@@ -112,6 +112,7 @@ XBT_PRIVATE void smpi_destroy_global_memory_segments();
 XBT_PRIVATE void smpi_bench_destroy();
 XBT_PRIVATE void smpi_bench_begin();
 XBT_PRIVATE void smpi_bench_end();
+XBT_PRIVATE void smpi_shared_destroy();
 
 XBT_PRIVATE void* smpi_get_tmp_sendbuffer(int size);
 XBT_PRIVATE void* smpi_get_tmp_recvbuffer(int size);

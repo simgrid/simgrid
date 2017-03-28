@@ -304,6 +304,7 @@ void smpi_global_destroy()
   int count = smpi_process_count();
 
   smpi_bench_destroy();
+  smpi_shared_destroy();
   if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED){
       delete MPI_COMM_WORLD->group();
       MSG_barrier_destroy(process_data[0]->finalization_barrier());
