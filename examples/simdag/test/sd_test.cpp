@@ -27,7 +27,7 @@ int main(int argc, char **argv)
   SD_create_environment(argv[1]);
 
   /* test the estimation functions */
-  const sg_host_t *hosts = sg_host_list();
+  const sg_host_t* hosts           = sg_host_list();
   simgrid::s4u::Host* h1           = hosts[4];
   simgrid::s4u::Host* h2           = hosts[2];
   double comp_amount1 = 2000000;
@@ -141,5 +141,6 @@ int main(int argc, char **argv)
 
   XBT_DEBUG("Tasks destroyed. Exiting SimDag...");
   SD_exit();
+  xbt_free((sg_host_t*)hosts);
   return 0;
 }
