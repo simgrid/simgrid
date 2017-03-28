@@ -484,7 +484,7 @@ void STag_surfxml_prop()
     XBT_DEBUG("Set AS property %s -> %s", A_surfxml_prop_id, A_surfxml_prop_value);
     simgrid::s4u::NetZone* netzone = simgrid::s4u::Engine::instance()->netzoneByNameOrNull(A_surfxml_AS_id);
 
-    netzone->setProperty(A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value));
+    netzone->setProperty(A_surfxml_prop_id, A_surfxml_prop_value);
   }
   else{
     if (!current_property_set)

@@ -12,6 +12,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/platform-properties$EXEEXT ${srcdir:=.}/prop.xml $
 > [  0.000000] (0:maestro@) Host 'node-2.acme.org' runs at 1000000000 flops/s
 > [  0.000000] (0:maestro@) Host 'node-3.acme.org' runs at 1000000000 flops/s
 > [  0.000000] (0:maestro@) Host 'node-4.acme.org' runs at 1000000000 flops/s
+> [  0.000000] (2:bob@host1) == Print the properties of the AS
+> [  0.000000] (2:bob@host1)    Process property: filename -> prop.xml
+> [  0.000000] (2:bob@host1)    Process property: date -> 31-08-12
+> [  0.000000] (2:bob@host1)    Process property: author -> pnavarro
 > [  0.000000] (2:bob@host1) == Print the properties of the process
 > [  0.000000] (2:bob@host1)    Process property: SomeProp -> SomeValue
 > [  0.000000] (2:bob@host1) == Try to get a process property that does not exist
