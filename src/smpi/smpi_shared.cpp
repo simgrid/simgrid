@@ -38,6 +38,7 @@
 #include "private.h"
 #include "private.hpp"
 #include "xbt/dict.h"
+#include <errno.h>
 
 #include <sys/types.h>
 #ifndef WIN32
