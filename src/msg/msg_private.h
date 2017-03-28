@@ -82,17 +82,6 @@ public:
 };
 }
 
-typedef struct process_arg {
-  const char *name;
-  xbt_main_func_t code;
-  void *data;
-  msg_host_t m_host;
-  int argc;
-  char **argv;
-  double kill_time;
-} s_process_arg_t;
-typedef s_process_arg_t* process_arg_t;
-
 typedef struct msg_comm {
   smx_activity_t s_comm;          /* SIMIX communication object encapsulated (the same for both processes) */
   msg_task_t task_sent;           /* task sent (NULL for the receiver) */
