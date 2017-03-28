@@ -63,9 +63,6 @@ static void hsm_put(const char* remote_host, const char* src, const char* dest)
 static void display_storage_content(simgrid::s4u::Storage* storage)
 {
   XBT_INFO("Print the content of the storage element: %s", storage->name());
-  xbt_dict_cursor_t cursor = NULL;
-  char* file;
-  sg_size_t* psize;
   std::map<std::string, sg_size_t*>* content = storage->content();
   if (!content->empty()) {
     for (auto entry : *content)
