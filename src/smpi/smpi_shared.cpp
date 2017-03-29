@@ -232,7 +232,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
       void* res = mmap(pos, smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED | MAP_POPULATE,
                        smpi_shared_malloc_bogusfile, 0);
       xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
-                             "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ?",
+                             "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ?"
                              "You can also try using  the sysctl vm.max_map_count",
                  strerror(errno));
     }
@@ -241,7 +241,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
       void* res = mmap(pos, size % smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE,
                        MAP_FIXED | MAP_SHARED | MAP_POPULATE, smpi_shared_malloc_bogusfile, 0);
       xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
-                             "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ?",
+                             "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ?"
                              "You can also try using  the sysctl vm.max_map_count",
                  strerror(errno));
     }
