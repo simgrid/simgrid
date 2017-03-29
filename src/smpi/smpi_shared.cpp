@@ -259,6 +259,8 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
 }
 
 int smpi_is_shared(void*ptr){
+  if (allocs_metadata.empty())
+    return 0;
   if ( smpi_cfg_shared_malloc == shmalloc_local || smpi_cfg_shared_malloc == shmalloc_global) {
     if (allocs_metadata.count(ptr) != 0) 
      return 1;
