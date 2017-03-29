@@ -399,6 +399,7 @@ static void smpi_init_logs(){
   XBT_LOG_CONNECT(smpi_request);
   XBT_LOG_CONNECT(smpi_replay);
   XBT_LOG_CONNECT(smpi_rma);
+  XBT_LOG_CONNECT(smpi_shared);
   XBT_LOG_CONNECT(smpi_utils);
 }
 }
