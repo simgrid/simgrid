@@ -33,7 +33,7 @@
  *                                                                    \ |  |
  *                                                                      ----
  */
-#include <unordered_map>
+#include <map>
 
 #include "private.h"
 #include "private.hpp"
@@ -117,7 +117,7 @@ typedef struct {
   shared_data_key_type* data;
 } shared_metadata_t;
 
-std::unordered_map<void*, shared_metadata_t> allocs_metadata;
+std::map<void*, shared_metadata_t> allocs_metadata;
 xbt_dict_t calls = nullptr;           /* Allocated on first use */
 #ifndef WIN32
 static int smpi_shared_malloc_bogusfile           = -1;
@@ -262,17 +262,19 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
   return mem;
 }
 
-int smpi_is_shared(void*ptr){
+int smpi_is_shared(void* ptr){
   if (allocs_metadata.empty())
     return 0;
   if ( smpi_cfg_shared_malloc == shmalloc_local || smpi_cfg_shared_malloc == shmalloc_global) {
-    if (allocs_metadata.count(ptr) != 0) 
-     return 1;
-    for(auto it : allocs_metadata){
-      if (ptr >= it.first && ptr < (char*)it.first + it.second.size)
-        return 1;
-    }
+    auto low = allocs_metadata.lower_bound(ptr);
+    if (low->first==ptr)
+      return 1;
+    if (low == allocs_metadata.begin())
       return 0;
+    low --;
+    if (ptr < (char*)low->first + low->second.size)
+      return 1;
+    return 0;
   } else {
     return 0;
   }
