@@ -212,6 +212,8 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
     if (smpi_shared_malloc_bogusfile == -1) {
       /* Create a fd to a new file on disk, make it smpi_shared_malloc_blocksize big, and unlink it.
        * It still exists in memory but not in the file system (thus it cannot be leaked). */
+      smpi_shared_malloc_blocksize = static_cast<unsigned long>(xbt_cfg_get_double("smpi/shared-malloc-blocksize"));
+      XBT_DEBUG("global shared allocation. Blocksize %lu", smpi_shared_malloc_blocksize);
       char* name                   = xbt_strdup("/tmp/simgrid-shmalloc-XXXXXX");
       smpi_shared_malloc_bogusfile = mkstemp(name);
       unlink(name);
@@ -230,7 +232,8 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
       void* res = mmap(pos, smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED | MAP_POPULATE,
                        smpi_shared_malloc_bogusfile, 0);
       xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
-                             "STARPU_MALLOC_SIMULATION_FOLD environment variable or the sysctl vm.max_map_count?",
+                             "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ?",
+                             "You can also try using  the sysctl vm.max_map_count",
                  strerror(errno));
     }
     if (size % smpi_shared_malloc_blocksize) {
@@ -238,7 +241,8 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
       void* res = mmap(pos, size % smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE,
                        MAP_FIXED | MAP_SHARED | MAP_POPULATE, smpi_shared_malloc_bogusfile, 0);
       xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
-                             "STARPU_MALLOC_SIMULATION_FOLD environment variable or the sysctl vm.max_map_count?",
+                             "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ?",
+                             "You can also try using  the sysctl vm.max_map_count",
                  strerror(errno));
     }
 
