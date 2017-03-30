@@ -42,6 +42,7 @@ int main(int argc, char **argv)
              xbt_dynar_length(ret));
   SD_task_destroy(taskA);
   SD_task_destroy(taskB);
+  xbt_dynar_free(&ret);
 
   XBT_INFO("Simulation time: %f", SD_get_clock());
 
