@@ -52,7 +52,6 @@ typedef simgrid::surf::CpuModel surf_CpuModel;
 typedef simgrid::surf::Cpu surf_Cpu;
 typedef simgrid::surf::HostModel surf_HostModel;
 typedef simgrid::surf::NetworkModel surf_NetworkModel;
-typedef simgrid::surf::Storage surf_Storage;
 typedef simgrid::surf::StorageModel surf_StorageModel;
 typedef simgrid::surf::Resource surf_Resource;
 typedef simgrid::surf::HostImpl surf_Host;
@@ -65,7 +64,6 @@ typedef struct surf_CpuModel surf_CpuModel;
 typedef struct surf_Cpu surf_Cpu;
 typedef struct surf_HostModel surf_HostModel;
 typedef struct surf_NetworkModel surf_NetworkModel;
-typedef struct surf_Storage surf_Storage;
 typedef struct surf_StorageModel surf_StorageModel;
 typedef struct surf_Resource surf_Resource;
 typedef struct surf_Host surf_Host;
@@ -84,7 +82,6 @@ typedef surf_CpuModel *surf_cpu_model_t;
 typedef surf_HostModel *surf_host_model_t;
 typedef surf_NetworkModel *surf_network_model_t;
 typedef surf_StorageModel *surf_storage_model_t;
-typedef surf_Storage* surf_storage_t;
 
 typedef xbt_dictelm_t surf_resource_t;
 
@@ -117,9 +114,8 @@ XBT_PUBLIC(void) model_help(const char *category, s_surf_model_description_t * t
 /* Generic model object */
 /***************************/
 
-static inline surf_storage_t surf_storage_resource_priv(const void* storage)
-{
-  return (surf_storage_t)xbt_lib_get_level((xbt_dictelm_t)storage, SURF_STORAGE_LEVEL);
+static inline void *surf_storage_resource_priv(const void *storage){
+  return (void*)xbt_lib_get_level((xbt_dictelm_t)storage, SURF_STORAGE_LEVEL);
 }
 
 static inline void *surf_storage_resource_by_name(const char *name){

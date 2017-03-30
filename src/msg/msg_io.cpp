@@ -587,7 +587,8 @@ void *MSG_storage_get_data(msg_storage_t storage)
  */
 xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
 {
-  std::map<std::string, sg_size_t*>* content = surf_storage_resource_priv(storage)->getContent();
+  std::map<std::string, sg_size_t*>* content =
+      static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(storage))->getContent();
   xbt_dict_t content_dict = xbt_dict_new_homogeneous(nullptr);
 
   for (auto entry : *content) {

@@ -88,7 +88,8 @@ void Storage::setProperty(const char* key, char* value)
 
 std::map<std::string, sg_size_t*>* Storage::content()
 {
-  return simgrid::simix::kernelImmediate([this] { return surf_storage_resource_priv(this->pimpl_)->getContent(); });
+  return simgrid::simix::kernelImmediate(
+      [this] { return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(this->pimpl_))->getContent(); });
 }
 
 std::unordered_map<std::string, Storage*>* Storage::allStorages()
