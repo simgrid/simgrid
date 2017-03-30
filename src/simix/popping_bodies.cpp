@@ -347,18 +347,6 @@ inline static int simcall_BODY_file_move(smx_file_t fd, const char* fullpath) {
     return simcall<int, smx_file_t, const char*>(SIMCALL_FILE_MOVE, fd, fullpath);
   }
   
-inline static sg_size_t simcall_BODY_storage_get_free_size(smx_storage_t storage) {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_storage_get_free_size(&SIMIX_process_self()->simcall, storage);
-    return simcall<sg_size_t, smx_storage_t>(SIMCALL_STORAGE_GET_FREE_SIZE, storage);
-  }
-  
-inline static sg_size_t simcall_BODY_storage_get_used_size(smx_storage_t name) {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_storage_get_used_size(&SIMIX_process_self()->simcall, name);
-    return simcall<sg_size_t, smx_storage_t>(SIMCALL_STORAGE_GET_USED_SIZE, name);
-  }
-  
 inline static xbt_dict_t simcall_BODY_storage_get_properties(smx_storage_t storage) {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) SIMIX_storage_get_properties(storage);

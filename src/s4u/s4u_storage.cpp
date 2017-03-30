@@ -59,12 +59,12 @@ const char* Storage::host()
 
 sg_size_t Storage::sizeFree()
 {
-  return simcall_storage_get_free_size(pimpl_);
+  return simgrid::simix::kernelImmediate([this] { return surf_storage_resource_priv(pimpl_)->getFreeSize(); });
 }
 
 sg_size_t Storage::sizeUsed()
 {
-  return simcall_storage_get_used_size(pimpl_);
+  return simgrid::simix::kernelImmediate([this] { return surf_storage_resource_priv(pimpl_)->getUsedSize(); });
 }
 
 sg_size_t Storage::size() {

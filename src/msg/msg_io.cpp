@@ -479,7 +479,7 @@ const char *MSG_storage_get_name(msg_storage_t storage) {
  * \return the free space size of the storage element (as a #sg_size_t)
  */
 sg_size_t MSG_storage_get_free_size(msg_storage_t storage){
-  return simcall_storage_get_free_size(storage);
+  return simgrid::simix::kernelImmediate([storage] { return surf_storage_resource_priv(storage)->getFreeSize(); });
 }
 
 /** \ingroup msg_storage_management
@@ -488,7 +488,7 @@ sg_size_t MSG_storage_get_free_size(msg_storage_t storage){
  * \return the used space size of the storage element (as a #sg_size_t)
  */
 sg_size_t MSG_storage_get_used_size(msg_storage_t storage){
-  return simcall_storage_get_used_size(storage);
+  return simgrid::simix::kernelImmediate([storage] { return surf_storage_resource_priv(storage)->getUsedSize(); });
 }
 
 /** \ingroup msg_storage_management
@@ -587,7 +587,8 @@ void *MSG_storage_get_data(msg_storage_t storage)
  */
 xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
 {
-  std::map<std::string, sg_size_t*>* content = surf_storage_resource_priv(storage)->getContent();
+  std::map<std::string, sg_size_t*>* content =
+      simgrid::simix::kernelImmediate([storage] { return surf_storage_resource_priv(storage)->getContent(); });
   xbt_dict_t content_dict = xbt_dict_new_homogeneous(nullptr);
 
   for (auto entry : *content) {

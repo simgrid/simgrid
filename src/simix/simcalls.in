@@ -96,8 +96,6 @@ int         file_seek(smx_file_t fd, sg_offset_t offset, int origin);
 xbt_dynar_t file_get_info(smx_file_t fd);
 int         file_move(smx_file_t fd, const char* fullpath);
 
-sg_size_t  storage_get_free_size(smx_storage_t storage);
-sg_size_t  storage_get_used_size(smx_storage_t name);
 xbt_dict_t storage_get_properties(smx_storage_t storage) [[nohandler]];
 
 int        mc_random(int min, int max);
