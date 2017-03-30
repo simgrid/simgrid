@@ -1,6 +1,11 @@
 SimGrid (3.16) UNRELEASED
 
-
+SimDag
+ - New and Backwards Compatibility break: 
+   SD_simulate_with_update (double how_long, xbt_dynar_t changed_tasks_dynar)
+   When one wants to get the list of tasks whose states have changed during a
+   simulation round, s/he has to allocate and free a dynar and use it as argument 
+   to this function. The former SD_simulate (double how_long) now returns void.
 
  -- Release target: June 21 2017   -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

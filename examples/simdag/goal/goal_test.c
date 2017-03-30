@@ -65,12 +65,12 @@ int main(int argc, char **argv) {
 
   ws_list = sg_host_list();
   reclaimed = xbt_dynar_new(sizeof(bcast_task_t),xbt_free_ref);
-  xbt_dynar_t done = NULL;
+  xbt_dynar_t done = xbt_dynar_new(sizeof(SD_task_t), NULL);
 
   xbt_os_cputimer_start(timer);
   send_one(0,sg_host_count());
   do {
-    if (done != NULL && !xbt_dynar_is_empty(done)) {
+    if (!xbt_dynar_is_empty(done)) {
       unsigned int cursor;
       SD_task_t task;
 
@@ -89,9 +89,9 @@ int main(int argc, char **argv) {
         }
         SD_task_destroy(task);
       }
-      xbt_dynar_free(&done);
+      xbt_dynar_free_container(&done);
     }
-    done=SD_simulate(-1);
+    SD_simulate_with_update(-1, done);
   } while(!xbt_dynar_is_empty(done));
   xbt_os_cputimer_stop(timer);
   printf("exec_time:%f\n", xbt_os_timer_elapsed(timer) );

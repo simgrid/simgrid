@@ -74,9 +74,9 @@ int main(int argc, char **argv)
   SD_task_watch(t3, SD_DONE);
   SD_task_watch(c3, SD_DONE);
   SD_task_watch(t4, SD_DONE);
-
+  xbt_dynar_t changed_tasks = xbt_dynar_new(sizeof(SD_task_t), NULL);
   while (1) {
-    xbt_dynar_t changed_tasks = SD_simulate(-1.0);
+    SD_simulate_with_update(-1.0, changed_tasks);
     if (xbt_dynar_is_empty(changed_tasks))
       break;
     XBT_INFO("link1: bw=%.0f, lat=%f", sg_host_route_bandwidth(hosts[0], hosts[1]),
@@ -92,9 +92,10 @@ int main(int argc, char **argv)
       if (SD_task_get_state(task)==SD_DONE)
         SD_task_destroy(task);
     }
-    xbt_dynar_free(&changed_tasks);
+    xbt_dynar_reset(changed_tasks);
   }
   SD_exit();
   xbt_free(hosts);
+  xbt_dynar_free(&changed_tasks);
   return 0;
 }

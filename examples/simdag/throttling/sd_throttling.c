@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 {
   unsigned int ctr;
   SD_task_t task;
-  xbt_dynar_t changed_tasks;
+  xbt_dynar_t changed_tasks = xbt_dynar_new(sizeof(SD_task_t), NULL);
 
   SD_init(&argc, argv);
   xbt_assert(argc > 1, "Usage: %s platform_file\n\nExample: %s two_clusters.xml", argv[0], argv[0]);
@@ -44,13 +44,15 @@ int main(int argc, char **argv)
   SD_task_schedulel(taskA, 1, hosts[0]);
   SD_task_schedulel(taskC, 1, hosts[1]);
   SD_task_schedulel(taskE, 1, hosts[0]);
-  while (!xbt_dynar_is_empty((changed_tasks = SD_simulate(-1.0)))) {
+
+  SD_simulate_with_update(-1.0, changed_tasks);
+  while (!xbt_dynar_is_empty(changed_tasks)) {
     XBT_INFO("Simulation stopped after %.4f seconds", SD_get_clock());
     xbt_dynar_foreach(changed_tasks, ctr, task) {
       XBT_INFO("Task '%s' start time: %f, finish time: %f", SD_task_get_name(task), SD_task_get_start_time(task),
                SD_task_get_finish_time(task));
     }
-    xbt_dynar_free(&changed_tasks);
+    xbt_dynar_reset(changed_tasks);
 
     /* let throttle the communication for taskD if its parent is SD_DONE */
     /* the bandwidth is 1.25e8, the data size is 1e7, and we want to throttle the bandwidth by a factor 2.
@@ -59,7 +61,10 @@ int main(int argc, char **argv)
      */
     if (SD_task_get_state(taskC) == SD_DONE && SD_task_get_state(taskD) < SD_RUNNING)
       SD_task_set_rate(taskD, 6.25);
+    SD_simulate_with_update(-1.0, changed_tasks);
   }
+
+  xbt_dynar_free(&changed_tasks);
 
   XBT_DEBUG("Destroying tasks...");
   SD_task_destroy(taskA);

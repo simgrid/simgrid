@@ -171,13 +171,18 @@ int main(int argc, char **argv)
   xbt_dynar_get_cpy(dax, 0, &task);
   sg_host_t host = SD_task_get_best_host(task);
   SD_task_schedulel(task, 1, host);
+  xbt_dynar_t changed_tasks = xbt_dynar_new(sizeof(SD_task_t), NULL);
+  SD_simulate_with_update(-1.0, changed_tasks);
 
-  while (!xbt_dynar_is_empty(SD_simulate(-1.0))) {
+  while (!xbt_dynar_is_empty(changed_tasks)) {
     /* Get the set of ready tasks */
     ready_tasks = get_ready_tasks(dax);
+    xbt_dynar_reset(changed_tasks);
+
     if (xbt_dynar_is_empty(ready_tasks)) {
       xbt_dynar_free_container(&ready_tasks);
       /* there is no ready task, let advance the simulation */
+      SD_simulate_with_update(-1.0, changed_tasks);
       continue;
     }
     /* For each ready task:
@@ -219,6 +224,8 @@ int main(int argc, char **argv)
     xbt_dynar_free_container(&ready_tasks);
     /* reset the min_finish_time for the next set of ready tasks */
     min_finish_time = -1.;
+    xbt_dynar_reset(changed_tasks);
+    SD_simulate_with_update(-1.0, changed_tasks);
   }
 
   XBT_INFO("Simulation Time: %f", SD_get_clock());
@@ -230,6 +237,7 @@ int main(int argc, char **argv)
   free(tracefilename);
 
   xbt_dynar_free_container(&ready_tasks);
+  xbt_dynar_free(&changed_tasks);
 
   xbt_dynar_foreach(dax, cursor, task) {
     SD_task_destroy(task);
