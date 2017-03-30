@@ -300,8 +300,6 @@ static void test3(method_t method)
 
 int main(int argc, char **argv)
 {
-  surf_init(&argc, argv);
-
   XBT_INFO("***** Test 1 (Max-Min)");
   test1(MAXMIN);
   XBT_INFO("***** Test 1 (Lagrange - Vegas)");
@@ -323,6 +321,5 @@ int main(int argc, char **argv)
   XBT_INFO("***** Test 3 (Lagrange - Reno)");
   test3(LAGRANGE_RENO);
 
-  surf_exit();
   return 0;
 }
