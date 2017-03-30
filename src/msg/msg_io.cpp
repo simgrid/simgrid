@@ -447,8 +447,8 @@ msg_storage_t __MSG_storage_create(smx_storage_t storage)
   msg_storage_priv_t storage_private = xbt_new0(s_msg_storage_priv_t, 1);
 
   storage_private->name     = SIMIX_storage_get_name(storage);
-  storage_private->hostname = SIMIX_storage_get_host(storage);
-  storage_private->size     = SIMIX_storage_get_size(storage);
+  storage_private->hostname = surf_storage_get_host(storage);
+  storage_private->size     = surf_storage_get_size(storage);
 
   xbt_lib_set(storage_lib, storage_private->name, MSG_STORAGE_LEVEL, storage_private);
   return xbt_lib_get_elm_or_null(storage_lib, storage_private->name);

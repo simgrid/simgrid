@@ -212,10 +212,6 @@ int SIMIX_file_move(smx_actor_t process, smx_file_t file, const char* fullpath)
   return  surf_host_file_move(host, file->surf_file, fullpath);
 }
 
-sg_size_t SIMIX_storage_get_size(smx_storage_t storage){
-  return surf_storage_get_size(storage);
-}
-
 sg_size_t simcall_HANDLER_storage_get_free_size(smx_simcall_t simcall, smx_storage_t storage)
 {
   return SIMIX_storage_get_free_size(simcall->issuer, storage);
@@ -242,10 +238,6 @@ xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage){
 
 const char* SIMIX_storage_get_name(smx_storage_t storage){
   return sg_storage_name(storage);
-}
-
-const char* SIMIX_storage_get_host(smx_storage_t storage){
-  return surf_storage_get_host(storage);
 }
 
 void SIMIX_io_destroy(smx_activity_t synchro)

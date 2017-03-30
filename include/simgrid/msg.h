@@ -226,7 +226,6 @@ XBT_PUBLIC(msg_error_t) MSG_storage_set_data(msg_storage_t host, void *data);
 XBT_PUBLIC(void *) MSG_storage_get_data(msg_storage_t storage);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_content(msg_storage_t storage);
 XBT_PUBLIC(sg_size_t) MSG_storage_get_size(msg_storage_t storage);
-XBT_PUBLIC(msg_error_t) MSG_storage_file_move(msg_file_t fd, msg_host_t dest, char* mount, char* fullname);
 XBT_PUBLIC(const char *) MSG_storage_get_host(msg_storage_t storage);
 
 /************************** Host handling ***********************************/

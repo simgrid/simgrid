@@ -101,4 +101,6 @@ $ ./storage_client_server$EXEEXT ${srcdir:=.}/../../../examples/platforms/storag
 > [  1.207952] (server@alice) 	\Windows\win.ini size: 92 bytes
 > [  1.207952] (server@alice) 	\Windows\winhlp32.exe size: 10752 bytes
 > [  1.207952] (server@alice) 	\Windows\write.exe size: 10752 bytes
+> [  1.207952] (server@alice) Storage Disk1 is attached to bob
+> [  1.207952] (server@alice) Storage Disk2 is attached to alice
 > [  1.207952] (maestro@) Simulated time: 1.20795

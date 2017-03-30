@@ -161,7 +161,6 @@ void HostImpl::getAttachedStorageList(std::vector<const char*>* storages)
 
 Action* HostImpl::open(const char* fullpath)
 {
-
   simgrid::surf::Storage* st = nullptr;
   size_t longest_prefix_length = 0;
   std::string path;

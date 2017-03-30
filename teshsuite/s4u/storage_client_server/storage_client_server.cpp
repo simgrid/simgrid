@@ -92,21 +92,18 @@ static void get_set_storage_data(const char* storage_name)
   xbt_free(data);
 }
 
-// static void dump_platform_storages(void){
-//  unsigned int cursor;
-//  xbt_dynar_t storages = MSG_storages_as_dynar();
-//  msg_storage_t storage;
-//  xbt_dynar_foreach(storages, cursor, storage){
-//    XBT_INFO("Storage %s is attached to %s", MSG_storage_get_name(storage), MSG_storage_get_host(storage));
-//    MSG_storage_set_property_value(storage, "other usage", xbt_strdup("gpfs"));
-//  }
-//  xbt_dynar_free(&storages);
-// Expected output in tesh file
-//> [  1.207952] (server@alice) Storage Disk1 is attached to bob
-//> [  1.207952] (server@alice) Storage Disk2 is attached to alice
-//> [  1.207952] (server@alice) Storage Disk3 is attached to carl
-//> [  1.207952] (server@alice) Storage Disk4 is attached to denise
-//}
+static void dump_platform_storages(void)
+{
+  std::unordered_map<std::string, simgrid::s4u::Storage*>* storages = simgrid::s4u::Storage().allStorages();
+
+  for (auto storage : *storages) {
+    XBT_INFO("Storage %s is attached to %s", storage.first.c_str(), storage.second->host());
+    storage.second->setProperty("other usage", xbt_strdup("gpfs"));
+  }
+  // Expected output in tesh file that's missing for now
+  //> [  1.207952] (server@alice) Storage Disk3 is attached to carl
+  //> [  1.207952] (server@alice) Storage Disk4 is attached to denise
+}
 
 static void storage_info(simgrid::s4u::Host* host)
 {
@@ -165,7 +162,7 @@ static void server()
   }
 
   storage_info(simgrid::s4u::this_actor::host());
-  //  dump_platform_storages();
+  dump_platform_storages();
 }
 
 int main(int argc, char* argv[])
