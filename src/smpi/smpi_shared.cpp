@@ -201,7 +201,11 @@ void *smpi_shared_malloc_local(size_t size, const char *file, int line)
   return mem;
 }
 
-void *smpi_shared_malloc_global(size_t size, const char *file, int line) {
+// Align functions, from http://stackoverflow.com/questions/4840410/how-to-align-a-pointer-in-c
+#define ALIGN_UP(n, align) (((n) + (align)-1) & -(align))
+#define ALIGN_DOWN(n, align) ((n) & -(align))
+
+void *smpi_shared_malloc_global__(size_t size, const char *file, int line, int *shared_block_offsets, int nb_shared_blocks) {
   void *mem;
   /* First reserve memory area */
   mem = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
@@ -228,36 +232,51 @@ void *smpi_shared_malloc_global(size_t size, const char *file, int line) {
   }
 
   /* Map the bogus file in place of the anonymous memory */
-  unsigned int i;
-  for (i = 0; i < size / smpi_shared_malloc_blocksize; i++) {
-    void* pos = (void*)((unsigned long)mem + i * smpi_shared_malloc_blocksize);
-    void* res = mmap(pos, smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED | MAP_POPULATE,
-                     smpi_shared_malloc_bogusfile, 0);
-    xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
-                           "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ?"
-                           "You can also try using  the sysctl vm.max_map_count",
-               strerror(errno));
-  }
-  if (size % smpi_shared_malloc_blocksize) {
-    void* pos = (void*)((unsigned long)mem + i * smpi_shared_malloc_blocksize);
-    void* res = mmap(pos, size % smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE,
-                     MAP_FIXED | MAP_SHARED | MAP_POPULATE, smpi_shared_malloc_bogusfile, 0);
-    xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
-                           "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ?"
-                           "You can also try using  the sysctl vm.max_map_count",
-               strerror(errno));
+  for(int i_block = 0; i_block < nb_shared_blocks; i_block ++) {
+    int start_offset = ALIGN_UP(shared_block_offsets[2*i_block], smpi_shared_malloc_blocksize);
+    int stop_offset = ALIGN_DOWN(shared_block_offsets[2*i_block+1], smpi_shared_malloc_blocksize);
+    unsigned int i;
+    for (i = start_offset; i < stop_offset / smpi_shared_malloc_blocksize; i++) {
+      void* pos = (void*)((unsigned long)mem + i * smpi_shared_malloc_blocksize);
+      void* res = mmap(pos, smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED | MAP_POPULATE,
+                       smpi_shared_malloc_bogusfile, 0);
+      xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
+                             "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ?"
+                             "You can also try using  the sysctl vm.max_map_count",
+                 strerror(errno));
+    }
   }
 
-  shared_metadata_t newmeta;
-  //register metadata for memcpy avoidance
-  shared_data_key_type* data = (shared_data_key_type*)xbt_malloc(sizeof(shared_data_key_type));
-  data->second.fd = -1;
-  data->second.count = 1;
-  newmeta.size = size;
-  newmeta.data = data;
-  allocs_metadata[mem] = newmeta;
+  if(nb_shared_blocks == 1 && shared_block_offsets[0] == 0 && shared_block_offsets[1] == size) {
+    shared_metadata_t newmeta;
+    //register metadata for memcpy avoidance
+    shared_data_key_type* data = (shared_data_key_type*)xbt_malloc(sizeof(shared_data_key_type));
+    data->second.fd = -1;
+    data->second.count = 1;
+    newmeta.size = size;
+    newmeta.data = data;
+    allocs_metadata[mem] = newmeta;
+  }
 
   return mem;
+}
+
+/*
+ * When nb_shared_blocks == -1, default behavior of smpi_shared_malloc: everything is shared.
+ * Otherwise, only the blocks described by shared_block_offsets are shared.
+ * This array contains the offsets (in bytes) of the block to share.
+ * Even indices are the start offsets (included), odd indices are the stop offsets (excluded).
+ * For instance, if shared_block_offsets == {27, 42}, then the elements mem[27], mem[28], ..., mem[41] are shared. The others are not.
+ */
+void *smpi_shared_malloc_global(size_t size, const char *file, int line, int *shared_block_offsets=NULL, int nb_shared_blocks=-1) {
+  int tmp_shared_block_offsets[2];
+  if(nb_shared_blocks == -1) {
+    nb_shared_blocks = 1;
+    shared_block_offsets = tmp_shared_block_offsets;
+    shared_block_offsets[0] = 0;
+    shared_block_offsets[1] = size;
+  }
+  return smpi_shared_malloc_global__(size, file, line, shared_block_offsets, nb_shared_blocks);
 }
 
 void *smpi_shared_malloc(size_t size, const char *file, int line) {
