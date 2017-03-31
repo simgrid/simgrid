@@ -298,7 +298,7 @@ static void test3(method_t method)
   xbt_free(A);
 }
 
-int main(int argc, char **argv)
+int main()
 {
   XBT_INFO("***** Test 1 (Max-Min)");
   test1(MAXMIN);

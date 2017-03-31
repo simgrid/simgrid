@@ -21,8 +21,6 @@ namespace surf {
  * Classes *
  ***********/
 
-class StorageModel;
-class Storage;
 class StorageAction;
 
 /*************

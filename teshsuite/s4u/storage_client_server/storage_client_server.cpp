@@ -84,15 +84,15 @@ static void get_set_storage_data(const char* storage_name)
   XBT_INFO("*** GET/SET DATA for storage element: %s ***", storage_name);
   simgrid::s4u::Storage& storage = simgrid::s4u::Storage::byName(storage_name);
 
-  char* data = (char*)storage.userdata();
+  char* data = static_cast<char*>(storage.userdata());
   XBT_INFO("Get data: '%s'", data);
   storage.setUserdata(xbt_strdup("Some data"));
-  data = (char*)storage.userdata();
+  data = static_cast<char*>(storage.userdata());
   XBT_INFO("\tSet and get data: '%s'", data);
   xbt_free(data);
 }
 
-static void dump_platform_storages(void)
+static void dump_platform_storages()
 {
   std::unordered_map<std::string, simgrid::s4u::Storage*>* storages = simgrid::s4u::Storage().allStorages();
 
