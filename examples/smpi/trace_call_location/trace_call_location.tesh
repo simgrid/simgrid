@@ -4,15 +4,7 @@
 
 p Test SMPI with call-location tracing. This means that the binary must have
 p already been compiled with the -trace-call-location switch.
-$ ../../smpi_script/bin/smpirun -trace -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=smpi/trace-call-location:1 -np 3 ${bindir:=.}/trace_call_location/smpi_trace_call_location --cfg=smpi/host-speed:-1 --log=smpi_kernel.thres:warning 
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_trace.trace'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/trace-call-location' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/host-speed' to '-1'
+$ ../../smpi_script/bin/smpirun -trace -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=smpi/trace-call-location:1 -np 3 ${bindir:=.}/trace_call_location/smpi_trace_call_location --cfg=smpi/host-speed:-1 --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 
 $ grep --quiet "12 0.* 2 1 5 .*trace_call_location\.c\" 14$" ./smpi_trace.trace 
 
