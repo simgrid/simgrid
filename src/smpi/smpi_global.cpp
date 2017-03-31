@@ -105,7 +105,7 @@ void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, s
 
 void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t buff_size)
 {
-  void* tmpbuff=buff;
+
   simgrid::kernel::activity::Comm *comm = dynamic_cast<simgrid::kernel::activity::Comm*>(synchro);
 
   XBT_DEBUG("Copy the data over");
@@ -114,7 +114,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
   }else if(smpi_is_shared((char*)comm->dst_buff)){
     XBT_DEBUG("Receiver %p is shared. Let's ignore it.", (char*)comm->dst_buff);
   }else{
-
+    void* tmpbuff=buff;
     if((smpi_privatize_global_variables) && (static_cast<char*>(buff) >= smpi_start_data_exe)
         && (static_cast<char*>(buff) < smpi_start_data_exe + smpi_size_data_exe )
       ){
@@ -135,17 +135,18 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
 
     XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff,comm->dst_buff);
     memcpy(comm->dst_buff, tmpbuff, buff_size);
-  }
-  if (comm->detached) {
-    // if this is a detached send, the source buffer was duplicated by SMPI
-    // sender to make the original buffer available to the application ASAP
-    xbt_free(buff);
-    //It seems that the request is used after the call there this should be free somewhere else but where???
-    //xbt_free(comm->comm.src_data);// inside SMPI the request is kept inside the user data and should be free
-    comm->src_buff = nullptr;
+
+    if (comm->detached) {
+      // if this is a detached send, the source buffer was duplicated by SMPI
+      // sender to make the original buffer available to the application ASAP
+      xbt_free(buff);
+      //It seems that the request is used after the call there this should be free somewhere else but where???
+      //xbt_free(comm->comm.src_data);// inside SMPI the request is kept inside the user data and should be free
+      comm->src_buff = nullptr;
+    }
+    if(tmpbuff!=buff)xbt_free(tmpbuff);
   }
 
-  if(tmpbuff!=buff)xbt_free(tmpbuff);
 }
 
 void smpi_comm_null_copy_buffer_callback(smx_activity_t comm, void *buff, size_t buff_size)
