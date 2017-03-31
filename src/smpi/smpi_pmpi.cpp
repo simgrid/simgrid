@@ -2975,7 +2975,7 @@ int PMPI_Attr_delete(MPI_Comm comm, int keyval) {
 int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
   static int one = 1;
   static int zero = 0;
-  static int tag_ub = 1000000;
+  static int tag_ub = INT_MAX;
   static int last_used_code = MPI_ERR_LASTCODE;
 
   if (comm==MPI_COMM_NULL){
