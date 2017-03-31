@@ -533,9 +533,6 @@ void xbt_dict_preinit()
   if (dict_elm_mallocator == nullptr)
     dict_elm_mallocator = xbt_mallocator_new(256, dict_elm_mallocator_new_f, dict_elm_mallocator_free_f,
       dict_elm_mallocator_reset_f);
-  if (dict_het_elm_mallocator == nullptr)
-    dict_het_elm_mallocator = xbt_mallocator_new(256, dict_het_elm_mallocator_new_f, dict_het_elm_mallocator_free_f,
-      dict_het_elm_mallocator_reset_f);
 }
 
 /**
@@ -547,8 +544,6 @@ void xbt_dict_postexit()
   if (dict_elm_mallocator != nullptr) {
     xbt_mallocator_free(dict_elm_mallocator);
     dict_elm_mallocator = nullptr;
-    xbt_mallocator_free(dict_het_elm_mallocator);
-    dict_het_elm_mallocator = nullptr;
   }
   if (all_sizes) {
     unsigned int count;
