@@ -94,6 +94,7 @@ void Process::set_data(int index, int *argc, char ***argv)
     argv_ = argv;
     // set the process attached to the mailbox
     mailbox_small_->setReceiver(simgrid::s4u::Actor::self());
+    process_ = SIMIX_process_self();
     XBT_DEBUG("<%d> New process in the game: %p", index, SIMIX_process_self());
 }
 
@@ -162,6 +163,10 @@ void Process::set_user_data(void *data)
 void *Process::get_user_data()
 {
   return data_;
+}
+
+smx_actor_t Process::process(){
+  return process_;
 }
 
 

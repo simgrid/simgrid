@@ -37,6 +37,7 @@ class Process {
     msg_bar_t finalization_barrier_;
     int return_value_;
     smpi_trace_call_location_t trace_call_loc_;
+    smx_actor_t process_;
 #if HAVE_PAPI
   /** Contains hardware data as read by PAPI **/
     int papi_event_set_;
@@ -77,6 +78,7 @@ class Process {
     int return_value();
     void set_return_value(int val);
     static void init(int *argc, char ***argv);
+    smx_actor_t process();
 };
 
 
