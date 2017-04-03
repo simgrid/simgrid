@@ -173,6 +173,9 @@ int Win::fence(int assert)
     count_=0;
     xbt_mutex_release(mut_);
   }
+
+  if(assert==MPI_MODE_NOSUCCEED)//there should be no ops after this one, tell we are closed.
+    opened_=0;
   assert_ = assert;
 
   MSG_barrier_wait(bar_);
