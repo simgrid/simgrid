@@ -354,7 +354,8 @@ int Win::get_accumulate( void *origin_addr, int origin_count, MPI_Datatype origi
 
   get(result_addr, result_count, result_datatype, target_rank,
               target_disp, target_count, target_datatype);
-  accumulate(origin_addr, origin_count, origin_datatype, target_rank,
+  if(op!=MPI_NO_OP)
+    accumulate(origin_addr, origin_count, origin_datatype, target_rank,
               target_disp, target_count, target_datatype, op);
 
   return MPI_SUCCESS;
