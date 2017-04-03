@@ -398,42 +398,44 @@ void Request::start()
   if ((flags_ & RECV) != 0) {
     this->print_request("New recv");
 
+    simgrid::smpi::Process* process = smpi_process_remote(dst_);
+
     int async_small_thresh = xbt_cfg_get_int("smpi/async-small-thresh");
 
-    xbt_mutex_t mut = smpi_process()->mailboxes_mutex();
+    xbt_mutex_t mut = process->mailboxes_mutex();
     if (async_small_thresh != 0 || (flags_ & RMA) != 0)
       xbt_mutex_acquire(mut);
 
     if (async_small_thresh == 0 && (flags_ & RMA) == 0 ) {
-      mailbox = smpi_process()->mailbox();
+      mailbox = process->mailbox();
     } 
     else if (((flags_ & RMA) != 0) || static_cast<int>(size_) < async_small_thresh) {
       //We have to check both mailboxes (because SSEND messages are sent to the large mbox).
       //begin with the more appropriate one : the small one.
-      mailbox = smpi_process()->mailbox_small();
+      mailbox = process->mailbox_small();
       XBT_DEBUG("Is there a corresponding send already posted in the small mailbox %p (in case of SSEND)?", mailbox);
       smx_activity_t action = simcall_comm_iprobe(mailbox, 0, src_,tag_, &match_recv,
                                                   static_cast<void*>(this));
 
       if (action == nullptr) {
-        mailbox = smpi_process()->mailbox();
+        mailbox = process->mailbox();
         XBT_DEBUG("No, nothing in the small mailbox test the other one : %p", mailbox);
         action = simcall_comm_iprobe(mailbox, 0, src_,tag_, &match_recv, static_cast<void*>(this));
         if (action == nullptr) {
           XBT_DEBUG("Still nothing, switch back to the small mailbox : %p", mailbox);
-          mailbox = smpi_process()->mailbox_small();
+          mailbox = process->mailbox_small();
         }
       } else {
         XBT_DEBUG("yes there was something for us in the large mailbox");
       }
     } else {
-      mailbox = smpi_process()->mailbox_small();
+      mailbox = process->mailbox_small();
       XBT_DEBUG("Is there a corresponding send already posted the small mailbox?");
       smx_activity_t action = simcall_comm_iprobe(mailbox, 0, src_,tag_, &match_recv, static_cast<void*>(this));
 
       if (action == nullptr) {
         XBT_DEBUG("No, nothing in the permanent receive mailbox");
-        mailbox = smpi_process()->mailbox();
+        mailbox = process->mailbox();
       } else {
         XBT_DEBUG("yes there was something for us in the small mailbox");
       }
@@ -441,19 +443,18 @@ void Request::start()
 
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     real_size_=size_;
-    action_ = simcall_comm_irecv(SIMIX_process_self(), mailbox, buf_, &real_size_, &match_recv,
-                                         ! smpi_process()->replaying()? smpi_comm_copy_data_callback
+    action_ = simcall_comm_irecv(process->process(), mailbox, buf_, &real_size_, &match_recv,
+                                         ! process->replaying()? smpi_comm_copy_data_callback
                                          : &smpi_comm_null_copy_buffer_callback, this, -1.0);
     XBT_DEBUG("recv simcall posted");
 
     if (async_small_thresh != 0 || (flags_ & RMA) != 0 )
       xbt_mutex_release(mut);
   } else { /* the RECV flag was not set, so this is a send */
-    int receiver = dst_;
-
+    simgrid::smpi::Process* process = smpi_process_remote(dst_);
     int rank = src_;
     if (TRACE_smpi_view_internals()) {
-      TRACE_smpi_send(rank, rank, receiver, tag_, size_);
+      TRACE_smpi_send(rank, rank, dst_, tag_, size_);
     }
     this->print_request("New send");
 
@@ -466,7 +467,7 @@ void Request::start()
       refcount_++;
       if(!(old_type_->flags() & DT_FLAG_DERIVED)){
         oldbuf = buf_;
-        if (!smpi_process()->replaying() && oldbuf != nullptr && size_!=0){
+        if (!process->replaying() && oldbuf != nullptr && size_!=0){
           if((smpi_privatize_global_variables != 0)
             && (static_cast<char*>(buf_) >= smpi_start_data_exe)
             && (static_cast<char*>(buf_) < smpi_start_data_exe + smpi_size_data_exe )){
@@ -494,36 +495,36 @@ void Request::start()
 
     int async_small_thresh = xbt_cfg_get_int("smpi/async-small-thresh");
 
-    xbt_mutex_t mut=smpi_process_remote(receiver)->mailboxes_mutex();
+    xbt_mutex_t mut=process->mailboxes_mutex();
 
     if (async_small_thresh != 0 || (flags_ & RMA) != 0)
       xbt_mutex_acquire(mut);
 
     if (!(async_small_thresh != 0 || (flags_ & RMA) !=0)) {
-      mailbox = smpi_process_remote(receiver)->mailbox();
+      mailbox = process->mailbox();
     } else if (((flags_ & RMA) != 0) || static_cast<int>(size_) < async_small_thresh) { // eager mode
-      mailbox = smpi_process_remote(receiver)->mailbox();
+      mailbox = process->mailbox();
       XBT_DEBUG("Is there a corresponding recv already posted in the large mailbox %p?", mailbox);
       smx_activity_t action = simcall_comm_iprobe(mailbox, 1,dst_, tag_, &match_send,
                                                   static_cast<void*>(this));
       if (action == nullptr) {
         if ((flags_ & SSEND) == 0){
-          mailbox = smpi_process_remote(receiver)->mailbox_small();
+          mailbox = process->mailbox_small();
           XBT_DEBUG("No, nothing in the large mailbox, message is to be sent on the small one %p", mailbox);
         } else {
-          mailbox = smpi_process_remote(receiver)->mailbox_small();
+          mailbox = process->mailbox_small();
           XBT_DEBUG("SSEND : Is there a corresponding recv already posted in the small mailbox %p?", mailbox);
           action = simcall_comm_iprobe(mailbox, 1,dst_, tag_, &match_send, static_cast<void*>(this));
           if (action == nullptr) {
             XBT_DEBUG("No, we are first, send to large mailbox");
-            mailbox = smpi_process_remote(receiver)->mailbox();
+            mailbox = process->mailbox();
           }
         }
       } else {
         XBT_DEBUG("Yes there was something for us in the large mailbox");
       }
     } else {
-      mailbox = smpi_process_remote(receiver)->mailbox();
+      mailbox = process->mailbox();
       XBT_DEBUG("Send request %p is in the large mailbox %p (buf: %p)",mailbox, this,buf_);
     }
 
@@ -532,7 +533,7 @@ void Request::start()
     action_ = simcall_comm_isend(SIMIX_process_from_PID(src_+1), mailbox, size_, -1.0,
                                          buf, real_size_, &match_send,
                          &xbt_free_f, // how to free the userdata if a detached send fails
-                         !smpi_process()->replaying() ? smpi_comm_copy_data_callback
+                         !process->replaying() ? smpi_comm_copy_data_callback
                          : &smpi_comm_null_copy_buffer_callback, this,
                          // detach if msg size < eager/rdv switch limit
                          detached_);
