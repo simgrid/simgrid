@@ -161,13 +161,7 @@ int Win::fence(int assert)
     int size = static_cast<int>(reqs->size());
     // start all requests that have been prepared by another process
     if (size > 0) {
-      for (const auto& req : *reqs) {
-        if (req && (req->flags() & PREPARED))
-          req->start();
-      }
-
       MPI_Request* treqs = &(*reqs)[0];
-
       Request::waitall(size, treqs, MPI_STATUSES_IGNORE);
     }
     count_=0;
@@ -221,7 +215,7 @@ int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     xbt_mutex_release(recv_win->mut_);
     //start send
     sreq->start();
-
+    rreq->start();
     //push request to sender's win
     xbt_mutex_acquire(mut_);
     requests_->push_back(sreq);
@@ -327,7 +321,7 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
     xbt_mutex_release(recv_win->mut_);
     //start send
     sreq->start();
-
+    rreq->start();
     //push request to sender's win
     xbt_mutex_acquire(mut_);
     requests_->push_back(sreq);
@@ -556,12 +550,6 @@ int Win::finish_comms(){
   std::vector<MPI_Request> *reqqs = requests_;
   int size = static_cast<int>(reqqs->size());
   if (size > 0) {
-    // start all requests that have been prepared by another process
-    for (const auto& req : *reqqs) {
-      if (req && (req->flags() & PREPARED))
-        req->start();
-    }
-
     MPI_Request* treqs = &(*reqqs)[0];
     Request::waitall(size, treqs, MPI_STATUSES_IGNORE);
     reqqs->clear();
