@@ -2752,6 +2752,10 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
   return retval;
 }
 
+int PMPI_Fetch_and_op(void *origin_addr, void *result_addr, MPI_Datatype dtype, int target_rank, MPI_Aint target_disp, MPI_Op op, MPI_Win win){
+  return PMPI_Get_accumulate(origin_addr, origin_addr==nullptr?0:1, dtype, result_addr, 1, dtype, target_rank, target_disp, 1, dtype, op, win);
+}
+
 int PMPI_Win_post(MPI_Group group, int assert, MPI_Win win){
   int retval = 0;
   smpi_bench_end();
