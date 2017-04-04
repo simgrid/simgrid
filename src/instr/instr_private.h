@@ -182,17 +182,25 @@ typedef struct s_subVariable {
   double value;
 }s_subVariable_t;
 
-typedef struct s_setState *setState_t;
-typedef struct s_setState {
+class s_setState;
+
+typedef s_setState *setState_t;
+class s_setState {
+  public:
   container_t container;
   type_t type;
   val_t value;
   const char* filename;
   int linenumber;
-}s_setState_t;
+};
 
-typedef struct s_pushState *pushState_t;
-typedef struct s_pushState {
+typedef s_setState s_setState_t;
+
+class s_pushState;
+
+typedef s_pushState *pushState_t;
+class s_pushState {
+  public:
   container_t container;
   type_t type;
   val_t value;
@@ -200,7 +208,9 @@ typedef struct s_pushState {
   const char* filename;
   int linenumber;
   void* extra;
-}s_pushState_t;
+};
+
+typedef s_pushState s_pushState_t;
 
 typedef struct s_popState *popState_t;
 typedef struct s_popState {
