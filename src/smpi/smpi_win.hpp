@@ -73,7 +73,14 @@ public:
   static Win* f2c(int id);
   int lock(int lock_type, int rank, int assert);
   int unlock(int rank);
+  int lock_all(int assert);
+  int unlock_all();
+  int flush(int rank);
+  int flush_local(int rank);
+  int flush_all();
+  int flush_local_all();
   int finish_comms();
+  int finish_comms(int rank);
 };
 
 

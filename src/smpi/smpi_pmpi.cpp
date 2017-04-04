@@ -2861,6 +2861,100 @@ int PMPI_Win_unlock(int rank, MPI_Win win){
   return retval;
 }
 
+int PMPI_Win_lock_all(int assert, MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  } else {
+    int myrank = smpi_process()->index();
+    TRACE_smpi_collective_in(myrank, -1, __FUNCTION__, nullptr);
+    retval = win->lock_all(assert);
+    TRACE_smpi_collective_out(myrank, -1, __FUNCTION__);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Win_unlock_all(MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  } else {
+    int myrank = smpi_process()->index();
+    TRACE_smpi_collective_in(myrank, -1, __FUNCTION__, nullptr);
+    retval = win->unlock_all();
+    TRACE_smpi_collective_out(myrank, -1, __FUNCTION__);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Win_flush(int rank, MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  } else if (rank == MPI_PROC_NULL){ 
+    retval = MPI_SUCCESS;
+  } else {
+    int myrank = smpi_process()->index();
+    TRACE_smpi_collective_in(myrank, -1, __FUNCTION__, nullptr);
+    retval = win->flush(rank);
+    TRACE_smpi_collective_out(myrank, -1, __FUNCTION__);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Win_flush_local(int rank, MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  } else if (rank == MPI_PROC_NULL){ 
+    retval = MPI_SUCCESS;
+  } else {
+    int myrank = smpi_process()->index();
+    TRACE_smpi_collective_in(myrank, -1, __FUNCTION__, nullptr);
+    retval = win->flush_local(rank);
+    TRACE_smpi_collective_out(myrank, -1, __FUNCTION__);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Win_flush_all(MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  } else {
+    int myrank = smpi_process()->index();
+    TRACE_smpi_collective_in(myrank, -1, __FUNCTION__, nullptr);
+    retval = win->flush_all();
+    TRACE_smpi_collective_out(myrank, -1, __FUNCTION__);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Win_flush_local_all(MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  } else {
+    int myrank = smpi_process()->index();
+    TRACE_smpi_collective_in(myrank, -1, __FUNCTION__, nullptr);
+    retval = win->flush_local_all();
+    TRACE_smpi_collective_out(myrank, -1, __FUNCTION__);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
 int PMPI_Alloc_mem(MPI_Aint size, MPI_Info info, void *baseptr){
   void *ptr = xbt_malloc(size);
   if(ptr==nullptr)

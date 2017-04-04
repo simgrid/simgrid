@@ -523,6 +523,17 @@ int Win::lock(int lock_type, int rank, int assert){
   return MPI_SUCCESS;
 }
 
+int Win::lock_all(int assert){
+  int i=0;
+  int retval = MPI_SUCCESS;
+  for (i=0; i<comm_->size();i++){
+      int ret = this->lock(MPI_LOCK_SHARED, i, assert);
+      if(ret != MPI_SUCCESS)
+        retval = ret;
+  }
+  return retval;
+}
+
 int Win::unlock(int rank){
   if(opened_!=0)
     return MPI_ERR_WIN;
@@ -541,6 +552,50 @@ int Win::unlock(int rank){
   return MPI_SUCCESS;
 }
 
+int Win::unlock_all(){
+  int i=0;
+  int retval = MPI_SUCCESS;
+  for (i=0; i<comm_->size();i++){
+      int ret = this->unlock(i);
+      if(ret != MPI_SUCCESS)
+        retval = ret;
+  }
+  return retval;
+}
+
+int Win::flush(int rank){
+  MPI_Win target_win = connected_wins_[rank];
+  int finished = finish_comms(rank);
+  XBT_DEBUG("Win_flush on local %d - Finished %d RMA calls", rank_, finished);
+  finished = target_win->finish_comms(rank_);
+  XBT_DEBUG("Win_flush on remote %d - Finished %d RMA calls", rank, finished);
+  return MPI_SUCCESS;
+}
+
+int Win::flush_local(int rank){
+  int finished = finish_comms(rank);
+  XBT_DEBUG("Win_flush_local for rank %d - Finished %d RMA calls", rank, finished);
+  return MPI_SUCCESS;
+}
+
+int Win::flush_all(){
+  int i=0;
+  int finished = 0;
+  finished = finish_comms();
+  XBT_DEBUG("Win_flush_all on local - Finished %d RMA calls", finished);
+  for (i=0; i<comm_->size();i++){
+    finished = connected_wins_[i]->finish_comms(rank_);
+    XBT_DEBUG("Win_flush_all on %d - Finished %d RMA calls", i, finished);
+  }
+  return MPI_SUCCESS;
+}
+
+int Win::flush_local_all(){
+  int finished = finish_comms();
+  XBT_DEBUG("Win_flush_local_all - Finished %d RMA calls", finished);
+  return MPI_SUCCESS;
+}
+
 Win* Win::f2c(int id){
   return static_cast<Win*>(F2C::f2c(id));
 }
@@ -555,6 +610,35 @@ int Win::finish_comms(){
     MPI_Request* treqs = &(*reqqs)[0];
     Request::waitall(size, treqs, MPI_STATUSES_IGNORE);
     reqqs->clear();
+  }
+  xbt_mutex_release(mut_);
+  return size;
+}
+
+int Win::finish_comms(int rank){
+  xbt_mutex_acquire(mut_);
+  //Finish own requests
+  std::vector<MPI_Request> *reqqs = requests_;
+  int size = static_cast<int>(reqqs->size());
+  if (size > 0) {
+    size = 0;
+    std::vector<MPI_Request>* myreqqs = new std::vector<MPI_Request>();
+    std::vector<MPI_Request>::iterator iter = reqqs->begin();
+    while (iter != reqqs->end()){
+      if(((*iter)->src() == rank) || ((*iter)->dst() == rank)){
+          myreqqs->push_back(*iter);
+          iter = reqqs->erase(iter);
+          size++;
+      } else {
+        ++iter;
+      }
+    }
+    if(size >0){
+      MPI_Request* treqs = &(*myreqqs)[0];
+      Request::waitall(size, treqs, MPI_STATUSES_IGNORE);
+      myreqqs->clear();
+      delete myreqqs;
+    }
   }
   xbt_mutex_release(mut_);
   return size;
