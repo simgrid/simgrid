@@ -209,13 +209,13 @@ int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype, smpi_process()->index(),
         comm_->group()->index(target_rank), SMPI_RMA_TAG+1, recv_win->comm_, MPI_OP_NULL);
 
+    //start send
+    sreq->start();
     //push request to receiver's win
     xbt_mutex_acquire(recv_win->mut_);
     recv_win->requests_->push_back(rreq);
-    xbt_mutex_release(recv_win->mut_);
-    //start send
-    sreq->start();
     rreq->start();
+    xbt_mutex_release(recv_win->mut_);
     //push request to sender's win
     xbt_mutex_acquire(mut_);
     requests_->push_back(sreq);
@@ -315,13 +315,14 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
         smpi_process()->index(), comm_->group()->index(target_rank), SMPI_RMA_TAG-3-count_, recv_win->comm_, op);
 
     count_++;
+
+    //start send
+    sreq->start();
     //push request to receiver's win
     xbt_mutex_acquire(recv_win->mut_);
     recv_win->requests_->push_back(rreq);
-    xbt_mutex_release(recv_win->mut_);
-    //start send
-    sreq->start();
     rreq->start();
+    xbt_mutex_release(recv_win->mut_);
     //push request to sender's win
     xbt_mutex_acquire(mut_);
     requests_->push_back(sreq);
