@@ -234,12 +234,18 @@ typedef struct s_endLink {
   char *key;
 }s_endLink_t;
 
-typedef struct s_newEvent *newEvent_t;
-typedef struct s_newEvent {
+class s_newEvent;
+
+typedef s_newEvent *newEvent_t;
+
+class s_newEvent {
+  public:
   container_t container;
   type_t type;
   val_t value;
-}s_newEvent_t;
+};
+
+typedef s_newEvent s_newEvent_t;
 
 extern XBT_PRIVATE xbt_dict_t created_categories;
 extern XBT_PRIVATE xbt_dict_t declared_marks;
