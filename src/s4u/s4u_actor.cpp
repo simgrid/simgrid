@@ -204,7 +204,7 @@ Comm& isend(MailboxPtr chan, void* payload, double simulatedSize)
   return Comm::send_async(chan, payload, simulatedSize);
 }
 
-Comm& isend(MailboxPtr chan, void** data)
+Comm& irecv(MailboxPtr chan, void** data)
 {
   return Comm::recv_async(chan, data);
 }
