@@ -34,13 +34,13 @@ lockcontention2 8
 lockopts 2
 #needs get_accumulate
 lock_dt 2
-#lock_dt_flush 2
-#lock_dt_flushlocal 2
-#lockall_dt 4 timeLimit=240
-#lockall_dt_flush 4 timeLimit=240
-#lockall_dt_flushall 4 timeLimit=240
-#lockall_dt_flushlocal 4 timeLimit=240
-#lockall_dt_flushlocalall 4 timeLimit=240
+lock_dt_flush 2
+lock_dt_flushlocal 2
+lockall_dt 4 timeLimit=240
+lockall_dt_flush 4 timeLimit=240
+lockall_dt_flushall 4 timeLimit=240
+lockall_dt_flushlocal 4 timeLimit=240
+lockall_dt_flushlocalall 4 timeLimit=240
 #lock_contention_dt 4 timeLimit=240
 transpose4 2
 #fetchandadd 7
@@ -100,6 +100,7 @@ win_dynamic_acc 4
 #linked_list 4 mpiversion=3.0
 #linked_list_fop 4 mpiversion=3.0
 #compare_and_swap 4 mpiversion=3.0
+fetch_and_op 4
 #fetch_and_op_char 4 mpiversion=3.0
 #fetch_and_op_short 4 mpiversion=3.0
 #fetch_and_op_int 4 mpiversion=3.0
@@ -114,7 +115,7 @@ win_dynamic_acc 4
 #get_accumulate_long_derived 4 mpiversion=3.0
 #get_accumulate_short 4 mpiversion=3.0
 #get_accumulate_short_derived 4 mpiversion=3.0
-#flush 4 mpiversion=3.0
+flush 4
 #reqops 4 mpiversion=3.0
 #req_example 4 mpiversion=3.0
 win_info 4
