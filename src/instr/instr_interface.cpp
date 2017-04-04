@@ -284,6 +284,7 @@ static void instr_user_variable(double time, const char *resource, const char *v
   }else{
     if (created) { // declared, let's work
       char valuestr[100];
+      s_subVariable n; 
       snprintf(valuestr, 100, "%g", value);
       container_t container = PJ_container_get(resource);
       type_t type = PJ_type_get (variable, container->type);
@@ -295,7 +296,7 @@ static void instr_user_variable(double time, const char *resource, const char *v
         new_pajeAddVariable(time, container, type, value);
         break;
       case INSTR_US_SUB:
-        new_pajeSubVariable(time, container, type, value);
+        n.new_pajeSubVariable(time, container, type, value);
         break;
       default:
         THROW_IMPOSSIBLE;

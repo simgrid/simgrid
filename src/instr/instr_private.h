@@ -66,8 +66,8 @@ typedef struct s_type {
   xbt_dict_t values; //valid for all types except variable and container
 }s_type_t;
 
+//--------------------------------------------------
 class s_val;
-
 typedef s_val *val_t;
 
 class s_val {
@@ -77,9 +77,9 @@ class s_val {
   char *color;
   type_t father;
 };
-
 typedef s_val s_val_t;
 
+//--------------------------------------------------
 typedef enum {
   INSTR_HOST,
   INSTR_LINK,
@@ -91,21 +91,25 @@ typedef enum {
   INSTR_MSG_TASK
 } e_container_types;
 
-typedef struct s_container *container_t;
-typedef struct s_container {
+//--------------------------------------------------
+class s_container;
+typedef s_container *container_t;
+
+class s_container {
+  public: 
   sg_netpoint_t netpoint;
   char *name;     /* Unique name of this container */
   char *id;       /* Unique id of this container */
   type_t type;    /* Type of this container */
   int level;      /* Level in the hierarchy, root level is 0 */
   e_container_types kind; /* This container is of what kind */
-  struct s_container *father;
+  s_container *father;
   xbt_dict_t children;
-}s_container_t;
+};
+typedef s_container s_container_t;
 
-
+//--------------------------------------------------
 class paje_event;
-
 typedef paje_event *paje_event_t;
 
 class paje_event {
@@ -116,8 +120,8 @@ class paje_event {
   void (*free) (paje_event_t event);
   void *data;
 };
-
 typedef paje_event s_paje_event_t;
+//--------------------------------------------------
 
 typedef struct s_defineContainerType *defineContainerType_t;
 typedef struct s_defineContainerType {
@@ -175,12 +179,21 @@ typedef struct s_addVariable {
   double value;
 }s_addVariable_t;
 
-typedef struct s_subVariable *subVariable_t;
-typedef struct s_subVariable {
+//--------------------------------------------------
+class s_subVariable;
+
+typedef s_subVariable *subVariable_t;
+
+class s_subVariable {
+  public:
   container_t container;
   type_t type;
   double value;
-}s_subVariable_t;
+  //methods 
+  XBT_PUBLIC(void) new_pajeSubVariable (double timestamp, container_t container, type_t type, double value);
+};
+typedef s_subVariable s_subVariable_t;
+//--------------------------------------------------
 
 class s_setState;
 
@@ -285,7 +298,7 @@ XBT_PUBLIC(void) new_pajeDestroyContainer (container_t container);
 
 XBT_PUBLIC(void) new_pajeSetVariable (double timestamp, container_t container, type_t type, double value);
 XBT_PUBLIC(void) new_pajeAddVariable (double timestamp, container_t container, type_t type, double value);
-XBT_PUBLIC(void) new_pajeSubVariable (double timestamp, container_t container, type_t type, double value);
+
 
 XBT_PUBLIC(void) new_pajeSetState (double timestamp, container_t container, type_t type, val_t value);
 XBT_PUBLIC(void) new_pajePushState (double timestamp, container_t container, type_t type, val_t value);

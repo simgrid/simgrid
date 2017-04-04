@@ -36,10 +36,10 @@ static void __TRACE_surf_check_variable_set_to_zero(double now, const char *vari
 }
 
 static void instr_event (double now, double delta, type_t variable, container_t resource, double value)
-{
+{ s_subVariable n;
   __TRACE_surf_check_variable_set_to_zero(now, variable->name, resource->name);
   new_pajeAddVariable(now, resource, variable, value);
-  new_pajeSubVariable(now + delta, resource, variable, value);
+  n.new_pajeSubVariable(now + delta, resource, variable, value);
 }
 
 /* TRACE_surf_link_set_utilization: entry point from SimGrid */

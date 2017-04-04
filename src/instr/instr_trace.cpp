@@ -296,7 +296,7 @@ void new_pajeAddVariable (double timestamp, container_t container, type_t type, 
   insert_into_buffer (event);
 }
 
-void new_pajeSubVariable (double timestamp, container_t container, type_t type, double value)
+void s_subVariable_t::new_pajeSubVariable (double timestamp, container_t container, type_t type, double value)
 {
   paje_event_t event                        = xbt_new0(s_paje_event_t, 1);
   event->event_type                         = PAJE_SubVariable;
