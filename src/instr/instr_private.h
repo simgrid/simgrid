@@ -97,14 +97,20 @@ typedef struct s_container {
   xbt_dict_t children;
 }s_container_t;
 
-typedef struct paje_event *paje_event_t;
-typedef struct paje_event {
+class paje_event;
+
+typedef paje_event *paje_event_t;
+
+class paje_event {
+  public:
   double timestamp;
   e_event_type event_type;
   void (*print) (paje_event_t event);
   void (*free) (paje_event_t event);
   void *data;
-} s_paje_event_t;
+};
+
+typedef paje_event s_paje_event_t;
 
 typedef struct s_defineContainerType *defineContainerType_t;
 typedef struct s_defineContainerType {
