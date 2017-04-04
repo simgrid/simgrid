@@ -66,13 +66,19 @@ typedef struct s_type {
   xbt_dict_t values; //valid for all types except variable and container
 }s_type_t;
 
-typedef struct s_val *val_t;
-typedef struct s_val {
+class s_val;
+
+typedef s_val *val_t;
+
+class s_val {
+  public:
   char *id;
   char *name;
   char *color;
   type_t father;
-}s_val_t;
+};
+
+typedef s_val s_val_t;
 
 typedef enum {
   INSTR_HOST,
@@ -96,6 +102,7 @@ typedef struct s_container {
   struct s_container *father;
   xbt_dict_t children;
 }s_container_t;
+
 
 class paje_event;
 
@@ -255,11 +262,15 @@ XBT_PUBLIC(void) new_pajeDefineStateType(type_t type);
 XBT_PUBLIC(void) new_pajeDefineEventType(type_t type);
 XBT_PUBLIC(void) new_pajeDefineLinkType(type_t type, type_t source, type_t dest);
 XBT_PUBLIC(void) new_pajeDefineEntityValue (val_t type);
+
+// Container 
 XBT_PUBLIC(void) new_pajeCreateContainer (container_t container);
 XBT_PUBLIC(void) new_pajeDestroyContainer (container_t container);
+
 XBT_PUBLIC(void) new_pajeSetVariable (double timestamp, container_t container, type_t type, double value);
 XBT_PUBLIC(void) new_pajeAddVariable (double timestamp, container_t container, type_t type, double value);
 XBT_PUBLIC(void) new_pajeSubVariable (double timestamp, container_t container, type_t type, double value);
+
 XBT_PUBLIC(void) new_pajeSetState (double timestamp, container_t container, type_t type, val_t value);
 XBT_PUBLIC(void) new_pajePushState (double timestamp, container_t container, type_t type, val_t value);
 XBT_PUBLIC(void) new_pajePushStateWithExtra (double timestamp, container_t container, type_t type, val_t value,
