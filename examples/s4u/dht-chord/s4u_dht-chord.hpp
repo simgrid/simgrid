@@ -33,7 +33,7 @@ public:
 
   explicit HostChord(simgrid::s4u::Host* ptr) : host(ptr)
   {
-    std::string descr = std::string("RngSream<") + host->name() + ">";
+    std::string descr = std::string("RngSream<") + host->cname() + ">";
     stream_           = RngStream_CreateStream(descr.c_str());
   }
 
