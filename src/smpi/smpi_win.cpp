@@ -26,6 +26,7 @@ Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
   requests_ = new std::vector<MPI_Request>();
   mut_=xbt_mutex_init();
   lock_mut_=xbt_mutex_init();
+  atomic_mut_=xbt_mutex_init();
   connected_wins_ = new MPI_Win[comm_size];
   connected_wins_[rank_] = this;
   count_ = 0;
@@ -68,6 +69,7 @@ Win::~Win(){
     MSG_barrier_destroy(bar_);
   xbt_mutex_destroy(mut_);
   xbt_mutex_destroy(lock_mut_);
+  xbt_mutex_destroy(atomic_mut_);
 
   if(allocated_ !=0)
     xbt_free(base_);
@@ -352,15 +354,52 @@ int Win::get_accumulate( void *origin_addr, int origin_count, MPI_Datatype origi
     return MPI_ERR_ARG;
 
   XBT_DEBUG("Entering MPI_Get_accumulate from %d", target_rank);
-
+  //need to be sure ops are correctly ordered, so finish request here ? slow.
+  MPI_Request req;
+  xbt_mutex_acquire(send_win->atomic_mut_);
   get(result_addr, result_count, result_datatype, target_rank,
-              target_disp, target_count, target_datatype);
+              target_disp, target_count, target_datatype, &req);
+  if (req != MPI_REQUEST_NULL)
+    Request::wait(&req, MPI_STATUS_IGNORE);
   if(op!=MPI_NO_OP)
     accumulate(origin_addr, origin_count, origin_datatype, target_rank,
-              target_disp, target_count, target_datatype, op);
-
+              target_disp, target_count, target_datatype, op, &req);
+  if (req != MPI_REQUEST_NULL)
+    Request::wait(&req, MPI_STATUS_IGNORE);
+  xbt_mutex_release(send_win->atomic_mut_);
   return MPI_SUCCESS;
 
+}
+
+int Win::compare_and_swap(void *origin_addr, void *compare_addr,
+        void *result_addr, MPI_Datatype datatype, int target_rank,
+        MPI_Aint target_disp){
+  //get sender pointer
+  MPI_Win send_win = connected_wins_[target_rank];
+
+  if(opened_==0){//check that post/start has been done
+    // no fence or start .. lock ok ?
+    int locked=0;
+    for(auto it : send_win->lockers_)
+      if (it == comm_->rank())
+        locked = 1;
+    if(locked != 1)
+      return MPI_ERR_WIN;
+  }
+
+  XBT_DEBUG("Entering MPI_Compare_and_swap with %d", target_rank);
+  MPI_Request req;
+  xbt_mutex_acquire(send_win->atomic_mut_);
+  get(result_addr, 1, datatype, target_rank,
+              target_disp, 1, datatype, &req);
+  if (req != MPI_REQUEST_NULL)
+    Request::wait(&req, MPI_STATUS_IGNORE);
+  if(! memcmp (result_addr, compare_addr, datatype->get_extent() )){
+    put(origin_addr, 1, datatype, target_rank,
+              target_disp, 1, datatype);
+  }
+  xbt_mutex_release(send_win->atomic_mut_);
+  return MPI_SUCCESS;
 }
 
 int Win::start(MPI_Group group, int assert){

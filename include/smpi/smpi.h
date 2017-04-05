@@ -568,6 +568,9 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Get_accumulate,( void *origin_addr, int origin_cou
     int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win));
 MPI_CALL(XBT_PUBLIC(int), MPI_Fetch_and_op,( void *origin_addr, void* result_addr, MPI_Datatype datatype,
     int target_rank, MPI_Aint target_disp, MPI_Op op, MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int), MPI_Compare_and_swap, (void *origin_addr, void *compare_addr,
+        void *result_addr, MPI_Datatype datatype, int target_rank, MPI_Aint target_disp, MPI_Win win));
+
 MPI_CALL(XBT_PUBLIC(int), MPI_Alloc_mem, (MPI_Aint size, MPI_Info info, void *baseptr));
 MPI_CALL(XBT_PUBLIC(int), MPI_Free_mem, (void *base));
 

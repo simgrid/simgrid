@@ -2756,6 +2756,40 @@ int PMPI_Fetch_and_op(void *origin_addr, void *result_addr, MPI_Datatype dtype, 
   return PMPI_Get_accumulate(origin_addr, origin_addr==nullptr?0:1, dtype, result_addr, 1, dtype, target_rank, target_disp, 1, dtype, op, win);
 }
 
+int PMPI_Compare_and_swap(void *origin_addr, void *compare_addr,
+        void *result_addr, MPI_Datatype datatype, int target_rank,
+        MPI_Aint target_disp, MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  } else if (target_rank == MPI_PROC_NULL) {
+    retval = MPI_SUCCESS;
+  } else if (target_rank <0){
+    retval = MPI_ERR_RANK;
+  } else if (win->dynamic()==0 && target_disp <0){ 
+    //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
+    retval = MPI_ERR_ARG;
+  } else if (origin_addr==nullptr || result_addr==nullptr || compare_addr==nullptr){
+    retval = MPI_ERR_COUNT;
+  } else if (!datatype->is_valid()) {
+    retval = MPI_ERR_TYPE;
+  } else {
+    int rank = smpi_process()->index();
+    MPI_Group group;
+    win->get_group(&group);
+    int src_traced = group->index(target_rank);
+    TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, nullptr);
+
+    retval = win->compare_and_swap( origin_addr, compare_addr, result_addr, datatype, 
+                                  target_rank, target_disp);
+
+    TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
 int PMPI_Win_post(MPI_Group group, int assert, MPI_Win win){
   int retval = 0;
   smpi_bench_end();
