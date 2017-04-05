@@ -775,8 +775,10 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
           datatype->unserialize(req->buf_, req->old_buf_, req->real_size_/datatype->size() , req->op_);
         xbt_free(req->buf_);
       }else if(req->flags_ & RECV){//apply op on contiguous buffer for accumulate
-          int n =req->real_size_/datatype->size();
-          req->op_->apply(req->buf_, req->old_buf_, &n, datatype);
+          if(datatype->size()!=0){
+            int n =req->real_size_/datatype->size();
+            req->op_->apply(req->buf_, req->old_buf_, &n, datatype);
+          }
           xbt_free(req->buf_);
       }
     }
