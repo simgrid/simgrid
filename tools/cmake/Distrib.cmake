@@ -22,6 +22,12 @@ if(enable_smpi)
   endif()
 endif()
 
+if(enable_model-checking)
+  install(
+    PROGRAMS ${CMAKE_BINARY_DIR}/bin/simgrid-mc
+    DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
+endif()
+
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
 
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/graphicator  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
