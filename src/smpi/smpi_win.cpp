@@ -559,9 +559,6 @@ int Win::wait(){
 }
 
 int Win::lock(int lock_type, int rank, int assert){
-  if(opened_!=0)
-    return MPI_ERR_WIN;
-
   MPI_Win target_win = connected_wins_[rank];
 
   if ((lock_type == MPI_LOCK_EXCLUSIVE && target_win->mode_ != MPI_LOCK_SHARED)|| target_win->mode_ == MPI_LOCK_EXCLUSIVE){
@@ -593,9 +590,6 @@ int Win::lock_all(int assert){
 }
 
 int Win::unlock(int rank){
-  if(opened_!=0)
-    return MPI_ERR_WIN;
-
   MPI_Win target_win = connected_wins_[rank];
   int target_mode = target_win->mode_;
   target_win->mode_= 0;
