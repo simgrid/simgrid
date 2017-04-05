@@ -566,6 +566,17 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Accumulate,( void *origin_addr, int origin_count, 
 MPI_CALL(XBT_PUBLIC(int), MPI_Get_accumulate,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, 
     void* result_addr, int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, 
     int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win));
+
+MPI_CALL(XBT_PUBLIC(int), MPI_Rget,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+    MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win, MPI_Request* request));
+MPI_CALL(XBT_PUBLIC(int), MPI_Rput,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+    MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win, MPI_Request* request));
+MPI_CALL(XBT_PUBLIC(int), MPI_Raccumulate,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
+    int target_rank, MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request));
+MPI_CALL(XBT_PUBLIC(int), MPI_Rget_accumulate,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, 
+    void* result_addr, int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, 
+    int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request));
+
 MPI_CALL(XBT_PUBLIC(int), MPI_Fetch_and_op,( void *origin_addr, void* result_addr, MPI_Datatype datatype,
     int target_rank, MPI_Aint target_disp, MPI_Op op, MPI_Win win));
 MPI_CALL(XBT_PUBLIC(int), MPI_Compare_and_swap, (void *origin_addr, void *compare_addr,

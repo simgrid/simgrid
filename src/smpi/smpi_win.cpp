@@ -181,7 +181,7 @@ int Win::fence(int assert)
 }
 
 int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
-              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype)
+              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Request* request)
 {
   //get receiver pointer
   MPI_Win recv_win = connected_wins_[target_rank];
@@ -213,24 +213,32 @@ int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
 
     //start send
     sreq->start();
+
+    if(request!=nullptr){
+      *request=sreq;
+    }else{
+      xbt_mutex_acquire(mut_);
+      requests_->push_back(sreq);
+      xbt_mutex_release(mut_);
+    }
+
     //push request to receiver's win
     xbt_mutex_acquire(recv_win->mut_);
     recv_win->requests_->push_back(rreq);
     rreq->start();
     xbt_mutex_release(recv_win->mut_);
-    //push request to sender's win
-    xbt_mutex_acquire(mut_);
-    requests_->push_back(sreq);
-    xbt_mutex_release(mut_);
+
   }else{
     Datatype::copy(origin_addr, origin_count, origin_datatype, recv_addr, target_count, target_datatype);
+    if(request!=nullptr)
+      *request = MPI_REQUEST_NULL;
   }
 
   return MPI_SUCCESS;
 }
 
 int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
-              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype)
+              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Request* request)
 {
   //get sender pointer
   MPI_Win send_win = connected_wins_[target_rank];
@@ -271,12 +279,19 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
 
     //start recv
     rreq->start();
-    //push request to sender's win
-    xbt_mutex_acquire(mut_);
-    requests_->push_back(rreq);
-    xbt_mutex_release(mut_);
+
+    if(request!=nullptr){
+      *request=rreq;
+    }else{
+      xbt_mutex_acquire(mut_);
+      requests_->push_back(rreq);
+      xbt_mutex_release(mut_);
+    }
+
   }else{
     Datatype::copy(send_addr, target_count, target_datatype, origin_addr, origin_count, origin_datatype);
+    if(request!=nullptr)
+      *request=MPI_REQUEST_NULL;
   }
 
   return MPI_SUCCESS;
@@ -284,7 +299,7 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
 
 
 int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
-              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op)
+              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Request* request)
 {
 
   //get receiver pointer
@@ -325,17 +340,21 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
     recv_win->requests_->push_back(rreq);
     rreq->start();
     xbt_mutex_release(recv_win->mut_);
-    //push request to sender's win
-    xbt_mutex_acquire(mut_);
-    requests_->push_back(sreq);
-    xbt_mutex_release(mut_);
+
+    if(request!=nullptr){
+      *request=sreq;
+    }else{
+      xbt_mutex_acquire(mut_);
+      requests_->push_back(sreq);
+      xbt_mutex_release(mut_);
+    }
 
   return MPI_SUCCESS;
 }
 
 int Win::get_accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr, 
               int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count, 
-              MPI_Datatype target_datatype, MPI_Op op){
+              MPI_Datatype target_datatype, MPI_Op op, MPI_Request* request){
 
   //get sender pointer
   MPI_Win send_win = connected_wins_[target_rank];
