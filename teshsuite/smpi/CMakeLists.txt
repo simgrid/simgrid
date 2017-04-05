@@ -21,14 +21,20 @@ if(enable_smpi)
     add_executable       (macro-shared macro-shared/macro-shared.c)
     target_link_libraries(macro-shared simgrid)
     set_target_properties(macro-shared PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/macro-shared)
+
+    add_executable       (macro-partial-shared macro-partial-shared/macro-partial-shared.c)
+    target_link_libraries(macro-partial-shared simgrid)
+    set_target_properties(macro-partial-shared PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/macro-partial-shared)
   endif()
 endif()
 
 set(teshsuite_src ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/macro-shared/macro-shared.c                PARENT_SCOPE)
+set(teshsuite_src ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/macro-partial-shared/macro-partial-shared.c                PARENT_SCOPE)
 set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-large.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-automatic.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/coll-alltoall/clusters.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/macro-shared/macro-shared.tesh
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/macro-partial-shared/macro-partial-shared.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/broken_hostfiles.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/TI_output.tesh              PARENT_SCOPE)
 set(bin_files       ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
@@ -39,6 +45,7 @@ set(bin_files       ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
 if(enable_smpi)
   if(NOT WIN32)
     ADD_TESH_FACTORIES(tesh-smpi-macro-shared "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-shared --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/macro-shared macro-shared.tesh)
+    ADD_TESH_FACTORIES(tesh-smpi-macro-partial-shared "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-partial-shared --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/macro-partial-shared macro-partial-shared.tesh)
   endif()
 
   foreach(x coll-allgather coll-allgatherv coll-allreduce coll-alltoall coll-alltoallv coll-barrier coll-bcast 

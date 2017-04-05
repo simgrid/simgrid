@@ -986,6 +986,7 @@ teshsuite/smpi/coll-reduce/coll-reduce
 teshsuite/smpi/coll-reduce-scatter/coll-reduce-scatter
 teshsuite/smpi/coll-scatter/coll-scatter
 teshsuite/smpi/macro-shared/macro-shared
+teshsuite/smpi/macro-partial-shared/macro-partial-shared
 teshsuite/smpi/type-struct/type-struct
 teshsuite/smpi/type-vector/type-vector
 teshsuite/surf/lmm_usage/lmm_usage

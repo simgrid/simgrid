@@ -202,11 +202,13 @@ void *smpi_shared_malloc_local(size_t size, const char *file, int line)
 }
 
 // Align functions, from http://stackoverflow.com/questions/4840410/how-to-align-a-pointer-in-c
+#define PAGE_SIZE 0x1000
 #define ALIGN_UP(n, align) (((n) + (align)-1) & -(align))
 #define ALIGN_DOWN(n, align) ((n) & -(align))
 
 void *smpi_shared_malloc_global__(size_t size, const char *file, int line, int *shared_block_offsets, int nb_shared_blocks) {
   void *mem;
+  xbt_assert(smpi_shared_malloc_blocksize % PAGE_SIZE == 0, "The block size of shared malloc should be a multiple of the page size.");
   /* First reserve memory area */
   mem = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 
@@ -233,10 +235,12 @@ void *smpi_shared_malloc_global__(size_t size, const char *file, int line, int *
 
   /* Map the bogus file in place of the anonymous memory */
   for(int i_block = 0; i_block < nb_shared_blocks; i_block ++) {
-    int start_offset = ALIGN_UP(shared_block_offsets[2*i_block], smpi_shared_malloc_blocksize);
-    int stop_offset = ALIGN_DOWN(shared_block_offsets[2*i_block+1], smpi_shared_malloc_blocksize);
+    int start_offset = shared_block_offsets[2*i_block];
+    int stop_offset = shared_block_offsets[2*i_block+1];
+    int start_block_offset = ALIGN_UP(start_offset, smpi_shared_malloc_blocksize);
+    int stop_block_offset = ALIGN_DOWN(stop_offset, smpi_shared_malloc_blocksize);
     unsigned int i;
-    for (i = start_offset / smpi_shared_malloc_blocksize; i < stop_offset / smpi_shared_malloc_blocksize; i++) {
+    for (i = start_block_offset / smpi_shared_malloc_blocksize; i < stop_block_offset / smpi_shared_malloc_blocksize; i++) {
       void* pos = (void*)((unsigned long)mem + i * smpi_shared_malloc_blocksize);
       void* res = mmap(pos, smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED | MAP_POPULATE,
                        smpi_shared_malloc_bogusfile, 0);
@@ -244,6 +248,29 @@ void *smpi_shared_malloc_global__(size_t size, const char *file, int line, int *
                              "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ?"
                              "You can also try using  the sysctl vm.max_map_count",
                  strerror(errno));
+    }
+    int low_page_start_offset = ALIGN_UP(start_offset, PAGE_SIZE);
+    int low_page_stop_offset = start_block_offset < ALIGN_DOWN(stop_offset, PAGE_SIZE) ? start_block_offset : ALIGN_DOWN(stop_offset, PAGE_SIZE);
+    if(low_page_start_offset < low_page_stop_offset) {
+      void* pos = (void*)((unsigned long)mem + low_page_start_offset);
+      void* res = mmap(pos, low_page_stop_offset-low_page_start_offset, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED | MAP_POPULATE,
+                       smpi_shared_malloc_bogusfile, 0);
+      xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
+                             "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ?"
+                             "You can also try using  the sysctl vm.max_map_count",
+                 strerror(errno));
+    }
+    if(low_page_stop_offset <= stop_block_offset) {
+      int high_page_stop_offset = stop_offset == size ? size : ALIGN_DOWN(stop_offset, PAGE_SIZE);
+      if(high_page_stop_offset > stop_block_offset) {
+        void* pos = (void*)((unsigned long)mem + stop_block_offset);
+        void* res = mmap(pos, high_page_stop_offset-stop_block_offset, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED | MAP_POPULATE,
+                         smpi_shared_malloc_bogusfile, 0);
+        xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
+                               "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ?"
+                               "You can also try using  the sysctl vm.max_map_count",
+                   strerror(errno));
+      }
     }
   }
 
