@@ -679,7 +679,7 @@ int Win::finish_comms(int rank){
     std::vector<MPI_Request>* myreqqs = new std::vector<MPI_Request>();
     std::vector<MPI_Request>::iterator iter = reqqs->begin();
     while (iter != reqqs->end()){
-      if(((*iter)->src() == rank) || ((*iter)->dst() == rank)){
+      if(((*iter)!=MPI_REQUEST_NULL) && (((*iter)->src() == rank) || ((*iter)->dst() == rank))){
           myreqqs->push_back(*iter);
           iter = reqqs->erase(iter);
           size++;
