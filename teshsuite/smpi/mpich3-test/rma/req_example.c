@@ -25,7 +25,7 @@
 /* Use a global variable to inhibit compiler optimizations in the compute
  * function. */
 double junk = 0.0;
-
+void compute(int step, double *data);
 void compute(int step, double *data)
 {
     int i;
@@ -54,9 +54,9 @@ int main(int argc, char *argv[])
     MPI_Info_create(&win_info);
 
 #ifdef USE_WIN_ALLOC_SHM
-    MPI_Info_set(win_info, "alloc_shm", "true");
+    MPI_Info_set(win_info, (char*)"alloc_shm", (char*)"true");
 #else
-    MPI_Info_set(win_info, "alloc_shm", "false");
+    MPI_Info_set(win_info, (char*)"alloc_shm", (char*)"false");
 #endif
 
     MPI_Win_allocate(NSTEPS * N * sizeof(double), sizeof(double), win_info,

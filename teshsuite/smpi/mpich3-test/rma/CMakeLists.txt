@@ -13,16 +13,16 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   foreach(file accfence1 accfence2_am accfence2 accpscw1 allocmem epochtest getfence1 getgroup manyrma3 nullpscw lockcontention lockopts contig_displ
           putfence1 putfidx putpscw1 test1_am test1 test1_dt test2_am test2 test3 test3_am test4 test4_am test5_am test5 transpose1 transpose2 lockcontention2
           transpose3 transpose4 transpose5 transpose6 transpose7 window_creation selfrma locknull win_info
-          at_complete  acc-pairtype manyget large-small-acc lock_dt win_dynamic_acc fetch_and_op flush
-          lock_nested winname attrorderwin baseattrwin fkeyvalwin strided_acc_indexed strided_getacc_indexed
-          lockall_dt lockall_dt_flushall lock_dt_flush lockall_dt_flush lockall_dt_flushlocalall lockall_dt_flushlocal  lock_dt_flushlocal
+          at_complete  acc-pairtype manyget large-small-acc lock_dt win_dynamic_acc fetch_and_op flush req_example rmanull rmazero badrma
+          lock_nested winname attrorderwin baseattrwin fkeyvalwin strided_acc_indexed strided_getacc_indexed compare_and_swap
+          lockall_dt lockall_dt_flushall lock_dt_flush lockall_dt_flush lockall_dt_flushlocalall lockall_dt_flushlocal  lock_dt_flushlocal 
      strided_acc_onelock strided_get_indexed strided_putget_indexed contention_put contention_putget)
-    # not compiled files: acc-loc adlb_mimic1  badrma  compare_and_swap contention_put
+    # not compiled files: acc-loc adlb_mimic1  
     # contention_putget contig_displ fence_shm fetchandadd_am fetchandadd fetchandadd_tree_am fetchandadd_tree 
     # fkeyvalwin  get_acc_local get_accumulate linked_list_bench_lock_all 
     # linked_list_bench_lock_excl linked_list_bench_lock_shr linked_list linked_list_fop linked_list_lockall 
-    #  manyrma2 mcs-mutex mixedsync mutex_bench lockcontention3
-    # pscw_ordering put_base put_bottom req_example reqops rmanull rmazero rma-contig selfrma  
+    #  manyrma2 mcs-mutex mixedsync mutex_bench lockcontention3 reqops
+    # pscw_ordering put_base put_bottom  rma-contig selfrma  
     # strided_getacc_indexed_shared 
     # win_flavors win_shared win_shared_noncontig win_shared_noncontig_put 
     # win_large_shm win_zero wintest get-struct atomic_rmw_fop atomic_rmw_gacc rget-unlock atomic_get atomic_rmw_cas

@@ -11,7 +11,8 @@
 
 MPI_Win win;
 int win_buf[SIZE], origin_buf[SIZE], result_buf[SIZE];
-
+int do_test(int origin_count, MPI_Datatype origin_type, int result_count,
+            MPI_Datatype result_type, int target_count, MPI_Datatype target_type);
 int do_test(int origin_count, MPI_Datatype origin_type, int result_count,
             MPI_Datatype result_type, int target_count, MPI_Datatype target_type)
 {

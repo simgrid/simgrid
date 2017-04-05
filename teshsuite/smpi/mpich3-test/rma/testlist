@@ -68,9 +68,8 @@ selfrma 1
 #mixedsync 4
 epochtest 3
 locknull 2
-#Needs MPI_Rput, rget, racumulate,  MPI_Fetch_and_op, MPI_Compare_and_swap
-#rmanull 2
-#rmazero 2
+rmanull 2
+rmazero 2
 strided_acc_indexed 2
 strided_acc_onelock 2
 #needs MPI_Type_create_subarray
@@ -99,7 +98,7 @@ win_dynamic_acc 4
 #get_acc_local 1 mpiversion=3.0
 #linked_list 4 mpiversion=3.0
 #linked_list_fop 4 mpiversion=3.0
-#compare_and_swap 4 mpiversion=3.0
+compare_and_swap 4
 fetch_and_op 4
 #fetch_and_op_char 4 mpiversion=3.0
 #fetch_and_op_short 4 mpiversion=3.0
@@ -116,8 +115,8 @@ fetch_and_op 4
 #get_accumulate_short 4 mpiversion=3.0
 #get_accumulate_short_derived 4 mpiversion=3.0
 flush 4
-#reqops 4 mpiversion=3.0
-#req_example 4 mpiversion=3.0
+#reqops 4
+req_example 4
 win_info 4
 #linked_list_lockall 4 mpiversion=3.0
 #pscw_ordering 4 mpiversion=3.0
@@ -128,7 +127,7 @@ win_info 4
 #mutex_bench_shm 4 mpiversion=3.0
 #mutex_bench_shm_ordered 4 mpiversion=3.0
 #rma-contig 2 mpiversion=3.0 timeLimit=720
-#badrma 2 mpiversion=3.0
+badrma 2
 #acc-loc 4
 #fence_shm 2 mpiversion=3.0
 #mutex_bench 4 mpiversion=3.0
