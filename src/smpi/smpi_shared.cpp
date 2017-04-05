@@ -237,10 +237,12 @@ void *smpi_shared_malloc_global__(size_t size, const char *file, int line, int *
   for(int i_block = 0; i_block < nb_shared_blocks; i_block ++) {
     int start_offset = shared_block_offsets[2*i_block];
     int stop_offset = shared_block_offsets[2*i_block+1];
+//    fprintf(stderr, "shared block 0x%x - 0x%x\n", start_offset, stop_offset);
     int start_block_offset = ALIGN_UP(start_offset, smpi_shared_malloc_blocksize);
     int stop_block_offset = ALIGN_DOWN(stop_offset, smpi_shared_malloc_blocksize);
     unsigned int i;
     for (i = start_block_offset / smpi_shared_malloc_blocksize; i < stop_block_offset / smpi_shared_malloc_blocksize; i++) {
+//      fprintf(stderr, "\tmmap:for  0x%x - 0x%x\n", i*smpi_shared_malloc_blocksize, smpi_shared_malloc_blocksize);
       void* pos = (void*)((unsigned long)mem + i * smpi_shared_malloc_blocksize);
       void* res = mmap(pos, smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED | MAP_POPULATE,
                        smpi_shared_malloc_bogusfile, 0);
@@ -252,6 +254,7 @@ void *smpi_shared_malloc_global__(size_t size, const char *file, int line, int *
     int low_page_start_offset = ALIGN_UP(start_offset, PAGE_SIZE);
     int low_page_stop_offset = start_block_offset < ALIGN_DOWN(stop_offset, PAGE_SIZE) ? start_block_offset : ALIGN_DOWN(stop_offset, PAGE_SIZE);
     if(low_page_start_offset < low_page_stop_offset) {
+//      fprintf(stderr, "\tmmap:low  0x%x - 0x%x\n", low_page_start_offset, low_page_stop_offset-low_page_start_offset);
       void* pos = (void*)((unsigned long)mem + low_page_start_offset);
       void* res = mmap(pos, low_page_stop_offset-low_page_start_offset, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED | MAP_POPULATE,
                        smpi_shared_malloc_bogusfile, 0);
@@ -263,6 +266,7 @@ void *smpi_shared_malloc_global__(size_t size, const char *file, int line, int *
     if(low_page_stop_offset <= stop_block_offset) {
       int high_page_stop_offset = stop_offset == size ? size : ALIGN_DOWN(stop_offset, PAGE_SIZE);
       if(high_page_stop_offset > stop_block_offset) {
+//        fprintf(stderr, "\tmmap:high 0x%x - 0x%x\n", stop_block_offset, high_page_stop_offset-stop_block_offset);
         void* pos = (void*)((unsigned long)mem + stop_block_offset);
         void* res = mmap(pos, high_page_stop_offset-stop_block_offset, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED | MAP_POPULATE,
                          smpi_shared_malloc_bogusfile, 0);

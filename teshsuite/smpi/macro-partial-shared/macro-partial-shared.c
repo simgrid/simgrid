@@ -45,9 +45,11 @@ int main(int argc, char *argv[])
   int size;
   int mem_size = 0x10000000;
   int shared_blocks[] = {
-    0,        0x1234567,
+    0,         0x1234567,
+    0x1300000, 0x1300010,
     0x3456789, 0x3457890,
     0x4444444, 0x5555555,
+    0x5555565, 0x5600000,
     0x8000000, 0x10000000
   };
   int nb_blocks = (sizeof(shared_blocks)/sizeof(int))/2;
