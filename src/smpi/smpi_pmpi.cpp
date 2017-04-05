@@ -2841,10 +2841,10 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
   } else if ((origin_count < 0 || target_count < 0 || result_count <0) ||
-             (origin_addr==nullptr && origin_count > 0) ||
+             (origin_addr==nullptr && origin_count > 0 && op != MPI_NO_OP) ||
              (result_addr==nullptr && result_count > 0)){
     retval = MPI_ERR_COUNT;
-  } else if ((!origin_datatype->is_valid()) ||
+  } else if ((origin_datatype!=MPI_DATATYPE_NULL && !origin_datatype->is_valid()) ||
             (!target_datatype->is_valid())||
             (!result_datatype->is_valid())) {
     retval = MPI_ERR_TYPE;
@@ -2884,10 +2884,10 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
   } else if ((origin_count < 0 || target_count < 0 || result_count <0) ||
-             (origin_addr==nullptr && origin_count > 0) ||
+             (origin_addr==nullptr && origin_count > 0 && op != MPI_NO_OP) ||
              (result_addr==nullptr && result_count > 0)){
     retval = MPI_ERR_COUNT;
-  } else if ((!origin_datatype->is_valid()) ||
+  } else if ((origin_datatype!=MPI_DATATYPE_NULL && !origin_datatype->is_valid()) ||
             (!target_datatype->is_valid())||
             (!result_datatype->is_valid())) {
     retval = MPI_ERR_TYPE;
