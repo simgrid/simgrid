@@ -236,7 +236,7 @@ void *smpi_shared_malloc_global__(size_t size, const char *file, int line, int *
     int start_offset = ALIGN_UP(shared_block_offsets[2*i_block], smpi_shared_malloc_blocksize);
     int stop_offset = ALIGN_DOWN(shared_block_offsets[2*i_block+1], smpi_shared_malloc_blocksize);
     unsigned int i;
-    for (i = start_offset; i < stop_offset / smpi_shared_malloc_blocksize; i++) {
+    for (i = start_offset / smpi_shared_malloc_blocksize; i < stop_offset / smpi_shared_malloc_blocksize; i++) {
       void* pos = (void*)((unsigned long)mem + i * smpi_shared_malloc_blocksize);
       void* res = mmap(pos, smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED | MAP_POPULATE,
                        smpi_shared_malloc_bogusfile, 0);

@@ -875,6 +875,9 @@ XBT_PUBLIC(void) smpi_trace_set_call_location__(const char *file, int* line);
 XBT_PUBLIC(int) smpi_is_shared(void *buf);
 XBT_PUBLIC(void *) smpi_shared_malloc(size_t size, const char *file, int line);
 #define SMPI_SHARED_MALLOC(size) smpi_shared_malloc(size, __FILE__, __LINE__)
+XBT_PUBLIC(void *) smpi_shared_malloc_global__(size_t size, const char *file, int line, int *shared_block_offsets, int nb_shared_blocks);
+#define SMPI_PARTIAL_SHARED_MALLOC(size, shared_block_offsets, nb_shared_blocks)\
+    smpi_shared_malloc_global__(size, __FILE__, __LINE__, shared_block_offsets, nb_shared_blocks)
 
 XBT_PUBLIC(void) smpi_shared_free(void *data);
 #define SMPI_SHARED_FREE(data) smpi_shared_free(data)
