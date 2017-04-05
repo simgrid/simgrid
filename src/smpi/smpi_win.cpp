@@ -572,9 +572,10 @@ int Win::lock(int lock_type, int rank, int assert){
 
   target_win->lockers_.push_back(comm_->rank());
 
-  int finished = finish_comms();
+  int finished = finish_comms(rank);
   XBT_DEBUG("Win_lock %d - Finished %d RMA calls", rank, finished);
-
+  finished = target_win->finish_comms(rank_);
+  XBT_DEBUG("Win_lock target %d - Finished %d RMA calls", rank, finished);
   return MPI_SUCCESS;
 }
 
@@ -598,9 +599,10 @@ int Win::unlock(int rank){
     xbt_mutex_release(target_win->lock_mut_);
   }
 
-  int finished = finish_comms();
+  int finished = finish_comms(rank);
   XBT_DEBUG("Win_unlock %d - Finished %d RMA calls", rank, finished);
-
+  finished = target_win->finish_comms(rank_);
+  XBT_DEBUG("Win_unlock target %d - Finished %d RMA calls", rank, finished);
   return MPI_SUCCESS;
 }
 
