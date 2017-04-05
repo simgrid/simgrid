@@ -35,6 +35,7 @@ public:
 
   double getCurrentLoad();
   double getComputedFlops();
+  double getAverageLoad();
   void update();
   void reset();
 
@@ -79,7 +80,7 @@ double HostLoad::getCurrentLoad()
 
 double HostLoad::getAverageLoad()
 {
-  return getComputedFlops() / (host->speed() * host->coreCount() * (surf_get_clock() - last_reset))
+  return getComputedFlops() / (host->speed() * host->coreCount() * (surf_get_clock() - last_reset));
 }
 
 double HostLoad::getComputedFlops()
