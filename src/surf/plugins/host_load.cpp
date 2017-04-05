@@ -41,6 +41,7 @@ public:
 private:
   simgrid::s4u::Host* host = nullptr;
   double last_updated      = 0;
+  double last_reset        = 0;
   double current_flops     = 0;
   double computed_flops    = 0;
 };
@@ -48,7 +49,10 @@ private:
 simgrid::xbt::Extension<simgrid::s4u::Host, HostLoad> HostLoad::EXTENSION_ID;
 
 HostLoad::HostLoad(simgrid::s4u::Host* ptr)
-    : host(ptr), last_updated(surf_get_clock()), current_flops(lmm_constraint_get_usage(host->pimpl_cpu->constraint()))
+    : host(ptr)
+    , last_updated(surf_get_clock())
+    , last_reset(surf_get_clock())
+    , current_flops(lmm_constraint_get_usage(host->pimpl_cpu->constraint()))
 {
 }
 
@@ -73,6 +77,11 @@ double HostLoad::getCurrentLoad()
   return current_flops / (host->speed() * host->coreCount());
 }
 
+double HostLoad::getAverageLoad()
+{
+  return getComputedFlops() / (host->speed() * host->coreCount() * (surf_get_clock() - last_reset))
+}
+
 double HostLoad::getComputedFlops()
 {
   update();
@@ -86,6 +95,7 @@ double HostLoad::getComputedFlops()
 void HostLoad::reset()
 {
   last_updated   = surf_get_clock();
+  last_reset     = surf_get_clock();
   computed_flops = 0;
 }
 }
