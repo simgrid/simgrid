@@ -237,6 +237,9 @@ void *smpi_shared_malloc_global__(size_t size, const char *file, int line, int *
   for(int i_block = 0; i_block < nb_shared_blocks; i_block ++) {
     int start_offset = shared_block_offsets[2*i_block];
     int stop_offset = shared_block_offsets[2*i_block+1];
+    xbt_assert(0 <= start_offset,          "start_offset (%d) should be greater than 0", start_offset);
+    xbt_assert(start_offset < stop_offset, "start_offset (%d) should be lower than stop offset (%d)", start_offset, stop_offset);
+    xbt_assert(stop_offset <= size,         "stop_offset (%d) should be lower than size (%lu)", stop_offset, size);
 //    fprintf(stderr, "shared block 0x%x - 0x%x\n", start_offset, stop_offset);
     int start_block_offset = ALIGN_UP(start_offset, smpi_shared_malloc_blocksize);
     int stop_block_offset = ALIGN_DOWN(stop_offset, smpi_shared_malloc_blocksize);
