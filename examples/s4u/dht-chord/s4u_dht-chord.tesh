@@ -1,0 +1,237 @@
+#! ./tesh
+
+p Testing the Chord implementation with MSG
+
+! output sort 19
+$ $SG_TEST_EXENV ${bindir:=.}/s4u_dht-chord$EXEEXT -nb_bits=3 ${srcdir:=.}/cluster.xml ${srcdir:=.}/../s4u/dht-chord/s4u_dht-chord_d.xml --log=s4u_chord.thres:verbose "--log=root.fmt:[%10.5r]%e(%P@%h)%e%m%n"
+> [   0.00000] (node@node-0.acme.org) My finger table:
+> [   0.00000] (node@node-0.acme.org) Start | Succ
+> [   0.00000] (node@node-0.acme.org)    3  |  42
+> [   0.00000] (node@node-0.acme.org)    4  |  42
+> [   0.00000] (node@node-0.acme.org)    6  |  42
+> [   0.00000] (node@node-0.acme.org) Predecessor: -1
+> [  10.00000] (node@node-1.acme.org) Joining the ring with id 366680, knowing node 42
+> [  15.00751] (node@node-1.acme.org) My new finger #0 is 42
+> [  15.00751] (node@node-1.acme.org) My finger table:
+> [  15.00751] (node@node-1.acme.org) Start | Succ
+> [  15.00751] (node@node-1.acme.org)    1  |  42
+> [  15.00751] (node@node-1.acme.org)    2  | 366680
+> [  15.00751] (node@node-1.acme.org)    4  | 366680
+> [  15.00751] (node@node-1.acme.org) Predecessor: -1
+> [  20.00000] (node@node-2.acme.org) Joining the ring with id 533744, knowing node 366680
+> [  30.00000] (node@node-3.acme.org) Joining the ring with id 1319738, knowing node 42
+> [  30.00721] (node@node-2.acme.org) My new finger #0 is 42
+> [  30.00721] (node@node-2.acme.org) My finger table:
+> [  30.00721] (node@node-2.acme.org) Start | Succ
+> [  30.00721] (node@node-2.acme.org)    1  |  42
+> [  30.00721] (node@node-2.acme.org)    2  | 533744
+> [  30.00721] (node@node-2.acme.org)    4  | 533744
+> [  30.00721] (node@node-2.acme.org) Predecessor: -1
+> [  35.00711] (node@node-3.acme.org) My new finger #0 is 42
+> [  35.00711] (node@node-3.acme.org) My finger table:
+> [  35.00711] (node@node-3.acme.org) Start | Succ
+> [  35.00711] (node@node-3.acme.org)    3  |  42
+> [  35.00711] (node@node-3.acme.org)    4  | 1319738
+> [  35.00711] (node@node-3.acme.org)    6  | 1319738
+> [  35.00711] (node@node-3.acme.org) Predecessor: -1
+> [  40.00000] (node@node-4.acme.org) Joining the ring with id 16509405, knowing node 366680
+> [  49.99900] (node@node-0.acme.org) My new predecessor is 366680
+> [  49.99900] (node@node-0.acme.org) My finger table:
+> [  49.99900] (node@node-0.acme.org) Start | Succ
+> [  49.99900] (node@node-0.acme.org)    3  |  42
+> [  49.99900] (node@node-0.acme.org)    4  |  42
+> [  49.99900] (node@node-0.acme.org)    6  |  42
+> [  49.99900] (node@node-0.acme.org) Predecessor: 366680
+> [  49.99900] (node@node-0.acme.org) My new finger #0 is 366680
+> [  55.00671] (node@node-4.acme.org) My new finger #0 is 366680
+> [  55.00671] (node@node-4.acme.org) My finger table:
+> [  55.00671] (node@node-4.acme.org) Start | Succ
+> [  55.00671] (node@node-4.acme.org)    6  | 366680
+> [  55.00671] (node@node-4.acme.org)    7  | 16509405
+> [  55.00671] (node@node-4.acme.org)    1  | 16509405
+> [  55.00671] (node@node-4.acme.org) Predecessor: -1
+> [  60.00000] (node@node-6.acme.org) Joining the ring with id 16728096, knowing node 1319738
+> [  65.00651] (node@node-3.acme.org) My new finger #0 is 366680
+> [  65.01431] (node@node-6.acme.org) My new finger #0 is 366680
+> [  65.01431] (node@node-6.acme.org) My finger table:
+> [  65.01431] (node@node-6.acme.org) Start | Succ
+> [  65.01431] (node@node-6.acme.org)    1  | 366680
+> [  65.01431] (node@node-6.acme.org)    2  | 16728096
+> [  65.01431] (node@node-6.acme.org)    4  | 16728096
+> [  65.01431] (node@node-6.acme.org) Predecessor: -1
+> [  70.00641] (node@node-1.acme.org) My new predecessor is 16509405
+> [  70.00641] (node@node-1.acme.org) My finger table:
+> [  70.00641] (node@node-1.acme.org) Start | Succ
+> [  70.00641] (node@node-1.acme.org)    1  |  42
+> [  70.00641] (node@node-1.acme.org)    2  | 366680
+> [  70.00641] (node@node-1.acme.org)    4  | 366680
+> [  70.00641] (node@node-1.acme.org) Predecessor: 16509405
+> [  80.01401] (node@node-0.acme.org) My new finger #0 is 16509405
+> [  85.01391] (node@node-6.acme.org) My new finger #0 is 16509405
+> [ 100.02922] (node@node-3.acme.org) My new finger #0 is 16509405
+> [ 110.02902] (node@node-4.acme.org) My new predecessor is 42
+> [ 110.02902] (node@node-4.acme.org) My finger table:
+> [ 110.02902] (node@node-4.acme.org) Start | Succ
+> [ 110.02902] (node@node-4.acme.org)    6  | 366680
+> [ 110.02902] (node@node-4.acme.org)    7  | 16509405
+> [ 110.02902] (node@node-4.acme.org)    1  | 16509405
+> [ 110.02902] (node@node-4.acme.org) Predecessor: 42
+> [ 115.03673] (node@node-6.acme.org) My new finger #0 is 42
+> [ 200.05164] (node@node-3.acme.org) Well Guys! I Think it's time for me to leave ;)
+> [ 210.04364] (node@node-1.acme.org) Well Guys! I Think it's time for me to leave ;)
+> [ 210.05925] (node@node-4.acme.org) My new predecessor is -1
+> [ 220.05905] (node@node-4.acme.org) My new predecessor is 42
+> [ 220.05905] (node@node-4.acme.org) My finger table:
+> [ 220.05905] (node@node-4.acme.org) Start | Succ
+> [ 220.05905] (node@node-4.acme.org)    6  | 366680
+> [ 220.05905] (node@node-4.acme.org)    7  | 16509405
+> [ 220.05905] (node@node-4.acme.org)    1  | 16509405
+> [ 220.05905] (node@node-4.acme.org) Predecessor: 42
+> [ 220.07466] (node@node-0.acme.org) My new predecessor is 16509405
+> [ 225.05895] (node@node-4.acme.org) My new finger #0 is 42
+> [ 230.07446] (node@node-0.acme.org) My new predecessor is 533744
+> [ 230.07446] (node@node-0.acme.org) My finger table:
+> [ 230.07446] (node@node-0.acme.org) Start | Succ
+> [ 230.07446] (node@node-0.acme.org)    3  | 16509405
+> [ 230.07446] (node@node-0.acme.org)    4  |  42
+> [ 230.07446] (node@node-0.acme.org)    6  |  42
+> [ 230.07446] (node@node-0.acme.org) Predecessor: 533744
+> [ 235.08217] (node@node-4.acme.org) My new finger #0 is 533744
+> [ 240.08987] (node@node-0.acme.org) My new finger #1 is 16509405
+> [ 240.08987] (node@node-0.acme.org) My finger table:
+> [ 240.08987] (node@node-0.acme.org) Start | Succ
+> [ 240.08987] (node@node-0.acme.org)    3  | 16509405
+> [ 240.08987] (node@node-0.acme.org)    4  | 16509405
+> [ 240.08987] (node@node-0.acme.org)    6  |  42
+> [ 240.08987] (node@node-0.acme.org) Predecessor: 533744
+> [ 250.00000] (node@node-5.acme.org) Joining the ring with id 10874876, knowing node 533744
+> [ 255.11299] (node@node-5.acme.org) My new finger #0 is 16509405
+> [ 255.11299] (node@node-5.acme.org) My finger table:
+> [ 255.11299] (node@node-5.acme.org) Start | Succ
+> [ 255.11299] (node@node-5.acme.org)    5  | 16509405
+> [ 255.11299] (node@node-5.acme.org)    6  | 10874876
+> [ 255.11299] (node@node-5.acme.org)    0  | 10874876
+> [ 255.11299] (node@node-5.acme.org) Predecessor: -1
+> [ 265.09718] (node@node-2.acme.org) My new predecessor is 16509405
+> [ 265.09718] (node@node-2.acme.org) My finger table:
+> [ 265.09718] (node@node-2.acme.org) Start | Succ
+> [ 265.09718] (node@node-2.acme.org)    1  |  42
+> [ 265.09718] (node@node-2.acme.org)    2  | 533744
+> [ 265.09718] (node@node-2.acme.org)    4  | 533744
+> [ 265.09718] (node@node-2.acme.org) Predecessor: 16509405
+> [ 275.11259] (node@node-5.acme.org) My new finger #0 is 42
+> [ 280.10468] (node@node-4.acme.org) My new predecessor is 10874876
+> [ 280.10468] (node@node-4.acme.org) My finger table:
+> [ 280.10468] (node@node-4.acme.org) Start | Succ
+> [ 280.10468] (node@node-4.acme.org)    6  | 533744
+> [ 280.10468] (node@node-4.acme.org)    7  | 16509405
+> [ 280.10468] (node@node-4.acme.org)    1  | 16509405
+> [ 280.10468] (node@node-4.acme.org) Predecessor: 10874876
+> [ 285.13581] (node@node-4.acme.org) My new predecessor is 42
+> [ 285.13581] (node@node-4.acme.org) My finger table:
+> [ 285.13581] (node@node-4.acme.org) Start | Succ
+> [ 285.13581] (node@node-4.acme.org)    6  | 533744
+> [ 285.13581] (node@node-4.acme.org)    7  | 16509405
+> [ 285.13581] (node@node-4.acme.org)    1  | 16509405
+> [ 285.13581] (node@node-4.acme.org) Predecessor: 42
+> [ 300.13551] (node@node-4.acme.org) My new finger #1 is 533744
+> [ 300.13551] (node@node-4.acme.org) My finger table:
+> [ 300.13551] (node@node-4.acme.org) Start | Succ
+> [ 300.13551] (node@node-4.acme.org)    6  | 533744
+> [ 300.13551] (node@node-4.acme.org)    7  | 533744
+> [ 300.13551] (node@node-4.acme.org)    1  | 16509405
+> [ 300.13551] (node@node-4.acme.org) Predecessor: 42
+> [ 300.14332] (node@node-2.acme.org) My new finger #1 is 42
+> [ 300.14332] (node@node-2.acme.org) My finger table:
+> [ 300.14332] (node@node-2.acme.org) Start | Succ
+> [ 300.14332] (node@node-2.acme.org)    1  |  42
+> [ 300.14332] (node@node-2.acme.org)    2  |  42
+> [ 300.14332] (node@node-2.acme.org)    4  | 533744
+> [ 300.14332] (node@node-2.acme.org) Predecessor: 16509405
+> [ 305.14322] (node@node-5.acme.org) My new finger #0 is 533744
+> [ 305.15102] (node@node-0.acme.org) My new finger #0 is 10874876
+> [ 310.15873] (node@node-6.acme.org) My new finger #1 is 42
+> [ 310.15873] (node@node-6.acme.org) My finger table:
+> [ 310.15873] (node@node-6.acme.org) Start | Succ
+> [ 310.15873] (node@node-6.acme.org)    1  |  42
+> [ 310.15873] (node@node-6.acme.org)    2  |  42
+> [ 310.15873] (node@node-6.acme.org)    4  | 16728096
+> [ 310.15873] (node@node-6.acme.org) Predecessor: -1
+> [ 330.16613] (node@node-5.acme.org) My new finger #0 is 16509405
+> [ 335.16603] (node@node-5.acme.org) My new predecessor is 42
+> [ 335.16603] (node@node-5.acme.org) My finger table:
+> [ 335.16603] (node@node-5.acme.org) Start | Succ
+> [ 335.16603] (node@node-5.acme.org)    5  | 16509405
+> [ 335.16603] (node@node-5.acme.org)    6  | 10874876
+> [ 335.16603] (node@node-5.acme.org)    0  | 10874876
+> [ 335.16603] (node@node-5.acme.org) Predecessor: 42
+> [ 340.16593] (node@node-4.acme.org) Well Guys! I Think it's time for me to leave ;)
+> [ 350.15793] (node@node-2.acme.org) My new predecessor is 42
+> [ 350.16573] (node@node-0.acme.org) My new finger #0 is 533744
+> [ 360.18115] (node@node-0.acme.org) My new finger #2 is 533744
+> [ 360.18115] (node@node-0.acme.org) My finger table:
+> [ 360.18115] (node@node-0.acme.org) Start | Succ
+> [ 360.18115] (node@node-0.acme.org)    3  | 533744
+> [ 360.18115] (node@node-0.acme.org)    4  | 16509405
+> [ 360.18115] (node@node-0.acme.org)    6  | 533744
+> [ 360.18115] (node@node-0.acme.org) Predecessor: 533744
+> [ 420.23459] (node@node-2.acme.org) Well Guys! I Think it's time for me to leave ;)
+> [ 425.22668] (node@node-0.acme.org) My new predecessor is 42
+> [ 475.23449] (node@node-0.acme.org) My new finger #0 is 42
+> [ 480.23439] (node@node-0.acme.org) My new predecessor is 16728096
+> [ 480.23439] (node@node-0.acme.org) My finger table:
+> [ 480.23439] (node@node-0.acme.org) Start | Succ
+> [ 480.23439] (node@node-0.acme.org)    3  |  42
+> [ 480.23439] (node@node-0.acme.org)    4  | 16509405
+> [ 480.23439] (node@node-0.acme.org)    6  | 533744
+> [ 480.23439] (node@node-0.acme.org) Predecessor: 16728096
+> [ 485.24209] (node@node-6.acme.org) My new finger #2 is 42
+> [ 485.24209] (node@node-6.acme.org) My finger table:
+> [ 485.24209] (node@node-6.acme.org) Start | Succ
+> [ 485.24209] (node@node-6.acme.org)    1  |  42
+> [ 485.24209] (node@node-6.acme.org)    2  |  42
+> [ 485.24209] (node@node-6.acme.org)    4  |  42
+> [ 485.24209] (node@node-6.acme.org) Predecessor: -1
+> [ 495.24970] (node@node-0.acme.org) My new finger #0 is 16728096
+> [ 575.26471] (node@node-6.acme.org) My new predecessor is 42
+> [ 575.26471] (node@node-6.acme.org) My finger table:
+> [ 575.26471] (node@node-6.acme.org) Start | Succ
+> [ 575.26471] (node@node-6.acme.org)    1  |  42
+> [ 575.26471] (node@node-6.acme.org)    2  |  42
+> [ 575.26471] (node@node-6.acme.org)    4  |  42
+> [ 575.26471] (node@node-6.acme.org) Predecessor: 42
+> [ 600.27202] (node@node-0.acme.org) My new finger #1 is 16728096
+> [ 600.27202] (node@node-0.acme.org) My finger table:
+> [ 600.27202] (node@node-0.acme.org) Start | Succ
+> [ 600.27202] (node@node-0.acme.org)    3  | 16728096
+> [ 600.27202] (node@node-0.acme.org)    4  | 16728096
+> [ 600.27202] (node@node-0.acme.org)    6  | 533744
+> [ 600.27202] (node@node-0.acme.org) Predecessor: 16728096
+> [ 720.36329] (node@node-0.acme.org) My new finger #2 is 16728096
+> [ 720.36329] (node@node-0.acme.org) My finger table:
+> [ 720.36329] (node@node-0.acme.org) Start | Succ
+> [ 720.36329] (node@node-0.acme.org)    3  | 16728096
+> [ 720.36329] (node@node-0.acme.org)    4  | 16728096
+> [ 720.36329] (node@node-0.acme.org)    6  | 16728096
+> [ 720.36329] (node@node-0.acme.org) Predecessor: 16728096
+> [ 855.46207] (node@node-6.acme.org) My new finger #2 is 16728096
+> [ 855.46207] (node@node-6.acme.org) My finger table:
+> [ 855.46207] (node@node-6.acme.org) Start | Succ
+> [ 855.46207] (node@node-6.acme.org)    1  |  42
+> [ 855.46207] (node@node-6.acme.org)    2  |  42
+> [ 855.46207] (node@node-6.acme.org)    4  | 16728096
+> [ 855.46207] (node@node-6.acme.org) Predecessor: 42
+> [ 860.46197] (node@node-6.acme.org) Well Guys! I Think it's time for me to leave ;)
+> [ 865.45406] (node@node-0.acme.org) My new predecessor is 42
+> [ 890.43115] (node@node-5.acme.org) Well Guys! I Think it's time for me to leave ;)
+> [ 915.45406] (node@node-0.acme.org) My new finger #0 is 42
+> [ 940.45356] (node@node-0.acme.org) My new finger #0 is 16509405
+> [ 990.45356] (node@node-0.acme.org) My new finger #1 is 16509405
+> [ 990.45356] (node@node-0.acme.org) My finger table:
+> [ 990.45356] (node@node-0.acme.org) Start | Succ
+> [ 990.45356] (node@node-0.acme.org)    3  | 16509405
+> [ 990.45356] (node@node-0.acme.org)    4  | 16509405
+> [ 990.45356] (node@node-0.acme.org)    6  | 16728096
+> [ 990.45356] (node@node-0.acme.org) Predecessor: 42
+> [1040.45356] (node@node-0.acme.org) Well Guys! I Think it's time for me to leave ;)
+> [1090.46137] (maestro@) Simulated time: 1090.46
