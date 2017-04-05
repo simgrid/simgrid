@@ -12,14 +12,14 @@
 
 int errors = 0;
 const int NITER = 1000;
-const int acc_val = 3;
+
 
 int main(int argc, char **argv)
 {
     int rank, nproc;
     int out_val, i, counter = 0;
     MPI_Win win;
-
+    int acc_val = 3;
     MPI_Init(&argc, &argv);
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);

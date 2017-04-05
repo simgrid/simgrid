@@ -44,10 +44,10 @@ int MCS_Mutex_create(int tail_rank, MPI_Comm comm, MCS_Mutex * hdl_out)
 #else
 #ifdef USE_WIN_ALLOC_SHM
     MPI_Info_create(&hdl->win_info);
-    MPI_Info_set(hdl->win_info, "alloc_shm", "true");
+    MPI_Info_set(hdl->win_info, (char*)"alloc_shm", (char*)"true");
 #else
     MPI_Info_create(&hdl->win_info);
-    MPI_Info_set(hdl->win_info, "alloc_shm", "false");
+    MPI_Info_set(hdl->win_info, (char*)"alloc_shm", (char*)"false");
 #endif
     MPI_Win_allocate(2 * sizeof(int), sizeof(int), hdl->win_info, hdl->comm,
                      &hdl->base, &hdl->window);
