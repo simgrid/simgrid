@@ -9,12 +9,11 @@
 
 #define SIZE 100
 
-MPI_Win win;
-int win_buf[SIZE], origin_buf[SIZE], result_buf[SIZE];
+
 int do_test(int origin_count, MPI_Datatype origin_type, int result_count,
-            MPI_Datatype result_type, int target_count, MPI_Datatype target_type);
+            MPI_Datatype result_type, int target_count, MPI_Datatype target_type, MPI_Win win, int* win_buf, int* origin_buf, int* result_buf);
 int do_test(int origin_count, MPI_Datatype origin_type, int result_count,
-            MPI_Datatype result_type, int target_count, MPI_Datatype target_type)
+            MPI_Datatype result_type, int target_count, MPI_Datatype target_type, MPI_Win win, int* win_buf, int* origin_buf, int* result_buf)
 {
     int errs = 0, ret, origin_type_size, result_type_size;
 
@@ -71,6 +70,8 @@ int do_test(int origin_count, MPI_Datatype origin_type, int result_count,
 
 int main(int argc, char *argv[])
 {
+    MPI_Win win;
+    int win_buf[SIZE], origin_buf[SIZE], result_buf[SIZE];
     int rank, nprocs, i, j, k;
     int errs = 0;
     MPI_Datatype types[4];
@@ -103,41 +104,41 @@ int main(int argc, char *argv[])
         for (i = 0; i < 4; i++)
             for (j = 0; j < 4; j++)
                 for (k = 0; k < 4; k++)
-                    do_test(0, types[i], 0, types[j], 0, types[k]);
+                    do_test(0, types[i], 0, types[j], 0, types[k], win, win_buf, origin_buf, result_buf);
 
         /* single zero-size datatype, but non-zero count */
         for (i = 1; i < 4; i++) {
             for (j = 1; j < 4; j++) {
-                do_test(1, types[0], 0, types[i], 0, types[j]);
-                do_test(0, types[i], 1, types[0], 0, types[j]);
-                do_test(0, types[i], 0, types[j], 1, types[0]);
+                do_test(1, types[0], 0, types[i], 0, types[j], win, win_buf, origin_buf, result_buf);
+                do_test(0, types[i], 1, types[0], 0, types[j], win, win_buf, origin_buf, result_buf);
+                do_test(0, types[i], 0, types[j], 1, types[0], win, win_buf, origin_buf, result_buf);
             }
         }
 
         /* two zero-size datatypes, but non-zero count */
         for (i = 1; i < 4; i++) {
-            do_test(1, types[0], 1, types[0], 0, types[i]);
-            do_test(1, types[0], 0, types[i], 1, types[0]);
-            do_test(0, types[i], 1, types[0], 1, types[0]);
+            do_test(1, types[0], 1, types[0], 0, types[i], win, win_buf, origin_buf, result_buf);
+            do_test(1, types[0], 0, types[i], 1, types[0], win, win_buf, origin_buf, result_buf);
+            do_test(0, types[i], 1, types[0], 1, types[0], win, win_buf, origin_buf, result_buf);
 
-            do_test(1, types[0], 2, types[0], 0, types[i]);
-            do_test(2, types[0], 1, types[0], 0, types[i]);
+            do_test(1, types[0], 2, types[0], 0, types[i], win, win_buf, origin_buf, result_buf);
+            do_test(2, types[0], 1, types[0], 0, types[i], win, win_buf, origin_buf, result_buf);
 
-            do_test(1, types[0], 0, types[i], 2, types[0]);
-            do_test(2, types[0], 0, types[i], 1, types[0]);
+            do_test(1, types[0], 0, types[i], 2, types[0], win, win_buf, origin_buf, result_buf);
+            do_test(2, types[0], 0, types[i], 1, types[0], win, win_buf, origin_buf, result_buf);
 
-            do_test(0, types[i], 1, types[0], 2, types[0]);
-            do_test(0, types[i], 2, types[0], 1, types[0]);
+            do_test(0, types[i], 1, types[0], 2, types[0], win, win_buf, origin_buf, result_buf);
+            do_test(0, types[i], 2, types[0], 1, types[0], win, win_buf, origin_buf, result_buf);
         }
 
         /* three zero-size datatypes, but non-zero count */
-        do_test(1, types[0], 1, types[0], 1, types[0]);
-        do_test(1, types[0], 1, types[0], 2, types[0]);
-        do_test(1, types[0], 2, types[0], 1, types[0]);
-        do_test(1, types[0], 2, types[0], 2, types[0]);
-        do_test(2, types[0], 1, types[0], 1, types[0]);
-        do_test(2, types[0], 1, types[0], 2, types[0]);
-        do_test(2, types[0], 2, types[0], 1, types[0]);
+        do_test(1, types[0], 1, types[0], 1, types[0], win, win_buf, origin_buf, result_buf);
+        do_test(1, types[0], 1, types[0], 2, types[0], win, win_buf, origin_buf, result_buf);
+        do_test(1, types[0], 2, types[0], 1, types[0], win, win_buf, origin_buf, result_buf);
+        do_test(1, types[0], 2, types[0], 2, types[0], win, win_buf, origin_buf, result_buf);
+        do_test(2, types[0], 1, types[0], 1, types[0], win, win_buf, origin_buf, result_buf);
+        do_test(2, types[0], 1, types[0], 2, types[0], win, win_buf, origin_buf, result_buf);
+        do_test(2, types[0], 2, types[0], 1, types[0], win, win_buf, origin_buf, result_buf);
     }
     MPI_Win_fence(0, win);
 
