@@ -123,7 +123,7 @@ static void free_paje_event (paje_event_t event)
   xbt_free (event);
 }
 
-void new_pajeDefineContainerType(type_t type)
+void s_defineContainerType::new_pajeDefineContainerType(type_t type)
 {
   paje_event_t event                           = xbt_new0(s_paje_event_t, 1);
   event->event_type                            = PAJE_DefineContainerType;

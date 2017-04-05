@@ -55,16 +55,21 @@ typedef enum {
   TYPE_EVENT
 } e_entity_types;
 
-typedef struct s_type *type_t;
-typedef struct s_type {
+//--------------------------------------------------
+class s_type;
+typedef s_type *type_t;
+class s_type {
+  public:
   char *id;
   char *name;
   char *color;
   e_entity_types kind;
-  struct s_type *father;
+  s_type *father;
   xbt_dict_t children;
   xbt_dict_t values; //valid for all types except variable and container
-}s_type_t;
+};
+
+typedef s_type s_type_t;
 
 //--------------------------------------------------
 class s_val;
@@ -122,11 +127,16 @@ class paje_event {
 };
 typedef paje_event s_paje_event_t;
 //--------------------------------------------------
+class s_defineContainerType;
 
-typedef struct s_defineContainerType *defineContainerType_t;
-typedef struct s_defineContainerType {
+typedef s_defineContainerType *defineContainerType_t;
+class s_defineContainerType {
+  public:
   type_t type;
-}s_defineContainerType_t;
+  XBT_PUBLIC(void) new_pajeDefineContainerType(type_t type);
+};
+typedef s_defineContainerType s_defineContainerType_t;
+//--------------------------------------------------
 
 typedef struct s_defineVariableType *defineVariableType_t;
 typedef struct s_defineVariableType {
@@ -285,7 +295,7 @@ XBT_PRIVATE void TRACE_paje_init();
 XBT_PRIVATE void TRACE_paje_start();
 XBT_PRIVATE void TRACE_paje_end();
 XBT_PRIVATE void TRACE_paje_dump_buffer (int force);
-XBT_PUBLIC(void) new_pajeDefineContainerType(type_t type);
+
 XBT_PUBLIC(void) new_pajeDefineVariableType(type_t type);
 XBT_PUBLIC(void) new_pajeDefineStateType(type_t type);
 XBT_PUBLIC(void) new_pajeDefineEventType(type_t type);

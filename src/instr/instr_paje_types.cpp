@@ -116,7 +116,7 @@ type_t PJ_type_get_or_null (const char *name, type_t father)
 }
 
 type_t PJ_type_container_new (const char *name, type_t father)
-{
+{ s_defineContainerType EltContainer;
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a container type with a nullptr name");
   }
@@ -130,7 +130,7 @@ type_t PJ_type_container_new (const char *name, type_t father)
 
   if(father){
     XBT_DEBUG("ContainerType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
-    new_pajeDefineContainerType (ret);
+    EltContainer.new_pajeDefineContainerType (ret);
   }
   return ret;
 }
