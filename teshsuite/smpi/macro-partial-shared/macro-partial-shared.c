@@ -4,31 +4,36 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* This example should be instructive to learn about SMPI_SHARED_CALL */
-
 #include <stdio.h>
 #include <mpi.h>
 #include <stdint.h>
 #include <inttypes.h>
 
-// Return the number of occurences of the given value between buf[start] and buf[stop-1].
+// Set the elements between buf[start] and buf[stop-1] to (i+value)%256
+void set(uint8_t *buf, int start, int stop, uint8_t value) {
+  for(int i = start; i < stop; i++) {
+    buf[i] = (i+value)%256;
+  }
+}
+
+// Return the number of times that an element is equal to (i+value)%256 between buf[start] and buf[stop-1].
 int count_all(uint8_t *buf, int start, int stop, uint8_t value) {
   int occ = 0;
   for(int i = start ; i < stop ; i++) {
-    if(buf[i] == value) {
+    if(buf[i] == (i+value)%256) {
       occ ++;
     }
   }
   return occ;
 }
 
-// Return true iff the values from buf[start] to buf[stop-1] are all equal to value.
+// Return true iff the values from buf[start] to buf[stop-1] are all equal to (i+value)%256.
 int check_all(uint8_t *buf, int start, int stop, uint8_t value) {
   int occ = count_all(buf, start, stop, value);
   return occ == stop-start;
 }
 
-// Return true iff "enough" occurences of the given value are between buf[start] and buf[stop-1].
+// Return true iff "enough" elements are equal to (i+value)%256 between buf[start] and buf[stop-1].
 int check_enough(uint8_t *buf, int start, int stop, uint8_t value) {
   int page_size = 0x1000;
   int size = stop-start;
@@ -58,7 +63,7 @@ int main(int argc, char *argv[])
   //Let's Allocate a shared memory buffer
   uint8_t *buf;
   buf = SMPI_PARTIAL_SHARED_MALLOC(mem_size, shared_blocks, nb_blocks);
-  memset(buf, 0, mem_size);
+  set(buf, 0, mem_size, 0);
   MPI_Barrier(MPI_COMM_WORLD);
 
   // Process 0 write in shared blocks
@@ -66,7 +71,7 @@ int main(int argc, char *argv[])
     for(int i = 0; i < nb_blocks; i++) {
       int start = shared_blocks[2*i];
       int stop = shared_blocks[2*i+1];
-      memset(buf+start, 42, stop-start);
+      set(buf, start, stop, 42);
     }
   }
   MPI_Barrier(MPI_COMM_WORLD);
