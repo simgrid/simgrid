@@ -7,6 +7,7 @@
 #include "private.h"
 #include "private.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
+#include "smpi/smpi_shared_malloc.hpp"
 #include "simgrid/sg_config.h"
 #include "src/kernel/activity/SynchroComm.hpp"
 #include "src/mc/mc_record.h"
@@ -103,17 +104,47 @@ void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, s
   smpi_comm_copy_data_callback = callback;
 }
 
+std::vector<std::pair<int, int>> merge_private_blocks(std::vector<std::pair<int, int>> src, std::vector<std::pair<int, int>> dst) {
+  std::vector<std::pair<int, int>> result;
+  int i_src=0, i_dst=0;
+  while(i_src < src.size() && i_dst < dst.size()) {
+    std::pair<int, int> block;
+    if(src[i_src].first < dst[i_dst].first) {
+      block = src[i_src];
+      i_src ++;
+    }
+    else {
+      block = dst[i_dst];
+      i_dst ++;
+    }
+    if(block.first <= result.back().second) { // overlapping with the last block inserted
+      result.back().second = std::max(result.back().second, block.second);
+    }
+    else { // not overlapping, we insert a new block
+      result.push_back(block);
+    }
+  }
+  for(; i_src < src.size(); i_src++) {
+    result.push_back(src[i_src]);
+  }
+  for(; i_dst < dst.size(); i_dst++) {
+    result.push_back(dst[i_dst]);
+  }
+  return result;
+}
+
 void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t buff_size)
 {
-
   simgrid::kernel::activity::Comm *comm = dynamic_cast<simgrid::kernel::activity::Comm*>(synchro);
-
+  int src_shared=0, dst_shared=0;
+  std::vector<std::pair<int, int>> src_private_blocks;
+  std::vector<std::pair<int, int>> dst_private_blocks;
   XBT_DEBUG("Copy the data over");
-  if(smpi_is_shared(buff)){
+  if(src_shared=smpi_is_shared(buff, src_private_blocks))
     XBT_DEBUG("Sender %p is shared. Let's ignore it.", buff);
-  }else if(smpi_is_shared((char*)comm->dst_buff)){
-    XBT_DEBUG("Receiver %p is shared. Let's ignore it.", (char*)comm->dst_buff);
-  }else{
+  if(dst_shared=smpi_is_shared((char*)comm->dst_buff, src_private_blocks))
+    XBT_DEBUG("Receiver %p is shared. Let's ignore it.", (char*)comm->dst_buff); 
+  if(!src_shared && !dst_shared){
     void* tmpbuff=buff;
     if((smpi_privatize_global_variables) && (static_cast<char*>(buff) >= smpi_start_data_exe)
         && (static_cast<char*>(buff) < smpi_start_data_exe + smpi_size_data_exe )

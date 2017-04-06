@@ -114,6 +114,7 @@ typedef std::unordered_map<smpi_source_location, shared_data_t>::value_type shar
 
 typedef struct {
   size_t size;
+  std::vector<std::pair<int, int>> private_blocks;
   shared_data_key_type* data;
 } shared_metadata_t;
 
@@ -240,6 +241,9 @@ void *smpi_shared_malloc_global__(size_t size, const char *file, int line, int *
     xbt_assert(0 <= start_offset,          "start_offset (%d) should be greater than 0", start_offset);
     xbt_assert(start_offset < stop_offset, "start_offset (%d) should be lower than stop offset (%d)", start_offset, stop_offset);
     xbt_assert(stop_offset <= size,         "stop_offset (%d) should be lower than size (%lu)", stop_offset, size);
+    if(i_block < nb_shared_blocks-1)
+      xbt_assert(stop_offset < shared_block_offsets[2*i_block+2],
+              "stop_offset (%d) should be lower than its successor start offset (%d)", stop_offset, shared_block_offsets[2*i_block+2]);
 //    fprintf(stderr, "shared block 0x%x - 0x%x\n", start_offset, stop_offset);
     int start_block_offset = ALIGN_UP(start_offset, smpi_shared_malloc_blocksize);
     int stop_block_offset = ALIGN_DOWN(stop_offset, smpi_shared_malloc_blocksize);
@@ -281,16 +285,23 @@ void *smpi_shared_malloc_global__(size_t size, const char *file, int line, int *
     }
   }
 
-  if(nb_shared_blocks == 1 && shared_block_offsets[0] == 0 && shared_block_offsets[1] == size) {
-    shared_metadata_t newmeta;
-    //register metadata for memcpy avoidance
-    shared_data_key_type* data = (shared_data_key_type*)xbt_malloc(sizeof(shared_data_key_type));
-    data->second.fd = -1;
-    data->second.count = 1;
-    newmeta.size = size;
-    newmeta.data = data;
-    allocs_metadata[mem] = newmeta;
+  shared_metadata_t newmeta;
+  //register metadata for memcpy avoidance
+  shared_data_key_type* data = (shared_data_key_type*)xbt_malloc(sizeof(shared_data_key_type));
+  data->second.fd = -1;
+  data->second.count = 1;
+  newmeta.size = size;
+  newmeta.data = data;
+  if(shared_block_offsets[0] > 0) {
+    newmeta.private_blocks.push_back(std::make_pair(0, shared_block_offsets[0]));
   }
+  for(int i_block = 0; i_block < nb_shared_blocks-1; i_block ++) {
+    newmeta.private_blocks.push_back(std::make_pair(shared_block_offsets[2*i_block+1], shared_block_offsets[2*i_block+2]));
+  }
+  if(shared_block_offsets[nb_shared_blocks-1] < size) {
+    newmeta.private_blocks.push_back(std::make_pair(shared_block_offsets[nb_shared_blocks-1], size));
+  }
+  allocs_metadata[mem] = newmeta;
 
   return mem;
 }
@@ -326,18 +337,23 @@ void *smpi_shared_malloc(size_t size, const char *file, int line) {
   return mem;
 }
 
-int smpi_is_shared(void* ptr){
+int smpi_is_shared(void* ptr, std::vector<std::pair<int, int>> &private_blocks){
+  private_blocks.clear(); // being paranoid
   if (allocs_metadata.empty())
     return 0;
   if ( smpi_cfg_shared_malloc == shmalloc_local || smpi_cfg_shared_malloc == shmalloc_global) {
     auto low = allocs_metadata.lower_bound(ptr);
-    if (low->first==ptr)
+    if (low->first==ptr) {
+      private_blocks = low->second.private_blocks;
       return 1;
+    }
     if (low == allocs_metadata.begin())
       return 0;
     low --;
-    if (ptr < (char*)low->first + low->second.size)
+    if (ptr < (char*)low->first + low->second.size) {
+      private_blocks = low->second.private_blocks;
       return 1;
+    }
     return 0;
   } else {
     return 0;
