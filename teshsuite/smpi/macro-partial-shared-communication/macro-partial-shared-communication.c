@@ -1,0 +1,102 @@
+/* Copyright (c) 2009-2015. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#include <stdio.h>
+#include <mpi.h>
+#include <stdint.h>
+#include <inttypes.h>
+#include <assert.h>
+
+// Set the elements between buf[start] and buf[stop-1] to (i+value)%256
+void set(uint8_t *buf, int start, int stop, uint8_t value) {
+  for(int i = start; i < stop; i++) {
+    buf[i] = (i+value)%256;
+  }
+}
+
+// Return the number of times that an element is equal to (i+value)%256 between buf[start] and buf[stop-1].
+int count_all(uint8_t *buf, int start, int stop, uint8_t value) {
+  int occ = 0;
+  for(int i = start ; i < stop ; i++) {
+    if(buf[i] == (i+value)%256) {
+      occ ++;
+    }
+  }
+  return occ;
+}
+
+// Return true iff the values from buf[start] to buf[stop-1] are all equal to (i+value)%256.
+int check_all(uint8_t *buf, int start, int stop, uint8_t value) {
+  int occ = count_all(buf, start, stop, value);
+  return occ == stop-start;
+}
+
+// Return true iff "enough" elements are equal to (i+value)%256 between buf[start] and buf[stop-1].
+int check_enough(uint8_t *buf, int start, int stop, uint8_t value) {
+  int page_size = 0x1000;
+  int size = stop-start;
+  if(size <= 2*page_size) // we are not sure to have a whole page that is shared
+    return 1;
+  int occ = count_all(buf, start, stop, value);
+  return occ >= size - 2*page_size;
+}
+
+int main(int argc, char *argv[])
+{
+  MPI_Init(&argc, &argv);
+  int rank;
+  int size;
+  int mem_size = 0x10000000;
+  int shared_blocks[] = {
+    0,         0x1234567,
+    0x1300000, 0x1300010,
+    0x3456789, 0x3457890,
+    0x4444444, 0x5555555,
+    0x5555565, 0x5600000,
+    0x8000000, 0x10000000
+  };
+  int nb_blocks = (sizeof(shared_blocks)/sizeof(int))/2;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  //Let's Allocate a shared memory buffer
+  assert(size%2 == 0);
+  uint8_t *buf;
+  buf = SMPI_PARTIAL_SHARED_MALLOC(mem_size, shared_blocks, nb_blocks);
+  memset(buf, 3, mem_size);
+  MPI_Barrier(MPI_COMM_WORLD);
+
+  // Even processes write their rank in private blocks
+  if(rank%2 == 0) {
+    for(int i = 0; i < nb_blocks-1; i++) {
+      int start = shared_blocks[2*i+1];
+      int stop = shared_blocks[2*i+2];
+      set(buf, start, stop, rank);
+    }
+  }
+  // Then, even processes send their buffer to their successor
+  if(rank%2 == 0) {
+    MPI_Send(buf, mem_size, MPI_UINT8_T, rank+1, 0, MPI_COMM_WORLD);
+  }
+  else {
+    MPI_Recv(buf, mem_size, MPI_UINT8_T, rank-1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+  }
+
+
+  // Odd processes verify that they successfully received the message
+  if(rank%2 == 1) {
+    for(int i = 0; i < nb_blocks-1; i++) {
+      int start = shared_blocks[2*i+1];
+      int stop = shared_blocks[2*i+2];
+      int comm = check_all(buf, start, stop, rank-1);
+      printf("[%d] The result of the communication check for block (0x%x, 0x%x) is: %d\n", rank, start, stop, comm);
+    }
+  }
+
+  SMPI_SHARED_FREE(buf);
+
+  MPI_Finalize();
+  return 0;
+}
