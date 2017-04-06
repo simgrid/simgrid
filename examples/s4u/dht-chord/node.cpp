@@ -392,7 +392,7 @@ void Node::remoteNotify(int notify_id, int predecessor_candidate_id)
     simgrid::s4u::this_actor::isend(mailbox, message, 10);
   } catch (xbt_ex& e) {
     if (e.category == timeout_error) {
-      XBT_DEBUG("Send of 'Notify' failed due du an expired timeout on receiver side");
+      XBT_DEBUG("Send of 'Notify' failed due to an expired timeout on receiver side");
       delete message;
     }
   }

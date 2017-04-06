@@ -156,7 +156,9 @@ public:
       }
       now = simgrid::s4u::Engine::instance()->getClock();
     }
-
+    if (data != nullptr) {
+      delete static_cast<ChordMessage*>(data);
+    }
     // leave the ring
     leave();
   }
