@@ -18,8 +18,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_op, smpi, "Logging specific to SMPI (op)");
 #define BAND_OP(a, b) (b) &= (a)
 #define BOR_OP(a, b)  (b) |= (a)
 #define BXOR_OP(a, b) (b) ^= (a)
-#define MAXLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (b) : (a)
-#define MINLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (a) : (b)
+#define MAXLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (b) : ((a.value) == (b.value) ? ((a.index) < (b.index) ? (a) : (b)) : (a))
+#define MINLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (a) : ((a.value) == (b.value) ? ((a.index) < (b.index) ? (a) : (b)) : (b))
 
 #define APPLY_FUNC(a, b, length, type, func) \
 {                                          \

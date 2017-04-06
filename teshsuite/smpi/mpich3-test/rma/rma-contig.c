@@ -9,15 +9,15 @@
 #include <string.h>
 #include <mpi.h>
 
-#define MAX_DATA_SIZE   (1024*128*16)
-#define MAX_NUM_ITERATIONS (8192*4)
+#define MAX_DATA_SIZE   (1024)
+#define MAX_NUM_ITERATIONS (1024)
 #define MIN_NUM_ITERATIONS 8
 #define NUM_WARMUP_ITER 1
 
 const int verbose = 0;
 static int rank;
 
-void run_test(int lock_mode, int lock_assert)
+static void run_test(int lock_mode, int lock_assert)
 {
     int nproc, test_iter, target_rank, data_size;
     int *buf, *win_buf;
