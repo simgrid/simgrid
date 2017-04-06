@@ -237,13 +237,8 @@ void SIMIX_maestro_create(void (*code)(void*), void* data)
  *
  * \return the process created
  */
-smx_actor_t SIMIX_process_create(
-                          const char *name,
-                          std::function<void()> code,
-                          void *data,
-                          sg_host_t host,
-                          xbt_dict_t properties,
-                          smx_actor_t parent_process)
+smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, void* data, simgrid::s4u::Host* host,
+                                 xbt_dict_t properties, smx_actor_t parent_process)
 {
 
   XBT_DEBUG("Start process %s on host '%s'", name, host->cname());
@@ -284,6 +279,10 @@ smx_actor_t SIMIX_process_create(
 
   /* Add properties */
   process->properties = properties;
+
+  /* Make sure that the process is initialized for simix, in case we are called from the Host::onCreation signal */
+  if (host->extension<simgrid::simix::Host>() == nullptr)
+    host->extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
 
   /* Add the process to it's host process list */
   xbt_swag_insert(process, host->extension<simgrid::simix::Host>()->process_list);
