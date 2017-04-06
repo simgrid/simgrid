@@ -111,9 +111,13 @@ Request::Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, 
   if(((((flags & RECV) != 0) && ((flags & ACCUMULATE) !=0)) || (datatype->flags() & DT_FLAG_DERIVED)) && (!smpi_is_shared(buf_))){
     // This part handles the problem of non-contiguous memory
     old_buf = buf;
-    buf_ = count==0 ? nullptr : xbt_malloc(count*datatype->size());
-    if ((datatype->flags() & DT_FLAG_DERIVED) && ((flags & SEND) != 0)) {
-      datatype->serialize(old_buf, buf_, count);
+    if (count==0){
+      buf_ = nullptr;
+    }else {
+      buf_ = xbt_malloc(count*datatype->size());
+      if ((datatype->flags() & DT_FLAG_DERIVED) && ((flags & SEND) != 0)) {
+        datatype->serialize(old_buf, buf_, count);
+      }
     }
   }
   // This part handles the problem of non-contiguous memory (for the unserialisation at the reception)

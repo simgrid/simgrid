@@ -243,7 +243,7 @@ void Op::apply(void *invec, void *inoutvec, int *len, MPI_Datatype datatype)
     smpi_switch_data_segment(smpi_process()->index());
   }
 
-  if(!smpi_process()->replaying()){
+  if(!smpi_process()->replaying() && *len > 0){
     if(! is_fortran_op_)
       this->func_(invec, inoutvec, len, &datatype);
     else{

@@ -20,7 +20,7 @@ static int rank;
 static void run_test(int lock_mode, int lock_assert)
 {
     int nproc, test_iter, target_rank, data_size;
-    int *buf, *win_buf;
+    char *buf, *win_buf;
     MPI_Win win;
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -101,8 +101,8 @@ static void run_test(int lock_mode, int lock_assert)
                     t_acc = MPI_Wtime();
 
                 MPI_Win_lock(lock_mode, target_rank, lock_assert, win);
-                MPI_Accumulate(buf, data_size / sizeof(int), MPI_INT, target_rank,
-                               0, data_size / sizeof(int), MPI_INT, MPI_SUM, win);
+                MPI_Accumulate(buf, data_size, MPI_BYTE, target_rank,
+                               0, data_size, MPI_BYTE, MPI_SUM, win);
                 MPI_Win_unlock(target_rank, win);
             }
             t_acc = (MPI_Wtime() - t_acc) / num_iter;
