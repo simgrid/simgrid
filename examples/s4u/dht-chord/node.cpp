@@ -58,7 +58,7 @@ Node::Node(std::vector<std::string> args)
 
   if (args.size() == 3) { // first ring
     deadline_   = std::stod(args[2]);
-    start_time_ = simgrid::s4u::Engine::instance()->getClock();
+    start_time_ = simgrid::s4u::Engine::getClock();
     XBT_DEBUG("Create a new Chord ring...");
   } else {
     known_id_   = std::stoi(args[2]);
