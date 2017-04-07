@@ -99,12 +99,12 @@ int main(int argc, char *argv[])
   MPI_Barrier(MPI_COMM_WORLD);
 
   // Then, even processes send a sub-part of their buffer their successor
-  // Note that the part (0, 0x10000) which is not sent is a shared part, so we do not care
+  // Note that the last block should not be copied entirely
   if(rank%2 == 0) {
-    MPI_Send(buf+0x10000, mem_size-0x10000, MPI_UINT8_T, rank+1, 0, MPI_COMM_WORLD);
+    MPI_Send(buf+0x10000, mem_size-0xa000000, MPI_UINT8_T, rank+1, 0, MPI_COMM_WORLD);
   }
   else {
-    MPI_Recv(buf+0x10000, mem_size-0x10000, MPI_UINT8_T, rank-1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    MPI_Recv(buf+0x10000, mem_size-0xa000000, MPI_UINT8_T, rank-1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   }
 
 

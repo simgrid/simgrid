@@ -364,14 +364,15 @@ int smpi_is_shared(void* ptr, std::vector<std::pair<int, int>> &private_blocks, 
   }
 }
 
-std::vector<std::pair<int, int>> shift_private_blocks(const std::vector<std::pair<int, int>> vec, int offset) {
-  std::vector<std::pair<int, int>> result;
-  for(auto block: vec) {
-    auto new_block = std::make_pair(std::max(0, block.first-offset), std::max(0, block.second-offset));
-    if(new_block.second > 0)
-      result.push_back(new_block);
-  }
-  return result;
+std::vector<std::pair<int, int>> shift_and_frame_private_blocks(const std::vector<std::pair<int, int>> vec, int offset, int buff_size) {
+    std::vector<std::pair<int, int>> result;
+    for(auto block: vec) {
+        auto new_block = std::make_pair(std::min(std::max(0, block.first-offset), buff_size),
+                                        std::min(std::max(0, block.second-offset), buff_size));
+        if(new_block.second > 0 && new_block.first < buff_size)
+            result.push_back(new_block);
+    }
+    return result;
 }
 
 void append_or_merge_block(std::vector<std::pair<int, int>> &vec, std::pair<int, int> &block) {

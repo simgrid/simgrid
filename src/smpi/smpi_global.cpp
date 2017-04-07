@@ -117,17 +117,23 @@ void memcpy_private(void *dest, const void *src, size_t n, std::vector<std::pair
   }
 }
 
+void check_blocks(std::vector<std::pair<int, int>> &private_blocks, size_t buff_size) {
+  for(auto block : private_blocks) {
+    xbt_assert(block.first >= 0 && block.second <= buff_size, "Oops, bug in shared malloc.");
+  }
+}
+
 void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t buff_size)
 {
   simgrid::kernel::activity::Comm *comm = dynamic_cast<simgrid::kernel::activity::Comm*>(synchro);
   int src_shared=0, dst_shared=0;
-  int src_offset, dst_offset;
+  int src_offset=0, dst_offset=0;
   std::vector<std::pair<int, int>> src_private_blocks;
   std::vector<std::pair<int, int>> dst_private_blocks;
   XBT_DEBUG("Copy the data over");
   if(src_shared=smpi_is_shared(buff, src_private_blocks, &src_offset)) {
     XBT_DEBUG("Sender %p is shared. Let's ignore it.", buff);
-    src_private_blocks = shift_private_blocks(src_private_blocks, src_offset);
+    src_private_blocks = shift_and_frame_private_blocks(src_private_blocks, src_offset, buff_size);
   }
   else {
     src_private_blocks.clear();
@@ -135,13 +141,29 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
   }
   if(dst_shared=smpi_is_shared((char*)comm->dst_buff, dst_private_blocks, &dst_offset)) {
     XBT_DEBUG("Receiver %p is shared. Let's ignore it.", (char*)comm->dst_buff);
-    dst_private_blocks = shift_private_blocks(dst_private_blocks, dst_offset);
+    dst_private_blocks = shift_and_frame_private_blocks(dst_private_blocks, dst_offset, buff_size);
   }
   else {
     dst_private_blocks.clear();
     dst_private_blocks.push_back(std::make_pair(0, buff_size));
   }
+/*
+  fprintf(stderr, "size: 0x%x\n", buff_size);
+  fprintf(stderr, "src: ");
+  print(src_private_blocks);
+  fprintf(stderr, "src_offset = 0x%x\n", src_offset);
+  fprintf(stderr, "dst: ");
+  print(dst_private_blocks);
+  fprintf(stderr, "dst_offset = 0x%x\n", dst_offset);
+*/
+  check_blocks(src_private_blocks, buff_size);
+  check_blocks(dst_private_blocks, buff_size);
   auto private_blocks = merge_private_blocks(src_private_blocks, dst_private_blocks);
+/*
+  fprintf(stderr, "Private blocks: ");
+  print(private_blocks);
+*/
+  check_blocks(private_blocks, buff_size);
   void* tmpbuff=buff;
   if((smpi_privatize_global_variables) && (static_cast<char*>(buff) >= smpi_start_data_exe)
       && (static_cast<char*>(buff) < smpi_start_data_exe + smpi_size_data_exe )
