@@ -134,7 +134,7 @@ The corresponding source files can be obtained
 [online on GitLab](https://gitlab.inria.fr/simgrid/simgrid/tree/master/doc/msg-tuto-src). 
 If you find the right button on the top right of the interface, you can download the whole 
 directory in one archive file. If you wish, you can find other platform file in 
-[this GitLab directory](https://gitlab.inria.fr/simgrid/simgrid/tree/master/doc/examples/platforms).
+[this GitLab directory](https://gitlab.inria.fr/simgrid/simgrid/tree/master/examples/platforms).
 
 As you can see, there is already a little Makefile that compiles
 everything for you. If you struggle with the compilation, then you should double check 
