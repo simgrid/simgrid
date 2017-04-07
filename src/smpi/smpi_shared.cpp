@@ -375,35 +375,26 @@ std::vector<std::pair<int, int>> shift_and_frame_private_blocks(const std::vecto
     return result;
 }
 
-void append_or_merge_block(std::vector<std::pair<int, int>> &vec, std::pair<int, int> &block) {
-  if(vec.size() > 0 && block.first <= vec.back().second) { // overlapping with the last block inserted
-    vec.back().second = std::max(vec.back().second, block.second);
-  }
-  else { // not overlapping, we insert a new block
-    vec.push_back(block);
-  }
-}
-
 std::vector<std::pair<int, int>> merge_private_blocks(std::vector<std::pair<int, int>> src, std::vector<std::pair<int, int>> dst) {
   std::vector<std::pair<int, int>> result;
   unsigned i_src=0, i_dst=0;
   while(i_src < src.size() && i_dst < dst.size()) {
     std::pair<int, int> block;
-    if(src[i_src].first < dst[i_dst].first) {
-      block = src[i_src];
-      i_src ++;
+    if(src[i_src].second <= dst[i_dst].first) {
+        i_src++;
     }
-    else {
-      block = dst[i_dst];
-      i_dst ++;
+    else if(dst[i_dst].second <= src[i_src].first) {
+        i_dst++;
     }
-    append_or_merge_block(result, block);
-  }
-  for(; i_src < src.size(); i_src++) {
-    append_or_merge_block(result, src[i_src]);
-  }
-  for(; i_dst < dst.size(); i_dst++) {
-    append_or_merge_block(result, dst[i_dst]);
+    else { // src.second > dst.first && dst.second > src.first → the blocks are overlapping
+      block = std::make_pair(std::max(src[i_src].first, dst[i_dst].first),
+                             std::min(src[i_src].second, dst[i_dst].second));
+      result.push_back(block);
+      if(src[i_src].second < dst[i_dst].second)
+          i_src ++;
+      else
+          i_dst ++;
+    }
   }
   return result;
 }
