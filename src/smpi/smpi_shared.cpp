@@ -353,7 +353,8 @@ int smpi_is_shared(void* ptr, std::vector<std::pair<int, int>> &private_blocks, 
       return 0;
     low --;
     if (ptr < (char*)low->first + low->second.size) {
-      *offset = ((uint8_t*) low->first) - ((uint8_t*)ptr);
+      xbt_assert(ptr > (char*)low->first, "Oops, there seems to be a bug in the shared memory metadata.");
+      *offset = ((uint8_t*)ptr) - ((uint8_t*) low->first);
       private_blocks = low->second.private_blocks;
       return 1;
     }

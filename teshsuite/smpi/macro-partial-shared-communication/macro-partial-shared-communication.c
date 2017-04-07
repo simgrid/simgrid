@@ -91,7 +91,30 @@ int main(int argc, char *argv[])
       int start = shared_blocks[2*i+1];
       int stop = shared_blocks[2*i+2];
       int comm = check_all(buf, start, stop, rank-1);
-      printf("[%d] The result of the communication check for block (0x%x, 0x%x) is: %d\n", rank, start, stop, comm);
+      printf("[%d] The result of the (normal) communication check for block (0x%x, 0x%x) is: %d\n", rank, start, stop, comm);
+    }
+    memset(buf, rank, mem_size);
+  }
+
+  MPI_Barrier(MPI_COMM_WORLD);
+
+  // Then, even processes send a sub-part of their buffer their successor
+  // Note that the part (0, 0x10000) which is not sent is a shared part, so we do not care
+  if(rank%2 == 0) {
+    MPI_Send(buf+0x10000, mem_size-0x10000, MPI_UINT8_T, rank+1, 0, MPI_COMM_WORLD);
+  }
+  else {
+    MPI_Recv(buf+0x10000, mem_size-0x10000, MPI_UINT8_T, rank-1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+  }
+
+
+  // Odd processes verify that they successfully received the message
+  if(rank%2 == 1) {
+    for(int i = 0; i < nb_blocks-1; i++) {
+      int start = shared_blocks[2*i+1];
+      int stop = shared_blocks[2*i+2];
+      int comm = check_all(buf, start, stop, rank-1);
+      printf("[%d] The result of the (shifted) communication check for block (0x%x, 0x%x) is: %d\n", rank, start, stop, comm);
     }
   }
 
