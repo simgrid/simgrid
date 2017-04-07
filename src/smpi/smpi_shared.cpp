@@ -114,7 +114,7 @@ typedef std::unordered_map<smpi_source_location, shared_data_t>::value_type shar
 
 typedef struct {
   size_t size;
-  std::vector<std::pair<int, int>> private_blocks;
+  std::vector<std::pair<size_t, size_t>> private_blocks;
   shared_data_key_type* data;
 } shared_metadata_t;
 
@@ -207,7 +207,7 @@ void *smpi_shared_malloc_local(size_t size, const char *file, int line)
 #define ALIGN_UP(n, align) (((n) + (align)-1) & -(align))
 #define ALIGN_DOWN(n, align) ((n) & -(align))
 
-void *smpi_shared_malloc_global__(size_t size, const char *file, int line, int *shared_block_offsets, int nb_shared_blocks) {
+void *smpi_shared_malloc_global__(size_t size, const char *file, int line, size_t *shared_block_offsets, int nb_shared_blocks) {
   void *mem;
   xbt_assert(smpi_shared_malloc_blocksize % PAGE_SIZE == 0, "The block size of shared malloc should be a multiple of the page size.");
   /* First reserve memory area */
@@ -236,17 +236,17 @@ void *smpi_shared_malloc_global__(size_t size, const char *file, int line, int *
 
   /* Map the bogus file in place of the anonymous memory */
   for(int i_block = 0; i_block < nb_shared_blocks; i_block ++) {
-    int start_offset = shared_block_offsets[2*i_block];
-    int stop_offset = shared_block_offsets[2*i_block+1];
-    xbt_assert(0 <= start_offset,          "start_offset (%d) should be greater than 0", start_offset);
-    xbt_assert(start_offset < stop_offset, "start_offset (%d) should be lower than stop offset (%d)", start_offset, stop_offset);
-    xbt_assert(stop_offset <= size,         "stop_offset (%d) should be lower than size (%lu)", stop_offset, size);
+    size_t start_offset = shared_block_offsets[2*i_block];
+    size_t stop_offset = shared_block_offsets[2*i_block+1];
+    xbt_assert(0 <= start_offset,          "start_offset (%lu) should be greater than 0", start_offset);
+    xbt_assert(start_offset < stop_offset, "start_offset (%lu) should be lower than stop offset (%lu)", start_offset, stop_offset);
+    xbt_assert(stop_offset <= size,         "stop_offset (%lu) should be lower than size (%lu)", stop_offset, size);
     if(i_block < nb_shared_blocks-1)
       xbt_assert(stop_offset < shared_block_offsets[2*i_block+2],
-              "stop_offset (%d) should be lower than its successor start offset (%d)", stop_offset, shared_block_offsets[2*i_block+2]);
+              "stop_offset (%lu) should be lower than its successor start offset (%lu)", stop_offset, shared_block_offsets[2*i_block+2]);
 //    fprintf(stderr, "shared block 0x%x - 0x%x\n", start_offset, stop_offset);
-    int start_block_offset = ALIGN_UP(start_offset, smpi_shared_malloc_blocksize);
-    int stop_block_offset = ALIGN_DOWN(stop_offset, smpi_shared_malloc_blocksize);
+    size_t start_block_offset = ALIGN_UP(start_offset, smpi_shared_malloc_blocksize);
+    size_t stop_block_offset = ALIGN_DOWN(stop_offset, smpi_shared_malloc_blocksize);
     unsigned int i;
     for (i = start_block_offset / smpi_shared_malloc_blocksize; i < stop_block_offset / smpi_shared_malloc_blocksize; i++) {
 //      fprintf(stderr, "\tmmap:for  0x%x - 0x%x\n", i*smpi_shared_malloc_blocksize, smpi_shared_malloc_blocksize);
@@ -258,8 +258,8 @@ void *smpi_shared_malloc_global__(size_t size, const char *file, int line, int *
                              "You can also try using  the sysctl vm.max_map_count",
                  strerror(errno));
     }
-    int low_page_start_offset = ALIGN_UP(start_offset, PAGE_SIZE);
-    int low_page_stop_offset = start_block_offset < ALIGN_DOWN(stop_offset, PAGE_SIZE) ? start_block_offset : ALIGN_DOWN(stop_offset, PAGE_SIZE);
+    size_t low_page_start_offset = ALIGN_UP(start_offset, PAGE_SIZE);
+    size_t low_page_stop_offset = start_block_offset < ALIGN_DOWN(stop_offset, PAGE_SIZE) ? start_block_offset : ALIGN_DOWN(stop_offset, PAGE_SIZE);
     if(low_page_start_offset < low_page_stop_offset) {
 //      fprintf(stderr, "\tmmap:low  0x%x - 0x%x\n", low_page_start_offset, low_page_stop_offset-low_page_start_offset);
       void* pos = (void*)((unsigned long)mem + low_page_start_offset);
@@ -271,7 +271,7 @@ void *smpi_shared_malloc_global__(size_t size, const char *file, int line, int *
                  strerror(errno));
     }
     if(low_page_stop_offset <= stop_block_offset) {
-      int high_page_stop_offset = stop_offset == size ? size : ALIGN_DOWN(stop_offset, PAGE_SIZE);
+      size_t high_page_stop_offset = stop_offset == size ? size : ALIGN_DOWN(stop_offset, PAGE_SIZE);
       if(high_page_stop_offset > stop_block_offset) {
 //        fprintf(stderr, "\tmmap:high 0x%x - 0x%x\n", stop_block_offset, high_page_stop_offset-stop_block_offset);
         void* pos = (void*)((unsigned long)mem + stop_block_offset);
@@ -314,8 +314,8 @@ void *smpi_shared_malloc_global__(size_t size, const char *file, int line, int *
  * Even indices are the start offsets (included), odd indices are the stop offsets (excluded).
  * For instance, if shared_block_offsets == {27, 42}, then the elements mem[27], mem[28], ..., mem[41] are shared. The others are not.
  */
-void *smpi_shared_malloc_global(size_t size, const char *file, int line, int *shared_block_offsets=NULL, int nb_shared_blocks=-1) {
-  int tmp_shared_block_offsets[2];
+void *smpi_shared_malloc_global(size_t size, const char *file, int line, size_t *shared_block_offsets=NULL, int nb_shared_blocks=-1) {
+  size_t tmp_shared_block_offsets[2];
   if(nb_shared_blocks == -1) {
     nb_shared_blocks = 1;
     shared_block_offsets = tmp_shared_block_offsets;
@@ -338,7 +338,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line) {
   return mem;
 }
 
-int smpi_is_shared(void* ptr, std::vector<std::pair<int, int>> &private_blocks, int *offset){
+int smpi_is_shared(void* ptr, std::vector<std::pair<size_t, size_t>> &private_blocks, size_t *offset){
   private_blocks.clear(); // being paranoid
   if (allocs_metadata.empty())
     return 0;
@@ -364,22 +364,22 @@ int smpi_is_shared(void* ptr, std::vector<std::pair<int, int>> &private_blocks, 
   }
 }
 
-std::vector<std::pair<int, int>> shift_and_frame_private_blocks(const std::vector<std::pair<int, int>> vec, int offset, int buff_size) {
-    std::vector<std::pair<int, int>> result;
+std::vector<std::pair<size_t, size_t>> shift_and_frame_private_blocks(const std::vector<std::pair<size_t, size_t>> vec, size_t offset, size_t buff_size) {
+    std::vector<std::pair<size_t, size_t>> result;
     for(auto block: vec) {
-        auto new_block = std::make_pair(std::min(std::max(0, block.first-offset), buff_size),
-                                        std::min(std::max(0, block.second-offset), buff_size));
+        auto new_block = std::make_pair(std::min(std::max((size_t)0, block.first-offset), buff_size),
+                                        std::min(std::max((size_t)0, block.second-offset), buff_size));
         if(new_block.second > 0 && new_block.first < buff_size)
             result.push_back(new_block);
     }
     return result;
 }
 
-std::vector<std::pair<int, int>> merge_private_blocks(std::vector<std::pair<int, int>> src, std::vector<std::pair<int, int>> dst) {
-  std::vector<std::pair<int, int>> result;
+std::vector<std::pair<size_t, size_t>> merge_private_blocks(std::vector<std::pair<size_t, size_t>> src, std::vector<std::pair<size_t, size_t>> dst) {
+  std::vector<std::pair<size_t, size_t>> result;
   unsigned i_src=0, i_dst=0;
   while(i_src < src.size() && i_dst < dst.size()) {
-    std::pair<int, int> block;
+    std::pair<size_t, size_t> block;
     if(src[i_src].second <= dst[i_dst].first) {
         i_src++;
     }

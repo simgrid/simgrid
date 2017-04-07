@@ -104,20 +104,20 @@ void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, s
   smpi_comm_copy_data_callback = callback;
 }
 
-void print(std::vector<std::pair<int, int>> vec) {
+void print(std::vector<std::pair<size_t, size_t>> vec) {
     fprintf(stderr, "{");
     for(auto elt: vec) {
         fprintf(stderr, "(0x%x, 0x%x),", elt.first, elt.second);
     }
     stderr, fprintf(stderr, "}\n");
 }
-void memcpy_private(void *dest, const void *src, size_t n, std::vector<std::pair<int, int>> &private_blocks) {
+void memcpy_private(void *dest, const void *src, size_t n, std::vector<std::pair<size_t, size_t>> &private_blocks) {
   for(auto block : private_blocks) {
     memcpy((uint8_t*)dest+block.first, (uint8_t*)src+block.first, block.second-block.first);
   }
 }
 
-void check_blocks(std::vector<std::pair<int, int>> &private_blocks, size_t buff_size) {
+void check_blocks(std::vector<std::pair<size_t, size_t>> &private_blocks, size_t buff_size) {
   for(auto block : private_blocks) {
     xbt_assert(block.first >= 0 && block.second <= buff_size, "Oops, bug in shared malloc.");
   }
@@ -127,9 +127,9 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
 {
   simgrid::kernel::activity::Comm *comm = dynamic_cast<simgrid::kernel::activity::Comm*>(synchro);
   int src_shared=0, dst_shared=0;
-  int src_offset=0, dst_offset=0;
-  std::vector<std::pair<int, int>> src_private_blocks;
-  std::vector<std::pair<int, int>> dst_private_blocks;
+  size_t src_offset=0, dst_offset=0;
+  std::vector<std::pair<size_t, size_t>> src_private_blocks;
+  std::vector<std::pair<size_t, size_t>> dst_private_blocks;
   XBT_DEBUG("Copy the data over");
   if(src_shared=smpi_is_shared(buff, src_private_blocks, &src_offset)) {
     XBT_DEBUG("Sender %p is shared. Let's ignore it.", buff);

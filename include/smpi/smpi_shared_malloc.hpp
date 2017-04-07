@@ -10,9 +10,9 @@
  */
 
 
-XBT_PUBLIC(int) smpi_is_shared(void* ptr, std::vector<std::pair<int, int>> &private_blocks, int *offset);
+XBT_PUBLIC(int) smpi_is_shared(void* ptr, std::vector<std::pair<size_t, size_t>> &private_blocks, size_t *offset);
 
-std::vector<std::pair<int, int>> shift_and_frame_private_blocks(const std::vector<std::pair<int, int>> vec, int offset, int buff_size);
-std::vector<std::pair<int, int>> merge_private_blocks(std::vector<std::pair<int, int>> src, std::vector<std::pair<int, int>> dst);
+std::vector<std::pair<size_t, size_t>> shift_and_frame_private_blocks(const std::vector<std::pair<size_t, size_t>> vec, size_t offset, size_t buff_size);
+std::vector<std::pair<size_t, size_t>> merge_private_blocks(std::vector<std::pair<size_t, size_t>> src, std::vector<std::pair<size_t, size_t>> dst);
 
 #endif
