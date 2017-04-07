@@ -337,7 +337,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line) {
   return mem;
 }
 
-int smpi_is_shared(void* ptr, std::vector<std::pair<int, int>> &private_blocks){
+int smpi_is_shared(void* ptr, std::vector<std::pair<int, int>> &private_blocks, int *offset){
   private_blocks.clear(); // being paranoid
   if (allocs_metadata.empty())
     return 0;
@@ -345,12 +345,14 @@ int smpi_is_shared(void* ptr, std::vector<std::pair<int, int>> &private_blocks){
     auto low = allocs_metadata.lower_bound(ptr);
     if (low->first==ptr) {
       private_blocks = low->second.private_blocks;
+      *offset = 0;
       return 1;
     }
     if (low == allocs_metadata.begin())
       return 0;
     low --;
     if (ptr < (char*)low->first + low->second.size) {
+      *offset = ((uint8_t*) low->first) - ((uint8_t*)ptr);
       private_blocks = low->second.private_blocks;
       return 1;
     }
@@ -358,6 +360,49 @@ int smpi_is_shared(void* ptr, std::vector<std::pair<int, int>> &private_blocks){
   } else {
     return 0;
   }
+}
+
+std::vector<std::pair<int, int>> shift_private_blocks(const std::vector<std::pair<int, int>> vec, int offset) {
+  std::vector<std::pair<int, int>> result;
+  for(auto block: vec) {
+    auto new_block = std::make_pair(std::max(0, block.first-offset), std::max(0, block.second-offset));
+    if(new_block.second > 0)
+      result.push_back(new_block);
+  }
+  return result;
+}
+
+void append_or_merge_block(std::vector<std::pair<int, int>> &vec, std::pair<int, int> &block) {
+  if(vec.size() > 0 && block.first <= vec.back().second) { // overlapping with the last block inserted
+    vec.back().second = std::max(vec.back().second, block.second);
+  }
+  else { // not overlapping, we insert a new block
+    vec.push_back(block);
+  }
+}
+
+std::vector<std::pair<int, int>> merge_private_blocks(std::vector<std::pair<int, int>> src, std::vector<std::pair<int, int>> dst) {
+  std::vector<std::pair<int, int>> result;
+  unsigned i_src=0, i_dst=0;
+  while(i_src < src.size() && i_dst < dst.size()) {
+    std::pair<int, int> block;
+    if(src[i_src].first < dst[i_dst].first) {
+      block = src[i_src];
+      i_src ++;
+    }
+    else {
+      block = dst[i_dst];
+      i_dst ++;
+    }
+    append_or_merge_block(result, block);
+  }
+  for(; i_src < src.size(); i_src++) {
+    append_or_merge_block(result, src[i_src]);
+  }
+  for(; i_dst < dst.size(); i_dst++) {
+    append_or_merge_block(result, dst[i_dst]);
+  }
+  return result;
 }
 
 void smpi_shared_free(void *ptr)

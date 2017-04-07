@@ -104,79 +104,68 @@ void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, s
   smpi_comm_copy_data_callback = callback;
 }
 
-std::vector<std::pair<int, int>> merge_private_blocks(std::vector<std::pair<int, int>> src, std::vector<std::pair<int, int>> dst) {
-  std::vector<std::pair<int, int>> result;
-  int i_src=0, i_dst=0;
-  while(i_src < src.size() && i_dst < dst.size()) {
-    std::pair<int, int> block;
-    if(src[i_src].first < dst[i_dst].first) {
-      block = src[i_src];
-      i_src ++;
-    }
-    else {
-      block = dst[i_dst];
-      i_dst ++;
-    }
-    if(block.first <= result.back().second) { // overlapping with the last block inserted
-      result.back().second = std::max(result.back().second, block.second);
-    }
-    else { // not overlapping, we insert a new block
-      result.push_back(block);
-    }
+void memcpy_private(void *dest, const void *src, size_t n, std::vector<std::pair<int, int>> &private_blocks) {
+  for(auto block : private_blocks) {
+    memcpy((uint8_t*)src+block.first, (uint8_t*)dest+block.first, block.second-block.first);
   }
-  for(; i_src < src.size(); i_src++) {
-    result.push_back(src[i_src]);
-  }
-  for(; i_dst < dst.size(); i_dst++) {
-    result.push_back(dst[i_dst]);
-  }
-  return result;
 }
 
 void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t buff_size)
 {
   simgrid::kernel::activity::Comm *comm = dynamic_cast<simgrid::kernel::activity::Comm*>(synchro);
   int src_shared=0, dst_shared=0;
+  int src_offset, dst_offset;
   std::vector<std::pair<int, int>> src_private_blocks;
   std::vector<std::pair<int, int>> dst_private_blocks;
   XBT_DEBUG("Copy the data over");
-  if(src_shared=smpi_is_shared(buff, src_private_blocks))
+  if(src_shared=smpi_is_shared(buff, src_private_blocks, &src_offset)) {
     XBT_DEBUG("Sender %p is shared. Let's ignore it.", buff);
-  if(dst_shared=smpi_is_shared((char*)comm->dst_buff, src_private_blocks))
-    XBT_DEBUG("Receiver %p is shared. Let's ignore it.", (char*)comm->dst_buff); 
-  if(!src_shared && !dst_shared){
-    void* tmpbuff=buff;
-    if((smpi_privatize_global_variables) && (static_cast<char*>(buff) >= smpi_start_data_exe)
-        && (static_cast<char*>(buff) < smpi_start_data_exe + smpi_size_data_exe )
-      ){
-         XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
-
-         smpi_switch_data_segment(
-             (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->src_proc->data)->data))->index()));
-         tmpbuff = static_cast<void*>(xbt_malloc(buff_size));
-         memcpy(tmpbuff, buff, buff_size);
-    }
-
-    if((smpi_privatize_global_variables) && ((char*)comm->dst_buff >= smpi_start_data_exe)
-        && ((char*)comm->dst_buff < smpi_start_data_exe + smpi_size_data_exe )){
-         XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
-         smpi_switch_data_segment(
-             (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->dst_proc->data)->data))->index()));
-    }
-
-    XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff,comm->dst_buff);
-    memcpy(comm->dst_buff, tmpbuff, buff_size);
-
-    if (comm->detached) {
-      // if this is a detached send, the source buffer was duplicated by SMPI
-      // sender to make the original buffer available to the application ASAP
-      xbt_free(buff);
-      //It seems that the request is used after the call there this should be free somewhere else but where???
-      //xbt_free(comm->comm.src_data);// inside SMPI the request is kept inside the user data and should be free
-      comm->src_buff = nullptr;
-    }
-    if(tmpbuff!=buff)xbt_free(tmpbuff);
+    src_private_blocks = shift_private_blocks(src_private_blocks, src_offset);
   }
+  else {
+    src_private_blocks.clear();
+    src_private_blocks.push_back(std::make_pair(0, buff_size));
+  }
+  if(dst_shared=smpi_is_shared((char*)comm->dst_buff, dst_private_blocks, &dst_offset)) {
+    XBT_DEBUG("Receiver %p is shared. Let's ignore it.", (char*)comm->dst_buff);
+    dst_private_blocks = shift_private_blocks(dst_private_blocks, dst_offset);
+  }
+  else {
+    dst_private_blocks.clear();
+    dst_private_blocks.push_back(std::make_pair(0, buff_size));
+  }
+  auto private_blocks = merge_private_blocks(src_private_blocks, dst_private_blocks);
+  void* tmpbuff=buff;
+  if((smpi_privatize_global_variables) && (static_cast<char*>(buff) >= smpi_start_data_exe)
+      && (static_cast<char*>(buff) < smpi_start_data_exe + smpi_size_data_exe )
+    ){
+       XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
+
+       smpi_switch_data_segment(
+           (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->src_proc->data)->data))->index()));
+       tmpbuff = static_cast<void*>(xbt_malloc(buff_size));
+       memcpy_private(tmpbuff, buff, buff_size, private_blocks);
+  }
+
+  if((smpi_privatize_global_variables) && ((char*)comm->dst_buff >= smpi_start_data_exe)
+      && ((char*)comm->dst_buff < smpi_start_data_exe + smpi_size_data_exe )){
+       XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
+       smpi_switch_data_segment(
+           (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->dst_proc->data)->data))->index()));
+  }
+
+  XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff,comm->dst_buff);
+  memcpy_private(comm->dst_buff, tmpbuff, buff_size, private_blocks);
+
+  if (comm->detached) {
+    // if this is a detached send, the source buffer was duplicated by SMPI
+    // sender to make the original buffer available to the application ASAP
+    xbt_free(buff);
+    //It seems that the request is used after the call there this should be free somewhere else but where???
+    //xbt_free(comm->comm.src_data);// inside SMPI the request is kept inside the user data and should be free
+    comm->src_buff = nullptr;
+  }
+  if(tmpbuff!=buff)xbt_free(tmpbuff);
 
 }
 
