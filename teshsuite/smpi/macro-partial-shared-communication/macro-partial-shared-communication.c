@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
   assert(size%2 == 0);
   uint8_t *buf;
   buf = SMPI_PARTIAL_SHARED_MALLOC(mem_size, shared_blocks, nb_blocks);
-  memset(buf, 3, mem_size);
+  memset(buf, rank, mem_size);
   MPI_Barrier(MPI_COMM_WORLD);
 
   // Even processes write their rank in private blocks

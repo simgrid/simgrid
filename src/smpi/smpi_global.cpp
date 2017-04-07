@@ -104,9 +104,16 @@ void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, s
   smpi_comm_copy_data_callback = callback;
 }
 
+void print(std::vector<std::pair<int, int>> vec) {
+    fprintf(stderr, "{");
+    for(auto elt: vec) {
+        fprintf(stderr, "(0x%x, 0x%x),", elt.first, elt.second);
+    }
+    stderr, fprintf(stderr, "}\n");
+}
 void memcpy_private(void *dest, const void *src, size_t n, std::vector<std::pair<int, int>> &private_blocks) {
   for(auto block : private_blocks) {
-    memcpy((uint8_t*)src+block.first, (uint8_t*)dest+block.first, block.second-block.first);
+    memcpy((uint8_t*)dest+block.first, (uint8_t*)src+block.first, block.second-block.first);
   }
 }
 

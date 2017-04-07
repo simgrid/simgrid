@@ -295,11 +295,12 @@ void *smpi_shared_malloc_global__(size_t size, const char *file, int line, int *
   if(shared_block_offsets[0] > 0) {
     newmeta.private_blocks.push_back(std::make_pair(0, shared_block_offsets[0]));
   }
-  for(int i_block = 0; i_block < nb_shared_blocks-1; i_block ++) {
+  int i_block;
+  for(i_block = 0; i_block < nb_shared_blocks-1; i_block ++) {
     newmeta.private_blocks.push_back(std::make_pair(shared_block_offsets[2*i_block+1], shared_block_offsets[2*i_block+2]));
   }
-  if(shared_block_offsets[nb_shared_blocks-1] < size) {
-    newmeta.private_blocks.push_back(std::make_pair(shared_block_offsets[nb_shared_blocks-1], size));
+  if(shared_block_offsets[2*i_block+1] < size) {
+    newmeta.private_blocks.push_back(std::make_pair(shared_block_offsets[2*i_block+1], size));
   }
   allocs_metadata[mem] = newmeta;
 
