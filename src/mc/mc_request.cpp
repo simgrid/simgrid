@@ -391,7 +391,9 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
     break;
 
   default:
-    THROW_UNIMPLEMENTED;
+    type = SIMIX_simcall_name(req->call);
+    args = bprintf("??");
+    break;
   }
 
   std::string str;
