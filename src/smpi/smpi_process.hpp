@@ -44,7 +44,6 @@ class Process {
 #endif
   public:
     explicit Process(int index);
-    void destroy();
     void set_data(int index, int* argc, char*** argv);
     void finalize();
     int finalized();

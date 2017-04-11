@@ -988,6 +988,5 @@ void smpi_replay_run(int *argc, char***argv){
 
   TRACE_smpi_collective_out(rank, -1, operation);
   TRACE_smpi_finalize(smpi_process()->index());
-  smpi_process()->destroy();
   xbt_free(operation);
 }

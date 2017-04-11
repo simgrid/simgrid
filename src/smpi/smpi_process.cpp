@@ -88,18 +88,12 @@ void Process::set_data(int index, int* argc, char*** argv)
     XBT_DEBUG("<%d> New process in the game: %p", index_, SIMIX_process_self());
 }
 
-void Process::destroy()
-{
-  if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){
-    smpi_switch_data_segment(index_);
-  }
-  state_ = SMPI_FINALIZED;
-  XBT_DEBUG("<%d> Process left the game", index_);
-}
-
 /** @brief Prepares the current process for termination. */
 void Process::finalize()
 {
+  state_ = SMPI_FINALIZED;
+  XBT_DEBUG("<%d> Process left the game", index_);
+
     // This leads to an explosion of the search graph which cannot be reduced:
     if(MC_is_active() || MC_record_replay_is_active())
       return;
