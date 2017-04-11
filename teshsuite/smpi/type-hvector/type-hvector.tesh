@@ -1,10 +1,7 @@
 p Test hvector
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 2 ${bindir:=.}/type-hvector -q --log=smpi_kernel.thres:warning
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 2 ${bindir:=.}/type-hvector -q --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > rank= 0, a[0][0]=0.000000

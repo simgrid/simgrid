@@ -146,16 +146,16 @@ void SIMIX_process_cleanup(smx_actor_t process)
 /**
  * Garbage collection
  *
- * Should be called some time to time to free the memory allocated for processes
- * that have finished (or killed).
+ * Should be called some time to time to free the memory allocated for processes that have finished (or killed).
  */
 void SIMIX_process_empty_trash()
 {
-  smx_actor_t process = nullptr;
+  smx_actor_t process = static_cast<smx_actor_t>(xbt_swag_extract(simix_global->process_to_destroy));
 
-  while ((process = (smx_actor_t) xbt_swag_extract(simix_global->process_to_destroy))) {
+  while (process) {
     XBT_DEBUG("Getting rid of %p",process);
     intrusive_ptr_release(process);
+    process = static_cast<smx_actor_t>(xbt_swag_extract(simix_global->process_to_destroy));
   }
 }
 
@@ -237,13 +237,8 @@ void SIMIX_maestro_create(void (*code)(void*), void* data)
  *
  * \return the process created
  */
-smx_actor_t SIMIX_process_create(
-                          const char *name,
-                          std::function<void()> code,
-                          void *data,
-                          sg_host_t host,
-                          xbt_dict_t properties,
-                          smx_actor_t parent_process)
+smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, void* data, simgrid::s4u::Host* host,
+                                 xbt_dict_t properties, smx_actor_t parent_process)
 {
 
   XBT_DEBUG("Start process %s on host '%s'", name, host->cname());
@@ -284,6 +279,10 @@ smx_actor_t SIMIX_process_create(
 
   /* Add properties */
   process->properties = properties;
+
+  /* Make sure that the process is initialized for simix, in case we are called from the Host::onCreation signal */
+  if (host->extension<simgrid::simix::Host>() == nullptr)
+    host->extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
 
   /* Add the process to it's host process list */
   xbt_swag_insert(process, host->extension<simgrid::simix::Host>()->process_list);
@@ -553,6 +552,7 @@ void simcall_HANDLER_process_set_host(smx_simcall_t simcall, smx_actor_t process
 {
   process->new_host = dest;
 }
+
 void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest)
 {
   xbt_assert((process != nullptr), "Invalid parameters");
@@ -602,12 +602,13 @@ void SIMIX_process_resume(smx_actor_t process)
 {
   XBT_IN("process = %p", process);
 
-  if(process->context->iwannadie) {
+  if (process->context->iwannadie) {
     XBT_VERB("Ignoring request to suspend a process that is currently dying.");
     return;
   }
 
-  if(!process->suspended) return;
+  if (!process->suspended)
+    return;
   process->suspended = 0;
 
   /* resume the synchronization that was blocking the resumed process. */

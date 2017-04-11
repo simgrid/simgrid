@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 
         for (i = 0; i < NTIMES; i++) {
             Get_nextval(win, val_array, get_type, rank, nprocs, counter_vals + i);
-            /* printf("Rank %d, counter %d\n", rank, value); */
+            /* printf("Rank %d, counter %d\n", rank, localvalue); */
         }
 
         MPI_Win_free(&win);

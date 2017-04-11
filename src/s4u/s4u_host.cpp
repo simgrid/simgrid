@@ -1,5 +1,4 @@
-/* Copyright (c) 2006-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -24,8 +23,6 @@
 
 XBT_LOG_EXTERNAL_CATEGORY(surf_route);
 
-std::map<std::string, simgrid::s4u::Host*> host_list; // FIXME: move it to Engine
-
 int USER_HOST_LEVEL = -1;
 
 namespace simgrid {
@@ -35,6 +32,8 @@ template class Extendable<simgrid::s4u::Host>;
 }
 
 namespace s4u {
+
+std::map<std::string, simgrid::s4u::Host*> host_list; // FIXME: move it to Engine
 
 simgrid::xbt::signal<void(Host&)> Host::onCreation;
 simgrid::xbt::signal<void(Host&)> Host::onDestruction;
@@ -129,6 +128,20 @@ int Host::pstatesCount() const {
 }
 
 /**
+ * \brief Return the list of actors attached to an host.
+ *
+ * \param whereto a vector in which we should push actors living on that host
+ */
+void Host::actorList(std::vector<ActorPtr>* whereto)
+{
+  smx_actor_t actor = NULL;
+  xbt_swag_foreach(actor, this->extension<simgrid::simix::Host>()->process_list)
+  {
+    whereto->push_back(actor->ciface());
+  }
+}
+
+/**
  * \brief Find a route toward another host
  *
  * \param dest [IN] where to
@@ -195,22 +208,15 @@ void Host::setProperty(const char*key, const char *value){
 }
 
 /** Get the processes attached to the host */
-xbt_swag_t Host::processes()
+void Host::processes(std::vector<ActorPtr>* list)
 {
-  return simgrid::simix::kernelImmediate([this] {
-    return this->extension<simgrid::simix::Host>()->process_list;
-  });
+  smx_actor_t actor = NULL;
+  xbt_swag_foreach(actor, this->extension<simgrid::simix::Host>()->process_list) {
+    list->push_back(actor->iface());
+  }
 }
 
-/** Get the peak power of a host */
-double Host::getPstateSpeedCurrent()
-{
-  return simgrid::simix::kernelImmediate([this] {
-    return this->pimpl_cpu->getPstateSpeedCurrent();
-  });
-}
-
-/** Get one power peak (in flops/s) of a host at a given pstate */
+/** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
 double Host::getPstateSpeed(int pstate_index)
 {
   return simgrid::simix::kernelImmediate([this, pstate_index] {
@@ -218,10 +224,11 @@ double Host::getPstateSpeed(int pstate_index)
   });
 }
 
-/** @brief Get the speed of the cpu associated to a host */
+/** @brief Get the peak processor speed (in flops/s), at the current pstate */
 double Host::speed() {
   return pimpl_cpu->getSpeed(1.0);
 }
+
 /** @brief Returns the number of core of the processor. */
 int Host::coreCount() {
   return pimpl_cpu->coreCount();

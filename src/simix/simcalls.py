@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2014-2016. The SimGrid Team. All rights reserved.
+# Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -233,9 +233,9 @@ def header(name):
 
 
 def handle(fd, func, simcalls, guarded_simcalls):
-    def nonempty(e): return e != ''
-    fd.write(
-        '\n'.join(filter(nonempty, (func(simcall) for simcall in simcalls))))
+    def nonempty(e): 
+        return e != ''
+    fd.write('\n'.join(filter(nonempty, (func(simcall) for simcall in simcalls))))
 
     for guard, list in guarded_simcalls.items():
         fd.write('\n#if %s\n' % (guard))

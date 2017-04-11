@@ -14,6 +14,7 @@ typedef enum {
   SURF_VM_STATE_CREATED, /**< created, but not yet started */
   SURF_VM_STATE_RUNNING,
   SURF_VM_STATE_SUSPENDED, /**< Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
+  SURF_VM_STATE_DESTROYED
 } e_surf_vm_state_t;
 
 namespace simgrid {
@@ -50,6 +51,8 @@ public:
   void setParameters(vm_params_t params);
   double getRamsize();
   simgrid::s4u::Host* pm();
+
+  e_surf_vm_state_t getState();
 
   /* FIXME: protect me */
   simgrid::vm::VirtualMachineImpl* pimpl_vm_ = nullptr;

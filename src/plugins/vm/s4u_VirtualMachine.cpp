@@ -66,6 +66,10 @@ simgrid::s4u::Host* VirtualMachine::pm()
 {
   return pimpl_vm_->getPm();
 }
+e_surf_vm_state_t VirtualMachine::getState()
+{
+  return pimpl_vm_->getState();
+}
 
 /** @brief Retrieve a copy of the parameters of that VM/PM
  *  @details The ramsize and overcommit fields are used on the PM too */

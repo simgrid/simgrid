@@ -1,5 +1,4 @@
-/* Copyright (c) 2014, 2016. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -32,15 +31,8 @@ public class Test extends Process{
   }
 
   public void main(String[] strings) throws MsgException {
-    Host host0 = null;
-    Host host1 = null;
-    try {
-    /* get hosts 1 and 2*/
-      host0 = Host.getByName("PM0");
-      host1 = Host.getByName("PM1");
-    }catch (HostNotFoundException e) {
-      e.printStackTrace();
-    }
+    Host host0 = Host.getByName("PM0");
+    Host host1 = Host.getByName("PM1");
 
     List<VM> vms = new ArrayList<>();
 
@@ -65,7 +57,6 @@ public class Test extends Process{
     vm1.start();
 
     /* Collocated VMs */
-    int collocatedSrc = 6;
     int[] vmSrcLoad = {
         80,
         0,
@@ -76,7 +67,7 @@ public class Test extends Process{
     };
 
     XVM tmp;
-    for (int i=1 ; i<= collocatedSrc ; i++){
+    for (int i=1 ; i<= vmSrcLoad.length ; i++){
       tmp = new XVM(host0, "vm"+i,
           2048, // Ramsize,
           125, // Net bandwidth,
@@ -87,7 +78,6 @@ public class Test extends Process{
       tmp.setLoad(vmSrcLoad[i-1]);
     }
 
-    int collocatedDst = 6;
     int[] vmDstLoad = {
         0,
         40,
@@ -97,8 +87,8 @@ public class Test extends Process{
         80,
     };
 
-    for (int i=1 ; i <= collocatedDst ; i++){
-      tmp = new XVM(host1, "vm"+(i+collocatedSrc),
+    for (int i=1 ; i <= vmDstLoad.length ; i++){
+      tmp = new XVM(host1, "vm"+(i+vmSrcLoad.length),
           2048, // Ramsize,
           125, // Net bandwidth,
           dpRate // Memory intensity

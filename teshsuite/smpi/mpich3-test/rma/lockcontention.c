@@ -14,8 +14,8 @@
    optimization. */
 
 
-#define SIZE1 100
-#define SIZE2 200
+#define SIZE1 10
+#define SIZE2 20
 
 int main(int argc, char *argv[])
 {

@@ -111,7 +111,7 @@ void HostEnergy::update()
   double start_time  = this->last_updated;
   double finish_time = surf_get_clock();
   double cpu_load;
-  double current_speed = host->pimpl_cpu->getPstateSpeedCurrent();
+  double current_speed = host->speed();
   if (current_speed <= 0)
     // Some users declare a pstate of speed 0 flops (e.g., to model boot time).
     // We consider that the machine is then fully loaded. That's arbitrary but it avoids a NaN
@@ -142,6 +142,8 @@ void HostEnergy::update()
     instantaneous_consumption = this->getCurrentWattsValue(cpu_load);
 
   double energy_this_step = instantaneous_consumption * (finish_time - start_time);
+
+  //TODO Trace: Trace energy_this_step from start_time to finish_time in host->name()
 
   this->total_energy = previous_energy + energy_this_step;
   this->last_updated = finish_time;
@@ -275,6 +277,9 @@ static void onCreation(simgrid::s4u::Host& host)
 {
   if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
+
+  //TODO Trace: set to zero the energy variable associated to host->name()
+
   host.extension_set(new HostEnergy(&host));
 }
 
@@ -282,19 +287,19 @@ static void onActionStateChange(simgrid::surf::CpuAction* action, simgrid::surf:
 {
   for (simgrid::surf::Cpu* cpu : action->cpus()) {
     simgrid::s4u::Host* host = cpu->getHost();
-    if (host == nullptr)
-      continue;
+    if (host != nullptr) {
 
-    // If it's a VM, take the corresponding PM
-    simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
-    if (vm) // If it's a VM, take the corresponding PM
-      host = vm->pimpl_vm_->getPm();
+      // If it's a VM, take the corresponding PM
+      simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
+      if (vm) // If it's a VM, take the corresponding PM
+        host = vm->pimpl_vm_->getPm();
 
-    // Get the host_energy extension for the relevant host
-    HostEnergy* host_energy = host->extension<HostEnergy>();
+      // Get the host_energy extension for the relevant host
+      HostEnergy* host_energy = host->extension<HostEnergy>();
 
-    if (host_energy->last_updated < surf_get_clock())
-      host_energy->update();
+      if (host_energy->last_updated < surf_get_clock())
+        host_energy->update();
+    }
   }
 }
 

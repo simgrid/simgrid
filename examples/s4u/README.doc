@@ -14,34 +14,88 @@ documentation, but it should remain readable directly.
  @brief Find the S4U example fitting your needs in the archive.
 
   - @ref s4u_ex_basics
+  - @ref s4u_ex_actors
   - @ref s4u_ex_synchro
+  - @ref s4u_ex_actions
 
 @section s4u_ex_basics Basics of SimGrid simulation
 
-  - <b>Launching actors:</b> @ref examples/s4u/launching/s4u_launching.cpp and 
-    @ref examples/s4u/launching/deployment.xml \n
+  - <b>Creating actors:</b> @ref examples/s4u/actor-create/s4u_actor-create.cpp and 
+    @ref examples/s4u/actor-create/s4u_actor-create_d.xml \n
     Shows how to start your actors to populate your simulation.
 
   - <b>Token ring:</b> @ref examples/s4u/app-token-ring/s4u_app-token-ring.cpp \n
     Shows how to implement a classical communication pattern, where a token is exchanged along a ring to reach every
     participant.
 
-  - <b>Master Workers:</b> @ref examples/s4u/app-token-ring/s4u_app-token-ring.cpp \n
+  - <b>Master Workers:</b> @ref examples/s4u/app-masterworker/s4u_app-masterworker.cpp \n
     Another good old example, where one Master process has a bunch of task to dispatch to a set of several Worker 
     processes. 
+
+@section s4u_ex_actors Acting on Actors
+
+  - <b>Creating actors</b>. 
+    @ref examples/s4u/actor-create/s4u_actor-create.cpp \n
+    Most actors are started from the deployment XML file, but they exist other methods.
+
+  - <b>Suspend and Resume actors</b>.
+    @ref examples/s4u/actor-suspend/s4u_actor-suspend.cpp \n
+    Actors can be suspended and resumed during their executions
+    thanks to the @ref suspend and @ref resume methods.
+
+  - <b>Kill actors</b>.
+    @ref examples/s4u/actor-kill/s4u_actor-kill.cpp \n
+    Actors can forcefully stop other actors with the @ref kill method.
+
+  - <b>Migrating Actors</b>.
+    @ref examples/s4u/actor-migration/s4u_actor-migration.cpp \n
+    Actors can move or be moved from a host to another with the @ref migrate method.
 
 @section s4u_ex_synchro Inter-Actor Synchronization 
 
  - <b>Mutex: </b> @ref examples/s4u/mutex/s4u_mutex.cpp \n
    Shows how to use simgrid::s4u::Mutex synchronization objects.
-   
+
+@section s4u_ex_actions Following Workload Traces
+
+This section details how to run trace-driven simulations. It is very
+handy when you want to test an algorithm or protocol that only react
+to external events. For example, many P2P protocols react to user
+requests, but do nothing if there is no such event.
+
+In such situations, you should write your protocol in C++, and separate
+the workload that you want to play onto your protocol in a separate
+text file. Declare a function handling each type of the events in your
+trace, register them using @ref xbt_replay_action_register in your
+main, and then run the simulation.
+
+Then, you can either have one trace file containing all your events,
+or a file per simulated process: the former may be easier to work
+with, but the second is more efficient on very large traces. Check
+also the tesh files in the example directories for details.
+
+  - <b>Communication replay</b>.
+    @ref examples/s4u/actions-comm/s4u_actions-comm.cpp \n
+    Presents a set of event handlers reproducing classical communication
+    primitives (asynchronous send/receive at the moment).
+
+  - <b>I/O replay</b>.
+    @ref examples/s4u/actions-storage/s4u_actions-storage.cpp \n
+    Presents a set of event handlers reproducing classical I/O
+    primitives (open, read, close).
+
 */
 
 /**
-@example examples/s4u/launching/s4u_launching.cpp
+@example examples/s4u/actions-comm/s4u_actions-comm.cpp
+@example examples/s4u/actions-storage/s4u_actions-storage.cpp
+@example examples/s4u/actor-create/s4u_actor-create.cpp
+@example examples/s4u/actor-create/s4u_actor-create_d.xml
+@example examples/s4u/actor-kill/s4u_actor-kill.cpp
+@example examples/s4u/actor-migration/s4u_actor-migration.cpp
+@example examples/s4u/actor-suspend/s4u_actor-suspend.cpp
 @example examples/s4u/app-token-ring/s4u_app-token-ring.cpp
-@example examples/s4u/app-master-worker/s4u_app-master-worker.cpp
-@example examples/s4u/launching/deployment.xml
+@example examples/s4u/app-masterworker/s4u_app-masterworker.cpp
 
 @example examples/s4u/mutex/s4u_mutex.cpp
 

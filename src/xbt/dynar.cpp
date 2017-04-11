@@ -23,14 +23,14 @@ static inline void _sanity_check_dynar(xbt_dynar_t dynar)
 
 static inline void _sanity_check_idx(int idx)
 {
-  xbt_assert(idx >= 0, "dynar idx(=%d) < 0", (int) (idx));
+  xbt_assert(idx >= 0, "dynar idx(=%d) < 0", idx);
 }
 
 static inline void _check_inbound_idx(xbt_dynar_t dynar, int idx)
 {
-  if (idx < 0 || idx >= (int)dynar->used) {
+  if (idx < 0 || idx >= static_cast<int>(dynar->used)) {
     THROWF(bound_error, idx, "dynar is not that long. You asked %d, but it's only %lu long",
-           (int) (idx), (unsigned long) dynar->used);
+           idx, static_cast<unsigned long>(dynar->used));
   }
 }
 
@@ -400,7 +400,8 @@ extern "C" void xbt_dynar_remove_n_at(xbt_dynar_t const dynar, const unsigned in
   unsigned long offset;
   unsigned long cur;
 
-  if (!n) return;
+  if (!n)
+    return;
 
   _sanity_check_dynar(dynar);
   _check_inbound_idx(dynar, idx);
@@ -650,10 +651,12 @@ extern "C" void xbt_dynar_three_way_partition(xbt_dynar_t const dynar, int_f_pvo
       ++i;
     } else {
       if (colori == 0) {
-        elm = _xbt_dynar_elm(dynar, ++p);
+        ++p;
+        elm = _xbt_dynar_elm(dynar, p);
         ++i;
       } else {                  /* colori == 2 */
-        elm = _xbt_dynar_elm(dynar, --q);
+        --q;
+        elm = _xbt_dynar_elm(dynar, q);
       }
       if (elm != elmi) {
         memcpy(tmp,  elm,  elmsize);
@@ -696,9 +699,9 @@ extern "C" int xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2, int (*compar)(c
 {
   int i ;
   int size;
-  if((!d1) && (!d2)) return 0;
-  if((!d1) || (!d2))
-  {
+  if((!d1) && (!d2))
+    return 0;
+  if((!d1) || (!d2)) {
     XBT_DEBUG("nullptr dynar d1=%p d2=%p",d1,d2);
     xbt_dynar_free(&d2);
     return 1;
@@ -1066,20 +1069,12 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
     s1 = xbt_strdup(buf);
     xbt_dynar_push(d, &s1);
   }
-  for (int cpt = 0; cpt < NB_ELEM; cpt++) {
-    snprintf(buf,1023, "%d", cpt);
-    s1 = xbt_strdup(buf);
-    xbt_dynar_replace(d, cpt, &s1);
-  }
-  for (int cpt = 0; cpt < NB_ELEM; cpt++) {
-    snprintf(buf,1023, "%d", cpt);
-    s1 = xbt_strdup(buf);
-    xbt_dynar_replace(d, cpt, &s1);
-  }
-  for (int cpt = 0; cpt < NB_ELEM; cpt++) {
-    snprintf(buf,1023, "%d", cpt);
-    s1 = xbt_strdup(buf);
-    xbt_dynar_replace(d, cpt, &s1);
+  for (int i = 0 ; i < 3 ; i++) {
+    for (int cpt = 0; cpt < NB_ELEM; cpt++) {
+      snprintf(buf,1023, "%d", cpt);
+      s1 = xbt_strdup(buf);
+      xbt_dynar_replace(d, cpt, &s1);
+    }
   }
   for (int cpt = 0; cpt < NB_ELEM; cpt++) {
     snprintf(buf,1023, "%d", cpt);

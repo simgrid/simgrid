@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
+/* Copyright (c) 2004-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -7,8 +7,9 @@
 #include <xbt/base.h>
 #include <xbt/signal.hpp>
 
-#include "surf_interface.hpp"
 #include "src/surf/PropertyHolder.hpp"
+#include "surf_interface.hpp"
+#include <map>
 
 #ifndef STORAGE_INTERFACE_HPP_
 #define STORAGE_INTERFACE_HPP_
@@ -20,8 +21,6 @@ namespace surf {
  * Classes *
  ***********/
 
-class StorageModel;
-class Storage;
 class StorageAction;
 
 /*************
@@ -101,7 +100,7 @@ public:
   void turnOn() override;
   void turnOff() override;
 
-  xbt_dict_t content_;
+  std::map<std::string, sg_size_t*>* content_;
   char* contentType_;
   sg_size_t size_;
   sg_size_t usedSize_;
@@ -149,14 +148,7 @@ public:
    *
    * @return A xbt_dict_t with path as keys and size in bytes as values
    */
-  virtual xbt_dict_t getContent();
-
-  /**
-   * @brief Get the size in bytes of the current Storage
-   *
-   * @return The size in bytes of the current Storage
-   */
-  virtual sg_size_t getSize();
+  virtual std::map<std::string, sg_size_t*>* getContent();
 
   /**
    * @brief Get the available size in bytes of the current Storage
@@ -172,8 +164,7 @@ public:
    */
   virtual sg_size_t getUsedSize();
 
-
-  xbt_dict_t parseContent(const char *filename);
+  std::map<std::string, sg_size_t*>* parseContent(const char* filename);
 
   std::vector<StorageAction*> writeActions_;
 
@@ -243,14 +234,16 @@ typedef struct s_storage_type {
   char *content_type;
   char *type_id;
   xbt_dict_t properties;
-  xbt_dict_t model_properties;
+  std::map<std::string, std::string>* model_properties;
   sg_size_t size;
-} s_storage_type_t, *storage_type_t;
+} s_storage_type_t;
+typedef s_storage_type_t* storage_type_t;
 
 typedef struct s_mount {
   void *storage;
   char *name;
-} s_mount_t, *mount_t;
+} s_mount_t;
+typedef s_mount_t* mount_t;
 
 typedef struct surf_file {
   char *name;

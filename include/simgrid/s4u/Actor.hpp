@@ -134,7 +134,6 @@ namespace s4u {
 /** @brief Simulation Agent */
 XBT_PUBLIC_CLASS Actor : public simgrid::xbt::Extendable<Actor>
 {
-
   friend Mailbox;
   friend simgrid::simix::ActorImpl;
   friend simgrid::kernel::activity::MailboxImpl;
@@ -213,17 +212,36 @@ public:
   /** Retrieves the PPID of that actor */
   int ppid();
 
+  /** Suspend an actor by suspending the task on which it was waiting for the completion. */
+  void suspend();
+
+  /** Resume a suspended process by resuming the task on which it was waiting for the completion. */
+  void resume();
+
+  /** Returns true if the process is suspended. */
+  int isSuspended();
+
   /** If set to true, the actor will automatically restart when its host reboots */
   void setAutoRestart(bool autorestart);
+
+  /** Add a function to the list of "on_exit" functions for the current actor. The on_exit functions are the functions
+   * executed when your actor is killed. You should use them to free the data used by your process.
+   */
+  void onExit(int_f_pvoid_pvoid_t fun, void* data);
+
   /** Sets the time at which that actor should be killed */
   void setKillTime(double time);
   /** Retrieves the time at which that actor will be killed (or -1 if not set) */
   double killTime();
 
+  void migrate(Host * new_host);
+
   /** Ask the actor to die.
    *
-   * It will only notice your request when doing a simcall next time (a communication or similar).
-   * SimGrid sometimes have issues when you kill actors that are currently communicating and such.
+   * Any blocking activity will be canceled, and it will be rescheduled to free its memory.
+   * Being killed is not something that actors can defer or avoid.
+   *
+   * SimGrid still have sometimes issues when you kill actors that are currently communicating and such.
    * Still. Please report any bug that you may encounter with a minimal working example.
    */
   void kill();
@@ -243,6 +261,7 @@ public:
 
   /** Ask kindly to all actors to die. Only the issuer will survive. */
   static void killAll();
+  static void killAll(int resetPid);
 
   /** Returns the internal implementation of this actor */
   simix::ActorImpl* getImpl();
@@ -283,21 +302,45 @@ namespace this_actor {
    * See \ref Comm for the full communication API (including non blocking communications).
    */
   XBT_PUBLIC(void*) recv(MailboxPtr chan);
+  XBT_PUBLIC(Comm&) irecv(MailboxPtr chan, void** data);
 
   /** Block the actor until it delivers a message of the given simulated size to the given mailbox
    *
    * See \ref Comm for the full communication API (including non blocking communications).
   */
-  XBT_PUBLIC(void) send(MailboxPtr chan, void*payload, size_t simulatedSize);
+  XBT_PUBLIC(void) send(MailboxPtr chan, void* payload, double simulatedSize);
+  XBT_PUBLIC(void) send(MailboxPtr chan, void* payload, double simulatedSize, double timeout);
+
+  XBT_PUBLIC(Comm&) isend(MailboxPtr chan, void* payload, double simulatedSize);
 
   /** @brief Returns the PID of the current actor. */
   XBT_PUBLIC(int) pid();
 
   /** @brief Returns the PPID of the current actor. */
-  int ppid();
+  XBT_PUBLIC(int) ppid();
 
   /** @brief Returns the name of the current actor. */
-  std::string name();
+  XBT_PUBLIC(std::string) name();
+
+  /** @brief Returns the name of the host on which the process is running. */
+  XBT_PUBLIC(Host*) host();
+
+  /** @brief Suspend the actor. */
+  XBT_PUBLIC(void) suspend();
+
+  /** @brief Resume the actor. */
+  XBT_PUBLIC(void) resume();
+
+  XBT_PUBLIC(int) isSuspended();
+
+  /** @brief kill the actor. */
+  XBT_PUBLIC(void) kill();
+
+  /** @brief Add a function to the list of "on_exit" functions. */
+  XBT_PUBLIC(void) onExit(int_f_pvoid_pvoid_t fun, void* data);
+
+  /** @brief Migrate the actor to a new host. */
+  XBT_PUBLIC(void) migrate(Host* new_host);
 };
 
 /** @} */

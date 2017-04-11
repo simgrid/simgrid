@@ -117,9 +117,11 @@ static int worker(int argc, char *argv[])
       retcode = MSG_task_execute(task);
       if (retcode == MSG_OK) {
         XBT_INFO("\"%s\" done", MSG_task_get_name(task));
+        free(task->data);
         MSG_task_destroy(task);
       } else if (retcode == MSG_HOST_FAILURE) {
         XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
+        free(task->data);
         MSG_task_destroy(task);
         return 0;
       } else {

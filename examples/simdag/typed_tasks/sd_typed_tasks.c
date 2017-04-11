@@ -62,7 +62,8 @@ int main(int argc, char **argv)
 
   SD_task_schedule(par_comp3, 4, host_list, computation_amount, communication_amount, -1);
 
-  xbt_dynar_t changed_tasks = SD_simulate(-1.0);
+  xbt_dynar_t changed_tasks = xbt_dynar_new(sizeof(SD_task_t), NULL);
+  SD_simulate_with_update(-1.0, changed_tasks);
   xbt_dynar_foreach(changed_tasks, ctr, task) {
     XBT_INFO("Task '%s' start time: %f, finish time: %f", SD_task_get_name(task), SD_task_get_start_time(task),
              SD_task_get_finish_time(task));

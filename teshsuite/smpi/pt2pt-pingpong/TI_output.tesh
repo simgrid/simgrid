@@ -5,7 +5,7 @@ p Test output of time independent tracing
 p generate a trace with pingpong, and replay itself, then check that output trace of the second run is the same as in the first (once sorted)
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
-$ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt --cfg=smpi/simulate-computation:no -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -q --log=smpi_kernel.thres:warning
+$ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt --cfg=smpi/simulate-computation:no -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -q --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 >
 >
 >
@@ -15,16 +15,6 @@ $ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.t
 > == pivot=0 : pingpong [0] <--> [1]
 > == pivot=1 : pingpong [1] <--> [2]
 > == pivot=2 : pingpong [2] <--> [3]
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_simgrid.txt'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/format' to 'TI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/computing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'out_in_ti.txt'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/simulate-computation' to 'no'
 > [0] About to send 1st message '99' to process [1]
 > [0] Received reply message '100' from process [1]
 > [1] About to send 1st message '100' to process [2]
@@ -45,21 +35,11 @@ $ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.t
 > [rank 2] -> Fafard
 > [rank 3] -> Ginette
 
-$ ${bindir:=.}/../../../bin/smpirun -ext smpi_replay --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=smpi/simulate-computation:no -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/../../../examples/smpi/replay/smpi_replay ./out_in_ti.txt --log=smpi_kernel.thres:warning
+$ ${bindir:=.}/../../../bin/smpirun -ext smpi_replay --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=smpi/simulate-computation:no -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/../../../examples/smpi/replay/smpi_replay ./out_in_ti.txt --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
 > [rank 3] -> Ginette
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_simgrid.txt'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/format' to 'TI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/computing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'out_ti.txt'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/simulate-computation' to 'no'
 > [Jupiter:1:(2) 0.016798] [smpi_replay/INFO] Simulation time 0.016798
 
 ! output sort
@@ -116,7 +96,7 @@ $ rm out_in_ti.txt
 p Same test, but only using one output file for all processes
 p generate a trace with pingpong, and replay itself, then check that output trace of the second run is the same as in the first (once sorted)
 ! output sort
-$ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt --cfg=tracing/smpi/format/ti-one-file:yes -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -q --log=smpi_kernel.thres:warning
+$ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt --cfg=tracing/smpi/format/ti-one-file:yes -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -q --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 >
 >
 >
@@ -126,16 +106,6 @@ $ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.t
 > == pivot=0 : pingpong [0] <--> [1]
 > == pivot=1 : pingpong [1] <--> [2]
 > == pivot=2 : pingpong [2] <--> [3]
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_simgrid.txt'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/format' to 'TI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/computing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'out_in_ti.txt'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/format/ti-one-file' to 'yes'
 > [0] About to send 1st message '99' to process [1]
 > [0] Received reply message '100' from process [1]
 > [1] About to send 1st message '100' to process [2]
@@ -156,21 +126,11 @@ $ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.t
 > [rank 2] -> Fafard
 > [rank 3] -> Ginette
 
-$ ${bindir:=.}/../../../bin/smpirun -ext smpi_replay --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=tracing/smpi/format/ti-one-file:yes -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/../../../examples/smpi/replay/smpi_replay ./out_in_ti.txt --log=smpi_kernel.thres:warning
+$ ${bindir:=.}/../../../bin/smpirun -ext smpi_replay --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=tracing/smpi/format/ti-one-file:yes -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/../../../examples/smpi/replay/smpi_replay ./out_in_ti.txt --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
 > [rank 3] -> Ginette
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_simgrid.txt'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/format' to 'TI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/computing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'out_ti.txt'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/format/ti-one-file' to 'yes'
 > [Jupiter:1:(2) 0.016798] [smpi_replay/INFO] Simulation time 0.016798
 
 $ rm -rf ./out_ti.txt_files

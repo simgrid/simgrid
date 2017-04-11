@@ -9,7 +9,8 @@
 
 int main(int argc, char **argv)
 {
-  int size, rank;
+  int size;
+  int rank;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &size);

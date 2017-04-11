@@ -69,6 +69,8 @@ public:
   simgrid::xbt::string const& name() const { return name_; }
   const char* cname() { return name_.c_str(); }
 
+  void actorList(std::vector<ActorPtr> * whereto);
+
   /** Turns that host on if it was previously off
    *
    * All actors on that host which were marked autorestart will be restarted automatically.
@@ -87,8 +89,7 @@ public:
   xbt_dict_t properties();
   const char*property(const char*key);
   void setProperty(const char*key, const char *value);
-  xbt_swag_t processes();
-  double getPstateSpeedCurrent();
+  void processes(std::vector<ActorPtr>* list);
   double getPstateSpeed(int pstate_index);
   int pstatesCount() const;
   void setPstate(int pstate_index);

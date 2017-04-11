@@ -48,6 +48,7 @@ int main(int argc, char *argv[]){
 
     xbt_free(line_char);
   }
+  xbt_free(line);
 
   fclose(fp);
 

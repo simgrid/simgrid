@@ -17,18 +17,17 @@
 
 int main(int argc, char *argv[])
 {
-  int rank, size;
+  int rank;
+  int size;
   int i;
-  int *sb;
-  int *rb;
   int status;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-  sb = (int *) xbt_malloc(size * sizeof(int) * 2);
-  rb = (int *) xbt_malloc(size * sizeof(int) * 2);
+  int* sb = (int *) xbt_malloc(size * sizeof(int) * 2);
+  int* rb = (int *) xbt_malloc(size * sizeof(int) * 2);
   
   for (i = 0; i < size; ++i) {
     sb[i] = rank*size + i;
@@ -53,8 +52,8 @@ int main(int argc, char *argv[])
       fflush(stdout);
     }
   }
-  free(sb);
-  free(rb);
+  xbt_free(sb);
+  xbt_free(rb);
   MPI_Finalize();
   return (EXIT_SUCCESS);
 }

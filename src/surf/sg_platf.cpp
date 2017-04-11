@@ -48,7 +48,8 @@ static simgrid::kernel::routing::NetZoneImpl* routing_get_current()
 }
 
 /** Module management function: creates all internal data structures */
-void sg_platf_init() {
+void sg_platf_init()
+{ /* Do nothing: just for symmetry of user code */
 }
 
 /** Module management function: frees all internal data structures */
@@ -157,7 +158,6 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
 
   int rankId=0;
 
-
   // What an inventive way of initializing the AS that I have as ancestor :-(
   s_sg_platf_AS_cbarg_t AS;
   AS.id = cluster->id;
@@ -207,7 +207,6 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       xbt_dict_foreach(cluster->properties,cursor,key,data) {
         xbt_dict_set(host.properties, key, xbt_strdup(data), nullptr);
       }
-      xbt_dict_free(&cluster->properties);
     }
 
     host.speed_per_pstate = cluster->speeds;
@@ -259,7 +258,8 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       link.latency = 0;
       link.policy = SURF_LINK_SHARED;
       sg_platf_new_link(&link);
-      linkUp = linkDown = simgrid::surf::LinkImpl::byName(tmp_link);
+      linkDown = simgrid::surf::LinkImpl::byName(tmp_link);
+      linkUp   = linkDown;
       free(tmp_link);
       current_as->privateLinks_.insert(
           {rankId * current_as->linkCountPerNode_ + current_as->hasLoopback_, {linkUp, linkDown}});
@@ -268,8 +268,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     //call the cluster function that adds the others links
     if (cluster->topology == SURF_CLUSTER_FAT_TREE) {
       static_cast<FatTreeZone*>(current_as)->addProcessingNode(i);
-    }
-    else {
+    } else {
       current_as->create_links_for_node(cluster, i, rankId,
           rankId*current_as->linkCountPerNode_ + current_as->hasLoopback_ + current_as->hasLimiter_ );
     }
@@ -277,6 +276,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     xbt_free(host_id);
     rankId++;
   }
+  xbt_dict_free(&cluster->properties);
 
   // Add a router.
   XBT_DEBUG(" ");
@@ -414,17 +414,10 @@ void sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type){
   stype->size = storage_type->size;
   stype->model_properties = storage_type->model_properties;
 
-  XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s', "
-      "content '%s', and content_type '%s'",
-      stype->type_id,
-      stype->model,
-      storage_type->content,
-      storage_type->content_type);
+  XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s', content '%s', and content_type '%s'",
+            stype->type_id, stype->model, storage_type->content, storage_type->content_type);
 
-  xbt_lib_set(storage_type_lib,
-      stype->type_id,
-      ROUTING_STORAGE_TYPE_LEVEL,
-      (void *) stype);
+  xbt_lib_set(storage_type_lib, stype->type_id, ROUTING_STORAGE_TYPE_LEVEL, (void*)stype);
 }
 
 void sg_platf_new_mount(sg_platf_mount_cbarg_t mount){
@@ -457,7 +450,8 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   sg_host_t host = sg_host_by_name(process->host);
   if (!host) {
     // The requested host does not exist. Do a nice message to the user
-    char *tmp = bprintf("Cannot create process '%s': host '%s' does not exist\nExisting hosts: '",process->function, process->host);
+    char* tmp = bprintf("Cannot create process '%s': host '%s' does not exist\nExisting hosts: '", process->function,
+                        process->host);
     xbt_strbuff_t msg = xbt_strbuff_new_from(tmp);
     free(tmp);
     xbt_dynar_t all_hosts = xbt_dynar_sort_strings(sg_hosts_as_dynar());
@@ -627,7 +621,6 @@ simgrid::s4u::NetZone* sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
 
   _sg_cfg_init_status = 2; /* HACK: direct access to the global controlling the level of configuration to prevent
                             * any further config now that we created some real content */
-
 
   /* search the routing model */
   simgrid::kernel::routing::NetZoneImpl* new_as = nullptr;

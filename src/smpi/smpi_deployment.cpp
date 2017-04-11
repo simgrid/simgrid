@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2014. The SimGrid Team.
+/* Copyright (c) 2004-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -54,13 +54,11 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
 }
 
 //get the index of the process in the process_data array
-void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm** comm, msg_bar_t* bar)
+void smpi_deployment_register_process(const char* instance_id, int rank, int index)
 {
 
   if(smpi_instances==nullptr){//no instance registered, we probably used smpirun.
     index_to_process_data[index]=index;
-    *bar = nullptr;
-    *comm = nullptr;
     return;
   }
 
@@ -69,14 +67,35 @@ void smpi_deployment_register_process(const char* instance_id, int rank, int ind
   xbt_assert(instance, "Error, unknown instance %s", instance_id);
 
   if(instance->comm_world == MPI_COMM_NULL){
-    MPI_Group group = new  Group(instance->size);
-    instance->comm_world = new  Comm(group, nullptr);
+    MPI_Group group = new  simgrid::smpi::Group(instance->size);
+    instance->comm_world = new  simgrid::smpi::Comm(group, nullptr);
   }
   instance->present_processes++;
   index_to_process_data[index]=instance->index+rank;
   instance->comm_world->group()->set_mapping(index, rank);
-  *bar = instance->finalization_barrier;
-  *comm = &instance->comm_world;
+}
+
+//get the index of the process in the process_data array
+MPI_Comm* smpi_deployment_comm_world(const char* instance_id)
+{
+  if(smpi_instances==nullptr){//no instance registered, we probably used smpirun.
+    return nullptr;
+  }
+  s_smpi_mpi_instance_t* instance =
+     static_cast<s_smpi_mpi_instance_t*>(xbt_dict_get_or_null(smpi_instances, instance_id));
+  xbt_assert(instance, "Error, unknown instance %s", instance_id);
+  return &instance->comm_world;
+}
+
+msg_bar_t smpi_deployment_finalization_barrier(const char* instance_id)
+{
+  if(smpi_instances==nullptr){//no instance registered, we probably used smpirun.
+    return nullptr;
+  }
+  s_smpi_mpi_instance_t* instance =
+     static_cast<s_smpi_mpi_instance_t*>(xbt_dict_get_or_null(smpi_instances, instance_id));
+  xbt_assert(instance, "Error, unknown instance %s", instance_id);
+  return instance->finalization_barrier;
 }
 
 void smpi_deployment_cleanup_instances(){

@@ -19,7 +19,11 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sg_host, sd, "Logging specific to sg_hosts");
 
 // FIXME: The following duplicates the content of s4u::Host
+namespace simgrid {
+namespace s4u {
 extern std::map<std::string, simgrid::s4u::Host*> host_list;
+}
+}
 
 extern "C" {
 
@@ -33,20 +37,20 @@ void sg_host_exit()
    * the tests.
    */
   std::vector<std::string> names = std::vector<std::string>();
-  for (auto kv : host_list)
+  for (auto kv : simgrid::s4u::host_list)
     names.push_back(kv.second->name());
 
   std::sort(names.begin(), names.end());
 
   for (auto name : names)
-    host_list.at(name)->destroy();
+    simgrid::s4u::host_list.at(name)->destroy();
 
   // host_list.clear(); This would be sufficient if the dict would contain smart_ptr. It's now useless
 }
 
 size_t sg_host_count()
 {
-  return host_list.size();
+  return simgrid::s4u::host_list.size();
 }
 /** @brief Returns the host list
  *
@@ -93,7 +97,7 @@ xbt_dynar_t sg_hosts_as_dynar()
 {
   xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t),nullptr);
 
-  for (auto kv : host_list) {
+  for (auto kv : simgrid::s4u::host_list) {
     simgrid::s4u::Host* host = kv.second;
     if (host && host->pimpl_netpoint && host->pimpl_netpoint->isHost())
       xbt_dynar_push(res, &host);
@@ -107,7 +111,7 @@ xbt_dynar_t sg_host_get_processes_as_dynar(sg_host_t host)
   smx_actor_t process;
 
   xbt_dynar_t process_dynar = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
-  xbt_swag_t  process_swag = host->processes();
+  xbt_swag_t process_swag = host->extension<simgrid::simix::Host>()->process_list;
   
   xbt_swag_foreach(process, process_swag){
     xbt_dynar_push(process_dynar, &process);
@@ -117,7 +121,7 @@ xbt_dynar_t sg_host_get_processes_as_dynar(sg_host_t host)
 }
 
 int sg_host_get_process_count(sg_host_t host){
-    return xbt_swag_size(host->processes());
+    return xbt_swag_size(host->extension<simgrid::simix::Host>()->process_list);
 }
 
 // ========= Layering madness ==============*

@@ -37,7 +37,6 @@ namespace simgrid {
     };
   }
 }
-typedef simgrid::simix::Host s_smx_host_priv_t;
 
 SG_BEGIN_DECL()
 XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host,

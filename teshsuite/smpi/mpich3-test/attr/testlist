@@ -20,8 +20,7 @@ attrordercomm 1
 attrordertype 1
 baseattr2 1
 baseattrcomm 1
-#would need a refcount in keyval and attr
-#fkeyval 1
-#fkeyvalcomm 1
-#fkeyvaltype 1
-#keyval_double_free 1
+fkeyval 1
+fkeyvalcomm 1
+fkeyvaltype 1
+keyval_double_free 1

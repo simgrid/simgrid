@@ -17,10 +17,9 @@
 
 int main(int argc, char *argv[])
 {
-  int rank, size;
+  int rank;
+  int size;
   int i;
-  int *sb;
-  int *rb;
   int status;
   int mult=1;
 
@@ -29,9 +28,10 @@ int main(int argc, char *argv[])
 
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
-  if (maxlen>1)mult=size;
-  sb = (int *) xbt_malloc(size *maxlen * sizeof(int));
-  rb = (int *) xbt_malloc(size *maxlen * sizeof(int));
+  if (maxlen > 1)
+    mult = size;
+  int* sb = (int *) xbt_malloc(size *maxlen * sizeof(int));
+  int* rb = (int *) xbt_malloc(size *maxlen * sizeof(int));
   
   for (i = 0; i < size *maxlen; ++i) {
     sb[i] = rank*size + i;
@@ -56,8 +56,8 @@ int main(int argc, char *argv[])
       fflush(stdout);
     }
   }
-  free(sb);
-  free(rb);
+  xbt_free(sb);
+  xbt_free(rb);
   MPI_Finalize();
   return (EXIT_SUCCESS);
 }

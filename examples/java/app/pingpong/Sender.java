@@ -1,5 +1,4 @@
-	/* Copyright (c) 2006-2014, 2016. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -12,43 +11,27 @@ import org.simgrid.msg.MsgException;
 import org.simgrid.msg.Process;
 
 public class Sender extends Process {
-  private static final double COMM_SIZE_LAT = 1;
+	private static final double COMM_SIZE_LAT = 1;
 
-  public Sender(String hostname, String name, String[] args) throws HostNotFoundException {
-    super(hostname,name,args);
-  }
+	public Sender(String hostname, String name, String[] args) throws HostNotFoundException {
+		super(hostname,name,args);
+	}
 
-  public void main(String[] args) throws MsgException {
-    Msg.info("hello!");
+	public void main(String[] args) throws MsgException {
+		Msg.info("Host count: " + args.length);
 
-    int hostCount = args.length;
+		for (int i = 0 ; i<Main.TASK_COUNT; i++) {
 
-    Msg.info("host count: " + hostCount);
-    String[] mailboxes = new String[hostCount]; 
-    double time;
-    double computeDuration = 0;
-    PingPongTask task;
+			for(int pos = 0; pos < args.length ; pos++) {
+				String hostname = Host.getByName(args[pos]).getName(); // Make sure that this host exists
 
-    for(int pos = 0; pos < args.length ; pos++) {
-      try {
-        mailboxes[pos] = Host.getByName(args[pos]).getName();
-      } catch (HostNotFoundException e) {
-        e.printStackTrace();
-        Msg.info("Invalid deployment file: " + e.toString());
-      }
-    }
+				double time = Msg.getClock(); 
+				Msg.info("sender time: " + time);
 
-    for (int pos = 0; pos < hostCount; pos++) { 
-      time = Msg.getClock(); 
-
-      Msg.info("sender time: " + time);
-
-      task = new PingPongTask("no name",computeDuration,COMM_SIZE_LAT);
-      task.setTime(time);
-
-      task.send(mailboxes[pos]);
-    }
-
-    Msg.info("goodbye!");
-  }
+				PingPongTask task = new PingPongTask("no name", /* Duration: 0 flops */ 0, COMM_SIZE_LAT, time);
+				task.send(hostname);
+			}
+		}
+		Msg.info("Done.");
+	}
 }

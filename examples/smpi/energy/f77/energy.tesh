@@ -1,11 +1,6 @@
 p Test smpi bindings for dvfs functions (Fortran 77 example)
 
-$ ../../../smpi_script/bin/smpirun -np 2 -hostfile ${srcdir:=.}/hostfile  -platform ${srcdir:=.}/../../platforms/energy_platform.xml --cfg=smpi/simulate-computation:no ${bindir:=.}/f77/sef --cfg=plugin:Energy --log=smpi_kernel.thres:warning
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/simulate-computation' to 'no'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'plugin' to 'Energy'
+$ ../../../smpi_script/bin/smpirun -np 2 -hostfile ${srcdir:=.}/hostfile  -platform ${srcdir:=.}/../../platforms/energy_platform.xml --cfg=smpi/simulate-computation:no ${bindir:=.}/f77/sef --cfg=plugin:Energy --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 >  [   0.0000000000000000      ] [rank            0 ]           3  pstates available
 >  [   0.0000000000000000      ] [rank            1 ]           3  pstates available
 >  [   0.0000000000000000      ] [rank            0 ] Power:    100000000.00000000     

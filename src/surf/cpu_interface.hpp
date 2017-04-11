@@ -105,7 +105,6 @@ public:
   virtual double getAvailableSpeed();
 
   /** @brief Get the current Cpu computational speed */
-  virtual double getPstateSpeedCurrent();
   virtual double getPstateSpeed(int pstate_index);
 
   virtual int getNbPStates();

@@ -153,7 +153,8 @@ void MSG_vm_destroy(msg_vm_t vm)
   if (MSG_vm_is_running(vm))
     MSG_vm_shutdown(vm);
 
-  xbt_assert(MSG_vm_is_created(vm), "shutdown the given VM before destroying it");
+  xbt_assert(MSG_vm_is_created(vm) || __MSG_vm_is_state(vm, SURF_VM_STATE_DESTROYED),
+             "shutdown the given VM before destroying it");
 
   /* Then, destroy the VM object */
   simgrid::simix::kernelImmediate([vm]() {
@@ -774,9 +775,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
   /* wait until the migration have finished or on error has occurred */
   XBT_DEBUG("wait for reception of the final ACK (i.e. migration has been correctly performed");
   msg_task_t task = nullptr;
-  msg_error_t ret = MSG_TIMEOUT;
-  while (ret == MSG_TIMEOUT && dst_pm->isOn()) // The rx will tell me when he gots the VM
-    ret = MSG_task_receive_with_timeout(&task, ms->mbox_ctl, 4);
+  msg_error_t ret = MSG_task_receive(&task, ms->mbox_ctl);
 
   pimpl->isMigrating = false;
 

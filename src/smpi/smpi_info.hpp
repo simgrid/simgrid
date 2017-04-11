@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2010, 2012-2014. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2012-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -20,7 +20,7 @@ class Info : public F2C{
     int refcount_;
   public:
     explicit Info();
-    Info(Info* orig);
+    explicit Info(Info* orig);
     ~Info();
     void ref();
     static void unref(MPI_Info info);

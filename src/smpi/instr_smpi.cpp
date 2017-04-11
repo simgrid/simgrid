@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, 2012-2015. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -92,7 +92,7 @@ static const char *instr_find_color (const char *state)
 
 char *smpi_container(int rank, char *container, int n)
 {
-  if(smpi_process_get_replaying()){
+  if(smpi_process()->replaying()){
     snprintf(container, n, "%s-rank-%d", SIMIX_host_self_get_name(), rank);
   /*TODO We may need a configuration flag to enable or disable the tracing of
    * the migration of processes/tasks.*/
@@ -219,7 +219,7 @@ void TRACE_smpi_init(int rank)
 #if HAVE_PAPI
   container_t container = me;
 
-  papi_counter_t counters = smpi_process_papi_counters();
+  papi_counter_t counters = smpi_process()->papi_counters();
 
   for (auto& it : counters) {
     /**

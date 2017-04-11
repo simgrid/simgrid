@@ -20,6 +20,7 @@ namespace s4u {
 class ConditionVariable;
 
 /** @brief A classical mutex, but blocking in the simulation world
+ *  @ingroup s4u_api
  *
  * It is strictly impossible to use a real mutex (such as
  * [std::mutex](http://en.cppreference.com/w/cpp/thread/mutex)

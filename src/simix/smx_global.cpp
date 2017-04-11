@@ -228,7 +228,8 @@ void SIMIX_global_init(int *argc, char **argv)
     sg_platf_init();
     simgrid::s4u::onPlatformCreated.connect(SIMIX_post_create_environment);
     simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
-      host.extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
+      if (host.extension<simgrid::simix::Host>() == nullptr) // another callback to the same signal may have created it
+        host.extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
     });
 
     simgrid::surf::storageCreatedCallbacks.connect([](simgrid::surf::Storage* storage) {
@@ -268,7 +269,7 @@ void SIMIX_clean()
 
 #if HAVE_SMPI
   if (SIMIX_process_count()>0){
-    if(smpi_process_initialized()){
+    if(smpi_process()->initialized()){
       xbt_die("Process exited without calling MPI_Finalize - Killing simulation");
     }else{
       XBT_WARN("Process called exit when leaving - Skipping cleanups");
@@ -302,6 +303,9 @@ void SIMIX_clean()
 
   xbt_os_mutex_destroy(simix_global->mutex);
   simix_global->mutex = nullptr;
+#if HAVE_MC
+  xbt_dynar_free(&simix_global->actors_vector);
+#endif
 
   /* Let's free maestro now */
   delete simix_global->maestro_process->context;
@@ -693,5 +697,6 @@ void SIMIX_display_process_status()
 
 int SIMIX_is_maestro()
 {
-  return simix_global==nullptr /*SimDag*/|| SIMIX_process_self() == simix_global->maestro_process;
+  smx_actor_t self = SIMIX_process_self();
+  return simix_global == nullptr /*SimDag*/ || self == nullptr || self == simix_global->maestro_process;
 }

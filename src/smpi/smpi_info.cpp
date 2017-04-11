@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
+/* Copyright (c) 2007-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -91,7 +91,7 @@ int Info::get_nthkey(int n, char *key){
 
 int Info::get_valuelen(char *key, int *valuelen, int *flag){
   *flag=false;
-  char* tmpvalue=(char*)xbt_dict_get_or_null(dict_, key);
+  char* tmpvalue=static_cast<char*>(xbt_dict_get_or_null(dict_, key));
   if(tmpvalue){
     *valuelen=strlen(tmpvalue);
     *flag=true;

@@ -220,7 +220,7 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
     SIMIX_process_kill(smx_process, issuer);
   }
 
-  setState(SURF_VM_STATE_CREATED);
+  setState(SURF_VM_STATE_DESTROYED);
 
   /* FIXME: we may have to do something at the surf layer, e.g., vcpu action */
 }
@@ -250,9 +250,6 @@ void VirtualMachineImpl::setPm(s4u::Host* destination)
   /* create a cpu action bound to the pm model at the destination. */
   surf::CpuAction* new_cpu_action = static_cast<surf::CpuAction*>(destination->pimpl_cpu->execution_start(0));
 
-  surf::Action::State state = action_->getState();
-  if (state != surf::Action::State::done)
-    XBT_CRITICAL("FIXME: may need a proper handling, %d", static_cast<int>(state));
   if (action_->getRemainsNoUpdate() > 0)
     XBT_CRITICAL("FIXME: need copy the state(?), %f", action_->getRemainsNoUpdate());
 

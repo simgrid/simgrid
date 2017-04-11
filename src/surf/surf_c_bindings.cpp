@@ -208,12 +208,8 @@ int surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath){
   return host->pimpl_->fileMove(fd, fullpath);
 }
 
-xbt_dict_t surf_storage_get_content(surf_resource_t resource){
-  return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->getContent();
-}
-
 sg_size_t surf_storage_get_size(surf_resource_t resource){
-  return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->getSize();
+  return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->size_;
 }
 
 sg_size_t surf_storage_get_free_size(surf_resource_t resource){

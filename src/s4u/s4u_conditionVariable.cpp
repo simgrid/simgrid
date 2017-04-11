@@ -1,12 +1,17 @@
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include <exception>
 #include <mutex>
 
 #include <xbt/ex.hpp>
 #include <xbt/log.hpp>
 
-#include "src/simix/smx_synchro_private.h"
-#include "simgrid/s4u/conditionVariable.hpp"
+#include "simgrid/s4u/ConditionVariable.hpp"
 #include "simgrid/simix.h"
+#include "src/simix/smx_synchro_private.h"
 
 namespace simgrid {
 namespace s4u {
@@ -20,6 +25,11 @@ ConditionVariablePtr ConditionVariable::createConditionVariable()
 /**
  * Wait functions
  */
+void ConditionVariable::wait(MutexPtr lock)
+{
+  simcall_cond_wait(cond_, lock->mutex_);
+}
+
 void ConditionVariable::wait(std::unique_lock<Mutex>& lock) {
   simcall_cond_wait(cond_, lock.mutex()->mutex_);
 }

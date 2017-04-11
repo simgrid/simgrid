@@ -1,19 +1,15 @@
-/* JNI interface to virtual machine in Simgrid */
+/* Java bindings of the s4u::VirtualMachine */
 
-/* Copyright (c) 2006-2014. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 package org.simgrid.msg;
-import java.util.ArrayList;
 
 public class VM extends Host {
 	// No need to declare a new bind variable: we use the one inherited from the super class Host
 
-	/* Static functions */ 
-
-	private static ArrayList<VM> vms= new ArrayList<>();
 	private Host currentHost; 
 
 	/** Create a `basic' VM (i.e. 1GB of RAM, other values are not taken into account). */
@@ -34,24 +30,15 @@ public class VM extends Host {
 		super.name = name;
 		this.currentHost = host; 
 		create(host, name, ramSize, migNetSpeed, dpIntensity);
-		vms.add(this);
 	}
 
-	public static VM[] all(){
-		VM[] allvms = new VM[vms.size()];
-		vms.toArray(allvms);
-		return allvms;
-	}
+	/** Retrieve the list of all existing VMs */
+	public static native VM[] all();
 
-	public static VM getVMByName(String name){
-		for (VM vm : vms){
-			if (vm.getName().equals(name))
-				return vm;
-		}
-		return null; 
-	}
+	/** Retrieve a VM from its name */
+	public static native VM getVMByName(String name);
 	
-	/** Kills all the actors running on that VM 
+	/** Shutdown and unref the VM. 
 	 * 
 	 * Actually, this strictly equivalent to shutdown().
 	 * In C and in libvirt, the destroy function also releases the memory associated to the VM, 
@@ -67,7 +54,7 @@ public class VM extends Host {
 	protected void finalize() throws Throwable {
 		nativeFinalize();
 	}
-	public native void nativeFinalize();
+	private native void nativeFinalize();
 
 	/** Returns whether the given VM is currently suspended */	
 	public native int isCreated();
@@ -107,17 +94,12 @@ public class VM extends Host {
 	 */
 	public native void shutdown();
 
-	/** Invoke native migration routine */
-	public native void internalmig(Host destination) throws Exception; // TODO add throws DoubleMigrationException (i.e. when you call migrate on a VM that is already migrating);
-
-
-
 	/** Change the host on which all processes are running
 	 * (pre-copy is implemented)
 	 */	
 	public void migrate(Host destination) throws HostFailureException{
 		try {
-			this.internalmig(destination);
+			this.nativeMigration(destination);
 		} catch (Exception e){
 		  Msg.info("Migration of VM "+this.getName()+" to "+destination.getName()+" is impossible ("+e.getMessage()+")");
 		  throw new HostFailureException();
@@ -125,6 +107,7 @@ public class VM extends Host {
 		// If the migration correcly returned, then we should change the currentHost value. 
 		this.currentHost = destination; 
 	}
+	private native void nativeMigration(Host destination) throws MsgException;
 
 	/** Immediately suspend the execution of all processes within the given VM
 	 *
@@ -143,7 +126,7 @@ public class VM extends Host {
 	public native void resume();
 
 	/**  Class initializer (for JNI), don't do it yourself */
-	public static native void nativeInit();
+	private static native void nativeInit();
 	static {
 		nativeInit();
 	}

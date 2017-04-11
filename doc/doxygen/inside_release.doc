@@ -29,38 +29,75 @@ Please apply the following checklist before releasing.
 
 \subsection inside_release_c_source Building the source archive
 
-First, clean up your git repository. Some files are included through
-globbing, you must ensure that your tree contains no cruft. You can
-either checkout a new tree or remove anything from your current tree:
+This should be done from a clean git repository because some files are
+included through globbing. The best is to use a clean checkout:
 \verbatim
-$ cd simgrid
-$ git reset --hard master # warning, it will kill your uncommited changes
-$ git clean -dfx          # warning, it will kill your uncommited changes
+cd /tmp
+git clone ~/Code/simgrid
+cd simgrid
+cmake . && make dist
 \endverbatim
 
-You can then build the archive. This gives you your archive in the
-build dir, named 'SimGrid-${inside_release_version}.tar.gz'.
-
+If you prefer, you can clean your repository the hard way:
 \verbatim
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make dist
+git reset --hard master # warning, it will kill your uncommited changes
+git clean -dfx          # warning, it will kill your uncommited changes
+cmake . && make dist
 \endverbatim
+
+\subsection inside_release_c_source Building the binary jarfile
+
+Get the jarfiles for several OSes on the CI slaves. Use Save under to
+give a separate name to each of them.
+
+- On Jenkins: Mac OSX, Linux 64 and Linux 32 (without boost-context), FreeBSD, NetBSD
+- On AppVeyor: Windows 
+
+Once all jarfiles are in a separate directory, run the following to
+merge them:
+\verbatim
+mkdir content ; cd content
+
+for j in  ../simgrid-linux64.jar ../*.jar ; do unzip -n $j ; done
+# The content of all jar should be the same, but I prefer using the Linux64 version by default
+#  => unpack it first, and unpack the others with -n (never overwrite)
+
+test -e doc/javadoc || echo "YOU ARE MISSING THE DOC"
+
+du -sh .                                  # 273M here. Let's strip (Darwin is already good)
+strip NATIVE/*/*/*.so                     # Gets BSD and Linux versions, down to 116M
+x86_64-linux-gnu-strip NATIVE/*/*/lib*dll # Gets Windows, down to 22M
+
+rm ../simgrid-3_*.jar
+zip -r ../simgrid-3_XX.jar *              # Produced ../simgrid-3_XX.jar is 7.7M
+\endverbatim
+
+To upload the file on gforge, you need to go to Files/Admin then clic
+on the Settings icon near to the "Add a version" button, and then on
+the settings icon of the release you want to change.
 
 \subsection inside_release_c_postchecks Check list after releasing
 
 - Tag the git repository (don't forget to push the tags to the main repo)
-- Push the archive files on gforge
-- Rebuild and resynchronize the website so that the file gets visible
-  from our download page (see @ref inside_doxygen_website).
+- Push the archive files (tar.gz and jar) on gforge
+- Post a news on gforge (before updating the website)
 - Update the link scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/latest
+- Rebuild and resynchronize the website so that the file gets visible
+  from our download page.\n
+  - Edit org/org-templates/level-0.org to change the release version, the tgz link and the jar link.
+  - emacs org/site/index.org and C-c C-c the first source block to refresh the news.
+  - emacs org/site/download.org and C-c C-c the first source block to refresh the download.
+  - emacs org/site/documentation.org and edit the version links.
+  - make -C org all sync
+  - git commit && git push
 - Announce the release
  - Mail the simgrid-user mailing list
     - the NEWS chunk in the mail;
     - the ChangeLog chunk as attachment
  - Also mail some other lists (G5K users), with only the NEWS chunk
    and the link to the download section
- - Post a news on gforge
+- Release the debian package   
+- Create the template for the next release in ChangeLog and NEWS files
+- Change the release number in CMakeLists.txt
 
 */

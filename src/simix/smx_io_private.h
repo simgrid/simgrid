@@ -34,9 +34,6 @@ XBT_PRIVATE xbt_dynar_t SIMIX_file_get_info(smx_actor_t process, smx_file_t fd);
 XBT_PRIVATE int SIMIX_file_seek(smx_actor_t process, smx_file_t fd, sg_offset_t offset, int origin);
 XBT_PRIVATE int SIMIX_file_move(smx_actor_t process, smx_file_t fd, const char* fullpath);
 
-XBT_PRIVATE sg_size_t SIMIX_storage_get_free_size(smx_actor_t process, smx_storage_t storage);
-XBT_PRIVATE sg_size_t SIMIX_storage_get_used_size(smx_actor_t process, smx_storage_t storage);
-
 XBT_PRIVATE xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage);
 
 XBT_PRIVATE void SIMIX_io_destroy(smx_activity_t synchro);

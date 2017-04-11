@@ -18,14 +18,18 @@ documentation and examples first, but if some remain don't hesitate to
 ask the community for help. If you do not have a question, just come to us
 and say hello! We love earing about how people use SimGrid.
 
- - For questions or remarks, drop us an email on the 
-   <a href="mailto:simgrid-user@lists.gforge.inria.fr">User Mailing list</a> (to subscribe, visit the [webinterface](http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user));
+ - For questions or remarks, drop us an email on the
+   <a href="mailto:simgrid-user@lists.gforge.inria.fr">User Mailing list</a> 
+   (to subscribe, visit the [web interface](http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user));
    you can also check out [our archives](http://lists.gforge.inria.fr/pipermail/simgrid-user/).
    We prefer you to <b>not use private emails</b>. SimGrid is an open
    framework, and you never know who have the time and knowledge to
    answer your question, so please keep messages on the public mailing list.
  - Join us on IRC and ask your question directly on the channel \#simgrid at
-   \b irc.debian.org. Be warned that even if many people are connected to
+   \b irc.debian.org (or use the ugly [web interface](https://webchat.oftc.net/?channels=%23simgrid)
+   if you don't have a [real client](https://en.wikipedia.org/wiki/Comparison_of_Internet_Relay_Chat_clients)
+   installed).<br>
+   Be warned that even if many people are connected to
    the chanel, they may not be staring at their IRC windows.
    So don't be surprised if you don't get an answer in the 
    second, and turn to the mailing lists if nobody seems to be there.
@@ -50,7 +54,7 @@ always the first question we get. The more you use the framework,
 the better for us. 
 
 Make sure that your scientific publications using SimGrid actually
-cite the <a href="http://simgrid.gforge.inria.fr/Publications.html">right paper</a>.
+cite the [right paper](http://simgrid.gforge.inria.fr/Publications.html).
 Also make sure that these citations are correctly listed on 
 <a href="http://simgrid.gforge.inria.fr/Usages.html">our list</a>.
 
@@ -87,8 +91,8 @@ do so is to open an issue on our GitHub's
 <a href="https://github.com/simgrid/simgrid/issues">Bug Tracker</a> so
 that we don't forget about it (if you want to put some attachment, you
 can use 
-<a https://gforge.inria.fr/tracker/?atid=165&group_id=12&func=browse">this
-other bugtracker</a> instead). 
+[this other bugtracker](https://gforge.inria.fr/tracker/?atid=165&group_id=12&func=browse)
+instead). 
 
 The worst way to report such issues is to go through private emails.
 These are unreliable, and we are trying to develop SimGrid openly, so

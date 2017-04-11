@@ -50,8 +50,7 @@ int main(int argc, char *argv[])
   XBT_INFO("Scheduling DAX...");
   scheduleDAX(dax);
   XBT_INFO("DAX scheduled");
-  xbt_dynar_t changed_tasks = SD_simulate(-1);
-  xbt_dynar_free(&changed_tasks);
+  SD_simulate(-1);
 
   XBT_INFO("Simulation done.");
 

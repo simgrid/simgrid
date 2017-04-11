@@ -258,7 +258,7 @@ int Topo_Cart::dim_get(int *ndims) {
 /*
  * This is a utility function, no need to have anything in the lower layer for this at all
  */
-int Dims_create(int nnodes, int ndims, int dims[])
+int Topo_Cart::Dims_create(int nnodes, int ndims, int dims[])
 {
   /* Get # of free-to-be-assigned processes and # of free dimensions */
   int freeprocs = nnodes;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
+/* Copyright (c) 2010-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -8,11 +8,12 @@
 #define SMPI_COMM_HPP_INCLUDED
 
 #include "private.h"
+#include <list>
 
 namespace simgrid{
 namespace smpi{
 
-class Comm : public F2C{
+class Comm : public F2C, public Keyval{
 
   private:
     MPI_Group group_;
@@ -26,13 +27,15 @@ class Comm : public F2C{
     int is_uniform_;
     int* non_uniform_map_; //set if smp nodes have a different number of processes allocated
     int is_blocked_;// are ranks allocated on the same smp node contiguous ?
-    xbt_dict_t attributes_;
+
+    std::list<MPI_Win> rma_wins_; // attached windows for synchronization.
 
   public:
-    Comm();
+    static std::unordered_map<int, smpi_key_elem> keyvals_;
+    static int keyval_id_;
+
+    Comm() = default;
     Comm(MPI_Group group, MPI_Topology topo);
-
-
     int dup(MPI_Comm* newcomm);
     MPI_Group group();
     MPI_Topology topo();
@@ -48,19 +51,23 @@ class Comm : public F2C{
     int is_uniform();
     int is_blocked();
     MPI_Comm split(int color, int key);
-    void cleanup_attributes();
     void cleanup_smp();
     void ref();
     static void unref(MPI_Comm comm);
     static void destroy(MPI_Comm comm);
     void init_smp();
-    int attr_delete(int keyval);
-    int attr_get(int keyval, void* attr_value, int* flag);
-    int attr_put(int keyval, void* attr_value);
 
     int add_f();
     static void free_f(int id);
     static Comm* f2c(int);
+
+    static int keyval_create(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn, int* keyval, void* extra_state);
+    static int keyval_free(int* keyval);
+    static void keyval_cleanup();
+
+    void add_rma_win(MPI_Win win);
+    void remove_rma_win(MPI_Win win);
+    void finish_rma_calls();
 
 };
 

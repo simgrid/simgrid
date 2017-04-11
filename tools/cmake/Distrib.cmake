@@ -22,6 +22,12 @@ if(enable_smpi)
   endif()
 endif()
 
+if(enable_model-checking)
+  install(
+    PROGRAMS ${CMAKE_BINARY_DIR}/bin/simgrid-mc
+    DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
+endif()
+
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
 
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/graphicator  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
@@ -184,7 +190,10 @@ add_custom_target(dist-dir
   COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_NAME}-${release_version}.tar.gz
   COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}
   COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/doc/html/
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/doc/html/ ${PROJECT_NAME}-${release_version}/doc/html/)
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/doc/html/ ${PROJECT_NAME}-${release_version}/doc/html/
+  COMMAND rm -f `grep -rl " Reference" ${PROJECT_NAME}-${release_version}/doc/html/` # Doxygen, go away
+  COMMAND rm -f `grep -rl "Member List" ${PROJECT_NAME}-${release_version}/doc/html/` # Doxygen, you're getting annoying
+  )
 add_dependencies(dist-dir maintainer_files)
 
 set(dirs_in_tarball "")

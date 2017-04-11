@@ -41,30 +41,38 @@ HostL07Model::HostL07Model() : HostModel() {
   surf_cpu_model_pm = new CpuL07Model(this,maxminSystem_);
 }
 
-HostL07Model::~HostL07Model() = default;
+HostL07Model::~HostL07Model() 
+{
+  lmm_system_free(maxminSystem_);
+  maxminSystem_ = nullptr;
+  delete surf_network_model;
+  delete surf_cpu_model_pm;
+}
 
 CpuL07Model::CpuL07Model(HostL07Model *hmodel,lmm_system_t sys)
   : CpuModel()
   , hostModel_(hmodel)
-  {
-    maxminSystem_ = sys;
-  }
-CpuL07Model::~CpuL07Model() {
-  lmm_system_free(maxminSystem_);
+{
+  maxminSystem_ = sys;
+}
+
+CpuL07Model::~CpuL07Model()
+{
   maxminSystem_ = nullptr;
 }
+
 NetworkL07Model::NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys)
   : NetworkModel()
   , hostModel_(hmodel)
-  {
-    maxminSystem_ = sys;
-    loopback_     = createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
-  }
-NetworkL07Model::~NetworkL07Model()
 {
-  maxminSystem_ = nullptr; // Avoid multi-free
+  maxminSystem_ = sys;
+  loopback_     = createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
 }
 
+NetworkL07Model::~NetworkL07Model()
+{
+  maxminSystem_ = nullptr;
+}
 
 double HostL07Model::nextOccuringEvent(double now)
 {
@@ -100,7 +108,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
       } else {
         action->latency_ = 0.0;
       }
-      if ((action->latency_ == 0.0) && (action->isSuspended() == 0)) {
+      if ((action->latency_ <= 0.0) && (action->isSuspended() == 0)) {
         action->updateBound();
         lmm_update_variable_weight(maxminSystem_, action->getVariable(), 1.0);
       }
@@ -109,7 +117,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
            action, action->getRemains(), lmm_variable_getvalue(action->getVariable()) * delta);
     action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
 
-    if (action->getMaxDuration() != NO_MAX_DURATION)
+    if (action->getMaxDuration() > NO_MAX_DURATION)
       action->updateMaxDuration(delta);
 
     XBT_DEBUG("Action (%p) : remains (%g).", action, action->getRemains());
@@ -121,7 +129,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
      */
 
     if (((action->getRemains() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||
-        ((action->getMaxDuration() != NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
+        ((action->getMaxDuration() > NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
       action->finish();
       action->setState(Action::State::done);
     } else {
@@ -160,8 +168,11 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
   double latency = 0.0;
 
   this->hostList_->reserve(host_nb);
-  for (int i = 0; i<host_nb; i++)
+  for (int i = 0; i < host_nb; i++) {
     this->hostList_->push_back(host_list[i]);
+    if (flops_amount[i] > 0)
+      nb_used_host++;
+  }
 
   /* Compute the number of affected resources... */
   if(bytes_amount != nullptr) {
@@ -185,10 +196,6 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
 
     nb_link = affected_links.size();
   }
-
-  for (int i = 0; i < host_nb; i++)
-    if (flops_amount[i] > 0)
-      nb_used_host++;
 
   XBT_DEBUG("Creating a parallel task (%p) with %d hosts and %d unique links.", this, host_nb, nb_link);
   this->latency_ = latency;
@@ -378,6 +385,7 @@ void LinkL07::setLatency(double value)
     action->updateBound();
   }
 }
+LinkL07::~LinkL07() = default;
 
 /**********
  * Action *
@@ -411,7 +419,7 @@ void L07Action::updateBound()
   }
   double lat_bound = sg_tcp_gamma / (2.0 * lat_current);
   XBT_DEBUG("action (%p) : lat_bound = %g", this, lat_bound);
-  if ((latency_ == 0.0) && (suspended_ == 0)) {
+  if ((latency_ <= 0.0) && (suspended_ == 0)) {
     if (rate_ < 0)
       lmm_update_variable_bound(getModel()->getMaxminSystem(), getVariable(), lat_bound);
     else

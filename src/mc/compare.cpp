@@ -714,7 +714,7 @@ static int compare_heap_area_without_type(
  * @param snapshot1      Snapshot of state 1
  * @param snapshot2      Snapshot of state 2
  * @param previous
- * @param type_id
+ * @param type
  * @param area_size      either a byte_size or an elements_count (?)
  * @param check_ignore
  * @param pointer_level
@@ -933,7 +933,7 @@ top:
  *
  * TODO, handle subfields ((*p).bar.foo, (*p)[5].bar…)
  *
- * @param  type_id            DWARF type ID of the root address
+ * @param  type               DWARF type ID of the root address
  * @param  area_size
  * @return                    DWARF type ID for given offset
  */

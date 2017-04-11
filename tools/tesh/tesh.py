@@ -162,6 +162,8 @@ class TeshState(Singleton):
         self.threads = []
         self.args_suffix = ""
         self.ignore_regexps_common = []
+        self.jenkins = False # not a Jenkins run by default
+        self.timeout = 10 # default value: 10 sec
         self.wrapper = None
         self.keep = False
     
@@ -179,7 +181,7 @@ class Cmd(object):
         self.input_pipe = []
         self.output_pipe_stdout = []
         self.output_pipe_stderr = []
-        self.timeout = 10
+        self.timeout = TeshState().timeout
         self.args = None
         self.linenumber = -1
         
@@ -291,6 +293,8 @@ class Cmd(object):
             self.args = TeshState().wrapper + self.args
         elif re.match(".*smpirun.*", self.args) is not None:
             self.args = "sh " + self.args 
+        if TeshState().jenkins and self.timeout != None:
+            self.timeout *= 10
 
         self.args += TeshState().args_suffix
         
@@ -298,18 +302,23 @@ class Cmd(object):
                 
         args = shlex.split(self.args)
         #print (args)
+
         try:
             proc = subprocess.Popen(args, bufsize=1, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
         except OSError as e:
             if e.errno == 8:
                 e.strerror += "\nOSError: [Errno 8] Executed scripts should start with shebang line (like #!/bin/sh)"
             raise e
+        except FileNotFoundError:
+            print("["+FileReader().filename+":"+str(self.linenumber)+"] Cannot start '"+args[0]+"': File not found")
+            exit(3)
 
         cmdName = FileReader().filename+":"+str(self.linenumber)
         try:
             (stdout_data, stderr_data) = proc.communicate("\n".join(self.input_pipe), self.timeout)
         except subprocess.TimeoutExpired:
             print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> timeout after "+str(self.timeout)+" sec)")
+            proc.kill()
             exit(3)
 
         if self.output_display:
@@ -434,11 +443,15 @@ if __name__ == '__main__':
            re.compile("False positive error reports may follow"),
            re.compile("For details see http://code.google.com/p/address-sanitizer/issues/detail?id=189"),
            ]
+        TeshState().jenkins = True # This is a Jenkins build
     
     if options.teshfile is None:
         f = FileReader(None)
         print("Test suite from stdin")
     else:
+        if not os.path.isfile(options.teshfile):
+            print("Cannot open teshfile '"+options.teshfile+"': File not found")
+            exit(3)
         f = FileReader(options.teshfile)
         print("Test suite '"+f.abspath+"'")
     

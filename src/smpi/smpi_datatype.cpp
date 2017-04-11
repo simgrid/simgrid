@@ -1,5 +1,5 @@
 /* smpi_datatype.cpp -- MPI primitives to handle datatypes                      */
-/* Copyright (c) 2009-2015. The SimGrid Team.
+/* Copyright (c) 2009-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -8,7 +8,6 @@
 #include "mc/mc.h"
 #include "private.h"
 #include "simgrid/modelchecker.h"
-#include "xbt/replay.h"
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,12 +18,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_datatype, smpi, "Logging specific to SMPI (datatype)");
 
-std::unordered_map<int, smpi_type_key_elem> smpi_type_keyvals;
-int type_keyval_id=0;//avoid collisions
-
-
 #define CREATE_MPI_DATATYPE(name, type)               \
-  static Datatype mpi_##name (         \
+  static simgrid::smpi::Datatype mpi_##name (         \
     (char*) # name,                                   \
     sizeof(type),   /* size */                        \
     0,              /* lb */                          \
@@ -34,7 +29,7 @@ int type_keyval_id=0;//avoid collisions
 const MPI_Datatype name = &mpi_##name;
 
 #define CREATE_MPI_DATATYPE_NULL(name)                \
-  static Datatype mpi_##name (         \
+  static simgrid::smpi::Datatype mpi_##name (         \
     (char*) # name,                                   \
     0,              /* size */                        \
     0,              /* lb */                          \
@@ -108,9 +103,10 @@ CREATE_MPI_DATATYPE(MPI_PTR, void*);
 namespace simgrid{
 namespace smpi{
 
-MPI_Datatype Datatype::null_id_=MPI_DATATYPE_NULL;
+std::unordered_map<int, smpi_key_elem> Datatype::keyvals_;
+int Datatype::keyval_id_=0;
 
-Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr), size_(size), lb_(lb), ub_(ub), flags_(flags), attributes_(nullptr), refcount_(1){
+Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(1){
 #if HAVE_MC
   if(MC_is_active())
     MC_ignore(&(refcount_), sizeof(refcount_));
@@ -118,36 +114,35 @@ Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr
 }
 
 //for predefined types, so in_use = 0.
-Datatype::Datatype(char* name, int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(name), size_(size), lb_(lb), ub_(ub), flags_(flags), attributes_(nullptr), refcount_(0){
+Datatype::Datatype(char* name, int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(name), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(0){
 #if HAVE_MC
   if(MC_is_active())
     MC_ignore(&(refcount_), sizeof(refcount_));
 #endif
 }
 
-Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), lb_(datatype->lb_), ub_(datatype->ub_), flags_(datatype->flags_), attributes_(nullptr), refcount_(1)
+Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), lb_(datatype->lb_), ub_(datatype->ub_), flags_(datatype->flags_), refcount_(1)
 {
   flags_ &= ~DT_FLAG_PREDEFINED;
   *ret = MPI_SUCCESS;
   if(datatype->name_)
     name_ = xbt_strdup(datatype->name_);
-  if(datatype->attributes_ !=nullptr){
-    attributes_ = xbt_dict_new_homogeneous(nullptr);
-    xbt_dict_cursor_t cursor = nullptr;
-    char* key;
+  
+  if(!(datatype->attributes()->empty())){
     int flag;
-    void* value_in;
     void* value_out;
-    xbt_dict_foreach (datatype->attributes_, cursor, key, value_in) {
-      smpi_type_key_elem elem = smpi_type_keyvals.at(atoi(key));
-      if (elem != nullptr && elem->copy_fn != MPI_NULL_COPY_FN) {
-        *ret = elem->copy_fn(datatype, atoi(key), nullptr, value_in, &value_out, &flag);
+    for(auto it = datatype->attributes()->begin(); it != datatype->attributes()->end(); it++){
+      smpi_key_elem elem = keyvals_.at((*it).first);
+      
+      if (elem != nullptr && elem->copy_fn.type_copy_fn != MPI_NULL_COPY_FN) {
+        *ret = elem->copy_fn.type_copy_fn(datatype, (*it).first, nullptr, (*it).second, &value_out, &flag);
         if (*ret != MPI_SUCCESS) {
-          xbt_dict_cursor_free(&cursor);
           break;
         }
-        if (flag)
-          xbt_dict_set_ext(attributes_, key, sizeof(int), value_out, nullptr);
+        if (flag){
+          elem->refcount++;
+          attributes()->insert({(*it).first, value_out});
+        }
       }
     }
   }
@@ -165,18 +160,7 @@ Datatype::~Datatype(){
       return;
   }
 
-  if(attributes_ !=nullptr){
-    xbt_dict_cursor_t cursor = nullptr;
-    char* key;
-    void * value;
-    int flag;
-    xbt_dict_foreach(attributes_, cursor, key, value){
-      smpi_type_key_elem elem = smpi_type_keyvals.at(atoi(key));
-      if(elem!=nullptr && elem->delete_fn!=nullptr)
-        elem->delete_fn(this,*key, value, &flag);
-    }
-    xbt_dict_free(&attributes_);
-  }
+  cleanup_attr<Datatype>();
 
   xbt_free(name_);
 }
@@ -224,6 +208,10 @@ int Datatype::flags(){
   return flags_;
 }
 
+int Datatype::refcount(){
+  return refcount_;
+}
+
 void Datatype::addflag(int flag){
   flags_ &= flag;
 }
@@ -262,88 +250,6 @@ void Datatype::set_name(char* name){
   name_ = xbt_strdup(name);
 }
 
-int Datatype::attr_delete(int keyval){
-  smpi_type_key_elem elem = smpi_type_keyvals.at(keyval);
-  if(elem==nullptr)
-    return MPI_ERR_ARG;
-  if(elem->delete_fn!=MPI_NULL_DELETE_FN){
-    void * value = nullptr;
-    int flag;
-    if(this->attr_get(keyval, &value, &flag)==MPI_SUCCESS){
-      int ret = elem->delete_fn(this, keyval, value, &flag);
-      if(ret!=MPI_SUCCESS) 
-        return ret;
-    }
-  }  
-  if(attributes_==nullptr)
-    return MPI_ERR_ARG;
-
-  xbt_dict_remove_ext(attributes_, reinterpret_cast<const char*>(&keyval), sizeof(int));
-  return MPI_SUCCESS;
-}
-
-
-int Datatype::attr_get(int keyval, void* attr_value, int* flag){
-  smpi_type_key_elem elem = smpi_type_keyvals.at(keyval);
-  if(elem==nullptr)
-    return MPI_ERR_ARG;
-  if(attributes_==nullptr){
-    *flag=0;
-    return MPI_SUCCESS;
-  }
-  try {
-    *static_cast<void**>(attr_value) = xbt_dict_get_ext(attributes_, reinterpret_cast<const char*>(&keyval), sizeof(int));
-    *flag=1;
-  }
-  catch (xbt_ex& ex) {
-    *flag=0;
-  }
-  return MPI_SUCCESS;
-}
-
-int Datatype::attr_put(int keyval, void* attr_value){
-  smpi_type_key_elem elem = smpi_type_keyvals.at(keyval);
-  if(elem==nullptr)
-    return MPI_ERR_ARG;
-  int flag;
-  void* value = nullptr;
-  this->attr_get(keyval, &value, &flag);
-  if(flag!=0 && elem->delete_fn!=MPI_NULL_DELETE_FN){
-    int ret = elem->delete_fn(this, keyval, value, &flag);
-    if(ret!=MPI_SUCCESS) 
-      return ret;
-  }
-  if(attributes_==nullptr)
-    attributes_ = xbt_dict_new_homogeneous(nullptr);
-
-  xbt_dict_set_ext(attributes_, reinterpret_cast<const char*>(&keyval), sizeof(int), attr_value, nullptr);
-  return MPI_SUCCESS;
-}
-
-int Datatype::keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval, void* extra_state){
-
-  smpi_type_key_elem value = (smpi_type_key_elem) xbt_new0(s_smpi_mpi_type_key_elem_t,1);
-
-  value->copy_fn=copy_fn;
-  value->delete_fn=delete_fn;
-
-  *keyval = type_keyval_id;
-  smpi_type_keyvals.insert({*keyval, value});
-  type_keyval_id++;
-  return MPI_SUCCESS;
-}
-
-int Datatype::keyval_free(int* keyval){
-  smpi_type_key_elem elem = smpi_type_keyvals.at(*keyval);
-  if(elem==0){
-    return MPI_ERR_ARG;
-  }
-  smpi_type_keyvals.erase(*keyval);
-  xbt_free(elem);
-  return MPI_SUCCESS;
-}
-
-
 int Datatype::pack(void* inbuf, int incount, void* outbuf, int outcount, int* position,MPI_Comm comm){
   if (outcount - *position < incount*static_cast<int>(size_))
     return MPI_ERR_BUFFER;
@@ -353,7 +259,7 @@ int Datatype::pack(void* inbuf, int incount, void* outbuf, int outcount, int* po
 }
 
 int Datatype::unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount,MPI_Comm comm){
-  if (outcount*(int)size_> insize)
+  if (outcount*static_cast<int>(size_)> insize)
     return MPI_ERR_BUFFER;
   Datatype::copy(static_cast<char*>(inbuf) + *position, insize, MPI_CHAR, outbuf, outcount, this);
   *position += outcount * size_;
@@ -364,8 +270,15 @@ int Datatype::unpack(void* inbuf, int insize, int* position, void* outbuf, int o
 int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        void *recvbuf, int recvcount, MPI_Datatype recvtype){
   int count;
+
+  if(smpi_is_shared(sendbuf)){
+    XBT_DEBUG("Copy input buf %p is shared. Let's ignore it.", sendbuf);
+  }else if(smpi_is_shared(recvbuf)){
+    XBT_DEBUG("Copy output buf %p is shared. Let's ignore it.", recvbuf);
+  }
+
   if(smpi_privatize_global_variables){
-    smpi_switch_data_segment(smpi_process_index());
+    smpi_switch_data_segment(smpi_process()->index());
   }
   /* First check if we really have something to do */
   if (recvcount > 0 && recvbuf != sendbuf) {
@@ -374,7 +287,7 @@ int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     count = sendcount < recvcount ? sendcount : recvcount;
 
     if(!(sendtype->flags() & DT_FLAG_DERIVED) && !(recvtype->flags() & DT_FLAG_DERIVED)) {
-      if(!smpi_process_get_replaying()) 
+      if(!smpi_process()->replaying()) 
         memcpy(recvbuf, sendbuf, count);
     }
     else if (!(sendtype->flags() & DT_FLAG_DERIVED))

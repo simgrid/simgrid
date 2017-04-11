@@ -39,7 +39,7 @@ namespace simgrid {
     public:
       NetworkCm02Model();
       explicit NetworkCm02Model(void (*solve_fun)(lmm_system_t self));
-      virtual ~NetworkCm02Model();
+      virtual ~NetworkCm02Model() = default;
       LinkImpl* createLink(const char* name, double bandwidth, double latency,
                            e_surf_link_sharing_policy_t policy) override;
       void updateActionsStateLazy(double now, double delta) override;

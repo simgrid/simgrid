@@ -50,9 +50,10 @@ typedef struct simdata_task {
   msg_process_t sender = nullptr;
   msg_process_t receiver = nullptr;
   msg_host_t source = nullptr;
-  double priority = 0.0;
-  double bound = 0.0; /* Capping for CPU resource */
-  double rate = 0.0;  /* Capping for network resource */
+
+  double priority = 1.0;
+  double bound    = 0.0; /* Capping for CPU resource, or 0 for no capping */
+  double rate     = -1;  /* Capping for network resource, or -1 for no capping*/
 
   bool isused = false;  /* Indicates whether the task is used in SIMIX currently */
   int host_nb = 0;      /* ==0 if sequential task; parallel task if not */
@@ -81,16 +82,6 @@ public:
 };
 }
 
-typedef struct process_arg {
-  const char *name;
-  xbt_main_func_t code;
-  void *data;
-  msg_host_t m_host;
-  int argc;
-  char **argv;
-  double kill_time;
-} s_process_arg_t, *process_arg_t;
-
 typedef struct msg_comm {
   smx_activity_t s_comm;          /* SIMIX communication object encapsulated (the same for both processes) */
   msg_task_t task_sent;           /* task sent (NULL for the receiver) */
@@ -104,7 +95,8 @@ typedef struct MSG_Global {
   unsigned long int sent_msg;   /* Total amount of messages sent during the simulation */
   void (*task_copy_callback) (msg_task_t task, msg_process_t src, msg_process_t dst);
   void_f_pvoid_t process_data_cleanup;
-} s_MSG_Global_t, *MSG_Global_t;
+} s_MSG_Global_t;
+typedef s_MSG_Global_t* MSG_Global_t;
 
 SG_BEGIN_DECL()
 
@@ -153,10 +145,6 @@ XBT_PRIVATE void TRACE_msg_process_sleep_in(msg_process_t process);   //called f
 XBT_PRIVATE void TRACE_msg_process_sleep_out(msg_process_t process);
 
 SG_END_DECL()
-
-XBT_PUBLIC(msg_process_t)
-MSG_process_create_from_stdfunc(const char* name, std::function<void()> code, void* data, msg_host_t host,
-                                xbt_dict_t properties);
 
 inline void simdata_task::setUsed()
 {

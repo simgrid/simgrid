@@ -13,7 +13,8 @@
 typedef struct xbt_heap_item {
   void *content;
   double key;
-} s_xbt_heap_item_t, *xbt_heap_item_t;
+} s_xbt_heap_item_t;
+typedef s_xbt_heap_item_t* xbt_heap_item_t;
 
 typedef struct xbt_heap {
   int size;

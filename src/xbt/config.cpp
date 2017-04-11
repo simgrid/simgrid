@@ -39,7 +39,7 @@ extern "C" {
 namespace simgrid {
 namespace config {
 
-missing_key_error::~missing_key_error() {}
+missing_key_error::~missing_key_error() = default;
 
 class Config;
 

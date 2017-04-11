@@ -5,13 +5,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <functional>
-#include <utility>
-
 #include "JavaContext.hpp"
 #include "jxbt_utilities.h"
 #include "src/simix/smx_private.h"
 #include "xbt/ex.hpp"
+
+#include <functional>
+#include <utility>
 
 extern "C" JavaVM* __java_vm;
 
@@ -133,7 +133,7 @@ void JavaContext::stop()
     // (as the ones created for the VM migration). The Java exception will not be catched anywhere.
     // Bad things happen currently if these actors get killed, unfortunately.
     jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError",
-                       bprintf("Process %s killed from file JavaContext.cpp)", this->process()->name.c_str()));
+                       std::string("Process ") + this->process()->cname() + " killed from file JavaContext.cpp");
 
     // (remember that throwing a java exception from C does not break the C execution path.
     //  Instead, it marks the exception to be raised when returning to the Java world and

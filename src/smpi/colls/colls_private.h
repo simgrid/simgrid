@@ -6,7 +6,12 @@
 #ifndef SMPI_COLLS_PRIVATE_H
 #define SMPI_COLLS_PRIVATE_H
 
-#include "colls.h"
+#include <math.h>
+#include "smpi/mpi.h"
+#include "src/smpi/private.h"
+#include "xbt/ex.h"
+#include "xbt.h"
+#include "../smpi_coll.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_colls);
 

@@ -9,7 +9,8 @@
 
 int main(int argc, char **argv)
 {
-   int size, rank;
+   int size;
+   int rank;
    int success = 1;
    int retval;
    int sendcount = 1;            // one double to each process

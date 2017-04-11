@@ -148,7 +148,7 @@ public class Host {
 	
 
 	/** Class initializer, to initialize various JNI stuff */
-	public static native void nativeInit();
+	private static native void nativeInit();
 	static {
 		nativeInit();
 	}	

@@ -26,6 +26,7 @@ static int master(int argc, char *argv[])
   MSG_host_off(jupiter);
 
   if (comm) {
+    MSG_task_destroy(task);
     MSG_comm_wait(comm, -1);
     MSG_comm_destroy(comm);
   }

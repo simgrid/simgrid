@@ -1,6 +1,6 @@
 /* Handle Fortan - C conversion for MPI Types*/
 
-/* Copyright (c) 2010, 2013-2015. The SimGrid Team.
+/* Copyright (c) 2010, 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -18,11 +18,16 @@ namespace simgrid{
 namespace smpi{
 
 class F2C {
-  protected:
+  private:
     // We use a single lookup table for every type. 
     // Beware of collisions if id in mpif.h is not unique
     static xbt_dict_t f2c_lookup_;
     static int f2c_id_;
+  protected:
+    static xbt_dict_t f2c_lookup();
+    static void set_f2c_lookup(xbt_dict_t dict);
+    static int f2c_id();
+    static void f2c_id_increment();
   public:
     static char* get_key(char* key, int id);
     static char* get_key_id(char* key, int id);
@@ -37,7 +42,7 @@ class F2C {
     //This method should be overriden in all subclasses
     //to avoid casting the result when calling it.
     //For the default one, the MPI_*_NULL returned is assumed to be NULL.
-    static F2C* f2c(int);
+    static F2C* f2c(int id);
 };
 
 }

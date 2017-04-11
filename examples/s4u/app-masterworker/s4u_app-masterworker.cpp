@@ -78,7 +78,7 @@ public:
         break;
       }
       /*  - Otherwise, process the task */
-      double comp_size = xbt_str_parse_double(res, nullptr);
+      double comp_size = std::stod(res);
       xbt_free(res);
       simgrid::s4u::this_actor::execute(comp_size);
     }

@@ -115,7 +115,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, j
   setlocale(LC_NUMERIC,"C");
 
   if (jargs)
-    argc = (int) env->GetArrayLength(jargs);
+    argc = static_cast<int>(env->GetArrayLength(jargs));
 
   argc++;
   argv = xbt_new(char *, argc + 1);
@@ -134,9 +134,11 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, j
   JAVA_HOST_LEVEL = simgrid::s4u::Host::extension_create(__JAVA_host_priv_free);
   JAVA_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, __JAVA_storage_priv_free);
 
-  for (index = 0; index < argc; index++)
+  for (index = 0; index < argc - 1; index++) {
+    env->SetObjectArrayElement(jargs, index, (jstring)env->NewStringUTF(argv[index + 1]));
     free(argv[index]);
-
+  }
+  free(argv[argc]);
   free(argv);
 }
 
@@ -329,11 +331,8 @@ void java_main_jprocess(jobject jprocess)
   JNIEnv *env = get_current_thread_env();
   simgrid::kernel::context::JavaContext* context = static_cast<simgrid::kernel::context::JavaContext*>(SIMIX_context_self());
   context->jprocess = jprocess;
-  msg_process_t process = MSG_process_self();
-  jprocess_bind(context->jprocess, process, env);
+  jprocess_bind(context->jprocess, MSG_process_self(), env);
 
-  // Adrien, ugly path, just to bypass creation of context at low levels (i.e such as for the VM migration for instance)
-  if (context->jprocess != nullptr)
-    run_jprocess(env, context->jprocess);
+  run_jprocess(env, context->jprocess);
 }
 }}}

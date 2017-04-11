@@ -147,7 +147,9 @@ examples/msg/io-file-unlink/io-file-unlink
 examples/msg/io-remote/io-remote
 examples/msg/io-storage/io-storage
 examples/msg/platform-failures/platform-failures
+examples/msg/plugin-hostload/plugin-hostload
 examples/msg/process-create/process-create
+examples/msg/process-daemon/process-daemon
 examples/msg/process-kill/process-kill
 examples/msg/process-join/process-join
 examples/msg/process-migration/process-migration
@@ -190,6 +192,11 @@ examples/msg/trace-host-user-variables/trace-host-user-variables
 examples/s4u/app-masterworker/s4u_app-masterworker
 examples/s4u/app-token-ring/s4u_app-token-ring
 examples/s4u/actions-comm/s4u_actions-comm
+examples/s4u/actions-storage/s4u_actions-storage
+examples/s4u/actor-create/s4u_actor-create
+examples/s4u/actor-kill/s4u_actor-kill
+examples/s4u/actor-migration/s4u_actor-migration
+examples/s4u/actor-suspend/s4u_actor-suspend
 examples/s4u/basic/s4u_basic
 examples/s4u/basic/s4u_basic_deployment
 examples/s4u/basic/s4u_basic_function

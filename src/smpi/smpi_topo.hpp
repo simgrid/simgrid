@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
+/* Copyright (c) 2010-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -9,11 +9,21 @@
 
 #include "private.h"
 
+typedef enum MPIR_Topo_type {
+  MPI_GRAPH=1,
+  MPI_CART=2,
+  MPI_DIST_GRAPH=3,
+  MPI_INVALID_TOPO=-1
+} MPIR_Topo_type;
+
+typedef SMPI_Topology *MPI_Topology;
 
 namespace simgrid{
 namespace smpi{
 
 class Topo {
+  public:
+    virtual ~Topo()=default;
   protected:
   MPI_Comm comm_;
 };
@@ -36,6 +46,7 @@ class Topo_Cart: public Topo {
     int rank(int* coords, int* rank);
     int shift(int direction, int disp, int *rank_source, int *rank_dest) ;
     int dim_get(int *ndims);
+    static int Dims_create(int nnodes, int ndims, int dims[]);
 };
 
 
@@ -63,11 +74,6 @@ class Topo_Dist_Graph: public Topo {
     Topo_Dist_Graph();
     ~Topo_Dist_Graph();
 };
-
-/*
- * This is a utility function, no need to have anything in the lower layer for this at all
- */
-extern int Dims_create(int nnodes, int ndims, int dims[]);
 
 }
 }

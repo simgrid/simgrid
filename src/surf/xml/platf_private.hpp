@@ -11,8 +11,9 @@
 
 #include "simgrid/host.h"
 #include "src/surf/xml/platf.hpp"
-#include <vector>
+#include <map>
 #include <string>
+#include <vector>
 
 SG_BEGIN_DECL()
 #include "src/surf/xml/simgrid_dtd.h"
@@ -139,7 +140,7 @@ typedef struct {
   const char* content;
   const char* content_type;
   xbt_dict_t properties;
-  xbt_dict_t model_properties;
+  std::map<std::string, std::string>* model_properties;
   sg_size_t size;
 } s_sg_platf_storage_type_cbarg_t, *sg_platf_storage_type_cbarg_t;
 

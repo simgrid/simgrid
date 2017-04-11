@@ -419,9 +419,9 @@ int remote_find_successor(node_t node, int ask_to, int id)
         //   }
   // That explained the bug in a snap, with a very cool example and everything.
   //
-  // This MC_assert is now desactivated as the case is now properly handled in our code and we don't want the
+  // This MC_assert is now deactivated as the case is now properly handled in our code and we don't want the
   //   MC to fail any further under that condition, but this comment is here to as a memorial for this first
-  //   brillant victory of the model-checking in the SimGrid community :)
+  //   brilliant victory of the model-checking in the SimGrid community :)
 
         if (task_received != task_sent ||
             ans_data->type != TASK_FIND_SUCCESSOR_ANSWER) {

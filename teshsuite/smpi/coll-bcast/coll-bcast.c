@@ -9,7 +9,9 @@
 
 int main(int argc, char **argv)
 {
-  int i, size, rank;
+  int i;
+  int size;
+  int rank;
   int count = 2048;
 
   MPI_Init(&argc, &argv);

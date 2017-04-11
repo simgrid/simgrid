@@ -99,8 +99,10 @@ extern int MSG_STORAGE_LEVEL;
 typedef xbt_dictelm_t msg_storage_t;
 
 struct msg_storage_priv  {
-  const char *hostname;
-  void *data;
+  const char* name;
+  const char* hostname;
+  sg_size_t size;
+  void* data;
 };
 typedef struct msg_storage_priv  s_msg_storage_priv_t;
 typedef struct msg_storage_priv* msg_storage_priv_t;
@@ -224,7 +226,6 @@ XBT_PUBLIC(msg_error_t) MSG_storage_set_data(msg_storage_t host, void *data);
 XBT_PUBLIC(void *) MSG_storage_get_data(msg_storage_t storage);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_content(msg_storage_t storage);
 XBT_PUBLIC(sg_size_t) MSG_storage_get_size(msg_storage_t storage);
-XBT_PUBLIC(msg_error_t) MSG_storage_file_move(msg_file_t fd, msg_host_t dest, char* mount, char* fullname);
 XBT_PUBLIC(const char *) MSG_storage_get_host(msg_storage_t storage);
 
 /************************** Host handling ***********************************/
@@ -245,15 +246,13 @@ XBT_PUBLIC(void) MSG_host_get_process_list(msg_host_t h, xbt_dynar_t whereto);
 XBT_PUBLIC(int) MSG_host_is_on(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_off(msg_host_t h);
 
-// deprecated
-XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h);
-
+XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h); /* deprecated */
 
 XBT_PUBLIC(double) MSG_host_get_power_peak_at(msg_host_t h, int pstate);
-XBT_PUBLIC(double) MSG_host_get_current_power_peak(msg_host_t h);
+#define MSG_host_get_current_power_peak(h) MSG_host_get_speed(h) /* deprecated */
 XBT_PUBLIC(int)    MSG_host_get_nb_pstates(msg_host_t h);
-#define MSG_host_get_pstate(h)         sg_host_get_pstate(h)
-#define MSG_host_set_pstate(h, pstate) sg_host_set_pstate(h, pstate)
+#define MSG_host_get_pstate(h)         sg_host_get_pstate(h)         /* deprecated */
+#define MSG_host_set_pstate(h, pstate) sg_host_set_pstate(h, pstate) /* deprecated */
 XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar();
 XBT_PUBLIC(int) MSG_get_host_number();
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_mounted_storage_list(msg_host_t host);
@@ -503,4 +502,11 @@ XBT_PUBLIC(smx_context_t) MSG_process_get_smx_ctx(msg_process_t process);
 
 
 SG_END_DECL()
+
+#ifdef __cplusplus
+XBT_PUBLIC(msg_process_t)
+MSG_process_create_from_stdfunc(const char* name, std::function<void()> code, void* data, msg_host_t host,
+                                xbt_dict_t properties);
+#endif
+
 #endif

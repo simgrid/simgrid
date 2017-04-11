@@ -247,7 +247,7 @@ void sg_instr_new_host(simgrid::s4u::Host& host)
       speed = PJ_type_variable_new ("power", nullptr, container->type);
     }
 
-    double current_speed_state = host.getPstateSpeedCurrent();
+    double current_speed_state = host.speed();
     new_pajeSetVariable (0, container, speed, current_speed_state);
   }
   if (TRACE_uncategorized()){

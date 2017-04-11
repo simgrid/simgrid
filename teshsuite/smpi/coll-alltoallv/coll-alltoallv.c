@@ -46,9 +46,9 @@
 
 static void print_buffer_int(void *buf, int len, char *msg, int rank)
 {
-  int tmp, *v;
+  int* v;
   printf("[%d] %s (#%d): ", rank, msg, len);
-  for (tmp = 0; tmp < len; tmp++) {
+  for (int tmp = 0; tmp < len; tmp++) {
     v = buf;
     printf("[%d]", v[tmp]);
   }
@@ -59,8 +59,9 @@ static void print_buffer_int(void *buf, int len, char *msg, int rank)
 int main(int argc, char **argv)
 {
   MPI_Comm comm;
-  int *sbuf, *rbuf;
-  int i,rank, size;
+  int i;
+  int rank;
+  int size;
   int *sendcounts, *recvcounts, *rdispls, *sdispls;
 
   MPI_Init(&argc, &argv);
@@ -70,8 +71,8 @@ int main(int argc, char **argv)
   /* Create the buffer */
   MPI_Comm_size(comm, &size);
   MPI_Comm_rank(comm, &rank);
-  sbuf = (int *) xbt_malloc(size * size * sizeof(int));
-  rbuf = (int *) xbt_malloc(size * size * sizeof(int));
+  int* sbuf = (int *) xbt_malloc(size * size * sizeof(int));
+  int* rbuf = (int *) xbt_malloc(size * size * sizeof(int));
 
   /* Load up the buffers */
   for (i = 0; i < size * size; i++) {

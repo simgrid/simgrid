@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2015. The SimGrid Team.
+/* Copyright (c) 2006-2015, 2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -7,14 +7,12 @@
 #ifndef INCLUDE_SIMGRID_S4U_STORAGE_HPP_
 #define INCLUDE_SIMGRID_S4U_STORAGE_HPP_
 
-#include <string>
-
-#include <boost/unordered_map.hpp>
-
-#include <xbt/base.h>
-
-#include <simgrid/simix.h>
+#include <map>
 #include <simgrid/s4u/forward.hpp>
+#include <simgrid/simix.h>
+#include <string>
+#include <unordered_map>
+#include <xbt/base.h>
 
 namespace simgrid {
 namespace s4u {
@@ -23,26 +21,24 @@ XBT_PUBLIC_CLASS Storage {
   friend s4u::Engine;
 
   Storage(std::string name, smx_storage_t inferior);
-  virtual ~Storage();
 
 public:
+  Storage() = default;
+  virtual ~Storage();
   /** Retrieve a Storage by its name. It must exist in the platform file */
   static Storage &byName(const char* name);
   const char *name();
+  const char* host();
   sg_size_t sizeFree();
   sg_size_t sizeUsed();
   /** Retrieve the total amount of space of this storage element */
   sg_size_t size();
+  xbt_dict_t properties();
+  const char* property(const char* key);
+  void setProperty(const char* key, char* value);
+  std::map<std::string, sg_size_t*>* content();
+  std::unordered_map<std::string, Storage*>* allStorages();
 
-  /* TODO: missing API:
-XBT_PUBLIC(xbt_dict_t) MSG_storage_get_properties(msg_storage_t storage);
-XBT_PUBLIC(void) MSG_storage_set_property_value(msg_storage_t storage, const char *name, char *value,void_f_pvoid_t free_ctn);
-XBT_PUBLIC(const char *)MSG_storage_get_property_value(msg_storage_t storage, const char *name);
-XBT_PUBLIC(xbt_dynar_t) MSG_storages_as_dynar(void);
-XBT_PUBLIC(xbt_dict_t) MSG_storage_get_content(msg_storage_t storage);
-XBT_PUBLIC(msg_error_t) MSG_storage_file_move(msg_file_t fd, msg_host_t dest, char* mount, char* fullname);
-XBT_PUBLIC(const char *) MSG_storage_get_host(msg_storage_t storage);
-   */
 protected:
   smx_storage_t inferior();
 
@@ -51,11 +47,13 @@ public:
   void *userdata() {return userdata_;}
   
 private:
-  static boost::unordered_map<std::string, Storage *> *storages_;
+  static std::unordered_map<std::string, Storage*>* storages_;
 
+  std::string hostname_;
   std::string name_;
+  sg_size_t size_      = 0;
   smx_storage_t pimpl_ = nullptr;
-  void *userdata_ = nullptr;
+  void* userdata_      = nullptr;
 };
 
 } /* namespace s4u */

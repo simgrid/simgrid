@@ -20,8 +20,8 @@ typedef struct {
 
   char *data;
   void_f_pvoid_t free_f;
-} s_xbt_matrix_t, *xbt_matrix_t;
-
+} s_xbt_matrix_t;
+typedef s_xbt_matrix_t* xbt_matrix_t;
 
   /** @brief Retrieve the address of a cell (not its content)
    *  @hideinitializer */

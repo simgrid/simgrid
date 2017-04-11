@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/msg/msg_private.h"
-#include "xbt/replay.h"
+#include "xbt/replay.hpp"
 
 #include <errno.h>
 
@@ -14,13 +14,12 @@ SG_BEGIN_DECL()
 
 void MSG_action_init()
 {
-  _xbt_replay_action_init();
-  MSG_function_register_default(xbt_replay_action_runner);
+  MSG_function_register_default(simgrid::xbt::replay_runner);
 }
 
 void MSG_action_exit()
 {
-  _xbt_replay_action_exit();
+  // Nothing to do anymore here
 }
 
 /** \ingroup msg_trace_driven
@@ -31,31 +30,25 @@ void MSG_action_exit()
  */
 msg_error_t MSG_action_trace_run(char *path)
 {
-  msg_error_t res;
-  char *name;
-  xbt_dynar_t todo;
-  xbt_dict_cursor_t cursor;
-
-  xbt_action_fp=nullptr;
   if (path) {
-    xbt_action_fp = fopen(path, "r");
-    xbt_assert(xbt_action_fp != nullptr, "Cannot open %s: %s", path, strerror(errno));
+    simgrid::xbt::action_fs = new std::ifstream(path, std::ifstream::in);
   }
-  res = MSG_main();
 
-  if (!xbt_dict_is_empty(xbt_action_queues)) {
+  msg_error_t res = MSG_main();
+
+  if (!simgrid::xbt::action_queues.empty()) {
     XBT_WARN("Not all actions got consumed. If the simulation ended successfully (without deadlock),"
              " you may want to add new processes to your deployment file.");
 
-    xbt_dict_foreach(xbt_action_queues, cursor, name, todo) {
-      XBT_WARN("Still %lu actions for %s", xbt_dynar_length(todo), name);
+    for (auto actions_of : simgrid::xbt::action_queues) {
+      XBT_WARN("Still %zu actions for %s", actions_of.second->size(), actions_of.first.c_str());
     }
   }
 
-  if (path)
-    fclose(xbt_action_fp);
-  xbt_dict_free(&xbt_action_queues);
-  xbt_action_queues = xbt_dict_new_homogeneous(nullptr);
+  if (path) {
+    delete simgrid::xbt::action_fs;
+    simgrid::xbt::action_fs = nullptr;
+  }
 
   return res;
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, 2013-2015. The SimGrid Team.
+/* Copyright (c) 2010, 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -39,7 +39,7 @@ class Request : public F2C{
     int refcount_;
     MPI_Op op_;
   public:
-    Request();
+    Request()=default;
     Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags);
     MPI_Comm comm();
     MPI_Datatype old_type();

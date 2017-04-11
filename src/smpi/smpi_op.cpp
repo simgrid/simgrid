@@ -18,8 +18,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_op, smpi, "Logging specific to SMPI (op)");
 #define BAND_OP(a, b) (b) &= (a)
 #define BOR_OP(a, b)  (b) |= (a)
 #define BXOR_OP(a, b) (b) ^= (a)
-#define MAXLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (b) : (a)
-#define MINLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (a) : (b)
+#define MAXLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (b) : ((a.value) == (b.value) ? ((a.index) < (b.index) ? (a) : (b)) : (a))
+#define MINLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (a) : ((a.value) == (b.value) ? ((a.index) < (b.index) ? (a) : (b)) : (b))
 
 #define APPLY_FUNC(a, b, length, type, func) \
 {                                          \
@@ -188,6 +188,11 @@ static void replace_func(void *a, void *b, int *length, MPI_Datatype * datatype)
   memcpy(b, a, *length * (*datatype)->size());
 }
 
+static void no_func(void *a, void *b, int *length, MPI_Datatype * datatype)
+{
+  /* obviously a no-op */
+}
+
 #define CREATE_MPI_OP(name, func)                             \
   static SMPI_Op mpi_##name (&(func) /* func */, true ); \
 MPI_Op name = &mpi_##name;
@@ -205,6 +210,7 @@ CREATE_MPI_OP(MPI_BXOR, bxor_func);
 CREATE_MPI_OP(MPI_MAXLOC, maxloc_func);
 CREATE_MPI_OP(MPI_MINLOC, minloc_func);
 CREATE_MPI_OP(MPI_REPLACE, replace_func);
+CREATE_MPI_OP(MPI_NO_OP, no_func);
 
 namespace simgrid{
 namespace smpi{
@@ -234,13 +240,14 @@ void Op::apply(void *invec, void *inoutvec, int *len, MPI_Datatype datatype)
 {
   if(smpi_privatize_global_variables){//we need to switch as the called function may silently touch global variables
     XBT_DEBUG("Applying operation, switch to the right data frame ");
-    smpi_switch_data_segment(smpi_process_index());
+    smpi_switch_data_segment(smpi_process()->index());
   }
 
-  if(!smpi_process_get_replaying()){
+  if(!smpi_process()->replaying() && *len > 0){
     if(! is_fortran_op_)
       this->func_(invec, inoutvec, len, &datatype);
     else{
+      XBT_DEBUG("Applying operation of length %d from %p and from/to %p", *len, invec, inoutvec);
       int tmp = datatype->c2f();
       /* Unfortunately, the C and Fortran version of the MPI standard do not agree on the type here,
          thus the reinterpret_cast. */

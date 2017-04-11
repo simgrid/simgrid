@@ -5,6 +5,7 @@
 
 #include "simgrid/s4u/host.hpp"
 #include "src/msg/msg_private.h"
+#include "src/surf/storage_interface.hpp"
 #include <numeric>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg, "Logging specific to MSG (io)");
@@ -443,12 +444,14 @@ void __MSG_file_destroy(msg_file_priv_t file) {
 
 msg_storage_t __MSG_storage_create(smx_storage_t storage)
 {
-  const char *name = SIMIX_storage_get_name(storage);
-  const char *host = SIMIX_storage_get_host(storage);
   msg_storage_priv_t storage_private = xbt_new0(s_msg_storage_priv_t, 1);
-  storage_private->hostname = host;
-  xbt_lib_set(storage_lib,name,MSG_STORAGE_LEVEL,storage_private);
-  return xbt_lib_get_elm_or_null(storage_lib, name);
+
+  storage_private->name     = SIMIX_storage_get_name(storage);
+  storage_private->hostname = surf_storage_get_host(storage);
+  storage_private->size     = surf_storage_get_size(storage);
+
+  xbt_lib_set(storage_lib, storage_private->name, MSG_STORAGE_LEVEL, storage_private);
+  return xbt_lib_get_elm_or_null(storage_lib, storage_private->name);
 }
 
 /**
@@ -466,7 +469,8 @@ void __MSG_storage_destroy(msg_storage_priv_t storage) {
  */
 const char *MSG_storage_get_name(msg_storage_t storage) {
   xbt_assert((storage != nullptr), "Invalid parameters");
-  return SIMIX_storage_get_name(storage);
+  msg_storage_priv_t priv = MSG_storage_priv(storage);
+  return priv->name;
 }
 
 /** \ingroup msg_storage_management
@@ -475,7 +479,7 @@ const char *MSG_storage_get_name(msg_storage_t storage) {
  * \return the free space size of the storage element (as a #sg_size_t)
  */
 sg_size_t MSG_storage_get_free_size(msg_storage_t storage){
-  return simcall_storage_get_free_size(storage);
+  return simgrid::simix::kernelImmediate([storage] { return surf_storage_resource_priv(storage)->getFreeSize(); });
 }
 
 /** \ingroup msg_storage_management
@@ -484,7 +488,7 @@ sg_size_t MSG_storage_get_free_size(msg_storage_t storage){
  * \return the used space size of the storage element (as a #sg_size_t)
  */
 sg_size_t MSG_storage_get_used_size(msg_storage_t storage){
-  return simcall_storage_get_used_size(storage);
+  return simgrid::simix::kernelImmediate([storage] { return surf_storage_resource_priv(storage)->getUsedSize(); });
 }
 
 /** \ingroup msg_storage_management
@@ -583,7 +587,14 @@ void *MSG_storage_get_data(msg_storage_t storage)
  */
 xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
 {
-  return SIMIX_storage_get_content(storage);
+  std::map<std::string, sg_size_t*>* content =
+      simgrid::simix::kernelImmediate([storage] { return surf_storage_resource_priv(storage)->getContent(); });
+  xbt_dict_t content_dict = xbt_dict_new_homogeneous(nullptr);
+
+  for (auto entry : *content) {
+    xbt_dict_set(content_dict, entry.first.c_str(), entry.second, nullptr);
+  }
+  return content_dict;
 }
 
 /** \ingroup msg_storage_management
@@ -594,7 +605,8 @@ xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
  */
 sg_size_t MSG_storage_get_size(msg_storage_t storage)
 {
-  return SIMIX_storage_get_size(storage);
+  msg_storage_priv_t priv = MSG_storage_priv(storage);
+  return priv->size;
 }
 
 /** \ingroup msg_storage_management

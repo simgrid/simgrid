@@ -13,7 +13,7 @@
 
 #include "src/kernel/context/Context.hpp"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor,"S4U actors");
+XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor, "S4U actors");
 
 namespace simgrid {
 namespace s4u {
@@ -52,6 +52,16 @@ void Actor::setAutoRestart(bool autorestart) {
   simcall_process_auto_restart_set(pimpl_,autorestart);
 }
 
+void Actor::onExit(int_f_pvoid_pvoid_t fun, void* data)
+{
+  simcall_process_on_exit(pimpl_, fun, data);
+}
+
+void Actor::migrate(Host* new_host)
+{
+  simcall_process_set_host(pimpl_, new_host);
+}
+
 s4u::Host* Actor::host()
 {
   return this->pimpl_->host;
@@ -75,6 +85,21 @@ int Actor::pid()
 int Actor::ppid()
 {
   return this->pimpl_->ppid;
+}
+
+void Actor::suspend()
+{
+  simcall_process_suspend(pimpl_);
+}
+
+void Actor::resume()
+{
+  simcall_process_resume(pimpl_);
+}
+
+int Actor::isSuspended()
+{
+  return simcall_process_is_suspended(pimpl_);
 }
 
 void Actor::setKillTime(double time) {
@@ -116,8 +141,14 @@ ActorPtr Actor::byPid(int pid)
     return ActorPtr();
 }
 
-void Actor::killAll() {
+void Actor::killAll()
+{
   simcall_process_killall(1);
+}
+
+void Actor::killAll(int resetPid)
+{
+  simcall_process_killall(resetPid);
 }
 
 // ***** this_actor *****
@@ -150,12 +181,32 @@ void* recv(MailboxPtr chan) {
   return res;
 }
 
-void send(MailboxPtr chan, void *payload, size_t simulatedSize) {
+void send(MailboxPtr chan, void* payload, double simulatedSize)
+{
   Comm& c = Comm::send_init(chan);
   c.setRemains(simulatedSize);
   c.setSrcData(payload);
   // c.start() is optional.
   c.wait();
+}
+
+void send(MailboxPtr chan, void* payload, double simulatedSize, double timeout)
+{
+  Comm& c = Comm::send_init(chan);
+  c.setRemains(simulatedSize);
+  c.setSrcData(payload);
+  // c.start() is optional.
+  c.wait(timeout);
+}
+
+Comm& isend(MailboxPtr chan, void* payload, double simulatedSize)
+{
+  return Comm::send_async(chan, payload, simulatedSize);
+}
+
+Comm& irecv(MailboxPtr chan, void** data)
+{
+  return Comm::recv_async(chan, data);
 }
 
 int pid()
@@ -171,6 +222,41 @@ int ppid()
 std::string name()
 {
   return SIMIX_process_self()->name;
+}
+
+Host* host()
+{
+  return SIMIX_process_self()->host;
+}
+
+void suspend()
+{
+  simcall_process_suspend(SIMIX_process_self());
+}
+
+void resume()
+{
+  simcall_process_resume(SIMIX_process_self());
+}
+
+int isSuspended()
+{
+  return simcall_process_is_suspended(SIMIX_process_self());
+}
+
+void kill()
+{
+  simcall_process_kill(SIMIX_process_self());
+}
+
+void onExit(int_f_pvoid_pvoid_t fun, void* data)
+{
+  simcall_process_on_exit(SIMIX_process_self(), fun, data);
+}
+
+void migrate(Host* new_host)
+{
+  simcall_process_set_host(SIMIX_process_self(), new_host);
 }
 }
 }

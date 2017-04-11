@@ -1,5 +1,4 @@
-/* Copyright (c) 2006-2014, 2016. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -14,12 +13,10 @@ public class PingPongTask extends Task {
     this.timeVal = 0;
   }
 
-  public PingPongTask(String name, double computeDuration, double messageSize) {
+  public PingPongTask(String name, double computeDuration, double messageSize, double timeVal) {
     super(name,computeDuration,messageSize);
-  }
-
-  public void setTime(double timeVal) {
-    this.timeVal = timeVal;
+    
+    this.timeVal = timeVal;    
   }
 
   public double getTime() {

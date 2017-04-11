@@ -13,12 +13,11 @@
 #include <time.h>
 #endif
 
+#include <simgrid/datatypes.h>
+#include <smpi/forward.hpp>
 #include <stddef.h>
-#include <xbt/misc.h>
 #include <xbt/function_types.h>
-#include "simgrid/datatypes.h"
-
-#include "smpi/forward.hpp"
+#include <xbt/misc.h>
 
 #ifdef _WIN32
 #define MPI_CALL(type,name,args) \
@@ -202,6 +201,10 @@ SG_BEGIN_DECL()
 #define MPI_SEEK_END            604
 #define MPI_MAX_DATAREP_STRING  128
 
+#define MPI_WIN_BASE -1
+#define MPI_WIN_SIZE -2
+#define MPI_WIN_DISP_UNIT -3
+
 // FIXME : used nowhere...
 typedef enum MPIR_Combiner_enum{
   MPI_COMBINER_NAMED,
@@ -225,12 +228,6 @@ typedef enum MPIR_Combiner_enum{
   MPI_COMBINER_HINDEXED_BLOCK
 }MPIR_Combiner_enum;
 
-typedef enum MPIR_Topo_type {
-  MPI_GRAPH=1,
-  MPI_CART=2,
-  MPI_DIST_GRAPH=3,
-  MPI_INVALID_TOPO=-1
-} MPIR_Topo_type;
 
 typedef ptrdiff_t MPI_Aint;
 typedef long long MPI_Offset;
@@ -319,13 +316,13 @@ XBT_PUBLIC_DATA( const MPI_Datatype ) MPI_INTEGER16;
 
 //defines for fortran compatibility
 #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
-  #define MPI_INTEGER MPI_INT
-  #define MPI_2INTEGER MPI_2INT
-  #define MPI_LOGICAL MPI_INT
+#define MPI_INTEGER MPI_INT
+#define MPI_2INTEGER MPI_2INT
+#define MPI_LOGICAL MPI_INT
 #else
-  #define MPI_INTEGER MPI_LONG
-  #define MPI_2INTEGER MPI_2LONG
-  #define MPI_LOGICAL MPI_LONG
+#define MPI_INTEGER MPI_LONG
+#define MPI_2INTEGER MPI_2LONG
+#define MPI_LOGICAL MPI_LONG
 #endif
 
 #define MPI_Fint int
@@ -359,8 +356,7 @@ XBT_PUBLIC_DATA( MPI_Op ) MPI_BOR;
 XBT_PUBLIC_DATA( MPI_Op ) MPI_BXOR;
 //For accumulate
 XBT_PUBLIC_DATA( MPI_Op ) MPI_REPLACE;
-
-typedef SMPI_Topology *MPI_Topology;
+XBT_PUBLIC_DATA( MPI_Op ) MPI_NO_OP;
 
 typedef SMPI_Group* MPI_Group;
 
@@ -378,6 +374,25 @@ typedef SMPI_Request *MPI_Request;
 
 #define MPI_REQUEST_NULL ((MPI_Request)NULL)
 #define MPI_FORTRAN_REQUEST_NULL -1
+
+typedef int MPI_Copy_function(MPI_Comm oldcomm, int keyval, void* extra_state, void* attribute_val_in,
+                              void* attribute_val_out, int* flag);
+typedef int MPI_Delete_function(MPI_Comm comm, int keyval, void* attribute_val, void* extra_state);
+#define MPI_Comm_copy_attr_function MPI_Copy_function
+#define MPI_Comm_delete_attr_function MPI_Delete_function
+typedef int MPI_Type_copy_attr_function(MPI_Datatype type, int keyval, void* extra_state, void* attribute_val_in,
+                              void* attribute_val_out, int* flag);
+typedef int MPI_Type_delete_attr_function(MPI_Datatype type, int keyval, void* attribute_val, void* extra_state);
+typedef int MPI_Win_copy_attr_function(MPI_Win win, int keyval, void* extra_state, void* attribute_val_in,
+                              void* attribute_val_out, int* flag);
+typedef int MPI_Win_delete_attr_function(MPI_Win win, int keyval, void* attribute_val, void* extra_state);
+#define MPI_COMM_NULL_COPY_FN ((MPI_Comm_copy_attr_function*)0)
+#define MPI_COMM_NULL_DELETE_FN ((MPI_Comm_delete_attr_function*)0)
+#define MPI_TYPE_NULL_COPY_FN ((MPI_Type_copy_attr_function*)0)
+#define MPI_TYPE_NULL_DELETE_FN ((MPI_Type_delete_attr_function*)0)
+#define MPI_WIN_NULL_COPY_FN ((MPI_Win_copy_attr_function*)0)
+#define MPI_WIN_NULL_DELETE_FN ((MPI_Win_delete_attr_function*)0)
+
 
 MPI_CALL(XBT_PUBLIC(int), MPI_Init, (int *argc, char ***argv));
 MPI_CALL(XBT_PUBLIC(int), MPI_Finalize, (void));
@@ -425,6 +440,7 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Type_contiguous, (int count, MPI_Datatype old_type
 MPI_CALL(XBT_PUBLIC(int), MPI_Testall, (int count, MPI_Request* requests, int* flag, MPI_Status* statuses));
 MPI_CALL(XBT_PUBLIC(int), MPI_Op_create, (MPI_User_function * function, int commute, MPI_Op * op));
 MPI_CALL(XBT_PUBLIC(int), MPI_Op_free, (MPI_Op * op));
+MPI_CALL(XBT_PUBLIC(int), MPI_Op_commutative, (MPI_Op op, int *commute));
 
 MPI_CALL(XBT_PUBLIC(int), MPI_Group_free, (MPI_Group * group));
 MPI_CALL(XBT_PUBLIC(int), MPI_Group_size, (MPI_Group group, int *size));
@@ -521,10 +537,25 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Reduce_local,(void *inbuf, void *inoutbuf, int cou
 MPI_CALL(XBT_PUBLIC(int), MPI_Win_free,( MPI_Win* win));
 MPI_CALL(XBT_PUBLIC(int), MPI_Win_create,( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
                               MPI_Win *win));
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_allocate,( MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, void *base,
+                              MPI_Win *win));
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_create_dynamic,( MPI_Info info, MPI_Comm comm,
+                              MPI_Win *win));
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_attach,(MPI_Win win, void *base, MPI_Aint size));
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_detach,(MPI_Win win, void *base));
 MPI_CALL(XBT_PUBLIC(int), MPI_Win_set_name,(MPI_Win  win, char * name));
 MPI_CALL(XBT_PUBLIC(int), MPI_Win_get_name,(MPI_Win  win, char * name, int* len));
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_set_info,(MPI_Win  win, MPI_Info info));
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_get_info,(MPI_Win  win, MPI_Info* info));
 MPI_CALL(XBT_PUBLIC(int), MPI_Win_get_group,(MPI_Win  win, MPI_Group * group));
 MPI_CALL(XBT_PUBLIC(int), MPI_Win_fence,( int assert,  MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_get_attr, (MPI_Win type, int type_keyval, void *attribute_val, int* flag));
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_set_attr, (MPI_Win type, int type_keyval, void *att));
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_delete_attr, (MPI_Win type, int comm_keyval));
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_create_keyval,(MPI_Win_copy_attr_function* copy_fn,
+                              MPI_Win_delete_attr_function* delete_fn, int* keyval, void* extra_state));
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_free_keyval,(int* keyval));
+
 
 MPI_CALL(XBT_PUBLIC(int), MPI_Get,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
     MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win));
@@ -532,6 +563,25 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Put,( void *origin_addr, int origin_count, MPI_Dat
     MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win));
 MPI_CALL(XBT_PUBLIC(int), MPI_Accumulate,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     int target_rank, MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int), MPI_Get_accumulate,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, 
+    void* result_addr, int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, 
+    int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win));
+
+MPI_CALL(XBT_PUBLIC(int), MPI_Rget,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+    MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win, MPI_Request* request));
+MPI_CALL(XBT_PUBLIC(int), MPI_Rput,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+    MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win, MPI_Request* request));
+MPI_CALL(XBT_PUBLIC(int), MPI_Raccumulate,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
+    int target_rank, MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request));
+MPI_CALL(XBT_PUBLIC(int), MPI_Rget_accumulate,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, 
+    void* result_addr, int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, 
+    int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request));
+
+MPI_CALL(XBT_PUBLIC(int), MPI_Fetch_and_op,( void *origin_addr, void* result_addr, MPI_Datatype datatype,
+    int target_rank, MPI_Aint target_disp, MPI_Op op, MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int), MPI_Compare_and_swap, (void *origin_addr, void *compare_addr,
+        void *result_addr, MPI_Datatype datatype, int target_rank, MPI_Aint target_disp, MPI_Win win));
+
 MPI_CALL(XBT_PUBLIC(int), MPI_Alloc_mem, (MPI_Aint size, MPI_Info info, void *baseptr));
 MPI_CALL(XBT_PUBLIC(int), MPI_Free_mem, (void *base));
 
@@ -555,26 +605,15 @@ typedef void MPI_Handler_function(MPI_Comm*, int*, ...);
 
 typedef void* MPI_Errhandler;
 
-typedef int MPI_Copy_function(MPI_Comm oldcomm, int keyval, void* extra_state, void* attribute_val_in,
-                              void* attribute_val_out, int* flag);
-typedef int MPI_Delete_function(MPI_Comm comm, int keyval, void* attribute_val, void* extra_state);
-#define MPI_Comm_copy_attr_function MPI_Copy_function
-#define MPI_Comm_delete_attr_function MPI_Delete_function
-typedef int MPI_Type_copy_attr_function(MPI_Datatype type, int keyval, void* extra_state, void* attribute_val_in,
-                              void* attribute_val_out, int* flag);
-typedef int MPI_Type_delete_attr_function(MPI_Datatype type, int keyval, void* attribute_val, void* extra_state);
 typedef void MPI_Comm_errhandler_function(MPI_Comm *, int *, ...);
 typedef int MPI_Grequest_query_function(void *extra_state, MPI_Status *status); 
 typedef int MPI_Grequest_free_function(void *extra_state); 
 typedef int MPI_Grequest_cancel_function(void *extra_state, int complete); 
 #define MPI_DUP_FN MPI_Comm_dup
-#define MPI_COMM_NULL_COPY_FN ((MPI_Comm_copy_attr_function*)0)
-#define MPI_COMM_NULL_DELETE_FN ((MPI_Comm_delete_attr_function*)0)
-#define MPI_COMM_DUP_FN  ((MPI_Comm_copy_attr_function *)MPI_DUP_FN)
-#define MPI_TYPE_NULL_COPY_FN ((MPI_Type_copy_attr_function*)0)
-#define MPI_TYPE_NULL_DELETE_FN ((MPI_Type_delete_attr_function*)0)
-#define MPI_TYPE_DUP_FN ((MPI_Type_copy_attr_function*)MPI_DUP_FN)
 
+#define MPI_WIN_DUP_FN ((MPI_Win_copy_attr_function*)MPI_DUP_FN)
+#define MPI_TYPE_DUP_FN ((MPI_Type_copy_attr_function*)MPI_DUP_FN)
+#define MPI_COMM_DUP_FN  ((MPI_Comm_copy_attr_function *)MPI_DUP_FN)
 typedef MPI_Comm_errhandler_function MPI_Comm_errhandler_fn;
 #define MPI_INFO_ENV 1
 XBT_PUBLIC_DATA( const MPI_Datatype )  MPI_PACKED;
@@ -737,13 +776,21 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Comm_spawn_multiple,(int count, char **array_of_co
                                                    MPI_Comm comm, MPI_Comm *intercomm, int* array_of_errcodes));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_get_parent,( MPI_Comm *parent));
 MPI_CALL(XBT_PUBLIC(int),  MPI_Win_complete,(MPI_Win win));
-MPI_CALL(XBT_PUBLIC(int),  MPI_Win_lock,(int lock_type, int rank, int assert, MPI_Win win));
+
 MPI_CALL(XBT_PUBLIC(int),  MPI_Win_post,(MPI_Group group, int assert, MPI_Win win));
 MPI_CALL(XBT_PUBLIC(int),  MPI_Win_start,(MPI_Group group, int assert, MPI_Win win));
 MPI_CALL(XBT_PUBLIC(int),  MPI_Win_test,(MPI_Win win, int *flag));
-MPI_CALL(XBT_PUBLIC(int),  MPI_Win_unlock,(int rank, MPI_Win win));
 MPI_CALL(XBT_PUBLIC(int),  MPI_Win_wait,(MPI_Win win));
 
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_lock,(int lock_type, int rank, int assert, MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_lock_all,(int assert, MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_unlock,(int rank, MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_unlock_all,(MPI_Win win));
+
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_flush,(int rank, MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_flush_local,(int rank, MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_flush_all,(MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_flush_local_all,(MPI_Win win));
 
 MPI_CALL(XBT_PUBLIC(int),  MPI_File_get_errhandler , (MPI_File file, MPI_Errhandler *errhandler));
 MPI_CALL(XBT_PUBLIC(int),  MPI_File_set_errhandler, (MPI_File file, MPI_Errhandler errhandler));
@@ -850,6 +897,7 @@ XBT_PUBLIC(void) smpi_trace_set_call_location__(const char *file, int* line);
 #define SMPI_SAMPLE_DELAY(duration) for(smpi_execute(duration); 0; )
 #define SMPI_SAMPLE_FLOPS(flops) for(smpi_execute_flops(flops); 0; )
 
+XBT_PUBLIC(int) smpi_is_shared(void *buf);
 XBT_PUBLIC(void *) smpi_shared_malloc(size_t size, const char *file, int line);
 #define SMPI_SHARED_MALLOC(size) smpi_shared_malloc(size, __FILE__, __LINE__)
 

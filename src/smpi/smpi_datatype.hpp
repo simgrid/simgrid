@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2010, 2012-2014. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2012-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -10,6 +10,7 @@
 #include <xbt/base.h>
 
 #include "private.h"
+
 
 #define DT_FLAG_DESTROYED     0x0001  /**< user destroyed but some other layers still have a reference */
 #define DT_FLAG_COMMITED      0x0002  /**< ready to be used for a send/recv operation */
@@ -77,34 +78,38 @@ typedef struct {
 namespace simgrid{
 namespace smpi{
 
-class Datatype : public F2C{
-  protected:
+class Datatype : public F2C, public Keyval{
+  private:
     char* name_;
     size_t size_;
     MPI_Aint lb_;
     MPI_Aint ub_;
     int flags_;
-    xbt_dict_t attributes_;
     int refcount_;
+
   public:
-    static MPI_Datatype null_id_;
+    static std::unordered_map<int, smpi_key_elem> keyvals_;
+    static int keyval_id_;
 
     Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags);
     Datatype(char* name, int size,MPI_Aint lb, MPI_Aint ub, int flags);
     Datatype(Datatype *datatype, int* ret);
     virtual ~Datatype();
+
+    char* name();
+    size_t size();
+    MPI_Aint lb();
+    MPI_Aint ub();
+    int flags();
+    int refcount();
+
     void ref();
     static void unref(MPI_Datatype datatype);
     void commit();
     bool is_valid();
-    size_t size();
-    int flags();
     void addflag(int flag);
-    MPI_Aint lb();
-    MPI_Aint ub();
     int extent(MPI_Aint * lb, MPI_Aint * extent);
     MPI_Aint get_extent();
-    char* name();
     void get_name(char* name, int* length);
     void set_name(char* name);
     static int copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
@@ -113,9 +118,6 @@ class Datatype : public F2C{
                             int count);
     virtual void unserialize( void* contiguous, void *noncontiguous, 
                               int count, MPI_Op op);
-    int attr_delete(int keyval);
-    int attr_get(int keyval, void* attr_value, int* flag);
-    int attr_put(int keyval, void* attr_value);
     static int keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval, void* extra_state);
     static int keyval_free(int* keyval);
     int pack(void* inbuf, int incount, void* outbuf, int outcount, int* position, MPI_Comm comm);

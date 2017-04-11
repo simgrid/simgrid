@@ -1,144 +1,123 @@
-/* Copyright (c) 2010, 2012-2015. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2015, 2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/ex.hpp>
-#include "src/internal_config.h"
-#include "xbt/sysdep.h"
+#include "xbt/ex.hpp"
 #include "xbt/log.h"
-#include "xbt/str.h"
-#include "xbt/file.h"
-#include "xbt/replay.h"
+#include "xbt/replay.hpp"
 
-#include <errno.h>
-#include <ctype.h>
-#include <wchar.h>
+#include <boost/algorithm/string.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(replay,xbt,"Replay trace reader");
 
-typedef struct s_replay_reader {
-  FILE *fp;
-  char *line;
-  size_t line_len;
-  char *position; /* stable storage */
-  char *filename; 
-  int linenum;
-} s_xbt_replay_reader_t;
+namespace simgrid {
+namespace xbt {
 
-FILE *xbt_action_fp;
+std::ifstream* action_fs = nullptr;
+std::unordered_map<std::string, action_fun> action_funs;
 
-xbt_dict_t xbt_action_funs = nullptr;
-xbt_dict_t xbt_action_queues = nullptr;
-
-static char *action_line = nullptr;
-static size_t action_len = 0;
-
-int is_replay_active = 0 ;
-
-static char **action_get_action(char *name);
-
-static char *str_tolower (const char *str)
+static void read_and_trim_line(std::ifstream* fs, std::string* line)
 {
-  char *ret = xbt_strdup (str);
-  int n     = strlen(ret);
-  for (int i = 0; i < n; i++)
-    ret[i] = tolower (str[i]);
-  return ret;
+  do {
+    std::getline(*fs, *line);
+    boost::trim(*line);
+  } while (!fs->eof() && (line->length() == 0 || line->front() == '#'));
+  XBT_DEBUG("got from trace: %s", line->c_str());
 }
 
-int _xbt_replay_is_active(){
-  return is_replay_active;
-}
+class ReplayReader {
+  std::ifstream* fs;
+  std::string line;
 
-xbt_replay_reader_t xbt_replay_reader_new(const char *filename)
-{
-  xbt_replay_reader_t res = xbt_new0(s_xbt_replay_reader_t,1);
-  res->fp = fopen(filename, "r");
-  xbt_assert(res->fp != nullptr, "Cannot open %s: %s", filename, strerror(errno));
-  res->filename = xbt_strdup(filename);
-  return res;
-}
-
-const char **xbt_replay_reader_get(xbt_replay_reader_t reader)
-{
-  ssize_t read = xbt_getline(&reader->line, &reader->line_len, reader->fp);
-  XBT_DEBUG("got from trace: %s", reader->line);
-  reader->linenum++;
-  if (read==-1)
-    return nullptr; /* end of file */
-  char *comment = strchr(reader->line, '#');
-  if (comment != nullptr)
-    *comment = '\0';
-  xbt_str_trim(reader->line, nullptr);
-  if (reader->line[0] == '\0')
-    return xbt_replay_reader_get(reader); /* Get next line */
-
-  xbt_dynar_t d = xbt_str_split_quoted_in_place(reader->line);
-  if (xbt_dynar_is_empty(d)) {
-    xbt_dynar_free(&d);
-    return xbt_replay_reader_get(reader); /* Get next line */
+public:
+  explicit ReplayReader(const char* filename)
+  {
+    fs = new std::ifstream(filename, std::ifstream::in);
   }
-  return (const char**) xbt_dynar_to_array(d);
-}
-
-void xbt_replay_reader_free(xbt_replay_reader_t *reader)
-{
-  free((*reader)->filename);
-  free((*reader)->position);
-  fclose((*reader)->fp);
-  free((*reader)->line);
-  free(*reader);
-  *reader=nullptr;
-}
-
-/**
- * \ingroup XBT_replay
- * \brief Registers a function to handle a kind of action
- *
- * Registers a function to handle a kind of action
- * This table is then used by \ref xbt_replay_action_runner
- *
- * The argument of the function is the line describing the action, splitted on spaces with xbt_str_split_quoted()
- *
- * \param action_name the reference name of the action.
- * \param function prototype given by the type: void...(xbt_dynar_t action)
- */
-void xbt_replay_action_register(const char *action_name, action_fun function)
-{
-  if (xbt_action_funs == nullptr) // If the user registers a function before the start
-    _xbt_replay_action_init();
-
-  char* lowername = str_tolower (action_name);
-  if(xbt_dict_get_or_null(xbt_action_funs, lowername) == nullptr){// Do not replace existing actions
-    xbt_dict_set(xbt_action_funs, lowername, (void*) function, nullptr);
+  ~ReplayReader()
+  {
+    delete fs;
   }
-  xbt_free(lowername);
+  bool get(ReplayAction* action);
+};
+
+bool ReplayReader::get(ReplayAction* action)
+{
+  read_and_trim_line(fs, &line);
+
+  boost::split(*action, line, boost::is_any_of(" \t"), boost::token_compress_on);
+  return !fs->eof();
 }
 
-/** @brief Initializes the replay mechanism, and returns true if (and only if) it was necessary
- *
- * It returns false if it was already done by another process.
- */
-int _xbt_replay_action_init()
+static ReplayAction* get_action(char* name)
 {
-  if (xbt_action_funs)
-    return 0;
-  is_replay_active = 1;
-  xbt_action_funs = xbt_dict_new_homogeneous(nullptr);
-  xbt_action_queues = xbt_dict_new_homogeneous(nullptr);
-  return 1;
+  ReplayAction* action;
+
+  std::queue<ReplayAction*>* myqueue = nullptr;
+  if (action_queues.find(std::string(name)) != action_queues.end())
+    myqueue = action_queues.at(std::string(name));
+  if (myqueue == nullptr || myqueue->empty()) { // Nothing stored for me. Read the file further
+    // Read lines until I reach something for me (which breaks in loop body) or end of file reached
+    while (true) {
+      std::string action_line;
+      read_and_trim_line(action_fs, &action_line);
+      if (action_fs->eof())
+        break;
+      /* we cannot split in place here because we parse&store several lines for the colleagues... */
+      action = new ReplayAction();
+      boost::split(*action, action_line, boost::is_any_of(" \t"), boost::token_compress_on);
+
+      // if it's for me, I'm done
+      std::string evtname = action->front();
+      if (evtname.compare(name) == 0) {
+        return action;
+      } else {
+        // Else, I have to store it for the relevant colleague
+        std::queue<ReplayAction*>* otherqueue = nullptr;
+        if (action_queues.find(evtname) != action_queues.end())
+          otherqueue = action_queues.at(evtname);
+        else { // Damn. Create the queue of that guy
+          otherqueue = new std::queue<ReplayAction*>();
+          action_queues.insert({evtname, otherqueue});
+        }
+        otherqueue->push(action);
+      }
+    }
+    // end of file reached while searching in vain for more work
+  } else {
+    // Get something from my queue and return it
+    action = myqueue->front();
+    myqueue->pop();
+    return action;
+  }
+  return nullptr;
 }
 
-void _xbt_replay_action_exit()
+static void handle_action(ReplayAction* action)
 {
-  xbt_dict_free(&xbt_action_queues);
-  xbt_dict_free(&xbt_action_funs);
-  free(action_line);
-  xbt_action_queues = nullptr;
-  xbt_action_funs = nullptr;
-  action_line = nullptr;
+  XBT_DEBUG("%s replays a %s action", action->at(0).c_str(), action->at(1).c_str());
+  char** c_action     = new char*[action->size() + 1];
+  action_fun function = action_funs.at(action->at(1));
+  int i               = 0;
+  for (auto arg : *action) {
+    c_action[i] = xbt_strdup(arg.c_str());
+    i++;
+  }
+  c_action[i] = nullptr;
+  try {
+    function(c_action);
+  } catch (xbt_ex& e) {
+    for (unsigned int j = 0; j < action->size(); j++)
+      xbt_free(c_action[j]);
+    delete[] c_action;
+    action->clear();
+    xbt_die("Replay error:\n %s", e.what());
+  }
+  for (unsigned int j = 0; j < action->size(); j++)
+    xbt_free(c_action[j]);
+  delete[] c_action;
 }
 
 /**
@@ -148,107 +127,56 @@ void _xbt_replay_action_exit()
  * \param argc argc .
  * \param argv argv
  */
-int xbt_replay_action_runner(int argc, char *argv[])
+int replay_runner(int argc, char* argv[])
 {
-  if (xbt_action_fp) {              // A unique trace file
+  if (simgrid::xbt::action_fs) { // A unique trace file
     while (true) {
-      char **evt = action_get_action(argv[0]);
+      simgrid::xbt::ReplayAction* evt = simgrid::xbt::get_action(argv[0]);
       if (evt == nullptr)
         break;
-
-      char* lowername = str_tolower (evt[1]);
-      action_fun function = (action_fun)xbt_dict_get(xbt_action_funs, lowername);
-      xbt_free(lowername);
-      try {
-        function((const char **)evt);
-      }
-      catch(xbt_ex& e) {
-        xbt_die("Replay error :\n %s", e.what());
-      }
-      for (int i=0;evt[i]!= nullptr;i++)
-        free(evt[i]);
-      free(evt);
+      simgrid::xbt::handle_action(evt);
+      delete evt;
     }
-  } else {                      // Should have got my trace file in argument
-    const char **evt;
-    xbt_assert(argc >= 2,
-                "No '%s' agent function provided, no simulation-wide trace file provided, "
-                "and no process-wide trace file provided in deployment file. Aborting.", argv[0]
-        );
-    xbt_replay_reader_t reader = xbt_replay_reader_new(argv[1]);
-    while ((evt=xbt_replay_reader_get(reader))) {
-      if (!strcmp(argv[0],evt[0])) {
-        char* lowername = str_tolower (evt[1]);
-        action_fun function = (action_fun)xbt_dict_get(xbt_action_funs, lowername);
-        xbt_free(lowername);
-        try {
-          function(evt);
-        } catch(xbt_ex& e) {
-          free(evt);
-          xbt_die("Replay error on line %d of file %s :\n %s" , reader->linenum,reader->filename, e.what());
-        }
+    if (action_queues.find(std::string(argv[0])) != action_queues.end()) {
+      std::queue<ReplayAction*>* myqueue = action_queues.at(std::string(argv[0]));
+      delete myqueue;
+      action_queues.erase(std::string(argv[0]));
+    }
+  } else { // Should have got my trace file in argument
+    simgrid::xbt::ReplayAction* evt = new simgrid::xbt::ReplayAction();
+    xbt_assert(argc >= 2, "No '%s' agent function provided, no simulation-wide trace file provided, "
+                          "and no process-wide trace file provided in deployment file. Aborting.",
+               argv[0]);
+    simgrid::xbt::ReplayReader* reader = new simgrid::xbt::ReplayReader(argv[1]);
+    while (reader->get(evt)) {
+      if (evt->front().compare(argv[0]) == 0) {
+        simgrid::xbt::handle_action(evt);
       } else {
-        XBT_WARN("%s:%d: Ignore trace element not for me", reader->filename, reader->linenum);
+        XBT_WARN("Ignore trace element not for me");
       }
-      free(evt);
+      evt->clear();
     }
-    xbt_replay_reader_free(&reader);
+    delete evt;
+    delete reader;
   }
   return 0;
 }
+}
+}
 
-static char **action_get_action(char *name)
+/**
+ * \ingroup XBT_replay
+ * \brief Registers a function to handle a kind of action
+ *
+ * Registers a function to handle a kind of action
+ * This table is then used by \ref xbt_replay_action_runner
+ *
+ * The argument of the function is the line describing the action, fields separated by spaces.
+ *
+ * \param action_name the reference name of the action.
+ * \param function prototype given by the type: void...(const char** action)
+ */
+void xbt_replay_action_register(const char* action_name, action_fun function)
 {
-  xbt_dynar_t evt = nullptr;
-  char *evtname = nullptr;
-
-  xbt_dynar_t myqueue = (xbt_dynar_t) xbt_dict_get_or_null(xbt_action_queues, name);
-  if (myqueue == nullptr || xbt_dynar_is_empty(myqueue)) {      // nothing stored for me. Read the file further
-    if (xbt_action_fp == nullptr) {    // File closed now. There's nothing more to read. I'm out of here
-      goto todo_done;
-    }
-    // Read lines until I reach something for me (which breaks in loop body)
-    // or end of file reached
-    while (xbt_getline(&action_line, &action_len, xbt_action_fp) != -1) {
-      // cleanup and split the string I just read
-      char *comment = strchr(action_line, '#');
-      if (comment != nullptr)
-        *comment = '\0';
-      xbt_str_trim(action_line, nullptr);
-      if (action_line[0] == '\0')
-        continue;
-      /* we cannot split in place here because we parse&store several lines for
-       * the colleagues... */
-      evt = xbt_str_split_quoted(action_line);
-
-      // if it's for me, I'm done
-      evtname = xbt_dynar_get_as(evt, 0, char *);
-      if (!strcasecmp(name, evtname)) {
-        return (char**) xbt_dynar_to_array(evt);
-      } else {
-        // Else, I have to store it for the relevant colleague
-        xbt_dynar_t otherqueue =
-            (xbt_dynar_t) xbt_dict_get_or_null(xbt_action_queues, evtname);
-        if (otherqueue == nullptr) {       // Damn. Create the queue of that guy
-          otherqueue = xbt_dynar_new(sizeof(xbt_dynar_t), xbt_dynar_free_voidp);
-          xbt_dict_set(xbt_action_queues, evtname, otherqueue, nullptr);
-        }
-        xbt_dynar_push(otherqueue, &evt);
-      }
-    }
-    // end of file reached while searching in vain for more work
-  } else {
-    // Get something from my queue and return it
-    xbt_dynar_shift(myqueue, &evt);
-    return (char**) xbt_dynar_to_array(evt);
-  }
-
-  // I did all my actions for me in the file (either I closed the file, or a colleague did)
-  // Let's cleanup before leaving
-todo_done:
-  if (myqueue != nullptr) {
-    xbt_dynar_free(&myqueue);
-    xbt_dict_remove(xbt_action_queues, name);
-  }
-  return nullptr;
+    simgrid::xbt::action_funs.insert({std::string(action_name), function});
 }

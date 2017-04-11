@@ -78,6 +78,19 @@ void Engine::loadDeployment(const char *deploy)
 {
   SIMIX_launch_application(deploy);
 }
+// FIXME: The following duplicates the content of s4u::Host
+extern std::map<std::string, simgrid::s4u::Host*> host_list;
+/** @brief Returns the amount of hosts in the platform */
+size_t Engine::hostCount()
+{
+  return host_list.size();
+}
+/** @brief Fills the passed list with all hosts found in the platform */
+void Engine::hostList(std::vector<Host*>* list)
+{
+  for (auto kv : host_list)
+    list->push_back(kv.second);
+}
 
 void Engine::run() {
   if (MC_is_active()) {

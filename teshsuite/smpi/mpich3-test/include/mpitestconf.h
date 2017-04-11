@@ -103,7 +103,7 @@
 #define HAVE_MPI_SPAWN 1
 
 /* Define if MPI_Win_create is available */
-//#define HAVE_MPI_WIN_CREATE 1
+#define HAVE_MPI_WIN_CREATE 1
 
 /* define if the compiler implements namespaces */
 #define HAVE_NAMESPACES /**/

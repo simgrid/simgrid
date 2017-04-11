@@ -64,6 +64,13 @@ static int david(int argc, char *argv[]) {/* Dump what we have on a remote host 
 
 static int bob(int argc, char *argv[])
 {
+  /* this host also tests the properties of the AS*/
+  msg_as_t root = MSG_environment_get_routing_root();
+  XBT_INFO("== Print the properties of the AS");
+  XBT_INFO("   Process property: filename -> %s", MSG_environment_as_get_property_value(root, "filename"));
+  XBT_INFO("   Process property: date -> %s", MSG_environment_as_get_property_value(root, "date"));
+  XBT_INFO("   Process property: author -> %s", MSG_environment_as_get_property_value(root, "author"));
+
   /* Get the property list of current bob process */
   xbt_dict_t props = MSG_process_get_properties(MSG_process_self());
   xbt_dict_cursor_t cursor = NULL;

@@ -296,7 +296,7 @@ static std::vector<double> surf_parse_get_all_speeds(char* speeds, const char* e
 
 /* The default current property receiver. Setup in the corresponding opening callbacks. */
 xbt_dict_t current_property_set = nullptr;
-xbt_dict_t current_model_property_set = nullptr;
+std::map<std::string, std::string>* current_model_property_set = nullptr;
 int AS_TAG                            = 0; // Whether we just opened an AS tag (to see what to do with the properties)
 
 /* dictionary of random generator data */
@@ -484,7 +484,7 @@ void STag_surfxml_prop()
     XBT_DEBUG("Set AS property %s -> %s", A_surfxml_prop_id, A_surfxml_prop_value);
     simgrid::s4u::NetZone* netzone = simgrid::s4u::Engine::instance()->netzoneByNameOrNull(A_surfxml_AS_id);
 
-    netzone->setProperty(A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value));
+    netzone->setProperty(A_surfxml_prop_id, A_surfxml_prop_value);
   }
   else{
     if (!current_property_set)
@@ -984,9 +984,10 @@ void STag_surfxml_argument(){
 
 void STag_surfxml_model___prop(){
   if (!current_model_property_set)
-    current_model_property_set = xbt_dict_new_homogeneous(xbt_free_f);
+    current_model_property_set = new std::map<std::string, std::string>();
 
-  xbt_dict_set(current_model_property_set, A_surfxml_model___prop_id, xbt_strdup(A_surfxml_model___prop_value), nullptr);
+  current_model_property_set->insert(
+      {std::string(A_surfxml_model___prop_id), std::string(A_surfxml_model___prop_value)});
 }
 
 void ETag_surfxml_prop(){/* Nothing to do */}

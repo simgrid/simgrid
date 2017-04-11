@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, 2013-2015. The SimGrid Team.
+/* Copyright (c) 2010, 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -7,7 +7,8 @@
 #include "private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_group, smpi, "Logging specific to SMPI (group)");
- Group mpi_MPI_GROUP_EMPTY;
+
+simgrid::smpi::Group mpi_MPI_GROUP_EMPTY;
 MPI_Group MPI_GROUP_EMPTY=&mpi_MPI_GROUP_EMPTY;
 
 namespace simgrid{
@@ -382,9 +383,9 @@ int Group::range_excl(int n, int ranges[][3], MPI_Group * newgroup){
 MPI_Group Group::f2c(int id) {
   if(id == -2) {
     return MPI_GROUP_EMPTY;
-  } else if(f2c_lookup_ != nullptr && id >= 0) {
+  } else if(F2C::f2c_lookup() != nullptr && id >= 0) {
     char key[KEY_SIZE];
-    return static_cast<MPI_Group>(xbt_dict_get_or_null(f2c_lookup_, get_key(key, id)));
+    return static_cast<MPI_Group>(xbt_dict_get_or_null(F2C::f2c_lookup(), get_key(key, id)));
   } else {
     return static_cast<MPI_Group>(MPI_GROUP_NULL);
   }

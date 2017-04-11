@@ -1,6 +1,6 @@
 /* selector for collective algorithms based on mvapich decision logic */
 
-/* Copyright (c) 2009-2010, 2013-2014. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -10,9 +10,11 @@
 
 #include "smpi_mvapich2_selector_stampede.h"
 
+namespace simgrid{
+namespace smpi{
 
 
-int smpi_coll_tuned_alltoall_mvapich2( void *sendbuf, int sendcount, 
+int Coll_alltoall_mvapich2::alltoall( void *sendbuf, int sendcount, 
     MPI_Datatype sendtype,
     void* recvbuf, int recvcount,
     MPI_Datatype recvtype,
@@ -82,7 +84,7 @@ int smpi_coll_tuned_alltoall_mvapich2( void *sendbuf, int sendcount,
   return (mpi_errno);
 }
 
-int smpi_coll_tuned_allgather_mvapich2(void *sendbuf, int sendcount, MPI_Datatype sendtype,
+int Coll_allgather_mvapich2::allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     void *recvbuf, int recvcount, MPI_Datatype recvtype,
     MPI_Comm comm)
 {
@@ -149,9 +151,9 @@ int smpi_coll_tuned_allgather_mvapich2(void *sendbuf, int sendcount, MPI_Datatyp
   }
 
   /* Set inter-leader pt */
-  MV2_Allgather_function =
+  MV2_Allgatherction =
       mv2_allgather_thresholds_table[conf_index][range].inter_leader[range_threshold].
-      MV2_pt_Allgather_function;
+      MV2_pt_Allgatherction;
 
   is_two_level =  mv2_allgather_thresholds_table[conf_index][range].two_level[range_threshold];
 
@@ -163,7 +165,7 @@ int smpi_coll_tuned_allgather_mvapich2(void *sendbuf, int sendcount, MPI_Datatyp
                             recvbuf, recvcount, recvtype,
                             comm);
       }else{
-      mpi_errno = smpi_coll_tuned_allgather_mpich(sendbuf, sendcount, sendtype,
+      mpi_errno = Coll_allgather_mpich::allgather(sendbuf, sendcount, sendtype,
                             recvbuf, recvcount, recvtype,
                             comm);
       }
@@ -172,10 +174,10 @@ int smpi_coll_tuned_allgather_mvapich2(void *sendbuf, int sendcount, MPI_Datatyp
           recvbuf, recvcount, recvtype,
           comm);
     }
-  } else if(MV2_Allgather_function == &MPIR_Allgather_Bruck_MV2
-      || MV2_Allgather_function == &MPIR_Allgather_RD_MV2
-      || MV2_Allgather_function == &MPIR_Allgather_Ring_MV2) {
-      mpi_errno = MV2_Allgather_function(sendbuf, sendcount, sendtype,
+  } else if(MV2_Allgatherction == &MPIR_Allgather_Bruck_MV2
+      || MV2_Allgatherction == &MPIR_Allgather_RD_MV2
+      || MV2_Allgatherction == &MPIR_Allgather_Ring_MV2) {
+      mpi_errno = MV2_Allgatherction(sendbuf, sendcount, sendtype,
           recvbuf, recvcount, recvtype,
           comm);
   }else{
@@ -185,8 +187,7 @@ int smpi_coll_tuned_allgather_mvapich2(void *sendbuf, int sendcount, MPI_Datatyp
   return mpi_errno;
 }
 
-
-int smpi_coll_tuned_gather_mvapich2(void *sendbuf,
+int Coll_gather_mvapich2::gather(void *sendbuf,
     int sendcnt,
     MPI_Datatype sendtype,
     void *recvbuf,
@@ -255,7 +256,7 @@ int smpi_coll_tuned_gather_mvapich2(void *sendbuf,
 
     } else {
   // Indeed, direct (non SMP-aware)gather is MPICH one
-  mpi_errno = smpi_coll_tuned_gather_mpich(sendbuf, sendcnt, sendtype,
+  mpi_errno = Coll_gather_mpich::gather(sendbuf, sendcnt, sendtype,
       recvbuf, recvcnt, recvtype,
       root, comm);
   }
@@ -263,8 +264,7 @@ int smpi_coll_tuned_gather_mvapich2(void *sendbuf,
   return mpi_errno;
 }
 
-
-int smpi_coll_tuned_allgatherv_mvapich2(void *sendbuf, int sendcount, MPI_Datatype sendtype,
+int Coll_allgatherv_mvapich2::allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     void *recvbuf, int *recvcounts, int *displs,
     MPI_Datatype recvtype, MPI_Comm  comm )
 {
@@ -330,7 +330,7 @@ int smpi_coll_tuned_allgatherv_mvapich2(void *sendbuf, int sendcount, MPI_Dataty
 
 
 
-int smpi_coll_tuned_allreduce_mvapich2(void *sendbuf,
+int Coll_allreduce_mvapich2::allreduce(void *sendbuf,
     void *recvbuf,
     int count,
     MPI_Datatype datatype,
@@ -378,10 +378,10 @@ int smpi_coll_tuned_allreduce_mvapich2(void *sendbuf,
     if(mv2_allreduce_thresholds_table[range].mcast_enabled != 1){
         while ((range_threshold < (mv2_allreduce_thresholds_table[range].size_inter_table - 1))
             && ((mv2_allreduce_thresholds_table[range].
-                inter_leader[range_threshold].MV2_pt_Allreduce_function
+                inter_leader[range_threshold].MV2_pt_Allreducection
                 == &MPIR_Allreduce_mcst_reduce_redscat_gather_MV2) ||
                 (mv2_allreduce_thresholds_table[range].
-                    inter_leader[range_threshold].MV2_pt_Allreduce_function
+                    inter_leader[range_threshold].MV2_pt_Allreducection
                     == &MPIR_Allreduce_mcst_reduce_two_level_helper_MV2)
             )) {
             range_threshold++;
@@ -406,20 +406,20 @@ int smpi_coll_tuned_allreduce_mvapich2(void *sendbuf,
         range_threshold_intra++;
     }
 
-    MV2_Allreduce_function = mv2_allreduce_thresholds_table[range].inter_leader[range_threshold]
-                                                                                .MV2_pt_Allreduce_function;
+    MV2_Allreducection = mv2_allreduce_thresholds_table[range].inter_leader[range_threshold]
+                                                                                .MV2_pt_Allreducection;
 
     MV2_Allreduce_intra_function = mv2_allreduce_thresholds_table[range].intra_node[range_threshold_intra]
-                                                                                    .MV2_pt_Allreduce_function;
+                                                                                    .MV2_pt_Allreducection;
 
     /* check if mcast is ready, otherwise replace mcast with other algorithm */
-    if((MV2_Allreduce_function == &MPIR_Allreduce_mcst_reduce_redscat_gather_MV2)||
-        (MV2_Allreduce_function == &MPIR_Allreduce_mcst_reduce_two_level_helper_MV2)){
+    if((MV2_Allreducection == &MPIR_Allreduce_mcst_reduce_redscat_gather_MV2)||
+        (MV2_Allreducection == &MPIR_Allreduce_mcst_reduce_two_level_helper_MV2)){
         {
-          MV2_Allreduce_function = &MPIR_Allreduce_pt2pt_rd_MV2;
+          MV2_Allreducection = &MPIR_Allreduce_pt2pt_rd_MV2;
         }
         if(is_two_level != 1) {
-            MV2_Allreduce_function = &MPIR_Allreduce_pt2pt_rd_MV2;
+            MV2_Allreducection = &MPIR_Allreduce_pt2pt_rd_MV2;
         }
     }
 
@@ -436,7 +436,7 @@ int smpi_coll_tuned_allreduce_mvapich2(void *sendbuf,
             datatype, op, comm);
         }
     } else {
-        mpi_errno = MV2_Allreduce_function(sendbuf, recvbuf, count,
+        mpi_errno = MV2_Allreducection(sendbuf, recvbuf, count,
             datatype, op, comm);
     }
   }
@@ -449,7 +449,7 @@ int smpi_coll_tuned_allreduce_mvapich2(void *sendbuf,
 }
 
 
-int smpi_coll_tuned_alltoallv_mvapich2(void *sbuf, int *scounts, int *sdisps,
+int Coll_alltoallv_mvapich2::alltoallv(void *sbuf, int *scounts, int *sdisps,
     MPI_Datatype sdtype,
     void *rbuf, int *rcounts, int *rdisps,
     MPI_Datatype rdtype,
@@ -458,25 +458,25 @@ int smpi_coll_tuned_alltoallv_mvapich2(void *sbuf, int *scounts, int *sdisps,
 {
 
   if (sbuf == MPI_IN_PLACE) {
-      return smpi_coll_tuned_alltoallv_ompi_basic_linear(sbuf, scounts, sdisps, sdtype,
+      return Coll_alltoallv_ompi_basic_linear::alltoallv(sbuf, scounts, sdisps, sdtype,
           rbuf, rcounts, rdisps,rdtype,
           comm);
   } else     /* For starters, just keep the original algorithm. */
-  return smpi_coll_tuned_alltoallv_ring(sbuf, scounts, sdisps, sdtype,
+  return Coll_alltoallv_ring::alltoallv(sbuf, scounts, sdisps, sdtype,
       rbuf, rcounts, rdisps,rdtype,
       comm);
 }
 
 
-int smpi_coll_tuned_barrier_mvapich2(MPI_Comm  comm)
+int Coll_barrier_mvapich2::barrier(MPI_Comm  comm)
 {   
-  return smpi_coll_tuned_barrier_mvapich2_pair(comm);
+  return Coll_barrier_mvapich2_pair::barrier(comm);
 }
 
 
 
 
-int smpi_coll_tuned_bcast_mvapich2(void *buffer,
+int Coll_bcast_mvapich2::bcast(void *buffer,
     int count,
     MPI_Datatype datatype,
     int root, MPI_Comm comm)
@@ -678,7 +678,7 @@ int smpi_coll_tuned_bcast_mvapich2(void *buffer,
 
 
 
-int smpi_coll_tuned_reduce_mvapich2( void *sendbuf,
+int Coll_reduce_mvapich2::reduce( void *sendbuf,
     void *recvbuf,
     int count,
     MPI_Datatype datatype,
@@ -796,7 +796,7 @@ int smpi_coll_tuned_reduce_mvapich2( void *sendbuf,
 }
 
 
-int smpi_coll_tuned_reduce_scatter_mvapich2(void *sendbuf, void *recvbuf, int *recvcnts,
+int Coll_reduce_scatter_mvapich2::reduce_scatter(void *sendbuf, void *recvbuf, int *recvcnts,
     MPI_Datatype datatype, MPI_Op op,
     MPI_Comm comm)
 {
@@ -860,7 +860,7 @@ int smpi_coll_tuned_reduce_scatter_mvapich2(void *sendbuf, void *recvbuf, int *r
               recvcnts, datatype,
               op, comm);
       }
-      mpi_errno =  smpi_coll_tuned_reduce_scatter_mpich_rdb(sendbuf, recvbuf,
+      mpi_errno =  Coll_reduce_scatter_mpich_rdb::reduce_scatter(sendbuf, recvbuf,
           recvcnts, datatype,
           op, comm);
   }
@@ -871,7 +871,7 @@ int smpi_coll_tuned_reduce_scatter_mvapich2(void *sendbuf, void *recvbuf, int *r
 
 
 
-int smpi_coll_tuned_scatter_mvapich2(void *sendbuf,
+int Coll_scatter_mvapich2::scatter(void *sendbuf,
     int sendcnt,
     MPI_Datatype sendtype,
     void *recvbuf,
@@ -1003,6 +1003,10 @@ int smpi_coll_tuned_scatter_mvapich2(void *sendbuf,
   }
   return (mpi_errno);
 }
+
+}
+}
+
 
 void smpi_coll_cleanup_mvapich2(void){
 int i=0;
