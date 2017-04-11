@@ -124,22 +124,26 @@ class paje_event {
   void (*print) (paje_event_t event);
   void (*free) (paje_event_t event);
   void *data;
+  void Event(type_t type);
 };
 typedef paje_event s_paje_event_t;
+
 //--------------------------------------------------
+
 class s_defineContainerType;
 
 typedef s_defineContainerType *defineContainerType_t;
-class s_defineContainerType {
+class s_defineContainerType: public paje_event
+{
   public:
   type_t type;
-  XBT_PUBLIC(void) new_pajeDefineContainerType(type_t type);
 };
 typedef s_defineContainerType s_defineContainerType_t;
 //--------------------------------------------------
 
 typedef struct s_defineVariableType *defineVariableType_t;
-typedef struct s_defineVariableType {
+typedef struct s_defineVariableType: public paje_event
+ {
   type_t type;
 }s_defineVariableType_t;
 

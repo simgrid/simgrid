@@ -130,7 +130,7 @@ type_t PJ_type_container_new (const char *name, type_t father)
 
   if(father){
     XBT_DEBUG("ContainerType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
-    EltContainer.new_pajeDefineContainerType (ret);
+    EltContainer.Event(ret);
   }
   return ret;
 }

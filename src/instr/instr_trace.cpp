@@ -123,7 +123,7 @@ static void free_paje_event (paje_event_t event)
   xbt_free (event);
 }
 
-void s_defineContainerType::new_pajeDefineContainerType(type_t type)
+void paje_event::Event(type_t type)
 {
   paje_event_t event                           = xbt_new0(s_paje_event_t, 1);
   event->event_type                            = PAJE_DefineContainerType;
@@ -140,6 +140,25 @@ void s_defineContainerType::new_pajeDefineContainerType(type_t type)
   event->free (event);
 }
 
+//--------------------------------------------------------
+/*
+void s_defineContainerType::new_pajeDefineContainerType(type_t type)
+{
+  paje_event_t event                           = xbt_new0(s_paje_event_t, 1);
+  event->event_type                            = PAJE_DefineContainerType;
+  event->timestamp                             = 0;
+  event->print                                 = active_writer.print_DefineContainerType;
+  event->free                                  = &free_paje_event;
+  event->data                                  = xbt_new0(s_defineContainerType_t, 1);
+  ((defineContainerType_t)(event->data))->type = type;
+
+  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event->event_type);
+
+  //print it
+  event->print (event);
+  event->free (event);
+}
+*/
 void new_pajeDefineVariableType(type_t type)
 {
   paje_event_t event                          = xbt_new0(s_paje_event_t, 1);
