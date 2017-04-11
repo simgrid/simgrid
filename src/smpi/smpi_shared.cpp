@@ -37,6 +37,7 @@
 
 #include "private.h"
 #include "private.hpp"
+#include "smpi/smpi_shared_malloc.hpp"
 #include "xbt/dict.h"
 #include <errno.h>
 
@@ -169,7 +170,7 @@ static void* shm_map(int fd, size_t size, shared_data_key_type* data) {
   return mem;
 }
 
-void *smpi_shared_malloc_local(size_t size, const char *file, int line)
+static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
 {
   void* mem;
   smpi_source_location loc(file, line);
@@ -238,7 +239,6 @@ void *smpi_shared_malloc_global__(size_t size, const char *file, int line, size_
   for(int i_block = 0; i_block < nb_shared_blocks; i_block ++) {
     size_t start_offset = shared_block_offsets[2*i_block];
     size_t stop_offset = shared_block_offsets[2*i_block+1];
-    xbt_assert(0 <= start_offset,          "start_offset (%lu) should be greater than 0", start_offset);
     xbt_assert(start_offset < stop_offset, "start_offset (%lu) should be lower than stop offset (%lu)", start_offset, stop_offset);
     xbt_assert(stop_offset <= size,         "stop_offset (%lu) should be lower than size (%lu)", stop_offset, size);
     if(i_block < nb_shared_blocks-1)
@@ -314,7 +314,7 @@ void *smpi_shared_malloc_global__(size_t size, const char *file, int line, size_
  * Even indices are the start offsets (included), odd indices are the stop offsets (excluded).
  * For instance, if shared_block_offsets == {27, 42}, then the elements mem[27], mem[28], ..., mem[41] are shared. The others are not.
  */
-void *smpi_shared_malloc_global(size_t size, const char *file, int line, size_t *shared_block_offsets=NULL, int nb_shared_blocks=-1) {
+static void *smpi_shared_malloc_global(size_t size, const char *file, int line, size_t *shared_block_offsets=NULL, int nb_shared_blocks=-1) {
   size_t tmp_shared_block_offsets[2];
   if(nb_shared_blocks == -1) {
     nb_shared_blocks = 1;

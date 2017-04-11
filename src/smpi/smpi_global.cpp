@@ -104,22 +104,22 @@ void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, s
   smpi_comm_copy_data_callback = callback;
 }
 
-void print(std::vector<std::pair<size_t, size_t>> vec) {
+static void print(std::vector<std::pair<size_t, size_t>> vec) {
     fprintf(stderr, "{");
     for(auto elt: vec) {
-        fprintf(stderr, "(0x%x, 0x%x),", elt.first, elt.second);
+        fprintf(stderr, "(0x%lx, 0x%lx),", elt.first, elt.second);
     }
-    stderr, fprintf(stderr, "}\n");
+    fprintf(stderr, "}\n");
 }
-void memcpy_private(void *dest, const void *src, size_t n, std::vector<std::pair<size_t, size_t>> &private_blocks) {
+static void memcpy_private(void *dest, const void *src, size_t n, std::vector<std::pair<size_t, size_t>> &private_blocks) {
   for(auto block : private_blocks) {
     memcpy((uint8_t*)dest+block.first, (uint8_t*)src+block.first, block.second-block.first);
   }
 }
 
-void check_blocks(std::vector<std::pair<size_t, size_t>> &private_blocks, size_t buff_size) {
+static void check_blocks(std::vector<std::pair<size_t, size_t>> &private_blocks, size_t buff_size) {
   for(auto block : private_blocks) {
-    xbt_assert(block.first >= 0 && block.second <= buff_size, "Oops, bug in shared malloc.");
+    xbt_assert(block.first <= block.second && block.second <= buff_size, "Oops, bug in shared malloc.");
   }
 }
 
@@ -131,7 +131,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
   std::vector<std::pair<size_t, size_t>> src_private_blocks;
   std::vector<std::pair<size_t, size_t>> dst_private_blocks;
   XBT_DEBUG("Copy the data over");
-  if(src_shared=smpi_is_shared(buff, src_private_blocks, &src_offset)) {
+  if((src_shared=smpi_is_shared(buff, src_private_blocks, &src_offset))) {
     XBT_DEBUG("Sender %p is shared. Let's ignore it.", buff);
     src_private_blocks = shift_and_frame_private_blocks(src_private_blocks, src_offset, buff_size);
   }
@@ -139,7 +139,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
     src_private_blocks.clear();
     src_private_blocks.push_back(std::make_pair(0, buff_size));
   }
-  if(dst_shared=smpi_is_shared((char*)comm->dst_buff, dst_private_blocks, &dst_offset)) {
+  if((dst_shared=smpi_is_shared((char*)comm->dst_buff, dst_private_blocks, &dst_offset))) {
     XBT_DEBUG("Receiver %p is shared. Let's ignore it.", (char*)comm->dst_buff);
     dst_private_blocks = shift_and_frame_private_blocks(dst_private_blocks, dst_offset, buff_size);
   }
