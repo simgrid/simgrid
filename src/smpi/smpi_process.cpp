@@ -40,6 +40,7 @@ Process::Process(int index)
   mailboxes_mutex_      = xbt_mutex_init();
   timer_                = xbt_os_timer_new();
   state_                = SMPI_UNINITIALIZED;
+  index_                = index;
   if (MC_is_active())
     MC_ignore_heap(timer_, xbt_os_timer_size());
 
@@ -61,7 +62,7 @@ Process::Process(int index)
 #endif
 }
 
-void Process::set_data(int index, int *argc, char ***argv)
+void Process::set_data(int* argc, char*** argv)
 {
 
     char* instance_id = (*argv)[1];
@@ -69,7 +70,6 @@ void Process::set_data(int index, int *argc, char ***argv)
     msg_bar_t bar = smpi_deployment_finalization_barrier(instance_id);
     if (bar!=nullptr) // don't overwrite the default one
       finalization_barrier_ = bar;
-    index_       = index;
     instance_id_ = instance_id;
 
     static_cast<simgrid::MsgActorExt*>(SIMIX_process_self()->data)->data = this;
@@ -85,7 +85,7 @@ void Process::set_data(int index, int *argc, char ***argv)
     // set the process attached to the mailbox
     mailbox_small_->setReceiver(simgrid::s4u::Actor::self());
     process_ = SIMIX_process_self();
-    XBT_DEBUG("<%d> New process in the game: %p", index, SIMIX_process_self());
+    XBT_DEBUG("<%d> New process in the game: %p", index_, SIMIX_process_self());
 }
 
 void Process::destroy()
@@ -297,7 +297,7 @@ void Process::init(int *argc, char ***argv){
     }
 
     Process* process = smpi_process_remote(index);
-    process->set_data(index, argc, argv);
+    process->set_data(argc, argv);
   }
   xbt_assert(smpi_process(),
       "smpi_process() returned nullptr. You probably gave a nullptr parameter to MPI_Init. "
