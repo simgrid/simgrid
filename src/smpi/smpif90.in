@@ -16,8 +16,8 @@ CMAKE_LINKARGS="-L@libdir@"
 
 @SMPITOOLS_SH@
 
-list_set FFLAGS "-ff2c" "-fno-second-underscore"
-list_set LINKARGS "-lsimgrid" "-lm" "-lgfortran"
+list_set FFLAGS "-fpic" "-ff2c" "-fno-second-underscore"
+list_set LINKARGS "-shared" "-lsimgrid" "-lm" "-lgfortran"
 list_set TMPFILES
 main_name=main
 
