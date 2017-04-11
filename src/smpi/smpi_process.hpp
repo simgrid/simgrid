@@ -18,26 +18,26 @@ namespace smpi{
 
 class Process {
   private:
-    double simulated_;
-    int *argc_;
-    char ***argv_;
+    double simulated_ = 0 /* Used to time with simulated_start/elapsed */;
+    int* argc_        = nullptr;
+    char*** argv_     = nullptr;
     simgrid::s4u::MailboxPtr mailbox_;
     simgrid::s4u::MailboxPtr mailbox_small_;
     xbt_mutex_t mailboxes_mutex_;
     xbt_os_timer_t timer_;
-    MPI_Comm comm_self_;
-    MPI_Comm comm_intra_;
-    MPI_Comm* comm_world_;
-    void *data_;                   /* user data */
-    int index_;
+    MPI_Comm comm_self_   = MPI_COMM_NULL;
+    MPI_Comm comm_intra_  = MPI_COMM_NULL;
+    MPI_Comm* comm_world_ = nullptr;
+    void* data_           = nullptr; /* user data */
+    int index_            = MPI_UNDEFINED;
     char state_;
-    int sampling_;                 /* inside an SMPI_SAMPLE_ block? */
-    char* instance_id_;
-    bool replaying_;                /* is the process replaying a trace */
-    msg_bar_t finalization_barrier_;
-    int return_value_;
+    int sampling_                   = 0; /* inside an SMPI_SAMPLE_ block? */
+    char* instance_id_              = nullptr;
+    bool replaying_                 = false; /* is the process replaying a trace */
+    msg_bar_t finalization_barrier_ = nullptr;
+    int return_value_               = 0;
     smpi_trace_call_location_t trace_call_loc_;
-    smx_actor_t process_;
+    smx_actor_t process_ = nullptr;
 #if HAVE_PAPI
   /** Contains hardware data as read by PAPI **/
     int papi_event_set_;

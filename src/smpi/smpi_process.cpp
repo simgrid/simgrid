@@ -35,22 +35,13 @@ namespace smpi{
 Process::Process(int index)
 {
   char name[MAILBOX_NAME_MAXLEN];
-  index_ = MPI_UNDEFINED;
-  argc_                 = nullptr;
-  argv_                 = nullptr;
   mailbox_              = simgrid::s4u::Mailbox::byName(get_mailbox_name(name, index));
   mailbox_small_        = simgrid::s4u::Mailbox::byName(get_mailbox_name_small(name, index));
   mailboxes_mutex_      = xbt_mutex_init();
   timer_                = xbt_os_timer_new();
+  state_                = SMPI_UNINITIALIZED;
   if (MC_is_active())
     MC_ignore_heap(timer_, xbt_os_timer_size());
-  comm_self_            = MPI_COMM_NULL;
-  comm_intra_           = MPI_COMM_NULL;
-  comm_world_           = nullptr;
-  state_                = SMPI_UNINITIALIZED;
-  sampling_             = 0;
-  finalization_barrier_ = nullptr;
-  return_value_         = 0;
 
 #if HAVE_PAPI
   if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0') {
@@ -80,7 +71,6 @@ void Process::set_data(int index, int *argc, char ***argv)
       finalization_barrier_ = bar;
     index_       = index;
     instance_id_ = instance_id;
-    replaying_   = false;
 
     static_cast<simgrid::MsgActorExt*>(SIMIX_process_self()->data)->data = this;
 
