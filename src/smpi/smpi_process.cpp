@@ -145,16 +145,6 @@ bool Process::replaying(){
     return false;
 }
 
-void Process::set_user_data(void *data)
-{
-  data_ = data;
-}
-
-void *Process::get_user_data()
-{
-  return data_;
-}
-
 smx_actor_t Process::process(){
   return process_;
 }
