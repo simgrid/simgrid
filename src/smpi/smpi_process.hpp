@@ -45,7 +45,7 @@ class Process {
   public:
     explicit Process(int index);
     void destroy();
-    void set_data(int* argc, char*** argv);
+    void set_data(int index, int* argc, char*** argv);
     void finalize();
     int finalized();
     int initialized();
