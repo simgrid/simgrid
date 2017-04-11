@@ -97,6 +97,15 @@ endif()
 
 # Compute the dependencies of SMPI
 ##################################
+
+if(enable_smpi)
+  set(SIMGRID_DEP "${SIMGRID_DEP} ${DL_LIBRARY}") # for privatization
+  add_executable(smpimain src/smpi/smpi_main.c)
+  target_link_libraries(smpimain simgrid)
+  set_target_properties(smpimain
+    PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+endif()
+
 if(enable_smpi AND APPLE)
   set(SIMGRID_DEP "${SIMGRID_DEP} -Wl,-U -Wl,_smpi_simulated_main")
 endif()

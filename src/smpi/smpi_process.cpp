@@ -90,7 +90,7 @@ void Process::set_data(int* argc, char*** argv)
 
 void Process::destroy()
 {
-  if(smpi_privatize_global_variables){
+  if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){
     smpi_switch_data_segment(index_);
   }
   state_ = SMPI_FINALIZED;
@@ -279,7 +279,7 @@ void Process::init(int *argc, char ***argv){
     int rank = xbt_str_parse_int((*argv)[2], "Invalid rank: %s");
     smpi_deployment_register_process(instance_id, rank, index);
 
-    if(smpi_privatize_global_variables){
+    if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){
       /* Now using segment index of the process  */
       index = proc->segment_index;
       /* Done at the process's creation */

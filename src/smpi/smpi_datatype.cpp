@@ -277,7 +277,7 @@ int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     XBT_DEBUG("Copy output buf %p is shared. Let's ignore it.", recvbuf);
   }
 
-  if(smpi_privatize_global_variables){
+  if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){
     smpi_switch_data_segment(smpi_process()->index());
   }
   /* First check if we really have something to do */
