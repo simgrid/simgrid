@@ -79,7 +79,7 @@ if(HAVE_GRAPHVIZ)
   endif()
 endif()
 
-if(HAVE_MC AND HAVE_GNU_LD)
+if(HAVE_MC AND HAVE_GNU_LD AND NOT ${DL_LIBRARY} STREQUAL "")
   SET(SIMGRID_DEP "${SIMGRID_DEP} ${DL_LIBRARY}")
 endif()
 
@@ -99,7 +99,9 @@ endif()
 ##################################
 
 if(enable_smpi)
-  set(SIMGRID_DEP "${SIMGRID_DEP} ${DL_LIBRARY}") # for privatization
+  if(NOT ${DL_LIBRARY} STREQUAL "")
+    set(SIMGRID_DEP "${SIMGRID_DEP} ${DL_LIBRARY}") # for privatization
+  endif()
   add_executable(smpimain src/smpi/smpi_main.c)
   target_link_libraries(smpimain simgrid)
   set_target_properties(smpimain
