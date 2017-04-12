@@ -2,6 +2,7 @@
 
 p Testing the Chord implementation with MSG
 
+! timeout 30
 ! output sort 19
 $ $SG_TEST_EXENV ${bindir:=.}/dht-chord$EXEEXT -nb_bits=6 ${srcdir:=.}/cluster.xml ${srcdir:=.}/../msg/dht-chord/dht-chord_d.xml --log=msg_chord.thres:verbose "--log=root.fmt:[%10.5r]%e(%i:%P@%h)%e%m%n"
 > [   0.00000] (1:node@node-0.acme.org) My finger table:
