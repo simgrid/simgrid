@@ -1643,15 +1643,13 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
 
   /* Compare enabled processes */
   if (s1->enabled_processes != s2->enabled_processes) {
-      XBT_VERB("(%d - %d) Different enabled processes", num1, num2);
-      // return 1; ??
+    XBT_VERB("(%d - %d) Different amount of enabled processes", num1, num2);
+    return 1;
   }
 
-  unsigned long i = 0;
-  int is_diff = 0;
-
   /* Compare size of stacks */
-  while (i < s1->stacks.size()) {
+  int is_diff = 0;
+  for (unsigned long i = 0; i < s1->stacks.size(); i++) {
     size_t size_used1 = s1->stack_sizes[i];
     size_t size_used2 = s2->stack_sizes[i];
     if (size_used1 != size_used2) {
@@ -1666,7 +1664,6 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
       return 1;
 #endif
     }
-    i++;
   }
   if (is_diff) // do not proceed if there is any stacks that don't match
     return 1;
