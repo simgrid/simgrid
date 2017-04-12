@@ -1510,12 +1510,12 @@ static int compare_global_variables(
 
     // Compare the global variables separately for each simulates process:
     for (size_t process_index = 0; process_index < process_count; process_index++) {
-      int is_diff = compare_global_variables(state,
-        object_info, process_index,
-        &r1->privatized_data()[process_index],
-        &r2->privatized_data()[process_index],
-        snapshot1, snapshot2);
-      if (is_diff) return 1;
+      if (compare_global_variables(state,
+          object_info, process_index,
+          &r1->privatized_data()[process_index],
+          &r2->privatized_data()[process_index],
+          snapshot1, snapshot2))
+        return 1;
     }
     return 0;
   }
@@ -1648,13 +1648,12 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
   }
 
   unsigned long i = 0;
-  size_t size_used1, size_used2;
   int is_diff = 0;
 
   /* Compare size of stacks */
   while (i < s1->stacks.size()) {
-    size_used1 = s1->stack_sizes[i];
-    size_used2 = s2->stack_sizes[i];
+    size_t size_used1 = s1->stack_sizes[i];
+    size_t size_used2 = s2->stack_sizes[i];
     if (size_used1 != size_used2) {
 #ifdef MC_DEBUG
       XBT_DEBUG("(%d - %d) Different size used in stacks: %zu - %zu", num1, num2, size_used1, size_used2);
@@ -1669,6 +1668,8 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
     }
     i++;
   }
+  if (is_diff) // do not proceed if there is any stacks that don't match
+    return 1;
 
   /* Init heap information used in heap comparison algorithm */
   xbt_mheap_t heap1 = (xbt_mheap_t)s1->read_bytes(
@@ -1697,9 +1698,6 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
 
   /* Stacks comparison */
   int diff_local = 0;
-#ifdef MC_DEBUG
-  is_diff = 0;
-#endif
   for (unsigned int cursor = 0; cursor < s1->stacks.size(); cursor++) {
     mc_snapshot_stack_t stack1 = &s1->stacks[cursor];
     mc_snapshot_stack_t stack2 = &s2->stacks[cursor];
