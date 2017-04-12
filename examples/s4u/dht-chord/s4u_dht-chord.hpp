@@ -1,5 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team.
-* All rights reserved.                                                     */
+/* Copyright (c) 2016-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -123,7 +122,7 @@ public:
       return;
     ChordMessage* message              = nullptr;
     void* data                         = nullptr;
-    double now                         = simgrid::s4u::Engine::instance()->getClock();
+    double now                         = simgrid::s4u::Engine::getClock();
     double next_stabilize_date         = start_time_ + PERIODIC_STABILIZE_DELAY;
     double next_fix_fingers_date       = start_time_ + PERIODIC_FIX_FINGERS_DELAY;
     double next_check_predecessor_date = start_time_ + PERIODIC_CHECK_PREDECESSOR_DELAY;

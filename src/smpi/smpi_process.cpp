@@ -32,25 +32,17 @@ static char *get_mailbox_name_small(char *str, int index)
 namespace simgrid{
 namespace smpi{
 
-Process::Process(int index)
+Process::Process(int index, msg_bar_t finalization_barrier)
+  : finalization_barrier_(finalization_barrier)
 {
   char name[MAILBOX_NAME_MAXLEN];
-  index_ = MPI_UNDEFINED;
-  argc_                 = nullptr;
-  argv_                 = nullptr;
   mailbox_              = simgrid::s4u::Mailbox::byName(get_mailbox_name(name, index));
   mailbox_small_        = simgrid::s4u::Mailbox::byName(get_mailbox_name_small(name, index));
   mailboxes_mutex_      = xbt_mutex_init();
   timer_                = xbt_os_timer_new();
+  state_                = SMPI_UNINITIALIZED;
   if (MC_is_active())
     MC_ignore_heap(timer_, xbt_os_timer_size());
-  comm_self_            = MPI_COMM_NULL;
-  comm_intra_           = MPI_COMM_NULL;
-  comm_world_           = nullptr;
-  state_                = SMPI_UNINITIALIZED;
-  sampling_             = 0;
-  finalization_barrier_ = nullptr;
-  return_value_         = 0;
 
 #if HAVE_PAPI
   if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0') {
@@ -70,17 +62,15 @@ Process::Process(int index)
 #endif
 }
 
-void Process::set_data(int index, int *argc, char ***argv)
+void Process::set_data(int index, int* argc, char*** argv)
 {
-
     char* instance_id = (*argv)[1];
     comm_world_         = smpi_deployment_comm_world(instance_id);
     msg_bar_t bar = smpi_deployment_finalization_barrier(instance_id);
     if (bar!=nullptr) // don't overwrite the default one
       finalization_barrier_ = bar;
-    index_       = index;
     instance_id_ = instance_id;
-    replaying_   = false;
+    index_ = index;
 
     static_cast<simgrid::MsgActorExt*>(SIMIX_process_self()->data)->data = this;
 
@@ -95,21 +85,15 @@ void Process::set_data(int index, int *argc, char ***argv)
     // set the process attached to the mailbox
     mailbox_small_->setReceiver(simgrid::s4u::Actor::self());
     process_ = SIMIX_process_self();
-    XBT_DEBUG("<%d> New process in the game: %p", index, SIMIX_process_self());
-}
-
-void Process::destroy()
-{
-  if(smpi_privatize_global_variables){
-    smpi_switch_data_segment(index_);
-  }
-  state_ = SMPI_FINALIZED;
-  XBT_DEBUG("<%d> Process left the game", index_);
+    XBT_DEBUG("<%d> New process in the game: %p", index_, SIMIX_process_self());
 }
 
 /** @brief Prepares the current process for termination. */
 void Process::finalize()
 {
+  state_ = SMPI_FINALIZED;
+  XBT_DEBUG("<%d> Process left the game", index_);
+
     // This leads to an explosion of the search graph which cannot be reduced:
     if(MC_is_active() || MC_record_replay_is_active())
       return;
@@ -153,16 +137,6 @@ bool Process::replaying(){
     return replaying_;
   else
     return false;
-}
-
-void Process::set_user_data(void *data)
-{
-  data_ = data;
-}
-
-void *Process::get_user_data()
-{
-  return data_;
 }
 
 smx_actor_t Process::process(){
@@ -263,10 +237,6 @@ int Process::sampling()
   return sampling_;
 }
 
-void Process::set_finalization_barrier(msg_bar_t bar){
-  finalization_barrier_=bar;
-}
-
 msg_bar_t Process::finalization_barrier(){
   return finalization_barrier_;
 }
@@ -299,7 +269,7 @@ void Process::init(int *argc, char ***argv){
     int rank = xbt_str_parse_int((*argv)[2], "Invalid rank: %s");
     smpi_deployment_register_process(instance_id, rank, index);
 
-    if(smpi_privatize_global_variables){
+    if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){
       /* Now using segment index of the process  */
       index = proc->segment_index;
       /* Done at the process's creation */

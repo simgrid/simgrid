@@ -31,7 +31,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_memory, smpi, "Memory layout support for SM
 int smpi_loaded_page = -1;
 char* smpi_start_data_exe = nullptr;
 int smpi_size_data_exe = 0;
-bool smpi_privatize_global_variables;
+int smpi_privatize_global_variables;
 
 static const int PROT_RWX = (PROT_READ | PROT_WRITE | PROT_EXEC);
 static const int PROT_RW  = (PROT_READ | PROT_WRITE );

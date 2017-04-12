@@ -5,7 +5,7 @@ p Test output of time independent tracing
 p generate a trace with pingpong, and replay itself, then check that output trace of the second run is the same as in the first (once sorted)
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
-$ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt --cfg=smpi/simulate-computation:no -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -q --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt --cfg=smpi/simulate-computation:no -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -q --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 >
 >
 >
@@ -35,7 +35,7 @@ $ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.t
 > [rank 2] -> Fafard
 > [rank 3] -> Ginette
 
-$ ${bindir:=.}/../../../bin/smpirun -ext smpi_replay --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=smpi/simulate-computation:no -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/../../../examples/smpi/replay/smpi_replay ./out_in_ti.txt --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=smpi/simulate-computation:no -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/../../../examples/smpi/replay/smpi_replay ./out_in_ti.txt --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
@@ -96,7 +96,7 @@ $ rm out_in_ti.txt
 p Same test, but only using one output file for all processes
 p generate a trace with pingpong, and replay itself, then check that output trace of the second run is the same as in the first (once sorted)
 ! output sort
-$ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt --cfg=tracing/smpi/format/ti-one-file:yes -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -q --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt --cfg=tracing/smpi/format/ti-one-file:yes -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -q --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 >
 >
 >
@@ -126,7 +126,7 @@ $ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.t
 > [rank 2] -> Fafard
 > [rank 3] -> Ginette
 
-$ ${bindir:=.}/../../../bin/smpirun -ext smpi_replay --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=tracing/smpi/format/ti-one-file:yes -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/../../../examples/smpi/replay/smpi_replay ./out_in_ti.txt --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=tracing/smpi/format/ti-one-file:yes -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/../../../examples/smpi/replay/smpi_replay ./out_in_ti.txt --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard

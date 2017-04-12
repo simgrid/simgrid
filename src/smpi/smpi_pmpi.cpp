@@ -57,7 +57,6 @@ int PMPI_Finalize()
 
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
   TRACE_smpi_finalize(smpi_process()->index());
-  smpi_process()->destroy();
   return MPI_SUCCESS;
 }
 
@@ -113,7 +112,6 @@ int PMPI_Is_thread_main(int *flag)
 int PMPI_Abort(MPI_Comm comm, int errorcode)
 {
   smpi_bench_end();
-  smpi_process()->destroy();
   // FIXME: should kill all processes in comm instead
   simcall_process_kill(SIMIX_process_self());
   return MPI_SUCCESS;
@@ -1178,7 +1176,7 @@ int PMPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* statu
   int retval = 0;
   smpi_bench_end();
 
-  if ((flag == nullptr) || (status == nullptr)) {
+  if (flag == nullptr) {
     retval = MPI_ERR_ARG;
   } else if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;

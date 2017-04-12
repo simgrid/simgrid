@@ -91,7 +91,7 @@ void smpi_execute(double duration)
 
 void smpi_bench_begin()
 {
-  if (smpi_privatize_global_variables) {
+  if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
     smpi_switch_data_segment(smpi_process()->index());
   }
 

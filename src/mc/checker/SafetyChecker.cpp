@@ -158,7 +158,7 @@ void SafetyChecker::run()
       this->checkNonTermination(next_state.get());
 
     /* Check whether we already explored next_state in the past (but only if interested in state-equality reduction) */
-    if (_sg_mc_max_visited_states == true)
+    if (_sg_mc_max_visited_states > 0)
       visitedState_ = visitedStates_.addVisitedState(expandedStatesCount_, next_state.get(), true);
 
     /* If this is a new state (or if we don't care about state-equality reduction) */
@@ -248,7 +248,7 @@ void SafetyChecker::backtrack()
         } else {
 
           const smx_actor_t previous_issuer = MC_smx_simcall_get_issuer(&prev_state->internal_req);
-          XBT_DEBUG("Simcall %d, process %lu (state %d) and simcall %d, process %lu (state %d) are independant",
+          XBT_DEBUG("Simcall %d, process %lu (state %d) and simcall %d, process %lu (state %d) are independent",
                     req->call, issuer->pid, state->num,
                     prev_state->internal_req.call,
                     previous_issuer->pid,

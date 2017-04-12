@@ -988,6 +988,12 @@ teshsuite/smpi/coll-scatter/coll-scatter
 teshsuite/smpi/macro-shared/macro-shared
 teshsuite/smpi/type-struct/type-struct
 teshsuite/smpi/type-vector/type-vector
+teshsuite/s4u/actor/actor
+teshsuite/s4u/concurrent_rw/concurrent_rw
+teshsuite/s4u/host_on_off_wait/host_on_off_wait
+teshsuite/s4u/listen_async/listen_async
+teshsuite/s4u/pid/pid
+teshsuite/s4u/storage_client_server/storage_client_server
 teshsuite/surf/lmm_usage/lmm_usage
 teshsuite/surf/maxmin_bench/maxmin_bench
 teshsuite/surf/surf_usage/surf_usage
