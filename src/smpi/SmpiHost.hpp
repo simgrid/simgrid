@@ -22,6 +22,8 @@ class SmpiHost {
 
   private:
   std::vector<s_smpi_factor_t> orecv_parsed_values;
+  std::vector<s_smpi_factor_t> osend_parsed_values;
+  std::vector<s_smpi_factor_t> oisend_parsed_values;
   simgrid::s4u::Host *host = nullptr;
 
   public:
@@ -30,12 +32,9 @@ class SmpiHost {
   explicit SmpiHost(simgrid::s4u::Host *ptr);
   ~SmpiHost();
 
-  double wtime;
-  double osend;
-  double oisend;
-  std::string orecv_;
   double orecv(size_t size);
-
+  double osend(size_t size);
+  double oisend(size_t size);
 };
 
 }
