@@ -249,11 +249,7 @@ then
     exit
 fi
 
-if [ -n "$WRAPPER" ]; then
-    EXEC="$WRAPPER $1"
-else
-    EXEC="$1"
-fi
+EXEC="$1"
 shift
 
 # steel --cfg and --logs options
@@ -493,7 +489,7 @@ fi
 
 export SMPI_GLOBAL_SIZE=${NUMPROCS}
 if [ -n "${KEEP}" ] ; then
-    echo ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PRIVATIZE} ${PLATFORMTMP} ${APPLICATIONTMP}
+    echo ${EXEC} ${PRIVATIZE} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
     if [ ${HOSTFILETMP} = 1 ] ; then
         echo "Generated hostfile ${HOSTFILE} kept."
     fi
@@ -513,7 +509,7 @@ fi
 # * The FD 3 is used to temporarily store FD 1. This is because the shell connects FD 1 to /dev/null when the command
 #   is launched in the background: this can be overriden in bash but not in standard bourne shell.
 exec 3<&0
-${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PRIVATIZE} ${PLATFORMTMP} ${APPLICATIONTMP} <&3 3>&- &
+${WRAPPER} "@SMPIMAIN@" ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP} <&3 3>&- &
 pid=$!
 exec 3>&-
 wait $pid
@@ -524,7 +520,7 @@ pid=""
 #
 if [ ${status} -ne 0 ] ; then
     if [ -z ${KEEP} ]; then
-        echo ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PRIVATIZE} ${PLATFORMTMP} ${APPLICATIONTMP}
+        echo ${EXEC} ${PRIVATIZE} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
         if [ ${HOSTFILETMP} = 1 ] ; then
             echo "Generated hostfile ${HOSTFILE} kept."
         fi

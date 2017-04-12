@@ -4,8 +4,7 @@ putfence1 4
 putfidx 4
 getfence1 4
 accfence1 4
-#Needs lock, unlock
-#adlb_mimic1 3
+adlb_mimic1 3
 accfence2 4
 putpscw1 4
 accpscw1 4
@@ -13,7 +12,6 @@ getgroup 4
 transpose1 2
 transpose2 2
 transpose3 2
-#Needs MPI_Win_allocate
 transpose3_shm 2
 transpose5 2
 transpose6 1
@@ -25,23 +23,21 @@ test2 2
 test3 2
 test4 2
 test5 2
-#Needs lock, unlock
 lockcontention 3
 lockcontention2 4
 lockcontention2 8
 #Buggy one.
 #lockcontention3 8
 lockopts 2
-#needs get_accumulate
 lock_dt 2
-#lock_dt_flush 2
-#lock_dt_flushlocal 2
-#lockall_dt 4 timeLimit=240
-#lockall_dt_flush 4 timeLimit=240
-#lockall_dt_flushall 4 timeLimit=240
-#lockall_dt_flushlocal 4 timeLimit=240
-#lockall_dt_flushlocalall 4 timeLimit=240
-#lock_contention_dt 4 timeLimit=240
+lock_dt_flush 2
+lock_dt_flushlocal 2
+lockall_dt 4 timeLimit=240
+lockall_dt_flush 4 timeLimit=240
+lockall_dt_flushall 4 timeLimit=240
+lockall_dt_flushlocal 4 timeLimit=240
+lockall_dt_flushlocalall 4 timeLimit=240
+lock_contention_dt 4 timeLimit=240
 transpose4 2
 #fetchandadd 7
 #fetchandadd_tree 7
@@ -68,9 +64,8 @@ selfrma 1
 #mixedsync 4
 epochtest 3
 locknull 2
-#Needs MPI_Rput, rget, racumulate,  MPI_Fetch_and_op, MPI_Compare_and_swap
-#rmanull 2
-#rmazero 2
+rmanull 2
+rmazero 2
 strided_acc_indexed 2
 strided_acc_onelock 2
 #needs MPI_Type_create_subarray
@@ -83,11 +78,11 @@ strided_getacc_indexed 4
 window_creation 2
 contention_put 4
 contention_putget 4
-#put_base 2
-#put_bottom 2
+put_base 2
+put_bottom 2
 #win_flavors 4 mpiversion=3.0
 #win_flavors 3 mpiversion=3.0
-#manyrma2 2 timeLimit=500
+manyrma2 2 timeLimit=500
 manyrma3 2
 #win_shared 4 mpiversion=3.0
 #win_shared_create_allocshm 4 mpiversion=3.0
@@ -96,10 +91,12 @@ manyrma3 2
 #win_shared_noncontig_put 4 mpiversion=3.0
 #win_zero 4 mpiversion=3.0
 win_dynamic_acc 4
-#get_acc_local 1 mpiversion=3.0
+get_acc_local 1
+#issues with concurrent updates..
 #linked_list 4 mpiversion=3.0
 #linked_list_fop 4 mpiversion=3.0
-#compare_and_swap 4 mpiversion=3.0
+compare_and_swap 4
+fetch_and_op 4
 #fetch_and_op_char 4 mpiversion=3.0
 #fetch_and_op_short 4 mpiversion=3.0
 #fetch_and_op_int 4 mpiversion=3.0
@@ -108,33 +105,36 @@ win_dynamic_acc 4
 #fetch_and_op_long_double 4 mpiversion=3.0
 #get_accumulate_double 4 mpiversion=3.0
 #get_accumulate_double_derived 4 mpiversion=3.0
-#get_accumulate_int 4 mpiversion=3.0
+get_accumulate 4
 #get_accumulate_int_derived 4 mpiversion=3.0
 #get_accumulate_long 4 mpiversion=3.0
 #get_accumulate_long_derived 4 mpiversion=3.0
 #get_accumulate_short 4 mpiversion=3.0
 #get_accumulate_short_derived 4 mpiversion=3.0
-#flush 4 mpiversion=3.0
-#reqops 4 mpiversion=3.0
-#req_example 4 mpiversion=3.0
+flush 4
+#reqops 4
+req_example 4
+rput_local_comp 2 mpiversion=3.0
+racc_local_comp 2 mpiversion=3.0
 win_info 4
+#issues with concurrent updates..
 #linked_list_lockall 4 mpiversion=3.0
-#pscw_ordering 4 mpiversion=3.0
-#linked_list_bench_lock_all 4 mpiversion=3.0
-#linked_list_bench_lock_excl 4 mpiversion=3.0
+pscw_ordering 4
+linked_list_bench_lock_all 4
+linked_list_bench_lock_excl 4 mpiversion=3.0
 #linked_list_bench_lock_shr 4 mpiversion=3.0
 #linked_list_bench_lock_shr_nocheck 4 mpiversion=3.0
 #mutex_bench_shm 4 mpiversion=3.0
 #mutex_bench_shm_ordered 4 mpiversion=3.0
-#rma-contig 2 mpiversion=3.0 timeLimit=720
-#badrma 2 mpiversion=3.0
-#acc-loc 4
+rma-contig 2 timeLimit=720
+badrma 2
+acc-loc 4
 #fence_shm 2 mpiversion=3.0
 #mutex_bench 4 mpiversion=3.0
 #mutex_bench_shared 4 mpiversion=3.0
 win_shared_zerobyte 4 mpiversion=3.0
 win_shared_put_flush_get 4 mpiversion=3.0
-#get-struct 2
+get-struct 2
 at_complete 2
 #atomic_rmw_fop 3
 #atomic_rmw_cas 3
@@ -156,7 +156,8 @@ large-small-acc 2
 #gacc_flush_get 3 mpiversion=3.0
 #fop_flush_get 3 mpiversion=3.0
 #cas_flush_get 3 mpiversion=3.0
-#rget-unlock 2 mpiversion=3.0
+#We still have an issue here, unlock should finish R* calls, but this causes issues.
+#rget-unlock 2
 #overlap_wins_put 3
 #overlap_wins_acc 3
 #overlap_wins_gacc 3

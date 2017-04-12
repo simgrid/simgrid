@@ -1,5 +1,4 @@
-/* Copyright (c) 2011-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2011-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -21,8 +20,7 @@
 #include "src/mc/mc_smx.h"
 #include "src/mc/VisitedState.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_VisitedState, mc,
-                                "Logging specific to state equaity detection mechanisms");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_VisitedState, mc, "Logging specific to state equality detection mechanisms");
 
 namespace simgrid {
 namespace mc {
@@ -36,10 +34,7 @@ static int snapshot_compare(simgrid::mc::VisitedState* state1, simgrid::mc::Visi
   return snapshot_compare(num1, s1, num2, s2);
 }
 
-/**
- * \brief Save the current state
- * \return Snapshot of the current state.
- */
+/** @brief Save the current state */
 VisitedState::VisitedState(unsigned long state_number)
 {
   simgrid::mc::Process* process = &(mc_model_checker->process());

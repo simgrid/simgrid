@@ -315,7 +315,7 @@ int RMACheck(int i, int *buf, MPI_Aint bufsize)
     case 6:    /* a few small puts (like strided put, but 1 word at a time) */
         /* FIXME: The conditional and increment are reversed below.  This looks
          * like a bug, and currently prevents the following test from running. */
-        for (j = 0; j++; j < veccount) {
+        for (j = 0; j < veccount; j++) {
             if (buf[j * stride] != PUT_VAL + j) {
                 errs++;
                 printf("case %d: value is %d should be %d\n", i, buf[j * stride], PUT_VAL + j);
@@ -326,7 +326,7 @@ int RMACheck(int i, int *buf, MPI_Aint bufsize)
     case 7:    /* a few small accumulates (like strided acc, but 1 word at a time) */
         /* FIXME: The conditional and increment are reversed below.  This looks
          * like a bug, and currently prevents the following test from running. */
-        for (j = 0; j++; j < veccount) {
+        for (j = 0; j < veccount;j++) {
             if (buf[j * stride] != ACC_VAL + j + OFFSET_2 + j * stride) {
                 errs++;
                 printf("case %d: value is %d should be %d\n", i,

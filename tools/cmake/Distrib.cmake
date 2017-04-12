@@ -13,6 +13,7 @@ if(enable_smpi)
     ${CMAKE_BINARY_DIR}/bin/smpicc
     ${CMAKE_BINARY_DIR}/bin/smpicxx
     ${CMAKE_BINARY_DIR}/bin/smpirun
+    ${CMAKE_BINARY_DIR}/bin/smpimain
     DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
   if(SMPI_FORTRAN)
     install(PROGRAMS
@@ -20,6 +21,12 @@ if(enable_smpi)
       ${CMAKE_BINARY_DIR}/bin/smpiff
       DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
   endif()
+endif()
+
+if(enable_model-checking)
+  install(
+    PROGRAMS ${CMAKE_BINARY_DIR}/bin/simgrid-mc
+    DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
 endif()
 
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)

@@ -147,7 +147,7 @@ s4u::Comm &Comm::send_async(MailboxPtr dest, void *data, int simulatedSize) {
 
 s4u::Comm &Comm::recv_async(MailboxPtr dest, void **data) {
   s4u::Comm &res = s4u::Comm::recv_init(dest);
-  res.setDstData(data);
+  res.setDstData(data, sizeof(*data));
   res.start();
   return res;
 }

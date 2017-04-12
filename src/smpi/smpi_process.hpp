@@ -18,42 +18,39 @@ namespace smpi{
 
 class Process {
   private:
-    double simulated_;
-    int *argc_;
-    char ***argv_;
+    double simulated_ = 0 /* Used to time with simulated_start/elapsed */;
+    int* argc_        = nullptr;
+    char*** argv_     = nullptr;
     simgrid::s4u::MailboxPtr mailbox_;
     simgrid::s4u::MailboxPtr mailbox_small_;
     xbt_mutex_t mailboxes_mutex_;
     xbt_os_timer_t timer_;
-    MPI_Comm comm_self_;
-    MPI_Comm comm_intra_;
-    MPI_Comm* comm_world_;
-    void *data_;                   /* user data */
-    int index_;
+    MPI_Comm comm_self_   = MPI_COMM_NULL;
+    MPI_Comm comm_intra_  = MPI_COMM_NULL;
+    MPI_Comm* comm_world_ = nullptr;
+    int index_            = MPI_UNDEFINED;
     char state_;
-    int sampling_;                 /* inside an SMPI_SAMPLE_ block? */
-    char* instance_id_;
-    bool replaying_;                /* is the process replaying a trace */
+    int sampling_                   = 0; /* inside an SMPI_SAMPLE_ block? */
+    char* instance_id_              = nullptr;
+    bool replaying_                 = false; /* is the process replaying a trace */
     msg_bar_t finalization_barrier_;
-    int return_value_;
+    int return_value_ = 0;
     smpi_trace_call_location_t trace_call_loc_;
+    smx_actor_t process_ = nullptr;
 #if HAVE_PAPI
   /** Contains hardware data as read by PAPI **/
     int papi_event_set_;
     papi_counter_t papi_counter_data_;
 #endif
   public:
-    explicit Process(int index);
-    void destroy();
-    void set_data(int index, int *argc, char ***argv);
+    explicit Process(int index, msg_bar_t barrier);
+    void set_data(int index, int* argc, char*** argv);
     void finalize();
     int finalized();
     int initialized();
     void mark_as_initialized();
     void set_replaying(bool value);
     bool replaying();
-    void set_user_data(void *data);
-    void *get_user_data();
     smpi_trace_call_location_t* call_location();
     int index();
     MPI_Comm comm_world();
@@ -73,10 +70,10 @@ class Process {
     void set_sampling(int s);
     int sampling();
     msg_bar_t finalization_barrier();
-    void set_finalization_barrier(msg_bar_t bar);
     int return_value();
     void set_return_value(int val);
     static void init(int *argc, char ***argv);
+    smx_actor_t process();
 };
 
 

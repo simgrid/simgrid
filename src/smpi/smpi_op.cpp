@@ -18,8 +18,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_op, smpi, "Logging specific to SMPI (op)");
 #define BAND_OP(a, b) (b) &= (a)
 #define BOR_OP(a, b)  (b) |= (a)
 #define BXOR_OP(a, b) (b) ^= (a)
-#define MAXLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (b) : (a)
-#define MINLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (a) : (b)
+#define MAXLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (b) : ((a.value) == (b.value) ? ((a.index) < (b.index) ? (a) : (b)) : (a))
+#define MINLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (a) : ((a.value) == (b.value) ? ((a.index) < (b.index) ? (a) : (b)) : (b))
 
 #define APPLY_FUNC(a, b, length, type, func) \
 {                                          \
@@ -243,7 +243,7 @@ void Op::apply(void *invec, void *inoutvec, int *len, MPI_Datatype datatype)
     smpi_switch_data_segment(smpi_process()->index());
   }
 
-  if(!smpi_process()->replaying()){
+  if(!smpi_process()->replaying() && *len > 0){
     if(! is_fortran_op_)
       this->func_(invec, inoutvec, len, &datatype);
     else{

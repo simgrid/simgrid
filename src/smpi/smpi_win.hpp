@@ -31,6 +31,7 @@ class Win : public F2C, public Keyval {
   MPI_Group group_;
   int count_; //for ordering the accs
   xbt_mutex_t lock_mut_;
+  xbt_mutex_t atomic_mut_;
   std::list<int> lockers_;
   int rank_; // to identify owner for barriers in MPI_COMM_WORLD
   int mode_; // exclusive or shared lock
@@ -62,18 +63,29 @@ public:
   int disp_unit();
   int fence(int assert);
   int put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
-              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype);
+              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Request* request=nullptr);
   int get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
-              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype);
+              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Request* request=nullptr);
   int accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
-              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op);
+              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Request* request=nullptr);
   int get_accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr, 
               int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count, 
-              MPI_Datatype target_datatype, MPI_Op op);
+              MPI_Datatype target_datatype, MPI_Op op, MPI_Request* request=nullptr);
+  int compare_and_swap(void *origin_addr, void *compare_addr,
+        void *result_addr, MPI_Datatype datatype, int target_rank,
+        MPI_Aint target_disp);
   static Win* f2c(int id);
+
   int lock(int lock_type, int rank, int assert);
   int unlock(int rank);
+  int lock_all(int assert);
+  int unlock_all();
+  int flush(int rank);
+  int flush_local(int rank);
+  int flush_all();
+  int flush_local_all();
   int finish_comms();
+  int finish_comms(int rank);
 };
 
 

@@ -26,6 +26,7 @@ Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
   requests_ = new std::vector<MPI_Request>();
   mut_=xbt_mutex_init();
   lock_mut_=xbt_mutex_init();
+  atomic_mut_=xbt_mutex_init();
   connected_wins_ = new MPI_Win[comm_size];
   connected_wins_[rank_] = this;
   count_ = 0;
@@ -68,6 +69,7 @@ Win::~Win(){
     MSG_barrier_destroy(bar_);
   xbt_mutex_destroy(mut_);
   xbt_mutex_destroy(lock_mut_);
+  xbt_mutex_destroy(atomic_mut_);
 
   if(allocated_ !=0)
     xbt_free(base_);
@@ -161,18 +163,15 @@ int Win::fence(int assert)
     int size = static_cast<int>(reqs->size());
     // start all requests that have been prepared by another process
     if (size > 0) {
-      for (const auto& req : *reqs) {
-        if (req && (req->flags() & PREPARED))
-          req->start();
-      }
-
       MPI_Request* treqs = &(*reqs)[0];
-
       Request::waitall(size, treqs, MPI_STATUSES_IGNORE);
     }
     count_=0;
     xbt_mutex_release(mut_);
   }
+
+  if(assert==MPI_MODE_NOSUCCEED)//there should be no ops after this one, tell we are closed.
+    opened_=0;
   assert_ = assert;
 
   MSG_barrier_wait(bar_);
@@ -182,7 +181,7 @@ int Win::fence(int assert)
 }
 
 int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
-              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype)
+              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Request* request)
 {
   //get receiver pointer
   MPI_Win recv_win = connected_wins_[target_rank];
@@ -212,26 +211,34 @@ int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype, smpi_process()->index(),
         comm_->group()->index(target_rank), SMPI_RMA_TAG+1, recv_win->comm_, MPI_OP_NULL);
 
-    //push request to receiver's win
-    xbt_mutex_acquire(recv_win->mut_);
-    recv_win->requests_->push_back(rreq);
-    xbt_mutex_release(recv_win->mut_);
     //start send
     sreq->start();
 
-    //push request to sender's win
-    xbt_mutex_acquire(mut_);
-    requests_->push_back(sreq);
-    xbt_mutex_release(mut_);
+    if(request!=nullptr){
+      *request=sreq;
+    }else{
+      xbt_mutex_acquire(mut_);
+      requests_->push_back(sreq);
+      xbt_mutex_release(mut_);
+    }
+
+    //push request to receiver's win
+    xbt_mutex_acquire(recv_win->mut_);
+    recv_win->requests_->push_back(rreq);
+    rreq->start();
+    xbt_mutex_release(recv_win->mut_);
+
   }else{
     Datatype::copy(origin_addr, origin_count, origin_datatype, recv_addr, target_count, target_datatype);
+    if(request!=nullptr)
+      *request = MPI_REQUEST_NULL;
   }
 
   return MPI_SUCCESS;
 }
 
 int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
-              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype)
+              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Request* request)
 {
   //get sender pointer
   MPI_Win send_win = connected_wins_[target_rank];
@@ -272,12 +279,19 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
 
     //start recv
     rreq->start();
-    //push request to sender's win
-    xbt_mutex_acquire(mut_);
-    requests_->push_back(rreq);
-    xbt_mutex_release(mut_);
+
+    if(request!=nullptr){
+      *request=rreq;
+    }else{
+      xbt_mutex_acquire(mut_);
+      requests_->push_back(rreq);
+      xbt_mutex_release(mut_);
+    }
+
   }else{
     Datatype::copy(send_addr, target_count, target_datatype, origin_addr, origin_count, origin_datatype);
+    if(request!=nullptr)
+      *request=MPI_REQUEST_NULL;
   }
 
   return MPI_SUCCESS;
@@ -285,7 +299,7 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
 
 
 int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
-              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op)
+              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Request* request)
 {
 
   //get receiver pointer
@@ -318,24 +332,29 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
         smpi_process()->index(), comm_->group()->index(target_rank), SMPI_RMA_TAG-3-count_, recv_win->comm_, op);
 
     count_++;
+
+    //start send
+    sreq->start();
     //push request to receiver's win
     xbt_mutex_acquire(recv_win->mut_);
     recv_win->requests_->push_back(rreq);
+    rreq->start();
     xbt_mutex_release(recv_win->mut_);
-    //start send
-    sreq->start();
 
-    //push request to sender's win
-    xbt_mutex_acquire(mut_);
-    requests_->push_back(sreq);
-    xbt_mutex_release(mut_);
+    if(request!=nullptr){
+      *request=sreq;
+    }else{
+      xbt_mutex_acquire(mut_);
+      requests_->push_back(sreq);
+      xbt_mutex_release(mut_);
+    }
 
   return MPI_SUCCESS;
 }
 
 int Win::get_accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr, 
               int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count, 
-              MPI_Datatype target_datatype, MPI_Op op){
+              MPI_Datatype target_datatype, MPI_Op op, MPI_Request* request){
 
   //get sender pointer
   MPI_Win send_win = connected_wins_[target_rank];
@@ -354,14 +373,52 @@ int Win::get_accumulate( void *origin_addr, int origin_count, MPI_Datatype origi
     return MPI_ERR_ARG;
 
   XBT_DEBUG("Entering MPI_Get_accumulate from %d", target_rank);
-
+  //need to be sure ops are correctly ordered, so finish request here ? slow.
+  MPI_Request req;
+  xbt_mutex_acquire(send_win->atomic_mut_);
   get(result_addr, result_count, result_datatype, target_rank,
-              target_disp, target_count, target_datatype);
-  accumulate(origin_addr, origin_count, origin_datatype, target_rank,
-              target_disp, target_count, target_datatype, op);
-
+              target_disp, target_count, target_datatype, &req);
+  if (req != MPI_REQUEST_NULL)
+    Request::wait(&req, MPI_STATUS_IGNORE);
+  if(op!=MPI_NO_OP)
+    accumulate(origin_addr, origin_count, origin_datatype, target_rank,
+              target_disp, target_count, target_datatype, op, &req);
+  if (req != MPI_REQUEST_NULL)
+    Request::wait(&req, MPI_STATUS_IGNORE);
+  xbt_mutex_release(send_win->atomic_mut_);
   return MPI_SUCCESS;
 
+}
+
+int Win::compare_and_swap(void *origin_addr, void *compare_addr,
+        void *result_addr, MPI_Datatype datatype, int target_rank,
+        MPI_Aint target_disp){
+  //get sender pointer
+  MPI_Win send_win = connected_wins_[target_rank];
+
+  if(opened_==0){//check that post/start has been done
+    // no fence or start .. lock ok ?
+    int locked=0;
+    for(auto it : send_win->lockers_)
+      if (it == comm_->rank())
+        locked = 1;
+    if(locked != 1)
+      return MPI_ERR_WIN;
+  }
+
+  XBT_DEBUG("Entering MPI_Compare_and_swap with %d", target_rank);
+  MPI_Request req;
+  xbt_mutex_acquire(send_win->atomic_mut_);
+  get(result_addr, 1, datatype, target_rank,
+              target_disp, 1, datatype, &req);
+  if (req != MPI_REQUEST_NULL)
+    Request::wait(&req, MPI_STATUS_IGNORE);
+  if(! memcmp (result_addr, compare_addr, datatype->get_extent() )){
+    put(origin_addr, 1, datatype, target_rank,
+              target_disp, 1, datatype);
+  }
+  xbt_mutex_release(send_win->atomic_mut_);
+  return MPI_SUCCESS;
 }
 
 int Win::start(MPI_Group group, int assert){
@@ -502,9 +559,6 @@ int Win::wait(){
 }
 
 int Win::lock(int lock_type, int rank, int assert){
-  if(opened_!=0)
-    return MPI_ERR_WIN;
-
   MPI_Win target_win = connected_wins_[rank];
 
   if ((lock_type == MPI_LOCK_EXCLUSIVE && target_win->mode_ != MPI_LOCK_SHARED)|| target_win->mode_ == MPI_LOCK_EXCLUSIVE){
@@ -518,16 +572,25 @@ int Win::lock(int lock_type, int rank, int assert){
 
   target_win->lockers_.push_back(comm_->rank());
 
-  int finished = finish_comms();
+  int finished = finish_comms(rank);
   XBT_DEBUG("Win_lock %d - Finished %d RMA calls", rank, finished);
-
+  finished = target_win->finish_comms(rank_);
+  XBT_DEBUG("Win_lock target %d - Finished %d RMA calls", rank, finished);
   return MPI_SUCCESS;
 }
 
-int Win::unlock(int rank){
-  if(opened_!=0)
-    return MPI_ERR_WIN;
+int Win::lock_all(int assert){
+  int i=0;
+  int retval = MPI_SUCCESS;
+  for (i=0; i<comm_->size();i++){
+      int ret = this->lock(MPI_LOCK_SHARED, i, assert);
+      if(ret != MPI_SUCCESS)
+        retval = ret;
+  }
+  return retval;
+}
 
+int Win::unlock(int rank){
   MPI_Win target_win = connected_wins_[rank];
   int target_mode = target_win->mode_;
   target_win->mode_= 0;
@@ -536,9 +599,54 @@ int Win::unlock(int rank){
     xbt_mutex_release(target_win->lock_mut_);
   }
 
-  int finished = finish_comms();
+  int finished = finish_comms(rank);
   XBT_DEBUG("Win_unlock %d - Finished %d RMA calls", rank, finished);
+  finished = target_win->finish_comms(rank_);
+  XBT_DEBUG("Win_unlock target %d - Finished %d RMA calls", rank, finished);
+  return MPI_SUCCESS;
+}
 
+int Win::unlock_all(){
+  int i=0;
+  int retval = MPI_SUCCESS;
+  for (i=0; i<comm_->size();i++){
+      int ret = this->unlock(i);
+      if(ret != MPI_SUCCESS)
+        retval = ret;
+  }
+  return retval;
+}
+
+int Win::flush(int rank){
+  MPI_Win target_win = connected_wins_[rank];
+  int finished = finish_comms(rank);
+  XBT_DEBUG("Win_flush on local %d - Finished %d RMA calls", rank_, finished);
+  finished = target_win->finish_comms(rank_);
+  XBT_DEBUG("Win_flush on remote %d - Finished %d RMA calls", rank, finished);
+  return MPI_SUCCESS;
+}
+
+int Win::flush_local(int rank){
+  int finished = finish_comms(rank);
+  XBT_DEBUG("Win_flush_local for rank %d - Finished %d RMA calls", rank, finished);
+  return MPI_SUCCESS;
+}
+
+int Win::flush_all(){
+  int i=0;
+  int finished = 0;
+  finished = finish_comms();
+  XBT_DEBUG("Win_flush_all on local - Finished %d RMA calls", finished);
+  for (i=0; i<comm_->size();i++){
+    finished = connected_wins_[i]->finish_comms(rank_);
+    XBT_DEBUG("Win_flush_all on %d - Finished %d RMA calls", i, finished);
+  }
+  return MPI_SUCCESS;
+}
+
+int Win::flush_local_all(){
+  int finished = finish_comms();
+  XBT_DEBUG("Win_flush_local_all - Finished %d RMA calls", finished);
   return MPI_SUCCESS;
 }
 
@@ -553,15 +661,38 @@ int Win::finish_comms(){
   std::vector<MPI_Request> *reqqs = requests_;
   int size = static_cast<int>(reqqs->size());
   if (size > 0) {
-    // start all requests that have been prepared by another process
-    for (const auto& req : *reqqs) {
-      if (req && (req->flags() & PREPARED))
-        req->start();
-    }
-
     MPI_Request* treqs = &(*reqqs)[0];
     Request::waitall(size, treqs, MPI_STATUSES_IGNORE);
     reqqs->clear();
+  }
+  xbt_mutex_release(mut_);
+  return size;
+}
+
+int Win::finish_comms(int rank){
+  xbt_mutex_acquire(mut_);
+  //Finish own requests
+  std::vector<MPI_Request> *reqqs = requests_;
+  int size = static_cast<int>(reqqs->size());
+  if (size > 0) {
+    size = 0;
+    std::vector<MPI_Request>* myreqqs = new std::vector<MPI_Request>();
+    std::vector<MPI_Request>::iterator iter = reqqs->begin();
+    while (iter != reqqs->end()){
+      if(((*iter)!=MPI_REQUEST_NULL) && (((*iter)->src() == rank) || ((*iter)->dst() == rank))){
+          myreqqs->push_back(*iter);
+          iter = reqqs->erase(iter);
+          size++;
+      } else {
+        ++iter;
+      }
+    }
+    if(size >0){
+      MPI_Request* treqs = &(*myreqqs)[0];
+      Request::waitall(size, treqs, MPI_STATUSES_IGNORE);
+      myreqqs->clear();
+      delete myreqqs;
+    }
   }
   xbt_mutex_release(mut_);
   return size;

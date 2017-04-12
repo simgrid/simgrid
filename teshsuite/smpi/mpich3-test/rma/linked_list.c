@@ -47,13 +47,8 @@ static const llist_ptr_t nil = { -1, (MPI_Aint) MPI_BOTTOM };
 
 static const int verbose = 0;
 
-/* List of locally allocated list elements. */
-static llist_elem_t **my_elems = NULL;
-static int my_elems_size = 0;
-static int my_elems_count = 0;
-
 /* Allocate a new shared linked list element */
-MPI_Aint alloc_elem(int value, MPI_Win win)
+static MPI_Aint alloc_elem(int value, MPI_Win win, llist_elem_t ***my_elems, int* my_elems_size, int* my_elems_count)
 {
     MPI_Aint disp;
     llist_elem_t *elem_ptr;
@@ -65,12 +60,12 @@ MPI_Aint alloc_elem(int value, MPI_Win win)
     MPI_Win_attach(win, elem_ptr, sizeof(llist_elem_t));
 
     /* Add the element to the list of local elements so we can free it later. */
-    if (my_elems_size == my_elems_count) {
-        my_elems_size += 100;
-        my_elems = realloc(my_elems, my_elems_size * sizeof(void *));
+    if (*my_elems_size == *my_elems_count) {
+        *my_elems_size += 100;
+        *my_elems = realloc(*my_elems, *my_elems_size * sizeof(void *));
     }
-    my_elems[my_elems_count] = elem_ptr;
-    my_elems_count++;
+    (*my_elems)[*my_elems_count] = elem_ptr;
+    (*my_elems_count)++;
 
     MPI_Get_address(elem_ptr, &disp);
     return disp;
@@ -81,6 +76,10 @@ int main(int argc, char **argv)
     int procid, nproc, i;
     MPI_Win llist_win;
     llist_ptr_t head_ptr, tail_ptr;
+    /* List of locally allocated list elements. */
+    llist_elem_t **my_elems = NULL;
+    int my_elems_size = 0;
+    int my_elems_count = 0;
 
     MPI_Init(&argc, &argv);
 
@@ -91,7 +90,7 @@ int main(int argc, char **argv)
 
     /* Process 0 creates the head node */
     if (procid == 0)
-        head_ptr.disp = alloc_elem(-1, llist_win);
+        head_ptr.disp = alloc_elem(-1, llist_win, &my_elems, &my_elems_size, &my_elems_count);
 
     /* Broadcast the head pointer to everyone */
     head_ptr.rank = 0;
@@ -105,7 +104,7 @@ int main(int argc, char **argv)
 
         /* Create a new list element and register it with the window */
         new_elem_ptr.rank = procid;
-        new_elem_ptr.disp = alloc_elem(procid, llist_win);
+        new_elem_ptr.disp = alloc_elem(procid, llist_win, &my_elems, &my_elems_size, &my_elems_count);
 
         /* Append the new node to the list.  This might take multiple attempts if
          * others have already appended and our tail pointer is stale. */

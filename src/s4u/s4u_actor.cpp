@@ -190,9 +190,23 @@ void send(MailboxPtr chan, void* payload, double simulatedSize)
   c.wait();
 }
 
+void send(MailboxPtr chan, void* payload, double simulatedSize, double timeout)
+{
+  Comm& c = Comm::send_init(chan);
+  c.setRemains(simulatedSize);
+  c.setSrcData(payload);
+  // c.start() is optional.
+  c.wait(timeout);
+}
+
 Comm& isend(MailboxPtr chan, void* payload, double simulatedSize)
 {
   return Comm::send_async(chan, payload, simulatedSize);
+}
+
+Comm& irecv(MailboxPtr chan, void** data)
+{
+  return Comm::recv_async(chan, data);
 }
 
 int pid()

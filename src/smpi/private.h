@@ -95,7 +95,13 @@ XBT_PRIVATE void smpi_mpi_init();
 // utilities
 extern XBT_PRIVATE double smpi_cpu_threshold;
 extern XBT_PRIVATE double smpi_host_speed;
-extern XBT_PRIVATE bool smpi_privatize_global_variables;
+
+#define SMPI_PRIVATIZE_NONE 0
+#define SMPI_PRIVATIZE_MMAP 1
+#define SMPI_PRIVATIZE_DLOPEN 2
+#define SMPI_PRIVATIZE_DEFAULT SMPI_PRIVATIZE_MMAP
+extern XBT_PRIVATE int smpi_privatize_global_variables;
+
 extern XBT_PRIVATE char* smpi_start_data_exe; //start of the data+bss segment of the executable
 extern XBT_PRIVATE int smpi_size_data_exe; //size of the data+bss segment of the executable
 

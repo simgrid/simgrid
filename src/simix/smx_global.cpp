@@ -94,7 +94,7 @@ static void segvhandler(int signum, siginfo_t *siginfo, void *context)
   } else  if (siginfo->si_signo == SIGSEGV) {
     fprintf(stderr, "Segmentation fault.\n");
 #if HAVE_SMPI
-    if (smpi_enabled() && !smpi_privatize_global_variables) {
+    if (smpi_enabled() && smpi_privatize_global_variables == SMPI_PRIVATIZE_NONE) {
 #if HAVE_PRIVATIZATION
       fprintf(stderr, "Try to enable SMPI variable privatization with --cfg=smpi/privatize-global-variables:yes.\n");
 #else
@@ -228,7 +228,8 @@ void SIMIX_global_init(int *argc, char **argv)
     sg_platf_init();
     simgrid::s4u::onPlatformCreated.connect(SIMIX_post_create_environment);
     simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
-      host.extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
+      if (host.extension<simgrid::simix::Host>() == nullptr) // another callback to the same signal may have created it
+        host.extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
     });
 
     simgrid::surf::storageCreatedCallbacks.connect([](simgrid::surf::Storage* storage) {
@@ -512,6 +513,12 @@ void SIMIX_run()
         SIMIX_wake_processes();
       } while (SIMIX_execute_tasks());
 
+      /* If only daemon processes remain, cancel their actions, mark them to die and reschedule them */
+      if (simix_global->process_list.size() == simix_global->daemons.size())
+        for (const auto& dmon : simix_global->daemons) {
+          XBT_DEBUG("Kill %s", dmon->cname());
+          SIMIX_process_kill(dmon, simix_global->maestro_process);
+        }
     }
 
     time = SIMIX_timer_next();
@@ -547,12 +554,6 @@ void SIMIX_run()
     XBT_DEBUG("### time %f, #processes %zu, #to_run %lu", time, simix_global->process_list.size(),
               xbt_dynar_length(simix_global->process_to_run));
 
-    /* If only daemon processes remain, cancel their actions, mark them to die and reschedule them */
-    if (simix_global->process_list.size() == simix_global->daemons.size())
-      for (const auto& dmon : simix_global->daemons) {
-        XBT_DEBUG("Kill %s", dmon->cname());
-        SIMIX_process_kill(dmon, simix_global->maestro_process);
-      }
 
     if (xbt_dynar_is_empty(simix_global->process_to_run) &&
         !simix_global->process_list.empty())
