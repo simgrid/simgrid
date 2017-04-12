@@ -220,6 +220,8 @@ set(SMPI_SRC
   src/smpi/smpi_f2c.hpp
   src/smpi/smpi_group.cpp
   src/smpi/smpi_group.hpp
+  src/smpi/SmpiHost.cpp
+  src/smpi/SmpiHost.hpp
   src/smpi/smpi_mpi.cpp
   src/smpi/smpi_datatype.cpp
   src/smpi/smpi_datatype.hpp

@@ -11,6 +11,7 @@
 #include "src/simix/smx_private.h"
 #include "simgrid/sg_config.h"
 #include "smpi/smpi_utils.hpp"
+#include "src/smpi/SmpiHost.hpp"
 #include <simgrid/s4u/host.hpp>
 #include "src/kernel/activity/SynchroComm.hpp"
 
@@ -21,86 +22,9 @@ static simgrid::config::Flag<double> smpi_iprobe_sleep(
 static simgrid::config::Flag<double> smpi_test_sleep(
   "smpi/test", "Minimum time to inject inside a call to MPI_Test", 1e-4);
 
-std::vector<s_smpi_factor_t> smpi_os_values;
-std::vector<s_smpi_factor_t> smpi_or_values;
 std::vector<s_smpi_factor_t> smpi_ois_values;
 
 extern void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t);
-
-static double smpi_os(size_t size)
-{
-  if (smpi_os_values.empty()) {
-    smpi_os_values = parse_factor(xbt_cfg_get_string("smpi/os"));
-  }
-  double current=smpi_os_values.empty()?0.0:smpi_os_values[0].values[0]+smpi_os_values[0].values[1]*size;
-  // Iterate over all the sections that were specified and find the right
-  // value. (fact.factor represents the interval sizes; we want to find the
-  // section that has fact.factor <= size and no other such fact.factor <= size)
-  // Note: parse_factor() (used before) already sorts the vector we iterate over!
-  for (auto& fact : smpi_os_values) {
-    if (size <= fact.factor) { // Values already too large, use the previously computed value of current!
-      XBT_DEBUG("os : %zu <= %zu return %.10f", size, fact.factor, current);
-      return current;
-    }else{
-      // If the next section is too large, the current section must be used.
-      // Hence, save the cost, as we might have to use it.
-      current = fact.values[0]+fact.values[1]*size;
-    }
-  }
-  XBT_DEBUG("Searching for smpi/os: %zu is larger than the largest boundary, return %.10f", size, current);
-
-  return current;
-}
-
-static double smpi_ois(size_t size)
-{
-  if (smpi_ois_values.empty()) {
-    smpi_ois_values = parse_factor(xbt_cfg_get_string("smpi/ois"));
-  }
-  double current=smpi_ois_values.empty()?0.0:smpi_ois_values[0].values[0]+smpi_ois_values[0].values[1]*size;
-  // Iterate over all the sections that were specified and find the right value. (fact.factor represents the interval
-  // sizes; we want to find the section that has fact.factor <= size and no other such fact.factor <= size)
-  // Note: parse_factor() (used before) already sorts the vector we iterate over!
-  for (auto& fact : smpi_ois_values) {
-    if (size <= fact.factor) { // Values already too large, use the previously  computed value of current!
-      XBT_DEBUG("ois : %zu <= %zu return %.10f", size, fact.factor, current);
-      return current;
-    }else{
-      // If the next section is too large, the current section must be used.
-      // Hence, save the cost, as we might have to use it.
-      current = fact.values[0]+fact.values[1]*size;
-    }
-  }
-  XBT_DEBUG("Searching for smpi/ois: %zu is larger than the largest boundary, return %.10f", size, current);
-
-  return current;
-}
-
-static double smpi_or(size_t size)
-{
-  if (smpi_or_values.empty()) {
-    smpi_or_values = parse_factor(xbt_cfg_get_string("smpi/or"));
-  }
-  
-  double current=smpi_or_values.empty()?0.0:smpi_or_values.front().values[0]+smpi_or_values.front().values[1]*size;
-
-  // Iterate over all the sections that were specified and find the right value. (fact.factor represents the interval
-  // sizes; we want to find the section that has fact.factor <= size and no other such fact.factor <= size)
-  // Note: parse_factor() (used before) already sorts the vector we iterate over!
-  for (auto fact : smpi_or_values) {
-    if (size <= fact.factor) { // Values already too large, use the previously computed value of current!
-      XBT_DEBUG("or : %zu <= %zu return %.10f", size, fact.factor, current);
-      return current;
-    } else {
-      // If the next section is too large, the current section must be used.
-      // Hence, save the cost, as we might have to use it.
-      current=fact.values[0]+fact.values[1]*size;
-    }
-  }
-  XBT_DEBUG("smpi_or: %zu is larger than largest boundary, return %.10f", size, current);
-
-  return current;
-}
 
 namespace simgrid{
 namespace smpi{
@@ -472,7 +396,7 @@ void Request::start()
       if(!(old_type_->flags() & DT_FLAG_DERIVED)){
         oldbuf = buf_;
         if (!process->replaying() && oldbuf != nullptr && size_!=0){
-          if((smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP)
+          if((smpi_privatize_global_variables != 0)
             && (static_cast<char*>(buf_) >= smpi_start_data_exe)
             && (static_cast<char*>(buf_) < smpi_start_data_exe + smpi_size_data_exe )){
             XBT_DEBUG("Privatization : We are sending from a zone inside global memory. Switch data segment ");
@@ -487,9 +411,11 @@ void Request::start()
 
     //if we are giving back the control to the user without waiting for completion, we have to inject timings
     double sleeptime = 0.0;
-    if(detached_ != 0 || ((flags_ & (ISEND|SSEND)) != 0)){// issend should be treated as isend
-      //isend and send timings may be different
-      sleeptime = ((flags_ & ISEND) != 0) ? smpi_ois(size_) : smpi_os(size_);
+    if (detached_ != 0 || ((flags_ & (ISEND | SSEND)) != 0)) { // issend should be treated as isend
+      // isend and send timings may be different
+      sleeptime = ((flags_ & ISEND) != 0)
+                      ? simgrid::s4u::Actor::self()->host()->extension<simgrid::smpi::SmpiHost>()->oisend(size_)
+                      : simgrid::s4u::Actor::self()->host()->extension<simgrid::smpi::SmpiHost>()->osend(size_);
     }
 
     if(sleeptime > 0.0){
@@ -766,7 +692,7 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
     if((((req->flags_ & ACCUMULATE) != 0) || (datatype->flags() & DT_FLAG_DERIVED)) && (!smpi_is_shared(req->old_buf_))){
 
       if (!smpi_process()->replaying()){
-        if( smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP && (static_cast<char*>(req->old_buf_) >= smpi_start_data_exe)
+        if( smpi_privatize_global_variables != 0 && (static_cast<char*>(req->old_buf_) >= smpi_start_data_exe)
             && ((char*)req->old_buf_ < smpi_start_data_exe + smpi_size_data_exe )){
             XBT_VERB("Privatization : We are unserializing to a zone in global memory  Switch data segment ");
             smpi_switch_data_segment(smpi_process()->index());
@@ -795,7 +721,7 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
   }
   if(req->detached_sender_ != nullptr){
     //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
-    double sleeptime = smpi_or(req->real_size_);
+    double sleeptime = simgrid::s4u::Actor::self()->host()->extension<simgrid::smpi::SmpiHost>()->orecv(req->real_size());
     if(sleeptime > 0.0){
       simcall_process_sleep(sleeptime);
       XBT_DEBUG("receiving size of %zu : sleep %f ", req->real_size_, sleeptime);
