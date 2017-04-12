@@ -3,10 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <dlfcn.h>
+#include <fcntl.h>
 #include <spawn.h>
+#include <sys/sendfile.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <dlfcn.h>
 
 #include "mc/mc.h"
 #include "private.h"
@@ -515,24 +518,28 @@ int smpi_main(const char* executable, int argc, char *argv[])
   if (smpi_privatize_global_variables == SMPI_PRIVATIZE_DLOPEN) {
 
     std::string executable_copy = executable;
-    simix_global->default_function = [executable_copy](std::vector<std::string> args) {
-      return std::function<void()>([executable_copy, args] {
+
+    // Prepare the copy of the binary (open the file and get its size)
+    // (fdin will remain open for the whole process execution. That's a sort of leak but we can live with it)
+    int fdin = open(executable_copy.c_str(), O_RDONLY);
+    xbt_assert(fdin >= 0, "Cannot read from %s", executable_copy.c_str());
+    struct stat fdin_stat;
+    fstat(fdin, &fdin_stat);
+    off_t fdin_size = fdin_stat.st_size;
+
+    simix_global->default_function = [executable_copy, fdin, fdin_size](std::vector<std::string> args) {
+      return std::function<void()>([executable_copy, fdin, fdin_size, args] {
 
         // Copy the dynamic library:
         std::string target_executable = executable_copy
           + "_" + std::to_string(getpid())
           + "_" + std::to_string(rank++) + ".so";
-        // TODO, execute directly instead of relying on cp
-        const char* command1 [] = {
-          "cp", "--reflink=auto", "--", executable_copy.c_str(), target_executable.c_str(),
-          nullptr
-        };
-        const char* command2 [] = {
-          "cp", "--", executable_copy.c_str(), target_executable.c_str(),
-          nullptr
-        };
-        if (execute_command(command1) != 0 && execute_command(command2) != 0)
-          xbt_die("copy failed");
+
+        int fdout = open(target_executable.c_str(), O_WRONLY);
+        xbt_assert(fdout >= 0, "Cannot write into %s", target_executable.c_str());
+
+        sendfile(fdout, fdin, NULL, fdin_size);
+        close(fdout);
 
         // Load the copy and resolve the entry point:
         void* handle = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL | RTLD_DEEPBIND);
@@ -543,7 +550,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
         if (!entry_point)
           xbt_die("Could not resolve entry point");
 
-          smpi_run_entry_point(entry_point, args);
+        smpi_run_entry_point(entry_point, args);
       });
     };
 
