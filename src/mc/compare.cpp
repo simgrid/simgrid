@@ -1627,7 +1627,6 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
   simgrid::mc::Process* process = &mc_model_checker->process();
 
   int errors = 0;
-  int res_init;
 
   int hash_result = 0;
   if (_sg_mc_hash) {
@@ -1677,8 +1676,7 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
     alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
     remote(process->heap_address),
     simgrid::mc::ProcessIndexMissing, simgrid::mc::ReadOptions::lazy());
-  res_init = state_comparator->initHeapInformation(
-    heap1, heap2, &s1->to_ignore, &s2->to_ignore);
+  int res_init = state_comparator->initHeapInformation(heap1, heap2, &s1->to_ignore, &s2->to_ignore);
 
   if (res_init == -1) {
 #ifdef MC_DEBUG
@@ -1743,12 +1741,9 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
     std::string const& name = region1->object_info()->file_name;
 
     /* Compare global variables */
-    is_diff =
-      compare_global_variables(*state_comparator,
-        region1->object_info(), simgrid::mc::ProcessIndexDisabled,
-        region1, region2, s1, s2);
+    if (compare_global_variables(*state_comparator, region1->object_info(), simgrid::mc::ProcessIndexDisabled, region1,
+                                 region2, s1, s2)) {
 
-    if (is_diff != 0) {
 #ifdef MC_DEBUG
       XBT_DEBUG("(%d - %d) Different global variables in %s",
         num1, num2, name.c_str());
