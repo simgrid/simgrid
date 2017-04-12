@@ -18,6 +18,7 @@
 #include "src/mc/mc_replay.h"
 #include "src/msg/msg_private.h"
 #include "src/simix/smx_private.h"
+#include "src/surf/surf_interface.hpp"
 #include "surf/surf.h"
 #include "xbt/replay.hpp"
 #include <xbt/config.hpp>
@@ -497,17 +498,17 @@ int smpi_main(const char* executable, int argc, char *argv[])
      * configuration tools */
     return 0;
   }
-  smpi_init_logs();
 
   TRACE_global_init(&argc, argv);
-  TRACE_add_start_function(TRACE_smpi_alloc);
-  TRACE_add_end_function(TRACE_smpi_release);
+  TRACE_smpi_alloc();
+  simgrid::surf::surfExitCallbacks.connect(TRACE_smpi_release);
 
   SIMIX_global_init(&argc, argv);
   MSG_init(&argc,argv);
 
   SMPI_switch_data_segment = &smpi_switch_data_segment;
 
+  smpi_init_logs();
   smpi_init_options();
 
   // parse the platform file: get the host list

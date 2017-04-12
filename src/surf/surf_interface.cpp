@@ -365,8 +365,8 @@ void surf_init(int *argc, char **argv)
   if (!future_evt_set)
     future_evt_set = new simgrid::trace_mgr::future_evt_set();
 
-  TRACE_add_start_function(TRACE_surf_alloc);
-  TRACE_add_end_function(TRACE_surf_release);
+  TRACE_surf_alloc();
+  simgrid::surf::surfExitCallbacks.connect(TRACE_surf_release);
 
   sg_config_init(argc, argv);
 
