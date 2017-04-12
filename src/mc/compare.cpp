@@ -288,8 +288,8 @@ void StateComparator::match_equals(HeapLocationPairs* list)
 void ProcessComparisonState::initHeapInformation(xbt_mheap_t heap,
                         std::vector<simgrid::mc::IgnoredHeapRegion>* i)
 {
-  auto heaplimit = ((struct mdesc *) heap)->heaplimit;
-  this->heapsize = ((struct mdesc *) heap)->heapsize;
+  auto heaplimit  = heap->heaplimit;
+  this->heapsize  = heap->heapsize;
   this->to_ignore = i;
   this->equals_to.assign(heaplimit * MAX_FRAGMENT_PER_BLOCK, HeapArea());
   this->types.assign(heaplimit * MAX_FRAGMENT_PER_BLOCK, nullptr);
@@ -299,13 +299,9 @@ int StateComparator::initHeapInformation(xbt_mheap_t heap1, xbt_mheap_t heap2,
                           std::vector<simgrid::mc::IgnoredHeapRegion>* i1,
                           std::vector<simgrid::mc::IgnoredHeapRegion>* i2)
 {
-  if ((((struct mdesc *) heap1)->heaplimit !=
-       ((struct mdesc *) heap2)->heaplimit)
-      ||
-      ((((struct mdesc *) heap1)->heapsize !=
-        ((struct mdesc *) heap2)->heapsize)))
+  if ((heap1->heaplimit != heap2->heaplimit) || (heap1->heapsize != heap2->heapsize))
     return -1;
-  this->heaplimit = ((struct mdesc *) heap1)->heaplimit;
+  this->heaplimit     = heap1->heaplimit;
   this->std_heap_copy = *mc_model_checker->process().get_heap();
   this->processStates[0].initHeapInformation(heap1, i1);
   this->processStates[1].initHeapInformation(heap2, i2);
@@ -336,7 +332,6 @@ int mmalloc_compare_heap(
   int equal, res_compare = 0;
 
   /* Check busy blocks */
-
   i1 = 1;
 
   malloc_info heapinfo_temp1, heapinfo_temp2;
@@ -447,7 +442,6 @@ int mmalloc_compare_heap(
         }
 
         i2++;
-
       }
 
       if (!equal) {
@@ -509,7 +503,7 @@ int mmalloc_compare_heap(
           }
 
           if (heapinfo2b->type < 0) {
-            fprintf(stderr, "Unkown mmalloc block type.\n");
+            fprintf(stderr, "Unknown mmalloc block type.\n");
             abort();
           }
 
@@ -536,11 +530,9 @@ int mmalloc_compare_heap(
               equal = 1;
               break;
             }
-
           }
 
           i2++;
-
         }
 
         if (!equal) {
@@ -553,13 +545,10 @@ int mmalloc_compare_heap(
           nb_diff1++;
           break;
         }
-
       }
 
       i1++;
-
     }
-
   }
 
   /* All blocks/fragments are equal to another block/fragment ? */
