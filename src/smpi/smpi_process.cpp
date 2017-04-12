@@ -32,7 +32,8 @@ static char *get_mailbox_name_small(char *str, int index)
 namespace simgrid{
 namespace smpi{
 
-Process::Process(int index)
+Process::Process(int index, msg_bar_t finalization_barrier)
+  : finalization_barrier_(finalization_barrier)
 {
   char name[MAILBOX_NAME_MAXLEN];
   mailbox_              = simgrid::s4u::Mailbox::byName(get_mailbox_name(name, index));
@@ -63,7 +64,6 @@ Process::Process(int index)
 
 void Process::set_data(int index, int* argc, char*** argv)
 {
-
     char* instance_id = (*argv)[1];
     comm_world_         = smpi_deployment_comm_world(instance_id);
     msg_bar_t bar = smpi_deployment_finalization_barrier(instance_id);
@@ -235,10 +235,6 @@ void Process::set_sampling(int s)
 int Process::sampling()
 {
   return sampling_;
-}
-
-void Process::set_finalization_barrier(msg_bar_t bar){
-  finalization_barrier_=bar;
 }
 
 msg_bar_t Process::finalization_barrier(){

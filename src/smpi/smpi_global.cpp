@@ -294,14 +294,16 @@ void smpi_global_init()
 #endif
 
   int smpirun = 0;
+  msg_bar_t finalization_barrier = nullptr;
   if (process_count == 0){
     process_count = SIMIX_process_count();
     smpirun=1;
+    finalization_barrier = MSG_barrier_init(process_count);
   }
   smpi_universe_size = process_count;
   process_data       = new simgrid::smpi::Process*[process_count];
   for (int i = 0; i < process_count; i++) {
-    process_data[i] = new simgrid::smpi::Process(i);
+    process_data[i] = new simgrid::smpi::Process(i, finalization_barrier);
   }
   //if the process was launched through smpirun script we generate a global mpi_comm_world
   //if not, we let MPI_COMM_NULL, and the comm world will be private to each mpi instance
@@ -309,12 +311,9 @@ void smpi_global_init()
     group = new  simgrid::smpi::Group(process_count);
     MPI_COMM_WORLD = new  simgrid::smpi::Comm(group, nullptr);
     MPI_Attr_put(MPI_COMM_WORLD, MPI_UNIVERSE_SIZE, reinterpret_cast<void *>(process_count));
-    msg_bar_t bar = MSG_barrier_init(process_count);
 
-    for (int i = 0; i < process_count; i++) {
+    for (int i = 0; i < process_count; i++)
       group->set_mapping(i, i);
-      process_data[i]->set_finalization_barrier(bar);
-    }
   }
 }
 

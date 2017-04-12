@@ -33,8 +33,8 @@ class Process {
     int sampling_                   = 0; /* inside an SMPI_SAMPLE_ block? */
     char* instance_id_              = nullptr;
     bool replaying_                 = false; /* is the process replaying a trace */
-    msg_bar_t finalization_barrier_ = nullptr;
-    int return_value_               = 0;
+    msg_bar_t finalization_barrier_;
+    int return_value_ = 0;
     smpi_trace_call_location_t trace_call_loc_;
     smx_actor_t process_ = nullptr;
 #if HAVE_PAPI
@@ -43,7 +43,7 @@ class Process {
     papi_counter_t papi_counter_data_;
 #endif
   public:
-    explicit Process(int index);
+    explicit Process(int index, msg_bar_t barrier);
     void set_data(int index, int* argc, char*** argv);
     void finalize();
     int finalized();
@@ -70,7 +70,6 @@ class Process {
     void set_sampling(int s);
     int sampling();
     msg_bar_t finalization_barrier();
-    void set_finalization_barrier(msg_bar_t bar);
     int return_value();
     void set_return_value(int val);
     static void init(int *argc, char ***argv);
