@@ -165,22 +165,9 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
     dst_private_blocks.clear();
     dst_private_blocks.push_back(std::make_pair(0, buff_size));
   }
-/*
-  fprintf(stderr, "size: 0x%x\n", buff_size);
-  fprintf(stderr, "src: ");
-  print(src_private_blocks);
-  fprintf(stderr, "src_offset = 0x%x\n", src_offset);
-  fprintf(stderr, "dst: ");
-  print(dst_private_blocks);
-  fprintf(stderr, "dst_offset = 0x%x\n", dst_offset);
-*/
   check_blocks(src_private_blocks, buff_size);
   check_blocks(dst_private_blocks, buff_size);
   auto private_blocks = merge_private_blocks(src_private_blocks, dst_private_blocks);
-/*
-  fprintf(stderr, "Private blocks: ");
-  print(private_blocks);
-*/
   check_blocks(private_blocks, buff_size);
   void* tmpbuff=buff;
   if((smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) && (static_cast<char*>(buff) >= smpi_start_data_exe)
