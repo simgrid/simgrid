@@ -125,13 +125,13 @@ void print_TIPushState(paje_event_t event)
     fprintf(trace_file, "%s send %d %d %s\n", process_id, extra->dst, extra->send_size, extra->datatype1);
     break;
   case TRACING_ISEND:
-    fprintf(trace_file, "%s isend %d %d %s\n", process_id, extra->dst, extra->send_size, extra->datatype1);
+    fprintf(trace_file, "%s Isend %d %d %s\n", process_id, extra->dst, extra->send_size, extra->datatype1);
     break;
   case TRACING_RECV:
     fprintf(trace_file, "%s recv %d %d %s\n", process_id, extra->src, extra->send_size, extra->datatype1);
     break;
   case TRACING_IRECV:
-    fprintf(trace_file, "%s irecv %d %d %s\n", process_id, extra->src, extra->send_size, extra->datatype1);
+    fprintf(trace_file, "%s Irecv %d %d %s\n", process_id, extra->src, extra->send_size, extra->datatype1);
     break;
   case TRACING_TEST:
     fprintf(trace_file, "%s test\n", process_id);
@@ -140,7 +140,7 @@ void print_TIPushState(paje_event_t event)
     fprintf(trace_file, "%s wait\n", process_id);
     break;
   case TRACING_WAITALL:
-    fprintf(trace_file, "%s waitall\n", process_id);
+    fprintf(trace_file, "%s waitAll\n", process_id);
     break;
   case TRACING_BARRIER:
     fprintf(trace_file, "%s barrier\n", process_id);
@@ -158,14 +158,14 @@ void print_TIPushState(paje_event_t event)
     fprintf(trace_file, "\n");
     break;
   case TRACING_ALLREDUCE:      // rank allreduce comm_size comp_size (datatype)
-    fprintf(trace_file, "%s allreduce %d %f %s\n", process_id, extra->send_size, extra->comp_size, extra->datatype1);
+    fprintf(trace_file, "%s allReduce %d %f %s\n", process_id, extra->send_size, extra->comp_size, extra->datatype1);
     break;
   case TRACING_ALLTOALL:       // rank alltoall send_size recv_size (sendtype) (recvtype)
-    fprintf(trace_file, "%s alltoall %d %d %s %s\n", process_id, extra->send_size, extra->recv_size, extra->datatype1,
+    fprintf(trace_file, "%s allToAll %d %d %s %s\n", process_id, extra->send_size, extra->recv_size, extra->datatype1,
             extra->datatype2);
     break;
   case TRACING_ALLTOALLV:      // rank alltoallv send_size [sendcounts] recv_size [recvcounts] (sendtype) (recvtype)
-    fprintf(trace_file, "%s alltoallv %d ", process_id, extra->send_size);
+    fprintf(trace_file, "%s allToAllV %d ", process_id, extra->send_size);
     for (i = 0; i < extra->num_processes; i++)
       fprintf(trace_file, "%d ", extra->sendcounts[i]);
     fprintf(trace_file, "%d ", extra->recv_size);
@@ -178,13 +178,13 @@ void print_TIPushState(paje_event_t event)
             extra->datatype1, extra->datatype2);
     break;
   case TRACING_ALLGATHERV:     // rank allgatherv send_size [recvcounts] (sendtype) (recvtype)
-    fprintf(trace_file, "%s allgatherv %d ", process_id, extra->send_size);
+    fprintf(trace_file, "%s allGatherV %d ", process_id, extra->send_size);
     for (i = 0; i < extra->num_processes; i++)
       fprintf(trace_file, "%d ", extra->recvcounts[i]);
     fprintf(trace_file, "%s %s \n", extra->datatype1, extra->datatype2);
     break;
   case TRACING_REDUCE_SCATTER: // rank reducescatter [recvcounts] comp_size (sendtype)
-    fprintf(trace_file, "%s reducescatter ", process_id);
+    fprintf(trace_file, "%s reduceScatter ", process_id);
     for (i = 0; i < extra->num_processes; i++)
       fprintf(trace_file, "%d ", extra->recvcounts[i]);
     fprintf(trace_file, "%f %s\n", extra->comp_size, extra->datatype1);
@@ -196,7 +196,7 @@ void print_TIPushState(paje_event_t event)
     fprintf(trace_file, "%s sleep %f\n", process_id, extra->sleep_duration);
     break;
   case TRACING_GATHERV: // rank gatherv send_size [recvcounts] root (sendtype) (recvtype)
-    fprintf(trace_file, "%s gatherv %d ", process_id, extra->send_size);
+    fprintf(trace_file, "%s gatherV %d ", process_id, extra->send_size);
     for (i = 0; i < extra->num_processes; i++)
       fprintf(trace_file, "%d ", extra->recvcounts[i]);
     fprintf(trace_file, "%d %s %s\n", extra->root, extra->datatype1, extra->datatype2);
