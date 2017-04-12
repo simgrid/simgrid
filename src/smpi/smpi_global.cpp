@@ -500,16 +500,11 @@ int smpi_main(const char* executable, int argc, char *argv[])
   }
 
   TRACE_global_init(&argc, argv);
-  TRACE_smpi_alloc();
-  simgrid::surf::surfExitCallbacks.connect(TRACE_smpi_release);
 
   SIMIX_global_init(&argc, argv);
   MSG_init(&argc,argv);
 
   SMPI_switch_data_segment = &smpi_switch_data_segment;
-
-  smpi_init_logs();
-  smpi_init_options();
 
   // parse the platform file: get the host list
   SIMIX_create_environment(argv[1]);
@@ -575,12 +570,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
 
   SIMIX_launch_application(argv[2]);
 
-  smpi_global_init();
-
-  smpi_check_options();
-
-  if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP)
-    smpi_initialize_global_memory_segments();
+  SMPI_init();
 
   /* Clean IO before the run */
   fflush(stdout);
@@ -620,15 +610,14 @@ int smpi_main(const char* executable, int argc, char *argv[])
   return ret;
 }
 
-// This function can be called from extern file, to initialize logs, options, and processes of smpi
-// without the need of smpirun
+// Called either directly from the user code, or from the code called by smpirun
 void SMPI_init(){
   smpi_init_logs();
   smpi_init_options();
   smpi_global_init();
   smpi_check_options();
-  if (TRACE_is_enabled() && TRACE_is_configured())
-    TRACE_smpi_alloc();
+  TRACE_smpi_alloc();
+  simgrid::surf::surfExitCallbacks.connect(TRACE_smpi_release);
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP)
     smpi_initialize_global_memory_segments();
 }
