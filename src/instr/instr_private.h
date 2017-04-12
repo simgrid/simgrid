@@ -128,8 +128,8 @@ class paje_event {
 };
 typedef paje_event s_paje_event_t;
 
-//--------------------------------------------------
 
+//--------------------------------------------------
 class s_defineContainerType;
 
 typedef s_defineContainerType *defineContainerType_t;
@@ -142,8 +142,7 @@ typedef s_defineContainerType s_defineContainerType_t;
 //--------------------------------------------------
 
 typedef struct s_defineVariableType *defineVariableType_t;
-typedef struct s_defineVariableType: public paje_event
- {
+typedef struct s_defineVariableType {
   type_t type;
 }s_defineVariableType_t;
 

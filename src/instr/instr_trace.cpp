@@ -159,6 +159,7 @@ void s_defineContainerType::new_pajeDefineContainerType(type_t type)
   event->free (event);
 }
 */
+
 void new_pajeDefineVariableType(type_t type)
 {
   paje_event_t event                          = xbt_new0(s_paje_event_t, 1);
