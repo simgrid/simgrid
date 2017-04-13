@@ -6,7 +6,6 @@
 #include <dlfcn.h>
 #include <fcntl.h>
 #include <spawn.h>
-#include <sys/sendfile.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -37,6 +36,10 @@
 #include <utility>
 #include <vector>
 #include <memory>
+
+#if HAVE_SENDFILE
+#include <sys/sendfile.h>
+#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (kernel)");
 #include <boost/tokenizer.hpp>
@@ -543,7 +546,28 @@ int smpi_main(const char* executable, int argc, char *argv[])
         int fdout = open(target_executable.c_str(), O_WRONLY);
         xbt_assert(fdout >= 0, "Cannot write into %s", target_executable.c_str());
 
+#if HAVE_SENDFILE
         sendfile(fdout, fdin, NULL, fdin_size);
+#else
+        const int bufsize = 1024 * 1024 * 4;
+        char buf[bufsize];
+        while (int got = read(fdin, buf, bufsize)) {
+          if (got == -1) {
+            xbt_assert(errno == EINTR, "Cannot read from %s", executable_copy.c_str());
+          } else {
+            char* p  = buf;
+            int todo = got;
+            while (int done = write(fdout, p, todo)) {
+              if (done == -1) {
+                xbt_assert(errno == EINTR, "Cannot write into %s", target_executable.c_str());
+              } else {
+                p += done;
+                todo -= done;
+              }
+            }
+          }
+        }
+#endif
         close(fdout);
 
         // Load the copy and resolve the entry point:
