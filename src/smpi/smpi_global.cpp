@@ -549,6 +549,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
 #if HAVE_SENDFILE
         sendfile(fdout, fdin, NULL, fdin_size);
 #else
+        XBT_WARN("Copy %d bytes into %s", static_cast<int>(fdin_size), target_executable.c_str());
         const int bufsize = 1024 * 1024 * 4;
         char buf[bufsize];
         while (int got = read(fdin, buf, bufsize)) {
