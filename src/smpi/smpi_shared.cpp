@@ -37,6 +37,7 @@
 
 #include "private.h"
 #include "private.hpp"
+#include "smpi/smpi_shared_malloc.hpp"
 #include "xbt/dict.h"
 #include <errno.h>
 
@@ -114,6 +115,7 @@ typedef std::unordered_map<smpi_source_location, shared_data_t>::value_type shar
 
 typedef struct {
   size_t size;
+  std::vector<std::pair<size_t, size_t>> private_blocks;
   shared_data_key_type* data;
 } shared_metadata_t;
 
@@ -168,66 +170,84 @@ static void* shm_map(int fd, size_t size, shared_data_key_type* data) {
   return mem;
 }
 
-void *smpi_shared_malloc(size_t size, const char *file, int line)
+static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
 {
   void* mem;
-  if (size > 0 && smpi_cfg_shared_malloc == shmalloc_local) {
-    smpi_source_location loc(file, line);
-    auto res = allocs.insert(std::make_pair(loc, shared_data_t()));
-    auto data = res.first;
-    if (res.second) {
-      // The insertion did not take place.
-      // Generate a shared memory name from the address of the shared_data:
-      char shmname[32]; // cannot be longer than PSHMNAMLEN = 31 on Mac OS X (shm_open raises ENAMETOOLONG otherwise)
-      snprintf(shmname, 31, "/shmalloc%p", &*data);
-      int fd = shm_open(shmname, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-      if (fd < 0) {
-        if (errno == EEXIST)
-          xbt_die("Please cleanup /dev/shm/%s", shmname);
-        else
-          xbt_die("An unhandled error occurred while opening %s. shm_open: %s", shmname, strerror(errno));
-      }
-      data->second.fd = fd;
-      data->second.count = 1;
-      mem = shm_map(fd, size, &*data);
-      if (shm_unlink(shmname) < 0) {
-        XBT_WARN("Could not early unlink %s. shm_unlink: %s", shmname, strerror(errno));
-      }
-      XBT_DEBUG("Mapping %s at %p through %d", shmname, mem, fd);
-    } else {
-      mem = shm_map(data->second.fd, size, &*data);
-      data->second.count++;
+  smpi_source_location loc(file, line);
+  auto res = allocs.insert(std::make_pair(loc, shared_data_t()));
+  auto data = res.first;
+  if (res.second) {
+    // The insertion did not take place.
+    // Generate a shared memory name from the address of the shared_data:
+    char shmname[32]; // cannot be longer than PSHMNAMLEN = 31 on Mac OS X (shm_open raises ENAMETOOLONG otherwise)
+    snprintf(shmname, 31, "/shmalloc%p", &*data);
+    int fd = shm_open(shmname, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    if (fd < 0) {
+      if (errno == EEXIST)
+        xbt_die("Please cleanup /dev/shm/%s", shmname);
+      else
+        xbt_die("An unhandled error occurred while opening %s. shm_open: %s", shmname, strerror(errno));
     }
-    XBT_DEBUG("Shared malloc %zu in %p (metadata at %p)", size, mem, &*data);
-
-  } else if (smpi_cfg_shared_malloc == shmalloc_global) {
-    /* First reserve memory area */
-    mem = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-
-    xbt_assert(mem != MAP_FAILED, "Failed to allocate %luMiB of memory. Run \"sysctl vm.overcommit_memory=1\" as root "
-                                  "to allow big allocations.\n",
-               (unsigned long)(size >> 20));
-
-    /* Create bogus file if not done already */
-    if (smpi_shared_malloc_bogusfile == -1) {
-      /* Create a fd to a new file on disk, make it smpi_shared_malloc_blocksize big, and unlink it.
-       * It still exists in memory but not in the file system (thus it cannot be leaked). */
-      smpi_shared_malloc_blocksize = static_cast<unsigned long>(xbt_cfg_get_double("smpi/shared-malloc-blocksize"));
-      XBT_DEBUG("global shared allocation. Blocksize %lu", smpi_shared_malloc_blocksize);
-      char* name                   = xbt_strdup("/tmp/simgrid-shmalloc-XXXXXX");
-      smpi_shared_malloc_bogusfile = mkstemp(name);
-      unlink(name);
-      xbt_free(name);
-      char* dumb = (char*)calloc(1, smpi_shared_malloc_blocksize);
-      ssize_t err = write(smpi_shared_malloc_bogusfile, dumb, smpi_shared_malloc_blocksize);
-      if(err<0)
-        xbt_die("Could not write bogus file for shared malloc");
-      xbt_free(dumb);
+    data->second.fd = fd;
+    data->second.count = 1;
+    mem = shm_map(fd, size, &*data);
+    if (shm_unlink(shmname) < 0) {
+      XBT_WARN("Could not early unlink %s. shm_unlink: %s", shmname, strerror(errno));
     }
+    XBT_DEBUG("Mapping %s at %p through %d", shmname, mem, fd);
+  } else {
+    mem = shm_map(data->second.fd, size, &*data);
+    data->second.count++;
+  }
+  XBT_DEBUG("Shared malloc %zu in %p (metadata at %p)", size, mem, &*data);
+  return mem;
+}
 
-    /* Map the bogus file in place of the anonymous memory */
+// Align functions, from http://stackoverflow.com/questions/4840410/how-to-align-a-pointer-in-c
+#define PAGE_SIZE 0x1000
+#define ALIGN_UP(n, align) (((n) + (align)-1) & -(align))
+#define ALIGN_DOWN(n, align) ((n) & -(align))
+
+void *smpi_shared_malloc_global__(size_t size, const char *file, int line, size_t *shared_block_offsets, int nb_shared_blocks) {
+  void *mem;
+  xbt_assert(smpi_shared_malloc_blocksize % PAGE_SIZE == 0, "The block size of shared malloc should be a multiple of the page size.");
+  /* First reserve memory area */
+  mem = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+
+  xbt_assert(mem != MAP_FAILED, "Failed to allocate %luMiB of memory. Run \"sysctl vm.overcommit_memory=1\" as root "
+                                "to allow big allocations.\n",
+             (unsigned long)(size >> 20));
+
+  /* Create bogus file if not done already */
+  if (smpi_shared_malloc_bogusfile == -1) {
+    /* Create a fd to a new file on disk, make it smpi_shared_malloc_blocksize big, and unlink it.
+     * It still exists in memory but not in the file system (thus it cannot be leaked). */
+    smpi_shared_malloc_blocksize = static_cast<unsigned long>(xbt_cfg_get_double("smpi/shared-malloc-blocksize"));
+    XBT_DEBUG("global shared allocation. Blocksize %lu", smpi_shared_malloc_blocksize);
+    char* name                   = xbt_strdup("/tmp/simgrid-shmalloc-XXXXXX");
+    smpi_shared_malloc_bogusfile = mkstemp(name);
+    unlink(name);
+    xbt_free(name);
+    char* dumb = (char*)calloc(1, smpi_shared_malloc_blocksize);
+    ssize_t err = write(smpi_shared_malloc_bogusfile, dumb, smpi_shared_malloc_blocksize);
+    if(err<0)
+      xbt_die("Could not write bogus file for shared malloc");
+    xbt_free(dumb);
+  }
+
+  /* Map the bogus file in place of the anonymous memory */
+  for(int i_block = 0; i_block < nb_shared_blocks; i_block ++) {
+    size_t start_offset = shared_block_offsets[2*i_block];
+    size_t stop_offset = shared_block_offsets[2*i_block+1];
+    xbt_assert(start_offset < stop_offset, "start_offset (%lu) should be lower than stop offset (%lu)", start_offset, stop_offset);
+    xbt_assert(stop_offset <= size,         "stop_offset (%lu) should be lower than size (%lu)", stop_offset, size);
+    if(i_block < nb_shared_blocks-1)
+      xbt_assert(stop_offset < shared_block_offsets[2*i_block+2],
+              "stop_offset (%lu) should be lower than its successor start offset (%lu)", stop_offset, shared_block_offsets[2*i_block+2]);
+    size_t start_block_offset = ALIGN_UP(start_offset, smpi_shared_malloc_blocksize);
+    size_t stop_block_offset = ALIGN_DOWN(stop_offset, smpi_shared_malloc_blocksize);
     unsigned int i;
-    for (i = 0; i < size / smpi_shared_malloc_blocksize; i++) {
+    for (i = start_block_offset / smpi_shared_malloc_blocksize; i < stop_block_offset / smpi_shared_malloc_blocksize; i++) {
       void* pos = (void*)((unsigned long)mem + i * smpi_shared_malloc_blocksize);
       void* res = mmap(pos, smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED | MAP_POPULATE,
                        smpi_shared_malloc_bogusfile, 0);
@@ -236,48 +256,143 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
                              "You can also try using  the sysctl vm.max_map_count",
                  strerror(errno));
     }
-    if (size % smpi_shared_malloc_blocksize) {
-      void* pos = (void*)((unsigned long)mem + i * smpi_shared_malloc_blocksize);
-      void* res = mmap(pos, size % smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE,
-                       MAP_FIXED | MAP_SHARED | MAP_POPULATE, smpi_shared_malloc_bogusfile, 0);
+    size_t low_page_start_offset = ALIGN_UP(start_offset, PAGE_SIZE);
+    size_t low_page_stop_offset = start_block_offset < ALIGN_DOWN(stop_offset, PAGE_SIZE) ? start_block_offset : ALIGN_DOWN(stop_offset, PAGE_SIZE);
+    if(low_page_start_offset < low_page_stop_offset) {
+      void* pos = (void*)((unsigned long)mem + low_page_start_offset);
+      void* res = mmap(pos, low_page_stop_offset-low_page_start_offset, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED | MAP_POPULATE,
+                       smpi_shared_malloc_bogusfile, 0);
       xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
                              "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ?"
                              "You can also try using  the sysctl vm.max_map_count",
                  strerror(errno));
     }
-
-    shared_metadata_t newmeta;
-    //register metadata for memcpy avoidance
-    shared_data_key_type* data = (shared_data_key_type*)xbt_malloc(sizeof(shared_data_key_type));
-    data->second.fd = -1;
-    data->second.count = 1;
-    newmeta.size = size;
-    newmeta.data = data;
-    allocs_metadata[mem] = newmeta;
-  } else {
-    mem = xbt_malloc(size);
-    XBT_DEBUG("Classic malloc %zu in %p", size, mem);
+    if(low_page_stop_offset <= stop_block_offset) {
+      size_t high_page_stop_offset = stop_offset == size ? size : ALIGN_DOWN(stop_offset, PAGE_SIZE);
+      if(high_page_stop_offset > stop_block_offset) {
+        void* pos = (void*)((unsigned long)mem + stop_block_offset);
+        void* res = mmap(pos, high_page_stop_offset-stop_block_offset, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED | MAP_POPULATE,
+                         smpi_shared_malloc_bogusfile, 0);
+        xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
+                               "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ?"
+                               "You can also try using  the sysctl vm.max_map_count",
+                   strerror(errno));
+      }
+    }
   }
+
+  shared_metadata_t newmeta;
+  //register metadata for memcpy avoidance
+  shared_data_key_type* data = (shared_data_key_type*)xbt_malloc(sizeof(shared_data_key_type));
+  data->second.fd = -1;
+  data->second.count = 1;
+  newmeta.size = size;
+  newmeta.data = data;
+  if(shared_block_offsets[0] > 0) {
+    newmeta.private_blocks.push_back(std::make_pair(0, shared_block_offsets[0]));
+  }
+  int i_block;
+  for(i_block = 0; i_block < nb_shared_blocks-1; i_block ++) {
+    newmeta.private_blocks.push_back(std::make_pair(shared_block_offsets[2*i_block+1], shared_block_offsets[2*i_block+2]));
+  }
+  if(shared_block_offsets[2*i_block+1] < size) {
+    newmeta.private_blocks.push_back(std::make_pair(shared_block_offsets[2*i_block+1], size));
+  }
+  allocs_metadata[mem] = newmeta;
 
   return mem;
 }
 
-int smpi_is_shared(void* ptr){
+/*
+ * When nb_shared_blocks == -1, default behavior of smpi_shared_malloc: everything is shared.
+ * Otherwise, only the blocks described by shared_block_offsets are shared.
+ * This array contains the offsets (in bytes) of the block to share.
+ * Even indices are the start offsets (included), odd indices are the stop offsets (excluded).
+ * For instance, if shared_block_offsets == {27, 42}, then the elements mem[27], mem[28], ..., mem[41] are shared. The others are not.
+ */
+static void *smpi_shared_malloc_global(size_t size, const char *file, int line, size_t *shared_block_offsets=NULL, int nb_shared_blocks=-1) {
+  size_t tmp_shared_block_offsets[2];
+  if(nb_shared_blocks == -1) {
+    nb_shared_blocks = 1;
+    shared_block_offsets = tmp_shared_block_offsets;
+    shared_block_offsets[0] = 0;
+    shared_block_offsets[1] = size;
+  }
+  return smpi_shared_malloc_global__(size, file, line, shared_block_offsets, nb_shared_blocks);
+}
+
+void *smpi_shared_malloc(size_t size, const char *file, int line) {
+  void *mem;
+  if (size > 0 && smpi_cfg_shared_malloc == shmalloc_local) {
+    mem = smpi_shared_malloc_local(size, file, line);
+  } else if (smpi_cfg_shared_malloc == shmalloc_global) {
+    mem = smpi_shared_malloc_global(size, file, line);
+  } else {
+    mem = xbt_malloc(size);
+    XBT_DEBUG("Classic malloc %zu in %p", size, mem);
+  }
+  return mem;
+}
+
+int smpi_is_shared(void* ptr, std::vector<std::pair<size_t, size_t>> &private_blocks, size_t *offset){
+  private_blocks.clear(); // being paranoid
   if (allocs_metadata.empty())
     return 0;
   if ( smpi_cfg_shared_malloc == shmalloc_local || smpi_cfg_shared_malloc == shmalloc_global) {
     auto low = allocs_metadata.lower_bound(ptr);
-    if (low->first==ptr)
+    if (low->first==ptr) {
+      private_blocks = low->second.private_blocks;
+      *offset = 0;
       return 1;
+    }
     if (low == allocs_metadata.begin())
       return 0;
     low --;
-    if (ptr < (char*)low->first + low->second.size)
+    if (ptr < (char*)low->first + low->second.size) {
+      xbt_assert(ptr > (char*)low->first, "Oops, there seems to be a bug in the shared memory metadata.");
+      *offset = ((uint8_t*)ptr) - ((uint8_t*) low->first);
+      private_blocks = low->second.private_blocks;
       return 1;
+    }
     return 0;
   } else {
     return 0;
   }
+}
+
+std::vector<std::pair<size_t, size_t>> shift_and_frame_private_blocks(const std::vector<std::pair<size_t, size_t>> vec, size_t offset, size_t buff_size) {
+    std::vector<std::pair<size_t, size_t>> result;
+    for(auto block: vec) {
+        auto new_block = std::make_pair(std::min(std::max((size_t)0, block.first-offset), buff_size),
+                                        std::min(std::max((size_t)0, block.second-offset), buff_size));
+        if(new_block.second > 0 && new_block.first < buff_size)
+            result.push_back(new_block);
+    }
+    return result;
+}
+
+std::vector<std::pair<size_t, size_t>> merge_private_blocks(std::vector<std::pair<size_t, size_t>> src, std::vector<std::pair<size_t, size_t>> dst) {
+  std::vector<std::pair<size_t, size_t>> result;
+  unsigned i_src=0, i_dst=0;
+  while(i_src < src.size() && i_dst < dst.size()) {
+    std::pair<size_t, size_t> block;
+    if(src[i_src].second <= dst[i_dst].first) {
+        i_src++;
+    }
+    else if(dst[i_dst].second <= src[i_src].first) {
+        i_dst++;
+    }
+    else { // src.second > dst.first && dst.second > src.first → the blocks are overlapping
+      block = std::make_pair(std::max(src[i_src].first, dst[i_dst].first),
+                             std::min(src[i_src].second, dst[i_dst].second));
+      result.push_back(block);
+      if(src[i_src].second < dst[i_dst].second)
+          i_src ++;
+      else
+          i_dst ++;
+    }
+  }
+  return result;
 }
 
 void smpi_shared_free(void *ptr)
