@@ -427,7 +427,7 @@ void smpi_shared_free(void *ptr)
         xbt_free(meta->second.data);
     }
 
-    munmap(ptr, 0); // the POSIX says that I should not give 0 as a length, but it seems to work OK
+    munmap(ptr, meta->second.size);
   } else {
     XBT_DEBUG("Classic free of %p", ptr);
     xbt_free(ptr);
