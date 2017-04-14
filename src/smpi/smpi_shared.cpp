@@ -214,9 +214,9 @@ void *smpi_shared_malloc_global__(size_t size, const char *file, int line, size_
   /* First reserve memory area */
   mem = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 
-  xbt_assert(mem != MAP_FAILED, "Failed to allocate %luMiB of memory. Run \"sysctl vm.overcommit_memory=1\" as root "
+  xbt_assert(mem != MAP_FAILED, "Failed to allocate %zuMiB of memory. Run \"sysctl vm.overcommit_memory=1\" as root "
                                 "to allow big allocations.\n",
-             (unsigned long)(size >> 20));
+             size >> 20);
 
   /* Create bogus file if not done already */
   if (smpi_shared_malloc_bogusfile == -1) {
@@ -239,11 +239,11 @@ void *smpi_shared_malloc_global__(size_t size, const char *file, int line, size_
   for(int i_block = 0; i_block < nb_shared_blocks; i_block ++) {
     size_t start_offset = shared_block_offsets[2*i_block];
     size_t stop_offset = shared_block_offsets[2*i_block+1];
-    xbt_assert(start_offset < stop_offset, "start_offset (%lu) should be lower than stop offset (%lu)", start_offset, stop_offset);
-    xbt_assert(stop_offset <= size,         "stop_offset (%lu) should be lower than size (%lu)", stop_offset, size);
+    xbt_assert(start_offset < stop_offset, "start_offset (%zu) should be lower than stop offset (%zu)", start_offset, stop_offset);
+    xbt_assert(stop_offset <= size,         "stop_offset (%zu) should be lower than size (%zu)", stop_offset, size);
     if(i_block < nb_shared_blocks-1)
       xbt_assert(stop_offset < shared_block_offsets[2*i_block+2],
-              "stop_offset (%lu) should be lower than its successor start offset (%lu)", stop_offset, shared_block_offsets[2*i_block+2]);
+              "stop_offset (%zu) should be lower than its successor start offset (%zu)", stop_offset, shared_block_offsets[2*i_block+2]);
     size_t start_block_offset = ALIGN_UP(start_offset, smpi_shared_malloc_blocksize);
     size_t stop_block_offset = ALIGN_DOWN(stop_offset, smpi_shared_malloc_blocksize);
     unsigned int i;
