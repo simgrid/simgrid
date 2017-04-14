@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
     size_t start = shared_blocks[2*i];
     size_t stop = shared_blocks[2*i+1];
     int is_shared = check_enough(buf, start, stop, 42);
-    printf("[%d] The result of the shared check for block (0x%lx, 0x%lx) is: %d\n", rank, start, stop, is_shared);
+    printf("[%d] The result of the shared check for block (0x%zx, 0x%zx) is: %d\n", rank, start, stop, is_shared);
   }
 
 
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
     size_t start = shared_blocks[2*i+1];
     size_t stop = shared_blocks[2*i+2];
     int is_private = check_all(buf, start, stop, 0);
-    printf("[%d] The result of the private check for block (0x%lx, 0x%lx) is: %d\n", rank, start, stop, is_private);
+    printf("[%d] The result of the private check for block (0x%zx, 0x%zx) is: %d\n", rank, start, stop, is_private);
   }
 
   SMPI_SHARED_FREE(buf);

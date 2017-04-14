@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
       size_t start = shared_blocks[2*i+1];
       size_t stop = shared_blocks[2*i+2];
       int comm = check_all(buf, start, stop, rank-1);
-      printf("[%d] The result of the (normal) communication check for block (0x%lx, 0x%lx) is: %d\n", rank, start, stop, comm);
+      printf("[%d] The result of the (normal) communication check for block (0x%zx, 0x%zx) is: %d\n", rank, start, stop, comm);
     }
     memset(buf, rank, mem_size);
   }
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
       size_t start = shared_blocks[2*i+1];
       size_t stop = shared_blocks[2*i+2];
       int comm = check_all(buf, start, stop, rank-1);
-      printf("[%d] The result of the (shifted) communication check for block (0x%lx, 0x%lx) is: %d\n", rank, start, stop, comm);
+      printf("[%d] The result of the (shifted) communication check for block (0x%zx, 0x%zx) is: %d\n", rank, start, stop, comm);
     }
   }
 
