@@ -401,7 +401,9 @@ static void smpi_init_logs(){
 }
 
 static void smpi_init_options(){
-
+    //return if already called
+    if(smpi_cpu_threshold!=-1)
+      return;
     simgrid::smpi::Colls::set_collectives();
     simgrid::smpi::Colls::smpi_coll_cleanup_callback=nullptr;
     smpi_cpu_threshold = xbt_cfg_get_double("smpi/cpu-threshold");
@@ -522,6 +524,8 @@ int smpi_main(const char* executable, int argc, char *argv[])
   SIMIX_comm_set_copy_data_callback(smpi_comm_copy_buffer_callback);
 
   static std::size_t rank = 0;
+
+  smpi_init_options();
 
   if (smpi_privatize_global_variables == SMPI_PRIVATIZE_DLOPEN) {
 

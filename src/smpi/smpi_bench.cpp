@@ -36,7 +36,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi, "Logging specific to SMPI (ben
 
 xbt_dict_t samples = nullptr;         /* Allocated on first use */
 
-double smpi_cpu_threshold;
+double smpi_cpu_threshold = -1;
 double smpi_host_speed;
 
 shared_malloc_type smpi_cfg_shared_malloc = shmalloc_global;
