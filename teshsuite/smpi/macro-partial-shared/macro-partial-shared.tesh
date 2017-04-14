@@ -1,0 +1,49 @@
+p Test compute
+! setenv LD_LIBRARY_PATH=../../lib
+! output sort
+! timeout 5
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/macro-partial-shared --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+> [0] The result of the shared check for block (0x0, 0x1234567) is: 1
+> [0] The result of the shared check for block (0x1300000, 0x1300010) is: 1
+> [0] The result of the shared check for block (0x3456789, 0x3457890) is: 1
+> [0] The result of the shared check for block (0x4444444, 0x5555555) is: 1
+> [0] The result of the shared check for block (0x5555565, 0x5600000) is: 1
+> [0] The result of the shared check for block (0x8000000, 0x10000000) is: 1
+> [3] The result of the shared check for block (0x0, 0x1234567) is: 1
+> [3] The result of the shared check for block (0x1300000, 0x1300010) is: 1
+> [3] The result of the shared check for block (0x3456789, 0x3457890) is: 1
+> [3] The result of the shared check for block (0x4444444, 0x5555555) is: 1
+> [3] The result of the shared check for block (0x5555565, 0x5600000) is: 1
+> [3] The result of the shared check for block (0x8000000, 0x10000000) is: 1
+> [1] The result of the shared check for block (0x0, 0x1234567) is: 1
+> [1] The result of the shared check for block (0x1300000, 0x1300010) is: 1
+> [1] The result of the shared check for block (0x3456789, 0x3457890) is: 1
+> [1] The result of the shared check for block (0x4444444, 0x5555555) is: 1
+> [1] The result of the shared check for block (0x5555565, 0x5600000) is: 1
+> [1] The result of the shared check for block (0x8000000, 0x10000000) is: 1
+> [2] The result of the shared check for block (0x0, 0x1234567) is: 1
+> [2] The result of the shared check for block (0x1300000, 0x1300010) is: 1
+> [2] The result of the shared check for block (0x3456789, 0x3457890) is: 1
+> [2] The result of the shared check for block (0x4444444, 0x5555555) is: 1
+> [2] The result of the shared check for block (0x5555565, 0x5600000) is: 1
+> [2] The result of the shared check for block (0x8000000, 0x10000000) is: 1
+> [0] The result of the private check for block (0x1234567, 0x1300000) is: 1
+> [0] The result of the private check for block (0x1300010, 0x3456789) is: 1
+> [0] The result of the private check for block (0x3457890, 0x4444444) is: 1
+> [0] The result of the private check for block (0x5555555, 0x5555565) is: 1
+> [0] The result of the private check for block (0x5600000, 0x8000000) is: 1
+> [3] The result of the private check for block (0x1234567, 0x1300000) is: 1
+> [3] The result of the private check for block (0x1300010, 0x3456789) is: 1
+> [3] The result of the private check for block (0x3457890, 0x4444444) is: 1
+> [3] The result of the private check for block (0x5555555, 0x5555565) is: 1
+> [3] The result of the private check for block (0x5600000, 0x8000000) is: 1
+> [1] The result of the private check for block (0x1234567, 0x1300000) is: 1
+> [1] The result of the private check for block (0x1300010, 0x3456789) is: 1
+> [1] The result of the private check for block (0x3457890, 0x4444444) is: 1
+> [1] The result of the private check for block (0x5555555, 0x5555565) is: 1
+> [1] The result of the private check for block (0x5600000, 0x8000000) is: 1
+> [2] The result of the private check for block (0x1234567, 0x1300000) is: 1
+> [2] The result of the private check for block (0x1300010, 0x3456789) is: 1
+> [2] The result of the private check for block (0x3457890, 0x4444444) is: 1
+> [2] The result of the private check for block (0x5555555, 0x5555565) is: 1
+> [2] The result of the private check for block (0x5600000, 0x8000000) is: 1

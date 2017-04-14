@@ -271,11 +271,14 @@ int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        void *recvbuf, int recvcount, MPI_Datatype recvtype){
   int count;
 
+// FIXME Handle the case of a partial shared malloc.
+#if 0
   if(smpi_is_shared(sendbuf)){
     XBT_DEBUG("Copy input buf %p is shared. Let's ignore it.", sendbuf);
   }else if(smpi_is_shared(recvbuf)){
     XBT_DEBUG("Copy output buf %p is shared. Let's ignore it.", recvbuf);
   }
+#endif
 
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){
     smpi_switch_data_segment(smpi_process()->index());
