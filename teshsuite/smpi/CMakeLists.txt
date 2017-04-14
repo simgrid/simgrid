@@ -8,7 +8,7 @@ if(enable_smpi)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   foreach(x coll-allgather coll-allgatherv coll-allreduce coll-alltoall coll-alltoallv coll-barrier coll-bcast 
             coll-gather coll-reduce coll-reduce-scatter coll-scatter macro-sample pt2pt-dsend pt2pt-pingpong 
-            type-hvector type-indexed type-struct type-vector bug-17132 timers)
+            type-hvector type-indexed type-struct type-vector bug-17132 timers )
     add_executable       (${x}  ${x}/${x}.c)
     target_link_libraries(${x}  simgrid)
     set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -18,29 +18,21 @@ if(enable_smpi)
   endforeach()
 
   if(NOT WIN32)
-    add_executable       (macro-shared macro-shared/macro-shared.c)
-    target_link_libraries(macro-shared simgrid)
-    set_target_properties(macro-shared PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/macro-shared)
+    foreach(x macro-shared macro-partial-shared macro-partial-shared-communication )
+      add_executable       (${x}  ${x}/${x}.c)
+      target_link_libraries(${x}  simgrid)
+      set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
 
-    add_executable       (macro-partial-shared macro-partial-shared/macro-partial-shared.c)
-    target_link_libraries(macro-partial-shared simgrid)
-    set_target_properties(macro-partial-shared PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/macro-partial-shared)
-
-    add_executable       (macro-partial-shared-communication macro-partial-shared-communication/macro-partial-shared-communication.c)
-    target_link_libraries(macro-partial-shared-communication simgrid)
-    set_target_properties(macro-partial-shared-communication PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/macro-partial-shared-communication)
+      set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
+      set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
+    endforeach()
   endif()
 endif()
 
-set(teshsuite_src ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/macro-shared/macro-shared.c                PARENT_SCOPE)
-set(teshsuite_src ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/macro-partial-shared/macro-partial-shared.c                PARENT_SCOPE)
-set(teshsuite_src ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/macro-partial-shared-communication/macro-partial-shared-communication.c                PARENT_SCOPE)
+set (teshsuite_src ${teshsuite_src} PARENT_SCOPE)
 set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-large.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-automatic.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/coll-alltoall/clusters.tesh
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/macro-shared/macro-shared.tesh
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/macro-partial-shared/macro-partial-shared.tesh
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/macro-partial-shared-communication/macro-partial-shared-communication.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/broken_hostfiles.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/TI_output.tesh              PARENT_SCOPE)
 set(bin_files       ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
