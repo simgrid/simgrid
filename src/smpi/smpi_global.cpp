@@ -444,17 +444,6 @@ static void smpi_init_options(){
     }
 }
 
-static int execute_command(const char * const argv[])
-{
-  pid_t pid;
-  int status;
-  if (posix_spawnp(&pid, argv[0], nullptr, nullptr, (char* const*) argv, environ) != 0)
-    return 127;
-  if (waitpid(pid, &status, 0) != pid)
-    return 127;
-  return status;
-}
-
 typedef std::function<int(int argc, char *argv[])> smpi_entry_point_type;
 typedef int (* smpi_c_entry_point_type)(int argc, char **argv);
 typedef void (* smpi_fortran_entry_point_type)(void);
