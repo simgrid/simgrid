@@ -137,7 +137,8 @@ static void print(std::vector<std::pair<size_t, size_t>> vec) {
     }
     std::fprintf(stderr, "}\n");
 }
-static void memcpy_private(void *dest, const void *src, size_t n, std::vector<std::pair<size_t, size_t>> &private_blocks) {
+static void memcpy_private(void* dest, const void* src, std::vector<std::pair<size_t, size_t>>& private_blocks)
+{
   for(auto block : private_blocks) {
     memcpy((uint8_t*)dest+block.first, (uint8_t*)src+block.first, block.second-block.first);
   }
@@ -152,8 +153,10 @@ static void check_blocks(std::vector<std::pair<size_t, size_t>> &private_blocks,
 void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t buff_size)
 {
   simgrid::kernel::activity::Comm *comm = dynamic_cast<simgrid::kernel::activity::Comm*>(synchro);
-  int src_shared=0, dst_shared=0;
-  size_t src_offset=0, dst_offset=0;
+  int src_shared                        = 0;
+  int dst_shared                        = 0;
+  size_t src_offset                     = 0;
+  size_t dst_offset                     = 0;
   std::vector<std::pair<size_t, size_t>> src_private_blocks;
   std::vector<std::pair<size_t, size_t>> dst_private_blocks;
   XBT_DEBUG("Copy the data over");
@@ -186,7 +189,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
        smpi_switch_data_segment(
            (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->src_proc->data)->data))->index()));
        tmpbuff = static_cast<void*>(xbt_malloc(buff_size));
-       memcpy_private(tmpbuff, buff, buff_size, private_blocks);
+       memcpy_private(tmpbuff, buff, private_blocks);
   }
 
   if((smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) && ((char*)comm->dst_buff >= smpi_start_data_exe)
@@ -196,7 +199,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
            (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->dst_proc->data)->data))->index()));
   }
   XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff,comm->dst_buff);
-  memcpy_private(comm->dst_buff, tmpbuff, buff_size, private_blocks);
+  memcpy_private(comm->dst_buff, tmpbuff, private_blocks);
 
   if (comm->detached) {
     // if this is a detached send, the source buffer was duplicated by SMPI
