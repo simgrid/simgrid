@@ -49,14 +49,14 @@ int main(int argc, char *argv[])
   MPI_Init(&argc, &argv);
   int rank;
   int size;
-  size_t mem_size = 0x10000000;
+  size_t mem_size = 0x1000000;
   size_t shared_blocks[] = {
-    0,         0x1234567,
-    0x1300000, 0x1300010,
-    0x3456789, 0x3457890,
-    0x4444444, 0x5555555,
-    0x5555565, 0x5600000,
-    0x8000000, 0x10000000
+    0,         0x123456,
+    0x130000, 0x130001,
+    0x345678, 0x345789,
+    0x444444, 0x555555,
+    0x555556, 0x560000,
+    0x800000, 0x1000000
   };
   int nb_blocks = (sizeof(shared_blocks)/sizeof(size_t))/2;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -101,10 +101,10 @@ int main(int argc, char *argv[])
   // Then, even processes send a sub-part of their buffer their successor
   // Note that the last block should not be copied entirely
   if(rank%2 == 0) {
-    MPI_Send(buf+0x10000, mem_size-0xa000000, MPI_UINT8_T, rank+1, 0, MPI_COMM_WORLD);
+    MPI_Send(buf+0x10000, mem_size-0xa00000, MPI_UINT8_T, rank+1, 0, MPI_COMM_WORLD);
   }
   else {
-    MPI_Recv(buf+0x10000, mem_size-0xa000000, MPI_UINT8_T, rank-1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    MPI_Recv(buf+0x10000, mem_size-0xa00000, MPI_UINT8_T, rank-1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   }
 
 
