@@ -505,20 +505,17 @@ static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<s
 // TODO, remove the number of functions involved here
 static smpi_entry_point_type smpi_resolve_function(void* handle)
 {
-  smpi_fortran_entry_point_type entry_point2 =
-    (smpi_fortran_entry_point_type) dlsym(handle, "user_main_");
-  if (entry_point2 != nullptr) {
-    // fprintf(stderr, "EP user_main_=%p\n", entry_point2);
-    return [entry_point2](int argc, char** argv) {
+  smpi_fortran_entry_point_type entry_point_fortran = (smpi_fortran_entry_point_type)dlsym(handle, "user_main_");
+  if (entry_point_fortran != nullptr) {
+    return [entry_point_fortran](int argc, char** argv) {
       smpi_process_init(&argc, &argv);
-      entry_point2();
+      entry_point_fortran();
       return 0;
     };
   }
 
-  smpi_c_entry_point_type entry_point = (smpi_c_entry_point_type) dlsym(handle, "main");
+  smpi_c_entry_point_type entry_point = (smpi_c_entry_point_type)dlsym(handle, "main");
   if (entry_point != nullptr) {
-    // fprintf(stderr, "EP main=%p\n", entry_point);
     return entry_point;
   }
 
