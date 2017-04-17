@@ -33,7 +33,7 @@ Request::Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, 
 {
   void *old_buf = nullptr;
 // FIXME Handle the case of a partial shared malloc.
-  if(((((flags & RECV) != 0) && ((flags & ACCUMULATE) !=0)) || (datatype->flags() & DT_FLAG_DERIVED))) { // && (!smpi_is_shared(buf_))){
+  if ((((flags & RECV) != 0) && ((flags & ACCUMULATE) != 0)) || (datatype->flags() & DT_FLAG_DERIVED)) {
     // This part handles the problem of non-contiguous memory
     old_buf = buf;
     if (count==0){
@@ -691,7 +691,8 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
     MPI_Datatype datatype = req->old_type_;
 
 // FIXME Handle the case of a partial shared malloc.
-    if((((req->flags_ & ACCUMULATE) != 0) || (datatype->flags() & DT_FLAG_DERIVED))){// && (!smpi_is_shared(req->old_buf_))){
+    if (((req->flags_ & ACCUMULATE) != 0) ||
+        (datatype->flags() & DT_FLAG_DERIVED)) { // && (!smpi_is_shared(req->old_buf_))){
 
       if (!smpi_process()->replaying()){
         if( smpi_privatize_global_variables != 0 && (static_cast<char*>(req->old_buf_) >= smpi_start_data_exe)

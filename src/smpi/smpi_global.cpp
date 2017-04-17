@@ -440,7 +440,7 @@ static void smpi_init_logs(){
 
 static void smpi_init_options(){
     //return if already called
-    if(smpi_cpu_threshold!=-1)
+    if (smpi_cpu_threshold > -1)
       return;
     simgrid::smpi::Colls::set_collectives();
     simgrid::smpi::Colls::smpi_coll_cleanup_callback=nullptr;
