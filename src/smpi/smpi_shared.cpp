@@ -208,7 +208,8 @@ static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
 #define ALIGN_UP(n, align) (((n) + (align)-1) & -(align))
 #define ALIGN_DOWN(n, align) ((n) & -(align))
 
-void *smpi_shared_malloc_global__(size_t size, const char *file, int line, size_t *shared_block_offsets, int nb_shared_blocks) {
+void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int nb_shared_blocks)
+{
   void *mem;
   xbt_assert(smpi_shared_malloc_blocksize % PAGE_SIZE == 0, "The block size of shared malloc should be a multiple of the page size.");
   /* First reserve memory area */
@@ -318,7 +319,7 @@ static void *smpi_shared_malloc_global(size_t size, const char *file, int line, 
     shared_block_offsets[0] = 0;
     shared_block_offsets[1] = size;
   }
-  return smpi_shared_malloc_global__(size, file, line, shared_block_offsets, nb_shared_blocks);
+  return smpi_shared_malloc_partial(size, shared_block_offsets, nb_shared_blocks);
 }
 
 void *smpi_shared_malloc(size_t size, const char *file, int line) {
