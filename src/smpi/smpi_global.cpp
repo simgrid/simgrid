@@ -484,7 +484,7 @@ static void smpi_init_options(){
 
 typedef std::function<int(int argc, char *argv[])> smpi_entry_point_type;
 typedef int (* smpi_c_entry_point_type)(int argc, char **argv);
-typedef void (* smpi_fortran_entry_point_type)(void);
+typedef void (*smpi_fortran_entry_point_type)();
 
 static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<std::string> args)
 {

@@ -83,7 +83,8 @@ inline int xbt_heap_size(xbt_heap_t H)
  */
 void xbt_heap_push(xbt_heap_t H, void *content, double key)
 {
-  int count = ++(H->count);
+  H->count += 1;
+  int count = H->count;
 
   int size = H->size;
   xbt_heap_item_t item;
