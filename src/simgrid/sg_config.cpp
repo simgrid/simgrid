@@ -503,7 +503,8 @@ void sg_config_init(int *argc, char **argv)
     if (default_privatization == nullptr)
       default_privatization = "no";
 
-    xbt_cfg_register_string("smpi/privatize-global-variables", default_privatization, nullptr, "Whether we should privatize global variable at runtime (no, yes, mmap, dlopen).");
+    xbt_cfg_register_string("smpi/privatize-global-variables", default_privatization, nullptr,
+                            "How we should privatize global variable at runtime (no, yes, mmap, dlopen).");
 
     xbt_cfg_register_alias("smpi/privatize-global-variables", "smpi/privatize_global_variables");
 
