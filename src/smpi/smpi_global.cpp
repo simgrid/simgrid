@@ -463,7 +463,7 @@ static void smpi_init_options(){
       smpi_privatize_global_variables = SMPI_PRIVATIZE_NONE;
 
     else
-      xbt_die("Invalid value for smpi/privatization: %s", smpi_privatize_option);
+      xbt_die("Invalid value for smpi/privatization: '%s'", smpi_privatize_option);
 
     if (smpi_cpu_threshold < 0)
       smpi_cpu_threshold = DBL_MAX;
@@ -603,7 +603,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
         void* handle = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL | RTLD_DEEPBIND);
         unlink(target_executable.c_str());
         if (handle == nullptr)
-          xbt_die("dlopen failed");
+          xbt_die(bprintf("dlopen failed. Errno: %d (%s)", errno, strerror(errno)));
         smpi_entry_point_type entry_point = smpi_resolve_function(handle);
         if (!entry_point)
           xbt_die("Could not resolve entry point");
