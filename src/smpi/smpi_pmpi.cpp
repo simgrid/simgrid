@@ -74,7 +74,7 @@ int PMPI_Get_version (int *version,int *subversion){
 
 int PMPI_Get_library_version (char *version,int *len){
   smpi_bench_end();
-  snprintf(version,MPI_MAX_LIBRARY_VERSION_STRING,"SMPI Version %d.%d. Copyright The Simgrid Team 2007-2015",
+  snprintf(version, MPI_MAX_LIBRARY_VERSION_STRING, "SMPI Version %d.%d. Copyright The Simgrid Team 2007-2017",
            SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR);
   *len = strlen(version) > MPI_MAX_LIBRARY_VERSION_STRING ? MPI_MAX_LIBRARY_VERSION_STRING : strlen(version);
   smpi_bench_begin();
@@ -1511,7 +1511,6 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recv
 
     int rank               = comm != MPI_COMM_NULL ? smpi_process()->index() : -1;
     int root_traced        = comm->group()->index(root);
-    int i                  = 0;
     int size               = comm->size();
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t, 1);
     extra->type            = TRACING_GATHERV;
@@ -1527,9 +1526,9 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recv
     int dt_size_recv = 1;
     if (known == 0)
       dt_size_recv = recvtype->size();
-    if ((comm->rank() == root)) {
+    if (comm->rank() == root) {
       extra->recvcounts = xbt_new(int, size);
-      for (i                 = 0; i < size; i++) // copy data to avoid bad free
+      for (int i = 0; i < size; i++) // copy data to avoid bad free
         extra->recvcounts[i] = recvcounts[i] * dt_size_recv;
     }
     TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
@@ -1710,7 +1709,6 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
     }
     int rank               = comm != MPI_COMM_NULL ? smpi_process()->index() : -1;
     int root_traced        = comm->group()->index(root);
-    int i                  = 0;
     int size               = comm->size();
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t, 1);
     extra->type            = TRACING_SCATTERV;
@@ -1721,9 +1719,9 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
     int dt_size_send       = 1;
     if (known == 0)
       dt_size_send = sendtype->size();
-    if ((comm->rank() == root)) {
+    if (comm->rank() == root) {
       extra->sendcounts = xbt_new(int, size);
-      for (i                 = 0; i < size; i++) // copy data to avoid bad free
+      for (int i = 0; i < size; i++) // copy data to avoid bad free
         extra->sendcounts[i] = sendcounts[i] * dt_size_send;
     }
     extra->datatype2 = encode_datatype(recvtype, &known);

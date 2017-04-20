@@ -517,24 +517,22 @@ int Request::test(MPI_Request * request, MPI_Status * status) {
 
 int Request::testsome(int incount, MPI_Request requests[], int *indices, MPI_Status status[])
 {
-  int i;
   int count = 0;
   int count_dead = 0;
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
 
-  for(i = 0; i < incount; i++) {
-    if((requests[i] != MPI_REQUEST_NULL)) {
-      if(test(&requests[i], pstat)) {
-         indices[i] = 1;
-         count++;
-         if(status != MPI_STATUSES_IGNORE) {
-           status[i] = *pstat;
-         }
-         if ((requests[i] != MPI_REQUEST_NULL) && requests[i]->flags_ & NON_PERSISTENT)
-         requests[i]=MPI_REQUEST_NULL;
+  for (int i = 0; i < incount; i++) {
+    if (requests[i] != MPI_REQUEST_NULL) {
+      if (test(&requests[i], pstat)) {
+        indices[i] = 1;
+        count++;
+        if (status != MPI_STATUSES_IGNORE)
+          status[i] = *pstat;
+        if ((requests[i] != MPI_REQUEST_NULL) && requests[i]->flags_ & NON_PERSISTENT)
+          requests[i] = MPI_REQUEST_NULL;
       }
-    }else{
+    } else {
       count_dead++;
     }
   }
