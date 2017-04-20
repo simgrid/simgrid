@@ -243,7 +243,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   endif()
 
   # Test MVAPICH2 selector: dlopen privatization and UCONTEXT if exists (without priv and with raw if not)
-  if(HAVE_PRIVATIZATION AND HAVE_THREAD_CONTEXTS)
+  if(HAVE_PRIVATIZATION AND HAVE_UCONTEXT_CONTEXTS)
     ADD_TEST(test-smpi-mpich3-coll-mvapich2-ucontext-dlopen ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:ucontext -execarg=--cfg=smpi/coll_selector:mvapich2 -execarg=--cfg=smpi/privatization:dlopen)
     SET_TESTS_PROPERTIES(test-smpi-mpich3-coll-mvapich2-ucontext-dlopen PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
   else()
