@@ -96,9 +96,9 @@ static void segvhandler(int signum, siginfo_t *siginfo, void *context)
 #if HAVE_SMPI
     if (smpi_enabled() && smpi_privatize_global_variables == SMPI_PRIVATIZE_NONE) {
 #if HAVE_PRIVATIZATION
-      fprintf(stderr, "Try to enable SMPI variable privatization with --cfg=smpi/privatize-global-variables:yes.\n");
+      fprintf(stderr, "Try to enable SMPI variable privatization with --cfg=smpi/privatization:yes.\n");
 #else
-      fprintf(stderr, "Sadly, your system does not support --cfg=smpi/privatize-global-variables:yes (yet).\n");
+      fprintf(stderr, "Sadly, your system does not support --cfg=smpi/privatization:yes (yet).\n");
 #endif /* HAVE_PRIVATIZATION */
     }
 #endif /* HAVE_SMPI */

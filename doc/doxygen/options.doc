@@ -895,11 +895,11 @@ of counters, the "default" set.
 --cfg=smpi/papi-events:"default:PAPI_L3_LDM:PAPI_L2_LDM"
 \endverbatim
 
-\subsection options_smpi_global smpi/privatize-global-variables: Automatic privatization of global variables
+\subsection options_smpi_global smpi/privatization: Automatic privatization of global variables
 
-MPI executables are meant to be executed in separated processes, but SMPI is
+MPI executables are usually meant to be executed in separated processes, but SMPI is
 executed in only one process. Global variables from executables will be placed
-in the same memory zone and shared between processes, causing hard to find bugs.
+in the same memory zone and shared between processes, causing intricate bugs.
 Several options are possible to avoid this, as described in the main
 <a href="https://hal.inria.fr/hal-01415484">SMPI publication</a>.
 SimGrid provides two ways of automatically privatizing the globals,

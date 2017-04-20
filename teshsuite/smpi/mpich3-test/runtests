@@ -422,7 +422,7 @@ sub RunList {
 	# skip empty lines
 	if ($programname eq "") { next; }
 
-	#if privatization is disabled, and if the test needs it, ignore it
+	# if privatization is disabled, and if the test needs it, ignore it
 	if ($needs_privatization == 1 &&
 		$enabled_privatization != 1) {
                 SkippedTest($programname, $np, $workdir, "requires SMPI privatization");

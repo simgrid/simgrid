@@ -23,7 +23,7 @@ NETWORK_BANDWIDTH="${DEFAULT_NETWORK_BANDWIDTH}"
 NETWORK_LATENCY="${DEFAULT_NETWORK_LATENCY}"
 SPEED="${DEFAULT_SPEED}"
 
-PRIVATIZE="--cfg=smpi/privatize-global-variables:@HAVE_PRIVATIZATION@"
+PRIVATIZE="--cfg=smpi/privatization:@HAVE_PRIVATIZATION@"
 
 SIMOPTS="--cfg=surf/precision:1e-9 --cfg=network/model:SMPI --cfg=network/TCP-gamma:4194304"
 

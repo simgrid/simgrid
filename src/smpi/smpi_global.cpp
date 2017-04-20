@@ -446,7 +446,7 @@ static void smpi_init_options(){
     simgrid::smpi::Colls::smpi_coll_cleanup_callback=nullptr;
     smpi_cpu_threshold = xbt_cfg_get_double("smpi/cpu-threshold");
     smpi_host_speed = xbt_cfg_get_double("smpi/host-speed");
-    const char* smpi_privatize_option = xbt_cfg_get_string("smpi/privatize-global-variables");
+    const char* smpi_privatize_option               = xbt_cfg_get_string("smpi/privatization");
     if (std::strcmp(smpi_privatize_option, "no") == 0)
       smpi_privatize_global_variables = SMPI_PRIVATIZE_NONE;
     else if (std::strcmp(smpi_privatize_option, "yes") == 0)
@@ -463,8 +463,7 @@ static void smpi_init_options(){
       smpi_privatize_global_variables = SMPI_PRIVATIZE_NONE;
 
     else
-      xbt_die("Invalid value for smpi/privatize-global-variables: %s",
-        smpi_privatize_option);
+      xbt_die("Invalid value for smpi/privatization: %s", smpi_privatize_option);
 
     if (smpi_cpu_threshold < 0)
       smpi_cpu_threshold = DBL_MAX;
