@@ -570,11 +570,12 @@ int smpi_main(const char* executable, int argc, char *argv[])
           + "_" + std::to_string(getpid())
           + "_" + std::to_string(rank++) + ".so";
 
-        int fdout = open(target_executable.c_str(), O_WRONLY);
+        int fdout = open(target_executable.c_str(), O_CREAT | O_RDWR, S_IRWXU);
         xbt_assert(fdout >= 0, "Cannot write into %s", target_executable.c_str());
 
 #if HAVE_SENDFILE
-        sendfile(fdout, fdin, NULL, fdin_size);
+        off_t offset = 0;
+        sendfile(fdout, fdin, &offset, fdin_size);
 #else
         XBT_WARN("Copy %d bytes into %s", static_cast<int>(fdin_size), target_executable.c_str());
         const int bufsize = 1024 * 1024 * 4;
