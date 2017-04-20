@@ -554,28 +554,26 @@ int smpi_main(const char* executable, int argc, char *argv[])
 
     std::string executable_copy = executable;
 
-    // Prepare the copy of the binary (open the file and get its size)
-    // (fdin will remain open for the whole process execution. That's a sort of leak but we can live with it)
-    int fdin = open(executable_copy.c_str(), O_RDONLY);
-    xbt_assert(fdin >= 0, "Cannot read from %s", executable_copy.c_str());
+    // Prepare the copy of the binary (get its size)
     struct stat fdin_stat;
-    fstat(fdin, &fdin_stat);
+    stat(executable_copy.c_str(), &fdin_stat);
     off_t fdin_size = fdin_stat.st_size;
 
-    simix_global->default_function = [executable_copy, fdin, fdin_size](std::vector<std::string> args) {
-      return std::function<void()>([executable_copy, fdin, fdin_size, args] {
+    simix_global->default_function = [executable_copy, fdin_size](std::vector<std::string> args) {
+      return std::function<void()>([executable_copy, fdin_size, args] {
 
         // Copy the dynamic library:
         std::string target_executable = executable_copy
           + "_" + std::to_string(getpid())
           + "_" + std::to_string(rank++) + ".so";
 
+        int fdin = open(executable_copy.c_str(), O_RDONLY);
+        xbt_assert(fdin >= 0, "Cannot read from %s", executable_copy.c_str());
         int fdout = open(target_executable.c_str(), O_CREAT | O_RDWR, S_IRWXU);
         xbt_assert(fdout >= 0, "Cannot write into %s", target_executable.c_str());
 
 #if HAVE_SENDFILE
-        off_t offset = 0;
-        sendfile(fdout, fdin, &offset, fdin_size);
+        sendfile(fdout, fdin, NULL, fdin_size);
 #else
         XBT_WARN("Copy %d bytes into %s", static_cast<int>(fdin_size), target_executable.c_str());
         const int bufsize = 1024 * 1024 * 4;
@@ -597,6 +595,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
           }
         }
 #endif
+        close(fdin);
         close(fdout);
 
         // Load the copy and resolve the entry point:
