@@ -895,7 +895,7 @@ of counters, the "default" set.
 --cfg=smpi/papi-events:"default:PAPI_L3_LDM:PAPI_L2_LDM"
 \endverbatim
 
-\subsection options_smpi_global smpi/privatization: Automatic privatization of global variables
+\subsection options_smpi_privatization smpi/privatization: Automatic privatization of global variables
 
 MPI executables are usually meant to be executed in separated processes, but SMPI is
 executed in only one process. Global variables from executables will be placed
@@ -1259,7 +1259,7 @@ It can be done by using XBT. Go to \ref XBT_log for more details.
 - \c smpi/or: \ref options_model_smpi_or
 - \c smpi/os: \ref options_model_smpi_os
 - \c smpi/papi-events: \ref options_smpi_papi_events
-- \c smpi/privatize-global-variables: \ref options_smpi_global
+- \c smpi/privatization: \ref options_smpi_privatization
 - \c smpi/send-is-detached-thresh: \ref options_model_smpi_detached
 - \c smpi/shared-malloc: \ref options_model_smpi_shared_malloc
 - \c smpi/simulate-computation: \ref options_smpi_bench
