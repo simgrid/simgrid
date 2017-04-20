@@ -617,7 +617,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
     // Load the dynamic library and resolve the entry point:
     void* handle = dlopen(executable, RTLD_LAZY | RTLD_LOCAL | RTLD_DEEPBIND);
     if (handle == nullptr)
-      xbt_die("dlopen failed for %s", executable);
+      xbt_die("dlopen failed for %s: %s (errno: %d -- %s)", executable, dlerror(), errno, strerror(errno));
     smpi_entry_point_type entry_point = smpi_resolve_function(handle);
     if (!entry_point)
       xbt_die("main not found in %s", executable);
