@@ -603,7 +603,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
         void* handle = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL | RTLD_DEEPBIND);
         unlink(target_executable.c_str());
         if (handle == nullptr)
-          xbt_die(bprintf("dlopen failed: %s (errno: %d -- %s)", dlerror(), errno, strerror(errno)));
+          xbt_die("dlopen failed: %s (errno: %d -- %s)", dlerror(), errno, strerror(errno));
         smpi_entry_point_type entry_point = smpi_resolve_function(handle);
         if (!entry_point)
           xbt_die("Could not resolve entry point");
