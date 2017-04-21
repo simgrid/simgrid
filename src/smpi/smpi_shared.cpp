@@ -208,6 +208,12 @@ static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
 #define ALIGN_UP(n, align) (((n) + (align)-1) & -(align))
 #define ALIGN_DOWN(n, align) ((n) & -(align))
 
+/*
+ * Similar to smpi_shared_malloc, but only sharing the blocks described by shared_block_offsets.
+ * This array contains the offsets (in bytes) of the block to share.
+ * Even indices are the start offsets (included), odd indices are the stop offsets (excluded).
+ * For instance, if shared_block_offsets == {27, 42}, then the elements mem[27], mem[28], ..., mem[41] are shared. The others are not.
+ */
 void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int nb_shared_blocks)
 {
   void *mem;
@@ -304,35 +310,16 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
   return mem;
 }
 
-/*
- * When nb_shared_blocks == -1, default behavior of smpi_shared_malloc: everything is shared.
- * Otherwise, only the blocks described by shared_block_offsets are shared.
- * This array contains the offsets (in bytes) of the block to share.
- * Even indices are the start offsets (included), odd indices are the stop offsets (excluded).
- * For instance, if shared_block_offsets == {27, 42}, then the elements mem[27], mem[28], ..., mem[41] are shared. The others are not.
- */
-static void *smpi_shared_malloc_global(size_t size, const char *file, int line, size_t *shared_block_offsets=NULL, int nb_shared_blocks=-1) {
-  size_t tmp_shared_block_offsets[2];
-  if(nb_shared_blocks == -1) {
-    nb_shared_blocks = 1;
-    shared_block_offsets = tmp_shared_block_offsets;
-    shared_block_offsets[0] = 0;
-    shared_block_offsets[1] = size;
-  }
-  return smpi_shared_malloc_partial(size, shared_block_offsets, nb_shared_blocks);
-}
-
 void *smpi_shared_malloc(size_t size, const char *file, int line) {
-  void *mem;
   if (size > 0 && smpi_cfg_shared_malloc == shmalloc_local) {
-    mem = smpi_shared_malloc_local(size, file, line);
+    return smpi_shared_malloc_local(size, file, line);
   } else if (smpi_cfg_shared_malloc == shmalloc_global) {
-    mem = smpi_shared_malloc_global(size, file, line);
-  } else {
-    mem = xbt_malloc(size);
-    XBT_DEBUG("Classic malloc %zu in %p", size, mem);
+    int nb_shared_blocks = 1;
+    size_t shared_block_offsets[2] = {0, size};
+    return smpi_shared_malloc_partial(size, shared_block_offsets, nb_shared_blocks);
   }
-  return mem;
+  XBT_DEBUG("Classic malloc %zu", size);
+  return xbt_malloc(size);
 }
 
 int smpi_is_shared(void* ptr, std::vector<std::pair<size_t, size_t>> &private_blocks, size_t *offset){
