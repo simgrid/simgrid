@@ -38,7 +38,7 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t old_host, m
     //start link
     container_t msg = PJ_container_get (instr_process_id(process, str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_LINK", PJ_type_get_root());
-    new_pajeStartLink (MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
+    StartLinkEvent (MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
 
     //destroy existing container of this process
     TRACE_msg_process_destroy (MSG_process_get_name (process), MSG_process_get_PID (process));
@@ -49,7 +49,7 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t old_host, m
     //end link
     msg = PJ_container_get(instr_process_id(process, str, len));
     type = PJ_type_get ("MSG_PROCESS_LINK", PJ_type_get_root());
-    new_pajeEndLink (MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
+    EndLinkEvent (MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
   }
 }
 
@@ -95,7 +95,7 @@ void TRACE_msg_process_suspend(msg_process_t process)
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
     val_t value = PJ_value_get ("suspend", type);
-    new_pajePushState (MSG_get_clock(), process_container, type, value);
+    PushStateEvent (MSG_get_clock(), process_container, type, value);
   }
 }
 
@@ -107,7 +107,7 @@ void TRACE_msg_process_resume(msg_process_t process)
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    new_pajePopState (MSG_get_clock(), process_container, type);
+    PopStateEvent (MSG_get_clock(), process_container, type);
   }
 }
 
@@ -120,7 +120,7 @@ void TRACE_msg_process_sleep_in(msg_process_t process)
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
     val_t value = PJ_value_get ("sleep", type);
-    new_pajePushState (MSG_get_clock(), process_container, type, value);
+    PushStateEvent (MSG_get_clock(), process_container, type, value);
   }
 }
 
@@ -132,6 +132,6 @@ void TRACE_msg_process_sleep_out(msg_process_t process)
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    new_pajePopState (MSG_get_clock(), process_container, type);
+    PopStateEvent (MSG_get_clock(), process_container, type);
   }
 }
