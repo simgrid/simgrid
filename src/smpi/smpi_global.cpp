@@ -573,7 +573,10 @@ int smpi_main(const char* executable, int argc, char *argv[])
         xbt_assert(fdout >= 0, "Cannot write into %s", target_executable.c_str());
 
 #if HAVE_SENDFILE
-        sendfile(fdout, fdin, NULL, fdin_size);
+        ssize_t sent_size = sendfile(fdout, fdin, NULL, fdin_size);
+        xbt_assert(sent_size == fdin_size,
+                   "Error while copying %s: only %ld bytes copied instead of %ld (errno: %d -- %s)",
+                   target_executable.c_str(), sent_size, fdin_size, errno, strerror(errno));
 #else
         XBT_WARN("Copy %d bytes into %s", static_cast<int>(fdin_size), target_executable.c_str());
         const int bufsize = 1024 * 1024 * 4;
