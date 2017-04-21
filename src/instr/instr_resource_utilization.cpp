@@ -29,17 +29,17 @@ static void __TRACE_surf_check_variable_set_to_zero(double now, const char *vari
   if (!xbt_dict_get_or_null(platform_variables, key)) {
     container_t container = PJ_container_get (resource);
     type_t type = PJ_type_get (variable, container->type);
-    new_pajeSetVariable (now, container, type, 0);
+    SetVariableEvent (now, container, type, 0);
     xbt_dict_set(platform_variables, key, (char*)"", nullptr);
   }
   xbt_free(key);
 }
 
 static void instr_event (double now, double delta, type_t variable, container_t resource, double value)
-{ s_subVariable n;
+{
   __TRACE_surf_check_variable_set_to_zero(now, variable->name, resource->name);
-  new_pajeAddVariable(now, resource, variable, value);
-  n.new_pajeSubVariable(now + delta, resource, variable, value);
+  AddVariableEvent(now, resource, variable, value);
+  SubVariableEvent(now + delta, resource, variable, value);
 }
 
 /* TRACE_surf_link_set_utilization: entry point from SimGrid */

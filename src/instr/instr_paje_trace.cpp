@@ -22,7 +22,7 @@ static void print_paje_debug(std::string functionName, paje_event_t event) {
             event->timestamp);
 }
 
-template<typename T> static void init_stream(paje_event_t event) {
+static void init_stream(paje_event_t event) {
   stream << std::fixed << std::setprecision(TRACE_precision());
   stream << (int) event->event_type;
 }
@@ -43,40 +43,9 @@ static void print_timestamp(paje_event_t event) {
     stream << event->timestamp;
 }
 
-template<typename T> static void print_default_pajeLink_row(paje_event_t& event) {
-  init_stream<T>(event);
-  print_timestamp(event);
-  stream << " " << static_cast<T>(event->data)->type->id
-         << " " << static_cast<T>(event->data)->container->id
-         << " " << static_cast<T>(event->data)->value;
-}
-
-template<typename T> static void print_default_pajeState_row(paje_event_t& event) {
-  init_stream<T>(event);
-  print_timestamp(event);
-  stream << " " << static_cast<T>(event->data)->type->id
-         << " " << static_cast<T>(event->data)->container->id;
-}
-
-template<typename T> static void print_default_pajeType_row(paje_event_t& event) {
-  init_stream<T>(event);
-  stream << " " << static_cast<T>(event->data)->type->id
-         << " " << static_cast<T>(event->data)->type->father->id
-         << " " << static_cast<T>(event->data)->type->name;
-}
-
-template<typename T> static void print_default_pajeVariable_row(paje_event_t& event) {
-  init_stream<T>(event);
-  print_timestamp(event);
-  stream << " " << static_cast<T>(event->data)->type->id
-         << " " << static_cast<T>(event->data)->container->id
-         << " " << static_cast<T>(event->data)->value;
-         
-  print_row();
-}
-
 void TRACE_paje_init() {
-  active_writer.print_DefineContainerType = &print_pajeDefineContainerType;
+  /*
+  //active_writer.print_DefineContainerType = &print_pajeDefineContainerType;
   active_writer.print_DefineVariableType  = &print_pajeDefineVariableType;
   active_writer.print_DefineStateType     = &print_pajeDefineStateType;
   active_writer.print_DefineEventType     = &print_pajeDefineEventType;
@@ -94,6 +63,7 @@ void TRACE_paje_init() {
   active_writer.print_StartLink           = &print_pajeStartLink;
   active_writer.print_EndLink             = &print_pajeEndLink;
   active_writer.print_NewEvent            = &print_pajeNewEvent;
+*/
 }
 
 void TRACE_paje_start() {
@@ -132,114 +102,146 @@ void TRACE_paje_end() {
   XBT_DEBUG("Filename %s is closed", filename);
 }
 
-void print_pajeDefineContainerType(paje_event_t event) {
-  print_paje_debug(__FUNCTION__, event);
-  print_default_pajeType_row<defineContainerType_t>(event);
+void DefineContainerEvent::print() {
+  print_paje_debug(__FUNCTION__, this);
+  init_stream(this);
+  stream << " " << type->id
+         << " " << type->father->id
+         << " " << type->name;
   print_row();
 }
 
-void print_pajeDefineVariableType(paje_event_t event) {
-  print_paje_debug(__FUNCTION__, event);
-  print_default_pajeType_row<defineVariableType_t>(event);
-  if(static_cast<defineVariableType_t>(event->data)->type->color)
-    stream << " \"" << static_cast<defineVariableType_t>(event->data)->type->color << "\"";
+void DefineVariableTypeEvent::print() {
+  print_paje_debug(__FUNCTION__, this);
+ init_stream(this);
+  stream << " " << type->id
+         << " " << type->father->id
+         << " " << type->name;
+  if (type->color)
+    stream << " \"" << type->color << "\"";
   print_row();
 }
 
-void print_pajeDefineStateType(paje_event_t event) {
-  print_paje_debug(__FUNCTION__, event);
-  print_default_pajeType_row<defineStateType_t>(event);
+void DefineStateTypeEvent::print() {
+  print_paje_debug(__FUNCTION__, this);
+  init_stream(this);
+  stream << " " << type->id
+         << " " << type->father->id
+         << " " << type->name;
   print_row();
 }
 
-void print_pajeDefineEventType(paje_event_t event) {
-  print_paje_debug(__FUNCTION__, event);
-  print_default_pajeType_row<defineEventType_t>(event);
+void DefineEventTypeEvent::print() {
+  print_paje_debug(__FUNCTION__, this);
+  init_stream(this);
+  stream << " " << type->id
+         << " " << type->father->id
+         << " " << type->name;
   print_row();
 }
 
-void print_pajeDefineLinkType(paje_event_t event) {
-  print_paje_debug(__FUNCTION__, event);
-  init_stream<defineLinkType_t>(event);
-  stream << " " << static_cast<defineLinkType_t>(event->data)->type->id 
-         << " " << static_cast<defineLinkType_t>(event->data)->type->father->id 
-         << " " << static_cast<defineLinkType_t>(event->data)->source->id 
-         << " " << static_cast<defineLinkType_t>(event->data)->dest->id 
-         << " " << static_cast<defineLinkType_t>(event->data)->type->name;
+void DefineLinkTypeEvent::print() {
+  print_paje_debug(__FUNCTION__, this);
+  init_stream (this);
+  stream << " " << type->id 
+         << " " << type->father->id 
+         << " " << source->id 
+         << " " << dest->id 
+         << " " << type->name;
   print_row();
 }
 
-void print_pajeDefineEntityValue (paje_event_t event) {
-  print_paje_debug(__FUNCTION__, event);
-  init_stream<defineEntityValue_t>(event);
-  stream << " "   << static_cast<defineEntityValue_t>(event->data)->value->id
-         << " "   << static_cast<defineEntityValue_t>(event->data)->value->father->id
-         << " "   << static_cast<defineEntityValue_t>(event->data)->value->name;
-  if(static_cast<defineEntityValue_t>(event->data)->value->color)
-    stream << " \"" << static_cast<defineEntityValue_t>(event->data)->value->color << "\"";
+void DefineEntityValueEvent::print() {
+  print_paje_debug(__FUNCTION__, this);
+  init_stream(this);
+  stream << " "   << value->id
+         << " "   << value->father->id
+         << " "   << value->name;
+  if(value->color)
+    stream << " \"" << value->color << "\"";
   print_row();
 }
 
-void print_pajeCreateContainer(paje_event_t event) {
-  print_paje_debug(__FUNCTION__, event);
-  init_stream<createContainer_t>(event);
-  print_timestamp(event);
-  stream << " "   << static_cast<createContainer_t>(event->data)->container->id
-         << " "   << static_cast<createContainer_t>(event->data)->container->type->id
-         << " "   << static_cast<createContainer_t>(event->data)->container->father->id
-         << " \"" << static_cast<createContainer_t>(event->data)->container->name << "\"";
-
-  print_row();
-}
-
-void print_pajeDestroyContainer(paje_event_t event) {
-  print_paje_debug(__FUNCTION__, event);
-  init_stream<createContainer_t>(event);
-  print_timestamp(event);
-  stream << " "   << static_cast<createContainer_t>(event->data)->container->type->id
-         << " "   << static_cast<createContainer_t>(event->data)->container->id;
+void CreateContainerEvent::print() {
+  print_paje_debug(__FUNCTION__, this);
+  init_stream(this);
+  print_timestamp(this);
+  stream << " "   << container->id
+         << " "   << container->type->id
+         << " "   << container->father->id
+         << " \"" << container->name << "\"";
 
   print_row();
 }
 
-void print_pajeSetVariable(paje_event_t event) {
-  print_paje_debug(__FUNCTION__, event);
-  print_default_pajeVariable_row<setVariable_t>(event);
+void DestroyContainerEvent::print() {
+  print_paje_debug(__FUNCTION__, this);
+  init_stream(this);
+  print_timestamp(this);
+  stream << " "   << container->type->id
+         << " "   << container->id;
+
+  print_row();
 }
 
-void print_pajeAddVariable(paje_event_t event) {
-  print_paje_debug(__FUNCTION__, event);
-  print_default_pajeVariable_row<addVariable_t>(event);
+void SetVariableEvent::print() {
+  print_paje_debug(__FUNCTION__, this);
+  init_stream(this);
+  print_timestamp(this);
+  stream << " " << type->id
+         << " " << container->id
+         << " " << value;
+  print_row();
 }
 
-void print_pajeSubVariable(paje_event_t event) {
-  print_paje_debug(__FUNCTION__, event);
-  print_default_pajeVariable_row<subVariable_t>(event);
+void AddVariableEvent::print() {
+  print_paje_debug(__FUNCTION__, this);
+  init_stream(this);
+  print_timestamp(this);
+  stream << " " << type->id
+         << " " << container->id
+         << " " << value;
+  print_row();
 }
 
-void print_pajeSetState(paje_event_t event) {
-  print_paje_debug(__FUNCTION__, event);
+void SubVariableEvent::print() {
+  print_paje_debug(__FUNCTION__, this);
+  init_stream(this);
+  print_timestamp(this);
+  stream << " " << type->id
+         << " " << container->id
+         << " " << value;
+  print_row();
+}
 
-  print_default_pajeState_row<setState_t>(event);
-  stream << " " << static_cast<setState_t>(event->data)->value->id;
+void SetStateEvent::print() {
+  print_paje_debug(__FUNCTION__, this);
+  init_stream(this);
+  print_timestamp(this);
+  stream << " " << type->id
+         << " " << container->id;
+  stream << " " <<value->id;
 #if HAVE_SMPI
   if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
-    stream << " \"" << static_cast<setState_t>(event->data)->filename
-           << "\" " << static_cast<setState_t>(event->data)->linenumber;
+    stream << " \"" << filename
+           << "\" " << linenumber;
   }
 #endif
   print_row();
 }
 
-void print_pajePushState(paje_event_t event) {
-  print_paje_debug(__FUNCTION__, event);
-  print_default_pajeState_row<pushState_t>(event);
-  stream << " " << static_cast<pushState_t>(event->data)->value->id;
+void PushStateEvent::print() {
+  print_paje_debug(__FUNCTION__, this);
+    init_stream(this);
+  print_timestamp(this);
+  stream << " " << type->id
+         << " " << container->id;
+  stream << " " <<value->id;
 
   if (TRACE_display_sizes()) {
     stream << " ";
-    if (static_cast<pushState_t>(event->data)->extra != nullptr) {
-      stream << static_cast<instr_extra_data>(static_cast<pushState_t>(event->data)->extra)->send_size;
+    if (extra != nullptr) {
+      stream << static_cast<instr_extra_data>(extra)->send_size;
     }
     else {
       stream << 0;
@@ -247,59 +249,73 @@ void print_pajePushState(paje_event_t event) {
   }
 #if HAVE_SMPI
   if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
-    stream << " \"" << static_cast<pushState_t>(event->data)->filename
-           << "\" " << static_cast<pushState_t>(event->data)->linenumber;
+    stream << " \"" << filename
+           << "\" " << linenumber;
   }
 #endif
   print_row();
 
-  if (static_cast<pushState_t>(event->data)->extra != nullptr) {
-    if (static_cast<instr_extra_data>(static_cast<pushState_t>(event->data)->extra)->sendcounts != nullptr)
-      xbt_free(static_cast<instr_extra_data>(static_cast<pushState_t>(event->data)->extra)->sendcounts);
-    if (static_cast<instr_extra_data>(static_cast<pushState_t>(event->data)->extra)->recvcounts != nullptr)
-      xbt_free(static_cast<instr_extra_data>(static_cast<pushState_t>(event->data)->extra)->recvcounts);
-    xbt_free(static_cast<pushState_t>(event->data)->extra);
+  if (extra != nullptr) {
+    if (static_cast<instr_extra_data>(extra)->sendcounts != nullptr)
+      xbt_free(static_cast<instr_extra_data>(extra)->sendcounts);
+    if (static_cast<instr_extra_data>(extra)->recvcounts != nullptr)
+      xbt_free(static_cast<instr_extra_data>(extra)->recvcounts);
+    xbt_free(extra);
   }
 }
 
-void print_pajePopState(paje_event_t event) {
-  print_paje_debug(__FUNCTION__, event);
-  print_default_pajeState_row<popState_t>(event);
+void PopStateEvent::print() {
+  print_paje_debug(__FUNCTION__, this);
+    init_stream(this);
+  print_timestamp(this);
+  stream << " " << type->id
+         << " " << container->id;
   print_row();
 }
 
-void print_pajeResetState(paje_event_t event) {
-  print_paje_debug(__FUNCTION__, event);
-  print_default_pajeState_row<resetState_t>(event);
+void ResetStateEvent::print() {
+  print_paje_debug(__FUNCTION__, this);
+    init_stream(this);
+  print_timestamp(this);
+  stream << " " << type->id
+         << " " << container->id;
   print_row();
 }
 
-void print_pajeStartLink(paje_event_t event) {
-  print_paje_debug(__FUNCTION__, event);
-  print_default_pajeLink_row<startLink_t>(event);
-  stream << " " << static_cast<startLink_t>(event->data)->sourceContainer->id
-         << " " << static_cast<startLink_t>(event->data)->key;
+void StartLinkEvent::print() {
+  print_paje_debug(__FUNCTION__, this);
+    init_stream(this);
+  print_timestamp(this);
+  stream << " " <<type->id
+         << " " <<container->id
+         << " " <<value;
+  stream << " " << sourceContainer->id
+         << " " << key;
 
   if (TRACE_display_sizes()) {
-    stream << " " << static_cast<startLink_t>(event->data)->size;
+    stream << " " << size;
   }
   print_row();
 }
 
-void print_pajeEndLink(paje_event_t event) {
-  print_paje_debug(__FUNCTION__, event);
-  print_default_pajeLink_row<startLink_t>(event);
-  stream << " " << static_cast<endLink_t>(event->data)->destContainer->id
-         << " " << static_cast<endLink_t>(event->data)->key;
+void EndLinkEvent::print() {
+  print_paje_debug(__FUNCTION__, this);
+    init_stream(this);
+  print_timestamp(this);
+  stream << " " <<type->id
+         << " " <<container->id
+         << " " <<value;
+  stream << " " << destContainer->id
+         << " " << key;
   print_row();
 }
 
-void print_pajeNewEvent (paje_event_t event) {
-  print_paje_debug(__FUNCTION__, event);
-  init_stream<newEvent_t>(event);
-  print_timestamp(event);
-  stream << " " << static_cast<newEvent_t>(event->data)->type->id
-         << " " << static_cast<newEvent_t>(event->data)->container->id
-         << " " << static_cast<newEvent_t>(event->data)->value->id;
+void NewEvent::print () {
+  print_paje_debug(__FUNCTION__, this);
+  init_stream (this);
+  print_timestamp(this);
+  stream << " " << type->id
+         << " " << container->id
+         << " " << value->id;
   print_row();
 }

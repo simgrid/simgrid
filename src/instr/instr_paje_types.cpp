@@ -116,7 +116,7 @@ type_t PJ_type_get_or_null (const char *name, type_t father)
 }
 
 type_t PJ_type_container_new (const char *name, type_t father)
-{ s_defineContainerType EltContainer;
+{
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a container type with a nullptr name");
   }
@@ -130,20 +130,20 @@ type_t PJ_type_container_new (const char *name, type_t father)
 
   if(father){
     XBT_DEBUG("ContainerType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
-    EltContainer.Event(ret);
+    new DefineContainerEvent(ret);
   }
   return ret;
 }
 
 type_t PJ_type_event_new (const char *name, type_t father)
-{
+{ 
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create an event type with a nullptr name");
   }
 
   type_t ret = newType (name, name, nullptr, TYPE_EVENT, father);
   XBT_DEBUG("EventType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
-  new_pajeDefineEventType(ret);
+  new DefineEventTypeEvent(ret);
   return ret;
 }
 
@@ -162,7 +162,7 @@ type_t PJ_type_variable_new (const char *name, const char *color, type_t father)
     ret = newType (name, name, color, TYPE_VARIABLE, father);
   }
   XBT_DEBUG("VariableType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
-  new_pajeDefineVariableType (ret);
+  new DefineVariableTypeEvent (ret);
   return ret;
 }
 
@@ -179,7 +179,7 @@ type_t PJ_type_link_new (const char *name, type_t father, type_t source, type_t 
   ret = newType (name, key, nullptr, TYPE_LINK, father);
   XBT_DEBUG("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->name, ret->id, father->name, father->id,
             source->name, source->id, dest->name, dest->id);
-  new_pajeDefineLinkType(ret, source, dest);
+  DefineLinkTypeEvent(ret, source, dest);
   return ret;
 }
 
@@ -193,6 +193,6 @@ type_t PJ_type_state_new (const char *name, type_t father)
 
   ret = newType (name, name, nullptr, TYPE_STATE, father);
   XBT_DEBUG("StateType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
-  new_pajeDefineStateType(ret);
+  new DefineStateTypeEvent(ret);
   return ret;
 }
