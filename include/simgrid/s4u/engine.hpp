@@ -102,6 +102,9 @@ public:
     });
   }
 
+  /** Returns whether SimGrid was initialized yet -- mostly for internal use */
+  static bool isInitialized();
+
   simgrid::kernel::EngineImpl* pimpl;
 
 private:

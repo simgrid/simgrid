@@ -153,5 +153,10 @@ void Engine::netpointUnregister(simgrid::kernel::routing::NetPoint* point)
     delete point;
   });
 }
+
+bool Engine::isInitialized()
+{
+  return Engine::instance_ != nullptr;
 }
 }
+} // namespace

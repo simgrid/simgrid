@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <simgrid/s4u/engine.hpp>
 #include <simgrid/s4u/host.hpp>
 
 #include "private.h"
@@ -24,7 +25,9 @@ extern "C" { // Obviously, the C MPI interface should use the C linkage
 
 int PMPI_Init(int *argc, char ***argv)
 {
-  // PMPI_Init is call only one time by only by SMPI process
+  xbt_assert(simgrid::s4u::Engine::isInitialized(),
+             "Your MPI program was not properly initialized. The easiest is to use smpirun to start it.");
+  // PMPI_Init is called only once per SMPI process
   int already_init;
   MPI_Initialized(&already_init);
   if(already_init == 0){
