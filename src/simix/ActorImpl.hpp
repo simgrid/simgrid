@@ -33,6 +33,7 @@ public:
 class ActorImpl {
 public:
   ActorImpl() : piface_(this) {}
+  ~ActorImpl();
 
   // TODO, replace with boost intrusive container hooks
   s_xbt_swag_hookup_t process_hookup   = { nullptr, nullptr }; /* simix_global->process_list */
@@ -66,6 +67,10 @@ public:
   smx_timer_t kill_timer = nullptr;
   int segment_index = -1; /* Reference to an SMPI process' data segment. Default value is -1 if not in SMPI context*/
 
+  /* Refcounting */
+private:
+  std::atomic_int_fast32_t refcount_{1};
+public:
   friend void intrusive_ptr_add_ref(ActorImpl* process)
   {
     process->refcount_.fetch_add(1, std::memory_order_relaxed);
@@ -79,18 +84,19 @@ public:
     }
   }
 
-  ~ActorImpl();
-
+  /* S4U/implem interfaces */
+private:
+  simgrid::s4u::Actor piface_; // Our interface is part of ourselves
+public:
   simgrid::s4u::ActorPtr iface() { return s4u::ActorPtr(&piface_); }
   simgrid::s4u::Actor* ciface() { return &piface_; }
 
-  void daemonize();
-  bool isDaemon();
-
+  /* Daemon actors are automatically killed when the last non-daemon leaves */
 private:
   bool daemon = false;
-  std::atomic_int_fast32_t refcount_ { 1 };
-  simgrid::s4u::Actor piface_; // Our interface is part of ourselves
+public:
+  void daemonize();
+  bool isDaemon();
 };
 
 }
