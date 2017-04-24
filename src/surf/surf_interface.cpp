@@ -32,6 +32,7 @@ simgrid::trace_mgr::future_evt_set *future_evt_set = nullptr;
 std::vector<std::string> surf_path;
 std::vector<simgrid::s4u::Host*> host_that_restart;
 xbt_dict_t watched_hosts_lib;
+extern std::map<std::string, storage_type_t> storage_types;
 
 namespace simgrid {
 namespace surf {
@@ -352,7 +353,6 @@ void surf_init(int *argc, char **argv)
   USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(nullptr);
 
   storage_lib = xbt_lib_new();
-  storage_type_lib = xbt_lib_new();
   watched_hosts_lib = xbt_dict_new_homogeneous(nullptr);
 
   XBT_DEBUG("Add SURF levels");
@@ -380,8 +380,17 @@ void surf_exit()
   sg_host_exit();
   xbt_lib_free(&storage_lib);
   sg_link_exit();
-  xbt_lib_free(&storage_type_lib);
   xbt_dict_free(&watched_hosts_lib);
+  for (auto e : storage_types) {
+    storage_type_t stype = e.second;
+    free(stype->model);
+    free(stype->type_id);
+    free(stype->content);
+    free(stype->content_type);
+    xbt_dict_free(&(stype->properties));
+    delete stype->model_properties;
+    free(stype);
+  }
 
   for (auto model : *all_existing_models)
     delete model;

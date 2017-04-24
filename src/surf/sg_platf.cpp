@@ -46,6 +46,7 @@ extern std::map<std::string, simgrid::s4u::Host*> host_list;
 }
 
 static int surf_parse_models_setup_already_called = 0;
+std::map<std::string, storage_type_t> storage_types;
 
 /** The current AS in the parsing */
 static simgrid::kernel::routing::NetZoneImpl* current_routing = nullptr;
@@ -366,37 +367,29 @@ void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)
   xbt_assert(!xbt_lib_get_or_null(storage_lib, storage->id,ROUTING_STORAGE_LEVEL),
                "Refusing to add a second storage named \"%s\"", storage->id);
 
-  void* stype = xbt_lib_get_or_null(storage_type_lib, storage->type_id,ROUTING_STORAGE_TYPE_LEVEL);
-  xbt_assert(stype,"No storage type '%s'", storage->type_id);
+  xbt_assert(storage_types.find(storage->type_id) != storage_types.end(), "No storage type '%s'", storage->type_id);
+  storage_type_t stype = storage_types.at(storage->type_id);
 
-  XBT_DEBUG("ROUTING Create a storage name '%s' with type_id '%s' and content '%s'",
-      storage->id,
-      storage->type_id,
-      storage->content);
+  XBT_DEBUG("ROUTING Create a storage name '%s' with type_id '%s' and content '%s'", storage->id, storage->type_id,
+            storage->content);
 
   xbt_lib_set(storage_lib, storage->id, ROUTING_STORAGE_LEVEL, (void *) xbt_strdup(storage->type_id));
 
   // if storage content is not specified use the content of storage_type if any
-  if(!strcmp(storage->content,"") && strcmp(((storage_type_t) stype)->content,"")){
-    storage->content = ((storage_type_t) stype)->content;
-    storage->content_type = ((storage_type_t) stype)->content_type;
-    XBT_DEBUG("For disk '%s' content is empty, inherit the content (of type %s) from storage type '%s' ",
-        storage->id,((storage_type_t) stype)->content_type,
-        ((storage_type_t) stype)->type_id);
+  if (!strcmp(storage->content, "") && strcmp(stype->content, "")) {
+    storage->content      = stype->content;
+    storage->content_type = stype->content_type;
+    XBT_DEBUG("For disk '%s' content is empty, inherit the content (of type %s) from storage type '%s' ", storage->id,
+              stype->content_type, stype->type_id);
   }
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' "
-      "\n\t\tmodel '%s' \n\t\tcontent '%s'\n\t\tcontent_type '%s' "
-      "\n\t\tproperties '%p''\n",
-      storage->id,
-      ((storage_type_t) stype)->model,
-      ((storage_type_t) stype)->type_id,
-      storage->content,
-      storage->content_type,
-    storage->properties);
+            "\n\t\tmodel '%s' \n\t\tcontent '%s'\n\t\tcontent_type '%s' "
+            "\n\t\tproperties '%p''\n",
+            storage->id, stype->model, stype->type_id, storage->content, storage->content_type, storage->properties);
 
-  auto s = surf_storage_model->createStorage(storage->id, ((storage_type_t)stype)->type_id, storage->content,
-                                             storage->content_type, storage->attach);
+  auto s = surf_storage_model->createStorage(storage->id, stype->type_id, storage->content, storage->content_type,
+                                             storage->attach);
 
   if (storage->properties) {
     xbt_dict_cursor_t cursor = nullptr;
@@ -407,10 +400,11 @@ void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)
     xbt_dict_free(&storage->properties);
   }
 }
-void sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type){
 
-  xbt_assert(!xbt_lib_get_or_null(storage_type_lib, storage_type->id,ROUTING_STORAGE_TYPE_LEVEL),
-               "Reading a storage type, processing unit \"%s\" already exists", storage_type->id);
+void sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type)
+{
+  xbt_assert(storage_types.find(storage_type->id) == storage_types.end(),
+             "Reading a storage type, processing unit \"%s\" already exists", storage_type->id);
 
   storage_type_t stype = xbt_new0(s_storage_type_t, 1);
   stype->model = xbt_strdup(storage_type->model);
@@ -424,7 +418,7 @@ void sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type){
   XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s', content '%s', and content_type '%s'",
             stype->type_id, stype->model, storage_type->content, storage_type->content_type);
 
-  xbt_lib_set(storage_type_lib, stype->type_id, ROUTING_STORAGE_TYPE_LEVEL, (void*)stype);
+  storage_types.insert({std::string(stype->type_id), stype});
 }
 
 void sg_platf_new_mount(sg_platf_mount_cbarg_t mount){
