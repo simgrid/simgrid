@@ -60,14 +60,9 @@ typedef msg_host_t msg_vm_t;
 
 /* ******************************** File ************************************ */
 
-/** @brief Opaque object describing a File in MSG.
- *  @ingroup msg_file */
-typedef xbt_dictelm_t msg_file_t;
+typedef struct simdata_file* simdata_file_t;
 
-extern int MSG_FILE_LEVEL;
-typedef struct simdata_file *simdata_file_t;
-
-struct msg_file_priv  {
+typedef struct msg_file_priv {
   char *fullpath;
   sg_size_t size;
   char* mount_point;
@@ -77,14 +72,9 @@ struct msg_file_priv  {
   int desc_id;
   void *data;
   simdata_file_t simdata;
-};
+} s_msg_file_priv_t;
 
-typedef struct msg_file_priv s_msg_file_priv_t;
-typedef struct msg_file_priv* msg_file_priv_t;
-
-static inline msg_file_priv_t MSG_file_priv(msg_file_t file){
-  return (msg_file_priv_t )xbt_lib_get_level(file, MSG_FILE_LEVEL);
-}
+typedef struct msg_file_priv* msg_file_t;
 
 /* ******************************** Storage ************************************ */
 /* TODO: PV: to comment */
@@ -208,7 +198,6 @@ XBT_PUBLIC(msg_error_t) MSG_file_unlink(msg_file_t fd);
 XBT_PUBLIC(msg_error_t) MSG_file_seek(msg_file_t fd, sg_offset_t offset, int origin);
 XBT_PUBLIC(sg_size_t) MSG_file_tell (msg_file_t fd);
 XBT_PUBLIC(void) __MSG_file_get_info(msg_file_t fd);
-XBT_PUBLIC(void) __MSG_file_priv_free(msg_file_priv_t priv);
 XBT_PUBLIC(const char *) MSG_file_get_name(msg_file_t file);
 XBT_PUBLIC(msg_error_t) MSG_file_move(msg_file_t fd, const char* fullpath);
 XBT_PUBLIC(msg_error_t) MSG_file_rcopy(msg_file_t fd, msg_host_t host, const char* fullpath);

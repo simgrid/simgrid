@@ -107,7 +107,7 @@ XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 XBT_PRIVATE msg_host_t __MSG_host_create(sg_host_t host);
 XBT_PRIVATE msg_storage_t __MSG_storage_create(smx_storage_t storage);
 XBT_PRIVATE void __MSG_storage_destroy(msg_storage_priv_t host);
-XBT_PRIVATE void __MSG_file_destroy(msg_file_priv_t host);
+XBT_PRIVATE void __MSG_file_destroy(msg_file_t file);
 
 XBT_PRIVATE void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_proc);
 XBT_PRIVATE smx_actor_t MSG_process_create_from_SIMIX(const char* name, std::function<void()> code, void* data,

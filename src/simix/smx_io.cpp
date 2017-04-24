@@ -20,7 +20,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)");
 
-
 /**
  * \brief Internal function to create a SIMIX storage.
  * \param name name of the storage to create

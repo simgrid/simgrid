@@ -353,7 +353,6 @@ void surf_init(int *argc, char **argv)
 
   storage_lib = xbt_lib_new();
   storage_type_lib = xbt_lib_new();
-  file_lib = xbt_lib_new();
   watched_hosts_lib = xbt_dict_new_homogeneous(nullptr);
 
   XBT_DEBUG("Add SURF levels");
@@ -382,7 +381,6 @@ void surf_exit()
   xbt_lib_free(&storage_lib);
   sg_link_exit();
   xbt_lib_free(&storage_type_lib);
-  xbt_lib_free(&file_lib);
   xbt_dict_free(&watched_hosts_lib);
 
   for (auto model : *all_existing_models)

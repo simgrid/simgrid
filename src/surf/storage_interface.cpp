@@ -14,9 +14,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf, "Logging specific to the SURF storage module");
 
-xbt_lib_t file_lib;
-int MSG_FILE_LEVEL = -1; // Msg file level
-
 xbt_lib_t storage_lib;
 int SIMIX_STORAGE_LEVEL        = -1; // Simix storage level
 int MSG_STORAGE_LEVEL          = -1; // Msg storage level
