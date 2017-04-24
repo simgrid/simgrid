@@ -180,3 +180,14 @@ void xbt_replay_action_register(const char* action_name, action_fun function)
 {
   simgrid::xbt::action_funs.insert({std::string(action_name), function});
 }
+
+/**
+ * \ingroup XBT_replay
+ * \brief Get the function that was previously registered to handle a kind of action
+ *
+ * This can be useful if you want to override and extend an existing action.
+ */
+action_fun xbt_replay_action_get(const char* action_name)
+{
+  return simgrid::xbt::action_funs.at(std::string(action_name));
+}

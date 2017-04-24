@@ -10,6 +10,10 @@ SimDag
 SMPI
  - New algorithm to privatize globals: dlopen, with dynamic loading tricks
 
+ XBT/Replay:
+  - New function xbt_replay_action_get():
+    Retrieve the function previously associated to an event type.
+
  -- Release target: June 21 2017   -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.15) stable; urgency=low
