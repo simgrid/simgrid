@@ -578,7 +578,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
                    "Error while copying %s: only %zd bytes copied instead of %ld (errno: %d -- %s)",
                    target_executable.c_str(), sent_size, fdin_size, errno, strerror(errno));
 #else
-        XBT_VERBOSE("Copy %d bytes into %s", static_cast<int>(fdin_size), target_executable.c_str());
+        XBT_VERB("Copy %d bytes into %s", static_cast<int>(fdin_size), target_executable.c_str());
         const int bufsize = 1024 * 1024 * 4;
         char buf[bufsize];
         while (int got = read(fdin, buf, bufsize)) {
