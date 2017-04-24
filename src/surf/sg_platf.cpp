@@ -38,6 +38,13 @@ simgrid::xbt::signal<void(sg_platf_cluster_cbarg_t)> on_cluster;
 }
 }
 
+// FIXME: The following duplicates the content of s4u::Host
+namespace simgrid {
+namespace s4u {
+extern std::map<std::string, simgrid::s4u::Host*> host_list;
+}
+}
+
 static int surf_parse_models_setup_already_called = 0;
 
 /** The current AS in the parsing */
@@ -450,26 +457,19 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   sg_host_t host = sg_host_by_name(process->host);
   if (!host) {
     // The requested host does not exist. Do a nice message to the user
-    char* tmp = bprintf("Cannot create process '%s': host '%s' does not exist\nExisting hosts: '", process->function,
-                        process->host);
-    xbt_strbuff_t msg = xbt_strbuff_new_from(tmp);
-    free(tmp);
-    xbt_dynar_t all_hosts = xbt_dynar_sort_strings(sg_hosts_as_dynar());
-    simgrid::s4u::Host* host;
-    unsigned int cursor;
-    xbt_dynar_foreach(all_hosts,cursor, host) {
-      xbt_strbuff_append(msg, host->cname());
-      xbt_strbuff_append(msg,"', '");
-      if (msg->used > 1024) {
-        msg->data[msg->used-3]='\0';
-        msg->used -= 3;
-
-        xbt_strbuff_append(msg," ...(list truncated)......");// That will be shortened by 3 chars when existing the loop
+    std::string msg = std::string("Cannot create process '") + process->function + "': host '" + process->host +
+                      "' does not exist\nExisting hosts: '";
+    for (auto kv : simgrid::s4u::host_list) {
+      simgrid::s4u::Host* host = kv.second;
+      msg += host->name();
+      msg += "', '";
+      if (msg.length() > 1024) {
+        msg.pop_back(); // remove trailing quote
+        msg += "...(list truncated)......";
         break;
       }
     }
-    msg->data[msg->used-3]='\0';
-    xbt_die("%s", msg->data);
+    xbt_die("%s", msg.c_str());
   }
   simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(process->function);
   xbt_assert(factory, "Function '%s' unknown", process->function);
