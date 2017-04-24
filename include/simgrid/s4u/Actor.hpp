@@ -207,10 +207,14 @@ public:
   simgrid::xbt::string name();
   /** Retrieves the host on which that actor is running */
   s4u::Host* host();
-  /** Retrieves the PID of that actor */
-  int pid();
-  /** Retrieves the PPID of that actor */
-  int ppid();
+  /** Retrieves the PID of that actor
+   *
+   * actor_id_t is an alias for unsigned long */
+  aid_t pid();
+  /** Retrieves the PPID of that actor
+   *
+   * actor_id_t is an alias for unsigned long */
+  aid_t ppid();
 
   /** Suspend an actor by suspending the task on which it was waiting for the completion. */
   void suspend();
@@ -246,10 +250,10 @@ public:
    */
   void kill();
 
-  static void kill(int pid);
+  static void kill(aid_t pid);
 
   /** Retrieves the actor that have the given PID (or nullptr if not existing) */
-  static ActorPtr byPid(int pid);
+  static ActorPtr byPid(aid_t pid);
 
   /** @brief Wait for the actor to finish.
    *
@@ -313,11 +317,11 @@ namespace this_actor {
 
   XBT_PUBLIC(Comm&) isend(MailboxPtr chan, void* payload, double simulatedSize);
 
-  /** @brief Returns the PID of the current actor. */
-  XBT_PUBLIC(int) pid();
+  /** @brief Returns the actor ID of the current actor (same as pid). */
+  XBT_PUBLIC(aid_t) pid();
 
-  /** @brief Returns the PPID of the current actor. */
-  XBT_PUBLIC(int) ppid();
+  /** @brief Returns the ancestor's actor ID of the current actor (same as ppid). */
+  XBT_PUBLIC(aid_t) ppid();
 
   /** @brief Returns the name of the current actor. */
   XBT_PUBLIC(std::string) name();

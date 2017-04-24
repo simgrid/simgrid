@@ -866,7 +866,7 @@ xbt_dynar_t SIMIX_process_get_runnable()
 /**
  * \brief Returns the process from PID.
  */
-smx_actor_t SIMIX_process_from_PID(int PID)
+smx_actor_t SIMIX_process_from_PID(aid_t PID)
 {
   if (simix_global->process_list.find(PID) == simix_global->process_list.end())
     return nullptr;

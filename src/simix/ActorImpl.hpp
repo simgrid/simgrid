@@ -40,8 +40,8 @@ public:
   s_xbt_swag_hookup_t host_proc_hookup = { nullptr, nullptr }; /* smx_host->process_lis */
   s_xbt_swag_hookup_t destroy_hookup   = { nullptr, nullptr }; /* simix_global->process_to_destroy */
 
-  unsigned long pid  = 0;
-  unsigned long ppid = -1;
+  aid_t pid  = 0;
+  aid_t ppid = -1;
   simgrid::xbt::string name;
   const char* cname() { return name.c_str(); }
   s4u::Host* host       = nullptr; /* the host on which the process is running */
@@ -56,7 +56,7 @@ public:
 
   sg_host_t new_host            = nullptr; /* if not null, the host on which the process must migrate to */
   smx_activity_t waiting_synchro = nullptr; /* the current blocking synchro if any */
-  std::list<smx_activity_t> comms               ;           /* the current non-blocking communication synchros */
+  std::list<smx_activity_t> comms;          /* the current non-blocking communication synchros */
   xbt_dict_t properties         = nullptr;
   s_smx_simcall_t simcall;
   void *data          = nullptr; /* kept for compatibility, it should be replaced with moddata */
