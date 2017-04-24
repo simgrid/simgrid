@@ -342,7 +342,7 @@ ResetStateEvent::ResetStateEvent (double timestamp, container_t container, type_
 StartLinkEvent::StartLinkEvent (double timestamp, container_t container, type_t type, container_t sourceContainer,
                         const char *value, const char *key)
 {
-  new StartLinkEvent(timestamp, container, type, sourceContainer, value, key, -1);
+  StartLinkEvent(timestamp, container, type, sourceContainer, value, key, -1);
 }
 
 StartLinkEvent::StartLinkEvent (double timestamp, container_t container, type_t type, container_t sourceContainer,
