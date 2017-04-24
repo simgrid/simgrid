@@ -68,17 +68,15 @@ public:
 
   friend void intrusive_ptr_add_ref(ActorImpl* process)
   {
-    // Atomic operation! Do not split in two instructions!
-    auto previous = (process->refcount_)++;
-    xbt_assert(previous != 0);
-    (void) previous;
+    process->refcount_.fetch_add(1, std::memory_order_relaxed);
   }
   friend void intrusive_ptr_release(ActorImpl* process)
   {
-    // Atomic operation! Do not split in two instructions!
-    auto count = --(process->refcount_);
-    if (count == 0)
+    // inspired from http://www.boost.org/doc/libs/1_55_0/doc/html/atomic/usage_examples.html
+    if (process->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
+      std::atomic_thread_fence(std::memory_order_acquire);
       delete process;
+    }
   }
 
   ~ActorImpl();
