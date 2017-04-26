@@ -101,7 +101,7 @@ void smpi_really_switch_data_segment(int dest)
   void* tmp =
       mmap(TOPAGE(smpi_start_data_exe), smpi_size_data_exe, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);
   if (tmp != TOPAGE(smpi_start_data_exe))
-    xbt_die("Couldn't map the new region");
+    xbt_die("Couldn't map the new region (errno %d): %s", errno, strerror(errno));
   smpi_loaded_page = dest;
 #endif
 }
