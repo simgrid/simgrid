@@ -79,6 +79,8 @@ public:
   {
     // inspired from http://www.boost.org/doc/libs/1_55_0/doc/html/atomic/usage_examples.html
     if (process->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
+      // Make sure that any changes done on other threads before their acquire are commited before our delete
+      // http://stackoverflow.com/questions/27751025/why-is-an-acquire-barrier-needed-before-deleting-the-data-in-an-atomically-refer
       std::atomic_thread_fence(std::memory_order_acquire);
       delete process;
     }
