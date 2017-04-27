@@ -38,7 +38,8 @@ Any SimGrid study entails the following components:
 
  - The studied **Application**. This can be either a distributed
    algorithm described in our simple APIs, or a full featured real
-   parallel application using the MPI interface (or other).
+   parallel application using for example the MPI interface 
+   @ref application "(more info)".
 
  - The **Virtual Platform**. This is a description of a given
    distributed system (machines, links, disks, clusters, etc). Most of
@@ -47,19 +48,21 @@ Any SimGrid study entails the following components:
    Platform with a Dynamic Scenario where for example the links are
    slowed down (because of external usage), the machines fail. You
    have even support to specify the applicative workload that you want
-   to feed to your application.
+   to feed to your application  @ref platform "(more info)".
 
  - The application's **Deployment Description**. In SimGrid terminology,
    the application is an inert set of source files and binaries. To
    make it run, you have to describe how your application should be
-   deployed on the virtual platform. Specify which process is located
-   on which host, along with its parameters.
+   deployed on the virtual platform. Specify which process is mapped
+   on which host, along with its parameters
+   @ref deployment "(more info)".
 
  - The **Platform Models**. They describe how the virtual platform
    reacts to the actions of the application. For example, they compute
    the time taken by a given communication on the virtual platform.
    These models are already included in SimGrid, and you only need to
-   pick one and maybe tweak its configuration to get your results.
+   pick one and maybe tweak its configuration to get your results
+   @ref models "(more info)".
 
 These components are put together to run a **simulation**, that is an
 experiment or a probe. The result of one or many simulation provides
