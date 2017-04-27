@@ -120,8 +120,8 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
   snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter);
   counter++;
 
-  new_pajeStartLink(SIMIX_get_clock(), father, link_type, src, "topology", key);
-  new_pajeEndLink(SIMIX_get_clock(), father, link_type, dst, "topology", key);
+  StartLinkEvent(SIMIX_get_clock(), father, link_type, src, "topology", key);
+  EndLinkEvent(SIMIX_get_clock(), father, link_type, dst, "topology", key);
 
   XBT_DEBUG ("  linkContainers %s <-> %s", src->name, dst->name);
 }
@@ -223,8 +223,8 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
     if (latency == nullptr) {
       latency = PJ_type_variable_new("latency", nullptr, container->type);
     }
-    new_pajeSetVariable(0, container, bandwidth, bandwidth_value);
-    new_pajeSetVariable(0, container, latency, latency_value);
+    SetVariableEvent(0, container, bandwidth, bandwidth_value);
+    SetVariableEvent(0, container, latency, latency_value);
   }
   if (TRACE_uncategorized()) {
     type_t bandwidth_used = PJ_type_get_or_null("bandwidth_used", container->type);
@@ -246,7 +246,7 @@ void sg_instr_new_host(simgrid::s4u::Host& host)
     }
 
     double current_speed_state = host.speed();
-    new_pajeSetVariable (0, container, speed, current_speed_state);
+    SetVariableEvent (0, container, speed, current_speed_state);
   }
   if (TRACE_uncategorized()){
     type_t speed_used = PJ_type_get_or_null ("power_used", container->type);
