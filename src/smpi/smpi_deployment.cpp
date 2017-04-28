@@ -51,11 +51,11 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
     xbt_dynar_free(&hosts);
   }
 
-  instance->name = name;
-  instance->size = num_processes;
-  instance->present_processes = 0;
-  instance->index = process_count;
-  instance->comm_world = MPI_COMM_NULL;
+  instance->name                 = name;
+  instance->size                 = num_processes;
+  instance->present_processes    = 0;
+  instance->index                = process_count;
+  instance->comm_world           = MPI_COMM_NULL;
   instance->finalization_barrier = MSG_barrier_init(num_processes);
 
   process_count+=num_processes;
