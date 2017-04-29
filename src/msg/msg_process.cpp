@@ -22,8 +22,8 @@ SG_BEGIN_DECL()
 
 /******************************** Process ************************************/
 /**
- * \brief Cleans the MSG data of a process.
- * \param smx_proc a SIMIX process
+ * \brief Cleans the MSG data of an actor
+ * \param smx_actor a SIMIX actor
  */
 void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
 {
