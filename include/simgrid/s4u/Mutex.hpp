@@ -22,9 +22,9 @@ class ConditionVariable;
 /** @brief A classical mutex, but blocking in the simulation world
  *  @ingroup s4u_api
  *
- * It is strictly impossible to use a real mutex (such as
+ * It is strictly impossible to use a real mutex, such as
  * [std::mutex](http://en.cppreference.com/w/cpp/thread/mutex)
- * or [pthread_mutex_t](http://pubs.opengroup.org/onlinepubs/007908775/xsh/pthread_mutex_lock.html)),
+ * or [pthread_mutex_t](http://pubs.opengroup.org/onlinepubs/007908775/xsh/pthread_mutex_lock.html),
  * because it would block the whole simulation.
  * Instead, you should use the present class, that is a drop-in replacement of
  * [std::mutex](http://en.cppreference.com/w/cpp/thread/mutex).

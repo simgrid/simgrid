@@ -157,37 +157,33 @@ public: // Debug/test methods
 
 };
 
-inline __attribute__((always_inline))
-void PageStore::unref_page(std::size_t pageno) {
+XBT_ALWAYS_INLINE void PageStore::unref_page(std::size_t pageno)
+{
   if ((--this->page_counts_[pageno]) == 0)
     this->remove_page(pageno);
 }
 
-inline __attribute__((always_inline))
-void PageStore::ref_page(size_t pageno)
+XBT_ALWAYS_INLINE void PageStore::ref_page(size_t pageno)
 {
   ++this->page_counts_[pageno];
 }
 
-inline __attribute__((always_inline))
-const void* PageStore::get_page(std::size_t pageno) const
+XBT_ALWAYS_INLINE const void* PageStore::get_page(std::size_t pageno) const
 {
   return (void*) simgrid::mc::mmu::join(pageno, (std::uintptr_t) this->memory_);
 }
 
-inline __attribute__((always_inline))
-std::size_t PageStore::get_ref(std::size_t pageno)
+XBT_ALWAYS_INLINE std::size_t PageStore::get_ref(std::size_t pageno)
 {
   return this->page_counts_[pageno];
 }
 
-inline __attribute__((always_inline))
-std::size_t PageStore::size() {
+XBT_ALWAYS_INLINE std::size_t PageStore::size()
+{
   return this->top_index_ - this->free_pages_.size();
 }
 
-inline __attribute__((always_inline))
-std::size_t PageStore::capacity()
+XBT_ALWAYS_INLINE std::size_t PageStore::capacity()
 {
   return this->capacity_;
 }
