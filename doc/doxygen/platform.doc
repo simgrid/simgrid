@@ -2,46 +2,63 @@
 
 @tableofcontents
 
-In order to run any simulation, SimGrid must be provided with three things:
-something to run (i.e., your code), a description of the platform on which you want to simulate your application, and 
-information about the deployment of the application: Which process should be executed onto which processor/core?
+As @ref starting_components "explained in the introduction," any
+SimGrid study must entail the description of the platform on which you
+want to simulate your application. You have to describe **each element
+of your platform**, such as computing hosts, clusters, each disks,
+links, etc. You must also define the **routing on your platform**, ie
+which path is taken between two hosts. Finally, you may also describe
+an **experimental scenario**, with qualitative changes (e.g.,
+bandwidth changes representing an external load) and qualitative
+changes (representing how some elements fail and restart over time).
 
-For the last two items, there are essentially three possible ways you can provide
-this information as an input:
-\li You can program, if you're using MSG, some of the platform and
-    deployment functions. If you choose to follow this approach, check the dedicated documentation
-    (\ref msg_simulation).
-\li You can use two XML files: one for the platform description and the other for the deployment. 
-\li You can program the description of your platform  in Lua format.
+You should really separate your application from the platform
+description, as it will ease your experimental campain afterward.
+Mixing them is seen as a really bad experimental practice. The easiest
+to enforce this split is to put the platform description in a XML
+file. Many example platforms are provided in the archive, and this
+page gives all needed details to write such files, as well as some
+hints and tricks about describing your platform.
 
-For more information on SimGrid's deployment features, please refer to the \ref deployment section.
+On the other side, XML is sometimes not expressive enough for some
+platforms, in particular large platforms exhibiting repetitive
+patterns that are not simply expressed in XML.  In practice, many
+users end up generating their XML platform files from some sort of
+scripts. It is probably preferable to rewrite your XML @ref
+platform_lua "platform using the lua scripting language" instead.
+In the future, it should be possible to describe the platform directly
+in C++, but this is not possible yet.
 
-The platform description may be intricate. This documentation is all
-about how to write this file. You should read about the
-@ref routing_basics "routing basic concepts" before proceeding. This page
-first contain a reference guide of the XML. Finally, it gives some hints and tips on how to write a better 
-platform description.
+As usual, SimGrid is a versatile framework, and you should find the
+way of describing your platform that best fits your experimental
+practice. 
 
-\section pf_overview Some words about XML and DTD
+\section pf_overview Describing the platform with XML
 
-We opted for XML not only because it is extensible but also because many tools (and plugins for existing tools) are 
-available that facilitate editing and validating XML files. Furthermore, libraries that parse XML are often already
-available and very well tested.
+Your platform description should follow the specification presented in
+the [simgrid.dtd](http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd)
+DTD file. The same DTD is used for both the platform and deployment
+files.
 
-The XML checking is done based on the [simgrid.dtd](http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd) Document Type 
-Definition (DTD) file.
+From time to time, this DTD evolves to introduce possibly
+backward-incompatible changes. That is why each platform desciption is
+enclosed within a @c platform tag, that have a @c version attribute. 
+The current version is <b>4</b>. The @c simgrid_update_xml program can
+upgrade most of the past platform files to the recent formalism.
 
-If you read the DTD, you should notice the following:
-\li The platform tag has a version attribute. The current version is <b>4</b>. This attribute might be used in the 
-    provide backward compatibility.
-\li The DTD contains definitions for both the platform description and deployment files used by SimGrid.
+\section pf_netzones Defining a NetZone
 
-\section pf_netzones Defining a netzone
+In SimGrid, any resource must be located within a given **NetZone**.
+Each netzone is in charge of the routing between its resources. It
+means that when an host wants to communicate with another host of the
+same NetZone, it is the NetZone's duty to find the list of links that
+are involved in the communication. If the hosts are not in the same
+NetZone, @ref routing_basics "things are slightly more complex" to
+determine the links involved in a time- and space-efficient manner.
 
-Here is a simplistic example, describing a netzone using the Full
-routing.  Other supported values for the routing attribute can be
-found below, Section \ref pf_raf.
-
+But only one NetZone is really sufficient to begin with. The following
+chunk describes a simplistic NetZone using the Full routing (we will
+have to specify each and every routes manually). 
 
 \verbatim
 <AS id="netzone0" routing="Full">

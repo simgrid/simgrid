@@ -50,11 +50,11 @@ Any SimGrid study entails the following components:
    have even support to specify the applicative workload that you want
    to feed to your application  @ref platform "(more info)".
 
- - The application's **Deployment Description**. In SimGrid terminology,
-   the application is an inert set of source files and binaries. To
-   make it run, you have to describe how your application should be
-   deployed on the virtual platform. Specify which process is mapped
-   on which host, along with its parameters
+ - The application's **Deployment Description**. In SimGrid
+   terminology, the application is an inert set of source files and
+   binaries. To make it run, you have to describe how your application
+   should be deployed on the virtual platform. You need to specify
+   which process is mapped on which host, along with their parameters
    @ref deployment "(more info)".
 
  - The **Platform Models**. They describe how the virtual platform
@@ -88,6 +88,22 @@ The questions that SimGrid can solve include the following:
    probe will not change the simulated state). It also makes it easy
    to mock some parts of the real system that are not under study.
 
+Depending on the context, you may see some parts of this process as
+less important, but you should pay close attention if you want to be
+confident in the results coming out of your simulations. In
+particular, you should not trust blindly your results but always
+strive to double-check them. Likewise, you should question the realism
+of your input configuration, and we even encourage you to doubt (and
+check) the provided performance models.
+
+To ease such questionning, you really should logically separate these
+parts in your experimental setup. It is seen as a very bad practice to
+merge the application, the platform and the deployment all together.
+SimGrid is versatile and your milleage may vary, but you should start
+with your Application specified as a C++ or Java program, using one of
+the provided XML platform file, and with your deployment in a separate
+XML file.
+
 @section starting_gears SimGrid Execution Gears
 
 Depending on the intended study, SimGrid can be run in several gears,
@@ -100,7 +116,7 @@ the experimental scenario.
 In this gear, SimGrid can provide information about the time taken by
 your application, the amount of energy dissipated by the platform to
 run your application and the detailed usage of each resource.
-   
+
 ** **Model-Checking Gear**. This can be seen as a sort of exhaustive
 testing gear, where every possible outcome of your application is
 explored. In some sense, this gear tests your application for all
@@ -109,15 +125,15 @@ possible platforms that you could imagine (and more).
 You just provide the application and its deployment (amount of
 processes and parameters), and the model-checker will litterally
 explore all possible outcomes by testing all possible message
-interleaving: if at some point a given process can either receive the
+interleavings: if at some point a given process can either receive the
 message A first or the message B depending on the platform
 characteristics, the model-checker will explore the scenario where A
 arrives first, and then rewind to the same point to explore the
-scenarion where B arrives first.
+scenario where B arrives first.
 
 This is a very powerful gear, where you can evaluate the correction of
-your application. It can verify either *safety properties* (asserts) 
-or *liveless properties* stating for example that if a given event
+your application. It can verify either **safety properties** (asserts) 
+or **liveless properties** stating for example that if a given event
 occures, then another given event will occur in a finite amount of
 steps. This gear is not only usable with the abstract algorithms
 developed on top of the SimGrid APIs, but also with real MPI
@@ -125,9 +141,15 @@ applications (to some extend).
 
 The main limit of Model Checking lays in the huge amount of scenarios
 to explore. SimGrid tries to explore only non-redundent scenarios
-thanks to classical reduction techniques (such as DPOR and statefull
+thanks to classical reduction techniques (such as DPOR and stateful
 exploration) but the exploration may well never finish if you don't
 carefully adapt your application to this gear.
+
+A classical trap is that the Model Checker can only verify whether
+your application fits the provided properties, which is useless if you
+have a bug in your property. Remember also that one way for your
+application to never violate a given assert is to not start at all
+because of a stupid bug.
 
 Another limit of this gear is that it does not use the performance
 models of the simulation gear. Time becomes discrete: You can say for
