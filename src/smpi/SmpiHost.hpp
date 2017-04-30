@@ -1,15 +1,18 @@
+/* Copyright (c) 2017. The SimGrid Team. All rights reserved.               */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #ifndef SMPI_HOST_HPP_
 #define SMPI_HOST_HPP_
 
 #include "src/include/smpi/smpi_utils.hpp"
 
-#include <simgrid/s4u/host.hpp>
+#include "simgrid/s4u/Host.hpp"
 #include <string>
 #include <vector>
-#include <xbt/config.hpp>
 #include <xbt/Extendable.hpp>
-
-
+#include <xbt/config.hpp>
 
 namespace simgrid {
 namespace smpi {

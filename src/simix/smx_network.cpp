@@ -9,7 +9,7 @@
 
 #include <xbt/ex.hpp>
 
-#include <simgrid/s4u/host.hpp>
+#include "simgrid/s4u/Host.hpp"
 
 #include "mc/mc.h"
 #include "simgrid/s4u/Mailbox.hpp"
@@ -17,8 +17,6 @@
 #include "src/simix/smx_private.h"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "xbt/dict.h"
-#include "xbt/log.h"
 
 #include "src/kernel/activity/SynchroComm.hpp"
 #include "src/surf/network_interface.hpp"

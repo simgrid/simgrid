@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, 2012-2016. The SimGrid Team. All rights reserved.    */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,9 +8,10 @@
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 
+#include "simgrid/s4u/Engine.hpp"
+
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <simgrid/s4u/engine.hpp>
 #include <string>
 #include <utility>
 #include <vector>

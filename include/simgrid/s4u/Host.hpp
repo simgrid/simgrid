@@ -22,13 +22,13 @@
 namespace simgrid {
 
 namespace xbt {
-  extern template class XBT_PUBLIC() Extendable<simgrid::s4u::Host>;
+extern template class XBT_PUBLIC() Extendable<simgrid::s4u::Host>;
 }
 namespace s4u {
 
 /** @ingroup s4u_api
  *
- * @tableofcontents 
+ * @tableofcontents
  *
  * An host represents some physical resource with computing and networking capabilities.
  *
@@ -39,11 +39,11 @@ namespace s4u {
  * You can retrieve a particular host using simgrid::s4u::Host::byName()
  * and actors can retrieve the host on which they run using simgrid::s4u::Host::current().
  */
-XBT_PUBLIC_CLASS Host :
-  public simgrid::xbt::Extendable<Host> {
+XBT_PUBLIC_CLASS Host : public simgrid::xbt::Extendable<Host>
+{
 
 public:
-  explicit Host(const char *name);
+  explicit Host(const char* name);
 
   /** Host destruction logic */
 protected:
@@ -51,6 +51,7 @@ protected:
 
 private:
   bool currentlyDestroying_ = false;
+
 public:
   void destroy();
   // No copy/move
@@ -62,9 +63,9 @@ public:
   /** Retrieves an host from its name, or return nullptr */
   static Host* by_name_or_null(std::string name);
   /** Retrieves an host from its name, or die */
-  static s4u::Host *by_name(std::string name);
+  static s4u::Host* by_name(std::string name);
   /** Retrieves the host on which the current actor is running */
-  static s4u::Host *current();
+  static s4u::Host* current();
 
   simgrid::xbt::string const& name() const { return name_; }
   const char* cname() { return name_.c_str(); }
@@ -87,9 +88,9 @@ public:
   double speed();
   int coreCount();
   xbt_dict_t properties();
-  const char*property(const char*key);
-  void setProperty(const char*key, const char *value);
-  void processes(std::vector<ActorPtr>* list);
+  const char* property(const char* key);
+  void setProperty(const char* key, const char* value);
+  void processes(std::vector<ActorPtr> * list);
   double getPstateSpeed(int pstate_index);
   int pstatesCount() const;
   void setPstate(int pstate_index);
@@ -101,20 +102,20 @@ public:
    *
    *  This is defined in the platform file, and cannot be modified programatically (yet).
    */
-  boost::unordered_map<std::string, Storage*> const &mountedStorages();
+  boost::unordered_map<std::string, Storage*> const& mountedStorages();
 
   void routeTo(Host * dest, std::vector<Link*> * links, double* latency);
   void routeTo(Host * dest, std::vector<surf::LinkImpl*> * links, double* latency);
 
 private:
   simgrid::xbt::string name_ = "noname";
-  boost::unordered_map<std::string, Storage*> *mounts = nullptr; // caching
+  boost::unordered_map<std::string, Storage*>* mounts = nullptr; // caching
 
 public:
   // TODO, this could be a unique_ptr
   surf::HostImpl* pimpl_ = nullptr;
   /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
-  surf::Cpu     *pimpl_cpu = nullptr;
+  surf::Cpu* pimpl_cpu = nullptr;
   /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
   kernel::routing::NetPoint* pimpl_netpoint = nullptr;
 
@@ -128,8 +129,8 @@ public:
    * (either because of a pstate switch or because of an external load event coming from the profile) */
   static simgrid::xbt::signal<void(Host&)> onSpeedChange;
 };
-
-}} // namespace simgrid::s4u
+}
+} // namespace simgrid::s4u
 
 extern int USER_HOST_LEVEL;
 
@@ -148,5 +149,5 @@ public class Host {
   public native int getLoad();
 
 
-} 
+}
 #endif

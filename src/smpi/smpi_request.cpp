@@ -3,17 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/config.hpp>
-#include <algorithm>
 #include "private.h"
 #include "mc/mc.h"
 #include "src/mc/mc_replay.h"
-#include "src/simix/smx_private.h"
-#include "simgrid/sg_config.h"
-#include "smpi/smpi_utils.hpp"
 #include "src/smpi/SmpiHost.hpp"
-#include <simgrid/s4u/host.hpp>
 #include "src/kernel/activity/SynchroComm.hpp"
+
+#include <algorithm>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_request, smpi, "Logging specific to SMPI (reques)");
 

@@ -1,6 +1,12 @@
-#include "smpi/smpi_utils.hpp"
+/* Copyright (c) 2017. The SimGrid Team. All rights reserved.               */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "src/smpi/SmpiHost.hpp"
-#include <simgrid/s4u/VirtualMachine.hpp>
+#include "simgrid/s4u/VirtualMachine.hpp"
+#include "smpi/smpi_utils.hpp"
+
 #include <string>
 #include <vector>
 

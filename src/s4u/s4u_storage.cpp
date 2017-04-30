@@ -1,10 +1,9 @@
-/* Copyright (c) 2006-2015, 2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u/storage.hpp"
+#include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.hpp"
 #include "src/surf/storage_interface.hpp"
 #include "xbt/lib.h"

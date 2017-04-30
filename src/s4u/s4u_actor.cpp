@@ -1,5 +1,4 @@
-/* Copyright (c) 2006-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,8 +6,8 @@
 #include "xbt/log.h"
 
 #include "simgrid/s4u/Actor.hpp"
-#include "simgrid/s4u/comm.hpp"
-#include "simgrid/s4u/host.hpp"
+#include "simgrid/s4u/Comm.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 
 #include "src/kernel/context/Context.hpp"
