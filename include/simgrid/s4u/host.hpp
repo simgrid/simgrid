@@ -136,37 +136,8 @@ extern int USER_HOST_LEVEL;
 #endif /* SIMGRID_S4U_HOST_HPP */
 
 #if 0
-/* Bindings to the MSG hosts */
-
-/* Copyright (c) 2006-2014. The SimGrid Team.
- * All rights reserved.                                                     */
-
-/* This program is free software; you can redistribute it and/or modify it
- * under the terms of the license (GNU LGPL) which comes with this package. */
-
-package org.simgrid.msg;
 
 public class Host {
-  /**
-   * This static method returns all of the hosts of the installed platform.
-   *
-   * @return      An array containing all the hosts installed.
-   *
-   */ 
-  public native static Host[] all();
-
-  /** 
-   * This static method sets a mailbox to receive in asynchronous mode.
-   * 
-   * All messages sent to this mailbox will be transferred to 
-   * the receiver without waiting for the receive call. 
-   * The receive call will still be necessary to use the received data.
-   * If there is a need to receive some messages asynchronously, and some not, 
-   * two different mailboxes should be used.
-   *
-   * @param mailboxName The name of the mailbox
-   */
-  public static native void setAsyncMailbox(String mailboxName);
 
   /**
    * This method returns the number of tasks currently running on a host.
@@ -175,12 +146,6 @@ public class Host {
    * @return      The number of tasks currently running on a host.
    */ 
   public native int getLoad();
-
-
-  /** This methods returns the list of storages attached to an host
-   * @return An array containing all storages (name) attached to the host
-   */
-  public native String[] getAttachedStorage();
 
 
 } 
