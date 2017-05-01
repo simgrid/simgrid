@@ -95,7 +95,10 @@ int smpi_process_count()
 
 simgrid::smpi::Process* smpi_process()
 {
-  simgrid::MsgActorExt* msgExt = static_cast<simgrid::MsgActorExt*>(SIMIX_process_self()->data);
+  smx_actor_t me = SIMIX_process_self();
+  if (me == nullptr) // This happens sometimes (eg, when linking against NS3 because it pulls openMPI...)
+    return nullptr;
+  simgrid::MsgActorExt* msgExt = static_cast<simgrid::MsgActorExt*>(me->data);
   return static_cast<simgrid::smpi::Process*>(msgExt->data);
 }
 
