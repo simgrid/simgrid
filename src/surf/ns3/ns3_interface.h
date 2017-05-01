@@ -6,7 +6,7 @@
 #ifndef NS3_INTERFACE_H
 #define NS3_INTERFACE_H
 
-#include <simgrid/s4u/host.hpp>
+#include "simgrid/s4u/Host.hpp"
 
 namespace simgrid {
 namespace surf {
