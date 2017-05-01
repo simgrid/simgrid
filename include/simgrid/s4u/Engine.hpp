@@ -26,13 +26,14 @@ namespace s4u {
  *
  * This class is an interface to the simulation engine.
  */
-XBT_PUBLIC_CLASS Engine {
+XBT_PUBLIC_CLASS Engine
+{
 private:
   ~Engine();
 
 public:
   /** Constructor, taking the command line parameters of your main function */
-  Engine(int *argc, char **argv);
+  Engine(int* argc, char** argv);
 
   /** Finalize the default engine and all its dependencies */
   static void shutdown();
@@ -42,20 +43,20 @@ public:
    * The environment is either a XML file following the simgrid.dtd formalism, or a lua file.
    * Some examples can be found in the directory examples/platforms.
    */
-  void loadPlatform(const char *platf);
+  void loadPlatform(const char* platf);
 
   /** Registers the main function of an actor that will be launched from the deployment file */
-  void registerFunction(const char*name, int (*code)(int,char**));
+  void registerFunction(const char* name, int (*code)(int, char**));
 
   /** Registers a function as the default main function of actors
    *
    * It will be used as fallback when the function requested from the deployment file was not registered.
    * It is used for trace-based simulations (see examples/msg/actions).
    */
-  void registerDefault(int (*code)(int,char**));
+  void registerDefault(int (*code)(int, char**));
 
   /** @brief Load a deployment file and launch the actors that it contains */
-  void loadDeployment(const char *deploy);
+  void loadDeployment(const char* deploy);
 
   size_t hostCount();
   void hostList(std::vector<Host*> * whereTo);
@@ -65,9 +66,9 @@ public:
 
   /** @brief Retrieve the simulation time */
   static double getClock();
-  
+
   /** @brief Retrieve the engine singleton */
-  static s4u::Engine *instance();
+  static s4u::Engine* instance();
 
   /** @brief Retrieve the root netzone, containing all others */
   simgrid::s4u::NetZone* netRoot();
@@ -81,10 +82,9 @@ public:
   void netpointRegister(simgrid::kernel::routing::NetPoint * card);
   void netpointUnregister(simgrid::kernel::routing::NetPoint * card);
 
-  template<class F>
-  void registerFunction(const char* name)
+  template <class F> void registerFunction(const char* name)
   {
-    simgrid::simix::registerFunction(name, [](std::vector<std::string> args){
+    simgrid::simix::registerFunction(name, [](std::vector<std::string> args) {
       return simgrid::simix::ActorCode([args] {
         F code(std::move(args));
         code();
@@ -92,13 +92,10 @@ public:
     });
   }
 
-  template<class F>
-  void registerFunction(const char* name, F code)
+  template <class F> void registerFunction(const char* name, F code)
   {
-    simgrid::simix::registerFunction(name, [code](std::vector<std::string> args){
-      return simgrid::simix::ActorCode([code,args] {
-        code(std::move(args));
-      });
+    simgrid::simix::registerFunction(name, [code](std::vector<std::string> args) {
+      return simgrid::simix::ActorCode([code, args] { code(std::move(args)); });
     });
   }
 
@@ -108,7 +105,7 @@ public:
   simgrid::kernel::EngineImpl* pimpl;
 
 private:
-  static s4u::Engine *instance_;
+  static s4u::Engine* instance_;
 };
 
 /** Callback fired when the platform is created (ie, the xml file parsed),
@@ -120,6 +117,7 @@ extern XBT_PRIVATE xbt::signal<void()> onSimulationEnd;
 
 /** Callback fired when the time jumps into the future */
 extern XBT_PRIVATE xbt::signal<void(double)> onTimeAdvance;
-}} // namespace simgrid::s4u
+}
+} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_ENGINE_HPP */

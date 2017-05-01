@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,8 +7,8 @@
 #define SIMGRID_S4U_VM_HPP
 
 #include "simgrid/datatypes.h"
+#include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/forward.hpp"
-#include "simgrid/s4u/host.hpp"
 
 typedef enum {
   SURF_VM_STATE_CREATED, /**< created, but not yet started */

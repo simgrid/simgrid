@@ -4,9 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/EngineImpl.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/kernel/routing/NetZoneImpl.hpp"
-#include <simgrid/s4u/host.hpp>
 
 namespace simgrid {
 namespace kernel {

@@ -200,8 +200,7 @@ public:
    * @param model The NetworkModel associated to this NetworkAction
    * @param cost The cost of this  NetworkAction in [TODO]
    * @param failed [description]
-   * @param var The lmm variable associated to this Action if it is part of a
-   * LMM component
+   * @param var The lmm variable associated to this Action if it is part of a LMM component
    */
   NetworkAction(simgrid::surf::Model* model, double cost, bool failed, lmm_variable_t var)
       : simgrid::surf::Action(model, cost, failed, var){};

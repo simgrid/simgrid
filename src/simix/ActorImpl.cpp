@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,7 +16,7 @@
 #include <xbt/log.h>
 #include <xbt/dict.h>
 
-#include <simgrid/s4u/host.hpp>
+#include "simgrid/s4u/Host.hpp"
 
 #include <mc/mc.h>
 
@@ -866,7 +865,7 @@ xbt_dynar_t SIMIX_process_get_runnable()
 /**
  * \brief Returns the process from PID.
  */
-smx_actor_t SIMIX_process_from_PID(int PID)
+smx_actor_t SIMIX_process_from_PID(aid_t PID)
 {
   if (simix_global->process_list.find(PID) == simix_global->process_list.end())
     return nullptr;

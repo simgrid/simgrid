@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,7 +7,7 @@
 
 #include "maxmin_private.hpp"
 #include "network_cm02.hpp"
-#include "simgrid/s4u/host.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "simgrid/sg_config.h"
 #include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 

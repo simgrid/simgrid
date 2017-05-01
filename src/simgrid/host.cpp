@@ -1,15 +1,14 @@
-/* Copyright (c) 2013-2016. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <vector>
 
-#include "xbt/dict.h"
 #include "simgrid/host.h"
-#include <xbt/Extendable.hpp>
-#include <simgrid/s4u/host.hpp>
+#include "simgrid/s4u/Host.hpp"
+#include "xbt/Extendable.hpp"
+#include "xbt/dict.h"
 
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/simix/smx_host_private.h"

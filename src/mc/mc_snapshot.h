@@ -34,8 +34,7 @@ SG_BEGIN_DECL()
 
 XBT_PRIVATE void mc_region_restore_sparse(simgrid::mc::Process* process, mc_mem_region_t reg);
 
-static inline __attribute__((always_inline))
-void* mc_translate_address_region_chunked(uintptr_t addr, mc_mem_region_t region)
+static XBT_ALWAYS_INLINE void* mc_translate_address_region_chunked(uintptr_t addr, mc_mem_region_t region)
 {
   auto split = simgrid::mc::mmu::split(addr - region->start().address());
   auto pageno = split.first;
@@ -44,8 +43,7 @@ void* mc_translate_address_region_chunked(uintptr_t addr, mc_mem_region_t region
   return (char*) snapshot_page + offset;
 }
 
-static inline __attribute__((always_inline))
-void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region, int process_index)
+static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region, int process_index)
 {
   switch (region->storage_type()) {
   case simgrid::mc::StorageType::NoData:
@@ -156,8 +154,8 @@ public: // To be private
 
 extern "C" {
 
-static inline __attribute__ ((always_inline))
-mc_mem_region_t mc_get_region_hinted(void* addr, simgrid::mc::Snapshot* snapshot, int process_index, mc_mem_region_t region)
+static XBT_ALWAYS_INLINE mc_mem_region_t mc_get_region_hinted(void* addr, simgrid::mc::Snapshot* snapshot,
+                                                              int process_index, mc_mem_region_t region)
 {
   if (region->contain(simgrid::mc::remote(addr)))
     return region;
@@ -198,8 +196,7 @@ XBT_PRIVATE int MC_snapshot_memcmp(
   const void* addr1, simgrid::mc::Snapshot* snapshot1,
   const void* addr2, simgrid::mc::Snapshot* snapshot2, int process_index, std::size_t size);
 
-static inline __attribute__ ((always_inline))
-const void* mc_snapshot_get_heap_end(simgrid::mc::Snapshot* snapshot)
+static XBT_ALWAYS_INLINE const void* mc_snapshot_get_heap_end(simgrid::mc::Snapshot* snapshot)
 {
   if(snapshot==nullptr)
       xbt_die("snapshot is nullptr");
@@ -214,9 +211,8 @@ const void* mc_snapshot_get_heap_end(simgrid::mc::Snapshot* snapshot)
  *  @param size    Size of the data to read in bytes
  *  @return Pointer where the data is located (target buffer of original location)
  */
-static inline __attribute__((always_inline))
-const void* MC_region_read(
-  mc_mem_region_t region, void* target, const void* addr, std::size_t size)
+static XBT_ALWAYS_INLINE const void* MC_region_read(mc_mem_region_t region, void* target, const void* addr,
+                                                    std::size_t size)
 {
   xbt_assert(region);
 
@@ -254,8 +250,7 @@ const void* MC_region_read(
   }
 }
 
-static inline __attribute__ ((always_inline))
-void* MC_region_read_pointer(mc_mem_region_t region, const void* addr)
+static XBT_ALWAYS_INLINE void* MC_region_read_pointer(mc_mem_region_t region, const void* addr)
 {
   void* res;
   return *(void**) MC_region_read(region, &res, addr, sizeof(void*));

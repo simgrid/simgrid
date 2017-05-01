@@ -1,15 +1,40 @@
 /*! @page deployment Deploy the simulation
 
-When you want to simulate the behavior of your code with SimGrid, you need
-to tell SimGrid exactly what code (that you wrote) is supposed to be run by which host - so you need to assign
-processes/functions to hosts. The hosts in question here are the hosts of your platform model; see Section @ref platform for details on how to set one up.
+Once you've specified your @ref platform "virtual platform" and the
+@ref application "application" you want to study, you must describe
+the mapping of the application onto the platform. This page says how
+to do that if you go for online simulation (that is, the study of a
+program), you must say which code starts on which host, with which
+parameters. You can also go for offline simulation, i.e. the study of
+a trace captured from a past applicative run, as briefly explained
+@ref XBT_replay "here".
 
-This assignment of the form @c code -> @c host is what the deployment file is all about, which will
-be discussed briefly here.
+There is two ways to specify the mapping of your program onto virtual
+hosts: either directly from your program (with @ref MSG_process_create
+or as in @ref s4u_ex_basics "this S4U example"), or using an external
+XML file.  You should really logically separate your application from
+the deployment, as it will ease your experimental campain afterward.
+How exactly you organize your work remains up to you.
 
-@note 
-    You can bypass the deployment file by hardcoding it in your user code, at least when you're using
-    MSG.
+@section deploy_s4u
+
+The following example shows the several ways of doing so in the S4U
+interface: @ref examples/s4u/actor-create/s4u_actor-create.cpp.
+Associated XML file: @ref examples/s4u/actor-create/s4u_actor-create_d.xml
+
+@section deploy_msg
+
+If you're stuck with the MSG interface, then you should simply use one
+of the following functions to start new actors onto your virtual
+hosts: @ref MSG_process_create, @ref MSG_process_create_with_arguments
+or @ref MSG_process_create_with_environment. These functions are used
+in many of the provided example, just grep for them.
+
+@section deploy_xml
+
+This section presents how to deploy from an XML file, as it is
+classically done. You will find a huge amount of examples of this in
+the @c examples directory.
 
 The deployment file looks just like a @ref platform "platform" file, except that in
 this case, only two different tags are used: @c process and @c argument, whereas

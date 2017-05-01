@@ -80,13 +80,7 @@ class Storage : public simgrid::surf::Resource,
         public simgrid::surf::PropertyHolder {
 public:
 
-  /**
-   * @brief Storage constructor
-   *
-   * @param model StorageModel associated to this Storage
-   * @param name The name of the Storage
-   * @param props Dictionary of properties associated to this Storage
-   */
+  /** @brief Storage constructor */
   Storage(Model* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
           const char* type_id, const char* content_name, const char* content_type, sg_size_t size, const char* attach);
 

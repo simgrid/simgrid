@@ -9,9 +9,9 @@
 
 #include <map>
 
-#include "simgrid/s4u/engine.hpp"
-#include "simgrid/s4u/host.hpp"
-#include "simgrid/s4u/storage.hpp"
+#include "simgrid/s4u/Engine.hpp"
+#include "simgrid/s4u/Host.hpp"
+#include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.hpp"
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/msg/msg_private.h"

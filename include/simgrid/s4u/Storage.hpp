@@ -17,7 +17,8 @@
 namespace simgrid {
 namespace s4u {
 
-XBT_PUBLIC_CLASS Storage {
+XBT_PUBLIC_CLASS Storage
+{
   friend s4u::Engine;
 
   Storage(std::string name, smx_storage_t inferior);
@@ -26,8 +27,8 @@ public:
   Storage() = default;
   virtual ~Storage();
   /** Retrieve a Storage by its name. It must exist in the platform file */
-  static Storage &byName(const char* name);
-  const char *name();
+  static Storage& byName(const char* name);
+  const char* name();
   const char* host();
   sg_size_t sizeFree();
   sg_size_t sizeUsed();
@@ -43,9 +44,9 @@ protected:
   smx_storage_t inferior();
 
 public:
-  void setUserdata(void *data) {userdata_ = data;}
-  void *userdata() {return userdata_;}
-  
+  void setUserdata(void* data) { userdata_ = data; }
+  void* userdata() { return userdata_; }
+
 private:
   static std::unordered_map<std::string, Storage*>* storages_;
 

@@ -1,5 +1,4 @@
-/* Copyright (c) 2006-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,8 +6,8 @@
 #include "xbt/log.h"
 
 #include "simgrid/s4u/Actor.hpp"
-#include "simgrid/s4u/comm.hpp"
-#include "simgrid/s4u/host.hpp"
+#include "simgrid/s4u/Comm.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 
 #include "src/kernel/context/Context.hpp"
@@ -77,12 +76,12 @@ simgrid::xbt::string Actor::name()
   return this->pimpl_->name;
 }
 
-int Actor::pid()
+aid_t Actor::pid()
 {
   return this->pimpl_->pid;
 }
 
-int Actor::ppid()
+aid_t Actor::ppid()
 {
   return this->pimpl_->ppid;
 }
@@ -111,7 +110,8 @@ double Actor::killTime()
   return simcall_process_get_kill_time(pimpl_);
 }
 
-void Actor::kill(int pid) {
+void Actor::kill(aid_t pid)
+{
   smx_actor_t process = SIMIX_process_from_PID(pid);
   if(process != nullptr) {
     simcall_process_kill(process);
@@ -132,7 +132,7 @@ void Actor::kill() {
 
 // ***** Static functions *****
 
-ActorPtr Actor::byPid(int pid)
+ActorPtr Actor::byPid(aid_t pid)
 {
   smx_actor_t process = SIMIX_process_from_PID(pid);
   if (process != nullptr)
@@ -209,12 +209,12 @@ Comm& irecv(MailboxPtr chan, void** data)
   return Comm::recv_async(chan, data);
 }
 
-int pid()
+aid_t pid()
 {
   return SIMIX_process_self()->pid;
 }
 
-int ppid()
+aid_t ppid()
 {
   return SIMIX_process_self()->ppid;
 }

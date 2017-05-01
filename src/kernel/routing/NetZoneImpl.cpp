@@ -1,11 +1,11 @@
-/* Copyright (c) 2006-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/routing/NetZoneImpl.hpp"
-#include "simgrid/s4u/engine.hpp"
-#include "simgrid/s4u/host.hpp"
+#include "simgrid/s4u/Engine.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
