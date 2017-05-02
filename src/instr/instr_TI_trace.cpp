@@ -57,7 +57,7 @@ void TRACE_TI_end()
   XBT_DEBUG("Filename %s is closed", filename);
 }
 
-void print_TICreateContainer(paje_event_t event)
+void print_TICreateContainer(PajeEvent* event)
 {
   //if we are in the mode with only one file
   static FILE *temp = nullptr;
@@ -88,7 +88,7 @@ void print_TICreateContainer(paje_event_t event)
   xbt_dict_set(tracing_files, ((CreateContainerEvent*) event)->container->name, (void *) temp, nullptr);
 }
 
-void print_TIDestroyContainer(paje_event_t event)
+void print_TIDestroyContainer(PajeEvent* event)
 {
   if (!xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file")|| xbt_dict_length(tracing_files) == 1) {
     FILE* f = (FILE*)xbt_dict_get_or_null(tracing_files, ((DestroyContainerEvent *) event)->container->name);
@@ -97,7 +97,7 @@ void print_TIDestroyContainer(paje_event_t event)
   xbt_dict_remove(tracing_files, ((DestroyContainerEvent*) event)->container->name);
 }
 
-void print_TIPushState(paje_event_t event)
+void print_TIPushState(PajeEvent* event)
 {
   int i;
 

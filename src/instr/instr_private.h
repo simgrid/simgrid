@@ -115,7 +115,6 @@ typedef s_container s_container_t;
 
 //--------------------------------------------------
 class PajeEvent;
-typedef PajeEvent *paje_event_t;
 
 class PajeEvent {
   public:
@@ -125,7 +124,6 @@ class PajeEvent {
   void *data;
   virtual ~PajeEvent();
 };
-typedef PajeEvent s_paje_event_t;
 
 class DefineContainerEvent : public PajeEvent
 {
@@ -407,56 +405,56 @@ XBT_PUBLIC(val_t)  PJ_value_get_or_new (const char *name, const char *color, typ
 XBT_PUBLIC(val_t)  PJ_value_get (const char *name, const type_t father);
 XBT_PRIVATE void PJ_value_free (val_t value);
 
-XBT_PRIVATE void print_pajeDefineContainerType(paje_event_t event);
-XBT_PRIVATE void print_pajeDefineVariableType(paje_event_t event);
-XBT_PRIVATE void print_pajeDefineStateType(paje_event_t event);
-XBT_PRIVATE void print_pajeDefineEventType(paje_event_t event);
-XBT_PRIVATE void print_pajeDefineLinkType(paje_event_t event);
-XBT_PRIVATE void print_pajeDefineEntityValue (paje_event_t event);
-XBT_PRIVATE void print_pajeCreateContainer(paje_event_t event);
-XBT_PRIVATE void print_pajeDestroyContainer(paje_event_t event);
-XBT_PRIVATE void print_pajeSetVariable(paje_event_t event);
-XBT_PRIVATE void print_pajeAddVariable(paje_event_t event);
-XBT_PRIVATE void print_pajeSubVariable(paje_event_t event);
-XBT_PRIVATE void print_pajeSetState(paje_event_t event);
-XBT_PRIVATE void print_pajePushState(paje_event_t event);
-XBT_PRIVATE void print_pajePopState(paje_event_t event);
-XBT_PRIVATE void print_pajeResetState(paje_event_t event);
-XBT_PRIVATE void print_pajeStartLink(paje_event_t event);
-XBT_PRIVATE void print_pajeEndLink(paje_event_t event);
-XBT_PRIVATE void print_pajeNewEvent (paje_event_t event);
+XBT_PRIVATE void print_pajeDefineContainerType(PajeEvent* event);
+XBT_PRIVATE void print_pajeDefineVariableType(PajeEvent* event);
+XBT_PRIVATE void print_pajeDefineStateType(PajeEvent* event);
+XBT_PRIVATE void print_pajeDefineEventType(PajeEvent* event);
+XBT_PRIVATE void print_pajeDefineLinkType(PajeEvent* event);
+XBT_PRIVATE void print_pajeDefineEntityValue (PajeEvent* event);
+XBT_PRIVATE void print_pajeCreateContainer(PajeEvent* event);
+XBT_PRIVATE void print_pajeDestroyContainer(PajeEvent* event);
+XBT_PRIVATE void print_pajeSetVariable(PajeEvent* event);
+XBT_PRIVATE void print_pajeAddVariable(PajeEvent* event);
+XBT_PRIVATE void print_pajeSubVariable(PajeEvent* event);
+XBT_PRIVATE void print_pajeSetState(PajeEvent* event);
+XBT_PRIVATE void print_pajePushState(PajeEvent* event);
+XBT_PRIVATE void print_pajePopState(PajeEvent* event);
+XBT_PRIVATE void print_pajeResetState(PajeEvent* event);
+XBT_PRIVATE void print_pajeStartLink(PajeEvent* event);
+XBT_PRIVATE void print_pajeEndLink(PajeEvent* event);
+XBT_PRIVATE void print_pajeNewEvent (PajeEvent* event);
 
-XBT_PRIVATE void print_TIPushState(paje_event_t event);
-XBT_PRIVATE void print_TICreateContainer(paje_event_t event);
-XBT_PRIVATE void print_TIDestroyContainer(paje_event_t event);
+XBT_PRIVATE void print_TIPushState(PajeEvent* event);
+XBT_PRIVATE void print_TICreateContainer(PajeEvent* event);
+XBT_PRIVATE void print_TIDestroyContainer(PajeEvent* event);
 XBT_PRIVATE void TRACE_TI_start();
 XBT_PRIVATE void TRACE_TI_end();
 XBT_PRIVATE void TRACE_TI_init();
 
-XBT_PRIVATE void print_NULL (paje_event_t event);
+XBT_PRIVATE void print_NULL (PajeEvent* event);
 XBT_PRIVATE void TRACE_paje_dump_buffer (int force);
 XBT_PRIVATE void dump_comment_file (const char *filename);
 XBT_PRIVATE void dump_comment (const char *comment);
 
 typedef struct instr_trace_writer {
-  void (*print_DefineContainerType) (paje_event_t event);
-  void (*print_DefineVariableType)(paje_event_t event);
-  void (*print_DefineStateType)(paje_event_t event);
-  void (*print_DefineEventType)(paje_event_t event);
-  void (*print_DefineLinkType)(paje_event_t event);
-  void (*print_DefineEntityValue)(paje_event_t event);
-  void (*print_CreateContainer)(paje_event_t event);
-  void (*print_DestroyContainer)(paje_event_t event);
-  void (*print_SetVariable)(paje_event_t event);
-  void (*print_AddVariable)(paje_event_t event);
-  void (*print_SubVariable)(paje_event_t event);
-  void (*print_SetState)(paje_event_t event);
-  void (*print_PushState)(paje_event_t event);
-  void (*print_PopState)(paje_event_t event);
-  void (*print_ResetState)(paje_event_t event);
-  void (*print_StartLink)(paje_event_t event);
-  void (*print_EndLink)(paje_event_t event);
-  void (*print_NewEvent) (paje_event_t event);
+  void (*print_DefineContainerType) (PajeEvent* event);
+  void (*print_DefineVariableType)(PajeEvent* event);
+  void (*print_DefineStateType)(PajeEvent* event);
+  void (*print_DefineEventType)(PajeEvent* event);
+  void (*print_DefineLinkType)(PajeEvent* event);
+  void (*print_DefineEntityValue)(PajeEvent* event);
+  void (*print_CreateContainer)(PajeEvent* event);
+  void (*print_DestroyContainer)(PajeEvent* event);
+  void (*print_SetVariable)(PajeEvent* event);
+  void (*print_AddVariable)(PajeEvent* event);
+  void (*print_SubVariable)(PajeEvent* event);
+  void (*print_SetState)(PajeEvent* event);
+  void (*print_PushState)(PajeEvent* event);
+  void (*print_PopState)(PajeEvent* event);
+  void (*print_ResetState)(PajeEvent* event);
+  void (*print_StartLink)(PajeEvent* event);
+  void (*print_EndLink)(PajeEvent* event);
+  void (*print_NewEvent) (PajeEvent* event);
 } s_instr_trace_writer_t;
 
 struct s_instr_extra_data;

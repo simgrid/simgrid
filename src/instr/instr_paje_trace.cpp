@@ -17,12 +17,12 @@ extern s_instr_trace_writer_t active_writer;
 
 static std::stringstream stream;
 
-static void print_paje_debug(std::string functionName, paje_event_t event) {
+static void print_paje_debug(std::string functionName, PajeEvent* event) {
   XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(),
             event->timestamp);
 }
 
-static void init_stream(paje_event_t event) {
+static void init_stream(PajeEvent* event) {
   stream << std::fixed << std::setprecision(TRACE_precision());
   stream << (int) event->event_type;
 }
@@ -34,7 +34,7 @@ static void print_row() {
   stream.clear();
 }
 
-static void print_timestamp(paje_event_t event) {
+static void print_timestamp(PajeEvent* event) {
   stream << " ";
   /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
   if (event->timestamp < 1e-12)

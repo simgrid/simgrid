@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_trace, instr, "tracing event system");
 
 FILE *tracing_file = nullptr;
 
-void print_NULL(paje_event_t event){}
+void print_NULL(PajeEvent* event){}
 
 /* The active set of functions for the selected trace format
  * By default, they all do nothing, hence the print_NULL to avoid segfaults */
@@ -23,7 +23,7 @@ s_instr_trace_writer_t active_writer = {&print_NULL, &print_NULL, &print_NULL, &
                                         &print_NULL, &print_NULL, &print_NULL, &print_NULL, &print_NULL, &print_NULL,
                                         &print_NULL, &print_NULL, &print_NULL, &print_NULL, &print_NULL, &print_NULL};
 
-std::vector<paje_event_t> buffer;
+std::vector<PajeEvent*> buffer;
 
 void dump_comment (const char *comment)
 {
@@ -66,7 +66,7 @@ void TRACE_paje_dump_buffer (int force)
     }
     buffer.clear();
   }else{
-    std::vector<paje_event_t>::iterator i = buffer.begin();
+    std::vector<PajeEvent*>::iterator i = buffer.begin();
     for (auto event :buffer){
       double head_timestamp = event->timestamp;
       if (head_timestamp > TRACE_last_timestamp_to_dump)
@@ -81,7 +81,7 @@ void TRACE_paje_dump_buffer (int force)
 }
 
 /* internal do the instrumentation module */
-static void insert_into_buffer (paje_event_t tbi)
+static void insert_into_buffer (PajeEvent* tbi)
 {
   if (TRACE_buffer() == 0){
     tbi->print ();
@@ -91,9 +91,9 @@ static void insert_into_buffer (paje_event_t tbi)
 
   XBT_DEBUG("%s: insert event_type=%d, timestamp=%f, buffersize=%zu)",
       __FUNCTION__, (int)tbi->event_type, tbi->timestamp, buffer.size());
-  std::vector<paje_event_t>::reverse_iterator i;
+  std::vector<PajeEvent*>::reverse_iterator i;
   for (i = buffer.rbegin(); i != buffer.rend(); ++i) {
-    paje_event_t e1 = *i;
+    PajeEvent* e1 = *i;
     XBT_DEBUG("compare to %p is of type %d; timestamp:%f", e1,
         (int)e1->event_type, e1->timestamp);
     if (e1->timestamp <= tbi->timestamp)
