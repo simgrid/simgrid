@@ -1,5 +1,7 @@
 /*! @page deployment Deploy the simulation
 
+@tableofcontents
+
 Once you've specified your @ref platform "virtual platform" and the
 @ref application "application" you want to study, you must describe
 the mapping of the application onto the platform. This page says how
@@ -16,13 +18,13 @@ XML file.  You should really logically separate your application from
 the deployment, as it will ease your experimental campain afterward.
 How exactly you organize your work remains up to you.
 
-@section deploy_s4u
+@section deploy_s4u Deployment with S4U
 
 The following example shows the several ways of doing so in the S4U
 interface: @ref examples/s4u/actor-create/s4u_actor-create.cpp.
 Associated XML file: @ref examples/s4u/actor-create/s4u_actor-create_d.xml
 
-@section deploy_msg
+@section deploy_msg Deployment with MSG
 
 If you're stuck with the MSG interface, then you should simply use one
 of the following functions to start new actors onto your virtual
@@ -30,51 +32,94 @@ hosts: @ref MSG_process_create, @ref MSG_process_create_with_arguments
 or @ref MSG_process_create_with_environment. These functions are used
 in many of the provided example, just grep for them.
 
-@section deploy_xml
+@section deploy_xml Deployment with XML
 
-This section presents how to deploy from an XML file, as it is
-classically done. You will find a huge amount of examples of this in
-the @c examples directory.
+Deploying processes from XML is easy. This section presents a complete
+example and the reference guide of the involved tags.
 
-The deployment file looks just like a @ref platform "platform" file, except that in
-this case, only two different tags are used: @c process and @c argument, whereas
-the latter is just used to supply additional configuration options to the process; the
-order in which the @c argument tags are given is important and depends on the application.
+The deployment file looks just like a @ref platform "platform" file,
+with only 3 tags used:
 
-### The process tag ###
+  - @c &lt;process&gt; starts a new actor on a given host;
+  - @c &lt;argument&gt; passes a given argument in the argv of an actor
+    (the list of arguments is ordered);
+  - @c &lt;prop&gt; adds a property to the actor.
 
-#### Attribute list ####
+@subsection deploy_xml_ex Examples
 
-As already written above, the @c process tag is the tag that defines which host
-executes which function (from your application). Hence, the @c host and @c function
-attributes are mandatory; however, there are some optional attributes to the process tag. Here is a list of all attributes of this tag:
+To make them easy to find, almost all deployment files in the archive
+are named @c ***_d_xml.
 
-| Attribute name  | Mandatory | Values                 | Description                                                                                                               |
-| --------------- | --------- | ---------------------- | -----------                                                                                                               |
-| host            | yes       | String                 | Describes which host will be used to run this process. The host must be defined in the platform file!                     |
-| function        | yes       | String                 | Name of a function that will be executed on this host; this function is written in userland code, for instance, C code. Valid values are functions that were registered by MSG_function_register() |
-| start_time      | no        | int (Default: -1.0)    | The simulated time when this function will start to be computed.                                                          |
-| kill_time       | no        | int (Default: -1.0)    | The simulated time when this function will end to be computed. By default, it stops only when it's done.                  |
-| on_failure      | no        | DIE\|RESTART (Default: "DIE")   | What should be done when the process fails.                  |
+@verbatim
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
+  <!-- Alice, which runs on the machine named 'host1', does not take any parameter -->
+  <process host="host1" function="alice" />
 
-#### Examples ####
+  <!-- Bob, which runs on 'host2', has 2 parameters "3" and "3000" in its argv -->
+  <process host="host2" function="bob" />
+     <argument value="3"/>
+     <argument value="3000"/>
+  </process>
 
-Almost any @ref msg_examples include a deployment file.
+  <!-- Carole runs on 'host3', has 1 parameter "42" in its argv and one property -->
+  <!-- See MSG_process_get_property_value() to retrieve this property -->
+  <process host="host3" function="carole">
+      <argument value="42"/>
+      <prop id="SomeProp" value="SomeValue"/>
+  </process>
+</platform>
+@endverbatim
 
-### The argument tag ###
+@subsection deploy_xml_process The process tag
 
-This tag must always be contained by a @c process tag - it doesn't make sense
-without it.
+&lt;process&gt; starts a new actor on a given host. It specifies which
+function (from your application) gets executed on the host. Hence, the
+@c host and @c function attributes are mandatory, but this tag accepts
+some optional attributes too.
 
-The way this works is that the order of arguments must be pre-defined <i>by the user</i>:
-It is totally up to you what <i>your</i> code expects as arguments and in which
-order. The arguments will be passed to your code (that is: to the function 
-executed by this process) in the order you declare them.
+| Attribute name  | Mandatory | Values       | Description                                                                     |
+| --------------- | --------- | ------------ | -----------                                                                     |
+| host            | yes       | String       | This must match the name of an host defined in the platform file.               |
+| function        | yes       | String       | Name of the function (from your own code) that will be executed.  See @ref deploy_xml_functions. |
+| start_time      | no        | int          | The simulated time when this actor will be started (Default: ASAP).             |
+| kill_time       | no        | int          | The simulated time when this actor will be forcefully stopped (Default: never). |
+| on_failure      | no        | DIE\|RESTART | What should be done when the process fails (Default: die).       |
 
-#### Attribute list ####
+@subsection deploy_xml_argument The argument tag
 
-| Attribute name  | Mandatory | Values                 | Description                                                                                                               |
-| --------------- | --------- | ---------------------- | -----------                                                                                                               |
-| value           | yes       | String                 | Contains the value for this parameter |
+This tag (which must be enclosed in a @c &lt;process&gt; tag) adds a
+new string to the parameter list received by your actor (either its @c
+argv array in MSG or its @c args vector in S4U).  Naturally, the
+semantic of these parameters completely depend on your program.
+
+| Attribute name  | Mandatory | Values                 | Description             |
+| --------------- | --------- | ---------------------- | -----------             |
+| value           | yes       | String                 | Value of this parameter |
+
+@subsection deploy_xml_prop The prop tag
+
+This tag (which must be enclosed in a @c &lt;process&gt; tag) adds a
+new property to your actor.
+
+(either its @c
+argv array in MSG or its @c args vector in S4U).  Naturally, the
+semantic of these parameters completely depend on your program.
+
+| Attribute name  | Mandatory | Values                 | Description                  |
+| --------------- | --------- | ---------------------- | -----------                  |
+| id              | yes       | String                 | Name of the defined property |
+| value           | yes       | String                 | Value of this property       |
+
+@subsection deploy_xml_functions Declaring startable functions
+
+You need to connect your code to the names that you use in the XML
+deployment file. Depends on the interface you use, this is done with
+MSG_process_create() or simgrid::s4u::Engine::registerFunction().
+There is nothing to do in your **Java code** since SimGrid uses
+the Java introspection abilities to retrieve the classes from their
+names. In your XML file, you must then use the full class name
+(including the package name).
 
 */

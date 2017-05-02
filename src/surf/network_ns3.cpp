@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -10,18 +10,14 @@
 #include "ns3/core-module.h"
 #include "ns3/node.h"
 
-#include "ns3/ns3_interface.h"
 #include "ns3/ns3_simulator.h"
 #include "network_ns3.hpp"
 
-#include "simgrid/sg_config.h"
 #include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/kernel/routing/NetPoint.hpp"
-#include "src/surf/HostImpl.hpp"
-#include "src/surf/surf_private.h"
 
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/NetZone.hpp"
-#include "simgrid/s4u/engine.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf, "Logging specific to the SURF network NS3 module");
 
