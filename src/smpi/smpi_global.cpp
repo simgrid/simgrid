@@ -119,6 +119,14 @@ int smpi_process_index(){
   return smpi_process()->index();
 }
 
+void * smpi_process_get_user_data(){
+  return smpi_process()->get_user_data();
+}
+
+void smpi_process_set_user_data(void *data){
+  return smpi_process()->set_user_data(data);
+}
+
 
 int smpi_global_size()
 {
