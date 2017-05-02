@@ -21,7 +21,7 @@ list_set LINKARGS
 if [ "@WIN32@" != "1" ]; then
     # list_add CFLAGS "-Dmain=smpi_simulated_main_"
     list_add CFLAGS "-fpic"
-    list_add LINKARGS "-shared" "-lsimgrid"
+    list_add LINKARGS "-shared" "-lsimgrid" "-Wl,-z,defs"
 else
     list_add CFLAGS "-include" "@includedir@/smpi/smpi_main.h"
     list_add LINKARGS "@libdir@\libsimgrid.dll"
