@@ -114,20 +114,20 @@ class s_container {
 typedef s_container s_container_t;
 
 //--------------------------------------------------
-class paje_event;
-typedef paje_event *paje_event_t;
+class PajeEvent;
+typedef PajeEvent *paje_event_t;
 
-class paje_event {
+class PajeEvent {
   public:
   double timestamp;
   e_event_type event_type;
   virtual void print(){};
   void *data;
-  virtual ~paje_event();
+  virtual ~PajeEvent();
 };
-typedef paje_event s_paje_event_t;
+typedef PajeEvent s_paje_event_t;
 
-class DefineContainerEvent : public paje_event
+class DefineContainerEvent : public PajeEvent
 {
   public:
   type_t type;
@@ -140,7 +140,7 @@ class DefineContainerEvent : public paje_event
 
 //--------------------------------------------------
 
-class DefineVariableTypeEvent : public paje_event 
+class DefineVariableTypeEvent : public PajeEvent 
 {
   public:
   type_t type;
@@ -149,21 +149,21 @@ class DefineVariableTypeEvent : public paje_event
 };
 //--------------------------------------------------
 
-class DefineStateTypeEvent : public paje_event  {
+class DefineStateTypeEvent : public PajeEvent  {
   type_t type;
   public:
   DefineStateTypeEvent(type_t type);
   void print();// override;
 };
 
-class DefineEventTypeEvent : public paje_event  {
+class DefineEventTypeEvent : public PajeEvent  {
   type_t type;
   public: 
   DefineEventTypeEvent(type_t type);
   void print() override;
 };
 
-class DefineLinkTypeEvent : public paje_event  {
+class DefineLinkTypeEvent : public PajeEvent  {
   type_t type;
   type_t source;
   type_t dest;
@@ -172,21 +172,21 @@ class DefineLinkTypeEvent : public paje_event  {
   void print() override;
 };
 
-class DefineEntityValueEvent : public paje_event  {
+class DefineEntityValueEvent : public PajeEvent  {
   val_t value;
   public:
   DefineEntityValueEvent (val_t type);
   void print() override;
 };
 
-class CreateContainerEvent : public paje_event  {
+class CreateContainerEvent : public PajeEvent  {
   public:
   container_t container;
   explicit CreateContainerEvent (container_t container);
   void print() override;
 };
 
-class DestroyContainerEvent : public paje_event  {
+class DestroyContainerEvent : public PajeEvent  {
   public:
   container_t container;
   DestroyContainerEvent (container_t container);
@@ -194,7 +194,7 @@ class DestroyContainerEvent : public paje_event  {
 };
 
 
-class SetVariableEvent : public paje_event  {
+class SetVariableEvent : public PajeEvent  {
   container_t container;
   type_t type;
   double value;
@@ -204,7 +204,7 @@ class SetVariableEvent : public paje_event  {
 };
 
 
-class AddVariableEvent:public paje_event {
+class AddVariableEvent:public PajeEvent {
   container_t container;
   type_t type;
   double value;
@@ -216,7 +216,7 @@ class AddVariableEvent:public paje_event {
 //--------------------------------------------------
 
 
-class SubVariableEvent : public paje_event  {
+class SubVariableEvent : public PajeEvent  {
   public:
   container_t container;
   type_t type;
@@ -227,7 +227,7 @@ class SubVariableEvent : public paje_event  {
 };
 //--------------------------------------------------
 
-class SetStateEvent : public paje_event  {
+class SetStateEvent : public PajeEvent  {
   public:
   container_t container;
   type_t type;
@@ -240,7 +240,7 @@ class SetStateEvent : public paje_event  {
 };
 
 
-class PushStateEvent : public paje_event  {
+class PushStateEvent : public PajeEvent  {
   public:
   container_t container;
   type_t type;
@@ -256,7 +256,7 @@ class PushStateEvent : public paje_event  {
   void print() override;
 };
 
-class PopStateEvent : public paje_event  {
+class PopStateEvent : public PajeEvent  {
   container_t container;
   type_t type;
   xbt_dynar_t extra;
@@ -265,7 +265,7 @@ class PopStateEvent : public paje_event  {
   void print() override;
 };
 
-class ResetStateEvent : public paje_event  {
+class ResetStateEvent : public PajeEvent  {
   container_t container;
   type_t type;
   public:
@@ -273,7 +273,7 @@ class ResetStateEvent : public paje_event  {
   void print() override;
 };
 
-class StartLinkEvent : public paje_event  {
+class StartLinkEvent : public PajeEvent  {
   public:
   container_t container;
   type_t type;
@@ -289,7 +289,7 @@ class StartLinkEvent : public paje_event  {
   void print() override;
 };
 
-class EndLinkEvent : public paje_event  {
+class EndLinkEvent : public PajeEvent  {
   container_t container;
   type_t type;
   container_t destContainer;
@@ -302,7 +302,7 @@ class EndLinkEvent : public paje_event  {
 };
 
 
-class NewEvent : public paje_event  {
+class NewEvent : public PajeEvent  {
   public:
   container_t container;
   type_t type;

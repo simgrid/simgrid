@@ -94,20 +94,24 @@ static void insert_into_buffer (paje_event_t tbi)
   std::vector<paje_event_t>::reverse_iterator i;
   for (i = buffer.rbegin(); i != buffer.rend(); ++i) {
     paje_event_t e1 = *i;
+    XBT_DEBUG("compare to %p is of type %d; timestamp:%f", e1,
+        (int)e1->event_type, e1->timestamp);
     if (e1->timestamp <= tbi->timestamp)
       break;
   }
   buffer.insert(i.base(), tbi);
   if (i == buffer.rend())
     XBT_DEBUG("%s: inserted at beginning", __FUNCTION__);
+  else if (i == buffer.rbegin())
+    XBT_DEBUG("%s: inserted at end", __FUNCTION__);
   else
-    XBT_DEBUG("%s: inserted at%s %zd", __FUNCTION__, (i == buffer.rbegin()) ? " end" :"pos =",
-        std::distance(buffer.rend(),i));
+    XBT_DEBUG("%s: inserted at pos= %zd from its end", __FUNCTION__,
+        std::distance(buffer.rbegin(),i));
 }
 
-paje_event:: ~paje_event()
+PajeEvent:: ~PajeEvent()
 {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, timestamp);
+  XBT_DEBUG("%s not implemented: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, timestamp);
  
  /* switch (event->event_type){
   case PAJE_StartLink:
