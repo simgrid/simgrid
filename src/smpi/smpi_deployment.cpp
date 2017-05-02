@@ -6,7 +6,6 @@
 
 #include "private.h"
 #include "simgrid/msg.h" /* barrier */
-#include "simgrid/s4u.hpp"
 #include "src/smpi/SmpiHost.hpp"
 #include "xbt/log.h"
 
