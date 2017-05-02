@@ -36,8 +36,7 @@ namespace mc {
  *  @param data Memory page
  *  @return hash off the page
  */
-static inline  __attribute__ ((always_inline))
-PageStore::hash_type mc_hash_page(const void* data)
+static XBT_ALWAYS_INLINE PageStore::hash_type mc_hash_page(const void* data)
 {
   const std::uint64_t* values = (const uint64_t*) data;
   std::size_t n = xbt_pagesize / sizeof(uint64_t);

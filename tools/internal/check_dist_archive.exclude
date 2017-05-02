@@ -9,6 +9,7 @@
 - Makefile
 - doc/html/.*
 
++ BuildSimGrid.sh
 + \.classpath
 + \.cproject
 + \.project

@@ -112,4 +112,6 @@ typedef unsigned long long sg_size_t;
  */
 typedef long long sg_offset_t;
 
+typedef unsigned long aid_t;
+
 #endif

@@ -3,7 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <simgrid/s4u/host.hpp>
+#include "simgrid/s4u/Engine.hpp"
+#include "simgrid/s4u/Host.hpp"
 
 #include "private.h"
 
@@ -24,7 +25,9 @@ extern "C" { // Obviously, the C MPI interface should use the C linkage
 
 int PMPI_Init(int *argc, char ***argv)
 {
-  // PMPI_Init is call only one time by only by SMPI process
+  xbt_assert(simgrid::s4u::Engine::isInitialized(),
+             "Your MPI program was not properly initialized. The easiest is to use smpirun to start it.");
+  // PMPI_Init is called only once per SMPI process
   int already_init;
   MPI_Initialized(&already_init);
   if(already_init == 0){
@@ -60,7 +63,6 @@ int PMPI_Finalize()
 
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
   TRACE_smpi_finalize(smpi_process()->index());
-  smpi_process()->destroy();
   return MPI_SUCCESS;
 }
 
@@ -78,7 +80,7 @@ int PMPI_Get_version (int *version,int *subversion){
 
 int PMPI_Get_library_version (char *version,int *len){
   smpi_bench_end();
-  snprintf(version,MPI_MAX_LIBRARY_VERSION_STRING,"SMPI Version %d.%d. Copyright The Simgrid Team 2007-2015",
+  snprintf(version, MPI_MAX_LIBRARY_VERSION_STRING, "SMPI Version %d.%d. Copyright The Simgrid Team 2007-2017",
            SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR);
   *len = strlen(version) > MPI_MAX_LIBRARY_VERSION_STRING ? MPI_MAX_LIBRARY_VERSION_STRING : strlen(version);
   smpi_bench_begin();
@@ -116,7 +118,6 @@ int PMPI_Is_thread_main(int *flag)
 int PMPI_Abort(MPI_Comm comm, int errorcode)
 {
   smpi_bench_end();
-  smpi_process()->destroy();
   // FIXME: should kill all processes in comm instead
   simcall_process_kill(SIMIX_process_self());
   return MPI_SUCCESS;
@@ -1245,7 +1246,7 @@ int PMPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* statu
   int retval = 0;
   smpi_bench_end();
 
-  if ((flag == nullptr) || (status == nullptr)) {
+  if (flag == nullptr) {
     retval = MPI_ERR_ARG;
   } else if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
@@ -1583,7 +1584,6 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recv
 
     int rank               = comm != MPI_COMM_NULL ? smpi_process()->index() : -1;
     int root_traced        = comm->group()->index(root);
-    int i                  = 0;
     int size               = comm->size();
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t, 1);
     extra->type            = TRACING_GATHERV;
@@ -1599,9 +1599,9 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recv
     int dt_size_recv = 1;
     if (known == 0)
       dt_size_recv = recvtype->size();
-    if ((comm->rank() == root)) {
+    if (comm->rank() == root) {
       extra->recvcounts = xbt_new(int, size);
-      for (i                 = 0; i < size; i++) // copy data to avoid bad free
+      for (int i = 0; i < size; i++) // copy data to avoid bad free
         extra->recvcounts[i] = recvcounts[i] * dt_size_recv;
     }
     TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
@@ -1782,7 +1782,6 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
     }
     int rank               = comm != MPI_COMM_NULL ? smpi_process()->index() : -1;
     int root_traced        = comm->group()->index(root);
-    int i                  = 0;
     int size               = comm->size();
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t, 1);
     extra->type            = TRACING_SCATTERV;
@@ -1793,9 +1792,9 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
     int dt_size_send       = 1;
     if (known == 0)
       dt_size_send = sendtype->size();
-    if ((comm->rank() == root)) {
+    if (comm->rank() == root) {
       extra->sendcounts = xbt_new(int, size);
-      for (i                 = 0; i < size; i++) // copy data to avoid bad free
+      for (int i = 0; i < size; i++) // copy data to avoid bad free
         extra->sendcounts[i] = sendcounts[i] * dt_size_send;
     }
     extra->datatype2 = encode_datatype(recvtype, &known);

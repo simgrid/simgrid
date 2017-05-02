@@ -1,5 +1,5 @@
 p Test timers
 ! setenv LD_LIBRARY_PATH=../../lib
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 1 ${bindir:=.}/timers -q --log=smpi_kernel.thres:warning --cfg=smpi/simulate-computation:no --cfg=smpi/host-speed:100000 --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 1 ${bindir:=.}/timers -q --log=smpi_kernel.thres:warning --cfg=smpi/simulate-computation:no --cfg=smpi/host-speed:100000 --log=xbt_cfg.thres:warning
 > [rank 0] -> Tremblay
 

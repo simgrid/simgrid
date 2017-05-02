@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "msg_private.h"
-#include "simgrid/s4u/host.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "src/simix/ActorImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (process)");
@@ -22,8 +22,8 @@ SG_BEGIN_DECL()
 
 /******************************** Process ************************************/
 /**
- * \brief Cleans the MSG data of a process.
- * \param smx_proc a SIMIX process
+ * \brief Cleans the MSG data of an actor
+ * \param smx_actor a SIMIX actor
  */
 void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
 {

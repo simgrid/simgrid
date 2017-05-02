@@ -3,16 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/config.hpp>
-#include <algorithm>
 #include "private.h"
 #include "mc/mc.h"
 #include "src/mc/mc_replay.h"
-#include "src/simix/smx_private.h"
-#include "simgrid/sg_config.h"
-#include "smpi/smpi_utils.hpp"
-#include <simgrid/s4u/host.hpp>
+#include "src/smpi/SmpiHost.hpp"
 #include "src/kernel/activity/SynchroComm.hpp"
+
+#include <algorithm>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_request, smpi, "Logging specific to SMPI (reques)");
 
@@ -21,86 +18,9 @@ static simgrid::config::Flag<double> smpi_iprobe_sleep(
 static simgrid::config::Flag<double> smpi_test_sleep(
   "smpi/test", "Minimum time to inject inside a call to MPI_Test", 1e-4);
 
-std::vector<s_smpi_factor_t> smpi_os_values;
-std::vector<s_smpi_factor_t> smpi_or_values;
 std::vector<s_smpi_factor_t> smpi_ois_values;
 
 extern void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t);
-
-static double smpi_os(size_t size)
-{
-  if (smpi_os_values.empty()) {
-    smpi_os_values = parse_factor(xbt_cfg_get_string("smpi/os"));
-  }
-  double current=smpi_os_values.empty()?0.0:smpi_os_values[0].values[0]+smpi_os_values[0].values[1]*size;
-  // Iterate over all the sections that were specified and find the right
-  // value. (fact.factor represents the interval sizes; we want to find the
-  // section that has fact.factor <= size and no other such fact.factor <= size)
-  // Note: parse_factor() (used before) already sorts the vector we iterate over!
-  for (auto& fact : smpi_os_values) {
-    if (size <= fact.factor) { // Values already too large, use the previously computed value of current!
-      XBT_DEBUG("os : %zu <= %zu return %.10f", size, fact.factor, current);
-      return current;
-    }else{
-      // If the next section is too large, the current section must be used.
-      // Hence, save the cost, as we might have to use it.
-      current = fact.values[0]+fact.values[1]*size;
-    }
-  }
-  XBT_DEBUG("Searching for smpi/os: %zu is larger than the largest boundary, return %.10f", size, current);
-
-  return current;
-}
-
-static double smpi_ois(size_t size)
-{
-  if (smpi_ois_values.empty()) {
-    smpi_ois_values = parse_factor(xbt_cfg_get_string("smpi/ois"));
-  }
-  double current=smpi_ois_values.empty()?0.0:smpi_ois_values[0].values[0]+smpi_ois_values[0].values[1]*size;
-  // Iterate over all the sections that were specified and find the right value. (fact.factor represents the interval
-  // sizes; we want to find the section that has fact.factor <= size and no other such fact.factor <= size)
-  // Note: parse_factor() (used before) already sorts the vector we iterate over!
-  for (auto& fact : smpi_ois_values) {
-    if (size <= fact.factor) { // Values already too large, use the previously  computed value of current!
-      XBT_DEBUG("ois : %zu <= %zu return %.10f", size, fact.factor, current);
-      return current;
-    }else{
-      // If the next section is too large, the current section must be used.
-      // Hence, save the cost, as we might have to use it.
-      current = fact.values[0]+fact.values[1]*size;
-    }
-  }
-  XBT_DEBUG("Searching for smpi/ois: %zu is larger than the largest boundary, return %.10f", size, current);
-
-  return current;
-}
-
-static double smpi_or(size_t size)
-{
-  if (smpi_or_values.empty()) {
-    smpi_or_values = parse_factor(xbt_cfg_get_string("smpi/or"));
-  }
-  
-  double current=smpi_or_values.empty()?0.0:smpi_or_values.front().values[0]+smpi_or_values.front().values[1]*size;
-
-  // Iterate over all the sections that were specified and find the right value. (fact.factor represents the interval
-  // sizes; we want to find the section that has fact.factor <= size and no other such fact.factor <= size)
-  // Note: parse_factor() (used before) already sorts the vector we iterate over!
-  for (auto fact : smpi_or_values) {
-    if (size <= fact.factor) { // Values already too large, use the previously computed value of current!
-      XBT_DEBUG("or : %zu <= %zu return %.10f", size, fact.factor, current);
-      return current;
-    } else {
-      // If the next section is too large, the current section must be used.
-      // Hence, save the cost, as we might have to use it.
-      current=fact.values[0]+fact.values[1]*size;
-    }
-  }
-  XBT_DEBUG("smpi_or: %zu is larger than largest boundary, return %.10f", size, current);
-
-  return current;
-}
 
 namespace simgrid{
 namespace smpi{
@@ -108,7 +28,8 @@ namespace smpi{
 Request::Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags) : buf_(buf), old_type_(datatype), src_(src), dst_(dst), tag_(tag), comm_(comm), flags_(flags) 
 {
   void *old_buf = nullptr;
-  if(((((flags & RECV) != 0) && ((flags & ACCUMULATE) !=0)) || (datatype->flags() & DT_FLAG_DERIVED)) && (!smpi_is_shared(buf_))){
+// FIXME Handle the case of a partial shared malloc.
+  if ((((flags & RECV) != 0) && ((flags & ACCUMULATE) != 0)) || (datatype->flags() & DT_FLAG_DERIVED)) {
     // This part handles the problem of non-contiguous memory
     old_buf = buf;
     if (count==0){
@@ -491,9 +412,11 @@ void Request::start()
 
     //if we are giving back the control to the user without waiting for completion, we have to inject timings
     double sleeptime = 0.0;
-    if(detached_ != 0 || ((flags_ & (ISEND|SSEND)) != 0)){// issend should be treated as isend
-      //isend and send timings may be different
-      sleeptime = ((flags_ & ISEND) != 0) ? smpi_ois(size_) : smpi_os(size_);
+    if (detached_ != 0 || ((flags_ & (ISEND | SSEND)) != 0)) { // issend should be treated as isend
+      // isend and send timings may be different
+      sleeptime = ((flags_ & ISEND) != 0)
+                      ? simgrid::s4u::Actor::self()->host()->extension<simgrid::smpi::SmpiHost>()->oisend(size_)
+                      : simgrid::s4u::Actor::self()->host()->extension<simgrid::smpi::SmpiHost>()->osend(size_);
     }
 
     if(sleeptime > 0.0){
@@ -594,24 +517,22 @@ int Request::test(MPI_Request * request, MPI_Status * status) {
 
 int Request::testsome(int incount, MPI_Request requests[], int *indices, MPI_Status status[])
 {
-  int i;
   int count = 0;
   int count_dead = 0;
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
 
-  for(i = 0; i < incount; i++) {
-    if((requests[i] != MPI_REQUEST_NULL)) {
-      if(test(&requests[i], pstat)) {
-         indices[i] = 1;
-         count++;
-         if(status != MPI_STATUSES_IGNORE) {
-           status[i] = *pstat;
-         }
-         if ((requests[i] != MPI_REQUEST_NULL) && requests[i]->flags_ & NON_PERSISTENT)
-         requests[i]=MPI_REQUEST_NULL;
+  for (int i = 0; i < incount; i++) {
+    if (requests[i] != MPI_REQUEST_NULL) {
+      if (test(&requests[i], pstat)) {
+        indices[i] = 1;
+        count++;
+        if (status != MPI_STATUSES_IGNORE)
+          status[i] = *pstat;
+        if ((requests[i] != MPI_REQUEST_NULL) && requests[i]->flags_ & NON_PERSISTENT)
+          requests[i] = MPI_REQUEST_NULL;
       }
-    }else{
+    } else {
       count_dead++;
     }
   }
@@ -767,7 +688,9 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
     req->print_request("Finishing");
     MPI_Datatype datatype = req->old_type_;
 
-    if((((req->flags_ & ACCUMULATE) != 0) || (datatype->flags() & DT_FLAG_DERIVED)) && (!smpi_is_shared(req->old_buf_))){
+// FIXME Handle the case of a partial shared malloc.
+    if (((req->flags_ & ACCUMULATE) != 0) ||
+        (datatype->flags() & DT_FLAG_DERIVED)) { // && (!smpi_is_shared(req->old_buf_))){
 
       if (!smpi_process()->replaying()){
         if( smpi_privatize_global_variables != 0 && (static_cast<char*>(req->old_buf_) >= smpi_start_data_exe)
@@ -799,7 +722,7 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
   }
   if(req->detached_sender_ != nullptr){
     //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
-    double sleeptime = smpi_or(req->real_size_);
+    double sleeptime = simgrid::s4u::Actor::self()->host()->extension<simgrid::smpi::SmpiHost>()->orecv(req->real_size());
     if(sleeptime > 0.0){
       simcall_process_sleep(sleeptime);
       XBT_DEBUG("receiving size of %zu : sleep %f ", req->real_size_, sleeptime);

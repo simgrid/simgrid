@@ -19,16 +19,18 @@ class Storage;
  *
  * Used to simulate the time it takes to access to a file, but does not really store any information.
  *
- * They are located on @ref simgrid::s4u::Storage that are accessed from a given @ref simgrid::s4u::Host through mountpoints.
+ * They are located on @ref simgrid::s4u::Storage that are accessed from a given @ref simgrid::s4u::Host through
+ * mountpoints.
  * For now, you cannot change the mountpoints programatically, and must declare them from your platform file.
  */
-XBT_PUBLIC_CLASS File {
+XBT_PUBLIC_CLASS File
+{
 public:
-  File(const char *fullpath, void* userdata);
+  File(const char* fullpath, void* userdata);
   ~File();
 
   /** Retrieves the path to the file */
-  const char *path() { return path_;}
+  const char* path() { return path_; }
 
   /** Simulates a read action. Returns the size of data actually read
    *
@@ -44,9 +46,9 @@ public:
   sg_size_t write(sg_size_t size);
 
   /** Allows to store user data on that host */
-  void setUserdata(void *data) {userdata_ = data;}
+  void setUserdata(void* data) { userdata_ = data; }
   /** Retrieves the previously stored data */
-  void* userdata() {return userdata_;}
+  void* userdata() { return userdata_; }
 
   /** Retrieve the datasize */
   sg_size_t size();
@@ -59,7 +61,7 @@ public:
   /** Rename a file
    *
    * WARNING: It is forbidden to move the file to another mount point */
-  void move(const char*fullpath);
+  void move(const char* fullpath);
 
   /** Remove a file from disk */
   void unlink();
@@ -72,10 +74,10 @@ public:
 
 private:
   smx_file_t pimpl_ = nullptr;
-  const char *path_ = nullptr;
-  void *userdata_ = nullptr;
+  const char* path_ = nullptr;
+  void* userdata_   = nullptr;
 };
-
-}} // namespace simgrid::s4u
+}
+} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_HOST_HPP */

@@ -288,8 +288,8 @@ void StateComparator::match_equals(HeapLocationPairs* list)
 void ProcessComparisonState::initHeapInformation(xbt_mheap_t heap,
                         std::vector<simgrid::mc::IgnoredHeapRegion>* i)
 {
-  auto heaplimit = ((struct mdesc *) heap)->heaplimit;
-  this->heapsize = ((struct mdesc *) heap)->heapsize;
+  auto heaplimit  = heap->heaplimit;
+  this->heapsize  = heap->heapsize;
   this->to_ignore = i;
   this->equals_to.assign(heaplimit * MAX_FRAGMENT_PER_BLOCK, HeapArea());
   this->types.assign(heaplimit * MAX_FRAGMENT_PER_BLOCK, nullptr);
@@ -299,13 +299,9 @@ int StateComparator::initHeapInformation(xbt_mheap_t heap1, xbt_mheap_t heap2,
                           std::vector<simgrid::mc::IgnoredHeapRegion>* i1,
                           std::vector<simgrid::mc::IgnoredHeapRegion>* i2)
 {
-  if ((((struct mdesc *) heap1)->heaplimit !=
-       ((struct mdesc *) heap2)->heaplimit)
-      ||
-      ((((struct mdesc *) heap1)->heapsize !=
-        ((struct mdesc *) heap2)->heapsize)))
+  if ((heap1->heaplimit != heap2->heaplimit) || (heap1->heapsize != heap2->heapsize))
     return -1;
-  this->heaplimit = ((struct mdesc *) heap1)->heaplimit;
+  this->heaplimit     = heap1->heaplimit;
   this->std_heap_copy = *mc_model_checker->process().get_heap();
   this->processStates[0].initHeapInformation(heap1, i1);
   this->processStates[1].initHeapInformation(heap2, i2);
@@ -336,7 +332,6 @@ int mmalloc_compare_heap(
   int equal, res_compare = 0;
 
   /* Check busy blocks */
-
   i1 = 1;
 
   malloc_info heapinfo_temp1, heapinfo_temp2;
@@ -447,7 +442,6 @@ int mmalloc_compare_heap(
         }
 
         i2++;
-
       }
 
       if (!equal) {
@@ -509,7 +503,7 @@ int mmalloc_compare_heap(
           }
 
           if (heapinfo2b->type < 0) {
-            fprintf(stderr, "Unkown mmalloc block type.\n");
+            fprintf(stderr, "Unknown mmalloc block type.\n");
             abort();
           }
 
@@ -536,11 +530,9 @@ int mmalloc_compare_heap(
               equal = 1;
               break;
             }
-
           }
 
           i2++;
-
         }
 
         if (!equal) {
@@ -553,13 +545,10 @@ int mmalloc_compare_heap(
           nb_diff1++;
           break;
         }
-
       }
 
       i1++;
-
     }
-
   }
 
   /* All blocks/fragments are equal to another block/fragment ? */
@@ -1510,12 +1499,12 @@ static int compare_global_variables(
 
     // Compare the global variables separately for each simulates process:
     for (size_t process_index = 0; process_index < process_count; process_index++) {
-      int is_diff = compare_global_variables(state,
-        object_info, process_index,
-        &r1->privatized_data()[process_index],
-        &r2->privatized_data()[process_index],
-        snapshot1, snapshot2);
-      if (is_diff) return 1;
+      if (compare_global_variables(state,
+          object_info, process_index,
+          &r1->privatized_data()[process_index],
+          &r2->privatized_data()[process_index],
+          snapshot1, snapshot2))
+        return 1;
     }
     return 0;
   }
@@ -1627,7 +1616,6 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
   simgrid::mc::Process* process = &mc_model_checker->process();
 
   int errors = 0;
-  int res_init;
 
   int hash_result = 0;
   if (_sg_mc_hash) {
@@ -1643,18 +1631,15 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
 
   /* Compare enabled processes */
   if (s1->enabled_processes != s2->enabled_processes) {
-      XBT_VERB("(%d - %d) Different enabled processes", num1, num2);
-      // return 1; ??
+    XBT_VERB("(%d - %d) Different amount of enabled processes", num1, num2);
+    return 1;
   }
 
-  unsigned long i = 0;
-  size_t size_used1, size_used2;
-  int is_diff = 0;
-
   /* Compare size of stacks */
-  while (i < s1->stacks.size()) {
-    size_used1 = s1->stack_sizes[i];
-    size_used2 = s2->stack_sizes[i];
+  int is_diff = 0;
+  for (unsigned long i = 0; i < s1->stacks.size(); i++) {
+    size_t size_used1 = s1->stack_sizes[i];
+    size_t size_used2 = s2->stack_sizes[i];
     if (size_used1 != size_used2) {
 #ifdef MC_DEBUG
       XBT_DEBUG("(%d - %d) Different size used in stacks: %zu - %zu", num1, num2, size_used1, size_used2);
@@ -1667,8 +1652,9 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
       return 1;
 #endif
     }
-    i++;
   }
+  if (is_diff) // do not proceed if there is any stacks that don't match
+    return 1;
 
   /* Init heap information used in heap comparison algorithm */
   xbt_mheap_t heap1 = (xbt_mheap_t)s1->read_bytes(
@@ -1679,8 +1665,7 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
     alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
     remote(process->heap_address),
     simgrid::mc::ProcessIndexMissing, simgrid::mc::ReadOptions::lazy());
-  res_init = state_comparator->initHeapInformation(
-    heap1, heap2, &s1->to_ignore, &s2->to_ignore);
+  int res_init = state_comparator->initHeapInformation(heap1, heap2, &s1->to_ignore, &s2->to_ignore);
 
   if (res_init == -1) {
 #ifdef MC_DEBUG
@@ -1697,9 +1682,6 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
 
   /* Stacks comparison */
   int diff_local = 0;
-#ifdef MC_DEBUG
-  is_diff = 0;
-#endif
   for (unsigned int cursor = 0; cursor < s1->stacks.size(); cursor++) {
     mc_snapshot_stack_t stack1 = &s1->stacks[cursor];
     mc_snapshot_stack_t stack2 = &s2->stacks[cursor];
@@ -1748,12 +1730,9 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
     std::string const& name = region1->object_info()->file_name;
 
     /* Compare global variables */
-    is_diff =
-      compare_global_variables(*state_comparator,
-        region1->object_info(), simgrid::mc::ProcessIndexDisabled,
-        region1, region2, s1, s2);
+    if (compare_global_variables(*state_comparator, region1->object_info(), simgrid::mc::ProcessIndexDisabled, region1,
+                                 region2, s1, s2)) {
 
-    if (is_diff != 0) {
 #ifdef MC_DEBUG
       XBT_DEBUG("(%d - %d) Different global variables in %s",
         num1, num2, name.c_str());

@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -897,9 +896,11 @@ XBT_PUBLIC(void) smpi_trace_set_call_location__(const char *file, int* line);
 #define SMPI_SAMPLE_DELAY(duration) for(smpi_execute(duration); 0; )
 #define SMPI_SAMPLE_FLOPS(flops) for(smpi_execute_flops(flops); 0; )
 
-XBT_PUBLIC(int) smpi_is_shared(void *buf);
 XBT_PUBLIC(void *) smpi_shared_malloc(size_t size, const char *file, int line);
 #define SMPI_SHARED_MALLOC(size) smpi_shared_malloc(size, __FILE__, __LINE__)
+XBT_PUBLIC(void*) smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int nb_shared_blocks);
+#define SMPI_PARTIAL_SHARED_MALLOC(size, shared_block_offsets, nb_shared_blocks)                                       \
+  smpi_shared_malloc_partial(size, shared_block_offsets, nb_shared_blocks)
 
 XBT_PUBLIC(void) smpi_shared_free(void *data);
 #define SMPI_SHARED_FREE(data) smpi_shared_free(data)
@@ -913,10 +914,7 @@ XBT_PUBLIC(void*) smpi_shared_set_call(const char* func, const char* input, void
 
 /* Fortran specific stuff */
 
-XBT_PUBLIC(int) __attribute__((weak)) smpi_simulated_main_(int argc, char** argv);
-XBT_PUBLIC(int) __attribute__((weak)) MAIN__();
-XBT_PUBLIC(int) smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[]);
-XBT_PUBLIC(void) __attribute__((weak)) user_main_();
+XBT_PUBLIC(int) smpi_main(const char* program, int argc, char *argv[]);
 XBT_PUBLIC(int) smpi_process_index();
 XBT_PUBLIC(void) smpi_process_init(int *argc, char ***argv);
 

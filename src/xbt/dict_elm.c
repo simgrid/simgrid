@@ -1,7 +1,6 @@
 /* dict - a generic dictionary, variation over hash table                   */
 
-/* Copyright (c) 2004-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -12,13 +11,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_elm, xbt_dict, "Dictionaries internals"
 
 xbt_mallocator_t dict_elm_mallocator = NULL;
 
-xbt_dictelm_t xbt_dictelm_new(xbt_dict_t dict, const char *key, int key_len, unsigned int hash_code, void *content,
-                              void_f_pvoid_t free_f)
+xbt_dictelm_t xbt_dictelm_new(const char* key, int key_len, unsigned int hash_code, void* content)
 {
-  xbt_dictelm_t element;
-
-  xbt_assert(!free_f, "Cannot set an individual free function in homogeneous dicts.");
-  element      = xbt_mallocator_get(dict_elm_mallocator);
+  xbt_dictelm_t element = xbt_mallocator_get(dict_elm_mallocator);
   element->key = xbt_new(char, key_len + 1);
   memcpy(element->key, key, key_len);
   element->key[key_len] = '\0';

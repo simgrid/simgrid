@@ -7,13 +7,13 @@
 
 #include <locale.h>
 
-#include <simgrid/msg.h>
-#include <simgrid/simix.h>
-#include <simgrid/plugins/energy.h>
+#include "simgrid/msg.h"
+#include "simgrid/plugins/energy.h"
+#include "simgrid/simix.h"
 
-#include <simgrid/s4u/host.hpp>
+#include "simgrid/s4u/Host.hpp"
 
-#include <src/simix/smx_private.h>
+#include "src/simix/smx_private.h"
 
 #include "jmsg_process.h"
 #include "jmsg_as.h"

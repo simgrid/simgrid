@@ -1,10 +1,10 @@
-/* Copyright (c) 2004-2015. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u/engine.hpp"
-#include "simgrid/s4u/host.hpp"
+#include "simgrid/s4u/Engine.hpp"
+#include "simgrid/s4u/Host.hpp"
 
 #include "instr/instr_interface.h"
 #include "mc/mc.h"
@@ -66,7 +66,6 @@ void MSG_init_nocheck(int *argc, char **argv) {
 
   XBT_DEBUG("ADD MSG LEVELS");
   MSG_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, (void_f_pvoid_t) __MSG_storage_destroy);
-  MSG_FILE_LEVEL = xbt_lib_add_level(file_lib, (void_f_pvoid_t) __MSG_file_destroy);
   if(xbt_cfg_get_boolean("clean-atexit"))
     atexit(MSG_exit);
 }

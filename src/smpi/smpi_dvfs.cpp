@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,9 +6,9 @@
 #include <xbt/log.h>
 
 // FIXME: this plugin should be separated from the core
+#include "simgrid/s4u/Host.hpp"
 #include <simgrid/plugins/energy.h>
 #include <simgrid/simix.h>
-#include <simgrid/s4u/host.hpp>
 
 #include <smpi/smpi.h>
 

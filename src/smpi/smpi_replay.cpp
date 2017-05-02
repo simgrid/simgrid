@@ -1071,23 +1071,23 @@ void smpi_replay_run(int *argc, char***argv){
   xbt_replay_action_register("comm_split", simgrid::smpi::action_comm_split);
   xbt_replay_action_register("comm_dup",   simgrid::smpi::action_comm_dup);
   xbt_replay_action_register("send",       simgrid::smpi::action_send);
-  xbt_replay_action_register("isend",      simgrid::smpi::action_Isend);
+  xbt_replay_action_register("Isend",      simgrid::smpi::action_Isend);
   xbt_replay_action_register("recv",       simgrid::smpi::action_recv);
-  xbt_replay_action_register("irecv",      simgrid::smpi::action_Irecv);
+  xbt_replay_action_register("Irecv",      simgrid::smpi::action_Irecv);
   xbt_replay_action_register("test",       simgrid::smpi::action_test);
   xbt_replay_action_register("wait",       simgrid::smpi::action_wait);
-  xbt_replay_action_register("waitall",    simgrid::smpi::action_waitall);
+  xbt_replay_action_register("waitAll",    simgrid::smpi::action_waitall);
   xbt_replay_action_register("barrier",    simgrid::smpi::action_barrier);
   xbt_replay_action_register("bcast",      simgrid::smpi::action_bcast);
   xbt_replay_action_register("reduce",     simgrid::smpi::action_reduce);
-  xbt_replay_action_register("allreduce",  simgrid::smpi::action_allReduce);
-  xbt_replay_action_register("alltoall",   simgrid::smpi::action_allToAll);
-  xbt_replay_action_register("alltoallv",  simgrid::smpi::action_allToAllv);
+  xbt_replay_action_register("allReduce",  simgrid::smpi::action_allReduce);
+  xbt_replay_action_register("allToAll",   simgrid::smpi::action_allToAll);
+  xbt_replay_action_register("allToAllV",  simgrid::smpi::action_allToAllv);
   xbt_replay_action_register("gather",     simgrid::smpi::action_gather);
-  xbt_replay_action_register("gatherv",    simgrid::smpi::action_gatherv);
-  xbt_replay_action_register("allgather",  simgrid::smpi::action_allgather);
-  xbt_replay_action_register("allgatherv", simgrid::smpi::action_allgatherv);
-  xbt_replay_action_register("reducescatter",  simgrid::smpi::action_reducescatter);
+  xbt_replay_action_register("gatherV",    simgrid::smpi::action_gatherv);
+  xbt_replay_action_register("allGather",  simgrid::smpi::action_allgather);
+  xbt_replay_action_register("allGatherV", simgrid::smpi::action_allgatherv);
+  xbt_replay_action_register("reduceScatter",  simgrid::smpi::action_reducescatter);
   xbt_replay_action_register("compute",    simgrid::smpi::action_compute);
 
   //if we have a delayed start, sleep here.
@@ -1143,7 +1143,6 @@ void smpi_replay_run(int *argc, char***argv){
 
   TRACE_smpi_collective_out(rank, -1, operation);
   TRACE_smpi_finalize(smpi_process()->index());
-  smpi_process()->destroy();
   xbt_free(operation);
 }
 

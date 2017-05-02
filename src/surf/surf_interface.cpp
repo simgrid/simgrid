@@ -1,21 +1,16 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_interface.hpp"
-#include "cpu_interface.hpp"
 #include "mc/mc.h"
-#include "network_interface.hpp"
-#include "simgrid/s4u/engine.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.h"
 #include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
-#include "src/internal_config.h"
 #include "src/kernel/routing/NetPoint.hpp"
-#include "src/simix/smx_host_private.h"
 #include "src/surf/HostImpl.hpp"
-#include "surf_private.h"
+
 #include <fstream>
 #include <vector>
 
@@ -32,6 +27,7 @@ simgrid::trace_mgr::future_evt_set *future_evt_set = nullptr;
 std::vector<std::string> surf_path;
 std::vector<simgrid::s4u::Host*> host_that_restart;
 xbt_dict_t watched_hosts_lib;
+extern std::map<std::string, storage_type_t> storage_types;
 
 namespace simgrid {
 namespace surf {
@@ -352,8 +348,6 @@ void surf_init(int *argc, char **argv)
   USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(nullptr);
 
   storage_lib = xbt_lib_new();
-  storage_type_lib = xbt_lib_new();
-  file_lib = xbt_lib_new();
   watched_hosts_lib = xbt_dict_new_homogeneous(nullptr);
 
   XBT_DEBUG("Add SURF levels");
@@ -365,8 +359,8 @@ void surf_init(int *argc, char **argv)
   if (!future_evt_set)
     future_evt_set = new simgrid::trace_mgr::future_evt_set();
 
-  TRACE_add_start_function(TRACE_surf_alloc);
-  TRACE_add_end_function(TRACE_surf_release);
+  TRACE_surf_alloc();
+  simgrid::surf::surfExitCallbacks.connect(TRACE_surf_release);
 
   sg_config_init(argc, argv);
 
@@ -381,9 +375,17 @@ void surf_exit()
   sg_host_exit();
   xbt_lib_free(&storage_lib);
   sg_link_exit();
-  xbt_lib_free(&storage_type_lib);
-  xbt_lib_free(&file_lib);
   xbt_dict_free(&watched_hosts_lib);
+  for (auto e : storage_types) {
+    storage_type_t stype = e.second;
+    free(stype->model);
+    free(stype->type_id);
+    free(stype->content);
+    free(stype->content_type);
+    xbt_dict_free(&(stype->properties));
+    delete stype->model_properties;
+    free(stype);
+  }
 
   for (auto model : *all_existing_models)
     delete model;

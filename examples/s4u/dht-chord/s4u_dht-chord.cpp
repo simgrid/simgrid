@@ -34,7 +34,7 @@ static void chord_init()
     host->extension_set(new HostChord(host));
 }
 
-static void chord_exit(void)
+static void chord_exit()
 {
   delete[] powers2;
 }

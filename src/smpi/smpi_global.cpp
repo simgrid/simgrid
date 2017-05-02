@@ -3,16 +3,26 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <dlfcn.h>
+#include <fcntl.h>
+#include <spawn.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
 #include "mc/mc.h"
 #include "private.h"
 #include "private.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
+#include "smpi/smpi_shared_malloc.hpp"
 #include "simgrid/sg_config.h"
 #include "src/kernel/activity/SynchroComm.hpp"
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_replay.h"
 #include "src/msg/msg_private.h"
 #include "src/simix/smx_private.h"
+#include "src/surf/surf_interface.hpp"
+#include "src/smpi/SmpiHost.hpp"
 #include "surf/surf.h"
 #include "xbt/replay.hpp"
 #include <xbt/config.hpp>
@@ -24,11 +34,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <utility>
 #include <vector>
+#include <memory>
+
+#if HAVE_SENDFILE
+#include <sys/sendfile.h>
+#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (kernel)");
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp> /* trim_right / trim_left */
+
+#ifndef RTLD_DEEPBIND
+/* RTLD_DEEPBIND is a bad idea of GNU ld that obviously does not exist on other platforms
+ * See https://www.akkadia.org/drepper/dsohowto.pdf
+ * and https://lists.freebsd.org/pipermail/freebsd-current/2016-March/060284.html
+*/
+#define RTLD_DEEPBIND 0
+#endif
+
+/* Mac OSX does not have any header file providing that definition so we have to duplicate it here. Bummers. */
+extern char** environ; /* we use it in posix_spawnp below */
 
 #if HAVE_PAPI
 #include "papi.h"
@@ -68,7 +95,10 @@ int smpi_process_count()
 
 simgrid::smpi::Process* smpi_process()
 {
-  simgrid::MsgActorExt* msgExt = static_cast<simgrid::MsgActorExt*>(SIMIX_process_self()->data);
+  smx_actor_t me = SIMIX_process_self();
+  if (me == nullptr) // This happens sometimes (eg, when linking against NS3 because it pulls openMPI...)
+    return nullptr;
+  simgrid::MsgActorExt* msgExt = static_cast<simgrid::MsgActorExt*>(me->data);
   return static_cast<simgrid::smpi::Process*>(msgExt->data);
 }
 
@@ -103,49 +133,86 @@ void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, s
   smpi_comm_copy_data_callback = callback;
 }
 
+static void print(std::vector<std::pair<size_t, size_t>> vec) {
+  std::fprintf(stderr, "{");
+  for (auto elt : vec) {
+    std::fprintf(stderr, "(0x%zx, 0x%zx),", elt.first, elt.second);
+    }
+    std::fprintf(stderr, "}\n");
+}
+static void memcpy_private(void* dest, const void* src, std::vector<std::pair<size_t, size_t>>& private_blocks)
+{
+  for(auto block : private_blocks) {
+    memcpy((uint8_t*)dest+block.first, (uint8_t*)src+block.first, block.second-block.first);
+  }
+}
+
+static void check_blocks(std::vector<std::pair<size_t, size_t>> &private_blocks, size_t buff_size) {
+  for(auto block : private_blocks) {
+    xbt_assert(block.first <= block.second && block.second <= buff_size, "Oops, bug in shared malloc.");
+  }
+}
+
 void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t buff_size)
 {
-
   simgrid::kernel::activity::Comm *comm = dynamic_cast<simgrid::kernel::activity::Comm*>(synchro);
-
+  int src_shared                        = 0;
+  int dst_shared                        = 0;
+  size_t src_offset                     = 0;
+  size_t dst_offset                     = 0;
+  std::vector<std::pair<size_t, size_t>> src_private_blocks;
+  std::vector<std::pair<size_t, size_t>> dst_private_blocks;
   XBT_DEBUG("Copy the data over");
-  if(smpi_is_shared(buff)){
+  if((src_shared=smpi_is_shared(buff, src_private_blocks, &src_offset))) {
     XBT_DEBUG("Sender %p is shared. Let's ignore it.", buff);
-  }else if(smpi_is_shared((char*)comm->dst_buff)){
-    XBT_DEBUG("Receiver %p is shared. Let's ignore it.", (char*)comm->dst_buff);
-  }else{
-    void* tmpbuff=buff;
-    if((smpi_privatize_global_variables) && (static_cast<char*>(buff) >= smpi_start_data_exe)
-        && (static_cast<char*>(buff) < smpi_start_data_exe + smpi_size_data_exe )
-      ){
-         XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
-
-         smpi_switch_data_segment(
-             (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->src_proc->data)->data))->index()));
-         tmpbuff = static_cast<void*>(xbt_malloc(buff_size));
-         memcpy(tmpbuff, buff, buff_size);
-    }
-
-    if((smpi_privatize_global_variables) && ((char*)comm->dst_buff >= smpi_start_data_exe)
-        && ((char*)comm->dst_buff < smpi_start_data_exe + smpi_size_data_exe )){
-         XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
-         smpi_switch_data_segment(
-             (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->dst_proc->data)->data))->index()));
-    }
-
-    XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff,comm->dst_buff);
-    memcpy(comm->dst_buff, tmpbuff, buff_size);
-
-    if (comm->detached) {
-      // if this is a detached send, the source buffer was duplicated by SMPI
-      // sender to make the original buffer available to the application ASAP
-      xbt_free(buff);
-      //It seems that the request is used after the call there this should be free somewhere else but where???
-      //xbt_free(comm->comm.src_data);// inside SMPI the request is kept inside the user data and should be free
-      comm->src_buff = nullptr;
-    }
-    if(tmpbuff!=buff)xbt_free(tmpbuff);
+    src_private_blocks = shift_and_frame_private_blocks(src_private_blocks, src_offset, buff_size);
   }
+  else {
+    src_private_blocks.clear();
+    src_private_blocks.push_back(std::make_pair(0, buff_size));
+  }
+  if((dst_shared=smpi_is_shared((char*)comm->dst_buff, dst_private_blocks, &dst_offset))) {
+    XBT_DEBUG("Receiver %p is shared. Let's ignore it.", (char*)comm->dst_buff);
+    dst_private_blocks = shift_and_frame_private_blocks(dst_private_blocks, dst_offset, buff_size);
+  }
+  else {
+    dst_private_blocks.clear();
+    dst_private_blocks.push_back(std::make_pair(0, buff_size));
+  }
+  check_blocks(src_private_blocks, buff_size);
+  check_blocks(dst_private_blocks, buff_size);
+  auto private_blocks = merge_private_blocks(src_private_blocks, dst_private_blocks);
+  check_blocks(private_blocks, buff_size);
+  void* tmpbuff=buff;
+  if((smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) && (static_cast<char*>(buff) >= smpi_start_data_exe)
+      && (static_cast<char*>(buff) < smpi_start_data_exe + smpi_size_data_exe )
+    ){
+       XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
+
+       smpi_switch_data_segment(
+           (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->src_proc->data)->data))->index()));
+       tmpbuff = static_cast<void*>(xbt_malloc(buff_size));
+       memcpy_private(tmpbuff, buff, private_blocks);
+  }
+
+  if((smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) && ((char*)comm->dst_buff >= smpi_start_data_exe)
+      && ((char*)comm->dst_buff < smpi_start_data_exe + smpi_size_data_exe )){
+       XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
+       smpi_switch_data_segment(
+           (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->dst_proc->data)->data))->index()));
+  }
+  XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff,comm->dst_buff);
+  memcpy_private(comm->dst_buff, tmpbuff, private_blocks);
+
+  if (comm->detached) {
+    // if this is a detached send, the source buffer was duplicated by SMPI
+    // sender to make the original buffer available to the application ASAP
+    xbt_free(buff);
+    //It seems that the request is used after the call there this should be free somewhere else but where???
+    //xbt_free(comm->comm.src_data);// inside SMPI the request is kept inside the user data and should be free
+    comm->src_buff = nullptr;
+  }
+  if(tmpbuff!=buff)xbt_free(tmpbuff);
 
 }
 
@@ -177,9 +244,7 @@ int smpi_enabled() {
 
 void smpi_global_init()
 {
-  int i;
   MPI_Group group;
-  int smpirun=0;
 
   if (!MC_is_active()) {
     global_timer = xbt_os_timer_new();
@@ -276,27 +341,28 @@ void smpi_global_init()
     }
   }
 #endif
+
+  int smpirun = 0;
+  msg_bar_t finalization_barrier = nullptr;
   if (process_count == 0){
     process_count = SIMIX_process_count();
     smpirun=1;
+    finalization_barrier = MSG_barrier_init(process_count);
   }
   smpi_universe_size = process_count;
   process_data       = new simgrid::smpi::Process*[process_count];
-  for (i = 0; i < process_count; i++) {
-    process_data[i]                       = new simgrid::smpi::Process(i);
+  for (int i = 0; i < process_count; i++) {
+    process_data[i] = new simgrid::smpi::Process(i, finalization_barrier);
   }
   //if the process was launched through smpirun script we generate a global mpi_comm_world
   //if not, we let MPI_COMM_NULL, and the comm world will be private to each mpi instance
-  if(smpirun){
+  if (smpirun) {
     group = new  simgrid::smpi::Group(process_count);
     MPI_COMM_WORLD = new  simgrid::smpi::Comm(group, nullptr);
     MPI_Attr_put(MPI_COMM_WORLD, MPI_UNIVERSE_SIZE, reinterpret_cast<void *>(process_count));
-    msg_bar_t bar = MSG_barrier_init(process_count);
 
-    for (i = 0; i < process_count; i++) {
+    for (int i = 0; i < process_count; i++)
       group->set_mapping(i, i);
-      process_data[i]->set_finalization_barrier(bar);
-    }
   }
 }
 
@@ -341,42 +407,12 @@ void smpi_global_destroy()
   }
 
   xbt_free(index_to_process_data);
-  if(smpi_privatize_global_variables)
+  if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP)
     smpi_destroy_global_memory_segments();
   smpi_free_static();
 }
 
 extern "C" {
-
-#ifndef WIN32
-
-void __attribute__ ((weak)) user_main_()
-{
-  xbt_die("Should not be in this smpi_simulated_main");
-}
-
-int __attribute__ ((weak)) smpi_simulated_main_(int argc, char **argv)
-{
-  simgrid::smpi::Process::init(&argc, &argv);
-  user_main_();
-  return 0;
-}
-
-inline static int smpi_main_wrapper(int argc, char **argv){
-  int ret = smpi_simulated_main_(argc,argv);
-  if(ret !=0){
-    XBT_WARN("SMPI process did not return 0. Return value : %d", ret);
-    smpi_process()->set_return_value(ret);
-  }
-  return 0;
-}
-
-int __attribute__ ((weak)) main(int argc, char **argv)
-{
-  return smpi_main(smpi_main_wrapper, argc, argv);
-}
-
-#endif
 
 static void smpi_init_logs(){
 
@@ -406,12 +442,32 @@ static void smpi_init_logs(){
 }
 
 static void smpi_init_options(){
-
+    //return if already called
+    if (smpi_cpu_threshold > -1)
+      return;
     simgrid::smpi::Colls::set_collectives();
     simgrid::smpi::Colls::smpi_coll_cleanup_callback=nullptr;
     smpi_cpu_threshold = xbt_cfg_get_double("smpi/cpu-threshold");
     smpi_host_speed = xbt_cfg_get_double("smpi/host-speed");
-    smpi_privatize_global_variables = xbt_cfg_get_boolean("smpi/privatize-global-variables");
+    const char* smpi_privatize_option               = xbt_cfg_get_string("smpi/privatization");
+    if (std::strcmp(smpi_privatize_option, "no") == 0)
+      smpi_privatize_global_variables = SMPI_PRIVATIZE_NONE;
+    else if (std::strcmp(smpi_privatize_option, "yes") == 0)
+      smpi_privatize_global_variables = SMPI_PRIVATIZE_DEFAULT;
+    else if (std::strcmp(smpi_privatize_option, "mmap") == 0)
+      smpi_privatize_global_variables = SMPI_PRIVATIZE_MMAP;
+    else if (std::strcmp(smpi_privatize_option, "dlopen") == 0)
+      smpi_privatize_global_variables = SMPI_PRIVATIZE_DLOPEN;
+
+    // Some compatibility stuff:
+    else if (std::strcmp(smpi_privatize_option, "1") == 0)
+      smpi_privatize_global_variables = SMPI_PRIVATIZE_DEFAULT;
+    else if (std::strcmp(smpi_privatize_option, "0") == 0)
+      smpi_privatize_global_variables = SMPI_PRIVATIZE_NONE;
+
+    else
+      xbt_die("Invalid value for smpi/privatization: '%s'", smpi_privatize_option);
+
     if (smpi_cpu_threshold < 0)
       smpi_cpu_threshold = DBL_MAX;
 
@@ -428,7 +484,47 @@ static void smpi_init_options(){
     }
 }
 
-int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
+typedef std::function<int(int argc, char *argv[])> smpi_entry_point_type;
+typedef int (* smpi_c_entry_point_type)(int argc, char **argv);
+typedef void (*smpi_fortran_entry_point_type)();
+
+static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<std::string> args)
+{
+  const int argc = args.size();
+  std::unique_ptr<char*[]> argv(new char*[argc + 1]);
+  for (int i = 0; i != argc; ++i)
+    argv[i] = args[i].empty() ? const_cast<char*>(""): &args[i].front();
+  argv[argc] = nullptr;
+
+  int res = entry_point(argc, argv.get());
+  if (res != 0){
+    XBT_WARN("SMPI process did not return 0. Return value : %d", res);
+    smpi_process()->set_return_value(res);
+  }
+  return 0;
+}
+
+// TODO, remove the number of functions involved here
+static smpi_entry_point_type smpi_resolve_function(void* handle)
+{
+  smpi_fortran_entry_point_type entry_point_fortran = (smpi_fortran_entry_point_type)dlsym(handle, "user_main_");
+  if (entry_point_fortran != nullptr) {
+    return [entry_point_fortran](int argc, char** argv) {
+      smpi_process_init(&argc, &argv);
+      entry_point_fortran();
+      return 0;
+    };
+  }
+
+  smpi_c_entry_point_type entry_point = (smpi_c_entry_point_type)dlsym(handle, "main");
+  if (entry_point != nullptr) {
+    return entry_point;
+  }
+
+  return smpi_entry_point_type();
+}
+
+int smpi_main(const char* executable, int argc, char *argv[])
 {
   srand(SMPI_RAND_SEED);
 
@@ -437,31 +533,114 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
      * configuration tools */
     return 0;
   }
-  smpi_init_logs();
 
   TRACE_global_init(&argc, argv);
-  TRACE_add_start_function(TRACE_smpi_alloc);
-  TRACE_add_end_function(TRACE_smpi_release);
 
   SIMIX_global_init(&argc, argv);
   MSG_init(&argc,argv);
 
   SMPI_switch_data_segment = &smpi_switch_data_segment;
 
-  smpi_init_options();
+  simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
+    host.extension_set(new simgrid::smpi::SmpiHost(&host));
+  });
 
   // parse the platform file: get the host list
   SIMIX_create_environment(argv[1]);
-  SIMIX_comm_set_copy_data_callback(smpi_comm_copy_data_callback);
-  SIMIX_function_register_default(realmain);
+  SIMIX_comm_set_copy_data_callback(smpi_comm_copy_buffer_callback);
+
+  static std::size_t rank = 0;
+
+  smpi_init_options();
+
+  if (smpi_privatize_global_variables == SMPI_PRIVATIZE_DLOPEN) {
+
+    std::string executable_copy = executable;
+
+    // Prepare the copy of the binary (get its size)
+    struct stat fdin_stat;
+    stat(executable_copy.c_str(), &fdin_stat);
+    off_t fdin_size = fdin_stat.st_size;
+
+    simix_global->default_function = [executable_copy, fdin_size](std::vector<std::string> args) {
+      return std::function<void()>([executable_copy, fdin_size, args] {
+
+        // Copy the dynamic library:
+        std::string target_executable = executable_copy
+          + "_" + std::to_string(getpid())
+          + "_" + std::to_string(rank++) + ".so";
+
+        int fdin = open(executable_copy.c_str(), O_RDONLY);
+        xbt_assert(fdin >= 0, "Cannot read from %s", executable_copy.c_str());
+        int fdout = open(target_executable.c_str(), O_CREAT | O_RDWR, S_IRWXU);
+        xbt_assert(fdout >= 0, "Cannot write into %s", target_executable.c_str());
+
+#if HAVE_SENDFILE
+        ssize_t sent_size = sendfile(fdout, fdin, NULL, fdin_size);
+        xbt_assert(sent_size == fdin_size,
+                   "Error while copying %s: only %zd bytes copied instead of %ld (errno: %d -- %s)",
+                   target_executable.c_str(), sent_size, fdin_size, errno, strerror(errno));
+#else
+        XBT_VERB("Copy %d bytes into %s", static_cast<int>(fdin_size), target_executable.c_str());
+        const int bufsize = 1024 * 1024 * 4;
+        char buf[bufsize];
+        while (int got = read(fdin, buf, bufsize)) {
+          if (got == -1) {
+            xbt_assert(errno == EINTR, "Cannot read from %s", executable_copy.c_str());
+          } else {
+            char* p  = buf;
+            int todo = got;
+            while (int done = write(fdout, p, todo)) {
+              if (done == -1) {
+                xbt_assert(errno == EINTR, "Cannot write into %s", target_executable.c_str());
+              } else {
+                p += done;
+                todo -= done;
+              }
+            }
+          }
+        }
+#endif
+        close(fdin);
+        close(fdout);
+
+        // Load the copy and resolve the entry point:
+        void* handle = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL | RTLD_DEEPBIND);
+        unlink(target_executable.c_str());
+        if (handle == nullptr)
+          xbt_die("dlopen failed: %s (errno: %d -- %s)", dlerror(), errno, strerror(errno));
+        smpi_entry_point_type entry_point = smpi_resolve_function(handle);
+        if (!entry_point)
+          xbt_die("Could not resolve entry point");
+
+        smpi_run_entry_point(entry_point, args);
+      });
+    };
+
+  }
+  else {
+
+    // Load the dynamic library and resolve the entry point:
+    void* handle = dlopen(executable, RTLD_LAZY | RTLD_LOCAL | RTLD_DEEPBIND);
+    if (handle == nullptr)
+      xbt_die("dlopen failed for %s: %s (errno: %d -- %s)", executable, dlerror(), errno, strerror(errno));
+    smpi_entry_point_type entry_point = smpi_resolve_function(handle);
+    if (!entry_point)
+      xbt_die("main not found in %s", executable);
+    // TODO, register the executable for SMPI privatization
+
+    // Execute the same entry point for each simulated process:
+    simix_global->default_function = [entry_point](std::vector<std::string> args) {
+      return std::function<void()>([entry_point, args] {
+        smpi_run_entry_point(entry_point, args);
+      });
+    };
+
+  }
+
   SIMIX_launch_application(argv[2]);
 
-  smpi_global_init();
-
-  smpi_check_options();
-
-  if(smpi_privatize_global_variables)
-    smpi_initialize_global_memory_segments();
+  SMPI_init();
 
   /* Clean IO before the run */
   fflush(stdout);
@@ -501,16 +680,15 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
   return ret;
 }
 
-// This function can be called from extern file, to initialize logs, options, and processes of smpi
-// without the need of smpirun
+// Called either directly from the user code, or from the code called by smpirun
 void SMPI_init(){
   smpi_init_logs();
   smpi_init_options();
   smpi_global_init();
   smpi_check_options();
-  if (TRACE_is_enabled() && TRACE_is_configured())
-    TRACE_smpi_alloc();
-  if(smpi_privatize_global_variables)
+  TRACE_smpi_alloc();
+  simgrid::surf::surfExitCallbacks.connect(TRACE_smpi_release);
+  if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP)
     smpi_initialize_global_memory_segments();
 }
 

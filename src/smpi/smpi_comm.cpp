@@ -1,17 +1,9 @@
-/* Copyright (c) 2010-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdlib.h>
-#include <limits.h>
-
-#include <xbt/dict.h>
-#include <xbt/ex.h>
-#include <xbt/ex.hpp>
-
-#include <simgrid/s4u/host.hpp>
+#include "simgrid/s4u/Host.hpp"
 
 #include "private.h"
 #include "src/simix/smx_private.h"
@@ -73,7 +65,7 @@ void Comm::destroy(Comm* comm)
 }
 
 int Comm::dup(MPI_Comm* newcomm){
-  if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
+  if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){ //we need to switch as the called function may silently touch global variables
      smpi_switch_data_segment(smpi_process()->index());
    }
   MPI_Group cp = new  Group(this->group());
@@ -328,7 +320,7 @@ void Comm::init_smp(){
    smpi_process()->set_replaying(false);
   }
 
-  if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
+  if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){ //we need to switch as the called function may silently touch global variables
      smpi_switch_data_segment(smpi_process()->index());
    }
   //identify neighbours in comm
@@ -370,7 +362,7 @@ void Comm::init_smp(){
 
   Coll_allgather_mpich::allgather(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, this);
 
-  if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
+  if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){ //we need to switch as the called function may silently touch global variables
      smpi_switch_data_segment(smpi_process()->index());
    }
 
@@ -444,7 +436,7 @@ void Comm::init_smp(){
   }
   Coll_bcast_mpich::bcast(&(is_uniform_),1, MPI_INT, 0, comm_intra );
 
-  if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
+  if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){ //we need to switch as the called function may silently touch global variables
      smpi_switch_data_segment(smpi_process()->index());
    }
   // Are the ranks blocked ? = allocated contiguously on the SMP nodes

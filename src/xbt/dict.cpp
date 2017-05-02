@@ -163,6 +163,7 @@ void xbt_dict_set_ext(xbt_dict_t dict, const char *key, int key_len, void *data,
   xbt_dictelm_t current;
   xbt_dictelm_t previous = nullptr;
 
+  xbt_assert(!free_ctn, "Cannot set an individual free function in homogeneous dicts.");
   XBT_CDEBUG(xbt_dict, "ADD %.*s hash = %u, size = %d, & = %u", key_len, key, hash_code,
              dict->table_size, hash_code & dict->table_size);
   current = dict->table[hash_code & dict->table_size];
@@ -174,7 +175,7 @@ void xbt_dict_set_ext(xbt_dict_t dict, const char *key, int key_len, void *data,
 
   if (current == nullptr) {
     /* this key doesn't exist yet */
-    current = xbt_dictelm_new(dict, key, key_len, hash_code, data, free_ctn);
+    current = xbt_dictelm_new(key, key_len, hash_code, data);
     dict->count++;
     if (previous == nullptr) {
       dict->table[hash_code & dict->table_size] = current;

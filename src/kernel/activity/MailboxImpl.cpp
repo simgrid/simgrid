@@ -50,11 +50,10 @@ void MailboxImpl::setReceiver(s4u::ActorPtr actor)
   this->permanent_receiver = actor.get()->getImpl();
 }
 /** @brief Pushes a communication activity into a mailbox
- *  @param activity What to add
+ *  @param comm What to add
  */
-void MailboxImpl::push(smx_activity_t synchro)
+void MailboxImpl::push(activity::Comm* comm)
 {
-  simgrid::kernel::activity::Comm* comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
   this->comm_queue.push_back(comm);
   comm->mbox = this;
 }

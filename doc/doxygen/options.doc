@@ -895,39 +895,55 @@ of counters, the "default" set.
 --cfg=smpi/papi-events:"default:PAPI_L3_LDM:PAPI_L2_LDM"
 \endverbatim
 
-\subsection options_smpi_global smpi/privatize-global-variables: Automatic privatization of global variables
+\subsection options_smpi_privatization smpi/privatization: Automatic privatization of global variables
 
-MPI executables are meant to be executed in separated processes, but SMPI is
+MPI executables are usually meant to be executed in separated processes, but SMPI is
 executed in only one process. Global variables from executables will be placed
-in the same memory zone and shared between processes, causing hard to find bugs.
-To avoid this, several options are possible :
-  - Manual edition of the code, for example to add __thread keyword before data
-  declaration, which allows the resulting code to work with SMPI, but only
-  if the thread factory (see \ref options_virt_factory) is used, as global
-  variables are then placed in the TLS (thread local storage) segment.
-  - Source-to-source transformation, to add a level of indirection
-  to the global variables. SMPI does this for F77 codes compiled with smpiff,
-  and used to provide coccinelle scripts for C codes, which are not functional anymore.
-  - Compilation pass, to have the compiler automatically put the data in
-  an adapted zone.
-  - Runtime automatic switching of the data segments. SMPI stores a copy of
-  each global data segment for each process, and at each context switch replaces
-  the actual data with its copy from the right process. This mechanism uses mmap,
-  and is for now limited to systems supporting this functionnality (all Linux
-  and some BSD should be compatible).
-  Another limitation is that SMPI only accounts for global variables defined in
-  the executable. If the processes use external global variables from dynamic
-  libraries, they won't be switched correctly. To avoid this, using static
-  linking is advised (but not with the simgrid library, to avoid replicating
-  its own global variables).
+in the same memory zone and shared between processes, causing intricate bugs.
+Several options are possible to avoid this, as described in the main
+<a href="https://hal.inria.fr/hal-01415484">SMPI publication</a>.
+SimGrid provides two ways of automatically privatizing the globals,
+and this option allows to choose between them.
 
-  To use this runtime automatic switching, the variable \b smpi/privatize-global-variables
-  should be set to yes
+  - <b>no</b> (default): Do not automatically privatize variables.
+  - <b>mmap</b> or <b>yes</b>: Runtime automatic switching of the data segments.\n
+    SMPI stores a copy of each global data segment for each process,
+    and at each context switch replaces the actual data with its copy
+    from the right process. No copy actually occures as this mechanism
+    uses mmap for efficiency. As such, it is for now limited to
+    systems supporting this functionnality (all Linux and most BSD).\n
+    Another limitation is that SMPI only accounts for global variables
+    defined in the executable. If the processes use external global
+    variables from dynamic libraries, they won't be switched
+    correctly. The easiest way to solve this is to statically link
+    against the library with these globals (but you should never
+    statically link against the simgrid library itself).
+  - <b>dlopen</b>: Link multiple times against the binary.\n  
+    SMPI loads several copy of the same binary in memory, resulting in
+    the natural duplication global variables. Since the dynamic linker
+    refuses to link the same file several times, the binary is copied
+    in a temporary file before being dl-loaded (it is erased right
+    after loading).\n
+    Note that this feature is somewhat experimental at time of writing
+    (v3.16) but seems to work.\n
+    This approach greatly speeds up the context switching, down to
+    about 40 CPU cycles with our raw contextes, instead of requesting
+    several syscalls with the \c mmap approach. Another advantage is
+    that it permits to run the SMPI contexts in parallel, which is
+    obviously not possible with the \c mmap approach.\n
+    Further work may be possible to alleviate the memory and disk
+    overconsumption. It seems that we could 
+    <a href="https://lwn.net/Articles/415889/">punch holes</a>
+    in the files before dl-loading them to remove the code and
+    constants, and mmap these area onto a unique copy. This require
+    to understand the ELF layout of the file, but would 
+    reduce the disk- and memory- usage to the bare minimum. In
+    addition, this would reduce the pressure on the CPU caches (in
+    particular on instruction one).
 
 \warning
   This configuration option cannot be set in your platform file. You can only
   pass it as an argument to smpirun.
-
 
 \subsection options_model_smpi_detached Simulating MPI detached send
 
@@ -1243,7 +1259,7 @@ It can be done by using XBT. Go to \ref XBT_log for more details.
 - \c smpi/or: \ref options_model_smpi_or
 - \c smpi/os: \ref options_model_smpi_os
 - \c smpi/papi-events: \ref options_smpi_papi_events
-- \c smpi/privatize-global-variables: \ref options_smpi_global
+- \c smpi/privatization: \ref options_smpi_privatization
 - \c smpi/send-is-detached-thresh: \ref options_model_smpi_detached
 - \c smpi/shared-malloc: \ref options_model_smpi_shared_malloc
 - \c smpi/simulate-computation: \ref options_smpi_bench

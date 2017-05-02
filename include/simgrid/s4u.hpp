@@ -8,15 +8,15 @@
 
 #include <simgrid/s4u/Activity.hpp>
 #include <simgrid/s4u/Actor.hpp>
+#include <simgrid/s4u/Engine.hpp>
+#include <simgrid/s4u/Host.hpp>
 #include <simgrid/s4u/Mailbox.hpp>
-#include <simgrid/s4u/engine.hpp>
-#include <simgrid/s4u/host.hpp>
 
+#include <simgrid/s4u/Comm.hpp>
 #include <simgrid/s4u/ConditionVariable.hpp>
 #include <simgrid/s4u/Mutex.hpp>
-#include <simgrid/s4u/comm.hpp>
 
-#include <simgrid/s4u/storage.hpp>
-#include <simgrid/s4u/file.hpp>
+#include <simgrid/s4u/File.hpp>
+#include <simgrid/s4u/Storage.hpp>
 
 #endif /* SIMGRID_S4U_S4U_H */

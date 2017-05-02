@@ -12,14 +12,13 @@
 
 #include <xbt/functional.hpp>
 
-#include "simgrid/s4u/engine.hpp"
-#include "simgrid/s4u/host.hpp"
+#include "simgrid/s4u/Engine.hpp"
+#include "simgrid/s4u/Host.hpp"
 
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/storage_interface.hpp"
 #include "src/surf/xml/platf.hpp"
 #include "smx_private.h"
-#include "xbt/str.h"
 #include "xbt/ex.h"             /* ex_backtrace_display */
 #include "mc/mc.h"
 #include "src/mc/mc_replay.h"
@@ -94,11 +93,11 @@ static void segvhandler(int signum, siginfo_t *siginfo, void *context)
   } else  if (siginfo->si_signo == SIGSEGV) {
     fprintf(stderr, "Segmentation fault.\n");
 #if HAVE_SMPI
-    if (smpi_enabled() && !smpi_privatize_global_variables) {
+    if (smpi_enabled() && smpi_privatize_global_variables == SMPI_PRIVATIZE_NONE) {
 #if HAVE_PRIVATIZATION
-      fprintf(stderr, "Try to enable SMPI variable privatization with --cfg=smpi/privatize-global-variables:yes.\n");
+      fprintf(stderr, "Try to enable SMPI variable privatization with --cfg=smpi/privatization:yes.\n");
 #else
-      fprintf(stderr, "Sadly, your system does not support --cfg=smpi/privatize-global-variables:yes (yet).\n");
+      fprintf(stderr, "Sadly, your system does not support --cfg=smpi/privatization:yes (yet).\n");
 #endif /* HAVE_PRIVATIZATION */
     }
 #endif /* HAVE_SMPI */
@@ -513,6 +512,12 @@ void SIMIX_run()
         SIMIX_wake_processes();
       } while (SIMIX_execute_tasks());
 
+      /* If only daemon processes remain, cancel their actions, mark them to die and reschedule them */
+      if (simix_global->process_list.size() == simix_global->daemons.size())
+        for (const auto& dmon : simix_global->daemons) {
+          XBT_DEBUG("Kill %s", dmon->cname());
+          SIMIX_process_kill(dmon, simix_global->maestro_process);
+        }
     }
 
     time = SIMIX_timer_next();
@@ -548,12 +553,6 @@ void SIMIX_run()
     XBT_DEBUG("### time %f, #processes %zu, #to_run %lu", time, simix_global->process_list.size(),
               xbt_dynar_length(simix_global->process_to_run));
 
-    /* If only daemon processes remain, cancel their actions, mark them to die and reschedule them */
-    if (simix_global->process_list.size() == simix_global->daemons.size())
-      for (const auto& dmon : simix_global->daemons) {
-        XBT_DEBUG("Kill %s", dmon->cname());
-        SIMIX_process_kill(dmon, simix_global->maestro_process);
-      }
 
     if (xbt_dynar_is_empty(simix_global->process_to_run) &&
         !simix_global->process_list.empty())

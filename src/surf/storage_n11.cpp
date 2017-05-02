@@ -1,13 +1,11 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "storage_n11.hpp"
-#include "simgrid/s4u/engine.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/routing/NetPoint.hpp"
-#include "surf_private.h"
 #include <math.h> /*ceil*/
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_storage);
@@ -15,18 +13,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_storage);
 /*************
  * CallBacks *
  *************/
-
-static inline void routing_storage_type_free(void *r)
-{
-  storage_type_t stype = (storage_type_t) r;
-  free(stype->model);
-  free(stype->type_id);
-  free(stype->content);
-  free(stype->content_type);
-  xbt_dict_free(&(stype->properties));
-  delete stype->model_properties;
-  free(stype);
-}
+extern std::map<std::string, storage_type_t> storage_types;
 
 static void check_disk_attachment()
 {
@@ -50,7 +37,6 @@ void storage_register_callbacks()
   instr_routing_define_callbacks();
 
   ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, xbt_free_f);
-  ROUTING_STORAGE_TYPE_LEVEL = xbt_lib_add_level(storage_type_lib, routing_storage_type_free);
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, [](void *self) {
     delete static_cast<simgrid::surf::Storage*>(self);
   });
@@ -76,8 +62,7 @@ Storage* StorageN11Model::createStorage(const char* id, const char* type_id, con
   xbt_assert(!surf_storage_resource_priv(surf_storage_resource_by_name(id)),
       "Storage '%s' declared several times in the platform file", id);
 
-  storage_type_t storage_type =
-      (storage_type_t)xbt_lib_get_or_null(storage_type_lib, type_id, ROUTING_STORAGE_TYPE_LEVEL);
+  storage_type_t storage_type = storage_types.at(type_id);
 
   double Bread =
       surf_parse_get_bandwidth(storage_type->model_properties->at("Bread").c_str(), "property Bread, storage", type_id);

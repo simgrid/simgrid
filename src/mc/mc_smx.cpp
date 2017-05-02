@@ -3,22 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cassert>
-#include <cstddef>
-#include <cstdlib>
+#include "simgrid/s4u/Host.hpp"
 
-#include <memory>
-#include <type_traits>
-#include <utility>
-#include <vector>
-
-#include <xbt/log.h>
-#include <xbt/str.h>
-#include <xbt/swag.h>
-
-#include <simgrid/s4u/host.hpp>
-
-#include "src/simix/smx_private.h"
 #include "src/mc/mc_smx.h"
 #include "src/mc/ModelChecker.hpp"
 

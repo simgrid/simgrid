@@ -220,6 +220,8 @@ set(SMPI_SRC
   src/smpi/smpi_f2c.hpp
   src/smpi/smpi_group.cpp
   src/smpi/smpi_group.hpp
+  src/smpi/SmpiHost.cpp
+  src/smpi/SmpiHost.hpp
   src/smpi/smpi_mpi.cpp
   src/smpi/smpi_datatype.cpp
   src/smpi/smpi_datatype.hpp
@@ -229,6 +231,7 @@ set(SMPI_SRC
   src/smpi/smpi_keyvals.hpp
   src/smpi/smpi_datatype_derived.cpp
   src/smpi/smpi_datatype_derived.hpp
+  src/smpi/smpi_main.c
   src/smpi/smpi_op.cpp
   src/smpi/smpi_op.hpp
   src/smpi/smpi_process.cpp
@@ -670,16 +673,16 @@ set(headers_to_install
   include/simgrid/s4u/forward.hpp
   include/simgrid/s4u/Activity.hpp
   include/simgrid/s4u/Actor.hpp
-  include/simgrid/s4u/comm.hpp
+  include/simgrid/s4u/Comm.hpp
   include/simgrid/s4u/ConditionVariable.hpp
-  include/simgrid/s4u/engine.hpp  
-  include/simgrid/s4u/file.hpp  
-  include/simgrid/s4u/host.hpp  
+  include/simgrid/s4u/Engine.hpp  
+  include/simgrid/s4u/File.hpp  
+  include/simgrid/s4u/Host.hpp  
   include/simgrid/s4u/Link.hpp  
   include/simgrid/s4u/Mailbox.hpp
   include/simgrid/s4u/Mutex.hpp
   include/simgrid/s4u/NetZone.hpp
-  include/simgrid/s4u/storage.hpp  
+  include/simgrid/s4u/Storage.hpp  
   include/simgrid/s4u/VirtualMachine.hpp  
   include/simgrid/s4u.hpp
   include/simgrid/plugins/energy.h
@@ -690,6 +693,7 @@ set(headers_to_install
   include/smpi/smpi_extended_traces.h
   include/smpi/smpi_extended_traces_fortran.h
   include/smpi/forward.hpp
+  include/smpi/smpi_shared_malloc.hpp
   include/surf/surf_routing.h
   include/xbt.h
   include/xbt/RngStream.h

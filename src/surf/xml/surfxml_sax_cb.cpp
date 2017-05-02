@@ -3,21 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <errno.h>
-#include <math.h>
-#include <stdarg.h> /* va_arg */
-
-#include "simgrid/link.h"
-#include "simgrid/s4u/engine.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.h"
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/surf_private.h"
-#include "xbt/dict.h"
 #include "xbt/file.h"
-#include "xbt/log.h"
-#include "xbt/misc.h"
-#include "xbt/str.h"
 
 #include "src/surf/xml/platf_private.hpp"
 #include <boost/algorithm/string.hpp>

@@ -87,13 +87,6 @@ static void TRACE_getopts()
   trace_precision           = xbt_cfg_get_int(OPT_TRACING_PRECISION);
 }
 
-static std::vector<std::function<void()>> TRACE_start_functions;
-
-void TRACE_add_start_function(void (*func) ())
-{
-  TRACE_start_functions.push_back(func);
-}
-
 int TRACE_start()
 {
   if (TRACE_is_configured())
@@ -133,18 +126,8 @@ int TRACE_start()
     user_host_variables = xbt_dict_new_homogeneous(xbt_free_f);
     user_vm_variables = xbt_dict_new_homogeneous(xbt_free_f);
     user_link_variables = xbt_dict_new_homogeneous(xbt_free_f);
-
-    for (auto func: TRACE_start_functions)
-      func();
   }
-  TRACE_start_functions.clear();
   return 0;
-}
-
-static std::vector<std::function<void()>> TRACE_end_functions;
-void TRACE_add_end_function(void (*func) (void))
-{
-  TRACE_end_functions.push_back(func);
 }
 
 int TRACE_end()
@@ -167,10 +150,6 @@ int TRACE_end()
     PJ_type_free_all();
     PJ_container_release();
     PJ_type_release();
-
-    for (auto func: TRACE_end_functions)
-      func();
-    TRACE_start_functions.clear();
 
     xbt_dict_free(&user_link_variables);
     xbt_dict_free(&user_host_variables);

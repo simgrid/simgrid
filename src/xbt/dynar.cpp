@@ -574,7 +574,8 @@ extern "C" void xbt_dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op)
  */
 extern "C" void xbt_dynar_cursor_rm(xbt_dynar_t dynar, unsigned int* const cursor)
 {
-  xbt_dynar_remove_at(dynar, (*cursor)--, nullptr);
+  xbt_dynar_remove_at(dynar, *cursor, nullptr);
+  *cursor -= 1;
 }
 
 /** @brief Sorts a dynar according to the function <tt>compar_fn</tt>

@@ -248,8 +248,10 @@ Process::~Process()
     close(this->memory_file);
 
   if (this->unw_underlying_addr_space != unw_local_addr_space) {
-    unw_destroy_addr_space(this->unw_underlying_addr_space);
-    _UPT_destroy(this->unw_underlying_context);
+    if (this->unw_underlying_addr_space)
+      unw_destroy_addr_space(this->unw_underlying_addr_space);
+    if (this->unw_underlying_context)
+      _UPT_destroy(this->unw_underlying_context);
   }
 
   unw_destroy_addr_space(this->unw_addr_space);

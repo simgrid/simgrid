@@ -33,6 +33,7 @@ public:
 class ActorImpl {
 public:
   ActorImpl() : piface_(this) {}
+  ~ActorImpl();
 
   // TODO, replace with boost intrusive container hooks
   s_xbt_swag_hookup_t process_hookup   = { nullptr, nullptr }; /* simix_global->process_list */
@@ -40,8 +41,8 @@ public:
   s_xbt_swag_hookup_t host_proc_hookup = { nullptr, nullptr }; /* smx_host->process_lis */
   s_xbt_swag_hookup_t destroy_hookup   = { nullptr, nullptr }; /* simix_global->process_to_destroy */
 
-  unsigned long pid  = 0;
-  unsigned long ppid = -1;
+  aid_t pid  = 0;
+  aid_t ppid = -1;
   simgrid::xbt::string name;
   const char* cname() { return name.c_str(); }
   s4u::Host* host       = nullptr; /* the host on which the process is running */
@@ -56,7 +57,7 @@ public:
 
   sg_host_t new_host            = nullptr; /* if not null, the host on which the process must migrate to */
   smx_activity_t waiting_synchro = nullptr; /* the current blocking synchro if any */
-  std::list<smx_activity_t> comms               ;           /* the current non-blocking communication synchros */
+  std::list<smx_activity_t> comms;          /* the current non-blocking communication synchros */
   xbt_dict_t properties         = nullptr;
   s_smx_simcall_t simcall;
   void *data          = nullptr; /* kept for compatibility, it should be replaced with moddata */
@@ -66,33 +67,42 @@ public:
   smx_timer_t kill_timer = nullptr;
   int segment_index = -1; /* Reference to an SMPI process' data segment. Default value is -1 if not in SMPI context*/
 
+  /* Refcounting */
+private:
+  std::atomic_int_fast32_t refcount_{1};
+public:
   friend void intrusive_ptr_add_ref(ActorImpl* process)
   {
-    // Atomic operation! Do not split in two instructions!
-    auto previous = (process->refcount_)++;
-    xbt_assert(previous != 0);
-    (void) previous;
+    // std::memory_order_relaxed ought to be enough here instead of std::memory_order_seq_cst
+    // But then, we have a threading issue when an actor commits a suicide:
+    //  it seems that in this case, the worker thread kills the last occurrence of the actor
+    //  while usually, the maestro does so. FIXME: we should change how actors suicide
+    process->refcount_.fetch_add(1, std::memory_order_seq_cst);
   }
   friend void intrusive_ptr_release(ActorImpl* process)
   {
-    // Atomic operation! Do not split in two instructions!
-    auto count = --(process->refcount_);
-    if (count == 0)
+    // inspired from http://www.boost.org/doc/libs/1_55_0/doc/html/atomic/usage_examples.html
+    if (process->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
+      // Make sure that any changes done on other threads before their acquire are committed before our delete
+      // http://stackoverflow.com/questions/27751025/why-is-an-acquire-barrier-needed-before-deleting-the-data-in-an-atomically-refer
+      std::atomic_thread_fence(std::memory_order_acquire);
       delete process;
+    }
   }
 
-  ~ActorImpl();
-
+  /* S4U/implem interfaces */
+private:
+  simgrid::s4u::Actor piface_; // Our interface is part of ourselves
+public:
   simgrid::s4u::ActorPtr iface() { return s4u::ActorPtr(&piface_); }
   simgrid::s4u::Actor* ciface() { return &piface_; }
 
-  void daemonize();
-  bool isDaemon();
-
+  /* Daemon actors are automatically killed when the last non-daemon leaves */
 private:
   bool daemon = false;
-  std::atomic_int_fast32_t refcount_ { 1 };
-  simgrid::s4u::Actor piface_; // Our interface is part of ourselves
+public:
+  void daemonize();
+  bool isDaemon();
 };
 
 }

@@ -499,8 +499,15 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_alias("smpi/send-is-detached-thresh","smpi/send_is_detached_thresh");
     xbt_cfg_register_alias("smpi/send-is-detached-thresh","smpi/send_is_detached_thres");
 
-    xbt_cfg_register_boolean("smpi/privatize-global-variables", "no", nullptr, "Whether we should privatize global variable at runtime.");
-    xbt_cfg_register_alias("smpi/privatize-global-variables", "smpi/privatize_global_variables");
+    const char* default_privatization = std::getenv("SMPI_PRIVATIZATION");
+    if (default_privatization == nullptr)
+      default_privatization = "no";
+
+    xbt_cfg_register_string("smpi/privatization", default_privatization, nullptr,
+                            "How we should privatize global variable at runtime (no, yes, mmap, dlopen).");
+
+    xbt_cfg_register_alias("smpi/privatization", "smpi/privatize-global-variables");
+    xbt_cfg_register_alias("smpi/privatization", "smpi/privatize_global_variables");
 
     xbt_cfg_register_boolean("smpi/grow-injected-times", "yes", nullptr, "Whether we want to make the injected time in MPI_Iprobe and MPI_Test grow, to allow faster simulation. This can make simulation less precise, though.");
 

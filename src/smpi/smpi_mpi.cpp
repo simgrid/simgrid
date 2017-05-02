@@ -1,5 +1,4 @@
-/* Copyright ,(c) 2007-2017. The SimGrid Team.
- * All rights reserved.*/
+/* Copyright ,(c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license ,(GNU LGPL) which comes with this package. */
@@ -9,10 +8,11 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)");
 
-#define NOT_YET_IMPLEMENTED { \
-XBT_WARN("Not yet implemented : %s. Please contact the Simgrid team if support is needed", __FUNCTION__); \
-return MPI_SUCCESS; \
-}
+#define NOT_YET_IMPLEMENTED                                                                                            \
+  {                                                                                                                    \
+    XBT_WARN("Not yet implemented : %s. Please contact the SimGrid team if support is needed", __FUNCTION__);          \
+    return MPI_SUCCESS;                                                                                                \
+  }
 
 #define WRAPPED_PMPI_CALL(type,name,args,args2) \
 type name args { \

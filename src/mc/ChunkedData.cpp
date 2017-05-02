@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -21,7 +20,7 @@ namespace mc {
 
 /** Take a per-page snapshot of a region
  *
- *  @param data            The start of the region (must be at the beginning of a page)
+ *  @param addr            The start of the region (must be at the beginning of a page)
  *  @param page_count      Number of pages of the region
  *  @return                Snapshot page numbers of this new snapshot
  */

@@ -624,26 +624,27 @@ static inline void saturated_variable_set_update(s_lmm_constraint_light_t *cnst_
 
 void lmm_print(lmm_system_t sys)
 {
-  void *_cnst, *_elem, *_var;
+  void* _cnst;
+  void* _elem;
+  void* _var;
   lmm_constraint_t cnst = nullptr;
-  lmm_element_t elem = nullptr;
-  lmm_variable_t var = nullptr;
-  xbt_swag_t cnst_list = nullptr;
-  xbt_swag_t var_list = nullptr;
-  xbt_swag_t elem_list = nullptr;
-  xbt_strbuff_t buf = xbt_strbuff_new();
+  lmm_element_t elem    = nullptr;
+  lmm_variable_t var    = nullptr;
+  xbt_swag_t cnst_list  = nullptr;
+  xbt_swag_t var_list   = nullptr;
+  xbt_swag_t elem_list  = nullptr;
+  std::string buf       = std::string("MAX-MIN ( ");
   double sum = 0.0;
 
   /* Printing Objective */
   var_list = &(sys->variable_set);
-  xbt_strbuff_append(buf, "MAX-MIN ( ");
   xbt_swag_foreach(_var, var_list) {
     var = (lmm_variable_t)_var;
-    xbt_strbuff_printf(buf, "'%d'(%f) ", var->id_int, var->weight);
+    buf = buf + "'" + std::to_string(var->id_int) + "'(" + std::to_string(var->weight) + ") ";
   }
-  xbt_strbuff_append(buf, ")");
-  XBT_DEBUG("%20s", buf->data);
-  xbt_strbuff_clear(buf);
+  buf += ")";
+  XBT_DEBUG("%20s", buf.c_str());
+  buf.clear();
 
   XBT_DEBUG("Constraints");
   /* Printing Constraints */
@@ -653,12 +654,12 @@ void lmm_print(lmm_system_t sys)
     sum = 0.0;
     //Show  the enabled variables
     elem_list = &(cnst->enabled_element_set);
-    xbt_strbuff_append(buf, "\t");
-    xbt_strbuff_printf(buf, "%s(", (cnst->sharing_policy)?"":"max");
+    buf += "\t";
+    buf += ((cnst->sharing_policy) ? "(" : "max(");
     xbt_swag_foreach(_elem, elem_list) {
       elem = (lmm_element_t)_elem;
-      xbt_strbuff_printf(buf, "%f.'%d'(%f) %s ", elem->value,
-              elem->variable->id_int, elem->variable->value,(cnst->sharing_policy)?"+":",");
+      buf  = buf + std::to_string(elem->value) + ".'" + std::to_string(elem->variable->id_int) + "'(" +
+            std::to_string(elem->variable->value) + ")" + ((cnst->sharing_policy) ? " + " : " , ");
       if(cnst->sharing_policy)
         sum += elem->value * elem->variable->value;
       else 
@@ -668,21 +669,21 @@ void lmm_print(lmm_system_t sys)
     elem_list = &(cnst->disabled_element_set);
     xbt_swag_foreach(_elem, elem_list) {
       elem = (lmm_element_t)_elem;
-      xbt_strbuff_printf(buf, "%f.'%d'(%f) %s ", elem->value,
-              elem->variable->id_int, elem->variable->value,(cnst->sharing_policy)?"+":",");
+      buf  = buf + std::to_string(elem->value) + ".'" + std::to_string(elem->variable->id_int) + "'(" +
+            std::to_string(elem->variable->value) + ")" + ((cnst->sharing_policy) ? " + " : " , ");
       if(cnst->sharing_policy)
         sum += elem->value * elem->variable->value;
       else 
         sum = MAX(sum,elem->value * elem->variable->value);
     }
 
-    xbt_strbuff_printf(buf, "0) <= %f ('%d')", cnst->bound, cnst->id_int);
+    buf = buf + "0) <= " + std::to_string(cnst->bound) + " ('" + std::to_string(cnst->id_int) + "')";
 
     if (!cnst->sharing_policy) {
-      xbt_strbuff_printf(buf, " [MAX-Constraint]");
+      buf += " [MAX-Constraint]";
     }
-    XBT_DEBUG("%s", buf->data);
-    xbt_strbuff_clear(buf);
+    XBT_DEBUG("%s", buf.c_str());
+    buf.clear();
     xbt_assert(!double_positive(sum - cnst->bound, cnst->bound*sg_maxmin_precision),
         "Incorrect value (%f is not smaller than %f): %g", sum, cnst->bound, sum - cnst->bound);
        //if(double_positive(sum - cnst->bound, cnst->bound*sg_maxmin_precision))
@@ -701,8 +702,6 @@ void lmm_print(lmm_system_t sys)
       XBT_DEBUG("'%d'(%f) : %f", var->id_int, var->weight, var->value);
     }
   }
-
-  xbt_strbuff_free(buf);
 }
 
 void lmm_solve(lmm_system_t sys)

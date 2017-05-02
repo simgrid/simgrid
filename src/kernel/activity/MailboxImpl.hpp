@@ -9,6 +9,7 @@
 #include <boost/circular_buffer.hpp>
 
 #include "simgrid/s4u/Mailbox.hpp"
+#include "src/kernel/activity/SynchroComm.hpp"
 #include "src/simix/ActorImpl.hpp"
 
 #define MAX_MAILBOX_SIZE 10000000
@@ -30,7 +31,7 @@ public:
   static MailboxImpl* byNameOrNull(const char* name);
   static MailboxImpl* byNameOrCreate(const char* name);
   void setReceiver(s4u::ActorPtr actor);
-  void push(smx_activity_t synchro);
+  void push(activity::Comm* comm);
   void remove(smx_activity_t activity);
   simgrid::s4u::Mailbox piface_; // Our interface
   char* name_;

@@ -142,7 +142,7 @@ bool request_depend(smx_simcall_t r1, smx_simcall_t r2)
   if (r1->issuer == r2->issuer)
     return false;
 
-  /* Wait with timeout transitions are not considered by the independence theorem, thus we consider them as dependant with all other transitions */
+  /* Wait with timeout transitions are not considered by the independence theorem, thus we consider them as dependent with all other transitions */
   if ((r1->call == SIMCALL_COMM_WAIT && simcall_comm_wait__get__timeout(r1) > 0)
       || (r2->call == SIMCALL_COMM_WAIT
           && simcall_comm_wait__get__timeout(r2) > 0))
@@ -391,7 +391,9 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
     break;
 
   default:
-    THROW_UNIMPLEMENTED;
+    type = SIMIX_simcall_name(req->call);
+    args = bprintf("??");
+    break;
   }
 
   std::string str;

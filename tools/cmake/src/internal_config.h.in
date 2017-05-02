@@ -77,6 +77,8 @@
 #cmakedefine01 HAVE_PRIVATIZATION
 /* We have PAPI to fine-grain trace execution time */
 #cmakedefine01 HAVE_PAPI
+/* We have sendfile to efficiently copy files for dl-open privatization */
+#cmakedefine01 HAVE_SENDFILE
 
 /* Other function checks */
 /* Function backtrace */
