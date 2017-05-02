@@ -121,9 +121,9 @@ class paje_event {
   public:
   double timestamp;
   e_event_type event_type;
-  virtual void print();
+  virtual void print(){};
   void *data;
-  ~paje_event();
+  virtual ~paje_event();
 };
 typedef paje_event s_paje_event_t;
 
@@ -310,6 +310,7 @@ class NewEvent : public paje_event  {
   public:
   NewEvent (double timestamp, container_t container, type_t type, val_t value);
   void print() override;
+
 };
 
 
@@ -324,7 +325,6 @@ extern XBT_PRIVATE double TRACE_last_timestamp_to_dump;
 XBT_PRIVATE void TRACE_header(int basic, int size);
 
 /* from paje.c */
-XBT_PRIVATE void TRACE_paje_init();
 XBT_PRIVATE void TRACE_paje_start();
 XBT_PRIVATE void TRACE_paje_end();
 XBT_PRIVATE void TRACE_paje_dump_buffer (int force);
