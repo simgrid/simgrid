@@ -7,6 +7,7 @@
 #include "src/instr/instr_private.h"
 #include "xbt/virtu.h" /* sg_cmdline */
 #include <sstream>
+#include <vector>
 #include <iomanip> /** std::setprecision **/
 #include "simgrid/sg_config.h"
 
@@ -16,6 +17,18 @@ extern FILE * tracing_file;
 extern s_instr_trace_writer_t active_writer;
 
 static std::stringstream stream;
+
+void buffer_debug(std::vector<PajeEvent*> *buf);
+void buffer_debug(std::vector<PajeEvent*> *buf) {
+  XBT_DEBUG(">>>>>> Dump the state of the buffer. %zu events", buf->size());
+  for (auto event :*buf){
+    event->print();
+    XBT_DEBUG("%s", stream.str().c_str());
+    stream.str("");
+    stream.clear();
+  }
+  XBT_DEBUG("<<<<<<");
+}
 
 static void print_paje_debug(std::string functionName, PajeEvent* event) {
   XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(),

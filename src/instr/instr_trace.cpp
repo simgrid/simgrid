@@ -10,6 +10,8 @@
 #include "xbt/virtu.h" /* sg_cmdline */
 #include "typeinfo"
 
+#include <vector>
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_trace, instr, "tracing event system");
 
 FILE *tracing_file = nullptr;
@@ -24,6 +26,7 @@ s_instr_trace_writer_t active_writer = {&print_NULL, &print_NULL, &print_NULL, &
                                         &print_NULL, &print_NULL, &print_NULL, &print_NULL, &print_NULL, &print_NULL};
 
 std::vector<PajeEvent*> buffer;
+void buffer_debug(std::vector<PajeEvent*> *buf);
 
 void dump_comment (const char *comment)
 {
@@ -88,6 +91,7 @@ static void insert_into_buffer (PajeEvent* tbi)
     delete tbi;
     return;
   }
+  buffer_debug(&buffer);
 
   XBT_DEBUG("%s: insert event_type=%d, timestamp=%f, buffersize=%zu)",
       __FUNCTION__, (int)tbi->event_type, tbi->timestamp, buffer.size());
