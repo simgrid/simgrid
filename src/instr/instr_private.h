@@ -114,13 +114,11 @@ class s_container {
 typedef s_container s_container_t;
 
 //--------------------------------------------------
-class PajeEvent;
-
 class PajeEvent {
   public:
   double timestamp;
   e_event_type event_type;
-  virtual void print(){};
+  virtual void print() = 0;
   void *data;
   virtual ~PajeEvent();
 };
@@ -151,7 +149,7 @@ class DefineStateTypeEvent : public PajeEvent  {
   type_t type;
   public:
   DefineStateTypeEvent(type_t type);
-  void print();// override;
+  void print() override;
 };
 
 class DefineEventTypeEvent : public PajeEvent  {

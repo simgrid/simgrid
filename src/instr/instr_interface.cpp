@@ -249,7 +249,7 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
 
   val_t value = PJ_value_get (mark_value, type);
   XBT_DEBUG("MARK %s %s", mark_type, mark_value);
-  NewEvent (MSG_get_clock(), PJ_container_get_root(), type, value);
+  new NewEvent (MSG_get_clock(), PJ_container_get_root(), type, value);
 }
 
 /** \ingroup TRACE_mark
@@ -289,13 +289,13 @@ static void instr_user_variable(double time, const char *resource, const char *v
       type_t type = PJ_type_get (variable, container->type);
       switch (what){
       case INSTR_US_SET:
-        SetVariableEvent(time, container, type, value);
+        new SetVariableEvent(time, container, type, value);
         break;
       case INSTR_US_ADD:
-        AddVariableEvent(time, container, type, value);
+        new AddVariableEvent(time, container, type, value);
         break;
       case INSTR_US_SUB:
-        SubVariableEvent(time, container, type, value);
+        new SubVariableEvent(time, container, type, value);
         break;
       default:
         THROW_IMPOSSIBLE;
@@ -964,7 +964,7 @@ void TRACE_host_set_state (const char *host, const char *state, const char *valu
   container_t container = PJ_container_get(host);
   type_t type = PJ_type_get (state, container->type);
   val_t val = PJ_value_get_or_new (value, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
-  SetStateEvent(MSG_get_clock(), container, type, val);
+  new SetStateEvent(MSG_get_clock(), container, type, val);
 }
 
 /** \ingroup TRACE_user_variables
@@ -983,7 +983,7 @@ void TRACE_host_push_state (const char *host, const char *state, const char *val
   container_t container = PJ_container_get(host);
   type_t type = PJ_type_get (state, container->type);
   val_t val = PJ_value_get_or_new (value, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
-  PushStateEvent(MSG_get_clock(), container, type, val);
+  new PushStateEvent(MSG_get_clock(), container, type, val);
 }
 
 /** \ingroup TRACE_user_variables
@@ -1000,7 +1000,7 @@ void TRACE_host_pop_state (const char *host, const char *state)
 {
   container_t container = PJ_container_get(host);
   type_t type = PJ_type_get (state, container->type);
-  PopStateEvent(MSG_get_clock(), container, type);
+  new PopStateEvent(MSG_get_clock(), container, type);
 }
 
 /** \ingroup TRACE_user_variables
@@ -1017,7 +1017,7 @@ void TRACE_host_reset_state (const char *host, const char *state)
 {
   container_t container = PJ_container_get(host);
   type_t type = PJ_type_get (state, container->type);
-  ResetStateEvent(MSG_get_clock(), container, type);
+  new ResetStateEvent(MSG_get_clock(), container, type);
 }
 
 /** \ingroup TRACE_API

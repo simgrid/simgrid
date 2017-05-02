@@ -20,10 +20,11 @@ static std::stringstream stream;
 
 void buffer_debug(std::vector<PajeEvent*> *buf);
 void buffer_debug(std::vector<PajeEvent*> *buf) {
+  return;
   XBT_DEBUG(">>>>>> Dump the state of the buffer. %zu events", buf->size());
   for (auto event :*buf){
     event->print();
-    XBT_DEBUG("%s", stream.str().c_str());
+    XBT_DEBUG("%p %s", event, stream.str().c_str());
     stream.str("");
     stream.clear();
   }
@@ -43,6 +44,7 @@ static void init_stream(PajeEvent* event) {
 static void print_row() {
   stream << std::endl;
   fprintf(tracing_file, "%s", stream.str().c_str());
+  XBT_DEBUG("Dump %s", stream.str().c_str());
   stream.str("");
   stream.clear();
 }

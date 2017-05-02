@@ -63,7 +63,7 @@ void TRACE_paje_dump_buffer (int force)
   if (!TRACE_is_enabled()) return;
   XBT_DEBUG("%s: dump until %f. starts", __FUNCTION__, TRACE_last_timestamp_to_dump);
   if (force){
-    for (auto event :buffer){
+    for (auto event : buffer){
       event->print();
       delete event;
     }
@@ -111,12 +111,16 @@ static void insert_into_buffer (PajeEvent* tbi)
   else
     XBT_DEBUG("%s: inserted at pos= %zd from its end", __FUNCTION__,
         std::distance(buffer.rbegin(),i));
+
+  buffer_debug(&buffer);
 }
 
 PajeEvent:: ~PajeEvent()
 {
-  XBT_DEBUG("%s not implemented: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, timestamp);
- 
+  XBT_DEBUG("%s not implemented for %p: event_type=%d, timestamp=%f", __FUNCTION__,
+      this, (int)event_type, timestamp);
+//  xbt_backtrace_display_current();
+
  /* switch (event->event_type){
   case PAJE_StartLink:
     xbt_free (((startLink_t)(event->data))->value);
@@ -228,7 +232,6 @@ DestroyContainerEvent::DestroyContainerEvent (container_t container)
 
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
-  //print it
   print();
 }
 
@@ -244,7 +247,6 @@ SetVariableEvent::SetVariableEvent (double timestamp, container_t container, typ
 
   insert_into_buffer (this);
 }
-
 
 AddVariableEvent::AddVariableEvent (double timestamp, container_t container, type_t type, double value)
 {
@@ -318,9 +320,8 @@ PushStateEvent::PushStateEvent (double timestamp, container_t container, type_t 
 
 
 PushStateEvent::PushStateEvent (double timestamp, container_t container, type_t type, val_t value)
-{
-  new PushStateEvent(timestamp, container, type, value, nullptr);
-}
+ : PushStateEvent(timestamp, container, type, value, nullptr)
+{}
 
 PopStateEvent::PopStateEvent (double timestamp, container_t container, type_t type)
 {
@@ -347,25 +348,25 @@ ResetStateEvent::ResetStateEvent (double timestamp, container_t container, type_
   insert_into_buffer (this);
 }
 
-StartLinkEvent::StartLinkEvent (double timestamp, container_t container, type_t type, container_t sourceContainer,
-                        const char *value, const char *key)
-{
-  StartLinkEvent(timestamp, container, type, sourceContainer, value, key, -1);
-}
+StartLinkEvent::StartLinkEvent (double timestamp, container_t container,
+    type_t type, container_t sourceContainer, const char *value, const char *key)
+  : StartLinkEvent(timestamp, container, type, sourceContainer, value, key, -1)
+{}
 
 StartLinkEvent::StartLinkEvent (double timestamp, container_t container, type_t type, container_t sourceContainer,
                                 const char *value, const char *key, int size)
 {
   event_type                             = PAJE_StartLink;
-  timestamp                              = timestamp;
+  this->timestamp       = timestamp;
   this->type            = type;
   this->container       = container;
   this->sourceContainer = sourceContainer;
-  value           = xbt_strdup(value);
-  key             = xbt_strdup(key);
+  this->value           = xbt_strdup(value);
+  this->key             = xbt_strdup(key);
   this->size            = size;
 
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f, value:%s", __FUNCTION__,
+      (int)event_type, this->timestamp, this->value);
 
   insert_into_buffer (this);
 }
