@@ -31,11 +31,6 @@ void buffer_debug(std::vector<PajeEvent*> *buf) {
   XBT_DEBUG("<<<<<<");
 }
 
-static void print_paje_debug(std::string functionName, PajeEvent* event) {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(),
-            event->timestamp);
-}
-
 static void init_stream(PajeEvent* event) {
   stream << std::fixed << std::setprecision(TRACE_precision());
   stream << (int) event->event_type;
@@ -95,7 +90,7 @@ void TRACE_paje_end() {
 }
 
 void DefineContainerEvent::print() {
-  print_paje_debug(__FUNCTION__, this);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
   init_stream(this);
   stream << " " << type->id
          << " " << type->father->id
@@ -104,8 +99,8 @@ void DefineContainerEvent::print() {
 }
 
 void DefineVariableTypeEvent::print() {
-  print_paje_debug(__FUNCTION__, this);
- init_stream(this);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+  init_stream(this);
   stream << " " << type->id
          << " " << type->father->id
          << " " << type->name;
@@ -115,7 +110,7 @@ void DefineVariableTypeEvent::print() {
 }
 
 void DefineStateTypeEvent::print() {
-  print_paje_debug(__FUNCTION__, this);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
   init_stream(this);
   stream << " " << type->id
          << " " << type->father->id
@@ -124,7 +119,7 @@ void DefineStateTypeEvent::print() {
 }
 
 void DefineEventTypeEvent::print() {
-  print_paje_debug(__FUNCTION__, this);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
   init_stream(this);
   stream << " " << type->id
          << " " << type->father->id
@@ -133,7 +128,7 @@ void DefineEventTypeEvent::print() {
 }
 
 void DefineLinkTypeEvent::print() {
-  print_paje_debug(__FUNCTION__, this);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
   init_stream (this);
   stream << " " << type->id 
          << " " << type->father->id 
@@ -144,7 +139,7 @@ void DefineLinkTypeEvent::print() {
 }
 
 void DefineEntityValueEvent::print() {
-  print_paje_debug(__FUNCTION__, this);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
   init_stream(this);
   stream << " "   << value->id
          << " "   << value->father->id
@@ -155,7 +150,7 @@ void DefineEntityValueEvent::print() {
 }
 
 void CreateContainerEvent::print() {
-  print_paje_debug(__FUNCTION__, this);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
   init_stream(this);
   print_timestamp(this);
   stream << " "   << container->id
@@ -167,7 +162,7 @@ void CreateContainerEvent::print() {
 }
 
 void DestroyContainerEvent::print() {
-  print_paje_debug(__FUNCTION__, this);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
   init_stream(this);
   print_timestamp(this);
   stream << " "   << container->type->id
@@ -177,7 +172,7 @@ void DestroyContainerEvent::print() {
 }
 
 void SetVariableEvent::print() {
-  print_paje_debug(__FUNCTION__, this);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
   init_stream(this);
   print_timestamp(this);
   stream << " " << type->id
@@ -187,7 +182,7 @@ void SetVariableEvent::print() {
 }
 
 void AddVariableEvent::print() {
-  print_paje_debug(__FUNCTION__, this);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
   init_stream(this);
   print_timestamp(this);
   stream << " " << type->id
@@ -197,7 +192,7 @@ void AddVariableEvent::print() {
 }
 
 void SubVariableEvent::print() {
-  print_paje_debug(__FUNCTION__, this);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
   init_stream(this);
   print_timestamp(this);
   stream << " " << type->id
@@ -207,7 +202,7 @@ void SubVariableEvent::print() {
 }
 
 void SetStateEvent::print() {
-  print_paje_debug(__FUNCTION__, this);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
   init_stream(this);
   print_timestamp(this);
   stream << " " << type->id
@@ -223,8 +218,8 @@ void SetStateEvent::print() {
 }
 
 void PushStateEvent::print() {
-  print_paje_debug(__FUNCTION__, this);
-    init_stream(this);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+  init_stream(this);
   print_timestamp(this);
   stream << " " << type->id
          << " " << container->id;
@@ -257,8 +252,8 @@ void PushStateEvent::print() {
 }
 
 void PopStateEvent::print() {
-  print_paje_debug(__FUNCTION__, this);
-    init_stream(this);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+  init_stream(this);
   print_timestamp(this);
   stream << " " << type->id
          << " " << container->id;
@@ -266,8 +261,8 @@ void PopStateEvent::print() {
 }
 
 void ResetStateEvent::print() {
-  print_paje_debug(__FUNCTION__, this);
-    init_stream(this);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+  init_stream(this);
   print_timestamp(this);
   stream << " " << type->id
          << " " << container->id;
@@ -275,8 +270,8 @@ void ResetStateEvent::print() {
 }
 
 void StartLinkEvent::print() {
-  print_paje_debug(__FUNCTION__, this);
-    init_stream(this);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+  init_stream(this);
   print_timestamp(this);
   stream << " " <<type->id
          << " " <<container->id
@@ -291,8 +286,8 @@ void StartLinkEvent::print() {
 }
 
 void EndLinkEvent::print() {
-  print_paje_debug(__FUNCTION__, this);
-    init_stream(this);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+  init_stream(this);
   print_timestamp(this);
   stream << " " <<type->id
          << " " <<container->id
@@ -303,7 +298,7 @@ void EndLinkEvent::print() {
 }
 
 void NewEvent::print () {
-  print_paje_debug(__FUNCTION__, this);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
   init_stream (this);
   print_timestamp(this);
   stream << " " << type->id
