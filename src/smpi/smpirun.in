@@ -206,6 +206,7 @@ while true; do
             ;;
         "-keep-temps")
 	    KEEP="true"
+	    SIMOPTS="$SIMOPTS --cfg=smpi/keep-temps:yes"
             shift 1
             ;;
         "-wrapper")

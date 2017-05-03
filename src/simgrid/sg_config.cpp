@@ -472,6 +472,8 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_alias("smpi/host-speed","smpi/running_power");
     xbt_cfg_register_alias("smpi/host-speed","smpi/running-power");
 
+    xbt_cfg_register_boolean("smpi/keep-temps", "no", nullptr, "Whether we should keep the generated temporary files.");
+
     xbt_cfg_register_boolean("smpi/display-timing", "no", nullptr, "Whether we should display the timing after simulation.");
     xbt_cfg_register_alias("smpi/display-timing", "smpi/display_timing");
 

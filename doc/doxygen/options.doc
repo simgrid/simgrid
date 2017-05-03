@@ -850,6 +850,16 @@ to 1, \c smpirun will display this information when the simulation ends. \verbat
 Simulation time: 1e3 seconds.
 \endverbatim
 
+\subsection options_smpi_temps smpi/keep-temps: not cleaning up after simulation
+
+\b Default: 0 (false)
+
+Under some conditions, SMPI generates a lot of temporary files.  They
+usually get cleaned, but you may use this option to not erase these
+files. This is for example useful when debugging or profiling
+executions using the dlopen privatization schema, as missing binary
+files tend to fool the debuggers.
+
 \subsection options_model_smpi_lat_factor smpi/lat-factor: Latency factors
 
 The motivation and syntax for this option is identical to the motivation/syntax
@@ -1254,6 +1264,7 @@ It can be done by using XBT. Go to \ref XBT_log for more details.
 - \c smpi/iprobe: \ref options_model_smpi_iprobe
 - \c smpi/iprobe-cpu-usage: \ref options_model_smpi_iprobe_cpu_usage
 - \c smpi/init: \ref options_model_smpi_init
+- \c smpi/keep-temps: \ref options_smpi_temps
 - \c smpi/lat-factor: \ref options_model_smpi_lat_factor
 - \c smpi/ois: \ref options_model_smpi_ois
 - \c smpi/or: \ref options_model_smpi_or

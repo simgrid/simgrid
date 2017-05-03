@@ -7,8 +7,9 @@ SimDag
    simulation round, s/he has to allocate and free a dynar and use it as argument 
    to this function. The former SD_simulate (double how_long) now returns void.
 
-SMPI
- - New algorithm to privatize globals: dlopen, with dynamic loading tricks
+ SMPI
+  - New algorithm to privatize globals: dlopen, with dynamic loading tricks
+  - New option: smpi/keep-temps to not cleanup temp files
 
  XBT/Replay:
   - New function xbt_replay_action_get():
