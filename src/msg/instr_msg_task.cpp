@@ -53,7 +53,7 @@ void TRACE_msg_task_execute_start(msg_task_t task)
     container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
     val_t value = PJ_value_get ("task_execute", type);
-    new_pajePushState (MSG_get_clock(), process_container, type, value);
+    new PushStateEvent (MSG_get_clock(), process_container, type, value);
   }
 }
 
@@ -67,7 +67,7 @@ void TRACE_msg_task_execute_end(msg_task_t task)
 
     container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    new_pajePopState (MSG_get_clock(), process_container, type);
+    new PopStateEvent (MSG_get_clock(), process_container, type);
   }
 }
 
@@ -93,7 +93,7 @@ void TRACE_msg_task_get_start()
     container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
     val_t value = PJ_value_get ("receive", type);
-    new_pajePushState (MSG_get_clock(), process_container, type, value);
+    new PushStateEvent (MSG_get_clock(), process_container, type, value);
   }
 }
 
@@ -107,12 +107,12 @@ void TRACE_msg_task_get_end(double start_time, msg_task_t task)
 
     container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    new_pajePopState (MSG_get_clock(), process_container, type);
+    new PopStateEvent (MSG_get_clock(), process_container, type);
 
     char key[INSTR_DEFAULT_STR_SIZE];
     snprintf (key, INSTR_DEFAULT_STR_SIZE, "p%lld", task->counter);
     type = PJ_type_get ("MSG_PROCESS_TASK_LINK", PJ_type_get_root());
-    new_pajeEndLink(MSG_get_clock(), PJ_container_get_root(), type, process_container, "SR", key);
+    new EndLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, process_container, "SR", key);
   }
 }
 
@@ -128,12 +128,12 @@ int TRACE_msg_task_put_start(msg_task_t task)
     container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
     val_t value = PJ_value_get ("send", type);
-    new_pajePushState (MSG_get_clock(), process_container, type, value);
+    new PushStateEvent (MSG_get_clock(), process_container, type, value);
 
     char key[INSTR_DEFAULT_STR_SIZE];
     snprintf (key, INSTR_DEFAULT_STR_SIZE, "p%lld", task->counter);
     type = PJ_type_get ("MSG_PROCESS_TASK_LINK", PJ_type_get_root());
-    new_pajeStartLink(MSG_get_clock(), PJ_container_get_root(), type, process_container, "SR", key);
+    new StartLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, process_container, "SR", key);
   }
 
   return 1;
@@ -149,6 +149,6 @@ void TRACE_msg_task_put_end()
 
     container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    new_pajePopState (MSG_get_clock(), process_container, type);
+    new PopStateEvent (MSG_get_clock(), process_container, type);
   }
 }

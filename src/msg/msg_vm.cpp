@@ -208,7 +208,7 @@ void MSG_vm_start(msg_vm_t vm)
     container_t vm_container = PJ_container_get(vm->cname());
     type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
     val_t value              = PJ_value_get_or_new("start", "0 0 1", type); // start is blue
-    new_pajePushState(MSG_get_clock(), vm_container, type, value);
+    new PushStateEvent(MSG_get_clock(), vm_container, type, value);
   }
 }
 
@@ -320,7 +320,7 @@ static int migration_rx_fun(int argc, char *argv[])
     // start link
     container_t msg = PJ_container_get(vm->cname());
     type_t type     = PJ_type_get("MSG_VM_LINK", PJ_type_get_root());
-    new_pajeStartLink(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
+    new StartLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
 
     // destroy existing container of this vm
     container_t existing_container = PJ_container_get(vm->cname());
@@ -333,7 +333,7 @@ static int migration_rx_fun(int argc, char *argv[])
     // end link
     msg  = PJ_container_get(vm->cname());
     type = PJ_type_get("MSG_VM_LINK", PJ_type_get_root());
-    new_pajeEndLink(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
+    new EndLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
   }
 
   // Inform the SRC that the migration has been correctly performed
@@ -824,7 +824,7 @@ void MSG_vm_suspend(msg_vm_t vm)
     container_t vm_container = PJ_container_get(vm->cname());
     type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
     val_t value              = PJ_value_get_or_new("suspend", "1 0 0", type); // suspend is red
-    new_pajePushState(MSG_get_clock(), vm_container, type, value);
+    new PushStateEvent(MSG_get_clock(), vm_container, type, value);
   }
 }
 
@@ -840,7 +840,7 @@ void MSG_vm_resume(msg_vm_t vm)
   if (TRACE_msg_vm_is_enabled()) {
     container_t vm_container = PJ_container_get(vm->cname());
     type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
-    new_pajePopState(MSG_get_clock(), vm_container, type);
+    new PopStateEvent(MSG_get_clock(), vm_container, type);
   }
 }
 

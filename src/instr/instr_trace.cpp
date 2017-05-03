@@ -8,12 +8,15 @@
 #include "src/instr/instr_smpi.h"
 #include "src/smpi/private.hpp"
 #include "xbt/virtu.h" /* sg_cmdline */
+#include "typeinfo"
+
+#include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_trace, instr, "tracing event system");
 
 FILE *tracing_file = nullptr;
 
-void print_NULL(paje_event_t event){}
+void print_NULL(PajeEvent* event){}
 
 /* The active set of functions for the selected trace format
  * By default, they all do nothing, hence the print_NULL to avoid segfaults */
@@ -22,7 +25,8 @@ s_instr_trace_writer_t active_writer = {&print_NULL, &print_NULL, &print_NULL, &
                                         &print_NULL, &print_NULL, &print_NULL, &print_NULL, &print_NULL, &print_NULL,
                                         &print_NULL, &print_NULL, &print_NULL, &print_NULL, &print_NULL, &print_NULL};
 
-std::vector<paje_event_t> buffer;
+std::vector<PajeEvent*> buffer;
+void buffer_debug(std::vector<PajeEvent*> *buf);
 
 void dump_comment (const char *comment)
 {
@@ -59,19 +63,19 @@ void TRACE_paje_dump_buffer (int force)
   if (!TRACE_is_enabled()) return;
   XBT_DEBUG("%s: dump until %f. starts", __FUNCTION__, TRACE_last_timestamp_to_dump);
   if (force){
-    for (auto event :buffer){
-      event->print (event);
-      event->free (event);
+    for (auto event : buffer){
+      event->print();
+      delete event;
     }
     buffer.clear();
   }else{
-    std::vector<paje_event_t>::iterator i = buffer.begin();
+    std::vector<PajeEvent*>::iterator i = buffer.begin();
     for (auto event :buffer){
       double head_timestamp = event->timestamp;
       if (head_timestamp > TRACE_last_timestamp_to_dump)
         break;
-      event->print (event);
-      event->free (event);
+      event->print();
+      delete event;
       ++i;
     }
     buffer.erase(buffer.begin(), i);
@@ -80,34 +84,44 @@ void TRACE_paje_dump_buffer (int force)
 }
 
 /* internal do the instrumentation module */
-static void insert_into_buffer (paje_event_t tbi)
+static void insert_into_buffer (PajeEvent* tbi)
 {
   if (TRACE_buffer() == 0){
-    tbi->print (tbi);
-    tbi->free (tbi);
+    tbi->print ();
+    delete tbi;
     return;
   }
+  buffer_debug(&buffer);
 
   XBT_DEBUG("%s: insert event_type=%d, timestamp=%f, buffersize=%zu)",
       __FUNCTION__, (int)tbi->event_type, tbi->timestamp, buffer.size());
-  std::vector<paje_event_t>::reverse_iterator i;
+  std::vector<PajeEvent*>::reverse_iterator i;
   for (i = buffer.rbegin(); i != buffer.rend(); ++i) {
-    paje_event_t e1 = *i;
+    PajeEvent* e1 = *i;
+    XBT_DEBUG("compare to %p is of type %d; timestamp:%f", e1,
+        (int)e1->event_type, e1->timestamp);
     if (e1->timestamp <= tbi->timestamp)
       break;
   }
   buffer.insert(i.base(), tbi);
   if (i == buffer.rend())
     XBT_DEBUG("%s: inserted at beginning", __FUNCTION__);
+  else if (i == buffer.rbegin())
+    XBT_DEBUG("%s: inserted at end", __FUNCTION__);
   else
-    XBT_DEBUG("%s: inserted at%s %zd", __FUNCTION__, (i == buffer.rbegin()) ? " end" :"pos =",
-        std::distance(buffer.rend(),i));
+    XBT_DEBUG("%s: inserted at pos= %zd from its end", __FUNCTION__,
+        std::distance(buffer.rbegin(),i));
+
+  buffer_debug(&buffer);
 }
 
-static void free_paje_event (paje_event_t event)
+PajeEvent:: ~PajeEvent()
 {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
-  switch (event->event_type){
+  XBT_DEBUG("%s not implemented for %p: event_type=%d, timestamp=%f", __FUNCTION__,
+      this, (int)event_type, timestamp);
+//  xbt_backtrace_display_current();
+
+ /* switch (event->event_type){
   case PAJE_StartLink:
     xbt_free (((startLink_t)(event->data))->value);
     xbt_free (((startLink_t)(event->data))->key);
@@ -118,352 +132,270 @@ static void free_paje_event (paje_event_t event)
     break;
   default:
     break;
-  }
-  xbt_free (event->data);
-  xbt_free (event);
+  }*/
 }
 
-void new_pajeDefineContainerType(type_t type)
-{
-  paje_event_t event                           = xbt_new0(s_paje_event_t, 1);
-  event->event_type                            = PAJE_DefineContainerType;
-  event->timestamp                             = 0;
-  event->print                                 = active_writer.print_DefineContainerType;
-  event->free                                  = &free_paje_event;
-  event->data                                  = xbt_new0(s_defineContainerType_t, 1);
-  ((defineContainerType_t)(event->data))->type = type;
 
-  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event->event_type);
+//--------------------------------------------------------
+
+DefineContainerEvent::DefineContainerEvent(type_t type)
+{
+
+  event_type                            = PAJE_DefineContainerType;
+  timestamp                             = 0;
+  this->type = type;
+  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event_type);
+  //print it
+  print ();
+}
+
+
+DefineVariableTypeEvent::DefineVariableTypeEvent(type_t type)
+{
+  this->event_type                           = PAJE_DefineVariableType;
+  this->timestamp                            = 0;
+  this->type = type;
+
+  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event_type);
 
   //print it
-  event->print (event);
-  event->free (event);
+  print ();
 }
-
-void new_pajeDefineVariableType(type_t type)
+// TODO convertir tt les constructeurs proprement.
+DefineStateTypeEvent::DefineStateTypeEvent(type_t type)
 {
-  paje_event_t event                          = xbt_new0(s_paje_event_t, 1);
-  event->event_type                           = PAJE_DefineVariableType;
-  event->timestamp                            = 0;
-  event->print                                = active_writer.print_DefineVariableType;
-  event->free                                 = &free_paje_event;
-  event->data                                 = xbt_new0(s_defineVariableType_t, 1);
-  ((defineVariableType_t)(event->data))->type = type;
+  this->event_type                        = PAJE_DefineStateType;
+  this->timestamp                         = 0;
+  this->type = type;
 
-  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event->event_type);
+  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event_type);
 
   //print it
-  event->print (event);
-  event->free (event);
+  print();
 }
 
-void new_pajeDefineStateType(type_t type)
+DefineEventTypeEvent::DefineEventTypeEvent(type_t type)
 {
-  paje_event_t event                       = xbt_new0(s_paje_event_t, 1);
-  event->event_type                        = PAJE_DefineStateType;
-  event->timestamp                         = 0;
-  event->print                             = active_writer.print_DefineStateType;
-  event->free                              = &free_paje_event;
-  event->data                              = xbt_new0(s_defineStateType_t, 1);
-  ((defineStateType_t)(event->data))->type = type;
+  this->event_type                        = PAJE_DefineEventType;
+  this->timestamp                         = 0;
+  this->type = type;
 
-  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event->event_type);
+  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event_type);
 
   //print it
-  event->print (event);
-  event->free (event);
+  print();
 }
 
-void new_pajeDefineEventType(type_t type)
+DefineLinkTypeEvent::DefineLinkTypeEvent(type_t type, type_t source, type_t dest)
 {
-  paje_event_t event                       = xbt_new0(s_paje_event_t, 1);
-  event->event_type                        = PAJE_DefineEventType;
-  event->timestamp                         = 0;
-  event->print                             = active_writer.print_DefineEventType;
-  event->free                              = &free_paje_event;
-  event->data                              = xbt_new0(s_defineEventType_t, 1);
-  ((defineEventType_t)(event->data))->type = type;
+  this->event_type                         = PAJE_DefineLinkType;
+  this->timestamp                          = 0;
+  this->type   = type;
+  this->source = source;
+  this->dest   = dest;
 
-  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event->event_type);
+  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event_type);
 
   //print it
-  event->print (event);
-  event->free (event);
+  print();
 }
 
-void new_pajeDefineLinkType(type_t type, type_t source, type_t dest)
+DefineEntityValueEvent::DefineEntityValueEvent (val_t value)
 {
-  paje_event_t event                        = xbt_new0(s_paje_event_t, 1);
-  event->event_type                         = PAJE_DefineLinkType;
-  event->timestamp                          = 0;
-  event->print                              = active_writer.print_DefineLinkType;
-  event->free                               = &free_paje_event;
-  event->data                               = xbt_new0(s_defineLinkType_t, 1);
-  ((defineLinkType_t)(event->data))->type   = type;
-  ((defineLinkType_t)(event->data))->source = source;
-  ((defineLinkType_t)(event->data))->dest   = dest;
+  this->event_type                           = PAJE_DefineEntityValue;
+  this->timestamp                            = 0;
+  this->value = value;
 
-  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event->event_type);
+  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event_type);
 
   //print it
-  event->print (event);
-  event->free (event);
+  print();
 }
 
-void new_pajeDefineEntityValue (val_t value)
+CreateContainerEvent::CreateContainerEvent (container_t container)
 {
-  paje_event_t event                          = xbt_new0(s_paje_event_t, 1);
-  event->event_type                           = PAJE_DefineEntityValue;
-  event->timestamp                            = 0;
-  event->print                                = active_writer.print_DefineEntityValue;
-  event->free                                 = &free_paje_event;
-  event->data                                 = xbt_new0(s_defineEntityValue_t, 1);
-  ((defineEntityValue_t)(event->data))->value = value;
+  this->event_type                             = PAJE_CreateContainer;
+  this->timestamp                              = SIMIX_get_clock();
+  this->container = container;
 
-  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event->event_type);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
   //print it
-  event->print (event);
-  event->free (event);
+  print();
 }
 
-void new_pajeCreateContainer (container_t container)
+DestroyContainerEvent::DestroyContainerEvent (container_t container)
 {
-  paje_event_t event                            = xbt_new0(s_paje_event_t, 1);
-  event->event_type                             = PAJE_CreateContainer;
-  event->timestamp                              = SIMIX_get_clock();
-  event->print                                  = active_writer.print_CreateContainer;
-  event->free                                   = &free_paje_event;
-  event->data                                   = xbt_new0(s_createContainer_t, 1);
-  ((createContainer_t)(event->data))->container = container;
+  this->event_type                              = PAJE_DestroyContainer;
+  this->timestamp                               = SIMIX_get_clock();
+  this->container = container;
 
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
-  //print it
-  event->print (event);
-  event->free (event);
+  print();
 }
 
-void new_pajeDestroyContainer (container_t container)
+SetVariableEvent::SetVariableEvent (double timestamp, container_t container, type_t type, double value)
 {
-  paje_event_t event                             = xbt_new0(s_paje_event_t, 1);
-  event->event_type                              = PAJE_DestroyContainer;
-  event->timestamp                               = SIMIX_get_clock();
-  event->print                                   = active_writer.print_DestroyContainer;
-  event->free                                    = &free_paje_event;
-  event->data                                    = xbt_new0(s_destroyContainer_t, 1);
-  ((destroyContainer_t)(event->data))->container = container;
+  this->event_type                         = PAJE_SetVariable;
+  this->timestamp                          = timestamp;
+  this->type      = type;
+  this->container = container;
+  this->value     = value;
 
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
-  //print it
-  event->print (event);
-  event->free (event);
+  insert_into_buffer (this);
 }
 
-void new_pajeSetVariable (double timestamp, container_t container, type_t type, double value)
+AddVariableEvent::AddVariableEvent (double timestamp, container_t container, type_t type, double value)
 {
-  paje_event_t event                        = xbt_new0(s_paje_event_t, 1);
-  event->event_type                         = PAJE_SetVariable;
-  event->timestamp                          = timestamp;
-  event->print                              = active_writer.print_SetVariable;
-  event->free                               = &free_paje_event;
-  event->data                               = xbt_new0(s_setVariable_t, 1);
-  ((setVariable_t)(event->data))->type      = type;
-  ((setVariable_t)(event->data))->container = container;
-  ((setVariable_t)(event->data))->value     = value;
+  this->event_type                         = PAJE_AddVariable;
+  this->timestamp                          = timestamp;
+  this->type      = type;
+  this->container = container;
+  this->value     = value;
 
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
-  insert_into_buffer (event);
+  insert_into_buffer (this);
 }
 
-
-void new_pajeAddVariable (double timestamp, container_t container, type_t type, double value)
+SubVariableEvent::SubVariableEvent (double timestamp, container_t container, type_t type, double value)
 {
-  paje_event_t event                        = xbt_new0(s_paje_event_t, 1);
-  event->event_type                         = PAJE_AddVariable;
-  event->timestamp                          = timestamp;
-  event->print                              = active_writer.print_AddVariable;
-  event->free                               = &free_paje_event;
-  event->data                               = xbt_new0(s_addVariable_t, 1);
-  ((addVariable_t)(event->data))->type      = type;
-  ((addVariable_t)(event->data))->container = container;
-  ((addVariable_t)(event->data))->value     = value;
+  this->event_type                         = PAJE_SubVariable;
+  this->timestamp                          = timestamp;
+  this->type      = type;
+  this->container = container;
+  this->value     = value;
 
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
-  insert_into_buffer (event);
+  insert_into_buffer (this);
 }
 
-void new_pajeSubVariable (double timestamp, container_t container, type_t type, double value)
+SetStateEvent::SetStateEvent (double timestamp, container_t container, type_t type, val_t value)
 {
-  paje_event_t event                        = xbt_new0(s_paje_event_t, 1);
-  event->event_type                         = PAJE_SubVariable;
-  event->timestamp                          = timestamp;
-  event->print                              = active_writer.print_SubVariable;
-  event->free                               = &free_paje_event;
-  event->data                               = xbt_new0(s_subVariable_t, 1);
-  ((subVariable_t)(event->data))->type      = type;
-  ((subVariable_t)(event->data))->container = container;
-  ((subVariable_t)(event->data))->value     = value;
-
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
-
-  insert_into_buffer (event);
-}
-
-void new_pajeSetState (double timestamp, container_t container, type_t type, val_t value)
-{
-  paje_event_t event                     = xbt_new0(s_paje_event_t, 1);
-  event->event_type                      = PAJE_SetState;
-  event->timestamp                       = timestamp;
-  event->print                           = active_writer.print_SetState;
-  event->free                            = &free_paje_event;
-  event->data                            = xbt_new0(s_setState_t, 1);
-  ((setState_t)(event->data))->type      = type;
-  ((setState_t)(event->data))->container = container;
-  ((setState_t)(event->data))->value     = value;
+  this->event_type                      = PAJE_SetState;
+  this->timestamp                       = timestamp;
+  this->type      = type;
+  this->container = container;
+  this->value     = value;
 
 #if HAVE_SMPI
   if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
     smpi_trace_call_location_t* loc = smpi_trace_get_call_location();
-    ((setState_t)(event->data))->filename   = loc->filename;
-    ((setState_t)(event->data))->linenumber = loc->linenumber;
+    filename   = loc->filename;
+    linenumber = loc->linenumber;
   }
 #endif
 
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
-  insert_into_buffer (event);
+  insert_into_buffer (this);
 }
 
 
-void new_pajePushStateWithExtra (double timestamp, container_t container, type_t type, val_t value, void* extra)
+PushStateEvent::PushStateEvent (double timestamp, container_t container, type_t type, val_t value, void* extra)
 {
-  paje_event_t event                 = xbt_new0(s_paje_event_t, 1);
-  event->event_type                  = PAJE_PushState;
-  event->timestamp                   = timestamp;
-  event->print                       = active_writer.print_PushState;
-  event->free                        = &free_paje_event;
-  event->data                        = xbt_new0(s_pushState_t, 1);
-  ((pushState_t)(event->data))->type = type;
-  ((pushState_t)(event->data))->container = container;
-  ((pushState_t)(event->data))->value     = value;
-  ((pushState_t)(event->data))->extra     = extra;
+  this->event_type                  = PAJE_PushState;
+  this->timestamp                   = timestamp;
+  this->type = type;
+  this->container = container;
+  this->value     = value;
+  this->extra     = extra;
 
 #if HAVE_SMPI
   if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
     smpi_trace_call_location_t* loc = smpi_trace_get_call_location();
-    ((pushState_t)(event->data))->filename   = loc->filename;
-    ((pushState_t)(event->data))->linenumber = loc->linenumber;
+    filename   = loc->filename;
+    linenumber = loc->linenumber;
   }
 #endif
 
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
-  insert_into_buffer (event);
+  insert_into_buffer (this);
 }
 
 
-void new_pajePushState (double timestamp, container_t container, type_t type, val_t value)
+PushStateEvent::PushStateEvent (double timestamp, container_t container, type_t type, val_t value)
+ : PushStateEvent(timestamp, container, type, value, nullptr)
+{}
+
+PopStateEvent::PopStateEvent (double timestamp, container_t container, type_t type)
 {
-  new_pajePushStateWithExtra(timestamp, container, type, value, nullptr);
+  this->event_type                      = PAJE_PopState;
+  this->timestamp                       = timestamp;
+  this->type      = type;
+  this->container = container;
+
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
+
+  insert_into_buffer (this);
 }
 
-void new_pajePopState (double timestamp, container_t container, type_t type)
+
+ResetStateEvent::ResetStateEvent (double timestamp, container_t container, type_t type)
 {
-  paje_event_t event                     = xbt_new0(s_paje_event_t, 1);
-  event->event_type                      = PAJE_PopState;
-  event->timestamp                       = timestamp;
-  event->print                           = active_writer.print_PopState;
-  event->free                            = &free_paje_event;
-  event->data                            = xbt_new0(s_popState_t, 1);
-  ((popState_t)(event->data))->type      = type;
-  ((popState_t)(event->data))->container = container;
+  this->event_type                        = PAJE_ResetState;
+  this->timestamp                         = timestamp;
+  this->type      = type;
+  this->container = container;
 
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
-  insert_into_buffer (event);
+  insert_into_buffer (this);
 }
 
+StartLinkEvent::StartLinkEvent (double timestamp, container_t container,
+    type_t type, container_t sourceContainer, const char *value, const char *key)
+  : StartLinkEvent(timestamp, container, type, sourceContainer, value, key, -1)
+{}
 
-void new_pajeResetState (double timestamp, container_t container, type_t type)
-{
-  paje_event_t event                       = xbt_new0(s_paje_event_t, 1);
-  event->event_type                        = PAJE_ResetState;
-  event->timestamp                         = timestamp;
-  event->print                             = active_writer.print_ResetState;
-  event->free                              = &free_paje_event;
-  event->data                              = xbt_new0(s_resetState_t, 1);
-  ((resetState_t)(event->data))->type      = type;
-  ((resetState_t)(event->data))->container = container;
-
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
-
-  insert_into_buffer (event);
-}
-
-void new_pajeStartLink (double timestamp, container_t container, type_t type, container_t sourceContainer,
-                        const char *value, const char *key)
-{
-  new_pajeStartLinkWithSize(timestamp, container, type, sourceContainer, value, key, -1);
-}
-
-void new_pajeStartLinkWithSize (double timestamp, container_t container, type_t type, container_t sourceContainer,
+StartLinkEvent::StartLinkEvent (double timestamp, container_t container, type_t type, container_t sourceContainer,
                                 const char *value, const char *key, int size)
 {
-  paje_event_t event                            = xbt_new0(s_paje_event_t, 1);
-  event->event_type                             = PAJE_StartLink;
-  event->timestamp                              = timestamp;
-  event->print                                  = active_writer.print_StartLink;
-  event->free                                   = &free_paje_event;
-  event->data                                   = xbt_new0(s_startLink_t, 1);
-  ((startLink_t)(event->data))->type            = type;
-  ((startLink_t)(event->data))->container       = container;
-  ((startLink_t)(event->data))->sourceContainer = sourceContainer;
-  ((startLink_t)(event->data))->value           = xbt_strdup(value);
-  ((startLink_t)(event->data))->key             = xbt_strdup(key);
-  ((startLink_t)(event->data))->size            = size;
+  event_type                             = PAJE_StartLink;
+  this->timestamp       = timestamp;
+  this->type            = type;
+  this->container       = container;
+  this->sourceContainer = sourceContainer;
+  this->value           = xbt_strdup(value);
+  this->key             = xbt_strdup(key);
+  this->size            = size;
 
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f, value:%s", __FUNCTION__,
+      (int)event_type, this->timestamp, this->value);
 
-  insert_into_buffer (event);
+  insert_into_buffer (this);
 }
 
-void new_pajeEndLink (double timestamp, container_t container, type_t type, container_t destContainer,
+EndLinkEvent::EndLinkEvent (double timestamp, container_t container, type_t type, container_t destContainer,
                       const char *value, const char *key)
 {
-  paje_event_t event                        = xbt_new0(s_paje_event_t, 1);
-  event->event_type                         = PAJE_EndLink;
-  event->timestamp                          = timestamp;
-  event->print                              = active_writer.print_EndLink;
-  event->free                               = &free_paje_event;
-  event->data                               = xbt_new0(s_endLink_t, 1);
-  ((endLink_t)(event->data))->type          = type;
-  ((endLink_t)(event->data))->container     = container;
-  ((endLink_t)(event->data))->destContainer = destContainer;
-  ((endLink_t)(event->data))->value         = xbt_strdup(value);
-  ((endLink_t)(event->data))->key           = xbt_strdup(key);
+  this->event_type                         = PAJE_EndLink;
+  this->timestamp                          = timestamp;
+  this->type          = type;
+  this->container     = container;
+  this->destContainer = destContainer;
+  this->value         = xbt_strdup(value);
+  this->key           = xbt_strdup(key);
 
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
-  insert_into_buffer (event);
+  insert_into_buffer (this);
 }
 
-void new_pajeNewEvent (double timestamp, container_t container, type_t type, val_t value)
+NewEvent::NewEvent (double timestamp, container_t container, type_t type, val_t value)
 {
-  paje_event_t event                     = xbt_new0(s_paje_event_t, 1);
-  event->event_type                      = PAJE_NewEvent;
-  event->timestamp                       = timestamp;
-  event->print                           = active_writer.print_NewEvent;
-  event->free                            = &free_paje_event;
-  event->data                            = xbt_new0(s_newEvent_t, 1);
-  ((newEvent_t)(event->data))->type      = type;
-  ((newEvent_t)(event->data))->container = container;
-  ((newEvent_t)(event->data))->value     = value;
+  this->event_type                      = PAJE_NewEvent;
+  this->timestamp                       = timestamp;
+  this->type      = type;
+  this->container = container;
+  this->value     = value;
 
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
-  insert_into_buffer (event);
+  insert_into_buffer (this);
 }

@@ -57,7 +57,7 @@ void TRACE_TI_end()
   XBT_DEBUG("Filename %s is closed", filename);
 }
 
-void print_TICreateContainer(paje_event_t event)
+void print_TICreateContainer(PajeEvent* event)
 {
   //if we are in the mode with only one file
   static FILE *temp = nullptr;
@@ -70,7 +70,8 @@ void print_TICreateContainer(paje_event_t event)
 
   if (!xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || temp == nullptr) {
     char *folder_name = bprintf("%s_files", TRACE_get_filename());
-    char *filename = bprintf("%s/%f_%s.txt", folder_name, prefix, ((createContainer_t) event->data)->container->name);
+    char *filename = bprintf("%s/%f_%s.txt", folder_name, prefix,
+     static_cast<CreateContainerEvent*>(event)->container->name);
 #ifdef WIN32
     _mkdir(folder_name);
 #else
@@ -84,35 +85,35 @@ void print_TICreateContainer(paje_event_t event)
     xbt_free(filename);
   }
 
-  xbt_dict_set(tracing_files, ((createContainer_t) event->data)->container->name, (void *) temp, nullptr);
+  xbt_dict_set(tracing_files, ((CreateContainerEvent*) event)->container->name, (void *) temp, nullptr);
 }
 
-void print_TIDestroyContainer(paje_event_t event)
+void print_TIDestroyContainer(PajeEvent* event)
 {
   if (!xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file")|| xbt_dict_length(tracing_files) == 1) {
-    FILE* f = (FILE*)xbt_dict_get_or_null(tracing_files, ((destroyContainer_t) event->data)->container->name);
+    FILE* f = (FILE*)xbt_dict_get_or_null(tracing_files, ((DestroyContainerEvent *) event)->container->name);
     fclose(f);
   }
-  xbt_dict_remove(tracing_files, ((destroyContainer_t) event->data)->container->name);
+  xbt_dict_remove(tracing_files, ((DestroyContainerEvent*) event)->container->name);
 }
 
-void print_TIPushState(paje_event_t event)
+void print_TIPushState(PajeEvent* event)
 {
   int i;
 
   //char* function=nullptr;
-  if (((pushState_t) event->data)->extra == nullptr)
+  if (((PushStateEvent*) event->data)->extra == nullptr)
     return;
-  instr_extra_data extra = (instr_extra_data) (((pushState_t) event->data)->extra);
+  instr_extra_data extra = (instr_extra_data) (((PushStateEvent*) event->data)->extra);
 
   char *process_id = nullptr;
   //FIXME: dirty extract "rank-" from the name, as we want the bare process id here
-  if (strstr(((pushState_t) event->data)->container->name, "rank-") == nullptr)
-    process_id = xbt_strdup(((pushState_t) event->data)->container->name);
+  if (strstr(((PushStateEvent*) event->data)->container->name, "rank-") == nullptr)
+    process_id = xbt_strdup(((PushStateEvent*) event->data)->container->name);
   else
-    process_id = xbt_strdup(((pushState_t) event->data)->container->name + 5);
+    process_id = xbt_strdup(((PushStateEvent*) event->data)->container->name + 5);
 
-  FILE* trace_file =  (FILE* )xbt_dict_get(tracing_files, ((pushState_t) event->data)->container->name);
+  FILE* trace_file =  (FILE* )xbt_dict_get(tracing_files, ((PushStateEvent*) event)->container->name);
 
   switch (extra->type) {
   case TRACING_INIT:
@@ -215,7 +216,7 @@ void print_TIPushState(paje_event_t event)
   case TRACING_ISSEND:
   default:
     XBT_WARN ("Call from %s impossible to translate into replay command : Not implemented (yet)",
-         ((pushState_t) event->data)->value->name);
+         ((PushStateEvent*) event->data)->value->name);
     break;
   }
 

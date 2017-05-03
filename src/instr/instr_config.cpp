@@ -104,7 +104,6 @@ int TRACE_start()
     const char* format = xbt_cfg_get_string(OPT_TRACING_FORMAT);
     XBT_DEBUG("Tracing format %s\n", format);
     if(!strcmp(format, "Paje")){
-      TRACE_paje_init();
       TRACE_paje_start();
     }else if (!strcmp(format, "TI")){
       TRACE_TI_init();
