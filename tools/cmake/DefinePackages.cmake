@@ -544,7 +544,6 @@ set(TRACING_SRC
   src/instr/instr_private.h
   src/instr/instr_smpi.h
   src/instr/instr_resource_utilization.cpp
-  src/instr/instr_trace.cpp
   )
 
 set(JEDULE_SRC

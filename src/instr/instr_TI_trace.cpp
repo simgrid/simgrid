@@ -16,7 +16,7 @@
 #include <direct.h> // _mkdir
 #endif
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_TI_trace, instr_trace, "tracing event system");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_TI_trace, instr, "tracing event system");
 
 extern FILE *tracing_file;
 double prefix=0.0;
