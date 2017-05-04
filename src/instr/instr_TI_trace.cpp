@@ -135,14 +135,14 @@ void print_TIPushState(paje_event_t event)
             extra->tag, extra->send_size, extra->datatype1);
     break;
   case TRACING_ISEND:
-    fprintf(trace_file, "%s Isend %d %d %s\n", process_id, extra->dst, extra->send_size, extra->datatype1);
+    fprintf(trace_file, "%s Isend %d %d %d %s\n", process_id, extra->dst, extra->tag, extra->send_size, extra->datatype1);
     break;
   case TRACING_RECV:
     fprintf(trace_file, "%s recv %d %d %d %s\n", process_id, extra->src,
             extra->tag, extra->send_size, extra->datatype1);
     break;
   case TRACING_IRECV:
-    fprintf(trace_file, "%s Irecv %d %d %s\n", process_id, extra->src, extra->send_size, extra->datatype1);
+    fprintf(trace_file, "%s Irecv %d %d %d %s\n", process_id, extra->src, extra->tag, extra->send_size, extra->datatype1);
     break;
   case TRACING_TEST:
     fprintf(trace_file, "%s test\n", process_id);
