@@ -33,7 +33,7 @@ usage () {
 Usage: $0 [OPTIONS] -platform <xmldesc> -hostfile <hostfile> program [program-options]
 Options:
   -keep-temps                # don't remove the generated files after execution
-  -wrapper <command>         # use command to run the program (e.g. "valgrind")
+  -wrapper <command>         # use command to run the program (e.g. "valgrind" or "gdb --args")
   -map                       # display the machine on which each process rank is mapped
   -np <numprocs>             # use that amount of processes from the hostfile.
                              # By default, all processes of the hostfile are used.
