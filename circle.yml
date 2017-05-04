@@ -18,6 +18,4 @@ test:
     - mkdir _build
     - pushd _build ; cmake -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON ..
   override:
-    - pushd _build ; make -j4
-    - pushd _build ; ctest -j4 --output-on-failure
-
+    - pushd _build ; make -j4 && ctest -j4 --output-on-failure
