@@ -12,7 +12,7 @@
 
 #ifndef SIMDAG_PRIVATE_HPP
 #define SIMDAG_PRIVATE_HPP
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
 #include "simgrid/jedule/jedule_sd_binding.h"
 #endif
 

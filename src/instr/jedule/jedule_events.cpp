@@ -11,7 +11,7 @@
 #include "simgrid/s4u/NetZone.hpp"
 #include "xbt/asserts.h"
 
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
 namespace simgrid{
 namespace jedule{
 

@@ -47,7 +47,7 @@ Context* ContextFactory::self()
 
 void ContextFactory::declare_context(void* context, std::size_t size)
 {
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   /* Store the address of the stack in heap to compare it apart of heap comparison */
   if(MC_is_active())
     MC_ignore_heap(context, size);

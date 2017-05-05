@@ -17,7 +17,7 @@
 
 #include <stdbool.h>
 
-#include <simgrid_config.h> /* HAVE_MC ? */
+#include <simgrid_config.h> /* SIMGRID_HAVE_MC ? */
 
 #include <xbt/base.h>
 
@@ -25,7 +25,7 @@ SG_BEGIN_DECL()
 
 XBT_PUBLIC(int) MC_random(int min, int max);
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 
 /* Internal variable used to check if we're running under the MC
  *

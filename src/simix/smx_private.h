@@ -22,7 +22,7 @@ public:
   xbt_dynar_t process_to_run = nullptr;
   xbt_dynar_t process_that_ran = nullptr;
   std::map<aid_t, smx_actor_t> process_list;
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   /* MCer cannot read the std::map above in the remote process, so we copy the info it needs in a dynar.
    * FIXME: This is supposed to be a temporary hack.
    * A better solution would be to change the split between MCer and MCed, where the responsibility

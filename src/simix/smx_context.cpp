@@ -182,8 +182,8 @@ void *SIMIX_context_stack_new()
 #endif
 
     size_t size = smx_context_stack_size + smx_context_guard_size;
-#if HAVE_MC
-    /* Cannot use posix_memalign when HAVE_MC. Align stack by hand, and save the
+#if SIMGRID_HAVE_MC
+    /* Cannot use posix_memalign when SIMGRID_HAVE_MC. Align stack by hand, and save the
      * pointer returned by xbt_malloc0. */
     char *alloc = (char*)xbt_malloc0(size + xbt_pagesize);
     stack = alloc - ((uintptr_t)alloc & (xbt_pagesize - 1)) + xbt_pagesize;
@@ -237,7 +237,7 @@ void SIMIX_context_stack_delete(void *stack)
       XBT_WARN("Failed to remove page protection: %s", strerror(errno));
       /* try to pursue anyway */
     }
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
     /* Retrieve the saved pointer.  See SIMIX_context_stack_new above. */
     stack = *((void **)stack - 1);
 #endif

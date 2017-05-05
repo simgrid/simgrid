@@ -15,7 +15,7 @@
 
 #include <xbt/base.h>
 #include "smx_private.h"
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 #include "src/mc/mc_forward.hpp"
 #endif
 

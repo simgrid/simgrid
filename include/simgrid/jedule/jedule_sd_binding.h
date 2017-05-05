@@ -10,7 +10,7 @@
 #include "simgrid_config.h"
 #include "simgrid/simdag.h"
 
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
 SG_BEGIN_DECL()
 XBT_PUBLIC(void) jedule_log_sd_event(SD_task_t task);
 XBT_PUBLIC(void) jedule_sd_init(void);

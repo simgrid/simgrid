@@ -24,7 +24,7 @@
 #include "xbt/str.h"
 #include "xbt/module.h"         /* xbt_binary_name */
 #include "src/xbt_modinter.h"       /* backtrace initialization headers */
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 #define UNW_LOCAL_ONLY
 #include <libunwind.h>
 #endif
@@ -338,7 +338,7 @@ std::vector<std::string> resolveBacktrace(
 }
 }
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 int xbt_libunwind_backtrace(void** bt, int size){
   for (int i = 0; i < size; i++)
     bt[i] = nullptr;

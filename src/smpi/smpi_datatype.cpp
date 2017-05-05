@@ -107,7 +107,7 @@ std::unordered_map<int, smpi_key_elem> Datatype::keyvals_;
 int Datatype::keyval_id_=0;
 
 Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(1){
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   if(MC_is_active())
     MC_ignore(&(refcount_), sizeof(refcount_));
 #endif
@@ -115,7 +115,7 @@ Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr
 
 //for predefined types, so in_use = 0.
 Datatype::Datatype(char* name, int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(name), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(0){
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   if(MC_is_active())
     MC_ignore(&(refcount_), sizeof(refcount_));
 #endif
@@ -170,7 +170,7 @@ void Datatype::ref(){
 
   refcount_++;
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   if(MC_is_active())
     MC_ignore(&(refcount_), sizeof(refcount_));
 #endif
@@ -184,7 +184,7 @@ void Datatype::unref(MPI_Datatype datatype)
   if (datatype->refcount_ == 0  && !(datatype->flags_ & DT_FLAG_PREDEFINED))
     delete datatype;
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   if(MC_is_active())
     MC_ignore(&(datatype->refcount_), sizeof(datatype->refcount_));
 #endif

@@ -11,7 +11,7 @@
 #include "xbt/dynar.h"
 #include <algorithm>
 
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
 
 namespace simgrid {
 namespace jedule {

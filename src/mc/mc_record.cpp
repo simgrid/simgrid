@@ -26,7 +26,7 @@
 #include "src/mc/mc_base.h"
 #include "src/mc/Transition.hpp"
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 #include "src/mc/mc_request.h"
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_state.h"
@@ -103,7 +103,7 @@ RecordTrace parseRecordTrace(const char* data)
   return res;
 }
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 
 std::string traceToString(simgrid::mc::RecordTrace const& trace)
 {

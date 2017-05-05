@@ -24,7 +24,7 @@
 #define nanosleep(x, y) smpi_nanosleep(x, y)
 #define clock_gettime(x, y) smpi_clock_gettime(x, y)
 #endif
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 #undef assert
 #define assert(x) MC_assert(x)
 #endif

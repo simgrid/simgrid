@@ -289,7 +289,7 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
     task->start_time = task->surf_action->getStartTime();
     if (new_state == SD_DONE){
       task->finish_time = task->surf_action->getFinishTime();
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
       jedule_log_sd_event(task);
 #endif
     } else

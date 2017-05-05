@@ -7,7 +7,7 @@
 #include "simgrid/s4u/NetZone.hpp"
 #include "src/msg/msg_private.h"
 
-#if HAVE_LUA
+#if SIMGRID_HAVE_LUA
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>

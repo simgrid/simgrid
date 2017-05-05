@@ -113,7 +113,7 @@ static void xbt_postexit(void)
   xbt_dynar_free(&xbt_cmdline);
   xbt_log_postexit();
   free(xbt_binary_name);
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   mmalloc_postexit();
 #endif
 }
