@@ -1,11 +1,15 @@
 SimGrid (3.16) UNRELEASED
 
-SimDag
- - New and Backwards Compatibility break: 
-   SD_simulate_with_update (double how_long, xbt_dynar_t changed_tasks_dynar)
-   When one wants to get the list of tasks whose states have changed during a
-   simulation round, s/he has to allocate and free a dynar and use it as argument 
-   to this function. The former SD_simulate (double how_long) now returns void.
+ Portability status:
+  - FreeBSD: Disable SMPI mmap privatization, switch automatically to dlopen.
+  - Mac, BSD: dlopen+thread broken, switch automatically to raw contexts.
+
+ SimDag
+  - New and Backwards Compatibility break: 
+    SD_simulate_with_update (double how_long, xbt_dynar_t changed_tasks_dynar)
+    When one wants to get the list of tasks whose states have changed during a
+    simulation round, s/he has to allocate and free a dynar and use it as argument 
+    to this function. The former SD_simulate (double how_long) now returns void.
 
  SMPI
   - New algorithm to privatize globals: dlopen, with dynamic loading tricks

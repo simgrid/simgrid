@@ -476,6 +476,13 @@ static void smpi_init_options(){
     else
       xbt_die("Invalid value for smpi/privatization: '%s'", smpi_privatize_option);
 
+#if defined(__FreeBSD__)
+    if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
+      XBT_INFO("Mixing mmap privatization is broken on FreeBSD, switching to dlopen privatization instead.");
+      smpi_privatize_global_variables = SMPI_PRIVATIZE_DLOPEN;
+    }
+#endif
+
     if (smpi_cpu_threshold < 0)
       smpi_cpu_threshold = DBL_MAX;
 
