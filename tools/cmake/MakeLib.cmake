@@ -39,7 +39,7 @@ if(HAVE_PTHREAD AND ${HAVE_THREAD_CONTEXTS} AND NOT APPLE)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -pthread")
 endif()
 
-if(HAVE_LUA)
+if(SIMGRID_HAVE_LUA)
   ADD_CUSTOM_TARGET(link_simgrid_lua ALL
     DEPENDS 	simgrid
     ${CMAKE_BINARY_DIR}/examples/lua/simgrid.${LIB_EXE}
@@ -79,11 +79,11 @@ if(HAVE_GRAPHVIZ)
   endif()
 endif()
 
-if(HAVE_MC AND HAVE_GNU_LD AND NOT ${DL_LIBRARY} STREQUAL "")
+if(SIMGRID_HAVE_MC AND HAVE_GNU_LD AND NOT ${DL_LIBRARY} STREQUAL "")
   SET(SIMGRID_DEP "${SIMGRID_DEP} ${DL_LIBRARY}")
 endif()
 
-if(HAVE_NS3)
+if(SIMGRID_HAVE_NS3)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lns${NS3_VERSION}-core${NS3_SUFFIX} -lns${NS3_VERSION}-csma${NS3_SUFFIX} -lns${NS3_VERSION}-point-to-point${NS3_SUFFIX} -lns${NS3_VERSION}-internet${NS3_SUFFIX} -lns${NS3_VERSION}-applications${NS3_SUFFIX}")
 endif()
 

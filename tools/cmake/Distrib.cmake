@@ -121,7 +121,7 @@ add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall man ok"
   WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}")
 
-if(HAVE_LUA)
+if(SIMGRID_HAVE_LUA)
   add_custom_command(TARGET uninstall
     COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding lua ok"
     COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_INSTALL_PREFIX}/lib/lua/5.1/simgrid.${LIB_EXE}

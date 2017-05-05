@@ -1,5 +1,5 @@
 foreach (x bugged1 bugged2 bugged3 centralized_mutex electric_fence bugged1_liveness bugged2_liveness)
-  if(HAVE_MC)
+  if(SIMGRID_HAVE_MC)
     add_executable       (${x} ${x}.c)
     target_link_libraries(${x} simgrid)
   endif()
@@ -7,7 +7,7 @@ foreach (x bugged1 bugged2 bugged3 centralized_mutex electric_fence bugged1_live
   set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/deploy_${x}.xml)
 endforeach()
 
-if(HAVE_MC)
+if(SIMGRID_HAVE_MC)
   if(HAVE_C_STACK_CLEANER)
     add_executable       (bugged1_liveness_cleaner_on  bugged1_liveness.c)
     target_link_libraries(bugged1_liveness_cleaner_on  simgrid)

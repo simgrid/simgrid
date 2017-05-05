@@ -290,7 +290,7 @@ if __name__ == '__main__':
 
     fd.write('#include <xbt/base.h>\n')
     fd.write('#include "smx_private.h"\n')
-    fd.write('#if HAVE_MC\n')
+    fd.write('#if SIMGRID_HAVE_MC\n')
     fd.write('#include "src/mc/mc_forward.hpp"\n')
     fd.write('#endif\n')
     fd.write('\n')
