@@ -14,7 +14,6 @@ $ ${bindir:=.}/is-router ${srcdir}/teshsuite/simdag/platforms/test_of_is_router.
 >    - Seen: "host09". Type: host
 >    - Seen: "host10". Type: host
 > NetCards count: 21
->    - Seen: "AS". Type: netzone
 >    - Seen: "AS0". Type: netzone
 >    - Seen: "AS1". Type: netzone
 >    - Seen: "AS2". Type: netzone
@@ -35,3 +34,4 @@ $ ${bindir:=.}/is-router ${srcdir}/teshsuite/simdag/platforms/test_of_is_router.
 >    - Seen: "router3". Type: router
 >    - Seen: "router4". Type: router
 >    - Seen: "router5". Type: router
+>    - Seen: "zone". Type: netzone

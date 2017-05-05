@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
-  <AS id="AS0" routing="Dijkstra">
+<platform version="4.1">
+  <zone id="AS0" routing="Dijkstra">
     <host id="NODO01" speed="10Mf"/>
     <host id="NODO02" speed="10Mf"/>
 
@@ -32,5 +32,5 @@
       <link_ctn id="11"/>
       <link_ctn id="12"/>
     </route>
-  </AS>
+  </zone>
 </platform>

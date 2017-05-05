@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
+<platform version="4.1">
   <config id="General">
     <prop id="maxmin/precision" value="0.000010"></prop>
     <prop id="cpu/optim" value="TI"></prop>
@@ -10,7 +10,7 @@
     <prop id="smpi/bw-factor" value="65472:0.940694;15424:0.697866;9376:0.58729"></prop>
   </config>
 
-  <AS  id="AS0"  routing="Full">
+  <zone  id="AS0"  routing="Full">
     <host id="bob" speed="1Gf"/>
     <host id="alice" speed="500Mf"/>
 
@@ -23,5 +23,5 @@
       <link_ctn id="link2"/>
       <link_ctn id="link3"/>
     </route>
-  </AS>
+  </zone>
 </platform>

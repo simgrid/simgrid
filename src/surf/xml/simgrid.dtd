@@ -4,7 +4,7 @@
 More info: http://simgrid.gforge.inria.fr/simgrid/latest/doc/platform.html
 To upgrade your files, use the tool simgrid_update_xml
 
-* New in DTD version 5 (in SimGrid 3.16): backward compatible change (v4 files are valid v5 files)
+* New in DTD version 4.1 (in SimGrid 3.16): backward compatible change (v4 files are valid v4.1 files)
    - <zone> can be used as a synonym for the now deprecated <as>
    - <zoneZoute> an be used as a synonym for the now deprecated <asroute>
    - <bypassZoneRoute> an be used as a synonym for the now deprecated <bypassAsRoute>

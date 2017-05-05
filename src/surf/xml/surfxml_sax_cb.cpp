@@ -446,16 +446,30 @@ void STag_surfxml_platform() {
       "Use simgrid_update_xml to update your file automatically. "
       "This program is installed automatically with SimGrid, or "
       "available in the tools/ directory of the source archive.");
-  xbt_assert((version >= 4.0), "******* FILE %s IS TOO OLD (v:%.1f) *********\n "
-      "Changes introduced in SimGrid 3.13:\n"
-      "  - 'power' attribute of hosts (and others) got renamed to 'speed'.\n"
-      "  - In <trace_connect>, attribute kind=\"POWER\" is now kind=\"SPEED\".\n"
-      "  - DOCTYPE now point to the rignt URL: http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\n"
-      "  - speed, bandwidth and latency attributes now MUST have an explicit unit (f, Bps, s by default)"
-      "\n\n"
-      "Use simgrid_update_xml to update your file automatically. "
-      "This program is installed automatically with SimGrid, or "
-      "available in the tools/ directory of the source archive.",surf_parsed_filename, version);
+  xbt_assert((version >= 4.0),
+             "******* FILE %s IS TOO OLD (v:%.1f) *********\n "
+             "Changes introduced in SimGrid 3.13:\n"
+             "  - 'power' attribute of hosts (and others) got renamed to 'speed'.\n"
+             "  - In <trace_connect>, attribute kind=\"POWER\" is now kind=\"SPEED\".\n"
+             "  - DOCTYPE now point to the rignt URL: http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\n"
+             "  - speed, bandwidth and latency attributes now MUST have an explicit unit (f, Bps, s by default)"
+             "\n\n"
+             "Use simgrid_update_xml to update your file automatically. "
+             "This program is installed automatically with SimGrid, or "
+             "available in the tools/ directory of the source archive.",
+             surf_parsed_filename, version);
+  if (version < 4.1) {
+    XBT_INFO("You're using a v%.1f XML file (%s) while the current standard is v4.1 "
+             "That's fine, the new version is backward compatible. \n\n"
+             "Use simgrid_update_xml to update your file automatically. "
+             "This program is installed automatically with SimGrid, or "
+             "available in the tools/ directory of the source archive.",
+             version, surf_parsed_filename);
+  }
+  xbt_assert(version <= 4.1, "******* FILE %s COMES FROM THE FUTURE (v:%.1f) *********\n "
+                             "The most recent formalism that this version of SimGrid understands is v4.1.\n"
+                             "Please update your code, or use another, more adapted, file.",
+             surf_parsed_filename, version);
 
   sg_platf_begin();
 }
@@ -471,8 +485,8 @@ void STag_surfxml_host(){
 void STag_surfxml_prop()
 {
   if (ZONE_TAG) { // We need to retrieve the most recently opened zone
-    XBT_DEBUG("Set Zone property %s -> %s", A_surfxml_prop_id, A_surfxml_prop_value);
-    simgrid::s4u::NetZone* netzone = simgrid::s4u::Engine::instance()->netzoneByNameOrNull(A_surfxml_AS_id);
+    XBT_DEBUG("Set zone property %s -> %s", A_surfxml_prop_id, A_surfxml_prop_value);
+    simgrid::s4u::NetZone* netzone = simgrid::s4u::Engine::instance()->netzoneByNameOrNull(A_surfxml_zone_id);
 
     netzone->setProperty(A_surfxml_prop_id, A_surfxml_prop_value);
   }
@@ -936,7 +950,7 @@ void ETag_surfxml_AS(){
 }
 void STag_surfxml_zone(){
   parse_after_config();
-  ZONE_TAG                   = 1;
+  ZONE_TAG                 = 1;
   s_sg_platf_AS_cbarg_t AS = { A_surfxml_zone_id, (int)A_surfxml_zone_routing};
 
   sg_platf_new_AS_begin(&AS);
@@ -950,7 +964,8 @@ void STag_surfxml_config(){
   xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
   XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
   if (_sg_cfg_init_status == 2) {
-    surf_parse_error("All <config> tags must be given before any platform elements (such as <AS>, <host>, <cluster>, <link>, etc).");
+    surf_parse_error("All <config> tags must be given before any platform elements (such as <zone>, <host>, <cluster>, "
+                     "<link>, etc).");
   }
 }
 void ETag_surfxml_config(){

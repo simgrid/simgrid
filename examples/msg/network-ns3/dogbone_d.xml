@@ -1,20 +1,20 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
-  <process host="S1" function="master">
+<platform version="4.1">
+  <actor host="S1" function="master">
     <argument value="10000"/>
     <argument value="C1"/>
     <argument value="0"/>
-  </process>
-  <process host="S2" function="master">
+  </actor>
+  <actor host="S2" function="master">
     <argument value="10000"/>
     <argument value="C2"/>
     <argument value="1"/>
-  </process>
-  <process host="C1" function="worker">
+  </actor>
+  <actor host="C1" function="worker">
     <argument value="0"/>
-  </process>
-  <process host="C2" function="worker">
+  </actor>
+  <actor host="C2" function="worker">
     <argument value="1"/>
-  </process>
+  </actor>
 </platform>

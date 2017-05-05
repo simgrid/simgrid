@@ -114,7 +114,7 @@ APPLICATIONTMP=$(echo ${PROC_ARGS}|cut -d' ' -f2 -s)
 cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
+<platform version="4.1">
 APPLICATIONHEAD
 
 ##---- cache hostnames of hostfile---------------
@@ -168,7 +168,7 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
 ##  hostfile has less than i lines.
 ##----------------------------------------------------------
 
-##---- generate <process> tags------------------------------
+##---- generate <actor> tags------------------------------
         do
 	    if [ -n "${HOSTFILE}" ]; then
 		j=$(( ${NUMPROCS} % ${NUMHOSTS} +1))
@@ -180,13 +180,13 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
 		host="${hostname}"
             fi
         
-            echo "  <process host=\"${host}\" function=\"${instance}\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
+            echo "  <actor host=\"${host}\" function=\"${instance}\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
             echo "    <argument value=\"${instance}\"/> <!-- instance -->" >> ${APPLICATIONTMP}
             echo "    <argument value=\"${i}\"/> <!-- rank -->" >> ${APPLICATIONTMP}
             echo "    <argument value=\"$(echo $hosttrace|cut -d' ' -f$(($i+1)))\"/>" >> ${APPLICATIONTMP}
 	    
             echo "    <argument value=\"${sleeptime}\"/> <!-- delay -->" >> ${APPLICATIONTMP}
-            echo "  </process>" >> ${APPLICATIONTMP}
+            echo "  </actor>" >> ${APPLICATIONTMP}
             NUMPROCS=$(( ${NUMPROCS} +1))
         done
         # return IFS back to newline for "for" loop
