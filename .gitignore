@@ -200,6 +200,7 @@ examples/s4u/actor-suspend/s4u_actor-suspend
 examples/s4u/basic/s4u_basic
 examples/s4u/basic/s4u_basic_deployment
 examples/s4u/basic/s4u_basic_function
+examples/s4u/dht-chord/s4u_dht-chord
 examples/s4u/io/s4u_io
 examples/s4u/mutex/s4u_mutex
 examples/simdag/daxload/sd_daxload
@@ -1037,6 +1038,7 @@ teshsuite/smpi/mpich-test/pt2pt/waitall3
 teshsuite/smpi/mpich-test/pt2pt/waitall4
 teshsuite/smpi/mpich-test/pt2pt/waitany
 teshsuite/smpi/mpich-test/*/*.stdo
+teshsuite/smpi/privatization/privatization
 teshsuite/smpi/pt2pt-dsend/pt2pt-dsend
 teshsuite/smpi/pt2pt-pingpong/pt2pt-pingpong
 teshsuite/smpi/coll-reduce/coll-reduce
