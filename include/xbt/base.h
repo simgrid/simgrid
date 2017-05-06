@@ -45,9 +45,9 @@
      __attribute__((__format__ (__scanf__, format_idx, arg_idx)))
 #endif
 
-#define XBT_ATTRIB_NORETURN __attribute__((__noreturn__))
-#define XBT_ATTRIB_UNUSED  __attribute__((__unused__))
-#define XBT_ATTRIB_DEPRECATED(m)  __attribute__((__deprecated__(m)))
+#define XBT_ATTRIB_NORETURN __attribute__((noreturn))
+#define XBT_ATTRIB_UNUSED  __attribute__((unused))
+#define XBT_ATTRIB_DEPRECATED(m)  __attribute__((deprecated(m)))
 
 /* Constructor priorities exist since gcc 4.3.  Apparently, they are however not
  * supported on Macs. */

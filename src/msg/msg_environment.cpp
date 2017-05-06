@@ -48,22 +48,22 @@ void MSG_post_create_environment() {
   }
 }
 
-msg_netzone_t MSG_environment_get_routing_root()
+msg_netzone_t MSG_zone_get_root()
 {
   return simgrid::s4u::Engine::instance()->netRoot();
 }
 
-const char* MSG_environment_as_get_name(msg_netzone_t netzone)
+const char* MSG_zone_get_name(msg_netzone_t netzone)
 {
   return netzone->name();
 }
 
-msg_netzone_t MSG_environment_as_get_by_name(const char* name)
+msg_netzone_t MSG_zone_get_by_name(const char* name)
 {
   return simgrid::s4u::Engine::instance()->netzoneByNameOrNull(name);
 }
 
-xbt_dict_t MSG_environment_as_get_routing_sons(msg_netzone_t netzone)
+xbt_dict_t MSG_zone_get_sons(msg_netzone_t netzone)
 {
   xbt_dict_t res = xbt_dict_new_homogeneous(nullptr);
   for (auto elem : *netzone->children()) {
@@ -72,17 +72,17 @@ xbt_dict_t MSG_environment_as_get_routing_sons(msg_netzone_t netzone)
   return res;
 }
 
-const char* MSG_environment_as_get_property_value(msg_netzone_t netzone, const char* name)
+const char* MSG_zone_get_property_value(msg_netzone_t netzone, const char* name)
 {
   return netzone->property(name);
 }
 
-void MSG_environment_as_set_property_value(msg_netzone_t netzone, const char* name, char* value)
+void MSG_zone_set_property_value(msg_netzone_t netzone, const char* name, char* value)
 {
   netzone->setProperty(name, value);
 }
 
-xbt_dynar_t MSG_environment_as_get_hosts(msg_netzone_t netzone)
+xbt_dynar_t MSG_zone_get_hosts(msg_netzone_t netzone)
 {
   xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t), nullptr);
 

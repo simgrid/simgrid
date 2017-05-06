@@ -18,6 +18,10 @@ SimGrid (3.16) UNRELEASED
     simulation round, s/he has to allocate and free a dynar and use it as argument 
     to this function. The former SD_simulate (double how_long) now returns void.
 
+ MSG
+  - The netzone are now available from the MSG API. 
+    The old names still work, but are now deprecated.
+
  SMPI
   - New algorithm to privatize globals: dlopen, with dynamic loading tricks
   - New option: smpi/keep-temps to not cleanup temp files

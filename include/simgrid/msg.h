@@ -176,14 +176,44 @@ XBT_PUBLIC(void) MSG_set_function(const char *host_id,
 XBT_PUBLIC(double) MSG_get_clock();
 XBT_PUBLIC(unsigned long int) MSG_get_sent_msg();
 
-/************************** Environment ***********************************/
-XBT_PUBLIC(msg_netzone_t) MSG_environment_get_routing_root();
-XBT_PUBLIC(const char*) MSG_environment_as_get_name(msg_netzone_t as);
-XBT_PUBLIC(msg_netzone_t) MSG_environment_as_get_by_name(const char* name);
-XBT_PUBLIC(xbt_dict_t) MSG_environment_as_get_routing_sons(msg_netzone_t as);
-XBT_PUBLIC(const char*) MSG_environment_as_get_property_value(msg_netzone_t as, const char* name);
-XBT_PUBLIC(void) MSG_environment_as_set_property_value(msg_netzone_t netzone, const char* name, char* value);
-XBT_PUBLIC(xbt_dynar_t) MSG_environment_as_get_hosts(msg_netzone_t as);
+/************************** Net Zones ***********************************/
+XBT_PUBLIC(msg_netzone_t) MSG_zone_get_root();
+XBT_PUBLIC(const char*) MSG_zone_get_name(msg_netzone_t zone);
+XBT_PUBLIC(msg_netzone_t) MSG_zone_get_by_name(const char* name);
+XBT_PUBLIC(xbt_dict_t) MSG_zone_get_sons(msg_netzone_t zone);
+XBT_PUBLIC(const char*) MSG_zone_get_property_value(msg_netzone_t as, const char* name);
+XBT_PUBLIC(void) MSG_zone_set_property_value(msg_netzone_t netzone, const char* name, char* value);
+XBT_PUBLIC(xbt_dynar_t) MSG_zone_get_hosts(msg_netzone_t zone);
+
+/* Deprecated forms of the previous functions */
+static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_root since v3.16")
+    msg_netzone_t MSG_environment_get_routing_root() {
+  return MSG_zone_get_root();
+}
+static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_name since v3.16")
+    const char* MSG_environment_as_get_name(msg_netzone_t zone) {
+  return MSG_zone_get_name(zone);
+}
+static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_by_name since v3.16")
+    msg_netzone_t MSG_environment_as_get_by_name(const char* name) {
+  return MSG_zone_get_by_name(name);
+}
+static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_sons since v3.16")
+    xbt_dict_t MSG_environment_as_get_routing_sons(msg_netzone_t zone) {
+  return MSG_zone_get_sons(zone);
+}
+static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_property_value since v3.16")
+    const char* MSG_environment_as_get_property_value(msg_netzone_t zone, const char* name) {
+  return MSG_zone_get_property_value(zone, name);
+}
+static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_set_property_value since v3.16")
+    void MSG_environment_as_set_property_value(msg_netzone_t zone, const char* name, char* value) {
+  MSG_zone_set_property_value(zone, name, value);
+}
+static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_hosts since v3.16")
+    xbt_dynar_t MSG_environment_as_get_hosts(msg_netzone_t zone) {
+  return MSG_zone_get_hosts(zone);
+}
 
 /************************** File handling ***********************************/
 XBT_PUBLIC(sg_size_t) MSG_file_read(msg_file_t fd, sg_size_t size);
