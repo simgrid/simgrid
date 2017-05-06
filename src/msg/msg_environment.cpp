@@ -63,13 +63,11 @@ msg_netzone_t MSG_zone_get_by_name(const char* name)
   return simgrid::s4u::Engine::instance()->netzoneByNameOrNull(name);
 }
 
-xbt_dict_t MSG_zone_get_sons(msg_netzone_t netzone)
+void MSG_zone_get_sons(msg_netzone_t netzone, xbt_dict_t whereto)
 {
-  xbt_dict_t res = xbt_dict_new_homogeneous(nullptr);
   for (auto elem : *netzone->children()) {
-    xbt_dict_set(res, elem->name(), static_cast<void*>(elem), nullptr);
+    xbt_dict_set(whereto, elem->name(), static_cast<void*>(elem), nullptr);
   }
-  return res;
 }
 
 const char* MSG_zone_get_property_value(msg_netzone_t netzone, const char* name)
@@ -82,15 +80,11 @@ void MSG_zone_set_property_value(msg_netzone_t netzone, const char* name, char* 
   netzone->setProperty(name, value);
 }
 
-xbt_dynar_t MSG_zone_get_hosts(msg_netzone_t netzone)
+void MSG_zone_get_hosts(msg_netzone_t netzone, xbt_dynar_t whereto)
 {
-  xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t), nullptr);
-
   for (auto host : *netzone->hosts()) {
-    xbt_dynar_push(res, &host);
+    xbt_dynar_push(whereto, &host);
   }
-
-  return res;
 }
 
 SG_END_DECL()

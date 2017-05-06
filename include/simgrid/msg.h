@@ -180,10 +180,10 @@ XBT_PUBLIC(unsigned long int) MSG_get_sent_msg();
 XBT_PUBLIC(msg_netzone_t) MSG_zone_get_root();
 XBT_PUBLIC(const char*) MSG_zone_get_name(msg_netzone_t zone);
 XBT_PUBLIC(msg_netzone_t) MSG_zone_get_by_name(const char* name);
-XBT_PUBLIC(xbt_dict_t) MSG_zone_get_sons(msg_netzone_t zone);
+XBT_PUBLIC(void) MSG_zone_get_sons(msg_netzone_t zone, xbt_dict_t whereto);
 XBT_PUBLIC(const char*) MSG_zone_get_property_value(msg_netzone_t as, const char* name);
 XBT_PUBLIC(void) MSG_zone_set_property_value(msg_netzone_t netzone, const char* name, char* value);
-XBT_PUBLIC(xbt_dynar_t) MSG_zone_get_hosts(msg_netzone_t zone);
+XBT_PUBLIC(void) MSG_zone_get_hosts(msg_netzone_t zone, xbt_dynar_t whereto);
 
 /* Deprecated forms of the previous functions */
 static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_root since v3.16")
@@ -200,7 +200,9 @@ static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_by_name since v3.16
 }
 static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_sons since v3.16")
     xbt_dict_t MSG_environment_as_get_routing_sons(msg_netzone_t zone) {
-  return MSG_zone_get_sons(zone);
+  xbt_dict_t res = xbt_dict_new_homogeneous(NULL);
+  MSG_zone_get_sons(zone, res);
+  return res;
 }
 static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_property_value since v3.16")
     const char* MSG_environment_as_get_property_value(msg_netzone_t zone, const char* name) {
@@ -212,7 +214,9 @@ static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_set_property_value sinc
 }
 static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_hosts since v3.16")
     xbt_dynar_t MSG_environment_as_get_hosts(msg_netzone_t zone) {
-  return MSG_zone_get_hosts(zone);
+  xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t), NULL);
+  MSG_zone_get_hosts(zone, res);
+  return res;
 }
 
 /************************** File handling ***********************************/
