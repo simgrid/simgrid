@@ -82,9 +82,10 @@ void MSG_zone_set_property_value(msg_netzone_t netzone, const char* name, char* 
 
 void MSG_zone_get_hosts(msg_netzone_t netzone, xbt_dynar_t whereto)
 {
-  for (auto host : *netzone->hosts()) {
+  std::vector<simgrid::s4u::Host*> hosts;
+  netzone->hosts(&hosts);
+  for (auto host : hosts)
     xbt_dynar_push(whereto, &host);
-  }
 }
 
 SG_END_DECL()
