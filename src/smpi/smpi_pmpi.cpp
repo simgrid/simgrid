@@ -5,6 +5,7 @@
 
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/smpi/private.h"
 #include "src/smpi/smpi_comm.hpp"
 #include "src/smpi/smpi_coll.hpp"
 #include "src/smpi/smpi_datatype_derived.hpp"

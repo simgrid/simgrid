@@ -7,7 +7,6 @@
 #ifndef SMPI_OP_HPP
 #define SMPI_OP_HPP
 
-#include "private.h"
 #include "src/smpi/smpi_info.hpp"
 
 namespace simgrid{

@@ -7,9 +7,6 @@
 #ifndef SMPI_DATATYPE_DERIVED_HPP
 #define SMPI_DATATYPE_DERIVED_HPP
 
-#include <xbt/base.h>
-
-#include "private.h"
 #include "src/smpi/smpi_datatype.hpp"
 
 namespace simgrid{

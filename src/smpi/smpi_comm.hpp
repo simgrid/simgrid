@@ -6,7 +6,6 @@
 #ifndef SMPI_COMM_HPP_INCLUDED
 #define SMPI_COMM_HPP_INCLUDED
 
-#include "private.h"
 #include <list>
 #include "src/smpi/smpi_keyvals.hpp"
 #include "src/smpi/smpi_group.hpp"
