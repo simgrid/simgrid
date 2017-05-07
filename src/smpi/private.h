@@ -8,7 +8,6 @@
 
 #include "smpi/smpi.h"
 #include "simgrid/msg.h" // msg_bar_t
-#include "src/instr/instr_private.h"
 
 SG_BEGIN_DECL()
 
@@ -366,32 +365,6 @@ void mpi_file_open_ ( int* comm, char* filename, int* amode, int* info, int* fh,
 void mpi_file_set_view_ ( int* fh, long long int* offset, int* etype, int* filetype, char* datarep, int* info, int* ierr);
 void mpi_file_read_ ( int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr);
 void mpi_file_write_ ( int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr);
-
-/********** Tracing **********/
-/* from instr_smpi.c */
-XBT_PRIVATE void TRACE_internal_smpi_set_category (const char *category);
-XBT_PRIVATE const char *TRACE_internal_smpi_get_category ();
-XBT_PRIVATE void TRACE_smpi_collective_in(int rank, int root, const char *operation, instr_extra_data extra);
-XBT_PRIVATE void TRACE_smpi_collective_out(int rank, int root, const char *operation);
-XBT_PRIVATE void TRACE_smpi_computing_init(int rank);
-XBT_PRIVATE void TRACE_smpi_computing_out(int rank);
-XBT_PRIVATE void TRACE_smpi_computing_in(int rank, instr_extra_data extra);
-XBT_PRIVATE void TRACE_smpi_sleeping_init(int rank);
-XBT_PRIVATE void TRACE_smpi_sleeping_out(int rank);
-XBT_PRIVATE void TRACE_smpi_sleeping_in(int rank, instr_extra_data extra);
-XBT_PRIVATE void TRACE_smpi_testing_out(int rank);
-XBT_PRIVATE void TRACE_smpi_testing_in(int rank, instr_extra_data extra);
-XBT_PRIVATE void TRACE_smpi_alloc();
-XBT_PRIVATE void TRACE_smpi_release();
-XBT_PRIVATE void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation,  instr_extra_data extra);
-XBT_PRIVATE void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation);
-XBT_PRIVATE void TRACE_smpi_send(int rank, int src, int dst, int tag, int size);
-XBT_PRIVATE void TRACE_smpi_recv(int rank, int src, int dst, int tag);
-XBT_PRIVATE void TRACE_smpi_init(int rank);
-XBT_PRIVATE void TRACE_smpi_finalize(int rank);
-XBT_PRIVATE char *smpi_container(int rank, char *container, int n);
-
-XBT_PRIVATE const char* encode_datatype(MPI_Datatype datatype, int* known);
 
 // TODO, make this static and expose it more cleanly
 
