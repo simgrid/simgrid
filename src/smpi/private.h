@@ -6,30 +6,11 @@
 #ifndef SMPI_PRIVATE_H
 #define SMPI_PRIVATE_H
 
-#include "simgrid/simix.h"
 #include "smpi/smpi.h"
+#include "simgrid/msg.h" // msg_bar_t
 #include "src/instr/instr_private.h"
-#include "src/internal_config.h"
-#include "xbt.h"
-#include "xbt/base.h"
-#include "xbt/synchro.h"
-#include "xbt/xbt_os_time.h"
-#include "src/smpi/smpi_process.hpp"
-#include "src/smpi/smpi_f2c.hpp"
-#include "src/smpi/smpi_keyvals.hpp"
-#include "src/smpi/smpi_group.hpp"
-#include "src/smpi/smpi_topo.hpp"
-#include "src/smpi/smpi_coll.hpp"
-#include "src/smpi/smpi_comm.hpp"
-#include "src/smpi/smpi_info.hpp"
-#include "src/smpi/smpi_op.hpp"
-#include "src/smpi/smpi_datatype.hpp"
-#include "src/smpi/smpi_datatype_derived.hpp"
-#include "src/smpi/smpi_request.hpp"
-#include "src/smpi/smpi_status.hpp"
-#include "src/smpi/smpi_win.hpp"
-SG_BEGIN_DECL()
 
+SG_BEGIN_DECL()
 
 #define PERSISTENT     0x1
 #define NON_PERSISTENT 0x2

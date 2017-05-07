@@ -1,20 +1,13 @@
-/* smpi_datatype.cpp -- MPI primitives to handle datatypes                      */
-/* Copyright (c) 2009-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* smpi_datatype.cpp -- MPI primitives to handle datatypes                  */
+/* Copyright (c) 2009-2017. The SimGrid Team.  All rights reserved.         */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "mc/mc.h"
-#include "private.h"
 #include "simgrid/modelchecker.h"
-#include <limits.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <string>
-#include <unordered_map>
-#include <xbt/ex.hpp>
+#include "src/smpi/smpi_datatype_derived.hpp"
+#include "src/smpi/smpi_op.hpp"
+#include "src/smpi/smpi_process.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_datatype, smpi, "Logging specific to SMPI (datatype)");
 
@@ -24,7 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_datatype, smpi, "Logging specific to SMPI (
     sizeof(type),   /* size */                        \
     0,              /* lb */                          \
     sizeof(type),   /* ub = lb + size */              \
-    DT_FLAG_BASIC  /* flags */                       \
+    DT_FLAG_BASIC  /* flags */                        \
   );                                                  \
 const MPI_Datatype name = &mpi_##name;
 

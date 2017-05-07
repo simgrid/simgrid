@@ -5,8 +5,14 @@
 
 #include "simgrid/s4u/Host.hpp"
 
-#include "private.h"
 #include "src/simix/smx_private.h"
+#include "src/smpi/smpi_comm.hpp"
+#include "src/smpi/smpi_coll.hpp"
+#include "src/smpi/smpi_datatype.hpp"
+#include "src/smpi/smpi_process.hpp"
+#include "src/smpi/smpi_request.hpp"
+#include "src/smpi/smpi_status.hpp"
+#include "src/smpi/smpi_win.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi, "Logging specific to SMPI (comm)");
 

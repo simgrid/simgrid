@@ -7,7 +7,7 @@
 #ifndef SMPI_STATUS_HPP
 #define SMPI_STATUS_HPP
 
-#include "private.h"
+#include "smpi/smpi.h"
 
 namespace simgrid{
 namespace smpi{

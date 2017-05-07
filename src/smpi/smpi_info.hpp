@@ -10,6 +10,7 @@
 #include <xbt/base.h>
 
 #include "private.h"
+#include "src/smpi/smpi_comm.hpp"
 
 namespace simgrid{
 namespace smpi{

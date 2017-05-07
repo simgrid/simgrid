@@ -22,6 +22,8 @@
 #include "src/mc/mc_state.h"
 #include "src/mc/remote/Client.hpp"
 
+#include "src/smpi/smpi_request.hpp"
+
 using simgrid::mc::remote;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_determinism, mc,

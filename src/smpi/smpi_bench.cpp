@@ -3,29 +3,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstring>
-
-#include <unordered_map>
-#include <utility>
-
 #include "src/internal_config.h"
 #include "private.h"
 #include "private.hpp"
-#include <xbt/ex.hpp>
-#include "xbt/dict.h"
-#include "xbt/sysdep.h"
-#include "xbt/ex.h"
-#include "surf/surf.h"
-#include "simgrid/sg_config.h"
 #include "simgrid/modelchecker.h"
 #include "src/mc/mc_replay.h"
+#include "src/smpi/smpi_process.hpp"
+#include "src/smpi/smpi_comm.hpp"
 
-#include <sys/types.h>
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
 #include <math.h> // sqrt
-#include <stdio.h>
 
 #if HAVE_PAPI
 #include <papi.h>

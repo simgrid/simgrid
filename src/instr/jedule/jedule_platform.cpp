@@ -1,14 +1,11 @@
-/* Copyright (c) 2010-2016. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/jedule/jedule.hpp"
-#include "simgrid/jedule/jedule_platform.hpp"
 #include "simgrid/s4u/NetZone.hpp"
 #include "xbt/asserts.h"
-#include "xbt/dynar.h"
 #include <algorithm>
 
 #if SIMGRID_HAVE_JEDULE

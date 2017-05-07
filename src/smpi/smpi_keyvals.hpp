@@ -7,9 +7,9 @@
 #ifndef SMPI_KEYVALS_HPP_INCLUDED
 #define SMPI_KEYVALS_HPP_INCLUDED
 
-#include "private.h"
 #include <unordered_map>
 #include <xbt/ex.hpp>
+#include "smpi/smpi.h"
 
 typedef struct smpi_delete_fn{
   MPI_Comm_delete_attr_function          *comm_delete_fn;

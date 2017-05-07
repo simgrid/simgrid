@@ -11,8 +11,6 @@
 #include <sys/wait.h>
 
 #include "mc/mc.h"
-#include "private.h"
-#include "private.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "smpi/smpi_shared_malloc.hpp"
 #include "simgrid/sg_config.h"
@@ -26,6 +24,9 @@
 #include "surf/surf.h"
 #include "xbt/replay.hpp"
 #include <xbt/config.hpp>
+#include "src/smpi/smpi_process.hpp"
+#include "src/smpi/smpi_coll.hpp"
+#include "src/smpi/smpi_info.hpp"
 
 #include <float.h> /* DBL_MAX */
 #include <fstream>

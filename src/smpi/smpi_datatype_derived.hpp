@@ -10,11 +10,12 @@
 #include <xbt/base.h>
 
 #include "private.h"
+#include "src/smpi/smpi_datatype.hpp"
 
 namespace simgrid{
 namespace smpi{
 
-class Type_Contiguous: public Datatype{
+class Type_Contiguous: public Datatype {
   private:
     int block_count_;
     MPI_Datatype old_type_;

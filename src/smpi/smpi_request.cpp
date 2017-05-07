@@ -3,11 +3,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
 #include "mc/mc.h"
 #include "src/mc/mc_replay.h"
 #include "src/smpi/SmpiHost.hpp"
 #include "src/kernel/activity/SynchroComm.hpp"
+#include "src/smpi/smpi_comm.hpp"
+#include "src/smpi/smpi_datatype.hpp"
+#include "src/smpi/smpi_op.hpp"
+#include "src/smpi/smpi_process.hpp"
+#include "src/smpi/smpi_request.hpp"
 
 #include <algorithm>
 

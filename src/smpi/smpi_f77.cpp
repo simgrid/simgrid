@@ -1,13 +1,13 @@
-/* Copyright (c) 2010-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <limits.h>
-#include <stdio.h>
-#include "private.h"
-#include "xbt.h"
+#include "src/smpi/smpi_datatype.hpp"
+#include "src/smpi/smpi_op.hpp"
+#include "src/smpi/smpi_process.hpp"
+#include "src/smpi/smpi_request.hpp"
+#include "src/smpi/smpi_win.hpp"
 
 static int running_processes = 0;
 

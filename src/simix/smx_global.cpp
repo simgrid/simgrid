@@ -24,6 +24,8 @@
 #include "src/mc/mc_replay.h"
 #include "simgrid/sg_config.h"
 
+#include "src/smpi/smpi_process.hpp"
+
 #include "src/kernel/activity/SynchroExec.hpp"
 #include "src/kernel/activity/SynchroComm.hpp"
 #include "src/kernel/activity/SynchroSleep.hpp"
