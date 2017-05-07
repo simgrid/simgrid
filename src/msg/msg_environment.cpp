@@ -82,6 +82,7 @@ void MSG_zone_set_property_value(msg_netzone_t netzone, const char* name, char* 
 
 void MSG_zone_get_hosts(msg_netzone_t netzone, xbt_dynar_t whereto)
 {
+  /* converts vector to dynar */
   std::vector<simgrid::s4u::Host*> hosts;
   netzone->hosts(&hosts);
   for (auto host : hosts)

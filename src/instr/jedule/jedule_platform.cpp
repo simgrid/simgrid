@@ -65,7 +65,9 @@ void Container::createHierarchy(sg_netzone_t from_as)
   if (from_as->children()->empty()) {
     // I am no AS
     // add hosts to jedule platform
-    this->addResources(*from_as->hosts());
+    std::vector<sg_host_t> table;
+    from_as->hosts(&table);
+    this->addResources(table);
   } else {
     for (auto nz : *from_as->children()) {
       jed_container_t child_container = new simgrid::jedule::Container(std::string(nz->name()));
