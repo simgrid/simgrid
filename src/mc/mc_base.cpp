@@ -96,11 +96,6 @@ bool request_is_enabled(smx_simcall_t req)
   case SIMCALL_NONE:
     return false;
 
-  case SIMCALL_SEM_ACQUIRE:
-    xbt_die("Don't use semaphores in model-checked code, it's not supported yet");
-  case SIMCALL_COND_WAIT:
-    xbt_die("Don't use condition variables in model-checked code, it's not supported yet");
-
   case SIMCALL_COMM_WAIT:
   {
     /* FIXME: check also that src and dst processes are not suspended */
@@ -200,9 +195,25 @@ bool request_is_enabled(smx_simcall_t req)
       return mutex->owner->pid == req->issuer->pid;
     }
 
-  default:
-    /* The rest of the requests are always enabled */
-    return true;
+    case SIMCALL_SEM_ACQUIRE: {
+      static int warned = 0;
+      if (!warned)
+        XBT_INFO("Using semaphore in model-checked code is still experimental. Use at your own risk");
+      warned = 1;
+      return true;
+    }
+
+    case SIMCALL_COND_WAIT: {
+      static int warned = 0;
+      if (!warned)
+        XBT_INFO("Using condition variables in model-checked code is still experimental. Use at your own risk");
+      warned = 1;
+      return true;
+    }
+
+    default:
+      /* The rest of the requests are always enabled */
+      return true;
   }
 }
 
