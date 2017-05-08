@@ -35,7 +35,7 @@
 using simgrid::mc::remote;
 #endif
 
-XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
+XBT_LOG_NEW_DEFAULT_CATEGORY(mc, "All MC categories");
 
 int MC_random(int min, int max)
 {
