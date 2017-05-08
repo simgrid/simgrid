@@ -9,6 +9,7 @@
 #include "instr/instr_interface.h"
 #include "mc/mc.h"
 #include "src/msg/msg_private.h"
+#include "src/mc/mc_ignore.h"
 
 XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg, "Logging specific to MSG (kernel)");

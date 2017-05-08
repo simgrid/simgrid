@@ -3,34 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cassert>
-
 #include <simgrid_config.h>
 
-#include <xbt/log.h>
-#include <xbt/asserts.h>
-#include <xbt/dynar.h>
-
-#include <simgrid/simix.h>
-
 #include "mc/mc.h"
-#include "src/mc/mc_base.h"
 #include "src/mc/mc_replay.h"
-#include "src/mc/remote/mc_protocol.h"
-#include "src/simix/smx_private.h"
-
-#include "src/kernel/activity/ActivityImpl.hpp"
-#include "src/kernel/activity/SynchroIo.hpp"
-#include "src/kernel/activity/SynchroComm.hpp"
-#include "src/kernel/activity/SynchroRaw.hpp"
-#include "src/kernel/activity/SynchroSleep.hpp"
-#include "src/kernel/activity/SynchroExec.hpp"
 
 #if SIMGRID_HAVE_MC
-#include "src/mc/mc_request.h"
-#include "src/mc/Process.hpp"
 #include "src/mc/ModelChecker.hpp"
-#include "src/mc/mc_smx.h"
 
 using simgrid::mc::remote;
 #endif
@@ -41,9 +20,8 @@ int MC_random(int min, int max)
 {
 #if SIMGRID_HAVE_MC
   xbt_assert(mc_model_checker == nullptr);
-  /* TODO, if the MC is disabled we do not really need to make a simcall for
-   * this :) */
 #endif
+  /* TODO, if the MC is disabled we do not really need to make a simcall for this :) */
   return simcall_mc_random(min, max);
 }
 

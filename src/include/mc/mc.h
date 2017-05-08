@@ -8,10 +8,6 @@
 
 #include <simgrid/modelchecker.h> /* our public interface (and definition of SIMGRID_HAVE_MC) */
 #include <simgrid/simix.h>
-#include <src/internal_config.h>
-#if HAVE_UCONTEXT_H
-#include <ucontext.h>           /* context relative declarations */
-#endif
 
 /* Maximum size of the application heap.
  *
@@ -65,15 +61,6 @@ XBT_PUBLIC(void) MC_run();
 XBT_PUBLIC(void) MC_process_clock_add(smx_actor_t, double);
 XBT_PUBLIC(double) MC_process_clock_get(smx_actor_t);
 XBT_PRIVATE void MC_automaton_load(const char *file);
-
-/****************************** MC ignore **********************************/
-XBT_PUBLIC(void) MC_ignore_heap(void *address, size_t size);
-XBT_PUBLIC(void) MC_remove_ignore_heap(void *address, size_t size);
-XBT_PUBLIC(void) MC_ignore_local_variable(const char *var_name, const char *frame);
-XBT_PUBLIC(void) MC_ignore_global_variable(const char *var_name);
-#if HAVE_UCONTEXT_H
-XBT_PUBLIC(void) MC_register_stack_area(void *stack, smx_actor_t process, ucontext_t* context, size_t size);
-#endif
 
 /********************************* Memory *************************************/
 XBT_PUBLIC(void) MC_memory_init();  /* Initialize the memory subsystem */

@@ -6,12 +6,25 @@
 #ifndef SIMGRID_MC_IGNORE_H
 #define SIMGRID_MC_IGNORE_H
 
-#include <xbt/base.h>           /* SG_BEGIN_DECL */
-#include <xbt/dynar.h>
+#include "src/internal_config.h"
+#include "xbt/dynar.h"
+
+#if HAVE_UCONTEXT_H
+#include <ucontext.h>           /* context relative declarations */
+#endif
+
 
 SG_BEGIN_DECL();
 
-XBT_PRIVATE xbt_dynar_t MC_checkpoint_ignore_new(void);
+XBT_PUBLIC(void) MC_ignore_heap(void *address, size_t size);
+XBT_PUBLIC(void) MC_remove_ignore_heap(void *address, size_t size);
+XBT_PUBLIC(void) MC_ignore_local_variable(const char *var_name, const char *frame);
+XBT_PUBLIC(void) MC_ignore_global_variable(const char *var_name);
+
+#if HAVE_UCONTEXT_H
+XBT_PUBLIC(void) MC_register_stack_area(void *stack, smx_actor_t process, ucontext_t* context, size_t size);
+#endif
+
 
 SG_END_DECL();
 

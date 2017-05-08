@@ -242,7 +242,7 @@ void Client::declareStack(void* stack, size_t size, smx_actor_t process, ucontex
   message.type         = MC_MESSAGE_STACK_REGION;
   message.stack_region = region;
   if (channel_.send(message))
-    xbt_die("Coule not send STACK_REGION to model-checker");
+    xbt_die("Could not send STACK_REGION to model-checker");
 }
 }
 }

@@ -7,6 +7,7 @@
 #include "mc/mc.h"
 #include "src/instr/instr_private.h"
 #include "src/msg/msg_private.h"
+#include "src/mc/mc_ignore.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_msg, instr, "MSG instrumentation");
 

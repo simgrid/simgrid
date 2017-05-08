@@ -1,7 +1,6 @@
 /* Free a block of memory allocated by `mmalloc'. */
 
-/* Copyright (c) 2010-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -14,6 +13,7 @@
 #include "mmprivate.h"
 #include "xbt/ex.h"
 #include "mc/mc.h"
+#include "src/mc/mc_ignore.h"
 
 /* Return memory to the heap.
    Like `mfree' but don't call a mfree_hook if there is one.  */
