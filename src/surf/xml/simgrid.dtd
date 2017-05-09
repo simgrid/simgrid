@@ -69,6 +69,7 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ELEMENT platform ((config|random)*,(include|cluster|cabinet|peer|AS|zone|trace|trace_connect)*,(process|actor)*)>
 <!ATTLIST platform version CDATA "0.0">
 
+<!-- tag include is deprecated. Not documented, and soon removed -->
 <!ELEMENT include (include|cluster|cabinet|peer|AS|zone|trace|trace_connect)*>
 <!ATTLIST include file CDATA #REQUIRED>
 
