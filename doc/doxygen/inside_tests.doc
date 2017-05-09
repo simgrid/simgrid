@@ -78,7 +78,7 @@ your changes should look like that:
 +  src/xbt/plouf.c
    )
 
- if(HAVE_MC)
+ if(SIMGRID_HAVE_MC)
 \endverbatim
 
 Then, you want to actually add your tests in the source file. All the

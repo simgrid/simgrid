@@ -1,21 +1,21 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
+<platform version="4.1">
   <!-- This file describe a super simple platform which main interest is to define some properties on hosts, 
        processes and links. It is used in several regression cases on properties -->
-  <AS  id="AS0"  routing="Full">
+  <zone  id="AS0"  routing="Full">
     <prop id="filename" value="prop.xml"/>
     <prop id="date" value="31-08-12"/>
     <prop id="author" value="pnavarro"/>
 
-    <AS id="AS3"  routing="Full">
-      <AS id="AS1" routing="None">
+    <zone id="AS3"  routing="Full">
+      <zone id="AS1" routing="None">
         <prop id="name" value="AS1"/>
-      </AS>
-      <AS id="AS2" routing="None">
+      </zone>
+      <zone id="AS2" routing="None">
         <prop id="name" value="AS2"/>
-     </AS>
-    </AS>
+     </zone>
+    </zone>
 
     <cluster id="acme" prefix="node-" suffix=".acme.org" radical="0-4" speed="1Gf"
              bw="125MBps" lat="50us" bb_bw="2.25GBps"  bb_lat="500us">
@@ -24,7 +24,7 @@
       <prop id="mem"  value="42"/>
     </cluster>
 
-    <AS  id="AS4"  routing="Full">
+    <zone  id="AS4"  routing="Full">
       <host id="host1" speed="1Gf">
         <prop id="Hdd" value="180"/>
         <prop id="mem" value="4"/>
@@ -44,6 +44,6 @@
         <link_ctn id="l1"/>
         <link_ctn id="l2"/>
       </route>
-    </AS>
-  </AS>
+    </zone>
+  </zone>
 </platform>

@@ -9,9 +9,11 @@
 #include <math.h>
 #include "smpi/mpi.h"
 #include "src/smpi/private.h"
-#include "xbt/ex.h"
-#include "xbt.h"
-#include "../smpi_coll.hpp"
+#include "src/smpi/smpi_coll.hpp"
+#include "src/smpi/smpi_comm.hpp"
+#include "src/smpi/smpi_datatype.hpp"
+#include "src/smpi/smpi_op.hpp"
+#include "src/smpi/smpi_request.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_colls);
 

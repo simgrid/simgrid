@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
 
 namespace simgrid {
 namespace jedule{

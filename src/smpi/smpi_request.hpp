@@ -7,12 +7,12 @@
 #ifndef SMPI_REQUEST_HPP_INCLUDED
 #define SMPI_REQUEST_HPP_INCLUDED
 
-#include "private.h"
+#include "src/smpi/smpi_f2c.hpp"
 
 namespace simgrid{
 namespace smpi{
 
-class Request : public F2C{
+class Request : public F2C {
   private :
     void *buf_;
     /* in the case of non-contiguous memory the user address should be keep

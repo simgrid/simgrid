@@ -125,7 +125,7 @@ static void xbt_log_connect_categories(void)
   /* The following categories are only defined in libsimgrid */
 
   /* bindings */
-#if HAVE_LUA
+#if SIMGRID_HAVE_LUA
   XBT_LOG_CONNECT(lua);
   XBT_LOG_CONNECT(lua_host);
   XBT_LOG_CONNECT(lua_platf);
@@ -150,13 +150,13 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(instr_TI_trace);
 
   /* jedule */
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
   XBT_LOG_CONNECT(jedule);
   XBT_LOG_CONNECT(jed_sd);
 #endif
 
   /* mc */
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   XBT_LOG_CONNECT(mc);
   XBT_LOG_CONNECT(mc_checkpoint);
   XBT_LOG_CONNECT(mc_comm_determinism);
@@ -245,7 +245,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_lagrange_dichotomy);
   XBT_LOG_CONNECT(surf_maxmin);
   XBT_LOG_CONNECT(surf_network);
-#if HAVE_NS3
+#if SIMGRID_HAVE_NS3
   XBT_LOG_CONNECT(ns3);
 #endif
   XBT_LOG_CONNECT(surf_parse);
@@ -602,13 +602,12 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
 
   control_string += strspn(control_string, " ");
   const char *name = control_string;
-  control_string += strcspn(control_string, ".= ");
+  control_string += strcspn(control_string, ".:= ");
   const char *dot = control_string;
   control_string += strcspn(control_string, ":= ");
   const char *eq = control_string;
 
-  if(*dot != '.' && (*eq == '=' || *eq == ':'))
-    xbt_die ("Invalid control string '%s'", orig_control_string);
+  xbt_assert(*dot == '.' || (*eq != '=' && *eq != ':'), "Invalid control string '%s'", orig_control_string);
 
   if (!strncmp(dot + 1, "threshold", (size_t) (eq - dot - 1))) {
     int i;
@@ -678,7 +677,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
   } else {
     char buff[512];
     snprintf(buff, MIN(512, eq - dot), "%s", dot + 1);
-    THROWF(arg_error, 0, "Unknown setting of the log category: '%s'", buff);
+    xbt_die("Unknown setting of the log category: '%s'", buff);
   }
   set->catname = (char *) xbt_malloc(dot - name + 1);
 

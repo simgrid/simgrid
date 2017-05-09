@@ -15,7 +15,7 @@ set(FILES_CONTAINING_UNITTESTS
   src/xbt/config.cpp
 )
 
-if(HAVE_MC)
+if(SIMGRID_HAVE_MC)
   set(FILES_CONTAINING_UNITTESTS ${FILES_CONTAINING_UNITTESTS}
       src/mc/PageStore.cpp
       src/mc/mc_snapshot.cpp

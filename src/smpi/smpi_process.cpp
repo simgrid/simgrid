@@ -1,13 +1,16 @@
+/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "mc/mc.h"
-#include "private.h"
-#include "simgrid/s4u/Mailbox.hpp"
-#include "src/kernel/activity/SynchroComm.hpp"
-#include "src/mc/mc_record.h"
 #include "src/mc/mc_replay.h"
 #include "src/msg/msg_private.h"
 #include "src/simix/smx_private.h"
-#include "surf/surf.h"
-#include "xbt/replay.hpp"
+#include "src/smpi/private.h"
+#include "src/smpi/smpi_process.hpp"
+#include "src/smpi/smpi_group.hpp"
+#include "src/smpi/smpi_comm.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_process, smpi, "Logging specific to SMPI (kernel)");
 
@@ -137,6 +140,16 @@ bool Process::replaying(){
     return replaying_;
   else
     return false;
+}
+
+void Process::set_user_data(void *data)
+{
+  data_ = data;
+}
+
+void *Process::get_user_data()
+{
+  return data_;
 }
 
 smx_actor_t Process::process(){

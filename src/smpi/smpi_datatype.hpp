@@ -1,5 +1,4 @@
-/* Copyright (c) 2009-2010, 2012-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,10 +6,8 @@
 #ifndef SMPI_DATATYPE_HPP
 #define SMPI_DATATYPE_HPP
 
-#include <xbt/base.h>
-
-#include "private.h"
-
+#include "src/smpi/smpi_f2c.hpp"
+#include "src/smpi/smpi_keyvals.hpp"
 
 #define DT_FLAG_DESTROYED     0x0001  /**< user destroyed but some other layers still have a reference */
 #define DT_FLAG_COMMITED      0x0002  /**< ready to be used for a send/recv operation */

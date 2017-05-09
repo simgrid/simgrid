@@ -26,7 +26,7 @@
 #include "src/kernel/activity/SynchroSleep.hpp"
 #include "src/kernel/activity/SynchroExec.hpp"
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 #include "src/mc/mc_request.h"
 #include "src/mc/Process.hpp"
 #include "src/mc/ModelChecker.hpp"
@@ -35,11 +35,11 @@
 using simgrid::mc::remote;
 #endif
 
-XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
+XBT_LOG_NEW_DEFAULT_CATEGORY(mc, "All MC categories");
 
 int MC_random(int min, int max)
 {
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   xbt_assert(mc_model_checker == nullptr);
   /* TODO, if the MC is disabled we do not really need to make a simcall for
    * this :) */
@@ -52,7 +52,7 @@ namespace mc {
 
 void wait_for_requests(void)
 {
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   xbt_assert(mc_model_checker == nullptr);
 #endif
 
@@ -68,7 +68,7 @@ void wait_for_requests(void)
         SIMIX_simcall_handle(req, 0);
     }
   }
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   xbt_dynar_reset(simix_global->actors_vector);
   for (std::pair<aid_t, smx_actor_t> kv : simix_global->process_list) {
     xbt_dynar_push_as(simix_global->actors_vector, smx_actor_t, kv.second);
@@ -96,18 +96,13 @@ bool request_is_enabled(smx_simcall_t req)
   case SIMCALL_NONE:
     return false;
 
-  case SIMCALL_SEM_ACQUIRE:
-    xbt_die("Don't use semaphores in model-checked code, it's not supported yet");
-  case SIMCALL_COND_WAIT:
-    xbt_die("Don't use condition variables in model-checked code, it's not supported yet");
-
   case SIMCALL_COMM_WAIT:
   {
     /* FIXME: check also that src and dst processes are not suspended */
     simgrid::kernel::activity::Comm *act =
         static_cast<simgrid::kernel::activity::Comm*>(simcall_comm_wait__get__comm(req));
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
     // Fetch from MCed memory:
     // HACK, type puning
     if (mc_model_checker != nullptr) {
@@ -135,7 +130,7 @@ bool request_is_enabled(smx_simcall_t req)
     simgrid::kernel::activity::Comm *act =
         static_cast<simgrid::kernel::activity::Comm*>(simcall_comm_wait__get__comm(req));
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
     s_xbt_dynar_t comms_buffer;
     size_t buffer_size = 0;
     if (mc_model_checker != nullptr) {
@@ -158,7 +153,7 @@ bool request_is_enabled(smx_simcall_t req)
 #endif
 
     for (index = 0; index < comms->used; ++index) {
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
       // Fetch act from MCed memory:
       // HACK, type puning
       simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_comm;
@@ -178,7 +173,7 @@ bool request_is_enabled(smx_simcall_t req)
 
   case SIMCALL_MUTEX_LOCK: {
     smx_mutex_t mutex = simcall_mutex_lock__get__mutex(req);
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
     simgrid::mc::Remote<simgrid::simix::Mutex> temp_mutex;
     if (mc_model_checker != nullptr) {
       mc_model_checker->process().read(temp_mutex.getBuffer(), remote(mutex));
@@ -188,7 +183,7 @@ bool request_is_enabled(smx_simcall_t req)
 
     if(mutex->owner == nullptr)
       return true;
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
     else if (mc_model_checker != nullptr) {
       simgrid::mc::Process& modelchecked = mc_model_checker->process();
       // TODO, *(mutex->owner) :/
@@ -200,9 +195,25 @@ bool request_is_enabled(smx_simcall_t req)
       return mutex->owner->pid == req->issuer->pid;
     }
 
-  default:
-    /* The rest of the requests are always enabled */
-    return true;
+    case SIMCALL_SEM_ACQUIRE: {
+      static int warned = 0;
+      if (!warned)
+        XBT_INFO("Using semaphore in model-checked code is still experimental. Use at your own risk");
+      warned = 1;
+      return true;
+    }
+
+    case SIMCALL_COND_WAIT: {
+      static int warned = 0;
+      if (!warned)
+        XBT_INFO("Using condition variables in model-checked code is still experimental. Use at your own risk");
+      warned = 1;
+      return true;
+    }
+
+    default:
+      /* The rest of the requests are always enabled */
+      return true;
   }
 }
 

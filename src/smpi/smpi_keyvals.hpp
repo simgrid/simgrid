@@ -1,5 +1,4 @@
-/* Copyright (c) 2010, 2013-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,9 +6,10 @@
 #ifndef SMPI_KEYVALS_HPP_INCLUDED
 #define SMPI_KEYVALS_HPP_INCLUDED
 
-#include "private.h"
+#include "smpi/smpi.h"
+#include "xbt/ex.hpp"
+
 #include <unordered_map>
-#include <xbt/ex.hpp>
 
 typedef struct smpi_delete_fn{
   MPI_Comm_delete_attr_function          *comm_delete_fn;

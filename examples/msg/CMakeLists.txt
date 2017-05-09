@@ -23,7 +23,7 @@ foreach(x maestro-set)
   set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
 endforeach()
 
-if(HAVE_NS3)
+if(SIMGRID_HAVE_NS3)
   add_executable       (network-ns3 network-ns3/network-ns3.c)
   target_link_libraries(network-ns3 simgrid)
   set_target_properties(network-ns3  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/network-ns3)
@@ -128,6 +128,6 @@ ADD_TESH_FACTORIES(app-masterworker-vivaldi     "thread;ucontext;raw;boost" --se
 
 ADD_TESH(msg-app-pmm  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/app-pmm/app-pmm.tesh)
 
-if(HAVE_NS3)
+if(SIMGRID_HAVE_NS3)
   ADD_TESH_FACTORIES(msg-network-ns3 "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/network-ns3/network-ns3.tesh)
 endif()

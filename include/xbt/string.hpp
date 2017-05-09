@@ -13,7 +13,7 @@
 #include <cstdarg>
 #include <stdlib.h>
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 
 #include <stdexcept>
 #include <cstddef>
@@ -28,7 +28,7 @@
 namespace simgrid {
 namespace xbt {
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 
 /** POD structure representation of a string
  */

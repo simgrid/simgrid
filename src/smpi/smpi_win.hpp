@@ -7,7 +7,9 @@
 #ifndef SMPI_WIN_HPP_INCLUDED
 #define SMPI_WIN_HPP_INCLUDED
 
-#include "private.h"
+#include "src/smpi/smpi_keyvals.hpp"
+#include "xbt/synchro.h"
+
 #include <vector>
 #include <list>
 

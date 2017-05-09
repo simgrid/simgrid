@@ -1,10 +1,10 @@
-/* Copyright (c) 2010, 2013-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
+#include "src/smpi/smpi_comm.hpp"
+#include "src/smpi/smpi_group.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_group, smpi, "Logging specific to SMPI (group)");
 

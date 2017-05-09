@@ -269,6 +269,10 @@ public:
 
   /** Returns the internal implementation of this actor */
   simix::ActorImpl* getImpl();
+
+  /** Retrieve the property value (or nullptr if not set) */
+  const char* property(const char* key);
+  void setProperty(const char* key, const char* value);
 };
 
 /** @ingroup s4u_api

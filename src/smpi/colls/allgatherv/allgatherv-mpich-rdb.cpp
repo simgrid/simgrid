@@ -1,12 +1,13 @@
-/* Copyright (c) 2013-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-        /* Short or medium size message and power-of-two no. of processes. Use
-         * recursive doubling algorithm */
+/* Short or medium size message and power-of-two no. of processes. Use
+ * recursive doubling algorithm */
+
 #include "../colls_private.h"
+#include "src/smpi/smpi_status.hpp"
 
 namespace simgrid{
 namespace smpi{

@@ -15,7 +15,6 @@
 #include <simgrid/datatypes.h>
 #include <smpi/forward.hpp>
 #include <stddef.h>
-#include <xbt/function_types.h>
 #include <xbt/misc.h>
 
 #ifdef _WIN32

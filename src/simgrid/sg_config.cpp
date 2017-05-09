@@ -208,7 +208,7 @@ static void _sg_cfg_cb_model_check_replay(const char *name) {
     MC_record_path = nullptr;
 }
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 extern int _sg_do_model_check_record;
 static void _sg_cfg_cb_model_check_record(const char *name) {
   _sg_do_model_check_record = xbt_cfg_get_boolean(name);
@@ -375,7 +375,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_string("model-check/replay", nullptr, _sg_cfg_cb_model_check_replay,
         "Model-check path to replay (as reported by SimGrid when a violation is reported)");
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
     /* do model-checking-record */
     xbt_cfg_register_boolean("model-check/record", "no", _sg_cfg_cb_model_check_record, "Record the model-checking paths");
 
@@ -471,6 +471,8 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_double("smpi/host-speed", 20000.0, nullptr, "Speed of the host running the simulation (in flop/s). Used to bench the operations.");
     xbt_cfg_register_alias("smpi/host-speed","smpi/running_power");
     xbt_cfg_register_alias("smpi/host-speed","smpi/running-power");
+
+    xbt_cfg_register_boolean("smpi/keep-temps", "no", nullptr, "Whether we should keep the generated temporary files.");
 
     xbt_cfg_register_boolean("smpi/display-timing", "no", nullptr, "Whether we should display the timing after simulation.");
     xbt_cfg_register_alias("smpi/display-timing", "smpi/display_timing");

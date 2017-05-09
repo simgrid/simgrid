@@ -3,8 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "mc/mc.h"
-#include "private.h"
+#include "src/smpi/private.h"
+#include "src/smpi/smpi_datatype.hpp"
+#include "src/smpi/smpi_op.hpp"
+#include "src/smpi/smpi_process.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_op, smpi, "Logging specific to SMPI (op)");
 

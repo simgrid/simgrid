@@ -151,6 +151,18 @@ void Actor::killAll(int resetPid)
   simcall_process_killall(resetPid);
 }
 
+/** Retrieve the property value (or nullptr if not set) */
+const char* Actor::property(const char* key)
+{
+  return (char*)xbt_dict_get_or_null(simcall_process_get_properties(pimpl_), key);
+}
+void Actor::setProperty(const char* key, const char* value)
+{
+  simgrid::simix::kernelImmediate([this, key, value] {
+    xbt_dict_set(simcall_process_get_properties(pimpl_), key, (char*)value, (void_f_pvoid_t) nullptr);
+  });
+}
+
 // ***** this_actor *****
 
 namespace this_actor {

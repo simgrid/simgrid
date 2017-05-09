@@ -77,7 +77,7 @@ void surf_network_model_init_IB() {
   xbt_die("Please activate SMPI support in cmake to use the IB network model.");
 }
 #endif
-#if !HAVE_NS3
+#if !SIMGRID_HAVE_NS3
 void surf_network_model_init_NS3() {
   xbt_die("Please activate NS3 support in cmake and install the dependencies to use the NS3 network model.");
 }
@@ -302,31 +302,31 @@ void sg_version()
   std::printf("This program was linked against %s (git: %s), found in %s.\n",
               SIMGRID_VERSION_STRING, SIMGRID_GIT_VERSION, SIMGRID_INSTALL_PREFIX);
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   std::printf("   Model-checking support compiled in.\n");
 #else
   std::printf("   Model-checking support disabled at compilation.\n");
 #endif
 
-#if HAVE_NS3
+#if SIMGRID_HAVE_NS3
   std::printf("   NS3 support compiled in.\n");
 #else
   std::printf("   NS3 support disabled at compilation.\n");
 #endif
 
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
   std::printf("   Jedule support compiled in.\n");
 #else
   std::printf("   Jedule support disabled at compilation.\n");
 #endif
 
-#if HAVE_LUA
+#if SIMGRID_HAVE_LUA
   std::printf("   Lua support compiled in.\n");
 #else
   std::printf("   Lua support disabled at compilation.\n");
 #endif
 
-#if HAVE_MALLOCATOR
+#if SIMGRID_HAVE_MALLOCATOR
   std::printf("   Mallocator support compiled in.\n");
 #else
   std::printf("   Mallocator support disabled at compilation.\n");

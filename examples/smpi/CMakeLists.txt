@@ -15,7 +15,7 @@ if(enable_smpi)
 
   foreach(x bugged1 bugged2 bugged1_liveness only_send_deterministic mutual_exclusion non_termination1 
             non_termination2 non_termination3 non_termination4)
-    if(HAVE_MC)
+    if(SIMGRID_HAVE_MC)
       add_executable       (smpi_${x} ${CMAKE_CURRENT_SOURCE_DIR}/mc/${x}.c)
       target_link_libraries(smpi_${x} simgrid)
       set_target_properties(smpi_${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mc)
@@ -55,7 +55,7 @@ set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions0.t
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/split_traces                         PARENT_SCOPE)
 
 if(enable_smpi)
-  if(HAVE_MC)
+  if(SIMGRID_HAVE_MC)
     ADD_TESH(smpi-mc-only-send-determinism --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/mc --cd ${CMAKE_BINARY_DIR}/examples/smpi/mc ${CMAKE_HOME_DIRECTORY}/examples/smpi/mc/only_send_deterministic.tesh)
   endif()
 

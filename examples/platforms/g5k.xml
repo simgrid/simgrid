@@ -1,5 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4.1">
 
 <!--
   This file is a manual and imperfect description of the Grid'5000 platform.
@@ -12,9 +13,8 @@
 
 -->
 
-<platform version="4">
-  <AS id="AS_grid5000" routing="Floyd">
-    <AS id="AS_interne" routing="Floyd">
+  <zone id="AS_grid5000" routing="Floyd">
+    <zone id="AS_interne" routing="Floyd">
       <router id="lille"/>
       <router id="paris"/>
       <router id="nancy"/>
@@ -63,8 +63,8 @@
       <route src="marseille" dst="toulouse">
         <link_ctn id="Marseille_Toulouse"/>
       </route>
-    </AS>
-    <AS id="AS_bordeaux" routing="Full">
+    </zone>
+    <zone id="AS_bordeaux" routing="Full">
       <cluster id="AS_bordeplage" prefix="bordeplage-" suffix=".bordeaux.grid5000.fr" radical="1-51" speed="5.2297E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
       <link id="link_bordeplage" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
@@ -74,36 +74,36 @@
       <cluster id="AS_borderline" prefix="borderline-" suffix=".bordeaux.grid5000.fr" radical="1-10" speed="13.357E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
       <link id="link_borderline" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
-      <AS id="gw_AS_bordeaux" routing="Full">
+      <zone id="gw_AS_bordeaux" routing="Full">
         <router id="gw_bordeaux"/>
-      </AS>
+      </zone>
       <link id="link_gw_bordeaux" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
-      <ASroute src="AS_bordeplage" dst="AS_bordereau" gw_src="bordeplage-AS_bordeplage_router.bordeaux.grid5000.fr" gw_dst="bordereau-AS_bordereau_router.bordeaux.grid5000.fr">
+      <zoneRoute src="AS_bordeplage" dst="AS_bordereau" gw_src="bordeplage-AS_bordeplage_router.bordeaux.grid5000.fr" gw_dst="bordereau-AS_bordereau_router.bordeaux.grid5000.fr">
         <link_ctn id="link_bordeplage"/>
         <link_ctn id="link_bordereau"/>
-      </ASroute>
-      <ASroute src="AS_borderline" dst="AS_bordereau" gw_src="borderline-AS_borderline_router.bordeaux.grid5000.fr" gw_dst="bordereau-AS_bordereau_router.bordeaux.grid5000.fr">
+      </zoneRoute>
+      <zoneRoute src="AS_borderline" dst="AS_bordereau" gw_src="borderline-AS_borderline_router.bordeaux.grid5000.fr" gw_dst="bordereau-AS_bordereau_router.bordeaux.grid5000.fr">
         <link_ctn id="link_borderline"/>
         <link_ctn id="link_bordereau"/>
-      </ASroute>
-      <ASroute src="AS_borderline" dst="AS_bordeplage" gw_src="borderline-AS_borderline_router.bordeaux.grid5000.fr" gw_dst="bordeplage-AS_bordeplage_router.bordeaux.grid5000.fr">
+      </zoneRoute>
+      <zoneRoute src="AS_borderline" dst="AS_bordeplage" gw_src="borderline-AS_borderline_router.bordeaux.grid5000.fr" gw_dst="bordeplage-AS_bordeplage_router.bordeaux.grid5000.fr">
         <link_ctn id="link_borderline"/>
         <link_ctn id="link_bordeplage"/>
-      </ASroute>
+      </zoneRoute>
 
-      <ASroute src="AS_bordereau" dst="gw_AS_bordeaux" gw_src="bordereau-AS_bordereau_router.bordeaux.grid5000.fr" gw_dst="gw_bordeaux">
+      <zoneRoute src="AS_bordereau" dst="gw_AS_bordeaux" gw_src="bordereau-AS_bordereau_router.bordeaux.grid5000.fr" gw_dst="gw_bordeaux">
         <link_ctn id="link_bordereau"/>
-      </ASroute>
-      <ASroute src="AS_bordeplage" dst="gw_AS_bordeaux" gw_src="bordeplage-AS_bordeplage_router.bordeaux.grid5000.fr" gw_dst="gw_bordeaux">
+      </zoneRoute>
+      <zoneRoute src="AS_bordeplage" dst="gw_AS_bordeaux" gw_src="bordeplage-AS_bordeplage_router.bordeaux.grid5000.fr" gw_dst="gw_bordeaux">
         <link_ctn id="link_bordeplage"/>
-      </ASroute>
-      <ASroute src="AS_borderline" dst="gw_AS_bordeaux" gw_src="borderline-AS_borderline_router.bordeaux.grid5000.fr" gw_dst="gw_bordeaux">
+      </zoneRoute>
+      <zoneRoute src="AS_borderline" dst="gw_AS_bordeaux" gw_src="borderline-AS_borderline_router.bordeaux.grid5000.fr" gw_dst="gw_bordeaux">
         <link_ctn id="link_borderline"/>
-      </ASroute>
-   </AS>
+      </zoneRoute>
+   </zone>
 
-    <AS id="AS_grenoble" routing="Full">
+    <zone id="AS_grenoble" routing="Full">
       <cluster id="AS_adonis" prefix="adonis-" suffix=".grenoble.grid5000.fr" radical="1-12" speed="23.681E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
       <link id="link_adonis" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
@@ -113,36 +113,36 @@
       <cluster id="AS_genepi" prefix="genepi-" suffix=".grenoble.grid5000.fr" radical="1-34" speed="21.175E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
       <link id="link_genepi" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
-      <AS id="gw_AS_grenoble" routing="Full">
+      <zone id="gw_AS_grenoble" routing="Full">
         <router id="gw_grenoble"/>
-      </AS>
+      </zone>
       <link id="link_gw_grenoble" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
-      <ASroute src="AS_genepi" dst="AS_adonis" gw_src="genepi-AS_genepi_router.grenoble.grid5000.fr" gw_dst="adonis-AS_adonis_router.grenoble.grid5000.fr">
+      <zoneRoute src="AS_genepi" dst="AS_adonis" gw_src="genepi-AS_genepi_router.grenoble.grid5000.fr" gw_dst="adonis-AS_adonis_router.grenoble.grid5000.fr">
         <link_ctn id="link_genepi"/>
         <link_ctn id="link_adonis"/>
-      </ASroute>
-      <ASroute src="AS_edel" dst="AS_adonis" gw_src="edel-AS_edel_router.grenoble.grid5000.fr" gw_dst="adonis-AS_adonis_router.grenoble.grid5000.fr">
+      </zoneRoute>
+      <zoneRoute src="AS_edel" dst="AS_adonis" gw_src="edel-AS_edel_router.grenoble.grid5000.fr" gw_dst="adonis-AS_adonis_router.grenoble.grid5000.fr">
         <link_ctn id="link_edel"/>
         <link_ctn id="link_adonis"/>
-      </ASroute>
-      <ASroute src="AS_edel" dst="AS_genepi" gw_src="edel-AS_edel_router.grenoble.grid5000.fr" gw_dst="genepi-AS_genepi_router.grenoble.grid5000.fr">
+      </zoneRoute>
+      <zoneRoute src="AS_edel" dst="AS_genepi" gw_src="edel-AS_edel_router.grenoble.grid5000.fr" gw_dst="genepi-AS_genepi_router.grenoble.grid5000.fr">
         <link_ctn id="link_edel"/>
         <link_ctn id="link_genepi"/>
-      </ASroute>
+      </zoneRoute>
 
-      <ASroute src="AS_adonis" dst="gw_AS_grenoble" gw_src="adonis-AS_adonis_router.grenoble.grid5000.fr" gw_dst="gw_grenoble">
+      <zoneRoute src="AS_adonis" dst="gw_AS_grenoble" gw_src="adonis-AS_adonis_router.grenoble.grid5000.fr" gw_dst="gw_grenoble">
         <link_ctn id="link_adonis"/>
-      </ASroute>
-      <ASroute src="AS_genepi" dst="gw_AS_grenoble" gw_src="genepi-AS_genepi_router.grenoble.grid5000.fr" gw_dst="gw_grenoble">
+      </zoneRoute>
+      <zoneRoute src="AS_genepi" dst="gw_AS_grenoble" gw_src="genepi-AS_genepi_router.grenoble.grid5000.fr" gw_dst="gw_grenoble">
         <link_ctn id="link_genepi"/>
-      </ASroute>
-      <ASroute src="AS_edel" dst="gw_AS_grenoble" gw_src="edel-AS_edel_router.grenoble.grid5000.fr" gw_dst="gw_grenoble">
+      </zoneRoute>
+      <zoneRoute src="AS_edel" dst="gw_AS_grenoble" gw_src="edel-AS_edel_router.grenoble.grid5000.fr" gw_dst="gw_grenoble">
         <link_ctn id="link_edel"/>
-      </ASroute>
-    </AS>
+      </zoneRoute>
+    </zone>
 
-    <AS id="AS_lille" routing="Full">
+    <zone id="AS_lille" routing="Full">
       <cluster id="AS_chicon" prefix="chicon-" suffix=".lille.grid5000.fr" radical="1-26" speed="8.9618E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
       <link id="link_chicon" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
@@ -155,174 +155,174 @@
       <cluster id="AS_chirloute" prefix="chirloute-" suffix=".lille.grid5000.fr" radical="1-8" speed="24.473E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
       <link id="link_chirloute" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
-      <AS id="gw_AS_lille" routing="Full">
+      <zone id="gw_AS_lille" routing="Full">
         <router id="gw_lille"/>
-      </AS>
+      </zone>
       <link id="link_gw_lille" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
-      <ASroute src="AS_chirloute" dst="AS_chinqchint" gw_src="chirloute-AS_chirloute_router.lille.grid5000.fr" gw_dst="chinqchint-AS_chinqchint_router.lille.grid5000.fr">
+      <zoneRoute src="AS_chirloute" dst="AS_chinqchint" gw_src="chirloute-AS_chirloute_router.lille.grid5000.fr" gw_dst="chinqchint-AS_chinqchint_router.lille.grid5000.fr">
         <link_ctn id="link_chirloute"/>
         <link_ctn id="link_chinqchint"/>
-      </ASroute>
-      <ASroute src="AS_chimint" dst="AS_chinqchint" gw_src="chimint-AS_chimint_router.lille.grid5000.fr" gw_dst="chinqchint-AS_chinqchint_router.lille.grid5000.fr">
+      </zoneRoute>
+      <zoneRoute src="AS_chimint" dst="AS_chinqchint" gw_src="chimint-AS_chimint_router.lille.grid5000.fr" gw_dst="chinqchint-AS_chinqchint_router.lille.grid5000.fr">
         <link_ctn id="link_chimint"/>
         <link_ctn id="link_chinqchint"/>
-      </ASroute>
-      <ASroute src="AS_chimint" dst="AS_chirloute" gw_src="chimint-AS_chimint_router.lille.grid5000.fr" gw_dst="chirloute-AS_chirloute_router.lille.grid5000.fr">
+      </zoneRoute>
+      <zoneRoute src="AS_chimint" dst="AS_chirloute" gw_src="chimint-AS_chimint_router.lille.grid5000.fr" gw_dst="chirloute-AS_chirloute_router.lille.grid5000.fr">
         <link_ctn id="link_chimint"/>
         <link_ctn id="link_chirloute"/>
-      </ASroute>
+      </zoneRoute>
  
-      <ASroute src="AS_chicon" dst="AS_chinqchint" gw_src="chicon-AS_chicon_router.lille.grid5000.fr" gw_dst="chinqchint-AS_chinqchint_router.lille.grid5000.fr">
+      <zoneRoute src="AS_chicon" dst="AS_chinqchint" gw_src="chicon-AS_chicon_router.lille.grid5000.fr" gw_dst="chinqchint-AS_chinqchint_router.lille.grid5000.fr">
         <link_ctn id="link_chicon"/>
         <link_ctn id="link_chinqchint"/>
-      </ASroute>
-      <ASroute src="AS_chicon" dst="AS_chirloute" gw_src="chicon-AS_chicon_router.lille.grid5000.fr" gw_dst="chirloute-AS_chirloute_router.lille.grid5000.fr">
+      </zoneRoute>
+      <zoneRoute src="AS_chicon" dst="AS_chirloute" gw_src="chicon-AS_chicon_router.lille.grid5000.fr" gw_dst="chirloute-AS_chirloute_router.lille.grid5000.fr">
         <link_ctn id="link_chicon"/>
         <link_ctn id="link_chirloute"/>
-      </ASroute>
-      <ASroute src="AS_chicon" dst="AS_chimint" gw_src="chicon-AS_chicon_router.lille.grid5000.fr" gw_dst="chimint-AS_chimint_router.lille.grid5000.fr">
+      </zoneRoute>
+      <zoneRoute src="AS_chicon" dst="AS_chimint" gw_src="chicon-AS_chicon_router.lille.grid5000.fr" gw_dst="chimint-AS_chimint_router.lille.grid5000.fr">
         <link_ctn id="link_chicon"/>
         <link_ctn id="link_chimint"/>
-      </ASroute>
+      </zoneRoute>
 
-      <ASroute src="AS_chinqchint" dst="gw_AS_lille" gw_src="chinqchint-AS_chinqchint_router.lille.grid5000.fr" gw_dst="gw_lille">
+      <zoneRoute src="AS_chinqchint" dst="gw_AS_lille" gw_src="chinqchint-AS_chinqchint_router.lille.grid5000.fr" gw_dst="gw_lille">
         <link_ctn id="link_chinqchint"/>
-      </ASroute>
-      <ASroute src="AS_chirloute" dst="gw_AS_lille" gw_src="chirloute-AS_chirloute_router.lille.grid5000.fr" gw_dst="gw_lille">
+      </zoneRoute>
+      <zoneRoute src="AS_chirloute" dst="gw_AS_lille" gw_src="chirloute-AS_chirloute_router.lille.grid5000.fr" gw_dst="gw_lille">
         <link_ctn id="link_chirloute"/>
-      </ASroute>
-      <ASroute src="AS_chimint" dst="gw_AS_lille" gw_src="chimint-AS_chimint_router.lille.grid5000.fr" gw_dst="gw_lille">
+      </zoneRoute>
+      <zoneRoute src="AS_chimint" dst="gw_AS_lille" gw_src="chimint-AS_chimint_router.lille.grid5000.fr" gw_dst="gw_lille">
         <link_ctn id="link_chimint"/>
-      </ASroute>
-      <ASroute src="AS_chicon" dst="gw_AS_lille" gw_src="chicon-AS_chicon_router.lille.grid5000.fr" gw_dst="gw_lille">
+      </zoneRoute>
+      <zoneRoute src="AS_chicon" dst="gw_AS_lille" gw_src="chicon-AS_chicon_router.lille.grid5000.fr" gw_dst="gw_lille">
         <link_ctn id="link_chicon"/>
-      </ASroute>
-    </AS>
+      </zoneRoute>
+    </zone>
 
-    <AS id="AS_lyon" routing="Full">
+    <zone id="AS_lyon" routing="Full">
       <cluster id="AS_capricorne" prefix="capricorne-" suffix=".lyon.grid5000.fr" radical="1-56" speed="4.7233E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
       <link id="link_capricorne" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
       <cluster id="AS_sagittaire" prefix="sagittaire-" suffix=".lyon.grid5000.fr" radical="1-79" speed="5.6693E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
       <link id="link_sagittaire" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
-      <AS id="gw_AS_lyon" routing="Full">
+      <zone id="gw_AS_lyon" routing="Full">
         <router id="gw_lyon"/>
-      </AS>
+      </zone>
       <link id="link_gw_lyon" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
-      <ASroute src="AS_capricorne" dst="AS_sagittaire" gw_src="capricorne-AS_capricorne_router.lyon.grid5000.fr" gw_dst="sagittaire-AS_sagittaire_router.lyon.grid5000.fr">
+      <zoneRoute src="AS_capricorne" dst="AS_sagittaire" gw_src="capricorne-AS_capricorne_router.lyon.grid5000.fr" gw_dst="sagittaire-AS_sagittaire_router.lyon.grid5000.fr">
         <link_ctn id="link_capricorne"/>
         <link_ctn id="link_sagittaire"/>
-      </ASroute>
+      </zoneRoute>
 
-      <ASroute src="AS_sagittaire" dst="gw_AS_lyon" gw_src="sagittaire-AS_sagittaire_router.lyon.grid5000.fr" gw_dst="gw_lyon">
+      <zoneRoute src="AS_sagittaire" dst="gw_AS_lyon" gw_src="sagittaire-AS_sagittaire_router.lyon.grid5000.fr" gw_dst="gw_lyon">
         <link_ctn id="link_sagittaire"/>
-      </ASroute>
-      <ASroute src="AS_capricorne" dst="gw_AS_lyon" gw_src="capricorne-AS_capricorne_router.lyon.grid5000.fr" gw_dst="gw_lyon">
+      </zoneRoute>
+      <zoneRoute src="AS_capricorne" dst="gw_AS_lyon" gw_src="capricorne-AS_capricorne_router.lyon.grid5000.fr" gw_dst="gw_lyon">
         <link_ctn id="link_capricorne"/>
-      </ASroute>
-    </AS>
+      </zoneRoute>
+    </zone>
 
-    <AS id="AS_nancy" routing="Full">
-      <AS id="AS_graphene" routing="Full">
+    <zone id="AS_nancy" routing="Full">
+      <zone id="AS_graphene" routing="Full">
         <cluster id="AS_sgraphene1" prefix="graphene-" suffix=".nancy.grid5000.fr" radical="1-39" speed="16.673E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
         <cluster id="AS_sgraphene2" prefix="graphene-" suffix=".nancy.grid5000.fr" radical="40-74" speed="16.673E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
         <cluster id="AS_sgraphene3" prefix="graphene-" suffix=".nancy.grid5000.fr" radical="75-104" speed="16.673E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
         <cluster id="AS_sgraphene4" prefix="graphene-" suffix=".nancy.grid5000.fr" radical="105-144" speed="16.673E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
 
-        <AS id="gw_AS_graphene" routing="Full">
+        <zone id="gw_AS_graphene" routing="Full">
           <router id="graphene-AS_graphene_router.nancy.grid5000.fr"/>
-        </AS>
+        </zone>
         <link id="switch-graphene" bandwidth="1250000000Bps" latency="5E-4s"/>
 
-        <ASroute src="AS_sgraphene2" dst="AS_sgraphene4" gw_src="graphene-AS_sgraphene2_router.nancy.grid5000.fr" gw_dst="graphene-AS_sgraphene4_router.nancy.grid5000.fr">
+        <zoneRoute src="AS_sgraphene2" dst="AS_sgraphene4" gw_src="graphene-AS_sgraphene2_router.nancy.grid5000.fr" gw_dst="graphene-AS_sgraphene4_router.nancy.grid5000.fr">
           <link_ctn id="switch-graphene"/>
-        </ASroute>
-        <ASroute src="AS_sgraphene3" dst="AS_sgraphene4" gw_src="graphene-AS_sgraphene3_router.nancy.grid5000.fr" gw_dst="graphene-AS_sgraphene4_router.nancy.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_sgraphene3" dst="AS_sgraphene4" gw_src="graphene-AS_sgraphene3_router.nancy.grid5000.fr" gw_dst="graphene-AS_sgraphene4_router.nancy.grid5000.fr">
           <link_ctn id="switch-graphene"/>
-        </ASroute>
-        <ASroute src="AS_sgraphene3" dst="AS_sgraphene2" gw_src="graphene-AS_sgraphene3_router.nancy.grid5000.fr" gw_dst="graphene-AS_sgraphene2_router.nancy.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_sgraphene3" dst="AS_sgraphene2" gw_src="graphene-AS_sgraphene3_router.nancy.grid5000.fr" gw_dst="graphene-AS_sgraphene2_router.nancy.grid5000.fr">
           <link_ctn id="switch-graphene"/>
-        </ASroute>
-        <ASroute src="AS_sgraphene1" dst="AS_sgraphene4" gw_src="graphene-AS_sgraphene1_router.nancy.grid5000.fr" gw_dst="graphene-AS_sgraphene4_router.nancy.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_sgraphene1" dst="AS_sgraphene4" gw_src="graphene-AS_sgraphene1_router.nancy.grid5000.fr" gw_dst="graphene-AS_sgraphene4_router.nancy.grid5000.fr">
           <link_ctn id="switch-graphene"/>
-        </ASroute>
-        <ASroute src="AS_sgraphene1" dst="AS_sgraphene2" gw_src="graphene-AS_sgraphene1_router.nancy.grid5000.fr" gw_dst="graphene-AS_sgraphene2_router.nancy.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_sgraphene1" dst="AS_sgraphene2" gw_src="graphene-AS_sgraphene1_router.nancy.grid5000.fr" gw_dst="graphene-AS_sgraphene2_router.nancy.grid5000.fr">
           <link_ctn id="switch-graphene"/>
-        </ASroute>
-        <ASroute src="AS_sgraphene1" dst="AS_sgraphene3" gw_src="graphene-AS_sgraphene1_router.nancy.grid5000.fr" gw_dst="graphene-AS_sgraphene3_router.nancy.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_sgraphene1" dst="AS_sgraphene3" gw_src="graphene-AS_sgraphene1_router.nancy.grid5000.fr" gw_dst="graphene-AS_sgraphene3_router.nancy.grid5000.fr">
           <link_ctn id="switch-graphene"/>
-        </ASroute>
+        </zoneRoute>
 
-        <ASroute src="AS_sgraphene4" dst="gw_AS_graphene" gw_src="graphene-AS_sgraphene4_router.nancy.grid5000.fr" gw_dst="graphene-AS_graphene_router.nancy.grid5000.fr">
+        <zoneRoute src="AS_sgraphene4" dst="gw_AS_graphene" gw_src="graphene-AS_sgraphene4_router.nancy.grid5000.fr" gw_dst="graphene-AS_graphene_router.nancy.grid5000.fr">
           <link_ctn id="switch-graphene"/>
-        </ASroute>
-        <ASroute src="AS_sgraphene2" dst="gw_AS_graphene" gw_src="graphene-AS_sgraphene2_router.nancy.grid5000.fr" gw_dst="graphene-AS_graphene_router.nancy.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_sgraphene2" dst="gw_AS_graphene" gw_src="graphene-AS_sgraphene2_router.nancy.grid5000.fr" gw_dst="graphene-AS_graphene_router.nancy.grid5000.fr">
           <link_ctn id="switch-graphene"/>
-        </ASroute>
-        <ASroute src="AS_sgraphene3" dst="gw_AS_graphene" gw_src="graphene-AS_sgraphene3_router.nancy.grid5000.fr" gw_dst="graphene-AS_graphene_router.nancy.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_sgraphene3" dst="gw_AS_graphene" gw_src="graphene-AS_sgraphene3_router.nancy.grid5000.fr" gw_dst="graphene-AS_graphene_router.nancy.grid5000.fr">
           <link_ctn id="switch-graphene"/>
-        </ASroute>
-        <ASroute src="AS_sgraphene1" dst="gw_AS_graphene" gw_src="graphene-AS_sgraphene1_router.nancy.grid5000.fr" gw_dst="graphene-AS_graphene_router.nancy.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_sgraphene1" dst="gw_AS_graphene" gw_src="graphene-AS_sgraphene1_router.nancy.grid5000.fr" gw_dst="graphene-AS_graphene_router.nancy.grid5000.fr">
           <link_ctn id="switch-graphene"/>
-        </ASroute>
-        </AS>
+        </zoneRoute>
+        </zone>
       <link id="link_graphene" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
-      <AS id="AS_griffon" routing="Full">
+      <zone id="AS_griffon" routing="Full">
         <cluster id="AS_sgriffon1" prefix="griffon-" suffix=".nancy.grid5000.fr" radical="1-29,58-60" speed="20.678E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
         <cluster id="AS_sgriffon2" prefix="griffon-" suffix=".nancy.grid5000.fr" radical="30-57" speed="20.678E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
         <cluster id="AS_sgriffon3" prefix="griffon-" suffix=".nancy.grid5000.fr" radical="61-92" speed="20.678E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
 
-        <AS id="gw_AS_griffon" routing="Full">
+        <zone id="gw_AS_griffon" routing="Full">
           <router id="griffon-AS_griffon_router.nancy.grid5000.fr"/>
-        </AS>
+        </zone>
         <link id="switch-griffon" bandwidth="1250000000Bps" latency="5E-4s"/>
 
-        <ASroute src="AS_sgriffon2" dst="AS_sgriffon1" gw_src="griffon-AS_sgriffon2_router.nancy.grid5000.fr" gw_dst="griffon-AS_sgriffon1_router.nancy.grid5000.fr">
+        <zoneRoute src="AS_sgriffon2" dst="AS_sgriffon1" gw_src="griffon-AS_sgriffon2_router.nancy.grid5000.fr" gw_dst="griffon-AS_sgriffon1_router.nancy.grid5000.fr">
           <link_ctn id="switch-griffon"/>
-        </ASroute>
-        <ASroute src="AS_sgriffon3" dst="AS_sgriffon1" gw_src="griffon-AS_sgriffon3_router.nancy.grid5000.fr" gw_dst="griffon-AS_sgriffon1_router.nancy.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_sgriffon3" dst="AS_sgriffon1" gw_src="griffon-AS_sgriffon3_router.nancy.grid5000.fr" gw_dst="griffon-AS_sgriffon1_router.nancy.grid5000.fr">
           <link_ctn id="switch-griffon"/>
-        </ASroute>
-        <ASroute src="AS_sgriffon3" dst="AS_sgriffon2" gw_src="griffon-AS_sgriffon3_router.nancy.grid5000.fr" gw_dst="griffon-AS_sgriffon2_router.nancy.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_sgriffon3" dst="AS_sgriffon2" gw_src="griffon-AS_sgriffon3_router.nancy.grid5000.fr" gw_dst="griffon-AS_sgriffon2_router.nancy.grid5000.fr">
           <link_ctn id="switch-griffon"/>
-        </ASroute>
+        </zoneRoute>
 
-        <ASroute src="AS_sgriffon1" dst="gw_AS_griffon" gw_src="griffon-AS_sgriffon1_router.nancy.grid5000.fr" gw_dst="griffon-AS_griffon_router.nancy.grid5000.fr">
+        <zoneRoute src="AS_sgriffon1" dst="gw_AS_griffon" gw_src="griffon-AS_sgriffon1_router.nancy.grid5000.fr" gw_dst="griffon-AS_griffon_router.nancy.grid5000.fr">
           <link_ctn id="switch-griffon"/>
-        </ASroute>
-        <ASroute src="AS_sgriffon2" dst="gw_AS_griffon" gw_src="griffon-AS_sgriffon2_router.nancy.grid5000.fr" gw_dst="griffon-AS_griffon_router.nancy.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_sgriffon2" dst="gw_AS_griffon" gw_src="griffon-AS_sgriffon2_router.nancy.grid5000.fr" gw_dst="griffon-AS_griffon_router.nancy.grid5000.fr">
           <link_ctn id="switch-griffon"/>
-        </ASroute>
-        <ASroute src="AS_sgriffon3" dst="gw_AS_griffon" gw_src="griffon-AS_sgriffon3_router.nancy.grid5000.fr" gw_dst="griffon-AS_griffon_router.nancy.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_sgriffon3" dst="gw_AS_griffon" gw_src="griffon-AS_sgriffon3_router.nancy.grid5000.fr" gw_dst="griffon-AS_griffon_router.nancy.grid5000.fr">
           <link_ctn id="switch-griffon"/>
-        </ASroute>
-        </AS>
+        </zoneRoute>
+        </zone>
       <link id="link_griffon" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
-      <AS id="gw_AS_nancy" routing="Full">
+      <zone id="gw_AS_nancy" routing="Full">
         <router id="gw_nancy"/>
-      </AS>
+      </zone>
       <link id="link_gw_nancy" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
-      <ASroute src="AS_griffon" dst="AS_graphene" gw_src="griffon-AS_griffon_router.nancy.grid5000.fr" gw_dst="graphene-AS_graphene_router.nancy.grid5000.fr">
+      <zoneRoute src="AS_griffon" dst="AS_graphene" gw_src="griffon-AS_griffon_router.nancy.grid5000.fr" gw_dst="graphene-AS_graphene_router.nancy.grid5000.fr">
         <link_ctn id="link_griffon"/>
         <link_ctn id="link_graphene"/>
-      </ASroute>
+      </zoneRoute>
 
-      <ASroute src="AS_graphene" dst="gw_AS_nancy" gw_src="graphene-AS_graphene_router.nancy.grid5000.fr" gw_dst="gw_nancy">
+      <zoneRoute src="AS_graphene" dst="gw_AS_nancy" gw_src="graphene-AS_graphene_router.nancy.grid5000.fr" gw_dst="gw_nancy">
         <link_ctn id="link_graphene"/>
-      </ASroute>
-      <ASroute src="AS_griffon" dst="gw_AS_nancy" gw_src="griffon-AS_griffon_router.nancy.grid5000.fr" gw_dst="gw_nancy">
+      </zoneRoute>
+      <zoneRoute src="AS_griffon" dst="gw_AS_nancy" gw_src="griffon-AS_griffon_router.nancy.grid5000.fr" gw_dst="gw_nancy">
         <link_ctn id="link_griffon"/>
-      </ASroute>
-    </AS>
+      </zoneRoute>
+    </zone>
 
-    <AS id="AS_orsay" routing="Full">
-      <AS id="AS_gdx" routing="Full">
+    <zone id="AS_orsay" routing="Full">
+      <zone id="AS_gdx" routing="Full">
         <cluster id="AS_netgear01.orsay.grid5000.fr" prefix="gdx-" suffix=".orsay.grid5000.fr" radical="1-36" speed="4.7153E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
         <cluster id="AS_netgear02.orsay.grid5000.fr" prefix="gdx-" suffix=".orsay.grid5000.fr" radical="37-72" speed="4.7153E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
         <cluster id="AS_netgear03.orsay.grid5000.fr" prefix="gdx-" suffix=".orsay.grid5000.fr" radical="73-108" speed="4.7153E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
@@ -335,235 +335,235 @@
         <cluster id="AS_switch14.orsay.grid5000.fr" prefix="gdx-" suffix=".orsay.grid5000.fr" radical="181-186" speed="4.7153E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
         <cluster id="AS_switch15.orsay.grid5000.fr" prefix="gdx-" suffix=".orsay.grid5000.fr" radical="187-192" speed="4.7153E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
 
-        <AS id="gw_AS_gdx" routing="Full">
+        <zone id="gw_AS_gdx" routing="Full">
           <router id="gdx-AS_gdx_router.orsay.grid5000.fr"/>
-        </AS>
+        </zone>
         <link id="switch-gdx" bandwidth="1250000000Bps" latency="5E-4s"/>
 
-        <ASroute src="AS_netgear06.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        <zoneRoute src="AS_netgear06.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear08.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear08.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear08.orsay.grid5000.fr" dst="AS_netgear06.orsay.grid5000.fr" gw_src="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear08.orsay.grid5000.fr" dst="AS_netgear06.orsay.grid5000.fr" gw_src="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_switch14.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_switch14.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_switch14.orsay.grid5000.fr" dst="AS_netgear06.orsay.grid5000.fr" gw_src="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_switch14.orsay.grid5000.fr" dst="AS_netgear06.orsay.grid5000.fr" gw_src="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_switch14.orsay.grid5000.fr" dst="AS_netgear08.orsay.grid5000.fr" gw_src="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_switch14.orsay.grid5000.fr" dst="AS_netgear08.orsay.grid5000.fr" gw_src="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear05.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear05.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear05.orsay.grid5000.fr" dst="AS_netgear06.orsay.grid5000.fr" gw_src="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear05.orsay.grid5000.fr" dst="AS_netgear06.orsay.grid5000.fr" gw_src="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear05.orsay.grid5000.fr" dst="AS_netgear08.orsay.grid5000.fr" gw_src="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear05.orsay.grid5000.fr" dst="AS_netgear08.orsay.grid5000.fr" gw_src="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear05.orsay.grid5000.fr" dst="AS_switch14.orsay.grid5000.fr" gw_src="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear05.orsay.grid5000.fr" dst="AS_switch14.orsay.grid5000.fr" gw_src="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear03.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear03.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear03.orsay.grid5000.fr" dst="AS_netgear06.orsay.grid5000.fr" gw_src="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear03.orsay.grid5000.fr" dst="AS_netgear06.orsay.grid5000.fr" gw_src="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear03.orsay.grid5000.fr" dst="AS_netgear08.orsay.grid5000.fr" gw_src="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear03.orsay.grid5000.fr" dst="AS_netgear08.orsay.grid5000.fr" gw_src="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear03.orsay.grid5000.fr" dst="AS_switch14.orsay.grid5000.fr" gw_src="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear03.orsay.grid5000.fr" dst="AS_switch14.orsay.grid5000.fr" gw_src="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear03.orsay.grid5000.fr" dst="AS_netgear05.orsay.grid5000.fr" gw_src="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear03.orsay.grid5000.fr" dst="AS_netgear05.orsay.grid5000.fr" gw_src="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear07.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear07.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear07.orsay.grid5000.fr" dst="AS_netgear06.orsay.grid5000.fr" gw_src="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear07.orsay.grid5000.fr" dst="AS_netgear06.orsay.grid5000.fr" gw_src="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear07.orsay.grid5000.fr" dst="AS_netgear08.orsay.grid5000.fr" gw_src="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear07.orsay.grid5000.fr" dst="AS_netgear08.orsay.grid5000.fr" gw_src="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear07.orsay.grid5000.fr" dst="AS_switch14.orsay.grid5000.fr" gw_src="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear07.orsay.grid5000.fr" dst="AS_switch14.orsay.grid5000.fr" gw_src="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear07.orsay.grid5000.fr" dst="AS_netgear05.orsay.grid5000.fr" gw_src="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear07.orsay.grid5000.fr" dst="AS_netgear05.orsay.grid5000.fr" gw_src="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear07.orsay.grid5000.fr" dst="AS_netgear03.orsay.grid5000.fr" gw_src="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear07.orsay.grid5000.fr" dst="AS_netgear03.orsay.grid5000.fr" gw_src="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear01.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear01.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear01.orsay.grid5000.fr" dst="AS_netgear06.orsay.grid5000.fr" gw_src="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear01.orsay.grid5000.fr" dst="AS_netgear06.orsay.grid5000.fr" gw_src="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear01.orsay.grid5000.fr" dst="AS_netgear08.orsay.grid5000.fr" gw_src="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear01.orsay.grid5000.fr" dst="AS_netgear08.orsay.grid5000.fr" gw_src="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear01.orsay.grid5000.fr" dst="AS_switch14.orsay.grid5000.fr" gw_src="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear01.orsay.grid5000.fr" dst="AS_switch14.orsay.grid5000.fr" gw_src="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear01.orsay.grid5000.fr" dst="AS_netgear05.orsay.grid5000.fr" gw_src="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear01.orsay.grid5000.fr" dst="AS_netgear05.orsay.grid5000.fr" gw_src="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear01.orsay.grid5000.fr" dst="AS_netgear03.orsay.grid5000.fr" gw_src="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear01.orsay.grid5000.fr" dst="AS_netgear03.orsay.grid5000.fr" gw_src="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear01.orsay.grid5000.fr" dst="AS_netgear07.orsay.grid5000.fr" gw_src="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear01.orsay.grid5000.fr" dst="AS_netgear07.orsay.grid5000.fr" gw_src="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_switch15.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_switch15.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_switch15.orsay.grid5000.fr" dst="AS_netgear06.orsay.grid5000.fr" gw_src="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_switch15.orsay.grid5000.fr" dst="AS_netgear06.orsay.grid5000.fr" gw_src="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_switch15.orsay.grid5000.fr" dst="AS_netgear08.orsay.grid5000.fr" gw_src="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_switch15.orsay.grid5000.fr" dst="AS_netgear08.orsay.grid5000.fr" gw_src="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_switch15.orsay.grid5000.fr" dst="AS_switch14.orsay.grid5000.fr" gw_src="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_switch15.orsay.grid5000.fr" dst="AS_switch14.orsay.grid5000.fr" gw_src="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_switch15.orsay.grid5000.fr" dst="AS_netgear05.orsay.grid5000.fr" gw_src="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_switch15.orsay.grid5000.fr" dst="AS_netgear05.orsay.grid5000.fr" gw_src="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_switch15.orsay.grid5000.fr" dst="AS_netgear03.orsay.grid5000.fr" gw_src="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_switch15.orsay.grid5000.fr" dst="AS_netgear03.orsay.grid5000.fr" gw_src="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_switch15.orsay.grid5000.fr" dst="AS_netgear07.orsay.grid5000.fr" gw_src="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_switch15.orsay.grid5000.fr" dst="AS_netgear07.orsay.grid5000.fr" gw_src="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_switch15.orsay.grid5000.fr" dst="AS_netgear01.orsay.grid5000.fr" gw_src="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_switch15.orsay.grid5000.fr" dst="AS_netgear01.orsay.grid5000.fr" gw_src="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear02.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear02.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear02.orsay.grid5000.fr" dst="AS_netgear06.orsay.grid5000.fr" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear02.orsay.grid5000.fr" dst="AS_netgear06.orsay.grid5000.fr" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear02.orsay.grid5000.fr" dst="AS_netgear08.orsay.grid5000.fr" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear02.orsay.grid5000.fr" dst="AS_netgear08.orsay.grid5000.fr" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear02.orsay.grid5000.fr" dst="AS_switch14.orsay.grid5000.fr" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear02.orsay.grid5000.fr" dst="AS_switch14.orsay.grid5000.fr" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear02.orsay.grid5000.fr" dst="AS_netgear05.orsay.grid5000.fr" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear02.orsay.grid5000.fr" dst="AS_netgear05.orsay.grid5000.fr" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear02.orsay.grid5000.fr" dst="AS_netgear03.orsay.grid5000.fr" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear02.orsay.grid5000.fr" dst="AS_netgear03.orsay.grid5000.fr" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear02.orsay.grid5000.fr" dst="AS_netgear07.orsay.grid5000.fr" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear02.orsay.grid5000.fr" dst="AS_netgear07.orsay.grid5000.fr" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear02.orsay.grid5000.fr" dst="AS_netgear01.orsay.grid5000.fr" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear02.orsay.grid5000.fr" dst="AS_netgear01.orsay.grid5000.fr" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear02.orsay.grid5000.fr" dst="AS_switch15.orsay.grid5000.fr" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear02.orsay.grid5000.fr" dst="AS_switch15.orsay.grid5000.fr" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear04.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear04.orsay.grid5000.fr" dst="AS_procurve-bmc-09.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear04.orsay.grid5000.fr" dst="AS_netgear06.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear04.orsay.grid5000.fr" dst="AS_netgear06.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear04.orsay.grid5000.fr" dst="AS_netgear08.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear04.orsay.grid5000.fr" dst="AS_netgear08.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear04.orsay.grid5000.fr" dst="AS_switch14.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear04.orsay.grid5000.fr" dst="AS_switch14.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear04.orsay.grid5000.fr" dst="AS_netgear05.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear04.orsay.grid5000.fr" dst="AS_netgear05.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear04.orsay.grid5000.fr" dst="AS_netgear03.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear04.orsay.grid5000.fr" dst="AS_netgear03.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear04.orsay.grid5000.fr" dst="AS_netgear07.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear04.orsay.grid5000.fr" dst="AS_netgear07.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear04.orsay.grid5000.fr" dst="AS_netgear01.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear04.orsay.grid5000.fr" dst="AS_netgear01.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear04.orsay.grid5000.fr" dst="AS_switch15.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear04.orsay.grid5000.fr" dst="AS_switch15.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear04.orsay.grid5000.fr" dst="AS_netgear02.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear04.orsay.grid5000.fr" dst="AS_netgear02.orsay.grid5000.fr" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
+        </zoneRoute>
 
-        <ASroute src="AS_procurve-bmc-09.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
+        <zoneRoute src="AS_procurve-bmc-09.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_procurve-bmc-09.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear06.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear06.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_netgear06.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear08.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear08.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_netgear08.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_switch14.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_switch14.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_switch14.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear05.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear05.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_netgear05.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear03.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear03.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_netgear03.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear07.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear07.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_netgear07.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear01.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear01.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_netgear01.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_switch15.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_switch15.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_switch15.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear02.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear02.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_netgear02.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-        <ASroute src="AS_netgear04.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
+        </zoneRoute>
+        <zoneRoute src="AS_netgear04.orsay.grid5000.fr" dst="gw_AS_gdx" gw_src="gdx-AS_netgear04.orsay.grid5000.fr_router.orsay.grid5000.fr" gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr">
           <link_ctn id="switch-gdx"/>
-        </ASroute>
-      </AS>
+        </zoneRoute>
+      </zone>
       <link id="link_gdx" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
       <cluster id="AS_netgdx" prefix="netgdx-" suffix=".orsay.grid5000.fr" radical="1-30" speed="4.7144E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
       <link id="link_netgdx" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
-      <AS id="gw_AS_orsay" routing="Full">
+      <zone id="gw_AS_orsay" routing="Full">
         <router id="gw_orsay"/>
-      </AS>
+      </zone>
       <link id="link_gw_orsay" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
-      <ASroute src="AS_gdx" dst="AS_netgdx" gw_src="gdx-AS_gdx_router.orsay.grid5000.fr" gw_dst="netgdx-AS_netgdx_router.orsay.grid5000.fr">
+      <zoneRoute src="AS_gdx" dst="AS_netgdx" gw_src="gdx-AS_gdx_router.orsay.grid5000.fr" gw_dst="netgdx-AS_netgdx_router.orsay.grid5000.fr">
         <link_ctn id="link_gdx"/>
         <link_ctn id="link_netgdx"/>
-      </ASroute>
+      </zoneRoute>
 
-      <ASroute src="AS_netgdx" dst="gw_AS_orsay" gw_src="netgdx-AS_netgdx_router.orsay.grid5000.fr" gw_dst="gw_orsay">
+      <zoneRoute src="AS_netgdx" dst="gw_AS_orsay" gw_src="netgdx-AS_netgdx_router.orsay.grid5000.fr" gw_dst="gw_orsay">
         <link_ctn id="link_netgdx"/>
-      </ASroute>
-      <ASroute src="AS_gdx" dst="gw_AS_orsay" gw_src="gdx-AS_gdx_router.orsay.grid5000.fr" gw_dst="gw_orsay">
+      </zoneRoute>
+      <zoneRoute src="AS_gdx" dst="gw_AS_orsay" gw_src="gdx-AS_gdx_router.orsay.grid5000.fr" gw_dst="gw_orsay">
         <link_ctn id="link_gdx"/>
-      </ASroute>
-    </AS>
+      </zoneRoute>
+    </zone>
 
-    <AS id="AS_rennes" routing="Full">
+    <zone id="AS_rennes" routing="Full">
       <cluster id="AS_paradent" prefix="paradent-" suffix=".rennes.grid5000.fr" radical="1-64" speed="21.496E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
       <link id="link_paradent" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
@@ -576,51 +576,51 @@
       <cluster id="AS_parapluie" prefix="parapluie-" suffix=".rennes.grid5000.fr" radical="1-40" speed="27.391E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
       <link id="link_parapluie" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
-      <AS id="gw_AS_rennes" routing="Full">
+      <zone id="gw_AS_rennes" routing="Full">
         <router id="gw_rennes"/>
-      </AS>
+      </zone>
       <link id="link_gw_rennes" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
-      <ASroute src="AS_parapluie" dst="AS_paradent" gw_src="parapluie-AS_parapluie_router.rennes.grid5000.fr" gw_dst="paradent-AS_paradent_router.rennes.grid5000.fr">
+      <zoneRoute src="AS_parapluie" dst="AS_paradent" gw_src="parapluie-AS_parapluie_router.rennes.grid5000.fr" gw_dst="paradent-AS_paradent_router.rennes.grid5000.fr">
         <link_ctn id="link_parapluie"/>
         <link_ctn id="link_paradent"/>
-      </ASroute>
-      <ASroute src="AS_parapide" dst="AS_paradent" gw_src="parapide-AS_parapide_router.rennes.grid5000.fr" gw_dst="paradent-AS_paradent_router.rennes.grid5000.fr">
+      </zoneRoute>
+      <zoneRoute src="AS_parapide" dst="AS_paradent" gw_src="parapide-AS_parapide_router.rennes.grid5000.fr" gw_dst="paradent-AS_paradent_router.rennes.grid5000.fr">
         <link_ctn id="link_parapide"/>
         <link_ctn id="link_paradent"/>
-      </ASroute>
-      <ASroute src="AS_parapide" dst="AS_parapluie" gw_src="parapide-AS_parapide_router.rennes.grid5000.fr" gw_dst="parapluie-AS_parapluie_router.rennes.grid5000.fr">
+      </zoneRoute>
+      <zoneRoute src="AS_parapide" dst="AS_parapluie" gw_src="parapide-AS_parapide_router.rennes.grid5000.fr" gw_dst="parapluie-AS_parapluie_router.rennes.grid5000.fr">
         <link_ctn id="link_parapide"/>
         <link_ctn id="link_parapluie"/>
-      </ASroute>
-      <ASroute src="AS_paramount" dst="AS_paradent" gw_src="paramount-AS_paramount_router.rennes.grid5000.fr" gw_dst="paradent-AS_paradent_router.rennes.grid5000.fr">
+      </zoneRoute>
+      <zoneRoute src="AS_paramount" dst="AS_paradent" gw_src="paramount-AS_paramount_router.rennes.grid5000.fr" gw_dst="paradent-AS_paradent_router.rennes.grid5000.fr">
         <link_ctn id="link_paramount"/>
         <link_ctn id="link_paradent"/>
-      </ASroute>
-      <ASroute src="AS_paramount" dst="AS_parapluie" gw_src="paramount-AS_paramount_router.rennes.grid5000.fr" gw_dst="parapluie-AS_parapluie_router.rennes.grid5000.fr">
+      </zoneRoute>
+      <zoneRoute src="AS_paramount" dst="AS_parapluie" gw_src="paramount-AS_paramount_router.rennes.grid5000.fr" gw_dst="parapluie-AS_parapluie_router.rennes.grid5000.fr">
         <link_ctn id="link_paramount"/>
         <link_ctn id="link_parapluie"/>
-      </ASroute>
-      <ASroute src="AS_paramount" dst="AS_parapide" gw_src="paramount-AS_paramount_router.rennes.grid5000.fr" gw_dst="parapide-AS_parapide_router.rennes.grid5000.fr">
+      </zoneRoute>
+      <zoneRoute src="AS_paramount" dst="AS_parapide" gw_src="paramount-AS_paramount_router.rennes.grid5000.fr" gw_dst="parapide-AS_parapide_router.rennes.grid5000.fr">
         <link_ctn id="link_paramount"/>
         <link_ctn id="link_parapide"/>
-      </ASroute>
+      </zoneRoute>
 
-      <ASroute src="AS_paradent" dst="gw_AS_rennes" gw_src="paradent-AS_paradent_router.rennes.grid5000.fr" gw_dst="gw_rennes">
+      <zoneRoute src="AS_paradent" dst="gw_AS_rennes" gw_src="paradent-AS_paradent_router.rennes.grid5000.fr" gw_dst="gw_rennes">
         <link_ctn id="link_paradent"/>
-      </ASroute>
-      <ASroute src="AS_parapluie" dst="gw_AS_rennes" gw_src="parapluie-AS_parapluie_router.rennes.grid5000.fr" gw_dst="gw_rennes">
+      </zoneRoute>
+      <zoneRoute src="AS_parapluie" dst="gw_AS_rennes" gw_src="parapluie-AS_parapluie_router.rennes.grid5000.fr" gw_dst="gw_rennes">
         <link_ctn id="link_parapluie"/>
-      </ASroute>
-      <ASroute src="AS_parapide" dst="gw_AS_rennes" gw_src="parapide-AS_parapide_router.rennes.grid5000.fr" gw_dst="gw_rennes">
+      </zoneRoute>
+      <zoneRoute src="AS_parapide" dst="gw_AS_rennes" gw_src="parapide-AS_parapide_router.rennes.grid5000.fr" gw_dst="gw_rennes">
         <link_ctn id="link_parapide"/>
-      </ASroute>
-      <ASroute src="AS_paramount" dst="gw_AS_rennes" gw_src="paramount-AS_paramount_router.rennes.grid5000.fr" gw_dst="gw_rennes">
+      </zoneRoute>
+      <zoneRoute src="AS_paramount" dst="gw_AS_rennes" gw_src="paramount-AS_paramount_router.rennes.grid5000.fr" gw_dst="gw_rennes">
         <link_ctn id="link_paramount"/>
-      </ASroute>
-    </AS>
+      </zoneRoute>
+    </zone>
 
-    <AS id="AS_sophia" routing="Full">
+    <zone id="AS_sophia" routing="Full">
       <cluster id="AS_helios" prefix="helios-" suffix=".sophia.grid5000.fr" radical="1-56" speed="7.7318E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
       <link id="link_helios" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
@@ -630,86 +630,86 @@
       <cluster id="AS_suno" prefix="suno-" suffix=".sophia.grid5000.fr" radical="1-45" speed="23.530E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
       <link id="link_suno" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
-      <AS id="gw_AS_sophia" routing="Full">
+      <zone id="gw_AS_sophia" routing="Full">
         <router id="gw_sophia"/>
-      </AS>
+      </zone>
       <link id="link_gw_sophia" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
-      <ASroute src="AS_helios" dst="AS_sol" gw_src="helios-AS_helios_router.sophia.grid5000.fr" gw_dst="sol-AS_sol_router.sophia.grid5000.fr">
+      <zoneRoute src="AS_helios" dst="AS_sol" gw_src="helios-AS_helios_router.sophia.grid5000.fr" gw_dst="sol-AS_sol_router.sophia.grid5000.fr">
         <link_ctn id="link_helios"/>
         <link_ctn id="link_sol"/>
-      </ASroute>
-      <ASroute src="AS_suno" dst="AS_sol" gw_src="suno-AS_suno_router.sophia.grid5000.fr" gw_dst="sol-AS_sol_router.sophia.grid5000.fr">
+      </zoneRoute>
+      <zoneRoute src="AS_suno" dst="AS_sol" gw_src="suno-AS_suno_router.sophia.grid5000.fr" gw_dst="sol-AS_sol_router.sophia.grid5000.fr">
         <link_ctn id="link_suno"/>
         <link_ctn id="link_sol"/>
-      </ASroute>
-      <ASroute src="AS_suno" dst="AS_helios" gw_src="suno-AS_suno_router.sophia.grid5000.fr" gw_dst="helios-AS_helios_router.sophia.grid5000.fr">
+      </zoneRoute>
+      <zoneRoute src="AS_suno" dst="AS_helios" gw_src="suno-AS_suno_router.sophia.grid5000.fr" gw_dst="helios-AS_helios_router.sophia.grid5000.fr">
         <link_ctn id="link_suno"/>
         <link_ctn id="link_helios"/>
-      </ASroute>
+      </zoneRoute>
 
-      <ASroute src="AS_sol" dst="gw_AS_sophia" gw_src="sol-AS_sol_router.sophia.grid5000.fr" gw_dst="gw_sophia">
+      <zoneRoute src="AS_sol" dst="gw_AS_sophia" gw_src="sol-AS_sol_router.sophia.grid5000.fr" gw_dst="gw_sophia">
         <link_ctn id="link_sol"/>
-      </ASroute>
-      <ASroute src="AS_helios" dst="gw_AS_sophia" gw_src="helios-AS_helios_router.sophia.grid5000.fr" gw_dst="gw_sophia">
+      </zoneRoute>
+      <zoneRoute src="AS_helios" dst="gw_AS_sophia" gw_src="helios-AS_helios_router.sophia.grid5000.fr" gw_dst="gw_sophia">
         <link_ctn id="link_helios"/>
-      </ASroute>
-      <ASroute src="AS_suno" dst="gw_AS_sophia" gw_src="suno-AS_suno_router.sophia.grid5000.fr" gw_dst="gw_sophia">
+      </zoneRoute>
+      <zoneRoute src="AS_suno" dst="gw_AS_sophia" gw_src="suno-AS_suno_router.sophia.grid5000.fr" gw_dst="gw_sophia">
         <link_ctn id="link_suno"/>
-      </ASroute>
-    </AS>
+      </zoneRoute>
+    </zone>
 
-    <AS id="AS_toulouse" routing="Full">
+    <zone id="AS_toulouse" routing="Full">
       <cluster id="AS_pastel" prefix="pastel-" suffix=".toulouse.grid5000.fr" radical="1-80" speed="9.5674E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
       <link id="link_pastel" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
       <cluster id="AS_violette" prefix="violette-" suffix=".toulouse.grid5000.fr" radical="1-52" speed="5.1143E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
       <link id="link_violette" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
-      <AS id="gw_AS_toulouse" routing="Full">
+      <zone id="gw_AS_toulouse" routing="Full">
         <router id="gw_toulouse"/>
-      </AS>
+      </zone>
       <link id="link_gw_toulouse" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
-      <ASroute src="AS_violette" dst="AS_pastel" gw_src="violette-AS_violette_router.toulouse.grid5000.fr" gw_dst="pastel-AS_pastel_router.toulouse.grid5000.fr">
+      <zoneRoute src="AS_violette" dst="AS_pastel" gw_src="violette-AS_violette_router.toulouse.grid5000.fr" gw_dst="pastel-AS_pastel_router.toulouse.grid5000.fr">
         <link_ctn id="link_violette"/>
         <link_ctn id="link_pastel"/>
-      </ASroute>
+      </zoneRoute>
 
-      <ASroute src="AS_pastel" dst="gw_AS_toulouse" gw_src="pastel-AS_pastel_router.toulouse.grid5000.fr" gw_dst="gw_toulouse">
+      <zoneRoute src="AS_pastel" dst="gw_AS_toulouse" gw_src="pastel-AS_pastel_router.toulouse.grid5000.fr" gw_dst="gw_toulouse">
         <link_ctn id="link_pastel"/>
-      </ASroute>
-      <ASroute src="AS_violette" dst="gw_AS_toulouse" gw_src="violette-AS_violette_router.toulouse.grid5000.fr" gw_dst="gw_toulouse">
+      </zoneRoute>
+      <zoneRoute src="AS_violette" dst="gw_AS_toulouse" gw_src="violette-AS_violette_router.toulouse.grid5000.fr" gw_dst="gw_toulouse">
         <link_ctn id="link_violette"/>
-      </ASroute>
-    </AS>
+      </zoneRoute>
+    </zone>
 
-    <ASroute src="AS_toulouse" dst="AS_interne" gw_src="gw_toulouse" gw_dst="toulouse">
+    <zoneRoute src="AS_toulouse" dst="AS_interne" gw_src="gw_toulouse" gw_dst="toulouse">
       <link_ctn id="link_gw_toulouse"/>
-    </ASroute>
-    <ASroute src="AS_sophia" dst="AS_interne" gw_src="gw_sophia" gw_dst="sophia">
+    </zoneRoute>
+    <zoneRoute src="AS_sophia" dst="AS_interne" gw_src="gw_sophia" gw_dst="sophia">
       <link_ctn id="link_gw_sophia"/>
-    </ASroute>
-    <ASroute src="AS_rennes" dst="AS_interne" gw_src="gw_rennes" gw_dst="rennes">
+    </zoneRoute>
+    <zoneRoute src="AS_rennes" dst="AS_interne" gw_src="gw_rennes" gw_dst="rennes">
       <link_ctn id="link_gw_rennes"/>
-    </ASroute>
-    <ASroute src="AS_orsay" dst="AS_interne" gw_src="gw_orsay" gw_dst="paris">
+    </zoneRoute>
+    <zoneRoute src="AS_orsay" dst="AS_interne" gw_src="gw_orsay" gw_dst="paris">
       <link_ctn id="link_gw_orsay"/>
-    </ASroute>
-    <ASroute src="AS_nancy" dst="AS_interne" gw_src="gw_nancy" gw_dst="nancy">
+    </zoneRoute>
+    <zoneRoute src="AS_nancy" dst="AS_interne" gw_src="gw_nancy" gw_dst="nancy">
       <link_ctn id="link_gw_nancy"/>
-    </ASroute>
-    <ASroute src="AS_lyon" dst="AS_interne" gw_src="gw_lyon" gw_dst="lyon">
+    </zoneRoute>
+    <zoneRoute src="AS_lyon" dst="AS_interne" gw_src="gw_lyon" gw_dst="lyon">
       <link_ctn id="link_gw_lyon"/>
-    </ASroute>
-    <ASroute src="AS_lille" dst="AS_interne" gw_src="gw_lille" gw_dst="lille">
+    </zoneRoute>
+    <zoneRoute src="AS_lille" dst="AS_interne" gw_src="gw_lille" gw_dst="lille">
       <link_ctn id="link_gw_lille"/>
-    </ASroute>
-    <ASroute src="AS_grenoble" dst="AS_interne" gw_src="gw_grenoble" gw_dst="grenoble">
+    </zoneRoute>
+    <zoneRoute src="AS_grenoble" dst="AS_interne" gw_src="gw_grenoble" gw_dst="grenoble">
       <link_ctn id="link_gw_grenoble"/>
-    </ASroute>
-    <ASroute src="AS_bordeaux" dst="AS_interne" gw_src="gw_bordeaux" gw_dst="bordeaux">
+    </zoneRoute>
+    <zoneRoute src="AS_bordeaux" dst="AS_interne" gw_src="gw_bordeaux" gw_dst="bordeaux">
       <link_ctn id="link_gw_bordeaux"/>
-    </ASroute>
-  </AS>
+    </zoneRoute>
+  </zone>
 </platform>

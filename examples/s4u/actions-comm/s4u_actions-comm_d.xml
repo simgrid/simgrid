@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
-  <process host="Tremblay" function="p0"/>
-  <process host="Ruby" function="p1"/>
+<platform version="4.1">
+  <actor host="Tremblay" function="p0"/>
+  <actor host="Ruby" function="p1"/>
 </platform>

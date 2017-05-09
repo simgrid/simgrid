@@ -3,7 +3,7 @@
 #  Input variable:
 #     LUA_HINT: path to Lua installation -- only needed for non-standard installs
 #  Output variable:
-#     HAVE_LUA         : if Lua was found
+#     SIMGRID_HAVE_LUA         : if Lua was found
 #     LUA_LIBRARY      : the path to the dynamic library
 #     LUA_INCLUDE_DIR  : where to find lua.h
 #     LUA_VERSION_MAJOR: First part of the version (often, 5)
@@ -56,7 +56,7 @@ unset(lua_version_str)
   
 # Check that we have a sufficient version of Lua
 if(LUA_VERSION_MAJOR EQUAL 5 AND LUA_VERSION_MINOR EQUAL 3)
-  set(HAVE_LUA 1)
+  set(SIMGRID_HAVE_LUA 1)
   include_directories(${LUA_INCLUDE_DIR})
 else()
   message(FATAL_ERROR "Error: Lua version 5.3 is required, but version ${LUA_VERSION_MAJOR}.${LUA_VERSION_MINOR} found instead.")

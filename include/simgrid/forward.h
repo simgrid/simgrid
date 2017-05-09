@@ -97,8 +97,8 @@ typedef enum {
 } e_surf_trace_connect_kind_t;
 
 typedef enum {
-  SURF_PROCESS_ON_FAILURE_DIE = 1,
-  SURF_PROCESS_ON_FAILURE_RESTART = 0
+  SURF_ACTOR_ON_FAILURE_DIE = 1,
+  SURF_ACTOR_ON_FAILURE_RESTART = 0
 } e_surf_process_on_failure_t;
 
 

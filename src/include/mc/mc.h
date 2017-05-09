@@ -6,9 +6,9 @@
 #ifndef MC_MC_H
 #define MC_MC_H
 
-#include <src/internal_config.h>
+#include <simgrid/modelchecker.h> /* our public interface (and definition of SIMGRID_HAVE_MC) */
 #include <simgrid/simix.h>
-#include <simgrid/modelchecker.h> /* our public interface (and definition of HAVE_MC) */
+#include <src/internal_config.h>
 #if HAVE_UCONTEXT_H
 #include <ucontext.h>           /* context relative declarations */
 #endif

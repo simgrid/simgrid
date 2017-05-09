@@ -28,7 +28,7 @@
 
 #include "src/simix/ActorImpl.hpp"
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 #include <libunwind.h>
 #include "src/mc/mc_comm_pattern.h"
 #include "src/mc/mc_request.h"
@@ -55,7 +55,7 @@ std::vector<double> processes_time;
 }
 }
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 
 /* Liveness */
 

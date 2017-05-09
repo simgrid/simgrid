@@ -786,7 +786,7 @@ set(simgrid_sources
   ${XBT_SRC}
   )
 
-if(${HAVE_JEDULE})  
+if(${SIMGRID_HAVE_JEDULE})  
   set(simgrid_sources  ${simgrid_sources}  ${JEDULE_SRC})
 else()
   set(EXTRA_DIST       ${EXTRA_DIST}       ${JEDULE_SRC})
@@ -796,11 +796,11 @@ if(enable_smpi)
   set(simgrid_sources  ${simgrid_sources}  ${SMPI_SRC})
 endif()
 
-if(HAVE_MC)
+if(SIMGRID_HAVE_MC)
   set(simgrid_sources  ${simgrid_sources}  ${MC_SRC})
 endif()
 
-if(HAVE_NS3)
+if(SIMGRID_HAVE_NS3)
   set(simgrid_sources  ${simgrid_sources}  ${NS3_SRC})
 endif()
 
@@ -814,7 +814,7 @@ if(WIN32)
     )
 endif()
 
-if(HAVE_LUA)
+if(SIMGRID_HAVE_LUA)
   set(simgrid_sources  ${simgrid_sources}  ${LUA_SRC})
 else()
   set(EXTRA_DIST       ${EXTRA_DIST}       ${LUA_SRC})

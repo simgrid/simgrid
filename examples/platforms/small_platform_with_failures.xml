@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
-  <AS  id="AS0"  routing="Full">
+<platform version="4.1">
+  <zone  id="AS0"  routing="Full">
     <host id="Tremblay" speed="25Mf"/>
     <host id="Jupiter"  speed="25Mf" state_file="trace/jupiter_state.trace"/>
     <host id="Fafard"   speed="25Mf" state_file="trace/fafard_state.trace" />
@@ -66,5 +66,5 @@
     <route src="Ginette" dst="Bourassa">
       <link_ctn id="10"/>
     </route>
-  </AS>
+  </zone>
 </platform>

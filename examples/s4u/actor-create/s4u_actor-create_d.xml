@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
+<platform version="4.1">
 
   <!-- This a weird deployment file: we only start one actor from here and the others from the main().
     -
@@ -8,8 +8,8 @@
     -  Instead, you want to start all your actors from the deployment file.
     -->
    
-  <process host="Fafard" function="receiver">
+  <actor host="Fafard" function="receiver">
     <!-- Pass the right mailbox name to the actor -->
     <argument value="mb42" />
-  </process>
+  </actor>
 </platform>

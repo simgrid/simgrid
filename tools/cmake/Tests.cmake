@@ -57,7 +57,7 @@ IF(enable_java)
   ENDIF()
 ENDIF()
 
-IF(HAVE_MC)
+IF(SIMGRID_HAVE_MC)
   ADD_TESH_FACTORIES(mc-bugged1                "ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged1.tesh)
   ADD_TESH_FACTORIES(mc-bugged2                "ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged2.tesh)
   IF(HAVE_UCONTEXT_CONTEXTS AND SIMGRID_PROCESSOR_x86_64) # liveness model-checking works only on 64bits (for now ...)
@@ -79,7 +79,7 @@ IF(enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN AND HAVE_THREAD_CONTEXTS)
   SET_TESTS_PROPERTIES(test-smpi-mpich3-thread-f90 PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
 ENDIF()
 
-IF(HAVE_LUA)
+IF(SIMGRID_HAVE_LUA)
   # Tests testing simulation from C but using lua for platform files. Executed like this
   # ~$ ./masterslave platform.lua deploy.lua
   ADD_TESH(lua-platform-masterslave                --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/lua --cd ${CMAKE_BINARY_DIR}/examples/lua ${CMAKE_HOME_DIRECTORY}/teshsuite/lua/lua_platforms.tesh)

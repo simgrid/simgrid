@@ -71,15 +71,13 @@ NetZone* NetZone::father()
   return father_;
 }
 
-std::vector<s4u::Host*>* NetZone::hosts()
+void NetZone::hosts(std::vector<s4u::Host*>* whereto)
 {
-  if (hosts_.empty()) // Lazy initialization
-    for (auto card : vertices_) {
-      s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->name());
-      if (host != nullptr)
-        hosts_.push_back(host);
-    }
-  return &hosts_;
+  for (auto card : vertices_) {
+    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->name());
+    if (host != nullptr)
+      whereto->push_back(host);
+  }
 }
 
 int NetZone::addComponent(kernel::routing::NetPoint* elm)

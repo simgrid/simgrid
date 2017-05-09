@@ -34,11 +34,13 @@
  *                                                                      ----
  */
 #include <map>
+#include <cstring>
 
 #include "private.h"
 #include "private.hpp"
 #include "smpi/smpi_shared_malloc.hpp"
 #include "xbt/dict.h"
+#include "xbt/ex.hpp"
 #include <errno.h>
 
 #include <sys/types.h>

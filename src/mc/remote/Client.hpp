@@ -58,7 +58,7 @@ public:
 
 SG_BEGIN_DECL()
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 void MC_ignore(void* addr, std::size_t size);
 #endif
 

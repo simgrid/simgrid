@@ -1,0 +1,5 @@
+p Test privatization with dlopen
+! setenv LD_LIBRARY_PATH=../../lib
+! timeout 5
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 32 ${bindir:=.}/privatization --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/privatization:dlopen --log=simix_context.thres:error
+> You requested to use 32 ranks, but there is only 5 processes in your hostfile...

@@ -12,7 +12,7 @@
 #include "jedule_events.hpp"
 #include "jedule_platform.hpp"
 
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
 
 XBT_ATTRIB_UNUSED static std::unordered_map <const char *, jed_container_t> host2_simgrid_parent_container;
 XBT_ATTRIB_UNUSED static std::unordered_map <std::string, jed_container_t> container_name2container;

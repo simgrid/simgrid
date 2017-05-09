@@ -106,6 +106,20 @@ void SIMIX_context_mod_init()
   xbt_os_thread_key_create(&smx_current_context_key);
 #endif
 
+#if defined(__APPLE__) || defined(__NetBSD__)
+  if (context_factory_name == std::string("thread") &&
+      strcmp(xbt_cfg_get_string("smpi/privatization"), "dlopen") == 0) {
+    XBT_WARN("dlopen+thread broken on Apple and BSD. Switching to raw contexts.");
+    context_factory_name = "raw";
+  }
+#endif
+#if defined(__FreeBSD__)
+  if (context_factory_name == std::string("thread") && strcmp(xbt_cfg_get_string("smpi/privatization"), "no") != 0) {
+    XBT_WARN("mmap broken on FreeBSD, but dlopen+thread broken too. Switching to dlopen+raw contexts.");
+    context_factory_name = "raw";
+  }
+#endif
+
   /* select the context factory to use to create the contexts */
   if (simgrid::kernel::context::factory_initializer) { // Give Java a chance to hijack the factory mechanism
     simix_global->context_factory = simgrid::kernel::context::factory_initializer();
@@ -168,8 +182,8 @@ void *SIMIX_context_stack_new()
 #endif
 
     size_t size = smx_context_stack_size + smx_context_guard_size;
-#if HAVE_MC
-    /* Cannot use posix_memalign when HAVE_MC. Align stack by hand, and save the
+#if SIMGRID_HAVE_MC
+    /* Cannot use posix_memalign when SIMGRID_HAVE_MC. Align stack by hand, and save the
      * pointer returned by xbt_malloc0. */
     char *alloc = (char*)xbt_malloc0(size + xbt_pagesize);
     stack = alloc - ((uintptr_t)alloc & (xbt_pagesize - 1)) + xbt_pagesize;
@@ -223,7 +237,7 @@ void SIMIX_context_stack_delete(void *stack)
       XBT_WARN("Failed to remove page protection: %s", strerror(errno));
       /* try to pursue anyway */
     }
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
     /* Retrieve the saved pointer.  See SIMIX_context_stack_new above. */
     stack = *((void **)stack - 1);
 #endif

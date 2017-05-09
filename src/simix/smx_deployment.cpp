@@ -147,7 +147,7 @@ void SIMIX_process_set_function(const char *process_host,
   process.host = process_host;
   process.kill_time = process_kill_time;
   process.start_time = process_start_time;
-  process.on_failure = SURF_PROCESS_ON_FAILURE_DIE;
+  process.on_failure = SURF_ACTOR_ON_FAILURE_DIE;
   sg_platf_new_process(&process);
 }
 

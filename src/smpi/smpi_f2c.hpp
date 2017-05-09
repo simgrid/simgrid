@@ -9,8 +9,7 @@
 #ifndef SMPI_F2C_HPP_INCLUDED
 #define SMPI_F2C_HPP_INCLUDED
 
-#include "private.h"
-
+#include "xbt/dict.h"
 
 #define KEY_SIZE (sizeof(int) * 2 + 1)
 

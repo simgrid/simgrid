@@ -8,9 +8,7 @@
 #ifndef SMPI_COLL_HPP
 #define SMPI_COLL_HPP
 
-#include <xbt/base.h>
-
-#include "private.h"
+#include "xbt/base.h"
 
 /** \brief MPI collective description */
 

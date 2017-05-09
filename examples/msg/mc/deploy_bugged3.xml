@@ -1,13 +1,13 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
-  <process host="HostA" function="server">
+<platform version="4.1">
+  <actor host="HostA" function="server">
     <argument value="0"/>
-  </process>
-  <process host="HostB" function="client">
+  </actor>
+  <actor host="HostB" function="client">
     <argument value="1"/>
-  </process>
-  <process host="HostC" function="client">
+  </actor>
+  <actor host="HostC" function="client">
     <argument value="2"/>
-  </process>
+  </actor>
 </platform>

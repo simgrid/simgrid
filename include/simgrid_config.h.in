@@ -33,14 +33,14 @@ SG_END_DECL()
 #define SIMGRID_VERSION_STRING "@SIMGRID_VERSION_STRING@"
 
 /* Was Jedule compiled in?  */
-#cmakedefine01 HAVE_JEDULE
+#cmakedefine01 SIMGRID_HAVE_JEDULE
 /* Was the Lua support compiled in? */
-#cmakedefine01 HAVE_LUA
+#cmakedefine01 SIMGRID_HAVE_LUA
 /* Were mallocators (object pools) compiled in? */
-#cmakedefine01 HAVE_MALLOCATOR
+#cmakedefine01 SIMGRID_HAVE_MALLOCATOR
 /* Was the model-checking compiled in? */
-#cmakedefine01 HAVE_MC
+#cmakedefine01 SIMGRID_HAVE_MC
 /* Was the NS3 support compiled in? */
-#cmakedefine01 HAVE_NS3
+#cmakedefine01 SIMGRID_HAVE_NS3
 
 #endif /* SIMGRID_PUBLIC_CONFIG_H */
