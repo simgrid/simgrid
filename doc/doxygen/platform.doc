@@ -43,80 +43,70 @@ files.
 From time to time, this DTD evolves to introduce possibly
 backward-incompatible changes. That is why each platform desciption is
 enclosed within a @c platform tag, that have a @c version attribute. 
-The current version is <b>4</b>. The @c simgrid_update_xml program can
+The current version is <b>4.1</b>. The @c simgrid_update_xml program can
 upgrade most of the past platform files to the recent formalism.
 
-\section pf_netzones Defining a NetZone
+\section pf_first_example First Platform Example 
 
-In SimGrid, any resource must be located within a given **NetZone**.
-Each netzone is in charge of the routing between its resources. It
-means that when an host wants to communicate with another host of the
-same NetZone, it is the NetZone's duty to find the list of links that
-are involved in the communication. If the hosts are not in the same
-NetZone, @ref routing_basics "things are slightly more complex" to
-determine the links involved in a time- and space-efficient manner.
+Here is a very simple platform file, containing 3 resources (two hosts
+and one link), and explicitly giving the route between the hosts.
 
-But only one NetZone is really sufficient to begin with. The following
-chunk describes a simplistic NetZone using the Full routing (we will
-have to specify each and every routes manually). 
+\code{.xml}
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4.1">
+  <zone id="first zone" routing="Full">
+    <!-- the resources -->
+    <host id="host1" speed="1Mf"/>
+    <host id="host2" speed="2Mf"/>
+    <link id="link1" bandwidth="125MBps" latency="100us"/>
+    <!-- the routing: specify how the hosts are interconnected -->
+    <route src="host1" dst="host2">
+      <link_ctn id="link1"/>
+    </route>
+  </zone>
+</platform>
+\endcode
 
-\verbatim
-<AS id="netzone0" routing="Full">
-\endverbatim
+As we said, the englobing @ref pf_overview "&lt;platform&gt;" tag is
+used to specify the dtd version used for this file.
 
-There is also the ``<route>`` tag; this tag takes two attributes,
-``src`` (source) and ``dst`` (destination). Both source and
-destination must be valid identifiers for routers (these will be
-introduced later). Contained by the ``<route>`` are network links;
-these links must be used in order to communicate from the source to
-the destination specified in the tag. Hence, a route merely describes
-how to reach a router from another router.
+Then, every resource (specified with @ref pf_tag_host, @ref
+pf_tag_link or others) must be located within a given **networking
+zone**.  Each zone is in charge of the routing between its
+resources. It means that when an host wants to communicate with
+another host of the same zone, it is the zone's duty to find the list
+of links that are involved in the communication. Here, since the @ref
+pf_tag_zone tag has **Full** as a **routing attribute**, all routes
+must be explicitely given using the @ref pf_tag_route and @ref
+pf_tag_linkctn tags (this @ref pf_rm "routing model" is both simple
+and inefficient :) It is OK to not specify the route between two
+hosts, as long as the processes located on them never try to
+communicate together.
 
-\remark
-  More information and (code-)examples can be found in Section \ref pf_rm.
-
-A netzone can also contain itself one or more netzone; this allows you to model
-the hierarchy of your platform.
-
-### Within each AS, the following types of resources exist:
-
-%Resource        | Documented in Section | Description
---------------- | --------------------- | -----------
-AS              |                       | Every Autonomous System (AS) may contain one or more AS.
-host            | \ref pf_host          | This entity carries out the actual computation. For this reason, it contains processors (with potentially multiple cores).
-router          | \ref pf_router        | In SimGrid, routers are used to provide helpful information to routing algorithms.  Routers may also act as gateways, connecting several autonomous systems with each other.
-link            | \ref pf_link          | In SimGrid, (network)links define a connection between two or potentially even more resources. Every link has a bandwidth and a latency and may potentially experience congestion.
-cluster         | \ref pf_cluster       | In SimGrid, clusters were introduced to model large and homogenous environments. They are not really a resource by themselves - technically, they are only a shortcut, as they will internally set up all the hosts, network and routing for you, i.e., using this resource, one can easily setup thousands of hosts and links in a few lines of code. Each cluster is itself an AS.
-
-As it is desirable to interconnect these resources, a routing has to
-be defined. The AS is supposed to be Autonomous, hence this has to be
-done at the AS level. The AS handles two different types of entities
-(<b>host/router</b> and <b>AS</b>). However, the user is responsible
-to define routes between those resources, otherwise entities will be
-unconnected and therefore unreachable from other entities. Although
-several routing algorithms are built into SimGrid (see \ref pf_rm),
-you might encounter a case where you want to define routes manually
-(for instance, due to specific requirements of your platform).
-
-There are three tags to use:
-\li <b>ASroute</b>: to define routes between two  <b>AS</b>
-\li <b>route</b>: to define routes between two <b>host/router</b>
-\li <b>bypassRoute</b>: to define routes between two <b>AS</b> that
-    will bypass default routing (as specified by the ``routing`` attribute
-    supplied to ``<AS>``, see above).
-
+A zone can contain several zones itself, leading to a hierarchical
+decomposition of the platform. This can be more efficient (as the
+inter-zone routing gets factorized with @ref pf_tag_zoneroute), and
+allows to have more than one routing model in your platform. For
+example, you could have a coordinate-based routing for the WAN parts
+of your platforms, a full routing within each datacenter, and a highly
+optimized routing within each cluster of the datacenter.  In this
+case, determining the route between two given hosts gets @ref
+routing_basics "somewhat more complex" but SimGrid still computes
+these routes for you in a time- and space-efficient manner.
 Here is an illustration of these concepts:
 
-![An illustration of an AS hierarchy. Here, AS1 contains 5 other ASes who in turn may contain other ASes as well.](AS_hierarchy.png)
- Circles represent processing units and squares represent network routers. Bold
-    lines represent communication links. AS2 models the core of a national
-    network interconnecting a small flat cluster (AS4) and a larger
-    hierarchical cluster (AS5), a subset of a LAN (AS6), and a set of peers
-    scattered around the world (AS7).
+![A hierarchy of networking zones.](AS_hierarchy.png)
+
+Circles represent processing units and squares represent network
+routers. Bold lines represent communication links. The zone "AS2"
+models the core of a national network interconnecting a small flat
+cluster (AS4) and a larger hierarchical cluster (AS5), a subset of a
+LAN (AS6), and a set of peers scattered around the world (AS7).
 
 \section pf_pftags Resource description
 
-\subsection  pf_As Platform: The &lt;AS&gt; tag
+\subsection  pf_tag_zone &lt;zone&gt;
 
 For historical reasons, the XML files use the expression AS for
 NetZones. Netzones are very important because they group other resources (such
@@ -146,7 +136,7 @@ between the hosts goes through link1.
 
 \subsection pf_Cr Computing resources: hosts, clusters and peers.
 
-\subsubsection pf_host &lt;host&gt;
+\subsubsection pf_tag_host &lt;host&gt;
 
 A <b>host</b> represents a computer/node card. Every host is able to execute
 code and it can send and receive data to/from other hosts. Most importantly,
@@ -319,7 +309,7 @@ suffix          | yes       | string | Each node of the cluster will be suffixed
 radical         | yes       | string | Regexp used to generate cluster nodes name. Syntax: "10-20" will give you 11 machines numbered from 10 to 20, "10-20;2" will give you 12 machines, one with the number 2, others numbered as before. The produced number is concatenated between prefix and suffix to form machine names.
 speed           | yes       | int    | Same as the ``speed`` attribute of the ``\<host\>`` tag.
 core            | no        | int (default: 1) | Same as the ``core`` attribute of the ``\<host\>`` tag.
-bw              | yes       | int    | Bandwidth for the links between nodes and backbone (if any). See the \ref pf_link "link section" for syntax/details.
+bw              | yes       | int    | Bandwidth for the links between nodes and backbone (if any). See the \ref pf_tag_link "link section" for syntax/details.
 lat             | yes       | int    | Latency for the links between nodes and backbone (if any). See <b>link</b> section for syntax/details.
 sharing_policy  | no        | string | Sharing policy for the links between nodes and backbone (if any). See <b>link</b> section for syntax/details.
 bb_bw           | no        | int    | Bandwidth for backbone (if any). See <b>link</b> section for syntax/details. If bb_bw and bb_lat (see below) attributes are omitted, no backbone is created (alternative cluster architecture <b>described before</b>).
@@ -383,9 +373,9 @@ id              | yes       | string | The identifier of the cabinet. Facilitate
 prefix          | yes       | string | Each node of the cabinet has to have a name. This name will be prefixed with this prefix.
 suffix          | yes       | string | Each node of the cabinet will be suffixed with this suffix
 radical         | yes       | string | Regexp used to generate cabinet nodes name. Syntax: "10-20" will give you 11 machines numbered from 10 to 20, "10-20;2" will give you 12 machines, one with the number 2, others numbered as before. The produced number is concatenated between prefix and suffix to form machine names.
-speed           | yes       | int    | Same as the ``speed`` attribute of the \ref pf_host "&lt;host&gt;" tag.
-bw              | yes       | int    | Bandwidth for the links between nodes and backbone (if any). See the \ref pf_link "link section" for syntax/details.
-lat             | yes       | int    | Latency for the links between nodes and backbone (if any). See the \ref pf_link "link section" for syntax/details.
+speed           | yes       | int    | Same as the ``speed`` attribute of the \ref pf_tag_host "&lt;host&gt;" tag.
+bw              | yes       | int    | Bandwidth for the links between nodes and backbone (if any). See the \ref pf_tag_link "link section" for syntax/details.
+lat             | yes       | int    | Latency for the links between nodes and backbone (if any). See the \ref pf_tag_link "link section" for syntax/details.
 
 \note
     Please note that as of now, it is impossible to change attributes such as,
@@ -497,7 +487,7 @@ coordinates     | no        | string | Must be provided when choosing the Vivald
  <router id="gw_dc1_horizdist"/>
 \endverbatim
 
-\subsubsection pf_link &lt;link/&gt;
+\subsubsection pf_tag_link &lt;link&gt;
 
 Network links can represent one-hop network connections. They are
 characterized by their id and their bandwidth; links can (but may not) be subject
@@ -697,7 +687,7 @@ Entity name     | Description
 --------------- | -----------
 \ref pf_storage_entity_storage_type "storage_type"    | Defines a template for a particular kind of storage (such as a hard-drive) and specifies important features of the storage, such as capacity, performance (read/write), contents, ... Different models of hard-drives use different storage_types (because the difference between an SSD and an HDD does matter), as they differ in some specifications (e.g., different sizes or read/write performance).
 \ref pf_storage_entity_storage "storage"        | Defines an actual instance of a storage type (disk, RAM, ...); uses a ``storage_type`` template (see line above) so that you don't need to re-specify the same details over and over again.
-\ref pf_storage_entity_mount "mount"          | Must be wrapped by a \ref pf_host tag; declares which storage(s) this host has mounted and where (i.e., the mountpoint).
+\ref pf_storage_entity_mount "mount"          | Must be wrapped by a \ref pf_tag_host tag; declares which storage(s) this host has mounted and where (i.e., the mountpoint).
 
 
 \anchor pf_storage_content_file
@@ -844,7 +834,7 @@ Attributes:
 | id               | yes         | string   | Refers to a \ref pf_storage_entity_storage "&lt;storage&gt;" entity that will be mounted on that computer |
 | name             | yes         | string   | Path/location to/of the logical reference (mount point) of this disk
 
-This tag must be enclosed by a \ref pf_host tag. It then specifies where the mountpoint of a given storage device (defined by the ``id`` attribute)
+This tag must be enclosed by a \ref pf_tag_host tag. It then specifies where the mountpoint of a given storage device (defined by the ``id`` attribute)
 is; this location is specified by the ``name`` attribute.
 
 Here is a simple example, taken from the file ``examples/platform/storage.xml``:
@@ -1163,7 +1153,7 @@ available within this model and if you try to communicate within the AS that
 uses this model, SimGrid will fail unless you have explicitly activated the
 \ref options_model_select_network_constant "Constant Network Model" (this model charges
 the same for every single communication). It should
-be noted, however, that you can still attach an \ref pf_routing_tag_asroute "ASroute",
+be noted, however, that you can still attach an \ref pf_tag_asroute "ASroute",
 as is demonstrated in the example below:
 
 \verbinclude platforms/cluster_and_one_host.xml
@@ -1201,10 +1191,10 @@ There are currently four different ways to define routes:
 
 | Name                                              | Description                                                                         |
 | ------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| \ref pf_routing_tag_route "route"                 | Used to define route between host/router                                            |
-| \ref pf_routing_tag_asroute "ASroute"             | Used to define route between different AS                                           |
-| \ref pf_routing_tag_bypassroute "bypassRoute"     | Used to supersede normal routes as calculated by the network model between host/router; e.g., can be used to use a route that is not the shortest path for any of the shortest-path routing models. |
-| \ref pf_routing_tag_bypassasroute "bypassASroute"  | Used in the same way as bypassRoute, but for AS                                     |
+| \ref pf_tag_route "route"                 | Used to define route between host/router                                            |
+| \ref pf_tag_zoneroute "zoneRoute"             | Used to define route between different zones                                           |
+| \ref pf_tag_bypassroute "bypassRoute"     | Used to supersede normal routes as calculated by the network model between host/router; e.g., can be used to use a route that is not the shortest path for any of the shortest-path routing models. |
+| \ref pf_tag_bypassasroute "bypassZoneRoute"  | Used in the same way as bypassRoute, but for zones                                     |
 
 Basically all those tags will contain an (ordered) list of references
 to link that compose the route you want to define.
@@ -1220,14 +1210,14 @@ Consider the example below:
 \endverbatim
 
 The route here from host Alice to Bob will be first link1, then link2,
-and finally link3. What about the reverse route? \ref pf_routing_tag_route "Route" and
-\ref pf_routing_tag_asroute "ASroute" have an optional attribute \c symmetrical, that can
+and finally link3. What about the reverse route? \ref pf_tag_route "Route" and
+\ref pf_tag_zoneroute "ASroute" have an optional attribute \c symmetrical, that can
 be either \c YES or \c NO. \c YES means that the reverse route is the same
 route in the inverse order, and is set to \c YES by default. Note that
 this is not the case for bypass*Route, as it is more probable that you
 want to bypass only one default route.
 
-For an \ref pf_routing_tag_asroute "ASroute", things are just slightly more complicated, as you have
+For an \ref pf_tag_zoneroute "ASroute", things are just slightly more complicated, as you have
 to give the id of the gateway which is inside the AS you want to access ... 
 So it looks like this:
 
@@ -1243,11 +1233,11 @@ it means that it must pass through router1 to get out of the AS, then
 pass through link1, and get into AS2 by being received by router2.
 router1 must belong to AS1 and router2 must belong to AS2.
 
-\subsubsection pf_linkctn &lt;link_ctn/&gt;
+\subsubsection pf_tag_linkctn &lt;link_ctn&gt;
 
 This entity has only one purpose: Refer to an already existing
-\ref pf_link "&lt;link/&gt;" when defining a route, i.e., it
-can only occur as a child of \ref pf_routing_tag_route "&lt;route/&gt;"
+\ref pf_tag_link "&lt;link/&gt;" when defining a route, i.e., it
+can only occur as a child of \ref pf_tag_route "&lt;route/&gt;"
 
 | Attribute name  | Mandatory | Values | Description                                                   |
 | --------------- | --------- | ------ | -----------                                                   |
@@ -1261,7 +1251,7 @@ entity (the path is given relative to SimGrid's source directory):
 
 \verbinclude example_filelist_xmltag_linkctn
 
-\subsubsection pf_routing_tag_asroute ASroute
+\subsubsection pf_tag_zoneroute &lt;zoneRoute&gt;
 
 The purpose of this entity is to define a route between two ASes.
 This is mainly useful when you're in the \ref pf_routing_model_full "Full routing model".
@@ -1272,7 +1262,7 @@ This is mainly useful when you're in the \ref pf_routing_model_full "Full routin
 | --------------- | --------- | ------ | -----------                                                                                                                                |
 | src             | yes       | String | The identifier of the source AS                                                                                                            |
 | dst             | yes       | String | See the \c src attribute                                                                                                                   |
-| gw_src          | yes       | String | The gateway that will be used within the src AS; this can be any \ref pf_host "Host" or \ref pf_router "Router" defined within the src AS. |
+| gw_src          | yes       | String | The gateway that will be used within the src AS; this can be any \ref pf_tag_host "Host" or \ref pf_router "Router" defined within the src AS. |
 | gw_dst          | yes       | String | Same as \c gw_src, but with the dst AS instead.                                                                                            |
 | symmetrical     | no        | YES\|NO (Default: YES) | If this route is symmetric, the opposite route (from dst to src) will also be declared implicitly.               | 
 
@@ -1303,12 +1293,12 @@ This is mainly useful when you're in the \ref pf_routing_model_full "Full routin
 </AS>
 \endverbatim
 
-\subsubsection pf_routing_tag_route route 
+\subsubsection pf_tag_route &lt;route&gt; 
 
 The principle is the same as for 
-\ref pf_routing_tag_asroute "ASroute": The route contains a list of links that
+\ref pf_tag_zoneroute "ASroute": The route contains a list of links that
 provide a path from \c src to \c dst. Here, \c src and \c dst can both be either a 
-\ref pf_host "host" or \ref pf_router "router".  This is mostly useful for the 
+\ref pf_tag_host "host" or \ref pf_router "router".  This is mostly useful for the 
 \ref pf_routing_model_full "Full routing model" as well as for the 
 \ref pf_routing_model_shortest_path "shortest-paths" based models (as they require 
 topological information).
@@ -1342,7 +1332,7 @@ A route in the \ref pf_routing_model_shortest_path "Shortest-Path routing model"
     (network-)graph and the employed algorithms need to know which edge connects
     which pair of entities.
 
-\subsubsection pf_routing_tag_bypassasroute bypassASroute
+\subsubsection pf_tag_bypassasroute bypassASroute
 
 As said before, once you choose
 a model, it (most likely; the constant network model, for example, doesn't) calculates routes for you. But maybe you want to
@@ -1379,7 +1369,7 @@ connects the router \c my_cluster_1_router in the source cluster to the router
 \c my_cluster_2_router in the destination router. Additionally, as the \c symmetrical
 attribute was not given, this route is presumed to be symmetrical.
 
-\subsubsection pf_routing_tag_bypassroute bypassRoute
+\subsubsection pf_tag_bypassroute bypassRoute
 
 As said before, once you choose
 a model, it (most likely; the constant network model, for example, doesn't) calculates routes for you. But maybe you want to
@@ -1602,7 +1592,7 @@ entity.
 | --------------- | --------- | ---------------------- | -----------                                                                                       |
 | id              | yes       | String                 | Identifier of this trace; this is the name you pass on to \c trace_connect.                       |
 | file            | no        | String                 | Filename of the file that contains the information - the path must follow the style of your OS. You can omit this, but then you must specifiy the values inside of &lt;trace&gt; and &lt;/trace&gt; - see the example below. |
-| trace_periodicity | yes | String | This is the same as for \ref pf_host "hosts" (see there for details) |
+| trace_periodicity | yes | String | This is the same as for \ref pf_tag_host "hosts" (see there for details) |
 
 Here is an example  of trace when no file name is provided:
 
