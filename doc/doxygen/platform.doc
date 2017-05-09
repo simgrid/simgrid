@@ -113,12 +113,10 @@ Systems, but this was misleading as zones may include other zones in a
 hierarchical manner. If you find any remaining reference to ASes,
 please report this as a bug.
 
-
-Attribute name  | Mandatory | Values | Description
---------------- | --------- | ------ | -----------
-id              | yes       | String | The identifier of an AS; facilitates referring to this AS. ID must be unique.
-routing         | yes       | Full\| Floyd\| Dijkstra\| DijkstraCache\| None\| Vivaldi\| Cluster | See Section \ref pf_rm for details.
-
+Attribute   | Value                                             | Description
+----------- | ------------------------------------------------- | ----------------------------------------------
+id          | String (mandatory)                                | The identifier of this zone (must be unique)
+routing     | One of the existing routing algorithm (mandatory) | See Section \ref pf_rm for details.
 
 <b>Example:</b>
 \code
