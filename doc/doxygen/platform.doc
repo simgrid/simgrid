@@ -108,12 +108,11 @@ LAN (AS6), and a set of peers scattered around the world (AS7).
 
 \subsection  pf_tag_zone &lt;zone&gt;
 
-For historical reasons, the XML files use the expression AS for
-NetZones. Netzones are very important because they group other resources (such
-as routers/hosts) together (in fact, any such resource must be
-contained in a NetZone).
+Before SimGrid v3.16, networking zones used to be called Autonomous
+Systems, but this was misleading as zones may include other zones in a
+hierarchical manner. If you find any remaining reference to ASes,
+please report this as a bug.
 
-Available attributes :
 
 Attribute name  | Mandatory | Values | Description
 --------------- | --------- | ------ | -----------
