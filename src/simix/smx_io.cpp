@@ -180,10 +180,6 @@ xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage){
   return surf_storage_get_properties(storage);
 }
 
-const char* SIMIX_storage_get_name(smx_storage_t storage){
-  return sg_storage_name(storage);
-}
-
 void SIMIX_io_destroy(smx_activity_t synchro)
 {
   simgrid::kernel::activity::Io *io = static_cast<simgrid::kernel::activity::Io*>(synchro);

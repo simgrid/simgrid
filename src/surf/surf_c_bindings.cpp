@@ -227,6 +227,10 @@ const char* surf_storage_get_host(surf_resource_t resource){
   return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->attach_;
 }
 
+const char* surf_storage_get_name(surf_resource_t resource){
+  return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->cname();
+}
+
 void surf_cpu_action_set_bound(surf_action_t action, double bound) {
   static_cast<simgrid::surf::CpuAction*>(action)->setBound(bound);
 }
