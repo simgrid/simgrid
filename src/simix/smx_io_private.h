@@ -11,18 +11,6 @@
 #include "simgrid/simix.h"
 #include "popping_private.h"
 
-/** @brief Storage datatype */
-typedef struct s_smx_storage_priv {
-  void *data;              /**< @brief user data */
-} s_smx_storage_priv_t;
-
-
-static inline smx_storage_priv_t SIMIX_storage_priv(smx_storage_t storage){
-  return (smx_storage_priv_t) xbt_lib_get_level(storage, SIMIX_STORAGE_LEVEL);
-}
-
-XBT_PRIVATE smx_storage_t SIMIX_storage_create(const char *name, void *storage, void *data);
-XBT_PRIVATE void SIMIX_storage_destroy(void *s);
 XBT_PRIVATE smx_activity_t SIMIX_file_read(smx_file_t fd, sg_size_t size, sg_host_t host);
 XBT_PRIVATE smx_activity_t SIMIX_file_write(smx_file_t fd, sg_size_t size, sg_host_t host);
 XBT_PRIVATE smx_activity_t SIMIX_file_open(const char* fullpath, sg_host_t host);

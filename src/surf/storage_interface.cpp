@@ -15,7 +15,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf, "Logging specific to the SURF storage module");
 
 xbt_lib_t storage_lib;
-int SIMIX_STORAGE_LEVEL        = -1; // Simix storage level
 int MSG_STORAGE_LEVEL          = -1; // Msg storage level
 int ROUTING_STORAGE_LEVEL      = -1; // Routing for storage level
 int SURF_STORAGE_LEVEL = -1;
