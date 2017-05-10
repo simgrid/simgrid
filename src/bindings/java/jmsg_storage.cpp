@@ -53,7 +53,7 @@ void jstorage_unref(JNIEnv * env, jobject jstorage) {
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getByName(JNIEnv * env, jclass cls, jstring jname) {
   msg_storage_t storage;
-  jobject jstorage;
+  jobject jstorage = nullptr;
 
   /* get the C string from the java string */
   if (jname == nullptr) {
@@ -70,8 +70,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getByName(JNIEnv * env, j
   }
   env->ReleaseStringUTFChars(jname, name);
 
-  if (!xbt_lib_get_level(storage, JAVA_STORAGE_LEVEL)) {       /* native host not associated yet with java host */
-
+  if (java_storage_map.find(storage->key) == java_storage_map.end()) {
     /* Instantiate a new java storage */
     jstorage = jstorage_new_instance(env);
 
@@ -95,11 +94,12 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getByName(JNIEnv * env, j
     /* the native storage data field is set with the global reference to the
      * java storage returned by this function
      */
-    xbt_lib_set(storage_lib, storage->key, JAVA_STORAGE_LEVEL, (void *) jstorage);
-  }
+    java_storage_map.insert({storage->key, jstorage});
+  } else
+    jstorage = java_storage_map.at(storage->key);
 
   /* return the global reference to the java storage instance */
-  return (jobject) xbt_lib_get_level(storage, JAVA_STORAGE_LEVEL);
+  return (jobject)jstorage;
 }
 
 JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getSize(JNIEnv * env,jobject jstorage) {
@@ -216,9 +216,9 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Storage_all(JNIEnv * env, jc
 
   for (index = 0; index < count; index++) {
     storage = xbt_dynar_get_as(table,index,msg_storage_t);
-    jstorage = (jobject) (xbt_lib_get_level(storage, JAVA_STORAGE_LEVEL));
-
-    if (!jstorage) {
+    if (java_storage_map.find(storage->key) != java_storage_map.end()) {
+      jstorage = java_storage_map.at(storage->key);
+    } else {
       jname = env->NewStringUTF(MSG_storage_get_name(storage));
       jstorage = Java_org_simgrid_msg_Storage_getByName(env, cls_arg, jname);
     }
