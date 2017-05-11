@@ -57,16 +57,16 @@ public class Node extends Process {
   }
 
   public void mainLoop() {
-    double next_lookup_time = Msg.getClock() + Common.RANDOM_LOOKUP_INTERVAL;
+    double nextLookupTime = Msg.getClock() + Common.RANDOM_LOOKUP_INTERVAL;
     while (Msg.getClock() < this.deadline) {
       try {
         if (comm == null) {
           comm = Task.irecv(Integer.toString(id));
         }
         if (!comm.test()) {
-          if (Msg.getClock() >= next_lookup_time) {
+          if (Msg.getClock() >= nextLookupTime) {
             randomLookup();
-            next_lookup_time += Common.RANDOM_LOOKUP_INTERVAL;
+            nextLookupTime += Common.RANDOM_LOOKUP_INTERVAL;
           } else {
             waitFor(1);
           }

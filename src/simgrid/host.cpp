@@ -236,8 +236,6 @@ double sg_host_route_bandwidth(sg_host_t from, sg_host_t to)
 void sg_host_dump(sg_host_t host)
 {
   xbt_dict_t props;
-  xbt_dict_cursor_t cursor=nullptr;
-  char *key,*data;
 
   XBT_INFO("Displaying host %s", host->cname());
   XBT_INFO("  - speed: %.0f", host->speed());
@@ -246,6 +244,9 @@ void sg_host_dump(sg_host_t host)
 
   if (!xbt_dict_is_empty(props)){
     XBT_INFO("  - properties:");
+    xbt_dict_cursor_t cursor = nullptr;
+    char* key;
+    char* data;
 
     xbt_dict_foreach(props,cursor,key,data) {
       XBT_INFO("    %s->%s",key,data);

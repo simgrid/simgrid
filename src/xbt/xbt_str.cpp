@@ -183,8 +183,6 @@ char *xbt_str_varsubst(const char *str, xbt_dict_t patterns)
 xbt_dynar_t xbt_str_split(const char *s, const char *sep)
 {
   xbt_dynar_t res = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-  const char *p, *q;
-  int done;
   const char *sep_dflt = " \t\n\r\x0B";
   char is_sep[256] = { 1, 0 };
 
@@ -197,12 +195,12 @@ xbt_dynar_t xbt_str_split(const char *s, const char *sep)
     while (*sep)
       is_sep[(unsigned char) *sep++] = 1;
   }
-  is_sep[0] = 1;                /* End of string is also separator */
+  is_sep[0] = 1; /* End of string is also separator */
 
   /* Do the job */
-  p = s;
-  q = s;
-  done = 0;
+  const char* p = s;
+  const char* q = s;
+  int done      = 0;
 
   if (s[0] == '\0')
     return res;
@@ -233,12 +231,10 @@ xbt_dynar_t xbt_str_split(const char *s, const char *sep)
 xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
 {
   xbt_dynar_t res = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-  int done;
-  const char *p, *q;
 
-  p = s;
-  q = s;
-  done = 0;
+  const char* p = s;
+  const char* q = s;
+  int done      = 0;
 
   if (s[0] == '\0')
     return res;
@@ -287,10 +283,12 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
  */
 xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
   xbt_dynar_t res = xbt_dynar_new(sizeof(char *), nullptr);
-  char *beg, *end;              /* pointers around the parsed chunk */
-  int in_simple_quote = 0, in_double_quote = 0;
-  int done = 0;
-  int ctn = 0;                  /* Got something in this block */
+  char* beg;
+  char* end; /* pointers around the parsed chunk */
+  int in_simple_quote = 0;
+  int in_double_quote = 0;
+  int done            = 0;
+  int ctn             = 0; /* Got something in this block */
 
   if (s[0] == '\0')
     return res;
@@ -403,8 +401,7 @@ char *xbt_str_join(xbt_dynar_t dyn, const char *sep)
 {
   int len = 1, dyn_len = xbt_dynar_length(dyn);
   unsigned int cpt;
-  char *cursor;
-  char *res, *p;
+  char* cursor;
 
   if (!dyn_len)
     return xbt_strdup("");
@@ -415,8 +412,8 @@ char *xbt_str_join(xbt_dynar_t dyn, const char *sep)
   }
   len += strlen(sep) * dyn_len;
   /* Do the job */
-  res = (char*) xbt_malloc(len);
-  p = res;
+  char* res = (char*)xbt_malloc(len);
+  char* p   = res;
   xbt_dynar_foreach(dyn, cpt, cursor) {
     if ((int) cpt < dyn_len - 1)
       p += snprintf(p,len, "%s%s", cursor, sep);
@@ -433,26 +430,24 @@ char *xbt_str_join(xbt_dynar_t dyn, const char *sep)
  */
 char *xbt_str_join_array(const char *const *strs, const char *sep)
 {
-  char *res,*q;
   int amount_strings=0;
   int len=0;
-  int i;
 
   if ((!strs) || (!strs[0]))
     return xbt_strdup("");
 
   /* compute the length before malloc */
-  for (i=0;strs[i];i++) {
+  for (int i = 0; strs[i]; i++) {
     len += strlen(strs[i]);
     amount_strings++;
   }
   len += strlen(sep) * amount_strings;
 
   /* Do the job */
-  res = (char*) xbt_malloc(len);
-  q = res;
-  for (i=0;strs[i];i++) {
-    if (i!=0) { // not first loop
+  char* res = (char*)xbt_malloc(len);
+  char* q   = res;
+  for (int i = 0; strs[i]; i++) {
+    if (i != 0) { // not first loop
       q += snprintf(q,len, "%s%s", sep, strs[i]);
     } else {
       q += snprintf(q,len, "%s",strs[i]);
@@ -468,7 +463,7 @@ char *xbt_str_join_array(const char *const *strs, const char *sep)
  */
 long int xbt_str_parse_int(const char* str, const char* error_msg)
 {
-  char *endptr;
+  char* endptr;
   if (str == nullptr || str[0] == '\0')
     THROWF(arg_error, 0, error_msg, str);
 

@@ -180,7 +180,8 @@ void parse_platform_file(const char *file)
 
     /* connect all traces relative to hosts */
     xbt_dict_cursor_t cursor = nullptr;
-    char *trace_name, *elm;
+    char* trace_name;
+    char* elm;
 
     xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
       tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
