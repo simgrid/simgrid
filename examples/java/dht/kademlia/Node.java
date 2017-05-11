@@ -275,7 +275,7 @@ public class Node extends Process {
   public int sendFindNodeToBest(Answer nodeList) {
     int destination = nodeList.getDestinationId();
     int i;
-    for (i = 0; i < Common.alpha && i < nodeList.size(); i++) {
+    for (i = 0; i < Common.ALPHA && i < nodeList.size(); i++) {
       Contact node = nodeList.getNodes().get(i);
       if (node.getId() != this.id) {
         this.sendFindNode(node.getId(),destination);
