@@ -369,8 +369,6 @@ XBT_PUBLIC(int) simcall_file_seek(smx_file_t fd, sg_offset_t offset, int origin)
 XBT_PUBLIC(int) simcall_file_move(smx_file_t fd, const char* fullpath);
 /*****************************   Storage   **********************************/
 XBT_PUBLIC(xbt_dict_t) simcall_storage_get_properties(smx_storage_t storage);
-XBT_PUBLIC(const char*) SIMIX_storage_get_name(smx_storage_t storage);
-
 /************************** MC simcalls   **********************************/
 XBT_PUBLIC(int) simcall_mc_random(int min, int max);
 

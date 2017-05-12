@@ -88,7 +88,7 @@ void surf_network_model_init_Reno()
   if (surf_network_model)
     return;
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(lagrange_solve);
+  surf_network_model = new simgrid::surf::NetworkCm02Model(&lagrange_solve);
   all_existing_models->push_back(surf_network_model);
 
   lmm_set_default_protocol_function(func_reno_f, func_reno_fp, func_reno_fpi);
@@ -104,7 +104,7 @@ void surf_network_model_init_Reno2()
   if (surf_network_model)
     return;
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(lagrange_solve);
+  surf_network_model = new simgrid::surf::NetworkCm02Model(&lagrange_solve);
   all_existing_models->push_back(surf_network_model);
 
   lmm_set_default_protocol_function(func_reno2_f, func_reno2_fp, func_reno2_fpi);
@@ -119,7 +119,7 @@ void surf_network_model_init_Vegas()
   if (surf_network_model)
     return;
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(lagrange_solve);
+  surf_network_model = new simgrid::surf::NetworkCm02Model(&lagrange_solve);
   all_existing_models->push_back(surf_network_model);
 
   lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp, func_vegas_fpi);
@@ -234,7 +234,7 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
           double_update(&(deltap), action->latency_, sg_surf_precision);
           action->latency_ = 0.0;
         }
-        if (action->latency_ == 0.0 && !(action->isSuspended()))
+        if (action->latency_ <= 0.0 && !(action->isSuspended()))
           lmm_update_variable_weight(maxminSystem_, action->getVariable(), action->weight_);
       }
       if (TRACE_is_enabled()) {
@@ -250,17 +250,16 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
         }
       }
       if (!lmm_get_number_of_cnst_from_var (maxminSystem_, action->getVariable())) {
-        /* There is actually no link used, hence an infinite bandwidth.
-         * This happens often when using models like vivaldi.
-         * In such case, just make sure that the action completes immediately.
+        /* There is actually no link used, hence an infinite bandwidth. This happens often when using models like
+         * vivaldi. In such case, just make sure that the action completes immediately.
          */
         action->updateRemains(action->getRemains());
       }
     action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
-                  
-    if (action->getMaxDuration() != NO_MAX_DURATION)
+
+    if (action->getMaxDuration() > NO_MAX_DURATION)
       action->updateMaxDuration(delta);
-      
+
     if (((action->getRemains() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||
         ((action->getMaxDuration() > NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
       action->finish();
@@ -393,7 +392,6 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const char* name, doub
 
 void NetworkCm02Link::apply_event(tmgr_trace_iterator_t triggered, double value)
 {
-
   /* Find out which of my iterators was triggered, and react accordingly */
   if (triggered == bandwidth_.event) {
     setBandwidth(value);
@@ -487,13 +485,9 @@ void NetworkCm02Link::setLatency(double value)
   }
 }
 
-NetworkCm02Link::~NetworkCm02Link() {}
-
 /**********
  * Action *
  **********/
-
-NetworkCm02Action::~NetworkCm02Action() {}
 
 void NetworkCm02Action::updateRemainingLazy(double now)
 {
@@ -509,11 +503,11 @@ void NetworkCm02Action::updateRemainingLazy(double now)
     XBT_DEBUG("Updating action(%p): remains is now %f", this, remains_);
   }
 
-  if (maxDuration_ != NO_MAX_DURATION)
+  if (maxDuration_ > NO_MAX_DURATION)
     double_update(&maxDuration_, delta, sg_surf_precision);
 
   if ((remains_ <= 0 && (lmm_get_variable_weight(getVariable()) > 0)) ||
-      (((maxDuration_ > NO_MAX_DURATION) && (maxDuration_ <= 0)))){
+      ((maxDuration_ > NO_MAX_DURATION) && (maxDuration_ <= 0))) {
     finish();
     setState(Action::State::done);
     heapRemove(getModel()->getActionHeap());

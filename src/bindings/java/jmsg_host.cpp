@@ -282,7 +282,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getAttachedStorage(JNIE
     jstorage_name = env->NewStringUTF(storage_name);
     env->SetObjectArrayElement(jtable, index, jstorage_name);
   }
-
+  xbt_dynar_free_container(&dyn);
   return jtable;
 }
 

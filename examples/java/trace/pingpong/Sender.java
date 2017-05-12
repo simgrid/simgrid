@@ -14,8 +14,8 @@ import org.simgrid.msg.Task;
 import org.simgrid.trace.Trace;
 
 public class Sender extends Process {
-  private static final double commSizeLat = 1;
-  private static final double commSizeBw = 100000000;
+  private static final double COMM_SIZE_LAT = 1;
+  private static final double COMM_SIZE_BW = 100000000;
   private static final String PM_STATE = "PM_STATE";
 
   public Sender(String hostname, String name, String[] args) throws HostNotFoundException {
@@ -40,7 +40,7 @@ public class Sender extends Process {
     for (int pos = 0; pos < hostCount; pos++) { 
       time = Msg.getClock(); 
       Msg.info("sender time: " + time);
-      ping = new PingPongTask("no name",computeDuration,commSizeLat);
+      ping = new PingPongTask("no name",computeDuration,COMM_SIZE_LAT);
       ping.setTime(time);
       ping.send(mailboxes[pos]);
 
@@ -57,7 +57,7 @@ public class Sender extends Process {
       communicationTime=timeGot - time;
       Msg.info("Communication time : " + communicationTime);
 
-      Msg.info(" --- bw "+ commSizeBw/communicationTime + " ----");
+      Msg.info(" --- bw "+ COMM_SIZE_BW/communicationTime + " ----");
 
       /* Pop the last state (going back to sending ping) */  
       Trace.hostPopState (getHost().getName(), PM_STATE);

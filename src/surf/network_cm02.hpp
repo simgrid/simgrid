@@ -59,7 +59,7 @@ namespace simgrid {
     public:
       NetworkCm02Link(NetworkCm02Model* model, const char* name, double bandwidth, double latency,
                       e_surf_link_sharing_policy_t policy, lmm_system_t system);
-      ~NetworkCm02Link() override;
+      virtual ~NetworkCm02Link() = default;
       void apply_event(tmgr_trace_iterator_t event, double value) override;
       void setBandwidth(double value) override;
       void setLatency(double value) override;
@@ -76,7 +76,7 @@ namespace simgrid {
     public:
       NetworkCm02Action(Model *model, double cost, bool failed)
       : NetworkAction(model, cost, failed) {};
-      ~NetworkCm02Action() override;
+      virtual ~NetworkCm02Action() = default;
       void updateRemainingLazy(double now) override;
     protected:
       double senderGap_;

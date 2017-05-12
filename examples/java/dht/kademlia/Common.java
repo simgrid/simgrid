@@ -13,7 +13,7 @@ public class Common {
 
   public static final int RANDOM_LOOKUP_INTERVAL = 100;
 
-  public static final int alpha = 3;
+  public static final int ALPHA = 3;
 
   public static final int IDENTIFIER_SIZE = 32;
   /* Maximum size of the buckets */

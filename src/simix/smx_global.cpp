@@ -238,11 +238,7 @@ void SIMIX_global_init(int *argc, char **argv)
       // TODO, create sg_storage_by_name
       sg_storage_t s = xbt_lib_get_elm_or_null(storage_lib, name);
       xbt_assert(s != nullptr, "Storage not found for name %s", name);
-
-      SIMIX_storage_create(name, s, nullptr);
     });
-
-    SIMIX_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, SIMIX_storage_destroy);
   }
   if (!simix_timers)
     simix_timers = xbt_heap_new(8, [](void* p) {

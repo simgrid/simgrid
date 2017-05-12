@@ -4,11 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/sysdep.h"
-#include "xbt/log.h"
 #include "maxmin_private.hpp"
-#include <stdlib.h>
+#include "xbt/log.h"
+#include "xbt/sysdep.h"
+#include <float.h>
 #include <math.h>
+#include <stdlib.h>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_maxmin);
 #define SHOW_EXPR_G(expr) XBT_DEBUG(#expr " = %g",expr);
@@ -113,10 +114,11 @@ void bottleneck_solve(lmm_system_t sys)
 
     xbt_swag_foreach_safe(_var, _var_next, var_list) {
       var = static_cast<lmm_variable_t>(_var);
-      double min_inc =  var->cnsts[0].constraint->usage / var->cnsts[0].value;
-      for (int i = 1; i < var->cnsts_number; i++) {
+      double min_inc = DBL_MAX;
+      for (int i = 0; i < var->cnsts_number; i++) {
         lmm_element_t elm = &var->cnsts[i];
-        min_inc = MIN(min_inc, elm->constraint->usage / elm->value);
+        if (elm->value > 0)
+          min_inc = MIN(min_inc, elm->constraint->usage / elm->value);
       }
       if (var->bound > 0)
         min_inc = MIN(min_inc, var->bound - var->value);

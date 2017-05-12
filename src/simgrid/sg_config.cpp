@@ -45,7 +45,8 @@ int _sg_cfg_exit_asap = 0;
 static void sg_config_cmd_line(int *argc, char **argv)
 {
   int shall_exit = 0;
-  int i, j;
+  int i;
+  int j;
 
   for (j = i = 1; i < *argc; i++) {
     if (!strncmp(argv[i], "--cfg=", strlen("--cfg="))) {

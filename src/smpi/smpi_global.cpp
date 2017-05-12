@@ -180,7 +180,8 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
        XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
 
        smpi_switch_data_segment(
-           (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->src_proc->data)->data))->index()));
+           static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->src_proc->data)->data))
+               ->index());
        tmpbuff = static_cast<void*>(xbt_malloc(buff_size));
        memcpy_private(tmpbuff, buff, private_blocks);
   }
@@ -189,7 +190,8 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
       && ((char*)comm->dst_buff < smpi_start_data_exe + smpi_size_data_exe )){
        XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
        smpi_switch_data_segment(
-           (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->dst_proc->data)->data))->index()));
+           static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->dst_proc->data)->data))
+               ->index());
   }
   XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff,comm->dst_buff);
   memcpy_private(comm->dst_buff, tmpbuff, private_blocks);
@@ -664,8 +666,8 @@ int smpi_main(const char* executable, int argc, char *argv[])
     }
   }
   int count = smpi_process_count();
-  int i, ret=0;
-  for (i = 0; i < count; i++) {
+  int ret   = 0;
+  for (int i = 0; i < count; i++) {
     if(process_data[i]->return_value()!=0){
       ret=process_data[i]->return_value();//return first non 0 value
       break;

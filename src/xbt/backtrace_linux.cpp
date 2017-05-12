@@ -34,8 +34,9 @@ extern char **environ;          /* the environment, as specified by the opengrou
 
 #include <unwind.h>
 struct trace_arg {
-  void **array;
-  int cnt, size;
+  void** array;
+  int cnt;
+  int size;
 };
 
 static _Unwind_Reason_Code
@@ -190,7 +191,8 @@ std::vector<std::string> resolveBacktrace(
   }
 
   /* To read the output of addr2line */
-  char line_func[1024], line_pos[1024];
+  char line_func[1024];
+  char line_pos[1024];
   for (std::size_t i = 0; i < count; i++) {
     XBT_DEBUG("Looking for symbol %zd, addr = '%s'", i, addrs[i].c_str());
     if (fgets(line_func, 1024, pipe)) {
@@ -217,7 +219,8 @@ std::vector<std::string> resolveBacktrace(
 
       char maps_buff[512];
       long int offset = 0;
-      char *p, *p2;
+      char* p;
+      char* p2;
       int found = 0;
 
       /* let's look for the offset of this library in our addressing space */
@@ -233,7 +236,8 @@ std::vector<std::string> resolveBacktrace(
         addrs[i].c_str(), addr);
 
       while (!found) {
-        long int first, last;
+        long int first;
+        long int last;
 
         if (fgets(maps_buff, 512, maps) == nullptr)
           break;

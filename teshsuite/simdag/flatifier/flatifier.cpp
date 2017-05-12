@@ -61,7 +61,8 @@ static void dump_platform()
   int version = 4;
   xbt_dict_t props = nullptr;
   xbt_dict_cursor_t cursor = nullptr;
-  char *key, *data;
+  char* key;
+  char* data;
 
   std::printf("<?xml version='1.0'?>\n");
   std::printf("<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\">\n");

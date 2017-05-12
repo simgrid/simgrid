@@ -43,8 +43,7 @@ void MSG_post_create_environment() {
 
   /* Initialize MSG storages */
   xbt_lib_foreach(storage_lib, cursor, name, data) {
-    if(data[SIMIX_STORAGE_LEVEL])
-      __MSG_storage_create(xbt_dict_cursor_get_elm(cursor));
+    __MSG_storage_create(xbt_dict_cursor_get_elm(cursor));
   }
 }
 

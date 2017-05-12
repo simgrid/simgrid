@@ -35,9 +35,10 @@ namespace simgrid {
     LinkImpl** LinkImpl::linksList()
     {
       LinkImpl** res = xbt_new(LinkImpl*, (int)links->size());
-      int i=0;
+      int i          = 0;
       for (auto kv : *links) {
-        res[i++] = kv.second;
+        res[i] = kv.second;
+        i++;
       }
       return res;
     }

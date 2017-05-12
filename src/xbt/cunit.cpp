@@ -88,7 +88,9 @@ struct s_xbt_test_unit {
   xbt_dynar_t tests;            /* of xbt_test_test_t */
 
   int nb_tests;
-  int test_failed, test_ignore, test_expect;
+  int test_failed;
+  int test_ignore;
+  int test_expect;
 };
 
 static void xbt_test_unit_dump(xbt_test_unit_t unit)
@@ -112,9 +114,14 @@ struct s_xbt_test_suite {
   char *title;
   xbt_dynar_t units;            /* of xbt_test_unit_t */
 
-  int nb_tests, nb_units;
-  int test_failed, test_ignore, test_expect;
-  int unit_failed, unit_ignore, unit_disabled;
+  int nb_tests;
+  int nb_units;
+  int test_failed;
+  int test_ignore;
+  int test_expect;
+  int unit_failed;
+  int unit_ignore;
+  int unit_disabled;
 };
 
 /* destroy test suite */
@@ -245,7 +252,9 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
   const char *file;
   int line;
   char *cp;
-  unsigned int it_unit, it_test, it_log;
+  unsigned int it_unit;
+  unsigned int it_test;
+  unsigned int it_log;
 
   int first = 1;                /* for result pretty printing */
 
@@ -253,25 +262,22 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
     return 0;
 
   /* suite title pretty-printing */
-  {
-    char suite_title[81];
-    int suite_len = strlen(suite->title);
-    int i;
+  char suite_title[81];
+  int suite_len = strlen(suite->title);
 
-    xbt_assert(suite_len < 68, "suite title \"%s\" too long (%d should be less than 68", suite->title, suite_len);
+  xbt_assert(suite_len < 68, "suite title \"%s\" too long (%d should be less than 68", suite->title, suite_len);
 
-    suite_title[0] = ' ';
-    for (i = 1; i < 80; i++)
-      suite_title[i] = '=';
-    suite_title[i++] = '\n';
-    suite_title[80] = '\0';
+  suite_title[0] = ' ';
+  for (int i = 1; i < 79; i++)
+    suite_title[i] = '=';
+  suite_title[79]  = '\n';
+  suite_title[80]  = '\0';
 
-    snprintf(suite_title + 40 - (suite_len + 4) / 2, 81-(40 - (suite_len + 4)/ 2), "[ %s ]", suite->title);
-    suite_title[40 + (suite_len + 5) / 2] = '=';
-    if (!suite->enabled)
-      snprintf(suite_title + 70, 11, " DISABLED ");
-    fprintf(stderr, "\n%s\n", suite_title);
-  }
+  snprintf(suite_title + 40 - (suite_len + 4) / 2, 81 - (40 - (suite_len + 4) / 2), "[ %s ]", suite->title);
+  suite_title[40 + (suite_len + 5) / 2] = '=';
+  if (!suite->enabled)
+    snprintf(suite_title + 70, 11, " DISABLED ");
+  fprintf(stderr, "\n%s\n", suite_title);
 
   if (suite->enabled) {
     /* iterate through all tests */
