@@ -6,7 +6,9 @@
 #include <simgrid_config.h>
 
 #include "mc/mc.h"
+#include "src/mc/mc_base.h"
 #include "src/mc/mc_replay.h"
+#include "src/simix/smx_private.h"
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/ModelChecker.hpp"
