@@ -10,6 +10,8 @@ SimGrid (3.16) UNRELEASED
    - <zoneZoute> an be used as a synonym for the now deprecated <asroute>
    - <bypassZoneRoute> an be used as a synonym for the now deprecated <bypassAsRoute>
    - <actor> can be used as a synonym for the now deprecated <process>
+   - state_file and avail_file periodicity is now easier to express
+     (check the documentation) the old behavior should still work.
 
  SimDag
   - New and Backwards Compatibility break: 
