@@ -66,13 +66,11 @@ tmgr_trace_t tmgr_trace_new_from_string(const char* name, std::string input, dou
 
       last_event->delta = event.delta - last_event->delta;
     } else {
-      /* We need to add the first fake event stating the time at which the trace begins */
-      if (event.delta > 0.0) {
-        s_tmgr_event_t first_event;
-        first_event.delta=event.delta;
-        first_event.value=-1.0;
-        trace->event_list.push_back(first_event);
-      }
+      /* Add the first fake event storing the time at which the trace begins */
+      s_tmgr_event_t first_event;
+      first_event.delta = event.delta;
+      first_event.value = -1.0;
+      trace->event_list.push_back(first_event);
     }
     trace->event_list.push_back(event);
     last_event = &(trace->event_list.back());
