@@ -6,8 +6,9 @@
 #ifndef SURF_TMGR_H
 #define SURF_TMGR_H
 
-#include "xbt/heap.h"
 #include "simgrid/forward.h"
+#include "xbt/heap.h"
+#include "xbt/sysdep.h"
 #include <vector>
 
 SG_BEGIN_DECL()

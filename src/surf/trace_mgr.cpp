@@ -37,10 +37,9 @@ simgrid::trace_mgr::future_evt_set::~future_evt_set()
 tmgr_trace_t tmgr_trace_new_from_string(const char* name, std::string input, double periodicity)
 {
   int linecount = 0;
-  tmgr_event_t last_event = nullptr;
+  tmgr_event_t last_event = nullptr; // last event seen
 
   xbt_assert(trace_list.find(name) == trace_list.end(), "Refusing to define trace %s twice", name);
-  xbt_assert(periodicity >= 0, "Invalid periodicity %g (must be positive)", periodicity);
 
   tmgr_trace_t trace = new simgrid::trace_mgr::trace();
 
@@ -52,15 +51,13 @@ tmgr_trace_t tmgr_trace_new_from_string(const char* name, std::string input, dou
     boost::trim(val);
     if (val[0] == '#' || val[0] == '\0' || val[0] == '%') // pass comments
       continue;
-    if (sscanf(val.c_str(), "PERIODICITY " "%lg" "\n", &periodicity) == 1)
+    if (sscanf(val.c_str(), "PERIODICITY %lg\n", &periodicity) == 1)
+      continue;
+    if (sscanf(val.c_str(), "WAITFOR %lg\n", &periodicity) == 1)
       continue;
 
-    xbt_assert(sscanf(val.c_str(), "%lg"
-                                   " "
-                                   "%lg"
-                                   "\n",
-                      &event.delta, &event.value) == 2,
-               "%s:%d: Syntax error in trace\n%s", name, linecount, input.c_str());
+    xbt_assert(sscanf(val.c_str(), "%lg  %lg\n", &event.delta, &event.value) == 2, "%s:%d: Syntax error in trace\n%s",
+               name, linecount, input.c_str());
 
     if (last_event) {
       xbt_assert(last_event->delta <= event.delta,
@@ -69,7 +66,8 @@ tmgr_trace_t tmgr_trace_new_from_string(const char* name, std::string input, dou
 
       last_event->delta = event.delta - last_event->delta;
     } else {
-      if(event.delta > 0.0){
+      /* We need to add the first fake event stating the time at which the trace begins */
+      if (event.delta > 0.0) {
         s_tmgr_event_t first_event;
         first_event.delta=event.delta;
         first_event.value=-1.0;
@@ -79,8 +77,9 @@ tmgr_trace_t tmgr_trace_new_from_string(const char* name, std::string input, dou
     trace->event_list.push_back(event);
     last_event = &(trace->event_list.back());
   }
-  if (last_event)
-    last_event->delta = periodicity;
+  if (last_event) {
+    last_event->delta = periodicity > 0 ? periodicity + trace->event_list.at(0).delta : -1;
+  }
 
   trace_list.insert({xbt_strdup(name), trace});
 
@@ -97,7 +96,7 @@ tmgr_trace_t tmgr_trace_new_from_file(const char *filename)
 
   std::stringstream buffer;
   buffer << f->rdbuf();
-  tmgr_trace_t trace = tmgr_trace_new_from_string(filename, buffer.str(), 0.);
+  tmgr_trace_t trace = tmgr_trace_new_from_string(filename, buffer.str(), -1);
 
   delete f;
 
@@ -147,8 +146,8 @@ double simgrid::trace_mgr::future_evt_set::next_date() const
 }
 
 /** @brief Retrieves the next occurring event, or nullptr if none happens before #date */
-tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::pop_leq(
-    double date, double *value, simgrid::surf::Resource **resource)
+tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::pop_leq(double date, double* value,
+                                                                  simgrid::surf::Resource** resource)
 {
   double event_date = next_date();
   if (event_date > date)
@@ -168,10 +167,10 @@ tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::pop_leq(
   if (trace_iterator->idx < trace->event_list.size() - 1) {
     xbt_heap_push(p_heap, trace_iterator, event_date + event->delta);
     trace_iterator->idx++;
-  } else if (event->delta > 0) {        /* Last element, checking for periodicity */
+  } else if (event->delta > 0) { /* Last element. Shall we loop? */
     xbt_heap_push(p_heap, trace_iterator, event_date + event->delta);
-    trace_iterator->idx = 1; /* not 0 as the first event is a placeholder to handle when events really start */
-  } else {                      /* We don't need this trace_event anymore */
+    trace_iterator->idx = 1; /* idx=0 is a placeholder to store when events really start */
+  } else {                   /* If we don't loop, we don't need this trace_event anymore */
     trace_iterator->free_me = 1;
   }
 
