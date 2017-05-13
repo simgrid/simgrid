@@ -843,6 +843,7 @@ XBT_PUBLIC(void) smpi_process_set_user_data(void *);
 
 XBT_PUBLIC(void) smpi_execute_flops(double flops);
 XBT_PUBLIC(void) smpi_execute(double duration);
+XBT_PUBLIC(void) smpi_execute_public(double duration);
 
 XBT_PUBLIC(double) smpi_get_host_power_peak_at(int pstate_index);
 XBT_PUBLIC(double) smpi_get_host_current_power_peak();
