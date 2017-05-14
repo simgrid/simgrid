@@ -1073,6 +1073,7 @@ testgraph.xml
 test_rl
 test_sg
 tools/tesh/tesh
+unit_tmgr
 #########################################
 ## touched files to track the dependencies of java examples
 examples/java/app/bittorrent/java_app_bittorrent_compiled
