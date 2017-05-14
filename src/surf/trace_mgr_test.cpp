@@ -29,13 +29,17 @@ public:
   bool isUsed() { return true; }
 };
 
+static inline bool doubleEq(double d1, double d2)
+{
+  return std::abs(d1 - d2) < 0.0001;
+}
 class Evt {
 public:
   double date;
   double value;
   explicit Evt(double d, double v) : date(d), value(v) {}
-  bool operator==(Evt e2) { return (date == e2.date) && (value == e2.value); }
-  bool operator!=(Evt e2) { return (date != e2.date) || (value != e2.value); }
+  bool operator==(Evt e2) { return (doubleEq(date, e2.date)) && (doubleEq(value, e2.value)); }
+  bool operator!=(Evt e2) { return !(*this == e2); }
 };
 static std::ostream& operator<<(std::ostream& out, const Evt& e)
 {

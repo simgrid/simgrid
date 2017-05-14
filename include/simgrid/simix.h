@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2010, 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -102,7 +101,6 @@ typedef struct s_smx_file *smx_file_t;
 
 /********************************** Storage *************************************/
 typedef xbt_dictelm_t smx_storage_t;
-typedef struct s_smx_storage_priv *smx_storage_priv_t;
 
 /* ****************************** Process *********************************** */
 
