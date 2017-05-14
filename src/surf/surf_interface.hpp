@@ -353,7 +353,7 @@ private:
 typedef struct {
   double peak;              /**< The peak of the metric, ie its max value */
   double scale;             /**< Current availability of the metric according to the traces, in [0,1] */
-  tmgr_trace_iterator_t event; /**< The associated trace event associated to the metric */
+  tmgr_trace_event_t event; /**< The associated trace event associated to the metric */
 } s_surf_metric_t;
 
 namespace simgrid {
@@ -390,7 +390,7 @@ public:
    * @param event What happened
    * @param value [TODO]
    */
-  virtual void apply_event(tmgr_trace_iterator_t event, double value)=0;
+  virtual void apply_event(tmgr_trace_event_t event, double value) = 0;
 
   /** @brief Check if the current Resource is used (if it currently serves an action) */
   virtual bool isUsed()=0;

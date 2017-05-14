@@ -89,7 +89,7 @@ public:
   /** @brief Check if the Storage is used (if an action currently uses its resources) */
   bool isUsed() override;
 
-  void apply_event(tmgr_trace_iterator_t event, double value) override;
+  void apply_event(tmgr_trace_event_t event, double value) override;
 
   void turnOn() override;
   void turnOff() override;

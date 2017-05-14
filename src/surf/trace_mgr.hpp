@@ -19,13 +19,13 @@ typedef struct tmgr_event {
 } s_tmgr_event_t, *tmgr_event_t;
 
 /* Iterator within a trace */
-typedef struct tmgr_trace_iterator {
+typedef struct tmgr_trace_event {
   tmgr_trace_t trace;
   unsigned int idx;
   sg_resource_t resource;
   int free_me;
 } s_tmgr_trace_event_t;
-typedef struct tmgr_trace_iterator *tmgr_trace_iterator_t;
+typedef struct tmgr_trace_event* tmgr_trace_event_t;
 
 /* Creation functions */
 XBT_PUBLIC(tmgr_trace_t) tmgr_empty_trace_new(void);
@@ -37,7 +37,7 @@ XBT_PUBLIC(void) tmgr_trace_free(tmgr_trace_t trace);
  * This flag indicates whether the structure is still used somewhere or not.
  * When the structure is freed, the argument is set to nullptr
 */
-XBT_PUBLIC(void) tmgr_trace_event_unref(tmgr_trace_iterator_t *trace_event);
+XBT_PUBLIC(void) tmgr_trace_event_unref(tmgr_trace_event_t* trace_event);
 
 XBT_PUBLIC(void) tmgr_finalize(void);
 
@@ -83,8 +83,8 @@ public:
   future_evt_set();
   virtual ~future_evt_set();
   double next_date() const;
-  tmgr_trace_iterator_t pop_leq(double date, double *value, simgrid::surf::Resource** resource);
-  tmgr_trace_iterator_t add_trace(tmgr_trace_t trace, simgrid::surf::Resource * resource);
+  tmgr_trace_event_t pop_leq(double date, double* value, simgrid::surf::Resource** resource);
+  tmgr_trace_event_t add_trace(tmgr_trace_t trace, simgrid::surf::Resource * resource);
 
 private:
   // TODO: use a boost type for the heap (or a ladder queue)

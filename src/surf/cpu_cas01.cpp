@@ -119,7 +119,7 @@ void CpuCas01::onSpeedChange() {
   Cpu::onSpeedChange();
 }
 
-void CpuCas01::apply_event(tmgr_trace_iterator_t event, double value)
+void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
 {
   if (event == speed_.event) {
     /* TODO (Hypervisor): do the same thing for constraint_core[i] */

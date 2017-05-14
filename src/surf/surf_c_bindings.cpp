@@ -18,7 +18,7 @@ extern double NOW;
 void surf_presolve()
 {
   double next_event_date = -1.0;
-  tmgr_trace_iterator_t event = nullptr;
+  tmgr_trace_event_t event          = nullptr;
   double value = -1.0;
   simgrid::surf::Resource *resource = nullptr;
 
@@ -46,7 +46,7 @@ double surf_solve(double max_date)
   double model_next_action_end = -1.0;
   double value = -1.0;
   simgrid::surf::Resource *resource = nullptr;
-  tmgr_trace_iterator_t event = nullptr;
+  tmgr_trace_event_t event          = nullptr;
 
   if (max_date > 0.0) {
     xbt_assert(max_date > NOW,"You asked to simulate up to %f, but that's in the past already", max_date);

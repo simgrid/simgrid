@@ -24,7 +24,7 @@ double thedate;
 class MockedResource : public simgrid::surf::Resource {
 public:
   explicit MockedResource() : simgrid::surf::Resource(nullptr, "fake", nullptr) {}
-  void apply_event(tmgr_trace_iterator_t event, double value)
+  void apply_event(tmgr_trace_event_t event, double value)
   {
     XBT_VERB("t=%.1f: Change value to %lg (idx: %d)", thedate, value, event->idx);
   }
@@ -58,13 +58,13 @@ static void trace2vector(const char* str, std::vector<Evt>* whereto)
 
   MockedResource daResource;
   simgrid::trace_mgr::future_evt_set fes;
-  tmgr_trace_iterator_t insertedIt = fes.add_trace(trace, &daResource);
+  tmgr_trace_event_t insertedIt = fes.add_trace(trace, &daResource);
 
   while (fes.next_date() <= 20.0 && fes.next_date() >= 0) {
     thedate = fes.next_date();
     double value;
     simgrid::surf::Resource* res;
-    tmgr_trace_iterator_t it = fes.pop_leq(thedate, &value, &res);
+    tmgr_trace_event_t it = fes.pop_leq(thedate, &value, &res);
     if (it == nullptr)
       continue;
 

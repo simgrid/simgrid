@@ -271,7 +271,7 @@ LinkNS3::LinkNS3(NetworkNS3Model* model, const char* name, double bandwidth, dou
 
 LinkNS3::~LinkNS3() = default;
 
-void LinkNS3::apply_event(tmgr_trace_iterator_t event, double value)
+void LinkNS3::apply_event(tmgr_trace_event_t event, double value)
 {
   THROW_UNIMPLEMENTED;
 }

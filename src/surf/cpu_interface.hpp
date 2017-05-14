@@ -121,7 +121,7 @@ public:
   virtual void setStateTrace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain boolean values (0 or 1). */
   virtual void setSpeedTrace(tmgr_trace_t trace); /*< setup the trace file with availability events (peak speed changes due to external load). Trace must contain relative values (ratio between 0 and 1) */
 
-  tmgr_trace_iterator_t stateEvent_ = nullptr;
+  tmgr_trace_event_t stateEvent_ = nullptr;
   s_surf_metric_t speed_ = {1.0, 0, nullptr};
 };
 

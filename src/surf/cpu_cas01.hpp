@@ -39,7 +39,7 @@ class CpuCas01 : public Cpu {
 public:
   CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core);
   ~CpuCas01() override;
-  void apply_event(tmgr_trace_iterator_t event, double value) override;
+  void apply_event(tmgr_trace_event_t event, double value) override;
   CpuAction *execution_start(double size) override;
   CpuAction *sleep(double duration) override;
 

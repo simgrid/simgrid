@@ -118,9 +118,9 @@ void tmgr_trace_free(tmgr_trace_t trace)
 }
 
 /** @brief Registers a new trace into the future event set, and get an iterator over the integrated trace  */
-tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::add_trace(tmgr_trace_t trace, surf::Resource* resource)
+tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::add_trace(tmgr_trace_t trace, surf::Resource* resource)
 {
-  tmgr_trace_iterator_t trace_iterator = nullptr;
+  tmgr_trace_event_t trace_iterator = nullptr;
 
   trace_iterator = xbt_new0(s_tmgr_trace_event_t, 1);
   trace_iterator->trace = trace;
@@ -144,14 +144,14 @@ double simgrid::trace_mgr::future_evt_set::next_date() const
 }
 
 /** @brief Retrieves the next occurring event, or nullptr if none happens before #date */
-tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::pop_leq(double date, double* value,
-                                                                  simgrid::surf::Resource** resource)
+tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::pop_leq(double date, double* value,
+                                                               simgrid::surf::Resource** resource)
 {
   double event_date = next_date();
   if (event_date > date)
     return nullptr;
 
-  tmgr_trace_iterator_t trace_iterator = (tmgr_trace_iterator_t)xbt_heap_pop(p_heap);
+  tmgr_trace_event_t trace_iterator = (tmgr_trace_event_t)xbt_heap_pop(p_heap);
   if (trace_iterator == nullptr)
     return nullptr;
 
@@ -183,7 +183,7 @@ void tmgr_finalize()
   }
 }
 
-void tmgr_trace_event_unref(tmgr_trace_iterator_t *trace_event)
+void tmgr_trace_event_unref(tmgr_trace_event_t* trace_event)
 {
   if ((*trace_event)->free_me) {
     xbt_free(*trace_event);

@@ -428,7 +428,7 @@ void CpuTi::setSpeedTrace(tmgr_trace_t trace)
   }
 }
 
-void CpuTi::apply_event(tmgr_trace_iterator_t event, double value)
+void CpuTi::apply_event(tmgr_trace_event_t event, double value)
 {
   if (event == speed_.event) {
     tmgr_trace_t speedTrace;

@@ -390,7 +390,7 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const char* name, doub
   simgrid::s4u::Link::onCreation(this->piface_);
 }
 
-void NetworkCm02Link::apply_event(tmgr_trace_iterator_t triggered, double value)
+void NetworkCm02Link::apply_event(tmgr_trace_event_t triggered, double value)
 {
   /* Find out which of my iterators was triggered, and react accordingly */
   if (triggered == bandwidth_.event) {
