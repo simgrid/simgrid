@@ -94,6 +94,7 @@ ADD_TEST(testall                                 ${CMAKE_BINARY_DIR}/testall)
 if(Boost_UNIT_TEST_FRAMEWORK_FOUND)
   add_executable       (unit_tmgr src/surf/trace_mgr_test.cpp)
   target_link_libraries(unit_tmgr simgrid ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+  set(CMAKE_CXX_FLAGS "-D_GLIBCXX_USE_CXX11_ABI=0 ${CMAKE_CXX_FLAGS}")
   ADD_TEST(unit_tmgr ${CMAKE_BINARY_DIR}/unit_tmgr --build_info=yes)
   
 else()
