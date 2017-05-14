@@ -16,6 +16,8 @@ namespace utf = boost::unit_test;
 #include "xbt/log.h"
 #include "xbt/misc.h"
 
+#include <math.h>
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(unit, "Unit tests of the Trace Manager");
 
 double thedate;
@@ -31,7 +33,7 @@ public:
 
 static inline bool doubleEq(double d1, double d2)
 {
-  return std::abs(d1 - d2) < 0.0001;
+  return fabs(d1 - d2) < 0.0001;
 }
 class Evt {
 public:
