@@ -424,7 +424,7 @@ void CpuTi::setSpeedTrace(tmgr_trace_t trace)
   if (trace && trace->event_list.size() > 1) {
     s_tmgr_event_t val = trace->event_list.back();
     if (val.delta < 1e-12)
-      speed_.event = future_evt_set->add_trace(tmgr_empty_trace_new(), 0.0, this);
+      speed_.event = future_evt_set->add_trace(tmgr_empty_trace_new(), this);
   }
 }
 

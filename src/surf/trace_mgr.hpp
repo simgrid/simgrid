@@ -84,7 +84,7 @@ public:
   virtual ~future_evt_set();
   double next_date() const;
   tmgr_trace_iterator_t pop_leq(double date, double *value, simgrid::surf::Resource** resource);
-  tmgr_trace_iterator_t add_trace(tmgr_trace_t trace, double start_time, simgrid::surf::Resource *resource);
+  tmgr_trace_iterator_t add_trace(tmgr_trace_t trace, simgrid::surf::Resource * resource);
 
 private:
   // TODO: use a boost type for the heap (or a ladder queue)

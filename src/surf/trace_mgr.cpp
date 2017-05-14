@@ -118,7 +118,7 @@ void tmgr_trace_free(tmgr_trace_t trace)
 }
 
 /** @brief Registers a new trace into the future event set, and get an iterator over the integrated trace  */
-tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::add_trace(tmgr_trace_t trace, double start_time, surf::Resource *resource)
+tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::add_trace(tmgr_trace_t trace, surf::Resource* resource)
 {
   tmgr_trace_iterator_t trace_iterator = nullptr;
 
@@ -129,7 +129,7 @@ tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::add_trace(tmgr_trace_t
 
   xbt_assert((trace_iterator->idx < trace->event_list.size()), "Your trace should have at least one event!");
 
-  xbt_heap_push(p_heap, trace_iterator, start_time);
+  xbt_heap_push(p_heap, trace_iterator, 0. /*start_time*/);
 
   return trace_iterator;
 }

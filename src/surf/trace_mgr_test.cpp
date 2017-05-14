@@ -58,7 +58,7 @@ static void trace2vector(const char* str, std::vector<Evt>* whereto)
 
   MockedResource daResource;
   simgrid::trace_mgr::future_evt_set fes;
-  tmgr_trace_iterator_t insertedIt = fes.add_trace(trace, 0.0, &daResource);
+  tmgr_trace_iterator_t insertedIt = fes.add_trace(trace, &daResource);
 
   while (fes.next_date() <= 20.0 && fes.next_date() >= 0) {
     thedate = fes.next_date();
