@@ -7,9 +7,8 @@
 
 set -e
 
-# Ensure that the locales are set, so that Perl keeps its nerves.
-# Not forgeting UTF to not drive Python crazy.
-export LC_ALL=C.UTF-8
+# ensure that the locales are set, so that perl keeps its nerves
+export LC_ALL=C
 
 echo "XXXX Cleanup previous attempts. Remaining content of /tmp:"
 rm -rf /tmp/simgrid-java*
