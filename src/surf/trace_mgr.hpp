@@ -22,8 +22,6 @@ typedef struct tmgr_trace_event {
 } s_tmgr_trace_event_t;
 typedef struct tmgr_trace_event* tmgr_trace_event_t;
 
-/* Creation functions */
-XBT_PUBLIC(void) tmgr_trace_free(tmgr_trace_t trace);
 /**
  * \brief Free a trace event structure
  *
@@ -96,7 +94,7 @@ public:
 
 private:
   // TODO: use a boost type for the heap (or a ladder queue)
-  xbt_heap_t p_heap = xbt_heap_new(8, xbt_free_f); /* Content: only trace_events (yep, 8 is an arbitrary value) */
+  xbt_heap_t heap_ = xbt_heap_new(8, xbt_free_f); /* Content: only trace_events (yep, 8 is an arbitrary value) */
 };
 
 }} // namespace simgrid::trace_mgr

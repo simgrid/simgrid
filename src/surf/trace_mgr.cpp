@@ -54,7 +54,7 @@ trace::~trace()                  = default;
 future_evt_set::future_evt_set() = default;
 simgrid::trace_mgr::future_evt_set::~future_evt_set()
 {
-  xbt_heap_free(p_heap);
+  xbt_heap_free(heap_);
 }
 }
 }
@@ -66,7 +66,6 @@ tmgr_trace_t tmgr_trace_new_from_string(const char* name, std::string input, dou
   tmgr::DatedValue* last_event = &(trace->event_list.back());
 
   xbt_assert(trace_list.find(name) == trace_list.end(), "Refusing to define trace %s twice", name);
-
 
   std::vector<std::string> list;
   boost::split(list, input, boost::is_any_of("\n\r"));
@@ -115,16 +114,9 @@ tmgr_trace_t tmgr_trace_new_from_file(const char *filename)
 
   std::stringstream buffer;
   buffer << f->rdbuf();
-  tmgr_trace_t trace = tmgr_trace_new_from_string(filename, buffer.str(), -1);
-
   delete f;
 
-  return trace;
-}
-
-void tmgr_trace_free(tmgr_trace_t trace)
-{
-  delete trace;
+  return tmgr_trace_new_from_string(filename, buffer.str(), -1);
 }
 
 /** @brief Registers a new trace into the future event set, and get an iterator over the integrated trace  */
@@ -139,7 +131,7 @@ tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::add_trace(tmgr_trace_t tr
 
   xbt_assert((trace_iterator->idx < trace->event_list.size()), "Your trace should have at least one event!");
 
-  xbt_heap_push(p_heap, trace_iterator, 0. /*start_time*/);
+  xbt_heap_push(heap_, trace_iterator, 0. /*start_time*/);
 
   return trace_iterator;
 }
@@ -147,10 +139,9 @@ tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::add_trace(tmgr_trace_t tr
 /** @brief returns the date of the next occurring event (pure function) */
 double simgrid::trace_mgr::future_evt_set::next_date() const
 {
-  if (xbt_heap_size(p_heap))
-    return (xbt_heap_maxkey(p_heap));
-  else
-    return -1.0;
+  if (xbt_heap_size(heap_))
+    return (xbt_heap_maxkey(heap_));
+  return -1.0;
 }
 
 /** @brief Retrieves the next occurring event, or nullptr if none happens before #date */
@@ -161,7 +152,7 @@ tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::pop_leq(double date, doub
   if (event_date > date)
     return nullptr;
 
-  tmgr_trace_event_t trace_iterator = (tmgr_trace_event_t)xbt_heap_pop(p_heap);
+  tmgr_trace_event_t trace_iterator = (tmgr_trace_event_t)xbt_heap_pop(heap_);
   if (trace_iterator == nullptr)
     return nullptr;
 
@@ -173,10 +164,10 @@ tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::pop_leq(double date, doub
   *value = dateVal.value_;
 
   if (trace_iterator->idx < trace->event_list.size() - 1) {
-    xbt_heap_push(p_heap, trace_iterator, event_date + dateVal.date_);
+    xbt_heap_push(heap_, trace_iterator, event_date + dateVal.date_);
     trace_iterator->idx++;
   } else if (dateVal.date_ > 0) { /* Last element. Shall we loop? */
-    xbt_heap_push(p_heap, trace_iterator, event_date + dateVal.date_);
+    xbt_heap_push(heap_, trace_iterator, event_date + dateVal.date_);
     trace_iterator->idx = 1; /* idx=0 is a placeholder to store when events really start */
   } else {                   /* If we don't loop, we don't need this trace_event anymore */
     trace_iterator->free_me = 1;
