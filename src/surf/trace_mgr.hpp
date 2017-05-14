@@ -23,7 +23,6 @@ typedef struct tmgr_trace_event {
 typedef struct tmgr_trace_event* tmgr_trace_event_t;
 
 /* Creation functions */
-XBT_PUBLIC(tmgr_trace_t) tmgr_empty_trace_new(void);
 XBT_PUBLIC(void) tmgr_trace_free(tmgr_trace_t trace);
 /**
  * \brief Free a trace event structure
@@ -79,7 +78,7 @@ XBT_PUBLIC_CLASS trace_event{
 XBT_PUBLIC_CLASS trace {
 public:
   /**  Creates an empty trace */
-  trace();
+  explicit trace();
   virtual ~trace();
 //private:
   std::vector<DatedValue> event_list;

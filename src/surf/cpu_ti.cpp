@@ -424,7 +424,7 @@ void CpuTi::setSpeedTrace(tmgr_trace_t trace)
   if (trace && trace->event_list.size() > 1) {
     trace_mgr::DatedValue val = trace->event_list.back();
     if (val.date_ < 1e-12)
-      speed_.event = future_evt_set->add_trace(tmgr_empty_trace_new(), this);
+      speed_.event = future_evt_set->add_trace(new simgrid::trace_mgr::trace(), this);
   }
 }
 
