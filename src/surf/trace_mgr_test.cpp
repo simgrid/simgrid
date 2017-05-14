@@ -13,6 +13,8 @@ namespace utf = boost::unit_test;
 
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/trace_mgr.hpp"
+namespace tmgr = simgrid::trace_mgr;
+
 #include "xbt/log.h"
 #include "xbt/misc.h"
 
@@ -31,30 +33,13 @@ public:
   bool isUsed() { return true; }
 };
 
-static inline bool doubleEq(double d1, double d2)
-{
-  return fabs(d1 - d2) < 0.0001;
-}
-class Evt {
-public:
-  double date;
-  double value;
-  explicit Evt(double d, double v) : date(d), value(v) {}
-  bool operator==(Evt e2) { return (doubleEq(date, e2.date)) && (doubleEq(value, e2.value)); }
-  bool operator!=(Evt e2) { return !(*this == e2); }
-};
-static std::ostream& operator<<(std::ostream& out, const Evt& e)
-{
-  out << e.date << " " << e.value;
-  return out;
-}
-
-static void trace2vector(const char* str, std::vector<Evt>* whereto)
+static void trace2vector(const char* str, std::vector<tmgr::DatedValue>* whereto)
 {
   simgrid::trace_mgr::trace* trace = tmgr_trace_new_from_string("TheName", str, 0);
+  XBT_VERB("---------------------------------------------------------");
   XBT_VERB("data>>\n%s<<data\n", str);
   for (auto evt : trace->event_list)
-    XBT_VERB("event: d:%lg v:%lg", evt.delta, evt.value);
+    XBT_VERB("event: d:%lg v:%lg", evt.date_, evt.value_);
 
   MockedResource daResource;
   simgrid::trace_mgr::future_evt_set fes;
@@ -71,7 +56,7 @@ static void trace2vector(const char* str, std::vector<Evt>* whereto)
     BOOST_CHECK_EQUAL(it, insertedIt); // Check that we find what we've put
     if (value >= 0) {
       res->apply_event(it, value);
-      whereto->push_back(Evt(thedate, value));
+      whereto->push_back(tmgr::DatedValue(thedate, value));
     } else {
       XBT_DEBUG("%.1f: ignore an event (idx: %d)\n", thedate, it->idx);
     }
@@ -87,76 +72,76 @@ BOOST_AUTO_TEST_CASE(no_evt_noloop) {
 }*/
 BOOST_AUTO_TEST_CASE(one_evt_noloop)
 {
-  std::vector<Evt> got;
+  std::vector<tmgr::DatedValue> got;
   trace2vector("9.0 3.0\n", &got);
 
-  std::vector<Evt> want;
-  want.push_back(Evt(9, 3));
+  std::vector<tmgr::DatedValue> want;
+  want.push_back(tmgr::DatedValue(9, 3));
   BOOST_CHECK_EQUAL_COLLECTIONS(want.begin(), want.end(), got.begin(), got.end());
 }
 BOOST_AUTO_TEST_CASE(two_evt_noloop)
 {
-  std::vector<Evt> got;
+  std::vector<tmgr::DatedValue> got;
   trace2vector("3.0 1.0\n"
                "9.0 3.0\n",
                &got);
 
-  std::vector<Evt> want;
-  want.push_back(Evt(3, 1));
-  want.push_back(Evt(9, 3));
+  std::vector<tmgr::DatedValue> want;
+  want.push_back(tmgr::DatedValue(3, 1));
+  want.push_back(tmgr::DatedValue(9, 3));
 
   BOOST_CHECK_EQUAL_COLLECTIONS(want.begin(), want.end(), got.begin(), got.end());
 }
 BOOST_AUTO_TEST_CASE(three_evt_noloop)
 {
-  std::vector<Evt> got;
+  std::vector<tmgr::DatedValue> got;
   trace2vector("3.0 1.0\n"
                "5.0 2.0\n"
                "9.0 3.0\n",
                &got);
 
-  std::vector<Evt> want;
-  want.push_back(Evt(3, 1));
-  want.push_back(Evt(5, 2));
-  want.push_back(Evt(9, 3));
+  std::vector<tmgr::DatedValue> want;
+  want.push_back(tmgr::DatedValue(3, 1));
+  want.push_back(tmgr::DatedValue(5, 2));
+  want.push_back(tmgr::DatedValue(9, 3));
 
   BOOST_CHECK_EQUAL_COLLECTIONS(want.begin(), want.end(), got.begin(), got.end());
 }
 
 BOOST_AUTO_TEST_CASE(two_evt_loop)
 {
-  std::vector<Evt> got;
+  std::vector<tmgr::DatedValue> got;
   trace2vector("1.0 1.0\n"
                "3.0 3.0\n"
                "WAITFOR 2\n",
                &got);
 
-  std::vector<Evt> want;
-  want.push_back(Evt(1, 1));
-  want.push_back(Evt(3, 3));
-  want.push_back(Evt(6, 1));
-  want.push_back(Evt(8, 3));
-  want.push_back(Evt(11, 1));
-  want.push_back(Evt(13, 3));
-  want.push_back(Evt(16, 1));
-  want.push_back(Evt(18, 3));
+  std::vector<tmgr::DatedValue> want;
+  want.push_back(tmgr::DatedValue(1, 1));
+  want.push_back(tmgr::DatedValue(3, 3));
+  want.push_back(tmgr::DatedValue(6, 1));
+  want.push_back(tmgr::DatedValue(8, 3));
+  want.push_back(tmgr::DatedValue(11, 1));
+  want.push_back(tmgr::DatedValue(13, 3));
+  want.push_back(tmgr::DatedValue(16, 1));
+  want.push_back(tmgr::DatedValue(18, 3));
 
   BOOST_CHECK_EQUAL_COLLECTIONS(want.begin(), want.end(), got.begin(), got.end());
 }
 BOOST_AUTO_TEST_CASE(two_evt_start0_loop)
 {
-  std::vector<Evt> got;
+  std::vector<tmgr::DatedValue> got;
   trace2vector("0.0 1\n"
                "5.0 2\n"
                "WAITFOR 5\n",
                &got);
 
-  std::vector<Evt> want;
-  want.push_back(Evt(0, 1));
-  want.push_back(Evt(5, 2));
-  want.push_back(Evt(10, 1));
-  want.push_back(Evt(15, 2));
-  want.push_back(Evt(20, 1));
+  std::vector<tmgr::DatedValue> want;
+  want.push_back(tmgr::DatedValue(0, 1));
+  want.push_back(tmgr::DatedValue(5, 2));
+  want.push_back(tmgr::DatedValue(10, 1));
+  want.push_back(tmgr::DatedValue(15, 2));
+  want.push_back(tmgr::DatedValue(20, 1));
 
   BOOST_CHECK_EQUAL_COLLECTIONS(want.begin(), want.end(), got.begin(), got.end());
 }

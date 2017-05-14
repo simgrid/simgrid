@@ -23,21 +23,41 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf, "Surf trace management");
 
-static std::unordered_map<const char*, simgrid::trace_mgr::trace*> trace_list;
+namespace tmgr = simgrid::trace_mgr;
 
-simgrid::trace_mgr::trace::trace()=default;
-simgrid::trace_mgr::trace::~trace()=default;
-simgrid::trace_mgr::future_evt_set::future_evt_set()=default;
+static std::unordered_map<const char*, tmgr::trace*> trace_list;
 
+static inline bool doubleEq(double d1, double d2)
+{
+  return fabs(d1 - d2) < 0.0001;
+}
+namespace simgrid {
+namespace trace_mgr {
+
+bool DatedValue::operator==(DatedValue e2)
+{
+  return (doubleEq(date_, e2.date_)) && (doubleEq(value_, e2.value_));
+}
+std::ostream& operator<<(std::ostream& out, const DatedValue& e)
+{
+  out << e.date_ << " " << e.value_;
+  return out;
+}
+
+trace::trace()                   = default;
+trace::~trace()                  = default;
+future_evt_set::future_evt_set() = default;
 simgrid::trace_mgr::future_evt_set::~future_evt_set()
 {
   xbt_heap_free(p_heap);
+}
+}
 }
 
 tmgr_trace_t tmgr_trace_new_from_string(const char* name, std::string input, double periodicity)
 {
   int linecount = 0;
-  tmgr_event_t last_event = nullptr; // last event seen
+  tmgr::DatedValue* last_event;
 
   xbt_assert(trace_list.find(name) == trace_list.end(), "Refusing to define trace %s twice", name);
 
@@ -46,7 +66,7 @@ tmgr_trace_t tmgr_trace_new_from_string(const char* name, std::string input, dou
   std::vector<std::string> list;
   boost::split(list, input, boost::is_any_of("\n\r"));
   for (auto val : list) {
-    s_tmgr_event_t event;
+    tmgr::DatedValue event;
     linecount++;
     boost::trim(val);
     if (val[0] == '#' || val[0] == '\0' || val[0] == '%') // pass comments
@@ -56,27 +76,29 @@ tmgr_trace_t tmgr_trace_new_from_string(const char* name, std::string input, dou
     if (sscanf(val.c_str(), "WAITFOR %lg\n", &periodicity) == 1)
       continue;
 
-    xbt_assert(sscanf(val.c_str(), "%lg  %lg\n", &event.delta, &event.value) == 2, "%s:%d: Syntax error in trace\n%s",
+    xbt_assert(sscanf(val.c_str(), "%lg  %lg\n", &event.date_, &event.value_) == 2, "%s:%d: Syntax error in trace\n%s",
                name, linecount, input.c_str());
 
     if (last_event) {
-      xbt_assert(last_event->delta <= event.delta,
+      xbt_assert(last_event->date_ <= event.date_,
                  "%s:%d: Invalid trace: Events must be sorted, but time %g > time %g.\n%s", name, linecount,
-                 last_event->delta, event.delta, input.c_str());
+                 last_event->date_, event.date_, input.c_str());
 
-      last_event->delta = event.delta - last_event->delta;
+      last_event->date_ = event.date_ - last_event->date_;
     } else {
       /* Add the first fake event storing the time at which the trace begins */
-      s_tmgr_event_t first_event;
-      first_event.delta = event.delta;
-      first_event.value = -1.0;
+      tmgr::DatedValue first_event(event.date_, -1.0);
       trace->event_list.push_back(first_event);
     }
     trace->event_list.push_back(event);
     last_event = &(trace->event_list.back());
   }
   if (last_event) {
-    last_event->delta = periodicity > 0 ? periodicity + trace->event_list.at(0).delta : -1;
+    if (periodicity > 0) {
+      last_event->date_ = periodicity + trace->event_list.at(0).date_;
+    } else {
+      last_event->date_ = -1;
+    }
   }
 
   trace_list.insert({xbt_strdup(name), trace});
@@ -104,10 +126,8 @@ tmgr_trace_t tmgr_trace_new_from_file(const char *filename)
 tmgr_trace_t tmgr_empty_trace_new()
 {
   tmgr_trace_t trace = new simgrid::trace_mgr::trace();
-  s_tmgr_event_t event;
-  event.delta = 0.0;
-  event.value = 0.0;
-  trace->event_list.push_back(event);
+  tmgr::DatedValue val(0, 0);
+  trace->event_list.push_back(val);
 
   return trace;
 }
@@ -158,15 +178,15 @@ tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::pop_leq(double date, doub
   tmgr_trace_t trace = trace_iterator->trace;
   *resource = trace_iterator->resource;
 
-  tmgr_event_t event = &(trace->event_list.at(trace_iterator->idx));
+  tmgr::DatedValue dateVal = trace->event_list.at(trace_iterator->idx);
 
-  *value = event->value;
+  *value = dateVal.value_;
 
   if (trace_iterator->idx < trace->event_list.size() - 1) {
-    xbt_heap_push(p_heap, trace_iterator, event_date + event->delta);
+    xbt_heap_push(p_heap, trace_iterator, event_date + dateVal.date_);
     trace_iterator->idx++;
-  } else if (event->delta > 0) { /* Last element. Shall we loop? */
-    xbt_heap_push(p_heap, trace_iterator, event_date + event->delta);
+  } else if (dateVal.date_ > 0) { /* Last element. Shall we loop? */
+    xbt_heap_push(p_heap, trace_iterator, event_date + dateVal.date_);
     trace_iterator->idx = 1; /* idx=0 is a placeholder to store when events really start */
   } else {                   /* If we don't loop, we don't need this trace_event anymore */
     trace_iterator->free_me = 1;

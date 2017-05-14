@@ -37,8 +37,8 @@ CpuTiTrace::CpuTiTrace(tmgr_trace_t speedTrace)
   for (auto val : speedTrace->event_list) {
     timePoints_[i] = time;
     integral_[i] = integral;
-    integral += val.delta * val.value;
-    time += val.delta;
+    integral += val.date_ * val.value_;
+    time += val.date_;
     i++;
   }
   timePoints_[i] = time;
@@ -237,8 +237,8 @@ double CpuTiTgmr::getPowerScale(double a)
 {
   double reduced_a = a - floor(a / lastTime_) * lastTime_;
   int point = trace_->binarySearch(trace_->timePoints_, reduced_a, 0, trace_->nbPoints_ - 1);
-  s_tmgr_event_t val = speedTrace_->event_list.at(point);
-  return val.value;
+  trace_mgr::DatedValue val = speedTrace_->event_list.at(point);
+  return val.value_;
 }
 
 /**
@@ -264,9 +264,9 @@ CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value) :
 
   /* only one point available, fixed trace */
   if (speedTrace->event_list.size() == 1) {
-    s_tmgr_event_t val = speedTrace->event_list.front();
+    trace_mgr::DatedValue val = speedTrace->event_list.front();
     type_ = TRACE_FIXED;
-    value_ = val.value;
+    value_                    = val.value_;
     return;
   }
 
@@ -274,7 +274,7 @@ CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value) :
 
   /* count the total time of trace file */
   for (auto val : speedTrace->event_list)
-    total_time += val.delta;
+    total_time += val.date_;
 
   trace_ = new CpuTiTrace(speedTrace);
   lastTime_ = total_time;
@@ -422,8 +422,8 @@ void CpuTi::setSpeedTrace(tmgr_trace_t trace)
 
   /* add a fake trace event if periodicity == 0 */
   if (trace && trace->event_list.size() > 1) {
-    s_tmgr_event_t val = trace->event_list.back();
-    if (val.delta < 1e-12)
+    trace_mgr::DatedValue val = trace->event_list.back();
+    if (val.date_ < 1e-12)
       speed_.event = future_evt_set->add_trace(tmgr_empty_trace_new(), this);
   }
 }
@@ -441,12 +441,12 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
     modified(true);
 
     speedTrace = speedIntegratedTrace_->speedTrace_;
-    s_tmgr_event_t val = speedTrace->event_list.back();
+    trace_mgr::DatedValue val = speedTrace->event_list.back();
     delete speedIntegratedTrace_;
-    speed_.scale = val.value;
+    speed_.scale = val.value_;
 
-    trace = new CpuTiTgmr(TRACE_FIXED, val.value);
-    XBT_DEBUG("value %f", val.value);
+    trace = new CpuTiTgmr(TRACE_FIXED, val.value_);
+    XBT_DEBUG("value %f", val.value_);
 
     speedIntegratedTrace_ = trace;
 

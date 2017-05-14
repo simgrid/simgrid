@@ -13,11 +13,6 @@
 
 SG_BEGIN_DECL()
 
-typedef struct tmgr_event {
-  double delta;
-  double value;
-} s_tmgr_event_t, *tmgr_event_t;
-
 /* Iterator within a trace */
 typedef struct tmgr_trace_event {
   tmgr_trace_t trace;
@@ -48,17 +43,31 @@ SG_END_DECL()
 
 #ifdef __cplusplus
 namespace simgrid {
-/** @brief Modeling of the resource variations, such as those due to an external load
+/** @brief Modeling of the availability profile (due to an external load) or the churn
  *
- * There is 3 main concepts in this module:
- * - #trace: a set of dated values, ie a list of pair <timestamp, value>
- * - #trace_iterator: links a given trace to a given simgrid resource. A Cpu for example has 2 iterators: state (ie, is it ON/OFF) and speed, while a link has 3 iterators: state, bandwidth and latency.
+ * There is 4 main concepts in this module:
+ * - #DatedValue: a pair <timestamp, value> (both are of type double)
+ * - #trace: a list of dated values
+ * - #trace_event: links a given trace to a given SimGrid resource.
+ *   A Cpu for example has 2 kinds of events: state (ie, is it ON/OFF) and speed,
+ *   while a link has 3 iterators: state, bandwidth and latency.
  * - #future_evt_set: makes it easy to find the next occuring event of all traces
  */
-  namespace trace_mgr {
+namespace trace_mgr {
+XBT_PUBLIC_CLASS DatedValue
+{
+public:
+  double date_          = 0;
+  double value_         = 0;
+  explicit DatedValue() = default;
+  explicit DatedValue(double d, double v) : date_(d), value_(v) {}
+  bool operator==(DatedValue e2);
+  bool operator!=(DatedValue e2) { return !(*this == e2); }
+};
+std::ostream& operator<<(std::ostream& out, const DatedValue& e);
 
 /** @brief A trace_iterator links a trace to a resource */
-XBT_PUBLIC_CLASS trace_iterator {
+XBT_PUBLIC_CLASS trace_event{
 
 };
 
@@ -73,7 +82,7 @@ public:
   trace();
   virtual ~trace();
 //private:
-  std::vector<s_tmgr_event_t> event_list;
+  std::vector<DatedValue> event_list;
 };
 
 /** @brief Future Event Set (collection of iterators over the traces)
