@@ -119,7 +119,7 @@ speed             | double (mandatory)                     | Computational power
 core              | int (defaults to 1)                    | Number of cores (see @ref howto_multicore)
 state             | optionally "OFF"                       | If set to OFF, the host is initially turned off.
 availability_file | File name (optional) | (Relative or absolute) filename to use as input; must contain availability traces for this host. The syntax of this file is defined below.
-state_file        | File name (optional) |  Same mechanism as availability_file.<br /> 
+state_file        | File name (optional) |  File to use as a state profile (see @ref howto_churn)
 coordinates       | String (mandatory when using Vivaldi routing) | The coordinates of this host (see @ref pf_P2P_tags).
 pstate     | Double (Defaults to 0) | FIXME: Not yet documented.
 
@@ -174,37 +174,6 @@ will start delivering 80\% of its power. In this example, this amounts to 400 Mf
 
 Since the periodicity in line 1 was set to be 1.0, i.e., 1 timestep, this host will
 continue to provide 500 Mflop/s from time 21. From time 32 it will provide 250 MFlop/s and so on.
-
-\anchor pf_host_churn
-### Expressing churn ###
-
-To express the fact that a host can change state over time (as in P2P
-systems, for instance), it is possible to use a file describing the time
-at which the host is turned on or off. An example of the content
-of such a file is presented below.
-
-#### Adding a state file ####
-
-\verbatim
-<platform version="4">
-  <host id="bob" power="500Gf" state_file="bob.fail" />
-</platform>
-\endverbatim
-
-#### Example of "bob.fail" file ####
-
-~~~{.py}
-  PERIODICITY 10.0
-  1.0 0
-  2.0 1
-~~~
-
-A zero value means <b>down</b> (i.e., OFF) while a positive one means <b>up and
-  running</b> (i.e., ON). From time 0.0 to time 1.0, the host is on as usual. At time 1.0, it is
-turned off and at time 2.0, it is turned on again until time 12 (2 plus the
-periodicity 10). It will be turned off again at time 13.0 until time 23.0, and
-so on.
-
 
 \subsubsection pf_tag_cluster &lt;cluster&gt;
 
