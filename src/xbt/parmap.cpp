@@ -218,6 +218,8 @@ static void xbt_parmap_set_mode(xbt_parmap_t parmap, e_xbt_parmap_mode_t mode)
     case XBT_PARMAP_DEFAULT:
       THROW_IMPOSSIBLE;
       break;
+    default:
+      THROW_IMPOSSIBLE;
   }
 }
 

@@ -96,7 +96,7 @@ static void xbt_preinit(void) {
   xbt_log_preinit();
   xbt_os_thread_mod_preinit();
   xbt_dict_preinit();
-   
+
   srand(seed);
 #ifndef _WIN32
   srand48(seed);
@@ -106,7 +106,8 @@ static void xbt_preinit(void) {
 
 static void xbt_postexit(void)
 {
-  if(!_sg_do_clean_atexit) return;
+  if (!_sg_do_clean_atexit)
+    return;
   xbt_initialized--;
   xbt_dict_postexit();
   xbt_os_thread_mod_postexit();
@@ -123,14 +124,15 @@ void xbt_init(int *argc, char **argv)
 {
   simgrid::xbt::installExceptionHandler();
 
-  if (xbt_initialized++) {
-    XBT_DEBUG("XBT was initialized %d times.", xbt_initialized);
+  if (xbt_initialized) {
+    xbt_initialized++;
+    XBT_DEBUG("XBT has been initialized %d times.", xbt_initialized);
     return;
   }
 
   xbt_binary_name = xbt_strdup(argv[0]);
-  xbt_cmdline = xbt_dynar_new(sizeof(char*),NULL);
-  for (int i=0;i<*argc;i++)
+  xbt_cmdline     = xbt_dynar_new(sizeof(char*), NULL);
+  for (int i = 0; i < *argc; i++)
     xbt_dynar_push(xbt_cmdline,&(argv[i]));
   
   xbt_log_init(argc, argv);
@@ -158,8 +160,7 @@ void xbt_abort(void)
   __gcov_flush();
 #endif
 #ifdef _WIN32
-  /* It was said *in silence*.  We don't want to see the error message printed
-   * by the Microsoft's implementation of abort(). */
+  /* We said *in silence*. We don't want to see the error message printed by Microsoft's implementation of abort(). */
   raise(SIGABRT);
   signal(SIGABRT, SIG_DFL);
   raise(SIGABRT);
