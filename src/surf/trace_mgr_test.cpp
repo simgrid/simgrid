@@ -4,21 +4,21 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #define BOOST_TEST_MODULE Trace Manager tests
-
 bool init_unit_test(); // boost forget to give this prototype on NetBSD, which does not fit our paranoid flags
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_NO_MAIN
 #include <boost/test/unit_test.hpp>
-namespace utf = boost::unit_test;
 
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/trace_mgr.hpp"
-namespace tmgr = simgrid::trace_mgr;
 
 #include "xbt/log.h"
 #include "xbt/misc.h"
 
 #include <math.h>
+
+namespace utf  = boost::unit_test;
+namespace tmgr = simgrid::trace_mgr;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(unit, "Unit tests of the Trace Manager");
 
