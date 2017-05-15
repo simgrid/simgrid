@@ -77,7 +77,7 @@ tmgr_trace_t tmgr_trace_new_from_string(const char* name, std::string input, dou
       continue;
     if (sscanf(val.c_str(), "PERIODICITY %lg\n", &periodicity) == 1)
       continue;
-    if (sscanf(val.c_str(), "WAITFOR %lg\n", &periodicity) == 1)
+    if (sscanf(val.c_str(), "LOOPAFTER %lg\n", &periodicity) == 1)
       continue;
 
     xbt_assert(sscanf(val.c_str(), "%lg  %lg\n", &event.date_, &event.value_) == 2, "%s:%d: Syntax error in trace\n%s",

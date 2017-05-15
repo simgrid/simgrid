@@ -35,7 +35,7 @@ the form "date value". Example:
 ~~~{.py}
   1 0
   2 1
- WAITFOR 8
+ LOOPAFTER 8
 ~~~
 
  - At time t=1, the host is turned off (value 0 means OFF)
@@ -43,7 +43,7 @@ the form "date value". Example:
  - At time t=10, the history is reset (because that's 8 seconds after
    the last event). So the host will be turned off again at t=11.
 
-If your trace does not contain a WAITFOR line, then your profile is
+If your trace does not contain a LOOPAFTER line, then your profile is
 only executed once and not repetitively.
 
 @section howto_multicore How to model multicore machines
