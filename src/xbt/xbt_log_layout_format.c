@@ -90,6 +90,7 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
       case '\0':
         fprintf(stderr, "Layout format (%s) ending with %%\n", (char *)l->data);
         xbt_abort();
+        break;
       case '%':
         *p = '%';
         check_overflow(1);

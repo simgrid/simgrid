@@ -88,13 +88,8 @@ static void __JAVA_host_priv_free(void *host)
 {
 }
 
-static void __JAVA_storage_priv_free(void *storage)
-{
-}
-
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 {
-  char **argv = nullptr;
   int index;
   int argc = 0;
   jstring jval;
@@ -117,7 +112,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, j
     argc = static_cast<int>(env->GetArrayLength(jargs));
 
   argc++;
-  argv = xbt_new(char *, argc + 1);
+  char** argv = new char*[argc + 1];
   argv[0] = xbt_strdup("java");
 
   for (index = 0; index < argc - 1; index++) {
@@ -137,7 +132,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, j
     free(argv[index]);
   }
   free(argv[argc]);
-  free(argv);
+  delete[] argv;
 }
 
 JNIEXPORT void JNICALL JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass cls)

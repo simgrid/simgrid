@@ -52,10 +52,6 @@ typedef struct s_smx_mailbox *smx_mailbox_t;
 
 #endif
 
-/**************************** Scalar Values **********************************/
-
-typedef union u_smx_scalar u_smx_scalar_t;
-
 /* ******************************** Host ************************************ */
 /** @brief Host datatype
     @ingroup simix_host_management
