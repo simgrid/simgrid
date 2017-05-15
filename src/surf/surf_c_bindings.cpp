@@ -28,9 +28,8 @@ void surf_presolve()
       break;
 
     while ((event = future_evt_set->pop_leq(next_event_date, &value, &resource))) {
-      if (value >= 0){
+      if (value >= 0)
         resource->apply_event(event, value);
-      }
     }
   }
 

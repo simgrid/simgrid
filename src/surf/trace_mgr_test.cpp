@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(two_evt_loop)
   std::vector<tmgr::DatedValue> got;
   trace2vector("1.0 1.0\n"
                "3.0 3.0\n"
-               "WAITFOR 2\n",
+               "LOOPAFTER 2\n",
                &got);
 
   std::vector<tmgr::DatedValue> want;
@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE(two_evt_start0_loop)
   std::vector<tmgr::DatedValue> got;
   trace2vector("0.0 1\n"
                "5.0 2\n"
-               "WAITFOR 5\n",
+               "LOOPAFTER 5\n",
                &got);
 
   std::vector<tmgr::DatedValue> want;
