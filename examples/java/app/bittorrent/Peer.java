@@ -624,10 +624,9 @@ public class Peer extends Process {
   }
 
   private String getStatus() {
-    String s = "";
-    for (int i = 0; i < Common.FILE_PIECES; i++) {
-      s = s + bitfield[i];
-    }
-    return s;
+    StringBuilder s = new StringBuilder("");
+    for (int i = 0; i < Common.FILE_PIECES; i++)
+      s.append(bitfield[i]);
+    return s.toString();
   }
 }

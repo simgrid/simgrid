@@ -16,7 +16,7 @@ public class Answer {
 
   public Answer(int destinationId) {
     this.destinationId = destinationId;
-    nodes = new ArrayList<Contact>();
+    nodes = new ArrayList<>();
   }
 
   int getDestinationId() {
