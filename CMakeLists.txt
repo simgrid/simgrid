@@ -252,34 +252,23 @@ else()
   endif()
 endif()
 
-#Boost context 1.61 will break compatibility with our implementation.
-#Warn users about that
-find_package(Boost 1.61 COMPONENTS context)
-
-if(Boost_FOUND AND Boost_CONTEXT_FOUND)
-  message("   WARNING : our implementation of Boost context factory is not compatible with Boost >=1.61 yet.")
-
-  set(Boost_FOUND 1)
-  set(HAVE_BOOST_CONTEXTS 0)
-else()
-# Try again to see if we have libboost-context
-  find_package(Boost 1.42 COMPONENTS context)
-  set(Boost_FOUND 1) # We don't care of whether this component is missing
-
-  if(Boost_FOUND AND Boost_CONTEXT_FOUND)
-    # We should use feature detection for this instead:
-    if (Boost_VERSION LESS 105600)
-      message("Found Boost.Context API v1")
-      set(HAVE_BOOST_CONTEXTS 1)
-    else()
-      message("Found Boost.Context API v2")
-      set(HAVE_BOOST_CONTEXTS 2)
-    endif()
+find_package(Boost COMPONENTS context)
+set(Boost_FOUND 1) # This component is optional
+if(Boost_CONTEXT_FOUND)
+  if (Boost_VERSION LESS 105600)
+    message("Found Boost.Context API v1")
+    set(HAVE_BOOST_CONTEXTS 1)
+  elseif(Boost_VERSION LESS 106100)
+    message("Found Boost.Context API v2")
+    set(HAVE_BOOST_CONTEXTS 2)
   else()
-    message ("   boost        : found.")
-    message ("   boost-context: missing. Install libboost-context-dev for this optional feature.")
+    message("   WARNING : our implementation of Boost context factory is not compatible with Boost >=1.61 yet.")
     set(HAVE_BOOST_CONTEXTS 0)
   endif()
+else()
+  message ("   boost        : found.")
+  message ("   boost-context: missing. Install libboost-context-dev for this optional feature.")
+  set(HAVE_BOOST_CONTEXTS 0)
 endif()
 
 # Checks for header libraries functions.
