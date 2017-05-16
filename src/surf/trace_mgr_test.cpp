@@ -29,6 +29,7 @@ public:
   void apply_event(tmgr_trace_event_t event, double value)
   {
     XBT_VERB("t=%.1f: Change value to %lg (idx: %d)", thedate, value, event->idx);
+    tmgr_trace_event_unref(&event);
   }
   bool isUsed() { return true; }
 };
@@ -61,6 +62,7 @@ static void trace2vector(const char* str, std::vector<tmgr::DatedValue>* whereto
       XBT_DEBUG("%.1f: ignore an event (idx: %d)\n", thedate, it->idx);
     }
   }
+  tmgr_finalize();
 }
 
 /* Fails in a way that is difficult to test: xbt_assert should become throw

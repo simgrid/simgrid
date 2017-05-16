@@ -182,6 +182,7 @@ void tmgr_finalize()
     xbt_free((char*)kv.first);
     delete kv.second;
   }
+  trace_list.clear();
 }
 
 void tmgr_trace_event_unref(tmgr_trace_event_t* trace_event)
