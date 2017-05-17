@@ -36,10 +36,7 @@
  */
 ssize_t xbt_getline(char **buf, size_t *n, FILE *stream)
 {
-  ssize_t i;
-  int ch;
-
-  ch = getc(stream);
+  int ch = getc(stream);
   if (ferror(stream) || feof(stream))
     return -1;
 
@@ -48,15 +45,20 @@ ssize_t xbt_getline(char **buf, size_t *n, FILE *stream)
     *buf = xbt_malloc(*n);
   }
 
-  i = 0;
+  ssize_t i = 0;
   do {
-    if (i == *n)
-      *buf = xbt_realloc(*buf, *n += 512);
-    (*buf)[i++] = ch;
+    if (i == *n) {
+      *n += 512;
+      *buf = xbt_realloc(*buf, *n);
+    }
+    (*buf)[i] = ch;
+    i++;
   } while (ch != '\n' && (ch = getc(stream)) != EOF);
 
-  if (i == *n)
-    *buf = xbt_realloc(*buf, *n += 1);
+  if (i == *n) {
+    *n += 1;
+    *buf = xbt_realloc(*buf, *n);
+  }
   (*buf)[i] = '\0';
 
   return i;

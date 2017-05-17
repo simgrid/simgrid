@@ -108,7 +108,8 @@ inline void xbt_dict_cursor_step(xbt_dict_cursor_t cursor)
       XBT_CDEBUG(xbt_dict_cursor, "next element: %p", current);
     }
 
-    while (current == NULL && ++line <= cursor->dict->table_size) {
+    while (current == NULL && (line + 1) <= cursor->dict->table_size) {
+      line++;
       XBT_CDEBUG(xbt_dict_cursor, "current is NULL, take the next line");
       current = cursor->dict->table[line];
       XBT_CDEBUG(xbt_dict_cursor, "element in the next line: %p", current);
