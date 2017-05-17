@@ -38,9 +38,9 @@ static unsigned int int_random(int max)
 static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limit, unsigned int pw_max_limit,
                  float rate_no_limit, int max_share, int mode)
 {
-  lmm_constraint_t *cnst = xbt_new0(lmm_constraint_t, nb_cnst);
-  lmm_variable_t *var = xbt_new0(lmm_variable_t, nb_var);
-  int *used = xbt_new0(int, nb_cnst);
+  lmm_constraint_t cnst[nb_cnst];
+  lmm_variable_t var[nb_var];
+  int used[nb_cnst];
   int concurrency_share;
 
   lmm_system_t Sys = lmm_system_new(1);
@@ -106,9 +106,6 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
   for (int i = 0; i < nb_var; i++)
     lmm_variable_free(Sys, var[i]);
   lmm_system_free(Sys);
-  free(cnst);
-  free(var);
-  free(used);
 }
 
 unsigned int TestClasses [][4]=
