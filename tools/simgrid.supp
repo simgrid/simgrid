@@ -72,6 +72,29 @@
    fun:smpi_simulated_main_
 }
 
+#SMPI leaks the dlopen handle used for loading the program
+{
+   dlopen handle leaks (1/2)
+   Memcheck:Leak
+   match-leak-kinds:reachable
+   fun:malloc
+   ...
+   fun:dlopen@@GLIBC_*
+   ...
+   fun:main
+}
+
+{
+   dlopen handle leaks (2/2)
+   Memcheck:Leak
+   match-leak-kinds:reachable
+   fun:calloc
+   ...
+   fun:dlopen@@GLIBC_*
+   ...
+   fun:main
+}
+
 # Memory leaks appearing to be in libcgraph.  They can be seen with the
 # following simple program:
 # ,----
