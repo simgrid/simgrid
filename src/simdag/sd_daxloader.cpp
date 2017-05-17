@@ -237,12 +237,14 @@ xbt_dynar_t SD_daxload(const char *filename)
       /* If some tasks do not take files as input, connect them to the root
        * if they don't produce files, connect them to the end node.
        */
-      if ((file != root_task) && file->inputs->empty())
-        SD_task_dependency_add(nullptr, nullptr, root_task, file);
-      if ((file != end_task) && file->outputs->empty())
-        SD_task_dependency_add(nullptr, nullptr, file, end_task);
+      if ((file != root_task) && (file != end_task)) {
+        if (file->inputs->empty())
+          SD_task_dependency_add(nullptr, nullptr, root_task, file);
+        if (file->outputs->empty())
+          SD_task_dependency_add(nullptr, nullptr, file, end_task);
+      }
     } else {
-       THROW_IMPOSSIBLE;
+      THROW_IMPOSSIBLE;
     }
   }
 
