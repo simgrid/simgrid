@@ -256,7 +256,7 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
    * It still exists in memory but not in the file system (thus it cannot be leaked). */
   /* Create bogus file if not done already */
   if(use_huge_page && smpi_shared_malloc_bogusfile_huge_page == -1) {
-    char *array[] = {huge_page_mount_point, "simgrid-shmalloc-XXXXXX", nullptr};
+    const char *const array[] = {huge_page_mount_point, "simgrid-shmalloc-XXXXXX", nullptr};
     char *huge_page_filename = xbt_str_join_array(array, "/");
     smpi_shared_malloc_bogusfile_huge_page = mkstemp(huge_page_filename);
     XBT_DEBUG("bogusfile_huge_page: %s\n", huge_page_filename);
@@ -296,8 +296,7 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
               "stop_offset (%zu) should be lower than its successor start offset (%zu)", stop_offset, shared_block_offsets[2*i_block+2]);
     size_t start_block_offset = ALIGN_UP(start_offset, smpi_shared_malloc_blocksize);
     size_t stop_block_offset = ALIGN_DOWN(stop_offset, smpi_shared_malloc_blocksize);
-    unsigned int i;
-    for (int block_id=0, i = start_block_offset / smpi_shared_malloc_blocksize; i < stop_block_offset / smpi_shared_malloc_blocksize; block_id++, i++) {
+    for (unsigned block_id=0, i = start_block_offset / smpi_shared_malloc_blocksize; i < stop_block_offset / smpi_shared_malloc_blocksize; block_id++, i++) {
       XBT_DEBUG("\t\tglobal shared allocation, mmap block offset %d", block_id);
       void* pos = (void*)((unsigned long)mem + i * smpi_shared_malloc_blocksize);
       void* res = mmap(pos, smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE, mmap_flag,
