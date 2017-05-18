@@ -492,7 +492,7 @@ static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<s
   const int argc = args.size();
   std::unique_ptr<char*[]> argv(new char*[argc + 1]);
   for (int i = 0; i != argc; ++i)
-    argv[i] = args[i].empty() ? const_cast<char*>(""): &args[i].front();
+    argv[i] = args[i].empty() ? '\0' : &args[i].front();
   argv[argc] = nullptr;
 
   int res = entry_point(argc, argv.get());
