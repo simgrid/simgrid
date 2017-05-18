@@ -246,8 +246,8 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
                                 "to allow big allocations.\n",
              size >> 20);
 
-  if(use_huge_page) // allign to a huge page
-    mem = (void*)(((intptr_t)allocated_ptr+smpi_shared_malloc_blocksize-1)&~(smpi_shared_malloc_blocksize-1));
+  if(use_huge_page)
+    mem = (void*)ALIGN_UP((uint64_t)allocated_ptr, HUGE_PAGE_SIZE);
   else
     mem = allocated_ptr;
 
@@ -255,7 +255,7 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
   /* Create a fd to a new file on disk, make it smpi_shared_malloc_blocksize big, and unlink it.
    * It still exists in memory but not in the file system (thus it cannot be leaked). */
   /* Create bogus file if not done already */
-  if (use_huge_page && smpi_shared_malloc_bogusfile_huge_page == -1) {
+  if(use_huge_page && smpi_shared_malloc_bogusfile_huge_page == -1) {
     char *array[] = {huge_page_mount_point, "simgrid-shmalloc-XXXXXX", nullptr};
     char *huge_page_filename = xbt_str_join_array(array, "/");
     smpi_shared_malloc_bogusfile_huge_page = mkstemp(huge_page_filename);
@@ -309,7 +309,6 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
                              "and that the directory you are passing is mounted correctly (mount /path/to/huge -t hugetlbfs -o rw,mode=0777).",
                  strerror(errno));
     }
-    size_t page_size = use_huge_page ? HUGE_PAGE_SIZE : PAGE_SIZE;
     size_t low_page_start_offset = ALIGN_UP(start_offset, PAGE_SIZE);
     size_t low_page_stop_offset = start_block_offset < ALIGN_DOWN(stop_offset, PAGE_SIZE) ? start_block_offset : ALIGN_DOWN(stop_offset, PAGE_SIZE);
     if(low_page_start_offset < low_page_stop_offset) {
