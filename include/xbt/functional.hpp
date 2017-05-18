@@ -39,11 +39,12 @@ public:
   {}
   void operator()() const
   {
+    char noarg[] = {'\0'};
     const int argc = args_->size();
     std::vector<std::string> args = *args_;
     std::unique_ptr<char*[]> argv(new char*[argc + 1]);
     for (int i = 0; i != argc; ++i)
-      argv[i] = args[i].empty() ? '\0' : &args[i].front();
+      argv[i] = args[i].empty() ? noarg : &args[i].front();
     argv[argc] = nullptr;
     code_(argc, argv.get());
   }
