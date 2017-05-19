@@ -30,7 +30,7 @@ static int master(int argc, char *argv[])
 {
   XBT_INFO("Launching our nice bugged recursive function...");
   unsigned i = 1;
-  while (i <= 0x80000000u) {
+  while (i <= 0x80000000U) {
     i *= 2;
     unsigned res = collatz(i, i);
     XBT_VERB("collatz(%u, %u) returned %u", i, i, res);

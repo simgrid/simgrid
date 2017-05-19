@@ -11,16 +11,19 @@
 typedef struct graph_node_data {
   int id;
   int graph_id; /* used for caching internal graph id's */
-} s_graph_node_data_t, *graph_node_data_t;
+} s_graph_node_data_t;
+typedef s_graph_node_data_t* graph_node_data_t;
 
 typedef struct graph_node_map_element {
   xbt_node_t node;
-} s_graph_node_map_element_t, *graph_node_map_element_t;
+} s_graph_node_map_element_t;
+typedef s_graph_node_map_element_t* graph_node_map_element_t;
 
 typedef struct route_cache_element {
   int* pred_arr;
   int size;
-} s_route_cache_element_t, *route_cache_element_t;
+} s_route_cache_element_t;
+typedef s_route_cache_element_t* route_cache_element_t;
 
 namespace simgrid {
 namespace kernel {

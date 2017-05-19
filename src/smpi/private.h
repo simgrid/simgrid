@@ -371,7 +371,8 @@ void mpi_file_write_ ( int* fh, void* buf, int* count, int* datatype, MPI_Status
 typedef struct s_smpi_privatisation_region {
   void* address;
   int file_descriptor;
-} s_smpi_privatisation_region_t, *smpi_privatisation_region_t;
+} s_smpi_privatisation_region_t;
+typedef s_smpi_privatisation_region_t* smpi_privatisation_region_t;
 
 extern XBT_PRIVATE smpi_privatisation_region_t smpi_privatisation_regions;
 extern XBT_PRIVATE int smpi_loaded_page;
