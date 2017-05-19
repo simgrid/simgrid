@@ -78,6 +78,13 @@ void smpi_execute(double duration)
   }
 }
 
+void smpi_execute_benched(double duration)
+{
+  smpi_bench_end();
+  smpi_execute(duration);
+  smpi_bench_begin();
+}
+
 void smpi_bench_begin()
 {
   if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
