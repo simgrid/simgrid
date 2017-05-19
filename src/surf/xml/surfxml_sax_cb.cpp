@@ -703,6 +703,9 @@ void STag_surfxml_link___ctn(){
     link_name = bprintf("%s_DOWN", A_surfxml_link___ctn_id);
     link      = simgrid::surf::LinkImpl::byName(link_name);
     break;
+  default:
+    surf_parse_error("Invalid direction for link %s", link_name);
+    break;
   }
   xbt_free(link_name); // no-op if it's already nullptr
 
@@ -911,7 +914,8 @@ void ETag_surfxml_trace(){
   sg_platf_new_trace(&trace);
 }
 
-void STag_surfxml_trace___connect(){
+void STag_surfxml_trace___connect()
+{
   parse_after_config();
   s_sg_platf_trace_connect_cbarg_t trace_connect;
   memset(&trace_connect,0,sizeof(trace_connect));
@@ -936,30 +940,41 @@ void STag_surfxml_trace___connect(){
   case A_surfxml_trace___connect_kind_LINK___AVAIL:
     trace_connect.kind =  SURF_TRACE_CONNECT_KIND_LINK_AVAIL;
     break;
+  default:
+    surf_parse_error("Invalid trace kind");
+    break;
   }
   sg_platf_trace_connect(&trace_connect);
 }
 
-void STag_surfxml_AS(){
+void STag_surfxml_AS()
+{
   AX_surfxml_zone_id = AX_surfxml_AS_id;
   AX_surfxml_zone_routing = (AT_surfxml_zone_routing)AX_surfxml_AS_routing;
   STag_surfxml_zone();
 }
-void ETag_surfxml_AS(){
+
+void ETag_surfxml_AS()
+{
   ETag_surfxml_zone();
 }
-void STag_surfxml_zone(){
+
+void STag_surfxml_zone()
+{
   parse_after_config();
   ZONE_TAG                 = 1;
-  s_sg_platf_AS_cbarg_t AS = { A_surfxml_zone_id, (int)A_surfxml_zone_routing};
+  s_sg_platf_AS_cbarg_t AS = {A_surfxml_zone_id, (int)A_surfxml_zone_routing};
 
   sg_platf_new_AS_begin(&AS);
 }
-void ETag_surfxml_zone(){
+
+void ETag_surfxml_zone()
+{
   sg_platf_new_AS_seal();
 }
 
-void STag_surfxml_config(){
+void STag_surfxml_config()
+{
   ZONE_TAG = 0;
   xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
   XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
@@ -968,15 +983,16 @@ void STag_surfxml_config(){
                      "<link>, etc).");
   }
 }
-void ETag_surfxml_config(){
+
+void ETag_surfxml_config()
+{
   xbt_dict_cursor_t cursor = nullptr;
   char *key;
   char *elem;
   xbt_dict_foreach(current_property_set, cursor, key, elem) {
     if (xbt_cfg_is_default_value(key)) {
-      char* cfg = bprintf("%s:%s", key, elem);
-      xbt_cfg_set_parse(cfg);
-      free(cfg);
+      std::string cfg = std::string(key) + ":" + elem;
+      xbt_cfg_set_parse(cfg.c_str());
     } else
       XBT_INFO("The custom configuration '%s' is already defined by user!",key);
   }
@@ -1032,6 +1048,9 @@ void ETag_surfxml_actor()
     break;
   case A_surfxml_actor_on___failure_RESTART:
     actor.on_failure =  SURF_ACTOR_ON_FAILURE_RESTART;
+    break;
+  default:
+    surf_parse_error("Invalid on failure behavior");
     break;
   }
 
@@ -1111,6 +1130,6 @@ static int _surf_parse() {
   return surf_parse_lex();
 }
 
-int_f_void_t surf_parse = _surf_parse;
+int_f_void_t surf_parse = &_surf_parse;
 
 SG_END_DECL()

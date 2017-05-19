@@ -482,12 +482,11 @@ double Model::nextOccuringEventLazy(double now)
     }
 
     if ((action->getMaxDuration() > NO_MAX_DURATION) &&
-        (min == -1 || action->getStartTime() + action->getMaxDuration() < min)) {
+        (min <= -1 || action->getStartTime() + action->getMaxDuration() < min)) {
       // when the task will complete anyway because of the deadline if any
       min          = action->getStartTime() + action->getMaxDuration();
       max_dur_flag = true;
     }
-
 
     XBT_DEBUG("Action(%p) corresponds to variable %d", action, action->getVariable()->id_int);
 
@@ -495,7 +494,7 @@ double Model::nextOccuringEventLazy(double now)
         action->getStartTime(), min, share,
         action->getMaxDuration());
 
-    if (min != -1) {
+    if (min > -1) {
       action->heapUpdate(actionHeap_, min, max_dur_flag ? MAX_DURATION : NORMAL);
       XBT_DEBUG("Insert at heap action(%p) min %f now %f", action, min, now);
     } else

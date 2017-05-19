@@ -23,7 +23,7 @@ XBT_PUBLIC_CLASS Comm : public Activity
 {
   Comm() : Activity() {}
 public:
-  ~Comm() override;
+  virtual ~Comm() = default;
 
   /*! take a range of s4u::Comm* (last excluded) and return when one of them is finished. The return value is an
    * iterator on the finished Comms. */

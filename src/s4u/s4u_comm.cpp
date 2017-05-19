@@ -14,12 +14,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm,s4u_activity,"S4U asynchronous communic
 namespace simgrid {
 namespace s4u {
 
-Comm::~Comm() {
-
-}
-
-
-
 s4u::Comm &Comm::send_init(s4u::MailboxPtr chan) {
   s4u::Comm *res = new s4u::Comm();
   res->sender_ = SIMIX_process_self();

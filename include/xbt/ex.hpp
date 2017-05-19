@@ -79,7 +79,7 @@ struct XBT_PUBLIC() xbt_ex :
     simgrid::xbt::WithContextException(throwpoint, simgrid::xbt::backtrace())
   {}
 
-  ~xbt_ex() override;
+  virtual ~xbt_ex() = default;
 
   /** Category (what went wrong) */
   xbt_errcat_t category = unknown_error;
