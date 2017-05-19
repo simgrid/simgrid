@@ -35,6 +35,5 @@ public class Killer extends Process {
     poorVictim.kill();
 
     Msg.info("Ok, goodbye now.");
-    exit(); // This would be more useful if not placed on the last line
   }
 }
