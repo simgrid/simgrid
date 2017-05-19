@@ -9,18 +9,26 @@
 #include "src/smpi/private.hpp"
 #include "typeinfo"
 #include "xbt/virtu.h" /* sg_cmdline */
+#include "simgrid/sg_config.h"
+
 #include <sstream>
 #include <vector>
 #include <iomanip> /** std::setprecision **/
-#include "simgrid/sg_config.h"
+#include <sys/stat.h>
+#ifdef WIN32
+#include <direct.h> // _mkdir
+#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr, "tracing event system");
 
-extern FILE * tracing_file;
 extern s_instr_trace_writer_t active_writer;
 
 static std::stringstream stream;
 FILE *tracing_file = nullptr;
+
+static xbt_dict_t tracing_files = nullptr; // TI specific
+static double prefix=0.0; // TI specific
+
 
 void print_NULL(PajeEvent* event){}
 
@@ -359,21 +367,51 @@ CreateContainerEvent::CreateContainerEvent (container_t container)
 
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
-  //print it
   print();
 }
 
 void CreateContainerEvent::print() {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-  stream << std::fixed << std::setprecision(TRACE_precision());
-  stream << (int)this->event_type;
-  print_timestamp(this);
-  stream << " "   << container->id
-         << " "   << container->type->id
-         << " "   << container->father->id
-         << " \"" << container->name << "\"";
+	if (instr_fmt_type == instr_fmt_paje) {
+		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+		stream << std::fixed << std::setprecision(TRACE_precision());
+		stream << (int)this->event_type;
+		print_timestamp(this);
+		stream << " "   << container->id
+				<< " "   << container->type->id
+				<< " "   << container->father->id
+				<< " \"" << container->name << "\"";
 
-  print_row();
+		print_row();
+	} else if (instr_fmt_type == instr_fmt_TI) {
+		//if we are in the mode with only one file
+		static FILE *temp = nullptr;
+
+		if (tracing_files == nullptr) {
+			tracing_files = xbt_dict_new_homogeneous(nullptr);
+			//generate unique run id with time
+			prefix = xbt_os_time();
+		}
+
+		if (!xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || temp == nullptr) {
+			char *folder_name = bprintf("%s_files", TRACE_get_filename());
+			char *filename = bprintf("%s/%f_%s.txt", folder_name, prefix, container->name);
+#ifdef WIN32
+			_mkdir(folder_name);
+#else
+			mkdir(folder_name, S_IRWXU | S_IRWXG | S_IRWXO);
+#endif
+			temp = fopen(filename, "w");
+			xbt_assert(temp, "Tracefile %s could not be opened for writing: %s", filename, strerror(errno));
+			fprintf(tracing_file, "%s\n", filename);
+
+			xbt_free(folder_name);
+			xbt_free(filename);
+		}
+
+		xbt_dict_set(tracing_files, container->name, (void *) temp, nullptr);
+	} else {
+		THROW_IMPOSSIBLE;
+	}
 }
 
 DestroyContainerEvent::DestroyContainerEvent (container_t container)
@@ -388,14 +426,24 @@ DestroyContainerEvent::DestroyContainerEvent (container_t container)
 }
 
 void DestroyContainerEvent::print() {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-  stream << std::fixed << std::setprecision(TRACE_precision());
-  stream << (int)this->event_type;
-  print_timestamp(this);
-  stream << " "   << container->type->id
-         << " "   << container->id;
+	if (instr_fmt_type == instr_fmt_paje) {
+		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+		stream << std::fixed << std::setprecision(TRACE_precision());
+		stream << (int)this->event_type;
+		print_timestamp(this);
+		stream << " "   << container->type->id
+				<< " "   << container->id;
 
-  print_row();
+		print_row();
+	} else if (instr_fmt_type == instr_fmt_TI) {
+		if (!xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file")|| xbt_dict_length(tracing_files) == 1) {
+			FILE* f = (FILE*)xbt_dict_get_or_null(tracing_files, container->name);
+			fclose(f);
+		}
+		xbt_dict_remove(tracing_files, container->name);
+	} else {
+		THROW_IMPOSSIBLE;
+	}
 }
 
 SetVariableEvent::SetVariableEvent (double timestamp, container_t container, type_t type, double value)
@@ -515,7 +563,7 @@ PushStateEvent::PushStateEvent (double timestamp, container_t container, type_t 
   this->type = type;
   this->container = container;
   this->value     = value;
-  this->extra     = extra;
+  this->extra_     = extra;
 
 #if HAVE_SMPI
   if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
@@ -534,38 +582,168 @@ PushStateEvent::PushStateEvent (double timestamp, container_t container, type_t 
  : PushStateEvent(timestamp, container, type, value, nullptr)
 {}
 void PushStateEvent::print() {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-  stream << std::fixed << std::setprecision(TRACE_precision());
-  stream << (int)this->event_type;
-  print_timestamp(this);
-  stream << " " << type->id
-         << " " << container->id;
-  stream << " " <<value->id;
+	if (instr_fmt_type == instr_fmt_paje) {
+		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+		stream << std::fixed << std::setprecision(TRACE_precision());
+		stream << (int)this->event_type;
+		print_timestamp(this);
+		stream << " " << type->id
+				<< " " << container->id;
+		stream << " " <<value->id;
 
-  if (TRACE_display_sizes()) {
-    stream << " ";
-    if (extra != nullptr) {
-      stream << static_cast<instr_extra_data>(extra)->send_size;
-    }
-    else {
-      stream << 0;
-    }
-  }
+		if (TRACE_display_sizes()) {
+			stream << " ";
+			if (extra_ != nullptr) {
+				stream << static_cast<instr_extra_data>(extra_)->send_size;
+			}
+			else {
+				stream << 0;
+			}
+		}
 #if HAVE_SMPI
-  if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
-    stream << " \"" << filename
-           << "\" " << linenumber;
-  }
+		if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
+			stream << " \"" << filename
+					<< "\" " << linenumber;
+		}
 #endif
-  print_row();
+		print_row();
 
-  if (extra != nullptr) {
-    if (static_cast<instr_extra_data>(extra)->sendcounts != nullptr)
-      xbt_free(static_cast<instr_extra_data>(extra)->sendcounts);
-    if (static_cast<instr_extra_data>(extra)->recvcounts != nullptr)
-      xbt_free(static_cast<instr_extra_data>(extra)->recvcounts);
-    xbt_free(extra);
-  }
+		if (extra_ != nullptr) {
+			if (static_cast<instr_extra_data>(extra_)->sendcounts != nullptr)
+				xbt_free(static_cast<instr_extra_data>(extra_)->sendcounts);
+			if (static_cast<instr_extra_data>(extra_)->recvcounts != nullptr)
+				xbt_free(static_cast<instr_extra_data>(extra_)->recvcounts);
+			xbt_free(extra_);
+		}
+	} else if (instr_fmt_type == instr_fmt_TI) {
+		  if (extra_ == nullptr)
+		    return;
+		  instr_extra_data extra = (instr_extra_data)extra_;
+
+		  char *process_id = nullptr;
+		  //FIXME: dirty extract "rank-" from the name, as we want the bare process id here
+		  if (strstr(container->name, "rank-") == nullptr)
+		    process_id = xbt_strdup(container->name);
+		  else
+		    process_id = xbt_strdup(container->name + 5);
+
+		  FILE* trace_file =  (FILE* )xbt_dict_get(tracing_files, container->name);
+
+		  switch (extra->type) {
+		  case TRACING_INIT:
+		    fprintf(trace_file, "%s init\n", process_id);
+		    break;
+		  case TRACING_FINALIZE:
+		    fprintf(trace_file, "%s finalize\n", process_id);
+		    break;
+		  case TRACING_SEND:
+		    fprintf(trace_file, "%s send %d %d %s\n", process_id, extra->dst, extra->send_size, extra->datatype1);
+		    break;
+		  case TRACING_ISEND:
+		    fprintf(trace_file, "%s Isend %d %d %s\n", process_id, extra->dst, extra->send_size, extra->datatype1);
+		    break;
+		  case TRACING_RECV:
+		    fprintf(trace_file, "%s recv %d %d %s\n", process_id, extra->src, extra->send_size, extra->datatype1);
+		    break;
+		  case TRACING_IRECV:
+		    fprintf(trace_file, "%s Irecv %d %d %s\n", process_id, extra->src, extra->send_size, extra->datatype1);
+		    break;
+		  case TRACING_TEST:
+		    fprintf(trace_file, "%s test\n", process_id);
+		    break;
+		  case TRACING_WAIT:
+		    fprintf(trace_file, "%s wait\n", process_id);
+		    break;
+		  case TRACING_WAITALL:
+		    fprintf(trace_file, "%s waitAll\n", process_id);
+		    break;
+		  case TRACING_BARRIER:
+		    fprintf(trace_file, "%s barrier\n", process_id);
+		    break;
+		  case TRACING_BCAST:          // rank bcast size (root) (datatype)
+		    fprintf(trace_file, "%s bcast %d ", process_id, extra->send_size);
+		    if (extra->root != 0 || (extra->datatype1 && strcmp(extra->datatype1, "")))
+		      fprintf(trace_file, "%d %s", extra->root, extra->datatype1);
+		    fprintf(trace_file, "\n");
+		    break;
+		  case TRACING_REDUCE:         // rank reduce comm_size comp_size (root) (datatype)
+		    fprintf(trace_file, "%s reduce %d %f ", process_id, extra->send_size, extra->comp_size);
+		    if (extra->root != 0 || (extra->datatype1 && strcmp(extra->datatype1, "")))
+		      fprintf(trace_file, "%d %s", extra->root, extra->datatype1);
+		    fprintf(trace_file, "\n");
+		    break;
+		  case TRACING_ALLREDUCE:      // rank allreduce comm_size comp_size (datatype)
+		    fprintf(trace_file, "%s allReduce %d %f %s\n", process_id, extra->send_size, extra->comp_size, extra->datatype1);
+		    break;
+		  case TRACING_ALLTOALL:       // rank alltoall send_size recv_size (sendtype) (recvtype)
+		    fprintf(trace_file, "%s allToAll %d %d %s %s\n", process_id, extra->send_size, extra->recv_size, extra->datatype1,
+		            extra->datatype2);
+		    break;
+		  case TRACING_ALLTOALLV:      // rank alltoallv send_size [sendcounts] recv_size [recvcounts] (sendtype) (recvtype)
+		    fprintf(trace_file, "%s allToAllV %d ", process_id, extra->send_size);
+		    for (int i = 0; i < extra->num_processes; i++)
+		      fprintf(trace_file, "%d ", extra->sendcounts[i]);
+		    fprintf(trace_file, "%d ", extra->recv_size);
+		    for (int i = 0; i < extra->num_processes; i++)
+		      fprintf(trace_file, "%d ", extra->recvcounts[i]);
+		    fprintf(trace_file, "%s %s \n", extra->datatype1, extra->datatype2);
+		    break;
+		  case TRACING_GATHER:         // rank gather send_size recv_size root (sendtype) (recvtype)
+		    fprintf(trace_file, "%s gather %d %d %d %s %s\n", process_id, extra->send_size, extra->recv_size, extra->root,
+		            extra->datatype1, extra->datatype2);
+		    break;
+		  case TRACING_ALLGATHERV:     // rank allgatherv send_size [recvcounts] (sendtype) (recvtype)
+		    fprintf(trace_file, "%s allGatherV %d ", process_id, extra->send_size);
+		    for (int i = 0; i < extra->num_processes; i++)
+		      fprintf(trace_file, "%d ", extra->recvcounts[i]);
+		    fprintf(trace_file, "%s %s \n", extra->datatype1, extra->datatype2);
+		    break;
+		  case TRACING_REDUCE_SCATTER: // rank reducescatter [recvcounts] comp_size (sendtype)
+		    fprintf(trace_file, "%s reduceScatter ", process_id);
+		    for (int i = 0; i < extra->num_processes; i++)
+		      fprintf(trace_file, "%d ", extra->recvcounts[i]);
+		    fprintf(trace_file, "%f %s\n", extra->comp_size, extra->datatype1);
+		    break;
+		  case TRACING_COMPUTING:
+		    fprintf(trace_file, "%s compute %f\n", process_id, extra->comp_size);
+		    break;
+		  case TRACING_SLEEPING:
+		    fprintf(trace_file, "%s sleep %f\n", process_id, extra->sleep_duration);
+		    break;
+		  case TRACING_GATHERV: // rank gatherv send_size [recvcounts] root (sendtype) (recvtype)
+		    fprintf(trace_file, "%s gatherV %d ", process_id, extra->send_size);
+		    for (int i = 0; i < extra->num_processes; i++)
+		      fprintf(trace_file, "%d ", extra->recvcounts[i]);
+		    fprintf(trace_file, "%d %s %s\n", extra->root, extra->datatype1, extra->datatype2);
+		    break;
+		  case TRACING_WAITANY:
+		  case TRACING_SENDRECV:
+		  case TRACING_SCATTER:
+		  case TRACING_SCATTERV:
+		  case TRACING_ALLGATHER:
+		  case TRACING_SCAN:
+		  case TRACING_EXSCAN:
+		  case TRACING_COMM_SIZE:
+		  case TRACING_COMM_SPLIT:
+		  case TRACING_COMM_DUP:
+		  case TRACING_SSEND:
+		  case TRACING_ISSEND:
+		  default:
+		    XBT_WARN ("Call from %s impossible to translate into replay command : Not implemented (yet)",
+		         value->name);
+		    break;
+		  }
+
+		  if (extra->recvcounts != nullptr)
+		    xbt_free(extra->recvcounts);
+		  if (extra->sendcounts != nullptr)
+		    xbt_free(extra->sendcounts);
+		  xbt_free(process_id);
+		  xbt_free(extra);
+
+	} else {
+		THROW_IMPOSSIBLE;
+	}
 }
 
 
@@ -706,3 +884,29 @@ void NewEvent::print () {
          << " " << value->id;
   print_row();
 }
+
+
+void TRACE_TI_start()
+{
+  char *filename = TRACE_get_filename();
+  tracing_file = fopen(filename, "w");
+  if (tracing_file == nullptr)
+    THROWF(system_error, 1, "Tracefile %s could not be opened for writing.", filename);
+
+  XBT_DEBUG("Filename %s is open for writing", filename);
+
+  /* output one line comment */
+  dump_comment(TRACE_get_comment());
+
+  /* output comment file */
+  dump_comment_file(TRACE_get_comment_file());
+}
+
+void TRACE_TI_end()
+{
+  xbt_dict_free(&tracing_files);
+  fclose(tracing_file);
+  char *filename = TRACE_get_filename();
+  XBT_DEBUG("Filename %s is closed", filename);
+}
+

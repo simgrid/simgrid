@@ -63,6 +63,8 @@ static int trace_precision;
 static bool trace_configured = false;
 static bool trace_active     = false;
 
+instr_fmt_type_t instr_fmt_type = instr_fmt_paje;
+
 static void TRACE_getopts()
 {
   trace_enabled             = xbt_cfg_get_boolean(OPT_TRACING);
@@ -106,7 +108,7 @@ int TRACE_start()
     if(!strcmp(format, "Paje")){
       TRACE_paje_start();
     }else if (!strcmp(format, "TI")){
-      TRACE_TI_init();
+      instr_fmt_type = instr_fmt_TI;
       TRACE_TI_start();
     }else{
       xbt_die("Unknown trace format :%s ", format);

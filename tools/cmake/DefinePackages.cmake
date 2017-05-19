@@ -533,7 +533,6 @@ set(LUA_SRC
   )
 
 set(TRACING_SRC
-  src/instr/instr_TI_trace.cpp
   src/instr/instr_config.cpp
   src/instr/instr_interface.cpp
   src/instr/instr_paje_containers.cpp

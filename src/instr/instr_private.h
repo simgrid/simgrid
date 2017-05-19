@@ -244,7 +244,7 @@ class PushStateEvent : public PajeEvent  {
   int size;
   const char* filename;
   int linenumber;
-  void* extra;
+  void* extra_;
   public:
   PushStateEvent (double timestamp, container_t container, type_t type, val_t value);
   PushStateEvent (double timestamp, container_t container, type_t type, val_t value,
@@ -422,12 +422,8 @@ XBT_PRIVATE void print_pajeStartLink(PajeEvent* event);
 XBT_PRIVATE void print_pajeEndLink(PajeEvent* event);
 XBT_PRIVATE void print_pajeNewEvent (PajeEvent* event);
 
-XBT_PRIVATE void print_TIPushState(PajeEvent* event);
-XBT_PRIVATE void print_TICreateContainer(PajeEvent* event);
-XBT_PRIVATE void print_TIDestroyContainer(PajeEvent* event);
 XBT_PRIVATE void TRACE_TI_start();
 XBT_PRIVATE void TRACE_TI_end();
-XBT_PRIVATE void TRACE_TI_init();
 
 XBT_PRIVATE void print_NULL (PajeEvent* event);
 XBT_PRIVATE void TRACE_paje_dump_buffer (int force);
@@ -509,6 +505,14 @@ typedef struct s_instr_extra_data {
   int * recvcounts;
   int num_processes;
 } s_instr_extra_data_t;
+
+/* Format of TRACING output.
+ *   - paje is the regular format, that we all know
+ *   - TI is a trick to reuse the tracing functions to generate a time independent trace during the execution. Such trace can easily be replayed with smpi_replay afterward.
+ *     This trick should be removed and replaced by some code using the signal that we will create to cleanup the TRACING
+ */
+typedef enum { instr_fmt_paje, instr_fmt_TI } instr_fmt_type_t;
+extern instr_fmt_type_t instr_fmt_type;
 
 SG_END_DECL()
 

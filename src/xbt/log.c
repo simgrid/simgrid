@@ -146,7 +146,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(instr_resource);
   XBT_LOG_CONNECT(instr_routing);
   XBT_LOG_CONNECT(instr_surf);
-  XBT_LOG_CONNECT(instr_TI_trace);
 
   /* jedule */
 #if HAVE_JEDULE
