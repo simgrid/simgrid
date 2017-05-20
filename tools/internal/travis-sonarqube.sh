@@ -55,8 +55,8 @@ ctest -D ExperimentalCoverage
 # See https://docs.travis-ci.com/user/sonarqube/ for more info on tokens
 # don't show the token in the logs
 set +x
-sonar-scanner -Dsonar.host.url=https://sonarqube.com -Dsonar.login=$SONAR_TOKEN     \
-  | grep -v 'INFO: Parsing /home/travis/build/simgrid/simgrid/Testing/CoverageInfo' \
+sonar-scanner -Dsonar.host.url=https://sonarqube.com -Dsonar.login=$SONAR_TOKEN 2>&1 \
+  | grep -v 'INFO: Parsing /home/travis/build/simgrid/simgrid/Testing/CoverageInfo'  \
   | grep -v 'WARN: File not analysed by Sonar, so ignoring coverage: /usr/include/'
 
 exit $outcome
