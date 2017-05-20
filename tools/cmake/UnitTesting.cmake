@@ -11,7 +11,6 @@ set(FILES_CONTAINING_UNITTESTS
   src/xbt/dict.cpp
   src/xbt/swag.c
   src/xbt/xbt_str.cpp
-  src/xbt/xbt_strbuff.c
   src/xbt/config.cpp
 )
 

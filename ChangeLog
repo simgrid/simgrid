@@ -28,9 +28,10 @@ SimGrid (3.16) UNRELEASED
   - New algorithm to privatize globals: dlopen, with dynamic loading tricks
   - New option: smpi/keep-temps to not cleanup temp files
 
- XBT/Replay:
-  - New function xbt_replay_action_get():
+ XBT
+  - Replay: New function xbt_replay_action_get():
     Retrieve the function previously associated to an event type.
+  - Drop unused functions: xbt_str_varsubst(), xbt_strbuff_varsubst()
 
  -- Release target: June 21 2017   -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
