@@ -727,7 +727,6 @@ set(headers_to_install
   include/xbt/log.hpp
   include/xbt/mallocator.h
   include/xbt/matrix.h
-  include/xbt/memory.hpp
   include/xbt/misc.h
   include/xbt/mmalloc.h
   include/xbt/module.h
