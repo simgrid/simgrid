@@ -59,7 +59,7 @@ _find_matching_comm(boost::circular_buffer_space_optimized<smx_activity_t>* dequ
       if (remove_matching)
         deque->erase(it);
       comm->ref();
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
       comm->mbox_cpy = comm->mbox;
 #endif
       comm->mbox = nullptr;

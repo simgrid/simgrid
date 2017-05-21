@@ -1,19 +1,38 @@
 SimGrid (3.16) UNRELEASED
 
-SimDag
- - New and Backwards Compatibility break: 
-   SD_simulate_with_update (double how_long, xbt_dynar_t changed_tasks_dynar)
-   When one wants to get the list of tasks whose states have changed during a
-   simulation round, s/he has to allocate and free a dynar and use it as argument 
-   to this function. The former SD_simulate (double how_long) now returns void.
+ Portability status:
+  - FreeBSD: Disable SMPI mmap privatization, switch automatically to dlopen.
+  - Mac, BSD: dlopen+thread broken, switch automatically to raw contexts.
+
+ XML platforms: Switch to platform v4.1 format.
+ * This is a backward compatible change: v4 are valid v4.1 files
+   - <zone> can be used as a synonym for the now deprecated <as>
+   - <zoneZoute> an be used as a synonym for the now deprecated <asroute>
+   - <bypassZoneRoute> an be used as a synonym for the now deprecated <bypassAsRoute>
+   - <actor> can be used as a synonym for the now deprecated <process>
+   - state_file and avail_file periodicity is now easier to express
+     (check the documentation) the old behavior should still work.
+
+ SimDag
+  - New and Backwards Compatibility break: 
+    SD_simulate_with_update (double how_long, xbt_dynar_t changed_tasks_dynar)
+    When one wants to get the list of tasks whose states have changed during a
+    simulation round, s/he has to allocate and free a dynar and use it as argument 
+    to this function. The former SD_simulate (double how_long) now returns void.
+
+ MSG
+  - The netzone are now available from the MSG API. 
+    The old names still work, but are now deprecated.
 
  SMPI
   - New algorithm to privatize globals: dlopen, with dynamic loading tricks
   - New option: smpi/keep-temps to not cleanup temp files
 
- XBT/Replay:
-  - New function xbt_replay_action_get():
+ XBT
+  - Replay: New function xbt_replay_action_get():
     Retrieve the function previously associated to an event type.
+  - DROPPED FUNCTION: xbt_str_varsubst()
+  - DROPPED MODULE: strbuff. We don't need it anymore.
 
  -- Release target: June 21 2017   -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

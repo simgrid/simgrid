@@ -174,13 +174,13 @@ void Cpu::setStateTrace(tmgr_trace_t trace)
 {
   xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Host %s", host_->cname());
 
-  stateEvent_ = future_evt_set->add_trace(trace, 0.0, this);
+  stateEvent_ = future_evt_set->add_trace(trace, this);
 }
 void Cpu::setSpeedTrace(tmgr_trace_t trace)
 {
   xbt_assert(speed_.event == nullptr, "Cannot set a second speed trace to Host %s", host_->cname());
 
-  speed_.event = future_evt_set->add_trace(trace, 0.0, this);
+  speed_.event = future_evt_set->add_trace(trace, this);
 }
 
 

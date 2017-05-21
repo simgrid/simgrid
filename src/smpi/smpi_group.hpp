@@ -7,7 +7,7 @@
 #ifndef SMPI_GROUP_HPP_INCLUDED
 #define SMPI_GROUP_HPP_INCLUDED
 
-#include "private.h"
+#include "src/smpi/smpi_f2c.hpp"
 
 namespace simgrid{
 namespace smpi{

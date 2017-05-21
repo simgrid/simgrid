@@ -26,7 +26,5 @@ $ $SG_TEST_EXENV ${bindir:=.}/surf_usage ${srcdir:=.}/../../../examples/platform
 > [110.000000] [surf_test/INFO] Next Event : 110
 > [120.000000] [surf_test/INFO] Next Event : 120
 > [130.000000] [surf_test/INFO] Next Event : 130
-> [140.000000] [surf_test/INFO] Next Event : 140
-> [150.000000] [surf_test/INFO] Next Event : 150
-> [157.500000] [surf_test/INFO] Next Event : 157.5
-> [157.500000] [surf_test/INFO]    CPU Done action
+> [132.500000] [surf_test/INFO] Next Event : 132.5
+> [132.500000] [surf_test/INFO]    CPU Done action

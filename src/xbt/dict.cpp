@@ -113,7 +113,8 @@ static void xbt_dict_rehash(xbt_dict_t dict)
 
   xbt_dictelm_t *currcell = (xbt_dictelm_t *) xbt_realloc((char *) dict->table, newsize * sizeof(xbt_dictelm_t));
   memset(&currcell[oldsize], 0, oldsize * sizeof(xbt_dictelm_t));       /* zero second half */
-  dict->table_size = --newsize;
+  newsize--;
+  dict->table_size = newsize;
   dict->table = currcell;
   XBT_DEBUG("REHASH (%d->%d)", oldsize, newsize);
 
@@ -559,7 +560,10 @@ void xbt_dict_postexit()
         total_count += size;
       }
     }
-    printf("; %f elm per cell\n", avg / (double) total_count);
+    if (total_count > 0)
+      printf("; %f elm per cell\n", avg / (double)total_count);
+    else
+      printf("; 0 elm per cell\n");
   }
 }
 

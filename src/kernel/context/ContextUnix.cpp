@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2015. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,10 +7,12 @@
 
 #include <ucontext.h>           /* context relative declarations */
 
-#include "mc/mc.h"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_private.h"
 #include "xbt/parmap.h"
+#include "mc/mc.h"
+#include "src/mc/mc_ignore.h"
+
 
 /** Many integers are needed to store a pointer
  *
@@ -218,7 +220,7 @@ UContext::UContext(std::function<void()> code,
       sysv_maestro_context = this;
   }
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   if (MC_is_active() && has_code()) {
     MC_register_stack_area(this->stack_, process,
                       &(this->uc_), smx_context_usable_stack_size);

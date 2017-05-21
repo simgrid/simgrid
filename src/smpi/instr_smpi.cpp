@@ -61,20 +61,20 @@ static const char *smpi_colors[] ={
 
 static char *str_tolower (const char *str)
 {
-  char *ret = xbt_strdup (str);
-  int i, n = strlen (ret);
-  for (i = 0; i < n; i++)
+  char* ret = xbt_strdup(str);
+  int n     = strlen(ret);
+  for (int i = 0; i < n; i++)
     ret[i] = tolower (str[i]);
   return ret;
 }
 
 static const char *instr_find_color (const char *state)
 {
-  char *target = str_tolower (state);
-  const char *ret = nullptr;
-  unsigned int i = 0;
-  const char *current = smpi_colors[i];
-  while ((current != nullptr)){
+  char* target        = str_tolower(state);
+  const char* ret     = nullptr;
+  unsigned int i      = 0;
+  const char* current = smpi_colors[i];
+  while (current != nullptr) {
     if (strcmp (state, current) == 0 //exact match
         || strstr(target, current) != 0 ){//as substring
          ret = smpi_colors[i+1]; 

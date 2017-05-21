@@ -4,14 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/jedule/jedule_events.hpp"
-
 #include "simgrid/jedule/jedule.hpp"
-#include "simgrid/jedule/jedule_platform.hpp"
 #include "simgrid/s4u/NetZone.hpp"
 #include "xbt/asserts.h"
 
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
 namespace simgrid{
 namespace jedule{
 

@@ -1,9 +1,9 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
+<platform version="4.1">
   <!-- THIS FILE IS INVALID.
        It declares a storage attached to a nonexistant host (plouf). See bogus_disk_attachment.tesh -->
-  <AS id="AS0" routing="Full">
+  <zone id="AS0" routing="Full">
     <storage_type id="single_HDD" model="SSD" size="4kB">
       <model_prop id="Bwrite" value="30MBps" />
       <model_prop id="Bread" value="100MBps" />
@@ -15,5 +15,5 @@
     <host id="client" speed="1Gf">
       <mount storageId="cdisk" name="/sd1" />
     </host>
-  </AS>
+  </zone>
 </platform>

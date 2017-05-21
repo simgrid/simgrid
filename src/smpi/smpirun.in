@@ -33,7 +33,7 @@ usage () {
 Usage: $0 [OPTIONS] -platform <xmldesc> -hostfile <hostfile> program [program-options]
 Options:
   -keep-temps                # don't remove the generated files after execution
-  -wrapper <command>         # use command to run the program (e.g. "valgrind")
+  -wrapper <command>         # use command to run the program (e.g. "valgrind" or "gdb --args")
   -map                       # display the machine on which each process rank is mapped
   -np <numprocs>             # use that amount of processes from the hostfile.
                              # By default, all processes of the hostfile are used.
@@ -323,7 +323,7 @@ if [ -z "${NUMPROCS}" ] ; then
 fi
 
 if [ ${NUMPROCS} -gt ${hostfile_procs} ] ; then
-    echo "You requested to use ${NUMPROCS} processes, but there is only ${hostfile_procs} processes in your hostfile..." >&2
+    echo "You requested to use ${NUMPROCS} ranks, but there is only ${hostfile_procs} processes in your hostfile..." >&2
 fi
 
 ##-------------------------------- DEFAULT or SPECIFIED PLATFORM --------------------------------------
@@ -333,8 +333,8 @@ if [ -z "${PLATFORM}" ]; then
     cat > ${PLATFORMTMP} <<PLATFORMHEAD
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
-<AS id="AS0" routing="Full">
+<platform version="4.1">
+<zone id="AS0" routing="Full">
 PLATFORMHEAD
 
     i=${NUMPROCS}
@@ -360,7 +360,7 @@ PLATFORMHEAD
     done
 
     cat >> ${PLATFORMTMP} <<PLATFORMFOOT
-</AS>
+</zone>
 </platform>
 PLATFORMFOOT
 
@@ -375,7 +375,7 @@ APPLICATIONTMP="$(mktemp smpitmp-appXXXXXX)"
 cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
+<platform version="4.1">
 APPLICATIONHEAD
 
 ##---- cache hostnames of hostfile---------------
@@ -415,7 +415,7 @@ fi
 
 set -- $hostnames
 
-##---- generate <process> tags------------------------------
+##---- generate <actor> tags------------------------------
 #prepare arguments at once
 for ARG in $PROC_ARGS; do
   XML_ARGS="${XML_ARGS}""<argument value=\"${ARG}\"/>
@@ -427,12 +427,12 @@ do
     j=$(( $i % ${hostfile_procs} + 1 ))
     host=$(eval "echo \${$j}")
 
-    ##---- optional display of ranks to process mapping
+    ##---- optional display of ranks to actor mapping
     if [ ${MAPOPT} = 1 ]; then
       echo "[rank $i] -> $host"
     fi
 
-    echo "  <process host=\"${host}\" function=\"$i\"> <!-- function name used only for logging -->
+    echo "  <actor host=\"${host}\" function=\"$i\"> <!-- function name used only for logging -->
     <argument value=\"1\"/> <!-- instance -->
     <argument value=\"$i\"/> <!-- rank -->" >> ${APPLICATIONTMP}
     if [ ${REPLAY} = 1 ]; then
@@ -444,7 +444,7 @@ do
     else 
     echo ${XML_ARGS} >> ${APPLICATIONTMP}
     fi
-    echo "  </process>" >> ${APPLICATIONTMP}
+    echo "  </actor>" >> ${APPLICATIONTMP}
 done
 
 cat >> ${APPLICATIONTMP} <<APPLICATIONFOOT

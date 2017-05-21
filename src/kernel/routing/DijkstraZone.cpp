@@ -236,11 +236,12 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
   }
 
   /* compose route path with links */
-  NetPoint *gw_src = nullptr;
-  NetPoint *gw_dst;
-  NetPoint *prev_gw_src;
-  NetPoint *first_gw = nullptr;
-  NetPoint *gw_dst_net_elm = nullptr, *prev_gw_src_net_elm = nullptr;
+  NetPoint* gw_src = nullptr;
+  NetPoint* gw_dst;
+  NetPoint* prev_gw_src;
+  NetPoint* first_gw            = nullptr;
+  NetPoint* gw_dst_net_elm      = nullptr;
+  NetPoint* prev_gw_src_net_elm = nullptr;
 
   for (int v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
     xbt_node_t node_pred_v = xbt_dynar_get_as(nodes, pred_arr[v], xbt_node_t);

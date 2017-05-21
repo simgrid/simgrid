@@ -6,7 +6,6 @@
 
 #include "storage_interface.hpp"
 #include "surf_private.h"
-#include "xbt/file.h" /* xbt_getline */
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -15,7 +14,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf, "Logging specific to the SURF storage module");
 
 xbt_lib_t storage_lib;
-int SIMIX_STORAGE_LEVEL        = -1; // Simix storage level
 int MSG_STORAGE_LEVEL          = -1; // Msg storage level
 int ROUTING_STORAGE_LEVEL      = -1; // Routing for storage level
 int SURF_STORAGE_LEVEL = -1;
@@ -117,7 +115,7 @@ bool Storage::isUsed()
   return false;
 }
 
-void Storage::apply_event(tmgr_trace_iterator_t /*event*/, double /*value*/)
+void Storage::apply_event(tmgr_trace_event_t /*event*/, double /*value*/)
 {
   THROW_UNIMPLEMENTED;
 }

@@ -17,7 +17,7 @@ xbt_dynar_iterator_t xbt_dynar_iterator_new(xbt_dynar_t list, xbt_dynar_t (*crit
   
   it->list = list;
   it->length = xbt_dynar_length(list);
-  it->indices_list = criteria_fn(it->length); //xbt_dynar_new(sizeof(int), NULL);
+  it->indices_list = criteria_fn(it->length); // Creates and fills a dynar of int
   it->criteria_fn = criteria_fn;
   it->current = 0;
 
@@ -46,8 +46,7 @@ void xbt_dynar_iterator_delete(xbt_dynar_iterator_t it)
 xbt_dynar_t forward_indices_list(int size)
 {
   xbt_dynar_t indices_list = xbt_dynar_new(sizeof(int), NULL);
-  int i;
-  for (i = 0; i < size; i++)
+  for (int i = 0; i < size; i++)
     xbt_dynar_push_as(indices_list, int, i);
   return indices_list;
 }

@@ -24,13 +24,15 @@
 #include "src/mc/mc_replay.h"
 #include "simgrid/sg_config.h"
 
+#include "src/smpi/smpi_process.hpp"
+
 #include "src/kernel/activity/SynchroExec.hpp"
 #include "src/kernel/activity/SynchroComm.hpp"
 #include "src/kernel/activity/SynchroSleep.hpp"
 #include "src/kernel/activity/SynchroIo.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 #include "src/mc/mc_private.h"
 #include "src/mc/remote/Client.hpp"
 #include "src/mc/remote/mc_protocol.h"
@@ -191,7 +193,7 @@ void SIMIX_set_maestro(void (*code)(void*), void* data)
  */
 void SIMIX_global_init(int *argc, char **argv)
 {
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   // The communication initialization is done ASAP.
   // We need to communicate  initialization of the different layers to the model-checker.
   simgrid::mc::Client::initialize();
@@ -236,11 +238,7 @@ void SIMIX_global_init(int *argc, char **argv)
       // TODO, create sg_storage_by_name
       sg_storage_t s = xbt_lib_get_elm_or_null(storage_lib, name);
       xbt_assert(s != nullptr, "Storage not found for name %s", name);
-
-      SIMIX_storage_create(name, s, nullptr);
     });
-
-    SIMIX_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, SIMIX_storage_destroy);
   }
   if (!simix_timers)
     simix_timers = xbt_heap_new(8, [](void* p) {
@@ -302,7 +300,7 @@ void SIMIX_clean()
 
   xbt_os_mutex_destroy(simix_global->mutex);
   simix_global->mutex = nullptr;
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   xbt_dynar_free(&simix_global->actors_vector);
 #endif
 

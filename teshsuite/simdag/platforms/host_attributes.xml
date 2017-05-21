@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
-  <AS  id="AS0"  routing="Full">
+<platform version="4.1">
+  <zone  id="AS0"  routing="Full">
     <host id="alice" speed="1Gf"/> <!-- connected to an in-file speed trace --> 
     <host id="bob" speed="1Gf"/>   <!-- connected to an out-file speed trace -->
     <host id="carol" speed="500Mf" state_file="carol.fail"/>  <!-- out-file state trace as attribute -->
@@ -11,7 +11,7 @@
       <prop id="OS" value="Linux 2.6.22-14"/>
     </host>
     <host id="erin" speed="500Mf" availability_file="erin.avail"/> <!--uses someone else's trace --> 
-  </AS>
+  </zone>
 
   <trace id="myTrace" periodicity="1.0">
     0.0 1.0

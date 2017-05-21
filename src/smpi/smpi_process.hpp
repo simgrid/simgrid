@@ -7,11 +7,9 @@
 #ifndef SMPI_PROCESS_HPP
 #define SMPI_PROCESS_HPP
 
-
-#include <xbt/base.h>
 #include "src/instr/instr_smpi.h"
-#include "private.h"
 #include "simgrid/s4u/Mailbox.hpp"
+#include "xbt/synchro.h"
 
 namespace simgrid{
 namespace smpi{
@@ -28,6 +26,7 @@ class Process {
     MPI_Comm comm_self_   = MPI_COMM_NULL;
     MPI_Comm comm_intra_  = MPI_COMM_NULL;
     MPI_Comm* comm_world_ = nullptr;
+    void* data_           = nullptr; /* user data */
     int index_            = MPI_UNDEFINED;
     char state_;
     int sampling_                   = 0; /* inside an SMPI_SAMPLE_ block? */
@@ -51,6 +50,8 @@ class Process {
     void mark_as_initialized();
     void set_replaying(bool value);
     bool replaying();
+    void set_user_data(void *data);
+    void *get_user_data();
     smpi_trace_call_location_t* call_location();
     int index();
     MPI_Comm comm_world();

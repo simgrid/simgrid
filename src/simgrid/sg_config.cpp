@@ -45,7 +45,8 @@ int _sg_cfg_exit_asap = 0;
 static void sg_config_cmd_line(int *argc, char **argv)
 {
   int shall_exit = 0;
-  int i, j;
+  int i;
+  int j;
 
   for (j = i = 1; i < *argc; i++) {
     if (!strncmp(argv[i], "--cfg=", strlen("--cfg="))) {
@@ -208,7 +209,7 @@ static void _sg_cfg_cb_model_check_replay(const char *name) {
     MC_record_path = nullptr;
 }
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 extern int _sg_do_model_check_record;
 static void _sg_cfg_cb_model_check_record(const char *name) {
   _sg_do_model_check_record = xbt_cfg_get_boolean(name);
@@ -375,7 +376,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_string("model-check/replay", nullptr, _sg_cfg_cb_model_check_replay,
         "Model-check path to replay (as reported by SimGrid when a violation is reported)");
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
     /* do model-checking-record */
     xbt_cfg_register_boolean("model-check/record", "no", _sg_cfg_cb_model_check_record, "Record the model-checking paths");
 

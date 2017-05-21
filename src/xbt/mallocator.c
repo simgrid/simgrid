@@ -71,7 +71,7 @@ void xbt_mallocator_initialization_is_done(int protect)
 
 /** used by the module to know if it's time to activate the mallocators yet */
 static inline int xbt_mallocator_is_active(void) {
-#if HAVE_MALLOCATOR
+#if SIMGRID_HAVE_MALLOCATOR
   return initialization_done && !MC_is_active();
 #else
   return 0;

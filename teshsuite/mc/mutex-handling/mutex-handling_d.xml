@@ -1,11 +1,11 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
-  <process host="Tremblay" function="receiver"/>
-  <process host="Boivin" function="sender">
+<platform version="4.1">
+  <actor host="Tremblay" function="receiver"/>
+  <actor host="Boivin" function="sender">
     <argument value="X"/>
-  </process>
-  <process host="Fafard" function="sender">
+  </actor>
+  <actor host="Fafard" function="sender">
     <argument value="Y"/>
-  </process>
+  </actor>
 </platform>

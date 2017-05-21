@@ -18,7 +18,7 @@ extern double NOW;
 void surf_presolve()
 {
   double next_event_date = -1.0;
-  tmgr_trace_iterator_t event = nullptr;
+  tmgr_trace_event_t event          = nullptr;
   double value = -1.0;
   simgrid::surf::Resource *resource = nullptr;
 
@@ -28,9 +28,8 @@ void surf_presolve()
       break;
 
     while ((event = future_evt_set->pop_leq(next_event_date, &value, &resource))) {
-      if (value >= 0){
+      if (value >= 0)
         resource->apply_event(event, value);
-      }
     }
   }
 
@@ -46,7 +45,7 @@ double surf_solve(double max_date)
   double model_next_action_end = -1.0;
   double value = -1.0;
   simgrid::surf::Resource *resource = nullptr;
-  tmgr_trace_iterator_t event = nullptr;
+  tmgr_trace_event_t event          = nullptr;
 
   if (max_date > 0.0) {
     xbt_assert(max_date > NOW,"You asked to simulate up to %f, but that's in the past already", max_date);
@@ -225,6 +224,10 @@ xbt_dict_t surf_storage_get_properties(surf_resource_t resource){
 
 const char* surf_storage_get_host(surf_resource_t resource){
   return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->attach_;
+}
+
+const char* surf_storage_get_name(surf_resource_t resource){
+  return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->cname();
 }
 
 void surf_cpu_action_set_bound(surf_action_t action, double bound) {

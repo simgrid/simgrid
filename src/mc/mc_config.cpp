@@ -13,7 +13,7 @@
 
 #include <simgrid/sg_config.h>
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 #include "src/mc/mc_safety.h"
 #include "src/mc/mc_private.h"
 #endif
@@ -23,7 +23,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_config, mc,
                                 "Configuration of MC");
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 namespace simgrid {
 namespace mc {
 /* Configuration support */
@@ -32,7 +32,7 @@ simgrid::mc::ReductionMode reduction_mode = simgrid::mc::ReductionMode::unset;
 }
 #endif
 
-#if !HAVE_MC
+#if !SIMGRID_HAVE_MC
 #define _sg_do_model_check 0
 #endif
 
@@ -46,7 +46,7 @@ void _mc_cfg_cb_timeout(const char *name)
   _sg_mc_timeout = xbt_cfg_get_boolean(name);
 }
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 int _sg_do_model_check = 0;
 int _sg_do_model_check_record = 0;
 int _sg_mc_checkpoint = 0;

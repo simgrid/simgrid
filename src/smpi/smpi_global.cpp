@@ -3,40 +3,27 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <dlfcn.h>
-#include <fcntl.h>
-#include <spawn.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-
 #include "mc/mc.h"
-#include "private.h"
-#include "private.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
-#include "smpi/smpi_shared_malloc.hpp"
-#include "simgrid/sg_config.h"
-#include "src/kernel/activity/SynchroComm.hpp"
-#include "src/mc/mc_record.h"
-#include "src/mc/mc_replay.h"
+#include "simgrid/s4u/Host.hpp"
 #include "src/msg/msg_private.h"
 #include "src/simix/smx_private.h"
 #include "src/surf/surf_interface.hpp"
 #include "src/smpi/SmpiHost.hpp"
-#include "surf/surf.h"
-#include "xbt/replay.hpp"
-#include <xbt/config.hpp>
+#include "xbt/config.hpp"
+#include "src/smpi/private.h"
+#include "smpi/smpi_shared_malloc.hpp"
+#include "src/smpi/smpi_coll.hpp"
+#include "src/smpi/smpi_comm.hpp"
+#include "src/smpi/smpi_group.hpp"
+#include "src/smpi/smpi_info.hpp"
+#include "src/smpi/smpi_process.hpp"
 
+#include <dlfcn.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 #include <float.h> /* DBL_MAX */
 #include <fstream>
-#include <map>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-#include <utility>
-#include <vector>
-#include <memory>
 
 #if HAVE_SENDFILE
 #include <sys/sendfile.h>
@@ -53,9 +40,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (ke
 */
 #define RTLD_DEEPBIND 0
 #endif
-
-/* Mac OSX does not have any header file providing that definition so we have to duplicate it here. Bummers. */
-extern char** environ; /* we use it in posix_spawnp below */
 
 #if HAVE_PAPI
 #include "papi.h"
@@ -86,8 +70,6 @@ static simgrid::config::Flag<double> smpi_init_sleep(
 
 void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t) = &smpi_comm_copy_buffer_callback;
 
-
-
 int smpi_process_count()
 {
   return process_count;
@@ -117,6 +99,14 @@ void smpi_process_init(int *argc, char ***argv){
 
 int smpi_process_index(){
   return smpi_process()->index();
+}
+
+void * smpi_process_get_user_data(){
+  return smpi_process()->get_user_data();
+}
+
+void smpi_process_set_user_data(void *data){
+  return smpi_process()->set_user_data(data);
 }
 
 
@@ -190,7 +180,8 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
        XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
 
        smpi_switch_data_segment(
-           (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->src_proc->data)->data))->index()));
+           static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->src_proc->data)->data))
+               ->index());
        tmpbuff = static_cast<void*>(xbt_malloc(buff_size));
        memcpy_private(tmpbuff, buff, private_blocks);
   }
@@ -199,7 +190,8 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
       && ((char*)comm->dst_buff < smpi_start_data_exe + smpi_size_data_exe )){
        XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
        smpi_switch_data_segment(
-           (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->dst_proc->data)->data))->index()));
+           static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->dst_proc->data)->data))
+               ->index());
   }
   XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff,comm->dst_buff);
   memcpy_private(comm->dst_buff, tmpbuff, private_blocks);
@@ -468,6 +460,13 @@ static void smpi_init_options(){
     else
       xbt_die("Invalid value for smpi/privatization: '%s'", smpi_privatize_option);
 
+#if defined(__FreeBSD__)
+    if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
+      XBT_INFO("Mixing mmap privatization is broken on FreeBSD, switching to dlopen privatization instead.");
+      smpi_privatize_global_variables = SMPI_PRIVATIZE_DLOPEN;
+    }
+#endif
+
     if (smpi_cpu_threshold < 0)
       smpi_cpu_threshold = DBL_MAX;
 
@@ -490,10 +489,11 @@ typedef void (*smpi_fortran_entry_point_type)();
 
 static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<std::string> args)
 {
+  char noarg[]   = {'\0'};
   const int argc = args.size();
   std::unique_ptr<char*[]> argv(new char*[argc + 1]);
   for (int i = 0; i != argc; ++i)
-    argv[i] = args[i].empty() ? const_cast<char*>(""): &args[i].front();
+    argv[i] = args[i].empty() ? noarg : &args[i].front();
   argv[argc] = nullptr;
 
   int res = entry_point(argc, argv.get());
@@ -667,8 +667,8 @@ int smpi_main(const char* executable, int argc, char *argv[])
     }
   }
   int count = smpi_process_count();
-  int i, ret=0;
-  for (i = 0; i < count; i++) {
+  int ret   = 0;
+  for (int i = 0; i < count; i++) {
     if(process_data[i]->return_value()!=0){
       ret=process_data[i]->return_value();//return first non 0 value
       break;

@@ -7,7 +7,7 @@
 #include "xbt/asserts.h"
 #include "simgrid/jedule/jedule.hpp"
 
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
 
 namespace simgrid{
 namespace jedule {

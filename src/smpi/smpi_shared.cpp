@@ -34,11 +34,13 @@
  *                                                                      ----
  */
 #include <map>
+#include <cstring>
 
 #include "private.h"
 #include "private.hpp"
 #include "smpi/smpi_shared_malloc.hpp"
 #include "xbt/dict.h"
+#include "xbt/ex.hpp"
 #include <errno.h>
 
 #include <sys/types.h>
@@ -361,7 +363,8 @@ std::vector<std::pair<size_t, size_t>> shift_and_frame_private_blocks(const std:
 
 std::vector<std::pair<size_t, size_t>> merge_private_blocks(std::vector<std::pair<size_t, size_t>> src, std::vector<std::pair<size_t, size_t>> dst) {
   std::vector<std::pair<size_t, size_t>> result;
-  unsigned i_src=0, i_dst=0;
+  unsigned i_src = 0;
+  unsigned i_dst = 0;
   while(i_src < src.size() && i_dst < dst.size()) {
     std::pair<size_t, size_t> block;
     if(src[i_src].second <= dst[i_dst].first) {

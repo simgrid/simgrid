@@ -8,7 +8,6 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "xbt/strbuff.h"
 #include "xbt/mallocator.h"
 #include "maxmin_private.hpp"
 #include <stdlib.h>

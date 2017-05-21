@@ -18,7 +18,6 @@
       - \ref XBT_dict
       - \ref XBT_swag
       - \ref XBT_heap
-      - @ref xbt_strbuff
     - \ref XBT_misc
       - \ref XBT_graph
 

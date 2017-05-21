@@ -15,7 +15,7 @@
 
 #include "jedule_platform.hpp"
 
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
 namespace simgrid {
 namespace jedule{
 

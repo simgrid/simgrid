@@ -9,6 +9,7 @@
 #include "instr/instr_interface.h"
 #include "mc/mc.h"
 #include "src/msg/msg_private.h"
+#include "src/mc/mc_ignore.h"
 
 XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg, "Logging specific to MSG (kernel)");
@@ -37,7 +38,7 @@ void MSG_init_nocheck(int *argc, char **argv) {
   xbt_getpid = &MSG_process_self_PID;
   if (!msg_global) {
 
-    msg_global = xbt_new0(s_MSG_Global_t, 1);
+    msg_global = new s_MSG_Global_t();
 
     xbt_cfg_register_boolean("msg/debug-multiple-use", "no", _sg_cfg_cb_msg_debug_multiple_use,
         "Print backtraces of both processes when there is a conflict of multiple use of a task");
@@ -120,7 +121,7 @@ static void MSG_exit() {
 
   TRACE_surf_resource_utilization_release();
   TRACE_end();
-  free(msg_global);
+  delete msg_global;
   msg_global = nullptr;
 }
 

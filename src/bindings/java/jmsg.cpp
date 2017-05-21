@@ -39,7 +39,6 @@
 SG_BEGIN_DECL()
 
 int JAVA_HOST_LEVEL = -1;
-int JAVA_STORAGE_LEVEL = -1;
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
@@ -89,13 +88,8 @@ static void __JAVA_host_priv_free(void *host)
 {
 }
 
-static void __JAVA_storage_priv_free(void *storage)
-{
-}
-
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 {
-  char **argv = nullptr;
   int index;
   int argc = 0;
   jstring jval;
@@ -118,7 +112,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, j
     argc = static_cast<int>(env->GetArrayLength(jargs));
 
   argc++;
-  argv = xbt_new(char *, argc + 1);
+  char** argv = new char*[argc + 1];
   argv[0] = xbt_strdup("java");
 
   for (index = 0; index < argc - 1; index++) {
@@ -132,14 +126,13 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, j
   MSG_init(&argc, argv);
 
   JAVA_HOST_LEVEL = simgrid::s4u::Host::extension_create(__JAVA_host_priv_free);
-  JAVA_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, __JAVA_storage_priv_free);
 
   for (index = 0; index < argc - 1; index++) {
     env->SetObjectArrayElement(jargs, index, (jstring)env->NewStringUTF(argv[index + 1]));
     free(argv[index]);
   }
   free(argv[argc]);
-  free(argv);
+  delete[] argv;
 }
 
 JNIEXPORT void JNICALL JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass cls)
@@ -164,15 +157,8 @@ JNIEXPORT void JNICALL JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass
   xbt_dynar_free(&hosts);
 
   /* Cleanup java storages */
-  xbt_dynar_t storages = MSG_storages_as_dynar();
-  if(!xbt_dynar_is_empty(storages)){
-    for (unsigned long index = 0; index < xbt_dynar_length(storages) - 1; index++) {
-      jobject jstorage = (jobject) xbt_lib_get_level(xbt_dynar_get_as(storages,index,msg_storage_t), JAVA_STORAGE_LEVEL);
-      if (jstorage)
-        jstorage_unref(env, jstorage);
-    }
-  }
-  xbt_dynar_free(&storages);
+  for (auto elm : java_storage_map)
+    jstorage_unref(env, elm.second);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_createEnvironment(JNIEnv * env, jclass cls, jstring jplatformFile)
@@ -186,7 +172,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_createEnvironment(JNIEnv * env, 
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Msg_environmentGetRoutingRoot(JNIEnv * env, jclass cls)
 {
-  msg_netzone_t as = MSG_environment_get_routing_root();
+  msg_netzone_t as = MSG_zone_get_root();
   jobject jas      = jnetzone_new_instance(env);
   if (!jas) {
     jxbt_throw_jni(env, "java As instantiation failed");

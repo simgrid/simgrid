@@ -15,7 +15,8 @@
 SG_BEGIN_DECL()
 
 typedef struct {
-  unsigned int lines, rows;
+  unsigned int lines;
+  unsigned int rows;
   unsigned long elmsize;
 
   char *data;

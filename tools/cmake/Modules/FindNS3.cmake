@@ -16,7 +16,7 @@
 #   - Add "ns3.${version}-core ns3.${version}-core-debug ns3.${version}-core-optimized" to the NAME line of the find_library below
 #   - Add "include/ns3{version}" to the PATH_SUFFIXES line of the find_path below
 
-set(HAVE_NS3 0)
+set(SIMGRID_HAVE_NS3 0)
 set(NS3_HINT ${ns3_path} CACHE PATH "Path to search for NS3 lib and include")
 
 find_library(NS3_LIBRARIES
@@ -50,7 +50,7 @@ mark_as_advanced(NS3_LIBRARIES)
 
 if(NS3_INCLUDE_DIR)
   if(NS3_LIBRARIES)
-    set(HAVE_NS3 1)
+    set(SIMGRID_HAVE_NS3 1)
     if(NS3_LIBRARIES MATCHES "-optimized")
       set (NS3_SUFFIX "-optimized")
     elseif(NS3_LIBRARIES MATCHES "-debug")
@@ -78,7 +78,7 @@ if(NS3_INCLUDE_DIR)
 endif()
 mark_as_advanced(NS3_LIBRARY_PATH)
 
-if(HAVE_NS3)
+if(SIMGRID_HAVE_NS3)
   link_directories(${NS3_LIBRARY_PATH})
   include_directories(${NS3_INCLUDE_DIR})
 else()

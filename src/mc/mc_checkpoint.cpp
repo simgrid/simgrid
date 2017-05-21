@@ -17,10 +17,9 @@
 
 #include "src/internal_config.h"
 #include "src/mc/mc_private.h"
-#include "xbt/module.h"
-#include <xbt/mmalloc.h>
-#include <xbt/memory.hpp>
 #include "src/smpi/private.h"
+#include "xbt/mmalloc.h"
+#include "xbt/module.h"
 
 #include "src/xbt/mmalloc/mmprivate.h"
 

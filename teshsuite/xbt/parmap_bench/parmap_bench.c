@@ -45,15 +45,13 @@ static const char *parmap_mode_name(e_xbt_parmap_mode_t mode)
 
 static int parmap_skip_mode(e_xbt_parmap_mode_t mode)
 {
-  switch (mode) {
 #if !HAVE_FUTEX_H
-  case XBT_PARMAP_FUTEX:
+  if (mode == XBT_PARMAP_FUTEX) {
     printf("not available\n");
     return 1;
+  } else
 #endif
-  default:
     return 0;
-  }
 }
 
 static unsigned fibonacci(unsigned n)

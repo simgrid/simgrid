@@ -6,7 +6,7 @@
 
 #include "smx_private.h"
 #include "xbt/xbt_os_thread.h"
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 #include "src/mc/mc_private.h"
 #endif
 

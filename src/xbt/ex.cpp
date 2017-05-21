@@ -59,11 +59,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex, xbt, "Exception mechanism");
 
-xbt_ex::~xbt_ex() {}
-
-void _xbt_throw(
-  char* message, xbt_errcat_t errcat, int value, 
-  const char* file, int line, const char* func)
+void _xbt_throw(char* message, xbt_errcat_t errcat, int value, const char* file, int line, const char* func)
 {
   xbt_ex e(simgrid::xbt::ThrowPoint(file, line, func), message);
   free(message);
@@ -110,6 +106,8 @@ const char *xbt_ex_catname(xbt_errcat_t cat)
     return "io error";
   case vm_error:
     return "vm error";
+  default:
+    return "INVALID ERROR";
   }
   return "INVALID ERROR";
 }

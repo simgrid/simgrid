@@ -1,11 +1,11 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
+<platform version="4.1">
 <!-- This is a random platform, generated with Simulacrum.
         http://pda.gforge.inria.fr/tools/download.html
      Unfortunately, the generation parameters were lost with the years. -->
 
-  <AS  id="AS0" routing="Full">
+  <zone  id="AS0" routing="Full">
     <host id="Host 26" speed="3.300140519709234Gf"/>
     <host id="Host 27" speed="3.867398877553016Gf"/>
     <host id="Host 28" speed="1.6522665718098645Gf"/>
@@ -109,6 +109,6 @@
     <route src="Host 31" dst="Host 32">
       <link_ctn id="l173"/>
     </route>
-  </AS>
+  </zone>
 </platform>
 

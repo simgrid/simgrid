@@ -38,15 +38,14 @@ std::vector<s_smpi_factor_t> parse_factor(const char *smpi_coef_string)
       xbt_die("Malformed radical for smpi factor: '%s'", smpi_coef_string);
     }
     unsigned int iteration = 0;
-    for (Tokenizer::iterator factor_iter = factor_values.begin();
-         factor_iter != factor_values.end(); factor_iter++, iteration++) {
+    for (Tokenizer::iterator factor_iter = factor_values.begin(); factor_iter != factor_values.end(); factor_iter++) {
+      iteration++;
       char *errmsg;
 
       if (factor_iter == factor_values.begin()) { /* first element */
         errmsg = bprintf("Invalid factor in chunk #%zu: %%s", smpi_factor.size()+1);
         fact.factor = xbt_str_parse_int(factor_iter->c_str(), errmsg);
-      }
-      else {
+      } else {
         errmsg = bprintf("Invalid factor value %d in chunk #%zu: %%s", iteration, smpi_factor.size()+1);
         fact.values.push_back(xbt_str_parse_double(factor_iter->c_str(), errmsg));
       }

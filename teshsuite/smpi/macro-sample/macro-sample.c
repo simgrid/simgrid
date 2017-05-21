@@ -48,7 +48,8 @@ int main(int argc, char *argv[])
     /* I want the standard error to go below 0.1 second.
      * Two tests at least will be run (count is not > 0) */
     SMPI_SAMPLE_LOCAL(0, 0.1) {
-      if (verbose || n++ < 2) {
+      if (verbose || n < 2) {
+        n++;
         if (verbose)
           fprintf(stderr, "(%12.6f)", MPI_Wtime());
         else

@@ -25,6 +25,9 @@ addons:
     - gfortran
     - libboost-dev
     - libboost-all-dev
+    - libdw-dev
+    - libevent-dev
+    - libunwind8-dev
   coverity_scan:
     project:
       name: "simgrid/simgrid"
@@ -44,9 +47,10 @@ addons:
 #   - ls -lR $TRAVIS_BUILD_DIR/LuaInstall
 
 script:
-   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update         ; fi
-   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install python3; fi
-   - cmake -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON . 
+   - test "$TRAVIS_OS_NAME" == "osx"   && brew update
+   - test "$TRAVIS_OS_NAME" == "osx"   && brew install python3
+   - test "$TRAVIS_OS_NAME" == "osx"   && cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON .
+   - test "$TRAVIS_OS_NAME" == "linux" && cmake -Denable_model-checking=ON  -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON .
    # run make in the sonar wrapper && run the tests before sonar to get coverage info
    - ./tools/internal/travis-sonarqube.sh make VERBOSE=1
    # if sonar was not run (and if the build succeeded), run the tests manually

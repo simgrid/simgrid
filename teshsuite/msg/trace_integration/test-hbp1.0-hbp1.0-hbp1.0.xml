@@ -1,16 +1,16 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
-  <process host="Cpu B" function="test_trace">
+<platform version="4.1">
+  <actor host="Cpu B" function="test_trace">
     <argument value="170"/>
     <argument value="1.0"/>
-  </process>
-  <process host="Cpu B" function="test_trace">
+  </actor>
+  <actor host="Cpu B" function="test_trace">
     <argument value="170"/>
     <argument value="1.0"/>
-  </process>
-  <process host="Cpu B" function="test_trace" start_time="30">
+  </actor>
+  <actor host="Cpu B" function="test_trace" start_time="30">
     <argument value="100"/>
     <argument value="1.0"/>
-  </process>
+  </actor>
 </platform>

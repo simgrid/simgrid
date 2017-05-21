@@ -201,7 +201,7 @@ void SD_create_environment(const char *platform_file)
   simgrid::s4u::Engine::instance()->loadPlatform(platform_file);
 
   XBT_DEBUG("Host number: %zu, link number: %d", sg_host_count(), sg_link_count());
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
   jedule_sd_init();
 #endif
   XBT_VERB("Starting simulation...");
@@ -247,7 +247,7 @@ double SD_get_clock() {
 void SD_exit()
 {
   TRACE_end();
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
   jedule_sd_exit();
 #endif
   delete sd_global;

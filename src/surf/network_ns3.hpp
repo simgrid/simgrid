@@ -35,7 +35,7 @@ public:
   explicit LinkNS3(NetworkNS3Model* model, const char* name, double bandwidth, double latency);
   ~LinkNS3();
 
-  void apply_event(tmgr_trace_iterator_t event, double value) override;
+  void apply_event(tmgr_trace_event_t event, double value) override;
   void setBandwidth(double value) override { THROW_UNIMPLEMENTED; }
   void setLatency(double value) override { THROW_UNIMPLEMENTED; }
   void setBandwidthTrace(tmgr_trace_t trace) override;

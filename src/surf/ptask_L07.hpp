@@ -75,7 +75,7 @@ public:
   CpuL07(CpuL07Model *model, simgrid::s4u::Host *host, std::vector<double> * speedPerPstate, int core);
   ~CpuL07() override;
   bool isUsed() override;
-  void apply_event(tmgr_trace_iterator_t event, double value) override;
+  void apply_event(tmgr_trace_event_t event, double value) override;
   Action *execution_start(double size) override;
   Action *sleep(double duration) override;
 protected:
@@ -88,7 +88,7 @@ public:
           e_surf_link_sharing_policy_t policy);
   ~LinkL07() override;
   bool isUsed() override;
-  void apply_event(tmgr_trace_iterator_t event, double value) override;
+  void apply_event(tmgr_trace_event_t event, double value) override;
   void setBandwidth(double value) override;
   void setLatency(double value) override;
 };

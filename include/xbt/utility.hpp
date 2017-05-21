@@ -46,7 +46,7 @@ class integer_sequence {
 namespace bits {
   template<class T, long long N, long long... M>
   struct make_integer_sequence :
-    public make_integer_sequence<T, N-1, N-1, M...>
+    make_integer_sequence<T, N-1, N-1, M...>
   {};
   template<class T, long long... M>
   struct make_integer_sequence<T, 0, M...> {

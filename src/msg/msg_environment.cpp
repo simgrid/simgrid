@@ -7,7 +7,7 @@
 #include "simgrid/s4u/NetZone.hpp"
 #include "src/msg/msg_private.h"
 
-#if HAVE_LUA
+#if SIMGRID_HAVE_LUA
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
@@ -43,54 +43,49 @@ void MSG_post_create_environment() {
 
   /* Initialize MSG storages */
   xbt_lib_foreach(storage_lib, cursor, name, data) {
-    if(data[SIMIX_STORAGE_LEVEL])
-      __MSG_storage_create(xbt_dict_cursor_get_elm(cursor));
+    __MSG_storage_create(xbt_dict_cursor_get_elm(cursor));
   }
 }
 
-msg_netzone_t MSG_environment_get_routing_root()
+msg_netzone_t MSG_zone_get_root()
 {
   return simgrid::s4u::Engine::instance()->netRoot();
 }
 
-const char* MSG_environment_as_get_name(msg_netzone_t netzone)
+const char* MSG_zone_get_name(msg_netzone_t netzone)
 {
   return netzone->name();
 }
 
-msg_netzone_t MSG_environment_as_get_by_name(const char* name)
+msg_netzone_t MSG_zone_get_by_name(const char* name)
 {
   return simgrid::s4u::Engine::instance()->netzoneByNameOrNull(name);
 }
 
-xbt_dict_t MSG_environment_as_get_routing_sons(msg_netzone_t netzone)
+void MSG_zone_get_sons(msg_netzone_t netzone, xbt_dict_t whereto)
 {
-  xbt_dict_t res = xbt_dict_new_homogeneous(nullptr);
   for (auto elem : *netzone->children()) {
-    xbt_dict_set(res, elem->name(), static_cast<void*>(elem), nullptr);
+    xbt_dict_set(whereto, elem->name(), static_cast<void*>(elem), nullptr);
   }
-  return res;
 }
 
-const char* MSG_environment_as_get_property_value(msg_netzone_t netzone, const char* name)
+const char* MSG_zone_get_property_value(msg_netzone_t netzone, const char* name)
 {
   return netzone->property(name);
 }
 
-void MSG_environment_as_set_property_value(msg_netzone_t netzone, const char* name, char* value)
+void MSG_zone_set_property_value(msg_netzone_t netzone, const char* name, char* value)
 {
   netzone->setProperty(name, value);
 }
 
-xbt_dynar_t MSG_environment_as_get_hosts(msg_netzone_t netzone)
+void MSG_zone_get_hosts(msg_netzone_t netzone, xbt_dynar_t whereto)
 {
-  xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t), nullptr);
-
-  for (auto host : *netzone->hosts()) {
-    xbt_dynar_push(res, &host);
-  }
-
-  return res;
+  /* converts vector to dynar */
+  std::vector<simgrid::s4u::Host*> hosts;
+  netzone->hosts(&hosts);
+  for (auto host : hosts)
+    xbt_dynar_push(whereto, &host);
 }
 
 SG_END_DECL()

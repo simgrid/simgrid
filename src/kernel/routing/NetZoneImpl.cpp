@@ -21,8 +21,8 @@ namespace routing {
 class BypassRoute {
 public:
   explicit BypassRoute(NetPoint* gwSrc, NetPoint* gwDst) : gw_src(gwSrc), gw_dst(gwDst) {}
-  const NetPoint* gw_src;
-  const NetPoint* gw_dst;
+  NetPoint* gw_src;
+  NetPoint* gw_dst;
   std::vector<surf::LinkImpl*> links;
 };
 
@@ -292,14 +292,14 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
               "calls to getRoute",
               src->cname(), dst->cname(), bypassedRoute->links.size());
     if (src != key.first)
-      getGlobalRoute(src, const_cast<NetPoint*>(bypassedRoute->gw_src), links, latency);
+      getGlobalRoute(src, bypassedRoute->gw_src, links, latency);
     for (surf::LinkImpl* link : bypassedRoute->links) {
       links->push_back(link);
       if (latency)
         *latency += link->latency();
     }
     if (dst != key.second)
-      getGlobalRoute(const_cast<NetPoint*>(bypassedRoute->gw_dst), dst, links, latency);
+      getGlobalRoute(bypassedRoute->gw_dst, dst, links, latency);
     return true;
   }
   XBT_DEBUG("No bypass route from '%s' to '%s'.", src->cname(), dst->cname());

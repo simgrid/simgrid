@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2010, 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -53,10 +52,6 @@ typedef struct s_smx_mailbox *smx_mailbox_t;
 
 #endif
 
-/**************************** Scalar Values **********************************/
-
-typedef union u_smx_scalar u_smx_scalar_t;
-
 /* ******************************** Host ************************************ */
 /** @brief Host datatype
     @ingroup simix_host_management
@@ -102,7 +97,6 @@ typedef struct s_smx_file *smx_file_t;
 
 /********************************** Storage *************************************/
 typedef xbt_dictelm_t smx_storage_t;
-typedef struct s_smx_storage_priv *smx_storage_priv_t;
 
 /* ****************************** Process *********************************** */
 
@@ -369,8 +363,6 @@ XBT_PUBLIC(int) simcall_file_seek(smx_file_t fd, sg_offset_t offset, int origin)
 XBT_PUBLIC(int) simcall_file_move(smx_file_t fd, const char* fullpath);
 /*****************************   Storage   **********************************/
 XBT_PUBLIC(xbt_dict_t) simcall_storage_get_properties(smx_storage_t storage);
-XBT_PUBLIC(const char*) SIMIX_storage_get_name(smx_storage_t storage);
-
 /************************** MC simcalls   **********************************/
 XBT_PUBLIC(int) simcall_mc_random(int min, int max);
 

@@ -1,11 +1,11 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
+<platform version="4.1">
   <config>
     <prop id="path" value="../examples/platforms/"/>
   </config>
 
-  <AS id="AS0" routing="Full">
+  <zone id="AS0" routing="Full">
     <storage_type id="single_HDD" size="500GiB" model="linear_no_lat" 
                   content="content/storage_content.txt" content_type="txt_unix">
       <model_prop id="Bwrite" value="30MBps" />
@@ -46,5 +46,5 @@
     <route src="bob" dst="alice">
       <link_ctn id="link1" />
     </route>
-  </AS>
+  </zone>
 </platform>

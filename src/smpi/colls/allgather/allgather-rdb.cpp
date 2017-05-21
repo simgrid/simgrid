@@ -1,14 +1,13 @@
-/* Copyright (c) 2013-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "../colls_private.h"
+#include "src/smpi/smpi_status.hpp"
 
 namespace simgrid{
 namespace smpi{
-
 
 int
 Coll_allgather_rdb::allgather(void *sbuf, int send_count,

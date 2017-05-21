@@ -1,20 +1,14 @@
-/* smpi_datatype.cpp -- MPI primitives to handle datatypes                      */
-/* Copyright (c) 2009-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* smpi_datatype.cpp -- MPI primitives to handle datatypes                  */
+/* Copyright (c) 2009-2017. The SimGrid Team.  All rights reserved.         */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "mc/mc.h"
-#include "private.h"
 #include "simgrid/modelchecker.h"
-#include <limits.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <string>
-#include <unordered_map>
-#include <xbt/ex.hpp>
+#include "src/smpi/private.h"
+#include "src/smpi/smpi_datatype_derived.hpp"
+#include "src/smpi/smpi_op.hpp"
+#include "src/smpi/smpi_process.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_datatype, smpi, "Logging specific to SMPI (datatype)");
 
@@ -24,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_datatype, smpi, "Logging specific to SMPI (
     sizeof(type),   /* size */                        \
     0,              /* lb */                          \
     sizeof(type),   /* ub = lb + size */              \
-    DT_FLAG_BASIC  /* flags */                       \
+    DT_FLAG_BASIC  /* flags */                        \
   );                                                  \
 const MPI_Datatype name = &mpi_##name;
 
@@ -107,7 +101,7 @@ std::unordered_map<int, smpi_key_elem> Datatype::keyvals_;
 int Datatype::keyval_id_=0;
 
 Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(1){
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   if(MC_is_active())
     MC_ignore(&(refcount_), sizeof(refcount_));
 #endif
@@ -115,7 +109,7 @@ Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr
 
 //for predefined types, so in_use = 0.
 Datatype::Datatype(char* name, int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(name), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(0){
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   if(MC_is_active())
     MC_ignore(&(refcount_), sizeof(refcount_));
 #endif
@@ -170,7 +164,7 @@ void Datatype::ref(){
 
   refcount_++;
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   if(MC_is_active())
     MC_ignore(&(refcount_), sizeof(refcount_));
 #endif
@@ -184,7 +178,7 @@ void Datatype::unref(MPI_Datatype datatype)
   if (datatype->refcount_ == 0  && !(datatype->flags_ & DT_FLAG_PREDEFINED))
     delete datatype;
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   if(MC_is_active())
     MC_ignore(&(datatype->refcount_), sizeof(datatype->refcount_));
 #endif

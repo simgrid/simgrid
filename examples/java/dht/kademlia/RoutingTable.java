@@ -18,7 +18,7 @@ public class RoutingTable {
 
   public RoutingTable(int id) {
     this.id = id;
-    buckets = new Vector<Bucket>();
+    buckets = new Vector<>();
     for (int i = 0; i < Common.IDENTIFIER_SIZE + 1; i++) {
       buckets.add(new Bucket(i));
     }
@@ -102,12 +102,12 @@ public class RoutingTable {
 
   @Override
   public String toString() {
-    String string = "RoutingTable [ id=" + id + " " ;
+    StringBuilder string = new StringBuilder("RoutingTable [ id=" + id + " ");
     for (int i = 0; i < buckets.size(); i++) {
       if (buckets.get(i).size() > 0) {
-        string += buckets.get(i) + " ";
+        string.append(buckets.get(i) + " ");
       }
     }
-    return string;
+    return string.toString();
   }
 }

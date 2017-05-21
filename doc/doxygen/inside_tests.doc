@@ -72,13 +72,12 @@ your changes should look like that:
 --- a/tools/cmake/UnitTesting.cmake
 +++ b/tools/cmake/UnitTesting.cmake
 @@ -11,6 +11,7 @@ set(FILES_CONTAINING_UNITTESTS
-   src/xbt/xbt_strbuff.c
    src/xbt/xbt_sha.c
    src/xbt/config.c
 +  src/xbt/plouf.c
    )
 
- if(HAVE_MC)
+ if(SIMGRID_HAVE_MC)
 \endverbatim
 
 Then, you want to actually add your tests in the source file. All the

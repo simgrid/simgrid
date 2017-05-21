@@ -12,9 +12,6 @@ namespace simgrid {
 namespace vm {
 simgrid::xbt::Extension<s4u::Host, VmHostExt> VmHostExt::EXTENSION_ID;
 
-VmHostExt::~VmHostExt()
-{
-}
 void VmHostExt::ensureVmExtInstalled()
 {
   if (!EXTENSION_ID.valid())

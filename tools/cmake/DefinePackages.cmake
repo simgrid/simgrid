@@ -53,6 +53,7 @@ set(EXTRA_DIST
   src/surf/network_ib.hpp
   src/surf/ns3/ns3_interface.h
   src/surf/ns3/ns3_simulator.h
+  src/surf/trace_mgr_test.cpp
   src/surf/xml/simgrid.dtd
   src/surf/xml/simgrid_dtd.h
   src/surf/xml/simgrid_dtd.c
@@ -287,7 +288,6 @@ set(XBT_SRC
   src/xbt/xbt_os_time.c
   src/xbt/xbt_replay.cpp
   src/xbt/xbt_str.cpp
-  src/xbt/xbt_strbuff.c
   src/xbt/xbt_virtu.c
   src/xbt_modinter.h
   )
@@ -724,7 +724,6 @@ set(headers_to_install
   include/xbt/log.hpp
   include/xbt/mallocator.h
   include/xbt/matrix.h
-  include/xbt/memory.hpp
   include/xbt/misc.h
   include/xbt/mmalloc.h
   include/xbt/module.h
@@ -732,7 +731,6 @@ set(headers_to_install
   include/xbt/range.hpp
   include/xbt/replay.hpp
   include/xbt/str.h
-  include/xbt/strbuff.h
   include/xbt/swag.h
   include/xbt/synchro.h
   include/xbt/sysdep.h
@@ -784,7 +782,7 @@ set(simgrid_sources
   ${XBT_SRC}
   )
 
-if(${HAVE_JEDULE})  
+if(${SIMGRID_HAVE_JEDULE})  
   set(simgrid_sources  ${simgrid_sources}  ${JEDULE_SRC})
 else()
   set(EXTRA_DIST       ${EXTRA_DIST}       ${JEDULE_SRC})
@@ -794,11 +792,11 @@ if(enable_smpi)
   set(simgrid_sources  ${simgrid_sources}  ${SMPI_SRC})
 endif()
 
-if(HAVE_MC)
+if(SIMGRID_HAVE_MC)
   set(simgrid_sources  ${simgrid_sources}  ${MC_SRC})
 endif()
 
-if(HAVE_NS3)
+if(SIMGRID_HAVE_NS3)
   set(simgrid_sources  ${simgrid_sources}  ${NS3_SRC})
 endif()
 
@@ -812,7 +810,7 @@ if(WIN32)
     )
 endif()
 
-if(HAVE_LUA)
+if(SIMGRID_HAVE_LUA)
   set(simgrid_sources  ${simgrid_sources}  ${LUA_SRC})
 else()
   set(EXTRA_DIST       ${EXTRA_DIST}       ${LUA_SRC})

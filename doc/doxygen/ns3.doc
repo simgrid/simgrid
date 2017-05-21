@@ -43,7 +43,7 @@ cmake . -Denable_ns3=ON -DNS3_HINT=/opt/ns3 # or change the path if needed
 
 By the end of the configuration, cmake reports whether ns-3 was found,
 and this information is also available in <tt>include/simgrid_config.h</tt>
-If your local copy defines the variable \c HAVE_NS3 to 1, then NS3
+If your local copy defines the variable \c SIMGRID_HAVE_NS3 to 1, then NS3
 was correctly detected. If it's defined to 0, then something went
 wrong. Explore <tt>CMakeFiles/CMakeOutput.log</tt> and
 <tt>CMakeFiles/CMakeError.log</tt> to diagnose the problem.

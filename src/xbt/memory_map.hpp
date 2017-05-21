@@ -19,7 +19,8 @@ namespace xbt {
 
 /** An virtual memory map entry from /proc/$pid/maps */
 struct VmMap {
-  std::uint64_t start_addr, end_addr;
+  std::uint64_t start_addr;
+  std::uint64_t end_addr;
   int prot;                     /* Memory protection */
   int flags;                    /* Additional memory flags */
   std::uint64_t offset;         /* Offset in the file/whatever */

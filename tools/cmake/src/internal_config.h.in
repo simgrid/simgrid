@@ -66,7 +66,7 @@
 /* process_vm_readv: transfer data between process address spaces */
 #cmakedefine01 HAVE_PROCESS_VM_READV
 /* Set to true if enable_model-checking is true and the dependencies available */
-#cmakedefine01 HAVE_MC
+#cmakedefine01 SIMGRID_HAVE_MC
 
 /* SMPI variables */
 /* SMPI enabled */

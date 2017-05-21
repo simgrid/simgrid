@@ -10,6 +10,7 @@
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
+#include <simgrid/s4u/Link.hpp>
 #include <simgrid/s4u/Mailbox.hpp>
 
 #include <simgrid/s4u/Comm.hpp>

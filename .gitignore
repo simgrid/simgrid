@@ -200,6 +200,7 @@ examples/s4u/actor-suspend/s4u_actor-suspend
 examples/s4u/basic/s4u_basic
 examples/s4u/basic/s4u_basic_deployment
 examples/s4u/basic/s4u_basic_function
+examples/s4u/dht-chord/s4u_dht-chord
 examples/s4u/io/s4u_io
 examples/s4u/mutex/s4u_mutex
 examples/simdag/daxload/sd_daxload
@@ -1037,6 +1038,7 @@ teshsuite/smpi/mpich-test/pt2pt/waitall3
 teshsuite/smpi/mpich-test/pt2pt/waitall4
 teshsuite/smpi/mpich-test/pt2pt/waitany
 teshsuite/smpi/mpich-test/*/*.stdo
+teshsuite/smpi/privatization/privatization
 teshsuite/smpi/pt2pt-dsend/pt2pt-dsend
 teshsuite/smpi/pt2pt-pingpong/pt2pt-pingpong
 teshsuite/smpi/coll-reduce/coll-reduce
@@ -1057,7 +1059,6 @@ teshsuite/surf/lmm_usage/lmm_usage
 teshsuite/surf/maxmin_bench/maxmin_bench
 teshsuite/surf/surf_usage/surf_usage
 teshsuite/surf/surf_usage2/surf_usage2
-teshsuite/surf/trace_usage/trace_usage
 teshsuite/xbt/heap_bench/heap_bench
 teshsuite/xbt/log_large/log_large
 teshsuite/xbt/log_usage/log_usage
@@ -1072,6 +1073,7 @@ testgraph.xml
 test_rl
 test_sg
 tools/tesh/tesh
+unit_tmgr
 #########################################
 ## touched files to track the dependencies of java examples
 examples/java/app/bittorrent/java_app_bittorrent_compiled

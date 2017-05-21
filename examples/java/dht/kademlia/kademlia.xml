@@ -1,27 +1,27 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
+<platform version="4.1">
 
-  <process host="node-0.acme.org" function="dht.kademlia.Node">
+  <actor host="node-0.acme.org" function="dht.kademlia.Node">
     <argument value="0"/>        <!-- my id -->
     <argument value ="900"/>     <!-- deadline -->
-  </process>
+  </actor>
 
-  <process host="node-1.acme.org" function="dht.kademlia.Node">
+  <actor host="node-1.acme.org" function="dht.kademlia.Node">
     <argument value="1"/>        <!-- my id -->
     <argument value="0"/>        <!-- known id -->
     <argument value ="900"/>     <!-- deadline -->
-  </process>
+  </actor>
 
-  <process host="node-2.acme.org" function="dht.kademlia.Node">
+  <actor host="node-2.acme.org" function="dht.kademlia.Node">
     <argument value="2"/>        <!-- my id -->
     <argument value="0"/>        <!-- known id -->
     <argument value ="900"/>     <!-- deadline -->
-  </process>
+  </actor>
 
-  <process host="node-3.acme.org" function="dht.kademlia.Node">
+  <actor host="node-3.acme.org" function="dht.kademlia.Node">
     <argument value="4"/>        <!-- my id -->
     <argument value="0"/>        <!-- known id -->
     <argument value ="900"/>     <!-- deadline -->
-  </process>
+  </actor>
 </platform>

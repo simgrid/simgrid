@@ -119,7 +119,7 @@ void CpuCas01::onSpeedChange() {
   Cpu::onSpeedChange();
 }
 
-void CpuCas01::apply_event(tmgr_trace_iterator_t event, double value)
+void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
 {
   if (event == speed_.event) {
     /* TODO (Hypervisor): do the same thing for constraint_core[i] */
@@ -179,7 +179,7 @@ CpuAction *CpuCas01::sleep(double duration)
   // FIXME: sleep variables should not consume 1.0 in lmm_expand
   action->maxDuration_ = duration;
   action->suspended_ = 2;
-  if (duration == NO_MAX_DURATION) {
+  if (duration < 0) { // NO_MAX_DURATION
     /* Move to the *end* of the corresponding action set. This convention is used to speed up update_resource_state */
     action->getStateSet()->erase(action->getStateSet()->iterator_to(*action));
     action->stateSet_ = static_cast<CpuCas01Model*>(model())->p_cpuRunningActionSetThatDoesNotNeedBeingChecked;

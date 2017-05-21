@@ -470,7 +470,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
 
   double start_time = process->start_time;
   double kill_time  = process->kill_time;
-  int auto_restart = process->on_failure == SURF_PROCESS_ON_FAILURE_DIE ? 0 : 1;
+  int auto_restart = process->on_failure == SURF_ACTOR_ON_FAILURE_DIE ? 0 : 1;
 
   std::vector<std::string> args(process->argv, process->argv + process->argc);
   std::function<void()> code = factory(std::move(args));

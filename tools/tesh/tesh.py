@@ -442,6 +442,8 @@ if __name__ == '__main__':
            re.compile("==WARNING: ASan is ignoring requested __asan_handle_no_return: stack top:"),
            re.compile("False positive error reports may follow"),
            re.compile("For details see http://code.google.com/p/address-sanitizer/issues/detail?id=189"),
+           
+           re.compile("Python runtime initialized with LC_CTYPE=C .*"),
            ]
         TeshState().jenkins = True # This is a Jenkins build
     

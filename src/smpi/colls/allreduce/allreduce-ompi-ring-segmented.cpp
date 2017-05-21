@@ -154,6 +154,7 @@
     }                                                                        \
 
 #include "../colls_private.h"
+
 namespace simgrid{
 namespace smpi{
 int 

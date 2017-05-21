@@ -322,6 +322,7 @@ XBT_PUBLIC(xbt_dict_t) surf_storage_action_get_ls_dict(surf_action_t action);
  * may not exist.
  */
 XBT_PUBLIC(const char * ) surf_storage_get_host(surf_resource_t resource);
+XBT_PUBLIC(const char * ) surf_storage_get_name(surf_resource_t resource);
 
 /** @} */
 
