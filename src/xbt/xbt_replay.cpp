@@ -34,7 +34,9 @@ class ReplayReader {
 public:
   explicit ReplayReader(const char* filename)
   {
-    fs = new std::ifstream(filename, std::ifstream::in);
+	  XBT_VERB("Prepare to replay file '%s'", filename);
+	  fs = new std::ifstream(filename, std::ifstream::in);
+	  xbt_assert(fs->is_open(), "Cannot read file %s", filename);
   }
   ~ReplayReader()
   {

@@ -106,6 +106,7 @@ static MPI_Datatype decode_datatype(const char *const action)
       break;
     default:
       MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
+      break;
   }
    return MPI_CURRENT_TYPE;
 }
