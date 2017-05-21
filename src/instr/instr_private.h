@@ -255,7 +255,6 @@ class PushStateEvent : public PajeEvent  {
 class PopStateEvent : public PajeEvent  {
   container_t container;
   type_t type;
-  xbt_dynar_t extra;
   public:
   PopStateEvent (double timestamp, container_t container, type_t type);
   void print() override;
