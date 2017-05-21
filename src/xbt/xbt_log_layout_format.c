@@ -1,20 +1,15 @@
 /* layout_simple - a dumb log layout                                        */
 
-/* Copyright (c) 2007-2016. The SimGrid Team.                               */
+/* Copyright (c) 2007-2017. The SimGrid Team.                               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/internal_config.h"       /* execinfo when available */
 #include "xbt/sysdep.h"
 #include "src/xbt/log_private.h"
 #include "simgrid/simix.h"      /* SIMIX_host_self_get_name */
 #include "surf/surf.h"
 #include <stdio.h>
-
-#if HAVE_EXECINFO_H
-#  include <execinfo.h> /* Function backtrace */
-#endif
 
 extern const char *xbt_log_priority_names[8];
 
@@ -27,7 +22,6 @@ static double format_begin_of_time = -1;
   "  where:\n"                                                          \
   "    source:    %%F: file          %%L: line          %%M: function  %%l: location (%%F:%%L)\n" \
   "    runtime:   %%h: hostname      %%t: thread        %%P: process   %%i: PID\n" \
-  "    backtrace: %%b: full          %%B: short\n"                      \
   "  when:        %%d: date          %%r: app. age\n"                   \
   "  other:       %%%%: %%             %%n: new line      %%e: plain space\n"
 

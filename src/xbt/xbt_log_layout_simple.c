@@ -1,7 +1,6 @@
 /* layout_simple - a dumb log layout                                        */
 
-/* Copyright (c) 2007-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -12,7 +11,6 @@
 #include "simgrid/simix.h"      /* SIMIX_host_self_get_name */
 #include "surf/surf.h"
 #include <stdio.h>
-#include "src/internal_config.h"
 
 extern const char *xbt_log_priority_names[8];
 extern int xbt_log_no_loc;
