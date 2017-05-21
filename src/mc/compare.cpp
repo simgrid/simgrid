@@ -907,7 +907,6 @@ top:
     return compare_heap_area_without_type(state, process_index, real_area1, real_area2,
                                           snapshot1, snapshot2, previous,
                                           type->byte_size, check_ignore);
-    return 0;
 
   default:
     return 0;
