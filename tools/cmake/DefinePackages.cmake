@@ -288,7 +288,6 @@ set(XBT_SRC
   src/xbt/xbt_os_time.c
   src/xbt/xbt_replay.cpp
   src/xbt/xbt_str.cpp
-  src/xbt/xbt_strbuff.c
   src/xbt/xbt_virtu.c
   src/xbt_modinter.h
   )
@@ -734,7 +733,6 @@ set(headers_to_install
   include/xbt/range.hpp
   include/xbt/replay.hpp
   include/xbt/str.h
-  include/xbt/strbuff.h
   include/xbt/swag.h
   include/xbt/synchro.h
   include/xbt/sysdep.h

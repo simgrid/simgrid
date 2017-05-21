@@ -124,7 +124,7 @@ if(enable_model-checking AND enable_compile_optimizations)
       src/xbt/xbt_log_layout_format.c src/xbt/xbt_log_layout_simple.c
       src/xbt/dict.cpp src/xbt/dict_elm.c src/xbt/dict_cursor.c
       src/xbt/dynar.cpp src/xbt/heap.c src/xbt/swag.c
-      src/xbt/str.c src/xbt/strbuff.c src/xbt/snprintf.c
+      src/xbt/str.c src src/xbt/snprintf.c
       src/xbt/queue.c
       src/xbt/xbt_os_time.c src/xbt/xbt_os_thread.c
       src/xbt/backtrace_linux.c

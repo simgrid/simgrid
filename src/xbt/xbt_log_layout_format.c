@@ -7,7 +7,6 @@
 
 #include "src/internal_config.h"       /* execinfo when available */
 #include "xbt/sysdep.h"
-#include "xbt/strbuff.h"
 #include "src/xbt/log_private.h"
 #include "simgrid/simix.h"      /* SIMIX_host_self_get_name */
 #include "surf/surf.h"

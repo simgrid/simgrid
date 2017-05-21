@@ -31,7 +31,8 @@ SimGrid (3.16) UNRELEASED
  XBT
   - Replay: New function xbt_replay_action_get():
     Retrieve the function previously associated to an event type.
-  - Drop unused functions: xbt_str_varsubst(), xbt_strbuff_varsubst()
+  - DROPPED FUNCTION: xbt_str_varsubst()
+  - DROPPED MODULE: strbuff. We don't need it anymore.
 
  -- Release target: June 21 2017   -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
