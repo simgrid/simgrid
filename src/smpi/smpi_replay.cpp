@@ -905,8 +905,9 @@ static void action_allToAllv(const char *const *action) {
 
 }} // namespace simgrid::smpi
 
-void smpi_replay_run(int *argc, char***argv){
-  /* First initializes everything */
+/** @brief Only initialize the replay, don't do it for real */
+void smpi_replay_init(int* argc, char*** argv)
+{
   simgrid::smpi::Process::init(argc, argv);
   smpi_process()->mark_as_initialized();
   smpi_process()->set_replaying(true);
@@ -916,10 +917,8 @@ void smpi_replay_run(int *argc, char***argv){
   TRACE_smpi_computing_init(rank);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_INIT;
-  char *operation =bprintf("%s_init",__FUNCTION__);
-  TRACE_smpi_collective_in(rank, -1, operation, extra);
-  TRACE_smpi_collective_out(rank, -1, operation);
-  xbt_free(operation);
+  TRACE_smpi_collective_in(rank, -1, "smpi_replay_run_init", extra);
+  TRACE_smpi_collective_out(rank, -1, "smpi_replay_run_init");
   xbt_replay_action_register("init",       simgrid::smpi::action_init);
   xbt_replay_action_register("finalize",   simgrid::smpi::action_finalize);
   xbt_replay_action_register("comm_size",  simgrid::smpi::action_comm_size);
@@ -947,10 +946,7 @@ void smpi_replay_run(int *argc, char***argv){
 
   //if we have a delayed start, sleep here.
   if(*argc>2){
-    char *endptr;
-    double value = strtod((*argv)[2], &endptr);
-    if (*endptr != '\0')
-      THROWF(unknown_error, 0, "%s is not a double", (*argv)[2]);
+    double value = xbt_str_parse_double((*argv)[2], "%s is not a double");
     XBT_VERB("Delayed start for instance - Sleeping for %f flops ",value );
     smpi_execute_flops(value);
   } else {
@@ -958,8 +954,11 @@ void smpi_replay_run(int *argc, char***argv){
     XBT_DEBUG("Force context switch by smpi_execute_flops  - Sleeping for 0.0 flops ");
     smpi_execute_flops(0.0);
   }
+}
 
-  /* Actually run the replay */
+/** @brief actually run the replay after initialization */
+void smpi_replay_main(int* argc, char*** argv)
+{
   simgrid::xbt::replay_runner(*argc, *argv);
 
   /* and now, finalize everything */
@@ -989,12 +988,17 @@ void smpi_replay_run(int *argc, char***argv){
 
   instr_extra_data extra_fin = xbt_new0(s_instr_extra_data_t,1);
   extra_fin->type = TRACING_FINALIZE;
-  operation =bprintf("%s_finalize",__FUNCTION__);
-  TRACE_smpi_collective_in(rank, -1, operation, extra_fin);
+  TRACE_smpi_collective_in(smpi_process()->index(), -1, "smpi_replay_run_finalize", extra_fin);
 
   smpi_process()->finalize();
 
-  TRACE_smpi_collective_out(rank, -1, operation);
+  TRACE_smpi_collective_out(smpi_process()->index(), -1, "smpi_replay_run_finalize");
   TRACE_smpi_finalize(smpi_process()->index());
-  xbt_free(operation);
+}
+
+/** @brief chain a replay initialization and a replay start */
+void smpi_replay_run(int* argc, char*** argv)
+{
+  smpi_replay_init(argc, argv);
+  smpi_replay_main(argc, argv);
 }

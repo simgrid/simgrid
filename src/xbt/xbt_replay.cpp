@@ -36,7 +36,7 @@ public:
   {
 	  XBT_VERB("Prepare to replay file '%s'", filename);
 	  fs = new std::ifstream(filename, std::ifstream::in);
-	  xbt_assert(fs->is_open(), "Cannot read file %s", filename);
+          xbt_assert(fs->is_open(), "Cannot read replay file '%s'", filename);
   }
   ~ReplayReader()
   {
@@ -125,9 +125,6 @@ static void handle_action(ReplayAction* action)
 /**
  * \ingroup XBT_replay
  * \brief function used internally to actually run the replay
-
- * \param argc argc .
- * \param argv argv
  */
 int replay_runner(int argc, char* argv[])
 {
