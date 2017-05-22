@@ -13,7 +13,8 @@ SimGrid (3.16) UNRELEASED
    - state_file and avail_file periodicity is now easier to express
      (check the documentation) the old behavior should still work.
  * Storage: not backward compatible, but it seems that nobody ever used it
-   - Remove attribute content_type of <storage_type>: was never used
+   - Remove attribute 'content_type' of <storage_type>: was never used
+   - Make attribute 'model' of <storage_type> optional: for future usage
 
  SimDag
   - New and Backwards Compatibility break: 

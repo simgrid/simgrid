@@ -6,8 +6,7 @@
   </config>
 
   <zone id="AS0" routing="Full">
-    <storage_type id="SATA-II_HDD" size="500GB" model="linear_no_lat"
-                  content="content/small_content.txt">
+    <storage_type id="SATA-II_HDD" size="500GB" content="content/small_content.txt">
       <model_prop id="Bread" value="92MBps"/> 
       <model_prop id="Bwrite" value="62MBps"/> 
       <model_prop id="Bconnection" value="122MBps"/> 

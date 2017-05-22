@@ -103,7 +103,7 @@ To upgrade your files, use the tool simgrid_update_xml
 
 <!ELEMENT storage_type ((model_prop|prop)*)>
 <!ATTLIST storage_type id       CDATA #REQUIRED>
-<!ATTLIST storage_type model    CDATA #REQUIRED>
+<!ATTLIST storage_type model    CDATA "N11">
 <!ATTLIST storage_type size     CDATA #REQUIRED>
 <!ATTLIST storage_type content  CDATA "">
 

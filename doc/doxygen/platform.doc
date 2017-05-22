@@ -682,7 +682,7 @@ these might also help you to get started.
 Attribute name  | Mandatory | Values | Description
 --------------- | --------- | ------ | -----------
 id              | yes       | string | Identifier of this storage_type; used when referring to it
-model           | yes       | string | For reasons of future backwards compatibility only; specifies the name of the model for the storage that should be used
+model           | no        | string | In the future, this will allow to change the performance model to use
 size            | yes       | string | Specifies the amount of available storage space; you can specify storage like "500GiB" or "500GB" if you want. (TODO add a link to all the available abbreviations)
 content         | yes       | string | Path to a \ref pf_storage_content_file "Storage Content File" on your system. This file must exist.
 
@@ -693,7 +693,6 @@ Property id     | Mandatory | Values | Description
 --------------- | --------- | ------ | -----------
 Bwrite          | yes       | string | Bandwidth for write access; in B/s (but you can also specify e.g. "30MBps")
 Bread           | yes       | string | Bandwidth for read access; in B/s (but you can also specify e.g. "30MBps")
-Bconnexion      | yes       | string | Throughput (of the storage connector) in B/s.
 
 \note
      A storage_type can also contain the <b>&lt;prop&gt;</b> tag. The &lt;prop&gt; tag allows you
@@ -703,10 +702,9 @@ Bconnexion      | yes       | string | Throughput (of the storage connector) in 
 
 Here is a complete example for the ``storage_type`` tag:
 \verbatim
-<storage_type id="single_HDD" model="linear_no_lat" size="4000">
+<storage_type id="single_HDD" size="4000">
   <model_prop id="Bwrite" value="30MBps" />
   <model_prop id="Bread" value="100MBps" />
-  <model_prop id="Bconnection" value="150MBps" />
   <prop id="Brand" value="Western Digital" />
 </storage_type>
 \endverbatim
@@ -751,10 +749,9 @@ is; this location is specified by the ``name`` attribute.
 Here is a simple example, taken from the file ``examples/platform/storage.xml``:
 
 \verbatim
-    <storage_type id="single_SSD" model="linear_no_lat" size="500GiB">
+    <storage_type id="single_SSD" size="500GiB">
        <model_prop id="Bwrite" value="60MBps" />
        <model_prop id="Bread" value="200MBps" />
-       <model_prop id="Bconnection" value="220MBps" />
     </storage_type>
 
     <storage id="Disk2" typeId="single_SSD"
