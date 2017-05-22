@@ -224,14 +224,14 @@ static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
 void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int nb_shared_blocks)
 {
   char *huge_page_mount_point = xbt_cfg_get_string("smpi/shared-malloc-hugepage");
-  const bool use_huge_page = huge_page_mount_point[0] != '\0';
-#ifndef MAP_HUGETLB
-    xbt_assert(!use_huge_page, "Huge pages are not available on your system.");
+  bool use_huge_page = huge_page_mount_point[0] != '\0';
+#ifndef MAP_HUGETLB /* If the system header don't define that mmap flag */
+    xbt_assert(!use_huge_page, "Huge pages are not available on your system, you cannot use the smpi/shared-malloc-hugepage option.");
+    use_huge_page = 0;
 #endif
   smpi_shared_malloc_blocksize = static_cast<unsigned long>(xbt_cfg_get_double("smpi/shared-malloc-blocksize"));
   void *mem, *allocated_ptr;
   size_t allocated_size;
-#ifdef MAP_HUGETLB
   if(use_huge_page) {
     xbt_assert(smpi_shared_malloc_blocksize == HUGE_PAGE_SIZE, "the block size of shared malloc should be equal to the size of a huge page.");
     allocated_size = size + 2*smpi_shared_malloc_blocksize;
@@ -240,10 +240,6 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
     xbt_assert(smpi_shared_malloc_blocksize % PAGE_SIZE == 0, "the block size of shared malloc should be a multiple of the page size.");
     allocated_size = size;
   }
-#else
-  xbt_assert(smpi_shared_malloc_blocksize % PAGE_SIZE == 0, "the block size of shared malloc should be a multiple of the page size.");
-  allocated_size = size;
-#endif
 
 
   /* First reserve memory area */
@@ -253,20 +249,15 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
   xbt_assert(allocated_ptr != MAP_FAILED, "Failed to allocate %zuMiB of memory. Run \"sysctl vm.overcommit_memory=1\" as root "
                                 "to allow big allocations.\n",
              size >> 20);
-#ifdef MAP_HUGETLB
   if(use_huge_page)
     mem = (void*)ALIGN_UP((uint64_t)allocated_ptr, HUGE_PAGE_SIZE);
   else
     mem = allocated_ptr;
-#else
-  mem = allocated_ptr;
-#endif
 
   XBT_DEBUG("global shared allocation. Blocksize %lu", smpi_shared_malloc_blocksize);
   /* Create a fd to a new file on disk, make it smpi_shared_malloc_blocksize big, and unlink it.
    * It still exists in memory but not in the file system (thus it cannot be leaked). */
   /* Create bogus file if not done already */
-#ifdef MAP_HUGETLB
   if(use_huge_page && smpi_shared_malloc_bogusfile_huge_page == -1) {
     const char *const array[] = {huge_page_mount_point, "simgrid-shmalloc-XXXXXX", nullptr};
     char *huge_page_filename = xbt_str_join_array(array, "/");
@@ -275,7 +266,6 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
     unlink(huge_page_filename);
     xbt_free(huge_page_filename);
   }
-#endif
   if(smpi_shared_malloc_bogusfile == -1) {
     char *name                   = xbt_strdup("/tmp/simgrid-shmalloc-XXXXXX");
     smpi_shared_malloc_bogusfile = mkstemp(name);
