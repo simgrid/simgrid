@@ -947,7 +947,7 @@ set(txt_files
   ${txt_files}
   AUTHORS
   COPYING
-  README
+  README.md
   ChangeLog
   INSTALL
   LICENSE-LGPL-2.1
