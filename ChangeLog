@@ -27,6 +27,7 @@ SimGrid (3.16) UNRELEASED
  SMPI
   - New algorithm to privatize globals: dlopen, with dynamic loading tricks
   - New option: smpi/keep-temps to not cleanup temp files
+  - Support for sparse privatized malloc with SMPI_PARTIAL_SHARED_MALLOC()
 
  XBT
   - Replay: New function xbt_replay_action_get():
