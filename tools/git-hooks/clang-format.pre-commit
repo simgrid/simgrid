@@ -149,7 +149,7 @@ do
     #    +++ - timestamp
     # to both lines working on the same file and having a a/ and b/ prefix.
     # Else it can not be applied with 'git apply'.
-    git ${GIT_SUBCOMMAND} --binary ${CLANG_FORMAT} --diff -q >> "$patch"
+    git ${GIT_SUBCOMMAND} --binary ${CLANG_FORMAT} --diff -q "$file" >> "$patch"
     #"$CLANG_FORMAT" -style=file "$file" | \
         #diff -u "$file" - | \
         #sed -e "1s|--- |--- a/|" -e "2s|+++ -|+++ b/$file|" >> "$patch"

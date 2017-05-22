@@ -13,7 +13,6 @@ $ ${bindir:=.}/io-remote$EXEEXT ${srcdir:=.}/storage/remote_io.xml ${srcdir:=.}/
 > 		Mount point: 'c:'
 > 		Storage Id: 'Disk2'
 > 		Storage Type: 'SATA-II_HDD'
-> 		Content Type: 'txt_windows'
 > 		File Descriptor Id: 0
 > [  0.000000] (2@  bob) File Descriptor information:
 > 		Full path: '/scratch/lib/libsimgrid.so.3.6.2'
@@ -21,7 +20,6 @@ $ ${bindir:=.}/io-remote$EXEEXT ${srcdir:=.}/storage/remote_io.xml ${srcdir:=.}/
 > 		Mount point: '/scratch'
 > 		Storage Id: 'Disk1'
 > 		Storage Type: 'SATA-II_HDD'
-> 		Content Type: 'txt_unix'
 > 		File Descriptor Id: 0
 > [  0.000000] (3@ carl) File Descriptor information:
 > 		Full path: '/scratch/lib/libsimgrid.so.3.6.2'
@@ -29,7 +27,6 @@ $ ${bindir:=.}/io-remote$EXEEXT ${srcdir:=.}/storage/remote_io.xml ${srcdir:=.}/
 > 		Mount point: '/scratch'
 > 		Storage Id: 'Disk1'
 > 		Storage Type: 'SATA-II_HDD'
-> 		Content Type: 'txt_unix'
 > 		File Descriptor Id: 0
 > [  0.000000] (4@ dave) File Descriptor information:
 > 		Full path: 'c:\Windows\bootstat.dat'
@@ -37,7 +34,6 @@ $ ${bindir:=.}/io-remote$EXEEXT ${srcdir:=.}/storage/remote_io.xml ${srcdir:=.}/
 > 		Mount point: 'c:'
 > 		Storage Id: 'Disk2'
 > 		Storage Type: 'SATA-II_HDD'
-> 		Content Type: 'txt_windows'
 > 		File Descriptor Id: 0
 > [  0.000000] (1@alice) Try to read 101663 from 'c:\Windows\setupact.log'
 > [  0.000000] (2@  bob) Try to read 12710497 from '/scratch/lib/libsimgrid.so.3.6.2'

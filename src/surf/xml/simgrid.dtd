@@ -106,7 +106,6 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST storage_type model    CDATA #REQUIRED>
 <!ATTLIST storage_type size     CDATA #REQUIRED>
 <!ATTLIST storage_type content  CDATA "">
-<!ATTLIST storage_type content_type  CDATA "txt_unix">
 
 <!ELEMENT mount EMPTY>
 <!ATTLIST mount storageId CDATA #REQUIRED>
@@ -125,7 +124,6 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST storage id CDATA #REQUIRED>
 <!ATTLIST storage typeId CDATA #REQUIRED>
 <!ATTLIST storage content  CDATA "">
-<!ATTLIST storage content_type  CDATA "txt_unix">
 <!ATTLIST storage attach CDATA #REQUIRED>
 
 <!ELEMENT host_link EMPTY>

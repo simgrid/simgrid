@@ -132,7 +132,6 @@ typedef struct s_sg_platf_storage_cbarg {
   const char* id;
   const char* type_id;
   const char* content;
-  const char* content_type;
   xbt_dict_t properties;
   const char* attach;
 } s_sg_platf_storage_cbarg_t;
@@ -142,7 +141,6 @@ typedef struct s_sg_platf_storage_type_cbarg {
   const char* id;
   const char* model;
   const char* content;
-  const char* content_type;
   xbt_dict_t properties;
   std::map<std::string, std::string>* model_properties;
   sg_size_t size;

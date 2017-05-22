@@ -315,7 +315,7 @@ void ETag_surfxml_storage()
   storage.id           = A_surfxml_storage_id;
   storage.type_id      = A_surfxml_storage_typeId;
   storage.content      = A_surfxml_storage_content;
-  storage.content_type = A_surfxml_storage_content___type;
+
   storage.attach       = A_surfxml_storage_attach;
   sg_platf_new_storage(&storage);
 }
@@ -338,7 +338,6 @@ void ETag_surfxml_storage___type()
   current_model_property_set    = nullptr;
 
   storage_type.content          = A_surfxml_storage___type_content;
-  storage_type.content_type     = A_surfxml_storage___type_content___type;
   storage_type.id               = A_surfxml_storage___type_id;
   storage_type.model            = A_surfxml_storage___type_model;
   storage_type.size             = surf_parse_get_size(A_surfxml_storage___type_size,

@@ -24,7 +24,6 @@ void __MSG_file_get_info(msg_file_t fd){
   xbt_dynar_t info = simcall_file_get_info(fd->simdata->smx_file);
   sg_size_t *psize;
 
-  fd->content_type = xbt_dynar_pop_as(info, char*);
   fd->storage_type = xbt_dynar_pop_as(info, char*);
   fd->storageId    = xbt_dynar_pop_as(info, char*);
   fd->mount_point  = xbt_dynar_pop_as(info, char*);
@@ -90,9 +89,8 @@ void MSG_file_dump (msg_file_t fd){
            "\t\tMount point: '%s'\n"
            "\t\tStorage Id: '%s'\n"
            "\t\tStorage Type: '%s'\n"
-           "\t\tContent Type: '%s'\n"
            "\t\tFile Descriptor Id: %d",
-           fd->fullpath, fd->size, fd->mount_point, fd->storageId, fd->storage_type, fd->content_type, fd->desc_id);
+           fd->fullpath, fd->size, fd->mount_point, fd->storageId, fd->storage_type, fd->desc_id);
 }
 
 /** \ingroup msg_file

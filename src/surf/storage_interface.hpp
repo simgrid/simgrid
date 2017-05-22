@@ -63,8 +63,7 @@ public:
   StorageModel();
   ~StorageModel();
 
-  virtual Storage* createStorage(const char* id, const char* type_id, const char* content_name,
-                                 const char* content_type, const char* attach) = 0;
+  virtual Storage* createStorage(const char* id, const char* type_id, const char* content_name, const char* attach) = 0;
 
   std::vector<Storage*> p_storageList;
 };
@@ -82,7 +81,7 @@ public:
 
   /** @brief Storage constructor */
   Storage(Model* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
-          const char* type_id, const char* content_name, const char* content_type, sg_size_t size, const char* attach);
+          const char* type_id, const char* content_name, sg_size_t size, const char* attach);
 
   ~Storage();
 
@@ -95,7 +94,6 @@ public:
   void turnOff() override;
 
   std::map<std::string, sg_size_t*>* content_;
-  char* contentType_;
   sg_size_t size_;
   sg_size_t usedSize_;
   char * typeId_;
@@ -225,7 +223,6 @@ public:
 typedef struct s_storage_type {
   char *model;
   char *content;
-  char *content_type;
   char *type_id;
   xbt_dict_t properties;
   std::map<std::string, std::string>* model_properties;

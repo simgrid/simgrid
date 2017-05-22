@@ -238,7 +238,6 @@ xbt_dynar_t HostImpl::getInfo(surf_file_t fd)
   xbt_dynar_push_as(info, void*, fd->mount);
   xbt_dynar_push_as(info, void*, (void*)st->cname());
   xbt_dynar_push_as(info, void*, st->typeId_);
-  xbt_dynar_push_as(info, void*, st->contentType_);
 
   return info;
 }

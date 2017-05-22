@@ -378,18 +378,15 @@ void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)
   // if storage content is not specified use the content of storage_type if any
   if (!strcmp(storage->content, "") && strcmp(stype->content, "")) {
     storage->content      = stype->content;
-    storage->content_type = stype->content_type;
-    XBT_DEBUG("For disk '%s' content is empty, inherit the content (of type %s) from storage type '%s' ", storage->id,
-              stype->content_type, stype->type_id);
+    XBT_DEBUG("For disk '%s' content is empty, inherit the content (of type %s)", storage->id, stype->type_id);
   }
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' "
-            "\n\t\tmodel '%s' \n\t\tcontent '%s'\n\t\tcontent_type '%s' "
+            "\n\t\tmodel '%s' \n\t\tcontent '%s' "
             "\n\t\tproperties '%p''\n",
-            storage->id, stype->model, stype->type_id, storage->content, storage->content_type, storage->properties);
+            storage->id, stype->model, stype->type_id, storage->content, storage->properties);
 
-  auto s = surf_storage_model->createStorage(storage->id, stype->type_id, storage->content, storage->content_type,
-                                             storage->attach);
+  auto s = surf_storage_model->createStorage(storage->id, stype->type_id, storage->content, storage->attach);
 
   if (storage->properties) {
     xbt_dict_cursor_t cursor = nullptr;
@@ -410,13 +407,12 @@ void sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type)
   stype->model = xbt_strdup(storage_type->model);
   stype->properties = storage_type->properties;
   stype->content = xbt_strdup(storage_type->content);
-  stype->content_type = xbt_strdup(storage_type->content_type);
   stype->type_id = xbt_strdup(storage_type->id);
   stype->size = storage_type->size;
   stype->model_properties = storage_type->model_properties;
 
-  XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s', content '%s', and content_type '%s'",
-            stype->type_id, stype->model, storage_type->content, storage_type->content_type);
+  XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s', content '%s'", stype->type_id, stype->model,
+            storage_type->content);
 
   storage_types.insert({std::string(stype->type_id), stype});
 }

@@ -28,8 +28,7 @@ class XBT_PRIVATE StorageN11Action;
 
 class StorageN11Model : public StorageModel {
 public:
-  Storage* createStorage(const char* id, const char* type_id, const char* content_name, const char* content_type,
-                         const char* attach) override;
+  Storage* createStorage(const char* id, const char* type_id, const char* content_name, const char* attach) override;
   double nextOccuringEvent(double now) override;
   void updateActionsState(double now, double delta) override;
 };
@@ -41,8 +40,7 @@ public:
 class StorageN11 : public Storage {
 public:
   StorageN11(StorageModel* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
-             double bconnection, const char* type_id, char* content_name, const char* content_type, sg_size_t size,
-             char* attach);
+             double bconnection, const char* type_id, char* content_name, sg_size_t size, char* attach);
 
   StorageAction *open(const char* mount, const char* path);
   StorageAction *close(surf_file_t fd);

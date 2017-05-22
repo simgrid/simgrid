@@ -50,10 +50,8 @@ StorageModel::~StorageModel(){
  ************/
 
 Storage::Storage(Model* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
-                 double bconnection, const char* type_id, const char* content_name, const char* content_type,
-                 sg_size_t size, const char* attach)
+                 double bconnection, const char* type_id, const char* content_name, sg_size_t size, const char* attach)
     : Resource(model, name, lmm_constraint_new(maxminSystem, this, bconnection))
-    , contentType_(xbt_strdup(content_type))
     , size_(size)
     , usedSize_(0)
     , typeId_(xbt_strdup(type_id))
@@ -75,7 +73,6 @@ Storage::~Storage(){
     delete content_;
   }
   free(typeId_);
-  free(contentType_);
   free(attach_);
 }
 

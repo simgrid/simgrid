@@ -381,7 +381,6 @@ void surf_exit()
     free(stype->model);
     free(stype->type_id);
     free(stype->content);
-    free(stype->content_type);
     xbt_dict_free(&(stype->properties));
     delete stype->model_properties;
     free(stype);

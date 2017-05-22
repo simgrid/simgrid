@@ -5,13 +5,15 @@ SimGrid (3.16) UNRELEASED
   - Mac, BSD: dlopen+thread broken, switch automatically to raw contexts.
 
  XML platforms: Switch to platform v4.1 format.
- * This is a backward compatible change: v4 are valid v4.1 files
+ * This is (mainly) a backward compatible change: v4 are valid v4.1 files
    - <zone> can be used as a synonym for the now deprecated <as>
    - <zoneZoute> an be used as a synonym for the now deprecated <asroute>
    - <bypassZoneRoute> an be used as a synonym for the now deprecated <bypassAsRoute>
    - <actor> can be used as a synonym for the now deprecated <process>
    - state_file and avail_file periodicity is now easier to express
      (check the documentation) the old behavior should still work.
+ * Storage: not backward compatible, but it seems that nobody ever used it
+   - Remove attribute content_type of <storage_type>: was never used
 
  SimDag
   - New and Backwards Compatibility break: 

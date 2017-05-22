@@ -315,16 +315,12 @@ typedef int AT_surfxml_storage_attach;
 #define AU_surfxml_storage_attach NULL
 typedef int AT_surfxml_storage_content;
 #define AU_surfxml_storage_content NULL
-typedef int AT_surfxml_storage_content___type;
-#define AU_surfxml_storage_content___type NULL
 typedef int AT_surfxml_storage_id;
 #define AU_surfxml_storage_id NULL
 typedef int AT_surfxml_storage_typeId;
 #define AU_surfxml_storage_typeId NULL
 typedef int AT_surfxml_storage___type_content;
 #define AU_surfxml_storage___type_content NULL
-typedef int AT_surfxml_storage___type_content___type;
-#define AU_surfxml_storage___type_content___type NULL
 typedef int AT_surfxml_storage___type_id;
 #define AU_surfxml_storage___type_id NULL
 typedef int AT_surfxml_storage___type_model;
@@ -680,9 +676,6 @@ XBT_PUBLIC_DATA(short int) surfxml_storage_attach_isset;
 XBT_PUBLIC_DATA(AT_surfxml_storage_content) AX_surfxml_storage_content;
 #define A_surfxml_storage_content (surfxml_bufferstack + AX_surfxml_storage_content)
 XBT_PUBLIC_DATA(short int) surfxml_storage_content_isset;
-XBT_PUBLIC_DATA(AT_surfxml_storage_content___type) AX_surfxml_storage_content___type;
-#define A_surfxml_storage_content___type (surfxml_bufferstack + AX_surfxml_storage_content___type)
-XBT_PUBLIC_DATA(short int) surfxml_storage_content___type_isset;
 XBT_PUBLIC_DATA(AT_surfxml_storage_id) AX_surfxml_storage_id;
 #define A_surfxml_storage_id (surfxml_bufferstack + AX_surfxml_storage_id)
 XBT_PUBLIC_DATA(short int) surfxml_storage_id_isset;
@@ -692,9 +685,6 @@ XBT_PUBLIC_DATA(short int) surfxml_storage_typeId_isset;
 XBT_PUBLIC_DATA(AT_surfxml_storage___type_content) AX_surfxml_storage___type_content;
 #define A_surfxml_storage___type_content (surfxml_bufferstack + AX_surfxml_storage___type_content)
 XBT_PUBLIC_DATA(short int) surfxml_storage___type_content_isset;
-XBT_PUBLIC_DATA(AT_surfxml_storage___type_content___type) AX_surfxml_storage___type_content___type;
-#define A_surfxml_storage___type_content___type (surfxml_bufferstack + AX_surfxml_storage___type_content___type)
-XBT_PUBLIC_DATA(short int) surfxml_storage___type_content___type_isset;
 XBT_PUBLIC_DATA(AT_surfxml_storage___type_id) AX_surfxml_storage___type_id;
 #define A_surfxml_storage___type_id (surfxml_bufferstack + AX_surfxml_storage___type_id)
 XBT_PUBLIC_DATA(short int) surfxml_storage___type_id_isset;
