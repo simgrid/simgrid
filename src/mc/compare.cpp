@@ -114,8 +114,7 @@ struct ProcessComparisonState {
   std::vector<simgrid::mc::Type*> types;
   std::size_t heapsize = 0;
 
-  void initHeapInformation(xbt_mheap_t heap,
-                          std::vector<simgrid::mc::IgnoredHeapRegion>* i);
+  void initHeapInformation(xbt_mheap_t heap, std::vector<simgrid::mc::IgnoredHeapRegion>* i);
 };
 
 namespace {
@@ -320,17 +319,22 @@ int mmalloc_compare_heap(
   simgrid::mc::Process* process = &mc_model_checker->process();
 
   /* Start comparison */
+  size_t i1;
+  size_t i2;
   size_t j1;
   size_t j2;
   size_t k;
+  void* addr_block1;
   void* addr_block2;
   void* addr_frag1;
   void* addr_frag2;
   int nb_diff1 = 0;
   int nb_diff2 = 0;
+  int equal;
+  int res_compare = 0;
 
   /* Check busy blocks */
-  size_t i1 = 1;
+  i1 = 1;
 
   malloc_info heapinfo_temp1;
   malloc_info heapinfo_temp2;
@@ -363,7 +367,7 @@ int mmalloc_compare_heap(
       abort();
     }
 
-    void* addr_block1 = ((void*)(((ADDR2UINT(i1)) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase));
+    addr_block1 = ((void*)(((ADDR2UINT(i1)) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase));
 
     if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED) {       /* Large block */
 
@@ -381,9 +385,9 @@ int mmalloc_compare_heap(
         continue;
       }
 
-      size_t i2       = 1;
-      int equal       = 0;
-      int res_compare = 0;
+      i2          = 1;
+      equal       = 0;
+      res_compare = 0;
 
       /* Try first to associate to same block in the other heap */
       if (heapinfo2->type == heapinfo1->type
