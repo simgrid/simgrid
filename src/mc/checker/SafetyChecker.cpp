@@ -332,10 +332,6 @@ SafetyChecker::SafetyChecker(Session& session) : Checker(session)
   stack_.push_back(std::move(initial_state));
 }
 
-SafetyChecker::~SafetyChecker()
-{
-}
-
 Checker* createSafetyChecker(Session& session)
 {
   return new SafetyChecker(session);

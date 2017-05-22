@@ -15,8 +15,6 @@
 namespace simgrid {
 namespace mc {
 
-ObjectInformation::ObjectInformation() {}
-
 /* For an executable object, addresses are virtual address
  * (there is no offset) i.e.
  * \f$\text{virtual address} = \{dwarf address}\f$;

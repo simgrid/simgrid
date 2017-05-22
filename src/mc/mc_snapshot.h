@@ -131,7 +131,7 @@ namespace mc {
 class XBT_PRIVATE Snapshot final : public AddressSpace {
 public:
   Snapshot(Process* process, int num_state);
-  ~Snapshot();
+  ~Snapshot() = default;
   const void* read_bytes(void* buffer, std::size_t size,
     RemotePtr<void> address, int process_index = ProcessIndexAny,
     ReadOptions options = ReadOptions::none()) const override;
@@ -216,11 +216,9 @@ static XBT_ALWAYS_INLINE const void* MC_region_read(mc_mem_region_t region, void
 {
   xbt_assert(region);
 
-  std::uintptr_t offset =
-    (std::uintptr_t) addr - (std::uintptr_t) region->start().address();
+  std::uintptr_t offset = (std::uintptr_t)addr - (std::uintptr_t)region->start().address();
 
-  xbt_assert(region->contain(simgrid::mc::remote(addr)),
-    "Trying to read out of the region boundary.");
+  xbt_assert(region->contain(simgrid::mc::remote(addr)), "Trying to read out of the region boundary.");
 
   switch (region->storage_type()) {
   case simgrid::mc::StorageType::NoData:

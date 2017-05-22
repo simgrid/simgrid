@@ -170,11 +170,6 @@ Snapshot::Snapshot(Process* process, int _num_state)
 
 }
 
-Snapshot::~Snapshot()
-{
-
-}
-
 const void* Snapshot::read_bytes(void* buffer, std::size_t size,
   RemotePtr<void> address, int process_index,
   ReadOptions options) const

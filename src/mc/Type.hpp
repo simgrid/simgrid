@@ -33,7 +33,7 @@ public:
   static constexpr flags_type INHERITANCE_FLAG = 1;
   static constexpr flags_type VIRTUAL_POINTER_FLAG = 2;
 
-  Member() {}
+  Member() = default;
 
   /** Whether this member represent some inherited part of the object */
   flags_type flags = 0;
@@ -96,7 +96,7 @@ public:
 /** A type in the model-checked program */
 class Type {
 public:
-  Type() {}
+  Type() = default;
 
   /** The DWARF TAG of the type (e.g. DW_TAG_array_type) */
   int type = 0;

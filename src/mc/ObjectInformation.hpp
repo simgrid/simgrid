@@ -52,7 +52,7 @@ struct FunctionIndexEntry {
  */
 class ObjectInformation {
 public:
-  ObjectInformation();
+  ObjectInformation() = default;
 
   // Not copyable:
   ObjectInformation(ObjectInformation const&) = delete;

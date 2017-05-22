@@ -112,7 +112,7 @@ private:
   Process* process_;
 public:
   AddressSpace(Process* process) : process_(process) {}
-  virtual ~AddressSpace();
+  virtual ~AddressSpace() = default;
 
   /** The process of this addres space
    *
