@@ -1115,6 +1115,35 @@ only consume 1 MiB in memory.
 You can disable this behavior and come back to regular mallocs (for
 example for debugging purposes) using \c "no" as a value.
 
+If you want to keep private some parts of the buffer, for instance if these
+parts are used by the application logic and should not be corrupted, you
+can use SMPI_PARTIAL_SHARED_MALLOC(size, offsets, offsets_count).
+
+As an example,
+
+\code{.unparsed}
+    mem = SMPI_PARTIAL_SHARED_MALLOC(500, {27,42 , 100,200}, 2);
+\endcode
+
+will allocate 500 bytes to mem, such that mem[27..41] and mem[100..199]
+are shared and other area remain private.
+
+Then, it can be deallocated by calling SMPI_SHARED_FREE(mem).
+
+When smpi/shared-malloc:global is used, it is possible to optimize even
+further the memory consumption and the simulation time by using huge pages.
+To do so, it is required to mount a hugetlbfs on your system and allocate
+at least one huge page:
+
+\code{.unparsed}
+    mkdir /home/huge
+    sudo mount none /home/huge -t hugetlbfs -o rw,mode=0777
+    sudo sh -c 'echo 1 > /proc/sys/vm/nr_hugepages'
+\endcode
+
+Then, you can pass the option --cfg=smpi/shared-malloc-hugepage:/home/huge
+to smpirun.
+
 \subsection options_model_smpi_wtime smpi/wtime: Inject constant times for calls to MPI_Wtime
 
 \b Default value: 0
