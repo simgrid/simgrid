@@ -388,7 +388,7 @@ if(HAVE_LIBUNWIND)
   endif()
 else()
   if(enable_model-checking)
-    message(FATAL_ERROR "Please either install the libunwind7-dev package (or equivalent) or turn off the model-checking option of SimGrid.")
+    message(FATAL_ERROR "Please install libunwind-dev libdw-dev libevent-dev if you want to compile the SimGrid model checker.")
   endif()
 endif()
 
