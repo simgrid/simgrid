@@ -486,6 +486,8 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_alias("smpi/shared-malloc", "smpi/use-shared-malloc");
     xbt_cfg_register_alias("smpi/shared-malloc", "smpi/use_shared_malloc");
     xbt_cfg_register_double("smpi/shared-malloc-blocksize", 1UL << 20, nullptr, "Size of the bogus file which will be created for global shared allocations");
+    xbt_cfg_register_string("smpi/shared-malloc-hugepage", "", nullptr,
+                            "Path to a mounted hugetlbfs, to use huge pages with shared malloc.");
 
     xbt_cfg_register_double("smpi/cpu-threshold", 1e-6, nullptr, "Minimal computation time (in seconds) not discarded, or -1 for infinity.");
     xbt_cfg_register_alias("smpi/cpu-threshold", "smpi/cpu_threshold");
