@@ -282,7 +282,6 @@ set(XBT_SRC
   src/xbt/xbt_log_layout_format.c
   src/xbt/xbt_log_layout_simple.c
   src/xbt/xbt_main.cpp
-  src/xbt/xbt_matrix.c
   src/xbt/xbt_os_file.c
   src/xbt/xbt_os_synchro.c
   src/xbt/xbt_os_time.c
@@ -584,7 +583,6 @@ set(MC_SRC
   src/mc/remote/mc_protocol.cpp
   
   src/mc/AddressSpace.hpp
-  src/mc/AddressSpace.cpp
   src/mc/Frame.hpp
   src/mc/Frame.cpp
   src/mc/ModelChecker.hpp
@@ -723,7 +721,6 @@ set(headers_to_install
   include/xbt/log.h
   include/xbt/log.hpp
   include/xbt/mallocator.h
-  include/xbt/matrix.h
   include/xbt/misc.h
   include/xbt/mmalloc.h
   include/xbt/module.h
