@@ -7,7 +7,8 @@
 # On Mac OSX or with pull requests, you don't want to run SonarQube but to exec the build command directly.
 if [ ${TRAVIS_OS_NAME} != 'linux' ] || [ ${TRAVIS_PULL_REQUEST} != 'false' ] 
 then
-  exec "$@"
+  sh "$@" && ctest --output-on-failure
+  exit $?
 fi
 # Passed this point, we are on Linux and not in a PR (exec never returns)
 
