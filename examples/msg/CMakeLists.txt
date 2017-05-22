@@ -1,5 +1,5 @@
 # C examples
-foreach(x actions-comm actions-storage app-masterworker app-pingpong app-pmm app-token-ring async-yield async-wait async-waitall 
+foreach(x actions-comm actions-storage app-masterworker app-pingpong app-token-ring async-yield async-wait async-waitall 
           async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple cloud-two-tasks
           dht-chord dht-pastry energy-consumption energy-onoff energy-pstate energy-ptask energy-vm platform-failures 
           io-file io-remote io-storage task-priority 
@@ -125,8 +125,6 @@ endif()
 
 ADD_TESH_FACTORIES(app-masterworker-multicore   "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/app-masterworker/app-masterworker-multicore.tesh)
 ADD_TESH_FACTORIES(app-masterworker-vivaldi     "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/app-masterworker/app-masterworker-vivaldi.tesh)
-
-ADD_TESH(msg-app-pmm  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/app-pmm/app-pmm.tesh)
 
 if(SIMGRID_HAVE_NS3)
   ADD_TESH_FACTORIES(msg-network-ns3 "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/network-ns3/network-ns3.tesh)

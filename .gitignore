@@ -173,7 +173,6 @@ examples/msg/mc/test/snapshot_comparison4
 examples/msg/mc/test/snapshot_comparison5
 examples/msg/ms.trace
 examples/msg/network-ns3/network-ns3
-examples/msg/app-pmm/app-pmm
 examples/msg/task-priority/task-priority
 examples/msg/procmig.trace
 examples/msg/platform-properties/platform-properties
