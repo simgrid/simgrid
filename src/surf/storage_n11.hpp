@@ -40,8 +40,7 @@ public:
 class StorageN11 : public Storage {
 public:
   StorageN11(StorageModel* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
-             double bconnection, const char* type_id, char* content_name, sg_size_t size, char* attach);
-
+             const char* type_id, char* content_name, sg_size_t size, char* attach);
   StorageAction *open(const char* mount, const char* path);
   StorageAction *close(surf_file_t fd);
   StorageAction *ls(const char *path);

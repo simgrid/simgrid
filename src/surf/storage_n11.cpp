@@ -68,11 +68,9 @@ Storage* StorageN11Model::createStorage(const char* id, const char* type_id, con
       surf_parse_get_bandwidth(storage_type->model_properties->at("Bread").c_str(), "property Bread, storage", type_id);
   double Bwrite = surf_parse_get_bandwidth(storage_type->model_properties->at("Bwrite").c_str(),
                                            "property Bwrite, storage", type_id);
-  double Bconnection = surf_parse_get_bandwidth(storage_type->model_properties->at("Bconnection").c_str(),
-                                                "property Bconnection, storage", type_id);
 
-  Storage* storage = new StorageN11(this, id, maxminSystem_, Bread, Bwrite, Bconnection, type_id, (char*)content_name,
-                                    storage_type->size, (char*)attach);
+ Storage* storage = new StorageN11(this, id, maxminSystem_, Bread, Bwrite, type_id, (char*)content_name,
+                                   storage_type->size, (char*)attach);
   storageCreatedCallbacks(storage);
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
@@ -162,10 +160,10 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
  ************/
 
 StorageN11::StorageN11(StorageModel* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
-                       double bconnection, const char* type_id, char* content_name, sg_size_t size, char* attach)
-    : Storage(model, name, maxminSystem, bread, bwrite, bconnection, type_id, content_name, size, attach)
+                       const char* type_id, char* content_name, sg_size_t size, char* attach)
+    : Storage(model, name, maxminSystem, bread, bwrite, type_id, content_name, size, attach)
 {
-  XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
+  XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);
 }
 
 StorageAction *StorageN11::open(const char* mount, const char* path)

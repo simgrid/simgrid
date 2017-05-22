@@ -9,7 +9,6 @@
     <storage_type id="SATA-II_HDD" size="500GB" content="content/small_content.txt">
       <model_prop id="Bread" value="92MBps"/> 
       <model_prop id="Bwrite" value="62MBps"/> 
-      <model_prop id="Bconnection" value="122MBps"/> 
     </storage_type>
 
     <storage id="Disk1" typeId="SATA-II_HDD" attach="carl"/>

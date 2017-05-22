@@ -80,8 +80,8 @@ class Storage : public simgrid::surf::Resource,
 public:
 
   /** @brief Storage constructor */
-  Storage(Model* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
-          const char* type_id, const char* content_name, sg_size_t size, const char* attach);
+  Storage(Model* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite, const char* type_id,
+      const char* content_name, sg_size_t size, const char* attach);
 
   ~Storage();
 

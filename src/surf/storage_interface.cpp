@@ -50,8 +50,8 @@ StorageModel::~StorageModel(){
  ************/
 
 Storage::Storage(Model* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
-                 double bconnection, const char* type_id, const char* content_name, sg_size_t size, const char* attach)
-    : Resource(model, name, lmm_constraint_new(maxminSystem, this, bconnection))
+                 const char* type_id, const char* content_name, sg_size_t size, const char* attach)
+    : Resource(model, name, lmm_constraint_new(maxminSystem, this, MAX(bread, bwrite)))
     , size_(size)
     , usedSize_(0)
     , typeId_(xbt_strdup(type_id))
@@ -60,7 +60,7 @@ Storage::Storage(Model* model, const char* name, lmm_system_t maxminSystem, doub
   content_ = parseContent(content_name);
   attach_  = xbt_strdup(attach);
   turnOn();
-  XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
+  XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);
   constraintRead_  = lmm_constraint_new(maxminSystem, this, bread);
   constraintWrite_ = lmm_constraint_new(maxminSystem, this, bwrite);
 }
