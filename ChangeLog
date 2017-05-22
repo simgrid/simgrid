@@ -15,6 +15,8 @@ SimGrid (3.16) UNRELEASED
  * Storage: not backward compatible, but it seems that nobody ever used it
    - Remove attribute 'content_type' of <storage_type>: was never used
    - Make attribute 'model' of <storage_type> optional: for future usage
+   - Remove Bconnection model property: was never (in)validated. Replaced by
+      the maximum of the read and write bandwidth as a resource constraint. 
 
  SimDag
   - New and Backwards Compatibility break: 
@@ -37,6 +39,7 @@ SimGrid (3.16) UNRELEASED
     Retrieve the function previously associated to an event type.
   - DROPPED FUNCTION: xbt_str_varsubst()
   - DROPPED MODULE: strbuff. We don't need it anymore.
+  - DROPPED MODULE: matrix. We don't need it anymore.
 
  -- Release target: June 21 2017   -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
