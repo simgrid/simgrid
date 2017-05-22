@@ -7,7 +7,7 @@
 
   <zone id="AS0" routing="Full">
     <storage_type id="SATA-II_HDD" size="500GB" model="linear_no_lat"
-                  content_type="txt_unix" content="content/small_content.txt">
+                  content="content/small_content.txt">
       <model_prop id="Bread" value="92MBps"/> 
       <model_prop id="Bwrite" value="62MBps"/> 
       <model_prop id="Bconnection" value="122MBps"/> 
@@ -16,7 +16,7 @@
     <storage id="Disk1" typeId="SATA-II_HDD" attach="carl"/>
 
     <storage id="Disk2" typeId="SATA-II_HDD" attach="dave"
-             content_type="txt_windows" content="content/win_storage_content.txt" />
+             content="content/win_storage_content.txt" />
 
     <host id="alice" speed="1Gf">
       <mount storageId="Disk2" name="c:"/>
