@@ -1141,6 +1141,8 @@ at least one huge page:
     sudo sh -c 'echo 1 > /proc/sys/vm/nr_hugepages'
 \endcode
 
+Note that at least one huge page is required for smpirun, but you can set
+an higher number of huge pages in nr_hugepages (e.g. "echo 27").
 Then, you can pass the option --cfg=smpi/shared-malloc-hugepage:/home/huge
 to smpirun.
 

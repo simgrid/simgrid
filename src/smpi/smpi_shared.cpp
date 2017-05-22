@@ -257,7 +257,12 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
   XBT_DEBUG("global shared allocation. Blocksize %lu", smpi_shared_malloc_blocksize);
   /* Create a fd to a new file on disk, make it smpi_shared_malloc_blocksize big, and unlink it.
    * It still exists in memory but not in the file system (thus it cannot be leaked). */
-  /* Create bogus file if not done already */
+  /* Create bogus file if not done already
+   * We need two different bogusfiles:
+   *    smpi_shared_malloc_bogusfile_huge_page is used for calls to mmap *with* MAP_HUGETLB,
+   *    smpi_shared_malloc_bogusfile is used for calls to mmap *without* MAP_HUGETLB.
+   * We cannot use a same file for the two type of calls, since the first one needs to be
+   * opened in a hugetlbfs mount point whereas the second needs to be a "classical" file. */
   if(use_huge_page && smpi_shared_malloc_bogusfile_huge_page == -1) {
     const char *const array[] = {huge_page_mount_point, "simgrid-shmalloc-XXXXXX", nullptr};
     char *huge_page_filename = xbt_str_join_array(array, "/");
