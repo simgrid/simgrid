@@ -233,12 +233,6 @@ typedef struct s_storage_type {
 } s_storage_type_t;
 typedef s_storage_type_t* storage_type_t;
 
-typedef struct s_mount {
-  void *storage;
-  char *name;
-} s_mount_t;
-typedef s_mount_t* mount_t;
-
 typedef struct surf_file {
   char *name;
   char *mount;

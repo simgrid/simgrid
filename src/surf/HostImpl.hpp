@@ -64,7 +64,7 @@ class HostImpl : public simgrid::surf::PropertyHolder {
 
 public:
   explicit HostImpl(s4u::Host* host);
-  virtual ~HostImpl();
+  virtual ~HostImpl() = default;
 
   /** @brief Return the storage of corresponding mount point */
   virtual simgrid::surf::Storage* findStorageOnMountList(const char* storage);
@@ -173,7 +173,7 @@ public:
    */
   virtual int fileMove(surf_file_t fd, const char* fullpath);
 
-  std::vector<s_mount_t> storage_;
+  std::map<std::string, simgrid::surf::Storage*> storage_;
   simgrid::s4u::Host* piface_ = nullptr;
 
   simgrid::s4u::Host* getHost() { return piface_; }

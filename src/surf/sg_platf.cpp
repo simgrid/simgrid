@@ -28,7 +28,7 @@
 #include <string>
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 
-XBT_PRIVATE std::vector<s_mount_t> mount_list;
+XBT_PRIVATE std::map<std::string, simgrid::surf::Storage*> mount_list;
 
 namespace simgrid {
 namespace surf {
@@ -427,13 +427,10 @@ void sg_platf_new_mount(sg_platf_mount_cbarg_t mount){
 
   XBT_DEBUG("ROUTING Mount '%s' on '%s'",mount->storageId, mount->name);
 
-  s_mount_t mnt;
-  mnt.storage = surf_storage_resource_priv(surf_storage_resource_by_name(mount->storageId));
-  mnt.name = xbt_strdup(mount->name);
-
   if (mount_list.empty())
     XBT_DEBUG("Create a Mount list for %s", A_surfxml_host_id);
-  mount_list.push_back(mnt);
+  mount_list.insert(
+      {std::string(mount->name), surf_storage_resource_priv(surf_storage_resource_by_name(mount->storageId))});
 }
 
 void sg_platf_new_route(sg_platf_route_cbarg_t route)

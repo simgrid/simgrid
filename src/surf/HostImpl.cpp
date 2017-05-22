@@ -106,28 +106,13 @@ HostImpl::HostImpl(s4u::Host* host) : piface_(host)
   piface_->pimpl_ = this;
 }
 
-/** @brief use destroy() instead of this destructor */
-HostImpl::~HostImpl()
-{
-  for (auto mnt : storage_)
-    xbt_free(mnt.name);
-}
-
 simgrid::surf::Storage* HostImpl::findStorageOnMountList(const char* mount)
 {
-  simgrid::surf::Storage* st = nullptr;
-
   XBT_DEBUG("Search for storage name '%s' on '%s'", mount, piface_->cname());
-  for (auto mnt : storage_) {
-    XBT_DEBUG("See '%s'", mnt.name);
-    if (!strcmp(mount, mnt.name)) {
-      st = static_cast<simgrid::surf::Storage*>(mnt.storage);
-      break;
-    }
-  }
-  if (!st)
+  if (storage_.find(mount) == storage_.end())
     xbt_die("Can't find mount '%s' for '%s'", mount, piface_->cname());
-  return st;
+
+  return storage_.at(mount);
 }
 
 xbt_dict_t HostImpl::getMountedStorageList()
@@ -136,8 +121,8 @@ xbt_dict_t HostImpl::getMountedStorageList()
   char* storage_name      = nullptr;
 
   for (auto mnt : storage_) {
-    storage_name = (char*)static_cast<simgrid::surf::Storage*>(mnt.storage)->cname();
-    xbt_dict_set(storage_list, mnt.name, storage_name, nullptr);
+    storage_name = (char*)mnt.second->cname();
+    xbt_dict_set(storage_list, mnt.first.c_str(), storage_name, nullptr);
   }
   return storage_list;
 }
@@ -168,14 +153,13 @@ Action* HostImpl::open(const char* fullpath)
 
   XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath, piface_->cname());
   for (auto mnt : storage_) {
-    XBT_DEBUG("See '%s'", mnt.name);
-    std::string file_mount_name = std::string(fullpath).substr(0, strlen(mnt.name));
+    XBT_DEBUG("See '%s'", mnt.first.c_str());
+    std::string file_mount_name = std::string(fullpath).substr(0, mnt.first.size());
 
-    if (!strcmp(file_mount_name.c_str(), mnt.name) &&
-        strlen(mnt.name) > longest_prefix_length) { /* The current mount name is found in the full path and is
-                                                           bigger than the previous*/
-      longest_prefix_length = strlen(mnt.name);
-      st                    = static_cast<simgrid::surf::Storage*>(mnt.storage);
+    if (file_mount_name == mnt.first && mnt.first.length() > longest_prefix_length) {
+      /* The current mount name is found in the full path and is bigger than the previous*/
+      longest_prefix_length = mnt.first.length();
+      st                    = mnt.second;
     }
   }
   if (longest_prefix_length > 0) { /* Mount point found, split fullpath into mount_name and path+filename*/
