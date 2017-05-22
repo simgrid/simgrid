@@ -39,9 +39,7 @@ Location resolve(
       && expression[0].atom >= DW_OP_reg0
       && expression[0].atom <= DW_OP_reg31) {
     int dwarf_register = expression[0].atom - DW_OP_reg0;
-    xbt_assert(c,
-      "Missing frame context for register operation DW_OP_reg%i",
-      dwarf_register);
+    xbt_assert(c, "Missing frame context for register operation DW_OP_reg%i", dwarf_register);
     return Location(dwarf_register_to_libunwind(dwarf_register));
   }
 
@@ -87,13 +85,13 @@ LocationList location_list(
   LocationList locations;
   std::ptrdiff_t offset = 0;
   while (1) {
-
-    Dwarf_Addr base, start, end;
+    Dwarf_Addr base;
+    Dwarf_Addr start;
+    Dwarf_Addr end;
     Dwarf_Op *ops;
     std::size_t len;
 
-    offset = dwarf_getlocations(
-      &attr, offset, &base, &start, &end, &ops, &len);
+    offset = dwarf_getlocations(&attr, offset, &base, &start, &end, &ops, &len);
 
     if (offset == 0)
       break;
@@ -114,7 +112,5 @@ LocationList location_list(
 
   return locations;
 }
-
-
 }
 }

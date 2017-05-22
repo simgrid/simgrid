@@ -32,7 +32,8 @@ namespace mc {
  */
 class ModelChecker {
   struct event_base *base_;
-  struct event *socket_event_, *signal_event_;
+  struct event* socket_event_;
+  struct event* signal_event_;
   /** String pool for host names */
   // TODO, use std::set with heterogeneous comparison lookup (C++14)?
   std::set<std::string> hostnames_;
@@ -46,7 +47,7 @@ public:
 public:
   ModelChecker(ModelChecker const&) = delete;
   ModelChecker& operator=(ModelChecker const&) = delete;
-  ModelChecker(std::unique_ptr<Process> process);
+  explicit ModelChecker(std::unique_ptr<Process> process);
   ~ModelChecker();
 
   Process& process()

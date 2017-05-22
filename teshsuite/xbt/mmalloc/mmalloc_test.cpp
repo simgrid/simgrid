@@ -40,7 +40,8 @@ int main(int argc, char**argv)
 
   XBT_INFO("HeapA allocated");
 
-  int i, size;
+  int i;
+  int size;
   for (i = 0; i < TESTSIZE; i++) {
     size = size_of_block(i);
     pointers[i] = mmalloc(heapA, size);

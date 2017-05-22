@@ -45,8 +45,7 @@
 
 using simgrid::mc::remote;
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
-                                "Logging specific to mc_checkpoint");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc, "Logging specific to mc_checkpoint");
 
 namespace simgrid {
 namespace mc {
@@ -366,7 +365,8 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(simgrid::mc::UnwindCo
 
       stack_frame.unw_cursor = c;
 
-      unw_word_t ip, sp;
+      unw_word_t ip;
+      unw_word_t sp;
 
       unw_get_reg(&c, UNW_REG_IP, &ip);
       unw_get_reg(&c, UNW_REG_SP, &sp);

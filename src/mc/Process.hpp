@@ -261,7 +261,8 @@ private:
   Channel channel_;
   bool running_ = false;
   std::vector<simgrid::xbt::VmMap> memory_map_;
-  RemotePtr<void> maestro_stack_start_, maestro_stack_end_;
+  RemotePtr<void> maestro_stack_start_;
+  RemotePtr<void> maestro_stack_end_;
   int memory_file = -1;
   std::vector<IgnoredRegion> ignored_regions_;
   bool privatized_ = false;

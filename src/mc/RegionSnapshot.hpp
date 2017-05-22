@@ -50,7 +50,7 @@ private:
   Buffer(void* data, std::size_t size, Type type = Type::Malloc) :
     data_(data), size_(size), type_(type) {}
 public:
-  Buffer() {}
+  Buffer() = default;
   void clear() noexcept;
   ~Buffer() noexcept { clear(); }
 
@@ -157,7 +157,7 @@ public:
     size_(size),
     permanent_addr_(permanent_addr)
   {}
-  ~RegionSnapshot() {}
+  ~RegionSnapshot()                     = default;
   RegionSnapshot(RegionSnapshot const&) = default;
   RegionSnapshot& operator=(RegionSnapshot const&) = default;
   RegionSnapshot(RegionSnapshot&& that)
@@ -277,6 +277,6 @@ simgrid::mc::RegionSnapshot region(
 }
 }
 
-typedef class simgrid::mc::RegionSnapshot s_mc_mem_region_t, *mc_mem_region_t;
-
+typedef class simgrid::mc::RegionSnapshot s_mc_mem_region_t;
+typedef s_mc_mem_region_t* mc_mem_region_t;
 #endif
