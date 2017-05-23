@@ -69,7 +69,7 @@ static void clusterCreation_cb(sg_platf_cluster_cbarg_t cluster)
     NetPointNs3* host_src = sg_host_by_name(host_id)->pimpl_netpoint->extension<NetPointNs3>();
     xbt_assert(host_src, "Cannot find a NS3 host of name %s", host_id);
 
-    ns3_add_link(host_src->node_num, host_dst->node_num, bw,lat);
+    ns3_add_link(host_src, host_dst, bw, lat);
 
     delete host_dst;
     free(host_id);
@@ -110,9 +110,9 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
     xbt_assert(host_src != nullptr, "Network element %s does not seem to be NS3-ready", src->cname());
     xbt_assert(host_dst != nullptr, "Network element %s does not seem to be NS3-ready", dst->cname());
 
-    ns3_add_link(host_src->node_num, host_dst->node_num, link_bdw, link_lat);
+    ns3_add_link(host_src, host_dst, link_bdw, link_lat);
     if (symmetrical)
-      ns3_add_link(host_dst->node_num, host_src->node_num, link_bdw, link_lat);
+      ns3_add_link(host_dst, host_src, link_bdw, link_lat);
 
     xbt_free(link_bdw);
     xbt_free(link_lat);
@@ -453,17 +453,20 @@ static char* transformIpv4Address (ns3::Ipv4Address from){
   return bprintf("%s",s.c_str());
 }
 
-void ns3_add_link(int src, int dst, char *bw, char *lat)
+void ns3_add_link(NetPointNs3* src, NetPointNs3* dst, char* bw, char* lat)
 {
   ns3::PointToPointHelper pointToPoint;
 
   ns3::NetDeviceContainer netA;
   ns3::Ipv4AddressHelper address;
 
-  ns3::Ptr<ns3::Node> a = nodes.Get(src);
-  ns3::Ptr<ns3::Node> b = nodes.Get(dst);
+  int srcNum = src->node_num;
+  int dstNum = dst->node_num;
 
-  XBT_DEBUG("\tAdd PTP from %d to %d bw:'%s' lat:'%s'",src,dst,bw,lat);
+  ns3::Ptr<ns3::Node> a = nodes.Get(srcNum);
+  ns3::Ptr<ns3::Node> b = nodes.Get(dstNum);
+
+  XBT_DEBUG("\tAdd PTP from %d to %d bw:'%s' lat:'%s'", srcNum, dstNum, bw, lat);
   pointToPoint.SetDeviceAttribute ("DataRate", ns3::StringValue (bw));
   pointToPoint.SetChannelAttribute ("Delay", ns3::StringValue (lat));
 
@@ -475,13 +478,13 @@ void ns3_add_link(int src, int dst, char *bw, char *lat)
   free(adr);
   interfaces.Add(address.Assign (netA));
 
-  if (IPV4addr.size() <= (unsigned)src)
-    IPV4addr.resize(src + 1, nullptr);
-  IPV4addr.at(src) = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 2));
+  if (IPV4addr.size() <= (unsigned)srcNum)
+    IPV4addr.resize(srcNum + 1, nullptr);
+  IPV4addr.at(srcNum) = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 2));
 
-  if (IPV4addr.size() <= (unsigned)dst)
-    IPV4addr.resize(dst + 1, nullptr);
-  IPV4addr.at(dst) = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 1));
+  if (IPV4addr.size() <= (unsigned)dstNum)
+    IPV4addr.resize(dstNum + 1, nullptr);
+  IPV4addr.at(dstNum) = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 1));
 
   if (number_of_links == 255){
     xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");
