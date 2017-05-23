@@ -35,7 +35,7 @@ if(enable_compile_warnings)
     set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-mismatched-tags -Wno-extern-c-compat")
   endif()
 
-  # the one specific to C but refused by C++
+  # the one specific to C but refused by C++
   set(warnCFLAGS "${warnCFLAGS} -Wmissing-prototypes") 
 
   if(CMAKE_Fotran_COMPILER_ID MATCHES "GCC|PGI")
@@ -76,7 +76,7 @@ endif()
 # Configure LTO
 # NOTE, cmake 3.0 has a INTERPROCEDURAL_OPTIMIZATION target
 #       property for this (http://www.cmake.org/cmake/help/v3.0/prop_tgt/INTERPROCEDURAL_OPTIMIZATION.html)
-if(enable_lto) # User wants LTO. Try if we can do that
+if(enable_lto) # User wants LTO. Try if we can do that
   set(enable_lto OFF)
   if(enable_compile_optimizations
       AND CMAKE_COMPILER_IS_GNUCC
@@ -211,8 +211,8 @@ if(NOT $ENV{LDFLAGS} STREQUAL "")
 endif()
 
 if(MINGW)
-  # http://stackoverflow.com/questions/10452262/create-64-bit-jni-under-windows
-  # We don't want to ship libgcc_s_seh-1.dll nor libstdc++-6.dll
+  # http://stackoverflow.com/questions/10452262/create-64-bit-jni-under-windows
+  # We don't want to ship libgcc_s_seh-1.dll nor libstdc++-6.dll
   set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -static-libgcc")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
   set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS   "${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS} -static-libgcc")

@@ -6,7 +6,7 @@
 
 # On Mac OSX or with pull requests, you don't want to run SonarQube but to exec the build command directly.
 
-# Be verbose and fail fast
+# Be verbose and fail fast
 set -ex
 
 # Install required software

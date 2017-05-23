@@ -30,7 +30,7 @@ do
    fi
 done
 
-### Cleanup previous runs
+### Cleanup previous runs
 
 ! [ -z "$WORKSPACE" ] || die "No WORKSPACE"
 [ -d "$WORKSPACE" ] || die "WORKSPACE ($WORKSPACE) does not exist"
@@ -46,7 +46,7 @@ NUMPROC="$(nproc)" || NUMPROC=1
 
 cd $WORKSPACE/build
 
-### Proceed with the tests
+### Proceed with the tests
 ctest -D ExperimentalStart || true
 
 cmake -Denable_documentation=OFF -Denable_lua=OFF  \

@@ -280,7 +280,7 @@ static void handle_task(node_t node, msg_task_t task) {
     /* Join reply from all the node touched by the join  */
     case TASK_JOIN_LAST_REPLY:
       // if last node touched reply, copy its namespace set
-      // TODO: it works only if the two nodes are side to side (is it really the case ?)
+      // TODO: it works only if the two nodes are side to side (is it really the case ?)
       j = (task_data->sender_id < node->id) ? -1 : 0;
       for (i=0; i<NAMESPACE_SIZE/2; i++) {
         node->namespace_set[i] = task_data->state->namespace_set[i-j];

@@ -55,7 +55,7 @@ do
    fi
 done
 
-### Cleanup previous runs
+### Cleanup previous runs
 
 ! [ -z "$WORKSPACE" ] || die "No WORKSPACE"
 [ -d "$WORKSPACE" ] || die "WORKSPACE ($WORKSPACE) does not exist"

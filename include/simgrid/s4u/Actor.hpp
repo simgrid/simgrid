@@ -351,7 +351,7 @@ namespace this_actor {
   XBT_PUBLIC(void) migrate(Host* new_host);
 };
 
-/** @} */
+/** @} */
 
 }} // namespace simgrid::s4u
 

@@ -418,7 +418,7 @@ if __name__ == '__main__':
     group1.add_argument('--setenv', metavar='var=value', action='append', help='set a specific environment variable')
     group1.add_argument('--cfg', metavar='arg', help='add parameter --cfg=arg to each command line')
     group1.add_argument('--log', metavar='arg', help='add parameter --log=arg to each command line')
-    group1.add_argument('--ignore-jenkins', action='store_true', help='ignore all cruft generated on SimGrid continous integration servers')
+    group1.add_argument('--ignore-jenkins', action='store_true', help='ignore all cruft generated on SimGrid continous integration servers')
     group1.add_argument('--wrapper', metavar='arg', help='Run each command in the provided wrapper (eg valgrind)')
     group1.add_argument('--keep', action='store_true', help='Keep the obtained output when it does not match the expected one')
 

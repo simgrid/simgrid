@@ -167,7 +167,7 @@ void seed_loop(peer_t peer, double deadline)
   }
 }
 
-/** @brief Retrieves the peer list from the tracker
+/** @brief Retrieves the peer list from the tracker
  *  @param peer current peer data
  */
 int get_peers_data(peer_t peer)
@@ -263,7 +263,7 @@ void peer_free(peer_t peer)
   xbt_free(peer);
 }
 
-/** @brief Returns if a peer has finished downloading the file
+/** @brief Returns if a peer has finished downloading the file
  *  @param bitfield peer bitfield
  */
 int has_finished(unsigned int bitfield)

@@ -5,7 +5,7 @@
 set(MACOSX_RPATH ON)
 if(APPLE)
   # add the current location of libsimgrid-java.dynlib as a location for libsimgrid.dynlib
-  # (useful when unpacking the native libraries from the jarfile)
+  # (useful when unpacking the native libraries from the jarfile)
   set(CMAKE_INSTALL_RPATH "@loader_path/.")
   SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif()

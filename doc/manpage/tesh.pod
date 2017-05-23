@@ -22,7 +22,7 @@ they produce the expected output and return the expected value.
   --setenv var=value  : set a specific environment variable
   --cfg arg           : add parameter --cfg=arg to each command line
   --log arg           : add parameter --log=arg to each command line
-  --ignore-jenkins    : ignore all cruft generated on SimGrid
+  --ignore-jenkins    : ignore all cruft generated on SimGrid
                         continuous integration servers
 
 
