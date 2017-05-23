@@ -90,6 +90,8 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
                              simgrid::kernel::routing::NetPoint* gw_dst,
                              std::vector<simgrid::surf::LinkImpl*>* link_list)
 {
+  static bool warned_about_long_routes = false;
+
   if (link_list->size() == 1) {
     simgrid::surf::LinkNS3* link = static_cast<simgrid::surf::LinkNS3*>(link_list->at(0));
 
@@ -114,6 +116,15 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
 
     xbt_free(link_bdw);
     xbt_free(link_lat);
+  } else {
+    if (not warned_about_long_routes)
+      XBT_INFO(
+          "Ignoring a route between %s and %s of length %zu: Only routes of length 1 are considered with NS3.\n"
+          "You can ignore this warning if your hosts can still communicate when only considering routes of length 1.\n"
+          "You may also remove these routes to avoid this harmless message. Other long routes will be silently "
+          "ignored.",
+          src->cname(), dst->cname(), link_list->size());
+    warned_about_long_routes = true;
   }
 }
 
