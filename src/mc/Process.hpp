@@ -143,13 +143,13 @@ public:
   // Heap access:
   xbt_mheap_t get_heap()
   {
-    if (!(this->cache_flags_ & Process::cache_heap))
+    if (not(this->cache_flags_ & Process::cache_heap))
       this->refresh_heap();
     return this->heap.get();
   }
   const malloc_info* get_malloc_info()
   {
-    if (!(this->cache_flags_ & Process::cache_malloc))
+    if (not(this->cache_flags_ & Process::cache_malloc))
       this->refresh_malloc_info();
     return this->heap_info.data();
   }
@@ -226,7 +226,7 @@ public:
   simgrid::mc::ActorInformation* resolveActorInfo(simgrid::mc::RemotePtr<simgrid::simix::ActorImpl> actor)
   {
     xbt_assert(mc_model_checker != nullptr);
-    if (!actor)
+    if (not actor)
       return nullptr;
     this->refresh_simix();
     for (auto& actor_info : this->smx_actors_infos)

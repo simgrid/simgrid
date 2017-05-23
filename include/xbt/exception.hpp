@@ -104,9 +104,7 @@ template<class E>
 class WithContext : public E, public WithContextException
 {
 public:
-
-  static_assert(!std::is_base_of<WithContextException,E>::value,
-    "Trying to appli WithContext twice");
+  static_assert(not std::is_base_of<WithContextException, E>::value, "Trying to appli WithContext twice");
 
   WithContext(E exception) :
     E(std::move(exception)) {}

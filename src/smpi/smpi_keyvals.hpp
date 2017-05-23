@@ -137,7 +137,7 @@ template <typename T> int Keyval::attr_put(int keyval, void* attr_value){
 }
 
 template <typename T> void Keyval::cleanup_attr(){
-  if(!attributes()->empty()){
+  if (not attributes()->empty()) {
     int flag=0;
     for(auto it : attributes_){
       try{

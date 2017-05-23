@@ -335,7 +335,7 @@ void Process::init_memory_map_info()
       continue;
 
     current_name = pathname;
-    if (!(reg.prot & PROT_READ) && (reg.prot & PROT_EXEC))
+    if (not(reg.prot & PROT_READ) && (reg.prot & PROT_EXEC))
       continue;
 
     const bool is_executable = not i;

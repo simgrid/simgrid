@@ -168,8 +168,8 @@ typename std::enable_if<std::is_same<
 bindFlag(T& value, const char* name, const char* description,
   F callback)
 {
-  declareFlag(name, description, value, [&value,callback](const T& val) {
-    if (!callback(val))
+  declareFlag(name, description, value, [&value, callback](const T& val) {
+    if (not callback(val))
       throw std::range_error("invalid value");
     value = std::move(val);
   });

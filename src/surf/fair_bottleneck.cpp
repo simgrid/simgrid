@@ -33,7 +33,7 @@ void bottleneck_solve(lmm_system_t sys)
 
   static s_xbt_swag_t cnst_to_update;
 
-  if (!(sys->modified))
+  if (not sys->modified)
     return;
 
   /* Init */

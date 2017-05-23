@@ -227,7 +227,7 @@ XBT_TEST_UNIT("cleanup", test_cleanup, "cleanup handling")
     c = 1;
     if (v1 != 5678)
       xbt_test_fail("v1 = %d (!= 5678)", v1);
-    if (!(ex.category == 1 && ex.value == 2 && not strcmp(ex.what(), "blah")))
+    if (not(ex.category == 1 && ex.value == 2 && not strcmp(ex.what(), "blah")))
       xbt_test_fail("unexpected exception contents");
   }
   if (not c)

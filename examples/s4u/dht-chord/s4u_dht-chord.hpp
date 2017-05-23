@@ -118,7 +118,7 @@ public:
       join(known_id_);
     }
 
-    if (!joined)
+    if (not joined)
       return;
     ChordMessage* message              = nullptr;
     void* data                         = nullptr;
@@ -131,7 +131,7 @@ public:
     while ((now < (start_time_ + deadline_)) && now < MAX_SIMULATION_TIME) {
       data                             = nullptr;
       simgrid::s4u::Comm& comm_receive = simgrid::s4u::this_actor::irecv(mailbox_, &data);
-      while ((now < (start_time_ + deadline_)) && now < MAX_SIMULATION_TIME && !comm_receive.test()) {
+      while ((now < (start_time_ + deadline_)) && now < MAX_SIMULATION_TIME && not comm_receive.test()) {
         // no task was received: make some periodic calls
         if (now >= next_stabilize_date) {
           stabilize();

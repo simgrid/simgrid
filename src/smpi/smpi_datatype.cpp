@@ -121,8 +121,8 @@ Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), lb_(datatype-
   *ret = MPI_SUCCESS;
   if(datatype->name_)
     name_ = xbt_strdup(datatype->name_);
-  
-  if(!(datatype->attributes()->empty())){
+
+  if (not datatype->attributes()->empty()) {
     int flag;
     void* value_out;
     for(auto it = datatype->attributes()->begin(); it != datatype->attributes()->end(); it++){
@@ -175,7 +175,7 @@ void Datatype::unref(MPI_Datatype datatype)
   if (datatype->refcount_ > 0)
     datatype->refcount_--;
 
-  if (datatype->refcount_ == 0  && !(datatype->flags_ & DT_FLAG_PREDEFINED))
+  if (datatype->refcount_ == 0 && not(datatype->flags_ & DT_FLAG_PREDEFINED))
     delete datatype;
 
 #if SIMGRID_HAVE_MC
@@ -276,16 +276,12 @@ int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     recvcount *= recvtype->size();
     count = sendcount < recvcount ? sendcount : recvcount;
 
-    if(!(sendtype->flags() & DT_FLAG_DERIVED) && !(recvtype->flags() & DT_FLAG_DERIVED)) {
+    if (not(sendtype->flags() & DT_FLAG_DERIVED) && not(recvtype->flags() & DT_FLAG_DERIVED)) {
       if (not smpi_process()->replaying())
         memcpy(recvbuf, sendbuf, count);
-    }
-    else if (!(sendtype->flags() & DT_FLAG_DERIVED))
-    {
+    } else if (not(sendtype->flags() & DT_FLAG_DERIVED)) {
       recvtype->unserialize( sendbuf, recvbuf, recvcount/recvtype->size(), MPI_REPLACE);
-    }
-    else if (!(recvtype->flags() & DT_FLAG_DERIVED))
-    {
+    } else if (not(recvtype->flags() & DT_FLAG_DERIVED)) {
       sendtype->serialize(sendbuf, recvbuf, sendcount/sendtype->size());
     }else{
 

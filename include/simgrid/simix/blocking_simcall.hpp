@@ -87,7 +87,7 @@ public:
   bool valid() const { return future_.valid(); }
   T get()
   {
-    if (!valid())
+    if (not valid())
       throw std::future_error(std::future_errc::no_state);
     smx_actor_t self = SIMIX_process_self();
     simgrid::xbt::Result<T> result;
@@ -109,7 +109,7 @@ public:
   }
   bool is_ready() const
   {
-    if (!valid())
+    if (not valid())
       throw std::future_error(std::future_errc::no_state);
     return future_.is_ready();
   }

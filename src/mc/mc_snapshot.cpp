@@ -35,7 +35,7 @@ mc_mem_region_t mc_get_snapshot_region(
   size_t n = snapshot->snapshot_regions.size();
   for (size_t i = 0; i != n; ++i) {
     mc_mem_region_t region = snapshot->snapshot_regions[i].get();
-    if (!(region && region->contain(simgrid::mc::remote(addr))))
+    if (not(region && region->contain(simgrid::mc::remote(addr))))
       continue;
 
     if (region->storage_type() == simgrid::mc::StorageType::Privatized) {

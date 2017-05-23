@@ -59,7 +59,7 @@ public:
   explicit DatedValue() = default;
   explicit DatedValue(double d, double v) : date_(d), value_(v) {}
   bool operator==(DatedValue e2);
-  bool operator!=(DatedValue e2) { return !(*this == e2); }
+  bool operator!=(DatedValue e2) { return not(*this == e2); }
 };
 std::ostream& operator<<(std::ostream& out, const DatedValue& e);
 

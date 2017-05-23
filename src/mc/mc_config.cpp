@@ -40,7 +40,7 @@ int _sg_mc_timeout = 0;
 
 void _mc_cfg_cb_timeout(const char *name)
 {
-  if (_sg_cfg_init_status && !(_sg_do_model_check || MC_record_path))
+  if (_sg_cfg_init_status && not(_sg_do_model_check || MC_record_path))
     xbt_die("You are specifying a value to enable/disable timeout for wait requests after the initialization (through MSG_config?), but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
 
   _sg_mc_timeout = xbt_cfg_get_boolean(name);

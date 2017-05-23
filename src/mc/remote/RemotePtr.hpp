@@ -89,7 +89,7 @@ public:
   T* local() const { return (T*)address_; }
 
   operator bool() const { return address_; }
-  bool operator!() const { return !address_; }
+  bool operator!() const { return not address_; }
   operator RemotePtr<void>() const { return RemotePtr<void>(address_); }
   RemotePtr<T> operator+(std::uint64_t n) const { return RemotePtr<T>(address_ + n * sizeof(T)); }
   RemotePtr<T> operator-(std::uint64_t n) const { return RemotePtr<T>(address_ - n * sizeof(T)); }

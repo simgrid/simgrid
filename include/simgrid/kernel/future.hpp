@@ -61,7 +61,7 @@ public:
 
   void set_continuation(simgrid::xbt::Task<void()>&& continuation)
   {
-    xbt_assert(!continuation_);
+    xbt_assert(not continuation_);
     switch (status_) {
     case FutureStatus::done:
       // This is not supposed to happen if continuation is set
@@ -369,12 +369,9 @@ public:
    *                     the future is ready
    * @exception std::future_error no state is associated with the future
    */
-  template<class F>
-  auto then(F continuation)
-  -> typename std::enable_if<
-       !is_future<decltype(continuation(std::move(*this)))>::value,
-       Future<decltype(continuation(std::move(*this)))>
-     >::type
+  template <class F>
+  auto then(F continuation) -> typename std::enable_if<not is_future<decltype(continuation(std::move(*this)))>::value,
+                                                       Future<decltype(continuation(std::move(*this)))>>::type
   {
     return this->thenNoUnwrap(std::move(continuation));
   }

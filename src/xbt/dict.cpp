@@ -119,7 +119,7 @@ static void xbt_dict_rehash(xbt_dict_t dict)
   XBT_DEBUG("REHASH (%d->%d)", oldsize, newsize);
 
   for (unsigned i = 0; i < oldsize; i++, currcell++) {
-    if (!*currcell)             /* empty cell */
+    if (*currcell == nullptr) /* empty cell */
       continue;
 
     xbt_dictelm_t *twincell = currcell + oldsize;
@@ -132,7 +132,7 @@ static void xbt_dict_rehash(xbt_dict_t dict)
       if ((bucklet->hash_code & newsize) != i) {        /* Move to b */
         *pprev = bucklet->next;
         bucklet->next = *twincell;
-        if (!*twincell)
+        if (*twincell == nullptr)
           dict->fill++;
         *twincell = bucklet;
       } else {
@@ -140,7 +140,7 @@ static void xbt_dict_rehash(xbt_dict_t dict)
       }
     }
 
-    if (!*currcell)             /* everything moved */
+    if (*currcell == nullptr) /* everything moved */
       dict->fill--;
   }
 }
@@ -938,7 +938,6 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   xbt_dict_t head = xbt_dict_new_homogeneous(&free);
   xbt_test_add("Fill %d elements, with keys being the number of element", NB_ELM);
   for (int j = 0; j < NB_ELM; j++) {
-    /* if (!(j%1000)) { printf("."); fflush(stdout); } */
     char* key = (char*)xbt_malloc(10);
 
     snprintf(key,10, "%d", j);
@@ -966,7 +965,6 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   xbt_test_add("Remove my %d elements", NB_ELM);
   key = (char*) xbt_malloc(10);
   for (int j = 0; j < NB_ELM; j++) {
-    /* if (!(j%10000)) printf("."); fflush(stdout); */
     snprintf(key,10, "%d", j);
     xbt_dict_remove(head, key);
   }

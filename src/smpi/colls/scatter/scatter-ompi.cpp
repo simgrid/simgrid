@@ -109,7 +109,7 @@ int Coll_scatter_ompi_binomial::scatter(void* sbuf, int scount, MPI_Datatype sdt
         }
       }
       total_send = scount;
-    } else if (!(vrank % 2)) {
+    } else if (not(vrank % 2)) {
       /* non-root, non-leaf nodes, allocate temp buffer for recv
        * the most we need is rcount*size/2 */
       tempbuf = (char*)smpi_get_tmp_recvbuffer(rtrue_extent + (rcount * size - 1) * rextent);
@@ -130,7 +130,7 @@ int Coll_scatter_ompi_binomial::scatter(void* sbuf, int scount, MPI_Datatype sdt
       ptmp = (char*)rbuf;
     }
 
-    if (!(vrank % 2)) {
+    if (not(vrank % 2)) {
       if (rank != root) {
         /* recv from parent on non-root */
         Request::recv(ptmp, rcount * size, rdtype, bmtree->tree_prev, COLL_TAG_SCATTER, comm, &status);

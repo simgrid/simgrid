@@ -395,7 +395,7 @@ void Request::start()
       detached_ = 1;
       XBT_DEBUG("Send request %p is detached", this);
       refcount_++;
-      if(!(old_type_->flags() & DT_FLAG_DERIVED)){
+      if (not(old_type_->flags() & DT_FLAG_DERIVED)) {
         oldbuf = buf_;
         if (not process->replaying() && oldbuf != nullptr && size_ != 0) {
           if((smpi_privatize_global_variables != 0)
@@ -432,7 +432,7 @@ void Request::start()
     if (async_small_thresh != 0 || (flags_ & RMA) != 0)
       xbt_mutex_acquire(mut);
 
-    if (!(async_small_thresh != 0 || (flags_ & RMA) !=0)) {
+    if (not(async_small_thresh != 0 || (flags_ & RMA) != 0)) {
       mailbox = process->mailbox();
     } else if (((flags_ & RMA) != 0) || static_cast<int>(size_) < async_small_thresh) { // eager mode
       mailbox = process->mailbox();
@@ -553,9 +553,9 @@ int Request::testany(int count, MPI_Request requests[], int *index, MPI_Status *
 
   std::vector<int> map; /** Maps all matching comms back to their location in requests **/
   for(i = 0; i < count; i++) {
-    if ((requests[i] != MPI_REQUEST_NULL) && requests[i]->action_ && !(requests[i]->flags_ & PREPARED)) {
-       comms.push_back(requests[i]->action_);
-       map.push_back(i);
+    if ((requests[i] != MPI_REQUEST_NULL) && requests[i]->action_ && not(requests[i]->flags_ & PREPARED)) {
+      comms.push_back(requests[i]->action_);
+      map.push_back(i);
     }
   }
   if (not map.empty()) {
@@ -591,7 +591,7 @@ int Request::testall(int count, MPI_Request requests[], MPI_Status status[])
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
   int flag=1;
   for(int i=0; i<count; i++){
-    if (requests[i] != MPI_REQUEST_NULL && !(requests[i]->flags_ & PREPARED)) {
+    if (requests[i] != MPI_REQUEST_NULL && not(requests[i]->flags_ & PREPARED)) {
       if (test(&requests[i], pstat)!=1){
         flag=0;
       }else{
@@ -675,7 +675,7 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
   MPI_Request req = *request;
   Status::empty(status);
 
-  if(!((req->detached_ != 0) && ((req->flags_ & SEND) != 0)) && ((req->flags_ & PREPARED) == 0)){
+  if (not((req->detached_ != 0) && ((req->flags_ & SEND) != 0)) && ((req->flags_ & PREPARED) == 0)) {
     if(status != MPI_STATUS_IGNORE) {
       int src = req->src_ == MPI_ANY_SOURCE ? req->real_src_ : req->src_;
       status->MPI_SOURCE = req->comm_->group()->rank(src);
@@ -766,7 +766,8 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
     map = xbt_new(int, count);
     XBT_DEBUG("Wait for one of %d", count);
     for(i = 0; i < count; i++) {
-      if (requests[i] != MPI_REQUEST_NULL && !(requests[i]->flags_ & PREPARED) && !(requests[i]->flags_ & FINISHED)) {
+      if (requests[i] != MPI_REQUEST_NULL && not(requests[i]->flags_ & PREPARED) &&
+          not(requests[i]->flags_ & FINISHED)) {
         if (requests[i]->action_ != nullptr) {
           XBT_DEBUG("Waiting any %p ", requests[i]);
           xbt_dynar_push(&comms, &requests[i]->action_);
@@ -790,8 +791,8 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
       if (i != -1) {
         index = map[i];
         //in case of an accumulate, we have to wait the end of all requests to apply the operation, ordered correctly.
-        if ((requests[index] == MPI_REQUEST_NULL)
-             ||  (!((requests[index]->flags_ & ACCUMULATE) && (requests[index]->flags_ & RECV)))){
+        if ((requests[index] == MPI_REQUEST_NULL) ||
+            (not((requests[index]->flags_ & ACCUMULATE) && (requests[index]->flags_ & RECV)))) {
           finish_wait(&requests[index],status);
           if (requests[i] != MPI_REQUEST_NULL && (requests[i]->flags_ & NON_PERSISTENT))
             requests[index] = MPI_REQUEST_NULL;

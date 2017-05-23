@@ -295,7 +295,7 @@ int ompi_coll_tuned_topo_destroy_tree( ompi_coll_tree_t** tree )
 {
     ompi_coll_tree_t *ptr;
 
-    if ((not tree) || (!*tree)) {
+    if ((tree == nullptr) || (*tree == nullptr)) {
       return MPI_SUCCESS;
     }
 

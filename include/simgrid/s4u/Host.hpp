@@ -83,7 +83,7 @@ public:
   /** Returns if that host is currently up and running */
   bool isOn();
   /** Returns if that host is currently down and offline */
-  bool isOff() { return !isOn(); }
+  bool isOff() { return not isOn(); }
 
   double speed();
   int coreCount();

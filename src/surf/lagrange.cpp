@@ -182,7 +182,7 @@ void lagrange_solve(lmm_system_t sys)
     lmm_print(sys);
   }
 
-  if (!(sys->modified))
+  if (not sys->modified)
     return;
 
   /* Initialize lambda. */

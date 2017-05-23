@@ -234,7 +234,7 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
           double_update(&(deltap), action->latency_, sg_surf_precision);
           action->latency_ = 0.0;
         }
-        if (action->latency_ <= 0.0 && !(action->isSuspended()))
+        if (action->latency_ <= 0.0 && not action->isSuspended())
           lmm_update_variable_weight(maxminSystem_, action->getVariable(), action->weight_);
       }
       if (TRACE_is_enabled()) {

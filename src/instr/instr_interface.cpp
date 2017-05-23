@@ -84,7 +84,7 @@ void TRACE_category_with_color (const char *category, const char *color)
   if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return;
 
-  if (!(TRACE_categorized() && category != nullptr))
+  if (not(TRACE_categorized() && category != nullptr))
     return;
 
   //check if category is already created

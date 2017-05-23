@@ -514,18 +514,18 @@ int lmm_get_number_of_cnst_from_var(lmm_system_t /*sys*/, lmm_variable_t var)
 
 lmm_variable_t lmm_get_var_from_cnst(lmm_system_t /*sys*/, lmm_constraint_t cnst, lmm_element_t * elem)
 {
-  if (!(*elem)) {
+  if (*elem == nullptr) {
     // That is the first call, pick the first element among enabled_element_set (or disabled_element_set if
     // enabled_element_set is empty)
     *elem = (lmm_element_t) xbt_swag_getFirst(&(cnst->enabled_element_set));
-    if (!(*elem))
+    if (*elem == nullptr)
       *elem = (lmm_element_t) xbt_swag_getFirst(&(cnst->disabled_element_set));
   } else {
     //elem is not null, so we carry on
     if(xbt_swag_belongs(*elem,&(cnst->enabled_element_set))){
       //Look at enabled_element_set, and jump to disabled_element_set when finished
       *elem = (lmm_element_t) xbt_swag_getNext(*elem, cnst->enabled_element_set.offset);
-      if (!(*elem))
+      if (*elem == nullptr)
         *elem = (lmm_element_t) xbt_swag_getFirst(&(cnst->disabled_element_set));
     } else {
       *elem = (lmm_element_t) xbt_swag_getNext(*elem, cnst->disabled_element_set.offset);      
@@ -542,10 +542,10 @@ lmm_variable_t lmm_get_var_from_cnst(lmm_system_t /*sys*/, lmm_constraint_t cnst
 lmm_variable_t lmm_get_var_from_cnst_safe(lmm_system_t /*sys*/, lmm_constraint_t cnst, lmm_element_t * elem,
                                           lmm_element_t * nextelem, int * numelem)
 {
-  if (!(*elem)){
+  if (*elem == nullptr) {
     *elem = (lmm_element_t) xbt_swag_getFirst(&(cnst->enabled_element_set));
     *numelem = xbt_swag_size(&(cnst->enabled_element_set))+xbt_swag_size(&(cnst->disabled_element_set))-1;
-    if (!(*elem))
+    if (*elem == nullptr)
       *elem = (lmm_element_t) xbt_swag_getFirst(&(cnst->disabled_element_set));
   }else{
     *elem = *nextelem;
@@ -559,7 +559,7 @@ lmm_variable_t lmm_get_var_from_cnst_safe(lmm_system_t /*sys*/, lmm_constraint_t
     if(xbt_swag_belongs(*elem,&(cnst->enabled_element_set))){
       //Look at enabled_element_set, and jump to disabled_element_set when finished
       *nextelem = (lmm_element_t) xbt_swag_getNext(*elem, cnst->enabled_element_set.offset);
-      if (!(*nextelem))
+      if (*nextelem == nullptr)
         *nextelem = (lmm_element_t) xbt_swag_getFirst(&(cnst->disabled_element_set));
     } else {
       *nextelem = (lmm_element_t) xbt_swag_getNext(*elem, cnst->disabled_element_set.offset);      
@@ -716,7 +716,7 @@ void lmm_solve(lmm_system_t sys)
   double min_usage = -1;
   double min_bound = -1;
 
-  if (!(sys->modified))
+  if (not sys->modified)
     return;
 
   XBT_IN("(sys=%p)", sys);

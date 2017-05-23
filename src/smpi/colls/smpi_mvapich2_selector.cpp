@@ -304,13 +304,9 @@ int Coll_allgatherv_mvapich2::allgatherv(void *sendbuf, int sendcount, MPI_Datat
 
   if (MV2_Allgatherv_function == &MPIR_Allgatherv_Rec_Doubling_MV2)
     {
-      if(!(comm_size & (comm_size - 1)))
-        {
-          mpi_errno =
-              MPIR_Allgatherv_Rec_Doubling_MV2(sendbuf, sendcount,
-                  sendtype, recvbuf,
-                  recvcounts, displs,
-                  recvtype, comm);
+    if (not(comm_size & (comm_size - 1))) {
+      mpi_errno =
+          MPIR_Allgatherv_Rec_Doubling_MV2(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm);
         } else {
             mpi_errno =
                 MPIR_Allgatherv_Bruck_MV2(sendbuf, sendcount,
