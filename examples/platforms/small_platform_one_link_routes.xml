@@ -1,5 +1,9 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+
+<!-- All routes of this platform are of length 1, so you can use it with the NS3 model
+     http://simgrid.gforge.inria.fr/simgrid/latest/doc/pls_ns3.html -->
+
 <platform version="4.1">
   <zone  id="AS0"  routing="Full">
     <host id="Tremblay" speed="98.095Mf"/>
