@@ -596,7 +596,6 @@ set(MC_SRC
   src/mc/RegionSnapshot.cpp
   src/mc/RegionSnapshot.hpp
   src/mc/Type.hpp
-  src/mc/Variable.cpp
   src/mc/Variable.hpp
   src/mc/mc_forward.hpp
   src/mc/Process.hpp
