@@ -1,13 +1,12 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team.  All rights reserved.         */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #ifndef NETWORK_NS3_HPP_
 #define NETWORK_NS3_HPP_
 
-
-#include <xbt/base.h>
+#include "xbt/base.h"
 
 #include "network_interface.hpp"
 #include "src/surf/ns3/ns3_interface.h"
