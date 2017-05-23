@@ -203,83 +203,83 @@ extern FILE *surf_parse_in, *surf_parse_out;
     
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
-	do \
-		{ \
-		/* Undo effects of setting up surf_parse_text. */ \
+  do \
+    { \
+    /* Undo effects of setting up surf_parse_text. */ \
         int yyless_macro_arg = (n); \
         YY_LESS_LINENO(yyless_macro_arg);\
-		*yy_cp = (yy_hold_char); \
-		YY_RESTORE_YY_MORE_OFFSET \
-		(yy_c_buf_p) = yy_cp = yy_bp + yyless_macro_arg - YY_MORE_ADJ; \
-		YY_DO_BEFORE_ACTION; /* set up surf_parse_text again */ \
-		} \
-	while ( 0 )
+    *yy_cp = (yy_hold_char); \
+    YY_RESTORE_YY_MORE_OFFSET \
+    (yy_c_buf_p) = yy_cp = yy_bp + yyless_macro_arg - YY_MORE_ADJ; \
+    YY_DO_BEFORE_ACTION; /* set up surf_parse_text again */ \
+    } \
+  while ( 0 )
 
 #define unput(c) yyunput( c, (yytext_ptr)  )
 
 #ifndef YY_STRUCT_YY_BUFFER_STATE
 #define YY_STRUCT_YY_BUFFER_STATE
 struct yy_buffer_state
-	{
-	FILE *yy_input_file;
+  {
+  FILE *yy_input_file;
 
-	char *yy_ch_buf;		/* input buffer */
-	char *yy_buf_pos;		/* current position in input buffer */
+  char *yy_ch_buf;    /* input buffer */
+  char *yy_buf_pos;    /* current position in input buffer */
 
-	/* Size of input buffer in bytes, not including room for EOB
-	 * characters.
-	 */
-	int yy_buf_size;
+  /* Size of input buffer in bytes, not including room for EOB
+   * characters.
+   */
+  int yy_buf_size;
 
-	/* Number of characters read into yy_ch_buf, not including EOB
-	 * characters.
-	 */
-	int yy_n_chars;
+  /* Number of characters read into yy_ch_buf, not including EOB
+   * characters.
+   */
+  int yy_n_chars;
 
-	/* Whether we "own" the buffer - i.e., we know we created it,
-	 * and can realloc() it to grow it, and should free() it to
-	 * delete it.
-	 */
-	int yy_is_our_buffer;
+  /* Whether we "own" the buffer - i.e., we know we created it,
+   * and can realloc() it to grow it, and should free() it to
+   * delete it.
+   */
+  int yy_is_our_buffer;
 
-	/* Whether this is an "interactive" input source; if so, and
-	 * if we're using stdio for input, then we want to use getc()
-	 * instead of fread(), to make sure we stop fetching input after
-	 * each newline.
-	 */
-	int yy_is_interactive;
+  /* Whether this is an "interactive" input source; if so, and
+   * if we're using stdio for input, then we want to use getc()
+   * instead of fread(), to make sure we stop fetching input after
+   * each newline.
+   */
+  int yy_is_interactive;
 
-	/* Whether we're considered to be at the beginning of a line.
-	 * If so, '^' rules will be active on the next match, otherwise
-	 * not.
-	 */
-	int yy_at_bol;
+  /* Whether we're considered to be at the beginning of a line.
+   * If so, '^' rules will be active on the next match, otherwise
+   * not.
+   */
+  int yy_at_bol;
 
     int yy_bs_lineno; /**< The line count. */
     int yy_bs_column; /**< The column count. */
 
-	/* Whether to try to fill the input buffer when we reach the
-	 * end of it.
-	 */
-	int yy_fill_buffer;
+  /* Whether to try to fill the input buffer when we reach the
+   * end of it.
+   */
+  int yy_fill_buffer;
 
-	int yy_buffer_status;
+  int yy_buffer_status;
 
 #define YY_BUFFER_NEW 0
 #define YY_BUFFER_NORMAL 1
-	/* When an EOF's been seen but there's still some text to process
-	 * then we mark the buffer as YY_EOF_PENDING, to indicate that we
-	 * shouldn't try reading from the input source any more.  We might
-	 * still have a bunch of tokens to match, though, because of
-	 * possible backing-up.
-	 *
-	 * When we actually see the EOF, we change the status to "new"
-	 * (via surf_parse_restart()), so that the user can continue scanning by
-	 * just pointing surf_parse_in at a new input file.
-	 */
+  /* When an EOF's been seen but there's still some text to process
+   * then we mark the buffer as YY_EOF_PENDING, to indicate that we
+   * shouldn't try reading from the input source any more.  We might
+   * still have a bunch of tokens to match, though, because of
+   * possible backing-up.
+   *
+   * When we actually see the EOF, we change the status to "new"
+   * (via surf_parse_restart()), so that the user can continue scanning by
+   * just pointing surf_parse_in at a new input file.
+   */
 #define YY_BUFFER_EOF_PENDING 2
 
-	};
+  };
 #endif /* !YY_STRUCT_YY_BUFFER_STATE */
 
 /* Stack of input buffers. */
@@ -304,13 +304,13 @@ static YY_BUFFER_STATE * yy_buffer_stack = NULL; /**< Stack as an array. */
 
 /* yy_hold_char holds the character lost when surf_parse_text is formed. */
 static char yy_hold_char;
-static int yy_n_chars;		/* number of characters read into yy_ch_buf */
+static int yy_n_chars;    /* number of characters read into yy_ch_buf */
 unsigned int surf_parse_leng;
 
 /* Points to current character in buffer. */
 static char *yy_c_buf_p = NULL;
-static int yy_init = 0;		/* whether we need to initialize */
-static int yy_start = 0;	/* start state number */
+static int yy_init = 0;    /* whether we need to initialize */
+static int yy_start = 0;  /* start state number */
 
 /* Flag which is used to allow surf_parse_wrap()'s to do buffer switches
  * instead of setting up a fresh surf_parse_in.  A bit of a hack ...
@@ -342,24 +342,24 @@ void surf_parse_free (void *  );
 #define yy_new_buffer surf_parse__create_buffer
 
 #define yy_set_interactive(is_interactive) \
-	{ \
-	if ( ! YY_CURRENT_BUFFER ){ \
+  { \
+  if ( ! YY_CURRENT_BUFFER ){ \
         surf_parse_ensure_buffer_stack (); \
-		YY_CURRENT_BUFFER_LVALUE =    \
+    YY_CURRENT_BUFFER_LVALUE =    \
             surf_parse__create_buffer(surf_parse_in,YY_BUF_SIZE ); \
-	} \
-	YY_CURRENT_BUFFER_LVALUE->yy_is_interactive = is_interactive; \
-	}
+  } \
+  YY_CURRENT_BUFFER_LVALUE->yy_is_interactive = is_interactive; \
+  }
 
 #define yy_set_bol(at_bol) \
-	{ \
-	if ( ! YY_CURRENT_BUFFER ){\
+  { \
+  if ( ! YY_CURRENT_BUFFER ){\
         surf_parse_ensure_buffer_stack (); \
-		YY_CURRENT_BUFFER_LVALUE =    \
+    YY_CURRENT_BUFFER_LVALUE =    \
             surf_parse__create_buffer(surf_parse_in,YY_BUF_SIZE ); \
-	} \
-	YY_CURRENT_BUFFER_LVALUE->yy_at_bol = at_bol; \
-	}
+  } \
+  YY_CURRENT_BUFFER_LVALUE->yy_at_bol = at_bol; \
+  }
 
 #define YY_AT_BOL() (YY_CURRENT_BUFFER_LVALUE->yy_at_bol)
 
@@ -393,21 +393,21 @@ static void yynoreturn yy_fatal_error (yyconst char* msg  );
  * corresponding action - sets up surf_parse_text.
  */
 #define YY_DO_BEFORE_ACTION \
-	(yytext_ptr) = yy_bp; \
-	surf_parse_leng = (int) (yy_cp - yy_bp); \
-	(yy_hold_char) = *yy_cp; \
-	*yy_cp = '\0'; \
-	(yy_c_buf_p) = yy_cp;
+  (yytext_ptr) = yy_bp; \
+  surf_parse_leng = (int) (yy_cp - yy_bp); \
+  (yy_hold_char) = *yy_cp; \
+  *yy_cp = '\0'; \
+  (yy_c_buf_p) = yy_cp;
 
 #define YY_NUM_RULES 647
 #define YY_END_OF_BUFFER 648
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
-	{
-	flex_int32_t yy_verify;
-	flex_int32_t yy_nxt;
-	};
+  {
+  flex_int32_t yy_verify;
+  flex_int32_t yy_nxt;
+  };
 static yyconst flex_int16_t yy_accept[3886] =
     {   0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -5451,23 +5451,23 @@ short int surfxml_zoneRoute_symmetrical_isset;
 
 /* XML state. */
 #ifdef FLEX_DEBUG
-# define ENTER(state)	debug_enter(state,#state)
-# define LEAVE		debug_leave()
-# define SET(state)	debug_set(state,#state)
+# define ENTER(state)  debug_enter(state,#state)
+# define LEAVE    debug_leave()
+# define SET(state)  debug_set(state,#state)
   static void debug_enter(int, const char*);
   static void debug_leave(void);
   static void debug_set(int, const char*);
 #else
-# define ENTER(state)	(yy_push_state(state))
-# define LEAVE		(yy_pop_state())
-# define SET(state)	BEGIN(state)
+# define ENTER(state)  (yy_push_state(state))
+# define LEAVE    (yy_pop_state())
+# define SET(state)  BEGIN(state)
 #endif
 
 /* Generic actions. */
-#define SKIP	/*skip*/
+#define SKIP  /*skip*/
 #define SUCCEED        CLEANUP; return 0
 
-#define FAIL	return fail
+#define FAIL  return fail
 static int fail(const char*, ...);
 
 enum {flexml_max_err_msg_size = 512};
@@ -5504,12 +5504,12 @@ static int inext = 1;
 static int ck_blimit()
 {
      if (bnext >= blimit) {
-	 blimit += FLEXML_BUFFERSTACKSIZE + 2;
-	 {
-	     char *temp = (char *) realloc(surfxml_bufferstack, blimit);
-	     assert(temp);
-	     surfxml_bufferstack = temp;
-	 }
+   blimit += FLEXML_BUFFERSTACKSIZE + 2;
+   {
+       char *temp = (char *) realloc(surfxml_bufferstack, blimit);
+       assert(temp);
+       surfxml_bufferstack = temp;
+   }
      }
      return 0;
 }
@@ -5518,12 +5518,12 @@ static int ck_blimit()
 static int ck_ilimit()
 {
      if (inext >= ilimit) {
-	 ilimit += FLEXML_INDEXSTACKSIZE + 2;
-	 {
-	     int *temp = (int *) realloc(indexstack, ilimit);
-	     assert(temp);
-	     indexstack = temp;
-	 }
+   ilimit += FLEXML_INDEXSTACKSIZE + 2;
+   {
+       int *temp = (int *) realloc(indexstack, ilimit);
+       assert(temp);
+       indexstack = temp;
+   }
      }
      return 0;
 }
@@ -5537,16 +5537,16 @@ static void surfxml_bufferliteral(char c, int* pp, const char* text)
       assert(s && e && s <= e);
       ++s;
       while (s < e) {
-	 if (isspace(*s)) {
-	    BUFFERPUTC(' ');
-	    do ++s; while (s < e && isspace(*s));
-	 } else
-	   BUFFERPUTC(*s++);
+   if (isspace(*s)) {
+      BUFFERPUTC(' ');
+      do ++s; while (s < e && isspace(*s));
+   } else
+     BUFFERPUTC(*s++);
       }
    } else {
       const char *s = text;
       while (*s)
-	BUFFERPUTC(*s++);
+  BUFFERPUTC(*s++);
    }
    BUFFERDONE;
 }
@@ -5580,18 +5580,18 @@ static int popbuffer(void)
 /* Miscellaneous. */
 /* Parser states (flex `exclusive start conditions'):
  *
- * PROLOG	the XML prolog of the document before <?xml...>
- * DOCTYPE	the XML prolog of the document after <?xml...>
- * EPILOG	after the root element
- * INCOMMENT	inside an XML comment <!--....-->
- * INPI		inside an XML PI <?...?>
- * VALUE1	inside a '...'-delimited literal
- * VALUE2	inside a "..."-delimited literal
- * CDATA	inside a <![CDATA[...] ]> section.
- * ROOT_<tag>	expect root element <tag>
- * AL_<tag>	inside the attribute list for <tag>
- * IN_<tag>	inside a <tag> with element contents (ready for end tag)
- * IMPOSSIBLE	dummy to permit disabling rules; must be last
+ * PROLOG  the XML prolog of the document before <?xml...>
+ * DOCTYPE  the XML prolog of the document after <?xml...>
+ * EPILOG  after the root element
+ * INCOMMENT  inside an XML comment <!--....-->
+ * INPI    inside an XML PI <?...?>
+ * VALUE1  inside a '...'-delimited literal
+ * VALUE2  inside a "..."-delimited literal
+ * CDATA  inside a <![CDATA[...] ]> section.
+ * ROOT_<tag>  expect root element <tag>
+ * AL_<tag>  inside the attribute list for <tag>
+ * IN_<tag>  inside a <tag> with element contents (ready for end tag)
+ * IMPOSSIBLE  dummy to permit disabling rules; must be last
  */
 
 /* State names. */
@@ -5785,7 +5785,7 @@ FILE *surf_parse_get_out (void );
 
 void surf_parse_set_out  (FILE * _out_str  );
 
-			int surf_parse_get_leng (void );
+      int surf_parse_get_leng (void );
 
 char *surf_parse_get_text (void );
 
@@ -5858,33 +5858,33 @@ static int input (void );
  */
 #ifndef YY_INPUT
 #define YY_INPUT(buf,result,max_size) \
-	if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
-		{ \
-		int c = '*'; \
-		size_t n; \
-		for ( n = 0; n < ( size_t ) max_size && \
-			     (c = getc( surf_parse_in )) != EOF && c != '\n'; ++n ) \
-			buf[n] = (char) c; \
-		if ( c == '\n' ) \
-			buf[n++] = (char) c; \
-		if ( c == EOF && ferror( surf_parse_in ) ) \
-			YY_FATAL_ERROR( "input in flex scanner failed" ); \
-		result = n; \
-		} \
-	else \
-		{ \
-		errno=0; \
-		while ( (result = (int) fread(buf, 1, max_size, surf_parse_in))==0 && ferror(surf_parse_in)) \
-			{ \
-			if( errno != EINTR) \
-				{ \
-				YY_FATAL_ERROR( "input in flex scanner failed" ); \
-				break; \
-				} \
-			errno=0; \
-			clearerr(surf_parse_in); \
-			} \
-		}\
+  if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
+    { \
+    int c = '*'; \
+    size_t n; \
+    for ( n = 0; n < ( size_t ) max_size && \
+           (c = getc( surf_parse_in )) != EOF && c != '\n'; ++n ) \
+      buf[n] = (char) c; \
+    if ( c == '\n' ) \
+      buf[n++] = (char) c; \
+    if ( c == EOF && ferror( surf_parse_in ) ) \
+      YY_FATAL_ERROR( "input in flex scanner failed" ); \
+    result = n; \
+    } \
+  else \
+    { \
+    errno=0; \
+    while ( (result = (int) fread(buf, 1, max_size, surf_parse_in))==0 && ferror(surf_parse_in)) \
+      { \
+      if( errno != EINTR) \
+        { \
+        YY_FATAL_ERROR( "input in flex scanner failed" ); \
+        break; \
+        } \
+      errno=0; \
+      clearerr(surf_parse_in); \
+      } \
+    }\
 \
 
 #endif
@@ -5933,43 +5933,43 @@ extern int surf_parse_lex (void);
 #endif
 
 #define YY_RULE_SETUP \
-	YY_USER_ACTION
+  YY_USER_ACTION
 
 /** The main scanner function which does all the work.
  */
 YY_DECL
 {
-	yy_state_type yy_current_state;
-	char *yy_cp, *yy_bp;
-	int yy_act;
+  yy_state_type yy_current_state;
+  char *yy_cp, *yy_bp;
+  int yy_act;
     
-	if ( !(yy_init) )
-		{
-		(yy_init) = 1;
+  if ( !(yy_init) )
+    {
+    (yy_init) = 1;
 
 #ifdef YY_USER_INIT
-		YY_USER_INIT;
+    YY_USER_INIT;
 #endif
 
-		if ( ! (yy_start) )
-			(yy_start) = 1;	/* first start state */
+    if ( ! (yy_start) )
+      (yy_start) = 1;  /* first start state */
 
-		if ( ! surf_parse_in )
-			surf_parse_in = stdin;
+    if ( ! surf_parse_in )
+      surf_parse_in = stdin;
 
-		if ( ! surf_parse_out )
-			surf_parse_out = stdout;
+    if ( ! surf_parse_out )
+      surf_parse_out = stdout;
 
-		if ( ! YY_CURRENT_BUFFER ) {
-			surf_parse_ensure_buffer_stack ();
-			YY_CURRENT_BUFFER_LVALUE =
-				surf_parse__create_buffer(surf_parse_in,YY_BUF_SIZE );
-		}
+    if ( ! YY_CURRENT_BUFFER ) {
+      surf_parse_ensure_buffer_stack ();
+      YY_CURRENT_BUFFER_LVALUE =
+        surf_parse__create_buffer(surf_parse_in,YY_BUF_SIZE );
+    }
 
-		surf_parse__load_buffer_state( );
-		}
+    surf_parse__load_buffer_state( );
+    }
 
-	{
+  {
 
  /* Bypass Flex's default INITIAL state and begin by parsing the XML prolog. */
  SET(PROLOG);
@@ -6150,153 +6150,153 @@ YY_DECL
 
  /* COMMENTS and PIs: handled uniformly for efficiency. */
 
-	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
-		{
-		yy_cp = (yy_c_buf_p);
+  while ( /*CONSTCOND*/1 )    /* loops until end-of-file is reached */
+    {
+    yy_cp = (yy_c_buf_p);
 
-		/* Support of surf_parse_text. */
-		*yy_cp = (yy_hold_char);
+    /* Support of surf_parse_text. */
+    *yy_cp = (yy_hold_char);
 
-		/* yy_bp points to the position in yy_ch_buf of the start of
-		 * the current run.
-		 */
-		yy_bp = yy_cp;
+    /* yy_bp points to the position in yy_ch_buf of the start of
+     * the current run.
+     */
+    yy_bp = yy_cp;
 
-		yy_current_state = (yy_start);
+    yy_current_state = (yy_start);
 yy_match:
-		do
-			{
-			YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)] ;
-			if ( yy_accept[yy_current_state] )
-				{
-				(yy_last_accepting_state) = yy_current_state;
-				(yy_last_accepting_cpos) = yy_cp;
-				}
-			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
-				{
-				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 3886 )
-					yy_c = yy_meta[(unsigned int) yy_c];
-				}
-			yy_current_state = yy_nxt[yy_base[yy_current_state] + (flex_int16_t) yy_c];
-			++yy_cp;
-			}
-		while ( yy_base[yy_current_state] != 13842 );
+    do
+      {
+      YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)] ;
+      if ( yy_accept[yy_current_state] )
+        {
+        (yy_last_accepting_state) = yy_current_state;
+        (yy_last_accepting_cpos) = yy_cp;
+        }
+      while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
+        {
+        yy_current_state = (int) yy_def[yy_current_state];
+        if ( yy_current_state >= 3886 )
+          yy_c = yy_meta[(unsigned int) yy_c];
+        }
+      yy_current_state = yy_nxt[yy_base[yy_current_state] + (flex_int16_t) yy_c];
+      ++yy_cp;
+      }
+    while ( yy_base[yy_current_state] != 13842 );
 
 yy_find_action:
-		yy_act = yy_accept[yy_current_state];
-		if ( yy_act == 0 )
-			{ /* have to back up */
-			yy_cp = (yy_last_accepting_cpos);
-			yy_current_state = (yy_last_accepting_state);
-			yy_act = yy_accept[yy_current_state];
-			}
+    yy_act = yy_accept[yy_current_state];
+    if ( yy_act == 0 )
+      { /* have to back up */
+      yy_cp = (yy_last_accepting_cpos);
+      yy_current_state = (yy_last_accepting_state);
+      yy_act = yy_accept[yy_current_state];
+      }
 
-		YY_DO_BEFORE_ACTION;
+    YY_DO_BEFORE_ACTION;
 
-		if ( yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act] )
-			{
-			unsigned int yyl;
-			for ( yyl = 0; yyl < surf_parse_leng; ++yyl )
-				if ( surf_parse_text[yyl] == '\n' )
-					
+    if ( yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act] )
+      {
+      unsigned int yyl;
+      for ( yyl = 0; yyl < surf_parse_leng; ++yyl )
+        if ( surf_parse_text[yyl] == '\n' )
+          
     surf_parse_lineno++;
 ;
-			}
+      }
 
-do_action:	/* This label is used only to access EOF actions. */
+do_action:  /* This label is used only to access EOF actions. */
 
-		switch ( yy_act )
-	{ /* beginning of action switch */
-			case 0: /* must back up */
-			/* undo the effects of YY_DO_BEFORE_ACTION */
-			*yy_cp = (yy_hold_char);
-			yy_cp = (yy_last_accepting_cpos);
-			yy_current_state = (yy_last_accepting_state);
-			goto yy_find_action;
+    switch ( yy_act )
+  { /* beginning of action switch */
+      case 0: /* must back up */
+      /* undo the effects of YY_DO_BEFORE_ACTION */
+      *yy_cp = (yy_hold_char);
+      yy_cp = (yy_last_accepting_cpos);
+      yy_current_state = (yy_last_accepting_state);
+      goto yy_find_action;
 
 case 1:
 YY_RULE_SETUP
 ENTER(INCOMMENT);
-	YY_BREAK
+  YY_BREAK
 case 2:
 YY_RULE_SETUP
 ENTER(INPI);
-	YY_BREAK
+  YY_BREAK
 
 case 3:
 YY_RULE_SETUP
 LEAVE;
-	YY_BREAK
+  YY_BREAK
 case 4:
 case 5:
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
 SKIP;
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(INCOMMENT):
 FAIL("EOF in comment.");
-	YY_BREAK
+  YY_BREAK
 
 case 7:
 YY_RULE_SETUP
 LEAVE;
-	YY_BREAK
+  YY_BREAK
 case 8:
 case 9:
 /* rule 9 can match eol */
 YY_RULE_SETUP
 SKIP;
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(INPI):
 FAIL("EOF in PI (processing instruction).");
-	YY_BREAK
+  YY_BREAK
 
 /* SPACES: skipped uniformly */
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
 SKIP;
-	YY_BREAK
+  YY_BREAK
 /* PROLOG: determine root element and process it. */
 
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
 SET(DOCTYPE); 
-	YY_BREAK
+  YY_BREAK
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
 FAIL("Bad declaration %s.\nIf your are using a XML v3 file (check the version attribute in <platform>), please update it with tools/simgrid_update_xml.pl",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 
 case 13:
 /* rule 13 can match eol */
 YY_RULE_SETUP
 SET(ROOT_surfxml_platform);
-	YY_BREAK
+  YY_BREAK
 case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
 FAIL("Bad declaration %s.\nIf your are using a XML v3 file (check the version attribute in <platform>), please update it with tools/simgrid_update_xml.pl",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 15:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in prolog.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(PROLOG):
 case YY_STATE_EOF(DOCTYPE):
 FAIL("EOF in prolog.");
-	YY_BREAK
+  YY_BREAK
 
 /* RULES DERIVED FROM DTD. */
 case 16:
 /* rule 16 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <AS> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
@@ -6307,88 +6307,88 @@ YY_RULE_SETUP
   surfxml_AS_routing_isset = 0;
   ENTER(AL_surfxml_AS); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
 if (surfxml_AS_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_AS>");} surfxml_AS_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_AS_id);
-	YY_BREAK
+  YY_BREAK
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
 if (surfxml_AS_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_AS>");}  surfxml_AS_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_AS_id);
-	YY_BREAK
+  YY_BREAK
 case 20:
 /* rule 20 can match eol */
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
 A_surfxml_AS_routing = A_surfxml_AS_routing_Full;
-	YY_BREAK
+  YY_BREAK
 case 22:
 /* rule 22 can match eol */
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
 A_surfxml_AS_routing = A_surfxml_AS_routing_Floyd;
-	YY_BREAK
+  YY_BREAK
 case 24:
 /* rule 24 can match eol */
 case 25:
 /* rule 25 can match eol */
 YY_RULE_SETUP
 A_surfxml_AS_routing = A_surfxml_AS_routing_Dijkstra;
-	YY_BREAK
+  YY_BREAK
 case 26:
 /* rule 26 can match eol */
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
 A_surfxml_AS_routing = A_surfxml_AS_routing_DijkstraCache;
-	YY_BREAK
+  YY_BREAK
 case 28:
 /* rule 28 can match eol */
 case 29:
 /* rule 29 can match eol */
 YY_RULE_SETUP
 A_surfxml_AS_routing = A_surfxml_AS_routing_None;
-	YY_BREAK
+  YY_BREAK
 case 30:
 /* rule 30 can match eol */
 case 31:
 /* rule 31 can match eol */
 YY_RULE_SETUP
 A_surfxml_AS_routing = A_surfxml_AS_routing_Vivaldi;
-	YY_BREAK
+  YY_BREAK
 case 32:
 /* rule 32 can match eol */
 case 33:
 /* rule 33 can match eol */
 YY_RULE_SETUP
 A_surfxml_AS_routing = A_surfxml_AS_routing_Cluster;
-	YY_BREAK
+  YY_BREAK
 case 34:
 /* rule 34 can match eol */
 case 35:
 /* rule 35 can match eol */
 YY_RULE_SETUP
 A_surfxml_AS_routing = A_surfxml_AS_routing_ClusterTorus;
-	YY_BREAK
+  YY_BREAK
 case 36:
 /* rule 36 can match eol */
 case 37:
 /* rule 37 can match eol */
 YY_RULE_SETUP
 A_surfxml_AS_routing = A_surfxml_AS_routing_ClusterFatTree;
-	YY_BREAK
+  YY_BREAK
 case 38:
 /* rule 38 can match eol */
 case 39:
 /* rule 39 can match eol */
 YY_RULE_SETUP
 A_surfxml_AS_routing = A_surfxml_AS_routing_ClusterDragonfly;
-	YY_BREAK
+  YY_BREAK
 case 40:
 YY_RULE_SETUP
 {
@@ -6396,7 +6396,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_AS_routing) FAIL("Required attribute `routing' not set for `AS' element.");
   LEAVE; STag_surfxml_AS();surfxml_pcdata_ix = 0; ENTER(S_surfxml_AS);
  }
-	YY_BREAK
+  YY_BREAK
 case 41:
 YY_RULE_SETUP
 {
@@ -6410,18 +6410,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 42:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of AS element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 43:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `AS' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_AS):
 FAIL("EOF in attribute list of `AS' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 44:
 /* rule 44 can match eol */
@@ -6437,16 +6437,16 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 45:
 /* rule 45 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</AS>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 46:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</AS>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_AS):
 case YY_STATE_EOF(S_surfxml_AS):
 case YY_STATE_EOF(S_surfxml_AS_1):
@@ -6455,13 +6455,13 @@ case YY_STATE_EOF(S_surfxml_AS_4):
 case YY_STATE_EOF(S_surfxml_AS_6):
 case YY_STATE_EOF(S_surfxml_AS_8):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</AS>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 47:
 /* rule 47 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <ASroute> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 48:
 /* rule 48 can match eol */
 YY_RULE_SETUP
@@ -6478,62 +6478,62 @@ YY_RULE_SETUP
   surfxml_ASroute_symmetrical_isset = 0;
   ENTER(AL_surfxml_ASroute); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 49:
 /* rule 49 can match eol */
 YY_RULE_SETUP
 if (surfxml_ASroute_dst_isset != 0) {FAIL("Multiple definition of attribute dst in <surfxml_ASroute>");} surfxml_ASroute_dst_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_ASroute_dst);
-	YY_BREAK
+  YY_BREAK
 case 50:
 /* rule 50 can match eol */
 YY_RULE_SETUP
 if (surfxml_ASroute_dst_isset != 0) {FAIL("Multiple definition of attribute dst in <surfxml_ASroute>");}  surfxml_ASroute_dst_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_ASroute_dst);
-	YY_BREAK
+  YY_BREAK
 case 51:
 /* rule 51 can match eol */
 YY_RULE_SETUP
 if (surfxml_ASroute_gw___dst_isset != 0) {FAIL("Multiple definition of attribute gw_dst in <surfxml_ASroute>");} surfxml_ASroute_gw___dst_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_ASroute_gw___dst);
-	YY_BREAK
+  YY_BREAK
 case 52:
 /* rule 52 can match eol */
 YY_RULE_SETUP
 if (surfxml_ASroute_gw___dst_isset != 0) {FAIL("Multiple definition of attribute gw_dst in <surfxml_ASroute>");}  surfxml_ASroute_gw___dst_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_ASroute_gw___dst);
-	YY_BREAK
+  YY_BREAK
 case 53:
 /* rule 53 can match eol */
 YY_RULE_SETUP
 if (surfxml_ASroute_gw___src_isset != 0) {FAIL("Multiple definition of attribute gw_src in <surfxml_ASroute>");} surfxml_ASroute_gw___src_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_ASroute_gw___src);
-	YY_BREAK
+  YY_BREAK
 case 54:
 /* rule 54 can match eol */
 YY_RULE_SETUP
 if (surfxml_ASroute_gw___src_isset != 0) {FAIL("Multiple definition of attribute gw_src in <surfxml_ASroute>");}  surfxml_ASroute_gw___src_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_ASroute_gw___src);
-	YY_BREAK
+  YY_BREAK
 case 55:
 /* rule 55 can match eol */
 YY_RULE_SETUP
 if (surfxml_ASroute_src_isset != 0) {FAIL("Multiple definition of attribute src in <surfxml_ASroute>");} surfxml_ASroute_src_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_ASroute_src);
-	YY_BREAK
+  YY_BREAK
 case 56:
 /* rule 56 can match eol */
 YY_RULE_SETUP
 if (surfxml_ASroute_src_isset != 0) {FAIL("Multiple definition of attribute src in <surfxml_ASroute>");}  surfxml_ASroute_src_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_ASroute_src);
-	YY_BREAK
+  YY_BREAK
 case 57:
 /* rule 57 can match eol */
 case 58:
 /* rule 58 can match eol */
 YY_RULE_SETUP
 A_surfxml_ASroute_symmetrical = A_surfxml_ASroute_symmetrical_YES;
-	YY_BREAK
+  YY_BREAK
 case 59:
 /* rule 59 can match eol */
 case 60:
 /* rule 60 can match eol */
 YY_RULE_SETUP
 A_surfxml_ASroute_symmetrical = A_surfxml_ASroute_symmetrical_NO;
-	YY_BREAK
+  YY_BREAK
 case 61:
 YY_RULE_SETUP
 {
@@ -6543,7 +6543,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_ASroute_src) FAIL("Required attribute `src' not set for `ASroute' element.");
   LEAVE; STag_surfxml_ASroute();surfxml_pcdata_ix = 0; ENTER(S_surfxml_ASroute);
  }
-	YY_BREAK
+  YY_BREAK
 case 62:
 YY_RULE_SETUP
 {
@@ -6559,18 +6559,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 63:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of ASroute element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 64:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `ASroute' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_ASroute):
 FAIL("EOF in attribute list of `ASroute' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 65:
 /* rule 65 can match eol */
@@ -6586,27 +6586,27 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 66:
 /* rule 66 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</ASroute>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 67:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</ASroute>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_ASroute):
 case YY_STATE_EOF(S_surfxml_ASroute):
 case YY_STATE_EOF(S_surfxml_ASroute_2):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</ASroute>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 68:
 /* rule 68 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <actor> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 69:
 /* rule 69 can match eol */
 YY_RULE_SETUP
@@ -6623,62 +6623,62 @@ YY_RULE_SETUP
   surfxml_actor_start___time_isset = 0;
   ENTER(AL_surfxml_actor); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 70:
 /* rule 70 can match eol */
 YY_RULE_SETUP
 if (surfxml_actor_function_isset != 0) {FAIL("Multiple definition of attribute function in <surfxml_actor>");} surfxml_actor_function_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_actor_function);
-	YY_BREAK
+  YY_BREAK
 case 71:
 /* rule 71 can match eol */
 YY_RULE_SETUP
 if (surfxml_actor_function_isset != 0) {FAIL("Multiple definition of attribute function in <surfxml_actor>");}  surfxml_actor_function_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_actor_function);
-	YY_BREAK
+  YY_BREAK
 case 72:
 /* rule 72 can match eol */
 YY_RULE_SETUP
 if (surfxml_actor_host_isset != 0) {FAIL("Multiple definition of attribute host in <surfxml_actor>");} surfxml_actor_host_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_actor_host);
-	YY_BREAK
+  YY_BREAK
 case 73:
 /* rule 73 can match eol */
 YY_RULE_SETUP
 if (surfxml_actor_host_isset != 0) {FAIL("Multiple definition of attribute host in <surfxml_actor>");}  surfxml_actor_host_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_actor_host);
-	YY_BREAK
+  YY_BREAK
 case 74:
 /* rule 74 can match eol */
 YY_RULE_SETUP
 if (surfxml_actor_kill___time_isset != 0) {FAIL("Multiple definition of attribute kill_time in <surfxml_actor>");} surfxml_actor_kill___time_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_actor_kill___time);
-	YY_BREAK
+  YY_BREAK
 case 75:
 /* rule 75 can match eol */
 YY_RULE_SETUP
 if (surfxml_actor_kill___time_isset != 0) {FAIL("Multiple definition of attribute kill_time in <surfxml_actor>");}  surfxml_actor_kill___time_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_actor_kill___time);
-	YY_BREAK
+  YY_BREAK
 case 76:
 /* rule 76 can match eol */
 case 77:
 /* rule 77 can match eol */
 YY_RULE_SETUP
 A_surfxml_actor_on___failure = A_surfxml_actor_on___failure_DIE;
-	YY_BREAK
+  YY_BREAK
 case 78:
 /* rule 78 can match eol */
 case 79:
 /* rule 79 can match eol */
 YY_RULE_SETUP
 A_surfxml_actor_on___failure = A_surfxml_actor_on___failure_RESTART;
-	YY_BREAK
+  YY_BREAK
 case 80:
 /* rule 80 can match eol */
 YY_RULE_SETUP
 if (surfxml_actor_start___time_isset != 0) {FAIL("Multiple definition of attribute start_time in <surfxml_actor>");} surfxml_actor_start___time_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_actor_start___time);
-	YY_BREAK
+  YY_BREAK
 case 81:
 /* rule 81 can match eol */
 YY_RULE_SETUP
 if (surfxml_actor_start___time_isset != 0) {FAIL("Multiple definition of attribute start_time in <surfxml_actor>");}  surfxml_actor_start___time_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_actor_start___time);
-	YY_BREAK
+  YY_BREAK
 case 82:
 YY_RULE_SETUP
 {
@@ -6686,7 +6686,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_actor_host) FAIL("Required attribute `host' not set for `actor' element.");
   LEAVE; STag_surfxml_actor();surfxml_pcdata_ix = 0; ENTER(S_surfxml_actor);
  }
-	YY_BREAK
+  YY_BREAK
 case 83:
 YY_RULE_SETUP
 {
@@ -6697,18 +6697,18 @@ YY_RULE_SETUP
    case S_surfxml_platform: case S_surfxml_platform_1: case S_surfxml_platform_3: case S_surfxml_platform_4: case S_surfxml_platform_6: case S_surfxml_platform_7: case S_surfxml_platform_8: SET(S_surfxml_platform_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 84:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of actor element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 85:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `actor' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_actor):
 FAIL("EOF in attribute list of `actor' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 86:
 /* rule 86 can match eol */
@@ -6721,27 +6721,27 @@ YY_RULE_SETUP
    case S_surfxml_platform: case S_surfxml_platform_1: case S_surfxml_platform_3: case S_surfxml_platform_4: case S_surfxml_platform_6: case S_surfxml_platform_7: case S_surfxml_platform_8: SET(S_surfxml_platform_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 87:
 /* rule 87 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</actor>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 88:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</actor>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_actor):
 case YY_STATE_EOF(S_surfxml_actor):
 case YY_STATE_EOF(S_surfxml_actor_2):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</actor>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 89:
 /* rule 89 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <argument> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 90:
 /* rule 90 can match eol */
 YY_RULE_SETUP
@@ -6750,25 +6750,25 @@ YY_RULE_SETUP
   surfxml_argument_value_isset = 0;
   ENTER(AL_surfxml_argument); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 91:
 /* rule 91 can match eol */
 YY_RULE_SETUP
 if (surfxml_argument_value_isset != 0) {FAIL("Multiple definition of attribute value in <surfxml_argument>");} surfxml_argument_value_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_argument_value);
-	YY_BREAK
+  YY_BREAK
 case 92:
 /* rule 92 can match eol */
 YY_RULE_SETUP
 if (surfxml_argument_value_isset != 0) {FAIL("Multiple definition of attribute value in <surfxml_argument>");}  surfxml_argument_value_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_argument_value);
-	YY_BREAK
+  YY_BREAK
 case 93:
 YY_RULE_SETUP
 {
   if (!AX_surfxml_argument_value) FAIL("Required attribute `value' not set for `argument' element.");
   LEAVE; STag_surfxml_argument();surfxml_pcdata_ix = 0; ENTER(E_surfxml_argument);
  }
-	YY_BREAK
+  YY_BREAK
 case 94:
 YY_RULE_SETUP
 {
@@ -6779,18 +6779,18 @@ YY_RULE_SETUP
    case S_surfxml_process: case S_surfxml_process_1: case S_surfxml_process_2: SET(S_surfxml_process_2); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 95:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of argument element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 96:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `argument' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_argument):
 FAIL("EOF in attribute list of `argument' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 97:
 /* rule 97 can match eol */
@@ -6804,25 +6804,25 @@ YY_RULE_SETUP
    case S_surfxml_process: case S_surfxml_process_1: case S_surfxml_process_2: SET(S_surfxml_process_2); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 98:
 /* rule 98 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</argument>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 99:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</argument>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_argument):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</argument>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 100:
 /* rule 100 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <backbone> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 101:
 /* rule 101 can match eol */
 YY_RULE_SETUP
@@ -6835,38 +6835,38 @@ YY_RULE_SETUP
   surfxml_backbone_latency_isset = 0;
   ENTER(AL_surfxml_backbone); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 102:
 /* rule 102 can match eol */
 YY_RULE_SETUP
 if (surfxml_backbone_bandwidth_isset != 0) {FAIL("Multiple definition of attribute bandwidth in <surfxml_backbone>");} surfxml_backbone_bandwidth_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_backbone_bandwidth);
-	YY_BREAK
+  YY_BREAK
 case 103:
 /* rule 103 can match eol */
 YY_RULE_SETUP
 if (surfxml_backbone_bandwidth_isset != 0) {FAIL("Multiple definition of attribute bandwidth in <surfxml_backbone>");}  surfxml_backbone_bandwidth_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_backbone_bandwidth);
-	YY_BREAK
+  YY_BREAK
 case 104:
 /* rule 104 can match eol */
 YY_RULE_SETUP
 if (surfxml_backbone_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_backbone>");} surfxml_backbone_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_backbone_id);
-	YY_BREAK
+  YY_BREAK
 case 105:
 /* rule 105 can match eol */
 YY_RULE_SETUP
 if (surfxml_backbone_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_backbone>");}  surfxml_backbone_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_backbone_id);
-	YY_BREAK
+  YY_BREAK
 case 106:
 /* rule 106 can match eol */
 YY_RULE_SETUP
 if (surfxml_backbone_latency_isset != 0) {FAIL("Multiple definition of attribute latency in <surfxml_backbone>");} surfxml_backbone_latency_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_backbone_latency);
-	YY_BREAK
+  YY_BREAK
 case 107:
 /* rule 107 can match eol */
 YY_RULE_SETUP
 if (surfxml_backbone_latency_isset != 0) {FAIL("Multiple definition of attribute latency in <surfxml_backbone>");}  surfxml_backbone_latency_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_backbone_latency);
-	YY_BREAK
+  YY_BREAK
 case 108:
 YY_RULE_SETUP
 {
@@ -6875,7 +6875,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_backbone_latency) FAIL("Required attribute `latency' not set for `backbone' element.");
   LEAVE; STag_surfxml_backbone();surfxml_pcdata_ix = 0; ENTER(E_surfxml_backbone);
  }
-	YY_BREAK
+  YY_BREAK
 case 109:
 YY_RULE_SETUP
 {
@@ -6888,18 +6888,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 110:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of backbone element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 111:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `backbone' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_backbone):
 FAIL("EOF in attribute list of `backbone' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 112:
 /* rule 112 can match eol */
@@ -6913,25 +6913,25 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 113:
 /* rule 113 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</backbone>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 114:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</backbone>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_backbone):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</backbone>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 115:
 /* rule 115 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <bypassASroute> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 116:
 /* rule 116 can match eol */
 YY_RULE_SETUP
@@ -6946,48 +6946,48 @@ YY_RULE_SETUP
   surfxml_bypassASroute_src_isset = 0;
   ENTER(AL_surfxml_bypassASroute); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 117:
 /* rule 117 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassASroute_dst_isset != 0) {FAIL("Multiple definition of attribute dst in <surfxml_bypassASroute>");} surfxml_bypassASroute_dst_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_bypassASroute_dst);
-	YY_BREAK
+  YY_BREAK
 case 118:
 /* rule 118 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassASroute_dst_isset != 0) {FAIL("Multiple definition of attribute dst in <surfxml_bypassASroute>");}  surfxml_bypassASroute_dst_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_bypassASroute_dst);
-	YY_BREAK
+  YY_BREAK
 case 119:
 /* rule 119 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassASroute_gw___dst_isset != 0) {FAIL("Multiple definition of attribute gw_dst in <surfxml_bypassASroute>");} surfxml_bypassASroute_gw___dst_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_bypassASroute_gw___dst);
-	YY_BREAK
+  YY_BREAK
 case 120:
 /* rule 120 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassASroute_gw___dst_isset != 0) {FAIL("Multiple definition of attribute gw_dst in <surfxml_bypassASroute>");}  surfxml_bypassASroute_gw___dst_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_bypassASroute_gw___dst);
-	YY_BREAK
+  YY_BREAK
 case 121:
 /* rule 121 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassASroute_gw___src_isset != 0) {FAIL("Multiple definition of attribute gw_src in <surfxml_bypassASroute>");} surfxml_bypassASroute_gw___src_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_bypassASroute_gw___src);
-	YY_BREAK
+  YY_BREAK
 case 122:
 /* rule 122 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassASroute_gw___src_isset != 0) {FAIL("Multiple definition of attribute gw_src in <surfxml_bypassASroute>");}  surfxml_bypassASroute_gw___src_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_bypassASroute_gw___src);
-	YY_BREAK
+  YY_BREAK
 case 123:
 /* rule 123 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassASroute_src_isset != 0) {FAIL("Multiple definition of attribute src in <surfxml_bypassASroute>");} surfxml_bypassASroute_src_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_bypassASroute_src);
-	YY_BREAK
+  YY_BREAK
 case 124:
 /* rule 124 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassASroute_src_isset != 0) {FAIL("Multiple definition of attribute src in <surfxml_bypassASroute>");}  surfxml_bypassASroute_src_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_bypassASroute_src);
-	YY_BREAK
+  YY_BREAK
 case 125:
 YY_RULE_SETUP
 {
@@ -6997,7 +6997,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_bypassASroute_src) FAIL("Required attribute `src' not set for `bypassASroute' element.");
   LEAVE; STag_surfxml_bypassASroute();surfxml_pcdata_ix = 0; ENTER(S_surfxml_bypassASroute);
  }
-	YY_BREAK
+  YY_BREAK
 case 126:
 YY_RULE_SETUP
 {
@@ -7011,18 +7011,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 127:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of bypassASroute element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 128:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `bypassASroute' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_bypassASroute):
 FAIL("EOF in attribute list of `bypassASroute' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 129:
 /* rule 129 can match eol */
@@ -7036,27 +7036,27 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 130:
 /* rule 130 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</bypassASroute>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 131:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</bypassASroute>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_bypassASroute):
 case YY_STATE_EOF(S_surfxml_bypassASroute):
 case YY_STATE_EOF(S_surfxml_bypassASroute_2):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</bypassASroute>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 132:
 /* rule 132 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <bypassRoute> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 133:
 /* rule 133 can match eol */
 YY_RULE_SETUP
@@ -7067,28 +7067,28 @@ YY_RULE_SETUP
   surfxml_bypassRoute_src_isset = 0;
   ENTER(AL_surfxml_bypassRoute); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 134:
 /* rule 134 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassRoute_dst_isset != 0) {FAIL("Multiple definition of attribute dst in <surfxml_bypassRoute>");} surfxml_bypassRoute_dst_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_bypassRoute_dst);
-	YY_BREAK
+  YY_BREAK
 case 135:
 /* rule 135 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassRoute_dst_isset != 0) {FAIL("Multiple definition of attribute dst in <surfxml_bypassRoute>");}  surfxml_bypassRoute_dst_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_bypassRoute_dst);
-	YY_BREAK
+  YY_BREAK
 case 136:
 /* rule 136 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassRoute_src_isset != 0) {FAIL("Multiple definition of attribute src in <surfxml_bypassRoute>");} surfxml_bypassRoute_src_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_bypassRoute_src);
-	YY_BREAK
+  YY_BREAK
 case 137:
 /* rule 137 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassRoute_src_isset != 0) {FAIL("Multiple definition of attribute src in <surfxml_bypassRoute>");}  surfxml_bypassRoute_src_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_bypassRoute_src);
-	YY_BREAK
+  YY_BREAK
 case 138:
 YY_RULE_SETUP
 {
@@ -7096,7 +7096,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_bypassRoute_src) FAIL("Required attribute `src' not set for `bypassRoute' element.");
   LEAVE; STag_surfxml_bypassRoute();surfxml_pcdata_ix = 0; ENTER(S_surfxml_bypassRoute);
  }
-	YY_BREAK
+  YY_BREAK
 case 139:
 YY_RULE_SETUP
 {
@@ -7108,18 +7108,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 140:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of bypassRoute element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 141:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `bypassRoute' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_bypassRoute):
 FAIL("EOF in attribute list of `bypassRoute' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 142:
 /* rule 142 can match eol */
@@ -7133,27 +7133,27 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 143:
 /* rule 143 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</bypassRoute>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 144:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</bypassRoute>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_bypassRoute):
 case YY_STATE_EOF(S_surfxml_bypassRoute):
 case YY_STATE_EOF(S_surfxml_bypassRoute_2):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</bypassRoute>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 145:
 /* rule 145 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <bypassZoneRoute> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 146:
 /* rule 146 can match eol */
 YY_RULE_SETUP
@@ -7168,48 +7168,48 @@ YY_RULE_SETUP
   surfxml_bypassZoneRoute_src_isset = 0;
   ENTER(AL_surfxml_bypassZoneRoute); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 147:
 /* rule 147 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassZoneRoute_dst_isset != 0) {FAIL("Multiple definition of attribute dst in <surfxml_bypassZoneRoute>");} surfxml_bypassZoneRoute_dst_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_bypassZoneRoute_dst);
-	YY_BREAK
+  YY_BREAK
 case 148:
 /* rule 148 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassZoneRoute_dst_isset != 0) {FAIL("Multiple definition of attribute dst in <surfxml_bypassZoneRoute>");}  surfxml_bypassZoneRoute_dst_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_bypassZoneRoute_dst);
-	YY_BREAK
+  YY_BREAK
 case 149:
 /* rule 149 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassZoneRoute_gw___dst_isset != 0) {FAIL("Multiple definition of attribute gw_dst in <surfxml_bypassZoneRoute>");} surfxml_bypassZoneRoute_gw___dst_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_bypassZoneRoute_gw___dst);
-	YY_BREAK
+  YY_BREAK
 case 150:
 /* rule 150 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassZoneRoute_gw___dst_isset != 0) {FAIL("Multiple definition of attribute gw_dst in <surfxml_bypassZoneRoute>");}  surfxml_bypassZoneRoute_gw___dst_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_bypassZoneRoute_gw___dst);
-	YY_BREAK
+  YY_BREAK
 case 151:
 /* rule 151 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassZoneRoute_gw___src_isset != 0) {FAIL("Multiple definition of attribute gw_src in <surfxml_bypassZoneRoute>");} surfxml_bypassZoneRoute_gw___src_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_bypassZoneRoute_gw___src);
-	YY_BREAK
+  YY_BREAK
 case 152:
 /* rule 152 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassZoneRoute_gw___src_isset != 0) {FAIL("Multiple definition of attribute gw_src in <surfxml_bypassZoneRoute>");}  surfxml_bypassZoneRoute_gw___src_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_bypassZoneRoute_gw___src);
-	YY_BREAK
+  YY_BREAK
 case 153:
 /* rule 153 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassZoneRoute_src_isset != 0) {FAIL("Multiple definition of attribute src in <surfxml_bypassZoneRoute>");} surfxml_bypassZoneRoute_src_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_bypassZoneRoute_src);
-	YY_BREAK
+  YY_BREAK
 case 154:
 /* rule 154 can match eol */
 YY_RULE_SETUP
 if (surfxml_bypassZoneRoute_src_isset != 0) {FAIL("Multiple definition of attribute src in <surfxml_bypassZoneRoute>");}  surfxml_bypassZoneRoute_src_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_bypassZoneRoute_src);
-	YY_BREAK
+  YY_BREAK
 case 155:
 YY_RULE_SETUP
 {
@@ -7219,7 +7219,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_bypassZoneRoute_src) FAIL("Required attribute `src' not set for `bypassZoneRoute' element.");
   LEAVE; STag_surfxml_bypassZoneRoute();surfxml_pcdata_ix = 0; ENTER(S_surfxml_bypassZoneRoute);
  }
-	YY_BREAK
+  YY_BREAK
 case 156:
 YY_RULE_SETUP
 {
@@ -7233,18 +7233,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 157:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of bypassZoneRoute element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 158:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `bypassZoneRoute' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_bypassZoneRoute):
 FAIL("EOF in attribute list of `bypassZoneRoute' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 159:
 /* rule 159 can match eol */
@@ -7258,27 +7258,27 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 160:
 /* rule 160 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</bypassZoneRoute>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 161:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</bypassZoneRoute>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_bypassZoneRoute):
 case YY_STATE_EOF(S_surfxml_bypassZoneRoute):
 case YY_STATE_EOF(S_surfxml_bypassZoneRoute_2):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</bypassZoneRoute>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 162:
 /* rule 162 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <cabinet> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 163:
 /* rule 163 can match eol */
 YY_RULE_SETUP
@@ -7299,78 +7299,78 @@ YY_RULE_SETUP
   surfxml_cabinet_suffix_isset = 0;
   ENTER(AL_surfxml_cabinet); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 164:
 /* rule 164 can match eol */
 YY_RULE_SETUP
 if (surfxml_cabinet_bw_isset != 0) {FAIL("Multiple definition of attribute bw in <surfxml_cabinet>");} surfxml_cabinet_bw_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cabinet_bw);
-	YY_BREAK
+  YY_BREAK
 case 165:
 /* rule 165 can match eol */
 YY_RULE_SETUP
 if (surfxml_cabinet_bw_isset != 0) {FAIL("Multiple definition of attribute bw in <surfxml_cabinet>");}  surfxml_cabinet_bw_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cabinet_bw);
-	YY_BREAK
+  YY_BREAK
 case 166:
 /* rule 166 can match eol */
 YY_RULE_SETUP
 if (surfxml_cabinet_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_cabinet>");} surfxml_cabinet_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cabinet_id);
-	YY_BREAK
+  YY_BREAK
 case 167:
 /* rule 167 can match eol */
 YY_RULE_SETUP
 if (surfxml_cabinet_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_cabinet>");}  surfxml_cabinet_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cabinet_id);
-	YY_BREAK
+  YY_BREAK
 case 168:
 /* rule 168 can match eol */
 YY_RULE_SETUP
 if (surfxml_cabinet_lat_isset != 0) {FAIL("Multiple definition of attribute lat in <surfxml_cabinet>");} surfxml_cabinet_lat_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cabinet_lat);
-	YY_BREAK
+  YY_BREAK
 case 169:
 /* rule 169 can match eol */
 YY_RULE_SETUP
 if (surfxml_cabinet_lat_isset != 0) {FAIL("Multiple definition of attribute lat in <surfxml_cabinet>");}  surfxml_cabinet_lat_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cabinet_lat);
-	YY_BREAK
+  YY_BREAK
 case 170:
 /* rule 170 can match eol */
 YY_RULE_SETUP
 if (surfxml_cabinet_prefix_isset != 0) {FAIL("Multiple definition of attribute prefix in <surfxml_cabinet>");} surfxml_cabinet_prefix_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cabinet_prefix);
-	YY_BREAK
+  YY_BREAK
 case 171:
 /* rule 171 can match eol */
 YY_RULE_SETUP
 if (surfxml_cabinet_prefix_isset != 0) {FAIL("Multiple definition of attribute prefix in <surfxml_cabinet>");}  surfxml_cabinet_prefix_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cabinet_prefix);
-	YY_BREAK
+  YY_BREAK
 case 172:
 /* rule 172 can match eol */
 YY_RULE_SETUP
 if (surfxml_cabinet_radical_isset != 0) {FAIL("Multiple definition of attribute radical in <surfxml_cabinet>");} surfxml_cabinet_radical_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cabinet_radical);
-	YY_BREAK
+  YY_BREAK
 case 173:
 /* rule 173 can match eol */
 YY_RULE_SETUP
 if (surfxml_cabinet_radical_isset != 0) {FAIL("Multiple definition of attribute radical in <surfxml_cabinet>");}  surfxml_cabinet_radical_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cabinet_radical);
-	YY_BREAK
+  YY_BREAK
 case 174:
 /* rule 174 can match eol */
 YY_RULE_SETUP
 if (surfxml_cabinet_speed_isset != 0) {FAIL("Multiple definition of attribute speed in <surfxml_cabinet>");} surfxml_cabinet_speed_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cabinet_speed);
-	YY_BREAK
+  YY_BREAK
 case 175:
 /* rule 175 can match eol */
 YY_RULE_SETUP
 if (surfxml_cabinet_speed_isset != 0) {FAIL("Multiple definition of attribute speed in <surfxml_cabinet>");}  surfxml_cabinet_speed_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cabinet_speed);
-	YY_BREAK
+  YY_BREAK
 case 176:
 /* rule 176 can match eol */
 YY_RULE_SETUP
 if (surfxml_cabinet_suffix_isset != 0) {FAIL("Multiple definition of attribute suffix in <surfxml_cabinet>");} surfxml_cabinet_suffix_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cabinet_suffix);
-	YY_BREAK
+  YY_BREAK
 case 177:
 /* rule 177 can match eol */
 YY_RULE_SETUP
 if (surfxml_cabinet_suffix_isset != 0) {FAIL("Multiple definition of attribute suffix in <surfxml_cabinet>");}  surfxml_cabinet_suffix_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cabinet_suffix);
-	YY_BREAK
+  YY_BREAK
 case 178:
 YY_RULE_SETUP
 {
@@ -7383,7 +7383,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_cabinet_suffix) FAIL("Required attribute `suffix' not set for `cabinet' element.");
   LEAVE; STag_surfxml_cabinet();surfxml_pcdata_ix = 0; ENTER(E_surfxml_cabinet);
  }
-	YY_BREAK
+  YY_BREAK
 case 179:
 YY_RULE_SETUP
 {
@@ -7402,18 +7402,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 180:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of cabinet element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 181:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `cabinet' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_cabinet):
 FAIL("EOF in attribute list of `cabinet' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 182:
 /* rule 182 can match eol */
@@ -7429,25 +7429,25 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 183:
 /* rule 183 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</cabinet>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 184:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</cabinet>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_cabinet):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</cabinet>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 185:
 /* rule 185 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <cluster> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 186:
 /* rule 186 can match eol */
 YY_RULE_SETUP
@@ -7490,221 +7490,221 @@ YY_RULE_SETUP
   surfxml_cluster_topology_isset = 0;
   ENTER(AL_surfxml_cluster); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 187:
 /* rule 187 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_bb___bw_isset != 0) {FAIL("Multiple definition of attribute bb_bw in <surfxml_cluster>");} surfxml_cluster_bb___bw_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_bb___bw);
-	YY_BREAK
+  YY_BREAK
 case 188:
 /* rule 188 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_bb___bw_isset != 0) {FAIL("Multiple definition of attribute bb_bw in <surfxml_cluster>");}  surfxml_cluster_bb___bw_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_bb___bw);
-	YY_BREAK
+  YY_BREAK
 case 189:
 /* rule 189 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_bb___lat_isset != 0) {FAIL("Multiple definition of attribute bb_lat in <surfxml_cluster>");} surfxml_cluster_bb___lat_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_bb___lat);
-	YY_BREAK
+  YY_BREAK
 case 190:
 /* rule 190 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_bb___lat_isset != 0) {FAIL("Multiple definition of attribute bb_lat in <surfxml_cluster>");}  surfxml_cluster_bb___lat_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_bb___lat);
-	YY_BREAK
+  YY_BREAK
 case 191:
 /* rule 191 can match eol */
 case 192:
 /* rule 192 can match eol */
 YY_RULE_SETUP
 A_surfxml_cluster_bb___sharing___policy = A_surfxml_cluster_bb___sharing___policy_SHARED;
-	YY_BREAK
+  YY_BREAK
 case 193:
 /* rule 193 can match eol */
 case 194:
 /* rule 194 can match eol */
 YY_RULE_SETUP
 A_surfxml_cluster_bb___sharing___policy = A_surfxml_cluster_bb___sharing___policy_FATPIPE;
-	YY_BREAK
+  YY_BREAK
 case 195:
 /* rule 195 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_bw_isset != 0) {FAIL("Multiple definition of attribute bw in <surfxml_cluster>");} surfxml_cluster_bw_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_bw);
-	YY_BREAK
+  YY_BREAK
 case 196:
 /* rule 196 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_bw_isset != 0) {FAIL("Multiple definition of attribute bw in <surfxml_cluster>");}  surfxml_cluster_bw_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_bw);
-	YY_BREAK
+  YY_BREAK
 case 197:
 /* rule 197 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_core_isset != 0) {FAIL("Multiple definition of attribute core in <surfxml_cluster>");} surfxml_cluster_core_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_core);
-	YY_BREAK
+  YY_BREAK
 case 198:
 /* rule 198 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_core_isset != 0) {FAIL("Multiple definition of attribute core in <surfxml_cluster>");}  surfxml_cluster_core_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_core);
-	YY_BREAK
+  YY_BREAK
 case 199:
 /* rule 199 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_cluster>");} surfxml_cluster_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_id);
-	YY_BREAK
+  YY_BREAK
 case 200:
 /* rule 200 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_cluster>");}  surfxml_cluster_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_id);
-	YY_BREAK
+  YY_BREAK
 case 201:
 /* rule 201 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_lat_isset != 0) {FAIL("Multiple definition of attribute lat in <surfxml_cluster>");} surfxml_cluster_lat_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_lat);
-	YY_BREAK
+  YY_BREAK
 case 202:
 /* rule 202 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_lat_isset != 0) {FAIL("Multiple definition of attribute lat in <surfxml_cluster>");}  surfxml_cluster_lat_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_lat);
-	YY_BREAK
+  YY_BREAK
 case 203:
 /* rule 203 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_limiter___link_isset != 0) {FAIL("Multiple definition of attribute limiter_link in <surfxml_cluster>");} surfxml_cluster_limiter___link_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_limiter___link);
-	YY_BREAK
+  YY_BREAK
 case 204:
 /* rule 204 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_limiter___link_isset != 0) {FAIL("Multiple definition of attribute limiter_link in <surfxml_cluster>");}  surfxml_cluster_limiter___link_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_limiter___link);
-	YY_BREAK
+  YY_BREAK
 case 205:
 /* rule 205 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_loopback___bw_isset != 0) {FAIL("Multiple definition of attribute loopback_bw in <surfxml_cluster>");} surfxml_cluster_loopback___bw_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_loopback___bw);
-	YY_BREAK
+  YY_BREAK
 case 206:
 /* rule 206 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_loopback___bw_isset != 0) {FAIL("Multiple definition of attribute loopback_bw in <surfxml_cluster>");}  surfxml_cluster_loopback___bw_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_loopback___bw);
-	YY_BREAK
+  YY_BREAK
 case 207:
 /* rule 207 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_loopback___lat_isset != 0) {FAIL("Multiple definition of attribute loopback_lat in <surfxml_cluster>");} surfxml_cluster_loopback___lat_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_loopback___lat);
-	YY_BREAK
+  YY_BREAK
 case 208:
 /* rule 208 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_loopback___lat_isset != 0) {FAIL("Multiple definition of attribute loopback_lat in <surfxml_cluster>");}  surfxml_cluster_loopback___lat_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_loopback___lat);
-	YY_BREAK
+  YY_BREAK
 case 209:
 /* rule 209 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_prefix_isset != 0) {FAIL("Multiple definition of attribute prefix in <surfxml_cluster>");} surfxml_cluster_prefix_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_prefix);
-	YY_BREAK
+  YY_BREAK
 case 210:
 /* rule 210 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_prefix_isset != 0) {FAIL("Multiple definition of attribute prefix in <surfxml_cluster>");}  surfxml_cluster_prefix_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_prefix);
-	YY_BREAK
+  YY_BREAK
 case 211:
 /* rule 211 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_radical_isset != 0) {FAIL("Multiple definition of attribute radical in <surfxml_cluster>");} surfxml_cluster_radical_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_radical);
-	YY_BREAK
+  YY_BREAK
 case 212:
 /* rule 212 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_radical_isset != 0) {FAIL("Multiple definition of attribute radical in <surfxml_cluster>");}  surfxml_cluster_radical_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_radical);
-	YY_BREAK
+  YY_BREAK
 case 213:
 /* rule 213 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_router___id_isset != 0) {FAIL("Multiple definition of attribute router_id in <surfxml_cluster>");} surfxml_cluster_router___id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_router___id);
-	YY_BREAK
+  YY_BREAK
 case 214:
 /* rule 214 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_router___id_isset != 0) {FAIL("Multiple definition of attribute router_id in <surfxml_cluster>");}  surfxml_cluster_router___id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_router___id);
-	YY_BREAK
+  YY_BREAK
 case 215:
 /* rule 215 can match eol */
 case 216:
 /* rule 216 can match eol */
 YY_RULE_SETUP
 A_surfxml_cluster_sharing___policy = A_surfxml_cluster_sharing___policy_SHARED;
-	YY_BREAK
+  YY_BREAK
 case 217:
 /* rule 217 can match eol */
 case 218:
 /* rule 218 can match eol */
 YY_RULE_SETUP
 A_surfxml_cluster_sharing___policy = A_surfxml_cluster_sharing___policy_FULLDUPLEX;
-	YY_BREAK
+  YY_BREAK
 case 219:
 /* rule 219 can match eol */
 case 220:
 /* rule 220 can match eol */
 YY_RULE_SETUP
 A_surfxml_cluster_sharing___policy = A_surfxml_cluster_sharing___policy_FATPIPE;
-	YY_BREAK
+  YY_BREAK
 case 221:
 /* rule 221 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_speed_isset != 0) {FAIL("Multiple definition of attribute speed in <surfxml_cluster>");} surfxml_cluster_speed_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_speed);
-	YY_BREAK
+  YY_BREAK
 case 222:
 /* rule 222 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_speed_isset != 0) {FAIL("Multiple definition of attribute speed in <surfxml_cluster>");}  surfxml_cluster_speed_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_speed);
-	YY_BREAK
+  YY_BREAK
 case 223:
 /* rule 223 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_suffix_isset != 0) {FAIL("Multiple definition of attribute suffix in <surfxml_cluster>");} surfxml_cluster_suffix_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_suffix);
-	YY_BREAK
+  YY_BREAK
 case 224:
 /* rule 224 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_suffix_isset != 0) {FAIL("Multiple definition of attribute suffix in <surfxml_cluster>");}  surfxml_cluster_suffix_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_suffix);
-	YY_BREAK
+  YY_BREAK
 case 225:
 /* rule 225 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_topo___parameters_isset != 0) {FAIL("Multiple definition of attribute topo_parameters in <surfxml_cluster>");} surfxml_cluster_topo___parameters_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_topo___parameters);
-	YY_BREAK
+  YY_BREAK
 case 226:
 /* rule 226 can match eol */
 YY_RULE_SETUP
 if (surfxml_cluster_topo___parameters_isset != 0) {FAIL("Multiple definition of attribute topo_parameters in <surfxml_cluster>");}  surfxml_cluster_topo___parameters_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_topo___parameters);
-	YY_BREAK
+  YY_BREAK
 case 227:
 /* rule 227 can match eol */
 case 228:
 /* rule 228 can match eol */
 YY_RULE_SETUP
 A_surfxml_cluster_topology = A_surfxml_cluster_topology_FLAT;
-	YY_BREAK
+  YY_BREAK
 case 229:
 /* rule 229 can match eol */
 case 230:
 /* rule 230 can match eol */
 YY_RULE_SETUP
 A_surfxml_cluster_topology = A_surfxml_cluster_topology_TORUS;
-	YY_BREAK
+  YY_BREAK
 case 231:
 /* rule 231 can match eol */
 case 232:
 /* rule 232 can match eol */
 YY_RULE_SETUP
 A_surfxml_cluster_topology = A_surfxml_cluster_topology_FAT___TREE;
-	YY_BREAK
+  YY_BREAK
 case 233:
 /* rule 233 can match eol */
 case 234:
 /* rule 234 can match eol */
 YY_RULE_SETUP
 A_surfxml_cluster_topology = A_surfxml_cluster_topology_DRAGONFLY;
-	YY_BREAK
+  YY_BREAK
 case 235:
 YY_RULE_SETUP
 {
@@ -7717,7 +7717,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_cluster_suffix) FAIL("Required attribute `suffix' not set for `cluster' element.");
   LEAVE; STag_surfxml_cluster();surfxml_pcdata_ix = 0; ENTER(S_surfxml_cluster);
  }
-	YY_BREAK
+  YY_BREAK
 case 236:
 YY_RULE_SETUP
 {
@@ -7736,18 +7736,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 237:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of cluster element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 238:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `cluster' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_cluster):
 FAIL("EOF in attribute list of `cluster' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 239:
 /* rule 239 can match eol */
@@ -7763,27 +7763,27 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 240:
 /* rule 240 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</cluster>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 241:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</cluster>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_cluster):
 case YY_STATE_EOF(S_surfxml_cluster):
 case YY_STATE_EOF(S_surfxml_cluster_2):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</cluster>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 242:
 /* rule 242 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <config> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 243:
 /* rule 243 can match eol */
 YY_RULE_SETUP
@@ -7792,24 +7792,24 @@ YY_RULE_SETUP
   surfxml_config_id_isset = 0;
   ENTER(AL_surfxml_config); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 244:
 /* rule 244 can match eol */
 YY_RULE_SETUP
 if (surfxml_config_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_config>");} surfxml_config_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_config_id);
-	YY_BREAK
+  YY_BREAK
 case 245:
 /* rule 245 can match eol */
 YY_RULE_SETUP
 if (surfxml_config_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_config>");}  surfxml_config_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_config_id);
-	YY_BREAK
+  YY_BREAK
 case 246:
 YY_RULE_SETUP
 {
   LEAVE; STag_surfxml_config();surfxml_pcdata_ix = 0; ENTER(S_surfxml_config);
  }
-	YY_BREAK
+  YY_BREAK
 case 247:
 YY_RULE_SETUP
 {
@@ -7818,18 +7818,18 @@ YY_RULE_SETUP
    case S_surfxml_platform: case S_surfxml_platform_2: case S_surfxml_platform_3: SET(S_surfxml_platform_3); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 248:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of config element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 249:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `config' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_config):
 FAIL("EOF in attribute list of `config' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 250:
 /* rule 250 can match eol */
@@ -7842,27 +7842,27 @@ YY_RULE_SETUP
    case S_surfxml_platform: case S_surfxml_platform_2: case S_surfxml_platform_3: SET(S_surfxml_platform_3); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 251:
 /* rule 251 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</config>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 252:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</config>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_config):
 case YY_STATE_EOF(S_surfxml_config):
 case YY_STATE_EOF(S_surfxml_config_2):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</config>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 253:
 /* rule 253 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <host> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 254:
 /* rule 254 can match eol */
 YY_RULE_SETUP
@@ -7883,78 +7883,78 @@ YY_RULE_SETUP
   surfxml_host_state___file_isset = 0;
   ENTER(AL_surfxml_host); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 255:
 /* rule 255 can match eol */
 YY_RULE_SETUP
 if (surfxml_host_availability___file_isset != 0) {FAIL("Multiple definition of attribute availability_file in <surfxml_host>");} surfxml_host_availability___file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_host_availability___file);
-	YY_BREAK
+  YY_BREAK
 case 256:
 /* rule 256 can match eol */
 YY_RULE_SETUP
 if (surfxml_host_availability___file_isset != 0) {FAIL("Multiple definition of attribute availability_file in <surfxml_host>");}  surfxml_host_availability___file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_host_availability___file);
-	YY_BREAK
+  YY_BREAK
 case 257:
 /* rule 257 can match eol */
 YY_RULE_SETUP
 if (surfxml_host_coordinates_isset != 0) {FAIL("Multiple definition of attribute coordinates in <surfxml_host>");} surfxml_host_coordinates_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_host_coordinates);
-	YY_BREAK
+  YY_BREAK
 case 258:
 /* rule 258 can match eol */
 YY_RULE_SETUP
 if (surfxml_host_coordinates_isset != 0) {FAIL("Multiple definition of attribute coordinates in <surfxml_host>");}  surfxml_host_coordinates_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_host_coordinates);
-	YY_BREAK
+  YY_BREAK
 case 259:
 /* rule 259 can match eol */
 YY_RULE_SETUP
 if (surfxml_host_core_isset != 0) {FAIL("Multiple definition of attribute core in <surfxml_host>");} surfxml_host_core_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_host_core);
-	YY_BREAK
+  YY_BREAK
 case 260:
 /* rule 260 can match eol */
 YY_RULE_SETUP
 if (surfxml_host_core_isset != 0) {FAIL("Multiple definition of attribute core in <surfxml_host>");}  surfxml_host_core_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_host_core);
-	YY_BREAK
+  YY_BREAK
 case 261:
 /* rule 261 can match eol */
 YY_RULE_SETUP
 if (surfxml_host_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_host>");} surfxml_host_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_host_id);
-	YY_BREAK
+  YY_BREAK
 case 262:
 /* rule 262 can match eol */
 YY_RULE_SETUP
 if (surfxml_host_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_host>");}  surfxml_host_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_host_id);
-	YY_BREAK
+  YY_BREAK
 case 263:
 /* rule 263 can match eol */
 YY_RULE_SETUP
 if (surfxml_host_pstate_isset != 0) {FAIL("Multiple definition of attribute pstate in <surfxml_host>");} surfxml_host_pstate_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_host_pstate);
-	YY_BREAK
+  YY_BREAK
 case 264:
 /* rule 264 can match eol */
 YY_RULE_SETUP
 if (surfxml_host_pstate_isset != 0) {FAIL("Multiple definition of attribute pstate in <surfxml_host>");}  surfxml_host_pstate_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_host_pstate);
-	YY_BREAK
+  YY_BREAK
 case 265:
 /* rule 265 can match eol */
 YY_RULE_SETUP
 if (surfxml_host_speed_isset != 0) {FAIL("Multiple definition of attribute speed in <surfxml_host>");} surfxml_host_speed_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_host_speed);
-	YY_BREAK
+  YY_BREAK
 case 266:
 /* rule 266 can match eol */
 YY_RULE_SETUP
 if (surfxml_host_speed_isset != 0) {FAIL("Multiple definition of attribute speed in <surfxml_host>");}  surfxml_host_speed_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_host_speed);
-	YY_BREAK
+  YY_BREAK
 case 267:
 /* rule 267 can match eol */
 YY_RULE_SETUP
 if (surfxml_host_state___file_isset != 0) {FAIL("Multiple definition of attribute state_file in <surfxml_host>");} surfxml_host_state___file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_host_state___file);
-	YY_BREAK
+  YY_BREAK
 case 268:
 /* rule 268 can match eol */
 YY_RULE_SETUP
 if (surfxml_host_state___file_isset != 0) {FAIL("Multiple definition of attribute state_file in <surfxml_host>");}  surfxml_host_state___file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_host_state___file);
-	YY_BREAK
+  YY_BREAK
 case 269:
 YY_RULE_SETUP
 {
@@ -7962,7 +7962,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_host_speed) FAIL("Required attribute `speed' not set for `host' element.");
   LEAVE; STag_surfxml_host();surfxml_pcdata_ix = 0; ENTER(S_surfxml_host);
  }
-	YY_BREAK
+  YY_BREAK
 case 270:
 YY_RULE_SETUP
 {
@@ -7974,18 +7974,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 271:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of host element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 272:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `host' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_host):
 FAIL("EOF in attribute list of `host' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 273:
 /* rule 273 can match eol */
@@ -7999,27 +7999,27 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 274:
 /* rule 274 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</host>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 275:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</host>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_host):
 case YY_STATE_EOF(S_surfxml_host):
 case YY_STATE_EOF(S_surfxml_host_2):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</host>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 276:
 /* rule 276 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <host_link> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 277:
 /* rule 277 can match eol */
 YY_RULE_SETUP
@@ -8032,38 +8032,38 @@ YY_RULE_SETUP
   surfxml_host___link_up_isset = 0;
   ENTER(AL_surfxml_host___link); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 278:
 /* rule 278 can match eol */
 YY_RULE_SETUP
 if (surfxml_host___link_down_isset != 0) {FAIL("Multiple definition of attribute down in <surfxml_host___link>");} surfxml_host___link_down_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_host___link_down);
-	YY_BREAK
+  YY_BREAK
 case 279:
 /* rule 279 can match eol */
 YY_RULE_SETUP
 if (surfxml_host___link_down_isset != 0) {FAIL("Multiple definition of attribute down in <surfxml_host___link>");}  surfxml_host___link_down_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_host___link_down);
-	YY_BREAK
+  YY_BREAK
 case 280:
 /* rule 280 can match eol */
 YY_RULE_SETUP
 if (surfxml_host___link_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_host___link>");} surfxml_host___link_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_host___link_id);
-	YY_BREAK
+  YY_BREAK
 case 281:
 /* rule 281 can match eol */
 YY_RULE_SETUP
 if (surfxml_host___link_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_host___link>");}  surfxml_host___link_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_host___link_id);
-	YY_BREAK
+  YY_BREAK
 case 282:
 /* rule 282 can match eol */
 YY_RULE_SETUP
 if (surfxml_host___link_up_isset != 0) {FAIL("Multiple definition of attribute up in <surfxml_host___link>");} surfxml_host___link_up_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_host___link_up);
-	YY_BREAK
+  YY_BREAK
 case 283:
 /* rule 283 can match eol */
 YY_RULE_SETUP
 if (surfxml_host___link_up_isset != 0) {FAIL("Multiple definition of attribute up in <surfxml_host___link>");}  surfxml_host___link_up_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_host___link_up);
-	YY_BREAK
+  YY_BREAK
 case 284:
 YY_RULE_SETUP
 {
@@ -8072,7 +8072,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_host___link_up) FAIL("Required attribute `up' not set for `host_link' element.");
   LEAVE; STag_surfxml_host___link();surfxml_pcdata_ix = 0; ENTER(E_surfxml_host___link);
  }
-	YY_BREAK
+  YY_BREAK
 case 285:
 YY_RULE_SETUP
 {
@@ -8085,18 +8085,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 286:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of host_link element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 287:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `host_link' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_host___link):
 FAIL("EOF in attribute list of `host_link' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 288:
 /* rule 288 can match eol */
@@ -8110,26 +8110,26 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 289:
 /* rule 289 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</host_link>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 290:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</host_link>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_host___link):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</host_link>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 /* <!-- tag include is deprecated. Not documented, and soon removed -->  */
 case 291:
 /* rule 291 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <include> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 292:
 /* rule 292 can match eol */
 YY_RULE_SETUP
@@ -8138,25 +8138,25 @@ YY_RULE_SETUP
   surfxml_include_file_isset = 0;
   ENTER(AL_surfxml_include); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 293:
 /* rule 293 can match eol */
 YY_RULE_SETUP
 if (surfxml_include_file_isset != 0) {FAIL("Multiple definition of attribute file in <surfxml_include>");} surfxml_include_file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_include_file);
-	YY_BREAK
+  YY_BREAK
 case 294:
 /* rule 294 can match eol */
 YY_RULE_SETUP
 if (surfxml_include_file_isset != 0) {FAIL("Multiple definition of attribute file in <surfxml_include>");}  surfxml_include_file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_include_file);
-	YY_BREAK
+  YY_BREAK
 case 295:
 YY_RULE_SETUP
 {
   if (!AX_surfxml_include_file) FAIL("Required attribute `file' not set for `include' element.");
   LEAVE; STag_surfxml_include();surfxml_pcdata_ix = 0; ENTER(S_surfxml_include);
  }
-	YY_BREAK
+  YY_BREAK
 case 296:
 YY_RULE_SETUP
 {
@@ -8169,18 +8169,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 297:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of include element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 298:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `include' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_include):
 FAIL("EOF in attribute list of `include' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 299:
 /* rule 299 can match eol */
@@ -8196,27 +8196,27 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 300:
 /* rule 300 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</include>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 301:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</include>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_include):
 case YY_STATE_EOF(S_surfxml_include):
 case YY_STATE_EOF(S_surfxml_include_2):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</include>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 302:
 /* rule 302 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <link> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 303:
 /* rule 303 can match eol */
 YY_RULE_SETUP
@@ -8237,89 +8237,89 @@ YY_RULE_SETUP
   surfxml_link_state___file_isset = 0;
   ENTER(AL_surfxml_link); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 304:
 /* rule 304 can match eol */
 YY_RULE_SETUP
 if (surfxml_link_bandwidth_isset != 0) {FAIL("Multiple definition of attribute bandwidth in <surfxml_link>");} surfxml_link_bandwidth_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_link_bandwidth);
-	YY_BREAK
+  YY_BREAK
 case 305:
 /* rule 305 can match eol */
 YY_RULE_SETUP
 if (surfxml_link_bandwidth_isset != 0) {FAIL("Multiple definition of attribute bandwidth in <surfxml_link>");}  surfxml_link_bandwidth_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_link_bandwidth);
-	YY_BREAK
+  YY_BREAK
 case 306:
 /* rule 306 can match eol */
 YY_RULE_SETUP
 if (surfxml_link_bandwidth___file_isset != 0) {FAIL("Multiple definition of attribute bandwidth_file in <surfxml_link>");} surfxml_link_bandwidth___file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_link_bandwidth___file);
-	YY_BREAK
+  YY_BREAK
 case 307:
 /* rule 307 can match eol */
 YY_RULE_SETUP
 if (surfxml_link_bandwidth___file_isset != 0) {FAIL("Multiple definition of attribute bandwidth_file in <surfxml_link>");}  surfxml_link_bandwidth___file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_link_bandwidth___file);
-	YY_BREAK
+  YY_BREAK
 case 308:
 /* rule 308 can match eol */
 YY_RULE_SETUP
 if (surfxml_link_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_link>");} surfxml_link_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_link_id);
-	YY_BREAK
+  YY_BREAK
 case 309:
 /* rule 309 can match eol */
 YY_RULE_SETUP
 if (surfxml_link_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_link>");}  surfxml_link_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_link_id);
-	YY_BREAK
+  YY_BREAK
 case 310:
 /* rule 310 can match eol */
 YY_RULE_SETUP
 if (surfxml_link_latency_isset != 0) {FAIL("Multiple definition of attribute latency in <surfxml_link>");} surfxml_link_latency_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_link_latency);
-	YY_BREAK
+  YY_BREAK
 case 311:
 /* rule 311 can match eol */
 YY_RULE_SETUP
 if (surfxml_link_latency_isset != 0) {FAIL("Multiple definition of attribute latency in <surfxml_link>");}  surfxml_link_latency_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_link_latency);
-	YY_BREAK
+  YY_BREAK
 case 312:
 /* rule 312 can match eol */
 YY_RULE_SETUP
 if (surfxml_link_latency___file_isset != 0) {FAIL("Multiple definition of attribute latency_file in <surfxml_link>");} surfxml_link_latency___file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_link_latency___file);
-	YY_BREAK
+  YY_BREAK
 case 313:
 /* rule 313 can match eol */
 YY_RULE_SETUP
 if (surfxml_link_latency___file_isset != 0) {FAIL("Multiple definition of attribute latency_file in <surfxml_link>");}  surfxml_link_latency___file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_link_latency___file);
-	YY_BREAK
+  YY_BREAK
 case 314:
 /* rule 314 can match eol */
 case 315:
 /* rule 315 can match eol */
 YY_RULE_SETUP
 A_surfxml_link_sharing___policy = A_surfxml_link_sharing___policy_SHARED;
-	YY_BREAK
+  YY_BREAK
 case 316:
 /* rule 316 can match eol */
 case 317:
 /* rule 317 can match eol */
 YY_RULE_SETUP
 A_surfxml_link_sharing___policy = A_surfxml_link_sharing___policy_FATPIPE;
-	YY_BREAK
+  YY_BREAK
 case 318:
 /* rule 318 can match eol */
 case 319:
 /* rule 319 can match eol */
 YY_RULE_SETUP
 A_surfxml_link_sharing___policy = A_surfxml_link_sharing___policy_FULLDUPLEX;
-	YY_BREAK
+  YY_BREAK
 case 320:
 /* rule 320 can match eol */
 YY_RULE_SETUP
 if (surfxml_link_state___file_isset != 0) {FAIL("Multiple definition of attribute state_file in <surfxml_link>");} surfxml_link_state___file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_link_state___file);
-	YY_BREAK
+  YY_BREAK
 case 321:
 /* rule 321 can match eol */
 YY_RULE_SETUP
 if (surfxml_link_state___file_isset != 0) {FAIL("Multiple definition of attribute state_file in <surfxml_link>");}  surfxml_link_state___file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_link_state___file);
-	YY_BREAK
+  YY_BREAK
 case 322:
 YY_RULE_SETUP
 {
@@ -8327,7 +8327,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_link_id) FAIL("Required attribute `id' not set for `link' element.");
   LEAVE; STag_surfxml_link();surfxml_pcdata_ix = 0; ENTER(S_surfxml_link);
  }
-	YY_BREAK
+  YY_BREAK
 case 323:
 YY_RULE_SETUP
 {
@@ -8339,18 +8339,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 324:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of link element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 325:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `link' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_link):
 FAIL("EOF in attribute list of `link' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 326:
 /* rule 326 can match eol */
@@ -8364,27 +8364,27 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 327:
 /* rule 327 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</link>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 328:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</link>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_link):
 case YY_STATE_EOF(S_surfxml_link):
 case YY_STATE_EOF(S_surfxml_link_2):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</link>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 329:
 /* rule 329 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <link_ctn> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 330:
 /* rule 330 can match eol */
 YY_RULE_SETUP
@@ -8395,7 +8395,7 @@ YY_RULE_SETUP
   surfxml_link___ctn_id_isset = 0;
   ENTER(AL_surfxml_link___ctn); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 331:
 /* rule 331 can match eol */
@@ -8403,38 +8403,38 @@ case 332:
 /* rule 332 can match eol */
 YY_RULE_SETUP
 A_surfxml_link___ctn_direction = A_surfxml_link___ctn_direction_UP;
-	YY_BREAK
+  YY_BREAK
 case 333:
 /* rule 333 can match eol */
 case 334:
 /* rule 334 can match eol */
 YY_RULE_SETUP
 A_surfxml_link___ctn_direction = A_surfxml_link___ctn_direction_DOWN;
-	YY_BREAK
+  YY_BREAK
 case 335:
 /* rule 335 can match eol */
 case 336:
 /* rule 336 can match eol */
 YY_RULE_SETUP
 A_surfxml_link___ctn_direction = A_surfxml_link___ctn_direction_NONE;
-	YY_BREAK
+  YY_BREAK
 case 337:
 /* rule 337 can match eol */
 YY_RULE_SETUP
 if (surfxml_link___ctn_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_link___ctn>");} surfxml_link___ctn_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_link___ctn_id);
-	YY_BREAK
+  YY_BREAK
 case 338:
 /* rule 338 can match eol */
 YY_RULE_SETUP
 if (surfxml_link___ctn_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_link___ctn>");}  surfxml_link___ctn_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_link___ctn_id);
-	YY_BREAK
+  YY_BREAK
 case 339:
 YY_RULE_SETUP
 {
   if (!AX_surfxml_link___ctn_id) FAIL("Required attribute `id' not set for `link_ctn' element.");
   LEAVE; STag_surfxml_link___ctn();surfxml_pcdata_ix = 0; ENTER(E_surfxml_link___ctn);
  }
-	YY_BREAK
+  YY_BREAK
 case 340:
 YY_RULE_SETUP
 {
@@ -8449,18 +8449,18 @@ YY_RULE_SETUP
    case S_surfxml_zoneRoute: case S_surfxml_zoneRoute_1: case S_surfxml_zoneRoute_2: SET(S_surfxml_zoneRoute_2); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 341:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of link_ctn element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 342:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `link_ctn' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_link___ctn):
 FAIL("EOF in attribute list of `link_ctn' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 343:
 /* rule 343 can match eol */
@@ -8478,19 +8478,19 @@ YY_RULE_SETUP
    case S_surfxml_zoneRoute: case S_surfxml_zoneRoute_1: case S_surfxml_zoneRoute_2: SET(S_surfxml_zoneRoute_2); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 344:
 /* rule 344 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</link_ctn>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 345:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</link_ctn>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_link___ctn):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</link_ctn>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 /* <!-- <!ATTLIST model_prop key CDATA #REQUIRED> -->
   * <!-- <!ATTLIST model_prop key CDATA #REQUIRED> -->  */
@@ -8498,7 +8498,7 @@ case 346:
 /* rule 346 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <model_prop> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 347:
 /* rule 347 can match eol */
 YY_RULE_SETUP
@@ -8509,28 +8509,28 @@ YY_RULE_SETUP
   surfxml_model___prop_value_isset = 0;
   ENTER(AL_surfxml_model___prop); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 348:
 /* rule 348 can match eol */
 YY_RULE_SETUP
 if (surfxml_model___prop_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_model___prop>");} surfxml_model___prop_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_model___prop_id);
-	YY_BREAK
+  YY_BREAK
 case 349:
 /* rule 349 can match eol */
 YY_RULE_SETUP
 if (surfxml_model___prop_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_model___prop>");}  surfxml_model___prop_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_model___prop_id);
-	YY_BREAK
+  YY_BREAK
 case 350:
 /* rule 350 can match eol */
 YY_RULE_SETUP
 if (surfxml_model___prop_value_isset != 0) {FAIL("Multiple definition of attribute value in <surfxml_model___prop>");} surfxml_model___prop_value_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_model___prop_value);
-	YY_BREAK
+  YY_BREAK
 case 351:
 /* rule 351 can match eol */
 YY_RULE_SETUP
 if (surfxml_model___prop_value_isset != 0) {FAIL("Multiple definition of attribute value in <surfxml_model___prop>");}  surfxml_model___prop_value_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_model___prop_value);
-	YY_BREAK
+  YY_BREAK
 case 352:
 YY_RULE_SETUP
 {
@@ -8538,7 +8538,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_model___prop_value) FAIL("Required attribute `value' not set for `model_prop' element.");
   LEAVE; STag_surfxml_model___prop();surfxml_pcdata_ix = 0; ENTER(E_surfxml_model___prop);
  }
-	YY_BREAK
+  YY_BREAK
 case 353:
 YY_RULE_SETUP
 {
@@ -8549,18 +8549,18 @@ YY_RULE_SETUP
    case S_surfxml_storage___type: case S_surfxml_storage___type_1: case S_surfxml_storage___type_2: SET(S_surfxml_storage___type_2); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 354:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of model_prop element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 355:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `model_prop' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_model___prop):
 FAIL("EOF in attribute list of `model_prop' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 356:
 /* rule 356 can match eol */
@@ -8573,25 +8573,25 @@ YY_RULE_SETUP
    case S_surfxml_storage___type: case S_surfxml_storage___type_1: case S_surfxml_storage___type_2: SET(S_surfxml_storage___type_2); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 357:
 /* rule 357 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</model_prop>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 358:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</model_prop>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_model___prop):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</model_prop>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 359:
 /* rule 359 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <mount> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 360:
 /* rule 360 can match eol */
 YY_RULE_SETUP
@@ -8602,28 +8602,28 @@ YY_RULE_SETUP
   surfxml_mount_storageId_isset = 0;
   ENTER(AL_surfxml_mount); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 361:
 /* rule 361 can match eol */
 YY_RULE_SETUP
 if (surfxml_mount_name_isset != 0) {FAIL("Multiple definition of attribute name in <surfxml_mount>");} surfxml_mount_name_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_mount_name);
-	YY_BREAK
+  YY_BREAK
 case 362:
 /* rule 362 can match eol */
 YY_RULE_SETUP
 if (surfxml_mount_name_isset != 0) {FAIL("Multiple definition of attribute name in <surfxml_mount>");}  surfxml_mount_name_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_mount_name);
-	YY_BREAK
+  YY_BREAK
 case 363:
 /* rule 363 can match eol */
 YY_RULE_SETUP
 if (surfxml_mount_storageId_isset != 0) {FAIL("Multiple definition of attribute storageId in <surfxml_mount>");} surfxml_mount_storageId_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_mount_storageId);
-	YY_BREAK
+  YY_BREAK
 case 364:
 /* rule 364 can match eol */
 YY_RULE_SETUP
 if (surfxml_mount_storageId_isset != 0) {FAIL("Multiple definition of attribute storageId in <surfxml_mount>");}  surfxml_mount_storageId_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_mount_storageId);
-	YY_BREAK
+  YY_BREAK
 case 365:
 YY_RULE_SETUP
 {
@@ -8631,7 +8631,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_mount_storageId) FAIL("Required attribute `storageId' not set for `mount' element.");
   LEAVE; STag_surfxml_mount();surfxml_pcdata_ix = 0; ENTER(E_surfxml_mount);
  }
-	YY_BREAK
+  YY_BREAK
 case 366:
 YY_RULE_SETUP
 {
@@ -8642,18 +8642,18 @@ YY_RULE_SETUP
    case S_surfxml_host: case S_surfxml_host_1: case S_surfxml_host_2: SET(S_surfxml_host_2); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 367:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of mount element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 368:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `mount' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_mount):
 FAIL("EOF in attribute list of `mount' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 369:
 /* rule 369 can match eol */
@@ -8666,25 +8666,25 @@ YY_RULE_SETUP
    case S_surfxml_host: case S_surfxml_host_1: case S_surfxml_host_2: SET(S_surfxml_host_2); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 370:
 /* rule 370 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</mount>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 371:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</mount>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_mount):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</mount>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 372:
 /* rule 372 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <peer> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 373:
 /* rule 373 can match eol */
 YY_RULE_SETUP
@@ -8707,88 +8707,88 @@ YY_RULE_SETUP
   surfxml_peer_state___file_isset = 0;
   ENTER(AL_surfxml_peer); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 374:
 /* rule 374 can match eol */
 YY_RULE_SETUP
 if (surfxml_peer_availability___file_isset != 0) {FAIL("Multiple definition of attribute availability_file in <surfxml_peer>");} surfxml_peer_availability___file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_availability___file);
-	YY_BREAK
+  YY_BREAK
 case 375:
 /* rule 375 can match eol */
 YY_RULE_SETUP
 if (surfxml_peer_availability___file_isset != 0) {FAIL("Multiple definition of attribute availability_file in <surfxml_peer>");}  surfxml_peer_availability___file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_availability___file);
-	YY_BREAK
+  YY_BREAK
 case 376:
 /* rule 376 can match eol */
 YY_RULE_SETUP
 if (surfxml_peer_bw___in_isset != 0) {FAIL("Multiple definition of attribute bw_in in <surfxml_peer>");} surfxml_peer_bw___in_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_bw___in);
-	YY_BREAK
+  YY_BREAK
 case 377:
 /* rule 377 can match eol */
 YY_RULE_SETUP
 if (surfxml_peer_bw___in_isset != 0) {FAIL("Multiple definition of attribute bw_in in <surfxml_peer>");}  surfxml_peer_bw___in_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_bw___in);
-	YY_BREAK
+  YY_BREAK
 case 378:
 /* rule 378 can match eol */
 YY_RULE_SETUP
 if (surfxml_peer_bw___out_isset != 0) {FAIL("Multiple definition of attribute bw_out in <surfxml_peer>");} surfxml_peer_bw___out_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_bw___out);
-	YY_BREAK
+  YY_BREAK
 case 379:
 /* rule 379 can match eol */
 YY_RULE_SETUP
 if (surfxml_peer_bw___out_isset != 0) {FAIL("Multiple definition of attribute bw_out in <surfxml_peer>");}  surfxml_peer_bw___out_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_bw___out);
-	YY_BREAK
+  YY_BREAK
 case 380:
 /* rule 380 can match eol */
 YY_RULE_SETUP
 if (surfxml_peer_coordinates_isset != 0) {FAIL("Multiple definition of attribute coordinates in <surfxml_peer>");} surfxml_peer_coordinates_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_coordinates);
-	YY_BREAK
+  YY_BREAK
 case 381:
 /* rule 381 can match eol */
 YY_RULE_SETUP
 if (surfxml_peer_coordinates_isset != 0) {FAIL("Multiple definition of attribute coordinates in <surfxml_peer>");}  surfxml_peer_coordinates_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_coordinates);
-	YY_BREAK
+  YY_BREAK
 case 382:
 /* rule 382 can match eol */
 YY_RULE_SETUP
 if (surfxml_peer_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_peer>");} surfxml_peer_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_id);
-	YY_BREAK
+  YY_BREAK
 case 383:
 /* rule 383 can match eol */
 YY_RULE_SETUP
 if (surfxml_peer_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_peer>");}  surfxml_peer_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_id);
-	YY_BREAK
+  YY_BREAK
 case 384:
 /* rule 384 can match eol */
 YY_RULE_SETUP
 if (surfxml_peer_lat_isset != 0) {FAIL("Multiple definition of attribute lat in <surfxml_peer>");} surfxml_peer_lat_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_lat);
-	YY_BREAK
+  YY_BREAK
 case 385:
 /* rule 385 can match eol */
 YY_RULE_SETUP
 if (surfxml_peer_lat_isset != 0) {FAIL("Multiple definition of attribute lat in <surfxml_peer>");}  surfxml_peer_lat_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_lat);
-	YY_BREAK
+  YY_BREAK
 case 386:
 /* rule 386 can match eol */
 YY_RULE_SETUP
 if (surfxml_peer_speed_isset != 0) {FAIL("Multiple definition of attribute speed in <surfxml_peer>");} surfxml_peer_speed_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_speed);
-	YY_BREAK
+  YY_BREAK
 case 387:
 /* rule 387 can match eol */
 YY_RULE_SETUP
 if (surfxml_peer_speed_isset != 0) {FAIL("Multiple definition of attribute speed in <surfxml_peer>");}  surfxml_peer_speed_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_speed);
-	YY_BREAK
+  YY_BREAK
 case 388:
 /* rule 388 can match eol */
 YY_RULE_SETUP
 if (surfxml_peer_state___file_isset != 0) {FAIL("Multiple definition of attribute state_file in <surfxml_peer>");} surfxml_peer_state___file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_state___file);
-	YY_BREAK
+  YY_BREAK
 case 389:
 /* rule 389 can match eol */
 YY_RULE_SETUP
 if (surfxml_peer_state___file_isset != 0) {FAIL("Multiple definition of attribute state_file in <surfxml_peer>");}  surfxml_peer_state___file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_state___file);
-	YY_BREAK
+  YY_BREAK
 case 390:
 YY_RULE_SETUP
 {
@@ -8798,7 +8798,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_peer_speed) FAIL("Required attribute `speed' not set for `peer' element.");
   LEAVE; STag_surfxml_peer();surfxml_pcdata_ix = 0; ENTER(E_surfxml_peer);
  }
-	YY_BREAK
+  YY_BREAK
 case 391:
 YY_RULE_SETUP
 {
@@ -8814,18 +8814,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 392:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of peer element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 393:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `peer' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_peer):
 FAIL("EOF in attribute list of `peer' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 394:
 /* rule 394 can match eol */
@@ -8841,19 +8841,19 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 395:
 /* rule 395 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</peer>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 396:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</peer>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_peer):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</peer>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 /* <!-- 
   *              DTD of SimGrid platform and deployment files.
@@ -8913,7 +8913,7 @@ case 397:
 /* rule 397 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <platform> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 398:
 /* rule 398 can match eol */
 YY_RULE_SETUP
@@ -8922,24 +8922,24 @@ YY_RULE_SETUP
   surfxml_platform_version_isset = 0;
   ENTER(AL_surfxml_platform); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 399:
 /* rule 399 can match eol */
 YY_RULE_SETUP
 if (surfxml_platform_version_isset != 0) {FAIL("Multiple definition of attribute version in <surfxml_platform>");} surfxml_platform_version_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_platform_version);
-	YY_BREAK
+  YY_BREAK
 case 400:
 /* rule 400 can match eol */
 YY_RULE_SETUP
 if (surfxml_platform_version_isset != 0) {FAIL("Multiple definition of attribute version in <surfxml_platform>");}  surfxml_platform_version_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_platform_version);
-	YY_BREAK
+  YY_BREAK
 case 401:
 YY_RULE_SETUP
 {
   LEAVE; STag_surfxml_platform();surfxml_pcdata_ix = 0; ENTER(S_surfxml_platform);
  }
-	YY_BREAK
+  YY_BREAK
 case 402:
 YY_RULE_SETUP
 {
@@ -8948,18 +8948,18 @@ YY_RULE_SETUP
    case ROOT_surfxml_platform: SET(EPILOG); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 403:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of platform element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 404:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `platform' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_platform):
 FAIL("EOF in attribute list of `platform' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 405:
 /* rule 405 can match eol */
@@ -8972,16 +8972,16 @@ YY_RULE_SETUP
    case ROOT_surfxml_platform: SET(EPILOG); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 406:
 /* rule 406 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</platform>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 407:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</platform>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_platform):
 case YY_STATE_EOF(S_surfxml_platform):
 case YY_STATE_EOF(S_surfxml_platform_1):
@@ -8990,13 +8990,13 @@ case YY_STATE_EOF(S_surfxml_platform_4):
 case YY_STATE_EOF(S_surfxml_platform_6):
 case YY_STATE_EOF(S_surfxml_platform_8):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</platform>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 408:
 /* rule 408 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <process> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 409:
 /* rule 409 can match eol */
 YY_RULE_SETUP
@@ -9013,62 +9013,62 @@ YY_RULE_SETUP
   surfxml_process_start___time_isset = 0;
   ENTER(AL_surfxml_process); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 410:
 /* rule 410 can match eol */
 YY_RULE_SETUP
 if (surfxml_process_function_isset != 0) {FAIL("Multiple definition of attribute function in <surfxml_process>");} surfxml_process_function_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_process_function);
-	YY_BREAK
+  YY_BREAK
 case 411:
 /* rule 411 can match eol */
 YY_RULE_SETUP
 if (surfxml_process_function_isset != 0) {FAIL("Multiple definition of attribute function in <surfxml_process>");}  surfxml_process_function_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_process_function);
-	YY_BREAK
+  YY_BREAK
 case 412:
 /* rule 412 can match eol */
 YY_RULE_SETUP
 if (surfxml_process_host_isset != 0) {FAIL("Multiple definition of attribute host in <surfxml_process>");} surfxml_process_host_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_process_host);
-	YY_BREAK
+  YY_BREAK
 case 413:
 /* rule 413 can match eol */
 YY_RULE_SETUP
 if (surfxml_process_host_isset != 0) {FAIL("Multiple definition of attribute host in <surfxml_process>");}  surfxml_process_host_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_process_host);
-	YY_BREAK
+  YY_BREAK
 case 414:
 /* rule 414 can match eol */
 YY_RULE_SETUP
 if (surfxml_process_kill___time_isset != 0) {FAIL("Multiple definition of attribute kill_time in <surfxml_process>");} surfxml_process_kill___time_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_process_kill___time);
-	YY_BREAK
+  YY_BREAK
 case 415:
 /* rule 415 can match eol */
 YY_RULE_SETUP
 if (surfxml_process_kill___time_isset != 0) {FAIL("Multiple definition of attribute kill_time in <surfxml_process>");}  surfxml_process_kill___time_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_process_kill___time);
-	YY_BREAK
+  YY_BREAK
 case 416:
 /* rule 416 can match eol */
 case 417:
 /* rule 417 can match eol */
 YY_RULE_SETUP
 A_surfxml_process_on___failure = A_surfxml_process_on___failure_DIE;
-	YY_BREAK
+  YY_BREAK
 case 418:
 /* rule 418 can match eol */
 case 419:
 /* rule 419 can match eol */
 YY_RULE_SETUP
 A_surfxml_process_on___failure = A_surfxml_process_on___failure_RESTART;
-	YY_BREAK
+  YY_BREAK
 case 420:
 /* rule 420 can match eol */
 YY_RULE_SETUP
 if (surfxml_process_start___time_isset != 0) {FAIL("Multiple definition of attribute start_time in <surfxml_process>");} surfxml_process_start___time_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_process_start___time);
-	YY_BREAK
+  YY_BREAK
 case 421:
 /* rule 421 can match eol */
 YY_RULE_SETUP
 if (surfxml_process_start___time_isset != 0) {FAIL("Multiple definition of attribute start_time in <surfxml_process>");}  surfxml_process_start___time_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_process_start___time);
-	YY_BREAK
+  YY_BREAK
 case 422:
 YY_RULE_SETUP
 {
@@ -9076,7 +9076,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_process_host) FAIL("Required attribute `host' not set for `process' element.");
   LEAVE; STag_surfxml_process();surfxml_pcdata_ix = 0; ENTER(S_surfxml_process);
  }
-	YY_BREAK
+  YY_BREAK
 case 423:
 YY_RULE_SETUP
 {
@@ -9087,18 +9087,18 @@ YY_RULE_SETUP
    case S_surfxml_platform: case S_surfxml_platform_1: case S_surfxml_platform_3: case S_surfxml_platform_4: case S_surfxml_platform_6: case S_surfxml_platform_7: case S_surfxml_platform_8: SET(S_surfxml_platform_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 424:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of process element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 425:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `process' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_process):
 FAIL("EOF in attribute list of `process' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 426:
 /* rule 426 can match eol */
@@ -9111,21 +9111,21 @@ YY_RULE_SETUP
    case S_surfxml_platform: case S_surfxml_platform_1: case S_surfxml_platform_3: case S_surfxml_platform_4: case S_surfxml_platform_6: case S_surfxml_platform_7: case S_surfxml_platform_8: SET(S_surfxml_platform_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 427:
 /* rule 427 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</process>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 428:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</process>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_process):
 case YY_STATE_EOF(S_surfxml_process):
 case YY_STATE_EOF(S_surfxml_process_2):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</process>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 /* <!-- <!ATTLIST prop key CDATA #REQUIRED> -->
   * <!-- <!ATTLIST prop key CDATA #REQUIRED> -->  */
@@ -9133,7 +9133,7 @@ case 429:
 /* rule 429 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <prop> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 430:
 /* rule 430 can match eol */
 YY_RULE_SETUP
@@ -9144,28 +9144,28 @@ YY_RULE_SETUP
   surfxml_prop_value_isset = 0;
   ENTER(AL_surfxml_prop); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 431:
 /* rule 431 can match eol */
 YY_RULE_SETUP
 if (surfxml_prop_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_prop>");} surfxml_prop_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_prop_id);
-	YY_BREAK
+  YY_BREAK
 case 432:
 /* rule 432 can match eol */
 YY_RULE_SETUP
 if (surfxml_prop_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_prop>");}  surfxml_prop_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_prop_id);
-	YY_BREAK
+  YY_BREAK
 case 433:
 /* rule 433 can match eol */
 YY_RULE_SETUP
 if (surfxml_prop_value_isset != 0) {FAIL("Multiple definition of attribute value in <surfxml_prop>");} surfxml_prop_value_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_prop_value);
-	YY_BREAK
+  YY_BREAK
 case 434:
 /* rule 434 can match eol */
 YY_RULE_SETUP
 if (surfxml_prop_value_isset != 0) {FAIL("Multiple definition of attribute value in <surfxml_prop>");}  surfxml_prop_value_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_prop_value);
-	YY_BREAK
+  YY_BREAK
 case 435:
 YY_RULE_SETUP
 {
@@ -9173,7 +9173,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_prop_value) FAIL("Required attribute `value' not set for `prop' element.");
   LEAVE; STag_surfxml_prop();surfxml_pcdata_ix = 0; ENTER(E_surfxml_prop);
  }
-	YY_BREAK
+  YY_BREAK
 case 436:
 YY_RULE_SETUP
 {
@@ -9193,18 +9193,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_2: case S_surfxml_zone_3: SET(S_surfxml_zone_3); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 437:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of prop element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 438:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `prop' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_prop):
 FAIL("EOF in attribute list of `prop' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 439:
 /* rule 439 can match eol */
@@ -9226,25 +9226,25 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_2: case S_surfxml_zone_3: SET(S_surfxml_zone_3); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 440:
 /* rule 440 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</prop>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 441:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</prop>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_prop):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</prop>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 442:
 /* rule 442 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <random> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 443:
 /* rule 443 can match eol */
 YY_RULE_SETUP
@@ -9267,7 +9267,7 @@ YY_RULE_SETUP
   surfxml_random_std___deviation_isset = 0;
   ENTER(AL_surfxml_random); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 444:
 /* rule 444 can match eol */
@@ -9275,98 +9275,98 @@ case 445:
 /* rule 445 can match eol */
 YY_RULE_SETUP
 A_surfxml_random_generator = A_surfxml_random_generator_DRAND48;
-	YY_BREAK
+  YY_BREAK
 case 446:
 /* rule 446 can match eol */
 case 447:
 /* rule 447 can match eol */
 YY_RULE_SETUP
 A_surfxml_random_generator = A_surfxml_random_generator_RAND;
-	YY_BREAK
+  YY_BREAK
 case 448:
 /* rule 448 can match eol */
 case 449:
 /* rule 449 can match eol */
 YY_RULE_SETUP
 A_surfxml_random_generator = A_surfxml_random_generator_RNGSTREAM;
-	YY_BREAK
+  YY_BREAK
 case 450:
 /* rule 450 can match eol */
 case 451:
 /* rule 451 can match eol */
 YY_RULE_SETUP
 A_surfxml_random_generator = A_surfxml_random_generator_NONE;
-	YY_BREAK
+  YY_BREAK
 case 452:
 /* rule 452 can match eol */
 YY_RULE_SETUP
 if (surfxml_random_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_random>");} surfxml_random_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_random_id);
-	YY_BREAK
+  YY_BREAK
 case 453:
 /* rule 453 can match eol */
 YY_RULE_SETUP
 if (surfxml_random_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_random>");}  surfxml_random_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_random_id);
-	YY_BREAK
+  YY_BREAK
 case 454:
 /* rule 454 can match eol */
 YY_RULE_SETUP
 if (surfxml_random_max_isset != 0) {FAIL("Multiple definition of attribute max in <surfxml_random>");} surfxml_random_max_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_random_max);
-	YY_BREAK
+  YY_BREAK
 case 455:
 /* rule 455 can match eol */
 YY_RULE_SETUP
 if (surfxml_random_max_isset != 0) {FAIL("Multiple definition of attribute max in <surfxml_random>");}  surfxml_random_max_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_random_max);
-	YY_BREAK
+  YY_BREAK
 case 456:
 /* rule 456 can match eol */
 YY_RULE_SETUP
 if (surfxml_random_mean_isset != 0) {FAIL("Multiple definition of attribute mean in <surfxml_random>");} surfxml_random_mean_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_random_mean);
-	YY_BREAK
+  YY_BREAK
 case 457:
 /* rule 457 can match eol */
 YY_RULE_SETUP
 if (surfxml_random_mean_isset != 0) {FAIL("Multiple definition of attribute mean in <surfxml_random>");}  surfxml_random_mean_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_random_mean);
-	YY_BREAK
+  YY_BREAK
 case 458:
 /* rule 458 can match eol */
 YY_RULE_SETUP
 if (surfxml_random_min_isset != 0) {FAIL("Multiple definition of attribute min in <surfxml_random>");} surfxml_random_min_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_random_min);
-	YY_BREAK
+  YY_BREAK
 case 459:
 /* rule 459 can match eol */
 YY_RULE_SETUP
 if (surfxml_random_min_isset != 0) {FAIL("Multiple definition of attribute min in <surfxml_random>");}  surfxml_random_min_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_random_min);
-	YY_BREAK
+  YY_BREAK
 case 460:
 /* rule 460 can match eol */
 YY_RULE_SETUP
 if (surfxml_random_radical_isset != 0) {FAIL("Multiple definition of attribute radical in <surfxml_random>");} surfxml_random_radical_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_random_radical);
-	YY_BREAK
+  YY_BREAK
 case 461:
 /* rule 461 can match eol */
 YY_RULE_SETUP
 if (surfxml_random_radical_isset != 0) {FAIL("Multiple definition of attribute radical in <surfxml_random>");}  surfxml_random_radical_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_random_radical);
-	YY_BREAK
+  YY_BREAK
 case 462:
 /* rule 462 can match eol */
 YY_RULE_SETUP
 if (surfxml_random_seed_isset != 0) {FAIL("Multiple definition of attribute seed in <surfxml_random>");} surfxml_random_seed_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_random_seed);
-	YY_BREAK
+  YY_BREAK
 case 463:
 /* rule 463 can match eol */
 YY_RULE_SETUP
 if (surfxml_random_seed_isset != 0) {FAIL("Multiple definition of attribute seed in <surfxml_random>");}  surfxml_random_seed_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_random_seed);
-	YY_BREAK
+  YY_BREAK
 case 464:
 /* rule 464 can match eol */
 YY_RULE_SETUP
 if (surfxml_random_std___deviation_isset != 0) {FAIL("Multiple definition of attribute std_deviation in <surfxml_random>");} surfxml_random_std___deviation_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_random_std___deviation);
-	YY_BREAK
+  YY_BREAK
 case 465:
 /* rule 465 can match eol */
 YY_RULE_SETUP
 if (surfxml_random_std___deviation_isset != 0) {FAIL("Multiple definition of attribute std_deviation in <surfxml_random>");}  surfxml_random_std___deviation_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_random_std___deviation);
-	YY_BREAK
+  YY_BREAK
 case 466:
 YY_RULE_SETUP
 {
@@ -9377,7 +9377,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_random_std___deviation) FAIL("Required attribute `std_deviation' not set for `random' element.");
   LEAVE; STag_surfxml_random();surfxml_pcdata_ix = 0; ENTER(E_surfxml_random);
  }
-	YY_BREAK
+  YY_BREAK
 case 467:
 YY_RULE_SETUP
 {
@@ -9391,18 +9391,18 @@ YY_RULE_SETUP
    case S_surfxml_platform: case S_surfxml_platform_2: case S_surfxml_platform_3: SET(S_surfxml_platform_3); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 468:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of random element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 469:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `random' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_random):
 FAIL("EOF in attribute list of `random' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 470:
 /* rule 470 can match eol */
@@ -9415,25 +9415,25 @@ YY_RULE_SETUP
    case S_surfxml_platform: case S_surfxml_platform_2: case S_surfxml_platform_3: SET(S_surfxml_platform_3); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 471:
 /* rule 471 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</random>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 472:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</random>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_random):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</random>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 473:
 /* rule 473 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <route> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 474:
 /* rule 474 can match eol */
 YY_RULE_SETUP
@@ -9446,42 +9446,42 @@ YY_RULE_SETUP
   surfxml_route_symmetrical_isset = 0;
   ENTER(AL_surfxml_route); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 475:
 /* rule 475 can match eol */
 YY_RULE_SETUP
 if (surfxml_route_dst_isset != 0) {FAIL("Multiple definition of attribute dst in <surfxml_route>");} surfxml_route_dst_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_route_dst);
-	YY_BREAK
+  YY_BREAK
 case 476:
 /* rule 476 can match eol */
 YY_RULE_SETUP
 if (surfxml_route_dst_isset != 0) {FAIL("Multiple definition of attribute dst in <surfxml_route>");}  surfxml_route_dst_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_route_dst);
-	YY_BREAK
+  YY_BREAK
 case 477:
 /* rule 477 can match eol */
 YY_RULE_SETUP
 if (surfxml_route_src_isset != 0) {FAIL("Multiple definition of attribute src in <surfxml_route>");} surfxml_route_src_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_route_src);
-	YY_BREAK
+  YY_BREAK
 case 478:
 /* rule 478 can match eol */
 YY_RULE_SETUP
 if (surfxml_route_src_isset != 0) {FAIL("Multiple definition of attribute src in <surfxml_route>");}  surfxml_route_src_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_route_src);
-	YY_BREAK
+  YY_BREAK
 case 479:
 /* rule 479 can match eol */
 case 480:
 /* rule 480 can match eol */
 YY_RULE_SETUP
 A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_YES;
-	YY_BREAK
+  YY_BREAK
 case 481:
 /* rule 481 can match eol */
 case 482:
 /* rule 482 can match eol */
 YY_RULE_SETUP
 A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_NO;
-	YY_BREAK
+  YY_BREAK
 case 483:
 YY_RULE_SETUP
 {
@@ -9489,7 +9489,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_route_src) FAIL("Required attribute `src' not set for `route' element.");
   LEAVE; STag_surfxml_route();surfxml_pcdata_ix = 0; ENTER(S_surfxml_route);
  }
-	YY_BREAK
+  YY_BREAK
 case 484:
 YY_RULE_SETUP
 {
@@ -9501,18 +9501,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 485:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of route element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 486:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `route' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_route):
 FAIL("EOF in attribute list of `route' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 487:
 /* rule 487 can match eol */
@@ -9526,27 +9526,27 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 488:
 /* rule 488 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</route>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 489:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</route>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_route):
 case YY_STATE_EOF(S_surfxml_route):
 case YY_STATE_EOF(S_surfxml_route_2):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</route>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 490:
 /* rule 490 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <router> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 491:
 /* rule 491 can match eol */
 YY_RULE_SETUP
@@ -9557,35 +9557,35 @@ YY_RULE_SETUP
   surfxml_router_id_isset = 0;
   ENTER(AL_surfxml_router); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 492:
 /* rule 492 can match eol */
 YY_RULE_SETUP
 if (surfxml_router_coordinates_isset != 0) {FAIL("Multiple definition of attribute coordinates in <surfxml_router>");} surfxml_router_coordinates_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_router_coordinates);
-	YY_BREAK
+  YY_BREAK
 case 493:
 /* rule 493 can match eol */
 YY_RULE_SETUP
 if (surfxml_router_coordinates_isset != 0) {FAIL("Multiple definition of attribute coordinates in <surfxml_router>");}  surfxml_router_coordinates_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_router_coordinates);
-	YY_BREAK
+  YY_BREAK
 case 494:
 /* rule 494 can match eol */
 YY_RULE_SETUP
 if (surfxml_router_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_router>");} surfxml_router_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_router_id);
-	YY_BREAK
+  YY_BREAK
 case 495:
 /* rule 495 can match eol */
 YY_RULE_SETUP
 if (surfxml_router_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_router>");}  surfxml_router_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_router_id);
-	YY_BREAK
+  YY_BREAK
 case 496:
 YY_RULE_SETUP
 {
   if (!AX_surfxml_router_id) FAIL("Required attribute `id' not set for `router' element.");
   LEAVE; STag_surfxml_router();surfxml_pcdata_ix = 0; ENTER(E_surfxml_router);
  }
-	YY_BREAK
+  YY_BREAK
 case 497:
 YY_RULE_SETUP
 {
@@ -9596,18 +9596,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 498:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of router element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 499:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `router' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_router):
 FAIL("EOF in attribute list of `router' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 500:
 /* rule 500 can match eol */
@@ -9621,25 +9621,25 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 501:
 /* rule 501 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</router>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 502:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</router>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_router):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</router>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 503:
 /* rule 503 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <storage> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 504:
 /* rule 504 can match eol */
 YY_RULE_SETUP
@@ -9654,48 +9654,48 @@ YY_RULE_SETUP
   surfxml_storage_typeId_isset = 0;
   ENTER(AL_surfxml_storage); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 505:
 /* rule 505 can match eol */
 YY_RULE_SETUP
 if (surfxml_storage_attach_isset != 0) {FAIL("Multiple definition of attribute attach in <surfxml_storage>");} surfxml_storage_attach_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_storage_attach);
-	YY_BREAK
+  YY_BREAK
 case 506:
 /* rule 506 can match eol */
 YY_RULE_SETUP
 if (surfxml_storage_attach_isset != 0) {FAIL("Multiple definition of attribute attach in <surfxml_storage>");}  surfxml_storage_attach_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_storage_attach);
-	YY_BREAK
+  YY_BREAK
 case 507:
 /* rule 507 can match eol */
 YY_RULE_SETUP
 if (surfxml_storage_content_isset != 0) {FAIL("Multiple definition of attribute content in <surfxml_storage>");} surfxml_storage_content_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_storage_content);
-	YY_BREAK
+  YY_BREAK
 case 508:
 /* rule 508 can match eol */
 YY_RULE_SETUP
 if (surfxml_storage_content_isset != 0) {FAIL("Multiple definition of attribute content in <surfxml_storage>");}  surfxml_storage_content_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_storage_content);
-	YY_BREAK
+  YY_BREAK
 case 509:
 /* rule 509 can match eol */
 YY_RULE_SETUP
 if (surfxml_storage_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_storage>");} surfxml_storage_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_storage_id);
-	YY_BREAK
+  YY_BREAK
 case 510:
 /* rule 510 can match eol */
 YY_RULE_SETUP
 if (surfxml_storage_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_storage>");}  surfxml_storage_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_storage_id);
-	YY_BREAK
+  YY_BREAK
 case 511:
 /* rule 511 can match eol */
 YY_RULE_SETUP
 if (surfxml_storage_typeId_isset != 0) {FAIL("Multiple definition of attribute typeId in <surfxml_storage>");} surfxml_storage_typeId_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_storage_typeId);
-	YY_BREAK
+  YY_BREAK
 case 512:
 /* rule 512 can match eol */
 YY_RULE_SETUP
 if (surfxml_storage_typeId_isset != 0) {FAIL("Multiple definition of attribute typeId in <surfxml_storage>");}  surfxml_storage_typeId_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_storage_typeId);
-	YY_BREAK
+  YY_BREAK
 case 513:
 YY_RULE_SETUP
 {
@@ -9704,7 +9704,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_storage_typeId) FAIL("Required attribute `typeId' not set for `storage' element.");
   LEAVE; STag_surfxml_storage();surfxml_pcdata_ix = 0; ENTER(S_surfxml_storage);
  }
-	YY_BREAK
+  YY_BREAK
 case 514:
 YY_RULE_SETUP
 {
@@ -9717,18 +9717,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 515:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of storage element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 516:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `storage' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_storage):
 FAIL("EOF in attribute list of `storage' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 517:
 /* rule 517 can match eol */
@@ -9742,27 +9742,27 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 518:
 /* rule 518 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</storage>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 519:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</storage>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_storage):
 case YY_STATE_EOF(S_surfxml_storage):
 case YY_STATE_EOF(S_surfxml_storage_2):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</storage>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 520:
 /* rule 520 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <storage_type> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 521:
 /* rule 521 can match eol */
 YY_RULE_SETUP
@@ -9777,48 +9777,48 @@ YY_RULE_SETUP
   surfxml_storage___type_size_isset = 0;
   ENTER(AL_surfxml_storage___type); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 522:
 /* rule 522 can match eol */
 YY_RULE_SETUP
 if (surfxml_storage___type_content_isset != 0) {FAIL("Multiple definition of attribute content in <surfxml_storage___type>");} surfxml_storage___type_content_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_storage___type_content);
-	YY_BREAK
+  YY_BREAK
 case 523:
 /* rule 523 can match eol */
 YY_RULE_SETUP
 if (surfxml_storage___type_content_isset != 0) {FAIL("Multiple definition of attribute content in <surfxml_storage___type>");}  surfxml_storage___type_content_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_storage___type_content);
-	YY_BREAK
+  YY_BREAK
 case 524:
 /* rule 524 can match eol */
 YY_RULE_SETUP
 if (surfxml_storage___type_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_storage___type>");} surfxml_storage___type_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_storage___type_id);
-	YY_BREAK
+  YY_BREAK
 case 525:
 /* rule 525 can match eol */
 YY_RULE_SETUP
 if (surfxml_storage___type_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_storage___type>");}  surfxml_storage___type_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_storage___type_id);
-	YY_BREAK
+  YY_BREAK
 case 526:
 /* rule 526 can match eol */
 YY_RULE_SETUP
 if (surfxml_storage___type_model_isset != 0) {FAIL("Multiple definition of attribute model in <surfxml_storage___type>");} surfxml_storage___type_model_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_storage___type_model);
-	YY_BREAK
+  YY_BREAK
 case 527:
 /* rule 527 can match eol */
 YY_RULE_SETUP
 if (surfxml_storage___type_model_isset != 0) {FAIL("Multiple definition of attribute model in <surfxml_storage___type>");}  surfxml_storage___type_model_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_storage___type_model);
-	YY_BREAK
+  YY_BREAK
 case 528:
 /* rule 528 can match eol */
 YY_RULE_SETUP
 if (surfxml_storage___type_size_isset != 0) {FAIL("Multiple definition of attribute size in <surfxml_storage___type>");} surfxml_storage___type_size_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_storage___type_size);
-	YY_BREAK
+  YY_BREAK
 case 529:
 /* rule 529 can match eol */
 YY_RULE_SETUP
 if (surfxml_storage___type_size_isset != 0) {FAIL("Multiple definition of attribute size in <surfxml_storage___type>");}  surfxml_storage___type_size_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_storage___type_size);
-	YY_BREAK
+  YY_BREAK
 case 530:
 YY_RULE_SETUP
 {
@@ -9826,7 +9826,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_storage___type_size) FAIL("Required attribute `size' not set for `storage_type' element.");
   LEAVE; STag_surfxml_storage___type();surfxml_pcdata_ix = 0; ENTER(S_surfxml_storage___type);
  }
-	YY_BREAK
+  YY_BREAK
 case 531:
 YY_RULE_SETUP
 {
@@ -9838,18 +9838,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 532:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of storage_type element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 533:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `storage_type' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_storage___type):
 FAIL("EOF in attribute list of `storage_type' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 534:
 /* rule 534 can match eol */
@@ -9863,27 +9863,27 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 535:
 /* rule 535 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</storage_type>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 536:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</storage_type>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_storage___type):
 case YY_STATE_EOF(S_surfxml_storage___type):
 case YY_STATE_EOF(S_surfxml_storage___type_2):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</storage_type>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 537:
 /* rule 537 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <trace> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 538:
 /* rule 538 can match eol */
 YY_RULE_SETUP
@@ -9896,38 +9896,38 @@ YY_RULE_SETUP
   surfxml_trace_periodicity_isset = 0;
   ENTER(AL_surfxml_trace); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 539:
 /* rule 539 can match eol */
 YY_RULE_SETUP
 if (surfxml_trace_file_isset != 0) {FAIL("Multiple definition of attribute file in <surfxml_trace>");} surfxml_trace_file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_trace_file);
-	YY_BREAK
+  YY_BREAK
 case 540:
 /* rule 540 can match eol */
 YY_RULE_SETUP
 if (surfxml_trace_file_isset != 0) {FAIL("Multiple definition of attribute file in <surfxml_trace>");}  surfxml_trace_file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_file);
-	YY_BREAK
+  YY_BREAK
 case 541:
 /* rule 541 can match eol */
 YY_RULE_SETUP
 if (surfxml_trace_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_trace>");} surfxml_trace_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_trace_id);
-	YY_BREAK
+  YY_BREAK
 case 542:
 /* rule 542 can match eol */
 YY_RULE_SETUP
 if (surfxml_trace_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_trace>");}  surfxml_trace_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_id);
-	YY_BREAK
+  YY_BREAK
 case 543:
 /* rule 543 can match eol */
 YY_RULE_SETUP
 if (surfxml_trace_periodicity_isset != 0) {FAIL("Multiple definition of attribute periodicity in <surfxml_trace>");} surfxml_trace_periodicity_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_trace_periodicity);
-	YY_BREAK
+  YY_BREAK
 case 544:
 /* rule 544 can match eol */
 YY_RULE_SETUP
 if (surfxml_trace_periodicity_isset != 0) {FAIL("Multiple definition of attribute periodicity in <surfxml_trace>");}  surfxml_trace_periodicity_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_periodicity);
-	YY_BREAK
+  YY_BREAK
 case 545:
 YY_RULE_SETUP
 {
@@ -9935,7 +9935,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_trace_periodicity) FAIL("Required attribute `periodicity' not set for `trace' element.");
   LEAVE; STag_surfxml_trace();pushbuffer(surfxml_pcdata_ix); BUFFERSET(surfxml_pcdata_ix);; ENTER(IN_trace);
  }
-	YY_BREAK
+  YY_BREAK
 case 546:
 YY_RULE_SETUP
 {
@@ -9949,18 +9949,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 547:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of trace element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 548:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `trace' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_trace):
 FAIL("EOF in attribute list of `trace' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 549:
 /* rule 549 can match eol */
@@ -9978,21 +9978,21 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 550:
 /* rule 550 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</trace>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(IN_trace):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</trace>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 551:
 /* rule 551 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <trace_connect> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 552:
 /* rule 552 can match eol */
 YY_RULE_SETUP
@@ -10005,63 +10005,63 @@ YY_RULE_SETUP
   surfxml_trace___connect_trace_isset = 0;
   ENTER(AL_surfxml_trace___connect); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 553:
 /* rule 553 can match eol */
 YY_RULE_SETUP
 if (surfxml_trace___connect_element_isset != 0) {FAIL("Multiple definition of attribute element in <surfxml_trace___connect>");} surfxml_trace___connect_element_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_trace___connect_element);
-	YY_BREAK
+  YY_BREAK
 case 554:
 /* rule 554 can match eol */
 YY_RULE_SETUP
 if (surfxml_trace___connect_element_isset != 0) {FAIL("Multiple definition of attribute element in <surfxml_trace___connect>");}  surfxml_trace___connect_element_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_trace___connect_element);
-	YY_BREAK
+  YY_BREAK
 case 555:
 /* rule 555 can match eol */
 case 556:
 /* rule 556 can match eol */
 YY_RULE_SETUP
 A_surfxml_trace___connect_kind = A_surfxml_trace___connect_kind_HOST___AVAIL;
-	YY_BREAK
+  YY_BREAK
 case 557:
 /* rule 557 can match eol */
 case 558:
 /* rule 558 can match eol */
 YY_RULE_SETUP
 A_surfxml_trace___connect_kind = A_surfxml_trace___connect_kind_SPEED;
-	YY_BREAK
+  YY_BREAK
 case 559:
 /* rule 559 can match eol */
 case 560:
 /* rule 560 can match eol */
 YY_RULE_SETUP
 A_surfxml_trace___connect_kind = A_surfxml_trace___connect_kind_LINK___AVAIL;
-	YY_BREAK
+  YY_BREAK
 case 561:
 /* rule 561 can match eol */
 case 562:
 /* rule 562 can match eol */
 YY_RULE_SETUP
 A_surfxml_trace___connect_kind = A_surfxml_trace___connect_kind_BANDWIDTH;
-	YY_BREAK
+  YY_BREAK
 case 563:
 /* rule 563 can match eol */
 case 564:
 /* rule 564 can match eol */
 YY_RULE_SETUP
 A_surfxml_trace___connect_kind = A_surfxml_trace___connect_kind_LATENCY;
-	YY_BREAK
+  YY_BREAK
 case 565:
 /* rule 565 can match eol */
 YY_RULE_SETUP
 if (surfxml_trace___connect_trace_isset != 0) {FAIL("Multiple definition of attribute trace in <surfxml_trace___connect>");} surfxml_trace___connect_trace_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_trace___connect_trace);
-	YY_BREAK
+  YY_BREAK
 case 566:
 /* rule 566 can match eol */
 YY_RULE_SETUP
 if (surfxml_trace___connect_trace_isset != 0) {FAIL("Multiple definition of attribute trace in <surfxml_trace___connect>");}  surfxml_trace___connect_trace_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_trace___connect_trace);
-	YY_BREAK
+  YY_BREAK
 case 567:
 YY_RULE_SETUP
 {
@@ -10069,7 +10069,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_trace___connect_trace) FAIL("Required attribute `trace' not set for `trace_connect' element.");
   LEAVE; STag_surfxml_trace___connect();surfxml_pcdata_ix = 0; ENTER(E_surfxml_trace___connect);
  }
-	YY_BREAK
+  YY_BREAK
 case 568:
 YY_RULE_SETUP
 {
@@ -10083,18 +10083,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 569:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of trace_connect element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 570:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `trace_connect' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_trace___connect):
 FAIL("EOF in attribute list of `trace_connect' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 571:
 /* rule 571 can match eol */
@@ -10110,25 +10110,25 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 572:
 /* rule 572 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</trace_connect>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 573:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</trace_connect>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_trace___connect):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</trace_connect>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 574:
 /* rule 574 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <zone> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 575:
 /* rule 575 can match eol */
 YY_RULE_SETUP
@@ -10139,88 +10139,88 @@ YY_RULE_SETUP
   surfxml_zone_routing_isset = 0;
   ENTER(AL_surfxml_zone); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 576:
 /* rule 576 can match eol */
 YY_RULE_SETUP
 if (surfxml_zone_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_zone>");} surfxml_zone_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_zone_id);
-	YY_BREAK
+  YY_BREAK
 case 577:
 /* rule 577 can match eol */
 YY_RULE_SETUP
 if (surfxml_zone_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_zone>");}  surfxml_zone_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_zone_id);
-	YY_BREAK
+  YY_BREAK
 case 578:
 /* rule 578 can match eol */
 case 579:
 /* rule 579 can match eol */
 YY_RULE_SETUP
 A_surfxml_zone_routing = A_surfxml_zone_routing_Full;
-	YY_BREAK
+  YY_BREAK
 case 580:
 /* rule 580 can match eol */
 case 581:
 /* rule 581 can match eol */
 YY_RULE_SETUP
 A_surfxml_zone_routing = A_surfxml_zone_routing_Floyd;
-	YY_BREAK
+  YY_BREAK
 case 582:
 /* rule 582 can match eol */
 case 583:
 /* rule 583 can match eol */
 YY_RULE_SETUP
 A_surfxml_zone_routing = A_surfxml_zone_routing_Dijkstra;
-	YY_BREAK
+  YY_BREAK
 case 584:
 /* rule 584 can match eol */
 case 585:
 /* rule 585 can match eol */
 YY_RULE_SETUP
 A_surfxml_zone_routing = A_surfxml_zone_routing_DijkstraCache;
-	YY_BREAK
+  YY_BREAK
 case 586:
 /* rule 586 can match eol */
 case 587:
 /* rule 587 can match eol */
 YY_RULE_SETUP
 A_surfxml_zone_routing = A_surfxml_zone_routing_None;
-	YY_BREAK
+  YY_BREAK
 case 588:
 /* rule 588 can match eol */
 case 589:
 /* rule 589 can match eol */
 YY_RULE_SETUP
 A_surfxml_zone_routing = A_surfxml_zone_routing_Vivaldi;
-	YY_BREAK
+  YY_BREAK
 case 590:
 /* rule 590 can match eol */
 case 591:
 /* rule 591 can match eol */
 YY_RULE_SETUP
 A_surfxml_zone_routing = A_surfxml_zone_routing_Cluster;
-	YY_BREAK
+  YY_BREAK
 case 592:
 /* rule 592 can match eol */
 case 593:
 /* rule 593 can match eol */
 YY_RULE_SETUP
 A_surfxml_zone_routing = A_surfxml_zone_routing_ClusterTorus;
-	YY_BREAK
+  YY_BREAK
 case 594:
 /* rule 594 can match eol */
 case 595:
 /* rule 595 can match eol */
 YY_RULE_SETUP
 A_surfxml_zone_routing = A_surfxml_zone_routing_ClusterFatTree;
-	YY_BREAK
+  YY_BREAK
 case 596:
 /* rule 596 can match eol */
 case 597:
 /* rule 597 can match eol */
 YY_RULE_SETUP
 A_surfxml_zone_routing = A_surfxml_zone_routing_ClusterDragonfly;
-	YY_BREAK
+  YY_BREAK
 case 598:
 YY_RULE_SETUP
 {
@@ -10228,7 +10228,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_zone_routing) FAIL("Required attribute `routing' not set for `zone' element.");
   LEAVE; STag_surfxml_zone();surfxml_pcdata_ix = 0; ENTER(S_surfxml_zone);
  }
-	YY_BREAK
+  YY_BREAK
 case 599:
 YY_RULE_SETUP
 {
@@ -10242,18 +10242,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 600:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of zone element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 601:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `zone' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_zone):
 FAIL("EOF in attribute list of `zone' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 602:
 /* rule 602 can match eol */
@@ -10269,16 +10269,16 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 603:
 /* rule 603 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</zone>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 604:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</zone>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_zone):
 case YY_STATE_EOF(S_surfxml_zone):
 case YY_STATE_EOF(S_surfxml_zone_1):
@@ -10287,13 +10287,13 @@ case YY_STATE_EOF(S_surfxml_zone_4):
 case YY_STATE_EOF(S_surfxml_zone_6):
 case YY_STATE_EOF(S_surfxml_zone_8):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</zone>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 605:
 /* rule 605 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <zoneRoute> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 606:
 /* rule 606 can match eol */
 YY_RULE_SETUP
@@ -10310,62 +10310,62 @@ YY_RULE_SETUP
   surfxml_zoneRoute_symmetrical_isset = 0;
   ENTER(AL_surfxml_zoneRoute); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 607:
 /* rule 607 can match eol */
 YY_RULE_SETUP
 if (surfxml_zoneRoute_dst_isset != 0) {FAIL("Multiple definition of attribute dst in <surfxml_zoneRoute>");} surfxml_zoneRoute_dst_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_zoneRoute_dst);
-	YY_BREAK
+  YY_BREAK
 case 608:
 /* rule 608 can match eol */
 YY_RULE_SETUP
 if (surfxml_zoneRoute_dst_isset != 0) {FAIL("Multiple definition of attribute dst in <surfxml_zoneRoute>");}  surfxml_zoneRoute_dst_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_zoneRoute_dst);
-	YY_BREAK
+  YY_BREAK
 case 609:
 /* rule 609 can match eol */
 YY_RULE_SETUP
 if (surfxml_zoneRoute_gw___dst_isset != 0) {FAIL("Multiple definition of attribute gw_dst in <surfxml_zoneRoute>");} surfxml_zoneRoute_gw___dst_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_zoneRoute_gw___dst);
-	YY_BREAK
+  YY_BREAK
 case 610:
 /* rule 610 can match eol */
 YY_RULE_SETUP
 if (surfxml_zoneRoute_gw___dst_isset != 0) {FAIL("Multiple definition of attribute gw_dst in <surfxml_zoneRoute>");}  surfxml_zoneRoute_gw___dst_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_zoneRoute_gw___dst);
-	YY_BREAK
+  YY_BREAK
 case 611:
 /* rule 611 can match eol */
 YY_RULE_SETUP
 if (surfxml_zoneRoute_gw___src_isset != 0) {FAIL("Multiple definition of attribute gw_src in <surfxml_zoneRoute>");} surfxml_zoneRoute_gw___src_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_zoneRoute_gw___src);
-	YY_BREAK
+  YY_BREAK
 case 612:
 /* rule 612 can match eol */
 YY_RULE_SETUP
 if (surfxml_zoneRoute_gw___src_isset != 0) {FAIL("Multiple definition of attribute gw_src in <surfxml_zoneRoute>");}  surfxml_zoneRoute_gw___src_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_zoneRoute_gw___src);
-	YY_BREAK
+  YY_BREAK
 case 613:
 /* rule 613 can match eol */
 YY_RULE_SETUP
 if (surfxml_zoneRoute_src_isset != 0) {FAIL("Multiple definition of attribute src in <surfxml_zoneRoute>");} surfxml_zoneRoute_src_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_zoneRoute_src);
-	YY_BREAK
+  YY_BREAK
 case 614:
 /* rule 614 can match eol */
 YY_RULE_SETUP
 if (surfxml_zoneRoute_src_isset != 0) {FAIL("Multiple definition of attribute src in <surfxml_zoneRoute>");}  surfxml_zoneRoute_src_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_zoneRoute_src);
-	YY_BREAK
+  YY_BREAK
 case 615:
 /* rule 615 can match eol */
 case 616:
 /* rule 616 can match eol */
 YY_RULE_SETUP
 A_surfxml_zoneRoute_symmetrical = A_surfxml_zoneRoute_symmetrical_YES;
-	YY_BREAK
+  YY_BREAK
 case 617:
 /* rule 617 can match eol */
 case 618:
 /* rule 618 can match eol */
 YY_RULE_SETUP
 A_surfxml_zoneRoute_symmetrical = A_surfxml_zoneRoute_symmetrical_NO;
-	YY_BREAK
+  YY_BREAK
 case 619:
 YY_RULE_SETUP
 {
@@ -10375,7 +10375,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_zoneRoute_src) FAIL("Required attribute `src' not set for `zoneRoute' element.");
   LEAVE; STag_surfxml_zoneRoute();surfxml_pcdata_ix = 0; ENTER(S_surfxml_zoneRoute);
  }
-	YY_BREAK
+  YY_BREAK
 case 620:
 YY_RULE_SETUP
 {
@@ -10391,18 +10391,18 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 621:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of zoneRoute element.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 622:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `zoneRoute' element start tag.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_surfxml_zoneRoute):
 FAIL("EOF in attribute list of `zoneRoute' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 623:
 /* rule 623 can match eol */
@@ -10418,31 +10418,31 @@ YY_RULE_SETUP
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 624:
 /* rule 624 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</zoneRoute>' expected.",surf_parse_text);
-	YY_BREAK
+  YY_BREAK
 case 625:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</zoneRoute>' expected.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_surfxml_zoneRoute):
 case YY_STATE_EOF(S_surfxml_zoneRoute):
 case YY_STATE_EOF(S_surfxml_zoneRoute_2):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</zoneRoute>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 /* EPILOG: after the root element. */
 
 case 626:
 YY_RULE_SETUP
 {SET(PROLOG); yyless(0); CLEANUP; return -1;}
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(EPILOG):
 SUCCEED;
-	YY_BREAK
+  YY_BREAK
 
 /* CHARACTER DATA. */
 
@@ -10450,32 +10450,32 @@ SUCCEED;
 case 627:
 YY_RULE_SETUP
 BUFFERPUTC('&');
-	YY_BREAK
+  YY_BREAK
 case 628:
 YY_RULE_SETUP
 BUFFERPUTC('<');
-	YY_BREAK
+  YY_BREAK
 case 629:
 YY_RULE_SETUP
 BUFFERPUTC('>');
-	YY_BREAK
+  YY_BREAK
 case 630:
 YY_RULE_SETUP
 BUFFERPUTC('\'');
-	YY_BREAK
+  YY_BREAK
 case 631:
 YY_RULE_SETUP
 BUFFERPUTC('"');
-	YY_BREAK
+  YY_BREAK
 /* Character entities. */
 case 632:
 YY_RULE_SETUP
 BUFFERPUTC((unsigned char)atoi(surf_parse_text+2));
-	YY_BREAK
+  YY_BREAK
 case 633:
 YY_RULE_SETUP
 BUFFERPUTC((unsigned char)strtol(surf_parse_text+3,NULL,16));
-	YY_BREAK
+  YY_BREAK
 
 case 634:
 /* rule 634 can match eol */
@@ -10487,55 +10487,55 @@ case 637:
 /* rule 637 can match eol */
 YY_RULE_SETUP
 BUFFERPUTC('\n');
-	YY_BREAK
+  YY_BREAK
 
 case 638:
 YY_RULE_SETUP
 ENTER(CDATA);
-	YY_BREAK
+  YY_BREAK
 case 639:
 YY_RULE_SETUP
 FAIL("Unexpected `]""]>' in character data.");
-	YY_BREAK
+  YY_BREAK
 
 case 640:
 YY_RULE_SETUP
 BUFFERDONE; LEAVE;
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(VALUE1):
 FAIL("EOF in literal (\"'\" expected).");
-	YY_BREAK
+  YY_BREAK
 
 case 641:
 YY_RULE_SETUP
 BUFFERDONE; LEAVE;
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(VALUE2):
 FAIL("EOF in literal (`\"' expected).");
-	YY_BREAK
+  YY_BREAK
 
 case 642:
 /* rule 642 can match eol */
 YY_RULE_SETUP
 BUFFERPUTC(surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 643:
 YY_RULE_SETUP
 FAIL("Spurious `%c' in character data.",surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 
 case 644:
 YY_RULE_SETUP
 LEAVE;
-	YY_BREAK
-/* "]""]"		BUFFERPUTC(surf_parse_text[0]); BUFFERPUTC(surf_parse_text[1]); */
+  YY_BREAK
+/* "]""]"    BUFFERPUTC(surf_parse_text[0]); BUFFERPUTC(surf_parse_text[1]); */
 case 645:
 YY_RULE_SETUP
 BUFFERPUTC(surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(CDATA):
 FAIL("EOF in CDATA section.");
-	YY_BREAK
+  YY_BREAK
 
 /* Impossible rules to avoid warnings from flex(1). */
 /* Ideally, this should be replaced by code in flexml.pl that
@@ -10545,12 +10545,12 @@ case 646:
 /* rule 646 can match eol */
 YY_RULE_SETUP
 FAIL("Syntax error on character `%c'.", surf_parse_text[0]);
-	YY_BREAK
+  YY_BREAK
 
 case 647:
 YY_RULE_SETUP
 ECHO;
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(S_surfxml_AS_2):
 case YY_STATE_EOF(S_surfxml_AS_5):
@@ -10578,332 +10578,332 @@ case YY_STATE_EOF(S_surfxml_zone_5):
 case YY_STATE_EOF(S_surfxml_zone_7):
 case YY_STATE_EOF(S_surfxml_zoneRoute_1):
 case YY_STATE_EOF(IMPOSSIBLE):
-	yyterminate();
+  yyterminate();
 
-	case YY_END_OF_BUFFER:
-		{
-		/* Amount of text matched not including the EOB char. */
-		int yy_amount_of_matched_text = (int) (yy_cp - (yytext_ptr)) - 1;
+  case YY_END_OF_BUFFER:
+    {
+    /* Amount of text matched not including the EOB char. */
+    int yy_amount_of_matched_text = (int) (yy_cp - (yytext_ptr)) - 1;
 
-		/* Undo the effects of YY_DO_BEFORE_ACTION. */
-		*yy_cp = (yy_hold_char);
-		YY_RESTORE_YY_MORE_OFFSET
+    /* Undo the effects of YY_DO_BEFORE_ACTION. */
+    *yy_cp = (yy_hold_char);
+    YY_RESTORE_YY_MORE_OFFSET
 
-		if ( YY_CURRENT_BUFFER_LVALUE->yy_buffer_status == YY_BUFFER_NEW )
-			{
-			/* We're scanning a new file or input source.  It's
-			 * possible that this happened because the user
-			 * just pointed surf_parse_in at a new source and called
-			 * surf_parse_lex().  If so, then we have to assure
-			 * consistency between YY_CURRENT_BUFFER and our
-			 * globals.  Here is the right place to do so, because
-			 * this is the first action (other than possibly a
-			 * back-up) that will match for the new input source.
-			 */
-			(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
-			YY_CURRENT_BUFFER_LVALUE->yy_input_file = surf_parse_in;
-			YY_CURRENT_BUFFER_LVALUE->yy_buffer_status = YY_BUFFER_NORMAL;
-			}
+    if ( YY_CURRENT_BUFFER_LVALUE->yy_buffer_status == YY_BUFFER_NEW )
+      {
+      /* We're scanning a new file or input source.  It's
+       * possible that this happened because the user
+       * just pointed surf_parse_in at a new source and called
+       * surf_parse_lex().  If so, then we have to assure
+       * consistency between YY_CURRENT_BUFFER and our
+       * globals.  Here is the right place to do so, because
+       * this is the first action (other than possibly a
+       * back-up) that will match for the new input source.
+       */
+      (yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
+      YY_CURRENT_BUFFER_LVALUE->yy_input_file = surf_parse_in;
+      YY_CURRENT_BUFFER_LVALUE->yy_buffer_status = YY_BUFFER_NORMAL;
+      }
 
-		/* Note that here we test for yy_c_buf_p "<=" to the position
-		 * of the first EOB in the buffer, since yy_c_buf_p will
-		 * already have been incremented past the NUL character
-		 * (since all states make transitions on EOB to the
-		 * end-of-buffer state).  Contrast this with the test
-		 * in input().
-		 */
-		if ( (yy_c_buf_p) <= &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)] )
-			{ /* This was really a NUL. */
-			yy_state_type yy_next_state;
+    /* Note that here we test for yy_c_buf_p "<=" to the position
+     * of the first EOB in the buffer, since yy_c_buf_p will
+     * already have been incremented past the NUL character
+     * (since all states make transitions on EOB to the
+     * end-of-buffer state).  Contrast this with the test
+     * in input().
+     */
+    if ( (yy_c_buf_p) <= &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)] )
+      { /* This was really a NUL. */
+      yy_state_type yy_next_state;
 
-			(yy_c_buf_p) = (yytext_ptr) + yy_amount_of_matched_text;
+      (yy_c_buf_p) = (yytext_ptr) + yy_amount_of_matched_text;
 
-			yy_current_state = yy_get_previous_state(  );
+      yy_current_state = yy_get_previous_state(  );
 
-			/* Okay, we're now positioned to make the NUL
-			 * transition.  We couldn't have
-			 * yy_get_previous_state() go ahead and do it
-			 * for us because it doesn't know how to deal
-			 * with the possibility of jamming (and we don't
-			 * want to build jamming into it because then it
-			 * will run more slowly).
-			 */
+      /* Okay, we're now positioned to make the NUL
+       * transition.  We couldn't have
+       * yy_get_previous_state() go ahead and do it
+       * for us because it doesn't know how to deal
+       * with the possibility of jamming (and we don't
+       * want to build jamming into it because then it
+       * will run more slowly).
+       */
 
-			yy_next_state = yy_try_NUL_trans( yy_current_state );
+      yy_next_state = yy_try_NUL_trans( yy_current_state );
 
-			yy_bp = (yytext_ptr) + YY_MORE_ADJ;
+      yy_bp = (yytext_ptr) + YY_MORE_ADJ;
 
-			if ( yy_next_state )
-				{
-				/* Consume the NUL. */
-				yy_cp = ++(yy_c_buf_p);
-				yy_current_state = yy_next_state;
-				goto yy_match;
-				}
+      if ( yy_next_state )
+        {
+        /* Consume the NUL. */
+        yy_cp = ++(yy_c_buf_p);
+        yy_current_state = yy_next_state;
+        goto yy_match;
+        }
 
-			else
-				{
-				yy_cp = (yy_c_buf_p);
-				goto yy_find_action;
-				}
-			}
+      else
+        {
+        yy_cp = (yy_c_buf_p);
+        goto yy_find_action;
+        }
+      }
 
-		else switch ( yy_get_next_buffer(  ) )
-			{
-			case EOB_ACT_END_OF_FILE:
-				{
-				(yy_did_buffer_switch_on_eof) = 0;
+    else switch ( yy_get_next_buffer(  ) )
+      {
+      case EOB_ACT_END_OF_FILE:
+        {
+        (yy_did_buffer_switch_on_eof) = 0;
 
-				if ( surf_parse_wrap( ) )
-					{
-					/* Note: because we've taken care in
-					 * yy_get_next_buffer() to have set up
-					 * surf_parse_text, we can now set up
-					 * yy_c_buf_p so that if some total
-					 * hoser (like flex itself) wants to
-					 * call the scanner after we return the
-					 * YY_NULL, it'll still work - another
-					 * YY_NULL will get returned.
-					 */
-					(yy_c_buf_p) = (yytext_ptr) + YY_MORE_ADJ;
+        if ( surf_parse_wrap( ) )
+          {
+          /* Note: because we've taken care in
+           * yy_get_next_buffer() to have set up
+           * surf_parse_text, we can now set up
+           * yy_c_buf_p so that if some total
+           * hoser (like flex itself) wants to
+           * call the scanner after we return the
+           * YY_NULL, it'll still work - another
+           * YY_NULL will get returned.
+           */
+          (yy_c_buf_p) = (yytext_ptr) + YY_MORE_ADJ;
 
-					yy_act = YY_STATE_EOF(YY_START);
-					goto do_action;
-					}
+          yy_act = YY_STATE_EOF(YY_START);
+          goto do_action;
+          }
 
-				else
-					{
-					if ( ! (yy_did_buffer_switch_on_eof) )
-						YY_NEW_FILE;
-					}
-				break;
-				}
+        else
+          {
+          if ( ! (yy_did_buffer_switch_on_eof) )
+            YY_NEW_FILE;
+          }
+        break;
+        }
 
-			case EOB_ACT_CONTINUE_SCAN:
-				(yy_c_buf_p) =
-					(yytext_ptr) + yy_amount_of_matched_text;
+      case EOB_ACT_CONTINUE_SCAN:
+        (yy_c_buf_p) =
+          (yytext_ptr) + yy_amount_of_matched_text;
 
-				yy_current_state = yy_get_previous_state(  );
+        yy_current_state = yy_get_previous_state(  );
 
-				yy_cp = (yy_c_buf_p);
-				yy_bp = (yytext_ptr) + YY_MORE_ADJ;
-				goto yy_match;
+        yy_cp = (yy_c_buf_p);
+        yy_bp = (yytext_ptr) + YY_MORE_ADJ;
+        goto yy_match;
 
-			case EOB_ACT_LAST_MATCH:
-				(yy_c_buf_p) =
-				&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)];
+      case EOB_ACT_LAST_MATCH:
+        (yy_c_buf_p) =
+        &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)];
 
-				yy_current_state = yy_get_previous_state(  );
+        yy_current_state = yy_get_previous_state(  );
 
-				yy_cp = (yy_c_buf_p);
-				yy_bp = (yytext_ptr) + YY_MORE_ADJ;
-				goto yy_find_action;
-			}
-		break;
-		}
+        yy_cp = (yy_c_buf_p);
+        yy_bp = (yytext_ptr) + YY_MORE_ADJ;
+        goto yy_find_action;
+      }
+    break;
+    }
 
-	default:
-		YY_FATAL_ERROR(
-			"fatal flex scanner internal error--no action found" );
-	} /* end of action switch */
-		} /* end of scanning one token */
-	} /* end of user's declarations */
+  default:
+    YY_FATAL_ERROR(
+      "fatal flex scanner internal error--no action found" );
+  } /* end of action switch */
+    } /* end of scanning one token */
+  } /* end of user's declarations */
 } /* end of surf_parse_lex */
 
 /* yy_get_next_buffer - try to read in a new buffer
  *
  * Returns a code representing an action:
- *	EOB_ACT_LAST_MATCH -
- *	EOB_ACT_CONTINUE_SCAN - continue scanning from current position
- *	EOB_ACT_END_OF_FILE - end of file
+ *  EOB_ACT_LAST_MATCH -
+ *  EOB_ACT_CONTINUE_SCAN - continue scanning from current position
+ *  EOB_ACT_END_OF_FILE - end of file
  */
 static int yy_get_next_buffer (void)
 {
-    	char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
-	char *source = (yytext_ptr);
-	int number_to_move, i;
-	int ret_val;
+      char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
+  char *source = (yytext_ptr);
+  int number_to_move, i;
+  int ret_val;
 
-	if ( (yy_c_buf_p) > &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars) + 1] )
-		YY_FATAL_ERROR(
-		"fatal flex scanner internal error--end of buffer missed" );
+  if ( (yy_c_buf_p) > &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars) + 1] )
+    YY_FATAL_ERROR(
+    "fatal flex scanner internal error--end of buffer missed" );
 
-	if ( YY_CURRENT_BUFFER_LVALUE->yy_fill_buffer == 0 )
-		{ /* Don't try to fill the buffer, so this is an EOF. */
-		if ( (yy_c_buf_p) - (yytext_ptr) - YY_MORE_ADJ == 1 )
-			{
-			/* We matched a single character, the EOB, so
-			 * treat this as a final EOF.
-			 */
-			return EOB_ACT_END_OF_FILE;
-			}
+  if ( YY_CURRENT_BUFFER_LVALUE->yy_fill_buffer == 0 )
+    { /* Don't try to fill the buffer, so this is an EOF. */
+    if ( (yy_c_buf_p) - (yytext_ptr) - YY_MORE_ADJ == 1 )
+      {
+      /* We matched a single character, the EOB, so
+       * treat this as a final EOF.
+       */
+      return EOB_ACT_END_OF_FILE;
+      }
 
-		else
-			{
-			/* We matched some text prior to the EOB, first
-			 * process it.
-			 */
-			return EOB_ACT_LAST_MATCH;
-			}
-		}
+    else
+      {
+      /* We matched some text prior to the EOB, first
+       * process it.
+       */
+      return EOB_ACT_LAST_MATCH;
+      }
+    }
 
-	/* Try to read more data. */
+  /* Try to read more data. */
 
-	/* First move last chars to start of buffer. */
-	number_to_move = (int) ((yy_c_buf_p) - (yytext_ptr) - 1);
+  /* First move last chars to start of buffer. */
+  number_to_move = (int) ((yy_c_buf_p) - (yytext_ptr) - 1);
 
-	for ( i = 0; i < number_to_move; ++i )
-		*(dest++) = *(source++);
+  for ( i = 0; i < number_to_move; ++i )
+    *(dest++) = *(source++);
 
-	if ( YY_CURRENT_BUFFER_LVALUE->yy_buffer_status == YY_BUFFER_EOF_PENDING )
-		/* don't do the read, it's not guaranteed to return an EOF,
-		 * just force an EOF
-		 */
-		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars) = 0;
+  if ( YY_CURRENT_BUFFER_LVALUE->yy_buffer_status == YY_BUFFER_EOF_PENDING )
+    /* don't do the read, it's not guaranteed to return an EOF,
+     * just force an EOF
+     */
+    YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars) = 0;
 
-	else
-		{
-			int num_to_read =
-			YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
+  else
+    {
+      int num_to_read =
+      YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
-		while ( num_to_read <= 0 )
-			{ /* Not enough room in the buffer - grow it. */
+    while ( num_to_read <= 0 )
+      { /* Not enough room in the buffer - grow it. */
 
-			/* just a shorter name for the current buffer */
-			YY_BUFFER_STATE b = YY_CURRENT_BUFFER_LVALUE;
+      /* just a shorter name for the current buffer */
+      YY_BUFFER_STATE b = YY_CURRENT_BUFFER_LVALUE;
 
-			int yy_c_buf_p_offset =
-				(int) ((yy_c_buf_p) - b->yy_ch_buf);
+      int yy_c_buf_p_offset =
+        (int) ((yy_c_buf_p) - b->yy_ch_buf);
 
-			if ( b->yy_is_our_buffer )
-				{
-				int new_size = b->yy_buf_size * 2;
+      if ( b->yy_is_our_buffer )
+        {
+        int new_size = b->yy_buf_size * 2;
 
-				if ( new_size <= 0 )
-					b->yy_buf_size += b->yy_buf_size / 8;
-				else
-					b->yy_buf_size *= 2;
+        if ( new_size <= 0 )
+          b->yy_buf_size += b->yy_buf_size / 8;
+        else
+          b->yy_buf_size *= 2;
 
-				b->yy_ch_buf = (char *)
-					/* Include room in for 2 EOB chars. */
-					surf_parse_realloc((void *) b->yy_ch_buf,b->yy_buf_size + 2  );
-				}
-			else
-				/* Can't grow it, we don't own it. */
-				b->yy_ch_buf = NULL;
+        b->yy_ch_buf = (char *)
+          /* Include room in for 2 EOB chars. */
+          surf_parse_realloc((void *) b->yy_ch_buf,b->yy_buf_size + 2  );
+        }
+      else
+        /* Can't grow it, we don't own it. */
+        b->yy_ch_buf = NULL;
 
-			if ( ! b->yy_ch_buf )
-				YY_FATAL_ERROR(
-				"fatal error - scanner input buffer overflow" );
+      if ( ! b->yy_ch_buf )
+        YY_FATAL_ERROR(
+        "fatal error - scanner input buffer overflow" );
 
-			(yy_c_buf_p) = &b->yy_ch_buf[yy_c_buf_p_offset];
+      (yy_c_buf_p) = &b->yy_ch_buf[yy_c_buf_p_offset];
 
-			num_to_read = YY_CURRENT_BUFFER_LVALUE->yy_buf_size -
-						number_to_move - 1;
+      num_to_read = YY_CURRENT_BUFFER_LVALUE->yy_buf_size -
+            number_to_move - 1;
 
-			}
+      }
 
-		if ( num_to_read > YY_READ_BUF_SIZE )
-			num_to_read = YY_READ_BUF_SIZE;
+    if ( num_to_read > YY_READ_BUF_SIZE )
+      num_to_read = YY_READ_BUF_SIZE;
 
-		/* Read in more data. */
-		YY_INPUT( (&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move]),
-			(yy_n_chars), num_to_read );
+    /* Read in more data. */
+    YY_INPUT( (&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move]),
+      (yy_n_chars), num_to_read );
 
-		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
-		}
+    YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
+    }
 
-	if ( (yy_n_chars) == 0 )
-		{
-		if ( number_to_move == YY_MORE_ADJ )
-			{
-			ret_val = EOB_ACT_END_OF_FILE;
-			surf_parse_restart(surf_parse_in  );
-			}
+  if ( (yy_n_chars) == 0 )
+    {
+    if ( number_to_move == YY_MORE_ADJ )
+      {
+      ret_val = EOB_ACT_END_OF_FILE;
+      surf_parse_restart(surf_parse_in  );
+      }
 
-		else
-			{
-			ret_val = EOB_ACT_LAST_MATCH;
-			YY_CURRENT_BUFFER_LVALUE->yy_buffer_status =
-				YY_BUFFER_EOF_PENDING;
-			}
-		}
+    else
+      {
+      ret_val = EOB_ACT_LAST_MATCH;
+      YY_CURRENT_BUFFER_LVALUE->yy_buffer_status =
+        YY_BUFFER_EOF_PENDING;
+      }
+    }
 
-	else
-		ret_val = EOB_ACT_CONTINUE_SCAN;
+  else
+    ret_val = EOB_ACT_CONTINUE_SCAN;
 
-	if (((yy_n_chars) + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
-		/* Extend the array by 50%, plus the number we really need. */
-		int new_size = (yy_n_chars) + number_to_move + ((yy_n_chars) >> 1);
-		YY_CURRENT_BUFFER_LVALUE->yy_ch_buf = (char *) surf_parse_realloc((void *) YY_CURRENT_BUFFER_LVALUE->yy_ch_buf,new_size  );
-		if ( ! YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
-			YY_FATAL_ERROR( "out of dynamic memory in yy_get_next_buffer()" );
-	}
+  if (((yy_n_chars) + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
+    /* Extend the array by 50%, plus the number we really need. */
+    int new_size = (yy_n_chars) + number_to_move + ((yy_n_chars) >> 1);
+    YY_CURRENT_BUFFER_LVALUE->yy_ch_buf = (char *) surf_parse_realloc((void *) YY_CURRENT_BUFFER_LVALUE->yy_ch_buf,new_size  );
+    if ( ! YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
+      YY_FATAL_ERROR( "out of dynamic memory in yy_get_next_buffer()" );
+  }
 
-	(yy_n_chars) += number_to_move;
-	YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)] = YY_END_OF_BUFFER_CHAR;
-	YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars) + 1] = YY_END_OF_BUFFER_CHAR;
+  (yy_n_chars) += number_to_move;
+  YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)] = YY_END_OF_BUFFER_CHAR;
+  YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars) + 1] = YY_END_OF_BUFFER_CHAR;
 
-	(yytext_ptr) = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[0];
+  (yytext_ptr) = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[0];
 
-	return ret_val;
+  return ret_val;
 }
 
 /* yy_get_previous_state - get the state just before the EOB char was reached */
 
     static yy_state_type yy_get_previous_state (void)
 {
-	yy_state_type yy_current_state;
-	char *yy_cp;
+  yy_state_type yy_current_state;
+  char *yy_cp;
     
-	yy_current_state = (yy_start);
+  yy_current_state = (yy_start);
 
-	for ( yy_cp = (yytext_ptr) + YY_MORE_ADJ; yy_cp < (yy_c_buf_p); ++yy_cp )
-		{
-		YY_CHAR yy_c = (*yy_cp ? yy_ec[YY_SC_TO_UI(*yy_cp)] : 1);
-		if ( yy_accept[yy_current_state] )
-			{
-			(yy_last_accepting_state) = yy_current_state;
-			(yy_last_accepting_cpos) = yy_cp;
-			}
-		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
-			{
-			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 3886 )
-				yy_c = yy_meta[(unsigned int) yy_c];
-			}
-		yy_current_state = yy_nxt[yy_base[yy_current_state] + (flex_int16_t) yy_c];
-		}
+  for ( yy_cp = (yytext_ptr) + YY_MORE_ADJ; yy_cp < (yy_c_buf_p); ++yy_cp )
+    {
+    YY_CHAR yy_c = (*yy_cp ? yy_ec[YY_SC_TO_UI(*yy_cp)] : 1);
+    if ( yy_accept[yy_current_state] )
+      {
+      (yy_last_accepting_state) = yy_current_state;
+      (yy_last_accepting_cpos) = yy_cp;
+      }
+    while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
+      {
+      yy_current_state = (int) yy_def[yy_current_state];
+      if ( yy_current_state >= 3886 )
+        yy_c = yy_meta[(unsigned int) yy_c];
+      }
+    yy_current_state = yy_nxt[yy_base[yy_current_state] + (flex_int16_t) yy_c];
+    }
 
-	return yy_current_state;
+  return yy_current_state;
 }
 
 /* yy_try_NUL_trans - try to make a transition on the NUL character
  *
  * synopsis
- *	next_state = yy_try_NUL_trans( current_state );
+ *  next_state = yy_try_NUL_trans( current_state );
  */
     static yy_state_type yy_try_NUL_trans  (yy_state_type yy_current_state )
 {
-	int yy_is_jam;
-    	char *yy_cp = (yy_c_buf_p);
+  int yy_is_jam;
+      char *yy_cp = (yy_c_buf_p);
 
-	YY_CHAR yy_c = 1;
-	if ( yy_accept[yy_current_state] )
-		{
-		(yy_last_accepting_state) = yy_current_state;
-		(yy_last_accepting_cpos) = yy_cp;
-		}
-	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
-		{
-		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 3886 )
-			yy_c = yy_meta[(unsigned int) yy_c];
-		}
-	yy_current_state = yy_nxt[yy_base[yy_current_state] + (flex_int16_t) yy_c];
-	yy_is_jam = (yy_current_state == 3885);
+  YY_CHAR yy_c = 1;
+  if ( yy_accept[yy_current_state] )
+    {
+    (yy_last_accepting_state) = yy_current_state;
+    (yy_last_accepting_cpos) = yy_cp;
+    }
+  while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
+    {
+    yy_current_state = (int) yy_def[yy_current_state];
+    if ( yy_current_state >= 3886 )
+      yy_c = yy_meta[(unsigned int) yy_c];
+    }
+  yy_current_state = yy_nxt[yy_base[yy_current_state] + (flex_int16_t) yy_c];
+  yy_is_jam = (yy_current_state == 3885);
 
-		return yy_is_jam ? 0 : yy_current_state;
+    return yy_is_jam ? 0 : yy_current_state;
 }
 
 #ifndef YY_NO_UNPUT
@@ -10918,76 +10918,76 @@ static int yy_get_next_buffer (void)
 #endif
 
 {
-	int c;
+  int c;
     
-	*(yy_c_buf_p) = (yy_hold_char);
+  *(yy_c_buf_p) = (yy_hold_char);
 
-	if ( *(yy_c_buf_p) == YY_END_OF_BUFFER_CHAR )
-		{
-		/* yy_c_buf_p now points to the character we want to return.
-		 * If this occurs *before* the EOB characters, then it's a
-		 * valid NUL; if not, then we've hit the end of the buffer.
-		 */
-		if ( (yy_c_buf_p) < &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)] )
-			/* This was really a NUL. */
-			*(yy_c_buf_p) = '\0';
+  if ( *(yy_c_buf_p) == YY_END_OF_BUFFER_CHAR )
+    {
+    /* yy_c_buf_p now points to the character we want to return.
+     * If this occurs *before* the EOB characters, then it's a
+     * valid NUL; if not, then we've hit the end of the buffer.
+     */
+    if ( (yy_c_buf_p) < &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)] )
+      /* This was really a NUL. */
+      *(yy_c_buf_p) = '\0';
 
-		else
-			{ /* need more input */
-			int offset = (yy_c_buf_p) - (yytext_ptr);
-			++(yy_c_buf_p);
+    else
+      { /* need more input */
+      int offset = (yy_c_buf_p) - (yytext_ptr);
+      ++(yy_c_buf_p);
 
-			switch ( yy_get_next_buffer(  ) )
-				{
-				case EOB_ACT_LAST_MATCH:
-					/* This happens because yy_g_n_b()
-					 * sees that we've accumulated a
-					 * token and flags that we need to
-					 * try matching the token before
-					 * proceeding.  But for input(),
-					 * there's no matching to consider.
-					 * So convert the EOB_ACT_LAST_MATCH
-					 * to EOB_ACT_END_OF_FILE.
-					 */
+      switch ( yy_get_next_buffer(  ) )
+        {
+        case EOB_ACT_LAST_MATCH:
+          /* This happens because yy_g_n_b()
+           * sees that we've accumulated a
+           * token and flags that we need to
+           * try matching the token before
+           * proceeding.  But for input(),
+           * there's no matching to consider.
+           * So convert the EOB_ACT_LAST_MATCH
+           * to EOB_ACT_END_OF_FILE.
+           */
 
-					/* Reset buffer status. */
-					surf_parse_restart(surf_parse_in );
+          /* Reset buffer status. */
+          surf_parse_restart(surf_parse_in );
 
-					/*FALLTHROUGH*/
+          /*FALLTHROUGH*/
 
-				case EOB_ACT_END_OF_FILE:
-					{
-					if ( surf_parse_wrap( ) )
-						return 0;
+        case EOB_ACT_END_OF_FILE:
+          {
+          if ( surf_parse_wrap( ) )
+            return 0;
 
-					if ( ! (yy_did_buffer_switch_on_eof) )
-						YY_NEW_FILE;
+          if ( ! (yy_did_buffer_switch_on_eof) )
+            YY_NEW_FILE;
 #ifdef __cplusplus
-					return yyinput();
+          return yyinput();
 #else
-					return input();
+          return input();
 #endif
-					}
+          }
 
-				case EOB_ACT_CONTINUE_SCAN:
-					(yy_c_buf_p) = (yytext_ptr) + offset;
-					break;
-				}
-			}
-		}
+        case EOB_ACT_CONTINUE_SCAN:
+          (yy_c_buf_p) = (yytext_ptr) + offset;
+          break;
+        }
+      }
+    }
 
-	c = *(unsigned char *) (yy_c_buf_p);	/* cast for 8-bit char's */
-	*(yy_c_buf_p) = '\0';	/* preserve surf_parse_text */
-	(yy_hold_char) = *++(yy_c_buf_p);
+  c = *(unsigned char *) (yy_c_buf_p);  /* cast for 8-bit char's */
+  *(yy_c_buf_p) = '\0';  /* preserve surf_parse_text */
+  (yy_hold_char) = *++(yy_c_buf_p);
 
-	if ( c == '\n' )
-		
+  if ( c == '\n' )
+    
     surf_parse_lineno++;
 ;
 
-	return c;
+  return c;
 }
-#endif	/* ifndef YY_NO_INPUT */
+#endif  /* ifndef YY_NO_INPUT */
 
 /** Immediately switch to a different input stream.
  * @param input_file A readable stream.
@@ -10997,14 +10997,14 @@ static int yy_get_next_buffer (void)
     void surf_parse_restart  (FILE * input_file )
 {
     
-	if ( ! YY_CURRENT_BUFFER ){
+  if ( ! YY_CURRENT_BUFFER ){
         surf_parse_ensure_buffer_stack ();
-		YY_CURRENT_BUFFER_LVALUE =
+    YY_CURRENT_BUFFER_LVALUE =
             surf_parse__create_buffer(surf_parse_in,YY_BUF_SIZE );
-	}
+  }
 
-	surf_parse__init_buffer(YY_CURRENT_BUFFER,input_file );
-	surf_parse__load_buffer_state( );
+  surf_parse__init_buffer(YY_CURRENT_BUFFER,input_file );
+  surf_parse__load_buffer_state( );
 }
 
 /** Switch to a different input buffer.
@@ -11014,40 +11014,40 @@ static int yy_get_next_buffer (void)
     void surf_parse__switch_to_buffer  (YY_BUFFER_STATE  new_buffer )
 {
     
-	/* TODO. We should be able to replace this entire function body
-	 * with
-	 *		surf_parse_pop_buffer_state();
-	 *		surf_parse_push_buffer_state(new_buffer);
+  /* TODO. We should be able to replace this entire function body
+   * with
+   *    surf_parse_pop_buffer_state();
+   *    surf_parse_push_buffer_state(new_buffer);
      */
-	surf_parse_ensure_buffer_stack ();
-	if ( YY_CURRENT_BUFFER == new_buffer )
-		return;
+  surf_parse_ensure_buffer_stack ();
+  if ( YY_CURRENT_BUFFER == new_buffer )
+    return;
 
-	if ( YY_CURRENT_BUFFER )
-		{
-		/* Flush out information for old buffer. */
-		*(yy_c_buf_p) = (yy_hold_char);
-		YY_CURRENT_BUFFER_LVALUE->yy_buf_pos = (yy_c_buf_p);
-		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
-		}
+  if ( YY_CURRENT_BUFFER )
+    {
+    /* Flush out information for old buffer. */
+    *(yy_c_buf_p) = (yy_hold_char);
+    YY_CURRENT_BUFFER_LVALUE->yy_buf_pos = (yy_c_buf_p);
+    YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
+    }
 
-	YY_CURRENT_BUFFER_LVALUE = new_buffer;
-	surf_parse__load_buffer_state( );
+  YY_CURRENT_BUFFER_LVALUE = new_buffer;
+  surf_parse__load_buffer_state( );
 
-	/* We don't actually know whether we did this switch during
-	 * EOF (surf_parse_wrap()) processing, but the only time this flag
-	 * is looked at is after surf_parse_wrap() is called, so it's safe
-	 * to go ahead and always set it.
-	 */
-	(yy_did_buffer_switch_on_eof) = 1;
+  /* We don't actually know whether we did this switch during
+   * EOF (surf_parse_wrap()) processing, but the only time this flag
+   * is looked at is after surf_parse_wrap() is called, so it's safe
+   * to go ahead and always set it.
+   */
+  (yy_did_buffer_switch_on_eof) = 1;
 }
 
 static void surf_parse__load_buffer_state  (void)
 {
-    	(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
-	(yytext_ptr) = (yy_c_buf_p) = YY_CURRENT_BUFFER_LVALUE->yy_buf_pos;
-	surf_parse_in = YY_CURRENT_BUFFER_LVALUE->yy_input_file;
-	(yy_hold_char) = *(yy_c_buf_p);
+      (yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
+  (yytext_ptr) = (yy_c_buf_p) = YY_CURRENT_BUFFER_LVALUE->yy_buf_pos;
+  surf_parse_in = YY_CURRENT_BUFFER_LVALUE->yy_input_file;
+  (yy_hold_char) = *(yy_c_buf_p);
 }
 
 /** Allocate and initialize an input buffer state.
@@ -11058,26 +11058,26 @@ static void surf_parse__load_buffer_state  (void)
  */
     YY_BUFFER_STATE surf_parse__create_buffer  (FILE * file, int  size )
 {
-	YY_BUFFER_STATE b;
+  YY_BUFFER_STATE b;
     
-	b = (YY_BUFFER_STATE) surf_parse_alloc(sizeof( struct yy_buffer_state )  );
-	if ( ! b )
-		YY_FATAL_ERROR( "out of dynamic memory in surf_parse__create_buffer()" );
+  b = (YY_BUFFER_STATE) surf_parse_alloc(sizeof( struct yy_buffer_state )  );
+  if ( ! b )
+    YY_FATAL_ERROR( "out of dynamic memory in surf_parse__create_buffer()" );
 
-	b->yy_buf_size = (yy_size_t)size;
+  b->yy_buf_size = (yy_size_t)size;
 
-	/* yy_ch_buf has to be 2 characters longer than the size given because
-	 * we need to put in 2 end-of-buffer characters.
-	 */
-	b->yy_ch_buf = (char *) surf_parse_alloc(b->yy_buf_size + 2  );
-	if ( ! b->yy_ch_buf )
-		YY_FATAL_ERROR( "out of dynamic memory in surf_parse__create_buffer()" );
+  /* yy_ch_buf has to be 2 characters longer than the size given because
+   * we need to put in 2 end-of-buffer characters.
+   */
+  b->yy_ch_buf = (char *) surf_parse_alloc(b->yy_buf_size + 2  );
+  if ( ! b->yy_ch_buf )
+    YY_FATAL_ERROR( "out of dynamic memory in surf_parse__create_buffer()" );
 
-	b->yy_is_our_buffer = 1;
+  b->yy_is_our_buffer = 1;
 
-	surf_parse__init_buffer(b,file );
+  surf_parse__init_buffer(b,file );
 
-	return b;
+  return b;
 }
 
 /** Destroy the buffer.
@@ -11087,16 +11087,16 @@ static void surf_parse__load_buffer_state  (void)
     void surf_parse__delete_buffer (YY_BUFFER_STATE  b )
 {
     
-	if ( ! b )
-		return;
+  if ( ! b )
+    return;
 
-	if ( b == YY_CURRENT_BUFFER ) /* Not sure if we should pop here. */
-		YY_CURRENT_BUFFER_LVALUE = (YY_BUFFER_STATE) 0;
+  if ( b == YY_CURRENT_BUFFER ) /* Not sure if we should pop here. */
+    YY_CURRENT_BUFFER_LVALUE = (YY_BUFFER_STATE) 0;
 
-	if ( b->yy_is_our_buffer )
-		surf_parse_free((void *) b->yy_ch_buf  );
+  if ( b->yy_is_our_buffer )
+    surf_parse_free((void *) b->yy_ch_buf  );
 
-	surf_parse_free((void *) b  );
+  surf_parse_free((void *) b  );
 }
 
 /* Initializes or reinitializes a buffer.
@@ -11106,12 +11106,12 @@ static void surf_parse__load_buffer_state  (void)
     static void surf_parse__init_buffer  (YY_BUFFER_STATE  b, FILE * file )
 
 {
-	int oerrno = errno;
+  int oerrno = errno;
     
-	surf_parse__flush_buffer(b );
+  surf_parse__flush_buffer(b );
 
-	b->yy_input_file = file;
-	b->yy_fill_buffer = 1;
+  b->yy_input_file = file;
+  b->yy_fill_buffer = 1;
 
     /* If b is the current buffer, then surf_parse__init_buffer was _probably_
      * called from surf_parse_restart() or through yy_get_next_buffer.
@@ -11124,7 +11124,7 @@ static void surf_parse__load_buffer_state  (void)
 
         b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
     
-	errno = oerrno;
+  errno = oerrno;
 }
 
 /** Discard all buffered characters. On the next scan, YY_INPUT will be called.
@@ -11133,25 +11133,25 @@ static void surf_parse__load_buffer_state  (void)
  */
     void surf_parse__flush_buffer (YY_BUFFER_STATE  b )
 {
-    	if ( ! b )
-		return;
+      if ( ! b )
+    return;
 
-	b->yy_n_chars = 0;
+  b->yy_n_chars = 0;
 
-	/* We always need two end-of-buffer characters.  The first causes
-	 * a transition to the end-of-buffer state.  The second causes
-	 * a jam in that state.
-	 */
-	b->yy_ch_buf[0] = YY_END_OF_BUFFER_CHAR;
-	b->yy_ch_buf[1] = YY_END_OF_BUFFER_CHAR;
+  /* We always need two end-of-buffer characters.  The first causes
+   * a transition to the end-of-buffer state.  The second causes
+   * a jam in that state.
+   */
+  b->yy_ch_buf[0] = YY_END_OF_BUFFER_CHAR;
+  b->yy_ch_buf[1] = YY_END_OF_BUFFER_CHAR;
 
-	b->yy_buf_pos = &b->yy_ch_buf[0];
+  b->yy_buf_pos = &b->yy_ch_buf[0];
 
-	b->yy_at_bol = 1;
-	b->yy_buffer_status = YY_BUFFER_NEW;
+  b->yy_at_bol = 1;
+  b->yy_buffer_status = YY_BUFFER_NEW;
 
-	if ( b == YY_CURRENT_BUFFER )
-		surf_parse__load_buffer_state( );
+  if ( b == YY_CURRENT_BUFFER )
+    surf_parse__load_buffer_state( );
 }
 
 /** Pushes the new state onto the stack. The new state becomes
@@ -11162,28 +11162,28 @@ static void surf_parse__load_buffer_state  (void)
  */
 void surf_parse_push_buffer_state (YY_BUFFER_STATE new_buffer )
 {
-    	if (new_buffer == NULL)
-		return;
+      if (new_buffer == NULL)
+    return;
 
-	surf_parse_ensure_buffer_stack();
+  surf_parse_ensure_buffer_stack();
 
-	/* This block is copied from surf_parse__switch_to_buffer. */
-	if ( YY_CURRENT_BUFFER )
-		{
-		/* Flush out information for old buffer. */
-		*(yy_c_buf_p) = (yy_hold_char);
-		YY_CURRENT_BUFFER_LVALUE->yy_buf_pos = (yy_c_buf_p);
-		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
-		}
+  /* This block is copied from surf_parse__switch_to_buffer. */
+  if ( YY_CURRENT_BUFFER )
+    {
+    /* Flush out information for old buffer. */
+    *(yy_c_buf_p) = (yy_hold_char);
+    YY_CURRENT_BUFFER_LVALUE->yy_buf_pos = (yy_c_buf_p);
+    YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
+    }
 
-	/* Only push if top exists. Otherwise, replace top. */
-	if (YY_CURRENT_BUFFER)
-		(yy_buffer_stack_top)++;
-	YY_CURRENT_BUFFER_LVALUE = new_buffer;
+  /* Only push if top exists. Otherwise, replace top. */
+  if (YY_CURRENT_BUFFER)
+    (yy_buffer_stack_top)++;
+  YY_CURRENT_BUFFER_LVALUE = new_buffer;
 
-	/* copied from surf_parse__switch_to_buffer. */
-	surf_parse__load_buffer_state( );
-	(yy_did_buffer_switch_on_eof) = 1;
+  /* copied from surf_parse__switch_to_buffer. */
+  surf_parse__load_buffer_state( );
+  (yy_did_buffer_switch_on_eof) = 1;
 }
 
 /** Removes and deletes the top of the stack, if present.
@@ -11192,18 +11192,18 @@ void surf_parse_push_buffer_state (YY_BUFFER_STATE new_buffer )
  */
 void surf_parse_pop_buffer_state (void)
 {
-    	if (!YY_CURRENT_BUFFER)
-		return;
+      if (!YY_CURRENT_BUFFER)
+    return;
 
-	surf_parse__delete_buffer(YY_CURRENT_BUFFER );
-	YY_CURRENT_BUFFER_LVALUE = NULL;
-	if ((yy_buffer_stack_top) > 0)
-		--(yy_buffer_stack_top);
+  surf_parse__delete_buffer(YY_CURRENT_BUFFER );
+  YY_CURRENT_BUFFER_LVALUE = NULL;
+  if ((yy_buffer_stack_top) > 0)
+    --(yy_buffer_stack_top);
 
-	if (YY_CURRENT_BUFFER) {
-		surf_parse__load_buffer_state( );
-		(yy_did_buffer_switch_on_eof) = 1;
-	}
+  if (YY_CURRENT_BUFFER) {
+    surf_parse__load_buffer_state( );
+    (yy_did_buffer_switch_on_eof) = 1;
+  }
 }
 
 /* Allocates the stack if it does not exist.
@@ -11211,45 +11211,45 @@ void surf_parse_pop_buffer_state (void)
  */
 static void surf_parse_ensure_buffer_stack (void)
 {
-	int num_to_alloc;
+  int num_to_alloc;
     
-	if (!(yy_buffer_stack)) {
+  if (!(yy_buffer_stack)) {
 
-		/* First allocation is just for 2 elements, since we don't know if this
-		 * scanner will even need a stack. We use 2 instead of 1 to avoid an
-		 * immediate realloc on the next call.
+    /* First allocation is just for 2 elements, since we don't know if this
+     * scanner will even need a stack. We use 2 instead of 1 to avoid an
+     * immediate realloc on the next call.
          */
       num_to_alloc = 1; /* After all that talk, this was set to 1 anyways... */
-		(yy_buffer_stack) = (struct yy_buffer_state**)surf_parse_alloc
-								(num_to_alloc * sizeof(struct yy_buffer_state*)
-								);
-		if ( ! (yy_buffer_stack) )
-			YY_FATAL_ERROR( "out of dynamic memory in surf_parse_ensure_buffer_stack()" );
+    (yy_buffer_stack) = (struct yy_buffer_state**)surf_parse_alloc
+                (num_to_alloc * sizeof(struct yy_buffer_state*)
+                );
+    if ( ! (yy_buffer_stack) )
+      YY_FATAL_ERROR( "out of dynamic memory in surf_parse_ensure_buffer_stack()" );
 
-		memset((yy_buffer_stack), 0, num_to_alloc * sizeof(struct yy_buffer_state*));
+    memset((yy_buffer_stack), 0, num_to_alloc * sizeof(struct yy_buffer_state*));
 
-		(yy_buffer_stack_max) = num_to_alloc;
-		(yy_buffer_stack_top) = 0;
-		return;
-	}
+    (yy_buffer_stack_max) = num_to_alloc;
+    (yy_buffer_stack_top) = 0;
+    return;
+  }
 
-	if ((yy_buffer_stack_top) >= ((yy_buffer_stack_max)) - 1){
+  if ((yy_buffer_stack_top) >= ((yy_buffer_stack_max)) - 1){
 
-		/* Increase the buffer to prepare for a possible push. */
-		yy_size_t grow_size = 8 /* arbitrary grow size */;
+    /* Increase the buffer to prepare for a possible push. */
+    yy_size_t grow_size = 8 /* arbitrary grow size */;
 
-		num_to_alloc = (yy_buffer_stack_max) + grow_size;
-		(yy_buffer_stack) = (struct yy_buffer_state**)surf_parse_realloc
-								((yy_buffer_stack),
-								num_to_alloc * sizeof(struct yy_buffer_state*)
-								);
-		if ( ! (yy_buffer_stack) )
-			YY_FATAL_ERROR( "out of dynamic memory in surf_parse_ensure_buffer_stack()" );
+    num_to_alloc = (yy_buffer_stack_max) + grow_size;
+    (yy_buffer_stack) = (struct yy_buffer_state**)surf_parse_realloc
+                ((yy_buffer_stack),
+                num_to_alloc * sizeof(struct yy_buffer_state*)
+                );
+    if ( ! (yy_buffer_stack) )
+      YY_FATAL_ERROR( "out of dynamic memory in surf_parse_ensure_buffer_stack()" );
 
-		/* zero only the new slots.*/
-		memset((yy_buffer_stack) + (yy_buffer_stack_max), 0, grow_size * sizeof(struct yy_buffer_state*));
-		(yy_buffer_stack_max) = num_to_alloc;
-	}
+    /* zero only the new slots.*/
+    memset((yy_buffer_stack) + (yy_buffer_stack_max), 0, grow_size * sizeof(struct yy_buffer_state*));
+    (yy_buffer_stack_max) = num_to_alloc;
+  }
 }
 
 /** Setup the input buffer state to scan directly from a user-specified character buffer.
@@ -11260,31 +11260,31 @@ static void surf_parse_ensure_buffer_stack (void)
  */
 YY_BUFFER_STATE surf_parse__scan_buffer  (char * base, yy_size_t  size )
 {
-	YY_BUFFER_STATE b;
+  YY_BUFFER_STATE b;
     
-	if ( size < 2 ||
-	     base[size-2] != YY_END_OF_BUFFER_CHAR ||
-	     base[size-1] != YY_END_OF_BUFFER_CHAR )
-		/* They forgot to leave room for the EOB's. */
-		return NULL;
+  if ( size < 2 ||
+       base[size-2] != YY_END_OF_BUFFER_CHAR ||
+       base[size-1] != YY_END_OF_BUFFER_CHAR )
+    /* They forgot to leave room for the EOB's. */
+    return NULL;
 
-	b = (YY_BUFFER_STATE) surf_parse_alloc(sizeof( struct yy_buffer_state )  );
-	if ( ! b )
-		YY_FATAL_ERROR( "out of dynamic memory in surf_parse__scan_buffer()" );
+  b = (YY_BUFFER_STATE) surf_parse_alloc(sizeof( struct yy_buffer_state )  );
+  if ( ! b )
+    YY_FATAL_ERROR( "out of dynamic memory in surf_parse__scan_buffer()" );
 
-	b->yy_buf_size = size - 2;	/* "- 2" to take care of EOB's */
-	b->yy_buf_pos = b->yy_ch_buf = base;
-	b->yy_is_our_buffer = 0;
-	b->yy_input_file = NULL;
-	b->yy_n_chars = b->yy_buf_size;
-	b->yy_is_interactive = 0;
-	b->yy_at_bol = 1;
-	b->yy_fill_buffer = 0;
-	b->yy_buffer_status = YY_BUFFER_NEW;
+  b->yy_buf_size = size - 2;  /* "- 2" to take care of EOB's */
+  b->yy_buf_pos = b->yy_ch_buf = base;
+  b->yy_is_our_buffer = 0;
+  b->yy_input_file = NULL;
+  b->yy_n_chars = b->yy_buf_size;
+  b->yy_is_interactive = 0;
+  b->yy_at_bol = 1;
+  b->yy_fill_buffer = 0;
+  b->yy_buffer_status = YY_BUFFER_NEW;
 
-	surf_parse__switch_to_buffer(b  );
+  surf_parse__switch_to_buffer(b  );
 
-	return b;
+  return b;
 }
 
 /** Setup the input buffer state to scan a string. The next call to surf_parse_lex() will
@@ -11298,7 +11298,7 @@ YY_BUFFER_STATE surf_parse__scan_buffer  (char * base, yy_size_t  size )
 YY_BUFFER_STATE surf_parse__scan_string (yyconst char * yystr )
 {
     
-	return surf_parse__scan_bytes(yystr,(int) strlen(yystr) );
+  return surf_parse__scan_bytes(yystr,(int) strlen(yystr) );
 }
 
 /** Setup the input buffer state to scan the given bytes. The next call to surf_parse_lex() will
@@ -11310,64 +11310,64 @@ YY_BUFFER_STATE surf_parse__scan_string (yyconst char * yystr )
  */
 YY_BUFFER_STATE surf_parse__scan_bytes  (yyconst char * yybytes, int  _yybytes_len )
 {
-	YY_BUFFER_STATE b;
-	char *buf;
-	yy_size_t n;
-	int i;
+  YY_BUFFER_STATE b;
+  char *buf;
+  yy_size_t n;
+  int i;
     
-	/* Get memory for full buffer, including space for trailing EOB's. */
-	n = (yy_size_t) (_yybytes_len + 2);
-	buf = (char *) surf_parse_alloc(n  );
-	if ( ! buf )
-		YY_FATAL_ERROR( "out of dynamic memory in surf_parse__scan_bytes()" );
+  /* Get memory for full buffer, including space for trailing EOB's. */
+  n = (yy_size_t) (_yybytes_len + 2);
+  buf = (char *) surf_parse_alloc(n  );
+  if ( ! buf )
+    YY_FATAL_ERROR( "out of dynamic memory in surf_parse__scan_bytes()" );
 
-	for ( i = 0; i < _yybytes_len; ++i )
-		buf[i] = yybytes[i];
+  for ( i = 0; i < _yybytes_len; ++i )
+    buf[i] = yybytes[i];
 
-	buf[_yybytes_len] = buf[_yybytes_len+1] = YY_END_OF_BUFFER_CHAR;
+  buf[_yybytes_len] = buf[_yybytes_len+1] = YY_END_OF_BUFFER_CHAR;
 
-	b = surf_parse__scan_buffer(buf,n );
-	if ( ! b )
-		YY_FATAL_ERROR( "bad buffer in surf_parse__scan_bytes()" );
+  b = surf_parse__scan_buffer(buf,n );
+  if ( ! b )
+    YY_FATAL_ERROR( "bad buffer in surf_parse__scan_bytes()" );
 
-	/* It's okay to grow etc. this buffer, and we should throw it
-	 * away when we're done.
-	 */
-	b->yy_is_our_buffer = 1;
+  /* It's okay to grow etc. this buffer, and we should throw it
+   * away when we're done.
+   */
+  b->yy_is_our_buffer = 1;
 
-	return b;
+  return b;
 }
 
     static void yy_push_state (int  _new_state )
 {
-    	if ( (yy_start_stack_ptr) >= (yy_start_stack_depth) )
-		{
-		yy_size_t new_size;
+      if ( (yy_start_stack_ptr) >= (yy_start_stack_depth) )
+    {
+    yy_size_t new_size;
 
-		(yy_start_stack_depth) += YY_START_STACK_INCR;
-		new_size = (yy_size_t) (yy_start_stack_depth) * sizeof( int );
+    (yy_start_stack_depth) += YY_START_STACK_INCR;
+    new_size = (yy_size_t) (yy_start_stack_depth) * sizeof( int );
 
-		if ( ! (yy_start_stack) )
-			(yy_start_stack) = (int *) surf_parse_alloc(new_size  );
+    if ( ! (yy_start_stack) )
+      (yy_start_stack) = (int *) surf_parse_alloc(new_size  );
 
-		else
-			(yy_start_stack) = (int *) surf_parse_realloc((void *) (yy_start_stack),new_size  );
+    else
+      (yy_start_stack) = (int *) surf_parse_realloc((void *) (yy_start_stack),new_size  );
 
-		if ( ! (yy_start_stack) )
-			YY_FATAL_ERROR( "out of memory expanding start-condition stack" );
-		}
+    if ( ! (yy_start_stack) )
+      YY_FATAL_ERROR( "out of memory expanding start-condition stack" );
+    }
 
-	(yy_start_stack)[(yy_start_stack_ptr)++] = YY_START;
+  (yy_start_stack)[(yy_start_stack_ptr)++] = YY_START;
 
-	BEGIN(_new_state);
+  BEGIN(_new_state);
 }
 
     static void yy_pop_state  (void)
 {
-    	if ( --(yy_start_stack_ptr) < 0 )
-		YY_FATAL_ERROR( "start-condition stack underflow" );
+      if ( --(yy_start_stack_ptr) < 0 )
+    YY_FATAL_ERROR( "start-condition stack underflow" );
 
-	BEGIN((yy_start_stack)[(yy_start_stack_ptr)]);
+  BEGIN((yy_start_stack)[(yy_start_stack_ptr)]);
 }
 
 #ifndef YY_EXIT_FAILURE
@@ -11376,26 +11376,26 @@ YY_BUFFER_STATE surf_parse__scan_bytes  (yyconst char * yybytes, int  _yybytes_l
 
 static void yynoreturn yy_fatal_error (yyconst char* msg )
 {
-			(void) fprintf( stderr, "%s\n", msg );
-	exit( YY_EXIT_FAILURE );
+      (void) fprintf( stderr, "%s\n", msg );
+  exit( YY_EXIT_FAILURE );
 }
 
 /* Redefine yyless() so it works in section 3 code. */
 
 #undef yyless
 #define yyless(n) \
-	do \
-		{ \
-		/* Undo effects of setting up surf_parse_text. */ \
+  do \
+    { \
+    /* Undo effects of setting up surf_parse_text. */ \
         int yyless_macro_arg = (n); \
         YY_LESS_LINENO(yyless_macro_arg);\
-		surf_parse_text[surf_parse_leng] = (yy_hold_char); \
-		(yy_c_buf_p) = surf_parse_text + yyless_macro_arg; \
-		(yy_hold_char) = *(yy_c_buf_p); \
-		*(yy_c_buf_p) = '\0'; \
-		surf_parse_leng = yyless_macro_arg; \
-		} \
-	while ( 0 )
+    surf_parse_text[surf_parse_leng] = (yy_hold_char); \
+    (yy_c_buf_p) = surf_parse_text + yyless_macro_arg; \
+    (yy_hold_char) = *(yy_c_buf_p); \
+    *(yy_c_buf_p) = '\0'; \
+    surf_parse_leng = yyless_macro_arg; \
+    } \
+  while ( 0 )
 
 /* Accessor  methods (get/set functions) to struct members. */
 
@@ -11517,15 +11517,15 @@ int surf_parse_lex_destroy  (void)
 {
     
     /* Pop the buffer stack, destroying each element. */
-	while(YY_CURRENT_BUFFER){
-		surf_parse__delete_buffer(YY_CURRENT_BUFFER  );
-		YY_CURRENT_BUFFER_LVALUE = NULL;
-		surf_parse_pop_buffer_state();
-	}
+  while(YY_CURRENT_BUFFER){
+    surf_parse__delete_buffer(YY_CURRENT_BUFFER  );
+    YY_CURRENT_BUFFER_LVALUE = NULL;
+    surf_parse_pop_buffer_state();
+  }
 
-	/* Destroy the stack itself. */
-	surf_parse_free((yy_buffer_stack) );
-	(yy_buffer_stack) = NULL;
+  /* Destroy the stack itself. */
+  surf_parse_free((yy_buffer_stack) );
+  (yy_buffer_stack) = NULL;
 
     /* Destroy the start condition stack. */
         surf_parse_free((yy_start_stack)  );
@@ -11545,45 +11545,45 @@ int surf_parse_lex_destroy  (void)
 #ifndef yytext_ptr
 static void yy_flex_strncpy (char* s1, yyconst char * s2, int n )
 {
-		
-	int i;
-	for ( i = 0; i < n; ++i )
-		s1[i] = s2[i];
+    
+  int i;
+  for ( i = 0; i < n; ++i )
+    s1[i] = s2[i];
 }
 #endif
 
 #ifdef YY_NEED_STRLEN
 static int yy_flex_strlen (yyconst char * s )
 {
-	int n;
-	for ( n = 0; s[n]; ++n )
-		;
+  int n;
+  for ( n = 0; s[n]; ++n )
+    ;
 
-	return n;
+  return n;
 }
 #endif
 
 void *surf_parse_alloc (yy_size_t  size )
 {
-			return malloc(size);
+      return malloc(size);
 }
 
 void *surf_parse_realloc  (void * ptr, yy_size_t  size )
 {
-		
-	/* The cast to (char *) in the following accommodates both
-	 * implementations that use char* generic pointers, and those
-	 * that use void* generic pointers.  It works with the latter
-	 * because both ANSI C and C++ allow castless assignment from
-	 * any pointer type to void*, and deal with argument conversions
-	 * as though doing an assignment.
-	 */
-	return realloc(ptr, size);
+    
+  /* The cast to (char *) in the following accommodates both
+   * implementations that use char* generic pointers, and those
+   * that use void* generic pointers.  It works with the latter
+   * because both ANSI C and C++ allow castless assignment from
+   * any pointer type to void*, and deal with argument conversions
+   * as though doing an assignment.
+   */
+  return realloc(ptr, size);
 }
 
 void surf_parse_free (void * ptr )
 {
-			free( (char *) ptr );	/* see surf_parse_realloc() for (char *) cast */
+      free( (char *) ptr );  /* see surf_parse_realloc() for (char *) cast */
 }
 
 #define YYTABLES_NAME "yytables"
@@ -11592,8 +11592,8 @@ void surf_parse_free (void * ptr )
 int surfxml_element_context(int i)
 {
   return (0<i && i<yy_start_stack_depth
-	  ? yy_start_stack[yy_start_stack_ptr - i]
-	  : 0);
+    ? yy_start_stack[yy_start_stack_ptr - i]
+    : 0);
 }
 
 #ifdef FLEX_DEBUG
@@ -11632,7 +11632,7 @@ static void debug_enter(int state, const char* statename) {
 static void debug_leave(void) {
     if (surf_parse__flex_debug) {
         print_yy_stack("--LEAVE : ");
-	print_surfxml_bufferstack();
+  print_surfxml_bufferstack();
     }
   yy_pop_state();
 }
@@ -11647,7 +11647,7 @@ static void cleanup(void)
 {
     if (surfxml_statenames) {
         free(surfxml_statenames);
-	surfxml_statenames = NULL;
+  surfxml_statenames = NULL;
     }
     free(surfxml_bufferstack);
     surfxml_bufferstack = NULL;
@@ -11662,12 +11662,12 @@ static int fail(const char* fmt, ...)
     va_list ap; va_start(ap, fmt);
 #ifdef FLEXML_yylineno
     used = snprintf(flexml_err_msg,flexml_max_err_msg_size,
-		   "Invalid XML (XML input line %d, state %d): ",
-		   surf_parse_lineno, YY_START);
+       "Invalid XML (XML input line %d, state %d): ",
+       surf_parse_lineno, YY_START);
 #else
     used = snprintf(flexml_err_msg,flexml_max_err_msg_size,
-		   "Invalid XML (state %d): ",
-		   YY_START);
+       "Invalid XML (state %d): ",
+       YY_START);
 #endif
     chars_left = flexml_max_err_msg_size - used - 1;
     vsnprintf(flexml_err_msg + used, chars_left, fmt, ap);

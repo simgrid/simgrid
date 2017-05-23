@@ -26,15 +26,8 @@
 namespace simgrid{
 namespace smpi{
 
-
-int
-Coll_scatter_ompi_binomial::scatter(void *sbuf, int scount,
-				       MPI_Datatype sdtype,
-				       void *rbuf, int rcount,
-				       MPI_Datatype rdtype,
-				       int root,
-				       MPI_Comm comm
-				       )
+int Coll_scatter_ompi_binomial::scatter(void* sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount,
+                                        MPI_Datatype rdtype, int root, MPI_Comm comm)
 {
     int line = -1;
     int i;
@@ -69,92 +62,99 @@ Coll_scatter_ompi_binomial::scatter(void *sbuf, int scount,
     vrank = (rank - root + size) % size;
 
     if (rank == root) {
-	if (0 == root) {
-	    /* root on 0, just use the send buffer */
-	    ptmp = (char *) sbuf;
-	    if (rbuf != MPI_IN_PLACE) {
-		/* local copy to rbuf */
-		err = Datatype::copy(sbuf, scount, sdtype,
-				      rbuf, rcount, rdtype);
-		if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
-	    }
-	} else {
-	    /* root is not on 0, allocate temp buffer for send */
-	    tempbuf = (char *) smpi_get_tmp_sendbuffer(strue_extent + (scount*size - 1) * sextent);
-	    if (NULL == tempbuf) {
-		err = MPI_ERR_OTHER; line = __LINE__; goto err_hndl;
-	    }
+      if (0 == root) {
+        /* root on 0, just use the send buffer */
+        ptmp = (char*)sbuf;
+        if (rbuf != MPI_IN_PLACE) {
+          /* local copy to rbuf */
+          err = Datatype::copy(sbuf, scount, sdtype, rbuf, rcount, rdtype);
+          if (MPI_SUCCESS != err) {
+            line = __LINE__;
+            goto err_hndl;
+          }
+        }
+      } else {
+        /* root is not on 0, allocate temp buffer for send */
+        tempbuf = (char*)smpi_get_tmp_sendbuffer(strue_extent + (scount * size - 1) * sextent);
+        if (NULL == tempbuf) {
+          err  = MPI_ERR_OTHER;
+          line = __LINE__;
+          goto err_hndl;
+        }
 
-	    ptmp = tempbuf - slb;
+        ptmp = tempbuf - slb;
 
-	    /* and rotate data so they will eventually in the right place */
-	    err = Datatype::copy((char *) sbuf + sextent*root*scount, scount*(size-root), sdtype,
-            ptmp, scount*(size-root), sdtype);
-	    if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
+        /* and rotate data so they will eventually in the right place */
+        err = Datatype::copy((char*)sbuf + sextent * root * scount, scount * (size - root), sdtype, ptmp,
+                             scount * (size - root), sdtype);
+        if (MPI_SUCCESS != err) {
+          line = __LINE__;
+          goto err_hndl;
+        }
 
+        err = Datatype::copy((char*)sbuf, scount * root, sdtype, ptmp + sextent * scount * (size - root), scount * root,
+                             sdtype);
+        if (MPI_SUCCESS != err) {
+          line = __LINE__;
+          goto err_hndl;
+        }
 
-	    err = Datatype::copy((char*)sbuf, scount*root, sdtype,
-						 ptmp + sextent*scount*(size - root), scount*root, sdtype);
-	    if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
-
-	    if (rbuf != MPI_IN_PLACE) {
-		/* local copy to rbuf */
-		err = Datatype::copy(ptmp, scount, sdtype,
-				      rbuf, rcount, rdtype);
-		if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
-	    }
-	}
-	total_send = scount;
+        if (rbuf != MPI_IN_PLACE) {
+          /* local copy to rbuf */
+          err = Datatype::copy(ptmp, scount, sdtype, rbuf, rcount, rdtype);
+          if (MPI_SUCCESS != err) {
+            line = __LINE__;
+            goto err_hndl;
+          }
+        }
+      }
+      total_send = scount;
     } else if (!(vrank % 2)) {
-	/* non-root, non-leaf nodes, allocate temp buffer for recv
-	 * the most we need is rcount*size/2 */
-	tempbuf = (char *) smpi_get_tmp_recvbuffer(rtrue_extent + (rcount*size - 1) * rextent);
-	if (NULL == tempbuf) {
-	    err= MPI_ERR_OTHER; line = __LINE__; goto err_hndl;
-	}
+      /* non-root, non-leaf nodes, allocate temp buffer for recv
+       * the most we need is rcount*size/2 */
+      tempbuf = (char*)smpi_get_tmp_recvbuffer(rtrue_extent + (rcount * size - 1) * rextent);
+      if (NULL == tempbuf) {
+        err  = MPI_ERR_OTHER;
+        line = __LINE__;
+        goto err_hndl;
+      }
 
-	ptmp = tempbuf - rlb;
+      ptmp = tempbuf - rlb;
 
-	sdtype = rdtype;
-	scount = rcount;
-	sextent = rextent;
-	total_send = scount;
+      sdtype     = rdtype;
+      scount     = rcount;
+      sextent    = rextent;
+      total_send = scount;
     } else {
-	/* leaf nodes, just use rbuf */
-	ptmp = (char *) rbuf;
+      /* leaf nodes, just use rbuf */
+      ptmp = (char*)rbuf;
     }
 
     if (!(vrank % 2)) {
-	if (rank != root) {
-	    /* recv from parent on non-root */
-	    Request::recv(ptmp, rcount*size, rdtype, bmtree->tree_prev,
-				    COLL_TAG_SCATTER, comm, &status);
-	    /* local copy to rbuf */
-	    Datatype::copy(ptmp, scount, sdtype, rbuf, rcount, rdtype);
-	}
-	/* send to children on all non-leaf */
-	for (i = 0; i < bmtree->tree_nextsize; i++) {
-	    int mycount = 0, vkid;
-	    /* figure out how much data I have to send to this child */
-	    vkid = (bmtree->tree_next[i] - root + size) % size;
-	    mycount = vkid - vrank;
-	    if (mycount > (size - vkid))
-		mycount = size - vkid;
-	    mycount *= scount;
+      if (rank != root) {
+        /* recv from parent on non-root */
+        Request::recv(ptmp, rcount * size, rdtype, bmtree->tree_prev, COLL_TAG_SCATTER, comm, &status);
+        /* local copy to rbuf */
+        Datatype::copy(ptmp, scount, sdtype, rbuf, rcount, rdtype);
+      }
+      /* send to children on all non-leaf */
+      for (i = 0; i < bmtree->tree_nextsize; i++) {
+        int mycount = 0, vkid;
+        /* figure out how much data I have to send to this child */
+        vkid    = (bmtree->tree_next[i] - root + size) % size;
+        mycount = vkid - vrank;
+        if (mycount > (size - vkid))
+          mycount = size - vkid;
+        mycount *= scount;
 
-	    Request::send(ptmp + total_send*sextent, mycount, sdtype,
-				    bmtree->tree_next[i],
-				    COLL_TAG_SCATTER,
-				     comm);
+        Request::send(ptmp + total_send * sextent, mycount, sdtype, bmtree->tree_next[i], COLL_TAG_SCATTER, comm);
 
-	    total_send += mycount;
-	}
-
+        total_send += mycount;
+      }
 
     } else {
-	/* recv from parent on leaf nodes */
-	Request::recv(ptmp, rcount, rdtype, bmtree->tree_prev,
-				COLL_TAG_SCATTER, comm, &status);
+      /* recv from parent on leaf nodes */
+      Request::recv(ptmp, rcount, rdtype, bmtree->tree_prev, COLL_TAG_SCATTER, comm, &status);
     }
 
     if (NULL != tempbuf)
@@ -166,10 +166,9 @@ Coll_scatter_ompi_binomial::scatter(void *sbuf, int scount,
 
  err_hndl:
     if (NULL != tempbuf)
-	free(tempbuf);
+      free(tempbuf);
 
-    XBT_DEBUG(  "%s:%4d\tError occurred %d, rank %2d",
-		 __FILE__, line, err, rank);
+    XBT_DEBUG("%s:%4d\tError occurred %d, rank %2d", __FILE__, line, err, rank);
     return err;
 }
 
@@ -187,20 +186,14 @@ Coll_scatter_ompi_binomial::scatter(void *sbuf, int scount,
 
 /* copied function (with appropriate renaming) starts here */
 /*
- *	scatter_intra
+ *  scatter_intra
  *
- *	Function:	- basic scatter operation
- *	Accepts:	- same arguments as MPI_Scatter()
- *	Returns:	- MPI_SUCCESS or error code
+ *  Function:  - basic scatter operation
+ *  Accepts:  - same arguments as MPI_Scatter()
+ *  Returns:  - MPI_SUCCESS or error code
  */
-int
-Coll_scatter_ompi_basic_linear::scatter(void *sbuf, int scount,
-					   MPI_Datatype sdtype,
-					   void *rbuf, int rcount,
-					   MPI_Datatype rdtype,
-					   int root,
-					   MPI_Comm comm
-					   )
+int Coll_scatter_ompi_basic_linear::scatter(void* sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount,
+                                            MPI_Datatype rdtype, int root, MPI_Comm comm)
 {
     int i, rank, size, err;
     char *ptmp;

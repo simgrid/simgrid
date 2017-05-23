@@ -21,7 +21,7 @@ static int growsdown(int *x)
    */
   if (iterate != 0 && y != (x > &y)) {
     fprintf(stderr, "The stack changed its direction! (Iteration: %d. It was growing %s; &y=%p; &prevY=%p)\n",
-	    (10-iterate), y?"down":"up", &y, x);
+            (10 - iterate), y ? "down" : "up", &y, x);
     exit(1);
   }
   return y;

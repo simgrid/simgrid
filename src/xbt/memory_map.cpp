@@ -145,9 +145,9 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 
     /* Path */
     char path[MAXPATHLEN];
-	int pathlen;
+    int pathlen;
     pathlen = proc_regionfilename(pid, address, path, sizeof(path));
-	path[pathlen] = '\0';
+    path[pathlen]   = '\0';
     memreg.pathname = path;
 
 #if 0 /* Display mappings for debug */
@@ -256,8 +256,9 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     } else {
       memreg.flags |= MAP_SHARED;
       if (lfields[1][3] != 's')
-	XBT_WARN("The protection is neither 'p' (private) nor 's' (shared) but '%s'. Let's assume shared, as on b0rken win-ubuntu systems.\nFull line: %s\n",
-		 lfields[1], line);
+        XBT_WARN("The protection is neither 'p' (private) nor 's' (shared) but '%s'. Let's assume shared, as on b0rken "
+                 "win-ubuntu systems.\nFull line: %s\n",
+                 lfields[1], line);
     }
 
     /* Get the offset value */
@@ -360,9 +361,8 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
       */
     if (vmentries[i].kve_path[0] != '\0')
       memreg.pathname = vmentries[i].kve_path;
-    else if (vmentries[i].kve_type == KVME_TYPE_DEFAULT
-	    && vmentries[i-1].kve_type == KVME_TYPE_VNODE
-        && vmentries[i-1].kve_path[0] != '\0')
+    else if (vmentries[i].kve_type == KVME_TYPE_DEFAULT && vmentries[i - 1].kve_type == KVME_TYPE_VNODE &&
+             vmentries[i - 1].kve_path[0] != '\0')
       memreg.pathname = vmentries[i-1].kve_path;
     else if (vmentries[i].kve_type == KVME_TYPE_DEFAULT
         && vmentries[i].kve_flags & KVME_FLAG_GROWS_DOWN)

@@ -39,7 +39,7 @@ Coll_allreduce_lr::allreduce(void *sbuf, void *rbuf, int rcount,
 
   /* when communication size is smaller than number of process (not support) */
   if (rcount < size) {
-    XBT_WARN("MPI_allreduce_lr use default MPI_allreduce.");	  
+    XBT_WARN("MPI_allreduce_lr use default MPI_allreduce.");
     Coll_allreduce_default::allreduce(sbuf, rbuf, rcount, dtype, op, comm);
     return MPI_SUCCESS; 
   }

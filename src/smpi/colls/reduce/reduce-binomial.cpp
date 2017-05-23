@@ -86,7 +86,7 @@ int Coll_reduce_binomial::reduce(void *sendbuf, void *recvbuf, int count,
   }
 
   if (rank != root) {
-	  smpi_free_tmp_buffer(recvbuf);
+    smpi_free_tmp_buffer(recvbuf);
   }
   smpi_free_tmp_buffer(tmp_buf);
 
