@@ -350,13 +350,17 @@ void ns3_simulator(double maxSeconds)
 void ns3_create_flow(simgrid::s4u::Host* src, simgrid::s4u::Host* dst, double startTime, u_int32_t TotalBytes,
                      simgrid::surf::NetworkNS3Action* action)
 {
-  int node1 = src->pimpl_netpoint->extension<NetPointNs3>()->node_num;
-  int node2 = dst->pimpl_netpoint->extension<NetPointNs3>()->node_num;
+  unsigned int node1 = src->pimpl_netpoint->extension<NetPointNs3>()->node_num;
+  unsigned int node2 = dst->pimpl_netpoint->extension<NetPointNs3>()->node_num;
 
   ns3::Ptr<ns3::Node> src_node = nodes.Get(node1);
   ns3::Ptr<ns3::Node> dst_node = nodes.Get(node2);
 
+  xbt_assert(node2 < IPV4addr.size(), "Element %s is unknown to NS3. Is it connected to any one-hop link?",
+             dst->pimpl_netpoint->cname());
   char* addr = IPV4addr.at(node2);
+  xbt_assert(addr != nullptr, "Element %s is unknown to NS3. Is it connected to any one-hop link?",
+             dst->pimpl_netpoint->cname());
 
   XBT_DEBUG("ns3_create_flow %d Bytes from %d to %d with Interface %s",TotalBytes, node1, node2,addr);
   ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress (ns3::Ipv4Address::GetAny(), port_number));
