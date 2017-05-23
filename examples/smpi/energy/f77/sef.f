@@ -28,28 +28,29 @@
 
       t = MPI_Wtime()
 
-      print *, '[', t, '] [rank ', rank, ']',
+      print '(1a,F15.8,1a,i2,1a,i2,1a)', '[', t, '] [rank ', rank, '] ',
      &     pstates, ' pstates available'
 
       do i = 0, pstates - 1
          p = smpi_get_host_power_peak_at(i)
-         print *, '[', t, '] [rank ', rank, '] Power: ', p
+         print '(1a,F15.8,1a,i2,1a,F15.4)', '[', t, '] [rank ',
+     &     rank, '] Power: ', p
       end do
 
       do i = 0, pstates - 1
          call smpi_set_host_pstate(i)
          t = MPI_Wtime()
          p = smpi_get_host_current_power_peak()
-         print *, '[', t, '] [rank ', rank, '] Current pstate: ', i,
-     &        '; Current power: ', p
+         print '(1a,F15.8,1a,i2,1a,i2,1a,F15.4)', '[', t, '] [rank ',
+     &         rank,'] Current pstate: ', i,'; Current power: ', p
 
          e = 1e9
          call smpi_execute_flops(e)
 
          t = MPI_Wtime()
          e = smpi_get_host_consumed_energy()
-         print *, '[', t, '] [rank ', rank, ']',
-     &        ' Energy consumed (Joules): ', e
+         print '(1a,F15.8,1a,i2,1a,1a,F15.4)', '[', t, '] [rank ',
+     &         rank, ']',' Energy consumed (Joules): ', e
       end do
 
       call MPI_Finalize(ierr)
