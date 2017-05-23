@@ -1,5 +1,11 @@
-foreach(example SemaphoreGC SleepHostOff)
-  set(sources ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.java)
+set(semaphoreGC_files  SemaphoreGC)
+set(sleepHostOff_files SleepHostOff)
+
+foreach(example semaphoreGC sleepHostOff)
+  foreach (filename ${${example}_files} )
+    set(sources "${${example}_sources}" "${CMAKE_CURRENT_SOURCE_DIR}/${example}/${filename}.java")
+  endforeach()
+
   set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
 
   if(enable_java)
@@ -21,6 +27,6 @@ set(examples_src ${examples_src} ${sources}                                     
 set(tesh_files   ${tesh_files}                                                                 PARENT_SCOPE)
 
 if(enable_java)
-  ADD_TESH(tesh-java-SemaphoreGC  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java/SemaphoreGC  ${CMAKE_HOME_DIRECTORY}/teshsuite/java/SemaphoreGC/SemaphoreGC.tesh)
-  ADD_TESH(tesh-java-SleepHostOff --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java/SleepHostOff ${CMAKE_HOME_DIRECTORY}/teshsuite/java/SleepHostOff/SleepHostOff.tesh)
+  ADD_TESH(tesh-java-semaphoreGC  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java/semaphoreGC  ${CMAKE_HOME_DIRECTORY}/teshsuite/java/semaphoreGC/SemaphoreGC.tesh)
+  ADD_TESH(tesh-java-sleepHostOff --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java/sleepHostOff ${CMAKE_HOME_DIRECTORY}/teshsuite/java/sleepHostOff/SleepHostOff.tesh)
 endif()

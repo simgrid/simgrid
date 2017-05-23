@@ -241,8 +241,8 @@ examples/smpi/trace_simple/smpi_trace_simple
 examples/smpi/trace_call_location/smpi_trace_call_location
 testall
 teshsuite/datadesc_usage.out
-teshsuite/java/SemaphoreGC/SemaphoreGC_compiled
-teshsuite/java/SleepHostOff/SleepHostOff_compiled
+teshsuite/java/semaphoreGC/semaphoreGC_compiled
+teshsuite/java/sleepHostOff/sleepHostOff_compiled
 teshsuite/mc/dwarf/dwarf
 teshsuite/mc/dwarf-expression/dwarf-expression
 teshsuite/mc/random-bug/random-bug
