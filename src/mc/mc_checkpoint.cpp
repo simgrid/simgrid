@@ -408,7 +408,7 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(simgrid::mc::UnwindCo
   }
 
   return result;
-};
+}
 
 static std::vector<s_mc_snapshot_stack_t> take_snapshot_stacks(simgrid::mc::Snapshot* snapshot)
 {
@@ -620,12 +620,11 @@ void restore_snapshot_fds(simgrid::mc::Snapshot* snapshot)
     
     int new_fd = open(fd.filename.c_str(), fd.flags);
     if (new_fd < 0)
-      xbt_die("Could not reopen the file %s fo restoring the file descriptor",
-        fd.filename.c_str());
+      xbt_die("Could not reopen the file %s fo restoring the file descriptor", fd.filename.c_str());
     if (new_fd != fd.number) {
       dup2(new_fd, fd.number);
       close(new_fd);
-    };
+    }
     lseek(fd.number, fd.current_position, SEEK_SET);
   }
 }

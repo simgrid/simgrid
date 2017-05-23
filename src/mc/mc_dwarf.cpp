@@ -53,8 +53,7 @@ static uint64_t MC_dwarf_default_lower_bound(int lang);
  * \param die  DIE for the DW_TAG_enumeration_type or DW_TAG_subrange_type
  * \param unit DIE of the DW_TAG_compile_unit
  */
-static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die * die,
-                                                Dwarf_Die * unit);
+static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die* die, Dwarf_Die* unit);
 
 /** \brief Computes the number of elements of a given DW_TAG_array_type.
  *

@@ -33,8 +33,7 @@
 #include "src/mc/mc_smx.h"
 #include "src/mc/remote/Client.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
-                                "Logging specific to algorithms for liveness properties verification");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc, "Logging specific to algorithms for liveness properties verification");
 
 /********* Static functions *********/
 
@@ -63,10 +62,7 @@ VisitedPair::VisitedPair(
   this->atomic_propositions = std::move(atomic_propositions);
 }
 
-VisitedPair::~VisitedPair() = default;
-
-static bool evaluate_label(
-  xbt_automaton_exp_label_t l, std::vector<int> const& values)
+static bool evaluate_label(xbt_automaton_exp_label_t l, std::vector<int> const& values)
 {
   switch (l->type) {
   case xbt_automaton_exp_label::AUT_OR:
@@ -95,8 +91,6 @@ static bool evaluate_label(
 
 Pair::Pair(unsigned long expanded_pairs) : num(expanded_pairs)
 {}
-
-Pair::~Pair() {}
 
 std::shared_ptr<const std::vector<int>> LivenessChecker::getPropositionValues()
 {
@@ -133,13 +127,11 @@ std::shared_ptr<VisitedPair> LivenessChecker::insertAcceptancePair(simgrid::mc::
         || *(pair_test->atomic_propositions) != *(new_pair->atomic_propositions)
         || this->compare(pair_test.get(), new_pair.get()) != 0)
       continue;
-    XBT_INFO("Pair %d already reached (equal to pair %d) !",
-      new_pair->num, pair_test->num);
+    XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
     explorationStack_.pop_back();
     if (dot_output != nullptr)
-      fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
-        this->previousPair_, pair_test->num,
-        this->previousRequest_.c_str());
+      fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", this->previousPair_, pair_test->num,
+              this->previousRequest_.c_str());
     return nullptr;
   }
 
@@ -224,9 +216,8 @@ int LivenessChecker::insertVisitedPair(std::shared_ptr<VisitedPair> visited_pair
     return -1;
 
   if (visited_pair == nullptr)
-    visited_pair = std::make_shared<VisitedPair>(
-      pair->num, pair->automaton_state, pair->atomic_propositions,
-      pair->graph_state);
+    visited_pair =
+        std::make_shared<VisitedPair>(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
 
   auto range = boost::range::equal_range(visitedPairs_, visited_pair.get(),
                                          simgrid::mc::DerefAndCompareByActorsCountAndUsedHeap());
@@ -267,10 +258,6 @@ void LivenessChecker::purgeVisitedPairs()
 }
 
 LivenessChecker::LivenessChecker(Session& session) : Checker(session)
-{
-}
-
-LivenessChecker::~LivenessChecker()
 {
 }
 

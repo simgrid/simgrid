@@ -38,7 +38,7 @@ struct XBT_PRIVATE Pair {
   bool exploration_started = false;
 
   Pair(unsigned long expanded_pairs);
-  ~Pair();
+  ~Pair() = default;
 
   Pair(Pair const&) = delete;
   Pair& operator=(Pair const&) = delete;
@@ -57,13 +57,13 @@ struct XBT_PRIVATE VisitedPair {
     int pair_num, xbt_automaton_state_t automaton_state,
     std::shared_ptr<const std::vector<int>> atomic_propositions,
     std::shared_ptr<simgrid::mc::State> graph_state);
-  ~VisitedPair();
+  ~VisitedPair() = default;
 };
 
 class XBT_PRIVATE LivenessChecker : public Checker {
 public:
   LivenessChecker(Session& session);
-  ~LivenessChecker();
+  ~LivenessChecker() = default;
   void run() override;
   RecordTrace getRecordTrace() override;
   std::vector<std::string> getTextualTrace() override;
