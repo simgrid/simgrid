@@ -244,7 +244,6 @@ void DefineContainerEvent::print() {
 }
 
 
-
 DefineVariableTypeEvent::DefineVariableTypeEvent(type_t type)
 {
   this->event_type                           = PAJE_DefineVariableType;

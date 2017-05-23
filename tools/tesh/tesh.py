@@ -28,7 +28,7 @@ under the terms of the license (GNU LGPL) which comes with this package.
 # print "WARNING: Output were only sorted using the $sort_prefix first chars.\n"
 #    if ( $sort_prefix > 0 );
 # print "WARNING: Use <! output sort 19> to sort by simulated date and process ID only.\n";
-#    
+#
 # print "----8<---------------  Begin of unprocessed observed output (as it should appear in file):\n";
 # map {print "> $_\n"} @{$cmd{'unsorted got'}};
 # print "--------------->8----  End of the unprocessed observed output.\n";
@@ -292,7 +292,7 @@ class Cmd(object):
             self.timeout *= 20
             self.args = TeshState().wrapper + self.args
         elif re.match(".*smpirun.*", self.args) is not None:
-            self.args = "sh " + self.args 
+            self.args = "sh " + self.args
         if TeshState().jenkins and self.timeout != None:
             self.timeout *= 10
 

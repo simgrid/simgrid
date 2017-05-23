@@ -19,9 +19,9 @@ class Group : public F2C{
     xbt_dict_t index_to_rank_map_;
     int refcount_;
   public:
-    Group();
-    Group(int size);
-    Group(Group* origin);
+    explicit Group();
+    explicit Group(int size);
+    explicit Group(Group* origin);
     ~Group();
 
     void set_mapping(int index, int rank);
