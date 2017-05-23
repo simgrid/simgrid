@@ -15,7 +15,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf, "Logging specific to the SUR
 
 xbt_lib_t storage_lib;
 int MSG_STORAGE_LEVEL          = -1; // Msg storage level
-int ROUTING_STORAGE_LEVEL      = -1; // Routing for storage level
 int SURF_STORAGE_LEVEL = -1;
 simgrid::surf::StorageModel *surf_storage_model = nullptr;
 

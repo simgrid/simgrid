@@ -29,6 +29,7 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 
 XBT_PRIVATE std::map<std::string, simgrid::surf::Storage*> mount_list;
+XBT_PRIVATE std::vector<std::string> known_storages;
 
 namespace simgrid {
 namespace surf {
@@ -364,7 +365,7 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
 
 void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)
 {
-  xbt_assert(not xbt_lib_get_or_null(storage_lib, storage->id, ROUTING_STORAGE_LEVEL),
+  xbt_assert(std::find(known_storages.begin(), known_storages.end(), storage->id) == known_storages.end(),
              "Refusing to add a second storage named \"%s\"", storage->id);
 
   xbt_assert(storage_types.find(storage->type_id) != storage_types.end(), "No storage type '%s'", storage->type_id);
@@ -373,7 +374,7 @@ void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)
   XBT_DEBUG("ROUTING Create a storage name '%s' with type_id '%s' and content '%s'", storage->id, storage->type_id,
             storage->content);
 
-  xbt_lib_set(storage_lib, storage->id, ROUTING_STORAGE_LEVEL, (void *) xbt_strdup(storage->type_id));
+  known_storages.push_back(storage->id);
 
   // if storage content is not specified use the content of storage_type if any
   if (not strcmp(storage->content, "") && strcmp(stype->content, "")) {
@@ -418,8 +419,8 @@ void sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type)
 }
 
 void sg_platf_new_mount(sg_platf_mount_cbarg_t mount){
-  xbt_assert(xbt_lib_get_or_null(storage_lib, mount->storageId, ROUTING_STORAGE_LEVEL),
-      "Cannot mount non-existent disk \"%s\"", mount->storageId);
+  xbt_assert(std::find(known_storages.begin(), known_storages.end(), mount->storageId) != known_storages.end(),
+             "Cannot mount non-existent disk \"%s\"", mount->storageId);
 
   XBT_DEBUG("ROUTING Mount '%s' on '%s'",mount->storageId, mount->name);
 

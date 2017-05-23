@@ -36,7 +36,6 @@ void storage_register_callbacks()
   simgrid::s4u::onPlatformCreated.connect(check_disk_attachment);
   instr_routing_define_callbacks();
 
-  ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, xbt_free_f);
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, [](void *self) {
     delete static_cast<simgrid::surf::Storage*>(self);
   });
@@ -58,10 +57,6 @@ namespace surf {
 Storage* StorageN11Model::createStorage(const char* id, const char* type_id, const char* content_name,
                                         const char* attach)
 {
-
-  xbt_assert(not surf_storage_resource_priv(surf_storage_resource_by_name(id)),
-             "Storage '%s' declared several times in the platform file", id);
-
   storage_type_t storage_type = storage_types.at(type_id);
 
   double Bread =
@@ -71,8 +66,8 @@ Storage* StorageN11Model::createStorage(const char* id, const char* type_id, con
 
  Storage* storage = new StorageN11(this, id, maxminSystem_, Bread, Bwrite, type_id, (char*)content_name,
                                    storage_type->size, (char*)attach);
-  storageCreatedCallbacks(storage);
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
+  storageCreatedCallbacks(storage);
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tBread '%f'\n", id, type_id, Bread);
 
