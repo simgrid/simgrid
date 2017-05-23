@@ -13,7 +13,6 @@
 #include "xbt/graph.h"
 
 
-
 /***********
  * Classes *
  ***********/

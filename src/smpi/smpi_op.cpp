@@ -246,7 +246,7 @@ void Op::apply(void *invec, void *inoutvec, int *len, MPI_Datatype datatype)
   }
 
   if (not smpi_process()->replaying() && *len > 0) {
-    if(! is_fortran_op_)
+    if (not is_fortran_op_)
       this->func_(invec, inoutvec, len, &datatype);
     else{
       XBT_DEBUG("Applying operation of length %d from %p and from/to %p", *len, invec, inoutvec);

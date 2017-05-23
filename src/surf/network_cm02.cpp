@@ -318,7 +318,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   action->latency_ *= latencyFactor(size);
   action->rate_ = bandwidthConstraint(action->rate_, bandwidth_bound, size);
   if (haveGap_) {
-    xbt_assert(! route->empty(),
+    xbt_assert(not route->empty(),
                "Using a model with a gap (e.g., SMPI) with a platform without links (e.g. vivaldi)!!!");
 
     gapAppend(size, route->at(0), action);

@@ -159,7 +159,7 @@ namespace simgrid {
         if((*it)->init_rate==-1)
           (*it)->init_rate= rate_before_update;
 
-        penalized_bw= ! num_comm_out ? (*it)->init_rate : (*it)->init_rate /penalty;
+        penalized_bw = num_comm_out ? (*it)->init_rate / penalty : (*it)->init_rate;
 
         if (not double_equals(penalized_bw, rate_before_update, sg_surf_precision)) {
           XBT_DEBUG("%d->%d action %p penalty updated : bw now %f, before %f , initial rate %f", root->id,(*it)->destination->id,(*it)->action,penalized_bw, (*it)->action->getBound(), (*it)->init_rate );

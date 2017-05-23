@@ -577,7 +577,7 @@ bool Resource::isOn() const {
   return isOn_;
 }
 bool Resource::isOff() const {
-  return ! isOn_;
+  return not isOn_;
 }
 
 void Resource::turnOn()

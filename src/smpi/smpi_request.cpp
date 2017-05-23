@@ -373,9 +373,9 @@ void Request::start()
 
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     real_size_=size_;
-    action_ = simcall_comm_irecv(process->process(), mailbox, buf_, &real_size_, &match_recv,
-                                         ! process->replaying()? smpi_comm_copy_data_callback
-                                         : &smpi_comm_null_copy_buffer_callback, this, -1.0);
+    action_   = simcall_comm_irecv(
+        process->process(), mailbox, buf_, &real_size_, &match_recv,
+        process->replaying() ? &smpi_comm_null_copy_buffer_callback : smpi_comm_copy_data_callback, this, -1.0);
     XBT_DEBUG("recv simcall posted");
 
     if (async_small_thresh != 0 || (flags_ & RMA) != 0 )

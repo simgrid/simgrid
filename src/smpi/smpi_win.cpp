@@ -419,7 +419,7 @@ int Win::compare_and_swap(void *origin_addr, void *compare_addr,
               target_disp, 1, datatype, &req);
   if (req != MPI_REQUEST_NULL)
     Request::wait(&req, MPI_STATUS_IGNORE);
-  if(! memcmp (result_addr, compare_addr, datatype->get_extent() )){
+  if (not memcmp(result_addr, compare_addr, datatype->get_extent())) {
     put(origin_addr, 1, datatype, target_rank,
               target_disp, 1, datatype);
   }

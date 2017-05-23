@@ -213,7 +213,7 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
 
   container_t container = PJ_container_new(link.name(), INSTR_LINK, father);
 
-  if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (! TRACE_disable_link())) {
+  if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
     type_t bandwidth = PJ_type_get_or_null("bandwidth", container->type);
     if (bandwidth == nullptr) {
       bandwidth = PJ_type_variable_new("bandwidth", nullptr, container->type);
@@ -238,7 +238,7 @@ void sg_instr_new_host(simgrid::s4u::Host& host)
   container_t father = currentContainer.back();
   container_t container = PJ_container_new(host.cname(), INSTR_HOST, father);
 
-  if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (! TRACE_disable_speed())) {
+  if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
     type_t speed = PJ_type_get_or_null ("power", container->type);
     if (speed == nullptr){
       speed = PJ_type_variable_new ("power", nullptr, container->type);

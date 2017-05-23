@@ -318,7 +318,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *al
   t_simdata->comm = static_cast<simgrid::kernel::activity::Comm*>(act);
 
   msg_comm_t comm = nullptr;
-  if (! detached) {
+  if (not detached) {
     comm = xbt_new0(s_msg_comm_t, 1);
     comm->task_sent = task;
     comm->task_received = nullptr;

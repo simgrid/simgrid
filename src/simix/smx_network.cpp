@@ -189,7 +189,7 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
 
   simgrid::kernel::activity::Comm* other_comm;
   //communication already done, get it inside the list of completed comms
-  if (mbox->permanent_receiver != nullptr && ! mbox->done_comm_queue.empty()) {
+  if (mbox->permanent_receiver != nullptr && not mbox->done_comm_queue.empty()) {
 
     XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
     //find a match in the list of already received comms

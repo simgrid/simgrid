@@ -370,7 +370,7 @@ static inline bool all_communications_are_finished()
   for (size_t current_actor = 1; current_actor < MC_smx_get_maxpid(); current_actor++) {
     xbt_dynar_t pattern = xbt_dynar_get_as(incomplete_communications_pattern, current_actor, xbt_dynar_t);
     if (not xbt_dynar_is_empty(pattern)) {
-      XBT_DEBUG("Some communications are not finished, cannot stop the exploration ! State not visited.");
+      XBT_DEBUG("Some communications are not finished, cannot stop the exploration! State not visited.");
       return false;
     }
   }
@@ -503,7 +503,7 @@ void CommunicationDeterminismChecker::main()
     } else {
 
       if (stack_.size() > (std::size_t) _sg_mc_max_depth)
-        XBT_WARN("/!\\ Max depth reached ! /!\\ ");
+        XBT_WARN("/!\\ Max depth reached! /!\\ ");
       else if (visited_state != nullptr)
         XBT_DEBUG("State already visited (equal to state %d), exploration stopped on this path.",
             visited_state->original_num == -1 ? visited_state->num : visited_state->original_num);
