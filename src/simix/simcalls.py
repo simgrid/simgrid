@@ -243,7 +243,6 @@ def handle(fd, func, simcalls, guarded_simcalls):
         fd.write('\n#endif\n')
 
 if __name__ == '__main__':
-    import sys
     simcalls, simcalls_dict = parse('simcalls.in')
 
     ok = True
