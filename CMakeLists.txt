@@ -60,6 +60,9 @@ if(APPLE AND (CMAKE_C_COMPILER_VERSION VERSION_LESS "4.6"))
   set(HAVE_UCONTEXT_H 0)
 endif()
 
+### Check threading support
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+find_package(Threads)
 
 ### Setup Options
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Option.cmake)
@@ -274,7 +277,6 @@ endif()
 # Checks for header libraries functions.
 CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
 
-CHECK_LIBRARY_EXISTS(pthread pthread_create          "" HAVE_PTHREAD)
 if(NOT APPLE) # OS X El Capitan deprecates this function
   CHECK_LIBRARY_EXISTS(pthread sem_init                "" HAVE_SEM_INIT_LIB)
 endif()
@@ -460,7 +462,7 @@ endif()
 ### Initialize of CONTEXT THREADS
 
 set(HAVE_THREAD_CONTEXTS 0)
-if(HAVE_PTHREAD)
+if(CMAKE_USE_PTHREADS_INIT)
   ### Test that we have a way to create semaphores
 
   if(HAVE_SEM_OPEN_LIB)
