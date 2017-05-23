@@ -32,8 +32,7 @@ extern std::map<std::string, storage_type_t> storage_types;
 namespace simgrid {
 namespace surf {
 
-simgrid::xbt::signal<void(void)> surfExitCallbacks;
-
+simgrid::xbt::signal<void()> surfExitCallbacks;
 }
 }
 

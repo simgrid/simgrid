@@ -426,7 +426,7 @@ void CommunicationDeterminismChecker::restoreState()
   }
 }
 
-void CommunicationDeterminismChecker::main(void)
+void CommunicationDeterminismChecker::main()
 {
   std::unique_ptr<simgrid::mc::VisitedState> visited_state = nullptr;
   smx_simcall_t req = nullptr;

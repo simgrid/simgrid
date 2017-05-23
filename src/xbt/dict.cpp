@@ -596,7 +596,7 @@ static void debugged_add(xbt_dict_t head, const char* key)
   debugged_add_ext(head, key, key);
 }
 
-static xbt_dict_t new_fixture(void)
+static xbt_dict_t new_fixture()
 {
   xbt_test_add("Fill in the dictionnary");
 

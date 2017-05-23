@@ -10,8 +10,6 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(energy_vm, "Messages of this example");
 
 static int worker_func(int argc, char *argv[]) {
-  (void)argc;
-  (void)argv;
   msg_task_t task1 = MSG_task_create("t1", 300E6, 0, NULL);
   MSG_task_execute (task1);
   MSG_task_destroy(task1);

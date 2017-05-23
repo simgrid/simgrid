@@ -27,7 +27,7 @@ void MC_memory_init()
 }
 
 /* Finalize the memory subsystem */
-void MC_memory_exit(void)
+void MC_memory_exit()
 {
 }
 

@@ -38,7 +38,7 @@ void jedule_sd_init()
   my_jedule->root_container = root_container;
 }
 
-void jedule_sd_exit(void)
+void jedule_sd_exit()
 {
   delete my_jedule;
 }

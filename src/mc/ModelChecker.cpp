@@ -183,7 +183,7 @@ static void MC_report_crash(int status)
   mc_model_checker->process().dumpStack();
 }
 
-static void MC_report_assertion_error(void)
+static void MC_report_assertion_error()
 {
   XBT_INFO("**************************");
   XBT_INFO("*** PROPERTY NOT VALID ***");

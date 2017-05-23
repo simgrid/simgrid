@@ -129,7 +129,7 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
 }
 
 /* Create the ns3 topology based on routing strategy */
-static void postparse_cb(void)
+static void postparse_cb()
 {
   IPV4addr.shrink_to_fit();
 

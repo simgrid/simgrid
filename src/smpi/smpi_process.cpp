@@ -196,12 +196,12 @@ xbt_mutex_t Process::mailboxes_mutex()
 }
 
 #if HAVE_PAPI
-int Process::papi_event_set(void)
+int Process::papi_event_set()
 {
   return papi_event_set_;
 }
 
-papi_counter_t& smpi_process_papi_counters(void)
+papi_counter_t& smpi_process_papi_counters()
 {
   return papi_counter_data_;
 }

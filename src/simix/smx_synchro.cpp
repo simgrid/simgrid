@@ -375,7 +375,6 @@ void intrusive_ptr_add_ref(s_smx_cond_t *cond)
 {
   auto previous = (cond->refcount_)++;
   xbt_assert(previous != 0);
-  (void) previous;
 }
 
 void intrusive_ptr_release(s_smx_cond_t *cond)

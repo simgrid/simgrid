@@ -30,7 +30,7 @@ int MC_random(int min, int max)
 namespace simgrid {
 namespace mc {
 
-void wait_for_requests(void)
+void wait_for_requests()
 {
 #if SIMGRID_HAVE_MC
   xbt_assert(mc_model_checker == nullptr);

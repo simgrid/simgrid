@@ -105,7 +105,7 @@ void MC_run()
   simgrid::mc::processes_time.clear();
 }
 
-void MC_show_deadlock(void)
+void MC_show_deadlock()
 {
   XBT_INFO("**************************");
   XBT_INFO("*** DEAD-LOCK DETECTED ***");

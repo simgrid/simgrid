@@ -151,7 +151,7 @@ void Client::handleMessages()
   }
 }
 
-void Client::mainLoop(void)
+void Client::mainLoop()
 {
   while (1) {
     simgrid::mc::wait_for_requests();

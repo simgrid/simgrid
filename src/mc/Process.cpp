@@ -185,7 +185,7 @@ static pthread_once_t zero_buffer_flag = PTHREAD_ONCE_INIT;
 static const void* zero_buffer;
 static const size_t zero_buffer_size = 10 * 4096;
 
-static void zero_buffer_init(void)
+static void zero_buffer_init()
 {
   int fd = open("/dev/zero", O_RDONLY);
   if (fd<0)

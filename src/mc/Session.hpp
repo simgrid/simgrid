@@ -66,7 +66,7 @@ public: // static constructors
    *
    *  The code is expected to `exec` the model-checker program.
    */
-  static Session* fork(std::function<void(void)> code);
+  static Session* fork(std::function<void()> code);
 
   /** Spawn a model-checked process
    *

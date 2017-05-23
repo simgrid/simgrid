@@ -33,7 +33,7 @@ void MC_assert(int prop)
     simgrid::mc::Client::get()->reportAssertionFailure();
 }
 
-void MC_cut(void)
+void MC_cut()
 {
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
@@ -50,7 +50,7 @@ void MC_ignore(void* addr, size_t size)
   simgrid::mc::Client::get()->ignoreMemory(addr, size);
 }
 
-void MC_automaton_new_propositional_symbol(const char *id, int(*fct)(void))
+void MC_automaton_new_propositional_symbol(const char* id, int (*fct)())
 {
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
