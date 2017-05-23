@@ -53,6 +53,8 @@
      &         rank, ']',' Energy consumed (Joules): ', e
       end do
 
+      flush(6)
+
       call MPI_Finalize(ierr)
       if (ierr .ne. MPI_SUCCESS) then
          print *, 'MPI_Finalize failed:', ierr
