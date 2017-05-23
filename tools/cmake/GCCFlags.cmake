@@ -38,7 +38,12 @@ if(enable_compile_warnings)
   # the one specific to C but refused by C++
   set(warnCFLAGS "${warnCFLAGS} -Wmissing-prototypes") 
 
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall")
+  if(CMAKE_Fotran_COMPILER_ID MATCHES "GCC|PGI")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall")
+  endif()
+  if(CMAKE_Fotran_COMPILER_ID MATCHES "Intel")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -warn all")
+  endif()
   set(CMAKE_JAVA_COMPILE_FLAGS "-Xlint")
 endif()
 

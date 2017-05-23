@@ -80,8 +80,21 @@ if ((NOT DEFINED enable_smpi) OR enable_smpi)
   
   if(CMAKE_Fortran_COMPILER)
     # Fortran compiler detected: save it, then replace by smpiff
-    set(SAVED_Fortran_COMPILER "${CMAKE_Fortran_COMPILER}" CACHE FILEPATH "The real Fortran compiler")
+    set(SMPI_Fortran_COMPILER "${CMAKE_Fortran_COMPILER}" CACHE FILEPATH "The real Fortran compiler")
     set(CMAKE_Fortran_COMPILER smpiff)
+
+	# Set flags/libs to be used in smpiff
+    if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
+      set(SMPI_Fortran_FLAGS "\"-fpic\" \"-ff2c\" \"-fno-second-underscore\"")
+      set(SMPI_Fortran_LIBS "\"-lgfortran\"")
+    elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
+      set(SMPI_Fortran_FLAGS "\"-fPIC\" \"-nofor-main\"")
+      set(SMPI_Fortran_LIBS "\"-lifcore\"")
+    elseif(CMAKE_Fortran_COMPILER_ID MATCHES "PGI") # flang
+      set(SMPI_Fortran_FLAGS "\"-fPIC\"")
+      set(SMPI_Fortran_LIBS "")
+    endif()
+
     set(SMPI_FORTRAN 1)
   endif(CMAKE_Fortran_COMPILER)
 
@@ -943,7 +956,7 @@ else()
 endif()
 endif()
 if(CMAKE_Fortran_COMPILER)
-  message("        Compiler: Fortran ...........: ${SAVED_Fortran_COMPILER} (id: ${CMAKE_Fortran_COMPILER_ID})")
+  message("        Compiler: Fortran ...........: ${SMPI_Fortran_COMPILER} (id: ${CMAKE_Fortran_COMPILER_ID})")
   message("                version .............: ${CMAKE_Fortran_COMPILER_VERSION}")
 endif()
 message("        Linker: .....................: ${CMAKE_LINKER}")
