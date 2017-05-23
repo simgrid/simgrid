@@ -18,7 +18,7 @@ static void server()
   XBT_INFO("Task listen works on regular mailboxes");
   char* res = static_cast<char*>(simgrid::s4u::this_actor::recv(mailbox));
 
-  xbt_assert(!strcmp("Some data", res), "Data received: %s", res);
+  xbt_assert(not strcmp("Some data", res), "Data received: %s", res);
   XBT_INFO("Data successfully received from regular mailbox");
   xbt_free(res);
 
@@ -31,7 +31,7 @@ static void server()
   XBT_INFO("Task listen works on asynchronous mailboxes");
 
   res = static_cast<char*>(simgrid::s4u::this_actor::recv(mailbox2));
-  xbt_assert(!strcmp("More data", res));
+  xbt_assert(not strcmp("More data", res));
   xbt_free(res);
 
   XBT_INFO("Data successfully received from asynchronous mailbox");

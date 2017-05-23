@@ -72,7 +72,7 @@ static bool evaluate_label(xbt_automaton_exp_label_t l, std::vector<int> const& 
     return evaluate_label(l->u.or_and.left_exp, values)
       && evaluate_label(l->u.or_and.right_exp, values);
   case xbt_automaton_exp_label::AUT_NOT:
-    return !evaluate_label(l->u.exp_not, values);
+    return not evaluate_label(l->u.exp_not, values);
   case xbt_automaton_exp_label::AUT_PREDICAT:{
       unsigned int cursor = 0;
       xbt_automaton_propositional_symbol_t p = nullptr;
@@ -331,7 +331,7 @@ void LivenessChecker::backtrack()
 {
   /* Traverse the stack backwards until a pair with a non empty interleave
      set is found, deleting all the pairs that have it empty in the way. */
-  while (!explorationStack_.empty()) {
+  while (not explorationStack_.empty()) {
     std::shared_ptr<simgrid::mc::Pair> current_pair = explorationStack_.back();
     explorationStack_.pop_back();
     if (current_pair->requests > 0) {
@@ -371,7 +371,7 @@ void LivenessChecker::run()
       explorationStack_.push_back(this->newPair(nullptr, automaton_state, propos));
 
   /* Actually run the double DFS search for counter-examples */
-  while (!explorationStack_.empty()){
+  while (not explorationStack_.empty()) {
     std::shared_ptr<Pair> current_pair = explorationStack_.back();
 
     /* Update current state in buchi automaton */
@@ -389,17 +389,16 @@ void LivenessChecker::run()
     }
 
     std::shared_ptr<VisitedPair> reached_pair;
-    if (current_pair->automaton_state->type == 1 && !current_pair->exploration_started
-        && (reached_pair = this->insertAcceptancePair(current_pair.get())) == nullptr) {
+    if (current_pair->automaton_state->type == 1 && not current_pair->exploration_started &&
+        (reached_pair = this->insertAcceptancePair(current_pair.get())) == nullptr) {
       this->showAcceptanceCycle(current_pair->depth);
       throw simgrid::mc::LivenessError();
     }
 
     /* Pair already visited ? stop the exploration on the current path */
     int visited_num = -1;
-    if ((!current_pair->exploration_started)
-      && (visited_num = this->insertVisitedPair(
-        reached_pair, current_pair.get())) != -1) {
+    if ((not current_pair->exploration_started) &&
+        (visited_num = this->insertVisitedPair(reached_pair, current_pair.get())) != -1) {
       if (dot_output != nullptr){
         fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
           this->previousPair_, visited_num,
@@ -435,7 +434,7 @@ void LivenessChecker::run()
 
     /* Update stats */
     mc_model_checker->executed_transitions++;
-    if (!current_pair->exploration_started)
+    if (not current_pair->exploration_started)
       visitedPairsCount_++;
 
     /* Answer the request */

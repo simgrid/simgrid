@@ -397,7 +397,7 @@ void Request::start()
       refcount_++;
       if(!(old_type_->flags() & DT_FLAG_DERIVED)){
         oldbuf = buf_;
-        if (!process->replaying() && oldbuf != nullptr && size_!=0){
+        if (not process->replaying() && oldbuf != nullptr && size_ != 0) {
           if((smpi_privatize_global_variables != 0)
             && (static_cast<char*>(buf_) >= smpi_start_data_exe)
             && (static_cast<char*>(buf_) < smpi_start_data_exe + smpi_size_data_exe )){
@@ -462,13 +462,12 @@ void Request::start()
 
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     real_size_=size_;
-    action_ = simcall_comm_isend(SIMIX_process_from_PID(src_+1), mailbox, size_, -1.0,
-                                         buf, real_size_, &match_send,
-                         &xbt_free_f, // how to free the userdata if a detached send fails
-                         !process->replaying() ? smpi_comm_copy_data_callback
-                         : &smpi_comm_null_copy_buffer_callback, this,
-                         // detach if msg size < eager/rdv switch limit
-                         detached_);
+    action_   = simcall_comm_isend(
+        SIMIX_process_from_PID(src_ + 1), mailbox, size_, -1.0, buf, real_size_, &match_send,
+        &xbt_free_f, // how to free the userdata if a detached send fails
+        not process->replaying() ? smpi_comm_copy_data_callback : &smpi_comm_null_copy_buffer_callback, this,
+        // detach if msg size < eager/rdv switch limit
+        detached_);
     XBT_DEBUG("send simcall posted");
 
     /* FIXME: detached sends are not traceable (action_ == nullptr) */
@@ -559,7 +558,7 @@ int Request::testany(int count, MPI_Request requests[], int *index, MPI_Status *
        map.push_back(i);
     }
   }
-  if(!map.empty()) {
+  if (not map.empty()) {
     //multiplier to the sleeptime, to increase speed of execution, each failed testany will increase it
     static int nsleeps = 1;
     if(smpi_test_sleep > 0) 
@@ -691,9 +690,9 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
 
 // FIXME Handle the case of a partial shared malloc.
     if (((req->flags_ & ACCUMULATE) != 0) ||
-        (datatype->flags() & DT_FLAG_DERIVED)) { // && (!smpi_is_shared(req->old_buf_))){
+        (datatype->flags() & DT_FLAG_DERIVED)) { // && (not smpi_is_shared(req->old_buf_))){
 
-      if (!smpi_process()->replaying()){
+      if (not smpi_process()->replaying()) {
         if( smpi_privatize_global_variables != 0 && (static_cast<char*>(req->old_buf_) >= smpi_start_data_exe)
             && ((char*)req->old_buf_ < smpi_start_data_exe + smpi_size_data_exe )){
             XBT_VERB("Privatization : We are unserializing to a zone in global memory  Switch data segment ");
@@ -856,7 +855,7 @@ int Request::waitall(int count, MPI_Request requests[], MPI_Status status[])
     }
   }
 
-  if (!accumulates.empty()) {
+  if (not accumulates.empty()) {
     std::sort(accumulates.begin(), accumulates.end(), sort_accumulates);
     for (auto req : accumulates) {
       finish_wait(&req, status);

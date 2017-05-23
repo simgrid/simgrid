@@ -324,15 +324,13 @@ Coll_bcast_scatter_rdb_allgather::bcast (
       xbt_die("we didn't receive enough !");
     }
 
-    if (!is_contig || !is_homogeneous)
-    {
-        if (rank != root)
-        {
-            position = 0;
-            mpi_errno = MPI_Unpack(tmp_buf, nbytes, &position, buffer,
-                                         count, datatype, comm);
-            if (mpi_errno) xbt_die("error when unpacking %d", mpi_errno);
-        }
+    if (not is_contig || not is_homogeneous) {
+      if (rank != root) {
+        position  = 0;
+        mpi_errno = MPI_Unpack(tmp_buf, nbytes, &position, buffer, count, datatype, comm);
+        if (mpi_errno)
+          xbt_die("error when unpacking %d", mpi_errno);
+      }
     }
 
 fn_exit:

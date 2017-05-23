@@ -197,7 +197,7 @@ double NetworkNS3Model::nextOccuringEvent(double now)
   XBT_DEBUG("ns3_next_occuring_event");
 
   //get the first relevant value from the running_actions list
-  if (!getRunningActionSet()->size() || now == 0.0)
+  if (not getRunningActionSet()->size() || now == 0.0)
     return -1.0;
   else
     do {
@@ -256,7 +256,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     }
   }
 
-  while (!xbt_dynar_is_empty(socket_to_destroy)){
+  while (not xbt_dynar_is_empty(socket_to_destroy)) {
     xbt_dynar_pop(socket_to_destroy,&ns3Socket);
 
     if (XBT_LOG_ISENABLED(ns3, xbt_log_priority_debug)) {
@@ -326,7 +326,7 @@ bool NetworkNS3Action::isSuspended()
 int NetworkNS3Action::unref()
 {
   refcount_--;
-  if (!refcount_) {
+  if (not refcount_) {
     if (action_hook.is_linked())
       stateSet_->erase(stateSet_->iterator_to(*this));
     XBT_DEBUG ("Removing action %p", this);
@@ -391,20 +391,20 @@ void ns3_initialize(const char* TcpProtocol){
   ns3::Config::SetDefault ("ns3::TcpSocket::SegmentSize", ns3::UintegerValue (1024)); // 1024-byte packet for easier reading
   ns3::Config::SetDefault ("ns3::TcpSocket::DelAckCount", ns3::UintegerValue (1));
 
-  if (!strcmp(TcpProtocol,"default"))
+  if (not strcmp(TcpProtocol, "default"))
     return;
 
-  if (!strcmp(TcpProtocol,"Reno")) {
+  if (not strcmp(TcpProtocol, "Reno")) {
     XBT_INFO("Switching Tcp protocol to '%s'",TcpProtocol);
     ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpReno"));
     return;
   }
-  if (!strcmp(TcpProtocol,"NewReno")) {
+  if (not strcmp(TcpProtocol, "NewReno")) {
     XBT_INFO("Switching Tcp protocol to '%s'",TcpProtocol);
     ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpNewReno"));
     return;
   }
-  if(!strcmp(TcpProtocol,"Tahoe")){
+  if (not strcmp(TcpProtocol, "Tahoe")) {
     XBT_INFO("Switching Tcp protocol to '%s'",TcpProtocol);
     ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpTahoe"));
     return;

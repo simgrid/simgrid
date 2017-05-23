@@ -64,7 +64,7 @@ static void display_storage_content(simgrid::s4u::Storage* storage)
 {
   XBT_INFO("Print the content of the storage element: %s", storage->name());
   std::map<std::string, sg_size_t*>* content = storage->content();
-  if (!content->empty()) {
+  if (not content->empty()) {
     for (auto entry : *content)
       XBT_INFO("\t%s size: %llu bytes", entry.first.c_str(), *entry.second);
   } else {
@@ -149,7 +149,7 @@ static void server()
   XBT_INFO("Server waiting for transfers ...");
   while (1) {
     char* msg = static_cast<char*>(simgrid::s4u::this_actor::recv(mailbox));
-    if (!strcmp(msg, "finalize")) { // Shutdown ...
+    if (not strcmp(msg, "finalize")) { // Shutdown ...
       xbt_free(msg);
       break;
     } else { // Receive file to save

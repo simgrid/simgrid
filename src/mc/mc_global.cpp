@@ -134,7 +134,7 @@ void dumpStack(FILE* file, unw_cursor_t cursor)
 
   unw_word_t off;
   do {
-    const char * name = !unw_get_proc_name(&cursor, buffer, 100, &off) ? buffer : "?";
+    const char* name = not unw_get_proc_name(&cursor, buffer, 100, &off) ? buffer : "?";
 
     int status;
 

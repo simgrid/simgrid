@@ -524,7 +524,7 @@ int simcall_comm_test(smx_activity_t comm)
  */
 smx_mutex_t simcall_mutex_init()
 {
-  if(!simix_global) {
+  if (not simix_global) {
     fprintf(stderr,"You must run MSG_init before using MSG\n"); // We can't use xbt_die since we may get there before the initialization
     xbt_abort();
   }

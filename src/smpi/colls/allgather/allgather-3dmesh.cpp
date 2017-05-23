@@ -113,7 +113,7 @@ int Coll_allgather_3dmesh::allgather(void *send_buff, int send_count,
   num_procs = comm->size();
   extent = send_type->get_extent();
 
-  if (!is_3dmesh(num_procs, &X, &Y, &Z))
+  if (not is_3dmesh(num_procs, &X, &Y, &Z))
     THROWF(arg_error,0, "allgather_3dmesh algorithm can't be used with this number of processes! ");
 
 

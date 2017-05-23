@@ -255,7 +255,7 @@ CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value) :
   trace_ = 0;
 
 /* no availability file, fixed trace */
-  if (!speedTrace) {
+  if (not speedTrace) {
     type_ = TRACE_FIXED;
     value_ = value;
     XBT_DEBUG("No availability trace. Constant value = %f", value);
@@ -320,8 +320,8 @@ int CpuTiTrace::binarySearch(double *array, double a, int low, int high)
 
 void surf_cpu_model_init_ti()
 {
-  xbt_assert(!surf_cpu_model_pm,"CPU model already initialized. This should not happen.");
-  xbt_assert(!surf_cpu_model_vm,"CPU model already initialized. This should not happen.");
+  xbt_assert(not surf_cpu_model_pm, "CPU model already initialized. This should not happen.");
+  xbt_assert(not surf_cpu_model_vm, "CPU model already initialized. This should not happen.");
 
   surf_cpu_model_pm = new simgrid::surf::CpuTiModel();
   all_existing_models->push_back(surf_cpu_model_pm);
@@ -560,7 +560,7 @@ void CpuTi::updateActionsFinishTime(double now)
 
 bool CpuTi::isUsed()
 {
-  return !actionSet_->empty();
+  return not actionSet_->empty();
 }
 
 double CpuTi::getAvailableSpeed()
@@ -649,7 +649,7 @@ CpuAction *CpuTi::sleep(double duration)
 void CpuTi::modified(bool modified){
   CpuTiList* modifiedCpu = static_cast<CpuTiModel*>(model())->modifiedCpu_;
   if (modified) {
-    if (!cpu_ti_hook.is_linked()) {
+    if (not cpu_ti_hook.is_linked()) {
       modifiedCpu->push_back(*this);
     }
   } else {
@@ -684,7 +684,7 @@ void CpuTiAction::setState(Action::State state)
 int CpuTiAction::unref()
 {
   refcount_--;
-  if (!refcount_) {
+  if (not refcount_) {
     if (action_hook.is_linked())
       getStateSet()->erase(getStateSet()->iterator_to(*this));
     /* remove from action_set */

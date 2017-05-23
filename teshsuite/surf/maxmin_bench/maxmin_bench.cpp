@@ -94,7 +94,7 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
         l=j;
       fprintf(stderr,"(%i):%i/%i ",i,j,k);
       lmm_constraint_concurrency_maximum_reset(cnst[i]);
-      xbt_assert(!lmm_constraint_concurrency_maximum_get(cnst[i]));
+      xbt_assert(not lmm_constraint_concurrency_maximum_get(cnst[i]));
       if(i%10==9)
         fprintf(stderr,"\n");
     }
@@ -129,14 +129,14 @@ int main(int argc, char **argv)
   }
 
   //what class?
-  if(!strcmp(argv[1],"small"))
-      testclass=0;
-  else if(!strcmp(argv[1],"medium"))
-      testclass=1;
-  else if(!strcmp(argv[1],"big"))
-      testclass=2;
-  else if(!strcmp(argv[1],"huge"))
-      testclass=3;
+  if (not strcmp(argv[1], "small"))
+    testclass = 0;
+  else if (not strcmp(argv[1], "medium"))
+    testclass = 1;
+  else if (not strcmp(argv[1], "big"))
+    testclass = 2;
+  else if (not strcmp(argv[1], "huge"))
+    testclass = 3;
   else {
     fprintf(stderr, "Unknown class \"%s\", aborting!\n",argv[1]);
     return -2;

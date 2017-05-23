@@ -198,7 +198,7 @@ void* sglua_checkudata_debug(lua_State* L, int ud, const char* tname)
   XBT_DEBUG("Checking the task's metatable: expected %p, found %p", correct_mt, actual_mt);
   sglua_stack_dump(L, "my_checkudata: ");
 
-  if (p == nullptr || !lua_getmetatable(L, ud) || !lua_rawequal(L, -1, -2))
+  if (p == nullptr || not lua_getmetatable(L, ud) || not lua_rawequal(L, -1, -2))
     XBT_ERROR("Error: Userdata is nullptr, couldn't find metatable or top of stack does not equal element below it.");
   lua_pop(L, 2);
   return p;

@@ -44,18 +44,20 @@ void buffer_debug(std::vector<PajeEvent*> *buf);
 
 void dump_comment (const char *comment)
 {
-  if (!strlen(comment)) return;
+  if (not strlen(comment))
+    return;
   fprintf (tracing_file, "# %s\n", comment);
 }
 
 void dump_comment_file (const char *filename)
 {
-  if (!strlen(filename)) return;
+  if (not strlen(filename))
+    return;
   FILE *file = fopen (filename, "r");
-  if (!file){
+  if (not file) {
     THROWF (system_error, 1, "Comment file %s could not be opened for reading.", filename);
   }
-  while (!feof(file)){
+  while (not feof(file)) {
     char c;
     c = fgetc(file);
     if (feof(file)) break;
@@ -74,7 +76,8 @@ double TRACE_last_timestamp_to_dump = 0;
 //dumps the trace file until the timestamp TRACE_last_timestamp_to_dump
 void TRACE_paje_dump_buffer (int force)
 {
-  if (!TRACE_is_enabled()) return;
+  if (not TRACE_is_enabled())
+    return;
   XBT_DEBUG("%s: dump until %f. starts", __FUNCTION__, TRACE_last_timestamp_to_dump);
   if (force){
     for (auto event : buffer){
@@ -429,9 +432,9 @@ void CreateContainerEvent::print() {
 			prefix = xbt_os_time();
 		}
 
-		if (!xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || ti_unique_file == nullptr) {
-			char *folder_name = bprintf("%s_files", TRACE_get_filename());
-			char *filename = bprintf("%s/%f_%s.txt", folder_name, prefix, container->name);
+                if (not xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || ti_unique_file == nullptr) {
+                  char* folder_name = bprintf("%s_files", TRACE_get_filename());
+                  char* filename    = bprintf("%s/%f_%s.txt", folder_name, prefix, container->name);
 #ifdef WIN32
 			_mkdir(folder_name);
 #else
@@ -473,14 +476,14 @@ void DestroyContainerEvent::print() {
 
 		print_row();
 	} else if (instr_fmt_type == instr_fmt_TI) {
-		if (!xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file")|| xbt_dict_length(tracing_files) == 1) {
-			FILE* f = (FILE*)xbt_dict_get_or_null(tracing_files, container->name);
-			fclose(f);
-		}
-		xbt_dict_remove(tracing_files, container->name);
-	} else {
-		THROW_IMPOSSIBLE;
-	}
+          if (not xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || xbt_dict_length(tracing_files) == 1) {
+            FILE* f = (FILE*)xbt_dict_get_or_null(tracing_files, container->name);
+            fclose(f);
+          }
+          xbt_dict_remove(tracing_files, container->name);
+        } else {
+          THROW_IMPOSSIBLE;
+        }
 }
 
 SetVariableEvent::SetVariableEvent (double timestamp, container_t container, type_t type, double value)

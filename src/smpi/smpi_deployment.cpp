@@ -58,7 +58,7 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
   SIMIX_function_register(name, code);
 
   static int already_called = 0;
-  if (!already_called) {
+  if (not already_called) {
     already_called = 1;
     for (auto& item : simgrid::s4u::host_list) {
       simgrid::s4u::Host* host = item.second;

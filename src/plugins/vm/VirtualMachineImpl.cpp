@@ -124,7 +124,7 @@ VirtualMachineImpl::~VirtualMachineImpl()
   /* dirty page tracking */
   unsigned int size          = xbt_dict_size(dp_objs);
   static bool already_warned = false;
-  if (size > 0 && !already_warned) {
+  if (size > 0 && not already_warned) {
     xbt_dict_cursor_t cursor = nullptr;
     xbt_dict_cursor_first(dp_objs, &cursor);
     XBT_WARN("Dirty page tracking: %u pending task(s) on a destroyed VM (first one is %s).\n"

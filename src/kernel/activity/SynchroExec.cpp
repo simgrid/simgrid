@@ -73,6 +73,6 @@ void simgrid::kernel::activity::Exec::post()
   }
 
   /* If there are simcalls associated with the synchro, then answer them */
-  if (!simcalls.empty())
+  if (not simcalls.empty())
     SIMIX_execution_finish(this);
 }

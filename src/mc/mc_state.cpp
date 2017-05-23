@@ -80,9 +80,9 @@ static inline smx_simcall_t MC_state_get_request_for_process(
   state->transition.argument           = -1;
   state->executed_req.call             = SIMCALL_NONE;
 
-  if (!procstate->isTodo())
+  if (not procstate->isTodo())
     return nullptr; // Not considered by the checker algorithm
-  if (!simgrid::mc::actor_is_enabled(actor))
+  if (not simgrid::mc::actor_is_enabled(actor))
     return nullptr; // Not executable in the application
 
   smx_simcall_t req = nullptr;
@@ -162,7 +162,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
         req = &actor->simcall;
         break;
   }
-  if (!req)
+  if (not req)
     return nullptr;
 
   state->transition.pid = actor->pid;

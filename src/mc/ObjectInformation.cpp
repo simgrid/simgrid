@@ -150,10 +150,8 @@ static void remove_local_variable(simgrid::mc::Frame& scope,
   typedef std::vector<Variable>::size_type size_type;
 
   // If the current subprogram matches the given name:
-  if ((subprogram_name == nullptr ||
-      (!subprogram.name.empty()
-        && subprogram.name == subprogram_name))
-      && !scope.variables.empty()) {
+  if ((subprogram_name == nullptr || (not subprogram.name.empty() && subprogram.name == subprogram_name)) &&
+      not scope.variables.empty()) {
 
     // Try to find the variable and remove it:
     size_type start = 0;

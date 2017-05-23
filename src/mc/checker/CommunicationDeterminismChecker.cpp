@@ -128,7 +128,7 @@ void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, si
   simgrid::mc::PatternCommunicationList* list =
     xbt_dynar_get_as(initial_communications_pattern, process, simgrid::mc::PatternCommunicationList*);
 
-  if(!backtracking){
+  if (not backtracking) {
     e_mc_comm_pattern_difference_t diff = compare_comm_pattern(list->list[list->index_comm].get(), comm);
 
     if (diff != NONE_DIFF) {
@@ -143,7 +143,7 @@ void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, si
           xbt_free(this->recv_diff);
         this->recv_diff = print_determinism_result(diff, process, comm, list->index_comm + 1);
       }
-      if(_sg_mc_send_determinism && !this->send_deterministic){
+      if (_sg_mc_send_determinism && not this->send_deterministic) {
         XBT_INFO("*********************************************************");
         XBT_INFO("***** Non-send-deterministic communications pattern *****");
         XBT_INFO("*********************************************************");
@@ -152,8 +152,7 @@ void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, si
         this->send_diff = nullptr;
         simgrid::mc::session->logState();
         mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
-      }else if(_sg_mc_comms_determinism
-          && (!this->send_deterministic && !this->recv_deterministic)) {
+      } else if (_sg_mc_comms_determinism && (not this->send_deterministic && not this->recv_deterministic)) {
         XBT_INFO("****************************************************");
         XBT_INFO("***** Non-deterministic communications pattern *****");
         XBT_INFO("****************************************************");
@@ -209,7 +208,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
       mc_model_checker->process().read_bytes(pattern->data.data(), pattern->data.size(), remote(synchro->src_buff));
     }
     if(mpi_request.detached()){
-      if (!this->initial_communications_pattern_done) {
+      if (not this->initial_communications_pattern_done) {
         /* Store comm pattern */
         simgrid::mc::PatternCommunicationList* list =
             xbt_dynar_get_as(initial_communications_pattern, pattern->src_proc, simgrid::mc::PatternCommunicationList*);
@@ -271,13 +270,13 @@ void CommunicationDeterminismChecker::complete_comm_pattern(
       break;
     }
 
-  if(!completed)
+  if (not completed)
     xbt_die("Corresponding communication not found!");
 
   simgrid::mc::PatternCommunicationList* pattern =
       xbt_dynar_get_as(initial_communications_pattern, issuer, simgrid::mc::PatternCommunicationList*);
 
-  if (!this->initial_communications_pattern_done)
+  if (not this->initial_communications_pattern_done)
     /* Store comm pattern */
     pattern->list.push_back(std::move(comm_pattern));
   else {
@@ -316,12 +315,12 @@ std::vector<std::string> CommunicationDeterminismChecker::getTextualTrace() // o
 void CommunicationDeterminismChecker::logState() // override
 {
   Checker::logState();
-  if (_sg_mc_comms_determinism && !this->recv_deterministic && this->send_deterministic) {
+  if (_sg_mc_comms_determinism && not this->recv_deterministic && this->send_deterministic) {
     XBT_INFO("******************************************************");
     XBT_INFO("**** Only-send-deterministic communication pattern ****");
     XBT_INFO("******************************************************");
     XBT_INFO("%s", this->recv_diff);
-  } else if (_sg_mc_comms_determinism && !this->send_deterministic && this->recv_deterministic) {
+  } else if (_sg_mc_comms_determinism && not this->send_deterministic && this->recv_deterministic) {
     XBT_INFO("******************************************************");
     XBT_INFO("**** Only-recv-deterministic communication pattern ****");
     XBT_INFO("******************************************************");
@@ -330,9 +329,9 @@ void CommunicationDeterminismChecker::logState() // override
   XBT_INFO("Expanded states = %lu", expandedStatesCount_);
   XBT_INFO("Visited states = %lu", mc_model_checker->visited_states);
   XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);
-  XBT_INFO("Send-deterministic : %s", !this->send_deterministic ? "No" : "Yes");
+  XBT_INFO("Send-deterministic : %s", not this->send_deterministic ? "No" : "Yes");
   if (_sg_mc_comms_determinism)
-    XBT_INFO("Recv-deterministic : %s", !this->recv_deterministic ? "No" : "Yes");
+    XBT_INFO("Recv-deterministic : %s", not this->recv_deterministic ? "No" : "Yes");
 }
 
 void CommunicationDeterminismChecker::prepare()
@@ -370,7 +369,7 @@ static inline bool all_communications_are_finished()
 {
   for (size_t current_actor = 1; current_actor < MC_smx_get_maxpid(); current_actor++) {
     xbt_dynar_t pattern = xbt_dynar_get_as(incomplete_communications_pattern, current_actor, xbt_dynar_t);
-    if (!xbt_dynar_is_empty(pattern)) {
+    if (not xbt_dynar_is_empty(pattern)) {
       XBT_DEBUG("Some communications are not finished, cannot stop the exploration ! State not visited.");
       return false;
     }
@@ -432,7 +431,7 @@ void CommunicationDeterminismChecker::main(void)
   std::unique_ptr<simgrid::mc::VisitedState> visited_state = nullptr;
   smx_simcall_t req = nullptr;
 
-  while (!stack_.empty()) {
+  while (not stack_.empty()) {
     /* Get current state */
     simgrid::mc::State* state = stack_.back().get();
 
@@ -465,7 +464,7 @@ void CommunicationDeterminismChecker::main(void)
       mc_model_checker->handle_simcall(state->transition);
       /* After this call req is no longer useful */
 
-      if (!this->initial_communications_pattern_done)
+      if (not this->initial_communications_pattern_done)
         MC_handle_comm_pattern(call, req, req_num, initial_communications_pattern, 0);
       else
         MC_handle_comm_pattern(call, req, req_num, nullptr, 0);
@@ -511,7 +510,7 @@ void CommunicationDeterminismChecker::main(void)
       else
         XBT_DEBUG("There are no more processes to interleave. (depth %zi)", stack_.size());
 
-      if (!this->initial_communications_pattern_done)
+      if (not this->initial_communications_pattern_done)
         this->initial_communications_pattern_done = 1;
 
       /* Trash the current state, no longer needed */
@@ -526,7 +525,7 @@ void CommunicationDeterminismChecker::main(void)
         throw new simgrid::mc::DeadlockError();
       }
 
-      while (!stack_.empty()) {
+      while (not stack_.empty()) {
         std::unique_ptr<simgrid::mc::State> state = std::move(stack_.back());
         stack_.pop_back();
         if (state->interleaveSize() && stack_.size() < (std::size_t)_sg_mc_max_depth) {

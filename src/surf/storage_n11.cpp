@@ -25,7 +25,7 @@ static void check_disk_attachment()
       simgrid::surf::Storage* storage =
           static_cast<simgrid::surf::Storage*>(xbt_lib_get_or_null(storage_lib, key, SURF_STORAGE_LEVEL));
       simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(storage->attach_);
-      if (!host_elm)
+      if (not host_elm)
         surf_parse_error("Unable to attach storage %s: host %s does not exist.", storage->cname(), storage->attach_);
     }
   }
@@ -59,8 +59,8 @@ Storage* StorageN11Model::createStorage(const char* id, const char* type_id, con
                                         const char* attach)
 {
 
-  xbt_assert(!surf_storage_resource_priv(surf_storage_resource_by_name(id)),
-      "Storage '%s' declared several times in the platform file", id);
+  xbt_assert(not surf_storage_resource_priv(surf_storage_resource_by_name(id)),
+             "Storage '%s' declared several times in the platform file", id);
 
   storage_type_t storage_type = storage_types.at(type_id);
 
@@ -284,7 +284,7 @@ StorageN11Action::StorageN11Action(Model *model, double cost, bool failed, Stora
 int StorageN11Action::unref()
 {
   refcount_--;
-  if (!refcount_) {
+  if (not refcount_) {
     if (action_hook.is_linked())
       stateSet_->erase(stateSet_->iterator_to(*this));
     if (getVariable())

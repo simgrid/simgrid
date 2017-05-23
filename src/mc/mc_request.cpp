@@ -332,7 +332,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
     s_xbt_dynar_t comms;
     mc_model_checker->process().read_bytes(
       &comms, sizeof(comms), remote(simcall_comm_waitany__get__comms(req)));
-    if (!xbt_dynar_is_empty(&comms)) {
+    if (not xbt_dynar_is_empty(&comms)) {
       smx_activity_t remote_sync;
       read_element(mc_model_checker->process(),
         &remote_sync, remote(simcall_comm_waitany__get__comms(req)), value,

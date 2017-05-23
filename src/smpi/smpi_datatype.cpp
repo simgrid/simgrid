@@ -277,7 +277,7 @@ int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     count = sendcount < recvcount ? sendcount : recvcount;
 
     if(!(sendtype->flags() & DT_FLAG_DERIVED) && !(recvtype->flags() & DT_FLAG_DERIVED)) {
-      if(!smpi_process()->replaying()) 
+      if (not smpi_process()->replaying())
         memcpy(recvbuf, sendbuf, count);
     }
     else if (!(sendtype->flags() & DT_FLAG_DERIVED))
@@ -404,7 +404,7 @@ int Datatype::create_indexed(int count, int* block_lengths, int* indices, MPI_Da
   if(old_type->flags_ & DT_FLAG_DERIVED)
     contiguous=false;
 
-  if(!contiguous){
+  if (not contiguous) {
     *new_type = new Type_Indexed(size * old_type->size(),lb,ub,
                                  DT_FLAG_DERIVED|DT_FLAG_DATA, count, block_lengths, indices, old_type);
   }else{
@@ -438,7 +438,7 @@ int Datatype::create_hindexed(int count, int* block_lengths, MPI_Aint* indices, 
   if (old_type->flags_ & DT_FLAG_DERIVED || lb!=0)
     contiguous=false;
 
-  if(!contiguous){
+  if (not contiguous) {
     *new_type = new Type_Hindexed(size * old_type->size(),lb,ub,
                                    DT_FLAG_DERIVED|DT_FLAG_DATA, count, block_lengths, indices, old_type);
   }else{
@@ -475,15 +475,15 @@ int Datatype::create_struct(int count, int* block_lengths, MPI_Aint* indices, MP
       forced_ub=true;
     }
 
-    if(!forced_lb && indices[i]+old_types[i]->lb()<lb) 
+    if (not forced_lb && indices[i] + old_types[i]->lb() < lb)
       lb = indices[i];
-    if(!forced_ub &&  indices[i]+block_lengths[i]*old_types[i]->ub()>ub)
+    if (not forced_ub && indices[i] + block_lengths[i] * old_types[i]->ub() > ub)
       ub = indices[i]+block_lengths[i]*old_types[i]->ub();
 
     if ( (i< count -1) && (indices[i]+block_lengths[i]*static_cast<int>(old_types[i]->size()) != indices[i+1]) )
       contiguous=false;
   }
-  if(!contiguous){
+  if (not contiguous) {
     *new_type = new Type_Struct(size, lb,ub, DT_FLAG_DERIVED|DT_FLAG_DATA, 
                                 count, block_lengths, indices, old_types);
   }else{

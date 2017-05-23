@@ -63,7 +63,7 @@ Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(void *sbuf,
     size = comm->size();
    
     XBT_DEBUG("coll:tuned:reduce_scatter_ompi_basic_recursivehalving, rank %d", rank);
-    if( (op!=MPI_OP_NULL && !op->is_commutative()))
+    if ((op != MPI_OP_NULL && not op->is_commutative()))
       THROWF(arg_error,0, " reduce_scatter ompi_basic_recursivehalving can only be used for commutative operations! ");
 
     /* Find displacements and the like */

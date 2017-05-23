@@ -72,7 +72,7 @@ Coll_allgatherv_mpich_ring::allgatherv(void *sendbuf, int sendcount,
     min = 32768*8 / recvtype_extent;
   /* Handle the case where the datatype extent is larger than
    * the pipeline size. */
-  if (!min)
+  if (not min)
     min = 1;
 
   sidx = rank;
@@ -86,25 +86,23 @@ Coll_allgatherv_mpich_ring::allgatherv(void *sendbuf, int sendcount,
       rbuf = (char *)recvbuf + ((displs[ridx] + roffset) * recvtype_extent);
 
       /* Protect against wrap-around of indices */
-      if (!tosend)
+      if (not tosend)
         sendnow = 0;
-      if (!torecv)
+      if (not torecv)
         recvnow = 0;
 
       /* Communicate */
-      if (!sendnow && !recvnow) {
-          /* Don't do anything. This case is possible if two
-           * consecutive processes contribute 0 bytes each. */
-      }
-      else if (!sendnow) { /* If there's no data to send, just do a recv call */
-          Request::recv(rbuf, recvnow, recvtype, left, COLL_TAG_ALLGATHERV, comm, &status);
+      if (not sendnow && not recvnow) {
+        /* Don't do anything. This case is possible if two
+         * consecutive processes contribute 0 bytes each. */
+      } else if (not sendnow) { /* If there's no data to send, just do a recv call */
+        Request::recv(rbuf, recvnow, recvtype, left, COLL_TAG_ALLGATHERV, comm, &status);
 
-          torecv -= recvnow;
-      }
-      else if (!recvnow) { /* If there's no data to receive, just do a send call */
-          Request::send(sbuf, sendnow, recvtype, right, COLL_TAG_ALLGATHERV, comm);
+        torecv -= recvnow;
+      } else if (not recvnow) { /* If there's no data to receive, just do a send call */
+        Request::send(sbuf, sendnow, recvtype, right, COLL_TAG_ALLGATHERV, comm);
 
-          tosend -= sendnow;
+        tosend -= sendnow;
       }
       else { /* There's data to be sent and received */
           Request::sendrecv(sbuf, sendnow, recvtype, right, COLL_TAG_ALLGATHERV,

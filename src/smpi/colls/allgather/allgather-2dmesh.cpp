@@ -130,7 +130,7 @@ Coll_allgather_2dmesh::allgather(void *send_buff, int send_count, MPI_Datatype
 
   block_size = extent * send_count;
 
-  if (!is_2dmesh(num_procs, &X, &Y))
+  if (not is_2dmesh(num_procs, &X, &Y))
     THROWF(arg_error,0, "allgather_2dmesh algorithm can't be used with this number of processes! ");
 
   my_row_base = (rank / Y) * Y;

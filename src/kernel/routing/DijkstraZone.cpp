@@ -49,9 +49,9 @@ void DijkstraZone::seal()
   unsigned int cursor;
 
   /* Create the topology graph */
-  if (!routeGraph_)
+  if (not routeGraph_)
     routeGraph_ = xbt_graph_new_graph(1, nullptr);
-  if (!graphNodeMap_)
+  if (not graphNodeMap_)
     graphNodeMap_ = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
 
   /* Add the loopback if needed */
@@ -67,7 +67,7 @@ void DijkstraZone::seal()
         }
       }
 
-      if (!found) {
+      if (not found) {
         sg_platf_route_cbarg_t e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
         e_route->link_list             = new std::vector<surf::LinkImpl*>();
         e_route->link_list->push_back(surf_network_model->loopback_);
@@ -295,7 +295,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
     xbt_dict_set_ext(routeCache_, (char*)(&src_id), sizeof(int), (xbt_dictelm_t)elm, nullptr);
   }
 
-  if (!routeCache_)
+  if (not routeCache_)
     xbt_free(pred_arr);
 }
 
@@ -324,9 +324,9 @@ void DijkstraZone::addRoute(sg_platf_route_cbarg_t route)
   addRouteCheckParams(route);
 
   /* Create the topology graph */
-  if (!routeGraph_)
+  if (not routeGraph_)
     routeGraph_ = xbt_graph_new_graph(1, nullptr);
-  if (!graphNodeMap_)
+  if (not graphNodeMap_)
     graphNodeMap_ = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
 
   /* we don't check whether the route already exist, because the algorithm may find another path through some other
@@ -338,7 +338,7 @@ void DijkstraZone::addRoute(sg_platf_route_cbarg_t route)
 
   // Symmetrical YES
   if (route->symmetrical == true) {
-    if (!route->gw_dst && !route->gw_src)
+    if (not route->gw_dst && not route->gw_src)
       XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dstName, srcName);
     else
       XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", dstName, route->gw_dst->name().c_str(), srcName,

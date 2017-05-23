@@ -45,7 +45,7 @@ XBT_IMPORT_NO_EXPORT(unsigned int) surfxml_buffer_stack_stack[1024];
 
 void surfxml_bufferstack_push(int new_one)
 {
-  if (!new_one)
+  if (not new_one)
     old_buff = surfxml_bufferstack;
   else {
     surfxml_bufferstack_stack.push_back(surfxml_bufferstack);
@@ -55,7 +55,7 @@ void surfxml_bufferstack_push(int new_one)
 
 void surfxml_bufferstack_pop(int new_one)
 {
-  if (!new_one)
+  if (not new_one)
     surfxml_bufferstack = old_buff;
   else {
     free(surfxml_bufferstack);
@@ -118,7 +118,7 @@ void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
 
 static int after_config_done;
 void parse_after_config() {
-  if (!after_config_done) {
+  if (not after_config_done) {
     TRACE_start();
 
     /* Register classical callbacks */

@@ -49,16 +49,16 @@ static void sg_config_cmd_line(int *argc, char **argv)
   int j;
 
   for (j = i = 1; i < *argc; i++) {
-    if (!strncmp(argv[i], "--cfg=", strlen("--cfg="))) {
+    if (not strncmp(argv[i], "--cfg=", strlen("--cfg="))) {
       char *opt = strchr(argv[i], '=');
       opt++;
 
       xbt_cfg_set_parse(opt);
       XBT_DEBUG("Did apply '%s' as config setting", opt);
-    } else if (!strcmp(argv[i], "--version")) {
+    } else if (not strcmp(argv[i], "--version")) {
       printf("%s\n", SIMGRID_VERSION_STRING);
       shall_exit = 1;
-    } else if (!strcmp(argv[i], "--cfg-help") || !strcmp(argv[i], "--help")) {
+    } else if (not strcmp(argv[i], "--cfg-help") || not strcmp(argv[i], "--help")) {
       printf("Description of the configuration accepted by this simulator:\n");
       xbt_cfg_help();
       printf(
@@ -76,12 +76,12 @@ static void sg_config_cmd_line(int *argc, char **argv)
           "\n"
         );
       shall_exit = 1;
-    } else if (!strcmp(argv[i], "--help-aliases")) {
+    } else if (not strcmp(argv[i], "--help-aliases")) {
       printf("Here is a list of all deprecated option names, with their replacement.\n");
       xbt_cfg_aliases();
       printf("Please consider using the recent names\n");
       shall_exit = 1;
-    } else if (!strcmp(argv[i], "--help-models")) {
+    } else if (not strcmp(argv[i], "--help-models")) {
       model_help("host", surf_host_model_description);
       printf("\n");
       model_help("CPU", surf_cpu_model_description);
@@ -94,7 +94,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
                surf_optimization_mode_description[k].description);
       printf("Both network and CPU models have 'Lazy' as default optimization level\n\n");
       shall_exit = 1;
-    } else if (!strcmp(argv[i], "--help-tracing")) {
+    } else if (not strcmp(argv[i], "--help-tracing")) {
       TRACE_help (1);
       shall_exit = 1;
     } else {
@@ -118,7 +118,7 @@ static void _sg_cfg_cb__plugin(const char *name)
   if (val==nullptr || val[0] == '\0')
     return;
 
-  if (!strcmp(val, "help")) {
+  if (not strcmp(val, "help")) {
     model_help("plugin", surf_plugin_description);
     sg_cfg_exit_early();
   }
@@ -133,7 +133,7 @@ static void _sg_cfg_cb__host_model(const char *name)
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
   char *val = xbt_cfg_get_string(name);
-  if (!strcmp(val, "help")) {
+  if (not strcmp(val, "help")) {
     model_help("host", surf_host_model_description);
     sg_cfg_exit_early();
   }
@@ -148,7 +148,7 @@ static void _sg_cfg_cb__cpu_model(const char *name)
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
   char *val = xbt_cfg_get_string(name);
-  if (!strcmp(val, "help")) {
+  if (not strcmp(val, "help")) {
     model_help("CPU", surf_cpu_model_description);
     sg_cfg_exit_early();
   }
@@ -163,7 +163,7 @@ static void _sg_cfg_cb__optimization_mode(const char *name)
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
   char *val = xbt_cfg_get_string(name);
-  if (!strcmp(val, "help")) {
+  if (not strcmp(val, "help")) {
     model_help("optimization", surf_optimization_mode_description);
     sg_cfg_exit_early();
   }
@@ -178,7 +178,7 @@ static void _sg_cfg_cb__storage_mode(const char *name)
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
   char *val = xbt_cfg_get_string(name);
-  if (!strcmp(val, "help")) {
+  if (not strcmp(val, "help")) {
     model_help("storage", surf_storage_model_description);
     sg_cfg_exit_early();
   }
@@ -192,7 +192,7 @@ static void _sg_cfg_cb__network_model(const char *name)
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
   char *val = xbt_cfg_get_string(name);
-  if (!strcmp(val, "help")) {
+  if (not strcmp(val, "help")) {
     model_help("network", surf_network_model_description);
     sg_cfg_exit_early();
   }
@@ -253,13 +253,11 @@ static void _sg_cfg_cb_contexts_parallel_threshold(const char *name)
 static void _sg_cfg_cb_contexts_parallel_mode(const char *name)
 {
   const char* mode_name = xbt_cfg_get_string(name);
-  if (!strcmp(mode_name, "posix")) {
+  if (not strcmp(mode_name, "posix")) {
     SIMIX_context_set_parallel_mode(XBT_PARMAP_POSIX);
-  }
-  else if (!strcmp(mode_name, "futex")) {
+  } else if (not strcmp(mode_name, "futex")) {
     SIMIX_context_set_parallel_mode(XBT_PARMAP_FUTEX);
-  }
-  else if (!strcmp(mode_name, "busy_wait")) {
+  } else if (not strcmp(mode_name, "busy_wait")) {
     SIMIX_context_set_parallel_mode(XBT_PARMAP_BUSY_WAIT);
   }
   else {

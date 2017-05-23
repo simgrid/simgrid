@@ -245,7 +245,7 @@ int Coll_reduce_scatter_mpich_noncomm::reduce_scatter(void *sendbuf, void *recvb
 		     outgoing_data + recv_offset*true_extent,
                      incoming_data + recv_offset*true_extent,
                      &size, datatype);
-            buf0_was_inout = !buf0_was_inout;
+            buf0_was_inout = not buf0_was_inout;
         }
 
         /* the next round of send/recv needs to happen within the block (of size

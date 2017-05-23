@@ -89,7 +89,7 @@ void FatTreeZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
   FatTreeNode* currentNode = source;
 
   // up part
-  while (!isInSubTree(currentNode, destination)) {
+  while (not isInSubTree(currentNode, destination)) {
     int d = destination->position; // as in d-mod-k
 
     for (unsigned int i = 0; i < currentNode->level; i++)

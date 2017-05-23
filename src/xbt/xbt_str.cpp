@@ -32,10 +32,10 @@ void xbt_str_rtrim(char *s, const char *char_list)
   const char *__char_list = " \t\n\r\x0B";
   char white_char[256] = { 1, 0 };
 
-  if (!s)
+  if (not s)
     return;
 
-  if (!char_list) {
+  if (not char_list) {
     while (*__char_list) {
       white_char[(unsigned char) *__char_list++] = 1;
     }
@@ -75,10 +75,10 @@ void xbt_str_ltrim(char *s, const char *char_list)
   const char *__char_list = " \t\n\r\x0B";
   char white_char[256] = { 1, 0 };
 
-  if (!s)
+  if (not s)
     return;
 
-  if (!char_list) {
+  if (not char_list) {
     while (*__char_list) {
       white_char[(unsigned char) *__char_list++] = 1;
     }
@@ -111,7 +111,7 @@ void xbt_str_ltrim(char *s, const char *char_list)
  */
 void xbt_str_trim(char *s, const char *char_list)
 {
-  if (!s)
+  if (not s)
     return;
 
   xbt_str_rtrim(s, char_list);
@@ -161,7 +161,7 @@ xbt_dynar_t xbt_str_split(const char *s, const char *sep)
 
   /* check what are the separators */
   memset(is_sep, 0, sizeof(is_sep));
-  if (!sep) {
+  if (not sep) {
     while (*sep_dflt)
       is_sep[(unsigned char) *sep_dflt++] = 1;
   } else {
@@ -178,9 +178,9 @@ xbt_dynar_t xbt_str_split(const char *s, const char *sep)
   if (s[0] == '\0')
     return res;
 
-  while (!done) {
+  while (not done) {
     char *topush;
-    while (!is_sep[(unsigned char) *q]) {
+    while (not is_sep[(unsigned char)*q]) {
       q++;
     }
     if (*q == '\0')
@@ -198,7 +198,7 @@ xbt_dynar_t xbt_str_split(const char *s, const char *sep)
 
 /**
  * \brief This functions splits a string after using another string as separator
- * For example A!!B!!C split after !! will return the dynar {A,B,C}
+ * For example Anot not B!not C split after !! will return the dynar {A,B,C}
  * \return An array of dynars containing the string tokens
  */
 xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
@@ -217,7 +217,7 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
     return res;
   }
 
-  while (!done) {
+  while (not done) {
     char *to_push;
     int v = 0;
     // get the start of the first occurrence of the substring
@@ -271,7 +271,7 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
   /* do not trim leading spaces: caller responsibility to clean his cruft */
   end = beg;
 
-  while (!done) {
+  while (not done) {
     switch (*end) {
     case '\\':
       ctn = 1;
@@ -283,8 +283,8 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
       break;
     case '\'':
       ctn = 1;
-      if (!in_double_quote) {
-        in_simple_quote = !in_simple_quote;
+      if (not in_double_quote) {
+        in_simple_quote = not in_simple_quote;
         memmove(end, end + 1, strlen(end));
       } else {
         /* simple quote protected by double ones */
@@ -293,8 +293,8 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
       break;
     case '"':
       ctn = 1;
-      if (!in_simple_quote) {
-        in_double_quote = !in_double_quote;
+      if (not in_simple_quote) {
+        in_double_quote = not in_double_quote;
         memmove(end, end + 1, strlen(end));
       } else {
         /* double quote protected by simple ones */
@@ -376,7 +376,7 @@ char *xbt_str_join(xbt_dynar_t dyn, const char *sep)
   unsigned int cpt;
   char* cursor;
 
-  if (!dyn_len)
+  if (not dyn_len)
     return xbt_strdup("");
 
   /* compute the length */
@@ -406,7 +406,7 @@ char *xbt_str_join_array(const char *const *strs, const char *sep)
   int amount_strings=0;
   int len=0;
 
-  if ((!strs) || (!strs[0]))
+  if ((not strs) || (not strs[0]))
     return xbt_strdup("");
 
   /* compute the length before malloc */
@@ -471,15 +471,13 @@ double xbt_str_parse_double(const char* str, const char* error_msg)
 
 XBT_TEST_SUITE("xbt_str", "String Handling");
 
-#define mytest(name, input, expected) \
-  xbt_test_add(name); \
-  d=xbt_str_split_quoted(input); \
-  s=xbt_str_join(d,"XXX"); \
-  xbt_test_assert(!strcmp(s,expected),\
-                   "Input (%s) leads to (%s) instead of (%s)", \
-                   input,s,expected);\
-                   free(s); \
-                   xbt_dynar_free(&d);
+#define mytest(name, input, expected)                                                                                  \
+  xbt_test_add(name);                                                                                                  \
+  d = xbt_str_split_quoted(input);                                                                                     \
+  s = xbt_str_join(d, "XXX");                                                                                          \
+  xbt_test_assert(not strcmp(s, expected), "Input (%s) leads to (%s) instead of (%s)", input, s, expected);            \
+  free(s);                                                                                                             \
+  xbt_dynar_free(&d);
 XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted, "test the function xbt_str_split_quoted")
 {
   xbt_dynar_t d;
@@ -499,15 +497,13 @@ XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted, "test the function xbt_
   mytest("Backslashed quotes + quotes", "'toto \\'tutu' tata", "toto 'tutuXXXtata");
 }
 
-#define mytest_str(name, input, separator, expected) \
-  xbt_test_add(name); \
-  d=xbt_str_split_str(input, separator); \
-  s=xbt_str_join(d,"XXX"); \
-  xbt_test_assert(!strcmp(s,expected),\
-                   "Input (%s) leads to (%s) instead of (%s)", \
-                   input,s,expected);\
-                   free(s); \
-                   xbt_dynar_free(&d);
+#define mytest_str(name, input, separator, expected)                                                                   \
+  xbt_test_add(name);                                                                                                  \
+  d = xbt_str_split_str(input, separator);                                                                             \
+  s = xbt_str_join(d, "XXX");                                                                                          \
+  xbt_test_assert(not strcmp(s, expected), "Input (%s) leads to (%s) instead of (%s)", input, s, expected);            \
+  free(s);                                                                                                             \
+  xbt_dynar_free(&d);
 
 XBT_TEST_UNIT("xbt_str_split_str", test_split_str, "test the function xbt_str_split_str")
 {

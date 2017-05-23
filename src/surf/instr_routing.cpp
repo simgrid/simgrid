@@ -74,7 +74,7 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
 
   //find common father
   container_t father = lowestCommonAncestor (src, dst);
-  if (!father){
+  if (not father) {
     xbt_die ("common father unknown, this is a tracing problem");
   }
 
@@ -127,12 +127,12 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
 
 static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t container, xbt_dict_t filter)
 {
-  if (!TRACE_platform_topology()){
+  if (not TRACE_platform_topology()) {
     XBT_DEBUG("Graph extraction disabled by user.");
     return;
   }
   XBT_DEBUG("Graph extraction for NetZone = %s", netzone->name());
-  if (!netzone->children()->empty()) {
+  if (not netzone->children()->empty()) {
     //bottom-up recursion
     for (auto nz_son : *netzone->children()) {
       container_t child_container = static_cast<container_t>(xbt_dict_get(container->children, nz_son->name()));
@@ -176,7 +176,7 @@ void sg_instr_AS_begin(sg_platf_AS_cbarg_t AS)
       type_t mpi = PJ_type_get_or_null ("MPI", root->type);
       if (mpi == nullptr){
         mpi = PJ_type_container_new("MPI", root->type);
-        if (!TRACE_smpi_is_grouped())
+        if (not TRACE_smpi_is_grouped())
           PJ_type_state_new ("MPI_STATE", mpi);
         PJ_type_link_new ("MPI_LINK", PJ_type_get_root(), mpi, mpi);
       }
@@ -318,7 +318,7 @@ void instr_routing_define_callbacks ()
 {
   //always need the call backs to ASes (we need only the root AS),
   //to create the rootContainer and the rootType properly
-  if (!TRACE_is_enabled() || !TRACE_needs_platform())
+  if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return;
   simgrid::s4u::Link::onCreation.connect(instr_routing_parse_start_link);
   simgrid::s4u::onPlatformCreated.connect(instr_routing_parse_end_platform);
@@ -329,17 +329,17 @@ void instr_routing_define_callbacks ()
  */
 static void recursiveNewVariableType (const char *new_typename, const char *color, type_t root)
 {
-  if (!strcmp (root->name, "HOST")){
+  if (not strcmp(root->name, "HOST")) {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
     PJ_type_variable_new (tnstr, color, root);
   }
-  if (!strcmp (root->name, "MSG_VM")){
+  if (not strcmp(root->name, "MSG_VM")) {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
     PJ_type_variable_new (tnstr, color, root);
   }
- if (!strcmp (root->name, "LINK")){
+  if (not strcmp(root->name, "LINK")) {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "b%s", new_typename);
     PJ_type_variable_new (tnstr, color, root);
@@ -359,7 +359,7 @@ void instr_new_variable_type (const char *new_typename, const char *color)
 
 static void recursiveNewUserVariableType (const char *father_type, const char *new_typename, const char *color, type_t root)
 {
-  if (!strcmp (root->name, father_type)){
+  if (not strcmp(root->name, father_type)) {
     PJ_type_variable_new (new_typename, color, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
@@ -377,7 +377,7 @@ void instr_new_user_variable_type  (const char *father_type, const char *new_typ
 
 static void recursiveNewUserStateType (const char *father_type, const char *new_typename, type_t root)
 {
-  if (!strcmp (root->name, father_type)){
+  if (not strcmp(root->name, father_type)) {
     PJ_type_state_new (new_typename, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
@@ -395,7 +395,7 @@ void instr_new_user_state_type (const char *father_type, const char *new_typenam
 
 static void recursiveNewValueForUserStateType (const char *type_name, const char *value, const char *color, type_t root)
 {
-  if (!strcmp (root->name, type_name)){
+  if (not strcmp(root->name, type_name)) {
     PJ_value_new (value, color, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
@@ -421,7 +421,7 @@ int instr_platform_traced ()
 static void recursiveXBTGraphExtraction(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges, sg_netzone_t netzone,
                                         container_t container)
 {
-  if (!netzone->children()->empty()) {
+  if (not netzone->children()->empty()) {
     //bottom-up recursion
     for (auto netzone_child : *netzone->children()) {
       container_t child_container = static_cast<container_t>(xbt_dict_get(container->children, netzone_child->name()));

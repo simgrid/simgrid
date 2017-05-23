@@ -35,9 +35,7 @@ Location resolve(
   context.object_info = object_info;
   context.process_index = process_index;
 
-  if (!expression.empty()
-      && expression[0].atom >= DW_OP_reg0
-      && expression[0].atom <= DW_OP_reg31) {
+  if (not expression.empty() && expression[0].atom >= DW_OP_reg0 && expression[0].atom <= DW_OP_reg31) {
     int dwarf_register = expression[0].atom - DW_OP_reg0;
     xbt_assert(c, "Missing frame context for register operation DW_OP_reg%i", dwarf_register);
     return Location(dwarf_register_to_libunwind(dwarf_register));
@@ -71,7 +69,7 @@ Location resolve(
     xbt_die("Could not resolve IP");
   simgrid::dwarf::DwarfExpression const* expression =
     find_expression(locations, ip);
-  if (!expression)
+  if (not expression)
     xbt_die("Could not resolve location");
   return simgrid::dwarf::resolve(
           *expression, object_info, c,

@@ -23,11 +23,11 @@ ClusterZone::ClusterZone(NetZone* father, const char* name) : NetZoneImpl(father
 void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
 {
   XBT_VERB("cluster getLocalRoute from '%s'[%d] to '%s'[%d]", src->cname(), src->id(), dst->cname(), dst->id());
-  xbt_assert(!privateLinks_.empty(),
+  xbt_assert(not privateLinks_.empty(),
              "Cluster routing: no links attached to the source node - did you use host_link tag?");
 
   if ((src->id() == dst->id()) && hasLoopback_) {
-    xbt_assert(!src->isRouter(), "Routing from a cluster private router to itself is meaningless");
+    xbt_assert(not src->isRouter(), "Routing from a cluster private router to itself is meaningless");
 
     std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(src->id() * linkCountPerNode_);
     route->link_list->push_back(info.first);
@@ -36,7 +36,7 @@ void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
     return;
   }
 
-  if (!src->isRouter()) { // No private link for the private router
+  if (not src->isRouter()) { // No private link for the private router
     if (hasLimiter_) { // limiter for sender
       std::pair<surf::LinkImpl*, surf::LinkImpl*> info =
           privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0));
@@ -58,7 +58,7 @@ void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
       *lat += backbone_->latency();
   }
 
-  if (!dst->isRouter()) { // No specific link for router
+  if (not dst->isRouter()) { // No specific link for router
 
     std::pair<surf::LinkImpl*, surf::LinkImpl*> info =
         privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_ + hasLimiter_);
@@ -89,7 +89,7 @@ void ClusterZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges
   }
 
   for (auto src : vertices_) {
-    if (!src->isRouter()) {
+    if (not src->isRouter()) {
       xbt_node_t previous = new_xbt_graph_node(graph, src->cname(), nodes);
 
       std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(src->id());

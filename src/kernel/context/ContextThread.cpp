@@ -52,7 +52,7 @@ ThreadContext* ThreadContextFactory::create_context(
     std::function<void()> code,
     void_pfn_smxprocess_t cleanup, smx_actor_t process)
 {
-  return this->new_context<ThreadContext>(std::move(code), cleanup, process, !code);
+  return this->new_context<ThreadContext>(std::move(code), cleanup, process, not code);
 }
 
 void ThreadContextFactory::run_all()

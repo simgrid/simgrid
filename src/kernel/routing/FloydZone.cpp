@@ -66,7 +66,7 @@ void FloydZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
   }
 
   sg_netpoint_t prev_dst_gw = nullptr;
-  while (!route_stack.empty()) {
+  while (not route_stack.empty()) {
     sg_platf_route_cbarg_t e_route = route_stack.back();
     route_stack.pop_back();
     if (hierarchy_ == RoutingMode::recursive && prev_dst_gw != nullptr &&
@@ -91,7 +91,7 @@ void FloydZone::addRoute(sg_platf_route_cbarg_t route)
 
   addRouteCheckParams(route);
 
-  if (!linkTable_) {
+  if (not linkTable_) {
     /* Create Cost, Predecessor and Link tables */
     costTable_        = xbt_new0(double, table_size* table_size);                  /* link cost from host to host */
     predecessorTable_ = xbt_new0(int, table_size* table_size);                     /* predecessor host numbers */
@@ -140,7 +140,7 @@ void FloydZone::addRoute(sg_platf_route_cbarg_t route)
       route->gw_dst   = gw_tmp;
     }
 
-    if (!route->gw_src && !route->gw_dst)
+    if (not route->gw_src && not route->gw_dst)
       XBT_DEBUG("Load Route from \"%s\" to \"%s\"", route->dst->name().c_str(), route->src->name().c_str());
     else
       XBT_DEBUG("Load NetzoneRoute from \"%s(%s)\" to \"%s(%s)\"", route->dst->name().c_str(), route->gw_src->name().c_str(),
@@ -158,7 +158,7 @@ void FloydZone::seal()
   /* set the size of table routing */
   size_t table_size = vertices_.size();
 
-  if (!linkTable_) {
+  if (not linkTable_) {
     /* Create Cost, Predecessor and Link tables */
     costTable_        = xbt_new0(double, table_size* table_size);                  /* link cost from host to host */
     predecessorTable_ = xbt_new0(int, table_size* table_size);                     /* predecessor host numbers */
@@ -177,7 +177,7 @@ void FloydZone::seal()
   if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
     for (unsigned int i = 0; i < table_size; i++) {
       sg_platf_route_cbarg_t e_route = TO_FLOYD_LINK(i, i);
-      if (!e_route) {
+      if (not e_route) {
         e_route            = xbt_new0(s_sg_platf_route_cbarg_t, 1);
         e_route->gw_src    = nullptr;
         e_route->gw_dst    = nullptr;

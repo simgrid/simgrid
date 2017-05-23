@@ -23,7 +23,7 @@ static void read_and_trim_line(std::ifstream* fs, std::string* line)
   do {
     std::getline(*fs, *line);
     boost::trim(*line);
-  } while (!fs->eof() && (line->length() == 0 || line->front() == '#'));
+  } while (not fs->eof() && (line->length() == 0 || line->front() == '#'));
   XBT_DEBUG("got from trace: %s", line->c_str());
 }
 
@@ -50,7 +50,7 @@ bool ReplayReader::get(ReplayAction* action)
   read_and_trim_line(fs, &line);
 
   boost::split(*action, line, boost::is_any_of(" \t"), boost::token_compress_on);
-  return !fs->eof();
+  return not fs->eof();
 }
 
 static ReplayAction* get_action(char* name)

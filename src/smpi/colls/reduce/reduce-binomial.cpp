@@ -77,7 +77,7 @@ int Coll_reduce_binomial::reduce(void *sendbuf, void *recvbuf, int count,
     mask <<= 1;
   }
 
-  if (!is_commutative && (root != 0)){
+  if (not is_commutative && (root != 0)) {
     if (rank == 0){
       Request::send(recvbuf, count, datatype, root,tag, comm);
     }else if (rank == root){

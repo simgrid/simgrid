@@ -16,7 +16,7 @@ jfieldID jrngstream_bind;
 
 RngStream jrngstream_to_native(JNIEnv *env, jobject jrngstream) {
   RngStream rngstream = (RngStream)(intptr_t)env->GetLongField(jrngstream, jrngstream_bind);
-  if (!rngstream) {
+  if (not rngstream) {
     jxbt_throw_notbound(env, "rngstream", jrngstream);
     return nullptr;
   }
@@ -67,7 +67,7 @@ Java_org_simgrid_msg_RngStream_setPackageSeed(JNIEnv *env, jobject jrngstream, j
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_resetStart(JNIEnv *env, jobject jrngstream) {
   RngStream rngstream = jrngstream_to_native(env, jrngstream);
-  if (!rngstream)
+  if (not rngstream)
     return;
 
   RngStream_ResetStartStream(rngstream);
@@ -75,7 +75,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_resetStart(JNIEnv *env, jo
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_resetStartSubstream(JNIEnv *env, jobject jrngstream) {
   RngStream rngstream = jrngstream_to_native(env, jrngstream);
-  if (!rngstream)
+  if (not rngstream)
     return;
 
   RngStream_ResetStartSubstream(rngstream);
@@ -83,7 +83,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_resetStartSubstream(JNIEnv
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_resetNextSubstream(JNIEnv *env, jobject jrngstream) {
   RngStream rngstream = jrngstream_to_native(env, jrngstream);
-  if (!rngstream)
+  if (not rngstream)
     return;
 
   RngStream_ResetNextSubstream(rngstream);
@@ -91,7 +91,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_resetNextSubstream(JNIEnv 
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_setAntithetic(JNIEnv *env, jobject jrngstream, jboolean ja) {
   RngStream rngstream = jrngstream_to_native(env, jrngstream);
-  if (!rngstream)
+  if (not rngstream)
     return;
 
   if (ja == JNI_TRUE) {
@@ -108,7 +108,7 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_RngStream_setSeed(JNIEnv *env, j
   env->GetIntArrayRegion(jseed, 0, 6, buffer);
 
   RngStream rngstream = jrngstream_to_native(env, jrngstream);
-  if (!rngstream)
+  if (not rngstream)
     return JNI_FALSE;
 
   // The C API expects unsigned long which are wider than int on LP64.
@@ -124,7 +124,7 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_RngStream_setSeed(JNIEnv *env, j
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_advanceState(JNIEnv *env, jobject jrngstream, jint e, jint g) {
   RngStream rngstream = jrngstream_to_native(env, jrngstream);
-  if (!rngstream)
+  if (not rngstream)
     return;
 
   RngStream_AdvanceState(rngstream, (long)e, (long)g);
@@ -132,7 +132,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_advanceState(JNIEnv *env, 
 
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_RngStream_randU01(JNIEnv *env, jobject jrngstream) {
   RngStream rngstream = jrngstream_to_native(env, jrngstream);
-  if (!rngstream)
+  if (not rngstream)
     return 0;
 
   return (jdouble)RngStream_RandU01(rngstream);
@@ -140,7 +140,7 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_RngStream_randU01(JNIEnv *env, jo
 
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_RngStream_randInt(JNIEnv *env, jobject jrngstream, jint i, jint j) {
   RngStream rngstream = jrngstream_to_native(env, jrngstream);
-  if (!rngstream)
+  if (not rngstream)
     return 0;
 
   return (jint)RngStream_RandInt(rngstream, (int)i, (int)j);

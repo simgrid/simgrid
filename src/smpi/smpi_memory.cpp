@@ -114,12 +114,7 @@ int smpi_is_privatisation_file(char* file)
 void smpi_initialize_global_memory_segments()
 {
 
-#if !HAVE_PRIVATIZATION
-  smpi_privatize_global_variables=false;
-  xbt_die("You are trying to use privatization on a system that does not support it. Don't.");
-  return;
-#else
-
+#if HAVE_PRIVATIZATION
   smpi_get_executable_global_size();
 
   XBT_DEBUG ("bss+data segment found : size %d starting at %p", smpi_size_data_exe, smpi_start_data_exe );
@@ -182,6 +177,10 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
     smpi_privatisation_regions[i].file_descriptor = file_descriptor;
     smpi_privatisation_regions[i].address         = address;
   }
+#else /* ! HAVE_PRIVATIZATION */
+  smpi_privatize_global_variables = false;
+  xbt_die("You are trying to use privatization on a system that does not support it. Don't.");
+  return;
 #endif
 }
 

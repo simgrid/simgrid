@@ -107,7 +107,7 @@ s4u::NetZone* Engine::netRoot()
 
 static s4u::NetZone* netzoneByNameRecursive(s4u::NetZone* current, const char* name)
 {
-  if(!strcmp(current->name(), name))
+  if (not strcmp(current->name(), name))
     return current;
 
   for (auto elem : *(current->children())) {

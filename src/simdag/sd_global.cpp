@@ -38,13 +38,14 @@ std::set<SD_task_t>* simulate(double how_long){
   sd_global->return_set->clear();
 
   /* explore the runnable tasks */
-  while(!sd_global->runnable_tasks->empty())
+  while (not sd_global->runnable_tasks->empty())
     SD_task_run(*(sd_global->runnable_tasks->begin()));
 
   double elapsed_time = 0.0;
   double total_time = 0.0;
   /* main loop */
-  while (elapsed_time >= 0 && (how_long < 0 || 0.00001 < (how_long -total_time)) && !sd_global->watch_point_reached) {
+  while (elapsed_time >= 0 && (how_long < 0 || 0.00001 < (how_long - total_time)) &&
+         not sd_global->watch_point_reached) {
 
     XBT_DEBUG("Total time: %f", total_time);
 
@@ -78,7 +79,7 @@ std::set<SD_task_t>* simulate(double how_long){
           if (SD_task_get_state(succ) == SD_SCHEDULED && succ->predecessors->empty() && succ->inputs->empty())
             SD_task_set_state(succ, SD_RUNNABLE);
 
-          if (SD_task_get_state(succ) == SD_RUNNABLE && !sd_global->watch_point_reached)
+          if (SD_task_get_state(succ) == SD_RUNNABLE && not sd_global->watch_point_reached)
             SD_task_run(succ);
         }
         task->successors->clear();
@@ -97,7 +98,7 @@ std::set<SD_task_t>* simulate(double how_long){
                 SD_task_get_name(output), SD_task_get_name(comm_dst), comm_dst->predecessors->size());
             SD_task_set_state(comm_dst, SD_SCHEDULABLE);
           }
-          if (SD_task_get_state(output) == SD_RUNNABLE && !sd_global->watch_point_reached)
+          if (SD_task_get_state(output) == SD_RUNNABLE && not sd_global->watch_point_reached)
             SD_task_run(output);
         }
         task->outputs->clear();
@@ -116,7 +117,7 @@ std::set<SD_task_t>* simulate(double how_long){
     }
   }
 
-  if (!sd_global->watch_point_reached && how_long < 0 && !sd_global->initial_tasks->empty()) {
+  if (not sd_global->watch_point_reached && how_long < 0 && not sd_global->initial_tasks->empty()) {
     XBT_WARN("Simulation is finished but %zu tasks are still not done", sd_global->initial_tasks->size());
     for (const auto& t : *sd_global->initial_tasks)
       XBT_WARN("%s is in %s state", SD_task_get_name(t), __get_state_name(SD_task_get_state(t)));

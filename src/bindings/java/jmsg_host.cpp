@@ -62,18 +62,18 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jcla
   /* get the host by name       (the hosts are created during the grid resolution) */
   msg_host_t host = MSG_host_by_name(name);
 
-  if (!host) {                  /* invalid name */
+  if (not host) { /* invalid name */
     jxbt_throw_host_not_found(env, name);
     env->ReleaseStringUTFChars(jname, name);
     return nullptr;
   }
   env->ReleaseStringUTFChars(jname, name);
 
-  if (!host->extension(JAVA_HOST_LEVEL)) {       /* native host not associated yet with java host */
+  if (not host->extension(JAVA_HOST_LEVEL)) { /* native host not associated yet with java host */
     /* Instantiate a new java host */
     jobject jhost = jhost_new_instance(env);
 
-    if (!jhost) {
+    if (not jhost) {
       jxbt_throw_jni(env, "java host instantiation failed");
       return nullptr;
     }
@@ -81,7 +81,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jcla
     /* get a global reference to the newly created host */
     jhost = jhost_ref(env, jhost);
 
-    if (!jhost) {
+    if (not jhost) {
       jxbt_throw_jni(env, "new global ref allocation failed");
       return nullptr;
     }
@@ -103,13 +103,13 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jc
 
   msg_host_t host = MSG_host_self();
 
-  if (!host->extension(JAVA_HOST_LEVEL)) {
+  if (not host->extension(JAVA_HOST_LEVEL)) {
     /* the native host not yet associated with the java host instance */
 
     /* instanciate a new java host instance */
     jhost = jhost_new_instance(env);
 
-    if (!jhost) {
+    if (not jhost) {
       jxbt_throw_jni(env, "java host instantiation failed");
       return nullptr;
     }
@@ -117,7 +117,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jc
     /* get a global reference to the newly created host */
     jhost = jhost_ref(env, jhost);
 
-    if (!jhost) {
+    if (not jhost) {
       jxbt_throw_jni(env, "global ref allocation failed");
       return nullptr;
     }
@@ -154,7 +154,7 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_Host_getCount(JNIEnv * env, jclass c
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getSpeed(JNIEnv * env, jobject jhost) {
   msg_host_t host = jhost_get_native(env, jhost);
 
-  if (!host) {
+  if (not host) {
     jxbt_throw_notbound(env, "host", jhost);
     return -1;
   }
@@ -165,7 +165,7 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getSpeed(JNIEnv * env, jobje
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCoreNumber(JNIEnv * env, jobject jhost) {
   msg_host_t host = jhost_get_native(env, jhost);
 
-  if (!host) {
+  if (not host) {
     jxbt_throw_notbound(env, "host", jhost);
     return -1;
   }
@@ -176,14 +176,14 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCoreNumber(JNIEnv * env, 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getProperty(JNIEnv *env, jobject jhost, jobject jname) {
   msg_host_t host = jhost_get_native(env, jhost);
 
-  if (!host) {
+  if (not host) {
     jxbt_throw_notbound(env, "host", jhost);
     return nullptr;
   }
   const char *name = env->GetStringUTFChars((jstring) jname, 0);
 
   const char *property = MSG_host_get_property_value(host, name);
-  if (!property) {
+  if (not property) {
     return nullptr;
   }
 
@@ -198,7 +198,7 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Host_setProperty(JNIEnv *env, jobject jhost, jobject jname, jobject jvalue) {
   msg_host_t host = jhost_get_native(env, jhost);
 
-  if (!host) {
+  if (not host) {
     jxbt_throw_notbound(env, "host", jhost);
     return;
   }
@@ -216,7 +216,7 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Host_isOn(JNIEnv * env, jobject 
 {
   msg_host_t host = jhost_get_native(env, jhost);
 
-  if (!host) {
+  if (not host) {
     jxbt_throw_notbound(env, "host", jhost);
     return 0;
   }
@@ -230,7 +230,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getMountedStorage(JNIEn
   jobject jstorage;
   jstring jname;
 
-  if (!host) {
+  if (not host) {
     jxbt_throw_notbound(env, "host", jhost);
     return 0;
   }
@@ -243,9 +243,9 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getMountedStorage(JNIEn
 
   jtable = env->NewObjectArray((jsize) count, cls, nullptr);
 
-  if (!jtable) {
-   jxbt_throw_jni(env, "Storages table allocation failed");
-   return nullptr;
+  if (not jtable) {
+    jxbt_throw_jni(env, "Storages table allocation failed");
+    return nullptr;
   }
 
   xbt_dict_cursor_t cursor=nullptr;
@@ -266,7 +266,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getAttachedStorage(JNIE
 {
   msg_host_t host = jhost_get_native(env, jhost);
 
-  if (!host) {
+  if (not host) {
     jxbt_throw_notbound(env, "host", jhost);
     return 0;
   }
@@ -290,7 +290,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getStorageContent(JNIEn
 {
   msg_host_t host = jhost_get_native(env, jhost);
 
-  if (!host) {
+  if (not host) {
     jxbt_throw_notbound(env, "host", jhost);
     return 0;
   }
@@ -304,12 +304,12 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_all(JNIEnv * env, jclas
   int count = xbt_dynar_length(table);
 
   jclass cls = jxbt_get_class(env, "org/simgrid/msg/Host");
-  if (!cls)
+  if (not cls)
     return nullptr;
 
   jobjectArray jtable = env->NewObjectArray((jsize)count, cls, nullptr);
 
-  if (!jtable) {
+  if (not jtable) {
     jxbt_throw_jni(env, "Hosts table allocation failed");
     return nullptr;
   }
@@ -318,7 +318,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_all(JNIEnv * env, jclas
     msg_host_t host = xbt_dynar_get_as(table, index, msg_host_t);
     jobject jhost   = static_cast<jobject>(host->extension(JAVA_HOST_LEVEL));
 
-    if (!jhost) {
+    if (not jhost) {
       jstring jname = env->NewStringUTF(host->cname());
       jhost         = Java_org_simgrid_msg_Host_getByName(env, cls_arg, jname);
     }
@@ -340,7 +340,7 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getConsumedEnergy (JNIEnv *e
 {
   msg_host_t host = jhost_get_native(env, jhost);
 
-  if (!host) {
+  if (not host) {
     jxbt_throw_notbound(env, "host", jhost);
     return 0;
   }

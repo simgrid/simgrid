@@ -159,7 +159,7 @@ Coll_scatter_ompi_binomial::scatter(void *sbuf, int scount,
 
     if (NULL != tempbuf)
       smpi_free_tmp_buffer(tempbuf);
-    //!FIXME : store the tree, as done in ompi, instead of calculating it each time ?
+    // not FIXME : store the tree, as done in ompi, instead of calculating it each time ?
     xbt_free(bmtree);
 
     return MPI_SUCCESS;

@@ -174,12 +174,12 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Msg_environmentGetRoutingRoot(JNI
 {
   msg_netzone_t as = MSG_zone_get_root();
   jobject jas      = jnetzone_new_instance(env);
-  if (!jas) {
+  if (not jas) {
     jxbt_throw_jni(env, "java As instantiation failed");
     return nullptr;
   }
   jas = jnetzone_ref(env, jas);
-  if (!jas) {
+  if (not jas) {
     jxbt_throw_jni(env, "new global ref allocation failed");
     return nullptr;
   }

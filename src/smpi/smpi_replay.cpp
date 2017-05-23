@@ -52,7 +52,7 @@ static void set_reqq_self(std::vector<MPI_Request> *mpi_request)
 //allocate a single buffer for all sends, growing it if needed
 void* smpi_get_tmp_sendbuffer(int size)
 {
-  if (!smpi_process()->replaying())
+  if (not smpi_process()->replaying())
     return xbt_malloc(size);
   if (sendbuffer_size<size){
     sendbuffer=static_cast<char*>(xbt_realloc(sendbuffer,size));
@@ -63,7 +63,7 @@ void* smpi_get_tmp_sendbuffer(int size)
 
 //allocate a single buffer for all recv
 void* smpi_get_tmp_recvbuffer(int size){
-  if (!smpi_process()->replaying())
+  if (not smpi_process()->replaying())
     return xbt_malloc(size);
   if (recvbuffer_size<size){
     recvbuffer=static_cast<char*>(xbt_realloc(recvbuffer,size));
@@ -73,7 +73,7 @@ void* smpi_get_tmp_recvbuffer(int size){
 }
 
 void smpi_free_tmp_buffer(void* buf){
-  if (!smpi_process()->replaying())
+  if (not smpi_process()->replaying())
     xbt_free(buf);
 }
 
@@ -236,7 +236,7 @@ static void action_send(const char *const *action)
   extra->dst = dst_traced;
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
-  if (!TRACE_smpi_view_internals())
+  if (not TRACE_smpi_view_internals())
     TRACE_smpi_send(rank, rank, dst_traced, 0, size*MPI_CURRENT_TYPE->size());
 
   Request::send(nullptr, size, MPI_CURRENT_TYPE, to , 0, MPI_COMM_WORLD);
@@ -267,7 +267,7 @@ static void action_Isend(const char *const *action)
   extra->dst = dst_traced;
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
-  if (!TRACE_smpi_view_internals())
+  if (not TRACE_smpi_view_internals())
     TRACE_smpi_send(rank, rank, dst_traced, 0, size*MPI_CURRENT_TYPE->size());
 
   MPI_Request request = Request::isend(nullptr, size, MPI_CURRENT_TYPE, to, 0,MPI_COMM_WORLD);
@@ -311,7 +311,7 @@ static void action_recv(const char *const *action) {
   Request::recv(nullptr, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD, &status);
 
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
-  if (!TRACE_smpi_view_internals()) {
+  if (not TRACE_smpi_view_internals()) {
     TRACE_smpi_recv(rank, src_traced, rank, 0);
   }
 
@@ -964,7 +964,7 @@ void smpi_replay_main(int* argc, char*** argv)
   /* and now, finalize everything */
   /* One active process will stop. Decrease the counter*/
   XBT_DEBUG("There are %zu elements in reqq[*]", get_reqq_self()->size());
-  if (!get_reqq_self()->empty()){
+  if (not get_reqq_self()->empty()) {
     unsigned int count_requests=get_reqq_self()->size();
     MPI_Request requests[count_requests];
     MPI_Status status[count_requests];

@@ -405,7 +405,7 @@ int mmalloc_compare_heap(
         }
       }
 
-      while (i2 < state.heaplimit && !equal) {
+      while (i2 < state.heaplimit && not equal) {
 
         addr_block2 = (ADDR2UINT(i2) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
 
@@ -442,7 +442,7 @@ int mmalloc_compare_heap(
         i2++;
       }
 
-      if (!equal) {
+      if (not equal) {
         XBT_DEBUG("Block %zu not found (size_used = %zu, addr = %p)", i1, heapinfo1->busy_block.busy_size, addr_block1);
         i1 = state.heaplimit + 1;
         nb_diff1++;
@@ -465,8 +465,7 @@ int mmalloc_compare_heap(
         equal = 0;
 
         /* Try first to associate to same fragment in the other heap */
-        if (heapinfo2->type == heapinfo1->type
-            && !state.equals_to2_(i1, j1).valid) {
+        if (heapinfo2->type == heapinfo1->type && not state.equals_to2_(i1, j1).valid) {
           addr_block2 = (ADDR2UINT(i1) - 1) * BLOCKSIZE +
                          (char *) state.std_heap_copy.heapbase;
           addr_frag2 =
@@ -478,7 +477,7 @@ int mmalloc_compare_heap(
             equal = 1;
         }
 
-        while (i2 < state.heaplimit && !equal) {
+        while (i2 < state.heaplimit && not equal) {
 
           const malloc_info* heapinfo2b = (const malloc_info*) MC_region_read(
             heap_region2, &heapinfo_temp2b, &heapinfos2[i2],
@@ -523,7 +522,7 @@ int mmalloc_compare_heap(
           i2++;
         }
 
-        if (!equal) {
+        if (not equal) {
           XBT_DEBUG("Block %zu, fragment %zu not found (size_used = %zd, address = %p)\n", i1, j1,
                     heapinfo1->busy_frag.frag_size[j1], addr_frag1);
           i2 = state.heaplimit + 1;
@@ -546,7 +545,7 @@ int mmalloc_compare_heap(
       heap_region1, &heapinfo_temp1, &heapinfos1[i], sizeof(malloc_info));
 
     if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED && i1 == state.heaplimit && heapinfo1->busy_block.busy_size > 0 &&
-        !state.equals_to1_(i, 0).valid) {
+        not state.equals_to1_(i, 0).valid) {
       XBT_DEBUG("Block %zu not found (size used = %zu)", i, heapinfo1->busy_block.busy_size);
       nb_diff1++;
     }
@@ -554,7 +553,7 @@ int mmalloc_compare_heap(
     if (heapinfo1->type <= 0)
       continue;
     for (j = 0; j < (size_t) (BLOCKSIZE >> heapinfo1->type); j++)
-      if (i1 == state.heaplimit && heapinfo1->busy_frag.frag_size[j] > 0 && !state.equals_to1_(i, j).valid) {
+      if (i1 == state.heaplimit && heapinfo1->busy_frag.frag_size[j] > 0 && not state.equals_to1_(i, j).valid) {
         XBT_DEBUG("Block %zu, Fragment %zu not found (size used = %zd)", i, j, heapinfo1->busy_frag.frag_size[j]);
         nb_diff1++;
       }
@@ -566,10 +565,8 @@ int mmalloc_compare_heap(
   for (i=1; i < state.heaplimit; i++) {
     const malloc_info* heapinfo2 = (const malloc_info*) MC_region_read(
       heap_region2, &heapinfo_temp2, &heapinfos2[i], sizeof(malloc_info));
-    if (heapinfo2->type == MMALLOC_TYPE_UNFRAGMENTED
-        && i1 == state.heaplimit
-        && heapinfo2->busy_block.busy_size > 0
-        && !state.equals_to2_(i, 0).valid) {
+    if (heapinfo2->type == MMALLOC_TYPE_UNFRAGMENTED && i1 == state.heaplimit && heapinfo2->busy_block.busy_size > 0 &&
+        not state.equals_to2_(i, 0).valid) {
       XBT_DEBUG("Block %zu not found (size used = %zu)", i,
                 heapinfo2->busy_block.busy_size);
       nb_diff2++;
@@ -579,9 +576,7 @@ int mmalloc_compare_heap(
       continue;
 
     for (j = 0; j < (size_t) (BLOCKSIZE >> heapinfo2->type); j++)
-      if (i1 == state.heaplimit
-          && heapinfo2->busy_frag.frag_size[j] > 0
-          && !state.equals_to2_(i, j).valid) {
+      if (i1 == state.heaplimit && heapinfo2->busy_frag.frag_size[j] > 0 && not state.equals_to2_(i, j).valid) {
         XBT_DEBUG("Block %zu, Fragment %zu not found (size used = %zd)",
           i, j, heapinfo2->busy_frag.frag_size[j]);
         nb_diff2++;
@@ -737,7 +732,7 @@ top:
     return 1;
 
   case DW_TAG_base_type:
-    if (!type->name.empty() && type->name == "char") {        /* String, hence random (arbitrary ?) size */
+    if (not type->name.empty() && type->name == "char") { /* String, hence random (arbitrary ?) size */
       if (real_area1 == real_area2)
         return -1;
       else
@@ -1042,7 +1037,7 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
 
     // Find type_size:
     if (type->type == DW_TAG_pointer_type ||
-        (type->type == DW_TAG_base_type && !type->name.empty() && type->name == "char"))
+        (type->type == DW_TAG_base_type && not type->name.empty() && type->name == "char"))
       type_size = -1;
     else
       type_size = type->byte_size;
@@ -1094,7 +1089,7 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
     if (heapinfo1->busy_block.busy_size != heapinfo2->busy_block.busy_size)
       return 1;
 
-    if (!previous->insert(simgrid::mc::makeHeapLocationPair(block1, -1, block2, -1)).second) {
+    if (not previous->insert(simgrid::mc::makeHeapLocationPair(block1, -1, block2, -1)).second) {
       if (match_pairs)
         state.match_equals(previous);
       return 0;
@@ -1233,7 +1228,7 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
     }
 
     if (offset1 == 0 && offset2 == 0 &&
-        !previous->insert(simgrid::mc::makeHeapLocationPair(block1, frag1, block2, frag2)).second) {
+        not previous->insert(simgrid::mc::makeHeapLocationPair(block1, frag1, block2, frag2)).second) {
       if (match_pairs)
         state.match_equals(previous);
       return 0;
@@ -1357,8 +1352,7 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state,
       return 0;
     if (addr_pointed1 == nullptr || addr_pointed2 == nullptr)
       return 1;
-    if (!state.compared_pointers.insert(
-        std::make_pair(addr_pointed1, addr_pointed2)).second)
+    if (not state.compared_pointers.insert(std::make_pair(addr_pointed1, addr_pointed2)).second)
       return 0;
 
     pointer_level++;
@@ -1382,9 +1376,9 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state,
 
       // The pointers are both in the current object R/W segment:
       else if (region1->contain(simgrid::mc::remote(addr_pointed1))) {
-        if (!region2->contain(simgrid::mc::remote(addr_pointed2)))
+        if (not region2->contain(simgrid::mc::remote(addr_pointed2)))
           return 1;
-        if (!type->type_id)
+        if (not type->type_id)
           return (addr_pointed1 != addr_pointed2);
         else
           return compare_areas_with_type(state, process_index,
@@ -1728,8 +1722,7 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
     // * There MUST not be any false negative.
 
     XBT_VERB("(%d - %d) State equality hash test is %s %s", num1, num2,
-             (hash_result != 0) == (errors != 0) ? "true" : "false",
-             !hash_result ? "positive" : "negative");
+             (hash_result != 0) == (errors != 0) ? "true" : "false", not hash_result ? "positive" : "negative");
   }
 #endif
 

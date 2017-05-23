@@ -65,7 +65,7 @@ int Coll_alltoall_3dmesh::alltoall(void *send_buff, int send_count,
   num_procs = comm->size();
   extent = send_type->get_extent();
 
-  if (!alltoall_check_is_3dmesh(num_procs, &X, &Y, &Z))
+  if (not alltoall_check_is_3dmesh(num_procs, &X, &Y, &Z))
     return MPI_ERR_OTHER;
 
   num_reqs = X;

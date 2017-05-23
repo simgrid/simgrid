@@ -88,7 +88,7 @@ double SmpiHost::oisend(size_t size)
 
 SmpiHost::SmpiHost(simgrid::s4u::Host *ptr) : host(ptr)
 {
-  if (!SmpiHost::EXTENSION_ID.valid())
+  if (not SmpiHost::EXTENSION_ID.valid())
     SmpiHost::EXTENSION_ID = simgrid::s4u::Host::extension_create<SmpiHost>();
 
   const char* orecv_string = host->property("smpi/or");

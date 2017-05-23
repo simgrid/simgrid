@@ -31,7 +31,7 @@ std::vector<simgrid::surf::LinkImpl*> parsed_link_list; /* temporary store of cu
  * Helping functions
  */
 void surf_parse_assert(bool cond, const char *fmt, ...) {
-  if (!cond ) {
+  if (not cond) {
     va_list va;
     va_start(va,fmt);
     int lineno = surf_parse_lineno;
@@ -490,7 +490,7 @@ void STag_surfxml_prop()
     netzone->setProperty(A_surfxml_prop_id, A_surfxml_prop_value);
   }
   else{
-    if (!current_property_set)
+    if (not current_property_set)
       current_property_set = xbt_dict_new_homogeneous(&xbt_free_f); // Maybe, it should raise an error
     xbt_dict_set(current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), nullptr);
     XBT_DEBUG("add prop %s=%s into current property set %p", A_surfxml_prop_id, A_surfxml_prop_value,
@@ -1070,7 +1070,7 @@ void STag_surfxml_argument(){
 }
 
 void STag_surfxml_model___prop(){
-  if (!current_model_property_set)
+  if (not current_model_property_set)
     current_model_property_set = new std::map<std::string, std::string>();
 
   current_model_property_set->insert(

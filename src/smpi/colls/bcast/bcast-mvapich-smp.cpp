@@ -318,24 +318,22 @@ int Coll_bcast_mvapich2_intra_node::bcast(void *buffer,
 #endif
         ) {
 
-        if (!is_contig || !is_homogeneous) {
-            tmp_buf=(void *)smpi_get_tmp_sendbuffer(nbytes);
+      if (not is_contig || not is_homogeneous) {
+        tmp_buf = (void*)smpi_get_tmp_sendbuffer(nbytes);
 
-            /* TODO: Pipeline the packing and communication */
-           // position = 0;
-/*            if (rank == root) {*/
-/*                mpi_errno =*/
-/*                    MPIR_Pack_impl(buffer, count, datatype, tmp_buf, nbytes, &position);*/
-/*                if (mpi_errno)*/
-/*                    MPIU_ERR_POP(mpi_errno);*/
-/*            }*/
+        /* TODO: Pipeline the packing and communication */
+        // position = 0;
+        /*            if (rank == root) {*/
+        /*                mpi_errno =*/
+        /*                    MPIR_Pack_impl(buffer, count, datatype, tmp_buf, nbytes, &position);*/
+        /*                if (mpi_errno)*/
+        /*                    MPIU_ERR_POP(mpi_errno);*/
+        /*            }*/
         }
 
         shmem_comm = comm->get_intra_comm();
-        if (!is_contig || !is_homogeneous) {
-            mpi_errno =
-                MPIR_Bcast_inter_node_helper_MV2(tmp_buf, nbytes, MPI_BYTE,
-                                                 root, comm);
+        if (not is_contig || not is_homogeneous) {
+          mpi_errno = MPIR_Bcast_inter_node_helper_MV2(tmp_buf, nbytes, MPI_BYTE, root, comm);
         } else {
             mpi_errno =
                 MPIR_Bcast_inter_node_helper_MV2(buffer, count, datatype, root,
@@ -344,20 +342,15 @@ int Coll_bcast_mvapich2_intra_node::bcast(void *buffer,
 
         /* We are now done with the inter-node phase */
             if (nbytes <= mv2_knomial_intra_node_threshold) {
-                if (!is_contig || !is_homogeneous) {
-                    mpi_errno = MPIR_Shmem_Bcast_MV2(tmp_buf, nbytes, MPI_BYTE,
-                                                     root, shmem_comm);
+              if (not is_contig || not is_homogeneous) {
+                mpi_errno = MPIR_Shmem_Bcast_MV2(tmp_buf, nbytes, MPI_BYTE, root, shmem_comm);
                 } else {
                     mpi_errno = MPIR_Shmem_Bcast_MV2(buffer, count, datatype,
                                                      root, shmem_comm);
                 }
             } else {
-                if (!is_contig || !is_homogeneous) {
-                    mpi_errno =
-                        MPIR_Knomial_Bcast_intra_node_MV2(tmp_buf, nbytes,
-                                                          MPI_BYTE,
-                                                          INTRA_NODE_ROOT,
-                                                          shmem_comm);
+              if (not is_contig || not is_homogeneous) {
+                mpi_errno = MPIR_Knomial_Bcast_intra_node_MV2(tmp_buf, nbytes, MPI_BYTE, INTRA_NODE_ROOT, shmem_comm);
                 } else {
                     mpi_errno =
                         MPIR_Knomial_Bcast_intra_node_MV2(buffer, count,

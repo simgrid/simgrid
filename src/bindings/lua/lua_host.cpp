@@ -34,7 +34,7 @@ sg_host_t sglua_check_host(lua_State * L, int index)
   if (pi == nullptr)
     XBT_ERROR("luaL_checkudata() returned nullptr");
   sg_host_t ht = *pi;
-  if (!ht)
+  if (not ht)
     luaL_error(L, "null Host");
   return ht;
 }

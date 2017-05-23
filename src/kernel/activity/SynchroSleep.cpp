@@ -26,7 +26,7 @@ void simgrid::kernel::activity::Sleep::resume()
 
 void simgrid::kernel::activity::Sleep::post()
 {
-  while (!simcalls.empty()) {
+  while (not simcalls.empty()) {
     smx_simcall_t simcall = simcalls.front();
     simcalls.pop_front();
 

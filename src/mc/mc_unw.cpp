@@ -154,7 +154,7 @@ int UnwindContext::access_reg(unw_addr_space_t as,
   if (write)
     return -UNW_EREADONLYREG;
   greg_t* preg = (greg_t*) get_reg(context, regnum);
-  if (!preg)
+  if (not preg)
     return -UNW_EBADREG;
   *valp = *preg;
   return 0;
@@ -192,7 +192,7 @@ int UnwindContext::get_proc_name(unw_addr_space_t as,
 {
   simgrid::mc::UnwindContext* context = (simgrid::mc::UnwindContext*) arg;
   simgrid::mc::Frame* frame = context->process_->find_function(remote(addr));
-  if (!frame)
+  if (not frame)
     return - UNW_ENOINFO;
   *offp = (unw_word_t) frame->range.begin() - addr;
 

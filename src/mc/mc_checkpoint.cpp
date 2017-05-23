@@ -122,7 +122,7 @@ void add_region(int index, simgrid::mc::Snapshot* snapshot,
   if (type == simgrid::mc::RegionType::Data)
     xbt_assert(object_info, "Missing object info for object.");
   else if (type == simgrid::mc::RegionType::Heap)
-    xbt_assert(!object_info, "Unexpected object info for heap region.");
+    xbt_assert(not object_info, "Unexpected object info for heap region.");
 
   simgrid::mc::RegionSnapshot region;
 #if HAVE_SMPI
@@ -201,9 +201,7 @@ void find_object_address(
 
     // This is the non-GNU_RELRO-part of the data segment:
     if (reg.prot == PROT_RW) {
-      xbt_assert(!result->start_rw,
-                 "Multiple read-write segments for %s, not supported",
-                 maps[i].pathname.c_str());
+      xbt_assert(not result->start_rw, "Multiple read-write segments for %s, not supported", maps[i].pathname.c_str());
       result->start_rw = (char*) reg.start_addr;
       result->end_rw = (char*) reg.end_addr;
 
@@ -217,8 +215,7 @@ void find_object_address(
 
     // This is the text segment:
     else if (reg.prot == PROT_RX) {
-      xbt_assert(!result->start_exec,
-                 "Multiple executable segments for %s, not supported",
+      xbt_assert(not result->start_exec, "Multiple executable segments for %s, not supported",
                  maps[i].pathname.c_str());
       result->start_exec = (char*) reg.start_addr;
       result->end_exec = (char*) reg.end_addr;
@@ -235,9 +232,7 @@ void find_object_address(
 
     // This is the GNU_RELRO-part of the data segment:
     else if (reg.prot == PROT_READ) {
-      xbt_assert(!result->start_ro,
-                 "Multiple read only segments for %s, not supported",
-                 maps[i].pathname.c_str());
+      xbt_assert(not result->start_ro, "Multiple read only segments for %s, not supported", maps[i].pathname.c_str());
       result->start_ro = (char*) reg.start_addr;
       result->end_ro = (char*) reg.end_addr;
     }
@@ -290,13 +285,13 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame,
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
 
-  if (!scope || !scope->range.contain(stack_frame->ip))
+  if (not scope || not scope->range.contain(stack_frame->ip))
     return;
 
   for(simgrid::mc::Variable& current_variable :
       scope->variables) {
 
-    if (!valid_variable(&current_variable, scope, (void *) stack_frame->ip))
+    if (not valid_variable(&current_variable, scope, (void*)stack_frame->ip))
       continue;
 
     int region_type;
@@ -316,7 +311,7 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame,
 
     if (current_variable.address != nullptr)
       new_var.address = current_variable.address;
-    else if (!current_variable.location_list.empty()) {
+    else if (not current_variable.location_list.empty()) {
       simgrid::dwarf::Location location =
         simgrid::dwarf::resolve(
           current_variable.location_list,
@@ -325,7 +320,7 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame,
           (void *) stack_frame->frame_base,
           &mc_model_checker->process(), process_index);
 
-      if (!location.in_memory())
+      if (not location.in_memory())
         xbt_die("Cannot handle non-address variable");
       new_var.address = location.address();
 

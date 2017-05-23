@@ -227,10 +227,10 @@ XBT_TEST_UNIT("cleanup", test_cleanup, "cleanup handling")
     c = 1;
     if (v1 != 5678)
       xbt_test_fail("v1 = %d (!= 5678)", v1);
-    if (!(ex.category == 1 && ex.value == 2 && !strcmp(ex.what(), "blah")))
+    if (!(ex.category == 1 && ex.value == 2 && not strcmp(ex.what(), "blah")))
       xbt_test_fail("unexpected exception contents");
   }
-  if (!c)
+  if (not c)
     xbt_test_fail("xbt_ex_free not executed");
 }
 #endif                          /* SIMGRID_TEST */

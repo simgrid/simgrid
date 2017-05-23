@@ -100,9 +100,9 @@ void bottleneck_solve(lmm_system_t sys)
           nb++;
       }
       XBT_DEBUG("\tThere are %d variables", nb);
-      if (nb > 0 && !cnst->sharing_policy)
+      if (nb > 0 && not cnst->sharing_policy)
         nb = 1;
-      if (!nb) {
+      if (not nb) {
         cnst->remaining = 0.0;
         cnst->usage = cnst->remaining;
         xbt_swag_remove(cnst, cnst_list);
@@ -147,7 +147,7 @@ void bottleneck_solve(lmm_system_t sys)
           cnst->usage = MIN(cnst->usage, elem->value * elem->variable->mu);
         }
       }
-      if (!cnst->sharing_policy) {
+      if (not cnst->sharing_policy) {
         XBT_DEBUG("\tUpdate constraint %p (%g) by %g", cnst, cnst->remaining, cnst->usage);
 
         double_update(&(cnst->remaining), cnst->usage, sg_maxmin_precision);

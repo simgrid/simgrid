@@ -92,7 +92,7 @@ void ModelChecker::start()
 
   // The model-checked process SIGSTOP itself to signal it's ready:
   pid_t res = waitpid(pid, &status, WAITPID_CHECKED_FLAGS);
-  if (res < 0 || !WIFSTOPPED(status) || WSTOPSIG(status) != SIGSTOP)
+  if (res < 0 || not WIFSTOPPED(status) || WSTOPSIG(status) != SIGSTOP)
     xbt_die("Could not wait model-checked process");
 
   process_->init();
@@ -306,7 +306,7 @@ void ModelChecker::handle_events(int fd, short events)
     ssize_t size = process_->getChannel().receive(buffer, sizeof(buffer), false);
     if (size == -1 && errno != EAGAIN)
       throw simgrid::xbt::errno_error();
-    if (!handle_message(buffer, size)) {
+    if (not handle_message(buffer, size)) {
       event_base_loopbreak(base_);
     }
   }

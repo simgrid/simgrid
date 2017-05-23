@@ -137,7 +137,7 @@ void HostImpl::getAttachedStorageList(std::vector<const char*>* storages)
     if (xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
       simgrid::surf::Storage* storage = static_cast<simgrid::surf::Storage*>(
           xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
-      if (!strcmp(static_cast<const char*>(storage->attach_), piface_->cname())) {
+      if (not strcmp(static_cast<const char*>(storage->attach_), piface_->cname())) {
         storages->push_back(storage->cname());
       }
     }
@@ -196,7 +196,7 @@ Action* HostImpl::write(surf_file_t fd, sg_size_t size)
 
 int HostImpl::unlink(surf_file_t fd)
 {
-  if (!fd) {
+  if (not fd) {
     XBT_WARN("No such file descriptor. Impossible to unlink");
     return -1;
   } else {
@@ -267,7 +267,7 @@ int HostImpl::fileSeek(surf_file_t fd, sg_offset_t offset, int origin)
 int HostImpl::fileMove(surf_file_t fd, const char* fullpath)
 {
   /* Check if the new full path is on the same mount point */
-  if (!strncmp((const char*)fd->mount, fullpath, strlen(fd->mount))) {
+  if (not strncmp((const char*)fd->mount, fullpath, strlen(fd->mount))) {
     std::map<std::string, sg_size_t*>* content = findStorageOnMountList(fd->mount)->content_;
     if (content->find(fd->name) != content->end()) { // src file exists
       sg_size_t* psize     = content->at(std::string(fd->name));

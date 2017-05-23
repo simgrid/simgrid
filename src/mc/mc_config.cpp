@@ -69,9 +69,9 @@ void _mc_cfg_cb_reduce(const char *name)
         ("You are specifying a reduction strategy after the initialization (through MSG_config?), but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
 
   char *val = xbt_cfg_get_string(name);
-  if (!strcasecmp(val, "none"))
+  if (not strcasecmp(val, "none"))
     simgrid::mc::reduction_mode = simgrid::mc::ReductionMode::none;
-  else if (!strcasecmp(val, "dpor"))
+  else if (not strcasecmp(val, "dpor"))
     simgrid::mc::reduction_mode = simgrid::mc::ReductionMode::dpor;
   else
     xbt_die("configuration option %s can only take 'none' or 'dpor' as a value",

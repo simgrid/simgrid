@@ -141,51 +141,46 @@ int Coll_scatter_mvapich2_two_level_direct::scatter(void *sendbuf,
         }
 
         if (leader_comm_size > 1 && local_rank == 0) {
-            if (!comm->is_uniform()) {
-                int *displs = NULL;
-                int *sendcnts = NULL;
-                int *node_sizes;
-                int i = 0;
-                node_sizes = comm->get_non_uniform_map();
+          if (not comm->is_uniform()) {
+            int* displs   = NULL;
+            int* sendcnts = NULL;
+            int* node_sizes;
+            int i      = 0;
+            node_sizes = comm->get_non_uniform_map();
 
-                if (root != leader_of_root) {
-                    if (leader_comm_rank == leader_root) {
-                        displs = static_cast<int*>(xbt_malloc(sizeof (int) * leader_comm_size));
-                        sendcnts = static_cast<int*>(xbt_malloc(sizeof (int) * leader_comm_size));
-                        sendcnts[0] = node_sizes[0] * nbytes;
-                        displs[0] = 0;
+            if (root != leader_of_root) {
+              if (leader_comm_rank == leader_root) {
+                displs      = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
+                sendcnts    = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
+                sendcnts[0] = node_sizes[0] * nbytes;
+                displs[0]   = 0;
 
-                        for (i = 1; i < leader_comm_size; i++) {
-                            displs[i] =
-                                displs[i - 1] + node_sizes[i - 1] * nbytes;
-                            sendcnts[i] = node_sizes[i] * nbytes;
-                        }
-                    }
-                        Colls::scatterv(leader_scatter_buf, sendcnts, displs,
-                                      MPI_BYTE, tmp_buf, nbytes * local_size,
-                                      MPI_BYTE, leader_root, leader_comm);
-                } else {
-                    if (leader_comm_rank == leader_root) {
-                        displs = static_cast<int*>(xbt_malloc(sizeof (int) * leader_comm_size));
-                        sendcnts = static_cast<int*>(xbt_malloc(sizeof (int) * leader_comm_size));
-                        sendcnts[0] = node_sizes[0] * sendcnt;
-                        displs[0] = 0;
-
-                        for (i = 1; i < leader_comm_size; i++) {
-                            displs[i] =
-                                displs[i - 1] + node_sizes[i - 1] * sendcnt;
-                            sendcnts[i] = node_sizes[i] * sendcnt;
-                        }
-                    }
-                    Colls::scatterv(sendbuf, sendcnts, displs,
-                                              sendtype, tmp_buf,
-                                              nbytes * local_size, MPI_BYTE,
-                                              leader_root, leader_comm);
+                for (i = 1; i < leader_comm_size; i++) {
+                  displs[i]   = displs[i - 1] + node_sizes[i - 1] * nbytes;
+                  sendcnts[i] = node_sizes[i] * nbytes;
                 }
-                if (leader_comm_rank == leader_root) {
-                    xbt_free(displs);
-                    xbt_free(sendcnts);
+              }
+              Colls::scatterv(leader_scatter_buf, sendcnts, displs, MPI_BYTE, tmp_buf, nbytes * local_size, MPI_BYTE,
+                              leader_root, leader_comm);
+            } else {
+              if (leader_comm_rank == leader_root) {
+                displs      = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
+                sendcnts    = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
+                sendcnts[0] = node_sizes[0] * sendcnt;
+                displs[0]   = 0;
+
+                for (i = 1; i < leader_comm_size; i++) {
+                  displs[i]   = displs[i - 1] + node_sizes[i - 1] * sendcnt;
+                  sendcnts[i] = node_sizes[i] * sendcnt;
                 }
+              }
+              Colls::scatterv(sendbuf, sendcnts, displs, sendtype, tmp_buf, nbytes * local_size, MPI_BYTE, leader_root,
+                              leader_comm);
+            }
+            if (leader_comm_rank == leader_root) {
+              xbt_free(displs);
+              xbt_free(sendcnts);
+            }
             } else {
                 if (leader_of_root != root) {
                     mpi_errno =
@@ -322,51 +317,46 @@ int Coll_scatter_mvapich2_two_level_binomial::scatter(void *sendbuf,
         }
 
         if (leader_comm_size > 1 && local_rank == 0) {
-            if (!comm->is_uniform()) {
-                int *displs = NULL;
-                int *sendcnts = NULL;
-                int *node_sizes;
-                int i = 0;
-                node_sizes = comm->get_non_uniform_map();
+          if (not comm->is_uniform()) {
+            int* displs   = NULL;
+            int* sendcnts = NULL;
+            int* node_sizes;
+            int i      = 0;
+            node_sizes = comm->get_non_uniform_map();
 
-                if (root != leader_of_root) {
-                    if (leader_comm_rank == leader_root) {
-                        displs = static_cast<int*>(xbt_malloc(sizeof (int) * leader_comm_size));
-                        sendcnts = static_cast<int*>(xbt_malloc(sizeof (int) * leader_comm_size));
-                        sendcnts[0] = node_sizes[0] * nbytes;
-                        displs[0] = 0;
+            if (root != leader_of_root) {
+              if (leader_comm_rank == leader_root) {
+                displs      = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
+                sendcnts    = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
+                sendcnts[0] = node_sizes[0] * nbytes;
+                displs[0]   = 0;
 
-                        for (i = 1; i < leader_comm_size; i++) {
-                            displs[i] =
-                                displs[i - 1] + node_sizes[i - 1] * nbytes;
-                            sendcnts[i] = node_sizes[i] * nbytes;
-                        }
-                    }
-                        Colls::scatterv(leader_scatter_buf, sendcnts, displs,
-                                      MPI_BYTE, tmp_buf, nbytes * local_size,
-                                      MPI_BYTE, leader_root, leader_comm);
-                } else {
-                    if (leader_comm_rank == leader_root) {
-                        displs = static_cast<int*>(xbt_malloc(sizeof (int) * leader_comm_size));
-                        sendcnts = static_cast<int*>(xbt_malloc(sizeof (int) * leader_comm_size));
-                        sendcnts[0] = node_sizes[0] * sendcnt;
-                        displs[0] = 0;
-
-                        for (i = 1; i < leader_comm_size; i++) {
-                            displs[i] =
-                                displs[i - 1] + node_sizes[i - 1] * sendcnt;
-                            sendcnts[i] = node_sizes[i] * sendcnt;
-                        }
-                    }
-                    Colls::scatterv(sendbuf, sendcnts, displs,
-                                              sendtype, tmp_buf,
-                                              nbytes * local_size, MPI_BYTE,
-                                              leader_root, leader_comm);
+                for (i = 1; i < leader_comm_size; i++) {
+                  displs[i]   = displs[i - 1] + node_sizes[i - 1] * nbytes;
+                  sendcnts[i] = node_sizes[i] * nbytes;
                 }
-                if (leader_comm_rank == leader_root) {
-                    xbt_free(displs);
-                    xbt_free(sendcnts);
+              }
+              Colls::scatterv(leader_scatter_buf, sendcnts, displs, MPI_BYTE, tmp_buf, nbytes * local_size, MPI_BYTE,
+                              leader_root, leader_comm);
+            } else {
+              if (leader_comm_rank == leader_root) {
+                displs      = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
+                sendcnts    = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
+                sendcnts[0] = node_sizes[0] * sendcnt;
+                displs[0]   = 0;
+
+                for (i = 1; i < leader_comm_size; i++) {
+                  displs[i]   = displs[i - 1] + node_sizes[i - 1] * sendcnt;
+                  sendcnts[i] = node_sizes[i] * sendcnt;
                 }
+              }
+              Colls::scatterv(sendbuf, sendcnts, displs, sendtype, tmp_buf, nbytes * local_size, MPI_BYTE, leader_root,
+                              leader_comm);
+            }
+            if (leader_comm_rank == leader_root) {
+              xbt_free(displs);
+              xbt_free(sendcnts);
+            }
             } else {
                 if (leader_of_root != root) {
                     mpi_errno =

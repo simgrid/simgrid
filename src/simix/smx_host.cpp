@@ -19,7 +19,7 @@ namespace simgrid {
 
     Host::Host()
     {
-      if (!Host::EXTENSION_ID.valid())
+      if (not Host::EXTENSION_ID.valid())
         Host::EXTENSION_ID = s4u::Host::extension_create<simix::Host>();
 
       simgrid::simix::ActorImpl act;
@@ -129,7 +129,7 @@ void SIMIX_host_add_auto_restart_process(
   arg->properties = properties;
   arg->auto_restart = auto_restart;
 
-  if (host->isOff() && !xbt_dict_get_or_null(watched_hosts_lib, host->cname())) {
+  if (host->isOff() && not xbt_dict_get_or_null(watched_hosts_lib, host->cname())) {
     xbt_dict_set(watched_hosts_lib, host->cname(), host, nullptr);
     XBT_DEBUG("Push host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF", host->cname());
   }
@@ -165,7 +165,7 @@ smx_activity_t SIMIX_execution_start(smx_actor_t issuer, const char *name, doubl
   simgrid::kernel::activity::Exec *exec = new simgrid::kernel::activity::Exec(name, issuer->host);
 
   /* set surf's action */
-  if (!MC_is_active() && !MC_record_replay_is_active()) {
+  if (not MC_is_active() && not MC_record_replay_is_active()) {
 
     exec->surf_exec = issuer->host->pimpl_cpu->execution_start(flops_amount);
     exec->surf_exec->setData(exec);
@@ -200,7 +200,7 @@ smx_activity_t SIMIX_execution_parallel_start(const char* name, int host_nb, sg_
   }
 
   /* set surf's synchro */
-  if (!MC_is_active() && !MC_record_replay_is_active()) {
+  if (not MC_is_active() && not MC_record_replay_is_active()) {
     exec->surf_exec = surf_host_model->executeParallelTask(host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
     exec->surf_exec->setData(exec);
     if (timeout > 0) {

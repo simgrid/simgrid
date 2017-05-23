@@ -203,7 +203,7 @@ void PJ_container_free (container_t container)
   TRACE_paje_dump_buffer(1);
 
   //trace my destruction
-  if (!TRACE_disable_destroy() && container != PJ_container_get_root()){
+  if (not TRACE_disable_destroy() && container != PJ_container_get_root()) {
     //do not trace the container destruction if user requests
     //or if the container is root
     new DestroyContainerEvent(container);
@@ -245,7 +245,7 @@ void PJ_container_free_all ()
   rootContainer = nullptr;
 
   //checks
-  if (!xbt_dict_is_empty(allContainers)){
+  if (not xbt_dict_is_empty(allContainers)) {
     THROWF(tracing_error, 0, "some containers still present even after destroying all of them");
   }
 }

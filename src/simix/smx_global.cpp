@@ -199,7 +199,7 @@ void SIMIX_global_init(int *argc, char **argv)
   simgrid::mc::Client::initialize();
 #endif
 
-  if (!simix_global) {
+  if (not simix_global) {
     simix_global = std::unique_ptr<simgrid::simix::Global>(new simgrid::simix::Global());
 
     simgrid::simix::ActorImpl proc;
@@ -240,7 +240,7 @@ void SIMIX_global_init(int *argc, char **argv)
       xbt_assert(s != nullptr, "Storage not found for name %s", name);
     });
   }
-  if (!simix_timers)
+  if (not simix_timers)
     simix_timers = xbt_heap_new(8, [](void* p) {
       delete static_cast<smx_timer_t>(p);
     });
@@ -277,7 +277,7 @@ void SIMIX_clean()
 
   smx_cleaned = 1;
   XBT_DEBUG("SIMIX_clean called. Simulation's over.");
-  if (!xbt_dynar_is_empty(simix_global->process_to_run) && SIMIX_get_clock() <= 0.0) {
+  if (not xbt_dynar_is_empty(simix_global->process_to_run) && SIMIX_get_clock() <= 0.0) {
     XBT_CRITICAL("   ");
     XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
     XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
@@ -410,7 +410,7 @@ static bool SIMIX_execute_tasks()
       task();
 
     simix_global->tasksTemp.clear();
-  } while (!simix_global->tasks.empty());
+  } while (not simix_global->tasks.empty());
 
   return true;
 }
@@ -433,7 +433,7 @@ void SIMIX_run()
 
     SIMIX_execute_tasks();
 
-    while (!xbt_dynar_is_empty(simix_global->process_to_run)) {
+    while (not xbt_dynar_is_empty(simix_global->process_to_run)) {
       XBT_DEBUG("New Sub-Schedule Round; size(queue)=%lu", xbt_dynar_length(simix_global->process_to_run));
 
       /* Run all processes that are ready to run, possibly in parallel */
@@ -551,12 +551,10 @@ void SIMIX_run()
     XBT_DEBUG("### time %f, #processes %zu, #to_run %lu", time, simix_global->process_list.size(),
               xbt_dynar_length(simix_global->process_to_run));
 
+    if (xbt_dynar_is_empty(simix_global->process_to_run) && not simix_global->process_list.empty())
+      simgrid::simix::onDeadlock();
 
-    if (xbt_dynar_is_empty(simix_global->process_to_run) &&
-        !simix_global->process_list.empty())
-    simgrid::simix::onDeadlock();
-
-  } while (time > -1.0 || !xbt_dynar_is_empty(simix_global->process_to_run));
+  } while (time > -1.0 || not xbt_dynar_is_empty(simix_global->process_to_run));
 
   if (simix_global->process_list.size() != 0) {
 

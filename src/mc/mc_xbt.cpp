@@ -30,7 +30,7 @@ void read_element(AddressSpace const& as,
 
 std::size_t read_length(AddressSpace const& as, RemotePtr<s_xbt_dynar_t> addr)
 {
-  if (!addr)
+  if (not addr)
     return 0;
   unsigned long res;
   as.read_bytes(&res, sizeof(res),

@@ -78,7 +78,7 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject j
     return JNI_TRUE;
   }
 
-  if (!comm) {
+  if (not comm) {
     jxbt_throw_null(env, bprintf("comm is null"));
     return JNI_FALSE;
   }
@@ -98,7 +98,7 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject j
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble timeout) {
   msg_comm_t comm = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
-  if (!comm) {
+  if (not comm) {
     jxbt_throw_null(env, bprintf("comm is null"));
     return;
   }
@@ -129,7 +129,7 @@ static msg_comm_t* jarray_to_commArray(JNIEnv *env, jobjectArray jcomms, /* OUT 
         break;
 
      comms[i] = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
-     if (!comms[i]) {
+     if (not comms[i]) {
        jxbt_throw_null(env, bprintf("comm at rank %d is null", i));
        return nullptr;
      }
@@ -142,7 +142,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitAll(JNIEnv *env, jclass cls
 {
   int count;
   msg_comm_t* comms = jarray_to_commArray(env, jcomms, &count);
-  if (!comms)
+  if (not comms)
     return;
 
   MSG_comm_waitall(comms, count, static_cast<double>(timeout));
@@ -152,7 +152,7 @@ JNIEXPORT int JNICALL Java_org_simgrid_msg_Comm_waitAny(JNIEnv *env, jclass cls,
 {
   int count;
   msg_comm_t* comms = jarray_to_commArray(env, jcomms, &count);
-  if (!comms)
+  if (not comms)
     return -1;
   xbt_dynar_t dyn = xbt_dynar_new(sizeof(msg_comm_t),nullptr);
   for (int i=0; i<count; i++) {

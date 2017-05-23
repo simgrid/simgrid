@@ -79,7 +79,7 @@ Storage::~Storage(){
 std::map<std::string, sg_size_t*>* Storage::parseContent(const char* filename)
 {
   usedSize_ = 0;
-  if ((!filename) || (strcmp(filename, "") == 0))
+  if ((not filename) || (strcmp(filename, "") == 0))
     return nullptr;
 
   std::map<std::string, sg_size_t*>* parse_content = new std::map<std::string, sg_size_t*>();
@@ -101,7 +101,7 @@ std::map<std::string, sg_size_t*>* Storage::parseContent(const char* filename)
       *psize = size;
       parse_content->insert({tokens.front(), psize});
     }
-  } while (!fs->eof());
+  } while (not fs->eof());
   delete fs;
   return parse_content;
 }

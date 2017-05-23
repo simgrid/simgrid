@@ -61,10 +61,8 @@ void simgrid::kernel::activity::Comm::cancel()
   if (state == SIMIX_WAITING) {
     mbox->remove(this);
     state = SIMIX_CANCELED;
-  }
-  else if (!MC_is_active() /* when running the MC there are no surf actions */
-           && !MC_record_replay_is_active()
-           && (state == SIMIX_READY || state == SIMIX_RUNNING)) {
+  } else if (not MC_is_active() /* when running the MC there are no surf actions */
+             && not MC_record_replay_is_active() && (state == SIMIX_READY || state == SIMIX_RUNNING)) {
 
     surf_comm->cancel();
   }
@@ -122,6 +120,6 @@ void simgrid::kernel::activity::Comm::post()
   cleanupSurf();
 
   /* if there are simcalls associated with the synchro, then answer them */
-  if (!simcalls.empty())
+  if (not simcalls.empty())
     SIMIX_comm_finish(this);
 }

@@ -24,14 +24,14 @@ const char *PropertyHolder::getProperty(const char*key) {
 
 /** @brief Change the value of a given key in the property set */
 void PropertyHolder::setProperty(const char*key, const char*value) {
-  if (!properties_)
+  if (not properties_)
     properties_ = xbt_dict_new_homogeneous(xbt_free_f);
   xbt_dict_set(properties_, key, xbt_strdup(value), nullptr);
 }
 
 /** @brief Return the whole set of properties. Don't mess with it, dude! */
 xbt_dict_t PropertyHolder::getProperties() {
-  if (!properties_)
+  if (not properties_)
     properties_ = xbt_dict_new_homogeneous(xbt_free_f);
   return properties_;
 }

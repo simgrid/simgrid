@@ -100,7 +100,7 @@ void SIMIX_context_mod_init()
 {
   xbt_assert(simix_global->context_factory == nullptr);
 
-#if HAVE_THREAD_CONTEXTS && !HAVE_THREAD_LOCAL_STORAGE
+#if HAVE_THREAD_CONTEXTS && not HAVE_THREAD_LOCAL_STORAGE
   /* the __thread storage class is not available on this platform:
    * use getspecific/setspecific instead to store the current context in each thread */
   xbt_os_thread_key_create(&smx_current_context_key);
@@ -171,11 +171,11 @@ void *SIMIX_context_stack_new()
    * growing downward (PTH_STACKGROWTH == -1).  Protected pages need to be put
    * after the stack when PTH_STACKGROWTH == 1. */
 
-  if (smx_context_guard_size > 0 && !MC_is_active()) {
+  if (smx_context_guard_size > 0 && not MC_is_active()) {
 
 #if !defined(PTH_STACKGROWTH) || (PTH_STACKGROWTH != -1)
     static int warned_once = 0;
-    if (!warned_once) {
+    if (not warned_once) {
       XBT_WARN("Stack overflow protection is known to be broken on your system.  Either stack grows upwards, or it was not even tested properly.");
       warned_once = 1;
     }
@@ -221,7 +221,7 @@ void *SIMIX_context_stack_new()
 
 void SIMIX_context_stack_delete(void *stack)
 {
-  if (!stack)
+  if (not stack)
     return;
 
 #if HAVE_VALGRIND_H
@@ -231,7 +231,7 @@ void SIMIX_context_stack_delete(void *stack)
 #endif
 
 #ifndef _WIN32
-  if (smx_context_guard_size > 0 && !MC_is_active()) {
+  if (smx_context_guard_size > 0 && not MC_is_active()) {
     stack = (char *)stack - smx_context_guard_size;
     if (mprotect(stack, smx_context_guard_size, PROT_READ | PROT_WRITE) == -1) {
       XBT_WARN("Failed to remove page protection: %s", strerror(errno));
@@ -274,7 +274,7 @@ void SIMIX_context_set_nthreads(int nb_threads) {
   if (nb_threads<=0) {  
      nb_threads = xbt_os_get_numcores();
      XBT_INFO("Auto-setting contexts/nthreads to %d",nb_threads);
-  }   
+  }
 #if !HAVE_THREAD_CONTEXTS
   xbt_assert(nb_threads == 1, "Parallel runs are impossible when the pthreads are missing.");
 #endif

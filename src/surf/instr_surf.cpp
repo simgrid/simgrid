@@ -39,11 +39,11 @@ void TRACE_surf_link_set_bandwidth(double date, const char *resource, double ban
 
 void TRACE_surf_action(surf_action_t surf_action, const char *category)
 {
-  if (!TRACE_is_enabled())
+  if (not TRACE_is_enabled())
     return;
-  if (!TRACE_categorized ())
+  if (not TRACE_categorized())
     return;
-  if (!category)
+  if (not category)
     return;
 
   surf_action->setCategory(category);

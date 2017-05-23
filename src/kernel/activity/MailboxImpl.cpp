@@ -35,7 +35,7 @@ MailboxImpl* MailboxImpl::byNameOrCreate(const char* name)
   xbt_assert(name, "Mailboxes must have a name");
   /* two processes may have pushed the same mbox_create simcall at the same time */
   smx_mailbox_t mbox = static_cast<smx_mailbox_t>(xbt_dict_get_or_null(mailboxes, name));
-  if (!mbox) {
+  if (not mbox) {
     mbox = new MailboxImpl(name);
     XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name);
     xbt_dict_set(mailboxes, mbox->name_, mbox, nullptr);

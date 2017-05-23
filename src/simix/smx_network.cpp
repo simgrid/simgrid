@@ -52,9 +52,8 @@ _find_matching_comm(boost::circular_buffer_space_optimized<smx_activity_t>* dequ
     } else if (comm->type == SIMIX_COMM_RECEIVE) {
       other_user_data = comm->dst_data;
     }
-    if (comm->type == type &&
-        (!      match_fun ||       match_fun(this_user_data,  other_user_data, synchro)) &&
-        (!comm->match_fun || comm->match_fun(other_user_data, this_user_data,  my_synchro))) {
+    if (comm->type == type && (!match_fun || match_fun(this_user_data, other_user_data, synchro)) &&
+        (not comm->match_fun || comm->match_fun(other_user_data, this_user_data, my_synchro))) {
       XBT_DEBUG("Found a matching communication synchro %p", comm);
       if (remove_matching)
         deque->erase(it);
@@ -108,7 +107,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx
   simgrid::kernel::activity::Comm* other_comm =
       _find_matching_comm(&mbox->comm_queue, SIMIX_COMM_RECEIVE, match_fun, data, this_comm, /*remove_matching*/ true);
 
-  if (!other_comm) {
+  if (not other_comm) {
     other_comm = this_comm;
 
     if (mbox->permanent_receiver!=nullptr){
@@ -197,7 +196,7 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
     other_comm = _find_matching_comm(&mbox->done_comm_queue, SIMIX_COMM_SEND, match_fun, data, this_synchro,
                                      /*remove_matching*/ true);
     //if not found, assume the receiver came first, register it to the mailbox in the classical way
-    if (!other_comm) {
+    if (not other_comm) {
       XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request into list");
       other_comm = this_synchro;
       mbox->push(this_synchro);
@@ -221,7 +220,7 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
     other_comm = _find_matching_comm(&mbox->comm_queue, SIMIX_COMM_SEND, match_fun, data, this_synchro,
                                      /*remove_matching*/ true);
 
-    if (!other_comm) {
+    if (not other_comm) {
       XBT_DEBUG("Receive pushed first %zu", mbox->comm_queue.size());
       other_comm = this_synchro;
       mbox->push(this_synchro);
@@ -276,12 +275,12 @@ smx_activity_t SIMIX_comm_iprobe(smx_actor_t dst_proc, smx_mailbox_t mbox, int t
     smx_type = SIMIX_COMM_SEND;
   } 
   smx_activity_t other_synchro=nullptr;
-  if (mbox->permanent_receiver != nullptr && !mbox->done_comm_queue.empty()) {
+  if (mbox->permanent_receiver != nullptr && not mbox->done_comm_queue.empty()) {
     XBT_DEBUG("first check in the permanent recv mailbox, to see if we already got something");
     other_synchro = _find_matching_comm(&mbox->done_comm_queue,
       (e_smx_comm_type_t) smx_type, match_fun, data, this_comm,/*remove_matching*/false);
   }
-  if (!other_synchro){
+  if (not other_synchro) {
     XBT_DEBUG("check if we have more luck in the normal mailbox");
     other_synchro = _find_matching_comm(&mbox->comm_queue,
       (e_smx_comm_type_t) smx_type, match_fun, data, this_comm,/*remove_matching*/false);
@@ -504,7 +503,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
   simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
   unsigned int destroy_count = 0;
 
-  while (!synchro->simcalls.empty()) {
+  while (not synchro->simcalls.empty()) {
     smx_simcall_t simcall = synchro->simcalls.front();
     synchro->simcalls.pop_front();
 
@@ -521,7 +520,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
         SIMIX_timer_remove(simcall->timer);
         simcall->timer = nullptr;
       }
-      if (!MC_is_active() && !MC_record_replay_is_active())
+      if (not MC_is_active() && not MC_record_replay_is_active())
         simcall_comm_waitany__set__result(simcall, xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &synchro));
     }
 
@@ -696,7 +695,7 @@ void SIMIX_comm_copy_data(smx_activity_t synchro)
 
   size_t buff_size = comm->src_buff_size;
   /* If there is no data to copy then return */
-  if (!comm->src_buff || !comm->dst_buff || comm->copied)
+  if (not comm->src_buff || not comm->dst_buff || comm->copied)
     return;
 
   XBT_DEBUG("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)", comm,

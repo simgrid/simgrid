@@ -40,7 +40,7 @@ static int MSG_host_get_file_descriptor_id(msg_host_t host)
     priv->file_descriptor_table = new std::vector<int>(sg_storage_max_file_descriptors);
     std::iota(priv->file_descriptor_table->rbegin(), priv->file_descriptor_table->rend(), 0); // Fill with ..., 1, 0.
   }
-  xbt_assert(!priv->file_descriptor_table->empty(), "Too much files are opened! Some have to be closed.");
+  xbt_assert(not priv->file_descriptor_table->empty(), "Too much files are opened! Some have to be closed.");
   int desc = priv->file_descriptor_table->back();
   priv->file_descriptor_table->pop_back();
   return desc;
@@ -326,7 +326,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
     strncpy(file_mount_name, fullpath, strlen(mount_name) + 1);
     file_mount_name[strlen(mount_name)] = '\0';
 
-    if (!strcmp(file_mount_name, mount_name) && strlen(mount_name) > longest_prefix_length) {
+    if (not strcmp(file_mount_name, mount_name) && strlen(mount_name) > longest_prefix_length) {
       /* The current mount name is found in the full path and is bigger than the previous*/
       longest_prefix_length = strlen(mount_name);
       storage_dest          = (msg_storage_t)xbt_lib_get_elm_or_null(storage_lib, storage_name);

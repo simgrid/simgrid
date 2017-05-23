@@ -296,7 +296,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 
     /* Create space for a new map region in the region's array and copy the */
     /* parsed stuff from the temporal memreg variable */
-    XBT_DEBUG("Found region for %s", !memreg.pathname.empty() ? memreg.pathname.c_str() : "(null)");
+    XBT_DEBUG("Found region for %s", not memreg.pathname.empty() ? memreg.pathname.c_str() : "(null)");
 
     ret.push_back(std::move(memreg));
   }

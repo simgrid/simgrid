@@ -73,13 +73,13 @@ int Colls::find_coll_description(s_mpi_coll_description_t * table, const char *n
 {
   char *name_list = nullptr;
   for (int i = 0; table[i].name; i++)
-    if (!strcmp(name, table[i].name)) {
+    if (not strcmp(name, table[i].name)) {
       if (strcmp(table[i].name,"default"))
         XBT_INFO("Switch to algorithm %s for collective %s",table[i].name,desc);
       return i;
     }
 
-  if (!table[0].name)
+  if (not table[0].name)
     xbt_die("No collective is valid for '%s'! This is a bug.",name);
   name_list = xbt_strdup(table[0].name);
   for (int i = 1; table[i].name; i++) {

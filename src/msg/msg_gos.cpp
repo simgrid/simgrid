@@ -52,11 +52,12 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
 
   TRACE_msg_task_execute_start(task);
 
-  xbt_assert((!simdata->compute) && !task->simdata->isused, "This task is executed somewhere else. Go fix your code!");
+  xbt_assert((not simdata->compute) && not task->simdata->isused,
+             "This task is executed somewhere else. Go fix your code!");
 
   XBT_DEBUG("Computing on %s", MSG_process_get_name(MSG_process_self()));
 
-  if (simdata->flops_amount <= 0.0 && !simdata->host_nb) {
+  if (simdata->flops_amount <= 0.0 && not simdata->host_nb) {
     TRACE_msg_task_execute_end(task);
     return MSG_OK;
   }
@@ -864,7 +865,7 @@ int MSG_task_listen_from(const char *alias)
   simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(alias);
   simgrid::kernel::activity::Comm* comm = static_cast<simgrid::kernel::activity::Comm*>(mbox->front());
 
-  if (!comm)
+  if (not comm)
     return -1;
 
   return MSG_process_get_PID( static_cast<msg_task_t>(comm->src_data)->simdata->sender );

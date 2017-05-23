@@ -40,11 +40,11 @@ void wait_for_requests(void)
   smx_simcall_t req;
   unsigned int iter;
 
-  while (!xbt_dynar_is_empty(simix_global->process_to_run)) {
+  while (not xbt_dynar_is_empty(simix_global->process_to_run)) {
     SIMIX_process_runall();
     xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
       req = &process->simcall;
-      if (req->call != SIMCALL_NONE && !simgrid::mc::request_is_visible(req))
+      if (req->call != SIMCALL_NONE && not simgrid::mc::request_is_visible(req))
         SIMIX_simcall_handle(req, 0);
     }
   }
@@ -177,7 +177,7 @@ bool request_is_enabled(smx_simcall_t req)
 
     case SIMCALL_SEM_ACQUIRE: {
       static int warned = 0;
-      if (!warned)
+      if (not warned)
         XBT_INFO("Using semaphore in model-checked code is still experimental. Use at your own risk");
       warned = 1;
       return true;
@@ -185,7 +185,7 @@ bool request_is_enabled(smx_simcall_t req)
 
     case SIMCALL_COND_WAIT: {
       static int warned = 0;
-      if (!warned)
+      if (not warned)
         XBT_INFO("Using condition variables in model-checked code is still experimental. Use at your own risk");
       warned = 1;
       return true;
@@ -235,7 +235,7 @@ static int prng_random(int min, int max)
 
 int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max)
 {
-  if (!MC_is_active() && !MC_record_path)
+  if (not MC_is_active() && not MC_record_path)
     return prng_random(min, max);
   return simcall->mc_value;
 }

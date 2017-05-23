@@ -151,7 +151,7 @@ static void cleanup_extra_data (instr_extra_data extra){
 
 void TRACE_internal_smpi_set_category (const char *category)
 {
-  if (!TRACE_smpi_is_enabled())
+  if (not TRACE_smpi_is_enabled())
     return;
 
   //declare category
@@ -167,7 +167,7 @@ void TRACE_internal_smpi_set_category (const char *category)
 
 const char *TRACE_internal_smpi_get_category ()
 {
-  if (!TRACE_smpi_is_enabled())
+  if (not TRACE_smpi_is_enabled())
     return nullptr;
 
   char processid[INSTR_DEFAULT_STR_SIZE];
@@ -189,7 +189,7 @@ void TRACE_smpi_release()
 
 void TRACE_smpi_init(int rank)
 {
-  if (!TRACE_smpi_is_enabled())
+  if (not TRACE_smpi_is_enabled())
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -224,7 +224,7 @@ void TRACE_smpi_init(int rank)
 
 void TRACE_smpi_finalize(int rank)
 {
-  if (!TRACE_smpi_is_enabled())
+  if (not TRACE_smpi_is_enabled())
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -235,9 +235,9 @@ void TRACE_smpi_finalize(int rank)
 
 void TRACE_smpi_collective_in(int rank, int root, const char *operation, instr_extra_data extra)
 {
-  if (!TRACE_smpi_is_enabled()) {
-      cleanup_extra_data(extra);
-      return;
+  if (not TRACE_smpi_is_enabled()) {
+    cleanup_extra_data(extra);
+    return;
   }
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -251,7 +251,7 @@ void TRACE_smpi_collective_in(int rank, int root, const char *operation, instr_e
 
 void TRACE_smpi_collective_out(int rank, int root, const char *operation)
 {
-  if (!TRACE_smpi_is_enabled()) 
+  if (not TRACE_smpi_is_enabled())
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -265,24 +265,24 @@ void TRACE_smpi_collective_out(int rank, int root, const char *operation)
 void TRACE_smpi_computing_init(int rank)
 {
  //first use, initialize the color in the trace
-  if (!TRACE_smpi_is_enabled() || !TRACE_smpi_is_computing()) 
-    return;
+ if (not TRACE_smpi_is_enabled() || not TRACE_smpi_is_computing())
+   return;
 
-  char str[INSTR_DEFAULT_STR_SIZE];
-  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-  container_t container = PJ_container_get (str);
-  type_t type = PJ_type_get ("MPI_STATE", container->type);
-  const char *color = instr_find_color ("computing");
-  val_t value = PJ_value_get_or_new ("computing", color, type);
-  new PushStateEvent (SIMIX_get_clock(), container, type, value);
+ char str[INSTR_DEFAULT_STR_SIZE];
+ smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+ container_t container = PJ_container_get(str);
+ type_t type           = PJ_type_get("MPI_STATE", container->type);
+ const char* color     = instr_find_color("computing");
+ val_t value           = PJ_value_get_or_new("computing", color, type);
+ new PushStateEvent(SIMIX_get_clock(), container, type, value);
 }
 
 void TRACE_smpi_computing_in(int rank, instr_extra_data extra)
 {
   //do not forget to set the color first, otherwise this will explode
-  if (!TRACE_smpi_is_enabled()|| !TRACE_smpi_is_computing()) {
-      cleanup_extra_data(extra);
-      return;
+  if (not TRACE_smpi_is_enabled() || not TRACE_smpi_is_computing()) {
+    cleanup_extra_data(extra);
+    return;
   }
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -295,7 +295,7 @@ void TRACE_smpi_computing_in(int rank, instr_extra_data extra)
 
 void TRACE_smpi_computing_out(int rank)
 {
-  if (!TRACE_smpi_is_enabled()|| !TRACE_smpi_is_computing())
+  if (not TRACE_smpi_is_enabled() || not TRACE_smpi_is_computing())
     return;
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
@@ -307,7 +307,7 @@ void TRACE_smpi_computing_out(int rank)
 void TRACE_smpi_sleeping_init(int rank)
 {
   //first use, initialize the color in the trace
-  if (!TRACE_smpi_is_enabled() || !TRACE_smpi_is_sleeping())
+  if (not TRACE_smpi_is_enabled() || not TRACE_smpi_is_sleeping())
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -322,9 +322,9 @@ void TRACE_smpi_sleeping_init(int rank)
 void TRACE_smpi_sleeping_in(int rank, instr_extra_data extra)
 {
   //do not forget to set the color first, otherwise this will explode
-  if (!TRACE_smpi_is_enabled()|| !TRACE_smpi_is_sleeping()) {
-      cleanup_extra_data(extra);
-      return;
+  if (not TRACE_smpi_is_enabled() || not TRACE_smpi_is_sleeping()) {
+    cleanup_extra_data(extra);
+    return;
   }
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -337,7 +337,7 @@ void TRACE_smpi_sleeping_in(int rank, instr_extra_data extra)
 
 void TRACE_smpi_sleeping_out(int rank)
 {
-  if (!TRACE_smpi_is_enabled()|| !TRACE_smpi_is_sleeping())
+  if (not TRACE_smpi_is_enabled() || not TRACE_smpi_is_sleeping())
     return;
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
@@ -349,9 +349,9 @@ void TRACE_smpi_sleeping_out(int rank)
 void TRACE_smpi_testing_in(int rank, instr_extra_data extra)
 {
   //do not forget to set the color first, otherwise this will explode
-  if (!TRACE_smpi_is_enabled()) {
-      cleanup_extra_data(extra);
-      return;
+  if (not TRACE_smpi_is_enabled()) {
+    cleanup_extra_data(extra);
+    return;
   }
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -364,7 +364,7 @@ void TRACE_smpi_testing_in(int rank, instr_extra_data extra)
 
 void TRACE_smpi_testing_out(int rank)
 {
-  if (!TRACE_smpi_is_enabled())
+  if (not TRACE_smpi_is_enabled())
     return;
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
@@ -375,9 +375,9 @@ void TRACE_smpi_testing_out(int rank)
 
 void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation, instr_extra_data extra)
 {
-  if (!TRACE_smpi_is_enabled()) {
-      cleanup_extra_data(extra);
-      return;
+  if (not TRACE_smpi_is_enabled()) {
+    cleanup_extra_data(extra);
+    return;
   }
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -391,7 +391,7 @@ void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation, instr_
 
 void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation)
 {
-  if (!TRACE_smpi_is_enabled())
+  if (not TRACE_smpi_is_enabled())
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -404,7 +404,7 @@ void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation)
 
 void TRACE_smpi_send(int rank, int src, int dst, int tag, int size)
 {
-  if (!TRACE_smpi_is_enabled())
+  if (not TRACE_smpi_is_enabled())
     return;
 
   char key[INSTR_DEFAULT_STR_SIZE] = {0};
@@ -420,7 +420,7 @@ void TRACE_smpi_send(int rank, int src, int dst, int tag, int size)
 
 void TRACE_smpi_recv(int rank, int src, int dst, int tag)
 {
-  if (!TRACE_smpi_is_enabled())
+  if (not TRACE_smpi_is_enabled())
     return;
 
   char key[INSTR_DEFAULT_STR_SIZE] = {0};

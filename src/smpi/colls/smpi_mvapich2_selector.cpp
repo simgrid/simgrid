@@ -500,7 +500,7 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
       comm->init_smp();
     }
-    if(!mv2_bcast_thresholds_table)
+    if (not mv2_bcast_thresholds_table)
       init_mv2_bcast_tables_stampede();
     comm_size = comm->size();
     //rank = comm->rank();
@@ -601,23 +601,22 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
         mv2_bcast_thresholds_table[range].is_two_level_bcast[range_threshold];
 #endif
      if (two_level_bcast == 1) {
-        if (!is_contig || !is_homogeneous) {
-            tmp_buf=(void *)smpi_get_tmp_sendbuffer(nbytes);
+       if (not is_contig || not is_homogeneous) {
+         tmp_buf = (void*)smpi_get_tmp_sendbuffer(nbytes);
 
-/*            position = 0;*/
-/*            if (rank == root) {*/
-/*                mpi_errno =*/
-/*                    MPIR_Pack_impl(buffer, count, datatype, tmp_buf, nbytes, &position);*/
-/*                if (mpi_errno)*/
-/*                    MPIU_ERR_POP(mpi_errno);*/
-/*            }*/
+         /*            position = 0;*/
+         /*            if (rank == root) {*/
+         /*                mpi_errno =*/
+         /*                    MPIR_Pack_impl(buffer, count, datatype, tmp_buf, nbytes, &position);*/
+         /*                if (mpi_errno)*/
+         /*                    MPIU_ERR_POP(mpi_errno);*/
+         /*            }*/
         }
 #ifdef CHANNEL_MRAIL_GEN2
         if ((mv2_enable_zcpy_bcast == 1) &&
-              (&MPIR_Pipelined_Bcast_Zcpy_MV2 == MV2_Bcast_function)) {  
-            if (!is_contig || !is_homogeneous) {
-                mpi_errno = MPIR_Pipelined_Bcast_Zcpy_MV2(tmp_buf, nbytes, MPI_BYTE,
-                                                 root, comm);
+              (&MPIR_Pipelined_Bcast_Zcpy_MV2 == MV2_Bcast_function)) {
+          if (not is_contig || not is_homogeneous) {
+            mpi_errno = MPIR_Pipelined_Bcast_Zcpy_MV2(tmp_buf, nbytes, MPI_BYTE, root, comm);
             } else { 
                 mpi_errno = MPIR_Pipelined_Bcast_Zcpy_MV2(buffer, count, datatype,
                                                  root, comm);
@@ -626,10 +625,8 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
 #endif /* defined(CHANNEL_MRAIL_GEN2) */
         { 
             shmem_comm = comm->get_intra_comm();
-            if (!is_contig || !is_homogeneous) {
-                mpi_errno =
-                    MPIR_Bcast_tune_inter_node_helper_MV2(tmp_buf, nbytes, MPI_BYTE,
-                                                          root, comm);
+            if (not is_contig || not is_homogeneous) {
+              mpi_errno = MPIR_Bcast_tune_inter_node_helper_MV2(tmp_buf, nbytes, MPI_BYTE, root, comm);
             } else {
                 mpi_errno =
                     MPIR_Bcast_tune_inter_node_helper_MV2(buffer, count, datatype, root,
@@ -640,24 +637,22 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
 
 
                     root = INTRA_NODE_ROOT;
-   
 
-                if (!is_contig || !is_homogeneous) {
-                    mpi_errno = MV2_Bcast_intra_node_function(tmp_buf, nbytes,
-                                                              MPI_BYTE, root, shmem_comm);
+                    if (not is_contig || not is_homogeneous) {
+                      mpi_errno = MV2_Bcast_intra_node_function(tmp_buf, nbytes, MPI_BYTE, root, shmem_comm);
                 } else {
                     mpi_errno = MV2_Bcast_intra_node_function(buffer, count,
                                                               datatype, root, shmem_comm);
 
                 }
-        } 
-/*        if (!is_contig || !is_homogeneous) {*/
-/*            if (rank != root) {*/
-/*                position = 0;*/
-/*                mpi_errno = MPIR_Unpack_impl(tmp_buf, nbytes, &position, buffer,*/
-/*                                             count, datatype);*/
-/*            }*/
-/*        }*/
+        }
+        /*        if (not is_contig || not is_homogeneous) {*/
+        /*            if (rank != root) {*/
+        /*                position = 0;*/
+        /*                mpi_errno = MPIR_Unpack_impl(tmp_buf, nbytes, &position, buffer,*/
+        /*                                             count, datatype);*/
+        /*            }*/
+        /*        }*/
     } else {
         /* We use Knomial for intra node */
         MV2_Bcast_intra_node_function = &MPIR_Knomial_Bcast_intra_node_MV2;
