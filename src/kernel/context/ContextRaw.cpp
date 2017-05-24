@@ -9,7 +9,6 @@
 
 #include "src/simix/smx_private.h"
 #include "mc/mc.h"
-#include "src/mc/mc_ignore.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 

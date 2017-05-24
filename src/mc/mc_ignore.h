@@ -7,20 +7,14 @@
 #define SIMGRID_MC_IGNORE_H
 
 #include "src/internal_config.h"
-#include "xbt/dynar.h"
 
 #if HAVE_UCONTEXT_H
 #include <ucontext.h>           /* context relative declarations */
-#endif
-
 
 SG_BEGIN_DECL();
-
-#if HAVE_UCONTEXT_H
 XBT_PUBLIC(void) MC_register_stack_area(void *stack, smx_actor_t process, ucontext_t* context, size_t size);
-#endif
-
-
 SG_END_DECL();
+
+#endif
 
 #endif

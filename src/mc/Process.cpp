@@ -34,7 +34,6 @@
 
 #include "src/mc/mc_unw.h"
 #include "src/mc/mc_snapshot.h"
-#include "src/mc/mc_ignore.h"
 #include "src/mc/mc_smx.h"
 
 #include "src/mc/Process.hpp"

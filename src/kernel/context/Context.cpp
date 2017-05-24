@@ -7,8 +7,6 @@
 
 #include "src/kernel/context/Context.hpp"
 #include "src/simix/smx_private.h"
-#include "src/mc/mc_ignore.h"
-
 
 /**
  * @brief creates a new context for a user level process

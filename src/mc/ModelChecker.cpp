@@ -27,7 +27,6 @@
 #include "src/mc/Transition.hpp"
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_exit.h"
-#include "src/mc/mc_ignore.h"
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_record.h"
 #include "src/mc/remote/mc_protocol.h"

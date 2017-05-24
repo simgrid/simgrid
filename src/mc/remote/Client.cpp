@@ -25,7 +25,6 @@
 #include "src/mc/remote/mc_protocol.h"
 
 // We won't need those once the separation MCer/MCed is complete:
-#include "src/mc/mc_ignore.h"
 #include "src/mc/mc_smx.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client, mc, "MC client logic");
