@@ -317,7 +317,12 @@ void NetworkNS3Action::resume() {
   THROW_UNIMPLEMENTED;
 }
 
-  /* Test whether a flow is suspended */
+std::list<LinkImpl*> NetworkNS3Action::links()
+{
+  THROW_UNIMPLEMENTED;
+}
+
+/* Test whether a flow is suspended */
 bool NetworkNS3Action::isSuspended()
 {
   return false;

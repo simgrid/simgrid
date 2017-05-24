@@ -198,7 +198,7 @@ namespace simgrid {
     {
       std::list<LinkImpl*> retlist;
       lmm_system_t sys = getModel()->getMaxminSystem();
-      int llen         = lmm_get_number_of_cnst_from_var(sys, getVariable());
+      int llen         = lmm_get_number_of_cnst_from_var(sys, variable_);
 
       for (int i = 0; i < llen; i++) {
         /* Beware of composite actions: ptasks put links and cpus together */

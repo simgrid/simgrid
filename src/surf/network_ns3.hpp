@@ -49,11 +49,12 @@ public:
   NetworkNS3Action(Model* model, double cost, s4u::Host* src, s4u::Host* dst);
 
   bool isSuspended();
-  int unref();
-  void suspend();
-  void resume();
+  int unref() override;
+  void suspend() override;
+  void resume() override;
+  std::list<LinkImpl*> links() override;
 
-//private:
+  // private:
   double lastSent_ = 0;
   s4u::Host* src_;
   s4u::Host* dst_;
