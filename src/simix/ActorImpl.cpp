@@ -111,10 +111,8 @@ void SIMIX_process_cleanup(smx_actor_t process)
       if (comm->detached)
         XBT_DEBUG("Don't destroy it since it's a detached comm and I'm the sender");
       else
-        comm->unref();
-
-    }
-    else if (comm->dst_proc == process){
+        SIMIX_comm_unref(comm);
+    } else if (comm->dst_proc == process) {
       XBT_DEBUG("Found an unfinished recv comm %p, state %d, src = %p, dst = %p",
           comm, (int)comm->state, comm->src_proc, comm->dst_proc);
       comm->dst_proc = nullptr;
@@ -123,8 +121,7 @@ void SIMIX_process_cleanup(smx_actor_t process)
         /* the comm will be freed right now, remove it from the sender */
         comm->src_proc->comms.remove(comm);
       }
-      
-      comm->unref();
+      SIMIX_comm_unref(comm);
     } else {
       xbt_die("Communication synchro %p is in my list but I'm not the sender nor the receiver", synchro);
     }
@@ -440,16 +437,11 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
     } else if (comm != nullptr) {
       process->comms.remove(process->waiting_synchro);
       comm->cancel();
-
       // Remove first occurrence of &process->simcall:
-      auto i = boost::range::find(
-        process->waiting_synchro->simcalls,
-        &process->simcall);
+      auto i = boost::range::find(process->waiting_synchro->simcalls, &process->simcall);
       if (i != process->waiting_synchro->simcalls.end())
         process->waiting_synchro->simcalls.remove(&process->simcall);
-
-      comm->unref();
-
+      SIMIX_comm_unref(comm);
     } else if (sleep != nullptr) {
       SIMIX_process_sleep_destroy(process->waiting_synchro);
 

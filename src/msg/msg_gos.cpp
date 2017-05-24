@@ -270,6 +270,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
     simcall_comm_recv(MSG_process_self()->getImpl(), mailbox->getImpl(), task, nullptr, nullptr, nullptr, nullptr, timeout, rate);
     XBT_DEBUG("Got task %s from %s",(*task)->name,mailbox->name());
     (*task)->simdata->setNotUsed();
+    SIMIX_comm_unref((*task)->simdata->comm);
   }
   catch (xbt_ex& e) {
     switch (e.category) {
@@ -489,6 +490,7 @@ int MSG_comm_test(msg_comm_t comm)
     if (finished && comm->task_received != nullptr) {
       /* I am the receiver */
       (*comm->task_received)->simdata->setNotUsed();
+      SIMIX_comm_unref(comm->s_comm);
     }
   }
   catch (xbt_ex& e) {
@@ -556,6 +558,7 @@ int MSG_comm_testany(xbt_dynar_t comms)
     if (status == MSG_OK && comm->task_received != nullptr) {
       /* I am the receiver */
       (*comm->task_received)->simdata->setNotUsed();
+      SIMIX_comm_unref(comm->s_comm);
     }
   }
 
@@ -584,6 +587,7 @@ msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
 {
   try {
     simcall_comm_wait(comm->s_comm, timeout);
+    SIMIX_comm_unref(comm->s_comm);
 
     if (comm->task_received != nullptr) {
       /* I am the receiver */
@@ -668,6 +672,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
   if (comm->task_received != nullptr) {
     /* I am the receiver */
     (*comm->task_received)->simdata->setNotUsed();
+    SIMIX_comm_unref(comm->s_comm);
   }
 
   return finished_index;
@@ -795,6 +800,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
       simcall_set_category(comm, task->category);
      t_simdata->comm = static_cast<simgrid::kernel::activity::Comm*>(comm);
      simcall_comm_wait(comm, timeout);
+     SIMIX_comm_unref(comm);
   }
   catch (xbt_ex& e) {
     switch (e.category) {

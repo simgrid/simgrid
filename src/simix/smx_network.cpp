@@ -45,7 +45,7 @@ _find_matching_comm(boost::circular_buffer_space_optimized<smx_activity_t>* dequ
 
   for(auto it = deque->begin(); it != deque->end(); it++){
     smx_activity_t synchro = *it;
-    simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
+    simgrid::kernel::activity::Comm* comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
 
     if (comm->type == SIMIX_COMM_SEND) {
       other_user_data = comm->src_data;
@@ -57,7 +57,7 @@ _find_matching_comm(boost::circular_buffer_space_optimized<smx_activity_t>* dequ
       XBT_DEBUG("Found a matching communication synchro %p", comm);
       if (remove_matching)
         deque->erase(it);
-      comm->ref();
+      comm = static_cast<simgrid::kernel::activity::Comm*>(SIMIX_comm_ref(comm));
 #if SIMGRID_HAVE_MC
       comm->mbox_cpy = comm->mbox;
 #endif
@@ -114,7 +114,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx
       //this mailbox is for small messages, which have to be sent right now
       other_comm->state   = SIMIX_READY;
       other_comm->dst_proc=mbox->permanent_receiver.get();
-      other_comm->ref();
+      other_comm          = static_cast<simgrid::kernel::activity::Comm*>(SIMIX_comm_ref(other_comm));
       mbox->done_comm_queue.push_back(other_comm);
       XBT_DEBUG("pushing a message into the permanent receive list %p, comm %p", mbox, &(other_comm));
 
@@ -123,7 +123,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx
     }
   } else {
     XBT_DEBUG("Receive already pushed");
-    this_comm->unref();
+    SIMIX_comm_unref(this_comm);
 
     other_comm->state = SIMIX_READY;
     other_comm->type = SIMIX_COMM_READY;
@@ -207,8 +207,8 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
         other_comm->type = SIMIX_COMM_DONE;
         other_comm->mbox = nullptr;
       }
-      other_comm->unref();
-      static_cast<simgrid::kernel::activity::Comm*>(this_synchro)->unref();
+      SIMIX_comm_unref(other_comm);
+      SIMIX_comm_unref(this_synchro);
     }
   } else {
     /* Prepare a comm describing us, so that it gets passed to the user-provided filter of other side */
@@ -225,7 +225,8 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
       other_comm = this_synchro;
       mbox->push(this_synchro);
     } else {
-      this_synchro->unref();
+      SIMIX_comm_unref(this_synchro);
+      other_comm = static_cast<simgrid::kernel::activity::Comm*>(other_comm);
 
       other_comm->state = SIMIX_READY;
       other_comm->type = SIMIX_COMM_READY;
@@ -287,9 +288,9 @@ smx_activity_t SIMIX_comm_iprobe(smx_actor_t dst_proc, smx_mailbox_t mbox, int t
   }
 
   if(other_synchro)
-    other_synchro->unref();
+    SIMIX_comm_unref(other_synchro);
 
-  this_comm->unref();
+  SIMIX_comm_unref(this_comm);
   return other_synchro;
 }
 
@@ -501,16 +502,14 @@ static inline void SIMIX_comm_start(smx_activity_t synchro)
 void SIMIX_comm_finish(smx_activity_t synchro)
 {
   simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
-  unsigned int destroy_count = 0;
 
   while (not synchro->simcalls.empty()) {
     smx_simcall_t simcall = synchro->simcalls.front();
     synchro->simcalls.pop_front();
 
-    /* If a waitany simcall is waiting for this synchro to finish, then remove
-       it from the other synchros in the waitany list. Afterwards, get the
-       position of the actual synchro in the waitany dynar and
-       return it as the result of the simcall */
+    /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
+     * list. Afterwards, get the position of the actual synchro in the waitany dynar and return it as the result of the
+     * simcall */
 
     if (simcall->call == SIMCALL_NONE) //FIXME: maybe a better way to handle this case
       continue; // if process handling comm is killed
@@ -521,7 +520,8 @@ void SIMIX_comm_finish(smx_activity_t synchro)
         simcall->timer = nullptr;
       }
       if (not MC_is_active() && not MC_record_replay_is_active())
-        simcall_comm_waitany__set__result(simcall, xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &synchro));
+        simcall_comm_waitany__set__result(simcall,
+                                          xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &synchro));
     }
 
     /* If the synchro is still in a rendez-vous point then remove from it */
@@ -642,16 +642,10 @@ void SIMIX_comm_finish(smx_activity_t synchro)
         comm->dst_proc->comms.remove(synchro);
         comm->src_proc->comms.remove(synchro);
       }
-      //in case of a detached comm we have an extra ref to remove, as the sender won't do it
-      destroy_count++;
     }
 
     SIMIX_simcall_answer(simcall);
-    destroy_count++;
   }
-
-  while (destroy_count-- > 0)
-    static_cast<simgrid::kernel::activity::Comm*>(synchro)->unref();
 }
 
 /******************************************************************************/
@@ -683,7 +677,6 @@ void SIMIX_comm_copy_buffer_callback(smx_activity_t synchro, void* buff, size_t 
     comm->src_buff = nullptr;
   }
 }
-
 
 /**
  *  @brief Copy the communication data from the sender's buffer to the receiver's one
@@ -717,8 +710,22 @@ void SIMIX_comm_copy_data(smx_activity_t synchro)
         SIMIX_comm_copy_data_callback (comm, comm->src_buff, buff_size);
   }
 
-
   /* Set the copied flag so we copy data only once */
   /* (this function might be called from both communication ends) */
   comm->copied = 1;
+}
+
+/** Increase the refcount for this comm */
+smx_activity_t SIMIX_comm_ref(smx_activity_t comm)
+{
+  if (comm != nullptr)
+    intrusive_ptr_add_ref(comm);
+  return comm;
+}
+
+/** Decrease the refcount for this comm */
+void SIMIX_comm_unref(smx_activity_t comm)
+{
+  if (comm != nullptr)
+    intrusive_ptr_release(comm);
 }

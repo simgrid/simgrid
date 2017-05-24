@@ -31,6 +31,7 @@ set(EXTRA_DIST
   src/simix/smx_private.h
   src/simix/smx_synchro_private.h
   src/kernel/activity/ActivityImpl.hpp
+  src/kernel/activity/CommImpl.hpp
   src/kernel/activity/SynchroComm.hpp
   src/kernel/activity/SynchroExec.hpp
   src/kernel/activity/SynchroIo.hpp

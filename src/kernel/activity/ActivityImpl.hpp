@@ -12,6 +12,7 @@
 #include <xbt/base.h>
 #include "simgrid/forward.h"
 
+#include <atomic>
 #include <simgrid/simix.hpp>
 
 namespace simgrid {
@@ -30,9 +31,27 @@ namespace activity {
     virtual void resume()=0;
     virtual void post() =0; // What to do when a simcall terminates
 
+    // boost::intrusive_ptr<Activity> support:
+    friend void intrusive_ptr_add_ref(ActivityImpl * activity)
+    {
+      // Atomic operation! Do not split in two instructions!
+      auto previous = (activity->refcount_)++;
+      xbt_assert(previous != 0);
+      (void)previous;
+    }
+
+    friend void intrusive_ptr_release(ActivityImpl * activity)
+    {
+      // Atomic operation! Do not split in two instructions!
+      auto count = --(activity->refcount_);
+      if (count == 0)
+        delete activity;
+    }
+
     void ref();
     void unref();
   private:
+    std::atomic_int_fast32_t refcount_{1};
     int refcount = 1;
   };
 }}} // namespace simgrid::kernel::activity
