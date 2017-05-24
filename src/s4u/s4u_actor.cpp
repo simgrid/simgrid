@@ -29,7 +29,7 @@ ActorPtr Actor::self()
 
 ActorPtr Actor::createActor(const char* name, s4u::Host* host, std::function<void()> code)
 {
-  smx_actor_t actor = simcall_process_create(name, std::move(code), nullptr, host, nullptr);
+  simgrid::simix::ActorImpl* actor = simcall_process_create(name, std::move(code), nullptr, host, nullptr);
   return actor->iface();
 }
 
@@ -37,7 +37,7 @@ ActorPtr Actor::createActor(const char* name, s4u::Host* host, const char* funct
 {
   simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(function);
   simgrid::simix::ActorCode code = factory(std::move(args));
-  smx_actor_t actor                         = simcall_process_create(name, std::move(code), nullptr, host, nullptr);
+  simgrid::simix::ActorImpl* actor          = simcall_process_create(name, std::move(code), nullptr, host, nullptr);
   return actor->iface();
 }
 

@@ -34,13 +34,13 @@ namespace context {
       \see m_process_management
     @{ */
   class ActorImpl;
-  class Mutex;
+  class MutexImpl;
 }
 }
 
 typedef simgrid::kernel::context::Context* smx_context_t;
 typedef simgrid::simix::ActorImpl* smx_actor_t;
-typedef simgrid::simix::Mutex* smx_mutex_t;
+typedef simgrid::simix::MutexImpl* smx_mutex_t;
 typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
 
 #else

@@ -365,7 +365,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
     else
       type = "Mutex TRYLOCK";
 
-    simgrid::mc::Remote<simgrid::simix::Mutex> mutex;
+    simgrid::mc::Remote<simgrid::simix::MutexImpl> mutex;
     mc_model_checker->process().read_bytes(mutex.getBuffer(), sizeof(mutex),
       remote(
         req->call == SIMCALL_MUTEX_LOCK
