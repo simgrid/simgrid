@@ -6,13 +6,14 @@
 
 /* \file callbacks.h */
 
-#include "xbt/sysdep.h"
+#include "maxmin_private.hpp"
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
-#include "maxmin_private.hpp"
-#include <stdlib.h>
-#include <stdio.h>              /* sprintf */
+#include "xbt/sysdep.h"
+#include <cxxabi.h>
 #include <math.h>
+#include <stdio.h> /* sprintf */
+#include <stdlib.h>
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_maxmin, surf, "Logging specific to SURF (maxmin)");
 
 typedef struct s_dyn_light {
@@ -115,7 +116,12 @@ void lmm_system_free(lmm_system_t sys)
     return;
 
   while ((var = (lmm_variable_t) extract_variable(sys))) {
-    XBT_WARN("Variable %d still in system when freing it: this may be a bug", var->id_int);
+    int status;
+    char* demangled = abi::__cxa_demangle(typeid(*var->id).name(), 0, 0, &status);
+
+    XBT_WARN("Probable bug: a %s variable (#%d) not removed before the LMM system destruction.", demangled,
+             var->id_int);
+    xbt_free(demangled);
     lmm_var_free(sys, var);
   }
   while ((cnst = (lmm_constraint_t) extract_constraint(sys)))
