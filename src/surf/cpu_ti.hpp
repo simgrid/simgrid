@@ -10,7 +10,6 @@
 
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/trace_mgr.hpp"
-#include "surf/surf_routing.h"
 
 /* Epsilon */
 #define EPSILON 0.000000001

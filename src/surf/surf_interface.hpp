@@ -10,7 +10,6 @@
 
 #include "src/surf/surf_private.h"
 #include "surf/surf.h"
-#include "surf/surf_routing.h"
 #include "xbt/str.h"
 
 #include <boost/intrusive/list.hpp>

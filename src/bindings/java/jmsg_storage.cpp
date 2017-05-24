@@ -6,7 +6,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/msg.h"
-#include "surf/surf_routing.h"
 
 #include "jmsg.h"
 #include "jmsg_storage.h"

@@ -10,7 +10,6 @@
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
-#include "surf/surf_routing.h"
 #include <ctype.h>
 #include <string.h>
 
