@@ -12,7 +12,6 @@
 #include <xbt/base.h>
 #include <xbt/dynar.h>
 
-#include <simgrid_config.h>
 #include "src/simix/smx_private.h"
 #include "src/kernel/activity/SynchroIo.hpp"
 #include "src/kernel/activity/SynchroComm.hpp"

@@ -6,15 +6,8 @@
 
 #include <cassert>
 
-#include <xbt/log.h>
-#include <xbt/str.h>
-#include <xbt/sysdep.h>
-#include <xbt/dynar.h>
-#include <xbt/swag.h>
-
+#include "src/mc/ModelChecker.hpp"
 #include "src/mc/mc_request.h"
-#include "src/mc/mc_safety.h"
-#include "src/mc/mc_private.h"
 #include "src/mc/mc_smx.h"
 #include "src/mc/mc_xbt.hpp"
 

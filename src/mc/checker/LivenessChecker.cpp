@@ -29,7 +29,6 @@
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_replay.h"
 #include "src/mc/mc_request.h"
-#include "src/mc/mc_safety.h"
 #include "src/mc/mc_smx.h"
 #include "src/mc/remote/Client.hpp"
 

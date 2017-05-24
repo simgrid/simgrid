@@ -22,10 +22,7 @@
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_request.h"
-#include "src/mc/mc_safety.h"
 #include "src/mc/mc_smx.h"
-#include "src/mc/mc_state.h"
-#include "src/mc/remote/Client.hpp"
 
 #include "src/xbt/mmalloc/mmprivate.h"
 

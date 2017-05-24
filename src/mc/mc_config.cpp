@@ -20,8 +20,7 @@
 
 #include "src/mc/mc_record.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_config, mc,
-                                "Configuration of MC");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_config, mc, "Configuration of the Model Checker");
 
 #if SIMGRID_HAVE_MC
 namespace simgrid {

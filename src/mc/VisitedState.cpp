@@ -14,7 +14,6 @@
 #include <xbt/sysdep.h>
 
 #include "src/mc/mc_comm_pattern.h"
-#include "src/mc/mc_safety.h"
 #include "src/mc/mc_private.h"
 #include "src/mc/Process.hpp"
 #include "src/mc/mc_smx.h"

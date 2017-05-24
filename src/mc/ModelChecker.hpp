@@ -15,7 +15,6 @@
 
 #include <event2/event.h>
 
-#include <simgrid_config.h>
 #include <xbt/base.h>
 #include <sys/types.h>
 

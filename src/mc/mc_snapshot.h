@@ -16,7 +16,6 @@
 
 #include <sys/types.h> // off_t
 
-#include <simgrid_config.h>
 #include "src/xbt/mmalloc/mmprivate.h"
 #include <xbt/asserts.h>
 #include <xbt/base.h>
