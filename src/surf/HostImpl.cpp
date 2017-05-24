@@ -106,7 +106,7 @@ HostImpl::HostImpl(s4u::Host* host) : piface_(host)
   piface_->pimpl_ = this;
 }
 
-simgrid::surf::Storage* HostImpl::findStorageOnMountList(const char* mount)
+simgrid::surf::StorageImpl* HostImpl::findStorageOnMountList(const char* mount)
 {
   XBT_DEBUG("Search for storage name '%s' on '%s'", mount, piface_->cname());
   if (storage_.find(mount) == storage_.end())
@@ -135,7 +135,7 @@ void HostImpl::getAttachedStorageList(std::vector<const char*>* storages)
   xbt_lib_foreach(storage_lib, cursor, key, data)
   {
     if (xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
-      simgrid::surf::Storage* storage = static_cast<simgrid::surf::Storage*>(
+      simgrid::surf::StorageImpl* storage = static_cast<simgrid::surf::StorageImpl*>(
           xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
       if (not strcmp(static_cast<const char*>(storage->attach_), piface_->cname())) {
         storages->push_back(storage->cname());
@@ -146,7 +146,7 @@ void HostImpl::getAttachedStorageList(std::vector<const char*>* storages)
 
 Action* HostImpl::open(const char* fullpath)
 {
-  simgrid::surf::Storage* st = nullptr;
+  simgrid::surf::StorageImpl* st = nullptr;
   size_t longest_prefix_length = 0;
   std::string path;
   std::string mount_name;
@@ -175,21 +175,21 @@ Action* HostImpl::open(const char* fullpath)
 
 Action* HostImpl::close(surf_file_t fd)
 {
-  simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
+  simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount);
   XBT_DEBUG("CLOSE %s on disk '%s'", fd->name, st->cname());
   return st->close(fd);
 }
 
 Action* HostImpl::read(surf_file_t fd, sg_size_t size)
 {
-  simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
+  simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount);
   XBT_DEBUG("READ %s on disk '%s'", fd->name, st->cname());
   return st->read(fd, size);
 }
 
 Action* HostImpl::write(surf_file_t fd, sg_size_t size)
 {
-  simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
+  simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount);
   XBT_DEBUG("WRITE %s on disk '%s'", fd->name, st->cname());
   return st->write(fd, size);
 }
@@ -201,7 +201,7 @@ int HostImpl::unlink(surf_file_t fd)
     return -1;
   } else {
 
-    simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
+    simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount);
     /* Check if the file is on this storage */
     if (st->content_->find(fd->name) == st->content_->end()) {
       XBT_WARN("File %s is not on disk %s. Impossible to unlink", fd->name, st->cname());
@@ -230,7 +230,7 @@ sg_size_t HostImpl::getSize(surf_file_t fd)
 
 xbt_dynar_t HostImpl::getInfo(surf_file_t fd)
 {
-  simgrid::surf::Storage* st = findStorageOnMountList(fd->mount);
+  simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount);
   sg_size_t* psize           = xbt_new(sg_size_t, 1);
   *psize                     = fd->size;
   xbt_dynar_t info           = xbt_dynar_new(sizeof(void*), nullptr);

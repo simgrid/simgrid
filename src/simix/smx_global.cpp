@@ -16,13 +16,14 @@
 #include "simgrid/s4u/Host.hpp"
 
 #include "src/surf/surf_interface.hpp"
-#include "src/surf/storage_interface.hpp"
 #include "src/surf/xml/platf.hpp"
 #include "smx_private.h"
 #include "xbt/ex.h"             /* ex_backtrace_display */
+
 #include "mc/mc.h"
-#include "src/mc/mc_replay.h"
 #include "simgrid/sg_config.h"
+#include "src/mc/mc_replay.h"
+#include "src/surf/StorageImpl.hpp"
 
 #include "src/smpi/smpi_process.hpp"
 
@@ -233,7 +234,7 @@ void SIMIX_global_init(int *argc, char **argv)
         host.extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
     });
 
-    simgrid::surf::storageCreatedCallbacks.connect([](simgrid::surf::Storage* storage) {
+    simgrid::surf::storageCreatedCallbacks.connect([](simgrid::surf::StorageImpl* storage) {
       const char* name = storage->cname();
       // TODO, create sg_storage_by_name
       sg_storage_t s = xbt_lib_get_elm_or_null(storage_lib, name);

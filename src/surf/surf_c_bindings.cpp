@@ -207,27 +207,27 @@ int surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath){
 }
 
 sg_size_t surf_storage_get_size(surf_resource_t resource){
-  return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->size_;
+  return static_cast<simgrid::surf::StorageImpl*>(surf_storage_resource_priv(resource))->size_;
 }
 
 sg_size_t surf_storage_get_free_size(surf_resource_t resource){
-  return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->getFreeSize();
+  return static_cast<simgrid::surf::StorageImpl*>(surf_storage_resource_priv(resource))->getFreeSize();
 }
 
 sg_size_t surf_storage_get_used_size(surf_resource_t resource){
-  return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->getUsedSize();
+  return static_cast<simgrid::surf::StorageImpl*>(surf_storage_resource_priv(resource))->getUsedSize();
 }
 
 xbt_dict_t surf_storage_get_properties(surf_resource_t resource){
-  return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->getProperties();
+  return static_cast<simgrid::surf::StorageImpl*>(surf_storage_resource_priv(resource))->getProperties();
 }
 
 const char* surf_storage_get_host(surf_resource_t resource){
-  return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->attach_;
+  return static_cast<simgrid::surf::StorageImpl*>(surf_storage_resource_priv(resource))->attach_;
 }
 
 const char* surf_storage_get_name(surf_resource_t resource){
-  return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->cname();
+  return static_cast<simgrid::surf::StorageImpl*>(surf_storage_resource_priv(resource))->cname();
 }
 
 void surf_cpu_action_set_bound(surf_action_t action, double bound) {

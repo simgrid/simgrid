@@ -28,7 +28,7 @@
 #include <string>
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 
-XBT_PRIVATE std::map<std::string, simgrid::surf::Storage*> mount_list;
+XBT_PRIVATE std::map<std::string, simgrid::surf::StorageImpl*> mount_list;
 XBT_PRIVATE std::vector<std::string> known_storages;
 
 namespace simgrid {

@@ -4,11 +4,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_interface.hpp"
-#include "storage_interface.hpp"
 #include "cpu_interface.hpp"
 #include "network_interface.hpp"
 #include "src/surf/PropertyHolder.hpp"
 
+#include "StorageImpl.hpp"
 #include <xbt/base.h>
 
 #ifndef SURF_HOST_INTERFACE_HPP_
@@ -67,7 +67,7 @@ public:
   virtual ~HostImpl() = default;
 
   /** @brief Return the storage of corresponding mount point */
-  virtual simgrid::surf::Storage* findStorageOnMountList(const char* storage);
+  virtual simgrid::surf::StorageImpl* findStorageOnMountList(const char* storage);
 
   /** @brief Get the xbt_dict_t of mount_point: Storage */
   virtual xbt_dict_t getMountedStorageList();
@@ -173,7 +173,7 @@ public:
    */
   virtual int fileMove(surf_file_t fd, const char* fullpath);
 
-  std::map<std::string, simgrid::surf::Storage*> storage_;
+  std::map<std::string, simgrid::surf::StorageImpl*> storage_;
   simgrid::s4u::Host* piface_ = nullptr;
 
   simgrid::s4u::Host* getHost() { return piface_; }

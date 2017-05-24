@@ -4,7 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "storage_interface.hpp"
+#include "StorageImpl.hpp"
+
 #include "surf_private.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/join.hpp>
@@ -14,9 +15,9 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf, "Logging specific to the SURF storage module");
 
 xbt_lib_t storage_lib;
-int MSG_STORAGE_LEVEL          = -1; // Msg storage level
-int SURF_STORAGE_LEVEL = -1;
-simgrid::surf::StorageModel *surf_storage_model = nullptr;
+int MSG_STORAGE_LEVEL                           = -1; // Msg storage level
+int SURF_STORAGE_LEVEL                          = -1;
+simgrid::surf::StorageModel* surf_storage_model = nullptr;
 
 namespace simgrid {
 namespace surf {
@@ -25,21 +26,22 @@ namespace surf {
  * Callbacks *
  *************/
 
-simgrid::xbt::signal<void(Storage*)> storageCreatedCallbacks;
-simgrid::xbt::signal<void(Storage*)> storageDestructedCallbacks;
-simgrid::xbt::signal<void(Storage*, int, int)> storageStateChangedCallbacks; // signature: wasOn, isOn
+simgrid::xbt::signal<void(StorageImpl*)> storageCreatedCallbacks;
+simgrid::xbt::signal<void(StorageImpl*)> storageDestructedCallbacks;
+simgrid::xbt::signal<void(StorageImpl*, int, int)> storageStateChangedCallbacks; // signature: wasOn, isOn
 simgrid::xbt::signal<void(StorageAction*, Action::State, Action::State)> storageActionStateChangedCallbacks;
 
 /*********
  * Model *
  *********/
 
-StorageModel::StorageModel(): Model()
+StorageModel::StorageModel() : Model()
 {
   maxminSystem_ = lmm_system_new(true /* lazy update */);
 }
 
-StorageModel::~StorageModel(){
+StorageModel::~StorageModel()
+{
   lmm_system_free(maxminSystem_);
   surf_storage_model = nullptr;
 }
@@ -48,8 +50,8 @@ StorageModel::~StorageModel(){
  * Resource *
  ************/
 
-Storage::Storage(Model* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
-                 const char* type_id, const char* content_name, sg_size_t size, const char* attach)
+StorageImpl::StorageImpl(Model* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
+                         const char* type_id, const char* content_name, sg_size_t size, const char* attach)
     : Resource(model, name, lmm_constraint_new(maxminSystem, this, MAX(bread, bwrite)))
     , size_(size)
     , usedSize_(0)
@@ -64,7 +66,8 @@ Storage::Storage(Model* model, const char* name, lmm_system_t maxminSystem, doub
   constraintWrite_ = lmm_constraint_new(maxminSystem, this, bwrite);
 }
 
-Storage::~Storage(){
+StorageImpl::~StorageImpl()
+{
   storageDestructedCallbacks(this);
   if (content_ != nullptr) {
     for (auto entry : *content_)
@@ -75,7 +78,7 @@ Storage::~Storage(){
   free(attach_);
 }
 
-std::map<std::string, sg_size_t*>* Storage::parseContent(const char* filename)
+std::map<std::string, sg_size_t*>* StorageImpl::parseContent(const char* filename)
 {
   usedSize_ = 0;
   if ((not filename) || (strcmp(filename, "") == 0))
@@ -97,7 +100,7 @@ std::map<std::string, sg_size_t*>* Storage::parseContent(const char* filename)
 
       usedSize_ += size;
       sg_size_t* psize = new sg_size_t;
-      *psize = size;
+      *psize           = size;
       parse_content->insert({tokens.front(), psize});
     }
   } while (not fs->eof());
@@ -105,66 +108,70 @@ std::map<std::string, sg_size_t*>* Storage::parseContent(const char* filename)
   return parse_content;
 }
 
-bool Storage::isUsed()
+bool StorageImpl::isUsed()
 {
   THROW_UNIMPLEMENTED;
   return false;
 }
 
-void Storage::apply_event(tmgr_trace_event_t /*event*/, double /*value*/)
+void StorageImpl::apply_event(tmgr_trace_event_t /*event*/, double /*value*/)
 {
   THROW_UNIMPLEMENTED;
 }
 
-void Storage::turnOn() {
+void StorageImpl::turnOn()
+{
   if (isOff()) {
     Resource::turnOn();
     storageStateChangedCallbacks(this, 0, 1);
   }
 }
-void Storage::turnOff() {
+void StorageImpl::turnOff()
+{
   if (isOn()) {
     Resource::turnOff();
     storageStateChangedCallbacks(this, 1, 0);
   }
 }
 
-std::map<std::string, sg_size_t*>* Storage::getContent()
+std::map<std::string, sg_size_t*>* StorageImpl::getContent()
 {
   /* For the moment this action has no cost, but in the future we could take in account access latency of the disk */
   return content_;
 }
 
-sg_size_t Storage::getFreeSize(){
+sg_size_t StorageImpl::getFreeSize()
+{
   return size_ - usedSize_;
 }
 
-sg_size_t Storage::getUsedSize(){
+sg_size_t StorageImpl::getUsedSize()
+{
   return usedSize_;
 }
 
 /**********
  * Action *
  **********/
-StorageAction::StorageAction(Model* model, double cost, bool failed, Storage* storage,
+StorageAction::StorageAction(Model* model, double cost, bool failed, StorageImpl* storage,
                              e_surf_action_storage_type_t type)
     : Action(model, cost, failed), type_(type), storage_(storage), file_(nullptr)
 {
   progress_ = 0;
 };
 
-StorageAction::StorageAction(Model* model, double cost, bool failed, lmm_variable_t var, Storage* storage,
+StorageAction::StorageAction(Model* model, double cost, bool failed, lmm_variable_t var, StorageImpl* storage,
                              e_surf_action_storage_type_t type)
     : Action(model, cost, failed, var), type_(type), storage_(storage), file_(nullptr)
 {
   progress_ = 0;
 }
 
-void StorageAction::setState(Action::State state){
+void StorageAction::setState(Action::State state)
+{
   Action::State old = getState();
   Action::setState(state);
   storageActionStateChangedCallbacks(this, old, state);
 }
-
 }
 }
