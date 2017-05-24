@@ -183,8 +183,6 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
   unsigned int answers;
   unsigned int destination_found = 0;
   unsigned int nodes_added = 0;
-  double time_beginreceive;
-  double timeout;
   double global_timeout = MSG_get_clock() + find_node_global_timeout;
   unsigned int steps = 0;
 
@@ -203,9 +201,9 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
     answers = 0;
     queries = send_find_node_to_best(node, node_list);
     nodes_added = 0;
-    timeout = MSG_get_clock() + find_node_timeout;
+    double timeout = MSG_get_clock() + find_node_timeout;
     steps++;
-    time_beginreceive = MSG_get_clock();
+    double time_beginreceive = MSG_get_clock();
     do {
       if (node->receive_comm == NULL) {
         node->task_received = NULL;

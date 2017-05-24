@@ -672,9 +672,8 @@ void update_interested_after_receive(peer_t peer)
   char *key;
   xbt_dict_cursor_t cursor;
   connection_t connection;
-  int interested;
   xbt_dict_foreach(peer->peers, cursor, key, connection) {
-    interested = 0;
+    int interested = 0;
     if (connection->am_interested != 0) {
       //Check if the peer still has a piece we want.
       for (int i = 0; i < FILE_PIECES; i++) {
