@@ -55,11 +55,10 @@ static inline unsigned int xbt_str_hash_ext(const char *str, int str_len)
 {
 #ifdef XBT_DJB2_HASH_FUNCTION
   /* fast implementation of djb2 algorithm */
-  int c;
   unsigned int hash = 5381;
 
   while (str_len--) {
-    c = *str++;
+    int c = *str++;
     hash = ((hash << 5) + hash) + c;    /* hash * 33 + c */
   }
 # elif defined(XBT_FNV_HASH_FUNCTION)

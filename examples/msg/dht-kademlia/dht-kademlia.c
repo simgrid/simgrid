@@ -360,11 +360,10 @@ unsigned int send_find_node_to_best(node_t node, answer_t node_list)
   unsigned int i = 0;
   unsigned int j = 0;
   unsigned int destination = node_list->destination_id;
-  node_contact_t node_to_query;
   while (j < kademlia_alpha && i < node_list->size) {
     /* We need to have at most "kademlia_alpha" requests each time, according to the protocol */
     /* Gets the node we want to send the query to */
-    node_to_query = xbt_dynar_get_as(node_list->nodes, i, node_contact_t);
+    node_contact_t node_to_query = xbt_dynar_get_as(node_list->nodes, i, node_contact_t);
     if (node_to_query->id != node->id) {        /* No need to query ourselves */
       send_find_node(node, node_to_query->id, destination);
       j++;
