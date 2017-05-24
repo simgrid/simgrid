@@ -56,12 +56,4 @@ public:
 }
 }
 
-SG_BEGIN_DECL()
-
-#if SIMGRID_HAVE_MC
-void MC_ignore(void* addr, std::size_t size);
-#endif
-
-SG_END_DECL()
-
 #endif
