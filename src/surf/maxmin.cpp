@@ -269,7 +269,8 @@ static void lmm_variable_mallocator_free_f(void *var)
   xbt_free(var);
 }
 
-lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id, double weight, double bound, int number_of_constraints)
+lmm_variable_t lmm_variable_new(lmm_system_t sys, simgrid::surf::Action* id, double weight, double bound,
+                                int number_of_constraints)
 {
   lmm_variable_t var = nullptr;
   int i;

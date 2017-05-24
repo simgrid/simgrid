@@ -87,7 +87,7 @@ typedef struct lmm_variable {
   double bound;
   double value;
   short int concurrency_share; /* The maximum number of elements that variable will add to a constraint */
-  void *id;
+  simgrid::surf::Action* id;
   int id_int;
   unsigned visited;             /* used by lmm_update_modified_set */
   /* \begin{For Lagrange only} */
