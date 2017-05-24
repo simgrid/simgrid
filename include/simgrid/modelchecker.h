@@ -49,6 +49,11 @@ XBT_PUBLIC(void) MC_automaton_new_propositional_symbol_pointer(const char *id, i
 XBT_PUBLIC(void) MC_cut(void);
 XBT_PUBLIC(void) MC_ignore(void *addr, size_t size);
 
+XBT_PUBLIC(void) MC_ignore_heap(void* address, size_t size);
+XBT_PUBLIC(void) MC_remove_ignore_heap(void* address, size_t size);
+XBT_PUBLIC(void) MC_ignore_local_variable(const char* var_name, const char* frame);
+XBT_PUBLIC(void) MC_ignore_global_variable(const char* var_name);
+
 #else
 
 #define MC_is_active()                  0
@@ -59,6 +64,11 @@ XBT_PUBLIC(void) MC_ignore(void *addr, size_t size);
 #define MC_automaton_new_propositional_symbol_pointer(a, b) ((void)0)
 #define MC_cut()                        ((void)0)
 #define MC_ignore(a, b)                 ((void)0)
+
+#define MC_ignore_heap(a,s)             ((void)0)
+#define MC_remove_ignore_heap(a,s)      ((void)0)
+#define MC_ignore_local_variable(n,f)   ((void)0)
+#define MC_ignore_global_variable(v)    ((void)0)
 
 #endif
 
