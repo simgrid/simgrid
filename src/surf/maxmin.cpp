@@ -111,7 +111,7 @@ void lmm_system_free(lmm_system_t sys)
   lmm_variable_t var = nullptr;
   lmm_constraint_t cnst = nullptr;
 
-  if (not sys)
+  if (sys == nullptr)
     return;
 
   while ((var = (lmm_variable_t) extract_variable(sys))) {

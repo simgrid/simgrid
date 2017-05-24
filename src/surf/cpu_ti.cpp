@@ -296,9 +296,8 @@ int CpuTiTrace::binarySearch(double *array, double a, int low, int high)
 {
   xbt_assert(low < high, "Wrong parameters: low (%d) should be smaller than high (%d)", low, high);
 
-  int mid;
   do {
-    mid = low + (high - low) / 2;
+    int mid = low + (high - low) / 2;
     XBT_DEBUG("a %f low %d high %d mid %d value %f", a, low, high, mid, array[mid]);
 
     if (array[mid] > a)
@@ -491,7 +490,6 @@ void CpuTi::updateActionsFinishTime(double now)
   CpuTiAction *action;
   double sum_priority = 0.0;
   double total_area;
-  double min_finish = -1;
 
   /* update remaining amount of actions */
   updateRemainingAmount(now);
@@ -516,7 +514,7 @@ void CpuTi::updateActionsFinishTime(double now)
 
   for(ActionTiList::iterator it(actionSet_->begin()), itend(actionSet_->end()) ; it != itend ; ++it) {
     action = &*it;
-    min_finish = -1;
+    double min_finish = -1;
     /* action not running, skip it */
     if (action->getStateSet() !=  surf_cpu_model_pm->getRunningActionSet())
       continue;
