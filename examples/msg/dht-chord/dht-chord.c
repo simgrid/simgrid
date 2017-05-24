@@ -327,7 +327,6 @@ void quit_notify(node_t node)
   get_mailbox(node->pred_id, mailbox);
   task_data_t req_data_s = xbt_new0(s_task_data_t,1);
   req_data_s->type = TASK_SUCCESSOR_LEAVING;
-  req_data_s->request_id = node->fingers[0].id;
   req_data_s->request_id = node->pred_id;
   get_mailbox(node->id, req_data_s->answer_to);
   req_data_s->issuer_host_name = MSG_host_get_name(MSG_host_self());

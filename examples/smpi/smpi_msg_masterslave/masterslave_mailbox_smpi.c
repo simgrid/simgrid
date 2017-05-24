@@ -1,5 +1,4 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -15,18 +14,15 @@ static int master(int argc, char *argv[])
   double task_comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s");
   long slaves_count = xbt_str_parse_int(argv[4], "Invalid amount of slaves: %s");
 
-  int i;
-
   XBT_INFO("Got %ld slaves and %ld tasks to process", slaves_count, number_of_tasks);
 
-  for (i = 0; i < number_of_tasks; i++) {
+  for (int i = 0; i < number_of_tasks; i++) {
     char mailbox[256];
     char sprintf_buffer[256];
-    msg_task_t task = NULL;
 
     snprintf(mailbox,256, "slave-%ld", i % slaves_count);
     snprintf(sprintf_buffer,256, "Task_%d", i);
-    task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
+    msg_task_t task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
     if (number_of_tasks < 10000 || i % 10000 == 0)
       XBT_INFO("Sending \"%s\" (of %ld) to mailbox \"%s\"", task->name, number_of_tasks, mailbox);
 
@@ -34,7 +30,7 @@ static int master(int argc, char *argv[])
   }
 
   XBT_INFO("All tasks have been dispatched. Let's tell everybody the computation is over.");
-  for (i = 0; i < slaves_count; i++) {
+  for (int i = 0; i < slaves_count; i++) {
     char mailbox[80];
 
     snprintf(mailbox,80, "slave-%ld", i % slaves_count);

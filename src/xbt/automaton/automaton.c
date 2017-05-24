@@ -57,8 +57,7 @@ xbt_automaton_transition_t xbt_automaton_transition_new(xbt_automaton_t a, xbt_a
 }
 
 xbt_automaton_exp_label_t xbt_automaton_exp_label_new(int type, ...){
-  xbt_automaton_exp_label_t label = NULL;
-  label = xbt_new0(struct xbt_automaton_exp_label, 1);
+  xbt_automaton_exp_label_t label = xbt_new0(struct xbt_automaton_exp_label, 1);
   label->type = type;
   xbt_automaton_exp_label_t left;
   xbt_automaton_exp_label_t right;
