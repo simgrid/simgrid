@@ -209,7 +209,7 @@ void bindPromise(Promise<T> promise, Future<T> future)
 {
   struct PromiseBinder {
   public:
-    explicit PromiseBinder(Promise<T> promise) : promise_(std::move(promise)) {}
+    PromiseBinder(Promise<T> promise) : promise_(std::move(promise)) {}
     void operator()(Future<T> future)
     {
       simgrid::xbt::setPromise(promise_, future);
@@ -282,7 +282,7 @@ template<class T>
 class Future {
 public:
   Future() = default;
-  explicit Future(std::shared_ptr<FutureState<T>> state) : state_(std::move(state)) {}
+  Future(std::shared_ptr<FutureState<T>> state) : state_(std::move(state)) {}
 
   // Move type:
   Future(Future&) = delete;
@@ -454,8 +454,8 @@ Future<T> unwrapFuture(Future<Future<T>> future)
 template<class T>
 class Promise {
 public:
-  explicit Promise() : state_(std::make_shared<FutureState<T>>()) {}
-  explicit Promise(std::shared_ptr<FutureState<T>> state) : state_(std::move(state)) {}
+  Promise() : state_(std::make_shared<FutureState<T>>()) {}
+  Promise(std::shared_ptr<FutureState<T>> state) : state_(std::move(state)) {}
 
   // Move type
   Promise(Promise const&) = delete;
