@@ -24,22 +24,16 @@ Group::Group()
 
 Group::Group(int n) : size_(n)
 {
-  int i;
   rank_to_index_map_ = xbt_new(int, size_);
   index_to_rank_map_ = xbt_dict_new_homogeneous(xbt_free_f);
   refcount_ = 1;
-  for (i = 0; i < size_; i++) {
+  for (int i = 0; i < size_; i++) {
     rank_to_index_map_[i] = MPI_UNDEFINED;
   }
 }
 
 Group::Group(MPI_Group origin)
 {
-  char *key;
-  char *ptr_rank;
-  xbt_dict_cursor_t cursor = nullptr;
-  
-  int i;
   if(origin != MPI_GROUP_NULL
             && origin != MPI_GROUP_EMPTY)
     {
@@ -47,10 +41,13 @@ Group::Group(MPI_Group origin)
       rank_to_index_map_ = xbt_new(int, size_);
       index_to_rank_map_ = xbt_dict_new_homogeneous(xbt_free_f);
       refcount_ = 1;
-      for (i = 0; i < size_; i++) {
+      for (int i = 0; i < size_; i++) {
         rank_to_index_map_[i] = origin->rank_to_index_map_[i];
       }
 
+      char* key;
+      char* ptr_rank;
+      xbt_dict_cursor_t cursor = nullptr;
       xbt_dict_foreach(origin->index_to_rank_map_, cursor, key, ptr_rank) {
         int * cp = static_cast<int*>(xbt_malloc(sizeof(int)));
         *cp=*reinterpret_cast<int*>(ptr_rank);
@@ -130,13 +127,12 @@ int Group::compare(MPI_Group group2)
   int i;
   int index;
   int rank;
-  int sz;
 
   result = MPI_IDENT;
   if (size_ != group2->size()) {
     result = MPI_UNEQUAL;
   } else {
-    sz = group2->size();
+    int sz = group2->size();
     for (i = 0; i < sz; i++) {
       index = this->index(i);
       rank = group2->rank(index);

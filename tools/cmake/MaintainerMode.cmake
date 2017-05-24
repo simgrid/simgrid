@@ -209,7 +209,7 @@ if(enable_maintainer_mode AND NOT WIN32)
       COMMAND ${SED_EXE} -i ${string15} src/surf/xml/simgrid_dtd.c
       COMMAND ${SED_EXE} -i 's/int yyl\;/unsigned int yyl\;/' src/surf/xml/simgrid_dtd.c
       COMMAND ${SED_EXE} -i 's/int surf_parse_leng\;/unsigned int surf_parse_leng\;/' src/surf/xml/simgrid_dtd.c
-      COMMAND ${SED_EXE} -i 's/n = 0\; n < max_size/n = 0\; n < (size_t)max_size/' src/surf/xml/simgrid_dtd.c
+      COMMAND ${SED_EXE} -i 's/n = 0\; n < max_size/n = 0\; n < (size_t) max_size/' src/surf/xml/simgrid_dtd.c
       COMMAND ${SED_EXE} -i "s/register //" src/surf/xml/simgrid_dtd.c
       COMMAND ${CMAKE_COMMAND} -E echo "       Generated surf/xml/simgrid_dtd.c"
 

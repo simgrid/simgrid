@@ -122,6 +122,7 @@ void xbt_os_thread_mod_postexit(void)
 
   //   if ((errcode=pthread_key_delete(xbt_self_thread_key)))
   //     THROWF(system_error,errcode,"pthread_key_delete failed for xbt_self_thread_key");
+  free(main_thread->name);
   free(main_thread);
   main_thread = NULL;
   thread_mod_inited = 0;

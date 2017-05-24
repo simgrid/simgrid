@@ -233,13 +233,13 @@ def header(name):
 
 
 def handle(fd, func, simcalls, guarded_simcalls):
-    def nonempty(e): 
+    def nonempty(e):
         return e != ''
     fd.write('\n'.join(filter(nonempty, (func(simcall) for simcall in simcalls))))
 
-    for guard, list in guarded_simcalls.items():
+    for guard, ll in guarded_simcalls.items():
         fd.write('\n#if %s\n' % (guard))
-        fd.write('\n'.join(func(simcall) for simcall in list))
+        fd.write('\n'.join(func(simcall) for simcall in ll))
         fd.write('\n#endif\n')
 
 if __name__ == '__main__':

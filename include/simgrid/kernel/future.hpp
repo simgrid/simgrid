@@ -282,7 +282,7 @@ template<class T>
 class Future {
 public:
   Future() = default;
-  Future(std::shared_ptr<FutureState<T>> state): state_(std::move(state)) {}
+  Future(std::shared_ptr<FutureState<T>> state) : state_(std::move(state)) {}
 
   // Move type:
   Future(Future&) = delete;

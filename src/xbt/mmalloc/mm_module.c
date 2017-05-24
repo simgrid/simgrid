@@ -327,7 +327,6 @@ static void mmalloc_fork_child(void)
 /* Initialize the default malloc descriptor. */
 void *mmalloc_preinit(void)
 {
-  int res;
   if (__mmalloc_default_mdp == NULL) {
     if(!xbt_pagesize)
       xbt_pagesize = getpagesize();
@@ -337,8 +336,7 @@ void *mmalloc_preinit(void)
     /* Fixme? only the default mdp in protected against forks */
     // This is mandated to protect the mmalloced areas through forks. Think of tesh.
     // Nah, removing the mutex isn't a good idea either for tesh
-    res = xbt_os_thread_atfork(mmalloc_fork_prepare,  
-                               mmalloc_fork_parent, mmalloc_fork_child);
+    int res = xbt_os_thread_atfork(mmalloc_fork_prepare, mmalloc_fork_parent, mmalloc_fork_child);
     if (res != 0)
       THROWF(system_error,0,"xbt_os_thread_atfork() failed: return value %d",res);
   }
