@@ -12,8 +12,8 @@
 #include <vector>
 #include <string>
 
-#include <xbt/base.h>
-#include <xbt/asserts.h>
+#include "xbt/asserts.h"
+#include "xbt/base.h"
 
 #include <dwarf.h>
 

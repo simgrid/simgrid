@@ -20,10 +20,10 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 
-#include <simgrid_config.h>
 #include "src/simgrid/util.hpp"
-#include <xbt/log.h>
-#include <xbt/sysdep.h>
+#include "xbt/log.h"
+#include "xbt/sysdep.h"
+#include <simgrid_config.h>
 
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_dwarf.hpp"

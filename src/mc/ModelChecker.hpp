@@ -15,7 +15,7 @@
 
 #include <event2/event.h>
 
-#include <xbt/base.h>
+#include "xbt/base.h"
 #include <sys/types.h>
 
 #include "src/mc/PageStore.hpp"

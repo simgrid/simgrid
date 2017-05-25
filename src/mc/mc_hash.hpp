@@ -9,7 +9,7 @@
 
 #include <cstdint>
 
-#include <xbt/base.h>
+#include "xbt/base.h"
 
 #include "src/mc/mc_forward.hpp"
 

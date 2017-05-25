@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include <xbt/base.h>
+#include "xbt/base.h"
 
 #include "src/simix/smx_private.h"
 

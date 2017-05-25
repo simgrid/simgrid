@@ -19,7 +19,7 @@
 
 #include <simgrid_config.h>
 
-#include <xbt/base.h>
+#include "xbt/base.h"
 #include <xbt/mmalloc.h>
 
 #include "src/xbt/mmalloc/mmprivate.h"

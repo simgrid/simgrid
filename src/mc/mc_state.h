@@ -9,15 +9,6 @@
 #include <list>
 #include <memory>
 
-#include <xbt/base.h>
-#include <xbt/dynar.h>
-
-#include "src/simix/smx_private.h"
-#include "src/kernel/activity/SynchroIo.hpp"
-#include "src/kernel/activity/SynchroComm.hpp"
-#include "src/kernel/activity/SynchroRaw.hpp"
-#include "src/kernel/activity/SynchroSleep.hpp"
-#include "src/kernel/activity/SynchroExec.hpp"
 #include "src/mc/mc_snapshot.h"
 #include "src/mc/mc_record.h"
 #include "src/mc/Transition.hpp"

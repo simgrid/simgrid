@@ -4,9 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/str.h>
-#include <xbt/log.h>
+#include "xbt/log.h"
 #include <xbt/config.h>
+#include <xbt/str.h>
 
 #include <mc/mc.h>
 #include "src/mc/mc_replay.h"

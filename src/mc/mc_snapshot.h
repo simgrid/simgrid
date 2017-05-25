@@ -17,15 +17,13 @@
 #include <sys/types.h> // off_t
 
 #include "src/xbt/mmalloc/mmprivate.h"
-#include <xbt/asserts.h>
-#include <xbt/base.h>
+#include "xbt/asserts.h"
+#include "xbt/base.h"
 
-#include "src/mc/mc_forward.hpp"
 #include "src/mc/ModelChecker.hpp"
-#include "src/mc/PageStore.hpp"
-#include "src/mc/AddressSpace.hpp"
-#include "src/mc/mc_unw.h"
 #include "src/mc/RegionSnapshot.hpp"
+#include "src/mc/mc_forward.hpp"
+#include "src/mc/mc_unw.h"
 
 SG_BEGIN_DECL()
 

@@ -8,8 +8,8 @@
 #include <cstdint>
 #include <utility>
 
-#include <xbt/asserts.h>
-#include <xbt/sysdep.h>
+#include "xbt/asserts.h"
+#include "xbt/sysdep.h"
 
 #include <libunwind.h>
 

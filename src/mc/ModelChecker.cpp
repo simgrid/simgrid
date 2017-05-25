@@ -14,7 +14,7 @@
 #include <memory>
 #include <system_error>
 
-#include <xbt/log.h>
+#include "xbt/log.h"
 #include <xbt/automaton.h>
 #include <xbt/automaton.hpp>
 #include <xbt/system_error.hpp>

@@ -28,8 +28,8 @@
 #include <libunwind.h>
 #include <libunwind-ptrace.h>
 
-#include <xbt/log.h>
-#include <xbt/base.h>
+#include "xbt/base.h"
+#include "xbt/log.h"
 #include <xbt/mmalloc.h>
 
 #include "src/mc/mc_unw.h"

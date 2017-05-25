@@ -12,8 +12,8 @@
 #include <sstream>
 #include <string>
 
-#include <xbt/log.h>
-#include <xbt/sysdep.h>
+#include "xbt/log.h"
+#include "xbt/sysdep.h"
 
 #include "simgrid/simix.h"
 

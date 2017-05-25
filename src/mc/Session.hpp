@@ -11,14 +11,14 @@
 #include <sys/prctl.h>
 #endif
 
-#include <sys/types.h>
+#include "xbt/sysdep.h"
 #include <sys/socket.h>
-#include <xbt/sysdep.h>
+#include <sys/types.h>
 #include <xbt/system_error.hpp>
 
 #include <functional>
 
-#include <xbt/log.h>
+#include "xbt/log.h"
 
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/ModelChecker.hpp"

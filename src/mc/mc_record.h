@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 
-#include <xbt/base.h>
+#include "xbt/base.h"
 
 #include "src/mc/Transition.hpp"
 

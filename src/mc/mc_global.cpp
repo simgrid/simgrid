@@ -12,7 +12,7 @@
 
 #include <vector>
 
-#include <xbt/dynar.h>
+#include "xbt/dynar.h"
 #include <xbt/automaton.h>
 #include <xbt/swag.h>
 

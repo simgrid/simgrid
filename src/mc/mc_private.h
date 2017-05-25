@@ -12,10 +12,10 @@
 
 #include <stdio.h>
 
+#include "xbt/base.h"
 #include <simgrid/msg.h>
-#include <xbt/config.h>
-#include <xbt/base.h>
 #include <xbt/automaton.h>
+#include <xbt/config.h>
 
 #include "mc/mc.h"
 #include "mc/datatypes.h"

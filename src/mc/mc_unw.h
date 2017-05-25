@@ -25,13 +25,10 @@
  *  much here.
  */
 
-#include <sys/types.h>
-
-#include <xbt/base.h>
+#include "src/mc/mc_forward.hpp"
 
 #include <libunwind.h>
-
-#include "src/mc/mc_forward.hpp"
+#include <sys/types.h>
 
 namespace simgrid {
 namespace unw {

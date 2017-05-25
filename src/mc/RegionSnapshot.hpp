@@ -13,7 +13,7 @@
 #include <memory>
 #include <vector>
 
-#include <xbt/base.h>
+#include "xbt/base.h"
 
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/ChunkedData.hpp"

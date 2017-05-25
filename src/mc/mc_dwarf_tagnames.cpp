@@ -10,7 +10,7 @@
 #include <elfutils/libdw.h>
 #include "src/mc/mc_dwarf.hpp"
 
-#include <xbt/base.h>
+#include "xbt/base.h"
 
 namespace simgrid {
 namespace dwarf {

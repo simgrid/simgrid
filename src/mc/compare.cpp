@@ -13,8 +13,8 @@
 #include <utility>
 #include <unordered_set>
 
-#include <xbt/sysdep.h>
-#include <xbt/dynar.h>
+#include "xbt/dynar.h"
+#include "xbt/sysdep.h"
 #include <xbt/mmalloc.h>
 
 #include <mc/mc.h>

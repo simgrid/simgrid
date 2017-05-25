@@ -10,7 +10,7 @@
 #include <string>
 #include <cstdint>
 
-#include <xbt/base.h>
+#include "xbt/base.h"
 #include <xbt/range.hpp>
 
 #include "src/mc/mc_forward.hpp"

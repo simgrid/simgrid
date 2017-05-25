@@ -9,11 +9,11 @@
 
 #include <functional>
 
-#include <xbt/log.h>
-#include <xbt/system_error.hpp>
-#include <simgrid/sg_config.h>
-#include <simgrid/modelchecker.h>
+#include "xbt/log.h"
 #include <mc/mc.h>
+#include <simgrid/modelchecker.h>
+#include <simgrid/sg_config.h>
+#include <xbt/system_error.hpp>
 
 #include "src/mc/Session.hpp"
 #include "src/mc/mc_state.h"

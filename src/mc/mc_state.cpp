@@ -7,8 +7,8 @@
 
 #include <boost/range/algorithm.hpp>
 
-#include <xbt/log.h>
-#include <xbt/sysdep.h>
+#include "xbt/log.h"
+#include "xbt/sysdep.h"
 
 #include "src/simix/smx_private.h"
 #include "src/mc/mc_state.h"

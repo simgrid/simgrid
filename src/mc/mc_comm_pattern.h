@@ -10,8 +10,8 @@
 
 #include <vector>
 
+#include "xbt/dynar.h"
 #include <simgrid_config.h>
-#include <xbt/dynar.h>
 
 #include "src/simix/smx_private.h"
 #include "src/smpi/private.h"

@@ -9,8 +9,8 @@
 #include <memory>
 #include <utility>
 
-#include <xbt/asserts.h>
-#include <xbt/sysdep.h>
+#include "xbt/asserts.h"
+#include "xbt/sysdep.h"
 
 #include "src/internal_config.h"
 #include "src/smpi/private.h"

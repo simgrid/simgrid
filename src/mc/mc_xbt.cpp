@@ -10,8 +10,8 @@
 #include "src/mc/mc_xbt.hpp"
 #include "src/mc/remote/RemotePtr.hpp"
 
-#include <xbt/dynar.h>
-#include <xbt/sysdep.h>
+#include "xbt/dynar.h"
+#include "xbt/sysdep.h"
 
 namespace simgrid {
 namespace mc {

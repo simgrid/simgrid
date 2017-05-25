@@ -12,7 +12,7 @@
 
 #include <simgrid_config.h>
 
-#include <xbt/base.h>
+#include "xbt/base.h"
 
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_state.h"
