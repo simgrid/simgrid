@@ -1,5 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -128,7 +127,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
       memreg.prot |= PROT_EXEC;
 
     /* Private (copy-on-write) or shared? */
-    memregs.flags = 0;
+    memreg.flags = 0;
     if (info.shared)
       memreg.flags |= MAP_SHARED;
     else
@@ -375,8 +374,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
      * later identifies mappings based on the permissions that are expected
      * when running the Linux kernel.
      */
-    if (vmentries[i].kve_type == KVME_TYPE_VNODE
-        && ! (vmentries[i].kve_flags & KVME_FLAG_NEEDS_COPY))
+    if (vmentries[i].kve_type == KVME_TYPE_VNODE && not(vmentries[i].kve_flags & KVME_FLAG_NEEDS_COPY))
       memreg.prot &= ~PROT_WRITE;
 
     ret.push_back(std::move(memreg));
