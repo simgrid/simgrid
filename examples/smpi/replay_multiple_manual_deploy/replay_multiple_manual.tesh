@@ -1,0 +1,110 @@
+p Test the replay with multiple instances
+
+
+
+p Workload with one empty job
+! timeout 120
+$ ./replay_multiple_manual ${srcdir:=.}/../../platforms/small_platform_with_routers.xml  ${srcdir:=.}/workload_empty1 --log=smpi.:info
+>Job read: app='alone', file='empty.txt', size=2, start=0, alloc='0,1'
+>[0.000000] [smpi_kernel/INFO] You did not set the power of the host running the simulation.  The timings will certainly not be accurate.  Use the option "--cfg=smpi/host-speed:<flops>" to set its value.Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information.
+>[Bourassa:workload_executor:(1) 0.000000] [test/INFO] Launching the job executor of job 0 (app 'alone')
+>[Bourassa:job_alone:(2) 0.000000] [test/INFO] Executing job 0 (smpi_app 'alone')
+>[Bourassa:0_0:(3) 0.000000] [test/INFO] Replaying rank 0 of job 0 (smpi_app 'alone')
+>[Fafard:0_1:(4) 0.000000] [test/INFO] Replaying rank 1 of job 0 (smpi_app 'alone')
+>[Fafard:0_1:(4) 0.000000] [test/INFO] Finished replaying rank 1 of job 0 (smpi_app 'alone')
+>[Bourassa:0_0:(3) 0.000000] [test/INFO] Finished replaying rank 0 of job 0 (smpi_app 'alone')
+>[Bourassa:job_alone:(2) 0.000000] [test/INFO] Finished job 0 (smpi_app 'alone')
+>[0.000000] [test/INFO] Simulation finished! Final time: 0
+
+
+p Workload with two empty jobs (not at the same time, not on the same resources)
+! timeout 120
+$ ./replay_multiple_manual ${srcdir:=.}/../../platforms/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2 --log=smpi.:info
+>Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
+>Job read: app='job1', file='empty.txt', size=2, start=1000, alloc='2,3'
+>[0.000000] [smpi_kernel/INFO] You did not set the power of the host running the simulation.  The timings will certainly not be accurate.  Use the option "--cfg=smpi/host-speed:<flops>" to set its value.Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information.
+>[Bourassa:workload_executor:(1) 0.000000] [test/INFO] Launching the job executor of job 0 (app 'job0')
+>[Bourassa:job_job0:(2) 0.000000] [test/INFO] Executing job 0 (smpi_app 'job0')
+>[Bourassa:workload_executor:(1) 0.000000] [test/INFO] Sleeping 1000 seconds (waiting for job 1000, app 'job1')
+>[Bourassa:0_0:(3) 0.000000] [test/INFO] Replaying rank 0 of job 0 (smpi_app 'job0')
+>[Fafard:0_1:(4) 0.000000] [test/INFO] Replaying rank 1 of job 0 (smpi_app 'job0')
+>[Fafard:0_1:(4) 0.000000] [test/INFO] Finished replaying rank 1 of job 0 (smpi_app 'job0')
+>[Bourassa:0_0:(3) 0.000000] [test/INFO] Finished replaying rank 0 of job 0 (smpi_app 'job0')
+>[Bourassa:job_job0:(2) 0.000000] [test/INFO] Finished job 0 (smpi_app 'job0')
+>[Bourassa:workload_executor:(1) 1000.000000] [test/INFO] Launching the job executor of job 1 (app 'job1')
+>[Ginette:job_job1:(5) 1000.000000] [test/INFO] Executing job 1 (smpi_app 'job1')
+>[Ginette:1_0:(6) 1000.000000] [test/INFO] Replaying rank 0 of job 1 (smpi_app 'job1')
+>[Jupiter:1_1:(7) 1000.000000] [test/INFO] Replaying rank 1 of job 1 (smpi_app 'job1')
+>[Jupiter:1_1:(7) 1000.000000] [test/INFO] Finished replaying rank 1 of job 1 (smpi_app 'job1')
+>[Ginette:1_0:(6) 1000.000000] [test/INFO] Finished replaying rank 0 of job 1 (smpi_app 'job1')
+>[Ginette:job_job1:(5) 1000.000000] [test/INFO] Finished job 1 (smpi_app 'job1')
+>[1000.000000] [test/INFO] Simulation finished! Final time: 1000
+
+p Workload with two empty jobs (not at the same time, but on the same resources)
+! timeout 120
+$ ./replay_multiple_manual ${srcdir:=.}/../../platforms/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_resources --log=smpi.:info
+>Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
+>Job read: app='job1', file='empty.txt', size=2, start=1000, alloc='0,1'
+>[0.000000] [smpi_kernel/INFO] You did not set the power of the host running the simulation.  The timings will certainly not be accurate.  Use the option "--cfg=smpi/host-speed:<flops>" to set its value.Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information.
+>[Bourassa:workload_executor:(1) 0.000000] [test/INFO] Launching the job executor of job 0 (app 'job0')
+>[Bourassa:job_job0:(2) 0.000000] [test/INFO] Executing job 0 (smpi_app 'job0')
+>[Bourassa:workload_executor:(1) 0.000000] [test/INFO] Sleeping 1000 seconds (waiting for job 1000, app 'job1')
+>[Bourassa:0_0:(3) 0.000000] [test/INFO] Replaying rank 0 of job 0 (smpi_app 'job0')
+>[Fafard:0_1:(4) 0.000000] [test/INFO] Replaying rank 1 of job 0 (smpi_app 'job0')
+>[Fafard:0_1:(4) 0.000000] [test/INFO] Finished replaying rank 1 of job 0 (smpi_app 'job0')
+>[Bourassa:0_0:(3) 0.000000] [test/INFO] Finished replaying rank 0 of job 0 (smpi_app 'job0')
+>[Bourassa:job_job0:(2) 0.000000] [test/INFO] Finished job 0 (smpi_app 'job0')
+>[Bourassa:workload_executor:(1) 1000.000000] [test/INFO] Launching the job executor of job 1 (app 'job1')
+>[Bourassa:job_job1:(5) 1000.000000] [test/INFO] Executing job 1 (smpi_app 'job1')
+>[Bourassa:1_0:(6) 1000.000000] [test/INFO] Replaying rank 0 of job 1 (smpi_app 'job1')
+>[Fafard:1_1:(7) 1000.000000] [test/INFO] Replaying rank 1 of job 1 (smpi_app 'job1')
+>[Fafard:1_1:(7) 1000.000000] [test/INFO] Finished replaying rank 1 of job 1 (smpi_app 'job1')
+>[Bourassa:1_0:(6) 1000.000000] [test/INFO] Finished replaying rank 0 of job 1 (smpi_app 'job1')
+>[Bourassa:job_job1:(5) 1000.000000] [test/INFO] Finished job 1 (smpi_app 'job1')
+>[1000.000000] [test/INFO] Simulation finished! Final time: 1000
+
+
+p Workload with two empty jobs (at the same time but not on the same resources)
+! timeout 120
+$ ./replay_multiple_manual ${srcdir:=.}/../../platforms/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_time --log=smpi.:info
+>Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
+>Job read: app='job1', file='empty.txt', size=2, start=0, alloc='2,3'
+>[0.000000] [smpi_kernel/INFO] You did not set the power of the host running the simulation.  The timings will certainly not be accurate.  Use the option "--cfg=smpi/host-speed:<flops>" to set its value.Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information.
+>[Bourassa:workload_executor:(1) 0.000000] [test/INFO] Launching the job executor of job 0 (app 'job0')
+>[Bourassa:job_job0:(2) 0.000000] [test/INFO] Executing job 0 (smpi_app 'job0')
+>[Bourassa:workload_executor:(1) 0.000000] [test/INFO] Launching the job executor of job 1 (app 'job1')
+>[Bourassa:0_0:(3) 0.000000] [test/INFO] Replaying rank 0 of job 0 (smpi_app 'job0')
+>[Ginette:job_job1:(4) 0.000000] [test/INFO] Executing job 1 (smpi_app 'job1')
+>[Fafard:0_1:(5) 0.000000] [test/INFO] Replaying rank 1 of job 0 (smpi_app 'job0')
+>[Ginette:1_0:(6) 0.000000] [test/INFO] Replaying rank 0 of job 1 (smpi_app 'job1')
+>[Jupiter:1_1:(7) 0.000000] [test/INFO] Replaying rank 1 of job 1 (smpi_app 'job1')
+>[Fafard:0_1:(5) 0.000000] [test/INFO] Finished replaying rank 1 of job 0 (smpi_app 'job0')
+>[Ginette:1_0:(6) 0.000000] [test/INFO] Finished replaying rank 0 of job 1 (smpi_app 'job1')
+>[Bourassa:0_0:(3) 0.000000] [test/INFO] Finished replaying rank 0 of job 0 (smpi_app 'job0')
+>[Jupiter:1_1:(7) 0.000000] [test/INFO] Finished replaying rank 1 of job 1 (smpi_app 'job1')
+>[Ginette:job_job1:(4) 0.000000] [test/INFO] Finished job 1 (smpi_app 'job1')
+>[Bourassa:job_job0:(2) 0.000000] [test/INFO] Finished job 0 (smpi_app 'job0')
+>[0.000000] [test/INFO] Simulation finished! Final time: 0
+
+
+p Workload with two empty jobs (at the same time and on the same resources)
+! timeout 120
+$ ./replay_multiple_manual ${srcdir:=.}/../../platforms/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_time_and_resources --log=smpi.:info
+>Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
+>Job read: app='job1', file='empty.txt', size=2, start=0, alloc='0,1'
+>[0.000000] [smpi_kernel/INFO] You did not set the power of the host running the simulation.  The timings will certainly not be accurate.  Use the option "--cfg=smpi/host-speed:<flops>" to set its value.Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information.
+>[Bourassa:workload_executor:(1) 0.000000] [test/INFO] Launching the job executor of job 0 (app 'job0')
+>[Bourassa:job_job0:(2) 0.000000] [test/INFO] Executing job 0 (smpi_app 'job0')
+>[Bourassa:workload_executor:(1) 0.000000] [test/INFO] Launching the job executor of job 1 (app 'job1')
+>[Bourassa:0_0:(3) 0.000000] [test/INFO] Replaying rank 0 of job 0 (smpi_app 'job0')
+>[Bourassa:job_job1:(4) 0.000000] [test/INFO] Executing job 1 (smpi_app 'job1')
+>[Fafard:0_1:(5) 0.000000] [test/INFO] Replaying rank 1 of job 0 (smpi_app 'job0')
+>[Bourassa:1_0:(6) 0.000000] [test/INFO] Replaying rank 0 of job 1 (smpi_app 'job1')
+>[Fafard:1_1:(7) 0.000000] [test/INFO] Replaying rank 1 of job 1 (smpi_app 'job1')
+>[Fafard:1_1:(7) 0.000000] [test/INFO] Finished replaying rank 1 of job 1 (smpi_app 'job1')
+>[Bourassa:0_0:(3) 0.000000] [test/INFO] Finished replaying rank 0 of job 0 (smpi_app 'job0')
+>[Bourassa:1_0:(6) 0.000000] [test/INFO] Finished replaying rank 0 of job 1 (smpi_app 'job1')
+>[Fafard:0_1:(5) 0.000000] [test/INFO] Finished replaying rank 1 of job 0 (smpi_app 'job0')
+>[Bourassa:job_job0:(2) 0.000000] [test/INFO] Finished job 0 (smpi_app 'job0')
+>[Bourassa:job_job1:(4) 0.000000] [test/INFO] Finished job 1 (smpi_app 'job1')
+>[0.000000] [test/INFO] Simulation finished! Final time: 0

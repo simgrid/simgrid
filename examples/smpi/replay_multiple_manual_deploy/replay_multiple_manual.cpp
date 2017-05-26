@@ -16,6 +16,8 @@
 #include <simgrid/msg.h>
 #include <smpi/smpi.h>
 
+#include <libgen.h>
+
 using namespace std;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific for this example");
@@ -61,9 +63,7 @@ int smpi_replay_process(int argc, char *argv[])
 
     XBT_INFO("Replaying rank %d of job %d (smpi_app '%s')", args->rank,
              args->job->unique_job_number, args->job->smpi_app_name.c_str());
-    // Added on hack commit 43c69dc808 on https://github.com/mpoquet/simgrid
-    //smpi_replay_run_with_index(&argc, &argv, args->job->unique_job_number);
-    // Otherwise, the following function can be called
+
     smpi_replay_run(&argc, &argv);
     XBT_INFO("Finished replaying rank %d of job %d (smpi_app '%s')", args->rank,
              args->job->unique_job_number, args->job->smpi_app_name.c_str());
@@ -198,6 +198,17 @@ vector<Job *> all_jobs(const std::string & workload_file)
     xbt_assert(f.is_open(), "Cannot open file '%s'.", workload_file.c_str());
     vector<Job *> jobs;
 
+    char * workload_filename_copy;
+    asprintf(&workload_filename_copy, "%s", workload_file.c_str());
+    char * dir = dirname(workload_filename_copy);
+
+    if (strlen(dir) == 0)
+    {
+        free(workload_filename_copy);
+        asprintf(&workload_filename_copy, ".");
+        dir = dirname(workload_filename_copy);
+    }
+
     regex r(R"(^\s*(\S+)\s+(\S+\.txt)\s+(\d+)\s+(\d+)\s+(\d+(?:,\d+)*).*$)");
     string line;
     while (getline(f, line))
@@ -210,7 +221,7 @@ vector<Job *> all_jobs(const std::string & workload_file)
             {
                 Job * job = new Job;
                 job->smpi_app_name = m[1];
-                job->filename = m[2];
+                job->filename = string(dir) + "/" + string(m[2]);
                 job->app_size = stoi(m[3]);
                 job->starting_time = stoi(m[4]);
                 string alloc = m[5];
@@ -226,6 +237,7 @@ vector<Job *> all_jobs(const std::string & workload_file)
                 for (unsigned int i = 0; i < subparts.size(); ++i)
                     job->allocation[i] = stoi(subparts[i]);
 
+
                 // Let's read the filename
                 ifstream traces_file(job->filename);
                 if (!traces_file.is_open())
@@ -235,7 +247,7 @@ vector<Job *> all_jobs(const std::string & workload_file)
                 while (getline(traces_file, traces_line))
                 {
                     boost::trim_right(traces_line);
-                    job->traces_filenames.push_back(traces_line);
+                    job->traces_filenames.push_back(string(dir) + "/" + traces_line);
                 }
 
                 if ((int) job->traces_filenames.size() < job->app_size)
@@ -244,7 +256,7 @@ vector<Job *> all_jobs(const std::string & workload_file)
 
                 printf("Job read: app='%s', file='%s', size=%d, start=%d, "
                        "alloc='%s'\n", job->smpi_app_name.c_str(),
-                       job->filename.c_str(), job->app_size, job->starting_time,
+                       string(m[2]).c_str(), job->app_size, job->starting_time,
                        alloc.c_str());
                 jobs.push_back(job);
             }
@@ -264,6 +276,7 @@ vector<Job *> all_jobs(const std::string & workload_file)
     for (unsigned int i = 0; i < jobs.size(); ++i)
         jobs[i]->unique_job_number = i;
 
+    free(workload_filename_copy);
     return jobs;
 }
 
