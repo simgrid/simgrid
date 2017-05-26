@@ -121,7 +121,7 @@ void SIMIX_process_cleanup(smx_actor_t process)
         /* the comm will be freed right now, remove it from the sender */
         comm->src_proc->comms.remove(comm);
       }
-      SIMIX_comm_unref(comm);
+      // SIMIX_comm_unref(comm);
     } else {
       xbt_die("Communication synchro %p is in my list but I'm not the sender nor the receiver", synchro);
     }

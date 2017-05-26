@@ -187,36 +187,40 @@ e_smx_state_t execute(double flops) {
 
 void* recv(MailboxPtr chan) {
   void *res = nullptr;
-  Comm& c = Comm::recv_init(chan);
-  c.setDstData(&res,sizeof(res));
-  c.wait();
+  CommPtr c = Comm::recv_init(chan);
+  c->setDstData(&res, sizeof(res));
+  c->wait();
   return res;
 }
 
 void send(MailboxPtr chan, void* payload, double simulatedSize)
 {
-  Comm& c = Comm::send_init(chan);
-  c.setRemains(simulatedSize);
-  c.setSrcData(payload);
-  // c.start() is optional.
-  c.wait();
+  CommPtr c = Comm::send_init(chan);
+  c->setRemains(simulatedSize);
+  c->setSrcData(payload);
+  // c->start() is optional.
+  c->wait();
 }
 
 void send(MailboxPtr chan, void* payload, double simulatedSize, double timeout)
 {
-  Comm& c = Comm::send_init(chan);
-  c.setRemains(simulatedSize);
-  c.setSrcData(payload);
-  // c.start() is optional.
-  c.wait(timeout);
+  CommPtr c = Comm::send_init(chan);
+  c->setRemains(simulatedSize);
+  c->setSrcData(payload);
+  // c->start() is optional.
+  c->wait(timeout);
 }
 
-Comm& isend(MailboxPtr chan, void* payload, double simulatedSize)
+CommPtr isend(MailboxPtr chan, void* payload, double simulatedSize)
 {
   return Comm::send_async(chan, payload, simulatedSize);
 }
+void dsend(MailboxPtr chan, void* payload, double simulatedSize)
+{
+  Comm::send_detached(chan, payload, simulatedSize);
+}
 
-Comm& irecv(MailboxPtr chan, void** data)
+CommPtr irecv(MailboxPtr chan, void** data)
 {
   return Comm::recv_async(chan, data);
 }

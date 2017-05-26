@@ -48,8 +48,11 @@ namespace activity {
         delete activity;
     }
 
+    /** @brief Increase the refcount */
     void ref();
-    void unref();
+    /** @brief Reduce the refcount; returns true if the object was destroyed */
+    bool unref();
+
   private:
     std::atomic_int_fast32_t refcount_{1};
     int refcount = 1;

@@ -16,6 +16,7 @@ using ActorPtr = boost::intrusive_ptr<Actor>;
 
 class Activity;
 class Comm;
+using CommPtr = boost::intrusive_ptr<Comm>;
 class Engine;
 class Host;
 class Mailbox;

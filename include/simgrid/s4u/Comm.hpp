@@ -14,7 +14,6 @@
 
 namespace simgrid {
 namespace s4u {
-
 /** @brief Communication async
  *
  * Represents all asynchronous communications, that you can test or wait onto.
@@ -23,7 +22,10 @@ XBT_PUBLIC_CLASS Comm : public Activity
 {
   Comm() : Activity() {}
 public:
-  virtual ~Comm() = default;
+  friend void intrusive_ptr_release(simgrid::s4u::Comm * c);
+  friend void intrusive_ptr_add_ref(simgrid::s4u::Comm * c);
+
+  virtual ~Comm();
 
   /*! take a range of s4u::Comm* (last excluded) and return when one of them is finished. The return value is an
    * iterator on the finished Comms. */
@@ -73,13 +75,16 @@ public:
     return res;
   }
   /** Creates (but don't start) an async send to the mailbox @p dest */
-  static Comm& send_init(MailboxPtr dest);
+  static CommPtr send_init(MailboxPtr dest);
   /** Creates and start an async send to the mailbox @p dest */
-  static Comm& send_async(MailboxPtr dest, void* data, int simulatedByteAmount);
+  static CommPtr send_async(MailboxPtr dest, void* data, int simulatedByteAmount);
   /** Creates (but don't start) an async recv onto the mailbox @p from */
-  static Comm& recv_init(MailboxPtr from);
+  static CommPtr recv_init(MailboxPtr from);
   /** Creates and start an async recv to the mailbox @p from */
-  static Comm& recv_async(MailboxPtr from, void** data);
+  static CommPtr recv_async(MailboxPtr from, void** data);
+  /** Creates and start a detached send to the mailbox @p dest
+   *  TODO: make it possible to detach an already created comm */
+  static void send_detached(MailboxPtr dest, void* data, int simulatedSize);
 
   void start() override;
   void wait() override;
@@ -103,6 +108,7 @@ public:
   size_t getDstDataSize();
 
   bool test();
+  void cancel();
 
 private:
   double rate_        = -1;
@@ -120,6 +126,8 @@ private:
   smx_actor_t sender_   = nullptr;
   smx_actor_t receiver_ = nullptr;
   MailboxPtr mailbox_   = nullptr;
+
+  std::atomic_int_fast32_t refcount_{0};
 };
 }
 } // namespace simgrid::s4u
