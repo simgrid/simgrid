@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2010, 2014. The SimGrid Team.
-# All rights reserved.
+# Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -14,10 +13,10 @@ fi
 
 TRACE=$1
 echo "input: $TRACE"
-OUTPUT=`echo $TRACE | cut -d\. -f1`.fix.trace
+OUTPUT=$( echo $TRACE | cut -d\. -f1 ).fix.trace
 
-cat $TRACE | grep ^% > header
-DEFEVENTS=`cat header | grep Define | awk '{ print $3 }'`
+grep ^% < $TRACE > header
+DEFEVENTS=$(grep Define < header | awk '{ print $3 }')
 
 GREP=""
 GREP2=""
@@ -28,9 +27,9 @@ do
 done
 GREP="/^%\ /d; /^%	/d; /^%E/d; $GREP"
 
-cat $TRACE | eval grep $GREP2 > types
+grep $GREP2 < $TRACE > types
 /bin/sed -e "$GREP" $TRACE > events
-cat events |  sort -n -k 2 -s > events.sorted
+sort -n -k 2 -s < events > events.sorted
 cat header types events.sorted > $OUTPUT
 rm types events events.sorted header
 

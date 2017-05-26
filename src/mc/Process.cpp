@@ -4,8 +4,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#define _FILE_OFFSET_BITS 64
-
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>

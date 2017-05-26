@@ -291,7 +291,7 @@ void lagrange_solve(lmm_system_t sys)
     }
 
     XBT_DEBUG("-------------- Check feasability ----------");
-    if (!__check_feasible(cnst_list, var_list, 0))
+    if (not __check_feasible(cnst_list, var_list, 0))
       overall_modification = 1.0;
     XBT_DEBUG("Iteration %d: overall_modification : %f", iteration, overall_modification);
     /*     if(not dual_updated) { */

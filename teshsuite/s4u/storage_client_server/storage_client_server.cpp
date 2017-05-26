@@ -11,12 +11,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(storage, "Messages specific for this simulation");
 
 static void display_storage_properties(simgrid::s4u::Storage* storage)
 {
-  xbt_dict_cursor_t cursor = NULL;
-  char* key;
-  char* data;
   xbt_dict_t props = storage->properties();
   if (xbt_dict_length(props) > 0) {
     XBT_INFO("\tProperties of mounted storage: %s", storage->name());
+
+    xbt_dict_cursor_t cursor = NULL;
+    char* key;
+    char* data;
     xbt_dict_foreach (props, cursor, key, data)
       XBT_INFO("\t\t'%s' -> '%s'", key, data);
   } else {

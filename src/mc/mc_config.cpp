@@ -63,7 +63,7 @@ int _sg_mc_termination = 0;
 
 void _mc_cfg_cb_reduce(const char *name)
 {
-  if (_sg_cfg_init_status && !_sg_do_model_check)
+  if (_sg_cfg_init_status && not _sg_do_model_check)
     xbt_die
         ("You are specifying a reduction strategy after the initialization (through MSG_config?), but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
 
@@ -79,7 +79,7 @@ void _mc_cfg_cb_reduce(const char *name)
 
 void _mc_cfg_cb_checkpoint(const char *name)
 {
-  if (_sg_cfg_init_status && !_sg_do_model_check)
+  if (_sg_cfg_init_status && not _sg_do_model_check)
     xbt_die
         ("You are specifying a checkpointing value after the initialization (through MSG_config?), but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
 
@@ -87,7 +87,7 @@ void _mc_cfg_cb_checkpoint(const char *name)
 }
 
 void _mc_cfg_cb_sparse_checkpoint(const char *name) {
-  if (_sg_cfg_init_status && !_sg_do_model_check)
+  if (_sg_cfg_init_status && not _sg_do_model_check)
     xbt_die("You are specifying a checkpointing value after the initialization (through MSG_config?), but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
 
   _sg_mc_sparse_checkpoint = xbt_cfg_get_boolean(name);
@@ -95,7 +95,7 @@ void _mc_cfg_cb_sparse_checkpoint(const char *name) {
 
 void _mc_cfg_cb_ksm(const char *name)
 {
-  if (_sg_cfg_init_status && !_sg_do_model_check)
+  if (_sg_cfg_init_status && not _sg_do_model_check)
     xbt_die("You are specifying a KSM value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
 
   _sg_mc_ksm = xbt_cfg_get_boolean(name);
@@ -103,7 +103,7 @@ void _mc_cfg_cb_ksm(const char *name)
 
 void _mc_cfg_cb_property(const char *name)
 {
-  if (_sg_cfg_init_status && !_sg_do_model_check)
+  if (_sg_cfg_init_status && not _sg_do_model_check)
     xbt_die
         ("You are specifying a property after the initialization (through MSG_config?), but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
 
@@ -112,7 +112,7 @@ void _mc_cfg_cb_property(const char *name)
 
 void _mc_cfg_cb_hash(const char *name)
 {
-  if (_sg_cfg_init_status && !_sg_do_model_check)
+  if (_sg_cfg_init_status && not _sg_do_model_check)
     xbt_die
         ("You are specifying a value to enable/disable the use of global hash to speedup state comparaison, but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
 
@@ -121,7 +121,7 @@ void _mc_cfg_cb_hash(const char *name)
 
 void _mc_cfg_cb_snapshot_fds(const char *name)
 {
-  if (_sg_cfg_init_status && !_sg_do_model_check)
+  if (_sg_cfg_init_status && not _sg_do_model_check)
     xbt_die
         ("You are specifying a value to enable/disable the use of FD snapshotting, but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
 
@@ -130,7 +130,7 @@ void _mc_cfg_cb_snapshot_fds(const char *name)
 
 void _mc_cfg_cb_max_depth(const char *name)
 {
-  if (_sg_cfg_init_status && !_sg_do_model_check)
+  if (_sg_cfg_init_status && not _sg_do_model_check)
     xbt_die
         ("You are specifying a max depth value after the initialization (through MSG_config?), but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
 
@@ -139,7 +139,7 @@ void _mc_cfg_cb_max_depth(const char *name)
 
 void _mc_cfg_cb_visited(const char *name)
 {
-  if (_sg_cfg_init_status && !_sg_do_model_check)
+  if (_sg_cfg_init_status && not _sg_do_model_check)
     xbt_die
         ("You are specifying a number of stored visited states after the initialization (through MSG_config?), but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
 
@@ -148,7 +148,7 @@ void _mc_cfg_cb_visited(const char *name)
 
 void _mc_cfg_cb_dot_output(const char *name)
 {
-  if (_sg_cfg_init_status && !_sg_do_model_check)
+  if (_sg_cfg_init_status && not _sg_do_model_check)
     xbt_die
         ("You are specifying a file name for a dot output of graph state after the initialization (through MSG_config?), but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
 
@@ -157,7 +157,7 @@ void _mc_cfg_cb_dot_output(const char *name)
 
 void _mc_cfg_cb_comms_determinism(const char *name)
 {
-  if (_sg_cfg_init_status && !_sg_do_model_check)
+  if (_sg_cfg_init_status && not _sg_do_model_check)
     xbt_die
         ("You are specifying a value to enable/disable the detection of determinism in the communications schemes after the initialization (through MSG_config?), but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
 
@@ -166,7 +166,7 @@ void _mc_cfg_cb_comms_determinism(const char *name)
 
 void _mc_cfg_cb_send_determinism(const char *name)
 {
-  if (_sg_cfg_init_status && !_sg_do_model_check)
+  if (_sg_cfg_init_status && not _sg_do_model_check)
     xbt_die
         ("You are specifying a value to enable/disable the detection of send-determinism in the communications schemes after the initialization (through MSG_config?), but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
 
@@ -175,7 +175,7 @@ void _mc_cfg_cb_send_determinism(const char *name)
 
 void _mc_cfg_cb_termination(const char *name)
 {
-  if (_sg_cfg_init_status && !_sg_do_model_check)
+  if (_sg_cfg_init_status && not _sg_do_model_check)
     xbt_die
         ("You are specifying a value to enable/disable the detection of non progressive cycles after the initialization (through MSG_config?), but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
 

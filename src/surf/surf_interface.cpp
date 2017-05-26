@@ -146,7 +146,6 @@ std::ifstream* surf_ifsopen(const char* name)
 }
 FILE *surf_fopen(const char *name, const char *mode)
 {
-  char *buff;
   FILE *file = nullptr;
 
   xbt_assert(name);
@@ -156,7 +155,7 @@ FILE *surf_fopen(const char *name, const char *mode)
 
   /* search relative files in the path */
   for (auto path_elm : surf_path) {
-    buff = bprintf("%s" FILE_DELIM "%s", path_elm.c_str(), name);
+    char* buff = bprintf("%s" FILE_DELIM "%s", path_elm.c_str(), name);
     file = fopen(buff, mode);
     free(buff);
 

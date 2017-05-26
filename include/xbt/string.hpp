@@ -1,5 +1,4 @@
-/* Copyright (c) 2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -209,7 +208,7 @@ public:
   template<class X>
   bool operator!=(X const& that) const
   {
-    return !((*this) == that);
+    return not (*this == that);
   }
 
   // Compare:

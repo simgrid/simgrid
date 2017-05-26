@@ -52,7 +52,7 @@ _find_matching_comm(boost::circular_buffer_space_optimized<smx_activity_t>* dequ
     } else if (comm->type == SIMIX_COMM_RECEIVE) {
       other_user_data = comm->dst_data;
     }
-    if (comm->type == type && (!match_fun || match_fun(this_user_data, other_user_data, synchro)) &&
+    if (comm->type == type && (match_fun == nullptr || match_fun(this_user_data, other_user_data, synchro)) &&
         (not comm->match_fun || comm->match_fun(other_user_data, this_user_data, my_synchro))) {
       XBT_DEBUG("Found a matching communication synchro %p", comm);
       if (remove_matching)

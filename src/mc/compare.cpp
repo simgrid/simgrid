@@ -1363,9 +1363,7 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state,
 
       if (addr_pointed1 > process->heap_address
           && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)) {
-        if (!
-            (addr_pointed2 > process->heap_address
-             && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2)))
+        if (not(addr_pointed2 > process->heap_address && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2)))
           return 1;
         // The pointers are both in the heap:
         return simgrid::mc::compare_heap_area(state,

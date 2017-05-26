@@ -128,6 +128,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
       memreg.prot |= PROT_EXEC;
 
     /* Private (copy-on-write) or shared? */
+    memregs.flags = 0;
     if (info.shared)
       memreg.flags |= MAP_SHARED;
     else

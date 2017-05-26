@@ -166,7 +166,7 @@ xbt_test_suite_t xbt_test_suite_new(const char *name, const char *fmt, ...)
   xbt_test_suite_t suite = xbt_new0(struct s_xbt_test_suite, 1);
   va_list ap;
 
-  if (!_xbt_test_suites)
+  if (_xbt_test_suites == nullptr)
     _xbt_test_suites = xbt_dynar_new(sizeof(xbt_test_suite_t), xbt_test_suite_free);
 
   va_start(ap, fmt);

@@ -107,7 +107,7 @@ static void xbt_preinit()
 
 static void xbt_postexit()
 {
-  if (!_sg_do_clean_atexit)
+  if (not _sg_do_clean_atexit)
     return;
   xbt_initialized--;
   xbt_dict_postexit();

@@ -87,7 +87,7 @@ public:
     return filename_length == that.filename_length && line == that.line &&
            std::memcmp(filename, that.filename, filename_length) == 0;
   }
-  bool operator!=(smpi_source_location const& that) const { return !(*this == that); }
+  bool operator!=(smpi_source_location const& that) const { return not(*this == that); }
 };
 }
 

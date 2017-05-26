@@ -13,8 +13,6 @@ import org.simgrid.msg.*;
 import org.simgrid.msg.Process;
 
 class SemCreator extends Process {
-  Semaphore sem; 
-
   SemCreator(Host h, String n){
     super(h, n);
   }
@@ -23,7 +21,7 @@ class SemCreator extends Process {
     int j; 
     Msg.info("Creating 50 new Semaphores, yielding and triggering a GC after each");
     for(j = 1; j <= 50; j++) {
-      sem = new Semaphore(0);
+      new Semaphore(0);
       waitFor(10);
       System.gc();
     }

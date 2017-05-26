@@ -219,12 +219,11 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
 
   while (not done) {
     char *to_push;
-    int v = 0;
     // get the start of the first occurrence of the substring
     q = strstr(p, sep);
     //if substring was not found add the entire string
     if (nullptr == q) {
-      v = strlen(p);
+      int v   = strlen(p);
       to_push = (char*) xbt_malloc(v + 1);
       memcpy(to_push, p, v);
       to_push[v] = '\0';

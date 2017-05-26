@@ -11,10 +11,6 @@
 #include <string>
 #include <memory>
 
-#include "src/xbt/mmalloc/mmprivate.h"
-//#include "xbt/asserts.h"
-#include "xbt/base.h"
-
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/RegionSnapshot.hpp"
 #include "src/mc/mc_forward.hpp"

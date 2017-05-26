@@ -1,5 +1,4 @@
-/* Copyright (c) 2006-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -22,7 +21,7 @@ public class Node extends Process {
   protected Comm commReceive;
   ///Last time I changed a finger or my predecessor
   protected double lastChangeDate;
-  int[] fingers;
+  private int[] fingers;
 
   public Node(Host host, String name, String[] args) {
     super(host,name,args);
@@ -109,7 +108,7 @@ public class Node extends Process {
     }
   }
 
-  void handleTask(Task task) {
+  private void handleTask(Task task) {
     if (task instanceof FindSuccessorTask) {
       FindSuccessorTask fTask = (FindSuccessorTask)task;
       Msg.debug("Receiving a 'Find Successor' request from " + fTask.getIssuerHostName() + " for id " + 
@@ -138,7 +137,7 @@ public class Node extends Process {
     }
   }
 
-  void leave() {
+  private void leave() {
     Msg.debug("Well Guys! I Think it's time for me to quit ;)");
     quitNotify(1); //Notify my successor
     quitNotify(-1); //Notify my predecessor.
@@ -148,20 +147,18 @@ public class Node extends Process {
    * @brief Notifies the successor or the predecessor of the current node of the departure
    * @param to 1 to notify the successor, -1 to notify the predecessor
    */
-  static void quitNotify( int to) {
+  static private void quitNotify( int to) {
     //TODO
   }
 
-  /**
-   * @brief Initializes the current node as the first one of the system.
-   */
-  void create() {
+  /** @brief Initializes the current node as the first one of the system  */
+  private void create() {
     Msg.debug("Create a new Chord ring...");
     setPredecessor(-1);
   }
 
   // Makes the current node join the ring, knowing the id of a node already in the ring 
-  boolean join(int knownId) {
+  private boolean join(int knownId) {
     Msg.info("Joining the ring with id " + this.id + " knowing node " + knownId);
     setPredecessor(-1);
     int successorId = remoteFindSuccessor(knownId, this.id);
@@ -173,7 +170,7 @@ public class Node extends Process {
     return successorId != -1;
   }
 
-  void setPredecessor(int predecessorId) {
+  private void setPredecessor(int predecessorId) {
     if (predecessorId != predId) {
       predId = predecessorId;
       if (predecessorId != -1) {
@@ -188,7 +185,7 @@ public class Node extends Process {
    * @param askTo the node to ask to
    * @return the id of its predecessor node, or -1 if the request failed(or if the node does not know its predecessor)
    */
-  int remoteGetPredecessor(int askTo) {
+  private int remoteGetPredecessor(int askTo) {
     int predecessorId = -1;
     boolean stop = false;
     Msg.debug("Sending a 'Get Predecessor' request to " + askTo);
@@ -229,7 +226,7 @@ public class Node extends Process {
    * @param id the id to find
    * @return the id of the successor node, or -1 if the request failed
    */
-  int findSuccessor(int id) {
+  private int findSuccessor(int id) {
     if (isInInterval(id, this.id + 1, fingers[0])) {
       return fingers[0];
     }
@@ -239,7 +236,7 @@ public class Node extends Process {
   }
 
   // Asks another node the successor node of an id.
-  int remoteFindSuccessor(int askTo, int id) {
+  private int remoteFindSuccessor(int askTo, int id) {
     int successor = -1;
     boolean stop = false;
     String askToMailbox = Integer.toString(askTo);
@@ -281,7 +278,7 @@ public class Node extends Process {
   }
 
   // This function is called periodically. It checks the immediate successor of the current node.
-  void stabilize() {
+  private void stabilize() {
     Msg.debug("Stabilizing node");
     int candidateId;
     int successorId = fingers[0];
@@ -303,7 +300,7 @@ public class Node extends Process {
    * @brief Notifies the current node that its predecessor may have changed.
    * @param candidate_id the possible new predecessor
    */
-  void notify(int predecessorCandidateId) {
+  private void notify(int predecessorCandidateId) {
     if (predId == -1 || isInInterval(predecessorCandidateId, predId + 1, this.id - 1 )) {
       setPredecessor(predecessorCandidateId);
     }
@@ -314,7 +311,7 @@ public class Node extends Process {
    * @param notify_id id of the node to notify
    * @param candidate_id the possible new predecessor
    */
-  void remoteNotify(int notifyId, int predecessorCandidateId) {
+  private void remoteNotify(int notifyId, int predecessorCandidateId) {
     Msg.debug("Sending a 'Notify' request to " + notifyId);
     Task sentTask = new NotifyTask(getHost().getName(), this.mailbox, predecessorCandidateId);
     sentTask.dsend(Integer.toString(notifyId));
@@ -322,7 +319,7 @@ public class Node extends Process {
 
   // This function is called periodically.
   // It refreshes the finger table of the current node.
-  void fixFingers() {
+  private void fixFingers() {
     Msg.debug("Fixing fingers");
     int i = this.nextFingerToFix;
     int successorId = this.findSuccessor(this.id + (int)Math.pow(2,i)); //FIXME: SLOW
@@ -336,12 +333,12 @@ public class Node extends Process {
 
   // This function is called periodically.
   // It checks whether the predecessor has failed
-  void checkPredecessor() {
+  private void checkPredecessor() {
     //TODO
   }
 
   // Performs a find successor request to a random id.
-  void randomLookup() {
+  private void randomLookup() {
     int id = 1337;
     //Msg.info("Making a lookup request for id " + id);
     findSuccessor(id);
@@ -352,7 +349,7 @@ public class Node extends Process {
    * @param id the id to find
    * @return the closest preceding finger of that id
    */
-  int closestPrecedingNode(int id) {
+  private int closestPrecedingNode(int id) {
     for (int i = Common.NB_BITS - 1; i >= 0; i--) {
       if (isInInterval(fingers[i], this.id + 1, id - 1)) {
         return fingers[i];
@@ -377,7 +374,7 @@ public class Node extends Process {
    * @param end upper bound
    * @return a non-zero value if id in in [start, end]
    */
-  static boolean isInInterval(int id, int start, int end) {
+  static private boolean isInInterval(int id, int start, int end) {
     int normId = normalize(id);
     int normStart = normalize(start);
     int normEnd = normalize(end);
@@ -397,7 +394,7 @@ public class Node extends Process {
    * @param id an id
    * @return the corresponding normalized id
    */
-  static int normalize(int id) {
+  static private int normalize(int id) {
     return id & (Common.NB_KEYS - 1);
   }
 
@@ -406,7 +403,7 @@ public class Node extends Process {
    * @param finger_index index of the finger to set (0 to nb_bits - 1)
    * @param id the id to set for this finger
    */
-  void setFinger(int fingerIndex, int id) {
+  private void setFinger(int fingerIndex, int id) {
     if (id != fingers[fingerIndex]) {
       fingers[fingerIndex] = id;
       lastChangeDate = Msg.getClock();

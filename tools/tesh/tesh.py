@@ -305,13 +305,13 @@ class Cmd(object):
 
         try:
             proc = subprocess.Popen(args, bufsize=1, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
-        except OSError as e:
-            if e.errno == 8:
-                e.strerror += "\nOSError: [Errno 8] Executed scripts should start with shebang line (like #!/bin/sh)"
-            raise e
         except FileNotFoundError:
             print("["+FileReader().filename+":"+str(self.linenumber)+"] Cannot start '"+args[0]+"': File not found")
             exit(3)
+        except OSError as osE:
+            if osE.errno == 8:
+                osE.strerror += "\nOSError: [Errno 8] Executed scripts should start with shebang line (like #!/bin/sh)"
+            raise osE
 
         cmdName = FileReader().filename+":"+str(self.linenumber)
         try:

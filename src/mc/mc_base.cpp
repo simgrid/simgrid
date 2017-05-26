@@ -69,7 +69,6 @@ void wait_for_requests()
 // Called from both MCer and MCed:
 bool request_is_enabled(smx_simcall_t req)
 {
-  unsigned int index = 0;
   // TODO, add support for the subtypes?
 
   switch (req->call) {
@@ -132,7 +131,7 @@ bool request_is_enabled(smx_simcall_t req)
     comms = simcall_comm_waitany__get__comms(req);
 #endif
 
-    for (index = 0; index < comms->used; ++index) {
+    for (unsigned int index = 0; index < comms->used; ++index) {
 #if SIMGRID_HAVE_MC
       // Fetch act from MCed memory:
       // HACK, type puning

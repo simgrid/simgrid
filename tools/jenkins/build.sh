@@ -94,7 +94,7 @@ PATH="$WORKSPACE/build/lib:$PATH"
 if test "$(uname -o)" != "Msys"; then
   echo "XX"
   echo "XX Build the archive out of the tree"
-  echo "XX   pwd: `pwd`"
+  echo "XX   pwd: "$(pwd)
   echo "XX"
 
   cmake -G"$GENERATOR" -Denable_documentation=OFF $WORKSPACE
@@ -103,9 +103,9 @@ if test "$(uname -o)" != "Msys"; then
   echo "XX"
   echo "XX Open the resulting archive"
   echo "XX"
-  gunzip `cat VERSION`.tar.gz
-  tar xf `cat VERSION`.tar
-  cd `cat VERSION`
+  gunzip $(cat VERSION).tar.gz
+  tar xf $(cat VERSION).tar
+  cd $(cat VERSION)
   mkdir build
   cd build
   SRCFOLDER=".."
@@ -116,7 +116,7 @@ fi
 
 echo "XX"
 echo "XX Configure and build SimGrid"
-echo "XX   pwd: `pwd`"
+echo "XX   pwd: "$(pwd)
 echo "XX"
 cmake -G"$GENERATOR"\
   -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
@@ -134,19 +134,17 @@ make -j$NUMBER_OF_PROCESSORS VERBOSE=1
 
 if test "$(uname -o)" != "Msys"; then
   cd $WORKSPACE/build
-  cd `cat VERSION`/build
+  cd $(cat VERSION)/build
 fi
-
-TRES=0
 
 echo "XX"
 echo "XX Run the tests"
-echo "XX   pwd: `pwd`"
+echo "XX   pwd: "$(pwd)
 echo "XX"
 
 ctest -T test --output-on-failure --no-compress-output || true
 if [ -f Testing/TAG ] ; then
-   xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml > CTestResults.xml
+   xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl Testing/$( head -n 1 < Testing/TAG )/Test.xml > CTestResults.xml
    mv CTestResults.xml $WORKSPACE
 fi
 

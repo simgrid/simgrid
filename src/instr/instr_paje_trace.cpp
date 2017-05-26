@@ -150,7 +150,6 @@ static void insert_into_buffer (PajeEvent* tbi)
     if (e1->timestamp <= tbi->timestamp)
       break;
   }
-  buffer.insert(i.base(), tbi);
   if (i == buffer.rend())
     XBT_DEBUG("%s: inserted at beginning", __FUNCTION__);
   else if (i == buffer.rbegin())
@@ -158,6 +157,7 @@ static void insert_into_buffer (PajeEvent* tbi)
   else
     XBT_DEBUG("%s: inserted at pos= %zd from its end", __FUNCTION__,
         std::distance(buffer.rbegin(),i));
+  buffer.insert(i.base(), tbi);
 
   buffer_debug(&buffer);
 }

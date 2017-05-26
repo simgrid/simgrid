@@ -44,9 +44,8 @@ namespace kernel {
 namespace routing {
 void DijkstraZone::seal()
 {
-  xbt_node_t node = nullptr;
-  unsigned int cursor2;
   unsigned int cursor;
+  xbt_node_t node = nullptr;
 
   /* Create the topology graph */
   if (not routeGraph_)
@@ -57,9 +56,10 @@ void DijkstraZone::seal()
   /* Add the loopback if needed */
   if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
     xbt_dynar_foreach (xbt_graph_get_nodes(routeGraph_), cursor, node) {
-      xbt_edge_t edge = nullptr;
 
       bool found = false;
+      xbt_edge_t edge = nullptr;
+      unsigned int cursor2;
       xbt_dynar_foreach (xbt_graph_node_get_outedges(node), cursor2, edge) {
         if (xbt_graph_edge_get_target(edge) == node) {
           found = true;
@@ -238,10 +238,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
   /* compose route path with links */
   NetPoint* gw_src = nullptr;
   NetPoint* gw_dst;
-  NetPoint* prev_gw_src;
   NetPoint* first_gw            = nullptr;
-  NetPoint* gw_dst_net_elm      = nullptr;
-  NetPoint* prev_gw_src_net_elm = nullptr;
 
   for (int v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
     xbt_node_t node_pred_v = xbt_dynar_get_as(nodes, pred_arr[v], xbt_node_t);
@@ -251,9 +248,9 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
     if (edge == nullptr)
       THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name().c_str(), dst->name().c_str());
 
-    prev_gw_src = gw_src;
-
     sg_platf_route_cbarg_t e_route = (sg_platf_route_cbarg_t)xbt_graph_edge_get_data(edge);
+
+    NetPoint* prev_gw_src          = gw_src;
     gw_src                         = e_route->gw_src;
     gw_dst                         = e_route->gw_dst;
 
@@ -264,6 +261,8 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
         strcmp(gw_dst->name().c_str(), prev_gw_src->name().c_str())) {
       std::vector<surf::LinkImpl*> e_route_as_to_as;
 
+      NetPoint* gw_dst_net_elm      = nullptr;
+      NetPoint* prev_gw_src_net_elm = nullptr;
       getGlobalRoute(gw_dst_net_elm, prev_gw_src_net_elm, &e_route_as_to_as, nullptr);
       auto pos = route->link_list->begin();
       for (auto link : e_route_as_to_as) {
