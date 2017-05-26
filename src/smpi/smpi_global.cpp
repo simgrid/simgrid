@@ -12,7 +12,6 @@
 #include "src/smpi/SmpiHost.hpp"
 #include "xbt/config.hpp"
 #include "src/smpi/private.h"
-#include "smpi/smpi_shared_malloc.hpp"
 #include "src/smpi/smpi_coll.hpp"
 #include "src/smpi/smpi_comm.hpp"
 #include "src/smpi/smpi_group.hpp"
