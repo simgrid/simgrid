@@ -139,16 +139,7 @@ public class Node extends Process {
 
   private void leave() {
     Msg.debug("Well Guys! I Think it's time for me to quit ;)");
-    quitNotify(1); //Notify my successor
-    quitNotify(-1); //Notify my predecessor.
-  }
-
-  /**
-   * @brief Notifies the successor or the predecessor of the current node of the departure
-   * @param to 1 to notify the successor, -1 to notify the predecessor
-   */
-  static private void quitNotify( int to) {
-    //TODO
+    // TODO: Notify my successor and predecessor.
   }
 
   /** @brief Initializes the current node as the first one of the system  */
@@ -374,7 +365,7 @@ public class Node extends Process {
    * @param end upper bound
    * @return a non-zero value if id in in [start, end]
    */
-  static private boolean isInInterval(int id, int start, int end) {
+  private static boolean isInInterval(int id, int start, int end) {
     int normId = normalize(id);
     int normStart = normalize(start);
     int normEnd = normalize(end);
@@ -394,7 +385,7 @@ public class Node extends Process {
    * @param id an id
    * @return the corresponding normalized id
    */
-  static private int normalize(int id) {
+  private static int normalize(int id) {
     return id & (Common.NB_KEYS - 1);
   }
 
