@@ -19,8 +19,7 @@ static int master(int argc, char *argv[])
 
   TRACE_mark("msmark", "start_send_tasks");
   for (int i = 0; i < number_of_tasks; i++) {
-    msg_task_t task = NULL;
-    task = MSG_task_create("task", task_comp_size, task_comm_size, NULL);
+    msg_task_t task = MSG_task_create("task", task_comp_size, task_comm_size, NULL);
 
     //setting the variable "task_creation" to value i
     TRACE_host_variable_set(MSG_host_get_name(MSG_host_self()), "task_creation", i);
