@@ -1,3 +1,8 @@
+/* Copyright (c) 2017. The SimGrid Team. All rights reserved.               */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 /* Bug report: https://github.com/simgrid/simgrid/issues/40
  *
  * Task.listen used to be on async mailboxes as it always returned false.

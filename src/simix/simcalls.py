@@ -11,9 +11,9 @@ import glob
 
 class Arg(object):
 
-    def __init__(self, name, type):
+    def __init__(self, name, thetype):
         self.name = name
-        self.type = type
+        self.type = thetype
 
     def field(self):
         return self.simcall_types[self.type]
@@ -218,6 +218,8 @@ def header(name):
         '/*                                                                    */\n')
     fd.write(
         '/* change simcalls specification in src/simix/simcalls.in             */\n')
+    fd.write(
+        '/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.    */\n')
     fd.write(
         '/**********************************************************************/\n\n')
     fd.write('/*\n')

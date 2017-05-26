@@ -2099,9 +2099,8 @@ int PMPI_Alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype 
     extra->recvcounts      = xbt_new(int, size);
     extra->sendcounts      = xbt_new(int, size);
     int known              = 0;
-    int dt_size_recv       = 1;
     extra->datatype2       = encode_datatype(recvtype, &known);
-    dt_size_recv           = recvtype->size();
+    int dt_size_recv       = recvtype->size();
 
     void* sendtmpbuf         = static_cast<char*>(sendbuf);
     int* sendtmpcounts       = sendcounts;

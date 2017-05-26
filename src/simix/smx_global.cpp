@@ -126,7 +126,7 @@ static void install_segvhandler()
     XBT_WARN("Failed to register alternate signal stack: %s", strerror(errno));
     return;
   }
-  if (!(old_stack.ss_flags & SS_DISABLE)) {
+  if (not(old_stack.ss_flags & SS_DISABLE)) {
     XBT_DEBUG("An alternate stack was already installed (sp=%p, size=%zd, flags=%x). Restore it.",
               old_stack.ss_sp, old_stack.ss_size, old_stack.ss_flags);
     sigaltstack(&old_stack, nullptr);

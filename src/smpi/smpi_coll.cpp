@@ -338,4 +338,3 @@ int Colls::exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype
 
 }
 }
-

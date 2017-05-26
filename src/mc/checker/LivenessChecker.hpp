@@ -62,7 +62,7 @@ struct XBT_PRIVATE VisitedPair {
 
 class XBT_PRIVATE LivenessChecker : public Checker {
 public:
-  LivenessChecker(Session& session);
+  explicit LivenessChecker(Session& session);
   ~LivenessChecker() = default;
   void run() override;
   RecordTrace getRecordTrace() override;
