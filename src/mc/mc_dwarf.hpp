@@ -1,18 +1,12 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#if !defined(SIMGRID_MC_DWARF_HPP)
+#ifndef SIMGRID_MC_DWARF_HPP
 #define SIMGRID_MC_DWARF_HPP
 
-#include <memory>
-
-#include <string.h>
-
 #include "xbt/base.h"
-#include "xbt/sysdep.h"
 
 #define DW_LANG_Objc DW_LANG_ObjC       /* fix spelling error in older dwarf.h */
 #include <dwarf.h>

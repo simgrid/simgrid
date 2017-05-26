@@ -14,10 +14,10 @@
 #include <memory>
 #include <system_error>
 
+#include "xbt/automaton.h"
+#include "xbt/automaton.hpp"
 #include "xbt/log.h"
-#include <xbt/automaton.h>
-#include <xbt/automaton.hpp>
-#include <xbt/system_error.hpp>
+#include "xbt/system_error.hpp"
 
 #include "simgrid/sg_config.h"
 

@@ -6,16 +6,7 @@
 #ifndef SIMGRID_MC_SAFETY_H
 #define SIMGRID_MC_SAFETY_H
 
-#include <stdint.h>
-
-#include <memory>
-
-#include <simgrid_config.h>
-
 #include "xbt/base.h"
-
-#include "src/mc/mc_forward.hpp"
-#include "src/mc/mc_state.h"
 
 namespace simgrid {
 namespace mc {

@@ -6,18 +6,13 @@
 #ifndef SIMGRID_MC_SNAPSHOT_H
 #define SIMGRID_MC_SNAPSHOT_H
 
-#include <cstdint>
-#include <cstddef>
-
 #include <vector>
 #include <set>
 #include <string>
 #include <memory>
 
-#include <sys/types.h> // off_t
-
 #include "src/xbt/mmalloc/mmprivate.h"
-#include "xbt/asserts.h"
+//#include "xbt/asserts.h"
 #include "xbt/base.h"
 
 #include "src/mc/ModelChecker.hpp"

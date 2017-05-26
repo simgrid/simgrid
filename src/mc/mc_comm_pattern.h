@@ -6,16 +6,10 @@
 #ifndef SIMGRID_MC_COMM_PATTERN_H
 #define SIMGRID_MC_COMM_PATTERN_H
 
-#include <cstddef>
-
 #include <vector>
 
+#include "smpi/smpi.h"
 #include "xbt/dynar.h"
-#include <simgrid_config.h>
-
-#include "src/simix/smx_private.h"
-#include "src/smpi/private.h"
-#include <smpi/smpi.h>
 
 #include "src/mc/mc_state.h"
 

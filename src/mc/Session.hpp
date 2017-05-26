@@ -12,9 +12,9 @@
 #endif
 
 #include "xbt/sysdep.h"
+#include "xbt/system_error.hpp"
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <xbt/system_error.hpp>
 
 #include <functional>
 

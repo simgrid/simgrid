@@ -12,9 +12,9 @@
 
 #include <vector>
 
+#include "xbt/automaton.h"
 #include "xbt/dynar.h"
-#include <xbt/automaton.h>
-#include <xbt/swag.h>
+#include "xbt/swag.h"
 
 #include "mc_base.h"
 
