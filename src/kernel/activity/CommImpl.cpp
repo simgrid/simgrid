@@ -1,26 +1,27 @@
-/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/kernel/activity/SynchroComm.hpp"
-#include "src/surf/surf_interface.hpp"
-#include "src/simix/smx_network_private.h"
+#include "src/kernel/activity/CommImpl.hpp"
+
 #include "simgrid/modelchecker.h"
 #include "src/mc/mc_replay.h"
+#include "src/simix/smx_network_private.h"
+#include "src/surf/surf_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_network);
 
-simgrid::kernel::activity::Comm::Comm(e_smx_comm_type_t _type) : type(_type)
+simgrid::kernel::activity::CommImpl::CommImpl(e_smx_comm_type_t _type) : type(_type)
 {
-  state = SIMIX_WAITING;
-  src_data=nullptr;
-  dst_data=nullptr;
+  state    = SIMIX_WAITING;
+  src_data = nullptr;
+  dst_data = nullptr;
   intrusive_ptr_add_ref(this);
   XBT_DEBUG("Create communicate synchro %p", this);
 }
 
-simgrid::kernel::activity::Comm::~Comm()
+simgrid::kernel::activity::CommImpl::~CommImpl()
 {
   XBT_DEBUG("Really free communication %p", this);
 
@@ -34,20 +35,19 @@ simgrid::kernel::activity::Comm::~Comm()
     src_buff = nullptr;
   }
 
-  if(mbox)
+  if (mbox)
     mbox->remove(this);
 }
 
-void simgrid::kernel::activity::Comm::suspend()
+void simgrid::kernel::activity::CommImpl::suspend()
 {
   /* FIXME: shall we suspend also the timeout synchro? */
   if (surf_comm)
     surf_comm->suspend();
   /* in the other case, the action will be suspended on creation, in SIMIX_comm_start() */
-
 }
 
-void simgrid::kernel::activity::Comm::resume()
+void simgrid::kernel::activity::CommImpl::resume()
 {
   /*FIXME: check what happen with the timeouts */
   if (surf_comm)
@@ -55,7 +55,7 @@ void simgrid::kernel::activity::Comm::resume()
   /* in the other case, the synchro were not really suspended yet, see SIMIX_comm_suspend() and SIMIX_comm_start() */
 }
 
-void simgrid::kernel::activity::Comm::cancel()
+void simgrid::kernel::activity::CommImpl::cancel()
 {
   /* if the synchro is a waiting state means that it is still in a mbox */
   /* so remove from it and delete it */
@@ -71,7 +71,7 @@ void simgrid::kernel::activity::Comm::cancel()
 }
 
 /**  @brief get the amount remaining from the communication */
-double simgrid::kernel::activity::Comm::remains()
+double simgrid::kernel::activity::CommImpl::remains()
 {
   if (state == SIMIX_RUNNING)
     return surf_comm->getRemains();
@@ -81,28 +81,28 @@ double simgrid::kernel::activity::Comm::remains()
 }
 
 /** @brief This is part of the cleanup process, probably an internal command */
-void simgrid::kernel::activity::Comm::cleanupSurf()
+void simgrid::kernel::activity::CommImpl::cleanupSurf()
 {
-  if (surf_comm){
+  if (surf_comm) {
     surf_comm->unref();
     surf_comm = nullptr;
   }
 
-  if (src_timeout){
+  if (src_timeout) {
     src_timeout->unref();
     src_timeout = nullptr;
   }
 
-  if (dst_timeout){
+  if (dst_timeout) {
     dst_timeout->unref();
     dst_timeout = nullptr;
   }
 }
 
-void simgrid::kernel::activity::Comm::post()
+void simgrid::kernel::activity::CommImpl::post()
 {
   /* Update synchro state */
-  if (src_timeout &&  src_timeout->getState() == simgrid::surf::Action::State::done)
+  if (src_timeout && src_timeout->getState() == simgrid::surf::Action::State::done)
     state = SIMIX_SRC_TIMEOUT;
   else if (dst_timeout && dst_timeout->getState() == simgrid::surf::Action::State::done)
     state = SIMIX_DST_TIMEOUT;
@@ -115,8 +115,8 @@ void simgrid::kernel::activity::Comm::post()
   } else
     state = SIMIX_DONE;
 
-  XBT_DEBUG("SIMIX_post_comm: comm %p, state %d, src_proc %p, dst_proc %p, detached: %d",
-            this, (int)state, src_proc, dst_proc, detached);
+  XBT_DEBUG("SIMIX_post_comm: comm %p, state %d, src_proc %p, dst_proc %p, detached: %d", this, (int)state, src_proc,
+            dst_proc, detached);
 
   /* destroy the surf actions associated with the Simix communication */
   cleanupSurf();

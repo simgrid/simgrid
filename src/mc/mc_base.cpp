@@ -78,16 +78,16 @@ bool request_is_enabled(smx_simcall_t req)
   case SIMCALL_COMM_WAIT:
   {
     /* FIXME: check also that src and dst processes are not suspended */
-    simgrid::kernel::activity::Comm *act =
-        static_cast<simgrid::kernel::activity::Comm*>(simcall_comm_wait__get__comm(req));
+    simgrid::kernel::activity::CommImpl* act =
+        static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__get__comm(req));
 
 #if SIMGRID_HAVE_MC
     // Fetch from MCed memory:
     // HACK, type puning
     if (mc_model_checker != nullptr) {
-      simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_comm;
+      simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
       mc_model_checker->process().read(temp_comm, remote(act));
-      act = static_cast<simgrid::kernel::activity::Comm*>(temp_comm.getBuffer());
+      act = static_cast<simgrid::kernel::activity::CommImpl*>(temp_comm.getBuffer());
     }
 #endif
 
@@ -106,8 +106,8 @@ bool request_is_enabled(smx_simcall_t req)
 
   case SIMCALL_COMM_WAITANY: {
     xbt_dynar_t comms;
-    simgrid::kernel::activity::Comm *act =
-        static_cast<simgrid::kernel::activity::Comm*>(simcall_comm_wait__get__comm(req));
+    simgrid::kernel::activity::CommImpl* act =
+        static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__get__comm(req));
 
 #if SIMGRID_HAVE_MC
     s_xbt_dynar_t comms_buffer;
@@ -135,15 +135,15 @@ bool request_is_enabled(smx_simcall_t req)
 #if SIMGRID_HAVE_MC
       // Fetch act from MCed memory:
       // HACK, type puning
-      simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_comm;
+      simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
       if (mc_model_checker != nullptr) {
         memcpy(&act, buffer + comms->elmsize * index, sizeof(act));
         mc_model_checker->process().read(temp_comm, remote(act));
-        act = static_cast<simgrid::kernel::activity::Comm*>(temp_comm.getBuffer());
+        act = static_cast<simgrid::kernel::activity::CommImpl*>(temp_comm.getBuffer());
       }
       else
 #endif
-        act = xbt_dynar_get_as(comms, index, simgrid::kernel::activity::Comm*);
+        act = xbt_dynar_get_as(comms, index, simgrid::kernel::activity::CommImpl*);
       if (act->src_proc && act->dst_proc)
         return true;
     }

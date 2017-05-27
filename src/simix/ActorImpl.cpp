@@ -10,20 +10,20 @@
 
 #include <boost/range/algorithm.hpp>
 
-#include <xbt/functional.hpp>
-#include <xbt/ex.hpp>
-#include <xbt/sysdep.h>
-#include <xbt/log.h>
-#include <xbt/dict.h>
+#include "xbt/dict.h"
+#include "xbt/ex.hpp"
+#include "xbt/functional.hpp"
+#include "xbt/log.h"
+#include "xbt/sysdep.h"
 
 #include "simgrid/s4u/Host.hpp"
 
-#include <mc/mc.h>
+#include "mc/mc.h"
 
 #include "smx_private.h"
+#include "src/kernel/activity/SleepImpl.hpp"
 #include "src/kernel/activity/SynchroIo.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
-#include "src/kernel/activity/SynchroSleep.hpp"
 #include "src/mc/mc_replay.h"
 #include "src/mc/remote/Client.hpp"
 #include "src/msg/msg_private.h"
@@ -96,7 +96,7 @@ void SIMIX_process_cleanup(smx_actor_t process)
   /* cancel non-blocking communications */
   smx_activity_t synchro = static_cast<smx_activity_t>(process->comms.front());
   while (not process->comms.empty()) {
-    simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
+    simgrid::kernel::activity::CommImpl* comm = static_cast<simgrid::kernel::activity::CommImpl*>(synchro);
 
     /* make sure no one will finish the comm after this process is destroyed,
      * because src_proc or dst_proc would be an invalid pointer */
@@ -425,9 +425,12 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
   /* destroy the blocking synchro if any */
   if (process->waiting_synchro) {
 
-    simgrid::kernel::activity::Exec *exec = dynamic_cast<simgrid::kernel::activity::Exec*>(process->waiting_synchro);
-    simgrid::kernel::activity::Comm *comm = dynamic_cast<simgrid::kernel::activity::Comm*>(process->waiting_synchro);
-    simgrid::kernel::activity::Sleep *sleep = dynamic_cast<simgrid::kernel::activity::Sleep*>(process->waiting_synchro);
+    simgrid::kernel::activity::ExecImpl* exec =
+        dynamic_cast<simgrid::kernel::activity::ExecImpl*>(process->waiting_synchro);
+    simgrid::kernel::activity::CommImpl* comm =
+        dynamic_cast<simgrid::kernel::activity::CommImpl*>(process->waiting_synchro);
+    simgrid::kernel::activity::SleepImpl* sleep =
+        dynamic_cast<simgrid::kernel::activity::SleepImpl*>(process->waiting_synchro);
     simgrid::kernel::activity::Raw *raw = dynamic_cast<simgrid::kernel::activity::Raw*>(process->waiting_synchro);
     simgrid::kernel::activity::Io *io = dynamic_cast<simgrid::kernel::activity::Io*>(process->waiting_synchro);
 
@@ -484,18 +487,21 @@ void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const
   /* cancel the blocking synchro if any */
   if (process->waiting_synchro) {
 
-    simgrid::kernel::activity::Exec *exec = dynamic_cast<simgrid::kernel::activity::Exec*>(process->waiting_synchro);
+    simgrid::kernel::activity::ExecImpl* exec =
+        dynamic_cast<simgrid::kernel::activity::ExecImpl*>(process->waiting_synchro);
     if (exec != nullptr) {
       SIMIX_execution_cancel(process->waiting_synchro);
     }
 
-    simgrid::kernel::activity::Comm *comm = dynamic_cast<simgrid::kernel::activity::Comm*>(process->waiting_synchro);
+    simgrid::kernel::activity::CommImpl* comm =
+        dynamic_cast<simgrid::kernel::activity::CommImpl*>(process->waiting_synchro);
     if (comm != nullptr) {
       process->comms.remove(comm);
       comm->cancel();
     }
 
-    simgrid::kernel::activity::Sleep *sleep = dynamic_cast<simgrid::kernel::activity::Sleep*>(process->waiting_synchro);
+    simgrid::kernel::activity::SleepImpl* sleep =
+        dynamic_cast<simgrid::kernel::activity::SleepImpl*>(process->waiting_synchro);
     if (sleep != nullptr) {
       SIMIX_process_sleep_destroy(process->waiting_synchro);
       if (not xbt_dynar_member(simix_global->process_to_run, &(process)) && process != SIMIX_process_self()) {
@@ -691,7 +697,7 @@ void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, do
 }
 
 static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_activity_t synchro){
-  simgrid::kernel::activity::Sleep *sleep = static_cast<simgrid::kernel::activity::Sleep*>(synchro);
+  simgrid::kernel::activity::SleepImpl* sleep = static_cast<simgrid::kernel::activity::SleepImpl*>(synchro);
 
   if (sleep->surf_sleep) {
     sleep->surf_sleep->cancel();
@@ -751,7 +757,7 @@ smx_activity_t SIMIX_process_sleep(smx_actor_t process, double duration)
   if (host->isOff())
     THROWF(host_error, 0, "Host %s failed, you cannot sleep there.", host->cname());
 
-  simgrid::kernel::activity::Sleep *synchro = new simgrid::kernel::activity::Sleep();
+  simgrid::kernel::activity::SleepImpl* synchro = new simgrid::kernel::activity::SleepImpl();
   synchro->host = host;
   synchro->surf_sleep                       = host->pimpl_cpu->sleep(duration);
   synchro->surf_sleep->setData(synchro);
@@ -763,7 +769,7 @@ smx_activity_t SIMIX_process_sleep(smx_actor_t process, double duration)
 void SIMIX_process_sleep_destroy(smx_activity_t synchro)
 {
   XBT_DEBUG("Destroy synchro %p", synchro);
-  simgrid::kernel::activity::Sleep *sleep = static_cast<simgrid::kernel::activity::Sleep*>(synchro);
+  simgrid::kernel::activity::SleepImpl* sleep = static_cast<simgrid::kernel::activity::SleepImpl*>(synchro);
 
   if (sleep->surf_sleep) {
     sleep->surf_sleep->unref();

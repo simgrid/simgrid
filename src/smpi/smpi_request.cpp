@@ -3,16 +3,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/smpi/smpi_request.hpp"
+
 #include "mc/mc.h"
+#include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/mc_replay.h"
 #include "src/smpi/SmpiHost.hpp"
-#include "src/kernel/activity/SynchroComm.hpp"
 #include "src/smpi/private.h"
 #include "src/smpi/smpi_comm.hpp"
 #include "src/smpi/smpi_datatype.hpp"
 #include "src/smpi/smpi_op.hpp"
 #include "src/smpi/smpi_process.hpp"
-#include "src/smpi/smpi_request.hpp"
 
 #include <algorithm>
 
@@ -651,7 +652,8 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   }
 
   if (request->action_ != nullptr){
-    simgrid::kernel::activity::Comm *sync_comm = static_cast<simgrid::kernel::activity::Comm*>(request->action_);
+    simgrid::kernel::activity::CommImpl* sync_comm =
+        static_cast<simgrid::kernel::activity::CommImpl*>(request->action_);
     MPI_Request req                            = static_cast<MPI_Request>(sync_comm->src_data);
     *flag = 1;
     if(status != MPI_STATUS_IGNORE && (req->flags_ & PREPARED) == 0) {

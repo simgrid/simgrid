@@ -5,11 +5,10 @@
 
 #include "mc/mc.h"
 #include "smx_private.h"
+#include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/mc_replay.h"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
-#include <xbt/ex.hpp>
-
-#include "src/kernel/activity/SynchroComm.hpp"
+#include "xbt/ex.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix, "SIMIX hosts");
 
@@ -162,7 +161,7 @@ smx_activity_t SIMIX_execution_start(smx_actor_t issuer, const char *name, doubl
                                     double bound){
 
   /* alloc structures and initialize */
-  simgrid::kernel::activity::Exec *exec = new simgrid::kernel::activity::Exec(name, issuer->host);
+  simgrid::kernel::activity::ExecImpl* exec = new simgrid::kernel::activity::ExecImpl(name, issuer->host);
 
   /* set surf's action */
   if (not MC_is_active() && not MC_record_replay_is_active()) {
@@ -185,7 +184,7 @@ smx_activity_t SIMIX_execution_parallel_start(const char* name, int host_nb, sg_
 {
 
   /* alloc structures and initialize */
-  simgrid::kernel::activity::Exec *exec = new simgrid::kernel::activity::Exec(name, nullptr);
+  simgrid::kernel::activity::ExecImpl* exec = new simgrid::kernel::activity::ExecImpl(name, nullptr);
 
   /* set surf's synchro */
   sg_host_t *host_list_cpy = xbt_new0(sg_host_t, host_nb);
@@ -216,7 +215,7 @@ smx_activity_t SIMIX_execution_parallel_start(const char* name, int host_nb, sg_
 void SIMIX_execution_cancel(smx_activity_t synchro)
 {
   XBT_DEBUG("Cancel synchro %p", synchro);
-  simgrid::kernel::activity::Exec *exec = static_cast<simgrid::kernel::activity::Exec *>(synchro);
+  simgrid::kernel::activity::ExecImpl* exec = static_cast<simgrid::kernel::activity::ExecImpl*>(synchro);
 
   if (exec->surf_exec)
     exec->surf_exec->cancel();
@@ -224,21 +223,21 @@ void SIMIX_execution_cancel(smx_activity_t synchro)
 
 void SIMIX_execution_set_priority(smx_activity_t synchro, double priority)
 {
-  simgrid::kernel::activity::Exec *exec = static_cast<simgrid::kernel::activity::Exec *>(synchro);
+  simgrid::kernel::activity::ExecImpl* exec = static_cast<simgrid::kernel::activity::ExecImpl*>(synchro);
   if(exec->surf_exec)
     exec->surf_exec->setPriority(priority);
 }
 
 void SIMIX_execution_set_bound(smx_activity_t synchro, double bound)
 {
-  simgrid::kernel::activity::Exec *exec = static_cast<simgrid::kernel::activity::Exec *>(synchro);
+  simgrid::kernel::activity::ExecImpl* exec = static_cast<simgrid::kernel::activity::ExecImpl*>(synchro);
   if(exec->surf_exec)
     static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)->setBound(bound);
 }
 
 void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_activity_t synchro)
 {
-  simgrid::kernel::activity::Exec *exec = static_cast<simgrid::kernel::activity::Exec *>(synchro);
+  simgrid::kernel::activity::ExecImpl* exec = static_cast<simgrid::kernel::activity::ExecImpl*>(synchro);
   XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro, (int)synchro->state);
 
   /* Associate this simcall to the synchro */
@@ -257,7 +256,7 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_activity_t synchr
     SIMIX_execution_finish(exec);
 }
 
-void SIMIX_execution_finish(simgrid::kernel::activity::Exec *exec)
+void SIMIX_execution_finish(simgrid::kernel::activity::ExecImpl* exec)
 {
   for (smx_simcall_t simcall : exec->simcalls) {
     switch (exec->state) {
@@ -305,13 +304,13 @@ void SIMIX_set_category(smx_activity_t synchro, const char *category)
   if (synchro->state != SIMIX_RUNNING)
     return;
 
-  simgrid::kernel::activity::Exec *exec = dynamic_cast<simgrid::kernel::activity::Exec *>(synchro);
+  simgrid::kernel::activity::ExecImpl* exec = dynamic_cast<simgrid::kernel::activity::ExecImpl*>(synchro);
   if (exec != nullptr) {
     exec->surf_exec->setCategory(category);
     return;
   }
 
-  simgrid::kernel::activity::Comm *comm = dynamic_cast<simgrid::kernel::activity::Comm *>(synchro);
+  simgrid::kernel::activity::CommImpl* comm = dynamic_cast<simgrid::kernel::activity::CommImpl*>(synchro);
   if (comm != nullptr) {
     comm->surf_comm->setCategory(category);
   }

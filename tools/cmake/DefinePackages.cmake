@@ -30,13 +30,6 @@ set(EXTRA_DIST
   src/simix/smx_network_private.h
   src/simix/smx_private.h
   src/simix/smx_synchro_private.h
-  src/kernel/activity/ActivityImpl.hpp
-  src/kernel/activity/CommImpl.hpp
-  src/kernel/activity/SynchroComm.hpp
-  src/kernel/activity/SynchroExec.hpp
-  src/kernel/activity/SynchroIo.hpp
-  src/kernel/activity/SynchroSleep.hpp
-  src/kernel/activity/SynchroRaw.hpp
   src/smpi/colls/coll_tuned_topo.h
   src/smpi/colls/colls_private.h
   src/smpi/colls/smpi_mvapich2_selector_stampede.h
@@ -385,13 +378,19 @@ set(SIMIX_SRC
   src/simix/smx_synchro.cpp
   src/simix/popping.cpp
   src/kernel/activity/ActivityImpl.cpp
+  src/kernel/activity/ActivityImpl.hpp
+  src/kernel/activity/CommImpl.cpp
+  src/kernel/activity/CommImpl.hpp
+  src/kernel/activity/ExecImpl.cpp
+  src/kernel/activity/ExecImpl.hpp
   src/kernel/activity/MailboxImpl.cpp
   src/kernel/activity/MailboxImpl.hpp
-  src/kernel/activity/SynchroComm.cpp
-  src/kernel/activity/SynchroExec.cpp
-  src/kernel/activity/SynchroSleep.cpp
-  src/kernel/activity/SynchroRaw.cpp
+  src/kernel/activity/SleepImpl.cpp
+  src/kernel/activity/SleepImpl.hpp
   src/kernel/activity/SynchroIo.cpp
+  src/kernel/activity/SynchroIo.hpp
+  src/kernel/activity/SynchroRaw.cpp
+  src/kernel/activity/SynchroRaw.hpp
   
   ${SIMIX_GENERATED_SRC}
   )

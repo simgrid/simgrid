@@ -6,23 +6,25 @@
 #ifndef SIMIX_SYNCHRO_SLEEP_HPP
 #define SIMIX_SYNCHRO_SLEEP_HPP
 
-#include "surf/surf.h"
 #include "src/kernel/activity/ActivityImpl.hpp"
+#include "surf/surf.h"
 
 namespace simgrid {
 namespace kernel {
 namespace activity {
 
-  XBT_PUBLIC_CLASS Sleep : public ActivityImpl {
-  public:
-    void suspend() override;
-    void resume() override;
-    void post() override;
+XBT_PUBLIC_CLASS SleepImpl : public ActivityImpl
+{
+public:
+  void suspend() override;
+  void resume() override;
+  void post() override;
 
-    sg_host_t host = nullptr;           /* The host that is sleeping */
-    surf_action_t surf_sleep = nullptr; /* The Surf sleeping action encapsulated */
-  };
-
-}}} // namespace simgrid::kernel::activity
+  sg_host_t host           = nullptr; /* The host that is sleeping */
+  surf_action_t surf_sleep = nullptr; /* The Surf sleeping action encapsulated */
+};
+}
+}
+} // namespace simgrid::kernel::activity
 
 #endif

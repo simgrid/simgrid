@@ -86,16 +86,15 @@ void MC_handle_comm_pattern(
   case MC_CALL_TYPE_WAIT:
   case MC_CALL_TYPE_WAITANY:
     {
-      simgrid::mc::RemotePtr<simgrid::kernel::activity::Comm> comm_addr = nullptr;
-      if (call_type == MC_CALL_TYPE_WAIT)
-        comm_addr = remote(static_cast<simgrid::kernel::activity::Comm*>(
-          simcall_comm_wait__get__comm(req)));
-      else {
-        simgrid::kernel::activity::Comm* addr;
-        // comm_addr = REMOTE(xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_synchro_t)):
-        simgrid::mc::read_element(mc_model_checker->process(), &addr,
-          remote(simcall_comm_waitany__get__comms(req)), value, sizeof(comm_addr));
-        comm_addr = remote(addr);
+    simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> comm_addr = nullptr;
+    if (call_type == MC_CALL_TYPE_WAIT)
+      comm_addr = remote(static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__get__comm(req)));
+    else {
+      simgrid::kernel::activity::CommImpl* addr;
+      // comm_addr = REMOTE(xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_synchro_t)):
+      simgrid::mc::read_element(mc_model_checker->process(), &addr, remote(simcall_comm_waitany__get__comms(req)),
+                                value, sizeof(comm_addr));
+      comm_addr = remote(addr);
       }
       checker->complete_comm_pattern(pattern, comm_addr,
         MC_smx_simcall_get_issuer(req)->pid, backtracking);

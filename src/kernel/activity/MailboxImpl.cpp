@@ -4,7 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/MailboxImpl.hpp"
-#include "src/kernel/activity/SynchroComm.hpp"
+
+#include "src/kernel/activity/CommImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_mailbox, simix, "Mailbox implementation");
 
@@ -52,7 +53,7 @@ void MailboxImpl::setReceiver(s4u::ActorPtr actor)
 /** @brief Pushes a communication activity into a mailbox
  *  @param comm What to add
  */
-void MailboxImpl::push(activity::Comm* comm)
+void MailboxImpl::push(activity::CommImpl* comm)
 {
   this->comm_queue.push_back(comm);
   comm->mbox = this;
@@ -63,7 +64,7 @@ void MailboxImpl::push(activity::Comm* comm)
  */
 void MailboxImpl::remove(smx_activity_t activity)
 {
-  simgrid::kernel::activity::Comm* comm = static_cast<simgrid::kernel::activity::Comm*>(activity);
+  simgrid::kernel::activity::CommImpl* comm = static_cast<simgrid::kernel::activity::CommImpl*>(activity);
 
   comm->mbox = nullptr;
   for (auto it = this->comm_queue.begin(); it != this->comm_queue.end(); it++)

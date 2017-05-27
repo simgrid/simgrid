@@ -27,9 +27,9 @@
 
 #include "src/smpi/smpi_process.hpp"
 
-#include "src/kernel/activity/SynchroExec.hpp"
-#include "src/kernel/activity/SynchroComm.hpp"
-#include "src/kernel/activity/SynchroSleep.hpp"
+#include "src/kernel/activity/CommImpl.hpp"
+#include "src/kernel/activity/ExecImpl.hpp"
+#include "src/kernel/activity/SleepImpl.hpp"
 #include "src/kernel/activity/SynchroIo.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 
@@ -654,13 +654,13 @@ void SIMIX_display_process_status()
 
       const char* synchro_description = "unknown";
 
-      if (dynamic_cast<simgrid::kernel::activity::Exec*>(process->waiting_synchro) != nullptr)
+      if (dynamic_cast<simgrid::kernel::activity::ExecImpl*>(process->waiting_synchro) != nullptr)
         synchro_description = "execution";
 
-      if (dynamic_cast<simgrid::kernel::activity::Comm*>(process->waiting_synchro) != nullptr)
+      if (dynamic_cast<simgrid::kernel::activity::CommImpl*>(process->waiting_synchro) != nullptr)
         synchro_description = "communication";
 
-      if (dynamic_cast<simgrid::kernel::activity::Sleep*>(process->waiting_synchro) != nullptr)
+      if (dynamic_cast<simgrid::kernel::activity::SleepImpl*>(process->waiting_synchro) != nullptr)
         synchro_description = "sleeping";
 
       if (dynamic_cast<simgrid::kernel::activity::Raw*>(process->waiting_synchro) != nullptr)
