@@ -65,12 +65,6 @@ shipped in the archive:
    until one activity of the set completes, no matter which terminates
    first.
    
- - <b>Yielding to other processes</b>.
-   @ref examples/msg/async-yield/async-yield.c\n
-   The @ref MSG_process_yield function interrupts the execution of the
-   current process, leaving a chance to run to the other processes
-   that are ready to run at the exact same timestamp
-
 @section msg_ex_process Acting on Processes
 
   - <b>Creating processes</b>. 
@@ -91,6 +85,12 @@ shipped in the archive:
     @ref examples/msg/process-migration/process-migration.c \n
     Processes can move or be moved from a host to another with the @ref MSG_process_migrate function.
     
+  - <b>Yielding to other processes</b>.
+    @ref examples/msg/process-yield/process-yield.c\n
+    The @ref MSG_process_yield function interrupts the execution of the
+    current process, leaving a chance to run to the other processes
+    that are ready to run at the exact same timestamp
+
   - <b>Controling the process life cycle from the XML</b>.
     @ref examples/msg/process-startkilltime/process-startkilltime.c \n
     You can specify a start time and a kill time in the deployment
