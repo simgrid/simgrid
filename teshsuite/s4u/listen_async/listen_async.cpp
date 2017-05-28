@@ -41,7 +41,6 @@ static void server()
   xbt_free(res);
 
   XBT_INFO("Data successfully received from asynchronous mailbox");
-  XBT_DEBUG("comm:%p", sendComm.get());
 }
 
 int main(int argc, char* argv[])
