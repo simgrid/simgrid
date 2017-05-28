@@ -186,8 +186,6 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
   double global_timeout = MSG_get_clock() + find_node_global_timeout;
   unsigned int steps = 0;
 
-  xbt_assert((id_to_find >= 0), "Id supplied incorrect");
-
   /* First we build a list of who we already know */
   answer_t node_list = node_find_closest(node, id_to_find);
   xbt_assert((node_list != NULL), "node_list incorrect");
@@ -276,7 +274,7 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
 unsigned int ping(node_t node, unsigned int id_to_ping)
 {
   char mailbox[MAILBOX_NAME_SIZE];
-  snprintf(mailbox,MAILBOX_NAME_SIZE, "%d", id_to_ping);
+  snprintf(mailbox, MAILBOX_NAME_SIZE, "%u", id_to_ping);
 
   double timeout = MSG_get_clock() + ping_timeout;
 
