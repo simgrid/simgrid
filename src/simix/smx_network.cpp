@@ -58,7 +58,7 @@ _find_matching_comm(boost::circular_buffer_space_optimized<smx_activity_t>* dequ
       XBT_DEBUG("Found a matching communication synchro %p", comm);
       if (remove_matching)
         deque->erase(it);
-      comm = static_cast<simgrid::kernel::activity::CommImpl*>(SIMIX_comm_ref(comm));
+      SIMIX_comm_ref(comm);
 #if SIMGRID_HAVE_MC
       comm->mbox_cpy = comm->mbox;
 #endif
@@ -465,11 +465,12 @@ static inline void SIMIX_comm_start(smx_activity_t synchro)
     simgrid::s4u::Host* sender   = comm->src_proc->host;
     simgrid::s4u::Host* receiver = comm->dst_proc->host;
 
-    XBT_DEBUG("Starting communication %p from '%s' to '%s'", synchro, sender->cname(), receiver->cname());
-
     comm->surf_comm = surf_network_model->communicate(sender, receiver, comm->task_size, comm->rate);
     comm->surf_comm->setData(synchro);
     comm->state = SIMIX_RUNNING;
+
+    XBT_DEBUG("Starting communication %p from '%s' to '%s' (surf_action: %p)", synchro, sender->cname(),
+              receiver->cname(), comm->surf_comm);
 
     /* If a link is failed, detect it immediately */
     if (comm->surf_comm->getState() == simgrid::surf::Action::State::failed) {
@@ -527,7 +528,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
 
     /* If the synchro is still in a rendez-vous point then remove from it */
     if (comm->mbox)
-      comm->mbox->remove(synchro);
+      comm->mbox->remove(comm);
 
     XBT_DEBUG("SIMIX_comm_finish: synchro state = %d", (int)synchro->state);
 

@@ -24,7 +24,7 @@ Comm::~Comm()
     xbt_backtrace_display_current();
   }
   if (pimpl_)
-    pimpl_->unref();
+    SIMIX_comm_unref(pimpl_);
 }
 
 s4u::CommPtr Comm::send_init(s4u::MailboxPtr chan)
@@ -96,11 +96,6 @@ void Comm::start() {
 
   } else {
     xbt_die("Cannot start a communication before specifying whether we are the sender or the receiver");
-  }
-  while (refcount_ > 1) { // Pass all the refcounts we had to the underlying pimpl since we are delegating the
-                          // refcounting to it afterward
-    refcount_--;
-    pimpl_->ref();
   }
   state_ = started;
 }
@@ -197,23 +192,14 @@ bool Comm::test() {
 
 void intrusive_ptr_release(simgrid::s4u::Comm* c)
 {
-  if (c->pimpl_ != nullptr) {
-    if (c->pimpl_->unref()) {
-      c->pimpl_ = nullptr;
-      delete c;
-    }
-  } else if (c->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
+  if (c->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
     std::atomic_thread_fence(std::memory_order_acquire);
     delete c;
   }
 }
 void intrusive_ptr_add_ref(simgrid::s4u::Comm* c)
 {
-  if (c->pimpl_ != nullptr) {
-    c->pimpl_->ref();
-  } else {
-    c->refcount_.fetch_add(1, std::memory_order_relaxed);
-  }
+  c->refcount_.fetch_add(1, std::memory_order_relaxed);
 }
 }
 } // namespaces
