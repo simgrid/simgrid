@@ -219,7 +219,7 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
       case SURF_VM_STATE_DESTROYED:
         stateName = "destroyed";
         break;
-      case SURF_VM_STATE_RUNNING:
+      default: /* SURF_VM_STATE_RUNNING or unexpected values */
         THROW_IMPOSSIBLE;
         break;
     }
