@@ -9,21 +9,11 @@
 
 #ifdef __cplusplus
 
+#include "s4u/forward.hpp"
 #include "xbt/base.h"
 #include <boost/intrusive_ptr.hpp>
 
 namespace simgrid {
-namespace s4u {
-class Actor;
-class Comm;
-class Host;
-class Link;
-class Mailbox;
-class NetZone;
-
-XBT_PUBLIC(void) intrusive_ptr_release(Comm* c);
-XBT_PUBLIC(void) intrusive_ptr_add_ref(Comm* c);
-}
 namespace kernel {
 namespace activity {
 class ActivityImpl;
