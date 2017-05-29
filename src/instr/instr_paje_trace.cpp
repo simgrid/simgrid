@@ -227,20 +227,23 @@ DefineContainerEvent::DefineContainerEvent(type_t type)
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event_type);
   //print it
   print ();
+	delete this;
 }
 
 void DefineContainerEvent::print() {
-  if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-    stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << (int)this->event_type;
-    stream << " " << type->id << " " << type->father->id << " " << type->name;
-    print_row();
-  } else if (instr_fmt_type == instr_fmt_TI) {
-    /* Nothing to do */
-  } else {
-    THROW_IMPOSSIBLE;
-  }
+	if (instr_fmt_type == instr_fmt_paje) {
+		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+		stream << std::fixed << std::setprecision(TRACE_precision());
+		stream << (int)this->event_type;
+		stream << " " << type->id
+				<< " " << type->father->id
+				<< " " << type->name;
+		print_row();
+	} else if (instr_fmt_type == instr_fmt_TI) {
+		/* Nothing to do */
+	} else {
+		THROW_IMPOSSIBLE;
+	}
 }
 
 
@@ -254,6 +257,7 @@ DefineVariableTypeEvent::DefineVariableTypeEvent(type_t type)
 
   //print it
   print ();
+	delete this;
 }
 
 void DefineVariableTypeEvent::print() {
@@ -282,6 +286,7 @@ DefineStateTypeEvent::DefineStateTypeEvent(type_t type)
 
   //print it
   print();
+	delete this;
 }
 
 
@@ -338,6 +343,7 @@ DefineLinkTypeEvent::DefineLinkTypeEvent(type_t type, type_t source, type_t dest
 
   //print it
   print();
+	delete this;
 }
 
 void DefineLinkTypeEvent::print() {
@@ -364,6 +370,7 @@ DefineEntityValueEvent::DefineEntityValueEvent (val_t value)
 
   //print it
   print();
+	delete this;
 }
 
 
@@ -392,6 +399,7 @@ CreateContainerEvent::CreateContainerEvent (container_t container)
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
   print();
+	delete this;
 }
 
 void CreateContainerEvent::print() {
@@ -445,6 +453,7 @@ DestroyContainerEvent::DestroyContainerEvent (container_t container)
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
   print();
+	delete this;
 }
 
 void DestroyContainerEvent::print() {
@@ -818,6 +827,7 @@ ResetStateEvent::ResetStateEvent (double timestamp, container_t container, type_
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
   insert_into_buffer (this);
+	delete [] this;
 }
 
 void ResetStateEvent::print() {
