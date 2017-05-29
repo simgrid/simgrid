@@ -125,6 +125,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx
   } else {
     XBT_DEBUG("Receive already pushed");
     SIMIX_comm_unref(this_comm);
+    SIMIX_comm_unref(this_comm);
 
     other_comm->state = SIMIX_READY;
     other_comm->type = SIMIX_COMM_READY;
