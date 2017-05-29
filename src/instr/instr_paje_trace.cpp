@@ -224,6 +224,7 @@ DefineContainerEvent::DefineContainerEvent(type_t type)
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event_type);
   //print it
   print ();
+	delete this;
 }
 
 void DefineContainerEvent::print() {
@@ -240,7 +241,6 @@ void DefineContainerEvent::print() {
 	} else {
 		THROW_IMPOSSIBLE;
 	}
-
 }
 
 
@@ -255,6 +255,7 @@ DefineVariableTypeEvent::DefineVariableTypeEvent(type_t type)
 
   //print it
   print ();
+	delete this;
 }
 
 void DefineVariableTypeEvent::print() {
@@ -285,6 +286,7 @@ DefineStateTypeEvent::DefineStateTypeEvent(type_t type)
 
   //print it
   print();
+	delete this;
 }
 
 
@@ -345,6 +347,7 @@ DefineLinkTypeEvent::DefineLinkTypeEvent(type_t type, type_t source, type_t dest
 
   //print it
   print();
+	delete this;
 }
 
 void DefineLinkTypeEvent::print() {
@@ -375,6 +378,7 @@ DefineEntityValueEvent::DefineEntityValueEvent (val_t value)
 
   //print it
   print();
+	delete this;
 }
 
 
@@ -405,6 +409,7 @@ CreateContainerEvent::CreateContainerEvent (container_t container)
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
   print();
+	delete this;
 }
 
 void CreateContainerEvent::print() {
@@ -460,6 +465,7 @@ DestroyContainerEvent::DestroyContainerEvent (container_t container)
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
   print();
+	delete this;
 }
 
 void DestroyContainerEvent::print() {
@@ -846,6 +852,7 @@ ResetStateEvent::ResetStateEvent (double timestamp, container_t container, type_
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
   insert_into_buffer (this);
+	delete [] this;
 }
 
 void ResetStateEvent::print() {
