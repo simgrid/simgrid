@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mc/mc.h"
-#include "src/mc/mc_ignore.h"
 #include "src/mc/mc_replay.h"
 #include "src/msg/msg_private.h"
 #include "src/simix/smx_private.h"
@@ -196,12 +195,12 @@ xbt_mutex_t Process::mailboxes_mutex()
 }
 
 #if HAVE_PAPI
-int Process::papi_event_set(void)
+int Process::papi_event_set()
 {
   return papi_event_set_;
 }
 
-papi_counter_t& smpi_process_papi_counters(void)
+papi_counter_t& smpi_process_papi_counters()
 {
   return papi_counter_data_;
 }

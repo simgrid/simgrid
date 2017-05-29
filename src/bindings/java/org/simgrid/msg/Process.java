@@ -51,11 +51,8 @@ public abstract class Process implements Runnable {
 
 	/** Time at which the process should be created  */
 	protected double startTime = 0;
-	/** Time at which the process should be killed.
-	 * 
-	 * Set at creation, and used internally by SimGrid
-	 */
-	private double killTime = -1;
+	/** Time at which the process should be killed */
+	private double killTime = -1; // Used from the C world
 
 	private String name = null;
 	
@@ -116,9 +113,9 @@ public abstract class Process implements Runnable {
 	public Process(Host host, String name, String[]args) 
 	{
 		if (host == null)
-			throw new NullPointerException("Cannot create a process on the null host");
+			throw new IllegalArgumentException("Cannot create a process on the null host");
 		if (name == null)
-			throw new NullPointerException("Process name cannot be null");
+			throw new IllegalArgumentException("Process name cannot be null");
 		
 		this.host = host;
 		this.name = name;

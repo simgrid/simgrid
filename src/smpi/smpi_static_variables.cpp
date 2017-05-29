@@ -24,7 +24,7 @@ void smpi_register_static(void* arg, void_f_pvoid_t free_fn) {
 }
 
 void smpi_free_static() {
-  while (!registered_static_variables_stack.empty()) {
+  while (not registered_static_variables_stack.empty()) {
     s_smpi_static_t elm = registered_static_variables_stack.top();
     elm.free_fn(elm.ptr);
     registered_static_variables_stack.pop();

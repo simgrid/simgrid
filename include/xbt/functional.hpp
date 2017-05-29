@@ -21,8 +21,8 @@
 #include <utility>
 #include <vector>
 
-#include <xbt/sysdep.h>
-#include <xbt/utility.hpp>
+#include "xbt/sysdep.h"
+#include "xbt/utility.hpp"
 
 namespace simgrid {
 namespace xbt {
@@ -232,9 +232,7 @@ private:
     vtable_ = &vtable;
   }
 
-  template<class F>
-  typename std::enable_if<!canSBO<F>()>::type
-  init(F code)
+  template <class F> typename std::enable_if<not canSBO<F>()>::type init(F code)
   {
     const static TaskVtable vtable {
       // Call:

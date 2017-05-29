@@ -230,7 +230,6 @@ static void handle_task(node_t node, msg_task_t task) {
   int j;
   int min;
   int max;
-  int d;
   int next;
   msg_task_t task_sent;
   task_data_t req_data;
@@ -280,7 +279,7 @@ static void handle_task(node_t node, msg_task_t task) {
     /* Join reply from all the node touched by the join  */
     case TASK_JOIN_LAST_REPLY:
       // if last node touched reply, copy its namespace set
-      // TODO: it works only if the two nodes are side to side (is it really the case ?)
+      // TODO: it works only if the two nodes are side to side (is it really the case ?)
       j = (task_data->sender_id < node->id) ? -1 : 0;
       for (i=0; i<NAMESPACE_SIZE/2; i++) {
         node->namespace_set[i] = task_data->state->namespace_set[i-j];
@@ -303,11 +302,11 @@ static void handle_task(node_t node, msg_task_t task) {
       min = (node->id==task_data->answer_id) ? 0 : shl(node->id, task_data->answer_id);
       max = shl(node->id, task_data->sender_id)+1;
       for (i=min;i<max;i++) {
-        d = domain(node->id, i); 
+        int d = domain(node->id, i);
         for (j=0; j<LEVEL_SIZE; j++)
           if (d!=j)
             node->routing_table[i][j] =  task_data->state->routing_table[i][j];
-          }
+      }
 
       node->ready--;
       // if the node is ready, do all the pending tasks and send update to known nodes

@@ -400,7 +400,7 @@ extern "C" void xbt_dynar_remove_n_at(xbt_dynar_t const dynar, const unsigned in
   unsigned long offset;
   unsigned long cur;
 
-  if (!n)
+  if (not n)
     return;
 
   _sanity_check_dynar(dynar);
@@ -431,13 +431,13 @@ extern "C" void xbt_dynar_remove_n_at(xbt_dynar_t const dynar, const unsigned in
  * \code
  * signed int position = -1;
  * xbt_dynar_foreach(dynar, iter, elem) {
- *    if (!memcmp(elem, searched_element, sizeof(*elem))) {
+ *    if (not memcmp(elem, searched_element, sizeof(*elem))) {
  *        position = iter;
  *        break;
  *    }
  * }
  * \endcode
- * 
+ *
  * Raises not_found_error if not found. If you have less than 2 millions elements, you probably want to use
  * #xbt_dynar_search_or_negative() instead, so that you don't have to TRY/CATCH on element not found.
  */
@@ -446,7 +446,7 @@ extern "C" unsigned int xbt_dynar_search(xbt_dynar_t const dynar, void* const el
   unsigned long it;
 
   for (it = 0; it < dynar->used; it++)
-    if (!memcmp(_xbt_dynar_elm(dynar, it), elem, dynar->elmsize)) {
+    if (not memcmp(_xbt_dynar_elm(dynar, it), elem, dynar->elmsize)) {
       return it;
     }
 
@@ -467,7 +467,7 @@ extern "C" signed int xbt_dynar_search_or_negative(xbt_dynar_t const dynar, void
   unsigned long it;
 
   for (it = 0; it < dynar->used; it++)
-    if (!memcmp(_xbt_dynar_elm(dynar, it), elem, dynar->elmsize)) {
+    if (not memcmp(_xbt_dynar_elm(dynar, it), elem, dynar->elmsize)) {
       return it;
     }
 
@@ -484,7 +484,7 @@ extern "C" int xbt_dynar_member(xbt_dynar_t const dynar, void* const elem)
   unsigned long it;
 
   for (it = 0; it < dynar->used; it++)
-    if (!memcmp(_xbt_dynar_elm(dynar, it), elem, dynar->elmsize)) {
+    if (not memcmp(_xbt_dynar_elm(dynar, it), elem, dynar->elmsize)) {
       return 1;
     }
 
@@ -700,9 +700,9 @@ extern "C" int xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2, int (*compar)(c
 {
   int i ;
   int size;
-  if((!d1) && (!d2))
+  if ((not d1) && (not d2))
     return 0;
-  if((!d1) || (!d2)) {
+  if ((not d1) || (not d2)) {
     XBT_DEBUG("nullptr dynar d1=%p d2=%p",d1,d2);
     xbt_dynar_free(&d2);
     return 1;
@@ -1080,7 +1080,7 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
   for (int cpt = 0; cpt < NB_ELEM; cpt++) {
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_shift(d, &s2);
-    xbt_test_assert(!strcmp(buf, s2), "The retrieved value is not the same than the injected one (%s!=%s)", buf, s2);
+    xbt_test_assert(not strcmp(buf, s2), "The retrieved value is not the same than the injected one (%s!=%s)", buf, s2);
     free(s2);
   }
   xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
@@ -1097,13 +1097,13 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
   /* 2. Traverse the dynar with the macro */
   xbt_dynar_foreach(d, iter, s1) {
     snprintf(buf,1023, "%u", NB_ELEM - iter - 1);
-    xbt_test_assert(!strcmp(buf, s1), "The retrieved value is not the same than the injected one (%s!=%s)", buf, s1);
+    xbt_test_assert(not strcmp(buf, s1), "The retrieved value is not the same than the injected one (%s!=%s)", buf, s1);
   }
   /* 3. Traverse the dynar with the macro */
   for (int cpt = 0; cpt < NB_ELEM; cpt++) {
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_pop(d, &s2);
-    xbt_test_assert(!strcmp(buf, s2), "The retrieved value is not the same than the injected one (%s!=%s)", buf, s2);
+    xbt_test_assert(not strcmp(buf, s2), "The retrieved value is not the same than the injected one (%s!=%s)", buf, s2);
     free(s2);
   }
   /* 4. Free the resources */
@@ -1127,22 +1127,22 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
   for (int cpt = 0; cpt < NB_ELEM / 2; cpt++) {
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_shift(d, &s2);
-    xbt_test_assert(!strcmp(buf, s2),
-                     "The retrieved value is not the same than the injected one at the begining (%s!=%s)", buf, s2);
+    xbt_test_assert(not strcmp(buf, s2),
+                    "The retrieved value is not the same than the injected one at the begining (%s!=%s)", buf, s2);
     free(s2);
   }
   for (int cpt = (NB_ELEM / 5) - 1; cpt >= 0; cpt--) {
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_shift(d, &s2);
-    xbt_test_assert(!strcmp(buf, s2),
-                     "The retrieved value is not the same than the injected one in the middle (%s!=%s)", buf, s2);
+    xbt_test_assert(not strcmp(buf, s2),
+                    "The retrieved value is not the same than the injected one in the middle (%s!=%s)", buf, s2);
     free(s2);
   }
   for (int cpt = NB_ELEM / 2; cpt < NB_ELEM; cpt++) {
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_shift(d, &s2);
-    xbt_test_assert(!strcmp(buf, s2), "The retrieved value is not the same than the injected one at the end (%s!=%s)",
-                     buf, s2);
+    xbt_test_assert(not strcmp(buf, s2),
+                    "The retrieved value is not the same than the injected one at the end (%s!=%s)", buf, s2);
     free(s2);
   }
   xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
@@ -1159,7 +1159,7 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
   for (int cpt = 2 * (NB_ELEM / 5); cpt < 4 * (NB_ELEM / 5); cpt++) {
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_remove_at(d, 2 * (NB_ELEM / 5), &s2);
-    xbt_test_assert(!strcmp(buf, s2), "Remove a bad value. Got %s, expected %s", s2, buf);
+    xbt_test_assert(not strcmp(buf, s2), "Remove a bad value. Got %s, expected %s", s2, buf);
     free(s2);
   }
   xbt_dynar_free(&d);           /* end_of_doxygen */

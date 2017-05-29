@@ -31,7 +31,7 @@ std::vector<simgrid::surf::LinkImpl*> parsed_link_list; /* temporary store of cu
  * Helping functions
  */
 void surf_parse_assert(bool cond, const char *fmt, ...) {
-  if (!cond ) {
+  if (not cond) {
     va_list va;
     va_start(va,fmt);
     int lineno = surf_parse_lineno;
@@ -315,7 +315,7 @@ void ETag_surfxml_storage()
   storage.id           = A_surfxml_storage_id;
   storage.type_id      = A_surfxml_storage_typeId;
   storage.content      = A_surfxml_storage_content;
-  storage.content_type = A_surfxml_storage_content___type;
+
   storage.attach       = A_surfxml_storage_attach;
   sg_platf_new_storage(&storage);
 }
@@ -338,7 +338,6 @@ void ETag_surfxml_storage___type()
   current_model_property_set    = nullptr;
 
   storage_type.content          = A_surfxml_storage___type_content;
-  storage_type.content_type     = A_surfxml_storage___type_content___type;
   storage_type.id               = A_surfxml_storage___type_id;
   storage_type.model            = A_surfxml_storage___type_model;
   storage_type.size             = surf_parse_get_size(A_surfxml_storage___type_size,
@@ -491,7 +490,7 @@ void STag_surfxml_prop()
     netzone->setProperty(A_surfxml_prop_id, A_surfxml_prop_value);
   }
   else{
-    if (!current_property_set)
+    if (not current_property_set)
       current_property_set = xbt_dict_new_homogeneous(&xbt_free_f); // Maybe, it should raise an error
     xbt_dict_set(current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), nullptr);
     XBT_DEBUG("add prop %s=%s into current property set %p", A_surfxml_prop_id, A_surfxml_prop_value,
@@ -1071,7 +1070,7 @@ void STag_surfxml_argument(){
 }
 
 void STag_surfxml_model___prop(){
-  if (!current_model_property_set)
+  if (not current_model_property_set)
     current_model_property_set = new std::map<std::string, std::string>();
 
   current_model_property_set->insert(

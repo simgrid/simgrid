@@ -31,7 +31,7 @@ do
    fi
 done
 
-### Cleanup previous runs
+### Cleanup previous runs
 
 ! [ -z "$WORKSPACE" ] || die "No WORKSPACE"
 [ -d "$WORKSPACE" ] || die "WORKSPACE ($WORKSPACE) does not exist"
@@ -66,11 +66,11 @@ ctest -D ExperimentalCoverage || true
 unset JAVA_TOOL_OPTIONS
 if [ -f Testing/TAG ] ; then
 
-  files=`find . -name "jacoco.exec"`
+  files=$( find . -name "jacoco.exec" )
   i=0
   for file in $files
   do
-    sourcepath=`dirname $file`
+    sourcepath=$( dirname $file )
     #convert jacoco reports in xml ones
     ant -f $WORKSPACE/tools/jenkins/jacoco.xml -Dexamplesrcdir=$WORKSPACE -Dbuilddir=$BUILDFOLDER/${sourcepath} -Djarfile=$BUILDFOLDER/simgrid.jar -Djacocodir=${JACOCO_PATH}/lib
     #convert jacoco xml reports in cobertura xml reports
@@ -80,6 +80,6 @@ if [ -f Testing/TAG ] ; then
 
    #convert all gcov reports to xml cobertura reports
    gcovr -r .. --xml-pretty -e teshsuite.* -u -o $WORKSPACE/xml_coverage.xml
-   xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml > CTestResults_memcheck.xml
+   xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl Testing/$( head -n 1 < Testing/TAG )/Test.xml > CTestResults_memcheck.xml
    mv CTestResults_memcheck.xml $WORKSPACE
 fi

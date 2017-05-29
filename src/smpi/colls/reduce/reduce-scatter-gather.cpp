@@ -40,7 +40,7 @@ int Coll_reduce_scatter_gather::reduce(void *sendbuf, void *recvbuf,
   extent = datatype->get_extent();
   /* If I'm not the root, then my recvbuf may not be valid, therefore
   I have to allocate a temporary one */
-  if (rank != root && !recvbuf) {
+  if (rank != root && not recvbuf) {
     temporary_buffer=1;
     recvbuf = (void *)smpi_get_tmp_recvbuffer(count * extent);
   }

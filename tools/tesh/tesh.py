@@ -28,7 +28,7 @@ under the terms of the license (GNU LGPL) which comes with this package.
 # print "WARNING: Output were only sorted using the $sort_prefix first chars.\n"
 #    if ( $sort_prefix > 0 );
 # print "WARNING: Use <! output sort 19> to sort by simulated date and process ID only.\n";
-#    
+#
 # print "----8<---------------  Begin of unprocessed observed output (as it should appear in file):\n";
 # map {print "> $_\n"} @{$cmd{'unsorted got'}};
 # print "--------------->8----  End of the unprocessed observed output.\n";
@@ -129,7 +129,7 @@ class FileReader(Singleton):
             self.filename = os.path.basename(filename)
             self.abspath = os.path.abspath(filename)
             self.f = open(self.filename_raw)
-        
+
         self.linenumber = 0
 
     def linenumber(self):
@@ -292,7 +292,7 @@ class Cmd(object):
             self.timeout *= 20
             self.args = TeshState().wrapper + self.args
         elif re.match(".*smpirun.*", self.args) is not None:
-            self.args = "sh " + self.args 
+            self.args = "sh " + self.args
         if TeshState().jenkins and self.timeout != None:
             self.timeout *= 10
 
@@ -305,13 +305,13 @@ class Cmd(object):
 
         try:
             proc = subprocess.Popen(args, bufsize=1, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
-        except OSError as e:
-            if e.errno == 8:
-                e.strerror += "\nOSError: [Errno 8] Executed scripts should start with shebang line (like #!/bin/sh)"
-            raise e
         except FileNotFoundError:
             print("["+FileReader().filename+":"+str(self.linenumber)+"] Cannot start '"+args[0]+"': File not found")
             exit(3)
+        except OSError as osE:
+            if osE.errno == 8:
+                osE.strerror += "\nOSError: [Errno 8] Executed scripts should start with shebang line (like #!/bin/sh)"
+            raise osE
 
         cmdName = FileReader().filename+":"+str(self.linenumber)
         try:
@@ -348,7 +348,7 @@ class Cmd(object):
                 self.output_pipe_stdout.sort(key=lambda x: x[:self.sort].lower())
             
             diff = list(difflib.unified_diff(self.output_pipe_stdout, stdouta,lineterm="",fromfile='expected', tofile='obtained'))
-            if len(diff) > 0: 
+            if len(diff) > 0:
                 print("Output of <"+cmdName+"> mismatch:")
                 if self.sort >= 0: # If sorted, truncate the diff output and show the unsorted version
                     difflen = 0;
@@ -418,7 +418,7 @@ if __name__ == '__main__':
     group1.add_argument('--setenv', metavar='var=value', action='append', help='set a specific environment variable')
     group1.add_argument('--cfg', metavar='arg', help='add parameter --cfg=arg to each command line')
     group1.add_argument('--log', metavar='arg', help='add parameter --log=arg to each command line')
-    group1.add_argument('--ignore-jenkins', action='store_true', help='ignore all cruft generated on SimGrid continous integration servers')
+    group1.add_argument('--ignore-jenkins', action='store_true', help='ignore all cruft generated on SimGrid continous integration servers')
     group1.add_argument('--wrapper', metavar='arg', help='Run each command in the provided wrapper (eg valgrind)')
     group1.add_argument('--keep', action='store_true', help='Keep the obtained output when it does not match the expected one')
 

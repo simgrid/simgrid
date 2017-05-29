@@ -38,7 +38,7 @@ void jedule_sd_init()
   my_jedule->root_container = root_container;
 }
 
-void jedule_sd_exit(void)
+void jedule_sd_exit()
 {
   delete my_jedule;
 }
@@ -47,7 +47,7 @@ void jedule_sd_dump(const char * filename)
 {
   if (my_jedule) {
     char *fname;
-    if (!filename) {
+    if (not filename) {
       fname = bprintf("%s.jed", xbt_binary_name);
     } else {
       fname = xbt_strdup(filename);

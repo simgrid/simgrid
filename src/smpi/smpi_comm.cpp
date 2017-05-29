@@ -79,7 +79,7 @@ int Comm::dup(MPI_Comm* newcomm){
   (*newcomm) = new  Comm(cp, this->topo());
   int ret = MPI_SUCCESS;
 
-  if(!attributes()->empty()){
+  if (not attributes()->empty()) {
     int flag;
     void* value_out;
     for(auto it : *attributes()){

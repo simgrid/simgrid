@@ -171,20 +171,20 @@ HostEnergy::~HostEnergy() = default;
 
 double HostEnergy::getWattMinAt(int pstate)
 {
-  xbt_assert(!power_range_watts_list.empty(), "No power range properties specified for host %s", host->cname());
+  xbt_assert(not power_range_watts_list.empty(), "No power range properties specified for host %s", host->cname());
   return power_range_watts_list[pstate].min;
 }
 
 double HostEnergy::getWattMaxAt(int pstate)
 {
-  xbt_assert(!power_range_watts_list.empty(), "No power range properties specified for host %s", host->cname());
+  xbt_assert(not power_range_watts_list.empty(), "No power range properties specified for host %s", host->cname());
   return power_range_watts_list[pstate].max;
 }
 
 /** @brief Computes the power consumed by the host according to the current pstate and processor load */
 double HostEnergy::getCurrentWattsValue(double cpu_load)
 {
-  xbt_assert(!power_range_watts_list.empty(), "No power range properties specified for host %s", host->cname());
+  xbt_assert(not power_range_watts_list.empty(), "No power range properties specified for host %s", host->cname());
 
   /* min_power corresponds to the power consumed when only one core is active */
   /* max_power is the power consumed at 100% cpu load       */

@@ -1,4 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2016-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,14 +7,12 @@
  * This was reported as bug #19893 on gforge.
  */
 
-package SemaphoreGC;
+package semaphoreGC;
 
 import org.simgrid.msg.*;
 import org.simgrid.msg.Process;
 
 class SemCreator extends Process {
-  Semaphore sem; 
-
   SemCreator(Host h, String n){
     super(h, n);
   }
@@ -23,7 +21,7 @@ class SemCreator extends Process {
     int j; 
     Msg.info("Creating 50 new Semaphores, yielding and triggering a GC after each");
     for(j = 1; j <= 50; j++) {
-      sem = new Semaphore(0);
+      new Semaphore(0);
       waitFor(10);
       System.gc();
     }
@@ -39,7 +37,7 @@ public class SemaphoreGC {
   public static void main(String[] args) throws Exception {
     Msg.init(args);
     if (args.length < 1) {
-      Msg.info("Usage: java -cp simgrid.jar:. semaphore.SemaphoreGC <deployment.xml>");
+      Msg.info("Usage: java -cp simgrid.jar:. semaphoreGC.SemaphoreGC <deployment.xml>");
       System.exit(1);
     }
     Msg.createEnvironment(args[0]);

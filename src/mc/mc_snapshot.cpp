@@ -9,8 +9,8 @@
 #include <memory>
 #include <utility>
 
-#include <xbt/asserts.h>
-#include <xbt/sysdep.h>
+#include "xbt/asserts.h"
+#include "xbt/sysdep.h"
 
 #include "src/internal_config.h"
 #include "src/smpi/private.h"
@@ -35,7 +35,7 @@ mc_mem_region_t mc_get_snapshot_region(
   size_t n = snapshot->snapshot_regions.size();
   for (size_t i = 0; i != n; ++i) {
     mc_mem_region_t region = snapshot->snapshot_regions[i].get();
-    if (!(region && region->contain(simgrid::mc::remote(addr))))
+    if (not(region && region->contain(simgrid::mc::remote(addr))))
       continue;
 
     if (region->storage_type() == simgrid::mc::StorageType::Privatized) {
@@ -132,7 +132,7 @@ int MC_snapshot_region_memcmp(
     res = 0;
   else
     res = memcmp(buffer1, buffer2, size);
-  if (!stack_alloc) {
+  if (not stack_alloc) {
     free(buffer1a);
     free(buffer2a);
   }
@@ -166,11 +166,6 @@ Snapshot::Snapshot(Process* process, int _num_state)
     , enabled_processes()
     , privatization_index(0)
     , hash(0)
-{
-
-}
-
-Snapshot::~Snapshot()
 {
 
 }
@@ -265,15 +260,14 @@ static void test_snapshot(bool sparse_checkpoint) {
 
     xbt_test_add("Reading whole region data for %i page(s)", n);
     const void* read = MC_region_read(&region, destination, source, byte_size);
-    xbt_test_assert(!memcmp(source, read, byte_size), "Mismatch in MC_region_read()");
+    xbt_test_assert(not memcmp(source, read, byte_size), "Mismatch in MC_region_read()");
 
     xbt_test_add("Reading parts of region data for %i page(s)", n);
     for(int j=0; j!=100; ++j) {
       size_t offset = rand() % byte_size;
       size_t size = rand() % (byte_size - offset);
       const void* read = MC_region_read(&region, destination, (const char*) source+offset, size);
-      xbt_test_assert(!memcmp((char*) source+offset, read, size),
-        "Mismatch in MC_region_read()");
+      xbt_test_assert(not memcmp((char*)source + offset, read, size), "Mismatch in MC_region_read()");
     }
 
     xbt_test_add("Compare whole region data for %i page(s)", n);
@@ -285,8 +279,9 @@ static void test_snapshot(bool sparse_checkpoint) {
     for(int j=0; j!=100; ++j) {
       size_t offset = rand() % byte_size;
       size_t size = rand() % (byte_size - offset);
-      xbt_test_assert(!MC_snapshot_region_memcmp((char*) source+offset, &region, (char*) source+offset, &region, size),
-        "Mismatch in MC_snapshot_region_memcmp()");
+      xbt_test_assert(
+          not MC_snapshot_region_memcmp((char*)source + offset, &region, (char*)source + offset, &region, size),
+          "Mismatch in MC_snapshot_region_memcmp()");
     }
 
     if (n==1) {

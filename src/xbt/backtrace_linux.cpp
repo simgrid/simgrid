@@ -186,7 +186,7 @@ std::vector<std::string> resolveBacktrace(
 
   XBT_VERB("Fire a first command: '%s'", cmd.c_str());
   FILE* pipe = popen(cmd.c_str(), "r");
-  if (!pipe) {
+  if (not pipe) {
     xbt_die("Cannot fork addr2line to display the backtrace");
   }
 
@@ -235,7 +235,7 @@ std::vector<std::string> resolveBacktrace(
       XBT_DEBUG("addr=%s (as string) =%#lx (as number)",
         addrs[i].c_str(), addr);
 
-      while (!found) {
+      while (not found) {
         long int first;
         long int last;
 
@@ -261,7 +261,7 @@ std::vector<std::string> resolveBacktrace(
       free(maps_name);
       addrs[i].clear();
 
-      if (!found) {
+      if (not found) {
         XBT_VERB("Problem while reading the maps file. Following backtrace will be mangled.");
         XBT_DEBUG("No dynamic. Static symbol: %s", backtrace_syms[i]);
         result.push_back(simgrid::xbt::string_printf("?? (%s)", backtrace_syms[i]));
@@ -294,7 +294,7 @@ std::vector<std::string> resolveBacktrace(
         free(p);
         XBT_VERB("Fire a new command: '%s'", subcmd);
         FILE* subpipe = popen(subcmd, "r");
-        if (!subpipe) {
+        if (not subpipe) {
           xbt_die("Cannot fork addr2line to display the backtrace");
         }
         if (fgets(line_func, 1024, subpipe)) {
@@ -329,9 +329,9 @@ std::vector<std::string> resolveBacktrace(
     addrs[i].clear();
 
     /* Mask the bottom of the stack */
-    if (!strncmp("main", line_func, strlen("main")) ||
-        !strncmp("xbt_thread_context_wrapper", line_func, strlen("xbt_thread_context_wrapper"))
-        || !strncmp("smx_ctx_sysv_wrapper", line_func, strlen("smx_ctx_sysv_wrapper")))
+    if (not strncmp("main", line_func, strlen("main")) ||
+        not strncmp("xbt_thread_context_wrapper", line_func, strlen("xbt_thread_context_wrapper")) ||
+        not strncmp("smx_ctx_sysv_wrapper", line_func, strlen("smx_ctx_sysv_wrapper")))
       break;
   }
   pclose(pipe);

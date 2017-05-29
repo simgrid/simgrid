@@ -27,10 +27,10 @@ void Jedule::addMetaInfo(char *key, char *value) {
 }
 
 void Jedule::writeOutput(FILE *file) {
-  if (!this->event_set.empty()){
+  if (not this->event_set.empty()) {
     fprintf(file, "<jedule>\n");
 
-    if (!this->meta_info.empty()){
+    if (not this->meta_info.empty()) {
       fprintf(file, "  <jedule_meta>\n");
       for (auto elm: this->meta_info)
         fprintf(file, "        <prop key=\"%s\" value=\"%s\" />\n",elm.first,elm.second);

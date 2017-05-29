@@ -59,8 +59,8 @@ class Process {
     smx_mailbox_t mailbox_small();
     xbt_mutex_t mailboxes_mutex();
 #if HAVE_PAPI
-    int papi_event_set(void);
-    papi_counter_t& papi_counters(void);
+    int papi_event_set();
+    papi_counter_t& papi_counters();
 #endif
     xbt_os_timer_t timer();
     void simulated_start();

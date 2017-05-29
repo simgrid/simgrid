@@ -187,7 +187,7 @@ void MSG_vm_start(msg_vm_t vm)
     int pm_overcommit = pm->extension<simgrid::vm::VmHostExt>()->overcommit;
     long vm_ramsize   = typedVM->getRamsize();
 
-    if (pm_ramsize && !pm_overcommit) { /* Only verify that we don't overcommit on need */
+    if (pm_ramsize && not pm_overcommit) { /* Only verify that we don't overcommit on need */
       /* Retrieve the memory occupied by the VMs on that host. Yep, we have to traverse all VMs of all hosts for that */
       long total_ramsize_of_vms = 0;
       for (simgrid::s4u::VirtualMachine* ws_vm : simgrid::vm::VirtualMachineImpl::allVms_)
@@ -268,7 +268,7 @@ static int migration_rx_fun(int argc, char *argv[])
   bool received_finalize = false;
 
   char *finalize_task_name = get_mig_task_name(ms->vm, ms->src_pm, ms->dst_pm, 3);
-  while (!received_finalize) {
+  while (not received_finalize) {
     msg_task_t task = nullptr;
     int ret         = MSG_task_recv(&task, ms->mbox);
 
@@ -361,7 +361,7 @@ static void start_dirty_page_tracking(msg_vm_t vm)
   simgrid::vm::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
 
   pimpl->dp_enabled = 1;
-  if (!pimpl->dp_objs)
+  if (not pimpl->dp_objs)
     return;
 
   char *key = nullptr;
@@ -441,7 +441,7 @@ void MSG_host_add_task(msg_host_t host, msg_task_t task)
     dp->prev_clock = MSG_get_clock();
     dp->prev_remaining = remaining;
   }
-  if (!pimpl->dp_objs)
+  if (not pimpl->dp_objs)
     pimpl->dp_objs = xbt_dict_new_homogeneous(nullptr);
   xbt_assert(xbt_dict_get_or_null(pimpl->dp_objs, key) == nullptr);
   xbt_dict_set(pimpl->dp_objs, key, dp, nullptr);
@@ -581,7 +581,7 @@ static int migration_tx_fun(int argc, char *argv[])
   start_dirty_page_tracking(ms->vm);
 
   double computed_during_stage1 = 0;
-  if (!skip_stage1) {
+  if (not skip_stage1) {
     double clock_prev_send = MSG_get_clock();
 
     try {
@@ -621,7 +621,7 @@ static int migration_tx_fun(int argc, char *argv[])
 
 
   /* Stage2: send update pages iteratively until the size of remaining states becomes smaller than threshold value. */
-  if (!skip_stage2) {
+  if (not skip_stage2) {
 
     int stage2_round = 0;
     for (;;) {
@@ -742,7 +742,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
     THROWF(vm_error, 0, "Cannot migrate VM '%s' from host '%s', which is offline.", vm->cname(), src_pm->cname());
   if (dst_pm->isOff())
     THROWF(vm_error, 0, "Cannot migrate VM '%s' to host '%s', which is offline.", vm->cname(), dst_pm->cname());
-  if (!MSG_vm_is_running(vm))
+  if (not MSG_vm_is_running(vm))
     THROWF(vm_error, 0, "Cannot migrate VM '%s' that is not running yet.", vm->cname());
   if (typedVm->isMigrating())
     THROWF(vm_error, 0, "Cannot migrate VM '%s' that is already migrating.", vm->cname());

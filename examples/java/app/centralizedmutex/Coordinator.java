@@ -1,5 +1,4 @@
-/* Copyright (c) 2012-2014, 2016. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -14,18 +13,16 @@ import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
 
 public class Coordinator extends Process {
-  LinkedList<RequestTask> waitingQueue=new LinkedList<>();
-  int csToServe;
-
   public Coordinator(Host host, String name, String[]args) {
     super(host,name,args);
   }
 
   public void main(String[] args) throws MsgException {
-    csToServe = Integer.parseInt(args[0]);
-    Task task;
+    int csToServe = Integer.parseInt(args[0]);
+    LinkedList<RequestTask> waitingQueue=new LinkedList<>();
+     
     while (csToServe >0) {
-      task = Task.receive("coordinator");
+      Task task = Task.receive("coordinator");
       if (task instanceof RequestTask) {
         RequestTask t = (RequestTask) task;
         if (waitingQueue.isEmpty()) {

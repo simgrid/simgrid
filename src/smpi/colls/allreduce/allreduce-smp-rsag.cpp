@@ -55,7 +55,7 @@ int Coll_allreduce_smp_rsag::allreduce(void *send_buf, void *recv_buf,
 
   int inter_comm_size = (comm_size + num_core - 1) / num_core;
 
-  if (!rank) {
+  if (not rank) {
     //printf("intra com size = %d\n",num_core);
     //printf("inter com size = %d\n",inter_comm_size);
   }

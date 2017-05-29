@@ -96,7 +96,7 @@ void xbt_os_thread_mod_preinit(void)
   main_thread = xbt_new(s_xbt_os_thread_t, 1);
   main_thread->name = NULL;
   main_thread->detached = 0;
-  main_thread->name = (char *) "main";
+  main_thread->name = xbt_strdup("main");
   main_thread->param = NULL;
   main_thread->start_routine = NULL;
   main_thread->extra_data = NULL;
@@ -122,6 +122,7 @@ void xbt_os_thread_mod_postexit(void)
 
   //   if ((errcode=pthread_key_delete(xbt_self_thread_key)))
   //     THROWF(system_error,errcode,"pthread_key_delete failed for xbt_self_thread_key");
+  free(main_thread->name);
   free(main_thread);
   main_thread = NULL;
   thread_mod_inited = 0;
@@ -234,7 +235,7 @@ void xbt_os_thread_setguardsize(int guard_size)
 const char *xbt_os_thread_self_name(void)
 {
   xbt_os_thread_t me = xbt_os_thread_self();
-  return me ? me->name : "main";
+  return me ? (const char *)me->name : "main";
 }
 
 void xbt_os_thread_join(xbt_os_thread_t thread, void **thread_return)

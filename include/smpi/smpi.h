@@ -918,7 +918,9 @@ XBT_PUBLIC(int) smpi_process_index();
 XBT_PUBLIC(void) smpi_process_init(int *argc, char ***argv);
 
 /* Trace replay specific stuff */
-XBT_PUBLIC(void) smpi_replay_run(int *argc, char***argv);
+XBT_PUBLIC(void) smpi_replay_init(int* argc, char*** argv); // Only initialization
+XBT_PUBLIC(void) smpi_replay_main(int* argc, char*** argv); // Launch the replay once init is done
+XBT_PUBLIC(void) smpi_replay_run(int* argc, char*** argv);  // Both init and start
 
 XBT_PUBLIC(void) SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_processes);
 XBT_PUBLIC(void) SMPI_init();
@@ -987,4 +989,17 @@ if(!name) {                                         \
 
 
 SG_END_DECL()
+
+/* C++ declarations for shared_malloc */
+#ifdef __cplusplus
+#include <vector>
+
+XBT_PUBLIC(int) smpi_is_shared(void* ptr, std::vector<std::pair<size_t, size_t>>& private_blocks, size_t* offset);
+
+std::vector<std::pair<size_t, size_t>> shift_and_frame_private_blocks(const std::vector<std::pair<size_t, size_t>> vec,
+                                                                      size_t offset, size_t buff_size);
+std::vector<std::pair<size_t, size_t>> merge_private_blocks(std::vector<std::pair<size_t, size_t>> src,
+                                                            std::vector<std::pair<size_t, size_t>> dst);
+#endif
+
 #endif

@@ -14,10 +14,10 @@
 #include <memory>
 #include <system_error>
 
-#include <xbt/log.h>
-#include <xbt/automaton.h>
-#include <xbt/automaton.hpp>
-#include <xbt/system_error.hpp>
+#include "xbt/automaton.h"
+#include "xbt/automaton.hpp"
+#include "xbt/log.h"
+#include "xbt/system_error.hpp"
 
 #include "simgrid/sg_config.h"
 
@@ -27,7 +27,6 @@
 #include "src/mc/Transition.hpp"
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_exit.h"
-#include "src/mc/mc_ignore.h"
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_record.h"
 #include "src/mc/remote/mc_protocol.h"
@@ -92,7 +91,7 @@ void ModelChecker::start()
 
   // The model-checked process SIGSTOP itself to signal it's ready:
   pid_t res = waitpid(pid, &status, WAITPID_CHECKED_FLAGS);
-  if (res < 0 || !WIFSTOPPED(status) || WSTOPSIG(status) != SIGSTOP)
+  if (res < 0 || not WIFSTOPPED(status) || WSTOPSIG(status) != SIGSTOP)
     xbt_die("Could not wait model-checked process");
 
   process_->init();
@@ -183,7 +182,7 @@ static void MC_report_crash(int status)
   mc_model_checker->process().dumpStack();
 }
 
-static void MC_report_assertion_error(void)
+static void MC_report_assertion_error()
 {
   XBT_INFO("**************************");
   XBT_INFO("*** PROPERTY NOT VALID ***");
@@ -306,7 +305,7 @@ void ModelChecker::handle_events(int fd, short events)
     ssize_t size = process_->getChannel().receive(buffer, sizeof(buffer), false);
     if (size == -1 && errno != EAGAIN)
       throw simgrid::xbt::errno_error();
-    if (!handle_message(buffer, size)) {
+    if (not handle_message(buffer, size)) {
       event_base_loopbreak(base_);
     }
   }

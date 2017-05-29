@@ -19,7 +19,7 @@
 
 #include <simgrid_config.h>
 
-#include <xbt/base.h>
+#include "xbt/base.h"
 #include <xbt/mmalloc.h>
 
 #include "src/xbt/mmalloc/mmprivate.h"
@@ -143,13 +143,13 @@ public:
   // Heap access:
   xbt_mheap_t get_heap()
   {
-    if (!(this->cache_flags_ & Process::cache_heap))
+    if (not(this->cache_flags_ & Process::cache_heap))
       this->refresh_heap();
     return this->heap.get();
   }
   const malloc_info* get_malloc_info()
   {
-    if (!(this->cache_flags_ & Process::cache_malloc))
+    if (not(this->cache_flags_ & Process::cache_malloc))
       this->refresh_malloc_info();
     return this->heap_info.data();
   }
@@ -226,7 +226,7 @@ public:
   simgrid::mc::ActorInformation* resolveActorInfo(simgrid::mc::RemotePtr<simgrid::simix::ActorImpl> actor)
   {
     xbt_assert(mc_model_checker != nullptr);
-    if (!actor)
+    if (not actor)
       return nullptr;
     this->refresh_simix();
     for (auto& actor_info : this->smx_actors_infos)
@@ -261,7 +261,8 @@ private:
   Channel channel_;
   bool running_ = false;
   std::vector<simgrid::xbt::VmMap> memory_map_;
-  RemotePtr<void> maestro_stack_start_, maestro_stack_end_;
+  RemotePtr<void> maestro_stack_start_;
+  RemotePtr<void> maestro_stack_end_;
   int memory_file = -1;
   std::vector<IgnoredRegion> ignored_regions_;
   bool privatized_ = false;

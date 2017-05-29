@@ -208,6 +208,8 @@ if(enable_maintainer_mode AND NOT WIN32)
       COMMAND ${SED_EXE} -i ${string9} src/surf/xml/simgrid_dtd.c
       COMMAND ${SED_EXE} -i ${string15} src/surf/xml/simgrid_dtd.c
       COMMAND ${SED_EXE} -i 's/int yyl\;/unsigned int yyl\;/' src/surf/xml/simgrid_dtd.c
+      COMMAND ${SED_EXE} -i 's/int surf_parse_leng\;/unsigned int surf_parse_leng\;/' src/surf/xml/simgrid_dtd.c
+      COMMAND ${SED_EXE} -i 's/n = 0\; n < max_size/n = 0\; n < (size_t) max_size/' src/surf/xml/simgrid_dtd.c
       COMMAND ${SED_EXE} -i "s/register //" src/surf/xml/simgrid_dtd.c
       COMMAND ${CMAKE_COMMAND} -E echo "       Generated surf/xml/simgrid_dtd.c"
 
@@ -217,6 +219,7 @@ if(enable_maintainer_mode AND NOT WIN32)
       COMMAND ${FLEX_EXE} -o src/simdag/dax_dtd.c -Pdax_ --noline src/simdag/dax_dtd.l
       COMMAND ${SED_EXE} -i ${string9}                        src/simdag/dax_dtd.c
       COMMAND ${SED_EXE} -i 's/int yyl\;/unsigned int yyl\;/' src/simdag/dax_dtd.c
+      COMMAND ${SED_EXE} -i 's/int dax_leng\;/unsigned int dax_leng\;/' src/simdag/dax_dtd.c
       COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/simdag/dax_dtd.c"
 
       WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}

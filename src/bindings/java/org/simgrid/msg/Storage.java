@@ -15,17 +15,10 @@ public class Storage {
 	 * a native storage. Even if this attribute is public you must never
 	 * access to it.
 	 */ 
-	private long bind;
+	private long bind = 0;
 
 	/** Storage name */
 	protected String name;
-
-	/** User data. */ 
-	private Object data;
-	protected Storage() {
-		this.bind = 0;
-		this.data = null;
-	}
 
 	@Override
 	public String toString (){

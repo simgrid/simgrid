@@ -5,13 +5,18 @@ SimGrid (3.16) UNRELEASED
   - Mac, BSD: dlopen+thread broken, switch automatically to raw contexts.
 
  XML platforms: Switch to platform v4.1 format.
- * This is a backward compatible change: v4 are valid v4.1 files
+ * This is (mainly) a backward compatible change: v4 are valid v4.1 files
    - <zone> can be used as a synonym for the now deprecated <as>
    - <zoneZoute> an be used as a synonym for the now deprecated <asroute>
    - <bypassZoneRoute> an be used as a synonym for the now deprecated <bypassAsRoute>
    - <actor> can be used as a synonym for the now deprecated <process>
    - state_file and avail_file periodicity is now easier to express
      (check the documentation) the old behavior should still work.
+ * Storage: not backward compatible, but it seems that nobody ever used it
+   - Remove attribute 'content_type' of <storage_type>: was never used
+   - Make attribute 'model' of <storage_type> optional: for future usage
+   - Remove Bconnection model property: was never (in)validated. Replaced by
+      the maximum of the read and write bandwidth as a resource constraint. 
 
  SimDag
   - New and Backwards Compatibility break: 
@@ -27,12 +32,14 @@ SimGrid (3.16) UNRELEASED
  SMPI
   - New algorithm to privatize globals: dlopen, with dynamic loading tricks
   - New option: smpi/keep-temps to not cleanup temp files
+  - Support for sparse privatized malloc with SMPI_PARTIAL_SHARED_MALLOC()
 
  XBT
   - Replay: New function xbt_replay_action_get():
     Retrieve the function previously associated to an event type.
   - DROPPED FUNCTION: xbt_str_varsubst()
   - DROPPED MODULE: strbuff. We don't need it anymore.
+  - DROPPED MODULE: matrix. We don't need it anymore.
 
  -- Release target: June 21 2017   -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

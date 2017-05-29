@@ -9,19 +9,24 @@
 
 #ifdef __cplusplus
 
+#include "xbt/base.h"
 #include <boost/intrusive_ptr.hpp>
 
 namespace simgrid {
-  namespace s4u {
-  class Actor;
-  class Host;
-  class Link;
-  class Mailbox;
-  class NetZone;
-  }
-  namespace kernel {
-     namespace activity {
-       class ActivityImpl;
+namespace s4u {
+class Actor;
+class Comm;
+class Host;
+class Link;
+class Mailbox;
+class NetZone;
+
+XBT_PUBLIC(void) intrusive_ptr_release(Comm* c);
+XBT_PUBLIC(void) intrusive_ptr_add_ref(Comm* c);
+}
+namespace kernel {
+namespace activity {
+class ActivityImpl;
      }
      namespace routing {
      class NetPoint;
@@ -35,7 +40,7 @@ namespace simgrid {
     class Cpu;
     class LinkImpl;
     class HostImpl;
-    class Storage;
+    class StorageImpl;
   }
   namespace trace_mgr {
     class trace;

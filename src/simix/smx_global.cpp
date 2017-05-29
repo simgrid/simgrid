@@ -16,19 +16,20 @@
 #include "simgrid/s4u/Host.hpp"
 
 #include "src/surf/surf_interface.hpp"
-#include "src/surf/storage_interface.hpp"
 #include "src/surf/xml/platf.hpp"
 #include "smx_private.h"
 #include "xbt/ex.h"             /* ex_backtrace_display */
+
 #include "mc/mc.h"
-#include "src/mc/mc_replay.h"
 #include "simgrid/sg_config.h"
+#include "src/mc/mc_replay.h"
+#include "src/surf/StorageImpl.hpp"
 
 #include "src/smpi/smpi_process.hpp"
 
-#include "src/kernel/activity/SynchroExec.hpp"
-#include "src/kernel/activity/SynchroComm.hpp"
-#include "src/kernel/activity/SynchroSleep.hpp"
+#include "src/kernel/activity/CommImpl.hpp"
+#include "src/kernel/activity/ExecImpl.hpp"
+#include "src/kernel/activity/SleepImpl.hpp"
 #include "src/kernel/activity/SynchroIo.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 
@@ -125,7 +126,7 @@ static void install_segvhandler()
     XBT_WARN("Failed to register alternate signal stack: %s", strerror(errno));
     return;
   }
-  if (!(old_stack.ss_flags & SS_DISABLE)) {
+  if (not(old_stack.ss_flags & SS_DISABLE)) {
     XBT_DEBUG("An alternate stack was already installed (sp=%p, size=%zd, flags=%x). Restore it.",
               old_stack.ss_sp, old_stack.ss_size, old_stack.ss_flags);
     sigaltstack(&old_stack, nullptr);
@@ -199,7 +200,7 @@ void SIMIX_global_init(int *argc, char **argv)
   simgrid::mc::Client::initialize();
 #endif
 
-  if (!simix_global) {
+  if (not simix_global) {
     simix_global = std::unique_ptr<simgrid::simix::Global>(new simgrid::simix::Global());
 
     simgrid::simix::ActorImpl proc;
@@ -233,14 +234,14 @@ void SIMIX_global_init(int *argc, char **argv)
         host.extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
     });
 
-    simgrid::surf::storageCreatedCallbacks.connect([](simgrid::surf::Storage* storage) {
+    simgrid::surf::storageCreatedCallbacks.connect([](simgrid::surf::StorageImpl* storage) {
       const char* name = storage->cname();
       // TODO, create sg_storage_by_name
       sg_storage_t s = xbt_lib_get_elm_or_null(storage_lib, name);
       xbt_assert(s != nullptr, "Storage not found for name %s", name);
     });
   }
-  if (!simix_timers)
+  if (not simix_timers)
     simix_timers = xbt_heap_new(8, [](void* p) {
       delete static_cast<smx_timer_t>(p);
     });
@@ -277,7 +278,7 @@ void SIMIX_clean()
 
   smx_cleaned = 1;
   XBT_DEBUG("SIMIX_clean called. Simulation's over.");
-  if (!xbt_dynar_is_empty(simix_global->process_to_run) && SIMIX_get_clock() <= 0.0) {
+  if (not xbt_dynar_is_empty(simix_global->process_to_run) && SIMIX_get_clock() <= 0.0) {
     XBT_CRITICAL("   ");
     XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
     XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
@@ -410,7 +411,7 @@ static bool SIMIX_execute_tasks()
       task();
 
     simix_global->tasksTemp.clear();
-  } while (!simix_global->tasks.empty());
+  } while (not simix_global->tasks.empty());
 
   return true;
 }
@@ -433,7 +434,7 @@ void SIMIX_run()
 
     SIMIX_execute_tasks();
 
-    while (!xbt_dynar_is_empty(simix_global->process_to_run)) {
+    while (not xbt_dynar_is_empty(simix_global->process_to_run)) {
       XBT_DEBUG("New Sub-Schedule Round; size(queue)=%lu", xbt_dynar_length(simix_global->process_to_run));
 
       /* Run all processes that are ready to run, possibly in parallel */
@@ -551,12 +552,10 @@ void SIMIX_run()
     XBT_DEBUG("### time %f, #processes %zu, #to_run %lu", time, simix_global->process_list.size(),
               xbt_dynar_length(simix_global->process_to_run));
 
+    if (xbt_dynar_is_empty(simix_global->process_to_run) && not simix_global->process_list.empty())
+      simgrid::simix::onDeadlock();
 
-    if (xbt_dynar_is_empty(simix_global->process_to_run) &&
-        !simix_global->process_list.empty())
-    simgrid::simix::onDeadlock();
-
-  } while (time > -1.0 || !xbt_dynar_is_empty(simix_global->process_to_run));
+  } while (time > -1.0 || not xbt_dynar_is_empty(simix_global->process_to_run));
 
   if (simix_global->process_list.size() != 0) {
 
@@ -655,13 +654,13 @@ void SIMIX_display_process_status()
 
       const char* synchro_description = "unknown";
 
-      if (dynamic_cast<simgrid::kernel::activity::Exec*>(process->waiting_synchro) != nullptr)
+      if (dynamic_cast<simgrid::kernel::activity::ExecImpl*>(process->waiting_synchro) != nullptr)
         synchro_description = "execution";
 
-      if (dynamic_cast<simgrid::kernel::activity::Comm*>(process->waiting_synchro) != nullptr)
+      if (dynamic_cast<simgrid::kernel::activity::CommImpl*>(process->waiting_synchro) != nullptr)
         synchro_description = "communication";
 
-      if (dynamic_cast<simgrid::kernel::activity::Sleep*>(process->waiting_synchro) != nullptr)
+      if (dynamic_cast<simgrid::kernel::activity::SleepImpl*>(process->waiting_synchro) != nullptr)
         synchro_description = "sleeping";
 
       if (dynamic_cast<simgrid::kernel::activity::Raw*>(process->waiting_synchro) != nullptr)

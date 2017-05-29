@@ -1,5 +1,4 @@
-/* Copyright (c) 2012-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -105,15 +104,12 @@ static void broadcaster_destroy(broadcaster_t bc)
 /** Emitter function  */
 int broadcaster(int argc, char *argv[])
 {
-  broadcaster_t bc = NULL;
-  xbt_dynar_t host_list = NULL;
-  int status;
   unsigned int piece_count = PIECE_COUNT;
 
   XBT_DEBUG("broadcaster");
 
   /* Add every mailbox given by the hostcount in argv[1] to a dynamic array */
-  host_list = build_hostlist_from_hostcount(xbt_str_parse_int(argv[1], "Invalid number of peers: %s"));
+  xbt_dynar_t host_list = build_hostlist_from_hostcount(xbt_str_parse_int(argv[1], "Invalid number of peers: %s"));
 
   /* argv[2] is the number of pieces */
   if (argc > 2) {
@@ -122,10 +118,10 @@ int broadcaster(int argc, char *argv[])
   } else {
     XBT_DEBUG("No piece_count specified, defaulting to %d", piece_count);
   }
-  bc = broadcaster_init(host_list, piece_count);
+  broadcaster_t bc = broadcaster_init(host_list, piece_count);
 
   /* TODO: Error checking */
-  status = broadcaster_send_file(bc);
+  int status = broadcaster_send_file(bc);
 
   broadcaster_destroy(bc);
 

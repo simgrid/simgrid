@@ -7,7 +7,6 @@
 #ifndef MSG_H
 #define MSG_H
 
-#include "xbt.h"
 #include "xbt/lib.h"
 #include "simgrid/forward.h"
 #include "simgrid/simix.h"
@@ -68,7 +67,6 @@ typedef struct msg_file_priv {
   char* mount_point;
   char* storageId;
   char* storage_type;
-  char* content_type;
   int desc_id;
   void *data;
   simdata_file_t simdata;

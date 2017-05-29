@@ -10,7 +10,6 @@
 
 #include "src/surf/surf_private.h"
 #include "surf/surf.h"
-#include "surf/surf_routing.h"
 #include "xbt/str.h"
 
 #include <boost/intrusive/list.hpp>
@@ -32,7 +31,7 @@ extern XBT_PRIVATE int sg_network_crosstraffic;
 extern XBT_PRIVATE std::vector<std::string> surf_path;
 
 extern "C" {
-XBT_PUBLIC(double) surf_get_clock(void);
+XBT_PUBLIC(double) surf_get_clock();
 }
 /** \ingroup SURF_simulation
  *  \brief List of hosts that have just restarted and whose autorestart process should be restarted.
@@ -45,8 +44,7 @@ extern XBT_PRIVATE double sg_sender_gap;
 namespace simgrid {
 namespace surf {
 
-extern XBT_PRIVATE simgrid::xbt::signal<void(void)> surfExitCallbacks;
-
+extern XBT_PRIVATE simgrid::xbt::signal<void()> surfExitCallbacks;
 }
 }
 

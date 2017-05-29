@@ -15,8 +15,7 @@ int Coll_allgatherv_GB::allgatherv(void *send_buff, int send_count,
                                  int *recv_counts, int *recv_disps, MPI_Datatype recv_type,
                                  MPI_Comm comm)
 {
-  Colls::gatherv(send_buff, send_count, send_type, recv_buff, recv_counts,
-		   recv_disps, recv_type, 0, comm);
+  Colls::gatherv(send_buff, send_count, send_type, recv_buff, recv_counts, recv_disps, recv_type, 0, comm);
   int num_procs, i, current, max = 0;
   num_procs = comm->size();
   for (i = 0; i < num_procs; i++) {

@@ -8,8 +8,8 @@
 
 #include <vector>
 
-#include <xbt/misc.h> 
-#include <xbt/asserts.h>
+#include "xbt/asserts.h"
+#include "xbt/misc.h"
 
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/ChunkedData.hpp"

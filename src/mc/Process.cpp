@@ -1,10 +1,9 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#define _FILE_OFFSET_BITS 64
+#define _FILE_OFFSET_BITS 64 /* needed for pread_whole to work as expected on 32bits */
 
 #include <assert.h>
 #include <stddef.h>
@@ -28,13 +27,12 @@
 #include <libunwind.h>
 #include <libunwind-ptrace.h>
 
-#include <xbt/log.h>
-#include <xbt/base.h>
+#include "xbt/base.h"
+#include "xbt/log.h"
 #include <xbt/mmalloc.h>
 
 #include "src/mc/mc_unw.h"
 #include "src/mc/mc_snapshot.h"
-#include "src/mc/mc_ignore.h"
 #include "src/mc/mc_smx.h"
 
 #include "src/mc/Process.hpp"
@@ -103,7 +101,7 @@ static const char* const filtered_libraries[] = {
 
 static bool is_simgrid_lib(const char* libname)
 {
-  return !strcmp(libname, "libsimgrid");
+  return not strcmp(libname, "libsimgrid");
 }
 
 static bool is_filtered_lib(const char* libname)
@@ -134,7 +132,7 @@ static char* get_lib_name(const char* pathname, struct s_mc_memory_map_re* res)
   map_basename = nullptr;
 
   // Strip the version suffix:
-  if(libname && !regexec(&res->version_re, libname, 1, &match, 0)) {
+  if (libname && not regexec(&res->version_re, libname, 1, &match, 0)) {
     char* temp = libname;
     libname = strndup(temp, match.rm_so);
     free(temp);
@@ -185,7 +183,7 @@ static pthread_once_t zero_buffer_flag = PTHREAD_ONCE_INIT;
 static const void* zero_buffer;
 static const size_t zero_buffer_size = 10 * 4096;
 
-static void zero_buffer_init(void)
+static void zero_buffer_init()
 {
   int fd = open("/dev/zero", O_RDONLY);
   if (fd<0)
@@ -226,9 +224,9 @@ void Process::init()
 
   // Read std_heap (is a struct mdesc*):
   simgrid::mc::Variable* std_heap_var = this->find_variable("__mmalloc_default_mdp");
-  if (!std_heap_var)
+  if (not std_heap_var)
     xbt_die("No heap information in the target process");
-  if(!std_heap_var->address)
+  if (not std_heap_var->address)
     xbt_die("No constant address for this variable");
   this->read_bytes(&this->heap_address, sizeof(struct mdesc*),
     remote(std_heap_var->address),
@@ -265,7 +263,7 @@ Process::~Process()
 void Process::refresh_heap()
 {
   // Read/dereference/refresh the std_heap pointer:
-  if (!this->heap)
+  if (not this->heap)
     this->heap = std::unique_ptr<s_xbt_mheap_t>(new s_xbt_mheap_t());
   this->read_bytes(this->heap.get(), sizeof(struct mdesc),
     remote(this->heap_address), simgrid::mc::ProcessIndexDisabled);
@@ -323,7 +321,7 @@ void Process::init_memory_map_info()
 
     // [stack], [vvar], [vsyscall], [vdso] ...
     if (pathname[0] == '[') {
-      if ((reg.prot & PROT_WRITE) && !memcmp(pathname, "[stack]", 7)) {
+      if ((reg.prot & PROT_WRITE) && not memcmp(pathname, "[stack]", 7)) {
         this->maestro_stack_start_ = remote(reg.start_addr);
         this->maestro_stack_end_ = remote(reg.end_addr);
       }
@@ -335,14 +333,14 @@ void Process::init_memory_map_info()
       continue;
 
     current_name = pathname;
-    if (!(reg.prot & PROT_READ) && (reg.prot & PROT_EXEC))
+    if (not(reg.prot & PROT_READ) && (reg.prot & PROT_EXEC))
       continue;
 
-    const bool is_executable = !i;
+    const bool is_executable = not i;
     char* libname = nullptr;
-    if (!is_executable) {
+    if (not is_executable) {
       libname = get_lib_name(pathname, &res);
-      if(!libname)
+      if (not libname)
         continue;
       if (is_filtered_lib(libname)) {
         free(libname);
@@ -442,7 +440,7 @@ void Process::read_variable(const char* name, void* target, size_t size) const
 
 std::string Process::read_string(RemotePtr<char> address) const
 {
-  if (!address)
+  if (not address)
     return {};
 
   // TODO, use std::vector with .data() in C++17 to avoid useless copies

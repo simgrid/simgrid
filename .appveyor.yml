@@ -2,7 +2,7 @@
 #
 # Build logs: https://ci.appveyor.com/project/simgrid/simgrid
 
-# Documentation: https://www.appveyor.com/docs/
+# Documentation: https://www.appveyor.com/docs/
 #                https://www.appveyor.com/docs/installed-software/
 
 os: Visual Studio 2015

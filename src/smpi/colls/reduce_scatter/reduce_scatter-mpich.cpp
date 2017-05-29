@@ -91,42 +91,37 @@ int Coll_reduce_scatter_mpich_pair::reduce_scatter(void *sendbuf, void *recvbuf,
             
             if (is_commutative || (src < rank)) {
                 if (sendbuf != MPI_IN_PLACE) {
-		     if(op!=MPI_OP_NULL) op->apply(
-			                          tmp_recvbuf, recvbuf, &recvcounts[rank],
-                               datatype); 
+                  if (op != MPI_OP_NULL)
+                    op->apply(tmp_recvbuf, recvbuf, &recvcounts[rank], datatype);
                 }
                 else {
-		    if(op!=MPI_OP_NULL) op->apply( 
-			tmp_recvbuf, ((char *)recvbuf+disps[rank]*extent), 
-			&recvcounts[rank], datatype);
-                    /* we can't store the result at the beginning of
-                       recvbuf right here because there is useful data
-                       there that other process/processes need. at the
-                       end, we will copy back the result to the
-                       beginning of recvbuf. */
+                  if (op != MPI_OP_NULL)
+                    op->apply(tmp_recvbuf, ((char*)recvbuf + disps[rank] * extent), &recvcounts[rank], datatype);
+                  /* we can't store the result at the beginning of
+                     recvbuf right here because there is useful data
+                     there that other process/processes need. at the
+                     end, we will copy back the result to the
+                     beginning of recvbuf. */
                 }
             }
             else {
                 if (sendbuf != MPI_IN_PLACE) {
-		    if(op!=MPI_OP_NULL) op->apply( 
-		       recvbuf, tmp_recvbuf, &recvcounts[rank], datatype);
-                    /* copy result back into recvbuf */
-                    mpi_errno = Datatype::copy(tmp_recvbuf, recvcounts[rank],
-                                               datatype, recvbuf,
-                                               recvcounts[rank], datatype);
-                    if (mpi_errno) return(mpi_errno);
+                  if (op != MPI_OP_NULL)
+                    op->apply(recvbuf, tmp_recvbuf, &recvcounts[rank], datatype);
+                  /* copy result back into recvbuf */
+                  mpi_errno =
+                      Datatype::copy(tmp_recvbuf, recvcounts[rank], datatype, recvbuf, recvcounts[rank], datatype);
+                  if (mpi_errno)
+                    return (mpi_errno);
                 }
                 else {
-		    if(op!=MPI_OP_NULL) op->apply( 
-                        ((char *)recvbuf+disps[rank]*extent),
-			tmp_recvbuf, &recvcounts[rank], datatype);
-                    /* copy result back into recvbuf */
-                    mpi_errno = Datatype::copy(tmp_recvbuf, recvcounts[rank],
-                                               datatype, 
-                                               ((char *)recvbuf +
-                                                disps[rank]*extent), 
-                                               recvcounts[rank], datatype);
-                    if (mpi_errno) return(mpi_errno);
+                  if (op != MPI_OP_NULL)
+                    op->apply(((char*)recvbuf + disps[rank] * extent), tmp_recvbuf, &recvcounts[rank], datatype);
+                  /* copy result back into recvbuf */
+                  mpi_errno = Datatype::copy(tmp_recvbuf, recvcounts[rank], datatype,
+                                             ((char*)recvbuf + disps[rank] * extent), recvcounts[rank], datatype);
+                  if (mpi_errno)
+                    return (mpi_errno);
                 }
             }
         }
@@ -241,11 +236,10 @@ int Coll_reduce_scatter_mpich_noncomm::reduce_scatter(void *sendbuf, void *recvb
         }
         else {
             /* lower ranked value so need to call op(my_data, received_data) */
-	    if(op!=MPI_OP_NULL) op->apply(
-		     outgoing_data + recv_offset*true_extent,
-                     incoming_data + recv_offset*true_extent,
-                     &size, datatype);
-            buf0_was_inout = !buf0_was_inout;
+            if (op != MPI_OP_NULL)
+              op->apply(outgoing_data + recv_offset * true_extent, incoming_data + recv_offset * true_extent, &size,
+                        datatype);
+            buf0_was_inout = not buf0_was_inout;
         }
 
         /* the next round of send/recv needs to happen within the block (of size
@@ -455,24 +449,20 @@ int Coll_reduce_scatter_mpich_rdb::reduce_scatter(void *sendbuf, void *recvbuf, 
                 if (received) {
                     if (is_commutative || (dst_tree_root < my_tree_root)) {
                         {
-			         if(op!=MPI_OP_NULL) op->apply( 
-                               tmp_recvbuf, tmp_results, &blklens[0],
-			       datatype); 
-			        if(op!=MPI_OP_NULL) op->apply( 
-                               ((char *)tmp_recvbuf + dis[1]*extent),
-			       ((char *)tmp_results + dis[1]*extent),
-			       &blklens[1], datatype); 
+                          if (op != MPI_OP_NULL)
+                            op->apply(tmp_recvbuf, tmp_results, &blklens[0], datatype);
+                          if (op != MPI_OP_NULL)
+                            op->apply(((char*)tmp_recvbuf + dis[1] * extent), ((char*)tmp_results + dis[1] * extent),
+                                      &blklens[1], datatype);
                         }
                     }
                     else {
                         {
-			         if(op!=MPI_OP_NULL) op->apply(
-                                   tmp_results, tmp_recvbuf, &blklens[0],
-                                   datatype); 
-			         if(op!=MPI_OP_NULL) op->apply(
-                                   ((char *)tmp_results + dis[1]*extent),
-                                   ((char *)tmp_recvbuf + dis[1]*extent),
-                                   &blklens[1], datatype); 
+                          if (op != MPI_OP_NULL)
+                            op->apply(tmp_results, tmp_recvbuf, &blklens[0], datatype);
+                          if (op != MPI_OP_NULL)
+                            op->apply(((char*)tmp_results + dis[1] * extent), ((char*)tmp_recvbuf + dis[1] * extent),
+                                      &blklens[1], datatype);
                         }
                         /* copy result back into tmp_results */
                         mpi_errno = Datatype::copy(tmp_recvbuf, 1, recvtype, 

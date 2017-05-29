@@ -6,17 +6,7 @@
 #ifndef SIMGRID_MC_SMX_H
 #define SIMGRID_MC_SMX_H
 
-#include <stddef.h>
-
-#include <xbt/base.h>
-#include <xbt/log.h>
-
-#include <simgrid/simix.h>
-
-#include "src/smpi/private.h"
-
 #include "src/mc/Process.hpp"
-#include "src/mc/remote/mc_protocol.h"
 
 /** @file
  *  @brief (Cross-process, MCer/MCed) Access to SMX structures

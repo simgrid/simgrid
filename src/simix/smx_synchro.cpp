@@ -98,7 +98,7 @@ void SIMIX_synchro_finish(smx_activity_t synchro)
 namespace simgrid {
 namespace simix {
 
-Mutex::Mutex() : mutex_(this)
+MutexImpl::MutexImpl() : mutex_(this)
 {
   XBT_IN("(%p)", this);
   // Useful to initialize sleeping swag:
@@ -107,14 +107,14 @@ Mutex::Mutex() : mutex_(this)
   XBT_OUT();
 }
 
-Mutex::~Mutex()
+MutexImpl::~MutexImpl()
 {
   XBT_IN("(%p)", this);
   xbt_swag_free(this->sleeping);
   XBT_OUT();
 }
 
-void Mutex::lock(smx_actor_t issuer)
+void MutexImpl::lock(smx_actor_t issuer)
 {
   XBT_IN("(%p; %p)", this, issuer);
   /* FIXME: check where to validate the arguments */
@@ -141,7 +141,7 @@ void Mutex::lock(smx_actor_t issuer)
  * \param  issuer  the process that tries to acquire the mutex
  * \return whether we managed to lock the mutex
  */
-bool Mutex::try_lock(smx_actor_t issuer)
+bool MutexImpl::try_lock(smx_actor_t issuer)
 {
   XBT_IN("(%p, %p)", this, issuer);
   if (this->locked) {
@@ -161,10 +161,10 @@ bool Mutex::try_lock(smx_actor_t issuer)
  * If the unlocker is not the owner of the mutex nothing happens.
  * If there are no process waiting, it sets the mutex as free.
  */
-void Mutex::unlock(smx_actor_t issuer)
+void MutexImpl::unlock(smx_actor_t issuer)
 {
   XBT_IN("(%p, %p)", this, issuer);
-  if(!this->locked)
+  if (not this->locked)
     THROWF(mismatch_error, 0, "Cannot release that mutex: it was not locked.");
 
   /* If the mutex is not owned by the issuer, that's not good */
@@ -207,7 +207,7 @@ void SIMIX_mutex_unref(smx_mutex_t mutex)
 
 smx_mutex_t simcall_HANDLER_mutex_init(smx_simcall_t simcall)
 {
-  return new simgrid::simix::Mutex();
+  return new simgrid::simix::MutexImpl();
 }
 
 // Simcall handlers:
@@ -375,7 +375,6 @@ void intrusive_ptr_add_ref(s_smx_cond_t *cond)
 {
   auto previous = (cond->refcount_)++;
   xbt_assert(previous != 0);
-  (void) previous;
 }
 
 void intrusive_ptr_release(s_smx_cond_t *cond)

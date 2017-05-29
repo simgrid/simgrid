@@ -26,7 +26,7 @@ Container::Container(std::string name): name(name)
 
 Container::~Container()
 {
-  if(!this->children.empty())
+  if (not this->children.empty())
     for (auto child: this->children)
       delete child;
 }
@@ -80,7 +80,7 @@ std::vector<int> Container::getHierarchy()
 
   if(this->parent != nullptr ) {
 
-    if(!this->parent->children.empty()) {
+    if (not this->parent->children.empty()) {
       // we are in the last level
       return this->parent->getHierarchy();
     } else {
@@ -128,7 +128,7 @@ std::string Container::getHierarchyAsString()
 void Container::printResources(FILE * jed_file)
 {
   unsigned int i=0;
-  xbt_assert(!this->resource_list.empty());
+  xbt_assert(not this->resource_list.empty());
 
   unsigned int res_nb = this->resource_list.size();
   std::string resid = this->getHierarchyAsString();
@@ -149,7 +149,7 @@ void Container::print(FILE* jed_file)
 {
   xbt_assert( this != nullptr );
   fprintf(jed_file, "    <res name=\"%s\">\n", this->name.c_str());
-  if( !this->children.empty()){
+  if (not this->children.empty()) {
     for (auto child: this->children) {
       child->print(jed_file);
     }

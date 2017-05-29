@@ -6,22 +6,8 @@
 #ifndef SIMGRID_MC_PRIVATE_H
 #define SIMGRID_MC_PRIVATE_H
 
-#include "simgrid_config.h"
-
-#include <sys/types.h>
-
-#include <stdio.h>
-
-#include <simgrid/msg.h>
-#include <xbt/config.h>
-#include <xbt/base.h>
-#include <xbt/automaton.h>
-
 #include "mc/mc.h"
-#include "mc/datatypes.h"
-#include "src/mc/mc_base.h"
-
-#include "src/simix/smx_private.h"
+#include "xbt/automaton.h"
 
 #ifdef __cplusplus
 #include "src/mc/mc_forward.hpp"

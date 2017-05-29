@@ -8,7 +8,7 @@
 
 #include <cstdint>
 
-#include <xbt/log.h>
+#include "xbt/log.h"
 
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_snapshot.h"
@@ -24,7 +24,8 @@ namespace mc {
 namespace {
 
 class djb_hash {
-  hash_type state_ = 5381ll;
+  hash_type state_ = 5381LL;
+
 public:
   template<class T>
   void update(T& x)

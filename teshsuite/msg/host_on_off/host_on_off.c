@@ -40,10 +40,9 @@ static int master(int argc, char *argv[])
   double task_comm_size = 1E6;
 
   const char * mailbox = "jupi";
-  msg_task_t task = NULL;
   msg_host_t jupiter = MSG_host_by_name("Jupiter");
 
-  task = MSG_task_create("task on", task_comp_size, task_comm_size, NULL);
+  msg_task_t task = MSG_task_create("task on", task_comp_size, task_comm_size, NULL);
   XBT_INFO("Sending \"%s\"", task->name);
   if (MSG_task_send_with_timeout(task, mailbox, 1) != MSG_OK)
     MSG_task_destroy(task);

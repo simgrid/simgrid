@@ -3,9 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "../surf/StorageImpl.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/msg/msg_private.h"
-#include "src/surf/storage_interface.hpp"
 #include <numeric>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg, "Logging specific to MSG (io)");
@@ -24,7 +24,6 @@ void __MSG_file_get_info(msg_file_t fd){
   xbt_dynar_t info = simcall_file_get_info(fd->simdata->smx_file);
   sg_size_t *psize;
 
-  fd->content_type = xbt_dynar_pop_as(info, char*);
   fd->storage_type = xbt_dynar_pop_as(info, char*);
   fd->storageId    = xbt_dynar_pop_as(info, char*);
   fd->mount_point  = xbt_dynar_pop_as(info, char*);
@@ -41,7 +40,7 @@ static int MSG_host_get_file_descriptor_id(msg_host_t host)
     priv->file_descriptor_table = new std::vector<int>(sg_storage_max_file_descriptors);
     std::iota(priv->file_descriptor_table->rbegin(), priv->file_descriptor_table->rend(), 0); // Fill with ..., 1, 0.
   }
-  xbt_assert(!priv->file_descriptor_table->empty(), "Too much files are opened! Some have to be closed.");
+  xbt_assert(not priv->file_descriptor_table->empty(), "Too much files are opened! Some have to be closed.");
   int desc = priv->file_descriptor_table->back();
   priv->file_descriptor_table->pop_back();
   return desc;
@@ -90,9 +89,8 @@ void MSG_file_dump (msg_file_t fd){
            "\t\tMount point: '%s'\n"
            "\t\tStorage Id: '%s'\n"
            "\t\tStorage Type: '%s'\n"
-           "\t\tContent Type: '%s'\n"
            "\t\tFile Descriptor Id: %d",
-           fd->fullpath, fd->size, fd->mount_point, fd->storageId, fd->storage_type, fd->content_type, fd->desc_id);
+           fd->fullpath, fd->size, fd->mount_point, fd->storageId, fd->storage_type, fd->desc_id);
 }
 
 /** \ingroup msg_file
@@ -328,7 +326,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
     strncpy(file_mount_name, fullpath, strlen(mount_name) + 1);
     file_mount_name[strlen(mount_name)] = '\0';
 
-    if (!strcmp(file_mount_name, mount_name) && strlen(mount_name) > longest_prefix_length) {
+    if (not strcmp(file_mount_name, mount_name) && strlen(mount_name) > longest_prefix_length) {
       /* The current mount name is found in the full path and is bigger than the previous*/
       longest_prefix_length = strlen(mount_name);
       storage_dest          = (msg_storage_t)xbt_lib_get_elm_or_null(storage_lib, storage_name);

@@ -12,7 +12,6 @@
 #include "src/smpi/SmpiHost.hpp"
 #include "xbt/config.hpp"
 #include "src/smpi/private.h"
-#include "smpi/smpi_shared_malloc.hpp"
 #include "src/smpi/smpi_coll.hpp"
 #include "src/smpi/smpi_comm.hpp"
 #include "src/smpi/smpi_group.hpp"
@@ -145,7 +144,7 @@ static void check_blocks(std::vector<std::pair<size_t, size_t>> &private_blocks,
 
 void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t buff_size)
 {
-  simgrid::kernel::activity::Comm *comm = dynamic_cast<simgrid::kernel::activity::Comm*>(synchro);
+  simgrid::kernel::activity::CommImpl* comm = dynamic_cast<simgrid::kernel::activity::CommImpl*>(synchro);
   int src_shared                        = 0;
   int dst_shared                        = 0;
   size_t src_offset                     = 0;
@@ -238,7 +237,7 @@ void smpi_global_init()
 {
   MPI_Group group;
 
-  if (!MC_is_active()) {
+  if (not MC_is_active()) {
     global_timer = xbt_os_timer_new();
     xbt_os_walltimer_start(global_timer);
   }
@@ -246,7 +245,7 @@ void smpi_global_init()
   if (xbt_cfg_get_string("smpi/comp-adjustment-file")[0] != '\0') { 
     std::string filename {xbt_cfg_get_string("smpi/comp-adjustment-file")};
     std::ifstream fstream(filename);
-    if (!fstream.is_open()) {
+    if (not fstream.is_open()) {
       xbt_die("Could not open file %s. Does it exist?", filename.c_str());
     }
 
@@ -394,7 +393,7 @@ void smpi_global_destroy()
 
   MPI_COMM_WORLD = MPI_COMM_NULL;
 
-  if (!MC_is_active()) {
+  if (not MC_is_active()) {
     xbt_os_timer_free(global_timer);
   }
 
@@ -471,11 +470,12 @@ static void smpi_init_options(){
       smpi_cpu_threshold = DBL_MAX;
 
     char* val = xbt_cfg_get_string("smpi/shared-malloc");
-    if (!strcasecmp(val, "yes") || !strcmp(val, "1") || !strcasecmp(val, "on") || !strcasecmp(val, "global")) {
+    if (not strcasecmp(val, "yes") || not strcmp(val, "1") || not strcasecmp(val, "on") ||
+        not strcasecmp(val, "global")) {
       smpi_cfg_shared_malloc = shmalloc_global;
-    } else if (!strcasecmp(val, "local")) {
+    } else if (not strcasecmp(val, "local")) {
       smpi_cfg_shared_malloc = shmalloc_local;
-    } else if (!strcasecmp(val, "no") || !strcmp(val, "0") || !strcasecmp(val, "off")) {
+    } else if (not strcasecmp(val, "no") || not strcmp(val, "0") || not strcasecmp(val, "off")) {
       smpi_cfg_shared_malloc = shmalloc_none;
     } else {
       xbt_die("Invalid value '%s' for option smpi/shared-malloc. Possible values: 'on' or 'global', 'local', 'off'",
@@ -611,7 +611,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
         if (handle == nullptr)
           xbt_die("dlopen failed: %s (errno: %d -- %s)", dlerror(), errno, strerror(errno));
         smpi_entry_point_type entry_point = smpi_resolve_function(handle);
-        if (!entry_point)
+        if (not entry_point)
           xbt_die("Could not resolve entry point");
 
         smpi_run_entry_point(entry_point, args);
@@ -626,7 +626,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
     if (handle == nullptr)
       xbt_die("dlopen failed for %s: %s (errno: %d -- %s)", executable, dlerror(), errno, strerror(errno));
     smpi_entry_point_type entry_point = smpi_resolve_function(handle);
-    if (!entry_point)
+    if (not entry_point)
       xbt_die("main not found in %s", executable);
     // TODO, register the executable for SMPI privatization
 

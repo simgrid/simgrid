@@ -5,14 +5,8 @@
 # Use it as a wrapper to your build command, eg: ./travis-sonarqube.sh make VERBOSE=1
 
 # On Mac OSX or with pull requests, you don't want to run SonarQube but to exec the build command directly.
-if [ ${TRAVIS_OS_NAME} != 'linux' ] || [ ${TRAVIS_PULL_REQUEST} != 'false' ] 
-then
-  exec "$@"
-fi
-# Passed this point, we are on Linux and not in a PR (exec never returns)
 
-
-# Be verbose and fail fast
+# Be verbose and fail fast
 set -ex
 
 # Install required software

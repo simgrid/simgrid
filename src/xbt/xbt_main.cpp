@@ -47,8 +47,8 @@ int xbt_pagebits = 0;
 /* Declare xbt_preinit and xbt_postexit as constructor/destructor of the library.
  * This is crude and rather compiler-specific, unfortunately.
  */
-static void xbt_preinit(void) _XBT_GNUC_CONSTRUCTOR(200);
-static void xbt_postexit(void);
+static void xbt_preinit() _XBT_GNUC_CONSTRUCTOR(200);
+static void xbt_postexit();
 
 #ifdef _WIN32
 #include <windows.h>
@@ -75,7 +75,8 @@ static BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserv
 
 #endif
 
-static void xbt_preinit(void) {
+static void xbt_preinit()
+{
   unsigned int seed = 2147483647;
 #ifdef _WIN32
   SYSTEM_INFO si;
@@ -104,9 +105,9 @@ static void xbt_preinit(void) {
   atexit(xbt_postexit);
 }
 
-static void xbt_postexit(void)
+static void xbt_postexit()
 {
-  if (!_sg_do_clean_atexit)
+  if (not _sg_do_clean_atexit)
     return;
   xbt_initialized--;
   xbt_dict_postexit();
@@ -152,11 +153,11 @@ void xbt_free_ref(void *d)
 }
 
 /** @brief Kill the program in silence */
-void xbt_abort(void)
+void xbt_abort()
 {
 #ifdef COVERAGE
   /* Call __gcov_flush on abort when compiling with coverage options. */
-  extern void __gcov_flush(void);
+  extern void __gcov_flush();
   __gcov_flush();
 #endif
 #ifdef _WIN32

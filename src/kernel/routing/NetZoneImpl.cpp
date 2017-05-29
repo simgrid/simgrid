@@ -69,15 +69,15 @@ void NetZoneImpl::addBypassRoute(sg_platf_route_cbarg_t e_route)
   if (e_route->gw_dst) {
     XBT_DEBUG("Load bypassNetzoneRoute from %s@%s to %s@%s", e_route->src->cname(), e_route->gw_src->cname(),
               e_route->dst->cname(), e_route->gw_dst->cname());
-    xbt_assert(!e_route->link_list->empty(), "Bypass route between %s@%s and %s@%s cannot be empty.",
+    xbt_assert(not e_route->link_list->empty(), "Bypass route between %s@%s and %s@%s cannot be empty.",
                e_route->src->cname(), e_route->gw_src->cname(), e_route->dst->cname(), e_route->gw_dst->cname());
     xbt_assert(bypassRoutes_.find({e_route->src, e_route->dst}) == bypassRoutes_.end(),
                "The bypass route between %s@%s and %s@%s already exists.", e_route->src->cname(),
                e_route->gw_src->cname(), e_route->dst->cname(), e_route->gw_dst->cname());
   } else {
     XBT_DEBUG("Load bypassRoute from %s to %s", e_route->src->cname(), e_route->dst->cname());
-    xbt_assert(!e_route->link_list->empty(), "Bypass route between %s and %s cannot be empty.", e_route->src->cname(),
-               e_route->dst->cname());
+    xbt_assert(not e_route->link_list->empty(), "Bypass route between %s and %s cannot be empty.",
+               e_route->src->cname(), e_route->dst->cname());
     xbt_assert(bypassRoutes_.find({e_route->src, e_route->dst}) == bypassRoutes_.end(),
                "The bypass route between %s and %s already exists.", e_route->src->cname(), e_route->dst->cname());
   }

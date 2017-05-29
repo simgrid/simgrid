@@ -183,12 +183,8 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
   unsigned int answers;
   unsigned int destination_found = 0;
   unsigned int nodes_added = 0;
-  double time_beginreceive;
-  double timeout;
   double global_timeout = MSG_get_clock() + find_node_global_timeout;
   unsigned int steps = 0;
-
-  xbt_assert((id_to_find >= 0), "Id supplied incorrect");
 
   /* First we build a list of who we already know */
   answer_t node_list = node_find_closest(node, id_to_find);
@@ -203,9 +199,9 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
     answers = 0;
     queries = send_find_node_to_best(node, node_list);
     nodes_added = 0;
-    timeout = MSG_get_clock() + find_node_timeout;
+    double timeout = MSG_get_clock() + find_node_timeout;
     steps++;
-    time_beginreceive = MSG_get_clock();
+    double time_beginreceive = MSG_get_clock();
     do {
       if (node->receive_comm == NULL) {
         node->task_received = NULL;
@@ -278,7 +274,7 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
 unsigned int ping(node_t node, unsigned int id_to_ping)
 {
   char mailbox[MAILBOX_NAME_SIZE];
-  snprintf(mailbox,MAILBOX_NAME_SIZE, "%d", id_to_ping);
+  snprintf(mailbox, MAILBOX_NAME_SIZE, "%u", id_to_ping);
 
   double timeout = MSG_get_clock() + ping_timeout;
 
@@ -360,11 +356,10 @@ unsigned int send_find_node_to_best(node_t node, answer_t node_list)
   unsigned int i = 0;
   unsigned int j = 0;
   unsigned int destination = node_list->destination_id;
-  node_contact_t node_to_query;
   while (j < kademlia_alpha && i < node_list->size) {
     /* We need to have at most "kademlia_alpha" requests each time, according to the protocol */
     /* Gets the node we want to send the query to */
-    node_to_query = xbt_dynar_get_as(node_list->nodes, i, node_contact_t);
+    node_contact_t node_to_query = xbt_dynar_get_as(node_list->nodes, i, node_contact_t);
     if (node_to_query->id != node->id) {        /* No need to query ourselves */
       send_find_node(node, node_to_query->id, destination);
       j++;

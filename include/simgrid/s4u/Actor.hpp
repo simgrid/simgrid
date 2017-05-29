@@ -16,15 +16,11 @@
 #include <utility>
 #include <vector>
 
-#include <boost/intrusive_ptr.hpp>
-
 #include <xbt/Extendable.hpp>
-#include <xbt/base.h>
 #include <xbt/functional.hpp>
 #include <xbt/string.hpp>
 
 #include <simgrid/chrono.hpp>
-#include <simgrid/simix.h>
 #include <simgrid/s4u/forward.hpp>
 
 namespace simgrid {
@@ -310,7 +306,7 @@ namespace this_actor {
    * See \ref Comm for the full communication API (including non blocking communications).
    */
   XBT_PUBLIC(void*) recv(MailboxPtr chan);
-  XBT_PUBLIC(Comm&) irecv(MailboxPtr chan, void** data);
+  XBT_PUBLIC(CommPtr) irecv(MailboxPtr chan, void** data);
 
   /** Block the actor until it delivers a message of the given simulated size to the given mailbox
    *
@@ -319,7 +315,8 @@ namespace this_actor {
   XBT_PUBLIC(void) send(MailboxPtr chan, void* payload, double simulatedSize);
   XBT_PUBLIC(void) send(MailboxPtr chan, void* payload, double simulatedSize, double timeout);
 
-  XBT_PUBLIC(Comm&) isend(MailboxPtr chan, void* payload, double simulatedSize);
+  XBT_PUBLIC(CommPtr) isend(MailboxPtr chan, void* payload, double simulatedSize);
+  XBT_PUBLIC(void) dsend(MailboxPtr chan, void* payload, double simulatedSize);
 
   /** @brief Returns the actor ID of the current actor (same as pid). */
   XBT_PUBLIC(aid_t) pid();
@@ -351,7 +348,7 @@ namespace this_actor {
   XBT_PUBLIC(void) migrate(Host* new_host);
 };
 
-/** @} */
+/** @} */
 
 }} // namespace simgrid::s4u
 

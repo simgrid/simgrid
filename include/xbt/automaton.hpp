@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_AUTOMATON_HPP
-#define _XBT_AUTOMATON_HPP
+#ifndef XBT_AUTOMATON_HPP
+#define XBT_AUTOMATON_HPP
 
 #include <utility>
 

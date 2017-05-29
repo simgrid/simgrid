@@ -20,10 +20,10 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 
-#include <simgrid_config.h>
 #include "src/simgrid/util.hpp"
-#include <xbt/log.h>
-#include <xbt/sysdep.h>
+#include "xbt/log.h"
+#include "xbt/sysdep.h"
+#include <simgrid_config.h>
 
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_dwarf.hpp"
@@ -53,8 +53,7 @@ static uint64_t MC_dwarf_default_lower_bound(int lang);
  * \param die  DIE for the DW_TAG_enumeration_type or DW_TAG_subrange_type
  * \param unit DIE of the DW_TAG_compile_unit
  */
-static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die * die,
-                                                Dwarf_Die * unit);
+static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die* die, Dwarf_Die* unit);
 
 /** \brief Computes the number of elements of a given DW_TAG_array_type.
  *
@@ -261,7 +260,7 @@ static const char *MC_dwarf_attr_integrate_string(Dwarf_Die * die,
                                                   int attribute)
 {
   Dwarf_Attribute attr;
-  if (!dwarf_attr_integrate(die, attribute, &attr))
+  if (not dwarf_attr_integrate(die, attribute, &attr))
     return nullptr;
   else
     return dwarf_formstring(&attr);
@@ -280,7 +279,7 @@ static const char *MC_dwarf_attr_integrate_string(Dwarf_Die * die,
 static const char *MC_dwarf_at_linkage_name(Dwarf_Die * die)
 {
   const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_linkage_name);
-  if (!name)
+  if (not name)
     name = MC_dwarf_attr_integrate_string(die, DW_AT_MIPS_linkage_name);
   return name;
 }
@@ -417,7 +416,7 @@ static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die * die,
     return MC_dwarf_attr_integrate_uint(die, DW_AT_count, 0);
   // Otherwise compute DW_TAG_upper_bound-DW_TAG_lower_bound + 1:
 
-  if (!dwarf_hasattr_integrate(die, DW_AT_upper_bound))
+  if (not dwarf_hasattr_integrate(die, DW_AT_upper_bound))
     // This is not really 0, but the code expects this (we do not know):
     return 0;
 
@@ -493,7 +492,7 @@ static void MC_dwarf_fill_member_location(
   if (dwarf_hasattr(child, DW_AT_data_bit_offset))
     xbt_die("Can't groke DW_AT_data_bit_offset.");
 
-  if (!dwarf_hasattr_integrate(child, DW_AT_data_member_location)) {
+  if (not dwarf_hasattr_integrate(child, DW_AT_data_member_location)) {
     if (type->type == DW_TAG_union_type)
       return;
     xbt_die
@@ -525,7 +524,7 @@ static void MC_dwarf_fill_member_location(
     // Offset from the base address of the object:
     {
       Dwarf_Word offset;
-      if (!dwarf_formudata(&attr, &offset))
+      if (not dwarf_formudata(&attr, &offset))
         member->offset(offset);
       else
         xbt_die("Cannot get %s location <%" PRIx64 ">%s",
@@ -612,7 +611,7 @@ static void MC_dwarf_add_members(simgrid::mc::ObjectInformation* info, Dwarf_Die
 
       MC_dwarf_fill_member_location(type, &member, &child);
 
-      if (!member.type_id)
+      if (not member.type_id)
         xbt_die("Missing type for member %s of <%" PRIx64 ">%s",
                 member.name.c_str(),
                 (uint64_t) type->id, type->name.c_str());
@@ -715,7 +714,7 @@ static void MC_dwarf_handle_type_die(simgrid::mc::ObjectInformation* info, Dwarf
 {
   simgrid::mc::Type type = MC_dwarf_die_to_type(info, die, unit, frame, ns);
   auto& t = (info->types[type.id] = std::move(type));
-  if (!t.name.empty() && type.byte_size != 0)
+  if (not t.name.empty() && type.byte_size != 0)
     info->full_types_by_name[t.name] = &t;
 }
 
@@ -840,7 +839,7 @@ static void MC_dwarf_handle_variable_die(simgrid::mc::ObjectInformation* info, D
 {
   std::unique_ptr<simgrid::mc::Variable> variable =
     MC_die_to_variable(info, die, unit, frame, ns);
-  if (!variable)
+  if (not variable)
     return;
   // Those arrays are sorted later:
   else if (variable->global)
@@ -894,7 +893,7 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
   if (low_pc) {
     // DW_AT_high_pc:
     Dwarf_Attribute attr;
-    if (!dwarf_attr_integrate(die, DW_AT_high_pc, &attr))
+    if (not dwarf_attr_integrate(die, DW_AT_high_pc, &attr))
       xbt_die("Missing DW_AT_high_pc matching with DW_AT_low_pc");
 
     Dwarf_Sword offset;
@@ -1203,7 +1202,7 @@ void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
   // Try with NT_GNU_BUILD_ID: we find the build ID in the ELF file and then
   // use this ID to find the file in some known locations in the filesystem.
   std::vector<char> build_id = get_build_id(elf);
-  if (!build_id.empty()) {
+  if (not build_id.empty()) {
     elf_end(elf);
     close(fd);
 
@@ -1317,7 +1316,7 @@ static
 simgrid::mc::Type* MC_resolve_type(
   simgrid::mc::ObjectInformation* info, unsigned type_id)
 {
-  if (!type_id)
+  if (not type_id)
     return nullptr;
   simgrid::mc::Type* type = simgrid::util::find_map_ptr(info->types, type_id);
   if (type == nullptr)
@@ -1387,11 +1386,10 @@ void postProcessObjectInformation(simgrid::mc::Process* process, simgrid::mc::Ob
         break;
 
     // Resolve full_type:
-    if (!subtype->name.empty() && subtype->byte_size == 0)
+    if (not subtype->name.empty() && subtype->byte_size == 0)
       for (auto const& object_info : process->object_infos) {
         auto i = object_info->full_types_by_name.find(subtype->name);
-        if (i != object_info->full_types_by_name.end()
-            && !i->second->name.empty() && i->second->byte_size) {
+        if (i != object_info->full_types_by_name.end() && not i->second->name.empty() && i->second->byte_size) {
           type->full_type = i->second;
           break;
         }

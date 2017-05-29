@@ -5,36 +5,36 @@
 
 #include "simgrid/s4u/Host.hpp"
 
+#include "src/kernel/activity/SleepImpl.hpp"
 #include "src/kernel/context/Context.hpp"
-#include "src/kernel/activity/SynchroSleep.hpp"
 
-#include "src/surf/surf_interface.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/popping_private.h"
+#include "src/surf/surf_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 
-void simgrid::kernel::activity::Sleep::suspend()
+void simgrid::kernel::activity::SleepImpl::suspend()
 {
   surf_sleep->suspend();
 }
 
-void simgrid::kernel::activity::Sleep::resume()
+void simgrid::kernel::activity::SleepImpl::resume()
 {
   surf_sleep->resume();
 }
 
-void simgrid::kernel::activity::Sleep::post()
+void simgrid::kernel::activity::SleepImpl::post()
 {
-  while (!simcalls.empty()) {
+  while (not simcalls.empty()) {
     smx_simcall_t simcall = simcalls.front();
     simcalls.pop_front();
 
     e_smx_state_t state;
-    switch (surf_sleep->getState()){
+    switch (surf_sleep->getState()) {
       case simgrid::surf::Action::State::failed:
         simcall->issuer->context->iwannadie = 1;
-        //SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+        // SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
         state = SIMIX_SRC_HOST_FAILURE;
         break;
 

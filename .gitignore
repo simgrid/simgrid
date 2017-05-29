@@ -173,7 +173,6 @@ examples/msg/mc/test/snapshot_comparison4
 examples/msg/mc/test/snapshot_comparison5
 examples/msg/ms.trace
 examples/msg/network-ns3/network-ns3
-examples/msg/app-pmm/app-pmm
 examples/msg/task-priority/task-priority
 examples/msg/procmig.trace
 examples/msg/platform-properties/platform-properties
@@ -242,8 +241,8 @@ examples/smpi/trace_simple/smpi_trace_simple
 examples/smpi/trace_call_location/smpi_trace_call_location
 testall
 teshsuite/datadesc_usage.out
-teshsuite/java/SemaphoreGC/SemaphoreGC_compiled
-teshsuite/java/SleepHostOff/SleepHostOff_compiled
+teshsuite/java/semaphoreGC/semaphoreGC_compiled
+teshsuite/java/sleepHostOff/sleepHostOff_compiled
 teshsuite/mc/dwarf/dwarf
 teshsuite/mc/dwarf-expression/dwarf-expression
 teshsuite/mc/random-bug/random-bug

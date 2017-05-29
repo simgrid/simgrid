@@ -92,10 +92,9 @@ if(comm->get_leaders_comm()==MPI_COMM_NULL){
       if (intra_rank == j) {
         if (i != inter_comm_size - 1) {
 
-          inter_rrequest = Request::irecv((char *)rbuf + inter_recv_offset, rcount, rtype,
-	                                  inter_src, tag, comm);
-          inter_srequest_array[inter_srequest_count++] = Request::isend((char *)rbuf + inter_send_offset, scount, stype,
-			                                                inter_dst, tag, comm);
+          inter_rrequest = Request::irecv((char*)rbuf + inter_recv_offset, rcount, rtype, inter_src, tag, comm);
+          inter_srequest_array[inter_srequest_count++] =
+              Request::isend((char*)rbuf + inter_send_offset, scount, stype, inter_dst, tag, comm);
         }
       }
       //intra_communication

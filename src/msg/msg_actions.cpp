@@ -36,7 +36,7 @@ msg_error_t MSG_action_trace_run(char *path)
 
   msg_error_t res = MSG_main();
 
-  if (!simgrid::xbt::action_queues.empty()) {
+  if (not simgrid::xbt::action_queues.empty()) {
     XBT_WARN("Not all actions got consumed. If the simulation ended successfully (without deadlock),"
              " you may want to add new processes to your deployment file.");
 

@@ -9,7 +9,7 @@
 #include "simgrid/s4u/Actor.hpp"
 #include "src/simix/popping_private.h"
 #include "xbt/swag.h"
-#include<list>
+#include <list>
 
 typedef struct s_smx_process_exit_fun {
   int_f_pvoid_pvoid_t fun;

@@ -100,14 +100,14 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID(JNIEnv * env, jcl
 {
   msg_process_t process = MSG_process_from_PID(pid);
 
-  if (!process) {
+  if (not process) {
     jxbt_throw_process_not_found(env, bprintf("PID = %d",static_cast<int>(pid)));
     return nullptr;
   }
 
   jobject jprocess = jprocess_from_native(process);
 
-  if (!jprocess) {
+  if (not jprocess) {
     jxbt_throw_jni(env, "get process failed");
     return nullptr;
   }
@@ -118,14 +118,14 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID(JNIEnv * env, jcl
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_getProperty(JNIEnv *env, jobject jprocess, jobject jname) {
   msg_process_t process = jprocess_to_native(jprocess, env);
 
-  if (!process) {
+  if (not process) {
     jxbt_throw_notbound(env, "process", jprocess);
     return nullptr;
   }
   const char *name = env->GetStringUTFChars((jstring)jname, 0);
 
   const char *property = MSG_process_get_property_value(process, name);
-  if (!property)
+  if (not property)
     return nullptr;
 
   jobject jproperty = env->NewStringUTF(property);
@@ -138,7 +138,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_getProperty(JNIEnv *env, 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_getCurrentProcess(JNIEnv * env, jclass cls)
 {
   jobject jprocess = jprocess_from_native(MSG_process_self());
-  if (!jprocess)
+  if (not jprocess)
     jxbt_throw_jni(env, xbt_strdup("SIMIX_process_get_jprocess() failed"));
 
   return jprocess;
@@ -148,7 +148,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_suspend(JNIEnv * env, jobjec
 {
   msg_process_t process = jprocess_to_native(jprocess, env);
 
-  if (!process) {
+  if (not process) {
     jxbt_throw_notbound(env, "process", jprocess);
     return;
   }
@@ -163,7 +163,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_resume(JNIEnv * env, jobject
 {
   msg_process_t process = jprocess_to_native(jprocess, env);
 
-  if (!process) {
+  if (not process) {
     jxbt_throw_notbound(env, "process", jprocess);
     return;
   }
@@ -177,7 +177,7 @@ JNIEXPORT void
 JNICALL Java_org_simgrid_msg_Process_setAutoRestart (JNIEnv *env, jobject jprocess, jboolean jauto_restart) {
 
   msg_process_t process = jprocess_to_native(jprocess, env);
-  if (!process) {
+  if (not process) {
     jxbt_throw_notbound(env, "process", jprocess);
     return;
   }
@@ -189,7 +189,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_restart (JNIEnv *env, jobjec
   msg_process_t process = jprocess_to_native(jprocess, env);
   xbt_ex_t e;
 
-  if (!process) {
+  if (not process) {
     jxbt_throw_notbound(env, "process", jprocess);
     return;
   }
@@ -206,7 +206,7 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Process_isSuspended(JNIEnv * env
 {
   msg_process_t process = jprocess_to_native(jprocess, env);
 
-  if (!process) {
+  if (not process) {
     jxbt_throw_notbound(env, "process", jprocess);
     return 0;
   }
@@ -250,7 +250,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_kill(JNIEnv * env, jobject j
 {
   /* get the native instances from the java ones */
   msg_process_t process = jprocess_to_native(jprocess, env);
-  if (!process) {
+  if (not process) {
     jxbt_throw_notbound(env, "process", jprocess);
     return;
   }
@@ -267,14 +267,14 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_migrate(JNIEnv * env, jobjec
 {
   msg_process_t process = jprocess_to_native(jprocess, env);
 
-  if (!process) {
+  if (not process) {
     jxbt_throw_notbound(env, "process", jprocess);
     return;
   }
 
   msg_host_t host = jhost_get_native(env, jhost);
 
-  if (!host) {
+  if (not host) {
     jxbt_throw_notbound(env, "host", jhost);
     return;
   }

@@ -105,7 +105,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_cancel(JNIEnv * env, jobject jt
 {
   msg_task_t ptask = jtask_to_native(jtask, env);
 
-  if (!ptask) {
+  if (not ptask) {
     jxbt_throw_notbound(env, "task", jtask);
     return;
   }
@@ -119,7 +119,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_execute(JNIEnv * env, jobject j
 {
   msg_task_t task = jtask_to_native(jtask, env);
 
-  if (!task) {
+  if (not task) {
     jxbt_throw_notbound(env, "task", jtask);
     return;
   }
@@ -136,7 +136,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setBound(JNIEnv * env, jobject 
 {
   msg_task_t task = jtask_to_native(jtask, env);
 
-  if (!task) {
+  if (not task) {
     jxbt_throw_notbound(env, "task", jtask);
     return;
   }
@@ -146,7 +146,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setBound(JNIEnv * env, jobject 
 JNIEXPORT jstring JNICALL Java_org_simgrid_msg_Task_getName(JNIEnv * env, jobject jtask) {
   msg_task_t task = jtask_to_native(jtask, env);
 
-  if (!task) {
+  if (not task) {
     jxbt_throw_notbound(env, "task", jtask);
     return nullptr;
   }
@@ -159,7 +159,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSender(JNIEnv * env, jobj
 
   msg_task_t task = jtask_to_native(jtask, env);
 
-  if (!task) {
+  if (not task) {
     jxbt_throw_notbound(env, "task", jtask);
     return nullptr;
   }
@@ -176,7 +176,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSource(JNIEnv * env, jobj
   msg_host_t host;
   msg_task_t task = jtask_to_native(jtask, env);
 
-  if (!task) {
+  if (not task) {
     jxbt_throw_notbound(env, "task", jtask);
     return nullptr;
   }
@@ -185,7 +185,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSource(JNIEnv * env, jobj
   if (host == nullptr) {
     return nullptr;
   }
-  if (!host->extension(JAVA_HOST_LEVEL)) {
+  if (not host->extension(JAVA_HOST_LEVEL)) {
     jxbt_throw_jni(env, "MSG_task_get_source() failed");
     return nullptr;
   }
@@ -197,7 +197,7 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Task_getFlopsAmount(JNIEnv * env,
 {
   msg_task_t ptask = jtask_to_native(jtask, env);
 
-  if (!ptask) {
+  if (not ptask) {
     jxbt_throw_notbound(env, "task", jtask);
     return -1;
   }
@@ -207,7 +207,7 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Task_getFlopsAmount(JNIEnv * env,
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setName(JNIEnv *env, jobject jtask, jobject jname) {
   msg_task_t task = jtask_to_native(jtask, env);
 
-  if (!task) {
+  if (not task) {
     jxbt_throw_notbound(env, "task", jtask);
     return;
   }
@@ -223,7 +223,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setPriority(JNIEnv * env, jobje
 {
   msg_task_t task = jtask_to_native(jtask, env);
 
-  if (!task) {
+  if (not task) {
     jxbt_throw_notbound(env, "task", jtask);
     return;
   }
@@ -234,7 +234,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setFlopsAmount (JNIEnv *env, jo
 {
   msg_task_t task = jtask_to_native(jtask, env);
 
-  if (!task) {
+  if (not task) {
     jxbt_throw_notbound(env, "task", jtask);
     return;
   }
@@ -245,7 +245,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setBytesAmount (JNIEnv *env, jo
 {
   msg_task_t task = jtask_to_native(jtask, env);
 
-  if (!task) {
+  if (not task) {
     jxbt_throw_notbound(env, "task", jtask);
     return;
   }
@@ -257,7 +257,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_sendBounded(JNIEnv * env,jobjec
                                                              jdouble jtimeout,jdouble maxrate)
 {
   msg_task_t task = jtask_to_native(jtask, env);
-  if (!task) {
+  if (not task) {
     jxbt_throw_notbound(env, "task", jtask);
     return;
   }
@@ -299,7 +299,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receive(JNIEnv* env, jclass 
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_irecv(JNIEnv * env, jclass cls, jstring jmailbox) {
   jclass comm_class = env->FindClass("org/simgrid/msg/Comm");
-  if (!comm_class)
+  if (not comm_class)
     return nullptr;
 
   //pointer to store the task object pointer.
@@ -308,7 +308,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_irecv(JNIEnv * env, jclass c
   /* There should be a cache here */
 
   jobject jcomm = env->NewObject(comm_class, jtask_method_Comm_constructor);
-  if (!jcomm) {
+  if (not jcomm) {
     jxbt_throw_jni(env, "Can't create a Comm object.");
     return nullptr;
   }
@@ -354,14 +354,14 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_irecvBounded(JNIEnv * env, j
                                                                  jdouble rate)
 {
   jclass comm_class = env->FindClass("org/simgrid/msg/Comm");
-  if (!comm_class)
+  if (not comm_class)
     return nullptr;
 
   // pointer to store the task object pointer.
   msg_task_t* task = xbt_new0(msg_task_t, 1);
 
   jobject jcomm = env->NewObject(comm_class, jtask_method_Comm_constructor);
-  if (!jcomm) {
+  if (not jcomm) {
     jxbt_throw_jni(env, "Can't create a Comm object.");
     return nullptr;
   }
@@ -383,14 +383,15 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_isend(JNIEnv *env, jobject j
 
   jclass comm_class = env->FindClass("org/simgrid/msg/Comm");
 
-  if (!comm_class) return nullptr;
+  if (not comm_class)
+    return nullptr;
 
   jobject jcomm       = env->NewObject(comm_class, jtask_method_Comm_constructor);
   const char* mailbox = env->GetStringUTFChars(jmailbox, 0);
 
   msg_task_t task = jtask_to_native(jtask, env);
 
-  if (!task) {
+  if (not task) {
     env->ReleaseStringUTFChars(jmailbox, mailbox);
     env->DeleteLocalRef(jcomm);
     jxbt_throw_notbound(env, "task", jtask);
@@ -418,7 +419,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_isendBounded(JNIEnv *env, jo
   const char *mailbox;
 
   jclass comm_class = env->FindClass("org/simgrid/msg/Comm");
-  if (!comm_class)
+  if (not comm_class)
     return nullptr;
 
   jcomm = env->NewObject(comm_class, jtask_method_Comm_constructor);
@@ -426,7 +427,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_isendBounded(JNIEnv *env, jo
 
   task = jtask_to_native(jtask, env);
 
-  if (!task) {
+  if (not task) {
     env->ReleaseStringUTFChars(jmailbox, mailbox);
     env->DeleteLocalRef(jcomm);
     jxbt_throw_notbound(env, "task", jtask);
@@ -449,7 +450,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_nativeFinalize(JNIEnv * env, jo
 {
   msg_task_t task = jtask_to_native(jtask, env);
 
-  if (!task) {
+  if (not task) {
     jxbt_throw_notbound(env, "task", jtask);
     return;
     }
@@ -474,7 +475,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_dsend(JNIEnv * env, jobject jta
 
   msg_task_t task = jtask_to_native(jtask, env);
 
-  if (!task) {
+  if (not task) {
     env->ReleaseStringUTFChars(jalias, alias);
     jxbt_throw_notbound(env, "task", jtask);
     return;
@@ -494,7 +495,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_dsendBounded(JNIEnv * env, jobj
 
   msg_task_t task = jtask_to_native(jtask, env);
 
-  if (!task) {
+  if (not task) {
     env->ReleaseStringUTFChars(jalias, alias);
     jxbt_throw_notbound(env, "task", jtask);
     return;

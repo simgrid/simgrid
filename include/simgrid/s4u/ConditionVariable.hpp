@@ -52,7 +52,7 @@ public:
   void wait(std::unique_lock<Mutex> & lock);
   template <class P> void wait(std::unique_lock<Mutex> & lock, P pred)
   {
-    while (!pred())
+    while (not pred())
       wait(lock);
   }
 
@@ -62,7 +62,7 @@ public:
   std::cv_status wait_for(std::unique_lock<Mutex> & lock, double duration);
   template <class P> bool wait_until(std::unique_lock<Mutex> & lock, double timeout_time, P pred)
   {
-    while (!pred())
+    while (not pred())
       if (this->wait_until(lock, timeout_time) == std::cv_status::timeout)
         return pred();
     return true;

@@ -9,7 +9,6 @@
 #include "instr/instr_interface.h"
 #include "mc/mc.h"
 #include "src/msg/msg_private.h"
-#include "src/mc/mc_ignore.h"
 
 XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg, "Logging specific to MSG (kernel)");
@@ -36,7 +35,7 @@ void MSG_init_nocheck(int *argc, char **argv) {
   TRACE_global_init(argc, argv);
 
   xbt_getpid = &MSG_process_self_PID;
-  if (!msg_global) {
+  if (not msg_global) {
 
     msg_global = new s_MSG_Global_t();
 

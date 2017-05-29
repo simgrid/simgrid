@@ -242,7 +242,7 @@ void sg_host_dump(sg_host_t host)
   XBT_INFO("  - available speed: %.2f", sg_host_get_available_speed(host));
   props = host->properties();
 
-  if (!xbt_dict_is_empty(props)){
+  if (not xbt_dict_is_empty(props)) {
     XBT_INFO("  - properties:");
     xbt_dict_cursor_t cursor = nullptr;
     char* key;

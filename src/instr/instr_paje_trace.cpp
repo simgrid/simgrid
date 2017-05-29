@@ -44,18 +44,20 @@ void buffer_debug(std::vector<PajeEvent*> *buf);
 
 void dump_comment (const char *comment)
 {
-  if (!strlen(comment)) return;
+  if (not strlen(comment))
+    return;
   fprintf (tracing_file, "# %s\n", comment);
 }
 
 void dump_comment_file (const char *filename)
 {
-  if (!strlen(filename)) return;
+  if (not strlen(filename))
+    return;
   FILE *file = fopen (filename, "r");
-  if (!file){
+  if (not file) {
     THROWF (system_error, 1, "Comment file %s could not be opened for reading.", filename);
   }
-  while (!feof(file)){
+  while (not feof(file)) {
     char c;
     c = fgetc(file);
     if (feof(file)) break;
@@ -74,7 +76,8 @@ double TRACE_last_timestamp_to_dump = 0;
 //dumps the trace file until the timestamp TRACE_last_timestamp_to_dump
 void TRACE_paje_dump_buffer (int force)
 {
-  if (!TRACE_is_enabled()) return;
+  if (not TRACE_is_enabled())
+    return;
   XBT_DEBUG("%s: dump until %f. starts", __FUNCTION__, TRACE_last_timestamp_to_dump);
   if (force){
     for (auto event : buffer){
@@ -147,7 +150,6 @@ static void insert_into_buffer (PajeEvent* tbi)
     if (e1->timestamp <= tbi->timestamp)
       break;
   }
-  buffer.insert(i.base(), tbi);
   if (i == buffer.rend())
     XBT_DEBUG("%s: inserted at beginning", __FUNCTION__);
   else if (i == buffer.rbegin())
@@ -155,6 +157,7 @@ static void insert_into_buffer (PajeEvent* tbi)
   else
     XBT_DEBUG("%s: inserted at pos= %zd from its end", __FUNCTION__,
         std::distance(buffer.rbegin(),i));
+  buffer.insert(i.base(), tbi);
 
   buffer_debug(&buffer);
 }
@@ -244,7 +247,6 @@ void DefineContainerEvent::print() {
 }
 
 
-
 DefineVariableTypeEvent::DefineVariableTypeEvent(type_t type)
 {
   this->event_type                           = PAJE_DefineVariableType;
@@ -259,21 +261,19 @@ DefineVariableTypeEvent::DefineVariableTypeEvent(type_t type)
 }
 
 void DefineVariableTypeEvent::print() {
-	if (instr_fmt_type == instr_fmt_paje) {
-		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << (int)this->event_type;
-		stream << " " << type->id
-				<< " " << type->father->id
-				<< " " << type->name;
-		if (type->color)
-			stream << " \"" << type->color << "\"";
-		print_row();
-	} else if (instr_fmt_type == instr_fmt_TI) {
-		/* Nothing to do */
-	} else {
-		THROW_IMPOSSIBLE;
-	}
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << (int)this->event_type;
+    stream << " " << type->id << " " << type->father->id << " " << type->name;
+    if (type->color)
+      stream << " \"" << type->color << "\"";
+    print_row();
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    /* Nothing to do */
+  } else {
+    THROW_IMPOSSIBLE;
+  }
 }
 
 DefineStateTypeEvent::DefineStateTypeEvent(type_t type)
@@ -304,35 +304,31 @@ DefineEventTypeEvent::DefineEventTypeEvent(type_t type)
 
 
 void DefineStateTypeEvent::print() {
-	if (instr_fmt_type == instr_fmt_paje) {
-		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << (int)this->event_type;
-		stream << " " << type->id
-				<< " " << type->father->id
-				<< " " << type->name;
-		print_row();
-	} else if (instr_fmt_type == instr_fmt_TI) {
-		/* Nothing to do */
-	} else {
-		THROW_IMPOSSIBLE;
-	}
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << (int)this->event_type;
+    stream << " " << type->id << " " << type->father->id << " " << type->name;
+    print_row();
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    /* Nothing to do */
+  } else {
+    THROW_IMPOSSIBLE;
+  }
 }
 
 void DefineEventTypeEvent::print() {
-	if (instr_fmt_type == instr_fmt_paje) {
-		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << (int)this->event_type;
-		stream << " " << type->id
-				<< " " << type->father->id
-				<< " " << type->name;
-		print_row();
-	} else if (instr_fmt_type == instr_fmt_TI) {
-		/* Nothing to do */
-	} else {
-		THROW_IMPOSSIBLE;
-	}
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << (int)this->event_type;
+    stream << " " << type->id << " " << type->father->id << " " << type->name;
+    print_row();
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    /* Nothing to do */
+  } else {
+    THROW_IMPOSSIBLE;
+  }
 }
 
 DefineLinkTypeEvent::DefineLinkTypeEvent(type_t type, type_t source, type_t dest)
@@ -351,21 +347,17 @@ DefineLinkTypeEvent::DefineLinkTypeEvent(type_t type, type_t source, type_t dest
 }
 
 void DefineLinkTypeEvent::print() {
-	if (instr_fmt_type == instr_fmt_paje) {
-		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << (int)this->event_type;
-		stream << " " << type->id
-				<< " " << type->father->id
-				<< " " << source->id
-				<< " " << dest->id
-				<< " " << type->name;
-		print_row();
-	} else if (instr_fmt_type == instr_fmt_TI) {
-		/* Nothing to do */
-	} else {
-		THROW_IMPOSSIBLE;
-	}
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << (int)this->event_type;
+    stream << " " << type->id << " " << type->father->id << " " << source->id << " " << dest->id << " " << type->name;
+    print_row();
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    /* Nothing to do */
+  } else {
+    THROW_IMPOSSIBLE;
+  }
 }
 
 DefineEntityValueEvent::DefineEntityValueEvent (val_t value)
@@ -383,21 +375,19 @@ DefineEntityValueEvent::DefineEntityValueEvent (val_t value)
 
 
 void DefineEntityValueEvent::print() {
-	if (instr_fmt_type == instr_fmt_paje) {
-		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << (int)this->event_type;
-		stream << " "   << value->id
-				<< " "   << value->father->id
-				<< " "   << value->name;
-		if(value->color)
-			stream << " \"" << value->color << "\"";
-		print_row();
-	} else if (instr_fmt_type == instr_fmt_TI) {
-		/* Nothing to do */
-	} else {
-		THROW_IMPOSSIBLE;
-	}
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << (int)this->event_type;
+    stream << " " << value->id << " " << value->father->id << " " << value->name;
+    if (value->color)
+      stream << " \"" << value->color << "\"";
+    print_row();
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    /* Nothing to do */
+  } else {
+    THROW_IMPOSSIBLE;
+  }
 }
 
 CreateContainerEvent::CreateContainerEvent (container_t container)
@@ -413,47 +403,45 @@ CreateContainerEvent::CreateContainerEvent (container_t container)
 }
 
 void CreateContainerEvent::print() {
-	if (instr_fmt_type == instr_fmt_paje) {
-		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << (int)this->event_type;
-		print_timestamp(this);
-		stream << " "   << container->id
-				<< " "   << container->type->id
-				<< " "   << container->father->id
-				<< " \"" << container->name << "\"";
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << (int)this->event_type;
+    print_timestamp(this);
+    stream << " " << container->id << " " << container->type->id << " " << container->father->id << " \""
+           << container->name << "\"";
 
-		print_row();
-	} else if (instr_fmt_type == instr_fmt_TI) {
-		//if we are in the mode with only one file
-		static FILE *ti_unique_file = nullptr;
+    print_row();
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    // if we are in the mode with only one file
+    static FILE* ti_unique_file = nullptr;
 
-		if (tracing_files == nullptr) {
-			tracing_files = xbt_dict_new_homogeneous(nullptr);
-			//generate unique run id with time
-			prefix = xbt_os_time();
-		}
+    if (tracing_files == nullptr) {
+      tracing_files = xbt_dict_new_homogeneous(nullptr);
+      // generate unique run id with time
+      prefix = xbt_os_time();
+    }
 
-		if (!xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || ti_unique_file == nullptr) {
-			char *folder_name = bprintf("%s_files", TRACE_get_filename());
-			char *filename = bprintf("%s/%f_%s.txt", folder_name, prefix, container->name);
+    if (not xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || ti_unique_file == nullptr) {
+      char* folder_name = bprintf("%s_files", TRACE_get_filename());
+      char* filename    = bprintf("%s/%f_%s.txt", folder_name, prefix, container->name);
 #ifdef WIN32
-			_mkdir(folder_name);
+      _mkdir(folder_name);
 #else
-			mkdir(folder_name, S_IRWXU | S_IRWXG | S_IRWXO);
+      mkdir(folder_name, S_IRWXU | S_IRWXG | S_IRWXO);
 #endif
-			ti_unique_file = fopen(filename, "w");
-			xbt_assert(ti_unique_file, "Tracefile %s could not be opened for writing: %s", filename, strerror(errno));
-			fprintf(tracing_file, "%s\n", filename);
+      ti_unique_file = fopen(filename, "w");
+      xbt_assert(ti_unique_file, "Tracefile %s could not be opened for writing: %s", filename, strerror(errno));
+      fprintf(tracing_file, "%s\n", filename);
 
-			xbt_free(folder_name);
-			xbt_free(filename);
-		}
+      xbt_free(folder_name);
+      xbt_free(filename);
+    }
 
-		xbt_dict_set(tracing_files, container->name, (void *) ti_unique_file, nullptr);
-	} else {
-		THROW_IMPOSSIBLE;
-	}
+    xbt_dict_set(tracing_files, container->name, (void*)ti_unique_file, nullptr);
+  } else {
+    THROW_IMPOSSIBLE;
+  }
 }
 
 DestroyContainerEvent::DestroyContainerEvent (container_t container)
@@ -469,24 +457,23 @@ DestroyContainerEvent::DestroyContainerEvent (container_t container)
 }
 
 void DestroyContainerEvent::print() {
-	if (instr_fmt_type == instr_fmt_paje) {
-		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << (int)this->event_type;
-		print_timestamp(this);
-		stream << " "   << container->type->id
-				<< " "   << container->id;
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << (int)this->event_type;
+    print_timestamp(this);
+    stream << " " << container->type->id << " " << container->id;
 
-		print_row();
-	} else if (instr_fmt_type == instr_fmt_TI) {
-		if (!xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file")|| xbt_dict_length(tracing_files) == 1) {
-			FILE* f = (FILE*)xbt_dict_get_or_null(tracing_files, container->name);
-			fclose(f);
-		}
-		xbt_dict_remove(tracing_files, container->name);
-	} else {
-		THROW_IMPOSSIBLE;
-	}
+    print_row();
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    if (not xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || xbt_dict_length(tracing_files) == 1) {
+      FILE* f = (FILE*)xbt_dict_get_or_null(tracing_files, container->name);
+      fclose(f);
+    }
+    xbt_dict_remove(tracing_files, container->name);
+        } else {
+          THROW_IMPOSSIBLE;
+        }
 }
 
 SetVariableEvent::SetVariableEvent (double timestamp, container_t container, type_t type, double value)
@@ -503,20 +490,18 @@ SetVariableEvent::SetVariableEvent (double timestamp, container_t container, typ
 }
 
 void SetVariableEvent::print() {
-	if (instr_fmt_type == instr_fmt_paje) {
-		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << (int)this->event_type;
-		print_timestamp(this);
-		stream << " " << type->id
-				<< " " << container->id
-				<< " " << value;
-		print_row();
-	} else if (instr_fmt_type == instr_fmt_TI) {
-		/* Nothing to do */
-	} else {
-		THROW_IMPOSSIBLE;
-	}
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << (int)this->event_type;
+    print_timestamp(this);
+    stream << " " << type->id << " " << container->id << " " << value;
+    print_row();
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    /* Nothing to do */
+  } else {
+    THROW_IMPOSSIBLE;
+  }
 }
 
 AddVariableEvent::AddVariableEvent (double timestamp, container_t container, type_t type, double value)
@@ -533,20 +518,18 @@ AddVariableEvent::AddVariableEvent (double timestamp, container_t container, typ
 }
 
 void AddVariableEvent::print() {
-	if (instr_fmt_type == instr_fmt_paje) {
-		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << (int)this->event_type;
-		print_timestamp(this);
-		stream << " " << type->id
-				<< " " << container->id
-				<< " " << value;
-		print_row();
-	} else if (instr_fmt_type == instr_fmt_TI) {
-		/* Nothing to do */
-	} else {
-		THROW_IMPOSSIBLE;
-	}
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << (int)this->event_type;
+    print_timestamp(this);
+    stream << " " << type->id << " " << container->id << " " << value;
+    print_row();
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    /* Nothing to do */
+  } else {
+    THROW_IMPOSSIBLE;
+  }
 }
 
 SubVariableEvent::SubVariableEvent (double timestamp, container_t container, type_t type, double value)
@@ -563,20 +546,18 @@ SubVariableEvent::SubVariableEvent (double timestamp, container_t container, typ
 }
 
 void SubVariableEvent::print() {
-	if (instr_fmt_type == instr_fmt_paje) {
-		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << (int)this->event_type;
-		print_timestamp(this);
-		stream << " " << type->id
-				<< " " << container->id
-				<< " " << value;
-		print_row();
-	} else if (instr_fmt_type == instr_fmt_TI) {
-		/* Nothing to do */
-	} else {
-		THROW_IMPOSSIBLE;
-	}
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << (int)this->event_type;
+    print_timestamp(this);
+    stream << " " << type->id << " " << container->id << " " << value;
+    print_row();
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    /* Nothing to do */
+  } else {
+    THROW_IMPOSSIBLE;
+  }
 }
 
 SetStateEvent::SetStateEvent (double timestamp, container_t container, type_t type, val_t value)
@@ -601,26 +582,24 @@ SetStateEvent::SetStateEvent (double timestamp, container_t container, type_t ty
 }
 
 void SetStateEvent::print() {
-	if (instr_fmt_type == instr_fmt_paje) {
-		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << (int)this->event_type;
-		print_timestamp(this);
-		stream << " " << type->id
-				<< " " << container->id;
-		stream << " " <<value->id;
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << (int)this->event_type;
+    print_timestamp(this);
+    stream << " " << type->id << " " << container->id;
+    stream << " " << value->id;
 #if HAVE_SMPI
-		if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
-			stream << " \"" << filename
-					<< "\" " << linenumber;
-		}
+    if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
+      stream << " \"" << filename << "\" " << linenumber;
+    }
 #endif
-		print_row();
-	} else if (instr_fmt_type == instr_fmt_TI) {
-		/* Nothing to do */
-	} else {
-		THROW_IMPOSSIBLE;
-	}
+    print_row();
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    /* Nothing to do */
+  } else {
+    THROW_IMPOSSIBLE;
+  }
 }
 
 PushStateEvent::PushStateEvent (double timestamp, container_t container, type_t type, val_t value, void* extra)
@@ -649,168 +628,165 @@ PushStateEvent::PushStateEvent (double timestamp, container_t container, type_t 
  : PushStateEvent(timestamp, container, type, value, nullptr)
 {}
 void PushStateEvent::print() {
-	if (instr_fmt_type == instr_fmt_paje) {
-		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << (int)this->event_type;
-		print_timestamp(this);
-		stream << " " << type->id
-				<< " " << container->id;
-		stream << " " <<value->id;
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << (int)this->event_type;
+    print_timestamp(this);
+    stream << " " << type->id << " " << container->id;
+    stream << " " << value->id;
 
-		if (TRACE_display_sizes()) {
-			stream << " ";
-			if (extra_ != nullptr) {
-				stream << static_cast<instr_extra_data>(extra_)->send_size;
-			}
-			else {
-				stream << 0;
-			}
-		}
+    if (TRACE_display_sizes()) {
+      stream << " ";
+      if (extra_ != nullptr) {
+        stream << static_cast<instr_extra_data>(extra_)->send_size;
+      } else {
+        stream << 0;
+      }
+    }
 #if HAVE_SMPI
-		if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
-			stream << " \"" << filename
-					<< "\" " << linenumber;
-		}
+    if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
+      stream << " \"" << filename << "\" " << linenumber;
+    }
 #endif
-		print_row();
+    print_row();
 
-		if (extra_ != nullptr) {
-			if (static_cast<instr_extra_data>(extra_)->sendcounts != nullptr)
-				xbt_free(static_cast<instr_extra_data>(extra_)->sendcounts);
-			if (static_cast<instr_extra_data>(extra_)->recvcounts != nullptr)
-				xbt_free(static_cast<instr_extra_data>(extra_)->recvcounts);
-			xbt_free(extra_);
-		}
-	} else if (instr_fmt_type == instr_fmt_TI) {
-		  if (extra_ == nullptr)
-		    return;
-		  instr_extra_data extra = (instr_extra_data)extra_;
+    if (extra_ != nullptr) {
+      if (static_cast<instr_extra_data>(extra_)->sendcounts != nullptr)
+        xbt_free(static_cast<instr_extra_data>(extra_)->sendcounts);
+      if (static_cast<instr_extra_data>(extra_)->recvcounts != nullptr)
+        xbt_free(static_cast<instr_extra_data>(extra_)->recvcounts);
+      xbt_free(extra_);
+    }
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    if (extra_ == nullptr)
+      return;
+    instr_extra_data extra = (instr_extra_data)extra_;
 
-		  char *process_id = nullptr;
-		  //FIXME: dirty extract "rank-" from the name, as we want the bare process id here
-		  if (strstr(container->name, "rank-") == nullptr)
-		    process_id = xbt_strdup(container->name);
-		  else
-		    process_id = xbt_strdup(container->name + 5);
+    char* process_id = nullptr;
+    // FIXME: dirty extract "rank-" from the name, as we want the bare process id here
+    if (strstr(container->name, "rank-") == nullptr)
+      process_id = xbt_strdup(container->name);
+    else
+      process_id = xbt_strdup(container->name + 5);
 
-		  FILE* trace_file =  (FILE* )xbt_dict_get(tracing_files, container->name);
+    FILE* trace_file = (FILE*)xbt_dict_get(tracing_files, container->name);
 
-		  switch (extra->type) {
-		  case TRACING_INIT:
-		    fprintf(trace_file, "%s init\n", process_id);
-		    break;
-		  case TRACING_FINALIZE:
-		    fprintf(trace_file, "%s finalize\n", process_id);
-		    break;
-		  case TRACING_SEND:
-		    fprintf(trace_file, "%s send %d %d %s\n", process_id, extra->dst, extra->send_size, extra->datatype1);
-		    break;
-		  case TRACING_ISEND:
-		    fprintf(trace_file, "%s Isend %d %d %s\n", process_id, extra->dst, extra->send_size, extra->datatype1);
-		    break;
-		  case TRACING_RECV:
-		    fprintf(trace_file, "%s recv %d %d %s\n", process_id, extra->src, extra->send_size, extra->datatype1);
-		    break;
-		  case TRACING_IRECV:
-		    fprintf(trace_file, "%s Irecv %d %d %s\n", process_id, extra->src, extra->send_size, extra->datatype1);
-		    break;
-		  case TRACING_TEST:
-		    fprintf(trace_file, "%s test\n", process_id);
-		    break;
-		  case TRACING_WAIT:
-		    fprintf(trace_file, "%s wait\n", process_id);
-		    break;
-		  case TRACING_WAITALL:
-		    fprintf(trace_file, "%s waitAll\n", process_id);
-		    break;
-		  case TRACING_BARRIER:
-		    fprintf(trace_file, "%s barrier\n", process_id);
-		    break;
-		  case TRACING_BCAST:          // rank bcast size (root) (datatype)
-		    fprintf(trace_file, "%s bcast %d ", process_id, extra->send_size);
-		    if (extra->root != 0 || (extra->datatype1 && strcmp(extra->datatype1, "")))
-		      fprintf(trace_file, "%d %s", extra->root, extra->datatype1);
-		    fprintf(trace_file, "\n");
-		    break;
-		  case TRACING_REDUCE:         // rank reduce comm_size comp_size (root) (datatype)
-		    fprintf(trace_file, "%s reduce %d %f ", process_id, extra->send_size, extra->comp_size);
-		    if (extra->root != 0 || (extra->datatype1 && strcmp(extra->datatype1, "")))
-		      fprintf(trace_file, "%d %s", extra->root, extra->datatype1);
-		    fprintf(trace_file, "\n");
-		    break;
-		  case TRACING_ALLREDUCE:      // rank allreduce comm_size comp_size (datatype)
-		    fprintf(trace_file, "%s allReduce %d %f %s\n", process_id, extra->send_size, extra->comp_size, extra->datatype1);
-		    break;
-		  case TRACING_ALLTOALL:       // rank alltoall send_size recv_size (sendtype) (recvtype)
-		    fprintf(trace_file, "%s allToAll %d %d %s %s\n", process_id, extra->send_size, extra->recv_size, extra->datatype1,
-		            extra->datatype2);
-		    break;
-		  case TRACING_ALLTOALLV:      // rank alltoallv send_size [sendcounts] recv_size [recvcounts] (sendtype) (recvtype)
-		    fprintf(trace_file, "%s allToAllV %d ", process_id, extra->send_size);
-		    for (int i = 0; i < extra->num_processes; i++)
-		      fprintf(trace_file, "%d ", extra->sendcounts[i]);
-		    fprintf(trace_file, "%d ", extra->recv_size);
-		    for (int i = 0; i < extra->num_processes; i++)
-		      fprintf(trace_file, "%d ", extra->recvcounts[i]);
-		    fprintf(trace_file, "%s %s \n", extra->datatype1, extra->datatype2);
-		    break;
-		  case TRACING_GATHER:         // rank gather send_size recv_size root (sendtype) (recvtype)
-		    fprintf(trace_file, "%s gather %d %d %d %s %s\n", process_id, extra->send_size, extra->recv_size, extra->root,
-		            extra->datatype1, extra->datatype2);
-		    break;
-		  case TRACING_ALLGATHERV:     // rank allgatherv send_size [recvcounts] (sendtype) (recvtype)
-		    fprintf(trace_file, "%s allGatherV %d ", process_id, extra->send_size);
-		    for (int i = 0; i < extra->num_processes; i++)
-		      fprintf(trace_file, "%d ", extra->recvcounts[i]);
-		    fprintf(trace_file, "%s %s \n", extra->datatype1, extra->datatype2);
-		    break;
-		  case TRACING_REDUCE_SCATTER: // rank reducescatter [recvcounts] comp_size (sendtype)
-		    fprintf(trace_file, "%s reduceScatter ", process_id);
-		    for (int i = 0; i < extra->num_processes; i++)
-		      fprintf(trace_file, "%d ", extra->recvcounts[i]);
-		    fprintf(trace_file, "%f %s\n", extra->comp_size, extra->datatype1);
-		    break;
-		  case TRACING_COMPUTING:
-		    fprintf(trace_file, "%s compute %f\n", process_id, extra->comp_size);
-		    break;
-		  case TRACING_SLEEPING:
-		    fprintf(trace_file, "%s sleep %f\n", process_id, extra->sleep_duration);
-		    break;
-		  case TRACING_GATHERV: // rank gatherv send_size [recvcounts] root (sendtype) (recvtype)
-		    fprintf(trace_file, "%s gatherV %d ", process_id, extra->send_size);
-		    for (int i = 0; i < extra->num_processes; i++)
-		      fprintf(trace_file, "%d ", extra->recvcounts[i]);
-		    fprintf(trace_file, "%d %s %s\n", extra->root, extra->datatype1, extra->datatype2);
-		    break;
-		  case TRACING_WAITANY:
-		  case TRACING_SENDRECV:
-		  case TRACING_SCATTER:
-		  case TRACING_SCATTERV:
-		  case TRACING_ALLGATHER:
-		  case TRACING_SCAN:
-		  case TRACING_EXSCAN:
-		  case TRACING_COMM_SIZE:
-		  case TRACING_COMM_SPLIT:
-		  case TRACING_COMM_DUP:
-		  case TRACING_SSEND:
-		  case TRACING_ISSEND:
-		  default:
-		    XBT_WARN ("Call from %s impossible to translate into replay command : Not implemented (yet)",
-		         value->name);
-		    break;
-		  }
+    switch (extra->type) {
+      case TRACING_INIT:
+        fprintf(trace_file, "%s init\n", process_id);
+        break;
+      case TRACING_FINALIZE:
+        fprintf(trace_file, "%s finalize\n", process_id);
+        break;
+      case TRACING_SEND:
+        fprintf(trace_file, "%s send %d %d %s\n", process_id, extra->dst, extra->send_size, extra->datatype1);
+        break;
+      case TRACING_ISEND:
+        fprintf(trace_file, "%s Isend %d %d %s\n", process_id, extra->dst, extra->send_size, extra->datatype1);
+        break;
+      case TRACING_RECV:
+        fprintf(trace_file, "%s recv %d %d %s\n", process_id, extra->src, extra->send_size, extra->datatype1);
+        break;
+      case TRACING_IRECV:
+        fprintf(trace_file, "%s Irecv %d %d %s\n", process_id, extra->src, extra->send_size, extra->datatype1);
+        break;
+      case TRACING_TEST:
+        fprintf(trace_file, "%s test\n", process_id);
+        break;
+      case TRACING_WAIT:
+        fprintf(trace_file, "%s wait\n", process_id);
+        break;
+      case TRACING_WAITALL:
+        fprintf(trace_file, "%s waitAll\n", process_id);
+        break;
+      case TRACING_BARRIER:
+        fprintf(trace_file, "%s barrier\n", process_id);
+        break;
+      case TRACING_BCAST: // rank bcast size (root) (datatype)
+        fprintf(trace_file, "%s bcast %d ", process_id, extra->send_size);
+        if (extra->root != 0 || (extra->datatype1 && strcmp(extra->datatype1, "")))
+          fprintf(trace_file, "%d %s", extra->root, extra->datatype1);
+        fprintf(trace_file, "\n");
+        break;
+      case TRACING_REDUCE: // rank reduce comm_size comp_size (root) (datatype)
+        fprintf(trace_file, "%s reduce %d %f ", process_id, extra->send_size, extra->comp_size);
+        if (extra->root != 0 || (extra->datatype1 && strcmp(extra->datatype1, "")))
+          fprintf(trace_file, "%d %s", extra->root, extra->datatype1);
+        fprintf(trace_file, "\n");
+        break;
+      case TRACING_ALLREDUCE: // rank allreduce comm_size comp_size (datatype)
+        fprintf(trace_file, "%s allReduce %d %f %s\n", process_id, extra->send_size, extra->comp_size,
+                extra->datatype1);
+        break;
+      case TRACING_ALLTOALL: // rank alltoall send_size recv_size (sendtype) (recvtype)
+        fprintf(trace_file, "%s allToAll %d %d %s %s\n", process_id, extra->send_size, extra->recv_size,
+                extra->datatype1, extra->datatype2);
+        break;
+      case TRACING_ALLTOALLV: // rank alltoallv send_size [sendcounts] recv_size [recvcounts] (sendtype) (recvtype)
+        fprintf(trace_file, "%s allToAllV %d ", process_id, extra->send_size);
+        for (int i = 0; i < extra->num_processes; i++)
+          fprintf(trace_file, "%d ", extra->sendcounts[i]);
+        fprintf(trace_file, "%d ", extra->recv_size);
+        for (int i = 0; i < extra->num_processes; i++)
+          fprintf(trace_file, "%d ", extra->recvcounts[i]);
+        fprintf(trace_file, "%s %s \n", extra->datatype1, extra->datatype2);
+        break;
+      case TRACING_GATHER: // rank gather send_size recv_size root (sendtype) (recvtype)
+        fprintf(trace_file, "%s gather %d %d %d %s %s\n", process_id, extra->send_size, extra->recv_size, extra->root,
+                extra->datatype1, extra->datatype2);
+        break;
+      case TRACING_ALLGATHERV: // rank allgatherv send_size [recvcounts] (sendtype) (recvtype)
+        fprintf(trace_file, "%s allGatherV %d ", process_id, extra->send_size);
+        for (int i = 0; i < extra->num_processes; i++)
+          fprintf(trace_file, "%d ", extra->recvcounts[i]);
+        fprintf(trace_file, "%s %s \n", extra->datatype1, extra->datatype2);
+        break;
+      case TRACING_REDUCE_SCATTER: // rank reducescatter [recvcounts] comp_size (sendtype)
+        fprintf(trace_file, "%s reduceScatter ", process_id);
+        for (int i = 0; i < extra->num_processes; i++)
+          fprintf(trace_file, "%d ", extra->recvcounts[i]);
+        fprintf(trace_file, "%f %s\n", extra->comp_size, extra->datatype1);
+        break;
+      case TRACING_COMPUTING:
+        fprintf(trace_file, "%s compute %f\n", process_id, extra->comp_size);
+        break;
+      case TRACING_SLEEPING:
+        fprintf(trace_file, "%s sleep %f\n", process_id, extra->sleep_duration);
+        break;
+      case TRACING_GATHERV: // rank gatherv send_size [recvcounts] root (sendtype) (recvtype)
+        fprintf(trace_file, "%s gatherV %d ", process_id, extra->send_size);
+        for (int i = 0; i < extra->num_processes; i++)
+          fprintf(trace_file, "%d ", extra->recvcounts[i]);
+        fprintf(trace_file, "%d %s %s\n", extra->root, extra->datatype1, extra->datatype2);
+        break;
+      case TRACING_WAITANY:
+      case TRACING_SENDRECV:
+      case TRACING_SCATTER:
+      case TRACING_SCATTERV:
+      case TRACING_ALLGATHER:
+      case TRACING_SCAN:
+      case TRACING_EXSCAN:
+      case TRACING_COMM_SIZE:
+      case TRACING_COMM_SPLIT:
+      case TRACING_COMM_DUP:
+      case TRACING_SSEND:
+      case TRACING_ISSEND:
+      default:
+        XBT_WARN("Call from %s impossible to translate into replay command : Not implemented (yet)", value->name);
+        break;
+    }
 
-		  if (extra->recvcounts != nullptr)
-		    xbt_free(extra->recvcounts);
-		  if (extra->sendcounts != nullptr)
-		    xbt_free(extra->sendcounts);
-		  xbt_free(process_id);
-		  xbt_free(extra);
+    if (extra->recvcounts != nullptr)
+      xbt_free(extra->recvcounts);
+    if (extra->sendcounts != nullptr)
+      xbt_free(extra->sendcounts);
+    xbt_free(process_id);
+    xbt_free(extra);
 
-	} else {
-		THROW_IMPOSSIBLE;
-	}
+  } else {
+    THROW_IMPOSSIBLE;
+  }
 }
 
 
@@ -827,19 +803,18 @@ PopStateEvent::PopStateEvent (double timestamp, container_t container, type_t ty
 }
 
 void PopStateEvent::print() {
-	if (instr_fmt_type == instr_fmt_paje) {
-		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << (int)this->event_type;
-		print_timestamp(this);
-		stream << " " << type->id
-				<< " " << container->id;
-		print_row();
-	} else if (instr_fmt_type == instr_fmt_TI) {
-		/* Nothing to do */
-	} else {
-		THROW_IMPOSSIBLE;
-	}
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << (int)this->event_type;
+    print_timestamp(this);
+    stream << " " << type->id << " " << container->id;
+    print_row();
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    /* Nothing to do */
+  } else {
+    THROW_IMPOSSIBLE;
+  }
 }
 
 ResetStateEvent::ResetStateEvent (double timestamp, container_t container, type_t type)
@@ -856,19 +831,18 @@ ResetStateEvent::ResetStateEvent (double timestamp, container_t container, type_
 }
 
 void ResetStateEvent::print() {
-	if (instr_fmt_type == instr_fmt_paje) {
-		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << (int)this->event_type;
-		print_timestamp(this);
-		stream << " " << type->id
-				<< " " << container->id;
-		print_row();
-	} else if (instr_fmt_type == instr_fmt_TI) {
-		/* Nothing to do */
-	} else {
-		THROW_IMPOSSIBLE;
-	}
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << (int)this->event_type;
+    print_timestamp(this);
+    stream << " " << type->id << " " << container->id;
+    print_row();
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    /* Nothing to do */
+  } else {
+    THROW_IMPOSSIBLE;
+  }
 }
 
 StartLinkEvent::StartLinkEvent (double timestamp, container_t container,
@@ -895,26 +869,23 @@ StartLinkEvent::StartLinkEvent (double timestamp, container_t container, type_t 
 }
 
 void StartLinkEvent::print() {
-	if (instr_fmt_type == instr_fmt_paje) {
-		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << (int)this->event_type;
-		print_timestamp(this);
-		stream << " " <<type->id
-				<< " " <<container->id
-				<< " " <<value;
-		stream << " " << sourceContainer->id
-				<< " " << key;
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << (int)this->event_type;
+    print_timestamp(this);
+    stream << " " << type->id << " " << container->id << " " << value;
+    stream << " " << sourceContainer->id << " " << key;
 
-		if (TRACE_display_sizes()) {
-			stream << " " << size;
-		}
-		print_row();
-	} else if (instr_fmt_type == instr_fmt_TI) {
-		/* Nothing to do */
-	} else {
-		THROW_IMPOSSIBLE;
-	}
+    if (TRACE_display_sizes()) {
+      stream << " " << size;
+    }
+    print_row();
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    /* Nothing to do */
+  } else {
+    THROW_IMPOSSIBLE;
+  }
 }
 
 EndLinkEvent::EndLinkEvent (double timestamp, container_t container, type_t type, container_t destContainer,
@@ -935,22 +906,19 @@ EndLinkEvent::EndLinkEvent (double timestamp, container_t container, type_t type
 
 
 void EndLinkEvent::print() {
-	if (instr_fmt_type == instr_fmt_paje) {
-		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << (int)this->event_type;
-		print_timestamp(this);
-		stream << " " <<type->id
-				<< " " <<container->id
-				<< " " <<value;
-		stream << " " << destContainer->id
-				<< " " << key;
-		print_row();
-	} else if (instr_fmt_type == instr_fmt_TI) {
-		/* Nothing to do */
-	} else {
-		THROW_IMPOSSIBLE;
-	}
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << (int)this->event_type;
+    print_timestamp(this);
+    stream << " " << type->id << " " << container->id << " " << value;
+    stream << " " << destContainer->id << " " << key;
+    print_row();
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    /* Nothing to do */
+  } else {
+    THROW_IMPOSSIBLE;
+  }
 }
 
 NewEvent::NewEvent (double timestamp, container_t container, type_t type, val_t value)
@@ -967,20 +935,18 @@ NewEvent::NewEvent (double timestamp, container_t container, type_t type, val_t 
 }
 
 void NewEvent::print () {
-	if (instr_fmt_type == instr_fmt_paje) {
-		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << (int)this->event_type;
-		print_timestamp(this);
-		stream << " " << type->id
-				<< " " << container->id
-				<< " " << value->id;
-		print_row();
-	} else if (instr_fmt_type == instr_fmt_TI) {
-		/* Nothing to do */
-	} else {
-		THROW_IMPOSSIBLE;
-	}
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << (int)this->event_type;
+    print_timestamp(this);
+    stream << " " << type->id << " " << container->id << " " << value->id;
+    print_row();
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    /* Nothing to do */
+  } else {
+    THROW_IMPOSSIBLE;
+  }
 }
 
 

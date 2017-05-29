@@ -110,7 +110,7 @@ tmgr_trace_t tmgr_trace_new_from_file(const char *filename)
   xbt_assert(trace_list.find(filename) == trace_list.end(), "Refusing to define trace %s twice", filename);
 
   std::ifstream* f = surf_ifsopen(filename);
-  xbt_assert(!f->fail(), "Cannot open file '%s' (path=%s)", filename, (boost::join(surf_path, ":")).c_str());
+  xbt_assert(not f->fail(), "Cannot open file '%s' (path=%s)", filename, (boost::join(surf_path, ":")).c_str());
 
   std::stringstream buffer;
   buffer << f->rdbuf();

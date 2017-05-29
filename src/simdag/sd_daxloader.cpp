@@ -67,7 +67,7 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
         current.push_back(task);
     }
   }
-  while(!current.empty()){
+  while (not current.empty()) {
     std::vector<SD_task_t> next;
     for (auto t: current){
       //Mark task
@@ -98,16 +98,16 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
     }
   }
 
-  if(!all_marked){
+  if (not all_marked) {
     XBT_VERB("there is at least one cycle in your task graph");
     xbt_dynar_foreach(dag,count,task){
       if(task->kind != SD_TASK_COMM_E2E && task->predecessors->empty() && task->inputs->empty()){
-	task->marked = 1;
-	current.push_back(task);
+        task->marked = 1;
+        current.push_back(task);
       }
     }
     //test if something has to be done for the next iteration
-    while(!current.empty()){
+    while (not current.empty()) {
       std::vector<SD_task_t> next;
       //test if the current iteration is done
       for (auto t: current){
@@ -248,7 +248,7 @@ xbt_dynar_t SD_daxload(const char *filename)
     }
   }
 
-  if (!acyclic_graph_detail(result)) {
+  if (not acyclic_graph_detail(result)) {
     char* base = xbt_basename(filename);
     XBT_ERROR("The DAX described in %s is not a DAG. It contains a cycle.", base);
     free(base);

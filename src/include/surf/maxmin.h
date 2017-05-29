@@ -12,6 +12,12 @@
 #include "surf/datatypes.h"
 #include <math.h>
 
+namespace simgrid {
+namespace surf {
+class Action;
+}
+}
+
 /** @addtogroup SURF_lmm 
  * @details 
  * A linear maxmin solver to resolve inequations systems.
@@ -233,8 +239,9 @@ XBT_PUBLIC(int) lmm_constraint_concurrency_maximum_get(lmm_constraint_t cnst);
  * @param bound The maximum value of the variable (-1.0 if no maximum value)
  * @param number_of_constraints The maximum number of constraint to associate to the variable
  */
-XBT_PUBLIC(lmm_variable_t) lmm_variable_new(lmm_system_t sys, void *id, double weight_value, double bound,
-                                            int number_of_constraints);
+XBT_PUBLIC(lmm_variable_t)
+lmm_variable_new(lmm_system_t sys, simgrid::surf::Action* id, double weight_value, double bound,
+                 int number_of_constraints);
 /**
  * @brief Free a variable
  * @param sys The system associated to the variable

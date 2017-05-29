@@ -44,8 +44,6 @@ void Info::set(char *key, char *value){
   xbt_dict_set(dict_, key, xbt_strdup(value), nullptr);
 }
 
-
-
 int Info::get(char *key, int valuelen, char *value, int *flag){
   *flag=false;
   char* tmpvalue=static_cast<char*>(xbt_dict_get_or_null(dict_, key));

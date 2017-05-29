@@ -69,7 +69,7 @@ static void clusterCreation_cb(sg_platf_cluster_cbarg_t cluster)
     NetPointNs3* host_src = sg_host_by_name(host_id)->pimpl_netpoint->extension<NetPointNs3>();
     xbt_assert(host_src, "Cannot find a NS3 host of name %s", host_id);
 
-    ns3_add_link(host_src->node_num, host_dst->node_num, bw,lat);
+    ns3_add_link(host_src, host_dst, bw, lat);
 
     delete host_dst;
     free(host_id);
@@ -108,17 +108,28 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
     xbt_assert(host_src != nullptr, "Network element %s does not seem to be NS3-ready", src->cname());
     xbt_assert(host_dst != nullptr, "Network element %s does not seem to be NS3-ready", dst->cname());
 
-    ns3_add_link(host_src->node_num, host_dst->node_num, link_bdw, link_lat);
+    ns3_add_link(host_src, host_dst, link_bdw, link_lat);
     if (symmetrical)
-      ns3_add_link(host_dst->node_num, host_src->node_num, link_bdw, link_lat);
+      ns3_add_link(host_dst, host_src, link_bdw, link_lat);
 
     xbt_free(link_bdw);
     xbt_free(link_lat);
+  } else {
+    static bool warned_about_long_routes = false;
+
+    if (not warned_about_long_routes)
+      XBT_WARN("Ignoring a route between %s and %s of length %zu: Only routes of length 1 are considered with NS3.\n"
+               "WARNING: You can ignore this warning if your hosts can still communicate when only considering routes "
+               "of length 1.\n"
+               "WARNING: Remove long routes to avoid this harmless message; subsequent long routes will be silently "
+               "ignored.",
+               src->cname(), dst->cname(), link_list->size());
+    warned_about_long_routes = true;
   }
 }
 
 /* Create the ns3 topology based on routing strategy */
-static void postparse_cb(void)
+static void postparse_cb()
 {
   IPV4addr.shrink_to_fit();
 
@@ -186,7 +197,7 @@ double NetworkNS3Model::nextOccuringEvent(double now)
   XBT_DEBUG("ns3_next_occuring_event");
 
   //get the first relevant value from the running_actions list
-  if (!getRunningActionSet()->size() || now == 0.0)
+  if (not getRunningActionSet()->size() || now == 0.0)
     return -1.0;
   else
     do {
@@ -245,7 +256,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     }
   }
 
-  while (!xbt_dynar_is_empty(socket_to_destroy)){
+  while (not xbt_dynar_is_empty(socket_to_destroy)) {
     xbt_dynar_pop(socket_to_destroy,&ns3Socket);
 
     if (XBT_LOG_ISENABLED(ns3, xbt_log_priority_debug)) {
@@ -306,7 +317,12 @@ void NetworkNS3Action::resume() {
   THROW_UNIMPLEMENTED;
 }
 
-  /* Test whether a flow is suspended */
+std::list<LinkImpl*> NetworkNS3Action::links()
+{
+  THROW_UNIMPLEMENTED;
+}
+
+/* Test whether a flow is suspended */
 bool NetworkNS3Action::isSuspended()
 {
   return false;
@@ -315,7 +331,7 @@ bool NetworkNS3Action::isSuspended()
 int NetworkNS3Action::unref()
 {
   refcount_--;
-  if (!refcount_) {
+  if (not refcount_) {
     if (action_hook.is_linked())
       stateSet_->erase(stateSet_->iterator_to(*this));
     XBT_DEBUG ("Removing action %p", this);
@@ -339,13 +355,17 @@ void ns3_simulator(double maxSeconds)
 void ns3_create_flow(simgrid::s4u::Host* src, simgrid::s4u::Host* dst, double startTime, u_int32_t TotalBytes,
                      simgrid::surf::NetworkNS3Action* action)
 {
-  int node1 = src->pimpl_netpoint->extension<NetPointNs3>()->node_num;
-  int node2 = dst->pimpl_netpoint->extension<NetPointNs3>()->node_num;
+  unsigned int node1 = src->pimpl_netpoint->extension<NetPointNs3>()->node_num;
+  unsigned int node2 = dst->pimpl_netpoint->extension<NetPointNs3>()->node_num;
 
   ns3::Ptr<ns3::Node> src_node = nodes.Get(node1);
   ns3::Ptr<ns3::Node> dst_node = nodes.Get(node2);
 
+  xbt_assert(node2 < IPV4addr.size(), "Element %s is unknown to NS3. Is it connected to any one-hop link?",
+             dst->pimpl_netpoint->cname());
   char* addr = IPV4addr.at(node2);
+  xbt_assert(addr != nullptr, "Element %s is unknown to NS3. Is it connected to any one-hop link?",
+             dst->pimpl_netpoint->cname());
 
   XBT_DEBUG("ns3_create_flow %d Bytes from %d to %d with Interface %s",TotalBytes, node1, node2,addr);
   ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress (ns3::Ipv4Address::GetAny(), port_number));
@@ -376,20 +396,20 @@ void ns3_initialize(const char* TcpProtocol){
   ns3::Config::SetDefault ("ns3::TcpSocket::SegmentSize", ns3::UintegerValue (1024)); // 1024-byte packet for easier reading
   ns3::Config::SetDefault ("ns3::TcpSocket::DelAckCount", ns3::UintegerValue (1));
 
-  if (!strcmp(TcpProtocol,"default"))
+  if (not strcmp(TcpProtocol, "default"))
     return;
 
-  if (!strcmp(TcpProtocol,"Reno")) {
+  if (not strcmp(TcpProtocol, "Reno")) {
     XBT_INFO("Switching Tcp protocol to '%s'",TcpProtocol);
     ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpReno"));
     return;
   }
-  if (!strcmp(TcpProtocol,"NewReno")) {
+  if (not strcmp(TcpProtocol, "NewReno")) {
     XBT_INFO("Switching Tcp protocol to '%s'",TcpProtocol);
     ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpNewReno"));
     return;
   }
-  if(!strcmp(TcpProtocol,"Tahoe")){
+  if (not strcmp(TcpProtocol, "Tahoe")) {
     XBT_INFO("Switching Tcp protocol to '%s'",TcpProtocol);
     ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpTahoe"));
     return;
@@ -442,17 +462,20 @@ static char* transformIpv4Address (ns3::Ipv4Address from){
   return bprintf("%s",s.c_str());
 }
 
-void ns3_add_link(int src, int dst, char *bw, char *lat)
+void ns3_add_link(NetPointNs3* src, NetPointNs3* dst, char* bw, char* lat)
 {
   ns3::PointToPointHelper pointToPoint;
 
   ns3::NetDeviceContainer netA;
   ns3::Ipv4AddressHelper address;
 
-  ns3::Ptr<ns3::Node> a = nodes.Get(src);
-  ns3::Ptr<ns3::Node> b = nodes.Get(dst);
+  int srcNum = src->node_num;
+  int dstNum = dst->node_num;
 
-  XBT_DEBUG("\tAdd PTP from %d to %d bw:'%s' lat:'%s'",src,dst,bw,lat);
+  ns3::Ptr<ns3::Node> a = nodes.Get(srcNum);
+  ns3::Ptr<ns3::Node> b = nodes.Get(dstNum);
+
+  XBT_DEBUG("\tAdd PTP from %d to %d bw:'%s' lat:'%s'", srcNum, dstNum, bw, lat);
   pointToPoint.SetDeviceAttribute ("DataRate", ns3::StringValue (bw));
   pointToPoint.SetChannelAttribute ("Delay", ns3::StringValue (lat));
 
@@ -464,13 +487,13 @@ void ns3_add_link(int src, int dst, char *bw, char *lat)
   free(adr);
   interfaces.Add(address.Assign (netA));
 
-  if (IPV4addr.size() <= (unsigned)src)
-    IPV4addr.resize(src + 1, nullptr);
-  IPV4addr.at(src) = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 2));
+  if (IPV4addr.size() <= (unsigned)srcNum)
+    IPV4addr.resize(srcNum + 1, nullptr);
+  IPV4addr.at(srcNum) = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 2));
 
-  if (IPV4addr.size() <= (unsigned)dst)
-    IPV4addr.resize(dst + 1, nullptr);
-  IPV4addr.at(dst) = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 1));
+  if (IPV4addr.size() <= (unsigned)dstNum)
+    IPV4addr.resize(dstNum + 1, nullptr);
+  IPV4addr.at(dstNum) = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 1));
 
   if (number_of_links == 255){
     xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");

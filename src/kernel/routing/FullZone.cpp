@@ -23,14 +23,14 @@ void FullZone::seal()
   int table_size = static_cast<int>(vertices_.size());
 
   /* Create table if needed */
-  if (!routingTable_)
+  if (not routingTable_)
     routingTable_ = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
 
   /* Add the loopback if needed */
   if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
     for (int i = 0; i < table_size; i++) {
       sg_platf_route_cbarg_t e_route = TO_ROUTE_FULL(i, i);
-      if (!e_route) {
+      if (not e_route) {
         e_route            = xbt_new0(s_sg_platf_route_cbarg_t, 1);
         e_route->gw_src    = nullptr;
         e_route->gw_dst    = nullptr;
@@ -84,7 +84,7 @@ void FullZone::addRoute(sg_platf_route_cbarg_t route)
 
   size_t table_size = vertices_.size();
 
-  if (!routingTable_)
+  if (not routingTable_)
     routingTable_ = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
 
   /* Check that the route does not already exist */

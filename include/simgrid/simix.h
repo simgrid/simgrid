@@ -34,13 +34,13 @@ namespace context {
       \see m_process_management
     @{ */
   class ActorImpl;
-  class Mutex;
+  class MutexImpl;
 }
 }
 
 typedef simgrid::kernel::context::Context* smx_context_t;
 typedef simgrid::simix::ActorImpl* smx_actor_t;
-typedef simgrid::simix::Mutex* smx_mutex_t;
+typedef simgrid::simix::MutexImpl* smx_mutex_t;
 typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
 
 #else
@@ -226,6 +226,8 @@ XBT_PUBLIC(smx_activity_t) SIMIX_comm_get_send_match(smx_mailbox_t mbox, int (*m
 XBT_PUBLIC(int) SIMIX_comm_has_send_match(smx_mailbox_t mbox, int (*match_fun)(void*, void*), void* data);
 XBT_PUBLIC(int) SIMIX_comm_has_recv_match(smx_mailbox_t mbox, int (*match_fun)(void*, void*), void* data);
 XBT_PUBLIC(void) SIMIX_comm_finish(smx_activity_t synchro);
+XBT_PUBLIC(smx_activity_t) SIMIX_comm_ref(smx_activity_t comm);
+XBT_PUBLIC(void) SIMIX_comm_unref(smx_activity_t comm);
 
 /******************************************************************************/
 /*                            SIMIX simcalls                                  */

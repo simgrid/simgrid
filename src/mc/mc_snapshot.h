@@ -6,27 +6,15 @@
 #ifndef SIMGRID_MC_SNAPSHOT_H
 #define SIMGRID_MC_SNAPSHOT_H
 
-#include <cstdint>
-#include <cstddef>
-
 #include <vector>
 #include <set>
 #include <string>
 #include <memory>
 
-#include <sys/types.h> // off_t
-
-#include <simgrid_config.h>
-#include "src/xbt/mmalloc/mmprivate.h"
-#include <xbt/asserts.h>
-#include <xbt/base.h>
-
-#include "src/mc/mc_forward.hpp"
 #include "src/mc/ModelChecker.hpp"
-#include "src/mc/PageStore.hpp"
-#include "src/mc/AddressSpace.hpp"
-#include "src/mc/mc_unw.h"
 #include "src/mc/RegionSnapshot.hpp"
+#include "src/mc/mc_forward.hpp"
+#include "src/mc/mc_unw.h"
 
 SG_BEGIN_DECL()
 
@@ -131,7 +119,7 @@ namespace mc {
 class XBT_PRIVATE Snapshot final : public AddressSpace {
 public:
   Snapshot(Process* process, int num_state);
-  ~Snapshot();
+  ~Snapshot() = default;
   const void* read_bytes(void* buffer, std::size_t size,
     RemotePtr<void> address, int process_index = ProcessIndexAny,
     ReadOptions options = ReadOptions::none()) const override;
@@ -216,11 +204,9 @@ static XBT_ALWAYS_INLINE const void* MC_region_read(mc_mem_region_t region, void
 {
   xbt_assert(region);
 
-  std::uintptr_t offset =
-    (std::uintptr_t) addr - (std::uintptr_t) region->start().address();
+  std::uintptr_t offset = (std::uintptr_t)addr - (std::uintptr_t)region->start().address();
 
-  xbt_assert(region->contain(simgrid::mc::remote(addr)),
-    "Trying to read out of the region boundary.");
+  xbt_assert(region->contain(simgrid::mc::remote(addr)), "Trying to read out of the region boundary.");
 
   switch (region->storage_type()) {
   case simgrid::mc::StorageType::NoData:

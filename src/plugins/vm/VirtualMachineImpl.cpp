@@ -124,7 +124,7 @@ VirtualMachineImpl::~VirtualMachineImpl()
   /* dirty page tracking */
   unsigned int size          = xbt_dict_size(dp_objs);
   static bool already_warned = false;
-  if (size > 0 && !already_warned) {
+  if (size > 0 && not already_warned) {
     xbt_dict_cursor_t cursor = nullptr;
     xbt_dict_cursor_first(dp_objs, &cursor);
     XBT_WARN("Dirty page tracking: %u pending task(s) on a destroyed VM (first one is %s).\n"
@@ -207,8 +207,24 @@ void VirtualMachineImpl::resume()
  */
 void VirtualMachineImpl::shutdown(smx_actor_t issuer)
 {
-  if (getState() != SURF_VM_STATE_RUNNING)
-    THROWF(vm_error, 0, "Cannot shutdown VM %s: it is not running", piface_->cname());
+  if (getState() != SURF_VM_STATE_RUNNING) {
+    const char* stateName = "(unknown state)";
+    switch (getState()) {
+      case SURF_VM_STATE_CREATED:
+        stateName = "created, but not yet started";
+        break;
+      case SURF_VM_STATE_SUSPENDED:
+        stateName = "suspended";
+        break;
+      case SURF_VM_STATE_DESTROYED:
+        stateName = "destroyed";
+        break;
+      case SURF_VM_STATE_RUNNING:
+        THROW_IMPOSSIBLE;
+        break;
+    }
+    XBT_VERB("Shuting down the VM %s even if it's not running but %s", piface_->cname(), stateName);
+  }
 
   xbt_swag_t process_list = piface_->extension<simgrid::simix::Host>()->process_list;
   XBT_DEBUG("shutdown VM %s, that contains %d processes", piface_->cname(), xbt_swag_size(process_list));

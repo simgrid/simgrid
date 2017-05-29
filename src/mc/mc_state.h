@@ -9,16 +9,6 @@
 #include <list>
 #include <memory>
 
-#include <xbt/base.h>
-#include <xbt/dynar.h>
-
-#include <simgrid_config.h>
-#include "src/simix/smx_private.h"
-#include "src/kernel/activity/SynchroIo.hpp"
-#include "src/kernel/activity/SynchroComm.hpp"
-#include "src/kernel/activity/SynchroRaw.hpp"
-#include "src/kernel/activity/SynchroSleep.hpp"
-#include "src/kernel/activity/SynchroExec.hpp"
 #include "src/mc/mc_snapshot.h"
 #include "src/mc/mc_record.h"
 #include "src/mc/Transition.hpp"
@@ -135,7 +125,7 @@ struct XBT_PRIVATE State {
   s_smx_simcall_t internal_req;
 
   /* Can be used as a copy of the remote synchro object */
-  simgrid::mc::Remote<simgrid::kernel::activity::Comm> internal_comm;
+  simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> internal_comm;
 
   /** Snapshot of system state (if needed) */
   std::shared_ptr<simgrid::mc::Snapshot> system_state;

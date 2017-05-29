@@ -216,7 +216,7 @@ public class Peer extends Process {
     return success;
   }
 
-  void handleMessage(Task task) {
+  private void handleMessage(Task task) {
     MessageTask message = (MessageTask)task;
     Connection remotePeer = peers.get(message.peerId);
     switch (message.type) {
@@ -332,7 +332,7 @@ public class Peer extends Process {
     beginReceiveTime = Msg.getClock();
   }
 
-  void waitForPieces() {
+  private void waitForPieces() {
     boolean finished = false;
     while (Msg.getClock() < deadline && !finished) {
       if (commReceived == null) {
@@ -380,7 +380,7 @@ public class Peer extends Process {
    * If the peer has more than pieces, he downloads the pieces that are the less
    * replicated
    */
-  void updateCurrentPiece() {
+  private void updateCurrentPiece() {
     if (currentPieces.size() >= (Common.FILE_PIECES - pieces)) {
       return;
     }

@@ -60,6 +60,9 @@ if(APPLE AND (CMAKE_C_COMPILER_VERSION VERSION_LESS "4.6"))
   set(HAVE_UCONTEXT_H 0)
 endif()
 
+### Check threading support
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+find_package(Threads)
 
 ### Setup Options
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Option.cmake)
@@ -77,8 +80,21 @@ if ((NOT DEFINED enable_smpi) OR enable_smpi)
   
   if(CMAKE_Fortran_COMPILER)
     # Fortran compiler detected: save it, then replace by smpiff
-    set(SAVED_Fortran_COMPILER "${CMAKE_Fortran_COMPILER}" CACHE FILEPATH "The real Fortran compiler")
+    set(SMPI_Fortran_COMPILER "${CMAKE_Fortran_COMPILER}" CACHE FILEPATH "The real Fortran compiler")
     set(CMAKE_Fortran_COMPILER smpiff)
+
+	# Set flags/libs to be used in smpiff
+    if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
+      set(SMPI_Fortran_FLAGS "\"-fpic\" \"-ff2c\" \"-fno-second-underscore\"")
+      set(SMPI_Fortran_LIBS "\"-lgfortran\"")
+    elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
+      set(SMPI_Fortran_FLAGS "\"-fPIC\" \"-nofor-main\"")
+      set(SMPI_Fortran_LIBS "\"-lifcore\"")
+    elseif(CMAKE_Fortran_COMPILER_ID MATCHES "PGI") # flang
+      set(SMPI_Fortran_FLAGS "\"-fPIC\"")
+      set(SMPI_Fortran_LIBS "")
+    endif()
+
     set(SMPI_FORTRAN 1)
   endif(CMAKE_Fortran_COMPILER)
 
@@ -274,7 +290,6 @@ endif()
 # Checks for header libraries functions.
 CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
 
-CHECK_LIBRARY_EXISTS(pthread pthread_create          "" HAVE_PTHREAD)
 if(NOT APPLE) # OS X El Capitan deprecates this function
   CHECK_LIBRARY_EXISTS(pthread sem_init                "" HAVE_SEM_INIT_LIB)
 endif()
@@ -388,7 +403,7 @@ if(HAVE_LIBUNWIND)
   endif()
 else()
   if(enable_model-checking)
-    message(FATAL_ERROR "Please either install the libunwind7-dev package (or equivalent) or turn off the model-checking option of SimGrid.")
+    message(FATAL_ERROR "Please install libunwind-dev libdw-dev libevent-dev if you want to compile the SimGrid model checker.")
   endif()
 endif()
 
@@ -460,7 +475,7 @@ endif()
 ### Initialize of CONTEXT THREADS
 
 set(HAVE_THREAD_CONTEXTS 0)
-if(HAVE_PTHREAD)
+if(CMAKE_USE_PTHREADS_INIT)
   ### Test that we have a way to create semaphores
 
   if(HAVE_SEM_OPEN_LIB)
@@ -941,7 +956,7 @@ else()
 endif()
 endif()
 if(CMAKE_Fortran_COMPILER)
-  message("        Compiler: Fortran ...........: ${SAVED_Fortran_COMPILER} (id: ${CMAKE_Fortran_COMPILER_ID})")
+  message("        Compiler: Fortran ...........: ${SMPI_Fortran_COMPILER} (id: ${CMAKE_Fortran_COMPILER_ID})")
   message("                version .............: ${CMAKE_Fortran_COMPILER_VERSION}")
 endif()
 message("        Linker: .....................: ${CMAKE_LINKER}")

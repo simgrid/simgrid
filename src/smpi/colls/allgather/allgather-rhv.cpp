@@ -94,10 +94,8 @@ Coll_allgather_rhv::allgather(void *sbuf, int send_count,
 
     //  printf("node %d send to %d in phase %d s_offset = %d r_offset = %d count = %d\n",rank,dst,phase, send_base_offset, recv_base_offset, curr_count);
 
-    Request::sendrecv((char *)rbuf + send_offset, curr_count, recv_type, dst, tag,
-		 (char *)rbuf + recv_offset, curr_count, recv_type, dst, tag,
-                 comm, &status);
-
+    Request::sendrecv((char*)rbuf + send_offset, curr_count, recv_type, dst, tag, (char*)rbuf + recv_offset, curr_count,
+                      recv_type, dst, tag, comm, &status);
 
     curr_count *= 2;
     i *= 2;

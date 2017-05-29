@@ -80,13 +80,13 @@ static int worker(int argc, char *argv[])
     xbt_assert(res == MSG_OK, "MSG_task_get failed");
     XBT_INFO("Handling task \"%s\"", MSG_task_get_name(task));
 
-    if (!strcmp(MSG_task_get_name(task), "finalize")) {
+    if (not strcmp(MSG_task_get_name(task), "finalize")) {
       XBT_INFO("Destroying task \"%s\"", task->name);
       MSG_task_destroy(task);
       break;
     }
 
-    if (!strcmp(MSG_task_get_name(task), "cancel")) {
+    if (not strcmp(MSG_task_get_name(task), "cancel")) {
       MSG_process_create("worker1", worker_main, task, MSG_host_self());
       MSG_process_sleep(0.1);
       XBT_INFO("Canceling task \"%s\"", task->name);

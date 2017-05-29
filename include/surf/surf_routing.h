@@ -14,7 +14,6 @@ SG_BEGIN_DECL()
 // FIXME: this header file should die
 
 XBT_PUBLIC_DATA(xbt_lib_t) storage_lib;
-XBT_PUBLIC_DATA(int) ROUTING_STORAGE_LEVEL;        //Routing storage level
 XBT_PUBLIC_DATA(int) SURF_STORAGE_LEVEL;  // Surf storage level
 
 SG_END_DECL()

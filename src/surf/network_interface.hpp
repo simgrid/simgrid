@@ -206,7 +206,7 @@ public:
       : simgrid::surf::Action(model, cost, failed, var){};
 
   void setState(simgrid::surf::Action::State state) override;
-  std::list<LinkImpl*> links();
+  virtual std::list<LinkImpl*> links();
 
   double latency_;
   double latCurrent_;

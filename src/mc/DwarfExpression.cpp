@@ -73,7 +73,7 @@ void execute(
         int register_id = simgrid::dwarf::dwarf_register_to_libunwind(
           op->atom - DW_OP_breg0);
         unw_word_t res;
-        if (!context.cursor)
+        if (not context.cursor)
           throw evaluation_error("Missing stack context");
         unw_get_reg(context.cursor, register_id, &res);
         stack.push(res + op->number);
@@ -95,7 +95,7 @@ void execute(
          * Warning: the CFA returned by libunwind (UNW_X86_64_RSP, etc.)
          * is the SP of the *current* frame. */
 
-        if (!context.cursor)
+        if (not context.cursor)
           throw evaluation_error("Missint cursor");
 
         // Get frame:
@@ -156,7 +156,7 @@ void execute(
       // Address from the base address of this ELF object.
       // Push the address on the stack (base_address + argument).
     case DW_OP_addr: {
-      if (!context.object_info)
+      if (not context.object_info)
         throw evaluation_error("No base address");
       Dwarf_Off addr = (Dwarf_Off) (std::uintptr_t)
         context.object_info->base_address() + op->number;
@@ -269,7 +269,7 @@ void execute(
 
     case DW_OP_deref:
       // Computed address:
-      if (!context.address_space)
+      if (not context.address_space)
         throw evaluation_error("Missing address space");
       context.address_space->read_bytes(
         &stack.top(), sizeof(uintptr_t), remote(stack.top()),

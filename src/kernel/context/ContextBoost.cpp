@@ -62,15 +62,15 @@ BoostContextFactory::BoostContextFactory()
 {
   BoostContext::parallel_ = SIMIX_context_is_parallel();
   if (BoostContext::parallel_) {
-#if !HAVE_THREAD_CONTEXTS
-    xbt_die("No thread support for parallel context execution");
-#else
+#if HAVE_THREAD_CONTEXTS
     int nthreads = SIMIX_context_get_nthreads();
     BoostContext::parmap_ = xbt_parmap_new(nthreads, SIMIX_context_get_parallel_mode());
     BoostContext::workers_context_.clear();
     BoostContext::workers_context_.resize(nthreads, nullptr);
     BoostContext::maestro_context_ = nullptr;
     xbt_os_thread_key_create(&BoostContext::worker_id_key_);
+#else
+    xbt_die("No thread support for parallel context execution");
 #endif
   }
 }
@@ -166,7 +166,7 @@ BoostContext::BoostContext(std::function<void()> code,
 BoostContext::~BoostContext()
 {
 #if HAVE_BOOST_CONTEXTS == 1
-  if (!this->stack_)
+  if (not this->stack_)
     delete this->fc_;
 #endif
   if (this == maestro_context_)

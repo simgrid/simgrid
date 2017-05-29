@@ -156,7 +156,7 @@ type_t PJ_type_variable_new (const char *name, const char *color, type_t father)
   type_t ret = nullptr;
 
   char white[INSTR_DEFAULT_STR_SIZE] = "1 1 1";
-  if (!color){
+  if (not color) {
     ret = newType (name, name, white, TYPE_VARIABLE, father);
   }else{
     ret = newType (name, name, color, TYPE_VARIABLE, father);

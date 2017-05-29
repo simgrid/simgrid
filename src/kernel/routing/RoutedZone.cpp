@@ -178,15 +178,17 @@ void RoutedZone::addRouteCheckParams(sg_platf_route_cbarg_t route)
   const char* srcName = src->cname();
   const char* dstName = dst->cname();
 
-  if (!route->gw_dst && !route->gw_src) {
+  if (not route->gw_dst && not route->gw_src) {
     XBT_DEBUG("Load Route from \"%s\" to \"%s\"", srcName, dstName);
     xbt_assert(src, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, srcName);
     xbt_assert(dst, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, dstName);
-    xbt_assert(!route->link_list->empty(), "Empty route (between %s and %s) forbidden.", srcName, dstName);
-    xbt_assert(!src->isNetZone(),
-               "When defining a route, src cannot be a netzone such as '%s'. Did you meant to have an NetzoneRoute?", srcName);
-    xbt_assert(!dst->isNetZone(),
-               "When defining a route, dst cannot be a netzone such as '%s'. Did you meant to have an NetzoneRoute?", dstName);
+    xbt_assert(not route->link_list->empty(), "Empty route (between %s and %s) forbidden.", srcName, dstName);
+    xbt_assert(not src->isNetZone(),
+               "When defining a route, src cannot be a netzone such as '%s'. Did you meant to have an NetzoneRoute?",
+               srcName);
+    xbt_assert(not dst->isNetZone(),
+               "When defining a route, dst cannot be a netzone such as '%s'. Did you meant to have an NetzoneRoute?",
+               dstName);
   } else {
     XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", srcName, route->gw_src->cname(), dstName, route->gw_dst->cname());
     xbt_assert(src->isNetZone(), "When defining a NetzoneRoute, src must be a netzone but '%s' is not", srcName);
@@ -203,7 +205,7 @@ void RoutedZone::addRouteCheckParams(sg_platf_route_cbarg_t route)
                dstName, route->gw_dst->cname(), srcName);
     xbt_assert(dst, "Cannot add a route from %s@%s to %s@%s: %s does not exist.", srcName, route->gw_src->cname(),
                dstName, route->gw_dst->cname(), dstName);
-    xbt_assert(!route->link_list->empty(), "Empty route (between %s@%s and %s@%s) forbidden.", srcName,
+    xbt_assert(not route->link_list->empty(), "Empty route (between %s@%s and %s@%s) forbidden.", srcName,
                route->gw_src->cname(), dstName, route->gw_dst->cname());
   }
 

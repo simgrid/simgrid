@@ -7,8 +7,8 @@
 
 #include <boost/range/algorithm.hpp>
 
-#include <xbt/log.h>
-#include <xbt/sysdep.h>
+#include "xbt/log.h"
+#include "xbt/sysdep.h"
 
 #include "src/simix/smx_private.h"
 #include "src/mc/mc_state.h"
@@ -80,9 +80,9 @@ static inline smx_simcall_t MC_state_get_request_for_process(
   state->transition.argument           = -1;
   state->executed_req.call             = SIMCALL_NONE;
 
-  if (!procstate->isTodo())
+  if (not procstate->isTodo())
     return nullptr; // Not considered by the checker algorithm
-  if (!simgrid::mc::actor_is_enabled(actor))
+  if (not simgrid::mc::actor_is_enabled(actor))
     return nullptr; // Not executable in the application
 
   smx_simcall_t req = nullptr;
@@ -129,11 +129,11 @@ static inline smx_simcall_t MC_state_get_request_for_process(
       }
 
       case SIMCALL_COMM_WAIT: {
-        simgrid::mc::RemotePtr<simgrid::kernel::activity::Comm> remote_act = remote(
-          static_cast<simgrid::kernel::activity::Comm*>(simcall_comm_wait__get__comm(&actor->simcall)));
-        simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_act;
+        simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> remote_act =
+            remote(static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__get__comm(&actor->simcall)));
+        simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_act;
         mc_model_checker->process().read(temp_act, remote_act);
-        simgrid::kernel::activity::Comm* act = temp_act.getBuffer();
+        simgrid::kernel::activity::CommImpl* act = temp_act.getBuffer();
         if (act->src_proc && act->dst_proc)
           state->transition.argument = 0;
         else if (act->src_proc == nullptr && act->type == SIMIX_COMM_READY
@@ -162,7 +162,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
         req = &actor->simcall;
         break;
   }
-  if (!req)
+  if (not req)
     return nullptr;
 
   state->transition.pid = actor->pid;
@@ -180,8 +180,8 @@ static inline smx_simcall_t MC_state_get_request_for_process(
     read_element(mc_model_checker->process(),
       &remote_comm, remote(simcall_comm_waitany__get__comms(req)),
       state->transition.argument, sizeof(remote_comm));
-    mc_model_checker->process().read(state->internal_comm, remote(
-      static_cast<simgrid::kernel::activity::Comm*>(remote_comm)));
+    mc_model_checker->process().read(state->internal_comm,
+                                     remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_comm)));
     simcall_comm_wait__set__comm(&state->internal_req, state->internal_comm.getBuffer());
     simcall_comm_wait__set__timeout(&state->internal_req, 0);
     break;
@@ -193,8 +193,8 @@ static inline smx_simcall_t MC_state_get_request_for_process(
     if (state->transition.argument > 0) {
       smx_activity_t remote_comm = mc_model_checker->process().read(
         remote(simcall_comm_testany__get__comms(req) + state->transition.argument));
-      mc_model_checker->process().read(state->internal_comm, remote(
-        static_cast<simgrid::kernel::activity::Comm*>(remote_comm)));
+      mc_model_checker->process().read(state->internal_comm,
+                                       remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_comm)));
     }
 
     simcall_comm_test__set__comm(&state->internal_req, state->internal_comm.getBuffer());

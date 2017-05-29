@@ -13,7 +13,6 @@
 #include "mmprivate.h"
 #include "xbt/ex.h"
 #include "mc/mc.h"
-#include "src/mc/mc_ignore.h"
 
 /* Return memory to the heap.
    Like `mfree' but don't call a mfree_hook if there is one.  */

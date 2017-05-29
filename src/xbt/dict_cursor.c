@@ -27,9 +27,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_cursor, xbt_dict, "To traverse dictiona
  */
 inline xbt_dict_cursor_t xbt_dict_cursor_new(const xbt_dict_t dict)
 {
-  xbt_dict_cursor_t res = NULL;
-
-  res = xbt_new(s_xbt_dict_cursor_t, 1);
+  xbt_dict_cursor_t res = xbt_new(s_xbt_dict_cursor_t, 1);
   res->dict = dict;
 
   xbt_dict_cursor_rewind(res);

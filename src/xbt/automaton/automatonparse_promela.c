@@ -51,9 +51,8 @@ static void new_state(char* id, int src){
 
 static void new_transition(char* id, xbt_automaton_exp_label_t label)
 {
-  xbt_automaton_state_t state_dst = NULL;
   new_state(id, 0);
-  state_dst = xbt_automaton_state_exists(parsed_automaton, id);
+  xbt_automaton_state_t state_dst = xbt_automaton_state_exists(parsed_automaton, id);
   xbt_automaton_state_t state_src = xbt_automaton_state_exists(parsed_automaton, state_id_src);
   
   //xbt_transition_t trans = NULL;

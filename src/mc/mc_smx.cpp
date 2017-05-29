@@ -192,7 +192,7 @@ const char* MC_smx_actor_get_name(smx_actor_t actor)
 }
 
 #if HAVE_SMPI
-int MC_smpi_process_count(void)
+int MC_smpi_process_count()
 {
   if (mc_model_checker == nullptr)
     return smpi_process_count();
@@ -203,7 +203,7 @@ int MC_smpi_process_count(void)
 }
 #endif
 
-unsigned long MC_smx_get_maxpid(void)
+unsigned long MC_smx_get_maxpid()
 {
   unsigned long maxpid;
   mc_model_checker->process().read_variable("simix_process_maxpid",

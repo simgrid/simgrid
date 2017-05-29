@@ -104,8 +104,7 @@ int Coll_allgather_bruck::allgather(void *send_buff, int send_count,
   tmp_buff = (char *) smpi_get_tmp_sendbuffer(num_procs * recv_count * recv_extent);
 
   // perform a local copy
-  Datatype::copy(send_ptr, send_count, send_type,
-		     tmp_buff, recv_count, recv_type);
+  Datatype::copy(send_ptr, send_count, send_type, tmp_buff, recv_count, recv_type);
   while (pof2 <= (num_procs / 2)) {
     src = (rank + pof2) % num_procs;
     dst = (rank - pof2 + num_procs) % num_procs;

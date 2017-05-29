@@ -53,7 +53,7 @@ int Coll_bcast_SMP_linear::bcast(void *buf, int count,
 
   // call native when MPI communication size is too small
   if (size <= num_core) {
-    XBT_WARN("MPI_bcast_SMP_linear use default MPI_bcast.");	  	  
+    XBT_WARN("MPI_bcast_SMP_linear use default MPI_bcast.");
     Coll_bcast_default::bcast(buf, count, datatype, root, comm);
     return MPI_SUCCESS;            
   }
@@ -170,7 +170,7 @@ int Coll_bcast_SMP_linear::bcast(void *buf, int count,
 
   // when count is not divisible by block size, use default BCAST for the remainder
   if ((remainder != 0) && (count > segment)) {
-    XBT_WARN("MPI_bcast_SMP_linear use default MPI_bcast.");	  	  	 
+    XBT_WARN("MPI_bcast_SMP_linear use default MPI_bcast.");
     Colls::bcast((char *) buf + (pipe_length * increment), remainder, datatype,
               root, comm);
   }

@@ -46,8 +46,8 @@ def format(xml, formats, attrib):
     return "".join(res)
 
 
-def formats(list):
-    return sorted(((Decimal(i), j) for i, j in list), key=lambda x: x[0], reverse=True)
+def formats(ll):
+    return sorted(((Decimal(i), j) for i, j in ll), key=lambda x: x[0], reverse=True)
 
 for root, dirnames, filenames in os.walk(sys.argv[1]):
     for filename in fnmatch.filter(filenames, '*.xml'):
@@ -90,6 +90,6 @@ for root, dirnames, filenames in os.walk(sys.argv[1]):
         xml = format(xml, time_formats, "bb_lat")
 
         # print xml
-        file = open(path, "w")
-        file.write(xml)
-        file.close()
+        outfile = open(path, "w")
+        outfile.write(xml)
+        outfile.close()

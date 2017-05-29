@@ -10,7 +10,6 @@
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
-#include "surf/surf_routing.h"
 #include <ctype.h>
 #include <string.h>
 
@@ -94,9 +93,9 @@ int console_add_backbone(lua_State *L) {
   lua_pushstring(L, "sharing_policy");
   type = lua_gettable(L, -2);
   const char* policy = lua_tostring(L, -1);
-  if (policy && !strcmp(policy,"FULLDUPLEX")) {
+  if (policy && not strcmp(policy, "FULLDUPLEX")) {
     link.policy = SURF_LINK_FULLDUPLEX;
-  } else if (policy && !strcmp(policy,"FATPIPE")) {
+  } else if (policy && not strcmp(policy, "FATPIPE")) {
     link.policy = SURF_LINK_FATPIPE;
   } else {
     link.policy = SURF_LINK_SHARED;
@@ -173,8 +172,8 @@ int console_add_host(lua_State *L) {
   // get core
   lua_pushstring(L, "core");
   lua_gettable(L, -2);
-  if(!lua_isnumber(L,-1))
-      host.core_amount = 1;// Default value
+  if (not lua_isnumber(L, -1))
+    host.core_amount = 1; // Default value
   else
     host.core_amount = lua_tonumber(L, -1);
   if (host.core_amount == 0)
@@ -270,9 +269,9 @@ int  console_add_link(lua_State *L) {
   lua_gettable(L, -2);
   policy = lua_tostring(L, -1);
   lua_pop(L, 1);
-  if (policy && !strcmp(policy,"FULLDUPLEX")) {
+  if (policy && not strcmp(policy, "FULLDUPLEX")) {
     link.policy = SURF_LINK_FULLDUPLEX;
-  } else if (policy && !strcmp(policy,"FATPIPE")) {
+  } else if (policy && not strcmp(policy, "FATPIPE")) {
     link.policy = SURF_LINK_FATPIPE;
   } else {
     link.policy = SURF_LINK_SHARED;
@@ -473,13 +472,20 @@ int console_AS_open(lua_State *L) {
  lua_pop(L, 1);
 
  int mode_int = A_surfxml_AS_routing_None;
- if(!strcmp(mode,"Full")) mode_int = A_surfxml_AS_routing_Full;
- else if(!strcmp(mode,"Floyd")) mode_int = A_surfxml_AS_routing_Floyd;
- else if(!strcmp(mode,"Dijkstra")) mode_int = A_surfxml_AS_routing_Dijkstra;
- else if(!strcmp(mode,"DijkstraCache")) mode_int = A_surfxml_AS_routing_DijkstraCache;
- else if(!strcmp(mode,"Vivaldi")) mode_int = A_surfxml_AS_routing_Vivaldi;
- else if(!strcmp(mode,"Cluster")) mode_int = A_surfxml_AS_routing_Cluster;
- else if(!strcmp(mode,"none")) mode_int = A_surfxml_AS_routing_None;
+ if (not strcmp(mode, "Full"))
+   mode_int = A_surfxml_AS_routing_Full;
+ else if (not strcmp(mode, "Floyd"))
+   mode_int = A_surfxml_AS_routing_Floyd;
+ else if (not strcmp(mode, "Dijkstra"))
+   mode_int = A_surfxml_AS_routing_Dijkstra;
+ else if (not strcmp(mode, "DijkstraCache"))
+   mode_int = A_surfxml_AS_routing_DijkstraCache;
+ else if (not strcmp(mode, "Vivaldi"))
+   mode_int = A_surfxml_AS_routing_Vivaldi;
+ else if (not strcmp(mode, "Cluster"))
+   mode_int = A_surfxml_AS_routing_Cluster;
+ else if (not strcmp(mode, "none"))
+   mode_int = A_surfxml_AS_routing_None;
  else xbt_die("Don't have the model name '%s'",mode);
 
  s_sg_platf_AS_cbarg_t AS;

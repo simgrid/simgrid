@@ -74,7 +74,7 @@ int Coll_alltoall_2dmesh::alltoall(void *send_buff, int send_count,
   num_procs = comm->size();
   extent = send_type->get_extent();
 
-  if (!alltoall_check_is_2dmesh(num_procs, &X, &Y))
+  if (not alltoall_check_is_2dmesh(num_procs, &X, &Y))
     return MPI_ERR_OTHER;
 
   my_row_base = (rank / Y) * Y;

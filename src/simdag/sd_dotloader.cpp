@@ -99,8 +99,8 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
         char *char_performer = agget(node, (char *) "performer");
         char *char_order = agget(node, (char *) "order");
         /* Tasks will execute on in a given "order" on a given set of "performer" hosts */
-        int performer = ((!char_performer || !strcmp(char_performer,"")) ? -1:atoi(char_performer));
-        int order = ((!char_order || !strcmp(char_order, ""))? -1:atoi(char_order));
+        int performer = ((not char_performer || not strcmp(char_performer, "")) ? -1 : atoi(char_performer));
+        int order     = ((not char_order || not strcmp(char_order, "")) ? -1 : atoi(char_order));
 
         if ((performer != -1 && order != -1) && performer < static_cast<int>(sg_host_count())) {
           /* required parameters are given and less performers than hosts are required */
@@ -219,7 +219,7 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
         xbt_dynar_foreach(computer, i, task){
           /* add dependency between the previous and the task to avoid parallel execution */
           if(task){
-            if(previous_task && !SD_task_dependency_exists(previous_task, task))
+            if (previous_task && not SD_task_dependency_exists(previous_task, task))
               SD_task_dependency_add(nullptr, nullptr, previous_task, task);
 
             SD_task_schedulel(task, 1, workstations[atoi(computer_name)]);
@@ -239,7 +239,7 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
 
   xbt_dict_free(&computers);
 
-  if (result && !acyclic_graph_detail(result)) {
+  if (result && not acyclic_graph_detail(result)) {
     char* base = xbt_basename(filename);
     XBT_ERROR("The DOT described in %s is not a DAG. It contains a cycle.", base);
     free(base);

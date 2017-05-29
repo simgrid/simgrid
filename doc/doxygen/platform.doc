@@ -682,10 +682,9 @@ these might also help you to get started.
 Attribute name  | Mandatory | Values | Description
 --------------- | --------- | ------ | -----------
 id              | yes       | string | Identifier of this storage_type; used when referring to it
-model           | yes       | string | For reasons of future backwards compatibility only; specifies the name of the model for the storage that should be used
+model           | no        | string | In the future, this will allow to change the performance model to use
 size            | yes       | string | Specifies the amount of available storage space; you can specify storage like "500GiB" or "500GB" if you want. (TODO add a link to all the available abbreviations)
 content         | yes       | string | Path to a \ref pf_storage_content_file "Storage Content File" on your system. This file must exist.
-content_type    | no        | ("txt_unix"\|"txt_win") | Determines which kind of filesystem you're using; make sure the filenames (stored in that file, see \ref pf_storage_content_file_structure "Storage Content File Structure"!)
 
 This tag must contain some predefined model properties, specified via the &lt;model_prop&gt; tag. Here is a list,
 see below for an example:
@@ -694,7 +693,6 @@ Property id     | Mandatory | Values | Description
 --------------- | --------- | ------ | -----------
 Bwrite          | yes       | string | Bandwidth for write access; in B/s (but you can also specify e.g. "30MBps")
 Bread           | yes       | string | Bandwidth for read access; in B/s (but you can also specify e.g. "30MBps")
-Bconnexion      | yes       | string | Throughput (of the storage connector) in B/s.
 
 \note
      A storage_type can also contain the <b>&lt;prop&gt;</b> tag. The &lt;prop&gt; tag allows you
@@ -704,10 +702,9 @@ Bconnexion      | yes       | string | Throughput (of the storage connector) in 
 
 Here is a complete example for the ``storage_type`` tag:
 \verbatim
-<storage_type id="single_HDD" model="linear_no_lat" size="4000" content_type="txt_unix">
+<storage_type id="single_HDD" size="4000">
   <model_prop id="Bwrite" value="30MBps" />
   <model_prop id="Bread" value="100MBps" />
-  <model_prop id="Bconnection" value="150MBps" />
   <prop id="Brand" value="Western Digital" />
 </storage_type>
 \endverbatim
@@ -720,7 +717,6 @@ id             | yes       | string | Identifier of this ``storage``; used when 
 typeId         | yes       | string | Here you need to refer to an already existing \ref pf_storage_entity_storage_type "\<storage_type\>"; the storage entity defined by this tag will then inherit the properties defined there.
 attach         | yes       | string | Name of a host (see Section \ref pf_host) to which this storage is <i>physically</i> attached to (e.g., a hard drive in a computer)
 content        | no        | string | When specified, overwrites the content attribute of \ref pf_storage_entity_storage_type "\<storage_type\>"
-content_type   | no        | string | When specified, overwrites the content_type attribute of \ref pf_storage_entity_storage_type "\<storage_type\>"
 
 Here are two examples:
 
@@ -728,8 +724,7 @@ Here are two examples:
      <storage id="Disk1" typeId="single_HDD" attach="bob" />
 
      <storage id="Disk2" typeId="single_SSD"
-              content="content/win_storage_content.txt"
-              content_type="txt_windows" attach="alice" />
+              content="content/win_storage_content.txt" />
 \endverbatim
 
 The first example is straightforward: A disk is defined and called "Disk1"; it is
@@ -754,18 +749,17 @@ is; this location is specified by the ``name`` attribute.
 Here is a simple example, taken from the file ``examples/platform/storage.xml``:
 
 \verbatim
-    <storage_type id="single_SSD" model="linear_no_lat" size="500GiB">
+    <storage_type id="single_SSD" size="500GiB">
        <model_prop id="Bwrite" value="60MBps" />
        <model_prop id="Bread" value="200MBps" />
-       <model_prop id="Bconnection" value="220MBps" />
     </storage_type>
 
     <storage id="Disk2" typeId="single_SSD"
               content="content/win_storage_content.txt"
-              content_type="txt_windows" attach="alice" />
+              attach="alice" />
     <storage id="Disk4" typeId="single_SSD"
              content="content/small_content.txt"
-             content_type="txt_unix" attach="denise"/>
+             attach="denise"/>
 
     <host id="alice" speed="1Gf">
       <mount storageId="Disk2" name="c:"/>

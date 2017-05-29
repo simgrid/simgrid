@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include <xbt/base.h>
+#include "xbt/base.h"
 
 #include "src/mc/mc_mmu.h"
 #include "src/mc/mc_forward.hpp"

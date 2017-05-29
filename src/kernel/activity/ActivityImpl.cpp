@@ -13,13 +13,15 @@ void simgrid::kernel::activity::ActivityImpl::ref()
   refcount++;
 }
 
-void simgrid::kernel::activity::ActivityImpl::unref()
+bool simgrid::kernel::activity::ActivityImpl::unref()
 {
   xbt_assert(refcount > 0,
       "This activity has a negative refcount! You can only call test() or wait() once per activity.");
 
   refcount--;
   if (refcount>0)
-    return;
+    return false;
   delete this;
+
+  return true;
 }

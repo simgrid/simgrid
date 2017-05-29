@@ -6,7 +6,7 @@
 #ifndef SIMGRID_MC_REPLAY_H
 #define SIMGRID_MC_REPLAY_H
 
-#include <xbt/base.h>
+#include "xbt/base.h"
 
 SG_BEGIN_DECL()
 

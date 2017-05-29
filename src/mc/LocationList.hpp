@@ -15,8 +15,8 @@
 #include <dwarf.h>
 #include <elfutils/libdw.h>
 
-#include <xbt/base.h>
-#include <xbt/range.hpp>
+#include "xbt/base.h"
+#include "xbt/range.hpp"
 
 #include "src/mc/mc_base.h"
 #include "src/mc/mc_forward.hpp"

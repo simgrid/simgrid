@@ -16,11 +16,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu, "Logging specific to the
  *********/
 void surf_cpu_model_init_Cas01()
 {
-  xbt_assert(!surf_cpu_model_pm);
-  xbt_assert(!surf_cpu_model_vm);
+  xbt_assert(not surf_cpu_model_pm);
+  xbt_assert(not surf_cpu_model_vm);
 
   char *optim = xbt_cfg_get_string("cpu/optim");
-  if (!strcmp(optim, "TI")) {
+  if (not strcmp(optim, "TI")) {
     surf_cpu_model_init_ti();
     return;
   }
@@ -40,10 +40,10 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
   char *optim = xbt_cfg_get_string("cpu/optim");
   bool select = xbt_cfg_get_boolean("cpu/maxmin-selective-update");
 
-  if (!strcmp(optim, "Full")) {
+  if (not strcmp(optim, "Full")) {
     updateMechanism_ = UM_FULL;
     selectiveUpdate_ = select;
-  } else if (!strcmp(optim, "Lazy")) {
+  } else if (not strcmp(optim, "Lazy")) {
     updateMechanism_ = UM_LAZY;
     selectiveUpdate_ = true;
     xbt_assert(select || (xbt_cfg_is_default_value("cpu/maxmin-selective-update")),

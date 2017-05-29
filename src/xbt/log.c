@@ -114,7 +114,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(xbt_heap);
   XBT_LOG_CONNECT(xbt_lib);
   XBT_LOG_CONNECT(xbt_mallocator);
-  XBT_LOG_CONNECT(xbt_matrix);
   XBT_LOG_CONNECT(xbt_memory_map);
   XBT_LOG_CONNECT(xbt_parmap);
   XBT_LOG_CONNECT(xbt_sync);
@@ -459,7 +458,6 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
 
   unsigned int cursor;
   xbt_log_setting_t setting = NULL;
-  int found = 0;
 
   XBT_DEBUG("Initializing category '%s' (firstChild=%s, nextSibling=%s)", category->name,
          (category->firstChild ? category->firstChild->name : "none"),
@@ -504,6 +502,7 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
   if (xbt_log_settings) {
     xbt_assert(category, "NULL category");
     xbt_assert(category->name);
+    int found = 0;
 
     xbt_dynar_foreach(xbt_log_settings, cursor, setting) {
       xbt_assert(setting, "Damnit, NULL cat in the list");

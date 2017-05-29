@@ -119,7 +119,7 @@ static void xbt_dict_rehash(xbt_dict_t dict)
   XBT_DEBUG("REHASH (%d->%d)", oldsize, newsize);
 
   for (unsigned i = 0; i < oldsize; i++, currcell++) {
-    if (!*currcell)             /* empty cell */
+    if (*currcell == nullptr) /* empty cell */
       continue;
 
     xbt_dictelm_t *twincell = currcell + oldsize;
@@ -132,7 +132,7 @@ static void xbt_dict_rehash(xbt_dict_t dict)
       if ((bucklet->hash_code & newsize) != i) {        /* Move to b */
         *pprev = bucklet->next;
         bucklet->next = *twincell;
-        if (!*twincell)
+        if (*twincell == nullptr)
           dict->fill++;
         *twincell = bucklet;
       } else {
@@ -140,7 +140,7 @@ static void xbt_dict_rehash(xbt_dict_t dict)
       }
     }
 
-    if (!*currcell)             /* everything moved */
+    if (*currcell == nullptr) /* everything moved */
       dict->fill--;
   }
 }
@@ -164,7 +164,7 @@ void xbt_dict_set_ext(xbt_dict_t dict, const char *key, int key_len, void *data,
   xbt_dictelm_t current;
   xbt_dictelm_t previous = nullptr;
 
-  xbt_assert(!free_ctn, "Cannot set an individual free function in homogeneous dicts.");
+  xbt_assert(not free_ctn, "Cannot set an individual free function in homogeneous dicts.");
   XBT_CDEBUG(xbt_dict, "ADD %.*s hash = %u, size = %d, & = %u", key_len, key, hash_code,
              dict->table_size, hash_code & dict->table_size);
   current = dict->table[hash_code & dict->table_size];
@@ -369,7 +369,7 @@ void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len)
     }
   }
 
-  if (!dict->table[hash_code & dict->table_size])
+  if (not dict->table[hash_code & dict->table_size])
     dict->fill--;
 
   xbt_dictelm_free(dict, current);
@@ -430,7 +430,7 @@ void xbt_dict_dump_output_string(void *s)
  */
 int xbt_dict_is_empty(xbt_dict_t dict)
 {
-  return !dict || (xbt_dict_length(dict) == 0);
+  return not dict || (xbt_dict_length(dict) == 0);
 }
 
 /**
@@ -477,7 +477,7 @@ void xbt_dict_dump_sizes(xbt_dict_t dict)
 
   printf("Dict %p: %d bucklets, %d used cells (of %d) ", dict, dict->count, dict->fill, dict->table_size);
 
-  if (!dict) {
+  if (not dict) {
     printf("\n");
     return;
   }
@@ -502,7 +502,7 @@ void xbt_dict_dump_sizes(xbt_dict_t dict)
       xbt_dynar_set(sizes, size, &prevsize);
     }
   }
-  if (!all_sizes)
+  if (not all_sizes)
     all_sizes = xbt_dynar_new(sizeof(int), nullptr);
 
   xbt_dynar_foreach(sizes, count, size) {
@@ -596,7 +596,7 @@ static void debugged_add(xbt_dict_t head, const char* key)
   debugged_add_ext(head, key, key);
 }
 
-static xbt_dict_t new_fixture(void)
+static xbt_dict_t new_fixture()
 {
   xbt_test_add("Fill in the dictionnary");
 
@@ -620,10 +620,10 @@ static void search_ext(xbt_dict_t head, const char *key, const char *data)
   if (data) {
     xbt_test_assert(found, "data do not match expectations: found nullptr while searching for %s", data);
     if (found)
-      xbt_test_assert(!strcmp(data, found), "data do not match expectations: found %s while searching for %s",
-                      found, data);
+      xbt_test_assert(not strcmp(data, found), "data do not match expectations: found %s while searching for %s", found,
+                      data);
   } else {
-    xbt_test_assert(!found, "data do not match expectations: found %s while searching for nullptr", found);
+    xbt_test_assert(not found, "data do not match expectations: found %s while searching for nullptr", found);
   }
 }
 
@@ -647,12 +647,12 @@ static void traverse(xbt_dict_t head)
   int i = 0;
 
   xbt_dict_foreach(head, cursor, key, data) {
-    if (!key || !data || strcmp(key, data)) {
+    if (not key || not data || strcmp(key, data)) {
       xbt_test_log("Seen #%d:  %s->%s", ++i, key, data);
     } else {
       xbt_test_log("Seen #%d:  %s", ++i, key);
     }
-    xbt_test_assert(!data || !strcmp(key, data), "Key(%s) != value(%s). Aborting", key, data);
+    xbt_test_assert(not data || not strcmp(key, data), "Key(%s) != value(%s). Aborting", key, data);
   }
 }
 
@@ -701,7 +701,7 @@ static void count_check_get_key(xbt_dict_t dict, int length)
   xbt_dict_foreach(dict, cursor, key, data) {
     effective++;
     char* key2 = xbt_dict_get_key(dict, data);
-    xbt_assert(!strcmp(key, key2), "The data was registered under %s instead of %s as expected", key2, key);
+    xbt_assert(not strcmp(key, key2), "The data was registered under %s instead of %s as expected", key2, key);
   }
 
   xbt_test_assert(effective == length, "Effective length(%d) != %d.", effective, length);
@@ -765,7 +765,7 @@ XBT_TEST_UNIT("basic", test_dict_basic, "Basic usage: change, retrieve and trave
   xbt_test_add("Search 123");
   char* data = (char*)xbt_dict_get(head, "123");
   xbt_test_assert(data);
-  xbt_test_assert(!strcmp("123", data));
+  xbt_test_assert(not strcmp("123", data));
 
   search_not_found(head, "Can't be found");
   search_not_found(head, "123 Can't be found");
@@ -872,13 +872,13 @@ XBT_TEST_UNIT("nulldata", test_dict_nulldata, "nullptr data management")
     char* data;
 
     xbt_dict_foreach(head, cursor, key, data) {
-      if (!key || !data || strcmp(key, data)) {
+      if (not key || not data || strcmp(key, data)) {
         xbt_test_log("Seen:  %s->%s", key, data);
       } else {
         xbt_test_log("Seen:  %s", key);
       }
 
-      if (!strcmp(key, "null"))
+      if (not strcmp(key, "null"))
         found = 1;
     }
     xbt_test_assert(found, "the key 'null', associated to nullptr is not found");
@@ -925,7 +925,7 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
 
       xbt_dict_set(head, key, key, nullptr);
       data = (char*) xbt_dict_get(head, key);
-      xbt_test_assert(!strcmp(key, data), "Retrieved value (%s) != Injected value (%s)", key, data);
+      xbt_test_assert(not strcmp(key, data), "Retrieved value (%s) != Injected value (%s)", key, data);
 
       count(head, j + 1);
     }
@@ -938,7 +938,6 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   xbt_dict_t head = xbt_dict_new_homogeneous(&free);
   xbt_test_add("Fill %d elements, with keys being the number of element", NB_ELM);
   for (int j = 0; j < NB_ELM; j++) {
-    /* if (!(j%1000)) { printf("."); fflush(stdout); } */
     char* key = (char*)xbt_malloc(10);
 
     snprintf(key,10, "%d", j);
@@ -956,9 +955,9 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
     for (int j = 0; j < NB_ELM; j++) {
       snprintf(key,10, "%d", j);
       void* data = xbt_dict_get(head, key);
-      xbt_test_assert(!strcmp(key, (char *) data), "with get, key=%s != data=%s", key, (char *) data);
+      xbt_test_assert(not strcmp(key, (char*)data), "with get, key=%s != data=%s", key, (char*)data);
       data = xbt_dict_get_ext(head, key, strlen(key));
-      xbt_test_assert(!strcmp(key, (char *) data), "with get_ext, key=%s != data=%s", key, (char *) data);
+      xbt_test_assert(not strcmp(key, (char*)data), "with get_ext, key=%s != data=%s", key, (char*)data);
     }
   }
   free(key);
@@ -966,7 +965,6 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   xbt_test_add("Remove my %d elements", NB_ELM);
   key = (char*) xbt_malloc(10);
   for (int j = 0; j < NB_ELM; j++) {
-    /* if (!(j%10000)) printf("."); fflush(stdout); */
     snprintf(key,10, "%d", j);
     xbt_dict_remove(head, key);
   }

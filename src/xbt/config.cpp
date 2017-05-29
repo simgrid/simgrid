@@ -536,7 +536,7 @@ void xbt_cfg_help()    { simgrid_config->help(); }
  */
 void xbt_cfg_set_parse(const char *options)
 {
-  if (!options || !strlen(options)) {   /* nothing to do */
+  if (not options || not strlen(options)) { /* nothing to do */
     return;
   }
   char *optionlist_cpy = xbt_strdup(options);
@@ -544,7 +544,7 @@ void xbt_cfg_set_parse(const char *options)
   XBT_DEBUG("List to parse and set:'%s'", options);
   char *option = optionlist_cpy;
   while (1) {                   /* breaks in the code */
-    if (!option)
+    if (not option)
       break;
     char *name = option;
     int len = strlen(name);
@@ -573,7 +573,7 @@ void xbt_cfg_set_parse(const char *options)
 
     if (name[0] == ' ' || name[0] == '\n' || name[0] == '\t')
       continue;
-    if (!strlen(name))
+    if (not strlen(name))
       break;
 
     char *val = strchr(name, ':');
@@ -904,7 +904,7 @@ XBT_TEST_UNIT("c++flags", test_config_cxx_flags, "C++ flags")
   xbt_test_assert(string_flag == "bar", "Check string flag");
   xbt_test_assert(double_flag == 8.0, "Check double flag");
   xbt_test_assert(bool_flag1, "Check bool1 flag");
-  xbt_test_assert(!bool_flag2, "Check bool2 flag");
+  xbt_test_assert(not bool_flag2, "Check bool2 flag");
 
   xbt_cfg_free(&simgrid_config);
   simgrid_config = temp;

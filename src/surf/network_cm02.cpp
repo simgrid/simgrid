@@ -138,10 +138,10 @@ NetworkCm02Model::NetworkCm02Model()
   char *optim = xbt_cfg_get_string("network/optim");
   bool select = xbt_cfg_get_boolean("network/maxmin-selective-update");
 
-  if (!strcmp(optim, "Full")) {
+  if (not strcmp(optim, "Full")) {
     updateMechanism_ = UM_FULL;
     selectiveUpdate_ = select;
-  } else if (!strcmp(optim, "Lazy")) {
+  } else if (not strcmp(optim, "Lazy")) {
     updateMechanism_ = UM_LAZY;
     selectiveUpdate_ = true;
     xbt_assert(select || (xbt_cfg_is_default_value("network/maxmin-selective-update")),
@@ -234,7 +234,7 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
           double_update(&(deltap), action->latency_, sg_surf_precision);
           action->latency_ = 0.0;
         }
-        if (action->latency_ <= 0.0 && !(action->isSuspended()))
+        if (action->latency_ <= 0.0 && not action->isSuspended())
           lmm_update_variable_weight(maxminSystem_, action->getVariable(), action->weight_);
       }
       if (TRACE_is_enabled()) {
@@ -249,7 +249,7 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
                                           action->getLastUpdate(), now - action->getLastUpdate());
         }
       }
-      if (!lmm_get_number_of_cnst_from_var (maxminSystem_, action->getVariable())) {
+      if (not lmm_get_number_of_cnst_from_var(maxminSystem_, action->getVariable())) {
         /* There is actually no link used, hence an infinite bandwidth. This happens often when using models like
          * vivaldi. In such case, just make sure that the action completes immediately.
          */
@@ -279,7 +279,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   XBT_IN("(%s,%s,%g,%g)", src->cname(), dst->cname(), size, rate);
 
   src->routeTo(dst, route, &latency);
-  xbt_assert(!route->empty() || latency,
+  xbt_assert(not route->empty() || latency,
              "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
              src->cname(), dst->cname());
 
@@ -318,7 +318,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   action->latency_ *= latencyFactor(size);
   action->rate_ = bandwidthConstraint(action->rate_, bandwidth_bound, size);
   if (haveGap_) {
-    xbt_assert(! route->empty(),
+    xbt_assert(not route->empty(),
                "Using a model with a gap (e.g., SMPI) with a platform without links (e.g. vivaldi)!!!");
 
     gapAppend(size, route->at(0), action);
@@ -447,7 +447,7 @@ void NetworkCm02Link::setBandwidth(double value)
     while ((var = lmm_get_var_from_cnst_safe(model()->getMaxminSystem(), constraint(), &elem, &nextelem, &numelem))) {
       NetworkCm02Action *action = static_cast<NetworkCm02Action*>(lmm_variable_id(var));
       action->weight_ += delta;
-      if (!action->isSuspended())
+      if (not action->isSuspended())
         lmm_update_variable_weight(model()->getMaxminSystem(), action->getVariable(), action->weight_);
     }
   }
@@ -480,7 +480,7 @@ void NetworkCm02Link::setLatency(double value)
         XBT_INFO("Flow is limited BYLATENCY, latency of flow is %f", action->latCurrent_);
       }
     }
-    if (!action->isSuspended())
+    if (not action->isSuspended())
       lmm_update_variable_weight(model()->getMaxminSystem(), action->getVariable(), action->weight_);
   }
 }

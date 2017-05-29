@@ -11,12 +11,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(storage, "Messages specific for this simulation");
 
 static void display_storage_properties(simgrid::s4u::Storage* storage)
 {
-  xbt_dict_cursor_t cursor = NULL;
-  char* key;
-  char* data;
   xbt_dict_t props = storage->properties();
   if (xbt_dict_length(props) > 0) {
     XBT_INFO("\tProperties of mounted storage: %s", storage->name());
+
+    xbt_dict_cursor_t cursor = NULL;
+    char* key;
+    char* data;
     xbt_dict_foreach (props, cursor, key, data)
       XBT_INFO("\t\t'%s' -> '%s'", key, data);
   } else {
@@ -64,7 +65,7 @@ static void display_storage_content(simgrid::s4u::Storage* storage)
 {
   XBT_INFO("Print the content of the storage element: %s", storage->name());
   std::map<std::string, sg_size_t*>* content = storage->content();
-  if (!content->empty()) {
+  if (not content->empty()) {
     for (auto entry : *content)
       XBT_INFO("\t%s size: %llu bytes", entry.first.c_str(), *entry.second);
   } else {
@@ -149,7 +150,7 @@ static void server()
   XBT_INFO("Server waiting for transfers ...");
   while (1) {
     char* msg = static_cast<char*>(simgrid::s4u::this_actor::recv(mailbox));
-    if (!strcmp(msg, "finalize")) { // Shutdown ...
+    if (not strcmp(msg, "finalize")) { // Shutdown ...
       xbt_free(msg);
       break;
     } else { // Receive file to save

@@ -109,15 +109,14 @@ void answer_trim(answer_t answer)
   */
 void answer_add_bucket(bucket_t bucket, answer_t answer)
 {
-  unsigned int cpt;
-  unsigned int id;
-  unsigned int distance;
-  node_contact_t contact;
   xbt_assert((bucket != NULL), "Provided a NULL bucket");
   xbt_assert((bucket->nodes != NULL), "Provided a bucket which nodes are NULL");
+
+  unsigned int cpt;
+  unsigned int id;
   xbt_dynar_foreach(bucket->nodes, cpt, id) {
-    distance = id ^ answer->destination_id;
-    contact = node_contact_new(id, distance);
+    unsigned int distance  = id ^ answer->destination_id;
+    node_contact_t contact = node_contact_new(id, distance);
     xbt_dynar_push(answer->nodes, &contact);
     answer->size++;
   }

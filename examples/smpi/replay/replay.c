@@ -14,11 +14,24 @@ static void action_blah(const char* const* args)
      args is a strings array containing the blank-separated parameters found in the trace for this event instance. */
 }
 
+action_fun previous_send;
+static void overriding_send(const char* const* args)
+{
+  (*previous_send)(args); // Just call the overriden symbol. That's a toy example.
+}
+
 int main(int argc, char *argv[]) {
+  /* Setup things and register default actions */
+  smpi_replay_init(&argc, &argv);
+
   /* Connect your callback function to the "blah" event in the trace files */
   xbt_replay_action_register("blah", action_blah);
 
+  /* The send action is an override, so we have to first save its previous value in a global */
+  previous_send = xbt_replay_action_get("send");
+  xbt_replay_action_register("send", overriding_send);
+
   /* The regular run of the replayer */
-  smpi_replay_run(&argc, &argv);
+  smpi_replay_main(&argc, &argv);
   return 0;
 }

@@ -104,7 +104,7 @@ namespace simgrid {
     {
 
       if (strcmp(name,"__loopback__"))
-        xbt_assert(!LinkImpl::byName(name), "Link '%s' declared several times in the platform.", name);
+        xbt_assert(not LinkImpl::byName(name), "Link '%s' declared several times in the platform.", name);
 
       latency_.scale   = 1;
       bandwidth_.scale = 1;
@@ -125,7 +125,7 @@ namespace simgrid {
      */
     void LinkImpl::destroy()
     {
-      if (!currentlyDestroying_) {
+      if (not currentlyDestroying_) {
         currentlyDestroying_ = true;
         s4u::Link::onDestruction(this->piface_);
         delete this;
@@ -198,7 +198,7 @@ namespace simgrid {
     {
       std::list<LinkImpl*> retlist;
       lmm_system_t sys = getModel()->getMaxminSystem();
-      int llen         = lmm_get_number_of_cnst_from_var(sys, getVariable());
+      int llen         = lmm_get_number_of_cnst_from_var(sys, variable_);
 
       for (int i = 0; i < llen; i++) {
         /* Beware of composite actions: ptasks put links and cpus together */

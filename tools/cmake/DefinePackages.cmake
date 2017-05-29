@@ -30,12 +30,6 @@ set(EXTRA_DIST
   src/simix/smx_network_private.h
   src/simix/smx_private.h
   src/simix/smx_synchro_private.h
-  src/kernel/activity/ActivityImpl.hpp
-  src/kernel/activity/SynchroComm.hpp
-  src/kernel/activity/SynchroExec.hpp
-  src/kernel/activity/SynchroIo.hpp
-  src/kernel/activity/SynchroSleep.hpp
-  src/kernel/activity/SynchroRaw.hpp
   src/smpi/colls/coll_tuned_topo.h
   src/smpi/colls/colls_private.h
   src/smpi/colls/smpi_mvapich2_selector_stampede.h
@@ -59,7 +53,7 @@ set(EXTRA_DIST
   src/surf/xml/simgrid_dtd.c
   src/surf/xml/surfxml_sax_cb.cpp
 
-  src/surf/storage_interface.hpp
+  src/surf/StorageImpl.hpp
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
   src/surf/surf_private.h
@@ -282,7 +276,6 @@ set(XBT_SRC
   src/xbt/xbt_log_layout_format.c
   src/xbt/xbt_log_layout_simple.c
   src/xbt/xbt_main.cpp
-  src/xbt/xbt_matrix.c
   src/xbt/xbt_os_file.c
   src/xbt/xbt_os_synchro.c
   src/xbt/xbt_os_time.c
@@ -343,7 +336,7 @@ set(SURF_SRC
   src/surf/plugins/host_load.cpp
   src/surf/PropertyHolder.cpp
   src/surf/sg_platf.cpp
-  src/surf/storage_interface.cpp
+  src/surf/StorageImpl.cpp
   src/surf/storage_n11.cpp
   src/surf/surf_c_bindings.cpp
   src/surf/surf_interface.cpp
@@ -385,13 +378,19 @@ set(SIMIX_SRC
   src/simix/smx_synchro.cpp
   src/simix/popping.cpp
   src/kernel/activity/ActivityImpl.cpp
+  src/kernel/activity/ActivityImpl.hpp
+  src/kernel/activity/CommImpl.cpp
+  src/kernel/activity/CommImpl.hpp
+  src/kernel/activity/ExecImpl.cpp
+  src/kernel/activity/ExecImpl.hpp
   src/kernel/activity/MailboxImpl.cpp
   src/kernel/activity/MailboxImpl.hpp
-  src/kernel/activity/SynchroComm.cpp
-  src/kernel/activity/SynchroExec.cpp
-  src/kernel/activity/SynchroSleep.cpp
-  src/kernel/activity/SynchroRaw.cpp
+  src/kernel/activity/SleepImpl.cpp
+  src/kernel/activity/SleepImpl.hpp
   src/kernel/activity/SynchroIo.cpp
+  src/kernel/activity/SynchroIo.hpp
+  src/kernel/activity/SynchroRaw.cpp
+  src/kernel/activity/SynchroRaw.hpp
   
   ${SIMIX_GENERATED_SRC}
   )
@@ -584,7 +583,6 @@ set(MC_SRC
   src/mc/remote/mc_protocol.cpp
   
   src/mc/AddressSpace.hpp
-  src/mc/AddressSpace.cpp
   src/mc/Frame.hpp
   src/mc/Frame.cpp
   src/mc/ModelChecker.hpp
@@ -598,7 +596,6 @@ set(MC_SRC
   src/mc/RegionSnapshot.cpp
   src/mc/RegionSnapshot.hpp
   src/mc/Type.hpp
-  src/mc/Variable.cpp
   src/mc/Variable.hpp
   src/mc/mc_forward.hpp
   src/mc/Process.hpp
@@ -691,7 +688,6 @@ set(headers_to_install
   include/smpi/smpi_extended_traces.h
   include/smpi/smpi_extended_traces_fortran.h
   include/smpi/forward.hpp
-  include/smpi/smpi_shared_malloc.hpp
   include/surf/surf_routing.h
   include/xbt.h
   include/xbt/RngStream.h
@@ -723,7 +719,6 @@ set(headers_to_install
   include/xbt/log.h
   include/xbt/log.hpp
   include/xbt/mallocator.h
-  include/xbt/matrix.h
   include/xbt/misc.h
   include/xbt/mmalloc.h
   include/xbt/module.h
@@ -947,7 +942,7 @@ set(txt_files
   ${txt_files}
   AUTHORS
   COPYING
-  README
+  README.md
   ChangeLog
   INSTALL
   LICENSE-LGPL-2.1

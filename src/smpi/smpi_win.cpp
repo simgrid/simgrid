@@ -84,7 +84,7 @@ Win::~Win(){
 }
 
 int Win::attach (void *base, MPI_Aint size){
-  if (!(base_ == MPI_BOTTOM || base_ == 0))
+  if (not(base_ == MPI_BOTTOM || base_ == 0))
     return MPI_ERR_ARG;
   base_=0;//actually the address will be given in the RMA calls, as being the disp.
   size_+=size;
@@ -419,7 +419,7 @@ int Win::compare_and_swap(void *origin_addr, void *compare_addr,
               target_disp, 1, datatype, &req);
   if (req != MPI_REQUEST_NULL)
     Request::wait(&req, MPI_STATUS_IGNORE);
-  if(! memcmp (result_addr, compare_addr, datatype->get_extent() )){
+  if (not memcmp(result_addr, compare_addr, datatype->get_extent())) {
     put(origin_addr, 1, datatype, target_rank,
               target_disp, 1, datatype);
   }
@@ -573,8 +573,8 @@ int Win::lock(int lock_type, int rank, int assert){
     if(lock_type == MPI_LOCK_SHARED){//the window used to be exclusive, it's now shared.
       xbt_mutex_release(target_win->lock_mut_);
    }
-  } else if(!(target_win->mode_==MPI_LOCK_SHARED && lock_type == MPI_LOCK_EXCLUSIVE))
-        target_win->mode_+= lock_type; // don't set to exclusive if it's already shared
+  } else if (not(target_win->mode_ == MPI_LOCK_SHARED && lock_type == MPI_LOCK_EXCLUSIVE))
+    target_win->mode_ += lock_type; // don't set to exclusive if it's already shared
 
   target_win->lockers_.push_back(comm_->rank());
 
@@ -682,22 +682,21 @@ int Win::finish_comms(int rank){
   int size = static_cast<int>(reqqs->size());
   if (size > 0) {
     size = 0;
-    std::vector<MPI_Request>* myreqqs = new std::vector<MPI_Request>();
+    std::vector<MPI_Request> myreqqs;
     std::vector<MPI_Request>::iterator iter = reqqs->begin();
     while (iter != reqqs->end()){
       if(((*iter)!=MPI_REQUEST_NULL) && (((*iter)->src() == rank) || ((*iter)->dst() == rank))){
-          myreqqs->push_back(*iter);
-          iter = reqqs->erase(iter);
-          size++;
+        myreqqs.push_back(*iter);
+        iter = reqqs->erase(iter);
+        size++;
       } else {
         ++iter;
       }
     }
     if(size >0){
-      MPI_Request* treqs = &(*myreqqs)[0];
+      MPI_Request* treqs = &myreqqs[0];
       Request::waitall(size, treqs, MPI_STATUSES_IGNORE);
-      myreqqs->clear();
-      delete myreqqs;
+      myreqqs.clear();
     }
   }
   xbt_mutex_release(mut_);
