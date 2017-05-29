@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
   MSG_init(&argc, argv);
 
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-             "\tExample: %s ../../platform/small_platform.xml app-pingpong_d.xml\n", argv[0], argv[0]);
+             "\tExample: %s ../../platforms/small_platform.xml app-pingpong_d.xml\n", argv[0], argv[0]);
 
   MSG_create_environment(argv[1]);          /* - Load the platform description */
 
