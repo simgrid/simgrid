@@ -1102,7 +1102,7 @@ void surf_parse_open(const char *file)
   xbt_free(dir);
 
   surf_file_to_parse = surf_fopen(file, "r");
-  xbt_assert((surf_file_to_parse), "Unable to open \"%s\"\n", file);
+  xbt_assert(surf_file_to_parse != nullptr, "Unable to open '%s'\n", file);
   surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, YY_BUF_SIZE);
   surf_parse__switch_to_buffer(surf_input_buffer);
   surf_parse_lineno = 1;

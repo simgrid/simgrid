@@ -119,13 +119,13 @@ public:
   /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
   kernel::routing::NetPoint* pimpl_netpoint = nullptr;
 
-  /*** Called on each newly created object */
+  /*** Called on each newly created host */
   static simgrid::xbt::signal<void(Host&)> onCreation;
-  /*** Called just before destructing an object */
+  /*** Called just before destructing an host */
   static simgrid::xbt::signal<void(Host&)> onDestruction;
-  /*** Called when the machine is turned on or off */
+  /*** Called when the machine is turned on or off (called AFTER the change) */
   static simgrid::xbt::signal<void(Host&)> onStateChange;
-  /*** Called when the speed of the machine is changed
+  /*** Called when the speed of the machine is changed (called AFTER the change)
    * (either because of a pstate switch or because of an external load event coming from the profile) */
   static simgrid::xbt::signal<void(Host&)> onSpeedChange;
 };
