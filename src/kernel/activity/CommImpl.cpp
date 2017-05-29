@@ -18,7 +18,7 @@ simgrid::kernel::activity::CommImpl::CommImpl(e_smx_comm_type_t _type) : type(_t
   src_data = nullptr;
   dst_data = nullptr;
   intrusive_ptr_add_ref(this);
-  XBT_DEBUG("Create communicate synchro %p", this);
+  XBT_DEBUG("Create comm activity %p", this);
 }
 
 simgrid::kernel::activity::CommImpl::~CommImpl()

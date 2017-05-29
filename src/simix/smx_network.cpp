@@ -202,7 +202,7 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
       other_comm = this_synchro;
       mbox->push(this_synchro);
     } else {
-      if(other_comm->surf_comm && other_comm->remains() < 1e-12) {
+      if (other_comm->surf_comm && other_comm->remains() < 1e-12) {
         XBT_DEBUG("comm %p has been already sent, and is finished, destroy it",other_comm);
         other_comm->state = SIMIX_DONE;
         other_comm->type = SIMIX_COMM_DONE;
@@ -226,11 +226,14 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
       other_comm = this_synchro;
       mbox->push(this_synchro);
     } else {
-      SIMIX_comm_unref(this_synchro);
+      XBT_DEBUG("Match my %p with the existing %p", this_synchro, other_comm);
+
       other_comm = static_cast<simgrid::kernel::activity::CommImpl*>(other_comm);
 
       other_comm->state = SIMIX_READY;
       other_comm->type = SIMIX_COMM_READY;
+      SIMIX_comm_unref(this_synchro);
+      SIMIX_comm_unref(this_synchro);
     }
     dst_proc->comms.push_back(other_comm);
   }
