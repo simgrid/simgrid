@@ -7,7 +7,6 @@
 #ifndef MSG_H
 #define MSG_H
 
-#include "xbt.h"
 #include "xbt/lib.h"
 #include "simgrid/forward.h"
 #include "simgrid/simix.h"

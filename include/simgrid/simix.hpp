@@ -7,14 +7,7 @@
 #ifndef SIMGRID_SIMIX_HPP
 #define SIMGRID_SIMIX_HPP
 
-#include <cstddef>
-
-#include <string>
-#include <utility>
-#include <memory>
-#include <functional>
-
-#include <xbt/function_types.h>
+//#include <xbt/function_types.h>
 #include <xbt/future.hpp>
 #include <xbt/functional.hpp>
 #include <xbt/signal.hpp>

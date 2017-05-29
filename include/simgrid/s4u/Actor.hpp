@@ -16,15 +16,11 @@
 #include <utility>
 #include <vector>
 
-#include <boost/intrusive_ptr.hpp>
-
 #include <xbt/Extendable.hpp>
-#include <xbt/base.h>
 #include <xbt/functional.hpp>
 #include <xbt/string.hpp>
 
 #include <simgrid/chrono.hpp>
-#include <simgrid/simix.h>
 #include <simgrid/s4u/forward.hpp>
 
 namespace simgrid {
