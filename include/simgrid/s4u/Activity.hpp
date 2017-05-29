@@ -15,7 +15,7 @@
 #include <simgrid/s4u/forward.hpp>
 #include <simgrid/forward.h>
 
-typedef enum { inited = 0, started = 1, canceled = 2, errored, finished } e_s4u_activity_state_t;
+typedef enum { inited = 0, started, canceled, errored, finished } e_s4u_activity_state_t;
 
 namespace simgrid {
 namespace s4u {
