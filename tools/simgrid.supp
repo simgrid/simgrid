@@ -185,3 +185,27 @@
    Memcheck:Addr8
    fun:_Ux86_64_setcontext
 }
+
+# Java cruft
+{
+  JavaCruft 1
+  Memcheck:Addr4
+  ...
+  fun:_ZN9JavaCalls11call_helperEP9JavaValueP12methodHandleP17JavaCallArgumentsP6Thread
+  fun:JVM_DoPrivileged
+  ...
+}
+{
+   JavaCruft 2
+   Memcheck:Cond
+   ...
+   fun:_ZN13CompileBroker25invoke_compiler_on_methodEP11CompileTask
+   ...
+}
+
+{
+   Somewhere within the Java conditions and monitors
+   Memcheck:Cond
+   fun:MarsagliaXORV
+   ...
+}
