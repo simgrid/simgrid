@@ -111,7 +111,7 @@ void SIMIX_process_cleanup(smx_actor_t process)
       if (comm->detached)
         XBT_DEBUG("Don't destroy it since it's a detached comm and I'm the sender");
       else
-        SIMIX_comm_unref(comm);
+        comm->unref();
     } else if (comm->dst_proc == process) {
       XBT_DEBUG("Found an unfinished recv comm %p, state %d, src = %p, dst = %p",
           comm, (int)comm->state, comm->src_proc, comm->dst_proc);
@@ -443,7 +443,7 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
       auto i = boost::range::find(process->waiting_synchro->simcalls, &process->simcall);
       if (i != process->waiting_synchro->simcalls.end())
         process->waiting_synchro->simcalls.remove(&process->simcall);
-      SIMIX_comm_unref(comm);
+      comm->unref();
     } else if (sleep != nullptr) {
       SIMIX_process_sleep_destroy(process->waiting_synchro);
 

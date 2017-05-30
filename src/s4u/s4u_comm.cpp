@@ -24,7 +24,7 @@ Comm::~Comm()
     xbt_backtrace_display_current();
   }
   if (pimpl_)
-    SIMIX_comm_unref(pimpl_);
+    pimpl_->unref();
 }
 
 s4u::CommPtr Comm::send_init(s4u::MailboxPtr chan)

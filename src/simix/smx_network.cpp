@@ -58,7 +58,7 @@ _find_matching_comm(boost::circular_buffer_space_optimized<smx_activity_t>* dequ
       XBT_DEBUG("Found a matching communication synchro %p", comm);
       if (remove_matching)
         deque->erase(it);
-      SIMIX_comm_ref(comm);
+      comm->ref();
 #if SIMGRID_HAVE_MC
       comm->mbox_cpy = comm->mbox;
 #endif
@@ -115,7 +115,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx
       //this mailbox is for small messages, which have to be sent right now
       other_comm->state   = SIMIX_READY;
       other_comm->dst_proc=mbox->permanent_receiver.get();
-      other_comm          = static_cast<simgrid::kernel::activity::CommImpl*>(SIMIX_comm_ref(other_comm));
+      other_comm->ref();
       mbox->done_comm_queue.push_back(other_comm);
       XBT_DEBUG("pushing a message into the permanent receive list %p, comm %p", mbox, other_comm);
 
@@ -124,8 +124,8 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx
     }
   } else {
     XBT_DEBUG("Receive already pushed");
-    SIMIX_comm_unref(this_comm);
-    SIMIX_comm_unref(this_comm);
+    this_comm->unref();
+    this_comm->unref();
 
     other_comm->state = SIMIX_READY;
     other_comm->type = SIMIX_COMM_READY;
@@ -193,7 +193,7 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
   //communication already done, get it inside the list of completed comms
   if (mbox->permanent_receiver != nullptr && not mbox->done_comm_queue.empty()) {
 
-    SIMIX_comm_unref(this_synchro);
+    this_synchro->unref();
     XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
     //find a match in the list of already received comms
     other_comm = _find_matching_comm(&mbox->done_comm_queue, SIMIX_COMM_SEND, match_fun, data, this_synchro,
@@ -209,10 +209,10 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
         other_comm->state = SIMIX_DONE;
         other_comm->type = SIMIX_COMM_DONE;
         other_comm->mbox = nullptr;
-        SIMIX_comm_unref(other_comm);
+        other_comm->unref();
       }
-      SIMIX_comm_unref(other_comm);
-      SIMIX_comm_unref(this_synchro);
+      other_comm->unref();
+      this_synchro->unref();
     }
   } else {
     /* Prepare a comm describing us, so that it gets passed to the user-provided filter of other side */
@@ -235,8 +235,8 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
 
       other_comm->state = SIMIX_READY;
       other_comm->type = SIMIX_COMM_READY;
-      SIMIX_comm_unref(this_synchro);
-      SIMIX_comm_unref(this_synchro);
+      this_synchro->unref();
+      this_synchro->unref();
     }
     dst_proc->comms.push_back(other_comm);
   }
@@ -295,9 +295,9 @@ smx_activity_t SIMIX_comm_iprobe(smx_actor_t dst_proc, smx_mailbox_t mbox, int t
   }
 
   if(other_synchro)
-    SIMIX_comm_unref(other_synchro);
+    other_synchro->unref();
 
-  SIMIX_comm_unref(this_comm);
+  this_comm->unref();
   return other_synchro;
 }
 
@@ -720,19 +720,4 @@ void SIMIX_comm_copy_data(smx_activity_t synchro)
   /* Set the copied flag so we copy data only once */
   /* (this function might be called from both communication ends) */
   comm->copied = 1;
-}
-
-/** Increase the refcount for this comm */
-smx_activity_t SIMIX_comm_ref(smx_activity_t comm)
-{
-  if (comm != nullptr)
-    comm->ref();
-  return comm;
-}
-
-/** Decrease the refcount for this comm */
-void SIMIX_comm_unref(smx_activity_t comm)
-{
-  if (comm != nullptr)
-    comm->unref();
 }
