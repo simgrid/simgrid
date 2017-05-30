@@ -34,27 +34,21 @@ namespace activity {
     // boost::intrusive_ptr<Activity> support:
     friend void intrusive_ptr_add_ref(ActivityImpl * activity)
     {
-      // Atomic operation! Do not split in two instructions!
-      XBT_ATTRIB_UNUSED auto previous = (activity->refcount_)++;
-      xbt_assert(previous != 0);
+      activity->ref();
     }
 
     friend void intrusive_ptr_release(ActivityImpl * activity)
     {
-      // Atomic operation! Do not split in two instructions!
-      auto count = --(activity->refcount_);
-      if (count == 0)
-        delete activity;
+      activity->unref();
     }
 
-    /** @brief Increase the refcount */
+    /** @brief Increases the refcount */
     void ref();
-    /** @brief Reduce the refcount; returns true if the object was destroyed */
-    bool unref();
+    /** @brief Reduces the refcount */
+    void unref();
 
   private:
     std::atomic_int_fast32_t refcount_{1};
-    int refcount = 1;
   };
 }}} // namespace simgrid::kernel::activity
 

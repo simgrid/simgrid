@@ -726,7 +726,7 @@ void SIMIX_comm_copy_data(smx_activity_t synchro)
 smx_activity_t SIMIX_comm_ref(smx_activity_t comm)
 {
   if (comm != nullptr)
-    intrusive_ptr_add_ref(comm);
+    comm->ref();
   return comm;
 }
 
@@ -734,5 +734,5 @@ smx_activity_t SIMIX_comm_ref(smx_activity_t comm)
 void SIMIX_comm_unref(smx_activity_t comm)
 {
   if (comm != nullptr)
-    intrusive_ptr_release(comm);
+    comm->unref();
 }
