@@ -137,7 +137,7 @@ void HostEnergy::update()
   double previous_energy = this->total_energy;
 
   double instantaneous_consumption;
-  if (host->isOff())
+  if (this->pstate == -1) // The host was off at the beginning of this time interval
     instantaneous_consumption = this->watts_off;
   else
     instantaneous_consumption = this->getCurrentWattsValue(cpu_load);
@@ -148,10 +148,13 @@ void HostEnergy::update()
 
   this->total_energy = previous_energy + energy_this_step;
   this->last_updated = finish_time;
-  this->pstate       = host->pstate();
+
   XBT_DEBUG(
       "[update_energy of %s] period=[%.2f-%.2f]; current power peak=%.0E flop/s; consumption change: %.2f J -> %.2f J",
       host->cname(), start_time, finish_time, host->pimpl_cpu->speed_.peak, previous_energy, energy_this_step);
+
+  /* Save data for the upcoming time interval: whether it's on/off and the pstate if it's on */
+  this->pstate = host->isOn() ? host->pstate() : -1;
 }
 
 HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host(ptr), last_updated(surf_get_clock())
