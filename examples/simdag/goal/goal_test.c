@@ -99,7 +99,6 @@ int main(int argc, char **argv) {
   xbt_dynar_free(&done);
   xbt_dynar_free(&reclaimed);
 
-  SD_exit();
   XBT_INFO("Done. Bailing out");
   return 0;
 }

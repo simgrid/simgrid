@@ -48,6 +48,5 @@ int main(int argc, char **argv)
   SD_task_destroy(task1);
   SD_task_destroy(task2);
 
-  SD_exit();
   return 0;
 }

@@ -46,6 +46,5 @@ int main(int argc, char **argv)
 
   XBT_INFO("Simulation time: %f", SD_get_clock());
 
-  SD_exit();
   return 0;
 }
