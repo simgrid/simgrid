@@ -1,14 +1,13 @@
-/* Copyright (c) 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/***************** Centralized Mutual Exclusion Algorithm *********************/
-/* This example implements a centralized mutual exclusion algorithm.          */
-/* Bug : CS requests of client 1 not satisfied                                      */
-/* LTL property checked : G(r->F(cs)); (r=request of CS, cs=CS ok)            */
-/******************************************************************************/
+/***************** Centralized Mutual Exclusion Algorithm *******************/
+/* This example implements a centralized mutual exclusion algorithm.        */
+/* Bug : CS requests of client 1 not satisfied                              */
+/* LTL property checked : G(r->F(cs)); (r=request of CS, cs=CS ok)          */
+/****************************************************************************/
 
 #ifdef GARBAGE_STACK
 #include <sys/stat.h>
@@ -38,8 +37,9 @@ static void garbage_stack(void) {
 
 static int coordinator(int argc, char *argv[])
 {
-  int CS_used = 0;   
-  msg_task_t task = NULL, answer = NULL; 
+  int CS_used          = 0;
+  msg_task_t task      = NULL;
+  msg_task_t answer    = NULL;
   xbt_dynar_t requests = xbt_dynar_new(sizeof(char *), NULL);
   char *req;
 
@@ -88,7 +88,8 @@ static int client(int argc, char *argv[])
   int my_pid = MSG_process_get_PID(MSG_process_self());
 
   char *my_mailbox = xbt_strdup(argv[1]);
-  msg_task_t grant = NULL, release = NULL;
+  msg_task_t grant   = NULL;
+  msg_task_t release = NULL;
 
   while(1){
     XBT_INFO("Ask the request");
