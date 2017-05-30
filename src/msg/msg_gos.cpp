@@ -873,7 +873,7 @@ int MSG_task_listen_from(const char *alias)
   if (not comm)
     return -1;
 
-  return MSG_process_get_PID( static_cast<msg_task_t>(comm->src_data)->simdata->sender );
+  return MSG_process_get_PID(static_cast<msg_task_t>(comm->src_buff)->simdata->sender);
 }
 
 /** \ingroup msg_task_usage

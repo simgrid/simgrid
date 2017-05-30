@@ -122,7 +122,6 @@ doc/msg-tuto-src/masterworker3
 doc/msg-tuto-src/masterworker4
 examples/msg/actions-comm/actions-comm
 examples/msg/actions-storage/actions-storage
-examples/msg/async-yield/async-yield
 examples/msg/async-wait/async-wait
 examples/msg/async-waitall/async-waitall
 examples/msg/async-waitany/async-waitany
@@ -155,6 +154,7 @@ examples/msg/process-join/process-join
 examples/msg/process-migration/process-migration
 examples/msg/process-startkilltime/process-startkilltime
 examples/msg/process-suspend/process-suspend
+examples/msg/process-yield/process-yield
 examples/msg/app-masterworker/app-masterworker
 examples/msg/mc/bugged1
 examples/msg/mc/bugged1_liveness
@@ -259,6 +259,7 @@ teshsuite/msg/pid/pid
 teshsuite/msg/process/process
 teshsuite/msg/storage_client_server/storage_client_server
 teshsuite/msg/task_destroy_cancel/task_destroy_cancel
+teshsuite/msg/task_listen_from/task_listen_from
 teshsuite/msg/trace_integration/trace_integration
 teshsuite/simdag/availability/availability
 teshsuite/simdag/basic-link-test/basic-link-test
