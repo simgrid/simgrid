@@ -202,7 +202,6 @@ int main(int argc, char** argv)
     dump_platform();
   }
 
-  SD_exit();
   xbt_os_timer_free(parse_time);
 
   return 0;

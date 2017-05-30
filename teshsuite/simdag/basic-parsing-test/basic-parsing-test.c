@@ -64,6 +64,5 @@ int main(int argc, char **argv)
   }
   xbt_free(hosts);
 
-  SD_exit();
   return 0;
 }
