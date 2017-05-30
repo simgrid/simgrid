@@ -32,9 +32,8 @@ public:
   friend void intrusive_ptr_add_ref(MutexImpl* mutex)
   {
     // Atomic operation! Do not split in two instructions!
-    auto previous = (mutex->refcount_)++;
+    XBT_ATTRIB_UNUSED auto previous = (mutex->refcount_)++;
     xbt_assert(previous != 0);
-    (void) previous;
   }
   friend void intrusive_ptr_release(MutexImpl* mutex)
   {
