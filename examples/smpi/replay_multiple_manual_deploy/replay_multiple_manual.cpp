@@ -38,12 +38,11 @@ struct Job
 // ugly global to avoid creating structures for giving args to processes
 std::vector<msg_host_t> hosts;
 
-// Comparator to sort jobs
-bool operator<(const Job & j1, const Job & j2)
+bool job_comparator(const Job * j1, const Job * j2)
 {
-    if (j1.starting_time == j2.starting_time)
-        return j1.smpi_app_name < j2.smpi_app_name;
-    return j1.starting_time < j2.starting_time;
+    if (j1->starting_time == j2->starting_time)
+        return j1->smpi_app_name < j2->smpi_app_name;
+    return j1->starting_time < j2->starting_time;
 }
 
 struct s_smpi_replay_process_args
@@ -56,7 +55,7 @@ struct s_smpi_replay_process_args
 int smpi_replay_process(int argc, char *argv[])
 {
     s_smpi_replay_process_args * args = (s_smpi_replay_process_args *)
-                                    MSG_process_get_data(MSG_process_self());
+                                        MSG_process_get_data(MSG_process_self());
 
     if (args->semaphore != nullptr)
         MSG_sem_acquire(args->semaphore);
@@ -226,6 +225,10 @@ vector<Job *> all_jobs(const std::string & workload_file)
                 job->starting_time = stoi(m[4]);
                 string alloc = m[5];
 
+                char * job_filename_copy;
+                asprintf(&job_filename_copy, "%s", job->filename.c_str());
+                char * job_filename_end = basename(job_filename_copy);
+
                 vector<string> subparts;
                 boost::split(subparts, alloc, boost::is_any_of(","),
                              boost::token_compress_on);
@@ -241,7 +244,7 @@ vector<Job *> all_jobs(const std::string & workload_file)
                 // Let's read the filename
                 ifstream traces_file(job->filename);
                 if (!traces_file.is_open())
-                    throw std::runtime_error("Cannot open file "+job->filename);
+                    throw std::runtime_error("Cannot open file " + job->filename);
 
                 string traces_line;
                 while (getline(traces_file, traces_line))
@@ -254,13 +257,15 @@ vector<Job *> all_jobs(const std::string & workload_file)
                     throw std::runtime_error("size/tracefiles inconsistency");
                 job->traces_filenames.resize(job->app_size);
 
-                printf("Job read: app='%s', file='%s', size=%d, start=%d, "
-                       "alloc='%s'\n", job->smpi_app_name.c_str(),
-                       string(m[2]).c_str(), job->app_size, job->starting_time,
-                       alloc.c_str());
+                XBT_INFO("Job read: app='%s', file='%s', size=%d, start=%d, "
+                         "alloc='%s'", job->smpi_app_name.c_str(),
+                         job_filename_end, job->app_size, job->starting_time,
+                         alloc.c_str());
                 jobs.push_back(job);
+
+                free(job_filename_copy);
             }
-            catch(const std::exception & e)
+            catch (const std::exception & e)
             {
                 printf("Bad line '%s' of file '%s': %s.\n",
                        line.c_str(), workload_file.c_str(),
@@ -271,7 +276,7 @@ vector<Job *> all_jobs(const std::string & workload_file)
 
     // Jobs are sorted by ascending date, then by lexicographical order of their
     // application names
-    sort(jobs.begin(), jobs.end());
+    sort(jobs.begin(), jobs.end(), job_comparator);
 
     for (unsigned int i = 0; i < jobs.size(); ++i)
         jobs[i]->unique_job_number = i;
@@ -310,8 +315,9 @@ int main(int argc, char *argv[])
     MSG_create_environment(argv[1]);
     hosts = all_hosts();
 
-    xbt_assert(hosts.size() >= 4, "The given platform should contain at least "
-                                  "4 hosts (found %lu).", hosts.size());
+    xbt_assert(hosts.size() >= 4,
+               "The given platform should contain at least 4 hosts (found %lu).",
+               hosts.size());
 
     // Let's retrieve all SMPI jobs
     vector<Job*> jobs = all_jobs(argv[2]);
