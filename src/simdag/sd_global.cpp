@@ -161,9 +161,8 @@ void SD_init(int *argc, char **argv)
   surf_init(argc, argv);
 
   xbt_cfg_setdefault_string("host/model", "ptask_L07");
-
+    atexit(SD_exit);
   if (_sg_cfg_exit_asap) {
-    SD_exit();
     exit(0);
   }
 }
