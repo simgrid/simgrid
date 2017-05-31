@@ -154,9 +154,6 @@ void MSG_vm_destroy(msg_vm_t vm)
   if (MSG_vm_is_running(vm))
     MSG_vm_shutdown(vm);
 
-  xbt_assert(MSG_vm_is_created(vm) || __MSG_vm_is_state(vm, SURF_VM_STATE_DESTROYED),
-             "shutdown the given VM before destroying it");
-
   /* Then, destroy the VM object */
   simgrid::simix::kernelImmediate([vm]() {
     vm->destroy();
@@ -172,7 +169,7 @@ void MSG_vm_destroy(msg_vm_t vm)
 /** @brief Start a vm (i.e., boot the guest operating system)
  *  @ingroup msg_VMs
  *
- *  If the VM cannot be started (because of memory overprovisionning), an exception is generated.
+ *  If the VM cannot be started (because of memory over-provisioning), an exception is generated.
  */
 void MSG_vm_start(msg_vm_t vm)
 {
