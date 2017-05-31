@@ -34,6 +34,5 @@ int main(int argc, char **argv)
     xbt_assert(!strcmp(user_data, (const char*)sg_link_data(links[i])),"User data was corrupted.");
   }
   xbt_free(links);
-  SD_exit();
   return 0;
 }
