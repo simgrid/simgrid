@@ -56,7 +56,7 @@ VirtualMachine::~VirtualMachine()
 
 bool VirtualMachine::isMigrating()
 {
-  return pimpl_vm_->isMigrating;
+  return pimpl_vm_ && pimpl_vm_->isMigrating;
 }
 double VirtualMachine::getRamsize()
 {
