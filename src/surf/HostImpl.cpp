@@ -38,7 +38,6 @@ void HostModel::adjustWeightOfDummyCpuActions()
       /* some tasks exist on this VM */
       XBT_DEBUG("set the weight of the dummy CPU action on PM to 1");
 
-      /* FIXME: we should use lmm_update_variable_weight() ? */
       /* FIXME: If we assign 1.05 and 0.05, the system makes apparently wrong values. */
       ws_vm->pimpl_vm_->action_->setPriority(1);
 

@@ -13,11 +13,11 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_vm, "S4U virtual machines");
 namespace simgrid {
 namespace s4u {
 
-VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm) : Host(name)
+VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm)
+    : Host(name), pimpl_vm_(new vm::VirtualMachineImpl(this, pm))
 {
   XBT_DEBUG("Create VM %s", name);
 
-  pimpl_vm_ = new vm::VirtualMachineImpl(this, pm);
   /* Currently, a VM uses the network resource of its physical host */
   pimpl_netpoint = pm->pimpl_netpoint;
   // Create a VCPU for this VM
