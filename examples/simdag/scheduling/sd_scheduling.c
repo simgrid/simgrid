@@ -250,7 +250,5 @@ int main(int argc, char **argv)
   }
 
   xbt_free(hosts);
-  /* exit */
-  SD_exit();
   return 0;
 }

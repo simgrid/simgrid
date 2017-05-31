@@ -74,7 +74,6 @@ int main(int argc, char **argv)
   SD_task_destroy(taskE);
 
   XBT_DEBUG("Tasks destroyed. Exiting SimDag...");
-  SD_exit();
   xbt_free(hosts);
   return 0;
 }

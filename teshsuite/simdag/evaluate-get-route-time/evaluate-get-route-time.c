@@ -47,7 +47,6 @@ int main(int argc, char **argv)
   printf("%f\n", xbt_os_timer_elapsed(timer) );
 
   xbt_free(hosts);
-  SD_exit();
 
   return 0;
 }
