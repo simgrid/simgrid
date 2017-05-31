@@ -59,7 +59,7 @@ public class Answer {
 
   /* Returns if the destination has been found */
   public boolean destinationFound() {
-    if (nodes.size() < 1) {
+    if (nodes.isEmpty()) {
       return false;
     }
     Contact tail = nodes.get(0);

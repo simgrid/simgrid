@@ -110,8 +110,6 @@ typedef enum {
 
 /* Process creation/destruction callbacks */
 typedef void (*void_pfn_smxprocess_t) (smx_actor_t);
-/* for auto-restart function */
-typedef void (*void_pfn_sghost_t) (sg_host_t);
 
 extern int smx_context_stack_size;
 extern int smx_context_stack_size_was_set;

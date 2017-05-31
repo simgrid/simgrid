@@ -454,7 +454,7 @@ void remove_current_piece(peer_t peer, connection_t remote_peer, unsigned int cu
 void update_pieces_count_from_bitfield(peer_t peer, unsigned int bitfield)
 {
   for (int i = 0; i < FILE_PIECES; i++) {
-    if ((bitfield & (1U << i))) {
+    if (bitfield & (1U << i)) {
       peer->pieces_count[i]++;
     }
   }
