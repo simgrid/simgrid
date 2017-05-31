@@ -1,0 +1,388 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4.1">
+  <actor host="Tremblay" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="0"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace0.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Jupiter" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="1"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace1.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Fafard" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="2"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace2.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Ginette" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="3"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace3.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Bourassa" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="4"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace4.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Tremblay" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="5"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace5.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Jupiter" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="6"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace6.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Fafard" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="7"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace7.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Ginette" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="8"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace8.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Bourassa" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="9"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace9.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Tremblay" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="10"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace10.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Jupiter" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="11"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace11.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Fafard" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="12"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace12.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Ginette" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="13"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace13.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Bourassa" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="14"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace14.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Tremblay" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="15"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace15.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Jupiter" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="16"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace16.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Fafard" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="17"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace17.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Ginette" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="18"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace18.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Bourassa" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="19"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace19.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Tremblay" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="20"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace20.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Jupiter" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="21"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace21.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Fafard" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="22"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace22.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Ginette" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="23"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace23.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Bourassa" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="24"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace24.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Tremblay" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="25"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace25.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Jupiter" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="26"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace26.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Fafard" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="27"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace27.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Ginette" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="28"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace28.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Bourassa" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="29"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace29.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Tremblay" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="30"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace30.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Jupiter" function="1"> <!-- function name used only for logging -->
+    <argument value="1"/> <!-- instance -->
+    <argument value="31"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace31.txt"/>
+    <argument value="0"/> <!-- delay -->
+  </actor>
+  <actor host="Fafard" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="0"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace0.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Ginette" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="1"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace1.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Bourassa" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="2"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace2.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Tremblay" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="3"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace3.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Jupiter" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="4"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace4.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Fafard" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="5"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace5.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Ginette" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="6"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace6.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Bourassa" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="7"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace7.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Tremblay" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="8"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace8.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Jupiter" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="9"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace9.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Fafard" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="10"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace10.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Ginette" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="11"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace11.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Bourassa" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="12"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace12.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Tremblay" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="13"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace13.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Jupiter" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="14"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace14.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Fafard" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="15"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace15.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Ginette" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="16"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace16.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Bourassa" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="17"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace17.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Tremblay" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="18"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace18.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Jupiter" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="19"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace19.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Fafard" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="20"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace20.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Ginette" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="21"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace21.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Bourassa" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="22"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace22.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Tremblay" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="23"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace23.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Jupiter" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="24"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace24.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Fafard" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="25"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace25.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Ginette" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="26"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace26.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Bourassa" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="27"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace27.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Tremblay" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="28"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace28.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Jupiter" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="29"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace29.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Fafard" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="30"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace30.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+  <actor host="Ginette" function="2"> <!-- function name used only for logging -->
+    <argument value="2"/> <!-- instance -->
+    <argument value="31"/> <!-- rank -->
+    <argument value="ti_traces_32_1/ti_trace31.txt"/>
+    <argument value="125000000000"/> <!-- delay -->
+  </actor>
+</platform>

@@ -44,6 +44,5 @@ int main(int argc, char **argv)
     std::printf("   - Seen: \"%s\". Type: %s\n", nc->cname(),
                 nc->isRouter() ? "router" : (nc->isNetZone() ? "netzone" : (nc->isHost() ? "host" : "buggy")));
 
-  SD_exit();
   return 0;
 }
