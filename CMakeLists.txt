@@ -156,10 +156,6 @@ if(NOT PYTHONINTERP_FOUND)
   message(FATAL_ERROR "Please install Python (version 3 or higher).")
 endif()
 
-if (APPLE)
-  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-  set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-endif()
 SET(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 ### Compute the include paths

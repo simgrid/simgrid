@@ -4,10 +4,13 @@
 # See https://cmake.org/Wiki/CMake_RPATH_handling and Java.cmake
 set(MACOSX_RPATH ON)
 if(APPLE)
+  SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE) # When installed, use system path
+  set(CMAKE_SKIP_BUILD_RPATH FALSE)         # When executing from build tree, take the lib from the build path if exists
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) # When executing from build tree, take the lib from the system path if exists
+  
   # add the current location of libsimgrid-java.dynlib as a location for libsimgrid.dynlib
   # (useful when unpacking the native libraries from the jarfile)
-  set(CMAKE_INSTALL_RPATH "@loader_path/.")
-  SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+  set(CMAKE_INSTALL_RPATH "@loader_path/.;@rpath/.")
 endif()
 
 ###############################
