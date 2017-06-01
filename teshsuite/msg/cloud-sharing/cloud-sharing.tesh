@@ -1,0 +1,29 @@
+#! ./tesh
+
+$ $SG_TEST_EXENV ${bindir:=.}/cloud-sharing$EXEEXT --log=no_loc ${srcdir:=.}/../../../examples/platforms/cluster.xml
+> [node-0.acme.org:master:(1) 0.000000] [msg_test/INFO] ## Test 1 (started): check computation on normal PMs
+> [node-0.acme.org:master:(1) 0.000000] [msg_test/INFO] ### Put a task on a PM
+> [node-0.acme.org:compute:(2) 0.100000] [msg_test/INFO] Task took 0.1s to execute
+> [node-0.acme.org:master:(1) 2.000000] [msg_test/INFO] ### Put two tasks on a PM
+> [node-0.acme.org:compute:(4) 2.200000] [msg_test/INFO] Task took 0.2s to execute
+> [node-0.acme.org:compute:(3) 2.200000] [msg_test/INFO] Task took 0.2s to execute
+> [node-0.acme.org:master:(1) 4.000000] [msg_test/INFO] ### Put a task on each PM
+> [node-0.acme.org:compute:(5) 4.100000] [msg_test/INFO] Task took 0.1s to execute
+> [node-1.acme.org:compute:(6) 4.100000] [msg_test/INFO] Task took 0.1s to execute
+> [node-0.acme.org:master:(1) 6.000000] [msg_test/INFO] ## Test 1 (ended)
+> [node-0.acme.org:master:(1) 6.000000] [msg_test/INFO] ## Test 2 (started): check impact of running a task inside a VM (there is no degradation for the moment)
+> [node-0.acme.org:master:(1) 6.000000] [msg_test/INFO] ### Put a VM on a PM, and put a task to the VM
+> [VM0:compute:(7) 6.100000] [msg_test/INFO] Task took 0.1s to execute
+> [node-0.acme.org:master:(1) 8.000000] [msg_test/INFO] ## Test 2 (ended)
+> [node-0.acme.org:master:(1) 8.000000] [msg_test/INFO] ## Test 3 (started): check impact of running a task collocated with a VM (there is no VM noise for the moment)
+> [node-0.acme.org:master:(1) 8.000000] [msg_test/INFO] ### Put a VM on a PM, and put a task to the PM
+> [node-0.acme.org:compute:(8) 8.100000] [msg_test/INFO] Task took 0.1s to execute
+> [node-0.acme.org:master:(1) 10.000000] [msg_test/INFO] ## Test 3 (ended)
+> [node-0.acme.org:master:(1) 10.000000] [msg_test/INFO] ## Test 4 (started): compare the cost of running two tasks inside two different VMs collocated or not (for the moment, there is no degradation for the VMs. Hence, the time should be equals to the time of test 1
+> [node-0.acme.org:master:(1) 10.000000] [msg_test/INFO] ### Put two VMs on a PM, and put a task to each VM
+> [VM0:compute:(9) 10.200000] [msg_test/INFO] Task took 0.2s to execute
+> [VM1:compute:(10) 10.200000] [msg_test/INFO] Task took 0.2s to execute
+> [node-0.acme.org:master:(1) 12.000000] [msg_test/INFO] ### Put a VM on each PM, and put a task to each VM
+> [VM0:compute:(11) 12.100000] [msg_test/INFO] Task took 0.1s to execute
+> [VM1:compute:(12) 12.100000] [msg_test/INFO] Task took 0.1s to execute
+> [node-0.acme.org:master:(1) 14.000000] [msg_test/INFO] ## Test 4 (ended)

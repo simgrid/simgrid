@@ -248,6 +248,7 @@ teshsuite/mc/dwarf-expression/dwarf-expression
 teshsuite/mc/random-bug/random-bug
 teshsuite/mc/mutex-handling/mutex-handling
 teshsuite/mc/mutex-handling/without-mutex-handling
+teshsuite/msg/cloud-sharing/cloud-sharing
 teshsuite/msg/concurrent_rw/concurrent_rw
 teshsuite/msg/get_sender/get_sender
 teshsuite/msg/host_on_off/host_on_off
