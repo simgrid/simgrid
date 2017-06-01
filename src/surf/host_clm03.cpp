@@ -46,7 +46,7 @@ namespace simgrid {
 namespace surf {
 
 double HostCLM03Model::nextOccuringEvent(double now){
-  adjustWeightOfDummyCpuActions();
+  ignoreEmptyVmInPmLMM();
 
   double min_by_cpu = surf_cpu_model_pm->nextOccuringEvent(now);
   double min_by_net = surf_network_model->nextOccuringEventIsIdempotent() ? surf_network_model->nextOccuringEvent(now) : -1;

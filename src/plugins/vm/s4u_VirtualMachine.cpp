@@ -13,8 +13,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_vm, "S4U virtual machines");
 namespace simgrid {
 namespace s4u {
 
-VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm)
-    : Host(name), pimpl_vm_(new vm::VirtualMachineImpl(this, pm))
+VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount)
+    : Host(name), pimpl_vm_(new vm::VirtualMachineImpl(this, pm, coreAmount))
 {
   XBT_DEBUG("Create VM %s", name);
 

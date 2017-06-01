@@ -65,20 +65,21 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_setBound(JNIEnv *env, jobject jvm
   MSG_vm_set_bound(vm, bound);
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_create(JNIEnv* env, jobject jvm, jobject jhost, jstring jname,
-                                                      jint jramsize, jint jmig_netspeed, jint jdp_intensity)
+JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_create(JNIEnv* env, jobject jVm, jobject jHost, jstring jname,
+                                                      jint coreAmount, jint jramsize, jint jmig_netspeed,
+                                                      jint jdp_intensity)
 {
-  msg_host_t host = jhost_get_native(env, jhost);
+  msg_host_t host = jhost_get_native(env, jHost);
 
   const char* name = env->GetStringUTFChars(jname, 0);
-  msg_vm_t vm = MSG_vm_create(host, name, static_cast<int>(jramsize), static_cast<int>(jmig_netspeed),
-                              static_cast<int>(jdp_intensity));
+  msg_vm_t vm      = MSG_vm_create(host, name, static_cast<int>(coreAmount), static_cast<int>(jramsize),
+                              static_cast<int>(jmig_netspeed), static_cast<int>(jdp_intensity));
   env->ReleaseStringUTFChars(jname, name);
 
-  jvm_bind(env, jvm, vm);
-  jvm = env->NewWeakGlobalRef(jvm);
+  jvm_bind(env, jVm, vm);
+  jVm = env->NewWeakGlobalRef(jVm);
   // We use the extension level of the host, even if that's somehow disturbing
-  vm->extension_set(JAVA_HOST_LEVEL, (void*)jvm);
+  vm->extension_set(JAVA_HOST_LEVEL, (void*)jVm);
 }
 
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_VM_all(JNIEnv* env, jclass cls_arg)

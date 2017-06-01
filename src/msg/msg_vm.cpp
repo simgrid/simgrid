@@ -99,11 +99,12 @@ int MSG_vm_is_suspended(msg_vm_t vm)
  *  @ingroup msg_VMs*
  *  @param pm        Physical machine that will host the VM
  *  @param name      Must be unique
+ *  @param coreAmount Must be >= 1
  *  @param ramsize   [TODO]
  *  @param mig_netspeed Amount of Mbyte/s allocated to the migration (cannot be larger than net_cap). Use 0 if unsure.
  *  @param dp_intensity Dirty page percentage according to migNetSpeed, [0-100]. Use 0 if unsure.
  */
-msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int ramsize, int mig_netspeed, int dp_intensity)
+msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int coreAmount, int ramsize, int mig_netspeed, int dp_intensity)
 {
   simgrid::vm::VmHostExt::ensureVmExtInstalled();
 
@@ -111,7 +112,7 @@ msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int ramsize, int mig_net
   double host_speed = MSG_host_get_speed(pm);
   double update_speed = (static_cast<double>(dp_intensity)/100) * mig_netspeed;
 
-  msg_vm_t vm = MSG_vm_create_core(pm, name);
+  msg_vm_t vm = MSG_vm_create_multicore(pm, name, coreAmount);
   s_vm_params_t params;
   memset(&params, 0, sizeof(params));
   params.ramsize = static_cast<sg_size_t>(ramsize) * 1024 * 1024;
@@ -129,7 +130,7 @@ msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int ramsize, int mig_net
   return vm;
 }
 
-/** @brief Create a new VM object. The VM is not yet started. The resource of the VM is allocated upon MSG_vm_start().
+/** @brief Create a new VM object with the default parameters
  *  @ingroup msg_VMs*
  *
  * A VM is treated as a host. The name of the VM must be unique among all hosts.
@@ -139,7 +140,19 @@ msg_vm_t MSG_vm_create_core(msg_host_t pm, const char* name)
   xbt_assert(sg_host_by_name(name) == nullptr,
              "Cannot create a VM named %s: this name is already used by an host or a VM", name);
 
-  return new simgrid::s4u::VirtualMachine(name, pm);
+  return new simgrid::s4u::VirtualMachine(name, pm, 1);
+}
+/** @brief Create a new VM object with the default parameters, but with a specified amount of cores
+ *  @ingroup msg_VMs*
+ *
+ * A VM is treated as a host. The name of the VM must be unique among all hosts.
+ */
+msg_vm_t MSG_vm_create_multicore(msg_host_t pm, const char* name, int coreAmount)
+{
+  xbt_assert(sg_host_by_name(name) == nullptr,
+             "Cannot create a VM named %s: this name is already used by an host or a VM", name);
+
+  return new simgrid::s4u::VirtualMachine(name, pm, coreAmount);
 }
 
 /** @brief Destroy a VM. Destroy the VM object from the simulation.

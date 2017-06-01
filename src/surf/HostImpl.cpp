@@ -25,7 +25,7 @@ namespace surf {
  * constraint (capacity) of the VM in the PM layer. If the VM does not have any
  * active task, the dummy CPU action must be deactivated, so that the VM does
  * not get any CPU share in the PM layer. */
-void HostModel::adjustWeightOfDummyCpuActions()
+void HostModel::ignoreEmptyVmInPmLMM()
 {
   /* iterate for all virtual machines */
   for (s4u::VirtualMachine* ws_vm : vm::VirtualMachineImpl::allVms_) {
@@ -42,7 +42,7 @@ void HostModel::adjustWeightOfDummyCpuActions()
       ws_vm->pimpl_vm_->action_->setPriority(1);
 
     } else {
-      /* no task exits on this VM */
+      /* no task exist on this VM */
       XBT_DEBUG("set the weight of the dummy CPU action on PM to 0");
 
       ws_vm->pimpl_vm_->action_->setPriority(0);

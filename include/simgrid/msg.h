@@ -491,8 +491,9 @@ XBT_PUBLIC(void) MSG_vm_set_params(msg_vm_t vm, vm_params_t params);
 
 // TODO add VDI later
 XBT_PUBLIC(msg_vm_t) MSG_vm_create_core(msg_host_t location, const char *name);
+XBT_PUBLIC(msg_vm_t) MSG_vm_create_multicore(msg_host_t pm, const char* name, int coreAmount);
 XBT_PUBLIC(msg_vm_t)
-MSG_vm_create(msg_host_t ind_pm, const char* name, int ramsize, int mig_netspeed, int dp_intensity);
+MSG_vm_create(msg_host_t ind_pm, const char* name, int coreAmount, int ramsize, int mig_netspeed, int dp_intensity);
 
 XBT_PUBLIC(void) MSG_vm_destroy(msg_vm_t vm);
 

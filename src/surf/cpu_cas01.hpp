@@ -41,6 +41,7 @@ public:
   ~CpuCas01() override;
   void apply_event(tmgr_trace_event_t event, double value) override;
   CpuAction *execution_start(double size) override;
+  CpuAction* execution_start(double size, int requestedCore) override;
   CpuAction *sleep(double duration) override;
 
   bool isUsed() override;
@@ -58,8 +59,13 @@ class CpuCas01Action: public CpuAction {
   friend CpuAction *CpuCas01::execution_start(double size);
   friend CpuAction *CpuCas01::sleep(double duration);
 public:
+  CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm_constraint_t constraint, int coreAmount);
   CpuCas01Action(Model *model, double cost, bool failed, double speed, lmm_constraint_t constraint);
   ~CpuCas01Action() override;
+  int requestedCore();
+
+private:
+  int requestedCore_ = 1;
 };
 
 }

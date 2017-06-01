@@ -11,10 +11,18 @@ public class VM extends Host {
 	// No need to declare a new bind variable: we use the one inherited from the super class Host
 
 	private Host currentHost; 
+	private int coreAmount = 1;
 
 	/** Create a `basic' VM (i.e. 1GB of RAM, other values are not taken into account). */
 	public VM(Host host, String name) {
-		this(host,name,1024, 0, 0);
+		this(host,name, /*coreAmount*/1, 1024, 0, 0);
+	}
+	
+	public VM(Host host, String name, int coreAmount) {
+		this(host,name, coreAmount, 1024, 0, 0);
+	}
+	public VM(Host host, String name, int ramSize, int migNetSpeed, int dpIntensity){
+		this(host, name, /*coreAmount*/1, ramSize, migNetSpeed, dpIntensity);
 	}
 
 	/**
@@ -25,11 +33,12 @@ public class VM extends Host {
 	 * @param migNetSpeed (network bandwith allocated for migrations in MB/s, if you don't know put zero ;))
 	 * @param dpIntensity (dirty page percentage according to migNetSpeed, [0-100], if you don't know put zero ;))
 	 */
-	public VM(Host host, String name, int ramSize, int migNetSpeed, int dpIntensity){
+	public VM(Host host, String name, int coreAmount, int ramSize, int migNetSpeed, int dpIntensity){
 		super();
 		super.name = name;
 		this.currentHost = host; 
-		create(host, name, ramSize, migNetSpeed, dpIntensity);
+		this.coreAmount = coreAmount;
+		create(host, name, coreAmount, ramSize, migNetSpeed, dpIntensity);
 	}
 
 	/** Retrieve the list of all existing VMs */
@@ -74,7 +83,7 @@ public class VM extends Host {
 	 * @param migNetSpeed (network bandwith allocated for migrations in MB/s, if you don't know put zero ;))
 	 * @param dpIntensity (dirty page intensity, a percentage of migNetSpeed [0-100],  if you don't know put zero ;))
 	 */
-	private native void create(Host host, String name, int ramSize, int migNetSpeed, int dpIntensity);
+	private native void create(Host host, String name, int coreAmount, int ramSize, int migNetSpeed, int dpIntensity);
 
 
 	/**

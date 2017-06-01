@@ -25,9 +25,9 @@ static int dvfs(int argc, char *argv[])
 
   /* Host 1 */
   XBT_INFO("Creating and starting two VMs");
-  msg_vm_t vm_host1 = MSG_vm_create(host1, "vm_host1", 2048, 10, 50);
+  msg_vm_t vm_host1 = MSG_vm_create(host1, "vm_host1", 1, 2048, 10, 50);
   MSG_vm_start(vm_host1);
-  msg_vm_t vm_host3 = MSG_vm_create(host3, "vm_host3", 2048, 10, 50);
+  msg_vm_t vm_host3 = MSG_vm_create(host3, "vm_host3", 1, 2048, 10, 50);
   MSG_vm_start(vm_host3);
 
   XBT_INFO("Create two tasks on Host1: one inside a VM, the other directly on the host");

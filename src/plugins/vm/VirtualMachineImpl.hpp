@@ -55,7 +55,7 @@ XBT_PUBLIC_CLASS VirtualMachineImpl : public surf::HostImpl
   friend simgrid::s4u::VirtualMachine;
 
 public:
-  explicit VirtualMachineImpl(s4u::VirtualMachine* piface, s4u::Host* host);
+  explicit VirtualMachineImpl(s4u::VirtualMachine * piface, s4u::Host * host, int coreAmount);
   ~VirtualMachineImpl();
 
   /** @brief Suspend the VM */
@@ -100,6 +100,7 @@ public:
 
 private:
   s_vm_params_t params_;
+  int coreAmount_;
 
 protected:
   e_surf_vm_state_t vmState_ = SURF_VM_STATE_CREATED;
@@ -114,7 +115,7 @@ protected:
  */
 class VMModel : public surf::HostModel {
 public:
-  void adjustWeightOfDummyCpuActions() override{};
+  void ignoreEmptyVmInPmLMM() override{};
 
   double nextOccuringEvent(double now) override;
   void updateActionsState(double /*now*/, double /*delta*/) override{};

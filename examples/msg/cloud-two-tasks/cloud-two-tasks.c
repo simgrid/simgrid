@@ -62,9 +62,9 @@ static int master_main(int argc, char *argv[])
   launch_computation_worker(vm0);
 
   while(MSG_get_clock()<100) {
-  if (atask != NULL)
-    XBT_INFO("aTask remaining duration: %g", MSG_task_get_flops_amount(atask));
-  MSG_process_sleep(1);
+    if (atask != NULL)
+      XBT_INFO("aTask remaining duration: %g", MSG_task_get_flops_amount(atask));
+    MSG_process_sleep(1);
   }
 
   MSG_process_sleep(10000);
@@ -73,23 +73,13 @@ static int master_main(int argc, char *argv[])
   return 1;
 }
 
-static void launch_master(msg_host_t host)
-{
-  const char *pr_name = "master_";
-  char **argv = xbt_new(char *, 2);
-  argv[0] = xbt_strdup(pr_name);
-  argv[1] = NULL;
-
-  MSG_process_create_with_arguments(pr_name, master_main, NULL, host, 1, argv);
-}
-
 int main(int argc, char *argv[]){
   MSG_init(&argc, argv);
 
   xbt_assert(argc == 2);
   MSG_create_environment(argv[1]);
 
-  launch_master(MSG_host_by_name("Fafard"));
+  MSG_process_create("master_", master_main, NULL, MSG_host_by_name("Fafard"));
 
   int res = MSG_main();
   XBT_INFO("Bye (simulation time %g)", MSG_get_clock());

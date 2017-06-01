@@ -113,7 +113,8 @@ void CpuCas01::onSpeedChange() {
   while ((var = lmm_get_var_from_cnst(model()->getMaxminSystem(), constraint(), &elem))) {
     CpuCas01Action* action = static_cast<CpuCas01Action*>(lmm_variable_id(var));
 
-    lmm_update_variable_bound(model()->getMaxminSystem(), action->getVariable(), speed_.scale * speed_.peak);
+    lmm_update_variable_bound(model()->getMaxminSystem(), action->getVariable(),
+                              action->requestedCore() * speed_.scale * speed_.peak);
   }
 
   Cpu::onSpeedChange();
@@ -163,9 +164,14 @@ void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
   }
 }
 
+/** @brief Start a new execution on this CPU lasting @size flops and using one core */
 CpuAction *CpuCas01::execution_start(double size)
 {
   return new CpuCas01Action(model(), size, isOff(), speed_.scale * speed_.peak, constraint());
+}
+CpuAction* CpuCas01::execution_start(double size, int requestedCores)
+{
+  return new CpuCas01Action(model(), size, isOff(), speed_.scale * speed_.peak, constraint(), requestedCores);
 }
 
 CpuAction *CpuCas01::sleep(double duration)
@@ -201,9 +207,10 @@ CpuAction *CpuCas01::sleep(double duration)
 /**********
  * Action *
  **********/
-
-CpuCas01Action::CpuCas01Action(Model *model, double cost, bool failed, double speed, lmm_constraint_t constraint)
- : CpuAction(model, cost, failed, lmm_variable_new(model->getMaxminSystem(), this, 1.0, speed, 1))
+CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm_constraint_t constraint,
+                               int requestedCore)
+    : CpuAction(model, cost, failed, lmm_variable_new(model->getMaxminSystem(), this, 1.0, speed, 1))
+    , requestedCore_(requestedCore)
 {
   if (model->getUpdateMechanism() == UM_LAZY) {
     indexHeap_ = -1;
@@ -211,6 +218,16 @@ CpuCas01Action::CpuCas01Action(Model *model, double cost, bool failed, double sp
     lastValue_ = 0.0;
   }
   lmm_expand(model->getMaxminSystem(), constraint, getVariable(), 1.0);
+}
+
+CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm_constraint_t constraint)
+    : CpuCas01Action(model, cost, failed, speed, constraint, 1)
+{
+}
+
+int CpuCas01Action::requestedCore()
+{
+  return requestedCore_;
 }
 
 CpuCas01Action::~CpuCas01Action()=default;

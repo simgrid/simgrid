@@ -38,7 +38,9 @@ simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> onVmStateChange;
 std::deque<s4u::VirtualMachine*> VirtualMachineImpl::allVms_;
 
 /* In the real world, processes on the guest operating system will be somewhat degraded due to virtualization overhead.
- * The total CPU share these processes get is smaller than that of the VM process gets on a host operating system. */
+ * The total CPU share these processes get is smaller than that of the VM process gets on a host operating system.
+ * FIXME: add a configuration flag for this
+ */
 // const double virt_overhead = 0.95;
 const double virt_overhead = 1;
 
@@ -65,7 +67,7 @@ double VMModel::nextOccuringEvent(double now)
    *
    * Equation 1 was solved in the physical machine layer.
    * Equation 2 is solved in the virtual machine layer (here).
-   * X1 must be passed to the virtual machine laye as a constraint value.
+   * X1 must be passed to the virtual machine layer as a constraint value.
    **/
 
   /* iterate for all virtual machines */
@@ -73,7 +75,8 @@ double VMModel::nextOccuringEvent(double now)
     surf::Cpu* cpu = ws_vm->pimpl_cpu;
     xbt_assert(cpu, "cpu-less host");
 
-    double solved_value = ws_vm->pimpl_vm_->action_->getVariable()->value;
+    double solved_value = ws_vm->pimpl_vm_->action_->getVariable()
+                              ->value; // this is X1 in comment above, what this VM got in the sharing on the PM
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->cname(), ws_vm->pimpl_vm_->getPm()->cname());
 
     // TODO: check lmm_update_constraint_bound() works fine instead of the below manual substitution.
@@ -84,9 +87,9 @@ double VMModel::nextOccuringEvent(double now)
   }
 
   /* 2. Calculate resource share at the virtual machine layer. */
-  adjustWeightOfDummyCpuActions();
+  ignoreEmptyVmInPmLMM();
 
-  /* 3. Ready. Get the next occuring event */
+  /* 3. Ready. Get the next occurring event */
   return surf_cpu_model_vm->nextOccuringEvent(now);
 }
 
@@ -94,15 +97,16 @@ double VMModel::nextOccuringEvent(double now)
  * Resource *
  ************/
 
-VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, simgrid::s4u::Host* host_PM)
-    : HostImpl(piface), hostPM_(host_PM)
+VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, simgrid::s4u::Host* host_PM,
+                                       int coreAmount)
+    : HostImpl(piface), hostPM_(host_PM), coreAmount_(coreAmount)
 {
   /* Register this VM to the list of all VMs */
   allVms_.push_back(piface);
 
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
-  action_ = host_PM->pimpl_cpu->execution_start(0);
+  action_ = host_PM->pimpl_cpu->execution_start(0, coreAmount);
 
   /* Initialize the VM parameters */
   params_.ramsize = 0;
@@ -264,7 +268,8 @@ void VirtualMachineImpl::setPm(s4u::Host* destination)
 
   /* Update vcpu's action for the new pm */
   /* create a cpu action bound to the pm model at the destination. */
-  surf::CpuAction* new_cpu_action = static_cast<surf::CpuAction*>(destination->pimpl_cpu->execution_start(0));
+  surf::CpuAction* new_cpu_action =
+      static_cast<surf::CpuAction*>(destination->pimpl_cpu->execution_start(0, this->coreAmount_));
 
   if (action_->getRemainsNoUpdate() > 0)
     XBT_CRITICAL("FIXME: need copy the state(?), %f", action_->getRemainsNoUpdate());

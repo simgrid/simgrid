@@ -48,7 +48,7 @@ class HostModel : public Model {
 public:
   HostModel() : Model() {}
 
-  virtual void adjustWeightOfDummyCpuActions();
+  virtual void ignoreEmptyVmInPmLMM();
   virtual Action* executeParallelTask(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount,
                                       double rate);
 };
