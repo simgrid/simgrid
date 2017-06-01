@@ -77,6 +77,11 @@ public class VM extends Host {
 	/** Returns whether the given VM is currently suspended */	
 	public native int isSuspended();
 
+	/** Returns the amount of virtual CPUs provided */
+	public int getCoreAmount() {
+		return coreAmount;
+	}
+	
 	/**
 	 * Natively implemented method create the VM.
 	 * @param ramSize size of the RAM that should be allocated (in MB)
