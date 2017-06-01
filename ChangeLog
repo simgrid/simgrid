@@ -3,6 +3,7 @@ SimGrid (3.16) UNRELEASED
  Portability status:
   - FreeBSD: Disable SMPI mmap privatization, switch automatically to dlopen.
   - Mac, BSD: dlopen+thread broken, switch automatically to raw contexts.
+  - Java JAR file should be finally fully working on Mac OSX too.
 
  XML platforms: Switch to platform v4.1 format.
  * This is (mainly) a backward compatible change: v4 are valid v4.1 files
