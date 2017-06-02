@@ -233,7 +233,7 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
   }
 }
 
-void sg_instr_new_host(simgrid::s4u::Host& host)
+static void sg_instr_new_host(simgrid::s4u::Host& host)
 {
   container_t father = currentContainer.back();
   container_t container = PJ_container_new(host.cname(), INSTR_HOST, father);
