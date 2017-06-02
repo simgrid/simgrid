@@ -140,7 +140,13 @@ XBT_PUBLIC(int) SD_task_dependency_exists(SD_task_t src, SD_task_t dst);
  *
  *  @{
  */
-XBT_PUBLIC(void) SD_init(int *argc, char **argv);
+
+#define SD_init(argc,argv)  do {                                                          \
+  sg_version_check(SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH);\
+    SD_init_nocheck(argc,argv);                                                        \
+} while (0) 
+
+XBT_PUBLIC(void) SD_init_nocheck(int *argc, char **argv);
 XBT_PUBLIC(void) SD_config(const char *key, const char *value);
 XBT_PUBLIC(void) SD_create_environment(const char *platform_file);
 XBT_PUBLIC(void) SD_simulate(double how_long);
