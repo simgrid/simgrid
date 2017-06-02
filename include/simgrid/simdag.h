@@ -161,12 +161,6 @@ XBT_PUBLIC(std::set<SD_task_t>*) simulate(double how_long);
 #endif
 /** @} */
 
-
-#define SD_init(argc,argv) do{\
-    sg_version_check(SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH);\
-    SD_init_check(argc,argv);\
-}while(0)
-
 /* Support some backward compatibility */
 #define SD_workstation_t sg_host_t
 
