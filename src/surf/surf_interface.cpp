@@ -261,31 +261,31 @@ static inline void surf_storage_free(void *r)
   delete static_cast<simgrid::surf::StorageImpl*>(r);
 }
 
-void sg_version_check(int lib_version_major,int lib_version_minor,int lib_version_patch) {
-    if ((lib_version_major != SIMGRID_VERSION_MAJOR) || (lib_version_minor != SIMGRID_VERSION_MINOR)) {
-      fprintf(stderr,
+void sg_version_check(int lib_version_major, int lib_version_minor, int lib_version_patch)
+{
+  if ((lib_version_major != SIMGRID_VERSION_MAJOR) || (lib_version_minor != SIMGRID_VERSION_MINOR)) {
+    fprintf(stderr, "FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, "
+                    "and then linked against SimGrid %d.%d.%d. Please fix this.\n",
+            lib_version_major, lib_version_minor, lib_version_patch, SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR,
+            SIMGRID_VERSION_PATCH);
+    abort();
+  }
+  if (lib_version_patch != SIMGRID_VERSION_PATCH) {
+    if (SIMGRID_VERSION_PATCH >= 90 || lib_version_patch >= 90) {
+      fprintf(
+          stderr,
           "FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, "
-          "and then linked against SimGrid %d.%d.%d. Please fix this.\n",
-          lib_version_major,lib_version_minor,lib_version_patch,
-          SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH);
+          "and then linked against SimGrid %d.%d.%d. \n"
+          "One of them is a development version, and should not be mixed with the stable release. Please fix this.\n",
+          lib_version_major, lib_version_minor, lib_version_patch, SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR,
+          SIMGRID_VERSION_PATCH);
       abort();
     }
-    if (lib_version_patch != SIMGRID_VERSION_PATCH) {
-      if(SIMGRID_VERSION_PATCH >= 90 || lib_version_patch >=90){
-        fprintf(stderr,
-        "FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, "
-        "and then linked against SimGrid %d.%d.%d. \n"
-        "One of them is a development version, and should not be mixed with the stable release. Please fix this.\n",
-        lib_version_major,lib_version_minor,lib_version_patch,
-        SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH);
-        abort();
-      }
-        fprintf(stderr,
-            "Warning: Your program was compiled with SimGrid version %d.%d.%d, "
-            "and then linked against SimGrid %d.%d.%d. Proceeding anyway.\n",
-            lib_version_major,lib_version_minor,lib_version_patch,
-            SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH);
-    }
+    fprintf(stderr, "Warning: Your program was compiled with SimGrid version %d.%d.%d, "
+                    "and then linked against SimGrid %d.%d.%d. Proceeding anyway.\n",
+            lib_version_major, lib_version_minor, lib_version_patch, SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR,
+            SIMGRID_VERSION_PATCH);
+  }
 }
 
 void sg_version_get(int* ver_major, int* ver_minor, int* ver_patch)
