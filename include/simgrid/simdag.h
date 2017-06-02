@@ -141,10 +141,11 @@ XBT_PUBLIC(int) SD_task_dependency_exists(SD_task_t src, SD_task_t dst);
  *  @{
  */
 
-#define SD_init(argc,argv)  do {                                                          \
-  sg_version_check(SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH);\
-    SD_init_nocheck(argc,argv);                                                        \
-} while (0) 
+#define SD_init(argc, argv)                                                                                            \
+  do {                                                                                                                 \
+    sg_version_check(SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR, SIMGRID_VERSION_PATCH);                             \
+    SD_init_nocheck(argc, argv);                                                                                       \
+  } while (0)
 
 XBT_PUBLIC(void) SD_init_nocheck(int *argc, char **argv);
 XBT_PUBLIC(void) SD_config(const char *key, const char *value);
@@ -157,7 +158,6 @@ XBT_PUBLIC(xbt_dynar_t) SD_daxload(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_dotload(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_dotload_with_sched(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_PTG_dotload(const char *filename);
-XBT_PUBLIC(void) SD_init_check(int *argc, char **argv);
 #ifdef __cplusplus
 namespace simgrid {
 namespace sd {
