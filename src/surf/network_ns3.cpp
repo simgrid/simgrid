@@ -69,6 +69,7 @@ static void clusterCreation_cb(sg_platf_cluster_cbarg_t cluster)
     NetPointNs3* host_src = sg_host_by_name(host_id)->pimpl_netpoint->extension<NetPointNs3>();
     xbt_assert(host_src, "Cannot find a NS3 host of name %s", host_id);
 
+    // Any NS3 route is symmetrical
     ns3_add_link(host_src, host_dst, bw, lat);
 
     delete host_dst;
@@ -108,9 +109,8 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
     xbt_assert(host_src != nullptr, "Network element %s does not seem to be NS3-ready", src->cname());
     xbt_assert(host_dst != nullptr, "Network element %s does not seem to be NS3-ready", dst->cname());
 
+    // Any NS3 route is symmetrical
     ns3_add_link(host_src, host_dst, link_bdw, link_lat);
-    if (symmetrical)
-      ns3_add_link(host_dst, host_src, link_bdw, link_lat);
 
     xbt_free(link_bdw);
     xbt_free(link_lat);
@@ -466,7 +466,6 @@ void ns3_add_link(NetPointNs3* src, NetPointNs3* dst, char* bw, char* lat)
 {
   ns3::PointToPointHelper pointToPoint;
 
-  ns3::NetDeviceContainer netA;
   ns3::Ipv4AddressHelper address;
 
   int srcNum = src->node_num;
@@ -479,6 +478,7 @@ void ns3_add_link(NetPointNs3* src, NetPointNs3* dst, char* bw, char* lat)
   pointToPoint.SetDeviceAttribute ("DataRate", ns3::StringValue (bw));
   pointToPoint.SetChannelAttribute ("Delay", ns3::StringValue (lat));
 
+  ns3::NetDeviceContainer netA;
   netA.Add(pointToPoint.Install (a, b));
 
   char * adr = bprintf("%d.%d.0.0",number_of_networks,number_of_links);
