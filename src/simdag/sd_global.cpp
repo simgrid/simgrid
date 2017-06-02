@@ -152,7 +152,7 @@ const char *__get_state_name(e_SD_task_state_t state){
  * \param argv argument list
  * \see SD_create_environment(), SD_exit()
  */
-void SD_init(int *argc, char **argv)
+void SD_init_check(int *argc, char **argv)
 {
   xbt_assert(sd_global == nullptr, "SD_init() already called");
 
