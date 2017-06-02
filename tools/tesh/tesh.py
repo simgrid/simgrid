@@ -353,11 +353,11 @@ class Cmd(object):
                 if self.sort >= 0: # If sorted, truncate the diff output and show the unsorted version
                     difflen = 0;
                     for line in diff:
-                        if difflen<250:
+                        if difflen<50:
                             print(line)
                         difflen += 1
-                    if difflen > 100:
-                        print("(diff truncated after 250 lines)")
+                    if difflen > 50:
+                        print("(diff truncated after 50 lines)")
                     print("Unsorted observed output:\n")
                     for line in stdcpy:
                         print(line)
