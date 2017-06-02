@@ -320,7 +320,6 @@ void NetworkNS3Action::resume() {
 std::list<LinkImpl*> NetworkNS3Action::links()
 {
   THROW_UNIMPLEMENTED;
-  return nullptr;
 }
 
 /* Test whether a flow is suspended */
