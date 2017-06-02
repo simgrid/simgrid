@@ -322,6 +322,7 @@ void instr_routing_define_callbacks ()
     return;
   simgrid::s4u::Link::onCreation.connect(instr_routing_parse_start_link);
   simgrid::s4u::onPlatformCreated.connect(instr_routing_parse_end_platform);
+  simgrid::s4u::Host::onCreation.connect(sg_instr_new_host);
 }
 
 /*
