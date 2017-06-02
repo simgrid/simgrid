@@ -360,7 +360,7 @@ void CommunicationDeterminismChecker::prepare()
   /* Get an enabled actor and insert it in the interleave set of the initial state */
   for (auto& actor : mc_model_checker->process().actors())
     if (simgrid::mc::actor_is_enabled(actor.copy.getBuffer()))
-      initial_state->interleave(actor.copy.getBuffer());
+      initial_state->addInterleavingSet(actor.copy.getBuffer());
 
   stack_.push_back(std::move(initial_state));
 }
@@ -488,7 +488,7 @@ void CommunicationDeterminismChecker::main()
         /* Get enabled actors and insert them in the interleave set of the next state */
         for (auto& actor : mc_model_checker->process().actors())
           if (simgrid::mc::actor_is_enabled(actor.copy.getBuffer()))
-            next_state->interleave(actor.copy.getBuffer());
+            next_state->addInterleavingSet(actor.copy.getBuffer());
 
         if (dot_output != nullptr)
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
