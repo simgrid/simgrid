@@ -34,7 +34,6 @@ int main(int argc, char **argv)
     sleep(atoi(argv[2]));
   }
 
-  SD_exit();
 
   free(timer);
   return 0;

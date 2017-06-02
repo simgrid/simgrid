@@ -33,7 +33,6 @@ int main(int argc, char **argv)
   dot = SD_dotload(argv[2]);
   if(dot == NULL){
     XBT_CRITICAL("No dot loaded. Do you have a cycle in your graph?");
-    SD_exit();
     exit(2);
   }
 
@@ -104,6 +103,5 @@ int main(int argc, char **argv)
   fclose(out);
 
   /* exit */
-  SD_exit();
   return 0;
 }

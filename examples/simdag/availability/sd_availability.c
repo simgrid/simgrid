@@ -94,7 +94,6 @@ int main(int argc, char **argv)
     }
     xbt_dynar_reset(changed_tasks);
   }
-  SD_exit();
   xbt_free(hosts);
   xbt_dynar_free(&changed_tasks);
   return 0;

@@ -74,6 +74,5 @@ int main(int argc, char **argv)
   xbt_dynar_free_container(&changed_tasks);
 
   xbt_free(hosts);
-  SD_exit();
   return 0;
 }
