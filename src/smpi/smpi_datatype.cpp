@@ -263,7 +263,6 @@ int Datatype::unpack(void* inbuf, int insize, int* position, void* outbuf, int o
 
 int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        void *recvbuf, int recvcount, MPI_Datatype recvtype){
-  int count;
 
 // FIXME Handle the case of a partial shared malloc.
 
@@ -274,7 +273,7 @@ int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   if (recvcount > 0 && recvbuf != sendbuf) {
     sendcount *= sendtype->size();
     recvcount *= recvtype->size();
-    count = sendcount < recvcount ? sendcount : recvcount;
+    int count = sendcount < recvcount ? sendcount : recvcount;
 
     if (not(sendtype->flags() & DT_FLAG_DERIVED) && not(recvtype->flags() & DT_FLAG_DERIVED)) {
       if (not smpi_process()->replaying())

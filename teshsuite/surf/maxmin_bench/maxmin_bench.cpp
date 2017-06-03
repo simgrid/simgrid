@@ -41,7 +41,6 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
   lmm_constraint_t cnst[nb_cnst];
   lmm_variable_t var[nb_var];
   int used[nb_cnst];
-  int concurrency_share;
 
   lmm_system_t Sys = lmm_system_new(1);
 
@@ -61,7 +60,7 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
   for (int i = 0; i < nb_var; i++) {
     var[i] = lmm_variable_new(Sys, NULL, 1.0, -1.0, nb_elem);
     //Have a few variables with a concurrency share of two (e.g. cross-traffic in some cases)
-    concurrency_share=1+int_random(max_share);
+    int concurrency_share = 1 + int_random(max_share);
     lmm_variable_concurrency_share_set(var[i],concurrency_share);
 
     for (int j = 0; j < nb_cnst; j++)

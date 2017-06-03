@@ -295,84 +295,92 @@ void sg_config_init(int *argc, char **argv)
   char description[descsize];
 
   /* Create the configuration support */
-  if (_sg_cfg_init_status == 0) { /* Only create stuff if not already inited */
+  if (_sg_cfg_init_status != 0) { /* Only create stuff if not already inited */
+    XBT_WARN("Call to sg_config_init() after initialization ignored");
+    return;
+  }
 
-    /* Plugins configuration */
-    describe_model(description,descsize, surf_plugin_description, "plugin", "The plugins");
-    xbt_cfg_register_string("plugin", nullptr, &_sg_cfg_cb__plugin, description);
+  /* Plugins configuration */
+  describe_model(description, descsize, surf_plugin_description, "plugin", "The plugins");
+  xbt_cfg_register_string("plugin", nullptr, &_sg_cfg_cb__plugin, description);
 
-    describe_model(description,descsize, surf_cpu_model_description, "model", "The model to use for the CPU");
-    xbt_cfg_register_string("cpu/model", "Cas01", &_sg_cfg_cb__cpu_model, description);
+  describe_model(description, descsize, surf_cpu_model_description, "model", "The model to use for the CPU");
+  xbt_cfg_register_string("cpu/model", "Cas01", &_sg_cfg_cb__cpu_model, description);
 
-    describe_model(description,descsize, surf_optimization_mode_description, "optimization mode", "The optimization modes to use for the CPU");
-    xbt_cfg_register_string("cpu/optim", "Lazy", &_sg_cfg_cb__optimization_mode, description);
+  describe_model(description, descsize, surf_optimization_mode_description, "optimization mode",
+                 "The optimization modes to use for the CPU");
+  xbt_cfg_register_string("cpu/optim", "Lazy", &_sg_cfg_cb__optimization_mode, description);
 
-    describe_model(description,descsize, surf_storage_model_description, "model", "The model to use for the storage");
-    xbt_cfg_register_string("storage/model", "default", &_sg_cfg_cb__storage_mode, description);
+  describe_model(description, descsize, surf_storage_model_description, "model", "The model to use for the storage");
+  xbt_cfg_register_string("storage/model", "default", &_sg_cfg_cb__storage_mode, description);
 
-    describe_model(description,descsize, surf_network_model_description, "model", "The model to use for the network");
-    xbt_cfg_register_string("network/model", "LV08", &_sg_cfg_cb__network_model, description);
+  describe_model(description, descsize, surf_network_model_description, "model", "The model to use for the network");
+  xbt_cfg_register_string("network/model", "LV08", &_sg_cfg_cb__network_model, description);
 
-    describe_model(description,descsize, surf_optimization_mode_description, "optimization mode", "The optimization modes to use for the network");
-    xbt_cfg_register_string("network/optim", "Lazy", &_sg_cfg_cb__optimization_mode, description);
+  describe_model(description, descsize, surf_optimization_mode_description, "optimization mode",
+                 "The optimization modes to use for the network");
+  xbt_cfg_register_string("network/optim", "Lazy", &_sg_cfg_cb__optimization_mode, description);
 
-    describe_model(description,descsize, surf_host_model_description, "model", "The model to use for the host");
-    xbt_cfg_register_string("host/model", "default", &_sg_cfg_cb__host_model, description);
+  describe_model(description, descsize, surf_host_model_description, "model", "The model to use for the host");
+  xbt_cfg_register_string("host/model", "default", &_sg_cfg_cb__host_model, description);
 
-    sg_tcp_gamma = 4194304.0;
-    simgrid::config::bindFlag(sg_tcp_gamma, { "network/TCP-gamma", "network/TCP_gamma" },
-      "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; Use the last given value, which is the max window size)");
+  sg_tcp_gamma = 4194304.0;
+  simgrid::config::bindFlag(sg_tcp_gamma, {"network/TCP-gamma", "network/TCP_gamma"},
+                            "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; "
+                            "Use the last given value, which is the max window size)");
 
-    simgrid::config::bindFlag(sg_surf_precision, "surf/precision",
-      "Numerical precision used when updating simulation times (in seconds)");
+  simgrid::config::bindFlag(sg_surf_precision, "surf/precision",
+                            "Numerical precision used when updating simulation times (in seconds)");
 
-    simgrid::config::bindFlag(sg_maxmin_precision, "maxmin/precision",
-                              "Numerical precision used when computing resource sharing (in flops/sec or bytes/sec)");
+  simgrid::config::bindFlag(sg_maxmin_precision, "maxmin/precision",
+                            "Numerical precision used when computing resource sharing (in flops/sec or bytes/sec)");
 
-    simgrid::config::bindFlag(sg_concurrency_limit, "maxmin/concurrency-limit",
-                              "Maximum number of concurrent variables in the maxmim system. Also limits the number of "
-                              "processes on each host, at higher level. (default: -1 means no such limitation)");
-    xbt_cfg_register_alias("maxmin/concurrency-limit", "maxmin/concurrency_limit");
+  simgrid::config::bindFlag(sg_concurrency_limit, "maxmin/concurrency-limit",
+                            "Maximum number of concurrent variables in the maxmim system. Also limits the number of "
+                            "processes on each host, at higher level. (default: -1 means no such limitation)");
+  xbt_cfg_register_alias("maxmin/concurrency-limit", "maxmin/concurrency_limit");
 
-    /* The parameters of network models */
+  /* The parameters of network models */
 
-    // real default for "network/sender-gap" is set in network_smpi.cpp:
-    sg_sender_gap = NAN;
-    simgrid::config::bindFlag(sg_sender_gap, { "network/sender-gap", "network/sender_gap" },
-      "Minimum gap between two overlapping sends");
+  // real default for "network/sender-gap" is set in network_smpi.cpp:
+  sg_sender_gap = NAN;
+  simgrid::config::bindFlag(sg_sender_gap, {"network/sender-gap", "network/sender_gap"},
+                            "Minimum gap between two overlapping sends");
 
-    sg_latency_factor = 1.0;
-    simgrid::config::bindFlag(sg_latency_factor, { "network/latency-factor", "network/latency_factor" },
-      "Correction factor to apply to the provided latency (default value set by network model)");
+  sg_latency_factor = 1.0;
+  simgrid::config::bindFlag(sg_latency_factor, {"network/latency-factor", "network/latency_factor"},
+                            "Correction factor to apply to the provided latency (default value set by network model)");
 
-    sg_bandwidth_factor = 1.0;
-    simgrid::config::bindFlag(sg_bandwidth_factor, { "network/bandwidth-factor", "network/bandwidth_factor" },
+  sg_bandwidth_factor = 1.0;
+  simgrid::config::bindFlag(
+      sg_bandwidth_factor, {"network/bandwidth-factor", "network/bandwidth_factor"},
       "Correction factor to apply to the provided bandwidth (default value set by network model)");
 
-    // real default for "network/weight-S" is set in network_*.cpp:
-    sg_weight_S_parameter = NAN;
-    simgrid::config::bindFlag(sg_weight_S_parameter, { "network/weight-S", "network/weight_S" },
+  // real default for "network/weight-S" is set in network_*.cpp:
+  sg_weight_S_parameter = NAN;
+  simgrid::config::bindFlag(
+      sg_weight_S_parameter, {"network/weight-S", "network/weight_S"},
       "Correction factor to apply to the weight of competing streams (default value set by network model)");
 
-    /* Inclusion path */
-    simgrid::config::declareFlag<std::string>("path",
-      "Lookup path for inclusions in platform and deployment XML files",
-      "",
-      [](std::string const& path) {
-        if (path[0] != '\0') {
-          surf_path.push_back(path);
-        }
-      });
+  /* Inclusion path */
+  simgrid::config::declareFlag<std::string>("path", "Lookup path for inclusions in platform and deployment XML files",
+                                            "", [](std::string const& path) {
+                                              if (path[0] != '\0') {
+                                                surf_path.push_back(path);
+                                              }
+                                            });
 
-    xbt_cfg_register_boolean("cpu/maxmin-selective-update", "no", nullptr,
-        "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)");
-    xbt_cfg_register_alias("cpu/maxmin-selective-update","cpu/maxmin_selective_update");
-    xbt_cfg_register_boolean("network/maxmin-selective-update", "no", nullptr,
-        "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)");
-    xbt_cfg_register_alias("network/maxmin-selective-update","network/maxmin_selective_update");
-    /* Replay (this part is enabled even if MC it disabled) */
-    xbt_cfg_register_string("model-check/replay", nullptr, _sg_cfg_cb_model_check_replay,
-        "Model-check path to replay (as reported by SimGrid when a violation is reported)");
+  xbt_cfg_register_boolean("cpu/maxmin-selective-update", "no", nullptr, "Update the constraint set propagating "
+                                                                         "recursively to others constraints (off by "
+                                                                         "default when optim is set to lazy)");
+  xbt_cfg_register_alias("cpu/maxmin-selective-update", "cpu/maxmin_selective_update");
+  xbt_cfg_register_boolean("network/maxmin-selective-update", "no", nullptr, "Update the constraint set propagating "
+                                                                             "recursively to others constraints (off "
+                                                                             "by default when optim is set to lazy)");
+  xbt_cfg_register_alias("network/maxmin-selective-update", "network/maxmin_selective_update");
+  /* Replay (this part is enabled even if MC it disabled) */
+  xbt_cfg_register_string("model-check/replay", nullptr, _sg_cfg_cb_model_check_replay,
+                          "Model-check path to replay (as reported by SimGrid when a violation is reported)");
 
 #if SIMGRID_HAVE_MC
     /* do model-checking-record */
@@ -568,9 +576,6 @@ void sg_config_init(int *argc, char **argv)
     sg_config_cmd_line(argc, argv);
 
     xbt_mallocator_initialization_is_done(SIMIX_context_is_parallel());
-  } else {
-    XBT_WARN("Call to sg_config_init() after initialization ignored");
-  }
 }
 
 void sg_config_finalize()
