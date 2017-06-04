@@ -17,9 +17,11 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 class ActivityImpl;
-     }
-     namespace routing {
-     class NetPoint;
+XBT_PUBLIC(void) intrusive_ptr_add_ref(ActivityImpl* activity);
+XBT_PUBLIC(void) intrusive_ptr_release(ActivityImpl* activity);
+}
+namespace routing {
+class NetPoint;
      }
   }
   namespace simix {

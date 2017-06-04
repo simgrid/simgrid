@@ -9,6 +9,11 @@
 #include <xbt/base.h>
 #include <simgrid/simix.h>
 
+#include <src/kernel/activity/ActivityImpl.hpp>
+#include <src/kernel/activity/CommImpl.hpp>
+
+#include <boost/intrusive_ptr.hpp>
+
 SG_BEGIN_DECL()
 
 /********************************* Simcalls *********************************/
@@ -116,6 +121,19 @@ template<class T> inline
 T* unmarshal(type<T*>, u_smx_scalar const& simcall)
 {
   return static_cast<T*>(simcall.dp);
+}
+
+template <class T>
+inline void marshal(type<boost::intrusive_ptr<T>>, u_smx_scalar& simcall, boost::intrusive_ptr<T> value)
+{
+  intrusive_ptr_add_ref(&*value);
+  simcall.dp = static_cast<void*>(&*value);
+}
+template <class T> inline boost::intrusive_ptr<T> unmarshal(type<boost::intrusive_ptr<T>>, u_smx_scalar const& simcall)
+{
+  boost::intrusive_ptr<T> res = boost::intrusive_ptr<T>(static_cast<T*>(simcall.dp), false);
+  intrusive_ptr_release(&*res);
+  return res;
 }
 
 template<class R, class... T> inline
