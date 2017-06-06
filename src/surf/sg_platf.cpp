@@ -119,7 +119,7 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const char* name, const 
   if (coords && strcmp(coords, ""))
     new simgrid::kernel::routing::vivaldi::Coords(netpoint, coords);
 
-  sg_instr_new_router(name);
+  sg_instr_new_router(*netpoint);
 
   return netpoint;
 }
