@@ -33,7 +33,7 @@ smx_activity_t SIMIX_file_read(smx_file_t fd, sg_size_t size, sg_host_t host)
   if (host->isOff())
     THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->cname());
 
-  simgrid::kernel::activity::Io *synchro = new simgrid::kernel::activity::Io();
+  simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
   synchro->host = host;
   synchro->surf_io = surf_host_read(host, fd->surf_file, size);
 
@@ -56,7 +56,7 @@ smx_activity_t SIMIX_file_write(smx_file_t fd, sg_size_t size, sg_host_t host)
   if (host->isOff())
     THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->cname());
 
-  simgrid::kernel::activity::Io *synchro = new simgrid::kernel::activity::Io();
+  simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
   synchro->host = host;
   synchro->surf_io = surf_host_write(host, fd->surf_file, size);
   synchro->surf_io->setData(synchro);
@@ -78,7 +78,7 @@ smx_activity_t SIMIX_file_open(const char* fullpath, sg_host_t host)
   if (host->isOff())
     THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->cname());
 
-  simgrid::kernel::activity::Io *synchro = new simgrid::kernel::activity::Io();
+  simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
   synchro->host = host;
   synchro->surf_io = surf_host_open(host, fullpath);
   synchro->surf_io->setData(synchro);
@@ -100,7 +100,7 @@ smx_activity_t SIMIX_file_close(smx_file_t fd, sg_host_t host)
   if (host->isOff())
     THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->cname());
 
-  simgrid::kernel::activity::Io *synchro = new simgrid::kernel::activity::Io();
+  simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
   synchro->host = host;
   synchro->surf_io = surf_host_close(host, fd->surf_file);
   synchro->surf_io->setData(synchro);
@@ -178,11 +178,11 @@ int SIMIX_file_move(smx_actor_t process, smx_file_t file, const char* fullpath)
 
 void SIMIX_io_destroy(smx_activity_t synchro)
 {
-  simgrid::kernel::activity::Io *io = static_cast<simgrid::kernel::activity::Io*>(synchro);
+  simgrid::kernel::activity::IoImplPtr io = boost::static_pointer_cast<simgrid::kernel::activity::IoImpl>(synchro);
   XBT_DEBUG("Destroy synchro %p", synchro);
   if (io->surf_io)
     io->surf_io->unref();
-  delete io;
+  io->unref();
 }
 
 void SIMIX_io_finish(smx_activity_t synchro)

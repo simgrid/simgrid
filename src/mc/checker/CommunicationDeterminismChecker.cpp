@@ -185,7 +185,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
   if (call_type == MC_CALL_TYPE_SEND) {
     /* Create comm pattern */
     pattern->type = simgrid::mc::PatternCommunicationType::send;
-    pattern->comm_addr = simcall_comm_isend__get__result(request);
+    pattern->comm_addr = &*simcall_comm_isend__get__result(request);
 
     simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_synchro;
     mc_model_checker->process().read(temp_synchro,

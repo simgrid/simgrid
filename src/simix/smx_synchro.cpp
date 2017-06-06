@@ -27,9 +27,10 @@ static smx_activity_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout)
 {
   XBT_IN("(%p, %f)",smx_host,timeout);
 
-  simgrid::kernel::activity::Raw *sync = new simgrid::kernel::activity::Raw();
+  simgrid::kernel::activity::RawImplPtr sync =
+      simgrid::kernel::activity::RawImplPtr(new simgrid::kernel::activity::RawImpl());
   sync->sleep                          = smx_host->pimpl_cpu->sleep(timeout);
-  sync->sleep->setData(sync);
+  sync->sleep->setData(&*sync);
   XBT_OUT();
   return sync;
 }
@@ -89,7 +90,7 @@ void SIMIX_synchro_finish(smx_activity_t synchro)
 
   SIMIX_synchro_stop_waiting(simcall->issuer, simcall);
   simcall->issuer->waiting_synchro = nullptr;
-  delete synchro;
+  synchro->unref();
   SIMIX_simcall_answer(simcall);
   XBT_OUT();
 }
@@ -175,7 +176,7 @@ void MutexImpl::unlock(smx_actor_t issuer)
   if (xbt_swag_size(this->sleeping) > 0) {
     /*process to wake up */
     smx_actor_t p = (smx_actor_t) xbt_swag_extract(this->sleeping);
-    delete p->waiting_synchro;
+    p->waiting_synchro->unref();
     p->waiting_synchro = nullptr;
     this->owner = p;
     SIMIX_simcall_answer(&p->simcall);
@@ -318,7 +319,7 @@ void SIMIX_cond_signal(smx_cond_t cond)
   if ((proc = (smx_actor_t) xbt_swag_extract(cond->sleeping))) {
 
     /* Destroy waiter's synchronization */
-    delete proc->waiting_synchro;
+    proc->waiting_synchro->unref();
     proc->waiting_synchro = nullptr;
 
     /* Now transform the cond wait simcall into a mutex lock one */
@@ -431,7 +432,7 @@ void SIMIX_sem_release(smx_sem_t sem)
 
   XBT_DEBUG("Sem release semaphore %p", sem);
   if ((proc = (smx_actor_t) xbt_swag_extract(sem->sleeping))) {
-    delete proc->waiting_synchro;
+    proc->waiting_synchro->unref();
     proc->waiting_synchro = nullptr;
     SIMIX_simcall_answer(&proc->simcall);
   } else {

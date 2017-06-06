@@ -144,7 +144,8 @@ static void check_blocks(std::vector<std::pair<size_t, size_t>> &private_blocks,
 
 void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t buff_size)
 {
-  simgrid::kernel::activity::CommImpl* comm = dynamic_cast<simgrid::kernel::activity::CommImpl*>(synchro);
+  simgrid::kernel::activity::CommImplPtr comm =
+      boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
   int src_shared                        = 0;
   int dst_shared                        = 0;
   size_t src_offset                     = 0;

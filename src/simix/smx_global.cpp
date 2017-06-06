@@ -356,7 +356,7 @@ static void SIMIX_wake_processes()
     XBT_DEBUG("Handling the processes whose action failed (if any)");
     while ((action = surf_model_extract_failed_action_set(model))) {
       XBT_DEBUG("   Handling Action %p",action);
-      SIMIX_simcall_exit((smx_activity_t) action->getData());
+      SIMIX_simcall_exit(static_cast<simgrid::kernel::activity::ActivityImpl*>(action->getData()));
     }
     XBT_DEBUG("Handling the processes whose action terminated normally (if any)");
     while ((action = surf_model_extract_done_action_set(model))) {
@@ -364,7 +364,7 @@ static void SIMIX_wake_processes()
       if (action->getData() == nullptr)
         XBT_DEBUG("probably vcpu's action %p, skip", action);
       else
-        SIMIX_simcall_exit((smx_activity_t) action->getData());
+        SIMIX_simcall_exit(static_cast<simgrid::kernel::activity::ActivityImpl*>(action->getData()));
     }
   }
 }
@@ -653,19 +653,19 @@ void SIMIX_display_process_status()
 
       const char* synchro_description = "unknown";
 
-      if (dynamic_cast<simgrid::kernel::activity::ExecImpl*>(process->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(process->waiting_synchro) != nullptr)
         synchro_description = "execution";
 
-      if (dynamic_cast<simgrid::kernel::activity::CommImpl*>(process->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(process->waiting_synchro) != nullptr)
         synchro_description = "communication";
 
-      if (dynamic_cast<simgrid::kernel::activity::SleepImpl*>(process->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(process->waiting_synchro) != nullptr)
         synchro_description = "sleeping";
 
-      if (dynamic_cast<simgrid::kernel::activity::Raw*>(process->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::RawImpl>(process->waiting_synchro) != nullptr)
         synchro_description = "synchronization";
 
-      if (dynamic_cast<simgrid::kernel::activity::Io*>(process->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(process->waiting_synchro) != nullptr)
         synchro_description = "I/O";
 
 

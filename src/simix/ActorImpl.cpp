@@ -95,7 +95,8 @@ void SIMIX_process_cleanup(smx_actor_t process)
   /* cancel non-blocking communications */
   smx_activity_t synchro = static_cast<smx_activity_t>(process->comms.front());
   while (not process->comms.empty()) {
-    simgrid::kernel::activity::CommImpl* comm = static_cast<simgrid::kernel::activity::CommImpl*>(synchro);
+    simgrid::kernel::activity::CommImplPtr comm =
+        boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
 
     /* make sure no one will finish the comm after this process is destroyed,
      * because src_proc or dst_proc would be an invalid pointer */
@@ -423,14 +424,16 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
   /* destroy the blocking synchro if any */
   if (process->waiting_synchro) {
 
-    simgrid::kernel::activity::ExecImpl* exec =
-        dynamic_cast<simgrid::kernel::activity::ExecImpl*>(process->waiting_synchro);
-    simgrid::kernel::activity::CommImpl* comm =
-        dynamic_cast<simgrid::kernel::activity::CommImpl*>(process->waiting_synchro);
-    simgrid::kernel::activity::SleepImpl* sleep =
-        dynamic_cast<simgrid::kernel::activity::SleepImpl*>(process->waiting_synchro);
-    simgrid::kernel::activity::Raw *raw = dynamic_cast<simgrid::kernel::activity::Raw*>(process->waiting_synchro);
-    simgrid::kernel::activity::Io *io = dynamic_cast<simgrid::kernel::activity::Io*>(process->waiting_synchro);
+    simgrid::kernel::activity::ExecImplPtr exec =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(process->waiting_synchro);
+    simgrid::kernel::activity::CommImplPtr comm =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(process->waiting_synchro);
+    simgrid::kernel::activity::SleepImplPtr sleep =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(process->waiting_synchro);
+    simgrid::kernel::activity::RawImplPtr raw =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::RawImpl>(process->waiting_synchro);
+    simgrid::kernel::activity::IoImplPtr io =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(process->waiting_synchro);
 
     if (exec != nullptr) {
       exec->unref();
@@ -448,7 +451,7 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
 
     } else if (raw != nullptr) {
       SIMIX_synchro_stop_waiting(process, &process->simcall);
-      delete process->waiting_synchro;
+      process->waiting_synchro->unref();
 
     } else if (io != nullptr) {
       SIMIX_io_destroy(process->waiting_synchro);
@@ -485,21 +488,21 @@ void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const
   /* cancel the blocking synchro if any */
   if (process->waiting_synchro) {
 
-    simgrid::kernel::activity::ExecImpl* exec =
-        dynamic_cast<simgrid::kernel::activity::ExecImpl*>(process->waiting_synchro);
+    simgrid::kernel::activity::ExecImplPtr exec =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(process->waiting_synchro);
     if (exec != nullptr) {
       SIMIX_execution_cancel(process->waiting_synchro);
     }
 
-    simgrid::kernel::activity::CommImpl* comm =
-        dynamic_cast<simgrid::kernel::activity::CommImpl*>(process->waiting_synchro);
+    simgrid::kernel::activity::CommImplPtr comm =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(process->waiting_synchro);
     if (comm != nullptr) {
       process->comms.remove(comm);
       comm->cancel();
     }
 
-    simgrid::kernel::activity::SleepImpl* sleep =
-        dynamic_cast<simgrid::kernel::activity::SleepImpl*>(process->waiting_synchro);
+    simgrid::kernel::activity::SleepImplPtr sleep =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(process->waiting_synchro);
     if (sleep != nullptr) {
       SIMIX_process_sleep_destroy(process->waiting_synchro);
       if (not xbt_dynar_member(simix_global->process_to_run, &(process)) && process != SIMIX_process_self()) {
@@ -508,12 +511,14 @@ void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const
       }
     }
 
-    simgrid::kernel::activity::Raw *raw = dynamic_cast<simgrid::kernel::activity::Raw*>(process->waiting_synchro);
+    simgrid::kernel::activity::RawImplPtr raw =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::RawImpl>(process->waiting_synchro);
     if (raw != nullptr) {
       SIMIX_synchro_stop_waiting(process, &process->simcall);
     }
 
-    simgrid::kernel::activity::Io *io = dynamic_cast<simgrid::kernel::activity::Io*>(process->waiting_synchro);
+    simgrid::kernel::activity::IoImplPtr io =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(process->waiting_synchro);
     if (io != nullptr) {
       SIMIX_io_destroy(process->waiting_synchro);
     }
@@ -694,7 +699,8 @@ void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, do
   simcall->issuer->waiting_synchro = sync;
 }
 
-static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_activity_t synchro){
+static int SIMIX_process_join_finish(smx_process_exit_status_t status, void* synchro)
+{
   simgrid::kernel::activity::SleepImpl* sleep = static_cast<simgrid::kernel::activity::SleepImpl*>(synchro);
 
   if (sleep->surf_sleep) {
@@ -724,14 +730,14 @@ static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_activ
 smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, double timeout)
 {
   smx_activity_t res = SIMIX_process_sleep(issuer, timeout);
-  static_cast<simgrid::kernel::activity::ActivityImpl*>(res)->ref();
+  (&*res)->ref();
   /* We are leaking the process here, but if we don't take the ref, we get a "use after free".
    * The correct solution would be to derivate the type SynchroSleep into a SynchroProcessJoin,
    * but the code is not clean enough for now for this.
    * The C API should first be properly replaced with the C++ one, which is a fair amount of work.
    */
   intrusive_ptr_add_ref(process);
-  SIMIX_process_on_exit(process, (int_f_pvoid_pvoid_t)SIMIX_process_join_finish, res);
+  SIMIX_process_on_exit(process, (int_f_pvoid_pvoid_t)SIMIX_process_join_finish, &*res);
   return res;
 }
 
@@ -757,7 +763,7 @@ smx_activity_t SIMIX_process_sleep(smx_actor_t process, double duration)
 
   simgrid::kernel::activity::SleepImpl* synchro = new simgrid::kernel::activity::SleepImpl();
   synchro->host = host;
-  synchro->surf_sleep                       = host->pimpl_cpu->sleep(duration);
+  synchro->surf_sleep                           = host->pimpl_cpu->sleep(duration);
   synchro->surf_sleep->setData(synchro);
   XBT_DEBUG("Create sleep synchronization %p", synchro);
 
@@ -767,7 +773,8 @@ smx_activity_t SIMIX_process_sleep(smx_actor_t process, double duration)
 void SIMIX_process_sleep_destroy(smx_activity_t synchro)
 {
   XBT_DEBUG("Destroy synchro %p", synchro);
-  simgrid::kernel::activity::SleepImpl* sleep = static_cast<simgrid::kernel::activity::SleepImpl*>(synchro);
+  simgrid::kernel::activity::SleepImplPtr sleep =
+      boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(synchro);
 
   if (sleep->surf_sleep) {
     sleep->surf_sleep->unref();

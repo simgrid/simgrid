@@ -57,7 +57,7 @@ XBT_PRIVATE void SIMIX_execution_cancel(smx_activity_t synchro);
 XBT_PRIVATE void SIMIX_execution_set_priority(smx_activity_t synchro, double priority);
 XBT_PRIVATE void SIMIX_execution_set_bound(smx_activity_t synchro, double bound);
 
-XBT_PRIVATE void SIMIX_execution_finish(simgrid::kernel::activity::ExecImpl* exec);
+XBT_PRIVATE void SIMIX_execution_finish(simgrid::kernel::activity::ExecImplPtr exec);
 
 XBT_PRIVATE void SIMIX_set_category(smx_activity_t synchro, const char *category);
 

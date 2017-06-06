@@ -544,7 +544,7 @@ int Request::testsome(int incount, MPI_Request requests[], int *indices, MPI_Sta
 
 int Request::testany(int count, MPI_Request requests[], int *index, MPI_Status * status)
 {
-  std::vector<simgrid::kernel::activity::ActivityImpl*> comms;
+  std::vector<simgrid::kernel::activity::ActivityImplPtr> comms;
   comms.reserve(count);
 
   int i;
@@ -652,8 +652,8 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   }
 
   if (request->action_ != nullptr){
-    simgrid::kernel::activity::CommImpl* sync_comm =
-        static_cast<simgrid::kernel::activity::CommImpl*>(request->action_);
+    simgrid::kernel::activity::CommImplPtr sync_comm =
+        boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(request->action_);
     MPI_Request req                            = static_cast<MPI_Request>(sync_comm->src_data);
     *flag = 1;
     if(status != MPI_STATUS_IGNORE && (req->flags_ & PREPARED) == 0) {

@@ -17,8 +17,20 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
   class ActivityImpl;
+  using ActivityImplPtr = boost::intrusive_ptr<ActivityImpl>;
   XBT_PUBLIC(void) intrusive_ptr_add_ref(ActivityImpl* activity);
   XBT_PUBLIC(void) intrusive_ptr_release(ActivityImpl* activity);
+
+  class CommImpl;
+  using CommImplPtr = boost::intrusive_ptr<CommImpl>;
+  class ExecImpl;
+  using ExecImplPtr = boost::intrusive_ptr<ExecImpl>;
+  class IoImpl;
+  using IoImplPtr = boost::intrusive_ptr<IoImpl>;
+  class RawImpl;
+  using RawImplPtr = boost::intrusive_ptr<RawImpl>;
+  class SleepImpl;
+  using SleepImplPtr = boost::intrusive_ptr<SleepImpl>;
 }
 namespace routing {
   class NetPoint;
@@ -46,7 +58,7 @@ typedef simgrid::s4u::Link s4u_Link;
 typedef simgrid::s4u::File s4u_File;
 typedef simgrid::s4u::Storage s4u_Storage;
 typedef simgrid::s4u::NetZone s4u_NetZone;
-typedef simgrid::kernel::activity::ActivityImpl* smx_activity_t;
+typedef boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> smx_activity_t;
 typedef simgrid::kernel::routing::NetPoint routing_NetPoint;
 typedef simgrid::surf::Resource surf_Resource;
 typedef simgrid::trace_mgr::trace tmgr_Trace;

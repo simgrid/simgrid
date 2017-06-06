@@ -14,14 +14,15 @@ namespace kernel {
 namespace activity {
 
   /** Used to implement mutexes, semaphores and conditions */
-  XBT_PUBLIC_CLASS Raw : public ActivityImpl {
-  public:
-    ~Raw() override;
-    void suspend() override;
-    void resume() override;
-    void post() override;
+XBT_PUBLIC_CLASS RawImpl : public ActivityImpl
+{
+public:
+  ~RawImpl() override;
+  void suspend() override;
+  void resume() override;
+  void post() override;
 
-    surf_action_t sleep = nullptr;
+  surf_action_t sleep = nullptr;
   };
 
 }}} // namespace simgrid::kernel::activity

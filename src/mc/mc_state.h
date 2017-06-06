@@ -24,7 +24,7 @@ enum class PatternCommunicationType {
 
 struct PatternCommunication {
   int num = 0;
-  smx_activity_t comm_addr;
+  simgrid::kernel::activity::CommImpl* comm_addr;
   PatternCommunicationType type = PatternCommunicationType::send;
   unsigned long src_proc = 0;
   unsigned long dst_proc = 0;

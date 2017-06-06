@@ -53,7 +53,7 @@ void MailboxImpl::setReceiver(s4u::ActorPtr actor)
 /** @brief Pushes a communication activity into a mailbox
  *  @param comm What to add
  */
-void MailboxImpl::push(activity::CommImpl* comm)
+void MailboxImpl::push(activity::CommImplPtr comm)
 {
   this->comm_queue.push_back(comm);
   comm->mbox = this;
@@ -64,7 +64,8 @@ void MailboxImpl::push(activity::CommImpl* comm)
  */
 void MailboxImpl::remove(smx_activity_t activity)
 {
-  simgrid::kernel::activity::CommImpl* comm = static_cast<simgrid::kernel::activity::CommImpl*>(activity);
+  simgrid::kernel::activity::CommImplPtr comm =
+      boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(activity);
 
   comm->mbox = nullptr;
   for (auto it = this->comm_queue.begin(); it != this->comm_queue.end(); it++)

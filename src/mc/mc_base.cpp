@@ -79,7 +79,7 @@ bool request_is_enabled(smx_simcall_t req)
   {
     /* FIXME: check also that src and dst processes are not suspended */
     simgrid::kernel::activity::CommImpl* act =
-        static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__get__comm(req));
+        static_cast<simgrid::kernel::activity::CommImpl*>(&*simcall_comm_wait__get__comm(req));
 
 #if SIMGRID_HAVE_MC
     // Fetch from MCed memory:
@@ -107,7 +107,7 @@ bool request_is_enabled(smx_simcall_t req)
   case SIMCALL_COMM_WAITANY: {
     xbt_dynar_t comms;
     simgrid::kernel::activity::CommImpl* act =
-        static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__get__comm(req));
+        static_cast<simgrid::kernel::activity::CommImpl*>(&*simcall_comm_wait__get__comm(req));
 
 #if SIMGRID_HAVE_MC
     s_xbt_dynar_t comms_buffer;

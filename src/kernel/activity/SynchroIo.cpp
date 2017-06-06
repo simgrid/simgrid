@@ -7,19 +7,19 @@
 #include "src/surf/surf_interface.hpp"
 #include "src/simix/smx_private.h"
 
-void simgrid::kernel::activity::Io::suspend()
+void simgrid::kernel::activity::IoImpl::suspend()
 {
   if (surf_io)
     surf_io->suspend();
 }
 
-void simgrid::kernel::activity::Io::resume()
+void simgrid::kernel::activity::IoImpl::resume()
 {
   if (surf_io)
     surf_io->resume();
 }
 
-void simgrid::kernel::activity::Io::post()
+void simgrid::kernel::activity::IoImpl::post()
 {
   for (smx_simcall_t simcall : simcalls) {
     switch (simcall->call) {

@@ -177,7 +177,8 @@ s4u::CommPtr Comm::recv_async(MailboxPtr dest, void** data)
 
 void Comm::cancel()
 {
-  simgrid::kernel::activity::CommImpl* commPimpl = static_cast<simgrid::kernel::activity::CommImpl*>(pimpl_);
+  simgrid::kernel::activity::CommImplPtr commPimpl =
+      boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(pimpl_);
   commPimpl->cancel();
 }
 

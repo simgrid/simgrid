@@ -215,7 +215,8 @@ smx_activity_t SIMIX_execution_parallel_start(const char* name, int host_nb, sg_
 void SIMIX_execution_cancel(smx_activity_t synchro)
 {
   XBT_DEBUG("Cancel synchro %p", synchro);
-  simgrid::kernel::activity::ExecImpl* exec = static_cast<simgrid::kernel::activity::ExecImpl*>(synchro);
+  simgrid::kernel::activity::ExecImplPtr exec =
+      boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro);
 
   if (exec->surf_exec)
     exec->surf_exec->cancel();
@@ -223,21 +224,24 @@ void SIMIX_execution_cancel(smx_activity_t synchro)
 
 void SIMIX_execution_set_priority(smx_activity_t synchro, double priority)
 {
-  simgrid::kernel::activity::ExecImpl* exec = static_cast<simgrid::kernel::activity::ExecImpl*>(synchro);
+  simgrid::kernel::activity::ExecImplPtr exec =
+      boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro);
   if(exec->surf_exec)
     exec->surf_exec->setPriority(priority);
 }
 
 void SIMIX_execution_set_bound(smx_activity_t synchro, double bound)
 {
-  simgrid::kernel::activity::ExecImpl* exec = static_cast<simgrid::kernel::activity::ExecImpl*>(synchro);
+  simgrid::kernel::activity::ExecImplPtr exec =
+      boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro);
   if(exec->surf_exec)
     static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)->setBound(bound);
 }
 
 void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_activity_t synchro)
 {
-  simgrid::kernel::activity::ExecImpl* exec = static_cast<simgrid::kernel::activity::ExecImpl*>(synchro);
+  simgrid::kernel::activity::ExecImplPtr exec =
+      boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro);
   XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro, (int)synchro->state);
 
   /* Associate this simcall to the synchro */
@@ -256,7 +260,7 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_activity_t synchr
     SIMIX_execution_finish(exec);
 }
 
-void SIMIX_execution_finish(simgrid::kernel::activity::ExecImpl* exec)
+void SIMIX_execution_finish(simgrid::kernel::activity::ExecImplPtr exec)
 {
   for (smx_simcall_t simcall : exec->simcalls) {
     switch (exec->state) {
@@ -304,13 +308,15 @@ void SIMIX_set_category(smx_activity_t synchro, const char *category)
   if (synchro->state != SIMIX_RUNNING)
     return;
 
-  simgrid::kernel::activity::ExecImpl* exec = dynamic_cast<simgrid::kernel::activity::ExecImpl*>(synchro);
+  simgrid::kernel::activity::ExecImplPtr exec =
+      boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro);
   if (exec != nullptr) {
     exec->surf_exec->setCategory(category);
     return;
   }
 
-  simgrid::kernel::activity::CommImpl* comm = dynamic_cast<simgrid::kernel::activity::CommImpl*>(synchro);
+  simgrid::kernel::activity::CommImplPtr comm =
+      boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
   if (comm != nullptr) {
     comm->surf_comm->setCategory(category);
   }
