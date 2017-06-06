@@ -24,8 +24,8 @@ XBT_PUBLIC_CLASS Activity {
   friend void intrusive_ptr_add_ref(Comm * c);
 
 protected:
-  Activity();
-  virtual ~Activity();
+  Activity()  = default;
+  ~Activity() = default;
 
 public:
   Activity(Activity const&) = delete;

@@ -117,13 +117,17 @@ void Comm::wait() {
     }
   }
   state_ = finished;
+  if (pimpl_)
+    pimpl_->unref();
 }
+
 void Comm::wait(double timeout) {
   xbt_assert(state_ == started || state_ == inited);
 
   if (state_ == started) {
     simcall_comm_wait(pimpl_, timeout);
     state_ = finished;
+    pimpl_->unref();
     return;
   }
 
@@ -139,6 +143,8 @@ void Comm::wait(double timeout) {
         userData_, timeout, rate_);
   }
   state_ = finished;
+  if (pimpl_)
+    pimpl_->unref();
 }
 
 void Comm::send_detached(MailboxPtr dest, void* data, int simulatedSize)
@@ -150,6 +156,7 @@ void Comm::send_detached(MailboxPtr dest, void* data, int simulatedSize)
   res->detached_    = true;
   res->start();
 }
+
 s4u::CommPtr Comm::send_async(MailboxPtr dest, void* data, int simulatedSize)
 {
   s4u::CommPtr res = CommPtr(s4u::Comm::send_init(dest));
@@ -173,6 +180,7 @@ void Comm::cancel()
   simgrid::kernel::activity::CommImpl* commPimpl = static_cast<simgrid::kernel::activity::CommImpl*>(pimpl_);
   commPimpl->cancel();
 }
+
 bool Comm::test() {
   xbt_assert(state_ == inited || state_ == started || state_ == finished);
   
@@ -185,6 +193,7 @@ bool Comm::test() {
   
   if(simcall_comm_test(pimpl_)){
     state_ = finished;
+    pimpl_->unref();
     return true;
   }
   return false;

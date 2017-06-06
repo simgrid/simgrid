@@ -129,7 +129,6 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx
 
     other_comm->state = SIMIX_READY;
     other_comm->type = SIMIX_COMM_READY;
-
   }
   src_proc->comms.push_back(other_comm);
 

@@ -46,7 +46,6 @@ namespace activity {
     void ref();
     /** @brief Reduces the refcount */
     void unref();
-
   private:
     std::atomic_int_fast32_t refcount_{1};
   };
