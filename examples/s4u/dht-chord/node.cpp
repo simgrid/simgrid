@@ -120,18 +120,20 @@ void Node::notifyAndQuit()
     }
   }
 
-  // send the SUCCESSOR_LEAVING to our predecessor
-  ChordMessage* succ_msg = new ChordMessage(SUCCESSOR_LEAVING);
-  succ_msg->request_id   = fingers_[0];
-  succ_msg->answer_to    = mailbox_;
-  XBT_DEBUG("Sending a 'SUCCESSOR_LEAVING' to my predecessor %d", pred_id_);
+  if (pred_id_ != -1) {
+    // send the SUCCESSOR_LEAVING to our predecessor (only if I have one)
+    ChordMessage* succ_msg = new ChordMessage(SUCCESSOR_LEAVING);
+    succ_msg->request_id   = fingers_[0];
+    succ_msg->answer_to    = mailbox_;
+    XBT_DEBUG("Sending a 'SUCCESSOR_LEAVING' to my predecessor %d", pred_id_);
 
-  try {
-    simgrid::s4u::this_actor::send(simgrid::s4u::Mailbox::byName(std::to_string(pred_id_)), succ_msg, 10, timeout);
-  } catch (xbt_ex& e) {
-    if (e.category == timeout_error) {
-      XBT_DEBUG("Timeout expired when sending a 'SUCCESSOR_LEAVING' to my predecessor %d", pred_id_);
-      delete succ_msg;
+    try {
+      simgrid::s4u::this_actor::send(simgrid::s4u::Mailbox::byName(std::to_string(pred_id_)), succ_msg, 10, timeout);
+    } catch (xbt_ex& e) {
+      if (e.category == timeout_error) {
+        XBT_DEBUG("Timeout expired when sending a 'SUCCESSOR_LEAVING' to my predecessor %d", pred_id_);
+        delete succ_msg;
+      }
     }
   }
 }
