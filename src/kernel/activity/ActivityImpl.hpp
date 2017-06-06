@@ -35,7 +35,8 @@ namespace activity {
     void ref();
     /** @brief Reduces the refcount */
     void unref();
-    // boost::intrusive_ptr<Activity> support:
+
+     // boost::intrusive_ptr<Activity> support:
     friend void intrusive_ptr_add_ref(ActivityImpl * activity);
     friend void intrusive_ptr_release(ActivityImpl * activity);
 

@@ -81,15 +81,14 @@ int SIMIX_process_has_pending_comms(smx_actor_t process) {
  */
 void SIMIX_process_cleanup(smx_actor_t process)
 {
-  XBT_DEBUG("Cleanup process %s (%p), waiting synchro %p",
-      process->name.c_str(), process, process->waiting_synchro);
+  XBT_DEBUG("Cleanup process %s (%p), waiting synchro %p", process->name.c_str(), process, process->waiting_synchro);
 
   process->finished = true;
   SIMIX_process_on_exit_runall(process);
 
   /* Unregister from the kill timer if any */
   if (process->kill_timer != nullptr)
-      SIMIX_timer_remove(process->kill_timer);
+    SIMIX_timer_remove(process->kill_timer);
 
   xbt_os_mutex_acquire(simix_global->mutex);
 
@@ -100,7 +99,6 @@ void SIMIX_process_cleanup(smx_actor_t process)
 
     /* make sure no one will finish the comm after this process is destroyed,
      * because src_proc or dst_proc would be an invalid pointer */
-    comm->cancel();
 
     if (comm->src_proc == process) {
       XBT_DEBUG("Found an unfinished send comm %p (detached = %d), state %d, src = %p, dst = %p",
@@ -126,6 +124,7 @@ void SIMIX_process_cleanup(smx_actor_t process)
     }
     process->comms.pop_front();
     synchro = static_cast<smx_activity_t>(process->comms.front());
+    comm->cancel();
   }
 
   XBT_DEBUG("%p should not be run anymore",process);
