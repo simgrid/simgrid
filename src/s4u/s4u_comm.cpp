@@ -88,6 +88,7 @@ void Comm::start() {
         matchFunction_, cleanFunction_, copyDataFunction_,
         userData_, detached_);
   } else if (dstBuff_ != nullptr) { // Receiver side
+    xbt_assert(not detached_, "Receive cannot be detached");
     pimpl_ = simcall_comm_irecv(receiver_, mailbox_->getImpl(), dstBuff_, &dstBuffSize_,
         matchFunction_, copyDataFunction_,
         userData_, rate_);
