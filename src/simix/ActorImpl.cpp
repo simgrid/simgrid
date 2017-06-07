@@ -279,7 +279,7 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
   if (host->extension<simgrid::simix::Host>() == nullptr)
     host->extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
 
-  /* Add the process to it's host process list */
+  /* Add the process to its host process list */
   xbt_swag_insert(process, host->extension<simgrid::simix::Host>()->process_list);
 
   XBT_DEBUG("Start context '%s'", process->name.c_str());
@@ -288,6 +288,7 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
   simix_global->process_list[process->pid] = process;
   XBT_DEBUG("Inserting %s(%s) in the to_run list", process->cname(), host->cname());
   xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, process);
+  intrusive_ptr_add_ref(process);
 
   /* Tracing the process creation */
   TRACE_msg_process_create(process->cname(), process->pid, process->host);
