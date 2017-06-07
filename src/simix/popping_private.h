@@ -144,13 +144,17 @@ template <class T> inline T* unmarshal_raw(type<T*>, u_smx_scalar const& simcall
 template <class T>
 inline void marshal(type<boost::intrusive_ptr<T>>, u_smx_scalar& simcall, boost::intrusive_ptr<T> value)
 {
-  intrusive_ptr_add_ref(&*value);
-  simcall.dp = static_cast<void*>(&*value);
+  if (value.get() == nullptr) { // Sometimes we return nullptr in an intrusive_ptr...
+    simcall.dp = nullptr;
+  } else {
+    intrusive_ptr_add_ref(&*value);
+    simcall.dp = static_cast<void*>(&*value);
+  }
 }
 template <class T> inline boost::intrusive_ptr<T> unmarshal(type<boost::intrusive_ptr<T>>, u_smx_scalar const& simcall)
 {
+  // refcount was already increased during the marshaling, thus the "false" as last argument
   boost::intrusive_ptr<T> res = boost::intrusive_ptr<T>(static_cast<T*>(simcall.dp), false);
-  // intrusive_ptr_release(&*res);
   return res;
 }
 template <class T> inline T* unmarshal_raw(type<boost::intrusive_ptr<T>>, u_smx_scalar const& simcall)
