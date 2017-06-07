@@ -1051,6 +1051,7 @@ teshsuite/smpi/macro-partial-shared-communication/macro-partial-shared-communica
 teshsuite/smpi/type-struct/type-struct
 teshsuite/smpi/type-vector/type-vector
 teshsuite/s4u/actor/actor
+teshsuite/s4u/comm-pt2pt/comm-pt2pt
 teshsuite/s4u/concurrent_rw/concurrent_rw
 teshsuite/s4u/host_on_off_wait/host_on_off_wait
 teshsuite/s4u/listen_async/listen_async
