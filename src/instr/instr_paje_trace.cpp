@@ -845,6 +845,11 @@ void ResetStateEvent::print() {
   }
 }
 
+StartLinkEvent::~StartLinkEvent()
+{
+  free(value);
+  free(key);
+}
 StartLinkEvent::StartLinkEvent (double timestamp, container_t container,
     type_t type, container_t sourceContainer, const char *value, const char *key)
   : StartLinkEvent(timestamp, container, type, sourceContainer, value, key, -1)
