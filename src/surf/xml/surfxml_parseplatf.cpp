@@ -29,92 +29,42 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 
 SG_BEGIN_DECL()
 
-/*
- *  Allow the cluster tag to mess with the parsing buffer.
- * (this will probably become obsolete once the cluster tag do not mess with the parsing callbacks directly)
- */
-
-/* This buffer is used to store the original buffer before substituting it by out own buffer. Useful for the cluster tag */
-static std::vector<char*> surfxml_bufferstack_stack;
-int surfxml_bufferstack_size = 2048;
-
-static char *old_buff = nullptr;
-
-XBT_IMPORT_NO_EXPORT(unsigned int) surfxml_buffer_stack_stack_ptr;
-XBT_IMPORT_NO_EXPORT(unsigned int) surfxml_buffer_stack_stack[1024];
-
-void surfxml_bufferstack_push(int new_one)
-{
-  if (not new_one)
-    old_buff = surfxml_bufferstack;
-  else {
-    surfxml_bufferstack_stack.push_back(surfxml_bufferstack);
-    surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
-  }
-}
-
-void surfxml_bufferstack_pop(int new_one)
-{
-  if (not new_one)
-    surfxml_bufferstack = old_buff;
-  else {
-    free(surfxml_bufferstack);
-    surfxml_bufferstack = surfxml_bufferstack_stack.back();
-    surfxml_bufferstack_stack.pop_back();
-  }
-}
-
-/*
- * Trace related stuff
- */
+/* Trace related stuff */
 
 xbt_dict_t traces_set_list = nullptr;
-XBT_PRIVATE xbt_dict_t trace_connect_list_host_avail = nullptr;
-XBT_PRIVATE xbt_dict_t trace_connect_list_host_speed = nullptr;
-XBT_PRIVATE xbt_dict_t trace_connect_list_link_avail = nullptr;
-XBT_PRIVATE xbt_dict_t trace_connect_list_link_bw = nullptr;
-XBT_PRIVATE xbt_dict_t trace_connect_list_link_lat = nullptr;
+XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_host_avail;
+XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_host_speed;
+XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link_avail;
+XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link_bw;
+XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link_lat;
 
 void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
 {
   xbt_assert(xbt_dict_get_or_null(traces_set_list, trace_connect->trace),
-              "Cannot connect trace %s to %s: trace unknown",
-              trace_connect->trace,
-              trace_connect->element);
+             "Cannot connect trace %s to %s: trace unknown", trace_connect->trace, trace_connect->element);
 
   switch (trace_connect->kind) {
   case SURF_TRACE_CONNECT_KIND_HOST_AVAIL:
-    xbt_dict_set(trace_connect_list_host_avail,
-        trace_connect->trace,
-        xbt_strdup(trace_connect->element), nullptr);
+    trace_connect_list_host_avail.insert({trace_connect->trace, trace_connect->element});
     break;
   case SURF_TRACE_CONNECT_KIND_SPEED:
-    xbt_dict_set(trace_connect_list_host_speed, trace_connect->trace,
-        xbt_strdup(trace_connect->element), nullptr);
+    trace_connect_list_host_speed.insert({trace_connect->trace, trace_connect->element});
     break;
   case SURF_TRACE_CONNECT_KIND_LINK_AVAIL:
-    xbt_dict_set(trace_connect_list_link_avail,
-        trace_connect->trace,
-        xbt_strdup(trace_connect->element), nullptr);
+    trace_connect_list_link_avail.insert({trace_connect->trace, trace_connect->element});
     break;
   case SURF_TRACE_CONNECT_KIND_BANDWIDTH:
-    xbt_dict_set(trace_connect_list_link_bw,
-        trace_connect->trace,
-        xbt_strdup(trace_connect->element), nullptr);
+    trace_connect_list_link_bw.insert({trace_connect->trace, trace_connect->element});
     break;
   case SURF_TRACE_CONNECT_KIND_LATENCY:
-    xbt_dict_set(trace_connect_list_link_lat, trace_connect->trace,
-        xbt_strdup(trace_connect->element), nullptr);
+    trace_connect_list_link_lat.insert({trace_connect->trace, trace_connect->element});
     break;
   default:
-  surf_parse_error("Cannot connect trace %s to %s: kind of trace unknown",
-        trace_connect->trace, trace_connect->element);
+    surf_parse_error("Cannot connect trace %s to %s: kind of trace unknown", trace_connect->trace,
+                     trace_connect->element);
     break;
   }
 }
-
-
-/* ***************************************** */
 
 static int after_config_done;
 void parse_after_config() {
@@ -163,76 +113,63 @@ void parse_platform_file(const char *file)
     int parse_status;
 
     /* init the flex parser */
-    surfxml_buffer_stack_stack_ptr = 1;
-    surfxml_buffer_stack_stack[0] = 0;
     after_config_done = 0;
     surf_parse_open(file);
 
     traces_set_list = xbt_dict_new_homogeneous(nullptr);
-    trace_connect_list_host_avail = xbt_dict_new_homogeneous(free);
-    trace_connect_list_host_speed = xbt_dict_new_homogeneous(free);
-    trace_connect_list_link_avail = xbt_dict_new_homogeneous(free);
-    trace_connect_list_link_bw = xbt_dict_new_homogeneous(free);
-    trace_connect_list_link_lat = xbt_dict_new_homogeneous(free);
 
     /* Do the actual parsing */
     parse_status = surf_parse();
 
     /* connect all traces relative to hosts */
-    xbt_dict_cursor_t cursor = nullptr;
-    char* trace_name;
-    char* elm;
+    for (auto elm : trace_connect_list_host_avail) {
+      tmgr_trace_t trace = (tmgr_trace_t)xbt_dict_get_or_null(traces_set_list, elm.first.c_str());
+      xbt_assert(trace, "Trace %s undefined", elm.first.c_str());
 
-    xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
-      tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-      xbt_assert(trace, "Trace %s undefined", trace_name);
-
-      simgrid::s4u::Host *host = sg_host_by_name(elm);
-      xbt_assert(host, "Host %s undefined", elm);
+      simgrid::s4u::Host* host = sg_host_by_name(elm.second.c_str());
+      xbt_assert(host, "Host %s undefined", elm.second.c_str());
       simgrid::surf::Cpu *cpu = host->pimpl_cpu;
 
       cpu->setStateTrace(trace);
     }
-    xbt_dict_foreach(trace_connect_list_host_speed, cursor, trace_name, elm) {
-      tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-      xbt_assert(trace, "Trace %s undefined", trace_name);
 
-      simgrid::s4u::Host *host = sg_host_by_name(elm);
-      xbt_assert(host, "Host %s undefined", elm);
+    for (auto elm : trace_connect_list_host_speed) {
+      tmgr_trace_t trace = (tmgr_trace_t)xbt_dict_get_or_null(traces_set_list, elm.first.c_str());
+      xbt_assert(trace, "Trace %s undefined", elm.first.c_str());
+
+      simgrid::s4u::Host* host = sg_host_by_name(elm.second.c_str());
+      xbt_assert(host, "Host %s undefined", elm.second.c_str());
       simgrid::surf::Cpu *cpu = host->pimpl_cpu;
 
       cpu->setSpeedTrace(trace);
     }
-    xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
-      tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-      xbt_assert(trace, "Trace %s undefined", trace_name);
-      sg_link_t link = simgrid::s4u::Link::byName(elm);
-      xbt_assert(link, "Link %s undefined", elm);
+
+    for (auto elm : trace_connect_list_link_avail) {
+      tmgr_trace_t trace = (tmgr_trace_t)xbt_dict_get_or_null(traces_set_list, elm.first.c_str());
+      xbt_assert(trace, "Trace %s undefined", elm.first.c_str());
+
+      sg_link_t link = simgrid::s4u::Link::byName(elm.second.c_str());
+      xbt_assert(link, "Link %s undefined", elm.second.c_str());
       link->setStateTrace(trace);
     }
 
-    xbt_dict_foreach(trace_connect_list_link_bw, cursor, trace_name, elm) {
-      tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-      xbt_assert(trace, "Trace %s undefined", trace_name);
-      sg_link_t link = simgrid::s4u::Link::byName(elm);
-      xbt_assert(link, "Link %s undefined", elm);
+    for (auto elm : trace_connect_list_link_bw) {
+      tmgr_trace_t trace = (tmgr_trace_t)xbt_dict_get_or_null(traces_set_list, elm.first.c_str());
+      xbt_assert(trace, "Trace %s undefined", elm.first.c_str());
+      sg_link_t link = simgrid::s4u::Link::byName(elm.second.c_str());
+      xbt_assert(link, "Link %s undefined", elm.second.c_str());
       link->setBandwidthTrace(trace);
     }
 
-    xbt_dict_foreach(trace_connect_list_link_lat, cursor, trace_name, elm) {
-      tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-      xbt_assert(trace, "Trace %s undefined", trace_name);
-      sg_link_t link = simgrid::s4u::Link::byName(elm);
-      xbt_assert(link, "Link %s undefined", elm);
+    for (auto elm : trace_connect_list_link_lat) {
+      tmgr_trace_t trace = (tmgr_trace_t)xbt_dict_get_or_null(traces_set_list, elm.first.c_str());
+      xbt_assert(trace, "Trace %s undefined", elm.first.c_str());
+      sg_link_t link = simgrid::s4u::Link::byName(elm.second.c_str());
+      xbt_assert(link, "Link %s undefined", elm.second.c_str());
       link->setLatencyTrace(trace);
     }
 
     /* Free my data */
-    xbt_dict_free(&trace_connect_list_host_avail);
-    xbt_dict_free(&trace_connect_list_host_speed);
-    xbt_dict_free(&trace_connect_list_link_avail);
-    xbt_dict_free(&trace_connect_list_link_bw);
-    xbt_dict_free(&trace_connect_list_link_lat);
     xbt_dict_free(&traces_set_list);
 
     surf_parse_close();
