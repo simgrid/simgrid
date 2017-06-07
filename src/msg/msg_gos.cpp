@@ -491,7 +491,6 @@ int MSG_comm_test(msg_comm_t comm)
     if (finished && comm->task_received != nullptr) {
       /* I am the receiver */
       (*comm->task_received)->simdata->setNotUsed();
-      comm->s_comm->unref();
     }
   }
   catch (xbt_ex& e) {
@@ -559,7 +558,6 @@ int MSG_comm_testany(xbt_dynar_t comms)
     if (status == MSG_OK && comm->task_received != nullptr) {
       /* I am the receiver */
       (*comm->task_received)->simdata->setNotUsed();
-      comm->s_comm->unref();
     }
   }
 
@@ -588,7 +586,6 @@ msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
 {
   try {
     simcall_comm_wait(comm->s_comm, timeout);
-    comm->s_comm->unref();
 
     if (comm->task_received != nullptr) {
       /* I am the receiver */
@@ -673,7 +670,6 @@ int MSG_comm_waitany(xbt_dynar_t comms)
   if (comm->task_received != nullptr) {
     /* I am the receiver */
     (*comm->task_received)->simdata->setNotUsed();
-    comm->s_comm->unref();
   }
 
   return finished_index;
@@ -802,7 +798,6 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
       simcall_set_category(comm, task->category);
     t_simdata->comm = boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(comm);
     simcall_comm_wait(comm, timeout);
-    comm->unref();
   }
   catch (xbt_ex& e) {
     switch (e.category) {

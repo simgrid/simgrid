@@ -185,7 +185,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
   if (call_type == MC_CALL_TYPE_SEND) {
     /* Create comm pattern */
     pattern->type = simgrid::mc::PatternCommunicationType::send;
-    pattern->comm_addr = &*simcall_comm_isend__get__result(request);
+    pattern->comm_addr = static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_isend__getraw__result(request));
 
     simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_synchro;
     mc_model_checker->process().read(temp_synchro,
@@ -223,7 +223,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
     }
   } else if (call_type == MC_CALL_TYPE_RECV) {
     pattern->type = simgrid::mc::PatternCommunicationType::receive;
-    pattern->comm_addr = simcall_comm_irecv__get__result(request);
+    pattern->comm_addr = static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_irecv__getraw__result(request));
 
     simgrid::smpi::Request mpi_request;
     mc_model_checker->process().read(&mpi_request,

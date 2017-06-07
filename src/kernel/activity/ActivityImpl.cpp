@@ -5,6 +5,8 @@
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 
+XBT_LOG_EXTERNAL_CATEGORY(simix_network);
+
 namespace simgrid {
 namespace kernel {
 namespace activity {
@@ -14,17 +16,22 @@ ActivityImpl::~ActivityImpl() = default;
 
 void ActivityImpl::ref()
 {
-  // Atomic operation! Do not split in two instructions!
   xbt_assert(refcount_ != 0);
   refcount_++;
+  XBT_CDEBUG(simix_network, "%p->refcount++ ~> %d", this, (int)refcount_);
+  if (XBT_LOG_ISENABLED(simix_network, xbt_log_priority_trace))
+    xbt_backtrace_display_current();
 }
 
 void ActivityImpl::unref()
 {
+  XBT_CDEBUG(simix_network, "%p->refcount-- ~> %d", this, ((int)refcount_) - 1);
   xbt_assert(refcount_ > 0,
              "This activity has a negative refcount! You can only call test() or wait() once per activity.");
   refcount_--;
-  if (refcount_ == 0)
+  if (XBT_LOG_ISENABLED(simix_network, xbt_log_priority_trace))
+    xbt_backtrace_display_current();
+  if (refcount_ <= 0)
     delete this;
 }
 

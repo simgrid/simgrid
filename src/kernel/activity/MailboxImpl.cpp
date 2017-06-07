@@ -55,8 +55,8 @@ void MailboxImpl::setReceiver(s4u::ActorPtr actor)
  */
 void MailboxImpl::push(activity::CommImplPtr comm)
 {
-  this->comm_queue.push_back(comm);
   comm->mbox = this;
+  this->comm_queue.push_back(std::move(comm));
 }
 
 /** @brief Removes a communication activity from a mailbox
@@ -67,13 +67,15 @@ void MailboxImpl::remove(smx_activity_t activity)
   simgrid::kernel::activity::CommImplPtr comm =
       boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(activity);
 
+  xbt_assert(comm->mbox == this, "Comm %p is in mailbox %s, not mailbox %s", comm,
+             (comm->mbox ? comm->mbox->name_ : "(null)"), this->name_);
   comm->mbox = nullptr;
   for (auto it = this->comm_queue.begin(); it != this->comm_queue.end(); it++)
     if (*it == comm) {
       this->comm_queue.erase(it);
       return;
     }
-  xbt_die("Cannot remove the comm %p that is not part of the mailbox %s", comm, this->name_);
+  xbt_die("Comm %p not found in mailbox %s", comm, this->name_);
 }
 }
 }

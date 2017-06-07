@@ -23,8 +23,6 @@ Comm::~Comm()
       XBT_INFO("pimpl_ is null");
     xbt_backtrace_display_current();
   }
-  if (pimpl_)
-    pimpl_->unref();
 }
 
 s4u::CommPtr Comm::send_init(s4u::MailboxPtr chan)
@@ -117,8 +115,6 @@ void Comm::wait() {
     }
   }
   state_ = finished;
-  if (pimpl_)
-    pimpl_->unref();
 }
 
 void Comm::wait(double timeout) {
@@ -127,7 +123,6 @@ void Comm::wait(double timeout) {
   if (state_ == started) {
     simcall_comm_wait(pimpl_, timeout);
     state_ = finished;
-    pimpl_->unref();
     return;
   }
 
@@ -143,8 +138,6 @@ void Comm::wait(double timeout) {
         userData_, timeout, rate_);
   }
   state_ = finished;
-  if (pimpl_)
-    pimpl_->unref();
 }
 
 void Comm::send_detached(MailboxPtr dest, void* data, int simulatedSize)
@@ -194,7 +187,6 @@ bool Comm::test() {
 
   if(simcall_comm_test(pimpl_)){
     state_ = finished;
-    pimpl_->unref();
     return true;
   }
   return false;

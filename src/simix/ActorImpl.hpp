@@ -70,7 +70,8 @@ public:
 
   /* Refcounting */
 private:
-  std::atomic_int_fast32_t refcount_{1};
+  std::atomic_int_fast32_t refcount_{0};
+
 public:
   friend void intrusive_ptr_add_ref(ActorImpl* process)
   {
