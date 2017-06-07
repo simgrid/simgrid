@@ -37,6 +37,8 @@ namespace routing {
 }
 }
 namespace simix {
+  class ActorImpl;
+  using ActorImplPtr = boost::intrusive_ptr<ActorImpl>;
   class Host;
 }
 namespace surf {
