@@ -1,6 +1,6 @@
 #! ./tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/cloud-sharing$EXEEXT --log=no_loc ${srcdir:=.}/../../../examples/platforms/cluster.xml
+$ $SG_TEST_EXENV ${bindir:=.}/cloud-sharing$EXEEXT --log=no_loc ${srcdir:=.}/../../../examples/platforms/cloud-sharing.xml
 > [node-0.acme.org:master:(1) 0.000000] [msg_test/INFO] # TEST ON SINGLE-CORE PMs
 > [node-0.acme.org:master:(1) 0.000000] [msg_test/INFO] ## Test 1 (started): check computation on normal PMs
 > [node-0.acme.org:master:(1) 0.000000] [msg_test/INFO] ### Put a task on a PM

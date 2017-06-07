@@ -104,7 +104,6 @@ static int master_main(int argc, char* argv[])
   XBT_INFO("# TEST ON TWO-CORE PMs");
   
   pm0 = MSG_host_by_name("node-0.acme2.org");
-  pm1 = MSG_host_by_name("node-1.acme2.org");
   xbt_assert(pm0, "Host node-0.acme2.org does not seem to exist");
   
   XBT_INFO("## Test 4 (started): check computation on 2 cores PMs");
@@ -287,7 +286,6 @@ static int master_main(int argc, char* argv[])
   XBT_INFO("# TEST ON FOUR-CORE PMs AND TWO-CORE VMs");
   
   pm0 = MSG_host_by_name("node-0.acme4.org");
-  pm1 = MSG_host_by_name("node-1.acme4.org");
   xbt_assert(pm0, "Host node-0.acme4.org does not seem to exist");
   
   XBT_INFO("## Test 9 (started): check impact of a single VM");
@@ -429,7 +427,7 @@ int main(int argc, char* argv[])
   MSG_init(&argc, argv);
 
   /* load the platform file */
-  const char* platform = "../../platforms/cluster.xml";
+  const char* platform = "../../../platforms/cloud-sharing.xml";
   if (argc == 2)
     platform = argv[1];
   MSG_create_environment(platform);

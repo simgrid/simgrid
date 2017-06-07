@@ -11,11 +11,6 @@
         |                                |
     node-0.acme.org                  node-99.acme.org
   -->
-  
- 	<AS id="AS_acme" routing="Full">
-  		<cluster id="acme" prefix="node-" radical="0-99" suffix=".acme.org" speed="1Gf" bw="125MBps" lat="50us" bb_bw="2.25GBps"  bb_lat="500us" core="1" />
-  		<cluster id="acme2" prefix="node-" radical="0-99" suffix=".acme2.org" speed="1Gf" bw="125MBps" lat="50us" bb_bw="2.25GBps"  bb_lat="500us" core="2" />
-  		<cluster id="acme4" prefix="node-" radical="0-99" suffix=".acme4.org" speed="1Gf" bw="125MBps" lat="50us" bb_bw="2.25GBps"  bb_lat="500us" core="4" />
-	</AS>
-		   
+  <cluster id="acme" prefix="node-" radical="0-99" suffix=".acme.org" speed="1Gf" bw="125MBps" lat="50us"
+           bb_bw="2.25GBps"  bb_lat="500us"/>
 </platform>
