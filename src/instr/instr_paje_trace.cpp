@@ -847,8 +847,20 @@ void ResetStateEvent::print() {
 
 StartLinkEvent::StartLinkEvent (double timestamp, container_t container,
     type_t type, container_t sourceContainer, const char *value, const char *key)
-  : StartLinkEvent(timestamp, container, type, sourceContainer, value, key, -1)
-{}
+{
+  event_type                              = PAJE_StartLink;
+  this->timestamp = timestamp;
+  this->type = type;
+  this->container = container;
+  this->sourceContainer = sourceContainer;
+  this->value = xbt_strdup(value);
+  this->key = xbt_strdup(key);
+  this->size = -1;
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
+
+  insert_into_buffer (this);
+
+}
 
 StartLinkEvent::StartLinkEvent (double timestamp, container_t container, type_t type, container_t sourceContainer,
                                 const char *value, const char *key, int size)
