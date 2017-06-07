@@ -67,6 +67,7 @@ public:
                                    kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                                    std::vector<surf::LinkImpl*>* link_list)>
       onRouteCreation;
+  static simgrid::xbt::signal<void(NetZone&)> onCreation;
 
 protected:
   std::vector<kernel::routing::NetPoint*>

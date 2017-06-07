@@ -662,8 +662,7 @@ simgrid::s4u::NetZone* sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
   /* set the new current component of the tree */
   current_routing = new_as;
 
-  if (TRACE_is_enabled())
-    sg_instr_AS_begin(AS);
+  simgrid::s4u::NetZone::onCreation(*new_as); // notify the signal
 
   return new_as;
 }
