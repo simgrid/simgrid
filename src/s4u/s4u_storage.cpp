@@ -11,10 +11,10 @@
 
 namespace simgrid {
 namespace s4u {
-std::unordered_map<std::string, Storage*>* allStorages()
+std::map<std::string, Storage*>* allStorages()
 {
   std::unordered_map<std::string, surf::StorageImpl*>* map = surf::StorageImpl::storagesMap();
-  std::unordered_map<std::string, Storage*>* res           = new std::unordered_map<std::string, Storage*>;
+  std::map<std::string, Storage*>* res                     = new std::map<std::string, Storage*>;
   for (auto s : *map)
     res->insert({s.first, &(s.second->piface_)}); // Convert each entry into its interface
 

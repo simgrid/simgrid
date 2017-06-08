@@ -17,7 +17,7 @@
 namespace simgrid {
 namespace s4u {
 
-std::unordered_map<std::string, Storage*>* allStorages();
+std::map<std::string, Storage*>* allStorages();
 
 XBT_PUBLIC_CLASS Storage
 {
