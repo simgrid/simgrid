@@ -52,7 +52,7 @@ _find_matching_comm(boost::circular_buffer_space_optimized<smx_activity_t>* dequ
     }
     if (comm->type == type && (match_fun == nullptr || match_fun(this_user_data, other_user_data, comm)) &&
         (not comm->match_fun || comm->match_fun(other_user_data, this_user_data, my_synchro))) {
-      XBT_DEBUG("Found a matching communication synchro %p", comm);
+      XBT_DEBUG("Found a matching communication synchro %p", comm.get());
       if (remove_matching)
         deque->erase(it);
 #if SIMGRID_HAVE_MC
@@ -92,7 +92,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx
                                   void (*copy_data_fun)(smx_activity_t, void*, size_t),// used to copy data if not default one
                           void *data, int detached)
 {
-  XBT_DEBUG("send from %p", mbox);
+  XBT_DEBUG("send from mailbox %p", mbox);
 
   /* Prepare a synchro describing us, so that it gets passed to the user-provided filter of other side */
   simgrid::kernel::activity::CommImplPtr this_comm =
@@ -181,7 +181,7 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
 {
   simgrid::kernel::activity::CommImplPtr this_synchro =
       simgrid::kernel::activity::CommImplPtr(new simgrid::kernel::activity::CommImpl(SIMIX_COMM_RECEIVE));
-  XBT_DEBUG("recv from %p %p. this_synchro=%p", mbox, &mbox->comm_queue, this_synchro);
+  XBT_DEBUG("recv from mbox %p. this_synchro=%p", mbox, this_synchro.get());
 
   simgrid::kernel::activity::CommImplPtr other_comm;
   //communication already done, get it inside the list of completed comms
@@ -214,12 +214,12 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
     other_comm = _find_matching_comm(&mbox->comm_queue, SIMIX_COMM_SEND, match_fun, data, this_synchro,
                                      /*remove_matching*/ true);
 
-    if (not other_comm) {
-      XBT_DEBUG("Receive pushed first %zu", mbox->comm_queue.size());
+    if (other_comm == nullptr) {
+      XBT_DEBUG("Receive pushed first (%zu comm enqueued so far)", mbox->comm_queue.size());
       other_comm = this_synchro;
       mbox->push(this_synchro);
     } else {
-      XBT_DEBUG("Match my %p with the existing %p", this_synchro, other_comm);
+      XBT_DEBUG("Match my %p with the existing %p", this_synchro.get(), other_comm.get());
 
       other_comm->state = SIMIX_READY;
       other_comm->type = SIMIX_COMM_READY;
@@ -286,7 +286,7 @@ smx_activity_t SIMIX_comm_iprobe(smx_actor_t dst_proc, smx_mailbox_t mbox, int t
 void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_activity_t synchro, double timeout)
 {
   /* Associate this simcall to the wait synchro */
-  XBT_DEBUG("simcall_HANDLER_comm_wait, %p", synchro);
+  XBT_DEBUG("simcall_HANDLER_comm_wait, %p", synchro.get());
 
   synchro->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
@@ -461,7 +461,7 @@ static inline void SIMIX_comm_start(smx_activity_t synchro)
     comm->surf_comm->setData(&*synchro);
     comm->state = SIMIX_RUNNING;
 
-    XBT_DEBUG("Starting communication %p from '%s' to '%s' (surf_action: %p)", synchro, sender->cname(),
+    XBT_DEBUG("Starting communication %p from '%s' to '%s' (surf_action: %p)", synchro.get(), sender->cname(),
               receiver->cname(), comm->surf_comm);
 
     /* If a link is failed, detect it immediately */
@@ -534,7 +534,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
       switch (comm->state) {
 
         case SIMIX_DONE:
-          XBT_DEBUG("Communication %p complete!", synchro);
+          XBT_DEBUG("Communication %p complete!", synchro.get());
           SIMIX_comm_copy_data(synchro);
           break;
 
@@ -688,7 +688,7 @@ void SIMIX_comm_copy_data(smx_activity_t synchro)
   if (not comm->src_buff || not comm->dst_buff || comm->copied)
     return;
 
-  XBT_DEBUG("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)", comm,
+  XBT_DEBUG("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)", comm.get(),
             comm->src_proc ? comm->src_proc->host->cname() : "a finished process", comm->src_buff,
             comm->dst_proc ? comm->dst_proc->host->cname() : "a finished process", comm->dst_buff, buff_size);
 
