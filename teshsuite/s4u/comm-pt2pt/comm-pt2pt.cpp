@@ -41,12 +41,12 @@ static void usage(const char* binaryName, const char* defaultSend, const char* d
 static void receiver(std::vector<std::string> args)
 {
   XBT_INFO("Receiver spec: %s", args[0].c_str());
-  for (unsigned int test = 0; test < args[0].size(); test++) {
-    this_actor::sleep_until(test * 5);
+  for (unsigned int test = 1; test <= args[0].size(); test++) {
+    this_actor::sleep_until(test * 5 - 5);
     char* mboxName                = bprintf("Test #%u", test);
     simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(mboxName);
 
-    switch (args[0][test]) {
+    switch (args[0][test - 1]) {
       case 'r':
         XBT_INFO("Test %d: r (regular send)", test);
         simgrid::s4u::this_actor::send(mbox, (void*)mboxName, 42.0);
@@ -77,22 +77,24 @@ static void receiver(std::vector<std::string> args)
         simgrid::s4u::this_actor::dsend(mbox, (void*)mboxName, 42.0);
         break;
       default:
-        xbt_die("Unknown sender spec for test %d: '%c'", test, args[0][test]);
+        xbt_die("Unknown sender spec for test %d: '%c'", test, args[0][test - 1]);
     }
     XBT_INFO("Test %d OK", test);
   }
+  simgrid::s4u::this_actor::sleep_for(0.5);
+  // FIXME: we should test what happens when the process ends before the end of remote comm instead of hiding it
 }
 
 static void sender(std::vector<std::string> args)
 {
   XBT_INFO("Sender spec: %s", args[0].c_str());
-  for (unsigned int test = 0; test < args[0].size(); test++) {
-    this_actor::sleep_until(test * 5);
+  for (unsigned int test = 1; test <= args[0].size(); test++) {
+    this_actor::sleep_until(test * 5 - 5);
     char* mboxName                = bprintf("Test #%u", test);
     simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(mboxName);
     void* received                = nullptr;
 
-    switch (args[0][test]) {
+    switch (args[0][test - 1]) {
       case 'r':
         XBT_INFO("Test %d: r (regular receive)", test);
         received = simgrid::s4u::this_actor::recv(mbox);
@@ -135,7 +137,7 @@ static void sender(std::vector<std::string> args)
         simgrid::s4u::this_actor::irecv(mbox, &received)->wait();
         break;
       default:
-        xbt_die("Unknown receiver spec for test %d: '%c'", test, args[0][test]);
+        xbt_die("Unknown receiver spec for test %d: '%c'", test, args[0][test - 1]);
     }
 
     xbt_assert(strcmp(static_cast<char*>(received), mboxName) == 0);
@@ -143,6 +145,7 @@ static void sender(std::vector<std::string> args)
     xbt_free(mboxName);
     XBT_INFO("Test %d OK", test);
   }
+  simgrid::s4u::this_actor::sleep_for(0.5);
 }
 
 int main(int argc, char* argv[])
