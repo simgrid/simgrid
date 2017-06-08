@@ -235,12 +235,11 @@ void SIMIX_global_init(int *argc, char **argv)
     });
 
     simgrid::surf::storageCreatedCallbacks.connect([](simgrid::surf::StorageImpl* storage) {
-      const char* name = storage->cname();
-      // TODO, create sg_storage_by_name
-      sg_storage_t s = xbt_lib_get_elm_or_null(storage_lib, name);
-      xbt_assert(s != nullptr, "Storage not found for name %s", name);
+      sg_storage_t s = simgrid::s4u::Storage::byName(storage->cname());
+      xbt_assert(s != nullptr, "Storage not found for name %s", storage->cname());
     });
   }
+
   if (not simix_timers)
     simix_timers = xbt_heap_new(8, [](void* p) {
       delete static_cast<smx_timer_t>(p);
