@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <xbt/base.h>
-#include <xbt/lib.h>
 
 #include "StorageImpl.hpp"
 

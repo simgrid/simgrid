@@ -6,7 +6,6 @@
 #include "../surf/StorageImpl.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.hpp"
-#include "xbt/lib.h"
 #include <unordered_map>
 
 namespace simgrid {

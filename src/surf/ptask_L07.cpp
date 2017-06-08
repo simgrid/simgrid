@@ -12,7 +12,6 @@
 #include "ptask_L07.hpp"
 
 #include "cpu_interface.hpp"
-#include "xbt/lib.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);

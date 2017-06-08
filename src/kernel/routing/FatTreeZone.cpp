@@ -11,8 +11,6 @@
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
 
-#include "xbt/lib.h"
-
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 

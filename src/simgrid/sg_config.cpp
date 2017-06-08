@@ -12,7 +12,6 @@
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
 #include "xbt/str.h"
-#include "xbt/lib.h"
 #include "xbt/sysdep.h"
 #include "surf/surf.h"
 #include "surf/maxmin.h"
