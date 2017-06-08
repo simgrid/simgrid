@@ -17,7 +17,7 @@ public:
 
     for (const auto&kv : mounts) {
       const char* mountpoint = kv.first.c_str();
-      simgrid::s4u::Storage &storage = *kv.second;
+      simgrid::s4u::Storage storage = *kv.second;
 
       // Retrieve disk's information
       sg_size_t free_size = storage.sizeFree();
@@ -55,7 +55,7 @@ public:
     write = file->write(100000);  // Write 100,000 bytes
     XBT_INFO("Write %llu bytes on %s", write, filename);
 
-    simgrid::s4u::Storage &storage = simgrid::s4u::Storage::byName("Disk4");
+    simgrid::s4u::Storage* storage = simgrid::s4u::Storage::byName("Disk4");
 
     // Now rename file from ./tmp/data.txt to ./tmp/simgrid.readme
     const char *newpath = "/home/tmp/simgrid.readme";
@@ -71,13 +71,13 @@ public:
     delete file;
 
     // Now attach some user data to disk1
-    XBT_INFO("Get/set data for storage element: %s",storage.name());
-    XBT_INFO("    Uninitialized storage data: '%s'", (char*)storage.userdata());
+    XBT_INFO("Get/set data for storage element: %s", storage->name());
+    XBT_INFO("    Uninitialized storage data: '%s'", (char*)storage->userdata());
 
-    storage.setUserdata(xbt_strdup("Some user data"));
-    XBT_INFO("    Set and get data: '%s'", (char*)storage.userdata());
+    storage->setUserdata(xbt_strdup("Some user data"));
+    XBT_INFO("    Set and get data: '%s'", (char*)storage->userdata());
 
-    xbt_free(storage.userdata());
+    xbt_free(storage->userdata());
   }
 };
 

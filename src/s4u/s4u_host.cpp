@@ -182,7 +182,7 @@ boost::unordered_map<std::string, Storage*> const& Host::mountedStorages() {
     char *mountname;
     char *storagename;
     xbt_dict_foreach(dict, cursor, mountname, storagename) {
-      mounts->insert({mountname, &Storage::byName(storagename)});
+      mounts->insert({mountname, Storage::byName(storagename)});
     }
     xbt_dict_free(&dict);
   }

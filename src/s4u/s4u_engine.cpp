@@ -53,7 +53,6 @@ Engine *Engine::instance() {
 void Engine::shutdown() {
   delete s4u::Engine::instance_;
   s4u::Engine::instance_ = nullptr;
-  delete s4u::Storage::storages_;
 }
 
 double Engine::getClock()

@@ -158,6 +158,7 @@ StorageN11::StorageN11(StorageModel* model, const char* name, lmm_system_t maxmi
     : StorageImpl(model, name, maxminSystem, bread, bwrite, type_id, content_name, size, attach)
 {
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);
+  simgrid::s4u::Storage::onCreation(this->piface_);
 }
 
 StorageAction *StorageN11::open(const char* mount, const char* path)

@@ -76,34 +76,32 @@ static void display_storage_content(simgrid::s4u::Storage* storage)
 static void dump_storage_by_name(char* name)
 {
   XBT_INFO("*** Dump a storage element ***");
-  simgrid::s4u::Storage& storage = simgrid::s4u::Storage::byName(name);
-  display_storage_content(&storage);
+  simgrid::s4u::Storage* storage = simgrid::s4u::Storage::byName(name);
+  display_storage_content(storage);
 }
 
 static void get_set_storage_data(const char* storage_name)
 {
   XBT_INFO("*** GET/SET DATA for storage element: %s ***", storage_name);
-  simgrid::s4u::Storage& storage = simgrid::s4u::Storage::byName(storage_name);
+  simgrid::s4u::Storage* storage = simgrid::s4u::Storage::byName(storage_name);
 
-  char* data = static_cast<char*>(storage.userdata());
+  char* data = static_cast<char*>(storage->userdata());
   XBT_INFO("Get data: '%s'", data);
-  storage.setUserdata(xbt_strdup("Some data"));
-  data = static_cast<char*>(storage.userdata());
+  storage->setUserdata(xbt_strdup("Some data"));
+  data = static_cast<char*>(storage->userdata());
   XBT_INFO("\tSet and get data: '%s'", data);
   xbt_free(data);
 }
 
 static void dump_platform_storages()
 {
-  std::unordered_map<std::string, simgrid::s4u::Storage*>* storages = simgrid::s4u::Storage().allStorages();
+  std::unordered_map<std::string, simgrid::s4u::Storage*>* storages = simgrid::s4u::allStorages();
 
   for (auto storage : *storages) {
     XBT_INFO("Storage %s is attached to %s", storage.first.c_str(), storage.second->host());
     storage.second->setProperty("other usage", xbt_strdup("gpfs"));
   }
-  // Expected output in tesh file that's missing for now
-  //> [  1.207952] (server@alice) Storage Disk3 is attached to carl
-  //> [  1.207952] (server@alice) Storage Disk4 is attached to denise
+  delete storages;
 }
 
 static void storage_info(simgrid::s4u::Host* host)
@@ -116,15 +114,15 @@ static void storage_info(simgrid::s4u::Host* host)
   xbt_dict_t storage_list = host->mountedStoragesAsDict();
   xbt_dict_foreach (storage_list, cursor, mount_name, storage_name) {
     XBT_INFO("\tStorage name: %s, mount name: %s", storage_name, mount_name);
-    simgrid::s4u::Storage& storage = simgrid::s4u::Storage::byName(storage_name);
+    simgrid::s4u::Storage* storage = simgrid::s4u::Storage::byName(storage_name);
 
-    sg_size_t free_size = storage.sizeFree();
-    sg_size_t used_size = storage.sizeUsed();
+    sg_size_t free_size = storage->sizeFree();
+    sg_size_t used_size = storage->sizeUsed();
 
     XBT_INFO("\t\tFree size: %llu bytes", free_size);
     XBT_INFO("\t\tUsed size: %llu bytes", used_size);
 
-    display_storage_properties(&storage);
+    display_storage_properties(storage);
     dump_storage_by_name(storage_name);
   }
   xbt_dict_free(&storage_list);

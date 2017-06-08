@@ -7,6 +7,7 @@
 #include <xbt/base.h>
 #include <xbt/signal.hpp>
 
+#include "simgrid/s4u/Storage.hpp"
 #include "src/surf/PropertyHolder.hpp"
 #include "surf_interface.hpp"
 #include <map>
@@ -86,7 +87,12 @@ public:
   StorageImpl(Model* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
               const char* type_id, const char* content_name, sg_size_t size, const char* attach);
 
-  ~StorageImpl();
+  ~StorageImpl() override;
+
+public:
+  /** @brief Public interface */
+  s4u::Storage piface_;
+  static StorageImpl* byName(const char* name);
 
   /** @brief Check if the Storage is used (if an action currently uses its resources) */
   bool isUsed() override;
@@ -160,7 +166,8 @@ public:
   virtual sg_size_t getUsedSize();
 
   std::map<std::string, sg_size_t*>* parseContent(const char* filename);
-
+  static std::unordered_map<std::string, StorageImpl*>* storages;
+  static std::unordered_map<std::string, StorageImpl*>* storagesMap() { return StorageImpl::storages; }
   std::vector<StorageAction*> writeActions_;
 
   lmm_constraint_t constraintWrite_; /* Constraint for maximum write bandwidth*/

@@ -42,6 +42,7 @@ class StorageN11 : public StorageImpl {
 public:
   StorageN11(StorageModel* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
              const char* type_id, char* content_name, sg_size_t size, char* attach);
+  virtual ~StorageN11() = default;
   StorageAction *open(const char* mount, const char* path);
   StorageAction *close(surf_file_t fd);
   StorageAction *ls(const char *path);
