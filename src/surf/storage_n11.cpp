@@ -17,17 +17,10 @@ extern std::map<std::string, storage_type_t> storage_types;
 
 static void check_disk_attachment()
 {
-  xbt_lib_cursor_t cursor;
-  char* key;
-  void** data;
-  xbt_lib_foreach(storage_lib, cursor, key, data) {
-    if (xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
-      simgrid::surf::StorageImpl* storage =
-          static_cast<simgrid::surf::StorageImpl*>(xbt_lib_get_or_null(storage_lib, key, SURF_STORAGE_LEVEL));
-      simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(storage->attach_);
-      if (not host_elm)
-        surf_parse_error("Unable to attach storage %s: host %s does not exist.", storage->cname(), storage->attach_);
-    }
+  for (auto s : *simgrid::surf::StorageImpl::storagesMap()) {
+    simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(s.second->attach_);
+    if (not host_elm)
+      surf_parse_error("Unable to attach storage %s: host %s does not exist.", s.second->cname(), s.second->attach_);
   }
 }
 
@@ -35,9 +28,6 @@ void storage_register_callbacks()
 {
   simgrid::s4u::onPlatformCreated.connect(check_disk_attachment);
   instr_routing_define_callbacks();
-
-  SURF_STORAGE_LEVEL =
-      xbt_lib_add_level(storage_lib, [](void* self) { delete static_cast<simgrid::surf::StorageImpl*>(self); });
 }
 
 /*********
@@ -65,7 +55,6 @@ StorageImpl* StorageN11Model::createStorage(const char* id, const char* type_id,
 
   StorageImpl* storage = new StorageN11(this, id, maxminSystem_, Bread, Bwrite, type_id, (char*)content_name,
                                         storage_type->size, (char*)attach);
-  xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
   storageCreatedCallbacks(storage);
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tBread '%f'\n", id, type_id, Bread);

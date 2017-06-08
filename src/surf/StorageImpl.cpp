@@ -11,12 +11,9 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <fstream>
-#include <xbt/lib.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf, "Logging specific to the SURF storage module");
 
-xbt_lib_t storage_lib;
-int SURF_STORAGE_LEVEL                          = -1;
 simgrid::surf::StorageModel* surf_storage_model = nullptr;
 
 namespace simgrid {
