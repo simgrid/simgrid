@@ -206,28 +206,34 @@ int surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath){
   return host->pimpl_->fileMove(fd, fullpath);
 }
 
-sg_size_t surf_storage_get_size(surf_resource_t resource){
-  return static_cast<simgrid::surf::StorageImpl*>(surf_storage_resource_priv(resource))->size_;
+sg_size_t surf_storage_get_size(surf_storage_t resource)
+{
+  return static_cast<simgrid::surf::StorageImpl*>(resource)->size_;
 }
 
-sg_size_t surf_storage_get_free_size(surf_resource_t resource){
-  return static_cast<simgrid::surf::StorageImpl*>(surf_storage_resource_priv(resource))->getFreeSize();
+sg_size_t surf_storage_get_free_size(surf_storage_t resource)
+{
+  return static_cast<simgrid::surf::StorageImpl*>(resource)->getFreeSize();
 }
 
-sg_size_t surf_storage_get_used_size(surf_resource_t resource){
-  return static_cast<simgrid::surf::StorageImpl*>(surf_storage_resource_priv(resource))->getUsedSize();
+sg_size_t surf_storage_get_used_size(surf_storage_t resource)
+{
+  return static_cast<simgrid::surf::StorageImpl*>(resource)->getUsedSize();
 }
 
-xbt_dict_t surf_storage_get_properties(surf_resource_t resource){
-  return static_cast<simgrid::surf::StorageImpl*>(surf_storage_resource_priv(resource))->getProperties();
+xbt_dict_t surf_storage_get_properties(surf_storage_t resource)
+{
+  return static_cast<simgrid::surf::StorageImpl*>(resource)->getProperties();
 }
 
-const char* surf_storage_get_host(surf_resource_t resource){
-  return static_cast<simgrid::surf::StorageImpl*>(surf_storage_resource_priv(resource))->attach_;
+const char* surf_storage_get_host(surf_storage_t resource)
+{
+  return static_cast<simgrid::surf::StorageImpl*>(resource)->attach_;
 }
 
-const char* surf_storage_get_name(surf_resource_t resource){
-  return static_cast<simgrid::surf::StorageImpl*>(surf_storage_resource_priv(resource))->cname();
+const char* surf_storage_get_name(surf_storage_t resource)
+{
+  return static_cast<simgrid::surf::StorageImpl*>(resource)->cname();
 }
 
 void surf_cpu_action_set_bound(surf_action_t action, double bound) {

@@ -688,7 +688,6 @@ set(headers_to_install
   include/smpi/smpi_extended_traces.h
   include/smpi/smpi_extended_traces_fortran.h
   include/smpi/forward.hpp
-  include/surf/surf_routing.h
   include/xbt.h
   include/xbt/RngStream.h
   include/xbt/asserts.h

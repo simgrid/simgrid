@@ -77,7 +77,6 @@ const char* simcall_names[] = {
     "SIMCALL_FILE_SEEK",
     "SIMCALL_FILE_GET_INFO",
     "SIMCALL_FILE_MOVE",
-    "SIMCALL_STORAGE_GET_PROPERTIES",
     "SIMCALL_MC_RANDOM",
     "SIMCALL_SET_CATEGORY",
     "SIMCALL_RUN_KERNEL",
@@ -333,11 +332,6 @@ case SIMCALL_FILE_GET_INFO:
 
 case SIMCALL_FILE_MOVE:
       simgrid::simix::marshal<int>(simcall->result, simcall_HANDLER_file_move(simcall, simgrid::simix::unmarshal<smx_file_t>(simcall->args[0]), simgrid::simix::unmarshal<const char*>(simcall->args[1])));
-      SIMIX_simcall_answer(simcall);
-      break;
-
-case SIMCALL_STORAGE_GET_PROPERTIES:
-      simgrid::simix::marshal<xbt_dict_t>(simcall->result, SIMIX_storage_get_properties(simgrid::simix::unmarshal<smx_storage_t>(simcall->args[0])));
       SIMIX_simcall_answer(simcall);
       break;
 

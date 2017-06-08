@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u/Engine.hpp"
+#include "simgrid/s4u/Storage.hpp"
 
 #include "src/kernel/EngineImpl.hpp"
 #include "src/simix/smx_private.h"
@@ -424,8 +425,7 @@ void sg_platf_new_mount(sg_platf_mount_cbarg_t mount){
 
   if (mount_list.empty())
     XBT_DEBUG("Create a Mount list for %s", A_surfxml_host_id);
-  mount_list.insert(
-      {std::string(mount->name), surf_storage_resource_priv(surf_storage_resource_by_name(mount->storageId))});
+  mount_list.insert({std::string(mount->name), simgrid::surf::StorageImpl::byName(mount->storageId)});
 }
 
 void sg_platf_new_route(sg_platf_route_cbarg_t route)

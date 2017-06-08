@@ -36,17 +36,6 @@ void MSG_create_environment(const char *file)
   SIMIX_create_environment(file);
 }
 
-void MSG_post_create_environment() {
-  xbt_lib_cursor_t cursor;
-  void **data;
-  char *name;
-
-  /* Initialize MSG storages */
-  xbt_lib_foreach(storage_lib, cursor, name, data) {
-    __MSG_storage_create(xbt_dict_cursor_get_elm(cursor));
-  }
-}
-
 msg_netzone_t MSG_zone_get_root()
 {
   return simgrid::s4u::Engine::instance()->netRoot();

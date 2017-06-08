@@ -746,18 +746,6 @@ int simcall_file_move(smx_file_t fd, const char* fullpath)
   return simcall_BODY_file_move(fd, fullpath);
 }
 
-/**
- * \ingroup simix_storage_management
- * \brief Returns a dict of the properties assigned to a storage element.
- *
- * \param storage A storage element
- * \return The properties of this storage element
- */
-xbt_dict_t simcall_storage_get_properties(smx_storage_t storage)
-{
-  return simcall_BODY_storage_get_properties(storage);
-}
-
 void simcall_run_kernel(std::function<void()> const& code)
 {
   simcall_BODY_run_kernel(&code);

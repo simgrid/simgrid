@@ -23,7 +23,7 @@ SG_BEGIN_DECL()
 /* end of eclipse-mandated pimple */
 
 extern int JAVA_HOST_LEVEL;
-static std::unordered_map<char*, jobject> java_storage_map;
+static std::unordered_map<msg_storage_t, jobject> java_storage_map;
 
 JavaVM *get_java_VM();
 JNIEnv *get_current_thread_env();

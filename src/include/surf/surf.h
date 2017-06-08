@@ -15,7 +15,6 @@
 #include "src/internal_config.h"
 #include "surf/surf_routing.h"
 #include "surf/datatypes.h"
-#include "xbt/lib.h"
 #include "simgrid/datatypes.h"
 #include "simgrid/forward.h"
 
@@ -85,8 +84,6 @@ typedef surf_NetworkModel *surf_network_model_t;
 typedef surf_StorageModel *surf_storage_model_t;
 typedef surf_Storage* surf_storage_t;
 
-typedef xbt_dictelm_t surf_resource_t;
-
 /** @ingroup SURF_c_bindings
  *  \brief Action structure
  *
@@ -115,15 +112,6 @@ XBT_PUBLIC(void) model_help(const char *category, s_surf_model_description_t * t
 /***************************/
 /* Generic model object */
 /***************************/
-
-static inline surf_storage_t surf_storage_resource_priv(const void* storage)
-{
-  return (surf_storage_t)xbt_lib_get_level((xbt_dictelm_t)storage, SURF_STORAGE_LEVEL);
-}
-
-static inline void *surf_storage_resource_by_name(const char *name){
-  return xbt_lib_get_elm_or_null(storage_lib, name);
-}
 
 /** @{ @ingroup SURF_c_bindings */
 
@@ -258,7 +246,7 @@ XBT_PUBLIC(int) surf_host_file_seek(sg_host_t host, surf_file_t fd, sg_offset_t 
  * @param resource The surf storage
  * @return The size in bytes of the storage
  */
-XBT_PUBLIC(sg_size_t) surf_storage_get_size(surf_resource_t resource);
+XBT_PUBLIC(sg_size_t) surf_storage_get_size(surf_storage_t resource);
 
 /**
  * @brief Get the available size in bytes of a storage
@@ -266,7 +254,7 @@ XBT_PUBLIC(sg_size_t) surf_storage_get_size(surf_resource_t resource);
  * @param resource The surf storage
  * @return The available size in bytes of the storage
  */
-XBT_PUBLIC(sg_size_t) surf_storage_get_free_size(surf_resource_t resource);
+XBT_PUBLIC(sg_size_t) surf_storage_get_free_size(surf_storage_t resource);
 
 /**
  * @brief Get the size in bytes of a storage
@@ -274,10 +262,10 @@ XBT_PUBLIC(sg_size_t) surf_storage_get_free_size(surf_resource_t resource);
  * @param resource The surf storage
  * @return The used size in bytes of the storage
  */
-XBT_PUBLIC(sg_size_t) surf_storage_get_used_size(surf_resource_t resource);
+XBT_PUBLIC(sg_size_t) surf_storage_get_used_size(surf_storage_t resource);
 
 /** @brief return the properties set associated to that storage */
-XBT_PUBLIC(xbt_dict_t) surf_storage_get_properties(surf_resource_t resource);
+XBT_PUBLIC(xbt_dict_t) surf_storage_get_properties(surf_storage_t resource);
 
 /**
  * @brief [brief description]
@@ -320,8 +308,8 @@ XBT_PUBLIC(xbt_dict_t) surf_storage_action_get_ls_dict(surf_action_t action);
  * @return The host name
  * may not exist.
  */
-XBT_PUBLIC(const char * ) surf_storage_get_host(surf_resource_t resource);
-XBT_PUBLIC(const char * ) surf_storage_get_name(surf_resource_t resource);
+XBT_PUBLIC(const char*) surf_storage_get_host(surf_storage_t resource);
+XBT_PUBLIC(const char*) surf_storage_get_name(surf_storage_t resource);
 
 /** @} */
 

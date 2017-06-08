@@ -51,8 +51,6 @@ void MSG_init_nocheck(int *argc, char **argv) {
     SIMIX_function_register_process_create(MSG_process_create_from_SIMIX);
     SIMIX_function_register_process_cleanup(MSG_process_cleanup_from_SIMIX);
 
-    simgrid::s4u::onPlatformCreated.connect(MSG_post_create_environment);
-
     simgrid::MsgHostExt::EXTENSION_ID = simgrid::s4u::Host::extension_create<simgrid::MsgHostExt>();
     simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
       host.extension_set<simgrid::MsgHostExt>(new simgrid::MsgHostExt());
@@ -64,8 +62,6 @@ void MSG_init_nocheck(int *argc, char **argv) {
     MC_ignore_heap(&(msg_global->sent_msg), sizeof(msg_global->sent_msg));
   }
 
-  XBT_DEBUG("ADD MSG LEVELS");
-  MSG_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, (void_f_pvoid_t) __MSG_storage_destroy);
   if (xbt_cfg_get_boolean("clean-atexit"))
     atexit(MSG_exit);
 }

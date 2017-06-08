@@ -176,10 +176,6 @@ int SIMIX_file_move(smx_actor_t process, smx_file_t file, const char* fullpath)
   return  surf_host_file_move(host, file->surf_file, fullpath);
 }
 
-xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage){
-  return surf_storage_get_properties(storage);
-}
-
 void SIMIX_io_destroy(smx_activity_t synchro)
 {
   simgrid::kernel::activity::Io *io = static_cast<simgrid::kernel::activity::Io*>(synchro);
