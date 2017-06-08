@@ -17,20 +17,21 @@ SimGrid (3.16) UNRELEASED
    - Remove attribute 'content_type' of <storage_type>: was never used
    - Make attribute 'model' of <storage_type> optional: for future usage
    - Remove Bconnection model property: was never (in)validated. Replaced by
-      the maximum of the read and write bandwidth as a resource constraint. 
+      the maximum of the read and write bandwidth as a resource constraint.
 
  SimDag
-  - New and Backwards Compatibility break: 
+  - New and Backwards Compatibility break:
     SD_simulate_with_update (double how_long, xbt_dynar_t changed_tasks_dynar)
     When one wants to get the list of tasks whose states have changed during a
-    simulation round, s/he has to allocate and free a dynar and use it as argument 
-    to this function. The former SD_simulate (double how_long) now returns void.
+    simulation round, s/he has to allocate and free a dynar and use it as
+    argument to this function. The former SD_simulate (double how_long)
+    now	returns void.
 
  Virtual Machines
   - Allow multicore VMs, along with the correct sharing computations
 
  MSG
-  - The netzone are now available from the MSG API. 
+  - The netzone are now available from the MSG API.
     The old names still work, but are now deprecated.
 
  SMPI
@@ -44,6 +45,7 @@ SimGrid (3.16) UNRELEASED
   - DROPPED FUNCTION: xbt_str_varsubst()
   - DROPPED MODULE: strbuff. We don't need it anymore.
   - DROPPED MODULE: matrix. We don't need it anymore.
+  - DROPPED MODULE: lib. We don't need it anymore.
 
  -- Release target: June 21 2017   -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
