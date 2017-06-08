@@ -294,6 +294,7 @@ class EndLinkEvent : public PajeEvent  {
   public:
   EndLinkEvent (double timestamp, container_t container, type_t type, container_t destContainer,
                                   const char *value, const char *key);
+  ~EndLinkEvent();
   void print() override;
 };
 
