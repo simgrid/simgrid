@@ -161,13 +161,14 @@ smx_activity_t SIMIX_execution_start(smx_actor_t issuer, const char *name, doubl
                                     double bound){
 
   /* alloc structures and initialize */
-  simgrid::kernel::activity::ExecImpl* exec = new simgrid::kernel::activity::ExecImpl(name, issuer->host);
+  simgrid::kernel::activity::ExecImplPtr exec =
+      simgrid::kernel::activity::ExecImplPtr(new simgrid::kernel::activity::ExecImpl(name, issuer->host));
 
   /* set surf's action */
   if (not MC_is_active() && not MC_record_replay_is_active()) {
 
     exec->surf_exec = issuer->host->pimpl_cpu->execution_start(flops_amount);
-    exec->surf_exec->setData(exec);
+    exec->surf_exec->setData(exec.get());
     exec->surf_exec->setPriority(priority);
 
     if (bound > 0)
@@ -184,7 +185,8 @@ smx_activity_t SIMIX_execution_parallel_start(const char* name, int host_nb, sg_
 {
 
   /* alloc structures and initialize */
-  simgrid::kernel::activity::ExecImpl* exec = new simgrid::kernel::activity::ExecImpl(name, nullptr);
+  simgrid::kernel::activity::ExecImplPtr exec =
+      simgrid::kernel::activity::ExecImplPtr(new simgrid::kernel::activity::ExecImpl(name, nullptr));
 
   /* set surf's synchro */
   sg_host_t *host_list_cpy = xbt_new0(sg_host_t, host_nb);
@@ -201,10 +203,10 @@ smx_activity_t SIMIX_execution_parallel_start(const char* name, int host_nb, sg_
   /* set surf's synchro */
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     exec->surf_exec = surf_host_model->executeParallelTask(host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
-    exec->surf_exec->setData(exec);
+    exec->surf_exec->setData(exec.get());
     if (timeout > 0) {
       exec->timeoutDetector = host_list[0]->pimpl_cpu->sleep(timeout);
-      exec->timeoutDetector->setData(exec);
+      exec->timeoutDetector->setData(exec.get());
     }
   }
   XBT_DEBUG("Create parallel execute synchro %p", exec);
@@ -298,9 +300,6 @@ void SIMIX_execution_finish(simgrid::kernel::activity::ExecImplPtr exec)
     simcall_execution_wait__set__result(simcall, exec->state);
     SIMIX_simcall_answer(simcall);
   }
-
-  /* We no longer need it */
-  exec->unref();
 }
 
 void SIMIX_set_category(smx_activity_t synchro, const char *category)

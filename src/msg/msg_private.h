@@ -30,9 +30,6 @@ public:
 typedef struct simdata_task {
   ~simdata_task()
   {
-    if (this->compute)
-      this->compute->unref();
-
     /* parallel tasks only */
     xbt_free(this->host_list);
   }

@@ -31,12 +31,7 @@ namespace activity {
     virtual void resume()=0;
     virtual void post() =0; // What to do when a simcall terminates
 
-    /** @brief Increases the refcount */
-    void ref();
-    /** @brief Reduces the refcount */
-    void unref();
-
-     // boost::intrusive_ptr<Activity> support:
+    // boost::intrusive_ptr<ActivityImpl> support:
     friend void intrusive_ptr_add_ref(ActivityImpl * activity);
     friend void intrusive_ptr_release(ActivityImpl * activity);
 

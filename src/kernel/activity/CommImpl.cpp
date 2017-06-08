@@ -61,7 +61,6 @@ void simgrid::kernel::activity::CommImpl::cancel()
   if (state == SIMIX_WAITING) {
     mbox->remove(this);
     state = SIMIX_CANCELED;
-    this->unref();
   } else if (not MC_is_active() /* when running the MC there are no surf actions */
              && not MC_record_replay_is_active() && (state == SIMIX_READY || state == SIMIX_RUNNING)) {
 

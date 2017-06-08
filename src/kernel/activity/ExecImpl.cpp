@@ -16,6 +16,7 @@ simgrid::kernel::activity::ExecImpl::ExecImpl(const char* name, sg_host_t host) 
   if (name)
     this->name = name;
   this->state  = SIMIX_RUNNING;
+  XBT_DEBUG("Create exec %p", this);
 }
 
 simgrid::kernel::activity::ExecImpl::~ExecImpl()
@@ -24,6 +25,7 @@ simgrid::kernel::activity::ExecImpl::~ExecImpl()
     surf_exec->unref();
   if (timeoutDetector)
     timeoutDetector->unref();
+  XBT_DEBUG("Destroy exec %p", this);
 }
 void simgrid::kernel::activity::ExecImpl::suspend()
 {

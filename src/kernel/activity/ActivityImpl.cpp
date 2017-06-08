@@ -5,7 +5,7 @@
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 
-XBT_LOG_EXTERNAL_CATEGORY(simix_network);
+XBT_LOG_EXTERNAL_CATEGORY(simix_process);
 
 namespace simgrid {
 namespace kernel {
@@ -14,35 +14,25 @@ namespace activity {
 ActivityImpl::ActivityImpl()  = default;
 ActivityImpl::~ActivityImpl() = default;
 
-void ActivityImpl::ref()
-{
-  xbt_assert(refcount_ >= 0);
-  refcount_++;
-  XBT_CDEBUG(simix_network, "%p->refcount++ ~> %d", this, (int)refcount_);
-  if (XBT_LOG_ISENABLED(simix_network, xbt_log_priority_trace))
-    xbt_backtrace_display_current();
-}
-
-void ActivityImpl::unref()
-{
-  XBT_CDEBUG(simix_network, "%p->refcount-- ~> %d", this, ((int)refcount_) - 1);
-  xbt_assert(refcount_ >= 0);
-  refcount_--;
-  if (XBT_LOG_ISENABLED(simix_network, xbt_log_priority_trace))
-    xbt_backtrace_display_current();
-  if (refcount_ <= 0)
-    delete this;
-}
-
 // boost::intrusive_ptr<Activity> support:
 void intrusive_ptr_add_ref(simgrid::kernel::activity::ActivityImpl* activity)
 {
-  activity->ref();
+  xbt_assert(activity->refcount_ >= 0);
+  activity->refcount_++;
+  XBT_CDEBUG(simix_process, "%p->refcount++ ~> %d", activity, (int)activity->refcount_);
+  if (XBT_LOG_ISENABLED(simix_process, xbt_log_priority_trace))
+    xbt_backtrace_display_current();
 }
 
 void intrusive_ptr_release(simgrid::kernel::activity::ActivityImpl* activity)
 {
-  activity->unref();
+  XBT_CDEBUG(simix_process, "%p->refcount-- ~> %d", activity, ((int)activity->refcount_) - 1);
+  xbt_assert(activity->refcount_ >= 0);
+  activity->refcount_--;
+  if (XBT_LOG_ISENABLED(simix_process, xbt_log_priority_trace))
+    xbt_backtrace_display_current();
+  if (activity->refcount_ <= 0)
+    delete activity;
 }
 }
 }

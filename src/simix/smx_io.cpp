@@ -182,7 +182,6 @@ void SIMIX_io_destroy(smx_activity_t synchro)
   XBT_DEBUG("Destroy synchro %p", synchro);
   if (io->surf_io)
     io->surf_io->unref();
-  io->unref();
 }
 
 void SIMIX_io_finish(smx_activity_t synchro)

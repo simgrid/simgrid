@@ -90,7 +90,6 @@ void SIMIX_synchro_finish(smx_activity_t synchro)
 
   SIMIX_synchro_stop_waiting(simcall->issuer, simcall);
   simcall->issuer->waiting_synchro = nullptr;
-  synchro->unref();
   SIMIX_simcall_answer(simcall);
   XBT_OUT();
 }
@@ -176,7 +175,6 @@ void MutexImpl::unlock(smx_actor_t issuer)
   if (xbt_swag_size(this->sleeping) > 0) {
     /*process to wake up */
     smx_actor_t p = (smx_actor_t) xbt_swag_extract(this->sleeping);
-    p->waiting_synchro->unref();
     p->waiting_synchro = nullptr;
     this->owner = p;
     SIMIX_simcall_answer(&p->simcall);
@@ -319,7 +317,6 @@ void SIMIX_cond_signal(smx_cond_t cond)
   if ((proc = (smx_actor_t) xbt_swag_extract(cond->sleeping))) {
 
     /* Destroy waiter's synchronization */
-    proc->waiting_synchro->unref();
     proc->waiting_synchro = nullptr;
 
     /* Now transform the cond wait simcall into a mutex lock one */
@@ -432,7 +429,6 @@ void SIMIX_sem_release(smx_sem_t sem)
 
   XBT_DEBUG("Sem release semaphore %p", sem);
   if ((proc = (smx_actor_t) xbt_swag_extract(sem->sleeping))) {
-    proc->waiting_synchro->unref();
     proc->waiting_synchro = nullptr;
     SIMIX_simcall_answer(&proc->simcall);
   } else {

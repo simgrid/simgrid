@@ -106,11 +106,6 @@ void SIMIX_process_cleanup(smx_actor_t process)
           comm, comm->detached, (int)comm->state, comm->src_proc, comm->dst_proc);
       comm->src_proc = nullptr;
 
-      /* I'm not supposed to destroy a detached comm from the sender side, */
-      if (comm->detached)
-        XBT_DEBUG("Don't destroy it since it's a detached comm and I'm the sender");
-      else
-        comm->unref();
     } else if (comm->dst_proc == process) {
       XBT_DEBUG("Found an unfinished recv comm %p, state %d, src = %p, dst = %p",
           comm, (int)comm->state, comm->src_proc, comm->dst_proc);
@@ -423,7 +418,7 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
   process->exception = nullptr;
 
   /* destroy the blocking synchro if any */
-  if (process->waiting_synchro) {
+  if (process->waiting_synchro != nullptr) {
 
     simgrid::kernel::activity::ExecImplPtr exec =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(process->waiting_synchro);
@@ -437,7 +432,6 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
         boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(process->waiting_synchro);
 
     if (exec != nullptr) {
-      exec->unref();
 
     } else if (comm != nullptr) {
       process->comms.remove(process->waiting_synchro);
@@ -446,13 +440,11 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
       auto i = boost::range::find(process->waiting_synchro->simcalls, &process->simcall);
       if (i != process->waiting_synchro->simcalls.end())
         process->waiting_synchro->simcalls.remove(&process->simcall);
-      comm->unref();
     } else if (sleep != nullptr) {
       SIMIX_process_sleep_destroy(process->waiting_synchro);
 
     } else if (raw != nullptr) {
       SIMIX_synchro_stop_waiting(process, &process->simcall);
-      process->waiting_synchro->unref();
 
     } else if (io != nullptr) {
       SIMIX_io_destroy(process->waiting_synchro);
@@ -723,7 +715,6 @@ static int SIMIX_process_join_finish(smx_process_exit_status_t status, void* syn
     sleep->surf_sleep->unref();
     sleep->surf_sleep = nullptr;
   }
-  sleep->unref();
   // intrusive_ptr_release(process); // FIXME: We are leaking here. See comment in SIMIX_process_join()
   return 0;
 }
@@ -731,7 +722,7 @@ static int SIMIX_process_join_finish(smx_process_exit_status_t status, void* syn
 smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, double timeout)
 {
   smx_activity_t res = SIMIX_process_sleep(issuer, timeout);
-  (&*res)->ref();
+  intrusive_ptr_add_ref(res.get());
   /* We are leaking the process here, but if we don't take the ref, we get a "use after free".
    * The correct solution would be to derivate the type SynchroSleep into a SynchroProcessJoin,
    * but the code is not clean enough for now for this.
@@ -773,7 +764,7 @@ smx_activity_t SIMIX_process_sleep(smx_actor_t process, double duration)
 
 void SIMIX_process_sleep_destroy(smx_activity_t synchro)
 {
-  XBT_DEBUG("Destroy synchro %p", synchro);
+  XBT_DEBUG("Destroy sleep synchro %p", synchro.get());
   simgrid::kernel::activity::SleepImplPtr sleep =
       boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(synchro);
 
