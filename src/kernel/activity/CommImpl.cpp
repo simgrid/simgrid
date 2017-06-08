@@ -123,6 +123,5 @@ void simgrid::kernel::activity::CommImpl::post()
   /* if there are simcalls associated with the synchro, then answer them */
   if (not simcalls.empty()) {
     SIMIX_comm_finish(this);
-    this->unref();
   }
 }
