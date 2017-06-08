@@ -13,7 +13,6 @@
 #include "xbt/misc.h"
 #include "xbt/config.h"
 #include "src/internal_config.h"
-#include "surf/surf_routing.h"
 #include "surf/datatypes.h"
 #include "simgrid/datatypes.h"
 #include "simgrid/forward.h"
