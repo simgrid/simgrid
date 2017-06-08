@@ -195,7 +195,7 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
   }
 }
 
-void sg_instr_AS_end()
+static void sg_instr_AS_end(simgrid::s4u::NetZone& /*netzone*/)
 {
   if (TRACE_needs_platform()){
     currentContainer.pop_back();
@@ -326,6 +326,7 @@ void instr_routing_define_callbacks ()
     simgrid::s4u::Host::onCreation.connect(sg_instr_new_host);
   }
   simgrid::s4u::NetZone::onCreation.connect(sg_instr_AS_begin);
+  simgrid::s4u::NetZone::onSeal.connect(sg_instr_AS_end);
 }
 
 /*
