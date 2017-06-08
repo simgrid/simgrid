@@ -241,7 +241,6 @@ XBT_PUBLIC(int) surf_parse_lex_destroy();
 XBT_PUBLIC(void) routing_route_free(sg_platf_route_cbarg_t route);
 /********** Instr. **********/
 XBT_PRIVATE void sg_instr_new_router(const char* name);
-XBT_PRIVATE void sg_instr_AS_end();
 
 SG_END_DECL()
 
