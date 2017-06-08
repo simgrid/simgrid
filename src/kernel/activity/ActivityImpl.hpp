@@ -41,7 +41,7 @@ namespace activity {
     friend void intrusive_ptr_release(ActivityImpl * activity);
 
   private:
-    std::atomic_int_fast32_t refcount_{1};
+    std::atomic_int_fast32_t refcount_{0};
   };
 }}} // namespace simgrid::kernel::activity
 

@@ -780,7 +780,6 @@ void SIMIX_process_sleep_destroy(smx_activity_t synchro)
   if (sleep->surf_sleep) {
     sleep->surf_sleep->unref();
     sleep->surf_sleep = nullptr;
-    sleep->unref();
   }
 }
 

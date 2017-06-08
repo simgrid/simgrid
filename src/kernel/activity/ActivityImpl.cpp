@@ -16,7 +16,7 @@ ActivityImpl::~ActivityImpl() = default;
 
 void ActivityImpl::ref()
 {
-  xbt_assert(refcount_ != 0);
+  xbt_assert(refcount_ >= 0);
   refcount_++;
   XBT_CDEBUG(simix_network, "%p->refcount++ ~> %d", this, (int)refcount_);
   if (XBT_LOG_ISENABLED(simix_network, xbt_log_priority_trace))
@@ -26,8 +26,7 @@ void ActivityImpl::ref()
 void ActivityImpl::unref()
 {
   XBT_CDEBUG(simix_network, "%p->refcount-- ~> %d", this, ((int)refcount_) - 1);
-  xbt_assert(refcount_ > 0,
-             "This activity has a negative refcount! You can only call test() or wait() once per activity.");
+  xbt_assert(refcount_ >= 0);
   refcount_--;
   if (XBT_LOG_ISENABLED(simix_network, xbt_log_priority_trace))
     xbt_backtrace_display_current();

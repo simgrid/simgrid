@@ -26,7 +26,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix, "SIMIX network-related syn
 
 static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall);
 static void SIMIX_comm_copy_data(smx_activity_t comm);
-static void SIMIX_comm_start(smx_activity_t synchro);
+static void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr synchro);
 
 /**
  *  \brief Checks if there is a communication activity queued in a deque matching our needs
@@ -106,7 +106,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx
       _find_matching_comm(&mbox->comm_queue, SIMIX_COMM_RECEIVE, match_fun, data, this_comm, /*remove_matching*/ true);
 
   if (not other_comm) {
-    other_comm = this_comm;
+    other_comm = std::move(this_comm);
 
     if (mbox->permanent_receiver != nullptr) {
       //this mailbox is for small messages, which have to be sent right now
@@ -446,22 +446,19 @@ void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
  *  \brief Starts the simulation of a communication synchro.
  *  \param synchro the communication synchro
  */
-static inline void SIMIX_comm_start(smx_activity_t synchro)
+static inline void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr comm)
 {
-  simgrid::kernel::activity::CommImplPtr comm =
-      boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
-
   /* If both the sender and the receiver are already there, start the communication */
-  if (synchro->state == SIMIX_READY) {
+  if (comm->state == SIMIX_READY) {
 
     simgrid::s4u::Host* sender   = comm->src_proc->host;
     simgrid::s4u::Host* receiver = comm->dst_proc->host;
 
     comm->surf_comm = surf_network_model->communicate(sender, receiver, comm->task_size, comm->rate);
-    comm->surf_comm->setData(&*synchro);
+    comm->surf_comm->setData(comm.get());
     comm->state = SIMIX_RUNNING;
 
-    XBT_DEBUG("Starting communication %p from '%s' to '%s' (surf_action: %p)", synchro.get(), sender->cname(),
+    XBT_DEBUG("Starting communication %p from '%s' to '%s' (surf_action: %p)", comm.get(), sender->cname(),
               receiver->cname(), comm->surf_comm);
 
     /* If a link is failed, detect it immediately */
