@@ -256,11 +256,6 @@ int find_model_description(s_surf_model_description_t * table,
   return -1;
 }
 
-static inline void surf_storage_free(void *r)
-{
-  delete static_cast<simgrid::surf::StorageImpl*>(r);
-}
-
 void sg_version_check(int lib_version_major, int lib_version_minor, int lib_version_patch)
 {
   if ((lib_version_major != SIMGRID_VERSION_MAJOR) || (lib_version_minor != SIMGRID_VERSION_MINOR)) {
@@ -378,6 +373,7 @@ void surf_exit()
     delete stype->model_properties;
     free(stype);
   }
+  delete simgrid::surf::StorageImpl::storages;
 
   for (auto model : *all_existing_models)
     delete model;
