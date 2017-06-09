@@ -164,7 +164,7 @@ void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
   }
 }
 
-/** @brief Start a new execution on this CPU lasting @size flops and using one core */
+/** @brief Start a new execution on this CPU lasting @param size flops and using one core */
 CpuAction *CpuCas01::execution_start(double size)
 {
   return new CpuCas01Action(model(), size, isOff(), speed_.scale * speed_.peak, constraint());

@@ -23,13 +23,13 @@ class ConditionVariable;
  *  @ingroup s4u_api
  *
  * It is strictly impossible to use a real mutex, such as
- * [std::mutex](http://en.cppreference.com/w/cpp/thread/mutex)
- * or [pthread_mutex_t](http://pubs.opengroup.org/onlinepubs/007908775/xsh/pthread_mutex_lock.html),
+ * <a href="http://en.cppreference.com/w/cpp/thread/mutex">std::mutex</a>
+ * or <a href="http://pubs.opengroup.org/onlinepubs/007908775/xsh/pthread_mutex_lock.html">pthread_mutex_t</a>,
  * because it would block the whole simulation.
  * Instead, you should use the present class, that is a drop-in replacement of
- * [std::mutex](http://en.cppreference.com/w/cpp/thread/mutex).
+ * <a href="http://en.cppreference.com/w/cpp/thread/mutex>std::mutex</a>.
  *
- * As for any S4U object, Mutexes are using the @ref "RAII idiom" s4u_raii for memory management.
+ * As for any S4U object, Mutexes are using the @ref s4u_raii "RAII idiom" for memory management.
  * Use createMutex() to get a ::MutexPtr to a newly created mutex and only manipulate ::MutexPtr.
  *
  */
