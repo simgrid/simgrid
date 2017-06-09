@@ -218,8 +218,8 @@ described in
 
 If you compiled SimGrid accordingly, you can use packet-level network
 simulators as network models (see \ref pls_ns3). In that case, you have
-two extra models, described below, and some \ref options_pls "specific
-additional configuration flags".
+two extra models, described below, and some 
+\ref options_pls "specific additional configuration flags".
   - \b NS3: Network pseudo-model using the NS3 tcp model
 
 Concerning the CPU, we have only one model for now:
