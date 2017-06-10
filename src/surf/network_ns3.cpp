@@ -57,7 +57,7 @@ NetPointNs3::NetPointNs3()
 static void clusterCreation_cb(sg_platf_cluster_cbarg_t cluster)
 {
   char* lat = bprintf("%fs", cluster->lat);
-  char* bw  = bprintf("%fBps", cluster->bw);
+  char* bw  = bprintf("%fbps", cluster->bw * 8);
 
   for (int i : *cluster->radicals) {
     // Routers don't create a router on the other end of the private link by themselves.
@@ -96,7 +96,7 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
 
     XBT_DEBUG("Route from '%s' to '%s' with link '%s' %s", src->cname(), dst->cname(), link->cname(),
               (symmetrical ? "(symmetrical)" : "(not symmetrical)"));
-    char* link_bdw = bprintf("%fBps", link->bandwidth());
+    char* link_bdw = bprintf("%fbps", link->bandwidth() * 8);
     char* link_lat = bprintf("%fs", link->latency());
 
     //   XBT_DEBUG("src (%s), dst (%s), src_id = %d, dst_id = %d",src,dst, src_id, dst_id);
