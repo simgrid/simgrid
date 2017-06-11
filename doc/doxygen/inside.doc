@@ -36,4 +36,7 @@ git will say so, and provide a ready to use patch that you can apply
 to improve your commit. Just carefully read the error message you get
 to find the exact command with git-apply to fix your formating.
 
+If you find that for a specific commit, the formatter does a very bad
+job, then add --no-verify to your git commit command line.
+
 */
