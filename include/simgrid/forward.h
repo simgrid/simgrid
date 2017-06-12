@@ -43,6 +43,7 @@ namespace trace_mgr {
 typedef simgrid::s4u::Actor s4u_Actor;
 typedef simgrid::s4u::Host s4u_Host;
 typedef simgrid::s4u::Link s4u_Link;
+typedef simgrid::s4u::File s4u_File;
 typedef simgrid::s4u::Storage s4u_Storage;
 typedef simgrid::s4u::NetZone s4u_NetZone;
 typedef simgrid::kernel::activity::ActivityImpl* smx_activity_t;
@@ -55,6 +56,7 @@ typedef simgrid::trace_mgr::trace tmgr_Trace;
 typedef struct s4u_Actor s4u_Actor;
 typedef struct s4u_Host s4u_Host;
 typedef struct s4u_Link s4u_Link;
+typedef struct s4u_File s4u_File;
 typedef struct s4u_Storage s4u_Storage;
 typedef struct s4u_NetZone s4u_NetZone;
 typedef struct kernel_Activity* smx_activity_t;
@@ -68,6 +70,7 @@ typedef s4u_NetZone* sg_netzone_t;
 typedef s4u_Host* sg_host_t;
 typedef s4u_Link* sg_link_t;
 typedef s4u_Storage* sg_storage_t;
+typedef s4u_File* sg_file_t;
 
 typedef routing_NetPoint* sg_netpoint_t;
 typedef surf_Resource *sg_resource_t;

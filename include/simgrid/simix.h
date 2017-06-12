@@ -95,9 +95,6 @@ typedef struct s_smx_sem *smx_sem_t;
 /********************************** File *************************************/
 typedef struct s_smx_file *smx_file_t;
 
-/********************************** Storage *************************************/
-typedef xbt_dictelm_t smx_storage_t;
-
 /* ****************************** Process *********************************** */
 
 typedef enum {
@@ -359,8 +356,6 @@ XBT_PUBLIC(xbt_dynar_t) simcall_file_get_info(smx_file_t fd);
 XBT_PUBLIC(sg_size_t) simcall_file_tell(smx_file_t fd);
 XBT_PUBLIC(int) simcall_file_seek(smx_file_t fd, sg_offset_t offset, int origin);
 XBT_PUBLIC(int) simcall_file_move(smx_file_t fd, const char* fullpath);
-/*****************************   Storage   **********************************/
-XBT_PUBLIC(xbt_dict_t) simcall_storage_get_properties(smx_storage_t storage);
 /************************** MC simcalls   **********************************/
 XBT_PUBLIC(int) simcall_mc_random(int min, int max);
 
