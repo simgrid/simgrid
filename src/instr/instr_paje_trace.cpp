@@ -21,8 +21,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr, "tracing event system");
 
-extern s_instr_trace_writer_t active_writer;
-
 static std::stringstream stream;
 FILE *tracing_file = nullptr;
 
@@ -34,10 +32,6 @@ void print_NULL(PajeEvent* event){}
 
 /* The active set of functions for the selected trace format
  * By default, they all do nothing, hence the print_NULL to avoid segfaults */
-
-s_instr_trace_writer_t active_writer = {&print_NULL, &print_NULL, &print_NULL, &print_NULL, &print_NULL, &print_NULL,
-                                        &print_NULL, &print_NULL, &print_NULL, &print_NULL, &print_NULL, &print_NULL,
-                                        &print_NULL, &print_NULL, &print_NULL, &print_NULL, &print_NULL, &print_NULL};
 
 std::vector<PajeEvent*> buffer;
 void buffer_debug(std::vector<PajeEvent*> *buf);
