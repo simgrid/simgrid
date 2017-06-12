@@ -12,9 +12,9 @@
 #include "simgrid/s4u/File.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
+#include "simgrid/s4u/Storage.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_file,"S4U files");
-
 
 namespace simgrid {
 namespace s4u {
@@ -22,10 +22,15 @@ namespace s4u {
 File::File(const char* fullpath, void* userdata) : path_(fullpath), userdata_(userdata)
 {
   // this cannot fail because we get a xbt_die if the mountpoint does not exist
-  pimpl_ = simcall_file_open(fullpath, Host::current());
+  pimpl_           = simcall_file_open(fullpath, Host::current());
+  xbt_dynar_t info = simcall_file_get_info(pimpl_);
+  storage_type     = xbt_dynar_pop_as(info, char*);
+  storageId        = xbt_dynar_pop_as(info, char*);
+  mount_point      = xbt_dynar_pop_as(info, char*);
 }
 
 File::~File() {
+  //  Host::current()->extension<simgrid::MsgHostExt>()->file_descriptor_table->push_back(desc_id_);
   simcall_file_close(pimpl_, Host::current());
 }
 
