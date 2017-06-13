@@ -27,6 +27,7 @@ File::File(const char* fullpath, void* userdata) : path_(fullpath), userdata_(us
   storage_type     = xbt_dynar_pop_as(info, char*);
   storageId        = xbt_dynar_pop_as(info, char*);
   mount_point      = xbt_dynar_pop_as(info, char*);
+  xbt_dynar_free(&info);
 }
 
 File::~File() {
