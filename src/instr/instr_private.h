@@ -125,49 +125,10 @@ class PajeEvent {
 
 //--------------------------------------------------
 
-//--------------------------------------------------
-
-class DefineStateTypeEvent : public PajeEvent  {
-  type_t type;
-  public:
-  DefineStateTypeEvent(type_t type);
-  void print() override;
-};
-
 class DefineEventTypeEvent : public PajeEvent  {
   type_t type;
   public: 
   DefineEventTypeEvent(type_t type);
-  void print() override;
-};
-
-class DefineLinkTypeEvent : public PajeEvent  {
-  type_t type;
-  type_t source;
-  type_t dest;
-  public:
-  DefineLinkTypeEvent(type_t type, type_t source, type_t dest);
-  void print() override;
-};
-
-class DefineEntityValueEvent : public PajeEvent  {
-  val_t value;
-  public:
-  DefineEntityValueEvent (val_t type);
-  void print() override;
-};
-
-class CreateContainerEvent : public PajeEvent  {
-  public:
-  container_t container;
-  explicit CreateContainerEvent (container_t container);
-  void print() override;
-};
-
-class DestroyContainerEvent : public PajeEvent  {
-  public:
-  container_t container;
-  DestroyContainerEvent (container_t container);
   void print() override;
 };
 
@@ -461,5 +422,10 @@ SG_END_DECL()
 
 void DefineContainerEvent(type_t type);
 void DefineVariableTypeEvent(type_t type);
+void DefineStateTypeEvent(type_t type);
+void DefineLinkTypeEvent(type_t type, type_t source, type_t dest);
+void DefineEntityValueEvent (val_t value);
+void CreateContainerEvent (container_t container);
+void DestroyContainerEvent (container_t container);
 
 #endif

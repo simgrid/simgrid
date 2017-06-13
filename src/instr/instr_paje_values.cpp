@@ -27,7 +27,7 @@ val_t PJ_value_new (const char *name, const char *color, type_t father)
 
   xbt_dict_set (father->values, name, ret, nullptr);
   XBT_DEBUG("new value %s, child of %s", ret->name, ret->father->name);
-  new DefineEntityValueEvent(ret);
+  DefineEntityValueEvent(ret);
   return ret;
 }
 
