@@ -133,7 +133,17 @@ public class Host {
 	/** This methods returns the list of storages (names) attached to an host */
 	public native String[] getAttachedStorage();
 
-	/** Returns the amount of Joules consumed by that host so far */
+	/** After this call, sg_host_get_consumed_energy() will not interrupt your process
+	 * (until after the next clock update).
+	 */
+	static public native void updateAllEnergyConsumptions();
+	/** Returns the amount of Joules consumed by that host so far 
+	 *
+	 * Please note that since the consumption is lazily updated, it may require a simcall to update it.
+	 * The result is that the actor requesting this value will be interrupted,
+	 * the value will be updated in kernel mode before returning the control to the requesting actor.
+
+	 */
 	public native double getConsumedEnergy();
 	
 	/** Returns the current pstate */

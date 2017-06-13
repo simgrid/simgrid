@@ -30,6 +30,9 @@ SimGrid (3.16) UNRELEASED
  Virtual Machines
   - Allow multicore VMs, along with the correct sharing computations
 
+ Energy
+  - New function to update the consumption of all hosts at once.
+
  MSG
   - The netzone are now available from the MSG API.
     The old names still work, but are now deprecated.

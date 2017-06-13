@@ -113,45 +113,54 @@ void HostEnergy::update()
   double finish_time = surf_get_clock();
   double cpu_load;
   double current_speed = host->speed();
-  if (current_speed <= 0)
-    // Some users declare a pstate of speed 0 flops (e.g., to model boot time).
-    // We consider that the machine is then fully loaded. That's arbitrary but it avoids a NaN
-    cpu_load = 1;
-  else
-    cpu_load = lmm_constraint_get_usage(host->pimpl_cpu->constraint()) / current_speed;
 
-  /** Divide by the number of cores here **/
-  cpu_load /= host->pimpl_cpu->coreCount();
+  if (start_time < finish_time) {
+    // We may have start == finish if the past consumption was updated since the simcall was started
+    // for example if 2 actors requested to update the same host's consumption in a given scheduling round.
+    //
+    // Even in this case, we need to save the pstate for the next call (after this big if),
+    // which may have changed since that recent update.
 
-  if (cpu_load > 1) // A machine with a load > 1 consumes as much as a fully loaded machine, not more
-    cpu_load = 1;
+    if (current_speed <= 0)
+      // Some users declare a pstate of speed 0 flops (e.g., to model boot time).
+      // We consider that the machine is then fully loaded. That's arbitrary but it avoids a NaN
+      cpu_load = 1;
+    else
+      cpu_load = lmm_constraint_get_usage(host->pimpl_cpu->constraint()) / current_speed;
 
-  /* The problem with this model is that the load is always 0 or 1, never something less.
-   * Another possibility could be to model the total energy as
-   *
-   *   X/(X+Y)*W_idle + Y/(X+Y)*W_burn
-   *
-   * where X is the amount of idling cores, and Y the amount of computing cores.
-   */
+    /** Divide by the number of cores here **/
+    cpu_load /= host->pimpl_cpu->coreCount();
 
-  double previous_energy = this->total_energy;
+    if (cpu_load > 1) // A machine with a load > 1 consumes as much as a fully loaded machine, not more
+      cpu_load = 1;
 
-  double instantaneous_consumption;
-  if (this->pstate == -1) // The host was off at the beginning of this time interval
-    instantaneous_consumption = this->watts_off;
-  else
-    instantaneous_consumption = this->getCurrentWattsValue(cpu_load);
+    /* The problem with this model is that the load is always 0 or 1, never something less.
+     * Another possibility could be to model the total energy as
+     *
+     *   X/(X+Y)*W_idle + Y/(X+Y)*W_burn
+     *
+     * where X is the amount of idling cores, and Y the amount of computing cores.
+     */
 
-  double energy_this_step = instantaneous_consumption * (finish_time - start_time);
+    double previous_energy = this->total_energy;
 
-  //TODO Trace: Trace energy_this_step from start_time to finish_time in host->name()
+    double instantaneous_consumption;
+    if (this->pstate == -1) // The host was off at the beginning of this time interval
+      instantaneous_consumption = this->watts_off;
+    else
+      instantaneous_consumption = this->getCurrentWattsValue(cpu_load);
 
-  this->total_energy = previous_energy + energy_this_step;
-  this->last_updated = finish_time;
+    double energy_this_step = instantaneous_consumption * (finish_time - start_time);
 
-  XBT_DEBUG(
-      "[update_energy of %s] period=[%.2f-%.2f]; current power peak=%.0E flop/s; consumption change: %.2f J -> %.2f J",
-      host->cname(), start_time, finish_time, host->pimpl_cpu->speed_.peak, previous_energy, energy_this_step);
+    // TODO Trace: Trace energy_this_step from start_time to finish_time in host->name()
+
+    this->total_energy = previous_energy + energy_this_step;
+    this->last_updated = finish_time;
+
+    XBT_DEBUG("[update_energy of %s] period=[%.2f-%.2f]; current power peak=%.0E flop/s; consumption change: %.2f J -> "
+              "%.2f J",
+              host->cname(), start_time, finish_time, host->pimpl_cpu->speed_.peak, previous_energy, energy_this_step);
+  }
 
   /* Save data for the upcoming time interval: whether it's on/off and the pstate if it's on */
   this->pstate = host->isOn() ? host->pstate() : -1;
@@ -372,7 +381,26 @@ void sg_host_energy_plugin_init()
   simgrid::surf::CpuAction::onStateChange.connect(&onActionStateChange);
 }
 
+/** @brief updates the consumption of all hosts
+ *
+ * After this call, sg_host_get_consumed_energy() will not interrupt your process
+ * (until after the next clock update).
+ */
+void sg_host_energy_update_all()
+{
+  simgrid::simix::kernelImmediate([]() {
+    std::vector<simgrid::s4u::Host*> list;
+    simgrid::s4u::Engine::instance()->hostList(&list);
+    for (auto host : list)
+      host->extension<HostEnergy>()->update();
+  });
+}
+
 /** @brief Returns the total energy consumed by the host so far (in Joules)
+ *
+ *  Please note that since the consumption is lazily updated, it may require a simcall to update it.
+ *  The result is that the actor requesting this value will be interrupted,
+ *  the value will be updated in kernel mode before returning the control to the requesting actor.
  *
  *  See also @ref SURF_plugin_energy.
  */
