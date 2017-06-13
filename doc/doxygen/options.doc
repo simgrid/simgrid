@@ -52,13 +52,11 @@ SimGrid.
 @code
 #include <xbt/config.h>
 
-extern xbt_cfg_t _sg_cfg_set;
-
 int main(int argc, char *argv[]) {
      SD_init(&argc, argv);
 
      /* Prefer MSG_config() if you use MSG!! */
-     xbt_cfg_set_parse(_sg_cfg_set,"Item:Value");
+     xbt_cfg_set_parse("Item:Value");
 
      // Rest of your code
 }
