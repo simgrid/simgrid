@@ -123,17 +123,6 @@ class PajeEvent {
   virtual ~PajeEvent();
 };
 
-class DefineContainerEvent : public PajeEvent
-{
-  public:
-  type_t type;
-  void print() override;
-  DefineContainerEvent(type_t);
-};
-
-//--------------------------------------------------
-
-
 //--------------------------------------------------
 
 class DefineVariableTypeEvent : public PajeEvent 
@@ -476,5 +465,7 @@ typedef enum { instr_fmt_paje, instr_fmt_TI } instr_fmt_type_t;
 extern instr_fmt_type_t instr_fmt_type;
 
 SG_END_DECL()
+
+void DefineContainerEvent(type_t type);
 
 #endif

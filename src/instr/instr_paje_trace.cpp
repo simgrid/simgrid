@@ -212,23 +212,16 @@ void TRACE_paje_end() {
   XBT_DEBUG("Filename %s is closed", filename);
 }
 
-DefineContainerEvent::DefineContainerEvent(type_t type)
+void DefineContainerEvent(type_t type)
 {
-
-  event_type                            = PAJE_DefineContainerType;
-  timestamp                             = 0;
-  this->type = type;
+  e_event_type event_type                            = PAJE_DefineContainerType;
+  double timestamp                             = 0;
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event_type);
   //print it
-  print ();
-	delete this;
-}
-
-void DefineContainerEvent::print() {
-	if (instr_fmt_type == instr_fmt_paje) {
+  if (instr_fmt_type == instr_fmt_paje) {
 		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
 		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << (int)this->event_type;
+		stream << (int)event_type;
 		stream << " " << type->id
 				<< " " << type->father->id
 				<< " " << type->name;
@@ -238,7 +231,9 @@ void DefineContainerEvent::print() {
 	} else {
 		THROW_IMPOSSIBLE;
 	}
+  //--
 }
+
 
 
 DefineVariableTypeEvent::DefineVariableTypeEvent(type_t type)
