@@ -125,13 +125,6 @@ class PajeEvent {
 
 //--------------------------------------------------
 
-class DefineVariableTypeEvent : public PajeEvent 
-{
-  public:
-  type_t type;
-   DefineVariableTypeEvent(type_t type);
-   void print() override;
-};
 //--------------------------------------------------
 
 class DefineStateTypeEvent : public PajeEvent  {
@@ -467,5 +460,6 @@ extern instr_fmt_type_t instr_fmt_type;
 SG_END_DECL()
 
 void DefineContainerEvent(type_t type);
+void DefineVariableTypeEvent(type_t type);
 
 #endif

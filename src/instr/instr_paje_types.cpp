@@ -162,7 +162,7 @@ type_t PJ_type_variable_new (const char *name, const char *color, type_t father)
     ret = newType (name, name, color, TYPE_VARIABLE, father);
   }
   XBT_DEBUG("VariableType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
-  new DefineVariableTypeEvent (ret);
+  DefineVariableTypeEvent (ret);
   return ret;
 }
 

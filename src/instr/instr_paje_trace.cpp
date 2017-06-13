@@ -236,24 +236,18 @@ void DefineContainerEvent(type_t type)
 
 
 
-DefineVariableTypeEvent::DefineVariableTypeEvent(type_t type)
+void DefineVariableTypeEvent(type_t type)
 {
-  this->event_type                           = PAJE_DefineVariableType;
-  this->timestamp                            = 0;
-  this->type = type;
+  e_event_type event_type                           = PAJE_DefineVariableType;
+  double timestamp                            = 0;
 
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event_type);
 
   //print it
-  print ();
-	delete this;
-}
-
-void DefineVariableTypeEvent::print() {
-  if (instr_fmt_type == instr_fmt_paje) {
+if (instr_fmt_type == instr_fmt_paje) {
     XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << (int)this->event_type;
+    stream << (int)event_type;
     stream << " " << type->id << " " << type->father->id << " " << type->name;
     if (type->color)
       stream << " \"" << type->color << "\"";
@@ -264,6 +258,7 @@ void DefineVariableTypeEvent::print() {
     THROW_IMPOSSIBLE;
   }
 }
+
 
 DefineStateTypeEvent::DefineStateTypeEvent(type_t type)
 {
