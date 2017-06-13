@@ -175,10 +175,10 @@ public:
    */
   static ActorPtr createActor(const char* name, s4u::Host* host, std::function<void()> code);
 
-  static ActorPtr createActor(const char* name, s4u::Host* host, std::function<void(std::vector<std::string>)> code,
-                              std::vector<std::string> args)
+  static ActorPtr createActor(const char* name, s4u::Host* host, std::function<void(std::vector<std::string>*)> code,
+                              std::vector<std::string>* args)
   {
-    return createActor(name, host, [code](std::vector<std::string> args) { code(args); }, args);
+    return createActor(name, host, [code](std::vector<std::string>* args) { code(args); }, args);
   }
 
   /** Create an actor using code
