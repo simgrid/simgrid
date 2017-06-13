@@ -61,7 +61,7 @@ int Coll_bcast_arrival_scatter::bcast(void *buf, int count,
   if (count < size) {
     XBT_WARN("MPI_bcast_arrival_scatter use default MPI_bcast.");
     Colls::bcast(buf, count, datatype, root, comm);
-    return MPI_SUCCESS;        
+    return MPI_SUCCESS;
   }
 
 
@@ -193,7 +193,7 @@ int Coll_bcast_arrival_scatter::bcast(void *buf, int count,
              0, tag, comm, &status);
 
     /* at this point all nodes in this set perform all-gather operation */
-    
+
     to = (myordering == (total_nodes - 1)) ? header_buf[0] : header_buf[myordering + 1];
     from = (myordering == 0) ? header_buf[total_nodes - 1] : header_buf[myordering - 1];
 

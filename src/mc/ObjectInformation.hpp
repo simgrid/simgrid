@@ -83,7 +83,7 @@ public:
    *
    * We need to efficiently find the function from any given instruction
    * address inside its range. This index is sorted by low_pc
-   * 
+   *
    * The entries are sorted by low_pc and a binary search can be used to look
    * them up. In order to have a better cache locality, we only keep the
    * information we need for the lookup in this vector. We could probably

@@ -10,7 +10,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_wait, "Messages specific for this msg exa
 /* Main function of the Sender process */
 static int sender(int argc, char *argv[])
 {
-  xbt_assert(argc==7, "The sender function expects 6 arguments from the XML deployment file"); 
+  xbt_assert(argc==7, "The sender function expects 6 arguments from the XML deployment file");
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");        /* - number of tasks */
   double task_comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s"); /* - computational cost */
   double task_comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s"); /* - communication cost */

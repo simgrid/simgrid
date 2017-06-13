@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(comm_mxn_scatter, sd, "SimDag test scatter");
 /*
  * intra communication test 1
  * scatter
- * 
+ *
  * start: 1 2 3 (each having 1/3 of the bandwidth)
  * after 3 sec: 0 1 2 (having 1/2 of the bandwidth)
  * after another 2 sec: 0 0 1 (having all the bandwidth)

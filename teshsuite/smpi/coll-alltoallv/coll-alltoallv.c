@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 
   print_buffer_int( rbuf, size*size, strdup("rbuf:"),rank);
 
-  MPI_Barrier(MPI_COMM_WORLD);  
+  MPI_Barrier(MPI_COMM_WORLD);
   if (0 == rank) {
     printf("Alltoallv TEST COMPLETE.\n");
   }

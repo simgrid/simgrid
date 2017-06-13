@@ -28,7 +28,7 @@ Coll_allgather_rhv::allgather(void *sbuf, int send_count,
   unsigned int mask;
   int curr_count;
 
-  // get size of the communicator, followed by rank 
+  // get size of the communicator, followed by rank
   unsigned int num_procs = comm->size();
 
   if((num_procs&(num_procs-1)))
@@ -45,10 +45,10 @@ Coll_allgather_rhv::allgather(void *sbuf, int send_count,
   recv_chunk = r_extent * recv_count;
 
   if (send_chunk != recv_chunk) {
-    XBT_WARN("MPI_allgather_rhv use default MPI_allgather.");  
+    XBT_WARN("MPI_allgather_rhv use default MPI_allgather.");
     Coll_allgather_default::allgather(sbuf, send_count, send_type, rbuf, recv_count,
                               recv_type, comm);
-    return MPI_SUCCESS;        
+    return MPI_SUCCESS;
   }
 
   // compute starting offset location to perform local copy

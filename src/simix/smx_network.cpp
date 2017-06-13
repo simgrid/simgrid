@@ -280,7 +280,7 @@ smx_activity_t SIMIX_comm_iprobe(smx_actor_t dst_proc, smx_mailbox_t mbox, int t
   } else{
     this_comm = new simgrid::kernel::activity::CommImpl(SIMIX_COMM_RECEIVE);
     smx_type = SIMIX_COMM_SEND;
-  } 
+  }
   smx_activity_t other_synchro=nullptr;
   if (mbox->permanent_receiver != nullptr && not mbox->done_comm_queue.empty()) {
     XBT_DEBUG("first check in the permanent recv mailbox, to see if we already got something");
@@ -410,7 +410,7 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, d
 
   if (MC_is_active() || MC_record_replay_is_active()){
     if (timeout > 0.0)
-      xbt_die("Timeout not implemented for waitany in the model-checker"); 
+      xbt_die("Timeout not implemented for waitany in the model-checker");
     int idx = SIMCALL_GET_MC_VALUE(simcall);
     synchro = xbt_dynar_get_as(synchros, idx, smx_activity_t);
     synchro->simcalls.push_back(simcall);
@@ -419,7 +419,7 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, d
     SIMIX_comm_finish(synchro);
     return;
   }
-  
+
   if (timeout < 0.0){
     simcall->timer = NULL;
   } else {
@@ -429,7 +429,7 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, d
       SIMIX_simcall_answer(simcall);
     });
   }
-  
+
   xbt_dynar_foreach(synchros, cursor, synchro){
     /* associate this simcall to the the synchro */
     synchro->simcalls.push_back(simcall);

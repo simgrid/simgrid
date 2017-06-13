@@ -77,8 +77,8 @@ static const char *instr_find_color (const char *state)
   while (current != nullptr) {
     if (strcmp (state, current) == 0 //exact match
         || strstr(target, current) != 0 ){//as substring
-         ret = smpi_colors[i+1]; 
-         break; 
+         ret = smpi_colors[i+1];
+         break;
     }
     i+=2;
     current = smpi_colors[i];

@@ -27,7 +27,7 @@ typedef struct s_smpi_key_elem {
   smpi_copy_fn copy_fn;
   smpi_delete_fn delete_fn;
   int refcount;
-} s_smpi_mpi_key_elem_t; 
+} s_smpi_mpi_key_elem_t;
 
 typedef struct s_smpi_key_elem *smpi_key_elem;
 
@@ -40,7 +40,7 @@ class Keyval{
   protected:
     std::unordered_map<int, void*>* attributes();
   public:
-// Each subclass should have two members, as we want to separate the ones for Win, Comm, and Datatypes :  
+// Each subclass should have two members, as we want to separate the ones for Win, Comm, and Datatypes :
 //    static std::unordered_map<int, smpi_key_elem> keyvals_;
 //    static int keyval_id_;
     template <typename T> static int keyval_create(smpi_copy_fn copy_fn, smpi_delete_fn delete_fn, int* keyval, void* extra_statee);

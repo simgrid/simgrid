@@ -5,16 +5,16 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "../colls_private.h"
-/* IMPLEMENTED BY PITCH PATARASUK 
-   Non-topoloty-specific (however, number of cores/node need to be changed) 
+/* IMPLEMENTED BY PITCH PATARASUK
+   Non-topoloty-specific (however, number of cores/node need to be changed)
    all-reduce operation designed for smp clusters
-   It uses 2-layer communication: binomial for both intra-communication 
+   It uses 2-layer communication: binomial for both intra-communication
    inter-communication
    The communication are done in a pipeline fashion */
 
 
 
-/* this is a default segment size for pipelining, 
+/* this is a default segment size for pipelining,
    but it is typically passed as a command line argument */
 int allreduce_smp_binomial_pipeline_segment_size = 4096;
 
@@ -113,7 +113,7 @@ int Coll_allreduce_smp_binomial_pipeline::allreduce(void *send_buf,
       }
     }
 
-    /* start binomial reduce inter-communication between each SMP nodes: 
+    /* start binomial reduce inter-communication between each SMP nodes:
        each node only have one process that can communicate to other nodes */
     if ((phase > 0) && (phase < (pipelength + 1))) {
       if (intra_rank == 0) {
@@ -138,7 +138,7 @@ int Coll_allreduce_smp_binomial_pipeline::allreduce(void *send_buf,
       }
     }
 
-    /* start binomial broadcast inter-communication between each SMP nodes: 
+    /* start binomial broadcast inter-communication between each SMP nodes:
        each node only have one process that can communicate to other nodes */
     if ((phase > 1) && (phase < (pipelength + 2))) {
       if (intra_rank == 0) {

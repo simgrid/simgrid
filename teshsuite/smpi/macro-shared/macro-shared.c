@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
   //Try SMPI_SHARED_CALL function, which should call hash only once and for all.
   char *str = strdup("onceandforall");
   if(rank==size-1){
-    SMPI_SHARED_CALL(hash,str,str,buf);  
+    SMPI_SHARED_CALL(hash,str,str,buf);
   }
 
   MPI_Barrier(MPI_COMM_WORLD);

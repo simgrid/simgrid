@@ -100,7 +100,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t args)
     host->pimpl_cpu->setPState(args->pstate);
   if (args->coord && strcmp(args->coord, ""))
     new simgrid::kernel::routing::vivaldi::Coords(host->pimpl_netpoint, args->coord);
-    
+
 }
 
 /** @brief Add a "router" to the network element list */
@@ -678,7 +678,7 @@ void sg_platf_new_AS_seal()
   xbt_assert(current_routing, "Cannot seal the current AS: none under construction");
   current_routing->seal();
   simgrid::s4u::NetZone::onSeal(*current_routing);
-  current_routing = static_cast<simgrid::kernel::routing::NetZoneImpl*>(current_routing->father()); 
+  current_routing = static_cast<simgrid::kernel::routing::NetZoneImpl*>(current_routing->father());
 }
 
 /** @brief Add a link connecting an host to the rest of its AS (which must be cluster or vivaldi) */

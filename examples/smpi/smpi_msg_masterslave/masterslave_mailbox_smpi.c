@@ -72,7 +72,7 @@ static int alltoall_mpi(int argc, char *argv[])
   XBT_INFO("alltoall for rank %d", rank);
   int* out=malloc(1000*size*sizeof(int));
   int* in=malloc(1000*size*sizeof(int));
-  MPI_Alltoall(out, 1000, MPI_INT,in, 1000, MPI_INT, MPI_COMM_WORLD); 
+  MPI_Alltoall(out, 1000, MPI_INT,in, 1000, MPI_INT, MPI_COMM_WORLD);
 
   XBT_INFO("after alltoall %d", rank);
   free(out);

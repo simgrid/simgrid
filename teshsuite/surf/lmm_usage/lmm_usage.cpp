@@ -259,7 +259,7 @@ static void test3(method_t method)
 
   /* Creates the constraints */
   lmm_constraint_t *tmp_cnst = xbt_new0(lmm_constraint_t, 15);
-  for (int i = 0; i < 15; i++) 
+  for (int i = 0; i < 15; i++)
     tmp_cnst[i] = lmm_constraint_new(Sys, nullptr, B[i]);
 
   /* Creates the variables */

@@ -37,10 +37,10 @@
  * copyright file COPYRIGHT in the top level MVAPICH2 directory.
  *
  */
- 
+
 //correct on stampede
 #define MV2_ALLTOALL_THROTTLE_FACTOR         4
- 
+
 #include "../colls_private.h"
 namespace simgrid{
 namespace smpi{
@@ -59,16 +59,16 @@ int Coll_alltoall_mvapich2_scatter_dest::alltoall(
     int dst, rank;
     MPI_Request *reqarray;
     MPI_Status *starray;
-    
+
     if (recvcount == 0) return MPI_SUCCESS;
-    
+
     comm_size =  comm->size();
     rank = comm->rank();
-    
+
     /* Get extent of send and recv types */
     recvtype_extent = recvtype->get_extent();
     sendtype_extent = sendtype->get_extent();
-    
+
     /* Medium-size message. Use isend/irecv with scattered
      destinations. Use Tony Ladd's modification to post only
      a small number of isends/irecvs at a time. */
@@ -83,20 +83,20 @@ int Coll_alltoall_mvapich2_scatter_dest::alltoall(
      there are only a few isend/irecvs left)
      */
     int ii, ss, bblock;
-        
+
     //Stampede is configured with
     bblock = MV2_ALLTOALL_THROTTLE_FACTOR;//mv2_coll_param.alltoall_throttle_factor;
-    
+
     if (bblock >= comm_size) bblock = comm_size;
     /* If throttle_factor is n, each process posts n pairs of isend/irecv
      in each iteration. */
-    
+
     /* FIXME: This should use the memory macros (there are storage
      leaks here if there is an error, for example) */
     reqarray= (MPI_Request*)xbt_malloc(2*bblock*sizeof(MPI_Request));
-    
+
     starray=(MPI_Status *)xbt_malloc(2*bblock*sizeof(MPI_Status));
- 
+
     for (ii=0; ii<comm_size; ii+=bblock) {
         ss = comm_size-ii < bblock ? comm_size-ii : bblock;
         /* do the communication -- post ss sends and receives: */
@@ -116,11 +116,11 @@ int Coll_alltoall_mvapich2_scatter_dest::alltoall(
                                           COLL_TAG_ALLTOALL, comm);
 
         }
-        
+
         /* ... then wait for them to finish: */
         Request::waitall(2*ss,reqarray,starray);
-        
-       
+
+
         /* --BEGIN ERROR HANDLING-- */
         if (mpi_errno == MPI_ERR_IN_STATUS) {
                 for (j=0; j<2*ss; j++) {
@@ -134,7 +134,7 @@ int Coll_alltoall_mvapich2_scatter_dest::alltoall(
     xbt_free(starray);
     xbt_free(reqarray);
     return (mpi_errno);
-    
+
 }
 }
 }

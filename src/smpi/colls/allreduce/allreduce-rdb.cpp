@@ -47,10 +47,10 @@ int Coll_allreduce_rdb::allreduce(void *sbuff, void *rbuff, int count,
   // processes of rank < 2*rem send their data to
   // (rank+1). These even-numbered processes no longer
   // participate in the algorithm until the very end. The
-  // remaining processes form a nice power-of-two. 
+  // remaining processes form a nice power-of-two.
 
   if (rank < 2 * rem) {
-    // even       
+    // even
     if (rank % 2 == 0) {
 
       Request::send(rbuff, count, dtype, rank + 1, tag, comm);
@@ -67,12 +67,12 @@ int Coll_allreduce_rdb::allreduce(void *sbuff, void *rbuff, int count,
       // the operation is commutative or not.
       if(op!=MPI_OP_NULL) op->apply( tmp_buf, rbuff, &count, dtype);
 
-      // change the rank 
+      // change the rank
       newrank = rank / 2;
     }
   }
 
-  else                          // rank >= 2 * rem 
+  else                          // rank >= 2 * rem
     newrank = rank - rem;
 
   // If op is user-defined or count is less than pof2, use
@@ -82,22 +82,22 @@ int Coll_allreduce_rdb::allreduce(void *sbuff, void *rbuff, int count,
   // datatypes on one process and derived on another as long as
   // the type maps are the same. Breaking up derived
   // datatypes to do the reduce-scatter is tricky, therefore
-  // using recursive doubling in that case.) 
+  // using recursive doubling in that case.)
 
   if (newrank != -1) {
     mask = 0x1;
     while (mask < pof2) {
       newdst = newrank ^ mask;
-      // find real rank of dest 
+      // find real rank of dest
       dst = (newdst < rem) ? newdst * 2 + 1 : newdst + rem;
 
       // Send the most current data, which is in recvbuf. Recv
-      // into tmp_buf 
+      // into tmp_buf
       Request::sendrecv(rbuff, count, dtype, dst, tag, tmp_buf, count, dtype,
                    dst, tag, comm, &status);
 
       // tmp_buf contains data received in this step.
-      // recvbuf contains data accumulated so far 
+      // recvbuf contains data accumulated so far
 
       // op is commutative OR the order is already right
       // we assume it is commuttive op
@@ -120,9 +120,9 @@ int Coll_allreduce_rdb::allreduce(void *sbuff, void *rbuff, int count,
   // participate above.
 
   if (rank < 2 * rem) {
-    if (rank % 2)               // odd 
+    if (rank % 2)               // odd
       Request::send(rbuff, count, dtype, rank - 1, tag, comm);
-    else                        // even 
+    else                        // even
       Request::recv(rbuff, count, dtype, rank + 1, tag, comm, &status);
   }
 

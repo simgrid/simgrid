@@ -25,7 +25,7 @@ SG_BEGIN_DECL()
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostStateDeclare(JNIEnv * env, jclass cls, jstring js)
 {
   const char *s = env->GetStringUTFChars(js, 0);
-  TRACE_host_state_declare(s);  
+  TRACE_host_state_declare(s);
   env->ReleaseStringUTFChars(js, s);
 }
 
@@ -36,7 +36,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostStateDeclareValue (JNIEn
   const char *value = env->GetStringUTFChars(js_value, 0);
   const char *color = env->GetStringUTFChars(js_color, 0);
 
-  TRACE_host_state_declare_value(state, value, color);  
+  TRACE_host_state_declare_value(state, value, color);
 
   env->ReleaseStringUTFChars(js_state, state);
   env->ReleaseStringUTFChars(js_value, value);
@@ -50,7 +50,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostSetState (JNIEnv *env, j
   const char *state = env->GetStringUTFChars(js_state, 0);
   const char *value = env->GetStringUTFChars(js_value, 0);
 
-  TRACE_host_set_state(host, state, value);  
+  TRACE_host_set_state(host, state, value);
 
   env->ReleaseStringUTFChars(js_host, host);
   env->ReleaseStringUTFChars(js_state, state);
@@ -64,7 +64,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostPushState (JNIEnv *env, 
   const char *state = env->GetStringUTFChars(js_state, 0);
   const char *value = env->GetStringUTFChars(js_value, 0);
 
-  TRACE_host_push_state(host, state, value);  
+  TRACE_host_push_state(host, state, value);
 
   env->ReleaseStringUTFChars(js_host, host);
   env->ReleaseStringUTFChars(js_state, state);
@@ -77,7 +77,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostPopState (JNIEnv *env, j
   const char *host = env->GetStringUTFChars(js_host, 0);
   const char *state = env->GetStringUTFChars(js_state, 0);
 
-  TRACE_host_pop_state(host, state);  
+  TRACE_host_pop_state(host, state);
 
   env->ReleaseStringUTFChars(js_host, host);
   env->ReleaseStringUTFChars(js_state, state);

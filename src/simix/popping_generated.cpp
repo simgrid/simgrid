@@ -85,7 +85,7 @@ const char* simcall_names[] = {
 
 /** @private
  * @brief (in kernel mode) unpack the simcall and activate the handler
- * 
+ *
  * This function is generated from src/simix/simcalls.in
  */
 void SIMIX_simcall_handle(smx_simcall_t simcall, int value) {

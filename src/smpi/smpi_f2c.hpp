@@ -18,7 +18,7 @@ namespace smpi{
 
 class F2C {
   private:
-    // We use a single lookup table for every type. 
+    // We use a single lookup table for every type.
     // Beware of collisions if id in mpif.h is not unique
     static xbt_dict_t f2c_lookup_;
     static int f2c_id_;

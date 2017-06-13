@@ -78,7 +78,7 @@ XBT_PUBLIC(void) xbt_automaton_transition_set_source(xbt_automaton_transition_t 
 XBT_PUBLIC(void) xbt_automaton_transition_set_destination(xbt_automaton_transition_t t, xbt_automaton_state_t dst);
 XBT_PUBLIC(xbt_dynar_t) xbt_automaton_state_get_out_transitions(xbt_automaton_state_t s);
 XBT_PUBLIC(xbt_dynar_t) xbt_automaton_state_get_in_transitions(xbt_automaton_state_t s);
-XBT_PUBLIC(xbt_automaton_state_t) xbt_automaton_state_exists(xbt_automaton_t a, char *id); 
+XBT_PUBLIC(xbt_automaton_state_t) xbt_automaton_state_exists(xbt_automaton_t a, char *id);
 XBT_PUBLIC(void) xbt_automaton_display(xbt_automaton_t a);
 XBT_PUBLIC(void) xbt_automaton_exp_label_display(xbt_automaton_exp_label_t l);
 

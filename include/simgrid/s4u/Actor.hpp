@@ -262,7 +262,7 @@ public:
    * This blocks the calling actor until the actor on which we call join() is terminated
    */
   void join();
-  
+
   // Static methods on all actors:
 
   /** Ask kindly to all actors to die. Only the issuer will survive. */

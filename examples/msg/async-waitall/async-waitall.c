@@ -50,7 +50,7 @@ static int receiver(int argc, char *argv[])
 
   char mailbox[80];
   snprintf(mailbox,79, "receiver-%d", id);
-   
+
   MSG_process_sleep(10);
   while (1) {
     XBT_INFO("Wait to receive a task");

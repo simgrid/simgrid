@@ -439,7 +439,7 @@ static std::vector<s_mc_snapshot_stack_t> take_snapshot_stacks(simgrid::mc::Snap
 static void snapshot_handle_ignore(simgrid::mc::Snapshot* snapshot)
 {
   xbt_assert(snapshot->process());
-  
+
   // Copy the memory:
   for (auto const& region : mc_model_checker->process().ignored_regions()) {
     s_mc_snapshot_ignored_data_t ignored_data;
@@ -612,7 +612,7 @@ void restore_snapshot_fds(simgrid::mc::Snapshot* snapshot)
   xbt_die("FD snapshot not implemented in client/server mode.");
 
   for (auto const& fd : snapshot->current_fds) {
-    
+
     int new_fd = open(fd.filename.c_str(), fd.flags);
     if (new_fd < 0)
       xbt_die("Could not reopen the file %s fo restoring the file descriptor", fd.filename.c_str());

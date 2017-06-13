@@ -32,7 +32,7 @@ Coll_allgather_rdb::allgather(void *sbuf, int send_count,
   char *send_ptr = (char *) sbuf;
   char *recv_ptr = (char *) rbuf;
 
-  // get size of the communicator, followed by rank 
+  // get size of the communicator, followed by rank
   unsigned int num_procs = comm->size();
   unsigned int rank = comm->rank();
 

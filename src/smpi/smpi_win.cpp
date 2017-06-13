@@ -276,7 +276,7 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
         comm_->group()->index(target_rank), smpi_process()->index(), SMPI_RMA_TAG+2, comm_,
         MPI_OP_NULL);
 
-    //start the send, with another process than us as sender. 
+    //start the send, with another process than us as sender.
     sreq->start();
     //push request to receiver's win
     xbt_mutex_acquire(send_win->mut_);
@@ -320,7 +320,7 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
     if(locked != 1)
       return MPI_ERR_WIN;
   }
-  //FIXME: local version 
+  //FIXME: local version
 
   if(target_count*target_datatype->get_extent()>recv_win->size_)
     return MPI_ERR_ARG;
@@ -358,8 +358,8 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
   return MPI_SUCCESS;
 }
 
-int Win::get_accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr, 
-              int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count, 
+int Win::get_accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
+              int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count,
               MPI_Datatype target_datatype, MPI_Op op, MPI_Request* request){
 
   //get sender pointer

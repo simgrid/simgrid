@@ -10,4 +10,4 @@
 int predR(void);
 int predCS(void);
 
-#endif 
+#endif

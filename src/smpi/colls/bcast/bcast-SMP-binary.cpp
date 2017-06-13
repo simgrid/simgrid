@@ -62,7 +62,7 @@ int Coll_bcast_SMP_binary::bcast(void *buf, int count,
     else if (rank == 0)
       Request::recv(buf, count, datatype, root, tag, comm, &status);
   }
-  // when a message is smaller than a block size => no pipeline 
+  // when a message is smaller than a block size => no pipeline
   if (count <= segment) {
     // case ROOT-of-each-SMP
     if (rank % host_num_core == 0) {

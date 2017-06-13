@@ -242,7 +242,7 @@ void smpi_global_init()
     xbt_os_walltimer_start(global_timer);
   }
 
-  if (xbt_cfg_get_string("smpi/comp-adjustment-file")[0] != '\0') { 
+  if (xbt_cfg_get_string("smpi/comp-adjustment-file")[0] != '\0') {
     std::string filename {xbt_cfg_get_string("smpi/comp-adjustment-file")};
     std::ifstream fstream(filename);
     if (not fstream.is_open()) {
@@ -650,7 +650,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
   if (MC_is_active()) {
     MC_run();
   } else {
-  
+
     SIMIX_run();
 
     xbt_os_walltimer_stop(global_timer);
@@ -660,7 +660,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
           "The simulation took %g seconds (after parsing and platform setup)\n"
           "%g seconds were actual computation of the application",
           SIMIX_get_clock(), global_time , smpi_total_benched_time);
-          
+
       if (smpi_total_benched_time/global_time>=0.75)
       XBT_INFO("More than 75%% of the time was spent inside the application code.\n"
       "You may want to use sampling functions or trace replay to reduce this.");
@@ -698,7 +698,7 @@ void SMPI_finalize(){
 }
 
 void smpi_mpi_init() {
-  if(smpi_init_sleep > 0) 
+  if(smpi_init_sleep > 0)
     simcall_process_sleep(smpi_init_sleep);
 }
 
@@ -713,7 +713,7 @@ double smpi_mpi_wtime(){
     //     }
     // because the time will not normally advance when only calls to MPI_Wtime
     // are made -> deadlock (MPI_Wtime never reaches the time limit)
-    if(smpi_wtime_sleep > 0) 
+    if(smpi_wtime_sleep > 0)
       simcall_process_sleep(smpi_wtime_sleep);
     smpi_bench_begin();
   } else {

@@ -145,6 +145,6 @@ RegionSnapshot sparse_region(RegionType region_type,
   region.page_data(std::move(page_data));
   return region;
 }
-  
+
 }
 }

@@ -35,7 +35,7 @@ main (int argc, char **argv)
   }
   else {
     MPI_Comm_split (MPI_COMM_WORLD, rank % 2, nprocs - rank, &comm);
-    
+
     if (comm != MPI_COMM_NULL) {
       MPI_Comm_size (comm, &dnprocs);
       MPI_Comm_rank (comm, &drank);

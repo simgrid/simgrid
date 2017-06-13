@@ -31,9 +31,9 @@ int Coll_reduce_binomial::reduce(void *sendbuf, void *recvbuf, int count,
   tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
   int is_commutative =  (op==MPI_OP_NULL || op->is_commutative());
   mask = 1;
-  
+
   int lroot;
-  if (is_commutative) 
+  if (is_commutative)
         lroot   = root;
   else
         lroot   = 0;
@@ -43,7 +43,7 @@ int Coll_reduce_binomial::reduce(void *sendbuf, void *recvbuf, int count,
 
   /* adjust for potential negative lower bound in datatype */
   tmp_buf = (void *)((char*)tmp_buf - true_lb);
-    
+
   /* If I'm not the root, then my recvbuf may not be valid, therefore
      I have to allocate a temporary one */
   if (rank != root) {
@@ -61,7 +61,7 @@ int Coll_reduce_binomial::reduce(void *sendbuf, void *recvbuf, int count,
       if (source < comm_size) {
         source = (source + lroot) % comm_size;
         Request::recv(tmp_buf, count, datatype, source, tag, comm, &status);
-        
+
         if (is_commutative) {
           if(op!=MPI_OP_NULL) op->apply( tmp_buf, recvbuf, &count, datatype);
         } else {

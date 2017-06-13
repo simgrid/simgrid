@@ -34,7 +34,7 @@ int main
   int done;
 
   rc = MPI_Init(&argc,&argv);
-  if (rc != MPI_SUCCESS) 
+  if (rc != MPI_SUCCESS)
     {
       printf ("Error starting MPI program. Terminating.\n");
       MPI_Abort(MPI_COMM_WORLD, rc);
@@ -45,7 +45,7 @@ int main
   MPI_Get_processor_name (processor_name, &namelen);
   printf ("(%d) is alive on %s\n", rank, processor_name);
   fflush (stdout);
-  
+
   /* Must be multiple of two for this test */
   if ((numtasks & 1) != 0)
     {
@@ -86,7 +86,7 @@ int main
 	}
       else if (split_rank == 1)
 	{
-	  rc = MPI_Irecv (&recv_int, 1, MPI_INT, 0, 0, split_comm, 
+	  rc = MPI_Irecv (&recv_int, 1, MPI_INT, 0, 0, split_comm,
 			  &request);
 	  if (rc != MPI_SUCCESS)
 	    {

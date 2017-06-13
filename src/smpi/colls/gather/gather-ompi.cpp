@@ -39,7 +39,7 @@ int Coll_gather_ompi_binomial::gather(void* sbuf, int scount, MPI_Datatype sdtyp
     int err;
     ompi_coll_tree_t* bmtree;
     MPI_Status status;
-    MPI_Aint sextent, slb, strue_lb, strue_extent; 
+    MPI_Aint sextent, slb, strue_lb, strue_extent;
     MPI_Aint rextent, rlb, rtrue_lb, rtrue_extent;
 
 
@@ -203,7 +203,7 @@ int Coll_gather_ompi_linear_sync::gather(void *sbuf, int scount,
                                          MPI_Datatype sdtype,
                                          void *rbuf, int rcount,
                                          MPI_Datatype rdtype,
-                                         int root, 
+                                         int root,
                                          MPI_Comm comm)
 {
     int i;
@@ -217,7 +217,7 @@ int Coll_gather_ompi_linear_sync::gather(void *sbuf, int scount,
     int first_segment_size=0;
     size = comm->size();
     rank = comm->rank();
-    
+
     size_t dsize, block_size;
     if (rank == root) {
         dsize= rdtype->size();
@@ -226,7 +226,7 @@ int Coll_gather_ompi_linear_sync::gather(void *sbuf, int scount,
         dsize=sdtype->size();
         block_size = dsize * scount;
     }
-    
+
      if (block_size > 92160){
      first_segment_size = 32768;
      }else{
@@ -272,26 +272,26 @@ int Coll_gather_ompi_linear_sync::gather(void *sbuf, int scount,
         ret  = -1;
         line = __LINE__;
         goto error_hndl; }
-        
+
         typelng=rdtype->size();
         rdtype->extent(&lb, &extent);
         first_segment_count = rcount;
-        COLL_TUNED_COMPUTED_SEGCOUNT( (size_t)first_segment_size, typelng, 
+        COLL_TUNED_COMPUTED_SEGCOUNT( (size_t)first_segment_size, typelng,
                                       first_segment_count );
 
         for (i = 0; i < size; ++i) {
-            if (i == rank) {  
+            if (i == rank) {
                 /* skip myself */
-                reqs[i] = MPI_REQUEST_NULL; 
-                continue; 
-            } 
+                reqs[i] = MPI_REQUEST_NULL;
+                continue;
+            }
 
             /* irecv for the first segment from i */
             ptmp = (char*)rbuf + i * rcount * extent;
             first_segment_req = Request::irecv(ptmp, first_segment_count, rdtype, i,
                                      COLL_TAG_GATHER, comm
                                      );
-            
+
             /* send sync message */
             Request::send(rbuf, 0, MPI_BYTE, i,
                                     COLL_TAG_GATHER,
@@ -299,7 +299,7 @@ int Coll_gather_ompi_linear_sync::gather(void *sbuf, int scount,
 
             /* irecv for the second segment */
             ptmp = (char*)rbuf + (i * rcount + first_segment_count) * extent;
-            reqs[i]=Request::irecv(ptmp, (rcount - first_segment_count), 
+            reqs[i]=Request::irecv(ptmp, (rcount - first_segment_count),
                                      rdtype, i, COLL_TAG_GATHER, comm
                                      );
 
@@ -310,11 +310,11 @@ int Coll_gather_ompi_linear_sync::gather(void *sbuf, int scount,
         /* copy local data if necessary */
         if (MPI_IN_PLACE != sbuf) {
             ret = Datatype::copy(sbuf, scount, sdtype,
-                                  (char*)rbuf + rank * rcount * extent, 
+                                  (char*)rbuf + rank * rcount * extent,
                                   rcount, rdtype);
             if (ret != MPI_SUCCESS) { line = __LINE__; goto error_hndl; }
         }
-        
+
         /* wait all second segments to complete */
         ret = Request::waitall(size, reqs, MPI_STATUSES_IGNORE);
         if (ret != MPI_SUCCESS) { line = __LINE__; goto error_hndl; }
@@ -326,8 +326,8 @@ int Coll_gather_ompi_linear_sync::gather(void *sbuf, int scount,
 
     return MPI_SUCCESS;
  error_hndl:
-    XBT_DEBUG( 
-                   "ERROR_HNDL: node %d file %s line %d error %d\n", 
+    XBT_DEBUG(
+                   "ERROR_HNDL: node %d file %s line %d error %d\n",
                    rank, __FILE__, line, ret );
     return ret;
 }
@@ -335,8 +335,8 @@ int Coll_gather_ompi_linear_sync::gather(void *sbuf, int scount,
 /*
  * Linear functions are copied from the BASIC coll module
  * they do not segment the message and are simple implementations
- * but for some small number of nodes and/or small data sizes they 
- * are just as fast as tuned/tree based segmenting operations 
+ * but for some small number of nodes and/or small data sizes they
+ * are just as fast as tuned/tree based segmenting operations
  * and as such may be selected by the decision functions
  * These are copied into this module due to the way we select modules
  * in V1. i.e. in V2 we will handle this differently and so will not

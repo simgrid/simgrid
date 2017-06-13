@@ -27,8 +27,8 @@ main (int argc, char **argv)
   int namelen = 128;
   int i;
   int ranks[2], ranges[1][3];
-  MPI_Group newgroup[GROUP_CONSTRUCTOR_COUNT]; 
-  MPI_Group newgroup2[GROUP_CONSTRUCTOR_COUNT]; 
+  MPI_Group newgroup[GROUP_CONSTRUCTOR_COUNT];
+  MPI_Group newgroup2[GROUP_CONSTRUCTOR_COUNT];
   MPI_Comm temp;
   MPI_Comm intercomm = MPI_COMM_NULL;
 
@@ -58,16 +58,16 @@ main (int argc, char **argv)
       MPI_Comm_group (MPI_COMM_WORLD, &newgroup[0]);
 
     if (GROUP_CONSTRUCTOR_COUNT > 1)
-      MPI_Group_incl (newgroup[0], 2, ranks, &newgroup[1]);    
+      MPI_Group_incl (newgroup[0], 2, ranks, &newgroup[1]);
 
     if (GROUP_CONSTRUCTOR_COUNT > 2)
       MPI_Group_excl (newgroup[0], 2, ranks, &newgroup[2]);
 
     if (GROUP_CONSTRUCTOR_COUNT > 3)
-      MPI_Group_range_incl (newgroup[0], 1, ranges, &newgroup[3]);    
+      MPI_Group_range_incl (newgroup[0], 1, ranges, &newgroup[3]);
 
     if (GROUP_CONSTRUCTOR_COUNT > 4)
-      MPI_Group_range_excl (newgroup[0], 1, ranges, &newgroup[4]);    
+      MPI_Group_range_excl (newgroup[0], 1, ranges, &newgroup[4]);
 
     if (GROUP_CONSTRUCTOR_COUNT > 5)
       MPI_Group_union (newgroup[1], newgroup[3], &newgroup[5]);
@@ -83,7 +83,7 @@ main (int argc, char **argv)
       MPI_Comm_split (MPI_COMM_WORLD, rank % 3, nprocs - rank, &temp);
 
       if (rank % 3) {
-	MPI_Intercomm_create (temp, 0, MPI_COMM_WORLD, 
+	MPI_Intercomm_create (temp, 0, MPI_COMM_WORLD,
 			      (((nprocs % 3) == 2) && ((rank % 3) == 2)) ?
 			      nprocs - 1 : nprocs - (rank % 3) - (nprocs % 3),
 			      INTERCOMM_CREATE_TAG, &intercomm);
@@ -98,7 +98,7 @@ main (int argc, char **argv)
 
       MPI_Comm_free (&temp);
     }
-      
+
     for (i = 0; i < GROUP_CONSTRUCTOR_COUNT; i++)
       MPI_Group_free (&newgroup[i]);
 
@@ -109,16 +109,16 @@ main (int argc, char **argv)
       MPI_Comm_group (MPI_COMM_WORLD, &newgroup[0]);
 
     if (GROUP_CONSTRUCTOR_COUNT > 1)
-      MPI_Group_incl (newgroup[0], 2, ranks, &newgroup[1]);    
+      MPI_Group_incl (newgroup[0], 2, ranks, &newgroup[1]);
 
     if (GROUP_CONSTRUCTOR_COUNT > 2)
       MPI_Group_excl (newgroup[0], 2, ranks, &newgroup[2]);
 
     if (GROUP_CONSTRUCTOR_COUNT > 3)
-      MPI_Group_range_incl (newgroup[0], 1, ranges, &newgroup[3]);    
+      MPI_Group_range_incl (newgroup[0], 1, ranges, &newgroup[3]);
 
     if (GROUP_CONSTRUCTOR_COUNT > 4)
-      MPI_Group_range_excl (newgroup[0], 1, ranges, &newgroup[4]);    
+      MPI_Group_range_excl (newgroup[0], 1, ranges, &newgroup[4]);
 
     if (GROUP_CONSTRUCTOR_COUNT > 5)
       MPI_Group_union (newgroup[1], newgroup[3], &newgroup[5]);
@@ -134,7 +134,7 @@ main (int argc, char **argv)
       MPI_Comm_split (MPI_COMM_WORLD, rank % 3, nprocs - rank, &temp);
 
       if (rank % 3) {
-	MPI_Intercomm_create (temp, 0, MPI_COMM_WORLD, 
+	MPI_Intercomm_create (temp, 0, MPI_COMM_WORLD,
 			      (((nprocs % 3) == 2) && ((rank % 3) == 2)) ?
 			      nprocs - 1 : nprocs - (rank % 3) - (nprocs % 3),
 			      INTERCOMM_CREATE_TAG, &intercomm);
@@ -149,7 +149,7 @@ main (int argc, char **argv)
 
       MPI_Comm_free (&temp);
     }
-      
+
     for (i = 0; i < GROUP_CONSTRUCTOR_COUNT; i++) {
       newgroup2[i] = newgroup[i];
       MPI_Group_free (&newgroup2[i]);

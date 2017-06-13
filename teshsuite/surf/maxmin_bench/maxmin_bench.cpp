@@ -48,7 +48,7 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
     cnst[i] = lmm_constraint_new(Sys, NULL, float_random(10.0));
     int l;
     if(rate_no_limit>float_random(1.0))
-      //Look at what happens when there is no concurrency limit 
+      //Look at what happens when there is no concurrency limit
       l=-1;
     else
       //Badly logarithmically random concurrency limit in [2^pw_base_limit+1,2^pw_base_limit+2^pw_max_limit]
@@ -108,12 +108,12 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
 }
 
 unsigned int TestClasses [][4]=
-  //Nbcnst Nbvar Baselimit Maxlimit 
+  //Nbcnst Nbvar Baselimit Maxlimit
   {{  10  ,10    ,1        ,2 }, //small
    {  100 ,100   ,3        ,6 }, //medium
    {  2000,2000  ,5        ,8 }, //big
    { 20000,20000 ,7        ,10}  //huge
-  }; 
+  };
 
 int main(int argc, char **argv)
 {
@@ -179,7 +179,7 @@ int main(int argc, char **argv)
     acc_date2+=date*date;
   }
 
-  float mean_date= acc_date/(float)testcount;  
+  float mean_date= acc_date/(float)testcount;
   float stdev_date= sqrt(acc_date2/(float)testcount-mean_date*mean_date);
 
   fprintf(stderr,

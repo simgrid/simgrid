@@ -35,7 +35,7 @@ xbt_automaton_state_t xbt_automaton_state_new(xbt_automaton_t a, int type, char*
   state->type = type;
   state->id = xbt_strdup(id);
   state->in = xbt_dynar_new(sizeof(xbt_automaton_transition_t), xbt_automaton_transition_free_voidp);
-  state->out = xbt_dynar_new(sizeof(xbt_automaton_transition_t), xbt_automaton_transition_free_voidp); 
+  state->out = xbt_dynar_new(sizeof(xbt_automaton_transition_t), xbt_automaton_transition_free_voidp);
   xbt_dynar_push(a->states, &state);
   return state;
 }
@@ -283,7 +283,7 @@ int xbt_automaton_transition_compare(const void *t1, const void *t2){
 
   if(xbt_automaton_state_compare(((xbt_automaton_transition_t)t1)->src, ((xbt_automaton_transition_t)t2)->src))
     return 1;
-  
+
   if(xbt_automaton_state_compare(((xbt_automaton_transition_t)t1)->dst, ((xbt_automaton_transition_t)t2)->dst))
     return 1;
 
@@ -291,7 +291,7 @@ int xbt_automaton_transition_compare(const void *t1, const void *t2){
     return 1;
 
   return 0;
-  
+
 }
 
 int xbt_automaton_exp_label_compare(xbt_automaton_exp_label_t l1, xbt_automaton_exp_label_t l2){
@@ -300,7 +300,7 @@ int xbt_automaton_exp_label_compare(xbt_automaton_exp_label_t l1, xbt_automaton_
     return 1;
 
   switch(l1->type){
-  case 0 : // OR 
+  case 0 : // OR
   case 1 : // AND
     if(xbt_automaton_exp_label_compare(l1->u.or_and.left_exp, l2->u.or_and.left_exp))
       return 1;
@@ -330,7 +330,7 @@ int xbt_automaton_propositional_symbols_compare_value(xbt_dynar_t s1, xbt_dynar_
     int* iptr2 = xbt_dynar_get_ptr(s2, cursor);
     if(*iptr1 != *iptr2)
       return 1;
-  } 
+  }
 
   return 0;
 }

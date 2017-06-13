@@ -111,9 +111,9 @@ class Datatype : public F2C, public Keyval{
     void set_name(char* name);
     static int copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                     void *recvbuf, int recvcount, MPI_Datatype recvtype);
-    virtual void serialize( void* noncontiguous, void *contiguous, 
+    virtual void serialize( void* noncontiguous, void *contiguous,
                             int count);
-    virtual void unserialize( void* contiguous, void *noncontiguous, 
+    virtual void unserialize( void* contiguous, void *noncontiguous,
                               int count, MPI_Op op);
     static int keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval, void* extra_state);
     static int keyval_free(int* keyval);

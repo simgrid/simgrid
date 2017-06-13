@@ -101,7 +101,7 @@ class s_container;
 typedef s_container *container_t;
 
 class s_container {
-  public: 
+  public:
   sg_netpoint_t netpoint;
   char *name;     /* Unique name of this container */
   char *id;       /* Unique id of this container */
@@ -136,7 +136,7 @@ class DefineContainerEvent : public PajeEvent
 
 //--------------------------------------------------
 
-class DefineVariableTypeEvent : public PajeEvent 
+class DefineVariableTypeEvent : public PajeEvent
 {
   public:
   type_t type;
@@ -154,7 +154,7 @@ class DefineStateTypeEvent : public PajeEvent  {
 
 class DefineEventTypeEvent : public PajeEvent  {
   type_t type;
-  public: 
+  public:
   DefineEventTypeEvent(type_t type);
   void print() override;
 };
@@ -216,7 +216,7 @@ class SubVariableEvent : public PajeEvent  {
   public:
   container_t container;
   type_t type;
-  double value; 
+  double value;
   public:
   SubVariableEvent(double timestamp, container_t container, type_t type, double value);
   void print() override;

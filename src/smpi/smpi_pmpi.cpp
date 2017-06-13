@@ -1015,10 +1015,10 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     extra->send_size = count*dt_size_send;
     TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
     TRACE_smpi_send(rank, rank, dst_traced, tag,count*datatype->size());
-  
+
     simgrid::smpi::Request::ssend(buf, count, datatype, dst, tag, comm);
     retval = MPI_SUCCESS;
-  
+
     TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
   }
 
@@ -1044,7 +1044,7 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
   }else if (dst >= comm->group()->size() || dst <0 ||
       (src!=MPI_ANY_SOURCE && (src >= comm->group()->size() || src <0))){
     retval = MPI_ERR_RANK;
-  } else if ((sendcount < 0 || recvcount<0) || 
+  } else if ((sendcount < 0 || recvcount<0) ||
       (sendbuf==nullptr && sendcount > 0) || (recvbuf==nullptr && recvcount>0)) {
     retval = MPI_ERR_COUNT;
   } else if((sendtag<0 && sendtag !=  MPI_ANY_TAG)||(recvtag<0 && recvtag != MPI_ANY_TAG)){
@@ -2620,7 +2620,7 @@ int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     retval = MPI_SUCCESS;
   } else if (target_rank <0){
     retval = MPI_ERR_RANK;
-  } else if (win->dynamic()==0 && target_disp <0){ 
+  } else if (win->dynamic()==0 && target_disp <0){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
   } else if ((origin_count < 0 || target_count < 0) ||
@@ -2655,7 +2655,7 @@ int PMPI_Rget( void *origin_addr, int origin_count, MPI_Datatype origin_datatype
     retval = MPI_SUCCESS;
   } else if (target_rank <0){
     retval = MPI_ERR_RANK;
-  } else if (win->dynamic()==0 && target_disp <0){ 
+  } else if (win->dynamic()==0 && target_disp <0){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
   } else if ((origin_count < 0 || target_count < 0) ||
@@ -2691,7 +2691,7 @@ int PMPI_Put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     retval = MPI_SUCCESS;
   } else if (target_rank <0){
     retval = MPI_ERR_RANK;
-  } else if (win->dynamic()==0 && target_disp <0){ 
+  } else if (win->dynamic()==0 && target_disp <0){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
   } else if ((origin_count < 0 || target_count < 0) ||
@@ -2727,7 +2727,7 @@ int PMPI_Rput( void *origin_addr, int origin_count, MPI_Datatype origin_datatype
     retval = MPI_SUCCESS;
   } else if (target_rank <0){
     retval = MPI_ERR_RANK;
-  } else if (win->dynamic()==0 && target_disp <0){ 
+  } else if (win->dynamic()==0 && target_disp <0){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
   } else if ((origin_count < 0 || target_count < 0) ||
@@ -2764,7 +2764,7 @@ int PMPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
     retval = MPI_SUCCESS;
   } else if (target_rank <0){
     retval = MPI_ERR_RANK;
-  } else if (win->dynamic()==0 && target_disp <0){ 
+  } else if (win->dynamic()==0 && target_disp <0){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
   } else if ((origin_count < 0 || target_count < 0) ||
@@ -2801,7 +2801,7 @@ int PMPI_Raccumulate( void *origin_addr, int origin_count, MPI_Datatype origin_d
     retval = MPI_SUCCESS;
   } else if (target_rank <0){
     retval = MPI_ERR_RANK;
-  } else if (win->dynamic()==0 && target_disp <0){ 
+  } else if (win->dynamic()==0 && target_disp <0){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
   } else if ((origin_count < 0 || target_count < 0) ||
@@ -2829,8 +2829,8 @@ int PMPI_Raccumulate( void *origin_addr, int origin_count, MPI_Datatype origin_d
   return retval;
 }
 
-int PMPI_Get_accumulate(void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr, 
-int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count, 
+int PMPI_Get_accumulate(void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
+int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count,
 MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
   int retval = 0;
   smpi_bench_end();
@@ -2840,7 +2840,7 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
     retval = MPI_SUCCESS;
   } else if (target_rank <0){
     retval = MPI_ERR_RANK;
-  } else if (win->dynamic()==0 && target_disp <0){ 
+  } else if (win->dynamic()==0 && target_disp <0){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
   } else if ((origin_count < 0 || target_count < 0 || result_count <0) ||
@@ -2859,8 +2859,8 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
     int src_traced = group->index(target_rank);
     TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, nullptr);
 
-    retval = win->get_accumulate( origin_addr, origin_count, origin_datatype, result_addr, 
-                                  result_count, result_datatype, target_rank, target_disp, 
+    retval = win->get_accumulate( origin_addr, origin_count, origin_datatype, result_addr,
+                                  result_count, result_datatype, target_rank, target_disp,
                                   target_count, target_datatype, op);
 
     TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
@@ -2870,8 +2870,8 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
 }
 
 
-int PMPI_Rget_accumulate(void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr, 
-int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count, 
+int PMPI_Rget_accumulate(void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
+int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count,
 MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
   int retval = 0;
   smpi_bench_end();
@@ -2882,7 +2882,7 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
     retval = MPI_SUCCESS;
   } else if (target_rank <0){
     retval = MPI_ERR_RANK;
-  } else if (win->dynamic()==0 && target_disp <0){ 
+  } else if (win->dynamic()==0 && target_disp <0){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
   } else if ((origin_count < 0 || target_count < 0 || result_count <0) ||
@@ -2903,8 +2903,8 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
     int src_traced = group->index(target_rank);
     TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, nullptr);
 
-    retval = win->get_accumulate( origin_addr, origin_count, origin_datatype, result_addr, 
-                                  result_count, result_datatype, target_rank, target_disp, 
+    retval = win->get_accumulate( origin_addr, origin_count, origin_datatype, result_addr,
+                                  result_count, result_datatype, target_rank, target_disp,
                                   target_count, target_datatype, op, request);
 
     TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
@@ -2928,7 +2928,7 @@ int PMPI_Compare_and_swap(void *origin_addr, void *compare_addr,
     retval = MPI_SUCCESS;
   } else if (target_rank <0){
     retval = MPI_ERR_RANK;
-  } else if (win->dynamic()==0 && target_disp <0){ 
+  } else if (win->dynamic()==0 && target_disp <0){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
   } else if (origin_addr==nullptr || result_addr==nullptr || compare_addr==nullptr){
@@ -2942,7 +2942,7 @@ int PMPI_Compare_and_swap(void *origin_addr, void *compare_addr,
     int src_traced = group->index(target_rank);
     TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, nullptr);
 
-    retval = win->compare_and_swap( origin_addr, compare_addr, result_addr, datatype, 
+    retval = win->compare_and_swap( origin_addr, compare_addr, result_addr, datatype,
                                   target_rank, target_disp);
 
     TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
@@ -3024,10 +3024,10 @@ int PMPI_Win_lock(int lock_type, int rank, int assert, MPI_Win win){
   smpi_bench_end();
   if (win == MPI_WIN_NULL) {
     retval = MPI_ERR_WIN;
-  } else if (lock_type != MPI_LOCK_EXCLUSIVE && 
+  } else if (lock_type != MPI_LOCK_EXCLUSIVE &&
              lock_type != MPI_LOCK_SHARED) {
     retval = MPI_ERR_LOCKTYPE;
-  } else if (rank == MPI_PROC_NULL){ 
+  } else if (rank == MPI_PROC_NULL){
     retval = MPI_SUCCESS;
   } else {
     int myrank = smpi_process()->index();
@@ -3044,7 +3044,7 @@ int PMPI_Win_unlock(int rank, MPI_Win win){
   smpi_bench_end();
   if (win == MPI_WIN_NULL) {
     retval = MPI_ERR_WIN;
-  } else if (rank == MPI_PROC_NULL){ 
+  } else if (rank == MPI_PROC_NULL){
     retval = MPI_SUCCESS;
   } else {
     int myrank = smpi_process()->index();
@@ -3091,7 +3091,7 @@ int PMPI_Win_flush(int rank, MPI_Win win){
   smpi_bench_end();
   if (win == MPI_WIN_NULL) {
     retval = MPI_ERR_WIN;
-  } else if (rank == MPI_PROC_NULL){ 
+  } else if (rank == MPI_PROC_NULL){
     retval = MPI_SUCCESS;
   } else {
     int myrank = smpi_process()->index();
@@ -3108,7 +3108,7 @@ int PMPI_Win_flush_local(int rank, MPI_Win win){
   smpi_bench_end();
   if (win == MPI_WIN_NULL) {
     retval = MPI_ERR_WIN;
-  } else if (rank == MPI_PROC_NULL){ 
+  } else if (rank == MPI_PROC_NULL){
     retval = MPI_SUCCESS;
   } else {
     int myrank = smpi_process()->index();

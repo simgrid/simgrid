@@ -238,7 +238,7 @@ WRAPPED_PMPI_CALL(MPI_Win, MPI_Win_f2c,(MPI_Fint win),(win))
 /*
   Unimplemented Calls - both PMPI and MPI calls are generated.
   When implementing, please move ahead, swap UNIMPLEMENTED_WRAPPED_PMPI_CALL for WRAPPED_PMPI_CALL,
-  and implement PMPI version of the function in smpi_pmpi.cpp file 
+  and implement PMPI version of the function in smpi_pmpi.cpp file
 */
 
 

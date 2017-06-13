@@ -48,7 +48,7 @@
    If FD is a valid file descriptor for an open file then data for the
    mmalloc managed region is mapped to that file, otherwise an anonymous
    map is used if supported by the underlying OS. In case of running in
-   an OS without support of anonymous mappings then "/dev/zero" is used 
+   an OS without support of anonymous mappings then "/dev/zero" is used
    and in both cases the data will not exist in any filesystem object.
 
    If the open file corresponding to FD is from a previous use of
@@ -58,8 +58,8 @@
    the current process as the process that created the file (ignoring
    the BASEADDR parameter).
 
-   For non valid FDs or empty files ones the mapping is established 
-   starting at the specified address BASEADDR in the process address 
+   For non valid FDs or empty files ones the mapping is established
+   starting at the specified address BASEADDR in the process address
    space.
 
    The provided BASEADDR should be choosed carefully in order to avoid
@@ -176,7 +176,7 @@ xbt_mheap_t xbt_mheap_new_options(int fd, void *baseaddr, int options)
   mdp->next_mdesc = NULL;
   mdp->refcount = 1;
   mdp->options = options;
-  
+
   /* If we have not been passed a valid open file descriptor for the file
      to map to, then we go for an anonymous map */
 
@@ -199,7 +199,7 @@ xbt_mheap_t xbt_mheap_new_options(int fd, void *baseaddr, int options)
     abort();
   }
 
-  /* Add the new heap to the linked list of heaps attached by mmalloc */  
+  /* Add the new heap to the linked list of heaps attached by mmalloc */
   if(__mmalloc_default_mdp){
     mdp = __mmalloc_default_mdp;
     while(mdp->next_mdesc)
@@ -388,7 +388,7 @@ ssize_t mmalloc_get_busy_size(xbt_mheap_t heap, void *ptr){
     ssize_t frag = ((uintptr_t) (ADDR2UINT (ptr) % (BLOCKSIZE))) >> heap->heapinfo[block].type;
     return heap->heapinfo[block].busy_frag.frag_size[frag];
   }
-    
+
 }
 
 void mmcheck(xbt_mheap_t heap) {return;

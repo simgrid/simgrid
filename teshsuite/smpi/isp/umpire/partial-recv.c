@@ -46,8 +46,8 @@ main (int argc, char **argv)
   MPI_Aint basic_extent;
   int blocklens[3];
   MPI_Aint displs[3];
-  MPI_Datatype structtypes[3]; 
-  MPI_Datatype newtype[2]; 
+  MPI_Datatype structtypes[3];
+  MPI_Datatype newtype[2];
   MPI_Request aReq[2];
   MPI_Status aStatus[2];
   test_small_struct_t small_struct_buf[SMALL_SIZE];
@@ -67,8 +67,8 @@ main (int argc, char **argv)
   blocklens[0] = blocklens[1] = blocklens[2] = 1;
   displs[0] = 0;
   displs[1] = sizeof(double);
-  displs[2] = 
-    ((void *) &(big_struct_buf[0].the_other_double)) - 
+  displs[2] =
+    ((void *) &(big_struct_buf[0].the_other_double)) -
     ((void *) big_struct_buf);
 
   if (displs[2] < 0) displs[2] = -displs[2];
@@ -78,13 +78,13 @@ main (int argc, char **argv)
   /* create the types */
   MPI_Type_struct (2, blocklens, displs, structtypes, &newtype[0]);
   MPI_Type_struct (3, blocklens, displs, structtypes, &newtype[1]);
-  
+
   MPI_Type_extent (newtype[0], &basic_extent);
   if (basic_extent != sizeof (test_small_struct_t)) {
     fprintf (stderr, "(%d): Unexpected extent for small struct\n", rank);
     MPI_Abort (MPI_COMM_WORLD, 666);
   }
-  
+
   MPI_Type_extent (newtype[1], &basic_extent);
   if (basic_extent != sizeof (test_big_struct_t)) {
     fprintf (stderr, "(%d): Unexpected extent for big struct\n", rank);

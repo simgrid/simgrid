@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/internal_config.h" 
+#include "src/internal_config.h"
 
 #include "xbt/parmap.h"
 
@@ -23,12 +23,12 @@ class RawContextFactory;
 
 /** @brief Fast context switching inspired from SystemV ucontexts.
   *
-  * The main difference to the System V context is that Raw Contexts are much faster because they don't 
+  * The main difference to the System V context is that Raw Contexts are much faster because they don't
   * preserve the signal mask when switching. This saves a system call (at least on Linux) on each context switch.
   */
 class RawContext : public Context {
 protected:
-  void* stack_ = nullptr; 
+  void* stack_ = nullptr;
   /** pointer to top the stack stack */
   void* stack_top_ = nullptr;
 public:

@@ -13,7 +13,7 @@
 
 SG_BEGIN_DECL()
 
-/** @brief get time in seconds 
+/** @brief get time in seconds
  *
  * gives  the  number  of  seconds since the Epoch (00:00:00 UTC, January 1, 1970).
  */

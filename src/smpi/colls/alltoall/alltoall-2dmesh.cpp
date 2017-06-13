@@ -26,7 +26,7 @@
            algorithm. It actually performs allgather operation in x dimension
            then in the y dimension. Each node then extracts the needed data.
            The communication in each dimension follows "simple."
- 
+
  * Auther: Ahmad Faraj
 
 ****************************************************************************/

@@ -70,8 +70,8 @@ public:
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Request* request=nullptr);
   int accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Request* request=nullptr);
-  int get_accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr, 
-              int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count, 
+  int get_accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
+              int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count,
               MPI_Datatype target_datatype, MPI_Op op, MPI_Request* request=nullptr);
   int compare_and_swap(void *origin_addr, void *compare_addr,
         void *result_addr, MPI_Datatype datatype, int target_rank,

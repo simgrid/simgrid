@@ -8,7 +8,7 @@
 
 static int bcast_NTSL_segment_size_in_byte = 8192;
 
-/* Non-topology-specific pipelined linear-bcast function 
+/* Non-topology-specific pipelined linear-bcast function
    0->1, 1->2 ,2->3, ....., ->last node : in a pipeline fashion
 */
 namespace simgrid{
@@ -37,14 +37,14 @@ int Coll_bcast_NTSL_Isend::bcast(void *buf, int count, MPI_Datatype datatype,
 
   /* segment is segment size in number of elements (not bytes) */
   int segment = bcast_NTSL_segment_size_in_byte / extent;
-  segment =  segment == 0 ? 1 :segment; 
+  segment =  segment == 0 ? 1 :segment;
   /* pipeline length */
   int pipe_length = count / segment;
 
   /* use for buffer offset for sending and receiving data = segment size in byte */
   int increment = segment * extent;
 
-  /* if the input size is not divisible by segment size => 
+  /* if the input size is not divisible by segment size =>
      the small remainder will be done with native implementation */
   int remainder = count % segment;
 

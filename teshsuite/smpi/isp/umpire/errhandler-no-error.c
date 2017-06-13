@@ -58,17 +58,17 @@ main (int argc, char **argv)
 
   MPI_Barrier (comm);
 
-  for (i = 0; i < ERRHANDLER_COUNT; i++) 
+  for (i = 0; i < ERRHANDLER_COUNT; i++)
     MPI_Errhandler_create (myErrhandler, &newerrhandler[i]);
 
-  for (i = 0; i < ERRHANDLER_COUNT; i++) 
+  for (i = 0; i < ERRHANDLER_COUNT; i++)
     MPI_Errhandler_free (&newerrhandler[i]);
 
   MPI_Barrier (comm);
 
   /* now with an alias... */
 
-  for (i = 0; i < ERRHANDLER_COUNT; i++) 
+  for (i = 0; i < ERRHANDLER_COUNT; i++)
     MPI_Errhandler_create (myErrhandler, &newerrhandler[i]);
 
   for (i = 0; i < ERRHANDLER_COUNT; i++) {

@@ -63,7 +63,7 @@ int Coll_allreduce_rab1::allreduce(void *sbuff, void *rbuff,
       if(op!=MPI_OP_NULL) op->apply( tmp_buf, (char *) recv + recv_idx * extent, &recv_cnt,
                      dtype);
 
-      // update send_idx for next iteration 
+      // update send_idx for next iteration
       send_idx = recv_idx;
       mask >>= 1;
     }
@@ -97,7 +97,7 @@ int Coll_allreduce_rab1::allreduce(void *sbuff, void *rbuff,
       if(op!=MPI_OP_NULL) op->apply( tmp_buf, (char *) rbuff + recv_idx * extent, &recv_cnt,
                      dtype);
 
-      // update send_idx for next iteration 
+      // update send_idx for next iteration
       send_idx = recv_idx;
       mask >>= 1;
     }

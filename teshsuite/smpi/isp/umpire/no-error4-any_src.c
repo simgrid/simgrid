@@ -39,7 +39,7 @@ main (int argc, char **argv)
       memset (buf0, 0, buf_size);
 
       MPI_Send_init (buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &aReq[0]);
-      MPI_Recv_init (buf1, buf_size, MPI_INT, 
+      MPI_Recv_init (buf1, buf_size, MPI_INT,
 		     MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &aReq[1]);
 
       MPI_Start (&aReq[0]);
@@ -55,7 +55,7 @@ main (int argc, char **argv)
     else if (rank == 1) {
       memset (buf1, 1, buf_size);
 
-      MPI_Recv_init (buf0, buf_size, MPI_INT, 
+      MPI_Recv_init (buf0, buf_size, MPI_INT,
 		     MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &aReq[0]);
       MPI_Send_init (buf1, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD, &aReq[1]);
 

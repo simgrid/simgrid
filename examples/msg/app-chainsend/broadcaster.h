@@ -32,7 +32,7 @@ typedef struct s_broadcaster {
 
 typedef s_broadcaster_t *broadcaster_t;
 
-xbt_dynar_t build_hostlist_from_hostcount(int hostcount); 
+xbt_dynar_t build_hostlist_from_hostcount(int hostcount);
 
 /* Broadcaster: helper functions */
 broadcaster_t broadcaster_init(xbt_dynar_t host_list, unsigned int piece_count);

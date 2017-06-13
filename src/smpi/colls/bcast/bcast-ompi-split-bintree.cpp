@@ -60,11 +60,11 @@
   #define MAXTREEFANOUT 32
 namespace simgrid{
 namespace smpi{
- 
+
 int
 Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
-                                            int count, 
-                                            MPI_Datatype datatype, 
+                                            int count,
+                                            MPI_Datatype datatype,
                                             int root,
                                             MPI_Comm comm)
 {
@@ -74,13 +74,13 @@ Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
     int segcount[2];       /* Number ompi_request_wait_allof elements sent with each segment */
     uint32_t counts[2];
     int num_segments[2];   /* Number of segmenets */
-    int sendcount[2];      /* the same like segcount, except for the last segment */ 
+    int sendcount[2];      /* the same like segcount, except for the last segment */
     size_t realsegsize[2];
     char *tmpbuf[2];
     size_t type_size;
     ptrdiff_t type_extent;
-    
-    
+
+
     MPI_Request base_req, new_req;
     ompi_coll_tree_t *tree;
 //    mca_coll_tuned_module_t *tuned_module = (mca_coll_tuned_module_t*) module;
@@ -93,11 +93,11 @@ Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
     //compute again segsize
     const size_t intermediate_message_size = 370728;
     size_t message_size = datatype->size() * (unsigned long)count;
-    if(message_size < intermediate_message_size) 
+    if(message_size < intermediate_message_size)
       segsize = 1024 ;
     else
       segsize = 1024 << 3;
-      
+
     XBT_DEBUG("ompi_coll_tuned_bcast_intra_split_bintree rank %d root %d ss %5d", rank, root, segsize);
 
     if (size == 1) {
@@ -120,7 +120,7 @@ Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
         if (segsize < ((uint32_t)type_size)) {
           segsize = type_size; /* push segsize up to hold one type */
         }
-        segcount[0] = segcount[1] = segsize / type_size; 
+        segcount[0] = segcount[1] = segsize / type_size;
         num_segments[0] = counts[0]/segcount[0];
         if ((counts[0] % segcount[0]) != 0) num_segments[0]++;
         num_segments[1] = counts[1]/segcount[1];
@@ -136,16 +136,16 @@ Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
         (segsize > counts[0] * type_size) ||
         (segsize > counts[1] * type_size) ) {
         /* call linear version here ! */
-        return (Coll_bcast_SMP_linear::bcast ( buffer, count, datatype, 
+        return (Coll_bcast_SMP_linear::bcast ( buffer, count, datatype,
                                                     root, comm));
     }
     type_extent = datatype->get_extent();
 
-    
+
     /* Determine real segment size */
     realsegsize[0] = segcount[0] * type_extent;
     realsegsize[1] = segcount[1] * type_extent;
-  
+
     /* set the buffer pointers */
     tmpbuf[0] = (char *) buffer;
     tmpbuf[1] = (char *) buffer+counts[0] * type_extent;
@@ -158,11 +158,11 @@ Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
 
     /* determine if I am left (0) or right (1), (root is right) */
     lr = ((rank + size - root)%size + 1)%2;
-  
+
     /* root code */
     if( rank == root ) {
         /* determine segment count */
-        sendcount[0] = segcount[0]; 
+        sendcount[0] = segcount[0];
         sendcount[1] = segcount[1];
         /* for each segment */
         for (segindex = 0; segindex < num_segments[0]; segindex++) {
@@ -172,7 +172,7 @@ Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
                     continue;
                 }
                 /* determine how many elements are being sent in this round */
-                if(segindex == (num_segments[i] - 1)) 
+                if(segindex == (num_segments[i] - 1))
                     sendcount[i] = counts[i] - segindex*segcount[i];
                 /* send data */
                 Request::send(tmpbuf[i], sendcount[i], datatype,
@@ -181,19 +181,19 @@ Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
                 tmpbuf[i] += realsegsize[i];
             }
         }
-    } 
-    
+    }
+
     /* intermediate nodes code */
-    else if( tree->tree_nextsize > 0 ) { 
+    else if( tree->tree_nextsize > 0 ) {
         /* Intermediate nodes:
          * It will receive segments only from one half of the data.
-         * Which one is determined by whether the node belongs to the "left" or "right" 
+         * Which one is determined by whether the node belongs to the "left" or "right"
          * subtree. Topoloby building function builds binary tree such that
          * odd "shifted ranks" ((rank + size - root)%size) are on the left subtree,
          * and even on the right subtree.
          *
          * Create the pipeline. We first post the first receive, then in the loop we
-         * post the next receive and after that wait for the previous receive to complete 
+         * post the next receive and after that wait for the previous receive to complete
          * and we disseminating the data to all children.
          */
         sendcount[lr] = segcount[lr];
@@ -203,7 +203,7 @@ Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
 
         for( segindex = 1; segindex < num_segments[lr]; segindex++ ) {
             /* determine how many elements to expect in this round */
-            if( segindex == (num_segments[lr] - 1)) 
+            if( segindex == (num_segments[lr] - 1))
                 sendcount[lr] = counts[lr] - segindex*segcount[lr];
             /* post new irecv */
             new_req = Request::irecv( tmpbuf[lr] + realsegsize[lr], sendcount[lr],
@@ -219,7 +219,7 @@ Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
             } /* end of for each child */
 
             /* upate the base request */
-            base_req = new_req;     
+            base_req = new_req;
             /* go to the next buffer (ie. the one corresponding to the next recv) */
             tmpbuf[lr] += realsegsize[lr];
         } /* end of for segindex */
@@ -230,10 +230,10 @@ Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
             Request::send(tmpbuf[lr], sendcount[lr], datatype,
                               tree->tree_next[i], COLL_TAG_BCAST, comm);
         } /* end of for each child */
-    } 
-  
+    }
+
     /* leaf nodes */
-    else { 
+    else {
         /* Just consume segments as fast as possible */
         sendcount[lr] = segcount[lr];
         for (segindex = 0; segindex < num_segments[lr]; segindex++) {
@@ -253,9 +253,9 @@ Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
     tmpbuf[1] = (char *) buffer+counts[0] * type_extent;
 
     /* Step 2:
-       Find your immediate pair (identical node in opposite subtree) and SendRecv 
+       Find your immediate pair (identical node in opposite subtree) and SendRecv
        data buffer with them.
-       The tree building function ensures that 
+       The tree building function ensures that
        if (we are not root)
        if we are in the left subtree (lr == 0) our pair is (rank+1)%size.
        if we are in the right subtree (lr == 1) our pair is (rank-1)%size
@@ -267,7 +267,7 @@ Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
         pair = (rank+size-1)%size;
     }
 
-    if ( (size%2) != 0 && rank != root) { 
+    if ( (size%2) != 0 && rank != root) {
 
         Request::sendrecv( tmpbuf[lr], counts[lr], datatype,
                                         pair, COLL_TAG_BCAST,
@@ -280,25 +280,25 @@ Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
             Request::send(tmpbuf[1], counts[1], datatype,
                               (root+size-1)%size, COLL_TAG_BCAST, comm);
 
-        } 
+        }
         /* last node receives right buffer from the root */
         else if (rank == (root+size-1)%size) {
             Request::recv(tmpbuf[1], counts[1], datatype,
                               root, COLL_TAG_BCAST,
                               comm, MPI_STATUS_IGNORE);
-        } 
+        }
         /* everyone else exchanges buffers */
         else {
             Request::sendrecv( tmpbuf[lr], counts[lr], datatype,
                                             pair, COLL_TAG_BCAST,
                                             tmpbuf[(lr+1)%2], counts[(lr+1)%2], datatype,
                                             pair, COLL_TAG_BCAST,
-                                            comm, MPI_STATUS_IGNORE); 
+                                            comm, MPI_STATUS_IGNORE);
         }
     }
     xbt_free(tree);
     return (MPI_SUCCESS);
-  
+
 
 }
 

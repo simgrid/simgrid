@@ -121,8 +121,8 @@ XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
 
 /** @} */
 
-/** @addtogroup SD_task_dependency_api 
- * 
+/** @addtogroup SD_task_dependency_api
+ *
  *  This section describes the functions for managing the dependencies between the tasks.
  *
  *  @see SD_task_api
