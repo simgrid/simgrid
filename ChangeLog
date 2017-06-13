@@ -40,7 +40,18 @@ SimGrid (3.16) UNRELEASED
  SMPI
   - New algorithm to privatize globals: dlopen, with dynamic loading tricks
   - New option: smpi/keep-temps to not cleanup temp files
+  - New option : smpi/shared-malloc-blocksize . Relevant only when global shared 
+    mallocs mode is used, allows to change the size of the fake file used
+    (default 1MB), to potentially limit the number of mappings for large runs.
   - Support for sparse privatized malloc with SMPI_PARTIAL_SHARED_MALLOC()
+  - Fortran ifort and flang compilers support
+  - New RMA calls supported (experimental) :
+      - MPI_Win_allocate, MPI_Win_create_dynamic, MPI_Win_attach
+      - MPI_Win_detach, MPI_Win_set_info, MPI_Win_get_info
+      - MPI_Win_lock_all, MPI_Win_unlock_all, MPI_Win_flush
+      - MPI_Win_flush_local, MPI_Win_flush_all, MPI_Win_flush_local_all
+      - MPI_Op_commutative, MPI_Fetch_and_Op, MPI_Compare_and_swap
+      - MPI_Rput, MPI_Rget, MPI_Raccumulate, MPI_Rget_accumulate
 
  XBT
   - Replay: New function xbt_replay_action_get():
