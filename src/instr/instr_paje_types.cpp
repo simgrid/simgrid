@@ -162,7 +162,7 @@ type_t PJ_type_variable_new (const char *name, const char *color, type_t father)
     ret = newType (name, name, color, TYPE_VARIABLE, father);
   }
   XBT_DEBUG("VariableType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
-  DefineVariableTypeEvent (ret);
+  LogVariableTypeDefinition (ret);
   return ret;
 }
 
@@ -179,7 +179,7 @@ type_t PJ_type_link_new (const char *name, type_t father, type_t source, type_t 
   ret = newType (name, key, nullptr, TYPE_LINK, father);
   XBT_DEBUG("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->name, ret->id, father->name, father->id,
             source->name, source->id, dest->name, dest->id);
-  DefineLinkTypeEvent(ret, source, dest);
+  LogLinkTypeDefinition(ret, source, dest);
   return ret;
 }
 
@@ -193,6 +193,6 @@ type_t PJ_type_state_new (const char *name, type_t father)
 
   ret = newType (name, name, nullptr, TYPE_STATE, father);
   XBT_DEBUG("StateType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
-  DefineStateTypeEvent(ret);
+  LogStateTypeDefinition(ret);
   return ret;
 }

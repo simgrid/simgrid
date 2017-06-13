@@ -214,14 +214,12 @@ void TRACE_paje_end() {
 
 void DefineContainerEvent(type_t type)
 {
-  e_event_type event_type                            = PAJE_DefineContainerType;
-  double timestamp                             = 0;
-  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event_type);
+  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, PAJE_DefineContainerType);
   //print it
   if (instr_fmt_type == instr_fmt_paje) {
-		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_DefineContainerType, TRACE_precision(), 0.);
 		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << (int)event_type;
+		stream << PAJE_DefineContainerType;
 		stream << " " << type->id
 				<< " " << type->father->id
 				<< " " << type->name;
@@ -236,18 +234,16 @@ void DefineContainerEvent(type_t type)
 
 
 
-void DefineVariableTypeEvent(type_t type)
+void LogVariableTypeDefinition(type_t type)
 {
-  e_event_type event_type                           = PAJE_DefineVariableType;
-  double timestamp                            = 0;
 
-  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event_type);
+  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, PAJE_DefineVariableType);
 
   //print it
 if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_DefineVariableType, TRACE_precision(), 0.);
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << (int)event_type;
+    stream << PAJE_DefineVariableType;
     stream << " " << type->id << " " << type->father->id << " " << type->name;
     if (type->color)
       stream << " \"" << type->color << "\"";
@@ -260,18 +256,16 @@ if (instr_fmt_type == instr_fmt_paje) {
 }
 
 
-void DefineStateTypeEvent(type_t type)
+void LogStateTypeDefinition(type_t type)
 {
-  e_event_type event_type                        = PAJE_DefineStateType;
-  double timestamp                         = 0;
 
-  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event_type);
+  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, PAJE_DefineStateType);
 
   //print it
 if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_DefineStateType, TRACE_precision(), 0.);
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << (int)event_type;
+    stream << PAJE_DefineStateType;
     stream << " " << type->id << " " << type->father->id << " " << type->name;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
@@ -309,18 +303,14 @@ void DefineEventTypeEvent::print() {
   }
 }
 
-void DefineLinkTypeEvent(type_t type, type_t source, type_t dest)
+void LogLinkTypeDefinition(type_t type, type_t source, type_t dest)
 {
-  e_event_type event_type                         = PAJE_DefineLinkType;
-  double timestamp                          = 0;
-
-  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event_type);
-
+  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, PAJE_DefineLinkType);
   //print it
 if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_DefineLinkType, TRACE_precision(), 0.);
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << (int)event_type;
+    stream << PAJE_DefineLinkType;
     stream << " " << type->id << " " << type->father->id << " " << source->id << " " << dest->id << " " << type->name;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
@@ -330,18 +320,14 @@ if (instr_fmt_type == instr_fmt_paje) {
   }
 }
 
-void DefineEntityValueEvent (val_t value)
+void LogEntityValue (val_t value)
 {
-  e_event_type event_type                           = PAJE_DefineEntityValue;
-  double timestamp                            = 0;
-
-  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event_type);
-
+  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, PAJE_DefineEntityValue);
   //print it
 if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_DefineEntityValue, TRACE_precision(),0.);
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << (int)event_type;
+    stream << PAJE_DefineEntityValue;
     stream << " " << value->id << " " << value->father->id << " " << value->name;
     if (value->color)
       stream << " \"" << value->color << "\"";
@@ -354,17 +340,16 @@ if (instr_fmt_type == instr_fmt_paje) {
 }
 
 
-void CreateContainerEvent (container_t container)
+void LogContainerCreation (container_t container)
 {
-  e_event_type event_type                             = PAJE_CreateContainer;
   double timestamp                              = SIMIX_get_clock();
 
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type,timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, PAJE_CreateContainer,timestamp);
 
 if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_CreateContainer, TRACE_precision(), timestamp);
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << (int)event_type;
+    stream << PAJE_CreateContainer;
     stream << " ";
   /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
      if (timestamp < 1e-12)
@@ -407,17 +392,16 @@ if (instr_fmt_type == instr_fmt_paje) {
   }
 }
 
-void DestroyContainerEvent (container_t container)
+void LogContainerDestruction(container_t container)
 {
-  e_event_type event_type                              = PAJE_DestroyContainer;
   double timestamp                               = SIMIX_get_clock();
 
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, PAJE_DestroyContainer, timestamp);
 
 if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_DestroyContainer, TRACE_precision(), timestamp);
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << (int)event_type;
+    stream << PAJE_DestroyContainer;
     stream << " ";
   /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
     if (timestamp < 1e-12)

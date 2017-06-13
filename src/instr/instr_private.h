@@ -421,11 +421,11 @@ extern instr_fmt_type_t instr_fmt_type;
 SG_END_DECL()
 
 void DefineContainerEvent(type_t type);
-void DefineVariableTypeEvent(type_t type);
-void DefineStateTypeEvent(type_t type);
-void DefineLinkTypeEvent(type_t type, type_t source, type_t dest);
-void DefineEntityValueEvent (val_t value);
-void CreateContainerEvent (container_t container);
-void DestroyContainerEvent (container_t container);
+void LogVariableTypeDefinition(type_t type);
+void LogStateTypeDefinition(type_t type);
+void LogLinkTypeDefinition(type_t type, type_t source, type_t dest);
+void LogEntityValue (val_t value);
+void LogContainerCreation (container_t container);
+void LogContainerDestruction (container_t container);
 
 #endif
