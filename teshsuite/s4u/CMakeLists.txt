@@ -20,11 +20,10 @@ endforeach()
 
 # The output is not relevant
 ADD_TEST(tesh-s4u-comm-pt2pt   ${CMAKE_BINARY_DIR}/teshsuite/s4u/comm-pt2pt/comm-pt2pt   ${CMAKE_HOME_DIRECTORY}/examples/platforms/cluster.xml)
-ADD_TEST(tesh-s4u-comm-waitany ${CMAKE_BINARY_DIR}/teshsuite/s4u/comm-pt2pt/comm-waitany ${CMAKE_HOME_DIRECTORY}/examples/platforms/cluster.xml)
+ADD_TEST(tesh-s4u-comm-waitany ${CMAKE_BINARY_DIR}/teshsuite/s4u/comm-waitany/comm-waitany ${CMAKE_HOME_DIRECTORY}/examples/platforms/cluster.xml)
 
 
 
 set(teshsuite_src ${teshsuite_src}  PARENT_SCOPE)
 set(tesh_files    ${tesh_files}     PARENT_SCOPE)
 set(xml_files     ${xml_files}      PARENT_SCOPE)
-
