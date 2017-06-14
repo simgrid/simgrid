@@ -3,6 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/* We want this test to be exhaustive in term of:
+ *   - communication involved (regular, asynchronous, detached, with a permanent receiver declared)
+ *   - whether the send or the receive was posted first
+ *
+ * FIXME: Missing elements: timeouts, host/actor failures, link failures
+ */
+
 #include "simgrid/s4u.hpp"
 
 #include <cstring>
@@ -32,15 +39,15 @@ static void usage(const char* binaryName, const char* defaultSend, const char* d
                        " j irecv on permanent mailbox (after a little delay)\n"
                        " J irecv on permanent mailbox (after a little delay)\n"
                        "\n"
-                       "Example 1: %s examples/platforms/cluster.xml ripd rrrr # testing fancy functions\n"
-                       "Default specs: %s %s (all possible pair)",
+                       "Example 1: %s examples/platforms/cluster.xml rRiIdD rrrrrr # testing all send functions\n"
+                       "Default specs: %s %s (all possible pairs)\n",
                binaryName, binaryName, defaultSend, defaultRecv);
   exit(1);
 }
 
-static void receiver(std::vector<std::string> args)
+static void sender(std::vector<std::string> args)
 {
-  XBT_INFO("Receiver spec: %s", args[0].c_str());
+  XBT_INFO("Sender spec: %s", args[0].c_str());
   for (unsigned int test = 1; test <= args[0].size(); test++) {
     this_actor::sleep_until(test * 5 - 5);
     char* mboxName                = bprintf("Test #%u", test);
@@ -85,9 +92,9 @@ static void receiver(std::vector<std::string> args)
   // FIXME: we should test what happens when the process ends before the end of remote comm instead of hiding it
 }
 
-static void sender(std::vector<std::string> args)
+static void receiver(std::vector<std::string> args)
 {
-  XBT_INFO("Sender spec: %s", args[0].c_str());
+  XBT_INFO("Receiver spec: %s", args[0].c_str());
   for (unsigned int test = 1; test <= args[0].size(); test++) {
     this_actor::sleep_until(test * 5 - 5);
     char* mboxName                = bprintf("Test #%u", test);
