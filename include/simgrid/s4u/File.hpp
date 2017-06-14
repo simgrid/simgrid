@@ -14,8 +14,6 @@
 namespace simgrid {
 namespace s4u {
 
-class Storage;
-
 /** @brief A simulated file
  *
  * Used to simulate the time it takes to access to a file, but does not really store any information.

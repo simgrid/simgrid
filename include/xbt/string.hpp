@@ -89,7 +89,7 @@ public:
     }
   }
   string() : string (const_cast<char*>(&NUL), 0) {}
-  string(const char* s) : string(s, strlen(s)) {}
+  explicit string(const char* s) : string(s, strlen(s)) {}
   string(string const& s) : string(s.c_str(), s.size()) {}
   string(string&& s)
   {
@@ -98,7 +98,7 @@ public:
     s.string_data::len = 0;
     s.string_data::data = const_cast<char*>(&NUL);
   }
-  string(std::string const& s) : string(s.c_str(), s.size()) {}
+  explicit string(std::string const& s) : string(s.c_str(), s.size()) {}
 
   // Assign
   void assign(const char* s, size_t size)
@@ -165,10 +165,7 @@ public:
     return data()[i];
   }
   // Conversion
-  operator std::string() const
-  {
-    return std::string(this->c_str(), this->size());
-  }
+  explicit operator std::string() const { return std::string(this->c_str(), this->size()); }
 
   // Iterators
   iterator begin()               { return data(); }
