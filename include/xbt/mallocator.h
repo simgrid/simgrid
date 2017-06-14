@@ -15,7 +15,7 @@ SG_BEGIN_DECL()
 
 /** @addtogroup XBT_mallocator
  *  @brief The mallocator system
- * 
+ *
  *  This section describes the API to a mallocator.
  *  A mallocator allows you to recycle the objects you don't need anymore  instead of freeing them. A mallocator is a
  *  stack which stores the unused objects  or a given type. If you often need to malloc() / free() objects of a certain

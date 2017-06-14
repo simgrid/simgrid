@@ -52,8 +52,8 @@ extern int (*MV2_Allreduce_intra_function)( void *sendbuf,
     int count,
     MPI_Datatype datatype,
     MPI_Op op, MPI_Comm comm);
-    
-    
+
+
 namespace simgrid{
 namespace smpi{
 static  int MPIR_Allreduce_reduce_p2p_MV2( void *sendbuf,
@@ -76,7 +76,7 @@ static  int MPIR_Allreduce_reduce_shmem_MV2( void *sendbuf,
   return MPI_SUCCESS;
 }
 
-    
+
 /* general two level allreduce helper function */
 int Coll_allreduce_mvapich2_two_level::allreduce(void *sendbuf,
                              void *recvbuf,
@@ -95,11 +95,11 @@ int Coll_allreduce_mvapich2_two_level::allreduce(void *sendbuf,
       MV2_Allreduce_intra_function = Coll_allreduce_mpich::allreduce;
     if(MV2_Allreducection==NULL)
       MV2_Allreducection = Coll_allreduce_rdb::allreduce;
-    
+
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
       comm->init_smp();
     }
-  
+
     if (count == 0) {
         return MPI_SUCCESS;
     }
@@ -122,7 +122,7 @@ int Coll_allreduce_mvapich2_two_level::allreduce(void *sendbuf,
 
     /* Doing the shared memory gather and reduction by the leader */
     if (local_rank == 0) {
-        if ((MV2_Allreduce_intra_function == &MPIR_Allreduce_reduce_shmem_MV2) || 
+        if ((MV2_Allreduce_intra_function == &MPIR_Allreduce_reduce_shmem_MV2) ||
               (MV2_Allreduce_intra_function == &MPIR_Allreduce_reduce_p2p_MV2) ) {
         mpi_errno =
         MV2_Allreduce_intra_function(sendbuf, recvbuf, count, datatype,
@@ -151,7 +151,7 @@ int Coll_allreduce_mvapich2_two_level::allreduce(void *sendbuf,
         }
     } else {
         /* insert the first reduce here */
-        if ((MV2_Allreduce_intra_function == &MPIR_Allreduce_reduce_shmem_MV2) || 
+        if ((MV2_Allreduce_intra_function == &MPIR_Allreduce_reduce_shmem_MV2) ||
               (MV2_Allreduce_intra_function == &MPIR_Allreduce_reduce_p2p_MV2) ) {
         mpi_errno =
         MV2_Allreduce_intra_function(sendbuf, recvbuf, count, datatype,

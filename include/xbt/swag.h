@@ -14,10 +14,10 @@
 
 SG_BEGIN_DECL()
 
-/** 
+/**
  * @addtogroup XBT_swag
  * @brief a O(1) set based on linked lists
- * 
+ *
  *  Warning, this module is done to be efficient and performs tons of cast and dirty things. So make sure you know what
  *  you are doing while using it.
  *  It is basically a fifo but with restrictions so that it can be used as a set. Any operation (add, remove, belongs)
@@ -29,7 +29,7 @@ SG_BEGIN_DECL()
 /** @defgroup XBT_swag_type Swag types
     @ingroup XBT_swag
 
-    Specific set. 
+    Specific set.
 
     These typedefs are public so that the compiler can do his job but believe me, you don't want to try to play with
     those structs directly. Use them as an abstract datatype.
@@ -39,7 +39,7 @@ typedef struct xbt_swag_hookup {
   void *next;
   void *prev;
 } s_xbt_swag_hookup_t;
-/**< This type should be added to a type that is to be used in a swag. 
+/**< This type should be added to a type that is to be used in a swag.
  *
  *  Whenever a new object with this struct is created, all fields have to be set to NULL
  *
@@ -78,9 +78,9 @@ typedef struct xbt_swag* xbt_swag_t;
 /**< A typical swag */
 /* @} */
 
-/** @defgroup XBT_swag_func SWAG functions 
+/** @defgroup XBT_swag_func SWAG functions
  *  @ingroup XBT_swag
- 
+
  *  @{
  */
 
@@ -136,7 +136,7 @@ static inline void *xbt_swag_getFirst(xbt_swag_t swag)
  * \defgroup XBT_swag_curs Swag cursor
  * @ingroup XBT_swag
 
- * Iterates over the whole swag. 
+ * Iterates over the whole swag.
  *
  * @{ */
 
@@ -157,13 +157,13 @@ static inline void *xbt_swag_getFirst(xbt_swag_t swag)
        (obj)=(decltype(obj)) xbt_swag_getNext((obj),(swag)->offset))
 #endif
 /**
- * @brief A safe swag iterator 
+ * @brief A safe swag iterator
  * @param obj the indice of the loop
  * @param obj_next the object that is right after (if any) \a obj in the swag
  * @param swag what to iterate over
  * @hideinitializer
 
-    You can safely modify the \a swag while using this loop. 
+    You can safely modify the \a swag while using this loop.
     Well, safely... Err. You can remove \a obj without having any trouble at least.  */
 
 #ifndef __cplusplus

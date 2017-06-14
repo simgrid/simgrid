@@ -19,7 +19,7 @@
 #define DCOMM_CALL_COUNT  7 /* MPI_Cart_create; MPI_Cart_sub;
 			       MPI_Comm_create; MPI_Comm_dup;
 			       MPI_Comm_split; MPI_Graph_create;
-			       and MPI_Intercomm_merge; store 
+			       and MPI_Intercomm_merge; store
 			       MPI_Intercomm_create separately... */
 #define TWOD     2
 #define GRAPH_SZ 4
@@ -105,7 +105,7 @@ main (int argc, char **argv)
       temp = dcomms[2];
     }
     if (rank % 3) {
-      MPI_Intercomm_create (temp, 0, MPI_COMM_WORLD, 
+      MPI_Intercomm_create (temp, 0, MPI_COMM_WORLD,
 			    (((nprocs % 3) == 2) && ((rank % 3) == 2)) ?
 			    nprocs - 1 : nprocs - (rank % 3) - (nprocs % 3),
 			    INTERCOMM_CREATE_TAG, &intercomm);
@@ -130,7 +130,7 @@ main (int argc, char **argv)
     if (DCOMM_CALL_COUNT > 4) {
 #ifdef RUN_GRAPH_CREATE
       /* create the graph on p.268 MPI: The Complete Reference... */
-      MPI_Graph_create (MPI_COMM_WORLD, GRAPH_SZ, 
+      MPI_Graph_create (MPI_COMM_WORLD, GRAPH_SZ,
 			graph_index, graph_edges, 1, &dcomms[4]);
 #else
       dcomms[4] = MPI_COMM_NULL;
@@ -177,7 +177,7 @@ main (int argc, char **argv)
       /* create an intercommunicator and merge it... */
       if (rank % 3) {
 #ifndef RUN_INTERCOMM_CREATE
-	MPI_Intercomm_create (dcomms[2], 0, MPI_COMM_WORLD, 
+	MPI_Intercomm_create (dcomms[2], 0, MPI_COMM_WORLD,
 			      (((nprocs % 3) == 2) && ((rank % 3) == 2)) ?
 			      nprocs - 1 : nprocs - (rank % 3) - (nprocs % 3),
 			      INTERCOMM_CREATE_TAG, &intercomm);
@@ -192,7 +192,7 @@ main (int argc, char **argv)
       }
       else {
 	dcomms[6] = MPI_COMM_NULL;
-      }    
+      }
 #ifndef RUN_INTERCOMM_CREATE
 #ifndef RUN_COMM_SPLIT
       if (dcomms[2] != MPI_COMM_NULL)
@@ -268,7 +268,7 @@ main (int argc, char **argv)
       if (dnprocs[i] > 1) {
 	if (drank[i] == 0) {
 	  for (j = 1; j < dnprocs[i]; j++) {
-	    MPI_Recv (buf, buf_size, MPI_INT, 
+	    MPI_Recv (buf, buf_size, MPI_INT,
 		      MPI_ANY_SOURCE, 0, dcomms[i], &status);
 	  }
 	}
@@ -284,7 +284,7 @@ main (int argc, char **argv)
     /* do any source receives on the intercomm... */
     if ((rank % 3) == 1) {
       for (j = 0; j < intersize; j++) {
-	MPI_Recv (buf, buf_size, MPI_INT, 
+	MPI_Recv (buf, buf_size, MPI_INT,
 		  MPI_ANY_SOURCE, 0, intercomm, &status);
       }
     }

@@ -5,10 +5,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "../colls_private.h"
-/* IMPLEMENTED BY PITCH PATARASUK 
-   Non-topoloty-specific (however, number of cores/node need to be changed) 
+/* IMPLEMENTED BY PITCH PATARASUK
+   Non-topoloty-specific (however, number of cores/node need to be changed)
    all-reduce operation designed for smp clusters
-   It uses 2-layer communication: binomial for intra-communication 
+   It uses 2-layer communication: binomial for intra-communication
    and rdb for inter-communication*/
 
 
@@ -91,7 +91,7 @@ int Coll_allreduce_smp_rdb::allreduce(void *send_buf, void *recv_buf, int count,
   }                             /* end binomial reduce intra-communication */
 
 
-  /* start rdb (recursive doubling) all-reduce inter-communication 
+  /* start rdb (recursive doubling) all-reduce inter-communication
      between each SMP nodes : each node only have one process that can communicate
      to other nodes */
   if (intra_rank == 0) {
@@ -124,11 +124,11 @@ int Coll_allreduce_smp_rdb::allreduce(void *send_buf, void *recv_buf, int count,
       newrank = inter_rank - rem;
     }
 
-    /* example inter-communication RDB rank change algorithm 
+    /* example inter-communication RDB rank change algorithm
        0,4,8,12..36 <= true rank (assume 4 core per SMP)
        0123 4567 89 <= inter_rank
        1 3 4567 89 (1,3 got data from 0,2 : 0,2 will be idle until the end)
-       0 1 4567 89 
+       0 1 4567 89
        0 1 2345 67 => newrank
      */
 
@@ -148,8 +148,8 @@ int Coll_allreduce_smp_rdb::allreduce(void *send_buf, void *recv_buf, int count,
       }
     }
 
-    /* non pof2 case 
-       left-over processes (all even ranks: < 2 * rem) get the result    
+    /* non pof2 case
+       left-over processes (all even ranks: < 2 * rem) get the result
      */
     if (inter_rank < 2 * rem) {
       if (inter_rank % 2) {

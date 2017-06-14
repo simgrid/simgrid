@@ -78,7 +78,7 @@ void bottleneck_solve(lmm_system_t sys)
 
   XBT_DEBUG("Fair bottleneck Initialized");
 
-  /* 
+  /*
    * Compute Usage and store the variables that reach the maximum.
    */
   do {

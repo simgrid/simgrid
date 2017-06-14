@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* 
+/*
  * Test of reduce scatter.
  * Each processor contributes its rank + the index to the reduction,  then receives the ith sum
  * Can be called with any number of processors.
@@ -29,11 +29,11 @@ int main( int argc, char **argv )
     MPI_Comm_size( comm, &size );
     MPI_Comm_rank( comm, &rank );
     int* sendbuf = (int *) malloc( size * sizeof(int) );
-    for (i=0; i<size; i++) 
+    for (i=0; i<size; i++)
       sendbuf[i] = rank + i;
     int* recvcounts = (int*) malloc (size * sizeof(int));
     int* recvbuf    = (int*) malloc (size * sizeof(int));
-    for (i=0; i<size; i++) 
+    for (i=0; i<size; i++)
       recvcounts[i] = 1;
     MPI_Reduce_scatter( sendbuf, recvbuf, recvcounts, MPI_INT, MPI_SUM, comm );
     int sumval = size * rank + ((size - 1) * size)/2;

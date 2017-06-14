@@ -23,7 +23,7 @@ static void dot_task_p_free(void *task) {
 }
 
 /** @brief loads a DOT file describing a DAG
- * 
+ *
  * See http://www.graphviz.org/doc/info/lang.html  for more details.
  * The size attribute of a node describes:
  *   - for a compute task: the amount of flops to execute

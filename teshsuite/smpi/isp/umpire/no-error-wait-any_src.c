@@ -36,7 +36,7 @@ main (int argc, char **argv)
     {
       memset (buf0, 0, buf_size);
 
-      MPI_Irecv (buf1, buf_size, MPI_INT, 
+      MPI_Irecv (buf1, buf_size, MPI_INT,
 		 MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &req);
 
       MPI_Send (buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD);
@@ -47,7 +47,7 @@ main (int argc, char **argv)
     {
       memset (buf1, 1, buf_size);
 
-      MPI_Irecv (buf0, buf_size, MPI_INT, 
+      MPI_Irecv (buf0, buf_size, MPI_INT,
 		 MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &req);
 
       MPI_Wait (&req, &status);

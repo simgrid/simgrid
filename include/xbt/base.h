@@ -153,7 +153,7 @@
 #  define XBT_PUBLIC_CLASS            class __declspec(dllimport)
 #  define XBT_PRIVATE
 
-#elif defined(__ELF__) 
+#elif defined(__ELF__)
 #  define XBT_PUBLIC(type)            __attribute__((visibility("default"))) type
 #  define XBT_EXPORT_NO_IMPORT(type)  __attribute__((visibility("default"))) type
 #  define XBT_IMPORT_NO_EXPORT(type)  __attribute__((visibility("default"))) type

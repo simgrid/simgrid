@@ -66,7 +66,7 @@ main (int argc, char **argv)
 	  MPI_Start (&aReq[j]);
 	}
       }
-    
+
       /* complete the sends */
       if (k < 2) {
 	/* use MPI_Testany */
@@ -92,7 +92,7 @@ main (int argc, char **argv)
     else if (rank == 1) {
       /* set up receives for all of the sends */
       for (j = 0; j < 2; j++) {
-	MPI_Irecv (&buf[j * BUF_SIZE], BUF_SIZE, 
+	MPI_Irecv (&buf[j * BUF_SIZE], BUF_SIZE,
 		   MPI_INT, 0, j, comm, &aReq[j]);
       }
       /* complete all of the receives... */

@@ -245,13 +245,13 @@ static void handle_task(node_t node, msg_task_t task) {
     /* Try to join the ring */
     case TASK_JOIN:
       next = routing_next(node, task_data->answer_id);
-      XBT_DEBUG("Join request from %08x forwarding to %08x", task_data->answer_id, next);      
+      XBT_DEBUG("Join request from %08x forwarding to %08x", task_data->answer_id, next);
       type = TASK_JOIN_LAST_REPLY;
 
       req_data = xbt_new0(s_task_data_t,1);
       req_data->answer_id = task_data->sender_id;
       req_data->steps = task_data->steps + 1;
-      
+
       // if next different from current node forward the join
       if (next!=node->id) {
         get_mailbox(next, mailbox);
@@ -263,8 +263,8 @@ static void handle_task(node_t node, msg_task_t task) {
           task_free(task_sent);
         }
         type = TASK_JOIN_REPLY;
-      } 
-      
+      }
+
       // send back the current node state to the joining node
       req_data->type = type;
       req_data->sender_id = node->id;
@@ -351,7 +351,7 @@ static void handle_task(node_t node, msg_task_t task) {
       print_node_namespace_set(node);
       int curr_namespace_set[NAMESPACE_SIZE];
       int task_namespace_set[NAMESPACE_SIZE+1];
-      
+
       // Copy the current namespace and the task state namespace with state->id in the middle
       i=0;
       for (; i<NAMESPACE_SIZE/2; i++){
@@ -360,7 +360,7 @@ static void handle_task(node_t node, msg_task_t task) {
       }
       task_namespace_set[i] = task_data->state->id;
       for (; i<NAMESPACE_SIZE; i++){
-        curr_namespace_set[i] = node->namespace_set[i];  
+        curr_namespace_set[i] = node->namespace_set[i];
         task_namespace_set[i+1] = task_data->state->namespace_set[i];
       }
 
@@ -465,8 +465,8 @@ static int join(node_t node){
 static int node(int argc, char *argv[])
 {
   double init_time = MSG_get_clock();
-  msg_task_t task_received = NULL;  
-  int join_success = 0;  
+  msg_task_t task_received = NULL;
+  int join_success = 0;
   double deadline;
   xbt_assert(argc == 3 || argc == 5, "Wrong number of arguments for this node");
   s_node_t node = {0};
@@ -556,9 +556,9 @@ static int node(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
-  xbt_assert(argc > 2, 
+  xbt_assert(argc > 2,
        "Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n"
-       "\tExample: %s ../msg_platform.xml pastry10.xml\n", 
+       "\tExample: %s ../msg_platform.xml pastry10.xml\n",
        argv[0], argv[0]);
 
   char **options = &argv[1];

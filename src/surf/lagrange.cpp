@@ -33,7 +33,7 @@ double (*func_fpi_def) (lmm_variable_t, double);
 void lagrange_solve(lmm_system_t sys);
 //computes the value of the dichotomy using a initial values, init, with a specific variable or constraint
 static double dichotomy(double init, double diff(double, void *), void *var_cnst, double min_error);
-//computes the value of the differential of constraint param_cnst applied to lambda  
+//computes the value of the differential of constraint param_cnst applied to lambda
 static double partial_diff_lambda(double lambda, void *param_cnst);
 
 static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
@@ -194,8 +194,8 @@ void lagrange_solve(lmm_system_t sys)
     XBT_DEBUG("#### cnst(%p)->lambda :  %e", cnst, cnst->lambda);
   }
 
-  /* 
-   * Initialize the var list variable with only the active variables. 
+  /*
+   * Initialize the var list variable with only the active variables.
    * Associate an index in the swag variables. Initialize mu.
    */
   var_list = &(sys->variable_set);
@@ -320,7 +320,7 @@ void lagrange_solve(lmm_system_t sys)
  *
  * @param init initial value for \mu or \lambda
  * @param diff a function that computes the differential of with respect a \mu or \lambda
- * @param var_cnst a pointer to a variable or constraint 
+ * @param var_cnst a pointer to a variable or constraint
  * @param min_erro a minimum error tolerated
  *
  * @return a double corresponding to the result of the dichotomy process
@@ -453,7 +453,7 @@ static double partial_diff_lambda(double lambda, void *param_cnst)
     // Initialize the summation variable
     sigma_i = 0.0;
 
-    // Compute sigma_i 
+    // Compute sigma_i
     for (j = 0; j < var->cnsts_number; j++) {
       sigma_i += (var->cnsts[j].constraint)->lambda;
     }
@@ -476,9 +476,9 @@ static double partial_diff_lambda(double lambda, void *param_cnst)
 }
 
 /** \brief Attribute the value bound to var->bound.
- * 
+ *
  *  \param func_fpi  inverse of the partial differential of f (f prime inverse, (f')^{-1})
- * 
+ *
  *  Set default functions to the ones passed as parameters. This is a polymorphism in C pure, enjoy the roots of
  *  programming.
  *

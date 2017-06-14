@@ -85,7 +85,7 @@ main (int argc, char **argv)
 	  MPI_Type_free (&newtype[j]);
 	}
       }
-      
+
       MPI_Waitall (TYPES_TO_COMMIT, reqs, statuses);
     }
   }

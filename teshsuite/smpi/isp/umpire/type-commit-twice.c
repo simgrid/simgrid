@@ -39,7 +39,7 @@ main (int argc, char **argv)
 
   /* COMMITTING TWICE IS NOT AN ERROR - SEE:
      http://www.mpi-forum.org/docs/mpi-20-html/node50.htm#Node50
-     AT MOST, UMPIRE SHOULD PROVIDE A CLEAR WARNING ABOUT MINOR 
+     AT MOST, UMPIRE SHOULD PROVIDE A CLEAR WARNING ABOUT MINOR
      PERFORMANCE CONSEQUENCE (JUST A WASTED FUNCTION CALL)... */
   MPI_Type_commit (&newtype);
 

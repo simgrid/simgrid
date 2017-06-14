@@ -141,7 +141,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_on(JNIEnv *env, jobject jhost) 
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_off(JNIEnv *env, jobject jhost) {
   msg_host_t host = jhost_get_native(env, jhost);
-  MSG_host_off(host); 
+  MSG_host_off(host);
 }
 
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Host_getCount(JNIEnv * env, jclass cls) {
@@ -334,6 +334,11 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_setAsyncMailbox(JNIEnv * env, j
   const char *name = env->GetStringUTFChars((jstring) jname, 0);
   MSG_mailbox_set_async(name);
   env->ReleaseStringUTFChars((jstring) jname, name);
+}
+
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_updateAllEnergyConsumptions(JNIEnv* env, jclass cls)
+{
+  sg_host_energy_update_all();
 }
 
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getConsumedEnergy (JNIEnv *env, jobject jhost)

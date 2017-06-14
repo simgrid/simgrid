@@ -11,8 +11,8 @@
 
 /*
  * simple latency test
- * send one byte from 0 to 1 
- * 
+ * send one byte from 0 to 1
+ *
  * this is a test for multiple platforms
  * see tesh file for expected output
  */

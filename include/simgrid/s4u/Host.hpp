@@ -145,7 +145,7 @@ public class Host {
    * The external load (coming from an availability trace) is not taken in account.
    *
    * @return      The number of tasks currently running on a host.
-   */ 
+   */
   public native int getLoad();
 
 

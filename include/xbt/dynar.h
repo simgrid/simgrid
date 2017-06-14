@@ -19,7 +19,7 @@ SG_BEGIN_DECL()
   * @brief DynArr are dynamically sized vector which may contain any type of variables.
   *
   * These are the SimGrid version of the dynamically size arrays, which all C programmer recode one day or another.
-  *  
+  *
   * For performance concerns, the content of DynArr must be homogeneous (in contrary to dictionnaries -- see the
   * \ref XBT_dict section). You thus have to provide the function which will be used to free the content at
   * structure creation (of type void_f_pvoid_t).
@@ -40,7 +40,7 @@ SG_BEGIN_DECL()
   * \until xbt_dynar_free
   *
   * \section XBT_dynar_exptr Example with pointed data
-  * 
+  *
   * \skip test_dynar_string
   * \skip dynar_t
   * \until s2
@@ -147,7 +147,7 @@ XBT_PUBLIC(void *) xbt_dynar_pop_ptr(xbt_dynar_t const dynar);
  *  @{
  */
 
-  /** @brief Quick retrieval of scalar content 
+  /** @brief Quick retrieval of scalar content
    *  @hideinitializer */
 #  define xbt_dynar_get_as(dynar,idx,type) \
           (*(type*)xbt_dynar_get_ptr((dynar),(idx)))
@@ -155,19 +155,19 @@ XBT_PUBLIC(void *) xbt_dynar_pop_ptr(xbt_dynar_t const dynar);
  *  @hideinitializer */
 #  define xbt_dynar_set_as(dynar,idx,type,val) \
          (*(type*)xbt_dynar_set_at_ptr((dynar),(idx))) = val
-  /** @brief Quick retrieval of scalar content 
+  /** @brief Quick retrieval of scalar content
    *  @hideinitializer */
 #  define xbt_dynar_getlast_as(dynar,type) \
           (*(type*)xbt_dynar_get_ptr((dynar),xbt_dynar_length(dynar)-1))
-  /** @brief Quick retrieval of scalar content 
+  /** @brief Quick retrieval of scalar content
    *  @hideinitializer */
 #  define xbt_dynar_getfirst_as(dynar,type) \
           (*(type*)xbt_dynar_get_ptr((dynar),0))
-  /** @brief Quick insertion of scalar content 
+  /** @brief Quick insertion of scalar content
    *  @hideinitializer */
 #  define xbt_dynar_insert_at_as(dynar,idx,type,value) \
           *(type*)xbt_dynar_insert_at_ptr(dynar,idx)=value
-  /** @brief Quick insertion of scalar content 
+  /** @brief Quick insertion of scalar content
    *  @hideinitializer */
 #  define xbt_dynar_push_as(dynar,type,value) \
           *(type*)xbt_dynar_push_ptr(dynar)=value
@@ -190,7 +190,7 @@ XBT_PUBLIC(void *) xbt_dynar_pop_ptr(xbt_dynar_t const dynar);
 
 XBT_PUBLIC(void) xbt_dynar_cursor_rm(xbt_dynar_t dynar, unsigned int *const cursor);
 
-/* 
+/*
  * \warning DO NOT USE THIS STRUCTURE DIRECTLY! Instead, use the public interface:
  *          This was made public to allow:
  *           - the inlining of the foreach elements
@@ -222,8 +222,8 @@ static inline int _xbt_dynar_cursor_get(const xbt_dynar_t dynar, unsigned int id
   return TRUE;
 }
 
-/** @brief Iterates over the whole dynar. 
- * 
+/** @brief Iterates over the whole dynar.
+ *
  *  @param _dynar what to iterate over
  *  @param _cursor an integer used as cursor
  *  @param _data
@@ -238,7 +238,7 @@ xbt_dynar_foreach (dyn,cpt,str) {
   printf("Seen %s\n",str);
 }
 \endcode
- * 
+ *
  * Note that underneath, that's a simple for loop with no real black  magic involved. It's perfectly safe to interrupt
  * a foreach with a break or a return statement.
  */

@@ -40,7 +40,7 @@ main (int argc, char **argv)
 
       MPI_Irecv (buf1, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &reqs[1]);
 
-      while (!flag) 
+      while (!flag)
 	MPI_Testall (2, reqs, &flag, statuses);
 
       MPI_Send (buf1, buf_size, MPI_INT, 1, 1, MPI_COMM_WORLD);
@@ -53,7 +53,7 @@ main (int argc, char **argv)
 
       MPI_Isend (buf0, buf_size, MPI_INT, 2, 1, MPI_COMM_WORLD, &reqs[1]);
 
-      while (!flag) 
+      while (!flag)
 	MPI_Testall (2, reqs, &flag, statuses);
 
       MPI_Send (buf0, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD);

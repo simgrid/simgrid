@@ -9,7 +9,7 @@
 
 int reduce_NTSL_segment_size_in_byte = 8192;
 
-/* Non-topology-specific pipelined linear-bcast function 
+/* Non-topology-specific pipelined linear-bcast function
    0->1, 1->2 ,2->3, ....., ->last node : in a pipeline fashion
 */
 namespace simgrid{
@@ -45,7 +45,7 @@ int Coll_reduce_NTSL::reduce(void *buf, void *rbuf, int count,
   /* use for buffer offset for sending and receiving data = segment size in byte */
   int increment = segment * extent;
 
-  /* if the input size is not divisible by segment size => 
+  /* if the input size is not divisible by segment size =>
      the small remainder will be done with native implementation */
   int remainder = count % segment;
 
@@ -59,7 +59,7 @@ int Coll_reduce_NTSL::reduce(void *buf, void *rbuf, int count,
      Request::send(buf,count,datatype,0,tag,comm);
      }
      else if (rank == 0) {
-     Request::recv(buf,count,datatype,root,tag,comm,&status);        
+     Request::recv(buf,count,datatype,root,tag,comm,&status);
      }
      }
    */

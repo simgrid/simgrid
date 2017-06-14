@@ -9,7 +9,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-static int master(int argc, char *argv[])
+static int master(int /*argc*/, char* /*argv*/ [])
 {
   double task_comp_size = 5E7;
   double task_comm_size = 1E6;
@@ -61,7 +61,7 @@ static int master(int argc, char *argv[])
   return 0;
 }
 
-static int worker_main(int argc, char *argv[])
+static int worker_main(int /*argc*/, char* /*argv*/ [])
 {
   msg_task_t task = (msg_task_t) MSG_process_get_data(MSG_process_self());
   msg_error_t res;
@@ -72,7 +72,7 @@ static int worker_main(int argc, char *argv[])
   return 0;
 }
 
-static int worker(int argc, char *argv[])
+static int worker(int /*argc*/, char* /*argv*/ [])
 {
   while (1) {
     msg_task_t task = NULL;

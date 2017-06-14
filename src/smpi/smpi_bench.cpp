@@ -428,7 +428,7 @@ extern "C" { /** These functions will be called from the user code **/
     smpi_trace_set_call_location(file, *line);
   }
 
-  /** 
+  /**
    * Required for Fortran if -fsecond-underscore is activated
    */
   void smpi_trace_set_call_location__(const char* file, int* line) {

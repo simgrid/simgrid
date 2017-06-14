@@ -12,21 +12,21 @@
  * Returns:      MPI_SUCCESS or error code
  *
  * Description:  Neighbor Exchange algorithm for allgather.
- *               Described by Chen et.al. in 
- *               "Performance Evaluation of Allgather Algorithms on 
+ *               Described by Chen et.al. in
+ *               "Performance Evaluation of Allgather Algorithms on
  *                Terascale Linux Cluster with Fast Ethernet",
- *               Proceedings of the Eighth International Conference on 
+ *               Proceedings of the Eighth International Conference on
  *               High-Performance Computing inn Asia-Pacific Region
  *               (HPCASIA'05), 2005
- * 
+ *
  *               Rank r exchanges message with one of its neighbors and
  *               forwards the data further in the next step.
  *
  *               No additional memory requirements.
- * 
+ *
  * Limitations:  Algorithm works only on even number of processes.
  *               For odd number of processes we switch to ring algorithm.
- * 
+ *
  * Example on 6 nodes:
  *  Initial state
  *    #     0      1      2      3      4      5
@@ -61,13 +61,13 @@
  *         [4]    [4]    [4]    [4]    [4]    [4]
  *         [5]    [5]    [5]    [5]    [5]    [5]
  */
- 
+
  #include "../colls_private.h"
 
 namespace simgrid{
 namespace smpi{
 
-int 
+int
 Coll_allgather_ompi_neighborexchange::allgather(void *sbuf, int scount,
                                                  MPI_Datatype sdtype,
                                                  void* rbuf, int rcount,
@@ -88,7 +88,7 @@ Coll_allgather_ompi_neighborexchange::allgather(void *sbuf, int scount,
 
    if (size % 2) {
       XBT_DEBUG(
-                   "coll:tuned:allgather_intra_neighborexchange WARNING: odd size %d, switching to ring algorithm", 
+                   "coll:tuned:allgather_intra_neighborexchange WARNING: odd size %d, switching to ring algorithm",
                    size);
       return Coll_allgather_ring::allgather(sbuf, scount, sdtype,
                                                   rbuf, rcount, rdtype,
@@ -112,7 +112,7 @@ Coll_allgather_ompi_neighborexchange::allgather(void *sbuf, int scount,
    if (MPI_IN_PLACE != sbuf) {
       tmpsend = (char*) sbuf;
       Datatype::copy (tmpsend, scount, sdtype, tmprecv, rcount, rdtype);
-   } 
+   }
 
    /* Determine neighbors, order in which blocks will arrive, etc. */
    even_rank = not(rank % 2);
@@ -134,8 +134,8 @@ Coll_allgather_ompi_neighborexchange::allgather(void *sbuf, int scount,
 
    /* Communication loop:
       - First step is special: exchange a single block with neighbor[0].
-      - Rest of the steps: 
-        update recv_data_from according to offset, and 
+      - Rest of the steps:
+        update recv_data_from according to offset, and
         exchange two blocks with appropriate neighbor.
         the send location becomes previous receve location.
    */
@@ -157,15 +157,15 @@ Coll_allgather_ompi_neighborexchange::allgather(void *sbuf, int scount,
 
    for (i = 1; i < (size / 2); i++) {
       const int i_parity = i % 2;
-      recv_data_from[i_parity] = 
+      recv_data_from[i_parity] =
          (recv_data_from[i_parity] + offset_at_step[i_parity] + size) % size;
 
       tmprecv = (char*)rbuf + recv_data_from[i_parity] * rcount * rext;
       tmpsend = (char*)rbuf + send_data_from * rcount * rext;
-      
+
       /* Sendreceive */
-      Request::sendrecv(tmpsend, 2 * rcount, rdtype, 
-                                     neighbor[i_parity], 
+      Request::sendrecv(tmpsend, 2 * rcount, rdtype,
+                                     neighbor[i_parity],
                                      COLL_TAG_ALLGATHER,
                                      tmprecv, 2 * rcount, rdtype,
                                      neighbor[i_parity],

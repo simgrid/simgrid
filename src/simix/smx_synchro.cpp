@@ -157,7 +157,7 @@ bool MutexImpl::try_lock(smx_actor_t issuer)
 
 /** Unlock a mutex for a process
  *
- * Unlocks the mutex and gives it to a process waiting for it. 
+ * Unlocks the mutex and gives it to a process waiting for it.
  * If the unlocker is not the owner of the mutex nothing happens.
  * If there are no process waiting, it sets the mutex as free.
  */
@@ -293,14 +293,14 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
   synchro = SIMIX_synchro_wait(issuer->host, timeout);
   synchro->simcalls.push_front(simcall);
   issuer->waiting_synchro = synchro;
-  xbt_swag_insert(simcall->issuer, cond->sleeping);   
+  xbt_swag_insert(simcall->issuer, cond->sleeping);
   XBT_OUT();
 }
 
 /**
  * \brief Signalizes a condition.
  *
- * Signalizes a condition and wakes up a sleeping process. 
+ * Signalizes a condition and wakes up a sleeping process.
  * If there are no process sleeping, no action is done.
  * \param cond A condition
  */
@@ -313,7 +313,7 @@ void SIMIX_cond_signal(smx_cond_t cond)
 
   XBT_DEBUG("Signal condition %p", cond);
 
-  /* If there are processes waiting for the condition choose one and try 
+  /* If there are processes waiting for the condition choose one and try
      to make it acquire the mutex */
   if ((proc = (smx_actor_t) xbt_swag_extract(cond->sleeping))) {
 
@@ -496,7 +496,7 @@ void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem)
 void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout)
 {
   XBT_IN("(%p)",simcall);
-  _SIMIX_sem_wait(sem, timeout, simcall->issuer, simcall);  
+  _SIMIX_sem_wait(sem, timeout, simcall->issuer, simcall);
   XBT_OUT();
 }
 int simcall_HANDLER_sem_would_block(smx_simcall_t simcall, smx_sem_t sem) {

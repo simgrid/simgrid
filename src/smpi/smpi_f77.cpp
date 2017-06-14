@@ -276,7 +276,7 @@ void mpi_startall_(int* count, int* requests, int* ierr) {
 
 void mpi_wait_(int* request, MPI_Status* status, int* ierr) {
    MPI_Request req = simgrid::smpi::Request::f2c(*request);
-   
+
    *ierr = MPI_Wait(&req, FORT_STATUS_IGNORE(status));
    if(req==MPI_REQUEST_NULL){
      simgrid::smpi::Request::free_f(*request);
@@ -564,7 +564,7 @@ void mpi_win_set_name_ (int*  win, char * name, int* ierr, int size){
 
 void mpi_win_get_name_ (int*  win, char * name, int* len, int* ierr){
   *ierr = MPI_Win_get_name(simgrid::smpi::Win::f2c(*win),name,len);
-  if(*len>0) 
+  if(*len>0)
     name[*len]=' ';//blank padding, not \0
 }
 
@@ -586,7 +586,7 @@ void mpi_info_set_( int *info, char *key, char *value, int* ierr, unsigned int k
   }
   char* tkey = xbt_new(char,keylen+1);
   strncpy(tkey, key, keylen);
-  tkey[keylen]='\0';  
+  tkey[keylen]='\0';
 
   while(value[valuelen-1]==' ')
     valuelen--;
@@ -596,7 +596,7 @@ void mpi_info_set_( int *info, char *key, char *value, int* ierr, unsigned int k
   }
   char* tvalue = xbt_new(char,valuelen+1);
   strncpy(tvalue, value, valuelen);
-  tvalue[valuelen]='\0'; 
+  tvalue[valuelen]='\0';
 
   *ierr =  MPI_Info_set( simgrid::smpi::Info::f2c(*info), tkey, tvalue);
   xbt_free(tkey);
@@ -609,7 +609,7 @@ void mpi_info_get_ (int* info,char *key,int* valuelen, char *value, int *flag, i
   while(*key==' '){//handle leading blanks
     keylen--;
     key++;
-  }  
+  }
   char* tkey = xbt_new(char,keylen+1);
   strncpy(tkey, key, keylen);
   tkey[keylen]='\0';
@@ -624,7 +624,7 @@ void mpi_info_get_ (int* info,char *key,int* valuelen, char *value, int *flag, i
       if(replace)
         value[i]=' ';
     }
-  } 
+  }
 }
 
 void mpi_info_free_(int* info, int* ierr){
@@ -703,7 +703,7 @@ void mpi_type_set_name_ (int*  datatype, char * name, int* ierr, int size){
 
 void mpi_type_get_name_ (int*  datatype, char * name, int* len, int* ierr){
  *ierr = MPI_Type_get_name(simgrid::smpi::Datatype::f2c(*datatype),name,len);
-  if(*len>0) 
+  if(*len>0)
     name[*len]=' ';
 }
 
@@ -869,7 +869,7 @@ void mpi_comm_free_keyval_ (int* keyval, int* ierr) {
 
 void mpi_comm_get_name_ (int* comm, char* name, int* len, int* ierr){
  *ierr = MPI_Comm_get_name(simgrid::smpi::Comm::f2c(*comm), name, len);
-  if(*len>0) 
+  if(*len>0)
     name[*len]=' ';
 }
 

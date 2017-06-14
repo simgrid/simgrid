@@ -44,7 +44,7 @@ int Coll_allgather_mvapich2_smp::allgather(void *sendbuf,int sendcnt, MPI_Dataty
 {
     int rank, size;
     int local_rank, local_size;
-    int leader_comm_size = 0; 
+    int leader_comm_size = 0;
     int mpi_errno = MPI_SUCCESS;
     MPI_Aint recvtype_extent = 0;  /* Datatype extent */
     MPI_Comm shmem_comm, leader_comm;
@@ -55,7 +55,7 @@ int Coll_allgather_mvapich2_smp::allgather(void *sendbuf,int sendcnt, MPI_Dataty
 
   if (not comm->is_uniform() || not comm->is_blocked())
     THROWF(arg_error,0, "allgather MVAPICH2 smp algorithm can't be used with irregular deployment. Please insure that processes deployed on the same node are contiguous and that each node has the same number of processes");
-  
+
     if (recvcnt == 0) {
         return MPI_SUCCESS;
     }
@@ -65,7 +65,7 @@ int Coll_allgather_mvapich2_smp::allgather(void *sendbuf,int sendcnt, MPI_Dataty
 
     /* extract the rank,size information for the intra-node communicator */
     recvtype_extent=recvtype->get_extent();
-    
+
     shmem_comm = comm->get_intra_comm();
     local_rank = shmem_comm->rank();
     local_size = shmem_comm->size();
@@ -82,20 +82,20 @@ int Coll_allgather_mvapich2_smp::allgather(void *sendbuf,int sendcnt, MPI_Dataty
     /*If there is just one node, after gather itself,
      * root has all the data and it can do bcast*/
     if(local_rank == 0) {
-        mpi_errno = Colls::gather(sendbuf, sendcnt,sendtype, 
-                                    (void*)((char*)recvbuf + (rank * recvcnt * recvtype_extent)), 
+        mpi_errno = Colls::gather(sendbuf, sendcnt,sendtype,
+                                    (void*)((char*)recvbuf + (rank * recvcnt * recvtype_extent)),
                                      recvcnt, recvtype,
                                      0, shmem_comm);
     } else {
-        /*Since in allgather all the processes could have 
+        /*Since in allgather all the processes could have
          * its own data in place*/
         if(sendbuf == MPI_IN_PLACE) {
-            mpi_errno = Colls::gather((void*)((char*)recvbuf + (rank * recvcnt * recvtype_extent)), 
-                                         recvcnt , recvtype, 
+            mpi_errno = Colls::gather((void*)((char*)recvbuf + (rank * recvcnt * recvtype_extent)),
+                                         recvcnt , recvtype,
                                          recvbuf, recvcnt, recvtype,
                                          0, shmem_comm);
         } else {
-            mpi_errno = Colls::gather(sendbuf, sendcnt,sendtype, 
+            mpi_errno = Colls::gather(sendbuf, sendcnt,sendtype,
                                          recvbuf, recvcnt, recvtype,
                                          0, shmem_comm);
         }
@@ -130,7 +130,7 @@ int Coll_allgather_mvapich2_smp::allgather(void *sendbuf,int sendcnt, MPI_Dataty
 
             mpi_errno = Colls::allgatherv(sendbuf,
                                        (recvcnt*local_size),
-                                       recvtype, 
+                                       recvtype,
                                        recvbuf, recvcnts,
                                        displs, recvtype,
                                        leader_comm);
@@ -138,10 +138,10 @@ int Coll_allgather_mvapich2_smp::allgather(void *sendbuf,int sendcnt, MPI_Dataty
             xbt_free(recvcnts);
         } else {
         void* sendtmpbuf=((char*)recvbuf)+recvtype->get_extent()*(recvcnt*local_size)*leader_comm->rank();
-        
-          
 
-            mpi_errno = Coll_allgather_mpich::allgather(sendtmpbuf, 
+
+
+            mpi_errno = Coll_allgather_mpich::allgather(sendtmpbuf,
                                                (recvcnt*local_size),
                                                recvtype,
                                                recvbuf, (recvcnt*local_size), recvtype,

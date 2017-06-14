@@ -12,8 +12,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(comm_mxn_independent, sd, "SimDag test independe
 /*
  * intra communication test
  * independent communication
- * 
- * 0 -> 1 
+ *
+ * 0 -> 1
  * 2 -> 3
  * shared is only switch which is fat pipe
  * should be 1 + 2 latency = 3

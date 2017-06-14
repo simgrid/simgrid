@@ -38,7 +38,7 @@
 #include "src/mc/remote/Client.hpp"
 #include "src/mc/remote/mc_protocol.h"
 #include <stdlib.h>
-#endif 
+#endif
 
 #include "src/mc/mc_record.h"
 

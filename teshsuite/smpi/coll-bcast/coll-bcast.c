@@ -34,7 +34,7 @@ int main(int argc, char **argv)
   xbt_free(values);
 
   count = 4096;
-  values = (int *) xbt_malloc(count * sizeof(int));  
+  values = (int *) xbt_malloc(count * sizeof(int));
 
   for (i = 0; i < count; i++)
     values[i] = (size -1 == rank) ? 17 : 3;

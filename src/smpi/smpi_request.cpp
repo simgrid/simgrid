@@ -31,7 +31,7 @@ extern void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t);
 namespace simgrid{
 namespace smpi{
 
-Request::Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags) : buf_(buf), old_type_(datatype), src_(src), dst_(dst), tag_(tag), comm_(comm), flags_(flags) 
+Request::Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags) : buf_(buf), old_type_(datatype), src_(src), dst_(dst), tag_(tag), comm_(comm), flags_(flags)
 {
   void *old_buf = nullptr;
 // FIXME Handle the case of a partial shared malloc.
@@ -131,7 +131,7 @@ int Request::match_recv(void* a, void* b, smx_activity_t ignored) {
       ref->real_src_ = req->src_;
     if(ref->tag_ == MPI_ANY_TAG)
       ref->real_tag_ = req->tag_;
-    if(ref->real_size_ < req->real_size_) 
+    if(ref->real_size_ < req->real_size_)
       ref->truncated_ = 1;
     if(req->detached_==1)
       ref->detached_sender_=req; //tie the sender to the receiver, as it is detached and has to be freed in the receiver
@@ -339,7 +339,7 @@ void Request::start()
 
     if (async_small_thresh == 0 && (flags_ & RMA) == 0 ) {
       mailbox = process->mailbox();
-    } 
+    }
     else if (((flags_ & RMA) != 0) || static_cast<int>(size_) < async_small_thresh) {
       //We have to check both mailboxes (because SSEND messages are sent to the large mbox).
       //begin with the more appropriate one : the small one.
@@ -481,7 +481,7 @@ void Request::start()
 
 void Request::startall(int count, MPI_Request * requests)
 {
-  if(requests== nullptr) 
+  if(requests== nullptr)
     return;
 
   for(int i = 0; i < count; i++) {
@@ -496,7 +496,7 @@ int Request::test(MPI_Request * request, MPI_Status * status) {
   // because the time will not normally advance when only calls to MPI_Test are made -> deadlock
   // multiplier to the sleeptime, to increase speed of execution, each failed test will increase it
   static int nsleeps = 1;
-  if(smpi_test_sleep > 0)  
+  if(smpi_test_sleep > 0)
     simcall_process_sleep(nsleeps*smpi_test_sleep);
 
   Status::empty(status);
@@ -562,12 +562,12 @@ int Request::testany(int count, MPI_Request requests[], int *index, MPI_Status *
   if (not map.empty()) {
     //multiplier to the sleeptime, to increase speed of execution, each failed testany will increase it
     static int nsleeps = 1;
-    if(smpi_test_sleep > 0) 
+    if(smpi_test_sleep > 0)
       simcall_process_sleep(nsleeps*smpi_test_sleep);
 
     i = simcall_comm_testany(comms.data(), comms.size()); // The i-th element in comms matches!
     if (i != -1) { // -1 is not MPI_UNDEFINED but a SIMIX return code. (nothing matches)
-      *index = map[i]; 
+      *index = map[i];
       finish_wait(&requests[*index],status);
       flag             = 1;
       nsleeps          = 1;

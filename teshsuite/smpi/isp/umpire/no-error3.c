@@ -43,7 +43,7 @@ main (int argc, char **argv)
       memset (buf1, 1, buf_size);
 
       MPI_Recv (buf0, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
-      
+
       MPI_Send (buf1, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
     }
   }

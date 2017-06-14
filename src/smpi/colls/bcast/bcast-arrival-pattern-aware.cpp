@@ -53,14 +53,14 @@ int Coll_bcast_arrival_pattern_aware::bcast(void *buf, int count,
 
   /* segment is segment size in number of elements (not bytes) */
   int segment = bcast_NTSL_segment_size_in_byte / extent;
-  segment =  segment == 0 ? 1 :segment; 
+  segment =  segment == 0 ? 1 :segment;
   /* pipeline length */
   int pipe_length = count / segment;
 
   /* use for buffer offset for sending and receiving data = segment size in byte */
   int increment = segment * extent;
 
-  /* if the input size is not divisible by segment size => 
+  /* if the input size is not divisible by segment size =>
      the small remainder will be done with native implementation */
   int remainder = count % segment;
 
@@ -347,7 +347,7 @@ int Coll_bcast_arrival_pattern_aware::bcast(void *buf, int count,
       }else{
           Request::waitall(pipe_length, recv_request_array, recv_status_array);
           }
-    
+
     }
 
     free(send_request_array);

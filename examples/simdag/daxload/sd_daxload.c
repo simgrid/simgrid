@@ -42,7 +42,7 @@ int main(int argc, char **argv)
   if (!dax){
     XBT_ERROR("A problem occurred during DAX parsing (cycle or syntax). Do not continue this test");
     free(tracefilename);
-  
+
     exit(255);
   }
 

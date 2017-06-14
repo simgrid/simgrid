@@ -65,7 +65,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *         algorithm.
  * Auther: MPICH
  * Comment: Original bruck algorithm from MPICH is slightly modified by
- *          Ahmad Faraj.  
+ *          Ahmad Faraj.
  ****************************************************************************/
 
 namespace simgrid{
@@ -92,7 +92,7 @@ int Coll_allgather_bruck::allgather(void *send_buff, int send_count,
   char *send_ptr = (char *) send_buff;
   char *recv_ptr = (char *) recv_buff;
 
-  // get size of the communicator, followed by rank 
+  // get size of the communicator, followed by rank
   num_procs = comm->size();
   rank = comm->rank();
 

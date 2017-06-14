@@ -12,7 +12,7 @@
 int main(void)
 {
   sem_t s;
-  if (sem_init(&s, 0, 0) != 0) 
+  if (sem_init(&s, 0, 0) != 0)
      return 1;
   return 0;
 }

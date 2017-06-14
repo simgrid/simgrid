@@ -42,7 +42,7 @@ main (int argc, char **argv)
       int src = (rank == 0) ? (nprocs - 1) : (rank - 1);
       memset (buf0, rank, buf_size);
       memset (buf1, rank, buf_size);
-      
+
       for (i = 0; i < req_count; i++) {
 	MPI_Irecv (buf0, buf_size, MPI_INT, src, 0, MPI_COMM_WORLD, &req1);
 	MPI_Isend (buf1, buf_size, MPI_INT, dest, 0, MPI_COMM_WORLD, &req2);

@@ -101,7 +101,7 @@ static int is_2dmesh(int num, int *i, int *j)
  * comm: communication
  * Descrp: Function realizes the allgather operation using the 2dmesh
  * algorithm. Allgather ommunication occurs first in the x dimension then in
- * the y dimension.  The communication in each dimension follows 
+ * the y dimension.  The communication in each dimension follows
  * "simple"
  * Auther: Ahmad Faraj
 ****************************************************************************/
@@ -144,7 +144,7 @@ Coll_allgather_2dmesh::allgather(void *send_buff, int send_count, MPI_Datatype
 
   req_ptr = req;
 
-  // do local allgather/local copy 
+  // do local allgather/local copy
   recv_offset = rank * block_size;
   Datatype::copy(send_buff, send_count, send_type, (char *)recv_buff + recv_offset,
                  recv_count, recv_type);

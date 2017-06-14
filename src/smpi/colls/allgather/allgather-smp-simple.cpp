@@ -67,7 +67,7 @@ int Coll_allgather_smp_simple::allgather(void *send_buf, int scount,
 
   }
 
-  // INTER-SMP-ALLGATHER 
+  // INTER-SMP-ALLGATHER
   // Every root of each SMP node post INTER-Sendrecv, then do INTRA-Bcast for each receiving message
 
 
@@ -86,7 +86,7 @@ int Coll_allgather_smp_simple::allgather(void *send_buf, int scount,
       src = ((inter_rank - i + inter_comm_size) % inter_comm_size) * num_core;
       //send_offset = (rank * sextent * scount);
       recv_offset = (src * sextent * scount);
-      //      Request::sendrecv((recv_buf+send_offset), (scount * num_core), stype, dst, tag, 
+      //      Request::sendrecv((recv_buf+send_offset), (scount * num_core), stype, dst, tag,
       //             (recv_buf+recv_offset), (rcount * num_core), rtype, src, tag, comm, &status);
       //MPIC_Isend((recv_buf+send_offset), (scount * num_core), stype, dst, tag, comm, req_ptr++);
       *(req_ptr++) = Request::irecv(((char *) recv_buf + recv_offset), (rcount * num_core), rtype,
@@ -98,7 +98,7 @@ int Coll_allgather_smp_simple::allgather(void *send_buf, int scount,
       //src = ((inter_rank-i+inter_comm_size)%inter_comm_size) * num_core;
       send_offset = (rank * sextent * scount);
       //recv_offset = (src * sextent * scount);
-      //      Request::sendrecv((recv_buf+send_offset), (scount * num_core), stype, dst, tag, 
+      //      Request::sendrecv((recv_buf+send_offset), (scount * num_core), stype, dst, tag,
       //             (recv_buf+recv_offset), (rcount * num_core), rtype, src, tag, comm, &status);
       *(req_ptr++) = Request::isend(((char *) recv_buf + send_offset), (scount * num_core), stype,
                 dst, tag, comm);

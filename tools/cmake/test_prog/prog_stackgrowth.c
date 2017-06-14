@@ -15,7 +15,7 @@ static int growsdown(int *x)
   if (--iterate > 0)
     y = growsdown(&y);
 
-  /* The stack sometimes changes at the 0th level. 
+  /* The stack sometimes changes at the 0th level.
    * Original version did fail in this case, but I changed this around SimGrid 3.13 because of https://bugs.debian.org/814272
    * Every arch failed on that day :(
    */

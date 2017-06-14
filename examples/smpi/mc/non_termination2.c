@@ -5,7 +5,9 @@
 int x;
 
 int main(int argc, char **argv) {
-  int recv_buff, size, rank;
+  int recv_buff;
+  int size;
+  int rank;
   MPI_Status status;
 
   MPI_Init(&argc, &argv);

@@ -73,10 +73,8 @@ XBT_PUBLIC(void) SIMIX_clean();
   _smx_throw_issuer->exception = std::make_exception_ptr(e); \
   } else ((void)0)
 
-/* ******************************** File ************************************ */
 typedef struct s_smx_file {
   surf_file_t surf_file;
-  void* data;                   /**< @brief user data */
 } s_smx_file_t;
 
 

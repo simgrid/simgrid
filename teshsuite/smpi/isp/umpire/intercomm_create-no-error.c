@@ -43,11 +43,11 @@ main (int argc, char **argv)
     /* need lots of stuff for this constructor... */
     MPI_Comm_split (MPI_COMM_WORLD, rank % 2, nprocs - rank, &temp);
 
-    MPI_Intercomm_create (temp, 0, MPI_COMM_WORLD, 
-			  nprocs - 
+    MPI_Intercomm_create (temp, 0, MPI_COMM_WORLD,
+			  nprocs -
 			  ((rank % 2) ? 2 - (nprocs % 2) : 1 + (nprocs % 2)),
 			  INTERCOMM_CREATE_TAG, &intercomm);
-      
+
     MPI_Comm_free (&intercomm);
 
     MPI_Comm_free (&temp);

@@ -34,7 +34,7 @@ main (int argc, char **argv)
   else {
     if (rank == 0) {
       for (i = 1; i < nprocs; i++) {
-	MPI_Recv (buf, buf_size, MPI_INT, 
+	MPI_Recv (buf, buf_size, MPI_INT,
 		  MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
       }
     }

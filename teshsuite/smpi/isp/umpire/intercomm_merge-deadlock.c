@@ -46,10 +46,10 @@ main (int argc, char **argv)
       MPI_Intercomm_create (temp, 0, MPI_COMM_WORLD, rleader,
 			    INTERCOMM_CREATE_TAG, &intercomm);
       MPI_Comm_free (&temp);
-      
+
       if (intercomm != MPI_COMM_NULL) {
 	/* need to make a different split communicator temporarily... */
-	MPI_Comm_split (MPI_COMM_WORLD, 
+	MPI_Comm_split (MPI_COMM_WORLD,
 			rank < nprocs/2, nprocs - rank, &temp);
 
 	if (temp != MPI_COMM_NULL) {
@@ -58,7 +58,7 @@ main (int argc, char **argv)
 	  MPI_Intercomm_create (temp, 0, MPI_COMM_WORLD, rleader,
 				INTERCOMM_CREATE_TAG, &intercomm2);
 	  MPI_Comm_free (&temp);
-      
+
 	  if (intercomm2 != MPI_COMM_NULL) {
 	    if (rank < nprocs/2) {
 	      MPI_Intercomm_merge (intercomm2, rank < nprocs/2, &comm2);
@@ -89,7 +89,7 @@ main (int argc, char **argv)
 		  memset (buf0, 0, buf_size);
 	
 		  MPI_Send (buf0, buf_size, MPI_INT, 1, 0, comm);
-	    
+	
 		  MPI_Recv (buf1, buf_size, MPI_INT, 1, 0, comm, &status);
 		}
 	      }
@@ -112,7 +112,7 @@ main (int argc, char **argv)
 		  memset (buf0, 0, buf_size);
 	
 		  MPI_Send (buf0, buf_size, MPI_INT, 1, 0, comm2);
-	    
+	
 		  MPI_Recv (buf1, buf_size, MPI_INT, 1, 0, comm2, &status);
 		}
 	      }

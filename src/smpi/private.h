@@ -61,7 +61,7 @@ XBT_PRIVATE void smpi_deployment_register_process(const char* instance_id, int r
 XBT_PRIVATE MPI_Comm* smpi_deployment_comm_world(const char* instance_id);
 XBT_PRIVATE msg_bar_t smpi_deployment_finalization_barrier(const char* instance_id);
 XBT_PRIVATE void smpi_deployment_cleanup_instances();
- 
+
 XBT_PRIVATE void smpi_comm_copy_buffer_callback(smx_activity_t comm, void *buff, size_t buff_size);
 
 XBT_PRIVATE void smpi_comm_null_copy_buffer_callback(smx_activity_t comm, void *buff, size_t buff_size);

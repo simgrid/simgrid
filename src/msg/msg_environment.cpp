@@ -25,7 +25,7 @@ SG_BEGIN_DECL()
  *
  *     \include simgrid.dtd
  *
- * Here is a small example of such a platform 
+ * Here is a small example of such a platform
  *
  *     \include small_platform.xml
  *

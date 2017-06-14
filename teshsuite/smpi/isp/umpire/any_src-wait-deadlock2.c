@@ -37,10 +37,10 @@ main (int argc, char **argv)
     {
       memset (buf0, 0, buf_size);
 
-      MPI_Irecv (buf1, buf_size, MPI_INT, 
+      MPI_Irecv (buf1, buf_size, MPI_INT,
 		 MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &req);
       printf("Proc 0:  Request number - %p\n",req);
-      
+
       MPI_Send (buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD);
 	
       MPI_Recv (buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
@@ -54,7 +54,7 @@ main (int argc, char **argv)
     {
       memset (buf1, 1, buf_size);
 
-      MPI_Irecv (buf1, buf_size, MPI_INT, 
+      MPI_Irecv (buf1, buf_size, MPI_INT,
 		 MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &req);
       printf("Proc 1:  Request number - %p\n",req);
 

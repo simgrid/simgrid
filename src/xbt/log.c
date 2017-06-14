@@ -199,7 +199,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(s4u_channel);
   XBT_LOG_CONNECT(s4u_comm);
   XBT_LOG_CONNECT(s4u_file);
-   
+
   /* sg */
   XBT_LOG_CONNECT(sg_host);
 
@@ -259,7 +259,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_trace);
   XBT_LOG_CONNECT(surf_vm);
   XBT_LOG_CONNECT(surf_host);
-   
+
 #endif /* simgrid_EXPORTS */
 }
 

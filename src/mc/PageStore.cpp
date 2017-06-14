@@ -224,7 +224,7 @@ XBT_TEST_SUITE("mc_page_store", "Page store");
 XBT_TEST_UNIT("base", test_mc_page_store, "Test adding/removing pages in the store")
 {
   using simgrid::mc::PageStore;
-  
+
   xbt_test_add("Init");
   std::size_t pagesize = (size_t) getpagesize();
   std::unique_ptr<PageStore> store

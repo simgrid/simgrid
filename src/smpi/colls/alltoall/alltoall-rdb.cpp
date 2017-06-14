@@ -13,7 +13,7 @@
 
  * Return: int
 
- * inputs: 
+ * inputs:
     send_buff: send input buffer
     send_count: number of elements to send
     send_type: data type of elements being sent
@@ -25,7 +25,7 @@
  * Descrp: Function realizes the allgather operation using the recursive
            doubling algorithm.
 
- * Auther: MPICH / slightly modified by Ahmad Faraj.  
+ * Auther: MPICH / slightly modified by Ahmad Faraj.
 
  ****************************************************************************/
 namespace simgrid{

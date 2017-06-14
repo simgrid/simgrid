@@ -50,14 +50,14 @@ main (int argc, char **argv)
     {
       for (j = 0; j < 2; j++) {
 	MPI_Probe (MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
-      
+
 	if (status.MPI_SOURCE == 0)
 	  MPI_Recv (&i, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
-	else 
+	else
 	  MPI_Recv (&x, 1, MPI_DOUBLE, 1, 0, MPI_COMM_WORLD, &status);
       }
     }
-      
+
   MPI_Barrier (MPI_COMM_WORLD);
 
   MPI_Finalize ();

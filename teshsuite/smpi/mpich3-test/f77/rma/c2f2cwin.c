@@ -5,8 +5,8 @@
  *      See COPYRIGHT in top-level directory.
  */
 /*
- * This file contains the C routines used in testing the c2f and f2c 
- * handle conversion functions for MPI_Win 
+ * This file contains the C routines used in testing the c2f and f2c
+ * handle conversion functions for MPI_Win
  *
  * The tests follow this pattern:
  *
@@ -30,11 +30,11 @@
 #include "../../include/mpitestconf.h"
 #include <string.h>
 
-/* 
+/*
    Name mapping.  All routines are created with names that are lower case
    with a single trailing underscore.  This matches many compilers.
    We use #define to change the name for Fortran compilers that do
-   not use the lowercase/underscore pattern 
+   not use the lowercase/underscore pattern
 */
 
 #ifdef F77_NAME_UPPER
@@ -50,7 +50,7 @@
       defined(F77_NAME_MIXED_USCORE)
 /* Else leave name alone (routines have no underscore, so both
    of these map to a lowercase, single underscore) */
-#else 
+#else
 #error 'Unrecognized Fortran name mapping'
 #endif
 
@@ -79,7 +79,7 @@ int c2fwin_( int *win )
     return 0;
 }
 
-/* 
+/*
  * The following routines provide handles to the calling Fortran program
  */
 void f2cwin_( int *win )

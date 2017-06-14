@@ -17,10 +17,10 @@ typedef pthread_key_t xbt_os_thread_key_t;
 
 /** @addtogroup XBT_thread
  *  @brief Thread portability layer
- * 
+ *
  *  This section describes the thread portability layer. It defines types and functions very close to the pthread API,
  *  but it's portable to windows too.
- * 
+ *
  *  @{
  */
 

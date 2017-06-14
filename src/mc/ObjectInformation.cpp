@@ -106,7 +106,7 @@ void ObjectInformation::remove_global_variable(const char* name)
     int cmp = current_var.name.compare(name);
 
     if (cmp == 0) {
-  
+
       // Find the whole range:
       size_type first = cursor;
       while (first != 0 && this->global_variables[first - 1].name == name)
@@ -115,12 +115,12 @@ void ObjectInformation::remove_global_variable(const char* name)
       size_type last = cursor;
       while (last != size - 1 && this->global_variables[last + 1].name == name)
         last++;
-  
+
       // Remove the whole range:
       this->global_variables.erase(
         this->global_variables.begin() + first,
         this->global_variables.begin() + last + 1);
-  
+
       return;
     } else if (cmp < 0)
       first = cursor + 1;

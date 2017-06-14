@@ -15,7 +15,7 @@ SG_BEGIN_DECL()
  *
  *     \include simgrid.dtd
  *
- * Here is a small example of such a platform 
+ * Here is a small example of such a platform
  *
  *     \include msg/masterslave/deployment_masterslave.xml
  *
@@ -30,8 +30,8 @@ void MSG_launch_application(const char *file)
 /** \ingroup msg_simulation
  * \brief Registers the main function of a process in a global table.
  *
- * Registers a code function in a global table. 
- * This table is then used by #MSG_launch_application. 
+ * Registers a code function in a global table.
+ * This table is then used by #MSG_launch_application.
  * \param name the reference name of the function.
  * \param code the function (must have the same prototype than the main function of any C program: int ..(int argc, char *argv[]))
  */

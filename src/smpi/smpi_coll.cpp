@@ -320,7 +320,7 @@ int Colls::exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype
           Datatype::copy(tmpbufs[other], count, datatype, recvbuf, count, datatype);
           recvbuf_is_empty = 0;
         } else
-          if(op!=MPI_OP_NULL) 
+          if(op!=MPI_OP_NULL)
             op->apply( tmpbufs[other], recvbuf, &count, datatype);
       }
     }

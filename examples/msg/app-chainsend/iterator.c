@@ -13,7 +13,7 @@
 xbt_dynar_iterator_t xbt_dynar_iterator_new(xbt_dynar_t list, xbt_dynar_t (*criteria_fn)(int))
 {
   xbt_dynar_iterator_t it = xbt_new(xbt_dynar_iterator_s, 1);
-  
+
   it->list = list;
   it->length = xbt_dynar_length(list);
   it->indices_list = criteria_fn(it->length); // Creates and fills a dynar of int

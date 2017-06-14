@@ -12,7 +12,7 @@
 /**
  * bw and latency test 3
  * same intention as test 2
- * sending 2 x 1 bytes at the same time 
+ * sending 2 x 1 bytes at the same time
  * this time in opposite direction
  */
 

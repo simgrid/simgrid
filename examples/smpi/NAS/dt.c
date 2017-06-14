@@ -1,10 +1,10 @@
 /*************************************************************************
- *                                                                       * 
+ *                                                                       *
  *    N  A  S   P A R A L L E L   B E N C H M A R K S  3.3     *
  *                                     *
  *                  D T       *
  *                                     *
- ************************************************************************* 
+ *************************************************************************
  *                                     *
  *   This benchmark is part of the NAS Parallel Benchmark 3.3 suite.   *
  *                                     *
@@ -31,7 +31,7 @@
  *     E-mail:  npb@nas.nasa.gov                   *
  *     Fax:   (650) 604-3957                     *
  *                                     *
- ************************************************************************* 
+ *************************************************************************
  *                                     *
  *   Author: M. Frumkin         *       *
  *                                     *
@@ -263,7 +263,7 @@ static DGraph *buildWH(const char cls){
     numPrevLayerNodes=numLayerNodes;
   }
   source=newNode((char*)"Source");
-  AttachNode(dg,source);   
+  AttachNode(dg,source);
   for(i=0;i<numPrevLayerNodes;i++){
     nd=dg->node[firstLayerNode+i];
     ar=newArc(source,nd);
@@ -323,7 +323,7 @@ static DGraph *buildBH(const char cls){
     numPrevLayerNodes=numLayerNodes;
   }
   sink=newNode((char*)"Sink");
-  AttachNode(dg,sink);   
+  AttachNode(dg,sink);
   for(i=0;i<numPrevLayerNodes;i++){
     nd=dg->node[firstLayerNode+i];
     ar=newArc(nd,sink);
@@ -428,7 +428,7 @@ static Arr* WindowFilter(Arr *a, Arr* b,int w){
   int i=0,j=0,k=0;
   double rms0=0.0,rms1=0.0,rmsm1=0.0;
   double weight=((double) (w+1))/(w+2);
- 
+
   w+=1;
   if(timer_on){
     timer_clear(w);

@@ -30,9 +30,9 @@ Coll_allgather_NTSLR::allgather(void *sbuf, int scount, MPI_Datatype stype,
 
   // irregular case use default MPI fucntions
   if (scount * sextent != rcount * rextent) {
-    XBT_WARN("MPI_allgather_NTSLR use default MPI_allgather.");  
+    XBT_WARN("MPI_allgather_NTSLR use default MPI_allgather.");
     Coll_allgather_default::allgather(sbuf, scount, stype, rbuf, rcount, rtype, comm);
-    return MPI_SUCCESS;    
+    return MPI_SUCCESS;
   }
 
   // topo non-specific
