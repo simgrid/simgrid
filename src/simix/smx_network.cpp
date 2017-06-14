@@ -391,14 +391,11 @@ void simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activi
 
 void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, double timeout)
 {
-  smx_activity_t synchro;
-  unsigned int cursor = 0;
-
   if (MC_is_active() || MC_record_replay_is_active()){
     if (timeout > 0.0)
       xbt_die("Timeout not implemented for waitany in the model-checker");
     int idx = SIMCALL_GET_MC_VALUE(simcall);
-    synchro = xbt_dynar_get_as(synchros, idx, smx_activity_t);
+    smx_activity_t synchro = xbt_dynar_get_as(synchros, idx, smx_activity_t);
     synchro->simcalls.push_back(simcall);
     simcall_comm_waitany__set__result(simcall, idx);
     synchro->state = SIMIX_DONE;
@@ -416,7 +413,10 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, d
     });
   }
 
-  xbt_dynar_foreach(synchros, cursor, synchro){
+  unsigned int cursor;
+  simgrid::kernel::activity::ActivityImpl* ptr;
+  xbt_dynar_foreach(synchros, cursor, ptr){
+    smx_activity_t synchro = simgrid::kernel::activity::ActivityImplPtr(ptr);
     /* associate this simcall to the the synchro */
     synchro->simcalls.push_back(simcall);
 
@@ -430,11 +430,13 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, d
 
 void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
 {
-  smx_activity_t synchro;
   unsigned int cursor = 0;
   xbt_dynar_t synchros = simcall_comm_waitany__get__comms(simcall);
 
-  xbt_dynar_foreach(synchros, cursor, synchro) {
+  simgrid::kernel::activity::ActivityImpl* ptr;
+  xbt_dynar_foreach(synchros, cursor, ptr){
+    smx_activity_t synchro = simgrid::kernel::activity::ActivityImplPtr(ptr);
+
     // Remove the first occurence of simcall:
     auto i = boost::range::find(synchro->simcalls, simcall);
     if (i !=  synchro->simcalls.end())

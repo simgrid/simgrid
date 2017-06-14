@@ -634,11 +634,14 @@ int MSG_comm_waitany(xbt_dynar_t comms)
   int finished_index = -1;
 
   /* create the equivalent dynar with SIMIX objects */
-  xbt_dynar_t s_comms = xbt_dynar_new(sizeof(smx_activity_t), nullptr);
+  xbt_dynar_t s_comms = xbt_dynar_new(sizeof(smx_activity_t), [](void*ptr){
+    intrusive_ptr_release((simgrid::kernel::activity::ActivityImpl*)ptr);
+  });
   msg_comm_t comm;
   unsigned int cursor;
   xbt_dynar_foreach(comms, cursor, comm) {
-    xbt_dynar_push(s_comms, &comm->s_comm);
+    intrusive_ptr_add_ref(comm->s_comm.get());
+    xbt_dynar_push_as(s_comms, simgrid::kernel::activity::ActivityImpl*, comm->s_comm.get());
   }
 
   msg_error_t status = MSG_OK;

@@ -530,7 +530,7 @@ int Request::testsome(int incount, MPI_Request requests[], int *indices, MPI_Sta
         count++;
         if (status != MPI_STATUSES_IGNORE)
           status[i] = *pstat;
-        if ((requests[i] != MPI_REQUEST_NULL) && requests[i]->flags_ & NON_PERSISTENT)
+        if ((requests[i] != MPI_REQUEST_NULL) && (requests[i]->flags_ & NON_PERSISTENT))
           requests[i] = MPI_REQUEST_NULL;
       }
     } else {
@@ -757,22 +757,23 @@ void Request::wait(MPI_Request * request, MPI_Status * status)
 int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
 {
   s_xbt_dynar_t comms; // Keep it on stack to save some extra mallocs
-  int i;
   int size = 0;
   int index = MPI_UNDEFINED;
-  int *map;
 
   if(count > 0) {
     // Wait for a request to complete
-    xbt_dynar_init(&comms, sizeof(smx_activity_t), nullptr);
-    map = xbt_new(int, count);
+    xbt_dynar_init(&comms, sizeof(smx_activity_t), [](void*ptr){
+      intrusive_ptr_release((simgrid::kernel::activity::ActivityImpl*)ptr);
+    });
+    int *map = xbt_new(int, count);
     XBT_DEBUG("Wait for one of %d", count);
-    for(i = 0; i < count; i++) {
+    for(int i = 0; i < count; i++) {
       if (requests[i] != MPI_REQUEST_NULL && not(requests[i]->flags_ & PREPARED) &&
           not(requests[i]->flags_ & FINISHED)) {
         if (requests[i]->action_ != nullptr) {
           XBT_DEBUG("Waiting any %p ", requests[i]);
-          xbt_dynar_push(&comms, &requests[i]->action_);
+          intrusive_ptr_add_ref(requests[i]->action_.get());
+          xbt_dynar_push_as(&comms, simgrid::kernel::activity::ActivityImpl*, requests[i]->action_.get());
           map[size] = i;
           size++;
         } else {
@@ -786,8 +787,9 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
         }
       }
     }
-    if(size > 0) {
-      i = simcall_comm_waitany(&comms, -1);
+    if (size > 0) {
+      XBT_DEBUG("Enter waitany for %lu comms", xbt_dynar_length(&comms));
+      int i = simcall_comm_waitany(&comms, -1);
 
       // not MPI_UNDEFINED, as this is a simix return code
       if (i != -1) {
@@ -822,7 +824,7 @@ int Request::waitall(int count, MPI_Request requests[], MPI_Status status[])
   std::vector<MPI_Request> accumulates;
   int index;
   MPI_Status stat;
-  MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
+  MPI_Status *pstat = (status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat);
   int retvalue = MPI_SUCCESS;
   //tag invalid requests in the set
   if (status != MPI_STATUSES_IGNORE) {
@@ -840,7 +842,7 @@ int Request::waitall(int count, MPI_Request requests[], MPI_Status status[])
       wait(&requests[c],pstat);
       index = c;
     } else {
-      index = waitany(count, requests, pstat);
+      index = waitany(count, (MPI_Request*)requests, pstat);
       if (index == MPI_UNDEFINED)
         break;
 
