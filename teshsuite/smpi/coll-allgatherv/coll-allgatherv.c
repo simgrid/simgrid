@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
   for (i = 0; i < recv_counts[rank]; ++i)
     sb[i] = recv_disps[rank] + i;
-  for (i = 0; i < recv_sb_size; ++i)  
+  for (i = 0; i < recv_sb_size; ++i)
     rb[i] = -1;
 
   printf("[%d] sndbuf=[", rank);

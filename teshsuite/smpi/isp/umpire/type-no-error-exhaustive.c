@@ -25,8 +25,8 @@ main (int argc, char **argv)
   int namelen = 128;
   int i;
   int blocklens[2], displs[2];
-  MPI_Datatype newtype[TYPE_CONSTRUCTOR_COUNT]; 
-  MPI_Datatype newtype2[TYPE_CONSTRUCTOR_COUNT]; 
+  MPI_Datatype newtype[TYPE_CONSTRUCTOR_COUNT];
+  MPI_Datatype newtype2[TYPE_CONSTRUCTOR_COUNT];
 
   /* init */
   MPI_Init (&argc, &argv);

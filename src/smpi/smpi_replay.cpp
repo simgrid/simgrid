@@ -164,8 +164,8 @@ static void action_init(const char *const *action)
 {
   XBT_DEBUG("Initialize the counters");
   CHECK_ACTION_PARAMS(action, 0, 1)
-  if(action[2]) 
-    MPI_DEFAULT_TYPE=MPI_DOUBLE; // default MPE dataype 
+  if(action[2])
+    MPI_DEFAULT_TYPE=MPI_DOUBLE; // default MPE dataype
   else MPI_DEFAULT_TYPE= MPI_BYTE; // default TAU datatype
 
   /* start a simulated timer */
@@ -253,9 +253,9 @@ static void action_Isend(const char *const *action)
   double size=parse_double(action[3]);
   double clock = smpi_process()->simulated_elapsed();
 
-  if(action[4]) 
+  if(action[4])
     MPI_CURRENT_TYPE=decode_datatype(action[4]);
-  else 
+  else
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
   int rank = smpi_process()->index();
@@ -286,9 +286,9 @@ static void action_recv(const char *const *action) {
   double clock = smpi_process()->simulated_elapsed();
   MPI_Status status;
 
-  if(action[4]) 
+  if(action[4])
     MPI_CURRENT_TYPE=decode_datatype(action[4]);
-  else 
+  else
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
   int rank = smpi_process()->index();
@@ -325,9 +325,9 @@ static void action_Irecv(const char *const *action)
   double size=parse_double(action[3]);
   double clock = smpi_process()->simulated_elapsed();
 
-  if(action[4]) 
+  if(action[4])
     MPI_CURRENT_TYPE=decode_datatype(action[4]);
-  else 
+  else
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
   int rank = smpi_process()->index();
@@ -361,8 +361,8 @@ static void action_test(const char *const *action){
 
   MPI_Request request = get_reqq_self()->back();
   get_reqq_self()->pop_back();
-  //if request is null here, this may mean that a previous test has succeeded 
-  //Different times in traced application and replayed version may lead to this 
+  //if request is null here, this may mean that a previous test has succeeded
+  //Different times in traced application and replayed version may lead to this
   //In this case, ignore the extra calls.
   if(request!=nullptr){
     int rank = smpi_process()->index();
@@ -469,12 +469,12 @@ static void action_bcast(const char *const *action)
   double clock = smpi_process()->simulated_elapsed();
   int root=0;
   /* Initialize MPI_CURRENT_TYPE in order to decrease the number of the checks */
-  MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;  
+  MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
   if(action[3]) {
     root= atoi(action[3]);
     if(action[4])
-      MPI_CURRENT_TYPE=decode_datatype(action[4]);   
+      MPI_CURRENT_TYPE=decode_datatype(action[4]);
   }
 
   int rank = smpi_process()->index();
@@ -755,8 +755,8 @@ static void action_allgather(const char *const *action) {
   double clock = smpi_process()->simulated_elapsed();
 
   CHECK_ACTION_PARAMS(action, 2, 2)
-  int sendcount=atoi(action[2]); 
-  int recvcount=atoi(action[3]); 
+  int sendcount=atoi(action[2]);
+  int recvcount=atoi(action[3]);
 
   MPI_Datatype MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;
 

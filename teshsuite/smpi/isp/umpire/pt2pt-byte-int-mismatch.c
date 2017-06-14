@@ -44,42 +44,42 @@ main (int argc, char **argv)
   printf ("(%d) is alive on %s\n", rank, processor_name);
   fflush (stdout);
 
-  MPI_Buffer_attach (bbuf, sizeof(int) * 
+  MPI_Buffer_attach (bbuf, sizeof(int) *
 		     (BUF_SIZE + MPI_BSEND_OVERHEAD) * 2 * NUM_BSEND_TYPES);
 
   if (rank == 0) {
     /* set up persistent sends... */
     send_t_number = NUM_SEND_TYPES - NUM_PERSISTENT_SEND_TYPES;
 
-    MPI_Send_init (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT, 
+    MPI_Send_init (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT,
 		    1, send_t_number * 2, comm, &aReq[send_t_number * 2]);
-    MPI_Send_init (&buf[(send_t_number * 2 + 1) * BUF_SIZE], 
-		    BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1, 
+    MPI_Send_init (&buf[(send_t_number * 2 + 1) * BUF_SIZE],
+		    BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1,
 		    comm, &aReq[send_t_number * 2 + 1]);
 
     send_t_number++;
 
-    MPI_Bsend_init (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT, 
+    MPI_Bsend_init (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT,
 		    1, send_t_number * 2, comm, &aReq[send_t_number * 2]);
-    MPI_Bsend_init (&buf[(send_t_number * 2 + 1) * BUF_SIZE], 
-		    BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1, 
+    MPI_Bsend_init (&buf[(send_t_number * 2 + 1) * BUF_SIZE],
+		    BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1,
 		    comm, &aReq[send_t_number * 2 + 1]);
 
 
     send_t_number++;
 
-    MPI_Rsend_init (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT, 
+    MPI_Rsend_init (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT,
 		    1, send_t_number * 2, comm, &aReq[send_t_number * 2]);
-    MPI_Rsend_init (&buf[(send_t_number * 2 + 1) * BUF_SIZE], 
-		    BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1, 
+    MPI_Rsend_init (&buf[(send_t_number * 2 + 1) * BUF_SIZE],
+		    BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1,
 		    comm, &aReq[send_t_number * 2 + 1]);
 
     send_t_number++;
 
-    MPI_Ssend_init (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT, 
+    MPI_Ssend_init (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT,
 		    1, send_t_number * 2, comm, &aReq[send_t_number * 2]);
-    MPI_Ssend_init (&buf[(send_t_number * 2 + 1) * BUF_SIZE], 
-		    BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1, 
+    MPI_Ssend_init (&buf[(send_t_number * 2 + 1) * BUF_SIZE],
+		    BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1,
 		    comm, &aReq[send_t_number * 2 + 1]);
   }
 
@@ -87,10 +87,10 @@ main (int argc, char **argv)
     if ((m == 1) && (rank == 1)) {
       /* set up the persistent receives... */
       for (j = 0; j < NUM_SEND_TYPES * 2; j+=2) {
-	MPI_Recv_init (&buf[j * BUF_SIZE], 
+	MPI_Recv_init (&buf[j * BUF_SIZE],
 		       BUF_SIZE, MPI_INT, 0, j, comm, &aReq[j]);
-	MPI_Recv_init (&buf[(j + 1) * BUF_SIZE], 
-		       BUF_SIZE * sizeof(int), 
+	MPI_Recv_init (&buf[(j + 1) * BUF_SIZE],
+		       BUF_SIZE * sizeof(int),
 		       MPI_BYTE, 0, j + 1, comm, &aReq[j + 1]);
       }
     }
@@ -116,11 +116,11 @@ main (int argc, char **argv)
 	if (rank == 0) {
 	  /* set up transient sends... */
 	  send_t_number = 0;
-    
+
 	  MPI_Isend (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT,
 		     1, send_t_number * 2, comm, &aReq[send_t_number * 2]);
 	  MPI_Isend (&buf[(send_t_number * 2 + 1) * BUF_SIZE],
-		     BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1, 
+		     BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1,
 		     comm, &aReq[send_t_number * 2 + 1]);
 
 	  send_t_number++;
@@ -128,18 +128,18 @@ main (int argc, char **argv)
 	  MPI_Ibsend (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT,
 		      1, send_t_number * 2, comm, &aReq[send_t_number * 2]);
 	  MPI_Ibsend (&buf[(send_t_number * 2 + 1) * BUF_SIZE],
-		      BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1, 
+		      BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1,
 		      comm, &aReq[send_t_number * 2 + 1]);
 
 	  send_t_number++;
 
 	  /* Barrier to ensure receives are posted for rsends... */
 	  MPI_Barrier(MPI_COMM_WORLD);
-	  
+	
 	  MPI_Irsend (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT,
 		    1, send_t_number * 2, comm, &aReq[send_t_number * 2]);
 	  MPI_Irsend (&buf[(send_t_number * 2 + 1) * BUF_SIZE],
-		      BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1, 
+		      BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1,
 		      comm, &aReq[send_t_number * 2 + 1]);
 
 	  send_t_number++;
@@ -147,17 +147,17 @@ main (int argc, char **argv)
 	  MPI_Issend (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT,
 		      1, send_t_number * 2, comm, &aReq[send_t_number * 2]);
 	  MPI_Issend (&buf[(send_t_number * 2 + 1) * BUF_SIZE],
-		      BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1, 
+		      BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1,
 		      comm, &aReq[send_t_number * 2 + 1]);
 
 	  /* just to be paranoid */
 	  send_t_number++;
-	  assert (send_t_number == 
+	  assert (send_t_number ==
 		  NUM_SEND_TYPES - NUM_PERSISTENT_SEND_TYPES);
 
 	  /* start the persistent sends... */
 	  if (k % 2) {
-	    MPI_Startall (NUM_PERSISTENT_SEND_TYPES * 2, 
+	    MPI_Startall (NUM_PERSISTENT_SEND_TYPES * 2,
 			  &aReq[2 * send_t_number]);
 	  }
 	  else {
@@ -174,7 +174,7 @@ main (int argc, char **argv)
 	      MPI_Wait (&aReq[j], &aStatus[j]);
 	    }
 	    break;
-	  
+	
 	  case 1:
 	    /* use MPI_Waitall */
 	    MPI_Waitall (NUM_SEND_TYPES * 2, aReq, aStatus);
@@ -185,14 +185,14 @@ main (int argc, char **argv)
 	    for (j = 0; j < NUM_SEND_TYPES * 2; j++) {
 	      MPI_Waitany (NUM_SEND_TYPES * 2, aReq, &index, aStatus);
 	    }
-	    
+	
 	    break;
 	
 	  case 3:
 	    /* use MPI_Waitsome */
 	    total = 0;
 	    while (total < NUM_SEND_TYPES * 2) {
-	      MPI_Waitsome (NUM_SEND_TYPES * 2, aReq, 
+	      MPI_Waitsome (NUM_SEND_TYPES * 2, aReq,
 			    &outcount, indices, aStatus);
 
 	      total += outcount;
@@ -204,12 +204,12 @@ main (int argc, char **argv)
 	    /* use MPI_Test */
 	    for (j = 0; j < NUM_SEND_TYPES * 2; j++) {
 	      flag = 0;
-	    
+	
 	      while (!flag) {
 		MPI_Test (&aReq[j], &flag, &aStatus[j]);
 	      }
 	    }
-	  
+	
 	    break;
 	
 	  case 5:
@@ -218,7 +218,7 @@ main (int argc, char **argv)
 	    while (!flag) {
 	      MPI_Testall (NUM_SEND_TYPES * 2, aReq, &flag, aStatus);
 	    }
-	  
+	
 	    break;
 	
 	  case 6:
@@ -226,7 +226,7 @@ main (int argc, char **argv)
 	    for (j = 0; j < NUM_SEND_TYPES * 2; j++) {
 	      flag = 0;
 	      while (!flag) {
-		MPI_Testany (NUM_SEND_TYPES * 2, aReq, 
+		MPI_Testany (NUM_SEND_TYPES * 2, aReq,
 			     &index, &flag, aStatus);
 	      }
 	    }
@@ -240,7 +240,7 @@ main (int argc, char **argv)
 	      outcount = 0;
 
 	      while (!outcount) {
-		MPI_Testsome (NUM_SEND_TYPES * 2, aReq, 
+		MPI_Testsome (NUM_SEND_TYPES * 2, aReq,
 			      &outcount, indices, aStatus);
 	      }
 
@@ -258,10 +258,10 @@ main (int argc, char **argv)
 	  /* start receives for all of the sends */
 	  if (m == 0) {
 	    for (j = 0; j < NUM_SEND_TYPES * 2; j+=2) {
-	      MPI_Irecv (&buf[j * BUF_SIZE], 
+	      MPI_Irecv (&buf[j * BUF_SIZE],
 			 BUF_SIZE, MPI_INT, 0, j, comm, &aReq[j]);
-	      MPI_Irecv (&buf[(j + 1) * BUF_SIZE], 
-			 BUF_SIZE * sizeof(int), 
+	      MPI_Irecv (&buf[(j + 1) * BUF_SIZE],
+			 BUF_SIZE * sizeof(int),
 			 MPI_BYTE, 0, j + 1, comm, &aReq[j + 1]);
 	    }
 	  }
@@ -282,13 +282,13 @@ main (int argc, char **argv)
 	
 	  /* complete all of the receives... */
 	  switch (l/2) {
-	  case 0: 
+	  case 0:
 	    /* use MPI_Wait */
 	    for (j = 0; j < NUM_SEND_TYPES * 2; j++) {
 	      MPI_Wait (&aReq[j], &aStatus[j]);
 	    }
 	    break;
-	    
+	
 	  case 1:
 	    /* use MPI_Waitall */
 	    MPI_Waitall (NUM_SEND_TYPES * 2, aReq, aStatus);
@@ -299,54 +299,54 @@ main (int argc, char **argv)
 	    for (j = 0; j < NUM_SEND_TYPES * 2; j++) {
 	      MPI_Waitany (NUM_SEND_TYPES * 2, aReq, &index, aStatus);
 	    }
-	    
+	
 	    break;
 	
 	  case 3:
 	    /* use MPI_Waitsome */
 	    total = 0;
 	    while (total < NUM_SEND_TYPES * 2) {
-	      MPI_Waitsome (NUM_SEND_TYPES * 2, aReq, 
+	      MPI_Waitsome (NUM_SEND_TYPES * 2, aReq,
 			    &outcount, indices, aStatus);
 
 	      total += outcount;
 	    }
 
 	    break;
-	    
+	
 	  case 4:
 	    /* use MPI_Test */
 	    for (j = 0; j < NUM_SEND_TYPES * 2; j++) {
 	      flag = 0;
-	      
+	
 	      while (!flag) {
 		MPI_Test (&aReq[j], &flag, &aStatus[j]);
 	      }
 	    }
-	    
+	
 	    break;
-	    
+	
 	  case 5:
 	    /* use MPI_Testall */
 	    flag = 0;
 	    while (!flag) {
 	      MPI_Testall (NUM_SEND_TYPES * 2, aReq, &flag, aStatus);
 	    }
-	    
+	
 	    break;
-	    
+	
 	  case 6:
 	    /* use MPI_Testany */
 	    for (j = 0; j < NUM_SEND_TYPES * 2; j++) {
 	      flag = 0;
 	      while (!flag) {
-		MPI_Testany (NUM_SEND_TYPES * 2, aReq, 
+		MPI_Testany (NUM_SEND_TYPES * 2, aReq,
 			     &index, &flag, aStatus);
 	      }
 	    }
-	    
+	
 	    break;
-	    
+	
 	  case 7:
 	    /* use MPI_Testsome */
 	    total = 0;
@@ -354,15 +354,15 @@ main (int argc, char **argv)
 	      outcount = 0;
 
 	      while (!outcount) {
-		MPI_Testsome (NUM_SEND_TYPES * 2, aReq, 
+		MPI_Testsome (NUM_SEND_TYPES * 2, aReq,
 			      &outcount, indices, aStatus);
 	      }
-	      
+	
 	      total += outcount;
 	    }
-	    
+	
 	    break;
-	    
+	
 	  default:
 	    assert (0);
 	    break;
@@ -395,7 +395,7 @@ main (int argc, char **argv)
 
   MPI_Buffer_detach (bbuf, &at_size);
 
-  assert (at_size == 
+  assert (at_size ==
 	  sizeof(int) * (BUF_SIZE + MPI_BSEND_OVERHEAD) * 2 * NUM_BSEND_TYPES);
 
   MPI_Finalize ();

@@ -5,7 +5,7 @@
 
 /******************** Non-deterministic message ordering  *********************/
 /* This example implements one process which receives messages from two other */
-/* processes. There is no bug on it, it is just provided to test the soundness*/ 
+/* processes. There is no bug on it, it is just provided to test the soundness*/
 /* of the state space reduction with DPOR, if the maximum depth (defined with */
 /* --cfg=model-check/max_depth:) is reached.                                  */
 /******************************************************************************/

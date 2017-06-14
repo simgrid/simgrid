@@ -25,8 +25,8 @@ main (int argc, char **argv)
   char processor_name[128];
   int namelen = 128;
   int i;
-  MPI_Group newgroup; 
-  MPI_Group newgroup2; 
+  MPI_Group newgroup;
+  MPI_Group newgroup2;
   MPI_Comm temp;
   MPI_Comm intercomm = MPI_COMM_NULL;
 
@@ -49,13 +49,13 @@ main (int argc, char **argv)
     MPI_Comm_split (MPI_COMM_WORLD, rank % 3, nprocs - rank, &temp);
 
     if (rank % 3) {
-      MPI_Intercomm_create (temp, 0, MPI_COMM_WORLD, 
+      MPI_Intercomm_create (temp, 0, MPI_COMM_WORLD,
 			    (((nprocs % 3) == 2) && ((rank % 3) == 2)) ?
 			    nprocs - 1 : nprocs - (rank % 3) - (nprocs % 3),
 			    INTERCOMM_CREATE_TAG, &intercomm);
 
       MPI_Comm_remote_group (intercomm, &newgroup);
-      
+
       MPI_Comm_free (&intercomm);
     }
     else {
@@ -63,7 +63,7 @@ main (int argc, char **argv)
     }
 
     MPI_Comm_free (&temp);
-      
+
     MPI_Group_free (&newgroup);
 
     MPI_Barrier (comm);
@@ -73,7 +73,7 @@ main (int argc, char **argv)
     MPI_Comm_split (MPI_COMM_WORLD, rank % 3, nprocs - rank, &temp);
 
     if (rank % 3) {
-      MPI_Intercomm_create (temp, 0, MPI_COMM_WORLD, 
+      MPI_Intercomm_create (temp, 0, MPI_COMM_WORLD,
 			    (((nprocs % 3) == 2) && ((rank % 3) == 2)) ?
 			    nprocs - 1 : nprocs - (rank % 3) - (nprocs % 3),
 			    INTERCOMM_CREATE_TAG, &intercomm);
@@ -87,7 +87,7 @@ main (int argc, char **argv)
     }
 
     MPI_Comm_free (&temp);
-      
+
     newgroup2 = newgroup;
     MPI_Group_free (&newgroup2);
   }

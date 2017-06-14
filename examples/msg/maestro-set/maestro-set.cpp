@@ -5,10 +5,10 @@
 
 /** @addtogroup MSG_examples
  *
- *  - <b>maestro-set/maestro-set.cpp: Switch the system thread hosting our maestro</b>. 
+ *  - <b>maestro-set/maestro-set.cpp: Switch the system thread hosting our maestro</b>.
  *    That's a very advanced example in which we move the maestro thread to another process.
  *    Not many users need it (maybe only one, actually), but this example is also a regression test.
- * 
+ *
  *    This example is in C++ because we use C++11 threads to ensure that the feature is working as
  *    expected. You can still use that feature from a C code.
  */

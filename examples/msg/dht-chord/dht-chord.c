@@ -134,7 +134,7 @@ static void print_finger_table(node_t node)
 }
 
 /* Sets a finger of the current node.
- * 
+ *
  * \param node the current node
  * \param finger_index index of the finger to set (0 to nb_bits - 1)
  * \param id the id to set for this finger
@@ -150,7 +150,7 @@ static void set_finger(node_t node, int finger_index, int id)
 }
 
 /* Sets the predecessor of the current node.
- * 
+ *
  * \param node the current node
  * \param id the id to predecessor, or -1 to unset the predecessor
  */
@@ -169,14 +169,14 @@ static void set_predecessor(node_t node, int predecessor_id)
 }
 
 /* Node main Function
- * 
+ *
  * Arguments:
  * - my id
  * - the id of a guy I know in the system (except for the first node)
  * - the time to sleep before I join (except for the first node)
  */
 /* This function is called when the current node receives a task.
- * 
+ *
  * \param node the current node
  * \param task the task to handle (don't touch it afterward: it will be destroyed, reused or forwarded)
  */
@@ -276,7 +276,7 @@ void create(node_t node)
 }
 
 /* Makes the current node join the ring, knowing the id of a node already in the ring
- * 
+ *
  * \param node the current node
  * \param known_id id of a node already in the ring
  * \return 1 if the join operation succeeded, 0 otherwise
@@ -340,7 +340,7 @@ void quit_notify(node_t node)
 }
 
 /* Makes the current node find the successor node of an id.
- * 
+ *
  * \param node the current node
  * \param id the id to find
  * \return the id of the successor node, or -1 if the request failed
@@ -358,7 +358,7 @@ int find_successor(node_t node, int id)
 }
 
 /* \brief Asks another node the successor node of an id.
- * 
+ *
  * \param node the current node
  * \param ask_to the node to ask to
  * \param id the id to find
@@ -447,7 +447,7 @@ int remote_find_successor(node_t node, int ask_to, int id)
 }
 
 /* Asks its predecessor to a remote node
- * 
+ *
  * \param node the current node
  * \param ask_to the node to ask to
  * \return the id of its predecessor node, or -1 if the request failed
@@ -526,7 +526,7 @@ int remote_get_predecessor(node_t node, int ask_to)
 }
 
 /* Returns the closest preceding finger of an id with respect to the finger table of the current node.
- * 
+ *
  * \param node the current node
  * \param id the id to find
  * \return the closest preceding finger of that id

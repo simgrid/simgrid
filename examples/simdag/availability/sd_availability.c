@@ -83,7 +83,7 @@ int main(int argc, char **argv)
              sg_host_route_latency(hosts[0], hosts[1]));
     XBT_INFO("Jupiter: speed=%.0f", sg_host_speed(hosts[0])* sg_host_get_available_speed(hosts[0]));
     XBT_INFO("Tremblay: speed=%.0f", sg_host_speed(hosts[1])* sg_host_get_available_speed(hosts[1]));
-     
+
     unsigned int ctr;
     SD_task_t task;
     xbt_dynar_foreach(changed_tasks, ctr, task) {

@@ -42,7 +42,7 @@ extern int (*MV2_Bcast_function) (void *buffer, int count, MPI_Datatype datatype
 
 extern int (*MV2_Bcast_intra_node_function) (void *buffer, int count, MPI_Datatype datatype,
                                       int root, MPI_Comm comm_ptr);
-                                      
+
 extern int zcpy_knomial_factor;
 extern int mv2_pipelined_zcpy_knomial_factor;
 extern int bcast_segment_size;
@@ -95,15 +95,15 @@ int Coll_bcast_mvapich2_inter_node::bcast(void *buffer,
     if (MV2_Bcast_function==NULL){
       MV2_Bcast_function=Coll_bcast_mpich::bcast;
     }
-    
+
     if (MV2_Bcast_intra_node_function==NULL){
       MV2_Bcast_intra_node_function= Coll_bcast_mpich::bcast;
     }
-    
+
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
       comm->init_smp();
     }
-    
+
     shmem_comm = comm->get_intra_comm();
     local_rank = shmem_comm->rank();
     local_size = shmem_comm->size();
@@ -117,8 +117,8 @@ int Coll_bcast_mvapich2_inter_node::bcast(void *buffer,
     int* leaders_map = comm->get_leaders_map();
     leader_of_root = comm->group()->rank(leaders_map[root]);
     leader_root = leader_comm->group()->rank(leaders_map[root]);
-    
-    
+
+
     if (local_size > 1) {
         if ((local_rank == 0) && (root != rank) && (leader_root == global_rank)) {
             Request::recv(buffer, count, datatype, root,
@@ -184,15 +184,15 @@ int Coll_bcast_mvapich2_knomial_intra_node::bcast(void *buffer,
     if (MV2_Bcast_function==NULL){
       MV2_Bcast_function=Coll_bcast_mpich::bcast;
     }
-    
+
     if (MV2_Bcast_intra_node_function==NULL){
       MV2_Bcast_intra_node_function= Coll_bcast_mpich::bcast;
     }
-    
+
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
       comm->init_smp();
     }
-    
+
     local_size = comm->size();
     rank = comm->rank();
 
@@ -254,7 +254,7 @@ int Coll_bcast_mvapich2_intra_node::bcast(void *buffer,
     int mpi_errno = MPI_SUCCESS;
     int comm_size;
     int two_level_bcast = 1;
-    size_t nbytes = 0; 
+    size_t nbytes = 0;
     int is_homogeneous, is_contig;
     MPI_Aint type_size;
     void *tmp_buf = NULL;
@@ -265,15 +265,15 @@ int Coll_bcast_mvapich2_intra_node::bcast(void *buffer,
     if (MV2_Bcast_function==NULL){
       MV2_Bcast_function=Coll_bcast_mpich::bcast;
     }
-    
+
     if (MV2_Bcast_intra_node_function==NULL){
       MV2_Bcast_intra_node_function= Coll_bcast_mpich::bcast;
     }
-    
+
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
       comm->init_smp();
     }
-    
+
     comm_size = comm->size();
    // rank = comm->rank();
 /*

@@ -24,13 +24,14 @@
 int r, cs;
 
 int main(int argc, char **argv){
-  int err, size, rank;
+  int size;
+  int rank;
   int recv_buff;
   MPI_Status status;
   xbt_dynar_t requests = xbt_dynar_new(sizeof(int), NULL);
 
   /* Initialize MPI */
-  err = MPI_Init(&argc, &argv);
+  int err = MPI_Init(&argc, &argv);
   if(err !=  MPI_SUCCESS){
     printf("MPI initialization failed !\n");
     exit(1);

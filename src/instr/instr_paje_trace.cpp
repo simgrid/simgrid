@@ -120,9 +120,9 @@ static void print_timestamp(PajeEvent* event) {
   /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
   if (event->timestamp < 1e-12)
     stream << 0;
-  else 
+  else
     stream << event->timestamp;
-}  
+}
 
 /* internal do the instrumentation module */
 static void insert_into_buffer (PajeEvent* tbi)

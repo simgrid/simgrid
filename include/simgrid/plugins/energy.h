@@ -13,6 +13,7 @@
 SG_BEGIN_DECL()
 
 XBT_PUBLIC(void) sg_host_energy_plugin_init();
+XBT_PUBLIC(void) sg_host_energy_update_all();
 XBT_PUBLIC(double) sg_host_get_consumed_energy(sg_host_t host);
 XBT_PUBLIC(double) sg_host_get_wattmin_at(sg_host_t host, int pstate);
 XBT_PUBLIC(double) sg_host_get_wattmax_at(sg_host_t host, int pstate);

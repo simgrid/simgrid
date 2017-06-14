@@ -210,7 +210,7 @@ public:
     page_numbers_.clear();
     privatized_regions_.clear();
   }
-  
+
   void flat_data(Buffer data)
   {
     storage_type_ = StorageType::Flat;

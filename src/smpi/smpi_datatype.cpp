@@ -127,7 +127,7 @@ Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), lb_(datatype-
     void* value_out;
     for(auto it = datatype->attributes()->begin(); it != datatype->attributes()->end(); it++){
       smpi_key_elem elem = keyvals_.at((*it).first);
-      
+
       if (elem != nullptr && elem->copy_fn.type_copy_fn != MPI_NULL_COPY_FN) {
         *ret = elem->copy_fn.type_copy_fn(datatype, (*it).first, nullptr, (*it).second, &value_out, &flag);
         if (*ret != MPI_SUCCESS) {
@@ -328,7 +328,7 @@ int Datatype::create_contiguous(int count, MPI_Datatype old_type, MPI_Aint lb, M
 int Datatype::create_vector(int count, int block_length, int stride, MPI_Datatype old_type, MPI_Datatype* new_type)
 {
   int retval;
-  if (block_length<0) 
+  if (block_length<0)
     return MPI_ERR_ARG;
   MPI_Aint lb = 0;
   MPI_Aint ub = 0;
@@ -353,7 +353,7 @@ int Datatype::create_vector(int count, int block_length, int stride, MPI_Datatyp
 int Datatype::create_hvector(int count, int block_length, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type)
 {
   int retval;
-  if (block_length<0) 
+  if (block_length<0)
     return MPI_ERR_ARG;
   MPI_Aint lb = 0;
   MPI_Aint ub = 0;
@@ -422,9 +422,9 @@ int Datatype::create_hindexed(int count, int* block_lengths, MPI_Aint* indices, 
       return MPI_ERR_ARG;
     size += block_lengths[i];
 
-    if(indices[i]+old_type->lb()<lb) 
+    if(indices[i]+old_type->lb()<lb)
       lb = indices[i]+old_type->lb();
-    if(indices[i]+block_lengths[i]*old_type->ub()>ub) 
+    if(indices[i]+block_lengths[i]*old_type->ub()>ub)
       ub = indices[i]+block_lengths[i]*old_type->ub();
 
     if ( (i< count -1) && (indices[i]+block_lengths[i]*(static_cast<int>(old_type->size())) != indices[i+1]) )
@@ -479,7 +479,7 @@ int Datatype::create_struct(int count, int* block_lengths, MPI_Aint* indices, MP
       contiguous=false;
   }
   if (not contiguous) {
-    *new_type = new Type_Struct(size, lb,ub, DT_FLAG_DERIVED|DT_FLAG_DATA, 
+    *new_type = new Type_Struct(size, lb,ub, DT_FLAG_DERIVED|DT_FLAG_DATA,
                                 count, block_lengths, indices, old_types);
   }else{
     Datatype::create_contiguous(size, MPI_CHAR, lb, new_type);

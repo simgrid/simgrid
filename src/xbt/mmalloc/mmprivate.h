@@ -148,7 +148,7 @@ typedef struct {
   int type; /*  0: busy large block
                 >0: busy fragmented (fragments of size 2^type bytes)
                 <0: free block */
-  
+
   union {
     /* Heap information for a busy block.  */
     struct {

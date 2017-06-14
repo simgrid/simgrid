@@ -57,21 +57,7 @@ typedef struct msg_task *msg_task_t;
 typedef msg_host_t msg_vm_t;
 
 /* ******************************** File ************************************ */
-
-typedef struct simdata_file* simdata_file_t;
-
-typedef struct msg_file_priv {
-  char *fullpath;
-  sg_size_t size;
-  char* mount_point;
-  char* storageId;
-  char* storage_type;
-  int desc_id;
-  void *data;
-  simdata_file_t simdata;
-} s_msg_file_priv_t;
-
-typedef struct msg_file_priv* msg_file_t;
+typedef sg_file_t msg_file_t;
 
 /* ******************************** Storage ************************************ */
 

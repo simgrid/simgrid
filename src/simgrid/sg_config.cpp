@@ -468,11 +468,11 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_string("smpi/lat-factor",
         "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;1426:1.61075;732:1.9503;257:1.95341;0:2.01467", nullptr, "Latency factors for smpi.");
     xbt_cfg_register_alias("smpi/lat-factor","smpi/lat_factor");
-    
+
     xbt_cfg_register_string("smpi/IB-penalty-factors", "0.965;0.925;1.35", nullptr,
         "Correction factor to communications using Infiniband model with contention (default value based on Stampede cluster profiling)");
     xbt_cfg_register_alias("smpi/IB-penalty-factors","smpi/IB_penalty_factors");
-    
+
 #if HAVE_SMPI
     xbt_cfg_register_double("smpi/host-speed", 20000.0, nullptr, "Speed of the host running the simulation (in flop/s). Used to bench the operations.");
     xbt_cfg_register_alias("smpi/host-speed","smpi/running_power");

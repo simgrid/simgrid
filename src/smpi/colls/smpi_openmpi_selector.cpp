@@ -20,8 +20,8 @@ int Coll_allreduce_ompi::allreduce(void *sbuf, void *rbuf, int count,
 
     /**
      * Decision function based on MX results from the Grig cluster at UTK.
-     * 
-     * Currently, linear, recursive doubling, and nonoverlapping algorithms 
+     *
+     * Currently, linear, recursive doubling, and nonoverlapping algorithms
      * can handle both commutative and non-commutative operations.
      * Ring algorithm does not support non-commutative operations.
      */
@@ -29,10 +29,10 @@ int Coll_allreduce_ompi::allreduce(void *sbuf, void *rbuf, int count,
     block_dsize = dsize * count;
 
     if (block_dsize < intermediate_message) {
-        return (Coll_allreduce_rdb::allreduce (sbuf, rbuf, 
+        return (Coll_allreduce_rdb::allreduce (sbuf, rbuf,
                                                                    count, dtype,
                                                                    op, comm));
-    } 
+    }
 
     if( ((op==MPI_OP_NULL) || op->is_commutative()) && (count > comm_size) ) {
         const size_t segment_size = 1 << 20; /* 1 MB */
@@ -43,29 +43,29 @@ int Coll_allreduce_ompi::allreduce(void *sbuf, void *rbuf, int count,
                                               op, comm);
         } else {
            return (Coll_allreduce_ompi_ring_segmented::allreduce (sbuf, rbuf,
-                                                                    count, dtype, 
-                                                                    op, comm 
+                                                                    count, dtype,
+                                                                    op, comm
                                                                     /*segment_size*/));
         }
     }
 
-    return (Coll_allreduce_redbcast::allreduce(sbuf, rbuf, count, 
+    return (Coll_allreduce_redbcast::allreduce(sbuf, rbuf, count,
                                                             dtype, op, comm));
 }
 
 
 
-int Coll_alltoall_ompi::alltoall( void *sbuf, int scount, 
+int Coll_alltoall_ompi::alltoall( void *sbuf, int scount,
                                              MPI_Datatype sdtype,
-                                             void* rbuf, int rcount, 
-                                             MPI_Datatype rdtype, 
+                                             void* rbuf, int rcount,
+                                             MPI_Datatype rdtype,
                                              MPI_Comm comm)
 {
     int communicator_size;
     size_t dsize, block_dsize;
     communicator_size = comm->size();
 
-    /* Decision function based on measurement on Grig cluster at 
+    /* Decision function based on measurement on Grig cluster at
        the University of Tennessee (2GB MX) up to 64 nodes.
        Has better performance for messages of intermediate sizes than the old one */
     /* determine block size */
@@ -73,17 +73,17 @@ int Coll_alltoall_ompi::alltoall( void *sbuf, int scount,
     block_dsize = dsize * scount;
 
     if ((block_dsize < 200) && (communicator_size > 12)) {
-        return Coll_alltoall_bruck::alltoall(sbuf, scount, sdtype, 
+        return Coll_alltoall_bruck::alltoall(sbuf, scount, sdtype,
                                                     rbuf, rcount, rdtype,
                                                     comm);
 
     } else if (block_dsize < 3000) {
-        return Coll_alltoall_basic_linear::alltoall(sbuf, scount, sdtype, 
-                                                           rbuf, rcount, rdtype, 
+        return Coll_alltoall_basic_linear::alltoall(sbuf, scount, sdtype,
+                                                           rbuf, rcount, rdtype,
                                                            comm);
     }
 
-    return Coll_alltoall_ring::alltoall (sbuf, scount, sdtype, 
+    return Coll_alltoall_ring::alltoall (sbuf, scount, sdtype,
                                                     rbuf, rcount, rdtype,
                                                     comm);
 }
@@ -96,7 +96,7 @@ int Coll_alltoallv_ompi::alltoallv(void *sbuf, int *scounts, int *sdisps,
                                               )
 {
     /* For starters, just keep the original algorithm. */
-    return Coll_alltoallv_ompi_basic_linear::alltoallv(sbuf, scounts, sdisps, sdtype, 
+    return Coll_alltoallv_ompi_basic_linear::alltoallv(sbuf, scounts, sdisps, sdtype,
                                                         rbuf, rcounts, rdisps,rdtype,
                                                         comm);
 }
@@ -128,14 +128,14 @@ int Coll_bcast_ompi::bcast(void *buff, int count,
                                           MPI_Comm  comm
                                           )
 {
-    /* Decision function based on MX results for 
+    /* Decision function based on MX results for
        messages up to 36MB and communicator sizes up to 64 nodes */
     const size_t small_message_size = 2048;
     const size_t intermediate_message_size = 370728;
     const double a_p16  = 3.2118e-6; /* [1 / byte] */
-    const double b_p16  = 8.7936;   
+    const double b_p16  = 8.7936;
     const double a_p64  = 2.3679e-6; /* [1 / byte] */
-    const double b_p64  = 1.1787;     
+    const double b_p64  = 1.1787;
     const double a_p128 = 1.6134e-6; /* [1 / byte] */
     const double b_p128 = 2.1102;
 
@@ -149,50 +149,50 @@ int Coll_bcast_ompi::bcast(void *buff, int count,
     dsize = datatype->size();
     message_size = dsize * (unsigned long)count;   /* needed for decision */
 
-    /* Handle messages of small and intermediate size, and 
+    /* Handle messages of small and intermediate size, and
        single-element broadcasts */
     if ((message_size < small_message_size) || (count <= 1)) {
         /* Binomial without segmentation */
-        return  Coll_bcast_binomial_tree::bcast (buff, count, datatype, 
+        return  Coll_bcast_binomial_tree::bcast (buff, count, datatype,
                                                       root, comm);
 
     } else if (message_size < intermediate_message_size) {
         // SplittedBinary with 1KB segments
-        return Coll_bcast_ompi_split_bintree::bcast(buff, count, datatype, 
+        return Coll_bcast_ompi_split_bintree::bcast(buff, count, datatype,
                                                          root, comm);
 
     }
-     //Handle large message sizes 
+     //Handle large message sizes
     else if (communicator_size < (a_p128 * message_size + b_p128)) {
-        //Pipeline with 128KB segments 
+        //Pipeline with 128KB segments
         //segsize = 1024  << 7;
-        return Coll_bcast_ompi_pipeline::bcast (buff, count, datatype, 
+        return Coll_bcast_ompi_pipeline::bcast (buff, count, datatype,
                                                      root, comm);
-                                                     
+
 
     } else if (communicator_size < 13) {
-        // Split Binary with 8KB segments 
-        return Coll_bcast_ompi_split_bintree::bcast(buff, count, datatype, 
+        // Split Binary with 8KB segments
+        return Coll_bcast_ompi_split_bintree::bcast(buff, count, datatype,
                                                          root, comm);
-       
+
     } else if (communicator_size < (a_p64 * message_size + b_p64)) {
-        // Pipeline with 64KB segments 
+        // Pipeline with 64KB segments
         //segsize = 1024 << 6;
-        return Coll_bcast_ompi_pipeline::bcast (buff, count, datatype, 
+        return Coll_bcast_ompi_pipeline::bcast (buff, count, datatype,
                                                      root, comm);
-                                                     
+
 
     } else if (communicator_size < (a_p16 * message_size + b_p16)) {
-        //Pipeline with 16KB segments 
+        //Pipeline with 16KB segments
         //segsize = 1024 << 4;
-        return Coll_bcast_ompi_pipeline::bcast (buff, count, datatype, 
+        return Coll_bcast_ompi_pipeline::bcast (buff, count, datatype,
                                                      root, comm);
-                                                     
+
 
     }
     /* Pipeline with 8KB segments */
     //segsize = 1024 << 3;
-    return Coll_bcast_flattree_pipeline::bcast (buff, count, datatype, 
+    return Coll_bcast_flattree_pipeline::bcast (buff, count, datatype,
                                                  root, comm
                                                  /*segsize*/);
 #if 0
@@ -252,7 +252,7 @@ int Coll_reduce_ompi::reduce( void *sendbuf, void *recvbuf,
     message_size = dsize * count;   /* needed for decision */
 
     /**
-     * If the operation is non commutative we currently have choice of linear 
+     * If the operation is non commutative we currently have choice of linear
      * or in-order binary tree algorithm.
      */
     if ((op != MPI_OP_NULL) && not op->is_commutative()) {
@@ -260,12 +260,12 @@ int Coll_reduce_ompi::reduce( void *sendbuf, void *recvbuf,
         return Coll_reduce_ompi_basic_linear::reduce(sendbuf, recvbuf, count, datatype, op, root, comm /*, module*/);
       }
       return Coll_reduce_ompi_in_order_binary::reduce(sendbuf, recvbuf, count, datatype, op, root, comm /*, module,
-                                                             0, max_requests*/); 
+                                                             0, max_requests*/);
     }
 
     if ((communicator_size < 8) && (message_size < 512)){
         /* Linear_0K */
-        return Coll_reduce_ompi_basic_linear::reduce (sendbuf, recvbuf, count, datatype, op, root, comm); 
+        return Coll_reduce_ompi_basic_linear::reduce (sendbuf, recvbuf, count, datatype, op, root, comm);
     } else if (((communicator_size < 8) && (message_size < 20480)) ||
                (message_size < 2048) || (count <= 1)) {
         /* Binomial_0K */
@@ -273,29 +273,29 @@ int Coll_reduce_ompi::reduce( void *sendbuf, void *recvbuf,
         return Coll_reduce_ompi_binomial::reduce(sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
                                                      segsize, max_requests*/);
     } else if (communicator_size > (a1 * message_size + b1)) {
-        // Binomial_1K 
+        // Binomial_1K
         //segsize = 1024;
         return Coll_reduce_ompi_binomial::reduce(sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
                                                      segsize, max_requests*/);
     } else if (communicator_size > (a2 * message_size + b2)) {
-        // Pipeline_1K 
+        // Pipeline_1K
         //segsize = 1024;
-        return Coll_reduce_ompi_pipeline::reduce (sendbuf, recvbuf, count, datatype, op, root, comm/*, module, 
+        return Coll_reduce_ompi_pipeline::reduce (sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
                                                       segsize, max_requests*/);
     } else if (communicator_size > (a3 * message_size + b3)) {
-        // Binary_32K 
+        // Binary_32K
         //segsize = 32*1024;
         return Coll_reduce_ompi_binary::reduce( sendbuf, recvbuf, count, datatype, op, root,
                                                     comm/*, module, segsize, max_requests*/);
     }
 //    if (communicator_size > (a4 * message_size + b4)) {
-        // Pipeline_32K 
+        // Pipeline_32K
 //        segsize = 32*1024;
 //    } else {
-        // Pipeline_64K 
+        // Pipeline_64K
 //        segsize = 64*1024;
 //    }
-    return Coll_reduce_ompi_pipeline::reduce (sendbuf, recvbuf, count, datatype, op, root, comm/*, module, 
+    return Coll_reduce_ompi_pipeline::reduce (sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
                                                   segsize, max_requests*/);
 
 #if 0
@@ -305,7 +305,7 @@ int Coll_reduce_ompi::reduce( void *sendbuf, void *recvbuf,
         fanout = communicator_size - 1;
         /* when linear implemented or taken from basic put here, right now using chain as a linear system */
         /* it is implemented and I shouldn't be calling a chain with a fanout bigger than MAXTREEFANOUT from topo.h! */
-        return Coll_reduce_intra_basic_linear::reduce (sendbuf, recvbuf, count, datatype, op, root, comm, module); 
+        return Coll_reduce_intra_basic_linear::reduce (sendbuf, recvbuf, count, datatype, op, root, comm, module);
         /*        return Coll_reduce_intra_chain::reduce (sendbuf, recvbuf, count, datatype, op, root, comm, segsize, fanout); */
     }
     if (message_size < 524288) {
@@ -343,12 +343,12 @@ int Coll_reduce_scatter_ompi::reduce_scatter( void *sbuf, void *rbuf,
     int zerocounts = 0;
 
     XBT_DEBUG("Coll_reduce_scatter_ompi::reduce_scatter");
-    
+
     comm_size = comm->size();
-    // We need data size for decision function 
+    // We need data size for decision function
     dsize=dtype->size();
     total_message_size = 0;
-    for (i = 0; i < comm_size; i++) { 
+    for (i = 0; i < comm_size; i++) {
         total_message_size += rcounts[i];
         if (0 == rcounts[i]) {
             zerocounts = 1;
@@ -359,20 +359,20 @@ int Coll_reduce_scatter_ompi::reduce_scatter( void *sbuf, void *rbuf,
       Coll_reduce_scatter_default::reduce_scatter(sbuf, rbuf, rcounts, dtype, op, comm);
       return MPI_SUCCESS;
     }
-   
+
     total_message_size *= dsize;
 
-    // compute the nearest power of 2 
+    // compute the nearest power of 2
     for (pow2 = 1; pow2 < comm_size; pow2 <<= 1);
 
     if ((total_message_size <= small_message_size) ||
         ((total_message_size <= large_message_size) && (pow2 == comm_size)) ||
         (comm_size >= a * total_message_size + b)) {
-        return 
+        return
             Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(sbuf, rbuf, rcounts,
                                                                         dtype, op,
                                                                         comm);
-    } 
+    }
     return Coll_reduce_scatter_ompi_ring::reduce_scatter(sbuf, rbuf, rcounts,
                                                      dtype, op,
                                                      comm);
@@ -381,10 +381,10 @@ int Coll_reduce_scatter_ompi::reduce_scatter( void *sbuf, void *rbuf,
 
 }
 
-int Coll_allgather_ompi::allgather(void *sbuf, int scount, 
+int Coll_allgather_ompi::allgather(void *sbuf, int scount,
                                               MPI_Datatype sdtype,
-                                              void* rbuf, int rcount, 
-                                              MPI_Datatype rdtype, 
+                                              void* rbuf, int rcount,
+                                              MPI_Datatype rdtype,
                                               MPI_Comm  comm
                                               )
 {
@@ -395,39 +395,39 @@ int Coll_allgather_ompi::allgather(void *sbuf, int scount,
 
     /* Special case for 2 processes */
     if (communicator_size == 2) {
-        return Coll_allgather_pair::allgather (sbuf, scount, sdtype, 
-                                                          rbuf, rcount, rdtype, 
+        return Coll_allgather_pair::allgather (sbuf, scount, sdtype,
+                                                          rbuf, rcount, rdtype,
                                                           comm/*, module*/);
     }
 
     /* Determine complete data size */
     dsize=sdtype->size();
-    total_dsize = dsize * scount * communicator_size;   
-   
-    for (pow2_size  = 1; pow2_size < communicator_size; pow2_size <<=1); 
+    total_dsize = dsize * scount * communicator_size;
 
-    /* Decision based on MX 2Gb results from Grig cluster at 
-       The University of Tennesse, Knoxville 
-       - if total message size is less than 50KB use either bruck or 
-       recursive doubling for non-power of two and power of two nodes, 
+    for (pow2_size  = 1; pow2_size < communicator_size; pow2_size <<=1);
+
+    /* Decision based on MX 2Gb results from Grig cluster at
+       The University of Tennesse, Knoxville
+       - if total message size is less than 50KB use either bruck or
+       recursive doubling for non-power of two and power of two nodes,
        respectively.
-       - else use ring and neighbor exchange algorithms for odd and even 
+       - else use ring and neighbor exchange algorithms for odd and even
        number of nodes, respectively.
     */
     if (total_dsize < 50000) {
         if (pow2_size == communicator_size) {
-            return Coll_allgather_rdb::allgather(sbuf, scount, sdtype, 
+            return Coll_allgather_rdb::allgather(sbuf, scount, sdtype,
                                                                      rbuf, rcount, rdtype,
                                                                      comm);
         } else {
-            return Coll_allgather_bruck::allgather(sbuf, scount, sdtype, 
-                                                         rbuf, rcount, rdtype, 
+            return Coll_allgather_bruck::allgather(sbuf, scount, sdtype,
+                                                         rbuf, rcount, rdtype,
                                                          comm);
         }
     } else {
         if (communicator_size % 2) {
-            return Coll_allgather_ring::allgather(sbuf, scount, sdtype, 
-                                                        rbuf, rcount, rdtype, 
+            return Coll_allgather_ring::allgather(sbuf, scount, sdtype,
+                                                        rbuf, rcount, rdtype,
                                                         comm);
         } else {
             return  Coll_allgather_ompi_neighborexchange::allgather(sbuf, scount, sdtype,
@@ -435,86 +435,86 @@ int Coll_allgather_ompi::allgather(void *sbuf, int scount,
                                                                      comm);
         }
     }
-   
+
 #if defined(USE_MPICH2_DECISION)
-    /* Decision as in MPICH-2 
-       presented in Thakur et.al. "Optimization of Collective Communication 
-       Operations in MPICH", International Journal of High Performance Computing 
+    /* Decision as in MPICH-2
+       presented in Thakur et.al. "Optimization of Collective Communication
+       Operations in MPICH", International Journal of High Performance Computing
        Applications, Vol. 19, No. 1, 49-66 (2005)
-       - for power-of-two processes and small and medium size messages 
+       - for power-of-two processes and small and medium size messages
        (up to 512KB) use recursive doubling
        - for non-power-of-two processes and small messages (80KB) use bruck,
        - for everything else use ring.
     */
     if ((pow2_size == communicator_size) && (total_dsize < 524288)) {
-        return Coll_allgather_rdb::allgather(sbuf, scount, sdtype, 
-                                                                 rbuf, rcount, rdtype, 
+        return Coll_allgather_rdb::allgather(sbuf, scount, sdtype,
+                                                                 rbuf, rcount, rdtype,
                                                                  comm);
-    } else if (total_dsize <= 81920) { 
-        return Coll_allgather_bruck::allgather(sbuf, scount, sdtype, 
+    } else if (total_dsize <= 81920) {
+        return Coll_allgather_bruck::allgather(sbuf, scount, sdtype,
                                                      rbuf, rcount, rdtype,
                                                      comm);
-    } 
-    return Coll_allgather_ring::allgather(sbuf, scount, sdtype, 
+    }
+    return Coll_allgather_ring::allgather(sbuf, scount, sdtype,
                                                 rbuf, rcount, rdtype,
                                                 comm);
 #endif  /* defined(USE_MPICH2_DECISION) */
 }
 
-int Coll_allgatherv_ompi::allgatherv(void *sbuf, int scount, 
+int Coll_allgatherv_ompi::allgatherv(void *sbuf, int scount,
                                                MPI_Datatype sdtype,
-                                               void* rbuf, int *rcounts, 
+                                               void* rbuf, int *rcounts,
                                                int *rdispls,
-                                               MPI_Datatype rdtype, 
+                                               MPI_Datatype rdtype,
                                                MPI_Comm  comm
                                                )
 {
     int i;
     int communicator_size;
     size_t dsize, total_dsize;
-    
+
     communicator_size = comm->size();
-    
+
     /* Special case for 2 processes */
     if (communicator_size == 2) {
         return Coll_allgatherv_pair::allgatherv(sbuf, scount, sdtype,
-                                                           rbuf, rcounts, rdispls, rdtype, 
+                                                           rbuf, rcounts, rdispls, rdtype,
                                                            comm);
     }
-    
+
     /* Determine complete data size */
     dsize=sdtype->size();
     total_dsize = 0;
     for (i = 0; i < communicator_size; i++) {
         total_dsize += dsize * rcounts[i];
     }
-    
+
     /* Decision based on allgather decision.   */
     if (total_dsize < 50000) {
-/*        return Coll_allgatherv_intra_bruck::allgatherv(sbuf, scount, sdtype, 
-                                                      rbuf, rcounts, rdispls, rdtype, 
+/*        return Coll_allgatherv_intra_bruck::allgatherv(sbuf, scount, sdtype,
+                                                      rbuf, rcounts, rdispls, rdtype,
                                                       comm, module);*/
-    return Coll_allgatherv_ring::allgatherv(sbuf, scount, sdtype, 
-                                                      rbuf, rcounts, rdispls, rdtype, 
+    return Coll_allgatherv_ring::allgatherv(sbuf, scount, sdtype,
+                                                      rbuf, rcounts, rdispls, rdtype,
                                                       comm);
 
     } else {
         if (communicator_size % 2) {
-            return Coll_allgatherv_ring::allgatherv(sbuf, scount, sdtype, 
-                                                         rbuf, rcounts, rdispls, rdtype, 
+            return Coll_allgatherv_ring::allgatherv(sbuf, scount, sdtype,
+                                                         rbuf, rcounts, rdispls, rdtype,
                                                          comm);
         } else {
             return  Coll_allgatherv_ompi_neighborexchange::allgatherv(sbuf, scount, sdtype,
-                                                                      rbuf, rcounts, rdispls, rdtype, 
+                                                                      rbuf, rcounts, rdispls, rdtype,
                                                                       comm);
         }
     }
 }
 
-int Coll_gather_ompi::gather(void *sbuf, int scount, 
+int Coll_gather_ompi::gather(void *sbuf, int scount,
                                            MPI_Datatype sdtype,
-                                           void* rbuf, int rcount, 
-                                           MPI_Datatype rdtype, 
+                                           void* rbuf, int rcount,
+                                           MPI_Datatype rdtype,
                                            int root,
                                            MPI_Comm  comm
                                            )
@@ -537,7 +537,7 @@ int Coll_gather_ompi::gather(void *sbuf, int scount,
     communicator_size = comm->size();
     rank = comm->rank();
 
-    // Determine block size 
+    // Determine block size
     if (rank == root) {
         dsize = rdtype->size();
         block_size = dsize * rcount;
@@ -552,29 +552,29 @@ int Coll_gather_ompi::gather(void *sbuf, int scount,
 /*                                                         root, comm);*/
 
 /*    } else*/ if (block_size > intermediate_block_size) {
-        return Coll_gather_ompi_linear_sync::gather (sbuf, scount, sdtype, 
-                                                         rbuf, rcount, rdtype, 
+        return Coll_gather_ompi_linear_sync::gather (sbuf, scount, sdtype,
+                                                         rbuf, rcount, rdtype,
                                                          root, comm);
 
     } else if ((communicator_size > large_communicator_size) ||
                ((communicator_size > small_communicator_size) &&
                 (block_size < small_block_size))) {
-        return Coll_gather_ompi_binomial::gather (sbuf, scount, sdtype, 
-                                                      rbuf, rcount, rdtype, 
+        return Coll_gather_ompi_binomial::gather (sbuf, scount, sdtype,
+                                                      rbuf, rcount, rdtype,
                                                       root, comm);
 
     }
-    // Otherwise, use basic linear 
-    return Coll_gather_ompi_basic_linear::gather (sbuf, scount, sdtype, 
-                                                      rbuf, rcount, rdtype, 
+    // Otherwise, use basic linear
+    return Coll_gather_ompi_basic_linear::gather (sbuf, scount, sdtype,
+                                                      rbuf, rcount, rdtype,
                                                       root, comm);
 }
 
 
-int Coll_scatter_ompi::scatter(void *sbuf, int scount, 
+int Coll_scatter_ompi::scatter(void *sbuf, int scount,
                                             MPI_Datatype sdtype,
-                                            void* rbuf, int rcount, 
-                                            MPI_Datatype rdtype, 
+                                            void* rbuf, int rcount,
+                                            MPI_Datatype rdtype,
                                             int root, MPI_Comm  comm
                                             )
 {
@@ -587,14 +587,14 @@ int Coll_scatter_ompi::scatter(void *sbuf, int scount,
 
     communicator_size = comm->size();
     rank = comm->rank();
-    // Determine block size 
+    // Determine block size
     if (root == rank) {
         dsize=sdtype->size();
         block_size = dsize * scount;
     } else {
         dsize=rdtype->size();
         block_size = dsize * rcount;
-    } 
+    }
 
     if ((communicator_size > small_comm_size) &&
         (block_size < small_block_size)) {
@@ -611,8 +611,8 @@ int Coll_scatter_ompi::scatter(void *sbuf, int scount,
         }
         return ret;
     }
-    return Coll_scatter_ompi_basic_linear::scatter (sbuf, scount, sdtype, 
-                                                       rbuf, rcount, rdtype, 
+    return Coll_scatter_ompi_basic_linear::scatter (sbuf, scount, sdtype,
+                                                       rbuf, rcount, rdtype,
                                                        root, comm);
 }
 

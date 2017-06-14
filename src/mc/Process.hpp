@@ -153,7 +153,7 @@ public:
       this->refresh_malloc_info();
     return this->heap_info.data();
   }
-  
+
   void clear_cache()
   {
     this->cache_flags_ = Process::cache_none;

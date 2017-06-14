@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
   int count = 2;
   int* sb = (int *) xbt_malloc(count * sizeof(int));
   int* rb = (int *) xbt_malloc(count * size * sizeof(int));
-  
+
   for (int i = 0; i < count; ++i)
     sb[i] = rank * count + i;
   for (int i = 0; i < count * size; ++i)

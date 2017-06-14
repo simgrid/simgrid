@@ -37,10 +37,10 @@ main (int argc, char **argv)
     }
   else if (rank == 0)
     {
-      MPI_Irecv (buf0, buf_size, MPI_INT, 
+      MPI_Irecv (buf0, buf_size, MPI_INT,
 		 MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &reqs[0]);
 
-      MPI_Irecv (buf1, buf_size, MPI_INT, 
+      MPI_Irecv (buf1, buf_size, MPI_INT,
 		 MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &reqs[1]);
 
       MPI_Waitall (2, reqs, statuses);
@@ -65,7 +65,7 @@ main (int argc, char **argv)
     }
   else if (rank == 2)
     {
-      //sleep (60);      
+      //sleep (60);
 
       MPI_Recv (buf1, buf_size, MPI_INT, 1, 1, MPI_COMM_WORLD, statuses);
     }

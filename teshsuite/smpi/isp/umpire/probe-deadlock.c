@@ -37,7 +37,7 @@ main (int argc, char **argv)
       i = 0;
 
       MPI_Probe (1, 0, MPI_COMM_WORLD, &status);
-      
+
       MPI_Send (&i, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
 
       MPI_Recv (&x, 1, MPI_DOUBLE, 1, 0, MPI_COMM_WORLD, &status);
@@ -52,7 +52,7 @@ main (int argc, char **argv)
 
       MPI_Send (&x, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
     }
-      
+
   MPI_Barrier (MPI_COMM_WORLD);
 
   MPI_Finalize ();

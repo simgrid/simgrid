@@ -222,7 +222,7 @@ int Coll_reduce_default::reduce(void *sendbuf, void *recvbuf, int count, MPI_Dat
     sendtmpbuf = static_cast<char *>(smpi_get_tmp_sendbuffer(count*datatype->get_extent()));
     Datatype::copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
   }
-  
+
   if(rank != root) {
     // Send buffer to root
     Request::send(sendtmpbuf, count, datatype, root, system_tag, comm);
@@ -337,7 +337,7 @@ int Coll_alltoallv_default::alltoallv(void *sendbuf, int *sendcounts, int *sendd
     XBT_DEBUG("<%d> wait for %d requests", rank, count);
     Request::waitall(count, requests, MPI_STATUS_IGNORE);
     for(i = 0; i < count; i++) {
-      if(requests[i]!=MPI_REQUEST_NULL) 
+      if(requests[i]!=MPI_REQUEST_NULL)
         Request::unref(&requests[i]);
     }
     xbt_free(requests);

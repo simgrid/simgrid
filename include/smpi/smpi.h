@@ -561,8 +561,8 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Put,( void *origin_addr, int origin_count, MPI_Dat
     MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win));
 MPI_CALL(XBT_PUBLIC(int), MPI_Accumulate,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     int target_rank, MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win));
-MPI_CALL(XBT_PUBLIC(int), MPI_Get_accumulate,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, 
-    void* result_addr, int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, 
+MPI_CALL(XBT_PUBLIC(int), MPI_Get_accumulate,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
+    void* result_addr, int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp,
     int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win));
 
 MPI_CALL(XBT_PUBLIC(int), MPI_Rget,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
@@ -571,8 +571,8 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Rput,( void *origin_addr, int origin_count, MPI_Da
     MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win, MPI_Request* request));
 MPI_CALL(XBT_PUBLIC(int), MPI_Raccumulate,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     int target_rank, MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request));
-MPI_CALL(XBT_PUBLIC(int), MPI_Rget_accumulate,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, 
-    void* result_addr, int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, 
+MPI_CALL(XBT_PUBLIC(int), MPI_Rget_accumulate,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
+    void* result_addr, int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp,
     int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request));
 
 MPI_CALL(XBT_PUBLIC(int), MPI_Fetch_and_op,( void *origin_addr, void* result_addr, MPI_Datatype datatype,
@@ -603,9 +603,9 @@ typedef void MPI_Handler_function(MPI_Comm*, int*, ...);
 typedef void* MPI_Errhandler;
 
 typedef void MPI_Comm_errhandler_function(MPI_Comm *, int *, ...);
-typedef int MPI_Grequest_query_function(void *extra_state, MPI_Status *status); 
-typedef int MPI_Grequest_free_function(void *extra_state); 
-typedef int MPI_Grequest_cancel_function(void *extra_state, int complete); 
+typedef int MPI_Grequest_query_function(void *extra_state, MPI_Status *status);
+typedef int MPI_Grequest_free_function(void *extra_state);
+typedef int MPI_Grequest_cancel_function(void *extra_state, int complete);
 #define MPI_DUP_FN MPI_Comm_dup
 
 #define MPI_WIN_DUP_FN ((MPI_Win_copy_attr_function*)MPI_DUP_FN)
@@ -723,7 +723,7 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Win_set_errhandler, (MPI_Win win, MPI_Errhandler e
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_get_envelope,(MPI_Datatype datatype,int *num_integers,int *num_addresses,
                             int *num_datatypes, int *combiner));
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_get_contents,(MPI_Datatype datatype, int max_integers, int max_addresses,
-                            int max_datatypes, int* array_of_integers, MPI_Aint* array_of_addresses, 
+                            int max_datatypes, int* array_of_integers, MPI_Aint* array_of_addresses,
                             MPI_Datatype *array_of_datatypes));
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_create_darray,(int size, int rank, int ndims, int* array_of_gsizes,
                             int* array_of_distribs, int* array_of_dargs, int* array_of_psizes,
@@ -866,14 +866,14 @@ XBT_PUBLIC(void) smpi_sample_1(int global, const char *file, int line, int iters
 XBT_PUBLIC(int) smpi_sample_2(int global, const char *file, int line);
 XBT_PUBLIC(void) smpi_sample_3(int global, const char *file, int line);
 
-/** 
- * Need a public setter for SMPI copy_callback function, so users can define 
+/**
+ * Need a public setter for SMPI copy_callback function, so users can define
  * their own while still using default SIMIX_copy_callback for MSG copies.
  */
 XBT_PUBLIC(void) smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, size_t));
 
 
-/** 
+/**
  * Functions for call location tracing. These functions will be
  * called from the user's application! (With the __FILE__ and __LINE__ values
  * passed as parameters.)
@@ -961,7 +961,7 @@ static void __attribute__((destructor)) __postfini_##name(void) { \
 
 #define SMPI_VARGET_GLOBAL(name) name[smpi_process_index()]
 
-/** 
+/**
  * This is used for the old privatization method, i.e., on old
  * machines that do not yet support privatization via mmap
  */

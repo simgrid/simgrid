@@ -1,6 +1,6 @@
-/* Example of scatter communication, accepting a large amount of processes. 
+/* Example of scatter communication, accepting a large amount of processes.
  * This based the experiment of Fig. 4 in http://hal.inria.fr/hal-00650233/
- * That experiment is a comparison to the LogOPSim simulator, that takes 
+ * That experiment is a comparison to the LogOPSim simulator, that takes
  * GOAL files as an input, thus the file name. But there is no actual link
  * to the GOAL formalism beside of this.
  */

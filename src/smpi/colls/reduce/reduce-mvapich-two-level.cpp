@@ -89,8 +89,8 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
     void *in_buf = NULL, *out_buf = NULL, *tmp_buf = NULL;
     MPI_Aint true_lb, true_extent, extent;
     int is_commutative = 0, stride = 0;
-    int intra_node_root=0; 
-    
+    int intra_node_root=0;
+
     //if not set (use of the algo directly, without mvapich2 selector)
     if(MV2_Reduce_function==NULL)
       MV2_Reduce_function=Coll_reduce_mpich::reduce;
@@ -100,13 +100,13 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
       comm->init_smp();
     }
-  
+
     my_rank = comm->rank();
     total_size = comm->size();
     shmem_comm = comm->get_intra_comm();
     local_rank = shmem_comm->rank();
     local_size = shmem_comm->size();
-    
+
     leader_comm = comm->get_leaders_comm();
     int* leaders_map = comm->get_leaders_map();
     leader_of_root = comm->group()->rank(leaders_map[root]);
@@ -135,18 +135,18 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
                 in_buf = recvbuf;
             }
 
-            if (local_rank == 0) { 
+            if (local_rank == 0) {
                  if( my_rank != root) {
                      out_buf = tmp_buf;
-                 } else { 
-                     out_buf = recvbuf; 
-                     if(in_buf == out_buf) { 
-                        in_buf = MPI_IN_PLACE; 
-                        out_buf = recvbuf; 
-                     } 
-                 } 
+                 } else {
+                     out_buf = recvbuf;
+                     if(in_buf == out_buf) {
+                        in_buf = MPI_IN_PLACE;
+                        out_buf = recvbuf;
+                     }
+                 }
             } else {
-                in_buf  = (void *)sendbuf; 
+                in_buf  = (void *)sendbuf;
                 out_buf = NULL;
             }
 
@@ -166,21 +166,21 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
                                          MPI_STATUS_IGNORE);
             }
         } else {
-            if(mv2_use_knomial_reduce == 1) { 
-                reduce_fn = &MPIR_Reduce_intra_knomial_wrapper_MV2; 
-            } else { 
-                reduce_fn = &MPIR_Reduce_binomial_MV2; 
-            } 
+            if(mv2_use_knomial_reduce == 1) {
+                reduce_fn = &MPIR_Reduce_intra_knomial_wrapper_MV2;
+            } else {
+                reduce_fn = &MPIR_Reduce_binomial_MV2;
+            }
             mpi_errno = reduce_fn(sendbuf, recvbuf, count,
                                   datatype, op,
                                   root, comm);
         }
         /* We are done */
-        if(tmp_buf!=NULL) 
+        if(tmp_buf!=NULL)
           smpi_free_tmp_buffer((void *) ((char *) tmp_buf + true_lb));
         goto fn_exit;
     }
-    
+
 
     if (local_rank == 0) {
         leader_comm = comm->get_leaders_comm();
@@ -205,12 +205,12 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
     }
 
 
-    if(local_size > 1) { 
+    if(local_size > 1) {
         /* Lets do the intra-node reduce operations, if we have more than one
          * process in the node */
 
         /*Fix the input and outbuf buffers for the intra-node reduce.
-         *Node leaders will have the reduced data in tmp_buf after 
+         *Node leaders will have the reduced data in tmp_buf after
          *this step*/
         if (MV2_Reduce_intra_function == & MPIR_Reduce_shmem_MV2)
         {
@@ -227,33 +227,33 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
                                       datatype, op,
                                       intra_node_root, shmem_comm);
         }
-    } else { 
+    } else {
         smpi_free_tmp_buffer((void *) ((char *) tmp_buf + true_lb));
-        tmp_buf = in_buf; 
-    } 
+        tmp_buf = in_buf;
+    }
 
     /* Now work on the inter-leader phase. Data is in tmp_buf */
     if (local_rank == 0 && leader_comm_size > 1) {
-        /*The leader of root will have the global reduced data in tmp_buf 
+        /*The leader of root will have the global reduced data in tmp_buf
            or recv_buf
            at the end of the reduce */
         if (leader_comm_rank == leader_root) {
             if (my_rank == root) {
-                /* I am the root of the leader-comm, and the 
-                 * root of the reduce op. So, I will write the 
+                /* I am the root of the leader-comm, and the
+                 * root of the reduce op. So, I will write the
                  * final result directly into my recvbuf */
-                if(tmp_buf != recvbuf) { 
+                if(tmp_buf != recvbuf) {
                     in_buf = tmp_buf;
                     out_buf = recvbuf;
-                } else { 
+                } else {
 
                      in_buf = (char *)smpi_get_tmp_sendbuffer(count*
                                        datatype->get_extent());
                      Datatype::copy(tmp_buf, count, datatype,
                                         in_buf, count, datatype);
-                    //in_buf = MPI_IN_PLACE; 
-                    out_buf = recvbuf; 
-                } 
+                    //in_buf = MPI_IN_PLACE;
+                    out_buf = recvbuf;
+                }
             } else {
                 in_buf = (char *)smpi_get_tmp_sendbuffer(count*
                                        datatype->get_extent());
@@ -291,7 +291,7 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
       smpi_free_tmp_buffer((void *) ((char *) tmp_buf + true_lb));
 
       if (leader_comm_rank == leader_root) {
-        if (my_rank != root || (my_rank == root && tmp_buf == recvbuf)) { 
+        if (my_rank != root || (my_rank == root && tmp_buf == recvbuf)) {
           smpi_free_tmp_buffer(in_buf);
         }
       }

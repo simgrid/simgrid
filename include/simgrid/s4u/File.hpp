@@ -8,6 +8,7 @@
 
 #include <xbt/base.h>
 
+#include "src/surf/StorageImpl.hpp"
 #include <simgrid/simix.h>
 
 namespace simgrid {
@@ -71,6 +72,10 @@ public:
   XBT_PUBLIC(msg_error_t) MSG_file_rcopy(msg_file_t fd, msg_host_t host, const char* fullpath);
   XBT_PUBLIC(msg_error_t) MSG_file_rmove(msg_file_t fd, msg_host_t host, const char* fullpath);
   */
+  char* storage_type;
+  char* storageId;
+  char* mount_point;
+  int desc_id = 0;
 
 private:
   smx_file_t pimpl_ = nullptr;

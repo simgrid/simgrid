@@ -19,14 +19,13 @@ static int getfactors(int num, int *nfators, int **factors);
 namespace simgrid{
 namespace smpi{
 
-
-Topo_Graph::~Topo_Graph() 
+Topo_Graph::~Topo_Graph()
 {
   delete[] index_;
   delete[] edges_;
 }
 
-Topo_Dist_Graph::~Topo_Dist_Graph() 
+Topo_Dist_Graph::~Topo_Dist_Graph()
 {
   delete[] in_;
   delete[] in_weights_;
@@ -37,7 +36,7 @@ Topo_Dist_Graph::~Topo_Dist_Graph()
 /*******************************************************************************
  * Cartesian topologies
  ******************************************************************************/
-Topo_Cart::~Topo_Cart() 
+Topo_Cart::~Topo_Cart()
 {
   delete[] dims_;
   delete[] periodic_;
@@ -56,12 +55,11 @@ Topo_Cart::Topo_Cart(int ndims) : ndims_(ndims)
 Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], int reorder, MPI_Comm *comm_cart) : Topo_Cart(ndims) {
   MPI_Group newGroup;
   MPI_Group oldGroup;
-  int nranks;
 
   int rank = comm_old->rank();
 
-  int newSize = 1;
   if(ndims != 0) {
+    int newSize = 1;
     for (int i = 0 ; i < ndims ; i++) {
       newSize *= dims[i];
     }
@@ -78,7 +76,7 @@ Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], in
     nnodes_ = newSize;
 
     //  FIXME : code duplication... See coords
-    nranks = newSize;
+    int nranks = newSize;
     for (int i=0; i<ndims; i++) {
       dims_[i] = dims[i];
      periodic_[i] = periods[i];
@@ -101,7 +99,6 @@ Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], in
 
 Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
   int oldNDims = ndims_;
-  int j = 0;
   int *newDims = nullptr;
   int *newPeriodic = nullptr;
 
@@ -119,6 +116,7 @@ Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
     newPeriodic = xbt_new(int, newNDims);
 
     // that should not segfault
+    int j = 0;
     for (int i = 0 ; j < newNDims ; i++) {
       if(remain_dims[i]) {
         newDims[j] =dims_[i];
@@ -152,12 +150,11 @@ int Topo_Cart::get(int maxdims, int* dims, int* periods, int* coords) {
 
 int Topo_Cart::rank(int* coords, int* rank) {
   int ndims =ndims_;
-  int coord;
   *rank = 0;
   int multiplier = 1;
 
   for (int i=ndims-1; i >=0; i-- ) {
-    coord = coords[i];
+    int coord = coords[i];
 
     /* The user can give us whatever coordinates he wants. If one of them is out of range, either this dimension is
      * periodic, and we consider the equivalent coordinate inside the bounds, or it's not and then it's an error
@@ -242,12 +239,12 @@ int Topo_Cart::dim_get(int *ndims) {
  * Copyright (c) 2004-2005 The University of Tennessee and The University
  *                         of Tennessee Research Foundation.  All rights
  *                         reserved.
- * Copyright (c) 2004-2014 High Performance Computing Center Stuttgart, 
+ * Copyright (c) 2004-2014 High Performance Computing Center Stuttgart,
  *                         University of Stuttgart.  All rights reserved.
  * Copyright (c) 2004-2005 The Regents of the University of California.
  *                         All rights reserved.
  * Copyright (c) 2012      Los Alamos National Security, LLC.  All rights
- *                         reserved. 
+ *                         reserved.
  * Copyright (c) 2014      Intel, Inc. All rights reserved
  * $COPYRIGHT$
  *
@@ -255,7 +252,6 @@ int Topo_Cart::dim_get(int *ndims) {
  *
  * $HEADER$
  */
-
 
 /*
  * This is a utility function, no need to have anything in the lower layer for this at all

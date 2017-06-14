@@ -25,15 +25,15 @@
 
 
 /*
- * Barrier is ment to be a synchronous operation, as some BTLs can mark 
- * a request done before its passed to the NIC and progress might not be made 
- * elsewhere we cannot allow a process to exit the barrier until its last 
+ * Barrier is ment to be a synchronous operation, as some BTLs can mark
+ * a request done before its passed to the NIC and progress might not be made
+ * elsewhere we cannot allow a process to exit the barrier until its last
  * [round of] sends are completed.
  *
- * It is last round of sends rather than 'last' individual send as each pair of 
- * peers can use different channels/devices/btls and the receiver of one of 
+ * It is last round of sends rather than 'last' individual send as each pair of
+ * peers can use different channels/devices/btls and the receiver of one of
  * these sends might be forced to wait as the sender
- * leaves the collective and does not make progress until the next mpi call 
+ * leaves the collective and does not make progress until the next mpi call
  *
  */
 
@@ -60,38 +60,38 @@ int Coll_barrier_ompi_doublering::barrier(MPI_Comm comm)
     right = ((rank+1)%size);
 
     if (rank > 0) { /* receive message from the left */
-        Request::recv((void*)NULL, 0, MPI_BYTE, left, 
+        Request::recv((void*)NULL, 0, MPI_BYTE, left,
                                 COLL_TAG_BARRIER, comm,
                                 MPI_STATUS_IGNORE);
     }
 
     /* Send message to the right */
-    Request::send((void*)NULL, 0, MPI_BYTE, right, 
+    Request::send((void*)NULL, 0, MPI_BYTE, right,
                             COLL_TAG_BARRIER,
                              comm);
 
     /* root needs to receive from the last node */
     if (rank == 0) {
-        Request::recv((void*)NULL, 0, MPI_BYTE, left, 
+        Request::recv((void*)NULL, 0, MPI_BYTE, left,
                                 COLL_TAG_BARRIER, comm,
                                 MPI_STATUS_IGNORE);
     }
 
     /* Allow nodes to exit */
     if (rank > 0) { /* post Receive from left */
-        Request::recv((void*)NULL, 0, MPI_BYTE, left, 
+        Request::recv((void*)NULL, 0, MPI_BYTE, left,
                                 COLL_TAG_BARRIER, comm,
                                 MPI_STATUS_IGNORE);
     }
 
     /* send message to the right one */
-    Request::send((void*)NULL, 0, MPI_BYTE, right, 
+    Request::send((void*)NULL, 0, MPI_BYTE, right,
                             COLL_TAG_BARRIER,
                              comm);
- 
+
     /* rank 0 post receive from the last node */
     if (rank == 0) {
-        Request::recv((void*)NULL, 0, MPI_BYTE, left, 
+        Request::recv((void*)NULL, 0, MPI_BYTE, left,
                                 COLL_TAG_BARRIER, comm,
                                 MPI_STATUS_IGNORE);
     }
@@ -113,7 +113,7 @@ int Coll_barrier_ompi_recursivedoubling::barrier(MPI_Comm comm)
     rank = comm->rank();
     size = comm->size();
     XBT_DEBUG(
-                 "ompi_coll_tuned_barrier_ompi_recursivedoubling rank %d", 
+                 "ompi_coll_tuned_barrier_ompi_recursivedoubling rank %d",
                  rank);
 
     /* do nearest power of 2 less than size calc */
@@ -163,7 +163,7 @@ int Coll_barrier_ompi_recursivedoubling::barrier(MPI_Comm comm)
         if (rank < (size - adjsize)) {
             /* send enter message to higher ranked node */
             remote = rank + adjsize;
-            Request::send((void*)NULL, 0, MPI_BYTE, remote, 
+            Request::send((void*)NULL, 0, MPI_BYTE, remote,
                                     COLL_TAG_BARRIER,
                                      comm);
 
@@ -190,14 +190,14 @@ int Coll_barrier_ompi_bruck::barrier(MPI_Comm comm)
                  "ompi_coll_tuned_barrier_ompi_bruck rank %d", rank);
 
     /* exchange data with rank-2^k and rank+2^k */
-    for (distance = 1; distance < size; distance <<= 1) { 
+    for (distance = 1; distance < size; distance <<= 1) {
         from = (rank + size - distance) % size;
         to   = (rank + distance) % size;
 
         /* send message to lower ranked node */
-        Request::sendrecv(NULL, 0, MPI_BYTE, to, 
+        Request::sendrecv(NULL, 0, MPI_BYTE, to,
                                               COLL_TAG_BARRIER,
-                                              NULL, 0, MPI_BYTE, from, 
+                                              NULL, 0, MPI_BYTE, from,
                                               COLL_TAG_BARRIER,
                                               comm, MPI_STATUS_IGNORE);
     }
@@ -220,9 +220,9 @@ int Coll_barrier_ompi_two_procs::barrier(MPI_Comm comm)
                  "ompi_coll_tuned_barrier_ompi_two_procs rank %d", remote);
     remote = (remote + 1) & 0x1;
 
-    Request::sendrecv(NULL, 0, MPI_BYTE, remote, 
+    Request::sendrecv(NULL, 0, MPI_BYTE, remote,
                                           COLL_TAG_BARRIER,
-                                          NULL, 0, MPI_BYTE, remote, 
+                                          NULL, 0, MPI_BYTE, remote,
                                           COLL_TAG_BARRIER,
                                           comm, MPI_STATUS_IGNORE);
     return (MPI_SUCCESS);
@@ -252,11 +252,11 @@ int Coll_barrier_ompi_basic_linear::barrier(MPI_Comm comm)
     /* All non-root send & receive zero-length message. */
 
     if (rank > 0) {
-        Request::send (NULL, 0, MPI_BYTE, 0, 
+        Request::send (NULL, 0, MPI_BYTE, 0,
                                  COLL_TAG_BARRIER,
                                   comm);
 
-        Request::recv (NULL, 0, MPI_BYTE, 0, 
+        Request::recv (NULL, 0, MPI_BYTE, 0,
                                  COLL_TAG_BARRIER,
                                  comm, MPI_STATUS_IGNORE);
     }
@@ -293,7 +293,7 @@ int Coll_barrier_ompi_basic_linear::barrier(MPI_Comm comm)
 
 /*
  * Another recursive doubling type algorithm, but in this case
- * we go up the tree and back down the tree.  
+ * we go up the tree and back down the tree.
  */
 int Coll_barrier_ompi_tree::barrier(MPI_Comm comm)
 {
@@ -303,7 +303,7 @@ int Coll_barrier_ompi_tree::barrier(MPI_Comm comm)
     rank = comm->rank();
     size = comm->size();
     XBT_DEBUG(
-                 "ompi_coll_tuned_barrier_ompi_tree %d", 
+                 "ompi_coll_tuned_barrier_ompi_tree %d",
                  rank);
 
     /* Find the nearest power of 2 of the communicator size. */
@@ -313,7 +313,7 @@ int Coll_barrier_ompi_tree::barrier(MPI_Comm comm)
         partner = rank ^ jump;
         if (!(partner & (jump-1)) && partner < size) {
             if (partner > rank) {
-                Request::recv (NULL, 0, MPI_BYTE, partner, 
+                Request::recv (NULL, 0, MPI_BYTE, partner,
                                          COLL_TAG_BARRIER, comm,
                                          MPI_STATUS_IGNORE);
             } else if (partner < rank) {
@@ -323,7 +323,7 @@ int Coll_barrier_ompi_tree::barrier(MPI_Comm comm)
             }
         }
     }
-    
+
     depth>>=1;
     for (jump = depth; jump>0; jump>>=1) {
         partner = rank ^ jump;
@@ -333,7 +333,7 @@ int Coll_barrier_ompi_tree::barrier(MPI_Comm comm)
                                          COLL_TAG_BARRIER,
                                           comm);
             } else if (partner < rank) {
-                Request::recv (NULL, 0, MPI_BYTE, partner, 
+                Request::recv (NULL, 0, MPI_BYTE, partner,
                                          COLL_TAG_BARRIER, comm,
                                          MPI_STATUS_IGNORE);
             }

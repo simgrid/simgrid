@@ -40,7 +40,7 @@ int Coll_scatter_ompi_binomial::scatter(void* sbuf, int scount, MPI_Datatype sdt
     int err;
     ompi_coll_tree_t* bmtree;
     MPI_Status status;
-    MPI_Aint sextent, slb, strue_lb, strue_extent; 
+    MPI_Aint sextent, slb, strue_lb, strue_extent;
     MPI_Aint rextent, rlb, rtrue_lb, rtrue_extent;
 
     size = comm->size();
@@ -50,7 +50,7 @@ int Coll_scatter_ompi_binomial::scatter(void* sbuf, int scount, MPI_Datatype sdt
                  "Coll_scatter_ompi_binomial::scatter rank %d", rank);
 
     /* create the binomial tree */
-    
+
 //    COLL_TUNED_UPDATE_IN_ORDER_BMTREE( comm, tuned_module, root );
     bmtree =  ompi_coll_tuned_topo_build_in_order_bmtree( comm, root);//ompi_ data->cached_in_order_bmtree;
 
@@ -175,8 +175,8 @@ int Coll_scatter_ompi_binomial::scatter(void* sbuf, int scount, MPI_Datatype sdt
 /*
  * Linear functions are copied from the BASIC coll module
  * they do not segment the message and are simple implementations
- * but for some small number of nodes and/or small data sizes they 
- * are just as fast as tuned/tree based segmenting operations 
+ * but for some small number of nodes and/or small data sizes they
+ * are just as fast as tuned/tree based segmenting operations
  * and as such may be selected by the decision functions
  * These are copied into this module due to the way we select modules
  * in V1. i.e. in V2 we will handle this differently and so will not

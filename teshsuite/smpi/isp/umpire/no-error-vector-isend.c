@@ -59,7 +59,7 @@ main (int argc, char **argv)
     for (i = 1; i < buf_size; i = i + 2)
       buf[i] = i;
 
-    MPI_Recv (&buf[(rank + 1) % 2], 1, 
+    MPI_Recv (&buf[(rank + 1) % 2], 1,
 	      strided_type, (rank + 1) % 2, 0, comm, &status);
 
     for (i = 0; i < buf_size; i++)

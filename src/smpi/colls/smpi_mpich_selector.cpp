@@ -9,7 +9,7 @@
 #include "colls_private.h"
 
 /* This is the default implementation of allreduce. The algorithm is:
-   
+
    Algorithm: MPI_Allreduce
 
    For the heterogeneous case, we call MPI_Reduce followed by MPI_Bcast
@@ -19,12 +19,12 @@
 
    For long messages and for builtin ops and if count >= pof2 (where
    pof2 is the nearest power-of-two less than or equal to the number
-   of processes), we use Rabenseifner's algorithm (see 
+   of processes), we use Rabenseifner's algorithm (see
    http://www.hlrs.de/mpi/myreduce.html).
    This algorithm implements the allreduce in two steps: first a
    reduce-scatter, followed by an allgather. A recursive-halving
    algorithm (beginning with processes that are distance 1 apart) is
-   used for the reduce-scatter, and a recursive doubling 
+   used for the reduce-scatter, and a recursive doubling
    algorithm is used for the allgather. The non-power-of-two case is
    handled by dropping to the nearest lower power-of-two: the first
    few even-numbered processes send their data to their right neighbors
@@ -32,27 +32,27 @@
    power-of-two processes. At the end, the first few even-numbered
    processes get the result from their right neighbors.
 
-   For the power-of-two case, the cost for the reduce-scatter is 
+   For the power-of-two case, the cost for the reduce-scatter is
    lgp.alpha + n.((p-1)/p).beta + n.((p-1)/p).gamma. The cost for the
    allgather lgp.alpha + n.((p-1)/p).beta. Therefore, the
    total cost is:
    Cost = 2.lgp.alpha + 2.n.((p-1)/p).beta + n.((p-1)/p).gamma
 
-   For the non-power-of-two case, 
+   For the non-power-of-two case,
    Cost = (2.floor(lgp)+2).alpha + (2.((p-1)/p) + 2).n.beta + n.(1+(p-1)/p).gamma
 
-   
-   For short messages, for user-defined ops, and for count < pof2 
+
+   For short messages, for user-defined ops, and for count < pof2
    we use a recursive doubling algorithm (similar to the one in
    MPI_Allgather). We use this algorithm in the case of user-defined ops
    because in this case derived datatypes are allowed, and the user
    could pass basic datatypes on one process and derived on another as
    long as the type maps are the same. Breaking up derived datatypes
-   to do the reduce-scatter is tricky. 
+   to do the reduce-scatter is tricky.
 
    Cost = lgp.alpha + n.lgp.beta + n.lgp.gamma
 
-   Possible improvements: 
+   Possible improvements:
 
    End Algorithm: MPI_Allreduce
 */
@@ -76,12 +76,12 @@ int Coll_allreduce_mpich::allreduce(void *sbuf, void *rbuf, int count,
 
     if (block_dsize > large_message && count >= pof2 && (op==MPI_OP_NULL || op->is_commutative())) {
       //for long messages
-       return (Coll_allreduce_rab_rdb::allreduce (sbuf, rbuf, 
+       return (Coll_allreduce_rab_rdb::allreduce (sbuf, rbuf,
                                                                    count, dtype,
                                                                    op, comm));
     }else {
       //for short ones and count < pof2
-      return (Coll_allreduce_rdb::allreduce (sbuf, rbuf, 
+      return (Coll_allreduce_rdb::allreduce (sbuf, rbuf,
                                                                    count, dtype,
                                                                    op, comm));
     }
@@ -89,7 +89,7 @@ int Coll_allreduce_mpich::allreduce(void *sbuf, void *rbuf, int count,
 
 
 /* This is the default implementation of alltoall. The algorithm is:
-   
+
    Algorithm: MPI_Alltoall
 
    We use four algorithms for alltoall. For short messages and
@@ -109,9 +109,9 @@ int Coll_allreduce_mpich::allreduce(void *sbuf, void *rbuf, int count,
    processes, so that all processes don't try to send/recv to/from the
    same process at the same time.
 
-   *** Modification: We post only a small number of isends and irecvs 
+   *** Modification: We post only a small number of isends and irecvs
    at a time and wait on them as suggested by Tony Ladd. ***
-   *** See comments below about an additional modification that 
+   *** See comments below about an additional modification that
    we may want to consider ***
 
    For long messages and power-of-two number of processes, we use a
@@ -122,22 +122,22 @@ int Coll_allreduce_mpich::allreduce(void *sbuf, void *rbuf, int count,
    This algorithm doesn't work if the number of processes is not a power of
    two. For a non-power-of-two number of processes, we use an
    algorithm in which, in step i, each process  receives from (rank-i)
-   and sends to (rank+i). 
+   and sends to (rank+i).
 
    Cost = (p-1).alpha + n.beta
 
    where n is the total amount of data a process needs to send to all
    other processes.
 
-   Possible improvements: 
+   Possible improvements:
 
    End Algorithm: MPI_Alltoall
 */
 
-int Coll_alltoall_mpich::alltoall( void *sbuf, int scount, 
+int Coll_alltoall_mpich::alltoall( void *sbuf, int scount,
                                              MPI_Datatype sdtype,
-                                             void* rbuf, int rcount, 
-                                             MPI_Datatype rdtype, 
+                                             void* rbuf, int rcount,
+                                             MPI_Datatype rdtype,
                                              MPI_Comm comm)
 {
     int communicator_size;
@@ -147,34 +147,34 @@ int Coll_alltoall_mpich::alltoall( void *sbuf, int scount,
     unsigned int short_size=256;
     unsigned int medium_size=32768;
     //short size and comm_size >=8   -> bruck
-    
+
 //     medium size messages and (short messages for comm_size < 8), we
 //     use an algorithm that posts all irecvs and isends and then does a
-//     waitall. 
-    
+//     waitall.
+
 //    For long messages and power-of-two number of processes, we use a
 //   pairwise exchange algorithm
 
 //   For a non-power-of-two number of processes, we use an
 //   algorithm in which, in step i, each process  receives from (rank-i)
-//   and sends to (rank+i). 
+//   and sends to (rank+i).
 
 
     dsize = sdtype->size();
     block_dsize = dsize * scount;
 
     if ((block_dsize < short_size) && (communicator_size >= 8)) {
-        return Coll_alltoall_bruck::alltoall(sbuf, scount, sdtype, 
+        return Coll_alltoall_bruck::alltoall(sbuf, scount, sdtype,
                                                     rbuf, rcount, rdtype,
                                                     comm);
 
     } else if (block_dsize < medium_size) {
-        return Coll_alltoall_basic_linear::alltoall(sbuf, scount, sdtype, 
-                                                           rbuf, rcount, rdtype, 
+        return Coll_alltoall_basic_linear::alltoall(sbuf, scount, sdtype,
+                                                           rbuf, rcount, rdtype,
                                                            comm);
     }else if (communicator_size%2){
-        return Coll_alltoall_ring::alltoall(sbuf, scount, sdtype, 
-                                                           rbuf, rcount, rdtype, 
+        return Coll_alltoall_ring::alltoall(sbuf, scount, sdtype,
+                                                           rbuf, rcount, rdtype,
                                                            comm);
     }
 
@@ -191,25 +191,25 @@ int Coll_alltoallv_mpich::alltoallv(void *sbuf, int *scounts, int *sdisps,
                                               )
 {
     /* For starters, just keep the original algorithm. */
-    return Coll_alltoallv_bruck::alltoallv(sbuf, scounts, sdisps, sdtype, 
+    return Coll_alltoallv_bruck::alltoallv(sbuf, scounts, sdisps, sdtype,
                                                         rbuf, rcounts, rdisps,rdtype,
                                                         comm);
 }
 
 
 int Coll_barrier_mpich::barrier(MPI_Comm  comm)
-{   
+{
     return Coll_barrier_ompi_bruck::barrier(comm);
 }
 
 /* This is the default implementation of broadcast. The algorithm is:
-   
+
    Algorithm: MPI_Bcast
 
-   For short messages, we use a binomial tree algorithm. 
+   For short messages, we use a binomial tree algorithm.
    Cost = lgp.alpha + n.lgp.beta
 
-   For long messages, we do a scatter followed by an allgather. 
+   For long messages, we do a scatter followed by an allgather.
    We first scatter the buffer using a binomial tree algorithm. This costs
    lgp.alpha + n.((p-1)/p).beta
    If the datatype is contiguous and the communicator is homogeneous,
@@ -218,7 +218,7 @@ int Coll_barrier_mpich::barrier(MPI_Comm  comm)
    cases, we first pack the data into a temporary buffer by using
    MPI_Pack, scatter it as bytes, and unpack it after the allgather.
 
-   For the allgather, we use a recursive doubling algorithm for 
+   For the allgather, we use a recursive doubling algorithm for
    medium-size messages and power-of-two number of processes. This
    takes lgp steps. In each step pairs of processes exchange all the
    data they have (we take care of non-power-of-two situations). This
@@ -232,12 +232,12 @@ int Coll_barrier_mpich::barrier(MPI_Comm  comm)
    versus n.lgp.beta. Therefore, for long messages and when lgp > 2,
    this algorithm will perform better.
 
-   For long messages and for medium-size messages and non-power-of-two 
-   processes, we use a ring algorithm for the allgather, which 
+   For long messages and for medium-size messages and non-power-of-two
+   processes, we use a ring algorithm for the allgather, which
    takes p-1 steps, because it performs better than recursive doubling.
    Total Cost = (lgp+p-1).alpha + 2.n.((p-1)/p).beta
 
-   Possible improvements: 
+   Possible improvements:
    For clusters of SMPs, we may want to do something differently to
    take advantage of shared memory on each node.
 
@@ -250,7 +250,7 @@ int Coll_bcast_mpich::bcast(void *buff, int count,
                                           MPI_Comm  comm
                                           )
 {
-    /* Decision function based on MX results for 
+    /* Decision function based on MX results for
        messages up to 36MB and communicator sizes up to 64 nodes */
     const size_t small_message_size = 12288;
     const size_t intermediate_message_size = 524288;
@@ -265,34 +265,34 @@ int Coll_bcast_mpich::bcast(void *buff, int count,
     dsize = datatype->size();
     message_size = dsize * (unsigned long)count;   /* needed for decision */
 
-    /* Handle messages of small and intermediate size, and 
+    /* Handle messages of small and intermediate size, and
        single-element broadcasts */
     if ((message_size < small_message_size) || (communicator_size <= 8)) {
         /* Binomial without segmentation */
-        return  Coll_bcast_binomial_tree::bcast (buff, count, datatype, 
+        return  Coll_bcast_binomial_tree::bcast (buff, count, datatype,
                                                       root, comm);
 
     } else if (message_size < intermediate_message_size && !(communicator_size%2)) {
         // SplittedBinary with 1KB segments
-        return Coll_bcast_scatter_rdb_allgather::bcast(buff, count, datatype, 
+        return Coll_bcast_scatter_rdb_allgather::bcast(buff, count, datatype,
                                                          root, comm);
 
     }
-     //Handle large message sizes 
-     return Coll_bcast_scatter_LR_allgather::bcast (buff, count, datatype, 
+     //Handle large message sizes
+     return Coll_bcast_scatter_LR_allgather::bcast (buff, count, datatype,
                                                      root, comm);
-                                                         
+
 }
 
 
 
 /* This is the default implementation of reduce. The algorithm is:
-   
+
    Algorithm: MPI_Reduce
 
    For long messages and for builtin ops and if count >= pof2 (where
    pof2 is the nearest power-of-two less than or equal to the number
-   of processes), we use Rabenseifner's algorithm (see 
+   of processes), we use Rabenseifner's algorithm (see
    http://www.hlrs.de/organization/par/services/models/mpi/myreduce.html ).
    This algorithm implements the reduce in two steps: first a
    reduce-scatter, followed by a gather to the root. A
@@ -307,7 +307,7 @@ int Coll_bcast_mpich::bcast(void *buff, int count,
    the root and exits; the root now acts as rank 0 in the binomial tree
    algorithm for gather.
 
-   For the power-of-two case, the cost for the reduce-scatter is 
+   For the power-of-two case, the cost for the reduce-scatter is
    lgp.alpha + n.((p-1)/p).beta + n.((p-1)/p).gamma. The cost for the
    gather to root is lgp.alpha + n.((p-1)/p).beta. Therefore, the
    total cost is:
@@ -315,12 +315,12 @@ int Coll_bcast_mpich::bcast(void *buff, int count,
 
    For the non-power-of-two case, assuming the root is not one of the
    odd-numbered processes that get excluded in the reduce-scatter,
-   Cost = (2.floor(lgp)+1).alpha + (2.((p-1)/p) + 1).n.beta + 
+   Cost = (2.floor(lgp)+1).alpha + (2.((p-1)/p) + 1).n.beta +
            n.(1+(p-1)/p).gamma
 
 
    For short messages, user-defined ops, and count < pof2, we use a
-   binomial tree algorithm for both short and long messages. 
+   binomial tree algorithm for both short and long messages.
 
    Cost = lgp.alpha + n.lgp.beta + n.lgp.gamma
 
@@ -335,7 +335,7 @@ int Coll_bcast_mpich::bcast(void *buff, int count,
    should be able to use the reduce-scatter/gather approach as long as
    count >= pof2.  [goodell@ 2009-01-21]
 
-   Possible improvements: 
+   Possible improvements:
 
    End Algorithm: MPI_Reduce
 */
@@ -361,7 +361,7 @@ int Coll_reduce_mpich::reduce( void *sendbuf, void *recvbuf,
     pof2 >>= 1;
 
     if ((count < pof2) || (message_size < 2048) || (op != MPI_OP_NULL && not op->is_commutative())) {
-      return Coll_reduce_binomial::reduce(sendbuf, recvbuf, count, datatype, op, root, comm); 
+      return Coll_reduce_binomial::reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
     }
         return Coll_reduce_scatter_gather::reduce(sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
                                                      segsize, max_requests*/);
@@ -430,17 +430,17 @@ int Coll_reduce_scatter_mpich::reduce_scatter( void *sbuf, void *rbuf,
     if(sbuf==rbuf)sbuf=MPI_IN_PLACE; //restore MPI_IN_PLACE as these algorithms handle it
 
     XBT_DEBUG("Coll_reduce_scatter_mpich::reduce");
-    
+
     comm_size = comm->size();
-    // We need data size for decision function 
+    // We need data size for decision function
     total_message_size = 0;
-    for (i = 0; i < comm_size; i++) { 
+    for (i = 0; i < comm_size; i++) {
         total_message_size += rcounts[i];
     }
 
-    if( (op==MPI_OP_NULL || op->is_commutative()) &&  total_message_size > 524288) { 
-        return Coll_reduce_scatter_mpich_pair::reduce_scatter (sbuf, rbuf, rcounts, 
-                                                                    dtype, op, 
+    if( (op==MPI_OP_NULL || op->is_commutative()) &&  total_message_size > 524288) {
+        return Coll_reduce_scatter_mpich_pair::reduce_scatter (sbuf, rbuf, rcounts,
+                                                                    dtype, op,
                                                                     comm);
     } else if ((op != MPI_OP_NULL && not op->is_commutative())) {
       int is_block_regular = 1;
@@ -462,14 +462,14 @@ int Coll_reduce_scatter_mpich::reduce_scatter( void *sbuf, void *rbuf,
       }
 
       return Coll_reduce_scatter_mpich_rdb::reduce_scatter(sbuf, rbuf, rcounts, dtype, op, comm);
-    }else{      
+    }else{
        return Coll_reduce_scatter_mpich_rdb::reduce_scatter(sbuf, rbuf, rcounts, dtype, op, comm);
     }
 }
 
 
 /* This is the default implementation of allgather. The algorithm is:
-   
+
    Algorithm: MPI_Allgather
 
    For short messages and non-power-of-two no. of processes, we use
@@ -508,15 +508,15 @@ int Coll_reduce_scatter_mpich::reduce_scatter( void *sbuf, void *rbuf,
    neighbor) performs twice as fast as recursive doubling for long
    messages (on Myrinet and IBM SP).
 
-   Possible improvements: 
+   Possible improvements:
 
    End Algorithm: MPI_Allgather
 */
 
-int Coll_allgather_mpich::allgather(void *sbuf, int scount, 
+int Coll_allgather_mpich::allgather(void *sbuf, int scount,
                                               MPI_Datatype sdtype,
-                                              void* rbuf, int rcount, 
-                                              MPI_Datatype rdtype, 
+                                              void* rbuf, int rcount,
+                                              MPI_Datatype rdtype,
                                               MPI_Comm  comm
                                               )
 {
@@ -527,36 +527,36 @@ int Coll_allgather_mpich::allgather(void *sbuf, int scount,
 
     /* Determine complete data size */
     dsize=sdtype->size();
-    total_dsize = dsize * scount * communicator_size;   
-   
-    for (pow2_size  = 1; pow2_size < communicator_size; pow2_size <<=1); 
+    total_dsize = dsize * scount * communicator_size;
 
-    /* Decision as in MPICH-2 
-       presented in Thakur et.al. "Optimization of Collective Communication 
-       Operations in MPICH", International Journal of High Performance Computing 
+    for (pow2_size  = 1; pow2_size < communicator_size; pow2_size <<=1);
+
+    /* Decision as in MPICH-2
+       presented in Thakur et.al. "Optimization of Collective Communication
+       Operations in MPICH", International Journal of High Performance Computing
        Applications, Vol. 19, No. 1, 49-66 (2005)
-       - for power-of-two processes and small and medium size messages 
+       - for power-of-two processes and small and medium size messages
        (up to 512KB) use recursive doubling
        - for non-power-of-two processes and small messages (80KB) use bruck,
        - for everything else use ring.
     */
     if ((pow2_size == communicator_size) && (total_dsize < 524288)) {
-        return Coll_allgather_rdb::allgather(sbuf, scount, sdtype, 
-                                                                 rbuf, rcount, rdtype, 
+        return Coll_allgather_rdb::allgather(sbuf, scount, sdtype,
+                                                                 rbuf, rcount, rdtype,
                                                                  comm);
-    } else if (total_dsize <= 81920) { 
-        return Coll_allgather_bruck::allgather(sbuf, scount, sdtype, 
+    } else if (total_dsize <= 81920) {
+        return Coll_allgather_bruck::allgather(sbuf, scount, sdtype,
                                                      rbuf, rcount, rdtype,
                                                      comm);
-    } 
-    return Coll_allgather_ring::allgather(sbuf, scount, sdtype, 
+    }
+    return Coll_allgather_ring::allgather(sbuf, scount, sdtype,
                                                 rbuf, rcount, rdtype,
                                                 comm);
 }
 
 
 /* This is the default implementation of allgatherv. The algorithm is:
-   
+
    Algorithm: MPI_Allgatherv
 
    For short messages and non-power-of-two no. of processes, we use
@@ -587,15 +587,15 @@ int Coll_allgather_mpich::allgather(void *sbuf, int scount,
 
    Cost = (p-1).alpha + n.((p-1)/p).beta
 
-   Possible improvements: 
+   Possible improvements:
 
    End Algorithm: MPI_Allgatherv
 */
-int Coll_allgatherv_mpich::allgatherv(void *sbuf, int scount, 
+int Coll_allgatherv_mpich::allgatherv(void *sbuf, int scount,
                                                MPI_Datatype sdtype,
-                                               void* rbuf, int *rcounts, 
+                                               void* rbuf, int *rcounts,
                                                int *rdispls,
-                                               MPI_Datatype rdtype, 
+                                               MPI_Datatype rdtype,
                                                MPI_Comm  comm
                                                )
 {
@@ -610,25 +610,25 @@ int Coll_allgatherv_mpich::allgatherv(void *sbuf, int scount,
         total_dsize += rcounts[i];
     if (total_dsize == 0)
       return MPI_SUCCESS;
-    
-    for (pow2_size  = 1; pow2_size < communicator_size; pow2_size <<=1); 
+
+    for (pow2_size  = 1; pow2_size < communicator_size; pow2_size <<=1);
 
     if ((pow2_size == communicator_size) && (total_dsize < 524288)) {
-        return Coll_allgatherv_mpich_rdb::allgatherv(sbuf, scount, sdtype, 
-                                                                 rbuf, rcounts, rdispls, rdtype, 
+        return Coll_allgatherv_mpich_rdb::allgatherv(sbuf, scount, sdtype,
+                                                                 rbuf, rcounts, rdispls, rdtype,
                                                                  comm);
-    } else if (total_dsize <= 81920) { 
-        return Coll_allgatherv_ompi_bruck::allgatherv(sbuf, scount, sdtype, 
+    } else if (total_dsize <= 81920) {
+        return Coll_allgatherv_ompi_bruck::allgatherv(sbuf, scount, sdtype,
                                                      rbuf, rcounts, rdispls, rdtype,
                                                      comm);
-    } 
+    }
     return Coll_allgatherv_mpich_ring::allgatherv(sbuf, scount, sdtype,
                                                 rbuf, rcounts, rdispls, rdtype,
                                                 comm);
 }
 
 /* This is the default implementation of gather. The algorithm is:
-   
+
    Algorithm: MPI_Gather
 
    We use a binomial tree algorithm for both short and long
@@ -644,50 +644,50 @@ int Coll_allgatherv_mpich::allgatherv(void *sbuf, int scount,
    Cost = lgp.alpha + n.((p-1)/p).beta
    where n is the total size of the data gathered at the root.
 
-   Possible improvements: 
+   Possible improvements:
 
    End Algorithm: MPI_Gather
 */
 
-int Coll_gather_mpich::gather(void *sbuf, int scount, 
+int Coll_gather_mpich::gather(void *sbuf, int scount,
                                            MPI_Datatype sdtype,
-                                           void* rbuf, int rcount, 
-                                           MPI_Datatype rdtype, 
+                                           void* rbuf, int rcount,
+                                           MPI_Datatype rdtype,
                                            int root,
                                            MPI_Comm  comm
                                            )
 {
-        return Coll_gather_ompi_binomial::gather (sbuf, scount, sdtype, 
-                                                      rbuf, rcount, rdtype, 
+        return Coll_gather_ompi_binomial::gather (sbuf, scount, sdtype,
+                                                      rbuf, rcount, rdtype,
                                                       root, comm);
 }
 
 /* This is the default implementation of scatter. The algorithm is:
-   
+
    Algorithm: MPI_Scatter
 
    We use a binomial tree algorithm for both short and
    long messages. At nodes other than leaf nodes we need to allocate
    a temporary buffer to store the incoming message. If the root is
-   not rank 0, we reorder the sendbuf in order of relative ranks by 
+   not rank 0, we reorder the sendbuf in order of relative ranks by
    copying it into a temporary buffer, so that all the sends from the
    root are contiguous and in the right order. In the heterogeneous
    case, we first pack the buffer by using MPI_Pack and then do the
-   scatter. 
+   scatter.
 
    Cost = lgp.alpha + n.((p-1)/p).beta
    where n is the total size of the data to be scattered from the root.
 
-   Possible improvements: 
+   Possible improvements:
 
    End Algorithm: MPI_Scatter
 */
 
 
-int Coll_scatter_mpich::scatter(void *sbuf, int scount, 
+int Coll_scatter_mpich::scatter(void *sbuf, int scount,
                                             MPI_Datatype sdtype,
-                                            void* rbuf, int rcount, 
-                                            MPI_Datatype rdtype, 
+                                            void* rbuf, int rcount,
+                                            MPI_Datatype rdtype,
                                             int root, MPI_Comm  comm
                                             )
 {
@@ -697,7 +697,7 @@ int Coll_scatter_mpich::scatter(void *sbuf, int scount,
       sdtype=rdtype;
   }
   int ret= Coll_scatter_ompi_binomial::scatter (sbuf, scount, sdtype,
-                                                       rbuf, rcount, rdtype, 
+                                                       rbuf, rcount, rdtype,
                                                        root, comm);
   if(comm->rank()!=root){
       xbt_free(sbuf);

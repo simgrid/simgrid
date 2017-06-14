@@ -335,6 +335,6 @@ Checker* createSafetyChecker(Session& session)
 {
   return new SafetyChecker(session);
 }
-  
+
 }
 }

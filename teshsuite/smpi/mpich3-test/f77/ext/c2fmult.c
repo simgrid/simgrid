@@ -6,8 +6,8 @@
 
 /*
   Check that MPI_xxxx_c2f, applied to the same object several times,
-  yields the same handle.  We do this because when MPI handles in 
-  C are a different length than those in Fortran, care needs to 
+  yields the same handle.  We do this because when MPI handles in
+  C are a different length than those in Fortran, care needs to
   be exercised to ensure that the mapping from one to another is unique.
   (Test added to test a potential problem in ROMIO for handling MPI_File
   on 64-bit systems)
@@ -55,6 +55,6 @@ int main( int argc, char *argv[] )
 
     MTest_Finalize( errs );
     MPI_Finalize();
-    
+
     return 0;
 }

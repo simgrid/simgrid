@@ -54,22 +54,22 @@ main (int argc, char **argv)
     {
       for (j = 0; j < 2; j++) {
 	MPI_Probe (MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
-      
+
 	if (status.MPI_SOURCE == 0) {
-	  MPI_Recv (&i, 1, MPI_INT, 
+	  MPI_Recv (&i, 1, MPI_INT,
 		    MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
 	  if (status.MPI_SOURCE != 0)
 	    printf ("(%d) Type mismatch from matching other message\n", rank);
 	}
 	else {
-	  MPI_Recv (&x, 1, MPI_DOUBLE, 
+	  MPI_Recv (&x, 1, MPI_DOUBLE,
 		    MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
 	  if (status.MPI_SOURCE == 0)
 	    printf ("(%d) Type mismatch from matching other message\n", rank);
 	}
       }
     }
-      
+
   MPI_Barrier (MPI_COMM_WORLD);
 
   MPI_Finalize ();

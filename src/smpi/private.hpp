@@ -20,7 +20,7 @@
 #define TOPAGE(addr) (void *)(((unsigned long)(addr) / xbt_pagesize) * xbt_pagesize)
 
 #if HAVE_PAPI
-typedef 
+typedef
     std::vector<std::pair</* counter name */std::string, /* counter value */long long>> papi_counter_t;
 XBT_PRIVATE papi_counter_t& smpi_process_papi_counters();
 XBT_PRIVATE int smpi_process_papi_event_set();

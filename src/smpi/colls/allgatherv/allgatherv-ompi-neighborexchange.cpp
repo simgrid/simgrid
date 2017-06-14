@@ -11,23 +11,23 @@
  * Accepts:      Same arguments as MPI_Allgatherv
  * Returns:      MPI_SUCCESS or error code
  *
- * Description:  Neighbor Exchange algorithm for allgather adapted for 
+ * Description:  Neighbor Exchange algorithm for allgather adapted for
  *               allgatherv.
- *               Described by Chen et.al. in 
- *               "Performance Evaluation of Allgather Algorithms on 
+ *               Described by Chen et.al. in
+ *               "Performance Evaluation of Allgather Algorithms on
  *                Terascale Linux Cluster with Fast Ethernet",
- *               Proceedings of the Eighth International Conference on 
+ *               Proceedings of the Eighth International Conference on
  *               High-Performance Computing inn Asia-Pacific Region
  *               (HPCASIA'05), 2005
- * 
+ *
  *               Rank r exchanges message with one of its neighbors and
  *               forwards the data further in the next step.
  *
  *               No additional memory requirements.
- * 
+ *
  * Limitations:  Algorithm works only on even number of processes.
  *               For odd number of processes we switch to ring algorithm.
- * 
+ *
  * Example on 6 nodes:
  *  Initial state
  *    #     0      1      2      3      4      5
@@ -62,13 +62,13 @@
  *         [4]    [4]    [4]    [4]    [4]    [4]
  *         [5]    [5]    [5]    [5]    [5]    [5]
  */
- 
+
  #include "../colls_private.h"
- 
+
 namespace simgrid{
 namespace smpi{
 
-int 
+int
 Coll_allgatherv_ompi_neighborexchange::allgatherv(void *sbuf, int scount,
                                                   MPI_Datatype sdtype,
                                                   void* rbuf, int *rcounts, int *rdispls,
@@ -78,7 +78,7 @@ Coll_allgatherv_ompi_neighborexchange::allgatherv(void *sbuf, int scount,
     int line = -1;
     int rank, size;
     int neighbor[2], offset_at_step[2], recv_data_from[2], send_data_from;
-  
+
     int i, even_rank;
     int err = 0;
     ptrdiff_t slb, rlb, sext, rext;
@@ -90,10 +90,10 @@ Coll_allgatherv_ompi_neighborexchange::allgatherv(void *sbuf, int scount,
 
     if (size % 2) {
         XBT_DEBUG(
-                     "coll:tuned:allgatherv_ompi_neighborexchange WARNING: odd size %d, switching to ring algorithm", 
+                     "coll:tuned:allgatherv_ompi_neighborexchange WARNING: odd size %d, switching to ring algorithm",
                      size);
         return Coll_allgatherv_ring::allgatherv(sbuf, scount, sdtype,
-                                                     rbuf, rcounts, 
+                                                     rbuf, rcounts,
                                                      rdispls, rdtype,
                                                      comm);
     }
@@ -108,16 +108,16 @@ Coll_allgatherv_ompi_neighborexchange::allgatherv(void *sbuf, int scount,
     if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
 
     /* Initialization step:
-       - if send buffer is not MPI_IN_PLACE, copy send buffer to 
+       - if send buffer is not MPI_IN_PLACE, copy send buffer to
        the appropriate block of receive buffer
     */
     tmprecv = (char*) rbuf + rdispls[rank] * rext;
     if (MPI_IN_PLACE != sbuf) {
         tmpsend = (char*) sbuf;
-        err = Datatype::copy(tmpsend, scount, sdtype, 
+        err = Datatype::copy(tmpsend, scount, sdtype,
                               tmprecv, rcounts[rank], rdtype);
         if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl;  }
-    } 
+    }
 
     /* Determine neighbors, order in which blocks will arrive, etc. */
     even_rank = !(rank % 2);
@@ -139,8 +139,8 @@ Coll_allgatherv_ompi_neighborexchange::allgatherv(void *sbuf, int scount,
 
     /* Communication loop:
        - First step is special: exchange a single block with neighbor[0].
-       - Rest of the steps: 
-       update recv_data_from according to offset, and 
+       - Rest of the steps:
+       update recv_data_from according to offset, and
        exchange two blocks with appropriate neighbor.
        the send location becomes previous receve location.
        Note, we need to create indexed datatype to send and receive these
@@ -148,16 +148,16 @@ Coll_allgatherv_ompi_neighborexchange::allgatherv(void *sbuf, int scount,
     */
     tmprecv = (char*)rbuf + rdispls[neighbor[0]] * rext;
     tmpsend = (char*)rbuf + rdispls[rank] * rext;
-    Request::sendrecv(tmpsend, rcounts[rank], rdtype, 
+    Request::sendrecv(tmpsend, rcounts[rank], rdtype,
                                    neighbor[0], COLL_TAG_ALLGATHERV,
-                                   tmprecv, rcounts[neighbor[0]], rdtype, 
+                                   tmprecv, rcounts[neighbor[0]], rdtype,
                                    neighbor[0], COLL_TAG_ALLGATHERV,
                                    comm, MPI_STATUS_IGNORE);
 
 
 
-  
-   
+
+
     /* Determine initial sending counts and displacements*/
     if (even_rank) {
         send_data_from = rank;
@@ -169,7 +169,7 @@ Coll_allgatherv_ompi_neighborexchange::allgatherv(void *sbuf, int scount,
         MPI_Datatype new_rdtype, new_sdtype;
         int new_scounts[2], new_sdispls[2], new_rcounts[2], new_rdispls[2];
         const int i_parity = i % 2;
-        recv_data_from[i_parity] = 
+        recv_data_from[i_parity] =
             (recv_data_from[i_parity] + offset_at_step[i_parity] + size) % size;
 
         /* Create new indexed types for sending and receiving.
@@ -177,12 +177,12 @@ Coll_allgatherv_ompi_neighborexchange::allgatherv(void *sbuf, int scount,
            We are receiving data from ranks (recv_data_from[i_parity]) and
            (recv_data_from[i_parity]+1).
         */
-        
+
         new_scounts[0] = rcounts[send_data_from];
         new_scounts[1] = rcounts[(send_data_from + 1)];
         new_sdispls[0] = rdispls[send_data_from];
         new_sdispls[1] = rdispls[(send_data_from + 1)];
-        err = Datatype::create_indexed(2, new_scounts, new_sdispls, rdtype, 
+        err = Datatype::create_indexed(2, new_scounts, new_sdispls, rdtype,
                                       &new_sdtype);
         if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
         new_sdtype->commit();
@@ -191,14 +191,14 @@ Coll_allgatherv_ompi_neighborexchange::allgatherv(void *sbuf, int scount,
         new_rcounts[1] = rcounts[(recv_data_from[i_parity] + 1)];
         new_rdispls[0] = rdispls[recv_data_from[i_parity]];
         new_rdispls[1] = rdispls[(recv_data_from[i_parity] + 1)];
-        err = Datatype::create_indexed(2, new_rcounts, new_rdispls, rdtype, 
+        err = Datatype::create_indexed(2, new_rcounts, new_rdispls, rdtype,
                                       &new_rdtype);
         if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
         new_rdtype->commit();
-      
+
         tmprecv = (char*)rbuf;
         tmpsend = (char*)rbuf;
-      
+
         /* Sendreceive */
         Request::sendrecv(tmpsend, 1, new_sdtype, neighbor[i_parity],
                                        COLL_TAG_ALLGATHERV,
@@ -207,7 +207,7 @@ Coll_allgatherv_ompi_neighborexchange::allgatherv(void *sbuf, int scount,
                                        comm, MPI_STATUS_IGNORE);
 
         send_data_from = recv_data_from[i_parity];
-      
+
         Datatype::unref(new_sdtype);
         Datatype::unref(new_rdtype);
     }

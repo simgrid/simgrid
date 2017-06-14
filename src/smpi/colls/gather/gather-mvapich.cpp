@@ -51,7 +51,7 @@ typedef int (*MV2_Gather_function_ptr) (void *sendbuf,
     int recvcnt,
     MPI_Datatype recvtype,
     int root, MPI_Comm comm);
-    
+
 extern MV2_Gather_function_ptr MV2_Gather_inter_leader_function;
 extern MV2_Gather_function_ptr MV2_Gather_intra_node_function;
 
@@ -80,15 +80,15 @@ namespace smpi{
  *                     (shmem_comm or intra_sock_comm or
  *                     inter-sock_leader_comm)
  * intra_node_fn_ptr - (in) Function ptr to choose the
- *                      intra node gather function  
+ *                      intra node gather function
  * errflag           - (out) to record errors
  */
 static int MPIR_pt_pt_intra_gather( void *sendbuf, int sendcnt, MPI_Datatype sendtype,
                             void *recvbuf, int recvcnt, MPI_Datatype recvtype,
-                            int root, int rank, 
+                            int root, int rank,
                             void *tmp_buf, int nbytes,
                             int is_data_avail,
-                            MPI_Comm comm,  
+                            MPI_Comm comm,
                             MV2_Gather_function_ptr intra_node_fn_ptr)
 {
     int mpi_errno = MPI_SUCCESS;
@@ -105,10 +105,10 @@ static int MPIR_pt_pt_intra_gather( void *sendbuf, int sendcnt, MPI_Datatype sen
         recvtype->extent(&true_lb,
                                        &recvtype_true_extent);
     }
-    
+
     /* Special case, when tmp_buf itself has data */
     if (rank == root && sendbuf == MPI_IN_PLACE && is_data_avail) {
-         
+
          mpi_errno = intra_node_fn_ptr(MPI_IN_PLACE,
                                        sendcnt, sendtype, tmp_buf, nbytes,
                                        MPI_BYTE, 0, comm);
@@ -151,12 +151,12 @@ int Coll_gather_mvapich2_two_level::gather(void *sendbuf,
     MPI_Aint true_lb = 0, sendtype_true_extent = 0, recvtype_true_extent = 0;
     MPI_Comm shmem_comm, leader_comm;
     void* tmp_buf = NULL;
-    
+
 
     //if not set (use of the algo directly, without mvapich2 selector)
     if(MV2_Gather_intra_node_function==NULL)
       MV2_Gather_intra_node_function= Coll_gather_mpich::gather;
-    
+
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
       comm->init_smp();
     }
@@ -186,7 +186,7 @@ int Coll_gather_mvapich2_two_level::gather(void *sendbuf,
     shmem_comm = comm->get_intra_comm();
     local_rank = shmem_comm->rank();
     local_size = shmem_comm->size();
-    
+
     if (local_rank == 0) {
         /* Node leader. Extract the rank, size information for the leader
          * communicator */
@@ -206,23 +206,23 @@ int Coll_gather_mvapich2_two_level::gather(void *sendbuf,
     }
 
 #if defined(_SMP_LIMIC_)
-     if((g_use_limic2_coll) && (shmem_commptr->ch.use_intra_sock_comm == 1) 
+     if((g_use_limic2_coll) && (shmem_commptr->ch.use_intra_sock_comm == 1)
          && (use_limic_gather)
-         &&((num_scheme == USE_GATHER_PT_PT_BINOMIAL) 
+         &&((num_scheme == USE_GATHER_PT_PT_BINOMIAL)
             || (num_scheme == USE_GATHER_PT_PT_DIRECT)
-            ||(num_scheme == USE_GATHER_PT_LINEAR_BINOMIAL) 
+            ||(num_scheme == USE_GATHER_PT_LINEAR_BINOMIAL)
             || (num_scheme == USE_GATHER_PT_LINEAR_DIRECT)
             || (num_scheme == USE_GATHER_LINEAR_PT_BINOMIAL)
             || (num_scheme == USE_GATHER_LINEAR_PT_DIRECT)
             || (num_scheme == USE_GATHER_LINEAR_LINEAR)
             || (num_scheme == USE_GATHER_SINGLE_LEADER))) {
-            
+
             mpi_errno = MV2_Gather_intra_node_function(sendbuf, sendcnt, sendtype,
-                                                    recvbuf, recvcnt,recvtype, 
+                                                    recvbuf, recvcnt,recvtype,
                                                     root, comm);
      } else
 
-#endif/*#if defined(_SMP_LIMIC_)*/    
+#endif/*#if defined(_SMP_LIMIC_)*/
     {
         if (local_rank == 0) {
             /* Node leader, allocate tmp_buffer */
@@ -241,17 +241,17 @@ int Coll_gather_mvapich2_two_level::gather(void *sendbuf,
         }
          /*while testing mpich2 gather test, we see that
          * which basically splits the comm, and we come to
-         * a point, where use_intra_sock_comm == 0, but if the 
+         * a point, where use_intra_sock_comm == 0, but if the
          * intra node function is MPIR_Intra_node_LIMIC_Gather_MV2,
-         * it would use the intra sock comm. In such cases, we 
+         * it would use the intra sock comm. In such cases, we
          * fallback to binomial as a default case.*/
-#if defined(_SMP_LIMIC_)         
+#if defined(_SMP_LIMIC_)
         if(*MV2_Gather_intra_node_function == MPIR_Intra_node_LIMIC_Gather_MV2) {
 
             mpi_errno  = MPIR_pt_pt_intra_gather(sendbuf,sendcnt, sendtype,
                                                  recvbuf, recvcnt, recvtype,
-                                                 root, rank, 
-                                                 tmp_buf, nbytes, 
+                                                 root, rank,
+                                                 tmp_buf, nbytes,
                                                  TEMP_BUF_HAS_NO_DATA,
                                                  shmem_commptr,
                                                  MPIR_Gather_intra);
@@ -263,8 +263,8 @@ int Coll_gather_mvapich2_two_level::gather(void *sendbuf,
              * local data, we pass is_data_avail = TEMP_BUF_HAS_NO_DATA*/
             mpi_errno  = MPIR_pt_pt_intra_gather(sendbuf,sendcnt, sendtype,
                                                  recvbuf, recvcnt, recvtype,
-                                                 root, rank, 
-                                                 tmp_buf, nbytes, 
+                                                 root, rank,
+                                                 tmp_buf, nbytes,
                                                  TEMP_BUF_HAS_NO_DATA,
                                                  shmem_comm,
                                                  MV2_Gather_intra_node_function
@@ -275,8 +275,8 @@ int Coll_gather_mvapich2_two_level::gather(void *sendbuf,
     int* leaders_map = comm->get_leaders_map();
     leader_of_root = comm->group()->rank(leaders_map[root]);
     leader_root = leader_comm->group()->rank(leaders_map[root]);
-    /* leader_root is the rank of the leader of the root in leader_comm. 
-     * leader_root is to be used as the root of the inter-leader gather ops 
+    /* leader_root is the rank of the leader of the root in leader_comm.
+     * leader_root is to be used as the root of the inter-leader gather ops
      */
     if (not comm->is_uniform()) {
       if (local_rank == 0) {
@@ -353,8 +353,8 @@ int Coll_gather_mvapich2_two_level::gather(void *sendbuf,
         }
       }
     } else {
-        /* All nodes have the same number of processes. 
-         * Just do one Gather to get all 
+        /* All nodes have the same number of processes.
+         * Just do one Gather to get all
          * the data at the leader of the root process */
         if (local_rank == 0) {
             if (leader_comm_rank == leader_root && root != leader_of_root) {
@@ -373,7 +373,7 @@ int Coll_gather_mvapich2_two_level::gather(void *sendbuf,
                                                    recvcnt * local_size,
                                                    recvtype, leader_root,
                                                    leader_comm);
-                 
+
             } else {
                 mpi_errno = MPIR_Gather_MV2_Direct(tmp_buf, nbytes * local_size,
                                                    MPI_BYTE, leader_gather_buf,

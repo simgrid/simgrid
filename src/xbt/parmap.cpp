@@ -117,7 +117,7 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
   parmap->workers[0] = nullptr;
 #if HAVE_PTHREAD_SETAFFINITY
   int core_bind = 0;
-#endif  
+#endif
   for (unsigned int i = 1; i < num_workers; i++) {
     xbt_parmap_thread_data_t data = xbt_new0(s_xbt_parmap_thread_data_t, 1);
     data->parmap = parmap;
@@ -128,7 +128,7 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
     if (core_bind != xbt_os_get_numcores() - 1)
       core_bind++;
     else
-      core_bind = 0; 
+      core_bind = 0;
 #endif
   }
   return parmap;

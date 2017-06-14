@@ -5,14 +5,14 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "../colls_private.h"
-/*  
+/*
  * Linear functions are copied from the basic coll module.  For
  * some small number of nodes and/or small data sizes they are just as
  * fast as tuned/tree based segmenting operations and as such may be
  * selected by the decision functions.  These are copied into this module
  * due to the way we select modules in V1. i.e. in V2 we will handle this
- * differently and so will not have to duplicate code.  
- * GEF Oct05 after asking Jeff.  
+ * differently and so will not have to duplicate code.
+ * GEF Oct05 after asking Jeff.
  */
 namespace simgrid{
 namespace smpi{
@@ -67,7 +67,7 @@ Coll_alltoallv_ompi_basic_linear::alltoallv(void *sbuf, int *scounts, int *sdisp
                                       );
         preq++;
         ++nreqs;
-        
+
     }
 
     /* Now post all sends */

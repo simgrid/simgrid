@@ -37,7 +37,7 @@
  * copyright file COPYRIGHT in the top level MVAPICH2 directory.
  *
  */
- 
+
 #include "../colls_private.h"
 extern int mv2_reduce_intra_knomial_factor;
 extern int mv2_reduce_inter_knomial_factor;
@@ -45,15 +45,15 @@ extern int mv2_reduce_inter_knomial_factor;
 #define SMPI_DEFAULT_KNOMIAL_FACTOR 4
 
 //        int mv2_reduce_knomial_factor = 2;
-        
-        
-        
-static int MPIR_Reduce_knomial_trace(int root, int reduce_knomial_factor,  
+
+
+
+static int MPIR_Reduce_knomial_trace(int root, int reduce_knomial_factor,
         MPI_Comm comm, int *dst, int *expected_send_count,
         int *expected_recv_count, int **src_array)
 {
     int mask=0x1, k, comm_size, src, rank, relative_rank, lroot=0;
-    int orig_mask=0x1; 
+    int orig_mask=0x1;
     int recv_iter=0, send_iter=0;
     int *knomial_reduce_src_array=NULL;
     comm_size =  comm->size();
@@ -62,7 +62,7 @@ static int MPIR_Reduce_knomial_trace(int root, int reduce_knomial_factor,
     lroot = root;
     relative_rank = (rank - lroot + comm_size) % comm_size;
 
-    /* First compute to whom we need to send data */ 
+    /* First compute to whom we need to send data */
     while (mask < comm_size) {
         if (relative_rank % (reduce_knomial_factor*mask)) {
             *dst = relative_rank/(reduce_knomial_factor*mask)*
@@ -77,8 +77,8 @@ static int MPIR_Reduce_knomial_trace(int root, int reduce_knomial_factor,
     }
     mask /= reduce_knomial_factor;
 
-    /* Now compute how many children we have in the knomial-tree */ 
-    orig_mask = mask; 
+    /* Now compute how many children we have in the knomial-tree */
+    orig_mask = mask;
     while (mask > 0) {
         for(k=1;k<reduce_knomial_factor;k++) {
             if (relative_rank + mask*k < comm_size) {
@@ -88,13 +88,13 @@ static int MPIR_Reduce_knomial_trace(int root, int reduce_knomial_factor,
         mask /= reduce_knomial_factor;
     }
 
-    /* Finally, fill up the src array */ 
-    if(recv_iter > 0) { 
+    /* Finally, fill up the src array */
+    if(recv_iter > 0) {
         knomial_reduce_src_array = static_cast<int*>(smpi_get_tmp_sendbuffer(sizeof(int)*recv_iter));
-    } 
+    }
 
-    mask = orig_mask; 
-    recv_iter=0; 
+    mask = orig_mask;
+    recv_iter=0;
     while (mask > 0) {
         for(k=1;k<reduce_knomial_factor;k++) {
             if (relative_rank + mask*k < comm_size) {
@@ -110,10 +110,10 @@ static int MPIR_Reduce_knomial_trace(int root, int reduce_knomial_factor,
 
     *expected_recv_count = recv_iter;
     *expected_send_count = send_iter;
-    *src_array = knomial_reduce_src_array; 
-    return 0; 
+    *src_array = knomial_reduce_src_array;
+    return 0;
 }
-        
+
 namespace simgrid{
 namespace smpi{
 int Coll_reduce_mvapich2_knomial::reduce (
@@ -131,7 +131,7 @@ int Coll_reduce_mvapich2_knomial::reduce (
     MPI_Request send_request;
     int index=0;
     MPI_Aint true_lb, true_extent, extent;
-    MPI_Status status; 
+    MPI_Status status;
     int recv_iter=0, dst=-1, expected_send_count, expected_recv_count;
     int *src_array=NULL;
     void **tmp_buf=NULL;
@@ -170,7 +170,7 @@ int Coll_reduce_mvapich2_knomial::reduce (
       }
 
 
-    MPIR_Reduce_knomial_trace(root, mv2_reduce_intra_knomial_factor, comm, 
+    MPIR_Reduce_knomial_trace(root, mv2_reduce_intra_knomial_factor, comm,
            &dst, &expected_send_count, &expected_recv_count, &src_array);
 
     if(expected_recv_count > 0 ) {
@@ -208,9 +208,9 @@ int Coll_reduce_mvapich2_knomial::reduce (
         xbt_free(requests);
     }
 
-    if(src_array != NULL) { 
+    if(src_array != NULL) {
         xbt_free(src_array);
-    } 
+    }
 
     if(rank != root) {
         send_request=Request::isend(recvbuf,count, datatype, dst,

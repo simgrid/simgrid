@@ -94,7 +94,7 @@ main (int argc, char **argv)
 	  total += outcount;
 	}
       }
-    }  
+    }
     else {
       /* Barrier to ensure receives are posted for rsends... */
       MPI_Barrier(MPI_COMM_WORLD);

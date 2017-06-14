@@ -454,7 +454,7 @@ extern "C" unsigned int xbt_dynar_search(xbt_dynar_t const dynar, void* const el
  *
  * Beware that if your dynar contains pointed values (such as strings) instead of scalar, this function is probably not
  * what you want. Check the documentation of xbt_dynar_search() for more info.
- * 
+ *
  * Note that usually, the dynar indices are unsigned integers. If you have more than 2 million elements in your dynar,
  * this very function will not work (but the other will).
  */
@@ -470,7 +470,7 @@ extern "C" signed int xbt_dynar_search_or_negative(xbt_dynar_t const dynar, void
   return -1;
 }
 
-/** @brief Returns a boolean indicating whether the element is part of the dynar 
+/** @brief Returns a boolean indicating whether the element is part of the dynar
  *
  * Beware that if your dynar contains pointed values (such as strings) instead of scalar, this function is probably not
  * what you want. Check the documentation of xbt_dynar_search() for more info.
@@ -664,7 +664,7 @@ extern "C" void xbt_dynar_three_way_partition(xbt_dynar_t const dynar, int_f_pvo
   }
 }
 
-/** @brief Transform a dynar into a nullptr terminated array. 
+/** @brief Transform a dynar into a nullptr terminated array.
  *
  *  \param dynar the dynar to transform
  *  \return pointer to the first element of the array

@@ -46,12 +46,12 @@ main (int argc, char **argv)
 			    INTERCOMM_CREATE_TAG, &intercomm);
 
       MPI_Comm_free (&temp);
-      
+
       if (intercomm != MPI_COMM_NULL) {
 	MPI_Comm_size (intercomm, &dnprocs);
 	MPI_Comm_rank (intercomm, &drank);
  	MPI_Comm_remote_size (intercomm, &rnprocs);
-     
+
 	if (rnprocs > drank) {
 	  if (rank % 2) {
 	    memset (buf1, 1, buf_size);
@@ -62,7 +62,7 @@ main (int argc, char **argv)
 	  }
 	  else {
 	    memset (buf0, 0, buf_size);
-	    
+	
 	    MPI_Recv (buf1, buf_size, MPI_INT, drank, 0, intercomm, &status);
 	
 	    MPI_Send (buf0, buf_size, MPI_INT, drank, 0, intercomm);

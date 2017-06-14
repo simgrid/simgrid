@@ -40,7 +40,7 @@ HostL07Model::HostL07Model() : HostModel() {
   surf_cpu_model_pm = new CpuL07Model(this,maxminSystem_);
 }
 
-HostL07Model::~HostL07Model() 
+HostL07Model::~HostL07Model()
 {
   lmm_system_free(maxminSystem_);
   maxminSystem_ = nullptr;

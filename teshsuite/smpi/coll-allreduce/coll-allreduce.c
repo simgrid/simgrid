@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     mult = size;
   int* sb = (int *) xbt_malloc(size *maxlen * sizeof(int));
   int* rb = (int *) xbt_malloc(size *maxlen * sizeof(int));
-  
+
   for (i = 0; i < size *maxlen; ++i) {
     sb[i] = rank*size + i;
     rb[i] = 0;

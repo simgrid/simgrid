@@ -133,7 +133,7 @@ SD_task_t SD_task_create_comp_par_amdahl(const char *name, void *data, double fl
 
 /** @brief create a complex data redistribution task that can then be  auto-scheduled
  *
- * Auto-scheduling mean that the task can be used with SD_task_schedulev(). 
+ * Auto-scheduling mean that the task can be used with SD_task_schedulev().
  * This allows to specify the task costs at creation, and decouple them from the scheduling process where you just
  * specify which resource should communicate.
  *

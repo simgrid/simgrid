@@ -45,7 +45,7 @@ int Coll_alltoallv_ring::alltoallv(void* send_buff, int* send_counts, int* send_
   recv_chunk = recv_type->get_extent();
   int pof2 = ((num_procs != 0) && ((num_procs & (~num_procs + 1)) == num_procs));
   for (i = 0; i < num_procs; i++) {
-  
+
     if (pof2 == 1) {
       /* use exclusive-or algorithm */
       src = dst = rank ^ i;

@@ -28,7 +28,7 @@ static int coordinator(int argc, char *argv[])
     const char *kind = MSG_task_get_name(task); //is it a request or a release?
     if (!strcmp(kind, "request")) {     // that's a request
       char *req = MSG_task_get_data(task);
-      if (CS_used) { 
+      if (CS_used) {
         XBT_INFO("CS already used.");
         msg_task_t answer = MSG_task_create("not grant", 0, 1000, NULL);
         MSG_task_send(answer, req);

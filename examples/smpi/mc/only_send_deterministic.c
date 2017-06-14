@@ -12,11 +12,13 @@
 
 int main(int argc, char **argv)
 {
-  int recv_buff, err, size, rank;
+  int recv_buff;
+  int size;
+  int rank;
   MPI_Status status;
 
   /* Initialize MPI */
-  err = MPI_Init(&argc, &argv);
+  int err = MPI_Init(&argc, &argv);
   if (err != MPI_SUCCESS) {
     printf("MPI initialization failed!\n");
     exit(1);

@@ -39,7 +39,7 @@ main (int argc, char **argv)
   }
   else {
     /* create the graph on p.268 MPI: The Complete Reference... */
-    MPI_Graph_create (MPI_COMM_WORLD, GRAPH_SZ, 
+    MPI_Graph_create (MPI_COMM_WORLD, GRAPH_SZ,
 		      graph_index, graph_edges, 1, &comm);
 
     if (comm != MPI_COMM_NULL) {

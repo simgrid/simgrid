@@ -39,14 +39,14 @@ main (int argc, char **argv)
     }
   else if (rank == 0)
     {
-      MPI_Irecv (buf0, buf_size, MPI_INT, 
+      MPI_Irecv (buf0, buf_size, MPI_INT,
 		 MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &req);
 
       MPI_Recv (buf1, buf_size, MPI_INT, 2, 0, MPI_COMM_WORLD, &status);
 
       MPI_Send (buf1, buf_size, MPI_INT, 2, 0, MPI_COMM_WORLD);
 
-      MPI_Recv (buf1, buf_size, MPI_INT, 
+      MPI_Recv (buf1, buf_size, MPI_INT,
 		MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
 
       MPI_Wait (&req, &status);

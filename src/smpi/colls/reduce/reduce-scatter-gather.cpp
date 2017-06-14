@@ -34,7 +34,7 @@ int Coll_reduce_scatter_gather::reduce(void *sendbuf, void *recvbuf,
     return 0;
   rank = comm->rank();
   comm_size = comm->size();
-  
+
 
 
   extent = datatype->get_extent();

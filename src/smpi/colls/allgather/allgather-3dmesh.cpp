@@ -137,12 +137,12 @@ int Coll_allgather_3dmesh::allgather(void *send_buff, int send_count,
 
   req_ptr = req;
 
-  // do local allgather/local copy 
+  // do local allgather/local copy
   recv_offset = rank * block_size;
   Datatype::copy(send_buff, send_count, send_type, (char *)recv_buff + recv_offset,
                  recv_count, recv_type);
 
-  // do rowwise comm 
+  // do rowwise comm
   for (i = 0; i < Y; i++) {
     src = i + my_row_base;
     if (src == rank)

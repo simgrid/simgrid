@@ -34,7 +34,7 @@ main (int argc, char **argv)
     }
   else if (rank == 0)
     {
-      MPI_Irecv (buf1, buf_size, MPI_INT, 
+      MPI_Irecv (buf1, buf_size, MPI_INT,
 		 MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, &req);
 
       MPI_Recv (buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);

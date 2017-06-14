@@ -62,24 +62,24 @@
  *   Accepts:        Same as MPI_Allreduce(), segment size
  *   Returns:        MPI_SUCCESS or error code
  *
- *   Description:    Implements pipelined ring algorithm for allreduce: 
+ *   Description:    Implements pipelined ring algorithm for allreduce:
  *                   user supplies suggested segment size for the pipelining of
  *                   reduce operation.
- *                   The segment size determines the number of phases, np, for 
- *                   the algorithm execution.  
- *                   The message is automatically divided into blocks of 
+ *                   The segment size determines the number of phases, np, for
+ *                   the algorithm execution.
+ *                   The message is automatically divided into blocks of
  *                   approximately  (count / (np * segcount)) elements.
- *                   At the end of reduction phase, allgather like step is 
+ *                   At the end of reduction phase, allgather like step is
  *                   executed.
  *                   Algorithm requires (np + 1)*(N - 1) steps.
  *
- *   Limitations:    The algorithm DOES NOT preserve order of operations so it 
+ *   Limitations:    The algorithm DOES NOT preserve order of operations so it
  *                   can be used only for commutative operations.
- *                   In addition, algorithm cannot work if the total size is 
+ *                   In addition, algorithm cannot work if the total size is
  *                   less than size * segment size.
  *         Example on 3 nodes with 2 phases
  *         Initial state
- *   #      0              1             2 
+ *   #      0              1             2
  *        [00a]          [10a]         [20a]
  *        [00b]          [10b]         [20b]
  *        [01a]          [11a]         [21a]
@@ -88,9 +88,9 @@
  *        [02b]          [12b]         [22b]
  *
  *        COMPUTATION PHASE 0 (a)
- *         Step 0: rank r sends block ra to rank (r+1) and receives bloc (r-1)a 
+ *         Step 0: rank r sends block ra to rank (r+1) and receives bloc (r-1)a
  *                 from rank (r-1) [with wraparound].
- *    #     0              1             2  
+ *    #     0              1             2
  *        [00a]        [00a+10a]       [20a]
  *        [00b]          [10b]         [20b]
  *        [01a]          [11a]       [11a+21a]
@@ -98,20 +98,20 @@
  *      [22a+02a]        [12a]         [22a]
  *        [02b]          [12b]         [22b]
  *
- *         Step 1: rank r sends block (r-1)a to rank (r+1) and receives bloc 
+ *         Step 1: rank r sends block (r-1)a to rank (r+1) and receives bloc
  *                 (r-2)a from rank (r-1) [with wraparound].
- *    #     0              1             2  
+ *    #     0              1             2
  *        [00a]        [00a+10a]   [00a+10a+20a]
  *        [00b]          [10b]         [20b]
  *    [11a+21a+01a]      [11a]       [11a+21a]
  *        [01b]          [11b]         [21b]
  *      [22a+02a]    [22a+02a+12a]     [22a]
- *        [02b]          [12b]         [22b] 
+ *        [02b]          [12b]         [22b]
  *
  *        COMPUTATION PHASE 1 (b)
- *         Step 0: rank r sends block rb to rank (r+1) and receives bloc (r-1)b 
+ *         Step 0: rank r sends block rb to rank (r+1) and receives bloc (r-1)b
  *                 from rank (r-1) [with wraparound].
- *    #     0              1             2  
+ *    #     0              1             2
  *        [00a]        [00a+10a]       [20a]
  *        [00b]        [00b+10b]       [20b]
  *        [01a]          [11a]       [11a+21a]
@@ -119,22 +119,22 @@
  *      [22a+02a]        [12a]         [22a]
  *      [22b+02b]        [12b]         [22b]
  *
- *         Step 1: rank r sends block (r-1)b to rank (r+1) and receives bloc 
+ *         Step 1: rank r sends block (r-1)b to rank (r+1) and receives bloc
  *                 (r-2)b from rank (r-1) [with wraparound].
- *    #     0              1             2  
+ *    #     0              1             2
  *        [00a]        [00a+10a]   [00a+10a+20a]
  *        [00b]          [10b]     [0bb+10b+20b]
  *    [11a+21a+01a]      [11a]       [11a+21a]
  *    [11b+21b+01b]      [11b]         [21b]
  *      [22a+02a]    [22a+02a+12a]     [22a]
- *        [02b]      [22b+01b+12b]     [22b] 
+ *        [02b]      [22b+01b+12b]     [22b]
  *
- *         
+ *
  *        DISTRIBUTION PHASE: ring ALLGATHER with ranks shifted by 1 (same as
  *         in regular ring algorithm.
  *
  */
- 
+
 #define COLL_TUNED_COMPUTED_SEGCOUNT(SEGSIZE, TYPELNG, SEGCOUNT)        \
     if( ((SEGSIZE) >= (TYPELNG)) &&                                     \
         ((SEGSIZE) < ((TYPELNG) * (SEGCOUNT))) ) {                      \
@@ -144,7 +144,7 @@
         if( residual > ((TYPELNG) >> 1) )                               \
             (SEGCOUNT)++;                                               \
     }                                                                   \
-    
+
 #define COLL_TUNED_COMPUTE_BLOCKCOUNT( COUNT, NUM_BLOCKS, SPLIT_INDEX,       \
                                        EARLY_BLOCK_COUNT, LATE_BLOCK_COUNT ) \
     EARLY_BLOCK_COUNT = LATE_BLOCK_COUNT = COUNT / NUM_BLOCKS;               \
@@ -157,16 +157,16 @@
 
 namespace simgrid{
 namespace smpi{
-int 
+int
 Coll_allreduce_ompi_ring_segmented::allreduce(void *sbuf, void *rbuf, int count,
                                                MPI_Datatype dtype,
                                                MPI_Op op,
-                                               MPI_Comm comm) 
+                                               MPI_Comm comm)
 {
    int ret = MPI_SUCCESS;
    int line;
    int k, recv_from, send_to;
-   int early_blockcount, late_blockcount, split_rank; 
+   int early_blockcount, late_blockcount, split_rank;
    int segcount, max_segcount;
    int num_phases, phase;
    int block_count;
@@ -191,7 +191,7 @@ Coll_allreduce_ompi_ring_segmented::allreduce(void *sbuf, void *rbuf, int count,
       }
       return MPI_SUCCESS;
    }
-   
+
    /* Determine segment count based on the suggested segment size */
    extent = dtype->get_extent();
    if (MPI_SUCCESS != ret) { line = __LINE__; goto error_hndl; }
@@ -205,27 +205,27 @@ Coll_allreduce_ompi_ring_segmented::allreduce(void *sbuf, void *rbuf, int count,
    /* Special case for count less than size * segcount - use regular ring */
    if (count < size * segcount) {
       XBT_DEBUG( "coll:tuned:allreduce_ring_segmented rank %d/%d, count %d, switching to regular ring", rank, size, count);
-      return (Coll_allreduce_lr::allreduce(sbuf, rbuf, count, dtype, op, 
+      return (Coll_allreduce_lr::allreduce(sbuf, rbuf, count, dtype, op,
                                                    comm));
    }
 
    /* Determine the number of phases of the algorithm */
    num_phases = count / (size * segcount);
-   if ((count % (size * segcount) >= size) && 
+   if ((count % (size * segcount) >= size) &&
        (count % (size * segcount) > ((size * segcount) / 2))) {
       num_phases++;
    }
 
-   /* Determine the number of elements per block and corresponding 
+   /* Determine the number of elements per block and corresponding
       block sizes.
       The blocks are divided into "early" and "late" ones:
-      blocks 0 .. (split_rank - 1) are "early" and 
+      blocks 0 .. (split_rank - 1) are "early" and
       blocks (split_rank) .. (size - 1) are "late".
       Early blocks are at most 1 element larger than the late ones.
       Note, these blocks will be split into num_phases segments,
       out of the largest one will have max_segcount elements.
     */
-   COLL_TUNED_COMPUTE_BLOCKCOUNT( count, size, split_rank, 
+   COLL_TUNED_COMPUTE_BLOCKCOUNT( count, size, split_rank,
                                   early_blockcount, late_blockcount )
    COLL_TUNED_COMPUTE_BLOCKCOUNT( early_blockcount, num_phases, inbi,
                                   max_segcount, k)
@@ -250,7 +250,7 @@ Coll_allreduce_ompi_ring_segmented::allreduce(void *sbuf, void *rbuf, int count,
       ptrdiff_t phase_offset;
       int early_phase_segcount, late_phase_segcount, split_phase, phase_count;
 
-      /* 
+      /*
          For each of the remote nodes:
          - post irecv for block (r-1)
          - send block (r)
@@ -269,7 +269,7 @@ Coll_allreduce_ompi_ring_segmented::allreduce(void *sbuf, void *rbuf, int count,
       */
       send_to = (rank + 1) % size;
       recv_from = (rank + size - 1) % size;
-      
+
       inbi = 0;
       /* Initialize first receive from the neighbor on the left */
       reqs[inbi] = Request::irecv(inbuf[inbi], max_segcount, dtype, recv_from,
@@ -277,8 +277,8 @@ Coll_allreduce_ompi_ring_segmented::allreduce(void *sbuf, void *rbuf, int count,
       /* Send first block (my block) to the neighbor on the right:
          - compute my block and phase offset
          - send data */
-      block_offset = ((rank < split_rank)? 
-                      (rank * early_blockcount) : 
+      block_offset = ((rank < split_rank)?
+                      (rank * early_blockcount) :
                       (rank * late_blockcount + split_rank));
       block_count = ((rank < split_rank)? early_blockcount : late_blockcount);
       COLL_TUNED_COMPUTE_BLOCKCOUNT(block_count, num_phases, split_phase,
@@ -286,39 +286,39 @@ Coll_allreduce_ompi_ring_segmented::allreduce(void *sbuf, void *rbuf, int count,
       phase_count = ((phase < split_phase)?
                      (early_phase_segcount) : (late_phase_segcount));
       phase_offset = ((phase < split_phase)?
-                      (phase * early_phase_segcount) : 
+                      (phase * early_phase_segcount) :
                       (phase * late_phase_segcount + split_phase));
       tmpsend = ((char*)rbuf) + (block_offset + phase_offset) * extent;
       Request::send(tmpsend, phase_count, dtype, send_to,
                               666, comm);
-      
+
       for (k = 2; k < size; k++) {
          const int prevblock = (rank + size - k + 1) % size;
-         
+
          inbi = inbi ^ 0x1;
-         
+
          /* Post irecv for the current block */
          reqs[inbi] = Request::irecv(inbuf[inbi], max_segcount, dtype, recv_from,
                                666, comm);
          if (MPI_SUCCESS != ret) { line = __LINE__; goto error_hndl; }
-         
+
          /* Wait on previous block to arrive */
          Request::wait(&reqs[inbi ^ 0x1], MPI_STATUS_IGNORE);
-         
+
          /* Apply operation on previous block: result goes to rbuf
             rbuf[prevblock] = inbuf[inbi ^ 0x1] (op) rbuf[prevblock]
          */
          block_offset = ((prevblock < split_rank)?
                          (prevblock * early_blockcount) :
                          (prevblock * late_blockcount + split_rank));
-         block_count = ((prevblock < split_rank)? 
+         block_count = ((prevblock < split_rank)?
                         early_blockcount : late_blockcount);
          COLL_TUNED_COMPUTE_BLOCKCOUNT(block_count, num_phases, split_phase,
                                        early_phase_segcount, late_phase_segcount)
          phase_count = ((phase < split_phase)?
                         (early_phase_segcount) : (late_phase_segcount));
          phase_offset = ((phase < split_phase)?
-                         (phase * early_phase_segcount) : 
+                         (phase * early_phase_segcount) :
                          (phase * late_phase_segcount + split_phase));
          tmprecv = ((char*)rbuf) + (block_offset + phase_offset) * extent;
          if(op!=MPI_OP_NULL) op->apply( inbuf[inbi ^ 0x1], tmprecv, &phase_count, dtype);
@@ -326,25 +326,25 @@ Coll_allreduce_ompi_ring_segmented::allreduce(void *sbuf, void *rbuf, int count,
          Request::send(tmprecv, phase_count, dtype, send_to,
                               666, comm);
       }
-      
+
       /* Wait on the last block to arrive */
       Request::wait(&reqs[inbi], MPI_STATUS_IGNORE);
 
-      
-      /* Apply operation on the last block (from neighbor (rank + 1) 
+
+      /* Apply operation on the last block (from neighbor (rank + 1)
          rbuf[rank+1] = inbuf[inbi] (op) rbuf[rank + 1] */
       recv_from = (rank + 1) % size;
       block_offset = ((recv_from < split_rank)?
                       (recv_from * early_blockcount) :
                       (recv_from * late_blockcount + split_rank));
-      block_count = ((recv_from < split_rank)? 
+      block_count = ((recv_from < split_rank)?
                      early_blockcount : late_blockcount);
       COLL_TUNED_COMPUTE_BLOCKCOUNT(block_count, num_phases, split_phase,
                                     early_phase_segcount, late_phase_segcount)
       phase_count = ((phase < split_phase)?
                      (early_phase_segcount) : (late_phase_segcount));
       phase_offset = ((phase < split_phase)?
-                      (phase * early_phase_segcount) : 
+                      (phase * early_phase_segcount) :
                       (phase * late_phase_segcount + split_phase));
       tmprecv = ((char*)rbuf) + (block_offset + phase_offset) * extent;
       if(op!=MPI_OP_NULL) op->apply( inbuf[inbi], tmprecv, &phase_count, dtype);
@@ -356,15 +356,15 @@ Coll_allreduce_ompi_ring_segmented::allreduce(void *sbuf, void *rbuf, int count,
    for (k = 0; k < size - 1; k++) {
       const int recv_data_from = (rank + size - k) % size;
       const int send_data_from = (rank + 1 + size - k) % size;
-      const int send_block_offset = 
+      const int send_block_offset =
          ((send_data_from < split_rank)?
           (send_data_from * early_blockcount) :
           (send_data_from * late_blockcount + split_rank));
-      const int recv_block_offset = 
+      const int recv_block_offset =
          ((recv_data_from < split_rank)?
           (recv_data_from * early_blockcount) :
           (recv_data_from * late_blockcount + split_rank));
-      block_count = ((send_data_from < split_rank)? 
+      block_count = ((send_data_from < split_rank)?
                      early_blockcount : late_blockcount);
 
       tmprecv = (char*)rbuf + recv_block_offset * extent;

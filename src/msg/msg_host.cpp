@@ -20,7 +20,7 @@ int sg_storage_max_file_descriptors = 1024;
 
 /** @addtogroup m_host_management
  * (#msg_host_t) and the functions for managing it.
- *  
+ *
  *  A <em>location</em> (or <em>host</em>) is any possible place where  a process may run. Thus it may be represented
  *  as a <em>physical resource with computing capabilities</em>, some <em>mailboxes</em> to enable running process to
  *  communicate with remote ones, and some <em>private data</em> that can be only accessed by local process.

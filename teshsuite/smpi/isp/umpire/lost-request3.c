@@ -54,7 +54,7 @@ main (int argc, char **argv)
 	memset (buf, 1, buf_size * REQS_PER_ITERATION);
 
 	for (j = 0; j < REQS_PER_ITERATION; j++) {
-	  MPI_Isend (&buf[j*buf_size], buf_size, MPI_INT, 
+	  MPI_Isend (&buf[j*buf_size], buf_size, MPI_INT,
 		     1, j, MPI_COMM_WORLD, &req[j]);
 	}
 
@@ -68,7 +68,7 @@ main (int argc, char **argv)
 	memset (buf, 2, buf_size * REQS_PER_ITERATION);
 
 	for (j = 0; j < REQS_PER_ITERATION; j++) {
-	  MPI_Irecv (&buf[j*buf_size], buf_size, MPI_INT, 
+	  MPI_Irecv (&buf[j*buf_size], buf_size, MPI_INT,
 		     0, j, MPI_COMM_WORLD, &req[j]);
 	}
 
