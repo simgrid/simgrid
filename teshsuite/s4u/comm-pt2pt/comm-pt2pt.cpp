@@ -159,8 +159,8 @@ int main(int argc, char* argv[])
 {
   std::string specSend;
   std::string specRecv;
-  for (char s : {'r', 'R', 'i', 'I', 'p', 'P', 'j', 'J'})
-    for (char r : {'r', 'R', 'i', 'I', 'd', 'D'}) {
+  for (char s : {'r', 'R', 'i', 'I', 'd', 'D'})
+    for (char r : {'r', 'R', 'i', 'I', 'p', 'P', 'j', 'J'}) {
       specSend += s;
       specRecv += r;
     }
