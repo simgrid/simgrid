@@ -258,9 +258,6 @@ if (instr_fmt_type == instr_fmt_paje) {
 
 void LogStateTypeDefinition(type_t type)
 {
-
-  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, PAJE_DefineStateType);
-
   //print it
 if (instr_fmt_type == instr_fmt_paje) {
     XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_DefineStateType, TRACE_precision(), 0.);
@@ -325,7 +322,6 @@ void LogEntityValue (val_t value)
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, PAJE_DefineEntityValue);
   //print it
 if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_DefineEntityValue, TRACE_precision(),0.);
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << PAJE_DefineEntityValue;
     stream << " " << value->id << " " << value->father->id << " " << value->name;
@@ -347,7 +343,6 @@ void LogContainerCreation (container_t container)
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, PAJE_CreateContainer,timestamp);
 
 if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_CreateContainer, TRACE_precision(), timestamp);
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << PAJE_CreateContainer;
     stream << " ";
@@ -399,7 +394,6 @@ void LogContainerDestruction(container_t container)
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, PAJE_DestroyContainer, timestamp);
 
 if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_DestroyContainer, TRACE_precision(), timestamp);
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << PAJE_DestroyContainer;
     stream << " ";
