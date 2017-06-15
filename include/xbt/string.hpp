@@ -165,10 +165,7 @@ public:
     return data()[i];
   }
   // Conversion
-  operator std::string() const
-  {
-    return std::string(this->c_str(), this->size());
-  }
+  operator std::string() const { return std::string(this->c_str(), this->size()); }
 
   // Iterators
   iterator begin()               { return data(); }

@@ -22,7 +22,7 @@ namespace mc {
 
 class XBT_PRIVATE CommunicationDeterminismChecker : public Checker {
 public:
-  CommunicationDeterminismChecker(Session& session);
+  explicit CommunicationDeterminismChecker(Session& session);
   ~CommunicationDeterminismChecker();
   void run() override;
   RecordTrace getRecordTrace() override;

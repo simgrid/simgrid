@@ -50,7 +50,7 @@ class ReadOptions {
 public:
   constexpr ReadOptions() : value_(0) {}
 
-  constexpr operator bool() const { return value_ != 0; }
+  explicit constexpr operator bool() const { return value_ != 0; }
   constexpr bool operator!() const { return value_ == 0; }
 
   constexpr ReadOptions operator|(ReadOptions const& that) const
@@ -111,7 +111,7 @@ class AddressSpace {
 private:
   Process* process_;
 public:
-  AddressSpace(Process* process) : process_(process) {}
+  explicit AddressSpace(Process* process) : process_(process) {}
   virtual ~AddressSpace() = default;
 
   /** The process of this addres space

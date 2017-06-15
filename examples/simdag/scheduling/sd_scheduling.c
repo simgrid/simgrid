@@ -65,14 +65,14 @@ static xbt_dynar_t get_ready_tasks(xbt_dynar_t dax)
 static double finish_on_at(SD_task_t task, sg_host_t host)
 {
   double result;
-  unsigned int i;
-  double data_available = 0.;
-  double redist_time = 0;
-  double last_data_available;
 
   xbt_dynar_t parents = SD_task_get_parents(task);
 
   if (!xbt_dynar_is_empty(parents)) {
+    unsigned int i;
+    double data_available = 0.;
+    double redist_time    = 0;
+    double last_data_available;
     /* compute last_data_available */
     SD_task_t parent;
     last_data_available = -1.0;

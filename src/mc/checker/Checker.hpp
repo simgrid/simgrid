@@ -34,7 +34,7 @@ namespace mc {
 class Checker {
   Session* session_;
 public:
-  Checker(Session& session);
+  explicit Checker(Session& session);
 
   // No copy:
   Checker(Checker const&) = delete;

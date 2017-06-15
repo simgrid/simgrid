@@ -37,7 +37,7 @@ class Topo_Cart: public Topo {
     int *periodic_;
     int *position_;
   public:
-    Topo_Cart(int ndims);
+    explicit Topo_Cart(int ndims);
     ~Topo_Cart();
     Topo_Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], int reorder, MPI_Comm *comm_cart);
     Topo_Cart* sub(const int remain_dims[], MPI_Comm *newcomm) ;

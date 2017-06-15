@@ -43,8 +43,7 @@ typedef std::vector<xbt_backtrace_location_t> Backtrace;
 class ThrowPoint {
  public:
   ThrowPoint() = default;
-  ThrowPoint(const char* file, int line, const char* function) :
-    file(file), line(line), function(function) {}
+  explicit ThrowPoint(const char* file, int line, const char* function) : file(file), line(line), function(function) {}
   const char* file = nullptr;
   int line = 0;
   const char* function = nullptr;
