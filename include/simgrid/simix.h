@@ -212,6 +212,8 @@ XBT_PUBLIC(int) SIMIX_process_has_pending_comms(smx_actor_t process);
 XBT_PUBLIC(void) SIMIX_process_on_exit_runall(smx_actor_t process);
 XBT_PUBLIC(void) SIMIX_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void *data);
 
+SG_END_DECL()
+
 /****************************** Communication *********************************/
 XBT_PUBLIC(void) SIMIX_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, size_t));
 XBT_PUBLIC(void) SIMIX_comm_copy_pointer_callback(smx_activity_t comm, void* buff, size_t buff_size);
@@ -320,6 +322,7 @@ XBT_PUBLIC(int) simcall_comm_testany(smx_activity_t* comms, size_t count);
 XBT_PUBLIC(void) simcall_set_category(smx_activity_t synchro, const char *category);
 
 /************************** Synchro simcalls **********************************/
+SG_BEGIN_DECL()
 XBT_PUBLIC(smx_mutex_t) simcall_mutex_init();
 XBT_PUBLIC(smx_mutex_t) SIMIX_mutex_ref(smx_mutex_t mutex);
 XBT_PUBLIC(void) SIMIX_mutex_unref(smx_mutex_t mutex);
@@ -360,4 +363,5 @@ XBT_PUBLIC(int) simcall_file_move(smx_file_t fd, const char* fullpath);
 XBT_PUBLIC(int) simcall_mc_random(int min, int max);
 
 SG_END_DECL()
+
 #endif                          /* _SIMIX_SIMIX_H */
