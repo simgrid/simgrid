@@ -26,7 +26,7 @@ public:
 
   virtual ~Comm();
 
-  /*! take a range of s4u::Comm* (last excluded) and return when one of them is finished. The return value is an
+  /*! take a range of s4u::CommPtr (last excluded) and return when one of them is finished. The return value is an
    * iterator on the finished Comms. */
   template <class I> static I wait_any(I first, I last)
   {
@@ -35,12 +35,13 @@ public:
       intrusive_ptr_release((simgrid::kernel::activity::ActivityImpl*)ptr);
     });
     for (I iter = first; iter != last; iter++) {
-      Comm& comm = **iter;
-      if (comm.state_ == inited)
-        comm.start();
-      xbt_assert(comm.state_ == started);
-      intrusive_ptr_add_ref(comm.pimpl_.get());
-      xbt_dynar_push_as(comms, simgrid::kernel::activity::ActivityImpl*, comm.pimpl_.get());
+      CommPtr comm = *iter;
+      if (comm->state_ == inited)
+        comm->start();
+      xbt_assert(comm->state_ == started);
+      simgrid::kernel::activity::ActivityImpl* ptr = comm->pimpl_.get();
+      intrusive_ptr_add_ref(ptr);
+      xbt_dynar_push_as(comms, simgrid::kernel::activity::ActivityImpl*, ptr);
     }
     // Call the underlying simcall:
     int idx = simcall_comm_waitany(comms, -1);
@@ -53,7 +54,7 @@ public:
     (*res)->state_ = finished;
     return res;
   }
-  /*! Same as wait_any, but with a timeout. If wait_any_for return because of the timeout last is returned.*/
+  /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
   template <class I> static I wait_any_for(I first, I last, double timeout)
   {
     // Map to dynar<Synchro*>:
@@ -61,12 +62,13 @@ public:
       intrusive_ptr_release((simgrid::kernel::activity::ActivityImpl*)ptr);
     });
     for (I iter = first; iter != last; iter++) {
-      Comm& comm = **iter;
-      if (comm.state_ == inited)
-        comm.start();
-      xbt_assert(comm.state_ == started);
-      intrusive_ptr_add_ref(comm.pimpl_.get());
-      xbt_dynar_push_as(comms, simgrid::kernel::activity::ActivityImpl*, comm.pimpl_.get());
+      CommPtr comm = *iter;
+      if (comm->state_ == inited)
+        comm->start();
+      xbt_assert(comm->state_ == started);
+      simgrid::kernel::activity::ActivityImpl* ptr = comm->pimpl_.get();
+      intrusive_ptr_add_ref(ptr);
+      xbt_dynar_push_as(comms, simgrid::kernel::activity::ActivityImpl*, ptr);
     }
     // Call the underlying simcall:
     int idx = simcall_comm_waitany(comms, timeout);
