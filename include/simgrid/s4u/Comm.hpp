@@ -32,7 +32,7 @@ public:
   {
     // Map to dynar<Synchro*>:
     xbt_dynar_t comms = xbt_dynar_new(sizeof(simgrid::kernel::activity::ActivityImpl*), [](void*ptr){
-      intrusive_ptr_release((simgrid::kernel::activity::ActivityImpl*)ptr);
+      intrusive_ptr_release(*(simgrid::kernel::activity::ActivityImpl**)ptr);
     });
     for (I iter = first; iter != last; iter++) {
       CommPtr comm = *iter;
@@ -59,7 +59,7 @@ public:
   {
     // Map to dynar<Synchro*>:
     xbt_dynar_t comms = xbt_dynar_new(sizeof(simgrid::kernel::activity::ActivityImpl*), [](void*ptr){
-      intrusive_ptr_release((simgrid::kernel::activity::ActivityImpl*)ptr);
+      intrusive_ptr_release(*(simgrid::kernel::activity::ActivityImpl**)ptr);
     });
     for (I iter = first; iter != last; iter++) {
       CommPtr comm = *iter;

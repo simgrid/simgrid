@@ -635,7 +635,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
 
   /* create the equivalent dynar with SIMIX objects */
   xbt_dynar_t s_comms = xbt_dynar_new(sizeof(smx_activity_t), [](void*ptr){
-    intrusive_ptr_release((simgrid::kernel::activity::ActivityImpl*)ptr);
+    intrusive_ptr_release(*(simgrid::kernel::activity::ActivityImpl**)ptr);
   });
   msg_comm_t comm;
   unsigned int cursor;
