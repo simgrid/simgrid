@@ -6,6 +6,8 @@
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "src/surf/HostImpl.hpp"
+#include <algorithm>
+#include <deque>
 
 #ifndef VM_INTERFACE_HPP_
 #define VM_INTERFACE_HPP_

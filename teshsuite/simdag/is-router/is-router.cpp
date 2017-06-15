@@ -7,6 +7,7 @@
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/simdag.h"
 #include "src/kernel/routing/NetPoint.hpp"
+#include <algorithm>
 #include <stdio.h>
 
 int main(int argc, char **argv)

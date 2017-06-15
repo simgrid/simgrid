@@ -11,6 +11,7 @@
 #include "simgrid/s4u/Mailbox.hpp"
 
 #include "src/kernel/context/Context.hpp"
+#include <sstream>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor, "S4U actors");
 

@@ -373,6 +373,8 @@ void surf_exit()
     delete stype->model_properties;
     free(stype);
   }
+  for (auto s : *simgrid::surf::StorageImpl::storages)
+    delete s.second;
   delete simgrid::surf::StorageImpl::storages;
 
   for (auto model : *all_existing_models)

@@ -13,6 +13,7 @@
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
 
+#include <algorithm>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(flatifier, "Logging specific to this platform parsing tool");
 

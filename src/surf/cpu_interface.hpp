@@ -9,6 +9,8 @@
 #include "simgrid/s4u/Host.hpp"
 #include "src/surf/maxmin_private.hpp"
 
+#include <list>
+
 /***********
  * Classes *
  ***********/

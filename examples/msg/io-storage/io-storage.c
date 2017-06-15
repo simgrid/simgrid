@@ -73,6 +73,7 @@ static int host(int argc, char *argv[]){
   /* - Then retrieve this data */
   char *data = MSG_file_get_data(file);
   XBT_INFO("User data attached to the file: %s", data);
+  xbt_free(data);
 
   MSG_file_close(file);
   free(file_name);
