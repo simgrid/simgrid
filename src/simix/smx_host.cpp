@@ -175,7 +175,7 @@ smx_activity_t SIMIX_execution_start(smx_actor_t issuer, const char *name, doubl
       static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)->setBound(bound);
   }
 
-  XBT_DEBUG("Create execute synchro %p: %s", exec, exec->name.c_str());
+  XBT_DEBUG("Create execute synchro %p: %s", exec.get(), exec->name.c_str());
 
   return exec;
 }
@@ -209,14 +209,14 @@ smx_activity_t SIMIX_execution_parallel_start(const char* name, int host_nb, sg_
       exec->timeoutDetector->setData(exec.get());
     }
   }
-  XBT_DEBUG("Create parallel execute synchro %p", exec);
+  XBT_DEBUG("Create parallel execute synchro %p", exec.get());
 
   return exec;
 }
 
 void SIMIX_execution_cancel(smx_activity_t synchro)
 {
-  XBT_DEBUG("Cancel synchro %p", synchro);
+  XBT_DEBUG("Cancel synchro %p", synchro.get());
   simgrid::kernel::activity::ExecImplPtr exec =
       boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro);
 
@@ -244,7 +244,7 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_activity_t synchr
 {
   simgrid::kernel::activity::ExecImplPtr exec =
       boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro);
-  XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro, (int)synchro->state);
+  XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro.get(), (int)synchro->state);
 
   /* Associate this simcall to the synchro */
   synchro->simcalls.push_back(simcall);

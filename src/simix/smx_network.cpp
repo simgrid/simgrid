@@ -63,7 +63,7 @@ _find_matching_comm(boost::circular_buffer_space_optimized<smx_activity_t>* dequ
     }
     XBT_DEBUG("Sorry, communication synchro %p does not match our needs:"
               " its type is %d but we are looking for a comm of type %d (or maybe the filtering didn't match)",
-              comm, (int)comm->type, (int)type);
+              comm.get(), (int)comm->type, (int)type);
   }
   XBT_DEBUG("No matching communication synchro found");
   return nullptr;
@@ -113,7 +113,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx
       other_comm->state   = SIMIX_READY;
       other_comm->dst_proc=mbox->permanent_receiver.get();
       mbox->done_comm_queue.push_back(other_comm);
-      XBT_DEBUG("pushing a message into the permanent receive list %p, comm %p", mbox, other_comm);
+      XBT_DEBUG("pushing a message into the permanent receive list %p, comm %p", mbox, other_comm.get());
 
     }else{
       mbox->push(other_comm);
@@ -198,7 +198,7 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
       mbox->push(this_synchro);
     } else {
       if (other_comm->surf_comm && other_comm->remains() < 1e-12) {
-        XBT_DEBUG("comm %p has been already sent, and is finished, destroy it",other_comm);
+        XBT_DEBUG("comm %p has been already sent, and is finished, destroy it", other_comm.get());
         other_comm->state = SIMIX_DONE;
         other_comm->type = SIMIX_COMM_DONE;
         other_comm->mbox = nullptr;
@@ -564,7 +564,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
         case SIMIX_LINK_FAILURE:
           XBT_DEBUG("Link failure in synchro %p between '%s' and '%s': posting an exception to the issuer: %s (%p) "
                     "detached:%d",
-                    synchro, comm->src_proc ? comm->src_proc->host->cname() : nullptr,
+                    synchro.get(), comm->src_proc ? comm->src_proc->host->cname() : nullptr,
                     comm->dst_proc ? comm->dst_proc->host->cname() : nullptr, simcall->issuer->cname(), simcall->issuer,
                     comm->detached);
           if (comm->src_proc == simcall->issuer) {

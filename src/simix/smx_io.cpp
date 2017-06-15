@@ -179,7 +179,7 @@ int SIMIX_file_move(smx_actor_t process, smx_file_t file, const char* fullpath)
 void SIMIX_io_destroy(smx_activity_t synchro)
 {
   simgrid::kernel::activity::IoImplPtr io = boost::static_pointer_cast<simgrid::kernel::activity::IoImpl>(synchro);
-  XBT_DEBUG("Destroy synchro %p", synchro);
+  XBT_DEBUG("Destroy synchro %p", synchro.get());
   if (io->surf_io)
     io->surf_io->unref();
 }

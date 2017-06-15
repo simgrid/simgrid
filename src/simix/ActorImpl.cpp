@@ -81,7 +81,8 @@ int SIMIX_process_has_pending_comms(smx_actor_t process) {
  */
 void SIMIX_process_cleanup(smx_actor_t process)
 {
-  XBT_DEBUG("Cleanup process %s (%p), waiting synchro %p", process->name.c_str(), process, process->waiting_synchro);
+  XBT_DEBUG("Cleanup process %s (%p), waiting synchro %p", process->name.c_str(), process,
+            process->waiting_synchro.get());
 
   process->finished = true;
   SIMIX_process_on_exit_runall(process);
@@ -102,13 +103,13 @@ void SIMIX_process_cleanup(smx_actor_t process)
      * because src_proc or dst_proc would be an invalid pointer */
 
     if (comm->src_proc == process) {
-      XBT_DEBUG("Found an unfinished send comm %p (detached = %d), state %d, src = %p, dst = %p",
-          comm, comm->detached, (int)comm->state, comm->src_proc, comm->dst_proc);
+      XBT_DEBUG("Found an unfinished send comm %p (detached = %d), state %d, src = %p, dst = %p", comm.get(),
+                comm->detached, (int)comm->state, comm->src_proc, comm->dst_proc);
       comm->src_proc = nullptr;
 
     } else if (comm->dst_proc == process) {
-      XBT_DEBUG("Found an unfinished recv comm %p, state %d, src = %p, dst = %p",
-          comm, (int)comm->state, comm->src_proc, comm->dst_proc);
+      XBT_DEBUG("Found an unfinished recv comm %p, state %d, src = %p, dst = %p", comm.get(), (int)comm->state,
+                comm->src_proc, comm->dst_proc);
       comm->dst_proc = nullptr;
 
       if (comm->detached && comm->src_proc != nullptr) {
@@ -116,7 +117,7 @@ void SIMIX_process_cleanup(smx_actor_t process)
         comm->src_proc->comms.remove(comm);
       }
     } else {
-      xbt_die("Communication synchro %p is in my list but I'm not the sender nor the receiver", synchro);
+      xbt_die("Communication synchro %p is in my list but I'm not the sender nor the receiver", synchro.get());
     }
     process->comms.pop_front();
     synchro = process->comms.front();

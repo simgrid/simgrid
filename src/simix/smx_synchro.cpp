@@ -68,7 +68,7 @@ void SIMIX_synchro_stop_waiting(smx_actor_t process, smx_simcall_t simcall)
 
 void SIMIX_synchro_finish(smx_activity_t synchro)
 {
-  XBT_IN("(%p)",synchro);
+  XBT_IN("(%p)", synchro.get());
   smx_simcall_t simcall = synchro->simcalls.front();
   synchro->simcalls.pop_front();
 
