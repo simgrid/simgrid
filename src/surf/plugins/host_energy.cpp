@@ -207,8 +207,8 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
   double power_slope   = 0;
 
   if (cpu_load > 0) { /* Something is going on, the machine is not idle */
-    double min_power = range.min;
-    double max_power = range.max;
+    min_power = range.min;
+    max_power = range.max;
 
     /**
      * The min_power states how much we consume when only one single
@@ -220,15 +220,15 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
      * i.e., we need min_power + (maxCpuLoad-1/coreCount)*power_slope == max_power
      * (maxCpuLoad is by definition 1)
      */
-    double power_slope;
     int coreCount         = host->coreCount();
     double coreReciprocal = static_cast<double>(1) / static_cast<double>(coreCount);
-    if (coreCount > 1)
+    if (coreCount > 1) {
       power_slope = (max_power - min_power) / (1 - coreReciprocal);
-    else
-      power_slope = 0; // Should be 0, since max_power == min_power (in this case)
+      current_power = min_power + (cpu_load - coreReciprocal) * power_slope;
+    } else {
+      current_power = max_power;
+    }
 
-    current_power = min_power + (cpu_load - coreReciprocal) * power_slope;
   } else { /* Our machine is idle, take the dedicated value! */
     current_power = range.idle;
   }

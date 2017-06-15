@@ -8,7 +8,7 @@ SimGrid (3.16) UNRELEASED
  XML platforms: Switch to platform v4.1 format.
  * This is (mainly) a backward compatible change: v4 are valid v4.1 files
    - <zone> can be used as a synonym for the now deprecated <as>
-   - <zoneZoute> an be used as a synonym for the now deprecated <asroute>
+   - <zoneRoute> can be used as a synonym for the now deprecated <asroute>
    - <bypassZoneRoute> an be used as a synonym for the now deprecated <bypassAsRoute>
    - <actor> can be used as a synonym for the now deprecated <process>
    - state_file and avail_file periodicity is now easier to express
