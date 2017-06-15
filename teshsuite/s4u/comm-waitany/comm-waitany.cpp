@@ -22,8 +22,8 @@ static void receiver()
   }
 
   for (int i = 0; i < NUM_COMMS; i++) {
-    XBT_INFO("Sleeping for 100 seconds (for the %dth time)...", i + 1);
-    simgrid::s4u::this_actor::sleep_for(100.0);
+    XBT_INFO("Sleeping for 3 seconds (for the %dth time)...", i + 1);
+    simgrid::s4u::this_actor::sleep_for(3.0);
     XBT_INFO("Calling wait_any() for %ld pending comms", pending_comms.size());
     std::vector<simgrid::s4u::CommPtr>::iterator ret_it =
         simgrid::s4u::Comm::wait_any(pending_comms.begin(), pending_comms.end());

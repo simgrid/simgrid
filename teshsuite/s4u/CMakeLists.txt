@@ -19,8 +19,8 @@ foreach(x host_on_off_wait listen_async pid storage_client_server)
 endforeach()
 
 # The output is not relevant
-ADD_TEST(tesh-s4u-comm-pt2pt   ${CMAKE_BINARY_DIR}/teshsuite/s4u/comm-pt2pt/comm-pt2pt   ${CMAKE_HOME_DIRECTORY}/examples/platforms/cluster.xml)
-ADD_TEST(tesh-s4u-comm-waitany ${CMAKE_BINARY_DIR}/teshsuite/s4u/comm-waitany/comm-waitany ${CMAKE_HOME_DIRECTORY}/examples/platforms/cluster.xml)
+ADD_TEST(tesh-s4u-comm-pt2pt   ${CMAKE_BINARY_DIR}/teshsuite/s4u/comm-pt2pt/comm-pt2pt     ${CMAKE_HOME_DIRECTORY}/examples/platforms/cluster.xml)
+ADD_TEST(tesh-s4u-comm-waitany ${CMAKE_BINARY_DIR}/teshsuite/s4u/comm-waitany/comm-waitany ${CMAKE_HOME_DIRECTORY}/examples/platforms/two_hosts.xml)
 
 
 
