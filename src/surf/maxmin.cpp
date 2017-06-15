@@ -1245,6 +1245,18 @@ double lmm_constraint_get_usage(lmm_constraint_t cnst) {
    }
   return usage;
 }
+int lmm_constraint_get_variable_amount(lmm_constraint_t cnst) {
+  int usage = 0;
+  xbt_swag_t elem_list = &(cnst->enabled_element_set);
+  void *_elem;
+
+  xbt_swag_foreach(_elem, elem_list) {
+    lmm_element_t elem = (lmm_element_t)_elem;
+    if (elem->value > 0)
+      usage++;
+  }
+ return usage;
+}
 
 void lmm_check_concurrency(lmm_system_t sys){
   //These checks are very expensive, so do them only if we want to debug SURF LMM

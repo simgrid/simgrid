@@ -203,6 +203,8 @@ XBT_PUBLIC(void) lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst);
  */
 XBT_PUBLIC(double) lmm_constraint_get_usage(lmm_constraint_t cnst);
 
+XBT_PUBLIC(int) lmm_constraint_get_variable_amount(lmm_constraint_t cnst);
+
 /**
  * @brief Sets the concurrency limit for this constraint
  * @param cnst A constraint
