@@ -95,6 +95,7 @@ public:
   e_surf_vm_state_t getState();
   void setState(e_surf_vm_state_t state);
   static std::deque<s4u::VirtualMachine*> allVms_;
+  int coreAmount() { return coreAmount_; }
 
   bool isMigrating = false;
 

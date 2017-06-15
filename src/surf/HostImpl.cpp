@@ -29,24 +29,14 @@ void HostModel::ignoreEmptyVmInPmLMM()
 {
   /* iterate for all virtual machines */
   for (s4u::VirtualMachine* ws_vm : vm::VirtualMachineImpl::allVms_) {
-
     Cpu* cpu = ws_vm->pimpl_cpu;
+    int active_tasks = lmm_constraint_get_variable_amount(cpu->constraint());
 
-    int is_active = lmm_constraint_used(cpu->model()->getMaxminSystem(), cpu->constraint());
+    /* The impact of the VM over its PM is the min between its vCPU amount and the amount of tasks it contains */
+    int impact = std::min(active_tasks, ws_vm->pimpl_vm_->coreAmount());
 
-    if (is_active) {
-      /* some tasks exist on this VM */
-      XBT_DEBUG("set the weight of the dummy CPU action on PM to 1");
-
-      /* FIXME: If we assign 1.05 and 0.05, the system makes apparently wrong values. */
-      ws_vm->pimpl_vm_->action_->setPriority(1);
-
-    } else {
-      /* no task exist on this VM */
-      XBT_DEBUG("set the weight of the dummy CPU action on PM to 0");
-
-      ws_vm->pimpl_vm_->action_->setPriority(0);
-    }
+    XBT_INFO("set the weight of the dummy CPU action of VM%p on PM to %d (#tasks: %d)", ws_vm, impact, active_tasks);
+    ws_vm->pimpl_vm_->action_->setPriority(impact);
   }
 }
 
