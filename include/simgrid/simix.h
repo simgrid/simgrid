@@ -248,6 +248,7 @@ XBT_PUBLIC(void) simcall_execution_set_bound(smx_activity_t execution, double bo
 XBT_PUBLIC(e_smx_state_t) simcall_execution_wait(smx_activity_t execution);
 
 /**************************** Process simcalls ********************************/
+SG_BEGIN_DECL()
 /* Constructor and Destructor */
 XBT_PUBLIC(smx_actor_t)
 simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_host_t host, int argc, char** argv,
@@ -277,6 +278,7 @@ XBT_PUBLIC(smx_actor_t) simcall_process_restart(smx_actor_t process);
 XBT_PUBLIC(void) simcall_process_join(smx_actor_t process, double timeout);
 /* Sleep control */
 XBT_PUBLIC(e_smx_state_t) simcall_process_sleep(double duration);
+SG_END_DECL()
 
 /************************** Comunication simcalls *****************************/
 

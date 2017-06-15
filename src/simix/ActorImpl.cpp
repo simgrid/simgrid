@@ -957,6 +957,7 @@ void SIMIX_segment_index_set(smx_actor_t proc, int index){
  * \param properties the properties of the process
  * \param auto_restart either it is autorestarting or not.
  */
+extern "C"
 smx_actor_t simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_host_t host, int argc,
                                    char** argv, xbt_dict_t properties)
 {
