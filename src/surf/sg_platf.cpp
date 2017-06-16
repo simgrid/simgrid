@@ -648,7 +648,7 @@ simgrid::s4u::NetZone* sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
 
   if (current_routing == nullptr) { /* it is the first one */
     xbt_assert(simgrid::s4u::Engine::instance()->pimpl->netRoot_ == nullptr,
-               "All defined components must belong to a AS");
+               "All defined components must belong to a networking zone.");
     simgrid::s4u::Engine::instance()->pimpl->netRoot_ = new_as;
 
   } else {
