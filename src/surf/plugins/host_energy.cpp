@@ -434,4 +434,13 @@ double sg_host_get_wattmax_at(sg_host_t host, int pstate)
   return host->extension<HostEnergy>()->getWattMaxAt(pstate);
 }
 
+/** @brief Returns the current consumption of the host */
+double sg_host_get_current_consumption(sg_host_t host)
+{
+  xbt_assert(HostEnergy::EXTENSION_ID.valid(),
+             "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
+  double cpu_load = lmm_constraint_get_usage(host->pimpl_cpu->constraint()) / host->speed();
+  return host->extension<HostEnergy>()->getCurrentWattsValue(cpu_load);
+}
+
 SG_END_DECL()
