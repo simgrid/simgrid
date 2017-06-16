@@ -1064,6 +1064,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/bypassRoute.xml
   examples/platforms/cloud.xml
   examples/platforms/cluster.xml
+  examples/platforms/cluster_backbone.xml
   examples/platforms/cluster_and_one_host.xml
   examples/platforms/cluster_prototype.lua
   examples/platforms/cluster_no_backbone.xml
@@ -1120,7 +1121,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/syscoord/median_meridian.syscoord
   examples/platforms/syscoord/median_p2psim.syscoord
   examples/platforms/three_multicore_hosts.xml
-  examples/platforms/two_clusters.xml
   examples/platforms/two_hosts.xml
   examples/platforms/two_hosts_platform_shared.xml
   examples/platforms/two_hosts_platform_with_availability.xml

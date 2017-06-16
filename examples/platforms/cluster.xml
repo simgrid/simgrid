@@ -4,12 +4,16 @@
   <!--             _________
                   |          |
                   |  router  |
-      ____________|__________|_____________ backbone
+      ____________|__________|_____________ backbone link
         |   |   |              |     |   |  
       l0| l1| l2|           l97| l96 |   | l99
         |   |   |   ........   |     |   |
         |                                |
     node-0.acme.org                  node-99.acme.org
+
+    The route from node-0 to node-2 is: l0.UP ; backbone ; l2.DOWN
+
+    The route from node-0 to the outer world begins with: l0.UP ; backbone
   -->
   <cluster id="acme" prefix="node-" radical="0-99" suffix=".acme.org" speed="1Gf" bw="125MBps" lat="50us"
            bb_bw="2.25GBps"  bb_lat="500us"/>
