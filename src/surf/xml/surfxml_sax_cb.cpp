@@ -54,6 +54,36 @@ void surf_parse_error(const char *fmt, ...) {
   surf_exit();
   xbt_die("Exiting now");
 }
+void surf_parse_assert_netpoint(char* hostname, const char* pre, const char* post)
+{
+  if (sg_netpoint_by_name_or_null(hostname) != nullptr) // found
+    return;
+
+  std::string msg = std::string(pre);
+  msg += hostname;
+  msg += post;
+  msg += " Existing netpoints: \n";
+
+  std::vector<simgrid::kernel::routing::NetPoint*> list;
+  simgrid::s4u::Engine::instance()->netpointList(&list);
+  bool first = true;
+  for (auto np : list) {
+    if (np->isNetZone())
+      continue;
+
+    if (not first)
+      msg += ",";
+    first = false;
+    msg += "'" + np->name() + "'";
+    if (msg.length() > 4096) {
+      msg.pop_back(); // remove trailing quote
+      msg += "...(list truncated)......";
+      break;
+    }
+  }
+  surf_parse_error("%s", msg.c_str());
+}
+
 void surf_parse_warn(const char *fmt, ...) {
   va_list va;
   va_start(va,fmt);
@@ -737,61 +767,40 @@ void ETag_surfxml_backbone(){
 }
 
 void STag_surfxml_route(){
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_route_src), "Route src='%s' does name a node.",
-                    A_surfxml_route_src);
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_route_dst), "Route dst='%s' does name a node.",
-                    A_surfxml_route_dst);
+  surf_parse_assert_netpoint(A_surfxml_route_src, "Route src='", "' does name a node.");
+  surf_parse_assert_netpoint(A_surfxml_route_dst, "Route dst='", "' does name a node.");
 }
 
 void STag_surfxml_ASroute(){
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_ASroute_src), "ASroute src='%s' does name a node.",
-                    A_surfxml_ASroute_src);
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_ASroute_dst), "ASroute dst='%s' does name a node.",
-                    A_surfxml_ASroute_dst);
+  surf_parse_assert_netpoint(A_surfxml_ASroute_src, "ASroute src='", "' does name a node.");
+  surf_parse_assert_netpoint(A_surfxml_ASroute_dst, "ASroute dst='", "' does name a node.");
 
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_ASroute_gw___src), "ASroute gw_src='%s' does name a node.",
-                    A_surfxml_ASroute_gw___src);
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_ASroute_gw___dst), "ASroute gw_dst='%s' does name a node.",
-                    A_surfxml_ASroute_gw___dst);
+  surf_parse_assert_netpoint(A_surfxml_ASroute_gw___src, "ASroute gw_src='", "' does name a node.");
+  surf_parse_assert_netpoint(A_surfxml_ASroute_gw___dst, "ASroute gw_dst='", "' does name a node.");
 }
 void STag_surfxml_zoneRoute(){
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_zoneRoute_src), "zoneRoute src='%s' does name a node.",
-                    A_surfxml_zoneRoute_src);
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_zoneRoute_dst), "zoneRoute dst='%s' does name a node.",
-                    A_surfxml_zoneRoute_dst);
-
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_zoneRoute_gw___src), "zoneRoute gw_src='%s' does name a node.",
-                    A_surfxml_zoneRoute_gw___src);
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_zoneRoute_gw___dst), "zoneRoute gw_dst='%s' does name a node.",
-                    A_surfxml_zoneRoute_gw___dst);
+  surf_parse_assert_netpoint(A_surfxml_zoneRoute_src, "zoneRoute src='", "' does name a node.");
+  surf_parse_assert_netpoint(A_surfxml_zoneRoute_dst, "zoneRoute dst='", "' does name a node.");
+  surf_parse_assert_netpoint(A_surfxml_zoneRoute_gw___src, "zoneRoute gw_src='", "' does name a node.");
+  surf_parse_assert_netpoint(A_surfxml_zoneRoute_gw___dst, "zoneRoute gw_dst='", "' does name a node.");
 }
 
 void STag_surfxml_bypassRoute(){
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassRoute_src), "bypassRoute src='%s' does name a node.",
-                    A_surfxml_bypassRoute_src);
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassRoute_dst), "bypassRoute dst='%s' does name a node.",
-                    A_surfxml_bypassRoute_dst);
+  surf_parse_assert_netpoint(A_surfxml_bypassRoute_src, "bypassRoute src='", "' does name a node.");
+  surf_parse_assert_netpoint(A_surfxml_bypassRoute_dst, "bypassRoute dst='", "' does name a node.");
 }
 
 void STag_surfxml_bypassASroute(){
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_src),
-                    "bypassASroute src='%s' does name a node.", A_surfxml_bypassASroute_src);
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_dst),
-                    "bypassASroute dst='%s' does name a node.", A_surfxml_bypassASroute_dst);
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_gw___src),
-                    "bypassASroute gw_src='%s' does name a node.", A_surfxml_bypassASroute_gw___src);
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassASroute_gw___dst),
-                    "bypassASroute gw_dst='%s' does name a node.", A_surfxml_bypassASroute_gw___dst);
+  surf_parse_assert_netpoint(A_surfxml_bypassASroute_src, "bypassASroute src='", "' does name a node.");
+  surf_parse_assert_netpoint(A_surfxml_bypassASroute_dst, "bypassASroute dst='", "' does name a node.");
+  surf_parse_assert_netpoint(A_surfxml_bypassASroute_gw___src, "bypassASroute gw_src='", "' does name a node.");
+  surf_parse_assert_netpoint(A_surfxml_bypassASroute_gw___dst, "bypassASroute gw_dst='", "' does name a node.");
 }
 void STag_surfxml_bypassZoneRoute(){
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_src),
-                    "bypassASroute src='%s' does name a node.", A_surfxml_bypassZoneRoute_src);
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_dst),
-                    "bypassASroute dst='%s' does name a node.", A_surfxml_bypassZoneRoute_dst);
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_gw___src),
-                    "bypassASroute gw_src='%s' does name a node.", A_surfxml_bypassZoneRoute_gw___src);
-  surf_parse_assert(sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_gw___dst),
-                    "bypassASroute gw_dst='%s' does name a node.", A_surfxml_bypassZoneRoute_gw___dst);
+  surf_parse_assert_netpoint(A_surfxml_bypassZoneRoute_src, "bypassZoneRoute src='", "' does name a node.");
+  surf_parse_assert_netpoint(A_surfxml_bypassZoneRoute_dst, "bypassZoneRoute dst='", "' does name a node.");
+  surf_parse_assert_netpoint(A_surfxml_bypassZoneRoute_gw___src, "bypassZoneRoute gw_src='", "' does name a node.");
+  surf_parse_assert_netpoint(A_surfxml_bypassZoneRoute_gw___dst, "bypassZoneRoute gw_dst='", "' does name a node.");
 }
 
 void ETag_surfxml_route(){
