@@ -1,160 +1,181 @@
 #! ./tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/cloud-sharing$EXEEXT --log=no_loc ${srcdir:=.}/../../../examples/platforms/cloud-sharing.xml
-> [node-0.acme.org:master:(1) 0.000000] [msg_test/INFO] # TEST ON SINGLE-CORE PMs
-> [node-0.acme.org:master:(1) 0.000000] [msg_test/INFO] ## Test 1 (started): check computation on normal PMs
-> [node-0.acme.org:master:(1) 0.000000] [msg_test/INFO] ### Put a task on a PM
-> [node-0.acme.org:compute:(2) 0.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 2.000000] [msg_test/INFO] ### Put two tasks on a PM
-> [node-0.acme.org:compute:(4) 2.200000] [msg_test/INFO] Task took 0.2s to execute
-> [node-0.acme.org:compute:(3) 2.200000] [msg_test/INFO] Task took 0.2s to execute
-> [node-0.acme.org:master:(1) 4.000000] [msg_test/INFO] ### Put a task on each PM
-> [node-0.acme.org:compute:(5) 4.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-1.acme.org:compute:(6) 4.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 6.000000] [msg_test/INFO] ## Test 1 (ended)
-> [node-0.acme.org:master:(1) 6.000000] [msg_test/INFO] # TEST ON SINGLE-CORE PMs AND SINGLE-CORE VMs
-> [node-0.acme.org:master:(1) 6.000000] [msg_test/INFO] ## Test 2 (started): check impact of running tasks inside a VM (there is no degradation for the moment)
-> [node-0.acme.org:master:(1) 6.000000] [msg_test/INFO] ### Put a VM on a PM, and put a task to the VM
-> [VM0:compute:(7) 6.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 8.000000] [msg_test/INFO] ### Put a VM on a PM, and put two task to the VM
-> [VM0:compute:(9) 8.200000] [msg_test/INFO] Task took 0.2s to execute
-> [VM0:compute:(8) 8.200000] [msg_test/INFO] Task took 0.2s to execute
-> [node-0.acme.org:master:(1) 10.000000] [msg_test/INFO] ## Test 2 (ended)
-> [node-0.acme.org:master:(1) 10.000000] [msg_test/INFO] ## Test 3 (started): check impact of running tasks collocated with VMs (there is no VM noise for the moment)
-> [node-0.acme.org:master:(1) 10.000000] [msg_test/INFO] ### Put a task on a PM collocated with an empty VM
-> [node-0.acme.org:compute:(10) 10.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 12.000000] [msg_test/INFO] ### Put a VM on a PM, put a task to the PM and a task to the VM
-> [node-0.acme.org:compute:(11) 12.200000] [msg_test/INFO] Task took 0.2s to execute
-> [VM0:compute:(12) 12.200000] [msg_test/INFO] Task took 0.2s to execute
-> [node-0.acme.org:master:(1) 14.000000] [msg_test/INFO] ### Put a VM on a PM, put a task to the PM and two tasks to the VM
-> [node-0.acme.org:compute:(13) 14.200000] [msg_test/INFO] Task took 0.2s to execute
-> [VM0:compute:(15) 14.400000] [msg_test/INFO] Task took 0.4s to execute
-> [VM0:compute:(14) 14.400000] [msg_test/INFO] Task took 0.4s to execute
-> [node-0.acme.org:master:(1) 16.000000] [msg_test/INFO] ## Test 3 (ended)
-> [node-0.acme.org:master:(1) 16.000000] [msg_test/INFO] # TEST ON TWO-CORE PMs
-> [node-0.acme.org:master:(1) 16.000000] [msg_test/INFO] ## Test 4 (started): check computation on 2 cores PMs
-> [node-0.acme.org:master:(1) 16.000000] [msg_test/INFO] ### Put a task on a PM
-> [node-0.acme2.org:compute:(16) 16.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 18.000000] [msg_test/INFO] ### Put two tasks on a PM
-> [node-0.acme2.org:compute:(18) 18.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme2.org:compute:(17) 18.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 20.000000] [msg_test/INFO] ### Put three tasks on a PM
-> [node-0.acme2.org:compute:(21) 20.150000] [msg_test/INFO] Task took 0.15s to execute
-> [node-0.acme2.org:compute:(19) 20.150000] [msg_test/INFO] Task took 0.15s to execute
-> [node-0.acme2.org:compute:(20) 20.150000] [msg_test/INFO] Task took 0.15s to execute
-> [node-0.acme.org:master:(1) 22.000000] [msg_test/INFO] ## Test 4 (ended)
-> [node-0.acme.org:master:(1) 22.000000] [msg_test/INFO] # TEST ON TWO-CORE PMs AND SINGLE-CORE VMs
-> [node-0.acme.org:master:(1) 22.000000] [msg_test/INFO] ## Test 5 (started): check impact of a single VM (there is no degradation for the moment)
-> [node-0.acme.org:master:(1) 22.000000] [msg_test/INFO] ### Put a VM on a PM, and put a task to the VM
-> [VM0:compute:(22) 22.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 24.000000] [msg_test/INFO] ### Put a VM on a PM, and put two tasks to the VM
-> [VM0:compute:(24) 24.200000] [msg_test/INFO] Task took 0.2s to execute
-> [VM0:compute:(23) 24.200000] [msg_test/INFO] Task took 0.2s to execute
-> [node-0.acme.org:master:(1) 26.000000] [msg_test/INFO] ### Put a VM on a PM, and put a task to the PM
-> [node-0.acme2.org:compute:(25) 26.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 28.000000] [msg_test/INFO] ### Put a VM on a PM, put a task to the PM and a task to the VM
-> [node-0.acme2.org:compute:(26) 28.100000] [msg_test/INFO] Task took 0.1s to execute
-> [VM0:compute:(27) 28.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 30.000000] [msg_test/INFO] ## Test 5 (ended)
-> [node-0.acme.org:master:(1) 30.000000] [msg_test/INFO] ## Test 6 (started): check impact of a several VMs (there is no degradation for the moment)
-> [node-0.acme.org:master:(1) 30.000000] [msg_test/INFO] ### Put two VMs on a PM, and put a task to one VM
-> [VM0:compute:(28) 30.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 32.000000] [msg_test/INFO] ### Put two VMs on a PM, and put a task to each VM
-> [VM0:compute:(29) 32.100000] [msg_test/INFO] Task took 0.1s to execute
-> [VM1:compute:(30) 32.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 34.000000] [msg_test/INFO] ### Put three VMs on a PM, and put a task to two VMs
-> [VM0:compute:(31) 34.100000] [msg_test/INFO] Task took 0.1s to execute
-> [VM1:compute:(32) 34.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 36.000000] [msg_test/INFO] ### Put three VMs on a PM, and put a task to each VM
-> [VM0:compute:(33) 36.150000] [msg_test/INFO] Task took 0.15s to execute
-> [VM2:compute:(35) 36.150000] [msg_test/INFO] Task took 0.15s to execute
-> [VM1:compute:(34) 36.150000] [msg_test/INFO] Task took 0.15s to execute
-> [node-0.acme.org:master:(1) 38.000000] [msg_test/INFO] ## Test 6 (ended)
-> [node-0.acme.org:master:(1) 38.000000] [msg_test/INFO] # TEST ON TWO-CORE PMs AND TWO-CORE VMs
-> [node-0.acme.org:master:(1) 38.000000] [msg_test/INFO] ## Test 7 (started): check impact of a single VM (there is no degradation for the moment)
-> [node-0.acme.org:master:(1) 38.000000] [msg_test/INFO] ### Put a VM on a PM, and put a task to the VM
-> [VM0:compute:(36) 38.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 40.000000] [msg_test/INFO] ### Put a VM on a PM, and put two tasks to the VM
-> [VM0:compute:(38) 40.100000] [msg_test/INFO] Task took 0.1s to execute
-> [VM0:compute:(37) 40.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 42.000000] [msg_test/INFO] ### Put a VM on a PM, and put three tasks to the VM
-> [VM0:compute:(41) 42.150000] [msg_test/INFO] Task took 0.15s to execute
-> [VM0:compute:(39) 42.150000] [msg_test/INFO] Task took 0.15s to execute
-> [VM0:compute:(40) 42.150000] [msg_test/INFO] Task took 0.15s to execute
-> [node-0.acme.org:master:(1) 44.000000] [msg_test/INFO] ## Test 7 (ended)
-> [node-0.acme.org:master:(1) 44.000000] [msg_test/INFO] ## Test 8 (started): check impact of a single VM collocated with a task (there is no degradation for the moment)
-> [node-0.acme.org:master:(1) 44.000000] [msg_test/INFO] ### Put a VM on a PM, and put a task to the PM
-> [node-0.acme2.org:compute:(42) 44.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 46.000000] [msg_test/INFO] ### Put a VM on a PM, put one task to the PM and one task to the VM
-> [node-0.acme2.org:compute:(43) 46.100000] [msg_test/INFO] Task took 0.1s to execute
-> [VM0:compute:(44) 46.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 48.000000] [msg_test/INFO] ### Put a VM on a PM, put one task to the PM and two tasks to the VM
-> [node-0.acme2.org:compute:(45) 48.100000] [msg_test/INFO] Task took 0.1s to execute
-> [VM0:compute:(47) 48.200000] [msg_test/INFO] Task took 0.2s to execute
-> [VM0:compute:(46) 48.200000] [msg_test/INFO] Task took 0.2s to execute
-> [node-0.acme.org:master:(1) 50.000000] [msg_test/INFO] ### Put a VM on a PM, put one task to the PM and three tasks to the VM
-> [node-0.acme2.org:compute:(48) 50.100000] [msg_test/INFO] Task took 0.1s to execute
-> [VM0:compute:(51) 50.300000] [msg_test/INFO] Task took 0.3s to execute
-> [VM0:compute:(49) 50.300000] [msg_test/INFO] Task took 0.3s to execute
-> [VM0:compute:(50) 50.300000] [msg_test/INFO] Task took 0.3s to execute
-> [node-0.acme.org:master:(1) 52.000000] [msg_test/INFO] ## Test 8 (ended)
-> [node-0.acme.org:master:(1) 52.000000] [msg_test/INFO] # TEST ON FOUR-CORE PMs AND TWO-CORE VMs
-> [node-0.acme.org:master:(1) 52.000000] [msg_test/INFO] ## Test 9 (started): check impact of a single VM
-> [node-0.acme.org:master:(1) 52.000000] [msg_test/INFO] ### Put a VM on a PM, and put a task to the VM
-> [VM0:compute:(52) 52.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 54.000000] [msg_test/INFO] ### Put a VM on a PM, and put two tasks to the VM
-> [VM0:compute:(54) 54.100000] [msg_test/INFO] Task took 0.1s to execute
-> [VM0:compute:(53) 54.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 56.000000] [msg_test/INFO] ### Put a VM on a PM, and put three tasks to the VM
-> [VM0:compute:(57) 56.150000] [msg_test/INFO] Task took 0.15s to execute
-> [VM0:compute:(55) 56.150000] [msg_test/INFO] Task took 0.15s to execute
-> [VM0:compute:(56) 56.150000] [msg_test/INFO] Task took 0.15s to execute
-> [node-0.acme.org:master:(1) 58.000000] [msg_test/INFO] ## Test 9 (ended)
-> [node-0.acme.org:master:(1) 58.000000] [msg_test/INFO] ## Test 10 (started): check impact of a single emtpy VM collocated with tasks
-> [node-0.acme.org:master:(1) 58.000000] [msg_test/INFO] ### Put a VM on a PM, and put a task to the PM
-> [node-0.acme4.org:compute:(58) 58.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 60.000000] [msg_test/INFO] ### Put a VM on a PM, and put two tasks to the PM
-> [node-0.acme4.org:compute:(60) 60.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme4.org:compute:(59) 60.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 62.000000] [msg_test/INFO] ### Put a VM on a PM, and put three tasks to the PM
-> [node-0.acme4.org:compute:(63) 62.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme4.org:compute:(61) 62.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme4.org:compute:(62) 62.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 64.000000] [msg_test/INFO] ### Put a VM on a PM, and put four tasks to the PM
-> [node-0.acme4.org:compute:(67) 64.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme4.org:compute:(66) 64.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme4.org:compute:(65) 64.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme4.org:compute:(64) 64.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 66.000000] [msg_test/INFO] ## Test 10 (ended)
-> [node-0.acme.org:master:(1) 66.000000] [msg_test/INFO] ## Test 11 (started): check impact of a single working VM collocated with tasks
-> [node-0.acme.org:master:(1) 66.000000] [msg_test/INFO] ### Put a VM on a PM, and put one task to the PM and one task to the VM
-> [node-0.acme4.org:compute:(69) 66.100000] [msg_test/INFO] Task took 0.1s to execute
-> [VM0:compute:(68) 66.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 68.000000] [msg_test/INFO] ### Put a VM on a PM, and put two tasks to the PM and one task to the VM
-> [node-0.acme4.org:compute:(71) 68.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme4.org:compute:(72) 68.100000] [msg_test/INFO] Task took 0.1s to execute
-> [VM0:compute:(70) 68.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 70.000000] [msg_test/INFO] ### Put a VM on a PM, and put two tasks to the PM and two tasks to the VM
-> [node-0.acme4.org:compute:(75) 70.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme4.org:compute:(76) 70.100000] [msg_test/INFO] Task took 0.1s to execute
-> [VM0:compute:(74) 70.100000] [msg_test/INFO] Task took 0.1s to execute
-> [VM0:compute:(73) 70.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 72.000000] [msg_test/INFO] ### Put a VM on a PM, and put three tasks to the PM and one tasks to the VM
-> [node-0.acme4.org:compute:(80) 72.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme4.org:compute:(78) 72.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme4.org:compute:(79) 72.100000] [msg_test/INFO] Task took 0.1s to execute
-> [VM0:compute:(77) 72.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme.org:master:(1) 74.000000] [msg_test/INFO] ### Put a VM on a PM, and put three tasks to the PM and two tasks to the VM
-> [node-0.acme4.org:compute:(85) 74.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme4.org:compute:(83) 74.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme4.org:compute:(84) 74.100000] [msg_test/INFO] Task took 0.1s to execute
-> [VM0:compute:(82) 74.200000] [msg_test/INFO] Task took 0.2s to execute
-> [VM0:compute:(81) 74.200000] [msg_test/INFO] Task took 0.2s to execute
-> [node-0.acme.org:master:(1) 76.000000] [msg_test/INFO] ### Put a VM on a PM, and put three tasks to the PM and three tasks to the VM
-> [node-0.acme4.org:compute:(91) 76.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme4.org:compute:(89) 76.100000] [msg_test/INFO] Task took 0.1s to execute
-> [node-0.acme4.org:compute:(90) 76.100000] [msg_test/INFO] Task took 0.1s to execute
-> [VM0:compute:(88) 76.300000] [msg_test/INFO] Task took 0.3s to execute
-> [VM0:compute:(86) 76.300000] [msg_test/INFO] Task took 0.3s to execute
-> [VM0:compute:(87) 76.300000] [msg_test/INFO] Task took 0.3s to execute
-> [node-0.acme.org:master:(1) 78.000000] [msg_test/INFO] ## Test 11 (ended)
+$ $SG_TEST_EXENV ${bindir:=.}/cloud-sharing$EXEEXT --log=root.fmt:%m%n ${srcdir:=.}/../../../examples/platforms/cluster_backbone.xml
+> # TEST ON SINGLE-CORE PMs
+> ## Test 1 (started): check computation on normal PMs
+> ### Put a task on a PM
+> Passed: (X)1 with 1 load (100000000flops) took 0.1s as expected
+> ### Put two tasks on a PM
+> Passed: (oX)1 with 0.5 load (50000000flops) took 0.1s as expected
+> Passed: (Xo)1 with 0.5 load (50000000flops) took 0.1s as expected
+> ### Put a task on each PM
+> Passed: (X)1 (o)1 with 1 load (100000000flops) took 0.1s as expected
+> Passed: (o)1 (X)1 with 1 load (100000000flops) took 0.1s as expected
+> ## Test 1 (ended)
+> # TEST ON SINGLE-CORE PMs AND SINGLE-CORE VMs
+> ## Test 2 (started): check impact of running tasks inside a VM (there is no degradation for the moment)
+> ### Put a VM on a PM, and put a task to the VM
+> Passed: ( [X]1 )1 with 1 load (100000000flops) took 0.1s as expected
+> ### Put a VM on a PM, and put two task to the VM
+> Passed: ( [oX]1 )1 with 0.5 load (50000000flops) took 0.1s as expected
+> Passed: ( [Xo]1 )1 with 0.5 load (50000000flops) took 0.1s as expected
+> ## Test 2 (ended)
+> ## Test 3 (started): check impact of running tasks collocated with VMs (there is no VM noise for the moment)
+> ### Put a task on a PM collocated with an empty VM
+> Passed: ( [ ]1 X )1 with 1 load (100000000flops) took 0.1s as expected
+> ### Put a VM on a PM, put a task to the PM and a task to the VM
+> Passed: ( [o]1 X )1 with 0.5 load (50000000flops) took 0.1s as expected
+> Passed: ( [X]1 o )1 with 0.5 load (50000000flops) took 0.1s as expected
+> ### Put a VM on a PM, put a task to the PM and two tasks to the VM
+> Passed: ( [oo]1 X )1 with 0.5 load (50000000flops) took 0.1s as expected
+> Passed: ( [oX]1 o )1 with 0.25 load (25000000flops) took 0.1s as expected
+> Passed: ( [Xo]1 o )1 with 0.25 load (25000000flops) took 0.1s as expected
+> ## Test 3 (ended)
+> # TEST ON TWO-CORE PMs
+> ## Test 4 (started): check computation on 2 cores PMs
+> ### Put a task on a PM
+> Passed: (X)2 with 1 load (100000000flops) took 0.1s as expected
+> ### Put two tasks on a PM
+> Passed: (xX)2 with 1 load (100000000flops) took 0.1s as expected
+> Passed: (Xx)2 with 1 load (100000000flops) took 0.1s as expected
+> ### Put three tasks on a PM
+> Passed: (xxX)2 with 0.6667 load (66666666flops) took 0.1s as expected
+> Passed: (Xxx)2 with 0.6667 load (66666666flops) took 0.1s as expected
+> Passed: (xXx)2 with 0.6667 load (66666666flops) took 0.1s as expected
+> ## Test 4 (ended)
+> # TEST ON TWO-CORE PMs AND SINGLE-CORE VMs
+> ## Test 5 (started): check impact of a single VM (there is no degradation for the moment)
+> ### Put a VM on a PM, and put a task to the VM
+> Passed: ( [X]1 )2 with 1 load (100000000flops) took 0.1s as expected
+> ### Put a VM on a PM, and put two tasks to the VM
+> Passed: ( [xX]1 )2 with 0.5 load (50000000flops) took 0.1s as expected
+> Passed: ( [Xx]1 )2 with 0.5 load (50000000flops) took 0.1s as expected
+> ### Put a VM on a PM, and put a task to the PM
+> Passed: ( [ ]1 X )2 with 1 load (100000000flops) took 0.1s as expected
+> ### Put a VM on a PM, put a task to the PM and a task to the VM
+> Passed: ( [x]1 X )2 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [X]1 x )2 with 1 load (100000000flops) took 0.1s as expected
+> ## Test 5 (ended)
+> ## Test 6 (started): check impact of a several VMs (there is no degradation for the moment)
+> ### Put two VMs on a PM, and put a task to one VM
+> Passed: ( [X]1 [ ]1 )2 with 1 load (100000000flops) took 0.1s as expected
+> ### Put two VMs on a PM, and put a task to each VM
+> Passed: ( [X]1 [x]1 )2 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [x]1 [X]1 )2 with 1 load (100000000flops) took 0.1s as expected
+> ### Put three VMs on a PM, and put a task to two VMs
+> Passed: ( [X]1 [x]1 [ ]1 )2 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [x]1 [X]1 [ ]1 )2 with 1 load (100000000flops) took 0.1s as expected
+> ### Put three VMs on a PM, and put a task to each VM
+> Passed: ( [X]1 [o]1 [o]1 )2 with 0.6667 load (66666666flops) took 0.1s as expected
+> Passed: ( [o]1 [o]1 [X]1 )2 with 0.6667 load (66666666flops) took 0.1s as expected
+> Passed: ( [o]1 [X]1 [o]1 )2 with 0.6667 load (66666666flops) took 0.1s as expected
+> ## Test 6 (ended)
+> # TEST ON TWO-CORE PMs AND TWO-CORE VMs
+> ## Test 7 (started): check impact of a single VM (there is no degradation for the moment)
+> ### Put a VM on a PM, and put a task to the VM
+> Passed: ( [X]2 )2 with 1 load (100000000flops) took 0.1s as expected
+> ### Put a VM on a PM, and put two tasks to the VM
+> Passed: ( [oX]2 )2 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [Xo]2 )2 with 1 load (100000000flops) took 0.1s as expected
+> ### Put a VM on a PM, and put three tasks to the VM
+> Passed: ( [ooX]2 )2 with 0.6667 load (66666666flops) took 0.1s as expected
+> Passed: ( [Xoo]2 )2 with 0.6667 load (66666666flops) took 0.1s as expected
+> Passed: ( [oXo]2 )2 with 0.6667 load (66666666flops) took 0.1s as expected
+> ## Test 7 (ended)
+> ## Test 8 (started): check impact of a single VM collocated with a task (there is no degradation for the moment)
+> ### Put a VM on a PM, and put a task to the PM
+> Passed: ( [ ]2 X )2 with 1 load (100000000flops) took 0.1s as expected
+> ### Put a VM on a PM, put one task to the PM and one task to the VM
+> Passed: ( [o]2 X )2 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [X]2 o )2 with 1 load (100000000flops) took 0.1s as expected
+> ### Put a VM on a PM, put one task to the PM and two tasks to the VM
+> Passed: ( [oo]2 X )2 with 0.6667 load (66666666flops) took 0.1s as expected
+> Passed: ( [oX]2 o )2 with 0.6667 load (66666666flops) took 0.1s as expected
+> Passed: ( [Xo]2 o )2 with 0.6667 load (66666666flops) took 0.1s as expected
+> ### Put a VM on a PM, put one task to the PM and three tasks to the VM
+> Passed: ( [ooo]2 X )2 with 0.6667 load (66666666flops) took 0.1s as expected
+> Passed: ( [ooX]2 o )2 with 0.2222 load (22222222flops) took 0.1s as expected
+> Passed: ( [Xoo]2 o )2 with 0.2222 load (22222222flops) took 0.1s as expected
+> Passed: ( [oXo]2 o )2 with 0.2222 load (22222222flops) took 0.1s as expected
+> ### Put a VM on a PM, and put two tasks to the PM
+> Passed: ( [ ]2 oX )2 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [ ]2 Xo )2 with 1 load (100000000flops) took 0.1s as expected
+> ### Put a VM on a PM, put one task to the PM and one task to the VM
+> Passed: ( [o]2 Xo )2 with 0.6667 load (66666666flops) took 0.1s as expected
+> Passed: ( [o]2 oX )2 with 0.6667 load (66666666flops) took 0.1s as expected
+> Passed: ( [X]2 oo )2 with 0.6667 load (66666666flops) took 0.1s as expected
+> ### Put a VM on a PM, put one task to the PM and two tasks to the VM
+> Passed: ( [oo]2 Xo )2 with 0.5 load (50000000flops) took 0.1s as expected
+> Passed: ( [oo]2 oX )2 with 0.5 load (50000000flops) took 0.1s as expected
+> Passed: ( [oX]2 oo )2 with 0.5 load (50000000flops) took 0.1s as expected
+> Passed: ( [Xo]2 oo )2 with 0.5 load (50000000flops) took 0.1s as expected
+> ### Put a VM on a PM, put one task to the PM and three tasks to the VM
+> Passed: ( [ooo]2 Xo )2 with 0.5 load (50000000flops) took 0.1s as expected
+> Passed: ( [ooo]2 oX )2 with 0.5 load (50000000flops) took 0.1s as expected
+> Passed: ( [ooX]2 oo )2 with 0.3333 load (33333333flops) took 0.1s as expected
+> Passed: ( [Xoo]2 oo )2 with 0.3333 load (33333333flops) took 0.1s as expected
+> Passed: ( [oXo]2 oo )2 with 0.3333 load (33333333flops) took 0.1s as expected
+> ## Test 8 (ended)
+> # TEST ON FOUR-CORE PMs AND TWO-CORE VMs
+> ## Test 9 (started): check impact of a single VM
+> ### Put a VM on a PM, and put a task to the VM
+> Passed: ( [X]2 )4 with 1 load (100000000flops) took 0.1s as expected
+> ### Put a VM on a PM, and put two tasks to the VM
+> Passed: ( [oX]2 )4 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [Xo]2 )4 with 1 load (100000000flops) took 0.1s as expected
+> ### ( [ooo]2 )4: Put a VM on a PM, and put three tasks to the VM
+> Passed: ( [ooX]2 )4 with 0.6667 load (66666666flops) took 0.1s as expected
+> Passed: ( [Xoo]2 )4 with 0.6667 load (66666666flops) took 0.1s as expected
+> Passed: ( [oXo]2 )4 with 0.6667 load (66666666flops) took 0.1s as expected
+> ## Test 9 (ended)
+> ## Test 10 (started): check impact of a single emtpy VM collocated with tasks
+> ### Put a VM on a PM, and put a task to the PM
+> Passed: ( [ ]2 X )4 with 1 load (100000000flops) took 0.1s as expected
+> ### Put a VM on a PM, and put two tasks to the PM
+> Passed: ( [ ]2 oX )4 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [ ]2 Xo )4 with 1 load (100000000flops) took 0.1s as expected
+> ### Put a VM on a PM, and put three tasks to the PM
+> Passed: ( [ ]2 ooX )4 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [ ]2 Xoo )4 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [ ]2 oXo )4 with 1 load (100000000flops) took 0.1s as expected
+> ### Put a VM on a PM, and put four tasks to the PM
+> Passed: ( [ ]2 oooX )4 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [ ]2 ooXo )4 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [ ]2 oXoo )4 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [ ]2 Xooo )4 with 1 load (100000000flops) took 0.1s as expected
+> ## Test 10 (ended)
+> ## Test 11 (started): check impact of a single working VM collocated with tasks
+> ### Put a VM on a PM, and put one task to the PM and one task to the VM
+> Passed: ( [o]2 X )4 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [X]2 o )4 with 1 load (100000000flops) took 0.1s as expected
+> ### Put a VM on a PM, and put two tasks to the PM and one task to the VM
+> Passed: ( [o]2 Xo )4 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [o]2 oX )4 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [X]2 oo )4 with 1 load (100000000flops) took 0.1s as expected
+> ### Put a VM on a PM, and put two tasks to the PM and two tasks to the VM
+> Passed: ( [oo]2 Xo )4 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [oo]2 oX )4 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [oX]2 oo )4 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [Xo]2 oo )4 with 1 load (100000000flops) took 0.1s as expected
+> ### Put a VM on a PM, and put three tasks to the PM and one tasks to the VM
+> Passed: ( [o]2 ooX )4 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [o]2 Xoo )4 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [o]2 oXo )4 with 1 load (100000000flops) took 0.1s as expected
+> Passed: ( [X]2 ooo )4 with 1 load (100000000flops) took 0.1s as expected
+> ### Put a VM on a PM, and put three tasks to the PM and two tasks to the VM
+> Passed: ( [oo]2 ooX )4 with 0.8 load (80000000flops) took 0.1s as expected
+> Passed: ( [oo]2 Xoo )4 with 0.8 load (80000000flops) took 0.1s as expected
+> Passed: ( [oo]2 oXo )4 with 0.8 load (80000000flops) took 0.1s as expected
+> Passed: ( [oX]2 ooo )4 with 0.8 load (80000000flops) took 0.1s as expected
+> Passed: ( [Xo]2 ooo )4 with 0.8 load (80000000flops) took 0.1s as expected
+> ### Put a VM on a PM, and put three tasks to the PM and three tasks to the VM
+> Passed: ( [ooo]2 ooX )4 with 0.8 load (80000000flops) took 0.1s as expected
+> Passed: ( [ooo]2 Xoo )4 with 0.8 load (80000000flops) took 0.1s as expected
+> Passed: ( [ooo]2 oXo )4 with 0.8 load (80000000flops) took 0.1s as expected
+> Passed: ( [ooX]2 ooo )4 with 0.3333 load (33333333flops) took 0.1s as expected
+> Passed: ( [Xoo]2 ooo )4 with 0.3333 load (33333333flops) took 0.1s as expected
+> Passed: ( [oXo]2 ooo )4 with 0.3333 load (33333333flops) took 0.1s as expected
+> ## Test 11 (ended)
+> 
+> 
+> ## 15 test failed

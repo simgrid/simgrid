@@ -48,11 +48,11 @@ static int master_main(int argc, char* argv[])
 	
   XBT_INFO("# TEST ON SINGLE-CORE PMs");
 
-  msg_host_t pm0 = MSG_host_by_name("node-0.acme.org");
-  msg_host_t pm1 = MSG_host_by_name("node-1.acme.org");
+  msg_host_t pm0 = MSG_host_by_name("node-0.1core.org");
+  msg_host_t pm1 = MSG_host_by_name("node-1.1core.org");
   msg_host_t vm0;
-  xbt_assert(pm0, "Host node-0.acme.org does not seem to exist");
-  
+  xbt_assert(pm0, "Host node-0.1core.org does not seem to exist");
+
   // syntax of the process name:
   // "( )1" means PM with one core; "( )2" means PM with 2 cores
   // "(  [  ]2  )4" means a VM with 2 cores, on a PM with 4 cores.
@@ -128,10 +128,10 @@ static int master_main(int argc, char* argv[])
   XBT_INFO("## Test 3 (ended)");
   
   XBT_INFO("# TEST ON TWO-CORE PMs");
-  
-  msg_host_t pm2 = MSG_host_by_name("node-0.acme2.org"); // 2 cores
-  xbt_assert(pm2, "Host node-0.acme2.org does not seem to exist");
-  
+
+  msg_host_t pm2 = MSG_host_by_name("node-0.2cores.org"); // 2 cores
+  xbt_assert(pm2, "Host node-0.2cores.org does not seem to exist");
+
   XBT_INFO("## Test 4 (started): check computation on 2 cores PMs");
 
   XBT_INFO("### Put a task on a PM");
@@ -348,10 +348,10 @@ static int master_main(int argc, char* argv[])
   XBT_INFO("## Test 8 (ended)");
   
   XBT_INFO("# TEST ON FOUR-CORE PMs AND TWO-CORE VMs");
-  
-  msg_host_t pm4 = MSG_host_by_name("node-0.acme4.org");
-  xbt_assert(pm4, "Host node-0.acme4.org does not seem to exist");
-  
+
+  msg_host_t pm4 = MSG_host_by_name("node-0.4cores.org");
+  xbt_assert(pm4, "Host node-0.4cores.org does not seem to exist");
+
   XBT_INFO("## Test 9 (started): check impact of a single VM");
   
   XBT_INFO("### Put a VM on a PM, and put a task to the VM");
@@ -483,7 +483,10 @@ static int master_main(int argc, char* argv[])
   
   XBT_INFO("## Test 11 (ended)");
 
+  XBT_INFO("");
+  XBT_INFO("");
   XBT_INFO("## %d test failed", failed_test);
+  XBT_INFO("");
   return 0;
 }
 
@@ -498,9 +501,9 @@ int main(int argc, char* argv[])
     platform = argv[1];
   MSG_create_environment(platform);
 
-  msg_host_t pm0 = MSG_host_by_name("node-0.acme.org");
-  xbt_assert(pm0, "Host 'node-0.acme.org' not found");
+  msg_host_t pm0 = MSG_host_by_name("node-0.1core.org");
+  xbt_assert(pm0, "Host 'node-0.1core.org' not found");
   MSG_process_create("master", master_main, NULL, pm0);
 
-  return MSG_main() != MSG_OK;
+  return MSG_main() != MSG_OK || failed_test;
 }
