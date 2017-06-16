@@ -10,6 +10,7 @@
 
 #include "simgrid/s4u/Engine.hpp"
 
+#include <algorithm>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <string>
@@ -177,6 +178,13 @@ HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host(ptr), last_updated(surf_g
     xbt_free(msg);
   }
   /* watts_off is 0 by default */
+
+  if (ptr->coreCount() == 1)
+    xbt_assert(std::all_of(power_range_watts_list.begin(), power_range_watts_list.end(),
+                           [](PowerRange power_range) { return power_range.min == power_range.max; }),
+               "You only have one core in host %s, but the \
+      energy consumption for one core does not match the energy consumption for all (here: 1) cores). This is an error in your platform, please fix it.",
+               host->cname());
 }
 
 HostEnergy::~HostEnergy() = default;
