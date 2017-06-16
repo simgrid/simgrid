@@ -79,7 +79,7 @@ bool request_is_enabled(smx_simcall_t req)
   {
     /* FIXME: check also that src and dst processes are not suspended */
     simgrid::kernel::activity::CommImpl* act =
-        static_cast<simgrid::kernel::activity::CommImpl*>(&*simcall_comm_wait__get__comm(req));
+        static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__getraw__comm(req));
 
 #if SIMGRID_HAVE_MC
     // Fetch from MCed memory:
