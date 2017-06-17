@@ -17,7 +17,7 @@
 namespace simgrid {
 namespace s4u {
 
-std::map<std::string, Storage*>* allStorages();
+XBT_ATTRIB_PUBLIC std::map<std::string, Storage*>* allStorages();
 
 XBT_PUBLIC_CLASS Storage
 {

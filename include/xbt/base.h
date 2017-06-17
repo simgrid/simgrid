@@ -137,6 +137,7 @@
 
 /* Build the DLL */
 #if defined(DLL_EXPORT)
+#  define XBT_ATTRIB_PUBLIC           __declspec(dllexport)
 #  define XBT_PUBLIC(type)            __declspec(dllexport) type
 #  define XBT_EXPORT_NO_IMPORT(type)  __declspec(dllexport) type
 #  define XBT_IMPORT_NO_EXPORT(type)  type
@@ -146,6 +147,7 @@
 
 /* Link against the DLL */
 #elif (defined(_WIN32) && !defined(DLL_EXPORT))
+#  define XBT_ATTRIB_PUBLIC           __declspec(dllimport)
 #  define XBT_PUBLIC(type)            __declspec(dllimport) type
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  __declspec(dllimport) type
@@ -154,6 +156,7 @@
 #  define XBT_PRIVATE
 
 #elif defined(__ELF__)
+#  define XBT_ATTRIB_PUBLIC           __attribute__((visibility("default")))
 #  define XBT_PUBLIC(type)            __attribute__((visibility("default"))) type
 #  define XBT_EXPORT_NO_IMPORT(type)  __attribute__((visibility("default"))) type
 #  define XBT_IMPORT_NO_EXPORT(type)  __attribute__((visibility("default"))) type
@@ -162,6 +165,7 @@
 #  define XBT_PRIVATE                 __attribute__((visibility("hidden")))
 
 #else
+#  define XBT_ATTRIB_PUBLIC           /* public */
 #  define XBT_PUBLIC(type)            type
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  type
