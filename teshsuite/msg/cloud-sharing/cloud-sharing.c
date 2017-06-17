@@ -483,10 +483,10 @@ static int master_main(int argc, char* argv[])
   
   XBT_INFO("## Test 11 (ended)");
 
-  XBT_INFO("");
-  XBT_INFO("");
+  XBT_INFO("   ");
+  XBT_INFO("   ");
   XBT_INFO("## %d test failed", failed_test);
-  XBT_INFO("");
+  XBT_INFO("   ");
   return 0;
 }
 
