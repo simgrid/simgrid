@@ -217,18 +217,16 @@ void DefineContainerEvent(type_t type)
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, PAJE_DefineContainerType);
   //print it
   if (instr_fmt_type == instr_fmt_paje) {
-		XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_DefineContainerType, TRACE_precision(), 0.);
-		stream << std::fixed << std::setprecision(TRACE_precision());
-		stream << PAJE_DefineContainerType;
-		stream << " " << type->id
-				<< " " << type->father->id
-				<< " " << type->name;
-		print_row();
-	} else if (instr_fmt_type == instr_fmt_TI) {
-		/* Nothing to do */
-	} else {
-		THROW_IMPOSSIBLE;
-	}
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_DefineContainerType, TRACE_precision(), 0.);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << PAJE_DefineContainerType;
+    stream << " " << type->id << " " << type->father->id << " " << type->name;
+    print_row();
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    /* Nothing to do */
+  } else {
+    THROW_IMPOSSIBLE;
+  }
   //--
 }
 
@@ -767,7 +765,7 @@ ResetStateEvent::ResetStateEvent (double timestamp, container_t container, type_
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
   insert_into_buffer (this);
-	delete [] this;
+  delete[] this;
 }
 
 void ResetStateEvent::print() {
