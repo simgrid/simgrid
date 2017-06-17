@@ -64,10 +64,10 @@ int main(int argc, char** argv)
   xbt_assert(argc >= 2, "Usage: %s <xml platform file>", argv[0]);
 
   engine->loadPlatform(argv[1]);
-  simgrid::s4u::Host* host = simgrid::s4u::Host::by_name("Tremblay");
-
-  simgrid::s4u::Actor::createActor("Receiver", host, receiver);
-  simgrid::s4u::Actor::createActor("Sender", host, sender);
+  simgrid::s4u::Host** hosts = sg_host_list();
+  simgrid::s4u::Actor::createActor("Receiver", hosts[1], receiver);
+  simgrid::s4u::Actor::createActor("Sender", hosts[2], sender);
+  xbt_free(hosts);
 
   simgrid::s4u::Engine::instance()->run();
 
