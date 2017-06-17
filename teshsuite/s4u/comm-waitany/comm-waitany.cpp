@@ -14,8 +14,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(mwe, "Minimum Working Example");
 
 static void receiver()
 {
-  simgrid::s4u::MailboxPtr mymailbox    = simgrid::s4u::Mailbox::byName("receiver_mailbox");
-  simgrid::s4u::MailboxPtr theirmailbox = simgrid::s4u::Mailbox::byName("sender_mailbox");
+  simgrid::s4u::MailboxPtr mymailbox = simgrid::s4u::Mailbox::byName("receiver_mailbox");
 
   std::vector<simgrid::s4u::CommPtr> pending_comms;
 
@@ -45,7 +44,6 @@ static void receiver()
 
 static void sender()
 {
-  simgrid::s4u::MailboxPtr mymailbox    = simgrid::s4u::Mailbox::byName("sender_mailbox");
   simgrid::s4u::MailboxPtr theirmailbox = simgrid::s4u::Mailbox::byName("receiver_mailbox");
 
   void* data = (void*)"data";
@@ -63,10 +61,7 @@ int main(int argc, char** argv)
 
   simgrid::s4u::Engine* engine = new simgrid::s4u::Engine(&argc, argv);
 
-  if (argc < 2) {
-    std::cerr << "Usage: " << argv[0] << " <xml platform file>" << std::endl;
-    exit(1);
-  }
+  xbt_assert(argc >= 2, "Usage: %s <xml platform file>", argv[0]);
 
   engine->loadPlatform(argv[1]);
   simgrid::s4u::Host* host = simgrid::s4u::Host::by_name("Tremblay");

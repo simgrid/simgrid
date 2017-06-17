@@ -25,7 +25,7 @@ XBT_PUBLIC_CLASS Activity {
 
 protected:
   Activity()  = default;
-  ~Activity() = default;
+  virtual ~Activity() = default;
 
 public:
   Activity(Activity const&) = delete;

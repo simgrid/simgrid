@@ -121,9 +121,11 @@ SIMIX_MARSHAL(FPtr, fp);
 
 inline void unmarshal(type<void>, u_smx_scalar const& simcall)
 {
+  /* Nothing to do for void data */
 }
 inline void unmarshal_raw(type<void>, u_smx_scalar const& simcall)
 {
+  /* Nothing to do for void data */
 }
 
 template<class T> inline
