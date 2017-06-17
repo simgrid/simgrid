@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -45,10 +45,10 @@ static int sender(int argc, char *argv[])
 
   for (int i = 0; i < receivers_count; i++) {
     char mailbox[80];
-    snprintf(mailbox,79, "receiver-%ld", i % receivers_count);
+    snprintf(mailbox, 79, "receiver-%d", i);
     msg_task_t task = MSG_task_create("finalize", 0, 0, 0);
     msg_comm_t comm = MSG_task_isend(task, mailbox);
-    XBT_INFO("Send to receiver-%ld finalize", i % receivers_count);
+    XBT_INFO("Send to receiver-%d finalize", i);
     if (sleep_test_time > 0) {
       while (MSG_comm_test(comm) == 0) {
         MSG_process_sleep(sleep_test_time);
