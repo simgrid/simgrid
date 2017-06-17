@@ -66,6 +66,10 @@ void surf_parse_assert_netpoint(char* hostname, const char* pre, const char* pos
 
   std::vector<simgrid::kernel::routing::NetPoint*> list;
   simgrid::s4u::Engine::instance()->netpointList(&list);
+  std::sort(list.begin(), list.end(),
+      [](simgrid::kernel::routing::NetPoint* a, simgrid::kernel::routing::NetPoint* b) {
+      return a->name() < b->name();
+  });
   bool first = true;
   for (auto np : list) {
     if (np->isNetZone())
