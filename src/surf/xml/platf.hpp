@@ -21,6 +21,7 @@ XBT_PUBLIC(void) surf_parse_open(const char *file);
 XBT_PUBLIC(void) surf_parse_close();
 XBT_PUBLIC(void) surf_parse_assert(bool cond, const char *fmt, ...) XBT_ATTRIB_PRINTF(2,3);
 XBT_PUBLIC(void) XBT_ATTRIB_NORETURN surf_parse_error(const char *msg,...) XBT_ATTRIB_PRINTF(1,2);
+XBT_PUBLIC(void) surf_parse_assert_netpoint(char* hostname, const char* pre, const char* post);
 XBT_PUBLIC(void) surf_parse_warn(const char *msg,...) XBT_ATTRIB_PRINTF(1,2);
 
 XBT_PUBLIC(double) surf_parse_get_double(const char *string);
