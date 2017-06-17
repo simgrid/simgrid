@@ -8,7 +8,6 @@
 
 #include <xbt/base.h>
 
-#include "src/surf/StorageImpl.hpp"
 #include <simgrid/simix.h>
 
 namespace simgrid {
