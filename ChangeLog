@@ -53,6 +53,9 @@ SimGrid (3.16) UNRELEASED
       - MPI_Op_commutative, MPI_Fetch_and_Op, MPI_Compare_and_swap
       - MPI_Rput, MPI_Rget, MPI_Raccumulate, MPI_Rget_accumulate
 
+ S4U
+  - New: this_actor::isMaestro() returns whether we are in kernel mode.
+
  XBT
   - Replay: New function xbt_replay_action_get():
     Retrieve the function previously associated to an event type.

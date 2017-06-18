@@ -281,15 +281,16 @@ public:
  *  @brief Static methods working on the current actor (see @ref s4u::Actor) */
 namespace this_actor {
 
-  /** Block the actor sleeping for that amount of seconds (may throws hostFailure) */
-  XBT_PUBLIC(void) sleep_for(double duration);
-  XBT_PUBLIC(void) sleep_until(double timeout);
+XBT_PUBLIC(bool) isMaestro();
 
-  template<class Rep, class Period>
-  inline void sleep_for(std::chrono::duration<Rep, Period> duration)
-  {
-    auto seconds = std::chrono::duration_cast<SimulationClockDuration>(duration);
-    this_actor::sleep_for(seconds.count());
+/** Block the actor sleeping for that amount of seconds (may throws hostFailure) */
+XBT_PUBLIC(void) sleep_for(double duration);
+XBT_PUBLIC(void) sleep_until(double timeout);
+
+template <class Rep, class Period> inline void sleep_for(std::chrono::duration<Rep, Period> duration)
+{
+  auto seconds = std::chrono::duration_cast<SimulationClockDuration>(duration);
+  this_actor::sleep_for(seconds.count());
   }
   template<class Duration>
   inline void sleep_until(const SimulationTimePoint<Duration>& timeout_time)

@@ -168,6 +168,21 @@ void Actor::setProperty(const char* key, const char* value)
 
 namespace this_actor {
 
+/** Returns true if run from the kernel mode, and false if run from a real actor
+ *
+ * Everything that is run out of any actor (simulation setup before the engine is run,
+ * computing the model evolutions as a result to the actors' action, etc) is run in
+ * kernel mode, just as in any operating systems.
+ *
+ * In SimGrid, the actor in charge of doing the stuff in kernel mode is called Maestro,
+ * because it is the one scheduling when the others should move or wait.
+ */
+bool isMaestro()
+{
+  smx_context_t self_context = SIMIX_context_self();
+  return self_context == nullptr;
+}
+
 void sleep_for(double duration)
 {
   if (duration > 0)
