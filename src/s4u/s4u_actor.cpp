@@ -11,6 +11,8 @@
 #include "simgrid/s4u/Mailbox.hpp"
 
 #include "src/kernel/context/Context.hpp"
+#include "src/simix/smx_private.h"
+
 #include <sstream>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor, "S4U actors");
@@ -179,8 +181,8 @@ namespace this_actor {
  */
 bool isMaestro()
 {
-  smx_context_t self_context = SIMIX_context_self();
-  return self_context == nullptr;
+  smx_actor_t process = SIMIX_process_self();
+  return process == nullptr || process == simix_global->maestro_process;
 }
 
 void sleep_for(double duration)

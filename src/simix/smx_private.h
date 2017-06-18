@@ -6,8 +6,9 @@
 #ifndef SIMIX_PRIVATE_H
 #define SIMIX_PRIVATE_H
 
-#include <signal.h>
+#include "simgrid/s4u/Actor.hpp"
 #include "src/kernel/context/Context.hpp"
+#include <signal.h>
 
 #include <map>
 
@@ -17,6 +18,8 @@ namespace simgrid {
 namespace simix {
 
 class Global {
+  friend bool simgrid::s4u::this_actor::isMaestro();
+
 public:
   smx_context_factory_t context_factory = nullptr;
   xbt_dynar_t process_to_run = nullptr;
