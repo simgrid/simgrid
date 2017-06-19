@@ -10,6 +10,17 @@
 #include "simgrid/forward.h"
 #include "simgrid/simix.h"
 
+#ifdef __cplusplus
+namespace simgrid {
+namespace msg {
+class Comm;
+}
+}
+typedef simgrid::msg::Comm sg_msg_Comm;
+#else
+typedef struct msg_Comm sg_msg_Comm;
+#endif
+
 SG_BEGIN_DECL()
 
 /* *************************** Network Zones ******************************** */
@@ -74,7 +85,7 @@ typedef sg_storage_t msg_storage_t;
  *
  * Object representing an ongoing communication between processes. Such beast is usually obtained by using #MSG_task_isend, #MSG_task_irecv or friends.
  */
-typedef struct msg_comm *msg_comm_t;
+typedef sg_msg_Comm* msg_comm_t;
 
 /** \brief Default value for an uninitialized #msg_task_t.
     \ingroup m_task_management

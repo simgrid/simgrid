@@ -321,11 +321,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *al
 
   msg_comm_t comm = nullptr;
   if (not detached) {
-    comm = xbt_new0(s_msg_comm_t, 1);
-    comm->task_sent = task;
-    comm->task_received = nullptr;
-    comm->status = MSG_OK;
-    comm->s_comm = act;
+    comm = new simgrid::msg::Comm(task, nullptr, act);
   }
 
   if (TRACE_is_enabled())
@@ -465,11 +461,9 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rat
     XBT_CRITICAL("MSG_task_irecv() was asked to write in a non empty task struct.");
 
   /* Try to receive it by calling SIMIX network layer */
-  msg_comm_t comm = xbt_new0(s_msg_comm_t, 1);
-  comm->task_sent = nullptr;
-  comm->task_received = task;
-  comm->status = MSG_OK;
-  comm->s_comm = simcall_comm_irecv(SIMIX_process_self(), mbox->getImpl(), task, nullptr, nullptr, nullptr, nullptr, rate);
+  msg_comm_t comm =
+      new simgrid::msg::Comm(nullptr, task, simcall_comm_irecv(SIMIX_process_self(), mbox->getImpl(), task, nullptr,
+                                                               nullptr, nullptr, nullptr, rate));
 
   return comm;
 }
@@ -570,7 +564,7 @@ int MSG_comm_testany(xbt_dynar_t comms)
  */
 void MSG_comm_destroy(msg_comm_t comm)
 {
-  xbt_free(comm);
+  delete comm;
 }
 
 /** \ingroup msg_task_usage

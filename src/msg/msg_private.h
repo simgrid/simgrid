@@ -77,15 +77,20 @@ public:
   msg_error_t errno_ = MSG_OK;  /* the last value returned by a MSG_function */
   void* data = nullptr; /* user data */
 };
-}
-}
 
-typedef struct msg_comm {
-  smx_activity_t s_comm;          /* SIMIX communication object encapsulated (the same for both processes) */
+class Comm {
+public:
   msg_task_t task_sent;           /* task sent (NULL for the receiver) */
   msg_task_t *task_received;      /* where the task will be received (NULL for the sender) */
-  msg_error_t status;           /* status of the communication once finished */
-} s_msg_comm_t;
+  smx_activity_t s_comm;          /* SIMIX communication object encapsulated (the same for both processes) */
+  msg_error_t status = MSG_OK;    /* status of the communication once finished */
+  Comm(msg_task_t sent, msg_task_t* received, smx_activity_t comm)
+      : task_sent(sent), task_received(received), s_comm(std::move(comm))
+  {
+  }
+};
+}
+}
 
 /************************** Global variables ********************************/
 typedef struct MSG_Global {
