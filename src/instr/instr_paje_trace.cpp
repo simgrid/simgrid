@@ -273,24 +273,13 @@ if (instr_fmt_type == instr_fmt_paje) {
 }
 
 
-DefineEventTypeEvent::DefineEventTypeEvent(type_t type)
+void LogDefineEventType(type_t type)
 {
-  this->event_type                        = PAJE_DefineEventType;
-  this->timestamp                         = 0;
-  this->type = type;
-
-  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event_type);
-
   //print it
-  print();
-}
-
-
-void DefineEventTypeEvent::print() {
   if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_DefineEventType, TRACE_precision(), 0.);
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << (int)this->event_type;
+    stream << PAJE_DefineEventType;
     stream << " " << type->id << " " << type->father->id << " " << type->name;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {

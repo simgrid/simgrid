@@ -141,13 +141,6 @@ class DefineStateTypeEvent : public PajeEvent  {
   void print() override;
 };
 
-class DefineEventTypeEvent : public PajeEvent  {
-  type_t type;
-  public:
-  DefineEventTypeEvent(type_t type);
-  void print() override;
-};
-
 
 class SetVariableEvent : public PajeEvent  {
   container_t container;
@@ -443,5 +436,6 @@ void LogLinkTypeDefinition(type_t type, type_t source, type_t dest);
 void LogEntityValue (val_t value);
 void LogContainerCreation (container_t container);
 void LogContainerDestruction (container_t container);
+void LogDefineEventType(type_t type);
 
 #endif
