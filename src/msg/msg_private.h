@@ -70,12 +70,14 @@ typedef struct simdata_file {
 /******************************* Process *************************************/
 
 namespace simgrid {
-class MsgActorExt {
+namespace msg {
+class ActorExt {
 public:
-  explicit MsgActorExt(void* d) : data(d) {}
+  explicit ActorExt(void* d) : data(d) {}
   msg_error_t errno_ = MSG_OK;  /* the last value returned by a MSG_function */
   void* data = nullptr; /* user data */
 };
+}
 }
 
 typedef struct msg_comm {

@@ -79,7 +79,7 @@ simgrid::smpi::Process* smpi_process()
   smx_actor_t me = SIMIX_process_self();
   if (me == nullptr) // This happens sometimes (eg, when linking against NS3 because it pulls openMPI...)
     return nullptr;
-  simgrid::MsgActorExt* msgExt = static_cast<simgrid::MsgActorExt*>(me->data);
+  simgrid::msg::ActorExt* msgExt = static_cast<simgrid::msg::ActorExt*>(me->data);
   return static_cast<simgrid::smpi::Process*>(msgExt->data);
 }
 
@@ -180,7 +180,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
        XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
 
        smpi_switch_data_segment(
-           static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->src_proc->data)->data))
+           static_cast<simgrid::smpi::Process*>((static_cast<simgrid::msg::ActorExt*>(comm->src_proc->data)->data))
                ->index());
        tmpbuff = static_cast<void*>(xbt_malloc(buff_size));
        memcpy_private(tmpbuff, buff, private_blocks);
@@ -190,7 +190,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
       && ((char*)comm->dst_buff < smpi_start_data_exe + smpi_size_data_exe )){
        XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
        smpi_switch_data_segment(
-           static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->dst_proc->data)->data))
+           static_cast<simgrid::smpi::Process*>((static_cast<simgrid::msg::ActorExt*>(comm->dst_proc->data)->data))
                ->index());
   }
   XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff,comm->dst_buff);

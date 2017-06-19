@@ -76,7 +76,7 @@ void Process::set_data(int index, int* argc, char*** argv)
     instance_id_ = instance_id;
     index_ = index;
 
-    static_cast<simgrid::MsgActorExt*>(SIMIX_process_self()->data)->data = this;
+    static_cast<simgrid::msg::ActorExt*>(SIMIX_process_self()->data)->data = this;
 
     if (*argc > 3) {
       memmove(&(*argv)[0], &(*argv)[2], sizeof(char *) * (*argc - 2));
