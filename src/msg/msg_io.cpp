@@ -8,6 +8,7 @@
 #include "simgrid/s4u/Storage.hpp"
 #include "src/msg/msg_private.h"
 #include <numeric>
+#include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg, "Logging specific to MSG (io)");
 
