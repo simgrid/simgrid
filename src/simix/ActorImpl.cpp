@@ -878,10 +878,9 @@ xbt_dynar_t SIMIX_processes_as_dynar() {
 }
 
 void SIMIX_process_on_exit_runall(smx_actor_t process) {
-  s_smx_process_exit_fun_t exit_fun;
   smx_process_exit_status_t exit_status = (process->context->iwannadie) ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
   while (not process->on_exit.empty()) {
-    exit_fun = process->on_exit.back();
+    s_smx_process_exit_fun_t exit_fun = process->on_exit.back();
     (exit_fun.fun)((void*)exit_status, exit_fun.arg);
     process->on_exit.pop_back();
   }
