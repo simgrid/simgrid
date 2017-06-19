@@ -19,8 +19,26 @@ pages, as follows:
  - @subpage inside_cmake
  - @subpage inside_release
 
-@section uhood_tech_codstand Coding Standard
+@section uhood_tech_config Insider's Configuration
 
+The default build configuration of SimGrid fits the user needs, but
+they are not adapted to the ones actually working on SimGrid. See @ref
+install_src_config for more information. Note that this is very
+different from runtime configuration.
+
+In particular, the build is configured by default to produce highly
+optimized binaries, at the price of high compilation time. The
+rational is that users will compile SimGrid only once, and use it many
+times. This is exactly the contrary for the insiders, so you want to
+turn off \b enable_compile_optimizations.
+
+Symmetrically, \b enable_compile_warnings is off for the users because
+we don't want to bother them with compiler warnings (that abort the
+build in SimGrid), but any insider must turn this option on, or your
+code will be refused from the main repository.
+
+@section uhood_tech_codstand Automatically Enforcing our Coding Standards
+ 
 If you plan to commit code to the SimGrid project, you definitely need
 to install the relevant tool to ensure that your changes follow our
 coding standards:
@@ -38,5 +56,54 @@ to find the exact command with git-apply to fix your formating.
 
 If you find that for a specific commit, the formatter does a very bad
 job, then add --no-verify to your git commit command line.
+
+@section uhood_tech_tricks Insider tricks
+
+Over the years, we accumulated a few tricks that make it easier to
+work with SimGrid. Here is a somewhat unsorted list of such tricks.
+
+### Easy testing
+
+Launching all tests can be very time consuming, so you want to build
+and run the tests in parallel. Also, you want to save the build output
+to disk, for further reference. This is exactly what the
+BuildSimGrid.sh script does. It is upper-cased so that the shell
+completion works and allow to run it in 4 key press: `./B<tab>`
+
+Note that if you build out of tree (as you should, see below), the
+script builds the build/default directory. I usually copy the file in
+each build/ subdir to test each of them separately.
+
+### Easy out of tree builds
+
+It is easy to break one build configuration or another. If you're
+serious about code quality, you should not commit your change before
+testing it with gcc and clang, with and without MC; with and without
+Java. To easily switch between the configs without rebuilding
+everything, you want to compile out of tree (as explained in @ref
+install_cmake_outsrc).
+
+To not mess with git, you want to put your build tree under the build/
+directory, which is ignored by git. For example, I have the following
+directories: build/default build/clang build/java build/full
+(but YMMV).
+
+Then, the problem is that when you traverse these directories, you
+cannot edit the sources (that are in the srcdir, while you're in
+bindir). This makes it difficult to launch the tests and everything.
+
+To solve that issue, just call `make hardlinks` from your build dir.
+This will create hard links allowing to share every source files into
+the build dir. They are not copied, but hard linked. It means that
+these files are accessible both from the srcdir and from the bindir. If
+you edit a source file found under bindir, the srcdir version (visible
+to git) will also be changed (that's the same file, after all).
+
+If you accidentally call `make` from the srcdir, it will mess up your
+out of tree builds. To fix it, remove \c srcdir/CMakeCache.txt. 
+To prevent make to even create this file, create a srcdir/CMakeFiles
+directory, and change its mode to 0 (`chmod 0 CMakeFiles`). That way,
+if you type `make` by mistake from srcdir, it will fail before causing
+any harm.
 
 */
