@@ -12,7 +12,6 @@
 namespace simgrid {
 namespace s4u {
 
-//  attached_to_ = Host::by_name_or_null(pimpl->attach_);
 std::map<std::string, Storage*>* allStorages()
 {
   std::unordered_map<std::string, surf::StorageImpl*>* map = surf::StorageImpl::storagesMap();
@@ -38,7 +37,7 @@ const char* Storage::name()
 
 const char* Storage::type()
 {
-  return pimpl_->typeId_;
+  return pimpl_->typeId_.c_str();
 }
 
 Host* Storage::host()

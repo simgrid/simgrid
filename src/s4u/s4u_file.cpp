@@ -17,7 +17,7 @@ namespace s4u {
 
 File::File(const char* fullpath, void* userdata) : File(fullpath, Host::current(), userdata){};
 
-File::File(const char* fullpath, sg_host_t host, void* userdata) : path_(fullpath), userdata_(userdata)
+File::File(const char* fullpath, sg_host_t host, void* userdata) : path_(fullpath), userdata_(userdata), host_(host)
 {
   // this cannot fail because we get a xbt_die if the mountpoint does not exist
   Storage* st                  = nullptr;
@@ -42,7 +42,6 @@ File::File(const char* fullpath, sg_host_t host, void* userdata) : path_(fullpat
     xbt_die("Can't find mount point for '%s' on '%s'", fullpath, host->cname());
 
   pimpl_       = simcall_file_open(mount_point.c_str(), path.c_str(), st);
-  host_        = host;
   storage_type = st->type();
   storageId    = st->name();
 }

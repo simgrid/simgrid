@@ -295,7 +295,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
     }
   }
 
-  if (longest_prefix_length > 0) {
+  if (storage_dest != nullptr) {
     /* Mount point found, retrieve the host the storage is attached to */
     dst_host = storage_dest->host();
   }else{
@@ -472,10 +472,12 @@ void *MSG_storage_get_data(msg_storage_t storage)
 xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
 {
   std::map<std::string, sg_size_t>* content = storage->content();
-  xbt_dict_t content_dict = xbt_dict_new_homogeneous(nullptr);
+  xbt_dict_t content_dict = xbt_dict_new_homogeneous(&free);
 
   for (auto entry : *content) {
-    xbt_dict_set(content_dict, entry.first.c_str(), (void*)entry.second, nullptr);
+    sg_size_t* psize = new sg_size_t;
+    *psize           = entry.second;
+    xbt_dict_set(content_dict, entry.first.c_str(), psize, nullptr);
   }
   return content_dict;
 }

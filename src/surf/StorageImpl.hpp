@@ -105,7 +105,7 @@ public:
   std::map<std::string, sg_size_t>* content_;
   sg_size_t size_;
   sg_size_t usedSize_;
-  char* typeId_;
+  std::string typeId_;
   std::string attach_; // Name of the host to which this storage is attached.
                        // Only used until the platform is fully parsed only.
                        // Then the interface stores the Host directly.

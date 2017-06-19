@@ -64,11 +64,11 @@ StorageImpl::StorageImpl(Model* model, const char* name, lmm_system_t maxminSyst
     , piface_(this)
     , size_(size)
     , usedSize_(0)
-    , typeId_(xbt_strdup(type_id))
+    , typeId_(type_id)
+    , attach_(attach)
     , writeActions_(std::vector<StorageAction*>())
 {
   content_ = parseContent(content_name);
-  attach_  = attach;
   turnOn();
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);
   constraintRead_  = lmm_constraint_new(maxminSystem, this, bread);
@@ -81,8 +81,6 @@ StorageImpl::~StorageImpl()
   storageDestructedCallbacks(this);
   if (content_ != nullptr)
     delete content_;
-
-  free(typeId_);
 }
 
 std::map<std::string, sg_size_t>* StorageImpl::parseContent(const char* filename)
