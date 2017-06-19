@@ -39,7 +39,7 @@ int peer_execute_task(peer_t peer, msg_task_t task)
     peer->pieces++;
     peer->bytes += msg->data_length;
     if (peer->pieces >= peer->total_pieces) {
-      XBT_DEBUG("%d pieces receieved", peer->pieces);
+      XBT_DEBUG("%d pieces received", peer->pieces);
       done = 1;
     }
   }
