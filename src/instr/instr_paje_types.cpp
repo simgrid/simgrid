@@ -143,7 +143,7 @@ type_t PJ_type_event_new (const char *name, type_t father)
 
   type_t ret = newType (name, name, nullptr, TYPE_EVENT, father);
   XBT_DEBUG("EventType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
-  new DefineEventTypeEvent(ret);
+  LogDefineEventType(ret);
   return ret;
 }
 
