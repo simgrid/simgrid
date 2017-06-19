@@ -306,12 +306,6 @@ Here are the existing format directives:
  - %%L: line number where the log event was raised (LOG4J compatible)
  - %%M: function name (LOG4J compatible -- called method name here of course).
 
- - %%b: full backtrace (Called %%throwable in LOG4J).
-   Defined only under windows or when using the GNU libc because backtrace() is not defined
-   elsewhere, and we only have a fallback for windows boxes, not mac ones for example.
- - %%B: short backtrace (only the first line of the %%b).
-   Called %%throwable{short} in LOG4J; defined where %%b is.
-
  - %%d: date (UNIX-like epoch)
  - %%r: application age (time elapsed since the beginning of the application)
 

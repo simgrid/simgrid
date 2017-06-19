@@ -12,7 +12,7 @@
 #include <memory>
 #include <vector>
 
-#include <xbt/base.h>
+#include "xbt/base.h"
 
 #include "src/xbt/memory_map.hpp"
 #include "src/mc/mc_forward.hpp"
@@ -52,7 +52,7 @@ struct FunctionIndexEntry {
  */
 class ObjectInformation {
 public:
-  ObjectInformation();
+  ObjectInformation() = default;
 
   // Not copyable:
   ObjectInformation(ObjectInformation const&) = delete;

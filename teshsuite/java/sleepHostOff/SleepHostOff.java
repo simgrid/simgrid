@@ -1,10 +1,9 @@
-/* Copyright (c) 2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package SleepHostOff;
+package sleepHostOff;
 
 import org.simgrid.msg.*;
 import org.simgrid.msg.Process;
@@ -56,7 +55,7 @@ public class SleepHostOff {
     Msg.init(args);
 
     if (args.length < 1) {
-      Msg.info("Usage: java -cp simgrid.jar:. sleep_host_off.SleepHostOff <platform.xml>");
+      Msg.info("Usage: java -cp simgrid.jar:. sleepHostOff.SleepHostOff <platform.xml>");
       System.exit(1);
     }
 

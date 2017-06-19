@@ -52,8 +52,8 @@ int Coll_allgather_mvapich2_smp::allgather(void *sendbuf,int sendcnt, MPI_Dataty
   if(comm->get_leaders_comm()==MPI_COMM_NULL){
     comm->init_smp();
   }
-  
-    if(!comm->is_uniform() || !comm->is_blocked())
+
+  if (not comm->is_uniform() || not comm->is_blocked())
     THROWF(arg_error,0, "allgather MVAPICH2 smp algorithm can't be used with irregular deployment. Please insure that processes deployed on the same node are contiguous and that each node has the same number of processes");
   
     if (recvcnt == 0) {
@@ -114,8 +114,8 @@ int Coll_allgather_mvapich2_smp::allgather(void *sendbuf,int sendcnt, MPI_Dataty
 
             displs =  static_cast<int *>(xbt_malloc(sizeof (int) * leader_comm_size));
             recvcnts =  static_cast<int *>(xbt_malloc(sizeof (int) * leader_comm_size));
-            if (!displs || !recvcnts) {
-                return MPI_ERR_OTHER;
+            if (not displs || not recvcnts) {
+              return MPI_ERR_OTHER;
             }
             recvcnts[0] = node_sizes[0] * recvcnt;
             displs[0] = 0;

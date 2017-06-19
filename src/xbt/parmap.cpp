@@ -141,7 +141,7 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
  */
 void xbt_parmap_destroy(xbt_parmap_t parmap)
 {
-  if (!parmap) {
+  if (not parmap) {
     return;
   }
 
@@ -218,6 +218,8 @@ static void xbt_parmap_set_mode(xbt_parmap_t parmap, e_xbt_parmap_mode_t mode)
     case XBT_PARMAP_DEFAULT:
       THROW_IMPOSSIBLE;
       break;
+    default:
+      THROW_IMPOSSIBLE;
   }
 }
 

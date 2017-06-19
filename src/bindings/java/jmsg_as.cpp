@@ -68,24 +68,24 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getSons(JNIEnv * env, job
 
   jclass cls = env->FindClass("org/simgrid/msg/As");
 
-  if (!cls)
+  if (not cls)
     return nullptr;
 
   jtable = env->NewObjectArray(static_cast<jsize>(self_as->children()->size()), cls, nullptr);
 
-  if (!jtable) {
+  if (not jtable) {
     jxbt_throw_jni(env, "Hosts table allocation failed");
     return nullptr;
   }
 
   for (auto tmp_as : *self_as->children()) {
     jobject tmp_jas = jnetzone_new_instance(env);
-    if (!tmp_jas) {
+    if (not tmp_jas) {
       jxbt_throw_jni(env, "java As instantiation failed");
       return nullptr;
     }
     tmp_jas = jnetzone_ref(env, tmp_jas);
-    if (!tmp_jas) {
+    if (not tmp_jas) {
       jxbt_throw_jni(env, "new global ref allocation failed");
       return nullptr;
     }
@@ -100,14 +100,14 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getSons(JNIEnv * env, job
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getProperty(JNIEnv *env, jobject jas, jobject jname) {
   simgrid::s4u::NetZone* as = jnetzone_get_native(env, jas);
 
-  if (!as) {
+  if (not as) {
     jxbt_throw_notbound(env, "as", jas);
     return nullptr;
   }
   const char *name = env->GetStringUTFChars(static_cast<jstring>(jname), 0);
 
-  const char *property = MSG_environment_as_get_property_value(as, name);
-  if (!property) {
+  const char* property = MSG_zone_get_property_value(as, name);
+  if (not property) {
     return nullptr;
   }
 
@@ -126,21 +126,23 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jo
   simgrid::s4u::NetZone* as = jnetzone_get_native(env, jas);
 
   jclass cls = jxbt_get_class(env, "org/simgrid/msg/Host");
-  std::vector<sg_host_t>* table = as->hosts();
-  if (!cls)
+  if (not cls)
     return nullptr;
 
-  jtable = env->NewObjectArray(static_cast<jsize>(table->size()), cls, nullptr);
+  std::vector<sg_host_t> table;
+  as->hosts(&table);
 
-  if (!jtable) {
+  jtable = env->NewObjectArray(static_cast<jsize>(table.size()), cls, nullptr);
+
+  if (not jtable) {
     jxbt_throw_jni(env, "Hosts table allocation failed");
     return nullptr;
   }
 
   int index = 0;
-  for (auto host : *table) {
+  for (auto host : table) {
     jhost = static_cast<jobject>(host->extension(JAVA_HOST_LEVEL));
-    if (!jhost) {
+    if (not jhost) {
       jname = env->NewStringUTF(host->cname());
 
       jhost = Java_org_simgrid_msg_Host_getByName(env, cls, jname);

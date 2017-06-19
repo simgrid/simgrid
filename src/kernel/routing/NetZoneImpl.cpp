@@ -21,8 +21,8 @@ namespace routing {
 class BypassRoute {
 public:
   explicit BypassRoute(NetPoint* gwSrc, NetPoint* gwDst) : gw_src(gwSrc), gw_dst(gwDst) {}
-  const NetPoint* gw_src;
-  const NetPoint* gw_dst;
+  NetPoint* gw_src;
+  NetPoint* gw_dst;
   std::vector<surf::LinkImpl*> links;
 };
 
@@ -69,15 +69,15 @@ void NetZoneImpl::addBypassRoute(sg_platf_route_cbarg_t e_route)
   if (e_route->gw_dst) {
     XBT_DEBUG("Load bypassNetzoneRoute from %s@%s to %s@%s", e_route->src->cname(), e_route->gw_src->cname(),
               e_route->dst->cname(), e_route->gw_dst->cname());
-    xbt_assert(!e_route->link_list->empty(), "Bypass route between %s@%s and %s@%s cannot be empty.",
+    xbt_assert(not e_route->link_list->empty(), "Bypass route between %s@%s and %s@%s cannot be empty.",
                e_route->src->cname(), e_route->gw_src->cname(), e_route->dst->cname(), e_route->gw_dst->cname());
     xbt_assert(bypassRoutes_.find({e_route->src, e_route->dst}) == bypassRoutes_.end(),
                "The bypass route between %s@%s and %s@%s already exists.", e_route->src->cname(),
                e_route->gw_src->cname(), e_route->dst->cname(), e_route->gw_dst->cname());
   } else {
     XBT_DEBUG("Load bypassRoute from %s to %s", e_route->src->cname(), e_route->dst->cname());
-    xbt_assert(!e_route->link_list->empty(), "Bypass route between %s and %s cannot be empty.", e_route->src->cname(),
-               e_route->dst->cname());
+    xbt_assert(not e_route->link_list->empty(), "Bypass route between %s and %s cannot be empty.",
+               e_route->src->cname(), e_route->dst->cname());
     xbt_assert(bypassRoutes_.find({e_route->src, e_route->dst}) == bypassRoutes_.end(),
                "The bypass route between %s and %s already exists.", e_route->src->cname(), e_route->dst->cname());
   }
@@ -292,14 +292,14 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
               "calls to getRoute",
               src->cname(), dst->cname(), bypassedRoute->links.size());
     if (src != key.first)
-      getGlobalRoute(src, const_cast<NetPoint*>(bypassedRoute->gw_src), links, latency);
+      getGlobalRoute(src, bypassedRoute->gw_src, links, latency);
     for (surf::LinkImpl* link : bypassedRoute->links) {
       links->push_back(link);
       if (latency)
         *latency += link->latency();
     }
     if (dst != key.second)
-      getGlobalRoute(const_cast<NetPoint*>(bypassedRoute->gw_dst), dst, links, latency);
+      getGlobalRoute(bypassedRoute->gw_dst, dst, links, latency);
     return true;
   }
   XBT_DEBUG("No bypass route from '%s' to '%s'.", src->cname(), dst->cname());

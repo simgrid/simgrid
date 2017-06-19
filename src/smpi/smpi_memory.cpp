@@ -1,11 +1,11 @@
-/* Copyright (c) 2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <cstdint>
 #include <climits>
+#include <cstring>
 
 #include <vector>
 
@@ -21,9 +21,9 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-#include "../xbt/memory_map.hpp"
+#include "src/xbt/memory_map.hpp"
 
-#include "private.h"
+#include "src/smpi/private.h"
 #include "private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_memory, smpi, "Memory layout support for SMPI");
@@ -101,7 +101,7 @@ void smpi_really_switch_data_segment(int dest)
   void* tmp =
       mmap(TOPAGE(smpi_start_data_exe), smpi_size_data_exe, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);
   if (tmp != TOPAGE(smpi_start_data_exe))
-    xbt_die("Couldn't map the new region");
+    xbt_die("Couldn't map the new region (errno %d): %s", errno, strerror(errno));
   smpi_loaded_page = dest;
 #endif
 }
@@ -114,12 +114,7 @@ int smpi_is_privatisation_file(char* file)
 void smpi_initialize_global_memory_segments()
 {
 
-#if !HAVE_PRIVATIZATION
-  smpi_privatize_global_variables=false;
-  xbt_die("You are trying to use privatization on a system that does not support it. Don't.");
-  return;
-#else
-
+#if HAVE_PRIVATIZATION
   smpi_get_executable_global_size();
 
   XBT_DEBUG ("bss+data segment found : size %d starting at %p", smpi_size_data_exe, smpi_start_data_exe );
@@ -182,6 +177,10 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
     smpi_privatisation_regions[i].file_descriptor = file_descriptor;
     smpi_privatisation_regions[i].address         = address;
   }
+#else /* ! HAVE_PRIVATIZATION */
+  smpi_privatize_global_variables = false;
+  xbt_die("You are trying to use privatization on a system that does not support it. Don't.");
+  return;
 #endif
 }
 

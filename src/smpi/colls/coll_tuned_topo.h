@@ -55,9 +55,7 @@
     ompi_coll_tree_t*
     ompi_coll_tuned_topo_build_bmtree( MPI_Comm comm,
                                        int root );
-    ompi_coll_tree_t*
-    ompi_coll_tuned_topo_build_in_order_bmtree( MPI_Comm comm,
-						int root );
+    ompi_coll_tree_t* ompi_coll_tuned_topo_build_in_order_bmtree(MPI_Comm comm, int root);
     ompi_coll_tree_t*
     ompi_coll_tuned_topo_build_chain( int fanout,
                                       MPI_Comm com,

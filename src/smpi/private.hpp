@@ -9,6 +9,7 @@
 #include "src/instr/instr_smpi.h"
 #include <unordered_map>
 #include <vector>
+#include "src/internal_config.h"
 
 /**
  * Get the address of the beginning of the memory page where addr is located.

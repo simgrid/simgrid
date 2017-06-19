@@ -1,5 +1,4 @@
-/* Copyright (c) 2006-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,17 +6,10 @@
 #ifndef SIMGRID_S4U_ACTIVITY_HPP
 #define SIMGRID_S4U_ACTIVITY_HPP
 
-#include <cstdlib>
-
-#include <xbt/base.h>
-#include <xbt/misc.h>
-
 #include <simgrid/s4u/forward.hpp>
 #include <simgrid/forward.h>
 
-typedef enum {
-  inited, started, finished
-} e_s4u_activity_state_t;
+typedef enum { inited = 0, started, canceled, errored, finished } e_s4u_activity_state_t;
 
 namespace simgrid {
 namespace s4u {
@@ -28,6 +20,9 @@ namespace s4u {
  */
 XBT_PUBLIC_CLASS Activity {
   friend Comm;
+  friend void intrusive_ptr_release(Comm * c);
+  friend void intrusive_ptr_add_ref(Comm * c);
+
 protected:
   Activity();
   virtual ~Activity();

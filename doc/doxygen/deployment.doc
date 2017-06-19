@@ -34,13 +34,13 @@ in many of the provided example, just grep for them.
 
 @section deploy_xml Deployment with XML
 
-Deploying processes from XML is easy. This section presents a complete
+Deploying actors from XML is easy. This section presents a complete
 example and the reference guide of the involved tags.
 
 The deployment file looks just like a @ref platform "platform" file,
 with only 3 tags used:
 
-  - @c &lt;process&gt; starts a new actor on a given host;
+  - @c &lt;actor&gt; starts a new actor on a given host;
   - @c &lt;argument&gt; passes a given argument in the argv of an actor
     (the list of arguments is ordered);
   - @c &lt;prop&gt; adds a property to the actor.
@@ -55,26 +55,26 @@ are named @c ***_d_xml.
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
   <!-- Alice, which runs on the machine named 'host1', does not take any parameter -->
-  <process host="host1" function="alice" />
+  <actor host="host1" function="alice" />
 
   <!-- Bob, which runs on 'host2', has 2 parameters "3" and "3000" in its argv -->
-  <process host="host2" function="bob" />
+  <actor host="host2" function="bob" />
      <argument value="3"/>
      <argument value="3000"/>
-  </process>
+  </actor>
 
   <!-- Carole runs on 'host3', has 1 parameter "42" in its argv and one property -->
   <!-- See MSG_process_get_property_value() to retrieve this property -->
-  <process host="host3" function="carole">
+  <actor host="host3" function="carole">
       <argument value="42"/>
       <prop id="SomeProp" value="SomeValue"/>
-  </process>
+  </actor>
 </platform>
 @endverbatim
 
-@subsection deploy_xml_process The process tag
+@subsection deploy_xml_actor The actor tag
 
-&lt;process&gt; starts a new actor on a given host. It specifies which
+&lt;actor&gt; starts a new actor on a given host. It specifies which
 function (from your application) gets executed on the host. Hence, the
 @c host and @c function attributes are mandatory, but this tag accepts
 some optional attributes too.
@@ -85,11 +85,11 @@ some optional attributes too.
 | function        | yes       | String       | Name of the function (from your own code) that will be executed.  See @ref deploy_xml_functions. |
 | start_time      | no        | int          | The simulated time when this actor will be started (Default: ASAP).             |
 | kill_time       | no        | int          | The simulated time when this actor will be forcefully stopped (Default: never). |
-| on_failure      | no        | DIE\|RESTART | What should be done when the process fails (Default: die).       |
+| on_failure      | no        | DIE\|RESTART | What should be done when the actor fails (Default: die).       |
 
 @subsection deploy_xml_argument The argument tag
 
-This tag (which must be enclosed in a @c &lt;process&gt; tag) adds a
+This tag (which must be enclosed in a @c &lt;actor&gt; tag) adds a
 new string to the parameter list received by your actor (either its @c
 argv array in MSG or its @c args vector in S4U).  Naturally, the
 semantic of these parameters completely depend on your program.
@@ -100,12 +100,11 @@ semantic of these parameters completely depend on your program.
 
 @subsection deploy_xml_prop The prop tag
 
-This tag (which must be enclosed in a @c &lt;process&gt; tag) adds a
-new property to your actor.
-
-(either its @c
-argv array in MSG or its @c args vector in S4U).  Naturally, the
-semantic of these parameters completely depend on your program.
+This tag (which must be enclosed in a @c &lt;actor&gt; tag) adds a new
+property to your actor. You can retrieve these properties with
+MSG_process_get_property_value() or simgrid::s4u::Actor::property().
+Naturally, the semantic of these parameters completely depend on your
+program.
 
 | Attribute name  | Mandatory | Values                 | Description                  |
 | --------------- | --------- | ---------------------- | -----------                  |
@@ -115,7 +114,7 @@ semantic of these parameters completely depend on your program.
 @subsection deploy_xml_functions Declaring startable functions
 
 You need to connect your code to the names that you use in the XML
-deployment file. Depends on the interface you use, this is done with
+deployment file. Depending on the interface you use, this is done with
 MSG_process_create() or simgrid::s4u::Engine::registerFunction().
 There is nothing to do in your **Java code** since SimGrid uses
 the Java introspection abilities to retrieve the classes from their

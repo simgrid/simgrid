@@ -117,8 +117,8 @@ Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
         /* Note that ompi_datatype_type_size() will never return a negative
            value in typelng; it returns an int [vs. an unsigned type]
            because of the MPI spec. */
-    	if (segsize < ((uint32_t) type_size)) {
-            segsize = type_size; /* push segsize up to hold one type */
+        if (segsize < ((uint32_t)type_size)) {
+          segsize = type_size; /* push segsize up to hold one type */
         }
         segcount[0] = segcount[1] = segsize / type_size; 
         num_segments[0] = counts[0]/segcount[0];

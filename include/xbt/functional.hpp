@@ -21,8 +21,8 @@
 #include <utility>
 #include <vector>
 
-#include <xbt/sysdep.h>
-#include <xbt/utility.hpp>
+#include "xbt/sysdep.h"
+#include "xbt/utility.hpp"
 
 namespace simgrid {
 namespace xbt {
@@ -39,11 +39,12 @@ public:
   {}
   void operator()() const
   {
+    char noarg[] = {'\0'};
     const int argc = args_->size();
     std::vector<std::string> args = *args_;
     std::unique_ptr<char*[]> argv(new char*[argc + 1]);
     for (int i = 0; i != argc; ++i)
-      argv[i] = args[i].empty() ? const_cast<char*>(""): &args[i].front();
+      argv[i] = args[i].empty() ? noarg : &args[i].front();
     argv[argc] = nullptr;
     code_(argc, argv.get());
   }
@@ -231,9 +232,7 @@ private:
     vtable_ = &vtable;
   }
 
-  template<class F>
-  typename std::enable_if<!canSBO<F>()>::type
-  init(F code)
+  template <class F> typename std::enable_if<not canSBO<F>()>::type init(F code)
   {
     const static TaskVtable vtable {
       // Call:

@@ -28,7 +28,8 @@
 #include <string>
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 
-XBT_PRIVATE std::vector<s_mount_t> mount_list;
+XBT_PRIVATE std::map<std::string, simgrid::surf::StorageImpl*> mount_list;
+XBT_PRIVATE std::vector<std::string> known_storages;
 
 namespace simgrid {
 namespace surf {
@@ -206,7 +207,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     s_sg_platf_host_cbarg_t host;
     memset(&host, 0, sizeof(host));
     host.id = host_id;
-    if ((cluster->properties != nullptr) && (!xbt_dict_is_empty(cluster->properties))) {
+    if ((cluster->properties != nullptr) && (not xbt_dict_is_empty(cluster->properties))) {
       xbt_dict_cursor_t cursor=nullptr;
       char *key;
       char* data;
@@ -289,7 +290,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   // Add a router.
   XBT_DEBUG(" ");
   XBT_DEBUG("<router id=\"%s\"/>", cluster->router_id);
-  if (!cluster->router_id || !strcmp(cluster->router_id, "")) {
+  if (not cluster->router_id || not strcmp(cluster->router_id, "")) {
     char* newid         = bprintf("%s%s_router%s", cluster->prefix, cluster->id, cluster->suffix);
     current_as->router_ = sg_platf_new_router(newid, NULL);
     free(newid);
@@ -364,8 +365,8 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
 
 void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)
 {
-  xbt_assert(!xbt_lib_get_or_null(storage_lib, storage->id,ROUTING_STORAGE_LEVEL),
-               "Refusing to add a second storage named \"%s\"", storage->id);
+  xbt_assert(std::find(known_storages.begin(), known_storages.end(), storage->id) == known_storages.end(),
+             "Refusing to add a second storage named \"%s\"", storage->id);
 
   xbt_assert(storage_types.find(storage->type_id) != storage_types.end(), "No storage type '%s'", storage->type_id);
   storage_type_t stype = storage_types.at(storage->type_id);
@@ -373,23 +374,20 @@ void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)
   XBT_DEBUG("ROUTING Create a storage name '%s' with type_id '%s' and content '%s'", storage->id, storage->type_id,
             storage->content);
 
-  xbt_lib_set(storage_lib, storage->id, ROUTING_STORAGE_LEVEL, (void *) xbt_strdup(storage->type_id));
+  known_storages.push_back(storage->id);
 
   // if storage content is not specified use the content of storage_type if any
-  if (!strcmp(storage->content, "") && strcmp(stype->content, "")) {
+  if (not strcmp(storage->content, "") && strcmp(stype->content, "")) {
     storage->content      = stype->content;
-    storage->content_type = stype->content_type;
-    XBT_DEBUG("For disk '%s' content is empty, inherit the content (of type %s) from storage type '%s' ", storage->id,
-              stype->content_type, stype->type_id);
+    XBT_DEBUG("For disk '%s' content is empty, inherit the content (of type %s)", storage->id, stype->type_id);
   }
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' "
-            "\n\t\tmodel '%s' \n\t\tcontent '%s'\n\t\tcontent_type '%s' "
+            "\n\t\tmodel '%s' \n\t\tcontent '%s' "
             "\n\t\tproperties '%p''\n",
-            storage->id, stype->model, stype->type_id, storage->content, storage->content_type, storage->properties);
+            storage->id, stype->model, stype->type_id, storage->content, storage->properties);
 
-  auto s = surf_storage_model->createStorage(storage->id, stype->type_id, storage->content, storage->content_type,
-                                             storage->attach);
+  auto s = surf_storage_model->createStorage(storage->id, stype->type_id, storage->content, storage->attach);
 
   if (storage->properties) {
     xbt_dict_cursor_t cursor = nullptr;
@@ -410,30 +408,26 @@ void sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type)
   stype->model = xbt_strdup(storage_type->model);
   stype->properties = storage_type->properties;
   stype->content = xbt_strdup(storage_type->content);
-  stype->content_type = xbt_strdup(storage_type->content_type);
   stype->type_id = xbt_strdup(storage_type->id);
   stype->size = storage_type->size;
   stype->model_properties = storage_type->model_properties;
 
-  XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s', content '%s', and content_type '%s'",
-            stype->type_id, stype->model, storage_type->content, storage_type->content_type);
+  XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s', content '%s'", stype->type_id, stype->model,
+            storage_type->content);
 
   storage_types.insert({std::string(stype->type_id), stype});
 }
 
 void sg_platf_new_mount(sg_platf_mount_cbarg_t mount){
-  xbt_assert(xbt_lib_get_or_null(storage_lib, mount->storageId, ROUTING_STORAGE_LEVEL),
-      "Cannot mount non-existent disk \"%s\"", mount->storageId);
+  xbt_assert(std::find(known_storages.begin(), known_storages.end(), mount->storageId) != known_storages.end(),
+             "Cannot mount non-existent disk \"%s\"", mount->storageId);
 
   XBT_DEBUG("ROUTING Mount '%s' on '%s'",mount->storageId, mount->name);
 
-  s_mount_t mnt;
-  mnt.storage = surf_storage_resource_priv(surf_storage_resource_by_name(mount->storageId));
-  mnt.name = xbt_strdup(mount->name);
-
   if (mount_list.empty())
     XBT_DEBUG("Create a Mount list for %s", A_surfxml_host_id);
-  mount_list.push_back(mnt);
+  mount_list.insert(
+      {std::string(mount->name), surf_storage_resource_priv(surf_storage_resource_by_name(mount->storageId))});
 }
 
 void sg_platf_new_route(sg_platf_route_cbarg_t route)
@@ -449,7 +443,7 @@ void sg_platf_new_bypassRoute(sg_platf_route_cbarg_t bypassRoute)
 void sg_platf_new_process(sg_platf_process_cbarg_t process)
 {
   sg_host_t host = sg_host_by_name(process->host);
-  if (!host) {
+  if (not host) {
     // The requested host does not exist. Do a nice message to the user
     std::string msg = std::string("Cannot create process '") + process->function + "': host '" + process->host +
                       "' does not exist\nExisting hosts: '";
@@ -470,7 +464,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
 
   double start_time = process->start_time;
   double kill_time  = process->kill_time;
-  int auto_restart = process->on_failure == SURF_PROCESS_ON_FAILURE_DIE ? 0 : 1;
+  int auto_restart = process->on_failure == SURF_ACTOR_ON_FAILURE_DIE ? 0 : 1;
 
   std::vector<std::string> args(process->argv, process->argv + process->argc);
   std::function<void()> code = factory(std::move(args));
@@ -557,14 +551,14 @@ static void surf_config_models_setup()
   const char* storage_model_name = xbt_cfg_get_string("storage/model");
 
   /* The compound host model is needed when using non-default net/cpu models */
-  if ((!xbt_cfg_is_default_value("network/model") || !xbt_cfg_is_default_value("cpu/model")) &&
+  if ((not xbt_cfg_is_default_value("network/model") || not xbt_cfg_is_default_value("cpu/model")) &&
       xbt_cfg_is_default_value("host/model")) {
     host_model_name = "compound";
     xbt_cfg_set_string("host/model", host_model_name);
   }
 
   XBT_DEBUG("host model: %s", host_model_name);
-  if (!strcmp(host_model_name, "compound")) {
+  if (not strcmp(host_model_name, "compound")) {
     xbt_assert(cpu_model_name, "Set a cpu model to use with the 'compound' host model");
     xbt_assert(network_model_name, "Set a network model to use with the 'compound' host model");
 
@@ -601,7 +595,7 @@ static void surf_config_models_setup()
  */
 simgrid::s4u::NetZone* sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
 {
-  if (!surf_parse_models_setup_already_called) {
+  if (not surf_parse_models_setup_already_called) {
     /* Initialize the surf models. That must be done after we got all config, and before we need the models.
      * That is, after the last <config> tag, if any, and before the first of cluster|peer|AS|trace|trace_connect
      *

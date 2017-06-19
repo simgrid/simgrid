@@ -8,7 +8,7 @@ if(enable_smpi)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   foreach(x coll-allgather coll-allgatherv coll-allreduce coll-alltoall coll-alltoallv coll-barrier coll-bcast 
             coll-gather coll-reduce coll-reduce-scatter coll-scatter macro-sample pt2pt-dsend pt2pt-pingpong 
-            type-hvector type-indexed type-struct type-vector bug-17132 timers )
+            type-hvector type-indexed type-struct type-vector bug-17132 timers privatization )
     add_executable       (${x}  ${x}/${x}.c)
     target_link_libraries(${x}  simgrid)
     set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -34,7 +34,8 @@ set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/c
                                     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-automatic.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/coll-alltoall/clusters.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/broken_hostfiles.tesh
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/TI_output.tesh              PARENT_SCOPE)
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/TI_output.tesh              
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/privatization/privatization_dlopen.tesh                             PARENT_SCOPE)
 set(bin_files       ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
                                     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_cluster
                                     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_coll
@@ -116,4 +117,12 @@ if(enable_smpi)
   # Extra pt2pt pingpong test: broken usage ti-tracing
   ADD_TESH_FACTORIES(tesh-smpi-broken  "thread"   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pt2pt-pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt-pingpong broken_hostfiles.tesh)
   ADD_TESH(tesh-smpi-replay-ti-tracing            --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pt2pt-pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt-pingpong TI_output.tesh)
+
+  # Simple privatization tests
+  if(HAVE_PRIVATIZATION)
+    ADD_TESH_FACTORIES(tesh-smpi-privatization-mmap  "thread;ucontext;raw;boost"   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/privatization privatization.tesh)
+  endif()
+
+    ADD_TESH_FACTORIES(tesh-smpi-privatization-dlopen  "thread;ucontext;raw;boost"   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/privatization privatization_dlopen.tesh)
+
 endif()

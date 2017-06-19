@@ -35,9 +35,10 @@ namespace simgrid {
     LinkImpl** LinkImpl::linksList()
     {
       LinkImpl** res = xbt_new(LinkImpl*, (int)links->size());
-      int i=0;
+      int i          = 0;
       for (auto kv : *links) {
-        res[i++] = kv.second;
+        res[i] = kv.second;
+        i++;
       }
       return res;
     }
@@ -103,7 +104,7 @@ namespace simgrid {
     {
 
       if (strcmp(name,"__loopback__"))
-        xbt_assert(!LinkImpl::byName(name), "Link '%s' declared several times in the platform.", name);
+        xbt_assert(not LinkImpl::byName(name), "Link '%s' declared several times in the platform.", name);
 
       latency_.scale   = 1;
       bandwidth_.scale = 1;
@@ -124,7 +125,7 @@ namespace simgrid {
      */
     void LinkImpl::destroy()
     {
-      if (!currentlyDestroying_) {
+      if (not currentlyDestroying_) {
         currentlyDestroying_ = true;
         s4u::Link::onDestruction(this->piface_);
         delete this;
@@ -168,17 +169,17 @@ namespace simgrid {
     void LinkImpl::setStateTrace(tmgr_trace_t trace)
     {
       xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Link %s", cname());
-      stateEvent_ = future_evt_set->add_trace(trace, 0.0, this);
+      stateEvent_ = future_evt_set->add_trace(trace, this);
     }
     void LinkImpl::setBandwidthTrace(tmgr_trace_t trace)
     {
       xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth trace to Link %s", cname());
-      bandwidth_.event = future_evt_set->add_trace(trace, 0.0, this);
+      bandwidth_.event = future_evt_set->add_trace(trace, this);
     }
     void LinkImpl::setLatencyTrace(tmgr_trace_t trace)
     {
       xbt_assert(latency_.event == nullptr, "Cannot set a second latency trace to Link %s", cname());
-      latency_.event = future_evt_set->add_trace(trace, 0.0, this);
+      latency_.event = future_evt_set->add_trace(trace, this);
     }
 
 
@@ -197,7 +198,7 @@ namespace simgrid {
     {
       std::list<LinkImpl*> retlist;
       lmm_system_t sys = getModel()->getMaxminSystem();
-      int llen         = lmm_get_number_of_cnst_from_var(sys, getVariable());
+      int llen         = lmm_get_number_of_cnst_from_var(sys, variable_);
 
       for (int i = 0; i < llen; i++) {
         /* Beware of composite actions: ptasks put links and cpus together */

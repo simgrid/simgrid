@@ -4,6 +4,12 @@
 More info: http://simgrid.gforge.inria.fr/simgrid/latest/doc/platform.html
 To upgrade your files, use the tool simgrid_update_xml
 
+* New in DTD version 4.1 (in SimGrid 3.16): backward compatible change (v4 files are valid v4.1 files)
+   - <zone> can be used as a synonym for the now deprecated <as>
+   - <zoneZoute> an be used as a synonym for the now deprecated <asroute>
+   - <bypassZoneRoute> an be used as a synonym for the now deprecated <bypassAsRoute>
+   - <actor>  can be used as a synonym for the now deprecated <process>
+
 * New in DTD version 4 (in SimGrid 3.13):
    - Rename (power->speed) the attributes describing the amount of flop
      that a <host>, <peer>, <cluster> or <cabinet> can deliver per second.
@@ -60,10 +66,11 @@ To upgrade your files, use the tool simgrid_update_xml
 
 -->
 
-<!ELEMENT platform ((config|random)*,(include|cluster|cabinet|peer|AS|trace|trace_connect)*,(process)*)>
+<!ELEMENT platform ((config|random)*,(include|cluster|cabinet|peer|AS|zone|trace|trace_connect)*,(process|actor)*)>
 <!ATTLIST platform version CDATA "0.0">
 
-<!ELEMENT include (include|cluster|cabinet|peer|AS|trace|trace_connect)*>
+<!-- tag include is deprecated. Not documented, and soon removed -->
+<!ELEMENT include (include|cluster|cabinet|peer|AS|zone|trace|trace_connect)*>
 <!ATTLIST include file CDATA #REQUIRED>
 
 <!ELEMENT trace (#PCDATA)>
@@ -86,16 +93,19 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST trace_connect trace CDATA #REQUIRED>
 <!ATTLIST trace_connect element CDATA #REQUIRED>
 
-<!ELEMENT AS ((prop*), ((AS|ASroute|include|storage_type|storage|link|backbone|cabinet|router|host|cluster|peer|host_link)*,(route|ASroute|trace|trace_connect|bypassRoute|bypassASroute)*))>
+<!ELEMENT AS ((prop*), ((AS|zone|ASroute|zoneRoute|include|storage_type|storage|link|backbone|cabinet|router|host|cluster|peer|host_link)*,(route|ASroute|zoneRoute|trace|trace_connect|bypassRoute|bypassASroute|bypassZoneRoute)*))>
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing (Full|Floyd|Dijkstra|DijkstraCache|None|Vivaldi|Cluster|ClusterTorus|ClusterFatTree|ClusterDragonfly) #REQUIRED>
 
+<!ELEMENT zone ((prop*), ((AS|zone|ASroute|zoneRoute|include|storage_type|storage|link|backbone|cabinet|router|host|cluster|peer|host_link)*,(route|ASroute|zoneRoute|trace|trace_connect|bypassRoute|bypassASroute|bypassZoneRoute)*))>
+<!ATTLIST zone id CDATA #REQUIRED>
+<!ATTLIST zone routing (Full|Floyd|Dijkstra|DijkstraCache|None|Vivaldi|Cluster|ClusterTorus|ClusterFatTree|ClusterDragonfly) #REQUIRED>
+
 <!ELEMENT storage_type ((model_prop|prop)*)>
 <!ATTLIST storage_type id       CDATA #REQUIRED>
-<!ATTLIST storage_type model    CDATA #REQUIRED>
+<!ATTLIST storage_type model    CDATA "N11">
 <!ATTLIST storage_type size     CDATA #REQUIRED>
 <!ATTLIST storage_type content  CDATA "">
-<!ATTLIST storage_type content_type  CDATA "txt_unix">
 
 <!ELEMENT mount EMPTY>
 <!ATTLIST mount storageId CDATA #REQUIRED>
@@ -114,7 +124,6 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST storage id CDATA #REQUIRED>
 <!ATTLIST storage typeId CDATA #REQUIRED>
 <!ATTLIST storage content  CDATA "">
-<!ATTLIST storage content_type  CDATA "txt_unix">
 <!ATTLIST storage attach CDATA #REQUIRED>
 
 <!ELEMENT host_link EMPTY>
@@ -191,6 +200,13 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST ASroute gw_dst CDATA #REQUIRED>
 <!ATTLIST ASroute symmetrical (YES|NO) "YES">
 
+<!ELEMENT zoneRoute (link_ctn*)>
+<!ATTLIST zoneRoute src CDATA #REQUIRED>
+<!ATTLIST zoneRoute dst CDATA #REQUIRED>
+<!ATTLIST zoneRoute gw_src CDATA #REQUIRED>
+<!ATTLIST zoneRoute gw_dst CDATA #REQUIRED>
+<!ATTLIST zoneRoute symmetrical (YES|NO) "YES">
+
 <!ELEMENT link_ctn EMPTY>
 <!ATTLIST link_ctn id CDATA #REQUIRED>
 <!ATTLIST link_ctn direction (UP|DOWN|NONE) "NONE">
@@ -205,12 +221,25 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST bypassASroute gw_src CDATA #REQUIRED>
 <!ATTLIST bypassASroute gw_dst CDATA #REQUIRED>
 
+<!ELEMENT bypassZoneRoute (link_ctn*)>
+<!ATTLIST bypassZoneRoute src CDATA #REQUIRED>
+<!ATTLIST bypassZoneRoute dst CDATA #REQUIRED>
+<!ATTLIST bypassZoneRoute gw_src CDATA #REQUIRED>
+<!ATTLIST bypassZoneRoute gw_dst CDATA #REQUIRED>
+
 <!ELEMENT process ((argument|prop)*)>
 <!ATTLIST process host CDATA #REQUIRED>
 <!ATTLIST process function CDATA #REQUIRED>
 <!ATTLIST process start_time CDATA "-1.0">
 <!ATTLIST process kill_time CDATA "-1.0">
 <!ATTLIST process on_failure (DIE|RESTART) "DIE">
+
+<!ELEMENT actor ((argument|prop)*)>
+<!ATTLIST actor host CDATA #REQUIRED>
+<!ATTLIST actor function CDATA #REQUIRED>
+<!ATTLIST actor start_time CDATA "-1.0">
+<!ATTLIST actor kill_time CDATA "-1.0">
+<!ATTLIST actor on_failure (DIE|RESTART) "DIE">
 
 <!ELEMENT argument EMPTY>
 <!ATTLIST argument value CDATA #REQUIRED>

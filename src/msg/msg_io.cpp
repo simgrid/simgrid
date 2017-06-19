@@ -3,9 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "../surf/StorageImpl.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/msg/msg_private.h"
-#include "src/surf/storage_interface.hpp"
 #include <numeric>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg, "Logging specific to MSG (io)");
@@ -24,7 +24,6 @@ void __MSG_file_get_info(msg_file_t fd){
   xbt_dynar_t info = simcall_file_get_info(fd->simdata->smx_file);
   sg_size_t *psize;
 
-  fd->content_type = xbt_dynar_pop_as(info, char*);
   fd->storage_type = xbt_dynar_pop_as(info, char*);
   fd->storageId    = xbt_dynar_pop_as(info, char*);
   fd->mount_point  = xbt_dynar_pop_as(info, char*);
@@ -41,7 +40,7 @@ static int MSG_host_get_file_descriptor_id(msg_host_t host)
     priv->file_descriptor_table = new std::vector<int>(sg_storage_max_file_descriptors);
     std::iota(priv->file_descriptor_table->rbegin(), priv->file_descriptor_table->rend(), 0); // Fill with ..., 1, 0.
   }
-  xbt_assert(!priv->file_descriptor_table->empty(), "Too much files are opened! Some have to be closed.");
+  xbt_assert(not priv->file_descriptor_table->empty(), "Too much files are opened! Some have to be closed.");
   int desc = priv->file_descriptor_table->back();
   priv->file_descriptor_table->pop_back();
   return desc;
@@ -90,9 +89,8 @@ void MSG_file_dump (msg_file_t fd){
            "\t\tMount point: '%s'\n"
            "\t\tStorage Id: '%s'\n"
            "\t\tStorage Type: '%s'\n"
-           "\t\tContent Type: '%s'\n"
            "\t\tFile Descriptor Id: %d",
-           fd->fullpath, fd->size, fd->mount_point, fd->storageId, fd->storage_type, fd->content_type, fd->desc_id);
+           fd->fullpath, fd->size, fd->mount_point, fd->storageId, fd->storage_type, fd->desc_id);
 }
 
 /** \ingroup msg_file
@@ -118,19 +116,15 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
   if (strcmp(storage_priv_src->hostname, MSG_host_self()->cname())) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", storage_priv_src->hostname, read_size);
-    msg_host_t *m_host_list = nullptr;
-    m_host_list = xbt_new0(msg_host_t, 2);
-
-    m_host_list[0] = MSG_host_self();
-    m_host_list[1] = attached_host;
-    double flops_amount[] = { 0, 0};
-    double bytes_amount[] = { 0, 0, static_cast<double>(read_size), 0 };
+    msg_host_t m_host_list[] = {MSG_host_self(), attached_host};
+    double flops_amount[]    = {0, 0};
+    double bytes_amount[]    = {0, 0, static_cast<double>(read_size), 0};
 
     msg_task_t task = MSG_parallel_task_create("file transfer for read", 2, m_host_list, flops_amount, bytes_amount,
                       nullptr);
     msg_error_t transfer = MSG_parallel_task_execute(task);
     MSG_task_destroy(task);
-    xbt_free(m_host_list);
+
     if(transfer != MSG_OK){
       if (transfer == MSG_HOST_FAILURE)
         XBT_WARN("Transfer error, %s remote host just turned off!", attached_host->cname());
@@ -163,19 +157,15 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
   if (strcmp(storage_priv_src->hostname, MSG_host_self()->cname())) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", storage_priv_src->hostname, size);
-    msg_host_t *m_host_list = nullptr;
-    m_host_list = xbt_new0(msg_host_t, 2);
-
-    m_host_list[0] = MSG_host_self();
-    m_host_list[1] = attached_host;
-    double flops_amount[] = { 0, 0 };
-    double bytes_amount[] = { 0, static_cast<double>(size), 0, 0 };
+    msg_host_t m_host_list[] = {MSG_host_self(), attached_host};
+    double flops_amount[]    = {0, 0};
+    double bytes_amount[]    = {0, static_cast<double>(size), 0, 0};
 
     msg_task_t task = MSG_parallel_task_create("file transfer for write", 2, m_host_list, flops_amount, bytes_amount,
                                                nullptr);
     msg_error_t transfer = MSG_parallel_task_execute(task);
     MSG_task_destroy(task);
-    free(m_host_list);
+
     if(transfer != MSG_OK){
       if (transfer == MSG_HOST_FAILURE)
         XBT_WARN("Transfer error, %s remote host just turned off!", attached_host->cname());
@@ -332,14 +322,14 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
   char *mount_name;
   char *storage_name;
   xbt_dict_foreach(storage_list,cursor,mount_name,storage_name){
-    char* file_mount_name = static_cast<char *>(xbt_malloc ((strlen(mount_name)+1)));
-    strncpy(file_mount_name,fullpath,strlen(mount_name)+1);
+    char* file_mount_name = static_cast<char*>(xbt_malloc(strlen(mount_name) + 1));
+    strncpy(file_mount_name, fullpath, strlen(mount_name) + 1);
     file_mount_name[strlen(mount_name)] = '\0';
 
-    if(!strcmp(file_mount_name,mount_name) && strlen(mount_name)>longest_prefix_length){
+    if (not strcmp(file_mount_name, mount_name) && strlen(mount_name) > longest_prefix_length) {
       /* The current mount name is found in the full path and is bigger than the previous*/
       longest_prefix_length = strlen(mount_name);
-      storage_dest = (msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, storage_name);
+      storage_dest          = (msg_storage_t)xbt_lib_get_elm_or_null(storage_lib, storage_name);
     }
     xbt_free(file_mount_name);
   }
@@ -358,19 +348,15 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
 
   XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, storage_priv_src->hostname,
             host_name_dest);
-  msg_host_t *m_host_list = nullptr;
-  m_host_list = xbt_new0(msg_host_t, 2);
-
-  m_host_list[0] = attached_host;
-  m_host_list[1] = host_dest;
-  double flops_amount[] = { 0, 0 };
-  double bytes_amount[] = { 0, static_cast<double>(read_size), 0, 0 };
+  msg_host_t m_host_list[] = {attached_host, host_dest};
+  double flops_amount[]    = {0, 0};
+  double bytes_amount[]    = {0, static_cast<double>(read_size), 0, 0};
 
   msg_task_t task =
       MSG_parallel_task_create("file transfer for write", 2, m_host_list, flops_amount, bytes_amount, nullptr);
   msg_error_t transfer = MSG_parallel_task_execute(task);
   MSG_task_destroy(task);
-  xbt_free(m_host_list);
+
   if(transfer != MSG_OK){
     if (transfer == MSG_HOST_FAILURE)
       XBT_WARN("Transfer error, %s remote host just turned off!", host_name_dest);
@@ -421,7 +407,7 @@ msg_storage_t __MSG_storage_create(smx_storage_t storage)
 {
   msg_storage_priv_t storage_private = xbt_new0(s_msg_storage_priv_t, 1);
 
-  storage_private->name     = SIMIX_storage_get_name(storage);
+  storage_private->name     = surf_storage_get_name(storage);
   storage_private->hostname = surf_storage_get_host(storage);
   storage_private->size     = surf_storage_get_size(storage);
 

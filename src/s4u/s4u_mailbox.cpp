@@ -43,7 +43,7 @@ bool Mailbox::empty()
 
 bool Mailbox::listen()
 {
-  return !this->empty() || (pimpl_->permanent_receiver && !pimpl_->done_comm_queue.empty());
+  return not this->empty() || (pimpl_->permanent_receiver && not pimpl_->done_comm_queue.empty());
 }
 
 smx_activity_t Mailbox::front()

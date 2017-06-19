@@ -45,19 +45,20 @@ int _sg_cfg_exit_asap = 0;
 static void sg_config_cmd_line(int *argc, char **argv)
 {
   int shall_exit = 0;
-  int i, j;
+  int i;
+  int j;
 
   for (j = i = 1; i < *argc; i++) {
-    if (!strncmp(argv[i], "--cfg=", strlen("--cfg="))) {
+    if (not strncmp(argv[i], "--cfg=", strlen("--cfg="))) {
       char *opt = strchr(argv[i], '=');
       opt++;
 
       xbt_cfg_set_parse(opt);
       XBT_DEBUG("Did apply '%s' as config setting", opt);
-    } else if (!strcmp(argv[i], "--version")) {
+    } else if (not strcmp(argv[i], "--version")) {
       printf("%s\n", SIMGRID_VERSION_STRING);
       shall_exit = 1;
-    } else if (!strcmp(argv[i], "--cfg-help") || !strcmp(argv[i], "--help")) {
+    } else if (not strcmp(argv[i], "--cfg-help") || not strcmp(argv[i], "--help")) {
       printf("Description of the configuration accepted by this simulator:\n");
       xbt_cfg_help();
       printf(
@@ -75,12 +76,12 @@ static void sg_config_cmd_line(int *argc, char **argv)
           "\n"
         );
       shall_exit = 1;
-    } else if (!strcmp(argv[i], "--help-aliases")) {
+    } else if (not strcmp(argv[i], "--help-aliases")) {
       printf("Here is a list of all deprecated option names, with their replacement.\n");
       xbt_cfg_aliases();
       printf("Please consider using the recent names\n");
       shall_exit = 1;
-    } else if (!strcmp(argv[i], "--help-models")) {
+    } else if (not strcmp(argv[i], "--help-models")) {
       model_help("host", surf_host_model_description);
       printf("\n");
       model_help("CPU", surf_cpu_model_description);
@@ -93,7 +94,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
                surf_optimization_mode_description[k].description);
       printf("Both network and CPU models have 'Lazy' as default optimization level\n\n");
       shall_exit = 1;
-    } else if (!strcmp(argv[i], "--help-tracing")) {
+    } else if (not strcmp(argv[i], "--help-tracing")) {
       TRACE_help (1);
       shall_exit = 1;
     } else {
@@ -117,7 +118,7 @@ static void _sg_cfg_cb__plugin(const char *name)
   if (val==nullptr || val[0] == '\0')
     return;
 
-  if (!strcmp(val, "help")) {
+  if (not strcmp(val, "help")) {
     model_help("plugin", surf_plugin_description);
     sg_cfg_exit_early();
   }
@@ -132,7 +133,7 @@ static void _sg_cfg_cb__host_model(const char *name)
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
   char *val = xbt_cfg_get_string(name);
-  if (!strcmp(val, "help")) {
+  if (not strcmp(val, "help")) {
     model_help("host", surf_host_model_description);
     sg_cfg_exit_early();
   }
@@ -147,7 +148,7 @@ static void _sg_cfg_cb__cpu_model(const char *name)
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
   char *val = xbt_cfg_get_string(name);
-  if (!strcmp(val, "help")) {
+  if (not strcmp(val, "help")) {
     model_help("CPU", surf_cpu_model_description);
     sg_cfg_exit_early();
   }
@@ -162,7 +163,7 @@ static void _sg_cfg_cb__optimization_mode(const char *name)
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
   char *val = xbt_cfg_get_string(name);
-  if (!strcmp(val, "help")) {
+  if (not strcmp(val, "help")) {
     model_help("optimization", surf_optimization_mode_description);
     sg_cfg_exit_early();
   }
@@ -177,7 +178,7 @@ static void _sg_cfg_cb__storage_mode(const char *name)
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
   char *val = xbt_cfg_get_string(name);
-  if (!strcmp(val, "help")) {
+  if (not strcmp(val, "help")) {
     model_help("storage", surf_storage_model_description);
     sg_cfg_exit_early();
   }
@@ -191,7 +192,7 @@ static void _sg_cfg_cb__network_model(const char *name)
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
   char *val = xbt_cfg_get_string(name);
-  if (!strcmp(val, "help")) {
+  if (not strcmp(val, "help")) {
     model_help("network", surf_network_model_description);
     sg_cfg_exit_early();
   }
@@ -208,7 +209,7 @@ static void _sg_cfg_cb_model_check_replay(const char *name) {
     MC_record_path = nullptr;
 }
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 extern int _sg_do_model_check_record;
 static void _sg_cfg_cb_model_check_record(const char *name) {
   _sg_do_model_check_record = xbt_cfg_get_boolean(name);
@@ -252,13 +253,11 @@ static void _sg_cfg_cb_contexts_parallel_threshold(const char *name)
 static void _sg_cfg_cb_contexts_parallel_mode(const char *name)
 {
   const char* mode_name = xbt_cfg_get_string(name);
-  if (!strcmp(mode_name, "posix")) {
+  if (not strcmp(mode_name, "posix")) {
     SIMIX_context_set_parallel_mode(XBT_PARMAP_POSIX);
-  }
-  else if (!strcmp(mode_name, "futex")) {
+  } else if (not strcmp(mode_name, "futex")) {
     SIMIX_context_set_parallel_mode(XBT_PARMAP_FUTEX);
-  }
-  else if (!strcmp(mode_name, "busy_wait")) {
+  } else if (not strcmp(mode_name, "busy_wait")) {
     SIMIX_context_set_parallel_mode(XBT_PARMAP_BUSY_WAIT);
   }
   else {
@@ -375,7 +374,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_string("model-check/replay", nullptr, _sg_cfg_cb_model_check_replay,
         "Model-check path to replay (as reported by SimGrid when a violation is reported)");
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
     /* do model-checking-record */
     xbt_cfg_register_boolean("model-check/record", "no", _sg_cfg_cb_model_check_record, "Record the model-checking paths");
 
@@ -472,6 +471,8 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_alias("smpi/host-speed","smpi/running_power");
     xbt_cfg_register_alias("smpi/host-speed","smpi/running-power");
 
+    xbt_cfg_register_boolean("smpi/keep-temps", "no", nullptr, "Whether we should keep the generated temporary files.");
+
     xbt_cfg_register_boolean("smpi/display-timing", "no", nullptr, "Whether we should display the timing after simulation.");
     xbt_cfg_register_alias("smpi/display-timing", "smpi/display_timing");
 
@@ -483,6 +484,8 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_alias("smpi/shared-malloc", "smpi/use-shared-malloc");
     xbt_cfg_register_alias("smpi/shared-malloc", "smpi/use_shared_malloc");
     xbt_cfg_register_double("smpi/shared-malloc-blocksize", 1UL << 20, nullptr, "Size of the bogus file which will be created for global shared allocations");
+    xbt_cfg_register_string("smpi/shared-malloc-hugepage", "", nullptr,
+                            "Path to a mounted hugetlbfs, to use huge pages with shared malloc.");
 
     xbt_cfg_register_double("smpi/cpu-threshold", 1e-6, nullptr, "Minimal computation time (in seconds) not discarded, or -1 for infinity.");
     xbt_cfg_register_alias("smpi/cpu-threshold", "smpi/cpu_threshold");
@@ -572,7 +575,7 @@ void sg_config_init(int *argc, char **argv)
 
 void sg_config_finalize()
 {
-  if (!_sg_cfg_init_status)
+  if (not _sg_cfg_init_status)
     return;                     /* Not initialized yet. Nothing to do */
 
   xbt_cfg_free(&simgrid_config);

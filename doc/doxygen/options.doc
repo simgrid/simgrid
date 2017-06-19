@@ -850,6 +850,16 @@ to 1, \c smpirun will display this information when the simulation ends. \verbat
 Simulation time: 1e3 seconds.
 \endverbatim
 
+\subsection options_smpi_temps smpi/keep-temps: not cleaning up after simulation
+
+\b Default: 0 (false)
+
+Under some conditions, SMPI generates a lot of temporary files.  They
+usually get cleaned, but you may use this option to not erase these
+files. This is for example useful when debugging or profiling
+executions using the dlopen privatization schema, as missing binary
+files tend to fool the debuggers.
+
 \subsection options_model_smpi_lat_factor smpi/lat-factor: Latency factors
 
 The motivation and syntax for this option is identical to the motivation/syntax
@@ -1100,10 +1110,41 @@ returns a new adress, but it only points to a shadow bloc: its memory
 area is mapped on a 1MiB file on disk. If the returned bloc is of size
 N MiB, then the same file is mapped N times to cover the whole bloc. 
 At the end, no matter how many SMPI_SHARED_MALLOC you do, this will
-only consume 1 MiB in memory.
+only consume 1 MiB in memory. 
 
 You can disable this behavior and come back to regular mallocs (for
 example for debugging purposes) using \c "no" as a value.
+
+If you want to keep private some parts of the buffer, for instance if these
+parts are used by the application logic and should not be corrupted, you
+can use SMPI_PARTIAL_SHARED_MALLOC(size, offsets, offsets_count).
+
+As an example,
+
+\code{.C}
+    mem = SMPI_PARTIAL_SHARED_MALLOC(500, {27,42 , 100,200}, 2);
+\endcode
+
+will allocate 500 bytes to mem, such that mem[27..41] and mem[100..199]
+are shared and other area remain private.
+
+Then, it can be deallocated by calling SMPI_SHARED_FREE(mem).
+
+When smpi/shared-malloc:global is used, the memory consumption problem
+is solved, but it may induce too much load on the kernel's pages table. 
+In this case, you should use huge pages so that we create only one
+entry per Mb of malloced data instead of one entry per 4k.
+To activate this, you must mount a hugetlbfs on your system and allocate
+at least one huge page:
+
+\code{.sh}
+    mkdir /home/huge
+    sudo mount none /home/huge -t hugetlbfs -o rw,mode=0777
+    sudo sh -c 'echo 1 > /proc/sys/vm/nr_hugepages' # echo more if you need more
+\endcode
+
+Then, you can pass the option --cfg=smpi/shared-malloc-hugepage:/home/huge
+to smpirun to actually activate the huge page support in shared mallocs.
 
 \subsection options_model_smpi_wtime smpi/wtime: Inject constant times for calls to MPI_Wtime
 
@@ -1254,6 +1295,7 @@ It can be done by using XBT. Go to \ref XBT_log for more details.
 - \c smpi/iprobe: \ref options_model_smpi_iprobe
 - \c smpi/iprobe-cpu-usage: \ref options_model_smpi_iprobe_cpu_usage
 - \c smpi/init: \ref options_model_smpi_init
+- \c smpi/keep-temps: \ref options_smpi_temps
 - \c smpi/lat-factor: \ref options_model_smpi_lat_factor
 - \c smpi/ois: \ref options_model_smpi_ois
 - \c smpi/or: \ref options_model_smpi_or
@@ -1262,6 +1304,7 @@ It can be done by using XBT. Go to \ref XBT_log for more details.
 - \c smpi/privatization: \ref options_smpi_privatization
 - \c smpi/send-is-detached-thresh: \ref options_model_smpi_detached
 - \c smpi/shared-malloc: \ref options_model_smpi_shared_malloc
+- \c smpi/shared-malloc-hugepage: \ref options_model_smpi_shared_malloc
 - \c smpi/simulate-computation: \ref options_smpi_bench
 - \c smpi/test: \ref options_model_smpi_test
 - \c smpi/wtime: \ref options_model_smpi_wtime

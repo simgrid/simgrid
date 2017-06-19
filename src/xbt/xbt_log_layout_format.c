@@ -1,21 +1,15 @@
 /* layout_simple - a dumb log layout                                        */
 
-/* Copyright (c) 2007-2016. The SimGrid Team.                               */
+/* Copyright (c) 2007-2017. The SimGrid Team.                               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/internal_config.h"       /* execinfo when available */
 #include "xbt/sysdep.h"
-#include "xbt/strbuff.h"
 #include "src/xbt/log_private.h"
 #include "simgrid/simix.h"      /* SIMIX_host_self_get_name */
 #include "surf/surf.h"
 #include <stdio.h>
-
-#if HAVE_EXECINFO_H
-#  include <execinfo.h> /* Function backtrace */
-#endif
 
 extern const char *xbt_log_priority_names[8];
 
@@ -28,7 +22,6 @@ static double format_begin_of_time = -1;
   "  where:\n"                                                          \
   "    source:    %%F: file          %%L: line          %%M: function  %%l: location (%%F:%%L)\n" \
   "    runtime:   %%h: hostname      %%t: thread        %%P: process   %%i: PID\n" \
-  "    backtrace: %%b: full          %%B: short\n"                      \
   "  when:        %%d: date          %%r: app. age\n"                   \
   "  other:       %%%%: %%             %%n: new line      %%e: plain space\n"
 
@@ -90,6 +83,7 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
       case '\0':
         fprintf(stderr, "Layout format (%s) ending with %%\n", (char *)l->data);
         xbt_abort();
+        break;
       case '%':
         *p = '%';
         check_overflow(1);
@@ -151,34 +145,6 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
         break;
       case 'M':                /* method (ie, function) name; LOG4J compliant */
         show_string(ev->functionName);
-        break;
-      case 'b':                 /* backtrace; called %throwable in LOG4J */
-      case 'B':         /* short backtrace; called %throwable{short} in LOG4J */
-// TODO, backtrace
-#if 0 && HAVE_BACKTRACE && HAVE_EXECINFO_H && HAVE_POPEN && defined(ADDR2LINE)
-        {
-          xbt_ex_t e("");
-
-          e.used = backtrace((void **) e.bt, XBT_BACKTRACE_SIZE);
-          e.bt_strings = NULL;
-          xbt_ex_setup_backtrace(&e);
-          if (*q == 'B') {
-            show_string(e.bt_strings[1] + 8);
-          } else {
-            xbt_strbuff_t buff = xbt_strbuff_new();
-            int i;
-            xbt_strbuff_append(buff, e.bt_strings[1] + 8);
-            for (i = 2; i < e.used; i++) {
-              xbt_strbuff_append(buff, "\n");
-              xbt_strbuff_append(buff, e.bt_strings[i] + 8);
-            }
-            show_string(buff->data);
-            xbt_strbuff_free(buff);
-          }
-        }
-#else
-        show_string("(no backtrace on this arch)");
-#endif
         break;
       case 'd':                 /* date; LOG4J compliant */
         show_double(surf_get_clock());

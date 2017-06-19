@@ -140,7 +140,7 @@ msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<vo
 
   smx_actor_t process = simcall_process_create(name, std::move(code), msgExt, host, properties);
 
-  if (!process) { /* Undo everything */
+  if (not process) { /* Undo everything */
     delete msgExt;
     return nullptr;
   }
@@ -164,7 +164,7 @@ msg_process_t MSG_process_attach(const char *name, void *data, msg_host_t host, 
 
   /* Let's create the process: SIMIX may decide to start it right now, even before returning the flow control to us */
   smx_actor_t process = SIMIX_process_attach(name, new simgrid::MsgActorExt(data), host->cname(), properties, nullptr);
-  if (!process)
+  if (not process)
     xbt_die("Could not attach");
   simcall_process_on_exit(process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,process);
   return process->ciface();

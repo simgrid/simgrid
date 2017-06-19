@@ -17,7 +17,7 @@ public class Receiver extends Process {
 	}
 
 	public void main(String[] args) throws MsgException {
-		for (int i = 0 ; i<Main.TASK_COUNT; i++) {
+		for (int i = 0 ; i < Main.TASK_COUNT; i++) {
 			Msg.info("Wait for a task");
 
 			PingPongTask task = (PingPongTask)Task.receive(getHost().getName());

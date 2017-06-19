@@ -11,14 +11,14 @@
 #include <sys/prctl.h>
 #endif
 
-#include <sys/types.h>
+#include "xbt/sysdep.h"
+#include "xbt/system_error.hpp"
 #include <sys/socket.h>
-#include <xbt/sysdep.h>
-#include <xbt/system_error.hpp>
+#include <sys/types.h>
 
 #include <functional>
 
-#include <xbt/log.h>
+#include "xbt/log.h"
 
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/ModelChecker.hpp"
@@ -66,7 +66,7 @@ public: // static constructors
    *
    *  The code is expected to `exec` the model-checker program.
    */
-  static Session* fork(std::function<void(void)> code);
+  static Session* fork(std::function<void()> code);
 
   /** Spawn a model-checked process
    *

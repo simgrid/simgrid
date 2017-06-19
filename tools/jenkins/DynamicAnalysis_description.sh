@@ -31,7 +31,7 @@ Testing with valgrind and gcov. Click on the graphs for details.
  <tr class=\"matrix-row\">  
   <td class=\"matrix-cell\">
     <a href=\"https://ci.inria.fr/simgrid/job/SimGrid-DynamicAnalysis-Valgrind/label=simgrid-debian8-64-dynamic-analysis/valgrindResult/\">
-  	 <img src=\"https://ci.inria.fr/simgrid/job/SimGrid-DynamicAnalysis/lastCompletedBuild/label=simgrid-debian8-64-dynamic-analysis/artifact/valgrind_graph.png\" title="$VALGRIND_RES">
+  	 <img src=\"https://ci.inria.fr/simgrid/job/SimGrid-DynamicAnalysis/lastCompletedBuild/label=simgrid-debian8-64-dynamic-analysis/artifact/valgrind_graph.png\" title=\"$VALGRIND_RES\">
 	</a>
   </td>
   <td class=\"matrix-cell\">

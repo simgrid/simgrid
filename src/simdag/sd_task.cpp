@@ -166,14 +166,14 @@ void SD_task_destroy(SD_task_t task)
   XBT_DEBUG("Destroying task %s...", SD_task_get_name(task));
 
   /* First Remove all dependencies associated with the task. */
-  while (!task->predecessors->empty())
+  while (not task->predecessors->empty())
     SD_task_dependency_remove(*(task->predecessors->begin()), task);
-  while (!task->inputs->empty())
+  while (not task->inputs->empty())
     SD_task_dependency_remove(*(task->inputs->begin()), task);
-  while (!task->successors->empty())
+  while (not task->successors->empty())
     SD_task_dependency_remove(task, *(task->successors->begin()));
-  while (!task->outputs->empty())
-   SD_task_dependency_remove(task, *(task->outputs->begin()));
+  while (not task->outputs->empty())
+    SD_task_dependency_remove(task, *(task->outputs->begin()));
 
   if (task->state == SD_SCHEDULED || task->state == SD_RUNNABLE)
     __SD_task_destroy_scheduling_data(task);
@@ -289,7 +289,7 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
     task->start_time = task->surf_action->getStartTime();
     if (new_state == SD_DONE){
       task->finish_time = task->surf_action->getFinishTime();
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
       jedule_log_sd_event(task);
 #endif
     } else
@@ -911,7 +911,7 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
   XBT_VERB("Schedule computation task %s on %zu host(s)", task->name, task->allocation->size());
 
   if (task->kind == SD_TASK_COMP_SEQ) {
-    if (!task->flops_amount){ /*This task has failed and is rescheduled. Reset the flops_amount*/
+    if (not task->flops_amount) { /*This task has failed and is rescheduled. Reset the flops_amount*/
       task->flops_amount = xbt_new0(double, 1);
       task->flops_amount[0] = task->amount;
     }

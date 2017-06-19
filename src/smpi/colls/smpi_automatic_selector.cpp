@@ -9,60 +9,66 @@
 #include <exception>
 
 #include "colls_private.h"
+#include "src/smpi/smpi_process.hpp"
+
 
 //attempt to do a quick autotuning version of the collective,
 
-#define TRACE_AUTO_COLL(cat) if (TRACE_is_enabled()){\
-        type_t type = PJ_type_get_or_null (#cat, PJ_type_get_root());\
-         if (!type){\
-             type=PJ_type_event_new(#cat, PJ_type_get_root());\
-         }\
-         char cont_name[25];\
-         snprintf(cont_name,25, "rank-%d", smpi_process()->index());\
-         val_t value = PJ_value_get_or_new(Colls::mpi_coll_##cat##_description[i].name,"1.0 1.0 1.0", type);\
-         new_pajeNewEvent (SIMIX_get_clock(), PJ_container_get(cont_name), type, value);\
-      }
+#define TRACE_AUTO_COLL(cat)                                                                                           \
+  if (TRACE_is_enabled()) {                                                                                            \
+    type_t type = PJ_type_get_or_null(#cat, PJ_type_get_root());                                                       \
+    if (not type) {                                                                                                    \
+      type = PJ_type_event_new(#cat, PJ_type_get_root());                                                              \
+    }                                                                                                                  \
+    char cont_name[25];                                                                                                \
+    snprintf(cont_name, 25, "rank-%d", smpi_process()->index());                                                       \
+    val_t value = PJ_value_get_or_new(Colls::mpi_coll_##cat##_description[i].name, "1.0 1.0 1.0", type);               \
+    new NewEvent(SIMIX_get_clock(), PJ_container_get(cont_name), type, value);                                         \
+  }
 
-#define AUTOMATIC_COLL_BENCH(cat, ret, args, args2)\
-    ret Coll_ ## cat ## _automatic:: cat (COLL_UNPAREN args)\
-{\
-  double time1, time2, time_min=DBL_MAX;\
-  int min_coll=-1, global_coll=-1;\
-  int i;\
-  double buf_in, buf_out, max_min=DBL_MAX;\
-  for (i = 0; Colls::mpi_coll_##cat##_description[i].name; i++){\
-      if(!strcmp(Colls::mpi_coll_##cat##_description[i].name, "automatic"))continue;\
-      if(!strcmp(Colls::mpi_coll_##cat##_description[i].name, "default"))continue;\
-      Coll_barrier_default::barrier(comm);\
-      TRACE_AUTO_COLL(cat)\
-      time1 = SIMIX_get_clock();\
-      try {\
-      ((int (*) args)\
-          Colls::mpi_coll_##cat##_description[i].coll) args2 ;\
-      }\
-      catch (std::exception& ex) {\
-        continue;\
-      }\
-      time2 = SIMIX_get_clock();\
-      buf_out=time2-time1;\
-      Coll_reduce_default::reduce((void*)&buf_out,(void*)&buf_in, 1, MPI_DOUBLE, MPI_MAX, 0,comm );\
-      if(time2-time1<time_min){\
-          min_coll=i;\
-          time_min=time2-time1;\
-      }\
-      if(comm->rank()==0){\
-          if(buf_in<max_min){\
-              max_min=buf_in;\
-              global_coll=i;\
-          }\
-      }\
-  }\
-  if(comm->rank()==0){\
-      XBT_WARN("For rank 0, the quickest was %s : %f , but global was %s : %f at max",Colls::mpi_coll_##cat##_description[min_coll].name, time_min,Colls::mpi_coll_##cat##_description[global_coll].name, max_min);\
-  }else\
-  XBT_WARN("The quickest %s was %s on rank %d and took %f",#cat,Colls::mpi_coll_##cat##_description[min_coll].name, comm->rank(), time_min);\
-  return (min_coll!=-1)?MPI_SUCCESS:MPI_ERR_INTERN;\
-}
+#define AUTOMATIC_COLL_BENCH(cat, ret, args, args2)                                                                    \
+  ret Coll_##cat##_automatic::cat(COLL_UNPAREN args)                                                                   \
+  {                                                                                                                    \
+    double time1, time2, time_min = DBL_MAX;                                                                           \
+    int min_coll = -1, global_coll = -1;                                                                               \
+    int i;                                                                                                             \
+    double buf_in, buf_out, max_min = DBL_MAX;                                                                         \
+    for (i = 0; Colls::mpi_coll_##cat##_description[i].name; i++) {                                                    \
+      if (not strcmp(Colls::mpi_coll_##cat##_description[i].name, "automatic"))                                        \
+        continue;                                                                                                      \
+      if (not strcmp(Colls::mpi_coll_##cat##_description[i].name, "default"))                                          \
+        continue;                                                                                                      \
+      Coll_barrier_default::barrier(comm);                                                                             \
+      TRACE_AUTO_COLL(cat)                                                                                             \
+      time1 = SIMIX_get_clock();                                                                                       \
+      try {                                                                                                            \
+        ((int(*) args)Colls::mpi_coll_##cat##_description[i].coll) args2;                                              \
+      } catch (std::exception & ex) {                                                                                  \
+        continue;                                                                                                      \
+      }                                                                                                                \
+      time2   = SIMIX_get_clock();                                                                                     \
+      buf_out = time2 - time1;                                                                                         \
+      Coll_reduce_default::reduce((void*)&buf_out, (void*)&buf_in, 1, MPI_DOUBLE, MPI_MAX, 0, comm);                   \
+      if (time2 - time1 < time_min) {                                                                                  \
+        min_coll = i;                                                                                                  \
+        time_min = time2 - time1;                                                                                      \
+      }                                                                                                                \
+      if (comm->rank() == 0) {                                                                                         \
+        if (buf_in < max_min) {                                                                                        \
+          max_min     = buf_in;                                                                                        \
+          global_coll = i;                                                                                             \
+        }                                                                                                              \
+      }                                                                                                                \
+    }                                                                                                                  \
+    if (comm->rank() == 0) {                                                                                           \
+      XBT_WARN("For rank 0, the quickest was %s : %f , but global was %s : %f at max",                                 \
+               Colls::mpi_coll_##cat##_description[min_coll].name, time_min,                                           \
+               Colls::mpi_coll_##cat##_description[global_coll].name, max_min);                                        \
+    } else                                                                                                             \
+      XBT_WARN("The quickest %s was %s on rank %d and took %f", #cat,                                                  \
+               Colls::mpi_coll_##cat##_description[min_coll].name, comm->rank(), time_min);                            \
+    return (min_coll != -1) ? MPI_SUCCESS : MPI_ERR_INTERN;                                                            \
+  }
 
 namespace simgrid{
 namespace smpi{

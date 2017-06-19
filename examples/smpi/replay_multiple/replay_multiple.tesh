@@ -3,7 +3,7 @@ p Test the replay with multiple instances
 p first generate the deployment file
 $ ${srcdir:=.}/generate_multiple_deployment.sh -platform ${srcdir:=.}/../../platforms/small_platform_with_routers.xml -hostfile ${srcdir:=.}/../hostfile  ${srcdir:=.}/description_file ${srcdir:=.}/deployment.xml
 
-p This test needs maxmin/concurrency-limit=100 because it stats 64 hosts on 5 machines.
+p This test needs maxmin/concurrency-limit=100 because it starts 64 hosts on 5 machines.
 ! timeout 120
 $ ./replay_multiple description_file ${srcdir:=.}/../../platforms/small_platform_with_routers.xml ${srcdir:=.}/deployment.xml --log=smpi.:info --cfg=maxmin/concurrency-limit:100
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/concurrency-limit' to '100'

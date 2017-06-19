@@ -38,9 +38,9 @@ static unsigned int int_random(int max)
 static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limit, unsigned int pw_max_limit,
                  float rate_no_limit, int max_share, int mode)
 {
-  lmm_constraint_t *cnst = xbt_new0(lmm_constraint_t, nb_cnst);
-  lmm_variable_t *var = xbt_new0(lmm_variable_t, nb_var);
-  int *used = xbt_new0(int, nb_cnst);
+  lmm_constraint_t cnst[nb_cnst];
+  lmm_variable_t var[nb_var];
+  int used[nb_cnst];
   int concurrency_share;
 
   lmm_system_t Sys = lmm_system_new(1);
@@ -94,7 +94,7 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
         l=j;
       fprintf(stderr,"(%i):%i/%i ",i,j,k);
       lmm_constraint_concurrency_maximum_reset(cnst[i]);
-      xbt_assert(!lmm_constraint_concurrency_maximum_get(cnst[i]));
+      xbt_assert(not lmm_constraint_concurrency_maximum_get(cnst[i]));
       if(i%10==9)
         fprintf(stderr,"\n");
     }
@@ -106,9 +106,6 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
   for (int i = 0; i < nb_var; i++)
     lmm_variable_free(Sys, var[i]);
   lmm_system_free(Sys);
-  free(cnst);
-  free(var);
-  free(used);
 }
 
 unsigned int TestClasses [][4]=
@@ -132,14 +129,14 @@ int main(int argc, char **argv)
   }
 
   //what class?
-  if(!strcmp(argv[1],"small"))
-      testclass=0;
-  else if(!strcmp(argv[1],"medium"))
-      testclass=1;
-  else if(!strcmp(argv[1],"big"))
-      testclass=2;
-  else if(!strcmp(argv[1],"huge"))
-      testclass=3;
+  if (not strcmp(argv[1], "small"))
+    testclass = 0;
+  else if (not strcmp(argv[1], "medium"))
+    testclass = 1;
+  else if (not strcmp(argv[1], "big"))
+    testclass = 2;
+  else if (not strcmp(argv[1], "huge"))
+    testclass = 3;
   else {
     fprintf(stderr, "Unknown class \"%s\", aborting!\n",argv[1]);
     return -2;

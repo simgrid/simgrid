@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
+<platform version="4.1">
   <cluster id="cluster" prefix="MyHost" radical="1-2" suffix="" speed="100.0Mf,50.0Mf,20.0Mf"
            bw="125MBps" lat="50us" bb_bw="2.25GBps"  bb_lat="500us">
     <!--  List of idle_power:min_power:max_power pairs (in Watts) -->

@@ -22,10 +22,10 @@ static void check_disk_attachment()
   void** data;
   xbt_lib_foreach(storage_lib, cursor, key, data) {
     if (xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
-      simgrid::surf::Storage* storage =
-          static_cast<simgrid::surf::Storage*>(xbt_lib_get_or_null(storage_lib, key, SURF_STORAGE_LEVEL));
+      simgrid::surf::StorageImpl* storage =
+          static_cast<simgrid::surf::StorageImpl*>(xbt_lib_get_or_null(storage_lib, key, SURF_STORAGE_LEVEL));
       simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(storage->attach_);
-      if (!host_elm)
+      if (not host_elm)
         surf_parse_error("Unable to attach storage %s: host %s does not exist.", storage->cname(), storage->attach_);
     }
   }
@@ -36,10 +36,8 @@ void storage_register_callbacks()
   simgrid::s4u::onPlatformCreated.connect(check_disk_attachment);
   instr_routing_define_callbacks();
 
-  ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, xbt_free_f);
-  SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, [](void *self) {
-    delete static_cast<simgrid::surf::Storage*>(self);
-  });
+  SURF_STORAGE_LEVEL =
+      xbt_lib_add_level(storage_lib, [](void* self) { delete static_cast<simgrid::surf::StorageImpl*>(self); });
 }
 
 /*********
@@ -55,26 +53,20 @@ void surf_storage_model_init_default()
 namespace simgrid {
 namespace surf {
 
-Storage* StorageN11Model::createStorage(const char* id, const char* type_id, const char* content_name,
-                                        const char* content_type, const char* attach)
+StorageImpl* StorageN11Model::createStorage(const char* id, const char* type_id, const char* content_name,
+                                            const char* attach)
 {
-
-  xbt_assert(!surf_storage_resource_priv(surf_storage_resource_by_name(id)),
-      "Storage '%s' declared several times in the platform file", id);
-
   storage_type_t storage_type = storage_types.at(type_id);
 
   double Bread =
       surf_parse_get_bandwidth(storage_type->model_properties->at("Bread").c_str(), "property Bread, storage", type_id);
   double Bwrite = surf_parse_get_bandwidth(storage_type->model_properties->at("Bwrite").c_str(),
                                            "property Bwrite, storage", type_id);
-  double Bconnection = surf_parse_get_bandwidth(storage_type->model_properties->at("Bconnection").c_str(),
-                                                "property Bconnection, storage", type_id);
 
-  Storage* storage = new StorageN11(this, id, maxminSystem_, Bread, Bwrite, Bconnection, type_id, (char*)content_name,
-                                    content_type, storage_type->size, (char*)attach);
-  storageCreatedCallbacks(storage);
+  StorageImpl* storage = new StorageN11(this, id, maxminSystem_, Bread, Bwrite, type_id, (char*)content_name,
+                                        storage_type->size, (char*)attach);
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
+  storageCreatedCallbacks(storage);
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tBread '%f'\n", id, type_id, Bread);
 
@@ -162,11 +154,10 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
  ************/
 
 StorageN11::StorageN11(StorageModel* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
-                       double bconnection, const char* type_id, char* content_name, const char* content_type,
-                       sg_size_t size, char* attach)
-    : Storage(model, name, maxminSystem, bread, bwrite, bconnection, type_id, content_name, content_type, size, attach)
+                       const char* type_id, char* content_name, sg_size_t size, char* attach)
+    : StorageImpl(model, name, maxminSystem, bread, bwrite, type_id, content_name, size, attach)
 {
-  XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
+  XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);
 }
 
 StorageAction *StorageN11::open(const char* mount, const char* path)
@@ -254,10 +245,10 @@ StorageAction *StorageN11::write(surf_file_t fd, sg_size_t size)
  * Action *
  **********/
 
-StorageN11Action::StorageN11Action(Model *model, double cost, bool failed, Storage *storage, e_surf_action_storage_type_t type)
-: StorageAction(model, cost, failed,
-    lmm_variable_new(model->getMaxminSystem(), this, 1.0, -1.0 , 3),
-    storage, type) {
+StorageN11Action::StorageN11Action(Model* model, double cost, bool failed, StorageImpl* storage,
+                                   e_surf_action_storage_type_t type)
+    : StorageAction(model, cost, failed, lmm_variable_new(model->getMaxminSystem(), this, 1.0, -1.0, 3), storage, type)
+{
   XBT_IN("(%s,%g", storage->cname(), cost);
 
   // Must be less than the max bandwidth for all actions
@@ -287,7 +278,7 @@ StorageN11Action::StorageN11Action(Model *model, double cost, bool failed, Stora
 int StorageN11Action::unref()
 {
   refcount_--;
-  if (!refcount_) {
+  if (not refcount_) {
     if (action_hook.is_linked())
       stateSet_->erase(stateSet_->iterator_to(*this));
     if (getVariable())

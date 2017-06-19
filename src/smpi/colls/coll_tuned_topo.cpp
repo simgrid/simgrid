@@ -99,9 +99,9 @@ ompi_coll_tuned_topo_build_tree( int fanout,
     rank = comm->rank();
 
     tree = (ompi_coll_tree_t*)malloc(sizeof(ompi_coll_tree_t));
-    if (!tree) {
-        XBT_DEBUG("coll:tuned:topo_build_tree PANIC::out of memory");
-        return NULL;
+    if (not tree) {
+      XBT_DEBUG("coll:tuned:topo_build_tree PANIC::out of memory");
+      return NULL;
     }
 
     tree->tree_root     = MPI_UNDEFINED;
@@ -199,10 +199,9 @@ ompi_coll_tuned_topo_build_in_order_bintree( MPI_Comm comm )
     rank = comm->rank();
 
     tree = (ompi_coll_tree_t*)malloc(sizeof(ompi_coll_tree_t));
-    if (!tree) {
-        XBT_DEBUG(
-                     "coll:tuned:topo_build_tree PANIC::out of memory");
-        return NULL;
+    if (not tree) {
+      XBT_DEBUG("coll:tuned:topo_build_tree PANIC::out of memory");
+      return NULL;
     }
 
     tree->tree_root     = MPI_UNDEFINED;
@@ -296,8 +295,8 @@ int ompi_coll_tuned_topo_destroy_tree( ompi_coll_tree_t** tree )
 {
     ompi_coll_tree_t *ptr;
 
-    if ((!tree)||(!*tree)) {
-        return MPI_SUCCESS;
+    if ((tree == nullptr) || (*tree == nullptr)) {
+      return MPI_SUCCESS;
     }
 
     ptr = *tree;
@@ -344,9 +343,9 @@ ompi_coll_tuned_topo_build_bmtree( MPI_Comm comm,
     index = rank -root;
 
     bmtree = (ompi_coll_tree_t*)malloc(sizeof(ompi_coll_tree_t));
-    if (!bmtree) {
-        XBT_DEBUG("coll:tuned:topo:build_bmtree PANIC out of memory");
-        return NULL;
+    if (not bmtree) {
+      XBT_DEBUG("coll:tuned:topo:build_bmtree PANIC out of memory");
+      return NULL;
     }
 
     bmtree->tree_bmtree   = 1;
@@ -402,9 +401,7 @@ ompi_coll_tuned_topo_build_bmtree( MPI_Comm comm,
  *                                                                 |
  *                                                                 7
  */
-ompi_coll_tree_t*
-ompi_coll_tuned_topo_build_in_order_bmtree( MPI_Comm comm,
-					    int root )
+ompi_coll_tree_t* ompi_coll_tuned_topo_build_in_order_bmtree(MPI_Comm comm, int root)
 {
     int childs = 0;
     int rank, vrank;
@@ -425,9 +422,9 @@ ompi_coll_tuned_topo_build_in_order_bmtree( MPI_Comm comm,
     vrank = (rank - root + size) % size;
 
     bmtree = (ompi_coll_tree_t*)xbt_malloc(sizeof(ompi_coll_tree_t));
-    if (!bmtree) {
-        XBT_DEBUG("coll:tuned:topo:build_bmtree PANIC out of memory");
-        return NULL;
+    if (not bmtree) {
+      XBT_DEBUG("coll:tuned:topo:build_bmtree PANIC out of memory");
+      return NULL;
     }
 
     bmtree->tree_bmtree   = 1;
@@ -438,25 +435,23 @@ ompi_coll_tuned_topo_build_in_order_bmtree( MPI_Comm comm,
     }
 
     if (root == rank) {
-	bmtree->tree_prev = root;
+      bmtree->tree_prev = root;
     }
 
     while (mask < size) {
-	remote = vrank ^ mask;
-	if (remote < vrank) {
-	    bmtree->tree_prev = (remote + root) % size;
-	    break;
-	} else if (remote < size) {
-	    bmtree->tree_next[childs] = (remote + root) % size;
-	    childs++;
-	    if (childs==MAXTREEFANOUT) {
-		XBT_DEBUG(
-			     "coll:tuned:topo:build_bmtree max fanout incorrect %d needed %d",
-			     MAXTREEFANOUT, childs);
-		return NULL;
-	    }
-	}
-	mask <<= 1;
+      remote = vrank ^ mask;
+      if (remote < vrank) {
+        bmtree->tree_prev = (remote + root) % size;
+        break;
+      } else if (remote < size) {
+        bmtree->tree_next[childs] = (remote + root) % size;
+        childs++;
+        if (childs == MAXTREEFANOUT) {
+          XBT_DEBUG("coll:tuned:topo:build_bmtree max fanout incorrect %d needed %d", MAXTREEFANOUT, childs);
+          return NULL;
+        }
+      }
+      mask <<= 1;
     }
     bmtree->tree_nextsize = childs;
     bmtree->tree_root     = root;
@@ -497,10 +492,10 @@ ompi_coll_tuned_topo_build_chain( int fanout,
      * Allocate space for topology arrays if needed 
      */
     chain = (ompi_coll_tree_t*)malloc( sizeof(ompi_coll_tree_t) );
-    if (!chain) {
-        XBT_DEBUG("coll:tuned:topo:build_chain PANIC out of memory");
-        fflush(stdout);
-        return NULL;
+    if (not chain) {
+      XBT_DEBUG("coll:tuned:topo:build_chain PANIC out of memory");
+      fflush(stdout);
+      return NULL;
     }
     chain->tree_root     = MPI_UNDEFINED;
     chain->tree_nextsize = -1;

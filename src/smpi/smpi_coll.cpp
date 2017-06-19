@@ -1,17 +1,16 @@
-/* smpi_coll.c -- various optimized routing for collectives                   */
+/* smpi_coll.c -- various optimized routing for collectives                 */
 
-/* Copyright (c) 2009-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
-
-#include "private.h"
-#include "simgrid/sg_config.h"
+#include "src/smpi/private.h"
+#include "src/smpi/smpi_coll.hpp"
+#include "src/smpi/smpi_comm.hpp"
+#include "src/smpi/smpi_datatype.hpp"
+#include "src/smpi/smpi_op.hpp"
+#include "src/smpi/smpi_request.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi, "Logging specific to SMPI (coll)");
 
@@ -73,13 +72,13 @@ int Colls::find_coll_description(s_mpi_coll_description_t * table, const char *n
 {
   char *name_list = nullptr;
   for (int i = 0; table[i].name; i++)
-    if (!strcmp(name, table[i].name)) {
+    if (not strcmp(name, table[i].name)) {
       if (strcmp(table[i].name,"default"))
         XBT_INFO("Switch to algorithm %s for collective %s",table[i].name,desc);
       return i;
     }
 
-  if (!table[0].name)
+  if (not table[0].name)
     xbt_die("No collective is valid for '%s'! This is a bug.",name);
   name_list = xbt_strdup(table[0].name);
   for (int i = 1; table[i].name; i++) {
@@ -339,8 +338,3 @@ int Colls::exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype
 
 }
 }
-
-
-
-
-

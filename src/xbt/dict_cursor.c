@@ -27,9 +27,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_cursor, xbt_dict, "To traverse dictiona
  */
 inline xbt_dict_cursor_t xbt_dict_cursor_new(const xbt_dict_t dict)
 {
-  xbt_dict_cursor_t res = NULL;
-
-  res = xbt_new(s_xbt_dict_cursor_t, 1);
+  xbt_dict_cursor_t res = xbt_new(s_xbt_dict_cursor_t, 1);
   res->dict = dict;
 
   xbt_dict_cursor_rewind(res);
@@ -108,7 +106,8 @@ inline void xbt_dict_cursor_step(xbt_dict_cursor_t cursor)
       XBT_CDEBUG(xbt_dict_cursor, "next element: %p", current);
     }
 
-    while (current == NULL && ++line <= cursor->dict->table_size) {
+    while (current == NULL && (line + 1) <= cursor->dict->table_size) {
+      line++;
       XBT_CDEBUG(xbt_dict_cursor, "current is NULL, take the next line");
       current = cursor->dict->table[line];
       XBT_CDEBUG(xbt_dict_cursor, "element in the next line: %p", current);

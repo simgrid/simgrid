@@ -17,7 +17,6 @@ $ ${bindir:=.}/io-storage$EXEEXT ${srcdir:=.}/storage/storage.xml "--log=root.fm
 > 		Mount point: '/home'
 > 		Storage Id: 'Disk4'
 > 		Storage Type: 'single_SSD'
-> 		Content Type: 'txt_unix'
 > 		File Descriptor Id: 0
 > [  0.003333] (1:@denise) Free size: 536857490006 bytes
 > [  0.003333] (1:@denise) Used size: 13421994 bytes
@@ -29,7 +28,6 @@ $ ${bindir:=.}/io-storage$EXEEXT ${srcdir:=.}/storage/storage.xml "--log=root.fm
 > 		Mount point: '/home'
 > 		Storage Id: 'Disk4'
 > 		Storage Type: 'single_SSD'
-> 		Content Type: 'txt_unix'
 > 		File Descriptor Id: 0
 > [  0.006000] (1:@denise) *** Move '/tmp/data.txt' into '/tmp/simgrid.readme'
 > [  0.006000] (1:@denise) User data attached to the file: 777

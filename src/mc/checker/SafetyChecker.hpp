@@ -23,8 +23,8 @@ namespace mc {
 class XBT_PRIVATE SafetyChecker : public Checker {
   simgrid::mc::ReductionMode reductionMode_ = simgrid::mc::ReductionMode::unset;
 public:
-  SafetyChecker(Session& session);
-  ~SafetyChecker();
+  explicit SafetyChecker(Session& session);
+  ~SafetyChecker() = default;
   void run() override;
   RecordTrace getRecordTrace() override;
   std::vector<std::string> getTextualTrace() override;

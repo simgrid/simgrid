@@ -4,9 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
-#include <vector>
-#include <xbt/ex.hpp>
+#include "src/smpi/smpi_info.hpp"
+#include "xbt/ex.hpp"
+#include "xbt/sysdep.h"
 
 namespace simgrid{
 namespace smpi{
@@ -43,8 +43,6 @@ void Info::unref(Info* info){
 void Info::set(char *key, char *value){
   xbt_dict_set(dict_, key, xbt_strdup(value), nullptr);
 }
-
-
 
 int Info::get(char *key, int valuelen, char *value, int *flag){
   *flag=false;

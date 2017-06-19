@@ -4,6 +4,7 @@
 /*                    DO NOT EVER CHANGE THIS FILE                    */
 /*                                                                    */
 /* change simcalls specification in src/simix/simcalls.in             */
+/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.    */
 /**********************************************************************/
 
 /*

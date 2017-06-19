@@ -41,7 +41,6 @@ XBT_PUBLIC(char *) xbt_str_join(xbt_dynar_t dynar, const char *sep);
 XBT_PUBLIC(char *) xbt_str_join_array(const char *const *strs, const char *sep);
 
 XBT_PUBLIC(void) xbt_str_subst(char *str, char from, char to, int amount);
-XBT_PUBLIC(char *) xbt_str_varsubst(const char *str, xbt_dict_t patterns);
 
 XBT_PUBLIC(long int) xbt_str_parse_int(const char* str, const char* error_msg);
 XBT_PUBLIC(double) xbt_str_parse_double(const char* str, const char* error_msg);
@@ -56,11 +55,10 @@ static inline unsigned int xbt_str_hash_ext(const char *str, int str_len)
 {
 #ifdef XBT_DJB2_HASH_FUNCTION
   /* fast implementation of djb2 algorithm */
-  int c;
   unsigned int hash = 5381;
 
   while (str_len--) {
-    c = *str++;
+    int c = *str++;
     hash = ((hash << 5) + hash) + c;    /* hash * 33 + c */
   }
 # elif defined(XBT_FNV_HASH_FUNCTION)

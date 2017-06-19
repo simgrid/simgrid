@@ -1,5 +1,4 @@
-/* Copyright (c) 2011-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2011-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -25,7 +24,7 @@ void smpi_register_static(void* arg, void_f_pvoid_t free_fn) {
 }
 
 void smpi_free_static() {
-  while (!registered_static_variables_stack.empty()) {
+  while (not registered_static_variables_stack.empty()) {
     s_smpi_static_t elm = registered_static_variables_stack.top();
     elm.free_fn(elm.ptr);
     registered_static_variables_stack.pop();

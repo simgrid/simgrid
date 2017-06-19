@@ -20,8 +20,6 @@ then
     exit
 fi
 
-EXTOPT=""
-WRAPPER=""
 HOSTFILE=""
 
 while true; do
@@ -29,7 +27,7 @@ while true; do
         "-platform")
 	    PLATFORM="$2"
             if [ ! -f "${PLATFORM}" ]; then
-		echo "[`basename $0`] ** error: the file '${PLATFORM}' does not exist. Aborting."
+		echo "["$(basename $0)"] ** error: the file \'${PLATFORM}\' does not exist. Aborting."
 		exit 1
             fi
 	    shift 2
@@ -37,7 +35,7 @@ while true; do
         "-hostfile")
 	    HOSTFILE="$2"
             if [ ! -f "${HOSTFILE}" ]; then
-		echo "[`basename $0`] ** error: the file '${HOSTFILE}' does not exist. Aborting."
+		echo "["$(basename $0)"] ** error: the file \'${HOSTFILE}\' does not exist. Aborting."
 		exit 1
             fi
 	    shift 2
@@ -45,7 +43,7 @@ while true; do
         "-machinefile")
 	    HOSTFILE="$2"
             if [ ! -f "${HOSTFILE}" ]; then
-		echo "[`basename $0`] ** error: the file '${HOSTFILE}' does not exist. Aborting."
+		echo "["$(basename $0)"] ** error: the file \'${HOSTFILE}\' does not exist. Aborting."
 		exit 1
             fi
 	    shift 2
@@ -88,7 +86,7 @@ fi
 UNROLLEDHOSTFILETMP=0
 
 #parse if our lines are terminated by :num_process
-multiple_processes=`grep -c ":" $HOSTFILE`
+multiple_processes=$(grep -c ":" $HOSTFILE)
 if [ "${multiple_processes}" -gt 0 ] ; then
     UNROLLEDHOSTFILETMP=1
     UNROLLEDHOSTFILE="$(mktemp tmphostXXXXXX)"
@@ -101,9 +99,9 @@ if [ "${multiple_processes}" -gt 0 ] ; then
 fi
 
 # Don't use wc -l to compute it to avoid issues with trailing \n at EOF
-hostfile_procs=`grep -c "[a-zA-Z0-9]" $HOSTFILE`
+hostfile_procs=$(grep -c "[a-zA-Z0-9]" $HOSTFILE)
 if [ ${hostfile_procs} = 0 ] ; then
-   echo "[`basename $0`] ** error: the hostfile '${HOSTFILE}' is empty. Aborting." >&2
+   echo "["$(basename $0)"] ** error: the hostfile \'${HOSTFILE}\' is empty. Aborting." >&2
    exit 1
 fi
 
@@ -114,20 +112,18 @@ APPLICATIONTMP=$(echo ${PROC_ARGS}|cut -d' ' -f2 -s)
 cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
+<platform version="4.1">
 APPLICATIONHEAD
 
 ##---- cache hostnames of hostfile---------------
 if [ -n "${HOSTFILE}" ] && [ -f ${HOSTFILE} ]; then
-    hostnames=$(cat ${HOSTFILE} | tr '\n\r' '  ')
-    NUMHOSTS=$(cat ${HOSTFILE} | wc -l)
+    hostnames=$(tr '\n\r' '  ' < ${HOSTFILE})
+    NUMHOSTS=$(wc -l < ${HOSTFILE})
 fi
 
 DESCRIPTIONFILE=$(echo $PROC_ARGS|cut -d' ' -f1)
 
 if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
-    NUMINSTANCES=$(cat ${DESCRIPTIONFILE} | wc -l)
-    replayinstances=$(cat ${DESCRIPTIONFILE})
     IFS_OLD=$IFS
     IFS=$'\n'
     set -f
@@ -148,10 +144,10 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
         fi
         
         sleeptime=$(echo "$line"|cut -d' ' -f4)
-        HAVE_SEQ="`which seq 2>/dev/null`"
+        HAVE_SEQ=$(which seq 2>/dev/null)
 
         if [ -n "${HAVE_SEQ}" ]; then
-            SEQ1=`${HAVE_SEQ} 0 $((${NUMPROCSMINE}-1))`
+            SEQ1=$( ${HAVE_SEQ} 0 $((${NUMPROCSMINE}-1)) )
         else
             cnt=0
             while (( $cnt < ${NUMPROCSMINE} )) ; do
@@ -168,7 +164,7 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
 ##  hostfile has less than i lines.
 ##----------------------------------------------------------
 
-##---- generate <process> tags------------------------------
+##---- generate <actor> tags------------------------------
         do
 	    if [ -n "${HOSTFILE}" ]; then
 		j=$(( ${NUMPROCS} % ${NUMHOSTS} +1))
@@ -180,13 +176,13 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
 		host="${hostname}"
             fi
         
-            echo "  <process host=\"${host}\" function=\"${instance}\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
+            echo "  <actor host=\"${host}\" function=\"${instance}\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
             echo "    <argument value=\"${instance}\"/> <!-- instance -->" >> ${APPLICATIONTMP}
             echo "    <argument value=\"${i}\"/> <!-- rank -->" >> ${APPLICATIONTMP}
             echo "    <argument value=\"$(echo $hosttrace|cut -d' ' -f$(($i+1)))\"/>" >> ${APPLICATIONTMP}
 	    
             echo "    <argument value=\"${sleeptime}\"/> <!-- delay -->" >> ${APPLICATIONTMP}
-            echo "  </process>" >> ${APPLICATIONTMP}
+            echo "  </actor>" >> ${APPLICATIONTMP}
             NUMPROCS=$(( ${NUMPROCS} +1))
         done
         # return IFS back to newline for "for" loop

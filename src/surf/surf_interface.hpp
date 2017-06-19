@@ -10,7 +10,6 @@
 
 #include "src/surf/surf_private.h"
 #include "surf/surf.h"
-#include "surf/surf_routing.h"
 #include "xbt/str.h"
 
 #include <boost/intrusive/list.hpp>
@@ -32,7 +31,7 @@ extern XBT_PRIVATE int sg_network_crosstraffic;
 extern XBT_PRIVATE std::vector<std::string> surf_path;
 
 extern "C" {
-XBT_PUBLIC(double) surf_get_clock(void);
+XBT_PUBLIC(double) surf_get_clock();
 }
 /** \ingroup SURF_simulation
  *  \brief List of hosts that have just restarted and whose autorestart process should be restarted.
@@ -45,16 +44,11 @@ extern XBT_PRIVATE double sg_sender_gap;
 namespace simgrid {
 namespace surf {
 
-extern XBT_PRIVATE simgrid::xbt::signal<void(void)> surfExitCallbacks;
-
+extern XBT_PRIVATE simgrid::xbt::signal<void()> surfExitCallbacks;
 }
 }
 
 int XBT_PRIVATE __surf_is_absolute_file_path(const char *file_path);
-
-static inline char* sg_storage_name(sg_storage_t storage) {
-  return storage->key;
-}
 
 /***********
  * Classes *
@@ -357,7 +351,7 @@ private:
 typedef struct {
   double peak;              /**< The peak of the metric, ie its max value */
   double scale;             /**< Current availability of the metric according to the traces, in [0,1] */
-  tmgr_trace_iterator_t event; /**< The associated trace event associated to the metric */
+  tmgr_trace_event_t event; /**< The associated trace event associated to the metric */
 } s_surf_metric_t;
 
 namespace simgrid {
@@ -394,7 +388,7 @@ public:
    * @param event What happened
    * @param value [TODO]
    */
-  virtual void apply_event(tmgr_trace_iterator_t event, double value)=0;
+  virtual void apply_event(tmgr_trace_event_t event, double value) = 0;
 
   /** @brief Check if the current Resource is used (if it currently serves an action) */
   virtual bool isUsed()=0;

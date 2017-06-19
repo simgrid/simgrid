@@ -46,14 +46,14 @@ int main(int argc, char* argv[])
                        "\tExample: %s ../msg_platform.xml chord.xml\n",
              argv[0], argv[0]);
   char** options = &argv[1];
-  while (!strncmp(options[0], "-", 1)) {
+  while (not strncmp(options[0], "-", 1)) {
     unsigned int length = strlen("-nb_bits=");
-    if (!strncmp(options[0], "-nb_bits=", length) && strlen(options[0]) > length) {
+    if (not strncmp(options[0], "-nb_bits=", length) && strlen(options[0]) > length) {
       nb_bits = xbt_str_parse_int(options[0] + length, "Invalid nb_bits parameter: %s");
       XBT_DEBUG("Set nb_bits to %d", nb_bits);
     } else {
       length = strlen("-timeout=");
-      if (!strncmp(options[0], "-timeout=", length) && strlen(options[0]) > length) {
+      if (not strncmp(options[0], "-timeout=", length) && strlen(options[0]) > length) {
         timeout = xbt_str_parse_int(options[0] + length, "Invalid timeout parameter: %s");
         XBT_DEBUG("Set timeout to %d", timeout);
       } else {

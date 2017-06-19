@@ -3,4 +3,4 @@ $ ./listen_async ${srcdir:=.}/../../../examples/platforms/small_platform.xml "--
 > [  0.000195] (test@Tremblay) Data successfully received from regular mailbox
 > [  0.000195] (test@Tremblay) Task listen works on asynchronous mailboxes
 > [  0.000195] (test@Tremblay) Data successfully received from asynchronous mailbox
-> [  0.000195] (maestro@) Variable 3 still in system when freing it: this may be a bug
+> [  0.000195] (maestro@) Probable bug: a simgrid::surf::NetworkCm02Action variable (#3) not removed before the LMM system destruction.

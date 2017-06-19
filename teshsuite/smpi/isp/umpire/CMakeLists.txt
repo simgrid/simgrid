@@ -92,7 +92,7 @@ set(umpire_tests_deadlock_broken
 )
  
 set(umpire_tests_problematic
-  deadlock-config # No deadlock detected by ISP unless MPI_Send blocking activated
+  deadlock-config # No deadlock detected by ISP unless MPI_Send blocking activated
  ) # problematic tests
  
  # These files are not listed on http://formalverification.cs.utah.edu/ISP_Tests/

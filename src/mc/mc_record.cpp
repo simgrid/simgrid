@@ -12,8 +12,8 @@
 #include <sstream>
 #include <string>
 
-#include <xbt/log.h>
-#include <xbt/sysdep.h>
+#include "xbt/log.h"
+#include "xbt/sysdep.h"
 
 #include "simgrid/simix.h"
 
@@ -26,7 +26,7 @@
 #include "src/mc/mc_base.h"
 #include "src/mc/Transition.hpp"
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 #include "src/mc/mc_request.h"
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_state.h"
@@ -53,13 +53,12 @@ void replay(RecordTrace const& trace)
 
     // Choose a request:
     smx_actor_t process = SIMIX_process_from_PID(transition.pid);
-    if (!process)
+    if (not process)
       xbt_die("Unexpected process.");
     smx_simcall_t simcall = &(process->simcall);
-    if(!simcall || simcall->call == SIMCALL_NONE)
+    if (not simcall || simcall->call == SIMCALL_NONE)
       xbt_die("No simcall for this process.");
-    if (!simgrid::mc::request_is_visible(simcall)
-        || !simgrid::mc::request_is_enabled(simcall))
+    if (not simgrid::mc::request_is_visible(simcall) || not simgrid::mc::request_is_enabled(simcall))
       xbt_die("Unexpected simcall.");
 
     // Execute the request:
@@ -103,7 +102,7 @@ RecordTrace parseRecordTrace(const char* data)
   return res;
 }
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 
 std::string traceToString(simgrid::mc::RecordTrace const& trace)
 {

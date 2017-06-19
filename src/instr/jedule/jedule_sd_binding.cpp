@@ -3,15 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/jedule/jedule_sd_binding.h"
-
 #include "simgrid/jedule/jedule.hpp"
 #include "src/simdag/simdag_private.hpp"
 
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/NetZone.hpp"
 
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
 
 XBT_LOG_NEW_CATEGORY(jedule, "Logging specific to Jedule");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jed_sd, jedule, "Logging specific to Jedule SD binding");
@@ -40,7 +38,7 @@ void jedule_sd_init()
   my_jedule->root_container = root_container;
 }
 
-void jedule_sd_exit(void)
+void jedule_sd_exit()
 {
   delete my_jedule;
 }
@@ -49,7 +47,7 @@ void jedule_sd_dump(const char * filename)
 {
   if (my_jedule) {
     char *fname;
-    if (!filename) {
+    if (not filename) {
       fname = bprintf("%s.jed", xbt_binary_name);
     } else {
       fname = xbt_strdup(filename);

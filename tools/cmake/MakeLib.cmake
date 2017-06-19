@@ -5,7 +5,7 @@
 set(MACOSX_RPATH ON)
 if(APPLE)
   # add the current location of libsimgrid-java.dynlib as a location for libsimgrid.dynlib
-  # (useful when unpacking the native libraries from the jarfile)
+  # (useful when unpacking the native libraries from the jarfile)
   set(CMAKE_INSTALL_RPATH "@loader_path/.")
   SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif()
@@ -34,12 +34,11 @@ if (HAVE_BOOST_CONTEXTS)
   set(SIMGRID_DEP "${SIMGRID_DEP} ${Boost_CONTEXT_LIBRARY}")
 endif()
 
-if(HAVE_PTHREAD AND ${HAVE_THREAD_CONTEXTS} AND NOT APPLE)
-  # Clang on recent Mac OS X is not happy about -pthread.
-  SET(SIMGRID_DEP "${SIMGRID_DEP} -pthread")
+if(CMAKE_USE_PTHREADS_INIT AND ${HAVE_THREAD_CONTEXTS})
+  set(SIMGRID_DEP "${SIMGRID_DEP} ${CMAKE_THREAD_LIBS_INIT}")
 endif()
 
-if(HAVE_LUA)
+if(SIMGRID_HAVE_LUA)
   ADD_CUSTOM_TARGET(link_simgrid_lua ALL
     DEPENDS 	simgrid
     ${CMAKE_BINARY_DIR}/examples/lua/simgrid.${LIB_EXE}
@@ -79,11 +78,11 @@ if(HAVE_GRAPHVIZ)
   endif()
 endif()
 
-if(HAVE_MC AND HAVE_GNU_LD AND NOT ${DL_LIBRARY} STREQUAL "")
+if(SIMGRID_HAVE_MC AND HAVE_GNU_LD AND NOT ${DL_LIBRARY} STREQUAL "")
   SET(SIMGRID_DEP "${SIMGRID_DEP} ${DL_LIBRARY}")
 endif()
 
-if(HAVE_NS3)
+if(SIMGRID_HAVE_NS3)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lns${NS3_VERSION}-core${NS3_SUFFIX} -lns${NS3_VERSION}-csma${NS3_SUFFIX} -lns${NS3_VERSION}-point-to-point${NS3_SUFFIX} -lns${NS3_VERSION}-internet${NS3_SUFFIX} -lns${NS3_VERSION}-applications${NS3_SUFFIX}")
 endif()
 

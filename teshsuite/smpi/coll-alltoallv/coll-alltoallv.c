@@ -62,7 +62,6 @@ int main(int argc, char **argv)
   int i;
   int rank;
   int size;
-  int *sendcounts, *recvcounts, *rdispls, *sdispls;
 
   MPI_Init(&argc, &argv);
 
@@ -81,10 +80,10 @@ int main(int argc, char **argv)
   }
 
   /* Create and load the arguments to alltoallv */
-  sendcounts = (int *) xbt_malloc(size * sizeof(int));
-  recvcounts = (int *) xbt_malloc(size * sizeof(int));
-  rdispls = (int *) xbt_malloc(size * sizeof(int));
-  sdispls = (int *) xbt_malloc(size * sizeof(int));
+  int* sendcounts = (int*)xbt_malloc(size * sizeof(int));
+  int* recvcounts = (int*)xbt_malloc(size * sizeof(int));
+  int* rdispls    = (int*)xbt_malloc(size * sizeof(int));
+  int* sdispls    = (int*)xbt_malloc(size * sizeof(int));
   for (i = 0; i < size; i++) {
     sendcounts[i] = i;
     recvcounts[i] = rank;

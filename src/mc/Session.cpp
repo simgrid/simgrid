@@ -9,11 +9,11 @@
 
 #include <functional>
 
-#include <xbt/log.h>
-#include <xbt/system_error.hpp>
-#include <simgrid/sg_config.h>
-#include <simgrid/modelchecker.h>
+#include "xbt/log.h"
+#include "xbt/system_error.hpp"
 #include <mc/mc.h>
+#include <simgrid/modelchecker.h>
+#include <simgrid/sg_config.h>
 
 #include "src/mc/Session.hpp"
 #include "src/mc/mc_state.h"
@@ -131,7 +131,7 @@ void Session::logState()
 }
 
 // static
-Session* Session::fork(std::function<void(void)> code)
+Session* Session::fork(std::function<void()> code)
 {
   // Create a AF_LOCAL socketpair used for exchanging messages
   // bewteen the model-checker process (ourselves) and the model-checked

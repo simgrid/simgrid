@@ -3,40 +3,26 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <dlfcn.h>
-#include <fcntl.h>
-#include <spawn.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-
 #include "mc/mc.h"
-#include "private.h"
-#include "private.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
-#include "smpi/smpi_shared_malloc.hpp"
-#include "simgrid/sg_config.h"
-#include "src/kernel/activity/SynchroComm.hpp"
-#include "src/mc/mc_record.h"
-#include "src/mc/mc_replay.h"
+#include "simgrid/s4u/Host.hpp"
 #include "src/msg/msg_private.h"
 #include "src/simix/smx_private.h"
 #include "src/surf/surf_interface.hpp"
 #include "src/smpi/SmpiHost.hpp"
-#include "surf/surf.h"
-#include "xbt/replay.hpp"
-#include <xbt/config.hpp>
+#include "xbt/config.hpp"
+#include "src/smpi/private.h"
+#include "src/smpi/smpi_coll.hpp"
+#include "src/smpi/smpi_comm.hpp"
+#include "src/smpi/smpi_group.hpp"
+#include "src/smpi/smpi_info.hpp"
+#include "src/smpi/smpi_process.hpp"
 
+#include <dlfcn.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 #include <float.h> /* DBL_MAX */
 #include <fstream>
-#include <map>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-#include <utility>
-#include <vector>
-#include <memory>
 
 #if HAVE_SENDFILE
 #include <sys/sendfile.h>
@@ -53,9 +39,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (ke
 */
 #define RTLD_DEEPBIND 0
 #endif
-
-/* Mac OSX does not have any header file providing that definition so we have to duplicate it here. Bummers. */
-extern char** environ; /* we use it in posix_spawnp below */
 
 #if HAVE_PAPI
 #include "papi.h"
@@ -86,8 +69,6 @@ static simgrid::config::Flag<double> smpi_init_sleep(
 
 void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t) = &smpi_comm_copy_buffer_callback;
 
-
-
 int smpi_process_count()
 {
   return process_count;
@@ -117,6 +98,14 @@ void smpi_process_init(int *argc, char ***argv){
 
 int smpi_process_index(){
   return smpi_process()->index();
+}
+
+void * smpi_process_get_user_data(){
+  return smpi_process()->get_user_data();
+}
+
+void smpi_process_set_user_data(void *data){
+  return smpi_process()->set_user_data(data);
 }
 
 
@@ -155,7 +144,7 @@ static void check_blocks(std::vector<std::pair<size_t, size_t>> &private_blocks,
 
 void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t buff_size)
 {
-  simgrid::kernel::activity::Comm *comm = dynamic_cast<simgrid::kernel::activity::Comm*>(synchro);
+  simgrid::kernel::activity::CommImpl* comm = dynamic_cast<simgrid::kernel::activity::CommImpl*>(synchro);
   int src_shared                        = 0;
   int dst_shared                        = 0;
   size_t src_offset                     = 0;
@@ -190,7 +179,8 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
        XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
 
        smpi_switch_data_segment(
-           (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->src_proc->data)->data))->index()));
+           static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->src_proc->data)->data))
+               ->index());
        tmpbuff = static_cast<void*>(xbt_malloc(buff_size));
        memcpy_private(tmpbuff, buff, private_blocks);
   }
@@ -199,7 +189,8 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
       && ((char*)comm->dst_buff < smpi_start_data_exe + smpi_size_data_exe )){
        XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
        smpi_switch_data_segment(
-           (static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->dst_proc->data)->data))->index()));
+           static_cast<simgrid::smpi::Process*>((static_cast<simgrid::MsgActorExt*>(comm->dst_proc->data)->data))
+               ->index());
   }
   XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff,comm->dst_buff);
   memcpy_private(comm->dst_buff, tmpbuff, private_blocks);
@@ -246,7 +237,7 @@ void smpi_global_init()
 {
   MPI_Group group;
 
-  if (!MC_is_active()) {
+  if (not MC_is_active()) {
     global_timer = xbt_os_timer_new();
     xbt_os_walltimer_start(global_timer);
   }
@@ -254,7 +245,7 @@ void smpi_global_init()
   if (xbt_cfg_get_string("smpi/comp-adjustment-file")[0] != '\0') { 
     std::string filename {xbt_cfg_get_string("smpi/comp-adjustment-file")};
     std::ifstream fstream(filename);
-    if (!fstream.is_open()) {
+    if (not fstream.is_open()) {
       xbt_die("Could not open file %s. Does it exist?", filename.c_str());
     }
 
@@ -402,7 +393,7 @@ void smpi_global_destroy()
 
   MPI_COMM_WORLD = MPI_COMM_NULL;
 
-  if (!MC_is_active()) {
+  if (not MC_is_active()) {
     xbt_os_timer_free(global_timer);
   }
 
@@ -468,15 +459,23 @@ static void smpi_init_options(){
     else
       xbt_die("Invalid value for smpi/privatization: '%s'", smpi_privatize_option);
 
+#if defined(__FreeBSD__)
+    if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
+      XBT_INFO("Mixing mmap privatization is broken on FreeBSD, switching to dlopen privatization instead.");
+      smpi_privatize_global_variables = SMPI_PRIVATIZE_DLOPEN;
+    }
+#endif
+
     if (smpi_cpu_threshold < 0)
       smpi_cpu_threshold = DBL_MAX;
 
     char* val = xbt_cfg_get_string("smpi/shared-malloc");
-    if (!strcasecmp(val, "yes") || !strcmp(val, "1") || !strcasecmp(val, "on") || !strcasecmp(val, "global")) {
+    if (not strcasecmp(val, "yes") || not strcmp(val, "1") || not strcasecmp(val, "on") ||
+        not strcasecmp(val, "global")) {
       smpi_cfg_shared_malloc = shmalloc_global;
-    } else if (!strcasecmp(val, "local")) {
+    } else if (not strcasecmp(val, "local")) {
       smpi_cfg_shared_malloc = shmalloc_local;
-    } else if (!strcasecmp(val, "no") || !strcmp(val, "0") || !strcasecmp(val, "off")) {
+    } else if (not strcasecmp(val, "no") || not strcmp(val, "0") || not strcasecmp(val, "off")) {
       smpi_cfg_shared_malloc = shmalloc_none;
     } else {
       xbt_die("Invalid value '%s' for option smpi/shared-malloc. Possible values: 'on' or 'global', 'local', 'off'",
@@ -490,10 +489,11 @@ typedef void (*smpi_fortran_entry_point_type)();
 
 static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<std::string> args)
 {
+  char noarg[]   = {'\0'};
   const int argc = args.size();
   std::unique_ptr<char*[]> argv(new char*[argc + 1]);
   for (int i = 0; i != argc; ++i)
-    argv[i] = args[i].empty() ? const_cast<char*>(""): &args[i].front();
+    argv[i] = args[i].empty() ? noarg : &args[i].front();
   argv[argc] = nullptr;
 
   int res = entry_point(argc, argv.get());
@@ -606,11 +606,12 @@ int smpi_main(const char* executable, int argc, char *argv[])
 
         // Load the copy and resolve the entry point:
         void* handle = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL | RTLD_DEEPBIND);
-        unlink(target_executable.c_str());
+        if (xbt_cfg_get_boolean("smpi/keep-temps") == false)
+          unlink(target_executable.c_str());
         if (handle == nullptr)
           xbt_die("dlopen failed: %s (errno: %d -- %s)", dlerror(), errno, strerror(errno));
         smpi_entry_point_type entry_point = smpi_resolve_function(handle);
-        if (!entry_point)
+        if (not entry_point)
           xbt_die("Could not resolve entry point");
 
         smpi_run_entry_point(entry_point, args);
@@ -625,7 +626,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
     if (handle == nullptr)
       xbt_die("dlopen failed for %s: %s (errno: %d -- %s)", executable, dlerror(), errno, strerror(errno));
     smpi_entry_point_type entry_point = smpi_resolve_function(handle);
-    if (!entry_point)
+    if (not entry_point)
       xbt_die("main not found in %s", executable);
     // TODO, register the executable for SMPI privatization
 
@@ -666,8 +667,8 @@ int smpi_main(const char* executable, int argc, char *argv[])
     }
   }
   int count = smpi_process_count();
-  int i, ret=0;
-  for (i = 0; i < count; i++) {
+  int ret   = 0;
+  for (int i = 0; i < count; i++) {
     if(process_data[i]->return_value()!=0){
       ret=process_data[i]->return_value();//return first non 0 value
       break;

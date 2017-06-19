@@ -69,7 +69,7 @@ Host::~Host()
  */
 void Host::destroy()
 {
-  if (!currentlyDestroying_) {
+  if (not currentlyDestroying_) {
     currentlyDestroying_ = true;
     onDestruction(*this);
     host_list.erase(name_);

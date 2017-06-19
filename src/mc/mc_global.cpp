@@ -12,9 +12,9 @@
 
 #include <vector>
 
-#include <xbt/dynar.h>
-#include <xbt/automaton.h>
-#include <xbt/swag.h>
+#include "xbt/automaton.h"
+#include "xbt/dynar.h"
+#include "xbt/swag.h"
 
 #include "mc_base.h"
 
@@ -28,7 +28,7 @@
 
 #include "src/simix/ActorImpl.hpp"
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 #include <libunwind.h>
 #include "src/mc/mc_comm_pattern.h"
 #include "src/mc/mc_request.h"
@@ -55,7 +55,7 @@ std::vector<double> processes_time;
 }
 }
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 
 /* Liveness */
 
@@ -104,7 +104,7 @@ void MC_run()
   simgrid::mc::processes_time.clear();
 }
 
-void MC_show_deadlock(void)
+void MC_show_deadlock()
 {
   XBT_INFO("**************************");
   XBT_INFO("*** DEAD-LOCK DETECTED ***");
@@ -133,7 +133,7 @@ void dumpStack(FILE* file, unw_cursor_t cursor)
 
   unw_word_t off;
   do {
-    const char * name = !unw_get_proc_name(&cursor, buffer, 100, &off) ? buffer : "?";
+    const char* name = not unw_get_proc_name(&cursor, buffer, 100, &off) ? buffer : "?";
 
     int status;
 

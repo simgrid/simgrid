@@ -8,10 +8,9 @@
 
 #include "simgrid/msg.h"
 
-#include "src/kernel/activity/SynchroExec.hpp"
-#include "src/kernel/activity/SynchroComm.hpp"
-
-#include <xbt/Extendable.hpp>
+#include "src/kernel/activity/CommImpl.hpp"
+#include "src/kernel/activity/ExecImpl.hpp"
+#include "xbt/Extendable.hpp"
 
 /**************** datatypes **********************************/
 /**************************** Host Extension *********************************/
@@ -43,8 +42,8 @@ typedef struct simdata_task {
     this->isused = false;
   }
 
-  simgrid::kernel::activity::Exec *compute = nullptr; /* SIMIX modeling of computation */
-  simgrid::kernel::activity::Comm *comm = nullptr;    /* SIMIX modeling of communication */
+  simgrid::kernel::activity::ExecImpl* compute = nullptr; /* SIMIX modeling of computation */
+  simgrid::kernel::activity::CommImpl* comm = nullptr; /* SIMIX modeling of communication */
   double bytes_amount = 0.0; /* Data size */
   double flops_amount = 0.0; /* Computation size */
   msg_process_t sender = nullptr;

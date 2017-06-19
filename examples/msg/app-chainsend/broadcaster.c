@@ -1,5 +1,4 @@
-/* Copyright (c) 2012-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,9 +10,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_broadcaster, "Messages specific for the broadca
 xbt_dynar_t build_hostlist_from_hostcount(int hostcount)
 {
   xbt_dynar_t host_list = xbt_dynar_new(sizeof(char*), xbt_free_ref);
-  int i;
-  
-  for (i = 1; i <= hostcount; i++) {
+  for (int i = 1; i <= hostcount; i++) {
     char *hostname = bprintf("host%d", i);
     XBT_DEBUG("%s", hostname);
     xbt_dynar_push(host_list, &hostname);
@@ -24,12 +21,12 @@ xbt_dynar_t build_hostlist_from_hostcount(int hostcount)
 int broadcaster_build_chain(broadcaster_t bc)
 {
   msg_task_t task = NULL;
-  char **cur = (char**)xbt_dynar_iterator_next(bc->it);
-  const char *me = "host0"; /* FIXME: hardcoded*/ /*MSG_host_get_name(MSG_host_self());*/
-  const char *current_host = NULL;
-  const char *prev = NULL;
-  const char *next = NULL;
-  const char *last = NULL;
+  char** cur               = (char**)xbt_dynar_iterator_next(bc->it);
+  const char* me           = MSG_host_get_name(MSG_host_self());
+  const char* current_host = NULL;
+  const char* prev         = NULL;
+  const char* next         = NULL;
+  const char* last         = NULL;
 
   /* Build the chain if there's at least one peer */
   if (cur != NULL) {
@@ -62,8 +59,7 @@ int broadcaster_build_chain(broadcaster_t bc)
 
 int broadcaster_send_file(broadcaster_t bc)
 {
-  const char *me = "host0"; /* FIXME: hardcoded*/ /*MSG_host_get_name(MSG_host_self());*/
-  //msg_comm_t comm = NULL;
+  const char* me  = MSG_host_get_name(MSG_host_self());
   msg_task_t task = NULL;
 
   bc->current_piece = 0;
@@ -101,22 +97,19 @@ static void broadcaster_destroy(broadcaster_t bc)
   /* Destroy iterator and hostlist */
   xbt_dynar_iterator_delete(bc->it);
   xbt_dynar_free(&bc->pending_sends);
-  xbt_dynar_free(&bc->host_list); /* FIXME: host names are not free'd */
+  xbt_dynar_free(&bc->host_list);
   xbt_free(bc);
 }
 
 /** Emitter function  */
 int broadcaster(int argc, char *argv[])
 {
-  broadcaster_t bc = NULL;
-  xbt_dynar_t host_list = NULL;
-  int status;
   unsigned int piece_count = PIECE_COUNT;
 
   XBT_DEBUG("broadcaster");
 
   /* Add every mailbox given by the hostcount in argv[1] to a dynamic array */
-  host_list = build_hostlist_from_hostcount(xbt_str_parse_int(argv[1], "Invalid number of peers: %s"));
+  xbt_dynar_t host_list = build_hostlist_from_hostcount(xbt_str_parse_int(argv[1], "Invalid number of peers: %s"));
 
   /* argv[2] is the number of pieces */
   if (argc > 2) {
@@ -125,10 +118,10 @@ int broadcaster(int argc, char *argv[])
   } else {
     XBT_DEBUG("No piece_count specified, defaulting to %d", piece_count);
   }
-  bc = broadcaster_init(host_list, piece_count);
+  broadcaster_t bc = broadcaster_init(host_list, piece_count);
 
   /* TODO: Error checking */
-  status = broadcaster_send_file(bc);
+  int status = broadcaster_send_file(bc);
 
   broadcaster_destroy(bc);
 

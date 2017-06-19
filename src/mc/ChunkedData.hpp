@@ -35,7 +35,7 @@ class ChunkedData {
   std::vector<std::size_t> pagenos_;
 public:
 
-  ChunkedData() {}
+  ChunkedData() = default;
   void clear()
   {
     for (std::size_t pageno : pagenos_)

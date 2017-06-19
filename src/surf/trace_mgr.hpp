@@ -6,29 +6,22 @@
 #ifndef SURF_TMGR_H
 #define SURF_TMGR_H
 
-#include "xbt/heap.h"
 #include "simgrid/forward.h"
+#include "xbt/heap.h"
+#include "xbt/sysdep.h"
 #include <vector>
 
 SG_BEGIN_DECL()
 
-typedef struct tmgr_event {
-  double delta;
-  double value;
-} s_tmgr_event_t, *tmgr_event_t;
-
 /* Iterator within a trace */
-typedef struct tmgr_trace_iterator {
+typedef struct tmgr_trace_event {
   tmgr_trace_t trace;
   unsigned int idx;
   sg_resource_t resource;
   int free_me;
 } s_tmgr_trace_event_t;
-typedef struct tmgr_trace_iterator *tmgr_trace_iterator_t;
+typedef struct tmgr_trace_event* tmgr_trace_event_t;
 
-/* Creation functions */
-XBT_PUBLIC(tmgr_trace_t) tmgr_empty_trace_new(void);
-XBT_PUBLIC(void) tmgr_trace_free(tmgr_trace_t trace);
 /**
  * \brief Free a trace event structure
  *
@@ -36,9 +29,9 @@ XBT_PUBLIC(void) tmgr_trace_free(tmgr_trace_t trace);
  * This flag indicates whether the structure is still used somewhere or not.
  * When the structure is freed, the argument is set to nullptr
 */
-XBT_PUBLIC(void) tmgr_trace_event_unref(tmgr_trace_iterator_t *trace_event);
+XBT_PUBLIC(void) tmgr_trace_event_unref(tmgr_trace_event_t* trace_event);
 
-XBT_PUBLIC(void) tmgr_finalize(void);
+XBT_PUBLIC(void) tmgr_finalize();
 
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_file(const char* filename);
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char* id, std::string input, double periodicity);
@@ -47,17 +40,31 @@ SG_END_DECL()
 
 #ifdef __cplusplus
 namespace simgrid {
-/** @brief Modeling of the resource variations, such as those due to an external load
+/** @brief Modeling of the availability profile (due to an external load) or the churn
  *
- * There is 3 main concepts in this module:
- * - #trace: a set of dated values, ie a list of pair <timestamp, value>
- * - #trace_iterator: links a given trace to a given simgrid resource. A Cpu for example has 2 iterators: state (ie, is it ON/OFF) and speed, while a link has 3 iterators: state, bandwidth and latency.
+ * There is 4 main concepts in this module:
+ * - #DatedValue: a pair <timestamp, value> (both are of type double)
+ * - #trace: a list of dated values
+ * - #trace_event: links a given trace to a given SimGrid resource.
+ *   A Cpu for example has 2 kinds of events: state (ie, is it ON/OFF) and speed,
+ *   while a link has 3 iterators: state, bandwidth and latency.
  * - #future_evt_set: makes it easy to find the next occuring event of all traces
  */
-  namespace trace_mgr {
+namespace trace_mgr {
+XBT_PUBLIC_CLASS DatedValue
+{
+public:
+  double date_          = 0;
+  double value_         = 0;
+  explicit DatedValue() = default;
+  explicit DatedValue(double d, double v) : date_(d), value_(v) {}
+  bool operator==(DatedValue e2);
+  bool operator!=(DatedValue e2) { return not(*this == e2); }
+};
+std::ostream& operator<<(std::ostream& out, const DatedValue& e);
 
 /** @brief A trace_iterator links a trace to a resource */
-XBT_PUBLIC_CLASS trace_iterator {
+XBT_PUBLIC_CLASS trace_event{
 
 };
 
@@ -69,10 +76,10 @@ XBT_PUBLIC_CLASS trace_iterator {
 XBT_PUBLIC_CLASS trace {
 public:
   /**  Creates an empty trace */
-  trace();
+  explicit trace();
   virtual ~trace();
 //private:
-  std::vector<s_tmgr_event_t> event_list;
+  std::vector<DatedValue> event_list;
 };
 
 /** @brief Future Event Set (collection of iterators over the traces)
@@ -82,12 +89,12 @@ public:
   future_evt_set();
   virtual ~future_evt_set();
   double next_date() const;
-  tmgr_trace_iterator_t pop_leq(double date, double *value, simgrid::surf::Resource** resource);
-  tmgr_trace_iterator_t add_trace(tmgr_trace_t trace, double start_time, simgrid::surf::Resource *resource);
+  tmgr_trace_event_t pop_leq(double date, double* value, simgrid::surf::Resource** resource);
+  tmgr_trace_event_t add_trace(tmgr_trace_t trace, simgrid::surf::Resource * resource);
 
 private:
   // TODO: use a boost type for the heap (or a ladder queue)
-  xbt_heap_t p_heap = xbt_heap_new(8, xbt_free_f); /* Content: only trace_events (yep, 8 is an arbitrary value) */
+  xbt_heap_t heap_ = xbt_heap_new(8, xbt_free_f); /* Content: only trace_events (yep, 8 is an arbitrary value) */
 };
 
 }} // namespace simgrid::trace_mgr

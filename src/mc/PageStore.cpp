@@ -12,9 +12,9 @@
 # define MAP_POPULATE MAP_PREFAULT_READ
 #endif
 
-#include <xbt/base.h>
-#include <xbt/log.h>
-#include <xbt/sysdep.h>
+#include "xbt/base.h"
+#include "xbt/log.h"
+#include "xbt/sysdep.h"
 
 #include "src/internal_config.h"
 

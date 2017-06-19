@@ -25,7 +25,6 @@
 #include "src/mc/remote/mc_protocol.h"
 
 // We won't need those once the separation MCer/MCed is complete:
-#include "src/mc/mc_ignore.h"
 #include "src/mc/mc_smx.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client, mc, "MC client logic");
@@ -39,7 +38,7 @@ Client* Client::initialize()
 {
   // We are not in MC mode:
   // TODO, handle this more gracefully.
-  if (!std::getenv(MC_ENV_SOCKET_FD))
+  if (not std::getenv(MC_ENV_SOCKET_FD))
     return nullptr;
 
   // Do not break if we are called multiple times:
@@ -50,7 +49,7 @@ Client* Client::initialize()
 
   // Fetch socket from MC_ENV_SOCKET_FD:
   char* fd_env = std::getenv(MC_ENV_SOCKET_FD);
-  if (!fd_env)
+  if (not fd_env)
     xbt_die("No MC socket passed in the environment");
   int fd =
       xbt_str_parse_int(fd_env, bprintf("Variable %s should contain a number but contains '%%s'", MC_ENV_SOCKET_FD));
@@ -103,7 +102,7 @@ void Client::handleMessages()
       case MC_MESSAGE_DEADLOCK_CHECK: {
         // Check deadlock:
         bool deadlock = false;
-        if (!simix_global->process_list.empty()) {
+        if (not simix_global->process_list.empty()) {
           deadlock = true;
           for (auto kv : simix_global->process_list)
             if (simgrid::mc::actor_is_enabled(kv.second)) {
@@ -128,7 +127,7 @@ void Client::handleMessages()
           xbt_die("Unexpected size for SIMCALL_HANDLE");
         memcpy(&message, message_buffer, sizeof(message));
         smx_actor_t process = SIMIX_process_from_PID(message.pid);
-        if (!process)
+        if (not process)
           xbt_die("Invalid pid %lu", (unsigned long)message.pid);
         SIMIX_simcall_handle(&process->simcall, message.value);
         if (channel_.send(MC_MESSAGE_WAITING))
@@ -151,7 +150,7 @@ void Client::handleMessages()
   }
 }
 
-void Client::mainLoop(void)
+void Client::mainLoop()
 {
   while (1) {
     simgrid::mc::wait_for_requests();
@@ -242,7 +241,7 @@ void Client::declareStack(void* stack, size_t size, smx_actor_t process, ucontex
   message.type         = MC_MESSAGE_STACK_REGION;
   message.stack_region = region;
   if (channel_.send(message))
-    xbt_die("Coule not send STACK_REGION to model-checker");
+    xbt_die("Could not send STACK_REGION to model-checker");
 }
 }
 }

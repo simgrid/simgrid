@@ -255,11 +255,11 @@ int Coll_reduce_ompi::reduce( void *sendbuf, void *recvbuf,
      * If the operation is non commutative we currently have choice of linear 
      * or in-order binary tree algorithm.
      */
-    if(  (op!=MPI_OP_NULL) && !op->is_commutative() ) {
-        if ((communicator_size < 12) && (message_size < 2048)) {
-            return Coll_reduce_ompi_basic_linear::reduce (sendbuf, recvbuf, count, datatype, op, root, comm/*, module*/); 
-        } 
-        return Coll_reduce_ompi_in_order_binary::reduce (sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
+    if ((op != MPI_OP_NULL) && not op->is_commutative()) {
+      if ((communicator_size < 12) && (message_size < 2048)) {
+        return Coll_reduce_ompi_basic_linear::reduce(sendbuf, recvbuf, count, datatype, op, root, comm /*, module*/);
+      }
+      return Coll_reduce_ompi_in_order_binary::reduce(sendbuf, recvbuf, count, datatype, op, root, comm /*, module,
                                                              0, max_requests*/); 
     }
 
@@ -355,11 +355,9 @@ int Coll_reduce_scatter_ompi::reduce_scatter( void *sbuf, void *rbuf,
         }
     }
 
-    if(  ((op!=MPI_OP_NULL) && !op->is_commutative()) || (zerocounts)) {
-        Coll_reduce_scatter_default::reduce_scatter (sbuf, rbuf, rcounts, 
-                                                                    dtype, op, 
-                                                                    comm); 
-        return MPI_SUCCESS;
+    if (((op != MPI_OP_NULL) && not op->is_commutative()) || (zerocounts)) {
+      Coll_reduce_scatter_default::reduce_scatter(sbuf, rbuf, rcounts, dtype, op, comm);
+      return MPI_SUCCESS;
     }
    
     total_message_size *= dsize;

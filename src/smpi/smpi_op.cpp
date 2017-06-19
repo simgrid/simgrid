@@ -3,8 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "mc/mc.h"
-#include "private.h"
+#include "src/smpi/private.h"
+#include "src/smpi/smpi_datatype.hpp"
+#include "src/smpi/smpi_op.hpp"
+#include "src/smpi/smpi_process.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_op, smpi, "Logging specific to SMPI (op)");
 
@@ -14,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_op, smpi, "Logging specific to SMPI (op)");
 #define PROD_OP(a, b) (b) *= (a)
 #define LAND_OP(a, b) (b) = (a) && (b)
 #define LOR_OP(a, b)  (b) = (a) || (b)
-#define LXOR_OP(a, b) (b) = (!(a) && (b)) || ((a) && !(b))
+#define LXOR_OP(a, b) (b) = (not(a) && (b)) || ((a) && not(b))
 #define BAND_OP(a, b) (b) &= (a)
 #define BOR_OP(a, b)  (b) |= (a)
 #define BXOR_OP(a, b) (b) ^= (a)
@@ -243,8 +245,8 @@ void Op::apply(void *invec, void *inoutvec, int *len, MPI_Datatype datatype)
     smpi_switch_data_segment(smpi_process()->index());
   }
 
-  if(!smpi_process()->replaying() && *len > 0){
-    if(! is_fortran_op_)
+  if (not smpi_process()->replaying() && *len > 0) {
+    if (not is_fortran_op_)
       this->func_(invec, inoutvec, len, &datatype);
     else{
       XBT_DEBUG("Applying operation of length %d from %p and from/to %p", *len, invec, inoutvec);

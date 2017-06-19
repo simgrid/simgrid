@@ -74,13 +74,13 @@ public class Task {
 	 */ 
 	public Task(String name, Host[]hosts, double[]flopsAmount, double[]bytesAmount) {
 		if (flopsAmount == null)
-			throw new NullPointerException("Parallel task flops amounts is null");
+			throw new IllegalArgumentException("Parallel task flops amounts is null");
 		if (bytesAmount == null)
-			throw new NullPointerException("Parallel task bytes amounts is null");
+			throw new IllegalArgumentException("Parallel task bytes amounts is null");
 		if (hosts == null)
-			throw new NullPointerException("Host list is null");
+			throw new IllegalArgumentException("Host list is null");
 		if (name == null)
-			throw new NullPointerException("Parallel task name is null");
+			throw new IllegalArgumentException("Parallel task name is null");
 		
 		parallelCreate(name, hosts, flopsAmount, bytesAmount);
 		this.name = name;

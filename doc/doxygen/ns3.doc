@@ -43,7 +43,7 @@ cmake . -Denable_ns3=ON -DNS3_HINT=/opt/ns3 # or change the path if needed
 
 By the end of the configuration, cmake reports whether ns-3 was found,
 and this information is also available in <tt>include/simgrid_config.h</tt>
-If your local copy defines the variable \c HAVE_NS3 to 1, then NS3
+If your local copy defines the variable \c SIMGRID_HAVE_NS3 to 1, then ns-3
 was correctly detected. If it's defined to 0, then something went
 wrong. Explore <tt>CMakeFiles/CMakeOutput.log</tt> and
 <tt>CMakeFiles/CMakeError.log</tt> to diagnose the problem.
@@ -54,17 +54,6 @@ Afterward, you can test your installation as follows:
 $ ctest -R ns3
 \endverbatim
 
-\subsection pls_ns3_config_trouble Troubleshooting
-
-If you have a ns-3 version that is not known to SimGrid yet, edit \c
-tools/cmake/Modules/FindNS3.cmake in your SimGrid tree, according to
-the comments on top of this file.
-
-If the compilation fails on Debian/Ubuntu when linking the library
-because of some .a file that cannot be used dynamically, then you are
-probably using a very old (and buggy) <tt>libns3-dev</tt>
-package. Update it, or install <tt>libns3-3</tt> manually.
-
 \section pls_ns3_use Using ns-3 from SimGrid
 
 The SimGrid-ns3 binding only contains features that are common to both
@@ -72,25 +61,65 @@ systems: ns-3 wireless models are not available, while SimGrid routes
 cannot be longer than 1. Also, the platform built in ns-3 from the
 SimGrid description is very basic.
 
-If your platform have longer routes, simply add some routers to break
-these routes. SimGrid's routers are similar to hosts, without
-computational abilities.
+Any route longer than one will be ignored when using ns-3. They are
+harmless, but you still need to connect your hosts using one-hop routes.
+The best solution is to add routers to split your route. Here is an
+example of invalid platform:
+
+@code{.xml}
+<platform>
+  <host id="alice" speed="1Gf" />
+  <host id="bob"   speed="1Gf" />
+  
+  <link id="l1" bw="1Mbps" />
+  <link id="l2" bw="1Mbps" />
+
+  <route src="alice" dst="bob">
+    <link_ctn id="l1"/> <!-- INVALID WITH NS-3 -->
+    <link_ctn id="l2"/> <!-- length=2 IS TOO MUCH -->
+  </route>
+</platform>
+@endcode
+  
+Here is the same platform expressed in a way that ns-3 will understand.
+There is no direct connexion from alice to bob, but that's OK because
+ns-3 will find the path from point to point.
+
+@code{.xml}
+<platform>
+  <host id="alice" speed="1Gf" />
+  <host id="bob"   speed="1Gf" />
+
+  <router id="r1" /> <!-- routers are compute-less hosts -->
+
+  <link id="l1" bw="1Mbps" />
+  <link id="l2" bw="1Mbps" />
+
+  <route src="alice" dst="r1">
+    <link_ctn id="l1"/> 
+  </route>
+  
+  <route src="r1" dst="bob">
+    <link_ctn id="l2"/> 
+  </route>
+</platform>
+@endcode
+
 
 Once your platform is OK, just change the "network/model"
-configuration option to "NS3". The rest remains unchanged.
-
-The following should work from the examples/msg/network-ns3 folder,
-where the \c network-ns3 binary example lives. 
+configuration option to "NS3" as follows. The rest remains unchanged.
 
 \verbatim
-./network-ns3 ../../platforms/small_platform_one_link_routes.xml 3hosts_2links_d.xml --cfg=network/model:NS3 --log=root.threshold:info
+./network-ns3 ../../platforms/small_platform_one_link_routes.xml 3hosts_2links_d.xml --cfg=network/model:NS3
 \endverbatim
 
 Many other files from the examples/platform directory are usable with
-the ns-3 model. Check the file
+the ns-3 model, such as @ref examples/platforms/dogbone.xml. Check the file
 examples/msg/network-ns3/network-ns3.tesh to see which ones are used
 in our regression tests. You may also be interested in the
 @ref msg_ex_ns3 "ns-3/SimGrid examples".
+
+@subsection pls_ns3_shortcomings Shortcomings of the ns-3 bindings in SimGrid
 
 A ns-3 platform is automatically created from the provided SimGrid
 platform. However, there are some known caveats:
@@ -115,4 +144,33 @@ readable) as possible. If the current state does not fit your needs,
 you should modify this plugin, and/or create your own plugin from the
 existing one.
 
+@section pls_trouble Troubleshooting with ns-3 and SimGrid
+
+@subsection pls_ns3_config_trouble I fail to compile ns-3 within SimGrid
+
+If you have a ns-3 version that is not known to SimGrid yet, edit \c
+tools/cmake/Modules/FindNS3.cmake in your SimGrid tree, according to
+the comments on top of this file.
+
+If the compilation fails on Debian/Ubuntu when linking the library
+because of some .a file that cannot be used dynamically, then you are
+probably using a very old (and buggy) <tt>libns3-dev</tt>
+package. Update it, or install <tt>libns3-3</tt> manually.
+
+@subsection pls_trouble_hang The simulation hangs at some point
+
+If your simulation hangs in a communication, this is probably because
+one host is sending data that is not routable in your platform. Make
+sure that you only use routes of length 1, and that any host is
+connected to the platform.
+
+Arguably, SimGrid could detect this situation and report it, but
+unfortunately, this is still to be done.
+
+@subsection pls_trouble_warning I get a warning that some routes are ignored
+
+Please read again the @ref pls_ns3_use section.
+
+
+@example examples/platforms/dogbone.xml
 */

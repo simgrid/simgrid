@@ -22,10 +22,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(electric_fence, "Example to check the soundness of 
 static int server(int argc, char *argv[])
 {
   msg_task_t task1 = NULL, task2 = NULL;
-  msg_comm_t comm_received1 = NULL, comm_received2 = NULL;
 
-  comm_received1 = MSG_task_irecv(&task1, "mymailbox");
-  comm_received2 = MSG_task_irecv(&task2, "mymailbox");
+  msg_comm_t comm_received1 = MSG_task_irecv(&task1, "mymailbox");
+  msg_comm_t comm_received2 = MSG_task_irecv(&task2, "mymailbox");
 
   MSG_comm_wait(comm_received1, -1);
   MSG_comm_wait(comm_received2, -1);

@@ -1,5 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -128,6 +127,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
       memreg.prot |= PROT_EXEC;
 
     /* Private (copy-on-write) or shared? */
+    memreg.flags = 0;
     if (info.shared)
       memreg.flags |= MAP_SHARED;
     else
@@ -145,9 +145,9 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 
     /* Path */
     char path[MAXPATHLEN];
-	int pathlen;
+    int pathlen;
     pathlen = proc_regionfilename(pid, address, path, sizeof(path));
-	path[pathlen] = '\0';
+    path[pathlen]   = '\0';
     memreg.pathname = path;
 
 #if 0 /* Display mappings for debug */
@@ -256,8 +256,9 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     } else {
       memreg.flags |= MAP_SHARED;
       if (lfields[1][3] != 's')
-	XBT_WARN("The protection is neither 'p' (private) nor 's' (shared) but '%s'. Let's assume shared, as on b0rken win-ubuntu systems.\nFull line: %s\n",
-		 lfields[1], line);
+        XBT_WARN("The protection is neither 'p' (private) nor 's' (shared) but '%s'. Let's assume shared, as on b0rken "
+                 "win-ubuntu systems.\nFull line: %s\n",
+                 lfields[1], line);
     }
 
     /* Get the offset value */
@@ -296,7 +297,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 
     /* Create space for a new map region in the region's array and copy the */
     /* parsed stuff from the temporal memreg variable */
-    XBT_DEBUG("Found region for %s", !memreg.pathname.empty() ? memreg.pathname.c_str() : "(null)");
+    XBT_DEBUG("Found region for %s", not memreg.pathname.empty() ? memreg.pathname.c_str() : "(null)");
 
     ret.push_back(std::move(memreg));
   }
@@ -360,9 +361,8 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
       */
     if (vmentries[i].kve_path[0] != '\0')
       memreg.pathname = vmentries[i].kve_path;
-    else if (vmentries[i].kve_type == KVME_TYPE_DEFAULT
-	    && vmentries[i-1].kve_type == KVME_TYPE_VNODE
-        && vmentries[i-1].kve_path[0] != '\0')
+    else if (vmentries[i].kve_type == KVME_TYPE_DEFAULT && vmentries[i - 1].kve_type == KVME_TYPE_VNODE &&
+             vmentries[i - 1].kve_path[0] != '\0')
       memreg.pathname = vmentries[i-1].kve_path;
     else if (vmentries[i].kve_type == KVME_TYPE_DEFAULT
         && vmentries[i].kve_flags & KVME_FLAG_GROWS_DOWN)
@@ -374,8 +374,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
      * later identifies mappings based on the permissions that are expected
      * when running the Linux kernel.
      */
-    if (vmentries[i].kve_type == KVME_TYPE_VNODE
-        && ! (vmentries[i].kve_flags & KVME_FLAG_NEEDS_COPY))
+    if (vmentries[i].kve_type == KVME_TYPE_VNODE && not(vmentries[i].kve_flags & KVME_FLAG_NEEDS_COPY))
       memreg.prot &= ~PROT_WRITE;
 
     ret.push_back(std::move(memreg));

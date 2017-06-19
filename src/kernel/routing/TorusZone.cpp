@@ -86,7 +86,7 @@ void TorusZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
   std::vector<std::string> dimensions;
   boost::split(dimensions, cluster->topo_parameters, boost::is_any_of(","));
 
-  if (!dimensions.empty()) {
+  if (not dimensions.empty()) {
     /* We are in a torus cluster
      * Parse attribute dimensions="dim1,dim2,dim3,...,dimN" and safe it in a vector.
      * Additionally, we need to know how many ranks we have in total

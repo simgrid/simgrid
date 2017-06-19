@@ -102,7 +102,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(log);
   XBT_LOG_CONNECT(module);
   XBT_LOG_CONNECT(replay);
-  XBT_LOG_CONNECT(strbuff);
   XBT_LOG_CONNECT(xbt_cfg);
   XBT_LOG_CONNECT(xbt_dict);
   XBT_LOG_CONNECT(xbt_dict_cursor);
@@ -115,7 +114,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(xbt_heap);
   XBT_LOG_CONNECT(xbt_lib);
   XBT_LOG_CONNECT(xbt_mallocator);
-  XBT_LOG_CONNECT(xbt_matrix);
   XBT_LOG_CONNECT(xbt_memory_map);
   XBT_LOG_CONNECT(xbt_parmap);
   XBT_LOG_CONNECT(xbt_sync);
@@ -125,7 +123,7 @@ static void xbt_log_connect_categories(void)
   /* The following categories are only defined in libsimgrid */
 
   /* bindings */
-#if HAVE_LUA
+#if SIMGRID_HAVE_LUA
   XBT_LOG_CONNECT(lua);
   XBT_LOG_CONNECT(lua_host);
   XBT_LOG_CONNECT(lua_platf);
@@ -146,17 +144,15 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(instr_resource);
   XBT_LOG_CONNECT(instr_routing);
   XBT_LOG_CONNECT(instr_surf);
-  XBT_LOG_CONNECT(instr_trace);
-  XBT_LOG_CONNECT(instr_TI_trace);
 
   /* jedule */
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
   XBT_LOG_CONNECT(jedule);
   XBT_LOG_CONNECT(jed_sd);
 #endif
 
   /* mc */
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   XBT_LOG_CONNECT(mc);
   XBT_LOG_CONNECT(mc_checkpoint);
   XBT_LOG_CONNECT(mc_comm_determinism);
@@ -245,7 +241,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_lagrange_dichotomy);
   XBT_LOG_CONNECT(surf_maxmin);
   XBT_LOG_CONNECT(surf_network);
-#if HAVE_NS3
+#if SIMGRID_HAVE_NS3
   XBT_LOG_CONNECT(ns3);
 #endif
   XBT_LOG_CONNECT(surf_parse);
@@ -462,7 +458,6 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
 
   unsigned int cursor;
   xbt_log_setting_t setting = NULL;
-  int found = 0;
 
   XBT_DEBUG("Initializing category '%s' (firstChild=%s, nextSibling=%s)", category->name,
          (category->firstChild ? category->firstChild->name : "none"),
@@ -507,6 +502,7 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
   if (xbt_log_settings) {
     xbt_assert(category, "NULL category");
     xbt_assert(category->name);
+    int found = 0;
 
     xbt_dynar_foreach(xbt_log_settings, cursor, setting) {
       xbt_assert(setting, "Damnit, NULL cat in the list");
@@ -602,13 +598,12 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
 
   control_string += strspn(control_string, " ");
   const char *name = control_string;
-  control_string += strcspn(control_string, ".= ");
+  control_string += strcspn(control_string, ".:= ");
   const char *dot = control_string;
   control_string += strcspn(control_string, ":= ");
   const char *eq = control_string;
 
-  if(*dot != '.' && (*eq == '=' || *eq == ':'))
-    xbt_die ("Invalid control string '%s'", orig_control_string);
+  xbt_assert(*dot == '.' || (*eq != '=' && *eq != ':'), "Invalid control string '%s'", orig_control_string);
 
   if (!strncmp(dot + 1, "threshold", (size_t) (eq - dot - 1))) {
     int i;
@@ -678,7 +673,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
   } else {
     char buff[512];
     snprintf(buff, MIN(512, eq - dot), "%s", dot + 1);
-    THROWF(arg_error, 0, "Unknown setting of the log category: '%s'", buff);
+    xbt_die("Unknown setting of the log category: '%s'", buff);
   }
   set->catname = (char *) xbt_malloc(dot - name + 1);
 

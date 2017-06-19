@@ -24,7 +24,7 @@ public class XVM extends VM {
     this.currentLoad = 0;
     this.dpIntensity = dpIntensity ;
     this.ramsize= ramsize;
-    this.daemon = new Daemon(this, 100);
+    this.daemon = new Daemon(this);
   }
 
   public void setLoad(int load){  

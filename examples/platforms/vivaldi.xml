@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
-  <AS id="AS0" routing="Vivaldi">
+<platform version="4.1">
+  <zone id="AS0" routing="Vivaldi">
     <host id="100030591" coordinates="25.5 9.4 1.4" speed="1.5Gf" />
     <host id="100036570" coordinates="-12.7 -9.9 2.1" speed="730Mf" />
     <host id="100041334" coordinates="-15.7 9.9 14.7" speed="2.8Gf" />
@@ -42,5 +42,5 @@
     <host id="100422926" coordinates="-23.1 -7.6 39.9" speed="1.6Gf" />
     <host id="100427449" coordinates="135.5 -21.0 83.4" speed="1.4Gf" />
     <host id="100429957" coordinates="17.5 6.7 18.8" speed="830Mf" />
-  </AS>
+  </zone>
 </platform>

@@ -14,12 +14,18 @@ set(optCFLAGS "")
 set(warnCXXFLAGS "")
 
 if(enable_compile_warnings)
-  set(warnCFLAGS "-fno-common -Wall -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral")
+  set(warnCFLAGS "-fno-common -Wall -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing")
+  if(CMAKE_C_COMPILER_ID MATCHES "Clang|GCC")
+    set(warnCFLAGS "${warnCFLAGS} -Wno-format-nonliteral")
+  endif()
   if(CMAKE_COMPILER_IS_GNUCC)
     set(warnCFLAGS "${warnCFLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes")
   endif()
 
-  set(warnCXXFLAGS "${warnCFLAGS} -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment  -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral")
+  set(warnCXXFLAGS "${warnCFLAGS} -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment  -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing")
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GCC")
+    set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-format-nonliteral")
+  endif()
   if(CMAKE_COMPILER_IS_GNUCXX)
     set(warnCXXFLAGS "${warnCXXFLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes")
   endif()
@@ -29,10 +35,15 @@ if(enable_compile_warnings)
     set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-mismatched-tags -Wno-extern-c-compat")
   endif()
 
-  # the one specific to C but refused by C++
+  # the one specific to C but refused by C++
   set(warnCFLAGS "${warnCFLAGS} -Wmissing-prototypes") 
 
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall")
+  if(CMAKE_Fotran_COMPILER_ID MATCHES "GCC|PGI")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall")
+  endif()
+  if(CMAKE_Fotran_COMPILER_ID MATCHES "Intel")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -warn all")
+  endif()
   set(CMAKE_JAVA_COMPILE_FLAGS "-Xlint")
 endif()
 
@@ -65,7 +76,7 @@ endif()
 # Configure LTO
 # NOTE, cmake 3.0 has a INTERPROCEDURAL_OPTIMIZATION target
 #       property for this (http://www.cmake.org/cmake/help/v3.0/prop_tgt/INTERPROCEDURAL_OPTIMIZATION.html)
-if(enable_lto) # User wants LTO. Try if we can do that
+if(enable_lto) # User wants LTO. Try if we can do that
   set(enable_lto OFF)
   if(enable_compile_optimizations
       AND CMAKE_COMPILER_IS_GNUCC
@@ -124,7 +135,7 @@ if(enable_model-checking AND enable_compile_optimizations)
       src/xbt/xbt_log_layout_format.c src/xbt/xbt_log_layout_simple.c
       src/xbt/dict.cpp src/xbt/dict_elm.c src/xbt/dict_cursor.c
       src/xbt/dynar.cpp src/xbt/heap.c src/xbt/swag.c
-      src/xbt/str.c src/xbt/strbuff.c src/xbt/snprintf.c
+      src/xbt/str.c src src/xbt/snprintf.c
       src/xbt/queue.c
       src/xbt/xbt_os_time.c src/xbt/xbt_os_thread.c
       src/xbt/backtrace_linux.c
@@ -200,8 +211,8 @@ if(NOT $ENV{LDFLAGS} STREQUAL "")
 endif()
 
 if(MINGW)
-  # http://stackoverflow.com/questions/10452262/create-64-bit-jni-under-windows
-  # We don't want to ship libgcc_s_seh-1.dll nor libstdc++-6.dll
+  # http://stackoverflow.com/questions/10452262/create-64-bit-jni-under-windows
+  # We don't want to ship libgcc_s_seh-1.dll nor libstdc++-6.dll
   set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -static-libgcc")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
   set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS   "${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS} -static-libgcc")

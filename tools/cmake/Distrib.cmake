@@ -121,7 +121,7 @@ add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall man ok"
   WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}")
 
-if(HAVE_LUA)
+if(SIMGRID_HAVE_LUA)
   add_custom_command(TARGET uninstall
     COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding lua ok"
     COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_INSTALL_PREFIX}/lib/lua/5.1/simgrid.${LIB_EXE}
@@ -318,7 +318,6 @@ add_custom_target(maintainer-clean
   COMMAND ${CMAKE_COMMAND} -E remove -f src/simgrid_units_main.c
   COMMAND ${CMAKE_COMMAND} -E remove -f src/swag_unit.c
   COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_str_unit.c
-  COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_strbuff_unit.c
   COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_synchro_unit.c
   WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}")
 

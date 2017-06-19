@@ -32,8 +32,7 @@ extern std::map<std::string, storage_type_t> storage_types;
 namespace simgrid {
 namespace surf {
 
-simgrid::xbt::signal<void(void)> surfExitCallbacks;
-
+simgrid::xbt::signal<void()> surfExitCallbacks;
 }
 }
 
@@ -77,7 +76,7 @@ void surf_network_model_init_IB() {
   xbt_die("Please activate SMPI support in cmake to use the IB network model.");
 }
 #endif
-#if !HAVE_NS3
+#if !SIMGRID_HAVE_NS3
 void surf_network_model_init_NS3() {
   xbt_die("Please activate NS3 support in cmake and install the dependencies to use the NS3 network model.");
 }
@@ -137,7 +136,7 @@ std::ifstream* surf_ifsopen(const char* name)
     std::string buff = path_elm + FILE_DELIM + name;
     fs->open(buff.c_str(), std::ifstream::in);
 
-    if (!fs->fail()) {
+    if (not fs->fail()) {
       XBT_DEBUG("Found file at %s", buff.c_str());
       return fs;
     }
@@ -147,7 +146,6 @@ std::ifstream* surf_ifsopen(const char* name)
 }
 FILE *surf_fopen(const char *name, const char *mode)
 {
-  char *buff;
   FILE *file = nullptr;
 
   xbt_assert(name);
@@ -157,7 +155,7 @@ FILE *surf_fopen(const char *name, const char *mode)
 
   /* search relative files in the path */
   for (auto path_elm : surf_path) {
-    buff = bprintf("%s" FILE_DELIM "%s", path_elm.c_str(), name);
+    char* buff = bprintf("%s" FILE_DELIM "%s", path_elm.c_str(), name);
     file = fopen(buff, mode);
     free(buff);
 
@@ -192,7 +190,7 @@ const char *__surf_get_initial_path()
   unsigned int len = GetCurrentDirectory(MAX_PATH + 1, current_directory);
   char root[4] = { 0 };
 
-  if (!len)
+  if (not len)
     return nullptr;
 
   strncpy(root, current_directory, 3);
@@ -243,10 +241,10 @@ int find_model_description(s_surf_model_description_t * table,
   char *name_list = nullptr;
 
   for (i = 0; table[i].name; i++)
-    if (!strcmp(name, table[i].name)) {
+    if (not strcmp(name, table[i].name)) {
       return i;
     }
-  if (!table[0].name)
+  if (not table[0].name)
     xbt_die("No model is valid! This is a bug.");
   name_list = xbt_strdup(table[0].name);
   for (i = 1; table[i].name; i++) {
@@ -260,7 +258,7 @@ int find_model_description(s_surf_model_description_t * table,
 
 static inline void surf_storage_free(void *r)
 {
-  delete static_cast<simgrid::surf::Storage*>(r);
+  delete static_cast<simgrid::surf::StorageImpl*>(r);
 }
 
 void sg_version_check(int lib_version_major,int lib_version_minor,int lib_version_patch) {
@@ -302,31 +300,31 @@ void sg_version()
   std::printf("This program was linked against %s (git: %s), found in %s.\n",
               SIMGRID_VERSION_STRING, SIMGRID_GIT_VERSION, SIMGRID_INSTALL_PREFIX);
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   std::printf("   Model-checking support compiled in.\n");
 #else
   std::printf("   Model-checking support disabled at compilation.\n");
 #endif
 
-#if HAVE_NS3
+#if SIMGRID_HAVE_NS3
   std::printf("   NS3 support compiled in.\n");
 #else
   std::printf("   NS3 support disabled at compilation.\n");
 #endif
 
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
   std::printf("   Jedule support compiled in.\n");
 #else
   std::printf("   Jedule support disabled at compilation.\n");
 #endif
 
-#if HAVE_LUA
+#if SIMGRID_HAVE_LUA
   std::printf("   Lua support compiled in.\n");
 #else
   std::printf("   Lua support disabled at compilation.\n");
 #endif
 
-#if HAVE_MALLOCATOR
+#if SIMGRID_HAVE_MALLOCATOR
   std::printf("   Mallocator support compiled in.\n");
 #else
   std::printf("   Mallocator support disabled at compilation.\n");
@@ -354,9 +352,9 @@ void surf_init(int *argc, char **argv)
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_free);
 
   xbt_init(argc, argv);
-  if (!all_existing_models)
+  if (not all_existing_models)
     all_existing_models = new std::vector<simgrid::surf::Model*>();
-  if (!future_evt_set)
+  if (not future_evt_set)
     future_evt_set = new simgrid::trace_mgr::future_evt_set();
 
   TRACE_surf_alloc();
@@ -381,7 +379,6 @@ void surf_exit()
     free(stype->model);
     free(stype->type_id);
     free(stype->content);
-    free(stype->content_type);
     xbt_dict_free(&(stype->properties));
     delete stype->model_properties;
     free(stype);
@@ -454,7 +451,7 @@ double Model::nextOccuringEventLazy(double now)
   lmm_solve(maxminSystem_);
   XBT_DEBUG("After share resources, The size of modified actions set is %zd", modifiedSet_->size());
 
-  while(!modifiedSet_->empty()) {
+  while (not modifiedSet_->empty()) {
     Action *action = &(modifiedSet_->front());
     modifiedSet_->pop_front();
     bool max_dur_flag = false;
@@ -482,12 +479,11 @@ double Model::nextOccuringEventLazy(double now)
     }
 
     if ((action->getMaxDuration() > NO_MAX_DURATION) &&
-        (min == -1 || action->getStartTime() + action->getMaxDuration() < min)) {
+        (min <= -1 || action->getStartTime() + action->getMaxDuration() < min)) {
       // when the task will complete anyway because of the deadline if any
       min          = action->getStartTime() + action->getMaxDuration();
       max_dur_flag = true;
     }
-
 
     XBT_DEBUG("Action(%p) corresponds to variable %d", action, action->getVariable()->id_int);
 
@@ -495,7 +491,7 @@ double Model::nextOccuringEventLazy(double now)
         action->getStartTime(), min, share,
         action->getMaxDuration());
 
-    if (min != -1) {
+    if (min > -1) {
       action->heapUpdate(actionHeap_, min, max_dur_flag ? MAX_DURATION : NORMAL);
       XBT_DEBUG("Insert at heap action(%p) min %f now %f", action, min, now);
     } else
@@ -580,7 +576,7 @@ bool Resource::isOn() const {
   return isOn_;
 }
 bool Resource::isOff() const {
-  return ! isOn_;
+  return not isOn_;
 }
 
 void Resource::turnOn()
@@ -768,7 +764,7 @@ void Action::cancel(){
 
 int Action::unref(){
   refcount_--;
-  if (!refcount_) {
+  if (not refcount_) {
     if (action_hook.is_linked())
       stateSet_->erase(stateSet_->iterator_to(*this));
     if (getVariable())

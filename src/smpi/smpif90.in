@@ -9,15 +9,15 @@
 SIMGRID_VERSION="@SIMGRID_VERSION_STRING@"
 SIMGRID_GITHASH="@SIMGRID_GITHASH@"
 
-F90=@SAVED_Fortran_COMPILER@
+F90=@SMPI_Fortran_COMPILER@
 
 INCLUDEARGS="@includeflag@"
 CMAKE_LINKARGS="-L@libdir@"
 
 @SMPITOOLS_SH@
 
-list_set FFLAGS "-fpic" "-ff2c" "-fno-second-underscore"
-list_set LINKARGS "-shared" "-lsimgrid" "-lm" "-lgfortran"
+list_set FFLAGS @SMPI_Fortran_FLAGS@
+list_set LINKARGS "-shared" "-lsimgrid" @SMPI_Fortran_LIBS@ "-lm"
 list_set TMPFILES
 main_name=main
 

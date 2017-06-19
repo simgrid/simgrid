@@ -15,21 +15,18 @@
 
 #include <functional>
 
-#include <xbt/functional.hpp>
-
-#include <simgrid/s4u/VirtualMachine.hpp>
-#include <simgrid/simix/blocking_simcall.hpp>
-
 #include "mc/mc.h"
+#include "simgrid/s4u/VirtualMachine.hpp"
+#include "simgrid/simix.hpp"
+#include "simgrid/simix/blocking_simcall.hpp"
 #include "smx_private.h"
-#include "src/kernel/activity/SynchroComm.hpp"
+#include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_replay.h"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/simix/smx_host_private.h"
 #include "xbt/ex.h"
-
-#include <simgrid/simix.hpp>
+#include "xbt/functional.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
@@ -461,8 +458,8 @@ smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type, int src, int ta
  */
 void simcall_comm_cancel(smx_activity_t synchro)
 {
-  simgrid::simix::kernelImmediate([synchro]{
-    simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
+  simgrid::simix::kernelImmediate([synchro] {
+    simgrid::kernel::activity::CommImpl* comm = static_cast<simgrid::kernel::activity::CommImpl*>(synchro);
     comm->cancel();
   });
 }
@@ -524,7 +521,7 @@ int simcall_comm_test(smx_activity_t comm)
  */
 smx_mutex_t simcall_mutex_init()
 {
-  if(!simix_global) {
+  if (not simix_global) {
     fprintf(stderr,"You must run MSG_init before using MSG\n"); // We can't use xbt_die since we may get there before the initialization
     xbt_abort();
   }

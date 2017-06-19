@@ -360,9 +360,8 @@ int Coll_reduce_mpich::reduce( void *sendbuf, void *recvbuf,
     while (pof2 <= communicator_size) pof2 <<= 1;
     pof2 >>= 1;
 
-
-    if ((count < pof2) || (message_size < 2048) || (op!=MPI_OP_NULL && !op->is_commutative())) {
-        return Coll_reduce_binomial::reduce (sendbuf, recvbuf, count, datatype, op, root, comm); 
+    if ((count < pof2) || (message_size < 2048) || (op != MPI_OP_NULL && not op->is_commutative())) {
+      return Coll_reduce_binomial::reduce(sendbuf, recvbuf, count, datatype, op, root, comm); 
     }
         return Coll_reduce_scatter_gather::reduce(sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
                                                      segsize, max_requests*/);
@@ -442,26 +441,27 @@ int Coll_reduce_scatter_mpich::reduce_scatter( void *sbuf, void *rbuf,
     if( (op==MPI_OP_NULL || op->is_commutative()) &&  total_message_size > 524288) { 
         return Coll_reduce_scatter_mpich_pair::reduce_scatter (sbuf, rbuf, rcounts, 
                                                                     dtype, op, 
-                                                                    comm); 
-    }else if ((op!=MPI_OP_NULL && !op->is_commutative())) {
-        int is_block_regular = 1;
-        for (i = 0; i < (comm_size - 1); ++i) {
-            if (rcounts[i] != rcounts[i+1]) {
-                is_block_regular = 0;
-                break;
-            }
+                                                                    comm);
+    } else if ((op != MPI_OP_NULL && not op->is_commutative())) {
+      int is_block_regular = 1;
+      for (i = 0; i < (comm_size - 1); ++i) {
+        if (rcounts[i] != rcounts[i + 1]) {
+          is_block_regular = 0;
+          break;
         }
+      }
 
-        /* slightly retask pof2 to mean pof2 equal or greater, not always greater as it is above */
-        int pof2 = 1;
-        while (pof2 < comm_size) pof2 <<= 1;
+      /* slightly retask pof2 to mean pof2 equal or greater, not always greater as it is above */
+      int pof2 = 1;
+      while (pof2 < comm_size)
+        pof2 <<= 1;
 
-        if (pof2 == comm_size && is_block_regular) {
-            /* noncommutative, pof2 size, and block regular */
-            return Coll_reduce_scatter_mpich_noncomm::reduce_scatter(sbuf, rbuf, rcounts, dtype, op, comm);
-        }
+      if (pof2 == comm_size && is_block_regular) {
+        /* noncommutative, pof2 size, and block regular */
+        return Coll_reduce_scatter_mpich_noncomm::reduce_scatter(sbuf, rbuf, rcounts, dtype, op, comm);
+      }
 
-       return Coll_reduce_scatter_mpich_rdb::reduce_scatter(sbuf, rbuf, rcounts, dtype, op, comm);
+      return Coll_reduce_scatter_mpich_rdb::reduce_scatter(sbuf, rbuf, rcounts, dtype, op, comm);
     }else{      
        return Coll_reduce_scatter_mpich_rdb::reduce_scatter(sbuf, rbuf, rcounts, dtype, op, comm);
     }

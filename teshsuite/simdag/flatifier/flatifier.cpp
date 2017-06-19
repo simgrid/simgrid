@@ -31,7 +31,7 @@ static bool parse_cmdline(int* timings, char** platformFile, int argc, char** ar
   bool parse_ok = true;
   for (int i = 1; i < argc; i++) {
     if (std::strlen(argv[i]) > 1 && argv[i][0] == '-' && argv[i][1] == '-') {
-      if (!std::strcmp(argv[i], "--timings")) {
+      if (not std::strcmp(argv[i], "--timings")) {
         *timings = 1;
       } else {
         parse_ok = false;
@@ -61,7 +61,8 @@ static void dump_platform()
   int version = 4;
   xbt_dict_t props = nullptr;
   xbt_dict_cursor_t cursor = nullptr;
-  char *key, *data;
+  char* key;
+  char* data;
 
   std::printf("<?xml version='1.0'?>\n");
   std::printf("<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\">\n");
@@ -79,7 +80,7 @@ static void dump_platform()
     if (hosts[i]->coreCount() > 1) {
       std::printf(" core=\"%d\"", hosts[i]->coreCount());
     }
-    if (props && !xbt_dict_is_empty(props)) {
+    if (props && not xbt_dict_is_empty(props)) {
       std::printf(">\n");
       xbt_dict_foreach (props, cursor, key, data) {
         std::printf("    <prop id=\"%s\" value=\"%s\"/>\n", key, data);
@@ -128,7 +129,7 @@ static void dump_platform()
       std::vector<simgrid::surf::LinkImpl*> route;
       simgrid::kernel::routing::NetPoint* netcardDst = host2->pimpl_netpoint;
       simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(netcardSrc, netcardDst, &route, nullptr);
-      if (!route.empty()) {
+      if (not route.empty()) {
         std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->cname(), host2->cname());
         for (auto link : route)
           std::printf("<link_ctn id=\"%s\"/>", link->cname());

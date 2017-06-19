@@ -8,7 +8,7 @@
 #include <string.h>
 #include "simgrid/simdag.h"
 
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
 #include "simgrid/jedule/jedule_sd_binding.h"
 #endif
 
@@ -231,7 +231,7 @@ int main(int argc, char **argv)
   XBT_INFO("Simulation Time: %f", SD_get_clock());
   XBT_INFO("------------------- Produce the trace file---------------------------");
   XBT_INFO("Producing a jedule output (if active) of the run into %s", tracefilename?tracefilename:"minmin_test.jed");
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
   jedule_sd_dump(tracefilename);
 #endif
   free(tracefilename);

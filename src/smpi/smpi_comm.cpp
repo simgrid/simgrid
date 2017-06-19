@@ -5,8 +5,15 @@
 
 #include "simgrid/s4u/Host.hpp"
 
-#include "private.h"
 #include "src/simix/smx_private.h"
+#include "src/smpi/private.h"
+#include "src/smpi/smpi_comm.hpp"
+#include "src/smpi/smpi_coll.hpp"
+#include "src/smpi/smpi_datatype.hpp"
+#include "src/smpi/smpi_process.hpp"
+#include "src/smpi/smpi_request.hpp"
+#include "src/smpi/smpi_status.hpp"
+#include "src/smpi/smpi_win.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi, "Logging specific to SMPI (comm)");
 
@@ -72,7 +79,7 @@ int Comm::dup(MPI_Comm* newcomm){
   (*newcomm) = new  Comm(cp, this->topo());
   int ret = MPI_SUCCESS;
 
-  if(!attributes()->empty()){
+  if (not attributes()->empty()) {
     int flag;
     void* value_out;
     for(auto it : *attributes()){

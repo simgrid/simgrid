@@ -22,10 +22,7 @@
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_request.h"
-#include "src/mc/mc_safety.h"
 #include "src/mc/mc_smx.h"
-#include "src/mc/mc_state.h"
-#include "src/mc/remote/Client.hpp"
 
 #include "src/xbt/mmalloc/mmprivate.h"
 
@@ -95,7 +92,7 @@ void SafetyChecker::run()
    * We do so iteratively instead of recursively, dealing with the call stack manually.
    * This allows to explore the call stack at wish. */
 
-  while (!stack_.empty()) {
+  while (not stack_.empty()) {
 
     /* Get current state */
     simgrid::mc::State* state = stack_.back().get();
@@ -205,7 +202,7 @@ void SafetyChecker::backtrack()
      executed before it. If it does then add it to the interleave set of the
      state that executed that previous request. */
 
-  while (!stack_.empty()) {
+  while (not stack_.empty()) {
     std::unique_ptr<simgrid::mc::State> state = std::move(stack_.back());
     stack_.pop_back();
     if (reductionMode_ == simgrid::mc::ReductionMode::dpor) {
@@ -233,7 +230,7 @@ void SafetyChecker::backtrack()
               state->num);
           }
 
-          if (!prev_state->actorStates[issuer->pid].isDone())
+          if (not prev_state->actorStates[issuer->pid].isDone())
             prev_state->interleave(issuer);
           else
             XBT_DEBUG("Process %p is in done set", req->issuer);
@@ -330,10 +327,6 @@ SafetyChecker::SafetyChecker(Session& session) : Checker(session)
     }
 
   stack_.push_back(std::move(initial_state));
-}
-
-SafetyChecker::~SafetyChecker()
-{
 }
 
 Checker* createSafetyChecker(Session& session)

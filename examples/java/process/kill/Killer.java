@@ -35,6 +35,8 @@ public class Killer extends Process {
     poorVictim.kill();
 
     Msg.info("Ok, goodbye now.");
-    exit(); // This would be more useful if not placed on the last line
+    // The actor can also commit a suicide with the following command
+    exit(); // This will forcefully stop the current actor
+    // Of course, it's not useful here at the end of the main function, but that's for the example (and to check that this still works in the automated tests)
   }
 }

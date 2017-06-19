@@ -30,12 +30,6 @@ set(EXTRA_DIST
   src/simix/smx_network_private.h
   src/simix/smx_private.h
   src/simix/smx_synchro_private.h
-  src/kernel/activity/ActivityImpl.hpp
-  src/kernel/activity/SynchroComm.hpp
-  src/kernel/activity/SynchroExec.hpp
-  src/kernel/activity/SynchroIo.hpp
-  src/kernel/activity/SynchroSleep.hpp
-  src/kernel/activity/SynchroRaw.hpp
   src/smpi/colls/coll_tuned_topo.h
   src/smpi/colls/colls_private.h
   src/smpi/colls/smpi_mvapich2_selector_stampede.h
@@ -53,12 +47,13 @@ set(EXTRA_DIST
   src/surf/network_ib.hpp
   src/surf/ns3/ns3_interface.h
   src/surf/ns3/ns3_simulator.h
+  src/surf/trace_mgr_test.cpp
   src/surf/xml/simgrid.dtd
   src/surf/xml/simgrid_dtd.h
   src/surf/xml/simgrid_dtd.c
   src/surf/xml/surfxml_sax_cb.cpp
 
-  src/surf/storage_interface.hpp
+  src/surf/StorageImpl.hpp
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
   src/surf/surf_private.h
@@ -281,13 +276,11 @@ set(XBT_SRC
   src/xbt/xbt_log_layout_format.c
   src/xbt/xbt_log_layout_simple.c
   src/xbt/xbt_main.cpp
-  src/xbt/xbt_matrix.c
   src/xbt/xbt_os_file.c
   src/xbt/xbt_os_synchro.c
   src/xbt/xbt_os_time.c
   src/xbt/xbt_replay.cpp
   src/xbt/xbt_str.cpp
-  src/xbt/xbt_strbuff.c
   src/xbt/xbt_virtu.c
   src/xbt_modinter.h
   )
@@ -343,7 +336,7 @@ set(SURF_SRC
   src/surf/plugins/host_load.cpp
   src/surf/PropertyHolder.cpp
   src/surf/sg_platf.cpp
-  src/surf/storage_interface.cpp
+  src/surf/StorageImpl.cpp
   src/surf/storage_n11.cpp
   src/surf/surf_c_bindings.cpp
   src/surf/surf_interface.cpp
@@ -385,13 +378,19 @@ set(SIMIX_SRC
   src/simix/smx_synchro.cpp
   src/simix/popping.cpp
   src/kernel/activity/ActivityImpl.cpp
+  src/kernel/activity/ActivityImpl.hpp
+  src/kernel/activity/CommImpl.cpp
+  src/kernel/activity/CommImpl.hpp
+  src/kernel/activity/ExecImpl.cpp
+  src/kernel/activity/ExecImpl.hpp
   src/kernel/activity/MailboxImpl.cpp
   src/kernel/activity/MailboxImpl.hpp
-  src/kernel/activity/SynchroComm.cpp
-  src/kernel/activity/SynchroExec.cpp
-  src/kernel/activity/SynchroSleep.cpp
-  src/kernel/activity/SynchroRaw.cpp
+  src/kernel/activity/SleepImpl.cpp
+  src/kernel/activity/SleepImpl.hpp
   src/kernel/activity/SynchroIo.cpp
+  src/kernel/activity/SynchroIo.hpp
+  src/kernel/activity/SynchroRaw.cpp
+  src/kernel/activity/SynchroRaw.hpp
   
   ${SIMIX_GENERATED_SRC}
   )
@@ -533,7 +532,6 @@ set(LUA_SRC
   )
 
 set(TRACING_SRC
-  src/instr/instr_TI_trace.cpp
   src/instr/instr_config.cpp
   src/instr/instr_interface.cpp
   src/instr/instr_paje_containers.cpp
@@ -544,7 +542,6 @@ set(TRACING_SRC
   src/instr/instr_private.h
   src/instr/instr_smpi.h
   src/instr/instr_resource_utilization.cpp
-  src/instr/instr_trace.cpp
   )
 
 set(JEDULE_SRC
@@ -586,7 +583,6 @@ set(MC_SRC
   src/mc/remote/mc_protocol.cpp
   
   src/mc/AddressSpace.hpp
-  src/mc/AddressSpace.cpp
   src/mc/Frame.hpp
   src/mc/Frame.cpp
   src/mc/ModelChecker.hpp
@@ -600,7 +596,6 @@ set(MC_SRC
   src/mc/RegionSnapshot.cpp
   src/mc/RegionSnapshot.hpp
   src/mc/Type.hpp
-  src/mc/Variable.cpp
   src/mc/Variable.hpp
   src/mc/mc_forward.hpp
   src/mc/Process.hpp
@@ -693,7 +688,6 @@ set(headers_to_install
   include/smpi/smpi_extended_traces.h
   include/smpi/smpi_extended_traces_fortran.h
   include/smpi/forward.hpp
-  include/smpi/smpi_shared_malloc.hpp
   include/surf/surf_routing.h
   include/xbt.h
   include/xbt/RngStream.h
@@ -725,8 +719,6 @@ set(headers_to_install
   include/xbt/log.h
   include/xbt/log.hpp
   include/xbt/mallocator.h
-  include/xbt/matrix.h
-  include/xbt/memory.hpp
   include/xbt/misc.h
   include/xbt/mmalloc.h
   include/xbt/module.h
@@ -734,7 +726,6 @@ set(headers_to_install
   include/xbt/range.hpp
   include/xbt/replay.hpp
   include/xbt/str.h
-  include/xbt/strbuff.h
   include/xbt/swag.h
   include/xbt/synchro.h
   include/xbt/sysdep.h
@@ -786,7 +777,7 @@ set(simgrid_sources
   ${XBT_SRC}
   )
 
-if(${HAVE_JEDULE})  
+if(${SIMGRID_HAVE_JEDULE})  
   set(simgrid_sources  ${simgrid_sources}  ${JEDULE_SRC})
 else()
   set(EXTRA_DIST       ${EXTRA_DIST}       ${JEDULE_SRC})
@@ -796,11 +787,11 @@ if(enable_smpi)
   set(simgrid_sources  ${simgrid_sources}  ${SMPI_SRC})
 endif()
 
-if(HAVE_MC)
+if(SIMGRID_HAVE_MC)
   set(simgrid_sources  ${simgrid_sources}  ${MC_SRC})
 endif()
 
-if(HAVE_NS3)
+if(SIMGRID_HAVE_NS3)
   set(simgrid_sources  ${simgrid_sources}  ${NS3_SRC})
 endif()
 
@@ -814,7 +805,7 @@ if(WIN32)
     )
 endif()
 
-if(HAVE_LUA)
+if(SIMGRID_HAVE_LUA)
   set(simgrid_sources  ${simgrid_sources}  ${LUA_SRC})
 else()
   set(EXTRA_DIST       ${EXTRA_DIST}       ${LUA_SRC})
@@ -951,7 +942,7 @@ set(txt_files
   ${txt_files}
   AUTHORS
   COPYING
-  README
+  README.md
   ChangeLog
   INSTALL
   LICENSE-LGPL-2.1

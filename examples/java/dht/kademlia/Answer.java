@@ -16,18 +16,18 @@ public class Answer {
 
   public Answer(int destinationId) {
     this.destinationId = destinationId;
-    nodes = new ArrayList<Contact>();
+    nodes = new ArrayList<>();
   }
 
-  int getDestinationId() {
+  protected int getDestinationId() {
     return destinationId;
   }
 
-  ArrayList<Contact> getNodes() {
+  protected ArrayList<Contact> getNodes() {
     return nodes;
   }
 
-  int size() {
+  protected int size() {
     return nodes.size();
   }
 

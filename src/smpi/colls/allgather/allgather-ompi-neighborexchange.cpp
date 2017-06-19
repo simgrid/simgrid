@@ -115,7 +115,7 @@ Coll_allgather_ompi_neighborexchange::allgather(void *sbuf, int scount,
    } 
 
    /* Determine neighbors, order in which blocks will arrive, etc. */
-   even_rank = !(rank % 2);
+   even_rank = not(rank % 2);
    if (even_rank) {
       neighbor[0] = (rank + 1) % size;
       neighbor[1] = (rank - 1 + size) % size;

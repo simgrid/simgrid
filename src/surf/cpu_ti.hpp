@@ -10,7 +10,6 @@
 
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/trace_mgr.hpp"
-#include "surf/surf_routing.h"
 
 /* Epsilon */
 #define EPSILON 0.000000001
@@ -116,7 +115,7 @@ public:
 
   void setSpeedTrace(tmgr_trace_t trace) override;
 
-  void apply_event(tmgr_trace_iterator_t event, double value) override;
+  void apply_event(tmgr_trace_event_t event, double value) override;
   void updateActionsFinishTime(double now);
   void updateRemainingAmount(double now);
 

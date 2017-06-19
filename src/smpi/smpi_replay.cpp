@@ -3,11 +3,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
-#include <stdio.h>
-#include <math.h>
-#include <xbt.h>
+#include "src/smpi/private.h"
+#include "src/smpi/smpi_coll.hpp"
+#include "src/smpi/smpi_comm.hpp"
+#include "src/smpi/smpi_datatype.hpp"
+#include "src/smpi/smpi_group.hpp"
+#include "src/smpi/smpi_process.hpp"
+#include "src/smpi/smpi_request.hpp"
 #include "xbt/replay.hpp"
+
 #include <unordered_map>
 #include <vector>
 #include <iostream>
@@ -106,7 +110,7 @@ static void log_timed_action (const char *const *action, double clock){
 //allocate a single buffer for all sends, growing it if needed
 void* smpi_get_tmp_sendbuffer(int size)
 {
-  if (!smpi_process()->replaying())
+  if (not smpi_process()->replaying())
     return xbt_malloc(size);
   if (sendbuffer_size<size){
     sendbuffer=static_cast<char*>(xbt_realloc(sendbuffer,size));
@@ -117,7 +121,7 @@ void* smpi_get_tmp_sendbuffer(int size)
 
 //allocate a single buffer for all recv
 void* smpi_get_tmp_recvbuffer(int size){
-  if (!smpi_process()->replaying())
+  if (not smpi_process()->replaying())
     return xbt_malloc(size);
   if (recvbuffer_size<size){
     recvbuffer=static_cast<char*>(xbt_realloc(recvbuffer,size));
@@ -127,7 +131,7 @@ void* smpi_get_tmp_recvbuffer(int size){
 }
 
 void smpi_free_tmp_buffer(void* buf){
-  if (!smpi_process()->replaying())
+  if (not smpi_process()->replaying())
     xbt_free(buf);
 }
 
@@ -167,6 +171,7 @@ static MPI_Datatype decode_datatype(const char *const action)
       break;
     default:
       MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
+      break;
   }
    return MPI_CURRENT_TYPE;
 }
@@ -218,7 +223,7 @@ namespace simgrid {
 namespace smpi {
 
 
-void action_init(const char *const *action)
+static void action_init(const char *const *action)
 {
   XBT_DEBUG("Initialize the counters");
   CHECK_ACTION_PARAMS(action, 0, 1)
@@ -239,28 +244,28 @@ void action_init(const char *const *action)
   }
 }
 
-void action_finalize(const char *const *action)
+static void action_finalize(const char *const *action)
 {
   /* Nothing to do */
 }
 
-void action_comm_size(const char *const *action)
+static void action_comm_size(const char *const *action)
 {
   communicator_size = parse_double(action[2]);
   log_timed_action (action, smpi_process()->simulated_elapsed());
 }
 
-void action_comm_split(const char *const *action)
+static void action_comm_split(const char *const *action)
 {
   log_timed_action (action, smpi_process()->simulated_elapsed());
 }
 
-void action_comm_dup(const char *const *action)
+static void action_comm_dup(const char *const *action)
 {
   log_timed_action (action, smpi_process()->simulated_elapsed());
 }
 
-void action_compute(const char *const *action)
+static void action_compute(const char *const *action)
 {
   CHECK_ACTION_PARAMS(action, 1, 1)
   double clock = smpi_process()->simulated_elapsed();
@@ -286,7 +291,7 @@ void action_compute(const char *const *action)
   log_timed_action (action, clock);
 }
 
-void action_send(const char *const *action)
+static void action_send(const char *const *action)
 {
   CHECK_ACTION_PARAMS(action, 3, 1);
   int to = atoi(action[2]);
@@ -310,7 +315,7 @@ void action_send(const char *const *action)
   extra->dst = dst_traced;
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
-  if (!TRACE_smpi_view_internals())
+  if (not TRACE_smpi_view_internals())
     TRACE_smpi_send(rank, rank, dst_traced, 0, size*MPI_CURRENT_TYPE->size());
 
   Request::send(nullptr, size, MPI_CURRENT_TYPE, to , tag, MPI_COMM_WORLD);
@@ -320,7 +325,7 @@ void action_send(const char *const *action)
   TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
 }
 
-void action_Isend(const char *const *action)
+static void action_Isend(const char *const *action)
 {
   CHECK_ACTION_PARAMS(action, 3, 1);
   int to = atoi(action[2]);
@@ -342,7 +347,7 @@ void action_Isend(const char *const *action)
   extra->dst = dst_traced;
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
-  if (!TRACE_smpi_view_internals())
+  if (not TRACE_smpi_view_internals())
     TRACE_smpi_send(rank, rank, dst_traced, 0, size*MPI_CURRENT_TYPE->size());
 
   MPI_Request request = Request::isend(nullptr, size, MPI_CURRENT_TYPE, to, tag, MPI_COMM_WORLD);
@@ -354,7 +359,7 @@ void action_Isend(const char *const *action)
   log_timed_action (action, clock);
 }
 
-void action_recv(const char *const *action) {
+static void action_recv(const char *const *action) {
   CHECK_ACTION_PARAMS(action, 3, 1);
   int from = atoi(action[2]);
   int tag = atoi(action[3]);
@@ -387,14 +392,14 @@ void action_recv(const char *const *action) {
   Request::recv(nullptr, size, MPI_CURRENT_TYPE, from, tag, MPI_COMM_WORLD, &status);
 
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
-  if (!TRACE_smpi_view_internals()) {
+  if (not TRACE_smpi_view_internals()) {
     TRACE_smpi_recv(rank, src_traced, rank, 0);
   }
 
   log_timed_action (action, clock);
 }
 
-void action_Irecv(const char *const *action)
+static void action_Irecv(const char *const *action)
 {
   CHECK_ACTION_PARAMS(action, 3, 1);
   int from = atoi(action[2]);
@@ -431,7 +436,7 @@ void action_Irecv(const char *const *action)
   log_timed_action (action, clock);
 }
 
-void action_test(const char *const *action){
+static void action_test(const char *const *action){
   CHECK_ACTION_PARAMS(action, 3, 0);
   int src = atoi(action[2]);
   int dst = atoi(action[3]);
@@ -464,7 +469,7 @@ void action_test(const char *const *action){
   log_timed_action (action, clock);
 }
 
-void action_wait(const char *const *action){
+static void action_wait(const char *const *action){
   CHECK_ACTION_PARAMS(action, 3, 0);
   int src = atoi(action[2]);
   int dst = atoi(action[3]);
@@ -502,7 +507,7 @@ void action_wait(const char *const *action){
   log_timed_action (action, clock);
 }
 
-void action_waitall(const char *const *action){
+static void action_waitall(const char *const *action){
   CHECK_ACTION_PARAMS(action, 0, 0);
   double clock = smpi_process()->simulated_elapsed();
   unsigned int count_requests = reqd[smpi_process_index()].size();
@@ -543,7 +548,7 @@ void action_waitall(const char *const *action){
   log_timed_action (action, clock);
 }
 
-void action_barrier(const char *const *action){
+static void action_barrier(const char *const *action){
   double clock = smpi_process()->simulated_elapsed();
   int rank = smpi_process()->index();
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
@@ -556,7 +561,7 @@ void action_barrier(const char *const *action){
   log_timed_action (action, clock);
 }
 
-void action_bcast(const char *const *action)
+static void action_bcast(const char *const *action)
 {
   CHECK_ACTION_PARAMS(action, 1, 2)
   double size = parse_double(action[2]);
@@ -588,7 +593,7 @@ void action_bcast(const char *const *action)
   log_timed_action (action, clock);
 }
 
-void action_reduce(const char *const *action)
+static void action_reduce(const char *const *action)
 {
   CHECK_ACTION_PARAMS(action, 2, 2)
   double comm_size = parse_double(action[2]);
@@ -623,7 +628,7 @@ void action_reduce(const char *const *action)
   log_timed_action (action, clock);
 }
 
-void action_allReduce(const char *const *action) {
+static void action_allReduce(const char *const *action) {
   CHECK_ACTION_PARAMS(action, 2, 1);
   double comm_size = parse_double(action[2]);
   double comp_size = parse_double(action[3]);
@@ -651,7 +656,7 @@ void action_allReduce(const char *const *action) {
   log_timed_action (action, clock);
 }
 
-void action_allToAll(const char *const *action) {
+static void action_allToAll(const char *const *action) {
   CHECK_ACTION_PARAMS(action, 2, 2) //two mandatory (send and recv volumes) and two optional (corresponding datatypes)
   double clock = smpi_process()->simulated_elapsed();
   int comm_size = MPI_COMM_WORLD->size();
@@ -685,7 +690,7 @@ void action_allToAll(const char *const *action) {
   log_timed_action (action, clock);
 }
 
-void action_gather(const char *const *action) {
+static void action_gather(const char *const *action) {
   /* The structure of the gather action for the rank 0 (total 4 processes) is the following:
         0 gather 68 68 0 0 0
       where:
@@ -733,7 +738,7 @@ void action_gather(const char *const *action) {
   log_timed_action (action, clock);
 }
 
-void action_gatherv(const char *const *action) {
+static void action_gatherv(const char *const *action) {
   /* The structure of the gatherv action for the rank 0 (total 4 processes) is the following:
        0 gather 68 68 10 10 10 0 0 0
      where:
@@ -791,7 +796,7 @@ void action_gatherv(const char *const *action) {
   log_timed_action (action, clock);
 }
 
-void action_reducescatter(const char *const *action) {
+static void action_reducescatter(const char *const *action) {
  /* The structure of the reducescatter action for the rank 0 (total 4 processes) is the following:
       0 reduceScatter 275427 275427 275427 204020 11346849 0
     where:
@@ -838,7 +843,7 @@ void action_reducescatter(const char *const *action) {
   log_timed_action (action, clock);
 }
 
-void action_allgather(const char *const *action) {
+static void action_allgather(const char *const *action) {
   /* The structure of the allgather action for the rank 0 (total 4 processes) is the following:
         0 allGather 275427 275427
     where:
@@ -880,7 +885,7 @@ void action_allgather(const char *const *action) {
   log_timed_action (action, clock);
 }
 
-void action_allgatherv(const char *const *action) {
+static void action_allgatherv(const char *const *action) {
   /* The structure of the allgatherv action for the rank 0 (total 4 processes) is the following:
         0 allGatherV 275427 275427 275427 275427 204020
      where:
@@ -933,7 +938,7 @@ void action_allgatherv(const char *const *action) {
   log_timed_action (action, clock);
 }
 
-void action_allToAllv(const char *const *action) {
+static void action_allToAllv(const char *const *action) {
   /* The structure of the allToAllV action for the rank 0 (total 4 processes) is the following:
         0 allToAllV 100 1 7 10 12 100 1 70 10 5
      where:
@@ -1049,21 +1054,20 @@ void smpi_replay_process_migrate(smx_actor_t process, sg_host_t new_host,
 
 }} // namespace simgrid::smpi
 
-void smpi_replay_run(int *argc, char***argv){
-  /* First initializes everything */
+/** @brief Only initialize the replay, don't do it for real */
+void smpi_replay_init(int* argc, char*** argv)
+{
   simgrid::smpi::Process::init(argc, argv);
   smpi_process()->mark_as_initialized();
   smpi_process()->set_replaying(true);
 
   int rank = smpi_process()->index();
   TRACE_smpi_init(rank);
-  TRACE_smpi_computing_init(rank, nullptr);
+  TRACE_smpi_computing_init(rank);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_INIT;
-  char *operation = bprintf("%s_init",__FUNCTION__);
-  TRACE_smpi_collective_in(rank, -1, operation, extra);
-  TRACE_smpi_collective_out(rank, -1, operation);
-  xbt_free(operation);
+  TRACE_smpi_collective_in(rank, -1, "smpi_replay_run_init", extra);
+  TRACE_smpi_collective_out(rank, -1, "smpi_replay_run_init");
   
   xbt_replay_action_register("init",       simgrid::smpi::action_init);
   xbt_replay_action_register("finalize",   simgrid::smpi::action_finalize);
@@ -1092,10 +1096,7 @@ void smpi_replay_run(int *argc, char***argv){
 
   //if we have a delayed start, sleep here.
   if(*argc>2){
-    char *endptr;
-    double value = strtod((*argv)[2], &endptr);
-    if (*endptr != '\0')
-      THROWF(unknown_error, 0, "%s is not a double", (*argv)[2]);
+    double value = xbt_str_parse_double((*argv)[2], "%s is not a double");
     XBT_VERB("Delayed start for instance - Sleeping for %f flops ",value );
     smpi_execute_flops(value);
   } else {
@@ -1103,8 +1104,11 @@ void smpi_replay_run(int *argc, char***argv){
     XBT_DEBUG("Force context switch by smpi_execute_flops  - Sleeping for 0.0 flops ");
     smpi_execute_flops(0.0);
   }
+}
 
-  /* Actually run the replay */
+/** @brief actually run the replay after initialization */
+void smpi_replay_main(int* argc, char*** argv)
+{
   simgrid::xbt::replay_runner(*argc, *argv);
 
   /* and now, finalize everything */
@@ -1114,6 +1118,7 @@ void smpi_replay_run(int *argc, char***argv){
             reqd[smpi_process_index()].size());
   if(!reqd[smpi_process_index()].empty()){
     int count_requests=reqd[smpi_process_index()].size();
+
     MPI_Request requests[count_requests];
     MPI_Status status[count_requests];
     unsigned int i = 0;
@@ -1136,13 +1141,18 @@ void smpi_replay_run(int *argc, char***argv){
   
   instr_extra_data extra_fin = xbt_new0(s_instr_extra_data_t,1);
   extra_fin->type = TRACING_FINALIZE;
-  operation = bprintf("%s_finalize",__FUNCTION__);
-  TRACE_smpi_collective_in(rank, -1, operation, extra_fin);
+  TRACE_smpi_collective_in(smpi_process()->index(), -1, "smpi_replay_run_finalize", extra_fin);
 
   smpi_process()->finalize();
 
-  TRACE_smpi_collective_out(rank, -1, operation);
+  TRACE_smpi_collective_out(smpi_process()->index(), -1, "smpi_replay_run_finalize");
   TRACE_smpi_finalize(smpi_process()->index());
-  xbt_free(operation);
+}
+
+/** @brief chain a replay initialization and a replay start */
+void smpi_replay_run(int* argc, char*** argv)
+{
+  smpi_replay_init(argc, argv);
+  smpi_replay_main(argc, argv);
 }
 

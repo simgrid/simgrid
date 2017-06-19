@@ -1,5 +1,4 @@
-/* Copyright (c) 2010-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,7 +6,8 @@
 #ifndef SMPI_TOPO_HPP_INCLUDED
 #define SMPI_TOPO_HPP_INCLUDED
 
-#include "private.h"
+#include "src/smpi/smpi_comm.hpp"
+#include "src/smpi/smpi_status.hpp"
 
 typedef enum MPIR_Topo_type {
   MPI_GRAPH=1,

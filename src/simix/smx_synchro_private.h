@@ -12,12 +12,12 @@
 namespace simgrid {
 namespace simix {
 
-class XBT_PUBLIC() Mutex {
+class XBT_PUBLIC() MutexImpl {
 public:
-  Mutex();
-  ~Mutex();
-  Mutex(Mutex const&) = delete;
-  Mutex& operator=(Mutex const&) = delete;
+  MutexImpl();
+  ~MutexImpl();
+  MutexImpl(MutexImpl const&) = delete;
+  MutexImpl& operator=(MutexImpl const&) = delete;
 
   void lock(smx_actor_t issuer);
   bool try_lock(smx_actor_t issuer);
@@ -29,14 +29,14 @@ public:
   xbt_swag_t sleeping = nullptr;
 
   // boost::intrusive_ptr<Mutex> support:
-  friend void intrusive_ptr_add_ref(Mutex* mutex)
+  friend void intrusive_ptr_add_ref(MutexImpl* mutex)
   {
     // Atomic operation! Do not split in two instructions!
     auto previous = (mutex->refcount_)++;
     xbt_assert(previous != 0);
     (void) previous;
   }
-  friend void intrusive_ptr_release(Mutex* mutex)
+  friend void intrusive_ptr_release(MutexImpl* mutex)
   {
     // Atomic operation! Do not split in two instructions!
     auto count = --(mutex->refcount_);

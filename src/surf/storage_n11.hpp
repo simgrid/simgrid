@@ -6,7 +6,7 @@
 
 #include <xbt/base.h>
 
-#include "storage_interface.hpp"
+#include "StorageImpl.hpp"
 
 #ifndef STORAGE_N11_HPP_
 #define STORAGE_N11_HPP_
@@ -28,8 +28,8 @@ class XBT_PRIVATE StorageN11Action;
 
 class StorageN11Model : public StorageModel {
 public:
-  Storage* createStorage(const char* id, const char* type_id, const char* content_name, const char* content_type,
-                         const char* attach) override;
+  StorageImpl* createStorage(const char* id, const char* type_id, const char* content_name,
+                             const char* attach) override;
   double nextOccuringEvent(double now) override;
   void updateActionsState(double now, double delta) override;
 };
@@ -38,12 +38,10 @@ public:
  * Resource *
  ************/
 
-class StorageN11 : public Storage {
+class StorageN11 : public StorageImpl {
 public:
   StorageN11(StorageModel* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
-             double bconnection, const char* type_id, char* content_name, const char* content_type, sg_size_t size,
-             char* attach);
-
+             const char* type_id, char* content_name, sg_size_t size, char* attach);
   StorageAction *open(const char* mount, const char* path);
   StorageAction *close(surf_file_t fd);
   StorageAction *ls(const char *path);
@@ -58,7 +56,7 @@ public:
 
 class StorageN11Action : public StorageAction {
 public:
-  StorageN11Action(Model *model, double cost, bool failed, Storage *storage, e_surf_action_storage_type_t type);
+  StorageN11Action(Model* model, double cost, bool failed, StorageImpl* storage, e_surf_action_storage_type_t type);
   void suspend();
   int unref();
   void cancel();
@@ -66,7 +64,6 @@ public:
   bool isSuspended();
   void setMaxDuration(double duration);
   void setPriority(double priority);
-
 };
 
 }

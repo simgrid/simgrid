@@ -45,8 +45,7 @@
  */
 namespace simgrid{
 namespace smpi{
-int Coll_barrier_ompi_doublering::barrier(MPI_Comm comm
-					     )
+int Coll_barrier_ompi_doublering::barrier(MPI_Comm comm)
 {
     int rank, size;
     int left, right;
@@ -106,8 +105,7 @@ int Coll_barrier_ompi_doublering::barrier(MPI_Comm comm
  * To make synchronous, uses sync sends and sync sendrecvs
  */
 
-int Coll_barrier_ompi_recursivedoubling::barrier(MPI_Comm comm
-						    )
+int Coll_barrier_ompi_recursivedoubling::barrier(MPI_Comm comm)
 {
     int rank, size, adjsize;
     int mask, remote;
@@ -181,8 +179,7 @@ int Coll_barrier_ompi_recursivedoubling::barrier(MPI_Comm comm
  * To make synchronous, uses sync sends and sync sendrecvs
  */
 
-int Coll_barrier_ompi_bruck::barrier(MPI_Comm comm
-					)
+int Coll_barrier_ompi_bruck::barrier(MPI_Comm comm)
 {
     int rank, size;
     int distance, to, from;
@@ -214,8 +211,7 @@ int Coll_barrier_ompi_bruck::barrier(MPI_Comm comm
  * To make synchronous, uses sync sends and sync sendrecvs
  */
 /* special case for two processes */
-int Coll_barrier_ompi_two_procs::barrier(MPI_Comm comm
-					    )
+int Coll_barrier_ompi_two_procs::barrier(MPI_Comm comm)
 {
     int remote;
 

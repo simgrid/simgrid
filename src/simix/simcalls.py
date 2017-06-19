@@ -11,9 +11,9 @@ import glob
 
 class Arg(object):
 
-    def __init__(self, name, type):
+    def __init__(self, name, thetype):
         self.name = name
-        self.type = type
+        self.type = thetype
 
     def field(self):
         return self.simcall_types[self.type]
@@ -219,6 +219,8 @@ def header(name):
     fd.write(
         '/* change simcalls specification in src/simix/simcalls.in             */\n')
     fd.write(
+        '/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.    */\n')
+    fd.write(
         '/**********************************************************************/\n\n')
     fd.write('/*\n')
     fd.write(
@@ -233,17 +235,16 @@ def header(name):
 
 
 def handle(fd, func, simcalls, guarded_simcalls):
-    def nonempty(e): 
+    def nonempty(e):
         return e != ''
     fd.write('\n'.join(filter(nonempty, (func(simcall) for simcall in simcalls))))
 
-    for guard, list in guarded_simcalls.items():
+    for guard, ll in guarded_simcalls.items():
         fd.write('\n#if %s\n' % (guard))
-        fd.write('\n'.join(func(simcall) for simcall in list))
+        fd.write('\n'.join(func(simcall) for simcall in ll))
         fd.write('\n#endif\n')
 
 if __name__ == '__main__':
-    import sys
     simcalls, simcalls_dict = parse('simcalls.in')
 
     ok = True
@@ -290,7 +291,7 @@ if __name__ == '__main__':
 
     fd.write('#include <xbt/base.h>\n')
     fd.write('#include "smx_private.h"\n')
-    fd.write('#if HAVE_MC\n')
+    fd.write('#if SIMGRID_HAVE_MC\n')
     fd.write('#include "src/mc/mc_forward.hpp"\n')
     fd.write('#endif\n')
     fd.write('\n')

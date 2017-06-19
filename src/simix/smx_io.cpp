@@ -19,40 +19,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)");
 
-/**
- * \brief Internal function to create a SIMIX storage.
- * \param name name of the storage to create
- * \param storage the SURF storage to encapsulate
- * \param data some user data (may be nullptr)
- */
-smx_storage_t SIMIX_storage_create(const char *name, void *storage, void *data)
-{
-  smx_storage_priv_t smx_storage = xbt_new0(s_smx_storage_priv_t, 1);
-
-  smx_storage->data = data;
-
-  /* Update global variables */
-  xbt_lib_set(storage_lib,name,SIMIX_STORAGE_LEVEL,smx_storage);
-  return xbt_lib_get_elm_or_null(storage_lib, name);
-}
-
-/**
- * \brief Internal function to destroy a SIMIX storage.
- *
- * \param s the host to destroy (a smx_storage_t)
- */
-void SIMIX_storage_destroy(void *s)
-{
-  smx_storage_priv_t storage = static_cast<smx_storage_priv_t>(s);
-
-  xbt_assert((storage != nullptr), "Invalid parameters");
-  if (storage->data)
-    free(storage->data);
-
-  /* Clean storage structure */
-  free(storage);
-}
-
 //SIMIX FILE READ
 void simcall_HANDLER_file_read(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, sg_host_t host)
 {
@@ -212,10 +178,6 @@ int SIMIX_file_move(smx_actor_t process, smx_file_t file, const char* fullpath)
 
 xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage){
   return surf_storage_get_properties(storage);
-}
-
-const char* SIMIX_storage_get_name(smx_storage_t storage){
-  return sg_storage_name(storage);
 }
 
 void SIMIX_io_destroy(smx_activity_t synchro)

@@ -68,7 +68,7 @@ static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
 
   xbt_swag_foreach(_var, var_list) {
     var = static_cast<lmm_variable_t>(_var);
-    if (!var->weight)
+    if (not var->weight)
       break;
     if (var->bound < 0)
       continue;
@@ -124,7 +124,7 @@ static double dual_objective(xbt_swag_t var_list, xbt_swag_t cnst_list)
     var = static_cast<lmm_variable_t>(_var);
     double sigma_i = 0.0;
 
-    if (!var->weight)
+    if (not var->weight)
       break;
 
     for (int j = 0; j < var->cnsts_number; j++)
@@ -182,7 +182,7 @@ void lagrange_solve(lmm_system_t sys)
     lmm_print(sys);
   }
 
-  if (!(sys->modified))
+  if (not sys->modified)
     return;
 
   /* Initialize lambda. */
@@ -202,29 +202,29 @@ void lagrange_solve(lmm_system_t sys)
   i = 0;
   xbt_swag_foreach(_var, var_list) {
   var = static_cast<lmm_variable_t>(_var);
-    if (!var->weight)
-      var->value = 0.0;
-    else {
-      int nb = 0;
-      if (var->bound < 0.0) {
-        XBT_DEBUG("#### NOTE var(%d) is a boundless variable", i);
-        var->mu = -1.0;
-        var->value = new_value(var);
-      } else {
-        var->mu = 1.0;
-        var->new_mu = 2.0;
-        var->value = new_value(var);
-      }
-      XBT_DEBUG("#### var(%p) ->weight :  %e", var, var->weight);
-      XBT_DEBUG("#### var(%p) ->mu :  %e", var, var->mu);
-      XBT_DEBUG("#### var(%p) ->weight: %e", var, var->weight);
-      XBT_DEBUG("#### var(%p) ->bound: %e", var, var->bound);
-      for (i = 0; i < var->cnsts_number; i++) {
-        if (var->cnsts[i].value ==   0.0)
-          nb++;
-      }
-      if (nb == var->cnsts_number)
-        var->value = 1.0;
+  if (not var->weight)
+    var->value = 0.0;
+  else {
+    int nb = 0;
+    if (var->bound < 0.0) {
+      XBT_DEBUG("#### NOTE var(%d) is a boundless variable", i);
+      var->mu    = -1.0;
+      var->value = new_value(var);
+    } else {
+      var->mu     = 1.0;
+      var->new_mu = 2.0;
+      var->value  = new_value(var);
+    }
+    XBT_DEBUG("#### var(%p) ->weight :  %e", var, var->weight);
+    XBT_DEBUG("#### var(%p) ->mu :  %e", var, var->mu);
+    XBT_DEBUG("#### var(%p) ->weight: %e", var, var->weight);
+    XBT_DEBUG("#### var(%p) ->bound: %e", var, var->bound);
+    for (i = 0; i < var->cnsts_number; i++) {
+      if (var->cnsts[i].value == 0.0)
+        nb++;
+    }
+    if (nb == var->cnsts_number)
+      var->value = 1.0;
     }
   }
 
@@ -240,7 +240,7 @@ void lagrange_solve(lmm_system_t sys)
     /* Improve the value of mu_i */
     xbt_swag_foreach(_var, var_list) {
       var = static_cast<lmm_variable_t>(_var);
-      if (!var->weight)
+      if (not var->weight)
         break;
       if (var->bound >= 0) {
         XBT_DEBUG("Working on var (%p)", var);
@@ -291,13 +291,13 @@ void lagrange_solve(lmm_system_t sys)
     }
 
     XBT_DEBUG("-------------- Check feasability ----------");
-    if (!__check_feasible(cnst_list, var_list, 0))
+    if (not __check_feasible(cnst_list, var_list, 0))
       overall_modification = 1.0;
     XBT_DEBUG("Iteration %d: overall_modification : %f", iteration, overall_modification);
-/*     if(!dual_updated) { */
-/*       XBT_WARN("Could not improve the convergence at iteration %d. Drop it!",iteration); */
-/*       break; */
-/*     } */
+    /*     if(not dual_updated) { */
+    /*       XBT_WARN("Could not improve the convergence at iteration %d. Drop it!",iteration); */
+    /*       break; */
+    /*     } */
   }
 
   __check_feasible(cnst_list, var_list, 1);

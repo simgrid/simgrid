@@ -14,7 +14,6 @@ SG_BEGIN_DECL()
 /* Modules definitions */
 
 void xbt_log_preinit(void);
-void xbt_log_init(int *argc, char **argv);
 void xbt_log_postexit(void);
 
 void xbt_dict_preinit(void);

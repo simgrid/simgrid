@@ -6,15 +6,8 @@
 
 #include <cassert>
 
-#include <xbt/log.h>
-#include <xbt/str.h>
-#include <xbt/sysdep.h>
-#include <xbt/dynar.h>
-#include <xbt/swag.h>
-
+#include "src/mc/ModelChecker.hpp"
 #include "src/mc/mc_request.h"
-#include "src/mc/mc_safety.h"
-#include "src/mc/mc_private.h"
 #include "src/mc/mc_smx.h"
 #include "src/mc/mc_xbt.hpp"
 
@@ -26,14 +19,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_request, mc,
 static char *pointer_to_string(void *pointer);
 static char *buff_size_to_string(size_t size);
 
-static inline
-simgrid::kernel::activity::Comm* MC_get_comm(smx_simcall_t r)
+static inline simgrid::kernel::activity::CommImpl* MC_get_comm(smx_simcall_t r)
 {
   switch (r->call ) {
   case SIMCALL_COMM_WAIT:
-    return static_cast<simgrid::kernel::activity::Comm*>(simcall_comm_wait__get__comm(r));
+    return static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__get__comm(r));
   case SIMCALL_COMM_TEST:
-    return static_cast<simgrid::kernel::activity::Comm*>(simcall_comm_test__get__comm(r));
+    return static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_test__get__comm(r));
   default:
     return nullptr;
   }
@@ -67,8 +59,8 @@ bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2)
 
   // Those are internal requests, we do not need indirection
   // because those objects are copies:
-  simgrid::kernel::activity::Comm* synchro1 = MC_get_comm(r1);
-  simgrid::kernel::activity::Comm* synchro2 = MC_get_comm(r2);
+  simgrid::kernel::activity::CommImpl* synchro1 = MC_get_comm(r1);
+  simgrid::kernel::activity::CommImpl* synchro2 = MC_get_comm(r2);
 
   if ((r1->call == SIMCALL_COMM_ISEND || r1->call == SIMCALL_COMM_IRECV)
       && r2->call == SIMCALL_COMM_WAIT) {
@@ -154,8 +146,8 @@ bool request_depend(smx_simcall_t r1, smx_simcall_t r2)
 
   // Those are internal requests, we do not need indirection
   // because those objects are copies:
-  simgrid::kernel::activity::Comm* synchro1 = MC_get_comm(r1);
-  simgrid::kernel::activity::Comm* synchro2 = MC_get_comm(r2);
+  simgrid::kernel::activity::CommImpl* synchro1 = MC_get_comm(r1);
+  simgrid::kernel::activity::CommImpl* synchro2 = MC_get_comm(r2);
 
   switch(r1->call) {
   case SIMCALL_COMM_ISEND:
@@ -264,8 +256,8 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
   }
 
   case SIMCALL_COMM_WAIT: {
-    simgrid::kernel::activity::Comm* remote_act =
-      static_cast<simgrid::kernel::activity::Comm*>(simcall_comm_wait__get__comm(req));
+    simgrid::kernel::activity::CommImpl* remote_act =
+        static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__get__comm(req));
     char* p;
     if (value == -1) {
       type = "WaitTimeout";
@@ -275,11 +267,11 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
       type = "Wait";
       p = pointer_to_string(remote_act);
 
-      simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_synchro;
-      simgrid::kernel::activity::Comm* act;
+      simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_synchro;
+      simgrid::kernel::activity::CommImpl* act;
       if (use_remote_comm) {
-        mc_model_checker->process().read(temp_synchro, remote(
-          static_cast<simgrid::kernel::activity::Comm*>(remote_act)));
+        mc_model_checker->process().read(temp_synchro,
+                                         remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
         act = temp_synchro.getBuffer();
       } else
         act = remote_act;
@@ -297,13 +289,13 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
   }
 
   case SIMCALL_COMM_TEST: {
-    simgrid::kernel::activity::Comm* remote_act = static_cast<simgrid::kernel::activity::Comm*>(
-      simcall_comm_test__get__comm(req));
-    simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_synchro;
-    simgrid::kernel::activity::Comm* act;
+    simgrid::kernel::activity::CommImpl* remote_act =
+        static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_test__get__comm(req));
+    simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_synchro;
+    simgrid::kernel::activity::CommImpl* act;
     if (use_remote_comm) {
-      mc_model_checker->process().read(temp_synchro, remote(
-        static_cast<simgrid::kernel::activity::Comm*>(remote_act)));
+      mc_model_checker->process().read(temp_synchro,
+                                       remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
       act = temp_synchro.getBuffer();
     } else
       act = remote_act;
@@ -332,7 +324,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
     s_xbt_dynar_t comms;
     mc_model_checker->process().read_bytes(
       &comms, sizeof(comms), remote(simcall_comm_waitany__get__comms(req)));
-    if (!xbt_dynar_is_empty(&comms)) {
+    if (not xbt_dynar_is_empty(&comms)) {
       smx_activity_t remote_sync;
       read_element(mc_model_checker->process(),
         &remote_sync, remote(simcall_comm_waitany__get__comms(req)), value,
@@ -365,7 +357,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
     else
       type = "Mutex TRYLOCK";
 
-    simgrid::mc::Remote<simgrid::simix::Mutex> mutex;
+    simgrid::mc::Remote<simgrid::simix::MutexImpl> mutex;
     mc_model_checker->process().read_bytes(mutex.getBuffer(), sizeof(mutex),
       remote(
         req->call == SIMCALL_MUTEX_LOCK
@@ -437,10 +429,9 @@ bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
     return true;
   }
 
-  simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_comm;
-  mc_model_checker->process().read(temp_comm, remote(
-    static_cast<simgrid::kernel::activity::Comm*>(remote_act)));
-  simgrid::kernel::activity::Comm* comm = temp_comm.getBuffer();
+  simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
+  mc_model_checker->process().read(temp_comm, remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
+  simgrid::kernel::activity::CommImpl* comm = temp_comm.getBuffer();
   return comm->src_proc && comm->dst_proc;
 }
 
@@ -499,10 +490,10 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
         label = simgrid::xbt::string_printf("[(%lu)] WaitTimeout", issuer->pid);
     } else {
       smx_activity_t remote_act = simcall_comm_wait__get__comm(req);
-      simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_comm;
-      mc_model_checker->process().read(temp_comm, remote(
-        static_cast<simgrid::kernel::activity::Comm*>(remote_act)));
-      simgrid::kernel::activity::Comm* comm = temp_comm.getBuffer();
+      simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
+      mc_model_checker->process().read(temp_comm,
+                                       remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
+      simgrid::kernel::activity::CommImpl* comm = temp_comm.getBuffer();
 
       smx_actor_t src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->src_proc));
       smx_actor_t dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_proc));
@@ -521,10 +512,9 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
 
   case SIMCALL_COMM_TEST: {
     smx_activity_t remote_act = simcall_comm_test__get__comm(req);
-    simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_comm;
-    mc_model_checker->process().read(temp_comm, remote(
-      static_cast<simgrid::kernel::activity::Comm*>(remote_act)));
-    simgrid::kernel::activity::Comm* comm = temp_comm.getBuffer();
+    simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
+    mc_model_checker->process().read(temp_comm, remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
+    simgrid::kernel::activity::CommImpl* comm = temp_comm.getBuffer();
     if (comm->src_proc == nullptr || comm->dst_proc == nullptr) {
       if (issuer->host)
         label = simgrid::xbt::string_printf("[(%lu)%s] Test FALSE", issuer->pid, MC_smx_actor_get_host_name(issuer));

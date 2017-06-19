@@ -7,8 +7,9 @@
 
 #ifndef MSG4JAVA_H
 #define MSG4JAVA_H
-#include <simgrid/msg.h>
 #include <jni.h>
+#include <simgrid/msg.h>
+#include <unordered_map>
 
 SG_BEGIN_DECL()
 
@@ -22,7 +23,7 @@ SG_BEGIN_DECL()
 /* end of eclipse-mandated pimple */
 
 extern int JAVA_HOST_LEVEL;
-extern int JAVA_STORAGE_LEVEL;
+static std::unordered_map<char*, jobject> java_storage_map;
 
 JavaVM *get_java_VM();
 JNIEnv *get_current_thread_env();

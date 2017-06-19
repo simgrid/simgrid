@@ -358,7 +358,7 @@ int Coll_bcast_arrival_pattern_aware::bcast(void *buf, int count,
 
   /* when count is not divisible by block size, use default BCAST for the remainder */
   if ((remainder != 0) && (count > segment)) {
-    XBT_WARN("MPI_bcast_arrival_pattern_aware use default MPI_bcast.");	  
+    XBT_WARN("MPI_bcast_arrival_pattern_aware use default MPI_bcast.");
     Colls::bcast((char *)buf + (pipe_length * increment), remainder, datatype, root, comm);
   }
 

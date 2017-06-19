@@ -150,17 +150,12 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
                 out_buf = NULL;
             }
 
-	    if (count * (MAX(extent, true_extent)) < SHMEM_COLL_BLOCK_SIZE) {
-		mpi_errno = MPIR_Reduce_shmem_MV2(in_buf, out_buf, count,
-						  datatype, op,
-						  0, shmem_comm);
-	    }
-	    else {
-		mpi_errno = MPIR_Reduce_intra_knomial_wrapper_MV2(in_buf, out_buf, count,
-								  datatype, op,
-								  0, shmem_comm);
-	    }
-	    
+            if (count * (MAX(extent, true_extent)) < SHMEM_COLL_BLOCK_SIZE) {
+              mpi_errno = MPIR_Reduce_shmem_MV2(in_buf, out_buf, count, datatype, op, 0, shmem_comm);
+            } else {
+              mpi_errno = MPIR_Reduce_intra_knomial_wrapper_MV2(in_buf, out_buf, count, datatype, op, 0, shmem_comm);
+            }
+
             if (local_rank == 0 && root != my_rank) {
                 Request::send(out_buf, count, datatype, root,
                                          COLL_TAG_REDUCE+1, comm);
@@ -219,11 +214,8 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
          *this step*/
         if (MV2_Reduce_intra_function == & MPIR_Reduce_shmem_MV2)
         {
-            if (is_commutative == 1
-		&& (count * (MAX(extent, true_extent)) < SHMEM_COLL_BLOCK_SIZE)) {
-                    mpi_errno = MV2_Reduce_intra_function(in_buf, out_buf, count,
-                                      datatype, op,
-                                      intra_node_root, shmem_comm);
+          if (is_commutative == 1 && (count * (MAX(extent, true_extent)) < SHMEM_COLL_BLOCK_SIZE)) {
+            mpi_errno = MV2_Reduce_intra_function(in_buf, out_buf, count, datatype, op, intra_node_root, shmem_comm);
             } else {
                     mpi_errno = MPIR_Reduce_intra_knomial_wrapper_MV2(in_buf, out_buf, count,
                                       datatype, op,

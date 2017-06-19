@@ -138,7 +138,7 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
   newContainer->children = xbt_dict_new_homogeneous(nullptr);
   if (newContainer->father){
     xbt_dict_set(newContainer->father->children, newContainer->name, newContainer, nullptr);
-    new_pajeCreateContainer (newContainer);
+    new CreateContainerEvent(newContainer);
   }
 
   //register all kinds by name
@@ -203,10 +203,10 @@ void PJ_container_free (container_t container)
   TRACE_paje_dump_buffer(1);
 
   //trace my destruction
-  if (!TRACE_disable_destroy() && container != PJ_container_get_root()){
+  if (not TRACE_disable_destroy() && container != PJ_container_get_root()) {
     //do not trace the container destruction if user requests
     //or if the container is root
-    new_pajeDestroyContainer(container);
+    new DestroyContainerEvent(container);
   }
 
   //remove it from allContainers data structure
@@ -245,7 +245,7 @@ void PJ_container_free_all ()
   rootContainer = nullptr;
 
   //checks
-  if (!xbt_dict_is_empty(allContainers)){
+  if (not xbt_dict_is_empty(allContainers)) {
     THROWF(tracing_error, 0, "some containers still present even after destroying all of them");
   }
 }

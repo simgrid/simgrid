@@ -6,7 +6,7 @@
 
 #include <libunwind.h>
 
-#include <xbt/sysdep.h>
+#include "xbt/sysdep.h"
 
 #include "src/mc/Frame.hpp"
 

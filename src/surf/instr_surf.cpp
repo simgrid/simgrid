@@ -24,7 +24,7 @@ void TRACE_surf_host_set_speed(double date, const char *resource, double speed)
   if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) {
     container_t container = PJ_container_get(resource);
     type_t type = PJ_type_get ("power", container->type);
-    new_pajeSetVariable(date, container, type, speed);
+    new SetVariableEvent(date, container, type, speed);
   }
 }
 
@@ -33,17 +33,17 @@ void TRACE_surf_link_set_bandwidth(double date, const char *resource, double ban
   if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) {
     container_t container = PJ_container_get(resource);
     type_t type = PJ_type_get ("bandwidth", container->type);
-    new_pajeSetVariable(date, container, type, bandwidth);
+    new SetVariableEvent(date, container, type, bandwidth);
   }
 }
 
 void TRACE_surf_action(surf_action_t surf_action, const char *category)
 {
-  if (!TRACE_is_enabled())
+  if (not TRACE_is_enabled())
     return;
-  if (!TRACE_categorized ())
+  if (not TRACE_categorized())
     return;
-  if (!category)
+  if (not category)
     return;
 
   surf_action->setCategory(category);

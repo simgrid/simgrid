@@ -26,10 +26,10 @@ import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.MsgException;
 
 public class Node extends Process {
-  private static String FILENAME1 = "/doc/simgrid/examples/platforms/g5k.xml";
-  private static String FILENAME2 = "\\Windows\\setupact.log";
-  private static String FILENAME3 = "/doc/simgrid/examples/platforms/g5k_cabinets.xml";
-  private static String FILENAME4 = "/doc/simgrid/examples/platforms/nancy.xml";
+  private static String file1 = "/doc/simgrid/examples/platforms/g5k.xml";
+  private static String file2 = "\\Windows\\setupact.log";
+  private static String file3 = "/doc/simgrid/examples/platforms/g5k_cabinets.xml";
+  private static String file4 = "/doc/simgrid/examples/platforms/nancy.xml";
 
   protected int rank;
 
@@ -40,42 +40,42 @@ public class Node extends Process {
 
   public void main(String[] args) throws MsgException {
     String mount;
-    String filename;
+    String fileName;
     switch (rank) {
       case 4:
         mount = "/home";
-        filename = mount + FILENAME1;
+        fileName = mount + file1;
       break;
       case 0:
         mount = "c:";
-        filename = mount + FILENAME2;
+        fileName = mount + file2;
       break;
       case 2:
         mount = "/home";
-        filename = mount + FILENAME3;
+        fileName = mount + file3;
       break;
       case 1:
         mount = "/home";
-        filename = mount + FILENAME4;
+        fileName = mount + file4;
       break;
       default:
         mount = "/home";
-        filename = mount + FILENAME1;
+        fileName = mount + file1;
     }
 
-    Msg.info("Open file " + filename);
-    File file = new File(filename);
+    Msg.info("Open file " + fileName);
+    File file = new File(fileName);
 
     long read = file.read(10000,1);
-    Msg.info("Having read " + read + " on " + filename);
+    Msg.info("Having read " + read + " on " + fileName);
 
     long write = file.write(100000,1);
-    Msg.info("Having write " + write + " on " + filename);
+    Msg.info("Having write " + write + " on " + fileName);
 
-    Msg.info("Seek back to the beginning of " + filename);
+    Msg.info("Seek back to the beginning of " + fileName);
     file.seek(0,File.SEEK_SET);
 
     read = file.read(150000,1);
-    Msg.info("Having read " + read + " on " + filename);  
+    Msg.info("Having read " + read + " on " + fileName);  
   }
 }

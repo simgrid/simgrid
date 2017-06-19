@@ -11,7 +11,7 @@ import org.simgrid.msg.Process;
 
 public class Daemon extends Process {
   private Task currentTask;
-  public Daemon(VM vm, int load) {
+  public Daemon(VM vm) {
     super((Host)vm,"Daemon");
     currentTask = new Task(this.getHost().getName()+"-daemon-0", this.getHost().getSpeed()*100, 0);
   }

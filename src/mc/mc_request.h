@@ -6,10 +6,6 @@
 #ifndef SIMGRID_MC_REQUEST_H
 #define SIMGRID_MC_REQUEST_H
 
-#include <string>
-
-#include <xbt/base.h>
-
 #include "src/simix/smx_private.h"
 
 namespace simgrid {

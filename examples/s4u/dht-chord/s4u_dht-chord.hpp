@@ -118,9 +118,8 @@ public:
       join(known_id_);
     }
 
-    if (!joined)
+    if (not joined)
       return;
-    ChordMessage* message              = nullptr;
     void* data                         = nullptr;
     double now                         = simgrid::s4u::Engine::getClock();
     double next_stabilize_date         = start_time_ + PERIODIC_STABILIZE_DELAY;
@@ -129,9 +128,9 @@ public:
     double next_lookup_date            = start_time_ + PERIODIC_LOOKUP_DELAY;
 
     while ((now < (start_time_ + deadline_)) && now < MAX_SIMULATION_TIME) {
-      data                             = nullptr;
-      simgrid::s4u::Comm& comm_receive = simgrid::s4u::this_actor::irecv(mailbox_, &data);
-      while ((now < (start_time_ + deadline_)) && now < MAX_SIMULATION_TIME && !comm_receive.test()) {
+      data                               = nullptr;
+      simgrid::s4u::CommPtr comm_receive = simgrid::s4u::this_actor::irecv(mailbox_, &data);
+      while ((now < (start_time_ + deadline_)) && now < MAX_SIMULATION_TIME && not comm_receive->test()) {
         // no task was received: make some periodic calls
         if (now >= next_stabilize_date) {
           stabilize();
@@ -153,8 +152,10 @@ public:
       }
 
       if (data != nullptr) {
-        message = static_cast<ChordMessage*>(data);
+        ChordMessage* message = static_cast<ChordMessage*>(data);
         handleMessage(message);
+      } else {
+        comm_receive->cancel();
       }
       now = simgrid::s4u::Engine::getClock();
     }

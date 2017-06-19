@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -152,7 +151,7 @@ static int master_fun(int argc, char *argv[])
   XBT_INFO("# Shutdown the half of worker processes gracefully. The remaining half will be forcibly killed.");
   for (i = 0; i < nb_workers; i++) {
     char mbox[MAXMBOXLEN];
-    snprintf(mbox, MAXMBOXLEN, "MBOX:WRK%02d", i);
+    snprintf(mbox, MAXMBOXLEN, "MBOX:WRK%02u", i);
     msg_task_t finalize = MSG_task_create("finalize", 0, 0, 0);
     MSG_task_send(finalize, mbox);
   }

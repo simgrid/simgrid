@@ -101,11 +101,11 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_VM_all(JNIEnv* env, jclass c
   int count = vms.size();
 
   jclass cls = jxbt_get_class(env, "org/simgrid/msg/VM");
-  if (!cls)
+  if (not cls)
     return nullptr;
 
   jobjectArray jtable = env->NewObjectArray((jsize)count, cls, nullptr);
-  if (!jtable) {
+  if (not jtable) {
     jxbt_throw_jni(env, "Hosts table allocation failed");
     return nullptr;
   }
@@ -180,7 +180,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_VM_getVMByName(JNIEnv* env, jclas
   /* get the VM by name   (VMs are just special hosts, unfortunately) */
   msg_host_t host = MSG_host_by_name(name);
 
-  if (!host) { /* invalid name */
+  if (not host) { /* invalid name */
     jxbt_throw_host_not_found(env, name);
     env->ReleaseStringUTFChars(jname, name);
     return nullptr;

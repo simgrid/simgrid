@@ -7,9 +7,7 @@
 #ifndef SIMGRID_MC_XBT_HPP
 #define SIMGRID_MC_XBT_HPP
 
-#include <cstddef>
-
-#include <xbt/dynar.h>
+#include "xbt/dynar.h"
 
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/remote/RemotePtr.hpp"

@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2010, 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -35,13 +34,13 @@ namespace context {
       \see m_process_management
     @{ */
   class ActorImpl;
-  class Mutex;
+  class MutexImpl;
 }
 }
 
 typedef simgrid::kernel::context::Context* smx_context_t;
 typedef simgrid::simix::ActorImpl* smx_actor_t;
-typedef simgrid::simix::Mutex* smx_mutex_t;
+typedef simgrid::simix::MutexImpl* smx_mutex_t;
 typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
 
 #else
@@ -52,10 +51,6 @@ typedef struct s_smx_mutex   *smx_mutex_t;
 typedef struct s_smx_mailbox *smx_mailbox_t;
 
 #endif
-
-/**************************** Scalar Values **********************************/
-
-typedef union u_smx_scalar u_smx_scalar_t;
 
 /* ******************************** Host ************************************ */
 /** @brief Host datatype
@@ -102,7 +97,6 @@ typedef struct s_smx_file *smx_file_t;
 
 /********************************** Storage *************************************/
 typedef xbt_dictelm_t smx_storage_t;
-typedef struct s_smx_storage_priv *smx_storage_priv_t;
 
 /* ****************************** Process *********************************** */
 
@@ -232,6 +226,8 @@ XBT_PUBLIC(smx_activity_t) SIMIX_comm_get_send_match(smx_mailbox_t mbox, int (*m
 XBT_PUBLIC(int) SIMIX_comm_has_send_match(smx_mailbox_t mbox, int (*match_fun)(void*, void*), void* data);
 XBT_PUBLIC(int) SIMIX_comm_has_recv_match(smx_mailbox_t mbox, int (*match_fun)(void*, void*), void* data);
 XBT_PUBLIC(void) SIMIX_comm_finish(smx_activity_t synchro);
+XBT_PUBLIC(smx_activity_t) SIMIX_comm_ref(smx_activity_t comm);
+XBT_PUBLIC(void) SIMIX_comm_unref(smx_activity_t comm);
 
 /******************************************************************************/
 /*                            SIMIX simcalls                                  */
@@ -369,8 +365,6 @@ XBT_PUBLIC(int) simcall_file_seek(smx_file_t fd, sg_offset_t offset, int origin)
 XBT_PUBLIC(int) simcall_file_move(smx_file_t fd, const char* fullpath);
 /*****************************   Storage   **********************************/
 XBT_PUBLIC(xbt_dict_t) simcall_storage_get_properties(smx_storage_t storage);
-XBT_PUBLIC(const char*) SIMIX_storage_get_name(smx_storage_t storage);
-
 /************************** MC simcalls   **********************************/
 XBT_PUBLIC(int) simcall_mc_random(int min, int max);
 

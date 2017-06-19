@@ -63,6 +63,8 @@ static int trace_precision;
 static bool trace_configured = false;
 static bool trace_active     = false;
 
+instr_fmt_type_t instr_fmt_type = instr_fmt_paje;
+
 static void TRACE_getopts()
 {
   trace_enabled             = xbt_cfg_get_boolean(OPT_TRACING);
@@ -103,11 +105,10 @@ int TRACE_start()
     /* open the trace file(s) */
     const char* format = xbt_cfg_get_string(OPT_TRACING_FORMAT);
     XBT_DEBUG("Tracing format %s\n", format);
-    if(!strcmp(format, "Paje")){
-      TRACE_paje_init();
+    if (not strcmp(format, "Paje")) {
       TRACE_paje_start();
-    }else if (!strcmp(format, "TI")){
-      TRACE_TI_init();
+    } else if (not strcmp(format, "TI")) {
+      instr_fmt_type = instr_fmt_TI;
       TRACE_TI_start();
     }else{
       xbt_die("Unknown trace format :%s ", format);
@@ -133,7 +134,7 @@ int TRACE_start()
 int TRACE_end()
 {
   int retval;
-  if (!trace_active) {
+  if (not trace_active) {
     retval = 1;
   } else {
     retval = 0;
@@ -160,9 +161,9 @@ int TRACE_end()
     /* close the trace files */
     const char* format = xbt_cfg_get_string(OPT_TRACING_FORMAT);
     XBT_DEBUG("Tracing format %s\n", format);
-    if(!strcmp(format, "Paje")){
+    if (not strcmp(format, "Paje")) {
       TRACE_paje_end();
-    }else if (!strcmp(format, "TI")){
+    } else if (not strcmp(format, "TI")) {
       TRACE_TI_end();
     }else{
       xbt_die("Unknown trace format :%s ", format);
@@ -604,7 +605,7 @@ static int previous_trace_state = -1;
 void instr_pause_tracing ()
 {
   previous_trace_state = trace_enabled;
-  if (!TRACE_is_enabled()){
+  if (not TRACE_is_enabled()) {
     XBT_DEBUG ("Tracing is already paused, therefore do nothing.");
   }else{
     XBT_DEBUG ("Tracing is being paused.");

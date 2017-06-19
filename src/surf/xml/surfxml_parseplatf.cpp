@@ -15,7 +15,7 @@
 
 #include "src/surf/xml/platf_private.hpp"
 
-#if HAVE_LUA
+#if SIMGRID_HAVE_LUA
 extern "C" {
 #include "src/bindings/lua/simgrid_lua.h"
 
@@ -45,7 +45,7 @@ XBT_IMPORT_NO_EXPORT(unsigned int) surfxml_buffer_stack_stack[1024];
 
 void surfxml_bufferstack_push(int new_one)
 {
-  if (!new_one)
+  if (not new_one)
     old_buff = surfxml_bufferstack;
   else {
     surfxml_bufferstack_stack.push_back(surfxml_bufferstack);
@@ -55,7 +55,7 @@ void surfxml_bufferstack_push(int new_one)
 
 void surfxml_bufferstack_pop(int new_one)
 {
-  if (!new_one)
+  if (not new_one)
     surfxml_bufferstack = old_buff;
   else {
     free(surfxml_bufferstack);
@@ -118,7 +118,7 @@ void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
 
 static int after_config_done;
 void parse_after_config() {
-  if (!after_config_done) {
+  if (not after_config_done) {
     TRACE_start();
 
     /* Register classical callbacks */
@@ -131,14 +131,14 @@ void parse_after_config() {
 /* This function acts as a main in the parsing area. */
 void parse_platform_file(const char *file)
 {
-#if HAVE_LUA
+#if SIMGRID_HAVE_LUA
   int len    = (file == nullptr ? 0 : strlen(file));
   int is_lua = (file != nullptr && len > 3 && file[len - 3] == 'l' && file[len - 2] == 'u' && file[len - 1] == 'a');
 #endif
 
   sg_platf_init();
 
-#if HAVE_LUA
+#if SIMGRID_HAVE_LUA
   /* Check if file extension is "lua". If so, we will use
    * the lua bindings to parse the platform file (since it is
    * written in lua). If not, we will use the (old?) XML parser
@@ -180,7 +180,8 @@ void parse_platform_file(const char *file)
 
     /* connect all traces relative to hosts */
     xbt_dict_cursor_t cursor = nullptr;
-    char *trace_name, *elm;
+    char* trace_name;
+    char* elm;
 
     xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
       tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);

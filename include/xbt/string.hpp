@@ -1,5 +1,4 @@
-/* Copyright (c) 2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,7 +12,7 @@
 #include <cstdarg>
 #include <stdlib.h>
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 
 #include <stdexcept>
 #include <cstddef>
@@ -28,7 +27,7 @@
 namespace simgrid {
 namespace xbt {
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 
 /** POD structure representation of a string
  */
@@ -209,7 +208,7 @@ public:
   template<class X>
   bool operator!=(X const& that) const
   {
-    return !((*this) == that);
+    return not (*this == that);
   }
 
   // Compare:

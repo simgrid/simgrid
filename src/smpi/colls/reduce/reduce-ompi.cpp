@@ -93,10 +93,8 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
 
         /* If this is a non-commutative operation we must copy
            sendbuf to the accumbuf, in order to simplfy the loops */
-        if ( (op!=MPI_OP_NULL && !op->is_commutative())) {
-            Datatype::copy(
-                                                (char*)sendtmpbuf, original_count, datatype,
-                                                (char*)accumbuf, original_count, datatype);
+        if ((op != MPI_OP_NULL && not op->is_commutative())) {
+          Datatype::copy((char*)sendtmpbuf, original_count, datatype, (char*)accumbuf, original_count, datatype);
         }
         /* Allocate two buffers for incoming segments */
         real_segment_size = true_extent + (count_by_segment - 1) * extent;

@@ -143,7 +143,7 @@ int Coll_reduce_NTSL::reduce(void *buf, void *rbuf, int count,
 
   /* when count is not divisible by block size, use default BCAST for the remainder */
   if ((remainder != 0) && (count > segment)) {
-    XBT_WARN("MPI_reduce_NTSL use default MPI_reduce.");	  
+    XBT_WARN("MPI_reduce_NTSL use default MPI_reduce.");
     Coll_reduce_default::reduce((char *)buf + (pipe_length * increment),
                (char *)rbuf + (pipe_length * increment), remainder, datatype, op, root,
                comm);

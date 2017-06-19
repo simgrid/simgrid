@@ -47,8 +47,8 @@ int xbt_pagebits = 0;
 /* Declare xbt_preinit and xbt_postexit as constructor/destructor of the library.
  * This is crude and rather compiler-specific, unfortunately.
  */
-static void xbt_preinit(void) _XBT_GNUC_CONSTRUCTOR(200);
-static void xbt_postexit(void);
+static void xbt_preinit() _XBT_GNUC_CONSTRUCTOR(200);
+static void xbt_postexit();
 
 #ifdef _WIN32
 #include <windows.h>
@@ -75,7 +75,8 @@ static BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserv
 
 #endif
 
-static void xbt_preinit(void) {
+static void xbt_preinit()
+{
   unsigned int seed = 2147483647;
 #ifdef _WIN32
   SYSTEM_INFO si;
@@ -96,7 +97,7 @@ static void xbt_preinit(void) {
   xbt_log_preinit();
   xbt_os_thread_mod_preinit();
   xbt_dict_preinit();
-   
+
   srand(seed);
 #ifndef _WIN32
   srand48(seed);
@@ -104,16 +105,17 @@ static void xbt_preinit(void) {
   atexit(xbt_postexit);
 }
 
-static void xbt_postexit(void)
+static void xbt_postexit()
 {
-  if(!_sg_do_clean_atexit) return;
+  if (not _sg_do_clean_atexit)
+    return;
   xbt_initialized--;
   xbt_dict_postexit();
   xbt_os_thread_mod_postexit();
   xbt_dynar_free(&xbt_cmdline);
   xbt_log_postexit();
   free(xbt_binary_name);
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   mmalloc_postexit();
 #endif
 }
@@ -123,14 +125,15 @@ void xbt_init(int *argc, char **argv)
 {
   simgrid::xbt::installExceptionHandler();
 
-  if (xbt_initialized++) {
-    XBT_DEBUG("XBT was initialized %d times.", xbt_initialized);
+  if (xbt_initialized) {
+    xbt_initialized++;
+    XBT_DEBUG("XBT has been initialized %d times.", xbt_initialized);
     return;
   }
 
   xbt_binary_name = xbt_strdup(argv[0]);
-  xbt_cmdline = xbt_dynar_new(sizeof(char*),NULL);
-  for (int i=0;i<*argc;i++)
+  xbt_cmdline     = xbt_dynar_new(sizeof(char*), NULL);
+  for (int i = 0; i < *argc; i++)
     xbt_dynar_push(xbt_cmdline,&(argv[i]));
   
   xbt_log_init(argc, argv);
@@ -150,16 +153,15 @@ void xbt_free_ref(void *d)
 }
 
 /** @brief Kill the program in silence */
-void xbt_abort(void)
+void xbt_abort()
 {
 #ifdef COVERAGE
   /* Call __gcov_flush on abort when compiling with coverage options. */
-  extern void __gcov_flush(void);
+  extern void __gcov_flush();
   __gcov_flush();
 #endif
 #ifdef _WIN32
-  /* It was said *in silence*.  We don't want to see the error message printed
-   * by the Microsoft's implementation of abort(). */
+  /* We said *in silence*. We don't want to see the error message printed by Microsoft's implementation of abort(). */
   raise(SIGABRT);
   signal(SIGABRT, SIG_DFL);
   raise(SIGABRT);

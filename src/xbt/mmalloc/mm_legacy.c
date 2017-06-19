@@ -51,7 +51,7 @@ xbt_mheap_t mmalloc_set_current_heap(xbt_mheap_t new_heap)
 }
 
 /* Override the malloc-like functions if MC is activated at compile time */
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 
 /* ***** Temporary allocator
  *
@@ -267,4 +267,4 @@ void free(void *p)
   mfree(mdp, p);
   UNLOCK(mdp);
 }
-#endif /* HAVE_MC */
+#endif /* SIMGRID_HAVE_MC */

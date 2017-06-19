@@ -50,13 +50,15 @@ typedef struct {
   tmgr_trace_t state_trace;
   const char* coord;
   xbt_dict_t properties;
-} s_sg_platf_host_cbarg_t, *sg_platf_host_cbarg_t;
+} s_sg_platf_host_cbarg_t;
+typedef s_sg_platf_host_cbarg_t* sg_platf_host_cbarg_t;
 
 typedef struct {
   const char* id;
   const char* link_up;
   const char* link_down;
-} s_sg_platf_host_link_cbarg_t, *sg_platf_host_link_cbarg_t;
+} s_sg_platf_host_link_cbarg_t;
+typedef s_sg_platf_host_link_cbarg_t* sg_platf_host_link_cbarg_t;
 
 class LinkCreationArgs {
 public:
@@ -114,7 +116,7 @@ typedef struct s_sg_platf_cluster_cbarg {
   e_surf_link_sharing_policy_t bb_sharing_policy;
 } s_sg_platf_cluster_cbarg_t;
 
-typedef struct s_sg_platf_cabinet_cbarg *sg_platf_cabinet_cbarg_t;
+typedef struct s_sg_platf_cabinet_cbarg* sg_platf_cabinet_cbarg_t;
 typedef struct s_sg_platf_cabinet_cbarg {
   const char* id;
   const char* prefix;
@@ -125,29 +127,30 @@ typedef struct s_sg_platf_cabinet_cbarg {
   double lat;
 } s_sg_platf_cabinet_cbarg_t;
 
-typedef struct {
+typedef struct s_sg_platf_storage_cbarg* sg_platf_storage_cbarg_t;
+typedef struct s_sg_platf_storage_cbarg {
   const char* id;
   const char* type_id;
   const char* content;
-  const char* content_type;
   xbt_dict_t properties;
   const char* attach;
-} s_sg_platf_storage_cbarg_t, *sg_platf_storage_cbarg_t;
+} s_sg_platf_storage_cbarg_t;
 
-typedef struct {
+typedef struct s_sg_platf_storage_type_cbarg* sg_platf_storage_type_cbarg_t;
+typedef struct s_sg_platf_storage_type_cbarg {
   const char* id;
   const char* model;
   const char* content;
-  const char* content_type;
   xbt_dict_t properties;
   std::map<std::string, std::string>* model_properties;
   sg_size_t size;
-} s_sg_platf_storage_type_cbarg_t, *sg_platf_storage_type_cbarg_t;
+} s_sg_platf_storage_type_cbarg_t;
 
-typedef struct {
+typedef struct s_sg_platf_mount_cbarg* sg_platf_mount_cbarg_t;
+typedef struct s_sg_platf_mount_cbarg {
   const char* storageId;
   const char* name;
-} s_sg_platf_mount_cbarg_t, *sg_platf_mount_cbarg_t;
+} s_sg_platf_mount_cbarg_t;
 
 typedef struct s_sg_platf_prop_cbarg *sg_platf_prop_cbarg_t;
 typedef struct s_sg_platf_prop_cbarg {

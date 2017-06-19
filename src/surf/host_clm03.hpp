@@ -6,10 +6,10 @@
 
 #include <xbt/base.h>
 
-#include "storage_interface.hpp"
+#include "StorageImpl.hpp"
 #include "cpu_interface.hpp"
-#include "src/surf/HostImpl.hpp"
 #include "network_interface.hpp"
+#include "src/surf/HostImpl.hpp"
 
 #ifndef SURF_HOST_CLM03_HPP_
 #define SURF_HOST_CLM03_HPP_

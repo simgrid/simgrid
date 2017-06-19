@@ -278,89 +278,80 @@ int Coll_gather_mvapich2_two_level::gather(void *sendbuf,
     /* leader_root is the rank of the leader of the root in leader_comm. 
      * leader_root is to be used as the root of the inter-leader gather ops 
      */
-    if (!comm->is_uniform()) {
-        if (local_rank == 0) {
-            int *displs = NULL;
-            int *recvcnts = NULL;
-            int *node_sizes;
-            int i = 0;
-            /* Node leaders have all the data. But, different nodes can have
-             * different number of processes. Do a Gather first to get the 
-             * buffer lengths at each leader, followed by a Gatherv to move
-             * the actual data */
+    if (not comm->is_uniform()) {
+      if (local_rank == 0) {
+        int* displs   = NULL;
+        int* recvcnts = NULL;
+        int* node_sizes;
+        int i = 0;
+        /* Node leaders have all the data. But, different nodes can have
+         * different number of processes. Do a Gather first to get the
+         * buffer lengths at each leader, followed by a Gatherv to move
+         * the actual data */
 
-            if (leader_comm_rank == leader_root && root != leader_of_root) {
-                /* The root of the Gather operation is not a node-level 
-                 * leader and this process's rank in the leader_comm 
-                 * is the same as leader_root */
-                if(rank == root) { 
-                    leader_gather_buf = smpi_get_tmp_recvbuffer(recvcnt *
-                                                MAX(recvtype_extent,
-                                                recvtype_true_extent) *
-                                                comm_size);
-                } else { 
-                    leader_gather_buf = smpi_get_tmp_sendbuffer(sendcnt *
-                                                MAX(sendtype_extent,
-                                                sendtype_true_extent) *
-                                                comm_size);
-                } 
-                if (leader_gather_buf == NULL) {
-                    mpi_errno =  MPI_ERR_OTHER;
-                    return mpi_errno;
-                }
-            }
-
-            node_sizes = comm->get_non_uniform_map();
-
-            if (leader_comm_rank == leader_root) {
-                displs =  static_cast<int *>(xbt_malloc(sizeof (int) * leader_comm_size));
-                recvcnts =  static_cast<int *>(xbt_malloc(sizeof (int) * leader_comm_size));
-                if (!displs || !recvcnts) {
-                    mpi_errno = MPI_ERR_OTHER;
-                    return mpi_errno;
-                }
-            }
-
-            if (root == leader_of_root) {
-                /* The root of the gather operation is also the node 
-                 * leader. Receive into recvbuf and we are done */
-                if (leader_comm_rank == leader_root) {
-                    recvcnts[0] = node_sizes[0] * recvcnt;
-                    displs[0] = 0;
-
-                    for (i = 1; i < leader_comm_size; i++) {
-                        displs[i] = displs[i - 1] + node_sizes[i - 1] * recvcnt;
-                        recvcnts[i] = node_sizes[i] * recvcnt;
-                    }
-                } 
-                Colls::gatherv(tmp_buf,
-                                         local_size * nbytes,
-                                         MPI_BYTE, recvbuf, recvcnts,
-                                         displs, recvtype,
-                                         leader_root, leader_comm);
-            } else {
-                /* The root of the gather operation is not the node leader. 
-                 * Receive into leader_gather_buf and then send 
-                 * to the root */
-                if (leader_comm_rank == leader_root) {
-                    recvcnts[0] = node_sizes[0] * nbytes;
-                    displs[0] = 0;
-
-                    for (i = 1; i < leader_comm_size; i++) {
-                        displs[i] = displs[i - 1] + node_sizes[i - 1] * nbytes;
-                        recvcnts[i] = node_sizes[i] * nbytes;
-                    }
-                } 
-                Colls::gatherv(tmp_buf, local_size * nbytes,
-                                         MPI_BYTE, leader_gather_buf,
-                                         recvcnts, displs, MPI_BYTE,
-                                         leader_root, leader_comm);
-            }
-            if (leader_comm_rank == leader_root) {
-                xbt_free(displs);
-                xbt_free(recvcnts);
-            }
+        if (leader_comm_rank == leader_root && root != leader_of_root) {
+          /* The root of the Gather operation is not a node-level
+           * leader and this process's rank in the leader_comm
+           * is the same as leader_root */
+          if (rank == root) {
+            leader_gather_buf =
+                smpi_get_tmp_recvbuffer(recvcnt * MAX(recvtype_extent, recvtype_true_extent) * comm_size);
+          } else {
+            leader_gather_buf =
+                smpi_get_tmp_sendbuffer(sendcnt * MAX(sendtype_extent, sendtype_true_extent) * comm_size);
+          }
+          if (leader_gather_buf == NULL) {
+            mpi_errno = MPI_ERR_OTHER;
+            return mpi_errno;
+          }
         }
+
+        node_sizes = comm->get_non_uniform_map();
+
+        if (leader_comm_rank == leader_root) {
+          displs   = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
+          recvcnts = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
+          if (not displs || not recvcnts) {
+            mpi_errno = MPI_ERR_OTHER;
+            return mpi_errno;
+          }
+        }
+
+        if (root == leader_of_root) {
+          /* The root of the gather operation is also the node
+           * leader. Receive into recvbuf and we are done */
+          if (leader_comm_rank == leader_root) {
+            recvcnts[0] = node_sizes[0] * recvcnt;
+            displs[0]   = 0;
+
+            for (i = 1; i < leader_comm_size; i++) {
+              displs[i]   = displs[i - 1] + node_sizes[i - 1] * recvcnt;
+              recvcnts[i] = node_sizes[i] * recvcnt;
+            }
+          }
+          Colls::gatherv(tmp_buf, local_size * nbytes, MPI_BYTE, recvbuf, recvcnts, displs, recvtype, leader_root,
+                         leader_comm);
+        } else {
+          /* The root of the gather operation is not the node leader.
+           * Receive into leader_gather_buf and then send
+           * to the root */
+          if (leader_comm_rank == leader_root) {
+            recvcnts[0] = node_sizes[0] * nbytes;
+            displs[0]   = 0;
+
+            for (i = 1; i < leader_comm_size; i++) {
+              displs[i]   = displs[i - 1] + node_sizes[i - 1] * nbytes;
+              recvcnts[i] = node_sizes[i] * nbytes;
+            }
+          }
+          Colls::gatherv(tmp_buf, local_size * nbytes, MPI_BYTE, leader_gather_buf, recvcnts, displs, MPI_BYTE,
+                         leader_root, leader_comm);
+        }
+        if (leader_comm_rank == leader_root) {
+          xbt_free(displs);
+          xbt_free(recvcnts);
+        }
+      }
     } else {
         /* All nodes have the same number of processes. 
          * Just do one Gather to get all 

@@ -1,44 +1,44 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
-  <process host="Tremblay" function="master">
+<platform version="4.1">
+  <actor host="Tremblay" function="master">
     <argument value="10000"/>
     <argument value="Jupiter"/>
     <argument value="1"/>
-  </process>
-  <process host="Jupiter" function="worker">
+  </actor>
+  <actor host="Jupiter" function="worker">
     <argument value="1"/>
-  </process>
-  <process host="Fafard" function="master">
+  </actor>
+  <actor host="Fafard" function="master">
     <argument value="10000"/>
     <argument value="Ginette"/>
     <argument value="2"/>
-  </process>
-  <process host="Ginette" function="worker">
+  </actor>
+  <actor host="Ginette" function="worker">
     <argument value="2"/>
-  </process>
-  <process host="Bourassa" function="master">
+  </actor>
+  <actor host="Bourassa" function="master">
     <argument value="10000"/>
     <argument value="Lovelace"/>
     <argument value="3"/>
-  </process>
-  <process host="Lovelace" function="worker">
+  </actor>
+  <actor host="Lovelace" function="worker">
     <argument value="3"/>
-  </process>
-  <process host="Bourassa" function="master" start_time="2.0">
+  </actor>
+  <actor host="Bourassa" function="master" start_time="2.0">
     <argument value="10000"/>
     <argument value="Lovelace"/>
     <argument value="4"/>
-  </process>
-  <process host="Lovelace" function="worker">
+  </actor>
+  <actor host="Lovelace" function="worker">
     <argument value="4"/>
-  </process>
-  <process host="Lovelace" function="timer">
+  </actor>
+  <actor host="Lovelace" function="timer">
     <argument value="0"/>
     <argument value=".1"/>
-  </process>
-  <process host="Lovelace" function="timer" start_time="2.0">
+  </actor>
+  <actor host="Lovelace" function="timer" start_time="2.0">
     <argument value="0"/>
     <argument value=".1"/>
-  </process>
+  </actor>
 </platform>

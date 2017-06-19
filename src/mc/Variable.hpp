@@ -20,7 +20,7 @@ namespace mc {
 /** A variable (global or local) in the model-checked program */
 class Variable {
 public:
-  Variable() {}
+  Variable() = default;
   std::uint32_t id = 0;
   bool global = false;
   std::string name;

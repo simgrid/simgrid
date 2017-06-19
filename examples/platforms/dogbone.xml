@@ -1,7 +1,27 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
-  <AS  id="AS0"  routing="Full">
+
+<!-- Describe a dogbone graph, with 4 hosts:
+  --
+  -- S1 ---[ 1 ]---                 ---[ 3 ]--- C1
+  --               \               /
+  --                R1 --[ 2 ]-- R2
+  --               /               \
+  -- S2 ---[ 4 ]---                 ---[ 5 ]--- C2
+  --
+  --
+  -- This platform is a valid NS3 platform, even if it exhibits routes of length >1,
+  -- because when you only keep the routes of length 1,
+  -- you get a graph where every host can speak to any other host.
+  --
+  -- For example, S1--C1 is (l1,l2,l3) of length >1
+  -- But it's also S1--C1 = S1--R1, R1--R2, R2--C1 which are all of length 1
+  --
+  -- http://simgrid.gforge.inria.fr/simgrid/latest/doc/pls_ns3.html
+  -->
+
+<platform version="4.1">
+  <zone  id="AS0"  routing="Full">
     <host id="S1" speed="1Gf"/>
     <host id="C1" speed="1Gf"/>
     <host id="S2" speed="1Gf"/>
@@ -50,5 +70,5 @@
     <route src="R2" dst="C2">
       <link_ctn id="5"/>
     </route>
-  </AS>
+  </zone>
 </platform>

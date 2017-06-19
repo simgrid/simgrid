@@ -62,15 +62,15 @@ BoostContextFactory::BoostContextFactory()
 {
   BoostContext::parallel_ = SIMIX_context_is_parallel();
   if (BoostContext::parallel_) {
-#if !HAVE_THREAD_CONTEXTS
-    xbt_die("No thread support for parallel context execution");
-#else
+#if HAVE_THREAD_CONTEXTS
     int nthreads = SIMIX_context_get_nthreads();
     BoostContext::parmap_ = xbt_parmap_new(nthreads, SIMIX_context_get_parallel_mode());
     BoostContext::workers_context_.clear();
     BoostContext::workers_context_.resize(nthreads, nullptr);
     BoostContext::maestro_context_ = nullptr;
     xbt_os_thread_key_create(&BoostContext::worker_id_key_);
+#else
+    xbt_die("No thread support for parallel context execution");
 #endif
   }
 }
@@ -86,8 +86,8 @@ BoostContextFactory::~BoostContextFactory()
 #endif
 }
 
-smx_context_t BoostContextFactory::create_context(std::function<void()>  code,
-  void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
+smx_context_t BoostContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func,
+                                                  smx_actor_t process)
 {
   BoostContext* context = nullptr;
   if (BoostContext::parallel_)
@@ -140,12 +140,11 @@ BoostContext::BoostContext(std::function<void()> code,
   : Context(std::move(code), cleanup_func, process)
 {
 
-  /* if the user provided a function for the process then use it,
-     otherwise it is the context for maestro */
+  /* if the user provided a function for the process then use it, otherwise it is the context for maestro */
   if (has_code()) {
     this->stack_ = SIMIX_context_stack_new();
-    // We need to pass the bottom of the stack to make_fcontext,
-    // depending on the stack direction it may be the lower or higher address:
+// We need to pass the bottom of the stack to make_fcontext, depending on the stack direction it may be the lower
+// or higher address:
 #if PTH_STACKGROWTH == -1
     void* stack = static_cast<char*>(this->stack_) + smx_context_usable_stack_size - 1;
 #else
@@ -167,7 +166,7 @@ BoostContext::BoostContext(std::function<void()> code,
 BoostContext::~BoostContext()
 {
 #if HAVE_BOOST_CONTEXTS == 1
-  if (!this->stack_)
+  if (not this->stack_)
     delete this->fc_;
 #endif
   if (this == maestro_context_)
@@ -191,15 +190,15 @@ void BoostSerialContext::suspend()
 {
   /* determine the next context */
   BoostSerialContext* next_context = nullptr;
-  unsigned long int i = process_index_++;
+  unsigned long int i              = process_index_;
+  process_index_++;
 
   if (i < xbt_dynar_length(simix_global->process_to_run)) {
     /* execute the next process */
     XBT_DEBUG("Run next process");
-    next_context = static_cast<BoostSerialContext*>(xbt_dynar_get_as(
-        simix_global->process_to_run, i, smx_actor_t)->context);
-  }
-  else {
+    next_context =
+        static_cast<BoostSerialContext*>(xbt_dynar_get_as(simix_global->process_to_run, i, smx_actor_t)->context);
+  } else {
     /* all processes were run, return to maestro */
     XBT_DEBUG("No more process to run");
     next_context = static_cast<BoostSerialContext*>(maestro_context_);
@@ -230,11 +229,9 @@ void BoostParallelContext::suspend()
   if (next_work != nullptr) {
     XBT_DEBUG("Run next process");
     next_context = static_cast<BoostParallelContext*>(next_work->context);
-  }
-  else {
+  } else {
     XBT_DEBUG("No more processes to run");
-    uintptr_t worker_id =
-      (uintptr_t) xbt_os_thread_get_specific(worker_id_key_);
+    uintptr_t worker_id = (uintptr_t)xbt_os_thread_get_specific(worker_id_key_);
     next_context = static_cast<BoostParallelContext*>(workers_context_[worker_id]);
   }
 

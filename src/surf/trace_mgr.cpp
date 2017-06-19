@@ -23,64 +23,81 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf, "Surf trace management");
 
-static std::unordered_map<const char*, simgrid::trace_mgr::trace*> trace_list;
+namespace tmgr = simgrid::trace_mgr;
 
-simgrid::trace_mgr::trace::trace()=default;
-simgrid::trace_mgr::trace::~trace()=default;
-simgrid::trace_mgr::future_evt_set::future_evt_set()=default;
+static std::unordered_map<const char*, tmgr::trace*> trace_list;
 
+static inline bool doubleEq(double d1, double d2)
+{
+  return fabs(d1 - d2) < 0.0001;
+}
+namespace simgrid {
+namespace trace_mgr {
+
+bool DatedValue::operator==(DatedValue e2)
+{
+  return (doubleEq(date_, e2.date_)) && (doubleEq(value_, e2.value_));
+}
+std::ostream& operator<<(std::ostream& out, const DatedValue& e)
+{
+  out << e.date_ << " " << e.value_;
+  return out;
+}
+
+trace::trace()
+{
+  /* Add the first fake event storing the time at which the trace begins */
+  tmgr::DatedValue val(0, -1);
+  event_list.push_back(val);
+}
+trace::~trace()                  = default;
+future_evt_set::future_evt_set() = default;
 simgrid::trace_mgr::future_evt_set::~future_evt_set()
 {
-  xbt_heap_free(p_heap);
+  xbt_heap_free(heap_);
+}
+}
 }
 
 tmgr_trace_t tmgr_trace_new_from_string(const char* name, std::string input, double periodicity)
 {
   int linecount = 0;
-  tmgr_event_t last_event = nullptr;
+  tmgr_trace_t trace           = new simgrid::trace_mgr::trace();
+  tmgr::DatedValue* last_event = &(trace->event_list.back());
 
   xbt_assert(trace_list.find(name) == trace_list.end(), "Refusing to define trace %s twice", name);
-  xbt_assert(periodicity >= 0, "Invalid periodicity %g (must be positive)", periodicity);
-
-  tmgr_trace_t trace = new simgrid::trace_mgr::trace();
 
   std::vector<std::string> list;
   boost::split(list, input, boost::is_any_of("\n\r"));
   for (auto val : list) {
-    s_tmgr_event_t event;
+    tmgr::DatedValue event;
     linecount++;
     boost::trim(val);
     if (val[0] == '#' || val[0] == '\0' || val[0] == '%') // pass comments
       continue;
-    if (sscanf(val.c_str(), "PERIODICITY " "%lg" "\n", &periodicity) == 1)
+    if (sscanf(val.c_str(), "PERIODICITY %lg\n", &periodicity) == 1)
+      continue;
+    if (sscanf(val.c_str(), "LOOPAFTER %lg\n", &periodicity) == 1)
       continue;
 
-    xbt_assert(sscanf(val.c_str(), "%lg"
-                                   " "
-                                   "%lg"
-                                   "\n",
-                      &event.delta, &event.value) == 2,
-               "%s:%d: Syntax error in trace\n%s", name, linecount, input.c_str());
+    xbt_assert(sscanf(val.c_str(), "%lg  %lg\n", &event.date_, &event.value_) == 2, "%s:%d: Syntax error in trace\n%s",
+               name, linecount, input.c_str());
 
-    if (last_event) {
-      xbt_assert(last_event->delta <= event.delta,
-                 "%s:%d: Invalid trace: Events must be sorted, but time %g > time %g.\n%s", name, linecount,
-                 last_event->delta, event.delta, input.c_str());
+    xbt_assert(last_event->date_ <= event.date_,
+               "%s:%d: Invalid trace: Events must be sorted, but time %g > time %g.\n%s", name, linecount,
+               last_event->date_, event.date_, input.c_str());
+    last_event->date_ = event.date_ - last_event->date_;
 
-      last_event->delta = event.delta - last_event->delta;
-    } else {
-      if(event.delta > 0.0){
-        s_tmgr_event_t first_event;
-        first_event.delta=event.delta;
-        first_event.value=-1.0;
-        trace->event_list.push_back(first_event);
-      }
-    }
     trace->event_list.push_back(event);
     last_event = &(trace->event_list.back());
   }
-  if (last_event)
-    last_event->delta = periodicity;
+  if (last_event) {
+    if (periodicity > 0) {
+      last_event->date_ = periodicity + trace->event_list.at(0).date_;
+    } else {
+      last_event->date_ = -1;
+    }
+  }
 
   trace_list.insert({xbt_strdup(name), trace});
 
@@ -93,37 +110,19 @@ tmgr_trace_t tmgr_trace_new_from_file(const char *filename)
   xbt_assert(trace_list.find(filename) == trace_list.end(), "Refusing to define trace %s twice", filename);
 
   std::ifstream* f = surf_ifsopen(filename);
-  xbt_assert(!f->fail(), "Cannot open file '%s' (path=%s)", filename, (boost::join(surf_path, ":")).c_str());
+  xbt_assert(not f->fail(), "Cannot open file '%s' (path=%s)", filename, (boost::join(surf_path, ":")).c_str());
 
   std::stringstream buffer;
   buffer << f->rdbuf();
-  tmgr_trace_t trace = tmgr_trace_new_from_string(filename, buffer.str(), 0.);
-
   delete f;
 
-  return trace;
-}
-
-tmgr_trace_t tmgr_empty_trace_new()
-{
-  tmgr_trace_t trace = new simgrid::trace_mgr::trace();
-  s_tmgr_event_t event;
-  event.delta = 0.0;
-  event.value = 0.0;
-  trace->event_list.push_back(event);
-
-  return trace;
-}
-
-void tmgr_trace_free(tmgr_trace_t trace)
-{
-  delete trace;
+  return tmgr_trace_new_from_string(filename, buffer.str(), -1);
 }
 
 /** @brief Registers a new trace into the future event set, and get an iterator over the integrated trace  */
-tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::add_trace(tmgr_trace_t trace, double start_time, surf::Resource *resource)
+tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::add_trace(tmgr_trace_t trace, surf::Resource* resource)
 {
-  tmgr_trace_iterator_t trace_iterator = nullptr;
+  tmgr_trace_event_t trace_iterator = nullptr;
 
   trace_iterator = xbt_new0(s_tmgr_trace_event_t, 1);
   trace_iterator->trace = trace;
@@ -132,7 +131,7 @@ tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::add_trace(tmgr_trace_t
 
   xbt_assert((trace_iterator->idx < trace->event_list.size()), "Your trace should have at least one event!");
 
-  xbt_heap_push(p_heap, trace_iterator, start_time);
+  xbt_heap_push(heap_, trace_iterator, 0. /*start_time*/);
 
   return trace_iterator;
 }
@@ -140,38 +139,37 @@ tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::add_trace(tmgr_trace_t
 /** @brief returns the date of the next occurring event (pure function) */
 double simgrid::trace_mgr::future_evt_set::next_date() const
 {
-  if (xbt_heap_size(p_heap))
-    return (xbt_heap_maxkey(p_heap));
-  else
-    return -1.0;
+  if (xbt_heap_size(heap_))
+    return (xbt_heap_maxkey(heap_));
+  return -1.0;
 }
 
 /** @brief Retrieves the next occurring event, or nullptr if none happens before #date */
-tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::pop_leq(
-    double date, double *value, simgrid::surf::Resource **resource)
+tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::pop_leq(double date, double* value,
+                                                               simgrid::surf::Resource** resource)
 {
   double event_date = next_date();
   if (event_date > date)
     return nullptr;
 
-  tmgr_trace_iterator_t trace_iterator = (tmgr_trace_iterator_t)xbt_heap_pop(p_heap);
+  tmgr_trace_event_t trace_iterator = (tmgr_trace_event_t)xbt_heap_pop(heap_);
   if (trace_iterator == nullptr)
     return nullptr;
 
   tmgr_trace_t trace = trace_iterator->trace;
   *resource = trace_iterator->resource;
 
-  tmgr_event_t event = &(trace->event_list.at(trace_iterator->idx));
+  tmgr::DatedValue dateVal = trace->event_list.at(trace_iterator->idx);
 
-  *value = event->value;
+  *value = dateVal.value_;
 
   if (trace_iterator->idx < trace->event_list.size() - 1) {
-    xbt_heap_push(p_heap, trace_iterator, event_date + event->delta);
+    xbt_heap_push(heap_, trace_iterator, event_date + dateVal.date_);
     trace_iterator->idx++;
-  } else if (event->delta > 0) {        /* Last element, checking for periodicity */
-    xbt_heap_push(p_heap, trace_iterator, event_date + event->delta);
-    trace_iterator->idx = 1; /* not 0 as the first event is a placeholder to handle when events really start */
-  } else {                      /* We don't need this trace_event anymore */
+  } else if (dateVal.date_ > 0) { /* Last element. Shall we loop? */
+    xbt_heap_push(heap_, trace_iterator, event_date + dateVal.date_);
+    trace_iterator->idx = 1; /* idx=0 is a placeholder to store when events really start */
+  } else {                   /* If we don't loop, we don't need this trace_event anymore */
     trace_iterator->free_me = 1;
   }
 
@@ -184,9 +182,10 @@ void tmgr_finalize()
     xbt_free((char*)kv.first);
     delete kv.second;
   }
+  trace_list.clear();
 }
 
-void tmgr_trace_event_unref(tmgr_trace_iterator_t *trace_event)
+void tmgr_trace_event_unref(tmgr_trace_event_t* trace_event)
 {
   if ((*trace_event)->free_me) {
     xbt_free(*trace_event);

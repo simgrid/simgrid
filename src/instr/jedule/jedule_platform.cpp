@@ -1,17 +1,14 @@
-/* Copyright (c) 2010-2016. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/jedule/jedule.hpp"
-#include "simgrid/jedule/jedule_platform.hpp"
 #include "simgrid/s4u/NetZone.hpp"
 #include "xbt/asserts.h"
-#include "xbt/dynar.h"
 #include <algorithm>
 
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
 
 namespace simgrid {
 namespace jedule {
@@ -29,7 +26,7 @@ Container::Container(std::string name): name(name)
 
 Container::~Container()
 {
-  if(!this->children.empty())
+  if (not this->children.empty())
     for (auto child: this->children)
       delete child;
 }
@@ -65,7 +62,9 @@ void Container::createHierarchy(sg_netzone_t from_as)
   if (from_as->children()->empty()) {
     // I am no AS
     // add hosts to jedule platform
-    this->addResources(*from_as->hosts());
+    std::vector<sg_host_t> table;
+    from_as->hosts(&table);
+    this->addResources(table);
   } else {
     for (auto nz : *from_as->children()) {
       jed_container_t child_container = new simgrid::jedule::Container(std::string(nz->name()));
@@ -81,7 +80,7 @@ std::vector<int> Container::getHierarchy()
 
   if(this->parent != nullptr ) {
 
-    if(!this->parent->children.empty()) {
+    if (not this->parent->children.empty()) {
       // we are in the last level
       return this->parent->getHierarchy();
     } else {
@@ -129,7 +128,7 @@ std::string Container::getHierarchyAsString()
 void Container::printResources(FILE * jed_file)
 {
   unsigned int i=0;
-  xbt_assert(!this->resource_list.empty());
+  xbt_assert(not this->resource_list.empty());
 
   unsigned int res_nb = this->resource_list.size();
   std::string resid = this->getHierarchyAsString();
@@ -150,7 +149,7 @@ void Container::print(FILE* jed_file)
 {
   xbt_assert( this != nullptr );
   fprintf(jed_file, "    <res name=\"%s\">\n", this->name.c_str());
-  if( !this->children.empty()){
+  if (not this->children.empty()) {
     for (auto child: this->children) {
       child->print(jed_file);
     }

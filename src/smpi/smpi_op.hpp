@@ -7,9 +7,7 @@
 #ifndef SMPI_OP_HPP
 #define SMPI_OP_HPP
 
-#include <xbt/base.h>
-
-#include "private.h"
+#include "src/smpi/smpi_info.hpp"
 
 namespace simgrid{
 namespace smpi{

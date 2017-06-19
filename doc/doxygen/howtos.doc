@@ -18,6 +18,34 @@ Of course, you should also check the @ref examples page, that shows
 more detailed usage examples. As for the rest of the documentation
 (and of SimGrid, actually), any contribution is welcome.
 
+@section howto_churn How to model churn
+
+One of the biggest challenges in P2P settings is to cope with the
+churn, meaning that resources keep appearing and disappearing. In
+SimGrid, you can always change the state of each host manually, with
+eg simgrid::s4u::Host::on(). To reduce the burden when the churn is
+high, you can also attach a **state profile** to the host directly.
+
+This is not possible from S4U yet (TODO), and you should use the \c
+state_file attribute of @ref pf_tag_host or @ref pf_tag_cluster. 
+
+Every lines (but the last) of such files describe timed events with
+the form "date value". Example:
+
+~~~{.py}
+  1 0
+  2 1
+ LOOPAFTER 8
+~~~
+
+ - At time t=1, the host is turned off (value 0 means OFF)
+ - At time t=2, it is turned back on (other values means ON)
+ - At time t=10, the history is reset (because that's 8 seconds after
+   the last event). So the host will be turned off again at t=11.
+
+If your trace does not contain a LOOPAFTER line, then your profile is
+only executed once and not repetitively.
+
 @section howto_multicore How to model multicore machines
 
 Multicore machines are very complex, and there is many way to model

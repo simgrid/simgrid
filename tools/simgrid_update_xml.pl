@@ -87,7 +87,7 @@ Several tags were renamed (for sake of XML sanity):
 
 =back
 
-=item B<Version 4:> Introduced in SimGrid 3.13 (this is the current version)
+=item B<Version 4:> Introduced in SimGrid 3.13
 
 =over 4
 
@@ -123,6 +123,21 @@ Units are now mandatory in attributes. USE THE SCRIPT sg_xml_unit_converter.py T
 
 =back
 
+=item B<Version 4.1:> Introduced in SimGrid 3.16 (this is the current version)
+
+=over 4
+
+=item
+
+Rename a few tags, but in a backward-compatible manner: the old names are still accepted.
+
+  AS            -> zone
+  ASroute       -> zoneRoute
+  bypassAsRoute -> bypassZoneRoute
+  process       -> actor
+
+=back
+
 =back
 
 =head1 AUTHORS
@@ -142,7 +157,7 @@ under the terms of GNU LGPL (v2.1) license.
 use strict;
 
 my $fromversion=-1;
-my $toversion=4;
+my $toversion=4.1;
 
 my $filename = $ARGV[0] or die "Usage: simgrid_update_xml.pl file_to_convert.xml\nPlease provide an XML to convert as a parameter.\n";
 open INPUT, "$filename" or die "Cannot open input file $filename: $!\n";
@@ -164,10 +179,10 @@ while (defined($line = <INPUT>)) {
 	$fromversion = 0;
 	print "$filename was using version 0\n";
 	next if !$line =~ /\S/;
-    } elsif ($line =~ s/<platform.*version=["']*([0-9.])["']*>//) {
+    } elsif ($line =~ s/<platform.*version=["']*([0-9.]*)["']*>//) {
 	$fromversion = $1;
 	if ($fromversion == $toversion) {
-	    die "Input platform file $filename is already conformant to version $fromversion. This should be a no-op.\n";
+	    warn "Input platform file $filename is already conformant to version $fromversion. This should be a no-op.\n";
 	}
 	if ($fromversion > $toversion) {
 	    die "Input platform file $filename is more recent than this script (file version: $fromversion; script version: $toversion)\n";
@@ -224,6 +239,12 @@ while (defined($line = <INPUT>)) {
     if ($fromversion < 4) {
 	$line =~ s/\bpower\b/speed/g;	
 	$line =~ s/\bkind="POWER"/kind="SPEED"/g;
+    }
+    if ($fromversion < 4.1) {
+	$line =~ s/\bAS\b/zone/g;
+	$line =~ s/\bASroute\b/zoneRoute/g;
+	$line =~ s/\bbypassAsRoute\b/bypassZoneRoute/g;
+	$line =~ s/\bprocess\b/actor/g;
     }
 	
     $output_string .= "$line\n";

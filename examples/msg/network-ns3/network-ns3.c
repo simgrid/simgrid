@@ -11,7 +11,6 @@ int timer_start; //set as 1 in the master process
 
 //keep a pointer to all surf running tasks.
 #define NTASKS 1500
-int bool_printed = 0;
 double start_time, end_time, elapsed_time;
 double gl_data_size[NTASKS];
 msg_task_t gl_task_array[NTASKS];
@@ -126,9 +125,6 @@ static int worker(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
-  bool_printed = 0;
-
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
              "\tExample: %s platform.xml deployment.xml\n", argv[0], argv[0]);
@@ -142,7 +138,7 @@ int main(int argc, char *argv[])
 
   MSG_launch_application(argv[2]);
 
-  res = MSG_main();
+  msg_error_t res = MSG_main();
 
   return res != MSG_OK;
 }

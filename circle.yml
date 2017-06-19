@@ -1,0 +1,21 @@
+# This is the configuration file for the https://circleci.com/ continuous integration server
+#
+# Copyright (C) 2017. The SimGrid team. All rights reserved.
+# 
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the license (GNU LGPL) which comes with this package.
+
+machine:
+  python:
+      version: 3.6.0
+
+dependencies:
+  pre:
+    - sudo apt-get update; sudo apt-get install cmake valgrind default-jdk gfortran libboost-dev libboost-all-dev
+
+test:
+  pre:
+    - mkdir _build
+    - pushd _build ; cmake -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON ..
+  override:
+    - pushd _build ; make -j4 && ctest -j4 --output-on-failure

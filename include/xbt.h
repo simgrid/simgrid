@@ -19,7 +19,6 @@
 #include <xbt/log.h>
 
 #include <xbt/module.h>
-#include <xbt/strbuff.h>
 
 #include <xbt/dynar.h>
 #include <xbt/dict.h>

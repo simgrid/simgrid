@@ -44,22 +44,22 @@ namespace kernel {
 namespace routing {
 void DijkstraZone::seal()
 {
-  xbt_node_t node = nullptr;
-  unsigned int cursor2;
   unsigned int cursor;
+  xbt_node_t node = nullptr;
 
   /* Create the topology graph */
-  if (!routeGraph_)
+  if (not routeGraph_)
     routeGraph_ = xbt_graph_new_graph(1, nullptr);
-  if (!graphNodeMap_)
+  if (not graphNodeMap_)
     graphNodeMap_ = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
 
   /* Add the loopback if needed */
   if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
     xbt_dynar_foreach (xbt_graph_get_nodes(routeGraph_), cursor, node) {
-      xbt_edge_t edge = nullptr;
 
       bool found = false;
+      xbt_edge_t edge = nullptr;
+      unsigned int cursor2;
       xbt_dynar_foreach (xbt_graph_node_get_outedges(node), cursor2, edge) {
         if (xbt_graph_edge_get_target(edge) == node) {
           found = true;
@@ -67,7 +67,7 @@ void DijkstraZone::seal()
         }
       }
 
-      if (!found) {
+      if (not found) {
         sg_platf_route_cbarg_t e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
         e_route->link_list             = new std::vector<surf::LinkImpl*>();
         e_route->link_list->push_back(surf_network_model->loopback_);
@@ -236,11 +236,9 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
   }
 
   /* compose route path with links */
-  NetPoint *gw_src = nullptr;
-  NetPoint *gw_dst;
-  NetPoint *prev_gw_src;
-  NetPoint *first_gw = nullptr;
-  NetPoint *gw_dst_net_elm = nullptr, *prev_gw_src_net_elm = nullptr;
+  NetPoint* gw_src = nullptr;
+  NetPoint* gw_dst;
+  NetPoint* first_gw            = nullptr;
 
   for (int v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
     xbt_node_t node_pred_v = xbt_dynar_get_as(nodes, pred_arr[v], xbt_node_t);
@@ -250,9 +248,9 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
     if (edge == nullptr)
       THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name().c_str(), dst->name().c_str());
 
-    prev_gw_src = gw_src;
-
     sg_platf_route_cbarg_t e_route = (sg_platf_route_cbarg_t)xbt_graph_edge_get_data(edge);
+
+    NetPoint* prev_gw_src          = gw_src;
     gw_src                         = e_route->gw_src;
     gw_dst                         = e_route->gw_dst;
 
@@ -263,6 +261,8 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
         strcmp(gw_dst->name().c_str(), prev_gw_src->name().c_str())) {
       std::vector<surf::LinkImpl*> e_route_as_to_as;
 
+      NetPoint* gw_dst_net_elm      = nullptr;
+      NetPoint* prev_gw_src_net_elm = nullptr;
       getGlobalRoute(gw_dst_net_elm, prev_gw_src_net_elm, &e_route_as_to_as, nullptr);
       auto pos = route->link_list->begin();
       for (auto link : e_route_as_to_as) {
@@ -294,7 +294,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
     xbt_dict_set_ext(routeCache_, (char*)(&src_id), sizeof(int), (xbt_dictelm_t)elm, nullptr);
   }
 
-  if (!routeCache_)
+  if (not routeCache_)
     xbt_free(pred_arr);
 }
 
@@ -323,9 +323,9 @@ void DijkstraZone::addRoute(sg_platf_route_cbarg_t route)
   addRouteCheckParams(route);
 
   /* Create the topology graph */
-  if (!routeGraph_)
+  if (not routeGraph_)
     routeGraph_ = xbt_graph_new_graph(1, nullptr);
-  if (!graphNodeMap_)
+  if (not graphNodeMap_)
     graphNodeMap_ = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
 
   /* we don't check whether the route already exist, because the algorithm may find another path through some other
@@ -337,7 +337,7 @@ void DijkstraZone::addRoute(sg_platf_route_cbarg_t route)
 
   // Symmetrical YES
   if (route->symmetrical == true) {
-    if (!route->gw_dst && !route->gw_src)
+    if (not route->gw_dst && not route->gw_src)
       XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dstName, srcName);
     else
       XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", dstName, route->gw_dst->name().c_str(), srcName,

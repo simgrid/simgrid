@@ -157,7 +157,7 @@ public:
       tmgr_trace_t trace); /*< setup the trace file with latency events (peak latency changes due to external load).
                                    Trace must contain absolute values */
 
-  tmgr_trace_iterator_t stateEvent_ = nullptr;
+  tmgr_trace_event_t stateEvent_    = nullptr;
   s_surf_metric_t latency_          = {1.0, 0, nullptr};
   s_surf_metric_t bandwidth_        = {1.0, 0, nullptr};
 
@@ -206,7 +206,7 @@ public:
       : simgrid::surf::Action(model, cost, failed, var){};
 
   void setState(simgrid::surf::Action::State state) override;
-  std::list<LinkImpl*> links();
+  virtual std::list<LinkImpl*> links();
 
   double latency_;
   double latCurrent_;

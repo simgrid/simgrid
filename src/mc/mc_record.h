@@ -17,12 +17,10 @@
 #ifndef SIMGRID_MC_RECORD_H
 #define SIMGRID_MC_RECORD_H
 
-#include <string>
-#include <vector>
-
-#include <xbt/base.h>
-
 #include "src/mc/Transition.hpp"
+#include "xbt/base.h"
+
+#include <vector>
 
 namespace simgrid {
 namespace mc {

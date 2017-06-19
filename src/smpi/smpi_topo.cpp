@@ -8,6 +8,8 @@
 #include "private.h"
 #include <vector>
 #include <math.h>
+#include "src/smpi/smpi_comm.hpp"
+#include "src/smpi/smpi_topo.hpp"
 
 /* static functions */
 static int assignnodes(int ndim, int nfactor, int *pfacts,int **pdims);

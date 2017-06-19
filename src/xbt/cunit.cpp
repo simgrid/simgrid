@@ -88,7 +88,9 @@ struct s_xbt_test_unit {
   xbt_dynar_t tests;            /* of xbt_test_test_t */
 
   int nb_tests;
-  int test_failed, test_ignore, test_expect;
+  int test_failed;
+  int test_ignore;
+  int test_expect;
 };
 
 static void xbt_test_unit_dump(xbt_test_unit_t unit)
@@ -112,9 +114,14 @@ struct s_xbt_test_suite {
   char *title;
   xbt_dynar_t units;            /* of xbt_test_unit_t */
 
-  int nb_tests, nb_units;
-  int test_failed, test_ignore, test_expect;
-  int unit_failed, unit_ignore, unit_disabled;
+  int nb_tests;
+  int nb_units;
+  int test_failed;
+  int test_ignore;
+  int test_expect;
+  int unit_failed;
+  int unit_ignore;
+  int unit_disabled;
 };
 
 /* destroy test suite */
@@ -159,7 +166,7 @@ xbt_test_suite_t xbt_test_suite_new(const char *name, const char *fmt, ...)
   xbt_test_suite_t suite = xbt_new0(struct s_xbt_test_suite, 1);
   va_list ap;
 
-  if (!_xbt_test_suites)
+  if (_xbt_test_suites == nullptr)
     _xbt_test_suites = xbt_dynar_new(sizeof(xbt_test_suite_t), xbt_test_suite_free);
 
   va_start(ap, fmt);
@@ -185,8 +192,8 @@ xbt_test_suite_t xbt_test_suite_by_name(const char *name, const char *fmt, ...)
 
   if (_xbt_test_suites)
     xbt_dynar_foreach(_xbt_test_suites, it_suite, suite)
-        if (!strcmp(suite->name, name))
-      return suite;
+      if (not strcmp(suite->name, name))
+        return suite;
 
   va_start(ap, fmt);
   bufname = bvprintf(fmt, ap);
@@ -245,7 +252,9 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
   const char *file;
   int line;
   char *cp;
-  unsigned int it_unit, it_test, it_log;
+  unsigned int it_unit;
+  unsigned int it_test;
+  unsigned int it_log;
 
   int first = 1;                /* for result pretty printing */
 
@@ -253,25 +262,22 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
     return 0;
 
   /* suite title pretty-printing */
-  {
-    char suite_title[81];
-    int suite_len = strlen(suite->title);
-    int i;
+  char suite_title[81];
+  int suite_len = strlen(suite->title);
 
-    xbt_assert(suite_len < 68, "suite title \"%s\" too long (%d should be less than 68", suite->title, suite_len);
+  xbt_assert(suite_len < 68, "suite title \"%s\" too long (%d should be less than 68", suite->title, suite_len);
 
-    suite_title[0] = ' ';
-    for (i = 1; i < 80; i++)
-      suite_title[i] = '=';
-    suite_title[i++] = '\n';
-    suite_title[80] = '\0';
+  suite_title[0] = ' ';
+  for (int i = 1; i < 79; i++)
+    suite_title[i] = '=';
+  suite_title[79]  = '\n';
+  suite_title[80]  = '\0';
 
-    snprintf(suite_title + 40 - (suite_len + 4) / 2, 81-(40 - (suite_len + 4)/ 2), "[ %s ]", suite->title);
-    suite_title[40 + (suite_len + 5) / 2] = '=';
-    if (!suite->enabled)
-      snprintf(suite_title + 70, 11, " DISABLED ");
-    fprintf(stderr, "\n%s\n", suite_title);
-  }
+  snprintf(suite_title + 40 - (suite_len + 4) / 2, 81 - (40 - (suite_len + 4) / 2), "[ %s ]", suite->title);
+  suite_title[40 + (suite_len + 5) / 2] = '=';
+  if (not suite->enabled)
+    snprintf(suite_title + 70, 11, " DISABLED ");
+  fprintf(stderr, "\n%s\n", suite_title);
 
   if (suite->enabled) {
     /* iterate through all tests */
@@ -301,9 +307,9 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
         } else {
           unit->nb_tests++;
 
-          if (test->failed && !test->expected_failure)
+          if (test->failed && not test->expected_failure)
             unit->test_failed++;
-          if (!test->failed && test->expected_failure)
+          if (not test->failed && test->expected_failure)
             unit->test_failed++;
           if (test->expected_failure)
             unit->test_expect++;
@@ -338,7 +344,7 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
           }
           fprintf(stderr, "      %s: %s [%s:%d]\n", resname, test->title, file, line);
 
-          if ((test->expected_failure && !test->failed) || (!test->expected_failure && test->failed)) {
+          if ((test->expected_failure && not test->failed) || (not test->expected_failure && test->failed)) {
             xbt_dynar_foreach(test->logs, it_log, log) {
               file = (log->file != nullptr ? log->file : file);
               line = (log->line != 0 ? log->line : line);
@@ -352,7 +358,7 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
         } else {
           fprintf(stderr, "\n");
         }
-      } else if (!unit->enabled) {
+      } else if (not unit->enabled) {
         fprintf(stderr, " disabled\n"); /* no test were run */
       } else if (unit->nb_tests) {
         fprintf(stderr, "...... ok\n"); /* successful */
@@ -376,7 +382,7 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
         suite->nb_units++;
         if (unit->test_failed)
           suite->unit_failed++;
-      } else if (!unit->enabled) {
+      } else if (not unit->enabled) {
         suite->unit_disabled++;
       } else {
         suite->unit_ignore++;
@@ -392,7 +398,7 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
     _xbt_test_nb_suites++;
     if (suite->test_failed)
       _xbt_test_suite_failed++;
-  } else if (!suite->enabled) {
+  } else if (not suite->enabled) {
     _xbt_test_suite_disabled++;
   } else {
     _xbt_test_suite_ignore++;
@@ -460,13 +466,13 @@ static void apply_selection(char *selection)
   char suitename[512];
   char unitname[512];
 
-  if (!selection || selection[0] == '\0')
+  if (not selection || selection[0] == '\0')
     return;
 
   /*printf("Test selection: %s\n", selection); */
 
   /* First apply the selection */
-  while (!done) {
+  while (not done) {
     int enabling = 1;
 
     char *p = strchr(sel, ',');
@@ -499,7 +505,7 @@ static void apply_selection(char *selection)
     }
 
     /* Deal with the specific case of 'all' pseudo serie */
-    if (!strcmp("all", suitename)) {
+    if (not strcmp("all", suitename)) {
       xbt_assert(unitname[0] == '\0', "The 'all' pseudo-suite does not accept any unit specification\n");
 
       xbt_dynar_foreach(_xbt_test_suites, it_suite, suite) {
@@ -513,7 +519,7 @@ static void apply_selection(char *selection)
       for (it = 0; it < xbt_dynar_length(_xbt_test_suites); it++) {
         xbt_test_suite_t thissuite =
             xbt_dynar_get_as(_xbt_test_suites, it, xbt_test_suite_t);
-        if (!strcmp(suitename, thissuite->name)) {
+        if (not strcmp(suitename, thissuite->name)) {
           /* Do not disable the whole suite when we just want to disable a child */
           if (enabling || (unitname[0] == '\0'))
             thissuite->enabled = enabling;
@@ -529,7 +535,7 @@ static void apply_selection(char *selection)
                  it2_unit < xbt_dynar_length(thissuite->units);
                  it2_unit++) {
               xbt_test_unit_t thisunit = xbt_dynar_get_as(thissuite->units, it2_unit, xbt_test_unit_t);
-              if (!strcmp(thisunit->name, unitname)) {
+              if (not strcmp(thisunit->name, unitname)) {
                 thisunit->enabled = enabling;
                 break;
               }

@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
-  <AS id="siteA" routing="Full">
+<platform version="4.1">
+  <zone id="siteA" routing="Full">
     <host id="PM0" speed="8.095Gf" core="4"/>
     <host id="PM1" speed="8.095Gf" core="4"/>
     <host id="PM2" speed="8.095Gf" core="2"/>
@@ -17,5 +17,5 @@
     <route src="PM1" dst="PM2">
       <link_ctn id="link1"/>
     </route>
-  </AS>
+  </zone>
 </platform>

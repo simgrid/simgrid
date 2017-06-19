@@ -1,8 +1,8 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
-  <AS id="AS0" routing="Vivaldi">
-    <AS id="dataCenter1" routing="Full">
+<platform version="4.1">
+  <zone id="AS0" routing="Vivaldi">
+    <zone id="dataCenter1" routing="Full">
       <!-- 3 cabinets, no zone dist area, 1 horiz dist area, no multi-homing, telecom and operation rooms omitted -->
       <!-- cabinets -->
       <cluster id="cabinet1" prefix="cb1-" suffix=".dc1.acloud.com" radical="1-40" speed="5.2297Gf"
@@ -17,7 +17,7 @@
       <link id="link_dc1_cb3" bandwidth="1.25GBps" latency="100us"/>
 
       <!-- horiz dist area switch, main dist area switch, entrance room switch, end point for ISP  -->
-      <AS id="gw_dataCenter1" routing="Floyd">
+      <zone id="gw_dataCenter1" routing="Floyd">
         <!-- equipments-->
         <router id="gw_dc1_horizdist"/>
         <router id="gw_dc1_maindist"/>
@@ -41,24 +41,24 @@
         <route src="gw_dc1_entranceroom" dst="router_dataCenter1">
           <link_ctn id="dc1_entranceroom_ISP"/>
         </route>
-      </AS>
+      </zone>
 
       <!-- internal routes between cabinets -->
-      <ASroute src="cabinet2" dst="cabinet3" gw_src="cb2-cabinet2_router.dc1.acloud.com"
+      <zoneRoute src="cabinet2" dst="cabinet3" gw_src="cb2-cabinet2_router.dc1.acloud.com"
                gw_dst="cb3-cabinet3_router.dc1.acloud.com">
         <link_ctn id="link_dc1_cb2"/>
         <link_ctn id="link_dc1_cb3"/>
-      </ASroute>
-      <ASroute src="cabinet1" dst="cabinet3" gw_src="cb1-cabinet1_router.dc1.acloud.com"
+      </zoneRoute>
+      <zoneRoute src="cabinet1" dst="cabinet3" gw_src="cb1-cabinet1_router.dc1.acloud.com"
                gw_dst="cb3-cabinet3_router.dc1.acloud.com">
         <link_ctn id="link_dc1_cb1"/>
         <link_ctn id="link_dc1_cb3"/>
-      </ASroute>
-      <ASroute src="cabinet1" dst="cabinet2" gw_src="cb1-cabinet1_router.dc1.acloud.com"
+      </zoneRoute>
+      <zoneRoute src="cabinet1" dst="cabinet2" gw_src="cb1-cabinet1_router.dc1.acloud.com"
                gw_dst="cb2-cabinet2_router.dc1.acloud.com">
         <link_ctn id="link_dc1_cb1"/>
         <link_ctn id="link_dc1_cb2"/>
-      </ASroute>
-    </AS>
-  </AS>
+      </zoneRoute>
+    </zone>
+  </zone>
 </platform>

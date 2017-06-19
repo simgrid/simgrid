@@ -4,14 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/jedule/jedule_events.hpp"
-
 #include "simgrid/jedule/jedule.hpp"
-#include "simgrid/jedule/jedule_platform.hpp"
 #include "simgrid/s4u/NetZone.hpp"
 #include "xbt/asserts.h"
 
-#if HAVE_JEDULE
+#if SIMGRID_HAVE_JEDULE
 namespace simgrid{
 namespace jedule{
 
@@ -23,7 +20,7 @@ Event::Event(std::string name, double start_time, double end_time, std::string t
 
 Event::~Event()
 {
-  if (!this->resource_subsets->empty()){
+  if (not this->resource_subsets->empty()) {
     for (auto subset: *this->resource_subsets)
       delete subset;
     delete this->resource_subsets;
@@ -54,7 +51,7 @@ void Event::print(FILE *jed_file)
   fprintf(jed_file, "      <prop key=\"end\" value=\"%g\" />\n", this->end_time);
   fprintf(jed_file, "      <prop key=\"type\" value=\"%s\" />\n", this->type.c_str());
 
-  xbt_assert(!this->resource_subsets->  empty());
+  xbt_assert(not this->resource_subsets->empty());
   fprintf(jed_file, "      <res_util>\n");
   for (auto subset: *this->resource_subsets) {
     fprintf(jed_file, "        <select resources=\"");
@@ -64,14 +61,14 @@ void Event::print(FILE *jed_file)
   }
   fprintf(jed_file, "      </res_util>\n");
 
-  if (!this->characteristics_list.empty()){
+  if (not this->characteristics_list.empty()) {
     fprintf(jed_file, "      <characteristics>\n");
     for (auto ch: this->characteristics_list)
       fprintf(jed_file, "          <characteristic name=\"%s\" />\n", ch);
     fprintf(jed_file, "      </characteristics>\n");
   }
 
-  if (!this->info_map.empty()){
+  if (not this->info_map.empty()) {
     fprintf(jed_file, "      <info>\n");
     for (auto elm: this->info_map)
       fprintf(jed_file, "        <prop key=\"%s\" value=\"%s\" />\n",elm.first,elm.second);

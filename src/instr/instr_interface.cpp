@@ -30,7 +30,7 @@ extern xbt_dict_t trivaEdgeTypes;
 
 static xbt_dynar_t instr_dict_to_dynar (xbt_dict_t filter)
 {
-  if (!TRACE_is_enabled() || !TRACE_needs_platform())
+  if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return nullptr;
 
   xbt_dynar_t ret = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
@@ -81,10 +81,10 @@ void TRACE_category(const char *category)
 void TRACE_category_with_color (const char *category, const char *color)
 {
   /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with categories */
-  if (!TRACE_is_enabled() || !TRACE_needs_platform())
+  if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return;
 
-  if (!(TRACE_categorized() && category != nullptr))
+  if (not(TRACE_categorized() && category != nullptr))
     return;
 
   //check if category is already created
@@ -95,7 +95,7 @@ void TRACE_category_with_color (const char *category, const char *color)
 
   //define final_color
   char final_color[INSTR_DEFAULT_STR_SIZE];
-  if (!color){
+  if (not color) {
     //generate a random color
     double red = drand48();
     double green = drand48();
@@ -125,7 +125,7 @@ void TRACE_category_with_color (const char *category, const char *color)
  */
 xbt_dynar_t TRACE_get_categories ()
 {
-  if (!TRACE_is_enabled() || !TRACE_categorized())
+  if (not TRACE_is_enabled() || not TRACE_categorized())
     return nullptr;
 
   return instr_dict_to_dynar (created_categories);
@@ -144,10 +144,10 @@ xbt_dynar_t TRACE_get_categories ()
 void TRACE_declare_mark(const char *mark_type)
 {
   /* safe switchs. tracing has to be activated and if platform is not traced, we can't deal with marks */
-  if (!TRACE_is_enabled() || !TRACE_needs_platform())
+  if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return;
 
-  if (!mark_type)
+  if (not mark_type)
     THROWF (tracing_error, 1, "mark_type is nullptr");
 
   //check if mark_type is already declared
@@ -178,21 +178,21 @@ void TRACE_declare_mark(const char *mark_type)
 void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mark_value, const char *mark_color)
 {
   /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with marks */
-  if (!TRACE_is_enabled() || !TRACE_needs_platform())
+  if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return;
 
-  if (!mark_type)
+  if (not mark_type)
     THROWF (tracing_error, 1, "mark_type is nullptr");
-  if (!mark_value)
+  if (not mark_value)
     THROWF (tracing_error, 1, "mark_value is nullptr");
 
   type_t type = PJ_type_get (mark_type, PJ_type_get_root());
-  if (!type){
+  if (not type) {
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
   }
 
   char white[INSTR_DEFAULT_STR_SIZE] = "1.0 1.0 1.0";
-  if (!mark_color)
+  if (not mark_color)
     mark_color = white;
 
   XBT_DEBUG("MARK,declare_value %s %s %s", mark_type, mark_value, mark_color);
@@ -233,23 +233,23 @@ void TRACE_declare_mark_value (const char *mark_type, const char *mark_value)
 void TRACE_mark(const char *mark_type, const char *mark_value)
 {
   /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with marks */
-  if (!TRACE_is_enabled() || !TRACE_needs_platform())
+  if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return;
 
-  if (!mark_type)
+  if (not mark_type)
     THROWF (tracing_error, 1, "mark_type is nullptr");
-  if (!mark_value)
+  if (not mark_value)
     THROWF (tracing_error, 1, "mark_value is nullptr");
 
   //check if mark_type is already declared
   type_t type = PJ_type_get (mark_type, PJ_type_get_root());
-  if (!type){
+  if (not type) {
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
   }
 
   val_t value = PJ_value_get (mark_value, type);
   XBT_DEBUG("MARK %s %s", mark_type, mark_value);
-  new_pajeNewEvent (MSG_get_clock(), PJ_container_get_root(), type, value);
+  new NewEvent (MSG_get_clock(), PJ_container_get_root(), type, value);
 }
 
 /** \ingroup TRACE_mark
@@ -261,7 +261,7 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
  */
 xbt_dynar_t TRACE_get_marks ()
 {
-  if (!TRACE_is_enabled())
+  if (not TRACE_is_enabled())
     return nullptr;
 
   return instr_dict_to_dynar (declared_marks);
@@ -271,13 +271,13 @@ static void instr_user_variable(double time, const char *resource, const char *v
                          double value, InstrUserVariable what, const char *color, xbt_dict_t filter)
 {
   /* safe switches. tracing has to be activated and if platform is not traced, we don't allow user variables */
-  if (!TRACE_is_enabled() || !TRACE_needs_platform())
+  if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return;
 
   //check if variable is already declared
   char *created = (char*)xbt_dict_get_or_null(filter, variable);
   if (what == INSTR_US_DECLARE){
-    if (!created) { // not declared yet
+    if (not created) { // not declared yet
       xbt_dict_set (filter, variable, xbt_strdup("1"), nullptr);
       instr_new_user_variable_type (father_type, variable, color);
     }
@@ -289,13 +289,13 @@ static void instr_user_variable(double time, const char *resource, const char *v
       type_t type = PJ_type_get (variable, container->type);
       switch (what){
       case INSTR_US_SET:
-        new_pajeSetVariable(time, container, type, value);
+        new SetVariableEvent(time, container, type, value);
         break;
       case INSTR_US_ADD:
-        new_pajeAddVariable(time, container, type, value);
+        new AddVariableEvent(time, container, type, value);
         break;
       case INSTR_US_SUB:
-        new_pajeSubVariable(time, container, type, value);
+        new SubVariableEvent(time, container, type, value);
         break;
       default:
         THROW_IMPOSSIBLE;
@@ -309,11 +309,11 @@ static void instr_user_srcdst_variable(double time, const char *src, const char 
                               const char *father_type, double value, InstrUserVariable what)
 {
   sg_netpoint_t src_elm = sg_netpoint_by_name_or_null(src);
-  if(!src_elm)
+  if (not src_elm)
     xbt_die("Element '%s' not found!",src);
 
   sg_netpoint_t dst_elm = sg_netpoint_by_name_or_null(dst);
-  if(!dst_elm)
+  if (not dst_elm)
     xbt_die("Element '%s' not found!",dst);
 
   std::vector<simgrid::surf::LinkImpl*> route;
@@ -336,7 +336,7 @@ static void instr_user_srcdst_variable(double time, const char *src, const char 
 int TRACE_platform_graph_export_graphviz (const char *filename)
 {
   /* returns 1 if successful, 0 otherwise */
-  if (!TRACE_is_enabled())
+  if (not TRACE_is_enabled())
     return 0;
   xbt_graph_t g = instr_routing_platform_graph();
   if (g == nullptr)
@@ -964,7 +964,7 @@ void TRACE_host_set_state (const char *host, const char *state, const char *valu
   container_t container = PJ_container_get(host);
   type_t type = PJ_type_get (state, container->type);
   val_t val = PJ_value_get_or_new (value, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
-  new_pajeSetState(MSG_get_clock(), container, type, val);
+  new SetStateEvent(MSG_get_clock(), container, type, val);
 }
 
 /** \ingroup TRACE_user_variables
@@ -983,7 +983,7 @@ void TRACE_host_push_state (const char *host, const char *state, const char *val
   container_t container = PJ_container_get(host);
   type_t type = PJ_type_get (state, container->type);
   val_t val = PJ_value_get_or_new (value, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
-  new_pajePushState(MSG_get_clock(), container, type, val);
+  new PushStateEvent(MSG_get_clock(), container, type, val);
 }
 
 /** \ingroup TRACE_user_variables
@@ -1000,7 +1000,7 @@ void TRACE_host_pop_state (const char *host, const char *state)
 {
   container_t container = PJ_container_get(host);
   type_t type = PJ_type_get (state, container->type);
-  new_pajePopState(MSG_get_clock(), container, type);
+  new PopStateEvent(MSG_get_clock(), container, type);
 }
 
 /** \ingroup TRACE_user_variables
@@ -1017,7 +1017,7 @@ void TRACE_host_reset_state (const char *host, const char *state)
 {
   container_t container = PJ_container_get(host);
   type_t type = PJ_type_get (state, container->type);
-  new_pajeResetState(MSG_get_clock(), container, type);
+  new ResetStateEvent(MSG_get_clock(), container, type);
 }
 
 /** \ingroup TRACE_API

@@ -11,11 +11,10 @@ set(FILES_CONTAINING_UNITTESTS
   src/xbt/dict.cpp
   src/xbt/swag.c
   src/xbt/xbt_str.cpp
-  src/xbt/xbt_strbuff.c
   src/xbt/config.cpp
 )
 
-if(HAVE_MC)
+if(SIMGRID_HAVE_MC)
   set(FILES_CONTAINING_UNITTESTS ${FILES_CONTAINING_UNITTESTS}
       src/mc/PageStore.cpp
       src/mc/mc_snapshot.cpp

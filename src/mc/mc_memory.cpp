@@ -22,12 +22,12 @@ extern "C" {
 /* It creates the two heap regions: std_heap and mc_heap */
 void MC_memory_init()
 {
-  if (!malloc_use_mmalloc())
+  if (not malloc_use_mmalloc())
     xbt_die("Model-checking support is not enabled: run with simgrid-mc.");
 }
 
 /* Finalize the memory subsystem */
-void MC_memory_exit(void)
+void MC_memory_exit()
 {
 }
 

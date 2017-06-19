@@ -46,7 +46,7 @@ void SIMIX_launch_application(const char *file)
   try {
     parse_status = surf_parse();
     surf_parse_close();
-    xbt_assert(!parse_status, "Parse error at %s:%d", file,surf_parse_lineno);
+    xbt_assert(not parse_status, "Parse error at %s:%d", file, surf_parse_lineno);
   }
   catch (xbt_ex& e) {
     XBT_ERROR("Unrecoverable error at %s:%d. The full exception stack follows, in case it helps you to diagnose the problem.",
@@ -124,7 +124,7 @@ void SIMIX_process_set_function(const char *process_host,
   memset(&process,0,sizeof(process));
 
   sg_host_t host = sg_host_by_name(process_host);
-  if (!host)
+  if (not host)
     THROWF(arg_error, 0, "Host '%s' unknown", process_host);
   process.host = host->cname();
 
@@ -147,7 +147,7 @@ void SIMIX_process_set_function(const char *process_host,
   process.host = process_host;
   process.kill_time = process_kill_time;
   process.start_time = process_start_time;
-  process.on_failure = SURF_PROCESS_ON_FAILURE_DIE;
+  process.on_failure = SURF_ACTOR_ON_FAILURE_DIE;
   sg_platf_new_process(&process);
 }
 

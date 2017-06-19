@@ -40,7 +40,8 @@ int main(int argc, char**argv)
 
   XBT_INFO("HeapA allocated");
 
-  int i, size;
+  int i;
+  int size;
   for (i = 0; i < TESTSIZE; i++) {
     size = size_of_block(i);
     pointers[i] = mmalloc(heapA, size);
@@ -70,7 +71,7 @@ int main(int argc, char**argv)
     } catch(xbt_ex& e) {
       gotit = true;
     }
-    if (!gotit)
+    if (not gotit)
       xbt_die("FAIL: A double-free went undetected (for size:%d)",size_of_block(i));
   }
 
@@ -82,7 +83,7 @@ int main(int argc, char**argv)
     } catch(xbt_ex& e) {
       gotit = true;
     }
-    if (!gotit)
+    if (not gotit)
       xbt_die("FAIL: A double-free went undetected (for size:%d)",size_of_block(i));
   }
 

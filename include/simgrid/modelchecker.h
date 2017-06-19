@@ -1,7 +1,6 @@
 /* simgrid/modelchecker.h - Formal Verification made possible in SimGrid    */
 
-/* Copyright (c) 2008-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -15,9 +14,9 @@
 #ifndef SIMGRID_MODELCHECKER_H
 #define SIMGRID_MODELCHECKER_H
 
-#include <stdbool.h>
+#include <stddef.h> /* size_t */
 
-#include <simgrid_config.h> /* HAVE_MC ? */
+#include <simgrid_config.h> /* SIMGRID_HAVE_MC ? */
 
 #include <xbt/base.h>
 
@@ -25,7 +24,7 @@ SG_BEGIN_DECL()
 
 XBT_PUBLIC(int) MC_random(int min, int max);
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 
 /* Internal variable used to check if we're running under the MC
  *
@@ -48,6 +47,11 @@ XBT_PUBLIC(void) MC_automaton_new_propositional_symbol_pointer(const char *id, i
 XBT_PUBLIC(void) MC_cut(void);
 XBT_PUBLIC(void) MC_ignore(void *addr, size_t size);
 
+XBT_PUBLIC(void) MC_ignore_heap(void* address, size_t size);
+XBT_PUBLIC(void) MC_remove_ignore_heap(void* address, size_t size);
+XBT_PUBLIC(void) MC_ignore_local_variable(const char* var_name, const char* frame);
+XBT_PUBLIC(void) MC_ignore_global_variable(const char* var_name);
+
 #else
 
 #define MC_is_active()                  0
@@ -58,6 +62,11 @@ XBT_PUBLIC(void) MC_ignore(void *addr, size_t size);
 #define MC_automaton_new_propositional_symbol_pointer(a, b) ((void)0)
 #define MC_cut()                        ((void)0)
 #define MC_ignore(a, b)                 ((void)0)
+
+#define MC_ignore_heap(a,s)             ((void)0)
+#define MC_remove_ignore_heap(a,s)      ((void)0)
+#define MC_ignore_local_variable(n,f)   ((void)0)
+#define MC_ignore_global_variable(v)    ((void)0)
 
 #endif
 

@@ -18,7 +18,7 @@ extern double NOW;
 void surf_presolve()
 {
   double next_event_date = -1.0;
-  tmgr_trace_iterator_t event = nullptr;
+  tmgr_trace_event_t event          = nullptr;
   double value = -1.0;
   simgrid::surf::Resource *resource = nullptr;
 
@@ -28,9 +28,8 @@ void surf_presolve()
       break;
 
     while ((event = future_evt_set->pop_leq(next_event_date, &value, &resource))) {
-      if (value >= 0){
+      if (value >= 0)
         resource->apply_event(event, value);
-      }
     }
   }
 
@@ -46,7 +45,7 @@ double surf_solve(double max_date)
   double model_next_action_end = -1.0;
   double value = -1.0;
   simgrid::surf::Resource *resource = nullptr;
-  tmgr_trace_iterator_t event = nullptr;
+  tmgr_trace_event_t event          = nullptr;
 
   if (max_date > 0.0) {
     xbt_assert(max_date > NOW,"You asked to simulate up to %f, but that's in the past already", max_date);
@@ -75,7 +74,7 @@ double surf_solve(double max_date)
     next_event_date = future_evt_set->next_date();
     XBT_DEBUG("Next TRACE event: %f", next_event_date);
 
-    if(! surf_network_model->nextOccuringEventIsIdempotent()){ // NS3, I see you
+    if (not surf_network_model->nextOccuringEventIsIdempotent()) { // NS3, I see you
       if (next_event_date!=-1.0 && time_delta!=-1.0) {
         time_delta = MIN(next_event_date - NOW, time_delta);
       } else {
@@ -208,23 +207,27 @@ int surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath){
 }
 
 sg_size_t surf_storage_get_size(surf_resource_t resource){
-  return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->size_;
+  return static_cast<simgrid::surf::StorageImpl*>(surf_storage_resource_priv(resource))->size_;
 }
 
 sg_size_t surf_storage_get_free_size(surf_resource_t resource){
-  return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->getFreeSize();
+  return static_cast<simgrid::surf::StorageImpl*>(surf_storage_resource_priv(resource))->getFreeSize();
 }
 
 sg_size_t surf_storage_get_used_size(surf_resource_t resource){
-  return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->getUsedSize();
+  return static_cast<simgrid::surf::StorageImpl*>(surf_storage_resource_priv(resource))->getUsedSize();
 }
 
 xbt_dict_t surf_storage_get_properties(surf_resource_t resource){
-  return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->getProperties();
+  return static_cast<simgrid::surf::StorageImpl*>(surf_storage_resource_priv(resource))->getProperties();
 }
 
 const char* surf_storage_get_host(surf_resource_t resource){
-  return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->attach_;
+  return static_cast<simgrid::surf::StorageImpl*>(surf_storage_resource_priv(resource))->attach_;
+}
+
+const char* surf_storage_get_name(surf_resource_t resource){
+  return static_cast<simgrid::surf::StorageImpl*>(surf_storage_resource_priv(resource))->cname();
 }
 
 void surf_cpu_action_set_bound(surf_action_t action, double bound) {

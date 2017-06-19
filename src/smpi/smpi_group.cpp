@@ -1,10 +1,10 @@
-/* Copyright (c) 2010, 2013-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
+#include "src/smpi/smpi_comm.hpp"
+#include "src/smpi/smpi_group.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_group, smpi, "Logging specific to SMPI (group)");
 
@@ -24,22 +24,16 @@ Group::Group()
 
 Group::Group(int n) : size_(n)
 {
-  int i;
   rank_to_index_map_ = xbt_new(int, size_);
   index_to_rank_map_ = xbt_dict_new_homogeneous(xbt_free_f);
   refcount_ = 1;
-  for (i = 0; i < size_; i++) {
+  for (int i = 0; i < size_; i++) {
     rank_to_index_map_[i] = MPI_UNDEFINED;
   }
 }
 
 Group::Group(MPI_Group origin)
 {
-  char *key;
-  char *ptr_rank;
-  xbt_dict_cursor_t cursor = nullptr;
-  
-  int i;
   if(origin != MPI_GROUP_NULL
             && origin != MPI_GROUP_EMPTY)
     {
@@ -47,10 +41,13 @@ Group::Group(MPI_Group origin)
       rank_to_index_map_ = xbt_new(int, size_);
       index_to_rank_map_ = xbt_dict_new_homogeneous(xbt_free_f);
       refcount_ = 1;
-      for (i = 0; i < size_; i++) {
+      for (int i = 0; i < size_; i++) {
         rank_to_index_map_[i] = origin->rank_to_index_map_[i];
       }
 
+      char* key;
+      char* ptr_rank;
+      xbt_dict_cursor_t cursor = nullptr;
       xbt_dict_foreach(origin->index_to_rank_map_, cursor, key, ptr_rank) {
         int * cp = static_cast<int*>(xbt_malloc(sizeof(int)));
         *cp=*reinterpret_cast<int*>(ptr_rank);
@@ -129,17 +126,15 @@ int Group::compare(MPI_Group group2)
   int result;
   int i;
   int index;
-  int rank;
-  int sz;
 
   result = MPI_IDENT;
   if (size_ != group2->size()) {
     result = MPI_UNEQUAL;
   } else {
-    sz = group2->size();
+    int sz = group2->size();
     for (i = 0; i < sz; i++) {
       index = this->index(i);
-      rank = group2->rank(index);
+      int rank = group2->rank(index);
       if (rank == MPI_UNDEFINED) {
         result = MPI_UNEQUAL;
         break;

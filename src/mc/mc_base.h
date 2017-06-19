@@ -6,9 +6,7 @@
 #ifndef SIMGRID_MC_BASE_H
 #define SIMGRID_MC_BASE_H
 
-
-#include <xbt/base.h>
-#include <simgrid/forward.h>
+#include "simgrid/forward.h"
 
 #ifdef __cplusplus
 

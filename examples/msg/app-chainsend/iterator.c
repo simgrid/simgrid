@@ -1,5 +1,4 @@
-/* Copyright (c) 2012, 2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,7 +16,7 @@ xbt_dynar_iterator_t xbt_dynar_iterator_new(xbt_dynar_t list, xbt_dynar_t (*crit
   
   it->list = list;
   it->length = xbt_dynar_length(list);
-  it->indices_list = criteria_fn(it->length); //xbt_dynar_new(sizeof(int), NULL);
+  it->indices_list = criteria_fn(it->length); // Creates and fills a dynar of int
   it->criteria_fn = criteria_fn;
   it->current = 0;
 
@@ -27,11 +26,10 @@ xbt_dynar_iterator_t xbt_dynar_iterator_new(xbt_dynar_t list, xbt_dynar_t (*crit
 /* Returns the next element iterated by iterator it, NULL if there are no more elements */
 void *xbt_dynar_iterator_next(xbt_dynar_iterator_t it)
 {
-  int *next;
   if (it->current >= it->length) {
     return NULL;
   } else {
-    next = xbt_dynar_get_ptr(it->indices_list, it->current);
+    int* next = xbt_dynar_get_ptr(it->indices_list, it->current);
     it->current++;
     return xbt_dynar_get_ptr(it->list, *next);
   }
@@ -46,8 +44,7 @@ void xbt_dynar_iterator_delete(xbt_dynar_iterator_t it)
 xbt_dynar_t forward_indices_list(int size)
 {
   xbt_dynar_t indices_list = xbt_dynar_new(sizeof(int), NULL);
-  int i;
-  for (i = 0; i < size; i++)
+  for (int i = 0; i < size; i++)
     xbt_dynar_push_as(indices_list, int, i);
   return indices_list;
 }

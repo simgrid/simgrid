@@ -1,20 +1,14 @@
-/* smpi_datatype.cpp -- MPI primitives to handle datatypes                      */
-/* Copyright (c) 2009-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* smpi_datatype.cpp -- MPI primitives to handle datatypes                  */
+/* Copyright (c) 2009-2017. The SimGrid Team.  All rights reserved.         */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "mc/mc.h"
-#include "private.h"
 #include "simgrid/modelchecker.h"
-#include <limits.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <string>
-#include <unordered_map>
-#include <xbt/ex.hpp>
+#include "src/smpi/private.h"
+#include "src/smpi/smpi_datatype_derived.hpp"
+#include "src/smpi/smpi_op.hpp"
+#include "src/smpi/smpi_process.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_datatype, smpi, "Logging specific to SMPI (datatype)");
 
@@ -24,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_datatype, smpi, "Logging specific to SMPI (
     sizeof(type),   /* size */                        \
     0,              /* lb */                          \
     sizeof(type),   /* ub = lb + size */              \
-    DT_FLAG_BASIC  /* flags */                       \
+    DT_FLAG_BASIC  /* flags */                        \
   );                                                  \
 const MPI_Datatype name = &mpi_##name;
 
@@ -107,7 +101,7 @@ std::unordered_map<int, smpi_key_elem> Datatype::keyvals_;
 int Datatype::keyval_id_=0;
 
 Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(1){
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   if(MC_is_active())
     MC_ignore(&(refcount_), sizeof(refcount_));
 #endif
@@ -115,7 +109,7 @@ Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr
 
 //for predefined types, so in_use = 0.
 Datatype::Datatype(char* name, int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(name), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(0){
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   if(MC_is_active())
     MC_ignore(&(refcount_), sizeof(refcount_));
 #endif
@@ -127,8 +121,8 @@ Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), lb_(datatype-
   *ret = MPI_SUCCESS;
   if(datatype->name_)
     name_ = xbt_strdup(datatype->name_);
-  
-  if(!(datatype->attributes()->empty())){
+
+  if (not datatype->attributes()->empty()) {
     int flag;
     void* value_out;
     for(auto it = datatype->attributes()->begin(); it != datatype->attributes()->end(); it++){
@@ -170,7 +164,7 @@ void Datatype::ref(){
 
   refcount_++;
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   if(MC_is_active())
     MC_ignore(&(refcount_), sizeof(refcount_));
 #endif
@@ -181,10 +175,10 @@ void Datatype::unref(MPI_Datatype datatype)
   if (datatype->refcount_ > 0)
     datatype->refcount_--;
 
-  if (datatype->refcount_ == 0  && !(datatype->flags_ & DT_FLAG_PREDEFINED))
+  if (datatype->refcount_ == 0 && not(datatype->flags_ & DT_FLAG_PREDEFINED))
     delete datatype;
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
   if(MC_is_active())
     MC_ignore(&(datatype->refcount_), sizeof(datatype->refcount_));
 #endif
@@ -282,16 +276,12 @@ int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     recvcount *= recvtype->size();
     count = sendcount < recvcount ? sendcount : recvcount;
 
-    if(!(sendtype->flags() & DT_FLAG_DERIVED) && !(recvtype->flags() & DT_FLAG_DERIVED)) {
-      if(!smpi_process()->replaying()) 
+    if (not(sendtype->flags() & DT_FLAG_DERIVED) && not(recvtype->flags() & DT_FLAG_DERIVED)) {
+      if (not smpi_process()->replaying())
         memcpy(recvbuf, sendbuf, count);
-    }
-    else if (!(sendtype->flags() & DT_FLAG_DERIVED))
-    {
+    } else if (not(sendtype->flags() & DT_FLAG_DERIVED)) {
       recvtype->unserialize( sendbuf, recvbuf, recvcount/recvtype->size(), MPI_REPLACE);
-    }
-    else if (!(recvtype->flags() & DT_FLAG_DERIVED))
-    {
+    } else if (not(recvtype->flags() & DT_FLAG_DERIVED)) {
       sendtype->serialize(sendbuf, recvbuf, sendcount/sendtype->size());
     }else{
 
@@ -410,7 +400,7 @@ int Datatype::create_indexed(int count, int* block_lengths, int* indices, MPI_Da
   if(old_type->flags_ & DT_FLAG_DERIVED)
     contiguous=false;
 
-  if(!contiguous){
+  if (not contiguous) {
     *new_type = new Type_Indexed(size * old_type->size(),lb,ub,
                                  DT_FLAG_DERIVED|DT_FLAG_DATA, count, block_lengths, indices, old_type);
   }else{
@@ -444,7 +434,7 @@ int Datatype::create_hindexed(int count, int* block_lengths, MPI_Aint* indices, 
   if (old_type->flags_ & DT_FLAG_DERIVED || lb!=0)
     contiguous=false;
 
-  if(!contiguous){
+  if (not contiguous) {
     *new_type = new Type_Hindexed(size * old_type->size(),lb,ub,
                                    DT_FLAG_DERIVED|DT_FLAG_DATA, count, block_lengths, indices, old_type);
   }else{
@@ -481,15 +471,15 @@ int Datatype::create_struct(int count, int* block_lengths, MPI_Aint* indices, MP
       forced_ub=true;
     }
 
-    if(!forced_lb && indices[i]+old_types[i]->lb()<lb) 
+    if (not forced_lb && indices[i] + old_types[i]->lb() < lb)
       lb = indices[i];
-    if(!forced_ub &&  indices[i]+block_lengths[i]*old_types[i]->ub()>ub)
+    if (not forced_ub && indices[i] + block_lengths[i] * old_types[i]->ub() > ub)
       ub = indices[i]+block_lengths[i]*old_types[i]->ub();
 
     if ( (i< count -1) && (indices[i]+block_lengths[i]*static_cast<int>(old_types[i]->size()) != indices[i+1]) )
       contiguous=false;
   }
-  if(!contiguous){
+  if (not contiguous) {
     *new_type = new Type_Struct(size, lb,ub, DT_FLAG_DERIVED|DT_FLAG_DATA, 
                                 count, block_lengths, indices, old_types);
   }else{

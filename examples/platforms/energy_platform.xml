@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
-  <AS id="AS0" routing="Full">
+<platform version="4.1">
+  <zone id="AS0" routing="Full">
     <!-- Multiple pstate processor capacities can be defined as a list of powers specified for a given host -->
     <!-- Attribute 'pstate' specifies the initialy selected pstate (here, the lowest pstate corresponds to the highest
          processor speed) -->
@@ -31,5 +31,5 @@
     <route src="MyHost2" dst="MyHost3">
       <link_ctn id="bus"/>
     </route>
-  </AS>
+  </zone>
 </platform>

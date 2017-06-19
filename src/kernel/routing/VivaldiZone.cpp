@@ -22,7 +22,7 @@ simgrid::xbt::Extension<NetPoint, Coords> Coords::EXTENSION_ID;
 
 Coords::Coords(NetPoint* netpoint, const char* coordStr)
 {
-  if (!Coords::EXTENSION_ID.valid())
+  if (not Coords::EXTENSION_ID.valid())
     Coords::EXTENSION_ID = NetPoint::extension_create<Coords>();
 
   std::vector<std::string> string_values;

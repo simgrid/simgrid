@@ -10,6 +10,7 @@
 - doc/html/.*
 
 + BuildSimGrid.sh
++ circle.yml
 + \.classpath
 + \.cproject
 + \.project

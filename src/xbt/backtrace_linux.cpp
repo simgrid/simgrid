@@ -24,7 +24,7 @@
 #include "xbt/str.h"
 #include "xbt/module.h"         /* xbt_binary_name */
 #include "src/xbt_modinter.h"       /* backtrace initialization headers */
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 #define UNW_LOCAL_ONLY
 #include <libunwind.h>
 #endif
@@ -34,8 +34,9 @@ extern char **environ;          /* the environment, as specified by the opengrou
 
 #include <unwind.h>
 struct trace_arg {
-  void **array;
-  int cnt, size;
+  void** array;
+  int cnt;
+  int size;
 };
 
 static _Unwind_Reason_Code
@@ -185,12 +186,13 @@ std::vector<std::string> resolveBacktrace(
 
   XBT_VERB("Fire a first command: '%s'", cmd.c_str());
   FILE* pipe = popen(cmd.c_str(), "r");
-  if (!pipe) {
+  if (not pipe) {
     xbt_die("Cannot fork addr2line to display the backtrace");
   }
 
   /* To read the output of addr2line */
-  char line_func[1024], line_pos[1024];
+  char line_func[1024];
+  char line_pos[1024];
   for (std::size_t i = 0; i < count; i++) {
     XBT_DEBUG("Looking for symbol %zd, addr = '%s'", i, addrs[i].c_str());
     if (fgets(line_func, 1024, pipe)) {
@@ -217,7 +219,8 @@ std::vector<std::string> resolveBacktrace(
 
       char maps_buff[512];
       long int offset = 0;
-      char *p, *p2;
+      char* p;
+      char* p2;
       int found = 0;
 
       /* let's look for the offset of this library in our addressing space */
@@ -232,8 +235,9 @@ std::vector<std::string> resolveBacktrace(
       XBT_DEBUG("addr=%s (as string) =%#lx (as number)",
         addrs[i].c_str(), addr);
 
-      while (!found) {
-        long int first, last;
+      while (not found) {
+        long int first;
+        long int last;
 
         if (fgets(maps_buff, 512, maps) == nullptr)
           break;
@@ -257,7 +261,7 @@ std::vector<std::string> resolveBacktrace(
       free(maps_name);
       addrs[i].clear();
 
-      if (!found) {
+      if (not found) {
         XBT_VERB("Problem while reading the maps file. Following backtrace will be mangled.");
         XBT_DEBUG("No dynamic. Static symbol: %s", backtrace_syms[i]);
         result.push_back(simgrid::xbt::string_printf("?? (%s)", backtrace_syms[i]));
@@ -290,7 +294,7 @@ std::vector<std::string> resolveBacktrace(
         free(p);
         XBT_VERB("Fire a new command: '%s'", subcmd);
         FILE* subpipe = popen(subcmd, "r");
-        if (!subpipe) {
+        if (not subpipe) {
           xbt_die("Cannot fork addr2line to display the backtrace");
         }
         if (fgets(line_func, 1024, subpipe)) {
@@ -325,9 +329,9 @@ std::vector<std::string> resolveBacktrace(
     addrs[i].clear();
 
     /* Mask the bottom of the stack */
-    if (!strncmp("main", line_func, strlen("main")) ||
-        !strncmp("xbt_thread_context_wrapper", line_func, strlen("xbt_thread_context_wrapper"))
-        || !strncmp("smx_ctx_sysv_wrapper", line_func, strlen("smx_ctx_sysv_wrapper")))
+    if (not strncmp("main", line_func, strlen("main")) ||
+        not strncmp("xbt_thread_context_wrapper", line_func, strlen("xbt_thread_context_wrapper")) ||
+        not strncmp("smx_ctx_sysv_wrapper", line_func, strlen("smx_ctx_sysv_wrapper")))
       break;
   }
   pclose(pipe);
@@ -338,7 +342,7 @@ std::vector<std::string> resolveBacktrace(
 }
 }
 
-#if HAVE_MC
+#if SIMGRID_HAVE_MC
 int xbt_libunwind_backtrace(void** bt, int size){
   for (int i = 0; i < size; i++)
     bt[i] = nullptr;

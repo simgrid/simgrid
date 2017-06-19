@@ -45,7 +45,7 @@ int Coll_allgather_SMP_NTS::allgather(void *sbuf, int scount,
 
   /* for too small number of processes, use default implementation */
   if (comm_size <= num_core) {
-    XBT_WARN("MPI_allgather_SMP_NTS use default MPI_allgather.");  	  
+    XBT_WARN("MPI_allgather_SMP_NTS use default MPI_allgather.");
     Coll_allgather_default::allgather(sbuf, scount, stype, rbuf, rcount, rtype, comm);
     return MPI_SUCCESS;    
   }

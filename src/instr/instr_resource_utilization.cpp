@@ -26,10 +26,10 @@ static void __TRACE_surf_check_variable_set_to_zero(double now, const char *vari
   snprintf (key, n, "%s%s", resource, variable);
 
   // check if key exists: if it doesn't, set the variable to zero and mark this in the dict
-  if (!xbt_dict_get_or_null(platform_variables, key)) {
+  if (not xbt_dict_get_or_null(platform_variables, key)) {
     container_t container = PJ_container_get (resource);
     type_t type = PJ_type_get (variable, container->type);
-    new_pajeSetVariable (now, container, type, 0);
+    new SetVariableEvent (now, container, type, 0);
     xbt_dict_set(platform_variables, key, (char*)"", nullptr);
   }
   xbt_free(key);
@@ -38,17 +38,17 @@ static void __TRACE_surf_check_variable_set_to_zero(double now, const char *vari
 static void instr_event (double now, double delta, type_t variable, container_t resource, double value)
 {
   __TRACE_surf_check_variable_set_to_zero(now, variable->name, resource->name);
-  new_pajeAddVariable(now, resource, variable, value);
-  new_pajeSubVariable(now + delta, resource, variable, value);
+  new AddVariableEvent(now, resource, variable, value);
+  new SubVariableEvent(now + delta, resource, variable, value);
 }
 
 /* TRACE_surf_link_set_utilization: entry point from SimGrid */
 void TRACE_surf_link_set_utilization(const char *resource, const char *category, double value, double now, double delta)
 {
   //only trace link utilization if link is known by tracing mechanism
-  if (!PJ_container_get_or_null(resource))
+  if (not PJ_container_get_or_null(resource))
     return;
-  if (!value)
+  if (not value)
     return;
 
   //trace uncategorized link utilization
@@ -61,7 +61,7 @@ void TRACE_surf_link_set_utilization(const char *resource, const char *category,
 
   //trace categorized utilization
   if (TRACE_categorized()){
-    if (!category)
+    if (not category)
       return;
     //variable of this category starts by 'b', because we have a link here
     char category_type[INSTR_DEFAULT_STR_SIZE];
@@ -78,7 +78,7 @@ void TRACE_surf_host_set_utilization(const char *resource, const char *category,
 {
   //only trace host utilization if host is known by tracing mechanism
   container_t container = PJ_container_get_or_null(resource);
-  if (!container || !value)
+  if (not container || not value)
     return;
 
   //trace uncategorized host utilization
@@ -90,7 +90,7 @@ void TRACE_surf_host_set_utilization(const char *resource, const char *category,
 
   //trace categorized utilization
   if (TRACE_categorized()){
-    if (!category)
+    if (not category)
       return;
     //variable of this category starts by 'p', because we have a host here
     char category_type[INSTR_DEFAULT_STR_SIZE];

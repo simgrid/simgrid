@@ -91,7 +91,7 @@ Coll_allgather_spreading_simple::allgather(void *send_buff, int send_count,
 
   num_reqs = (2 * num_procs) - 2;
   reqs = (MPI_Request *) xbt_malloc(num_reqs * sizeof(MPI_Request));
-  if (!reqs) {
+  if (not reqs) {
     printf("allgather-spreading-simple.c:40: cannot allocate memory\n");
     MPI_Finalize();
     exit(0);

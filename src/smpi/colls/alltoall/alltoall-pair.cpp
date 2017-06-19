@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "../colls_private.h"
+#include "src/smpi/smpi_win.hpp"
 
 /*****************************************************************************
 
@@ -90,9 +91,8 @@ int Coll_alltoall_pair::alltoall(void *send_buff, int send_count,
 
   for (i = 0; i < num_procs; i++) {
     src = dst = rank ^ i;
-    Request::sendrecv(send_ptr + dst * send_chunk, send_count, send_type, dst, tag,
-		 recv_ptr + src * recv_chunk, recv_count, recv_type, src, tag,
-		 comm, &s);
+    Request::sendrecv(send_ptr + dst * send_chunk, send_count, send_type, dst, tag, recv_ptr + src * recv_chunk,
+                      recv_count, recv_type, src, tag, comm, &s);
   }
 
   return MPI_SUCCESS;

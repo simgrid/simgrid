@@ -24,7 +24,7 @@ namespace simgrid {
       NetworkAction *action;
       double init_rate;
       ActiveComm() : destination(nullptr),action(nullptr),init_rate(-1){};
-      ~ActiveComm(){};
+      virtual ~ActiveComm() = default;
     };
 
     class IBNode{
@@ -37,7 +37,7 @@ namespace simgrid {
       //number of comms the node is receiving
       int nbActiveCommsDown;
       explicit IBNode(int id) : id(id),nbActiveCommsDown(0){};
-      ~IBNode(){};
+      virtual ~IBNode() = default;
     };
 
     class XBT_PRIVATE NetworkIBModel : public NetworkSmpiModel {

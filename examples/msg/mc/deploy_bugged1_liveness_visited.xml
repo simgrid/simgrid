@@ -1,11 +1,11 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
-  <process host="Tremblay" function="coordinator" />
-  <process host="Boivin" function="client" >
+<platform version="4.1">
+  <actor host="Tremblay" function="coordinator" />
+  <actor host="Boivin" function="client" >
     <argument value="2"/>
-  </process>
-  <process host="Fafard" function="client" >
+  </actor>
+  <actor host="Fafard" function="client" >
     <argument value="1"/>
-  </process>
+  </actor>
 </platform>
