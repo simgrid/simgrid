@@ -9,6 +9,8 @@
 #include <xbt/dict.h>
 
 #include "simgrid/s4u/Host.hpp"
+#include "simgrid/s4u/Storage.hpp"
+#include "src/surf/StorageImpl.hpp"
 
 #include <mc/mc.h>
 
@@ -66,21 +68,21 @@ smx_activity_t SIMIX_file_write(smx_file_t fd, sg_size_t size, sg_host_t host)
 }
 
 //SIMIX FILE OPEN
-void simcall_HANDLER_file_open(smx_simcall_t simcall, const char* fullpath, sg_host_t host)
+void simcall_HANDLER_file_open(smx_simcall_t simcall, const char* mount, const char* path, sg_storage_t st)
 {
-  smx_activity_t synchro = SIMIX_file_open(fullpath, host);
+  smx_activity_t synchro = SIMIX_file_open(mount, path, st);
   synchro->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_activity_t SIMIX_file_open(const char* fullpath, sg_host_t host)
+smx_activity_t SIMIX_file_open(const char* mount, const char* path, sg_storage_t st)
 {
-  if (host->isOff())
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->cname());
+  if (st->host()->isOff())
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function", st->host()->cname());
 
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
-  synchro->host = host;
-  synchro->surf_io = surf_host_open(host, fullpath);
+  synchro->host                              = st->host();
+  synchro->surf_io                           = st->pimpl_->open(mount, path);
   synchro->surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
 
@@ -140,18 +142,6 @@ sg_size_t SIMIX_file_tell(smx_actor_t process, smx_file_t fd)
 {
   sg_host_t host = process->host;
   return  surf_host_file_tell(host, fd->surf_file);
-}
-
-
-xbt_dynar_t simcall_HANDLER_file_get_info(smx_simcall_t simcall, smx_file_t fd)
-{
-  return SIMIX_file_get_info(simcall->issuer, fd);
-}
-
-xbt_dynar_t SIMIX_file_get_info(smx_actor_t process, smx_file_t fd)
-{
-  sg_host_t host = process->host;
-  return  surf_host_get_info(host, fd->surf_file);
 }
 
 int simcall_HANDLER_file_seek(smx_simcall_t simcall, smx_file_t fd, sg_offset_t offset, int origin)

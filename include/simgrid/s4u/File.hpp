@@ -25,6 +25,7 @@ XBT_PUBLIC_CLASS File
 {
 public:
   File(const char* fullpath, void* userdata);
+  File(const char* fullpath, sg_host_t host, void* userdata);
   ~File();
 
   /** Retrieves the path to the file */
@@ -36,12 +37,10 @@ public:
    *  Any storage is considered as local, and no network communication ever occur.
    */
   sg_size_t read(sg_size_t size);
-  /** Simulates a write action. Returns the size of data actually written.
-   *
-   *  FIXME: reading from a remotely mounted disk is not implemented yet.
-   *  Any storage is considered as local, and no network communication ever occur.
-   */
+
+  /** Simulates a write action. Returns the size of data actually written. */
   sg_size_t write(sg_size_t size);
+  sg_size_t write(sg_size_t size, sg_host_t host);
 
   /** Allows to store user data on that host */
   void setUserdata(void* data) { userdata_ = data; }
@@ -63,18 +62,20 @@ public:
 
   /** Remove a file from disk */
   void unlink();
+  void unlink(sg_host_t host);
 
   /* FIXME: add these to the S4U API:
   XBT_PUBLIC(const char *) MSG_file_get_name(msg_file_t file);
   XBT_PUBLIC(msg_error_t) MSG_file_rcopy(msg_file_t fd, msg_host_t host, const char* fullpath);
   XBT_PUBLIC(msg_error_t) MSG_file_rmove(msg_file_t fd, msg_host_t host, const char* fullpath);
   */
-  char* storage_type;
-  char* storageId;
-  char* mount_point;
+  const char* storage_type;
+  const char* storageId;
+  std::string mount_point;
   int desc_id = 0;
 
 private:
+  sg_host_t host_   = nullptr;
   smx_file_t pimpl_ = nullptr;
   const char* path_ = nullptr;
   void* userdata_   = nullptr;

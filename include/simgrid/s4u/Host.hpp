@@ -7,8 +7,7 @@
 #define SIMGRID_S4U_HOST_HPP
 
 #include <string>
-
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include "xbt/Extendable.hpp"
 #include "xbt/dict.h"
@@ -95,21 +94,20 @@ public:
   int pstatesCount() const;
   void setPstate(int pstate_index);
   int pstate();
-  xbt_dict_t mountedStoragesAsDict(); // HACK
   void attachedStorages(std::vector<const char*> * storages);
 
   /** Get an associative list [mount point]->[Storage] of all local mount points.
    *
    *  This is defined in the platform file, and cannot be modified programatically (yet).
    */
-  boost::unordered_map<std::string, Storage*> const& mountedStorages();
+  std::unordered_map<std::string, Storage*> const& mountedStorages();
 
   void routeTo(Host * dest, std::vector<Link*> * links, double* latency);
   void routeTo(Host * dest, std::vector<surf::LinkImpl*> * links, double* latency);
 
 private:
   simgrid::xbt::string name_ = "noname";
-  boost::unordered_map<std::string, Storage*>* mounts = nullptr; // caching
+  std::unordered_map<std::string, Storage*>* mounts = nullptr; // caching
 
 public:
   // TODO, this could be a unique_ptr
@@ -147,7 +145,6 @@ public class Host {
    * @return      The number of tasks currently running on a host.
    */
   public native int getLoad();
-
 
 }
 #endif

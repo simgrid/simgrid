@@ -30,17 +30,18 @@ public:
   /** Retrieve a Storage by its name. It must exist in the platform file */
   static Storage* byName(const char* name);
   const char* name();
-  const char* host();
+  const char* type();
+  Host* host();
   sg_size_t sizeFree();
   sg_size_t sizeUsed();
   /** Retrieve the total amount of space of this storage element */
   sg_size_t size();
+
   xbt_dict_t properties();
   const char* property(const char* key);
   void setProperty(const char* key, char* value);
-  std::map<std::string, sg_size_t*>* content();
+  std::map<std::string, sg_size_t>* content();
 
-public:
   void setUserdata(void* data) { userdata_ = data; }
   void* userdata() { return userdata_; }
 
@@ -51,10 +52,12 @@ public:
   /** @brief Callback signal fired when a Link is destroyed */
   static simgrid::xbt::signal<void(s4u::Storage&)> onDestruction;
 
+  Host* attached_to_              = nullptr;
+  surf::StorageImpl* const pimpl_ = nullptr;
+
 private:
   std::string name_;
-  surf::StorageImpl* const pimpl_ = nullptr;
-  void* userdata_      = nullptr;
+  void* userdata_ = nullptr;
 };
 
 } /* namespace s4u */

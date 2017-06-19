@@ -11,27 +11,27 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 
 class MyHost {
 public:
-
-  void show_info(boost::unordered_map <std::string, simgrid::s4u::Storage*> const&mounts) {
+  void show_info(std::unordered_map<std::string, simgrid::s4u::Storage*> const& mounts)
+  {
     XBT_INFO("Storage info on %s:", simgrid::s4u::Host::current()->cname());
 
     for (const auto&kv : mounts) {
       const char* mountpoint = kv.first.c_str();
-      simgrid::s4u::Storage storage = *kv.second;
+      simgrid::s4u::Storage* storage = kv.second;
 
       // Retrieve disk's information
-      sg_size_t free_size = storage.sizeFree();
-      sg_size_t used_size = storage.sizeUsed();
-      sg_size_t size = storage.size();
+      sg_size_t free_size = storage->sizeFree();
+      sg_size_t used_size = storage->sizeUsed();
+      sg_size_t size      = storage->size();
 
-      XBT_INFO("    %s (%s) Used: %llu; Free: %llu; Total: %llu.",
-          storage.name(), mountpoint, used_size, free_size, size);
+      XBT_INFO("    %s (%s) Used: %llu; Free: %llu; Total: %llu.", storage->name(), mountpoint, used_size, free_size,
+               size);
     }
   }
 
   void operator()() {
-    boost::unordered_map <std::string, simgrid::s4u::Storage *> const& mounts =
-      simgrid::s4u::Host::current()->mountedStorages();
+    std::unordered_map<std::string, simgrid::s4u::Storage*> const& mounts =
+        simgrid::s4u::Host::current()->mountedStorages();
 
     show_info(mounts);
 

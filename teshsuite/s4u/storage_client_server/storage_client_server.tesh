@@ -53,10 +53,10 @@ $ ./storage_client_server$EXEEXT ${srcdir:=.}/../../../examples/platforms/storag
 > [  0.803996] (client@bob) client sends 6217 to alice
 > [  0.806104] (server@alice) 6217 bytes on 6217 bytes have been written by server on /sd1
 > [  1.207952] (server@alice) *** Storage info on alice ***
+> [  1.207952] (server@alice) 	Storage name: Disk2, mount name: c:
 > [  1.207952] (client@bob) *** GET/SET DATA for storage element: Disk1 ***
 > [  1.207952] (client@bob) Get data: '(null)'
 > [  1.207952] (client@bob) 	Set and get data: 'Some data'
-> [  1.207952] (server@alice) 	Storage name: Disk2, mount name: c:
 > [  1.207952] (server@alice) 		Free size: 534479367024 bytes
 > [  1.207952] (server@alice) 		Used size: 2391544976 bytes
 > [  1.207952] (server@alice) 	No property attached.

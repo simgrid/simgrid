@@ -4,12 +4,15 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "../surf/StorageImpl.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.hpp"
 #include <unordered_map>
 
 namespace simgrid {
 namespace s4u {
+
+//  attached_to_ = Host::by_name_or_null(pimpl->attach_);
 std::map<std::string, Storage*>* allStorages()
 {
   std::unordered_map<std::string, surf::StorageImpl*>* map = surf::StorageImpl::storagesMap();
@@ -33,9 +36,14 @@ const char* Storage::name()
   return pimpl_->cname();
 }
 
-const char* Storage::host()
+const char* Storage::type()
 {
-  return pimpl_->attach_;
+  return pimpl_->typeId_;
+}
+
+Host* Storage::host()
+{
+  return attached_to_;
 }
 
 sg_size_t Storage::sizeFree()
@@ -67,7 +75,7 @@ void Storage::setProperty(const char* key, char* value)
   xbt_dict_set(this->properties(), key, value, nullptr);
 }
 
-std::map<std::string, sg_size_t*>* Storage::content()
+std::map<std::string, sg_size_t>* Storage::content()
 {
   return simgrid::simix::kernelImmediate([this] { return pimpl_->getContent(); });
 }

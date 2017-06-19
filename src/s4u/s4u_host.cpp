@@ -160,6 +160,7 @@ void Host::routeTo(Host* dest, std::vector<Link*>* links, double* latency)
   for (surf::LinkImpl* l : linkImpls)
     links->push_back(&l->piface_);
 }
+
 /** @brief Just like Host::routeTo, but filling an array of link implementations */
 void Host::routeTo(Host* dest, std::vector<surf::LinkImpl*>* links, double* latency)
 {
@@ -172,24 +173,6 @@ void Host::routeTo(Host* dest, std::vector<surf::LinkImpl*>* links, double* late
   }
 }
 
-boost::unordered_map<std::string, Storage*> const& Host::mountedStorages() {
-  if (mounts == nullptr) {
-    mounts = new boost::unordered_map<std::string, Storage*> ();
-
-    xbt_dict_t dict = this->mountedStoragesAsDict();
-
-    xbt_dict_cursor_t cursor;
-    char *mountname;
-    char *storagename;
-    xbt_dict_foreach(dict, cursor, mountname, storagename) {
-      mounts->insert({mountname, Storage::byName(storagename)});
-    }
-    xbt_dict_free(&dict);
-  }
-
-  return *mounts;
-}
-
 /** Get the properties assigned to a host */
 xbt_dict_t Host::properties() {
   return simgrid::simix::kernelImmediate([this] {
@@ -198,13 +181,14 @@ xbt_dict_t Host::properties() {
 }
 
 /** Retrieve the property value (or nullptr if not set) */
-const char*Host::property(const char*key) {
+const char* Host::property(const char* key)
+{
   return this->pimpl_->getProperty(key);
 }
-void Host::setProperty(const char*key, const char *value){
-  simgrid::simix::kernelImmediate([this, key, value] {
-    this->pimpl_->setProperty(key, value);
-  });
+
+void Host::setProperty(const char* key, const char* value)
+{
+  simgrid::simix::kernelImmediate([this, key, value] { this->pimpl_->setProperty(key, value); });
 }
 
 /** Get the processes attached to the host */
@@ -249,26 +233,25 @@ int Host::pstate()
 
 /**
  * \ingroup simix_storage_management
- * \brief Returns the list of storages mounted on an host.
- * \return a dict containing all storages mounted on the host
- */
-xbt_dict_t Host::mountedStoragesAsDict()
-{
-  return simgrid::simix::kernelImmediate([this] {
-    return this->pimpl_->getMountedStorageList();
-  });
-}
-
-/**
- * \ingroup simix_storage_management
  * \brief Returns the list of storages attached to an host.
- * \return a dict containing all storages attached to the host
+ * \return a vector containing all storages attached to the host
  */
 void Host::attachedStorages(std::vector<const char*>* storages)
 {
   simgrid::simix::kernelImmediate([this, storages] {
      this->pimpl_->getAttachedStorageList(storages);
   });
+}
+
+std::unordered_map<std::string, Storage*> const& Host::mountedStorages()
+{
+  if (mounts == nullptr) {
+    mounts = new std::unordered_map<std::string, Storage*>();
+    for (auto m : this->pimpl_->storage_) {
+      mounts->insert({m.first, &m.second->piface_});
+    }
+  }
+  return *mounts;
 }
 
 } // namespace simgrid

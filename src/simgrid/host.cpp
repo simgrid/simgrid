@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <algorithm>
 #include <vector>
 
 #include "simgrid/host.h"
@@ -120,7 +121,15 @@ void sg_host_user_destroy(sg_host_t host) {
 
 // ========= storage related functions ============
 xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host){
-  return host->pimpl_->getMountedStorageList();
+  xbt_assert((host != nullptr), "Invalid parameters");
+  xbt_dict_t res = xbt_dict_new_homogeneous(nullptr);
+  for (auto elm : host->mountedStorages()) {
+    const char* mount_name = elm.first.c_str();
+    sg_storage_t storage   = elm.second;
+    xbt_dict_set(res, mount_name, (void*)storage->name(), nullptr);
+  }
+
+  return res;
 }
 
 xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t host){

@@ -18,9 +18,12 @@ extern std::map<std::string, storage_type_t> storage_types;
 static void check_disk_attachment()
 {
   for (auto s : *simgrid::surf::StorageImpl::storagesMap()) {
-    simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(s.second->attach_);
+    simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(s.second->attach_.c_str());
     if (not host_elm)
-      surf_parse_error("Unable to attach storage %s: host %s does not exist.", s.second->cname(), s.second->attach_);
+      surf_parse_error("Unable to attach storage %s: host %s does not exist.", s.second->cname(),
+                       s.second->attach_.c_str());
+    else
+      s.second->piface_.attached_to_ = sg_host_by_name(s.second->attach_.c_str());
   }
 }
 
@@ -113,12 +116,8 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
       //  which becomes the new file size
       action->file_->size = action->file_->current_position;
 
-      sg_size_t* psize = new sg_size_t;
-      *psize           = action->file_->size;
-      std::map<std::string, sg_size_t*>* content_dict = action->storage_->content_;
-      auto entry = content_dict->find(action->file_->name);
-      delete entry->second;
-      entry->second = psize;
+      action->storage_->content_->erase(action->file_->name);
+      action->storage_->content_->insert({action->file_->name, action->file_->size});
     }
 
     action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
@@ -155,15 +154,12 @@ StorageAction *StorageN11::open(const char* mount, const char* path)
   XBT_DEBUG("\tOpen file '%s'",path);
 
   sg_size_t size;
-  sg_size_t* psize = nullptr;
   // if file does not exist create an empty file
   if (content_->find(path) != content_->end())
-    size = *(content_->at(path));
+    size = content_->at(path);
   else {
-    psize  = new sg_size_t;
-    size   = 0;
-    *psize = size;
-    content_->insert({path, psize});
+    size = 0;
+    content_->insert({path, size});
     XBT_DEBUG("File '%s' was not found, file created.",path);
   }
   surf_file_t file = xbt_new0(s_surf_file_t,1);

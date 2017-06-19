@@ -69,19 +69,8 @@ public:
   /** @brief Return the storage of corresponding mount point */
   virtual simgrid::surf::StorageImpl* findStorageOnMountList(const char* storage);
 
-  /** @brief Get the xbt_dict_t of mount_point: Storage */
-  virtual xbt_dict_t getMountedStorageList();
-
   /** @brief Get the xbt_dynar_t of storages attached to the Host */
   virtual void getAttachedStorageList(std::vector<const char*>* storages);
-
-  /**
-   * @brief Open a file
-   *
-   * @param fullpath The full path to the file
-   * @return The StorageAction corresponding to the opening
-   */
-  virtual Action* open(const char* fullpath);
 
   /**
    * @brief Close a file
@@ -125,20 +114,6 @@ public:
    * @return The StorageAction corresponding to the writing
    */
   virtual Action* write(surf_file_t fd, sg_size_t size);
-
-  /**
-   * @brief Get the information of a file descriptor
-   * @details The returned xbt_dynar_t contains:
-   *  - the size of the file,
-   *  - the mount point,
-   *  - the storage name,
-   *  - the storage typeId,
-   *  - the storage content type
-   *
-   * @param fd The file descriptor
-   * @return An xbt_dynar_t with the file information
-   */
-  virtual xbt_dynar_t getInfo(surf_file_t fd);
 
   /**
    * @brief Get the current position of the file descriptor

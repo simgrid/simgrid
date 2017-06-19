@@ -681,9 +681,9 @@ sg_size_t simcall_file_write(smx_file_t fd, sg_size_t size, sg_host_t host)
  * \ingroup simix_file_management
  * \brief
  */
-smx_file_t simcall_file_open(const char* fullpath, sg_host_t host)
+smx_file_t simcall_file_open(const char* mount, const char* path, sg_storage_t st)
 {
-  return simcall_BODY_file_open(fullpath, host);
+  return simcall_BODY_file_open(mount, path, st);
 }
 
 /**
@@ -718,15 +718,6 @@ sg_size_t simcall_file_get_size(smx_file_t fd){
  */
 sg_size_t simcall_file_tell(smx_file_t fd){
   return simcall_BODY_file_tell(fd);
-}
-
-/**
- * \ingroup simix_file_management
- *
- */
-xbt_dynar_t simcall_file_get_info(smx_file_t fd)
-{
-  return simcall_BODY_file_get_info(fd);
 }
 
 /**

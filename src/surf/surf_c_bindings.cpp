@@ -165,10 +165,6 @@ int surf_model_running_action_set_size(surf_model_t model){
   return model->getRunningActionSet()->size();
 }
 
-surf_action_t surf_host_open(sg_host_t host, const char* fullpath){
-  return host->pimpl_->open(fullpath);
-}
-
 surf_action_t surf_host_close(sg_host_t host, surf_file_t fd){
   return host->pimpl_->close(fd);
 }
@@ -187,10 +183,6 @@ surf_action_t surf_host_read(sg_host_t host, surf_file_t fd, sg_size_t size){
 
 surf_action_t surf_host_write(sg_host_t host, surf_file_t fd, sg_size_t size){
   return host->pimpl_->write(fd, size);
-}
-
-xbt_dynar_t surf_host_get_info(sg_host_t host, surf_file_t fd){
-  return host->pimpl_->getInfo(fd);
 }
 
 size_t surf_host_file_tell(sg_host_t host, surf_file_t fd){
@@ -228,7 +220,7 @@ xbt_dict_t surf_storage_get_properties(surf_storage_t resource)
 
 const char* surf_storage_get_host(surf_storage_t resource)
 {
-  return static_cast<simgrid::surf::StorageImpl*>(resource)->attach_;
+  return static_cast<simgrid::surf::StorageImpl*>(resource)->attach_.c_str();
 }
 
 const char* surf_storage_get_name(surf_storage_t resource)

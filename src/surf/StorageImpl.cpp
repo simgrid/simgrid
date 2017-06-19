@@ -68,7 +68,7 @@ StorageImpl::StorageImpl(Model* model, const char* name, lmm_system_t maxminSyst
     , writeActions_(std::vector<StorageAction*>())
 {
   content_ = parseContent(content_name);
-  attach_  = xbt_strdup(attach);
+  attach_  = attach;
   turnOn();
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);
   constraintRead_  = lmm_constraint_new(maxminSystem, this, bread);
@@ -79,22 +79,19 @@ StorageImpl::StorageImpl(Model* model, const char* name, lmm_system_t maxminSyst
 StorageImpl::~StorageImpl()
 {
   storageDestructedCallbacks(this);
-  if (content_ != nullptr) {
-    for (auto entry : *content_)
-      delete entry.second;
+  if (content_ != nullptr)
     delete content_;
-  }
+
   free(typeId_);
-  free(attach_);
 }
 
-std::map<std::string, sg_size_t*>* StorageImpl::parseContent(const char* filename)
+std::map<std::string, sg_size_t>* StorageImpl::parseContent(const char* filename)
 {
   usedSize_ = 0;
   if ((not filename) || (strcmp(filename, "") == 0))
     return nullptr;
 
-  std::map<std::string, sg_size_t*>* parse_content = new std::map<std::string, sg_size_t*>();
+  std::map<std::string, sg_size_t>* parse_content = new std::map<std::string, sg_size_t>();
 
   std::ifstream* fs = surf_ifsopen(filename);
 
@@ -109,9 +106,7 @@ std::map<std::string, sg_size_t*>* StorageImpl::parseContent(const char* filenam
       sg_size_t size = std::stoull(tokens.at(1));
 
       usedSize_ += size;
-      sg_size_t* psize = new sg_size_t;
-      *psize           = size;
-      parse_content->insert({tokens.front(), psize});
+      parse_content->insert({tokens.front(), size});
     }
   } while (not fs->eof());
   delete fs;
@@ -144,7 +139,7 @@ void StorageImpl::turnOff()
   }
 }
 
-std::map<std::string, sg_size_t*>* StorageImpl::getContent()
+std::map<std::string, sg_size_t>* StorageImpl::getContent()
 {
   /* For the moment this action has no cost, but in the future we could take in account access latency of the disk */
   return content_;

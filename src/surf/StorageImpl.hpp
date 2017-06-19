@@ -102,20 +102,21 @@ public:
   void turnOn() override;
   void turnOff() override;
 
-  std::map<std::string, sg_size_t*>* content_;
+  std::map<std::string, sg_size_t>* content_;
   sg_size_t size_;
   sg_size_t usedSize_;
   char* typeId_;
-  char* attach_; // FIXME: this is the name of the host. Use the host directly
-
-  /**
-   * @brief Open a file
-   *
-   * @param mount The mount point
-   * @param path The path to the file
-   *
-   * @return The StorageAction corresponding to the opening
-   */
+  std::string attach_; // Name of the host to which this storage is attached.
+                       // Only used until the platform is fully parsed only.
+                       // Then the interface stores the Host directly.
+                       /**
+                        * @brief Open a file
+                        *
+                        * @param mount The mount point
+                        * @param path The path to the file
+                        *
+                        * @return The StorageAction corresponding to the opening
+                        */
   virtual StorageAction* open(const char* mount, const char* path) = 0;
 
   /**
@@ -149,7 +150,7 @@ public:
    *
    * @return A xbt_dict_t with path as keys and size in bytes as values
    */
-  virtual std::map<std::string, sg_size_t*>* getContent();
+  virtual std::map<std::string, sg_size_t>* getContent();
 
   /**
    * @brief Get the available size in bytes of the current Storage
@@ -165,7 +166,7 @@ public:
    */
   virtual sg_size_t getUsedSize();
 
-  std::map<std::string, sg_size_t*>* parseContent(const char* filename);
+  std::map<std::string, sg_size_t>* parseContent(const char* filename);
   static std::unordered_map<std::string, StorageImpl*>* storages;
   static std::unordered_map<std::string, StorageImpl*>* storagesMap() { return StorageImpl::storages; }
   std::vector<StorageAction*> writeActions_;

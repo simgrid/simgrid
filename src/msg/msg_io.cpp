@@ -3,7 +3,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "../surf/StorageImpl.hpp"
 #include "simgrid/s4u/File.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
@@ -56,7 +55,7 @@ msg_error_t MSG_file_set_data(msg_file_t fd, void *data)
  *
  * This functions checks whether \a file is a valid pointer and return the user data associated to \a file if possible.
  */
-void *MSG_file_get_data(msg_file_t fd)
+void* MSG_file_get_data(msg_file_t fd)
 {
   return fd->userdata();
 }
@@ -74,7 +73,7 @@ void MSG_file_dump (msg_file_t fd){
            "\t\tStorage Id: '%s'\n"
            "\t\tStorage Type: '%s'\n"
            "\t\tFile Descriptor Id: %d",
-           fd->path(), fd->size(), fd->mount_point, fd->storageId, fd->storage_type, fd->desc_id);
+           fd->path(), fd->size(), fd->mount_point.c_str(), fd->storageId, fd->storage_type, fd->desc_id);
 }
 
 /** \ingroup msg_file
@@ -93,7 +92,7 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
 
   /* Find the host where the file is physically located and read it */
   msg_storage_t storage_src           = simgrid::s4u::Storage::byName(fd->storageId);
-  msg_host_t attached_host            = MSG_host_by_name(storage_src->host());
+  msg_host_t attached_host            = storage_src->host();
   read_size                           = fd->read(size); // TODO re-add attached_host;
 
   if (strcmp(attached_host->cname(), MSG_host_self()->cname())) {
@@ -134,7 +133,7 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
 
   /* Find the host where the file is physically located (remote or local)*/
   msg_storage_t storage_src = simgrid::s4u::Storage::byName(fd->storageId);
-  msg_host_t attached_host  = MSG_host_by_name(storage_src->host());
+  msg_host_t attached_host  = storage_src->host();
 
   if (strcmp(attached_host->cname(), MSG_host_self()->cname())) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
@@ -187,6 +186,7 @@ msg_file_t MSG_file_open(const char* fullpath, void* data)
  */
 int MSG_file_close(msg_file_t fd)
 {
+  MSG_host_release_file_descriptor_id(MSG_host_self(), fd->desc_id);
   delete fd;
 
   return MSG_OK;
@@ -201,9 +201,9 @@ int MSG_file_close(msg_file_t fd)
 msg_error_t MSG_file_unlink(msg_file_t fd)
 {
   /* Find the host where the file is physically located (remote or local)*/
-  // msg_storage_t storage_src           = simgrid::s4u::Storage::byName(fd->storageId);
-  // msg_host_t attached_host            = MSG_host_by_name(storage_src->host());
-  fd->unlink(); // simcall_file_unlink(fd->simdata->smx_file, attached_host);
+  msg_storage_t storage_src = simgrid::s4u::Storage::byName(fd->storageId);
+  msg_host_t attached_host  = storage_src->host();
+  fd->unlink(attached_host);
   return MSG_OK;
 }
 
@@ -213,7 +213,8 @@ msg_error_t MSG_file_unlink(msg_file_t fd)
  * \param fd is the file descriptor (#msg_file_t)
  * \return the size of the file (as a #sg_size_t)
  */
-sg_size_t MSG_file_get_size(msg_file_t fd){
+sg_size_t MSG_file_get_size(msg_file_t fd)
+{
   return fd->size();
 }
 
@@ -276,65 +277,56 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
 {
   /* Find the host where the file is physically located and read it */
   msg_storage_t storage_src = simgrid::s4u::Storage::byName(file->storageId);
-  msg_host_t attached_host  = MSG_host_by_name(storage_src->host());
+  msg_host_t src_host       = storage_src->host();
   MSG_file_seek(file, 0, SEEK_SET);
   sg_size_t read_size = file->read(file->size());
 
-  /* Find the real host destination where the file will be physically stored */
-  xbt_dict_cursor_t cursor   = nullptr;
+  /* Find the host that owns the storage where the file has to be copied */
   msg_storage_t storage_dest = nullptr;
-  msg_host_t host_dest;
+  msg_host_t dst_host;
   size_t longest_prefix_length = 0;
 
-  xbt_dict_t storage_list = host->mountedStoragesAsDict();
-  char *mount_name;
-  char *storage_name;
-  xbt_dict_foreach(storage_list,cursor,mount_name,storage_name){
-    char* file_mount_name = static_cast<char*>(xbt_malloc(strlen(mount_name) + 1));
-    strncpy(file_mount_name, fullpath, strlen(mount_name) + 1);
-    file_mount_name[strlen(mount_name)] = '\0';
-
-    if (not strcmp(file_mount_name, mount_name) && strlen(mount_name) > longest_prefix_length) {
+  for (auto elm : host->mountedStorages()) {
+    std::string mount_point = std::string(fullpath).substr(0, elm.first.size());
+    if (mount_point == elm.first && elm.first.length() > longest_prefix_length) {
       /* The current mount name is found in the full path and is bigger than the previous*/
-      longest_prefix_length = strlen(mount_name);
-      storage_dest          = simgrid::s4u::Storage::byName(storage_name);
+      longest_prefix_length = elm.first.length();
+      storage_dest          = elm.second;
     }
-    xbt_free(file_mount_name);
   }
-  xbt_dict_free(&storage_list);
 
-  if(longest_prefix_length>0){
+  if (longest_prefix_length > 0) {
     /* Mount point found, retrieve the host the storage is attached to */
-    host_dest = MSG_host_by_name(storage_dest->host());
+    dst_host = storage_dest->host();
   }else{
     XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, host->cname());
     return MSG_TASK_CANCELED;
   }
 
-  XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, attached_host->cname(),
-            storage_dest->host());
-  msg_host_t m_host_list[] = {attached_host, host_dest};
+  XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, src_host->cname(),
+            storage_dest->host()->cname());
+  msg_host_t m_host_list[] = {src_host, dst_host};
   double flops_amount[]    = {0, 0};
   double bytes_amount[]    = {0, static_cast<double>(read_size), 0, 0};
 
   msg_task_t task =
       MSG_parallel_task_create("file transfer for write", 2, m_host_list, flops_amount, bytes_amount, nullptr);
-  msg_error_t transfer = MSG_parallel_task_execute(task);
+  msg_error_t err = MSG_parallel_task_execute(task);
   MSG_task_destroy(task);
 
-  if(transfer != MSG_OK){
-    if (transfer == MSG_HOST_FAILURE)
-      XBT_WARN("Transfer error, %s remote host just turned off!", storage_dest->host());
-    if (transfer == MSG_TASK_CANCELED)
+  if (err != MSG_OK) {
+    if (err == MSG_HOST_FAILURE)
+      XBT_WARN("Transfer error, %s remote host just turned off!", storage_dest->host()->cname());
+    if (err == MSG_TASK_CANCELED)
       XBT_WARN("Transfer error, task has been canceled!");
 
-    return transfer;
+    return err;
   }
 
   /* Create file on remote host, write it and close it */
-  smx_file_t smx_file = simcall_file_open(fullpath, host_dest);
-  simcall_file_write(smx_file, read_size, host_dest);
-  simcall_file_close(smx_file, host_dest);
+  msg_file_t fd = new simgrid::s4u::File(fullpath, dst_host, nullptr);
+  fd->write(read_size, dst_host);
+  delete fd;
   return MSG_OK;
 }
 
@@ -364,7 +356,8 @@ msg_error_t MSG_file_rmove (msg_file_t file, msg_host_t host, const char* fullpa
  *
  * This functions checks whether a storage is a valid pointer or not and return its name.
  */
-const char *MSG_storage_get_name(msg_storage_t storage) {
+const char* MSG_storage_get_name(msg_storage_t storage)
+{
   xbt_assert((storage != nullptr), "Invalid parameters");
   return storage->name();
 }
@@ -374,7 +367,8 @@ const char *MSG_storage_get_name(msg_storage_t storage) {
  * \param storage a storage
  * \return the free space size of the storage element (as a #sg_size_t)
  */
-sg_size_t MSG_storage_get_free_size(msg_storage_t storage){
+sg_size_t MSG_storage_get_free_size(msg_storage_t storage)
+{
   return storage->sizeFree();
 }
 
@@ -383,7 +377,8 @@ sg_size_t MSG_storage_get_free_size(msg_storage_t storage){
  * \param storage a storage
  * \return the used space size of the storage element (as a #sg_size_t)
  */
-sg_size_t MSG_storage_get_used_size(msg_storage_t storage){
+sg_size_t MSG_storage_get_used_size(msg_storage_t storage)
+{
   return storage->sizeUsed();
 }
 
@@ -435,11 +430,13 @@ msg_storage_t MSG_storage_get_by_name(const char *name)
 /** \ingroup msg_storage_management
  * \brief Returns a dynar containing all the storage elements declared at a given point of time
  */
-xbt_dynar_t MSG_storages_as_dynar() {
+xbt_dynar_t MSG_storages_as_dynar()
+{
+  std::map<std::string, simgrid::s4u::Storage*>* storage_map = simgrid::s4u::allStorages();
   xbt_dynar_t res = xbt_dynar_new(sizeof(msg_storage_t),nullptr);
-  for (auto s : *simgrid::s4u::allStorages()) {
+  for (auto s : *storage_map)
     xbt_dynar_push(res, &(s.second));
-  }
+  delete storage_map;
   return res;
 }
 
@@ -474,11 +471,11 @@ void *MSG_storage_get_data(msg_storage_t storage)
  */
 xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
 {
-  std::map<std::string, sg_size_t*>* content = storage->content();
+  std::map<std::string, sg_size_t>* content = storage->content();
   xbt_dict_t content_dict = xbt_dict_new_homogeneous(nullptr);
 
   for (auto entry : *content) {
-    xbt_dict_set(content_dict, entry.first.c_str(), entry.second, nullptr);
+    xbt_dict_set(content_dict, entry.first.c_str(), (void*)entry.second, nullptr);
   }
   return content_dict;
 }
@@ -500,9 +497,10 @@ sg_size_t MSG_storage_get_size(msg_storage_t storage)
  *
  * This functions checks whether a storage is a valid pointer or not and return its name.
  */
-const char *MSG_storage_get_host(msg_storage_t storage) {
+const char* MSG_storage_get_host(msg_storage_t storage)
+{
   xbt_assert((storage != nullptr), "Invalid parameters");
-  return storage->host();
+  return storage->host()->cname();
 }
 
 SG_END_DECL()

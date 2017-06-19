@@ -100,11 +100,11 @@ static int host(int argc, char *argv[]){
   char* mountname;
   xbt_dict_t content;
   char* path;
-  sg_size_t *size;
+  sg_size_t size;
   xbt_dict_foreach(contents, curs, mountname, content){
     XBT_INFO("Print the content of mount point: %s",mountname);
     xbt_dict_foreach(content,curs2,path,size){
-       XBT_INFO("%s size: %llu bytes", path,*((sg_size_t*)size));
+      XBT_INFO("%s size: %llu bytes", path, (sg_size_t)size);
     }
     xbt_dict_free(&content);
   }

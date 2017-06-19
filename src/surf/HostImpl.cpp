@@ -48,6 +48,7 @@ static inline double has_cost(double* array, int pos)
   else
     return -1.0;
 }
+
 Action* HostModel::executeParallelTask(int host_nb, simgrid::s4u::Host** host_list, double* flops_amount,
     double* bytes_amount, double rate)
 {
@@ -104,52 +105,11 @@ simgrid::surf::StorageImpl* HostImpl::findStorageOnMountList(const char* mount)
   return storage_.at(mount);
 }
 
-xbt_dict_t HostImpl::getMountedStorageList()
-{
-  xbt_dict_t storage_list = xbt_dict_new_homogeneous(nullptr);
-  char* storage_name      = nullptr;
-
-  for (auto mnt : storage_) {
-    storage_name = (char*)mnt.second->cname();
-    xbt_dict_set(storage_list, mnt.first.c_str(), storage_name, nullptr);
-  }
-  return storage_list;
-}
-
 void HostImpl::getAttachedStorageList(std::vector<const char*>* storages)
 {
   for (auto s : storage_)
-    if (not strcmp(static_cast<const char*>(s.second->attach_), piface_->cname()))
+    if (s.second->attach_ == piface_->cname())
       storages->push_back(s.second->piface_.name());
-}
-
-Action* HostImpl::open(const char* fullpath)
-{
-  simgrid::surf::StorageImpl* st = nullptr;
-  size_t longest_prefix_length = 0;
-  std::string path;
-  std::string mount_name;
-
-  XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath, piface_->cname());
-  for (auto mnt : storage_) {
-    XBT_DEBUG("See '%s'", mnt.first.c_str());
-    std::string file_mount_name = std::string(fullpath).substr(0, mnt.first.size());
-
-    if (file_mount_name == mnt.first && mnt.first.length() > longest_prefix_length) {
-      /* The current mount name is found in the full path and is bigger than the previous*/
-      longest_prefix_length = mnt.first.length();
-      st                    = mnt.second;
-    }
-  }
-  if (longest_prefix_length > 0) { /* Mount point found, split fullpath into mount_name and path+filename*/
-    mount_name = std::string(fullpath).substr(0, longest_prefix_length);
-    path       = std::string(fullpath).substr(longest_prefix_length, strlen(fullpath));
-  } else
-    xbt_die("Can't find mount point for '%s' on '%s'", fullpath, piface_->cname());
-
-  XBT_DEBUG("OPEN %s on disk '%s'", path.c_str(), st->cname());
-  Action* action = st->open(mount_name.c_str(), path.c_str());
-  return action;
 }
 
 Action* HostImpl::close(surf_file_t fd)
@@ -190,8 +150,6 @@ int HostImpl::unlink(surf_file_t fd)
       st->usedSize_ -= fd->size;
 
       // Remove the file from storage
-      sg_size_t* psize = st->content_->at(fd->name);
-      delete psize;
       st->content_->erase(fd->name);
 
       xbt_free(fd->name);
@@ -205,20 +163,6 @@ int HostImpl::unlink(surf_file_t fd)
 sg_size_t HostImpl::getSize(surf_file_t fd)
 {
   return fd->size;
-}
-
-xbt_dynar_t HostImpl::getInfo(surf_file_t fd)
-{
-  simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount);
-  sg_size_t* psize           = xbt_new(sg_size_t, 1);
-  *psize                     = fd->size;
-  xbt_dynar_t info           = xbt_dynar_new(sizeof(void*), nullptr);
-  xbt_dynar_push_as(info, sg_size_t*, psize);
-  xbt_dynar_push_as(info, void*, fd->mount);
-  xbt_dynar_push_as(info, void*, (void*)st->cname());
-  xbt_dynar_push_as(info, void*, st->typeId_);
-
-  return info;
 }
 
 sg_size_t HostImpl::fileTell(surf_file_t fd)
@@ -247,16 +191,13 @@ int HostImpl::fileMove(surf_file_t fd, const char* fullpath)
 {
   /* Check if the new full path is on the same mount point */
   if (not strncmp((const char*)fd->mount, fullpath, strlen(fd->mount))) {
-    std::map<std::string, sg_size_t*>* content = findStorageOnMountList(fd->mount)->content_;
+    std::map<std::string, sg_size_t>* content = findStorageOnMountList(fd->mount)->content_;
     if (content->find(fd->name) != content->end()) { // src file exists
-      sg_size_t* psize     = content->at(std::string(fd->name));
-      sg_size_t* new_psize = new sg_size_t;
-      *new_psize           = *psize;
-      delete psize;
+      sg_size_t new_size = content->at(std::string(fd->name));
       content->erase(fd->name);
       std::string path = std::string(fullpath).substr(strlen(fd->mount), strlen(fullpath));
-      content->insert({path.c_str(), new_psize});
-      XBT_DEBUG("Move file from %s to %s, size '%llu'", fd->name, fullpath, *psize);
+      content->insert({path.c_str(), new_size});
+      XBT_DEBUG("Move file from %s to %s, size '%llu'", fd->name, fullpath, new_size);
       return 0;
     } else {
       XBT_WARN("File %s doesn't exist", fd->name);
