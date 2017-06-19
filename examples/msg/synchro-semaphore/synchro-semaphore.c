@@ -67,6 +67,7 @@ int main(int argc, char* argv[])
   MSG_process_create_with_arguments("Bob", peer, NULL, h, 8, bobTimes);
 
   msg_error_t res = MSG_main();
+  MSG_sem_destroy(sem);
   XBT_INFO("Finished\n");
   return (res != MSG_OK);
 }
