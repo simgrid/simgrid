@@ -9,25 +9,25 @@ $ java -classpath ${classpath:=.} cloud/migration/Main ${srcdir:=.}/../platforms
 > [PM0:Test:(1) 0.000000] [java/INFO]      - Launch migration from PM0 to PM1
 > [PM0:Test:(1) 0.000000] [java/INFO] Start migration of VM vm0 to PM1
 > [PM0:Test:(1) 0.000000] [java/INFO]     currentLoad:90/ramSize:2048/dpIntensity:70/remaining:8.10E+11
-> [PM0:Test:(1) 35.084170] [java/INFO] End of migration of VM vm0 to node PM1
-> [PM0:Test:(1) 35.084170] [java/INFO]      - End of Migration from PM0 to PM1 (duration:35.0841702956701)
-> [PM0:Test:(1) 35.084170] [java/INFO]      - Launch migration from PM1 to PM0
-> [PM0:Test:(1) 35.084170] [java/INFO] Start migration of VM vm0 to PM0
-> [PM0:Test:(1) 35.084170] [java/INFO]     currentLoad:90/ramSize:2048/dpIntensity:70/remaining:6.22E+11
-> [PM0:Test:(1) 67.551019] [java/INFO] End of migration of VM vm0 to node PM0
-> [PM0:Test:(1) 67.551019] [java/INFO]      - End of Migration from PM1 to PM0 (duration:32.46684874546391)
-> [PM0:Test:(1) 67.551019] [java/INFO] 
-> [PM0:Test:(1) 67.551019] [java/INFO] 
-> [PM0:Test:(1) 67.551019] [java/INFO] Round trip of VM1 (load 80%)
-> [PM0:Test:(1) 67.551019] [java/INFO]      - Launch migration from PM0 to PM1
-> [PM0:Test:(1) 67.551019] [java/INFO] Start migration of VM vm0 to PM1
-> [PM0:Test:(1) 67.551019] [java/INFO]     currentLoad:80/ramSize:2048/dpIntensity:70/remaining:4.65E+11
-> [PM0:Test:(1) 102.635189] [java/INFO] End of migration of VM vm0 to node PM1
-> [PM0:Test:(1) 102.635189] [java/INFO]      - End of Migration from PM0 to PM1 (duration:35.08417029567006)
-> [PM0:Test:(1) 102.635189] [java/INFO]      - Launch migration from PM1 to PM0
-> [PM0:Test:(1) 102.635189] [java/INFO] Start migration of VM vm0 to PM0
-> [PM0:Test:(1) 102.635189] [java/INFO]     currentLoad:80/ramSize:2048/dpIntensity:70/remaining:2.77E+11
-> [PM0:Test:(1) 135.102038] [java/INFO] End of migration of VM vm0 to node PM0
-> [PM0:Test:(1) 135.102038] [java/INFO]      - End of Migration from PM1 to PM0 (duration:32.46684874546395)
-> [PM0:Test:(1) 135.102038] [java/INFO] Forcefully destroy VMs
-> [135.102038] [java/INFO] MSG_main finished; Cleaning up the simulation...
+> [PM0:Test:(1) 45.731913] [java/INFO] End of migration of VM vm0 to node PM1
+> [PM0:Test:(1) 45.731913] [java/INFO]      - End of Migration from PM0 to PM1 (duration:45.73191265731957)
+> [PM0:Test:(1) 45.731913] [java/INFO]      - Launch migration from PM1 to PM0
+> [PM0:Test:(1) 45.731913] [java/INFO] Start migration of VM vm0 to PM0
+> [PM0:Test:(1) 45.731913] [java/INFO]     currentLoad:90/ramSize:2048/dpIntensity:70/remaining:5.01E+11
+> [PM0:Test:(1) 97.502571] [java/INFO] End of migration of VM vm0 to node PM0
+> [PM0:Test:(1) 97.502571] [java/INFO]      - End of Migration from PM1 to PM0 (duration:51.770657959072125)
+> [PM0:Test:(1) 97.502571] [java/INFO] 
+> [PM0:Test:(1) 97.502571] [java/INFO] 
+> [PM0:Test:(1) 97.502571] [java/INFO] Round trip of VM1 (load 80%)
+> [PM0:Test:(1) 97.502571] [java/INFO]      - Launch migration from PM0 to PM1
+> [PM0:Test:(1) 97.502571] [java/INFO] Start migration of VM vm0 to PM1
+> [PM0:Test:(1) 97.502571] [java/INFO]     currentLoad:80/ramSize:2048/dpIntensity:70/remaining:1.24E+11
+> [PM0:Test:(1) 140.711178] [java/INFO] End of migration of VM vm0 to node PM1
+> [PM0:Test:(1) 140.711178] [java/INFO]      - End of Migration from PM0 to PM1 (duration:43.20860711422699)
+> [PM0:Test:(1) 140.711178] [java/INFO]      - Launch migration from PM1 to PM0
+> [PM0:Test:(1) 140.711178] [java/INFO] Start migration of VM vm0 to PM0
+> [PM0:Test:(1) 140.711178] [java/INFO]     currentLoad:80/ramSize:2048/dpIntensity:70/remaining:6.54E+11
+> [PM0:Test:(1) 183.918679] [java/INFO] End of migration of VM vm0 to node PM0
+> [PM0:Test:(1) 183.918679] [java/INFO]      - End of Migration from PM1 to PM0 (duration:43.207501264227034)
+> [PM0:Test:(1) 183.918679] [java/INFO] Forcefully destroy VMs
+> [183.918679] [java/INFO] MSG_main finished; Cleaning up the simulation...

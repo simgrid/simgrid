@@ -8,8 +8,8 @@ $ ${bindir:=.}/energy-ptask/energy-ptask$EXEEXT ${srcdir:=.}/../platforms/energy
 > [311.000000] (1:test@MyHost1) Then, build a parallel task with no computation nor communication (synchro only)
 > [311.000000] (1:test@MyHost1) Finally, trick the ptask to do a 'remote execution', on host MyHost2
 > [321.000000] (1:test@MyHost1) Goodbye now!
-> [321.000000] (0:maestro@) Total energy consumption: 115160.000000 Joules (used hosts: 115160.000000 Joules; unused/idle hosts: 0.000000)
+> [321.000000] (0:maestro@) Total energy consumption: 157960.888889 Joules (used hosts: 157960.888889 Joules; unused/idle hosts: 0.000000)
 > [321.000000] (0:maestro@) Simulation done.
-> [321.000000] (0:maestro@) Energy consumption of host MyHost1: 38320.000000 Joules
-> [321.000000] (0:maestro@) Energy consumption of host MyHost2: 38520.000000 Joules
-> [321.000000] (0:maestro@) Energy consumption of host MyHost3: 38320.000000 Joules
+> [321.000000] (0:maestro@) Energy consumption of host MyHost1: 30560.888889 Joules
+> [321.000000] (0:maestro@) Energy consumption of host MyHost2: 64200.000000 Joules
+> [321.000000] (0:maestro@) Energy consumption of host MyHost3: 63200.000000 Joules

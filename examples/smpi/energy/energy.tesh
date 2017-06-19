@@ -5,16 +5,16 @@ $ ../../../smpi_script/bin/smpirun -np 2 -hostfile ${srcdir:=.}/hostfile  -platf
 > [0.000000] [rank 0] Current pstate: 0; Current power: 100000000
 > [0.000000] [rank 1] Current pstate: 0; Current power: 100000000
 > [10.000000] [rank 0] Energy consumed: 1200 Joules.
-> [10.000000] [rank 1] Energy consumed: 1200 Joules.
+> [10.000000] [rank 1] Energy consumed: 2000 Joules.
 > [10.000000] [rank 0] Current pstate: 1; Current power: 50000000
 > [10.000000] [rank 1] Current pstate: 1; Current power: 50000000
 > [30.000000] [rank 0] Energy consumed: 3400 Joules.
-> [30.000000] [rank 1] Energy consumed: 3400 Joules.
+> [30.000000] [rank 1] Energy consumed: 5400 Joules.
 > [30.000000] [rank 0] Current pstate: 2; Current power: 20000000
 > [30.000000] [rank 1] Current pstate: 2; Current power: 20000000
 > [80.000000] [rank 0] Energy consumed: 8650 Joules.
-> [80.000000] [rank 1] Energy consumed: 8650 Joules.
-> [80.000000] [surf_energy/INFO] Total energy consumption: 25300.000000 Joules (used hosts: 17300.000000 Joules; unused/idle hosts: 8000.000000)
+> [80.000000] [rank 1] Energy consumed: 12900 Joules.
+> [80.000000] [surf_energy/INFO] Total energy consumption: 29550.000000 Joules (used hosts: 21550.000000 Joules; unused/idle hosts: 8000.000000)
 > [80.000000] [surf_energy/INFO] Energy consumption of host MyHost1: 8650.000000 Joules
-> [80.000000] [surf_energy/INFO] Energy consumption of host MyHost2: 8650.000000 Joules
+> [80.000000] [surf_energy/INFO] Energy consumption of host MyHost2: 12900.000000 Joules
 > [80.000000] [surf_energy/INFO] Energy consumption of host MyHost3: 8000.000000 Joules
