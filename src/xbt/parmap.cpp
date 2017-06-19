@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <atomic>
+#include <climits>
 
 #include "src/internal_config.h"
 #if HAVE_UNISTD_H

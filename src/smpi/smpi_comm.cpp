@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u/Host.hpp"
+#include <climits>
 
 #include "src/simix/smx_private.h"
 #include "src/smpi/private.h"
