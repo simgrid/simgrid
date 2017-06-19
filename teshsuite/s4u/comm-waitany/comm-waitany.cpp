@@ -65,8 +65,8 @@ int main(int argc, char** argv)
 
   engine->loadPlatform(argv[1]);
   simgrid::s4u::Host** hosts = sg_host_list();
-  simgrid::s4u::Actor::createActor("Receiver", hosts[1], receiver);
-  simgrid::s4u::Actor::createActor("Sender", hosts[2], sender);
+  simgrid::s4u::Actor::createActor("Receiver", hosts[0], receiver);
+  simgrid::s4u::Actor::createActor("Sender", hosts[1], sender);
   xbt_free(hosts);
 
   simgrid::s4u::Engine::instance()->run();
