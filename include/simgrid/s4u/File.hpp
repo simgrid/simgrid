@@ -9,6 +9,7 @@
 #include <xbt/base.h>
 
 #include <simgrid/simix.h>
+#include <string>
 
 namespace simgrid {
 namespace s4u {
