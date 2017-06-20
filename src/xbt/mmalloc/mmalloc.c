@@ -171,7 +171,8 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
   void *result;
   size_t block;
   size_t blocks;
-  size_t lastblocks size_t start;
+  size_t lastblocks;
+  size_t start;
   size_t i;
   size_t log;
   int it;
