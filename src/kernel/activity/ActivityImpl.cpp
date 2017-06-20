@@ -15,13 +15,15 @@ ActivityImpl::~ActivityImpl() = default;
 // boost::intrusive_ptr<Activity> support:
 void intrusive_ptr_add_ref(simgrid::kernel::activity::ActivityImpl* activity)
 {
-  activity->refcount_++;
+  activity->refcount_.fetch_add(1, std::memory_order_relaxed);
 }
 
 void intrusive_ptr_release(simgrid::kernel::activity::ActivityImpl* activity)
 {
-  if (activity->refcount_-- == 0)
+  if (activity->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
+    std::atomic_thread_fence(std::memory_order_acquire);
     delete activity;
+  }
 }
 }
 }
