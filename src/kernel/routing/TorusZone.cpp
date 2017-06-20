@@ -33,22 +33,17 @@ TorusZone::TorusZone(NetZone* father, const char* name) : ClusterZone(father, na
 
 void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position)
 {
-  /*
-   * Create all links that exist in the torus.
-   * Each rank creates @a dimensions-1 links
-   */
-  int neighbor_rank_id  = 0; // The other node the link connects
-  int current_dimension = 0; // which dimension are we currently in?
-      // we need to iterate over all dimensions
-      // and create all links there
+  /* Create all links that exist in the torus. Each rank creates @a dimensions-1 links */
   int dim_product = 1; // Needed to calculate the next neighbor_id
-  for (unsigned int j = 0; j < dimensions_.size(); j++) {
 
+  for (unsigned int j = 0; j < dimensions_.size(); j++) {
     LinkCreationArgs link;
-    current_dimension = dimensions_.at(j);
-    neighbor_rank_id  = ((static_cast<int>(rank) / dim_product) % current_dimension == current_dimension - 1)
-                           ? rank - (current_dimension - 1) * dim_product
-                           : rank + dim_product;
+    int current_dimension = dimensions_.at(j); // which dimension are we currently in?
+                                               // we need to iterate over all dimensions and create all links there
+    // The other node the link connects
+    int neighbor_rank_id = ((static_cast<int>(rank) / dim_product) % current_dimension == current_dimension - 1)
+                               ? rank - (current_dimension - 1) * dim_product
+                               : rank + dim_product;
     // name of neighbor is not right for non contiguous cluster radicals (as id != rank in this case)
     char* link_id  = bprintf("%s_link_from_%i_to_%i", cluster->id, id, neighbor_rank_id);
     link.id        = link_id;

@@ -11,13 +11,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_app_token_ring, "Messages specific for this msg
 static int relay_runner(int argc, char *argv[])
 {
   xbt_assert(argc==0, "The relay_runner function does not accept any parameter from the XML deployment file");
-  unsigned int task_comm_size = 1000000; /* The token is 1MB long*/
   int rank = xbt_str_parse_int(MSG_process_get_name(MSG_process_self()), "Any process of this example must have a numerical name, not %s");
   char mailbox[256];
 
   if (rank == 0) {
     /* The root process (rank 0) first sends the token then waits to receive it back */
     snprintf(mailbox,255, "%d", rank+1);
+    unsigned int task_comm_size = 1000000; /* The token is 1MB long*/
     msg_task_t task = MSG_task_create("Token", 0, task_comm_size, NULL);
     XBT_INFO("Host \"%d\" send '%s' to Host \"%s\"", rank, task->name,mailbox);
     MSG_task_send(task, mailbox);

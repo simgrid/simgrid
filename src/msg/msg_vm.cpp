@@ -274,7 +274,7 @@ static int migration_rx_fun(int argc, char *argv[])
   XBT_DEBUG("mig: rx_start");
 
   // The structure has been created in the do_migration function and should only be freed in the same place ;)
-  struct migration_session *ms = (migration_session *) MSG_process_get_data(MSG_process_self());
+  struct migration_session* ms = static_cast<migration_session*>(MSG_process_get_data(MSG_process_self()));
 
   bool received_finalize = false;
 

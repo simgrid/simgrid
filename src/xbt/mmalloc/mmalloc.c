@@ -102,24 +102,19 @@ static void initialize(xbt_mheap_t mdp)
  * into the heap info table as necessary. */
 static void *register_morecore(struct mdesc *mdp, size_t size)
 {
-  int i;
-  void *result;
-  malloc_info *newinfo, *oldinfo;
-  size_t newsize;
-
-  result = align(mdp, size); // Never returns NULL
+  void* result = align(mdp, size); // Never returns NULL
 
   /* Check if we need to grow the info table (in a multiplicative manner)  */
   if ((size_t) BLOCK((char *) result + size) > mdp->heapsize) {
     int it;
 
-    newsize = mdp->heapsize;
+    size_t newsize = mdp->heapsize;
     while ((size_t) BLOCK((char *) result + size) > newsize)
       newsize *= 2;
 
     /* Copy old info into new location */
-    oldinfo = mdp->heapinfo;
-    newinfo = (malloc_info *) align(mdp, newsize * sizeof(malloc_info));
+    malloc_info* oldinfo = mdp->heapinfo;
+    malloc_info* newinfo = (malloc_info*)align(mdp, newsize * sizeof(malloc_info));
     memcpy(newinfo, oldinfo, mdp->heapsize * sizeof(malloc_info));
 
     /* Initialise the new blockinfo : */
@@ -129,14 +124,12 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
     /* Update the swag of busy blocks containing free fragments by applying the offset to all swag_hooks. Yeah. My hand is right in the fan and I still type */
     size_t offset=((char*)newinfo)-((char*)oldinfo);
 
-    for (i=1/*first element of heapinfo describes the mdesc area*/;
-         i<mdp->heaplimit;
-         i++) {
+    for (int i = 1 /*first element of heapinfo describes the mdesc area*/; i < mdp->heaplimit; i++) {
       update_hook(newinfo[i].freehook.next,offset);
       update_hook(newinfo[i].freehook.prev,offset);
     }
     // also update the starting points of the swag
-    for (i=0;i<BLOCKLOG;i++) {
+    for (int i = 0; i < BLOCKLOG; i++) {
       update_hook(mdp->fraghead[i].head,offset);
       update_hook(mdp->fraghead[i].tail,offset);
     }
@@ -176,7 +169,9 @@ void *mmalloc(xbt_mheap_t mdp, size_t size) {
 void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
 {
   void *result;
-  size_t block, blocks, lastblocks, start;
+  size_t block;
+  size_t blocks;
+  size_t lastblocks size_t start;
   size_t i;
   size_t log;
   int it;

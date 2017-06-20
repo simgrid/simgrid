@@ -90,10 +90,7 @@ static void __JAVA_host_priv_free(void *host)
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 {
-  int index;
   int argc = 0;
-  jstring jval;
-  const char *tmp;
 
   XBT_LOG_CONNECT(java);
   XBT_LOG_CONNECT(jtrace);
@@ -115,9 +112,9 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, j
   char** argv = new char*[argc + 1];
   argv[0] = xbt_strdup("java");
 
-  for (index = 0; index < argc - 1; index++) {
-    jval = (jstring) env->GetObjectArrayElement(jargs, index);
-    tmp = env->GetStringUTFChars(jval, 0);
+  for (int index = 0; index < argc - 1; index++) {
+    jstring jval    = (jstring)env->GetObjectArrayElement(jargs, index);
+    const char* tmp = env->GetStringUTFChars(jval, 0);
     argv[index + 1] = xbt_strdup(tmp);
     env->ReleaseStringUTFChars(jval, tmp);
   }
@@ -127,7 +124,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, j
 
   JAVA_HOST_LEVEL = simgrid::s4u::Host::extension_create(__JAVA_host_priv_free);
 
-  for (index = 0; index < argc - 1; index++) {
+  for (int index = 0; index < argc - 1; index++) {
     env->SetObjectArrayElement(jargs, index, (jstring)env->NewStringUTF(argv[index + 1]));
     free(argv[index]);
   }

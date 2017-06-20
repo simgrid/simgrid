@@ -63,9 +63,8 @@ public:
   int answer_id      = -1;            // answer (used by some types of messages)
   simgrid::s4u::MailboxPtr answer_to; // mailbox to send an answer to (if any)
 
-  explicit ChordMessage(e_message_type_t type) : type(type)
+  explicit ChordMessage(e_message_type_t type) : type(type), issuer_host_name(simgrid::s4u::this_actor::host()->name())
   {
-    issuer_host_name = simgrid::s4u::this_actor::host()->name();
   }
 
   ~ChordMessage() = default;

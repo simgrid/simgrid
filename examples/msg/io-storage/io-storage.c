@@ -93,8 +93,7 @@ static int host(int argc, char *argv[]){
 
   /* - Finally dump disks contents */
   XBT_INFO("*** Dump content of %s ***",MSG_host_get_name(MSG_host_self()));
-  xbt_dict_t contents = NULL;
-  contents = MSG_host_get_storage_content(MSG_host_self()); // contents is a dict of dicts
+  xbt_dict_t contents = MSG_host_get_storage_content(MSG_host_self()); // contents is a dict of dicts
   xbt_dict_cursor_t curs;
   xbt_dict_cursor_t curs2 = NULL;
   char* mountname;

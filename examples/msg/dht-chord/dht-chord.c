@@ -367,7 +367,6 @@ int find_successor(node_t node, int id)
 int remote_find_successor(node_t node, int ask_to, int id)
 {
   int successor = -1;
-  int stop = 0;
   char mailbox[MAILBOX_NAME_SIZE];
   get_mailbox(ask_to, mailbox);
   task_data_t req_data = xbt_new0(s_task_data_t, 1);
@@ -385,6 +384,7 @@ int remote_find_successor(node_t node, int ask_to, int id)
     XBT_DEBUG("Failed to send the 'Find Successor' request (task %p) to %d for id %d", task_sent, ask_to, id);
     task_free(task_sent);
   } else {
+    int stop = 0;
     // receive the answer
     XBT_DEBUG("Sent a 'Find Successor' request (task %p) to %d for key %d, waiting for the answer",
         task_sent, ask_to, id);

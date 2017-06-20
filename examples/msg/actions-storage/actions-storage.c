@@ -28,11 +28,10 @@ static void log_action(const char *const *action, double date)
 
 static msg_file_t get_file_descriptor(const char *file_name){
   char full_name[1024];
-  msg_file_t file = NULL;
 
   snprintf(full_name,1023, "%s:%s", MSG_process_get_name(MSG_process_self()), file_name);
 
-  file = (msg_file_t) xbt_dict_get_or_null(opened_files, full_name);
+  msg_file_t file = (msg_file_t)xbt_dict_get_or_null(opened_files, full_name);
   return file;
 }
 

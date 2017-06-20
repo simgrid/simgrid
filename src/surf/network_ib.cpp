@@ -1,5 +1,5 @@
 /* Copyright (c) 2014-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+*All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -125,7 +125,6 @@ namespace simgrid {
     }
 
     void NetworkIBModel::computeIBfactors(IBNode *root) {
-      double penalized_bw=0.0;
       double num_comm_out = (double) root->ActiveCommsUp.size();
       double max_penalty_out=0.0;
       //first, compute all outbound penalties to get their max
@@ -159,7 +158,7 @@ namespace simgrid {
         if((*it)->init_rate==-1)
           (*it)->init_rate= rate_before_update;
 
-        penalized_bw = num_comm_out ? (*it)->init_rate / penalty : (*it)->init_rate;
+        double penalized_bw = num_comm_out ? (*it)->init_rate / penalty : (*it)->init_rate;
 
         if (not double_equals(penalized_bw, rate_before_update, sg_surf_precision)) {
           XBT_DEBUG("%d->%d action %p penalty updated : bw now %f, before %f , initial rate %f", root->id,(*it)->destination->id,(*it)->action,penalized_bw, (*it)->action->getBound(), (*it)->init_rate );
