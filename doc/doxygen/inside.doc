@@ -103,7 +103,7 @@ If you convert from a regular build to an out-of-tree build, you need
 to clean your source tree by removing the following files:
 
 @verbatim
-rm Makefile CMakeCache.txt CMakeFiles.txt include/simgrid_config.h src/internal_config.h
+rm -rf Makefile CMakeCache.txt CMakeFiles include/simgrid_config.h src/internal_config.h lib/*.so
 @endverbatim
 
 */
