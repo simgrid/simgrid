@@ -99,11 +99,11 @@ these files are accessible both from the srcdir and from the bindir. If
 you edit a source file found under bindir, the srcdir version (visible
 to git) will also be changed (that's the same file, after all).
 
-If you accidentally call `make` from the srcdir, it will mess up your
-out of tree builds. To fix it, remove \c srcdir/CMakeCache.txt. 
-To prevent make to even create this file, create a srcdir/CMakeFiles
-directory, and change its mode to 0 (`chmod 0 CMakeFiles`). That way,
-if you type `make` by mistake from srcdir, it will fail before causing
-any harm.
+If you convert from a regular build to an out-of-tree build, you need
+to clean your source tree by removing the following files:
+
+@verbatim
+rm Makefile CMakeCache.txt CMakeFiles.txt include/simgrid_config.h src/internal_config.h
+@endverbatim
 
 */
