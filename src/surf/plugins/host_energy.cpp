@@ -102,6 +102,16 @@ This encodes the following values
 To change the pstate of a given CPU, use the following functions:
 #MSG_host_get_nb_pstates(), simgrid#s4u#Host#setPstate(), #MSG_host_get_power_peak_at().
 
+### How accurate are these models?
+
+This model cannot be more accurate than your instantiation:
+with the default values, your result will not be accurate at all. You can still get
+accurate energy prediction, provided that you carefully instantiate the model.
+The first step is to ensure that your timing prediction match perfectly. But this
+is only the first step of the path, and you really want to read
+<a href="https://hal.inria.fr/hal-01523608">this paper</a> to see all what you need
+to do before you can get accurate energy predictions.
+
  */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_energy, surf, "Logging specific to the SURF energy plugin");
