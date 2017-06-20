@@ -157,7 +157,7 @@ double sg_host_get_available_speed(sg_host_t host)
 
 /** @brief Returns the number of power states for a host.
  *
- *  See also @ref SURF_plugin_energy.
+ *  See also @ref plugin_energy.
  */
 int sg_host_get_nb_pstates(sg_host_t host) {
   return host->pstatesCount();
@@ -165,14 +165,14 @@ int sg_host_get_nb_pstates(sg_host_t host) {
 
 /** @brief Gets the pstate at which that host currently runs.
  *
- *  See also @ref SURF_plugin_energy.
+ *  See also @ref plugin_energy.
  */
 int sg_host_get_pstate(sg_host_t host) {
   return host->pstate();
 }
 /** @brief Sets the pstate at which that host should run.
  *
- *  See also @ref SURF_plugin_energy.
+ *  See also @ref plugin_energy.
  */
 void sg_host_set_pstate(sg_host_t host,int pstate) {
   host->setPstate(pstate);

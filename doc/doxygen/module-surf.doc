@@ -14,7 +14,7 @@
    - \ref SURF_vm_interface
    - \ref SURF_lmm
    - \ref SURF_callbacks
-   - \ref SURF_plugin_energy
+   - \ref plugin_energy
    
 
 */
@@ -135,7 +135,7 @@
 */
 
 /**
-@defgroup SURF_plugin_energy   SURF Energy Plugin
+@defgroup plugin_energy   Energy Plugin
 @ingroup SURF_API
 @brief Describes how to use the energy plugin.
 */

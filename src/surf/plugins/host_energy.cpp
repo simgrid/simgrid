@@ -16,18 +16,19 @@
 #include <utility>
 #include <vector>
 
-/** @addtogroup SURF_plugin_energy
+/** @addtogroup plugin_energy
 
 
 This is the energy plugin, enabling to account not only for computation time,
 but also for the dissipated energy in the simulated platform.
-To activate this plugin, first call MSG_energy_plugin_init() before your #MSG_init(),
+To activate this plugin, first call sg_host_energy_plugin_init() before your #MSG_init(),
 and then use MSG_host_get_consumed_energy() to retrieve the consumption of a given host.
 
 When the host is on, this energy consumption naturally depends on both the
 current CPU load and the host energy profile. According to our measurements,
 the consumption is somehow linear in the amount of cores at full speed,
-with an abnormality when all the cores are idle.
+with an abnormality when all the cores are idle. The full details are in
+<a href="https://hal.inria.fr/hal-01523608">our scientific paper</a> on that topic.
 
 As a result, our energy model takes 4 parameters:
 
@@ -60,10 +61,10 @@ This is enough to compute the consumption as a function of the amount of loaded 
 
 ### What if a given core is only at load 50%?
 
-Well, that's impossible in SimGrid because we recompute everything each time
+This is impossible in SimGrid because we recompute everything each time
 that the CPU starts or stops doing something. So if a core is at load 50% over
 a period, it means that it is at load 100% half of the time and at load 0% the
-rest of the time, and the model holds.
+rest of the time, and our model holds.
 
 ### What if the host has only one core?
 
@@ -78,7 +79,7 @@ If you insist on passing 3 parameters in this case, then you must have the same 
 </host>
 \endcode
 
-### How does DVFS interact with the energy model?
+### How does DVFS interact with the host energy model?
 
 If your host has several DVFS levels (several pstates), then you should
 give the energetic profile of each pstate level:
@@ -426,7 +427,7 @@ static void onSimulationEnd()
 /* **************************** Public interface *************************** */
 SG_BEGIN_DECL()
 
-/** \ingroup SURF_plugin_energy
+/** \ingroup plugin_energy
  * \brief Enable host energy plugin
  * \details Enable energy plugin to get joules consumption of each cpu. Call this function before #MSG_init().
  */
@@ -445,7 +446,8 @@ void sg_host_energy_plugin_init()
   simgrid::surf::CpuAction::onStateChange.connect(&onActionStateChange);
 }
 
-/** @brief updates the consumption of all hosts
+/** @ingroup plugin_energy
+ *  @brief updates the consumption of all hosts
  *
  * After this call, sg_host_get_consumed_energy() will not interrupt your process
  * (until after the next clock update).
@@ -460,13 +462,12 @@ void sg_host_energy_update_all()
   });
 }
 
-/** @brief Returns the total energy consumed by the host so far (in Joules)
+/** @ingroup plugin_energy
+ *  @brief Returns the total energy consumed by the host so far (in Joules)
  *
  *  Please note that since the consumption is lazily updated, it may require a simcall to update it.
  *  The result is that the actor requesting this value will be interrupted,
  *  the value will be updated in kernel mode before returning the control to the requesting actor.
- *
- *  See also @ref SURF_plugin_energy.
  */
 double sg_host_get_consumed_energy(sg_host_t host)
 {
@@ -475,14 +476,18 @@ double sg_host_get_consumed_energy(sg_host_t host)
   return host->extension<HostEnergy>()->getConsumedEnergy();
 }
 
-/** @brief Get the amount of watt dissipated at the given pstate when the host is idling */
+/** @ingroup plugin_energy
+ *  @brief Get the amount of watt dissipated at the given pstate when the host is idling
+ */
 double sg_host_get_wattmin_at(sg_host_t host, int pstate)
 {
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
              "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
   return host->extension<HostEnergy>()->getWattMinAt(pstate);
 }
-/** @brief  Returns the amount of watt dissipated at the given pstate when the host burns CPU at 100% */
+/** @ingroup plugin_energy
+ *  @brief  Returns the amount of watt dissipated at the given pstate when the host burns CPU at 100%
+ */
 double sg_host_get_wattmax_at(sg_host_t host, int pstate)
 {
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
@@ -490,7 +495,9 @@ double sg_host_get_wattmax_at(sg_host_t host, int pstate)
   return host->extension<HostEnergy>()->getWattMaxAt(pstate);
 }
 
-/** @brief Returns the current consumption of the host */
+/** @ingroup plugin_energy
+ *  @brief Returns the current consumption of the host
+ */
 double sg_host_get_current_consumption(sg_host_t host)
 {
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),

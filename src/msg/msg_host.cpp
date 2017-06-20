@@ -74,7 +74,7 @@ msg_host_t MSG_host_self()
  *
  * \brief Start the host if it is off
  *
- * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref SURF_plugin_energy
+ * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref plugin_energy
  * for more info on DVFS.
  */
 void MSG_host_on(msg_host_t host)
@@ -86,7 +86,7 @@ void MSG_host_on(msg_host_t host)
  *
  * \brief Stop the host if it is on
  *
- * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref SURF_plugin_energy
+ * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref plugin_energy
  * for more info on DVFS.
  */
 void MSG_host_off(msg_host_t host)
@@ -192,7 +192,8 @@ void MSG_host_set_property_value(msg_host_t host, const char* name, char* value)
 /** @ingroup m_host_management
  * @brief Determine if a host is up and running.
  *
- * See also #MSG_host_on() and #MSG_host_off() to switch the host ON and OFF and @ref SURF_plugin_energy for more info on DVFS.
+ * See also #MSG_host_on() and #MSG_host_off() to switch the host ON and OFF and @ref plugin_energy for more info on
+ * DVFS.
  *
  * @param host host to test
  * @return Returns true if the host is up and running, and false if it's currently down
@@ -205,7 +206,8 @@ int MSG_host_is_on(msg_host_t host)
 /** @ingroup m_host_management
  * @brief Determine if a host is currently off.
  *
- * See also #MSG_host_on() and #MSG_host_off() to switch the host ON and OFF and @ref SURF_plugin_energy for more info on DVFS.
+ * See also #MSG_host_on() and #MSG_host_off() to switch the host ON and OFF and @ref plugin_energy for more info on
+ * DVFS.
  */
 int MSG_host_is_off(msg_host_t host)
 {
@@ -213,7 +215,7 @@ int MSG_host_is_off(msg_host_t host)
 }
 
 /** \ingroup m_host_management
- * \brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref SURF_plugin_energy.
+ * \brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref plugin_energy.
  *
  * \param  host host to test
  * \param pstate_index pstate to test
@@ -225,7 +227,7 @@ double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
 }
 
 /** \ingroup m_host_management
- * \brief Return the total count of pstates defined for a host. See also @ref SURF_plugin_energy.
+ * \brief Return the total count of pstates defined for a host. See also @ref plugin_energy.
  *
  * \param  host host to test
  */
