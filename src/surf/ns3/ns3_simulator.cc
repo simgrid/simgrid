@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,6 +7,8 @@
 #include "xbt/dict.h"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
+
+#include <algorithm>
 
 xbt_dict_t flowFromSock = xbt_dict_new_homogeneous([](void *p) {
   delete (SgFlow*)p;
