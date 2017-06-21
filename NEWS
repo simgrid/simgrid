@@ -5,6 +5,13 @@ __   _____ _ __ ___(_) ___  _ __   |___ / / |/ /_
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_|\___/
                (not released yet)
 
+The Blooming Spring Release: developments are budding.
+
+ * S4U: Progress; Activity refcounting is now automatic.
+ * XML: <AS> can now be named <zone> as they should.
+ * SMPI: Further performance improvements; RMA support.
+ * XBT: Dropped a few more modules that we don't use.
+ * (+ bug fixes, cleanups and documentation improvements)
                     _               _____  _ ____
 __   _____ _ __ ___(_) ___  _ __   |___ / / | ___|
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | |___ \
@@ -17,7 +24,7 @@ The Spring Release: continuous integration servers become green.
  * S4U: progress, integrating more parts of SimDag; New examples.
  * SMPI: Support MPI 2.2; Convert internals to C++ (TBC).
  * Java: Massive memleaks and performance issues fixed.
- * Plus the usual bug fixes, cleanups and documentation improvements
+ * (+ bug fixes, cleanups and documentation improvements)
                     _               _____  _ _  _    _ ____  ___
 __   _____ _ __ ___(_) ___  _ __   |___ / / | || |  / | ___|/ _ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | | || |_ | |___ \ (_) |
