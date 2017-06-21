@@ -1,7 +1,6 @@
 /* cunit - A little C Unit facility                                         */
 
-/* Copyright (c) 2005-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2005-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -96,12 +95,13 @@ struct s_xbt_test_unit {
 static void xbt_test_unit_dump(xbt_test_unit_t unit)
 {
   if (unit) {
-    xbt_test_test_t test;
-    unsigned int it_test;
     fprintf(stderr, "  UNIT %s: %s (%s)\n", unit->name, unit->title, (unit->enabled ? "enabled" : "disabled"));
-    if (unit->enabled)
+    if (unit->enabled) {
+      xbt_test_test_t test;
+      unsigned int it_test;
       xbt_dynar_foreach(unit->tests, it_test, test)
           xbt_test_test_dump(test);
+    }
   } else {
     fprintf(stderr, "  unit=nullptr\n");
   }
@@ -185,15 +185,15 @@ xbt_test_suite_t xbt_test_suite_new(const char *name, const char *fmt, ...)
 xbt_test_suite_t xbt_test_suite_by_name(const char *name, const char *fmt, ...)
 {
   xbt_test_suite_t suite;
-  unsigned int it_suite;
-
   char *bufname;
   va_list ap;
 
-  if (_xbt_test_suites)
+  if (_xbt_test_suites) {
+    unsigned int it_suite;
     xbt_dynar_foreach(_xbt_test_suites, it_suite, suite)
       if (not strcmp(suite->name, name))
         return suite;
+  }
 
   va_start(ap, fmt);
   bufname = bvprintf(fmt, ap);
@@ -207,14 +207,15 @@ xbt_test_suite_t xbt_test_suite_by_name(const char *name, const char *fmt, ...)
 void xbt_test_suite_dump(xbt_test_suite_t suite)
 {
   if (suite) {
-    xbt_test_unit_t unit;
-    unsigned int it_unit;
     fprintf(stderr, "TESTSUITE %s: %s (%s)\n", suite->name, suite->title, suite->enabled ? "enabled" : "disabled");
-    if (suite->enabled)
+    if (suite->enabled) {
+      xbt_test_unit_t unit;
+      unsigned int it_unit;
       xbt_dynar_foreach(suite->units, it_unit, unit)
           xbt_test_unit_dump(unit);
+    }
   } else {
-    fprintf(stderr, "TESTSUITE IS nullptr!\n");
+    fprintf(stderr, "TESTSUITE IS NULL!\n");
   }
 }
 
@@ -249,14 +250,8 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
   xbt_test_test_t test;
   xbt_test_log_t log;
 
-  const char *file;
-  int line;
-  char *cp;
   unsigned int it_unit;
   unsigned int it_test;
-  unsigned int it_log;
-
-  int first = 1;                /* for result pretty printing */
 
   if (suite == nullptr)
     return 0;
@@ -289,8 +284,9 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
       unit->test_expect = 0;
 
       /* display unit title */
-      cp = bprintf(" Unit: %s ......................................"
-                   "......................................", unit->title);
+      char* cp = bprintf(" Unit: %s ......................................"
+                         "......................................",
+                         unit->title);
       cp[70] = '\0';
       fprintf(stderr, "%s", cp);
       free(cp);
@@ -326,8 +322,8 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
           fprintf(stderr, ".... skip\n");       /* shouldn't happen, but I'm a bit lost with this logic */
         }
         xbt_dynar_foreach(unit->tests, it_test, test) {
-          file = (test->file != nullptr ? test->file : unit->file);
-          line = (test->line != 0 ? test->line : unit->line);
+          const char* file = (test->file != nullptr ? test->file : unit->file);
+          int line         = (test->line != 0 ? test->line : unit->line);
           const char* resname;
           if (test->ignored)
             resname = " SKIP";
@@ -345,6 +341,7 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
           fprintf(stderr, "      %s: %s [%s:%d]\n", resname, test->title, file, line);
 
           if ((test->expected_failure && not test->failed) || (not test->expected_failure && test->failed)) {
+            unsigned int it_log;
             xbt_dynar_foreach(test->logs, it_log, log) {
               file = (log->file != nullptr ? log->file : file);
               line = (log->line != 0 ? log->line : line);
@@ -406,6 +403,8 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
 
   /* print test suite summary */
   if (suite->enabled) {
+    int first = 1; /* for result pretty printing */
+
     fprintf(stderr," =====================================================================%s\n",
             (suite->nb_units ? (suite->unit_failed ? "== FAILED" : "====== OK") :
                                (suite->unit_disabled ? " DISABLED" : "==== SKIP")));
