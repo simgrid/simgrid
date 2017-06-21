@@ -120,7 +120,7 @@ except NameError:
 
 # read file line per line (and concat line that ends with "\")
 class FileReader(Singleton):
-    def __init__(self, filename):
+    def __init__(self, filename=None):
         if filename is None:
             self.filename = "(stdin)"
             self.f = sys.stdin
@@ -132,9 +132,6 @@ class FileReader(Singleton):
 
         self.linenumber = 0
 
-    def linenumber(self):
-        return self.linenumber
-    
     def __repr__(self):
         return self.filename+":"+str(self.linenumber)
     
