@@ -26,14 +26,6 @@ namespace context {
 
   namespace simix {
 
-  /** @brief Process datatype
-      @ingroup simix_process_management
-
-      A process may be defined as a <em>code</em>, with some <em>private
-      data</em>, executing in a <em>location</em>.
-      \see m_process_management
-    @{ */
-  class ActorImpl;
   class MutexImpl;
 }
 }
