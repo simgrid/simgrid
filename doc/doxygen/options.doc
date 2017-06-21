@@ -485,13 +485,15 @@ For now, this configuration variable can take 2 values:
 \subsection options_modelchecking_visited model-check/visited, Cycle detection
 
 In order to detect cycles, the model-checker needs to check if a new explored
-state is in fact the same state than a previous one. In order to do this,
+state is in fact the same state than a previous one. For that,
 the model-checker can take a snapshot of each visited state: this snapshot is
 then used to compare it with subsequent states in the exploration graph.
 
-The \b model-check/visited is the maximum number of states which are stored in
-memory. If the maximum number of snapshotted state is reached some states will
-be removed from the memory and some cycles might be missed.
+The \b model-check/visited option is the maximum number of states which are stored in
+memory. If the maximum number of snapshotted state is reached, some states will
+be removed from the memory and some cycles might be missed. Small
+values can lead to incorrect verifications, but large value can
+exhaust your memory, so choose carefully.
 
 By default, no state is snapshotted and cycles cannot be detected.
 
