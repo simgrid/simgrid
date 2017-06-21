@@ -23,7 +23,7 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount)
   // Create a VCPU for this VM
   surf::CpuCas01* sub_cpu = dynamic_cast<surf::CpuCas01*>(pm->pimpl_cpu);
 
-  pimpl_cpu = surf_cpu_model_vm->createCpu(this, sub_cpu->getSpeedPeakList(), 1 /*cores*/);
+  pimpl_cpu = surf_cpu_model_vm->createCpu(this, sub_cpu->getSpeedPeakList(), coreAmount);
   if (sub_cpu->getPState() != 0)
     pimpl_cpu->setPState(sub_cpu->getPState());
 

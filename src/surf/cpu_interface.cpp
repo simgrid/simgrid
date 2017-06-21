@@ -113,8 +113,6 @@ Cpu::Cpu(Model* model, simgrid::s4u::Host* host, lmm_constraint_t constraint, st
   for (double value : *speedPerPstate) {
     speedPerPstate_.push_back(value);
   }
-
-  xbt_assert(model == surf_cpu_model_pm || core==1, "Currently, VM cannot be multicore");
 }
 
 Cpu::~Cpu() = default;
