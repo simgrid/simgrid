@@ -475,7 +475,7 @@ xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
   xbt_dict_t content_dict = xbt_dict_new_homogeneous(&free);
 
   for (auto entry : *content) {
-    sg_size_t* psize = new sg_size_t;
+    sg_size_t* psize = static_cast<sg_size_t*>(malloc(sizeof(sg_size_t)));
     *psize           = entry.second;
     xbt_dict_set(content_dict, entry.first.c_str(), psize, nullptr);
   }
