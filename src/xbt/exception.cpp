@@ -90,7 +90,7 @@ static void handler()
   // an uncaught exception
   static std::atomic_flag lock = ATOMIC_FLAG_INIT;
   if (lock.test_and_set()) {
-    XBT_ERROR("Multiple uncaught exceptions");
+    XBT_ERROR("Handling an exception raised an exception. Bailing out.");
     std::abort();
   }
 
