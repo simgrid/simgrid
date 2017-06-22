@@ -87,8 +87,7 @@ void MC_handle_comm_pattern(
     {
     simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> comm_addr = nullptr;
     if (call_type == MC_CALL_TYPE_WAIT)
-      comm_addr = remote(static_cast<simgrid::kernel::activity::CommImpl*>(
-          simgrid::simix::unmarshal_raw<simgrid::kernel::activity::ActivityImpl*>(req->result)));
+      comm_addr = remote(static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__getraw__comm(req)));
 
     else {
       simgrid::kernel::activity::CommImpl* addr;
