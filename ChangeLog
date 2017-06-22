@@ -29,6 +29,7 @@ SimGrid (3.16) UNRELEASED
 
  Virtual Machines
   - Allow multicore VMs, along with the correct sharing computations
+    vCPU overcommitting still leads to buggy sharing, though. WIP.
 
  Energy
   - New function to update the consumption of all hosts at once.
