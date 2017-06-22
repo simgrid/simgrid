@@ -28,11 +28,14 @@ SimGrid (3.16) UNRELEASED
     now	returns void.
 
  Virtual Machines
-  - Allow multicore VMs, along with the correct sharing computations
-    vCPU overcommitting still leads to buggy sharing, though. WIP.
+  - Allow multicore VMs, with the correct sharing (unless you overcommit)
+    BUG: vCPU overcommitting still leads to buggy sharing, though. WIP.
 
  Energy
   - New function to update the consumption of all hosts at once.
+  - Fix the model for multi-core hosts, linear in the amount of busy
+    cores with an abnormality for pIdle (see paper).
+    BUG: Still not satisfactory for ptask on mono-cores.
 
  MSG
   - The netzone are now available from the MSG API.
@@ -56,6 +59,8 @@ SimGrid (3.16) UNRELEASED
 
  S4U
   - New: this_actor::isMaestro() returns whether we are in kernel mode.
+  - Behind the scene, ActivityImpl are now automatically refcounted.
+    Removing this nasty bottleneck will greatly simplify our internals.
 
  XBT
   - Replay: New function xbt_replay_action_get():

@@ -10,7 +10,7 @@ The Blooming Spring Release: developments are budding.
  * S4U: Progress; Activity refcounting is now automatic.
  * XML: <AS> can now be named <zone> as they should.
  * SMPI: Further performance improvements; RMA support.
- * XBT: Dropped a few more modules that we don't use.
+ * Cloud: Multi-core VMs (do not overcommit them yet)
  * (+ bug fixes, cleanups and documentation improvements)
                     _               _____  _ ____
 __   _____ _ __ ___(_) ___  _ __   |___ / / | ___|
