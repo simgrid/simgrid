@@ -1,4 +1,6 @@
-SimGrid (3.16) UNRELEASED
+SimGrid (3.17) UNRELEASED (release target: September 22 2017)
+
+SimGrid (3.16) Released June 22. 2017.
 
  The Blooming Spring Release: developments are budding.
 
@@ -74,7 +76,7 @@ SimGrid (3.16) UNRELEASED
 
  -- Thu Jun 22 22:48:12 CEST 2017   -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
-SimGrid (3.15) stable; urgency=low
+SimGrid (3.15) Released March 22. 2017
 
  The Spring Release: continuous integration servers become green
  We fixed even the transient bugs on all target architectures:
@@ -163,9 +165,7 @@ SimGrid (3.15) stable; urgency=low
  - A <cluster> can now be created with different speed values to represent pstates.
    see examples/platforms/energy_cluster.xml for an example.
 
- -- Wed Mar 22 17:50:21 CET 2017 -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
-
-SimGrid (3.14.159) stable; urgency=low
+SimGrid (3.14.159) Released December 28. 2016
 
  The previous release was only a crude approximation of a Pi release;
  this one should be a bit better.
@@ -175,9 +175,7 @@ SimGrid (3.14.159) stable; urgency=low
  - Improve the documentation, in particular of the routing module.
  - Integrate some patches flying around in Debian.
 
- -- Wed Dec 28 17:14:49 CET 2016 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
-
-SimGrid (3.14) stable; urgency=low
+SimGrid (3.14) Released December 24. 2016
 
  Documentation
  * The whole documentation was reworked and reorganized. There is
@@ -274,8 +272,6 @@ SimGrid (3.14) stable; urgency=low
  MSG:
  * Memory usage should be decreased for simulations with a large number 
    of processes. This also helps for SMPI.
-
- -- Sat Dec 24 22:34:26 CET 2016 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.13) stable; urgency=low
 

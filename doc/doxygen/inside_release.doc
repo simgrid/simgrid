@@ -20,7 +20,7 @@ Please apply the following checklist before releasing.
 - ChangeLog file
   - All changes are documented
   - The release date is indicated below the changes
-  - The release is marked as stable above the changes
+  - The release is marked as stable above the changes (remove the UNRELEASED marker)
   - The release dub name matches the one given in NEWS file
 - NEWS
   - The most notable changes of the version are documented
@@ -82,6 +82,7 @@ the settings icon of the release you want to change.
 - Push the archive files (tar.gz and jar) on gforge
 - Post a news on gforge (before updating the website)
 - Update the link scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/latest
+  (and create the directory of the next version)
 - Rebuild and resynchronize the website so that the file gets visible
   from our download page.\n
   - Edit org/org-templates/level-0.org to change the release version, the tgz link and the jar link.
