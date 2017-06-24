@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -85,10 +84,9 @@ static int communication_rx_fun(int argc, char *argv[])
 static void launch_communication_worker(msg_host_t tx_host, msg_host_t rx_host)
 {
   char *mbox = bprintf("MBOX:%s-%s", MSG_host_get_name(tx_host), MSG_host_get_name(rx_host));
-  char **argv = NULL;
-
   const char *pr_name_tx =  "comm_tx";
-  argv = xbt_new(char *, 3);
+
+  char** argv = xbt_new(char*, 3);
   argv[0] = xbt_strdup(pr_name_tx);
   argv[1] = xbt_strdup(mbox);
   argv[2] = NULL;

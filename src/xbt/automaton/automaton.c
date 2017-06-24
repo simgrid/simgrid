@@ -21,8 +21,7 @@ struct xbt_automaton_propositional_symbol{
 };
 
 xbt_automaton_t xbt_automaton_new(void){
-  xbt_automaton_t automaton = NULL;
-  automaton = xbt_new0(struct xbt_automaton, 1);
+  xbt_automaton_t automaton = xbt_new0(struct xbt_automaton, 1);
   automaton->states = xbt_dynar_new(sizeof(xbt_automaton_state_t), xbt_automaton_state_free_voidp);
   automaton->transitions = xbt_dynar_new(sizeof(xbt_automaton_transition_t), xbt_automaton_transition_free_voidp);
   automaton->propositional_symbols = xbt_dynar_new(sizeof(xbt_automaton_propositional_symbol_t), xbt_automaton_propositional_symbol_free_voidp);
@@ -30,8 +29,7 @@ xbt_automaton_t xbt_automaton_new(void){
 }
 
 xbt_automaton_state_t xbt_automaton_state_new(xbt_automaton_t a, int type, char* id){
-  xbt_automaton_state_t state = NULL;
-  state = xbt_new0(struct xbt_automaton_state, 1);
+  xbt_automaton_state_t state = xbt_new0(struct xbt_automaton_state, 1);
   state->type = type;
   state->id = xbt_strdup(id);
   state->in = xbt_dynar_new(sizeof(xbt_automaton_transition_t), xbt_automaton_transition_free_voidp);
@@ -41,8 +39,7 @@ xbt_automaton_state_t xbt_automaton_state_new(xbt_automaton_t a, int type, char*
 }
 
 xbt_automaton_transition_t xbt_automaton_transition_new(xbt_automaton_t a, xbt_automaton_state_t src, xbt_automaton_state_t dst, xbt_automaton_exp_label_t label){
-  xbt_automaton_transition_t transition = NULL;
-  transition = xbt_new0(struct xbt_automaton_transition, 1);
+  xbt_automaton_transition_t transition = xbt_new0(struct xbt_automaton_transition, 1);
   if(src != NULL){
     xbt_dynar_push(src->out, &transition);
     transition->src = src;
@@ -205,8 +202,7 @@ static int call_simple_function(void* function)
 }
 
 xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new(xbt_automaton_t a, const char* id, int(*fct)(void)){
-  xbt_automaton_propositional_symbol_t prop_symb = NULL;
-  prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
+  xbt_automaton_propositional_symbol_t prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
   prop_symb->pred = xbt_strdup(id);
   prop_symb->callback                            = &call_simple_function;
   prop_symb->data = fct;

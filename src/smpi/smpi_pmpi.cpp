@@ -2127,8 +2127,7 @@ int PMPI_Alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype 
     }
 
     extra->datatype1 = encode_datatype(sendtmptype, &known);
-    int dt_size_send = 1;
-    dt_size_send     = sendtmptype->size();
+    int dt_size_send = sendtmptype->size();
 
     for (i = 0; i < size; i++) { // copy data to avoid bad free
       extra->send_size += sendtmpcounts[i] * dt_size_send;

@@ -35,10 +35,8 @@ static int lazy_guy(int argc, char *argv[])
 /* The Dream master: */
 static int dream_master(int argc, char *argv[])
 {
-  msg_process_t lazy = NULL;
-
   XBT_INFO("Let's create a lazy guy."); /* - Create a lazy_guy process */
-  lazy = MSG_process_create("Lazy", lazy_guy, NULL, MSG_host_self());
+  msg_process_t lazy = MSG_process_create("Lazy", lazy_guy, NULL, MSG_host_self());
   XBT_INFO("Let's wait a little bit...");
   MSG_process_sleep(10.0);              /* - Wait for 10 seconds */
   XBT_INFO("Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!");
