@@ -550,8 +550,6 @@ int smpi_main(const char* executable, int argc, char *argv[])
   SIMIX_create_environment(argv[1]);
   SIMIX_comm_set_copy_data_callback(smpi_comm_copy_buffer_callback);
 
-  static std::size_t rank = 0;
-
   smpi_init_options();
 
   if (smpi_privatize_global_variables == SMPI_PRIVATIZE_DLOPEN) {
@@ -562,6 +560,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
     struct stat fdin_stat;
     stat(executable_copy.c_str(), &fdin_stat);
     off_t fdin_size = fdin_stat.st_size;
+    static std::size_t rank = 0;
 
     simix_global->default_function = [executable_copy, fdin_size](std::vector<std::string> args) {
       return std::function<void()>([executable_copy, fdin_size, args] {

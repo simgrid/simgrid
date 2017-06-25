@@ -166,10 +166,10 @@ void HostEnergy::update()
 {
   double start_time  = this->last_updated;
   double finish_time = surf_get_clock();
-  double cpu_load;
   double current_speed = host->speed();
 
   if (start_time < finish_time) {
+    double cpu_load;
     // We may have start == finish if the past consumption was updated since the simcall was started
     // for example if 2 actors requested to update the same host's consumption in a given scheduling round.
     //

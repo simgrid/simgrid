@@ -250,7 +250,6 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
   xbt_test_test_t test;
   xbt_test_log_t log;
 
-  unsigned int it_unit;
   unsigned int it_test;
 
   if (suite == nullptr)
@@ -276,6 +275,7 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
 
   if (suite->enabled) {
     /* iterate through all tests */
+    unsigned int it_unit;
     xbt_dynar_foreach(suite->units, it_unit, unit) {
       /* init unit case counters */
       unit->nb_tests = 0;

@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -44,11 +43,9 @@ static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
   lmm_constraint_t cnst = nullptr;
   lmm_variable_t var = nullptr;
 
-  double tmp;
-
   xbt_swag_foreach(_cnst, cnst_list) {
-  cnst = static_cast<lmm_constraint_t>(_cnst);
-    tmp = 0;
+    cnst       = static_cast<lmm_constraint_t>(_cnst);
+    double tmp = 0;
     elem_list = &(cnst->enabled_element_set);
     xbt_swag_foreach(_elem, elem_list) {
       elem = static_cast<lmm_element_t>(_elem);
@@ -431,30 +428,25 @@ static double dichotomy(double init, double diff(double, void *), void *var_cnst
 
 static double partial_diff_lambda(double lambda, void *param_cnst)
 {
-  int j;
-  void *_elem;
-  xbt_swag_t elem_list = nullptr;
-  lmm_element_t elem = nullptr;
-  lmm_variable_t var = nullptr;
   lmm_constraint_t cnst = static_cast<lmm_constraint_t>(param_cnst);
   double diff = 0.0;
-  double sigma_i = 0.0;
 
   XBT_IN();
-  elem_list = &(cnst->enabled_element_set);
 
   XBT_CDEBUG(surf_lagrange_dichotomy, "Computing diff of cnst (%p)", cnst);
 
+  xbt_swag_t elem_list = &(cnst->enabled_element_set);
+  void* _elem;
   xbt_swag_foreach(_elem, elem_list) {
-  elem = static_cast<lmm_element_t>(_elem);
-    var = elem->variable;
+    lmm_element_t elem = static_cast<lmm_element_t>(_elem);
+    lmm_variable_t var = elem->variable;
     xbt_assert(var->weight > 0);
     XBT_CDEBUG(surf_lagrange_dichotomy, "Computing sigma_i for var (%p)", var);
     // Initialize the summation variable
-    sigma_i = 0.0;
+    double sigma_i = 0.0;
 
     // Compute sigma_i
-    for (j = 0; j < var->cnsts_number; j++) {
+    for (int j = 0; j < var->cnsts_number; j++) {
       sigma_i += (var->cnsts[j].constraint)->lambda;
     }
 

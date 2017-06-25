@@ -72,20 +72,15 @@ xbt_dict_t xbt_dict_new_homogeneous(void_f_pvoid_t free_ctn)
  */
 void xbt_dict_free(xbt_dict_t * dict)
 {
-  xbt_dictelm_t current;
-  xbt_dictelm_t previous;
-  int table_size;
-  xbt_dictelm_t *table;
-
-  //  if ( *dict )  xbt_dict_dump_sizes(*dict);
-
   if (dict != nullptr && *dict != nullptr) {
-    table_size = (*dict)->table_size;
-    table = (*dict)->table;
+    int table_size       = (*dict)->table_size;
+    xbt_dictelm_t* table = (*dict)->table;
     /* Warning: the size of the table is 'table_size+1'...
      * This is because table_size is used as a binary mask in xbt_dict_rehash */
     for (int i = 0; (*dict)->count && i <= table_size; i++) {
-      current = table[i];
+      xbt_dictelm_t current = table[i];
+      xbt_dictelm_t previous;
+
       while (current != nullptr) {
         previous = current;
         current = current->next;

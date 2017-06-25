@@ -757,10 +757,10 @@ void Request::wait(MPI_Request * request, MPI_Status * status)
 int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
 {
   s_xbt_dynar_t comms; // Keep it on stack to save some extra mallocs
-  int size = 0;
   int index = MPI_UNDEFINED;
 
   if(count > 0) {
+    int size = 0;
     // Wait for a request to complete
     xbt_dynar_init(&comms, sizeof(smx_activity_t), [](void*ptr){
       intrusive_ptr_release(*(simgrid::kernel::activity::ActivityImpl**)ptr);
@@ -914,9 +914,10 @@ int Request::add_f() {
 }
 
 void Request::free_f(int id) {
-  char key[KEY_SIZE];
-  if(id!=MPI_FORTRAN_REQUEST_NULL)
+  if (id != MPI_FORTRAN_REQUEST_NULL) {
+    char key[KEY_SIZE];
     xbt_dict_remove(F2C::f2c_lookup(), get_key_id(key, id));
+  }
 }
 
 }
