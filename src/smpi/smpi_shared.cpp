@@ -214,12 +214,13 @@ static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
 
 #define HUGE_PAGE_SIZE 1<<21
 
-/*
- * Similar to smpi_shared_malloc, but only sharing the blocks described by shared_block_offsets.
+/* Similar to smpi_shared_malloc, but only sharing the blocks described by shared_block_offsets.
  * This array contains the offsets (in bytes) of the block to share.
  * Even indices are the start offsets (included), odd indices are the stop offsets (excluded).
- * For instance, if shared_block_offsets == {27, 42}, then the elements mem[27], mem[28], ..., mem[41] are shared. The others are not.
+ * For instance, if shared_block_offsets == {27, 42}, then the elements mem[27], mem[28], ..., mem[41] are shared.
+ * The others are not.
  */
+
 void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int nb_shared_blocks)
 {
   char *huge_page_mount_point = xbt_cfg_get_string("smpi/shared-malloc-hugepage");
@@ -230,7 +231,7 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
   use_huge_page = 0;
 #endif
   smpi_shared_malloc_blocksize = static_cast<unsigned long>(xbt_cfg_get_double("smpi/shared-malloc-blocksize"));
-  void *mem, *allocated_ptr;
+  void* mem;
   size_t allocated_size;
   if(use_huge_page) {
     xbt_assert(smpi_shared_malloc_blocksize == HUGE_PAGE_SIZE, "the block size of shared malloc should be equal to the size of a huge page.");
@@ -243,8 +244,7 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
 
 
   /* First reserve memory area */
-  allocated_ptr = mmap(NULL, allocated_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-
+  void* allocated_ptr = mmap(NULL, allocated_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 
   xbt_assert(allocated_ptr != MAP_FAILED, "Failed to allocate %zuMiB of memory. Run \"sysctl vm.overcommit_memory=1\" as root "
                                 "to allow big allocations.\n",

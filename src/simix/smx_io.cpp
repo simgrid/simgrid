@@ -117,9 +117,7 @@ int SIMIX_file_unlink(smx_file_t fd, sg_host_t host)
   if (host->isOff())
     THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->cname());
 
-  int res = surf_host_unlink(host, fd->surf_file);
-  xbt_free(fd);
-  return res;
+  return surf_host_unlink(host, fd->surf_file);
 }
 
 sg_size_t simcall_HANDLER_file_get_size(smx_simcall_t simcall, smx_file_t fd)

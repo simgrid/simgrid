@@ -64,48 +64,43 @@
 void *mmorecore(struct mdesc *mdp, ssize_t size)
 {
   ssize_t test = 0;
-  void *result; // please keep it uninitialized to track issues
+  void* result;                 // please keep it uninitialized to track issues
   off_t foffset;                /* File offset at which new mapping will start */
   size_t mapbytes;              /* Number of bytes to map */
-  void *moveto;                 /* Address where we wish to move "break value" to */
-  void *mapto;                  /* Address we actually mapped to */
+  void* moveto;                 /* Address where we wish to move "break value" to */
+  void* mapto;                  /* Address we actually mapped to */
   char buf = 0;                 /* Single byte to write to extend mapped file */
 
   if (size == 0) {
     /* Just return the current "break" value. */
-    result = mdp->breakval;
+    return mdp->breakval;
+  }
 
-  } else if (size < 0) {
-    /* We are deallocating memory.  If the amount requested would cause
-       us to try to deallocate back past the base of the mmap'd region
-       then die verbosely.  Otherwise, deallocate the memory and return
-       the old break value. */
-    if (((char *) mdp->breakval) + size >= (char *) mdp->base) {
-      result = (void *) mdp->breakval;
-      mdp->breakval = (char *) mdp->breakval + size;
+  if (size < 0) {
+    /* We are deallocating memory.  If the amount requested would cause us to try to deallocate back past the base of
+     * the mmap'd region then die verbosely.  Otherwise, deallocate the memory and return the old break value. */
+    if (((char*)mdp->breakval) + size >= (char*)mdp->base) {
+      result        = (void*)mdp->breakval;
+      mdp->breakval = (char*)mdp->breakval + size;
       moveto = PAGE_ALIGN(mdp->breakval);
-      munmap(moveto,
-             (size_t) (((char *) mdp->top) - ((char *) moveto)) - 1);
+      munmap(moveto, (size_t)(((char*)mdp->top) - ((char*)moveto)) - 1);
       mdp->top = moveto;
     } else {
       fprintf(stderr,"Internal error: mmap was asked to deallocate more memory than it previously allocated. Bailling out now!\n");
       abort();
     }
   } else {
-    /* We are allocating memory. Make sure we have an open file
-       descriptor if not working with anonymous memory. */
+    /* We are allocating memory. Make sure we have an open file descriptor if not working with anonymous memory. */
     if (!(mdp->flags & MMALLOC_ANONYMOUS) && mdp->fd < 0) {
       fprintf(stderr,"Internal error: mmap file descriptor <0 (%d), without MMALLOC_ANONYMOUS being in the flags.\n",mdp->fd);
       abort();
-    } else if ((char *) mdp->breakval + size > (char *) mdp->top) {
-      /* The request would move us past the end of the currently
-         mapped memory, so map in enough more memory to satisfy
-         the request.  This means we also have to grow the mapped-to
-         file by an appropriate amount, since mmap cannot be used
-         to extend a file. */
-      moveto = PAGE_ALIGN((char *) mdp->breakval + size);
-      mapbytes = (char *) moveto - (char *) mdp->top;
-      foffset = (char *) mdp->top - (char *) mdp->base;
+    } else if ((char*)mdp->breakval + size > (char*)mdp->top) {
+      /* The request would move us past the end of the currently mapped memory, so map in enough more memory to satisfy
+         the request.  This means we also have to grow the mapped-to file by an appropriate amount, since mmap cannot
+         be used to extend a file. */
+      moveto   = PAGE_ALIGN((char*)mdp->breakval + size);
+      mapbytes = (char*)moveto - (char*)mdp->top;
+      foffset  = (char*)mdp->top - (char*)mdp->base;
 
       if (mdp->fd > 0) {
         /* FIXME:  Test results of lseek() */
@@ -117,10 +112,8 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
         }
       }
 
-      /* Let's call mmap. Note that it is possible that mdp->top
-         is 0. In this case mmap will choose the address for us.
-         This call might very well overwrite an already existing memory mapping
-         (leading to weird bugs).
+      /* Let's call mmap. Note that it is possible that mdp->top is 0. In this case mmap will choose the address for us.
+         This call might very well overwrite an already existing memory mapping (leading to weird bugs).
        */
       mapto = mmap(mdp->top, mapbytes, PROT_READ | PROT_WRITE,
                    MAP_PRIVATE_OR_SHARED(mdp) | MAP_IS_ANONYMOUS(mdp) |
@@ -140,13 +133,13 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
       if (mdp->top == 0)
         mdp->base = mdp->breakval = mapto;
 
-      mdp->top = PAGE_ALIGN((char *) mdp->breakval + size);
+      mdp->top      = PAGE_ALIGN((char*)mdp->breakval + size);
       result = (void *) mdp->breakval;
-      mdp->breakval = (char *) mdp->breakval + size;
+      mdp->breakval = (char*)mdp->breakval + size;
     } else {
       /* Memory is already mapped, we only need to increase the breakval: */
       result = (void *) mdp->breakval;
-      mdp->breakval = (char *) mdp->breakval + size;
+      mdp->breakval = (char*)mdp->breakval + size;
     }
   }
   return (result);

@@ -14,18 +14,15 @@
 
 #include "mmprivate.h"
 
-/* Resize the given region to the new size, returning a pointer
-   to the (possibly moved) region.  This is optimized for speed;
-   some benchmarks seem to indicate that greater compactness is
-   achieved by unconditionally allocating and copying to a
-   new region.  This module has incestuous knowledge of the
-   internals of both mfree and mmalloc. */
+/* Resize the given region to the new size, returning a pointer to the (possibly moved) region. This is optimized for
+ * speed; some benchmarks seem to indicate that greater compactness is achieved by unconditionally allocating and
+ * copying to a new region.  This module has incestuous knowledge of the internals of both mfree and mmalloc. */
 
 void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
 {
   void *result;
-  int type;
-  size_t block, blocks, oldlimit;
+  size_t blocks;
+  size_t oldlimit;
 
   /* Only keep real realloc, and reroute hidden malloc and free to the relevant functions */
   if (size == 0) {
@@ -38,8 +35,8 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
   //printf("(%s)realloc %p to %d...",xbt_thread_self_name(),ptr,(int)size);
 
   if ((char *) ptr < (char *) mdp->heapbase || BLOCK(ptr) > mdp->heapsize) {
-    printf
-      ("FIXME. Ouch, this pointer is not mine, refusing to proceed (another solution would be to malloc it instead of reallocing it, see source code)\n");
+    printf("FIXME. Ouch, this pointer is not mine, refusing to proceed (another solution would be to malloc "
+           "it instead of reallocing it, see source code)\n");
     result = mmalloc(mdp, size);
     abort();
     return result;
@@ -54,9 +51,9 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
   if (size < SMALLEST_POSSIBLE_MALLOC)
     size = SMALLEST_POSSIBLE_MALLOC;
 
-  block = BLOCK(ptr);
+  size_t block = BLOCK(ptr);
 
-  type = mdp->heapinfo[block].type;
+  int type = mdp->heapinfo[block].type;
 
   switch (type) {
   case MMALLOC_TYPE_HEAPINFO:
