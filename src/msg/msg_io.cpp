@@ -204,6 +204,7 @@ msg_error_t MSG_file_unlink(msg_file_t fd)
   msg_storage_t storage_src = simgrid::s4u::Storage::byName(fd->storageId);
   msg_host_t attached_host  = storage_src->host();
   fd->unlink(attached_host);
+  delete fd;
   return MSG_OK;
 }
 

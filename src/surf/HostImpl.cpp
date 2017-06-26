@@ -152,9 +152,6 @@ int HostImpl::unlink(surf_file_t fd)
       // Remove the file from storage
       st->content_->erase(fd->name);
 
-      xbt_free(fd->name);
-      xbt_free(fd->mount);
-      xbt_free(fd);
       return 0;
     }
   }
