@@ -54,6 +54,7 @@ typedef simgrid::surf::StorageModel surf_StorageModel;
 typedef simgrid::surf::Resource surf_Resource;
 typedef simgrid::surf::HostImpl surf_Host;
 typedef simgrid::surf::Action surf_Action;
+typedef simgrid::surf::FileImpl surf_File;
 
 #else
 
@@ -67,6 +68,7 @@ typedef struct surf_StorageModel surf_StorageModel;
 typedef struct surf_Resource surf_Resource;
 typedef struct surf_Host surf_Host;
 typedef struct surf_Action surf_Action;
+typedef struct surf_File surf_File;
 
 #endif
 
@@ -82,6 +84,7 @@ typedef surf_HostModel *surf_host_model_t;
 typedef surf_NetworkModel *surf_network_model_t;
 typedef surf_StorageModel *surf_storage_model_t;
 typedef surf_Storage* surf_storage_t;
+typedef surf_File* surf_file_t;
 
 /** @ingroup SURF_c_bindings
  *  \brief Action structure
@@ -93,7 +96,6 @@ typedef surf_Storage* surf_storage_t;
  */
 typedef surf_Action *surf_action_t;
 
-typedef struct surf_file *surf_file_t;
 
 /** \brief Resource model description
  */

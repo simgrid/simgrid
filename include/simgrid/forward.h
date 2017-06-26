@@ -47,6 +47,7 @@ namespace surf {
   class LinkImpl;
   class HostImpl;
   class StorageImpl;
+  class FileImpl;
 }
 namespace trace_mgr {
   class trace;

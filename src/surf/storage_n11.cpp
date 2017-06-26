@@ -102,7 +102,7 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
       long int incr = current_progress;
 
       XBT_DEBUG("%s:\n\t progress =  %.2f, current_progress = %.2f, incr = %ld, lrint(1) = %ld, lrint(2) = %ld",
-                action->file_->name, action->progress_, current_progress, incr,
+                action->file_->cname(), action->progress_, current_progress, incr,
                 lrint(action->progress_ + current_progress), lrint(action->progress_) + incr);
 
       /* take care of rounding error accumulation */
@@ -112,12 +112,12 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
       action->progress_ += current_progress;
 
       action->storage_->usedSize_ += incr;     // disk usage
-      action->file_->current_position += incr; // current_position
+      action->file_->incrPosition(incr);       // current_position
       //  which becomes the new file size
-      action->file_->size = action->file_->current_position;
+      action->file_->setSize(action->file_->tell());
 
-      action->storage_->content_->erase(action->file_->name);
-      action->storage_->content_->insert({action->file_->name, action->file_->size});
+      action->storage_->content_->erase(action->file_->cname());
+      action->storage_->content_->insert({action->file_->cname(), action->file_->size()});
     }
 
     action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
@@ -162,11 +162,7 @@ StorageAction *StorageN11::open(const char* mount, const char* path)
     content_->insert({path, size});
     XBT_DEBUG("File '%s' was not found, file created.",path);
   }
-  surf_file_t file = xbt_new0(s_surf_file_t,1);
-  file->name = xbt_strdup(path);
-  file->size = size;
-  file->mount = xbt_strdup(mount);
-  file->current_position = 0;
+  FileImpl* file = new FileImpl(path, mount, size);
 
   StorageAction* action = new StorageN11Action(model(), 0, isOff(), this, OPEN);
   action->file_         = file;
@@ -176,7 +172,7 @@ StorageAction *StorageN11::open(const char* mount, const char* path)
 
 StorageAction *StorageN11::close(surf_file_t fd)
 {
-  XBT_DEBUG("\tClose file '%s' size '%llu'", fd->name, fd->size);
+  XBT_DEBUG("\tClose file '%s' size '%llu'", fd->cname(), fd->size());
   // unref write actions from storage
   for (std::vector<StorageAction*>::iterator it = writeActions_.begin(); it != writeActions_.end();) {
     StorageAction *write_action = *it;
@@ -187,25 +183,23 @@ StorageAction *StorageN11::close(surf_file_t fd)
       ++it;
     }
   }
-  free(fd->name);
-  free(fd->mount);
-  xbt_free(fd);
+  delete fd;
   StorageAction* action = new StorageN11Action(model(), 0, isOff(), this, CLOSE);
   return action;
 }
 
 StorageAction *StorageN11::read(surf_file_t fd, sg_size_t size)
 {
-  if(fd->current_position + size > fd->size){
-    if (fd->current_position > fd->size){
+  if (fd->tell() + size > fd->size()) {
+    if (fd->tell() > fd->size()) {
       size = 0;
     } else {
-      size = fd->size - fd->current_position;
+      size = fd->size() - fd->tell();
     }
-    fd->current_position = fd->size;
+    fd->setPosition(fd->size());
   }
   else
-    fd->current_position += size;
+    fd->incrPosition(size);
 
   StorageAction* action = new StorageN11Action(model(), size, isOff(), this, READ);
   return action;
@@ -213,13 +207,12 @@ StorageAction *StorageN11::read(surf_file_t fd, sg_size_t size)
 
 StorageAction *StorageN11::write(surf_file_t fd, sg_size_t size)
 {
-  char *filename = fd->name;
-  XBT_DEBUG("\tWrite file '%s' size '%llu/%llu'",filename,size,fd->size);
+  XBT_DEBUG("\tWrite file '%s' size '%llu/%llu'", fd->cname(), size, fd->size());
 
   StorageAction* action = new StorageN11Action(model(), size, isOff(), this, WRITE);
   action->file_         = fd;
   /* Substract the part of the file that might disappear from the used sized on the storage element */
-  usedSize_ -= (fd->size - fd->current_position);
+  usedSize_ -= (fd->size() - fd->tell());
   // If the storage is full before even starting to write
   if(usedSize_==size_) {
     action->setState(Action::State::failed);

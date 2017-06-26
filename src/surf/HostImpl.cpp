@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "src/surf/FileImpl.hpp"
 #include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_host, surf, "Logging specific to the SURF host module");
@@ -114,22 +115,22 @@ void HostImpl::getAttachedStorageList(std::vector<const char*>* storages)
 
 Action* HostImpl::close(surf_file_t fd)
 {
-  simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount);
-  XBT_DEBUG("CLOSE %s on disk '%s'", fd->name, st->cname());
+  simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount());
+  XBT_DEBUG("CLOSE %s on disk '%s'", fd->cname(), st->cname());
   return st->close(fd);
 }
 
 Action* HostImpl::read(surf_file_t fd, sg_size_t size)
 {
-  simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount);
-  XBT_DEBUG("READ %s on disk '%s'", fd->name, st->cname());
+  simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount());
+  XBT_DEBUG("READ %s on disk '%s'", fd->cname(), st->cname());
   return st->read(fd, size);
 }
 
 Action* HostImpl::write(surf_file_t fd, sg_size_t size)
 {
-  simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount);
-  XBT_DEBUG("WRITE %s on disk '%s'", fd->name, st->cname());
+  simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount());
+  XBT_DEBUG("WRITE %s on disk '%s'", fd->cname(), st->cname());
   return st->write(fd, size);
 }
 
@@ -140,17 +141,17 @@ int HostImpl::unlink(surf_file_t fd)
     return -1;
   } else {
 
-    simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount);
+    simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount());
     /* Check if the file is on this storage */
-    if (st->content_->find(fd->name) == st->content_->end()) {
-      XBT_WARN("File %s is not on disk %s. Impossible to unlink", fd->name, st->cname());
+    if (st->content_->find(fd->cname()) == st->content_->end()) {
+      XBT_WARN("File %s is not on disk %s. Impossible to unlink", fd->cname(), st->cname());
       return -1;
     } else {
-      XBT_DEBUG("UNLINK %s on disk '%s'", fd->name, st->cname());
-      st->usedSize_ -= fd->size;
+      XBT_DEBUG("UNLINK %s on disk '%s'", fd->cname(), st->cname());
+      st->usedSize_ -= fd->size();
 
       // Remove the file from storage
-      st->content_->erase(fd->name);
+      st->content_->erase(fd->cname());
 
       return 0;
     }
@@ -159,25 +160,25 @@ int HostImpl::unlink(surf_file_t fd)
 
 sg_size_t HostImpl::getSize(surf_file_t fd)
 {
-  return fd->size;
+  return fd->size();
 }
 
 sg_size_t HostImpl::fileTell(surf_file_t fd)
 {
-  return fd->current_position;
+  return fd->tell();
 }
 
 int HostImpl::fileSeek(surf_file_t fd, sg_offset_t offset, int origin)
 {
   switch (origin) {
   case SEEK_SET:
-    fd->current_position = offset;
+    fd->setPosition(offset);
     return 0;
   case SEEK_CUR:
-    fd->current_position += offset;
+    fd->incrPosition(offset);
     return 0;
   case SEEK_END:
-    fd->current_position = fd->size + offset;
+    fd->setPosition(fd->size() + offset);
     return 0;
   default:
     return -1;
@@ -187,21 +188,21 @@ int HostImpl::fileSeek(surf_file_t fd, sg_offset_t offset, int origin)
 int HostImpl::fileMove(surf_file_t fd, const char* fullpath)
 {
   /* Check if the new full path is on the same mount point */
-  if (not strncmp((const char*)fd->mount, fullpath, strlen(fd->mount))) {
-    std::map<std::string, sg_size_t>* content = findStorageOnMountList(fd->mount)->content_;
-    if (content->find(fd->name) != content->end()) { // src file exists
-      sg_size_t new_size = content->at(std::string(fd->name));
-      content->erase(fd->name);
-      std::string path = std::string(fullpath).substr(strlen(fd->mount), strlen(fullpath));
+  if (not strncmp(fd->mount(), fullpath, strlen(fd->mount()))) {
+    std::map<std::string, sg_size_t>* content = findStorageOnMountList(fd->mount())->content_;
+    if (content->find(fd->name()) != content->end()) { // src file exists
+      sg_size_t new_size = content->at(fd->name());
+      content->erase(fd->name());
+      std::string path = std::string(fullpath).substr(strlen(fd->mount()), strlen(fullpath));
       content->insert({path.c_str(), new_size});
-      XBT_DEBUG("Move file from %s to %s, size '%llu'", fd->name, fullpath, new_size);
+      XBT_DEBUG("Move file from %s to %s, size '%llu'", fd->cname(), fullpath, new_size);
       return 0;
     } else {
-      XBT_WARN("File %s doesn't exist", fd->name);
+      XBT_WARN("File %s doesn't exist", fd->cname());
       return -1;
     }
   } else {
-    XBT_WARN("New full path %s is not on the same mount point: %s. Action has been canceled.", fullpath, fd->mount);
+    XBT_WARN("New full path %s is not on the same mount point: %s. Action has been canceled.", fullpath, fd->mount());
     return -1;
   }
 }

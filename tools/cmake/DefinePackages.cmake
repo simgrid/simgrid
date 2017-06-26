@@ -53,6 +53,7 @@ set(EXTRA_DIST
   src/surf/xml/simgrid_dtd.c
   src/surf/xml/surfxml_sax_cb.cpp
 
+  src/surf/FileImpl.hpp
   src/surf/StorageImpl.hpp
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
