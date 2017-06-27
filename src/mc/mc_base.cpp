@@ -91,9 +91,9 @@ bool request_is_enabled(smx_simcall_t req)
     }
 #endif
 
-    if (simcall_comm_wait__get__timeout(req) >= 0) {
-      /* If it has a timeout it will be always be enabled, because even if the
-       * communication is not ready, it can timeout and won't block. */
+    if (act->src_timeout || act->dst_timeout) {
+      /* If it has a timeout it will be always be enabled (regardless of who declared the timeout),
+       * because even if the communication is not ready, it can timeout and won't block. */
       if (_sg_mc_timeout == 1)
         return true;
     }
