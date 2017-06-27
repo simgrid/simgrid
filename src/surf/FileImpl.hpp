@@ -7,6 +7,9 @@
 #ifndef SRC_SURF_FILEIMPL_HPP_
 #define SRC_SURF_FILEIMPL_HPP_
 
+#include "surf/surf.h"
+#include <string>
+
 namespace simgrid {
 namespace surf {
 
