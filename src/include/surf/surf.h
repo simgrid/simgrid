@@ -150,39 +150,6 @@ XBT_PUBLIC(surf_action_t) surf_host_read(sg_host_t host, surf_file_t fd, sg_size
 XBT_PUBLIC(surf_action_t) surf_host_write(sg_host_t host, surf_file_t fd, sg_size_t size);
 
 /**
- * @brief Get the information of a file descriptor
- * @details The returned xbt_dynar_t contains:
- *  - the size of the file,
- *  - the mount point,
- *  - the storage name,
- *  - the storage typeId,
- *  - the storage content type
- *
- * @param host The surf host
- * @param fd The file descriptor
- * @return An xbt_dynar_t with the file information
- */
-XBT_PUBLIC(xbt_dynar_t) surf_host_get_info(sg_host_t host, surf_file_t fd);
-
-/**
- * @brief Get the available space of the storage at the mount point
- *
- * @param resource The surf host
- * @param name The mount point
- * @return The amount of available space in bytes
- */
-XBT_PUBLIC(sg_size_t) surf_host_get_free_size(sg_host_t resource, const char* name);
-
-/**
- * @brief Get the used space of the storage at the mount point
- *
- * @param resource The surf host
- * @param name The mount point
- * @return The amount of used space in bytes
- */
-XBT_PUBLIC(sg_size_t) surf_host_get_used_size(sg_host_t resource, const char* name);
-
-/**
  * @brief Unlink a file descriptor
  *
  * @param host The surf host
@@ -191,15 +158,6 @@ XBT_PUBLIC(sg_size_t) surf_host_get_used_size(sg_host_t resource, const char* na
  * @return 0 if failed to unlink, 1 otherwise
  */
 XBT_PUBLIC(int) surf_host_unlink(sg_host_t host, surf_file_t fd);
-
-/**
- * @brief Get the current position of the file descriptor
- *
- * @param host The surf host
- * @param fd The file descriptor
- * @return The current position of the file descriptor
- */
-XBT_PUBLIC(size_t) surf_host_file_tell(sg_host_t host, surf_file_t fd);
 
 /**
  * @brief Move a file to another location on the *same mount point*.
