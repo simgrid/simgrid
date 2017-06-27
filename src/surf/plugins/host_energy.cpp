@@ -152,6 +152,7 @@ private:
    * with the old pstate!)
    */
   int pstate = 0;
+  const int pstate_off = -1;
 
 public:
   double watts_off    = 0.0; /*< Consumption when the machine is turned off (shutdown) */
@@ -200,7 +201,7 @@ void HostEnergy::update()
     double previous_energy = this->total_energy;
 
     double instantaneous_consumption;
-    if (this->pstate == -1) // The host was off at the beginning of this time interval
+    if (this->pstate == pstate_off) // The host was off at the beginning of this time interval
       instantaneous_consumption = this->watts_off;
     else
       instantaneous_consumption = this->getCurrentWattsValue(cpu_load);
@@ -219,7 +220,7 @@ void HostEnergy::update()
   }
 
   /* Save data for the upcoming time interval: whether it's on/off and the pstate if it's on */
-  this->pstate = host->isOn() ? host->getPstate() : -1;
+  this->pstate = host->isOn() ? host->getPstate() : pstate_off;
 }
 
 HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host(ptr), last_updated(surf_get_clock())
