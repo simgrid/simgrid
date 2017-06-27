@@ -90,14 +90,6 @@ public:
   virtual int unlink(surf_file_t fd);
 
   /**
-   * @brief Get the size in bytes of the file
-   *
-   * @param fd The file descriptor to read
-   * @return The size in bytes of the file
-   */
-  virtual sg_size_t getSize(surf_file_t fd);
-
-  /**
    * @brief Read a file
    *
    * @param fd The file descriptor to read
@@ -114,14 +106,6 @@ public:
    * @return The StorageAction corresponding to the writing
    */
   virtual Action* write(surf_file_t fd, sg_size_t size);
-
-  /**
-   * @brief Get the current position of the file descriptor
-   *
-   * @param fd The file descriptor
-   * @return The current position of the file descriptor
-   */
-  virtual sg_size_t fileTell(surf_file_t fd);
 
   /**
    * @brief Set the position indicator associated with the file descriptor to a new position

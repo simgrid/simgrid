@@ -223,7 +223,7 @@ public:
 
   e_surf_action_storage_type_t type_;
   StorageImpl* storage_;
-  surf_file_t file_;
+  FileImpl* file_;
   double progress_;
 };
 }
@@ -238,12 +238,5 @@ typedef struct s_storage_type {
   sg_size_t size;
 } s_storage_type_t;
 typedef s_storage_type_t* storage_type_t;
-
-typedef struct surf_file {
-  char* name;
-  char* mount;
-  sg_size_t size;
-  sg_size_t current_position;
-} s_surf_file_t;
 
 #endif /* STORAGE_INTERFACE_HPP_ */

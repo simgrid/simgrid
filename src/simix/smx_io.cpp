@@ -10,6 +10,7 @@
 
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
+#include "src/surf/FileImpl.hpp"
 #include "src/surf/StorageImpl.hpp"
 
 #include <mc/mc.h>
@@ -127,8 +128,7 @@ sg_size_t simcall_HANDLER_file_get_size(smx_simcall_t simcall, smx_file_t fd)
 
 sg_size_t SIMIX_file_get_size(smx_actor_t process, smx_file_t fd)
 {
-  sg_host_t host = process->host;
-  return  surf_host_get_size(host, fd->surf_file);
+  return fd->surf_file->size();
 }
 
 sg_size_t simcall_HANDLER_file_tell(smx_simcall_t simcall, smx_file_t fd)
@@ -138,8 +138,7 @@ sg_size_t simcall_HANDLER_file_tell(smx_simcall_t simcall, smx_file_t fd)
 
 sg_size_t SIMIX_file_tell(smx_actor_t process, smx_file_t fd)
 {
-  sg_host_t host = process->host;
-  return  surf_host_file_tell(host, fd->surf_file);
+  return fd->surf_file->tell();
 }
 
 int simcall_HANDLER_file_seek(smx_simcall_t simcall, smx_file_t fd, sg_offset_t offset, int origin)
