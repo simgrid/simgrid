@@ -158,16 +158,6 @@ int HostImpl::unlink(surf_file_t fd)
   }
 }
 
-sg_size_t HostImpl::getSize(surf_file_t fd)
-{
-  return fd->size();
-}
-
-sg_size_t HostImpl::fileTell(surf_file_t fd)
-{
-  return fd->tell();
-}
-
 int HostImpl::fileSeek(surf_file_t fd, sg_offset_t offset, int origin)
 {
   switch (origin) {

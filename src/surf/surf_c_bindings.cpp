@@ -173,20 +173,12 @@ int surf_host_unlink(sg_host_t host, surf_file_t fd){
   return host->pimpl_->unlink(fd);
 }
 
-size_t surf_host_get_size(sg_host_t host, surf_file_t fd){
-  return host->pimpl_->getSize(fd);
-}
-
 surf_action_t surf_host_read(sg_host_t host, surf_file_t fd, sg_size_t size){
   return host->pimpl_->read(fd, size);
 }
 
 surf_action_t surf_host_write(sg_host_t host, surf_file_t fd, sg_size_t size){
   return host->pimpl_->write(fd, size);
-}
-
-size_t surf_host_file_tell(sg_host_t host, surf_file_t fd){
-  return host->pimpl_->fileTell(fd);
 }
 
 int surf_host_file_seek(sg_host_t host, surf_file_t fd,
@@ -196,36 +188,6 @@ int surf_host_file_seek(sg_host_t host, surf_file_t fd,
 
 int surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath){
   return host->pimpl_->fileMove(fd, fullpath);
-}
-
-sg_size_t surf_storage_get_size(surf_storage_t resource)
-{
-  return static_cast<simgrid::surf::StorageImpl*>(resource)->size_;
-}
-
-sg_size_t surf_storage_get_free_size(surf_storage_t resource)
-{
-  return static_cast<simgrid::surf::StorageImpl*>(resource)->getFreeSize();
-}
-
-sg_size_t surf_storage_get_used_size(surf_storage_t resource)
-{
-  return static_cast<simgrid::surf::StorageImpl*>(resource)->getUsedSize();
-}
-
-xbt_dict_t surf_storage_get_properties(surf_storage_t resource)
-{
-  return static_cast<simgrid::surf::StorageImpl*>(resource)->getProperties();
-}
-
-const char* surf_storage_get_host(surf_storage_t resource)
-{
-  return static_cast<simgrid::surf::StorageImpl*>(resource)->attach_.c_str();
-}
-
-const char* surf_storage_get_name(surf_storage_t resource)
-{
-  return static_cast<simgrid::surf::StorageImpl*>(resource)->cname();
 }
 
 void surf_cpu_action_set_bound(surf_action_t action, double bound) {

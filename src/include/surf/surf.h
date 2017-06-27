@@ -193,16 +193,6 @@ XBT_PUBLIC(sg_size_t) surf_host_get_used_size(sg_host_t resource, const char* na
 XBT_PUBLIC(int) surf_host_unlink(sg_host_t host, surf_file_t fd);
 
 /**
- * @brief Get the size of a file on a host
- *
- * @param host The surf host
- * @param fd The file descriptor
- *
- * @return The size in bytes of the file
- */
-XBT_PUBLIC(size_t) surf_host_get_size(sg_host_t host, surf_file_t fd);
-
-/**
  * @brief Get the current position of the file descriptor
  *
  * @param host The surf host
@@ -239,33 +229,6 @@ XBT_PUBLIC(int) surf_host_file_move(sg_host_t host, surf_file_t fd, const char* 
 XBT_PUBLIC(int) surf_host_file_seek(sg_host_t host, surf_file_t fd, sg_offset_t offset, int origin);
 
 /**
- * @brief Get the size in bytes of a storage
- *
- * @param resource The surf storage
- * @return The size in bytes of the storage
- */
-XBT_PUBLIC(sg_size_t) surf_storage_get_size(surf_storage_t resource);
-
-/**
- * @brief Get the available size in bytes of a storage
- *
- * @param resource The surf storage
- * @return The available size in bytes of the storage
- */
-XBT_PUBLIC(sg_size_t) surf_storage_get_free_size(surf_storage_t resource);
-
-/**
- * @brief Get the size in bytes of a storage
- *
- * @param resource The surf storage
- * @return The used size in bytes of the storage
- */
-XBT_PUBLIC(sg_size_t) surf_storage_get_used_size(surf_storage_t resource);
-
-/** @brief return the properties set associated to that storage */
-XBT_PUBLIC(xbt_dict_t) surf_storage_get_properties(surf_storage_t resource);
-
-/**
  * @brief [brief description]
  * @details [long description]
  *
@@ -289,25 +252,6 @@ XBT_PUBLIC(double) surf_network_action_get_latency_limited(surf_action_t action)
  * @return The file associated to a storage action
  */
 XBT_PUBLIC(surf_file_t) surf_storage_action_get_file(surf_action_t action);
-
-/**
- * @brief Get the result dictionary of an ls action
- *
- * @param action The surf storage action
- * @return The dictionry listing a path
- */
-XBT_PUBLIC(xbt_dict_t) surf_storage_action_get_ls_dict(surf_action_t action);
-
-
-/**
- * @brief Get the host the storage is attached to
- *
- * @param resource The surf storage
- * @return The host name
- * may not exist.
- */
-XBT_PUBLIC(const char*) surf_storage_get_host(surf_storage_t resource);
-XBT_PUBLIC(const char*) surf_storage_get_name(surf_storage_t resource);
 
 /** @} */
 
