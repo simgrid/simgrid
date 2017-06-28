@@ -109,8 +109,6 @@ msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int coreAmount, int rams
   simgrid::vm::VmHostExt::ensureVmExtInstalled();
 
   /* For the moment, intensity_rate is the percentage against the migration bandwidth */
-  double host_speed = MSG_host_get_speed(pm);
-  double update_speed = (static_cast<double>(dp_intensity)/100) * mig_netspeed;
 
   msg_vm_t vm = MSG_vm_create_multicore(pm, name, coreAmount);
   s_vm_params_t params;
@@ -119,12 +117,11 @@ msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int coreAmount, int rams
   params.devsize = 0;
   params.skip_stage2 = 0;
   params.max_downtime = 0.03;
-  params.dp_rate = (update_speed * 1024 * 1024) / host_speed;
-  params.dp_cap = params.ramsize * 0.9; // assume working set memory is 90% of ramsize
   params.mig_speed = static_cast<double>(mig_netspeed) * 1024 * 1024; // mig_speed
+  params.dp_intensity = static_cast<double>(dp_intensity) / 100;
+  params.dp_cap       = params.ramsize * 0.9; // assume working set memory is 90% of ramsize
 
-  XBT_DEBUG("dp rate %f migspeed : %f intensity mem : %d, updatespeed %f, hostspeed %f", params.dp_rate,
-            params.mig_speed, dp_intensity, update_speed, host_speed);
+  XBT_DEBUG("migspeed : %f intensity mem : %d", params.mig_speed, dp_intensity);
   static_cast<simgrid::s4u::VirtualMachine*>(vm)->setParameters(&params);
 
   return vm;
@@ -497,8 +494,6 @@ static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t 
   char *task_name = get_mig_task_name(vm, src_pm, dst_pm, stage);
   msg_task_t task = MSG_task_create(task_name, 0, static_cast<double>(size), nullptr);
 
-  /* TODO: clean up */
-
   double clock_sta = MSG_get_clock();
 
   msg_error_t ret;
@@ -562,13 +557,14 @@ static int migration_tx_fun(int argc, char *argv[])
   // Note that the ms structure has been allocated in do_migration and hence should be freed in the same function ;)
   migration_session *ms = static_cast<migration_session *>(MSG_process_get_data(MSG_process_self()));
 
+  double host_speed = MSG_host_get_speed(MSG_vm_get_pm(ms->vm));
   s_vm_params_t params;
   static_cast<simgrid::s4u::VirtualMachine*>(ms->vm)->parameters(&params);
   const sg_size_t ramsize   = params.ramsize;
   const sg_size_t devsize   = params.devsize;
   const int skip_stage1     = params.skip_stage1;
   int skip_stage2           = params.skip_stage2;
-  const double dp_rate      = params.dp_rate;
+  const double dp_rate      = host_speed ? (params.mig_speed * params.dp_intensity) / host_speed : 1;
   const double dp_cap       = params.dp_cap;
   const double mig_speed    = params.mig_speed;
   double max_downtime       = params.max_downtime;
@@ -598,7 +594,7 @@ static int migration_tx_fun(int argc, char *argv[])
     try {
       /* At stage 1, we do not need timeout. We have to send all the memory pages even though the duration of this
        * transfer exceeds the timeout value. */
-      XBT_VERB("Stage 1: Gonna send %llu", ramsize);
+      XBT_VERB("Stage 1: Gonna send %llu bytes", ramsize);
       sg_size_t sent = send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, ramsize, ms->mbox, 1, 0, mig_speed, -1);
       remaining_size -= sent;
       computed_during_stage1 = lookup_computed_flop_counts(ms->vm, 1, 0);
@@ -706,7 +702,7 @@ static int migration_tx_fun(int argc, char *argv[])
   stop_dirty_page_tracking(ms->vm);
 
   try {
-    XBT_DEBUG("Stage 3: Gonna send %f", remaining_size);
+    XBT_DEBUG("Stage 3: Gonna send %f bytes", remaining_size);
     send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, static_cast<sg_size_t>(remaining_size), ms->mbox, 3, 0,
                         mig_speed, -1);
   }
