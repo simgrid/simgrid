@@ -248,8 +248,7 @@ if (NOT ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     # Actually copy the file
     add_custom_command(
       TARGET hardlinks
-      COMMAND test -e ${CMAKE_BINARY_DIR}/${file} || echo "Hard link to ${CMAKE_HOME_DIRECTORY}/${file} ${CMAKE_BINARY_DIR}/${file}"
-      COMMAND test -e ${CMAKE_BINARY_DIR}/${file} || ln ${CMAKE_HOME_DIRECTORY}/${file} ${CMAKE_BINARY_DIR}/${file_location}
+      COMMAND if test -f ${CMAKE_HOME_DIRECTORY}/${file} \; then rm -f ${CMAKE_BINARY_DIR}/${file}\; ln ${CMAKE_HOME_DIRECTORY}/${file} ${CMAKE_BINARY_DIR}/${file_location}\; fi
     )
   endforeach(file ${source_to_pack})
 endif()
