@@ -362,19 +362,24 @@ case SIMCALL_FILE_UNLINK:
       break;
 
 case SIMCALL_FILE_GET_SIZE:
-      simgrid::simix::marshal<sg_size_t>(simcall->result, simcall_HANDLER_file_get_size(simcall, simgrid::simix::unmarshal<smx_file_t>(simcall->args[0])));
-      SIMIX_simcall_answer(simcall);
-      break;
+  simgrid::simix::marshal<sg_size_t>(simcall->result,
+                                     SIMIX_file_get_size(simgrid::simix::unmarshal<smx_file_t>(simcall->args[0])));
+  SIMIX_simcall_answer(simcall);
+  break;
 
 case SIMCALL_FILE_TELL:
-      simgrid::simix::marshal<sg_size_t>(simcall->result, simcall_HANDLER_file_tell(simcall, simgrid::simix::unmarshal<smx_file_t>(simcall->args[0])));
-      SIMIX_simcall_answer(simcall);
-      break;
+  simgrid::simix::marshal<sg_size_t>(simcall->result,
+                                     SIMIX_file_tell(simgrid::simix::unmarshal<smx_file_t>(simcall->args[0])));
+  SIMIX_simcall_answer(simcall);
+  break;
 
 case SIMCALL_FILE_SEEK:
-      simgrid::simix::marshal<int>(simcall->result, simcall_HANDLER_file_seek(simcall, simgrid::simix::unmarshal<smx_file_t>(simcall->args[0]), simgrid::simix::unmarshal<sg_offset_t>(simcall->args[1]), simgrid::simix::unmarshal<int>(simcall->args[2])));
-      SIMIX_simcall_answer(simcall);
-      break;
+  simgrid::simix::marshal<int>(simcall->result,
+                               SIMIX_file_seek(simgrid::simix::unmarshal<smx_file_t>(simcall->args[0]),
+                                               simgrid::simix::unmarshal<sg_offset_t>(simcall->args[1]),
+                                               simgrid::simix::unmarshal<int>(simcall->args[2])));
+  SIMIX_simcall_answer(simcall);
+  break;
 
 case SIMCALL_FILE_MOVE:
       simgrid::simix::marshal<int>(simcall->result, simcall_HANDLER_file_move(simcall, simgrid::simix::unmarshal<smx_file_t>(simcall->args[0]), simgrid::simix::unmarshal<const char*>(simcall->args[1])));

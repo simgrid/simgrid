@@ -1772,8 +1772,5 @@ XBT_PRIVATE void simcall_HANDLER_file_read(smx_simcall_t simcall, smx_file_t fd,
 XBT_PRIVATE void simcall_HANDLER_file_write(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, sg_host_t host);
 XBT_PRIVATE void simcall_HANDLER_file_open(smx_simcall_t simcall, const char* mount, const char* path, sg_storage_t st);
 XBT_PRIVATE void simcall_HANDLER_file_close(smx_simcall_t simcall, smx_file_t fd, sg_host_t host);
-XBT_PRIVATE sg_size_t simcall_HANDLER_file_get_size(smx_simcall_t simcall, smx_file_t fd);
-XBT_PRIVATE sg_size_t simcall_HANDLER_file_tell(smx_simcall_t simcall, smx_file_t fd);
-XBT_PRIVATE int simcall_HANDLER_file_seek(smx_simcall_t simcall, smx_file_t fd, sg_offset_t offset, int origin);
 XBT_PRIVATE int simcall_HANDLER_file_move(smx_simcall_t simcall, smx_file_t fd, const char* fullpath);
 XBT_PRIVATE int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max);

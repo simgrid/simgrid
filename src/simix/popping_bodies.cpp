@@ -365,19 +365,22 @@ inline static int simcall_BODY_file_unlink(smx_file_t fd, sg_host_t host) {
 
 inline static sg_size_t simcall_BODY_file_get_size(smx_file_t fd) {
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_file_get_size(&SIMIX_process_self()->simcall, fd);
+    if (0)
+      SIMIX_file_get_size(fd);
     return simcall<sg_size_t, smx_file_t>(SIMCALL_FILE_GET_SIZE, fd);
   }
 
 inline static sg_size_t simcall_BODY_file_tell(smx_file_t fd) {
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_file_tell(&SIMIX_process_self()->simcall, fd);
+    if (0)
+      SIMIX_file_tell(fd);
     return simcall<sg_size_t, smx_file_t>(SIMCALL_FILE_TELL, fd);
   }
 
 inline static int simcall_BODY_file_seek(smx_file_t fd, sg_offset_t offset, int origin) {
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_file_seek(&SIMIX_process_self()->simcall, fd, offset, origin);
+    if (0)
+      SIMIX_file_seek(fd, offset, origin);
     return simcall<int, smx_file_t, sg_offset_t, int>(SIMCALL_FILE_SEEK, fd, offset, origin);
   }
 

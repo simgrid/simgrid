@@ -181,11 +181,6 @@ surf_action_t surf_host_write(sg_host_t host, surf_file_t fd, sg_size_t size){
   return host->pimpl_->write(fd, size);
 }
 
-int surf_host_file_seek(sg_host_t host, surf_file_t fd,
-                               sg_offset_t offset, int origin){
-  return host->pimpl_->fileSeek(fd, offset, origin);
-}
-
 int surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath){
   return host->pimpl_->fileMove(fd, fullpath);
 }

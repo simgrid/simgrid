@@ -158,23 +158,6 @@ int HostImpl::unlink(surf_file_t fd)
   }
 }
 
-int HostImpl::fileSeek(surf_file_t fd, sg_offset_t offset, int origin)
-{
-  switch (origin) {
-  case SEEK_SET:
-    fd->setPosition(offset);
-    return 0;
-  case SEEK_CUR:
-    fd->incrPosition(offset);
-    return 0;
-  case SEEK_END:
-    fd->setPosition(fd->size() + offset);
-    return 0;
-  default:
-    return -1;
-  }
-}
-
 int HostImpl::fileMove(surf_file_t fd, const char* fullpath)
 {
   /* Check if the new full path is on the same mount point */

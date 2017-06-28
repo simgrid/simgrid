@@ -121,35 +121,19 @@ int SIMIX_file_unlink(smx_file_t fd, sg_host_t host)
   return surf_host_unlink(host, fd->surf_file);
 }
 
-sg_size_t simcall_HANDLER_file_get_size(smx_simcall_t simcall, smx_file_t fd)
-{
-  return SIMIX_file_get_size(simcall->issuer, fd);
-}
-
-sg_size_t SIMIX_file_get_size(smx_actor_t process, smx_file_t fd)
+sg_size_t SIMIX_file_get_size(smx_file_t fd)
 {
   return fd->surf_file->size();
 }
 
-sg_size_t simcall_HANDLER_file_tell(smx_simcall_t simcall, smx_file_t fd)
-{
-  return SIMIX_file_tell(simcall->issuer, fd);
-}
-
-sg_size_t SIMIX_file_tell(smx_actor_t process, smx_file_t fd)
+sg_size_t SIMIX_file_tell(smx_file_t fd)
 {
   return fd->surf_file->tell();
 }
 
-int simcall_HANDLER_file_seek(smx_simcall_t simcall, smx_file_t fd, sg_offset_t offset, int origin)
+int SIMIX_file_seek(smx_file_t fd, sg_offset_t offset, int origin)
 {
-  return SIMIX_file_seek(simcall->issuer, fd, offset, origin);
-}
-
-int SIMIX_file_seek(smx_actor_t process, smx_file_t fd, sg_offset_t offset, int origin)
-{
-  sg_host_t host = process->host;
-  return  surf_host_file_seek(host, fd->surf_file, offset, origin);
+  return fd->surf_file->seek(offset, origin);
 }
 
 int simcall_HANDLER_file_move(smx_simcall_t simcall, smx_file_t file, const char* fullpath)

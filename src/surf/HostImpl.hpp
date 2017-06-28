@@ -108,20 +108,6 @@ public:
   virtual Action* write(surf_file_t fd, sg_size_t size);
 
   /**
-   * @brief Set the position indicator associated with the file descriptor to a new position
-   * @details [long description]
-   *
-   * @param fd The file descriptor
-   * @param offset The offset from the origin
-   * @param origin Position used as a reference for the offset
-   *  - SEEK_SET: beginning of the file
-   *  - SEEK_CUR: current position indicator
-   *  - SEEK_END: end of the file
-   * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
-   */
-  virtual int fileSeek(surf_file_t fd, sg_offset_t offset, int origin);
-
-  /**
    * @brief Move a file to another location on the *same mount point*.
    * @details [long description]
    *
