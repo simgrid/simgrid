@@ -162,34 +162,26 @@ static void action_wait(const char *const *action)
 /* FIXME: that's a poor man's implementation: we should take the message exchanges into account */
 static void action_barrier(const char *const *action)
 {
-  static smx_mutex_t mutex = NULL;
-  static smx_cond_t cond = NULL;
+  static msg_bar_t barrier           = NULL;
   static int processes_arrived_sofar = 0;
 
-  if (mutex == NULL) {          // first arriving on the barrier
-    mutex = simcall_mutex_init();
-    cond = simcall_cond_init();
-    processes_arrived_sofar = 0;
+  if (barrier == NULL) {                                    // first arriving on the barrier
+    msg_bar_t newbar = MSG_barrier_init(communicator_size); // This is a simcall, unscheduling the current process
+    if (barrier == NULL)                                    // Still null, commit our new value
+      barrier = newbar;
+    else // some other process commited a new barrier before me, so dismiss mine
+      MSG_barrier_destroy(newbar);
   }
-  ACT_DEBUG("Entering barrier: %s (%d already there)", NAME, processes_arrived_sofar);
 
-  simcall_mutex_lock(mutex);
   processes_arrived_sofar++;
-  if (processes_arrived_sofar == communicator_size) {
-    simcall_cond_broadcast(cond);
-    simcall_mutex_unlock(mutex);
-  } else {
-    simcall_cond_wait(cond, mutex);
-    simcall_mutex_unlock(mutex);
-  }
+  MSG_barrier_wait(barrier);
 
   ACT_DEBUG("Exiting barrier: %s", NAME);
 
   processes_arrived_sofar--;
   if (processes_arrived_sofar<=0) {
-    SIMIX_cond_unref(cond);
-    SIMIX_mutex_unref(mutex);
-    mutex = NULL;
+    MSG_barrier_destroy(barrier);
+    barrier = NULL;
   }
 }
 
