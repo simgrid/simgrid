@@ -160,11 +160,11 @@ SET(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 ### Compute the include paths
 set(INCLUDES
+  ${CMAKE_BINARY_DIR}
+  ${CMAKE_BINARY_DIR}/include
   ${CMAKE_HOME_DIRECTORY}
   ${CMAKE_HOME_DIRECTORY}/include
   ${CMAKE_HOME_DIRECTORY}/src/include
-  ${CMAKE_BINARY_DIR}
-  ${CMAKE_BINARY_DIR}/include
   )
 
 if(NOT CMAKE_CROSSCOMPILING AND EXISTS /usr/include/)
