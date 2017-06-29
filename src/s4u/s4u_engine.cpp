@@ -42,6 +42,7 @@ Engine::Engine(int *argc, char **argv) {
 Engine::~Engine()
 {
   delete pimpl;
+  s4u::Engine::instance_ = nullptr;
 }
 
 Engine *Engine::instance() {
@@ -52,7 +53,6 @@ Engine *Engine::instance() {
 
 void Engine::shutdown() {
   delete s4u::Engine::instance_;
-  s4u::Engine::instance_ = nullptr;
 }
 
 double Engine::getClock()

@@ -28,13 +28,11 @@ namespace s4u {
  */
 XBT_PUBLIC_CLASS Engine
 {
-private:
-  ~Engine();
-
 public:
   /** Constructor, taking the command line parameters of your main function */
   Engine(int* argc, char** argv);
 
+  ~Engine();
   /** Finalize the default engine and all its dependencies */
   static void shutdown();
 
