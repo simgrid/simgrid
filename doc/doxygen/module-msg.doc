@@ -91,13 +91,6 @@ details).
  *  into, and interact directly with the VMs to manage groups of
  *  processes.
  *
- *  This interface is highly experimental at this point. Testing is
- *  welcomed, but do not expect too much of it right now. Even the
- *  interfaces may be changed in future releases of SimGrid (although
- *  things are expected to stabilize nicely before SimGrid v3.8).
- *  There is no guaranty on the rest of SimGrid, and there is less
- *  than that on this part.
- *
  */
 
 /** @defgroup msg_storage_management Storage Management Functions
