@@ -244,8 +244,6 @@ XBT_PRIVATE void surfxml_bufferstack_pop(int _new);
 XBT_PUBLIC_DATA(int) surfxml_bufferstack_size;
 
 XBT_PUBLIC(void) routing_route_free(sg_platf_route_cbarg_t route);
-/********** Instr. **********/
-XBT_PRIVATE void sg_instr_new_router(const char* name);
 
 SG_END_DECL()
 
