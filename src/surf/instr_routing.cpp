@@ -8,6 +8,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/routing/NetZoneImpl.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.h"
@@ -294,11 +295,13 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
 
 }
 
-void sg_instr_new_router(const char* name)
+static void sg_instr_new_router(simgrid::kernel::routing::NetPoint * netpoint)
 {
+  if (not netpoint->isRouter())
+    return; 
   if (TRACE_is_enabled() && TRACE_needs_platform()) {
     container_t father = currentContainer.back();
-    PJ_container_new(name, INSTR_ROUTER, father);
+    PJ_container_new(netpoint->cname(), INSTR_ROUTER, father);
   }
 }
 
@@ -327,8 +330,8 @@ void instr_routing_define_callbacks ()
   }
   simgrid::s4u::NetZone::onCreation.connect(sg_instr_AS_begin);
   simgrid::s4u::NetZone::onSeal.connect(sg_instr_AS_end);
+  simgrid::kernel::routing::NetPoint::onCreation.connect(&sg_instr_new_router);
 }
-
 /*
  * user categories support
  */

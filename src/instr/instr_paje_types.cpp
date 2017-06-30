@@ -19,6 +19,7 @@ void PJ_type_release ()
   rootType = nullptr;
 }
 
+
 type_t PJ_type_get_root ()
 {
   return rootType;
