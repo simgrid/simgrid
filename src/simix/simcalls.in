@@ -46,8 +46,8 @@ int  process_is_suspended(smx_actor_t process) [[nohandler]];
 int  process_join(smx_actor_t process, double timeout) [[block]];
 int  process_sleep(double duration) [[block]];
 
-boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution_start(const char* name, double flops_amount, double priority, double bound);
-boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount, double amount, double rate, double timeout) [[nohandler]];
+boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl> execution_start(const char* name, double flops_amount, double priority, double bound);
+boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl> execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount, double amount, double rate, double timeout) [[nohandler]];
 void          execution_cancel(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution) [[nohandler]];
 void          execution_set_priority(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution, double priority) [[nohandler]];
 void          execution_set_bound(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution, double bound) [[nohandler]];

@@ -152,13 +152,17 @@ void SIMIX_host_autorestart(sg_host_t host)
   process_list.clear();
 }
 
-smx_activity_t simcall_HANDLER_execution_start(smx_simcall_t simcall, const char* name, double flops_amount,
-                                              double priority, double bound) {
+boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl> simcall_HANDLER_execution_start(smx_simcall_t simcall,
+                                                                                          const char* name,
+                                                                                          double flops_amount,
+                                                                                          double priority, double bound)
+{
   return SIMIX_execution_start(simcall->issuer, name,flops_amount,priority,bound);
 }
 
-smx_activity_t SIMIX_execution_start(smx_actor_t issuer, const char *name, double flops_amount, double priority,
-                                    double bound){
+boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
+SIMIX_execution_start(smx_actor_t issuer, const char* name, double flops_amount, double priority, double bound)
+{
 
   /* alloc structures and initialize */
   simgrid::kernel::activity::ExecImplPtr exec =
@@ -180,8 +184,9 @@ smx_activity_t SIMIX_execution_start(smx_actor_t issuer, const char *name, doubl
   return exec;
 }
 
-smx_activity_t SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount,
-                                              double* bytes_amount, double amount, double rate, double timeout)
+boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
+SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount,
+                               double* bytes_amount, double amount, double rate, double timeout)
 {
 
   /* alloc structures and initialize */
