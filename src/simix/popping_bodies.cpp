@@ -90,22 +90,22 @@ inline static int simcall_BODY_process_sleep(double duration) {
     return simcall<int, double>(SIMCALL_PROCESS_SLEEP, duration);
   }
 
-  inline static boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>
+  inline static boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
   simcall_BODY_execution_start(const char* name, double flops_amount, double priority, double bound)
   {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) simcall_HANDLER_execution_start(&SIMIX_process_self()->simcall, name, flops_amount, priority, bound);
-    return simcall<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>, const char*, double, double, double>(
+    return simcall<boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>, const char*, double, double, double>(
         SIMCALL_EXECUTION_START, name, flops_amount, priority, bound);
   }
 
-  inline static boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>
+  inline static boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
   simcall_BODY_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount,
                                         double* bytes_amount, double amount, double rate, double timeout)
   {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) SIMIX_execution_parallel_start(name, host_nb, host_list, flops_amount, bytes_amount, amount, rate, timeout);
-    return simcall<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>, const char*, int, sg_host_t*, double*,
+    return simcall<boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>, const char*, int, sg_host_t*, double*,
                    double*, double, double, double>(SIMCALL_EXECUTION_PARALLEL_START, name, host_nb, host_list,
                                                     flops_amount, bytes_amount, amount, rate, timeout);
   }

@@ -136,7 +136,7 @@ case SIMCALL_PROCESS_SLEEP:
       break;
 
 case SIMCALL_EXECUTION_START:
-  simgrid::simix::marshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(
+  simgrid::simix::marshal<boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>>(
       simcall->result,
       simcall_HANDLER_execution_start(simcall, simgrid::simix::unmarshal<const char*>(simcall->args[0]),
                                       simgrid::simix::unmarshal<double>(simcall->args[1]),
@@ -146,7 +146,7 @@ case SIMCALL_EXECUTION_START:
   break;
 
 case SIMCALL_EXECUTION_PARALLEL_START:
-  simgrid::simix::marshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(
+  simgrid::simix::marshal<boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>>(
       simcall->result,
       SIMIX_execution_parallel_start(
           simgrid::simix::unmarshal<const char*>(simcall->args[0]), simgrid::simix::unmarshal<int>(simcall->args[1]),

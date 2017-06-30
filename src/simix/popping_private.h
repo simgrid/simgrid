@@ -11,6 +11,7 @@
 
 #include <src/kernel/activity/ActivityImpl.hpp>
 #include <src/kernel/activity/CommImpl.hpp>
+#include <src/kernel/activity/ExecImpl.hpp>
 
 #include <boost/intrusive_ptr.hpp>
 
