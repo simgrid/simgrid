@@ -114,6 +114,7 @@ int main(int argc, char** argv)
   e->run();
 
   /* Once the simulation is done, the program is ended */
-  e->shutdown();
+  delete e;
+
   return 0;
 }
