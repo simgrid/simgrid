@@ -36,12 +36,12 @@ static int xbt_log_layout_simple_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
   /* Display the proc info if available */
   procname = xbt_procname();
   if (procname && strcmp(procname,"maestro")) {
-    len = snprintf(p, rem_size, "%s:%s:(%d) ", SIMIX_host_self_get_name(), procname, xbt_getpid());
+    len = snprintf(p, rem_size, "%s:%s:(%d) ", sg_host_self_get_name(), procname, xbt_getpid());
     check_overflow(len);
   }
   else if (!procname)  {
-  len = snprintf(p, rem_size, "%s::(%d) ", SIMIX_host_self_get_name(), xbt_getpid());
-  check_overflow(len);
+    len = snprintf(p, rem_size, "%s::(%d) ", sg_host_self_get_name(), xbt_getpid());
+    check_overflow(len);
   }
 
   /* Display the date */

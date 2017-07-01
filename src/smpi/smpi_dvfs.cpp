@@ -24,7 +24,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_dvfs, smpi, "Logging specific to SMPI (expe
  */
 double smpi_get_host_power_peak_at(int pstate_index)
 {
-  return SIMIX_host_self()->getPstateSpeed(pstate_index);
+  return sg_host_self()->getPstateSpeed(pstate_index);
 }
 
 /**
@@ -34,7 +34,7 @@ double smpi_get_host_power_peak_at(int pstate_index)
  */
 double smpi_get_host_current_power_peak()
 {
-  return SIMIX_host_self()->speed();
+  return sg_host_self()->speed();
 }
 
 /**
@@ -42,7 +42,7 @@ double smpi_get_host_current_power_peak()
  */
 int smpi_get_host_nb_pstates()
 {
-  return sg_host_get_nb_pstates(SIMIX_host_self());
+  return sg_host_get_nb_pstates(sg_host_self());
 }
 
 /**
@@ -52,11 +52,11 @@ int smpi_get_host_nb_pstates()
  */
 void smpi_set_host_pstate(int pstate_index)
 {
-  sg_host_set_pstate(SIMIX_host_self(), pstate_index);
+  sg_host_set_pstate(sg_host_self(), pstate_index);
 }
 /** @brief Gets the pstate at which the processor currently running */
 int smpi_get_host_pstate() {
-  return sg_host_get_pstate(SIMIX_host_self());
+  return sg_host_get_pstate(sg_host_self());
 }
 
 /**
@@ -65,7 +65,7 @@ int smpi_get_host_pstate() {
  * \return Returns the consumed energy
  */
 double smpi_get_host_consumed_energy() {
-  return sg_host_get_consumed_energy(SIMIX_host_self());
+  return sg_host_get_consumed_energy(sg_host_self());
 }
 
 #if SMPI_FORTRAN

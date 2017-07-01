@@ -92,16 +92,16 @@ void SIMIX_host_off(sg_host_t h, smx_actor_t issuer)
   }
 }
 
-sg_host_t SIMIX_host_self()
+sg_host_t sg_host_self()
 {
   smx_actor_t process = SIMIX_process_self();
   return (process == nullptr) ? nullptr : process->host;
 }
 
 /* needs to be public and without simcall for exceptions and logging events */
-const char* SIMIX_host_self_get_name()
+const char* sg_host_self_get_name()
 {
-  sg_host_t host = SIMIX_host_self();
+  sg_host_t host = sg_host_self();
   if (host == nullptr || SIMIX_process_self() == simix_global->maestro_process)
     return "";
 

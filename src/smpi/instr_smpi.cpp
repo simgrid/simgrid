@@ -197,7 +197,7 @@ void TRACE_smpi_init(int rank)
 
   container_t father;
   if (TRACE_smpi_is_grouped()){
-    father = PJ_container_get (SIMIX_host_self_get_name());
+    father = PJ_container_get(sg_host_self_get_name());
   }else{
     father = PJ_container_get_root ();
   }

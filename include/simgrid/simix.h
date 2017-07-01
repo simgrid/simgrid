@@ -184,8 +184,6 @@ XBT_PUBLIC(smx_actor_t) SIMIX_process_attach(
 XBT_PUBLIC(void) SIMIX_process_detach();
 
 /*********************************** Host *************************************/
-XBT_PUBLIC(sg_host_t) SIMIX_host_self();
-XBT_PUBLIC(const char*) SIMIX_host_self_get_name();
 XBT_PUBLIC(void) SIMIX_host_off(sg_host_t host, smx_actor_t issuer);
 XBT_PUBLIC(void) SIMIX_host_self_set_data(void *data);
 XBT_PUBLIC(void*) SIMIX_host_self_get_data();
@@ -227,7 +225,6 @@ XBT_PUBLIC(void) simcall_call(smx_actor_t process);
 
 /******************************* Host simcalls ********************************/
 XBT_PUBLIC(void) simcall_host_set_data(sg_host_t host, void *data);
-
 XBT_PUBLIC(smx_activity_t) simcall_execution_start(const char *name,
                                                 double flops_amount,
                                                 double priority, double bound);
