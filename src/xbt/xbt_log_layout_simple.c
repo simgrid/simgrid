@@ -8,7 +8,7 @@
 #include "xbt/sysdep.h"
 #include "src/xbt/log_private.h"
 
-#include "simgrid/simix.h"      /* SIMIX_host_self_get_name */
+#include "simgrid/host.h" /* sg_host_self_get_name */
 #include "surf/surf.h"
 #include <stdio.h>
 

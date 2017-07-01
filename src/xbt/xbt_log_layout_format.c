@@ -6,7 +6,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/host.h"
-#include "simgrid/simix.h" /* SIMIX_host_self_get_name */
 #include "src/xbt/log_private.h"
 #include "surf/surf.h"
 #include "xbt/sysdep.h"
@@ -122,9 +121,7 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
       case 'h':                 /* host name; SimGrid extension */
         show_string(sg_host_self_get_name());
         break;
-      case 't':                 /* thread name; LOG4J compliant */
-        show_string(SIMIX_process_self_get_name());
-        break;
+      case 't':                 /* thread/process name; LOG4J compliant */
       case 'P':                 /* process name; SimGrid extension */
         show_string(xbt_procname());
         break;
