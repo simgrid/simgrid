@@ -1,7 +1,4 @@
-/* xbt_synchro -- Synchronization virtualized depending on whether we are   */
-/*                in simulation or real life (act on simulated processes)   */
-
-/* This is the simulation implementation, using simix.                      */
+/* Classical synchro schema, implemented on top of SimGrid                  */
 
 /* Copyright (c) 2007-2016. The SimGrid Team.
  * All rights reserved.                                                     */

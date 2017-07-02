@@ -391,6 +391,14 @@ int MSG_process_self_PPID()
 }
 
 /** \ingroup m_process_management
+ * \brief Return the name of the current process.
+ */
+const char* MSG_process_self_name()
+{
+  return SIMIX_process_self_get_name();
+}
+
+/** \ingroup m_process_management
  * \brief Return the current process.
  *
  * This function returns the currently running #msg_process_t.

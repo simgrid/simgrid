@@ -297,6 +297,7 @@ XBT_PUBLIC(int) MSG_process_get_PPID(msg_process_t process);
 XBT_PUBLIC(const char *) MSG_process_get_name(msg_process_t process);
 XBT_PUBLIC(int) MSG_process_self_PID();
 XBT_PUBLIC(int) MSG_process_self_PPID();
+XBT_PUBLIC(const char*) MSG_process_self_name();
 XBT_PUBLIC(msg_process_t) MSG_process_self();
 XBT_PUBLIC(xbt_dynar_t) MSG_processes_as_dynar();
 XBT_PUBLIC(int) MSG_process_get_number();
