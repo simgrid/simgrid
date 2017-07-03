@@ -235,18 +235,17 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     simgrid::surf::LinkImpl* linkUp   = nullptr;
     simgrid::surf::LinkImpl* linkDown = nullptr;
     if(cluster->loopback_bw > 0 || cluster->loopback_lat > 0){
-      char *tmp_link = bprintf("%s_loopback", link_id);
-      XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", tmp_link, cluster->loopback_bw);
+      std::string tmp_link = std::string(link_id) + "_loopback";
+      XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", tmp_link.c_str(), cluster->loopback_bw);
 
       LinkCreationArgs link;
-      link.id        = tmp_link;
+      link.id        = tmp_link.c_str();
       link.bandwidth = cluster->loopback_bw;
       link.latency   = cluster->loopback_lat;
       link.policy    = SURF_LINK_FATPIPE;
       sg_platf_new_link(&link);
-      linkUp   = simgrid::surf::LinkImpl::byName(tmp_link);
-      linkDown = simgrid::surf::LinkImpl::byName(tmp_link);
-      free(tmp_link);
+      linkUp   = simgrid::surf::LinkImpl::byName(tmp_link.c_str());
+      linkDown = simgrid::surf::LinkImpl::byName(tmp_link.c_str());
 
       auto as_cluster = static_cast<ClusterZone*>(current_as);
       as_cluster->privateLinks_.insert({rankId * as_cluster->linkCountPerNode_, {linkUp, linkDown}});
@@ -256,18 +255,17 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     linkUp   = nullptr;
     linkDown = nullptr;
     if(cluster->limiter_link > 0){
-      char *tmp_link = bprintf("%s_limiter", link_id);
-      XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", tmp_link, cluster->limiter_link);
+      std::string tmp_link = std::string(link_id) + "_limiter";
+      XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", tmp_link.c_str(), cluster->limiter_link);
 
       LinkCreationArgs link;
-      link.id = tmp_link;
+      link.id        = tmp_link.c_str();
       link.bandwidth = cluster->limiter_link;
       link.latency = 0;
       link.policy = SURF_LINK_SHARED;
       sg_platf_new_link(&link);
-      linkDown = simgrid::surf::LinkImpl::byName(tmp_link);
+      linkDown = simgrid::surf::LinkImpl::byName(tmp_link.c_str());
       linkUp   = linkDown;
-      free(tmp_link);
       current_as->privateLinks_.insert(
           {rankId * current_as->linkCountPerNode_ + current_as->hasLoopback_, {linkUp, linkDown}});
     }
@@ -351,12 +349,12 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
 
     s_sg_platf_host_link_cbarg_t host_link;
     memset(&host_link, 0, sizeof(host_link));
+    std::string tmp_link_up   = std::string("link_") + hostname + "_UP";
+    std::string tmp_link_down = std::string("link_") + hostname + "_DOWN";
     host_link.id        = hostname.c_str();
-    host_link.link_up   = bprintf("link_%s_UP",hostname.c_str());
-    host_link.link_down = bprintf("link_%s_DOWN",hostname.c_str());
+    host_link.link_up         = tmp_link_up.c_str();
+    host_link.link_down       = tmp_link_down.c_str();
     sg_platf_new_hostlink(&host_link);
-    free((char*)host_link.link_up);
-    free((char*)host_link.link_down);
   }
   delete cabinet->radicals;
 }
