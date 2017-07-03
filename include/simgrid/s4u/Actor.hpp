@@ -313,6 +313,7 @@ template <class Rep, class Period> inline void sleep_for(std::chrono::duration<R
    * See \ref Comm for the full communication API (including non blocking communications).
    */
   XBT_PUBLIC(void*) recv(MailboxPtr chan);
+  XBT_PUBLIC(void*) recv(MailboxPtr chan, double timeout);
   XBT_PUBLIC(CommPtr) irecv(MailboxPtr chan, void** data);
 
   /** Block the actor until it delivers a message of the given simulated size to the given mailbox

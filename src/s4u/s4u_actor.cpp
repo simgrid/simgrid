@@ -211,6 +211,15 @@ void* recv(MailboxPtr chan) {
   return res;
 }
 
+void* recv(MailboxPtr chan, double timeout)
+{
+  void* res = nullptr;
+  CommPtr c = Comm::recv_init(chan);
+  c->setDstData(&res, sizeof(res));
+  c->wait(timeout);
+  return res;
+}
+
 void send(MailboxPtr chan, void* payload, double simulatedSize)
 {
   CommPtr c = Comm::send_init(chan);
