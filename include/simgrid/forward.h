@@ -1,11 +1,10 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SG_PLATF_TYPES_H
-#define SG_PLATF_TYPES_H
+#ifndef SIMGRID_TYPES_H
+#define SIMGRID_TYPES_H
 
 #ifdef __cplusplus
 
@@ -15,6 +14,10 @@
 
 namespace simgrid {
 namespace kernel {
+namespace context {
+class Context;
+class ContextFactory;
+}
 namespace activity {
   class ActivityImpl;
   using ActivityImplPtr = boost::intrusive_ptr<ActivityImpl>;
@@ -31,7 +34,10 @@ namespace activity {
   using RawImplPtr = boost::intrusive_ptr<RawImpl>;
   class SleepImpl;
   using SleepImplPtr = boost::intrusive_ptr<SleepImpl>;
+
+  class MailboxImpl;
 }
+
 namespace routing {
   class NetPoint;
 }
@@ -40,6 +46,8 @@ namespace simix {
   class ActorImpl;
   using ActorImplPtr = boost::intrusive_ptr<ActorImpl>;
   class Host;
+
+  class MutexImpl;
 }
 namespace surf {
   class Resource;
@@ -66,6 +74,11 @@ typedef simgrid::kernel::routing::NetPoint routing_NetPoint;
 typedef simgrid::surf::Resource surf_Resource;
 typedef simgrid::trace_mgr::trace tmgr_Trace;
 
+typedef simgrid::kernel::context::Context* smx_context_t;
+typedef simgrid::simix::ActorImpl* smx_actor_t;
+typedef simgrid::simix::MutexImpl* smx_mutex_t;
+typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
+
 #else
 
 typedef struct s4u_Actor s4u_Actor;
@@ -78,6 +91,11 @@ typedef struct kernel_Activity* smx_activity_t;
 typedef struct routing_NetPoint routing_NetPoint;
 typedef struct surf_Resource surf_Resource;
 typedef struct Trace tmgr_Trace;
+
+typedef struct s_smx_context* smx_context_t;
+typedef struct s_smx_actor* smx_actor_t;
+typedef struct s_smx_mutex* smx_mutex_t;
+typedef struct s_smx_mailbox* smx_mailbox_t;
 
 #endif
 
@@ -127,4 +145,4 @@ typedef long long sg_offset_t;
 
 typedef unsigned long aid_t;
 
-#endif
+#endif /* SIMGRID_TYPES_H */

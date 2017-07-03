@@ -26,7 +26,7 @@ static unsigned collatz(unsigned c0, unsigned n)
   return x;
 }
 
-static int master(int argc, char *argv[])
+static int master(int argc, char* argv[])
 {
   XBT_INFO("Launching our nice bugged recursive function...");
   unsigned i = 1;
@@ -38,7 +38,7 @@ static int master(int argc, char *argv[])
   return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   SIMIX_global_init(&argc, argv);
 

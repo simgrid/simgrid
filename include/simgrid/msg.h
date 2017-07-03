@@ -7,10 +7,16 @@
 #ifndef MSG_H
 #define MSG_H
 
+#include "simgrid/datatypes.h"
 #include "simgrid/forward.h"
-#include "simgrid/simix.h"
+#include "simgrid/host.h"
+
+#include "xbt/base.h"
+#include "xbt/dict.h"
+#include "xbt/dynar.h"
 
 #ifdef __cplusplus
+#include "simgrid/simix.h"
 namespace simgrid {
 namespace msg {
 class Comm;
@@ -386,8 +392,9 @@ XBT_PUBLIC(msg_error_t) MSG_task_receive_bounded(msg_task_t * task, const char *
 
 XBT_PUBLIC(msg_comm_t) MSG_task_isend(msg_task_t task, const char *alias);
 XBT_PUBLIC(msg_comm_t) MSG_task_isend_bounded(msg_task_t task, const char *alias, double maxrate);
-XBT_PUBLIC(msg_comm_t) MSG_task_isend_with_matching(msg_task_t task, const char *alias,
-    int (*match_fun)(void*,void*, smx_activity_t), void *match_data);
+XBT_PUBLIC(msg_comm_t)
+MSG_task_isend_with_matching(msg_task_t task, const char* alias, int (*match_fun)(void*, void*, void*),
+                             void* match_data);
 
 XBT_PUBLIC(void) MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup);
 XBT_PUBLIC(void) MSG_task_dsend_bounded(msg_task_t task, const char *alias, void_f_pvoid_t cleanup, double maxrate);

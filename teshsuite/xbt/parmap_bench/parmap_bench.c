@@ -1,17 +1,16 @@
-/* Copyright (c) 2012-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/msg.h"
+#include "src/internal_config.h" /* HAVE_FUTEX_H */
+#include "xbt/xbt_os_time.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <xbt/dynar.h>
 #include <xbt/parmap.h>
 #include <xbt/sysdep.h>
-#include "src/internal_config.h"        /* HAVE_FUTEX_H */
-#include "simgrid/simix.h"
-#include "xbt/xbt_os_time.h"
 
 #define MODES_DEFAULT 0x7
 #define TIMEOUT 10.0
@@ -162,7 +161,7 @@ int main(int argc, char *argv[])
   int nthreads;
   unsigned modes = MODES_DEFAULT;
 
-  SIMIX_global_init(&argc, argv);
+  MSG_init(&argc, argv);
 
   if (argc != 2 && argc != 3) {
     fprintf(stderr, "Usage: %s nthreads [modes]\n"

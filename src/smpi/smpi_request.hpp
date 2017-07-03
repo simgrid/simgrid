@@ -88,8 +88,8 @@ class Request : public F2C {
     static int waitall(int count, MPI_Request requests[], MPI_Status status[]);
     static int waitsome(int incount, MPI_Request requests[], int *indices, MPI_Status status[]);
 
-    static int match_send(void* a, void* b,smx_activity_t ignored);
-    static int match_recv(void* a, void* b,smx_activity_t ignored);
+    static int match_send(void* a, void* b, simgrid::kernel::activity::CommImpl* ignored);
+    static int match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl* ignored);
 
     int add_f();
     static void free_f(int id);

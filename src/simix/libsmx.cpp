@@ -355,11 +355,9 @@ e_smx_state_t simcall_process_sleep(double duration)
 /**
  * \ingroup simix_comm_management
  */
-void simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate,
-                         void *src_buff, size_t src_buff_size,
-                         int (*match_fun)(void *, void *, smx_activity_t),
-                         void (*copy_data_fun)(smx_activity_t, void*, size_t), void *data,
-                         double timeout)
+void simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,
+                       size_t src_buff_size, int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                       void (*copy_data_fun)(smx_activity_t, void*, size_t), void* data, double timeout)
 {
   /* checking for infinite values */
   xbt_assert(std::isfinite(task_size), "task_size is not finite!");
@@ -385,13 +383,11 @@ void simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size,
 /**
  * \ingroup simix_comm_management
  */
-smx_activity_t simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate,
-                              void *src_buff, size_t src_buff_size,
-                              int (*match_fun)(void *, void *, smx_activity_t),
-                              void (*clean_fun)(void *),
-                              void (*copy_data_fun)(smx_activity_t, void*, size_t),
-                              void *data,
-                              int detached)
+smx_activity_t simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,
+                                  size_t src_buff_size,
+                                  int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                                  void (*clean_fun)(void*), void (*copy_data_fun)(smx_activity_t, void*, size_t),
+                                  void* data, int detached)
 {
   /* checking for infinite values */
   xbt_assert(std::isfinite(task_size), "task_size is not finite!");
@@ -407,10 +403,9 @@ smx_activity_t simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double
 /**
  * \ingroup simix_comm_management
  */
-void simcall_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void *dst_buff, size_t * dst_buff_size,
-                       int (*match_fun)(void *, void *, smx_activity_t),
-                       void (*copy_data_fun)(smx_activity_t, void*, size_t),
-                       void *data, double timeout, double rate)
+void simcall_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size,
+                       int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                       void (*copy_data_fun)(smx_activity_t, void*, size_t), void* data, double timeout, double rate)
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
   xbt_assert(mbox, "No rendez-vous point defined for recv");
@@ -431,10 +426,9 @@ void simcall_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void *dst_buff,
 /**
  * \ingroup simix_comm_management
  */
-smx_activity_t simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void *dst_buff, size_t *dst_buff_size,
-                                int (*match_fun)(void *, void *, smx_activity_t),
-                                void (*copy_data_fun)(smx_activity_t, void*, size_t),
-                                void *data, double rate)
+smx_activity_t simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size,
+                                  int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                                  void (*copy_data_fun)(smx_activity_t, void*, size_t), void* data, double rate)
 {
   xbt_assert(mbox, "No rendez-vous point defined for irecv");
 
@@ -446,7 +440,7 @@ smx_activity_t simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void
  * \ingroup simix_comm_management
  */
 smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type, int src, int tag,
-                                int (*match_fun)(void *, void *, smx_activity_t), void *data)
+                                   int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*), void* data)
 {
   xbt_assert(mbox, "No rendez-vous point defined for iprobe");
 

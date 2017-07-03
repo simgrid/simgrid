@@ -9,7 +9,7 @@
 #include "simgrid/simix.h"
 #include "xbt/log.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   xbt_log_control_set("root.fmt:[%c/%p]%e%m%n");
   xbt_log_control_set("simix_context.threshold:verbose");

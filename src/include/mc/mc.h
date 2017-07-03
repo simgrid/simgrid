@@ -6,8 +6,8 @@
 #ifndef MC_MC_H
 #define MC_MC_H
 
+#include <simgrid/forward.h>
 #include <simgrid/modelchecker.h> /* our public interface (and definition of SIMGRID_HAVE_MC) */
-#include <simgrid/simix.h>
 
 /* Maximum size of the application heap.
  *

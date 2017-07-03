@@ -297,9 +297,9 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
 }
 
 /* Internal function used to factorize code between MSG_task_isend_with_matching() and MSG_task_dsend(). */
-static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
-                                                     int (*match_fun)(void*,void*, smx_activity_t),
-                                                     void *match_data, void_f_pvoid_t cleanup, int detached)
+static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* alias,
+                                                 int (*match_fun)(void*, void*, void*), void* match_data,
+                                                 void_f_pvoid_t cleanup, int detached)
 {
   simdata_task_t t_simdata = nullptr;
   msg_process_t myself = MSG_process_self();
@@ -315,8 +315,9 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *al
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
-  smx_activity_t act = simcall_comm_isend(myself->getImpl(), mailbox->getImpl(), t_simdata->bytes_amount, t_simdata->rate,
-                                         task, sizeof(void *), match_fun, cleanup, nullptr, match_data,detached);
+  smx_activity_t act =
+      simcall_comm_isend(myself->getImpl(), mailbox->getImpl(), t_simdata->bytes_amount, t_simdata->rate, task,
+                         sizeof(void*), (simix_match_func_t)match_fun, cleanup, nullptr, match_data, detached);
   t_simdata->comm = boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(act);
 
   msg_comm_t comm = nullptr;
@@ -377,8 +378,8 @@ msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias, double max
  * \param match_data user provided data passed to match_fun
  * \return the msg_comm_t communication created
  */
-msg_comm_t MSG_task_isend_with_matching(msg_task_t task, const char *alias,
-                                        int (*match_fun)(void*, void*, smx_activity_t), void *match_data)
+msg_comm_t MSG_task_isend_with_matching(msg_task_t task, const char* alias, int (*match_fun)(void*, void*, void*),
+                                        void* match_data)
 {
   return MSG_task_isend_internal(task, alias, match_fun, match_data, nullptr, 0);
 }

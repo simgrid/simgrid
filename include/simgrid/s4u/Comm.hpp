@@ -104,7 +104,7 @@ private:
 
   /* FIXME: expose these elements in the API */
   int detached_ = 0;
-  int (*matchFunction_)(void*, void*, smx_activity_t) = nullptr;
+  int (*matchFunction_)(void*, void*, simgrid::kernel::activity::CommImpl*) = nullptr;
   void (*cleanFunction_)(void*) = nullptr;
   void (*copyDataFunction_)(smx_activity_t, void*, size_t) = nullptr;
 

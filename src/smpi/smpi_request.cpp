@@ -117,7 +117,8 @@ void Request::unref(MPI_Request* request)
   }
 }
 
-int Request::match_recv(void* a, void* b, smx_activity_t ignored) {
+int Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl* ignored)
+{
   MPI_Request ref = static_cast<MPI_Request>(a);
   MPI_Request req = static_cast<MPI_Request>(b);
   XBT_DEBUG("Trying to match a recv of src %d against %d, tag %d against %d",ref->src_,req->src_, ref->tag_, req->tag_);
@@ -140,7 +141,8 @@ int Request::match_recv(void* a, void* b, smx_activity_t ignored) {
   }else return 0;
 }
 
-int Request::match_send(void* a, void* b,smx_activity_t ignored) {
+int Request::match_send(void* a, void* b, simgrid::kernel::activity::CommImpl* ignored)
+{
   MPI_Request ref = static_cast<MPI_Request>(a);
   MPI_Request req = static_cast<MPI_Request>(b);
   XBT_DEBUG("Trying to match a send of src %d against %d, tag %d against %d",ref->src_,req->src_, ref->tag_, req->tag_);

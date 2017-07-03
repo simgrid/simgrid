@@ -1,12 +1,4 @@
-foreach(x check_defaults stack_overflow)
-  add_executable       (${x}  ${x}/${x}.c)
-  target_link_libraries(${x}  simgrid)
-  set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
-
-  set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
-endforeach()
-
-foreach(x generic_simcalls)
+foreach(x check_defaults generic_simcalls stack_overflow)
   add_executable       (${x}  ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
