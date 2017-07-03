@@ -38,21 +38,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix, "Logging specific to SIMIX
 
 unsigned long simix_process_maxpid = 0;
 
-/** Increase the refcount for this process */
-smx_actor_t SIMIX_process_ref(smx_actor_t process)
-{
-  if (process != nullptr)
-    intrusive_ptr_add_ref(process);
-  return process;
-}
-
-/** Decrease the refcount for this process */
-void SIMIX_process_unref(smx_actor_t process)
-{
-  if (process != nullptr)
-    intrusive_ptr_release(process);
-}
-
 /**
  * \brief Returns the current agent.
  *

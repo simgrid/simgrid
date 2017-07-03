@@ -13,6 +13,8 @@ namespace simgrid {
 namespace s4u {
 
 class Actor;
+XBT_PUBLIC(void) intrusive_ptr_release(Actor* actor);
+XBT_PUBLIC(void) intrusive_ptr_add_ref(Actor* actor);
 using ActorPtr = boost::intrusive_ptr<Actor>;
 
 class Activity;

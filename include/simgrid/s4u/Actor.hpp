@@ -153,17 +153,9 @@ public:
   Actor(Actor const&) = delete;
   Actor& operator=(Actor const&) = delete;
 
-  // ***** Reference count (delegated to pimpl_) *****
-  friend void intrusive_ptr_add_ref(Actor* actor)
-  {
-    xbt_assert(actor != nullptr);
-    SIMIX_process_ref(actor->pimpl_);
-  }
-  friend void intrusive_ptr_release(Actor* actor)
-  {
-    xbt_assert(actor != nullptr);
-    SIMIX_process_unref(actor->pimpl_);
-  }
+  // ***** Reference count *****
+  friend void intrusive_ptr_add_ref(Actor * actor);
+  friend void intrusive_ptr_release(Actor * actor);
 
   // ***** Actor creation *****
   /** Retrieve a reference to myself */

@@ -41,9 +41,8 @@ _find_matching_comm(boost::circular_buffer_space_optimized<smx_activity_t>* dequ
   void* other_user_data = nullptr;
 
   for(auto it = deque->begin(); it != deque->end(); it++){
-    smx_activity_t synchro = *it;
     simgrid::kernel::activity::CommImplPtr comm =
-        boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(std::move(synchro));
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(std::move(*it));
 
     if (comm->type == SIMIX_COMM_SEND) {
       other_user_data = comm->src_data;
@@ -59,7 +58,7 @@ _find_matching_comm(boost::circular_buffer_space_optimized<smx_activity_t>* dequ
       comm->mbox_cpy = comm->mbox;
 #endif
       comm->mbox = nullptr;
-      return comm;
+      return std::move(comm);
     }
     XBT_DEBUG("Sorry, communication synchro %p does not match our needs:"
               " its type is %d but we are looking for a comm of type %d (or maybe the filtering didn't match)",
@@ -189,8 +188,8 @@ smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *
 
     XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
     //find a match in the list of already received comms
-    other_comm = _find_matching_comm(&mbox->done_comm_queue, SIMIX_COMM_SEND, match_fun, data, this_synchro,
-                                     /*remove_matching*/ true);
+    other_comm = std::move(_find_matching_comm(&mbox->done_comm_queue, SIMIX_COMM_SEND, match_fun, data, this_synchro,
+                                               /*remove_matching*/ true));
     //if not found, assume the receiver came first, register it to the mailbox in the classical way
     if (not other_comm) {
       XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request into list");
