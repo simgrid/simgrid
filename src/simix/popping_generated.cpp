@@ -339,12 +339,16 @@ case SIMCALL_SEM_GET_CAPACITY:
       break;
 
 case SIMCALL_FILE_READ:
-      simcall_HANDLER_file_read(simcall, simgrid::simix::unmarshal<smx_file_t>(simcall->args[0]), simgrid::simix::unmarshal<sg_size_t>(simcall->args[1]), simgrid::simix::unmarshal<sg_host_t>(simcall->args[2]));
-      break;
+  simcall_HANDLER_file_read(simcall, simgrid::simix::unmarshal<surf_file_t>(simcall->args[0]),
+                            simgrid::simix::unmarshal<sg_size_t>(simcall->args[1]),
+                            simgrid::simix::unmarshal<sg_host_t>(simcall->args[2]));
+  break;
 
 case SIMCALL_FILE_WRITE:
-      simcall_HANDLER_file_write(simcall, simgrid::simix::unmarshal<smx_file_t>(simcall->args[0]), simgrid::simix::unmarshal<sg_size_t>(simcall->args[1]), simgrid::simix::unmarshal<sg_host_t>(simcall->args[2]));
-      break;
+  simcall_HANDLER_file_write(simcall, simgrid::simix::unmarshal<surf_file_t>(simcall->args[0]),
+                             simgrid::simix::unmarshal<sg_size_t>(simcall->args[1]),
+                             simgrid::simix::unmarshal<sg_host_t>(simcall->args[2]));
+  break;
 
 case SIMCALL_FILE_OPEN:
   simcall_HANDLER_file_open(simcall, simgrid::simix::unmarshal<const char*>(simcall->args[0]),
@@ -353,38 +357,43 @@ case SIMCALL_FILE_OPEN:
   break;
 
 case SIMCALL_FILE_CLOSE:
-      simcall_HANDLER_file_close(simcall, simgrid::simix::unmarshal<smx_file_t>(simcall->args[0]), simgrid::simix::unmarshal<sg_host_t>(simcall->args[1]));
-      break;
+  simcall_HANDLER_file_close(simcall, simgrid::simix::unmarshal<surf_file_t>(simcall->args[0]),
+                             simgrid::simix::unmarshal<sg_host_t>(simcall->args[1]));
+  break;
 
 case SIMCALL_FILE_UNLINK:
-      simgrid::simix::marshal<int>(simcall->result, SIMIX_file_unlink(simgrid::simix::unmarshal<smx_file_t>(simcall->args[0]), simgrid::simix::unmarshal<sg_host_t>(simcall->args[1])));
-      SIMIX_simcall_answer(simcall);
-      break;
+  simgrid::simix::marshal<int>(simcall->result,
+                               SIMIX_file_unlink(simgrid::simix::unmarshal<surf_file_t>(simcall->args[0]),
+                                                 simgrid::simix::unmarshal<sg_host_t>(simcall->args[1])));
+  SIMIX_simcall_answer(simcall);
+  break;
 
 case SIMCALL_FILE_GET_SIZE:
   simgrid::simix::marshal<sg_size_t>(simcall->result,
-                                     SIMIX_file_get_size(simgrid::simix::unmarshal<smx_file_t>(simcall->args[0])));
+                                     SIMIX_file_get_size(simgrid::simix::unmarshal<surf_file_t>(simcall->args[0])));
   SIMIX_simcall_answer(simcall);
   break;
 
 case SIMCALL_FILE_TELL:
   simgrid::simix::marshal<sg_size_t>(simcall->result,
-                                     SIMIX_file_tell(simgrid::simix::unmarshal<smx_file_t>(simcall->args[0])));
+                                     SIMIX_file_tell(simgrid::simix::unmarshal<surf_file_t>(simcall->args[0])));
   SIMIX_simcall_answer(simcall);
   break;
 
 case SIMCALL_FILE_SEEK:
   simgrid::simix::marshal<int>(simcall->result,
-                               SIMIX_file_seek(simgrid::simix::unmarshal<smx_file_t>(simcall->args[0]),
+                               SIMIX_file_seek(simgrid::simix::unmarshal<surf_file_t>(simcall->args[0]),
                                                simgrid::simix::unmarshal<sg_offset_t>(simcall->args[1]),
                                                simgrid::simix::unmarshal<int>(simcall->args[2])));
   SIMIX_simcall_answer(simcall);
   break;
 
 case SIMCALL_FILE_MOVE:
-      simgrid::simix::marshal<int>(simcall->result, simcall_HANDLER_file_move(simcall, simgrid::simix::unmarshal<smx_file_t>(simcall->args[0]), simgrid::simix::unmarshal<const char*>(simcall->args[1])));
-      SIMIX_simcall_answer(simcall);
-      break;
+  simgrid::simix::marshal<int>(
+      simcall->result, simcall_HANDLER_file_move(simcall, simgrid::simix::unmarshal<surf_file_t>(simcall->args[0]),
+                                                 simgrid::simix::unmarshal<const char*>(simcall->args[1])));
+  SIMIX_simcall_answer(simcall);
+  break;
 
 case SIMCALL_MC_RANDOM:
       simgrid::simix::marshal<int>(simcall->result, simcall_HANDLER_mc_random(simcall, simgrid::simix::unmarshal<int>(simcall->args[0]), simgrid::simix::unmarshal<int>(simcall->args[1])));

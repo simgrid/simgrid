@@ -62,11 +62,6 @@ private:
   void reportMultipleUse() const;
 } s_simdata_task_t;
 
-/********************************* File **************************************/
-typedef struct simdata_file {
-  smx_file_t smx_file;
-} s_simdata_file_t;
-
 /******************************* Process *************************************/
 
 namespace simgrid {

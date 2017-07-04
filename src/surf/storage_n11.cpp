@@ -183,7 +183,6 @@ StorageAction *StorageN11::close(surf_file_t fd)
       ++it;
     }
   }
-  delete fd;
   StorageAction* action = new StorageN11Action(model(), 0, isOff(), this, CLOSE);
   return action;
 }

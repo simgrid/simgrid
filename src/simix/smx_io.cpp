@@ -12,6 +12,7 @@
 #include "simgrid/s4u/Storage.hpp"
 #include "src/surf/FileImpl.hpp"
 #include "src/surf/StorageImpl.hpp"
+#include "surf/surf.h"
 
 #include <mc/mc.h>
 
@@ -23,14 +24,14 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)");
 
 //SIMIX FILE READ
-void simcall_HANDLER_file_read(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, sg_host_t host)
+void simcall_HANDLER_file_read(smx_simcall_t simcall, surf_file_t fd, sg_size_t size, sg_host_t host)
 {
   smx_activity_t synchro = SIMIX_file_read(fd, size, host);
   synchro->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_activity_t SIMIX_file_read(smx_file_t fd, sg_size_t size, sg_host_t host)
+smx_activity_t SIMIX_file_read(surf_file_t file, sg_size_t size, sg_host_t host)
 {
   /* check if the host is active */
   if (host->isOff())
@@ -38,7 +39,7 @@ smx_activity_t SIMIX_file_read(smx_file_t fd, sg_size_t size, sg_host_t host)
 
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
   synchro->host = host;
-  synchro->surf_io = surf_host_read(host, fd->surf_file, size);
+  synchro->surf_io                           = surf_host_read(host, file, size);
 
   synchro->surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
@@ -47,21 +48,21 @@ smx_activity_t SIMIX_file_read(smx_file_t fd, sg_size_t size, sg_host_t host)
 }
 
 //SIMIX FILE WRITE
-void simcall_HANDLER_file_write(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, sg_host_t host)
+void simcall_HANDLER_file_write(smx_simcall_t simcall, surf_file_t fd, sg_size_t size, sg_host_t host)
 {
   smx_activity_t synchro = SIMIX_file_write(fd,  size, host);
   synchro->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_activity_t SIMIX_file_write(smx_file_t fd, sg_size_t size, sg_host_t host)
+smx_activity_t SIMIX_file_write(surf_file_t file, sg_size_t size, sg_host_t host)
 {
   if (host->isOff())
     THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->cname());
 
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
   synchro->host = host;
-  synchro->surf_io = surf_host_write(host, fd->surf_file, size);
+  synchro->surf_io                           = surf_host_write(host, file, size);
   synchro->surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
 
@@ -91,21 +92,21 @@ smx_activity_t SIMIX_file_open(const char* mount, const char* path, sg_storage_t
 }
 
 //SIMIX FILE CLOSE
-void simcall_HANDLER_file_close(smx_simcall_t simcall, smx_file_t fd, sg_host_t host)
+void simcall_HANDLER_file_close(smx_simcall_t simcall, surf_file_t fd, sg_host_t host)
 {
   smx_activity_t synchro = SIMIX_file_close(fd, host);
   synchro->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_activity_t SIMIX_file_close(smx_file_t fd, sg_host_t host)
+smx_activity_t SIMIX_file_close(surf_file_t file, sg_host_t host)
 {
   if (host->isOff())
     THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->cname());
 
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
   synchro->host = host;
-  synchro->surf_io = surf_host_close(host, fd->surf_file);
+  synchro->surf_io                           = surf_host_close(host, file);
   synchro->surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
 
@@ -113,38 +114,38 @@ smx_activity_t SIMIX_file_close(smx_file_t fd, sg_host_t host)
 }
 
 //SIMIX FILE UNLINK
-int SIMIX_file_unlink(smx_file_t fd, sg_host_t host)
+int SIMIX_file_unlink(surf_file_t file, sg_host_t host)
 {
   if (host->isOff())
     THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->cname());
 
-  return surf_host_unlink(host, fd->surf_file);
+  return surf_host_unlink(host, file);
 }
 
-sg_size_t SIMIX_file_get_size(smx_file_t fd)
+sg_size_t SIMIX_file_get_size(surf_file_t fd)
 {
-  return fd->surf_file->size();
+  return fd->size();
 }
 
-sg_size_t SIMIX_file_tell(smx_file_t fd)
+sg_size_t SIMIX_file_tell(surf_file_t fd)
 {
-  return fd->surf_file->tell();
+  return fd->tell();
 }
 
-int SIMIX_file_seek(smx_file_t fd, sg_offset_t offset, int origin)
+int SIMIX_file_seek(surf_file_t fd, sg_offset_t offset, int origin)
 {
-  return fd->surf_file->seek(offset, origin);
+  return fd->seek(offset, origin);
 }
 
-int simcall_HANDLER_file_move(smx_simcall_t simcall, smx_file_t file, const char* fullpath)
+int simcall_HANDLER_file_move(smx_simcall_t simcall, surf_file_t file, const char* fullpath)
 {
   return SIMIX_file_move(simcall->issuer, file, fullpath);
 }
 
-int SIMIX_file_move(smx_actor_t process, smx_file_t file, const char* fullpath)
+int SIMIX_file_move(smx_actor_t process, surf_file_t file, const char* fullpath)
 {
   sg_host_t host = process->host;
-  return  surf_host_file_move(host, file->surf_file, fullpath);
+  return surf_host_file_move(host, file, fullpath);
 }
 
 void SIMIX_io_destroy(smx_activity_t synchro)

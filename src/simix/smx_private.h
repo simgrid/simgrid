@@ -76,11 +76,6 @@ XBT_PUBLIC(void) SIMIX_clean();
   _smx_throw_issuer->exception = std::make_exception_ptr(e); \
   } else ((void)0)
 
-typedef struct s_smx_file {
-  surf_file_t surf_file;
-} s_smx_file_t;
-
-
 SG_END_DECL()
 
 #endif

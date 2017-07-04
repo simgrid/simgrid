@@ -657,7 +657,7 @@ int simcall_sem_get_capacity(smx_sem_t sem)
  * \ingroup simix_file_management
  *
  */
-sg_size_t simcall_file_read(smx_file_t fd, sg_size_t size, sg_host_t host)
+sg_size_t simcall_file_read(surf_file_t fd, sg_size_t size, sg_host_t host)
 {
   return simcall_BODY_file_read(fd, size, host);
 }
@@ -666,7 +666,7 @@ sg_size_t simcall_file_read(smx_file_t fd, sg_size_t size, sg_host_t host)
  * \ingroup simix_file_management
  *
  */
-sg_size_t simcall_file_write(smx_file_t fd, sg_size_t size, sg_host_t host)
+sg_size_t simcall_file_write(surf_file_t fd, sg_size_t size, sg_host_t host)
 {
   return simcall_BODY_file_write(fd, size, host);
 }
@@ -675,7 +675,7 @@ sg_size_t simcall_file_write(smx_file_t fd, sg_size_t size, sg_host_t host)
  * \ingroup simix_file_management
  * \brief
  */
-smx_file_t simcall_file_open(const char* mount, const char* path, sg_storage_t st)
+surf_file_t simcall_file_open(const char* mount, const char* path, sg_storage_t st)
 {
   return simcall_BODY_file_open(mount, path, st);
 }
@@ -684,7 +684,7 @@ smx_file_t simcall_file_open(const char* mount, const char* path, sg_storage_t s
  * \ingroup simix_file_management
  *
  */
-int simcall_file_close(smx_file_t fd, sg_host_t host)
+int simcall_file_close(surf_file_t fd, sg_host_t host)
 {
   return simcall_BODY_file_close(fd, host);
 }
@@ -693,7 +693,7 @@ int simcall_file_close(smx_file_t fd, sg_host_t host)
  * \ingroup simix_file_management
  *
  */
-int simcall_file_unlink(smx_file_t fd, sg_host_t host)
+int simcall_file_unlink(surf_file_t fd, sg_host_t host)
 {
   return simcall_BODY_file_unlink(fd, host);
 }
@@ -702,7 +702,8 @@ int simcall_file_unlink(smx_file_t fd, sg_host_t host)
  * \ingroup simix_file_management
  *
  */
-sg_size_t simcall_file_get_size(smx_file_t fd){
+sg_size_t simcall_file_get_size(surf_file_t fd)
+{
   return simcall_BODY_file_get_size(fd);
 }
 
@@ -710,7 +711,8 @@ sg_size_t simcall_file_get_size(smx_file_t fd){
  * \ingroup simix_file_management
  *
  */
-sg_size_t simcall_file_tell(smx_file_t fd){
+sg_size_t simcall_file_tell(surf_file_t fd)
+{
   return simcall_BODY_file_tell(fd);
 }
 
@@ -718,7 +720,8 @@ sg_size_t simcall_file_tell(smx_file_t fd){
  * \ingroup simix_file_management
  *
  */
-int simcall_file_seek(smx_file_t fd, sg_offset_t offset, int origin){
+int simcall_file_seek(surf_file_t fd, sg_offset_t offset, int origin)
+{
   return simcall_BODY_file_seek(fd, offset, origin);
 }
 
@@ -727,7 +730,7 @@ int simcall_file_seek(smx_file_t fd, sg_offset_t offset, int origin){
  * \brief Move a file to another location on the *same mount point*.
  *
  */
-int simcall_file_move(smx_file_t fd, const char* fullpath)
+int simcall_file_move(surf_file_t fd, const char* fullpath)
 {
   return simcall_BODY_file_move(fd, fullpath);
 }

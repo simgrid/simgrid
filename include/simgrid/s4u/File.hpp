@@ -76,10 +76,10 @@ public:
   int desc_id = 0;
 
 private:
-  smx_file_t pimpl_ = nullptr;
-  const char* path_ = nullptr;
-  void* userdata_   = nullptr;
-  sg_host_t host_   = nullptr;
+  surf_file_t pimpl_ = nullptr;
+  const char* path_  = nullptr;
+  void* userdata_    = nullptr;
+  sg_host_t host_    = nullptr;
 };
 }
 } // namespace simgrid::s4u

@@ -331,63 +331,71 @@ inline static int simcall_BODY_sem_get_capacity(smx_sem_t sem) {
     return simcall<int, smx_sem_t>(SIMCALL_SEM_GET_CAPACITY, sem);
   }
 
-inline static sg_size_t simcall_BODY_file_read(smx_file_t fd, sg_size_t size, sg_host_t host) {
+  inline static sg_size_t simcall_BODY_file_read(surf_file_t fd, sg_size_t size, sg_host_t host)
+  {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) simcall_HANDLER_file_read(&SIMIX_process_self()->simcall, fd, size, host);
-    return simcall<sg_size_t, smx_file_t, sg_size_t, sg_host_t>(SIMCALL_FILE_READ, fd, size, host);
+    return simcall<sg_size_t, surf_file_t, sg_size_t, sg_host_t>(SIMCALL_FILE_READ, fd, size, host);
   }
 
-inline static sg_size_t simcall_BODY_file_write(smx_file_t fd, sg_size_t size, sg_host_t host) {
+  inline static sg_size_t simcall_BODY_file_write(surf_file_t fd, sg_size_t size, sg_host_t host)
+  {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) simcall_HANDLER_file_write(&SIMIX_process_self()->simcall, fd, size, host);
-    return simcall<sg_size_t, smx_file_t, sg_size_t, sg_host_t>(SIMCALL_FILE_WRITE, fd, size, host);
+    return simcall<sg_size_t, surf_file_t, sg_size_t, sg_host_t>(SIMCALL_FILE_WRITE, fd, size, host);
   }
 
-  inline static smx_file_t simcall_BODY_file_open(const char* mount, const char* path, sg_storage_t st)
+  inline static surf_file_t simcall_BODY_file_open(const char* mount, const char* path, sg_storage_t st)
   {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0)
       simcall_HANDLER_file_open(&SIMIX_process_self()->simcall, mount, path, st);
-    return simcall<smx_file_t, const char*, const char*, sg_storage_t>(SIMCALL_FILE_OPEN, mount, path, st);
+    return simcall<surf_file_t, const char*, const char*, sg_storage_t>(SIMCALL_FILE_OPEN, mount, path, st);
   }
 
-inline static int simcall_BODY_file_close(smx_file_t fd, sg_host_t host) {
+  inline static int simcall_BODY_file_close(surf_file_t fd, sg_host_t host)
+  {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) simcall_HANDLER_file_close(&SIMIX_process_self()->simcall, fd, host);
-    return simcall<int, smx_file_t, sg_host_t>(SIMCALL_FILE_CLOSE, fd, host);
+    return simcall<int, surf_file_t, sg_host_t>(SIMCALL_FILE_CLOSE, fd, host);
   }
 
-inline static int simcall_BODY_file_unlink(smx_file_t fd, sg_host_t host) {
+  inline static int simcall_BODY_file_unlink(surf_file_t fd, sg_host_t host)
+  {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) SIMIX_file_unlink(fd, host);
-    return simcall<int, smx_file_t, sg_host_t>(SIMCALL_FILE_UNLINK, fd, host);
+    return simcall<int, surf_file_t, sg_host_t>(SIMCALL_FILE_UNLINK, fd, host);
   }
 
-inline static sg_size_t simcall_BODY_file_get_size(smx_file_t fd) {
+  inline static sg_size_t simcall_BODY_file_get_size(surf_file_t fd)
+  {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0)
       SIMIX_file_get_size(fd);
-    return simcall<sg_size_t, smx_file_t>(SIMCALL_FILE_GET_SIZE, fd);
+    return simcall<sg_size_t, surf_file_t>(SIMCALL_FILE_GET_SIZE, fd);
   }
 
-inline static sg_size_t simcall_BODY_file_tell(smx_file_t fd) {
+  inline static sg_size_t simcall_BODY_file_tell(surf_file_t fd)
+  {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0)
       SIMIX_file_tell(fd);
-    return simcall<sg_size_t, smx_file_t>(SIMCALL_FILE_TELL, fd);
+    return simcall<sg_size_t, surf_file_t>(SIMCALL_FILE_TELL, fd);
   }
 
-inline static int simcall_BODY_file_seek(smx_file_t fd, sg_offset_t offset, int origin) {
+  inline static int simcall_BODY_file_seek(surf_file_t fd, sg_offset_t offset, int origin)
+  {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0)
       SIMIX_file_seek(fd, offset, origin);
-    return simcall<int, smx_file_t, sg_offset_t, int>(SIMCALL_FILE_SEEK, fd, offset, origin);
+    return simcall<int, surf_file_t, sg_offset_t, int>(SIMCALL_FILE_SEEK, fd, offset, origin);
   }
 
-inline static int simcall_BODY_file_move(smx_file_t fd, const char* fullpath) {
+  inline static int simcall_BODY_file_move(surf_file_t fd, const char* fullpath)
+  {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) simcall_HANDLER_file_move(&SIMIX_process_self()->simcall, fd, fullpath);
-    return simcall<int, smx_file_t, const char*>(SIMCALL_FILE_MOVE, fd, fullpath);
+    return simcall<int, surf_file_t, const char*>(SIMCALL_FILE_MOVE, fd, fullpath);
   }
 
 inline static int simcall_BODY_mc_random(int min, int max) {
