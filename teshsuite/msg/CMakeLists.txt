@@ -42,5 +42,4 @@ endforeach()
 
 foreach(x cloud-sharing)
   ADD_TESH(tesh-msg-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x} --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x}/${x}.tesh)
-  set_tests_properties(tesh-msg-${x} PROPERTIES WILL_FAIL true)
 endforeach()

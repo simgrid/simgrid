@@ -2,52 +2,48 @@
 
 $ $SG_TEST_EXENV ${bindir:=.}/cloud-sharing$EXEEXT --log=root.fmt:%m%n ${srcdir:=.}/../../../examples/platforms/cluster_backbone.xml
 > # TEST ON SINGLE-CORE PMs
-> ## Test 1 (started): check computation on normal PMs
-> ### Put a task on a PM
+> ## Check computation on regular PMs
+> ### Test '(o)1'. A task on a regular PM
 > Passed: (X)1 with 1 load (100000000flops) took 0.1s as expected
-> ### Put two tasks on a PM
+> ### Test '(oo)1'. 2 tasks on a regular PM
 > Passed: (oX)1 with 0.5 load (50000000flops) took 0.1s as expected
 > Passed: (Xo)1 with 0.5 load (50000000flops) took 0.1s as expected
-> ### Put a task on each PM
+> ### Test '(o)1 (o)1'. 2 regular PMs, with a task each.
 > Passed: (X)1 (o)1 with 1 load (100000000flops) took 0.1s as expected
 > Passed: (o)1 (X)1 with 1 load (100000000flops) took 0.1s as expected
-> ## Test 1 (ended)
 > # TEST ON SINGLE-CORE PMs AND SINGLE-CORE VMs
-> ## Test 2 (started): check impact of running tasks inside a VM (there is no degradation for the moment)
-> ### Put a VM on a PM, and put a task to the VM
+> ## Check the impact of running tasks inside a VM (no degradation for the moment)
+> ### Test '( [o]1 )1'. A task in a VM on a PM.
 > Passed: ( [X]1 )1 with 1 load (100000000flops) took 0.1s as expected
-> ### Put a VM on a PM, and put two task to the VM
+> ### Test '( [oo]1 )1'. 2 tasks co-located in a VM on a PM.
 > Passed: ( [oX]1 )1 with 0.5 load (50000000flops) took 0.1s as expected
 > Passed: ( [Xo]1 )1 with 0.5 load (50000000flops) took 0.1s as expected
-> ## Test 2 (ended)
-> ## Test 3 (started): check impact of running tasks collocated with VMs (there is no VM noise for the moment)
-> ### Put a task on a PM collocated with an empty VM
+> ## Check impact of running tasks collocated with VMs (no VM noise for the moment)
+> ### Test '( [ ]1 o )1'. 1 task collocated with an empty VM
 > Passed: ( [ ]1 X )1 with 1 load (100000000flops) took 0.1s as expected
-> ### Put a VM on a PM, put a task to the PM and a task to the VM
+> ### Test '( [o]1 o )1'. A task in a VM, plus a task
 > Passed: ( [o]1 X )1 with 0.5 load (50000000flops) took 0.1s as expected
 > Passed: ( [X]1 o )1 with 0.5 load (50000000flops) took 0.1s as expected
-> ### Put a VM on a PM, put a task to the PM and two tasks to the VM
+> ### Test '( [oo]1 o )1'. 2 tasks in a VM, plus a task
 > Passed: ( [oo]1 X )1 with 0.5 load (50000000flops) took 0.1s as expected
 > Passed: ( [oX]1 o )1 with 0.25 load (25000000flops) took 0.1s as expected
 > Passed: ( [Xo]1 o )1 with 0.25 load (25000000flops) took 0.1s as expected
-> ## Test 3 (ended)
 > # TEST ON TWO-CORE PMs
-> ## Test 4 (started): check computation on 2 cores PMs
-> ### Put a task on a PM
+> ## Check computation on 2 cores PMs
+> ### Test '( o )2'. A task on bicore PM
 > Passed: (X)2 with 1 load (100000000flops) took 0.1s as expected
-> ### Put two tasks on a PM
+> ### Test '( oo )2'. 2 tasks on a bicore PM
 > Passed: (xX)2 with 1 load (100000000flops) took 0.1s as expected
 > Passed: (Xx)2 with 1 load (100000000flops) took 0.1s as expected
-> ### Put three tasks on a PM
+> ### Test '( ooo )2'. 3 tasks on a bicore PM
 > Passed: (xxX)2 with 0.6667 load (66666666flops) took 0.1s as expected
 > Passed: (Xxx)2 with 0.6667 load (66666666flops) took 0.1s as expected
 > Passed: (xXx)2 with 0.6667 load (66666666flops) took 0.1s as expected
-> ## Test 4 (ended)
 > # TEST ON TWO-CORE PMs AND SINGLE-CORE VMs
-> ## Test 5 (started): check impact of a single VM (there is no degradation for the moment)
-> ### Put a VM on a PM, and put a task to the VM
+> ## Check impact of a single VM (no degradation for the moment)
+> ### Test '( [o]1 )2'. A task in a VM on a bicore PM
 > Passed: ( [X]1 )2 with 1 load (100000000flops) took 0.1s as expected
-> ### Put a VM on a PM, and put two tasks to the VM
+> ### Test '( [oo]1 )2'. 2 tasks in a VM on a bicore PM
 > Passed: ( [xX]1 )2 with 0.5 load (50000000flops) took 0.1s as expected
 > Passed: ( [Xx]1 )2 with 0.5 load (50000000flops) took 0.1s as expected
 > ### Put a VM on a PM, and put a task to the PM
@@ -55,8 +51,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/cloud-sharing$EXEEXT --log=root.fmt:%m%n ${srcdir:
 > ### Put a VM on a PM, put a task to the PM and a task to the VM
 > Passed: ( [x]1 X )2 with 1 load (100000000flops) took 0.1s as expected
 > Passed: ( [X]1 x )2 with 1 load (100000000flops) took 0.1s as expected
-> ## Test 5 (ended)
-> ## Test 6 (started): check impact of a several VMs (there is no degradation for the moment)
+> ## Check impact of a several VMs (there is no degradation for the moment)
 > ### Put two VMs on a PM, and put a task to one VM
 > Passed: ( [X]1 [ ]1 )2 with 1 load (100000000flops) took 0.1s as expected
 > ### Put two VMs on a PM, and put a task to each VM
@@ -69,9 +64,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/cloud-sharing$EXEEXT --log=root.fmt:%m%n ${srcdir:
 > Passed: ( [X]1 [o]1 [o]1 )2 with 0.6667 load (66666666flops) took 0.1s as expected
 > Passed: ( [o]1 [o]1 [X]1 )2 with 0.6667 load (66666666flops) took 0.1s as expected
 > Passed: ( [o]1 [X]1 [o]1 )2 with 0.6667 load (66666666flops) took 0.1s as expected
-> ## Test 6 (ended)
 > # TEST ON TWO-CORE PMs AND TWO-CORE VMs
-> ## Test 7 (started): check impact of a single VM (there is no degradation for the moment)
+> ## Check impact of a single VM (there is no degradation for the moment)
 > ### Put a VM on a PM, and put a task to the VM
 > Passed: ( [X]2 )2 with 1 load (100000000flops) took 0.1s as expected
 > ### Put a VM on a PM, and put two tasks to the VM
@@ -81,8 +75,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/cloud-sharing$EXEEXT --log=root.fmt:%m%n ${srcdir:
 > Passed: ( [ooX]2 )2 with 0.6667 load (66666666flops) took 0.1s as expected
 > Passed: ( [Xoo]2 )2 with 0.6667 load (66666666flops) took 0.1s as expected
 > Passed: ( [oXo]2 )2 with 0.6667 load (66666666flops) took 0.1s as expected
-> ## Test 7 (ended)
-> ## Test 8 (started): check impact of a single VM collocated with a task (there is no degradation for the moment)
+> ## Check impact of a single VM collocated with a task (there is no degradation for the moment)
 > ### Put a VM on a PM, and put a task to the PM
 > Passed: ( [ ]2 X )2 with 1 load (100000000flops) took 0.1s as expected
 > ### Put a VM on a PM, put one task to the PM and one task to the VM
@@ -94,9 +87,9 @@ $ $SG_TEST_EXENV ${bindir:=.}/cloud-sharing$EXEEXT --log=root.fmt:%m%n ${srcdir:
 > Passed: ( [Xo]2 o )2 with 0.6667 load (66666666flops) took 0.1s as expected
 > ### Put a VM on a PM, put one task to the PM and three tasks to the VM
 > Passed: ( [ooo]2 X )2 with 0.6667 load (66666666flops) took 0.1s as expected
-> Passed: ( [ooX]2 o )2 with 0.2222 load (22222222flops) took 0.1s as expected
-> Passed: ( [Xoo]2 o )2 with 0.2222 load (22222222flops) took 0.1s as expected
-> Passed: ( [oXo]2 o )2 with 0.2222 load (22222222flops) took 0.1s as expected
+> Passed: ( [ooX]2 o )2 with 0.4444 load (44444444flops) took 0.1s as expected
+> Passed: ( [Xoo]2 o )2 with 0.4444 load (44444444flops) took 0.1s as expected
+> Passed: ( [oXo]2 o )2 with 0.4444 load (44444444flops) took 0.1s as expected
 > ### Put a VM on a PM, and put two tasks to the PM
 > Passed: ( [ ]2 oX )2 with 1 load (100000000flops) took 0.1s as expected
 > Passed: ( [ ]2 Xo )2 with 1 load (100000000flops) took 0.1s as expected
@@ -115,9 +108,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/cloud-sharing$EXEEXT --log=root.fmt:%m%n ${srcdir:
 > Passed: ( [ooX]2 oo )2 with 0.3333 load (33333333flops) took 0.1s as expected
 > Passed: ( [Xoo]2 oo )2 with 0.3333 load (33333333flops) took 0.1s as expected
 > Passed: ( [oXo]2 oo )2 with 0.3333 load (33333333flops) took 0.1s as expected
-> ## Test 8 (ended)
 > # TEST ON FOUR-CORE PMs AND TWO-CORE VMs
-> ## Test 9 (started): check impact of a single VM
+> ## Check impact of a single VM
 > ### Put a VM on a PM, and put a task to the VM
 > Passed: ( [X]2 )4 with 1 load (100000000flops) took 0.1s as expected
 > ### Put a VM on a PM, and put two tasks to the VM
@@ -127,8 +119,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/cloud-sharing$EXEEXT --log=root.fmt:%m%n ${srcdir:
 > Passed: ( [ooX]2 )4 with 0.6667 load (66666666flops) took 0.1s as expected
 > Passed: ( [Xoo]2 )4 with 0.6667 load (66666666flops) took 0.1s as expected
 > Passed: ( [oXo]2 )4 with 0.6667 load (66666666flops) took 0.1s as expected
-> ## Test 9 (ended)
-> ## Test 10 (started): check impact of a single emtpy VM collocated with tasks
+> ## Check impact of a single empty VM collocated with tasks
 > ### Put a VM on a PM, and put a task to the PM
 > Passed: ( [ ]2 X )4 with 1 load (100000000flops) took 0.1s as expected
 > ### Put a VM on a PM, and put two tasks to the PM
@@ -143,8 +134,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/cloud-sharing$EXEEXT --log=root.fmt:%m%n ${srcdir:
 > Passed: ( [ ]2 ooXo )4 with 1 load (100000000flops) took 0.1s as expected
 > Passed: ( [ ]2 oXoo )4 with 1 load (100000000flops) took 0.1s as expected
 > Passed: ( [ ]2 Xooo )4 with 1 load (100000000flops) took 0.1s as expected
-> ## Test 10 (ended)
-> ## Test 11 (started): check impact of a single working VM collocated with tasks
+> ## Check impact of a single working VM collocated with tasks
 > ### Put a VM on a PM, and put one task to the PM and one task to the VM
 > Passed: ( [o]2 X )4 with 1 load (100000000flops) took 0.1s as expected
 > Passed: ( [X]2 o )4 with 1 load (100000000flops) took 0.1s as expected
@@ -172,10 +162,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/cloud-sharing$EXEEXT --log=root.fmt:%m%n ${srcdir:
 > Passed: ( [ooo]2 ooX )4 with 0.8 load (80000000flops) took 0.1s as expected
 > Passed: ( [ooo]2 Xoo )4 with 0.8 load (80000000flops) took 0.1s as expected
 > Passed: ( [ooo]2 oXo )4 with 0.8 load (80000000flops) took 0.1s as expected
-> Passed: ( [ooX]2 ooo )4 with 0.3333 load (33333333flops) took 0.1s as expected
-> Passed: ( [Xoo]2 ooo )4 with 0.3333 load (33333333flops) took 0.1s as expected
-> Passed: ( [oXo]2 ooo )4 with 0.3333 load (33333333flops) took 0.1s as expected
-> ## Test 11 (ended)
-> 
-> 
-> ## 15 test failed
+> Passed: ( [ooX]2 ooo )4 with 0.5333 load (53333333flops) took 0.1s as expected
+> Passed: ( [Xoo]2 ooo )4 with 0.5333 load (53333333flops) took 0.1s as expected
+> Passed: ( [oXo]2 ooo )4 with 0.5333 load (53333333flops) took 0.1s as expected
+>    
+>    
+> ## 0 test failed
+>    

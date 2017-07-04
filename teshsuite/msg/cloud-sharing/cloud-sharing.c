@@ -288,9 +288,9 @@ static void run_test(const char* chooser)
     vm0 = MSG_vm_create_multicore(pm2, "VM0", 2);
     MSG_vm_start(vm0);
     run_test_process("( [ooo]2 X )2", pm2, flop_amount * 2 / 3);
-    run_test_process("( [Xoo]2 o )2", vm0, flop_amount * 2 / 9);
-    run_test_process("( [oXo]2 o )2", vm0, flop_amount * 2 / 9);
-    run_test_process("( [ooX]2 o )2", vm0, flop_amount * 2 / 9);
+    run_test_process("( [Xoo]2 o )2", vm0, flop_amount * (2. / 3 * 2) / 3); // VM_share/3
+    run_test_process("( [oXo]2 o )2", vm0, flop_amount * (2. / 3 * 2) / 3); // VM_share/3
+    run_test_process("( [ooX]2 o )2", vm0, flop_amount * (2. / 3 * 2) / 3); // VM_share/3
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
 
@@ -458,9 +458,9 @@ static void run_test(const char* chooser)
     XBT_INFO("### Put a VM on a PM, and put three tasks to the PM and three tasks to the VM");
     vm0 = MSG_vm_create_multicore(pm4, "VM0", 2);
     MSG_vm_start(vm0);
-    run_test_process("( [Xoo]2 ooo )4", vm0, flop_amount * (8 / 5) * 1 / 3); // The VM has 8/5 of the PM
-    run_test_process("( [oXo]2 ooo )4", vm0, flop_amount * (8 / 5) * 1 / 3);
-    run_test_process("( [ooX]2 ooo )4", vm0, flop_amount * (8 / 5) * 1 / 3);
+    run_test_process("( [Xoo]2 ooo )4", vm0, flop_amount * (8. / 5) * 1 / 3); // The VM has 8/5 of the PM
+    run_test_process("( [oXo]2 ooo )4", vm0, flop_amount * (8. / 5) * 1 / 3);
+    run_test_process("( [ooX]2 ooo )4", vm0, flop_amount * (8. / 5) * 1 / 3);
 
     run_test_process("( [ooo]2 Xoo )4", pm4, flop_amount * 4 / 5);
     run_test_process("( [ooo]2 oXo )4", pm4, flop_amount * 4 / 5);
@@ -474,7 +474,6 @@ static void run_test(const char* chooser)
 }
 static int master_main(int argc, char* argv[])
 {
-#ifdef IGNORE_ME
   XBT_INFO("# TEST ON SINGLE-CORE PMs");
   XBT_INFO("## Check computation on regular PMs");
   run_test("(o)1");
@@ -519,9 +518,7 @@ static int master_main(int argc, char* argv[])
 
   XBT_INFO("## Check impact of a single VM collocated with a task (there is no degradation for the moment)");
   run_test("( [ ]2 o )2");
-#endif
   run_test("( [o]2 o )2");
-#ifdef IGNORE_ME
   run_test("( [oo]2 o )2");
   run_test("( [ooo]2 o )2");
   run_test("( [ ]2 oo )2");
@@ -548,7 +545,6 @@ static int master_main(int argc, char* argv[])
   run_test("( [o]2 ooo )4");
   run_test("( [oo]2 ooo )4");
   run_test("( [ooo]2 ooo )4");
-#endif
 
   XBT_INFO("   ");
   XBT_INFO("   ");
