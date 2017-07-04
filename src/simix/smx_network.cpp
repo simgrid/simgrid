@@ -193,8 +193,8 @@ SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void* dst_buff, size_
     //if not found, assume the receiver came first, register it to the mailbox in the classical way
     if (not other_comm) {
       XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request into list");
-      other_comm = this_synchro;
-      mbox->push(this_synchro);
+      other_comm = std::move(this_synchro);
+      mbox->push(other_comm);
     } else {
       if (other_comm->surf_comm && other_comm->remains() < 1e-12) {
         XBT_DEBUG("comm %p has been already sent, and is finished, destroy it", other_comm.get());
@@ -215,8 +215,8 @@ SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void* dst_buff, size_
 
     if (other_comm == nullptr) {
       XBT_DEBUG("Receive pushed first (%zu comm enqueued so far)", mbox->comm_queue.size());
-      other_comm = this_synchro;
-      mbox->push(this_synchro);
+      other_comm = std::move(this_synchro);
+      mbox->push(other_comm);
     } else {
       XBT_DEBUG("Match my %p with the existing %p", this_synchro.get(), other_comm.get());
 
