@@ -50,7 +50,7 @@ static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
     xbt_swag_foreach(_elem, elem_list) {
       elem = static_cast<lmm_element_t>(_elem);
       var = elem->variable;
-      xbt_assert(var->weight > 0);
+      xbt_assert(var->sharing_weight > 0);
       tmp += var->value;
     }
 
@@ -65,7 +65,7 @@ static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
 
   xbt_swag_foreach(_var, var_list) {
     var = static_cast<lmm_variable_t>(_var);
-    if (not var->weight)
+    if (not var->sharing_weight)
       break;
     if (var->bound < 0)
       continue;
@@ -89,7 +89,7 @@ static double new_value(lmm_variable_t var)
   }
   if (var->bound > 0)
     tmp += var->mu;
-  XBT_DEBUG("\t Working on var (%p). cost = %e; Weight = %e", var, tmp, var->weight);
+  XBT_DEBUG("\t Working on var (%p). cost = %e; Weight = %e", var, tmp, var->sharing_weight);
   //uses the partial differential inverse function
   return var->func_fpi(var, tmp);
 }
@@ -121,7 +121,7 @@ static double dual_objective(xbt_swag_t var_list, xbt_swag_t cnst_list)
     var = static_cast<lmm_variable_t>(_var);
     double sigma_i = 0.0;
 
-    if (not var->weight)
+    if (not var->sharing_weight)
       break;
 
     for (int j = 0; j < var->cnsts_number; j++)
@@ -199,7 +199,7 @@ void lagrange_solve(lmm_system_t sys)
   i = 0;
   xbt_swag_foreach(_var, var_list) {
   var = static_cast<lmm_variable_t>(_var);
-  if (not var->weight)
+  if (not var->sharing_weight)
     var->value = 0.0;
   else {
     int nb = 0;
@@ -212,12 +212,12 @@ void lagrange_solve(lmm_system_t sys)
       var->new_mu = 2.0;
       var->value  = new_value(var);
     }
-    XBT_DEBUG("#### var(%p) ->weight :  %e", var, var->weight);
+    XBT_DEBUG("#### var(%p) ->weight :  %e", var, var->sharing_weight);
     XBT_DEBUG("#### var(%p) ->mu :  %e", var, var->mu);
-    XBT_DEBUG("#### var(%p) ->weight: %e", var, var->weight);
+    XBT_DEBUG("#### var(%p) ->weight: %e", var, var->sharing_weight);
     XBT_DEBUG("#### var(%p) ->bound: %e", var, var->bound);
     for (i = 0; i < var->cnsts_number; i++) {
-      if (var->cnsts[i].value == 0.0)
+      if (var->cnsts[i].consumption_weight == 0.0)
         nb++;
     }
     if (nb == var->cnsts_number)
@@ -237,7 +237,7 @@ void lagrange_solve(lmm_system_t sys)
     /* Improve the value of mu_i */
     xbt_swag_foreach(_var, var_list) {
       var = static_cast<lmm_variable_t>(_var);
-      if (not var->weight)
+      if (not var->sharing_weight)
         break;
       if (var->bound >= 0) {
         XBT_DEBUG("Working on var (%p)", var);
@@ -275,7 +275,7 @@ void lagrange_solve(lmm_system_t sys)
     overall_modification = 0;
     xbt_swag_foreach(_var, var_list) {
       var = static_cast<lmm_variable_t>(_var);
-      if (var->weight <= 0)
+      if (var->sharing_weight <= 0)
         var->value = 0.0;
       else {
         tmp = new_value(var);
@@ -440,7 +440,7 @@ static double partial_diff_lambda(double lambda, void *param_cnst)
   xbt_swag_foreach(_elem, elem_list) {
     lmm_element_t elem = static_cast<lmm_element_t>(_elem);
     lmm_variable_t var = elem->variable;
-    xbt_assert(var->weight > 0);
+    xbt_assert(var->sharing_weight > 0);
     XBT_CDEBUG(surf_lagrange_dichotomy, "Computing sigma_i for var (%p)", var);
     // Initialize the summation variable
     double sigma_i = 0.0;
@@ -497,19 +497,19 @@ void lmm_set_default_protocol_function(double (*func_f) (lmm_variable_t var, dou
 double func_vegas_f(lmm_variable_t var, double x)
 {
   xbt_assert(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
-  return VEGAS_SCALING * var->weight * log(x);
+  return VEGAS_SCALING * var->sharing_weight * log(x);
 }
 
 double func_vegas_fp(lmm_variable_t var, double x)
 {
   xbt_assert(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
-  return VEGAS_SCALING * var->weight / x;
+  return VEGAS_SCALING * var->sharing_weight / x;
 }
 
 double func_vegas_fpi(lmm_variable_t var, double x)
 {
   xbt_assert(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
-  return var->weight / (x / VEGAS_SCALING);
+  return var->sharing_weight / (x / VEGAS_SCALING);
 }
 
 /*
@@ -520,24 +520,25 @@ double func_vegas_fpi(lmm_variable_t var, double x)
 #define RENO_SCALING 1.0
 double func_reno_f(lmm_variable_t var, double x)
 {
-  xbt_assert(var->weight > 0.0, "Don't call me with stupid values!");
+  xbt_assert(var->sharing_weight > 0.0, "Don't call me with stupid values!");
 
-  return RENO_SCALING * sqrt(3.0 / 2.0) / var->weight * atan(sqrt(3.0 / 2.0) * var->weight * x);
+  return RENO_SCALING * sqrt(3.0 / 2.0) / var->sharing_weight * atan(sqrt(3.0 / 2.0) * var->sharing_weight * x);
 }
 
 double func_reno_fp(lmm_variable_t var, double x)
 {
-  return RENO_SCALING * 3.0 / (3.0 * var->weight * var->weight * x * x + 2.0);
+  return RENO_SCALING * 3.0 / (3.0 * var->sharing_weight * var->sharing_weight * x * x + 2.0);
 }
 
 double func_reno_fpi(lmm_variable_t var, double x)
 {
   double res_fpi;
 
-  xbt_assert(var->weight > 0.0, "Don't call me with stupid values!");
+  xbt_assert(var->sharing_weight > 0.0, "Don't call me with stupid values!");
   xbt_assert(x > 0.0, "Don't call me with stupid values!");
 
-  res_fpi = 1.0 / (var->weight * var->weight * (x / RENO_SCALING)) - 2.0 / (3.0 * var->weight * var->weight);
+  res_fpi = 1.0 / (var->sharing_weight * var->sharing_weight * (x / RENO_SCALING)) -
+            2.0 / (3.0 * var->sharing_weight * var->sharing_weight);
   if (res_fpi <= 0.0)
     return 0.0;
 /*   xbt_assert(res_fpi>0.0,"Don't call me with stupid values!"); */
@@ -552,19 +553,20 @@ double func_reno_fpi(lmm_variable_t var, double x)
 #define RENO2_SCALING 1.0
 double func_reno2_f(lmm_variable_t var, double x)
 {
-  xbt_assert(var->weight > 0.0, "Don't call me with stupid values!");
-  return RENO2_SCALING * (1.0 / var->weight) * log((x * var->weight) / (2.0 * x * var->weight + 3.0));
+  xbt_assert(var->sharing_weight > 0.0, "Don't call me with stupid values!");
+  return RENO2_SCALING * (1.0 / var->sharing_weight) *
+         log((x * var->sharing_weight) / (2.0 * x * var->sharing_weight + 3.0));
 }
 
 double func_reno2_fp(lmm_variable_t var, double x)
 {
-  return RENO2_SCALING * 3.0 / (var->weight * x * (2.0 * var->weight * x + 3.0));
+  return RENO2_SCALING * 3.0 / (var->sharing_weight * x * (2.0 * var->sharing_weight * x + 3.0));
 }
 
 double func_reno2_fpi(lmm_variable_t var, double x)
 {
   xbt_assert(x > 0.0, "Don't call me with stupid values!");
-  double tmp = x * var->weight * var->weight;
+  double tmp     = x * var->sharing_weight * var->sharing_weight;
   double res_fpi = tmp * (9.0 * x + 24.0);
 
   if (res_fpi <= 0.0)

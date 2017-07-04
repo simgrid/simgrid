@@ -49,7 +49,7 @@ static void lmm_check_concurrency(lmm_system_t sys);
 
 inline int lmm_element_concurrency(lmm_element_t elem) {
   //Ignore element with weight less than one (e.g. cross-traffic)
-  return (elem->value>=1)?1:0;
+  return (elem->consumption_weight >= 1) ? 1 : 0;
   //There are other alternatives, but they will change the behaviour of the model..
   //So do not use it unless you want to make a new model.
   //If you do, remember to change the variables concurrency share to reflect it.
@@ -148,8 +148,8 @@ static inline void lmm_variable_remove(lmm_system_t sys, lmm_variable_t var)
 
   for (i = 0; i < var->cnsts_number; i++) {
     elem = &var->cnsts[i];
-    if(var->weight>0)
-    lmm_decrease_concurrency(elem);
+    if (var->sharing_weight > 0)
+      lmm_decrease_concurrency(elem);
     xbt_swag_remove(elem, &(elem->constraint->enabled_element_set));
     xbt_swag_remove(elem, &(elem->constraint->disabled_element_set));
     xbt_swag_remove(elem, &(elem->constraint->active_element_set));
@@ -275,13 +275,13 @@ static void lmm_variable_mallocator_free_f(void *var)
   xbt_free(var);
 }
 
-lmm_variable_t lmm_variable_new(lmm_system_t sys, simgrid::surf::Action* id, double weight, double bound,
+lmm_variable_t lmm_variable_new(lmm_system_t sys, simgrid::surf::Action* id, double sharing_weight, double bound,
                                 int number_of_constraints)
 {
   lmm_variable_t var = nullptr;
   int i;
 
-  XBT_IN("(sys=%p, id=%p, weight=%f, bound=%f, num_cons =%d)", sys, id, weight, bound, number_of_constraints);
+  XBT_IN("(sys=%p, id=%p, weight=%f, bound=%f, num_cons =%d)", sys, id, sharing_weight, bound, number_of_constraints);
 
   var = (lmm_variable_t) xbt_mallocator_get(sys->variable_mallocator);
   var->id = id;
@@ -296,11 +296,11 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, simgrid::surf::Action* id, dou
     var->cnsts[i].active_element_set_hookup.prev = nullptr;
     var->cnsts[i].constraint = nullptr;
     var->cnsts[i].variable = nullptr;
-    var->cnsts[i].value = 0.0;
+    var->cnsts[i].consumption_weight               = 0.0;
   }
   var->cnsts_size = number_of_constraints;
   var->cnsts_number = 0;
-  var->weight = weight;
+  var->sharing_weight    = sharing_weight;
   var->staged_weight = 0.0;
   var->bound = bound;
   var->concurrency_share = 1;
@@ -317,7 +317,7 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, simgrid::surf::Action* id, dou
   var->saturated_variable_set_hookup.next = nullptr;
   var->saturated_variable_set_hookup.prev = nullptr;
 
-  if (weight)
+  if (sharing_weight)
     xbt_swag_insert_at_head(var, &(sys->variable_set));
   else
     xbt_swag_insert_at_tail(var, &(sys->variable_set));
@@ -368,7 +368,8 @@ void lmm_shrink(lmm_system_t sys, lmm_constraint_t cnst, lmm_variable_t var)
 
   sys->modified = 1;
 
-  XBT_DEBUG("remove elem(value %f, cnst %p, var %p) in var %p", elem->value, elem->constraint, elem->variable, var);
+  XBT_DEBUG("remove elem(value %f, cnst %p, var %p) in var %p", elem->consumption_weight, elem->constraint,
+            elem->variable, var);
 
   /* We are going to change the constraint object and the variable object.
    * Propagate this change to other objects. Calling here before removing variable from not active elements
@@ -385,7 +386,7 @@ void lmm_shrink(lmm_system_t sys, lmm_constraint_t cnst, lmm_variable_t var)
   xbt_swag_remove(elem, &(elem->constraint->active_element_set));
   elem->constraint = nullptr;
   elem->variable = nullptr;
-  elem->value = 0;
+  elem->consumption_weight = 0;
 
   var->cnsts_number -= 1;
 
@@ -400,7 +401,7 @@ void lmm_shrink(lmm_system_t sys, lmm_constraint_t cnst, lmm_variable_t var)
   lmm_check_concurrency(sys);
 }
 
-void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst, lmm_variable_t var, double value)
+void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst, lmm_variable_t var, double consumption_weight)
 {
   lmm_element_t elem = nullptr;
   int i,current_share;
@@ -419,25 +420,25 @@ void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst, lmm_variable_t var, dou
   }
 
   //Check if we need to disable the variable
-  if(var->weight>0 && var->concurrency_share-current_share>lmm_concurrency_slack(cnst)) {
-    double weight = var->weight;
+  if (var->sharing_weight > 0 && var->concurrency_share - current_share > lmm_concurrency_slack(cnst)) {
+    double weight = var->sharing_weight;
     lmm_disable_var(sys,var);
     for (i = 0; i < var->cnsts_number; i++)
       lmm_on_disabled_var(sys,var->cnsts[i].constraint);
-    value=0;
+    consumption_weight = 0;
     var->staged_weight=weight;
-    xbt_assert(not var->weight);
+    xbt_assert(not var->sharing_weight);
   }
 
   xbt_assert(var->cnsts_number < var->cnsts_size, "Too much constraints");
 
   elem = &(var->cnsts[var->cnsts_number++]);
 
-  elem->value = value;
+  elem->consumption_weight = consumption_weight;
   elem->constraint = cnst;
   elem->variable = var;
 
-  if (var->weight){
+  if (var->sharing_weight) {
     xbt_swag_insert_at_head(elem, &(elem->constraint->enabled_element_set));
     lmm_increase_concurrency(elem);
   } else
@@ -445,7 +446,7 @@ void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst, lmm_variable_t var, dou
 
   if (not sys->selective_update_active) {
     make_constraint_active(sys, cnst);
-  } else if(elem->value>0 || var->weight >0) {
+  } else if (elem->consumption_weight > 0 || var->sharing_weight > 0) {
     make_constraint_active(sys, cnst);
     lmm_update_modified_set(sys, cnst);
     //TODOLATER: Why do we need this second call?
@@ -470,23 +471,23 @@ void lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst, lmm_variable_t var,
       break;
 
   if (i < var->cnsts_number) {
-    if (var->weight)
+    if (var->sharing_weight)
       lmm_decrease_concurrency(&var->cnsts[i]);
 
     if (cnst->sharing_policy)
-      var->cnsts[i].value += value;
+      var->cnsts[i].consumption_weight += value;
     else
-      var->cnsts[i].value = MAX(var->cnsts[i].value, value);
+      var->cnsts[i].consumption_weight = MAX(var->cnsts[i].consumption_weight, value);
 
     //We need to check that increasing value of the element does not cross the concurrency limit
-    if (var->weight){
+    if (var->sharing_weight) {
       if(lmm_concurrency_slack(cnst)<lmm_element_concurrency(&var->cnsts[i])){
-        weight=var->weight;
+        weight = var->sharing_weight;
         lmm_disable_var(sys,var);
         for (int j = 0; j < var->cnsts_number; j++)
           lmm_on_disabled_var(sys,var->cnsts[j].constraint);
         var->staged_weight=weight;
-        xbt_assert(not var->weight);
+        xbt_assert(not var->sharing_weight);
       }
       lmm_increase_concurrency(&var->cnsts[i]);
     }
@@ -508,7 +509,7 @@ lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t /*sys*/, lmm_variable_t var,
 double lmm_get_cnst_weight_from_var(lmm_system_t /*sys*/, lmm_variable_t var, int num)
 {
   if (num < var->cnsts_number)
-    return (var->cnsts[num].value);
+    return (var->cnsts[num].consumption_weight);
   else
     return 0.0;
 }
@@ -621,8 +622,8 @@ static inline void saturated_variable_set_update(s_lmm_constraint_light_t *cnst_
     xbt_swag_foreach(_elem, elem_list) {
       elem = (lmm_element_t)_elem;
       //Visiting active_element_set, so, by construction, should never get a zero weight, correct?
-      xbt_assert(elem->variable->weight > 0);
-      if ((elem->value > 0))
+      xbt_assert(elem->variable->sharing_weight > 0);
+      if ((elem->consumption_weight > 0))
         xbt_swag_insert(elem->variable, &(sys->saturated_variable_set));
     }
   }
@@ -645,7 +646,7 @@ void lmm_print(lmm_system_t sys)
   var_list = &(sys->variable_set);
   xbt_swag_foreach(_var, var_list) {
     var = (lmm_variable_t)_var;
-    buf = buf + "'" + std::to_string(var->id_int) + "'(" + std::to_string(var->weight) + ") ";
+    buf = buf + "'" + std::to_string(var->id_int) + "'(" + std::to_string(var->sharing_weight) + ") ";
   }
   buf += ")";
   XBT_DEBUG("%20s", buf.c_str());
@@ -663,23 +664,23 @@ void lmm_print(lmm_system_t sys)
     buf += ((cnst->sharing_policy) ? "(" : "max(");
     xbt_swag_foreach(_elem, elem_list) {
       elem = (lmm_element_t)_elem;
-      buf  = buf + std::to_string(elem->value) + ".'" + std::to_string(elem->variable->id_int) + "'(" +
+      buf  = buf + std::to_string(elem->consumption_weight) + ".'" + std::to_string(elem->variable->id_int) + "'(" +
             std::to_string(elem->variable->value) + ")" + ((cnst->sharing_policy) ? " + " : " , ");
       if(cnst->sharing_policy)
-        sum += elem->value * elem->variable->value;
+        sum += elem->consumption_weight * elem->variable->value;
       else
-        sum = MAX(sum,elem->value * elem->variable->value);
+        sum = MAX(sum, elem->consumption_weight * elem->variable->value);
     }
     //TODO: Adding disabled elements only for test compatibility, but do we really want them to be printed?
     elem_list = &(cnst->disabled_element_set);
     xbt_swag_foreach(_elem, elem_list) {
       elem = (lmm_element_t)_elem;
-      buf  = buf + std::to_string(elem->value) + ".'" + std::to_string(elem->variable->id_int) + "'(" +
+      buf  = buf + std::to_string(elem->consumption_weight) + ".'" + std::to_string(elem->variable->id_int) + "'(" +
             std::to_string(elem->variable->value) + ")" + ((cnst->sharing_policy) ? " + " : " , ");
       if(cnst->sharing_policy)
-        sum += elem->value * elem->variable->value;
+        sum += elem->consumption_weight * elem->variable->value;
       else
-        sum = MAX(sum,elem->value * elem->variable->value);
+        sum = MAX(sum, elem->consumption_weight * elem->variable->value);
     }
 
     buf = buf + "0) <= " + std::to_string(cnst->bound) + " ('" + std::to_string(cnst->id_int) + "')";
@@ -700,11 +701,11 @@ void lmm_print(lmm_system_t sys)
   xbt_swag_foreach(_var, var_list) {
   var = (lmm_variable_t)_var;
     if (var->bound > 0) {
-      XBT_DEBUG("'%d'(%f) : %f (<=%f)", var->id_int, var->weight, var->value, var->bound);
+      XBT_DEBUG("'%d'(%f) : %f (<=%f)", var->id_int, var->sharing_weight, var->value, var->bound);
       xbt_assert(not double_positive(var->value - var->bound, var->bound * sg_maxmin_precision),
                  "Incorrect value (%f is not smaller than %f", var->value, var->bound);
     } else {
-      XBT_DEBUG("'%d'(%f) : %f", var->id_int, var->weight, var->value);
+      XBT_DEBUG("'%d'(%f) : %f", var->id_int, var->sharing_weight, var->value);
     }
   }
 }
@@ -739,7 +740,7 @@ void lmm_solve(lmm_system_t sys)
     //XBT_DEBUG("Variable set : %d", xbt_swag_size(elem_list));
     xbt_swag_foreach(_elem, elem_list) {
       var = ((lmm_element_t)_elem)->variable;
-      xbt_assert(var->weight > 0.0);
+      xbt_assert(var->sharing_weight > 0.0);
       var->value = 0.0;
     }
   }
@@ -762,12 +763,12 @@ void lmm_solve(lmm_system_t sys)
     elem_list = &(cnst->enabled_element_set);
     xbt_swag_foreach(_elem, elem_list) {
       elem = (lmm_element_t)_elem;
-      xbt_assert(elem->variable->weight > 0);
-      if ((elem->value > 0)) {
+      xbt_assert(elem->variable->sharing_weight > 0);
+      if ((elem->consumption_weight > 0)) {
         if (cnst->sharing_policy)
-          cnst->usage += elem->value / elem->variable->weight;
-        else if (cnst->usage < elem->value / elem->variable->weight)
-          cnst->usage = elem->value / elem->variable->weight;
+          cnst->usage += elem->consumption_weight / elem->variable->sharing_weight;
+        else if (cnst->usage < elem->consumption_weight / elem->variable->sharing_weight)
+          cnst->usage = elem->consumption_weight / elem->variable->sharing_weight;
 
         make_elem_active(elem);
         simgrid::surf::Action *action = static_cast<simgrid::surf::Action*>(elem->variable->id);
@@ -799,17 +800,16 @@ void lmm_solve(lmm_system_t sys)
 
     xbt_swag_foreach(_var, var_list) {
       var = (lmm_variable_t)_var;
-      if (var->weight <= 0.0)
+      if (var->sharing_weight <= 0.0)
         DIE_IMPOSSIBLE;
       /* First check if some of these variables could reach their upper bound and update min_bound accordingly. */
-      XBT_DEBUG
-          ("var=%d, var->bound=%f, var->weight=%f, min_usage=%f, var->bound*var->weight=%f",
-           var->id_int, var->bound, var->weight, min_usage, var->bound * var->weight);
-      if ((var->bound > 0) && (var->bound * var->weight < min_usage)) {
+      XBT_DEBUG("var=%d, var->bound=%f, var->weight=%f, min_usage=%f, var->bound*var->weight=%f", var->id_int,
+                var->bound, var->sharing_weight, min_usage, var->bound * var->sharing_weight);
+      if ((var->bound > 0) && (var->bound * var->sharing_weight < min_usage)) {
         if (min_bound < 0)
-          min_bound = var->bound*var->weight;
+          min_bound = var->bound * var->sharing_weight;
         else
-          min_bound = MIN(min_bound, (var->bound*var->weight));
+          min_bound = MIN(min_bound, (var->bound * var->sharing_weight));
         XBT_DEBUG("Updated min_bound=%f", min_bound);
       }
     }
@@ -820,14 +820,14 @@ void lmm_solve(lmm_system_t sys)
       if (min_bound < 0) {
         //If no variable could reach its bound, deal iteratively the constraints usage ( at worst one constraint is
         // saturated at each cycle)
-        var->value = min_usage / var->weight;
+        var->value = min_usage / var->sharing_weight;
         // XBT_DEBUG("Setting %p (%d) value to %f\n", var, var->id_int, var->value);
         XBT_DEBUG("Setting var (%d) value to %f\n", var->id_int, var->value);
       } else {
          //If there exist a variable that can reach its bound, only update it (and other with the same bound) for now.
-         if (double_equals(min_bound, var->bound*var->weight, sg_maxmin_precision)){
-            var->value = var->bound;
-            XBT_DEBUG("Setting %p (%d) value to %f\n", var, var->id_int, var->value);
+         if (double_equals(min_bound, var->bound * var->sharing_weight, sg_maxmin_precision)) {
+           var->value = var->bound;
+           XBT_DEBUG("Setting %p (%d) value to %f\n", var, var->id_int, var->value);
          } else {
            // Variables which bound is different are not considered for this cycle, but they will be afterwards.
            XBT_DEBUG("Do not consider %p (%d) \n", var, var->id_int);
@@ -835,8 +835,8 @@ void lmm_solve(lmm_system_t sys)
            continue;
          }
       }
-      XBT_DEBUG("Min usage: %f, Var(%d)->weight: %f, Var(%d)->value: %f ",
-                min_usage, var->id_int, var->weight, var->id_int, var->value);
+      XBT_DEBUG("Min usage: %f, Var(%d)->weight: %f, Var(%d)->value: %f ", min_usage, var->id_int, var->sharing_weight,
+                var->id_int, var->value);
 
       /* Update the usage of contraints where this variable is involved */
       for (i = 0; i < var->cnsts_number; i++) {
@@ -844,8 +844,8 @@ void lmm_solve(lmm_system_t sys)
         cnst = elem->constraint;
         if (cnst->sharing_policy) {
           //Remember: shared constraints require that sum(elem->value * var->value) < cnst->bound
-          double_update(&(cnst->remaining),  elem->value * var->value, cnst->bound*sg_maxmin_precision);
-          double_update(&(cnst->usage), elem->value / var->weight, sg_maxmin_precision);
+          double_update(&(cnst->remaining), elem->consumption_weight * var->value, cnst->bound * sg_maxmin_precision);
+          double_update(&(cnst->usage), elem->consumption_weight / var->sharing_weight, sg_maxmin_precision);
           //If the constraint is saturated, remove it from the set of active constraints (light_tab)
           if (not double_positive(cnst->usage, sg_maxmin_precision) ||
               not double_positive(cnst->remaining, cnst->bound * sg_maxmin_precision)) {
@@ -872,10 +872,10 @@ void lmm_solve(lmm_system_t sys)
           elem_list = &(cnst->enabled_element_set);
           xbt_swag_foreach(_elem, elem_list) {
             elem = (lmm_element_t)_elem;
-            xbt_assert(elem->variable->weight > 0);
+            xbt_assert(elem->variable->sharing_weight > 0);
             if (elem->variable->value > 0) continue;
-            if (elem->value > 0)
-              cnst->usage = MAX(cnst->usage, elem->value / elem->variable->weight);
+            if (elem->consumption_weight > 0)
+              cnst->usage = MAX(cnst->usage, elem->consumption_weight / elem->variable->sharing_weight);
           }
           //If the constraint is saturated, remove it from the set of active constraints (light_tab)
           if (not double_positive(cnst->usage, sg_maxmin_precision) ||
@@ -997,7 +997,7 @@ void lmm_enable_var(lmm_system_t sys, lmm_variable_t var){
 
   xbt_assert(lmm_can_enable_var(var));
 
-  var->weight = var->staged_weight;
+  var->sharing_weight = var->staged_weight;
   var->staged_weight = 0;
 
   //Enabling the variable, move to var to list head. Subtility is: here, we need to call lmm_update_modified_set AFTER
@@ -1041,7 +1041,7 @@ void lmm_disable_var(lmm_system_t sys, lmm_variable_t var){
     lmm_decrease_concurrency(elem);
   }
 
-  var->weight=0.0;
+  var->sharing_weight = 0.0;
   var->staged_weight=0.0;
   var->value = 0.0;
   lmm_check_concurrency(sys);
@@ -1100,11 +1100,11 @@ void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var, double wei
 
   xbt_assert(weight>=0,"Variable weight should not be negative!");
 
-  if (weight == var->weight)
+  if (weight == var->sharing_weight)
     return;
 
-  int enabling_var=  (weight>0 && var->weight<=0);
-  int disabling_var= (weight<=0 && var->weight>0);
+  int enabling_var  = (weight > 0 && var->sharing_weight <= 0);
+  int disabling_var = (weight <= 0 && var->sharing_weight > 0);
 
   XBT_IN("(sys=%p, var=%p, weight=%f)", sys, var, weight);
 
@@ -1125,7 +1125,7 @@ void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var, double wei
     //Are we disabling this variable?
     lmm_disable_var(sys,var);
   } else {
-    var->weight=weight;
+    var->sharing_weight = weight;
   }
 
   lmm_check_concurrency(sys);
@@ -1135,7 +1135,7 @@ void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var, double wei
 
 double lmm_get_variable_weight(lmm_variable_t var)
 {
-  return var->weight;
+  return var->sharing_weight;
 }
 
 void lmm_update_constraint_bound(lmm_system_t sys, lmm_constraint_t cnst, double bound)
@@ -1236,11 +1236,11 @@ double lmm_constraint_get_usage(lmm_constraint_t cnst) {
 
    xbt_swag_foreach(_elem, elem_list) {
      lmm_element_t elem = (lmm_element_t)_elem;
-     if (elem->value > 0) {
+     if (elem->consumption_weight > 0) {
        if (cnst->sharing_policy)
-         usage += elem->value * elem->variable->value;
-       else if (usage < elem->value * elem->variable->value)
-         usage = std::max(usage, elem->value * elem->variable->value);
+         usage += elem->consumption_weight * elem->variable->value;
+       else if (usage < elem->consumption_weight * elem->variable->value)
+         usage = std::max(usage, elem->consumption_weight * elem->variable->value);
      }
    }
   return usage;
@@ -1252,7 +1252,7 @@ int lmm_constraint_get_variable_amount(lmm_constraint_t cnst) {
 
   xbt_swag_foreach(_elem, elem_list) {
     lmm_element_t elem = (lmm_element_t)_elem;
-    if (elem->value > 0)
+    if (elem->consumption_weight > 0)
       usage++;
   }
  return usage;
@@ -1270,7 +1270,7 @@ void lmm_check_concurrency(lmm_system_t sys){
       xbt_swag_foreach(elemIt, &(cnst->enabled_element_set))
       {
         lmm_element_t elem = (lmm_element_t)elemIt;
-        xbt_assert(elem->variable->weight > 0);
+        xbt_assert(elem->variable->sharing_weight > 0);
         concurrency+=lmm_element_concurrency(elem);
       }
 
