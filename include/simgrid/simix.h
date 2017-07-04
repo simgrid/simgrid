@@ -8,7 +8,7 @@
 
 #include "simgrid/datatypes.h"
 #include "simgrid/host.h"
-#include "surf/surf.h"
+#include "src/include/surf/surf.h"
 #include "xbt/ex.h"
 #include "xbt/parmap.h"
 
