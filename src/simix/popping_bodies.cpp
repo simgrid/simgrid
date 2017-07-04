@@ -367,30 +367,6 @@ inline static int simcall_BODY_sem_get_capacity(smx_sem_t sem) {
     return simcall<int, surf_file_t, sg_host_t>(SIMCALL_FILE_UNLINK, fd, host);
   }
 
-  inline static sg_size_t simcall_BODY_file_get_size(surf_file_t fd)
-  {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0)
-      SIMIX_file_get_size(fd);
-    return simcall<sg_size_t, surf_file_t>(SIMCALL_FILE_GET_SIZE, fd);
-  }
-
-  inline static sg_size_t simcall_BODY_file_tell(surf_file_t fd)
-  {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0)
-      SIMIX_file_tell(fd);
-    return simcall<sg_size_t, surf_file_t>(SIMCALL_FILE_TELL, fd);
-  }
-
-  inline static int simcall_BODY_file_seek(surf_file_t fd, sg_offset_t offset, int origin)
-  {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0)
-      SIMIX_file_seek(fd, offset, origin);
-    return simcall<int, surf_file_t, sg_offset_t, int>(SIMCALL_FILE_SEEK, fd, offset, origin);
-  }
-
   inline static int simcall_BODY_file_move(surf_file_t fd, const char* fullpath)
   {
     /* Go to that function to follow the code flow through the simcall barrier */

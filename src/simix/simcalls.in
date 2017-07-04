@@ -90,9 +90,6 @@ sg_size_t   file_write(surf_file_t fd, sg_size_t size, sg_host_t host) [[block]]
 surf_file_t  file_open(const char* mount, const char* path, sg_storage_t st) [[block]];
 int         file_close(surf_file_t fd, sg_host_t host) [[block]];
 int         file_unlink(surf_file_t fd, sg_host_t host) [[nohandler]];
-sg_size_t   file_get_size(surf_file_t fd) [[nohandler]];
-sg_size_t   file_tell(surf_file_t fd) [[nohandler]];
-int         file_seek(surf_file_t fd, sg_offset_t offset, int origin) [[nohandler]];
 int         file_move(surf_file_t fd, const char* fullpath);
 
 int        mc_random(int min, int max);

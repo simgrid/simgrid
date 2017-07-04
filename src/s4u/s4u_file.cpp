@@ -8,6 +8,8 @@
 #include "simgrid/s4u/File.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
+#include "simgrid/simix.hpp"
+#include "src/surf/FileImpl.hpp"
 #include "src/surf/HostImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_file,"S4U files");
@@ -68,17 +70,17 @@ sg_size_t File::write(sg_size_t size, sg_host_t host)
 
 sg_size_t File::size()
 {
-  return simcall_file_get_size(pimpl_);
+  return simgrid::simix::kernelImmediate([this] { return pimpl_->size(); });
 }
 
 void File::seek(sg_size_t pos)
 {
-  simcall_file_seek(pimpl_,pos,SEEK_SET);
+  simgrid::simix::kernelImmediate([this, pos] { pimpl_->seek(pos, SEEK_SET); });
 }
 
 sg_size_t File::tell()
 {
-  return simcall_file_tell(pimpl_);
+  return simgrid::simix::kernelImmediate([this] { return pimpl_->tell(); });
 }
 
 void File::move(const char* fullpath)

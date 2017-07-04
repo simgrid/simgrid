@@ -122,21 +122,6 @@ int SIMIX_file_unlink(surf_file_t file, sg_host_t host)
   return surf_host_unlink(host, file);
 }
 
-sg_size_t SIMIX_file_get_size(surf_file_t fd)
-{
-  return fd->size();
-}
-
-sg_size_t SIMIX_file_tell(surf_file_t fd)
-{
-  return fd->tell();
-}
-
-int SIMIX_file_seek(surf_file_t fd, sg_offset_t offset, int origin)
-{
-  return fd->seek(offset, origin);
-}
-
 int simcall_HANDLER_file_move(smx_simcall_t simcall, surf_file_t file, const char* fullpath)
 {
   return SIMIX_file_move(simcall->issuer, file, fullpath);

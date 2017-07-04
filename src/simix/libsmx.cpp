@@ -698,32 +698,6 @@ int simcall_file_unlink(surf_file_t fd, sg_host_t host)
   return simcall_BODY_file_unlink(fd, host);
 }
 
-/**
- * \ingroup simix_file_management
- *
- */
-sg_size_t simcall_file_get_size(surf_file_t fd)
-{
-  return simcall_BODY_file_get_size(fd);
-}
-
-/**
- * \ingroup simix_file_management
- *
- */
-sg_size_t simcall_file_tell(surf_file_t fd)
-{
-  return simcall_BODY_file_tell(fd);
-}
-
-/**
- * \ingroup simix_file_management
- *
- */
-int simcall_file_seek(surf_file_t fd, sg_offset_t offset, int origin)
-{
-  return simcall_BODY_file_seek(fd, offset, origin);
-}
 
 /**
  * \ingroup simix_file_management
