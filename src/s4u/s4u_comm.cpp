@@ -179,8 +179,9 @@ void Comm::cancel()
 bool Comm::test() {
   xbt_assert(state_ == inited || state_ == started || state_ == finished);
 
-  if (state_ == finished)
-    xbt_die("Don't call test on a finished comm.");
+  if (state_ == finished) {
+    return true;
+  }
 
   if (state_ == inited) {
     this->start();
