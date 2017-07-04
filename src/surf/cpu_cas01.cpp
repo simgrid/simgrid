@@ -209,7 +209,8 @@ CpuAction *CpuCas01::sleep(double duration)
  **********/
 CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm_constraint_t constraint,
                                int requestedCore)
-    : CpuAction(model, cost, failed, lmm_variable_new(model->getMaxminSystem(), this, 1.0, speed, 1))
+    : CpuAction(model, cost, failed,
+                lmm_variable_new(model->getMaxminSystem(), this, 1.0 / requestedCore, requestedCore * speed, 1))
     , requestedCore_(requestedCore)
 {
   if (model->getUpdateMechanism() == UM_LAZY) {

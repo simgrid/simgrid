@@ -750,10 +750,10 @@ void CpuTiAction::setMaxDuration(double duration)
   XBT_OUT();
 }
 
-void CpuTiAction::setPriority(double priority)
+void CpuTiAction::setSharingWeight(double priority)
 {
   XBT_IN("(%p,%g)", this, priority);
-  priority_ = priority;
+  sharingWeight_ = priority;
   cpu_->modified(true);
   XBT_OUT();
 }

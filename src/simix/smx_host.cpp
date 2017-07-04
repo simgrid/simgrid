@@ -173,7 +173,7 @@ SIMIX_execution_start(smx_actor_t issuer, const char* name, double flops_amount,
 
     exec->surf_exec = issuer->host->pimpl_cpu->execution_start(flops_amount);
     exec->surf_exec->setData(exec.get());
-    exec->surf_exec->setPriority(priority);
+    exec->surf_exec->setSharingWeight(priority);
 
     if (bound > 0)
       static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)->setBound(bound);
@@ -234,7 +234,7 @@ void SIMIX_execution_set_priority(smx_activity_t synchro, double priority)
   simgrid::kernel::activity::ExecImplPtr exec =
       boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro);
   if(exec->surf_exec)
-    exec->surf_exec->setPriority(priority);
+    exec->surf_exec->setSharingWeight(priority);
 }
 
 void SIMIX_execution_set_bound(smx_activity_t synchro, double bound)

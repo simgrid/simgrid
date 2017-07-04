@@ -37,7 +37,10 @@ void HostModel::ignoreEmptyVmInPmLMM()
     int impact = std::min(active_tasks, ws_vm->pimpl_vm_->coreAmount());
 
     XBT_DEBUG("set the weight of the dummy CPU action of VM%p on PM to %d (#tasks: %d)", ws_vm, impact, active_tasks);
-    ws_vm->pimpl_vm_->action_->setPriority(impact);
+    if (impact > 0)
+      ws_vm->pimpl_vm_->action_->setSharingWeight(1. / impact);
+    else
+      ws_vm->pimpl_vm_->action_->setSharingWeight(0.);
   }
 }
 

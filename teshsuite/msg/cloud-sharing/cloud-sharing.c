@@ -519,10 +519,10 @@ static int master_main(int argc, char* argv[])
 
   XBT_INFO("## Check impact of a single VM collocated with a task (there is no degradation for the moment)");
   run_test("( [ ]2 o )2");
-  run_test("( [o]2 o )2");
 #endif
-  run_test("( [oo]2 o )2");
+  run_test("( [o]2 o )2");
 #ifdef IGNORE_ME
+  run_test("( [oo]2 o )2");
   run_test("( [ooo]2 o )2");
   run_test("( [ ]2 oo )2");
   run_test("( [o]2 oo )2");

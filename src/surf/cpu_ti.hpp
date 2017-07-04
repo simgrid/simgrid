@@ -92,7 +92,7 @@ public:
   void suspend() override;
   void resume() override;
   void setMaxDuration(double duration) override;
-  void setPriority(double priority) override;
+  void setSharingWeight(double priority) override;
   double getRemains() override;
 
   CpuTi *cpu_;

@@ -86,11 +86,13 @@ typedef struct lmm_variable {
   s_lmm_element_t *cnsts;
   int cnsts_size;
   int cnsts_number;
+
   // sharing_weight: variable's impact on the resource during the sharing
   //   if == 0, the variable is not considered by LMM
   //   on CPU, actions with N threads have a sharing of N
   //   on network, the actions with higher latency have a lesser sharing_weight
-  double sharing_weight; /* weight == 0 -> not considered by LMM;  */
+  double sharing_weight;
+
   double staged_weight; /* If non-zero, variable is staged for addition as soon as maxconcurrency constraints will be met */
   double bound;
   double value;

@@ -298,7 +298,7 @@ void StorageN11Action::setMaxDuration(double /*duration*/)
   THROW_UNIMPLEMENTED;
 }
 
-void StorageN11Action::setPriority(double /*priority*/)
+void StorageN11Action::setSharingWeight(double /*priority*/)
 {
   THROW_UNIMPLEMENTED;
 }

@@ -65,7 +65,7 @@ public:
   void resume();
   bool isSuspended();
   void setMaxDuration(double duration);
-  void setPriority(double priority);
+  void setSharingWeight(double priority);
 };
 
 }
