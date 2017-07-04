@@ -80,6 +80,11 @@ s4u::Host* Actor::host()
   return this->pimpl_->host;
 }
 
+void Actor::daemonize()
+{
+  simgrid::simix::kernelImmediate([this]() { pimpl_->daemonize(); });
+}
+
 const char* Actor::cname()
 {
   return this->pimpl_->name.c_str();

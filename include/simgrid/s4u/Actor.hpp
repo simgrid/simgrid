@@ -195,7 +195,7 @@ public:
 
   // ***** Methods *****
   /** This actor will be automatically terminated when the last non-daemon process finishes **/
-  void deamonize();
+  void daemonize();
 
   /** Retrieves the name of that actor as a C string */
   const char* cname();

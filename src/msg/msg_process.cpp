@@ -479,9 +479,7 @@ XBT_PUBLIC(msg_process_t) MSG_process_restart(msg_process_t process) {
  */
 XBT_PUBLIC(void) MSG_process_daemonize(msg_process_t process)
 {
-  simgrid::simix::kernelImmediate([process]() {
-    process->getImpl()->daemonize();
-  });
+  simgrid::simix::kernelImmediate([process]() { process->getImpl()->daemonize(); });
 }
 
 /** @ingroup m_process_management
