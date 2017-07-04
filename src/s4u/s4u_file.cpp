@@ -73,9 +73,14 @@ sg_size_t File::size()
   return simgrid::simix::kernelImmediate([this] { return pimpl_->size(); });
 }
 
-void File::seek(sg_size_t pos)
+void File::seek(sg_offset_t pos)
 {
   simgrid::simix::kernelImmediate([this, pos] { pimpl_->seek(pos, SEEK_SET); });
+}
+
+void File::seek(sg_offset_t pos, int origin)
+{
+  simgrid::simix::kernelImmediate([this, pos, origin] { pimpl_->seek(pos, origin); });
 }
 
 sg_size_t File::tell()

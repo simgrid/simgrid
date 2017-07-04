@@ -47,7 +47,7 @@ private:
   std::string path_;
   std::string mount_point_;
   sg_size_t size_;
-  sg_size_t current_position_ = 0;
+  sg_size_t current_position_ = SEEK_SET;
 };
 }
 }

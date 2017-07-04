@@ -233,7 +233,7 @@ sg_size_t MSG_file_get_size(msg_file_t fd)
  */
 msg_error_t MSG_file_seek(msg_file_t fd, sg_offset_t offset, int origin)
 {
-  fd->seek(offset); // TODO re-add origin
+  fd->seek(offset, origin);
   return MSG_OK;
 }
 

@@ -52,7 +52,9 @@ public:
   sg_size_t size();
 
   /** Sets the file head to the given position. */
-  void seek(sg_size_t pos);
+  void seek(sg_offset_t pos);
+  void seek(sg_offset_t pos, int origin);
+
   /** Retrieves the current file position */
   sg_size_t tell();
 
