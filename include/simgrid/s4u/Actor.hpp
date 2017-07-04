@@ -194,6 +194,8 @@ public:
   static ActorPtr createActor(const char* name, s4u::Host* host, const char* function, std::vector<std::string> args);
 
   // ***** Methods *****
+  /** This actor will be automatically terminated when the last non-daemon process finishes **/
+  void deamonize();
 
   /** Retrieves the name of that actor as a C string */
   const char* cname();

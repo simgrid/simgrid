@@ -7,8 +7,8 @@
 #define _SIMIX_SIMIX_H
 
 #include "simgrid/datatypes.h"
+#include "simgrid/forward.h"
 #include "simgrid/host.h"
-#include "src/include/surf/surf.h"
 #include "xbt/ex.h"
 #include "xbt/parmap.h"
 
