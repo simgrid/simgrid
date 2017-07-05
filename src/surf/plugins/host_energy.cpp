@@ -468,7 +468,8 @@ void sg_host_energy_update_all()
     std::vector<simgrid::s4u::Host*> list;
     simgrid::s4u::Engine::instance()->hostList(&list);
     for (auto host : list)
-      host->extension<HostEnergy>()->update();
+      if (dynamic_cast<simgrid::s4u::VirtualMachine*>(host) == nullptr) // Ignore virtual machines
+        host->extension<HostEnergy>()->update();
   });
 }
 
