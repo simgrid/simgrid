@@ -231,14 +231,6 @@ also the tesh files in the example directories for details.
     Presents a set of event handlers reproducing classical I/O
     primitives (open, read, write, close, etc).
 
-@section msg_ex_apps Examples of Full Applications
- 
-  - <b>Chord P2P protocol</b>.
-    @ref examples/msg/dht-chord/dht-chord.c \n
-    This example implements the well known Chord protocol,
-    constituting a fully working non-trivial example. This 
-    implementation is also very efficient, as demonstrated in 
-    http://hal.inria.fr/inria-00602216/
 
 @section msg_ex_misc Miscellaneous
 
@@ -298,8 +290,6 @@ top of the example file).
 
 @example examples/msg/actions-comm/actions-comm.c
 @example examples/msg/actions-storage/actions-storage.c
-
-@example examples/msg/dht-chord/dht-chord.c
 
 @example examples/msg/task-priority/task-priority.c
 @example examples/msg/platform-properties/platform-properties.c

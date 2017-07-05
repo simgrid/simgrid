@@ -1,8 +1,8 @@
 #! ./tesh
 
-p Testing the Pastry implementation with MSG (use the deployment file for chord in ../dht-chord)
+p Testing the Pastry implementation with MSG
 
-$ $SG_TEST_EXENV ${bindir:=.}/dht-pastry$EXEEXT -nb_bits=6 ${srcdir:=.}/cluster.xml ${srcdir:=.}/../msg/dht-chord/dht-chord_d.xml --log=msg_pastry.thres:verbose "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/dht-pastry$EXEEXT -nb_bits=6 ${srcdir:=.}/cluster.xml ${srcdir:=.}/../msg/dht-pastry/dht-pastry_d.xml --log=msg_pastry.thres:verbose "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [ 25.007806] (1:node@node-0.acme.org) Task update from 366680 !!!
 > [ 25.007806] (1:node@node-0.acme.org) Node:
 > [ 25.007806] (1:node@node-0.acme.org)  Id: 42 '0000002a' 
