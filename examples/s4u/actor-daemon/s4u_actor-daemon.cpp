@@ -39,5 +39,7 @@ int main(int argc, char* argv[])
 
   e->run();
 
+  delete e;
+
   return 0;
 }
