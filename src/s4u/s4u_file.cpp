@@ -93,14 +93,14 @@ void File::move(const char* fullpath)
   simcall_file_move(pimpl_,fullpath);
 }
 
-void File::unlink()
+int File::unlink()
 {
-  simcall_file_unlink(pimpl_, Host::current());
+  return simgrid::simix::kernelImmediate([this] { return pimpl_->unlink(Host::current()); });
 }
 
-void File::unlink(sg_host_t host)
+int File::unlink(sg_host_t host)
 {
-  simcall_file_unlink(pimpl_, host);
+  return simgrid::simix::kernelImmediate([this, host] { return pimpl_->unlink(host); });
 }
 
 }} // namespace simgrid::s4u

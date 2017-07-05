@@ -64,8 +64,8 @@ public:
   void move(const char* fullpath);
 
   /** Remove a file from disk */
-  void unlink();
-  void unlink(sg_host_t host);
+  int unlink();
+  int unlink(sg_host_t host);
 
   /* FIXME: add these to the S4U API:
   XBT_PUBLIC(const char *) MSG_file_get_name(msg_file_t file);

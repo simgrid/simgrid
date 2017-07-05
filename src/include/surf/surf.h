@@ -148,16 +148,6 @@ XBT_PUBLIC(surf_action_t) surf_host_read(sg_host_t host, surf_file_t fd, sg_size
 XBT_PUBLIC(surf_action_t) surf_host_write(sg_host_t host, surf_file_t fd, sg_size_t size);
 
 /**
- * @brief Unlink a file descriptor
- *
- * @param host The surf host
- * @param fd The file descriptor
- *
- * @return 0 if failed to unlink, 1 otherwise
- */
-XBT_PUBLIC(int) surf_host_unlink(sg_host_t host, surf_file_t fd);
-
-/**
  * @brief Move a file to another location on the *same mount point*.
  * @details [long description]
  *
@@ -168,21 +158,6 @@ XBT_PUBLIC(int) surf_host_unlink(sg_host_t host, surf_file_t fd);
  * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
  */
 XBT_PUBLIC(int) surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath);
-
-/**
- * @brief Set the position indictator assiociated with the file descriptor to a new position
- * @details [long description]
- *
- * @param host The surf host
- * @param fd The file descriptor
- * @param offset The offset from the origin
- * @param origin Position used as a reference for the offset
- *  - SEEK_SET: beginning of the file
- *  - SEEK_CUR: current position indicator
- *  - SEEK_END: end of the file
- * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
- */
-XBT_PUBLIC(int) surf_host_file_seek(sg_host_t host, surf_file_t fd, sg_offset_t offset, int origin);
 
 /**
  * @brief [brief description]

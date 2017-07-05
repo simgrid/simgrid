@@ -169,10 +169,6 @@ surf_action_t surf_host_close(sg_host_t host, surf_file_t fd){
   return host->pimpl_->close(fd);
 }
 
-int surf_host_unlink(sg_host_t host, surf_file_t fd){
-  return host->pimpl_->unlink(fd);
-}
-
 surf_action_t surf_host_read(sg_host_t host, surf_file_t fd, sg_size_t size){
   return host->pimpl_->read(fd, size);
 }

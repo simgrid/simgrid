@@ -691,16 +691,6 @@ int simcall_file_close(surf_file_t fd, sg_host_t host)
 
 /**
  * \ingroup simix_file_management
- *
- */
-int simcall_file_unlink(surf_file_t fd, sg_host_t host)
-{
-  return simcall_BODY_file_unlink(fd, host);
-}
-
-
-/**
- * \ingroup simix_file_management
  * \brief Move a file to another location on the *same mount point*.
  *
  */

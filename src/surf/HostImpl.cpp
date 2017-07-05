@@ -137,30 +137,6 @@ Action* HostImpl::write(surf_file_t fd, sg_size_t size)
   return st->write(fd, size);
 }
 
-int HostImpl::unlink(surf_file_t fd)
-{
-  if (not fd) {
-    XBT_WARN("No such file descriptor. Impossible to unlink");
-    return -1;
-  } else {
-
-    simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount());
-    /* Check if the file is on this storage */
-    if (st->content_->find(fd->cname()) == st->content_->end()) {
-      XBT_WARN("File %s is not on disk %s. Impossible to unlink", fd->cname(), st->cname());
-      return -1;
-    } else {
-      XBT_DEBUG("UNLINK %s on disk '%s'", fd->cname(), st->cname());
-      st->usedSize_ -= fd->size();
-
-      // Remove the file from storage
-      st->content_->erase(fd->cname());
-
-      return 0;
-    }
-  }
-}
-
 int HostImpl::fileMove(surf_file_t fd, const char* fullpath)
 {
   /* Check if the new full path is on the same mount point */

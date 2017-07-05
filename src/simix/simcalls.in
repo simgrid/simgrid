@@ -89,7 +89,6 @@ sg_size_t   file_read(surf_file_t fd, sg_size_t size, sg_host_t host) [[block]];
 sg_size_t   file_write(surf_file_t fd, sg_size_t size, sg_host_t host) [[block]];
 surf_file_t  file_open(const char* mount, const char* path, sg_storage_t st) [[block]];
 int         file_close(surf_file_t fd, sg_host_t host) [[block]];
-int         file_unlink(surf_file_t fd, sg_host_t host) [[nohandler]];
 int         file_move(surf_file_t fd, const char* fullpath);
 
 int        mc_random(int min, int max);

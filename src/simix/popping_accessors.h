@@ -1723,42 +1723,6 @@ static inline void simcall_file_close__set__result(smx_simcall_t simcall, int re
     simgrid::simix::marshal<int>(simcall->result, result);
 }
 
-static inline surf_file_t simcall_file_unlink__get__fd(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<surf_file_t>(simcall->args[0]);
-}
-static inline surf_file_t simcall_file_unlink__getraw__fd(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<surf_file_t>(simcall->args[0]);
-}
-static inline void simcall_file_unlink__set__fd(smx_simcall_t simcall, surf_file_t arg)
-{
-  simgrid::simix::marshal<surf_file_t>(simcall->args[0], arg);
-}
-static inline sg_host_t simcall_file_unlink__get__host(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<sg_host_t>(simcall->args[1]);
-}
-static inline sg_host_t simcall_file_unlink__getraw__host(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<sg_host_t>(simcall->args[1]);
-}
-static inline void simcall_file_unlink__set__host(smx_simcall_t simcall, sg_host_t arg)
-{
-  simgrid::simix::marshal<sg_host_t>(simcall->args[1], arg);
-}
-static inline int simcall_file_unlink__get__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<int>(simcall->result);
-}
-static inline int simcall_file_unlink__getraw__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<int>(simcall->result);
-}
-static inline void simcall_file_unlink__set__result(smx_simcall_t simcall, int result){
-    simgrid::simix::marshal<int>(simcall->result, result);
-}
-
 static inline surf_file_t simcall_file_move__get__fd(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<surf_file_t>(simcall->args[0]);

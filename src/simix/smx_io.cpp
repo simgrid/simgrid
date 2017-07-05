@@ -113,15 +113,6 @@ smx_activity_t SIMIX_file_close(surf_file_t file, sg_host_t host)
   return synchro;
 }
 
-//SIMIX FILE UNLINK
-int SIMIX_file_unlink(surf_file_t file, sg_host_t host)
-{
-  if (host->isOff())
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->cname());
-
-  return surf_host_unlink(host, file);
-}
-
 int simcall_HANDLER_file_move(smx_simcall_t simcall, surf_file_t file, const char* fullpath)
 {
   return SIMIX_file_move(simcall->issuer, file, fullpath);

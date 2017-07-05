@@ -26,22 +26,8 @@ public:
   void setPosition(sg_size_t size) { current_position_ = size; }
   void incrPosition(sg_size_t incr) { current_position_ += incr; }
   sg_size_t tell() { return current_position_; }
-  int seek(sg_offset_t offset, int origin)
-  {
-    switch (origin) {
-      case SEEK_SET:
-        current_position_ = offset;
-        return 0;
-      case SEEK_CUR:
-        current_position_ += offset;
-        return 0;
-      case SEEK_END:
-        current_position_ = size_ + offset;
-        return 0;
-      default:
-        return -1;
-    }
-  }
+  int seek(sg_offset_t offset, int origin);
+  int unlink(sg_host_t host);
 
 private:
   std::string path_;

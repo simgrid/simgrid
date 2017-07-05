@@ -325,6 +325,7 @@ set(SURF_SRC
   src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp
   src/surf/fair_bottleneck.cpp
+  src/surf/FileImpl.cpp
   src/surf/instr_routing.cpp
   src/surf/instr_surf.cpp
   src/surf/lagrange.cpp

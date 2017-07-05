@@ -360,13 +360,6 @@ inline static int simcall_BODY_sem_get_capacity(smx_sem_t sem) {
     return simcall<int, surf_file_t, sg_host_t>(SIMCALL_FILE_CLOSE, fd, host);
   }
 
-  inline static int simcall_BODY_file_unlink(surf_file_t fd, sg_host_t host)
-  {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_file_unlink(fd, host);
-    return simcall<int, surf_file_t, sg_host_t>(SIMCALL_FILE_UNLINK, fd, host);
-  }
-
   inline static int simcall_BODY_file_move(surf_file_t fd, const char* fullpath)
   {
     /* Go to that function to follow the code flow through the simcall barrier */

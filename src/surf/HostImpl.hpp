@@ -81,15 +81,6 @@ public:
   virtual Action* close(surf_file_t fd);
 
   /**
-   * @brief Unlink a file
-   * @details [long description]
-   *
-   * @param fd [description]
-   * @return [description]
-   */
-  virtual int unlink(surf_file_t fd);
-
-  /**
    * @brief Read a file
    *
    * @param fd The file descriptor to read
