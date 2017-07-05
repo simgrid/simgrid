@@ -346,17 +346,16 @@ void sg_config_init(int *argc, char **argv)
   simgrid::config::bindFlag(sg_sender_gap, {"network/sender-gap", "network/sender_gap"},
                             "Minimum gap between two overlapping sends");
 
-  sg_latency_factor = 1.0;
+  sg_latency_factor = 13.01; // comes from the default LV08 network model
   simgrid::config::bindFlag(sg_latency_factor, {"network/latency-factor", "network/latency_factor"},
                             "Correction factor to apply to the provided latency (default value set by network model)");
 
-  sg_bandwidth_factor = 1.0;
+  sg_bandwidth_factor = 0.97; // comes from the default LV08 network model
   simgrid::config::bindFlag(
       sg_bandwidth_factor, {"network/bandwidth-factor", "network/bandwidth_factor"},
       "Correction factor to apply to the provided bandwidth (default value set by network model)");
 
-  // real default for "network/weight-S" is set in network_*.cpp:
-  sg_weight_S_parameter = NAN;
+  sg_weight_S_parameter = 20537; // comes from the default LV08 network model
   simgrid::config::bindFlag(
       sg_weight_S_parameter, {"network/weight-S", "network/weight_S"},
       "Correction factor to apply to the weight of competing streams (default value set by network model)");

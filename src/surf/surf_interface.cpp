@@ -47,25 +47,31 @@ s_surf_model_description_t surf_plugin_description[] = {
 
 /* Don't forget to update the option description in smx_config when you change this */
 s_surf_model_description_t surf_network_model_description[] = {
-  {"LV08", "Realistic network analytic model (slow-start modeled by multiplying latency by 10.4, bandwidth by .92; bottleneck sharing uses a payload of S=8775 for evaluating RTT). ",
-   &surf_network_model_init_LegrandVelho},
-  {"Constant",
-   "Simplistic network model where all communication take a constant time (one second). This model provides the lowest realism, but is (marginally) faster.",
-   &surf_network_model_init_Constant},
-  {"SMPI", "Realistic network model specifically tailored for HPC settings (accurate modeling of slow start with correction factors on three intervals: < 1KiB, < 64 KiB, >= 64 KiB)",
-   &surf_network_model_init_SMPI},
-  {"IB", "Realistic network model specifically tailored for HPC settings, with Infiniband contention model",
-   &surf_network_model_init_IB},
-  {"CM02", "Legacy network analytic model (Very similar to LV08, but without corrective factors. The timings of small messages are thus poorly modeled).",
-   &surf_network_model_init_CM02},
-  {"NS3", "Network pseudo-model using the NS3 tcp model instead of an analytic model", &surf_network_model_init_NS3},
-  {"Reno",  "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
-   &surf_network_model_init_Reno},
-  {"Reno2", "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
-   &surf_network_model_init_Reno2},
-  {"Vegas", "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
-   &surf_network_model_init_Vegas},
-  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
+    {"LV08", "Realistic network analytic model (slow-start modeled by multiplying latency by 13.01, bandwidth by .97; "
+             "bottleneck sharing uses a payload of S=20537 for evaluating RTT). ",
+     &surf_network_model_init_LegrandVelho},
+    {"Constant", "Simplistic network model where all communication take a constant time (one second). This model "
+                 "provides the lowest realism, but is (marginally) faster.",
+     &surf_network_model_init_Constant},
+    {"SMPI", "Realistic network model specifically tailored for HPC settings (accurate modeling of slow start with "
+             "correction factors on three intervals: < 1KiB, < 64 KiB, >= 64 KiB)",
+     &surf_network_model_init_SMPI},
+    {"IB", "Realistic network model specifically tailored for HPC settings, with Infiniband contention model",
+     &surf_network_model_init_IB},
+    {"CM02", "Legacy network analytic model (Very similar to LV08, but without corrective factors. The timings of "
+             "small messages are thus poorly modeled).",
+     &surf_network_model_init_CM02},
+    {"NS3", "Network pseudo-model using the NS3 tcp model instead of an analytic model", &surf_network_model_init_NS3},
+    {"Reno",
+     "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
+     &surf_network_model_init_Reno},
+    {"Reno2",
+     "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
+     &surf_network_model_init_Reno2},
+    {"Vegas",
+     "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
+     &surf_network_model_init_Vegas},
+    {nullptr, nullptr, nullptr} /* this array must be nullptr terminated */
 };
 
 #if ! HAVE_SMPI
