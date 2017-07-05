@@ -10,12 +10,10 @@
 #include "xbt/misc.h"
 #include "xbt/virtu.h"
 
-static int xbt_fake_pid(void)
+int xbt_getpid()
 {
-  return 0;
+  return MSG_process_self_PID();
 }
-
-int_f_void_t xbt_getpid = &xbt_fake_pid;
 
 const char *xbt_procname(void)
 {
