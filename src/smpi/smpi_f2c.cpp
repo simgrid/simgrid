@@ -80,8 +80,8 @@ F2C* F2C::f2c(int id){
   if(f2c_lookup_==nullptr){
     f2c_lookup_=xbt_dict_new_homogeneous(nullptr);
   }
-  char key[KEY_SIZE];
   if(id >= 0){
+    char key[KEY_SIZE];
     return static_cast<F2C*>(xbt_dict_get_or_null(f2c_lookup_, get_key(key, id)));
   }else
     return NULL;

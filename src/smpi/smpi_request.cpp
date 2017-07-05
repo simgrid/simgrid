@@ -874,15 +874,12 @@ int Request::waitall(int count, MPI_Request requests[], MPI_Status status[])
 
 int Request::waitsome(int incount, MPI_Request requests[], int *indices, MPI_Status status[])
 {
-  int i;
   int count = 0;
-  int index;
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
 
-  for(i = 0; i < incount; i++)
-  {
-    index=waitany(incount, requests, pstat);
+  for (int i = 0; i < incount; i++) {
+    int index = waitany(incount, requests, pstat);
     if(index!=MPI_UNDEFINED){
       indices[count] = index;
       count++;

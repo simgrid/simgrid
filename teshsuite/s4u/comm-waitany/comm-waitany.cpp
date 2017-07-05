@@ -69,7 +69,8 @@ int main(int argc, char** argv)
   simgrid::s4u::Actor::createActor("Sender", hosts[1], sender);
   xbt_free(hosts);
 
-  simgrid::s4u::Engine::instance()->run();
+  engine->run();
 
+  delete engine;
   return 0;
 }

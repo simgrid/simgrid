@@ -439,11 +439,10 @@ int xbt_dict_is_empty(xbt_dict_t dict)
  */
 void xbt_dict_dump(xbt_dict_t dict, void_f_pvoid_t output)
 {
-  int i;
   xbt_dictelm_t element;
   printf("Dict %p:\n", dict);
   if (dict != nullptr) {
-    for (i = 0; i < dict->table_size; i++) {
+    for (int i = 0; i < dict->table_size; i++) {
       element = dict->table[i];
       if (element) {
         printf("[\n");
