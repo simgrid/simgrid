@@ -11,6 +11,9 @@
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Activity.hpp>
 #include <simgrid/s4u/forward.hpp>
+
+#include <vector>
+
 namespace simgrid {
 namespace s4u {
 /** @brief Communication async
@@ -28,19 +31,15 @@ public:
 
   /*! take a range of s4u::CommPtr (last excluded) and return when one of them is finished. The return value is an
    * iterator on the finished Comms. */
-  template <class I> static I wait_any(I first, I last)
-  {
-    return wait_any_for(first, last, -1);
-  }
+  static int wait_any(std::vector<CommPtr> * comms) { return wait_any_for(comms, -1); }
   /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
-  template <class I> static I wait_any_for(I first, I last, double timeout)
+  static int wait_any_for(std::vector<CommPtr> * comms_in, double timeout)
   {
     // Map to dynar<Synchro*>:
     xbt_dynar_t comms = xbt_dynar_new(sizeof(simgrid::kernel::activity::ActivityImpl*), [](void*ptr){
       intrusive_ptr_release(*(simgrid::kernel::activity::ActivityImpl**)ptr);
     });
-    for (I iter = first; iter != last; iter++) {
-      CommPtr comm = *iter;
+    for (auto comm : *comms_in) {
       if (comm->state_ == inited)
         comm->start();
       xbt_assert(comm->state_ == started);
@@ -51,13 +50,7 @@ public:
     // Call the underlying simcall:
     int idx = simcall_comm_waitany(comms, timeout);
     xbt_dynar_free(&comms);
-    // Not found:
-    if (idx == -1)
-      return last;
-    // Lift the index to the corresponding iterator:
-    auto res       = std::next(first, idx);
-    (*res)->state_ = finished;
-    return res;
+    return idx;
   }
   /** Creates (but don't start) an async send to the mailbox @p dest */
   static CommPtr send_init(MailboxPtr dest);

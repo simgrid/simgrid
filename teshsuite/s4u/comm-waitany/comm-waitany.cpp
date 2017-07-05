@@ -29,16 +29,10 @@ static void receiver()
     XBT_INFO("Sleeping for 3 seconds (for the %dth time)...", i + 1);
     simgrid::s4u::this_actor::sleep_for(3.0);
     XBT_INFO("Calling wait_any() for %zu pending comms", pending_comms.size());
-    std::vector<simgrid::s4u::CommPtr>::iterator ret_it =
-        simgrid::s4u::Comm::wait_any(pending_comms.begin(), pending_comms.end());
+    int changed_pos = simgrid::s4u::Comm::wait_any(&pending_comms);
     XBT_INFO("Counting the number of completed comms...");
 
-    int count = 0;
-    for (; ret_it != pending_comms.end(); count++, ret_it++)
-      ;
-
-    XBT_INFO("wait_any() replied that %d comms have completed", count);
-    // xbt_assert(count == 1, "wait_any() replied that %d comms have completed, which is broken!", count);
+    pending_comms.erase(pending_comms.begin() + changed_pos);
   }
 }
 
