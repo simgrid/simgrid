@@ -152,10 +152,10 @@ class TeshState(Singleton):
         self.timeout = 10 # default value: 10 sec
         self.wrapper = None
         self.keep = False
-    
+
     def add_thread(self, thread):
         self.threads.append(thread)
-    
+
     def join_all_threads(self):
         for t in self.threads:
             t.acquire()
@@ -170,7 +170,7 @@ class Cmd(object):
         self.timeout = TeshState().timeout
         self.args = None
         self.linenumber = -1
-        
+
         self.background = False
         self.cwd = None
         
