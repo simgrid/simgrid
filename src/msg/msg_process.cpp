@@ -212,7 +212,7 @@ msg_error_t MSG_process_join(msg_process_t process, double timeout){
 msg_error_t MSG_process_migrate(msg_process_t process, msg_host_t host)
 {
   TRACE_msg_process_change_host(process, MSG_process_get_host(process), host);
-  simcall_process_set_host(process->getImpl(), host);
+  process->migrate(host);
   return MSG_OK;
 }
 
@@ -443,7 +443,7 @@ msg_error_t MSG_process_resume(msg_process_t process)
  */
 int MSG_process_is_suspended(msg_process_t process)
 {
-  return simcall_process_is_suspended(process->getImpl());
+  return process->isSuspended();
 }
 
 smx_context_t MSG_process_get_smx_ctx(msg_process_t process) {

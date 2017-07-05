@@ -529,11 +529,6 @@ void SIMIX_process_killall(smx_actor_t issuer, int reset_pid)
   SIMIX_process_empty_trash();
 }
 
-void simcall_HANDLER_process_set_host(smx_simcall_t simcall, smx_actor_t process, sg_host_t dest)
-{
-  process->new_host = dest;
-}
-
 void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest)
 {
   xbt_assert((process != nullptr), "Invalid parameters");

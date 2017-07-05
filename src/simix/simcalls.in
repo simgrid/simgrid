@@ -10,10 +10,10 @@
 # int foo(int x, int y) [[nohandler]];
 # int foo(int x, int y) [[block, nohandler]];
 #
-# The `block` attribut is used for calls which do not return in the same
+# The `block` attribute is used for calls which do not return in the same
 # scheduling round. The answer requires some interaction with SURF,
-# even if this can still occure at the same timestamp under some
-# circonstances (eg if the surf_action cannot start because of resources
+# even if this can still occur at the same timestamp under some
+# circumstances (eg if the surf_action cannot start because of resources
 # that are down) examples: things that last some time (communicate, execute,
 # mutex_lock).
 #
@@ -24,25 +24,22 @@
 # by the kernel. 
 # The only remaining use of that mechanism is to add the caller
 # identity as a parameter of internal call, but that could be
-# automatized too (eg by having a special parameter type called "self")
+# automated too (eg by having a special parameter type called "self")
 
 # Please note that in addition to completing this file with your new simcall,
 # you should complete the libsmx.c file by adding the corresponding function
-# (aka. stub). Anyway, if you omit to do it, the invocation of ./simcalls.py will notify you ;)
+# (a.k.a. stub). Anyway, if you omit to do it, the invocation of ./simcalls.py will notify you ;)
 # If you want to remove an handler, it is important to remove although
 # the corresponding code (simcall_HANDLER_name_of_simcall(xxx) (note that comment the code 
 # is not sufficient, the python script does not check whether the code is commented or not).
 # Last but not the least, you should declare the new simix call in
-# ./include/simgrid/simix.h (otherwise you will get a warning at the
-# compilation time)
+# ./include/simgrid/simix.h (otherwise you will get a warning at compile time)
 
 void process_kill(smx_actor_t process);
 void process_killall(int reset_pid);
 void process_cleanup(smx_actor_t process) [[nohandler]];
 void process_suspend(smx_actor_t process) [[block]];
 void process_resume(smx_actor_t process) [[nohandler]];
-void process_set_host(smx_actor_t process, sg_host_t dest);
-int  process_is_suspended(smx_actor_t process) [[nohandler]];
 int  process_join(smx_actor_t process, double timeout) [[block]];
 int  process_sleep(double duration) [[block]];
 

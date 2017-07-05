@@ -219,8 +219,6 @@ XBT_PUBLIC(void) simcall_process_resume(smx_actor_t process);
 /* Getters and Setters */
 XBT_PUBLIC(int) simcall_process_count();
 XBT_PUBLIC(void) simcall_process_set_data(smx_actor_t process, void *data);
-XBT_PUBLIC(void) simcall_process_set_host(smx_actor_t process, sg_host_t dest);
-XBT_PUBLIC(int) simcall_process_is_suspended(smx_actor_t process);
 XBT_PUBLIC(xbt_dict_t) simcall_process_get_properties(smx_actor_t host);
 XBT_PUBLIC(void) simcall_process_set_kill_time(smx_actor_t process, double kill_time);
 XBT_PUBLIC(double) simcall_process_get_kill_time(smx_actor_t process);

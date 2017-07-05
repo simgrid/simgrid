@@ -80,55 +80,6 @@ static inline void simcall_process_resume__set__process(smx_simcall_t simcall, s
   simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
 }
 
-static inline smx_actor_t simcall_process_set_host__get__process(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
-}
-static inline smx_actor_t simcall_process_set_host__getraw__process(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<smx_actor_t>(simcall->args[0]);
-}
-static inline void simcall_process_set_host__set__process(smx_simcall_t simcall, smx_actor_t arg)
-{
-  simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
-}
-static inline sg_host_t simcall_process_set_host__get__dest(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<sg_host_t>(simcall->args[1]);
-}
-static inline sg_host_t simcall_process_set_host__getraw__dest(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<sg_host_t>(simcall->args[1]);
-}
-static inline void simcall_process_set_host__set__dest(smx_simcall_t simcall, sg_host_t arg)
-{
-  simgrid::simix::marshal<sg_host_t>(simcall->args[1], arg);
-}
-
-static inline smx_actor_t simcall_process_is_suspended__get__process(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
-}
-static inline smx_actor_t simcall_process_is_suspended__getraw__process(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<smx_actor_t>(simcall->args[0]);
-}
-static inline void simcall_process_is_suspended__set__process(smx_simcall_t simcall, smx_actor_t arg)
-{
-  simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
-}
-static inline int simcall_process_is_suspended__get__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<int>(simcall->result);
-}
-static inline int simcall_process_is_suspended__getraw__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<int>(simcall->result);
-}
-static inline void simcall_process_is_suspended__set__result(smx_simcall_t simcall, int result){
-    simgrid::simix::marshal<int>(simcall->result, result);
-}
-
 static inline smx_actor_t simcall_process_join__get__process(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
@@ -1817,7 +1768,6 @@ static inline void simcall_run_blocking__set__code(smx_simcall_t simcall, std::f
 XBT_PRIVATE void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_actor_t process);
 XBT_PRIVATE void simcall_HANDLER_process_killall(smx_simcall_t simcall, int reset_pid);
 XBT_PRIVATE void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t process);
-XBT_PRIVATE void simcall_HANDLER_process_set_host(smx_simcall_t simcall, smx_actor_t process, sg_host_t dest);
 XBT_PRIVATE void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, double timeout);
 XBT_PRIVATE void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration);
 XBT_PRIVATE boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>

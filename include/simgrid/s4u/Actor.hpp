@@ -338,7 +338,7 @@ template <class Rep, class Period> inline void sleep_for(std::chrono::duration<R
   /** @brief Resume the actor. */
   XBT_PUBLIC(void) resume();
 
-  XBT_PUBLIC(int) isSuspended();
+  XBT_PUBLIC(bool) isSuspended();
 
   /** @brief kill the actor. */
   XBT_PUBLIC(void) kill();

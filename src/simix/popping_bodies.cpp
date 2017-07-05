@@ -66,18 +66,6 @@ inline static void simcall_BODY_process_resume(smx_actor_t process) {
     return simcall<void, smx_actor_t>(SIMCALL_PROCESS_RESUME, process);
   }
 
-inline static void simcall_BODY_process_set_host(smx_actor_t process, sg_host_t dest) {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_process_set_host(&SIMIX_process_self()->simcall, process, dest);
-    return simcall<void, smx_actor_t, sg_host_t>(SIMCALL_PROCESS_SET_HOST, process, dest);
-  }
-
-inline static int simcall_BODY_process_is_suspended(smx_actor_t process) {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_process_is_suspended(process);
-    return simcall<int, smx_actor_t>(SIMCALL_PROCESS_IS_SUSPENDED, process);
-  }
-
 inline static int simcall_BODY_process_join(smx_actor_t process, double timeout) {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) simcall_HANDLER_process_join(&SIMIX_process_self()->simcall, process, timeout);

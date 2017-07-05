@@ -30,8 +30,6 @@ const char* simcall_names[] = {
     "SIMCALL_PROCESS_CLEANUP",
     "SIMCALL_PROCESS_SUSPEND",
     "SIMCALL_PROCESS_RESUME",
-    "SIMCALL_PROCESS_SET_HOST",
-    "SIMCALL_PROCESS_IS_SUSPENDED",
     "SIMCALL_PROCESS_JOIN",
     "SIMCALL_PROCESS_SLEEP",
     "SIMCALL_EXECUTION_START",
@@ -109,16 +107,6 @@ case SIMCALL_PROCESS_SUSPEND:
 
 case SIMCALL_PROCESS_RESUME:
       SIMIX_process_resume(simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]));
-      SIMIX_simcall_answer(simcall);
-      break;
-
-case SIMCALL_PROCESS_SET_HOST:
-      simcall_HANDLER_process_set_host(simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]), simgrid::simix::unmarshal<sg_host_t>(simcall->args[1]));
-      SIMIX_simcall_answer(simcall);
-      break;
-
-case SIMCALL_PROCESS_IS_SUSPENDED:
-      simgrid::simix::marshal<int>(simcall->result, SIMIX_process_is_suspended(simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0])));
       SIMIX_simcall_answer(simcall);
       break;
 

@@ -189,20 +189,6 @@ void simcall_process_cleanup(smx_actor_t process)
   simcall_BODY_process_cleanup(process);
 }
 
-/**
- * \ingroup simix_process_management
- * \brief Migrates an agent to another location.
- *
- * This function changes the value of the host on which \a process is running.
- *
- * \param process the process to migrate
- * \param dest name of the new host
- */
-void simcall_process_set_host(smx_actor_t process, sg_host_t dest)
-{
-  simcall_BODY_process_set_host(process, dest);
-}
-
 void simcall_process_join(smx_actor_t process, double timeout)
 {
   simcall_BODY_process_join(process, timeout);
@@ -281,19 +267,6 @@ void simcall_process_set_kill_time(smx_actor_t process, double kill_time)
  */
 double simcall_process_get_kill_time(smx_actor_t process) {
   return SIMIX_timer_get_date(process->kill_timer);
-}
-
-/**
- * \ingroup simix_process_management
- * \brief Returns true if the process is suspended .
- *
- * This checks whether a process is suspended or not by inspecting the task on which it was waiting for the completion.
- * \param process SIMIX process
- * \return 1, if the process is suspended, else 0.
- */
-int simcall_process_is_suspended(smx_actor_t process)
-{
-  return simcall_BODY_process_is_suspended(process);
 }
 
 /**

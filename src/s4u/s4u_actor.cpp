@@ -72,7 +72,7 @@ void Actor::onExit(int_f_pvoid_pvoid_t fun, void* data)
 
 void Actor::migrate(Host* new_host)
 {
-  simcall_process_set_host(pimpl_, new_host);
+  simgrid::simix::kernelImmediate([this, new_host]() { pimpl_->new_host = new_host; });
 }
 
 s4u::Host* Actor::host()
@@ -117,7 +117,7 @@ void Actor::resume()
 
 int Actor::isSuspended()
 {
-  return simcall_process_is_suspended(pimpl_);
+  return simgrid::simix::kernelImmediate([this]() { return pimpl_->suspended; });
 }
 
 void Actor::setKillTime(double time) {
@@ -299,9 +299,10 @@ void resume()
   simcall_process_resume(SIMIX_process_self());
 }
 
-int isSuspended()
+bool isSuspended()
 {
-  return simcall_process_is_suspended(SIMIX_process_self());
+  smx_actor_t process = SIMIX_process_self();
+  return simgrid::simix::kernelImmediate([process] { return process->suspended; });
 }
 
 void kill()
@@ -316,7 +317,8 @@ void onExit(int_f_pvoid_pvoid_t fun, void* data)
 
 void migrate(Host* new_host)
 {
-  simcall_process_set_host(SIMIX_process_self(), new_host);
+  smx_actor_t process = SIMIX_process_self();
+  simgrid::simix::kernelImmediate([process, new_host] { process->new_host = new_host; });
 }
 }
 }
