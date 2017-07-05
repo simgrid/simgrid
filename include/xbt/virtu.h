@@ -15,6 +15,8 @@
 
 SG_BEGIN_DECL()
 
+XBT_PUBLIC(const char*) xbt_procname(void);
+
 XBT_PUBLIC(int) xbt_getpid(void);
 
 /* Get the name of the UNIX process englobing the world */
