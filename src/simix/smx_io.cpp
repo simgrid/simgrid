@@ -113,17 +113,6 @@ smx_activity_t SIMIX_file_close(surf_file_t file, sg_host_t host)
   return synchro;
 }
 
-int simcall_HANDLER_file_move(smx_simcall_t simcall, surf_file_t file, const char* fullpath)
-{
-  return SIMIX_file_move(simcall->issuer, file, fullpath);
-}
-
-int SIMIX_file_move(smx_actor_t process, surf_file_t file, const char* fullpath)
-{
-  sg_host_t host = process->host;
-  return surf_host_file_move(host, file, fullpath);
-}
-
 void SIMIX_io_destroy(smx_activity_t synchro)
 {
   simgrid::kernel::activity::IoImplPtr io = boost::static_pointer_cast<simgrid::kernel::activity::IoImpl>(synchro);

@@ -1723,42 +1723,6 @@ static inline void simcall_file_close__set__result(smx_simcall_t simcall, int re
     simgrid::simix::marshal<int>(simcall->result, result);
 }
 
-static inline surf_file_t simcall_file_move__get__fd(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<surf_file_t>(simcall->args[0]);
-}
-static inline surf_file_t simcall_file_move__getraw__fd(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<surf_file_t>(simcall->args[0]);
-}
-static inline void simcall_file_move__set__fd(smx_simcall_t simcall, surf_file_t arg)
-{
-  simgrid::simix::marshal<surf_file_t>(simcall->args[0], arg);
-}
-static inline const char* simcall_file_move__get__fullpath(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<const char*>(simcall->args[1]);
-}
-static inline const char* simcall_file_move__getraw__fullpath(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<const char*>(simcall->args[1]);
-}
-static inline void simcall_file_move__set__fullpath(smx_simcall_t simcall, const char* arg)
-{
-  simgrid::simix::marshal<const char*>(simcall->args[1], arg);
-}
-static inline int simcall_file_move__get__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<int>(simcall->result);
-}
-static inline int simcall_file_move__getraw__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<int>(simcall->result);
-}
-static inline void simcall_file_move__set__result(smx_simcall_t simcall, int result){
-    simgrid::simix::marshal<int>(simcall->result, result);
-}
-
 static inline int simcall_mc_random__get__min(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<int>(simcall->args[0]);
@@ -1901,5 +1865,4 @@ XBT_PRIVATE void simcall_HANDLER_file_read(smx_simcall_t simcall, surf_file_t fd
 XBT_PRIVATE void simcall_HANDLER_file_write(smx_simcall_t simcall, surf_file_t fd, sg_size_t size, sg_host_t host);
 XBT_PRIVATE void simcall_HANDLER_file_open(smx_simcall_t simcall, const char* mount, const char* path, sg_storage_t st);
 XBT_PRIVATE void simcall_HANDLER_file_close(smx_simcall_t simcall, surf_file_t fd, sg_host_t host);
-XBT_PRIVATE int simcall_HANDLER_file_move(smx_simcall_t simcall, surf_file_t fd, const char* fullpath);
 XBT_PRIVATE int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max);

@@ -137,27 +137,5 @@ Action* HostImpl::write(surf_file_t fd, sg_size_t size)
   return st->write(fd, size);
 }
 
-int HostImpl::fileMove(surf_file_t fd, const char* fullpath)
-{
-  /* Check if the new full path is on the same mount point */
-  if (not strncmp(fd->mount(), fullpath, strlen(fd->mount()))) {
-    std::map<std::string, sg_size_t>* content = findStorageOnMountList(fd->mount())->content_;
-    if (content->find(fd->name()) != content->end()) { // src file exists
-      sg_size_t new_size = content->at(fd->name());
-      content->erase(fd->name());
-      std::string path = std::string(fullpath).substr(strlen(fd->mount()), strlen(fullpath));
-      content->insert({path.c_str(), new_size});
-      XBT_DEBUG("Move file from %s to %s, size '%llu'", fd->cname(), fullpath, new_size);
-      return 0;
-    } else {
-      XBT_WARN("File %s doesn't exist", fd->cname());
-      return -1;
-    }
-  } else {
-    XBT_WARN("New full path %s is not on the same mount point: %s. Action has been canceled.", fullpath, fd->mount());
-    return -1;
-  }
-}
-
 }
 }

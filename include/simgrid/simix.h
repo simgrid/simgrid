@@ -295,17 +295,10 @@ XBT_PUBLIC(void) simcall_sem_acquire_timeout(smx_sem_t sem, double max_duration)
 XBT_PUBLIC(int) simcall_sem_get_capacity(smx_sem_t sem);
 
 /*****************************   File   **********************************/
-XBT_PUBLIC(void*) simcall_file_get_data(surf_file_t fd);
-XBT_PUBLIC(void) simcall_file_set_data(surf_file_t fd, void* data);
 XBT_PUBLIC(sg_size_t) simcall_file_read(surf_file_t fd, sg_size_t size, sg_host_t host);
 XBT_PUBLIC(sg_size_t) simcall_file_write(surf_file_t fd, sg_size_t size, sg_host_t host);
 XBT_PUBLIC(surf_file_t) simcall_file_open(const char* mount, const char* path, sg_storage_t st);
 XBT_PUBLIC(int) simcall_file_close(surf_file_t fd, sg_host_t host);
-XBT_PUBLIC(int) simcall_file_unlink(surf_file_t fd, sg_host_t host);
-XBT_PUBLIC(sg_size_t) simcall_file_get_size(surf_file_t fd);
-XBT_PUBLIC(sg_size_t) simcall_file_tell(surf_file_t fd);
-XBT_PUBLIC(int) simcall_file_seek(surf_file_t fd, sg_offset_t offset, int origin);
-XBT_PUBLIC(int) simcall_file_move(surf_file_t fd, const char* fullpath);
 /************************** MC simcalls   **********************************/
 XBT_PUBLIC(int) simcall_mc_random(int min, int max);
 

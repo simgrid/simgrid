@@ -360,13 +360,6 @@ inline static int simcall_BODY_sem_get_capacity(smx_sem_t sem) {
     return simcall<int, surf_file_t, sg_host_t>(SIMCALL_FILE_CLOSE, fd, host);
   }
 
-  inline static int simcall_BODY_file_move(surf_file_t fd, const char* fullpath)
-  {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_file_move(&SIMIX_process_self()->simcall, fd, fullpath);
-    return simcall<int, surf_file_t, const char*>(SIMCALL_FILE_MOVE, fd, fullpath);
-  }
-
 inline static int simcall_BODY_mc_random(int min, int max) {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) simcall_HANDLER_mc_random(&SIMIX_process_self()->simcall, min, max);

@@ -177,10 +177,6 @@ surf_action_t surf_host_write(sg_host_t host, surf_file_t fd, sg_size_t size){
   return host->pimpl_->write(fd, size);
 }
 
-int surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath){
-  return host->pimpl_->fileMove(fd, fullpath);
-}
-
 void surf_cpu_action_set_bound(surf_action_t action, double bound) {
   static_cast<simgrid::surf::CpuAction*>(action)->setBound(bound);
 }

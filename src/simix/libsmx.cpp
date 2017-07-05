@@ -689,16 +689,6 @@ int simcall_file_close(surf_file_t fd, sg_host_t host)
   return simcall_BODY_file_close(fd, host);
 }
 
-/**
- * \ingroup simix_file_management
- * \brief Move a file to another location on the *same mount point*.
- *
- */
-int simcall_file_move(surf_file_t fd, const char* fullpath)
-{
-  return simcall_BODY_file_move(fd, fullpath);
-}
-
 void simcall_run_kernel(std::function<void()> const& code)
 {
   simcall_BODY_run_kernel(&code);

@@ -28,6 +28,7 @@ public:
   sg_size_t tell() { return current_position_; }
   int seek(sg_offset_t offset, int origin);
   int unlink(sg_host_t host);
+  void move(sg_host_t host, const char* fullpath);
 
 private:
   std::string path_;

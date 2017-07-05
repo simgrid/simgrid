@@ -90,12 +90,13 @@ sg_size_t File::tell()
 
 void File::move(const char* fullpath)
 {
-  simcall_file_move(pimpl_,fullpath);
+  sg_host_t host = Host::current();
+  simgrid::simix::kernelImmediate([this, host, fullpath] { pimpl_->move(host, fullpath); });
 }
 
 int File::unlink()
 {
-  return simgrid::simix::kernelImmediate([this] { return pimpl_->unlink(Host::current()); });
+  return unlink(Host::current());
 }
 
 int File::unlink(sg_host_t host)

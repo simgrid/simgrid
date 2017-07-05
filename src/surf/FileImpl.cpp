@@ -45,5 +45,24 @@ int FileImpl::unlink(sg_host_t host)
     return 0;
   }
 }
+
+void FileImpl::move(sg_host_t host, const char* fullpath)
+{
+  /* Check if the new full path is on the same mount point */
+  if (not strncmp(mount_point_.c_str(), fullpath, mount_point_.size())) {
+    std::map<std::string, sg_size_t>* content = host->pimpl_->findStorageOnMountList(mount_point_.c_str())->content_;
+    if (content->find(path_) != content->end()) { // src file exists
+      sg_size_t new_size = content->at(path_);
+      content->erase(path_);
+      std::string path = std::string(fullpath).substr(mount_point_.size(), strlen(fullpath));
+      content->insert({path.c_str(), new_size});
+      XBT_DEBUG("Move file from %s to %s, size '%llu'", path_.c_str(), fullpath, new_size);
+    } else {
+      XBT_WARN("File %s doesn't exist", path_.c_str());
+    }
+  } else {
+    XBT_WARN("New full path %s is not on the same mount point: %s.", fullpath, mount_point_.c_str());
+  }
+}
 }
 }
