@@ -76,12 +76,12 @@ static void sender(std::vector<std::string> args)
 
       case 'd':
         XBT_INFO("Test %d: d (detached send)", test);
-        simgrid::s4u::this_actor::dsend(mbox, (void*)mboxName, 42.0);
+        simgrid::s4u::this_actor::isend(mbox, (void*)mboxName, 42.0)->detach();
         break;
       case 'D':
         XBT_INFO("Test %d: D (sleep + detached send)", test);
         simgrid::s4u::this_actor::sleep_for(0.5);
-        simgrid::s4u::this_actor::dsend(mbox, (void*)mboxName, 42.0);
+        simgrid::s4u::this_actor::isend(mbox, (void*)mboxName, 42.0)->detach();
         break;
       default:
         xbt_die("Unknown sender spec for test %d: '%c'", test, args[0][test - 1]);

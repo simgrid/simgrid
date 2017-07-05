@@ -31,7 +31,7 @@ static void server()
   simgrid::s4u::MailboxPtr mailbox2 = simgrid::s4u::Mailbox::byName("mailbox2");
   mailbox2->setReceiver(simgrid::s4u::Actor::self());
 
-  simgrid::s4u::this_actor::dsend(mailbox2, xbt_strdup("More data"), 0);
+  simgrid::s4u::this_actor::isend(mailbox2, xbt_strdup("More data"), 0)->detach();
 
   xbt_assert(mailbox2->listen()); // used to break.
   XBT_INFO("Task listen works on asynchronous mailboxes");

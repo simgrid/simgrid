@@ -60,13 +60,13 @@ public:
   static CommPtr recv_init(MailboxPtr from);
   /** Creates and start an async recv to the mailbox @p from */
   static CommPtr recv_async(MailboxPtr from, void** data);
-  /** Creates and start a detached send to the mailbox @p dest
-   *  TODO: make it possible to detach an already created comm */
-  static void send_detached(MailboxPtr dest, void* data, int simulatedSize);
 
   void start() override;
   void wait() override;
   void wait(double timeout) override;
+
+  /** Start the comm, and ignore its result. It can be completely forgotten after that. */
+  void detach();
 
   /** Sets the maximal communication rate (in byte/sec). Must be done before start */
   void setRate(double rate);

@@ -318,7 +318,6 @@ template <class Rep, class Period> inline void sleep_for(std::chrono::duration<R
   XBT_PUBLIC(void) send(MailboxPtr chan, void* payload, double simulatedSize, double timeout);
 
   XBT_PUBLIC(CommPtr) isend(MailboxPtr chan, void* payload, double simulatedSize);
-  XBT_PUBLIC(void) dsend(MailboxPtr chan, void* payload, double simulatedSize);
 
   /** @brief Returns the actor ID of the current actor (same as pid). */
   XBT_PUBLIC(aid_t) pid();

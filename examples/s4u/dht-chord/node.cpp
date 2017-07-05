@@ -389,7 +389,7 @@ void Node::remoteNotify(int notify_id, int predecessor_candidate_id)
   // send a "Notify" request to notify_id
   XBT_DEBUG("Sending a 'Notify' request to %d", notify_id);
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(std::to_string(notify_id));
-  simgrid::s4u::this_actor::dsend(mailbox, message, 10);
+  simgrid::s4u::this_actor::isend(mailbox, message, 10)->detach();
 }
 
 /* This function is called periodically. It checks the immediate successor of the current node. */
@@ -431,14 +431,14 @@ void Node::handleMessage(ChordMessage* message)
       message->answer_id = fingers_[0];
       XBT_DEBUG("Sending back a 'Find Successor Answer' to %s (mailbox %s): the successor of %d is %d",
           message->issuer_host_name.c_str(), message->answer_to->name(), message->request_id, message->answer_id);
-      simgrid::s4u::this_actor::dsend(message->answer_to, message, 10);
+      simgrid::s4u::this_actor::isend(message->answer_to, message, 10)->detach();
     } else {
       // otherwise, forward the request to the closest preceding finger in my table
       int closest = closestPrecedingFinger(message->request_id);
       XBT_DEBUG("Forwarding the 'Find Successor' request for id %d to my closest preceding finger %d",
           message->request_id, closest);
       simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(std::to_string(closest));
-      simgrid::s4u::this_actor::dsend(mailbox, message, 10);
+      simgrid::s4u::this_actor::isend(mailbox, message, 10)->detach();
     }
     break;
 
@@ -448,7 +448,7 @@ void Node::handleMessage(ChordMessage* message)
     message->answer_id = pred_id_;
     XBT_DEBUG("Sending back a 'Get Predecessor Answer' to %s via mailbox '%s': my predecessor is %d",
         message->issuer_host_name.c_str(), message->answer_to->name(), message->answer_id);
-    simgrid::s4u::this_actor::dsend(message->answer_to, message, 10);
+    simgrid::s4u::this_actor::isend(message->answer_to, message, 10)->detach();
     break;
 
   case NOTIFY:
@@ -486,7 +486,7 @@ void Node::handleMessage(ChordMessage* message)
     message->type = PREDECESSOR_ALIVE_ANSWER;
     XBT_DEBUG("Sending back a 'Predecessor Alive Answer' to %s (mailbox %s)",
         message->issuer_host_name.c_str(), message->answer_to->name());
-    simgrid::s4u::this_actor::dsend(message->answer_to, message, 10);
+    simgrid::s4u::this_actor::isend(message->answer_to, message, 10)->detach();
     break;
 
   default:

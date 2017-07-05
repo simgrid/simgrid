@@ -1,5 +1,8 @@
 SimGrid (3.17) UNRELEASED (release target: September 22 2017)
 
+ S4U
+  - start and forget about isend comms with detach()
+
 SimGrid (3.16) Released June 22. 2017.
 
  The Blooming Spring Release: developments are budding.

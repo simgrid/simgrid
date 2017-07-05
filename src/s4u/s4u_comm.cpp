@@ -141,14 +141,11 @@ void Comm::wait(double timeout) {
   state_ = finished;
 }
 
-void Comm::send_detached(MailboxPtr dest, void* data, int simulatedSize)
+void Comm::detach()
 {
-  s4u::CommPtr res = CommPtr(s4u::Comm::send_init(dest));
-  res->setRemains(simulatedSize);
-  res->srcBuff_     = data;
-  res->srcBuffSize_ = sizeof(void*);
-  res->detached_    = true;
-  res->start();
+  xbt_assert(state_ == inited, "You cannot detach communications once they are started.");
+  xbt_assert(srcBuff_ != nullptr && srcBuffSize_ != 0, "You can only detach sends, not recvs");
+  detached_ = true;
 }
 
 s4u::CommPtr Comm::send_async(MailboxPtr dest, void* data, int simulatedSize)
