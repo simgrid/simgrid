@@ -11,7 +11,7 @@
 
 #include "simgrid/s4u/ConditionVariable.hpp"
 #include "simgrid/simix.h"
-#include "src/simix/smx_synchro_private.h"
+#include "src/simix/smx_synchro_private.hpp"
 
 namespace simgrid {
 namespace s4u {

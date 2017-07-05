@@ -13,22 +13,22 @@
 
 #include <xbt/functional.hpp>
 
-#include "src/internal_config.h"
 #include "simgrid/simix.h"
-#include "surf/surf.h"
-#include "xbt/base.h"
-#include "xbt/swag.h"
-#include "xbt/dict.h"
-#include "xbt/mallocator.h"
-#include "xbt/config.h"
-#include "xbt/xbt_os_time.h"
-#include "xbt/function_types.h"
 #include "src/instr/instr_private.h"
+#include "src/internal_config.h"
+#include "src/simix/popping_private.h"
 #include "src/simix/smx_host_private.h"
 #include "src/simix/smx_io_private.h"
 #include "src/simix/smx_network_private.h"
-#include "src/simix/popping_private.h"
-#include "src/simix/smx_synchro_private.h"
+#include "src/simix/smx_synchro_private.hpp"
+#include "surf/surf.h"
+#include "xbt/base.h"
+#include "xbt/config.h"
+#include "xbt/dict.h"
+#include "xbt/function_types.h"
+#include "xbt/mallocator.h"
+#include "xbt/swag.h"
+#include "xbt/xbt_os_time.h"
 
 #include <signal.h>
 #include "src/simix/ActorImpl.hpp"

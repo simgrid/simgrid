@@ -23,7 +23,7 @@ public:
   bool try_lock(smx_actor_t issuer);
   void unlock(smx_actor_t issuer);
 
-  bool locked = false;
+  bool locked       = false;
   smx_actor_t owner = nullptr;
   // List of sleeping processes:
   xbt_swag_t sleeping = nullptr;
@@ -46,25 +46,24 @@ public:
   simgrid::s4u::Mutex& mutex() { return mutex_; }
 
 private:
-  std::atomic_int_fast32_t refcount_ { 1 };
+  std::atomic_int_fast32_t refcount_{1};
   simgrid::s4u::Mutex mutex_;
 };
-
 }
 }
 
 typedef struct s_smx_cond {
   s_smx_cond() : cond_(this) {}
 
-  std::atomic_int_fast32_t refcount_ { 1 };
-  smx_mutex_t mutex = nullptr;
-  xbt_swag_t sleeping = nullptr;  /* list of sleeping process */
+  std::atomic_int_fast32_t refcount_{1};
+  smx_mutex_t mutex   = nullptr;
+  xbt_swag_t sleeping = nullptr; /* list of sleeping process */
   simgrid::s4u::ConditionVariable cond_;
 } s_smx_cond_t;
 
 typedef struct s_smx_sem {
   unsigned int value;
-  xbt_swag_t sleeping;          /* list of sleeping process */
+  xbt_swag_t sleeping; /* list of sleeping process */
 } s_smx_sem_t;
 
 XBT_PRIVATE void SIMIX_post_synchro(smx_activity_t synchro);
@@ -75,8 +74,8 @@ XBT_PRIVATE void SIMIX_synchro_finish(smx_activity_t synchro);
 XBT_PRIVATE smx_cond_t SIMIX_cond_init();
 XBT_PRIVATE void SIMIX_cond_broadcast(smx_cond_t cond);
 XBT_PRIVATE void SIMIX_cond_signal(smx_cond_t cond);
-XBT_PRIVATE void intrusive_ptr_add_ref(s_smx_cond_t *cond);
-XBT_PRIVATE void intrusive_ptr_release(s_smx_cond_t *cond);
+XBT_PRIVATE void intrusive_ptr_add_ref(s_smx_cond_t* cond);
+XBT_PRIVATE void intrusive_ptr_release(s_smx_cond_t* cond);
 
 XBT_PRIVATE XBT_PRIVATE smx_sem_t SIMIX_sem_init(unsigned int value);
 XBT_PRIVATE void SIMIX_sem_release(smx_sem_t sem);
