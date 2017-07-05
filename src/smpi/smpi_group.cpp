@@ -64,12 +64,10 @@ Group::~Group()
 
 void Group::set_mapping(int index, int rank)
 {
-  int * val_rank;
-
   if (rank < size_) {
     rank_to_index_map_[rank] = index;
     if (index!=MPI_UNDEFINED ) {
-      val_rank = static_cast<int *>(xbt_malloc(sizeof(int)));
+      int* val_rank = static_cast<int*>(xbt_malloc(sizeof(int)));
       *val_rank = rank;
 
       char * key = bprintf("%d", index);
@@ -124,16 +122,14 @@ int Group::size()
 int Group::compare(MPI_Group group2)
 {
   int result;
-  int i;
-  int index;
 
   result = MPI_IDENT;
   if (size_ != group2->size()) {
     result = MPI_UNEQUAL;
   } else {
     int sz = group2->size();
-    for (i = 0; i < sz; i++) {
-      index = this->index(i);
+    for (int i = 0; i < sz; i++) {
+      int index = this->index(i);
       int rank = group2->rank(index);
       if (rank == MPI_UNDEFINED) {
         result = MPI_UNEQUAL;

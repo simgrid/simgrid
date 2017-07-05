@@ -387,8 +387,8 @@ if (instr_fmt_type == instr_fmt_paje) {
   /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
     if (timestamp < 1e-12)
         stream << 0;
-    else 
-        stream << timestamp;
+    else
+      stream << timestamp;
     stream << " " << container->type->id << " " << container->id;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
