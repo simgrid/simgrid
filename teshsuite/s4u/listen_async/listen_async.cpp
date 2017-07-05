@@ -51,5 +51,7 @@ int main(int argc, char* argv[])
   simgrid::s4u::Actor::createActor("test", simgrid::s4u::Host::by_name("Tremblay"), server);
 
   e->run();
+
+  delete e;
   return 0;
 }

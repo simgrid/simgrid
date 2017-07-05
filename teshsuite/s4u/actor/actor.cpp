@@ -62,5 +62,6 @@ int main(int argc, char* argv[])
   e->run();
   XBT_INFO("Simulation time %g", e->getClock());
 
+  delete e;
   return 0;
 }
