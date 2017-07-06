@@ -100,6 +100,15 @@ public:
   /** Returns whether SimGrid was initialized yet -- mostly for internal use */
   static bool isInitialized();
 
+  /** @brief set a configuration variable
+   *
+   * Do --help on any simgrid binary to see the list of currently existing configuration variables (see @ref options).
+   *
+   * Example:
+   * e->setConfig("host/model","ptask_L07");
+   */
+  void setConfig(std::string str);
+
   simgrid::kernel::EngineImpl* pimpl;
 
 private:

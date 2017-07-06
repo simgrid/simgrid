@@ -158,5 +158,9 @@ bool Engine::isInitialized()
 {
   return Engine::instance_ != nullptr;
 }
+void Engine::setConfig(std::string str)
+{
+  xbt_cfg_set_parse(str.c_str());
+}
 }
 } // namespace
