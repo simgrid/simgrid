@@ -174,7 +174,7 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
   smx_actor_t smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, process_list) {
     XBT_DEBUG("suspend %s", smx_process->name.c_str());
-    SIMIX_process_suspend(smx_process, issuer);
+    smx_process->suspend(issuer);
   }
 
   XBT_DEBUG("suspend all processes on the VM done done");

@@ -56,7 +56,7 @@ public:
   bool suspended    = false;
   bool auto_restart = false;
 
-  sg_host_t new_host            = nullptr; /* if not null, the host on which the process must migrate to */
+  sg_host_t new_host             = nullptr; /* if not null, the host on which the process must migrate to */
   smx_activity_t waiting_synchro = nullptr; /* the current blocking synchro if any */
   std::list<smx_activity_t> comms;          /* the current non-blocking communication synchros */
   xbt_dict_t properties         = nullptr;
@@ -106,7 +106,9 @@ public:
   void daemonize();
   bool isDaemon() { return daemon; } /** Whether this actor has been daemonized */
   bool isSuspended() { return suspended; }
+  smx_activity_t suspend(smx_actor_t issuer);
   void resume();
+  smx_activity_t sleep(double duration);
 };
 
 }
@@ -145,8 +147,6 @@ extern void (*SMPI_switch_data_segment)(int dest);
 SG_END_DECL()
 
 XBT_PRIVATE void SIMIX_process_sleep_destroy(smx_activity_t synchro);
-XBT_PRIVATE smx_activity_t SIMIX_process_suspend(smx_actor_t process, smx_actor_t issuer);
 XBT_PRIVATE smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, double timeout);
-XBT_PRIVATE smx_activity_t SIMIX_process_sleep(smx_actor_t process, double duration);
 
 #endif

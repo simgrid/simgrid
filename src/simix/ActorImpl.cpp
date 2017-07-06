@@ -167,6 +167,27 @@ void ActorImpl::daemonize()
   }
 }
 
+smx_activity_t ActorImpl::suspend(smx_actor_t issuer)
+{
+  if (suspended) {
+    XBT_DEBUG("Process '%s' is already suspended", name.c_str());
+    return nullptr;
+  }
+
+  suspended = 1;
+
+  /* If we are suspending another process that is waiting on a sync, suspend its synchronization. */
+  if (this != issuer) {
+    if (waiting_synchro)
+      waiting_synchro->suspend();
+    /* If the other process is not waiting, its suspension is delayed to when the process is rescheduled. */
+
+    return nullptr;
+  } else {
+    return SIMIX_execution_start(this, "suspend", 0.0, 1.0, 0.0);
+  }
+}
+
 void ActorImpl::resume()
 {
   XBT_IN("process = %p", this);
@@ -185,6 +206,20 @@ void ActorImpl::resume()
     waiting_synchro->resume();
 
   XBT_OUT();
+}
+
+smx_activity_t ActorImpl::sleep(double duration)
+{
+  if (host->isOff())
+    THROWF(host_error, 0, "Host %s failed, you cannot sleep there.", host->getCname());
+
+  simgrid::kernel::activity::SleepImpl* synchro = new simgrid::kernel::activity::SleepImpl();
+  synchro->host                                 = host;
+  synchro->surf_sleep                           = host->pimpl_cpu->sleep(duration);
+  synchro->surf_sleep->setData(synchro);
+  XBT_DEBUG("Create sleep synchronization %p", synchro);
+
+  return synchro;
 }
 
 void create_maestro(std::function<void()> code)
@@ -553,7 +588,7 @@ void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest)
 
 void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t process)
 {
-  smx_activity_t sync_suspend = SIMIX_process_suspend(process, simcall->issuer);
+  smx_activity_t sync_suspend = process->suspend(simcall->issuer);
 
   if (process != simcall->issuer) {
     SIMIX_simcall_answer(simcall);
@@ -563,28 +598,6 @@ void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t process)
     process->waiting_synchro->suspend();
   }
   /* If we are suspending ourselves, then just do not finish the simcall now */
-}
-
-smx_activity_t SIMIX_process_suspend(smx_actor_t process, smx_actor_t issuer)
-{
-  if (process->suspended) {
-    XBT_DEBUG("Process '%s' is already suspended", process->name.c_str());
-    return nullptr;
-  }
-
-  process->suspended = 1;
-
-  /* If we are suspending another process that is waiting on a sync, suspend its synchronization. */
-  if (process != issuer) {
-
-    if (process->waiting_synchro)
-      process->waiting_synchro->suspend();
-    /* If the other process is not waiting, its suspension is delayed to when the process is rescheduled. */
-
-    return nullptr;
-  } else {
-    return SIMIX_execution_start(process, "suspend", 0.0, 1.0, 0.0);
-  }
 }
 
 int SIMIX_process_get_maxpid() {
@@ -679,7 +692,7 @@ static int SIMIX_process_join_finish(smx_process_exit_status_t status, void* syn
 
 smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, double timeout)
 {
-  smx_activity_t res = SIMIX_process_sleep(issuer, timeout);
+  smx_activity_t res = issuer->sleep(timeout);
   intrusive_ptr_add_ref(res.get());
   /* We are leaking the process here, but if we don't take the ref, we get a "use after free".
    * The correct solution would be to derivate the type SynchroSleep into a SynchroProcessJoin,
@@ -699,25 +712,9 @@ void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration)
     SIMIX_simcall_answer(simcall);
     return;
   }
-  smx_activity_t sync = SIMIX_process_sleep(simcall->issuer, duration);
+  smx_activity_t sync = simcall->issuer->sleep(duration);
   sync->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = sync;
-}
-
-smx_activity_t SIMIX_process_sleep(smx_actor_t process, double duration)
-{
-  sg_host_t host = process->host;
-
-  if (host->isOff())
-    THROWF(host_error, 0, "Host %s failed, you cannot sleep there.", host->getCname());
-
-  simgrid::kernel::activity::SleepImpl* synchro = new simgrid::kernel::activity::SleepImpl();
-  synchro->host = host;
-  synchro->surf_sleep                           = host->pimpl_cpu->sleep(duration);
-  synchro->surf_sleep->setData(synchro);
-  XBT_DEBUG("Create sleep synchronization %p", synchro);
-
-  return synchro;
 }
 
 void SIMIX_process_sleep_destroy(smx_activity_t synchro)
@@ -776,7 +773,7 @@ void SIMIX_process_yield(smx_actor_t self)
     XBT_DEBUG("Hey! I'm suspended.");
     xbt_assert(self->exception != nullptr, "Gasp! This exception may be lost by subsequent calls.");
     self->suspended = 0;
-    SIMIX_process_suspend(self, self);
+    self->suspend(self);
   }
 
   if (self->exception != nullptr) {
