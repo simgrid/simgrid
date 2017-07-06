@@ -26,6 +26,7 @@
 
 #if HAVE_SMPI
 #include "src/smpi/private.h"
+#include "src/smpi/private.hpp"
 #endif
 
 #include "src/mc/mc_forward.hpp"
