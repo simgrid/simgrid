@@ -391,12 +391,12 @@ smx_activity_t simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void
 /**
  * \ingroup simix_comm_management
  */
-smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type, int src, int tag,
+smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type,
                                    int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*), void* data)
 {
   xbt_assert(mbox, "No rendez-vous point defined for iprobe");
 
-  return simcall_BODY_comm_iprobe(mbox, type, src, tag, match_fun, data);
+  return simcall_BODY_comm_iprobe(mbox, type, match_fun, data);
 }
 
 /**

@@ -247,14 +247,14 @@ SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void* dst_buff, size_
   return other_comm;
 }
 
-smx_activity_t simcall_HANDLER_comm_iprobe(smx_simcall_t simcall, smx_mailbox_t mbox, int type, int src, int tag,
+smx_activity_t simcall_HANDLER_comm_iprobe(smx_simcall_t simcall, smx_mailbox_t mbox, int type,
                                            simix_match_func_t match_fun, void* data)
 {
-  return SIMIX_comm_iprobe(simcall->issuer, mbox, type, src, tag, match_fun, data);
+  return SIMIX_comm_iprobe(simcall->issuer, mbox, type, match_fun, data);
 }
 
-smx_activity_t SIMIX_comm_iprobe(smx_actor_t dst_proc, smx_mailbox_t mbox, int type, int src, int tag,
-                                 simix_match_func_t match_fun, void* data)
+smx_activity_t SIMIX_comm_iprobe(smx_actor_t dst_proc, smx_mailbox_t mbox, int type, simix_match_func_t match_fun,
+                                 void* data)
 {
   XBT_DEBUG("iprobe from %p %p", mbox, &mbox->comm_queue);
   simgrid::kernel::activity::CommImplPtr this_comm;

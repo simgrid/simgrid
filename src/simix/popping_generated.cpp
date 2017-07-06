@@ -178,10 +178,8 @@ case SIMCALL_COMM_IPROBE:
   simgrid::simix::marshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(
       simcall->result, simcall_HANDLER_comm_iprobe(simcall, simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[0]),
                                                    simgrid::simix::unmarshal<int>(simcall->args[1]),
-                                                   simgrid::simix::unmarshal<int>(simcall->args[2]),
-                                                   simgrid::simix::unmarshal<int>(simcall->args[3]),
-                                                   simgrid::simix::unmarshal<simix_match_func_t>(simcall->args[4]),
-                                                   simgrid::simix::unmarshal<void*>(simcall->args[5])));
+                                                   simgrid::simix::unmarshal<simix_match_func_t>(simcall->args[2]),
+                                                   simgrid::simix::unmarshal<void*>(simcall->args[3])));
   SIMIX_simcall_answer(simcall);
   break;
 

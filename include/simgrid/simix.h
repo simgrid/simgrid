@@ -250,8 +250,8 @@ simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, siz
                    void (*copy_data_fun)(smx_activity_t, void*, size_t), void* data, double rate);
 
 XBT_PUBLIC(smx_activity_t)
-simcall_comm_iprobe(smx_mailbox_t mbox, int type, int src, int tag,
-                    int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*), void* data);
+simcall_comm_iprobe(smx_mailbox_t mbox, int type, int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                    void* data);
 XBT_PUBLIC(void) simcall_comm_cancel(smx_activity_t comm);
 
 /* FIXME: waitany is going to be a vararg function, and should take a timeout */

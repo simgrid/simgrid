@@ -15,7 +15,7 @@ XBT_PRIVATE smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t 
                                             int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                                             void (*copy_data_fun)(smx_activity_t, void*, size_t), void* data,
                                             double rate);
-XBT_PRIVATE smx_activity_t SIMIX_comm_iprobe(smx_actor_t dst_proc, smx_mailbox_t mbox, int type, int src, int tag,
+XBT_PRIVATE smx_activity_t SIMIX_comm_iprobe(smx_actor_t dst_proc, smx_mailbox_t mbox, int type,
                                              simix_match_func_t match_fun, void* data);
 
 #endif

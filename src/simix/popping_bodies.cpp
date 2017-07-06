@@ -148,12 +148,13 @@ inline static smx_actor_t simcall_BODY_process_restart(smx_actor_t process) {
   }
 
   inline static boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>
-  simcall_BODY_comm_iprobe(smx_mailbox_t mbox, int type, int src, int tag, simix_match_func_t match_fun, void* data)
+  simcall_BODY_comm_iprobe(smx_mailbox_t mbox, int type, simix_match_func_t match_fun, void* data)
   {
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_comm_iprobe(&SIMIX_process_self()->simcall, mbox, type, src, tag, match_fun, data);
-    return simcall<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>, smx_mailbox_t, int, int, int,
-                   simix_match_func_t, void*>(SIMCALL_COMM_IPROBE, mbox, type, src, tag, match_fun, data);
+    if (0)
+      simcall_HANDLER_comm_iprobe(&SIMIX_process_self()->simcall, mbox, type, match_fun, data);
+    return simcall<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>, smx_mailbox_t, int,
+                   simix_match_func_t, void*>(SIMCALL_COMM_IPROBE, mbox, type, match_fun, data);
   }
 
 inline static void simcall_BODY_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout) {
