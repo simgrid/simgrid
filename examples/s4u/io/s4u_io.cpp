@@ -13,25 +13,25 @@ class MyHost {
 public:
   void show_info(std::unordered_map<std::string, simgrid::s4u::Storage*> const& mounts)
   {
-    XBT_INFO("Storage info on %s:", simgrid::s4u::Host::current()->cname());
+    XBT_INFO("Storage info on %s:", simgrid::s4u::Host::current()->getCname());
 
     for (const auto&kv : mounts) {
       const char* mountpoint = kv.first.c_str();
       simgrid::s4u::Storage* storage = kv.second;
 
       // Retrieve disk's information
-      sg_size_t free_size = storage->sizeFree();
-      sg_size_t used_size = storage->sizeUsed();
-      sg_size_t size      = storage->size();
+      sg_size_t free_size = storage->getSizeFree();
+      sg_size_t used_size = storage->getSizeUsed();
+      sg_size_t size      = storage->getSize();
 
-      XBT_INFO("    %s (%s) Used: %llu; Free: %llu; Total: %llu.", storage->name(), mountpoint, used_size, free_size,
+      XBT_INFO("    %s (%s) Used: %llu; Free: %llu; Total: %llu.", storage->getName(), mountpoint, used_size, free_size,
                size);
     }
   }
 
   void operator()() {
     std::unordered_map<std::string, simgrid::s4u::Storage*> const& mounts =
-        simgrid::s4u::Host::current()->mountedStorages();
+        simgrid::s4u::Host::current()->getMountedStorages();
 
     show_info(mounts);
 
@@ -59,25 +59,25 @@ public:
 
     // Now rename file from ./tmp/data.txt to ./tmp/simgrid.readme
     const char *newpath = "/home/tmp/simgrid.readme";
-    XBT_INFO("Move '%s' to '%s'", file->path(), newpath);
+    XBT_INFO("Move '%s' to '%s'", file->getPath(), newpath);
     file->move(newpath);
 
     // Test attaching some user data to the file
     file->setUserdata(xbt_strdup("777"));
-    XBT_INFO("User data attached to the file: %s", (char*)file->userdata());
-    xbt_free(file->userdata());
+    XBT_INFO("User data attached to the file: %s", (char*)file->getUserdata());
+    xbt_free(file->getUserdata());
 
     // Close the file
     delete file;
 
     // Now attach some user data to disk1
-    XBT_INFO("Get/set data for storage element: %s", storage->name());
-    XBT_INFO("    Uninitialized storage data: '%s'", (char*)storage->userdata());
+    XBT_INFO("Get/set data for storage element: %s", storage->getName());
+    XBT_INFO("    Uninitialized storage data: '%s'", (char*)storage->getUserdata());
 
     storage->setUserdata(xbt_strdup("Some user data"));
-    XBT_INFO("    Set and get data: '%s'", (char*)storage->userdata());
+    XBT_INFO("    Set and get data: '%s'", (char*)storage->getUserdata());
 
-    xbt_free(storage->userdata());
+    xbt_free(storage->getUserdata());
   }
 };
 

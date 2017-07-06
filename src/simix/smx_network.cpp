@@ -458,13 +458,13 @@ static inline void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr comm)
     comm->surf_comm->setData(comm.get());
     comm->state = SIMIX_RUNNING;
 
-    XBT_DEBUG("Starting communication %p from '%s' to '%s' (surf_action: %p)", comm.get(), sender->cname(),
-              receiver->cname(), comm->surf_comm);
+    XBT_DEBUG("Starting communication %p from '%s' to '%s' (surf_action: %p)", comm.get(), sender->getCname(),
+              receiver->getCname(), comm->surf_comm);
 
     /* If a link is failed, detect it immediately */
     if (comm->surf_comm->getState() == simgrid::surf::Action::State::failed) {
-      XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure", sender->cname(),
-                receiver->cname());
+      XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure", sender->getCname(),
+                receiver->getCname());
       comm->state = SIMIX_LINK_FAILURE;
       comm->cleanupSurf();
     }
@@ -475,11 +475,11 @@ static inline void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr comm)
       if (comm->src_proc->isSuspended())
         XBT_DEBUG("The communication is suspended on startup because src (%s@%s) was suspended since it initiated the "
                   "communication",
-                  comm->src_proc->cname(), comm->src_proc->host->cname());
+                  comm->src_proc->cname(), comm->src_proc->host->getCname());
       else
         XBT_DEBUG("The communication is suspended on startup because dst (%s@%s) was suspended since it initiated the "
                   "communication",
-                  comm->dst_proc->cname(), comm->dst_proc->host->cname());
+                  comm->dst_proc->cname(), comm->dst_proc->host->getCname());
 
       comm->surf_comm->suspend();
     }
@@ -562,9 +562,9 @@ void SIMIX_comm_finish(smx_activity_t synchro)
         case SIMIX_LINK_FAILURE:
           XBT_DEBUG("Link failure in synchro %p between '%s' and '%s': posting an exception to the issuer: %s (%p) "
                     "detached:%d",
-                    synchro.get(), comm->src_proc ? comm->src_proc->host->cname() : nullptr,
-                    comm->dst_proc ? comm->dst_proc->host->cname() : nullptr, simcall->issuer->cname(), simcall->issuer,
-                    comm->detached);
+                    synchro.get(), comm->src_proc ? comm->src_proc->host->getCname() : nullptr,
+                    comm->dst_proc ? comm->dst_proc->host->getCname() : nullptr, simcall->issuer->cname(),
+                    simcall->issuer, comm->detached);
           if (comm->src_proc == simcall->issuer) {
             XBT_DEBUG("I'm source");
           } else if (comm->dst_proc == simcall->issuer) {
@@ -686,8 +686,8 @@ void SIMIX_comm_copy_data(smx_activity_t synchro)
     return;
 
   XBT_DEBUG("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)", comm.get(),
-            comm->src_proc ? comm->src_proc->host->cname() : "a finished process", comm->src_buff,
-            comm->dst_proc ? comm->dst_proc->host->cname() : "a finished process", comm->dst_buff, buff_size);
+            comm->src_proc ? comm->src_proc->host->getCname() : "a finished process", comm->src_buff,
+            comm->dst_proc ? comm->dst_proc->host->getCname() : "a finished process", comm->dst_buff, buff_size);
 
   /* Copy at most dst_buff_size bytes of the message to receiver's buffer */
   if (comm->dst_buff_size)

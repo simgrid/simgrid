@@ -19,7 +19,7 @@ int main(int argc, char **argv)
   std::printf("Host count: %zu, link number: %d\n", sg_host_count(), sg_link_count());
 
   std::vector<simgrid::kernel::routing::NetPoint*> netcardList;
-  simgrid::s4u::Engine::instance()->netpointList(&netcardList);
+  simgrid::s4u::Engine::getInstance()->getNetpointList(&netcardList);
   std::sort(netcardList.begin(), netcardList.end(),
             [](simgrid::kernel::routing::NetPoint* a, simgrid::kernel::routing::NetPoint* b) {
               return a->name() < b->name();
@@ -36,7 +36,7 @@ int main(int argc, char **argv)
       type = "netzone";
     if (nc->isHost())
       type = "host";
-    std::printf("   - Seen: \"%s\". Type: %s\n", host->cname(), type);
+    std::printf("   - Seen: \"%s\". Type: %s\n", host->getCname(), type);
   }
   xbt_dynar_free(&hosts);
 

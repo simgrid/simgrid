@@ -29,7 +29,7 @@ static void chord_init()
   HostChord::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostChord>();
 
   std::vector<simgrid::s4u::Host*> list;
-  simgrid::s4u::Engine::instance()->hostList(&list);
+  simgrid::s4u::Engine::getInstance()->getHostList(&list);
   for (auto host : list)
     host->extension_set(new HostChord(host));
 }

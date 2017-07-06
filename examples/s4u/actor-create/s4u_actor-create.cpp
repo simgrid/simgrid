@@ -72,7 +72,7 @@ public:
   }
   void operator()()
   {
-    XBT_INFO("Hello s4u, I'm ready to get any message you'd want on %s", mailbox->name());
+    XBT_INFO("Hello s4u, I'm ready to get any message you'd want on %s", mailbox->getName());
 
     char* msg1 = static_cast<char*>(mailbox->get());
     char* msg2 = static_cast<char*>(mailbox->get());

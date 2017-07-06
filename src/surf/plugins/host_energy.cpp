@@ -166,7 +166,7 @@ void HostEnergy::update()
 {
   double start_time  = this->last_updated;
   double finish_time = surf_get_clock();
-  double current_speed = host->speed();
+  double current_speed = host->getSpeed();
 
   if (start_time < finish_time) {
     double cpu_load;
@@ -214,20 +214,21 @@ void HostEnergy::update()
 
     XBT_DEBUG("[update_energy of %s] period=[%.2f-%.2f]; current power peak=%.0E flop/s; consumption change: %.2f J -> "
               "%.2f J",
-              host->cname(), start_time, finish_time, host->pimpl_cpu->speed_.peak, previous_energy, energy_this_step);
+              host->getCname(), start_time, finish_time, host->pimpl_cpu->speed_.peak, previous_energy,
+              energy_this_step);
   }
 
   /* Save data for the upcoming time interval: whether it's on/off and the pstate if it's on */
-  this->pstate = host->isOn() ? host->pstate() : -1;
+  this->pstate = host->isOn() ? host->getPstate() : -1;
 }
 
 HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host(ptr), last_updated(surf_get_clock())
 {
   initWattsRangeList();
 
-  const char* off_power_str = host->property("watt_off");
+  const char* off_power_str = host->getProperty("watt_off");
   if (off_power_str != nullptr) {
-    char* msg       = bprintf("Invalid value for property watt_off of host %s: %%s", host->cname());
+    char* msg       = bprintf("Invalid value for property watt_off of host %s: %%s", host->getCname());
     this->watts_off = xbt_str_parse_double(off_power_str, msg);
     xbt_free(msg);
   }
@@ -238,20 +239,20 @@ HostEnergy::~HostEnergy() = default;
 
 double HostEnergy::getWattMinAt(int pstate)
 {
-  xbt_assert(not power_range_watts_list.empty(), "No power range properties specified for host %s", host->cname());
+  xbt_assert(not power_range_watts_list.empty(), "No power range properties specified for host %s", host->getCname());
   return power_range_watts_list[pstate].min;
 }
 
 double HostEnergy::getWattMaxAt(int pstate)
 {
-  xbt_assert(not power_range_watts_list.empty(), "No power range properties specified for host %s", host->cname());
+  xbt_assert(not power_range_watts_list.empty(), "No power range properties specified for host %s", host->getCname());
   return power_range_watts_list[pstate].max;
 }
 
 /** @brief Computes the power consumed by the host according to the current pstate and processor load */
 double HostEnergy::getCurrentWattsValue(double cpu_load)
 {
-  xbt_assert(not power_range_watts_list.empty(), "No power range properties specified for host %s", host->cname());
+  xbt_assert(not power_range_watts_list.empty(), "No power range properties specified for host %s", host->getCname());
 
   /* min_power corresponds to the power consumed when only one core is active */
   /* max_power is the power consumed at 100% cpu load       */
@@ -276,7 +277,7 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
      * (maxCpuLoad is by definition 1)
      */
     double power_slope;
-    int coreCount         = host->coreCount();
+    int coreCount         = host->getCoreCount();
     double coreReciprocal = static_cast<double>(1) / static_cast<double>(coreCount);
     if (coreCount > 1)
       power_slope = (max_power - min_power) / (1 - coreReciprocal);
@@ -304,24 +305,24 @@ double HostEnergy::getConsumedEnergy()
 
 void HostEnergy::initWattsRangeList()
 {
-  const char* all_power_values_str = host->property("watt_per_state");
+  const char* all_power_values_str = host->getProperty("watt_per_state");
   if (all_power_values_str == nullptr)
     return;
 
   std::vector<std::string> all_power_values;
   boost::split(all_power_values, all_power_values_str, boost::is_any_of(","));
-  XBT_DEBUG("%s: profile: %s, cores: %d", host->cname(), all_power_values_str, host->coreCount());
+  XBT_DEBUG("%s: profile: %s, cores: %d", host->getCname(), all_power_values_str, host->getCoreCount());
 
   int i = 0;
   for (auto current_power_values_str : all_power_values) {
     /* retrieve the power values associated with the current pstate */
     std::vector<std::string> current_power_values;
     boost::split(current_power_values, current_power_values_str, boost::is_any_of(":"));
-    if (host->coreCount() == 1) {
+    if (host->getCoreCount() == 1) {
       xbt_assert(current_power_values.size() == 2 || current_power_values.size() == 3,
                  "Power properties incorrectly defined for host %s."
                  "It should be 'Idle:FullSpeed' power values because you have one core only.",
-                 host->cname());
+                 host->getCname());
       if (current_power_values.size() == 2) {
         // In this case, 1core == AllCores
         current_power_values.push_back(current_power_values.at(1));
@@ -331,20 +332,20 @@ void HostEnergy::initWattsRangeList()
                    "The energy profile of mono-cores should be formated as 'Idle:FullSpeed' only.\n"
                    "If you go for a 'Idle:OneCore:AllCores' power profile on mono-cores, then OneCore and AllCores "
                    "must be equal.",
-                   host->cname());
+                   host->getCname());
       }
     } else {
       xbt_assert(current_power_values.size() == 3,
                  "Power properties incorrectly defined for host %s."
                  "It should be 'Idle:OneCore:AllCores' power values because you have more than one core.",
-                 host->cname());
+                 host->getCname());
     }
 
     /* min_power corresponds to the idle power (cpu load = 0) */
     /* max_power is the power consumed at 100% cpu load       */
-    char* msg_idle = bprintf("Invalid idle value for pstate %d on host %s: %%s", i, host->cname());
-    char* msg_min  = bprintf("Invalid OneCore value for pstate %d on host %s: %%s", i, host->cname());
-    char* msg_max  = bprintf("Invalid AllCores value for pstate %d on host %s: %%s", i, host->cname());
+    char* msg_idle = bprintf("Invalid idle value for pstate %d on host %s: %%s", i, host->getCname());
+    char* msg_min  = bprintf("Invalid OneCore value for pstate %d on host %s: %%s", i, host->getCname());
+    char* msg_max  = bprintf("Invalid AllCores value for pstate %d on host %s: %%s", i, host->getCname());
     PowerRange range(xbt_str_parse_double((current_power_values.at(0)).c_str(), msg_idle),
                      xbt_str_parse_double((current_power_values.at(1)).c_str(), msg_min),
                      xbt_str_parse_double((current_power_values.at(2)).c_str(), msg_max));
@@ -410,7 +411,7 @@ static void onHostDestruction(simgrid::s4u::Host& host)
 
   HostEnergy* host_energy = host.extension<HostEnergy>();
   host_energy->update();
-  XBT_INFO("Energy consumption of host %s: %f Joules", host.cname(), host_energy->getConsumedEnergy());
+  XBT_INFO("Energy consumption of host %s: %f Joules", host.getCname(), host_energy->getConsumedEnergy());
 }
 
 static void onSimulationEnd()
@@ -466,7 +467,7 @@ void sg_host_energy_update_all()
 {
   simgrid::simix::kernelImmediate([]() {
     std::vector<simgrid::s4u::Host*> list;
-    simgrid::s4u::Engine::instance()->hostList(&list);
+    simgrid::s4u::Engine::getInstance()->getHostList(&list);
     for (auto host : list)
       if (dynamic_cast<simgrid::s4u::VirtualMachine*>(host) == nullptr) // Ignore virtual machines
         host->extension<HostEnergy>()->update();
@@ -513,7 +514,7 @@ double sg_host_get_current_consumption(sg_host_t host)
 {
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
              "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
-  double cpu_load = lmm_constraint_get_usage(host->pimpl_cpu->constraint()) / host->speed();
+  double cpu_load = lmm_constraint_get_usage(host->pimpl_cpu->constraint()) / host->getSpeed();
   return host->extension<HostEnergy>()->getCurrentWattsValue(cpu_load);
 }
 

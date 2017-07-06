@@ -165,11 +165,11 @@ void RoutedZone::getRouteCheckParams(NetPoint* src, NetPoint* dst)
 
   xbt_assert(src_as == dst_as,
              "Internal error: %s@%s and %s@%s are not in the same netzone as expected. Please report that bug.",
-             src->cname(), src_as->name(), dst->cname(), dst_as->name());
+             src->cname(), src_as->getCname(), dst->cname(), dst_as->getCname());
 
   xbt_assert(this == dst_as, "Internal error: route destination %s@%s is not in netzone %s as expected (route source: "
                              "%s@%s). Please report that bug.",
-             src->cname(), dst->cname(), src_as->name(), dst_as->name(), name());
+             src->cname(), dst->cname(), src_as->getCname(), dst_as->getCname(), getCname());
 }
 void RoutedZone::addRouteCheckParams(sg_platf_route_cbarg_t route)
 {

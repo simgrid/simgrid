@@ -45,7 +45,8 @@ Engine::~Engine()
   s4u::Engine::instance_ = nullptr;
 }
 
-Engine *Engine::instance() {
+Engine* Engine::getInstance()
+{
   if (s4u::Engine::instance_ == nullptr)
     new Engine(0,nullptr);
   return s4u::Engine::instance_;
@@ -80,12 +81,12 @@ void Engine::loadDeployment(const char *deploy)
 // FIXME: The following duplicates the content of s4u::Host
 extern std::map<std::string, simgrid::s4u::Host*> host_list;
 /** @brief Returns the amount of hosts in the platform */
-size_t Engine::hostCount()
+size_t Engine::getHostCount()
 {
   return host_list.size();
 }
 /** @brief Fills the passed list with all hosts found in the platform */
-void Engine::hostList(std::vector<Host*>* list)
+void Engine::getHostList(std::vector<Host*>* list)
 {
   for (auto kv : host_list)
     list->push_back(kv.second);
@@ -99,17 +100,17 @@ void Engine::run() {
   }
 }
 
-s4u::NetZone* Engine::netRoot()
+s4u::NetZone* Engine::getNetRoot()
 {
   return pimpl->netRoot_;
 }
 
 static s4u::NetZone* netzoneByNameRecursive(s4u::NetZone* current, const char* name)
 {
-  if (not strcmp(current->name(), name))
+  if (not strcmp(current->getCname(), name))
     return current;
 
-  for (auto elem : *(current->children())) {
+  for (auto elem : *(current->getChildren())) {
     simgrid::s4u::NetZone* tmp = netzoneByNameRecursive(elem, name);
     if (tmp != nullptr) {
       return tmp;
@@ -119,20 +120,20 @@ static s4u::NetZone* netzoneByNameRecursive(s4u::NetZone* current, const char* n
 }
 
 /** @brief Retrieve the NetZone of the given name (or nullptr if not found) */
-NetZone* Engine::netzoneByNameOrNull(const char* name)
+NetZone* Engine::getNetzoneByNameOrNull(const char* name)
 {
-  return netzoneByNameRecursive(netRoot(), name);
+  return netzoneByNameRecursive(getNetRoot(), name);
 }
 
 /** @brief Retrieve the netpoint of the given name (or nullptr if not found) */
-simgrid::kernel::routing::NetPoint* Engine::netpointByNameOrNull(const char* name)
+simgrid::kernel::routing::NetPoint* Engine::getNetpointByNameOrNull(const char* name)
 {
   if (pimpl->netpoints_.find(name) == pimpl->netpoints_.end())
     return nullptr;
   return pimpl->netpoints_.at(name);
 }
 /** @brief Fill the provided vector with all existing netpoints */
-void Engine::netpointList(std::vector<simgrid::kernel::routing::NetPoint*>* list)
+void Engine::getNetpointList(std::vector<simgrid::kernel::routing::NetPoint*>* list)
 {
   for (auto kv : pimpl->netpoints_)
     list->push_back(kv.second);

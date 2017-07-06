@@ -300,7 +300,7 @@ void LinkNS3::setLatencyTrace(tmgr_trace_t trace) {
 NetworkNS3Action::NetworkNS3Action(Model* model, double size, s4u::Host* src, s4u::Host* dst)
     : NetworkAction(model, size, false)
 {
-  XBT_DEBUG("Communicate from %s to %s", src->cname(), dst->cname());
+  XBT_DEBUG("Communicate from %s to %s", src->getCname(), dst->getCname());
 
   src_ = src;
   dst_ = dst;

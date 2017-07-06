@@ -198,19 +198,19 @@ public:
   void daemonize();
 
   /** Retrieves the name of that actor as a C string */
-  const char* cname();
+  const char* getCname();
   /** Retrieves the name of that actor as a C++ string */
-  simgrid::xbt::string name();
+  simgrid::xbt::string getName();
   /** Retrieves the host on which that actor is running */
-  s4u::Host* host();
+  s4u::Host* getHost();
   /** Retrieves the PID of that actor
    *
    * actor_id_t is an alias for unsigned long */
-  aid_t pid();
+  aid_t getPid();
   /** Retrieves the PPID of that actor
    *
    * actor_id_t is an alias for unsigned long */
-  aid_t ppid();
+  aid_t getPpid();
 
   /** Suspend an actor by suspending the task on which it was waiting for the completion. */
   void suspend();
@@ -232,7 +232,7 @@ public:
   /** Sets the time at which that actor should be killed */
   void setKillTime(double time);
   /** Retrieves the time at which that actor will be killed (or -1 if not set) */
-  double killTime();
+  double getKillTime();
 
   void migrate(Host * new_host);
 
@@ -267,7 +267,7 @@ public:
   simix::ActorImpl* getImpl();
 
   /** Retrieve the property value (or nullptr if not set) */
-  const char* property(const char* key);
+  const char* getProperty(const char* key);
   void setProperty(const char* key, const char* value);
 };
 
@@ -325,16 +325,16 @@ template <class Rep, class Period> inline void sleep_for(std::chrono::duration<R
   XBT_ATTRIB_DEPRECATED("Please use Mailbox::put_async") isend(MailboxPtr chan, void* payload, double simulatedSize);
 
   /** @brief Returns the actor ID of the current actor (same as pid). */
-  XBT_PUBLIC(aid_t) pid();
+  XBT_PUBLIC(aid_t) getPid();
 
   /** @brief Returns the ancestor's actor ID of the current actor (same as ppid). */
-  XBT_PUBLIC(aid_t) ppid();
+  XBT_PUBLIC(aid_t) getPpid();
 
   /** @brief Returns the name of the current actor. */
-  XBT_PUBLIC(std::string) name();
+  XBT_PUBLIC(std::string) getName();
 
   /** @brief Returns the name of the host on which the process is running. */
-  XBT_PUBLIC(Host*) host();
+  XBT_PUBLIC(Host*) getHost();
 
   /** @brief Suspend the actor. */
   XBT_PUBLIC(void) suspend();

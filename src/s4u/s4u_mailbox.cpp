@@ -16,7 +16,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_channel,s4u,"S4U Communication Mailboxes");
 namespace simgrid {
 namespace s4u {
 
-const char *Mailbox::name() {
+const char* Mailbox::getName()
+{
   return pimpl_->name_;
 }
 
@@ -58,7 +59,8 @@ void Mailbox::setReceiver(ActorPtr actor) {
 }
 
 /** @brief get the receiver (process associated to the mailbox) */
-ActorPtr Mailbox::receiver() {
+ActorPtr Mailbox::getReceiver()
+{
   if (pimpl_->permanent_receiver == nullptr)
     return ActorPtr();
   return pimpl_->permanent_receiver->iface();

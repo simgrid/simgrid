@@ -66,8 +66,8 @@ public:
   /** Retrieves the host on which the current actor is running */
   static s4u::Host* current();
 
-  simgrid::xbt::string const& name() const { return name_; }
-  const char* cname() { return name_.c_str(); }
+  simgrid::xbt::string const& getName() const { return name_; }
+  const char* getCname() { return name_.c_str(); }
 
   void actorList(std::vector<ActorPtr> * whereto);
 
@@ -84,23 +84,23 @@ public:
   /** Returns if that host is currently down and offline */
   bool isOff() { return not isOn(); }
 
-  double speed();
-  int coreCount();
-  xbt_dict_t properties();
-  const char* property(const char* key);
+  double getSpeed();
+  int getCoreCount();
+  xbt_dict_t getProperties();
+  const char* getProperty(const char* key);
   void setProperty(const char* key, const char* value);
-  void processes(std::vector<ActorPtr> * list);
+  void getProcesses(std::vector<ActorPtr> * list);
   double getPstateSpeed(int pstate_index);
-  int pstatesCount() const;
+  int getPstatesCount() const;
   void setPstate(int pstate_index);
-  int pstate();
-  void attachedStorages(std::vector<const char*> * storages);
+  int getPstate();
+  void getAttachedStorages(std::vector<const char*> * storages);
 
   /** Get an associative list [mount point]->[Storage] of all local mount points.
    *
    *  This is defined in the platform file, and cannot be modified programatically (yet).
    */
-  std::unordered_map<std::string, Storage*> const& mountedStorages();
+  std::unordered_map<std::string, Storage*> const& getMountedStorages();
 
   void routeTo(Host * dest, std::vector<Link*> * links, double* latency);
   void routeTo(Host * dest, std::vector<surf::LinkImpl*> * links, double* latency);

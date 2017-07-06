@@ -145,7 +145,7 @@ smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req)
 const char* MC_smx_actor_get_host_name(smx_actor_t actor)
 {
   if (mc_model_checker == nullptr)
-    return actor->host->cname();
+    return actor->host->getCname();
 
   simgrid::mc::Process* process = &mc_model_checker->process();
 
@@ -165,7 +165,7 @@ const char* MC_smx_actor_get_host_name(smx_actor_t actor)
     ~fake_host() {}
   };
   fake_host foo;
-  const size_t offset = (char*) &foo.host.name() - (char*) &foo.host;
+  const size_t offset = (char*)&foo.host.getName() - (char*)&foo.host;
 
   // Read the simgrid::xbt::string in the MCed process:
   simgrid::mc::ActorInformation* info     = actor_info_cast(actor);

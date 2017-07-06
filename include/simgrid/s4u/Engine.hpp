@@ -56,8 +56,8 @@ public:
   /** @brief Load a deployment file and launch the actors that it contains */
   void loadDeployment(const char* deploy);
 
-  size_t hostCount();
-  void hostList(std::vector<Host*> * whereTo);
+  size_t getHostCount();
+  void getHostList(std::vector<Host*> * whereTo);
 
   /** @brief Run the simulation */
   void run();
@@ -66,17 +66,17 @@ public:
   static double getClock();
 
   /** @brief Retrieve the engine singleton */
-  static s4u::Engine* instance();
+  static s4u::Engine* getInstance();
 
   /** @brief Retrieve the root netzone, containing all others */
-  simgrid::s4u::NetZone* netRoot();
+  simgrid::s4u::NetZone* getNetRoot();
 
   /** @brief Retrieve the netzone of the given name (or nullptr if not found) */
-  simgrid::s4u::NetZone* netzoneByNameOrNull(const char* name);
+  simgrid::s4u::NetZone* getNetzoneByNameOrNull(const char* name);
 
   /** @brief Retrieve the netcard of the given name (or nullptr if not found) */
-  simgrid::kernel::routing::NetPoint* netpointByNameOrNull(const char* name);
-  void netpointList(std::vector<simgrid::kernel::routing::NetPoint*> * list);
+  simgrid::kernel::routing::NetPoint* getNetpointByNameOrNull(const char* name);
+  void getNetpointList(std::vector<simgrid::kernel::routing::NetPoint*> * list);
   void netpointRegister(simgrid::kernel::routing::NetPoint * card);
   void netpointUnregister(simgrid::kernel::routing::NetPoint * card);
 

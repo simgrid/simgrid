@@ -34,7 +34,7 @@ double smpi_get_host_power_peak_at(int pstate_index)
  */
 double smpi_get_host_current_power_peak()
 {
-  return sg_host_self()->speed();
+  return sg_host_self()->getSpeed();
 }
 
 /**

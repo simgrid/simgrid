@@ -102,9 +102,9 @@ HostImpl::HostImpl(s4u::Host* host) : piface_(host)
 
 simgrid::surf::StorageImpl* HostImpl::findStorageOnMountList(const char* mount)
 {
-  XBT_DEBUG("Search for storage name '%s' on '%s'", mount, piface_->cname());
+  XBT_DEBUG("Search for storage name '%s' on '%s'", mount, piface_->getCname());
   if (storage_.find(mount) == storage_.end())
-    xbt_die("Can't find mount '%s' for '%s'", mount, piface_->cname());
+    xbt_die("Can't find mount '%s' for '%s'", mount, piface_->getCname());
 
   return storage_.at(mount);
 }
@@ -112,8 +112,8 @@ simgrid::surf::StorageImpl* HostImpl::findStorageOnMountList(const char* mount)
 void HostImpl::getAttachedStorageList(std::vector<const char*>* storages)
 {
   for (auto s : storage_)
-    if (s.second->attach_ == piface_->cname())
-      storages->push_back(s.second->piface_.name());
+    if (s.second->attach_ == piface_->getCname())
+      storages->push_back(s.second->piface_.getName());
 }
 
 Action* HostImpl::close(surf_file_t fd)

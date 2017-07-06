@@ -32,7 +32,7 @@ static void lazy_guy()
 static void dream_master()
 {
   XBT_INFO("Let's create a lazy guy."); /* - Create a lazy_guy process */
-  simgrid::s4u::ActorPtr lazy = simgrid::s4u::Actor::createActor("Lazy", simgrid::s4u::this_actor::host(), lazy_guy);
+  simgrid::s4u::ActorPtr lazy = simgrid::s4u::Actor::createActor("Lazy", simgrid::s4u::this_actor::getHost(), lazy_guy);
   XBT_INFO("Let's wait a little bit...");
   simgrid::s4u::this_actor::sleep_for(10); /* - Wait for 10 seconds */
   XBT_INFO("Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!");
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 
   e->loadPlatform(argv[1]); /* - Load the platform description */
   std::vector<simgrid::s4u::Host*> list;
-  e->hostList(&list);
+  e->getHostList(&list);
   simgrid::s4u::Actor::createActor("dream_master", list.front(), dream_master);
 
   e->run(); /* - Run the simulation */

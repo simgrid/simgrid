@@ -76,12 +76,12 @@ void HostLoad::update()
 
 double HostLoad::getCurrentLoad()
 {
-  return current_flops / (host->speed() * host->coreCount());
+  return current_flops / (host->getSpeed() * host->getCoreCount());
 }
 
 double HostLoad::getAverageLoad()
 {
-  return getComputedFlops() / (host->speed() * host->coreCount() * (surf_get_clock() - last_reset));
+  return getComputedFlops() / (host->getSpeed() * host->getCoreCount() * (surf_get_clock() - last_reset));
 }
 
 double HostLoad::getComputedFlops()

@@ -38,7 +38,7 @@ public:
 
       if (number_of_tasks < 10000 || i % 10000 == 0)
         XBT_INFO("Sending \"%s\" (of %ld) to mailbox \"%s\"", (std::string("Task_") + std::to_string(i)).c_str(),
-                                                              number_of_tasks, mailbox->name());
+                 number_of_tasks, mailbox->getName());
 
       /* - Send the task to the @ref worker */
       char* payload = bprintf("%f", comp_size);

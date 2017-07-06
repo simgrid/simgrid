@@ -685,7 +685,7 @@ double SD_task_get_execution_time(SD_task_t task, int host_count, const sg_host_
   for (int i = 0; i < host_count; i++) {
     double time = 0.0;
     if (flops_amount != nullptr)
-      time = flops_amount[i] / host_list[i]->speed();
+      time = flops_amount[i] / host_list[i]->getSpeed();
 
     if (bytes_amount != nullptr)
       for (int j = 0; j < host_count; j++)

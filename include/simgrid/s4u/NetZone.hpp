@@ -44,17 +44,17 @@ protected:
 public:
   /** @brief Seal your netzone once you're done adding content, and before routing stuff through it */
   virtual void seal();
-  char* name();
-  NetZone* father();
+  char* getCname();
+  NetZone* getFather();
 
-  std::vector<NetZone*>* children(); // Sub netzones
-  void hosts(std::vector<s4u::Host*> * whereto); // retrieve my content as a vector of hosts
+  std::vector<NetZone*>* getChildren();             // Sub netzones
+  void getHosts(std::vector<s4u::Host*> * whereto); // retrieve my content as a vector of hosts
 
   /** Get the properties assigned to a host */
-  std::unordered_map<std::string, std::string>* properties();
+  std::unordered_map<std::string, std::string>* getProperties();
 
   /** Retrieve the property value (or nullptr if not set) */
-  const char* property(const char* key);
+  const char* getProperty(const char* key);
   void setProperty(const char* key, const char* value);
 
   /* Add content to the netzone, at parsing time. It should be sealed afterward. */

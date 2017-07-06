@@ -47,7 +47,7 @@ Node::Node(std::vector<std::string> args)
 
   // initialize my node
   id_                = std::stoi(args[1]);
-  stream             = simgrid::s4u::this_actor::host()->extension<HostChord>()->getStream();
+  stream             = simgrid::s4u::this_actor::getHost()->extension<HostChord>()->getStream();
   mailbox_           = simgrid::s4u::Mailbox::byName(std::to_string(id_));
   next_finger_to_fix = 0;
   fingers_           = new int[nb_bits];
@@ -230,7 +230,7 @@ void Node::checkPredecessor()
   }
   // receive the answer
   XBT_DEBUG("Sent 'Predecessor Alive' request to %d, waiting for the answer on my mailbox '%s'", pred_id_,
-            message->answer_to->name());
+            message->answer_to->getName());
   simgrid::s4u::CommPtr comm = return_mailbox->get_async(&data);
 
   try {
@@ -275,7 +275,7 @@ int Node::remoteGetPredecessor(int ask_to)
 
   // receive the answer
   XBT_DEBUG("Sent 'Get Predecessor' request to %d, waiting for the answer on my mailbox '%s'", ask_to,
-            message->answer_to->name());
+            message->answer_to->getName());
   simgrid::s4u::CommPtr comm = return_mailbox->get_async(&data);
 
   try {
@@ -430,7 +430,8 @@ void Node::handleMessage(ChordMessage* message)
       message->type = FIND_SUCCESSOR_ANSWER;
       message->answer_id = fingers_[0];
       XBT_DEBUG("Sending back a 'Find Successor Answer' to %s (mailbox %s): the successor of %d is %d",
-          message->issuer_host_name.c_str(), message->answer_to->name(), message->request_id, message->answer_id);
+                message->issuer_host_name.c_str(), message->answer_to->getName(), message->request_id,
+                message->answer_id);
       message->answer_to->put_init(message, 10)->detach();
     } else {
       // otherwise, forward the request to the closest preceding finger in my table
@@ -447,7 +448,7 @@ void Node::handleMessage(ChordMessage* message)
     message->type = GET_PREDECESSOR_ANSWER;
     message->answer_id = pred_id_;
     XBT_DEBUG("Sending back a 'Get Predecessor Answer' to %s via mailbox '%s': my predecessor is %d",
-        message->issuer_host_name.c_str(), message->answer_to->name(), message->answer_id);
+              message->issuer_host_name.c_str(), message->answer_to->getName(), message->answer_id);
     message->answer_to->put_init(message, 10)->detach();
     break;
 
@@ -484,8 +485,8 @@ void Node::handleMessage(ChordMessage* message)
   case PREDECESSOR_ALIVE:
     XBT_DEBUG("Receiving a 'Predecessor Alive' request from %s", message->issuer_host_name.c_str());
     message->type = PREDECESSOR_ALIVE_ANSWER;
-    XBT_DEBUG("Sending back a 'Predecessor Alive Answer' to %s (mailbox %s)",
-        message->issuer_host_name.c_str(), message->answer_to->name());
+    XBT_DEBUG("Sending back a 'Predecessor Alive Answer' to %s (mailbox %s)", message->issuer_host_name.c_str(),
+              message->answer_to->getName());
     message->answer_to->put_init(message, 10)->detach();
     break;
 

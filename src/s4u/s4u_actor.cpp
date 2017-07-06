@@ -75,7 +75,7 @@ void Actor::migrate(Host* new_host)
   simgrid::simix::kernelImmediate([this, new_host]() { pimpl_->new_host = new_host; });
 }
 
-s4u::Host* Actor::host()
+s4u::Host* Actor::getHost()
 {
   return this->pimpl_->host;
 }
@@ -85,22 +85,22 @@ void Actor::daemonize()
   simgrid::simix::kernelImmediate([this]() { pimpl_->daemonize(); });
 }
 
-const char* Actor::cname()
+const char* Actor::getCname()
 {
   return this->pimpl_->name.c_str();
 }
 
-simgrid::xbt::string Actor::name()
+simgrid::xbt::string Actor::getName()
 {
   return this->pimpl_->name;
 }
 
-aid_t Actor::pid()
+aid_t Actor::getPid()
 {
   return this->pimpl_->pid;
 }
 
-aid_t Actor::ppid()
+aid_t Actor::getPpid()
 {
   return this->pimpl_->ppid;
 }
@@ -125,7 +125,7 @@ void Actor::setKillTime(double time) {
 }
 
 /** \brief Get the kill time of an actor(or 0 if unset). */
-double Actor::killTime()
+double Actor::getKillTime()
 {
   return SIMIX_timer_get_date(pimpl_->kill_timer);
 }
@@ -172,7 +172,7 @@ void Actor::killAll(int resetPid)
 }
 
 /** Retrieve the property value (or nullptr if not set) */
-const char* Actor::property(const char* key)
+const char* Actor::getProperty(const char* key)
 {
   return (char*)xbt_dict_get_or_null(simcall_process_get_properties(pimpl_), key);
 }
@@ -250,22 +250,22 @@ CommPtr irecv(MailboxPtr chan, void** data)
   return chan->get_async(data);
 }
 
-aid_t pid()
+aid_t getPid()
 {
   return SIMIX_process_self()->pid;
 }
 
-aid_t ppid()
+aid_t getPpid()
 {
   return SIMIX_process_self()->ppid;
 }
 
-std::string name()
+std::string getName()
 {
   return SIMIX_process_self()->name;
 }
 
-Host* host()
+Host* getHost()
 {
   return SIMIX_process_self()->host;
 }

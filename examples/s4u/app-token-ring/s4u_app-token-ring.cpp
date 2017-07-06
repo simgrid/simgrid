@@ -23,10 +23,10 @@ public:
 
   void operator()()
   {
-    rank = xbt_str_parse_int(simgrid::s4u::this_actor::name().c_str(),
+    rank = xbt_str_parse_int(simgrid::s4u::this_actor::getName().c_str(),
                              "Any process of this example must have a numerical name, not %s");
     my_mailbox = simgrid::s4u::Mailbox::byName(std::to_string(rank));
-    if (rank + 1 == simgrid::s4u::Engine::instance()->hostCount())
+    if (rank + 1 == simgrid::s4u::Engine::getInstance()->getHostCount())
       /* The last process, which sends the token back to rank 0 */
       neighbor_mailbox = simgrid::s4u::Mailbox::byName("0");
     else
@@ -35,7 +35,7 @@ public:
 
     if (rank == 0) {
       /* The root process (rank 0) first sends the token then waits to receive it back */
-      XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->name());
+      XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->getName());
       neighbor_mailbox->put(xbt_strdup("Token"), task_comm_size);
       char* res = static_cast<char*>(my_mailbox->get());
       XBT_INFO("Host \"%u\" received \"%s\"", rank, res);
@@ -43,7 +43,7 @@ public:
     } else {
       char* res = static_cast<char*>(my_mailbox->get());
       XBT_INFO("Host \"%u\" received \"%s\"", rank, res);
-      XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->name());
+      XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->getName());
       neighbor_mailbox->put(res, task_comm_size);
     }
   }
@@ -55,10 +55,10 @@ int main(int argc, char** argv)
   xbt_assert(argc > 1, "Usage: %s platform.xml\n", argv[0]);
   e->loadPlatform(argv[1]);
 
-  XBT_INFO("Number of hosts '%zu'", e->hostCount());
+  XBT_INFO("Number of hosts '%zu'", e->getHostCount());
   int id = 0;
   std::vector<simgrid::s4u::Host*> list;
-  e->hostList(&list);
+  e->getHostList(&list);
   for (auto host : list) {
     /* - Give a unique rank to each host and create a @ref relay_runner process on each */
     simgrid::s4u::Actor::createActor((std::to_string(id)).c_str(), host, RelayRunner());

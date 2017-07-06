@@ -47,10 +47,10 @@ private:
 public:
   bool isMigrating();
 
-  void parameters(vm_params_t params);
+  void getParameters(vm_params_t params);
   void setParameters(vm_params_t params);
   double getRamsize();
-  simgrid::s4u::Host* pm();
+  simgrid::s4u::Host* getPm();
 
   e_surf_vm_state_t getState();
 

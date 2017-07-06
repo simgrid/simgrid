@@ -16,7 +16,7 @@ static int my_onexit(smx_process_exit_status_t status, int* pid)
 static void sendpid()
 {
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName("mailbox");
-  int pid = simgrid::s4u::this_actor::pid();
+  int pid                          = simgrid::s4u::this_actor::getPid();
   double comm_size                 = 100000;
   simgrid::s4u::this_actor::onExit((int_f_pvoid_pvoid_t)my_onexit, &pid);
 

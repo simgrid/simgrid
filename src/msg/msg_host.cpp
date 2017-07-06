@@ -115,7 +115,7 @@ xbt_dynar_t MSG_hosts_as_dynar() {
  * \brief Return the speed of the processor (in flop/s), regardless of the current load on the machine.
  */
 double MSG_host_get_speed(msg_host_t host) {
-  return host->speed();
+  return host->getSpeed();
 }
 
 /** \ingroup m_host_management
@@ -134,7 +134,7 @@ double MSG_get_host_speed(msg_host_t host) {
  * \return the number of cores
  */
 int MSG_host_get_core_number(msg_host_t host) {
-  return host->coreCount();
+  return host->getCoreCount();
 }
 
 /** \ingroup m_host_management
@@ -174,7 +174,7 @@ const char *MSG_host_get_property_value(msg_host_t host, const char *name)
 xbt_dict_t MSG_host_get_properties(msg_host_t host)
 {
   xbt_assert((host != nullptr), "Invalid parameters (host is nullptr)");
-  return host->properties();
+  return host->getProperties();
 }
 
 /** \ingroup m_host_management
@@ -264,7 +264,7 @@ xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
 {
   xbt_assert((host != nullptr), "Invalid parameters");
   xbt_dict_t contents = xbt_dict_new_homogeneous(nullptr);
-  for (auto elm : host->mountedStorages())
+  for (auto elm : host->getMountedStorages())
     xbt_dict_set(contents, elm.first.c_str(), MSG_storage_get_content(elm.second), nullptr);
 
   return contents;

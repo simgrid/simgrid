@@ -35,7 +35,7 @@ smx_activity_t SIMIX_file_read(surf_file_t file, sg_size_t size, sg_host_t host)
 {
   /* check if the host is active */
   if (host->isOff())
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->cname());
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->getCname());
 
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
   synchro->host = host;
@@ -58,7 +58,7 @@ void simcall_HANDLER_file_write(smx_simcall_t simcall, surf_file_t fd, sg_size_t
 smx_activity_t SIMIX_file_write(surf_file_t file, sg_size_t size, sg_host_t host)
 {
   if (host->isOff())
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->cname());
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->getCname());
 
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
   synchro->host = host;
@@ -79,11 +79,11 @@ void simcall_HANDLER_file_open(smx_simcall_t simcall, const char* mount, const c
 
 smx_activity_t SIMIX_file_open(const char* mount, const char* path, sg_storage_t st)
 {
-  if (st->host()->isOff())
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function", st->host()->cname());
+  if (st->getHost()->isOff())
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function", st->getHost()->getCname());
 
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
-  synchro->host                              = st->host();
+  synchro->host                              = st->getHost();
   synchro->surf_io                           = st->pimpl_->open(mount, path);
   synchro->surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
@@ -102,7 +102,7 @@ void simcall_HANDLER_file_close(smx_simcall_t simcall, surf_file_t fd, sg_host_t
 smx_activity_t SIMIX_file_close(surf_file_t file, sg_host_t host)
 {
   if (host->isOff())
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->cname());
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->getCname());
 
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
   synchro->host = host;

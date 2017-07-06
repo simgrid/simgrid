@@ -121,7 +121,7 @@ public:
   kernel::activity::MailboxImpl* getImpl() { return pimpl_; }
 
   /** Gets the name of that mailbox */
-  const char *name();
+  const char* getName();
 
   /** Retrieve the mailbox associated to the given C string */
   static MailboxPtr byName(const char *name);
@@ -147,7 +147,7 @@ public:
   void setReceiver(ActorPtr actor);
 
   /** Return the actor declared as permanent receiver, or nullptr if none **/
-  ActorPtr receiver();
+  ActorPtr getReceiver();
 
   /** Creates (but don't start) an emission to that mailbox */
   CommPtr put_init();

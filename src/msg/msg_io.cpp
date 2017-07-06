@@ -57,7 +57,7 @@ msg_error_t MSG_file_set_data(msg_file_t fd, void *data)
  */
 void* MSG_file_get_data(msg_file_t fd)
 {
-  return fd->userdata();
+  return fd->getUserdata();
 }
 
 /** \ingroup msg_file
@@ -73,7 +73,7 @@ void MSG_file_dump (msg_file_t fd){
            "\t\tStorage Id: '%s'\n"
            "\t\tStorage Type: '%s'\n"
            "\t\tFile Descriptor Id: %d",
-           fd->path(), fd->size(), fd->mount_point.c_str(), fd->storageId, fd->storage_type, fd->desc_id);
+           fd->getPath(), fd->size(), fd->mount_point.c_str(), fd->storageId, fd->storage_type, fd->desc_id);
 }
 
 /** \ingroup msg_file
@@ -92,12 +92,12 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
 
   /* Find the host where the file is physically located and read it */
   msg_storage_t storage_src           = simgrid::s4u::Storage::byName(fd->storageId);
-  msg_host_t attached_host            = storage_src->host();
+  msg_host_t attached_host            = storage_src->getHost();
   read_size                           = fd->read(size); // TODO re-add attached_host;
 
-  if (strcmp(attached_host->cname(), MSG_host_self()->cname())) {
+  if (strcmp(attached_host->getCname(), MSG_host_self()->getCname())) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
-    XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", attached_host->cname(), read_size);
+    XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", attached_host->getCname(), read_size);
     msg_host_t m_host_list[] = {MSG_host_self(), attached_host};
     double flops_amount[]    = {0, 0};
     double bytes_amount[]    = {0, 0, static_cast<double>(read_size), 0};
@@ -109,7 +109,7 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
 
     if(transfer != MSG_OK){
       if (transfer == MSG_HOST_FAILURE)
-        XBT_WARN("Transfer error, %s remote host just turned off!", attached_host->cname());
+        XBT_WARN("Transfer error, %s remote host just turned off!", attached_host->getCname());
       if (transfer == MSG_TASK_CANCELED)
         XBT_WARN("Transfer error, task has been canceled!");
 
@@ -133,11 +133,11 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
 
   /* Find the host where the file is physically located (remote or local)*/
   msg_storage_t storage_src = simgrid::s4u::Storage::byName(fd->storageId);
-  msg_host_t attached_host  = storage_src->host();
+  msg_host_t attached_host  = storage_src->getHost();
 
-  if (strcmp(attached_host->cname(), MSG_host_self()->cname())) {
+  if (strcmp(attached_host->getCname(), MSG_host_self()->getCname())) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
-    XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", attached_host->cname(), size);
+    XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", attached_host->getCname(), size);
     msg_host_t m_host_list[] = {MSG_host_self(), attached_host};
     double flops_amount[]    = {0, 0};
     double bytes_amount[]    = {0, static_cast<double>(size), 0, 0};
@@ -149,7 +149,7 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
 
     if(transfer != MSG_OK){
       if (transfer == MSG_HOST_FAILURE)
-        XBT_WARN("Transfer error, %s remote host just turned off!", attached_host->cname());
+        XBT_WARN("Transfer error, %s remote host just turned off!", attached_host->getCname());
       if (transfer == MSG_TASK_CANCELED)
         XBT_WARN("Transfer error, task has been canceled!");
 
@@ -202,7 +202,7 @@ msg_error_t MSG_file_unlink(msg_file_t fd)
 {
   /* Find the host where the file is physically located (remote or local)*/
   msg_storage_t storage_src = simgrid::s4u::Storage::byName(fd->storageId);
-  msg_host_t attached_host  = storage_src->host();
+  msg_host_t attached_host  = storage_src->getHost();
   fd->unlink(attached_host);
   delete fd;
   return MSG_OK;
@@ -252,7 +252,7 @@ sg_size_t MSG_file_tell(msg_file_t fd)
 
 const char *MSG_file_get_name(msg_file_t fd) {
   xbt_assert((fd != nullptr), "Invalid parameters");
-  return fd->path();
+  return fd->getPath();
 }
 
 /**
@@ -278,7 +278,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
 {
   /* Find the host where the file is physically located and read it */
   msg_storage_t storage_src = simgrid::s4u::Storage::byName(file->storageId);
-  msg_host_t src_host       = storage_src->host();
+  msg_host_t src_host       = storage_src->getHost();
   MSG_file_seek(file, 0, SEEK_SET);
   sg_size_t read_size = file->read(file->size());
 
@@ -287,7 +287,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
   msg_host_t dst_host;
   size_t longest_prefix_length = 0;
 
-  for (auto elm : host->mountedStorages()) {
+  for (auto elm : host->getMountedStorages()) {
     std::string mount_point = std::string(fullpath).substr(0, elm.first.size());
     if (mount_point == elm.first && elm.first.length() > longest_prefix_length) {
       /* The current mount name is found in the full path and is bigger than the previous*/
@@ -298,14 +298,14 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
 
   if (storage_dest != nullptr) {
     /* Mount point found, retrieve the host the storage is attached to */
-    dst_host = storage_dest->host();
+    dst_host = storage_dest->getHost();
   }else{
-    XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, host->cname());
+    XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, host->getCname());
     return MSG_TASK_CANCELED;
   }
 
-  XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, src_host->cname(),
-            storage_dest->host()->cname());
+  XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, src_host->getCname(),
+            storage_dest->getHost()->getCname());
   msg_host_t m_host_list[] = {src_host, dst_host};
   double flops_amount[]    = {0, 0};
   double bytes_amount[]    = {0, static_cast<double>(read_size), 0, 0};
@@ -317,7 +317,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
 
   if (err != MSG_OK) {
     if (err == MSG_HOST_FAILURE)
-      XBT_WARN("Transfer error, %s remote host just turned off!", storage_dest->host()->cname());
+      XBT_WARN("Transfer error, %s remote host just turned off!", storage_dest->getHost()->getCname());
     if (err == MSG_TASK_CANCELED)
       XBT_WARN("Transfer error, task has been canceled!");
 
@@ -360,7 +360,7 @@ msg_error_t MSG_file_rmove (msg_file_t file, msg_host_t host, const char* fullpa
 const char* MSG_storage_get_name(msg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters");
-  return storage->name();
+  return storage->getName();
 }
 
 /** \ingroup msg_storage_management
@@ -370,7 +370,7 @@ const char* MSG_storage_get_name(msg_storage_t storage)
  */
 sg_size_t MSG_storage_get_free_size(msg_storage_t storage)
 {
-  return storage->sizeFree();
+  return storage->getSizeFree();
 }
 
 /** \ingroup msg_storage_management
@@ -380,7 +380,7 @@ sg_size_t MSG_storage_get_free_size(msg_storage_t storage)
  */
 sg_size_t MSG_storage_get_used_size(msg_storage_t storage)
 {
-  return storage->sizeUsed();
+  return storage->getSizeUsed();
 }
 
 /** \ingroup msg_storage_management
@@ -391,7 +391,7 @@ sg_size_t MSG_storage_get_used_size(msg_storage_t storage)
 xbt_dict_t MSG_storage_get_properties(msg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters (storage is nullptr)");
-  return storage->properties();
+  return storage->getProperties();
 }
 
 /** \ingroup msg_storage_management
@@ -415,7 +415,7 @@ void MSG_storage_set_property_value(msg_storage_t storage, const char* name, cha
  */
 const char *MSG_storage_get_property_value(msg_storage_t storage, const char *name)
 {
-  return storage->property(name);
+  return storage->getProperty(name);
 }
 
 /** \ingroup msg_storage_management
@@ -461,7 +461,7 @@ msg_error_t MSG_storage_set_data(msg_storage_t storage, void *data)
 void *MSG_storage_get_data(msg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters");
-  return storage->userdata();
+  return storage->getUserdata();
 }
 
 /** \ingroup msg_storage_management
@@ -472,7 +472,7 @@ void *MSG_storage_get_data(msg_storage_t storage)
  */
 xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
 {
-  std::map<std::string, sg_size_t>* content = storage->content();
+  std::map<std::string, sg_size_t>* content = storage->getContent();
   xbt_dict_t content_dict = xbt_dict_new_homogeneous(&free);
 
   for (auto entry : *content) {
@@ -491,7 +491,7 @@ xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
  */
 sg_size_t MSG_storage_get_size(msg_storage_t storage)
 {
-  return storage->size();
+  return storage->getSize();
 }
 
 /** \ingroup msg_storage_management
@@ -503,7 +503,7 @@ sg_size_t MSG_storage_get_size(msg_storage_t storage)
 const char* MSG_storage_get_host(msg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters");
-  return storage->host()->cname();
+  return storage->getHost()->getCname();
 }
 
 SG_END_DECL()

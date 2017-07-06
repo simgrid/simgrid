@@ -66,11 +66,11 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
       xbt_assert(newContainer->netpoint, "Element '%s' not found", name);
       break;
     case INSTR_ROUTER:
-      newContainer->netpoint = simgrid::s4u::Engine::instance()->netpointByNameOrNull(name);
+      newContainer->netpoint = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
       xbt_assert(newContainer->netpoint, "Element '%s' not found", name);
       break;
     case INSTR_AS:
-      newContainer->netpoint = simgrid::s4u::Engine::instance()->netpointByNameOrNull(name);
+      newContainer->netpoint = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
       xbt_assert(newContainer->netpoint, "Element '%s' not found", name);
       break;
     default:

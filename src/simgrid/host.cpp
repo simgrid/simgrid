@@ -38,7 +38,7 @@ void sg_host_exit()
    */
   std::vector<std::string> names = std::vector<std::string>();
   for (auto kv : simgrid::s4u::host_list)
-    names.push_back(kv.second->name());
+    names.push_back(kv.second->getName());
 
   std::sort(names.begin(), names.end());
 
@@ -69,7 +69,7 @@ sg_host_t *sg_host_list() {
 
 const char *sg_host_get_name(sg_host_t host)
 {
-  return host->cname();
+  return host->getCname();
 }
 
 void* sg_host_extension_get(sg_host_t host, size_t ext)
@@ -89,8 +89,8 @@ sg_host_t sg_host_by_name(const char *name)
 
 static int hostcmp_voidp(const void* pa, const void* pb)
 {
-  return strcmp((*static_cast<simgrid::s4u::Host* const*>(pa))->cname(),
-                (*static_cast<simgrid::s4u::Host* const*>(pb))->cname());
+  return strcmp((*static_cast<simgrid::s4u::Host* const*>(pa))->getCname(),
+                (*static_cast<simgrid::s4u::Host* const*>(pb))->getCname());
 }
 
 xbt_dynar_t sg_hosts_as_dynar()
@@ -123,10 +123,10 @@ void sg_host_user_destroy(sg_host_t host) {
 xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host){
   xbt_assert((host != nullptr), "Invalid parameters");
   xbt_dict_t res = xbt_dict_new_homogeneous(nullptr);
-  for (auto elm : host->mountedStorages()) {
+  for (auto elm : host->getMountedStorages()) {
     const char* mount_name = elm.first.c_str();
     sg_storage_t storage   = elm.second;
-    xbt_dict_set(res, mount_name, (void*)storage->name(), nullptr);
+    xbt_dict_set(res, mount_name, (void*)storage->getName(), nullptr);
   }
 
   return res;
@@ -135,7 +135,7 @@ xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host){
 xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t host){
   std::vector<const char*>* storage_vector = new std::vector<const char*>();
   xbt_dynar_t storage_dynar = xbt_dynar_new(sizeof(const char*), nullptr);
-  host->attachedStorages(storage_vector);
+  host->getAttachedStorages(storage_vector);
   for (auto name : *storage_vector)
     xbt_dynar_push(storage_dynar, &name);
   delete storage_vector;
@@ -147,7 +147,7 @@ xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t host){
 /** @brief Returns the total speed of a host */
 double sg_host_speed(sg_host_t host)
 {
-  return host->speed();
+  return host->getSpeed();
 }
 
 double sg_host_get_available_speed(sg_host_t host)
@@ -160,7 +160,7 @@ double sg_host_get_available_speed(sg_host_t host)
  *  See also @ref plugin_energy.
  */
 int sg_host_get_nb_pstates(sg_host_t host) {
-  return host->pstatesCount();
+  return host->getPstatesCount();
 }
 
 /** @brief Gets the pstate at which that host currently runs.
@@ -168,7 +168,7 @@ int sg_host_get_nb_pstates(sg_host_t host) {
  *  See also @ref plugin_energy.
  */
 int sg_host_get_pstate(sg_host_t host) {
-  return host->pstate();
+  return host->getPstate();
 }
 /** @brief Sets the pstate at which that host should run.
  *
@@ -180,7 +180,7 @@ void sg_host_set_pstate(sg_host_t host,int pstate) {
 
 /** @brief Get the properties of an host */
 xbt_dict_t sg_host_get_properties(sg_host_t host) {
-  return host->properties();
+  return host->getProperties();
 }
 
 /** \ingroup m_host_management
@@ -246,10 +246,10 @@ void sg_host_dump(sg_host_t host)
 {
   xbt_dict_t props;
 
-  XBT_INFO("Displaying host %s", host->cname());
-  XBT_INFO("  - speed: %.0f", host->speed());
+  XBT_INFO("Displaying host %s", host->getCname());
+  XBT_INFO("  - speed: %.0f", host->getSpeed());
   XBT_INFO("  - available speed: %.2f", sg_host_get_available_speed(host));
-  props = host->properties();
+  props = host->getProperties();
 
   if (not xbt_dict_is_empty(props)) {
     XBT_INFO("  - properties:");

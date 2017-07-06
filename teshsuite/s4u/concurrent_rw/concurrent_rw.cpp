@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u test");
 static void host()
 {
   char name[2048];
-  int id = simgrid::s4u::this_actor::pid();
+  int id = simgrid::s4u::this_actor::getPid();
   snprintf(name, 2048, "%s%i", FILENAME1, id);
   simgrid::s4u::File* file = new simgrid::s4u::File(name, NULL);
   XBT_INFO("process %d is writing!", id);

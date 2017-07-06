@@ -30,7 +30,7 @@ public:
   ~File();
 
   /** Retrieves the path to the file */
-  const char* path() { return path_; }
+  const char* getPath() { return path_; }
 
   /** Simulates a read action. Returns the size of data actually read
    *
@@ -46,7 +46,7 @@ public:
   /** Allows to store user data on that host */
   void setUserdata(void* data) { userdata_ = data; }
   /** Retrieves the previously stored data */
-  void* userdata() { return userdata_; }
+  void* getUserdata() { return userdata_; }
 
   /** Retrieve the datasize */
   sg_size_t size();

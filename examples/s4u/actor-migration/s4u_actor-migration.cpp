@@ -36,7 +36,7 @@ static void emigrant()
 
   simgrid::s4u::this_actor::suspend();
 
-  XBT_INFO("I've been moved on this new host: %s", simgrid::s4u::this_actor::host()->cname());
+  XBT_INFO("I've been moved on this new host: %s", simgrid::s4u::this_actor::getHost()->getCname());
   XBT_INFO("Uh, nothing to do here. Stopping now");
 }
 

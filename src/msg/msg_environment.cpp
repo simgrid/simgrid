@@ -38,29 +38,29 @@ void MSG_create_environment(const char *file)
 
 msg_netzone_t MSG_zone_get_root()
 {
-  return simgrid::s4u::Engine::instance()->netRoot();
+  return simgrid::s4u::Engine::getInstance()->getNetRoot();
 }
 
 const char* MSG_zone_get_name(msg_netzone_t netzone)
 {
-  return netzone->name();
+  return netzone->getCname();
 }
 
 msg_netzone_t MSG_zone_get_by_name(const char* name)
 {
-  return simgrid::s4u::Engine::instance()->netzoneByNameOrNull(name);
+  return simgrid::s4u::Engine::getInstance()->getNetzoneByNameOrNull(name);
 }
 
 void MSG_zone_get_sons(msg_netzone_t netzone, xbt_dict_t whereto)
 {
-  for (auto elem : *netzone->children()) {
-    xbt_dict_set(whereto, elem->name(), static_cast<void*>(elem), nullptr);
+  for (auto elem : *netzone->getChildren()) {
+    xbt_dict_set(whereto, elem->getCname(), static_cast<void*>(elem), nullptr);
   }
 }
 
 const char* MSG_zone_get_property_value(msg_netzone_t netzone, const char* name)
 {
-  return netzone->property(name);
+  return netzone->getProperty(name);
 }
 
 void MSG_zone_set_property_value(msg_netzone_t netzone, const char* name, char* value)
@@ -72,7 +72,7 @@ void MSG_zone_get_hosts(msg_netzone_t netzone, xbt_dynar_t whereto)
 {
   /* converts vector to dynar */
   std::vector<simgrid::s4u::Host*> hosts;
-  netzone->hosts(&hosts);
+  netzone->getHosts(&hosts);
   for (auto host : hosts)
     xbt_dynar_push(whereto, &host);
 }

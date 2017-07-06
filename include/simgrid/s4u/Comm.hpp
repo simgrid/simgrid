@@ -113,7 +113,7 @@ public:
   void cancel();
 
   /** Retrieve the mailbox on which this comm acts */
-  MailboxPtr mailbox();
+  MailboxPtr getMailbox();
 
 private:
   double rate_        = -1;

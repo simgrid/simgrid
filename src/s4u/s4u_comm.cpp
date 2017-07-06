@@ -165,7 +165,7 @@ bool Comm::test()
   return false;
 }
 
-MailboxPtr Comm::mailbox()
+MailboxPtr Comm::getMailbox()
 {
   return mailbox_;
 }

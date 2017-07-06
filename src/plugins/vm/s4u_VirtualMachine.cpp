@@ -31,7 +31,7 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount)
   extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t host_container = PJ_container_get(pm->cname());
+    container_t host_container = PJ_container_get(pm->getCname());
     PJ_container_new(name, INSTR_MSG_VM, host_container);
   }
 }
@@ -40,7 +40,7 @@ VirtualMachine::~VirtualMachine()
 {
   onDestruction(*this);
 
-  XBT_DEBUG("destroy %s", cname());
+  XBT_DEBUG("destroy %s", getCname());
 
   /* FIXME: this is really strange that everything fails if the next line is removed.
    * This is as if we shared these data with the PM, which definitely should not be the case...
@@ -62,7 +62,7 @@ double VirtualMachine::getRamsize()
 {
   return pimpl_vm_->params_.ramsize;
 }
-simgrid::s4u::Host* VirtualMachine::pm()
+simgrid::s4u::Host* VirtualMachine::getPm()
 {
   return pimpl_vm_->getPm();
 }
@@ -73,7 +73,7 @@ e_surf_vm_state_t VirtualMachine::getState()
 
 /** @brief Retrieve a copy of the parameters of that VM/PM
  *  @details The ramsize and overcommit fields are used on the PM too */
-void VirtualMachine::parameters(vm_params_t params)
+void VirtualMachine::getParameters(vm_params_t params)
 {
   pimpl_vm_->getParams(params);
 }

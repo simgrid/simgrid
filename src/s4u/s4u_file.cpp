@@ -25,9 +25,9 @@ File::File(const char* fullpath, sg_host_t host, void* userdata) : path_(fullpat
   Storage* st                  = nullptr;
   size_t longest_prefix_length = 0;
   std::string path;
-  XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath, host->cname());
+  XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath, host->getCname());
 
-  for (auto mnt : host->mountedStorages()) {
+  for (auto mnt : host->getMountedStorages()) {
     XBT_DEBUG("See '%s'", mnt.first.c_str());
     mount_point = std::string(fullpath).substr(0, mnt.first.size());
 
@@ -41,11 +41,11 @@ File::File(const char* fullpath, sg_host_t host, void* userdata) : path_(fullpat
     mount_point = std::string(fullpath).substr(0, longest_prefix_length);
     path        = std::string(fullpath).substr(longest_prefix_length, strlen(fullpath));
   } else
-    xbt_die("Can't find mount point for '%s' on '%s'", fullpath, host->cname());
+    xbt_die("Can't find mount point for '%s' on '%s'", fullpath, host->getCname());
 
   pimpl_       = simcall_file_open(mount_point.c_str(), path.c_str(), st);
-  storage_type = st->type();
-  storageId    = st->name();
+  storage_type = st->getType();
+  storageId    = st->getName();
 }
 
 File::~File()

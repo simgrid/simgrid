@@ -231,10 +231,10 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
                                  xbt_dict_t properties, smx_actor_t parent_process)
 {
 
-  XBT_DEBUG("Start process %s on host '%s'", name, host->cname());
+  XBT_DEBUG("Start process %s on host '%s'", name, host->getCname());
 
   if (host->isOff()) {
-    XBT_WARN("Cannot launch process '%s' on failed host '%s'", name, host->cname());
+    XBT_WARN("Cannot launch process '%s' on failed host '%s'", name, host->getCname());
     return nullptr;
   }
 
@@ -281,7 +281,7 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
 
   /* Now insert it in the global process list and in the process to run list */
   simix_global->process_list[process->pid] = process;
-  XBT_DEBUG("Inserting %s(%s) in the to_run list", process->cname(), host->cname());
+  XBT_DEBUG("Inserting %s(%s) in the to_run list", process->cname(), host->getCname());
   xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, process);
   intrusive_ptr_add_ref(process);
 
@@ -345,7 +345,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
 
   /* Now insert it in the global process list and in the process to run list */
   simix_global->process_list[process->pid] = process;
-  XBT_DEBUG("Inserting %s(%s) in the to_run list", process->cname(), host->cname());
+  XBT_DEBUG("Inserting %s(%s) in the to_run list", process->cname(), host->getCname());
   xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, process);
 
   /* Tracing the process creation */
@@ -410,7 +410,7 @@ void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_actor_t process) {
  */
 void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
 
-  XBT_DEBUG("Killing process %s@%s", process->cname(), process->host->cname());
+  XBT_DEBUG("Killing process %s@%s", process->cname(), process->host->getCname());
 
   process->context->iwannadie = 1;
   process->blocked = 0;
@@ -709,7 +709,7 @@ smx_activity_t SIMIX_process_sleep(smx_actor_t process, double duration)
   sg_host_t host = process->host;
 
   if (host->isOff())
-    THROWF(host_error, 0, "Host %s failed, you cannot sleep there.", host->cname());
+    THROWF(host_error, 0, "Host %s failed, you cannot sleep there.", host->getCname());
 
   simgrid::kernel::activity::SleepImpl* synchro = new simgrid::kernel::activity::SleepImpl();
   synchro->host = host;
@@ -768,7 +768,7 @@ void SIMIX_process_yield(smx_actor_t self)
                                           self->properties,
                                           self->auto_restart);
     }
-    XBT_DEBUG("Process %s@%s is dead", self->cname(), self->host->cname());
+    XBT_DEBUG("Process %s@%s is dead", self->cname(), self->host->getCname());
     self->context->stop();
   }
 
@@ -857,7 +857,7 @@ smx_actor_t simcall_HANDLER_process_restart(smx_simcall_t simcall, smx_actor_t p
 }
 /** @brief Restart a process, starting it again from the beginning. */
 smx_actor_t SIMIX_process_restart(smx_actor_t process, smx_actor_t issuer) {
-  XBT_DEBUG("Restarting process %s on %s", process->cname(), process->host->cname());
+  XBT_DEBUG("Restarting process %s on %s", process->cname(), process->host->getCname());
 
   //retrieve the arguments of the old process
   //FIXME: Factorize this with SIMIX_host_add_auto_restart_process ?

@@ -65,7 +65,7 @@ void surf_parse_assert_netpoint(char* hostname, const char* pre, const char* pos
   msg += " Existing netpoints: \n";
 
   std::vector<simgrid::kernel::routing::NetPoint*> list;
-  simgrid::s4u::Engine::instance()->netpointList(&list);
+  simgrid::s4u::Engine::getInstance()->getNetpointList(&list);
   std::sort(list.begin(), list.end(),
       [](simgrid::kernel::routing::NetPoint* a, simgrid::kernel::routing::NetPoint* b) {
       return a->name() < b->name();
@@ -519,7 +519,7 @@ void STag_surfxml_prop()
 {
   if (ZONE_TAG) { // We need to retrieve the most recently opened zone
     XBT_DEBUG("Set zone property %s -> %s", A_surfxml_prop_id, A_surfxml_prop_value);
-    simgrid::s4u::NetZone* netzone = simgrid::s4u::Engine::instance()->netzoneByNameOrNull(A_surfxml_zone_id);
+    simgrid::s4u::NetZone* netzone = simgrid::s4u::Engine::getInstance()->getNetzoneByNameOrNull(A_surfxml_zone_id);
 
     netzone->setProperty(A_surfxml_prop_id, A_surfxml_prop_value);
   }

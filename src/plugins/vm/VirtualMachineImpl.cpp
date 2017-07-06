@@ -77,7 +77,7 @@ double VMModel::nextOccuringEvent(double now)
 
     double solved_value = ws_vm->pimpl_vm_->action_->getVariable()
                               ->value; // this is X1 in comment above, what this VM got in the sharing on the PM
-    XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->cname(), ws_vm->pimpl_vm_->getPm()->cname());
+    XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->getCname(), ws_vm->pimpl_vm_->getPm()->getCname());
 
     // TODO: check lmm_update_constraint_bound() works fine instead of the below manual substitution.
     // cpu_cas01->constraint->bound = solved_value;
@@ -111,7 +111,7 @@ VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, sim
   /* Initialize the VM parameters */
   params_.ramsize = 0;
 
-  XBT_VERB("Create VM(%s)@PM(%s)", piface->cname(), hostPM_->cname());
+  XBT_VERB("Create VM(%s)@PM(%s)", piface->getCname(), hostPM_->getCname());
 }
 
 extern "C" int
@@ -159,14 +159,14 @@ void VirtualMachineImpl::setState(e_surf_vm_state_t state)
 void VirtualMachineImpl::suspend(smx_actor_t issuer)
 {
   if (isMigrating)
-    THROWF(vm_error, 0, "Cannot suspend VM '%s': it is migrating", piface_->cname());
+    THROWF(vm_error, 0, "Cannot suspend VM '%s': it is migrating", piface_->getCname());
   if (getState() != SURF_VM_STATE_RUNNING)
-    THROWF(vm_error, 0, "Cannot suspend VM %s: it is not running.", piface_->cname());
+    THROWF(vm_error, 0, "Cannot suspend VM %s: it is not running.", piface_->getCname());
   if (issuer->host == piface_)
-    THROWF(vm_error, 0, "Actor %s cannot suspend the VM %s in which it runs", issuer->cname(), piface_->cname());
+    THROWF(vm_error, 0, "Actor %s cannot suspend the VM %s in which it runs", issuer->cname(), piface_->getCname());
 
   xbt_swag_t process_list = piface_->extension<simgrid::simix::Host>()->process_list;
-  XBT_DEBUG("suspend VM(%s), where %d processes exist", piface_->cname(), xbt_swag_size(process_list));
+  XBT_DEBUG("suspend VM(%s), where %d processes exist", piface_->getCname(), xbt_swag_size(process_list));
 
   action_->suspend();
 
@@ -185,10 +185,10 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
 void VirtualMachineImpl::resume()
 {
   if (getState() != SURF_VM_STATE_SUSPENDED)
-    THROWF(vm_error, 0, "Cannot resume VM %s: it was not suspended", piface_->cname());
+    THROWF(vm_error, 0, "Cannot resume VM %s: it was not suspended", piface_->getCname());
 
   xbt_swag_t process_list = piface_->extension<simgrid::simix::Host>()->process_list;
-  XBT_DEBUG("Resume VM %s, containing %d processes.", piface_->cname(), xbt_swag_size(process_list));
+  XBT_DEBUG("Resume VM %s, containing %d processes.", piface_->getCname(), xbt_swag_size(process_list));
 
   action_->resume();
 
@@ -227,11 +227,11 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
         THROW_IMPOSSIBLE;
         break;
     }
-    XBT_VERB("Shuting down the VM %s even if it's not running but %s", piface_->cname(), stateName);
+    XBT_VERB("Shuting down the VM %s even if it's not running but %s", piface_->getCname(), stateName);
   }
 
   xbt_swag_t process_list = piface_->extension<simgrid::simix::Host>()->process_list;
-  XBT_DEBUG("shutdown VM %s, that contains %d processes", piface_->cname(), xbt_swag_size(process_list));
+  XBT_DEBUG("shutdown VM %s, that contains %d processes", piface_->getCname(), xbt_swag_size(process_list));
 
   smx_actor_t smx_process;
   smx_actor_t smx_process_safe;
@@ -257,9 +257,9 @@ s4u::Host* VirtualMachineImpl::getPm()
  */
 void VirtualMachineImpl::setPm(s4u::Host* destination)
 {
-  const char* vm_name     = piface_->cname();
-  const char* pm_name_src = hostPM_->cname();
-  const char* pm_name_dst = destination->cname();
+  const char* vm_name     = piface_->getCname();
+  const char* pm_name_src = hostPM_->getCname();
+  const char* pm_name_dst = destination->getCname();
 
   /* update net_elm with that of the destination physical host */
   piface_->pimpl_netpoint = destination->pimpl_netpoint;

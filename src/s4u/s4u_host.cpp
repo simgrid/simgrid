@@ -54,7 +54,7 @@ Host::~Host()
 
   delete pimpl_;
   if (pimpl_netpoint != nullptr) // not removed yet by a children class
-    simgrid::s4u::Engine::instance()->netpointUnregister(pimpl_netpoint);
+    simgrid::s4u::Engine::getInstance()->netpointUnregister(pimpl_netpoint);
   delete pimpl_cpu;
   delete mounts;
 }
@@ -123,7 +123,8 @@ bool Host::isOn() {
   return this->pimpl_cpu->isOn();
 }
 
-int Host::pstatesCount() const {
+int Host::getPstatesCount() const
+{
   return this->pimpl_cpu->getNbPStates();
 }
 
@@ -166,7 +167,7 @@ void Host::routeTo(Host* dest, std::vector<surf::LinkImpl*>* links, double* late
 {
   simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(pimpl_netpoint, dest->pimpl_netpoint, links, latency);
   if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {
-    XBT_CDEBUG(surf_route, "Route from '%s' to '%s' (latency: %f):", cname(), dest->cname(),
+    XBT_CDEBUG(surf_route, "Route from '%s' to '%s' (latency: %f):", getCname(), dest->getCname(),
                (latency == nullptr ? -1 : *latency));
     for (auto link : *links)
       XBT_CDEBUG(surf_route, "Link %s", link->cname());
@@ -174,14 +175,15 @@ void Host::routeTo(Host* dest, std::vector<surf::LinkImpl*>* links, double* late
 }
 
 /** Get the properties assigned to a host */
-xbt_dict_t Host::properties() {
+xbt_dict_t Host::getProperties()
+{
   return simgrid::simix::kernelImmediate([this] {
     return this->pimpl_->getProperties();
   });
 }
 
 /** Retrieve the property value (or nullptr if not set) */
-const char* Host::property(const char* key)
+const char* Host::getProperty(const char* key)
 {
   return this->pimpl_->getProperty(key);
 }
@@ -192,7 +194,7 @@ void Host::setProperty(const char* key, const char* value)
 }
 
 /** Get the processes attached to the host */
-void Host::processes(std::vector<ActorPtr>* list)
+void Host::getProcesses(std::vector<ActorPtr>* list)
 {
   smx_actor_t actor = NULL;
   xbt_swag_foreach(actor, this->extension<simgrid::simix::Host>()->process_list) {
@@ -209,12 +211,14 @@ double Host::getPstateSpeed(int pstate_index)
 }
 
 /** @brief Get the peak processor speed (in flops/s), at the current pstate */
-double Host::speed() {
+double Host::getSpeed()
+{
   return pimpl_cpu->getSpeed(1.0);
 }
 
 /** @brief Returns the number of core of the processor. */
-int Host::coreCount() {
+int Host::getCoreCount()
+{
   return pimpl_cpu->coreCount();
 }
 
@@ -226,7 +230,7 @@ void Host::setPstate(int pstate_index)
   });
 }
 /** @brief Retrieve the pstate at which the host is currently running */
-int Host::pstate()
+int Host::getPstate()
 {
   return this->pimpl_cpu->getPState();
 }
@@ -236,14 +240,14 @@ int Host::pstate()
  * \brief Returns the list of storages attached to an host.
  * \return a vector containing all storages attached to the host
  */
-void Host::attachedStorages(std::vector<const char*>* storages)
+void Host::getAttachedStorages(std::vector<const char*>* storages)
 {
   simgrid::simix::kernelImmediate([this, storages] {
      this->pimpl_->getAttachedStorageList(storages);
   });
 }
 
-std::unordered_map<std::string, Storage*> const& Host::mountedStorages()
+std::unordered_map<std::string, Storage*> const& Host::getMountedStorages()
 {
   if (mounts == nullptr) {
     mounts = new std::unordered_map<std::string, Storage*>();

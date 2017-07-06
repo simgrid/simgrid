@@ -100,14 +100,14 @@ Cpu::Cpu(Model *model, simgrid::s4u::Host *host, std::vector<double> *speedPerPs
 
 Cpu::Cpu(Model* model, simgrid::s4u::Host* host, lmm_constraint_t constraint, std::vector<double>* speedPerPstate,
          int core)
-    : Resource(model, host->cname(), constraint), coresAmount_(core), host_(host)
+    : Resource(model, host->getCname(), constraint), coresAmount_(core), host_(host)
 {
-  xbt_assert(core > 0, "Host %s must have at least one core, not 0.", host->cname());
+  xbt_assert(core > 0, "Host %s must have at least one core, not 0.", host->getCname());
 
   speed_.peak = speedPerPstate->front();
   speed_.scale = 1;
   host->pimpl_cpu = this;
-  xbt_assert(speed_.scale > 0, "Speed of host %s must be >0", host->cname());
+  xbt_assert(speed_.scale > 0, "Speed of host %s must be >0", host->getCname());
 
   // Copy the power peak array:
   for (double value : *speedPerPstate) {
@@ -170,13 +170,13 @@ int Cpu::coreCount()
 
 void Cpu::setStateTrace(tmgr_trace_t trace)
 {
-  xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Host %s", host_->cname());
+  xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Host %s", host_->getCname());
 
   stateEvent_ = future_evt_set->add_trace(trace, this);
 }
 void Cpu::setSpeedTrace(tmgr_trace_t trace)
 {
-  xbt_assert(speed_.event == nullptr, "Cannot set a second speed trace to Host %s", host_->cname());
+  xbt_assert(speed_.event == nullptr, "Cannot set a second speed trace to Host %s", host_->getCname());
 
   speed_.event = future_evt_set->add_trace(trace, this);
 }

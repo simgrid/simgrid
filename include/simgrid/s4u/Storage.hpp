@@ -29,21 +29,21 @@ public:
   virtual ~Storage() = default;
   /** Retrieve a Storage by its name. It must exist in the platform file */
   static Storage* byName(const char* name);
-  const char* name();
-  const char* type();
-  Host* host();
-  sg_size_t sizeFree();
-  sg_size_t sizeUsed();
+  const char* getName();
+  const char* getType();
+  Host* getHost();
+  sg_size_t getSizeFree();
+  sg_size_t getSizeUsed();
   /** Retrieve the total amount of space of this storage element */
-  sg_size_t size();
+  sg_size_t getSize();
 
-  xbt_dict_t properties();
-  const char* property(const char* key);
+  xbt_dict_t getProperties();
+  const char* getProperty(const char* key);
   void setProperty(const char* key, char* value);
-  std::map<std::string, sg_size_t>* content();
+  std::map<std::string, sg_size_t>* getContent();
 
   void setUserdata(void* data) { userdata_ = data; }
-  void* userdata() { return userdata_; }
+  void* getUserdata() { return userdata_; }
 
   /* The signals */
   /** @brief Callback signal fired when a new Link is created */

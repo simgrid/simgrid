@@ -540,7 +540,7 @@ void SIMIX_run()
 
     /* Autorestart all process */
     for (auto host: host_that_restart) {
-      XBT_INFO("Restart processes on host %s", host->cname());
+      XBT_INFO("Restart processes on host %s", host->getCname());
       SIMIX_host_autorestart(host);
     }
     host_that_restart.clear();
@@ -681,11 +681,11 @@ void SIMIX_display_process_status()
 */
 
       XBT_INFO("Process %lu (%s@%s): waiting for %s synchro %p (%s) in state %d to finish", process->pid,
-               process->cname(), process->host->cname(), synchro_description, process->waiting_synchro.get(),
+               process->cname(), process->host->getCname(), synchro_description, process->waiting_synchro.get(),
                process->waiting_synchro->name.c_str(), (int)process->waiting_synchro->state);
     }
     else {
-      XBT_INFO("Process %lu (%s@%s)", process->pid, process->cname(), process->host->cname());
+      XBT_INFO("Process %lu (%s@%s)", process->pid, process->cname(), process->host->getCname());
     }
   }
 }
