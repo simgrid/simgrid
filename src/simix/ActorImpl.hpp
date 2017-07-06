@@ -106,7 +106,8 @@ public:
   void daemonize();
   bool isDaemon() { return daemon; } /** Whether this actor has been daemonized */
   bool isSuspended() { return suspended; }
-  smx_activity_t suspend(smx_actor_t issuer);
+  ActorImpl* restart(ActorImpl* issuer);
+  smx_activity_t suspend(ActorImpl* issuer);
   void resume();
   smx_activity_t sleep(double duration);
 };
@@ -140,7 +141,6 @@ XBT_PRIVATE void SIMIX_process_set_data(smx_actor_t process, void *data);
 XBT_PRIVATE smx_actor_t SIMIX_process_get_by_name(const char* name);
 
 XBT_PRIVATE void SIMIX_process_auto_restart_set(smx_actor_t process, int auto_restart);
-XBT_PRIVATE smx_actor_t SIMIX_process_restart(smx_actor_t process, smx_actor_t issuer);
 
 extern void (*SMPI_switch_data_segment)(int dest);
 

@@ -167,20 +167,49 @@ void ActorImpl::daemonize()
   }
 }
 
-smx_activity_t ActorImpl::suspend(smx_actor_t issuer)
+ActorImpl* ActorImpl::restart(ActorImpl* issuer)
+{
+  XBT_DEBUG("Restarting process %s on %s", cname(), host->getCname());
+
+  // retrieve the arguments of the old process
+  // FIXME: Factorize this with SIMIX_host_add_auto_restart_process ?
+  simgrid::simix::ProcessArg arg;
+  arg.name         = name;
+  arg.code         = code;
+  arg.host         = host;
+  arg.kill_time    = SIMIX_timer_get_date(kill_timer);
+  arg.data         = data;
+  arg.properties   = nullptr;
+  arg.auto_restart = auto_restart;
+
+  // kill the old process
+  SIMIX_process_kill(this, issuer);
+
+  // start the new process
+  ActorImpl* actor = simix_global->create_process_function(arg.name.c_str(), std::move(arg.code), arg.data, arg.host,
+                                                           arg.properties, nullptr);
+  if (arg.kill_time >= 0)
+    simcall_process_set_kill_time(actor, arg.kill_time);
+  if (arg.auto_restart)
+    simcall_process_auto_restart_set(actor, arg.auto_restart);
+
+  return actor;
+}
+
+smx_activity_t ActorImpl::suspend(ActorImpl* issuer)
 {
   if (suspended) {
-    XBT_DEBUG("Process '%s' is already suspended", name.c_str());
+    XBT_DEBUG("Actor '%s' is already suspended", name.c_str());
     return nullptr;
   }
 
   suspended = 1;
 
-  /* If we are suspending another process that is waiting on a sync, suspend its synchronization. */
+  /* If we are suspending another actor that is waiting on a sync, suspend its synchronization. */
   if (this != issuer) {
     if (waiting_synchro)
       waiting_synchro->suspend();
-    /* If the other process is not waiting, its suspension is delayed to when the process is rescheduled. */
+    /* If the other actor is not waiting, its suspension is delayed to when the actor is rescheduled. */
 
     return nullptr;
   } else {
@@ -193,7 +222,7 @@ void ActorImpl::resume()
   XBT_IN("process = %p", this);
 
   if (context->iwannadie) {
-    XBT_VERB("Ignoring request to suspend a process that is currently dying.");
+    XBT_VERB("Ignoring request to suspend an actor that is currently dying.");
     return;
   }
 
@@ -201,7 +230,7 @@ void ActorImpl::resume()
     return;
   suspended = 0;
 
-  /* resume the synchronization that was blocking the resumed process. */
+  /* resume the synchronization that was blocking the resumed actor. */
   if (waiting_synchro)
     waiting_synchro->resume();
 
@@ -850,37 +879,10 @@ void SIMIX_process_auto_restart_set(smx_actor_t process, int auto_restart) {
 }
 
 smx_actor_t simcall_HANDLER_process_restart(smx_simcall_t simcall, smx_actor_t process) {
-  return SIMIX_process_restart(process, simcall->issuer);
+  return process->restart(simcall->issuer);
 }
+
 /** @brief Restart a process, starting it again from the beginning. */
-smx_actor_t SIMIX_process_restart(smx_actor_t process, smx_actor_t issuer) {
-  XBT_DEBUG("Restarting process %s on %s", process->cname(), process->host->getCname());
-
-  //retrieve the arguments of the old process
-  //FIXME: Factorize this with SIMIX_host_add_auto_restart_process ?
-  simgrid::simix::ProcessArg arg;
-  arg.name = process->name;
-  arg.code = process->code;
-  arg.host = process->host;
-  arg.kill_time = SIMIX_timer_get_date(process->kill_timer);
-  arg.data = process->data;
-  arg.properties = nullptr;
-  arg.auto_restart = process->auto_restart;
-
-  //kill the old process
-  SIMIX_process_kill(process, issuer);
-
-  //start the new process
-  smx_actor_t actor = simix_global->create_process_function(arg.name.c_str(), std::move(arg.code), arg.data, arg.host,
-                                                            arg.properties, nullptr);
-  if (arg.kill_time >= 0)
-    simcall_process_set_kill_time(actor, arg.kill_time);
-  if (arg.auto_restart)
-    simcall_process_auto_restart_set(actor, arg.auto_restart);
-
-  return actor;
-}
-
 /**
  * \ingroup simix_process_management
  * \brief Creates and runs a new SIMIX process.
@@ -889,7 +891,8 @@ smx_actor_t SIMIX_process_restart(smx_actor_t process, smx_actor_t issuer) {
  *
  * \param name a name for the process. It is for user-level information and can be nullptr.
  * \param code the main function of the process
- * \param data a pointer to any data one may want to attach to the new object. It is for user-level information and can be nullptr.
+ * \param data a pointer to any data one may want to attach to the new object. It is for user-level information and can
+ * be nullptr.
  * It can be retrieved with the function \ref simcall_process_get_data.
  * \param host where the new agent is executed.
  * \param kill_time time when the process is killed
