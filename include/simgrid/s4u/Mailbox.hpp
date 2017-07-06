@@ -152,14 +152,17 @@ public:
   /** Creates (but don't start) an emission to that mailbox */
   CommPtr put_init();
   /** Creates (but don't start) an emission to that mailbox */
-  CommPtr put_init(void* data, int simulatedByteAmount);
+  CommPtr put_init(void* payload, size_t simulatedSizeInBytes);
   /** Creates and start an async emission to that mailbox */
-  CommPtr put_async(void* data, int simulatedByteAmount);
+  CommPtr put_async(void* payload, size_t simulatedSizeInBytes);
 
-  /** Blocking put */
-  void put(void* payload, double simulatedSize);
-  /** Blocking put with timeout */
-  void put(void* payload, double simulatedSize, double timeout);
+  /** Blocking emission
+   *
+   * There is no deep-copy of the payload; the pointer is just copied to the receiving actor.
+   */
+  void put(void* payload, size_t simulatedSizeInBytes);
+  /** Blocking emission with timeout */
+  void put(void* payload, size_t simulatedSizeInBytes, double timeout);
 
   /** Creates (but don't start) a reception onto that mailbox */
   CommPtr get_init();
