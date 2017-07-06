@@ -483,18 +483,18 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
       if (process_index >= (int) MC_smpi_process_count())
         xbt_die("Invalid process index");
 
-      // Read smpi_privatisation_regions from MCed:
-      smpi_privatisation_region_t remote_smpi_privatisation_regions =
-        mc_model_checker->process().read_variable<smpi_privatisation_region_t>(
-          "smpi_privatisation_regions");
+      // Read smpi_privatization_regions from MCed:
+      smpi_privatization_region_t remote_smpi_privatization_regions =
+        mc_model_checker->process().read_variable<smpi_privatization_region_t>(
+          "smpi_privatization_regions");
 
-      s_smpi_privatisation_region_t privatisation_region =
-        mc_model_checker->process().read<s_smpi_privatisation_region_t>(
-          remote(remote_smpi_privatisation_regions + process_index));
+      s_smpi_privatization_region_t privatization_region =
+        mc_model_checker->process().read<s_smpi_privatization_region_t>(
+          remote(remote_smpi_privatization_regions + process_index));
 
       // Address translation in the privatization segment:
       size_t offset = address.address() - (std::uint64_t)info->start_rw;
-      address = remote((char*)privatisation_region.address + offset);
+      address = remote((char*)privatization_region.address + offset);
     }
 #endif
   }

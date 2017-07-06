@@ -89,21 +89,21 @@ RegionSnapshot privatized_region(
 {
   size_t process_count = MC_smpi_process_count();
 
-  // Read smpi_privatisation_regions from MCed:
-  smpi_privatisation_region_t remote_smpi_privatisation_regions;
+  // Read smpi_privatization_regions from MCed:
+  smpi_privatization_region_t remote_smpi_privatization_regions;
   mc_model_checker->process().read_variable(
-    "smpi_privatisation_regions",
-    &remote_smpi_privatisation_regions, sizeof(remote_smpi_privatisation_regions));
-  s_smpi_privatisation_region_t privatisation_regions[process_count];
+    "smpi_privatization_regions",
+    &remote_smpi_privatization_regions, sizeof(remote_smpi_privatization_regions));
+  s_smpi_privatization_region_t privatization_regions[process_count];
   mc_model_checker->process().read_bytes(
-    &privatisation_regions, sizeof(privatisation_regions),
-    remote(remote_smpi_privatisation_regions));
+    &privatization_regions, sizeof(privatization_regions),
+    remote(remote_smpi_privatization_regions));
 
   std::vector<simgrid::mc::RegionSnapshot> data;
   data.reserve(process_count);
   for (size_t i = 0; i < process_count; i++)
     data.push_back(simgrid::mc::region(region_type, start_addr,
-      privatisation_regions[i].address, size));
+      privatization_regions[i].address, size));
 
   simgrid::mc::RegionSnapshot region = simgrid::mc::RegionSnapshot(
     region_type, start_addr, permanent_addr, size);
@@ -510,7 +510,7 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
     link[res] = '\0';
 
 #if HAVE_SMPI
-    if(smpi_is_privatisation_file(link))
+    if(smpi_is_privatization_file(link))
       continue;
 #endif
 

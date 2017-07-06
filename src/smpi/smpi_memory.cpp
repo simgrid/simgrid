@@ -91,12 +91,12 @@ void smpi_really_switch_data_segment(int dest)
 #if HAVE_PRIVATIZATION
   if(smpi_loaded_page==-1){//initial switch, do the copy from the real page here
     for (int i=0; i< smpi_process_count(); i++){
-      memcpy(smpi_privatisation_regions[i].address, TOPAGE(smpi_start_data_exe), smpi_size_data_exe);
+      memcpy(smpi_privatization_regions[i].address, TOPAGE(smpi_start_data_exe), smpi_size_data_exe);
     }
   }
 
   // FIXME, cross-process support (mmap across process when necessary)
-  int current = smpi_privatisation_regions[dest].file_descriptor;
+  int current = smpi_privatization_regions[dest].file_descriptor;
   XBT_DEBUG("Switching data frame to the one of process %d", dest);
   void* tmp =
       mmap(TOPAGE(smpi_start_data_exe), smpi_size_data_exe, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);
@@ -106,7 +106,7 @@ void smpi_really_switch_data_segment(int dest)
 #endif
 }
 
-int smpi_is_privatisation_file(char* file)
+int smpi_is_privatization_file(char* file)
 {
   return strncmp("/dev/shm/my-buffer-", file, std::strlen("/dev/shm/my-buffer-")) == 0;
 }
@@ -124,8 +124,8 @@ void smpi_initialize_global_memory_segments()
     return;
   }
 
-  smpi_privatisation_regions = static_cast<smpi_privatisation_region_t>(
-      xbt_malloc(smpi_process_count() * sizeof(struct s_smpi_privatisation_region)));
+  smpi_privatization_regions = static_cast<smpi_privatization_region_t>(
+      xbt_malloc(smpi_process_count() * sizeof(struct s_smpi_privatization_region)));
 
   for (int i=0; i< smpi_process_count(); i++){
     // create SIMIX_process_count() mappings of this size with the same data inside
@@ -174,8 +174,8 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
     memcpy(address, TOPAGE(smpi_start_data_exe), smpi_size_data_exe);
 
     // store the address of the mapping for further switches
-    smpi_privatisation_regions[i].file_descriptor = file_descriptor;
-    smpi_privatisation_regions[i].address         = address;
+    smpi_privatization_regions[i].file_descriptor = file_descriptor;
+    smpi_privatization_regions[i].address         = address;
   }
 #else /* ! HAVE_PRIVATIZATION */
   smpi_privatize_global_variables = false;
@@ -189,11 +189,11 @@ void smpi_destroy_global_memory_segments(){
     return;
 #if HAVE_PRIVATIZATION
   for (int i=0; i< smpi_process_count(); i++) {
-    if (munmap(smpi_privatisation_regions[i].address, smpi_size_data_exe) < 0)
-      XBT_WARN("Unmapping of fd %d failed: %s", smpi_privatisation_regions[i].file_descriptor, strerror(errno));
-    close(smpi_privatisation_regions[i].file_descriptor);
+    if (munmap(smpi_privatization_regions[i].address, smpi_size_data_exe) < 0)
+      XBT_WARN("Unmapping of fd %d failed: %s", smpi_privatization_regions[i].file_descriptor, strerror(errno));
+    close(smpi_privatization_regions[i].file_descriptor);
   }
-  xbt_free(smpi_privatisation_regions);
+  xbt_free(smpi_privatization_regions);
 #endif
 }
 

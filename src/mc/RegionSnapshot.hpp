@@ -101,7 +101,7 @@ public:
  *  * sparse/per-page snapshots are snaapshots which shared
  *    identical pages.
  *
- *  * privatized (SMPI global variable privatisation).
+ *  * privatized (SMPI global variable privatization).
  *
  *  This is handled with a variant based approach:
  *

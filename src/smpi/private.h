@@ -83,7 +83,7 @@ extern XBT_PRIVATE shared_malloc_type smpi_cfg_shared_malloc; // Whether to acti
 
 XBT_PRIVATE void smpi_switch_data_segment(int dest);
 XBT_PRIVATE void smpi_really_switch_data_segment(int dest);
-XBT_PRIVATE int smpi_is_privatisation_file(char* file);
+XBT_PRIVATE int smpi_is_privatization_file(char* file);
 
 XBT_PRIVATE void smpi_get_executable_global_size();
 XBT_PRIVATE void smpi_initialize_global_memory_segments();
@@ -361,13 +361,13 @@ void mpi_file_write_ ( int* fh, void* buf, int* count, int* datatype, MPI_Status
 
 // TODO, make this static and expose it more cleanly
 
-typedef struct s_smpi_privatisation_region {
+typedef struct s_smpi_privatization_region {
   void* address;
   int file_descriptor;
-} s_smpi_privatisation_region_t;
-typedef s_smpi_privatisation_region_t* smpi_privatisation_region_t;
+} s_smpi_privatization_region_t;
+typedef s_smpi_privatization_region_t* smpi_privatization_region_t;
 
-extern XBT_PRIVATE smpi_privatisation_region_t smpi_privatisation_regions;
+extern XBT_PRIVATE smpi_privatization_region_t smpi_privatization_regions;
 extern XBT_PRIVATE int smpi_loaded_page;
 extern XBT_PRIVATE int smpi_universe_size;
 
