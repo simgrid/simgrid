@@ -55,34 +55,34 @@ public:
     return idx;
   }
   /** Creates (but don't start) an async send to the mailbox @p dest */
-  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::send_init") // 3.17
+  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::put_init") // 3.17
       send_init(MailboxPtr dest)
   {
-    return dest->send_init();
+    return dest->put_init();
   }
   /** Creates (but don't start) an async send to the mailbox @p dest */
-  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::send_init") // 3.17
+  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::put_init") // 3.17
       send_init(MailboxPtr dest, void* data, int simulatedByteAmount)
   {
-    return dest->send_init(data, simulatedByteAmount);
+    return dest->put_init(data, simulatedByteAmount);
   }
   /** Creates and start an async send to the mailbox @p dest */
-  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::send_async") // 3.17
+  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::put_async") // 3.17
       send_async(MailboxPtr dest, void* data, int simulatedByteAmount)
   {
-    return dest->send_async(data, simulatedByteAmount);
+    return dest->put_async(data, simulatedByteAmount);
   }
   /** Creates (but don't start) an async recv onto the mailbox @p from */
-  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::recv_init") // 3.17
+  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::get_init") // 3.17
       recv_init(MailboxPtr from)
   {
-    return from->recv_init();
+    return from->get_init();
   }
   /** Creates and start an async recv to the mailbox @p from */
-  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::recv_async") // 3.17
+  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::get_async") // 3.17
       recv_async(MailboxPtr from, void** data)
   {
-    return from->recv_async(data);
+    return from->get_async(data);
   }
 
   void start() override;

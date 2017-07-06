@@ -21,7 +21,7 @@ static void sendpid()
   simgrid::s4u::this_actor::onExit((int_f_pvoid_pvoid_t)my_onexit, &pid);
 
   XBT_INFO("Sending pid of \"%d\".", pid);
-  mailbox->send(&pid, comm_size);
+  mailbox->put(&pid, comm_size);
   XBT_INFO("Send of pid \"%d\" done.", pid);
 
   simgrid::s4u::this_actor::suspend();
@@ -31,7 +31,7 @@ static void killall()
 {
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName("mailbox");
   for (int i = 0; i < 3; i++) {
-    int* pid = static_cast<int*>(mailbox->recv());
+    int* pid = static_cast<int*>(mailbox->get());
     XBT_INFO("Killing process \"%d\".", *pid);
     simgrid::s4u::Actor::byPid(*pid)->kill();
   }

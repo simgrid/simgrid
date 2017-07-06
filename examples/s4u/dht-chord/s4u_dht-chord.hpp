@@ -128,7 +128,7 @@ public:
     simgrid::s4u::CommPtr comm_receive = nullptr;
     while ((now < (start_time_ + deadline_)) && now < MAX_SIMULATION_TIME) {
       if (comm_receive == nullptr)
-        comm_receive = mailbox_->recv_async(&data);
+        comm_receive = mailbox_->get_async(&data);
       while ((now < (start_time_ + deadline_)) && now < MAX_SIMULATION_TIME && not comm_receive->test()) {
         // no task was received: make some periodic calls
         if (now >= next_stabilize_date) {

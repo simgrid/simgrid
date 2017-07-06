@@ -306,8 +306,8 @@ template <class Rep, class Period> inline void sleep_for(std::chrono::duration<R
    *
    * See \ref Comm for the full communication API (including non blocking communications).
    */
-  XBT_PUBLIC(void*) XBT_ATTRIB_DEPRECATED("Please use Mailbox::recv") recv(MailboxPtr chan);                 // 3.17
-  XBT_PUBLIC(void*) XBT_ATTRIB_DEPRECATED("Please use Mailbox::recv") recv(MailboxPtr chan, double timeout); // 3.17
+  XBT_PUBLIC(void*) XBT_ATTRIB_DEPRECATED("Please use Mailbox::get") recv(MailboxPtr chan);                 // 3.17
+  XBT_PUBLIC(void*) XBT_ATTRIB_DEPRECATED("Please use Mailbox::get") recv(MailboxPtr chan, double timeout); // 3.17
   XBT_PUBLIC(CommPtr)
   XBT_ATTRIB_DEPRECATED("Please use Mailbox::recv_async") irecv(MailboxPtr chan, void** data); // 3.17
 
@@ -316,13 +316,13 @@ template <class Rep, class Period> inline void sleep_for(std::chrono::duration<R
    * See \ref Comm for the full communication API (including non blocking communications).
   */
   XBT_PUBLIC(void)
-  XBT_ATTRIB_DEPRECATED("Please use Mailbox::send") send(MailboxPtr chan, void* payload, double simulatedSize); // 3.17
+  XBT_ATTRIB_DEPRECATED("Please use Mailbox::put") send(MailboxPtr chan, void* payload, double simulatedSize); // 3.17
   XBT_PUBLIC(void)
-  XBT_ATTRIB_DEPRECATED("Please use Mailbox::send")
+  XBT_ATTRIB_DEPRECATED("Please use Mailbox::put")
   send(MailboxPtr chan, void* payload, double simulatedSize, double timeout); // 3.17
 
   XBT_PUBLIC(CommPtr)
-  XBT_ATTRIB_DEPRECATED("Please use Mailbox::send_async") isend(MailboxPtr chan, void* payload, double simulatedSize);
+  XBT_ATTRIB_DEPRECATED("Please use Mailbox::put_async") isend(MailboxPtr chan, void* payload, double simulatedSize);
 
   /** @brief Returns the actor ID of the current actor (same as pid). */
   XBT_PUBLIC(aid_t) pid();

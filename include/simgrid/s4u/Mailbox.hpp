@@ -149,27 +149,27 @@ public:
   /** Return the actor declared as permanent receiver, or nullptr if none **/
   ActorPtr receiver();
 
-  /** Creates (but don't start) an async send to that mailbox */
-  CommPtr send_init();
-  /** Creates (but don't start) an async send to that mailbox */
-  CommPtr send_init(void* data, int simulatedByteAmount);
-  /** Creates and start an async send to that mailbox */
-  CommPtr send_async(void* data, int simulatedByteAmount);
+  /** Creates (but don't start) an emission to that mailbox */
+  CommPtr put_init();
+  /** Creates (but don't start) an emission to that mailbox */
+  CommPtr put_init(void* data, int simulatedByteAmount);
+  /** Creates and start an async emission to that mailbox */
+  CommPtr put_async(void* data, int simulatedByteAmount);
 
-  /** Blocking send */
-  void send(void* payload, double simulatedSize);
-  /** Blocking send with timeout */
-  void send(void* payload, double simulatedSize, double timeout);
+  /** Blocking put */
+  void put(void* payload, double simulatedSize);
+  /** Blocking put with timeout */
+  void put(void* payload, double simulatedSize, double timeout);
 
-  /** Creates (but don't start) an async recv onto the mailbox @p from */
-  CommPtr recv_init();
-  /** Creates and start an async recv to the mailbox @p from */
-  CommPtr recv_async(void** data);
+  /** Creates (but don't start) a reception onto that mailbox */
+  CommPtr get_init();
+  /** Creates and start an async reception to that mailbox */
+  CommPtr get_async(void** data);
 
-  /** Blocking receive */
-  void* recv();
-  /** Blocking receive with timeout */
-  void* recv(double timeout);
+  /** Blocking reception */
+  void* get();
+  /** Blocking reception with timeout */
+  void* get(double timeout);
 };
 
 }} // namespace simgrid::s4u

@@ -42,7 +42,7 @@ public:
     XBT_INFO("Hello s4u, I have something to send");
     simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName("mb42");
 
-    mailbox->send(xbt_strdup(msg.c_str()), msg.size());
+    mailbox->put(xbt_strdup(msg.c_str()), msg.size());
     XBT_INFO("I'm done. See you.");
   }
 };
@@ -74,8 +74,8 @@ public:
   {
     XBT_INFO("Hello s4u, I'm ready to get any message you'd want on %s", mailbox->name());
 
-    char* msg1 = static_cast<char*>(mailbox->recv());
-    char* msg2 = static_cast<char*>(mailbox->recv());
+    char* msg1 = static_cast<char*>(mailbox->get());
+    char* msg2 = static_cast<char*>(mailbox->get());
     XBT_INFO("I received '%s' and '%s'", msg1, msg2);
     xbt_free(msg1);
     xbt_free(msg2);

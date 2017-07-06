@@ -42,14 +42,14 @@ public:
 
       /* - Send the task to the @ref worker */
       char* payload = bprintf("%f", comp_size);
-      mailbox->send(payload, comm_size);
+      mailbox->put(payload, comm_size);
     }
 
     XBT_INFO("All tasks have been dispatched. Let's tell everybody the computation is over.");
     for (int i = 0; i < workers_count; i++) {
       /* - Eventually tell all the workers to stop by sending a "finalize" task */
       mailbox = simgrid::s4u::Mailbox::byName(std::string("worker-") + std::to_string(i % workers_count));
-      mailbox->send(xbt_strdup("finalize"), 0);
+      mailbox->put(xbt_strdup("finalize"), 0);
     }
   }
 };
@@ -70,7 +70,7 @@ public:
   void operator()()
   {
     while (1) { /* The worker waits in an infinite loop for tasks sent by the \ref master */
-      char* res = static_cast<char*>(mailbox->recv());
+      char* res = static_cast<char*>(mailbox->get());
       xbt_assert(res != nullptr, "MSG_task_get failed");
 
       if (strcmp(res, "finalize") == 0) { /* - Exit if 'finalize' is received */

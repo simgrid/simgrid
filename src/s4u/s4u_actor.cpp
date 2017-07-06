@@ -220,32 +220,32 @@ e_smx_state_t execute(double flops) {
 }
 
 void* recv(MailboxPtr chan) {
-  return chan->recv();
+  return chan->get();
 }
 
 void* recv(MailboxPtr chan, double timeout)
 {
-  return chan->recv(timeout);
+  return chan->get(timeout);
 }
 
 void send(MailboxPtr chan, void* payload, double simulatedSize)
 {
-  chan->send(payload, simulatedSize);
+  chan->put(payload, simulatedSize);
 }
 
 void send(MailboxPtr chan, void* payload, double simulatedSize, double timeout)
 {
-  chan->send(payload, simulatedSize, timeout);
+  chan->put(payload, simulatedSize, timeout);
 }
 
 CommPtr isend(MailboxPtr chan, void* payload, double simulatedSize)
 {
-  return chan->send_async(payload, simulatedSize);
+  return chan->put_async(payload, simulatedSize);
 }
 
 CommPtr irecv(MailboxPtr chan, void** data)
 {
-  return chan->recv_async(data);
+  return chan->get_async(data);
 }
 
 aid_t pid()

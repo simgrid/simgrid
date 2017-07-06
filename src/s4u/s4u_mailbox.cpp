@@ -64,71 +64,71 @@ ActorPtr Mailbox::receiver() {
   return pimpl_->permanent_receiver->iface();
 }
 
-CommPtr Mailbox::send_init()
+CommPtr Mailbox::put_init()
 {
   CommPtr res   = CommPtr(new s4u::Comm());
   res->sender_  = SIMIX_process_self();
   res->mailbox_ = this;
   return res;
 }
-s4u::CommPtr Mailbox::send_init(void* data, int simulatedSize)
+s4u::CommPtr Mailbox::put_init(void* data, int simulatedSize)
 {
-  s4u::CommPtr res = send_init();
+  s4u::CommPtr res = put_init();
   res->setRemains(simulatedSize);
   res->srcBuff_     = data;
   res->srcBuffSize_ = sizeof(void*);
   return res;
 }
-s4u::CommPtr Mailbox::send_async(void* data, int simulatedSize)
+s4u::CommPtr Mailbox::put_async(void* data, int simulatedSize)
 {
-  s4u::CommPtr res = send_init(data, simulatedSize);
+  s4u::CommPtr res = put_init(data, simulatedSize);
   res->start();
   return res;
 }
-void Mailbox::send(void* payload, double simulatedSize)
+void Mailbox::put(void* payload, double simulatedSize)
 {
-  CommPtr c = send_init();
+  CommPtr c = put_init();
   c->setRemains(simulatedSize);
   c->setSrcData(payload);
   c->wait();
 }
 /** Blocking send with timeout */
-void Mailbox::send(void* payload, double simulatedSize, double timeout)
+void Mailbox::put(void* payload, double simulatedSize, double timeout)
 {
-  CommPtr c = send_init();
+  CommPtr c = put_init();
   c->setRemains(simulatedSize);
   c->setSrcData(payload);
   // c->start() is optional.
   c->wait(timeout);
 }
 
-s4u::CommPtr Mailbox::recv_init()
+s4u::CommPtr Mailbox::get_init()
 {
   CommPtr res    = CommPtr(new s4u::Comm());
   res->receiver_ = SIMIX_process_self();
   res->mailbox_  = this;
   return res;
 }
-s4u::CommPtr Mailbox::recv_async(void** data)
+s4u::CommPtr Mailbox::get_async(void** data)
 {
-  s4u::CommPtr res = recv_init();
+  s4u::CommPtr res = get_init();
   res->setDstData(data, sizeof(*data));
   res->start();
   return res;
 }
 
-void* Mailbox::recv()
+void* Mailbox::get()
 {
   void* res = nullptr;
-  CommPtr c = recv_init();
+  CommPtr c = get_init();
   c->setDstData(&res, sizeof(res));
   c->wait();
   return res;
 }
-void* Mailbox::recv(double timeout)
+void* Mailbox::get(double timeout)
 {
   void* res = nullptr;
-  CommPtr c = recv_init();
+  CommPtr c = get_init();
   c->setDstData(&res, sizeof(res));
   c->wait(timeout);
   return res;
