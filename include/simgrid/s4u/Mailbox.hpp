@@ -149,26 +149,29 @@ public:
   /** Return the actor declared as permanent receiver, or nullptr if none **/
   ActorPtr getReceiver();
 
-  /** Creates (but don't start) an emission to that mailbox */
+  /** Creates (but don't start) a data emission to that mailbox */
   CommPtr put_init();
-  /** Creates (but don't start) an emission to that mailbox */
-  CommPtr put_init(void* data, int simulatedByteAmount);
-  /** Creates and start an async emission to that mailbox */
-  CommPtr put_async(void* data, int simulatedByteAmount);
+  /** Creates (but don't start) a data emission to that mailbox */
+  CommPtr put_init(void* data, double simulatedSizeInBytes);
+  /** Creates and start a data emission to that mailbox */
+  CommPtr put_async(void* data, double simulatedSizeInBytes);
 
-  /** Blocking put */
-  void put(void* payload, double simulatedSize);
-  /** Blocking put with timeout */
-  void put(void* payload, double simulatedSize, double timeout);
+  /** Blocking data emission
+   *
+   * simulatedSizeInBytes must be a double so that you can send more than 4Gb even if the simulator runs on 32 bits
+   */
+  void put(void* payload, double simulatedSizeInBytes);
+  /** Blocking data emission with timeout */
+  void put(void* payload, double simulatedSizeInBytes, double timeout);
 
-  /** Creates (but don't start) a reception onto that mailbox */
+  /** Creates (but don't start) a data reception onto that mailbox */
   CommPtr get_init();
-  /** Creates and start an async reception to that mailbox */
+  /** Creates and start an async data reception to that mailbox */
   CommPtr get_async(void** data);
 
-  /** Blocking reception */
+  /** Blocking data reception */
   void* get();
-  /** Blocking reception with timeout */
+  /** Blocking data reception with timeout */
   void* get(double timeout);
 };
 

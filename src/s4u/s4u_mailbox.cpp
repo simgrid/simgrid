@@ -73,7 +73,7 @@ CommPtr Mailbox::put_init()
   res->mailbox_ = this;
   return res;
 }
-s4u::CommPtr Mailbox::put_init(void* data, int simulatedSize)
+s4u::CommPtr Mailbox::put_init(void* data, double simulatedSize)
 {
   s4u::CommPtr res = put_init();
   res->setRemains(simulatedSize);
@@ -81,7 +81,7 @@ s4u::CommPtr Mailbox::put_init(void* data, int simulatedSize)
   res->srcBuffSize_ = sizeof(void*);
   return res;
 }
-s4u::CommPtr Mailbox::put_async(void* data, int simulatedSize)
+s4u::CommPtr Mailbox::put_async(void* data, double simulatedSize)
 {
   s4u::CommPtr res = put_init(data, simulatedSize);
   res->start();
