@@ -112,6 +112,9 @@ public:
   bool test();
   void cancel();
 
+  /** Retrieve the mailbox on which this comm acts */
+  MailboxPtr mailbox();
+
 private:
   double rate_        = -1;
   void* dstBuff_      = nullptr;

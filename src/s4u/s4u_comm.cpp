@@ -146,7 +146,8 @@ void Comm::cancel()
   commPimpl->cancel();
 }
 
-bool Comm::test() {
+bool Comm::test()
+{
   xbt_assert(state_ == inited || state_ == started || state_ == finished);
 
   if (state_ == finished) {
@@ -162,6 +163,11 @@ bool Comm::test() {
     return true;
   }
   return false;
+}
+
+MailboxPtr Comm::mailbox()
+{
+  return mailbox_;
 }
 
 void intrusive_ptr_release(simgrid::s4u::Comm* c)
