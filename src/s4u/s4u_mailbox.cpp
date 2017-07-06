@@ -1,14 +1,14 @@
-/* Copyright (c) 2006-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/log.h"
+#include "simgrid/s4u/Comm.hpp"
+#include "simgrid/s4u/Mailbox.hpp"
 #include "src/msg/msg_private.h"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_network_private.h"
-#include "simgrid/s4u/Mailbox.hpp"
+#include "xbt/log.h"
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_channel,s4u,"S4U Communication Mailboxes");
@@ -64,5 +64,74 @@ ActorPtr Mailbox::receiver() {
   return pimpl_->permanent_receiver->iface();
 }
 
+CommPtr Mailbox::send_init()
+{
+  CommPtr res   = CommPtr(new s4u::Comm());
+  res->sender_  = SIMIX_process_self();
+  res->mailbox_ = this;
+  return res;
+}
+s4u::CommPtr Mailbox::send_init(void* data, int simulatedSize)
+{
+  s4u::CommPtr res = send_init();
+  res->setRemains(simulatedSize);
+  res->srcBuff_     = data;
+  res->srcBuffSize_ = sizeof(void*);
+  return res;
+}
+s4u::CommPtr Mailbox::send_async(void* data, int simulatedSize)
+{
+  s4u::CommPtr res = send_init(data, simulatedSize);
+  res->start();
+  return res;
+}
+void Mailbox::send(void* payload, double simulatedSize)
+{
+  CommPtr c = send_init();
+  c->setRemains(simulatedSize);
+  c->setSrcData(payload);
+  c->wait();
+}
+/** Blocking send with timeout */
+void Mailbox::send(void* payload, double simulatedSize, double timeout)
+{
+  CommPtr c = send_init();
+  c->setRemains(simulatedSize);
+  c->setSrcData(payload);
+  // c->start() is optional.
+  c->wait(timeout);
+}
+
+s4u::CommPtr Mailbox::recv_init()
+{
+  CommPtr res    = CommPtr(new s4u::Comm());
+  res->receiver_ = SIMIX_process_self();
+  res->mailbox_  = this;
+  return res;
+}
+s4u::CommPtr Mailbox::recv_async(void** data)
+{
+  s4u::CommPtr res = recv_init();
+  res->setDstData(data, sizeof(*data));
+  res->start();
+  return res;
+}
+
+void* Mailbox::recv()
+{
+  void* res = nullptr;
+  CommPtr c = recv_init();
+  c->setDstData(&res, sizeof(res));
+  c->wait();
+  return res;
+}
+void* Mailbox::recv(double timeout)
+{
+  void* res = nullptr;
+  CommPtr c = recv_init();
+  c->setDstData(&res, sizeof(res));
+  c->wait(timeout);
+  return res;
+}
 }
 }

@@ -148,6 +148,28 @@ public:
 
   /** Return the actor declared as permanent receiver, or nullptr if none **/
   ActorPtr receiver();
+
+  /** Creates (but don't start) an async send to that mailbox */
+  CommPtr send_init();
+  /** Creates (but don't start) an async send to that mailbox */
+  CommPtr send_init(void* data, int simulatedByteAmount);
+  /** Creates and start an async send to that mailbox */
+  CommPtr send_async(void* data, int simulatedByteAmount);
+
+  /** Blocking send */
+  void send(void* payload, double simulatedSize);
+  /** Blocking send with timeout */
+  void send(void* payload, double simulatedSize, double timeout);
+
+  /** Creates (but don't start) an async recv onto the mailbox @p from */
+  CommPtr recv_init();
+  /** Creates and start an async recv to the mailbox @p from */
+  CommPtr recv_async(void** data);
+
+  /** Blocking receive */
+  void* recv();
+  /** Blocking receive with timeout */
+  void* recv(double timeout);
 };
 
 }} // namespace simgrid::s4u

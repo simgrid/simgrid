@@ -21,7 +21,7 @@ static void receiver()
   XBT_INFO("Placing %d asynchronous recv requests", NUM_COMMS);
   void* data;
   for (int i = 0; i < NUM_COMMS; i++) {
-    simgrid::s4u::CommPtr comm = simgrid::s4u::Comm::recv_async(mymailbox, &data);
+    simgrid::s4u::CommPtr comm = mymailbox->recv_async(&data);
     pending_comms.push_back(comm);
   }
 
@@ -44,7 +44,7 @@ static void sender()
 
   for (int i = 0; i < NUM_COMMS; i++) {
     XBT_INFO("Sending a message to the receiver");
-    simgrid::s4u::this_actor::send(theirmailbox, &data, 4);
+    theirmailbox->send(&data, 4);
     XBT_INFO("Sleeping for 1000 seconds");
     simgrid::s4u::this_actor::sleep_for(1000.0);
   }

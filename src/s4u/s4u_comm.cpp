@@ -25,22 +25,6 @@ Comm::~Comm()
   }
 }
 
-s4u::CommPtr Comm::send_init(s4u::MailboxPtr chan)
-{
-  CommPtr res   = CommPtr(new s4u::Comm());
-  res->sender_ = SIMIX_process_self();
-  res->mailbox_ = chan;
-  return res;
-}
-
-s4u::CommPtr Comm::recv_init(s4u::MailboxPtr chan)
-{
-  CommPtr res    = CommPtr(new s4u::Comm());
-  res->receiver_ = SIMIX_process_self();
-  res->mailbox_ = chan;
-  return res;
-}
-
 void Comm::setRate(double rate) {
   xbt_assert(state_==inited);
   rate_ = rate;
@@ -146,24 +130,7 @@ void Comm::detach()
   xbt_assert(state_ == inited, "You cannot detach communications once they are started.");
   xbt_assert(srcBuff_ != nullptr && srcBuffSize_ != 0, "You can only detach sends, not recvs");
   detached_ = true;
-}
-
-s4u::CommPtr Comm::send_async(MailboxPtr dest, void* data, int simulatedSize)
-{
-  s4u::CommPtr res = CommPtr(s4u::Comm::send_init(dest));
-  res->setRemains(simulatedSize);
-  res->srcBuff_     = data;
-  res->srcBuffSize_ = sizeof(void*);
-  res->start();
-  return res;
-}
-
-s4u::CommPtr Comm::recv_async(MailboxPtr dest, void** data)
-{
-  s4u::CommPtr res = CommPtr(s4u::Comm::recv_init(dest));
-  res->setDstData(data, sizeof(*data));
-  res->start();
-  return res;
+  start();
 }
 
 void Comm::cancel()

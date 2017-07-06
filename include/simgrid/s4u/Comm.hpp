@@ -10,6 +10,7 @@
 
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Activity.hpp>
+#include <simgrid/s4u/Mailbox.hpp> // DEPRECATED 3.17
 #include <simgrid/s4u/forward.hpp>
 
 #include <vector>
@@ -26,6 +27,7 @@ XBT_PUBLIC_CLASS Comm : public Activity
 public:
   friend void intrusive_ptr_release(simgrid::s4u::Comm * c);
   friend void intrusive_ptr_add_ref(simgrid::s4u::Comm * c);
+  friend Mailbox; // Factory of comms
 
   virtual ~Comm();
 
@@ -53,13 +55,35 @@ public:
     return idx;
   }
   /** Creates (but don't start) an async send to the mailbox @p dest */
-  static CommPtr send_init(MailboxPtr dest);
+  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::send_init") // 3.17
+      send_init(MailboxPtr dest)
+  {
+    return dest->send_init();
+  }
+  /** Creates (but don't start) an async send to the mailbox @p dest */
+  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::send_init") // 3.17
+      send_init(MailboxPtr dest, void* data, int simulatedByteAmount)
+  {
+    return dest->send_init(data, simulatedByteAmount);
+  }
   /** Creates and start an async send to the mailbox @p dest */
-  static CommPtr send_async(MailboxPtr dest, void* data, int simulatedByteAmount);
+  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::send_async") // 3.17
+      send_async(MailboxPtr dest, void* data, int simulatedByteAmount)
+  {
+    return dest->send_async(data, simulatedByteAmount);
+  }
   /** Creates (but don't start) an async recv onto the mailbox @p from */
-  static CommPtr recv_init(MailboxPtr from);
+  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::recv_init") // 3.17
+      recv_init(MailboxPtr from)
+  {
+    return from->recv_init();
+  }
   /** Creates and start an async recv to the mailbox @p from */
-  static CommPtr recv_async(MailboxPtr from, void** data);
+  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::recv_async") // 3.17
+      recv_async(MailboxPtr from, void** data)
+  {
+    return from->recv_async(data);
+  }
 
   void start() override;
   void wait() override;

@@ -17,7 +17,7 @@ static void server()
 {
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName("mailbox");
 
-  simgrid::s4u::CommPtr sendComm = simgrid::s4u::this_actor::isend(mailbox, xbt_strdup("Some data"), 0);
+  simgrid::s4u::CommPtr sendComm = mailbox->send_async(xbt_strdup("Some data"), 0);
 
   xbt_assert(mailbox->listen()); // True (1)
   XBT_INFO("Task listen works on regular mailboxes");
@@ -31,7 +31,7 @@ static void server()
   simgrid::s4u::MailboxPtr mailbox2 = simgrid::s4u::Mailbox::byName("mailbox2");
   mailbox2->setReceiver(simgrid::s4u::Actor::self());
 
-  simgrid::s4u::this_actor::isend(mailbox2, xbt_strdup("More data"), 0)->detach();
+  mailbox2->send_init(xbt_strdup("More data"), 0)->detach();
 
   xbt_assert(mailbox2->listen()); // used to break.
   XBT_INFO("Task listen works on asynchronous mailboxes");

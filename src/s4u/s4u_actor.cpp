@@ -220,48 +220,32 @@ e_smx_state_t execute(double flops) {
 }
 
 void* recv(MailboxPtr chan) {
-  void *res = nullptr;
-  CommPtr c = Comm::recv_init(chan);
-  c->setDstData(&res, sizeof(res));
-  c->wait();
-  return res;
+  return chan->recv();
 }
 
 void* recv(MailboxPtr chan, double timeout)
 {
-  void* res = nullptr;
-  CommPtr c = Comm::recv_init(chan);
-  c->setDstData(&res, sizeof(res));
-  c->wait(timeout);
-  return res;
+  return chan->recv(timeout);
 }
 
 void send(MailboxPtr chan, void* payload, double simulatedSize)
 {
-  CommPtr c = Comm::send_init(chan);
-  c->setRemains(simulatedSize);
-  c->setSrcData(payload);
-  // c->start() is optional.
-  c->wait();
+  chan->send(payload, simulatedSize);
 }
 
 void send(MailboxPtr chan, void* payload, double simulatedSize, double timeout)
 {
-  CommPtr c = Comm::send_init(chan);
-  c->setRemains(simulatedSize);
-  c->setSrcData(payload);
-  // c->start() is optional.
-  c->wait(timeout);
+  chan->send(payload, simulatedSize, timeout);
 }
 
 CommPtr isend(MailboxPtr chan, void* payload, double simulatedSize)
 {
-  return Comm::send_async(chan, payload, simulatedSize);
+  return chan->send_async(payload, simulatedSize);
 }
 
 CommPtr irecv(MailboxPtr chan, void** data)
 {
-  return Comm::recv_async(chan, data);
+  return chan->recv_async(data);
 }
 
 aid_t pid()

@@ -64,7 +64,7 @@ public:
     simgrid::s4u::MailboxPtr to = simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::name() + "_" + action[2]);
     ACT_DEBUG("Entering Send: %s (size: %g) -- Actor %s on mailbox %s", NAME, size,
               simgrid::s4u::this_actor::name().c_str(), to->name());
-    simgrid::s4u::this_actor::send(to, payload, size);
+    to->send(payload, size);
     xbt_free(payload);
 
     log_action(action, simgrid::s4u::Engine::getClock() - clock);

@@ -42,14 +42,14 @@ public:
 
       /* - Send the task to the @ref worker */
       char* payload = bprintf("%f", comp_size);
-      simgrid::s4u::this_actor::send(mailbox, payload, comm_size);
+      mailbox->send(payload, comm_size);
     }
 
     XBT_INFO("All tasks have been dispatched. Let's tell everybody the computation is over.");
     for (int i = 0; i < workers_count; i++) {
       /* - Eventually tell all the workers to stop by sending a "finalize" task */
       mailbox = simgrid::s4u::Mailbox::byName(std::string("worker-") + std::to_string(i % workers_count));
-      simgrid::s4u::this_actor::send(mailbox, xbt_strdup("finalize"), 0);
+      mailbox->send(xbt_strdup("finalize"), 0);
     }
   }
 };

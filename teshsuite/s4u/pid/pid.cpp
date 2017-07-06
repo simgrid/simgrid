@@ -21,7 +21,7 @@ static void sendpid()
   simgrid::s4u::this_actor::onExit((int_f_pvoid_pvoid_t)my_onexit, &pid);
 
   XBT_INFO("Sending pid of \"%d\".", pid);
-  simgrid::s4u::this_actor::send(mailbox, &pid, comm_size);
+  mailbox->send(&pid, comm_size);
   XBT_INFO("Send of pid \"%d\" done.", pid);
 
   simgrid::s4u::this_actor::suspend();

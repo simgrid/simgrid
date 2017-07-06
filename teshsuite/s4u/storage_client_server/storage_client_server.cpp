@@ -56,7 +56,7 @@ static void hsm_put(const char* remote_host, const char* src, const char* dest)
   XBT_INFO("%s sends %llu to %s", simgrid::s4u::this_actor::name().c_str(), read_size, remote_host);
   char* payload                    = bprintf("%s %llu", dest, read_size);
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(remote_host);
-  simgrid::s4u::this_actor::send(mailbox, payload, static_cast<double>(read_size));
+  mailbox->send(payload, static_cast<double>(read_size));
   simgrid::s4u::this_actor::sleep_for(.4);
 }
 
@@ -130,7 +130,7 @@ static void client()
   hsm_put("alice", "/home/doc/simgrid/examples/msg/alias/masterslave_forwarder_with_alias.c", "c:\\Windows\\tata.c");
 
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName("alice");
-  simgrid::s4u::this_actor::send(mailbox, xbt_strdup("finalize"), 0);
+  mailbox->send(xbt_strdup("finalize"), 0);
 
   get_set_storage_data("Disk1");
 }
