@@ -173,14 +173,14 @@ class Cmd(object):
 
         self.background = False
         self.cwd = None
-        
+
         self.ignore_output = False
         self.expect_return = 0
-        
+
         self.output_display = False
-        
+
         self.sort = -1
-        
+
         self.ignore_regexps = TeshState().ignore_regexps_common
 
     def add_input_pipe(self, l):
@@ -195,10 +195,10 @@ class Cmd(object):
     def set_cmd(self, args, linenumber):
         self.args = args
         self.linenumber = linenumber
-    
+
     def add_ignore(self, txt):
         self.ignore_regexps.append(re.compile(txt))
-    
+
     def remove_ignored_lines(self, lines):
         for ign in self.ignore_regexps:
                 lines = [l for l in lines if not ign.match(l)]
@@ -250,7 +250,7 @@ class Cmd(object):
         if self.cwd is not None:
             os.chdir(self.cwd)
             self.cwd = None
-        
+
         #retrocompatibility: support ${aaa:=.} variable format
         def replace_perl_variables(m):
             vname = m.group(1)
@@ -263,17 +263,17 @@ class Cmd(object):
 
         #replace bash environment variables ($THINGS) to their values
         self.args = expandvars2(self.args)
-        
+
         if re.match("^mkfile ", self.args) is not None:
             self._cmd_mkfile(self.args)
             if lock is not None: lock.release()
             return
-        
+
         if re.match("^cd ", self.args) is not None:
             self._cmd_cd(self.args)
             if lock is not None: lock.release()
             return
-        
+
         if TeshState().wrapper is not None:
             self.timeout *= 20
             self.args = TeshState().wrapper + self.args
@@ -283,9 +283,9 @@ class Cmd(object):
             self.timeout *= 10
 
         self.args += TeshState().args_suffix
-        
+
         print("["+FileReader().filename+":"+str(self.linenumber)+"] "+self.args)
-                
+
         args = shlex.split(self.args)
         #print (args)
 
@@ -313,9 +313,9 @@ class Cmd(object):
         #remove text colors
         ansi_escape = re.compile(r'\x1b[^m]*m')
         stdout_data = ansi_escape.sub('', stdout_data)
-        
+
         #print ((stdout_data, stderr_data))
-        
+
         if self.ignore_output:
             print("(ignoring the output of <"+cmdName+"> as requested)")
         else:
@@ -332,7 +332,7 @@ class Cmd(object):
             elif self.sort > 0:
                 stdouta.sort(key=lambda x: x[:self.sort].lower())
                 self.output_pipe_stdout.sort(key=lambda x: x[:self.sort].lower())
-            
+
             diff = list(difflib.unified_diff(self.output_pipe_stdout, stdouta,lineterm="",fromfile='expected', tofile='obtained'))
             if len(diff) > 0:
                 print("Output of <"+cmdName+"> mismatch:")
@@ -350,7 +350,7 @@ class Cmd(object):
                 else: # If not sorted, just display the diff
                     for line in diff:
                         print(line)
-                        
+
                 print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> output mismatch)")
                 if lock is not None: lock.release()
                 if TeshState().keep:
@@ -364,9 +364,9 @@ class Cmd(object):
                     f.close()
                     print("Obtained output kept as requested: "+os.path.abspath("obtained"))
                 exit(2)
-        
+
         #print ((proc.returncode, self.expect_return))
-        
+
         if proc.returncode != self.expect_return:
             if proc.returncode >= 0:
                 print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> returned code "+str(proc.returncode)+")")
@@ -376,11 +376,11 @@ class Cmd(object):
                 print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> got signal "+SIGNALS_TO_NAMES_DICT[-proc.returncode]+")")
                 if lock is not None: lock.release()
                 exit(-proc.returncode)
-            
+
         if lock is not None: lock.release()
-    
-    
-    
+
+
+
     def can_run(self):
         return self.args is not None
 
@@ -396,7 +396,7 @@ class Cmd(object):
 
 
 if __name__ == '__main__':
-    
+
     parser = argparse.ArgumentParser(description='tesh -- testing shell', add_help=True)
     group1 = parser.add_argument_group('Options')
     group1.add_argument('teshfile', nargs='?', help='Name of teshfile, stdin if omitted')
@@ -415,7 +415,7 @@ if __name__ == '__main__':
 
     if options.cd is not None:
         os.chdir(options.cd)
-    
+
     if options.ignore_jenkins:
         print("Ignore all cruft seen on SimGrid's continous integration servers")
         TeshState().ignore_regexps_common = [
@@ -428,11 +428,11 @@ if __name__ == '__main__':
            re.compile("==WARNING: ASan is ignoring requested __asan_handle_no_return: stack top:"),
            re.compile("False positive error reports may follow"),
            re.compile("For details see http://code.google.com/p/address-sanitizer/issues/detail?id=189"),
-           
+
            re.compile("Python runtime initialized with LC_CTYPE=C .*"),
            ]
         TeshState().jenkins = True # This is a Jenkins build
-    
+
     if options.teshfile is None:
         f = FileReader(None)
         print("Test suite from stdin")
@@ -442,11 +442,11 @@ if __name__ == '__main__':
             exit(3)
         f = FileReader(options.teshfile)
         print("Test suite '"+f.abspath+"'")
-    
+
     if options.setenv is not None:
         for e in options.setenv:
             setenv(e)
-    
+
     if options.cfg is not None:
         TeshState().args_suffix += " --cfg="+options.cfg
     if options.log is not None:
@@ -454,15 +454,15 @@ if __name__ == '__main__':
 
     if options.wrapper is not None:
         TeshState().wrapper = options.wrapper
-        
+
     if options.keep:
         TeshState().keep = True
-    
+
     #cmd holds the current command line
     # tech commands will add some parameters to it
     # when ready, we execute it.
     cmd = Cmd()
-    
+
     line = f.readfullline()
     while line is not None:
         #print(">>============="+line+"==<<")
@@ -470,34 +470,34 @@ if __name__ == '__main__':
             #print ("END CMD block")
             if cmd.run_if_possible():
                 cmd = Cmd()
-        
+
         elif line[0] == "#":
             pass
-        
+
         elif line[0:2] == "p ":
             print("["+str(FileReader())+"] "+line[2:])
-        
+
         elif line[0:2] == "< ":
             cmd.add_input_pipe(line[2:])
         elif line[0:1] == "<":
             cmd.add_input_pipe(line[1:])
-            
+
         elif line[0:2] == "> ":
             cmd.add_output_pipe_stdout(line[2:])
         elif line[0:1] == ">":
             cmd.add_output_pipe_stdout(line[1:])
-            
+
         elif line[0:2] == "$ ":
             if cmd.run_if_possible():
                 cmd = Cmd()
             cmd.set_cmd(line[2:], f.linenumber)
-        
+
         elif line[0:2] == "& ":
             if cmd.run_if_possible():
                 cmd = Cmd()
             cmd.set_cmd(line[2:], f.linenumber)
             cmd.background = True
-        
+
         elif line[0:15] == "! output ignore":
             cmd.ignore_output = True
             #print("cmd.ignore_output = True")
@@ -520,7 +520,7 @@ if __name__ == '__main__':
                 cmd.timeout = None
             else:
                 cmd.timeout = int(line[len("! timeout "):])
-            
+
         elif line[0:len("! output sort")] == "! output sort":
             if len(line) >= len("! output sort "):
                 sort = int(line[len("! output sort "):])
@@ -529,20 +529,20 @@ if __name__ == '__main__':
             cmd.sort = sort
         elif line[0:len("! setenv ")] == "! setenv ":
             setenv(line[len("! setenv "):])
-        
+
         elif line[0:len("! ignore ")] == "! ignore ":
             cmd.add_ignore(line[len("! ignore "):])
-        
+
         else:
             fatal_error("UNRECOGNIZED OPTION")
-            
-        
+
+
         line = f.readfullline()
 
     cmd.run_if_possible()
-    
+
     TeshState().join_all_threads()
-    
+
     if f.filename == "(stdin)":
         print("Test suite from stdin OK")
     else:

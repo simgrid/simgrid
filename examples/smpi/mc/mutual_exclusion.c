@@ -17,7 +17,6 @@ int main(int argc, char **argv){
   int rank;
   int recv_buff;
   MPI_Status status;
-  int CS_used = 0;
   xbt_dynar_t requests = xbt_dynar_new(sizeof(int), NULL);
 
   /* Initialize MPI */
@@ -35,6 +34,7 @@ int main(int argc, char **argv){
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   if(rank == 0){ /* Coordinator */
+    int CS_used = 0;
     while(1){
       MPI_Recv(&recv_buff, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
       if(status.MPI_TAG == REQUEST_TAG){

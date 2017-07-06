@@ -213,8 +213,7 @@ xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new(xbt_
 
 XBT_PUBLIC(xbt_automaton_propositional_symbol_t) xbt_automaton_propositional_symbol_new_pointer(xbt_automaton_t a, const char* id, int* value)
 {
-  xbt_automaton_propositional_symbol_t prop_symb = NULL;
-  prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
+  xbt_automaton_propositional_symbol_t prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
   prop_symb->pred = xbt_strdup(id);
   prop_symb->callback = NULL;
   prop_symb->data = value;

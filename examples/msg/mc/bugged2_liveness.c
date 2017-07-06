@@ -53,7 +53,6 @@ static int client(int argc, char *argv[])
 {
   int my_pid = MSG_process_get_PID(MSG_process_self());
   char *my_mailbox = xbt_strdup(argv[1]);
-  const char* kind;
 
   while(1){
     XBT_INFO("Client (%s) asks the request", my_mailbox);
@@ -62,7 +61,7 @@ static int client(int argc, char *argv[])
     msg_task_t answer = NULL;
     MSG_task_receive(&answer, my_mailbox);
 
-    kind = MSG_task_get_name(answer);
+    const char* kind = MSG_task_get_name(answer);
 
     if (!strcmp(kind, "grant")) {
       XBT_INFO("Client (%s) got the answer (grant). Sleep a bit and release it", my_mailbox);

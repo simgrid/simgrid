@@ -755,10 +755,8 @@ void xbt_log_control_set(const char *control_string)
 
   /* Parse each entry and either use it right now (if the category was already created), or store it for further use */
   xbt_dynar_foreach(set_strings, cpt, str) {
-    xbt_log_category_t cat = NULL;
-
     set = _xbt_log_parse_setting(str);
-    cat = _xbt_log_cat_searchsub(&_XBT_LOGV(XBT_LOG_ROOT_CAT), set->catname);
+    xbt_log_category_t cat = _xbt_log_cat_searchsub(&_XBT_LOGV(XBT_LOG_ROOT_CAT), set->catname);
 
     if (cat) {
       XBT_DEBUG("Apply directly");
