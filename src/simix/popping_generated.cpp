@@ -29,7 +29,6 @@ const char* simcall_names[] = {
     "SIMCALL_PROCESS_KILLALL",
     "SIMCALL_PROCESS_CLEANUP",
     "SIMCALL_PROCESS_SUSPEND",
-    "SIMCALL_PROCESS_RESUME",
     "SIMCALL_PROCESS_JOIN",
     "SIMCALL_PROCESS_SLEEP",
     "SIMCALL_EXECUTION_START",
@@ -103,11 +102,6 @@ case SIMCALL_PROCESS_CLEANUP:
 
 case SIMCALL_PROCESS_SUSPEND:
       simcall_HANDLER_process_suspend(simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]));
-      break;
-
-case SIMCALL_PROCESS_RESUME:
-      SIMIX_process_resume(simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]));
-      SIMIX_simcall_answer(simcall);
       break;
 
 case SIMCALL_PROCESS_JOIN:

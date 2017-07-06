@@ -104,7 +104,9 @@ private:
   bool daemon = false;
 public:
   void daemonize();
-  bool isDaemon();
+  bool isDaemon() { return daemon; } /** Whether this actor has been daemonized */
+  bool isSuspended() { return suspended; }
+  void resume();
 };
 
 }
@@ -132,17 +134,12 @@ XBT_PRIVATE void SIMIX_process_empty_trash();
 XBT_PRIVATE void SIMIX_process_yield(smx_actor_t self);
 XBT_PRIVATE void SIMIX_process_exception_terminate(xbt_ex_t * e);
 XBT_PRIVATE void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest);
-XBT_PRIVATE void SIMIX_process_resume(smx_actor_t process);
-XBT_PRIVATE int SIMIX_process_get_PID(smx_actor_t self);
 XBT_PRIVATE void SIMIX_process_set_data(smx_actor_t process, void *data);
 XBT_PRIVATE smx_actor_t SIMIX_process_get_by_name(const char* name);
-XBT_PRIVATE int SIMIX_process_is_suspended(smx_actor_t process);
-XBT_PRIVATE xbt_dict_t SIMIX_process_get_properties(smx_actor_t process);
 
 XBT_PRIVATE void SIMIX_process_auto_restart_set(smx_actor_t process, int auto_restart);
 XBT_PRIVATE smx_actor_t SIMIX_process_restart(smx_actor_t process, smx_actor_t issuer);
 
-void SIMIX_segment_index_set(smx_actor_t process, int segment_index);
 extern void (*SMPI_switch_data_segment)(int dest);
 
 SG_END_DECL()

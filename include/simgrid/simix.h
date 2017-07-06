@@ -159,8 +159,6 @@ XBT_PUBLIC(smx_actor_t) SIMIX_process_self();
 XBT_PUBLIC(const char*) SIMIX_process_self_get_name();
 XBT_PUBLIC(void) SIMIX_process_self_set_data(void *data);
 XBT_PUBLIC(void*) SIMIX_process_self_get_data();
-XBT_PUBLIC(smx_context_t) SIMIX_process_get_context(smx_actor_t process);
-XBT_PUBLIC(void) SIMIX_process_set_context(smx_actor_t p,smx_context_t c);
 XBT_PUBLIC(int) SIMIX_process_has_pending_comms(smx_actor_t process);
 XBT_PUBLIC(void) SIMIX_process_on_exit_runall(smx_actor_t process);
 XBT_PUBLIC(void) SIMIX_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void *data);
@@ -214,14 +212,12 @@ XBT_PUBLIC(void) SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int 
 /* Process handling */
 XBT_PUBLIC(void) simcall_process_cleanup(smx_actor_t process);
 XBT_PUBLIC(void) simcall_process_suspend(smx_actor_t process);
-XBT_PUBLIC(void) simcall_process_resume(smx_actor_t process);
 
 /* Getters and Setters */
 XBT_PUBLIC(int) simcall_process_count();
 XBT_PUBLIC(void) simcall_process_set_data(smx_actor_t process, void *data);
 XBT_PUBLIC(xbt_dict_t) simcall_process_get_properties(smx_actor_t host);
 XBT_PUBLIC(void) simcall_process_set_kill_time(smx_actor_t process, double kill_time);
-XBT_PUBLIC(double) simcall_process_get_kill_time(smx_actor_t process);
 XBT_PUBLIC(void) simcall_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void *data);
 XBT_PUBLIC(void) simcall_process_auto_restart_set(smx_actor_t process, int auto_restart);
 XBT_PUBLIC(smx_actor_t) simcall_process_restart(smx_actor_t process);

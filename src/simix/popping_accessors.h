@@ -67,19 +67,6 @@ static inline void simcall_process_suspend__set__process(smx_simcall_t simcall, 
   simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
 }
 
-static inline smx_actor_t simcall_process_resume__get__process(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
-}
-static inline smx_actor_t simcall_process_resume__getraw__process(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<smx_actor_t>(simcall->args[0]);
-}
-static inline void simcall_process_resume__set__process(smx_simcall_t simcall, smx_actor_t arg)
-{
-  simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
-}
-
 static inline smx_actor_t simcall_process_join__get__process(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);

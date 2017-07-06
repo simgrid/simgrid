@@ -378,12 +378,5 @@ extern XBT_PRIVATE smpi_privatisation_region_t smpi_privatisation_regions;
 extern XBT_PRIVATE int smpi_loaded_page;
 extern XBT_PRIVATE int smpi_universe_size;
 
-XBT_PRIVATE int SIMIX_process_get_PID(smx_actor_t self);
-
-static inline __attribute__ ((always_inline))
-int smpi_process_index_of_smx_process(smx_actor_t process) {
-  return SIMIX_process_get_PID(process) -1;
-}
-
 SG_END_DECL()
 #endif

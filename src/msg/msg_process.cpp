@@ -432,7 +432,7 @@ msg_error_t MSG_process_resume(msg_process_t process)
   xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
 
   TRACE_msg_process_resume(process);
-  simcall_process_resume(process->getImpl());
+  process->resume();
   return MSG_OK;
 }
 
@@ -447,7 +447,7 @@ int MSG_process_is_suspended(msg_process_t process)
 }
 
 smx_context_t MSG_process_get_smx_ctx(msg_process_t process) {
-  return SIMIX_process_get_context(process->getImpl());
+  return process->getImpl()->context;
 }
 /**
  * \ingroup m_process_management

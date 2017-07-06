@@ -196,7 +196,7 @@ void VirtualMachineImpl::resume()
   smx_actor_t smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, process_list) {
     XBT_DEBUG("resume %s", smx_process->cname());
-    SIMIX_process_resume(smx_process);
+    smx_process->resume();
   }
 
   vmState_ = SURF_VM_STATE_RUNNING;

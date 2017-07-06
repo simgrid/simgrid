@@ -210,20 +210,6 @@ void simcall_process_suspend(smx_actor_t process)
 
 /**
  * \ingroup simix_process_management
- * \brief Resumes a suspended process.
- *
- * This function resumes a suspended process by resuming the synchro
- * it was waiting for completion.
- *
- * \param process a SIMIX process
- */
-void simcall_process_resume(smx_actor_t process)
-{
-  simcall_BODY_process_resume(process);
-}
-
-/**
- * \ingroup simix_process_management
  * \brief Returns the amount of SIMIX processes in the system
  *
  * Maestro internal process is not counted, only user code processes are
@@ -261,23 +247,17 @@ void simcall_process_set_kill_time(smx_actor_t process, double kill_time)
     process->kill_timer=nullptr;
   });
 }
-/**
- * \ingroup simix_process_management
- * \brief Get the kill time of a process (or 0 if unset).
- */
-double simcall_process_get_kill_time(smx_actor_t process) {
-  return SIMIX_timer_get_date(process->kill_timer);
-}
 
 /**
  * \ingroup simix_process_management
  * \brief Return the properties
  *
- * This functions returns the properties associated with this process
+ * This function returns the properties associated with this process
  */
 xbt_dict_t simcall_process_get_properties(smx_actor_t process)
 {
-  return SIMIX_process_get_properties(process);
+  return process->properties;
+  ;
 }
 /**
  * \ingroup simix_process_management

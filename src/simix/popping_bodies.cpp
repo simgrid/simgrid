@@ -60,12 +60,6 @@ inline static void simcall_BODY_process_suspend(smx_actor_t process) {
     return simcall<void, smx_actor_t>(SIMCALL_PROCESS_SUSPEND, process);
   }
 
-inline static void simcall_BODY_process_resume(smx_actor_t process) {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_process_resume(process);
-    return simcall<void, smx_actor_t>(SIMCALL_PROCESS_RESUME, process);
-  }
-
 inline static int simcall_BODY_process_join(smx_actor_t process, double timeout) {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) simcall_HANDLER_process_join(&SIMIX_process_self()->simcall, process, timeout);

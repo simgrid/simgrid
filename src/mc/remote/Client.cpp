@@ -232,7 +232,7 @@ void Client::declareStack(void* stack, size_t size, smx_actor_t process, ucontex
   region.block   = ((char*)stack - (char*)heap->heapbase) / BLOCKSIZE + 1;
 #if HAVE_SMPI
   if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP && process)
-    region.process_index = smpi_process_index_of_smx_process(process);
+    region.process_index = process->pid - 1;
   else
 #endif
     region.process_index = -1;

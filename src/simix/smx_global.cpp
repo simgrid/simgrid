@@ -340,8 +340,8 @@ static int process_syscall_color(void *p)
   case SIMCALL_NONE:
   case SIMCALL_PROCESS_KILL:
     return 2;
-  case SIMCALL_PROCESS_RESUME:
-    return 1;
+  //  case SIMCALL_PROCESS_RESUME:
+  //    return 1;
   default:
     return 0;
   }

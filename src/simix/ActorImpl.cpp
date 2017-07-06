@@ -167,10 +167,24 @@ void ActorImpl::daemonize()
   }
 }
 
-/** Whether this process is daemonized */
-bool ActorImpl::isDaemon()
+void ActorImpl::resume()
 {
-  return daemon;
+  XBT_IN("process = %p", this);
+
+  if (context->iwannadie) {
+    XBT_VERB("Ignoring request to suspend a process that is currently dying.");
+    return;
+  }
+
+  if (not suspended)
+    return;
+  suspended = 0;
+
+  /* resume the synchronization that was blocking the resumed process. */
+  if (waiting_synchro)
+    waiting_synchro->resume();
+
+  XBT_OUT();
 }
 
 void create_maestro(std::function<void()> code)
@@ -240,9 +254,9 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
 #if HAVE_SMPI
     if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
       if (parent_process->pid != 0) {
-        SIMIX_segment_index_set(process, parent_process->segment_index);
+        process->segment_index = parent_process->segment_index;
       } else {
-        SIMIX_segment_index_set(process, process->pid - 1);
+        process->segment_index = process->pid - 1;
       }
     }
 #endif
@@ -306,9 +320,9 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
 #if HAVE_SMPI
     if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
       if (parent_process->pid != 0) {
-        SIMIX_segment_index_set(process, parent_process->segment_index);
+        process->segment_index = parent_process->segment_index;
       } else {
-        SIMIX_segment_index_set(process, process->pid - 1);
+        process->segment_index = process->pid - 1;
       }
     }
 #endif
@@ -464,7 +478,7 @@ void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const
   SMX_EXCEPTION(process, cat, value, msg);
 
   if (process->suspended)
-    SIMIX_process_resume(process);
+    process->resume();
 
   /* cancel the blocking synchro if any */
   if (process->waiting_synchro) {
@@ -537,7 +551,6 @@ void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest)
   xbt_swag_insert(process, dest->extension<simgrid::simix::Host>()->process_list);
 }
 
-
 void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t process)
 {
   smx_activity_t sync_suspend = SIMIX_process_suspend(process, simcall->issuer);
@@ -574,26 +587,6 @@ smx_activity_t SIMIX_process_suspend(smx_actor_t process, smx_actor_t issuer)
   }
 }
 
-void SIMIX_process_resume(smx_actor_t process)
-{
-  XBT_IN("process = %p", process);
-
-  if (process->context->iwannadie) {
-    XBT_VERB("Ignoring request to suspend a process that is currently dying.");
-    return;
-  }
-
-  if (not process->suspended)
-    return;
-  process->suspended = 0;
-
-  /* resume the synchronization that was blocking the resumed process. */
-  if (process->waiting_synchro)
-    process->waiting_synchro->resume();
-
-  XBT_OUT();
-}
-
 int SIMIX_process_get_maxpid() {
   return simix_process_maxpid;
 }
@@ -601,14 +594,6 @@ int SIMIX_process_get_maxpid() {
 int SIMIX_process_count()
 {
   return simix_global->process_list.size();
-}
-
-int SIMIX_process_get_PID(smx_actor_t self)
-{
-  if (self == nullptr)
-    return 0;
-  else
-    return self->pid;
 }
 
 void* SIMIX_process_self_get_data()
@@ -650,16 +635,6 @@ smx_actor_t SIMIX_process_get_by_name(const char* name)
     if (kv.second->name == name)
       return kv.second;
   return nullptr;
-}
-
-int SIMIX_process_is_suspended(smx_actor_t process)
-{
-  return process->suspended;
-}
-
-xbt_dict_t SIMIX_process_get_properties(smx_actor_t process)
-{
-  return process->properties;
 }
 
 void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, double timeout)
@@ -823,14 +798,6 @@ void SIMIX_process_exception_terminate(xbt_ex_t * e)
   xbt_abort();
 }
 
-smx_context_t SIMIX_process_get_context(smx_actor_t p) {
-  return p->context;
-}
-
-void SIMIX_process_set_context(smx_actor_t p,smx_context_t c) {
-  p->context = c;
-}
-
 /**
  * \brief Returns the list of processes to run.
  */
@@ -915,10 +882,6 @@ smx_actor_t SIMIX_process_restart(smx_actor_t process, smx_actor_t issuer) {
     simcall_process_auto_restart_set(actor, arg.auto_restart);
 
   return actor;
-}
-
-void SIMIX_segment_index_set(smx_actor_t proc, int index){
-  proc->segment_index = index;
 }
 
 /**

@@ -112,21 +112,22 @@ void Actor::suspend()
 
 void Actor::resume()
 {
-  simcall_process_resume(pimpl_);
+  simgrid::simix::kernelImmediate([this] { pimpl_->resume(); });
 }
 
 int Actor::isSuspended()
 {
-  return simgrid::simix::kernelImmediate([this]() { return pimpl_->suspended; });
+  return simgrid::simix::kernelImmediate([this] { return pimpl_->suspended; });
 }
 
 void Actor::setKillTime(double time) {
   simcall_process_set_kill_time(pimpl_,time);
 }
 
+/** \brief Get the kill time of an actor(or 0 if unset). */
 double Actor::killTime()
 {
-  return simcall_process_get_kill_time(pimpl_);
+  return SIMIX_timer_get_date(pimpl_->kill_timer);
 }
 
 void Actor::kill(aid_t pid)
@@ -175,6 +176,7 @@ const char* Actor::property(const char* key)
 {
   return (char*)xbt_dict_get_or_null(simcall_process_get_properties(pimpl_), key);
 }
+
 void Actor::setProperty(const char* key, const char* value)
 {
   simgrid::simix::kernelImmediate([this, key, value] {
@@ -275,7 +277,8 @@ void suspend()
 
 void resume()
 {
-  simcall_process_resume(SIMIX_process_self());
+  smx_actor_t process = SIMIX_process_self();
+  simgrid::simix::kernelImmediate([process] { process->resume(); });
 }
 
 bool isSuspended()

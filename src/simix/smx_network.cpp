@@ -471,8 +471,8 @@ static inline void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr comm)
 
     /* If any of the process is suspend, create the synchro but stop its execution,
        it will be restarted when the sender process resume */
-    if (SIMIX_process_is_suspended(comm->src_proc) || SIMIX_process_is_suspended(comm->dst_proc)) {
-      if (SIMIX_process_is_suspended(comm->src_proc))
+    if (comm->src_proc->isSuspended() || comm->dst_proc->isSuspended()) {
+      if (comm->src_proc->isSuspended())
         XBT_DEBUG("The communication is suspended on startup because src (%s@%s) was suspended since it initiated the "
                   "communication",
                   comm->src_proc->cname(), comm->src_proc->host->cname());

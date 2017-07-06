@@ -39,7 +39,6 @@ void process_kill(smx_actor_t process);
 void process_killall(int reset_pid);
 void process_cleanup(smx_actor_t process) [[nohandler]];
 void process_suspend(smx_actor_t process) [[block]];
-void process_resume(smx_actor_t process) [[nohandler]];
 int  process_join(smx_actor_t process, double timeout) [[block]];
 int  process_sleep(double duration) [[block]];
 
