@@ -257,7 +257,6 @@ void simcall_process_set_kill_time(smx_actor_t process, double kill_time)
 xbt_dict_t simcall_process_get_properties(smx_actor_t process)
 {
   return process->properties;
-  ;
 }
 /**
  * \ingroup simix_process_management
