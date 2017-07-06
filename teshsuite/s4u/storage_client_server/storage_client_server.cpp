@@ -142,7 +142,7 @@ static void server()
 
   XBT_INFO("Server waiting for transfers ...");
   while (1) {
-    char* msg = static_cast<char*>(simgrid::s4u::this_actor::recv(mailbox));
+    char* msg = static_cast<char*>(mailbox->recv());
     if (not strcmp(msg, "finalize")) { // Shutdown ...
       xbt_free(msg);
       break;

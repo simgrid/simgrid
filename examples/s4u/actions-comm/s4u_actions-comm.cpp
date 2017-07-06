@@ -77,7 +77,7 @@ public:
         simgrid::s4u::Mailbox::byName(std::string(action[2]) + "_" + simgrid::s4u::this_actor::name());
 
     ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME, simgrid::s4u::this_actor::name().c_str(), from->name());
-    simgrid::s4u::this_actor::recv(from);
+    from->recv();
     log_action(action, simgrid::s4u::Engine::getClock() - clock);
   }
 };

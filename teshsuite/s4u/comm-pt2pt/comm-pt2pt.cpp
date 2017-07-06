@@ -104,7 +104,7 @@ static void receiver(std::vector<std::string> args)
     switch (args[0][test - 1]) {
       case 'r':
         XBT_INFO("Test %d: r (regular receive)", test);
-        received = simgrid::s4u::this_actor::recv(mbox);
+        received = mbox->recv();
         break;
       case 'R':
         XBT_INFO("Test %d: R (sleep + regular receive)", test);

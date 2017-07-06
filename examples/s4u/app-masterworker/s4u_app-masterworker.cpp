@@ -70,7 +70,7 @@ public:
   void operator()()
   {
     while (1) { /* The worker waits in an infinite loop for tasks sent by the \ref master */
-      char* res = static_cast<char*>(simgrid::s4u::this_actor::recv(mailbox));
+      char* res = static_cast<char*>(mailbox->recv());
       xbt_assert(res != nullptr, "MSG_task_get failed");
 
       if (strcmp(res, "finalize") == 0) { /* - Exit if 'finalize' is received */

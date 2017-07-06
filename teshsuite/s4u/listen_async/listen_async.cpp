@@ -21,7 +21,7 @@ static void server()
 
   xbt_assert(mailbox->listen()); // True (1)
   XBT_INFO("Task listen works on regular mailboxes");
-  char* res = static_cast<char*>(simgrid::s4u::this_actor::recv(mailbox));
+  char* res = static_cast<char*>(mailbox->recv());
 
   xbt_assert(not strcmp("Some data", res), "Data received: %s", res);
   XBT_INFO("Data successfully received from regular mailbox");
@@ -36,7 +36,7 @@ static void server()
   xbt_assert(mailbox2->listen()); // used to break.
   XBT_INFO("Task listen works on asynchronous mailboxes");
 
-  res = static_cast<char*>(simgrid::s4u::this_actor::recv(mailbox2));
+  res = static_cast<char*>(mailbox2->recv());
   xbt_assert(not strcmp("More data", res));
   xbt_free(res);
 

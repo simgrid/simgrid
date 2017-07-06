@@ -37,11 +37,11 @@ public:
       /* The root process (rank 0) first sends the token then waits to receive it back */
       XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->name());
       neighbor_mailbox->send(xbt_strdup("Token"), task_comm_size);
-      char* res = static_cast<char*>(simgrid::s4u::this_actor::recv(my_mailbox));
+      char* res = static_cast<char*>(my_mailbox->recv());
       XBT_INFO("Host \"%u\" received \"%s\"", rank, res);
       xbt_free(res);
     } else {
-      char* res = static_cast<char*>(simgrid::s4u::this_actor::recv(my_mailbox));
+      char* res = static_cast<char*>(my_mailbox->recv());
       XBT_INFO("Host \"%u\" received \"%s\"", rank, res);
       XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->name());
       neighbor_mailbox->send(res, task_comm_size);

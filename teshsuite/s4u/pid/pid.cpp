@@ -31,7 +31,7 @@ static void killall()
 {
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName("mailbox");
   for (int i = 0; i < 3; i++) {
-    int* pid = static_cast<int*>(simgrid::s4u::this_actor::recv(mailbox));
+    int* pid = static_cast<int*>(mailbox->recv());
     XBT_INFO("Killing process \"%d\".", *pid);
     simgrid::s4u::Actor::byPid(*pid)->kill();
   }
