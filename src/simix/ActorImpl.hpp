@@ -61,7 +61,7 @@ public:
   std::list<smx_activity_t> comms;          /* the current non-blocking communication synchros */
   xbt_dict_t properties         = nullptr;
   s_smx_simcall_t simcall;
-  void *data          = nullptr; /* kept for compatibility, it should be replaced with moddata */
+  void* userdata = nullptr;                      /* kept for compatibility, it should be replaced with moddata */
   std::vector<s_smx_process_exit_fun_t> on_exit; /* list of functions executed when the process dies */
 
   std::function<void()> code;
@@ -110,6 +110,8 @@ public:
   smx_activity_t suspend(ActorImpl* issuer);
   void resume();
   smx_activity_t sleep(double duration);
+  void setUserData(void* data) { userdata = data; }
+  void* getUserData() { return userdata; }
 };
 
 }

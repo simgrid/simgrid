@@ -178,7 +178,7 @@ ActorImpl* ActorImpl::restart(ActorImpl* issuer)
   arg.code         = code;
   arg.host         = host;
   arg.kill_time    = SIMIX_timer_get_date(kill_timer);
-  arg.data         = data;
+  arg.data         = userdata;
   arg.properties   = nullptr;
   arg.auto_restart = auto_restart;
 
@@ -258,7 +258,7 @@ void create_maestro(std::function<void()> code)
   maestro = new simgrid::simix::ActorImpl();
   maestro->pid = simix_process_maxpid++;
   maestro->name = "";
-  maestro->data = nullptr;
+  maestro->userdata = nullptr;
 
   if (not code) {
     maestro->context = SIMIX_context_new(std::function<void()>(), nullptr, maestro);
@@ -309,7 +309,7 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
   process->pid            = simix_process_maxpid++;
   process->name           = simgrid::xbt::string(name);
   process->host           = host;
-  process->data           = data;
+  process->userdata       = data;
   process->simcall.issuer = process;
 
   if (parent_process != nullptr) {
@@ -375,7 +375,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   process->pid = simix_process_maxpid++;
   process->name = std::string(name);
   process->host = host;
-  process->data = data;
+  process->userdata       = data;
   process->simcall.issuer = process;
 
   if (parent_process != nullptr) {
@@ -645,20 +645,14 @@ void* SIMIX_process_self_get_data()
   if (not self) {
     return nullptr;
   }
-  return self->data;
+  return self->getUserData();
 }
 
 void SIMIX_process_self_set_data(void *data)
 {
-  smx_actor_t self = SIMIX_process_self();
-
-  SIMIX_process_set_data(self, data);
+  SIMIX_process_self()->setUserData(data);
 }
 
-void SIMIX_process_set_data(smx_actor_t process, void *data)
-{
-  process->data = data;
-}
 
 /* needs to be public and without simcall because it is called
    by exceptions and logging events */
@@ -788,11 +782,8 @@ void SIMIX_process_yield(smx_actor_t self)
     SIMIX_process_on_exit_runall(self);
     /* Add the process to the list of process to restart, only if the host is down */
     if (self->auto_restart && self->host->isOff()) {
-      SIMIX_host_add_auto_restart_process(self->host, self->cname(),
-                                          self->code, self->data,
-                                          SIMIX_timer_get_date(self->kill_timer),
-                                          self->properties,
-                                          self->auto_restart);
+      SIMIX_host_add_auto_restart_process(self->host, self->cname(), self->code, self->userdata,
+                                          SIMIX_timer_get_date(self->kill_timer), self->properties, self->auto_restart);
     }
     XBT_DEBUG("Process %s@%s is dead", self->cname(), self->host->getCname());
     self->context->stop();

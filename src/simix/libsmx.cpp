@@ -229,7 +229,7 @@ int simcall_process_count()
  */
 void simcall_process_set_data(smx_actor_t process, void *data)
 {
-  simgrid::simix::kernelImmediate(std::bind(SIMIX_process_set_data, process, data));
+  simgrid::simix::kernelImmediate([process, data] { process->setUserData(data); });
 }
 
 /**
