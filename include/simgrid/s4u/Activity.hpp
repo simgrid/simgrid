@@ -49,11 +49,11 @@ public:
   e_s4u_activity_state_t getState() {return state_;}
 
   /** Get the remaining amount of work that this Activity entails. When it's 0, it's done. */
-  size_t getRemains();
+  double getRemains();
   /** Set the [remaining] amount of work that this Activity will entail
    *
    * It is forbidden to change the amount of work once the Activity is started */
-  void setRemains(size_t remains);
+  void setRemains(double remains);
 
   /** Put some user data onto the Activity */
   void setUserData(void *data) {userData_=data;}
@@ -63,7 +63,7 @@ public:
 private:
   simgrid::kernel::activity::ActivityImplPtr pimpl_ = nullptr;
   e_s4u_activity_state_t state_ = inited;
-  size_t remains_                                   = 0;
+  double remains_ = 0;
   void *userData_ = nullptr;
 }; // class
 

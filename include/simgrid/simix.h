@@ -229,12 +229,12 @@ SG_END_DECL()
 /************************** Comunication simcalls *****************************/
 
 XBT_PUBLIC(void)
-simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, size_t task_size, double rate, void* src_buff,
+simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,
                   size_t src_buff_size, int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                   void (*copy_data_fun)(smx_activity_t, void*, size_t), void* data, double timeout);
 
 XBT_PUBLIC(smx_activity_t)
-simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, size_t task_size, double rate, void* src_buff,
+simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,
                    size_t src_buff_size, int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                    void (*clean_fun)(void*), void (*copy_data_fun)(smx_activity_t, void*, size_t), void* data,
                    int detached);
