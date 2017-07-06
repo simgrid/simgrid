@@ -31,7 +31,7 @@
 #include "src/surf/surf_interface.hpp"
 
 #ifdef HAVE_SMPI
-#include "src/smpi/private.h"
+#include "src/smpi/private.hpp"
 #endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix, "Logging specific to SIMIX (process)");

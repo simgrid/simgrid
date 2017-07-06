@@ -6,6 +6,7 @@
 
 #include "simgrid/modelchecker.h"
 #include "src/smpi/private.h"
+#include "src/smpi/private.hpp"
 #include "src/smpi/smpi_datatype_derived.hpp"
 #include "src/smpi/smpi_op.hpp"
 #include "src/smpi/smpi_process.hpp"

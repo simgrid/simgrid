@@ -10,6 +10,7 @@
 #include "src/mc/mc_replay.h"
 #include "src/smpi/SmpiHost.hpp"
 #include "src/smpi/private.h"
+#include "src/smpi/private.hpp"
 #include "src/smpi/smpi_comm.hpp"
 #include "src/smpi/smpi_datatype.hpp"
 #include "src/smpi/smpi_op.hpp"

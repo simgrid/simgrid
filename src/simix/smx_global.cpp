@@ -44,6 +44,7 @@
 
 #if HAVE_SMPI
 #include "src/smpi/private.h"
+#include "src/smpi/private.hpp"
 #endif
 
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");

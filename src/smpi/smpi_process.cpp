@@ -8,6 +8,7 @@
 #include "src/msg/msg_private.h"
 #include "src/simix/smx_private.h"
 #include "src/smpi/private.h"
+#include "src/smpi/private.hpp"
 #include "src/smpi/smpi_process.hpp"
 #include "src/smpi/smpi_group.hpp"
 #include "src/smpi/smpi_comm.hpp"
