@@ -152,17 +152,14 @@ public:
   /** Creates (but don't start) a data emission to that mailbox */
   CommPtr put_init();
   /** Creates (but don't start) a data emission to that mailbox */
-  CommPtr put_init(void* data, double simulatedSizeInBytes);
+  CommPtr put_init(void* data, uint64_t simulatedSizeInBytes);
   /** Creates and start a data emission to that mailbox */
-  CommPtr put_async(void* data, double simulatedSizeInBytes);
+  CommPtr put_async(void* data, uint64_t simulatedSizeInBytes);
 
-  /** Blocking data emission
-   *
-   * simulatedSizeInBytes must be a double so that you can send more than 4Gb even if the simulator runs on 32 bits
-   */
-  void put(void* payload, double simulatedSizeInBytes);
+  /** Blocking data emission */
+  void put(void* payload, uint64_t simulatedSizeInBytes);
   /** Blocking data emission with timeout */
-  void put(void* payload, double simulatedSizeInBytes, double timeout);
+  void put(void* payload, uint64_t simulatedSizeInBytes, double timeout);
 
   /** Creates (but don't start) a data reception onto that mailbox */
   CommPtr get_init();
