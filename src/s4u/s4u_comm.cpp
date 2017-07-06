@@ -83,7 +83,10 @@ void Comm::start() {
   state_ = started;
 }
 void Comm::wait() {
-  xbt_assert(state_ == started || state_ == inited);
+  xbt_assert(state_ == started || state_ == inited || state_ == finished);
+
+  if (state_ == finished)
+    return;
 
   if (state_ == started)
     simcall_comm_wait(pimpl_, -1/*timeout*/);
@@ -103,7 +106,10 @@ void Comm::wait() {
 }
 
 void Comm::wait(double timeout) {
-  xbt_assert(state_ == started || state_ == inited);
+  xbt_assert(state_ == started || state_ == inited || state_ == finished);
+
+  if (state_ == finished)
+    return;
 
   if (state_ == started) {
     simcall_comm_wait(pimpl_, timeout);
