@@ -216,9 +216,10 @@ XBT_PUBLIC(void) sleep_until(double timeout)
     simcall_process_sleep(timeout - now);
 }
 
-e_smx_state_t execute(double flops) {
+void execute(double flops)
+{
   smx_activity_t s = simcall_execution_start(nullptr,flops,1.0/*priority*/,0./*bound*/);
-  return simcall_execution_wait(s);
+  simcall_execution_wait(s);
 }
 
 void* recv(MailboxPtr chan) {

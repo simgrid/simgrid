@@ -300,7 +300,7 @@ template <class Rep, class Period> inline void sleep_for(std::chrono::duration<R
   }
 
   /** Block the actor, computing the given amount of flops */
-  XBT_PUBLIC(e_smx_state_t) execute(double flop);
+  XBT_PUBLIC(void) execute(double flop);
 
   /** Block the actor until it gets a message from the given mailbox.
    *
