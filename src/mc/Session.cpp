@@ -20,6 +20,8 @@
 #include "src/mc/mc_private.h"
 #include "src/mc/checker/Checker.hpp"
 
+#include "src/smpi/private.hpp"
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Session, mc, "Model-checker session");
 
 namespace simgrid {
