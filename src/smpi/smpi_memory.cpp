@@ -23,7 +23,6 @@
 
 #include "src/xbt/memory_map.hpp"
 
-#include "private.hpp"
 #include "src/smpi/private.h"
 #include "src/smpi/private.hpp"
 
