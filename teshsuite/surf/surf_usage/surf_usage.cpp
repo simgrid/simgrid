@@ -63,11 +63,10 @@ int main(int argc, char **argv)
 
   surf_solve(-1.0);
   do {
-    simgrid::surf::ActionList *action_list = nullptr;
     XBT_INFO("Next Event : %g", surf_get_clock());
     XBT_DEBUG("\t CPU actions");
 
-    action_list = surf_cpu_model_pm->getFailedActionSet();
+    simgrid::surf::ActionList* action_list = surf_cpu_model_pm->getFailedActionSet();
     for(simgrid::surf::ActionList::iterator it(action_list->begin()), itNext = it, itend(action_list->end()) ;
         it != itend ; it=itNext) {
       ++itNext;

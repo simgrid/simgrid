@@ -1642,7 +1642,6 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
       XBT_DEBUG("(%d - %d) Different local variables between stacks %d", num1,
                 num2, cursor + 1);
       errors++;
-      is_diff = 1;
 #else
 
 #ifdef MC_VERBOSE
