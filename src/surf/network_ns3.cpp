@@ -362,7 +362,7 @@ void ns3_create_flow(simgrid::s4u::Host* src, simgrid::s4u::Host* dst,
   xbt_dict_set(flowFromSock, transformSocketPtr(sock), new SgFlow(TotalBytes, action), nullptr);
 
   sock->Bind(ns3::InetSocketAddress(port_number));
-   
+
   ns3::Simulator::ScheduleNow(&StartFlow, sock, addr, port_number);
 
   port_number++;
