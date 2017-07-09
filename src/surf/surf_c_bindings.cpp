@@ -165,18 +165,6 @@ int surf_model_running_action_set_size(surf_model_t model){
   return model->getRunningActionSet()->size();
 }
 
-surf_action_t surf_host_close(sg_host_t host, surf_file_t fd){
-  return host->pimpl_->close(fd);
-}
-
-surf_action_t surf_host_read(sg_host_t host, surf_file_t fd, sg_size_t size){
-  return host->pimpl_->read(fd, size);
-}
-
-surf_action_t surf_host_write(sg_host_t host, surf_file_t fd, sg_size_t size){
-  return host->pimpl_->write(fd, size);
-}
-
 void surf_cpu_action_set_bound(surf_action_t action, double bound) {
   static_cast<simgrid::surf::CpuAction*>(action)->setBound(bound);
 }

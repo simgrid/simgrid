@@ -138,27 +138,6 @@ XBT_PUBLIC(surf_action_t) surf_model_extract_failed_action_set(surf_model_t mode
  */
 XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
 
-/** @brief Create a file closing action on the given host */
-XBT_PUBLIC(surf_action_t) surf_host_close(sg_host_t host, surf_file_t fd);
-
-/** @brief Create a file reading action on the given host */
-XBT_PUBLIC(surf_action_t) surf_host_read(sg_host_t host, surf_file_t fd, sg_size_t size);
-
-/** @brief Create a file writing action on the given host  */
-XBT_PUBLIC(surf_action_t) surf_host_write(sg_host_t host, surf_file_t fd, sg_size_t size);
-
-/**
- * @brief Move a file to another location on the *same mount point*.
- * @details [long description]
- *
- * @param host The surf host
- * @param fd The file descriptor
- * @param fullpath The new full path
- *
- * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
- */
-XBT_PUBLIC(int) surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath);
-
 /**
  * @brief [brief description]
  * @details [long description]

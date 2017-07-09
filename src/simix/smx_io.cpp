@@ -6,15 +6,13 @@
 #include <xbt/ex.hpp>
 #include <xbt/sysdep.h>
 #include <xbt/log.h>
-#include <xbt/dict.h>
 
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "src/surf/FileImpl.hpp"
+#include "src/surf/HostImpl.hpp"
 #include "src/surf/StorageImpl.hpp"
 #include "surf/surf.h"
-
-#include <mc/mc.h>
 
 #include "src/surf/surf_interface.hpp"
 #include "smx_private.h"
@@ -39,7 +37,7 @@ smx_activity_t SIMIX_file_read(surf_file_t file, sg_size_t size, sg_host_t host)
 
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
   synchro->host = host;
-  synchro->surf_io                           = surf_host_read(host, file, size);
+  synchro->surf_io                           = host->pimpl_->read(file, size);
 
   synchro->surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
@@ -62,7 +60,7 @@ smx_activity_t SIMIX_file_write(surf_file_t file, sg_size_t size, sg_host_t host
 
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
   synchro->host = host;
-  synchro->surf_io                           = surf_host_write(host, file, size);
+  synchro->surf_io                           = host->pimpl_->write(file, size);
   synchro->surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
 
@@ -106,7 +104,7 @@ smx_activity_t SIMIX_file_close(surf_file_t file, sg_host_t host)
 
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
   synchro->host = host;
-  synchro->surf_io                           = surf_host_close(host, file);
+  synchro->surf_io                           = host->pimpl_->close(file);
   synchro->surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
 
