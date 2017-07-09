@@ -15,7 +15,6 @@ xbt_dict_t flowFromSock = xbt_dict_new_homogeneous([](void *p) {
 }); // ns3::sock -> SgFlow
 
 static void receive_callback(ns3::Ptr<ns3::Socket> socket);
-static void send_callback(ns3::Ptr<ns3::Socket> sock, uint32_t txSpace);
 static void datasent_callback(ns3::Ptr<ns3::Socket> socket, uint32_t dataSent);
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
@@ -45,39 +44,40 @@ static void receive_callback(ns3::Ptr<ns3::Socket> socket)
   }
 }
 
-static void send_callback(ns3::Ptr<ns3::Socket> sock, uint32_t txSpace)
+static void WriteUntilBufferFull(ns3::Ptr<ns3::Socket> sock, uint32_t txSpace)
 {
   SgFlow* flow = getFlowFromSocket(sock);
 
   if (flow->remaining_ == 0) // all data was already buffered (and socket was already closed)
     return;
 
-  uint8_t* data = (uint8_t*)malloc(sizeof(uint8_t) * txSpace);
-
+  /* While not all is buffered and there remain space in the buffers */
   while (flow->bufferedBytes_ < flow->totalBytes_ && sock->GetTxAvailable() > 0) {
 
-    uint32_t toWrite = std::min({flow->remaining_, txSpace, sock->GetTxAvailable()});
-    int amountSent   = sock->Send(data, toWrite, 0);
-
-    if (amountSent < 0)
+    uint32_t toWrite = std::min({flow->remaining_, sock->GetTxAvailable()});
+    if (toWrite == 0) // buffer full
       return;
+    int amountSent   = sock->Send(0, toWrite, 0);
+
+    xbt_assert(amountSent > 0, "Since TxAvailable>0, amountSent should also >0");
     flow->bufferedBytes_ += amountSent;
     flow->remaining_ -= amountSent;
 
-    XBT_DEBUG("send_cb of F[%p, %p, %d] (%d/%d) %d buffered", flow, flow->action_, flow->totalBytes_, flow->remaining_,
-              flow->totalBytes_, amountSent);
+    XBT_DEBUG("%f: sent %d bytes over flow %p (still %d to go)",
+        ns3::Simulator::Now().GetSeconds(), amountSent, flow, flow->remaining_);
   }
-  free(data);
 
-  if ((flow->bufferedBytes_) >= flow->totalBytes_)
+  if (flow->bufferedBytes_ >= flow->totalBytes_)
     sock->Close();
 }
 
 static void datasent_callback(ns3::Ptr<ns3::Socket> socket, uint32_t dataSent)
 {
+  /* The tracing wants to know */
   SgFlow* flow = getFlowFromSocket(socket);
   flow->sentBytes_ += dataSent;
-  XBT_DEBUG("datasent_cb of F[%p, %p, %d] %d sent", flow, flow->action_, flow->totalBytes_, dataSent);
+  XBT_DEBUG("datasent_cb of F[%p, %p, %d] %d sent (%d total)",
+      flow, flow->action_, flow->totalBytes_, dataSent, flow->sentBytes_);
 }
 
 static void normalClose_callback(ns3::Ptr<ns3::Socket> socket)
@@ -109,15 +109,25 @@ static void failedConnect_callback(ns3::Ptr<ns3::Socket> socket)
 
 void StartFlow(ns3::Ptr<ns3::Socket> sock, const char* to, uint16_t port_number)
 {
+  SgFlow* flow = getFlowFromSocket(sock);
   ns3::InetSocketAddress serverAddr(to, port_number);
 
   sock->Connect(serverAddr);
-  sock->SetSendCallback(MakeCallback(&send_callback));
+  // tell the tcp implementation to call WriteUntilBufferFull again
+  // if we blocked and new tx buffer space becomes available
+  sock->SetSendCallback (MakeCallback(&WriteUntilBufferFull));
+  // Note when the send is over
   sock->SetRecvCallback(MakeCallback(&receive_callback));
+  // Keep track of what was used (for the TRACING module)
   sock->SetDataSentCallback(MakeCallback(&datasent_callback));
+  XBT_DEBUG("startFlow of F[%p, %p, %d] dest=%s port=%d", flow, flow->action_, flow->totalBytes_, to, port_number);
+
+  //WriteUntilBufferFull (sock, sock->GetTxAvailable ());
+  /*
+  sock->SetSendCallback(MakeCallback(&send_callback));
   sock->SetConnectCallback(MakeCallback(&succeededConnect_callback), MakeCallback(&failedConnect_callback));
   sock->SetCloseCallbacks(MakeCallback(&normalClose_callback), MakeCallback(&errorClose_callback));
+  send_callback(sock, sock->GetTxAvailable ());
+   */
 
-  SgFlow* flow = getFlowFromSocket(sock);
-  XBT_DEBUG("startFlow_cb of F[%p, %p, %d] dest=%s port=%d", flow, flow->action_, flow->totalBytes_, to, port_number);
 }
