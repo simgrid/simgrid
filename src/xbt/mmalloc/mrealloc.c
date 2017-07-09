@@ -22,7 +22,6 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
 {
   void *result;
   size_t blocks;
-  size_t oldlimit;
 
   /* Only keep real realloc, and reroute hidden malloc and free to the relevant functions */
   if (size == 0) {
@@ -92,8 +91,7 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
         mdp->heapinfo[it].busy_block.busy_size = 0;
       }
 
-      mdp->heapinfo[block + blocks].busy_block.size
-        = mdp->heapinfo[block].busy_block.size - blocks;
+      mdp->heapinfo[block + blocks].busy_block.size = mdp->heapinfo[block].busy_block.size - blocks;
       mfree(mdp, ADDRESS(block + blocks));
 
       mdp->heapinfo[block].busy_block.size = blocks;
@@ -115,7 +113,7 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
            action for obvious reasons. */
       blocks = mdp->heapinfo[block].busy_block.size;
       /* Prevent free from actually returning memory to the system.  */
-      oldlimit = mdp->heaplimit;
+      size_t oldlimit = mdp->heaplimit;
       mdp->heaplimit = 0;
       mfree(mdp, ptr);
       mdp->heaplimit = oldlimit;
