@@ -1,7 +1,6 @@
 /* Memory allocator `malloc'. */
 
-/* Copyright (c) 2010-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -269,7 +268,8 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
        If we loop completely around without finding a large enough
        space we will have to get more memory from the system.  */
     size_t blocks = BLOCKIFY(size);
-    size_t start = block = MALLOC_SEARCH_START;
+    size_t start  = MALLOC_SEARCH_START;
+    block         = MALLOC_SEARCH_START;
     while (mdp->heapinfo[block].free_block.size < blocks) {
       if (mdp->heapinfo[block].type >=0) { // Don't trust xbt_die and friends in malloc-level library, you fool!
         fprintf(stderr,"Internal error: found a free block not marked as such (block=%lu type=%lu). Please report this bug.\n",(unsigned long)block,(unsigned long)mdp->heapinfo[block].type);

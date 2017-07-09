@@ -1,5 +1,4 @@
-/* Copyright (c) 2009-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -115,7 +114,7 @@ ThreadContext::ThreadContext(std::function<void()> code,
     * name, but now the name is stored at SIMIX level, so we pass a null  */
     this->thread_ =
       xbt_os_thread_create(nullptr,
-        maestro ? ThreadContext::maestro_wrapper : ThreadContext::wrapper,
+        maestro ? &ThreadContext::maestro_wrapper : &ThreadContext::wrapper,
         this, this);
     /* wait the starting of the newly created process */
     xbt_os_sem_acquire(this->end_);
