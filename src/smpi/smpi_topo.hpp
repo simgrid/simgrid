@@ -9,13 +9,6 @@
 #include "src/smpi/smpi_comm.hpp"
 #include "src/smpi/smpi_status.hpp"
 
-typedef enum MPIR_Topo_type {
-  MPI_GRAPH=1,
-  MPI_CART=2,
-  MPI_DIST_GRAPH=3,
-  MPI_INVALID_TOPO=-1
-} MPIR_Topo_type;
-
 typedef SMPI_Topology *MPI_Topology;
 
 namespace simgrid{
