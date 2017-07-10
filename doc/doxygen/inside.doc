@@ -76,16 +76,18 @@ each build/ subdir to test each of them separately.
 
 ### Easy out of tree builds
 
-It is easy to break one build configuration or another. If you're
-serious about code quality, you should not commit your change before
-testing it with gcc and clang, with and without MC; with and without
-Java. To easily switch between the configs without rebuilding
-everything, you want to compile out of tree (as explained in @ref
-install_cmake_outsrc).
+It is easy to break one build configuration or another. That's
+perfectly OK and we will not point fingers if it happens. But it is
+somewhat forbidden to leave the tree broken for a long while. Monitor
+the build daemons after you push something, and strive to fix any
+breakage ASAP.
 
+To easily switch between the configs without rebuilding everything,
+create a set of out of tree builds (as explained in @ref
+install_cmake_outsrc) in addition to your main build tree.
 To not mess with git, you want to put your build tree under the build/
 directory, which is ignored by git. For example, I have the following
-directories: build/default build/clang build/java build/full
+directories: build/clang build/java build/full
 (but YMMV).
 
 Then, the problem is that when you traverse these directories, you
@@ -95,15 +97,11 @@ bindir). This makes it difficult to launch the tests and everything.
 To solve that issue, just call `make hardlinks` from your build dir.
 This will create hard links allowing to share every source files into
 the build dir. They are not copied, but hard linked. It means that
-these files are accessible both from the srcdir and from the bindir. If
-you edit a source file found under bindir, the srcdir version (visible
-to git) will also be changed (that's the same file, after all).
+each file is accessible under several names, from the srcdir and from
+the bindirs. If you edit a source file found under bindir, the srcdir
+version (visible to git) will also be changed (that's the same file,
+after all).
 
-If you convert from a regular build to an out-of-tree build, you need
-to clean your source tree by removing the following files:
-
-@verbatim
-rm -rf Makefile CMakeCache.txt CMakeFiles include/simgrid_config.h src/internal_config.h lib/*.so
-@endverbatim
-
+Note that the links sometimes broken by git or others. Relaunching
+`make hardlinks` may help if you're getting incoherent build results.
 */

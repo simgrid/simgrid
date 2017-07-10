@@ -23,7 +23,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi, "Logging specific to SMPI (comm
 MPI_Comm MPI_COMM_UNINITIALIZED=&mpi_MPI_COMM_UNINITIALIZED;
 
 /* Support for cartesian topology was added, but there are 2 other types of topology, graph et dist graph. In order to
- * support them, we have to add a field MPIR_Topo_type, and replace the MPI_Topology field by an union. */
+ * support them, we have to add a field SMPI_Topo_type, and replace the MPI_Topology field by an union. */
 
 static int smpi_compare_rankmap(const void *a, const void *b)
 {

@@ -18,7 +18,7 @@ class Comm : public F2C, public Keyval{
 
   private:
     MPI_Group group_;
-    MPIR_Topo_type topoType_;
+    SMPI_Topo_type topoType_;
     MPI_Topology topo_; // to be replaced by an union
     int refcount_;
     MPI_Comm leaders_comm_;//inter-node communicator
