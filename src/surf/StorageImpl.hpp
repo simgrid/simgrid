@@ -169,7 +169,6 @@ public:
   std::map<std::string, sg_size_t>* parseContent(const char* filename);
   static std::unordered_map<std::string, StorageImpl*>* storages;
   static std::unordered_map<std::string, StorageImpl*>* storagesMap() { return StorageImpl::storages; }
-  std::vector<StorageAction*> writeActions_;
 
   lmm_constraint_t constraintWrite_; /* Constraint for maximum write bandwidth*/
   lmm_constraint_t constraintRead_;  /* Constraint for maximum write bandwidth*/

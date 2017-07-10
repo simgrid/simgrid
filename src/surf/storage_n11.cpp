@@ -69,19 +69,7 @@ StorageImpl* StorageN11Model::createStorage(const char* id, const char* type_id,
 
 double StorageN11Model::nextOccuringEvent(double now)
 {
-  double min_completion = StorageModel::nextOccuringEventFull(now);
-
-  for(auto storage: p_storageList) {
-    double rate = 0;
-    // Foreach write action on that disk
-    for (auto write_action: storage->writeActions_) {
-      rate += lmm_variable_getvalue(write_action->getVariable());
-    }
-    if(rate > 0)
-      min_completion = MIN(min_completion, (storage->size_-storage->usedSize_)/rate);
-  }
-
-  return min_completion;
+  return StorageModel::nextOccuringEventFull(now);
 }
 
 void StorageN11Model::updateActionsState(double /*now*/, double delta)
@@ -173,16 +161,6 @@ StorageAction *StorageN11::open(const char* mount, const char* path)
 StorageAction *StorageN11::close(surf_file_t fd)
 {
   XBT_DEBUG("\tClose file '%s' size '%llu'", fd->cname(), fd->size());
-  // unref write actions from storage
-  for (std::vector<StorageAction*>::iterator it = writeActions_.begin(); it != writeActions_.end();) {
-    StorageAction *write_action = *it;
-    if ((write_action->file_) == fd) {
-      write_action->unref();
-      it = writeActions_.erase(it);
-    } else {
-      ++it;
-    }
-  }
   StorageAction* action = new StorageN11Action(model(), 0, isOff(), this, CLOSE);
   return action;
 }
@@ -241,11 +219,6 @@ StorageN11Action::StorageN11Action(Model* model, double cost, bool failed, Stora
     break;
   case WRITE:
     lmm_expand(model->getMaxminSystem(), storage->constraintWrite_, getVariable(), 1.0);
-
-    //TODO there is something annoying with what's below. Have to sort it out...
-    //    Action *action = this;
-    //    storage->p_writeActions->push_back(action);
-    //    ref();
     break;
   default:
     THROW_UNIMPLEMENTED;

@@ -66,7 +66,6 @@ StorageImpl::StorageImpl(Model* model, const char* name, lmm_system_t maxminSyst
     , usedSize_(0)
     , typeId_(type_id)
     , attach_(attach)
-    , writeActions_(std::vector<StorageAction*>())
 {
   content_ = parseContent(content_name);
   turnOn();
