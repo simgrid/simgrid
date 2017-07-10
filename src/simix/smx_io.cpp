@@ -36,8 +36,7 @@ smx_activity_t SIMIX_file_read(surf_file_t file, sg_size_t size, sg_host_t host)
     THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->getCname());
 
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
-  synchro->host = host;
-  synchro->surf_io                           = host->pimpl_->read(file, size);
+  synchro->surf_io                           = file->read(size);
 
   synchro->surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
@@ -59,8 +58,7 @@ smx_activity_t SIMIX_file_write(surf_file_t file, sg_size_t size, sg_host_t host
     THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->getCname());
 
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
-  synchro->host = host;
-  synchro->surf_io                           = host->pimpl_->write(file, size);
+  synchro->surf_io                           = file->write(size);
   synchro->surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
 

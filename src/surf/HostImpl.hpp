@@ -66,29 +66,8 @@ public:
   explicit HostImpl(s4u::Host* host);
   virtual ~HostImpl() = default;
 
-  /** @brief Return the storage of corresponding mount point */
-  virtual simgrid::surf::StorageImpl* findStorageOnMountList(const char* storage);
-
-  /** @brief Get the xbt_dynar_t of storages attached to the Host */
+  /** @brief Get the vector of storages (by names) attached to the Host */
   virtual void getAttachedStorageList(std::vector<const char*>* storages);
-
-  /**
-   * @brief Read a file
-   *
-   * @param fd The file descriptor to read
-   * @param size The size in bytes to read
-   * @return The StorageAction corresponding to the reading
-   */
-  virtual Action* read(surf_file_t fd, sg_size_t size);
-
-  /**
-   * @brief Write a file
-   *
-   * @param fd The file descriptor to write
-   * @param size The size in bytes to write
-   * @return The StorageAction corresponding to the writing
-   */
-  virtual Action* write(surf_file_t fd, sg_size_t size);
 
   std::map<std::string, simgrid::surf::StorageImpl*> storage_;
   simgrid::s4u::Host* piface_ = nullptr;

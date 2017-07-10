@@ -27,10 +27,13 @@ public:
   void incrPosition(sg_size_t incr) { current_position_ += incr; }
   sg_size_t tell() { return current_position_; }
   int seek(sg_offset_t offset, int origin);
-  int unlink(sg_host_t host);
-  void move(sg_host_t host, const char* fullpath);
+  int unlink();
+  void move(const char* fullpath);
+  Action* read(sg_size_t size);
+  Action* write(sg_size_t size);
 
 private:
+  StorageImpl* location_;
   std::string path_;
   std::string mount_point_;
   sg_size_t size_;

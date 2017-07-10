@@ -14,7 +14,8 @@ namespace surf {
 FileImpl::FileImpl(sg_storage_t st, std::string path, std::string mount) : path_(path), mount_point_(mount)
 {
   XBT_DEBUG("\tOpen file '%s'", path.c_str());
-  std::map<std::string, sg_size_t>* content = st->pimpl_->content_;
+  location_ = st->pimpl_;
+  std::map<std::string, sg_size_t>* content = location_->content_;
   // if file does not exist create an empty file
   if (content->find(path) != content->end())
     size_ = content->at(path);
@@ -23,6 +24,37 @@ FileImpl::FileImpl(sg_storage_t st, std::string path, std::string mount) : path_
     content->insert({path, size_});
     XBT_DEBUG("File '%s' was not found, file created.", path.c_str());
   }
+}
+
+Action* FileImpl::read(sg_size_t size)
+{
+  XBT_DEBUG("READ %s on disk '%s'", cname(), location_->cname());
+  if (current_position_ + size > size_) {
+    if (current_position_ > size_) {
+      size = 0;
+    } else {
+      size = size_ - current_position_;
+    }
+    current_position_ = size_;
+  } else
+    current_position_ += size;
+
+  return location_->read(size);
+}
+
+Action* FileImpl::write(sg_size_t size)
+{
+  XBT_DEBUG("WRITE %s on disk '%s'. size '%llu/%llu'", cname(), location_->cname(), size, size_);
+
+  StorageAction* action = location_->write(size);
+  action->file_         = this;
+  /* Substract the part of the file that might disappear from the used sized on the storage element */
+  location_->usedSize_ -= (size_ - current_position_);
+  // If the storage is full before even starting to write
+  if (location_->usedSize_ >= location_->size_) {
+    action->setState(Action::State::failed);
+  }
+  return action;
 }
 
 int FileImpl::seek(sg_offset_t offset, int origin)
@@ -42,29 +74,28 @@ int FileImpl::seek(sg_offset_t offset, int origin)
   }
 }
 
-int FileImpl::unlink(sg_host_t host)
+int FileImpl::unlink()
 {
-  simgrid::surf::StorageImpl* st = host->pimpl_->findStorageOnMountList(mount_point_.c_str());
   /* Check if the file is on this storage */
-  if (st->content_->find(path_) == st->content_->end()) {
-    XBT_WARN("File %s is not on disk %s. Impossible to unlink", cname(), st->cname());
+  if (location_->content_->find(path_) == location_->content_->end()) {
+    XBT_WARN("File %s is not on disk %s. Impossible to unlink", cname(), location_->cname());
     return -1;
   } else {
-    XBT_DEBUG("UNLINK %s on disk '%s'", cname(), st->cname());
-    st->usedSize_ -= size_;
+    XBT_DEBUG("UNLINK %s on disk '%s'", cname(), location_->cname());
+    location_->usedSize_ -= size_;
 
     // Remove the file from storage
-    st->content_->erase(path_);
+    location_->content_->erase(path_);
 
     return 0;
   }
 }
 
-void FileImpl::move(sg_host_t host, const char* fullpath)
+void FileImpl::move(const char* fullpath)
 {
   /* Check if the new full path is on the same mount point */
   if (not strncmp(mount_point_.c_str(), fullpath, mount_point_.size())) {
-    std::map<std::string, sg_size_t>* content = host->pimpl_->findStorageOnMountList(mount_point_.c_str())->content_;
+    std::map<std::string, sg_size_t>* content = location_->content_;
     if (content->find(path_) != content->end()) { // src file exists
       sg_size_t new_size = content->at(path_);
       content->erase(path_);
