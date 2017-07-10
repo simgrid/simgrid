@@ -32,10 +32,9 @@ public:
   const char* getName();
   const char* getType();
   Host* getHost();
+  sg_size_t getSize(); /** Retrieve the total amount of space of this storage element */
   sg_size_t getSizeFree();
   sg_size_t getSizeUsed();
-  /** Retrieve the total amount of space of this storage element */
-  sg_size_t getSize();
 
   xbt_dict_t getProperties();
   const char* getProperty(const char* key);
@@ -45,6 +44,8 @@ public:
   void setUserdata(void* data) { userdata_ = data; }
   void* getUserdata() { return userdata_; }
 
+  surf::StorageImpl* getImpl() { return pimpl_; }
+
   /* The signals */
   /** @brief Callback signal fired when a new Link is created */
   static simgrid::xbt::signal<void(s4u::Storage&)> onCreation;
@@ -53,9 +54,9 @@ public:
   static simgrid::xbt::signal<void(s4u::Storage&)> onDestruction;
 
   Host* attached_to_              = nullptr;
-  surf::StorageImpl* const pimpl_ = nullptr;
 
 private:
+  surf::StorageImpl* const pimpl_ = nullptr;
   std::string name_;
   void* userdata_ = nullptr;
 };

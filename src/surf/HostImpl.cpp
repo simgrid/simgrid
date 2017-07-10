@@ -103,7 +103,7 @@ HostImpl::HostImpl(s4u::Host* host) : piface_(host)
 void HostImpl::getAttachedStorageList(std::vector<const char*>* storages)
 {
   for (auto s : storage_)
-    if (s.second->attach_ == piface_->getCname())
+    if (s.second->getHost() == piface_->getCname())
       storages->push_back(s.second->piface_.getName());
 }
 

@@ -18,12 +18,12 @@ extern std::map<std::string, storage_type_t> storage_types;
 static void check_disk_attachment()
 {
   for (auto s : *simgrid::surf::StorageImpl::storagesMap()) {
-    simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(s.second->attach_.c_str());
+    simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(s.second->getHost().c_str());
     if (not host_elm)
       surf_parse_error("Unable to attach storage %s: host %s does not exist.", s.second->cname(),
-                       s.second->attach_.c_str());
+                       s.second->getHost().c_str());
     else
-      s.second->piface_.attached_to_ = sg_host_by_name(s.second->attach_.c_str());
+      s.second->piface_.attached_to_ = sg_host_by_name(s.second->getHost().c_str());
   }
 }
 
@@ -74,10 +74,8 @@ double StorageN11Model::nextOccuringEvent(double now)
 
 void StorageN11Model::updateActionsState(double /*now*/, double delta)
 {
-
   ActionList *actionSet = getRunningActionSet();
-  for(ActionList::iterator it(actionSet->begin()), itNext=it, itend(actionSet->end())
-      ; it != itend ; it=itNext) {
+  for (ActionList::iterator it(actionSet->begin()), itNext = it, itend(actionSet->end()); it != itend; it = itNext) {
     ++itNext;
 
     StorageAction *action = static_cast<StorageAction*>(&*it);
@@ -104,8 +102,8 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
       //  which becomes the new file size
       action->file_->setSize(action->file_->tell());
 
-      action->storage_->content_->erase(action->file_->cname());
-      action->storage_->content_->insert({action->file_->cname(), action->file_->size()});
+      action->storage_->getContent()->erase(action->file_->cname());
+      action->storage_->getContent()->insert({action->file_->cname(), action->file_->size()});
     }
 
     action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
@@ -114,7 +112,7 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
       action->updateMaxDuration(delta);
 
     if (action->getRemainsNoUpdate() > 0 && lmm_get_variable_weight(action->getVariable()) > 0 &&
-        action->storage_->usedSize_ == action->storage_->size_) {
+        action->storage_->usedSize_ == action->storage_->getSize()) {
       action->finish();
       action->setState(Action::State::failed);
     } else if (((action->getRemainsNoUpdate() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||

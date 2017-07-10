@@ -102,14 +102,6 @@ public:
   void turnOn() override;
   void turnOff() override;
 
-  std::map<std::string, sg_size_t>* content_;
-  sg_size_t size_;
-  sg_size_t usedSize_;
-  std::string typeId_;
-  std::string attach_; // Name of the host to which this storage is attached.
-                       // Only used until the platform is fully parsed only.
-                       // Then the interface stores the Host directly.
-
   /**
    * @brief Read a file
    *
@@ -146,6 +138,8 @@ public:
    * @return The used size in bytes of the current Storage
    */
   virtual sg_size_t getUsedSize();
+  virtual sg_size_t getSize() { return size_; }
+  virtual std::string getHost() { return attach_; }
 
   std::map<std::string, sg_size_t>* parseContent(const char* filename);
   static std::unordered_map<std::string, StorageImpl*>* storages;
@@ -153,6 +147,16 @@ public:
 
   lmm_constraint_t constraintWrite_; /* Constraint for maximum write bandwidth*/
   lmm_constraint_t constraintRead_;  /* Constraint for maximum write bandwidth*/
+
+  std::string typeId_;
+  sg_size_t usedSize_ = 0;
+
+private:
+  sg_size_t size_;
+  std::map<std::string, sg_size_t>* content_;
+  // Name of the host to which this storage is attached. Only used at platform parsing time, then the interface stores
+  // the Host directly.
+  std::string attach_;
 };
 
 /**********

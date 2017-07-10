@@ -32,11 +32,7 @@ public:
   /** Retrieves the path to the file */
   const char* getPath() { return path_; }
 
-  /** Simulates a read action. Returns the size of data actually read
-   *
-   *  FIXME: reading from a remotely mounted disk is not implemented yet.
-   *  Any storage is considered as local, and no network communication ever occur.
-   */
+  /** Simulates a local read action. Returns the size of data actually read */
   sg_size_t read(sg_size_t size);
 
   /** Simulates a write action. Returns the size of data actually written. */
@@ -66,11 +62,6 @@ public:
   /** Remove a file from disk */
   int unlink();
 
-  /* FIXME: add these to the S4U API:
-  XBT_PUBLIC(const char *) MSG_file_get_name(msg_file_t file);
-  XBT_PUBLIC(msg_error_t) MSG_file_rcopy(msg_file_t fd, msg_host_t host, const char* fullpath);
-  XBT_PUBLIC(msg_error_t) MSG_file_rmove(msg_file_t fd, msg_host_t host, const char* fullpath);
-  */
   const char* storage_type;
   const char* storageId;
   std::string mount_point;

@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/surf/FileImpl.hpp"
-#include "src/surf/HostImpl.hpp"
+#include "src/surf/StorageImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_file, surf, "Logging specific to the SURF file module");
 namespace simgrid {
@@ -14,8 +14,8 @@ namespace surf {
 FileImpl::FileImpl(sg_storage_t st, std::string path, std::string mount) : path_(path), mount_point_(mount)
 {
   XBT_DEBUG("\tOpen file '%s'", path.c_str());
-  location_ = st->pimpl_;
-  std::map<std::string, sg_size_t>* content = location_->content_;
+  location_ = st->getImpl();
+  std::map<std::string, sg_size_t>* content = location_->getContent();
   // if file does not exist create an empty file
   if (content->find(path) != content->end())
     size_ = content->at(path);
@@ -51,7 +51,7 @@ Action* FileImpl::write(sg_size_t size)
   /* Substract the part of the file that might disappear from the used sized on the storage element */
   location_->usedSize_ -= (size_ - current_position_);
   // If the storage is full before even starting to write
-  if (location_->usedSize_ >= location_->size_) {
+  if (location_->usedSize_ >= location_->getSize()) {
     action->setState(Action::State::failed);
   }
   return action;
@@ -77,7 +77,7 @@ int FileImpl::seek(sg_offset_t offset, int origin)
 int FileImpl::unlink()
 {
   /* Check if the file is on this storage */
-  if (location_->content_->find(path_) == location_->content_->end()) {
+  if (location_->getContent()->find(path_) == location_->getContent()->end()) {
     XBT_WARN("File %s is not on disk %s. Impossible to unlink", cname(), location_->cname());
     return -1;
   } else {
@@ -85,7 +85,7 @@ int FileImpl::unlink()
     location_->usedSize_ -= size_;
 
     // Remove the file from storage
-    location_->content_->erase(path_);
+    location_->getContent()->erase(path_);
 
     return 0;
   }
@@ -95,7 +95,7 @@ void FileImpl::move(const char* fullpath)
 {
   /* Check if the new full path is on the same mount point */
   if (not strncmp(mount_point_.c_str(), fullpath, mount_point_.size())) {
-    std::map<std::string, sg_size_t>* content = location_->content_;
+    std::map<std::string, sg_size_t>* content = location_->getContent();
     if (content->find(path_) != content->end()) { // src file exists
       sg_size_t new_size = content->at(path_);
       content->erase(path_);

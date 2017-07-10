@@ -62,9 +62,8 @@ StorageImpl::StorageImpl(Model* model, const char* name, lmm_system_t maxminSyst
                          const char* type_id, const char* content_name, sg_size_t size, const char* attach)
     : Resource(model, name, lmm_constraint_new(maxminSystem, this, MAX(bread, bwrite)))
     , piface_(this)
-    , size_(size)
-    , usedSize_(0)
     , typeId_(type_id)
+    , size_(size)
     , attach_(attach)
 {
   content_ = parseContent(content_name);
