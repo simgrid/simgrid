@@ -184,7 +184,6 @@ public:
 typedef enum {
   READ = 0, /**< Read a file */
   WRITE,    /**< Write in a file */
-  STAT,     /**< Stat a file */
   OPEN,     /**< Open a file */
   CLOSE     /**< Close a file */
 } e_surf_action_storage_type_t;

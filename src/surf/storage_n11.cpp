@@ -212,8 +212,6 @@ StorageN11Action::StorageN11Action(Model* model, double cost, bool failed, Stora
   switch(type) {
   case OPEN:
   case CLOSE:
-  case STAT:
-    break;
   case READ:
     lmm_expand(model->getMaxminSystem(), storage->constraintRead_, getVariable(), 1.0);
     break;
