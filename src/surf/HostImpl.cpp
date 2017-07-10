@@ -120,14 +120,33 @@ Action* HostImpl::read(surf_file_t fd, sg_size_t size)
 {
   simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount());
   XBT_DEBUG("READ %s on disk '%s'", fd->cname(), st->cname());
-  return st->read(fd, size);
+  if (fd->tell() + size > fd->size()) {
+    if (fd->tell() > fd->size()) {
+      size = 0;
+    } else {
+      size = fd->size() - fd->tell();
+    }
+    fd->setPosition(fd->size());
+  } else
+    fd->incrPosition(size);
+
+  return st->read(size);
 }
 
 Action* HostImpl::write(surf_file_t fd, sg_size_t size)
 {
   simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount());
-  XBT_DEBUG("WRITE %s on disk '%s'", fd->cname(), st->cname());
-  return st->write(fd, size);
+  XBT_DEBUG("WRITE %s on disk '%s'. size '%llu/%llu'", fd->cname(), st->cname(), size, fd->size());
+
+  StorageAction* action = st->write(size);
+  action->file_         = fd;
+  /* Substract the part of the file that might disappear from the used sized on the storage element */
+  st->usedSize_ -= (fd->size() - fd->tell());
+  // If the storage is full before even starting to write
+  if (st->usedSize_ >= st->size_) {
+    action->setState(Action::State::failed);
+  }
+  return action;
 }
 
 }

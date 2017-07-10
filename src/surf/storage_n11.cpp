@@ -137,36 +137,14 @@ StorageN11::StorageN11(StorageModel* model, const char* name, lmm_system_t maxmi
   simgrid::s4u::Storage::onCreation(this->piface_);
 }
 
-StorageAction *StorageN11::read(surf_file_t fd, sg_size_t size)
+StorageAction* StorageN11::read(sg_size_t size)
 {
-  if (fd->tell() + size > fd->size()) {
-    if (fd->tell() > fd->size()) {
-      size = 0;
-    } else {
-      size = fd->size() - fd->tell();
-    }
-    fd->setPosition(fd->size());
-  }
-  else
-    fd->incrPosition(size);
-
-  StorageAction* action = new StorageN11Action(model(), size, isOff(), this, READ);
-  return action;
+  return new StorageN11Action(model(), size, isOff(), this, READ);
 }
 
-StorageAction *StorageN11::write(surf_file_t fd, sg_size_t size)
+StorageAction* StorageN11::write(sg_size_t size)
 {
-  XBT_DEBUG("\tWrite file '%s' size '%llu/%llu'", fd->cname(), size, fd->size());
-
-  StorageAction* action = new StorageN11Action(model(), size, isOff(), this, WRITE);
-  action->file_         = fd;
-  /* Substract the part of the file that might disappear from the used sized on the storage element */
-  usedSize_ -= (fd->size() - fd->tell());
-  // If the storage is full before even starting to write
-  if(usedSize_==size_) {
-    action->setState(Action::State::failed);
-  }
-  return action;
+  return new StorageN11Action(model(), size, isOff(), this, WRITE);
 }
 
 /**********

@@ -46,8 +46,8 @@ public:
   virtual ~StorageN11() = default;
   StorageAction *open(const char* mount, const char* path);
   StorageAction *ls(const char *path);
-  StorageAction* read(surf_file_t fd, sg_size_t size);
-  StorageAction* write(surf_file_t fd, sg_size_t size);
+  StorageAction* read(sg_size_t size);
+  StorageAction* write(sg_size_t size);
   void rename(const char *src, const char *dest);
 };
 

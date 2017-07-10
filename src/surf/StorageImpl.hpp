@@ -113,20 +113,18 @@ public:
   /**
    * @brief Read a file
    *
-   * @param fd The file descriptor to read
    * @param size The size in bytes to read
    * @return The StorageAction corresponding to the reading
    */
-  virtual StorageAction* read(surf_file_t fd, sg_size_t size) = 0;
+  virtual StorageAction* read(sg_size_t size) = 0;
 
   /**
    * @brief Write a file
    *
-   * @param fd The file descriptor to write
    * @param size The size in bytes to write
    * @return The StorageAction corresponding to the writing
    */
-  virtual StorageAction* write(surf_file_t fd, sg_size_t size) = 0;
+  virtual StorageAction* write(sg_size_t size) = 0;
 
   /**
    * @brief Get the content of the current Storage
