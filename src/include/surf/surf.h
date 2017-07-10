@@ -155,14 +155,6 @@ XBT_PUBLIC(void) surf_cpu_action_set_bound(surf_action_t action, double bound);
  */
 XBT_PUBLIC(double) surf_network_action_get_latency_limited(surf_action_t action);
 
-/**
- * @brief Get the file associated to a storage action
- *
- * @param action The surf storage action
- * @return The file associated to a storage action
- */
-XBT_PUBLIC(surf_file_t) surf_storage_action_get_file(surf_action_t action);
-
 /** @} */
 
 /**************************************/

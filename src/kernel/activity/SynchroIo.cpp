@@ -6,6 +6,7 @@
 #include "src/kernel/activity/SynchroIo.hpp"
 #include "src/simix/smx_private.h"
 #include "src/surf/FileImpl.hpp"
+#include "src/surf/StorageImpl.hpp"
 #include "src/surf/surf_interface.hpp"
 
 void simgrid::kernel::activity::IoImpl::suspend()
@@ -25,7 +26,7 @@ void simgrid::kernel::activity::IoImpl::post()
   for (smx_simcall_t simcall : simcalls) {
     switch (simcall->call) {
     case SIMCALL_FILE_OPEN: {
-      surf_file_t tmp = surf_storage_action_get_file(surf_io);
+      surf_file_t tmp = static_cast<simgrid::surf::StorageAction*>(surf_io)->file_;
       simcall_file_open__set__result(simcall, tmp);
       break;
     }

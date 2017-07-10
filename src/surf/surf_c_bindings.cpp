@@ -168,7 +168,3 @@ int surf_model_running_action_set_size(surf_model_t model){
 void surf_cpu_action_set_bound(surf_action_t action, double bound) {
   static_cast<simgrid::surf::CpuAction*>(action)->setBound(bound);
 }
-
-surf_file_t surf_storage_action_get_file(surf_action_t action){
-  return static_cast<simgrid::surf::StorageAction*>(action)->file_;
-}
