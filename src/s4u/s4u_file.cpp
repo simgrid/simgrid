@@ -19,7 +19,7 @@ namespace s4u {
 
 File::File(const char* fullpath, void* userdata) : File(fullpath, Host::current(), userdata){};
 
-File::File(const char* fullpath, sg_host_t host, void* userdata) : path_(fullpath), userdata_(userdata), host_(host)
+File::File(const char* fullpath, sg_host_t host, void* userdata) : path_(fullpath), userdata_(userdata)
 {
   // this cannot fail because we get a xbt_die if the mountpoint does not exist
   Storage* st                  = nullptr;
