@@ -15,7 +15,7 @@ namespace surf {
 
 class FileImpl {
 public:
-  FileImpl(const char* path, const char* mount, sg_size_t size) : path_(path), mount_point_(mount), size_(size) {}
+  FileImpl(sg_storage_t st, std::string path, std::string mount);
   ~FileImpl() = default;
 
   std::string name() { return path_; }

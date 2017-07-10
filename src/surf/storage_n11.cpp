@@ -137,27 +137,6 @@ StorageN11::StorageN11(StorageModel* model, const char* name, lmm_system_t maxmi
   simgrid::s4u::Storage::onCreation(this->piface_);
 }
 
-StorageAction *StorageN11::open(const char* mount, const char* path)
-{
-  XBT_DEBUG("\tOpen file '%s'",path);
-
-  sg_size_t size;
-  // if file does not exist create an empty file
-  if (content_->find(path) != content_->end())
-    size = content_->at(path);
-  else {
-    size = 0;
-    content_->insert({path, size});
-    XBT_DEBUG("File '%s' was not found, file created.",path);
-  }
-  FileImpl* file = new FileImpl(path, mount, size);
-
-  StorageAction* action = new StorageN11Action(model(), 0, isOff(), this, OPEN);
-  action->file_         = file;
-
-  return action;
-}
-
 StorageAction *StorageN11::read(surf_file_t fd, sg_size_t size)
 {
   if (fd->tell() + size > fd->size()) {
@@ -203,8 +182,6 @@ StorageN11Action::StorageN11Action(Model* model, double cost, bool failed, Stora
   // Must be less than the max bandwidth for all actions
   lmm_expand(model->getMaxminSystem(), storage->constraint(), getVariable(), 1.0);
   switch(type) {
-  case OPEN:
-    break;
   case READ:
     lmm_expand(model->getMaxminSystem(), storage->constraintRead_, getVariable(), 1.0);
     break;

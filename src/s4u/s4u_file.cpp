@@ -43,7 +43,8 @@ File::File(const char* fullpath, sg_host_t host, void* userdata) : path_(fullpat
   } else
     xbt_die("Can't find mount point for '%s' on '%s'", fullpath, host->getCname());
 
-  pimpl_       = simcall_file_open(mount_point.c_str(), path.c_str(), st);
+  pimpl_ =
+      simgrid::simix::kernelImmediate([this, st, path] { return new simgrid::surf::FileImpl(st, path, mount_point); });
   storage_type = st->getType();
   storageId    = st->getName();
 }

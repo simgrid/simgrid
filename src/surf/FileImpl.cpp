@@ -11,6 +11,20 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_file, surf, "Logging specific to the SURF f
 namespace simgrid {
 namespace surf {
 
+FileImpl::FileImpl(sg_storage_t st, std::string path, std::string mount) : path_(path), mount_point_(mount)
+{
+  XBT_DEBUG("\tOpen file '%s'", path.c_str());
+  std::map<std::string, sg_size_t>* content = st->pimpl_->content_;
+  // if file does not exist create an empty file
+  if (content->find(path) != content->end())
+    size_ = content->at(path);
+  else {
+    size_ = 0;
+    content->insert({path, size_});
+    XBT_DEBUG("File '%s' was not found, file created.", path.c_str());
+  }
+}
+
 int FileImpl::seek(sg_offset_t offset, int origin)
 {
   switch (origin) {

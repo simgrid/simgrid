@@ -25,11 +25,6 @@ void simgrid::kernel::activity::IoImpl::post()
 {
   for (smx_simcall_t simcall : simcalls) {
     switch (simcall->call) {
-    case SIMCALL_FILE_OPEN: {
-      surf_file_t tmp = static_cast<simgrid::surf::StorageAction*>(surf_io)->file_;
-      simcall_file_open__set__result(simcall, tmp);
-      break;
-    }
     case SIMCALL_FILE_WRITE:
       simcall_file_write__set__result(simcall, surf_io->getCost());
       break;

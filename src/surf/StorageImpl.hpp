@@ -109,15 +109,6 @@ public:
   std::string attach_; // Name of the host to which this storage is attached.
                        // Only used until the platform is fully parsed only.
                        // Then the interface stores the Host directly.
-                       /**
-                        * @brief Open a file
-                        *
-                        * @param mount The mount point
-                        * @param path The path to the file
-                        *
-                        * @return The StorageAction corresponding to the opening
-                        */
-  virtual StorageAction* open(const char* mount, const char* path) = 0;
 
   /**
    * @brief Read a file
@@ -175,9 +166,7 @@ public:
  */
 typedef enum {
   READ = 0, /**< Read a file */
-  WRITE,    /**< Write in a file */
-  OPEN,     /**< Open a file */
-  CLOSE     /**< Close a file */
+  WRITE     /**< Write in a file */
 } e_surf_action_storage_type_t;
 
 /** @ingroup SURF_storage_interface

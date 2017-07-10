@@ -67,28 +67,6 @@ smx_activity_t SIMIX_file_write(surf_file_t file, sg_size_t size, sg_host_t host
   return synchro;
 }
 
-//SIMIX FILE OPEN
-void simcall_HANDLER_file_open(smx_simcall_t simcall, const char* mount, const char* path, sg_storage_t st)
-{
-  smx_activity_t synchro = SIMIX_file_open(mount, path, st);
-  synchro->simcalls.push_back(simcall);
-  simcall->issuer->waiting_synchro = synchro;
-}
-
-smx_activity_t SIMIX_file_open(const char* mount, const char* path, sg_storage_t st)
-{
-  if (st->getHost()->isOff())
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function", st->getHost()->getCname());
-
-  simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
-  synchro->host                              = st->getHost();
-  synchro->surf_io                           = st->pimpl_->open(mount, path);
-  synchro->surf_io->setData(synchro);
-  XBT_DEBUG("Create io synchro %p", synchro);
-
-  return synchro;
-}
-
 void SIMIX_io_destroy(smx_activity_t synchro)
 {
   simgrid::kernel::activity::IoImplPtr io = boost::static_pointer_cast<simgrid::kernel::activity::IoImpl>(synchro);
