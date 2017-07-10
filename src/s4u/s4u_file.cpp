@@ -50,7 +50,7 @@ File::File(const char* fullpath, sg_host_t host, void* userdata) : path_(fullpat
 
 File::~File()
 {
-  simcall_file_close(pimpl_, host_);
+  simgrid::simix::kernelImmediate([this] { delete pimpl_; });
 }
 
 sg_size_t File::read(sg_size_t size)

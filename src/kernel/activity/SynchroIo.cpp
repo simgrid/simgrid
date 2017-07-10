@@ -30,10 +30,6 @@ void simgrid::kernel::activity::IoImpl::post()
       simcall_file_open__set__result(simcall, tmp);
       break;
     }
-    case SIMCALL_FILE_CLOSE:
-      delete simcall_file_close__get__fd(simcall);
-      simcall_file_close__set__result(simcall, 0);
-      break;
     case SIMCALL_FILE_WRITE:
       simcall_file_write__set__result(simcall, surf_io->getCost());
       break;

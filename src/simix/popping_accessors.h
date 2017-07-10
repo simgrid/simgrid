@@ -1601,42 +1601,6 @@ static inline void simcall_file_open__set__result(smx_simcall_t simcall, surf_fi
   simgrid::simix::marshal<surf_file_t>(simcall->result, result);
 }
 
-static inline surf_file_t simcall_file_close__get__fd(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<surf_file_t>(simcall->args[0]);
-}
-static inline surf_file_t simcall_file_close__getraw__fd(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<surf_file_t>(simcall->args[0]);
-}
-static inline void simcall_file_close__set__fd(smx_simcall_t simcall, surf_file_t arg)
-{
-  simgrid::simix::marshal<surf_file_t>(simcall->args[0], arg);
-}
-static inline sg_host_t simcall_file_close__get__host(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<sg_host_t>(simcall->args[1]);
-}
-static inline sg_host_t simcall_file_close__getraw__host(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<sg_host_t>(simcall->args[1]);
-}
-static inline void simcall_file_close__set__host(smx_simcall_t simcall, sg_host_t arg)
-{
-  simgrid::simix::marshal<sg_host_t>(simcall->args[1], arg);
-}
-static inline int simcall_file_close__get__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<int>(simcall->result);
-}
-static inline int simcall_file_close__getraw__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<int>(simcall->result);
-}
-static inline void simcall_file_close__set__result(smx_simcall_t simcall, int result){
-    simgrid::simix::marshal<int>(simcall->result, result);
-}
-
 static inline int simcall_mc_random__get__min(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<int>(simcall->args[0]);
@@ -1777,5 +1741,4 @@ XBT_PRIVATE int simcall_HANDLER_sem_get_capacity(smx_simcall_t simcall, smx_sem_
 XBT_PRIVATE void simcall_HANDLER_file_read(smx_simcall_t simcall, surf_file_t fd, sg_size_t size, sg_host_t host);
 XBT_PRIVATE void simcall_HANDLER_file_write(smx_simcall_t simcall, surf_file_t fd, sg_size_t size, sg_host_t host);
 XBT_PRIVATE void simcall_HANDLER_file_open(smx_simcall_t simcall, const char* mount, const char* path, sg_storage_t st);
-XBT_PRIVATE void simcall_HANDLER_file_close(smx_simcall_t simcall, surf_file_t fd, sg_host_t host);
 XBT_PRIVATE int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max);

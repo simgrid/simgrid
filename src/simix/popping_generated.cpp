@@ -67,7 +67,6 @@ const char* simcall_names[] = {
     "SIMCALL_FILE_READ",
     "SIMCALL_FILE_WRITE",
     "SIMCALL_FILE_OPEN",
-    "SIMCALL_FILE_CLOSE",
     "SIMCALL_MC_RANDOM",
     "SIMCALL_SET_CATEGORY",
     "SIMCALL_RUN_KERNEL",
@@ -329,11 +328,6 @@ case SIMCALL_FILE_OPEN:
   simcall_HANDLER_file_open(simcall, simgrid::simix::unmarshal<const char*>(simcall->args[0]),
                             simgrid::simix::unmarshal<const char*>(simcall->args[1]),
                             simgrid::simix::unmarshal<sg_storage_t>(simcall->args[2]));
-  break;
-
-case SIMCALL_FILE_CLOSE:
-  simcall_HANDLER_file_close(simcall, simgrid::simix::unmarshal<surf_file_t>(simcall->args[0]),
-                             simgrid::simix::unmarshal<sg_host_t>(simcall->args[1]));
   break;
 
 case SIMCALL_MC_RANDOM:

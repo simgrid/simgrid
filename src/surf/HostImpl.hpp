@@ -73,14 +73,6 @@ public:
   virtual void getAttachedStorageList(std::vector<const char*>* storages);
 
   /**
-   * @brief Close a file
-   *
-   * @param fd The file descriptor to close
-   * @return The StorageAction corresponding to the closing
-   */
-  virtual Action* close(surf_file_t fd);
-
-  /**
    * @brief Read a file
    *
    * @param fd The file descriptor to read

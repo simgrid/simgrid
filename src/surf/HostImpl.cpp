@@ -116,13 +116,6 @@ void HostImpl::getAttachedStorageList(std::vector<const char*>* storages)
       storages->push_back(s.second->piface_.getName());
 }
 
-Action* HostImpl::close(surf_file_t fd)
-{
-  simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount());
-  XBT_DEBUG("CLOSE %s on disk '%s'", fd->cname(), st->cname());
-  return st->close(fd);
-}
-
 Action* HostImpl::read(surf_file_t fd, sg_size_t size)
 {
   simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount());

@@ -336,13 +336,6 @@ inline static int simcall_BODY_sem_get_capacity(smx_sem_t sem) {
     return simcall<surf_file_t, const char*, const char*, sg_storage_t>(SIMCALL_FILE_OPEN, mount, path, st);
   }
 
-  inline static int simcall_BODY_file_close(surf_file_t fd, sg_host_t host)
-  {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_file_close(&SIMIX_process_self()->simcall, fd, host);
-    return simcall<int, surf_file_t, sg_host_t>(SIMCALL_FILE_CLOSE, fd, host);
-  }
-
 inline static int simcall_BODY_mc_random(int min, int max) {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) simcall_HANDLER_mc_random(&SIMIX_process_self()->simcall, min, max);

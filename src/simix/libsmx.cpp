@@ -632,15 +632,6 @@ surf_file_t simcall_file_open(const char* mount, const char* path, sg_storage_t 
   return simcall_BODY_file_open(mount, path, st);
 }
 
-/**
- * \ingroup simix_file_management
- *
- */
-int simcall_file_close(surf_file_t fd, sg_host_t host)
-{
-  return simcall_BODY_file_close(fd, host);
-}
-
 void simcall_run_kernel(std::function<void()> const& code)
 {
   simcall_BODY_run_kernel(&code);

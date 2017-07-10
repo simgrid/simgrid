@@ -292,7 +292,6 @@ XBT_PUBLIC(int) simcall_sem_get_capacity(smx_sem_t sem);
 XBT_PUBLIC(sg_size_t) simcall_file_read(surf_file_t fd, sg_size_t size, sg_host_t host);
 XBT_PUBLIC(sg_size_t) simcall_file_write(surf_file_t fd, sg_size_t size, sg_host_t host);
 XBT_PUBLIC(surf_file_t) simcall_file_open(const char* mount, const char* path, sg_storage_t st);
-XBT_PUBLIC(int) simcall_file_close(surf_file_t fd, sg_host_t host);
 /************************** MC simcalls   **********************************/
 XBT_PUBLIC(int) simcall_mc_random(int min, int max);
 

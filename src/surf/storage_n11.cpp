@@ -158,13 +158,6 @@ StorageAction *StorageN11::open(const char* mount, const char* path)
   return action;
 }
 
-StorageAction *StorageN11::close(surf_file_t fd)
-{
-  XBT_DEBUG("\tClose file '%s' size '%llu'", fd->cname(), fd->size());
-  StorageAction* action = new StorageN11Action(model(), 0, isOff(), this, CLOSE);
-  return action;
-}
-
 StorageAction *StorageN11::read(surf_file_t fd, sg_size_t size)
 {
   if (fd->tell() + size > fd->size()) {
@@ -211,7 +204,7 @@ StorageN11Action::StorageN11Action(Model* model, double cost, bool failed, Stora
   lmm_expand(model->getMaxminSystem(), storage->constraint(), getVariable(), 1.0);
   switch(type) {
   case OPEN:
-  case CLOSE:
+    break;
   case READ:
     lmm_expand(model->getMaxminSystem(), storage->constraintRead_, getVariable(), 1.0);
     break;

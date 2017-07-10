@@ -120,14 +120,6 @@ public:
   virtual StorageAction* open(const char* mount, const char* path) = 0;
 
   /**
-   * @brief Close a file
-   *
-   * @param fd The file descriptor to close
-   * @return The StorageAction corresponding to the closing
-   */
-  virtual StorageAction* close(surf_file_t fd) = 0;
-
-  /**
    * @brief Read a file
    *
    * @param fd The file descriptor to read
