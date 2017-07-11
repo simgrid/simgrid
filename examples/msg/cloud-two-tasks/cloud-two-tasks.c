@@ -59,7 +59,7 @@ static int master_main(int argc, char *argv[])
   msg_vm_t   vm0 = MSG_vm_create_core(pm0, "VM0");
   MSG_vm_start(vm0);
 
-  launch_computation_worker(vm0);
+  launch_computation_worker((msg_host_t)vm0);
 
   while(MSG_get_clock()<100) {
     if (atask != NULL)

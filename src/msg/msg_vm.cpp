@@ -32,6 +32,10 @@ typedef struct dirty_page* dirty_page_t;
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg, "Cloud-oriented parts of the MSG API");
 
 /* **** ******** GENERAL ********* **** */
+const char* MSG_vm_get_name(msg_vm_t vm)
+{
+  return vm->getCname();
+}
 
 /** \ingroup m_vm_management
  * \brief Set the parameters of a given host

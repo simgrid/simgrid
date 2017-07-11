@@ -31,11 +31,11 @@ static int dvfs(int argc, char *argv[])
   MSG_vm_start(vm_host2);
 
   XBT_INFO("Create two tasks on Host1: one inside a VM, the other directly on the host");
-  MSG_process_create("p11", worker_func, NULL, vm_host1);
-  MSG_process_create("p12", worker_func, NULL, vm_host1);
+  MSG_process_create("p11", worker_func, NULL, (msg_host_t)vm_host1);
+  MSG_process_create("p12", worker_func, NULL, (msg_host_t)vm_host1);
 
   XBT_INFO("Create two tasks on Host2: both directly on the host");
-  MSG_process_create("p21", worker_func, NULL, vm_host2);
+  MSG_process_create("p21", worker_func, NULL, (msg_host_t)vm_host2);
   MSG_process_create("p22", worker_func, NULL, host2);
 
   XBT_INFO("Create two tasks on Host3: both inside a VM");

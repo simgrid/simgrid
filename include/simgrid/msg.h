@@ -471,8 +471,7 @@ XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t vm);
 XBT_PUBLIC(int) MSG_vm_is_migrating(msg_vm_t vm);
 XBT_PUBLIC(int) MSG_vm_is_suspended(msg_vm_t vm);
 
-#define MSG_vm_get_name(vm) MSG_host_get_name(vm)
-
+XBT_PUBLIC(const char*) MSG_vm_get_name(msg_vm_t vm);
 XBT_PUBLIC(void) MSG_vm_get_params(msg_vm_t vm, vm_params_t params);
 XBT_PUBLIC(void) MSG_vm_set_params(msg_vm_t vm, vm_params_t params);
 

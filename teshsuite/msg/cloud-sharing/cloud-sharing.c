@@ -51,7 +51,7 @@ static void run_test(const char* chooser)
   msg_host_t pm2 = MSG_host_by_name("node-0.2cores.org"); // 2 cores
   msg_host_t pm4 = MSG_host_by_name("node-0.4cores.org");
 
-  msg_host_t vm0;
+  msg_vm_t vm0;
   xbt_assert(pm0, "Host node-0.1core.org does not seem to exist");
   xbt_assert(pm2, "Host node-0.2cores.org does not seem to exist");
   xbt_assert(pm4, "Host node-0.4cores.org does not seem to exist");
@@ -83,7 +83,7 @@ static void run_test(const char* chooser)
     XBT_INFO("### Test '%s'. A task in a VM on a PM.", chooser);
     vm0 = MSG_vm_create_core(pm0, "VM0");
     MSG_vm_start(vm0);
-    run_test_process("( [X]1 )1", vm0, flop_amount);
+    run_test_process("( [X]1 )1", (msg_host_t)vm0, flop_amount);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
 
@@ -91,8 +91,8 @@ static void run_test(const char* chooser)
     XBT_INFO("### Test '%s'. 2 tasks co-located in a VM on a PM.", chooser);
     vm0 = MSG_vm_create_core(pm0, "VM0");
     MSG_vm_start(vm0);
-    run_test_process("( [Xo]1 )1", vm0, flop_amount / 2);
-    run_test_process("( [oX]1 )1", vm0, flop_amount / 2);
+    run_test_process("( [Xo]1 )1", (msg_host_t)vm0, flop_amount / 2);
+    run_test_process("( [oX]1 )1", (msg_host_t)vm0, flop_amount / 2);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
 
@@ -108,7 +108,7 @@ static void run_test(const char* chooser)
     XBT_INFO("### Test '%s'. A task in a VM, plus a task", chooser);
     vm0 = MSG_vm_create_core(pm0, "VM0");
     MSG_vm_start(vm0);
-    run_test_process("( [X]1 o )1", vm0, flop_amount / 2);
+    run_test_process("( [X]1 o )1", (msg_host_t)vm0, flop_amount / 2);
     run_test_process("( [o]1 X )1", pm0, flop_amount / 2);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
@@ -117,8 +117,8 @@ static void run_test(const char* chooser)
     XBT_INFO("### Test '%s'. 2 tasks in a VM, plus a task", chooser);
     vm0 = MSG_vm_create_core(pm0, "VM0");
     MSG_vm_start(vm0);
-    run_test_process("( [Xo]1 o )1", vm0, flop_amount / 4);
-    run_test_process("( [oX]1 o )1", vm0, flop_amount / 4);
+    run_test_process("( [Xo]1 o )1", (msg_host_t)vm0, flop_amount / 4);
+    run_test_process("( [oX]1 o )1", (msg_host_t)vm0, flop_amount / 4);
     run_test_process("( [oo]1 X )1", pm0, flop_amount / 2);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
@@ -145,7 +145,7 @@ static void run_test(const char* chooser)
     XBT_INFO("### Test '%s'. A task in a VM on a bicore PM", chooser);
     vm0 = MSG_vm_create_core(pm2, "VM0");
     MSG_vm_start(vm0);
-    run_test_process("( [X]1 )2", vm0, flop_amount);
+    run_test_process("( [X]1 )2", (msg_host_t)vm0, flop_amount);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
 
@@ -153,8 +153,8 @@ static void run_test(const char* chooser)
     XBT_INFO("### Test '%s'. 2 tasks in a VM on a bicore PM", chooser);
     vm0 = MSG_vm_create_core(pm2, "VM0");
     MSG_vm_start(vm0);
-    run_test_process("( [Xx]1 )2", vm0, flop_amount / 2);
-    run_test_process("( [xX]1 )2", vm0, flop_amount / 2);
+    run_test_process("( [Xx]1 )2", (msg_host_t)vm0, flop_amount / 2);
+    run_test_process("( [xX]1 )2", (msg_host_t)vm0, flop_amount / 2);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
 
@@ -170,7 +170,7 @@ static void run_test(const char* chooser)
     XBT_INFO("### Put a VM on a PM, put a task to the PM and a task to the VM");
     vm0 = MSG_vm_create_core(pm2, "VM0");
     MSG_vm_start(vm0);
-    run_test_process("( [X]1 x )2", vm0, flop_amount);
+    run_test_process("( [X]1 x )2", (msg_host_t)vm0, flop_amount);
     run_test_process("( [x]1 X )2", pm2, flop_amount);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
@@ -181,7 +181,7 @@ static void run_test(const char* chooser)
     msg_vm_t vm1 = MSG_vm_create_core(pm2, "VM1");
     MSG_vm_start(vm0);
     MSG_vm_start(vm1);
-    run_test_process("( [X]1 [ ]1 )2", vm0, flop_amount);
+    run_test_process("( [X]1 [ ]1 )2", (msg_host_t)vm0, flop_amount);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
     MSG_vm_destroy(vm1);
@@ -192,8 +192,8 @@ static void run_test(const char* chooser)
     msg_vm_t vm1 = MSG_vm_create_core(pm2, "VM1");
     MSG_vm_start(vm0);
     MSG_vm_start(vm1);
-    run_test_process("( [X]1 [x]1 )2", vm0, flop_amount);
-    run_test_process("( [x]1 [X]1 )2", vm1, flop_amount);
+    run_test_process("( [X]1 [x]1 )2", (msg_host_t)vm0, flop_amount);
+    run_test_process("( [x]1 [X]1 )2", (msg_host_t)vm1, flop_amount);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
     MSG_vm_destroy(vm1);
@@ -206,8 +206,8 @@ static void run_test(const char* chooser)
     MSG_vm_start(vm0);
     MSG_vm_start(vm1);
     MSG_vm_start(vm2);
-    run_test_process("( [X]1 [x]1 [ ]1 )2", vm0, flop_amount);
-    run_test_process("( [x]1 [X]1 [ ]1 )2", vm1, flop_amount);
+    run_test_process("( [X]1 [x]1 [ ]1 )2", (msg_host_t)vm0, flop_amount);
+    run_test_process("( [x]1 [X]1 [ ]1 )2", (msg_host_t)vm1, flop_amount);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
     MSG_vm_destroy(vm1);
@@ -221,9 +221,9 @@ static void run_test(const char* chooser)
     MSG_vm_start(vm0);
     MSG_vm_start(vm1);
     MSG_vm_start(vm2);
-    run_test_process("( [X]1 [o]1 [o]1 )2", vm0, flop_amount * 2 / 3);
-    run_test_process("( [o]1 [X]1 [o]1 )2", vm1, flop_amount * 2 / 3);
-    run_test_process("( [o]1 [o]1 [X]1 )2", vm2, flop_amount * 2 / 3);
+    run_test_process("( [X]1 [o]1 [o]1 )2", (msg_host_t)vm0, flop_amount * 2 / 3);
+    run_test_process("( [o]1 [X]1 [o]1 )2", (msg_host_t)vm1, flop_amount * 2 / 3);
+    run_test_process("( [o]1 [o]1 [X]1 )2", (msg_host_t)vm2, flop_amount * 2 / 3);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
     MSG_vm_destroy(vm1);
@@ -233,7 +233,7 @@ static void run_test(const char* chooser)
     XBT_INFO("### Put a VM on a PM, and put a task to the VM");
     vm0 = MSG_vm_create_multicore(pm2, "VM0", 2);
     MSG_vm_start(vm0);
-    run_test_process("( [X]2 )2", vm0, flop_amount);
+    run_test_process("( [X]2 )2", (msg_host_t)vm0, flop_amount);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
 
@@ -241,8 +241,8 @@ static void run_test(const char* chooser)
     XBT_INFO("### Put a VM on a PM, and put two tasks to the VM");
     vm0 = MSG_vm_create_multicore(pm2, "VM0", 2);
     MSG_vm_start(vm0);
-    run_test_process("( [Xo]2 )2", vm0, flop_amount);
-    run_test_process("( [oX]2 )2", vm0, flop_amount);
+    run_test_process("( [Xo]2 )2", (msg_host_t)vm0, flop_amount);
+    run_test_process("( [oX]2 )2", (msg_host_t)vm0, flop_amount);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
 
@@ -250,9 +250,9 @@ static void run_test(const char* chooser)
     XBT_INFO("### Put a VM on a PM, and put three tasks to the VM");
     vm0 = MSG_vm_create_multicore(pm2, "VM0", 2);
     MSG_vm_start(vm0);
-    run_test_process("( [Xoo]2 )2", vm0, flop_amount * 2 / 3);
-    run_test_process("( [oXo]2 )2", vm0, flop_amount * 2 / 3);
-    run_test_process("( [ooX]2 )2", vm0, flop_amount * 2 / 3);
+    run_test_process("( [Xoo]2 )2", (msg_host_t)vm0, flop_amount * 2 / 3);
+    run_test_process("( [oXo]2 )2", (msg_host_t)vm0, flop_amount * 2 / 3);
+    run_test_process("( [ooX]2 )2", (msg_host_t)vm0, flop_amount * 2 / 3);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
 
@@ -269,7 +269,7 @@ static void run_test(const char* chooser)
     vm0 = MSG_vm_create_multicore(pm2, "VM0", 2);
     MSG_vm_start(vm0);
     run_test_process("( [o]2 X )2", pm2, flop_amount);
-    run_test_process("( [X]2 o )2", vm0, flop_amount);
+    run_test_process("( [X]2 o )2", (msg_host_t)vm0, flop_amount);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
 
@@ -278,8 +278,8 @@ static void run_test(const char* chooser)
     vm0 = MSG_vm_create_multicore(pm2, "VM0", 2);
     MSG_vm_start(vm0);
     run_test_process("( [oo]2 X )2", pm2, flop_amount * 2 / 3);
-    run_test_process("( [Xo]2 o )2", vm0, flop_amount * 2 / 3);
-    run_test_process("( [oX]2 o )2", vm0, flop_amount * 2 / 3);
+    run_test_process("( [Xo]2 o )2", (msg_host_t)vm0, flop_amount * 2 / 3);
+    run_test_process("( [oX]2 o )2", (msg_host_t)vm0, flop_amount * 2 / 3);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
 
@@ -288,9 +288,9 @@ static void run_test(const char* chooser)
     vm0 = MSG_vm_create_multicore(pm2, "VM0", 2);
     MSG_vm_start(vm0);
     run_test_process("( [ooo]2 X )2", pm2, flop_amount * 2 / 3);
-    run_test_process("( [Xoo]2 o )2", vm0, flop_amount * (2. / 3 * 2) / 3); // VM_share/3
-    run_test_process("( [oXo]2 o )2", vm0, flop_amount * (2. / 3 * 2) / 3); // VM_share/3
-    run_test_process("( [ooX]2 o )2", vm0, flop_amount * (2. / 3 * 2) / 3); // VM_share/3
+    run_test_process("( [Xoo]2 o )2", (msg_host_t)vm0, flop_amount * (2. / 3 * 2) / 3); // VM_share/3
+    run_test_process("( [oXo]2 o )2", (msg_host_t)vm0, flop_amount * (2. / 3 * 2) / 3); // VM_share/3
+    run_test_process("( [ooX]2 o )2", (msg_host_t)vm0, flop_amount * (2. / 3 * 2) / 3); // VM_share/3
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
 
@@ -309,7 +309,7 @@ static void run_test(const char* chooser)
     MSG_vm_start(vm0);
     run_test_process("( [o]2 Xo )2", pm2, flop_amount * 2 / 3);
     run_test_process("( [o]2 oX )2", pm2, flop_amount * 2 / 3);
-    run_test_process("( [X]2 oo )2", vm0, flop_amount * 2 / 3);
+    run_test_process("( [X]2 oo )2", (msg_host_t)vm0, flop_amount * 2 / 3);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
 
@@ -319,8 +319,8 @@ static void run_test(const char* chooser)
     MSG_vm_start(vm0);
     run_test_process("( [oo]2 Xo )2", pm2, flop_amount / 2);
     run_test_process("( [oo]2 oX )2", pm2, flop_amount / 2);
-    run_test_process("( [Xo]2 oo )2", vm0, flop_amount / 2);
-    run_test_process("( [oX]2 oo )2", vm0, flop_amount / 2);
+    run_test_process("( [Xo]2 oo )2", (msg_host_t)vm0, flop_amount / 2);
+    run_test_process("( [oX]2 oo )2", (msg_host_t)vm0, flop_amount / 2);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
 
@@ -330,9 +330,9 @@ static void run_test(const char* chooser)
     MSG_vm_start(vm0);
     run_test_process("( [ooo]2 Xo )2", pm2, flop_amount * 2 / 4);
     run_test_process("( [ooo]2 oX )2", pm2, flop_amount * 2 / 4);
-    run_test_process("( [Xoo]2 oo )2", vm0, flop_amount / 3);
-    run_test_process("( [oXo]2 oo )2", vm0, flop_amount / 3);
-    run_test_process("( [ooX]2 oo )2", vm0, flop_amount / 3);
+    run_test_process("( [Xoo]2 oo )2", (msg_host_t)vm0, flop_amount / 3);
+    run_test_process("( [oXo]2 oo )2", (msg_host_t)vm0, flop_amount / 3);
+    run_test_process("( [ooX]2 oo )2", (msg_host_t)vm0, flop_amount / 3);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
 
@@ -340,7 +340,7 @@ static void run_test(const char* chooser)
     XBT_INFO("### Put a VM on a PM, and put a task to the VM");
     vm0 = MSG_vm_create_multicore(pm4, "VM0", 2);
     MSG_vm_start(vm0);
-    run_test_process("( [X]2 )4", vm0, flop_amount);
+    run_test_process("( [X]2 )4", (msg_host_t)vm0, flop_amount);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
 
@@ -348,8 +348,8 @@ static void run_test(const char* chooser)
     XBT_INFO("### Put a VM on a PM, and put two tasks to the VM");
     vm0 = MSG_vm_create_multicore(pm4, "VM0", 2);
     MSG_vm_start(vm0);
-    run_test_process("( [Xo]2 )4", vm0, flop_amount);
-    run_test_process("( [oX]2 )4", vm0, flop_amount);
+    run_test_process("( [Xo]2 )4", (msg_host_t)vm0, flop_amount);
+    run_test_process("( [oX]2 )4", (msg_host_t)vm0, flop_amount);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
 
@@ -357,9 +357,9 @@ static void run_test(const char* chooser)
     XBT_INFO("### ( [ooo]2 )4: Put a VM on a PM, and put three tasks to the VM");
     vm0 = MSG_vm_create_multicore(pm4, "VM0", 2);
     MSG_vm_start(vm0);
-    run_test_process("( [Xoo]2 )4", vm0, flop_amount * 2 / 3);
-    run_test_process("( [oXo]2 )4", vm0, flop_amount * 2 / 3);
-    run_test_process("( [ooX]2 )4", vm0, flop_amount * 2 / 3);
+    run_test_process("( [Xoo]2 )4", (msg_host_t)vm0, flop_amount * 2 / 3);
+    run_test_process("( [oXo]2 )4", (msg_host_t)vm0, flop_amount * 2 / 3);
+    run_test_process("( [ooX]2 )4", (msg_host_t)vm0, flop_amount * 2 / 3);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
 
@@ -405,7 +405,7 @@ static void run_test(const char* chooser)
     XBT_INFO("### Put a VM on a PM, and put one task to the PM and one task to the VM");
     vm0 = MSG_vm_create_multicore(pm4, "VM0", 2);
     MSG_vm_start(vm0);
-    run_test_process("( [X]2 o )4", vm0, flop_amount);
+    run_test_process("( [X]2 o )4", (msg_host_t)vm0, flop_amount);
     run_test_process("( [o]2 X )4", pm4, flop_amount);
     MSG_process_sleep(2);
     MSG_vm_destroy(vm0);
@@ -414,7 +414,7 @@ static void run_test(const char* chooser)
     XBT_INFO("### Put a VM on a PM, and put two tasks to the PM and one task to the VM");
     vm0 = MSG_vm_create_multicore(pm4, "VM0", 2);
     MSG_vm_start(vm0);
-    run_test_process("( [X]2 oo )4", vm0, flop_amount);
+    run_test_process("( [X]2 oo )4", (msg_host_t)vm0, flop_amount);
     run_test_process("( [o]2 Xo )4", pm4, flop_amount);
     run_test_process("( [o]2 oX )4", pm4, flop_amount);
     MSG_process_sleep(2);
@@ -424,8 +424,8 @@ static void run_test(const char* chooser)
     XBT_INFO("### Put a VM on a PM, and put two tasks to the PM and two tasks to the VM");
     vm0 = MSG_vm_create_multicore(pm4, "VM0", 2);
     MSG_vm_start(vm0);
-    run_test_process("( [Xo]2 oo )4", vm0, flop_amount);
-    run_test_process("( [oX]2 oo )4", vm0, flop_amount);
+    run_test_process("( [Xo]2 oo )4", (msg_host_t)vm0, flop_amount);
+    run_test_process("( [oX]2 oo )4", (msg_host_t)vm0, flop_amount);
     run_test_process("( [oo]2 Xo )4", pm4, flop_amount);
     run_test_process("( [oo]2 oX )4", pm4, flop_amount);
     MSG_process_sleep(2);
@@ -435,7 +435,7 @@ static void run_test(const char* chooser)
     XBT_INFO("### Put a VM on a PM, and put three tasks to the PM and one tasks to the VM");
     vm0 = MSG_vm_create_multicore(pm4, "VM0", 2);
     MSG_vm_start(vm0);
-    run_test_process("( [X]2 ooo )4", vm0, flop_amount);
+    run_test_process("( [X]2 ooo )4", (msg_host_t)vm0, flop_amount);
     run_test_process("( [o]2 Xoo )4", pm4, flop_amount);
     run_test_process("( [o]2 oXo )4", pm4, flop_amount);
     run_test_process("( [o]2 ooX )4", pm4, flop_amount);
@@ -446,8 +446,8 @@ static void run_test(const char* chooser)
     XBT_INFO("### Put a VM on a PM, and put three tasks to the PM and two tasks to the VM");
     vm0 = MSG_vm_create_multicore(pm4, "VM0", 2);
     MSG_vm_start(vm0);
-    run_test_process("( [Xo]2 ooo )4", vm0, flop_amount * 4 / 5);
-    run_test_process("( [oX]2 ooo )4", vm0, flop_amount * 4 / 5);
+    run_test_process("( [Xo]2 ooo )4", (msg_host_t)vm0, flop_amount * 4 / 5);
+    run_test_process("( [oX]2 ooo )4", (msg_host_t)vm0, flop_amount * 4 / 5);
     run_test_process("( [oo]2 Xoo )4", pm4, flop_amount * 4 / 5);
     run_test_process("( [oo]2 oXo )4", pm4, flop_amount * 4 / 5);
     run_test_process("( [oo]2 ooX )4", pm4, flop_amount * 4 / 5);
@@ -458,9 +458,9 @@ static void run_test(const char* chooser)
     XBT_INFO("### Put a VM on a PM, and put three tasks to the PM and three tasks to the VM");
     vm0 = MSG_vm_create_multicore(pm4, "VM0", 2);
     MSG_vm_start(vm0);
-    run_test_process("( [Xoo]2 ooo )4", vm0, flop_amount * (8. / 5) * 1 / 3); // The VM has 8/5 of the PM
-    run_test_process("( [oXo]2 ooo )4", vm0, flop_amount * (8. / 5) * 1 / 3);
-    run_test_process("( [ooX]2 ooo )4", vm0, flop_amount * (8. / 5) * 1 / 3);
+    run_test_process("( [Xoo]2 ooo )4", (msg_host_t)vm0, flop_amount * (8. / 5) * 1 / 3); // The VM has 8/5 of the PM
+    run_test_process("( [oXo]2 ooo )4", (msg_host_t)vm0, flop_amount * (8. / 5) * 1 / 3);
+    run_test_process("( [ooX]2 ooo )4", (msg_host_t)vm0, flop_amount * (8. / 5) * 1 / 3);
 
     run_test_process("( [ooo]2 Xoo )4", pm4, flop_amount * 4 / 5);
     run_test_process("( [ooo]2 oXo )4", pm4, flop_amount * 4 / 5);
