@@ -200,10 +200,7 @@ int MSG_file_close(msg_file_t fd)
  */
 msg_error_t MSG_file_unlink(msg_file_t fd)
 {
-  /* Find the host where the file is physically located (remote or local)*/
-  msg_storage_t storage_src = simgrid::s4u::Storage::byName(fd->storageId);
-  msg_host_t attached_host  = storage_src->getHost();
-  fd->unlink(attached_host);
+  fd->unlink();
   delete fd;
   return MSG_OK;
 }

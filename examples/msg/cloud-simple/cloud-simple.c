@@ -134,7 +134,7 @@ static int master_main(int argc, char *argv[])
   XBT_INFO("### Put a VM on a PM, and put a task to the VM");
   msg_vm_t vm0 = MSG_vm_create_core(pm0, "VM0");
   MSG_vm_start(vm0);
-  launch_computation_worker(vm0);
+  launch_computation_worker((msg_host_t)vm0);
   MSG_process_sleep(2);
   MSG_vm_destroy(vm0);
 
@@ -159,8 +159,8 @@ static int master_main(int argc, char *argv[])
   msg_vm_t vm1 = MSG_vm_create_core(pm0, "VM1");
   MSG_vm_start(vm0);
   MSG_vm_start(vm1);
-  launch_computation_worker(vm0);
-  launch_computation_worker(vm1);
+  launch_computation_worker((msg_host_t)vm0);
+  launch_computation_worker((msg_host_t)vm1);
   MSG_process_sleep(2);
   MSG_vm_destroy(vm0);
   MSG_vm_destroy(vm1);
@@ -170,8 +170,8 @@ static int master_main(int argc, char *argv[])
   vm1 = MSG_vm_create_core(pm1, "VM1");
   MSG_vm_start(vm0);
   MSG_vm_start(vm1);
-  launch_computation_worker(vm0);
-  launch_computation_worker(vm1);
+  launch_computation_worker((msg_host_t)vm0);
+  launch_computation_worker((msg_host_t)vm1);
   MSG_process_sleep(2);
   MSG_vm_destroy(vm0);
   MSG_vm_destroy(vm1);
@@ -190,29 +190,29 @@ static int master_main(int argc, char *argv[])
   XBT_INFO("### Make a connection between PM0 and VM0@PM0");
   vm0 = MSG_vm_create_core(pm0, "VM0");
   MSG_vm_start(vm0);
-  launch_communication_worker(pm0, vm0);
+  launch_communication_worker(pm0, (msg_host_t)vm0);
   MSG_process_sleep(5);
   MSG_vm_destroy(vm0);
 
   XBT_INFO("### Make a connection between PM0 and VM0@PM1");
   vm0 = MSG_vm_create_core(pm1, "VM0");
   MSG_vm_start(vm0);
-  launch_communication_worker(pm0, vm0);
+  launch_communication_worker(pm0, (msg_host_t)vm0);
   MSG_process_sleep(5);
   MSG_vm_destroy(vm0);
 
   XBT_INFO("### Make two connections between PM0 and VM0@PM1");
   vm0 = MSG_vm_create_core(pm1, "VM0");
   MSG_vm_start(vm0);
-  launch_communication_worker(pm0, vm0);
-  launch_communication_worker(pm0, vm0);
+  launch_communication_worker(pm0, (msg_host_t)vm0);
+  launch_communication_worker(pm0, (msg_host_t)vm0);
   MSG_process_sleep(5);
   MSG_vm_destroy(vm0);
 
   XBT_INFO("### Make a connection between PM0 and VM0@PM1, and also make a connection between PM0 and PM1");
   vm0 = MSG_vm_create_core(pm1, "VM0");
   MSG_vm_start(vm0);
-  launch_communication_worker(pm0, vm0);
+  launch_communication_worker(pm0, (msg_host_t)vm0);
   launch_communication_worker(pm0, pm1);
   MSG_process_sleep(5);
   MSG_vm_destroy(vm0);
@@ -222,8 +222,8 @@ static int master_main(int argc, char *argv[])
   vm1 = MSG_vm_create_core(pm1, "VM1");
   MSG_vm_start(vm0);
   MSG_vm_start(vm1);
-  launch_communication_worker(vm0, vm1);
-  launch_communication_worker(vm0, vm1);
+  launch_communication_worker((msg_host_t)vm0, (msg_host_t)vm1);
+  launch_communication_worker((msg_host_t)vm0, (msg_host_t)vm1);
   MSG_process_sleep(5);
   MSG_vm_destroy(vm0);
   MSG_vm_destroy(vm1);
@@ -240,7 +240,7 @@ static int master_main(int argc, char *argv[])
   MSG_vm_set_params(vm0, &params);
 
   MSG_vm_start(vm0);
-  launch_communication_worker(vm0, pm2);
+  launch_communication_worker((msg_host_t)vm0, pm2);
   MSG_process_sleep(0.01);
   MSG_vm_migrate(vm0, pm1);
   MSG_process_sleep(0.01);

@@ -19,7 +19,7 @@ namespace s4u {
 
 File::File(const char* fullpath, void* userdata) : File(fullpath, Host::current(), userdata){};
 
-File::File(const char* fullpath, sg_host_t host, void* userdata) : path_(fullpath), userdata_(userdata), host_(host)
+File::File(const char* fullpath, sg_host_t host, void* userdata) : path_(fullpath), userdata_(userdata)
 {
   // this cannot fail because we get a xbt_die if the mountpoint does not exist
   Storage* st                  = nullptr;
@@ -43,14 +43,15 @@ File::File(const char* fullpath, sg_host_t host, void* userdata) : path_(fullpat
   } else
     xbt_die("Can't find mount point for '%s' on '%s'", fullpath, host->getCname());
 
-  pimpl_       = simcall_file_open(mount_point.c_str(), path.c_str(), st);
+  pimpl_ =
+      simgrid::simix::kernelImmediate([this, st, path] { return new simgrid::surf::FileImpl(st, path, mount_point); });
   storage_type = st->getType();
   storageId    = st->getName();
 }
 
 File::~File()
 {
-  simcall_file_close(pimpl_, host_);
+  simgrid::simix::kernelImmediate([this] { delete pimpl_; });
 }
 
 sg_size_t File::read(sg_size_t size)
@@ -90,18 +91,12 @@ sg_size_t File::tell()
 
 void File::move(const char* fullpath)
 {
-  sg_host_t host = Host::current();
-  simgrid::simix::kernelImmediate([this, host, fullpath] { pimpl_->move(host, fullpath); });
+  simgrid::simix::kernelImmediate([this, fullpath] { pimpl_->move(fullpath); });
 }
 
 int File::unlink()
 {
-  return unlink(Host::current());
-}
-
-int File::unlink(sg_host_t host)
-{
-  return simgrid::simix::kernelImmediate([this, host] { return pimpl_->unlink(host); });
+  return simgrid::simix::kernelImmediate([this] { return pimpl_->unlink(); });
 }
 
 }} // namespace simgrid::s4u

@@ -15,7 +15,7 @@ namespace surf {
 
 class FileImpl {
 public:
-  FileImpl(const char* path, const char* mount, sg_size_t size) : path_(path), mount_point_(mount), size_(size) {}
+  FileImpl(sg_storage_t st, std::string path, std::string mount);
   ~FileImpl() = default;
 
   std::string name() { return path_; }
@@ -27,10 +27,13 @@ public:
   void incrPosition(sg_size_t incr) { current_position_ += incr; }
   sg_size_t tell() { return current_position_; }
   int seek(sg_offset_t offset, int origin);
-  int unlink(sg_host_t host);
-  void move(sg_host_t host, const char* fullpath);
+  int unlink();
+  void move(const char* fullpath);
+  Action* read(sg_size_t size);
+  Action* write(sg_size_t size);
 
 private:
+  StorageImpl* location_;
   std::string path_;
   std::string mount_point_;
   sg_size_t size_;

@@ -20,7 +20,6 @@ public:
   void resume() override;
   void post() override;
 
-  sg_host_t host        = nullptr;
   surf_action_t surf_io = nullptr;
   };
 

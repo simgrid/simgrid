@@ -102,48 +102,21 @@ public:
   void turnOn() override;
   void turnOff() override;
 
-  std::map<std::string, sg_size_t>* content_;
-  sg_size_t size_;
-  sg_size_t usedSize_;
-  std::string typeId_;
-  std::string attach_; // Name of the host to which this storage is attached.
-                       // Only used until the platform is fully parsed only.
-                       // Then the interface stores the Host directly.
-                       /**
-                        * @brief Open a file
-                        *
-                        * @param mount The mount point
-                        * @param path The path to the file
-                        *
-                        * @return The StorageAction corresponding to the opening
-                        */
-  virtual StorageAction* open(const char* mount, const char* path) = 0;
-
-  /**
-   * @brief Close a file
-   *
-   * @param fd The file descriptor to close
-   * @return The StorageAction corresponding to the closing
-   */
-  virtual StorageAction* close(surf_file_t fd) = 0;
-
   /**
    * @brief Read a file
    *
-   * @param fd The file descriptor to read
    * @param size The size in bytes to read
    * @return The StorageAction corresponding to the reading
    */
-  virtual StorageAction* read(surf_file_t fd, sg_size_t size) = 0;
+  virtual StorageAction* read(sg_size_t size) = 0;
 
   /**
    * @brief Write a file
    *
-   * @param fd The file descriptor to write
    * @param size The size in bytes to write
    * @return The StorageAction corresponding to the writing
    */
-  virtual StorageAction* write(surf_file_t fd, sg_size_t size) = 0;
+  virtual StorageAction* write(sg_size_t size) = 0;
 
   /**
    * @brief Get the content of the current Storage
@@ -165,14 +138,25 @@ public:
    * @return The used size in bytes of the current Storage
    */
   virtual sg_size_t getUsedSize();
+  virtual sg_size_t getSize() { return size_; }
+  virtual std::string getHost() { return attach_; }
 
   std::map<std::string, sg_size_t>* parseContent(const char* filename);
   static std::unordered_map<std::string, StorageImpl*>* storages;
   static std::unordered_map<std::string, StorageImpl*>* storagesMap() { return StorageImpl::storages; }
-  std::vector<StorageAction*> writeActions_;
 
   lmm_constraint_t constraintWrite_; /* Constraint for maximum write bandwidth*/
   lmm_constraint_t constraintRead_;  /* Constraint for maximum write bandwidth*/
+
+  std::string typeId_;
+  sg_size_t usedSize_ = 0;
+
+private:
+  sg_size_t size_;
+  std::map<std::string, sg_size_t>* content_;
+  // Name of the host to which this storage is attached. Only used at platform parsing time, then the interface stores
+  // the Host directly.
+  std::string attach_;
 };
 
 /**********
@@ -184,10 +168,7 @@ public:
  */
 typedef enum {
   READ = 0, /**< Read a file */
-  WRITE,    /**< Write in a file */
-  STAT,     /**< Stat a file */
-  OPEN,     /**< Open a file */
-  CLOSE     /**< Close a file */
+  WRITE     /**< Write in a file */
 } e_surf_action_storage_type_t;
 
 /** @ingroup SURF_storage_interface

@@ -100,41 +100,11 @@ HostImpl::HostImpl(s4u::Host* host) : piface_(host)
   piface_->pimpl_ = this;
 }
 
-simgrid::surf::StorageImpl* HostImpl::findStorageOnMountList(const char* mount)
-{
-  XBT_DEBUG("Search for storage name '%s' on '%s'", mount, piface_->getCname());
-  if (storage_.find(mount) == storage_.end())
-    xbt_die("Can't find mount '%s' for '%s'", mount, piface_->getCname());
-
-  return storage_.at(mount);
-}
-
 void HostImpl::getAttachedStorageList(std::vector<const char*>* storages)
 {
   for (auto s : storage_)
-    if (s.second->attach_ == piface_->getCname())
+    if (s.second->getHost() == piface_->getCname())
       storages->push_back(s.second->piface_.getName());
-}
-
-Action* HostImpl::close(surf_file_t fd)
-{
-  simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount());
-  XBT_DEBUG("CLOSE %s on disk '%s'", fd->cname(), st->cname());
-  return st->close(fd);
-}
-
-Action* HostImpl::read(surf_file_t fd, sg_size_t size)
-{
-  simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount());
-  XBT_DEBUG("READ %s on disk '%s'", fd->cname(), st->cname());
-  return st->read(fd, size);
-}
-
-Action* HostImpl::write(surf_file_t fd, sg_size_t size)
-{
-  simgrid::surf::StorageImpl* st = findStorageOnMountList(fd->mount());
-  XBT_DEBUG("WRITE %s on disk '%s'", fd->cname(), st->cname());
-  return st->write(fd, size);
 }
 
 }

@@ -71,7 +71,7 @@ typedef struct msg_task {
 typedef struct msg_task *msg_task_t;
 
 /* ******************************** VM ************************************* */
-typedef msg_host_t msg_vm_t;
+typedef sg_vm_t msg_vm_t;
 
 /* ******************************** File ************************************ */
 typedef sg_file_t msg_file_t;
@@ -471,8 +471,7 @@ XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t vm);
 XBT_PUBLIC(int) MSG_vm_is_migrating(msg_vm_t vm);
 XBT_PUBLIC(int) MSG_vm_is_suspended(msg_vm_t vm);
 
-#define MSG_vm_get_name(vm) MSG_host_get_name(vm)
-
+XBT_PUBLIC(const char*) MSG_vm_get_name(msg_vm_t vm);
 XBT_PUBLIC(void) MSG_vm_get_params(msg_vm_t vm, vm_params_t params);
 XBT_PUBLIC(void) MSG_vm_set_params(msg_vm_t vm, vm_params_t params);
 

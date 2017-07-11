@@ -49,7 +49,6 @@ typedef simgrid::surf::CpuModel surf_CpuModel;
 typedef simgrid::surf::Cpu surf_Cpu;
 typedef simgrid::surf::HostModel surf_HostModel;
 typedef simgrid::surf::NetworkModel surf_NetworkModel;
-typedef simgrid::surf::StorageImpl surf_Storage;
 typedef simgrid::surf::StorageModel surf_StorageModel;
 typedef simgrid::surf::Resource surf_Resource;
 typedef simgrid::surf::Action surf_Action;
@@ -62,7 +61,6 @@ typedef struct surf_CpuModel surf_CpuModel;
 typedef struct surf_Cpu surf_Cpu;
 typedef struct surf_HostModel surf_HostModel;
 typedef struct surf_NetworkModel surf_NetworkModel;
-typedef struct surf_StorageImpl surf_Storage;
 typedef struct surf_StorageModel surf_StorageModel;
 typedef struct surf_Resource surf_Resource;
 typedef struct surf_Host surf_Host;
@@ -138,27 +136,6 @@ XBT_PUBLIC(surf_action_t) surf_model_extract_failed_action_set(surf_model_t mode
  */
 XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
 
-/** @brief Create a file closing action on the given host */
-XBT_PUBLIC(surf_action_t) surf_host_close(sg_host_t host, surf_file_t fd);
-
-/** @brief Create a file reading action on the given host */
-XBT_PUBLIC(surf_action_t) surf_host_read(sg_host_t host, surf_file_t fd, sg_size_t size);
-
-/** @brief Create a file writing action on the given host  */
-XBT_PUBLIC(surf_action_t) surf_host_write(sg_host_t host, surf_file_t fd, sg_size_t size);
-
-/**
- * @brief Move a file to another location on the *same mount point*.
- * @details [long description]
- *
- * @param host The surf host
- * @param fd The file descriptor
- * @param fullpath The new full path
- *
- * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
- */
-XBT_PUBLIC(int) surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath);
-
 /**
  * @brief [brief description]
  * @details [long description]
@@ -175,14 +152,6 @@ XBT_PUBLIC(void) surf_cpu_action_set_bound(surf_action_t action, double bound);
  * @param action The surf network action
  */
 XBT_PUBLIC(double) surf_network_action_get_latency_limited(surf_action_t action);
-
-/**
- * @brief Get the file associated to a storage action
- *
- * @param action The surf storage action
- * @return The file associated to a storage action
- */
-XBT_PUBLIC(surf_file_t) surf_storage_action_get_file(surf_action_t action);
 
 /** @} */
 

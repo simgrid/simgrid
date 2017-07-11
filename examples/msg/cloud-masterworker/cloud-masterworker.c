@@ -92,7 +92,7 @@ static int master_fun(int argc, char *argv[])
     xbt_dynar_push(vms, &vm);
 
     XBT_INFO("put a process (%s) on %s", pr_name, vm_name);
-    MSG_process_create(pr_name, worker_fun, NULL, vm);
+    MSG_process_create(pr_name, worker_fun, NULL, (msg_host_t)vm);
 
     xbt_free(vm_name);
     xbt_free(pr_name);
@@ -104,7 +104,7 @@ static int master_fun(int argc, char *argv[])
 
   XBT_INFO("# Suspend all VMs");
   xbt_dynar_foreach(vms, i, vm) {
-    XBT_INFO("suspend %s", MSG_host_get_name(vm));
+    XBT_INFO("suspend %s", MSG_vm_get_name(vm));
     MSG_vm_suspend(vm);
   }
 
@@ -126,7 +126,7 @@ static int master_fun(int argc, char *argv[])
     char *pr_name = bprintf("WRK%02d", index);
 
     XBT_INFO("put a process (%s) on %s", pr_name, vm_name);
-    MSG_process_create(pr_name, worker_fun, NULL, vm);
+    MSG_process_create(pr_name, worker_fun, NULL, (msg_host_t)vm);
 
     xbt_free(vm_name);
     xbt_free(pr_name);
@@ -161,9 +161,9 @@ static int master_fun(int argc, char *argv[])
 
   XBT_INFO("# Shutdown and destroy all the VMs. The remaining worker processes will be forcibly killed.");
   xbt_dynar_foreach(vms, i, vm) {
-    XBT_INFO("shutdown %s", MSG_host_get_name(vm));
+    XBT_INFO("shutdown %s", MSG_vm_get_name(vm));
     MSG_vm_shutdown(vm);
-    XBT_INFO("destroy %s", MSG_host_get_name(vm));
+    XBT_INFO("destroy %s", MSG_vm_get_name(vm));
     MSG_vm_destroy(vm);
   }
 

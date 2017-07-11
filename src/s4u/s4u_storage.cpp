@@ -57,7 +57,7 @@ sg_size_t Storage::getSizeUsed()
 
 sg_size_t Storage::getSize()
 {
-  return pimpl_->size_;
+  return pimpl_->getSize();
 }
 
 xbt_dict_t Storage::getProperties()

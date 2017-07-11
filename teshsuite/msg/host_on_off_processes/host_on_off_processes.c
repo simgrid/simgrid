@@ -179,7 +179,7 @@ static int test_launcher(int argc, char *argv[])
 
     argvF = xbt_new(char*, 2);
     argvF[0] = xbt_strdup("process_daemon");
-    daemon = MSG_process_create_with_arguments("process_daemon", process_daemon, NULL, vm0, 1, argvF);
+    daemon   = MSG_process_create_with_arguments("process_daemon", process_daemon, NULL, (msg_host_t)vm0, 1, argvF);
 
     argvF = xbt_new(char*, 2);
     argvF[0] = xbt_strdup("process_daemonJUPI");

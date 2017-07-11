@@ -18,12 +18,12 @@ extern std::map<std::string, storage_type_t> storage_types;
 static void check_disk_attachment()
 {
   for (auto s : *simgrid::surf::StorageImpl::storagesMap()) {
-    simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(s.second->attach_.c_str());
+    simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(s.second->getHost().c_str());
     if (not host_elm)
       surf_parse_error("Unable to attach storage %s: host %s does not exist.", s.second->cname(),
-                       s.second->attach_.c_str());
+                       s.second->getHost().c_str());
     else
-      s.second->piface_.attached_to_ = sg_host_by_name(s.second->attach_.c_str());
+      s.second->piface_.attached_to_ = sg_host_by_name(s.second->getHost().c_str());
   }
 }
 
@@ -69,27 +69,13 @@ StorageImpl* StorageN11Model::createStorage(const char* id, const char* type_id,
 
 double StorageN11Model::nextOccuringEvent(double now)
 {
-  double min_completion = StorageModel::nextOccuringEventFull(now);
-
-  for(auto storage: p_storageList) {
-    double rate = 0;
-    // Foreach write action on that disk
-    for (auto write_action: storage->writeActions_) {
-      rate += lmm_variable_getvalue(write_action->getVariable());
-    }
-    if(rate > 0)
-      min_completion = MIN(min_completion, (storage->size_-storage->usedSize_)/rate);
-  }
-
-  return min_completion;
+  return StorageModel::nextOccuringEventFull(now);
 }
 
 void StorageN11Model::updateActionsState(double /*now*/, double delta)
 {
-
   ActionList *actionSet = getRunningActionSet();
-  for(ActionList::iterator it(actionSet->begin()), itNext=it, itend(actionSet->end())
-      ; it != itend ; it=itNext) {
+  for (ActionList::iterator it(actionSet->begin()), itNext = it, itend(actionSet->end()); it != itend; it = itNext) {
     ++itNext;
 
     StorageAction *action = static_cast<StorageAction*>(&*it);
@@ -116,8 +102,8 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
       //  which becomes the new file size
       action->file_->setSize(action->file_->tell());
 
-      action->storage_->content_->erase(action->file_->cname());
-      action->storage_->content_->insert({action->file_->cname(), action->file_->size()});
+      action->storage_->getContent()->erase(action->file_->cname());
+      action->storage_->getContent()->insert({action->file_->cname(), action->file_->size()});
     }
 
     action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
@@ -126,7 +112,7 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
       action->updateMaxDuration(delta);
 
     if (action->getRemainsNoUpdate() > 0 && lmm_get_variable_weight(action->getVariable()) > 0 &&
-        action->storage_->usedSize_ == action->storage_->size_) {
+        action->storage_->usedSize_ == action->storage_->getSize()) {
       action->finish();
       action->setState(Action::State::failed);
     } else if (((action->getRemainsNoUpdate() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||
@@ -149,74 +135,14 @@ StorageN11::StorageN11(StorageModel* model, const char* name, lmm_system_t maxmi
   simgrid::s4u::Storage::onCreation(this->piface_);
 }
 
-StorageAction *StorageN11::open(const char* mount, const char* path)
+StorageAction* StorageN11::read(sg_size_t size)
 {
-  XBT_DEBUG("\tOpen file '%s'",path);
-
-  sg_size_t size;
-  // if file does not exist create an empty file
-  if (content_->find(path) != content_->end())
-    size = content_->at(path);
-  else {
-    size = 0;
-    content_->insert({path, size});
-    XBT_DEBUG("File '%s' was not found, file created.",path);
-  }
-  FileImpl* file = new FileImpl(path, mount, size);
-
-  StorageAction* action = new StorageN11Action(model(), 0, isOff(), this, OPEN);
-  action->file_         = file;
-
-  return action;
+  return new StorageN11Action(model(), size, isOff(), this, READ);
 }
 
-StorageAction *StorageN11::close(surf_file_t fd)
+StorageAction* StorageN11::write(sg_size_t size)
 {
-  XBT_DEBUG("\tClose file '%s' size '%llu'", fd->cname(), fd->size());
-  // unref write actions from storage
-  for (std::vector<StorageAction*>::iterator it = writeActions_.begin(); it != writeActions_.end();) {
-    StorageAction *write_action = *it;
-    if ((write_action->file_) == fd) {
-      write_action->unref();
-      it = writeActions_.erase(it);
-    } else {
-      ++it;
-    }
-  }
-  StorageAction* action = new StorageN11Action(model(), 0, isOff(), this, CLOSE);
-  return action;
-}
-
-StorageAction *StorageN11::read(surf_file_t fd, sg_size_t size)
-{
-  if (fd->tell() + size > fd->size()) {
-    if (fd->tell() > fd->size()) {
-      size = 0;
-    } else {
-      size = fd->size() - fd->tell();
-    }
-    fd->setPosition(fd->size());
-  }
-  else
-    fd->incrPosition(size);
-
-  StorageAction* action = new StorageN11Action(model(), size, isOff(), this, READ);
-  return action;
-}
-
-StorageAction *StorageN11::write(surf_file_t fd, sg_size_t size)
-{
-  XBT_DEBUG("\tWrite file '%s' size '%llu/%llu'", fd->cname(), size, fd->size());
-
-  StorageAction* action = new StorageN11Action(model(), size, isOff(), this, WRITE);
-  action->file_         = fd;
-  /* Substract the part of the file that might disappear from the used sized on the storage element */
-  usedSize_ -= (fd->size() - fd->tell());
-  // If the storage is full before even starting to write
-  if(usedSize_==size_) {
-    action->setState(Action::State::failed);
-  }
-  return action;
+  return new StorageN11Action(model(), size, isOff(), this, WRITE);
 }
 
 /**********
@@ -232,20 +158,11 @@ StorageN11Action::StorageN11Action(Model* model, double cost, bool failed, Stora
   // Must be less than the max bandwidth for all actions
   lmm_expand(model->getMaxminSystem(), storage->constraint(), getVariable(), 1.0);
   switch(type) {
-  case OPEN:
-  case CLOSE:
-  case STAT:
-    break;
   case READ:
     lmm_expand(model->getMaxminSystem(), storage->constraintRead_, getVariable(), 1.0);
     break;
   case WRITE:
     lmm_expand(model->getMaxminSystem(), storage->constraintWrite_, getVariable(), 1.0);
-
-    //TODO there is something annoying with what's below. Have to sort it out...
-    //    Action *action = this;
-    //    storage->p_writeActions->push_back(action);
-    //    ref();
     break;
   default:
     THROW_UNIMPLEMENTED;
