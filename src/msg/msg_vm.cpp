@@ -41,7 +41,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg, "Cloud-oriented parts of the MSG AP
  */
 void MSG_vm_set_params(msg_vm_t vm, vm_params_t params)
 {
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->setParameters(params);
+  vm->setParameters(params);
 }
 
 /** \ingroup m_vm_management
@@ -52,14 +52,13 @@ void MSG_vm_set_params(msg_vm_t vm, vm_params_t params)
  */
 void MSG_vm_get_params(msg_vm_t vm, vm_params_t params)
 {
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->getParameters(params);
+  vm->getParameters(params);
 }
 
 /* **** Check state of a VM **** */
 static inline int __MSG_vm_is_state(msg_vm_t vm, e_surf_vm_state_t state)
 {
-  simgrid::s4u::VirtualMachine* castedVm = static_cast<simgrid::s4u::VirtualMachine*>(vm);
-  return castedVm->pimpl_vm_ != nullptr && castedVm->pimpl_vm_->getState() == state;
+  return vm->pimpl_vm_ != nullptr && vm->pimpl_vm_->getState() == state;
 }
 
 /** @brief Returns whether the given VM has just created, not running.
@@ -83,7 +82,7 @@ int MSG_vm_is_running(msg_vm_t vm)
  */
 int MSG_vm_is_migrating(msg_vm_t vm)
 {
-  return static_cast<simgrid::s4u::VirtualMachine*>(vm)->isMigrating();
+  return vm->isMigrating();
 }
 
 /** @brief Returns whether the given VM is currently suspended, not running.
@@ -110,7 +109,7 @@ msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int coreAmount, int rams
 
   /* For the moment, intensity_rate is the percentage against the migration bandwidth */
 
-  msg_vm_t vm = MSG_vm_create_multicore(pm, name, coreAmount);
+  msg_vm_t vm = new simgrid::s4u::VirtualMachine(name, pm, coreAmount);
   s_vm_params_t params;
   memset(&params, 0, sizeof(params));
   params.ramsize = static_cast<sg_size_t>(ramsize) * 1024 * 1024;
@@ -122,7 +121,7 @@ msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int coreAmount, int rams
   params.dp_cap       = params.ramsize * 0.9; // assume working set memory is 90% of ramsize
 
   XBT_DEBUG("migspeed : %f intensity mem : %d", params.mig_speed, dp_intensity);
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->setParameters(&params);
+  vm->setParameters(&params);
 
   return vm;
 }
@@ -157,7 +156,7 @@ msg_vm_t MSG_vm_create_multicore(msg_host_t pm, const char* name, int coreAmount
  */
 void MSG_vm_destroy(msg_vm_t vm)
 {
-  if (MSG_vm_is_migrating(vm))
+  if (vm->isMigrating())
     THROWF(vm_error, 0, "Cannot destroy VM '%s', which is migrating.", vm->getCname());
 
   /* First, terminate all processes on the VM if necessary */
@@ -165,9 +164,7 @@ void MSG_vm_destroy(msg_vm_t vm)
     MSG_vm_shutdown(vm);
 
   /* Then, destroy the VM object */
-  simgrid::simix::kernelImmediate([vm]() {
-    vm->destroy();
-  });
+  simgrid::simix::kernelImmediate([vm]() { vm->destroy(); });
 
   if (TRACE_msg_vm_is_enabled()) {
     container_t container = PJ_container_get(vm->getCname());
@@ -186,14 +183,13 @@ void MSG_vm_start(msg_vm_t vm)
   simgrid::simix::kernelImmediate([vm]() {
     simgrid::vm::VmHostExt::ensureVmExtInstalled();
 
-    simgrid::s4u::VirtualMachine* typedVM = static_cast<simgrid::s4u::VirtualMachine*>(vm);
-    simgrid::s4u::Host* pm                = typedVM->pimpl_vm_->getPm();
+    simgrid::s4u::Host* pm = vm->pimpl_vm_->getPm();
     if (pm->extension<simgrid::vm::VmHostExt>() == nullptr)
       pm->extension_set(new simgrid::vm::VmHostExt());
 
     long pm_ramsize   = pm->extension<simgrid::vm::VmHostExt>()->ramsize;
     int pm_overcommit = pm->extension<simgrid::vm::VmHostExt>()->overcommit;
-    long vm_ramsize   = typedVM->getRamsize();
+    long vm_ramsize   = vm->getRamsize();
 
     if (pm_ramsize && not pm_overcommit) { /* Only verify that we don't overcommit on need */
       /* Retrieve the memory occupied by the VMs on that host. Yep, we have to traverse all VMs of all hosts for that */
@@ -209,7 +205,7 @@ void MSG_vm_start(msg_vm_t vm)
       }
     }
 
-    typedVM->pimpl_vm_->setState(SURF_VM_STATE_RUNNING);
+    vm->pimpl_vm_->setState(SURF_VM_STATE_RUNNING);
   });
 
   if (TRACE_msg_vm_is_enabled()) {
@@ -230,9 +226,7 @@ void MSG_vm_start(msg_vm_t vm)
 void MSG_vm_shutdown(msg_vm_t vm)
 {
   smx_actor_t issuer=SIMIX_process_self();
-  simgrid::simix::kernelImmediate([vm,issuer]() {
-    static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->shutdown(issuer);
-  });
+  simgrid::simix::kernelImmediate([vm, issuer]() { vm->pimpl_vm_->shutdown(issuer); });
 
   // Make sure that the processes in the VM are killed in this scheduling round before processing
   // (eg with the VM destroy)
@@ -300,7 +294,7 @@ static int migration_rx_fun(int argc, char *argv[])
   // Copy the reference to the vm (if SRC crashes now, do_migration will free ms)
   // This is clearly ugly but I (Adrien) need more time to do something cleaner (actually we should copy the whole ms
   // structure at the beginning and free it at the end of each function)
-  simgrid::s4u::VirtualMachine* vm = static_cast<simgrid::s4u::VirtualMachine*>(ms->vm);
+  simgrid::s4u::VirtualMachine* vm = ms->vm;
   msg_host_t dst_pm                = ms->dst_pm;
 
   // Make sure that we cannot get interrupted between the migrate and the resume to not end in an inconsistent state
@@ -366,16 +360,14 @@ static int migration_rx_fun(int argc, char *argv[])
 
 static void start_dirty_page_tracking(msg_vm_t vm)
 {
-  simgrid::vm::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
-
-  pimpl->dp_enabled = 1;
-  if (not pimpl->dp_objs)
+  vm->pimpl_vm_->dp_enabled = 1;
+  if (not vm->pimpl_vm_->dp_objs)
     return;
 
   char *key = nullptr;
   xbt_dict_cursor_t cursor = nullptr;
   dirty_page_t dp = nullptr;
-  xbt_dict_foreach (pimpl->dp_objs, cursor, key, dp) {
+  xbt_dict_foreach (vm->pimpl_vm_->dp_objs, cursor, key, dp) {
     double remaining = MSG_task_get_flops_amount(dp->task);
     dp->prev_clock = MSG_get_clock();
     dp->prev_remaining = remaining;
@@ -386,7 +378,7 @@ static void start_dirty_page_tracking(msg_vm_t vm)
 
 static void stop_dirty_page_tracking(msg_vm_t vm)
 {
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->dp_enabled = 0;
+  vm->pimpl_vm_->dp_enabled = 0;
 }
 
 static double get_computed(char *key, msg_vm_t vm, dirty_page_t dp, double remaining, double clock)
@@ -402,13 +394,12 @@ static double get_computed(char *key, msg_vm_t vm, dirty_page_t dp, double remai
 
 static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug, int stage2_round_for_fancy_debug)
 {
-  simgrid::vm::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
   double total = 0;
 
   char *key = nullptr;
   xbt_dict_cursor_t cursor = nullptr;
   dirty_page_t dp = nullptr;
-  xbt_dict_foreach (pimpl->dp_objs, cursor, key, dp) {
+  xbt_dict_foreach (vm->pimpl_vm_->dp_objs, cursor, key, dp) {
     double remaining = MSG_task_get_flops_amount(dp->task);
 
     double clock = MSG_get_clock();
@@ -420,12 +411,12 @@ static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug
     dp->prev_clock = clock;
   }
 
-  total += pimpl->dp_updated_by_deleted_tasks;
+  total += vm->pimpl_vm_->dp_updated_by_deleted_tasks;
 
   XBT_DEBUG("mig-stage%d.%d: computed %f flop_counts (including %f by deleted tasks)", stage_for_fancy_debug,
-            stage2_round_for_fancy_debug, total, pimpl->dp_updated_by_deleted_tasks);
+            stage2_round_for_fancy_debug, total, vm->pimpl_vm_->dp_updated_by_deleted_tasks);
 
-  pimpl->dp_updated_by_deleted_tasks = 0;
+  vm->pimpl_vm_->dp_updated_by_deleted_tasks = 0;
 
   return total;
 }
@@ -438,22 +429,21 @@ void MSG_host_add_task(msg_host_t host, msg_task_t task)
   simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
   if (vm == nullptr)
     return;
-  simgrid::vm::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
 
   double remaining = MSG_task_get_flops_amount(task);
   char *key = bprintf("%s-%p", task->name, task);
 
   dirty_page_t dp = xbt_new0(s_dirty_page, 1);
   dp->task = task;
-  if (pimpl->dp_enabled) {
+  if (vm->pimpl_vm_->dp_enabled) {
     dp->prev_clock = MSG_get_clock();
     dp->prev_remaining = remaining;
   }
-  if (not pimpl->dp_objs)
-    pimpl->dp_objs = xbt_dict_new_homogeneous(nullptr);
-  xbt_assert(xbt_dict_get_or_null(pimpl->dp_objs, key) == nullptr);
-  xbt_dict_set(pimpl->dp_objs, key, dp, nullptr);
-  XBT_DEBUG("add %s on %s (remaining %f, dp_enabled %d)", key, host->getCname(), remaining, pimpl->dp_enabled);
+  if (not vm->pimpl_vm_->dp_objs)
+    vm->pimpl_vm_->dp_objs = xbt_dict_new_homogeneous(nullptr);
+  xbt_assert(xbt_dict_get_or_null(vm->pimpl_vm_->dp_objs, key) == nullptr);
+  xbt_dict_set(vm->pimpl_vm_->dp_objs, key, dp, nullptr);
+  XBT_DEBUG("add %s on %s (remaining %f, dp_enabled %d)", key, host->getCname(), remaining, vm->pimpl_vm_->dp_enabled);
 
   xbt_free(key);
 }
@@ -463,24 +453,23 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
   simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
   if (vm == nullptr)
     return;
-  simgrid::vm::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
 
   char *key = bprintf("%s-%p", task->name, task);
-  dirty_page_t dp = (dirty_page_t)(pimpl->dp_objs ? xbt_dict_get_or_null(pimpl->dp_objs, key) : NULL);
+  dirty_page_t dp = (dirty_page_t)(vm->pimpl_vm_->dp_objs ? xbt_dict_get_or_null(vm->pimpl_vm_->dp_objs, key) : NULL);
   xbt_assert(dp->task == task);
 
   /* If we are in the middle of dirty page tracking, we record how much computation has been done until now, and keep
    * the information for the lookup_() function that will called soon. */
-  if (pimpl->dp_enabled) {
+  if (vm->pimpl_vm_->dp_enabled) {
     double remaining = MSG_task_get_flops_amount(task);
     double clock = MSG_get_clock();
     // double updated = calc_updated_pages(key, host, dp, remaining, clock);
-    double updated = get_computed(key, host, dp, remaining, clock);
+    double updated = get_computed(key, vm, dp, remaining, clock); // was host instead of vm
 
-    pimpl->dp_updated_by_deleted_tasks += updated;
+    vm->pimpl_vm_->dp_updated_by_deleted_tasks += updated;
   }
-  if (pimpl->dp_objs)
-    xbt_dict_remove(pimpl->dp_objs, key);
+  if (vm->pimpl_vm_->dp_objs)
+    xbt_dict_remove(vm->pimpl_vm_->dp_objs, key);
   xbt_free(dp);
 
   XBT_DEBUG("del %s on %s", key, host->getCname());
@@ -557,9 +546,9 @@ static int migration_tx_fun(int argc, char *argv[])
   // Note that the ms structure has been allocated in do_migration and hence should be freed in the same function ;)
   migration_session *ms = static_cast<migration_session *>(MSG_process_get_data(MSG_process_self()));
 
-  double host_speed = MSG_host_get_speed(MSG_vm_get_pm(ms->vm));
+  double host_speed = ms->vm->pimpl_vm_->getPm()->getSpeed();
   s_vm_params_t params;
-  static_cast<simgrid::s4u::VirtualMachine*>(ms->vm)->getParameters(&params);
+  ms->vm->getParameters(&params);
   const sg_size_t ramsize   = params.ramsize;
   const sg_size_t devsize   = params.devsize;
   const int skip_stage1     = params.skip_stage1;
@@ -695,7 +684,7 @@ static int migration_tx_fun(int argc, char *argv[])
 
   /* Stage3: stop the VM and copy the rest of states. */
   XBT_DEBUG("mig-stage3: remaining_size %f", remaining_size);
-  simgrid::vm::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(ms->vm)->pimpl_vm_;
+  simgrid::vm::VirtualMachineImpl* pimpl = ms->vm->pimpl_vm_;
   pimpl->setState(SURF_VM_STATE_RUNNING); // FIXME: this bypass of the checks in suspend() is not nice
   pimpl->isMigrating = false;             // FIXME: this bypass of the checks in suspend() is not nice
   pimpl->suspend(SIMIX_process_self());
@@ -709,7 +698,7 @@ static int migration_tx_fun(int argc, char *argv[])
   catch(xbt_ex& e) {
     //hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data code)
     // Stop the dirty page tracking an return (there is no memory space to release)
-    static_cast<simgrid::s4u::VirtualMachine*>(ms->vm)->pimpl_vm_->resume();
+    ms->vm->pimpl_vm_->resume();
     return 0;
   }
 
@@ -741,9 +730,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
    * The second one would be easier.
    */
 
-  simgrid::s4u::VirtualMachine* typedVm  = static_cast<simgrid::s4u::VirtualMachine*>(vm);
-  simgrid::vm::VirtualMachineImpl* pimpl = typedVm->pimpl_vm_;
-  msg_host_t src_pm                      = pimpl->getPm();
+  msg_host_t src_pm = vm->pimpl_vm_->getPm();
 
   if (src_pm->isOff())
     THROWF(vm_error, 0, "Cannot migrate VM '%s' from host '%s', which is offline.", vm->getCname(), src_pm->getCname());
@@ -751,10 +738,10 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
     THROWF(vm_error, 0, "Cannot migrate VM '%s' to host '%s', which is offline.", vm->getCname(), dst_pm->getCname());
   if (not MSG_vm_is_running(vm))
     THROWF(vm_error, 0, "Cannot migrate VM '%s' that is not running yet.", vm->getCname());
-  if (typedVm->isMigrating())
+  if (vm->isMigrating())
     THROWF(vm_error, 0, "Cannot migrate VM '%s' that is already migrating.", vm->getCname());
 
-  pimpl->isMigrating = true;
+  vm->pimpl_vm_->isMigrating = true;
 
   struct migration_session *ms = xbt_new(struct migration_session, 1);
   ms->vm = vm;
@@ -784,7 +771,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
   msg_task_t task = nullptr;
   msg_error_t ret = MSG_task_receive(&task, ms->mbox_ctl);
 
-  pimpl->isMigrating = false;
+  vm->pimpl_vm_->isMigrating = false;
 
   xbt_free(ms->mbox_ctl);
   xbt_free(ms->mbox);
@@ -822,9 +809,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
 void MSG_vm_suspend(msg_vm_t vm)
 {
   smx_actor_t issuer = SIMIX_process_self();
-  simgrid::simix::kernelImmediate([vm,issuer]() {
-    static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->suspend(issuer);
-  });
+  simgrid::simix::kernelImmediate([vm, issuer]() { vm->pimpl_vm_->suspend(issuer); });
 
   XBT_DEBUG("vm_suspend done");
 
@@ -843,7 +828,7 @@ void MSG_vm_suspend(msg_vm_t vm)
  */
 void MSG_vm_resume(msg_vm_t vm)
 {
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->resume();
+  vm->pimpl_vm_->resume();
 
   if (TRACE_msg_vm_is_enabled()) {
     container_t vm_container = PJ_container_get(vm->getCname());
@@ -857,7 +842,7 @@ void MSG_vm_resume(msg_vm_t vm)
  */
 msg_host_t MSG_vm_get_pm(msg_vm_t vm)
 {
-  return static_cast<simgrid::s4u::VirtualMachine*>(vm)->getPm();
+  return vm->getPm();
 }
 
 /** @brief Set a CPU bound for a given VM.
@@ -888,8 +873,7 @@ msg_host_t MSG_vm_get_pm(msg_vm_t vm)
  */
 void MSG_vm_set_bound(msg_vm_t vm, double bound)
 {
-  simgrid::simix::kernelImmediate(
-      [vm, bound]() { static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->setBound(bound); });
+  simgrid::simix::kernelImmediate([vm, bound]() { vm->pimpl_vm_->setBound(bound); });
 }
 
 SG_END_DECL()

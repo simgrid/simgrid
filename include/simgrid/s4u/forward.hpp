@@ -27,6 +27,7 @@ class Mailbox;
 using MailboxPtr = boost::intrusive_ptr<Mailbox>;
 class Mutex;
 class NetZone;
+class VirtualMachine;
 
 class File;
 class Storage;

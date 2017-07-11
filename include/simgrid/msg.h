@@ -71,7 +71,7 @@ typedef struct msg_task {
 typedef struct msg_task *msg_task_t;
 
 /* ******************************** VM ************************************* */
-typedef msg_host_t msg_vm_t;
+typedef sg_vm_t msg_vm_t;
 
 /* ******************************** File ************************************ */
 typedef sg_file_t msg_file_t;
