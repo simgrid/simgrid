@@ -67,12 +67,12 @@ xbt_dict_t Storage::getProperties()
 
 const char* Storage::getProperty(const char* key)
 {
-  return static_cast<const char*>(xbt_dict_get_or_null(this->getProperties(), key));
+  return this->pimpl_->getProperty(key);
 }
 
 void Storage::setProperty(const char* key, char* value)
 {
-  xbt_dict_set(this->getProperties(), key, value, nullptr);
+  simgrid::simix::kernelImmediate([this, key, value] { this->pimpl_->setProperty(key, value); });
 }
 
 std::map<std::string, sg_size_t>* Storage::getContent()
