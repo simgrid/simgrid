@@ -24,6 +24,11 @@ documentation, but it should remain readable directly.
     @ref examples/s4u/actor-create/s4u_actor-create_d.xml \n
     Shows how to start your actors to populate your simulation.
 
+  - <b>Ping Pong</b>: @ref examples/s4u/app-pingpong/s4u_app-pingpong.c\n
+   It's hard to think of a simpler example: it is just sending one message back and forth.
+   The tesh file laying in the directory show how to start the simulator binary, highlighting how to pass options to 
+   the simulators (as detailed in Section \ref options). 
+
   - <b>Token ring:</b> @ref examples/s4u/app-token-ring/s4u_app-token-ring.cpp \n
     Shows how to implement a classical communication pattern, where a token is exchanged along a ring to reach every
     participant.
@@ -37,6 +42,11 @@ documentation, but it should remain readable directly.
   - <b>Creating actors</b>. 
     @ref examples/s4u/actor-create/s4u_actor-create.cpp \n
     Most actors are started from the deployment XML file, but they exist other methods.
+
+  - <b>Daemonize actors</b>
+    @ref examples/s4u/actor-daemon/s4u_actor-daemon.cpp \n
+    Some actors may be intended to simulate daemons that run in background. This example show how to transform a regular
+    actor into a daemon that will be automatically killed once the simulation is over. 
 
   - <b>Suspend and Resume actors</b>.
     @ref examples/s4u/actor-suspend/s4u_actor-suspend.cpp \n
@@ -91,11 +101,13 @@ also the tesh files in the example directories for details.
 @example examples/s4u/actions-storage/s4u_actions-storage.cpp
 @example examples/s4u/actor-create/s4u_actor-create.cpp
 @example examples/s4u/actor-create/s4u_actor-create_d.xml
+@example examples/s4u/actor-daemon/s4u_actor-daemon.cpp
 @example examples/s4u/actor-kill/s4u_actor-kill.cpp
 @example examples/s4u/actor-migration/s4u_actor-migration.cpp
 @example examples/s4u/actor-suspend/s4u_actor-suspend.cpp
 @example examples/s4u/app-token-ring/s4u_app-token-ring.cpp
 @example examples/s4u/app-masterworker/s4u_app-masterworker.cpp
+@example examples/s4u/app-pingpong/s4u_app-pingpong.cpp
 
 @example examples/s4u/mutex/s4u_mutex.cpp
 

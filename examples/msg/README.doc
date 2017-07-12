@@ -14,17 +14,16 @@ documentation, but it should remain readable directly.
   - @ref msg_ex_models
     - @ref msg_ex_ns3
     - @ref msg_ex_io
-  - @ref msg_ex_actions
   - @ref msg_ex_apps
   - @ref msg_ex_misc
-		    
+
 @section msg_ex_basics Basic examples and features
 
  - <b>Ping Pong</b>: @ref examples/msg/app-pingpong/app-pingpong.c\n
    It's hard to think of a simpler example: it is just sending one
    message back and forth.  
    The tesh file laying in the directory show how to start the
-   simulator binary, enlighting how to pass options to the simulators
+   simulator binary, highlighting how to pass options to the simulators
    (as detailed in Section \ref options). 
 
  - <b>Token Ring</b>.
@@ -202,36 +201,6 @@ simulated storages.
     I/O operations can also be done in a remote, i.e. when the
     accessed disk is not mounted on the caller's host.
 
-@section msg_ex_actions Following Workload Traces
-
-This section details how to run trace-driven simulations. It is very
-handy when you want to test an algorithm or protocol that only react
-to external events. For example, many P2P protocols react to user
-requests, but do nothing if there is no such event.
-
-In such situations, you should write your protocol in C, and separate
-the workload that you want to play onto your protocol in a separate
-text file. Declare a function handling each type of the events in your
-trace, register them using @ref xbt_replay_action_register in your
-main, and then use @ref MSG_action_trace_run to launch the simulation.
-
-Then, you can either have one trace file containing all your events,
-or a file per simulated process: the former may be easier to work
-with, but the second is more efficient on very large traces. Check
-also the tesh files in the example directories for details.
-
-  - <b>Communication replay</b>.
-    @ref examples/msg/actions-comm/actions-comm.c \n
-    Presents a set of event handlers reproducing classical communication
-    primitives (synchronous and asynchronous send/receive, broadcast,
-    barrier, etc).
-
-  - <b>I/O replay</b>.
-    @ref examples/msg/actions-storage/actions-storage.c \n
-    Presents a set of event handlers reproducing classical I/O
-    primitives (open, read, write, close, etc).
-
-
 @section msg_ex_misc Miscellaneous
 
  - <b>Task priorities</b>.
@@ -259,8 +228,8 @@ top of the example file).
 
 
 /**
-@example examples/msg/app-pingpong/app-pingpong.c        
-@example examples/msg/app-token-ring/app-token-ring.c    
+@example examples/msg/app-pingpong/app-pingpong.c
+@example examples/msg/app-token-ring/app-token-ring.c
 @example examples/msg/app-masterworker/app-masterworker.c
 
 @example examples/msg/async-wait/async-wait.c
@@ -288,11 +257,8 @@ top of the example file).
 @example examples/msg/io-file/io-file.c
 @example examples/msg/io-remote/io-remote.c
 
-@example examples/msg/actions-comm/actions-comm.c
-@example examples/msg/actions-storage/actions-storage.c
-
 @example examples/msg/task-priority/task-priority.c
 @example examples/msg/platform-properties/platform-properties.c
-			 
+
 */
 
