@@ -14,7 +14,7 @@ static int execute_load_test(int argc, char* argv[])
   msg_host_t host = MSG_host_by_name("MyHost1");
 
   XBT_INFO("Initial peak speed: %.0E flop/s; number of flops computed so far: %.0E (should be 0)",
-           MSG_host_get_current_power_peak(host), MSG_host_get_computed_flops(host));
+           MSG_host_get_speed(host), sg_host_get_computed_flops(host));
 
   double start = MSG_get_clock();
   XBT_INFO("Sleep for 10 seconds");
@@ -22,7 +22,7 @@ static int execute_load_test(int argc, char* argv[])
 
   XBT_INFO("Done sleeping %.2fs; peak speed: %.0E flop/s; number of flops computed so far: %.0E (nothing should have "
            "changed)",
-           MSG_get_clock() - start, MSG_host_get_current_power_peak(host), MSG_host_get_computed_flops(host));
+           MSG_get_clock() - start, MSG_host_get_speed(host), sg_host_get_computed_flops(host));
 
   // Run a task
   start            = MSG_get_clock();
@@ -33,13 +33,13 @@ static int execute_load_test(int argc, char* argv[])
 
   XBT_INFO("Done working on my task; this took %.2fs; current peak speed: %.0E flop/s; number of flops computed so "
            "far: %.0E",
-           MSG_get_clock() - start, MSG_host_get_current_power_peak(host), MSG_host_get_computed_flops(host));
+           MSG_get_clock() - start, MSG_host_get_speed(host), sg_host_get_computed_flops(host));
 
   // ========= Change power peak =========
   int pstate = 2;
-  MSG_host_set_pstate(host, pstate);
+  sg_host_set_pstate(host, pstate);
   XBT_INFO("========= Requesting pstate %d (speed should be of %.0E flop/s and is of %.0E flop/s)", pstate,
-           MSG_host_get_power_peak_at(host, pstate), MSG_host_get_current_power_peak(host));
+           MSG_host_get_power_peak_at(host, pstate), MSG_host_get_speed(host));
 
   // Run a second task
   start = MSG_get_clock();
@@ -49,7 +49,7 @@ static int execute_load_test(int argc, char* argv[])
   MSG_task_destroy(task1);
   XBT_INFO("Done working on my task; this took %.2fs; current peak speed: %.0E flop/s; number of flops computed so "
            "far: %.0E",
-           MSG_get_clock() - start, MSG_host_get_current_power_peak(host), MSG_host_get_computed_flops(host));
+           MSG_get_clock() - start, MSG_host_get_speed(host), sg_host_get_computed_flops(host));
 
   start = MSG_get_clock();
   XBT_INFO("========= Requesting a reset of the computation counter");
@@ -57,7 +57,7 @@ static int execute_load_test(int argc, char* argv[])
   XBT_INFO("Sleep for 4 seconds");
   MSG_process_sleep(4);
   XBT_INFO("Done sleeping %.2f s; peak speed: %.0E flop/s; number of flops computed so far: %.0E",
-           MSG_get_clock() - start, MSG_host_get_current_power_peak(host), MSG_host_get_computed_flops(host));
+           MSG_get_clock() - start, MSG_host_get_speed(host), sg_host_get_computed_flops(host));
 
   // =========== Turn the other host off ==========
   XBT_INFO("Turning MyHost2 off, and sleeping another 10 seconds. MyHost2 computed %.0f flops so far.",
@@ -66,7 +66,7 @@ static int execute_load_test(int argc, char* argv[])
   start = MSG_get_clock();
   MSG_process_sleep(10);
   XBT_INFO("Done sleeping %.2f s; peak speed: %.0E flop/s; number of flops computed so far: %.0E",
-           MSG_get_clock() - start, MSG_host_get_current_power_peak(host), MSG_host_get_computed_flops(host));
+           MSG_get_clock() - start, MSG_host_get_speed(host), sg_host_get_computed_flops(host));
   return 0;
 }
 
