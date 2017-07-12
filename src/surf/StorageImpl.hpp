@@ -185,7 +185,8 @@ public:
    * @param storage The Storage associated to this StorageAction
    * @param type [description]
    */
-  StorageAction(Model* model, double cost, bool failed, StorageImpl* storage, e_surf_action_storage_type_t type);
+  StorageAction(Model* model, double cost, bool failed, StorageImpl* storage, e_surf_action_storage_type_t type)
+      : Action(model, cost, failed), type_(type), storage_(storage){};
 
   /**
  * @brief StorageAction constructor
@@ -198,14 +199,14 @@ public:
  * @param type [description]
  */
   StorageAction(Model* model, double cost, bool failed, lmm_variable_t var, StorageImpl* storage,
-                e_surf_action_storage_type_t type);
+                e_surf_action_storage_type_t type)
+      : Action(model, cost, failed, var), type_(type), storage_(storage){};
 
   void setState(simgrid::surf::Action::State state) override;
 
   e_surf_action_storage_type_t type_;
   StorageImpl* storage_;
-  FileImpl* file_;
-  double progress_;
+  FileImpl* file_ = nullptr;
 };
 }
 }

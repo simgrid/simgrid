@@ -80,33 +80,17 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
 
     StorageAction *action = static_cast<StorageAction*>(&*it);
 
+    double current_progress = lrint(lmm_variable_getvalue(action->getVariable()) * delta);
+
+    action->updateRemains(current_progress);
     if (action->type_ == WRITE) {
-      // Update the disk usage
-      // Update the file size
-      // For each action of type write
-      double current_progress = delta * lmm_variable_getvalue(action->getVariable());
-      long int incr = current_progress;
-
-      XBT_DEBUG("%s:\n\t progress =  %.2f, current_progress = %.2f, incr = %ld, lrint(1) = %ld, lrint(2) = %ld",
-                action->file_->cname(), action->progress_, current_progress, incr,
-                lrint(action->progress_ + current_progress), lrint(action->progress_) + incr);
-
-      /* take care of rounding error accumulation */
-      if (lrint(action->progress_ + current_progress) > lrint(action->progress_) + incr)
-        incr++;
-
-      action->progress_ += current_progress;
-
-      action->storage_->usedSize_ += incr;     // disk usage
-      action->file_->incrPosition(incr);       // current_position
-      //  which becomes the new file size
+      action->storage_->usedSize_ += current_progress;
+      action->file_->incrPosition(current_progress);
       action->file_->setSize(action->file_->tell());
 
       action->storage_->getContent()->erase(action->file_->cname());
       action->storage_->getContent()->insert({action->file_->cname(), action->file_->size()});
     }
-
-    action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
 
     if (action->getMaxDuration() > NO_MAX_DURATION)
       action->updateMaxDuration(delta);

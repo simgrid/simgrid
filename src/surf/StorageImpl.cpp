@@ -154,20 +154,6 @@ sg_size_t StorageImpl::getUsedSize()
 /**********
  * Action *
  **********/
-StorageAction::StorageAction(Model* model, double cost, bool failed, StorageImpl* storage,
-                             e_surf_action_storage_type_t type)
-    : Action(model, cost, failed), type_(type), storage_(storage), file_(nullptr)
-{
-  progress_ = 0;
-};
-
-StorageAction::StorageAction(Model* model, double cost, bool failed, lmm_variable_t var, StorageImpl* storage,
-                             e_surf_action_storage_type_t type)
-    : Action(model, cost, failed, var), type_(type), storage_(storage), file_(nullptr)
-{
-  progress_ = 0;
-}
-
 void StorageAction::setState(Action::State state)
 {
   Action::State old = getState();
