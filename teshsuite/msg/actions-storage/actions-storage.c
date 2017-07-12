@@ -10,34 +10,37 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(storage_actions, "Messages specific for this exampl
 
 static xbt_dict_t opened_files = NULL;
 
-#define ACT_DEBUG(...) \
-  if (XBT_LOG_ISENABLED(storage_actions, xbt_log_priority_verbose)) {  \
-    char *NAME = xbt_str_join_array(action, " ");              \
-    XBT_DEBUG(__VA_ARGS__);                                    \
-    xbt_free(NAME);                                            \
-  } else ((void)0)
+#define ACT_DEBUG(...)                                                                                                 \
+  if (XBT_LOG_ISENABLED(storage_actions, xbt_log_priority_verbose)) {                                                  \
+    char* NAME = xbt_str_join_array(action, " ");                                                                      \
+    XBT_DEBUG(__VA_ARGS__);                                                                                            \
+    xbt_free(NAME);                                                                                                    \
+  } else                                                                                                               \
+  ((void)0)
 
-static void log_action(const char *const *action, double date)
+static void log_action(const char* const* action, double date)
 {
   if (XBT_LOG_ISENABLED(storage_actions, xbt_log_priority_verbose)) {
-    char *name = xbt_str_join_array(action, " ");
+    char* name = xbt_str_join_array(action, " ");
     XBT_VERB("%s %f", name, date);
     xbt_free(name);
   }
 }
 
-static msg_file_t get_file_descriptor(const char *file_name){
+static msg_file_t get_file_descriptor(const char* file_name)
+{
   char full_name[1024];
 
-  snprintf(full_name,1023, "%s:%s", MSG_process_get_name(MSG_process_self()), file_name);
+  snprintf(full_name, 1023, "%s:%s", MSG_process_get_name(MSG_process_self()), file_name);
 
   msg_file_t file = (msg_file_t)xbt_dict_get_or_null(opened_files, full_name);
   return file;
 }
 
-static sg_size_t parse_size(const char *string){
+static sg_size_t parse_size(const char* string)
+{
   sg_size_t size;
-  char *endptr;
+  char* endptr;
 
   size = strtoul(string, &endptr, 10);
   if (*endptr != '\0')
@@ -45,13 +48,14 @@ static sg_size_t parse_size(const char *string){
   return size;
 }
 
-static void action_open(const char *const *action) {
-  const char *file_name = action[2];
+static void action_open(const char* const* action)
+{
+  const char* file_name = action[2];
   char full_name[1024];
   msg_file_t file = NULL;
-  double clock = MSG_get_clock();
+  double clock    = MSG_get_clock();
 
-  snprintf(full_name,1023, "%s:%s", MSG_process_get_name(MSG_process_self()), file_name);
+  snprintf(full_name, 1023, "%s:%s", MSG_process_get_name(MSG_process_self()), file_name);
 
   ACT_DEBUG("Entering Open: %s (filename: %s)", NAME, file_name);
   file = MSG_file_open(file_name, NULL);
@@ -61,10 +65,11 @@ static void action_open(const char *const *action) {
   log_action(action, MSG_get_clock() - clock);
 }
 
-static void action_read(const char *const *action) {
-  const char *file_name = action[2];
-  const char *size_str = action[3];
-  sg_size_t size = parse_size(size_str);
+static void action_read(const char* const* action)
+{
+  const char* file_name = action[2];
+  const char* size_str  = action[3];
+  sg_size_t size        = parse_size(size_str);
 
   double clock = MSG_get_clock();
 
@@ -76,8 +81,9 @@ static void action_read(const char *const *action) {
   log_action(action, MSG_get_clock() - clock);
 }
 
-static void action_close(const char *const *action) {
-  const char *file_name = action[2];
+static void action_close(const char* const* action)
+{
+  const char* file_name = action[2];
   msg_file_t file;
   double clock = MSG_get_clock();
 
@@ -89,12 +95,14 @@ static void action_close(const char *const *action) {
   log_action(action, MSG_get_clock() - clock);
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[])
+{
   MSG_init(&argc, argv);
   /* Explicit initialization of the action module is required */
   MSG_action_init();
 
-  xbt_assert(argc > 3,"Usage: %s platform_file deployment_file [action_files]\n"
+  xbt_assert(argc > 3,
+             "Usage: %s platform_file deployment_file [action_files]\n"
              "\texample: %s platform.xml deployment.xml actions # if all actions are in the same file\n"
              "\texample: %s platform.xml deployment.xml # if actions are in separate files, specified in deployment\n",
              argv[0], argv[0], argv[0]);
@@ -120,5 +128,5 @@ int main(int argc, char *argv[]) {
   /* Explicit finalization of the action module is required now*/
   MSG_action_exit();
 
-  return res!=MSG_OK;
+  return res != MSG_OK;
 }
