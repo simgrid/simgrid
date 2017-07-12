@@ -609,18 +609,18 @@ int simcall_sem_get_capacity(smx_sem_t sem)
  * \ingroup simix_file_management
  *
  */
-sg_size_t simcall_file_read(surf_file_t fd, sg_size_t size, sg_host_t host)
+sg_size_t simcall_file_read(surf_file_t fd, sg_size_t size)
 {
-  return simcall_BODY_file_read(fd, size, host);
+  return simcall_BODY_file_read(fd, size);
 }
 
 /**
  * \ingroup simix_file_management
  *
  */
-sg_size_t simcall_file_write(surf_file_t fd, sg_size_t size, sg_host_t host)
+sg_size_t simcall_file_write(surf_file_t fd, sg_size_t size)
 {
-  return simcall_BODY_file_write(fd, size, host);
+  return simcall_BODY_file_write(fd, size);
 }
 
 void simcall_run_kernel(std::function<void()> const& code)

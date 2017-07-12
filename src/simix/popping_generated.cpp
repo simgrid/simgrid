@@ -313,14 +313,12 @@ case SIMCALL_SEM_GET_CAPACITY:
 
 case SIMCALL_FILE_READ:
   simcall_HANDLER_file_read(simcall, simgrid::simix::unmarshal<surf_file_t>(simcall->args[0]),
-                            simgrid::simix::unmarshal<sg_size_t>(simcall->args[1]),
-                            simgrid::simix::unmarshal<sg_host_t>(simcall->args[2]));
+                            simgrid::simix::unmarshal<sg_size_t>(simcall->args[1]));
   break;
 
 case SIMCALL_FILE_WRITE:
   simcall_HANDLER_file_write(simcall, simgrid::simix::unmarshal<surf_file_t>(simcall->args[0]),
-                             simgrid::simix::unmarshal<sg_size_t>(simcall->args[1]),
-                             simgrid::simix::unmarshal<sg_host_t>(simcall->args[2]));
+                             simgrid::simix::unmarshal<sg_size_t>(simcall->args[1]));
   break;
 
 case SIMCALL_MC_RANDOM:

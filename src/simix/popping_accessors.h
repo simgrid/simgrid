@@ -1480,18 +1480,6 @@ static inline void simcall_file_read__set__size(smx_simcall_t simcall, sg_size_t
 {
   simgrid::simix::marshal<sg_size_t>(simcall->args[1], arg);
 }
-static inline sg_host_t simcall_file_read__get__host(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<sg_host_t>(simcall->args[2]);
-}
-static inline sg_host_t simcall_file_read__getraw__host(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<sg_host_t>(simcall->args[2]);
-}
-static inline void simcall_file_read__set__host(smx_simcall_t simcall, sg_host_t arg)
-{
-  simgrid::simix::marshal<sg_host_t>(simcall->args[2], arg);
-}
 static inline sg_size_t simcall_file_read__get__result(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<sg_size_t>(simcall->result);
@@ -1527,18 +1515,6 @@ static inline sg_size_t simcall_file_write__getraw__size(smx_simcall_t simcall)
 static inline void simcall_file_write__set__size(smx_simcall_t simcall, sg_size_t arg)
 {
   simgrid::simix::marshal<sg_size_t>(simcall->args[1], arg);
-}
-static inline sg_host_t simcall_file_write__get__host(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<sg_host_t>(simcall->args[2]);
-}
-static inline sg_host_t simcall_file_write__getraw__host(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<sg_host_t>(simcall->args[2]);
-}
-static inline void simcall_file_write__set__host(smx_simcall_t simcall, sg_host_t arg)
-{
-  simgrid::simix::marshal<sg_host_t>(simcall->args[2], arg);
 }
 static inline sg_size_t simcall_file_write__get__result(smx_simcall_t simcall)
 {
@@ -1689,6 +1665,6 @@ XBT_PRIVATE int simcall_HANDLER_sem_would_block(smx_simcall_t simcall, smx_sem_t
 XBT_PRIVATE void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem);
 XBT_PRIVATE void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout);
 XBT_PRIVATE int simcall_HANDLER_sem_get_capacity(smx_simcall_t simcall, smx_sem_t sem);
-XBT_PRIVATE void simcall_HANDLER_file_read(smx_simcall_t simcall, surf_file_t fd, sg_size_t size, sg_host_t host);
-XBT_PRIVATE void simcall_HANDLER_file_write(smx_simcall_t simcall, surf_file_t fd, sg_size_t size, sg_host_t host);
+XBT_PRIVATE void simcall_HANDLER_file_read(smx_simcall_t simcall, surf_file_t fd, sg_size_t size);
+XBT_PRIVATE void simcall_HANDLER_file_write(smx_simcall_t simcall, surf_file_t fd, sg_size_t size);
 XBT_PRIVATE int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max);

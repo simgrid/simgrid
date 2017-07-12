@@ -314,18 +314,20 @@ inline static int simcall_BODY_sem_get_capacity(smx_sem_t sem) {
     return simcall<int, smx_sem_t>(SIMCALL_SEM_GET_CAPACITY, sem);
   }
 
-  inline static sg_size_t simcall_BODY_file_read(surf_file_t fd, sg_size_t size, sg_host_t host)
+  inline static sg_size_t simcall_BODY_file_read(surf_file_t fd, sg_size_t size)
   {
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_file_read(&SIMIX_process_self()->simcall, fd, size, host);
-    return simcall<sg_size_t, surf_file_t, sg_size_t, sg_host_t>(SIMCALL_FILE_READ, fd, size, host);
+    if (0)
+      simcall_HANDLER_file_read(&SIMIX_process_self()->simcall, fd, size);
+    return simcall<sg_size_t, surf_file_t, sg_size_t>(SIMCALL_FILE_READ, fd, size);
   }
 
-  inline static sg_size_t simcall_BODY_file_write(surf_file_t fd, sg_size_t size, sg_host_t host)
+  inline static sg_size_t simcall_BODY_file_write(surf_file_t fd, sg_size_t size)
   {
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_file_write(&SIMIX_process_self()->simcall, fd, size, host);
-    return simcall<sg_size_t, surf_file_t, sg_size_t, sg_host_t>(SIMCALL_FILE_WRITE, fd, size, host);
+    if (0)
+      simcall_HANDLER_file_write(&SIMIX_process_self()->simcall, fd, size);
+    return simcall<sg_size_t, surf_file_t, sg_size_t>(SIMCALL_FILE_WRITE, fd, size);
   }
 
 inline static int simcall_BODY_mc_random(int min, int max) {

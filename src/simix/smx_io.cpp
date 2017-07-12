@@ -22,19 +22,15 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)");
 
 //SIMIX FILE READ
-void simcall_HANDLER_file_read(smx_simcall_t simcall, surf_file_t fd, sg_size_t size, sg_host_t host)
+void simcall_HANDLER_file_read(smx_simcall_t simcall, surf_file_t fd, sg_size_t size)
 {
-  smx_activity_t synchro = SIMIX_file_read(fd, size, host);
+  smx_activity_t synchro = SIMIX_file_read(fd, size);
   synchro->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_activity_t SIMIX_file_read(surf_file_t file, sg_size_t size, sg_host_t host)
+smx_activity_t SIMIX_file_read(surf_file_t file, sg_size_t size)
 {
-  /* check if the host is active */
-  if (host->isOff())
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->getCname());
-
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
   synchro->surf_io                           = file->read(size);
 
@@ -45,18 +41,15 @@ smx_activity_t SIMIX_file_read(surf_file_t file, sg_size_t size, sg_host_t host)
 }
 
 //SIMIX FILE WRITE
-void simcall_HANDLER_file_write(smx_simcall_t simcall, surf_file_t fd, sg_size_t size, sg_host_t host)
+void simcall_HANDLER_file_write(smx_simcall_t simcall, surf_file_t fd, sg_size_t size)
 {
-  smx_activity_t synchro = SIMIX_file_write(fd,  size, host);
+  smx_activity_t synchro = SIMIX_file_write(fd, size);
   synchro->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_activity_t SIMIX_file_write(surf_file_t file, sg_size_t size, sg_host_t host)
+smx_activity_t SIMIX_file_write(surf_file_t file, sg_size_t size)
 {
-  if (host->isOff())
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function", host->getCname());
-
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
   synchro->surf_io                           = file->write(size);
   synchro->surf_io->setData(synchro);

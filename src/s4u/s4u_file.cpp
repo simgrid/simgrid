@@ -56,17 +56,12 @@ File::~File()
 
 sg_size_t File::read(sg_size_t size)
 {
-  return simcall_file_read(pimpl_, size, Host::current());
+  return simcall_file_read(pimpl_, size);
 }
 
 sg_size_t File::write(sg_size_t size)
 {
-  return simcall_file_write(pimpl_,size, Host::current());
-}
-
-sg_size_t File::write(sg_size_t size, sg_host_t host)
-{
-  return simcall_file_write(pimpl_, size, host);
+  return simcall_file_write(pimpl_, size);
 }
 
 sg_size_t File::size()

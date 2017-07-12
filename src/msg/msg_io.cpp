@@ -323,7 +323,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
 
   /* Create file on remote host, write it and close it */
   msg_file_t fd = new simgrid::s4u::File(fullpath, dst_host, nullptr);
-  fd->write(read_size, dst_host);
+  fd->write(read_size);
   delete fd;
   return MSG_OK;
 }

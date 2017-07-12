@@ -11,8 +11,8 @@
 #include "simgrid/simix.h"
 #include "popping_private.h"
 
-XBT_PRIVATE smx_activity_t SIMIX_file_read(surf_file_t fd, sg_size_t size, sg_host_t host);
-XBT_PRIVATE smx_activity_t SIMIX_file_write(surf_file_t fd, sg_size_t size, sg_host_t host);
+XBT_PRIVATE smx_activity_t SIMIX_file_read(surf_file_t fd, sg_size_t size);
+XBT_PRIVATE smx_activity_t SIMIX_file_write(surf_file_t fd, sg_size_t size);
 
 XBT_PRIVATE void SIMIX_io_destroy(smx_activity_t synchro);
 XBT_PRIVATE void SIMIX_io_finish(smx_activity_t synchro);

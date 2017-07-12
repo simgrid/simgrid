@@ -37,7 +37,6 @@ public:
 
   /** Simulates a write action. Returns the size of data actually written. */
   sg_size_t write(sg_size_t size);
-  sg_size_t write(sg_size_t size, sg_host_t host);
 
   /** Allows to store user data on that host */
   void setUserdata(void* data) { userdata_ = data; }
