@@ -485,19 +485,6 @@ void TRACE_vm_variable_sub_with_time (double time, const char *vm, const char *v
   instr_user_variable(time, vm, variable, "MSG_VM", value, INSTR_US_SUB, nullptr, user_vm_variables);
 }
 
-/** \ingroup TRACE_user_variables
- *  \brief Get declared user vm variables
- *
- * This function should be used to get VM variables that were already declared with #TRACE_vm_variable_declare or with
- * #TRACE_vm_variable_declare_with_color.
- *
- * \return A dynar with the declared host variables, must be freed with xbt_dynar_free.
- */
-xbt_dynar_t TRACE_get_vm_variables ()
-{
-  return instr_dict_to_dynar (user_vm_variables);
-}
-
 /* for host variables */
 /** \ingroup TRACE_user_variables
  *  \brief Declare a new user variable associated to hosts.
