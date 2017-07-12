@@ -990,23 +990,6 @@ void TRACE_host_pop_state (const char *host, const char *state)
   new PopStateEvent(MSG_get_clock(), container, type);
 }
 
-/** \ingroup TRACE_user_variables
- *  \brief Reset the state of a given host.
- *
- *  Clear all previous values of a user state.
- *
- *  \param host The name of the host to be considered.
- *  \param state The name of the state to be cleared.
- *
- *  \see TRACE_host_state_declare, TRACE_host_set_state, TRACE_host_push_state, TRACE_host_pop_state
- */
-void TRACE_host_reset_state (const char *host, const char *state)
-{
-  container_t container = PJ_container_get(host);
-  type_t type = PJ_type_get (state, container->type);
-  new ResetStateEvent(MSG_get_clock(), container, type);
-}
-
 /** \ingroup TRACE_API
  *  \brief Get Paje container types that can be mapped to the nodes of a graph.
  *
