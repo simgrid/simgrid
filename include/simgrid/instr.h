@@ -77,8 +77,6 @@ XBT_PUBLIC(void) TRACE_host_pop_state (const char *host, const char *state);
 /* for creating graph configuration files for Viva by hand */
 XBT_PUBLIC(xbt_dynar_t) TRACE_get_node_types ();
 XBT_PUBLIC(xbt_dynar_t) TRACE_get_edge_types ();
-XBT_PUBLIC(void) TRACE_pause ();
-XBT_PUBLIC(void) TRACE_resume ();
 
 SG_END_DECL()
 

@@ -1015,21 +1015,3 @@ xbt_dynar_t TRACE_get_edge_types ()
 {
   return instr_dict_to_dynar (trivaEdgeTypes);
 }
-
-/** \ingroup TRACE_API
- *  \brief Pauses all tracing activities.
- *  \see TRACE_resume
- */
-void TRACE_pause ()
-{
-  instr_pause_tracing();
-}
-
-/** \ingroup TRACE_API
- *  \brief Resumes all tracing activities.
- *  \see TRACE_pause
- */
-void TRACE_resume ()
-{
-  instr_resume_tracing();
-}
