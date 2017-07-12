@@ -359,7 +359,6 @@ XBT_PRIVATE void PJ_value_free (val_t value);
 XBT_PRIVATE void TRACE_TI_start();
 XBT_PRIVATE void TRACE_TI_end();
 
-XBT_PRIVATE void print_NULL (PajeEvent* event);
 XBT_PRIVATE void TRACE_paje_dump_buffer (int force);
 XBT_PRIVATE void dump_comment_file (const char *filename);
 XBT_PRIVATE void dump_comment (const char *comment);

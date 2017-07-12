@@ -27,12 +27,6 @@ FILE *tracing_file = nullptr;
 static xbt_dict_t tracing_files = nullptr; // TI specific
 static double prefix=0.0; // TI specific
 
-
-void print_NULL(PajeEvent* event){}
-
-/* The active set of functions for the selected trace format
- * By default, they all do nothing, hence the print_NULL to avoid segfaults */
-
 std::vector<PajeEvent*> buffer;
 void buffer_debug(std::vector<PajeEvent*> *buf);
 
