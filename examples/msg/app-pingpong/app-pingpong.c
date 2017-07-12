@@ -5,7 +5,7 @@
 
 #include "simgrid/msg.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(mag_app_pingpong,"Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_app_pingpong, "Messages specific for this msg example");
 
 static int pinger(int argc, char *argv[])
 {
