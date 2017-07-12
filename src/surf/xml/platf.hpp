@@ -31,7 +31,7 @@ XBT_PUBLIC(double) surf_parse_get_size(const char *string, const char *entity_ki
 XBT_PUBLIC(double) surf_parse_get_bandwidth(const char *string, const char *entity_kind, const char *name);
 XBT_PUBLIC(double) surf_parse_get_speed(const char *string, const char *entity_kind, const char *name);
 
-XBT_PUBLIC_DATA(int_f_void_t) surf_parse;       /* Entry-point to the parser. Set this to your function. */
+XBT_PUBLIC(int) surf_parse(); /* Entry-point to the parser */
 
 SG_END_DECL()
 

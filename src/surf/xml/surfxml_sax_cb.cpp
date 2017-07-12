@@ -1138,11 +1138,10 @@ void surf_parse_close()
   }
 }
 
-/* Call the lexer to parse the currently opened file. This pointer to function enables bypassing of the parser */
-static int _surf_parse() {
+/* Call the lexer to parse the currently opened file */
+int surf_parse()
+{
   return surf_parse_lex();
 }
-
-int_f_void_t surf_parse = &_surf_parse;
 
 SG_END_DECL()

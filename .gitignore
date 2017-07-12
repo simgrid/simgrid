@@ -193,6 +193,7 @@ examples/s4u/app-token-ring/s4u_app-token-ring
 examples/s4u/actions-comm/s4u_actions-comm
 examples/s4u/actions-storage/s4u_actions-storage
 examples/s4u/actor-create/s4u_actor-create
+examples/s4u/actor-daemon/s4u_actor-daemon
 examples/s4u/actor-kill/s4u_actor-kill
 examples/s4u/actor-migration/s4u_actor-migration
 examples/s4u/actor-suspend/s4u_actor-suspend
@@ -1052,6 +1053,7 @@ teshsuite/smpi/type-struct/type-struct
 teshsuite/smpi/type-vector/type-vector
 teshsuite/s4u/actor/actor
 teshsuite/s4u/comm-pt2pt/comm-pt2pt
+teshsuite/s4u/comm-waitany/comm-waitany
 teshsuite/s4u/concurrent_rw/concurrent_rw
 teshsuite/s4u/host_on_off_wait/host_on_off_wait
 teshsuite/s4u/listen_async/listen_async
