@@ -365,18 +365,15 @@ static int migration_rx_fun(int argc, char *argv[])
 static void start_dirty_page_tracking(msg_vm_t vm)
 {
   vm->pimpl_vm_->dp_enabled = 1;
-  if (not vm->pimpl_vm_->dp_objs)
+  if (vm->pimpl_vm_->dp_objs.empty())
     return;
 
-  char *key = nullptr;
-  xbt_dict_cursor_t cursor = nullptr;
-  dirty_page_t dp = nullptr;
-  xbt_dict_foreach (vm->pimpl_vm_->dp_objs, cursor, key, dp) {
+  for (auto elm : vm->pimpl_vm_->dp_objs) {
+    dirty_page_t dp    = elm.second;
     double remaining = MSG_task_get_flops_amount(dp->task);
     dp->prev_clock = MSG_get_clock();
     dp->prev_remaining = remaining;
-
-    // XBT_INFO("%s@%s remaining %f", key, sg_host_name(vm), remaining);
+    XBT_DEBUG("%s@%s remaining %f", elm.first.c_str(), vm->getCname(), remaining);
   }
 }
 
@@ -385,7 +382,7 @@ static void stop_dirty_page_tracking(msg_vm_t vm)
   vm->pimpl_vm_->dp_enabled = 0;
 }
 
-static double get_computed(char *key, msg_vm_t vm, dirty_page_t dp, double remaining, double clock)
+static double get_computed(const char* key, msg_vm_t vm, dirty_page_t dp, double remaining, double clock)
 {
   double computed = dp->prev_remaining - remaining;
   double duration = clock - dp->prev_clock;
@@ -400,10 +397,9 @@ static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug
 {
   double total = 0;
 
-  char *key = nullptr;
-  xbt_dict_cursor_t cursor = nullptr;
-  dirty_page_t dp = nullptr;
-  xbt_dict_foreach (vm->pimpl_vm_->dp_objs, cursor, key, dp) {
+  for (auto elm : vm->pimpl_vm_->dp_objs) {
+    const char* key  = elm.first.c_str();
+    dirty_page_t dp  = elm.second;
     double remaining = MSG_task_get_flops_amount(dp->task);
 
     double clock = MSG_get_clock();
@@ -443,10 +439,7 @@ void MSG_host_add_task(msg_host_t host, msg_task_t task)
     dp->prev_clock = MSG_get_clock();
     dp->prev_remaining = remaining;
   }
-  if (not vm->pimpl_vm_->dp_objs)
-    vm->pimpl_vm_->dp_objs = xbt_dict_new_homogeneous(nullptr);
-  xbt_assert(xbt_dict_get_or_null(vm->pimpl_vm_->dp_objs, key) == nullptr);
-  xbt_dict_set(vm->pimpl_vm_->dp_objs, key, dp, nullptr);
+  vm->pimpl_vm_->dp_objs.insert({key, dp});
   XBT_DEBUG("add %s on %s (remaining %f, dp_enabled %d)", key, host->getCname(), remaining, vm->pimpl_vm_->dp_enabled);
 
   xbt_free(key);
@@ -459,8 +452,10 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
     return;
 
   char *key = bprintf("%s-%p", task->name, task);
-  dirty_page_t dp = (dirty_page_t)(vm->pimpl_vm_->dp_objs ? xbt_dict_get_or_null(vm->pimpl_vm_->dp_objs, key) : NULL);
-  xbt_assert(dp->task == task);
+  dirty_page_t dp = nullptr;
+  if (vm->pimpl_vm_->dp_objs.find(key) != vm->pimpl_vm_->dp_objs.end())
+    dp = vm->pimpl_vm_->dp_objs.at(key);
+  xbt_assert(dp && dp->task == task);
 
   /* If we are in the middle of dirty page tracking, we record how much computation has been done until now, and keep
    * the information for the lookup_() function that will called soon. */
@@ -472,8 +467,8 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
 
     vm->pimpl_vm_->dp_updated_by_deleted_tasks += updated;
   }
-  if (vm->pimpl_vm_->dp_objs)
-    xbt_dict_remove(vm->pimpl_vm_->dp_objs, key);
+
+  vm->pimpl_vm_->dp_objs.erase(key);
   xbt_free(dp);
 
   XBT_DEBUG("del %s on %s", key, host->getCname());

@@ -126,21 +126,18 @@ VirtualMachineImpl::~VirtualMachineImpl()
     allVms_.erase(iter);
 
   /* dirty page tracking */
-  unsigned int size          = xbt_dict_size(dp_objs);
+  unsigned int size          = dp_objs.size();
   static bool already_warned = false;
   if (size > 0 && not already_warned) {
-    xbt_dict_cursor_t cursor = nullptr;
-    xbt_dict_cursor_first(dp_objs, &cursor);
+    auto front = dp_objs.begin();
     XBT_WARN("Dirty page tracking: %u pending task(s) on a destroyed VM (first one is %s).\n"
              "If you don't understand why your task was not properly removed, please report that bug.\n"
              "This is a known bug if you turned the host off during the VM execution.\n"
              "Please remind us of that problem at some point: our code base is not ready to fix this harmless issue in "
              "2016, sorry.",
-             size, (xbt_log_no_loc ? "(name hidden)" : xbt_dict_cursor_get_key(cursor)));
-    xbt_dict_cursor_free(&cursor);
+             size, (xbt_log_no_loc ? "(name hidden)" : front->first.c_str()));
     already_warned = true;
   }
-  xbt_dict_free(&dp_objs);
 
   /* Free the cpu_action of the VM. */
   XBT_ATTRIB_UNUSED int ret = action_->unref();

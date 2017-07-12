@@ -8,12 +8,15 @@
 #include "src/surf/HostImpl.hpp"
 #include <algorithm>
 #include <deque>
+#include <unordered_map>
 
 #ifndef VM_INTERFACE_HPP_
 #define VM_INTERFACE_HPP_
 
 #define GUESTOS_NOISE 100 // This value corresponds to the cost of the global action associated to the VM
                           // It corresponds to the cost of a VM running no tasks.
+
+typedef struct dirty_page* dirty_page_t;
 
 namespace simgrid {
 namespace vm {
@@ -86,8 +89,8 @@ public:
   surf::Action* action_ = nullptr;
 
   /* Dirty pages stuff */
+  std::unordered_map<std::string, dirty_page_t> dp_objs;
   int dp_enabled                     = 0;
-  xbt_dict_t dp_objs                 = nullptr;
   double dp_updated_by_deleted_tasks = 0;
 
 protected:
