@@ -1,6 +1,6 @@
 /* xbt.h - Public interface to the xbt (simgrid's toolbox)                  */
 
-/* Copyright (c) 2004-2015. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -47,7 +47,8 @@
 
 #define XBT_ATTRIB_NORETURN __attribute__((noreturn))
 #define XBT_ATTRIB_UNUSED  __attribute__((unused))
-#define XBT_ATTRIB_DEPRECATED(m)  __attribute__((deprecated(m)))
+#define XBT_ATTRIB_DEPRECATED_v319(msg) __attribute__((deprecated(msg))) /* Will be dropped in v3.19 */
+#define XBT_ATTRIB_DEPRECATED_v320(msg) __attribute__((deprecated(msg))) /* Will be dropped in v3.20 */
 
 /* Constructor priorities exist since gcc 4.3.  Apparently, they are however not
  * supported on Macs. */

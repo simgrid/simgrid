@@ -170,34 +170,48 @@ XBT_PUBLIC(void) MSG_zone_set_property_value(msg_netzone_t netzone, const char* 
 XBT_PUBLIC(void) MSG_zone_get_hosts(msg_netzone_t zone, xbt_dynar_t whereto);
 
 /* Deprecated forms of the previous functions */
-static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_root since v3.16")
-    msg_netzone_t MSG_environment_get_routing_root() {
+static inline XBT_ATTRIB_DEPRECATED_v319(
+    "Use MSG_zone_get_root() instead: v3.19 will remove MSG_environment_get_routing_root() completely.") msg_netzone_t
+    MSG_environment_get_routing_root()
+{
   return MSG_zone_get_root();
 }
-static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_name since v3.16")
-    const char* MSG_environment_as_get_name(msg_netzone_t zone) {
+static inline XBT_ATTRIB_DEPRECATED_v319(
+    "Use MSG_zone_get_name() instead: v3.19 will remove MSG_environment_as_get_name() completely.") const
+    char* MSG_environment_as_get_name(msg_netzone_t zone)
+{
   return MSG_zone_get_name(zone);
 }
-static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_by_name since v3.16")
-    msg_netzone_t MSG_environment_as_get_by_name(const char* name) {
+static inline XBT_ATTRIB_DEPRECATED_v319(
+    "Use MSG_zone_get_by_name() instead: v3.19 will remove MSG_environment_as_get_by_name() completely.") msg_netzone_t
+    MSG_environment_as_get_by_name(const char* name)
+{
   return MSG_zone_get_by_name(name);
 }
-static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_sons since v3.16")
-    xbt_dict_t MSG_environment_as_get_routing_sons(msg_netzone_t zone) {
+static inline XBT_ATTRIB_DEPRECATED_v319(
+    "Use MSG_zone_get_sons() instead: v3.19 will remove MSG_environment_as_get_routing_sons() completely.") xbt_dict_t
+    MSG_environment_as_get_routing_sons(msg_netzone_t zone)
+{
   xbt_dict_t res = xbt_dict_new_homogeneous(NULL);
   MSG_zone_get_sons(zone, res);
   return res;
 }
-static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_property_value since v3.16")
-    const char* MSG_environment_as_get_property_value(msg_netzone_t zone, const char* name) {
+static inline XBT_ATTRIB_DEPRECATED_v319(
+    "Use MSG_zone_get_property_value() instead: v3.19 will remove MSG_environment_as_get_property_value() completely.")
+    const char* MSG_environment_as_get_property_value(msg_netzone_t zone, const char* name)
+{
   return MSG_zone_get_property_value(zone, name);
 }
-static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_set_property_value since v3.16")
-    void MSG_environment_as_set_property_value(msg_netzone_t zone, const char* name, char* value) {
+static inline XBT_ATTRIB_DEPRECATED_v319(
+    "Use MSG_zone_set_property_value() instead: v3.19 will remove MSG_environment_as_set_property_value() "
+    "completely.") void MSG_environment_as_set_property_value(msg_netzone_t zone, const char* name, char* value)
+{
   MSG_zone_set_property_value(zone, name, value);
 }
-static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_hosts since v3.16")
-    xbt_dynar_t MSG_environment_as_get_hosts(msg_netzone_t zone) {
+static inline XBT_ATTRIB_DEPRECATED_v319(
+    "Use MSG_zone_get_hosts() instead: v3.19 will remove MSG_environment_as_get_hosts() completely.") xbt_dynar_t
+    MSG_environment_as_get_hosts(msg_netzone_t zone)
+{
   xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t), NULL);
   MSG_zone_get_hosts(zone, res);
   return res;

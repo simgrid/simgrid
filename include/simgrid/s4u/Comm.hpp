@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -10,7 +10,7 @@
 
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Activity.hpp>
-#include <simgrid/s4u/Mailbox.hpp> // DEPRECATED 3.17
+#include <simgrid/s4u/Mailbox.hpp> // DEPRECATED 3.20
 #include <simgrid/s4u/forward.hpp>
 
 #include <vector>
@@ -55,31 +55,33 @@ public:
     return idx;
   }
   /** Creates (but don't start) an async send to the mailbox @p dest */
-  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::put_init") // 3.17
+  static CommPtr XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_init(): v3.20 will remove Comm::send_init() completely.")
       send_init(MailboxPtr dest)
   {
     return dest->put_init();
   }
   /** Creates (but don't start) an async send to the mailbox @p dest */
-  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::put_init") // 3.17
+  static CommPtr XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_init(): v3.20 will remove Comm::send_init() completely.")
       send_init(MailboxPtr dest, void* data, int simulatedByteAmount)
   {
     return dest->put_init(data, simulatedByteAmount);
   }
   /** Creates and start an async send to the mailbox @p dest */
-  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::put_async") // 3.17
+  static CommPtr XBT_ATTRIB_DEPRECATED_v320(
+      "Use Mailbox::put_async(): v3.20 will remove Comm::send_async() completely.")
       send_async(MailboxPtr dest, void* data, int simulatedByteAmount)
   {
     return dest->put_async(data, simulatedByteAmount);
   }
   /** Creates (but don't start) an async recv onto the mailbox @p from */
-  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::get_init") // 3.17
+  static CommPtr XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get_init(): v3.20 will remove Comm::recv_init() completely.")
       recv_init(MailboxPtr from)
   {
     return from->get_init();
   }
   /** Creates and start an async recv to the mailbox @p from */
-  static CommPtr XBT_ATTRIB_DEPRECATED("please use Mailbox::get_async") // 3.17
+  static CommPtr XBT_ATTRIB_DEPRECATED_v320(
+      "Use Mailbox::get_async(): v3.20 will remove Comm::recv_async() completely.")
       recv_async(MailboxPtr from, void** data)
   {
     return from->get_async(data);
