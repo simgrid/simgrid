@@ -119,15 +119,6 @@ double MSG_host_get_speed(msg_host_t host) {
 }
 
 /** \ingroup m_host_management
- * \brief Return the speed of the processor (in flop/s), regardless of the current load on the machine.
- * Deprecated: use MSG_host_get_speed
- */
-double MSG_get_host_speed(msg_host_t host) {
-  XBT_WARN("MSG_get_host_speed is deprecated: use MSG_host_get_speed");
-  return MSG_host_get_speed(host);
-}
-
-/** \ingroup m_host_management
  * \brief Return the number of cores.
  *
  * \param host a host

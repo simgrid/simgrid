@@ -266,6 +266,13 @@ XBT_PUBLIC(void) MSG_host_get_process_list(msg_host_t h, xbt_dynar_t whereto);
 XBT_PUBLIC(int) MSG_host_is_on(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_off(msg_host_t h);
 
+static inline double
+    XBT_ATTRIB_DEPRECATED_v319("Use MSG_host_get_speed(): v3.19 will drop MSG_get_host_speed() completely.")
+        MSG_get_host_speed(msg_host_t host)
+{
+  return MSG_host_get_speed(host);
+}
+
 XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h); /* deprecated */
 
 XBT_PUBLIC(double) MSG_host_get_power_peak_at(msg_host_t h, int pstate);
