@@ -1,5 +1,4 @@
-/* Copyright (c) 2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -72,7 +71,7 @@ public:
   static const std::size_t max_size = 64;
 private:
   // Values of the stack (the top is stack_[size_ - 1]):
-  uintptr_t stack_[max_size];
+  uintptr_t stack_[max_size] {0};
   size_t size_;
 public:
   ExpressionStack() : size_(0) {}
