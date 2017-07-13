@@ -99,6 +99,6 @@ int main(int argc, char **argv)
   xbt_dynar_free(&hosts);
 
   int res = MSG_main();
-  XBT_INFO("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %.6f", MSG_get_clock());
   return res != MSG_OK;
 }

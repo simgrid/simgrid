@@ -53,4 +53,4 @@ $ ${bindir:=.}/io-file ${srcdir:=.}/storage/storage.xml "--log=root.fmt:[%10.6r]
 > [  0.008326] (3:host@carl) 	Have written 110000 in '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml'. Size now is: 110000
 > [  0.008326] (3:host@carl) 	Capacity of the storage element '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml' is stored on: 37020686 / 536870912000
 > [  0.008326] (3:host@carl) 	Close file '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml'
-> [  0.008326] (0:maestro@) Simulation time 0.00832645
+> [  0.008326] (0:maestro@) Simulation time 0.008326
