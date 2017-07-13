@@ -58,8 +58,8 @@ public class Node extends Process {
       create();
       joinSuccess = true;
     } else {
-      int knownId = Integer.valueOf(args[1]);
-      deadline = Integer.valueOf(args[3]);
+      int knownId = Integer.parseInt(args[1]);
+      deadline = Integer.parseInt(args[3]);
       Msg.debug("Hey! Let's join the system with the id " + id + ".");
 
       joinSuccess = join(knownId);
@@ -202,7 +202,6 @@ public class Node extends Process {
       }
       catch (MsgException e) {
         commReceive = null;
-        stop = true;
       }
     }
     catch (MsgException e) {
