@@ -579,7 +579,7 @@ void SIMIX_run()
  */
 smx_timer_t SIMIX_timer_set(double date, void (*callback)(void*), void *arg)
 {
-  smx_timer_t timer = new s_smx_timer_t(date, [=](){ callback(arg); });
+  smx_timer_t timer = new s_smx_timer_t(date, [callback, arg]() { callback(arg); });
   xbt_heap_push(simix_timers, timer, date);
   return timer;
 }
@@ -668,18 +668,6 @@ void SIMIX_display_process_status()
 
       if (boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(process->waiting_synchro) != nullptr)
         synchro_description = "I/O";
-
-
-      /*
-        switch (process->waiting_synchro->type) {
-      case SIMIX_SYNC_PARALLEL_EXECUTE:
-        synchro_description = "parallel execution";
-        break;
-
-      case SIMIX_SYNC_JOIN:
-        synchro_description = "joining";
-        break;
-*/
 
       XBT_INFO("Process %lu (%s@%s): waiting for %s synchro %p (%s) in state %d to finish", process->pid,
                process->cname(), process->host->getCname(), synchro_description, process->waiting_synchro.get(),

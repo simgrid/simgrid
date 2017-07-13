@@ -38,7 +38,6 @@ XBT_PUBLIC(void) TRACE_vm_variable_sub (const char *vm, const char *variable, do
 XBT_PUBLIC(void) TRACE_vm_variable_set_with_time (double time, const char *vm, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_vm_variable_add_with_time (double time, const char *vm, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_vm_variable_sub_with_time (double time, const char *vm, const char *variable, double value);
-XBT_PUBLIC(xbt_dynar_t) TRACE_get_vm_variables ();
 
 /* for host variables */
 XBT_PUBLIC(void) TRACE_host_variable_declare (const char *variable);
@@ -74,7 +73,6 @@ XBT_PUBLIC(void) TRACE_host_state_declare_value (const char *state, const char *
 XBT_PUBLIC(void) TRACE_host_set_state (const char *host, const char *state, const char *value);
 XBT_PUBLIC(void) TRACE_host_push_state (const char *host, const char *state, const char *value);
 XBT_PUBLIC(void) TRACE_host_pop_state (const char *host, const char *state);
-XBT_PUBLIC(void) TRACE_host_reset_state (const char *host, const char *state);
 
 /* for creating graph configuration files for Viva by hand */
 XBT_PUBLIC(xbt_dynar_t) TRACE_get_node_types ();
