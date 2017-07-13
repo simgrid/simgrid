@@ -273,8 +273,6 @@ static inline double
   return MSG_host_get_speed(host);
 }
 
-XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h); /* deprecated */
-
 XBT_PUBLIC(double) MSG_host_get_power_peak_at(msg_host_t h, int pstate);
 #define MSG_host_get_current_power_peak(h) MSG_host_get_speed(h) /* deprecated */
 XBT_PUBLIC(int)    MSG_host_get_nb_pstates(msg_host_t h);
