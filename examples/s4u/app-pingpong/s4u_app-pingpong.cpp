@@ -38,7 +38,7 @@ static void ponger(std::vector<std::string> args)
 
   /* - Receive the (small) ping first ....*/
   double* sender_time =
-      (static_cast<double*>(simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::getHost()->getName())->get()));
+      static_cast<double*>(simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::getHost()->getName())->get());
   double communication_time = simgrid::s4u::Engine::getClock() - *sender_time;
   XBT_INFO("Task received : small communication (latency bound)");
   XBT_INFO(" Ping time (latency bound) %f", communication_time);

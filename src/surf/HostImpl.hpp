@@ -20,9 +20,6 @@
 
 namespace simgrid {
 namespace surf {
-
-class XBT_PRIVATE HostModel;
-class XBT_PRIVATE HostImpl;
 class XBT_PRIVATE HostAction;
 }
 }
@@ -44,7 +41,7 @@ namespace surf {
  * @brief SURF Host model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
  */
-class HostModel : public Model {
+class XBT_PRIVATE HostModel : public Model {
 public:
   HostModel() : Model() {}
 
@@ -60,7 +57,7 @@ public:
  * @brief SURF Host interface class
  * @details An host represents a machine with a aggregation of a Cpu, a RoutingEdge and a Storage
  */
-class HostImpl : public simgrid::surf::PropertyHolder {
+class XBT_PRIVATE HostImpl : public simgrid::surf::PropertyHolder {
 
 public:
   explicit HostImpl(s4u::Host* host);

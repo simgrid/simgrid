@@ -17,22 +17,11 @@
 #include "simgrid/datatypes.h"
 #include "simgrid/forward.h"
 
-SG_BEGIN_DECL()
-/* Actions and models are highly connected structures... */
-
-/* user-visible parameters */
-extern XBT_PRIVATE double sg_tcp_gamma;
-extern XBT_PRIVATE double sg_sender_gap;
-extern XBT_PRIVATE double sg_latency_factor;
-extern XBT_PRIVATE double sg_bandwidth_factor;
-extern XBT_PRIVATE double sg_weight_S_parameter;
-extern XBT_PRIVATE int sg_network_crosstraffic;
 
 #ifdef __cplusplus
 
 namespace simgrid {
 namespace surf {
-
 class Model;
 class CpuModel;
 class HostModel;
@@ -68,6 +57,17 @@ typedef struct surf_Action surf_Action;
 typedef struct surf_File surf_File;
 
 #endif
+
+SG_BEGIN_DECL()
+/* Actions and models are highly connected structures... */
+
+/* user-visible parameters */
+extern XBT_PRIVATE double sg_tcp_gamma;
+extern XBT_PRIVATE double sg_sender_gap;
+extern XBT_PRIVATE double sg_latency_factor;
+extern XBT_PRIVATE double sg_bandwidth_factor;
+extern XBT_PRIVATE double sg_weight_S_parameter;
+extern XBT_PRIVATE int sg_network_crosstraffic;
 
 /** @ingroup SURF_c_bindings
  *  \brief Model datatype

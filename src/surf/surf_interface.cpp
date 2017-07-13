@@ -900,13 +900,8 @@ void Action::updateRemainingLazy(double now)
       double_update(&maxDuration_, delta, sg_surf_precision);
 
     //FIXME: duplicated code
-    if ((remains_ <= 0) &&
-        (lmm_get_variable_weight(getVariable()) > 0)) {
-      finish();
-      setState(Action::State::done);
-      heapRemove(getModel()->getActionHeap());
-    } else if (((maxDuration_ != NO_MAX_DURATION)
-        && (maxDuration_ <= 0))) {
+    if (((remains_ <= 0) && (lmm_get_variable_weight(getVariable()) > 0)) ||
+        ((maxDuration_ > NO_MAX_DURATION) && (maxDuration_ <= 0))) {
       finish();
       setState(Action::State::done);
       heapRemove(getModel()->getActionHeap());
