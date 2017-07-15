@@ -371,7 +371,7 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_Host_getPstatesCount(JNIEnv* env, jo
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCurrentPowerPeak(JNIEnv* env, jobject jhost)
 {
   msg_host_t host = jhost_get_native(env, jhost);
-  return MSG_host_get_current_power_peak(host);
+  return MSG_host_get_speed(host);
 }
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getPowerPeakAt(JNIEnv* env, jobject jhost, jint pstate)
 {
