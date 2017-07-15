@@ -169,7 +169,6 @@ XBT_PUBLIC(const char*) MSG_zone_get_property_value(msg_netzone_t as, const char
 XBT_PUBLIC(void) MSG_zone_set_property_value(msg_netzone_t netzone, const char* name, char* value);
 XBT_PUBLIC(void) MSG_zone_get_hosts(msg_netzone_t zone, xbt_dynar_t whereto);
 
-/* Deprecated forms of the previous functions */
 static inline XBT_ATTRIB_DEPRECATED_v319(
     "Use MSG_zone_get_root() instead: v3.19 will remove MSG_environment_get_routing_root() completely.") msg_netzone_t
     MSG_environment_get_routing_root()
@@ -272,12 +271,17 @@ static inline double
 {
   return MSG_host_get_speed(host);
 }
+static inline double XBT_ATTRIB_DEPRECATED_v320(
+    "Use MSG_host_get_speed(): v3.20 will drop MSG_host_get_current_power_peak() completely.")
+    MSG_host_get_current_power_peak(msg_host_t host)
+{
+  return MSG_host_get_speed(host);
+}
 
 XBT_PUBLIC(double) MSG_host_get_power_peak_at(msg_host_t h, int pstate);
-#define MSG_host_get_current_power_peak(h) MSG_host_get_speed(h) /* deprecated */
 XBT_PUBLIC(int)    MSG_host_get_nb_pstates(msg_host_t h);
-#define MSG_host_get_pstate(h)         sg_host_get_pstate(h)         /* deprecated */
-#define MSG_host_set_pstate(h, pstate) sg_host_set_pstate(h, pstate) /* deprecated */
+#define MSG_host_get_pstate(h) sg_host_get_pstate(h) /* users don't know that MSG is the C version of SimGrid */
+#define MSG_host_set_pstate(h, pstate) sg_host_set_pstate(h, pstate) /* (same here) */
 XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar();
 XBT_PUBLIC(int) MSG_get_host_number();
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_mounted_storage_list(msg_host_t host);

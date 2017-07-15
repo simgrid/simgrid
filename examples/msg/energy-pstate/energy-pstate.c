@@ -24,7 +24,7 @@ static int dvfs(int argc, char *argv[])
   int nb = MSG_host_get_nb_pstates(host);
   XBT_INFO("Count of Processor states=%d", nb);
 
-  double current_peak = MSG_host_get_current_power_peak(host);
+  double current_peak = MSG_host_get_speed(host);
   XBT_INFO("Current power peak=%f", current_peak);
 
   // Run a task
@@ -45,7 +45,7 @@ static int dvfs(int argc, char *argv[])
 
   MSG_host_set_pstate(host, new_pstate);
 
-  current_peak = MSG_host_get_current_power_peak(host);
+  current_peak = MSG_host_get_speed(host);
   XBT_INFO("Current power peak=%f", current_peak);
 
   // Run a second task
@@ -61,7 +61,7 @@ static int dvfs(int argc, char *argv[])
   int nb2 = MSG_host_get_nb_pstates(host);
   XBT_INFO("Count of Processor states=%d", nb2);
 
-  double current_peak2 = MSG_host_get_current_power_peak(host);
+  double current_peak2 = MSG_host_get_speed(host);
   XBT_INFO("Current power peak=%f", current_peak2);
   return 0;
 }

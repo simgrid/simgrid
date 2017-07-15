@@ -14,14 +14,14 @@ static int dvfs(int argc, char *argv[])
   msg_host_t host = MSG_host_by_name("MyHost1");
 
   XBT_INFO("Energetic profile: %s",MSG_host_get_property_value(host,"watt_per_state"));
-  XBT_INFO("Initial peak speed=%.0E flop/s; Energy dissipated =%.0E J", MSG_host_get_current_power_peak(host),
+  XBT_INFO("Initial peak speed=%.0E flop/s; Energy dissipated =%.0E J", MSG_host_get_speed(host),
            sg_host_get_consumed_energy(host));
 
   double start = MSG_get_clock();
   XBT_INFO("Sleep for 10 seconds");
   MSG_process_sleep(10);
-  XBT_INFO("Done sleeping (duration: %.2f s). Current peak speed=%.0E; Energy dissipated=%.2f J", MSG_get_clock()-start,
-      MSG_host_get_current_power_peak(host), sg_host_get_consumed_energy(host));
+  XBT_INFO("Done sleeping (duration: %.2f s). Current peak speed=%.0E; Energy dissipated=%.2f J",
+           MSG_get_clock() - start, MSG_host_get_speed(host), sg_host_get_consumed_energy(host));
 
   // Run a task
   start = MSG_get_clock();
@@ -30,15 +30,15 @@ static int dvfs(int argc, char *argv[])
   MSG_task_execute (task1);
   MSG_task_destroy(task1);
   XBT_INFO("Task done (duration: %.2f s). Current peak speed=%.0E flop/s; Current consumption: from %.0fW to %.0fW"
-           " depending on load; Energy dissipated=%.0f J", MSG_get_clock()-start,
-           MSG_host_get_current_power_peak(host), sg_host_get_wattmin_at(host,MSG_host_get_pstate(host)),
-           sg_host_get_wattmax_at(host,MSG_host_get_pstate(host)), sg_host_get_consumed_energy(host));
+           " depending on load; Energy dissipated=%.0f J",
+           MSG_get_clock() - start, MSG_host_get_speed(host), sg_host_get_wattmin_at(host, MSG_host_get_pstate(host)),
+           sg_host_get_wattmax_at(host, MSG_host_get_pstate(host)), sg_host_get_consumed_energy(host));
 
   // ========= Change power peak =========
   int pstate=2;
   MSG_host_set_pstate(host, pstate);
-  XBT_INFO("========= Requesting pstate %d (speed should be of %.0E flop/s and is of %.0E flop/s)",
-      pstate, MSG_host_get_power_peak_at(host, pstate), MSG_host_get_current_power_peak(host));
+  XBT_INFO("========= Requesting pstate %d (speed should be of %.0E flop/s and is of %.0E flop/s)", pstate,
+           MSG_host_get_power_peak_at(host, pstate), MSG_host_get_speed(host));
 
   // Run a second task
   start = MSG_get_clock();
@@ -47,13 +47,13 @@ static int dvfs(int argc, char *argv[])
   MSG_task_execute (task1);
   MSG_task_destroy(task1);
   XBT_INFO("Task done (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",
-      MSG_get_clock()-start, MSG_host_get_current_power_peak(host), sg_host_get_consumed_energy(host));
+           MSG_get_clock() - start, MSG_host_get_speed(host), sg_host_get_consumed_energy(host));
 
   start = MSG_get_clock();
   XBT_INFO("Sleep for 4 seconds");
   MSG_process_sleep(4);
   XBT_INFO("Done sleeping (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",
-      MSG_get_clock()-start, MSG_host_get_current_power_peak(host), sg_host_get_consumed_energy(host));
+           MSG_get_clock() - start, MSG_host_get_speed(host), sg_host_get_consumed_energy(host));
 
   // =========== Turn the other host off ==========
   XBT_INFO("Turning MyHost2 off, and sleeping another 10 seconds. MyHost2 dissipated %.0f J so far.",
@@ -62,7 +62,7 @@ static int dvfs(int argc, char *argv[])
   start = MSG_get_clock();
   MSG_process_sleep(10);
   XBT_INFO("Done sleeping (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",
-      MSG_get_clock()-start, MSG_host_get_current_power_peak(host), sg_host_get_consumed_energy(host));
+           MSG_get_clock() - start, MSG_host_get_speed(host), sg_host_get_consumed_energy(host));
   return 0;
 }
 

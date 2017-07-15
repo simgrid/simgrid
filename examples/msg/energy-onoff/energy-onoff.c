@@ -58,26 +58,26 @@ static int onoff(int argc, char *argv[]) {
   msg_host_t host1 = MSG_host_by_name("MyHost1");
 
   XBT_INFO("Energetic profile: %s", MSG_host_get_property_value(host1,"watt_per_state"));
-  XBT_INFO("Initial peak speed=%.0E flop/s; Energy dissipated =%.0E J",
-     MSG_host_get_current_power_peak(host1), sg_host_get_consumed_energy(host1));
+  XBT_INFO("Initial peak speed=%.0E flop/s; Energy dissipated =%.0E J", MSG_host_get_speed(host1),
+           sg_host_get_consumed_energy(host1));
 
   XBT_INFO("Sleep for 10 seconds");
   MSG_process_sleep(10);
-  XBT_INFO("Done sleeping. Current peak speed=%.0E; Energy dissipated=%.2f J",
-     MSG_host_get_current_power_peak(host1), sg_host_get_consumed_energy(host1));
+  XBT_INFO("Done sleeping. Current peak speed=%.0E; Energy dissipated=%.2f J", MSG_host_get_speed(host1),
+           sg_host_get_consumed_energy(host1));
 
   simulate_shutdown(host1);
-  XBT_INFO("Host1 is now OFF. Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",
-     MSG_host_get_current_power_peak(host1), sg_host_get_consumed_energy(host1));
+  XBT_INFO("Host1 is now OFF. Current peak speed=%.0E flop/s; Energy dissipated=%.0f J", MSG_host_get_speed(host1),
+           sg_host_get_consumed_energy(host1));
 
   XBT_INFO("Sleep for 10 seconds");
   MSG_process_sleep(10);
-  XBT_INFO("Done sleeping. Current peak speed=%.0E; Energy dissipated=%.2f J",
-     MSG_host_get_current_power_peak(host1), sg_host_get_consumed_energy(host1));
+  XBT_INFO("Done sleeping. Current peak speed=%.0E; Energy dissipated=%.2f J", MSG_host_get_speed(host1),
+           sg_host_get_consumed_energy(host1));
 
   simulate_bootup(host1);
-  XBT_INFO("Host1 is now ON again. Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",
-     MSG_host_get_current_power_peak(host1), sg_host_get_consumed_energy(host1));
+  XBT_INFO("Host1 is now ON again. Current peak speed=%.0E flop/s; Energy dissipated=%.0f J", MSG_host_get_speed(host1),
+           sg_host_get_consumed_energy(host1));
 
   return 0;
 }
