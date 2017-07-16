@@ -26,6 +26,11 @@ XBT_PRIVATE bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx);
 /** Is the process ready to execute its simcall?
  *
  *  This is true if the request associated with the process is ready.
+ *
+ *  Most requests are always enabled but WAIT and WAITANY
+ *  are not always enabled: a WAIT where the communication does not
+ *  have both a source and a destination yet is not enabled
+ *  (unless timeout is enabled in the wait and enabeld in SimGridMC).
  */
 XBT_PRIVATE bool actor_is_enabled(smx_actor_t process);
 
