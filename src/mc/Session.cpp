@@ -136,7 +136,7 @@ void Session::logState()
 Session* Session::fork(std::function<void()> code)
 {
   // Create a AF_LOCAL socketpair used for exchanging messages
-  // bewteen the model-checker process (ourselves) and the model-checked
+  // between the model-checker process (ourselves) and the model-checked
   // process:
   int res;
   int sockets[2];

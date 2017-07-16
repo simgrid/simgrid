@@ -33,7 +33,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client, mc, "MC client logic");
 namespace simgrid {
 namespace mc {
 
-std::unique_ptr<Client> Client::client_;
+std::unique_ptr<Client> Client::instance_;
 
 Client* Client::initialize()
 {
@@ -43,8 +43,8 @@ Client* Client::initialize()
     return nullptr;
 
   // Do not break if we are called multiple times:
-  if (client_)
-    return client_.get();
+  if (instance_)
+    return instance_.get();
 
   _sg_do_model_check = 1;
 
@@ -65,7 +65,7 @@ Client* Client::initialize()
     xbt_die("Unexpected socket type %i", type);
   XBT_DEBUG("Model-checked application found expected socket type");
 
-  client_ = std::unique_ptr<Client>(new simgrid::mc::Client(fd));
+  instance_ = std::unique_ptr<Client>(new simgrid::mc::Client(fd));
 
   // Wait for the model-checker:
   errno = 0;
@@ -79,8 +79,8 @@ Client* Client::initialize()
   if (errno != 0 || raise(SIGSTOP) != 0)
     xbt_die("Could not wait for the model-checker");
 
-  client_->handleMessages();
-  return client_.get();
+  instance_->handleMessages();
+  return instance_.get();
 }
 
 void Client::handleDeadlockCheck(mc_message_t* msg)

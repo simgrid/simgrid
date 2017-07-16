@@ -69,12 +69,8 @@ public:
   void resume(simgrid::mc::RemoteClient& process);
   void loop();
   void handle_events(int fd, short events);
-  void wait_client(simgrid::mc::RemoteClient& process);
+  void wait_for_requests();
   void handle_simcall(Transition const& transition);
-  void wait_for_requests()
-  {
-    mc_model_checker->wait_client(mc_model_checker->process());
-  }
   void exit(int status);
 
   bool checkDeadlock();

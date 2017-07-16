@@ -30,7 +30,7 @@ class XBT_PUBLIC() Client {
 private:
   bool active_ = false;
   Channel channel_;
-  static std::unique_ptr<Client> client_;
+  static std::unique_ptr<Client> instance_;
 
 public:
   Client();
@@ -59,7 +59,7 @@ public:
   // Singleton :/
   // TODO, remove the singleton antipattern.
   static Client* initialize();
-  static Client* get() { return client_.get(); }
+  static Client* get() { return instance_.get(); }
 };
 }
 }

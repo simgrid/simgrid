@@ -387,9 +387,9 @@ void ModelChecker::on_signal(int signo)
   }
 }
 
-void ModelChecker::wait_client(simgrid::mc::RemoteClient& process)
+void ModelChecker::wait_for_requests()
 {
-  this->resume(process);
+  this->resume(process());
   if (this->process().running())
     event_base_dispatch(base_);
 }
