@@ -48,7 +48,7 @@ XBT_PUBLIC(void) MC_cut(void);
 XBT_PUBLIC(void) MC_ignore(void *addr, size_t size);
 
 XBT_PUBLIC(void) MC_ignore_heap(void* address, size_t size);
-XBT_PUBLIC(void) MC_remove_ignore_heap(void* address, size_t size);
+XBT_PUBLIC(void) MC_unignore_heap(void* address, size_t size);
 XBT_PUBLIC(void) MC_ignore_local_variable(const char* var_name, const char* frame);
 XBT_PUBLIC(void) MC_ignore_global_variable(const char* var_name);
 

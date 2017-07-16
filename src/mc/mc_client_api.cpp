@@ -69,21 +69,21 @@ void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
 
 /** @brief Register a stack in the model checker
  *
- *  The stacks are allocated in the heap. The MC handle them especially
+ *  The stacks are allocated in the heap. The MC handle them specifically
  *  when we analyze/compare the content of the heap so it must be told where
  *  they are with this function.
  *
- *  @param stack
- *  @param process Process owning the stack
- *  @param context
+ *  @param stack Where the stack is
+ *  @param actor Actor owning the stack
+ *  @param context The context associated to that stack
  *  @param size    Size of the stack
  */
-void MC_register_stack_area(void *stack, smx_actor_t process, ucontext_t* context, size_t size)
+void MC_register_stack_area(void* stack, smx_actor_t actor, ucontext_t* context, size_t size)
 {
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
     return;
-  simgrid::mc::Client::get()->declareStack(stack, size, process, context);
+  simgrid::mc::Client::get()->declareStack(stack, size, actor, context);
 }
 
 void MC_ignore_global_variable(const char *name)
@@ -103,7 +103,7 @@ void MC_ignore_heap(void *address, size_t size)
   simgrid::mc::Client::get()->ignoreHeap(address, size);
 }
 
-void MC_remove_ignore_heap(void *address, size_t size)
+void MC_unignore_heap(void* address, size_t size)
 {
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
