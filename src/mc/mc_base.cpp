@@ -164,7 +164,7 @@ bool request_is_enabled(smx_simcall_t req)
       return true;
 #if SIMGRID_HAVE_MC
     else if (mc_model_checker != nullptr) {
-      simgrid::mc::Process& modelchecked = mc_model_checker->process();
+      simgrid::mc::RemoteClient& modelchecked = mc_model_checker->process();
       // TODO, *(mutex->owner) :/
       return modelchecked.resolveActor(simgrid::mc::remote(mutex->owner))->pid ==
              modelchecked.resolveActor(simgrid::mc::remote(req->issuer))->pid;

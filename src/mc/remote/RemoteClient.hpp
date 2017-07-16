@@ -1,5 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,13 +6,13 @@
 #ifndef SIMGRID_MC_PROCESS_H
 #define SIMGRID_MC_PROCESS_H
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
-#include <type_traits>
-#include <vector>
 #include <memory>
 #include <string>
+#include <type_traits>
+#include <vector>
 
 #include <sys/types.h>
 
@@ -27,9 +26,9 @@
 #include "src/mc/remote/Channel.hpp"
 #include "src/mc/remote/RemotePtr.hpp"
 
-#include <simgrid/simix.h>
 #include "src/simix/popping_private.h"
 #include "src/simix/smx_private.h"
+#include <simgrid/simix.h>
 
 #include "src/xbt/memory_map.hpp"
 
@@ -55,7 +54,7 @@ public:
   void clear()
   {
     name.clear();
-    address = nullptr;
+    address  = nullptr;
     hostname = nullptr;
   }
 };
@@ -68,11 +67,11 @@ struct IgnoredRegion {
 struct IgnoredHeapRegion {
   int block;
   int fragment;
-  void *address;
+  void* address;
   std::size_t size;
 };
 
-/** Representation of a process
+/** The Model-Checked process, seen from the MCer perspective
  *
  *  This class is mixing a lot of different responsibilities and is tied
  *  to SIMIX. It should probably be split into different classes.
@@ -87,36 +86,35 @@ struct IgnoredHeapRegion {
  *  - stack unwinding;
  *  - etc.
  */
-class Process final : public AddressSpace {
+class RemoteClient final : public AddressSpace {
 private:
   // Those flags are used to track down which cached information
   // is still up to date and which information needs to be updated.
-  static constexpr int cache_none = 0;
-  static constexpr int cache_heap = 1;
-  static constexpr int cache_malloc = 2;
+  static constexpr int cache_none            = 0;
+  static constexpr int cache_heap            = 1;
+  static constexpr int cache_malloc          = 2;
   static constexpr int cache_simix_processes = 4;
+
 public:
-  Process(pid_t pid, int sockfd);
-  ~Process();
+  RemoteClient(pid_t pid, int sockfd);
+  ~RemoteClient();
   void init();
 
-  Process(Process const&) = delete;
-  Process(Process &&) = delete;
-  Process& operator=(Process const&) = delete;
-  Process& operator=(Process &&) = delete;
+  RemoteClient(RemoteClient const&) = delete;
+  RemoteClient(RemoteClient&&)      = delete;
+  RemoteClient& operator=(RemoteClient const&) = delete;
+  RemoteClient& operator=(RemoteClient&&) = delete;
 
   // Read memory:
-  const void* read_bytes(void* buffer, std::size_t size,
-    RemotePtr<void> address, int process_index = ProcessIndexAny,
-    ReadOptions options = ReadOptions::none()) const override;
+  const void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, int process_index = ProcessIndexAny,
+                         ReadOptions options = ReadOptions::none()) const override;
 
   void read_variable(const char* name, void* target, size_t size) const;
-  template<class T> void read_variable(const char* name, T* target) const
+  template <class T> void read_variable(const char* name, T* target) const
   {
     read_variable(name, target, sizeof(*target));
   }
-  template<class T>
-  Remote<T> read_variable(const char *name) const
+  template <class T> Remote<T> read_variable(const char* name) const
   {
     Remote<T> res;
     read_variable(name, res.getBuffer(), sizeof(T));
@@ -143,29 +141,23 @@ public:
   // Heap access:
   xbt_mheap_t get_heap()
   {
-    if (not(this->cache_flags_ & Process::cache_heap))
+    if (not(this->cache_flags_ & RemoteClient::cache_heap))
       this->refresh_heap();
     return this->heap.get();
   }
   const malloc_info* get_malloc_info()
   {
-    if (not(this->cache_flags_ & Process::cache_malloc))
+    if (not(this->cache_flags_ & RemoteClient::cache_malloc))
       this->refresh_malloc_info();
     return this->heap_info.data();
   }
 
-  void clear_cache()
-  {
-    this->cache_flags_ = Process::cache_none;
-  }
+  void clear_cache() { this->cache_flags_ = RemoteClient::cache_none; }
 
   Channel const& getChannel() const { return channel_; }
   Channel& getChannel() { return channel_; }
 
-  std::vector<IgnoredRegion> const& ignored_regions() const
-  {
-    return ignored_regions_;
-  }
+  std::vector<IgnoredRegion> const& ignored_regions() const { return ignored_regions_; }
   void ignore_region(std::uint64_t address, std::size_t size);
 
   pid_t pid() const { return pid_; }
@@ -175,50 +167,28 @@ public:
     return p >= this->maestro_stack_start_ && p < this->maestro_stack_end_;
   }
 
-  bool running() const
-  {
-    return running_;
-  }
+  bool running() const { return running_; }
 
-  void terminate()
-  {
-    running_ = false;
-  }
+  void terminate() { running_ = false; }
 
-  bool privatized(ObjectInformation const& info) const
-  {
-    return privatized_ && info.executable();
-  }
-  bool privatized() const
-  {
-    return privatized_;
-  }
+  bool privatized(ObjectInformation const& info) const { return privatized_ && info.executable(); }
+  bool privatized() const { return privatized_; }
   void privatized(bool privatized) { privatized_ = privatized; }
 
   void ignore_global_variable(const char* name)
   {
-    for (std::shared_ptr<simgrid::mc::ObjectInformation> const& info :
-        this->object_infos)
+    for (std::shared_ptr<simgrid::mc::ObjectInformation> const& info : this->object_infos)
       info->remove_global_variable(name);
   }
 
-  std::vector<s_stack_region_t>& stack_areas()
-  {
-    return stack_areas_;
-  }
-  std::vector<s_stack_region_t> const& stack_areas() const
-  {
-    return stack_areas_;
-  }
+  std::vector<s_stack_region_t>& stack_areas() { return stack_areas_; }
+  std::vector<s_stack_region_t> const& stack_areas() const { return stack_areas_; }
 
-  std::vector<IgnoredHeapRegion> const& ignored_heap() const
-  {
-    return ignored_heap_;
-  }
+  std::vector<IgnoredHeapRegion> const& ignored_heap() const { return ignored_heap_; }
   void ignore_heap(IgnoredHeapRegion const& region);
-  void unignore_heap(void *address, size_t size);
+  void unignore_heap(void* address, size_t size);
 
-  void ignore_local_variable(const char *var_name, const char *frame_name);
+  void ignore_local_variable(const char* var_name, const char* frame_name);
   std::vector<simgrid::mc::ActorInformation>& actors();
   std::vector<simgrid::mc::ActorInformation>& dead_actors();
 
@@ -276,10 +246,10 @@ public: // object info
   std::shared_ptr<simgrid::mc::ObjectInformation> binary_info;
 
 public: // Copies of MCed SMX data structures
-  /** Copy of `simix_global->process_list`
-   *
-   *  See mc_smx.c.
-   */
+        /** Copy of `simix_global->process_list`
+         *
+         *  See mc_smx.c.
+         */
   std::vector<ActorInformation> smx_actors_infos;
 
   /** Copy of `simix_global->process_to_destroy`
@@ -290,7 +260,7 @@ public: // Copies of MCed SMX data structures
 
 private:
   /** State of the cache (which variables are up to date) */
-  int cache_flags_ = Process::cache_none;
+  int cache_flags_ = RemoteClient::cache_none;
 
 public:
   /** Address of the heap structure in the MCed process. */
@@ -302,7 +272,7 @@ public:
    *  This is not used if the process is the current one:
    *  use `get_heap_info()` in order to use it.
    */
-   std::unique_ptr<s_xbt_mheap_t> heap;
+  std::unique_ptr<s_xbt_mheap_t> heap;
 
   /** Copy of the allocation info structure
    *
@@ -313,13 +283,12 @@ public:
   std::vector<malloc_info> heap_info;
 
 public: // Libunwind-data
-
-  /** Full-featured MC-aware libunwind address space for the process
-   *
-   *  This address space is using a simgrid::mc::UnwindContext*
-   *  (with simgrid::mc::Process* / simgrid::mc::AddressSpace*
-   *  and unw_context_t).
-   */
+        /** Full-featured MC-aware libunwind address space for the process
+         *
+         *  This address space is using a simgrid::mc::UnwindContext*
+         *  (with simgrid::mc::Process* / simgrid::mc::AddressSpace*
+         *  and unw_context_t).
+         */
   unw_addr_space_t unw_addr_space;
 
   /** Underlying libunwind address-space
@@ -338,7 +307,6 @@ public: // Libunwind-data
 /** Open a FD to a remote process memory (`/dev/$pid/mem`)
  */
 XBT_PRIVATE int open_vm(pid_t pid, int flags);
-
 }
 }
 

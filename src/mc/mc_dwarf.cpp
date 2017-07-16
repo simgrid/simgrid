@@ -28,9 +28,9 @@
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_dwarf.hpp"
 
-#include "src/mc/Process.hpp"
 #include "src/mc/ObjectInformation.hpp"
 #include "src/mc/Variable.hpp"
+#include "src/mc/remote/RemoteClient.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dwarf, mc, "DWARF processing");
 
@@ -1371,7 +1371,7 @@ std::shared_ptr<simgrid::mc::ObjectInformation> createObjectInformation(
 
 /*************************************************************************/
 
-void postProcessObjectInformation(simgrid::mc::Process* process, simgrid::mc::ObjectInformation* info)
+void postProcessObjectInformation(simgrid::mc::RemoteClient* process, simgrid::mc::ObjectInformation* info)
 {
   for (auto& i : info->types) {
 

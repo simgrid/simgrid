@@ -20,7 +20,7 @@ SG_BEGIN_DECL()
 
 // ***** Snapshot region
 
-XBT_PRIVATE void mc_region_restore_sparse(simgrid::mc::Process* process, mc_mem_region_t reg);
+XBT_PRIVATE void mc_region_restore_sparse(simgrid::mc::RemoteClient* process, mc_mem_region_t reg);
 
 static XBT_ALWAYS_INLINE void* mc_translate_address_region_chunked(uintptr_t addr, mc_mem_region_t region)
 {
@@ -118,7 +118,7 @@ namespace mc {
 
 class XBT_PRIVATE Snapshot final : public AddressSpace {
 public:
-  Snapshot(Process* process, int num_state);
+  Snapshot(RemoteClient* process, int num_state);
   ~Snapshot() = default;
   const void* read_bytes(void* buffer, std::size_t size,
     RemotePtr<void> address, int process_index = ProcessIndexAny,
@@ -170,9 +170,8 @@ XBT_PRIVATE void restore_snapshot(std::shared_ptr<simgrid::mc::Snapshot> snapsho
 
 extern "C" {
 
-XBT_PRIVATE void mc_restore_page_snapshot_region(
-  simgrid::mc::Process* process,
-  void* start_addr, simgrid::mc::ChunkedData const& pagenos);
+XBT_PRIVATE void mc_restore_page_snapshot_region(simgrid::mc::RemoteClient* process, void* start_addr,
+                                                 simgrid::mc::ChunkedData const& pagenos);
 
 const void* MC_region_read_fragmented(
   mc_mem_region_t region, void* target, const void* addr, std::size_t size);

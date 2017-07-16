@@ -22,9 +22,9 @@ typedef register_t greg_t;
 
 #include <libunwind.h>
 
-#include "src/mc/Process.hpp"
-#include "src/mc/mc_unw.h"
 #include "src/mc/Frame.hpp"
+#include "src/mc/mc_unw.h"
+#include "src/mc/remote/RemoteClient.hpp"
 
 using simgrid::mc::remote;
 
@@ -236,7 +236,7 @@ void UnwindContext::clear()
   process_ = nullptr;
 }
 
-void UnwindContext::initialize(simgrid::mc::Process* process, unw_context_t* c)
+void UnwindContext::initialize(simgrid::mc::RemoteClient* process, unw_context_t* c)
 {
   clear();
 

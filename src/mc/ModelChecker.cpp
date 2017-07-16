@@ -46,13 +46,13 @@ using simgrid::mc::remote;
 namespace simgrid {
 namespace mc {
 
-ModelChecker::ModelChecker(std::unique_ptr<Process> process) :
-  base_(nullptr),
-  socket_event_(nullptr),
-  signal_event_(nullptr),
-  page_store_(500),
-  process_(std::move(process)),
-  parent_snapshot_(nullptr)
+ModelChecker::ModelChecker(std::unique_ptr<RemoteClient> process)
+    : base_(nullptr)
+    , socket_event_(nullptr)
+    , signal_event_(nullptr)
+    , page_store_(500)
+    , process_(std::move(process))
+    , parent_snapshot_(nullptr)
 {
 
 }
@@ -131,7 +131,7 @@ static const std::pair<const char*, const char*> ignored_local_variables[] = {
 
 void ModelChecker::setup_ignore()
 {
-  Process& process = this->process();
+  RemoteClient& process = this->process();
   for (std::pair<const char*, const char*> const& var :
       ignored_local_variables)
     process.ignore_local_variable(var.first, var.second);
@@ -144,7 +144,7 @@ void ModelChecker::shutdown()
 {
   XBT_DEBUG("Shuting down model-checker");
 
-  simgrid::mc::Process* process = &this->process();
+  simgrid::mc::RemoteClient* process = &this->process();
   if (process->running()) {
     XBT_DEBUG("Killing process");
     kill(process->pid(), SIGTERM);
@@ -152,7 +152,7 @@ void ModelChecker::shutdown()
   }
 }
 
-void ModelChecker::resume(simgrid::mc::Process& process)
+void ModelChecker::resume(simgrid::mc::RemoteClient& process)
 {
   int res = process.getChannel().send(MC_MESSAGE_CONTINUE);
   if (res)
@@ -262,7 +262,7 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
       if (simgrid::mc::property_automaton == nullptr)
         simgrid::mc::property_automaton = xbt_automaton_new();
 
-      simgrid::mc::Process* process = &this->process();
+      simgrid::mc::RemoteClient* process = &this->process();
       simgrid::mc::RemotePtr<int> address
         = simgrid::mc::remote((int*) message.data);
       simgrid::xbt::add_proposition(simgrid::mc::property_automaton,
@@ -387,7 +387,7 @@ void ModelChecker::on_signal(int signo)
   }
 }
 
-void ModelChecker::wait_client(simgrid::mc::Process& process)
+void ModelChecker::wait_client(simgrid::mc::RemoteClient& process)
 {
   this->resume(process);
   if (this->process().running())

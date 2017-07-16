@@ -16,10 +16,10 @@
 #include "mc/datatypes.h"
 #include "src/mc/mc_private.h"
 
-#include "src/mc/Process.hpp"
-#include "src/mc/Type.hpp"
 #include "src/mc/ObjectInformation.hpp"
+#include "src/mc/Type.hpp"
 #include "src/mc/Variable.hpp"
+#include "src/mc/remote/RemoteClient.hpp"
 
 int test_some_array[4][5][6];
 struct some_struct {
@@ -77,9 +77,9 @@ static void test_local_variable(simgrid::mc::ObjectInformation* info, const char
   xbt_assert(location.address() == address, "Bad resolution of local variable %s of %s", variable, function);
 }
 
-static simgrid::mc::Variable* test_global_variable(
-  simgrid::mc::Process& process, simgrid::mc::ObjectInformation* info,
-  const char* name, void* address, long byte_size)
+static simgrid::mc::Variable* test_global_variable(simgrid::mc::RemoteClient& process,
+                                                   simgrid::mc::ObjectInformation* info, const char* name,
+                                                   void* address, long byte_size)
 {
   simgrid::mc::Variable* variable = info->find_variable(name);
   xbt_assert(variable, "Global variable %s was not found", name);
@@ -107,7 +107,7 @@ int some_local_variable = 0;
 
 typedef struct foo {int i;} s_foo;
 
-static void test_type_by_name(simgrid::mc::Process& process, s_foo my_foo)
+static void test_type_by_name(simgrid::mc::RemoteClient& process, s_foo my_foo)
 {
   assert(process.binary_info->full_types_by_name.find("struct foo") != process.binary_info->full_types_by_name.end());
 }
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
   simgrid::mc::Variable* var;
   simgrid::mc::Type* type;
 
-  simgrid::mc::Process process(getpid(), -1);
+  simgrid::mc::RemoteClient process(getpid(), -1);
   process.init();
 
   test_global_variable(process, process.binary_info.get(), "some_local_variable", &some_local_variable, sizeof(int));

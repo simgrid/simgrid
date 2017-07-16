@@ -44,7 +44,7 @@ VisitedPair::VisitedPair(
   std::shared_ptr<const std::vector<int>> atomic_propositions,
   std::shared_ptr<simgrid::mc::State> graph_state)
 {
-  simgrid::mc::Process* process = &(mc_model_checker->process());
+  simgrid::mc::RemoteClient* process = &(mc_model_checker->process());
 
   this->graph_state = std::move(graph_state);
   if(this->graph_state->system_state == nullptr)

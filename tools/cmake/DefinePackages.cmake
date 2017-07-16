@@ -579,6 +579,8 @@ set(MC_SRC
   src/mc/remote/Channel.hpp
   src/mc/remote/Client.cpp
   src/mc/remote/Client.hpp
+  src/mc/remote/RemoteClient.hpp
+  src/mc/remote/RemoteClient.cpp
   src/mc/remote/RemotePtr.hpp
   src/mc/remote/mc_protocol.h
   src/mc/remote/mc_protocol.cpp
@@ -599,8 +601,6 @@ set(MC_SRC
   src/mc/Type.hpp
   src/mc/Variable.hpp
   src/mc/mc_forward.hpp
-  src/mc/Process.hpp
-  src/mc/Process.cpp
   src/mc/Session.cpp
   src/mc/Session.hpp
   src/mc/mc_unw.h

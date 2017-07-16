@@ -316,7 +316,7 @@ static
 int mmalloc_compare_heap(
   simgrid::mc::StateComparator& state, simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot* snapshot2)
 {
-  simgrid::mc::Process* process = &mc_model_checker->process();
+  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
   /* Start comparison */
   size_t i1;
@@ -609,7 +609,7 @@ static int compare_heap_area_without_type(
   HeapLocationPairs* previous, int size,
   int check_ignore)
 {
-  simgrid::mc::Process* process = &mc_model_checker->process();
+  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
   mc_mem_region_t heap_region1 = MC_get_heap_region(snapshot1);
   mc_mem_region_t heap_region2 = MC_get_heap_region(snapshot2);
 
@@ -965,7 +965,7 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
                       HeapLocationPairs* previous,
                       simgrid::mc::Type* type, int pointer_level)
 {
-  simgrid::mc::Process* process = &mc_model_checker->process();
+  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
   int res_compare;
   ssize_t block1;
@@ -1276,7 +1276,7 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state,
                                    void* real_area2, simgrid::mc::Snapshot* snapshot2, mc_mem_region_t region2,
                                    simgrid::mc::Type* type, int pointer_level)
 {
-  simgrid::mc::Process* process = &mc_model_checker->process();
+  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
   simgrid::mc::Type* subtype;
   simgrid::mc::Type* subsubtype;
@@ -1557,7 +1557,7 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
   else
     state_comparator->clear();
 
-  simgrid::mc::Process* process = &mc_model_checker->process();
+  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
   int errors = 0;
 

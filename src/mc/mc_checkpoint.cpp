@@ -142,7 +142,7 @@ void add_region(int index, simgrid::mc::Snapshot* snapshot,
   return;
 }
 
-static void get_memory_regions(simgrid::mc::Process* process, simgrid::mc::Snapshot* snapshot)
+static void get_memory_regions(simgrid::mc::RemoteClient* process, simgrid::mc::Snapshot* snapshot)
 {
   const size_t n = process->object_infos.size();
   snapshot->snapshot_regions.resize(n + 1);
@@ -283,7 +283,7 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame,
                                            int process_index,
                                            std::vector<s_local_variable>& result)
 {
-  simgrid::mc::Process* process = &mc_model_checker->process();
+  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
   if (not scope || not scope->range.contain(stack_frame->ip))
     return;
@@ -347,7 +347,7 @@ static std::vector<s_local_variable> get_local_variables_values(
 
 static std::vector<s_mc_stack_frame_t> unwind_stack_frames(simgrid::mc::UnwindContext* stack_context)
 {
-  simgrid::mc::Process* process = &mc_model_checker->process();
+  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
   std::vector<s_mc_stack_frame_t> result;
 
   unw_cursor_t c = stack_context->cursor();
@@ -555,7 +555,7 @@ std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
 {
   XBT_DEBUG("Taking snapshot %i", num_state);
 
-  simgrid::mc::Process* mc_process = &mc_model_checker->process();
+  simgrid::mc::RemoteClient* mc_process = &mc_model_checker->process();
 
   std::shared_ptr<simgrid::mc::Snapshot> snapshot = std::make_shared<simgrid::mc::Snapshot>(mc_process, num_state);
 

@@ -11,8 +11,8 @@
 #include <libunwind.h>
 #include <libunwind-ptrace.h>
 
-#include "src/mc/Process.hpp"
 #include "src/mc/mc_unw.h"
+#include "src/mc/remote/RemoteClient.hpp"
 
 /** \file
  *  Libunwind namespace implementation using process_vm_readv.

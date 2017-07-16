@@ -13,11 +13,11 @@
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
 
+#include "src/mc/VisitedState.hpp"
 #include "src/mc/mc_comm_pattern.h"
 #include "src/mc/mc_private.h"
-#include "src/mc/Process.hpp"
 #include "src/mc/mc_smx.h"
-#include "src/mc/VisitedState.hpp"
+#include "src/mc/remote/RemoteClient.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_VisitedState, mc, "Logging specific to state equality detection mechanisms");
 
@@ -36,7 +36,7 @@ static int snapshot_compare(simgrid::mc::VisitedState* state1, simgrid::mc::Visi
 /** @brief Save the current state */
 VisitedState::VisitedState(unsigned long state_number)
 {
-  simgrid::mc::Process* process = &(mc_model_checker->process());
+  simgrid::mc::RemoteClient* process = &(mc_model_checker->process());
   this->heap_bytes_used = mmalloc_get_bytes_used_remote(
     process->get_heap()->heaplimit,
     process->get_malloc_info());

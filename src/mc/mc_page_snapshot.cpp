@@ -30,8 +30,8 @@ extern "C" {
  *  @param page_count       Number of pages of the region
  *  @param pagenos
  */
-void mc_restore_page_snapshot_region(simgrid::mc::Process* process,
-  void* start_addr, simgrid::mc::ChunkedData const& pages_copy)
+void mc_restore_page_snapshot_region(simgrid::mc::RemoteClient* process, void* start_addr,
+                                     simgrid::mc::ChunkedData const& pages_copy)
 {
   for (size_t i = 0; i != pages_copy.page_count(); ++i) {
     // Otherwise, copy the page:
@@ -43,7 +43,7 @@ void mc_restore_page_snapshot_region(simgrid::mc::Process* process,
 
 // ***** High level API
 
-void mc_region_restore_sparse(simgrid::mc::Process* process, mc_mem_region_t reg)
+void mc_region_restore_sparse(simgrid::mc::RemoteClient* process, mc_mem_region_t reg)
 {
   xbt_assert(((reg->permanent_address().address()) & (xbt_pagesize-1)) == 0,
     "Not at the beginning of a page");
