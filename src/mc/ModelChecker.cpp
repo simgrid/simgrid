@@ -251,26 +251,23 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
 
   case MC_MESSAGE_REGISTER_SYMBOL:
     {
-      s_mc_register_symbol_message_t message;
-      if (size != sizeof(message))
-        xbt_die("Broken message");
-      memcpy(&message, buffer, sizeof(message));
-      if (message.callback)
-        xbt_die("Support for client-side function proposition is not implemented.");
-      XBT_DEBUG("Received symbol: %s", message.name);
+    s_mc_message_register_symbol_t message;
+    if (size != sizeof(message))
+      xbt_die("Broken message");
+    memcpy(&message, buffer, sizeof(message));
+    if (message.callback)
+      xbt_die("Support for client-side function proposition is not implemented.");
+    XBT_DEBUG("Received symbol: %s", message.name);
 
-      if (simgrid::mc::property_automaton == nullptr)
-        simgrid::mc::property_automaton = xbt_automaton_new();
+    if (simgrid::mc::property_automaton == nullptr)
+      simgrid::mc::property_automaton = xbt_automaton_new();
 
-      simgrid::mc::RemoteClient* process = &this->process();
-      simgrid::mc::RemotePtr<int> address
-        = simgrid::mc::remote((int*) message.data);
-      simgrid::xbt::add_proposition(simgrid::mc::property_automaton,
-        message.name,
-        [process, address]() { return process->read(address); }
-        );
+    simgrid::mc::RemoteClient* process  = &this->process();
+    simgrid::mc::RemotePtr<int> address = simgrid::mc::remote((int*)message.data);
+    simgrid::xbt::add_proposition(simgrid::mc::property_automaton, message.name,
+                                  [process, address]() { return process->read(address); });
 
-      break;
+    break;
     }
 
   case MC_MESSAGE_WAITING:

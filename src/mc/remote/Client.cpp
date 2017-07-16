@@ -101,6 +101,7 @@ void Client::handleDeadlockCheck(mc_message_t* msg)
 }
 void Client::handleContinue(mc_message_t* msg)
 {
+  /* Nothing to do */
 }
 void Client::handleSimcall(s_mc_message_simcall_handle_t* message)
 {
@@ -223,7 +224,7 @@ void Client::unignoreHeap(void* address, std::size_t size)
 
 void Client::declareSymbol(const char* name, int* value)
 {
-  s_mc_register_symbol_message_t message;
+  s_mc_message_register_symbol_t message;
   message.type = MC_MESSAGE_REGISTER_SYMBOL;
   if (strlen(name) + 1 > sizeof(message.name))
     xbt_die("Symbol is too long");

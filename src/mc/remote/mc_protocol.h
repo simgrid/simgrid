@@ -67,6 +67,7 @@ struct s_mc_message_int {
 };
 typedef struct s_mc_message_int mc_message_int_t;
 
+/* Client->Server */
 struct s_mc_message_ignore_heap {
   e_mc_message_type type;
   int block;
@@ -89,20 +90,21 @@ struct s_mc_message_stack_region {
 };
 typedef struct s_mc_message_stack_region s_mc_message_stack_region_t;
 
+struct s_mc_message_register_symbol {
+  e_mc_message_type type;
+  char name[128];
+  int (*callback)(void*);
+  void* data;
+};
+typedef struct s_mc_message_register_symbol s_mc_message_register_symbol_t;
+
+/* Server -> client */
 struct s_mc_message_simcall_handle {
   e_mc_message_type type;
   unsigned long pid;
   int value;
 };
 typedef struct s_mc_message_simcall_handle s_mc_message_simcall_handle_t;
-
-struct s_mc_register_symbol_message {
-  e_mc_message_type type;
-  char name[128];
-  int (*callback)(void*);
-  void* data;
-};
-typedef struct s_mc_register_symbol_message s_mc_register_symbol_message_t;
 
 struct s_mc_message_restore {
   e_mc_message_type type;
