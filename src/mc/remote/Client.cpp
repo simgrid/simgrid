@@ -83,70 +83,83 @@ Client* Client::initialize()
   return client_.get();
 }
 
+void Client::handleDeadlockCheck(mc_message_t* msg)
+{
+  bool deadlock = false;
+  if (not simix_global->process_list.empty()) {
+    deadlock = true;
+    for (auto kv : simix_global->process_list)
+      if (simgrid::mc::actor_is_enabled(kv.second)) {
+        deadlock = false;
+        break;
+      }
+  }
+
+  // Send result:
+  mc_message_int_t answer{MC_MESSAGE_DEADLOCK_CHECK_REPLY, deadlock};
+  xbt_assert(channel_.send(answer) == 0, "Could not send response");
+}
+void Client::handleContinue(mc_message_t* msg)
+{
+}
+void Client::handleSimcall(s_mc_message_simcall_handle_t* message)
+{
+  smx_actor_t process = SIMIX_process_from_PID(message->pid);
+  if (not process)
+    xbt_die("Invalid pid %lu", (unsigned long)message->pid);
+  SIMIX_simcall_handle(&process->simcall, message->value);
+  if (channel_.send(MC_MESSAGE_WAITING))
+    xbt_die("Could not send MESSAGE_WAITING to model-checker");
+}
+void Client::handleRestore(s_mc_message_restore_t* message)
+{
+#if HAVE_SMPI
+  smpi_really_switch_data_segment(message->index);
+#endif
+}
+
 void Client::handleMessages()
 {
   while (1) {
     XBT_DEBUG("Waiting messages from model-checker");
 
     char message_buffer[MC_MESSAGE_LENGTH];
-    ssize_t received_size;
+    ssize_t received_size = channel_.receive(&message_buffer, sizeof(message_buffer));
 
-    if ((received_size = channel_.receive(&message_buffer, sizeof(message_buffer))) < 0)
+    if (received_size < 0)
       xbt_die("Could not receive commands from the model-checker");
 
-    s_mc_message_t message;
-    if ((size_t)received_size < sizeof(message))
-      xbt_die("Received message is too small");
-    memcpy(&message, message_buffer, sizeof(message));
-    switch (message.type) {
+    mc_message_t* message = (mc_message_t*)message_buffer;
+    switch (message->type) {
 
-      case MC_MESSAGE_DEADLOCK_CHECK: {
-        // Check deadlock:
-        bool deadlock = false;
-        if (not simix_global->process_list.empty()) {
-          deadlock = true;
-          for (auto kv : simix_global->process_list)
-            if (simgrid::mc::actor_is_enabled(kv.second)) {
-              deadlock = false;
-              break;
-            }
-        }
-
-        // Send result:
-        s_mc_int_message_t answer;
-        answer.type  = MC_MESSAGE_DEADLOCK_CHECK_REPLY;
-        answer.value = deadlock;
-        xbt_assert(channel_.send(answer) == 0, "Could not send response");
-      } break;
+      case MC_MESSAGE_DEADLOCK_CHECK:
+        xbt_assert(received_size == sizeof(mc_message_t), "Unexpected size for DEADLOCK_CHECK (%zu != %zu)",
+                   received_size, sizeof(mc_message_t));
+        handleDeadlockCheck(message);
+        break;
 
       case MC_MESSAGE_CONTINUE:
+        xbt_assert(received_size == sizeof(mc_message_t), "Unexpected size for MESSAGE_CONTINUE (%zu != %zu)",
+                   received_size, sizeof(mc_message_t));
+        handleContinue(message);
         return;
 
-      case MC_MESSAGE_SIMCALL_HANDLE: {
-        s_mc_simcall_handle_message_t message;
-        if (received_size != sizeof(message))
-          xbt_die("Unexpected size for SIMCALL_HANDLE");
-        memcpy(&message, message_buffer, sizeof(message));
-        smx_actor_t process = SIMIX_process_from_PID(message.pid);
-        if (not process)
-          xbt_die("Invalid pid %lu", (unsigned long)message.pid);
-        SIMIX_simcall_handle(&process->simcall, message.value);
-        if (channel_.send(MC_MESSAGE_WAITING))
-          xbt_die("Could not send MESSAGE_WAITING to model-checker");
-      } break;
+      case MC_MESSAGE_SIMCALL_HANDLE:
+        xbt_assert(received_size == sizeof(s_mc_message_simcall_handle_t),
+                   "Unexpected size for SIMCALL_HANDLE (%zu != %zu)", received_size,
+                   sizeof(s_mc_message_simcall_handle_t));
+        handleSimcall((s_mc_message_simcall_handle_t*)message_buffer);
+        break;
 
-      case MC_MESSAGE_RESTORE: {
-        s_mc_restore_message_t message;
-        if (received_size != sizeof(message))
-          xbt_die("Unexpected size for SIMCALL_HANDLE");
-        memcpy(&message, message_buffer, sizeof(message));
-#if HAVE_SMPI
-        smpi_really_switch_data_segment(message.index);
-#endif
-      } break;
+      case MC_MESSAGE_RESTORE:
+        xbt_assert(received_size == sizeof(mc_message_t), "Unexpected size for MESSAGE_RESTORE (%zu != %zu)",
+                   received_size, sizeof(mc_message_t));
+        handleRestore((s_mc_message_restore_t*)message_buffer);
+        break;
 
       default:
-        xbt_die("Received unexpected message %s (%i)", MC_message_type_name(message.type), message.type);
+        xbt_die("Received unexpected message %s (%i)", MC_message_type_name(message->type), message->type);
+        break;
     }
   }
 }
@@ -169,7 +182,7 @@ void Client::reportAssertionFailure(const char* description)
 
 void Client::ignoreMemory(void* addr, std::size_t size)
 {
-  s_mc_ignore_memory_message_t message;
+  s_mc_message_ignore_memory_t message;
   message.type = MC_MESSAGE_IGNORE_MEMORY;
   message.addr = (std::uintptr_t)addr;
   message.size = size;
@@ -181,7 +194,7 @@ void Client::ignoreHeap(void* address, std::size_t size)
 {
   xbt_mheap_t heap = mmalloc_get_current_heap();
 
-  s_mc_ignore_heap_message_t message;
+  s_mc_message_ignore_heap_t message;
   message.type    = MC_MESSAGE_IGNORE_HEAP;
   message.address = address;
   message.size    = size;
@@ -200,7 +213,7 @@ void Client::ignoreHeap(void* address, std::size_t size)
 
 void Client::unignoreHeap(void* address, std::size_t size)
 {
-  s_mc_ignore_memory_message_t message;
+  s_mc_message_ignore_memory_t message;
   message.type = MC_MESSAGE_UNIGNORE_HEAP;
   message.addr = (std::uintptr_t)address;
   message.size = size;
@@ -238,7 +251,7 @@ void Client::declareStack(void* stack, size_t size, smx_actor_t process, ucontex
 #endif
     region.process_index = -1;
 
-  s_mc_stack_region_message_t message;
+  s_mc_message_stack_region_t message;
   message.type         = MC_MESSAGE_STACK_REGION;
   message.stack_region = region;
   if (channel_.send(message))

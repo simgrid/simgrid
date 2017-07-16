@@ -598,7 +598,7 @@ void restore_snapshot_regions(simgrid::mc::Snapshot* snapshot)
   // TODO, send a message to implement this in the MCed process
   if(snapshot->privatization_index >= 0) {
     // Fix the privatization mmap:
-    s_mc_restore_message message;
+    s_mc_message_restore message;
     message.type = MC_MESSAGE_RESTORE;
     message.index = snapshot->privatization_index;
     mc_model_checker->process().getChannel().send(message);

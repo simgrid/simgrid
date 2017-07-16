@@ -196,7 +196,7 @@ static void MC_report_assertion_error()
 
 bool ModelChecker::handle_message(char* buffer, ssize_t size)
 {
-  s_mc_message_t base_message;
+  mc_message_t base_message;
   if (size < (ssize_t) sizeof(base_message))
     xbt_die("Broken message");
   memcpy(&base_message, buffer, sizeof(base_message));
@@ -205,48 +205,47 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
 
   case MC_MESSAGE_IGNORE_HEAP:
     {
-      s_mc_ignore_heap_message_t message;
-      if (size != sizeof(message))
-        xbt_die("Broken messsage");
-      memcpy(&message, buffer, sizeof(message));
+    s_mc_message_ignore_heap_t message;
+    if (size != sizeof(message))
+      xbt_die("Broken messsage");
+    memcpy(&message, buffer, sizeof(message));
 
-      IgnoredHeapRegion region;
-      region.block = message.block;
-      region.fragment = message.fragment;
-      region.address = message.address;
-      region.size = message.size;
-      process().ignore_heap(region);
-      break;
+    IgnoredHeapRegion region;
+    region.block    = message.block;
+    region.fragment = message.fragment;
+    region.address  = message.address;
+    region.size     = message.size;
+    process().ignore_heap(region);
+    break;
     }
 
   case MC_MESSAGE_UNIGNORE_HEAP:
     {
-      s_mc_ignore_memory_message_t message;
-      if (size != sizeof(message))
-        xbt_die("Broken messsage");
-      memcpy(&message, buffer, sizeof(message));
-      process().unignore_heap(
-        (void *)(std::uintptr_t) message.addr, message.size);
-      break;
+    s_mc_message_ignore_memory_t message;
+    if (size != sizeof(message))
+      xbt_die("Broken messsage");
+    memcpy(&message, buffer, sizeof(message));
+    process().unignore_heap((void*)(std::uintptr_t)message.addr, message.size);
+    break;
     }
 
   case MC_MESSAGE_IGNORE_MEMORY:
     {
-      s_mc_ignore_memory_message_t message;
-      if (size != sizeof(message))
-        xbt_die("Broken messsage");
-      memcpy(&message, buffer, sizeof(message));
-      this->process().ignore_region(message.addr, message.size);
-      break;
+    s_mc_message_ignore_memory_t message;
+    if (size != sizeof(message))
+      xbt_die("Broken messsage");
+    memcpy(&message, buffer, sizeof(message));
+    this->process().ignore_region(message.addr, message.size);
+    break;
     }
 
   case MC_MESSAGE_STACK_REGION:
     {
-      s_mc_stack_region_message_t message;
-      if (size != sizeof(message))
-        xbt_die("Broken messsage");
-      memcpy(&message, buffer, sizeof(message));
-      this->process().stack_areas().push_back(message.stack_region);
+    s_mc_message_stack_region_t message;
+    if (size != sizeof(message))
+      xbt_die("Broken messsage");
+    memcpy(&message, buffer, sizeof(message));
+    this->process().stack_areas().push_back(message.stack_region);
     }
     break;
 
@@ -397,7 +396,7 @@ void ModelChecker::wait_client(simgrid::mc::Process& process)
 
 void ModelChecker::handle_simcall(Transition const& transition)
 {
-  s_mc_simcall_handle_message m;
+  s_mc_message_simcall_handle m;
   memset(&m, 0, sizeof(m));
   m.type  = MC_MESSAGE_SIMCALL_HANDLE;
   m.pid   = transition.pid;
@@ -413,7 +412,7 @@ bool ModelChecker::checkDeadlock()
   int res;
   if ((res = this->process().getChannel().send(MC_MESSAGE_DEADLOCK_CHECK)))
     xbt_die("Could not check deadlock state");
-  s_mc_int_message_t message;
+  mc_message_int_t message;
   ssize_t s = mc_model_checker->process().getChannel().receive(message);
   if (s == -1)
     xbt_die("Could not receive message");
