@@ -20,7 +20,6 @@ struct PatternCommunicationList {
   unsigned int index_comm = 0;
   std::vector<std::unique_ptr<simgrid::mc::PatternCommunication>> list;
 };
-
 }
 }
 
@@ -57,21 +56,22 @@ typedef enum {
 
 static inline e_mc_call_type_t MC_get_call_type(smx_simcall_t req)
 {
-  switch(req->call) {
-  case SIMCALL_COMM_ISEND:
-    return MC_CALL_TYPE_SEND;
-  case SIMCALL_COMM_IRECV:
-    return MC_CALL_TYPE_RECV;
-  case SIMCALL_COMM_WAIT:
-    return MC_CALL_TYPE_WAIT;
-  case SIMCALL_COMM_WAITANY:
-    return MC_CALL_TYPE_WAITANY;
-  default:
-    return MC_CALL_TYPE_NONE;
+  switch (req->call) {
+    case SIMCALL_COMM_ISEND:
+      return MC_CALL_TYPE_SEND;
+    case SIMCALL_COMM_IRECV:
+      return MC_CALL_TYPE_RECV;
+    case SIMCALL_COMM_WAIT:
+      return MC_CALL_TYPE_WAIT;
+    case SIMCALL_COMM_WAITANY:
+      return MC_CALL_TYPE_WAITANY;
+    default:
+      return MC_CALL_TYPE_NONE;
   }
 }
 
-XBT_PRIVATE void MC_handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t request, int value, xbt_dynar_t current_pattern, int backtracking);
+XBT_PRIVATE void MC_handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t request, int value,
+                                        xbt_dynar_t current_pattern, int backtracking);
 
 XBT_PRIVATE void MC_restore_communications_pattern(simgrid::mc::State* state);
 

@@ -9,10 +9,10 @@
 #include "xbt/sysdep.h"
 #include <xbt/dynar.hpp>
 
-#include "src/mc/mc_comm_pattern.h"
+#include "src/mc/checker/CommunicationDeterminismChecker.hpp"
+#include "src/mc/mc_comm_pattern.hpp"
 #include "src/mc/mc_smx.h"
 #include "src/mc/mc_xbt.hpp"
-#include "src/mc/checker/CommunicationDeterminismChecker.hpp"
 
 using simgrid::mc::remote;
 

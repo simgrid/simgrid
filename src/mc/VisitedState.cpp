@@ -14,7 +14,7 @@
 #include "xbt/sysdep.h"
 
 #include "src/mc/VisitedState.hpp"
-#include "src/mc/mc_comm_pattern.h"
+#include "src/mc/mc_comm_pattern.hpp"
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_smx.h"
 #include "src/mc/remote/RemoteClient.hpp"

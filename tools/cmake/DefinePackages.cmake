@@ -610,8 +610,8 @@ set(MC_SRC
   src/mc/mc_snapshot.h
   src/mc/mc_snapshot.cpp
   src/mc/mc_page_snapshot.cpp
-  src/mc/mc_comm_pattern.h
   src/mc/mc_comm_pattern.cpp
+  src/mc/mc_comm_pattern.hpp
   src/mc/compare.cpp
   src/mc/mc_dwarf.hpp
   src/mc/mc_dwarf.cpp

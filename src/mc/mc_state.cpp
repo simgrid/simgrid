@@ -10,14 +10,14 @@
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
 
-#include "src/simix/smx_private.h"
-#include "src/mc/mc_state.h"
-#include "src/mc/mc_request.h"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_comm_pattern.h"
-#include "src/mc/mc_smx.h"
-#include "src/mc/mc_xbt.hpp"
 #include "src/mc/Transition.hpp"
+#include "src/mc/mc_comm_pattern.hpp"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_request.h"
+#include "src/mc/mc_smx.h"
+#include "src/mc/mc_state.h"
+#include "src/mc/mc_xbt.hpp"
+#include "src/simix/smx_private.h"
 
 using simgrid::mc::remote;
 

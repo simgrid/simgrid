@@ -29,15 +29,15 @@
 #include "src/simix/ActorImpl.hpp"
 
 #if SIMGRID_HAVE_MC
-#include <libunwind.h>
-#include "src/mc/mc_comm_pattern.h"
+#include "src/mc/checker/Checker.hpp"
+#include "src/mc/mc_comm_pattern.hpp"
+#include "src/mc/mc_private.h"
 #include "src/mc/mc_request.h"
 #include "src/mc/mc_safety.h"
-#include "src/mc/mc_snapshot.h"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_unw.h"
 #include "src/mc/mc_smx.h"
-#include "src/mc/checker/Checker.hpp"
+#include "src/mc/mc_snapshot.h"
+#include "src/mc/mc_unw.h"
+#include <libunwind.h>
 #endif
 
 #include "src/mc/Transition.hpp"
