@@ -45,6 +45,13 @@ enum smpi_process_state{
 //SMPI_RMA_TAG has to be the smallest one, as it will be decremented for accumulate ordering.
 #define SMPI_RMA_TAG -6666
 
+/* Convert between Fortran and C */
+
+#define FORT_BOTTOM(addr)          ((*(int*)addr) == -200 ? MPI_BOTTOM : (void*)addr)
+#define FORT_IN_PLACE(addr)        ((*(int*)addr) == -100 ? MPI_IN_PLACE : (void*)addr)
+#define FORT_STATUS_IGNORE(addr)   (static_cast<MPI_Status*>((*(int*)addr) == -300 ? MPI_STATUS_IGNORE : (void*)addr))
+#define FORT_STATUSES_IGNORE(addr) (static_cast<MPI_Status*>((*(int*)addr) == -400 ? MPI_STATUSES_IGNORE : (void*)addr))
+
 extern XBT_PRIVATE MPI_Comm MPI_COMM_UNINITIALIZED;
 
 typedef SMPI_Cart_topology *MPIR_Cart_Topology;
