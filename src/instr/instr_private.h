@@ -337,7 +337,6 @@ XBT_PUBLIC(void) PJ_container_free_all (void);
 XBT_PUBLIC(void) PJ_container_remove_from_parent (container_t container);
 
 /* instr_paje_types.c */
-XBT_PRIVATE void PJ_type_alloc ();
 XBT_PRIVATE void PJ_type_release ();
 XBT_PUBLIC(type_t)  PJ_type_get_root ();
 XBT_PRIVATE type_t PJ_type_container_new (const char *name, type_t father);
@@ -354,7 +353,6 @@ XBT_PRIVATE XBT_PRIVATE void PJ_type_free (type_t type);
 XBT_PUBLIC(val_t)  PJ_value_new (const char *name, const char *color, type_t father);
 XBT_PUBLIC(val_t)  PJ_value_get_or_new (const char *name, const char *color, type_t father);
 XBT_PUBLIC(val_t)  PJ_value_get (const char *name, const type_t father);
-XBT_PRIVATE void PJ_value_free (val_t value);
 
 XBT_PRIVATE void TRACE_TI_start();
 XBT_PRIVATE void TRACE_TI_end();
