@@ -9,7 +9,7 @@
 #include <exception>
 
 #include "colls_private.h"
-#include "src/smpi/smpi_process.hpp"
+#include "smpi_process.hpp"
 
 
 //attempt to do a quick autotuning version of the collective,

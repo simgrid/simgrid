@@ -21,7 +21,7 @@
 #include "src/mc/mc_state.h"
 #include "src/mc/remote/Client.hpp"
 
-#include "src/smpi/smpi_request.hpp"
+#include "smpi_request.hpp"
 
 using simgrid::mc::remote;
 

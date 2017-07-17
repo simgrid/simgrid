@@ -25,8 +25,8 @@
 #include "src/xbt/mmalloc/mmprivate.h"
 
 #if HAVE_SMPI
-#include "src/smpi/private.h"
-#include "src/smpi/private.hpp"
+#include "src/smpi/include/private.h"
+#include "src/smpi/include/private.hpp"
 #endif
 
 #include "src/mc/mc_forward.hpp"

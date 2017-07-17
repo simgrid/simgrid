@@ -25,7 +25,7 @@
 #include "src/mc/mc_replay.h"
 #include "src/surf/StorageImpl.hpp"
 
-#include "src/smpi/smpi_process.hpp"
+#include "src/smpi/include/smpi_process.hpp"
 
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
@@ -43,8 +43,8 @@
 #include "src/mc/mc_record.h"
 
 #if HAVE_SMPI
-#include "src/smpi/private.h"
-#include "src/smpi/private.hpp"
+#include "src/smpi/include/private.h"
+#include "src/smpi/include/private.hpp"
 #endif
 
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");

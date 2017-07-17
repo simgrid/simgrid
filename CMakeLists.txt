@@ -167,6 +167,10 @@ set(INCLUDES
   ${CMAKE_HOME_DIRECTORY}/src/include
   )
 
+if(enable_smpi)
+  set (INCLUDES ${INCLUDES} ${CMAKE_HOME_DIRECTORY}/src/smpi/include)
+endif()
+
 if(NOT CMAKE_CROSSCOMPILING AND EXISTS /usr/include/)
   set(INCLUDES ${INCLUDES} /usr/include/)
 endif()

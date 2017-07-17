@@ -33,8 +33,8 @@ set(EXTRA_DIST
   src/smpi/colls/coll_tuned_topo.h
   src/smpi/colls/colls_private.h
   src/smpi/colls/smpi_mvapich2_selector_stampede.h
-  src/smpi/private.h
-  src/smpi/private.hpp
+  src/smpi/include/private.h
+  src/smpi/include/private.hpp
   src/surf/cpu_cas01.hpp
   src/surf/cpu_interface.hpp
   src/surf/cpu_ti.hpp
@@ -96,6 +96,10 @@ set(EXTRA_DIST
   )
 
 set(SMPI_SRC
+  src/smpi/smpi_main.c
+  src/smpi/bindings/smpi_mpi.cpp
+  src/smpi/bindings/smpi_pmpi.cpp
+  src/smpi/bindings/smpi_f77.cpp
   src/smpi/colls/allgather/allgather-2dmesh.cpp
   src/smpi/colls/allgather/allgather-3dmesh.cpp
   src/smpi/colls/allgather/allgather-GB.cpp
@@ -200,51 +204,46 @@ set(SMPI_SRC
   src/smpi/colls/smpi_intel_mpi_selector.cpp
   src/smpi/colls/smpi_openmpi_selector.cpp
   src/smpi/colls/smpi_mvapich2_selector.cpp
-  src/smpi/instr_smpi.cpp
-  src/smpi/smpi_bench.cpp
-  src/smpi/smpi_memory.cpp
-  src/smpi/smpi_shared.cpp
-  src/smpi/smpi_static_variables.cpp
-  src/smpi/smpi_coll.cpp
-  src/smpi/smpi_coll.hpp
-  src/smpi/smpi_comm.cpp
-  src/smpi/smpi_comm.hpp
-  src/smpi/smpi_deployment.cpp
-  src/smpi/smpi_dvfs.cpp
-  src/smpi/smpi_global.cpp
-  src/smpi/smpi_f2c.cpp
-  src/smpi/smpi_f2c.hpp
-  src/smpi/smpi_group.cpp
-  src/smpi/smpi_group.hpp
-  src/smpi/SmpiHost.cpp
-  src/smpi/SmpiHost.hpp
-  src/smpi/smpi_mpi.cpp
-  src/smpi/smpi_datatype.cpp
-  src/smpi/smpi_datatype.hpp
-  src/smpi/smpi_info.cpp
-  src/smpi/smpi_info.hpp
-  src/smpi/smpi_keyvals.cpp
-  src/smpi/smpi_keyvals.hpp
-  src/smpi/smpi_datatype_derived.cpp
-  src/smpi/smpi_datatype_derived.hpp
-  src/smpi/smpi_main.c
-  src/smpi/smpi_op.cpp
-  src/smpi/smpi_op.hpp
-  src/smpi/smpi_process.cpp
-  src/smpi/smpi_process.hpp
-  src/smpi/smpi_pmpi.cpp
-  src/smpi/smpi_replay.cpp
-  src/smpi/smpi_request.cpp
-  src/smpi/smpi_request.hpp
-  src/smpi/smpi_status.cpp
-  src/smpi/smpi_status.hpp
-  src/smpi/smpi_win.cpp
-  src/smpi/smpi_win.hpp
-  src/smpi/smpi_topo.cpp
-  src/smpi/smpi_topo.hpp
-  src/smpi/smpi_utils.cpp
-  src/smpi/smpi_f77.cpp
-  
+  src/smpi/colls/smpi_coll.cpp
+  src/smpi/internals/instr_smpi.cpp
+  src/smpi/internals/smpi_bench.cpp
+  src/smpi/internals/smpi_memory.cpp
+  src/smpi/internals/smpi_shared.cpp
+  src/smpi/internals/smpi_static_variables.cpp
+  src/smpi/internals/smpi_deployment.cpp
+  src/smpi/internals/smpi_dvfs.cpp
+  src/smpi/internals/smpi_global.cpp
+  src/smpi/internals/SmpiHost.cpp
+  src/smpi/internals/smpi_replay.cpp
+  src/smpi/internals/smpi_process.cpp
+  src/smpi/internals/smpi_utils.cpp
+  src/smpi/mpi/smpi_comm.cpp
+  src/smpi/mpi/smpi_datatype.cpp
+  src/smpi/mpi/smpi_datatype_derived.cpp
+  src/smpi/mpi/smpi_f2c.cpp
+  src/smpi/mpi/smpi_group.cpp
+  src/smpi/mpi/smpi_info.cpp
+  src/smpi/mpi/smpi_keyvals.cpp
+  src/smpi/mpi/smpi_op.cpp
+  src/smpi/mpi/smpi_request.cpp
+  src/smpi/mpi/smpi_status.cpp
+  src/smpi/mpi/smpi_topo.cpp
+  src/smpi/mpi/smpi_win.cpp
+  src/smpi/include/smpi_coll.hpp
+  src/smpi/include/smpi_comm.hpp
+  src/smpi/include/smpi_f2c.hpp
+  src/smpi/include/smpi_group.hpp
+  src/smpi/include/SmpiHost.hpp
+  src/smpi/include/smpi_datatype.hpp
+  src/smpi/include/smpi_info.hpp
+  src/smpi/include/smpi_keyvals.hpp
+  src/smpi/include/smpi_datatype_derived.hpp
+  src/smpi/include/smpi_op.hpp
+  src/smpi/include/smpi_process.hpp
+  src/smpi/include/smpi_request.hpp
+  src/smpi/include/smpi_status.hpp
+  src/smpi/include/smpi_win.hpp
+  src/smpi/include/smpi_topo.hpp
   src/surf/network_smpi.cpp
   src/surf/network_ib.cpp
   )

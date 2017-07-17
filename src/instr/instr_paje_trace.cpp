@@ -6,7 +6,7 @@
 
 #include "src/instr/instr_private.h"
 #include "src/instr/instr_smpi.h"
-#include "src/smpi/private.hpp"
+#include "src/smpi/include/private.hpp"
 #include "typeinfo"
 #include "xbt/virtu.h" /* sg_cmdline */
 #include "simgrid/sg_config.h"

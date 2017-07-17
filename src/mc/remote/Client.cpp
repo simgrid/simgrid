@@ -23,7 +23,7 @@
 #include "src/mc/remote/Client.hpp"
 #include "src/mc/remote/mc_protocol.h"
 
-#include "src/smpi/private.hpp"
+#include "src/smpi/include/private.hpp"
 
 // We won't need those once the separation MCer/MCed is complete:
 #include "src/mc/mc_smx.h"

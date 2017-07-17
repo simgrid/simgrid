@@ -7,7 +7,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "colls_private.h"
-#include "src/smpi/smpi_process.hpp"
+#include "smpi_process.hpp"
 
 namespace simgrid{
 namespace smpi{

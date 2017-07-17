@@ -17,7 +17,7 @@
 
 #include "src/internal_config.h"
 #include "src/mc/mc_private.h"
-#include "src/smpi/private.h"
+#include "src/smpi/include/private.h"
 #include "xbt/mmalloc.h"
 #include "xbt/module.h"
 

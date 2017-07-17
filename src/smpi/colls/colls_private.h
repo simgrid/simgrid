@@ -8,12 +8,12 @@
 
 #include <math.h>
 #include "smpi/mpi.h"
-#include "src/smpi/private.h"
-#include "src/smpi/smpi_coll.hpp"
-#include "src/smpi/smpi_comm.hpp"
-#include "src/smpi/smpi_datatype.hpp"
-#include "src/smpi/smpi_op.hpp"
-#include "src/smpi/smpi_request.hpp"
+#include "private.h"
+#include "smpi_coll.hpp"
+#include "smpi_comm.hpp"
+#include "smpi_datatype.hpp"
+#include "smpi_op.hpp"
+#include "smpi_request.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_colls);
 

@@ -7,7 +7,7 @@
  * recursive doubling algorithm */
 
 #include "../colls_private.h"
-#include "src/smpi/smpi_status.hpp"
+#include "smpi_status.hpp"
 
 namespace simgrid{
 namespace smpi{

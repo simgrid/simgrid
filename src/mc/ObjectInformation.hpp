@@ -19,7 +19,7 @@
 #include "src/mc/Type.hpp"
 #include "src/mc/Frame.hpp"
 
-#include "src/smpi/private.h"
+#include "src/smpi/include/private.h"
 
 namespace simgrid {
 namespace mc {
