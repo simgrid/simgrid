@@ -6,12 +6,9 @@ wingetf   5 needs_privatization=1
 #Needs win error handling
 #winerrf 1
 winnamef 1
-#Needs win get group
-#wingroupf 4
+wingroupf 4
 winaccf 4 needs_privatization=1
-#Needs mpi_win_f2c
 c2f2cwinf 1
-#Needs attr
 #baseattrwinf 1
 #winattrf 1
 #winattr2f 1

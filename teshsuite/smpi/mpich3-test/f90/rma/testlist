@@ -6,7 +6,7 @@ wingetf90 5 needs_privatization=1
 #winscale2f90 4
 #winerrf90 1
 winnamef90 1
-#wingroupf90 4
+wingroupf90 4
 winaccf90 4 needs_privatization=1
 c2f2cwinf90 1
 #baseattrwinf90 1
