@@ -56,7 +56,6 @@ void PJ_type_free (type_t type)
      xbt_free(value->color);
      xbt_free(value->id);
      xbt_free(value);
-    //PJ_value_free (value);
   }
   xbt_dict_free (&type->values);
   xbt_free (type->name);
