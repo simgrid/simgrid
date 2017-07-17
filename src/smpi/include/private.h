@@ -121,6 +121,7 @@ void mpi_comm_free_(int* comm, int* ierr);
 void mpi_comm_split_(int* comm, int* color, int* key, int* comm_out, int* ierr);
 void mpi_group_incl_(int* group, int* n, int* key, int* group_out, int* ierr) ;
 void mpi_comm_group_(int* comm, int* group_out,  int* ierr);
+void mpi_comm_create_group_ (int* comm, int* group, int, int* comm_out, int* ierr);
 void mpi_send_init_(void *buf, int* count, int* datatype, int* dst, int* tag, int* comm, int* request, int* ierr);
 void mpi_isend_(void *buf, int* count, int* datatype, int* dst, int* tag, int* comm, int* request, int* ierr);
 void mpi_irsend_(void *buf, int* count, int* datatype, int* dst, int* tag, int* comm, int* request, int* ierr);
@@ -167,7 +168,6 @@ void mpi_type_extent_(int* datatype, MPI_Aint * extent, int* ierr);
 void mpi_attr_get_(int* comm, int* keyval, void* attr_value, int* flag, int* ierr );
 void mpi_type_commit_(int* datatype,  int* ierr);
 void mpi_type_vector_(int* count, int* blocklen, int* stride, int* old_type, int* newtype,  int* ierr);
-void mpi_type_create_vector_(int* count, int* blocklen, int* stride, int* old_type, int* newtype,  int* ierr);
 void mpi_type_hvector_(int* count, int* blocklen, MPI_Aint* stride, int* old_type, int* newtype,  int* ierr);
 void mpi_type_create_hvector_(int* count, int* blocklen, MPI_Aint* stride, int* old_type, int* newtype,  int* ierr);
 void mpi_type_free_(int* datatype, int* ierr);
@@ -182,6 +182,26 @@ void mpi_win_post_(int* group, int assert, int* win, int* ierr);
 void mpi_win_start_(int* group, int assert, int* win, int* ierr);
 void mpi_win_complete_(int* win, int* ierr);
 void mpi_win_wait_(int* win, int* ierr);
+void mpi_win_allocate_( MPI_Aint* size, int* disp_unit, int* info, int* comm, void* base, int* win, int* ierr);
+void mpi_win_attach_(int* win, int* base, MPI_Aint* size, int* ierr);
+void mpi_win_create_dynamic_( int* info, int* comm, int *win, int* ierr);
+void mpi_win_detach_(int* win, int* base, int* ierr);
+void mpi_win_set_info_(int*  win, int* info, int* ierr);
+void mpi_win_get_info_(int*  win, int* info, int* ierr);
+void mpi_win_get_group_(int*  win, int* group, int* ierr);
+void mpi_win_get_attr_(int* win, int* type_keyval, void* attribute_val, int* flag, int* ierr);
+void mpi_win_set_attr_(int* win, int* type_keyval, void* att, int* ierr);
+void mpi_win_delete_attr_(int* win, int* comm_keyval, int* ierr);
+void mpi_win_create_keyval_(void* copy_fn, void* delete_fn, int* keyval, void* extra_state, int* ierr);
+void mpi_win_free_keyval_(int* keyval, int* ierr);
+void mpi_win_lock_(int* lock_type, int* rank, int* assert, int* win, int* ierr);
+void mpi_win_lock_all_(int* assert, int* win, int* ierr);
+void mpi_win_unlock_(int* rank, int* win, int* ierr);
+void mpi_win_unlock_all_(int* win, int* ierr);
+void mpi_win_flush_(int* rank, int* win, int* ierr);
+void mpi_win_flush_local_(int* rank, int* win, int* ierr);
+void mpi_win_flush_all_(int* win, int* ierr);
+void mpi_win_flush_local_all_(int* win, int* ierr);
 void mpi_info_create_( int *info, int* ierr);
 void mpi_info_set_( int *info, char *key, char *value, int* ierr, unsigned int keylen, unsigned int valuelen);
 void mpi_info_free_(int* info, int* ierr);
@@ -189,8 +209,23 @@ void mpi_get_( int *origin_addr, int* origin_count, int* origin_datatype, int* t
     MPI_Aint* target_disp, int* target_count, int* target_datatype, int* win, int* ierr);
 void mpi_put_( int *origin_addr, int* origin_count, int* origin_datatype, int* target_rank,
     MPI_Aint* target_disp, int* target_count, int* target_datatype, int* win, int* ierr);
+void mpi_rget_( int *origin_addr, int* origin_count, int* origin_datatype, int* target_rank,
+    MPI_Aint* target_disp, int* target_count, int* target_datatype, int* win, int* request, int* ierr);
+void mpi_rput_( int *origin_addr, int* origin_count, int* origin_datatype, int* target_rank,
+    MPI_Aint* target_disp, int* target_count, int* target_datatype, int* win, int* request, int* ierr);
+void mpi_fetch_and_op_( int *origin_addr, int* result_addr, int* datatype, int* target_rank, MPI_Aint* target_disp, int* op, int* win, int* ierr);
+void mpi_compare_and_swap_( int *origin_addr, int* compare_addr, int* result_addr, 
+    int* datatype, int* target_rank, MPI_Aint* target_disp, int* win, int* ierr);
+void mpi_get_accumulate_(int *origin_addr, int* origin_count, int* origin_datatype, int* result_addr,
+                        int* result_count, int* result_datatype, int* target_rank, MPI_Aint* target_disp, int* target_count,
+                        int* target_datatype, int* op, int* win, int* ierr);
+void mpi_rget_accumulate_(int *origin_addr, int* origin_count, int* origin_datatype, int* result_addr,
+                        int* result_count, int* result_datatype, int* target_rank, MPI_Aint* target_disp, int* target_count,
+                        int* target_datatype, int* op, int* win, int* request, int* ierr);
 void mpi_accumulate_( int *origin_addr, int* origin_count, int* origin_datatype, int* target_rank,
     MPI_Aint* target_disp, int* target_count, int* target_datatype, int* op, int* win, int* ierr);
+void mpi_raccumulate_( int *origin_addr, int* origin_count, int* origin_datatype, int* target_rank,
+    MPI_Aint* target_disp, int* target_count, int* target_datatype, int* op, int* win, int* request, int* ierr);
 void mpi_error_string_(int* errorcode, char* string, int* resultlen, int* ierr);
 void mpi_sendrecv_(void* sendbuf, int* sendcount, int* sendtype, int* dst, int* sendtag, void *recvbuf, int* recvcount,
                 int* recvtype, int* src, int* recvtag, int* comm, MPI_Status* status, int* ierr);
@@ -214,6 +249,7 @@ void mpi_type_get_extent_ (int* datatype, MPI_Aint * lb, MPI_Aint * extent, int*
 void mpi_type_get_true_extent_ (int* datatype, MPI_Aint * lb, MPI_Aint * extent, int* ierr);
 void mpi_op_create_ (void * function, int* commute, int* op, int* ierr);
 void mpi_op_free_ (int* op, int* ierr);
+void mpi_op_commutative_ (int* op, int* commute, int* ierr);
 void mpi_group_free_ (int* group, int* ierr);
 void mpi_group_size_ (int* group, int *size, int* ierr);
 void mpi_group_rank_ (int* group, int *rank, int* ierr);
@@ -282,6 +318,7 @@ void mpi_type_create_hindexed_ (int* count, int* blocklens, MPI_Aint* indices, i
 void mpi_type_create_hindexed_block_ (int* count, int* blocklength, MPI_Aint* indices, int* old_type, int*  newtype,
                                       int* ierr) ;
 void mpi_type_indexed_ (int* count, int* blocklens, int* indices, int* old_type, int*  newtype, int* ierr) ;
+void mpi_type_create_indexed_ (int* count, int* blocklens, int* indices, int* old_type, int*  newtype, int* ierr) ;
 void mpi_type_create_indexed_block_ (int* count, int* blocklength, int* indices,  int* old_type,  int*newtype,
                                      int* ierr);
 void mpi_type_struct_ (int* count, int* blocklens, MPI_Aint* indices, int*  old_types, int*  newtype, int* ierr) ;

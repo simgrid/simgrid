@@ -112,14 +112,6 @@ void mpi_type_vector_(int* count, int* blocklen, int* stride, int* old_type, int
   }
 }
 
-void mpi_type_create_vector_(int* count, int* blocklen, int* stride, int* old_type, int* newtype,  int* ierr){
-  MPI_Datatype tmp;
-  *ierr= MPI_Type_vector(*count, *blocklen, *stride, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
-  if(*ierr == MPI_SUCCESS) {
-    *newtype = tmp->add_f();
-  }
-}
-
 void mpi_type_hvector_(int* count, int* blocklen, MPI_Aint* stride, int* old_type, int* newtype,  int* ierr){
   MPI_Datatype tmp;
   *ierr= MPI_Type_hvector (*count, *blocklen, *stride, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
@@ -164,6 +156,14 @@ void mpi_type_create_hindexed_block_ (int* count, int* blocklength, MPI_Aint* in
 void mpi_type_indexed_ (int* count, int* blocklens, int* indices, int* old_type, int*  newtype, int* ierr) {
   MPI_Datatype tmp;
   *ierr = MPI_Type_indexed(*count, blocklens, indices, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
+  if(*ierr == MPI_SUCCESS) {
+    *newtype = tmp->add_f();
+  }
+}
+
+void mpi_type_create_indexed_(int* count, int* blocklens, int* indices, int* old_type, int*  newtype, int* ierr){
+  MPI_Datatype tmp;
+  *ierr = MPI_Type_create_indexed(*count, blocklens, indices, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newtype = tmp->add_f();
   }

@@ -63,6 +63,14 @@ void mpi_comm_group_(int* comm, int* group_out,  int* ierr) {
   }
 }
 
+void mpi_comm_create_group_ (int* comm, int* group, int i, int* comm_out, int* ierr){
+  MPI_Comm tmp;
+ *ierr = MPI_Comm_create_group(simgrid::smpi::Comm::f2c(*comm),simgrid::smpi::Group::f2c(*group), i, &tmp);
+  if(*ierr == MPI_SUCCESS) {
+    *comm_out = tmp->c2f();
+  }
+}
+
 void mpi_comm_get_attr_ (int* comm, int* comm_keyval, void *attribute_val, int *flag, int* ierr){
 
  *ierr = MPI_Comm_get_attr (simgrid::smpi::Comm::f2c(*comm), *comm_keyval, attribute_val, flag);
