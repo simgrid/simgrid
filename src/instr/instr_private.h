@@ -346,8 +346,10 @@ XBT_PRIVATE XBT_PRIVATE type_t PJ_type_variable_new (const char *name, const cha
 XBT_PRIVATE type_t PJ_type_state_new (const char *name, type_t father);
 XBT_PUBLIC(type_t)  PJ_type_get (const char *name, const type_t father);
 XBT_PUBLIC(type_t)  PJ_type_get_or_null (const char *name, type_t father);
-void PJ_type_free_all ();
-XBT_PRIVATE XBT_PRIVATE void PJ_type_free (type_t type);
+XBT_PRIVATE XBT_PRIVATE void PJ_type_free (type_t type); 
+
+/* instr_config.c */
+XBT_PRIVATE void recursiveDestroyType (type_t type);
 
 /* instr_paje_values.c */
 XBT_PUBLIC(val_t)  PJ_value_new (const char *name, const char *color, type_t father);

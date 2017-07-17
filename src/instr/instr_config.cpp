@@ -63,6 +63,8 @@ static int trace_precision;
 static bool trace_configured = false;
 static bool trace_active     = false;
 
+static type_t rootType = nullptr;        /* the root type */
+
 instr_fmt_type_t instr_fmt_type = instr_fmt_paje;
 
 static void TRACE_getopts()
@@ -148,9 +150,9 @@ int TRACE_end()
 
     /* destroy all data structures of tracing (and free) */
     PJ_container_free_all();
-    PJ_type_free_all();
+    recursiveDestroyType (PJ_type_get_root());
     PJ_container_release();
-    PJ_type_release();
+    rootType = nullptr;
 
     xbt_dict_free(&user_link_variables);
     xbt_dict_free(&user_host_variables);

@@ -66,7 +66,7 @@ void PJ_type_free (type_t type)
   type = nullptr;
 }
 
-static void recursiveDestroyType (type_t type)
+void recursiveDestroyType (type_t type)
 {
   XBT_DEBUG("recursiveDestroyType %s", type->name);
   xbt_dict_cursor_t cursor = nullptr;
@@ -76,12 +76,6 @@ static void recursiveDestroyType (type_t type)
     recursiveDestroyType (child);
   }
   PJ_type_free(type);
-}
-
-void PJ_type_free_all ()
-{
-  recursiveDestroyType (PJ_type_get_root());
-  rootType = nullptr;
 }
 
 type_t PJ_type_get (const char *name, type_t father)
