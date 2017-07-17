@@ -80,8 +80,6 @@ static inline smx_simcall_t MC_state_get_request_for_process(
   state->transition.argument           = -1;
   state->executed_req.call             = SIMCALL_NONE;
 
-  if (not procstate->isTodo())
-    return nullptr; // Not considered by the checker algorithm
   if (not simgrid::mc::actor_is_enabled(actor))
     return nullptr; // Not executable in the application
 
@@ -225,6 +223,10 @@ static inline smx_simcall_t MC_state_get_request_for_process(
 smx_simcall_t MC_state_get_request(simgrid::mc::State* state)
 {
   for (auto& actor : mc_model_checker->process().actors()) {
+    /* Only consider the actors that were marked as interleaving by the checker algorithm */
+    if (not state->actorStates[actor.copy.getBuffer()->pid].isTodo())
+      continue;
+
     smx_simcall_t res = MC_state_get_request_for_process(state, actor.copy.getBuffer());
     if (res)
       return res;
