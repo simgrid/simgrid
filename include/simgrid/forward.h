@@ -117,25 +117,24 @@ typedef tmgr_Trace *tmgr_trace_t; /**< Opaque structure defining an availability
 typedef struct s_smx_simcall s_smx_simcall_t;
 typedef struct s_smx_simcall* smx_simcall_t;
 
-typedef enum {
+typedef enum { // FIXME: move this to s4u::Link; make it an enum class
   SURF_LINK_FULLDUPLEX = 2,
-  SURF_LINK_SHARED = 1,
-  SURF_LINK_FATPIPE = 0
+  SURF_LINK_SHARED     = 1,
+  SURF_LINK_FATPIPE    = 0
 } e_surf_link_sharing_policy_t;
 
-typedef enum {
+typedef enum { // FIXME: move this away; make it an enum class
   SURF_TRACE_CONNECT_KIND_HOST_AVAIL = 4,
-  SURF_TRACE_CONNECT_KIND_SPEED = 3,
+  SURF_TRACE_CONNECT_KIND_SPEED      = 3,
   SURF_TRACE_CONNECT_KIND_LINK_AVAIL = 2,
-  SURF_TRACE_CONNECT_KIND_BANDWIDTH = 1,
-  SURF_TRACE_CONNECT_KIND_LATENCY = 0
+  SURF_TRACE_CONNECT_KIND_BANDWIDTH  = 1,
+  SURF_TRACE_CONNECT_KIND_LATENCY    = 0
 } e_surf_trace_connect_kind_t;
 
-typedef enum {
-  SURF_ACTOR_ON_FAILURE_DIE = 1,
+typedef enum { // FIXME: move this to s4u::Actor; make it an enum class
+  SURF_ACTOR_ON_FAILURE_DIE     = 1,
   SURF_ACTOR_ON_FAILURE_RESTART = 0
 } e_surf_process_on_failure_t;
-
 
 /** @ingroup m_datatypes_management_details
  * @brief Type for any simgrid size
