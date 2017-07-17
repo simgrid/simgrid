@@ -10,6 +10,7 @@
 #include <math.h>
 #include <xbt/xbt_os_time.h>
 
+#include "simgrid/msg.h"
 #include "xbt/heap.h"
 #include "xbt/sysdep.h"
 
@@ -89,10 +90,11 @@ static void test_heap_mean_operation(int size)
   xbt_heap_free(heap);
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-  int size;
-  for (size = 100; size < 10000; size *= 10) {
+  MSG_init(&argc, argv);
+
+  for (int size = 100; size < 10000; size *= 10) {
     test_heap_validity(size);
     test_heap_mean_operation(size);
   }

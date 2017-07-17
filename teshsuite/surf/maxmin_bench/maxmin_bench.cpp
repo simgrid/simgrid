@@ -7,9 +7,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf/maxmin.h"
+#include "simgrid/msg.h"
 #include "xbt/module.h"
+#include "xbt/sysdep.h" /* time manipulation for benchmarking */
 #include "xbt/xbt_os_time.h"
-#include "xbt/sysdep.h"         /* time manipulation for benchmarking */
 
 #define MYRANDMAX 1000
 
@@ -117,6 +118,8 @@ unsigned int TestClasses [][4]=
 
 int main(int argc, char **argv)
 {
+  MSG_init(&argc, argv);
+
   float rate_no_limit=0.2;
   float acc_date=0;
   float acc_date2=0;
