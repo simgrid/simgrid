@@ -13,7 +13,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
 int main(int argc, char **argv)
 {
-  double now = -1.0;
   int running;
 
   surf_init(&argc, argv);       /* Initialize some common structures */
@@ -40,7 +39,7 @@ int main(int argc, char **argv)
     surf_action_t action = nullptr;
     running = 0;
 
-    now = surf_get_clock();
+    double now = surf_get_clock();
     XBT_INFO("Next Event : %g", now);
 
     for (auto model: *all_existing_models) {

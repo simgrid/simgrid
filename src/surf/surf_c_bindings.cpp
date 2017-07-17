@@ -41,7 +41,6 @@ void surf_presolve()
 double surf_solve(double max_date)
 {
   double time_delta = -1.0; /* duration */
-  double next_event_date = -1.0;
   double model_next_action_end = -1.0;
   double value = -1.0;
   simgrid::surf::Resource *resource = nullptr;
@@ -71,7 +70,7 @@ double surf_solve(double max_date)
   XBT_DEBUG("Looking for next trace event");
 
   while (1) { // Handle next occurring events until none remains
-    next_event_date = future_evt_set->next_date();
+    double next_event_date = future_evt_set->next_date();
     XBT_DEBUG("Next TRACE event: %f", next_event_date);
 
     if (not surf_network_model->nextOccuringEventIsIdempotent()) { // NS3, I see you

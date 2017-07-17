@@ -1479,11 +1479,9 @@ static int compare_global_variables(
                (char *) current_var.address);
       return 1;
     }
-
   }
 
   return 0;
-
 }
 
 static int compare_local_variables(simgrid::mc::StateComparator& state,
@@ -1500,7 +1498,6 @@ static int compare_local_variables(simgrid::mc::StateComparator& state,
 
     unsigned int cursor = 0;
     local_variable_t current_var1, current_var2;
-    int res;
     while (cursor < stack1->local_variables.size()) {
       current_var1 = &stack1->local_variables[cursor];
       current_var2 = &stack1->local_variables[cursor];
@@ -1521,22 +1518,18 @@ static int compare_local_variables(simgrid::mc::StateComparator& state,
       // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
 
         simgrid::mc::Type* subtype = current_var1->type;
-        res =
-            compare_areas_with_type(state, process_index,
-                                    current_var1->address, snapshot1, mc_get_snapshot_region(current_var1->address, snapshot1, process_index),
-                                    current_var2->address, snapshot2, mc_get_snapshot_region(current_var2->address, snapshot2, process_index),
-                                    subtype, 0);
+        int res                    = compare_areas_with_type(
+            state, process_index, current_var1->address, snapshot1,
+            mc_get_snapshot_region(current_var1->address, snapshot1, process_index), current_var2->address, snapshot2,
+            mc_get_snapshot_region(current_var2->address, snapshot2, process_index), subtype, 0);
 
-      if (res == 1) {
-        // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
-        XBT_VERB
-            ("Local variable %s (%p - %p) in frame %s "
-             "is different between snapshots",
-             current_var1->name.c_str(),
-             current_var1->address,
-             current_var2->address,
-             current_var1->subprogram->name.c_str());
-        return res;
+        if (res == 1) {
+          // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
+          XBT_VERB("Local variable %s (%p - %p) in frame %s "
+                   "is different between snapshots",
+                   current_var1->name.c_str(), current_var1->address, current_var2->address,
+                   current_var1->subprogram->name.c_str());
+          return res;
       }
       cursor++;
     }

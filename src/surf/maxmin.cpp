@@ -460,7 +460,6 @@ void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst, lmm_variable_t var, dou
 void lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst, lmm_variable_t var, double value)
 {
   int i;
-  double weight;
   sys->modified = 1;
 
   lmm_check_concurrency(sys);
@@ -482,7 +481,7 @@ void lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst, lmm_variable_t var,
     //We need to check that increasing value of the element does not cross the concurrency limit
     if (var->sharing_weight) {
       if(lmm_concurrency_slack(cnst)<lmm_element_concurrency(&var->cnsts[i])){
-        weight = var->sharing_weight;
+        double weight = var->sharing_weight;
         lmm_disable_var(sys,var);
         for (int j = 0; j < var->cnsts_number; j++)
           lmm_on_disabled_var(sys,var->cnsts[j].constraint);

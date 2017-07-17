@@ -250,8 +250,6 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
   xbt_test_test_t test;
   xbt_test_log_t log;
 
-  unsigned int it_test;
-
   if (suite == nullptr)
     return 0;
 
@@ -297,6 +295,7 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
         unit->func();
 
       /* iterate through all performed tests to determine status */
+      unsigned int it_test;
       xbt_dynar_foreach(unit->tests, it_test, test) {
         if (test->ignored) {
           unit->test_ignore++;

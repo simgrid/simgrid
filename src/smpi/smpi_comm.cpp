@@ -423,11 +423,10 @@ void Comm::init_smp(){
     smpi_process()->set_comm_intra(comm_intra);
   }
 
-  int is_uniform = 1;
-
   // Are the nodes uniform ? = same number of process/node
   int my_local_size=comm_intra->size();
   if(comm_intra->rank()==0) {
+    int is_uniform       = 1;
     int* non_uniform_map = xbt_new0(int,leader_group_size);
     Coll_allgather_mpich::allgather(&my_local_size, 1, MPI_INT,
         non_uniform_map, 1, MPI_INT, leader_comm);

@@ -393,9 +393,6 @@ extern "C" void xbt_dynar_remove_at(xbt_dynar_t const dynar, const int idx, void
  */
 extern "C" void xbt_dynar_remove_n_at(xbt_dynar_t const dynar, const unsigned int n, const int idx)
 {
-  unsigned long nb_shift;
-  unsigned long offset;
-
   if (not n)
     return;
 
@@ -409,10 +406,10 @@ extern "C" void xbt_dynar_remove_n_at(xbt_dynar_t const dynar, const unsigned in
     }
   }
 
-  nb_shift = dynar->used - n - idx;
+  unsigned long nb_shift = dynar->used - n - idx;
 
   if (nb_shift) {
-    offset = nb_shift * dynar->elmsize;
+    unsigned long offset = nb_shift * dynar->elmsize;
     memmove(_xbt_dynar_elm(dynar, idx), _xbt_dynar_elm(dynar, idx + n), offset);
   }
 
