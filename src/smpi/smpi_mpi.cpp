@@ -72,7 +72,7 @@ WRAPPED_PMPI_CALL(int,MPI_Comm_size,(MPI_Comm comm, int *size),(comm, size))
 WRAPPED_PMPI_CALL(int,MPI_Comm_split,(MPI_Comm comm, int color, int key, MPI_Comm* comm_out),(comm, color, key, comm_out))
 WRAPPED_PMPI_CALL(int,MPI_Comm_create_group,(MPI_Comm comm, MPI_Group group, int tag, MPI_Comm* comm_out),(comm, group, tag, comm_out))
 WRAPPED_PMPI_CALL(int,MPI_Compare_and_swap,(void *origin_addr, void *compare_addr,
-        void *result_addr, MPI_Datatype datatype, int target_rank, MPI_Aint target_disp, MPI_Win win), (origin_addr, compare_addr, result_addr, datatype, target_rank, target_disp, win));
+        void *result_addr, MPI_Datatype datatype, int target_rank, MPI_Aint target_disp, MPI_Win win), (origin_addr, compare_addr, result_addr, datatype, target_rank, target_disp, win))
 WRAPPED_PMPI_CALL(int,MPI_Dims_create,(int nnodes, int ndims, int* dims) ,(nnodes, ndims, dims))
 WRAPPED_PMPI_CALL(int,MPI_Error_class,(int errorcode, int* errorclass) ,(errorcode, errorclass))
 WRAPPED_PMPI_CALL(int,MPI_Exscan,(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm),(sendbuf, recvbuf, count, datatype, op, comm))
@@ -276,68 +276,68 @@ UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Errhandler_free,(MPI_Errhandler* errhand
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Errhandler_get,(MPI_Comm comm, MPI_Errhandler* errhandler) ,(comm, errhandler))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Errhandler_set,(MPI_Comm comm, MPI_Errhandler errhandler) ,(comm, errhandler))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Error_string,(int errorcode, char* string, int* resultlen) ,(errorcode, string, resultlen))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Register_datarep, (char *datarep, MPI_Datarep_conversion_function *read_conversion_fn, MPI_Datarep_conversion_function *write_conversion_fn, MPI_Datarep_extent_function *dtype_file_extent_fn, void *extra_state) ,(datarep, read_conversion_fn, write_conversion_fn, dtype_file_extent_fn, extra_state));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(MPI_Fint, MPI_File_c2f,(MPI_File file), (file));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(MPI_File, MPI_File_f2c,(MPI_Fint file), (file));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_call_errhandler,(MPI_File fh, int errorcode), (fh, errorcode));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_create_errhandler,(MPI_File_errhandler_function *function, MPI_Errhandler *errhandler),(function, errhandler));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_set_errhandler,( MPI_File file, MPI_Errhandler errhandler), (file, errhandler));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_errhandler,( MPI_File file, MPI_Errhandler *errhandler), (file, errhandler));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_open,(MPI_Comm comm, char *filename, int amode, MPI_Info info, MPI_File *fh),(comm, filename, amode, info, fh));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_close,(MPI_File *fh), (fh));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_delete,(char *filename, MPI_Info info), (filename, info));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_set_size,(MPI_File fh, MPI_Offset size), (fh, size));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_preallocate,(MPI_File fh, MPI_Offset size), (fh, size));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_size,(MPI_File fh, MPI_Offset *size), (fh, size));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_group,(MPI_File fh, MPI_Group *group), (fh, group));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_amode,(MPI_File fh, int *amode), (fh, amode));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_set_info,(MPI_File fh, MPI_Info info), (fh, info));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_info,(MPI_File fh, MPI_Info *info_used), (fh, info_used));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_set_view,(MPI_File fh, MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype, char *datarep, MPI_Info info), (fh, disp, etype, filetype, datarep, info));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_view,(MPI_File fh, MPI_Offset *disp, MPI_Datatype *etype, MPI_Datatype *filetype, char *datarep), (fh, disp, etype, filetype, datarep));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_at,(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype, MPI_Status *status), (fh, offset, buf, count, datatype, status));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_at_all,(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype, MPI_Status *status), (fh, offset, buf, count, datatype, status));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_at,(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype, MPI_Status *status), (fh, offset, buf, count, datatype, status));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_at_all,(MPI_File fh, MPI_Offset offset, void *buf,int count, MPI_Datatype datatype, MPI_Status *status), (fh, offset, buf, count, datatype, status));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iread_at,(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, offset, buf, count, datatype, request));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iwrite_at,(MPI_File fh, MPI_Offset offset, void *buf,int count, MPI_Datatype datatype, MPI_Request *request), (fh, offset, buf, count, datatype, request));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iread_at_all,(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, offset, buf, count, datatype, request));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iwrite_at_all,(MPI_File fh, MPI_Offset offset, void *buf,int count, MPI_Datatype datatype, MPI_Request *request), (fh, offset, buf, count, datatype, request));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read,(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status), (fh, buf, count, datatype, status));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_all,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status), (fh, buf, count, datatype, status));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status), (fh, buf, count, datatype, status));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_all,(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status), (fh, buf, count, datatype, status));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iread,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, buf, count, datatype, request));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iwrite,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, buf, count, datatype, request));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iread_all,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, buf, count, datatype, request));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iwrite_all,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, buf, count, datatype, request));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_seek,(MPI_File fh, MPI_Offset offset, int whenace), (fh, offset, whenace));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_position,(MPI_File fh, MPI_Offset *offset), (fh, offset));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_byte_offset,(MPI_File fh, MPI_Offset offset, MPI_Offset *disp), (fh, offset, disp));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_shared,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status), (fh, buf, count, datatype, status));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_shared,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status), (fh, buf, count, datatype, status));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iread_shared,(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Request *request), (fh, buf, count, datatype, request));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iwrite_shared,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, buf, count, datatype, request));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_ordered,(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status), (fh, buf, count, datatype, status));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_ordered,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status), (fh, buf, count, datatype, status));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_seek_shared,(MPI_File fh, MPI_Offset offset, int whence), (fh, offset, whence));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_position_shared,(MPI_File fh, MPI_Offset *offset), (fh, offset));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_at_all_begin,(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype), (fh, offset, buf, count, datatype));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_at_all_end,(MPI_File fh, void *buf, MPI_Status *status), (fh, buf, status));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_at_all_begin,(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype), (fh, offset, buf, count, datatype));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_at_all_end,(MPI_File fh, void *buf, MPI_Status *status), (fh, buf, status));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_all_begin,(MPI_File fh, void *buf, int count, MPI_Datatype datatype), (fh, buf, count, datatype));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_all_end,(MPI_File fh, void *buf, MPI_Status *status), (fh, buf, status));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_all_begin,(MPI_File fh, void *buf, int count, MPI_Datatype datatype), (fh, buf, count, datatype));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_all_end,(MPI_File fh, void *buf, MPI_Status *status), (fh, buf, status));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_ordered_begin,(MPI_File fh, void *buf, int count, MPI_Datatype datatype), (fh, buf, count, datatype));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_ordered_end,(MPI_File fh, void *buf, MPI_Status *status), (fh, buf, status));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_ordered_begin,(MPI_File fh, void *buf, int count, MPI_Datatype datatype), (fh, buf, count, datatype));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_ordered_end,(MPI_File fh, void *buf, MPI_Status *status), (fh, buf, status));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_type_extent,(MPI_File fh, MPI_Datatype datatype, MPI_Aint *extent), (fh, datatype, extent));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_set_atomicity,(MPI_File fh, int flag), (fh, flag));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_atomicity,(MPI_File fh, int *flag), (fh, flag));
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_sync,(MPI_File fh), (fh));
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Register_datarep, (char *datarep, MPI_Datarep_conversion_function *read_conversion_fn, MPI_Datarep_conversion_function *write_conversion_fn, MPI_Datarep_extent_function *dtype_file_extent_fn, void *extra_state) ,(datarep, read_conversion_fn, write_conversion_fn, dtype_file_extent_fn, extra_state))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(MPI_Fint, MPI_File_c2f,(MPI_File file), (file))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(MPI_File, MPI_File_f2c,(MPI_Fint file), (file))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_call_errhandler,(MPI_File fh, int errorcode), (fh, errorcode))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_create_errhandler,(MPI_File_errhandler_function *function, MPI_Errhandler *errhandler),(function, errhandler))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_set_errhandler,( MPI_File file, MPI_Errhandler errhandler), (file, errhandler))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_errhandler,( MPI_File file, MPI_Errhandler *errhandler), (file, errhandler))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_open,(MPI_Comm comm, char *filename, int amode, MPI_Info info, MPI_File *fh),(comm, filename, amode, info, fh))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_close,(MPI_File *fh), (fh))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_delete,(char *filename, MPI_Info info), (filename, info))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_set_size,(MPI_File fh, MPI_Offset size), (fh, size))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_preallocate,(MPI_File fh, MPI_Offset size), (fh, size))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_size,(MPI_File fh, MPI_Offset *size), (fh, size))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_group,(MPI_File fh, MPI_Group *group), (fh, group))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_amode,(MPI_File fh, int *amode), (fh, amode))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_set_info,(MPI_File fh, MPI_Info info), (fh, info))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_info,(MPI_File fh, MPI_Info *info_used), (fh, info_used))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_set_view,(MPI_File fh, MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype, char *datarep, MPI_Info info), (fh, disp, etype, filetype, datarep, info))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_view,(MPI_File fh, MPI_Offset *disp, MPI_Datatype *etype, MPI_Datatype *filetype, char *datarep), (fh, disp, etype, filetype, datarep))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_at,(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype, MPI_Status *status), (fh, offset, buf, count, datatype, status))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_at_all,(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype, MPI_Status *status), (fh, offset, buf, count, datatype, status))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_at,(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype, MPI_Status *status), (fh, offset, buf, count, datatype, status))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_at_all,(MPI_File fh, MPI_Offset offset, void *buf,int count, MPI_Datatype datatype, MPI_Status *status), (fh, offset, buf, count, datatype, status))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iread_at,(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, offset, buf, count, datatype, request))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iwrite_at,(MPI_File fh, MPI_Offset offset, void *buf,int count, MPI_Datatype datatype, MPI_Request *request), (fh, offset, buf, count, datatype, request))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iread_at_all,(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, offset, buf, count, datatype, request))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iwrite_at_all,(MPI_File fh, MPI_Offset offset, void *buf,int count, MPI_Datatype datatype, MPI_Request *request), (fh, offset, buf, count, datatype, request))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read,(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status), (fh, buf, count, datatype, status))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_all,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status), (fh, buf, count, datatype, status))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status), (fh, buf, count, datatype, status))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_all,(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status), (fh, buf, count, datatype, status))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iread,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, buf, count, datatype, request))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iwrite,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, buf, count, datatype, request))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iread_all,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, buf, count, datatype, request))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iwrite_all,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, buf, count, datatype, request))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_seek,(MPI_File fh, MPI_Offset offset, int whenace), (fh, offset, whenace))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_position,(MPI_File fh, MPI_Offset *offset), (fh, offset))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_byte_offset,(MPI_File fh, MPI_Offset offset, MPI_Offset *disp), (fh, offset, disp))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_shared,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status), (fh, buf, count, datatype, status))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_shared,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status), (fh, buf, count, datatype, status))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iread_shared,(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Request *request), (fh, buf, count, datatype, request))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iwrite_shared,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, buf, count, datatype, request))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_ordered,(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status), (fh, buf, count, datatype, status))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_ordered,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status), (fh, buf, count, datatype, status))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_seek_shared,(MPI_File fh, MPI_Offset offset, int whence), (fh, offset, whence))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_position_shared,(MPI_File fh, MPI_Offset *offset), (fh, offset))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_at_all_begin,(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype), (fh, offset, buf, count, datatype))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_at_all_end,(MPI_File fh, void *buf, MPI_Status *status), (fh, buf, status))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_at_all_begin,(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype), (fh, offset, buf, count, datatype))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_at_all_end,(MPI_File fh, void *buf, MPI_Status *status), (fh, buf, status))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_all_begin,(MPI_File fh, void *buf, int count, MPI_Datatype datatype), (fh, buf, count, datatype))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_all_end,(MPI_File fh, void *buf, MPI_Status *status), (fh, buf, status))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_all_begin,(MPI_File fh, void *buf, int count, MPI_Datatype datatype), (fh, buf, count, datatype))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_all_end,(MPI_File fh, void *buf, MPI_Status *status), (fh, buf, status))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_ordered_begin,(MPI_File fh, void *buf, int count, MPI_Datatype datatype), (fh, buf, count, datatype))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_ordered_end,(MPI_File fh, void *buf, MPI_Status *status), (fh, buf, status))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_ordered_begin,(MPI_File fh, void *buf, int count, MPI_Datatype datatype), (fh, buf, count, datatype))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_ordered_end,(MPI_File fh, void *buf, MPI_Status *status), (fh, buf, status))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_type_extent,(MPI_File fh, MPI_Datatype datatype, MPI_Aint *extent), (fh, datatype, extent))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_set_atomicity,(MPI_File fh, int flag), (fh, flag))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_atomicity,(MPI_File fh, int *flag), (fh, flag))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_sync,(MPI_File fh), (fh))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Get_elements,(MPI_Status* status, MPI_Datatype datatype, int* elements) ,(status, datatype, elements))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Graph_create,(MPI_Comm comm_old, int nnodes, int* index, int* edges, int reorder, MPI_Comm* comm_graph) ,(comm_old, nnodes, index, edges, reorder, comm_graph))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Graphdims_get,(MPI_Comm comm, int* nnodes, int* nedges) ,(comm, nnodes, nedges))
