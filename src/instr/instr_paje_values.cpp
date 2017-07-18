@@ -57,12 +57,3 @@ val_t PJ_value_get (const char *name, type_t father)
   }
   return ret;
 }
-
-void PJ_value_free (val_t value)
-{
-  XBT_DEBUG("free value %s, child of %s", value->name, value->father->name);
-  xbt_free(((val_t)value)->name);
-  xbt_free(((val_t)value)->color);
-  xbt_free(((val_t)value)->id);
-  xbt_free(value);
-}
