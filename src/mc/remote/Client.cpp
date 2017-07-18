@@ -118,6 +118,12 @@ void Client::handleRestore(s_mc_message_restore_t* message)
   smpi_really_switch_data_segment(message->index);
 #endif
 }
+void Client::handleActorEnabled(s_mc_message_actor_enabled_t* msg)
+{
+  bool res = simgrid::mc::actor_is_enabled(SIMIX_process_from_PID(msg->aid));
+  s_mc_message_int answer{MC_MESSAGE_ACTOR_ENABLED_REPLY, res};
+  channel_.send(answer);
+}
 
 void Client::handleMessages()
 {
@@ -156,6 +162,13 @@ void Client::handleMessages()
         xbt_assert(received_size == sizeof(mc_message_t), "Unexpected size for MESSAGE_RESTORE (%zu != %zu)",
                    received_size, sizeof(mc_message_t));
         handleRestore((s_mc_message_restore_t*)message_buffer);
+        break;
+
+      case MC_MESSAGE_ACTOR_ENABLED:
+        xbt_assert(received_size == sizeof(s_mc_message_actor_enabled_t),
+                   "Unexpected size for ACTOR_ENABLED (%zu != %zu)", received_size,
+                   sizeof(s_mc_message_actor_enabled_t));
+        handleActorEnabled((s_mc_message_actor_enabled_t*)message_buffer);
         break;
 
       default:

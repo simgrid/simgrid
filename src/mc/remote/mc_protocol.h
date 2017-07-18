@@ -11,6 +11,7 @@
 #include <xbt/base.h>
 
 #include "mc/datatypes.h"
+#include "simgrid/forward.h"
 
 SG_BEGIN_DECL()
 
@@ -41,6 +42,8 @@ typedef enum {
   MC_MESSAGE_ASSERTION_FAILED,
   // MCer request to finish the restoration:
   MC_MESSAGE_RESTORE,
+  MC_MESSAGE_ACTOR_ENABLED,
+  MC_MESSAGE_ACTOR_ENABLED_REPLY
 } e_mc_message_type;
 
 #define MC_MESSAGE_LENGTH 512
@@ -111,6 +114,12 @@ struct s_mc_message_restore {
   int index;
 };
 typedef struct s_mc_message_restore s_mc_message_restore_t;
+
+struct s_mc_message_actor_enabled {
+  e_mc_message_type type;
+  aid_t aid; // actor ID
+};
+typedef struct s_mc_message_actor_enabled s_mc_message_actor_enabled_t;
 
 XBT_PRIVATE const char* MC_message_type_name(e_mc_message_type type);
 

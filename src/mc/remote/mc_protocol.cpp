@@ -46,6 +46,12 @@ const char* MC_message_type_name(e_mc_message_type type)
       return "SIMCALL_HANDLE";
     case MC_MESSAGE_ASSERTION_FAILED:
       return "ASSERTION_FAILED";
+
+    case MC_MESSAGE_ACTOR_ENABLED:
+      return "ACTOR_ENABLED";
+    case MC_MESSAGE_ACTOR_ENABLED_REPLY:
+      return "ACTOR_ENABLED_REPLY";
+
     default:
       return "?";
   }
