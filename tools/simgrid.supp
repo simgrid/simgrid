@@ -80,8 +80,6 @@
    fun:malloc
    ...
    fun:dlopen@@GLIBC_*
-   ...
-   fun:main
 }
 
 {
@@ -91,8 +89,6 @@
    fun:calloc
    ...
    fun:dlopen@@GLIBC_*
-   ...
-   fun:main
 }
 
 # Memory leaks appearing to be in libcgraph.  They can be seen with the

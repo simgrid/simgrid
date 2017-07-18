@@ -42,6 +42,7 @@ private:
   void handleContinue(mc_message_t* msg);
   void handleSimcall(s_mc_message_simcall_handle_t* message);
   void handleRestore(s_mc_message_restore_t* msg);
+  void handleActorEnabled(s_mc_message_actor_enabled_t* msg);
 
 public:
   Channel const& getChannel() const { return channel_; }

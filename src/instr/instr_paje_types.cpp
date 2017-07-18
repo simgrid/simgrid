@@ -10,15 +10,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_types, instr, "Paje tracing event sy
 
 static type_t rootType = nullptr;        /* the root type */
 
-void PJ_type_alloc ()
-{
-}
-
 void PJ_type_release ()
 {
   rootType = nullptr;
 }
-
 
 type_t PJ_type_get_root ()
 {
@@ -56,7 +51,11 @@ void PJ_type_free (type_t type)
   char *value_name;
   xbt_dict_cursor_t cursor = nullptr;
   xbt_dict_foreach(type->values, cursor, value_name, value) {
-    PJ_value_free (value);
+     XBT_DEBUG("free value %s, child of %s", value->name, value->father->name);
+     xbt_free(value->name);
+     xbt_free(value->color);
+     xbt_free(value->id);
+     xbt_free(value);
   }
   xbt_dict_free (&type->values);
   xbt_free (type->name);
@@ -67,7 +66,7 @@ void PJ_type_free (type_t type)
   type = nullptr;
 }
 
-static void recursiveDestroyType (type_t type)
+void recursiveDestroyType (type_t type)
 {
   XBT_DEBUG("recursiveDestroyType %s", type->name);
   xbt_dict_cursor_t cursor = nullptr;
@@ -77,12 +76,6 @@ static void recursiveDestroyType (type_t type)
     recursiveDestroyType (child);
   }
   PJ_type_free(type);
-}
-
-void PJ_type_free_all ()
-{
-  recursiveDestroyType (PJ_type_get_root());
-  rootType = nullptr;
 }
 
 type_t PJ_type_get (const char *name, type_t father)

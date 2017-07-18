@@ -169,7 +169,6 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
 
   if (PJ_container_get_root() == nullptr){
     PJ_container_alloc ();
-    PJ_type_alloc();
     container_t root = PJ_container_new (id, INSTR_AS, nullptr);
     PJ_container_set_root (root);
 

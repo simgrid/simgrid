@@ -154,20 +154,6 @@ PajeEvent:: ~PajeEvent()
 {
   XBT_DEBUG("%s not implemented for %p: event_type=%d, timestamp=%f", __FUNCTION__,
       this, (int)event_type, timestamp);
-//  xbt_backtrace_display_current();
-
- /* switch (event->event_type){
-  case PAJE_StartLink:
-    xbt_free (((startLink_t)(event->data))->value);
-    xbt_free (((startLink_t)(event->data))->key);
-    break;
-  case PAJE_EndLink:
-    xbt_free (((endLink_t)(event->data))->value);
-    xbt_free (((endLink_t)(event->data))->key);
-    break;
-  default:
-    break;
-  }*/
 }
 
 void TRACE_paje_start() {

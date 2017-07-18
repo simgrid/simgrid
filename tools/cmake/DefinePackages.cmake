@@ -99,7 +99,20 @@ set(SMPI_SRC
   src/smpi/smpi_main.c
   src/smpi/bindings/smpi_mpi.cpp
   src/smpi/bindings/smpi_pmpi.cpp
+  src/smpi/bindings/smpi_pmpi_coll.cpp
+  src/smpi/bindings/smpi_pmpi_comm.cpp
+  src/smpi/bindings/smpi_pmpi_group.cpp
+  src/smpi/bindings/smpi_pmpi_info.cpp
+  src/smpi/bindings/smpi_pmpi_op.cpp
+  src/smpi/bindings/smpi_pmpi_request.cpp
+  src/smpi/bindings/smpi_pmpi_topo.cpp
+  src/smpi/bindings/smpi_pmpi_type.cpp
+  src/smpi/bindings/smpi_pmpi_win.cpp
   src/smpi/bindings/smpi_f77.cpp
+  src/smpi/bindings/smpi_f77_coll.cpp
+  src/smpi/bindings/smpi_f77_comm.cpp
+  src/smpi/bindings/smpi_f77_request.cpp
+  src/smpi/bindings/smpi_f77_type.cpp
   src/smpi/colls/allgather/allgather-2dmesh.cpp
   src/smpi/colls/allgather/allgather-3dmesh.cpp
   src/smpi/colls/allgather/allgather-GB.cpp

@@ -82,6 +82,11 @@
       integer MPI_COMM_NULL_DUP_FN, MPI_COMM_DUP_FN
       parameter(MPI_COMM_NULL_DUP_FN =0)
       parameter(MPI_COMM_DUP_FN =0)
+      integer MPI_WIN_NULL_COPY_FN, MPI_WIN_NULL_DELETE_FN
+      parameter(MPI_WIN_NULL_COPY_FN =0)
+      parameter(MPI_WIN_NULL_DELETE_FN =0)
+      integer MPI_WIN_DUP_FN
+      parameter(MPI_WIN_DUP_FN =0)
 
       integer MPI_ROOT, MPI_COMM_TYPE_SHARED
       parameter(MPI_ROOT=0)
@@ -152,6 +157,12 @@
       parameter(MPI_GROUP_NULL=-1)
       parameter(MPI_GROUP_EMPTY=-2)
       parameter(MPI_WIN_NULL=-1)
+
+      integer MPI_WIN_BASE, MPI_WIN_SIZE, MPI_WIN_DISP_UNIT
+
+      parameter(MPI_WIN_BASE=-1)
+      parameter(MPI_WIN_SIZE=-2)
+      parameter(MPI_WIN_DISP_UNIT=-3)
 
 ! These IDs have to be unique, consecutive
 ! and ordered as in smpi_f77.cpp. 
