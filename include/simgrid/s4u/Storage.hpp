@@ -38,7 +38,7 @@ public:
 
   xbt_dict_t getProperties();
   const char* getProperty(const char* key);
-  void setProperty(const char* key, char* value);
+  void setProperty(const char* key, const char* value);
   std::map<std::string, sg_size_t>* getContent();
 
   void setUserdata(void* data) { userdata_ = data; }

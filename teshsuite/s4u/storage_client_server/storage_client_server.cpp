@@ -98,7 +98,7 @@ static void dump_platform_storages()
 
   for (auto storage : *storages) {
     XBT_INFO("Storage %s is attached to %s", storage.first.c_str(), storage.second->getHost()->getCname());
-    storage.second->setProperty("other usage", xbt_strdup("gpfs"));
+    storage.second->setProperty("other usage", "gpfs");
   }
   delete storages;
 }
