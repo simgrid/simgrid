@@ -262,6 +262,14 @@ class NewEvent : public PajeEvent  {
 
 };
 
+class paje_value{
+  public:
+  paje_value(){};
+  ~paje_value(){};
+  val_t PJ_value_new (const char *name, const char *color, type_t father);
+  val_t PJ_value_get (const char *name, type_t father);
+  val_t PJ_value_get_or_new (const char *name, const char *color, type_t father);
+};
 
 extern XBT_PRIVATE xbt_dict_t created_categories;
 extern XBT_PRIVATE xbt_dict_t declared_marks;
@@ -350,11 +358,6 @@ XBT_PRIVATE XBT_PRIVATE void PJ_type_free (type_t type);
 
 /* instr_config.c */
 XBT_PRIVATE void recursiveDestroyType (type_t type);
-
-/* instr_paje_values.c */
-XBT_PUBLIC(val_t)  PJ_value_new (const char *name, const char *color, type_t father);
-XBT_PUBLIC(val_t)  PJ_value_get_or_new (const char *name, const char *color, type_t father);
-XBT_PUBLIC(val_t)  PJ_value_get (const char *name, const type_t father);
 
 XBT_PRIVATE void TRACE_TI_start();
 XBT_PRIVATE void TRACE_TI_end();

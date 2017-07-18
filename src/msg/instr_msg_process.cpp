@@ -87,14 +87,14 @@ void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t proc
 }
 
 void TRACE_msg_process_suspend(msg_process_t process)
-{
+{ paje_value pj_value;
   if (TRACE_msg_process_is_enabled()){
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    val_t value = PJ_value_get ("suspend", type);
+    val_t value = pj_value.PJ_value_get ("suspend", type);
     new PushStateEvent (MSG_get_clock(), process_container, type, value);
   }
 }
@@ -112,14 +112,14 @@ void TRACE_msg_process_resume(msg_process_t process)
 }
 
 void TRACE_msg_process_sleep_in(msg_process_t process)
-{
+{ paje_value pj_value;
   if (TRACE_msg_process_is_enabled()){
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    val_t value = PJ_value_get ("sleep", type);
+    val_t value = pj_value.PJ_value_get ("sleep", type);
     new PushStateEvent (MSG_get_clock(), process_container, type, value);
   }
 }

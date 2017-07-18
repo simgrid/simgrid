@@ -183,7 +183,7 @@ void MSG_vm_destroy(msg_vm_t vm)
  *  If the VM cannot be started (because of memory over-provisioning), an exception is generated.
  */
 void MSG_vm_start(msg_vm_t vm)
-{
+{ paje_value pj_value;
   simgrid::simix::kernelImmediate([vm]() {
     simgrid::vm::VmHostExt::ensureVmExtInstalled();
 
@@ -215,7 +215,7 @@ void MSG_vm_start(msg_vm_t vm)
   if (TRACE_msg_vm_is_enabled()) {
     container_t vm_container = PJ_container_get(vm->getCname());
     type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
-    val_t value              = PJ_value_get_or_new("start", "0 0 1", type); // start is blue
+    val_t value              = pj_value.PJ_value_get_or_new("start", "0 0 1", type); // start is blue
     new PushStateEvent(MSG_get_clock(), vm_container, type, value);
   }
 }
@@ -806,7 +806,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
  * No suspension cost occurs.
  */
 void MSG_vm_suspend(msg_vm_t vm)
-{
+{ paje_value pj_value;
   smx_actor_t issuer = SIMIX_process_self();
   simgrid::simix::kernelImmediate([vm, issuer]() { vm->pimpl_vm_->suspend(issuer); });
 
@@ -815,7 +815,7 @@ void MSG_vm_suspend(msg_vm_t vm)
   if (TRACE_msg_vm_is_enabled()) {
     container_t vm_container = PJ_container_get(vm->getCname());
     type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
-    val_t value              = PJ_value_get_or_new("suspend", "1 0 0", type); // suspend is red
+    val_t value              = pj_value.PJ_value_get_or_new("suspend", "1 0 0", type); // suspend is red
     new PushStateEvent(MSG_get_clock(), vm_container, type, value);
   }
 }
