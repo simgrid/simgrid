@@ -70,7 +70,7 @@ const char* Storage::getProperty(const char* key)
   return this->pimpl_->getProperty(key);
 }
 
-void Storage::setProperty(const char* key, char* value)
+void Storage::setProperty(const char* key, const char* value)
 {
   simgrid::simix::kernelImmediate([this, key, value] { this->pimpl_->setProperty(key, value); });
 }

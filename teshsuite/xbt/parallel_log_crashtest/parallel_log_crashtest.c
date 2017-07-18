@@ -6,6 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/msg.h"
 #include "xbt.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(synchro_crashtest, "Logs of this example");
@@ -36,8 +37,6 @@ static int crasher(int argc, char *argv[])
   int i;
   xbt_os_thread_t *crashers;
 
-  xbt_init(&argc, argv);
-
   /* initializations of the philosopher mechanisms */
   id = xbt_new0(int, crasher_amount);
   crashers = xbt_new(xbt_os_thread_t, crasher_amount);
@@ -64,5 +63,6 @@ static int crasher(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
+  MSG_init(&argc, argv);
   return crasher(argc, argv);
 }
