@@ -72,7 +72,7 @@
    fun:smpi_simulated_main_
 }
 
-#SMPI leaks the dlopen handle used for loading the program
+#SMPI leaks the dlopen handle used to load the program
 {
    dlopen handle leaks (1/2)
    Memcheck:Leak
