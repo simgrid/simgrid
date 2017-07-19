@@ -194,14 +194,9 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_restart (JNIEnv *env, jobjec
     return;
   }
 
-  try {
-    MSG_process_restart(process);
-  }
-  catch (xbt_ex& e) {
-    // Nothing to do
-  }
-
+  MSG_process_restart(process);
 }
+
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Process_isSuspended(JNIEnv * env, jobject jprocess)
 {
   msg_process_t process = jprocess_to_native(jprocess, env);
