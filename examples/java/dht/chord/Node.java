@@ -64,47 +64,49 @@ public class Node extends Process {
 
       joinSuccess = join(knownId);
     }
-    if (joinSuccess) {
-      double currentClock = Msg.getClock();
-      while (currentClock < (initTime + deadline) && currentClock < Common.MAX_SIMULATION_TIME) {
-        if (commReceive == null) {
-          commReceive = Task.irecv(this.mailbox);
-        }
-        try {
-          if (!commReceive.test()) {
-            if (currentClock >= nextStabilizeDate) {
-              stabilize();
-              nextStabilizeDate = Msg.getClock() + Common.PERIODIC_STABILIZE_DELAY;
-            } else if (currentClock >= nextFixFingersDate) {
-              fixFingers();
-              nextFixFingersDate = Msg.getClock() + Common.PERIODIC_FIX_FINGERS_DELAY;
-            } else if (currentClock >= nextCheckPredecessorDate) {
-              this.checkPredecessor();
-              nextCheckPredecessorDate = Msg.getClock() + Common.PERIODIC_CHECK_PREDECESSOR_DELAY;
-            } else if (currentClock >= nextLookupDate) {
-              this.randomLookup();
-              nextLookupDate = Msg.getClock() + Common.PERIODIC_LOOKUP_DELAY;
-            } else {
-              waitFor(5);
-            }
-            currentClock = Msg.getClock();
+
+    if (!joinSuccess) {
+      Msg.info("I couldn't join the ring");
+      return;
+    }
+
+    double currentClock = Msg.getClock();
+    while (currentClock < (initTime + deadline) && currentClock < Common.MAX_SIMULATION_TIME) {
+      if (commReceive == null) {
+        commReceive = Task.irecv(this.mailbox);
+      }
+      try {
+        if (!commReceive.test()) {
+          if (currentClock >= nextStabilizeDate) {
+            stabilize();
+            nextStabilizeDate = Msg.getClock() + Common.PERIODIC_STABILIZE_DELAY;
+          } else if (currentClock >= nextFixFingersDate) {
+            fixFingers();
+            nextFixFingersDate = Msg.getClock() + Common.PERIODIC_FIX_FINGERS_DELAY;
+          } else if (currentClock >= nextCheckPredecessorDate) {
+            this.checkPredecessor();
+            nextCheckPredecessorDate = Msg.getClock() + Common.PERIODIC_CHECK_PREDECESSOR_DELAY;
+          } else if (currentClock >= nextLookupDate) {
+            this.randomLookup();
+            nextLookupDate = Msg.getClock() + Common.PERIODIC_LOOKUP_DELAY;
           } else {
-            handleTask(commReceive.getTask());
-            currentClock = Msg.getClock();
-            commReceive = null;
+            waitFor(5);
           }
-        }
-        catch (Exception e) {
+          currentClock = Msg.getClock();
+        } else {
+          handleTask(commReceive.getTask());
           currentClock = Msg.getClock();
           commReceive = null;
         }
       }
-      leave();
-      if (commReceive != null) {
+      catch (Exception e) {
+        currentClock = Msg.getClock();
         commReceive = null;
       }
-    } else {
-      Msg.info("I couldn't join the ring");
+    }
+    leave();
+    if (commReceive != null) {
+      commReceive = null;
     }
   }
 
