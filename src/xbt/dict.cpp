@@ -20,14 +20,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt, "Dictionaries provide the same functionalities as hash tables");
 
-/**
- * \brief Constructor
- * \return pointer to the destination
- * \see xbt_dict_new_homogenous(), xbt_dict_free()
- *
- * Creates and initialize a new dictionary with a default hashtable size.
- * The dictionary is heterogeneous: each element can have a different free function.
- */
 xbt_dict_t xbt_dict_new()
 {
   XBT_WARN("Function xbt_dict_new() will soon be dropped. Please switch to xbt_dict_new_homogeneous()");
