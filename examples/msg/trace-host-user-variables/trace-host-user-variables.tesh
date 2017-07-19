@@ -20,3 +20,5 @@ $ rm -f viva_graph.plist
 
 p Not tracing user variables
 $ $SG_TEST_EXENV ${bindir:=.}/trace-host-user-variables$EXEEXT ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/app-masterworker/app-masterworker_d.xml
+
+$ rm -f simgrid.trace viva_graph.plist
