@@ -399,8 +399,9 @@ void mpi_fetch_and_op_( int *origin_addr, int* result_addr, int* datatype, int* 
               *target_disp, simgrid::smpi::Op::f2c(*op), simgrid::smpi::Win::f2c(*win));
 }
 
-void mpi_compare_and_swap_( int *origin_addr, int* compare_addr, int* result_addr, 
-    int* datatype, int* target_rank, MPI_Aint* target_disp, int* win, int* ierr){
+void mpi_compare_and_swap_(int* origin_addr, int* compare_addr, int* result_addr, int* datatype, int* target_rank,
+                           MPI_Aint* target_disp, int* win, int* ierr)
+{
   *ierr =  MPI_Compare_and_swap( static_cast<void *>(origin_addr),static_cast<void *>(compare_addr),
               static_cast<void *>(result_addr), simgrid::smpi::Datatype::f2c(*datatype),*target_rank,
               *target_disp, simgrid::smpi::Win::f2c(*win));
@@ -409,20 +410,22 @@ void mpi_compare_and_swap_( int *origin_addr, int* compare_addr, int* result_add
 void mpi_get_accumulate_(int *origin_addr, int* origin_count, int* origin_datatype, int* result_addr,
                         int* result_count, int* result_datatype, int* target_rank, MPI_Aint* target_disp, int* target_count,
                         int* target_datatype, int* op, int* win, int* ierr){
-  *ierr = MPI_Get_accumulate( static_cast<void *>(origin_addr), *origin_count, simgrid::smpi::Datatype::f2c(*origin_datatype),
-                               static_cast<void *>(result_addr), *result_count, simgrid::smpi::Datatype::f2c(*result_datatype), 
-                               *target_rank, *target_disp, *target_count, simgrid::smpi::Datatype::f2c(*target_datatype),   
-                               simgrid::smpi::Op::f2c(*op), simgrid::smpi::Win::f2c(*win));
+  *ierr =
+      MPI_Get_accumulate(static_cast<void*>(origin_addr), *origin_count, simgrid::smpi::Datatype::f2c(*origin_datatype),
+                         static_cast<void*>(result_addr), *result_count, simgrid::smpi::Datatype::f2c(*result_datatype),
+                         *target_rank, *target_disp, *target_count, simgrid::smpi::Datatype::f2c(*target_datatype),
+                         simgrid::smpi::Op::f2c(*op), simgrid::smpi::Win::f2c(*win));
 }
 
 void mpi_rget_accumulate_(int *origin_addr, int* origin_count, int* origin_datatype, int* result_addr,
                         int* result_count, int* result_datatype, int* target_rank, MPI_Aint* target_disp, int* target_count,
                         int* target_datatype, int* op, int* win, int* request, int* ierr){
   MPI_Request req;
-  *ierr = MPI_Rget_accumulate( static_cast<void *>(origin_addr), *origin_count, simgrid::smpi::Datatype::f2c(*origin_datatype),
-                               static_cast<void *>(result_addr), *result_count, simgrid::smpi::Datatype::f2c(*result_datatype), 
-                               *target_rank, *target_disp, *target_count, simgrid::smpi::Datatype::f2c(*target_datatype),   
-                               simgrid::smpi::Op::f2c(*op), simgrid::smpi::Win::f2c(*win), &req);
+  *ierr = MPI_Rget_accumulate(static_cast<void*>(origin_addr), *origin_count,
+                              simgrid::smpi::Datatype::f2c(*origin_datatype), static_cast<void*>(result_addr),
+                              *result_count, simgrid::smpi::Datatype::f2c(*result_datatype), *target_rank, *target_disp,
+                              *target_count, simgrid::smpi::Datatype::f2c(*target_datatype),
+                              simgrid::smpi::Op::f2c(*op), simgrid::smpi::Win::f2c(*win), &req);
   if(*ierr == MPI_SUCCESS) {
     *request = req->add_f();
   }
@@ -430,7 +433,6 @@ void mpi_rget_accumulate_(int *origin_addr, int* origin_count, int* origin_datat
 
 //following are automatically generated, and have to be checked
 void mpi_finalized_ (int * flag, int* ierr){
-
  *ierr = MPI_Finalized(flag);
 }
 
@@ -441,7 +443,6 @@ void mpi_init_thread_ (int* required, int *provided, int* ierr){
 }
 
 void mpi_query_thread_ (int *provided, int* ierr){
-
  *ierr = MPI_Query_thread(provided);
 }
 
