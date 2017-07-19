@@ -31,6 +31,8 @@ typedef struct xbt_os_thread_ *xbt_os_thread_t;
 XBT_PUBLIC(xbt_os_thread_t) xbt_os_thread_create(const char *name, pvoid_f_pvoid_t start_routine, void *param, void *data);
 XBT_PUBLIC(void) xbt_os_thread_exit(int *retcode);
 XBT_PUBLIC(void) xbt_os_thread_detach(xbt_os_thread_t thread);
+#define xbt_os_thread_cleanup_push(routine, arg) pthread_cleanup_push(routine, arg)
+#define xbt_os_thread_cleanup_pop(execute) pthread_cleanup_pop(execute)
 
 XBT_PUBLIC(xbt_os_thread_t) xbt_os_thread_self(void);
 XBT_PUBLIC(const char *) xbt_os_thread_self_name(void);

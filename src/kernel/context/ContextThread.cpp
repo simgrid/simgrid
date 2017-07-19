@@ -200,9 +200,9 @@ void ThreadContext::stop()
     xbt_os_sem_release(smx_ctx_thread_sem);
 
   // Signal to the maestro that it has finished:
-  xbt_os_sem_release(this->end_);
-
+  xbt_os_thread_cleanup_push((void (*)(void*))xbt_os_sem_release, this->end_);
   xbt_os_thread_exit(nullptr);
+  xbt_os_thread_cleanup_pop(0);
 }
 
 void ThreadContext::suspend()
