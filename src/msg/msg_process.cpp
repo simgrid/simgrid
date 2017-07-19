@@ -464,7 +464,7 @@ void MSG_process_on_exit(int_f_pvoid_pvoid_t fun, void *data) {
  * If the flag is set to 1, the process will be automatically restarted when its host comes back up.
  */
 XBT_PUBLIC(void) MSG_process_auto_restart_set(msg_process_t process, int auto_restart) {
-  simcall_process_auto_restart_set(process->getImpl(), auto_restart);
+  simgrid::simix::kernelImmediate([process, auto_restart]() { process->getImpl()->auto_restart = auto_restart; });
 }
 /**
  * \ingroup m_process_management

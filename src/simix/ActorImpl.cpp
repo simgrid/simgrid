@@ -191,7 +191,7 @@ ActorImpl* ActorImpl::restart(ActorImpl* issuer)
   if (arg.kill_time >= 0)
     simcall_process_set_kill_time(actor, arg.kill_time);
   if (arg.auto_restart)
-    simcall_process_auto_restart_set(actor, arg.auto_restart);
+    actor->auto_restart = arg.auto_restart;
 
   return actor;
 }

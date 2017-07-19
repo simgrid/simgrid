@@ -267,16 +267,6 @@ XBT_PUBLIC(void) simcall_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_
 {
   simcall_BODY_process_on_exit(process, fun, data);
 }
-/**
- * \ingroup simix_process_management
- * \brief Sets the process to be auto-restarted or not by SIMIX when its host comes back up.
- * Will restart the process when the host comes back up if auto_restart is set to 1.
- */
-
-XBT_PUBLIC(void) simcall_process_auto_restart_set(smx_actor_t process, int auto_restart)
-{
-  simcall_BODY_process_auto_restart_set(process, auto_restart);
-}
 
 /**
  * \ingroup simix_process_management

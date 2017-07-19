@@ -443,31 +443,6 @@ static inline void simcall_process_on_exit__set__data(smx_simcall_t simcall, voi
   simgrid::simix::marshal<void*>(simcall->args[2], arg);
 }
 
-static inline smx_actor_t simcall_process_auto_restart_set__get__process(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
-}
-static inline smx_actor_t simcall_process_auto_restart_set__getraw__process(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<smx_actor_t>(simcall->args[0]);
-}
-static inline void simcall_process_auto_restart_set__set__process(smx_simcall_t simcall, smx_actor_t arg)
-{
-  simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
-}
-static inline int simcall_process_auto_restart_set__get__auto_restart(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<int>(simcall->args[1]);
-}
-static inline int simcall_process_auto_restart_set__getraw__auto_restart(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<int>(simcall->args[1]);
-}
-static inline void simcall_process_auto_restart_set__set__auto_restart(smx_simcall_t simcall, int arg)
-{
-  simgrid::simix::marshal<int>(simcall->args[1], arg);
-}
-
 static inline smx_actor_t simcall_process_restart__get__process(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);

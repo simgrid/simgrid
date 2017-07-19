@@ -38,7 +38,6 @@ const char* simcall_names[] = {
     "SIMCALL_EXECUTION_SET_BOUND",
     "SIMCALL_EXECUTION_WAIT",
     "SIMCALL_PROCESS_ON_EXIT",
-    "SIMCALL_PROCESS_AUTO_RESTART_SET",
     "SIMCALL_PROCESS_RESTART",
     "SIMCALL_COMM_IPROBE",
     "SIMCALL_COMM_SEND",
@@ -159,11 +158,6 @@ case SIMCALL_EXECUTION_WAIT:
 
 case SIMCALL_PROCESS_ON_EXIT:
       SIMIX_process_on_exit(simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]), simgrid::simix::unmarshal<int_f_pvoid_pvoid_t>(simcall->args[1]), simgrid::simix::unmarshal<void*>(simcall->args[2]));
-      SIMIX_simcall_answer(simcall);
-      break;
-
-case SIMCALL_PROCESS_AUTO_RESTART_SET:
-      SIMIX_process_auto_restart_set(simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]), simgrid::simix::unmarshal<int>(simcall->args[1]));
       SIMIX_simcall_answer(simcall);
       break;
 

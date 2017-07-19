@@ -135,12 +135,6 @@ inline static void simcall_BODY_process_on_exit(smx_actor_t process, int_f_pvoid
     return simcall<void, smx_actor_t, int_f_pvoid_pvoid_t, void*>(SIMCALL_PROCESS_ON_EXIT, process, fun, data);
   }
 
-inline static void simcall_BODY_process_auto_restart_set(smx_actor_t process, int auto_restart) {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_process_auto_restart_set(process, auto_restart);
-    return simcall<void, smx_actor_t, int>(SIMCALL_PROCESS_AUTO_RESTART_SET, process, auto_restart);
-  }
-
 inline static smx_actor_t simcall_BODY_process_restart(smx_actor_t process) {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) simcall_HANDLER_process_restart(&SIMIX_process_self()->simcall, process);

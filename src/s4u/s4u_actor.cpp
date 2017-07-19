@@ -62,7 +62,7 @@ void Actor::join() {
 }
 
 void Actor::setAutoRestart(bool autorestart) {
-  simcall_process_auto_restart_set(pimpl_,autorestart);
+  simgrid::simix::kernelImmediate([this, autorestart]() { pimpl_->auto_restart = autorestart; });
 }
 
 void Actor::onExit(int_f_pvoid_pvoid_t fun, void* data)
