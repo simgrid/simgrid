@@ -8,7 +8,6 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
-  include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
   add_executable(allpairf allpairf.f)
 #  add_executable(greqf greqf.f dummyf.f)
