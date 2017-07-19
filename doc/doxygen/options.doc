@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
 - \c contexts/factory: \ref options_virt_factory
 - \c contexts/guard-size: \ref options_virt_guard_size
 - \c contexts/nthreads: \ref options_virt_parallel
-- \c contexts/parallel_threshold: \ref options_virt_parallel
+- \c contexts/parallel-threshold: \ref options_virt_parallel
 - \c contexts/stack-size: \ref options_virt_stacksize
 - \c contexts/synchro: \ref options_virt_parallel
 
@@ -515,7 +515,7 @@ liveness violation) as well as the cycle for liveness properties. This dot file
 can then fed to the graphviz dot tool to generate an corresponding graphical
 representation.
 
-\subsection options_modelchecking_max_depth model-check/max_depth, Depth limit
+\subsection options_modelchecking_max_depth model-check/max-depth, Depth limit
 
 The \b model-checker/max-depth can set the maximum depth of the exploration
 graph of the model-checker. If this limit is reached, a logging message is

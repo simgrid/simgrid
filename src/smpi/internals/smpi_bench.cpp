@@ -73,7 +73,7 @@ void smpi_execute(double duration)
     TRACE_smpi_computing_out(rank);
 
   } else {
-    XBT_DEBUG("Real computation took %g while option smpi/cpu_threshold is set to %g => ignore it", duration,
+    XBT_DEBUG("Real computation took %g while option smpi/cpu-threshold is set to %g => ignore it", duration,
               smpi_cpu_threshold);
   }
 }

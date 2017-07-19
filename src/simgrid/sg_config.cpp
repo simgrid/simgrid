@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2010, 2012-2015. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2012-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -457,7 +457,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_boolean("network/crosstraffic", "yes", _sg_cfg_cb__surf_network_crosstraffic,
         "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)");
 
-    //For smpi/bw_factor and smpi/lat_factor
+    // For smpi/bw-factor and smpi/lat-factor
     // SMPI model can be used without enable_smpi, so keep this out of the ifdef.
     xbt_cfg_register_string("smpi/bw-factor",
         "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;1426:0.608902;732:0.341987;257:0.338112;0:0.812084", nullptr,
