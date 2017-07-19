@@ -10,6 +10,7 @@
 #include "src/mc/mc_replay.h"
 #include "smpi_process.hpp"
 #include "smpi_comm.hpp"
+#include "simgrid/host.h"
 
 #ifndef WIN32
 #include <sys/mman.h>
@@ -81,7 +82,8 @@ void smpi_execute(double duration)
 void smpi_execute_benched(double duration)
 {
   smpi_bench_end();
-  smpi_execute(duration);
+  double speed = sg_host_speed(sg_host_self());
+  smpi_execute_flops(duration*speed);
   smpi_bench_begin();
 }
 
