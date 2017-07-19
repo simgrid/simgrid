@@ -273,9 +273,7 @@ static void xbt_log_help_categories(void);
 void xbt_log_init(int *argc, char **argv)
 {
   unsigned help_requested = 0;  /* 1: logs; 2: categories */
-  int i;
-  int j;
-  char *opt;
+  int j                   = 1;
 
   /* uncomment to set the LOG category to debug directly */
   //    _XBT_LOGV(log).threshold = xbt_log_priority_debug;
@@ -283,9 +281,9 @@ void xbt_log_init(int *argc, char **argv)
   xbt_log_connect_categories();
 
   /* Set logs and init log submodule */
-  for (j = i = 1; i < *argc; i++) {
+  for (int i = 1; i < *argc; i++) {
     if (!strncmp(argv[i], "--log=", strlen("--log="))) {
-      opt = strchr(argv[i], '=');
+      char* opt = strchr(argv[i], '=');
       opt++;
       xbt_log_control_set(opt);
       XBT_DEBUG("Did apply '%s' as log setting", opt);
