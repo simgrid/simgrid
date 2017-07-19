@@ -88,7 +88,7 @@ static inline void xbt_inject_init(char *inputfile)
 
     xbt_dict_set(mydict, key, data, NULL);
   }
-  fclose(fInput);
+  fclose(fpInput);
 }
 
 /* Initializing xbt dictionary for StarPU version, reading xbt_hist_t entries line by line */
@@ -113,6 +113,7 @@ static inline void inject_init_starpu(char *inputfile, xbt_dict_t *dict, RngStre
 
   if (fgets(line, MAX_LINE_INJ, fpInput) == NULL) {
     printf("Error input file is empty!"); // Skipping first row
+    fclose(fpInput);
     return;
   }
 
@@ -139,7 +140,7 @@ static inline void inject_init_starpu(char *inputfile, xbt_dict_t *dict, RngStre
 
     xbt_dict_set(mydict, key, data, NULL);
   }
-  fclose(fInput);
+  fclose(fpInput);
 }
 
 /* Injecting time */
