@@ -3,6 +3,6 @@
 # Go for the first test
 
 p Test instrumentation of SMPI
-$ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ./trace/smpi_trace --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ../../../smpi_script/bin/smpirun -trace -trace-resource -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ./smpi_trace --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 
 $ rm -f smpi_trace.trace
