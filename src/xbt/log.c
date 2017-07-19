@@ -1,6 +1,6 @@
 /* log - a generic logging facility in the spirit of log4j                  */
 
-/* Copyright (c) 2004-2015. The SimGrid Team.
+/* Copyright (c) 2004-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -199,6 +199,8 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(s4u_channel);
   XBT_LOG_CONNECT(s4u_comm);
   XBT_LOG_CONNECT(s4u_file);
+  XBT_LOG_CONNECT(s4u_link);
+  XBT_LOG_CONNECT(s4u_vm);
 
   /* sg */
   XBT_LOG_CONNECT(sg_host);
@@ -220,6 +222,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(simix_host);
   XBT_LOG_CONNECT(simix_io);
   XBT_LOG_CONNECT(simix_kernel);
+  XBT_LOG_CONNECT(simix_mailbox);
   XBT_LOG_CONNECT(simix_network);
   XBT_LOG_CONNECT(simix_process);
   XBT_LOG_CONNECT(simix_popping);
@@ -235,6 +238,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_cpu_cas);
   XBT_LOG_CONNECT(surf_cpu_ti);
   XBT_LOG_CONNECT(surf_energy);
+  XBT_LOG_CONNECT(surf_file);
   XBT_LOG_CONNECT(surf_kernel);
   XBT_LOG_CONNECT(surf_lagrange);
   XBT_LOG_CONNECT(surf_lagrange_dichotomy);
@@ -244,6 +248,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(ns3);
 #endif
   XBT_LOG_CONNECT(surf_parse);
+  XBT_LOG_CONNECT(surf_plugin_load);
   XBT_LOG_CONNECT(surf_route);
   XBT_LOG_CONNECT(surf_routing_generic);
   XBT_LOG_CONNECT(surf_route_cluster);
