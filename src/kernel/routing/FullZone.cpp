@@ -20,7 +20,7 @@ FullZone::FullZone(NetZone* father, const char* name) : RoutedZone(father, name)
 
 void FullZone::seal()
 {
-  int table_size = static_cast<int>(vertices_.size());
+  unsigned int table_size = getTableSize();
 
   /* Create table if needed */
   if (not routingTable_)
@@ -28,7 +28,7 @@ void FullZone::seal()
 
   /* Add the loopback if needed */
   if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
-    for (int i = 0; i < table_size; i++) {
+    for (unsigned int i = 0; i < table_size; i++) {
       sg_platf_route_cbarg_t e_route = TO_ROUTE_FULL(i, i);
       if (not e_route) {
         e_route            = xbt_new0(s_sg_platf_route_cbarg_t, 1);
@@ -45,10 +45,10 @@ void FullZone::seal()
 FullZone::~FullZone()
 {
   if (routingTable_) {
-    int table_size = static_cast<int>(vertices_.size());
+    unsigned int table_size = getTableSize();
     /* Delete routing table */
-    for (int i = 0; i < table_size; i++)
-      for (int j = 0; j < table_size; j++) {
+    for (unsigned int i = 0; i < table_size; i++)
+      for (unsigned int j = 0; j < table_size; j++) {
         if (TO_ROUTE_FULL(i, j)) {
           delete TO_ROUTE_FULL(i, j)->link_list;
           xbt_free(TO_ROUTE_FULL(i, j));
@@ -62,7 +62,7 @@ void FullZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_
 {
   XBT_DEBUG("full getLocalRoute from %s[%d] to %s[%d]", src->cname(), src->id(), dst->cname(), dst->id());
 
-  size_t table_size              = vertices_.size();
+  unsigned int table_size        = getTableSize();
   sg_platf_route_cbarg_t e_route = TO_ROUTE_FULL(src->id(), dst->id());
 
   if (e_route != nullptr) {
@@ -82,7 +82,7 @@ void FullZone::addRoute(sg_platf_route_cbarg_t route)
   NetPoint* dst = route->dst;
   addRouteCheckParams(route);
 
-  size_t table_size = vertices_.size();
+  unsigned int table_size = getTableSize();
 
   if (not routingTable_)
     routingTable_ = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);

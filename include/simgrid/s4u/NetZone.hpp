@@ -71,10 +71,13 @@ public:
   static simgrid::xbt::signal<void(NetZone&)> onSeal;
 
 protected:
-  std::vector<kernel::routing::NetPoint*>
-      vertices_; // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
+  unsigned int getTableSize() { return vertices_.size(); }
+  std::vector<kernel::routing::NetPoint*> getVertices() { return vertices_; }
 
 private:
+  // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
+  std::vector<kernel::routing::NetPoint*> vertices_;
+
   std::unordered_map<std::string, std::string> properties_;
   NetZone* father_ = nullptr;
   char* name_      = nullptr;

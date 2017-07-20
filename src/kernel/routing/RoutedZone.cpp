@@ -72,8 +72,10 @@ RoutedZone::RoutedZone(NetZone* father, const char* name) : NetZoneImpl(father, 
 
 void RoutedZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 {
-  for (auto my_src : vertices_) {
-    for (auto my_dst : vertices_) {
+  std::vector<kernel::routing::NetPoint*> vertices = getVertices();
+
+  for (auto my_src : vertices) {
+    for (auto my_dst : vertices) {
       if (my_src == my_dst)
         continue;
 

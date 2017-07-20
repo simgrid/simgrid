@@ -88,7 +88,7 @@ void ClusterZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges
     new_xbt_graph_edge(graph, routerNode, backboneNode, edges);
   }
 
-  for (auto src : vertices_) {
+  for (auto src : getVertices()) {
     if (not src->isRouter()) {
       xbt_node_t previous = new_xbt_graph_node(graph, src->cname(), nodes);
 
