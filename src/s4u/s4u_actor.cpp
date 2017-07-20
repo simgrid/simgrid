@@ -222,31 +222,32 @@ void execute(double flops)
   simcall_execution_wait(s);
 }
 
-void* recv(MailboxPtr chan) {
+void* recv(MailboxPtr chan) // deprecated
+{
   return chan->get();
 }
 
-void* recv(MailboxPtr chan, double timeout)
+void* recv(MailboxPtr chan, double timeout) // deprecated
 {
   return chan->get(timeout);
 }
 
-void send(MailboxPtr chan, void* payload, double simulatedSize)
+void send(MailboxPtr chan, void* payload, double simulatedSize) // deprecated
 {
   chan->put(payload, simulatedSize);
 }
 
-void send(MailboxPtr chan, void* payload, double simulatedSize, double timeout)
+void send(MailboxPtr chan, void* payload, double simulatedSize, double timeout) // deprecated
 {
   chan->put(payload, simulatedSize, timeout);
 }
 
-CommPtr isend(MailboxPtr chan, void* payload, double simulatedSize)
+CommPtr isend(MailboxPtr chan, void* payload, double simulatedSize) // deprecated
 {
   return chan->put_async(payload, simulatedSize);
 }
 
-CommPtr irecv(MailboxPtr chan, void** data)
+CommPtr irecv(MailboxPtr chan, void** data) // deprecated
 {
   return chan->get_async(data);
 }
