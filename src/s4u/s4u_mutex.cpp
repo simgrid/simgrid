@@ -24,7 +24,8 @@ void Mutex::lock()
  */
 void Mutex::unlock()
 {
-  simcall_mutex_unlock(mutex_);
+  smx_actor_t self = SIMIX_process_self();
+  simgrid::simix::kernelImmediate([this, self] { return mutex_->unlock(self); });
 }
 
 /** @brief Acquire the mutex if it's free, and return false (without blocking) if not */

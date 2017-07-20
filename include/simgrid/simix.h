@@ -191,7 +191,7 @@ XBT_PUBLIC(smx_activity_t) simcall_execution_start(const char *name,
                                                 double priority, double bound);
 XBT_PUBLIC(smx_activity_t)
 simcall_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount,
-                                 double* bytes_amount, double amount, double rate, double timeout);
+                                 double* bytes_amount, double rate, double timeout);
 XBT_PUBLIC(void) simcall_execution_cancel(smx_activity_t execution);
 XBT_PUBLIC(void) simcall_execution_set_priority(smx_activity_t execution, double priority);
 XBT_PUBLIC(void) simcall_execution_set_bound(smx_activity_t execution, double bound);
@@ -269,7 +269,6 @@ XBT_PUBLIC(smx_mutex_t) SIMIX_mutex_ref(smx_mutex_t mutex);
 XBT_PUBLIC(void) SIMIX_mutex_unref(smx_mutex_t mutex);
 XBT_PUBLIC(void) simcall_mutex_lock(smx_mutex_t mutex);
 XBT_PUBLIC(int) simcall_mutex_trylock(smx_mutex_t mutex);
-XBT_PUBLIC(void) simcall_mutex_unlock(smx_mutex_t mutex);
 
 XBT_PUBLIC(smx_cond_t) simcall_cond_init();
 XBT_PUBLIC(void) SIMIX_cond_unref(smx_cond_t cond);

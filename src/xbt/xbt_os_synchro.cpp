@@ -10,6 +10,7 @@
 #include "xbt/synchro.h"
 
 #include "simgrid/simix.h" /* used implementation */
+#include "src/simix/smx_synchro_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync, xbt, "Synchronization mechanism");
 
@@ -31,7 +32,7 @@ int xbt_mutex_try_acquire(xbt_mutex_t mutex)
 
 void xbt_mutex_release(xbt_mutex_t mutex)
 {
-  simcall_mutex_unlock((smx_mutex_t)mutex);
+  ((smx_mutex_t)mutex)->unlock(SIMIX_process_self());
 }
 
 void xbt_mutex_destroy(xbt_mutex_t mutex)

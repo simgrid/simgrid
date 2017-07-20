@@ -51,7 +51,6 @@ const char* simcall_names[] = {
     "SIMCALL_MUTEX_INIT",
     "SIMCALL_MUTEX_LOCK",
     "SIMCALL_MUTEX_TRYLOCK",
-    "SIMCALL_MUTEX_UNLOCK",
     "SIMCALL_COND_INIT",
     "SIMCALL_COND_SIGNAL",
     "SIMCALL_COND_WAIT",
@@ -126,7 +125,7 @@ case SIMCALL_EXECUTION_PARALLEL_START:
           simgrid::simix::unmarshal<const char*>(simcall->args[0]), simgrid::simix::unmarshal<int>(simcall->args[1]),
           simgrid::simix::unmarshal<sg_host_t*>(simcall->args[2]), simgrid::simix::unmarshal<double*>(simcall->args[3]),
           simgrid::simix::unmarshal<double*>(simcall->args[4]), simgrid::simix::unmarshal<double>(simcall->args[5]),
-          simgrid::simix::unmarshal<double>(simcall->args[6]), simgrid::simix::unmarshal<double>(simcall->args[7])));
+          simgrid::simix::unmarshal<double>(simcall->args[6])));
   SIMIX_simcall_answer(simcall);
   break;
 
@@ -246,11 +245,6 @@ case SIMCALL_MUTEX_LOCK:
 
 case SIMCALL_MUTEX_TRYLOCK:
       simgrid::simix::marshal<int>(simcall->result, simcall_HANDLER_mutex_trylock(simcall, simgrid::simix::unmarshal<smx_mutex_t>(simcall->args[0])));
-      SIMIX_simcall_answer(simcall);
-      break;
-
-case SIMCALL_MUTEX_UNLOCK:
-      simcall_HANDLER_mutex_unlock(simcall, simgrid::simix::unmarshal<smx_mutex_t>(simcall->args[0]));
       SIMIX_simcall_answer(simcall);
       break;
 
