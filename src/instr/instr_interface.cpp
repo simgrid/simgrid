@@ -196,7 +196,7 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
     mark_color = white;
 
   XBT_DEBUG("MARK,declare_value %s %s %s", mark_type, mark_value, mark_color);
-  PJ_value_new (mark_value, mark_color, type);
+  s_val rett(mark_value, mark_color, type);
 }
 
 /** \ingroup TRACE_mark

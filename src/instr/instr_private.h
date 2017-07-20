@@ -81,8 +81,11 @@ class s_val {
   char *name;
   char *color;
   type_t father;
+  val_t ret;
+  s_val(const char *name, const char *color, type_t father);
+  val_t PJ_value_update (const char *name, const char *color, type_t father);
 };
-typedef s_val s_val_t;
+
 
 //--------------------------------------------------
 typedef enum {
@@ -352,7 +355,6 @@ XBT_PRIVATE XBT_PRIVATE void PJ_type_free (type_t type);
 XBT_PRIVATE void recursiveDestroyType (type_t type);
 
 /* instr_paje_values.c */
-XBT_PUBLIC(val_t)  PJ_value_new (const char *name, const char *color, type_t father);
 XBT_PUBLIC(val_t)  PJ_value_get_or_new (const char *name, const char *color, type_t father);
 XBT_PUBLIC(val_t)  PJ_value_get (const char *name, const type_t father);
 
