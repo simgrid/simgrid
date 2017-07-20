@@ -738,8 +738,6 @@ void Action::setMaxDuration(double duration)
     heapRemove(getModel()->getActionHeap());
 }
 
-void Action::gapRemove() {}
-
 void Action::setSharingWeight(double weight)
 {
   XBT_IN("(%p,%g)", this, weight);

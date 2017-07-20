@@ -208,8 +208,6 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
       action->finish();
       action->setState(Action::State::done);
       action->heapRemove(actionHeap_);
-
-      action->gapRemove();
     }
   }
 }
@@ -264,7 +262,6 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
         ((action->getMaxDuration() > NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
       action->finish();
       action->setState(Action::State::done);
-      action->gapRemove();
     }
   }
 }
