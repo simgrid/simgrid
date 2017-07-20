@@ -161,9 +161,8 @@ FILE *surf_fopen(const char *name, const char *mode)
 
   /* search relative files in the path */
   for (auto path_elm : surf_path) {
-    char* buff = bprintf("%s" FILE_DELIM "%s", path_elm.c_str(), name);
-    file = fopen(buff, mode);
-    free(buff);
+    std::string buff = path_elm + FILE_DELIM + name;
+    file             = fopen(buff.c_str(), mode);
 
     if (file)
       return file;
