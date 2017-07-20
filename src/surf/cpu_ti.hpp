@@ -88,7 +88,7 @@ public:
   void setState(simgrid::surf::Action::State state) override;
   int unref() override;
   void cancel() override;
-  void updateIndexHeap(int i);
+  void updateIndexHeap(int i) override;
   void suspend() override;
   void resume() override;
   void setMaxDuration(double duration) override;
@@ -96,8 +96,6 @@ public:
   double getRemains() override;
 
   CpuTi *cpu_;
-  int indexHeap_ = -1;
-  int suspended_ = 0;
 
   boost::intrusive::list_member_hook<> action_ti_hook;
 };
@@ -153,14 +151,6 @@ public:
   ActionList *runningActionSetThatDoesNotNeedBeingChecked_;
   CpuTiList *modifiedCpu_;
   xbt_heap_t tiActionHeap_;
-
-protected:
-  void NotifyResourceTurnedOn(simgrid::surf::Resource*){};
-  void NotifyResourceTurnedOff(simgrid::surf::Resource*){};
-
-  void NotifyActionCancel(Action*){};
-  void NotifyActionResume(Action*){};
-  void NotifyActionSuspend(Action*){};
 };
 
 }
