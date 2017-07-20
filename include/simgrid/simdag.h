@@ -158,13 +158,6 @@ XBT_PUBLIC(xbt_dynar_t) SD_daxload(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_dotload(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_dotload_with_sched(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_PTG_dotload(const char *filename);
-#ifdef __cplusplus
-namespace simgrid {
-namespace sd {
-XBT_PUBLIC(std::set<SD_task_t>*) simulate(double how_long);
-}
-}
-#endif
 /** @} */
 
 /* Support some backward compatibility */
@@ -203,4 +196,13 @@ XBT_PUBLIC(std::set<SD_task_t>*) simulate(double how_long);
 //SD_route_get_list
 //TRACE_sd_set_task_category
 SG_END_DECL()
+
+#ifdef __cplusplus
+namespace simgrid {
+namespace sd {
+XBT_PUBLIC(std::set<SD_task_t>*) simulate(double how_long);
+}
+}
+#endif
+
 #endif

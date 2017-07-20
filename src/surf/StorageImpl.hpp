@@ -89,7 +89,6 @@ public:
 
   ~StorageImpl() override;
 
-public:
   /** @brief Public interface */
   s4u::Storage piface_;
   static StorageImpl* byName(const char* name);
@@ -142,7 +141,6 @@ public:
   virtual std::string getHost() { return attach_; }
 
   std::map<std::string, sg_size_t>* parseContent(const char* filename);
-  static std::unordered_map<std::string, StorageImpl*>* storages;
   static std::unordered_map<std::string, StorageImpl*>* storagesMap() { return StorageImpl::storages; }
 
   lmm_constraint_t constraintWrite_; /* Constraint for maximum write bandwidth*/
@@ -153,6 +151,7 @@ public:
 
 private:
   sg_size_t size_;
+  static std::unordered_map<std::string, StorageImpl*>* storages;
   std::map<std::string, sg_size_t>* content_;
   // Name of the host to which this storage is attached. Only used at platform parsing time, then the interface stores
   // the Host directly.
