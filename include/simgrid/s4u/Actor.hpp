@@ -293,7 +293,8 @@ template <class Rep, class Period> inline void sleep_for(std::chrono::duration<R
     this_actor::sleep_until(timeout_native.time_since_epoch().count());
   }
 
-  XBT_ATTRIB_DEPRECATED_v320("Use sleep_for(): v3.20 will drop sleep() completely.") inline void sleep(double duration)
+  XBT_ATTRIB_DEPRECATED_v320("Use sleep_for(): v3.20 will turn this warning into an error.") inline void sleep(
+      double duration)
   {
     return sleep_for(duration);
   }
@@ -306,12 +307,12 @@ template <class Rep, class Period> inline void sleep_for(std::chrono::duration<R
    * See \ref Comm for the full communication API (including non blocking communications).
    */
   XBT_PUBLIC(void*)
-  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get(): v3.20 will remove Actor::recv() completely.") recv(MailboxPtr chan);
+  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get(): v3.20 will turn this warning into an error.") recv(MailboxPtr chan);
   XBT_PUBLIC(void*)
-  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get(): v3.20 will remove Actor::recv() completely.")
+  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get(): v3.20 will turn this warning into an error.")
       recv(MailboxPtr chan, double timeout);
   XBT_PUBLIC(CommPtr)
-  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::recv_async(): v3.20 will remove Actor::irecv() completely.")
+  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::recv_async(): v3.20 will turn this warning into an error.")
       irecv(MailboxPtr chan, void** data);
 
   /** Block the actor until it delivers a message of the given simulated size to the given mailbox
@@ -319,14 +320,14 @@ template <class Rep, class Period> inline void sleep_for(std::chrono::duration<R
    * See \ref Comm for the full communication API (including non blocking communications).
   */
   XBT_PUBLIC(void)
-  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put(): v3.20 will remove Actor::send() completely.")
+  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put(): v3.20 will turn this warning into an error.")
       send(MailboxPtr chan, void* payload, double simulatedSize); // 3.17
   XBT_PUBLIC(void)
-  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put(): v3.20 will remove Actor::send() completely.")
+  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put(): v3.20 will turn this warning into an error.")
       send(MailboxPtr chan, void* payload, double simulatedSize, double timeout); // 3.17
 
   XBT_PUBLIC(CommPtr)
-  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_async(): v3.20 will remove Actor::isend() completely.")
+  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_async(): v3.20 will turn this warning into an error.")
       isend(MailboxPtr chan, void* payload, double simulatedSize);
 
   /** @brief Returns the actor ID of the current actor (same as pid). */

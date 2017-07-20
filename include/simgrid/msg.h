@@ -169,35 +169,32 @@ XBT_PUBLIC(const char*) MSG_zone_get_property_value(msg_netzone_t as, const char
 XBT_PUBLIC(void) MSG_zone_set_property_value(msg_netzone_t netzone, const char* name, char* value);
 XBT_PUBLIC(void) MSG_zone_get_hosts(msg_netzone_t zone, xbt_dynar_t whereto);
 
-static inline XBT_ATTRIB_DEPRECATED_v319(
-    "Use MSG_zone_get_root() instead: v3.19 will remove MSG_environment_get_routing_root() completely.") msg_netzone_t
-    MSG_environment_get_routing_root()
+static inline XBT_ATTRIB_DEPRECATED_v319("Use MSG_zone_get_root() instead: v3.19 will turn this warning into an error.")
+    msg_netzone_t MSG_environment_get_routing_root()
 {
   return MSG_zone_get_root();
 }
-static inline XBT_ATTRIB_DEPRECATED_v319(
-    "Use MSG_zone_get_name() instead: v3.19 will remove MSG_environment_as_get_name() completely.") const
-    char* MSG_environment_as_get_name(msg_netzone_t zone)
+static inline XBT_ATTRIB_DEPRECATED_v319("Use MSG_zone_get_name() instead: v3.19 will turn this warning into an error.")
+    const char* MSG_environment_as_get_name(msg_netzone_t zone)
 {
   return MSG_zone_get_name(zone);
 }
 static inline XBT_ATTRIB_DEPRECATED_v319(
-    "Use MSG_zone_get_by_name() instead: v3.19 will remove MSG_environment_as_get_by_name() completely.") msg_netzone_t
+    "Use MSG_zone_get_by_name() instead: v3.19 will turn this warning into an error.") msg_netzone_t
     MSG_environment_as_get_by_name(const char* name)
 {
   return MSG_zone_get_by_name(name);
 }
-static inline XBT_ATTRIB_DEPRECATED_v319(
-    "Use MSG_zone_get_sons() instead: v3.19 will remove MSG_environment_as_get_routing_sons() completely.") xbt_dict_t
-    MSG_environment_as_get_routing_sons(msg_netzone_t zone)
+static inline XBT_ATTRIB_DEPRECATED_v319("Use MSG_zone_get_sons() instead: v3.19 will turn this warning into an error.")
+    xbt_dict_t MSG_environment_as_get_routing_sons(msg_netzone_t zone)
 {
   xbt_dict_t res = xbt_dict_new_homogeneous(NULL);
   MSG_zone_get_sons(zone, res);
   return res;
 }
 static inline XBT_ATTRIB_DEPRECATED_v319(
-    "Use MSG_zone_get_property_value() instead: v3.19 will remove MSG_environment_as_get_property_value() completely.")
-    const char* MSG_environment_as_get_property_value(msg_netzone_t zone, const char* name)
+    "Use MSG_zone_get_property_value() instead: v3.19 will turn this warning into an error.") const
+    char* MSG_environment_as_get_property_value(msg_netzone_t zone, const char* name)
 {
   return MSG_zone_get_property_value(zone, name);
 }

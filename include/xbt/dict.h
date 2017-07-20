@@ -56,7 +56,8 @@ typedef struct s_xbt_dictelm {
 } s_xbt_dictelm_t;
 
 XBT_PUBLIC(xbt_dict_t)
-XBT_ATTRIB_DEPRECATED_v319("Use xbt_dict_new_homogeneous(). v3.19 will turn this warning into an error") xbt_dict_new();
+XBT_ATTRIB_DEPRECATED_v319("Use xbt_dict_new_homogeneous(). v3.19 will turn this warning into an error.")
+    xbt_dict_new();
 XBT_PUBLIC(xbt_dict_t) xbt_dict_new_homogeneous(void_f_pvoid_t free_ctn);
 XBT_PUBLIC(void) xbt_dict_free(xbt_dict_t * dict);
 XBT_PUBLIC(unsigned int) xbt_dict_size(xbt_dict_t dict);
