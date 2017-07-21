@@ -524,33 +524,6 @@ void simcall_cond_broadcast(smx_cond_t cond)
  * \ingroup simix_synchro_management
  *
  */
-smx_sem_t simcall_sem_init(int capacity)
-{
-  return simcall_BODY_sem_init(capacity);
-}
-
-/**
- * \ingroup simix_synchro_management
- *
- */
-void simcall_sem_release(smx_sem_t sem)
-{
-  simcall_BODY_sem_release(sem);
-}
-
-/**
- * \ingroup simix_synchro_management
- *
- */
-int simcall_sem_would_block(smx_sem_t sem)
-{
-  return simcall_BODY_sem_would_block(sem);
-}
-
-/**
- * \ingroup simix_synchro_management
- *
- */
 void simcall_sem_acquire(smx_sem_t sem)
 {
   simcall_BODY_sem_acquire(sem);
@@ -564,15 +537,6 @@ void simcall_sem_acquire_timeout(smx_sem_t sem, double timeout)
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
   simcall_BODY_sem_acquire_timeout(sem, timeout);
-}
-
-/**
- * \ingroup simix_synchro_management
- *
- */
-int simcall_sem_get_capacity(smx_sem_t sem)
-{
-  return simcall_BODY_sem_get_capacity(sem);
 }
 
 /**

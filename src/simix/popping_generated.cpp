@@ -54,12 +54,8 @@ const char* simcall_names[] = {
     "SIMCALL_COND_WAIT",
     "SIMCALL_COND_WAIT_TIMEOUT",
     "SIMCALL_COND_BROADCAST",
-    "SIMCALL_SEM_INIT",
-    "SIMCALL_SEM_RELEASE",
-    "SIMCALL_SEM_WOULD_BLOCK",
     "SIMCALL_SEM_ACQUIRE",
     "SIMCALL_SEM_ACQUIRE_TIMEOUT",
-    "SIMCALL_SEM_GET_CAPACITY",
     "SIMCALL_FILE_READ",
     "SIMCALL_FILE_WRITE",
     "SIMCALL_MC_RANDOM",
@@ -259,32 +255,12 @@ case SIMCALL_COND_BROADCAST:
       SIMIX_simcall_answer(simcall);
       break;
 
-case SIMCALL_SEM_INIT:
-      simgrid::simix::marshal<smx_sem_t>(simcall->result, SIMIX_sem_init(simgrid::simix::unmarshal<unsigned int>(simcall->args[0])));
-      SIMIX_simcall_answer(simcall);
-      break;
-
-case SIMCALL_SEM_RELEASE:
-      simcall_HANDLER_sem_release(simcall, simgrid::simix::unmarshal<smx_sem_t>(simcall->args[0]));
-      SIMIX_simcall_answer(simcall);
-      break;
-
-case SIMCALL_SEM_WOULD_BLOCK:
-      simgrid::simix::marshal<int>(simcall->result, simcall_HANDLER_sem_would_block(simcall, simgrid::simix::unmarshal<smx_sem_t>(simcall->args[0])));
-      SIMIX_simcall_answer(simcall);
-      break;
-
 case SIMCALL_SEM_ACQUIRE:
       simcall_HANDLER_sem_acquire(simcall, simgrid::simix::unmarshal<smx_sem_t>(simcall->args[0]));
       break;
 
 case SIMCALL_SEM_ACQUIRE_TIMEOUT:
       simcall_HANDLER_sem_acquire_timeout(simcall, simgrid::simix::unmarshal<smx_sem_t>(simcall->args[0]), simgrid::simix::unmarshal<double>(simcall->args[1]));
-      break;
-
-case SIMCALL_SEM_GET_CAPACITY:
-      simgrid::simix::marshal<int>(simcall->result, simcall_HANDLER_sem_get_capacity(simcall, simgrid::simix::unmarshal<smx_sem_t>(simcall->args[0])));
-      SIMIX_simcall_answer(simcall);
       break;
 
 case SIMCALL_FILE_READ:

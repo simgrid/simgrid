@@ -1247,67 +1247,6 @@ static inline void simcall_cond_broadcast__set__cond(smx_simcall_t simcall, smx_
   simgrid::simix::marshal<smx_cond_t>(simcall->args[0], arg);
 }
 
-static inline unsigned int simcall_sem_init__get__capacity(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<unsigned int>(simcall->args[0]);
-}
-static inline unsigned int simcall_sem_init__getraw__capacity(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<unsigned int>(simcall->args[0]);
-}
-static inline void simcall_sem_init__set__capacity(smx_simcall_t simcall, unsigned int arg)
-{
-  simgrid::simix::marshal<unsigned int>(simcall->args[0], arg);
-}
-static inline smx_sem_t simcall_sem_init__get__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<smx_sem_t>(simcall->result);
-}
-static inline smx_sem_t simcall_sem_init__getraw__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<smx_sem_t>(simcall->result);
-}
-static inline void simcall_sem_init__set__result(smx_simcall_t simcall, smx_sem_t result){
-    simgrid::simix::marshal<smx_sem_t>(simcall->result, result);
-}
-
-static inline smx_sem_t simcall_sem_release__get__sem(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<smx_sem_t>(simcall->args[0]);
-}
-static inline smx_sem_t simcall_sem_release__getraw__sem(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<smx_sem_t>(simcall->args[0]);
-}
-static inline void simcall_sem_release__set__sem(smx_simcall_t simcall, smx_sem_t arg)
-{
-  simgrid::simix::marshal<smx_sem_t>(simcall->args[0], arg);
-}
-
-static inline smx_sem_t simcall_sem_would_block__get__sem(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<smx_sem_t>(simcall->args[0]);
-}
-static inline smx_sem_t simcall_sem_would_block__getraw__sem(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<smx_sem_t>(simcall->args[0]);
-}
-static inline void simcall_sem_would_block__set__sem(smx_simcall_t simcall, smx_sem_t arg)
-{
-  simgrid::simix::marshal<smx_sem_t>(simcall->args[0], arg);
-}
-static inline int simcall_sem_would_block__get__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<int>(simcall->result);
-}
-static inline int simcall_sem_would_block__getraw__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<int>(simcall->result);
-}
-static inline void simcall_sem_would_block__set__result(smx_simcall_t simcall, int result){
-    simgrid::simix::marshal<int>(simcall->result, result);
-}
-
 static inline smx_sem_t simcall_sem_acquire__get__sem(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<smx_sem_t>(simcall->args[0]);
@@ -1344,30 +1283,6 @@ static inline double simcall_sem_acquire_timeout__getraw__timeout(smx_simcall_t 
 static inline void simcall_sem_acquire_timeout__set__timeout(smx_simcall_t simcall, double arg)
 {
   simgrid::simix::marshal<double>(simcall->args[1], arg);
-}
-
-static inline smx_sem_t simcall_sem_get_capacity__get__sem(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<smx_sem_t>(simcall->args[0]);
-}
-static inline smx_sem_t simcall_sem_get_capacity__getraw__sem(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<smx_sem_t>(simcall->args[0]);
-}
-static inline void simcall_sem_get_capacity__set__sem(smx_simcall_t simcall, smx_sem_t arg)
-{
-  simgrid::simix::marshal<smx_sem_t>(simcall->args[0], arg);
-}
-static inline int simcall_sem_get_capacity__get__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<int>(simcall->result);
-}
-static inline int simcall_sem_get_capacity__getraw__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<int>(simcall->result);
-}
-static inline void simcall_sem_get_capacity__set__result(smx_simcall_t simcall, int result){
-    simgrid::simix::marshal<int>(simcall->result, result);
 }
 
 static inline surf_file_t simcall_file_read__get__fd(smx_simcall_t simcall)
@@ -1571,11 +1486,8 @@ XBT_PRIVATE void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t m
 XBT_PRIVATE int simcall_HANDLER_mutex_trylock(smx_simcall_t simcall, smx_mutex_t mutex);
 XBT_PRIVATE void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex);
 XBT_PRIVATE void simcall_HANDLER_cond_wait_timeout(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex, double timeout);
-XBT_PRIVATE void simcall_HANDLER_sem_release(smx_simcall_t simcall, smx_sem_t sem);
-XBT_PRIVATE int simcall_HANDLER_sem_would_block(smx_simcall_t simcall, smx_sem_t sem);
 XBT_PRIVATE void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem);
 XBT_PRIVATE void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout);
-XBT_PRIVATE int simcall_HANDLER_sem_get_capacity(smx_simcall_t simcall, smx_sem_t sem);
 XBT_PRIVATE void simcall_HANDLER_file_read(smx_simcall_t simcall, surf_file_t fd, sg_size_t size);
 XBT_PRIVATE void simcall_HANDLER_file_write(smx_simcall_t simcall, surf_file_t fd, sg_size_t size);
 XBT_PRIVATE int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max);

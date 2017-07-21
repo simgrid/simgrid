@@ -70,12 +70,8 @@ void       cond_wait(smx_cond_t cond, smx_mutex_t mutex) [[block]];
 void       cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout) [[block]];
 void       cond_broadcast(smx_cond_t cond) [[nohandler]];
 
-smx_sem_t sem_init(unsigned int capacity) [[nohandler]];
-void      sem_release(smx_sem_t sem);
-int       sem_would_block(smx_sem_t sem);
 void      sem_acquire(smx_sem_t sem) [[block]];
 void      sem_acquire_timeout(smx_sem_t sem, double timeout) [[block]];
-int       sem_get_capacity(smx_sem_t sem);
 
 sg_size_t   file_read(surf_file_t fd, sg_size_t size) [[block]];
 sg_size_t   file_write(surf_file_t fd, sg_size_t size) [[block]];

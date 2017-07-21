@@ -255,24 +255,6 @@ inline static void simcall_BODY_cond_broadcast(smx_cond_t cond) {
     return simcall<void, smx_cond_t>(SIMCALL_COND_BROADCAST, cond);
   }
 
-inline static smx_sem_t simcall_BODY_sem_init(unsigned int capacity) {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_sem_init(capacity);
-    return simcall<smx_sem_t, unsigned int>(SIMCALL_SEM_INIT, capacity);
-  }
-
-inline static void simcall_BODY_sem_release(smx_sem_t sem) {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_sem_release(&SIMIX_process_self()->simcall, sem);
-    return simcall<void, smx_sem_t>(SIMCALL_SEM_RELEASE, sem);
-  }
-
-inline static int simcall_BODY_sem_would_block(smx_sem_t sem) {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_sem_would_block(&SIMIX_process_self()->simcall, sem);
-    return simcall<int, smx_sem_t>(SIMCALL_SEM_WOULD_BLOCK, sem);
-  }
-
 inline static void simcall_BODY_sem_acquire(smx_sem_t sem) {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) simcall_HANDLER_sem_acquire(&SIMIX_process_self()->simcall, sem);
@@ -283,12 +265,6 @@ inline static void simcall_BODY_sem_acquire_timeout(smx_sem_t sem, double timeou
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) simcall_HANDLER_sem_acquire_timeout(&SIMIX_process_self()->simcall, sem, timeout);
     return simcall<void, smx_sem_t, double>(SIMCALL_SEM_ACQUIRE_TIMEOUT, sem, timeout);
-  }
-
-inline static int simcall_BODY_sem_get_capacity(smx_sem_t sem) {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_sem_get_capacity(&SIMIX_process_self()->simcall, sem);
-    return simcall<int, smx_sem_t>(SIMCALL_SEM_GET_CAPACITY, sem);
   }
 
   inline static sg_size_t simcall_BODY_file_read(surf_file_t fd, sg_size_t size)

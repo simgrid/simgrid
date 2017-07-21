@@ -404,9 +404,6 @@ void SIMIX_sem_destroy(smx_sem_t sem)
   XBT_OUT();
 }
 
-void simcall_HANDLER_sem_release(smx_simcall_t simcall, smx_sem_t sem){
-  SIMIX_sem_release(sem);
-}
 /** @brief release the semaphore
  *
  * Unlock a process waiting on the semaphore.
@@ -435,9 +432,6 @@ int SIMIX_sem_would_block(smx_sem_t sem)
   return (sem->value <= 0);
 }
 
-int simcall_HANDLER_sem_get_capacity(smx_simcall_t simcall, smx_sem_t sem){
-  return SIMIX_sem_get_capacity(sem);
-}
 /** @brief Returns the current capacity of the semaphore */
 int SIMIX_sem_get_capacity(smx_sem_t sem)
 {
@@ -485,7 +479,4 @@ void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, d
   XBT_IN("(%p)",simcall);
   _SIMIX_sem_wait(sem, timeout, simcall->issuer, simcall);
   XBT_OUT();
-}
-int simcall_HANDLER_sem_would_block(smx_simcall_t simcall, smx_sem_t sem) {
-  return SIMIX_sem_would_block(sem);
 }

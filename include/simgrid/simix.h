@@ -277,13 +277,9 @@ XBT_PUBLIC(void) simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex);
 XBT_PUBLIC(void) simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double max_duration);
 XBT_PUBLIC(void) simcall_cond_broadcast(smx_cond_t cond);
 
-XBT_PUBLIC(smx_sem_t) simcall_sem_init(int capacity);
 XBT_PUBLIC(void) SIMIX_sem_destroy(smx_sem_t sem);
-XBT_PUBLIC(void) simcall_sem_release(smx_sem_t sem);
-XBT_PUBLIC(int) simcall_sem_would_block(smx_sem_t sem);
 XBT_PUBLIC(void) simcall_sem_acquire(smx_sem_t sem);
 XBT_PUBLIC(void) simcall_sem_acquire_timeout(smx_sem_t sem, double max_duration);
-XBT_PUBLIC(int) simcall_sem_get_capacity(smx_sem_t sem);
 
 /*****************************   File   **********************************/
 XBT_PUBLIC(sg_size_t) simcall_file_read(surf_file_t fd, sg_size_t size);
