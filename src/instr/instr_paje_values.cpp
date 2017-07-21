@@ -45,11 +45,11 @@ s_val::s_val(const char *name, const char *color, type_t father){
   LogEntityValue(this->ret);
 };
 
-val_t PJ_value_get_or_new (const char *name, const char *color, type_t father)
-{
+val_t paje_value :: PJ_value_get_or_new (const char *name, const char *color, type_t father)
+{ paje_value pj_value;
   val_t ret = 0;
   try {
-    ret = PJ_value_get(name, father);
+    ret = pj_value.PJ_value_get(name, father);
   }
   catch(xbt_ex& e) {
     s_val rett(name, color, father);
@@ -58,7 +58,7 @@ val_t PJ_value_get_or_new (const char *name, const char *color, type_t father)
   return ret;
 }
 
-val_t PJ_value_get (const char *name, type_t father)
+val_t paje_value::PJ_value_get (const char *name, type_t father)
 {
   if (name == nullptr || father == nullptr){
     THROWF (tracing_error, 0, "can't get a value with a nullptr name (or a nullptr father)");

@@ -265,6 +265,14 @@ class NewEvent : public PajeEvent  {
 
 };
 
+class paje_value{
+  public:
+  paje_value(){};
+  ~paje_value(){};
+  val_t PJ_value_new (const char *name, const char *color, type_t father);
+  val_t PJ_value_get (const char *name, type_t father);
+  val_t PJ_value_get_or_new (const char *name, const char *color, type_t father);
+};
 
 extern XBT_PRIVATE xbt_dict_t created_categories;
 extern XBT_PRIVATE xbt_dict_t declared_marks;

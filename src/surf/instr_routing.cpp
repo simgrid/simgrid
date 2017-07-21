@@ -234,7 +234,7 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
 }
 
 static void sg_instr_new_host(simgrid::s4u::Host& host)
-{
+{ paje_value pj_value;
   container_t father = currentContainer.back();
   container_t container = PJ_container_new(host.getCname(), INSTR_HOST, father);
 
@@ -401,7 +401,7 @@ void instr_new_user_state_type (const char *father_type, const char *new_typenam
 }
 
 static void recursiveNewValueForUserStateType (const char *type_name, const char *value, const char *color, type_t root)
-{
+{ paje_value pj_value;
   if (not strcmp(root->name, type_name)) {
     s_val PJ_value (value, color, root);
   }

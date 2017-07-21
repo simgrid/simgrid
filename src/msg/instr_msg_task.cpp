@@ -45,7 +45,7 @@ void TRACE_msg_task_create(msg_task_t task)
 
 /* MSG_task_execute related functions */
 void TRACE_msg_task_execute_start(msg_task_t task)
-{
+{ paje_value pj_value;
   XBT_DEBUG("EXEC,in %p, %lld, %s", task, task->counter, task->category);
 
   if (TRACE_msg_process_is_enabled()){
@@ -54,7 +54,7 @@ void TRACE_msg_task_execute_start(msg_task_t task)
 
     container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    val_t value = PJ_value_get ("task_execute", type);
+    val_t value = pj_value.PJ_value_get ("task_execute", type);
     new PushStateEvent (MSG_get_clock(), process_container, type, value);
   }
 }
@@ -85,7 +85,7 @@ void TRACE_msg_task_destroy(msg_task_t task)
 
 /* MSG_task_get related functions */
 void TRACE_msg_task_get_start()
-{
+{ paje_value pj_value;
   XBT_DEBUG("GET,in");
 
   if (TRACE_msg_process_is_enabled()){
@@ -94,7 +94,7 @@ void TRACE_msg_task_get_start()
 
     container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    val_t value = PJ_value_get ("receive", type);
+    val_t value = pj_value.PJ_value_get ("receive", type);
     new PushStateEvent (MSG_get_clock(), process_container, type, value);
   }
 }
@@ -120,7 +120,7 @@ void TRACE_msg_task_get_end(double start_time, msg_task_t task)
 
 /* MSG_task_put related functions */
 int TRACE_msg_task_put_start(msg_task_t task)
-{
+{ paje_value pj_value;
   XBT_DEBUG("PUT,in %p, %lld, %s", task, task->counter, task->category);
 
   if (TRACE_msg_process_is_enabled()){
@@ -129,7 +129,7 @@ int TRACE_msg_task_put_start(msg_task_t task)
 
     container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    val_t value = PJ_value_get ("send", type);
+    val_t value = pj_value.PJ_value_get ("send", type);
     new PushStateEvent (MSG_get_clock(), process_container, type, value);
 
     char key[INSTR_DEFAULT_STR_SIZE];
