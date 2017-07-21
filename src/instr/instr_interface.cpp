@@ -176,7 +176,7 @@ void TRACE_declare_mark(const char *mark_type)
  * \see TRACE_mark
  */
 void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mark_value, const char *mark_color)
-{ paje_value pj_value;
+{
   /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with marks */
   if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return;
@@ -231,7 +231,7 @@ void TRACE_declare_mark_value (const char *mark_type, const char *mark_value)
  * \see TRACE_declare_mark
  */
 void TRACE_mark(const char *mark_type, const char *mark_value)
-{ paje_value pj_value;
+{
   /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with marks */
   if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return;
@@ -247,7 +247,7 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
   }
 
-  val_t value = pj_value.PJ_value_get (mark_value, type);
+  val_t value = s_val::PJ_value_get (mark_value, type);
   XBT_DEBUG("MARK %s %s", mark_type, mark_value);
   new NewEvent (MSG_get_clock(), PJ_container_get_root(), type, value);
 }
@@ -947,10 +947,10 @@ void TRACE_host_state_declare_value (const char *state, const char *value, const
  *  \see TRACE_host_state_declare, TRACE_host_push_state, TRACE_host_pop_state, TRACE_host_reset_state
  */
 void TRACE_host_set_state (const char *host, const char *state, const char *value)
-{ paje_value pj_value;
+{
   container_t container = PJ_container_get(host);
   type_t type = PJ_type_get (state, container->type);
-  val_t val = pj_value.PJ_value_get_or_new (value, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
+  val_t val = s_val::PJ_value_get_or_new (value, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
   new SetStateEvent(MSG_get_clock(), container, type, val);
 }
 
@@ -966,10 +966,10 @@ void TRACE_host_set_state (const char *host, const char *state, const char *valu
  *  \see TRACE_host_state_declare, TRACE_host_set_state, TRACE_host_pop_state, TRACE_host_reset_state
  */
 void TRACE_host_push_state (const char *host, const char *state, const char *value)
-{ paje_value pj_value;
+{
   container_t container = PJ_container_get(host);
   type_t type = PJ_type_get (state, container->type);
-  val_t val = pj_value.PJ_value_get_or_new (value, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
+  val_t val = s_val::PJ_value_get_or_new (value, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
   new PushStateEvent(MSG_get_clock(), container, type, val);
 }
 

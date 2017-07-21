@@ -26,7 +26,7 @@ static type_t newType (const char *typeNameBuff, const char *key, const char *co
     THROWF(tracing_error, 0, "can't create a new type with name or key equal nullptr");
   }
 
-  type_t ret = xbt_new0(s_type_t, 1);
+  type_t ret = xbt_new0(s_type, 1);
   ret->name = xbt_strdup (typeNameBuff);
   ret->father = father;
   ret->kind = kind;
