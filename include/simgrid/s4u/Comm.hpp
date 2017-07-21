@@ -55,33 +55,31 @@ public:
     return idx;
   }
   /** Creates (but don't start) an async send to the mailbox @p dest */
-  static CommPtr XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_init(): v3.20 will remove Comm::send_init() completely.")
+  static CommPtr XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_init(): v3.20 will turn this warning into an error.")
       send_init(MailboxPtr dest)
   {
     return dest->put_init();
   }
   /** Creates (but don't start) an async send to the mailbox @p dest */
-  static CommPtr XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_init(): v3.20 will remove Comm::send_init() completely.")
+  static CommPtr XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_init(): v3.20 will turn this warning into an error.")
       send_init(MailboxPtr dest, void* data, int simulatedByteAmount)
   {
     return dest->put_init(data, simulatedByteAmount);
   }
   /** Creates and start an async send to the mailbox @p dest */
-  static CommPtr XBT_ATTRIB_DEPRECATED_v320(
-      "Use Mailbox::put_async(): v3.20 will remove Comm::send_async() completely.")
+  static CommPtr XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_async(): v3.20 will turn this warning into an error.")
       send_async(MailboxPtr dest, void* data, int simulatedByteAmount)
   {
     return dest->put_async(data, simulatedByteAmount);
   }
   /** Creates (but don't start) an async recv onto the mailbox @p from */
-  static CommPtr XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get_init(): v3.20 will remove Comm::recv_init() completely.")
+  static CommPtr XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get_init(): v3.20 will turn this warning into an error.")
       recv_init(MailboxPtr from)
   {
     return from->get_init();
   }
   /** Creates and start an async recv to the mailbox @p from */
-  static CommPtr XBT_ATTRIB_DEPRECATED_v320(
-      "Use Mailbox::get_async(): v3.20 will remove Comm::recv_async() completely.")
+  static CommPtr XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get_async(): v3.20 will turn this warning into an error.")
       recv_async(MailboxPtr from, void** data)
   {
     return from->get_async(data);

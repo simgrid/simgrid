@@ -69,7 +69,6 @@ typedef struct s_mc_snapshot_ignored_data {
   void* start;
   std::vector<char> data;
 } s_mc_snapshot_ignored_data_t;
-typedef s_mc_snapshot_ignored_data_t* mc_snapshot_ignored_data_t;
 
 typedef struct s_fd_infos{
   std::string filename;
@@ -77,7 +76,6 @@ typedef struct s_fd_infos{
   off_t current_position;
   int flags;
 } s_fd_infos_t;
-typedef s_fd_infos_t* fd_infos_t;
 
 /** Information about a given stack frame */
 typedef struct s_mc_stack_frame {
