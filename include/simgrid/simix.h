@@ -191,7 +191,7 @@ XBT_PUBLIC(smx_activity_t) simcall_execution_start(const char *name,
                                                 double priority, double bound);
 XBT_PUBLIC(smx_activity_t)
 simcall_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount,
-                                 double* bytes_amount, double amount, double rate, double timeout);
+                                 double* bytes_amount, double rate, double timeout);
 XBT_PUBLIC(void) simcall_execution_cancel(smx_activity_t execution);
 XBT_PUBLIC(void) simcall_execution_set_priority(smx_activity_t execution, double priority);
 XBT_PUBLIC(void) simcall_execution_set_bound(smx_activity_t execution, double bound);

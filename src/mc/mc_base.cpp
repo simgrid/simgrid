@@ -155,16 +155,10 @@ bool request_is_visible(smx_simcall_t req)
   xbt_assert(mc_model_checker == nullptr, "This should be called from the client side");
 #endif
 
-  return req->call == SIMCALL_COMM_ISEND
-      || req->call == SIMCALL_COMM_IRECV
-      || req->call == SIMCALL_COMM_WAIT
-      || req->call == SIMCALL_COMM_WAITANY
-      || req->call == SIMCALL_COMM_TEST
-      || req->call == SIMCALL_COMM_TESTANY
-      || req->call == SIMCALL_MC_RANDOM
-      || req->call == SIMCALL_MUTEX_LOCK
-      || req->call == SIMCALL_MUTEX_TRYLOCK
-      ;
+  return req->call == SIMCALL_COMM_ISEND || req->call == SIMCALL_COMM_IRECV || req->call == SIMCALL_COMM_WAIT ||
+         req->call == SIMCALL_COMM_WAITANY || req->call == SIMCALL_COMM_TEST || req->call == SIMCALL_COMM_TESTANY ||
+         req->call == SIMCALL_MC_RANDOM || req->call == SIMCALL_MUTEX_LOCK || req->call == SIMCALL_MUTEX_TRYLOCK ||
+         req->call == SIMCALL_MUTEX_UNLOCK;
 }
 
 }

@@ -83,13 +83,14 @@ inline static int simcall_BODY_process_sleep(double duration) {
 
   inline static boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
   simcall_BODY_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount,
-                                        double* bytes_amount, double amount, double rate, double timeout)
+                                        double* bytes_amount, double rate, double timeout)
   {
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_execution_parallel_start(name, host_nb, host_list, flops_amount, bytes_amount, amount, rate, timeout);
+    if (0)
+      SIMIX_execution_parallel_start(name, host_nb, host_list, flops_amount, bytes_amount, rate, timeout);
     return simcall<boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>, const char*, int, sg_host_t*, double*,
-                   double*, double, double, double>(SIMCALL_EXECUTION_PARALLEL_START, name, host_nb, host_list,
-                                                    flops_amount, bytes_amount, amount, rate, timeout);
+                   double*, double, double>(SIMCALL_EXECUTION_PARALLEL_START, name, host_nb, host_list, flops_amount,
+                                            bytes_amount, rate, timeout);
   }
 
   inline static void

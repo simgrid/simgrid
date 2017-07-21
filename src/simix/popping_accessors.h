@@ -251,41 +251,29 @@ static inline void simcall_execution_parallel_start__set__bytes_amount(smx_simca
 {
   simgrid::simix::marshal<double*>(simcall->args[4], arg);
 }
-static inline double simcall_execution_parallel_start__get__amount(smx_simcall_t simcall)
+static inline double simcall_execution_parallel_start__get__rate(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<double>(simcall->args[5]);
 }
-static inline double simcall_execution_parallel_start__getraw__amount(smx_simcall_t simcall)
+static inline double simcall_execution_parallel_start__getraw__rate(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal_raw<double>(simcall->args[5]);
 }
-static inline void simcall_execution_parallel_start__set__amount(smx_simcall_t simcall, double arg)
+static inline void simcall_execution_parallel_start__set__rate(smx_simcall_t simcall, double arg)
 {
   simgrid::simix::marshal<double>(simcall->args[5], arg);
 }
-static inline double simcall_execution_parallel_start__get__rate(smx_simcall_t simcall)
+static inline double simcall_execution_parallel_start__get__timeout(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<double>(simcall->args[6]);
 }
-static inline double simcall_execution_parallel_start__getraw__rate(smx_simcall_t simcall)
+static inline double simcall_execution_parallel_start__getraw__timeout(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal_raw<double>(simcall->args[6]);
 }
-static inline void simcall_execution_parallel_start__set__rate(smx_simcall_t simcall, double arg)
-{
-  simgrid::simix::marshal<double>(simcall->args[6], arg);
-}
-static inline double simcall_execution_parallel_start__get__timeout(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<double>(simcall->args[7]);
-}
-static inline double simcall_execution_parallel_start__getraw__timeout(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<double>(simcall->args[7]);
-}
 static inline void simcall_execution_parallel_start__set__timeout(smx_simcall_t simcall, double arg)
 {
-  simgrid::simix::marshal<double>(simcall->args[7], arg);
+  simgrid::simix::marshal<double>(simcall->args[6], arg);
 }
 static inline boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
 simcall_execution_parallel_start__get__result(smx_simcall_t simcall)
