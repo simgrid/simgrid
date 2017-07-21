@@ -269,6 +269,7 @@ public:
   /** Retrieve the property value (or nullptr if not set) */
   const char* getProperty(const char* key);
   void setProperty(const char* key, const char* value);
+  Actor* restart();
 };
 
 /** @ingroup s4u_api

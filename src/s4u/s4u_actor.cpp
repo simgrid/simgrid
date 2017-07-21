@@ -184,6 +184,11 @@ void Actor::setProperty(const char* key, const char* value)
   });
 }
 
+Actor* Actor::restart()
+{
+  return simgrid::simix::kernelImmediate([this]() { return pimpl_->restart(); });
+}
+
 // ***** this_actor *****
 
 namespace this_actor {

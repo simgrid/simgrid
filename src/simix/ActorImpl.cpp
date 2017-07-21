@@ -167,7 +167,7 @@ void ActorImpl::daemonize()
   }
 }
 
-ActorImpl* ActorImpl::restart(ActorImpl* issuer)
+simgrid::s4u::Actor* ActorImpl::restart()
 {
   XBT_DEBUG("Restarting process %s on %s", cname(), host->getCname());
 
@@ -183,7 +183,7 @@ ActorImpl* ActorImpl::restart(ActorImpl* issuer)
   arg.auto_restart = auto_restart;
 
   // kill the old process
-  SIMIX_process_kill(this, issuer);
+  SIMIX_process_kill(this, this);
 
   // start the new process
   ActorImpl* actor = simix_global->create_process_function(arg.name.c_str(), std::move(arg.code), arg.data, arg.host,
@@ -193,7 +193,7 @@ ActorImpl* ActorImpl::restart(ActorImpl* issuer)
   if (arg.auto_restart)
     actor->auto_restart = arg.auto_restart;
 
-  return actor;
+  return actor->ciface();
 }
 
 smx_activity_t ActorImpl::suspend(ActorImpl* issuer)

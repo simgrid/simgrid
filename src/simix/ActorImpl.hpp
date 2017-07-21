@@ -106,7 +106,7 @@ public:
   void daemonize();
   bool isDaemon() { return daemon; } /** Whether this actor has been daemonized */
   bool isSuspended() { return suspended; }
-  ActorImpl* restart(ActorImpl* issuer);
+  simgrid::s4u::Actor* restart();
   smx_activity_t suspend(ActorImpl* issuer);
   void resume();
   smx_activity_t sleep(double duration);
