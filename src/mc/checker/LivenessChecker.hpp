@@ -45,10 +45,10 @@ struct XBT_PRIVATE Pair {
 };
 
 struct XBT_PRIVATE VisitedPair {
-  int num = 0;
+  int num;
   int other_num = 0; /* Dot output for */
   std::shared_ptr<simgrid::mc::State> graph_state = nullptr; /* System state included */
-  xbt_automaton_state_t automaton_state = nullptr;
+  xbt_automaton_state_t automaton_state;
   std::shared_ptr<const std::vector<int>> atomic_propositions;
   std::size_t heap_bytes_used = 0;
   int actors_count            = 0;

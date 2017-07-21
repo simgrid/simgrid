@@ -34,7 +34,7 @@ static int snapshot_compare(simgrid::mc::VisitedState* state1, simgrid::mc::Visi
 }
 
 /** @brief Save the current state */
-VisitedState::VisitedState(unsigned long state_number)
+VisitedState::VisitedState(unsigned long state_number) : num(state_number)
 {
   simgrid::mc::RemoteClient* process = &(mc_model_checker->process());
   this->heap_bytes_used = mmalloc_get_bytes_used_remote(
@@ -44,12 +44,7 @@ VisitedState::VisitedState(unsigned long state_number)
   this->actors_count = mc_model_checker->process().actors().size();
 
   this->system_state = simgrid::mc::take_snapshot(state_number);
-  this->num = state_number;
   this->original_num = -1;
-}
-
-VisitedState::~VisitedState()
-{
 }
 
 void VisitedStates::prune()

@@ -25,7 +25,7 @@ struct XBT_PRIVATE VisitedState {
   int original_num = 0; // num field of the VisitedState to which I was declared equal to (used for dot_output)
 
   explicit VisitedState(unsigned long state_number);
-  ~VisitedState();
+  ~VisitedState() = default;
 };
 
 class XBT_PRIVATE VisitedStates {

@@ -39,24 +39,20 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc, "Logging specific to algorithms
 namespace simgrid {
 namespace mc {
 
-VisitedPair::VisitedPair(
-  int pair_num, xbt_automaton_state_t automaton_state,
-  std::shared_ptr<const std::vector<int>> atomic_propositions,
-  std::shared_ptr<simgrid::mc::State> graph_state)
+VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
+                         std::shared_ptr<const std::vector<int>> atomic_propositions,
+                         std::shared_ptr<simgrid::mc::State> graph_state)
+    : num(pair_num), automaton_state(automaton_state)
 {
   simgrid::mc::RemoteClient* process = &(mc_model_checker->process());
 
   this->graph_state = std::move(graph_state);
   if(this->graph_state->system_state == nullptr)
     this->graph_state->system_state = simgrid::mc::take_snapshot(pair_num);
-  this->heap_bytes_used = mmalloc_get_bytes_used_remote(
-    process->get_heap()->heaplimit,
-    process->get_malloc_info());
+  this->heap_bytes_used = mmalloc_get_bytes_used_remote(process->get_heap()->heaplimit, process->get_malloc_info());
 
   this->actors_count = mc_model_checker->process().actors().size();
 
-  this->automaton_state = automaton_state;
-  this->num = pair_num;
   this->other_num = -1;
   this->atomic_propositions = std::move(atomic_propositions);
 }
