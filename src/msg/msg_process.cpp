@@ -189,7 +189,7 @@ void MSG_process_detach()
  */
 void MSG_process_kill(msg_process_t process)
 {
-  simcall_process_kill(process->getImpl());
+  process->kill();
 }
 
 /**
