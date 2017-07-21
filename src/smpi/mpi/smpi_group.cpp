@@ -16,9 +16,9 @@ namespace smpi{
 
 Group::Group()
 {
-  size_=0;                            /* size */
-  rank_to_index_map_=nullptr;                         /* rank_to_index_map_ */
-  refcount_=1;                            /* refcount_: start > 0 so that this group never gets freed */
+  size_              = 0;       /* size */
+  rank_to_index_map_ = nullptr; /* rank_to_index_map_ */
+  refcount_          = 1;       /* refcount_: start > 0 so that this group never gets freed */
 }
 
 Group::Group(int n) : size_(n)
@@ -33,7 +33,7 @@ Group::Group(MPI_Group origin)
 {
   if (origin != MPI_GROUP_NULL && origin != MPI_GROUP_EMPTY) {
     size_              = origin->size();
-    rank_to_index_map_ = xbt_new(int, size_);
+    rank_to_index_map_ = new int[size_];
     refcount_          = 1;
     for (int i = 0; i < size_; i++) {
       rank_to_index_map_[i] = origin->rank_to_index_map_[i];
