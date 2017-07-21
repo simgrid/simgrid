@@ -83,14 +83,13 @@ inline static int simcall_BODY_process_sleep(double duration) {
 
   inline static boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
   simcall_BODY_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount,
-                                        double* bytes_amount, double rate, double timeout)
+                                        double* bytes_amount, double amount, double rate, double timeout)
   {
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0)
-      SIMIX_execution_parallel_start(name, host_nb, host_list, flops_amount, bytes_amount, rate, timeout);
+    if (0) SIMIX_execution_parallel_start(name, host_nb, host_list, flops_amount, bytes_amount, amount, rate, timeout);
     return simcall<boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>, const char*, int, sg_host_t*, double*,
-                   double*, double, double>(SIMCALL_EXECUTION_PARALLEL_START, name, host_nb, host_list, flops_amount,
-                                            bytes_amount, rate, timeout);
+                   double*, double, double, double>(SIMCALL_EXECUTION_PARALLEL_START, name, host_nb, host_list,
+                                                    flops_amount, bytes_amount, amount, rate, timeout);
   }
 
   inline static void
@@ -223,6 +222,12 @@ inline static int simcall_BODY_mutex_trylock(smx_mutex_t mutex) {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) simcall_HANDLER_mutex_trylock(&SIMIX_process_self()->simcall, mutex);
     return simcall<int, smx_mutex_t>(SIMCALL_MUTEX_TRYLOCK, mutex);
+  }
+
+inline static void simcall_BODY_mutex_unlock(smx_mutex_t mutex) {
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) simcall_HANDLER_mutex_unlock(&SIMIX_process_self()->simcall, mutex);
+    return simcall<void, smx_mutex_t>(SIMCALL_MUTEX_UNLOCK, mutex);
   }
 
 inline static smx_cond_t simcall_BODY_cond_init() {

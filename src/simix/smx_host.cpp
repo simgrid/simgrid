@@ -29,14 +29,17 @@ namespace simgrid {
     {
       /* Clean Simulator data */
       if (xbt_swag_size(process_list) != 0) {
-        std::string msg     = std::string("Shutting down host, but it's not empty:");
+        char *msg = xbt_strdup("Shutting down host, but it's not empty:");
+        char *tmp;
         smx_actor_t process = nullptr;
 
         xbt_swag_foreach(process, process_list) {
-          msg = msg + "\n\t" + process->name.c_str();
+          tmp = bprintf("%s\n\t%s", msg, process->name.c_str());
+          free(msg);
+          msg = tmp;
         }
         SIMIX_display_process_status();
-        THROWF(arg_error, 0, "%s", msg.c_str());
+        THROWF(arg_error, 0, "%s", msg);
       }
       for (auto arg : auto_restart_processes)
         delete arg;
@@ -183,7 +186,7 @@ SIMIX_execution_start(smx_actor_t issuer, const char* name, double flops_amount,
 
 boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
 SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount,
-                               double* bytes_amount, double rate, double timeout)
+                               double* bytes_amount, double amount, double rate, double timeout)
 {
 
   /* alloc structures and initialize */

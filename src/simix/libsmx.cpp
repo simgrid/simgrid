@@ -84,7 +84,8 @@ smx_activity_t simcall_execution_start(const char *name,
  * \return A new SIMIX execution synchronization
  */
 smx_activity_t simcall_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list,
-                                                double* flops_amount, double* bytes_amount, double rate, double timeout)
+                                                double* flops_amount, double* bytes_amount, double amount, double rate,
+                                                double timeout)
 {
   /* checking for infinite values */
   for (int i = 0 ; i < host_nb ; ++i) {
@@ -97,9 +98,11 @@ smx_activity_t simcall_execution_parallel_start(const char* name, int host_nb, s
     }
   }
 
+  xbt_assert(std::isfinite(amount), "amount is not finite!");
   xbt_assert(std::isfinite(rate), "rate is not finite!");
 
-  return simcall_BODY_execution_parallel_start(name, host_nb, host_list, flops_amount, bytes_amount, rate, timeout);
+  return simcall_BODY_execution_parallel_start(name, host_nb, host_list, flops_amount, bytes_amount, amount, rate,
+                                               timeout);
 }
 
 /**
@@ -470,6 +473,15 @@ void simcall_mutex_lock(smx_mutex_t mutex)
 int simcall_mutex_trylock(smx_mutex_t mutex)
 {
   return simcall_BODY_mutex_trylock(mutex);
+}
+
+/**
+ * \ingroup simix_synchro_management
+ *
+ */
+void simcall_mutex_unlock(smx_mutex_t mutex)
+{
+  simcall_BODY_mutex_unlock(mutex);
 }
 
 /**
