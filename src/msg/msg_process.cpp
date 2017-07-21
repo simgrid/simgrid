@@ -471,7 +471,8 @@ XBT_PUBLIC(void) MSG_process_auto_restart_set(msg_process_t process, int auto_re
  * \brief Restarts a process from the beginning.
  */
 XBT_PUBLIC(msg_process_t) MSG_process_restart(msg_process_t process) {
-  return simcall_process_restart(process->getImpl())->ciface();
+  return simgrid::simix::kernelImmediate(
+      [process]() { return process->getImpl()->restart(process->getImpl())->ciface(); });
 }
 
 /** @ingroup m_process_management

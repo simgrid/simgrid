@@ -38,7 +38,6 @@ const char* simcall_names[] = {
     "SIMCALL_EXECUTION_SET_BOUND",
     "SIMCALL_EXECUTION_WAIT",
     "SIMCALL_PROCESS_ON_EXIT",
-    "SIMCALL_PROCESS_RESTART",
     "SIMCALL_COMM_IPROBE",
     "SIMCALL_COMM_SEND",
     "SIMCALL_COMM_ISEND",
@@ -48,7 +47,6 @@ const char* simcall_names[] = {
     "SIMCALL_COMM_WAIT",
     "SIMCALL_COMM_TEST",
     "SIMCALL_COMM_TESTANY",
-    "SIMCALL_MUTEX_INIT",
     "SIMCALL_MUTEX_LOCK",
     "SIMCALL_MUTEX_TRYLOCK",
     "SIMCALL_COND_INIT",
@@ -160,11 +158,6 @@ case SIMCALL_PROCESS_ON_EXIT:
       SIMIX_simcall_answer(simcall);
       break;
 
-case SIMCALL_PROCESS_RESTART:
-      simgrid::simix::marshal<smx_actor_t>(simcall->result, simcall_HANDLER_process_restart(simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0])));
-      SIMIX_simcall_answer(simcall);
-      break;
-
 case SIMCALL_COMM_IPROBE:
   simgrid::simix::marshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(
       simcall->result, simcall_HANDLER_comm_iprobe(simcall, simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[0]),
@@ -233,11 +226,6 @@ case SIMCALL_COMM_TESTANY:
       simgrid::simix::unmarshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>*>(simcall->args[0]),
       simgrid::simix::unmarshal<size_t>(simcall->args[1]));
   break;
-
-case SIMCALL_MUTEX_INIT:
-      simgrid::simix::marshal<smx_mutex_t>(simcall->result, simcall_HANDLER_mutex_init(simcall));
-      SIMIX_simcall_answer(simcall);
-      break;
 
 case SIMCALL_MUTEX_LOCK:
       simcall_HANDLER_mutex_lock(simcall, simgrid::simix::unmarshal<smx_mutex_t>(simcall->args[0]));

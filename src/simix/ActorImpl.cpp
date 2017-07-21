@@ -755,8 +755,7 @@ void SIMIX_process_sleep_destroy(smx_activity_t synchro)
 /**
  * \brief Calling this function makes the process to yield.
  *
- * Only the current process can call this function, giving back the control to
- * maestro.
+ * Only the current process can call this function, giving back the control to maestro.
  *
  * \param self the current process
  */
@@ -815,17 +814,13 @@ void SIMIX_process_exception_terminate(xbt_ex_t * e)
   xbt_abort();
 }
 
-/**
- * \brief Returns the list of processes to run.
- */
+/** @brief Returns the list of processes to run. */
 xbt_dynar_t SIMIX_process_get_runnable()
 {
   return simix_global->process_to_run;
 }
 
-/**
- * \brief Returns the process from PID.
- */
+/** @brief Returns the process from PID. */
 smx_actor_t SIMIX_process_from_PID(aid_t PID)
 {
   if (simix_global->process_list.find(PID) == simix_global->process_list.end())
@@ -862,15 +857,10 @@ void SIMIX_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void *d
 
 /**
  * \brief Sets the auto-restart status of the process.
- * If set to 1, the process will be automatically restarted when its host
- * comes back.
+ * If set to 1, the process will be automatically restarted when its host comes back.
  */
 void SIMIX_process_auto_restart_set(smx_actor_t process, int auto_restart) {
   process->auto_restart = auto_restart;
-}
-
-smx_actor_t simcall_HANDLER_process_restart(smx_simcall_t simcall, smx_actor_t process) {
-  return process->restart(simcall->issuer);
 }
 
 /** @brief Restart a process, starting it again from the beginning. */

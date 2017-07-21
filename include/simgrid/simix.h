@@ -219,7 +219,6 @@ XBT_PUBLIC(void) simcall_process_set_data(smx_actor_t process, void *data);
 XBT_PUBLIC(xbt_dict_t) simcall_process_get_properties(smx_actor_t host);
 XBT_PUBLIC(void) simcall_process_set_kill_time(smx_actor_t process, double kill_time);
 XBT_PUBLIC(void) simcall_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void *data);
-XBT_PUBLIC(smx_actor_t) simcall_process_restart(smx_actor_t process);
 XBT_PUBLIC(void) simcall_process_join(smx_actor_t process, double timeout);
 /* Sleep control */
 XBT_PUBLIC(e_smx_state_t) simcall_process_sleep(double duration);

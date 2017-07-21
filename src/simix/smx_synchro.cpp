@@ -204,11 +204,6 @@ void SIMIX_mutex_unref(smx_mutex_t mutex)
     intrusive_ptr_release(mutex);
 }
 
-smx_mutex_t simcall_HANDLER_mutex_init(smx_simcall_t simcall)
-{
-  return new simgrid::simix::MutexImpl();
-}
-
 // Simcall handlers:
 
 void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex)

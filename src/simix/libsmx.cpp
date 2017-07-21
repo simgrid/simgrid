@@ -267,14 +267,6 @@ XBT_PUBLIC(void) simcall_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_
 
 /**
  * \ingroup simix_process_management
- * \brief Restarts the process, killing it and starting it again from scratch.
- */
-XBT_PUBLIC(smx_actor_t) simcall_process_restart(smx_actor_t process)
-{
-  return (smx_actor_t) simcall_BODY_process_restart(process);
-}
-/**
- * \ingroup simix_process_management
  * \brief Creates a new sleep SIMIX synchro.
  *
  * This function creates a SURF action and allocates the data necessary
@@ -459,7 +451,7 @@ smx_mutex_t simcall_mutex_init()
     fprintf(stderr,"You must run MSG_init before using MSG\n"); // We can't use xbt_die since we may get there before the initialization
     xbt_abort();
   }
-  return simcall_BODY_mutex_init();
+  return simgrid::simix::kernelImmediate([] { return new simgrid::simix::MutexImpl(); });
 }
 
 /**

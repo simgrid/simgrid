@@ -136,12 +136,6 @@ inline static void simcall_BODY_process_on_exit(smx_actor_t process, int_f_pvoid
     return simcall<void, smx_actor_t, int_f_pvoid_pvoid_t, void*>(SIMCALL_PROCESS_ON_EXIT, process, fun, data);
   }
 
-inline static smx_actor_t simcall_BODY_process_restart(smx_actor_t process) {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_process_restart(&SIMIX_process_self()->simcall, process);
-    return simcall<smx_actor_t, smx_actor_t>(SIMCALL_PROCESS_RESTART, process);
-  }
-
   inline static boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>
   simcall_BODY_comm_iprobe(smx_mailbox_t mbox, int type, simix_match_func_t match_fun, void* data)
   {
@@ -217,12 +211,6 @@ inline static int simcall_BODY_comm_waitany(xbt_dynar_t comms, double timeout) {
     if (0) simcall_HANDLER_comm_testany(&SIMIX_process_self()->simcall, comms, count);
     return simcall<int, boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>*, size_t>(SIMCALL_COMM_TESTANY,
                                                                                                 comms, count);
-  }
-
-inline static smx_mutex_t simcall_BODY_mutex_init() {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_mutex_init(&SIMIX_process_self()->simcall);
-    return simcall<smx_mutex_t>(SIMCALL_MUTEX_INIT);
   }
 
 inline static void simcall_BODY_mutex_lock(smx_mutex_t mutex) {

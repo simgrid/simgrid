@@ -431,30 +431,6 @@ static inline void simcall_process_on_exit__set__data(smx_simcall_t simcall, voi
   simgrid::simix::marshal<void*>(simcall->args[2], arg);
 }
 
-static inline smx_actor_t simcall_process_restart__get__process(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
-}
-static inline smx_actor_t simcall_process_restart__getraw__process(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<smx_actor_t>(simcall->args[0]);
-}
-static inline void simcall_process_restart__set__process(smx_simcall_t simcall, smx_actor_t arg)
-{
-  simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
-}
-static inline smx_actor_t simcall_process_restart__get__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<smx_actor_t>(simcall->result);
-}
-static inline smx_actor_t simcall_process_restart__getraw__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<smx_actor_t>(simcall->result);
-}
-static inline void simcall_process_restart__set__result(smx_simcall_t simcall, smx_actor_t result){
-    simgrid::simix::marshal<smx_actor_t>(simcall->result, result);
-}
-
 static inline smx_mailbox_t simcall_comm_iprobe__get__mbox(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[0]);
@@ -1134,18 +1110,6 @@ static inline void simcall_comm_testany__set__result(smx_simcall_t simcall, int 
     simgrid::simix::marshal<int>(simcall->result, result);
 }
 
-static inline smx_mutex_t simcall_mutex_init__get__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<smx_mutex_t>(simcall->result);
-}
-static inline smx_mutex_t simcall_mutex_init__getraw__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<smx_mutex_t>(simcall->result);
-}
-static inline void simcall_mutex_init__set__result(smx_simcall_t simcall, smx_mutex_t result){
-    simgrid::simix::marshal<smx_mutex_t>(simcall->result, result);
-}
-
 static inline smx_mutex_t simcall_mutex_lock__get__mutex(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<smx_mutex_t>(simcall->args[0]);
@@ -1580,7 +1544,6 @@ simcall_HANDLER_execution_start(smx_simcall_t simcall, const char* name, double 
 XBT_PRIVATE void
 simcall_HANDLER_execution_wait(smx_simcall_t simcall,
                                boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution);
-XBT_PRIVATE smx_actor_t simcall_HANDLER_process_restart(smx_simcall_t simcall, smx_actor_t process);
 XBT_PRIVATE boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>
 simcall_HANDLER_comm_iprobe(smx_simcall_t simcall, smx_mailbox_t mbox, int type, simix_match_func_t match_fun,
                             void* data);
@@ -1604,7 +1567,6 @@ XBT_PRIVATE void simcall_HANDLER_comm_test(smx_simcall_t simcall,
 XBT_PRIVATE void simcall_HANDLER_comm_testany(smx_simcall_t simcall,
                                               boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>* comms,
                                               size_t count);
-XBT_PRIVATE smx_mutex_t simcall_HANDLER_mutex_init(smx_simcall_t simcall);
 XBT_PRIVATE void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex);
 XBT_PRIVATE int simcall_HANDLER_mutex_trylock(smx_simcall_t simcall, smx_mutex_t mutex);
 XBT_PRIVATE void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex);
