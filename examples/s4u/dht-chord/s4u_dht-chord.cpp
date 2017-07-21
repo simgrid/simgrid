@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -29,7 +29,7 @@ static void chord_init()
   HostChord::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostChord>();
 
   std::vector<simgrid::s4u::Host*> list;
-  simgrid::s4u::Engine::instance()->hostList(&list);
+  simgrid::s4u::Engine::getInstance()->getHostList(&list);
   for (auto host : list)
     host->extension_set(new HostChord(host));
 }
@@ -76,5 +76,6 @@ int main(int argc, char* argv[])
 
   chord_exit();
 
+  delete e;
   return 0;
 }

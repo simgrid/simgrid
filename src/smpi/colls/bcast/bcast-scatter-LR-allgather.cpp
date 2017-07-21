@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "../colls_private.h"
-#include "src/smpi/smpi_status.hpp"
+#include "smpi_status.hpp"
 
 /*****************************************************************************
 
@@ -87,7 +87,7 @@ Coll_bcast_scatter_LR_allgather::bcast(void *buff, int count,
 
 
   nbytes = extent * count;
-  scatter_size = (nbytes + num_procs - 1) / num_procs;  // ceiling division 
+  scatter_size = (nbytes + num_procs - 1) / num_procs;  // ceiling division
   curr_size = (rank == root) ? nbytes : 0;      // root starts with all the data
   relative_rank = (rank >= root) ? rank - root : rank - root + num_procs;
 
@@ -103,7 +103,7 @@ Coll_bcast_scatter_LR_allgather::bcast(void *buff, int count,
       //  allows you to post a larger recv.
       if (recv_size <= 0)
         curr_size = 0;          // this process doesn't receive any data
-      // because of uneven division 
+      // because of uneven division
       else {
         Request::recv((char *) buff + relative_rank * scatter_size, recv_size,
                  MPI_BYTE, src, tag, comm, &status);
@@ -123,7 +123,7 @@ Coll_bcast_scatter_LR_allgather::bcast(void *buff, int count,
   while (mask > 0) {
     if (relative_rank + mask < num_procs) {
       send_size = curr_size - scatter_size * mask;
-      // mask is also the size of this process's subtree 
+      // mask is also the size of this process's subtree
 
       if (send_size > 0) {
         dst = rank + mask;

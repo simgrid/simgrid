@@ -31,12 +31,12 @@ public:
   static MailboxImpl* byNameOrNull(const char* name);
   static MailboxImpl* byNameOrCreate(const char* name);
   void setReceiver(s4u::ActorPtr actor);
-  void push(activity::CommImpl* comm);
+  void push(activity::CommImplPtr comm);
   void remove(smx_activity_t activity);
   simgrid::s4u::Mailbox piface_; // Our interface
   char* name_;
 
-  boost::intrusive_ptr<simgrid::simix::ActorImpl> permanent_receiver; // process which the mailbox is attached to
+  simgrid::simix::ActorImplPtr permanent_receiver; // process which the mailbox is attached to
   boost::circular_buffer_space_optimized<smx_activity_t> comm_queue;
   boost::circular_buffer_space_optimized<smx_activity_t> done_comm_queue; // messages already received in the permanent receive mode
 };

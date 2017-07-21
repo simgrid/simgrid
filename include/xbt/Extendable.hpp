@@ -24,7 +24,7 @@ class Extension {
   friend class Extendable<T>;
   constexpr Extension(std::size_t id) : id_(id) {}
 public:
-  constexpr Extension() : id_(INVALID_ID) {}
+  explicit constexpr Extension() : id_(INVALID_ID) {}
   std::size_t id() const { return id_; }
   bool valid() { return id_ != INVALID_ID; }
 };

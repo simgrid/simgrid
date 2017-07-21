@@ -6,7 +6,10 @@ int x = 0;
 int y = 0;
 
 int main(int argc, char **argv) {
-  int recv_x, recv_y, size, rank;
+  int recv_x;
+  int recv_y;
+  int size;
+  int rank;
   MPI_Status status;
 
   MPI_Init(&argc, &argv);

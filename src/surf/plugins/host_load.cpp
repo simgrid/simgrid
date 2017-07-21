@@ -16,13 +16,13 @@
 #include <utility>
 #include <vector>
 
-/** @addtogroup SURF_plugin_load
+/** @addtogroup plugin_load
 
 This plugin makes it very simple for users to obtain the current load for each host.
 
 */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_plugin_load, surf, "Logging specific to the SURF HostLoad plugin");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_plugin_load, surf, "Logging specific to the HostLoad plugin");
 
 namespace simgrid {
 namespace plugin {
@@ -76,12 +76,12 @@ void HostLoad::update()
 
 double HostLoad::getCurrentLoad()
 {
-  return current_flops / (host->speed() * host->coreCount());
+  return current_flops / (host->getSpeed() * host->getCoreCount());
 }
 
 double HostLoad::getAverageLoad()
 {
-  return getComputedFlops() / (host->speed() * host->coreCount() * (surf_get_clock() - last_reset));
+  return getComputedFlops() / (host->getSpeed() * host->getCoreCount() * (surf_get_clock() - last_reset));
 }
 
 double HostLoad::getComputedFlops()
@@ -141,7 +141,7 @@ static void onActionStateChange(simgrid::surf::CpuAction* action, simgrid::surf:
 /* **************************** Public interface *************************** */
 SG_BEGIN_DECL()
 
-/** \ingroup SURF_plugin_load
+/** \ingroup plugin_load
  * \brief Initializes the HostLoad plugin
  * \details The HostLoad plugin provides an API to get the current load of each host.
  */
@@ -160,7 +160,7 @@ void sg_host_load_plugin_init()
 
 /** @brief Returns the current load of the host passed as argument
  *
- *  See also @ref SURF_plugin_load
+ *  See also @ref plugin_load
  */
 double sg_host_get_current_load(sg_host_t host)
 {

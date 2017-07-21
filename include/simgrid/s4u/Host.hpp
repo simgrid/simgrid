@@ -7,8 +7,7 @@
 #define SIMGRID_S4U_HOST_HPP
 
 #include <string>
-
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include "xbt/Extendable.hpp"
 #include "xbt/dict.h"
@@ -67,8 +66,8 @@ public:
   /** Retrieves the host on which the current actor is running */
   static s4u::Host* current();
 
-  simgrid::xbt::string const& name() const { return name_; }
-  const char* cname() { return name_.c_str(); }
+  simgrid::xbt::string const& getName() const { return name_; }
+  const char* getCname() { return name_.c_str(); }
 
   void actorList(std::vector<ActorPtr> * whereto);
 
@@ -85,31 +84,30 @@ public:
   /** Returns if that host is currently down and offline */
   bool isOff() { return not isOn(); }
 
-  double speed();
-  int coreCount();
-  xbt_dict_t properties();
-  const char* property(const char* key);
+  double getSpeed();
+  int getCoreCount();
+  xbt_dict_t getProperties();
+  const char* getProperty(const char* key);
   void setProperty(const char* key, const char* value);
-  void processes(std::vector<ActorPtr> * list);
+  void getProcesses(std::vector<ActorPtr> * list);
   double getPstateSpeed(int pstate_index);
-  int pstatesCount() const;
+  int getPstatesCount() const;
   void setPstate(int pstate_index);
-  int pstate();
-  xbt_dict_t mountedStoragesAsDict(); // HACK
-  void attachedStorages(std::vector<const char*> * storages);
+  int getPstate();
+  void getAttachedStorages(std::vector<const char*> * storages);
 
   /** Get an associative list [mount point]->[Storage] of all local mount points.
    *
    *  This is defined in the platform file, and cannot be modified programatically (yet).
    */
-  boost::unordered_map<std::string, Storage*> const& mountedStorages();
+  std::unordered_map<std::string, Storage*> const& getMountedStorages();
 
   void routeTo(Host * dest, std::vector<Link*> * links, double* latency);
   void routeTo(Host * dest, std::vector<surf::LinkImpl*> * links, double* latency);
 
 private:
   simgrid::xbt::string name_ = "noname";
-  boost::unordered_map<std::string, Storage*>* mounts = nullptr; // caching
+  std::unordered_map<std::string, Storage*>* mounts = nullptr; // caching
 
 public:
   // TODO, this could be a unique_ptr
@@ -119,13 +117,13 @@ public:
   /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
   kernel::routing::NetPoint* pimpl_netpoint = nullptr;
 
-  /*** Called on each newly created object */
+  /*** Called on each newly created host */
   static simgrid::xbt::signal<void(Host&)> onCreation;
-  /*** Called just before destructing an object */
+  /*** Called just before destructing an host */
   static simgrid::xbt::signal<void(Host&)> onDestruction;
-  /*** Called when the machine is turned on or off */
+  /*** Called when the machine is turned on or off (called AFTER the change) */
   static simgrid::xbt::signal<void(Host&)> onStateChange;
-  /*** Called when the speed of the machine is changed
+  /*** Called when the speed of the machine is changed (called AFTER the change)
    * (either because of a pstate switch or because of an external load event coming from the profile) */
   static simgrid::xbt::signal<void(Host&)> onSpeedChange;
 };
@@ -145,9 +143,8 @@ public class Host {
    * The external load (coming from an availability trace) is not taken in account.
    *
    * @return      The number of tasks currently running on a host.
-   */ 
+   */
   public native int getLoad();
-
 
 }
 #endif

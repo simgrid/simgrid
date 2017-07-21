@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -31,31 +31,12 @@ namespace activity {
     virtual void resume()=0;
     virtual void post() =0; // What to do when a simcall terminates
 
-    // boost::intrusive_ptr<Activity> support:
-    friend void intrusive_ptr_add_ref(ActivityImpl * activity)
-    {
-      // Atomic operation! Do not split in two instructions!
-      auto previous = (activity->refcount_)++;
-      xbt_assert(previous != 0);
-      (void)previous;
-    }
-
-    friend void intrusive_ptr_release(ActivityImpl * activity)
-    {
-      // Atomic operation! Do not split in two instructions!
-      auto count = --(activity->refcount_);
-      if (count == 0)
-        delete activity;
-    }
-
-    /** @brief Increase the refcount */
-    void ref();
-    /** @brief Reduce the refcount; returns true if the object was destroyed */
-    bool unref();
+    // boost::intrusive_ptr<ActivityImpl> support:
+    friend void intrusive_ptr_add_ref(ActivityImpl * activity);
+    friend void intrusive_ptr_release(ActivityImpl * activity);
 
   private:
-    std::atomic_int_fast32_t refcount_{1};
-    int refcount = 1;
+    std::atomic_int_fast32_t refcount_{0};
   };
 }}} // namespace simgrid::kernel::activity
 

@@ -31,7 +31,7 @@ static inline simgrid::mc::ActorInformation* actor_info_cast(smx_actor_t actor)
  *  @param target      Local vector (to be filled with copies of `s_smx_actor_t`)
  *  @param remote_swag Address of the process SWAG in the remote list
  */
-static void MC_process_refresh_simix_process_list(simgrid::mc::Process* process,
+static void MC_process_refresh_simix_process_list(simgrid::mc::RemoteClient* process,
                                                   std::vector<simgrid::mc::ActorInformation>& target,
                                                   simgrid::mc::RemotePtr<s_xbt_swag_t> remote_swag)
 {
@@ -57,7 +57,7 @@ static void MC_process_refresh_simix_process_list(simgrid::mc::Process* process,
   assert(i == swag.count);
 }
 
-static void MC_process_refresh_simix_actor_dynar(simgrid::mc::Process* process,
+static void MC_process_refresh_simix_actor_dynar(simgrid::mc::RemoteClient* process,
                                                  std::vector<simgrid::mc::ActorInformation>& target,
                                                  simgrid::mc::RemotePtr<s_xbt_dynar_t> remote_dynar)
 {
@@ -83,9 +83,9 @@ static void MC_process_refresh_simix_actor_dynar(simgrid::mc::Process* process,
 namespace simgrid {
 namespace mc {
 
-void Process::refresh_simix()
+void RemoteClient::refresh_simix()
 {
-  if (this->cache_flags_ & Process::cache_simix_processes)
+  if (this->cache_flags_ & RemoteClient::cache_simix_processes)
     return;
 
   // TODO, avoid to reload `&simix_global`, `simix_global`, `*simix_global`
@@ -109,7 +109,7 @@ void Process::refresh_simix()
   MC_process_refresh_simix_process_list(this, this->smx_dead_actors_infos,
                                         remote(simix_global.getBuffer()->process_to_destroy));
 
-  this->cache_flags_ |= Process::cache_simix_processes;
+  this->cache_flags_ |= RemoteClient::cache_simix_processes;
 }
 
 }
@@ -145,9 +145,9 @@ smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req)
 const char* MC_smx_actor_get_host_name(smx_actor_t actor)
 {
   if (mc_model_checker == nullptr)
-    return actor->host->cname();
+    return actor->host->getCname();
 
-  simgrid::mc::Process* process = &mc_model_checker->process();
+  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
   /* HACK, Horrible hack to find the offset of the id in the simgrid::s4u::Host.
 
@@ -165,7 +165,7 @@ const char* MC_smx_actor_get_host_name(smx_actor_t actor)
     ~fake_host() {}
   };
   fake_host foo;
-  const size_t offset = (char*) &foo.host.name() - (char*) &foo.host;
+  const size_t offset = (char*)&foo.host.getName() - (char*)&foo.host;
 
   // Read the simgrid::xbt::string in the MCed process:
   simgrid::mc::ActorInformation* info     = actor_info_cast(actor);
@@ -179,7 +179,7 @@ const char* MC_smx_actor_get_host_name(smx_actor_t actor)
 
 const char* MC_smx_actor_get_name(smx_actor_t actor)
 {
-  simgrid::mc::Process* process = &mc_model_checker->process();
+  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
   if (mc_model_checker == nullptr)
     return actor->name.c_str();
 

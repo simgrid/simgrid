@@ -1,7 +1,6 @@
 /* Bindings to the MSG hosts */
 
-/* Copyright (c) 2006-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -133,7 +132,16 @@ public class Host {
 	/** This methods returns the list of storages (names) attached to an host */
 	public native String[] getAttachedStorage();
 
-	/** Returns the amount of Joules consumed by that host so far */
+	/** After this call, sg_host_get_consumed_energy() will not interrupt your process
+	 * (until after the next clock update).
+	 */
+	public static native void updateAllEnergyConsumptions();
+	/** Returns the amount of Joules consumed by that host so far 
+	 *
+	 * Please note that since the consumption is lazily updated, it may require a simcall to update it.
+	 * The result is that the actor requesting this value will be interrupted,
+	 * the value will be updated in kernel mode before returning the control to the requesting actor.
+	 */
 	public native double getConsumedEnergy();
 	
 	/** Returns the current pstate */
@@ -141,9 +149,9 @@ public class Host {
 	/** Changes the current pstate */
 	public native void setPstate(int pstate);
 	public native int getPstatesCount();
-	/** Returns the speed of the processor (in flop/s) at the current pstate. See also @ref SURF_plugin_energy. */
+	/** Returns the speed of the processor (in flop/s) at the current pstate. See also @ref plugin_energy. */
 	public native double getCurrentPowerPeak();
-	/** Returns the speed of the processor (in flop/s) at a given pstate. See also @ref SURF_plugin_energy. */
+	/** Returns the speed of the processor (in flop/s) at a given pstate. See also @ref plugin_energy. */
 	public native double getPowerPeakAt(int pstate);
 	
 

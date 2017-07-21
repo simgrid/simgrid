@@ -2,7 +2,7 @@
 /* include/mpitestconf.h.in.  Generated from configure.ac by autoheader.  */
 
 /* -*- Mode: C; c-basic-offset:4 ; -*- */
-/*  
+/*
  *  (C) 2001 by Argonne National Laboratory.
  *      See COPYRIGHT in top-level directory.
  */
@@ -188,25 +188,25 @@
 #define POINTERINT_t int
 
 /* The size of `int', as computed by sizeof. */
-#define SIZEOF_INT 
+#define SIZEOF_INT
 
 /* The size of `long', as computed by sizeof. */
-#define SIZEOF_LONG 
+#define SIZEOF_LONG
 
 /* The size of `long long', as computed by sizeof. */
-#define SIZEOF_LONG_LONG 
+#define SIZEOF_LONG_LONG
 
 /* The size of `MPI_Offset', as computed by sizeof. */
-#define SIZEOF_MPI_OFFSET 
+#define SIZEOF_MPI_OFFSET
 
 /* The size of `short', as computed by sizeof. */
-#define SIZEOF_SHORT 
+#define SIZEOF_SHORT
 
 /* The size of `void *', as computed by sizeof. */
-#define SIZEOF_VOID_P 
+#define SIZEOF_VOID_P
 
 /* Define calling convention */
-#define STDCALL 
+#define STDCALL
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1

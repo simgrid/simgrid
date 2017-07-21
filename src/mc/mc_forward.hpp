@@ -19,7 +19,7 @@ class PageStore;
 class ChunkedData;
 class ModelChecker;
 class AddressSpace;
-class Process;
+class RemoteClient;
 class Snapshot;
 class ObjectInformation;
 class Member;

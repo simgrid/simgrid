@@ -30,12 +30,21 @@ class XBT_PUBLIC() Client {
 private:
   bool active_ = false;
   Channel channel_;
-  static std::unique_ptr<Client> client_;
+  static std::unique_ptr<Client> instance_;
 
 public:
   Client();
   explicit Client(int fd) : active_(true), channel_(fd) {}
   void handleMessages();
+
+private:
+  void handleDeadlockCheck(mc_message_t* msg);
+  void handleContinue(mc_message_t* msg);
+  void handleSimcall(s_mc_message_simcall_handle_t* message);
+  void handleRestore(s_mc_message_restore_t* msg);
+  void handleActorEnabled(s_mc_message_actor_enabled_t* msg);
+
+public:
   Channel const& getChannel() const { return channel_; }
   Channel& getChannel() { return channel_; }
   void mainLoop();
@@ -51,7 +60,7 @@ public:
   // Singleton :/
   // TODO, remove the singleton antipattern.
   static Client* initialize();
-  static Client* get() { return client_.get(); }
+  static Client* get() { return instance_.get(); }
 };
 }
 }

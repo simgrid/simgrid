@@ -11,7 +11,7 @@
 
 /*
  * bw and latency test 2
- * send 2 x 1 byte from 2 task in same direction 0 -> 1 
+ * send 2 x 1 byte from 2 task in same direction 0 -> 1
  */
 
 int main(int argc, char **argv)
@@ -46,7 +46,6 @@ int main(int argc, char **argv)
   SD_task_destroy(task1);
   SD_task_destroy(task2);
 
-  SD_exit();
 
   return 0;
 }

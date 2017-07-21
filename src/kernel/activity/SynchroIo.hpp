@@ -13,14 +13,14 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-  XBT_PUBLIC_CLASS Io : public ActivityImpl {
-  public:
-    void suspend() override;
-    void resume() override;
-    void post() override;
+XBT_PUBLIC_CLASS IoImpl : public ActivityImpl
+{
+public:
+  void suspend() override;
+  void resume() override;
+  void post() override;
 
-    sg_host_t host = nullptr;
-    surf_action_t surf_io = nullptr;
+  surf_action_t surf_io = nullptr;
   };
 
 }}} // namespace simgrid::kernel::activity

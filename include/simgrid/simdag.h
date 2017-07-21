@@ -121,8 +121,8 @@ XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
 
 /** @} */
 
-/** @addtogroup SD_task_dependency_api 
- * 
+/** @addtogroup SD_task_dependency_api
+ *
  *  This section describes the functions for managing the dependencies between the tasks.
  *
  *  @see SD_task_api
@@ -140,7 +140,14 @@ XBT_PUBLIC(int) SD_task_dependency_exists(SD_task_t src, SD_task_t dst);
  *
  *  @{
  */
-XBT_PUBLIC(void) SD_init(int *argc, char **argv);
+
+#define SD_init(argc, argv)                                                                                            \
+  do {                                                                                                                 \
+    sg_version_check(SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR, SIMGRID_VERSION_PATCH);                             \
+    SD_init_nocheck(argc, argv);                                                                                       \
+  } while (0)
+
+XBT_PUBLIC(void) SD_init_nocheck(int *argc, char **argv);
 XBT_PUBLIC(void) SD_config(const char *key, const char *value);
 XBT_PUBLIC(void) SD_create_environment(const char *platform_file);
 XBT_PUBLIC(void) SD_simulate(double how_long);
@@ -151,13 +158,6 @@ XBT_PUBLIC(xbt_dynar_t) SD_daxload(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_dotload(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_dotload_with_sched(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_PTG_dotload(const char *filename);
-#ifdef __cplusplus
-namespace simgrid {
-namespace sd {
-XBT_PUBLIC(std::set<SD_task_t>*) simulate(double how_long);
-}
-}
-#endif
 /** @} */
 
 /* Support some backward compatibility */
@@ -196,4 +196,13 @@ XBT_PUBLIC(std::set<SD_task_t>*) simulate(double how_long);
 //SD_route_get_list
 //TRACE_sd_set_task_category
 SG_END_DECL()
+
+#ifdef __cplusplus
+namespace simgrid {
+namespace sd {
+XBT_PUBLIC(std::set<SD_task_t>*) simulate(double how_long);
+}
+}
+#endif
+
 #endif

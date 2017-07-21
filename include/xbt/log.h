@@ -12,12 +12,12 @@
 
 /** \defgroup XBT_log_cats Existing log categories
  *  \ingroup XBT_log
- *  \brief (automatically extracted) 
+ *  \brief (automatically extracted)
  *
  *  This is the list of all existing log categories in SimGrid.
  *  This list is automatically extracted from the source code by the tools/doxygen/xbt_log_extract_hierarchy.pl utility.
  *
- *  It should thus contain every categories that are defined in the SimGrid library. 
+ *  It should thus contain every categories that are defined in the SimGrid library.
  *  If you want to see the one defined in your code in addition, provide `--help-logs` on the command line of your simulator.
  */
 
@@ -150,14 +150,14 @@ typedef enum {
  * \param desc string describing the purpose of this category
  * \hideinitializer
  *
- * Defines a new subcategory of the parent. 
+ * Defines a new subcategory of the parent.
  */
 #define XBT_LOG_NEW_SUBCATEGORY(catName, parent, desc)    \
   XBT_LOG_EXTERNAL_CATEGORY(parent);                      \
   XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc)   \
 
 /**
- * \ingroup XBT_log  
+ * \ingroup XBT_log
  * \param catName name of new category
  * \param desc string describing the purpose of this category
  * \hideinitializer
@@ -168,7 +168,7 @@ typedef enum {
    XBT_LOG_NEW_SUBCATEGORY_helper(catName, XBT_LOG_ROOT_CAT, desc)
 
 /**
- * \ingroup XBT_log  
+ * \ingroup XBT_log
  * \param cname name of the cat
  * \hideinitializer
  *
@@ -183,7 +183,7 @@ typedef enum {
 #endif
 
 /**
- * \ingroup XBT_log  
+ * \ingroup XBT_log
  * \param cname name of the cat
  * \param desc string describing the purpose of this category
  * \hideinitializer
@@ -196,7 +196,7 @@ typedef enum {
     XBT_LOG_DEFAULT_CATEGORY(cname)
 
 /**
- * \ingroup XBT_log  
+ * \ingroup XBT_log
  * \param cname name of the cat
  * \param parent name of the parent
  * \param desc string describing the purpose of this category
@@ -210,7 +210,7 @@ typedef enum {
     XBT_LOG_DEFAULT_CATEGORY(cname)
 
 /**
- * \ingroup XBT_log  
+ * \ingroup XBT_log
  * \param cname name of the cat
  * \hideinitializer
  *
@@ -283,7 +283,7 @@ struct xbt_log_event_s {
 XBT_PUBLIC(void) xbt_log_threshold_set(xbt_log_category_t cat, e_xbt_log_priority_t thresholdPriority);
 
 /**
- * \ingroup XBT_log_implem  
+ * \ingroup XBT_log_implem
  * \param cat the category (not only its name, but the variable)
  * \param app the appender
  *
@@ -291,7 +291,7 @@ XBT_PUBLIC(void) xbt_log_threshold_set(xbt_log_category_t cat, e_xbt_log_priorit
  */
 XBT_PUBLIC(void) xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app);
 /**
- * \ingroup XBT_log_implem  
+ * \ingroup XBT_log_implem
  * \param cat the category (not only its name, but the variable)
  * \param lay the layout
  *
@@ -300,7 +300,7 @@ XBT_PUBLIC(void) xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t
 XBT_PUBLIC(void) xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay);
 
 /**
- * \ingroup XBT_log_implem  
+ * \ingroup XBT_log_implem
  * \param cat the category (not only its name, but the variable)
  * \param additivity whether logging actions must be passed to parent.
  *
@@ -309,7 +309,7 @@ XBT_PUBLIC(void) xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay
  */
 XBT_PUBLIC(void) xbt_log_additivity_set(xbt_log_category_t cat, int additivity);
 
-/** @brief create a new simple layout 
+/** @brief create a new simple layout
  *
  * This layout is not as flexible as the pattern one
  */
@@ -343,7 +343,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
 /* ********************** */
 
 /**
- * \ingroup XBT_log 
+ * \ingroup XBT_log
  * \param catName name of the category
  * \param priority minimal priority to be enabled to return true (must be #e_xbt_log_priority_t)
  * \hideinitializer

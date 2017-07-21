@@ -41,7 +41,7 @@ MPI_Allreduce
 4 - Topology aware Reduce + Bcast algorithm
 5 - Binomial gather + scatter algorithm
 6 - Topology aware binominal gather + scatter algorithm
-7 - Shumilin's ring algorithm 
+7 - Shumilin's ring algorithm
 8 - Ring algorithm
 
   as Shumilin's ring algorithm is unknown, default to ring'
@@ -67,7 +67,7 @@ int (*intel_allreduce_functions_table[])(void *sendbuf,
 
 intel_tuning_table_element intel_allreduce_table[] =
 {
-  {1,{ 
+  {1,{
     { 2,9,{
       {6,7},
       {85,1},
@@ -382,13 +382,13 @@ intel_tuning_table_element intel_allreduce_table[] =
 
 
 
-/*I_MPI_ADJUST_ALLTOALL 
+/*I_MPI_ADJUST_ALLTOALL
 
-MPI_Alltoall 
+MPI_Alltoall
 
-1. Bruck's algorithm 
-2. Isend/Irecv + waitall algorithm 
-3. Pair wise exchange algorithm 
+1. Bruck's algorithm
+2. Isend/Irecv + waitall algorithm
+3. Pair wise exchange algorithm
 4. Plum's algorithm
 
 */
@@ -634,10 +634,10 @@ intel_tuning_table_element intel_alltoall_table[] =
   }
   }
 };
-int (*intel_alltoall_functions_table[])(void *sbuf, int scount, 
+int (*intel_alltoall_functions_table[])(void *sbuf, int scount,
                                              MPI_Datatype sdtype,
-                                             void* rbuf, int rcount, 
-                                             MPI_Datatype rdtype, 
+                                             void* rbuf, int rcount,
+                                             MPI_Datatype rdtype,
                                              MPI_Comm comm) ={
       Coll_alltoall_bruck::alltoall,
       Coll_alltoall_mvapich2_scatter_dest::alltoall,
@@ -645,16 +645,16 @@ int (*intel_alltoall_functions_table[])(void *sbuf, int scount,
       Coll_alltoall_mvapich2::alltoall//Plum is proprietary ? (and super efficient)
 };
 
-/*I_MPI_ADJUST_BARRIER 
+/*I_MPI_ADJUST_BARRIER
 
-MPI_Barrier 
+MPI_Barrier
 
-1. Dissemination algorithm 
-2. Recursive doubling algorithm 
-3. Topology aware dissemination algorithm 
-4. Topology aware recursive doubling algorithm 
-5. Binominal gather + scatter algorithm 
-6. Topology aware binominal gather + scatter algorithm 
+1. Dissemination algorithm
+2. Recursive doubling algorithm
+3. Topology aware dissemination algorithm
+4. Topology aware recursive doubling algorithm
+5. Binominal gather + scatter algorithm
+6. Topology aware binominal gather + scatter algorithm
 
 */
 static int intel_barrier_gather_scatter(MPI_Comm comm){
@@ -785,17 +785,17 @@ intel_tuning_table_element intel_barrier_table[] =
 };
 
 
-/*I_MPI_ADJUST_BCAST 
+/*I_MPI_ADJUST_BCAST
 
-MPI_Bcast 
+MPI_Bcast
 
-1. Binomial algorithm 
-2. Recursive doubling algorithm 
-3. Ring algorithm 
-4. Topology aware binomial algorithm 
-5. Topology aware recursive doubling algorithm 
-6. Topology aware ring algorithm 
-7. Shumilin's bcast algorithm 
+1. Binomial algorithm
+2. Recursive doubling algorithm
+3. Ring algorithm
+4. Topology aware binomial algorithm
+5. Topology aware recursive doubling algorithm
+6. Topology aware ring algorithm
+7. Shumilin's bcast algorithm
 */
 
 int (*intel_bcast_functions_table[])(void *buff, int count,
@@ -954,15 +954,15 @@ intel_tuning_table_element intel_bcast_table[] =
 };
 
 
-/*I_MPI_ADJUST_REDUCE 
+/*I_MPI_ADJUST_REDUCE
 
-MPI_Reduce 
+MPI_Reduce
 
-1. Shumilin's algorithm 
-2. Binomial algorithm 
-3. Topology aware Shumilin's algorithm 
-4. Topology aware binomial algorithm 
-5. Rabenseifner's algorithm 
+1. Shumilin's algorithm
+2. Binomial algorithm
+3. Topology aware Shumilin's algorithm
+4. Topology aware binomial algorithm
+5. Rabenseifner's algorithm
 6. Topology aware Rabenseifner's algorithm
 
 */
@@ -1044,15 +1044,15 @@ intel_tuning_table_element intel_reduce_table[] =
   }
 };
 
-/* I_MPI_ADJUST_REDUCE_SCATTER 
+/* I_MPI_ADJUST_REDUCE_SCATTER
 
-MPI_Reduce_scatter 
+MPI_Reduce_scatter
 
-1. Recursive having algorithm 
-2. Pair wise exchange algorithm 
-3. Recursive doubling algorithm 
-4. Reduce + Scatterv algorithm 
-5. Topology aware Reduce + Scatterv algorithm 
+1. Recursive having algorithm
+2. Pair wise exchange algorithm
+3. Recursive doubling algorithm
+4. Reduce + Scatterv algorithm
+5. Topology aware Reduce + Scatterv algorithm
 
 */
 static  int intel_reduce_scatter_reduce_scatterv(void *sbuf, void *rbuf,
@@ -1476,21 +1476,21 @@ intel_tuning_table_element intel_reduce_scatter_table[] =
   }
 };
 
-/* I_MPI_ADJUST_ALLGATHER 
+/* I_MPI_ADJUST_ALLGATHER
 
-MPI_Allgather 
+MPI_Allgather
 
-1. Recursive doubling algorithm 
-2. Bruck's algorithm 
-3. Ring algorithm 
-4. Topology aware Gatherv + Bcast algorithm 
+1. Recursive doubling algorithm
+2. Bruck's algorithm
+3. Ring algorithm
+4. Topology aware Gatherv + Bcast algorithm
 
 */
 
-int (*intel_allgather_functions_table[])(void *sbuf, int scount, 
+int (*intel_allgather_functions_table[])(void *sbuf, int scount,
                                               MPI_Datatype sdtype,
-                                              void* rbuf, int rcount, 
-                                              MPI_Datatype rdtype, 
+                                              void* rbuf, int rcount,
+                                              MPI_Datatype rdtype,
                                               MPI_Comm  comm
                                                     ) ={
       Coll_allgather_rdb::allgather,
@@ -1645,22 +1645,22 @@ intel_tuning_table_element intel_allgather_table[] =
   }
 };
 
-/* I_MPI_ADJUST_ALLGATHERV 
+/* I_MPI_ADJUST_ALLGATHERV
 
-MPI_Allgatherv 
+MPI_Allgatherv
 
-1. Recursive doubling algorithm 
-2. Bruck's algorithm 
-3. Ring algorithm 
-4. Topology aware Gatherv + Bcast algorithm 
+1. Recursive doubling algorithm
+2. Bruck's algorithm
+3. Ring algorithm
+4. Topology aware Gatherv + Bcast algorithm
 
 */
 
-int (*intel_allgatherv_functions_table[])(void *sbuf, int scount, 
+int (*intel_allgatherv_functions_table[])(void *sbuf, int scount,
                                                MPI_Datatype sdtype,
-                                               void* rbuf, int *rcounts, 
+                                               void* rbuf, int *rcounts,
                                                int *rdispls,
-                                               MPI_Datatype rdtype, 
+                                               MPI_Datatype rdtype,
                                                MPI_Comm  comm
                                                     ) ={
       Coll_allgatherv_mpich_rdb::allgatherv,
@@ -1861,16 +1861,16 @@ intel_tuning_table_element intel_allgatherv_table[] =
 
 MPI_Gather
 
-1. Binomial algorithm 
-2. Topology aware binomial algorithm 
+1. Binomial algorithm
+2. Topology aware binomial algorithm
 3. Shumilin's algorithm
 
 */
 
-int (*intel_gather_functions_table[])(void *sbuf, int scount, 
+int (*intel_gather_functions_table[])(void *sbuf, int scount,
                                            MPI_Datatype sdtype,
-                                           void* rbuf, int rcount, 
-                                           MPI_Datatype rdtype, 
+                                           void* rbuf, int rcount,
+                                           MPI_Datatype rdtype,
                                            int root,
                                            MPI_Comm  comm
                                                     ) ={
@@ -1961,20 +1961,20 @@ intel_tuning_table_element intel_gather_table[] =
 };
 
 
-/* I_MPI_ADJUST_SCATTER 
+/* I_MPI_ADJUST_SCATTER
 
-MPI_Scatter 
+MPI_Scatter
 
-1. Binomial algorithm 
-2. Topology aware binomial algorithm 
-3. Shumilin's algorithm 
+1. Binomial algorithm
+2. Topology aware binomial algorithm
+3. Shumilin's algorithm
 
 */
 
-int (*intel_scatter_functions_table[])(void *sbuf, int scount, 
+int (*intel_scatter_functions_table[])(void *sbuf, int scount,
                                             MPI_Datatype sdtype,
-                                            void* rbuf, int rcount, 
-                                            MPI_Datatype rdtype, 
+                                            void* rbuf, int rcount,
+                                            MPI_Datatype rdtype,
                                             int root, MPI_Comm  comm
                                                     ) ={
       Coll_scatter_ompi_binomial::scatter,
@@ -2136,12 +2136,12 @@ intel_tuning_table_element intel_scatter_table[] =
 
 
 
-/* I_MPI_ADJUST_ALLTOALLV 
+/* I_MPI_ADJUST_ALLTOALLV
 
-MPI_Alltoallv 
+MPI_Alltoallv
 
-1. Isend/Irecv + waitall algorithm 
-2. Plum's algorithm 
+1. Isend/Irecv + waitall algorithm
+2. Plum's algorithm
 
 */
 
@@ -2179,7 +2179,7 @@ intel_tuning_table_element intel_alltoallv_table[] =
     }
     },
     { 2147483647,2,{
-      {4,1},//0 again 
+      {4,1},//0 again
       {2147483647,2}
     }
     }
@@ -2212,19 +2212,19 @@ intel_tuning_table_element intel_alltoallv_table[] =
 };
 
 
-//These are collected from table 3.5-2 of the Intel MPI Reference Manual 
+//These are collected from table 3.5-2 of the Intel MPI Reference Manual
 
-    
+
 #define SIZECOMP_reduce_scatter\
     int total_message_size = 0;\
     for (i = 0; i < comm_size; i++) { \
         total_message_size += rcounts[i];\
     }\
     size_t block_dsize = total_message_size*dtype->size();\
-    
+
 #define SIZECOMP_allreduce\
   size_t block_dsize =rcount * dtype->size();
-  
+
 #define SIZECOMP_alltoall\
   size_t block_dsize =send_count * send_type->size();
 
@@ -2246,7 +2246,7 @@ intel_tuning_table_element intel_alltoallv_table[] =
         total_message_size += recv_count[i];\
     }\
     size_t block_dsize = total_message_size*recv_type->size();
-    
+
 #define SIZECOMP_gather\
   int rank = comm->rank();\
   size_t block_dsize = (send_buff == MPI_IN_PLACE || rank ==root) ?\
@@ -2261,7 +2261,7 @@ intel_tuning_table_element intel_alltoallv_table[] =
 
 #define SIZECOMP_alltoallv\
   size_t block_dsize = 1;
-  
+
 #define IMPI_COLL_SELECT(cat, ret, args, args2)\
 ret Coll_ ## cat ## _impi:: cat (COLL_UNPAREN args)\
 {\

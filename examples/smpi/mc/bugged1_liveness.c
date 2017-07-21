@@ -11,7 +11,12 @@
 /******************************************************************************/
 
 /* Run :
-  /usr/bin/time -f "clock:%e user:%U sys:%S swapped:%W exitval:%x max:%Mk" "$@" ../../../smpi_script/bin/smpirun -hostfile hostfile_bugged1_liveness -platform ../../platforms/cluster.xml --cfg=contexts/factory:ucontext --cfg=model-check/reduction:none --cfg=model-check/property:promela_bugged1_liveness --cfg=smpi/send-is-detached-thresh:0 --cfg=contexts/stack_size:128 --cfg=model-check/visited:100000 --cfg=model-check/max_depth:100000 ./bugged1_liveness */
+  /usr/bin/time -f "clock:%e user:%U sys:%S swapped:%W exitval:%x max:%Mk" "$@" \
+    ../../../smpi_script/bin/smpirun -hostfile hostfile_bugged1_liveness -platform ../../platforms/cluster.xml \
+    --cfg=contexts/factory:ucontext --cfg=model-check/reduction:none \
+    --cfg=model-check/property:promela_bugged1_liveness --cfg=smpi/send-is-detached-thresh:0 \
+    --cfg=contexts/stack-size:128 --cfg=model-check/visited:100000 --cfg=model-check/max-depth:100000 ./bugged1_liveness
+*/
 
 #include <stdio.h>
 #include <mpi.h>
@@ -24,13 +29,14 @@
 int r, cs;
 
 int main(int argc, char **argv){
-  int err, size, rank;
+  int size;
+  int rank;
   int recv_buff;
   MPI_Status status;
   xbt_dynar_t requests = xbt_dynar_new(sizeof(int), NULL);
 
   /* Initialize MPI */
-  err = MPI_Init(&argc, &argv);
+  int err = MPI_Init(&argc, &argv);
   if(err !=  MPI_SUCCESS){
     printf("MPI initialization failed !\n");
     exit(1);

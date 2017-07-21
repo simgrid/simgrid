@@ -72,6 +72,5 @@ int main(int argc, char **argv)
   /* Test if properties are displayed by sg_host_dump */
   sg_host_dump(h2);
 
-  SD_exit();
   return 0;
 }

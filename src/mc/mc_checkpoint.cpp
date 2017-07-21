@@ -17,7 +17,7 @@
 
 #include "src/internal_config.h"
 #include "src/mc/mc_private.h"
-#include "src/smpi/private.h"
+#include "src/smpi/include/private.h"
 #include "xbt/mmalloc.h"
 #include "xbt/module.h"
 
@@ -89,21 +89,21 @@ RegionSnapshot privatized_region(
 {
   size_t process_count = MC_smpi_process_count();
 
-  // Read smpi_privatisation_regions from MCed:
-  smpi_privatisation_region_t remote_smpi_privatisation_regions;
+  // Read smpi_privatization_regions from MCed:
+  smpi_privatization_region_t remote_smpi_privatization_regions;
   mc_model_checker->process().read_variable(
-    "smpi_privatisation_regions",
-    &remote_smpi_privatisation_regions, sizeof(remote_smpi_privatisation_regions));
-  s_smpi_privatisation_region_t privatisation_regions[process_count];
+    "smpi_privatization_regions",
+    &remote_smpi_privatization_regions, sizeof(remote_smpi_privatization_regions));
+  s_smpi_privatization_region_t privatization_regions[process_count];
   mc_model_checker->process().read_bytes(
-    &privatisation_regions, sizeof(privatisation_regions),
-    remote(remote_smpi_privatisation_regions));
+    &privatization_regions, sizeof(privatization_regions),
+    remote(remote_smpi_privatization_regions));
 
   std::vector<simgrid::mc::RegionSnapshot> data;
   data.reserve(process_count);
   for (size_t i = 0; i < process_count; i++)
     data.push_back(simgrid::mc::region(region_type, start_addr,
-      privatisation_regions[i].address, size));
+      privatization_regions[i].address, size));
 
   simgrid::mc::RegionSnapshot region = simgrid::mc::RegionSnapshot(
     region_type, start_addr, permanent_addr, size);
@@ -142,7 +142,7 @@ void add_region(int index, simgrid::mc::Snapshot* snapshot,
   return;
 }
 
-static void get_memory_regions(simgrid::mc::Process* process, simgrid::mc::Snapshot* snapshot)
+static void get_memory_regions(simgrid::mc::RemoteClient* process, simgrid::mc::Snapshot* snapshot)
 {
   const size_t n = process->object_infos.size();
   snapshot->snapshot_regions.resize(n + 1);
@@ -283,7 +283,7 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame,
                                            int process_index,
                                            std::vector<s_local_variable>& result)
 {
-  simgrid::mc::Process* process = &mc_model_checker->process();
+  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
   if (not scope || not scope->range.contain(stack_frame->ip))
     return;
@@ -347,7 +347,7 @@ static std::vector<s_local_variable> get_local_variables_values(
 
 static std::vector<s_mc_stack_frame_t> unwind_stack_frames(simgrid::mc::UnwindContext* stack_context)
 {
-  simgrid::mc::Process* process = &mc_model_checker->process();
+  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
   std::vector<s_mc_stack_frame_t> result;
 
   unw_cursor_t c = stack_context->cursor();
@@ -439,7 +439,7 @@ static std::vector<s_mc_snapshot_stack_t> take_snapshot_stacks(simgrid::mc::Snap
 static void snapshot_handle_ignore(simgrid::mc::Snapshot* snapshot)
 {
   xbt_assert(snapshot->process());
-  
+
   // Copy the memory:
   for (auto const& region : mc_model_checker->process().ignored_regions()) {
     s_mc_snapshot_ignored_data_t ignored_data;
@@ -510,7 +510,7 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
     link[res] = '\0';
 
 #if HAVE_SMPI
-    if(smpi_is_privatisation_file(link))
+    if(smpi_is_privatization_file(link))
       continue;
 #endif
 
@@ -555,7 +555,7 @@ std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
 {
   XBT_DEBUG("Taking snapshot %i", num_state);
 
-  simgrid::mc::Process* mc_process = &mc_model_checker->process();
+  simgrid::mc::RemoteClient* mc_process = &mc_model_checker->process();
 
   std::shared_ptr<simgrid::mc::Snapshot> snapshot = std::make_shared<simgrid::mc::Snapshot>(mc_process, num_state);
 
@@ -595,12 +595,9 @@ void restore_snapshot_regions(simgrid::mc::Snapshot* snapshot)
   }
 
 #if HAVE_SMPI
-  // TODO, send a message to implement this in the MCed process
   if(snapshot->privatization_index >= 0) {
     // Fix the privatization mmap:
-    s_mc_restore_message message;
-    message.type = MC_MESSAGE_RESTORE;
-    message.index = snapshot->privatization_index;
+    s_mc_message_restore message{MC_MESSAGE_RESTORE, snapshot->privatization_index};
     mc_model_checker->process().getChannel().send(message);
   }
 #endif
@@ -612,7 +609,7 @@ void restore_snapshot_fds(simgrid::mc::Snapshot* snapshot)
   xbt_die("FD snapshot not implemented in client/server mode.");
 
   for (auto const& fd : snapshot->current_fds) {
-    
+
     int new_fd = open(fd.filename.c_str(), fd.flags);
     if (new_fd < 0)
       xbt_die("Could not reopen the file %s fo restoring the file descriptor", fd.filename.c_str());

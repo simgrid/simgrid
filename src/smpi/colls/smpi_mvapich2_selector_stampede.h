@@ -42,7 +42,7 @@ mv2_alltoall_tuning_table **mv2_alltoall_thresholds_table = NULL;
 #define MPIR_Alltoall_RD_MV2 simgrid::smpi::Coll_alltoall_rdb::alltoall
 #define MPIR_Alltoall_Scatter_dest_MV2 simgrid::smpi::Coll_alltoall_mvapich2_scatter_dest::alltoall
 #define MPIR_Alltoall_pairwise_MV2 simgrid::smpi::Coll_alltoall_pair::alltoall
-#define MPIR_Alltoall_inplace_MV2 simgrid::smpi::Coll_alltoall_ring::alltoall 
+#define MPIR_Alltoall_inplace_MV2 simgrid::smpi::Coll_alltoall_ring::alltoall
 
 
 static void init_mv2_alltoall_tables_stampede(){
@@ -578,7 +578,7 @@ typedef struct {
 } mv2_gather_tuning_table;
 
 int mv2_size_gather_tuning_table=7;
-mv2_gather_tuning_table * mv2_gather_thresholds_table=NULL; 
+mv2_gather_tuning_table * mv2_gather_thresholds_table=NULL;
 
 typedef int (*MV2_Gather_function_ptr) (void *sendbuf,
     int sendcnt,
@@ -796,7 +796,7 @@ static int MPIR_Allreduce_mcst_reduce_two_level_helper_MV2( void *sendbuf,
     int count,
     MPI_Datatype datatype,
     MPI_Op op, MPI_Comm comm)
-{ 
+{
   return 0;
 }
 
@@ -1982,6 +1982,6 @@ static void init_mv2_scatter_tables_stampede(){
                 * mv2_size_scatter_tuning_table[i]));
     }
     xbt_free(table_ptrs);
-  
+
 }
 

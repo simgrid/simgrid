@@ -15,7 +15,7 @@
  * @brief LMM element
  * Elements can be seen as glue between constraint objects and variable objects.
  * Basically, each variable will have a set of elements, one for each constraint where it is involved.
- * Then, it is used to list all variables involved in constraint through constraint's xxx_element_set lists, or vice-versa list all constraints for a given variable.  
+ * Then, it is used to list all variables involved in constraint through constraint's xxx_element_set lists, or vice-versa list all constraints for a given variable.
  */
 typedef struct lmm_element {
   /* hookup to constraint */
@@ -25,7 +25,11 @@ typedef struct lmm_element {
 
   lmm_constraint_t constraint;
   lmm_variable_t variable;
-  double value;
+
+  // consumption_weight: impact of 1 byte or flop of your application onto the resource (in byte or flop)
+  //   - if CPU, then probably 1.
+  //   - If network, then 1 in forward direction and 0.05 backward for the ACKs
+  double consumption_weight;
 } s_lmm_element_t;
 #define make_elem_active(elem) xbt_swag_insert_at_head(elem,&(elem->constraint->active_element_set))
 #define make_elem_inactive(elem) xbt_swag_remove(elem,&(elem->constraint->active_element_set))
@@ -37,11 +41,11 @@ typedef struct lmm_constraint_light {
 
 /** @ingroup SURF_lmm
  * @brief LMM constraint
- * Each constraint contains several partially overlapping logical sets of elements: 
+ * Each constraint contains several partially overlapping logical sets of elements:
  * \li Disabled elements which variable's weight is zero. This variables are not at all processed by LMM, but eventually the corresponding action will enable it (at least this is the idea).
  * \li Enabled elements which variable's weight is non-zero. They are utilized in some LMM functions.
- * \li Active elements which variable's weight is non-zero (i.e. it is enabled) AND its element value is non-zero. LMM_solve iterates over active elements during resolution, dynamically making them active or unactive. 
- * 
+ * \li Active elements which variable's weight is non-zero (i.e. it is enabled) AND its element value is non-zero. LMM_solve iterates over active elements during resolution, dynamically making them active or unactive.
+ *
  */
 typedef struct lmm_constraint {
   /* hookup to system */
@@ -57,10 +61,10 @@ typedef struct lmm_constraint {
   double usage;
   double bound;
   int concurrency_limit; /* The maximum number of variables that may be enabled at any time (stage variables if necessary) */
-  //TODO MARTIN Check maximum value across resources at the end of simulation and give a warning is more than e.g. 500 
+  //TODO MARTIN Check maximum value across resources at the end of simulation and give a warning is more than e.g. 500
   int concurrency_current; /* The current concurrency */
   int concurrency_maximum; /* The maximum number of (enabled and disabled) variables associated to the constraint at any given time (essentially for tracing)*/
-  
+
   int sharing_policy; /* see @e_surf_link_sharing_policy_t (0: FATPIPE, 1: SHARED, 2: FULLDUPLEX) */
   void *id;
   int id_int;
@@ -71,7 +75,7 @@ typedef struct lmm_constraint {
 
 /** @ingroup SURF_lmm
  * @brief LMM variable
- * 
+ *
  * When something prevents us from enabling a variable, we "stage" the weight that we would have like to set, so that as soon as possible we enable the variable with desired weight
  */
 typedef struct lmm_variable {
@@ -82,7 +86,13 @@ typedef struct lmm_variable {
   s_lmm_element_t *cnsts;
   int cnsts_size;
   int cnsts_number;
-  double weight; /* weight > 0 means variable is considered by LMM, weight == 0 means variable is not considered by LMM*/
+
+  // sharing_weight: variable's impact on the resource during the sharing
+  //   if == 0, the variable is not considered by LMM
+  //   on CPU, actions with N threads have a sharing of N
+  //   on network, the actions with higher latency have a lesser sharing_weight
+  double sharing_weight;
+
   double staged_weight; /* If non-zero, variable is staged for addition as soon as maxconcurrency constraints will be met */
   double bound;
   double value;
@@ -136,7 +146,7 @@ typedef struct lmm_system {
 
 /** @ingroup SURF_lmm
  * @brief Print information about a lmm system
- * 
+ *
  * @param sys A lmm system
  */
 //XBT_PRIVATE void lmm_print(lmm_system_t sys);

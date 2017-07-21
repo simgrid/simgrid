@@ -485,19 +485,6 @@ void TRACE_vm_variable_sub_with_time (double time, const char *vm, const char *v
   instr_user_variable(time, vm, variable, "MSG_VM", value, INSTR_US_SUB, nullptr, user_vm_variables);
 }
 
-/** \ingroup TRACE_user_variables
- *  \brief Get declared user vm variables
- *
- * This function should be used to get VM variables that were already declared with #TRACE_vm_variable_declare or with
- * #TRACE_vm_variable_declare_with_color.
- *
- * \return A dynar with the declared host variables, must be freed with xbt_dynar_free.
- */
-xbt_dynar_t TRACE_get_vm_variables ()
-{
-  return instr_dict_to_dynar (user_vm_variables);
-}
-
 /* for host variables */
 /** \ingroup TRACE_user_variables
  *  \brief Declare a new user variable associated to hosts.
@@ -1003,23 +990,6 @@ void TRACE_host_pop_state (const char *host, const char *state)
   new PopStateEvent(MSG_get_clock(), container, type);
 }
 
-/** \ingroup TRACE_user_variables
- *  \brief Reset the state of a given host.
- *
- *  Clear all previous values of a user state.
- *
- *  \param host The name of the host to be considered.
- *  \param state The name of the state to be cleared.
- *
- *  \see TRACE_host_state_declare, TRACE_host_set_state, TRACE_host_push_state, TRACE_host_pop_state
- */
-void TRACE_host_reset_state (const char *host, const char *state)
-{
-  container_t container = PJ_container_get(host);
-  type_t type = PJ_type_get (state, container->type);
-  new ResetStateEvent(MSG_get_clock(), container, type);
-}
-
 /** \ingroup TRACE_API
  *  \brief Get Paje container types that can be mapped to the nodes of a graph.
  *
@@ -1044,22 +1014,4 @@ xbt_dynar_t TRACE_get_node_types ()
 xbt_dynar_t TRACE_get_edge_types ()
 {
   return instr_dict_to_dynar (trivaEdgeTypes);
-}
-
-/** \ingroup TRACE_API
- *  \brief Pauses all tracing activities.
- *  \see TRACE_resume
- */
-void TRACE_pause ()
-{
-  instr_pause_tracing();
-}
-
-/** \ingroup TRACE_API
- *  \brief Resumes all tracing activities.
- *  \see TRACE_pause
- */
-void TRACE_resume ()
-{
-  instr_resume_tracing();
 }

@@ -20,8 +20,8 @@ typedef struct {
   double real, imag;
 } Complex;
 
-void 
-myProd (void *inp, void *inoutp, int *len, MPI_Datatype *dptr) 
+void
+myProd (void *inp, void *inoutp, int *len, MPI_Datatype *dptr)
 {
   int i;
   Complex c;
@@ -60,7 +60,7 @@ main (int argc, char **argv)
 
   MPI_Barrier (comm);
 
-  for (i = 0; i < OP_COUNT; i++) 
+  for (i = 0; i < OP_COUNT; i++)
     MPI_Op_create (myProd, 1, &newop[i]);
 
   MPI_Barrier (comm);

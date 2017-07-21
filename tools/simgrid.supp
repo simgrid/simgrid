@@ -72,7 +72,7 @@
    fun:smpi_simulated_main_
 }
 
-#SMPI leaks the dlopen handle used for loading the program
+#SMPI leaks the dlopen handle used to load the program
 {
    dlopen handle leaks (1/2)
    Memcheck:Leak
@@ -80,8 +80,6 @@
    fun:malloc
    ...
    fun:dlopen@@GLIBC_*
-   ...
-   fun:main
 }
 
 {
@@ -91,8 +89,6 @@
    fun:calloc
    ...
    fun:dlopen@@GLIBC_*
-   ...
-   fun:main
 }
 
 # Memory leaks appearing to be in libcgraph.  They can be seen with the
@@ -184,4 +180,28 @@
    ignore unwind invalid reads 
    Memcheck:Addr8
    fun:_Ux86_64_setcontext
+}
+
+# Java cruft
+{
+  JavaCruft 1
+  Memcheck:Addr4
+  ...
+  fun:_ZN9JavaCalls11call_helperEP9JavaValueP12methodHandleP17JavaCallArgumentsP6Thread
+  fun:JVM_DoPrivileged
+  ...
+}
+{
+   JavaCruft 2
+   Memcheck:Cond
+   ...
+   fun:_ZN13CompileBroker25invoke_compiler_on_methodEP11CompileTask
+   ...
+}
+
+{
+   Somewhere within the Java conditions and monitors
+   Memcheck:Cond
+   fun:MarsagliaXORV
+   ...
 }

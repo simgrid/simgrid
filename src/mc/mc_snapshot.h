@@ -20,7 +20,7 @@ SG_BEGIN_DECL()
 
 // ***** Snapshot region
 
-XBT_PRIVATE void mc_region_restore_sparse(simgrid::mc::Process* process, mc_mem_region_t reg);
+XBT_PRIVATE void mc_region_restore_sparse(simgrid::mc::RemoteClient* process, mc_mem_region_t reg);
 
 static XBT_ALWAYS_INLINE void* mc_translate_address_region_chunked(uintptr_t addr, mc_mem_region_t region)
 {
@@ -34,34 +34,28 @@ static XBT_ALWAYS_INLINE void* mc_translate_address_region_chunked(uintptr_t add
 static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region, int process_index)
 {
   switch (region->storage_type()) {
-  case simgrid::mc::StorageType::NoData:
-  default:
-    xbt_die("Storage type not supported");
-
   case simgrid::mc::StorageType::Flat:
     {
       uintptr_t offset = (uintptr_t) addr - (uintptr_t) region->start().address();
       return (void *) ((uintptr_t) region->flat_data().get() + offset);
     }
-
   case simgrid::mc::StorageType::Chunked:
     return mc_translate_address_region_chunked(addr, region);
-
   case simgrid::mc::StorageType::Privatized:
     {
-      xbt_assert(process_index >=0,
-        "Missing process index for privatized region");
-      xbt_assert((size_t) process_index < region->privatized_data().size(),
-        "Out of range process index");
-      simgrid::mc::RegionSnapshot& subregion= region->privatized_data()[process_index];
-      return mc_translate_address_region(addr, &subregion, process_index);
+    xbt_assert(process_index >= 0, "Missing process index for privatized region");
+    xbt_assert((size_t)process_index < region->privatized_data().size(), "Out of range process index");
+    simgrid::mc::RegionSnapshot& subregion = region->privatized_data()[process_index];
+    return mc_translate_address_region(addr, &subregion, process_index);
     }
+    case simgrid::mc::StorageType::NoData:
+    default:
+      xbt_die("Storage type not supported");
   }
 }
 
-XBT_PRIVATE mc_mem_region_t mc_get_snapshot_region(
-  const void* addr, const simgrid::mc::Snapshot *snapshot, int process_index);
-
+XBT_PRIVATE mc_mem_region_t mc_get_snapshot_region(const void* addr, const simgrid::mc::Snapshot* snapshot,
+                                                   int process_index);
 }
 
 // ***** MC Snapshot
@@ -74,18 +68,18 @@ XBT_PRIVATE mc_mem_region_t mc_get_snapshot_region(
 typedef struct s_mc_snapshot_ignored_data {
   void* start;
   std::vector<char> data;
-} s_mc_snapshot_ignored_data_t, *mc_snapshot_ignored_data_t;
+} s_mc_snapshot_ignored_data_t;
+typedef s_mc_snapshot_ignored_data_t* mc_snapshot_ignored_data_t;
 
 typedef struct s_fd_infos{
   std::string filename;
   int number;
   off_t current_position;
   int flags;
-}s_fd_infos_t, *fd_infos_t;
+} s_fd_infos_t;
+typedef s_fd_infos_t* fd_infos_t;
 
-/** Information about a given stack frame
- *
- */
+/** Information about a given stack frame */
 typedef struct s_mc_stack_frame {
   /** Instruction pointer */
   unw_word_t ip;
@@ -95,7 +89,8 @@ typedef struct s_mc_stack_frame {
   simgrid::mc::Frame* frame;
   std::string frame_name;
   unw_cursor_t unw_cursor;
-} s_mc_stack_frame_t, *mc_stack_frame_t;
+} s_mc_stack_frame_t;
+typedef s_mc_stack_frame_t* mc_stack_frame_t;
 
 typedef struct s_local_variable{
   simgrid::mc::Frame* subprogram;
@@ -104,7 +99,8 @@ typedef struct s_local_variable{
   simgrid::mc::Type* type;
   void *address;
   int region;
-} s_local_variable_t, *local_variable_t;
+} s_local_variable_t;
+typedef s_local_variable_t* local_variable_t;
 
 typedef struct XBT_PRIVATE s_mc_snapshot_stack {
   std::vector<s_local_variable> local_variables;
@@ -118,12 +114,13 @@ namespace mc {
 
 class XBT_PRIVATE Snapshot final : public AddressSpace {
 public:
-  Snapshot(Process* process, int num_state);
+  Snapshot(RemoteClient* process, int num_state);
   ~Snapshot() = default;
   const void* read_bytes(void* buffer, std::size_t size,
     RemotePtr<void> address, int process_index = ProcessIndexAny,
     ReadOptions options = ReadOptions::none()) const override;
-public: // To be private
+
+  // To be private
   int num_state;
   std::size_t heap_bytes_used;
   std::vector<std::unique_ptr<s_mc_mem_region_t>> snapshot_regions;
@@ -170,9 +167,8 @@ XBT_PRIVATE void restore_snapshot(std::shared_ptr<simgrid::mc::Snapshot> snapsho
 
 extern "C" {
 
-XBT_PRIVATE void mc_restore_page_snapshot_region(
-  simgrid::mc::Process* process,
-  void* start_addr, simgrid::mc::ChunkedData const& pagenos);
+XBT_PRIVATE void mc_restore_page_snapshot_region(simgrid::mc::RemoteClient* process, void* start_addr,
+                                                 simgrid::mc::ChunkedData const& pagenos);
 
 const void* MC_region_read_fragmented(
   mc_mem_region_t region, void* target, const void* addr, std::size_t size);

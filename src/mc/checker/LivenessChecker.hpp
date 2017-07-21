@@ -37,7 +37,7 @@ struct XBT_PRIVATE Pair {
   int depth = 0;
   bool exploration_started = false;
 
-  Pair(unsigned long expanded_pairs);
+  explicit Pair(unsigned long expanded_pairs);
   ~Pair() = default;
 
   Pair(Pair const&) = delete;

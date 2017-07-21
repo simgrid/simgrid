@@ -152,7 +152,7 @@ const char *__get_state_name(e_SD_task_state_t state){
  * \param argv argument list
  * \see SD_create_environment(), SD_exit()
  */
-void SD_init(int *argc, char **argv)
+void SD_init_nocheck(int *argc, char **argv)
 {
   xbt_assert(sd_global == nullptr, "SD_init() already called");
 
@@ -161,9 +161,9 @@ void SD_init(int *argc, char **argv)
   surf_init(argc, argv);
 
   xbt_cfg_setdefault_string("host/model", "ptask_L07");
-
+  if(xbt_cfg_get_boolean("clean-atexit"))
+    atexit(SD_exit);
   if (_sg_cfg_exit_asap) {
-    SD_exit();
     exit(0);
   }
 }
@@ -199,7 +199,7 @@ void SD_config(const char *key, const char *value){
  */
 void SD_create_environment(const char *platform_file)
 {
-  simgrid::s4u::Engine::instance()->loadPlatform(platform_file);
+  simgrid::s4u::Engine::getInstance()->loadPlatform(platform_file);
 
   XBT_DEBUG("Host number: %zu, link number: %d", sg_host_count(), sg_link_count());
 #if SIMGRID_HAVE_JEDULE

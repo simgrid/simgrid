@@ -157,6 +157,7 @@ static bool init_function()
 
 int main(int argc, char** argv)
 {
+  XBT_LOG_CONNECT(unit);
   xbt_log_init(&argc, argv);
   return ::boost::unit_test::unit_test_main(&init_function, argc, argv);
 }

@@ -7,6 +7,7 @@
 #include <xbt/base.h>
 #include <xbt/signal.hpp>
 
+#include "simgrid/s4u/Storage.hpp"
 #include "src/surf/PropertyHolder.hpp"
 #include "surf_interface.hpp"
 #include <map>
@@ -86,7 +87,11 @@ public:
   StorageImpl(Model* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
               const char* type_id, const char* content_name, sg_size_t size, const char* attach);
 
-  ~StorageImpl();
+  ~StorageImpl() override;
+
+  /** @brief Public interface */
+  s4u::Storage piface_;
+  static StorageImpl* byName(const char* name);
 
   /** @brief Check if the Storage is used (if an action currently uses its resources) */
   bool isUsed() override;
@@ -96,54 +101,28 @@ public:
   void turnOn() override;
   void turnOff() override;
 
-  std::map<std::string, sg_size_t*>* content_;
-  sg_size_t size_;
-  sg_size_t usedSize_;
-  char* typeId_;
-  char* attach_; // FIXME: this is the name of the host. Use the host directly
-
-  /**
-   * @brief Open a file
-   *
-   * @param mount The mount point
-   * @param path The path to the file
-   *
-   * @return The StorageAction corresponding to the opening
-   */
-  virtual StorageAction* open(const char* mount, const char* path) = 0;
-
-  /**
-   * @brief Close a file
-   *
-   * @param fd The file descriptor to close
-   * @return The StorageAction corresponding to the closing
-   */
-  virtual StorageAction* close(surf_file_t fd) = 0;
-
   /**
    * @brief Read a file
    *
-   * @param fd The file descriptor to read
    * @param size The size in bytes to read
    * @return The StorageAction corresponding to the reading
    */
-  virtual StorageAction* read(surf_file_t fd, sg_size_t size) = 0;
+  virtual StorageAction* read(sg_size_t size) = 0;
 
   /**
    * @brief Write a file
    *
-   * @param fd The file descriptor to write
    * @param size The size in bytes to write
    * @return The StorageAction corresponding to the writing
    */
-  virtual StorageAction* write(surf_file_t fd, sg_size_t size) = 0;
+  virtual StorageAction* write(sg_size_t size) = 0;
 
   /**
    * @brief Get the content of the current Storage
    *
    * @return A xbt_dict_t with path as keys and size in bytes as values
    */
-  virtual std::map<std::string, sg_size_t*>* getContent();
+  virtual std::map<std::string, sg_size_t>* getContent();
 
   /**
    * @brief Get the available size in bytes of the current Storage
@@ -158,13 +137,25 @@ public:
    * @return The used size in bytes of the current Storage
    */
   virtual sg_size_t getUsedSize();
+  virtual sg_size_t getSize() { return size_; }
+  virtual std::string getHost() { return attach_; }
 
-  std::map<std::string, sg_size_t*>* parseContent(const char* filename);
-
-  std::vector<StorageAction*> writeActions_;
+  std::map<std::string, sg_size_t>* parseContent(const char* filename);
+  static std::unordered_map<std::string, StorageImpl*>* storagesMap() { return StorageImpl::storages; }
 
   lmm_constraint_t constraintWrite_; /* Constraint for maximum write bandwidth*/
   lmm_constraint_t constraintRead_;  /* Constraint for maximum write bandwidth*/
+
+  std::string typeId_;
+  sg_size_t usedSize_ = 0;
+
+private:
+  sg_size_t size_;
+  static std::unordered_map<std::string, StorageImpl*>* storages;
+  std::map<std::string, sg_size_t>* content_;
+  // Name of the host to which this storage is attached. Only used at platform parsing time, then the interface stores
+  // the Host directly.
+  std::string attach_;
 };
 
 /**********
@@ -176,10 +167,7 @@ public:
  */
 typedef enum {
   READ = 0, /**< Read a file */
-  WRITE,    /**< Write in a file */
-  STAT,     /**< Stat a file */
-  OPEN,     /**< Open a file */
-  CLOSE     /**< Close a file */
+  WRITE     /**< Write in a file */
 } e_surf_action_storage_type_t;
 
 /** @ingroup SURF_storage_interface
@@ -196,7 +184,8 @@ public:
    * @param storage The Storage associated to this StorageAction
    * @param type [description]
    */
-  StorageAction(Model* model, double cost, bool failed, StorageImpl* storage, e_surf_action_storage_type_t type);
+  StorageAction(Model* model, double cost, bool failed, StorageImpl* storage, e_surf_action_storage_type_t type)
+      : Action(model, cost, failed), type_(type), storage_(storage){};
 
   /**
  * @brief StorageAction constructor
@@ -209,14 +198,14 @@ public:
  * @param type [description]
  */
   StorageAction(Model* model, double cost, bool failed, lmm_variable_t var, StorageImpl* storage,
-                e_surf_action_storage_type_t type);
+                e_surf_action_storage_type_t type)
+      : Action(model, cost, failed, var), type_(type), storage_(storage){};
 
   void setState(simgrid::surf::Action::State state) override;
 
   e_surf_action_storage_type_t type_;
   StorageImpl* storage_;
-  surf_file_t file_;
-  double progress_;
+  FileImpl* file_ = nullptr;
 };
 }
 }
@@ -230,12 +219,5 @@ typedef struct s_storage_type {
   sg_size_t size;
 } s_storage_type_t;
 typedef s_storage_type_t* storage_type_t;
-
-typedef struct surf_file {
-  char* name;
-  char* mount;
-  sg_size_t size;
-  sg_size_t current_position;
-} s_surf_file_t;
 
 #endif /* STORAGE_INTERFACE_HPP_ */

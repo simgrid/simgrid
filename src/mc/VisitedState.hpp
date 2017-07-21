@@ -24,7 +24,7 @@ struct XBT_PRIVATE VisitedState {
   int num          = 0; // unique id of that state in the storage of all stored IDs
   int original_num = 0; // num field of the VisitedState to which I was declared equal to (used for dot_output)
 
-  VisitedState(unsigned long state_number);
+  explicit VisitedState(unsigned long state_number);
   ~VisitedState();
 };
 

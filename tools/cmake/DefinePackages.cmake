@@ -29,12 +29,12 @@ set(EXTRA_DIST
   src/simix/smx_io_private.h
   src/simix/smx_network_private.h
   src/simix/smx_private.h
-  src/simix/smx_synchro_private.h
+  src/simix/smx_synchro_private.hpp
   src/smpi/colls/coll_tuned_topo.h
   src/smpi/colls/colls_private.h
   src/smpi/colls/smpi_mvapich2_selector_stampede.h
-  src/smpi/private.h
-  src/smpi/private.hpp
+  src/smpi/include/private.h
+  src/smpi/include/private.hpp
   src/surf/cpu_cas01.hpp
   src/surf/cpu_interface.hpp
   src/surf/cpu_ti.hpp
@@ -53,6 +53,7 @@ set(EXTRA_DIST
   src/surf/xml/simgrid_dtd.c
   src/surf/xml/surfxml_sax_cb.cpp
 
+  src/surf/FileImpl.hpp
   src/surf/StorageImpl.hpp
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
@@ -95,6 +96,23 @@ set(EXTRA_DIST
   )
 
 set(SMPI_SRC
+  src/smpi/smpi_main.c
+  src/smpi/bindings/smpi_mpi.cpp
+  src/smpi/bindings/smpi_pmpi.cpp
+  src/smpi/bindings/smpi_pmpi_coll.cpp
+  src/smpi/bindings/smpi_pmpi_comm.cpp
+  src/smpi/bindings/smpi_pmpi_group.cpp
+  src/smpi/bindings/smpi_pmpi_info.cpp
+  src/smpi/bindings/smpi_pmpi_op.cpp
+  src/smpi/bindings/smpi_pmpi_request.cpp
+  src/smpi/bindings/smpi_pmpi_topo.cpp
+  src/smpi/bindings/smpi_pmpi_type.cpp
+  src/smpi/bindings/smpi_pmpi_win.cpp
+  src/smpi/bindings/smpi_f77.cpp
+  src/smpi/bindings/smpi_f77_coll.cpp
+  src/smpi/bindings/smpi_f77_comm.cpp
+  src/smpi/bindings/smpi_f77_request.cpp
+  src/smpi/bindings/smpi_f77_type.cpp
   src/smpi/colls/allgather/allgather-2dmesh.cpp
   src/smpi/colls/allgather/allgather-3dmesh.cpp
   src/smpi/colls/allgather/allgather-GB.cpp
@@ -199,51 +217,46 @@ set(SMPI_SRC
   src/smpi/colls/smpi_intel_mpi_selector.cpp
   src/smpi/colls/smpi_openmpi_selector.cpp
   src/smpi/colls/smpi_mvapich2_selector.cpp
-  src/smpi/instr_smpi.cpp
-  src/smpi/smpi_bench.cpp
-  src/smpi/smpi_memory.cpp
-  src/smpi/smpi_shared.cpp
-  src/smpi/smpi_static_variables.cpp
-  src/smpi/smpi_coll.cpp
-  src/smpi/smpi_coll.hpp
-  src/smpi/smpi_comm.cpp
-  src/smpi/smpi_comm.hpp
-  src/smpi/smpi_deployment.cpp
-  src/smpi/smpi_dvfs.cpp
-  src/smpi/smpi_global.cpp
-  src/smpi/smpi_f2c.cpp
-  src/smpi/smpi_f2c.hpp
-  src/smpi/smpi_group.cpp
-  src/smpi/smpi_group.hpp
-  src/smpi/SmpiHost.cpp
-  src/smpi/SmpiHost.hpp
-  src/smpi/smpi_mpi.cpp
-  src/smpi/smpi_datatype.cpp
-  src/smpi/smpi_datatype.hpp
-  src/smpi/smpi_info.cpp
-  src/smpi/smpi_info.hpp
-  src/smpi/smpi_keyvals.cpp
-  src/smpi/smpi_keyvals.hpp
-  src/smpi/smpi_datatype_derived.cpp
-  src/smpi/smpi_datatype_derived.hpp
-  src/smpi/smpi_main.c
-  src/smpi/smpi_op.cpp
-  src/smpi/smpi_op.hpp
-  src/smpi/smpi_process.cpp
-  src/smpi/smpi_process.hpp
-  src/smpi/smpi_pmpi.cpp
-  src/smpi/smpi_replay.cpp
-  src/smpi/smpi_request.cpp
-  src/smpi/smpi_request.hpp
-  src/smpi/smpi_status.cpp
-  src/smpi/smpi_status.hpp
-  src/smpi/smpi_win.cpp
-  src/smpi/smpi_win.hpp
-  src/smpi/smpi_topo.cpp
-  src/smpi/smpi_topo.hpp
-  src/smpi/smpi_utils.cpp
-  src/smpi/smpi_f77.cpp
-  
+  src/smpi/colls/smpi_coll.cpp
+  src/smpi/internals/instr_smpi.cpp
+  src/smpi/internals/smpi_bench.cpp
+  src/smpi/internals/smpi_memory.cpp
+  src/smpi/internals/smpi_shared.cpp
+  src/smpi/internals/smpi_static_variables.cpp
+  src/smpi/internals/smpi_deployment.cpp
+  src/smpi/internals/smpi_dvfs.cpp
+  src/smpi/internals/smpi_global.cpp
+  src/smpi/internals/SmpiHost.cpp
+  src/smpi/internals/smpi_replay.cpp
+  src/smpi/internals/smpi_process.cpp
+  src/smpi/internals/smpi_utils.cpp
+  src/smpi/mpi/smpi_comm.cpp
+  src/smpi/mpi/smpi_datatype.cpp
+  src/smpi/mpi/smpi_datatype_derived.cpp
+  src/smpi/mpi/smpi_f2c.cpp
+  src/smpi/mpi/smpi_group.cpp
+  src/smpi/mpi/smpi_info.cpp
+  src/smpi/mpi/smpi_keyvals.cpp
+  src/smpi/mpi/smpi_op.cpp
+  src/smpi/mpi/smpi_request.cpp
+  src/smpi/mpi/smpi_status.cpp
+  src/smpi/mpi/smpi_topo.cpp
+  src/smpi/mpi/smpi_win.cpp
+  src/smpi/include/smpi_coll.hpp
+  src/smpi/include/smpi_comm.hpp
+  src/smpi/include/smpi_f2c.hpp
+  src/smpi/include/smpi_group.hpp
+  src/smpi/include/SmpiHost.hpp
+  src/smpi/include/smpi_datatype.hpp
+  src/smpi/include/smpi_info.hpp
+  src/smpi/include/smpi_keyvals.hpp
+  src/smpi/include/smpi_datatype_derived.hpp
+  src/smpi/include/smpi_op.hpp
+  src/smpi/include/smpi_process.hpp
+  src/smpi/include/smpi_request.hpp
+  src/smpi/include/smpi_status.hpp
+  src/smpi/include/smpi_win.hpp
+  src/smpi/include/smpi_topo.hpp
   src/surf/network_smpi.cpp
   src/surf/network_ib.cpp
   )
@@ -263,7 +276,6 @@ set(XBT_SRC
   src/xbt/exception.cpp
   src/xbt/graph.c
   src/xbt/heap.c
-  src/xbt/lib.c
   src/xbt/log.c
   src/xbt/mallocator.c
   src/xbt/memory_map.cpp
@@ -277,7 +289,7 @@ set(XBT_SRC
   src/xbt/xbt_log_layout_simple.c
   src/xbt/xbt_main.cpp
   src/xbt/xbt_os_file.c
-  src/xbt/xbt_os_synchro.c
+  src/xbt/xbt_os_synchro.cpp
   src/xbt/xbt_os_time.c
   src/xbt/xbt_replay.cpp
   src/xbt/xbt_str.cpp
@@ -325,6 +337,7 @@ set(SURF_SRC
   src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp
   src/surf/fair_bottleneck.cpp
+  src/surf/FileImpl.cpp
   src/surf/instr_routing.cpp
   src/surf/instr_surf.cpp
   src/surf/lagrange.cpp
@@ -578,6 +591,8 @@ set(MC_SRC
   src/mc/remote/Channel.hpp
   src/mc/remote/Client.cpp
   src/mc/remote/Client.hpp
+  src/mc/remote/RemoteClient.hpp
+  src/mc/remote/RemoteClient.cpp
   src/mc/remote/RemotePtr.hpp
   src/mc/remote/mc_protocol.h
   src/mc/remote/mc_protocol.cpp
@@ -598,8 +613,6 @@ set(MC_SRC
   src/mc/Type.hpp
   src/mc/Variable.hpp
   src/mc/mc_forward.hpp
-  src/mc/Process.hpp
-  src/mc/Process.cpp
   src/mc/Session.cpp
   src/mc/Session.hpp
   src/mc/mc_unw.h
@@ -609,8 +622,8 @@ set(MC_SRC
   src/mc/mc_snapshot.h
   src/mc/mc_snapshot.cpp
   src/mc/mc_page_snapshot.cpp
-  src/mc/mc_comm_pattern.h
   src/mc/mc_comm_pattern.cpp
+  src/mc/mc_comm_pattern.hpp
   src/mc/compare.cpp
   src/mc/mc_dwarf.hpp
   src/mc/mc_dwarf.cpp
@@ -688,7 +701,6 @@ set(headers_to_install
   include/smpi/smpi_extended_traces.h
   include/smpi/smpi_extended_traces_fortran.h
   include/smpi/forward.hpp
-  include/surf/surf_routing.h
   include/xbt.h
   include/xbt/RngStream.h
   include/xbt/asserts.h
@@ -714,7 +726,6 @@ set(headers_to_install
   include/xbt/future.hpp
   include/xbt/graph.h
   include/xbt/heap.h
-  include/xbt/lib.h
   include/xbt/Extendable.hpp
   include/xbt/log.h
   include/xbt/log.hpp
@@ -1067,6 +1078,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/bypassRoute.xml
   examples/platforms/cloud.xml
   examples/platforms/cluster.xml
+  examples/platforms/cluster_backbone.xml
   examples/platforms/cluster_and_one_host.xml
   examples/platforms/cluster_prototype.lua
   examples/platforms/cluster_no_backbone.xml
@@ -1123,7 +1135,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/syscoord/median_meridian.syscoord
   examples/platforms/syscoord/median_p2psim.syscoord
   examples/platforms/three_multicore_hosts.xml
-  examples/platforms/two_clusters.xml
   examples/platforms/two_hosts.xml
   examples/platforms/two_hosts_platform_shared.xml
   examples/platforms/two_hosts_platform_with_availability.xml

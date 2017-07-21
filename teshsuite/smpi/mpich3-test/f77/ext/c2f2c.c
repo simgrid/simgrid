@@ -5,7 +5,7 @@
  *      See COPYRIGHT in top-level directory.
  */
 /*
- * This file contains the C routines used in testing the c2f and f2c 
+ * This file contains the C routines used in testing the c2f and f2c
  * handle conversion functions, except for MPI_File and MPI_Win (to
  * allow working with MPI implementations that do not include those
  * features).
@@ -32,11 +32,11 @@
 #include "../../include/mpitestconf.h"
 #include <string.h>
 
-/* 
+/*
    Name mapping.  All routines are created with names that are lower case
    with a single trailing underscore.  This matches many compilers.
    We use #define to change the name for Fortran compilers that do
-   not use the lowercase/underscore pattern 
+   not use the lowercase/underscore pattern
 */
 
 #ifdef F77_NAME_UPPER
@@ -78,7 +78,7 @@
       defined(F77_NAME_MIXED_USCORE)
 /* Else leave name alone (routines have no underscore, so both
    of these map to a lowercase, single underscore) */
-#else 
+#else
 #error 'Unrecognized Fortran name mapping'
 #endif
 
@@ -176,7 +176,7 @@ MPI_Fint c2frequest_ ( MPI_Fint *request )
     int flag;
     MPI_Test( &req, &flag, &status );
     MPI_Test_cancelled( &status, &flag );
-    if (!flag) { 
+    if (!flag) {
 	fprintf( stderr, "Request: Wrong value for flag\n" );
 	return 1;
     }
@@ -189,7 +189,7 @@ MPI_Fint c2frequest_ ( MPI_Fint *request )
 MPI_Fint c2fop_ ( MPI_Fint *op )
 {
     MPI_Op cOp = MPI_Op_f2c( *op );
-    
+
     if (cOp != MPI_SUM) {
 	fprintf( stderr, "Op: did not get sum\n" );
 	return 1;
@@ -209,7 +209,7 @@ MPI_Fint c2ferrhandler_ ( MPI_Fint *errh )
     return 0;
 }
 
-/* 
+/*
  * The following routines provide handles to the calling Fortran program
  */
 void f2ccomm_( MPI_Fint * comm )
@@ -244,11 +244,11 @@ void f2crequest_( MPI_Fint * req )
 {
     MPI_Request cReq;
 
-    MPI_Irecv( NULL, 0, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, 
+    MPI_Irecv( NULL, 0, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG,
 	       MPI_COMM_WORLD, &cReq );
     MPI_Cancel( &cReq );
     *req = MPI_Request_c2f( cReq );
-    
+
 }
 
 void f2cop_( MPI_Fint * op )

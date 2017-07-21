@@ -67,7 +67,7 @@ int Coll_scatter_mvapich2_two_level_direct::scatter(void *sendbuf,
     //if not set (use of the algo directly, without mvapich2 selector)
     if(MV2_Scatter_intra_function==NULL)
       MV2_Scatter_intra_function=Coll_scatter_mpich::scatter;
-    
+
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
       comm->init_smp();
     }
@@ -246,7 +246,7 @@ int Coll_scatter_mvapich2_two_level_binomial::scatter(void *sendbuf,
     //if not set (use of the algo directly, without mvapich2 selector)
     if(MV2_Scatter_intra_function==NULL)
       MV2_Scatter_intra_function=Coll_scatter_mpich::scatter;
-    
+
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
       comm->init_smp();
     }

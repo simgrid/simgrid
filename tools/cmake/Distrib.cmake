@@ -223,6 +223,37 @@ add_custom_command(
   TARGET dist-dir
   COMMAND ${CMAKE_COMMAND} -E echo "${GIT_VERSION}" > ${PROJECT_NAME}-${release_version}/.gitversion)
 
+##########################################################
+### Link all sources to the bindir if srcdir != bindir ###
+##########################################################
+add_custom_target(hardlinks
+   COMMENT "Making the source files available from the bindir"
+)
+if (NOT ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+  foreach(file ${source_to_pack})
+    #message(${file})
+    # This damn prefix is still set somewhere (seems to be in subdirs)
+    string(REPLACE "${CMAKE_HOME_DIRECTORY}/" "" file "${file}")
+
+    # Create the directory on need
+    get_filename_component(file_location ${file} PATH)
+    string(REGEX MATCH ";${file_location};" OPERATION "${dirs_in_bindir}")
+    if(NOT OPERATION)
+      set(dirs_in_tarball "${dirs_in_bindir};${file_location};")
+      add_custom_command(
+        TARGET hardlinks
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/${file_location}/)
+    endif()
+
+    # Actually copy the file
+    add_custom_command(
+      TARGET hardlinks
+      COMMAND if test -f ${CMAKE_HOME_DIRECTORY}/${file} \; then rm -f ${CMAKE_BINARY_DIR}/${file}\; ln ${CMAKE_HOME_DIRECTORY}/${file} ${CMAKE_BINARY_DIR}/${file_location}\; fi
+    )
+  endforeach(file ${source_to_pack})
+endif()
+
+
 ######################################
 ### Fill in the "make dist" target ###
 ######################################

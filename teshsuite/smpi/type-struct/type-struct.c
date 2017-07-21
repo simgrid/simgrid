@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 
     MPI_Comm_rank( MPI_COMM_WORLD, &rank );
 
-    int tab[2][3]={{1*rank,2*rank,3*rank},{7*rank,8*rank,9*rank}}; 
+    int tab[2][3]={{1*rank,2*rank,3*rank},{7*rank,8*rank,9*rank}};
     MPI_Type_contiguous(3, MPI_INT, &type2);
     MPI_Type_commit(&type2);
 
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
       value.b=8.0;
     }else{
       value.a=10000;
-      value.b=5.0; 
+      value.b=5.0;
     }
 
     MPI_Bcast( &value, 1, mystruct, 0, MPI_COMM_WORLD );

@@ -84,7 +84,7 @@ make -j$NUMPROC
 ctest -D ExperimentalTest || true
 
 if [ -f Testing/TAG ] ; then
-   xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml > CTestResults_${SANITIZER}.xml
+   xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl Testing/$(head -n 1 < Testing/TAG)/Test.xml > CTestResults_${SANITIZER}.xml
    mv CTestResults_${SANITIZER}.xml $WORKSPACE
 fi
 

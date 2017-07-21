@@ -1,13 +1,22 @@
-SimGrid (3.16) UNRELEASED
+SimGrid (3.17) UNRELEASED (release target: September 22 2017)
+
+ S4U
+  - Comm.detach(): start and forget about asynchronous emission
+  - this_actor::send(mailbox) is now mailbox->put()
+
+SimGrid (3.16) Released June 22. 2017.
+
+ The Blooming Spring Release: developments are budding.
 
  Portability status:
   - FreeBSD: Disable SMPI mmap privatization, switch automatically to dlopen.
   - Mac, BSD: dlopen+thread broken, switch automatically to raw contexts.
+  - Java JAR file should be finally fully working on Mac OSX too.
 
  XML platforms: Switch to platform v4.1 format.
  * This is (mainly) a backward compatible change: v4 are valid v4.1 files
    - <zone> can be used as a synonym for the now deprecated <as>
-   - <zoneZoute> an be used as a synonym for the now deprecated <asroute>
+   - <zoneRoute> can be used as a synonym for the now deprecated <asroute>
    - <bypassZoneRoute> an be used as a synonym for the now deprecated <bypassAsRoute>
    - <actor> can be used as a synonym for the now deprecated <process>
    - state_file and avail_file periodicity is now easier to express
@@ -16,23 +25,50 @@ SimGrid (3.16) UNRELEASED
    - Remove attribute 'content_type' of <storage_type>: was never used
    - Make attribute 'model' of <storage_type> optional: for future usage
    - Remove Bconnection model property: was never (in)validated. Replaced by
-      the maximum of the read and write bandwidth as a resource constraint. 
+      the maximum of the read and write bandwidth as a resource constraint.
 
  SimDag
-  - New and Backwards Compatibility break: 
+  - New and Backwards Compatibility break:
     SD_simulate_with_update (double how_long, xbt_dynar_t changed_tasks_dynar)
     When one wants to get the list of tasks whose states have changed during a
-    simulation round, s/he has to allocate and free a dynar and use it as argument 
-    to this function. The former SD_simulate (double how_long) now returns void.
+    simulation round, s/he has to allocate and free a dynar and use it as
+    argument to this function. The former SD_simulate (double how_long)
+    now	returns void.
+
+ Virtual Machines
+  - Allow multicore VMs, with the correct sharing (unless you overcommit)
+    BUG: vCPU overcommitting still leads to buggy sharing, though. WIP.
+
+ Energy
+  - New function to update the consumption of all hosts at once.
+  - Fix the model for multi-core hosts, linear in the amount of busy
+    cores with an abnormality for pIdle (see paper).
+    BUG: Still not satisfactory for ptask on mono-cores.
 
  MSG
-  - The netzone are now available from the MSG API. 
+  - The netzone are now available from the MSG API.
     The old names still work, but are now deprecated.
 
  SMPI
   - New algorithm to privatize globals: dlopen, with dynamic loading tricks
   - New option: smpi/keep-temps to not cleanup temp files
+  - New option : smpi/shared-malloc-blocksize . Relevant only when global shared 
+    mallocs mode is used, allows to change the size of the fake file used
+    (default 1MB), to potentially limit the number of mappings for large runs.
   - Support for sparse privatized malloc with SMPI_PARTIAL_SHARED_MALLOC()
+  - Fortran ifort and flang compilers support
+  - New RMA calls supported (experimental) :
+      - MPI_Win_allocate, MPI_Win_create_dynamic, MPI_Win_attach
+      - MPI_Win_detach, MPI_Win_set_info, MPI_Win_get_info
+      - MPI_Win_lock_all, MPI_Win_unlock_all, MPI_Win_flush
+      - MPI_Win_flush_local, MPI_Win_flush_all, MPI_Win_flush_local_all
+      - MPI_Op_commutative, MPI_Fetch_and_Op, MPI_Compare_and_swap
+      - MPI_Rput, MPI_Rget, MPI_Raccumulate, MPI_Rget_accumulate
+
+ S4U
+  - New: this_actor::isMaestro() returns whether we are in kernel mode.
+  - Behind the scene, ActivityImpl are now automatically refcounted.
+    Removing this nasty bottleneck will greatly simplify our internals.
 
  XBT
   - Replay: New function xbt_replay_action_get():
@@ -40,10 +76,11 @@ SimGrid (3.16) UNRELEASED
   - DROPPED FUNCTION: xbt_str_varsubst()
   - DROPPED MODULE: strbuff. We don't need it anymore.
   - DROPPED MODULE: matrix. We don't need it anymore.
+  - DROPPED MODULE: lib. We don't need it anymore.
 
- -- Release target: June 21 2017   -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Thu Jun 22 22:48:12 CEST 2017   -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
-SimGrid (3.15) stable; urgency=low
+SimGrid (3.15) Released March 22. 2017
 
  The Spring Release: continuous integration servers become green
  We fixed even the transient bugs on all target architectures:
@@ -132,9 +169,7 @@ SimGrid (3.15) stable; urgency=low
  - A <cluster> can now be created with different speed values to represent pstates.
    see examples/platforms/energy_cluster.xml for an example.
 
- -- Wed Mar 22 17:50:21 CET 2017 -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
-
-SimGrid (3.14.159) stable; urgency=low
+SimGrid (3.14.159) Released December 28. 2016
 
  The previous release was only a crude approximation of a Pi release;
  this one should be a bit better.
@@ -144,9 +179,7 @@ SimGrid (3.14.159) stable; urgency=low
  - Improve the documentation, in particular of the routing module.
  - Integrate some patches flying around in Debian.
 
- -- Wed Dec 28 17:14:49 CET 2016 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
-
-SimGrid (3.14) stable; urgency=low
+SimGrid (3.14) Released December 24. 2016
 
  Documentation
  * The whole documentation was reworked and reorganized. There is
@@ -243,8 +276,6 @@ SimGrid (3.14) stable; urgency=low
  MSG:
  * Memory usage should be decreased for simulations with a large number 
    of processes. This also helps for SMPI.
-
- -- Sat Dec 24 22:34:26 CET 2016 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.13) stable; urgency=low
 

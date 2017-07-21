@@ -31,7 +31,6 @@ int main(int argc, char *argv[]){
     xbt_die("Cannot open %s", argv[1]);
   char *line = NULL;
   size_t n   = 0;
-  int instance_size = 0;
   const char* instance_id = NULL;
   while (xbt_getline(&line, &n, fp) != -1 ){
     xbt_dynar_t elems = xbt_str_split_quoted_in_place(line);
@@ -41,7 +40,7 @@ int main(int argc, char *argv[]){
 
     const char** line_char= xbt_dynar_to_array(elems);
     instance_id = line_char[0];
-    instance_size = xbt_str_parse_int(line_char[2], "Invalid size: %s");
+    int instance_size     = xbt_str_parse_int(line_char[2], "Invalid size: %s");
 
     XBT_INFO("Initializing instance %s of size %d", instance_id, instance_size);
     SMPI_app_instance_register(instance_id, smpi_replay,instance_size);

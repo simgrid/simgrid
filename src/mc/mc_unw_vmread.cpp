@@ -11,8 +11,8 @@
 #include <libunwind.h>
 #include <libunwind-ptrace.h>
 
-#include "src/mc/Process.hpp"
 #include "src/mc/mc_unw.h"
+#include "src/mc/remote/RemoteClient.hpp"
 
 /** \file
  *  Libunwind namespace implementation using process_vm_readv.
@@ -109,7 +109,7 @@ namespace unw {
  *  does not use ptrace() to read the target process memory by
  *  `process_vm_readv()` or `/dev/${pid}/mem` if possible.
  *
- *  Does not support any MC-specific behaviour (privatisation, snapshots)
+ *  Does not support any MC-specific behaviour (privatization, snapshots)
  *  and `ucontext_t`.
  *
  *  It works with `void*` contexts allocated with `_UPT_create(pid)`.

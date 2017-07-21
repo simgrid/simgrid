@@ -105,7 +105,7 @@ endif()
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 set(SIMGRID_VERSION_MAJOR "3")
-set(SIMGRID_VERSION_MINOR "16")
+set(SIMGRID_VERSION_MINOR "17")
 set(SIMGRID_VERSION_PATCH "0")
 set(SIMGRID_VERSION_EXTRA "-DEVEL") # Extra words to add to version string (e.g. -rc1)
 
@@ -156,20 +156,20 @@ if(NOT PYTHONINTERP_FOUND)
   message(FATAL_ERROR "Please install Python (version 3 or higher).")
 endif()
 
-if (APPLE)
-  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-  set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-endif()
 SET(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 ### Compute the include paths
 set(INCLUDES
+  ${CMAKE_BINARY_DIR}
+  ${CMAKE_BINARY_DIR}/include
   ${CMAKE_HOME_DIRECTORY}
   ${CMAKE_HOME_DIRECTORY}/include
   ${CMAKE_HOME_DIRECTORY}/src/include
-  ${CMAKE_BINARY_DIR}
-  ${CMAKE_BINARY_DIR}/include
   )
+
+if(enable_smpi)
+  set (INCLUDES ${INCLUDES} ${CMAKE_HOME_DIRECTORY}/src/smpi/include)
+endif()
 
 if(NOT CMAKE_CROSSCOMPILING AND EXISTS /usr/include/)
   set(INCLUDES ${INCLUDES} /usr/include/)
@@ -403,15 +403,16 @@ if(HAVE_LIBUNWIND)
   endif()
 else()
   if(enable_model-checking)
-    message(FATAL_ERROR "Please install libunwind-dev libdw-dev libevent-dev if you want to compile the SimGrid model checker.")
+    message(FATAL_ERROR "Please install libunwind-dev libdw-dev libelf-dev libevent-dev if you want to compile the SimGrid model checker.")
   endif()
 endif()
 
 if(enable_model-checking)
   find_package(Libdw REQUIRED)
+  find_package(Libelf REQUIRED)
   find_package(Libevent REQUIRED)
-  include_directories(${LIBDW_INCLUDE_DIR} ${LIBEVENT_INCLUDE_DIR})
-  set(SIMGRID_DEP "${SIMGRID_DEP} ${LIBEVENT_LIBRARIES} ${LIBDW_LIBRARIES}")
+  include_directories(${LIBDW_INCLUDE_DIR} ${LIBELF_INCLUDE_DIR} ${LIBEVENT_INCLUDE_DIR})
+  set(SIMGRID_DEP "${SIMGRID_DEP} ${LIBEVENT_LIBRARIES} ${LIBELF_LIBRARIES} ${LIBDW_LIBRARIES}")
   set(SIMGRID_HAVE_MC 1)
   if("${CMAKE_SYSTEM}" MATCHES "FreeBSD" AND enable_java)
     message(WARNING "FreeBSD + Model-Checking + Java = too much for now. Disabling java")

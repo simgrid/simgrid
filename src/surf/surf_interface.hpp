@@ -200,9 +200,9 @@ public:
   void setCategory(const char *category);
 
   /** @brief Get the priority of the current Action */
-  double getPriority() {return priority_;};
+  double getPriority() { return sharingWeight_; };
   /** @brief Set the priority of the current Action */
-  virtual void setPriority(double priority);
+  virtual void setSharingWeight(double priority);
 
   /** @brief Get the state set in which the action is */
   ActionList* getStateSet() {return stateSet_;};
@@ -213,7 +213,7 @@ public:
 
 protected:
   ActionList* stateSet_;
-  double priority_ = 1.0; /**< priority (1.0 by default) */
+  double sharingWeight_ = 1.0; /**< priority (1.0 by default) */
   int    refcount_ = 1;
   double remains_; /**< How much of that cost remains to be done in the currently running task */
   double maxDuration_ = NO_MAX_DURATION; /*< max_duration (may fluctuate until the task is completed) */
@@ -233,13 +233,12 @@ public:
   void heapInsert(xbt_heap_t heap, double key, enum heap_action_type hat);
   void heapRemove(xbt_heap_t heap);
   void heapUpdate(xbt_heap_t heap, double key, enum heap_action_type hat);
-  void updateIndexHeap(int i);
+  virtual void updateIndexHeap(int i);
   lmm_variable_t getVariable() {return variable_;}
   double getLastUpdate() {return lastUpdate_;}
   void refreshLastUpdate() {lastUpdate_ = surf_get_clock();}
   enum heap_action_type getHat() {return hat_;}
   bool is_linked() {return action_lmm_hook.is_linked();}
-  void gapRemove();
 
 protected:
   lmm_variable_t variable_ = nullptr;

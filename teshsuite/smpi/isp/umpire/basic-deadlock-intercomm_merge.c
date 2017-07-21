@@ -46,7 +46,7 @@ main (int argc, char **argv)
 			    INTERCOMM_CREATE_TAG, &intercomm);
 
       MPI_Comm_free (&temp);
-      
+
       if (intercomm == MPI_COMM_NULL) {
 	printf ("(%d) MPI_Intercomm_Create returned MPI_COMM_NULL\n", rank);
 	printf ("(%d) Aborting...\n", rank);
@@ -61,11 +61,11 @@ main (int argc, char **argv)
       if (comm != MPI_COMM_NULL) {
 	MPI_Comm_size (comm, &dnprocs);
 	MPI_Comm_rank (comm, &drank);
-      
+
 	if (dnprocs > 1) {
 	  if (drank == 0) {
 	    memset (buf0, 0, buf_size);
-	    
+	
 	    MPI_Recv (buf1, buf_size, MPI_INT, 1, 0, comm, &status);
 	
 	    MPI_Send (buf0, buf_size, MPI_INT, 1, 0, comm);

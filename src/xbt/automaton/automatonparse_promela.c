@@ -1,7 +1,6 @@
 /* methods for implementation of automaton from promela description */
 
-/* Copyright (c) 2011-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2011-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -33,8 +32,7 @@ static void new_state(char* id, int src){
   }
   free(id_copy);
 
-  xbt_automaton_state_t state = NULL;
-  state = xbt_automaton_state_exists(parsed_automaton, id);
+  xbt_automaton_state_t state = xbt_automaton_state_exists(parsed_automaton, id);
   if(state == NULL){
     state = xbt_automaton_state_new(parsed_automaton, type, id);
   }
@@ -54,7 +52,7 @@ static void new_transition(char* id, xbt_automaton_exp_label_t label)
   new_state(id, 0);
   xbt_automaton_state_t state_dst = xbt_automaton_state_exists(parsed_automaton, id);
   xbt_automaton_state_t state_src = xbt_automaton_state_exists(parsed_automaton, state_id_src);
-  
+
   //xbt_transition_t trans = NULL;
   xbt_automaton_transition_new(parsed_automaton, state_src, state_dst, label);
 

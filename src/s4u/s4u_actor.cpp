@@ -11,6 +11,9 @@
 #include "simgrid/s4u/Mailbox.hpp"
 
 #include "src/kernel/context/Context.hpp"
+#include "src/simix/smx_private.h"
+
+#include <sstream>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor, "S4U actors");
 
@@ -41,6 +44,17 @@ ActorPtr Actor::createActor(const char* name, s4u::Host* host, const char* funct
   return actor->iface();
 }
 
+void intrusive_ptr_add_ref(Actor* actor)
+{
+  xbt_assert(actor != nullptr);
+  intrusive_ptr_add_ref(actor->pimpl_);
+}
+void intrusive_ptr_release(Actor* actor)
+{
+  xbt_assert(actor != nullptr);
+  intrusive_ptr_release(actor->pimpl_);
+}
+
 // ***** Actor methods *****
 
 void Actor::join() {
@@ -48,7 +62,7 @@ void Actor::join() {
 }
 
 void Actor::setAutoRestart(bool autorestart) {
-  simcall_process_auto_restart_set(pimpl_,autorestart);
+  simgrid::simix::kernelImmediate([this, autorestart]() { pimpl_->auto_restart = autorestart; });
 }
 
 void Actor::onExit(int_f_pvoid_pvoid_t fun, void* data)
@@ -58,30 +72,35 @@ void Actor::onExit(int_f_pvoid_pvoid_t fun, void* data)
 
 void Actor::migrate(Host* new_host)
 {
-  simcall_process_set_host(pimpl_, new_host);
+  simgrid::simix::kernelImmediate([this, new_host]() { pimpl_->new_host = new_host; });
 }
 
-s4u::Host* Actor::host()
+s4u::Host* Actor::getHost()
 {
   return this->pimpl_->host;
 }
 
-const char* Actor::cname()
+void Actor::daemonize()
+{
+  simgrid::simix::kernelImmediate([this]() { pimpl_->daemonize(); });
+}
+
+const char* Actor::getCname()
 {
   return this->pimpl_->name.c_str();
 }
 
-simgrid::xbt::string Actor::name()
+simgrid::xbt::string Actor::getName()
 {
   return this->pimpl_->name;
 }
 
-aid_t Actor::pid()
+aid_t Actor::getPid()
 {
   return this->pimpl_->pid;
 }
 
-aid_t Actor::ppid()
+aid_t Actor::getPpid()
 {
   return this->pimpl_->ppid;
 }
@@ -93,21 +112,22 @@ void Actor::suspend()
 
 void Actor::resume()
 {
-  simcall_process_resume(pimpl_);
+  simgrid::simix::kernelImmediate([this] { pimpl_->resume(); });
 }
 
 int Actor::isSuspended()
 {
-  return simcall_process_is_suspended(pimpl_);
+  return simgrid::simix::kernelImmediate([this] { return pimpl_->suspended; });
 }
 
 void Actor::setKillTime(double time) {
   simcall_process_set_kill_time(pimpl_,time);
 }
 
-double Actor::killTime()
+/** \brief Get the kill time of an actor(or 0 if unset). */
+double Actor::getKillTime()
 {
-  return simcall_process_get_kill_time(pimpl_);
+  return SIMIX_timer_get_date(pimpl_->kill_timer);
 }
 
 void Actor::kill(aid_t pid)
@@ -152,10 +172,11 @@ void Actor::killAll(int resetPid)
 }
 
 /** Retrieve the property value (or nullptr if not set) */
-const char* Actor::property(const char* key)
+const char* Actor::getProperty(const char* key)
 {
   return (char*)xbt_dict_get_or_null(simcall_process_get_properties(pimpl_), key);
 }
+
 void Actor::setProperty(const char* key, const char* value)
 {
   simgrid::simix::kernelImmediate([this, key, value] {
@@ -166,6 +187,21 @@ void Actor::setProperty(const char* key, const char* value)
 // ***** this_actor *****
 
 namespace this_actor {
+
+/** Returns true if run from the kernel mode, and false if run from a real actor
+ *
+ * Everything that is run out of any actor (simulation setup before the engine is run,
+ * computing the model evolutions as a result to the actors' action, etc) is run in
+ * kernel mode, just as in any operating systems.
+ *
+ * In SimGrid, the actor in charge of doing the stuff in kernel mode is called Maestro,
+ * because it is the one scheduling when the others should move or wait.
+ */
+bool isMaestro()
+{
+  smx_actor_t process = SIMIX_process_self();
+  return process == nullptr || process == simix_global->maestro_process;
+}
 
 void sleep_for(double duration)
 {
@@ -180,67 +216,58 @@ XBT_PUBLIC(void) sleep_until(double timeout)
     simcall_process_sleep(timeout - now);
 }
 
-e_smx_state_t execute(double flops) {
+void execute(double flops)
+{
   smx_activity_t s = simcall_execution_start(nullptr,flops,1.0/*priority*/,0./*bound*/);
-  return simcall_execution_wait(s);
+  simcall_execution_wait(s);
 }
 
-void* recv(MailboxPtr chan) {
-  void *res = nullptr;
-  CommPtr c = Comm::recv_init(chan);
-  c->setDstData(&res, sizeof(res));
-  c->wait();
-  return res;
-}
-
-void send(MailboxPtr chan, void* payload, double simulatedSize)
+void* recv(MailboxPtr chan) // deprecated
 {
-  CommPtr c = Comm::send_init(chan);
-  c->setRemains(simulatedSize);
-  c->setSrcData(payload);
-  // c->start() is optional.
-  c->wait();
+  return chan->get();
 }
 
-void send(MailboxPtr chan, void* payload, double simulatedSize, double timeout)
+void* recv(MailboxPtr chan, double timeout) // deprecated
 {
-  CommPtr c = Comm::send_init(chan);
-  c->setRemains(simulatedSize);
-  c->setSrcData(payload);
-  // c->start() is optional.
-  c->wait(timeout);
+  return chan->get(timeout);
 }
 
-CommPtr isend(MailboxPtr chan, void* payload, double simulatedSize)
+void send(MailboxPtr chan, void* payload, double simulatedSize) // deprecated
 {
-  return Comm::send_async(chan, payload, simulatedSize);
-}
-void dsend(MailboxPtr chan, void* payload, double simulatedSize)
-{
-  Comm::send_detached(chan, payload, simulatedSize);
+  chan->put(payload, simulatedSize);
 }
 
-CommPtr irecv(MailboxPtr chan, void** data)
+void send(MailboxPtr chan, void* payload, double simulatedSize, double timeout) // deprecated
 {
-  return Comm::recv_async(chan, data);
+  chan->put(payload, simulatedSize, timeout);
 }
 
-aid_t pid()
+CommPtr isend(MailboxPtr chan, void* payload, double simulatedSize) // deprecated
+{
+  return chan->put_async(payload, simulatedSize);
+}
+
+CommPtr irecv(MailboxPtr chan, void** data) // deprecated
+{
+  return chan->get_async(data);
+}
+
+aid_t getPid()
 {
   return SIMIX_process_self()->pid;
 }
 
-aid_t ppid()
+aid_t getPpid()
 {
   return SIMIX_process_self()->ppid;
 }
 
-std::string name()
+std::string getName()
 {
   return SIMIX_process_self()->name;
 }
 
-Host* host()
+Host* getHost()
 {
   return SIMIX_process_self()->host;
 }
@@ -252,12 +279,14 @@ void suspend()
 
 void resume()
 {
-  simcall_process_resume(SIMIX_process_self());
+  smx_actor_t process = SIMIX_process_self();
+  simgrid::simix::kernelImmediate([process] { process->resume(); });
 }
 
-int isSuspended()
+bool isSuspended()
 {
-  return simcall_process_is_suspended(SIMIX_process_self());
+  smx_actor_t process = SIMIX_process_self();
+  return simgrid::simix::kernelImmediate([process] { return process->suspended; });
 }
 
 void kill()
@@ -272,7 +301,8 @@ void onExit(int_f_pvoid_pvoid_t fun, void* data)
 
 void migrate(Host* new_host)
 {
-  simcall_process_set_host(SIMIX_process_self(), new_host);
+  smx_actor_t process = SIMIX_process_self();
+  simgrid::simix::kernelImmediate([process, new_host] { process->new_host = new_host; });
 }
 }
 }

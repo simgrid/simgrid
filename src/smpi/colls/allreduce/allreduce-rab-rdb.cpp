@@ -39,10 +39,10 @@ int Coll_allreduce_rab_rdb::allreduce(void *sbuff, void *rbuff, int count,
   // processes of rank < 2*rem send their data to
   // (rank+1). These even-numbered processes no longer
   // participate in the algorithm until the very end. The
-  // remaining processes form a nice power-of-two. 
+  // remaining processes form a nice power-of-two.
 
   if (rank < 2 * rem) {
-    // even       
+    // even
     if (rank % 2 == 0) {
 
       Request::send(rbuff, count, dtype, rank + 1, tag, comm);
@@ -59,12 +59,12 @@ int Coll_allreduce_rab_rdb::allreduce(void *sbuff, void *rbuff, int count,
       // the operation is commutative or not.
        if(op!=MPI_OP_NULL) op->apply( tmp_buf, rbuff, &count, dtype);
 
-      // change the rank 
+      // change the rank
       newrank = rank / 2;
     }
   }
 
-  else                          // rank >= 2 * rem 
+  else                          // rank >= 2 * rem
     newrank = rank - rem;
 
   // If op is user-defined or count is less than pof2, use
@@ -74,12 +74,12 @@ int Coll_allreduce_rab_rdb::allreduce(void *sbuff, void *rbuff, int count,
   // datatypes on one process and derived on another as long as
   // the type maps are the same. Breaking up derived
   // datatypes to do the reduce-scatter is tricky, therefore
-  // using recursive doubling in that case.) 
+  // using recursive doubling in that case.)
 
   if (newrank != -1) {
     // do a reduce-scatter followed by allgather. for the
     // reduce-scatter, calculate the count that each process receives
-    // and the displacement within the buffer 
+    // and the displacement within the buffer
 
     cnts = (int *) xbt_malloc(pof2 * sizeof(int));
     disps = (int *) xbt_malloc(pof2 * sizeof(int));
@@ -97,7 +97,7 @@ int Coll_allreduce_rab_rdb::allreduce(void *sbuff, void *rbuff, int count,
     last_idx = pof2;
     while (mask < pof2) {
       newdst = newrank ^ mask;
-      // find real rank of dest 
+      // find real rank of dest
       dst = (newdst < rem) ? newdst * 2 + 1 : newdst + rem;
 
       send_cnt = recv_cnt = 0;
@@ -115,31 +115,31 @@ int Coll_allreduce_rab_rdb::allreduce(void *sbuff, void *rbuff, int count,
           recv_cnt += cnts[i];
       }
 
-      // Send data from recvbuf. Recv into tmp_buf 
+      // Send data from recvbuf. Recv into tmp_buf
       Request::sendrecv((char *) rbuff + disps[send_idx] * extent, send_cnt,
                    dtype, dst, tag,
                    (char *) tmp_buf + disps[recv_idx] * extent, recv_cnt,
                    dtype, dst, tag, comm, &status);
 
       // tmp_buf contains data received in this step.
-      // recvbuf contains data accumulated so far 
+      // recvbuf contains data accumulated so far
 
       // This algorithm is used only for predefined ops
       // and predefined ops are always commutative.
       if(op!=MPI_OP_NULL) op->apply( (char *) tmp_buf + disps[recv_idx] * extent,
                         (char *) rbuff + disps[recv_idx] * extent, &recv_cnt, dtype);
 
-      // update send_idx for next iteration 
+      // update send_idx for next iteration
       send_idx = recv_idx;
       mask <<= 1;
 
       // update last_idx, but not in last iteration because the value
-      // is needed in the allgather step below. 
+      // is needed in the allgather step below.
       if (mask < pof2)
         last_idx = recv_idx + pof2 / mask;
     }
 
-    // now do the allgather 
+    // now do the allgather
 
     mask >>= 1;
     while (mask > 0) {
@@ -149,7 +149,7 @@ int Coll_allreduce_rab_rdb::allreduce(void *sbuff, void *rbuff, int count,
 
       send_cnt = recv_cnt = 0;
       if (newrank < newdst) {
-        // update last_idx except on first iteration 
+        // update last_idx except on first iteration
         if (mask != pof2 / 2)
           last_idx = last_idx + pof2 / (mask * 2);
 
@@ -186,9 +186,9 @@ int Coll_allreduce_rab_rdb::allreduce(void *sbuff, void *rbuff, int count,
   // participate above.
 
   if (rank < 2 * rem) {
-    if (rank % 2)               // odd 
+    if (rank % 2)               // odd
       Request::send(rbuff, count, dtype, rank - 1, tag, comm);
-    else                        // even 
+    else                        // even
       Request::recv(rbuff, count, dtype, rank + 1, tag, comm, &status);
   }
 

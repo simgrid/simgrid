@@ -26,7 +26,7 @@ int main(int argc, char **argv)
   int count = sg_link_count();
   XBT_INFO("Link count: %d", count);
   qsort((void *)links, count, sizeof(SD_link_t), cmp_link);
-   
+
   for (int i=0; i < count; i++){
     XBT_INFO("%s: latency = %.5f, bandwidth = %f", sg_link_name(links[i]),
              sg_link_latency(links[i]), sg_link_bandwidth(links[i]));
@@ -34,6 +34,5 @@ int main(int argc, char **argv)
     xbt_assert(!strcmp(user_data, (const char*)sg_link_data(links[i])),"User data was corrupted.");
   }
   xbt_free(links);
-  SD_exit();
   return 0;
 }

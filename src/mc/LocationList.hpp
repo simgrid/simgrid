@@ -38,9 +38,7 @@ public:
   LocationListEntry(DwarfExpression expression, range_type range)
     : expression_(std::move(expression)), range_(range)
   {}
-  LocationListEntry(DwarfExpression expression)
-    : expression_(std::move(expression)), range_({0, UINT64_MAX})
-  {}
+  LocationListEntry(DwarfExpression expression) : expression_(std::move(expression)), range_({0, UINT64_MAX}) {}
 
   DwarfExpression& expression()
   {
@@ -67,9 +65,8 @@ private:
   void* memory_;
   int register_id_;
 public:
-  Location(void* x) :memory_(x) {}
-  Location(int register_id) :
-    memory_(nullptr), register_id_(register_id) {}
+  explicit Location(void* x) : memory_(x) {}
+  explicit Location(int register_id) : memory_(nullptr), register_id_(register_id) {}
   // Type of location:
   bool in_register() const { return memory_ == nullptr; }
   bool in_memory()   const { return memory_ != nullptr; }

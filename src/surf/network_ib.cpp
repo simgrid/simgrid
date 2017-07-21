@@ -1,5 +1,5 @@
 /* Copyright (c) 2014-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+*All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -28,7 +28,7 @@ static void IB_create_host_callback(simgrid::s4u::Host& host){
   IBNode* act = new IBNode(id);
 
   id++;
-  xbt_dict_set(((NetworkIBModel*)surf_network_model)->active_nodes, host.cname(), act, nullptr);
+  xbt_dict_set(((NetworkIBModel*)surf_network_model)->active_nodes, host.getCname(), act, nullptr);
 }
 
 static void IB_action_state_changed_callback(simgrid::surf::NetworkAction* action)
@@ -52,10 +52,10 @@ static void IB_action_init_callback(simgrid::surf::NetworkAction* action, simgri
 {
   simgrid::surf::NetworkIBModel* ibModel = (simgrid::surf::NetworkIBModel*)surf_network_model;
 
-  simgrid::surf::IBNode* act_src = (simgrid::surf::IBNode*)xbt_dict_get_or_null(ibModel->active_nodes, src->cname());
+  simgrid::surf::IBNode* act_src = (simgrid::surf::IBNode*)xbt_dict_get_or_null(ibModel->active_nodes, src->getCname());
   xbt_assert(act_src, "could not find src node active comms !");
 
-  simgrid::surf::IBNode* act_dst = (simgrid::surf::IBNode*)xbt_dict_get_or_null(ibModel->active_nodes, dst->cname());
+  simgrid::surf::IBNode* act_dst = (simgrid::surf::IBNode*)xbt_dict_get_or_null(ibModel->active_nodes, dst->getCname());
   xbt_assert(act_dst, "could not find dst node active comms !");
 
   ibModel->active_comms[action]=std::make_pair(act_src, act_dst);
@@ -125,7 +125,6 @@ namespace simgrid {
     }
 
     void NetworkIBModel::computeIBfactors(IBNode *root) {
-      double penalized_bw=0.0;
       double num_comm_out = (double) root->ActiveCommsUp.size();
       double max_penalty_out=0.0;
       //first, compute all outbound penalties to get their max
@@ -159,7 +158,7 @@ namespace simgrid {
         if((*it)->init_rate==-1)
           (*it)->init_rate= rate_before_update;
 
-        penalized_bw = num_comm_out ? (*it)->init_rate / penalty : (*it)->init_rate;
+        double penalized_bw = num_comm_out ? (*it)->init_rate / penalty : (*it)->init_rate;
 
         if (not double_equals(penalized_bw, rate_before_update, sg_surf_precision)) {
           XBT_DEBUG("%d->%d action %p penalty updated : bw now %f, before %f , initial rate %f", root->id,(*it)->destination->id,(*it)->action,penalized_bw, (*it)->action->getBound(), (*it)->init_rate );

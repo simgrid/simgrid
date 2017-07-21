@@ -6,12 +6,17 @@
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "src/surf/HostImpl.hpp"
+#include <algorithm>
+#include <deque>
+#include <unordered_map>
 
 #ifndef VM_INTERFACE_HPP_
 #define VM_INTERFACE_HPP_
 
 #define GUESTOS_NOISE 100 // This value corresponds to the cost of the global action associated to the VM
                           // It corresponds to the cost of a VM running no tasks.
+
+typedef struct dirty_page* dirty_page_t;
 
 namespace simgrid {
 namespace vm {
@@ -55,7 +60,7 @@ XBT_PUBLIC_CLASS VirtualMachineImpl : public surf::HostImpl
   friend simgrid::s4u::VirtualMachine;
 
 public:
-  explicit VirtualMachineImpl(s4u::VirtualMachine* piface, s4u::Host* host);
+  explicit VirtualMachineImpl(s4u::VirtualMachine * piface, s4u::Host * host, int coreAmount);
   ~VirtualMachineImpl();
 
   /** @brief Suspend the VM */
@@ -84,8 +89,8 @@ public:
   surf::Action* action_ = nullptr;
 
   /* Dirty pages stuff */
+  std::unordered_map<std::string, dirty_page_t> dp_objs;
   int dp_enabled                     = 0;
-  xbt_dict_t dp_objs                 = nullptr;
   double dp_updated_by_deleted_tasks = 0;
 
 protected:
@@ -95,11 +100,13 @@ public:
   e_surf_vm_state_t getState();
   void setState(e_surf_vm_state_t state);
   static std::deque<s4u::VirtualMachine*> allVms_;
+  int coreAmount() { return coreAmount_; }
 
   bool isMigrating = false;
 
 private:
   s_vm_params_t params_;
+  int coreAmount_;
 
 protected:
   e_surf_vm_state_t vmState_ = SURF_VM_STATE_CREATED;
@@ -114,7 +121,7 @@ protected:
  */
 class VMModel : public surf::HostModel {
 public:
-  void adjustWeightOfDummyCpuActions() override{};
+  void ignoreEmptyVmInPmLMM() override{};
 
   double nextOccuringEvent(double now) override;
   void updateActionsState(double /*now*/, double /*delta*/) override{};

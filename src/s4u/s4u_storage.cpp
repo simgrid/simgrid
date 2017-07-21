@@ -4,96 +4,87 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "../surf/StorageImpl.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.hpp"
-#include "xbt/lib.h"
 #include <unordered_map>
-
-extern xbt_lib_t storage_lib;
 
 namespace simgrid {
 namespace s4u {
 
-std::unordered_map<std::string, Storage*>* Storage::storages_ = new std::unordered_map<std::string, Storage*>();
-
-Storage::Storage(std::string name, smx_storage_t inferior) :
-    name_(name), pimpl_(inferior)
+std::map<std::string, Storage*>* allStorages()
 {
-  hostname_ = surf_storage_get_host(pimpl_);
-  size_     = surf_storage_get_size(pimpl_);
-  storages_->insert({name, this});
+  std::unordered_map<std::string, surf::StorageImpl*>* map = surf::StorageImpl::storagesMap();
+  std::map<std::string, Storage*>* res                     = new std::map<std::string, Storage*>;
+  for (auto s : *map)
+    res->insert({s.first, &(s.second->piface_)}); // Convert each entry into its interface
+
+  return res;
 }
 
-Storage::~Storage() = default;
-
-smx_storage_t Storage::inferior()
+Storage* Storage::byName(const char* name)
 {
-  return pimpl_;
+  surf::StorageImpl* res = surf::StorageImpl::byName(name);
+  if (res == nullptr)
+    return nullptr;
+  return &res->piface_;
 }
 
-Storage& Storage::byName(const char* name)
+const char* Storage::getName()
 {
-  s4u::Storage* res = nullptr;
-  try {
-    res = storages_->at(name);
-  } catch (std::out_of_range& e) {
-    smx_storage_t inferior = xbt_lib_get_elm_or_null(storage_lib,name);
-    if (inferior == nullptr)
-      xbt_die("Storage %s does not exist. Please only use the storages that are defined in your platform.", name);
-
-    res = new Storage(name,inferior);
-  }
-  return *res;
+  return pimpl_->cname();
 }
 
-const char* Storage::name()
+const char* Storage::getType()
 {
-  return name_.c_str();
+  return pimpl_->typeId_.c_str();
 }
 
-const char* Storage::host()
+Host* Storage::getHost()
 {
-  return hostname_.c_str();
+  return attached_to_;
 }
 
-sg_size_t Storage::sizeFree()
+sg_size_t Storage::getSizeFree()
 {
-  return simgrid::simix::kernelImmediate([this] { return surf_storage_resource_priv(pimpl_)->getFreeSize(); });
+  return simgrid::simix::kernelImmediate([this] { return pimpl_->getFreeSize(); });
 }
 
-sg_size_t Storage::sizeUsed()
+sg_size_t Storage::getSizeUsed()
 {
-  return simgrid::simix::kernelImmediate([this] { return surf_storage_resource_priv(pimpl_)->getUsedSize(); });
+  return simgrid::simix::kernelImmediate([this] { return pimpl_->getUsedSize(); });
 }
 
-sg_size_t Storage::size() {
-  return size_;
-}
-
-xbt_dict_t Storage::properties()
+sg_size_t Storage::getSize()
 {
-  return simcall_storage_get_properties(pimpl_);
+  return pimpl_->getSize();
 }
 
-const char* Storage::property(const char* key)
+xbt_dict_t Storage::getProperties()
 {
-  return static_cast<const char*>(xbt_dict_get_or_null(this->properties(), key));
+  return simgrid::simix::kernelImmediate([this] { return pimpl_->getProperties(); });
 }
 
-void Storage::setProperty(const char* key, char* value)
+const char* Storage::getProperty(const char* key)
 {
-  xbt_dict_set(this->properties(), key, value, nullptr);
+  return this->pimpl_->getProperty(key);
 }
 
-std::map<std::string, sg_size_t*>* Storage::content()
+void Storage::setProperty(const char* key, const char* value)
 {
-  return simgrid::simix::kernelImmediate([this] { return surf_storage_resource_priv(this->pimpl_)->getContent(); });
+  simgrid::simix::kernelImmediate([this, key, value] { this->pimpl_->setProperty(key, value); });
 }
 
-std::unordered_map<std::string, Storage*>* Storage::allStorages()
+std::map<std::string, sg_size_t>* Storage::getContent()
 {
-  return storages_;
+  return simgrid::simix::kernelImmediate([this] { return pimpl_->getContent(); });
 }
+
+/*************
+ * Callbacks *
+ *************/
+simgrid::xbt::signal<void(s4u::Storage&)> Storage::onCreation;
+simgrid::xbt::signal<void(s4u::Storage&)> Storage::onDestruction;
 
 } /* namespace s4u */
 } /* namespace simgrid */

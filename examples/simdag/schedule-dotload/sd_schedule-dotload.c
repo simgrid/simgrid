@@ -34,7 +34,6 @@ int main(int argc, char **argv)
   if(!dot){
     XBT_CRITICAL("The dot file with the provided scheduling is wrong,"
                  " more information with the option : --log=sd_dotparse.thres:verbose");
-    SD_exit();
     exit(2);
   }
 
@@ -81,7 +80,5 @@ int main(int argc, char **argv)
   fclose(out);
   xbt_dynar_free_container(&dot);
 
-  /* exit */
-  SD_exit();
   return 0;
 }

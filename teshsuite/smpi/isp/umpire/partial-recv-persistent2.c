@@ -88,7 +88,7 @@ main (int argc, char **argv)
 	  }
 	}
       }
-    }  
+    }
     else {
       /* Barrier to ensure receives are posted for rsends... */
       MPI_Barrier(MPI_COMM_WORLD);

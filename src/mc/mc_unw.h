@@ -26,8 +26,10 @@
  */
 
 #include "src/mc/mc_forward.hpp"
+#include "xbt/base.h"
 
 #include <libunwind.h>
+#include <stdio.h>
 #include <sys/types.h>
 
 namespace simgrid {
@@ -44,13 +46,13 @@ namespace mc {
 
 class UnwindContext {
   simgrid::mc::AddressSpace* addressSpace_ = nullptr;
-  simgrid::mc::Process* process_           = nullptr;
+  simgrid::mc::RemoteClient* process_      = nullptr;
   unw_context_t unwindContext_;
 
 public:
   UnwindContext() = default;
   ~UnwindContext() { clear(); }
-  void initialize(simgrid::mc::Process* process, unw_context_t* c);
+  void initialize(simgrid::mc::RemoteClient* process, unw_context_t* c);
   void clear();
   unw_cursor_t cursor();
 

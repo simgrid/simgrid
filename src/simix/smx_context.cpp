@@ -33,10 +33,10 @@
 #include <sys/mman.h>
 #endif
 
-#ifdef __MINGW32__ 
-#define _aligned_malloc __mingw_aligned_malloc 
-#define _aligned_free  __mingw_aligned_free 
-#endif //MINGW
+#ifdef __MINGW32__
+#define _aligned_malloc __mingw_aligned_malloc
+#define _aligned_free  __mingw_aligned_free
+#endif /*MINGW*/
 
 #if HAVE_VALGRIND_H
 # include <valgrind/valgrind.h>
@@ -271,7 +271,7 @@ int SIMIX_context_get_nthreads() {
  * \param nb_threads the number of threads to use
  */
 void SIMIX_context_set_nthreads(int nb_threads) {
-  if (nb_threads<=0) {  
+  if (nb_threads<=0) {
      nb_threads = xbt_os_get_numcores();
      XBT_INFO("Auto-setting contexts/nthreads to %d",nb_threads);
   }

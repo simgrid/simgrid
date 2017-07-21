@@ -7,6 +7,7 @@
 #include "xbt/config.h"
 #include "xbt/log.h"
 #include <xbt/str.h>
+#include <xbt/sysdep.h>
 
 #include <mc/mc.h>
 #include "src/mc/mc_replay.h"

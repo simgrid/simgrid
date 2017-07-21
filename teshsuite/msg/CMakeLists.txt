@@ -1,5 +1,6 @@
 # C examples
-foreach(x get_sender host_on_off host_on_off_recv host_on_off_processes trace_integration)
+foreach(x actions-comm actions-storage cloud-sharing get_sender host_on_off host_on_off_recv host_on_off_processes 
+          trace_integration)
   add_executable       (${x}  ${x}/${x}.c)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -9,7 +10,7 @@ foreach(x get_sender host_on_off host_on_off_recv host_on_off_processes trace_in
 endforeach()
 
 # CPP examples
-foreach(x task_destroy_cancel)
+foreach(x task_destroy_cancel task_listen_from)
   add_executable       (${x}  ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -20,7 +21,14 @@ endforeach()
 
 set(teshsuite_src ${teshsuite_src}  PARENT_SCOPE)
 set(tesh_files    ${tesh_files}     PARENT_SCOPE)
-set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.0-hbp1.0-hbp1.0.xml
+set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm.txt
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm_split_p0.txt
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm_split_p1.txt
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-storage/actions-storage.txt         PARENT_SCOPE)
+set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm_d.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm_split_d.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-storage/actions-storage_d.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.0-hbp1.0-hbp1.0.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.0-hbp3.0-hbp4.0.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.5-hbp1.5.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1-c0s0-c0s1.xml
@@ -33,6 +41,15 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1-c1s1-c3s2.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp2.5-hbp1.5.xml    PARENT_SCOPE)
 
-foreach(x get_sender host_on_off host_on_off_processes host_on_off_recv task_destroy_cancel trace_integration)
+foreach(x get_sender host_on_off host_on_off_processes host_on_off_recv task_destroy_cancel task_listen_from trace_integration)
   ADD_TESH_FACTORIES(tesh-msg-${x} "thread;boost;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x} --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x}/${x}.tesh)
+endforeach()
+
+foreach(x actions-comm actions-storage)
+  ADD_TESH_FACTORIES(tesh-msg-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/msg/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x} ${x}.tesh)
+endforeach()
+# One context factory is enough for these ones
+
+foreach(x cloud-sharing)
+  ADD_TESH(tesh-msg-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x} --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x}/${x}.tesh)
 endforeach()

@@ -122,7 +122,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jc
       return nullptr;
     }
     /* Sets the host name */
-    jobject jname = env->NewStringUTF(host->cname());
+    jobject jname = env->NewStringUTF(host->getCname());
     env->SetObjectField(jhost, jhost_field_Host_name, jname);
     /* Bind & store it */
     jhost_bind(jhost, host, env);
@@ -141,7 +141,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_on(JNIEnv *env, jobject jhost) 
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_off(JNIEnv *env, jobject jhost) {
   msg_host_t host = jhost_get_native(env, jhost);
-  MSG_host_off(host); 
+  MSG_host_off(host);
 }
 
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Host_getCount(JNIEnv * env, jclass cls) {
@@ -319,7 +319,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_all(JNIEnv * env, jclas
     jobject jhost   = static_cast<jobject>(host->extension(JAVA_HOST_LEVEL));
 
     if (not jhost) {
-      jstring jname = env->NewStringUTF(host->cname());
+      jstring jname = env->NewStringUTF(host->getCname());
       jhost         = Java_org_simgrid_msg_Host_getByName(env, cls_arg, jname);
     }
 
@@ -334,6 +334,11 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_setAsyncMailbox(JNIEnv * env, j
   const char *name = env->GetStringUTFChars((jstring) jname, 0);
   MSG_mailbox_set_async(name);
   env->ReleaseStringUTFChars((jstring) jname, name);
+}
+
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_updateAllEnergyConsumptions(JNIEnv* env, jclass cls)
+{
+  sg_host_energy_update_all();
 }
 
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getConsumedEnergy (JNIEnv *env, jobject jhost)
@@ -366,7 +371,7 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_Host_getPstatesCount(JNIEnv* env, jo
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCurrentPowerPeak(JNIEnv* env, jobject jhost)
 {
   msg_host_t host = jhost_get_native(env, jhost);
-  return MSG_host_get_current_power_peak(host);
+  return MSG_host_get_speed(host);
 }
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getPowerPeakAt(JNIEnv* env, jobject jhost, jint pstate)
 {

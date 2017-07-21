@@ -17,7 +17,6 @@ simgrid::kernel::activity::CommImpl::CommImpl(e_smx_comm_type_t _type) : type(_t
   state    = SIMIX_WAITING;
   src_data = nullptr;
   dst_data = nullptr;
-  intrusive_ptr_add_ref(this);
   XBT_DEBUG("Create comm activity %p", this);
 }
 
@@ -62,7 +61,6 @@ void simgrid::kernel::activity::CommImpl::cancel()
   if (state == SIMIX_WAITING) {
     mbox->remove(this);
     state = SIMIX_CANCELED;
-    SIMIX_comm_unref(this);
   } else if (not MC_is_active() /* when running the MC there are no surf actions */
              && not MC_record_replay_is_active() && (state == SIMIX_READY || state == SIMIX_RUNNING)) {
 
@@ -124,6 +122,5 @@ void simgrid::kernel::activity::CommImpl::post()
   /* if there are simcalls associated with the synchro, then answer them */
   if (not simcalls.empty()) {
     SIMIX_comm_finish(this);
-    SIMIX_comm_unref(this);
   }
 }

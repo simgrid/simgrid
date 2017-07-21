@@ -73,6 +73,7 @@ static int host(int argc, char *argv[]){
   /* - Then retrieve this data */
   char *data = MSG_file_get_data(file);
   XBT_INFO("User data attached to the file: %s", data);
+  xbt_free(data);
 
   MSG_file_close(file);
   free(file_name);
@@ -92,18 +93,17 @@ static int host(int argc, char *argv[]){
 
   /* - Finally dump disks contents */
   XBT_INFO("*** Dump content of %s ***",MSG_host_get_name(MSG_host_self()));
-  xbt_dict_t contents = NULL;
-  contents = MSG_host_get_storage_content(MSG_host_self()); // contents is a dict of dicts
+  xbt_dict_t contents = MSG_host_get_storage_content(MSG_host_self()); // contents is a dict of dicts
   xbt_dict_cursor_t curs;
   xbt_dict_cursor_t curs2 = NULL;
   char* mountname;
   xbt_dict_t content;
   char* path;
-  sg_size_t *size;
+  sg_size_t* psize;
   xbt_dict_foreach(contents, curs, mountname, content){
     XBT_INFO("Print the content of mount point: %s",mountname);
-    xbt_dict_foreach(content,curs2,path,size){
-       XBT_INFO("%s size: %llu bytes", path,*((sg_size_t*)size));
+    xbt_dict_foreach (content, curs2, path, psize) {
+      XBT_INFO("%s size: %llu bytes", path, *psize);
     }
     xbt_dict_free(&content);
   }

@@ -17,17 +17,13 @@ extern std::map<std::string, storage_type_t> storage_types;
 
 static void check_disk_attachment()
 {
-  xbt_lib_cursor_t cursor;
-  char* key;
-  void** data;
-  xbt_lib_foreach(storage_lib, cursor, key, data) {
-    if (xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
-      simgrid::surf::StorageImpl* storage =
-          static_cast<simgrid::surf::StorageImpl*>(xbt_lib_get_or_null(storage_lib, key, SURF_STORAGE_LEVEL));
-      simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(storage->attach_);
-      if (not host_elm)
-        surf_parse_error("Unable to attach storage %s: host %s does not exist.", storage->cname(), storage->attach_);
-    }
+  for (auto s : *simgrid::surf::StorageImpl::storagesMap()) {
+    simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(s.second->getHost().c_str());
+    if (not host_elm)
+      surf_parse_error("Unable to attach storage %s: host %s does not exist.", s.second->cname(),
+                       s.second->getHost().c_str());
+    else
+      s.second->piface_.attached_to_ = sg_host_by_name(s.second->getHost().c_str());
   }
 }
 
@@ -35,9 +31,6 @@ void storage_register_callbacks()
 {
   simgrid::s4u::onPlatformCreated.connect(check_disk_attachment);
   instr_routing_define_callbacks();
-
-  SURF_STORAGE_LEVEL =
-      xbt_lib_add_level(storage_lib, [](void* self) { delete static_cast<simgrid::surf::StorageImpl*>(self); });
 }
 
 /*********
@@ -65,7 +58,6 @@ StorageImpl* StorageN11Model::createStorage(const char* id, const char* type_id,
 
   StorageImpl* storage = new StorageN11(this, id, maxminSystem_, Bread, Bwrite, type_id, (char*)content_name,
                                         storage_type->size, (char*)attach);
-  xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
   storageCreatedCallbacks(storage);
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tBread '%f'\n", id, type_id, Bread);
@@ -77,68 +69,34 @@ StorageImpl* StorageN11Model::createStorage(const char* id, const char* type_id,
 
 double StorageN11Model::nextOccuringEvent(double now)
 {
-  double min_completion = StorageModel::nextOccuringEventFull(now);
-
-  for(auto storage: p_storageList) {
-    double rate = 0;
-    // Foreach write action on that disk
-    for (auto write_action: storage->writeActions_) {
-      rate += lmm_variable_getvalue(write_action->getVariable());
-    }
-    if(rate > 0)
-      min_completion = MIN(min_completion, (storage->size_-storage->usedSize_)/rate);
-  }
-
-  return min_completion;
+  return StorageModel::nextOccuringEventFull(now);
 }
 
 void StorageN11Model::updateActionsState(double /*now*/, double delta)
 {
-
   ActionList *actionSet = getRunningActionSet();
-  for(ActionList::iterator it(actionSet->begin()), itNext=it, itend(actionSet->end())
-      ; it != itend ; it=itNext) {
+  for (ActionList::iterator it(actionSet->begin()), itNext = it, itend(actionSet->end()); it != itend; it = itNext) {
     ++itNext;
 
     StorageAction *action = static_cast<StorageAction*>(&*it);
 
+    double current_progress = lrint(lmm_variable_getvalue(action->getVariable()) * delta);
+
+    action->updateRemains(current_progress);
     if (action->type_ == WRITE) {
-      // Update the disk usage
-      // Update the file size
-      // For each action of type write
-      double current_progress = delta * lmm_variable_getvalue(action->getVariable());
-      long int incr = current_progress;
+      action->storage_->usedSize_ += current_progress;
+      action->file_->incrPosition(current_progress);
+      action->file_->setSize(action->file_->tell());
 
-      XBT_DEBUG("%s:\n\t progress =  %.2f, current_progress = %.2f, incr = %ld, lrint(1) = %ld, lrint(2) = %ld",
-                action->file_->name, action->progress_, current_progress, incr,
-                lrint(action->progress_ + current_progress), lrint(action->progress_) + incr);
-
-      /* take care of rounding error accumulation */
-      if (lrint(action->progress_ + current_progress) > lrint(action->progress_) + incr)
-        incr++;
-
-      action->progress_ += current_progress;
-
-      action->storage_->usedSize_ += incr;     // disk usage
-      action->file_->current_position += incr; // current_position
-      //  which becomes the new file size
-      action->file_->size = action->file_->current_position;
-
-      sg_size_t* psize = new sg_size_t;
-      *psize           = action->file_->size;
-      std::map<std::string, sg_size_t*>* content_dict = action->storage_->content_;
-      auto entry = content_dict->find(action->file_->name);
-      delete entry->second;
-      entry->second = psize;
+      action->storage_->getContent()->erase(action->file_->cname());
+      action->storage_->getContent()->insert({action->file_->cname(), action->file_->size()});
     }
-
-    action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
 
     if (action->getMaxDuration() > NO_MAX_DURATION)
       action->updateMaxDuration(delta);
 
     if (action->getRemainsNoUpdate() > 0 && lmm_get_variable_weight(action->getVariable()) > 0 &&
-        action->storage_->usedSize_ == action->storage_->size_) {
+        action->storage_->usedSize_ == action->storage_->getSize()) {
       action->finish();
       action->setState(Action::State::failed);
     } else if (((action->getRemainsNoUpdate() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||
@@ -158,87 +116,17 @@ StorageN11::StorageN11(StorageModel* model, const char* name, lmm_system_t maxmi
     : StorageImpl(model, name, maxminSystem, bread, bwrite, type_id, content_name, size, attach)
 {
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);
+  simgrid::s4u::Storage::onCreation(this->piface_);
 }
 
-StorageAction *StorageN11::open(const char* mount, const char* path)
+StorageAction* StorageN11::read(sg_size_t size)
 {
-  XBT_DEBUG("\tOpen file '%s'",path);
-
-  sg_size_t size;
-  sg_size_t* psize = nullptr;
-  // if file does not exist create an empty file
-  if (content_->find(path) != content_->end())
-    size = *(content_->at(path));
-  else {
-    psize  = new sg_size_t;
-    size   = 0;
-    *psize = size;
-    content_->insert({path, psize});
-    XBT_DEBUG("File '%s' was not found, file created.",path);
-  }
-  surf_file_t file = xbt_new0(s_surf_file_t,1);
-  file->name = xbt_strdup(path);
-  file->size = size;
-  file->mount = xbt_strdup(mount);
-  file->current_position = 0;
-
-  StorageAction* action = new StorageN11Action(model(), 0, isOff(), this, OPEN);
-  action->file_         = file;
-
-  return action;
+  return new StorageN11Action(model(), size, isOff(), this, READ);
 }
 
-StorageAction *StorageN11::close(surf_file_t fd)
+StorageAction* StorageN11::write(sg_size_t size)
 {
-  XBT_DEBUG("\tClose file '%s' size '%llu'", fd->name, fd->size);
-  // unref write actions from storage
-  for (std::vector<StorageAction*>::iterator it = writeActions_.begin(); it != writeActions_.end();) {
-    StorageAction *write_action = *it;
-    if ((write_action->file_) == fd) {
-      write_action->unref();
-      it = writeActions_.erase(it);
-    } else {
-      ++it;
-    }
-  }
-  free(fd->name);
-  free(fd->mount);
-  xbt_free(fd);
-  StorageAction* action = new StorageN11Action(model(), 0, isOff(), this, CLOSE);
-  return action;
-}
-
-StorageAction *StorageN11::read(surf_file_t fd, sg_size_t size)
-{
-  if(fd->current_position + size > fd->size){
-    if (fd->current_position > fd->size){
-      size = 0;
-    } else {
-      size = fd->size - fd->current_position;
-    }
-    fd->current_position = fd->size;
-  }
-  else
-    fd->current_position += size;
-
-  StorageAction* action = new StorageN11Action(model(), size, isOff(), this, READ);
-  return action;
-}
-
-StorageAction *StorageN11::write(surf_file_t fd, sg_size_t size)
-{
-  char *filename = fd->name;
-  XBT_DEBUG("\tWrite file '%s' size '%llu/%llu'",filename,size,fd->size);
-
-  StorageAction* action = new StorageN11Action(model(), size, isOff(), this, WRITE);
-  action->file_         = fd;
-  /* Substract the part of the file that might disappear from the used sized on the storage element */
-  usedSize_ -= (fd->size - fd->current_position);
-  // If the storage is full before even starting to write
-  if(usedSize_==size_) {
-    action->setState(Action::State::failed);
-  }
-  return action;
+  return new StorageN11Action(model(), size, isOff(), this, WRITE);
 }
 
 /**********
@@ -254,20 +142,11 @@ StorageN11Action::StorageN11Action(Model* model, double cost, bool failed, Stora
   // Must be less than the max bandwidth for all actions
   lmm_expand(model->getMaxminSystem(), storage->constraint(), getVariable(), 1.0);
   switch(type) {
-  case OPEN:
-  case CLOSE:
-  case STAT:
-    break;
   case READ:
     lmm_expand(model->getMaxminSystem(), storage->constraintRead_, getVariable(), 1.0);
     break;
   case WRITE:
     lmm_expand(model->getMaxminSystem(), storage->constraintWrite_, getVariable(), 1.0);
-
-    //TODO there is something annoying with what's below. Have to sort it out...
-    //    Action *action = this;
-    //    storage->p_writeActions->push_back(action);
-    //    ref();
     break;
   default:
     THROW_UNIMPLEMENTED;
@@ -320,7 +199,7 @@ void StorageN11Action::setMaxDuration(double /*duration*/)
   THROW_UNIMPLEMENTED;
 }
 
-void StorageN11Action::setPriority(double /*priority*/)
+void StorageN11Action::setSharingWeight(double /*priority*/)
 {
   THROW_UNIMPLEMENTED;
 }

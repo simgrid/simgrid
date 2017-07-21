@@ -48,7 +48,7 @@
    If FD is a valid file descriptor for an open file then data for the
    mmalloc managed region is mapped to that file, otherwise an anonymous
    map is used if supported by the underlying OS. In case of running in
-   an OS without support of anonymous mappings then "/dev/zero" is used 
+   an OS without support of anonymous mappings then "/dev/zero" is used
    and in both cases the data will not exist in any filesystem object.
 
    If the open file corresponding to FD is from a previous use of
@@ -58,8 +58,8 @@
    the current process as the process that created the file (ignoring
    the BASEADDR parameter).
 
-   For non valid FDs or empty files ones the mapping is established 
-   starting at the specified address BASEADDR in the process address 
+   For non valid FDs or empty files ones the mapping is established
+   starting at the specified address BASEADDR in the process address
    space.
 
    The provided BASEADDR should be choosed carefully in order to avoid
@@ -120,7 +120,8 @@ xbt_mheap_t xbt_mheap_new_options(int fd, void *baseaddr, int options)
          unsuccessful for some reason. */
 
       struct mdesc newmd;
-      struct mdesc *mdptr = NULL, *mdptemp = NULL;
+      struct mdesc* mdptr   = NULL;
+      struct mdesc* mdptemp = NULL;
 
       if (lseek(fd, 0L, SEEK_SET) != 0)
         return NULL;
@@ -156,15 +157,13 @@ xbt_mheap_t xbt_mheap_new_options(int fd, void *baseaddr, int options)
     }
   }
 
-  /* NULL is not a valid baseaddr as we cannot map anything there.
-     C'mon, user. Think! */
+  /* NULL is not a valid baseaddr as we cannot map anything there. C'mon, user. Think! */
   if (baseaddr == NULL)
     return (NULL);
 
-  /* We start off with the malloc descriptor allocated on the stack, until
-     we build it up enough to call _mmalloc_mmap_morecore() to allocate the
-     first page of the region and copy it there.  Ensure that it is zero'd and
-     then initialize the fields that we know values for. */
+  /* We start off with the malloc descriptor allocated on the stack, until we build it up enough to
+   * call _mmalloc_mmap_morecore() to allocate the first page of the region and copy it there.  Ensure that it is
+   * zero'd and then initialize the fields that we know values for. */
 
   mdp = &mtemp;
   memset((char *) mdp, 0, sizeof(mtemp));
@@ -176,7 +175,7 @@ xbt_mheap_t xbt_mheap_new_options(int fd, void *baseaddr, int options)
   mdp->next_mdesc = NULL;
   mdp->refcount = 1;
   mdp->options = options;
-  
+
   /* If we have not been passed a valid open file descriptor for the file
      to map to, then we go for an anonymous map */
 
@@ -187,10 +186,9 @@ xbt_mheap_t xbt_mheap_new_options(int fd, void *baseaddr, int options)
   /* If we have not been passed a valid open file descriptor for the file
      to map to, then open /dev/zero and use that to map to. */
 
-  /* Now try to map in the first page, copy the malloc descriptor structure
-     there, and arrange to return a pointer to this new copy.  If the mapping
-     fails, then close the file descriptor if it was opened by us, and arrange
-     to return a NULL. */
+  /* Now try to map in the first page, copy the malloc descriptor structure there, and arrange to return a pointer to
+   * this new copy.  If the mapping fails, then close the file descriptor if it was opened by us, and arrange to return
+   * a NULL. */
 
   if ((mbase = mmorecore(mdp, sizeof(mtemp))) != NULL) {
     memcpy(mbase, mdp, sizeof(mtemp));
@@ -199,7 +197,7 @@ xbt_mheap_t xbt_mheap_new_options(int fd, void *baseaddr, int options)
     abort();
   }
 
-  /* Add the new heap to the linked list of heaps attached by mmalloc */  
+  /* Add the new heap to the linked list of heaps attached by mmalloc */
   if(__mmalloc_default_mdp){
     mdp = __mmalloc_default_mdp;
     while(mdp->next_mdesc)
@@ -229,41 +227,35 @@ void xbt_mheap_destroy_no_free(xbt_mheap_t md)
   }
 }
 
-/** Terminate access to a mmalloc managed region by unmapping all memory pages
-    associated with the region, and closing the file descriptor if it is one
-    that we opened.
+/** Terminate access to a mmalloc managed region by unmapping all memory pages associated with the region, and closing
+ *  the file descriptor if it is one that we opened.
 
     Returns NULL on success.
 
-    Returns the malloc descriptor on failure, which can subsequently be used
-    for further action, such as obtaining more information about the nature of
-    the failure.
+    Returns the malloc descriptor on failure, which can subsequently be used for further action, such as obtaining more
+    information about the nature of the failure.
 
-    Note that the malloc descriptor that we are using is currently located in
-    region we are about to unmap, so we first make a local copy of it on the
-    stack and use the copy. */
+    Note that the malloc descriptor that we are using is currently located in region we are about to unmap, so we first
+    make a local copy of it on the stack and use the copy. */
 
 void *xbt_mheap_destroy(xbt_mheap_t mdp)
 {
-  struct mdesc mtemp, *mdptemp;
-
   if (mdp != NULL) {
     /* Remove the heap from the linked list of heaps attached by mmalloc */
-    mdptemp = __mmalloc_default_mdp;
+    struct mdesc* mdptemp = __mmalloc_default_mdp;
     while(mdptemp->next_mdesc != mdp )
       mdptemp = mdptemp->next_mdesc;
 
     mdptemp->next_mdesc = mdp->next_mdesc;
 
     xbt_mheap_destroy_no_free(mdp);
-    mtemp = *mdp;
+    struct mdesc mtemp = *mdp;
 
     /* Now unmap all the pages associated with this region by asking for a
        negative increment equal to the current size of the region. */
 
     if (mmorecore(&mtemp, (char *)mtemp.base - (char *)mtemp.breakval) == NULL) {
-      /* Deallocating failed.  Update the original malloc descriptor
-         with any changes */
+      /* Deallocating failed.  Update the original malloc descriptor with any changes */
       *mdp = mtemp;
     } else {
       if (mtemp.flags & MMALLOC_DEVZERO) {
@@ -277,8 +269,7 @@ void *xbt_mheap_destroy(xbt_mheap_t mdp)
 }
 
 /* Safety gap from the heap's break address.
- * Try to increase this first if you experience strange errors under
- * valgrind. */
+ * Try to increase this first if you experience strange errors under valgrind. */
 #define HEAP_OFFSET   (128UL<<20)
 
 xbt_mheap_t mmalloc_get_default_md(void)
@@ -388,7 +379,7 @@ ssize_t mmalloc_get_busy_size(xbt_mheap_t heap, void *ptr){
     ssize_t frag = ((uintptr_t) (ADDR2UINT (ptr) % (BLOCKSIZE))) >> heap->heapinfo[block].type;
     return heap->heapinfo[block].busy_frag.frag_size[frag];
   }
-    
+
 }
 
 void mmcheck(xbt_mheap_t heap) {return;

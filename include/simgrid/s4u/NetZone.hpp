@@ -44,17 +44,17 @@ protected:
 public:
   /** @brief Seal your netzone once you're done adding content, and before routing stuff through it */
   virtual void seal();
-  char* name();
-  NetZone* father();
+  char* getCname();
+  NetZone* getFather();
 
-  std::vector<NetZone*>* children(); // Sub netzones
-  void hosts(std::vector<s4u::Host*> * whereto); // retrieve my content as a vector of hosts
+  std::vector<NetZone*>* getChildren();             // Sub netzones
+  void getHosts(std::vector<s4u::Host*> * whereto); // retrieve my content as a vector of hosts
 
   /** Get the properties assigned to a host */
-  std::unordered_map<std::string, std::string>* properties();
+  std::unordered_map<std::string, std::string>* getProperties();
 
   /** Retrieve the property value (or nullptr if not set) */
-  const char* property(const char* key);
+  const char* getProperty(const char* key);
   void setProperty(const char* key, const char* value);
 
   /* Add content to the netzone, at parsing time. It should be sealed afterward. */
@@ -67,12 +67,17 @@ public:
                                    kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                                    std::vector<surf::LinkImpl*>* link_list)>
       onRouteCreation;
+  static simgrid::xbt::signal<void(NetZone&)> onCreation;
+  static simgrid::xbt::signal<void(NetZone&)> onSeal;
 
 protected:
-  std::vector<kernel::routing::NetPoint*>
-      vertices_; // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
+  unsigned int getTableSize() { return vertices_.size(); }
+  std::vector<kernel::routing::NetPoint*> getVertices() { return vertices_; }
 
 private:
+  // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
+  std::vector<kernel::routing::NetPoint*> vertices_;
+
   std::unordered_map<std::string, std::string> properties_;
   NetZone* father_ = nullptr;
   char* name_      = nullptr;

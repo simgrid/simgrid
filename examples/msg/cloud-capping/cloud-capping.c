@@ -66,15 +66,15 @@ static void test_dynamic_change(void)
 {
   msg_host_t pm0 = MSG_host_by_name("Fafard");
 
-  msg_host_t vm0 = MSG_vm_create_core(pm0, "VM0");
-  msg_host_t vm1 = MSG_vm_create_core(pm0, "VM1");
+  msg_vm_t vm0 = MSG_vm_create_core(pm0, "VM0");
+  msg_vm_t vm1 = MSG_vm_create_core(pm0, "VM1");
   MSG_vm_start(vm0);
   MSG_vm_start(vm1);
 
   msg_task_t task0 = MSG_task_create("Task0", DOUBLE_MAX, 0, NULL);
   msg_task_t task1 = MSG_task_create("Task1", DOUBLE_MAX, 0, NULL);
-  MSG_process_create("worker0", worker_busy_loop_main, &task0, vm0);
-  MSG_process_create("worker1", worker_busy_loop_main, &task1, vm1);
+  MSG_process_create("worker0", worker_busy_loop_main, &task0, (msg_host_t)vm0);
+  MSG_process_create("worker1", worker_busy_loop_main, &task1, (msg_host_t)vm1);
 
   double task0_remain_prev = MSG_task_get_flops_amount(task0);
   double task1_remain_prev = MSG_task_get_flops_amount(task1);
@@ -203,15 +203,15 @@ static int master_main(int argc, char *argv[])
   test_two_tasks(pm0, pm0);
   XBT_INFO(" ");
 
-  msg_host_t vm0 = MSG_vm_create_core(pm0, "VM0");
+  msg_vm_t vm0 = MSG_vm_create_core(pm0, "VM0");
   MSG_vm_start(vm0);
 
   XBT_INFO("# 3. Put a single task on a VM. ");
-  test_one_task(vm0);
+  test_one_task((msg_host_t)vm0);
   XBT_INFO(" ");
 
   XBT_INFO("# 4. Put two tasks on a VM.");
-  test_two_tasks(vm0, vm0);
+  test_two_tasks((msg_host_t)vm0, (msg_host_t)vm0);
   XBT_INFO(" ");
 
   MSG_vm_destroy(vm0);
@@ -220,7 +220,7 @@ static int master_main(int argc, char *argv[])
   MSG_vm_start(vm0);
 
   XBT_INFO("# 6. Put a task on a PM and a task on a VM.");
-  test_two_tasks(pm0, vm0);
+  test_two_tasks(pm0, (msg_host_t)vm0);
   XBT_INFO(" ");
 
   MSG_vm_destroy(vm0);
@@ -231,15 +231,15 @@ static int master_main(int argc, char *argv[])
   MSG_vm_start(vm0);
 
   XBT_INFO("# 7. Put a single task on the VM capped by 10%%.");
-  test_one_task(vm0);
+  test_one_task((msg_host_t)vm0);
   XBT_INFO(" ");
 
   XBT_INFO("# 8. Put two tasks on the VM capped by 10%%.");
-  test_two_tasks(vm0, vm0);
+  test_two_tasks((msg_host_t)vm0, (msg_host_t)vm0);
   XBT_INFO(" ");
 
   XBT_INFO("# 9. Put a task on a PM and a task on the VM capped by 10%%.");
-  test_two_tasks(pm0, vm0);
+  test_two_tasks(pm0, (msg_host_t)vm0);
   XBT_INFO(" ");
 
   MSG_vm_destroy(vm0);
@@ -259,13 +259,13 @@ static int master_main(int argc, char *argv[])
   const double computation_amount = cpu_speed * 10;
 
   XBT_INFO("# 10. (a) Put a task on a VM without any bound.");
-  launch_worker(vm0, "worker0", computation_amount, 0, 0);
+  launch_worker((msg_host_t)vm0, "worker0", computation_amount, 0, 0);
   MSG_process_sleep(1000);
   XBT_INFO(" ");
 
   XBT_INFO("# 10. (b) set 10%% bound to the VM, and then put a task on the VM.");
   MSG_vm_set_bound(vm0, cpu_speed / 10);
-  launch_worker(vm0, "worker0", computation_amount, 0, 0);
+  launch_worker((msg_host_t)vm0, "worker0", computation_amount, 0, 0);
   MSG_process_sleep(1000);
   XBT_INFO(" ");
 
@@ -274,7 +274,7 @@ static int master_main(int argc, char *argv[])
   XBT_INFO(" ");
 
   XBT_INFO("# 10. (d) Put a task again on the VM.");
-  launch_worker(vm0, "worker0", computation_amount, 0, 0);
+  launch_worker((msg_host_t)vm0, "worker0", computation_amount, 0, 0);
   MSG_process_sleep(1000);
   XBT_INFO(" ");
 

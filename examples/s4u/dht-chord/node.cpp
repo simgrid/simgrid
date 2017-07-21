@@ -47,7 +47,7 @@ Node::Node(std::vector<std::string> args)
 
   // initialize my node
   id_                = std::stoi(args[1]);
-  stream             = simgrid::s4u::this_actor::host()->extension<HostChord>()->getStream();
+  stream             = simgrid::s4u::this_actor::getHost()->extension<HostChord>()->getStream();
   mailbox_           = simgrid::s4u::Mailbox::byName(std::to_string(id_));
   next_finger_to_fix = 0;
   fingers_           = new int[nb_bits];
@@ -112,7 +112,7 @@ void Node::notifyAndQuit()
 
   XBT_DEBUG("Sending a 'PREDECESSOR_LEAVING' to my successor %d", fingers_[0]);
   try {
-    simgrid::s4u::this_actor::send(simgrid::s4u::Mailbox::byName(std::to_string(fingers_[0])), pred_msg, 10, timeout);
+    simgrid::s4u::Mailbox::byName(std::to_string(fingers_[0]))->put(pred_msg, 10, timeout);
   } catch (xbt_ex& e) {
     if (e.category == timeout_error) {
       XBT_DEBUG("Timeout expired when sending a 'PREDECESSOR_LEAVING' to my successor %d", fingers_[0]);
@@ -120,18 +120,20 @@ void Node::notifyAndQuit()
     }
   }
 
-  // send the SUCCESSOR_LEAVING to our predecessor
-  ChordMessage* succ_msg = new ChordMessage(SUCCESSOR_LEAVING);
-  succ_msg->request_id   = fingers_[0];
-  succ_msg->answer_to    = mailbox_;
-  XBT_DEBUG("Sending a 'SUCCESSOR_LEAVING' to my predecessor %d", pred_id_);
+  if (pred_id_ != -1) {
+    // send the SUCCESSOR_LEAVING to our predecessor (only if I have one)
+    ChordMessage* succ_msg = new ChordMessage(SUCCESSOR_LEAVING);
+    succ_msg->request_id   = fingers_[0];
+    succ_msg->answer_to    = mailbox_;
+    XBT_DEBUG("Sending a 'SUCCESSOR_LEAVING' to my predecessor %d", pred_id_);
 
-  try {
-    simgrid::s4u::this_actor::send(simgrid::s4u::Mailbox::byName(std::to_string(pred_id_)), succ_msg, 10, timeout);
-  } catch (xbt_ex& e) {
-    if (e.category == timeout_error) {
-      XBT_DEBUG("Timeout expired when sending a 'SUCCESSOR_LEAVING' to my predecessor %d", pred_id_);
-      delete succ_msg;
+    try {
+      simgrid::s4u::Mailbox::byName(std::to_string(pred_id_))->put(succ_msg, 10, timeout);
+    } catch (xbt_ex& e) {
+      if (e.category == timeout_error) {
+        XBT_DEBUG("Timeout expired when sending a 'SUCCESSOR_LEAVING' to my predecessor %d", pred_id_);
+        delete succ_msg;
+      }
     }
   }
 }
@@ -218,7 +220,7 @@ void Node::checkPredecessor()
 
   XBT_DEBUG("Sending a 'Predecessor Alive' request to my predecessor %d", pred_id_);
   try {
-    simgrid::s4u::this_actor::send(mailbox, message, 10, timeout);
+    mailbox->put(message, 10, timeout);
   } catch (xbt_ex& e) {
     if (e.category == timeout_error) {
       XBT_DEBUG("Failed to send the 'Predecessor Alive' request to %d", pred_id_);
@@ -228,19 +230,19 @@ void Node::checkPredecessor()
   }
   // receive the answer
   XBT_DEBUG("Sent 'Predecessor Alive' request to %d, waiting for the answer on my mailbox '%s'", pred_id_,
-            message->answer_to->name());
-  simgrid::s4u::CommPtr comm = simgrid::s4u::this_actor::irecv(return_mailbox, &data);
+            message->answer_to->getName());
+  simgrid::s4u::CommPtr comm = return_mailbox->get_async(&data);
 
   try {
     comm->wait(timeout);
     XBT_DEBUG("Received the answer to my 'Predecessor Alive': my predecessor %d is alive", pred_id_);
-    delete message;
   } catch (xbt_ex& e) {
     if (e.category == timeout_error) {
       XBT_DEBUG("Failed to receive the answer to my 'Predecessor Alive' request");
       pred_id_ = -1;
     }
   }
+  delete message;
 }
 
 /* Asks its predecessor to a remote node
@@ -262,7 +264,7 @@ int Node::remoteGetPredecessor(int ask_to)
   // send a "Get Predecessor" request to ask_to_id
   XBT_DEBUG("Sending a 'Get Predecessor' request to %d", ask_to);
   try {
-    simgrid::s4u::this_actor::send(mailbox, message, 10, timeout);
+    mailbox->put(message, 10, timeout);
   } catch (xbt_ex& e) {
     if (e.category == timeout_error) {
       XBT_DEBUG("Failed to send the 'Get Predecessor' request to %d", ask_to);
@@ -273,8 +275,8 @@ int Node::remoteGetPredecessor(int ask_to)
 
   // receive the answer
   XBT_DEBUG("Sent 'Get Predecessor' request to %d, waiting for the answer on my mailbox '%s'", ask_to,
-            message->answer_to->name());
-  simgrid::s4u::CommPtr comm = simgrid::s4u::this_actor::irecv(return_mailbox, &data);
+            message->answer_to->getName());
+  simgrid::s4u::CommPtr comm = return_mailbox->get_async(&data);
 
   try {
     comm->wait(timeout);
@@ -338,7 +340,7 @@ int Node::remoteFindSuccessor(int ask_to, int id)
   // send a "Find Successor" request to ask_to_id
   XBT_DEBUG("Sending a 'Find Successor' request to %d for id %d", ask_to, id);
   try {
-    simgrid::s4u::this_actor::send(mailbox, message, 10, timeout);
+    mailbox->put(message, 10, timeout);
   } catch (xbt_ex& e) {
     if (e.category == timeout_error) {
       XBT_DEBUG("Failed to send the 'Find Successor' request to %d for id %d", ask_to, id_);
@@ -348,7 +350,7 @@ int Node::remoteFindSuccessor(int ask_to, int id)
   }
   // receive the answer
   XBT_DEBUG("Sent a 'Find Successor' request to %d for key %d, waiting for the answer", ask_to, id);
-  simgrid::s4u::CommPtr comm = simgrid::s4u::this_actor::irecv(return_mailbox, &data);
+  simgrid::s4u::CommPtr comm = return_mailbox->get_async(&data);
 
   try {
     comm->wait(timeout);
@@ -387,7 +389,7 @@ void Node::remoteNotify(int notify_id, int predecessor_candidate_id)
   // send a "Notify" request to notify_id
   XBT_DEBUG("Sending a 'Notify' request to %d", notify_id);
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(std::to_string(notify_id));
-  simgrid::s4u::this_actor::dsend(mailbox, message, 10);
+  mailbox->put_init(message, 10)->detach();
 }
 
 /* This function is called periodically. It checks the immediate successor of the current node. */
@@ -428,15 +430,16 @@ void Node::handleMessage(ChordMessage* message)
       message->type = FIND_SUCCESSOR_ANSWER;
       message->answer_id = fingers_[0];
       XBT_DEBUG("Sending back a 'Find Successor Answer' to %s (mailbox %s): the successor of %d is %d",
-          message->issuer_host_name.c_str(), message->answer_to->name(), message->request_id, message->answer_id);
-      simgrid::s4u::this_actor::dsend(message->answer_to, message, 10);
+                message->issuer_host_name.c_str(), message->answer_to->getName(), message->request_id,
+                message->answer_id);
+      message->answer_to->put_init(message, 10)->detach();
     } else {
       // otherwise, forward the request to the closest preceding finger in my table
       int closest = closestPrecedingFinger(message->request_id);
       XBT_DEBUG("Forwarding the 'Find Successor' request for id %d to my closest preceding finger %d",
           message->request_id, closest);
       simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(std::to_string(closest));
-      simgrid::s4u::this_actor::dsend(mailbox, message, 10);
+      mailbox->put_init(message, 10)->detach();
     }
     break;
 
@@ -445,8 +448,8 @@ void Node::handleMessage(ChordMessage* message)
     message->type = GET_PREDECESSOR_ANSWER;
     message->answer_id = pred_id_;
     XBT_DEBUG("Sending back a 'Get Predecessor Answer' to %s via mailbox '%s': my predecessor is %d",
-        message->issuer_host_name.c_str(), message->answer_to->name(), message->answer_id);
-    simgrid::s4u::this_actor::dsend(message->answer_to, message, 10);
+              message->issuer_host_name.c_str(), message->answer_to->getName(), message->answer_id);
+    message->answer_to->put_init(message, 10)->detach();
     break;
 
   case NOTIFY:
@@ -482,9 +485,9 @@ void Node::handleMessage(ChordMessage* message)
   case PREDECESSOR_ALIVE:
     XBT_DEBUG("Receiving a 'Predecessor Alive' request from %s", message->issuer_host_name.c_str());
     message->type = PREDECESSOR_ALIVE_ANSWER;
-    XBT_DEBUG("Sending back a 'Predecessor Alive Answer' to %s (mailbox %s)",
-        message->issuer_host_name.c_str(), message->answer_to->name());
-    simgrid::s4u::this_actor::dsend(message->answer_to, message, 10);
+    XBT_DEBUG("Sending back a 'Predecessor Alive Answer' to %s (mailbox %s)", message->issuer_host_name.c_str(),
+              message->answer_to->getName());
+    message->answer_to->put_init(message, 10)->detach();
     break;
 
   default:

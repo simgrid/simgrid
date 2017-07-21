@@ -101,7 +101,7 @@ public:
  *  * sparse/per-page snapshots are snaapshots which shared
  *    identical pages.
  *
- *  * privatized (SMPI global variable privatisation).
+ *  * privatized (SMPI global variable privatization).
  *
  *  This is handled with a variant based approach:
  *
@@ -210,7 +210,7 @@ public:
     page_numbers_.clear();
     privatized_regions_.clear();
   }
-  
+
   void flat_data(Buffer data)
   {
     storage_type_ = StorageType::Flat;

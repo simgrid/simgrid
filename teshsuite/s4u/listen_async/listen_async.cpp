@@ -17,11 +17,11 @@ static void server()
 {
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName("mailbox");
 
-  simgrid::s4u::CommPtr sendComm = simgrid::s4u::this_actor::isend(mailbox, xbt_strdup("Some data"), 0);
+  simgrid::s4u::CommPtr sendComm = mailbox->put_async(xbt_strdup("Some data"), 0);
 
   xbt_assert(mailbox->listen()); // True (1)
   XBT_INFO("Task listen works on regular mailboxes");
-  char* res = static_cast<char*>(simgrid::s4u::this_actor::recv(mailbox));
+  char* res = static_cast<char*>(mailbox->get());
 
   xbt_assert(not strcmp("Some data", res), "Data received: %s", res);
   XBT_INFO("Data successfully received from regular mailbox");
@@ -31,12 +31,12 @@ static void server()
   simgrid::s4u::MailboxPtr mailbox2 = simgrid::s4u::Mailbox::byName("mailbox2");
   mailbox2->setReceiver(simgrid::s4u::Actor::self());
 
-  simgrid::s4u::this_actor::dsend(mailbox2, xbt_strdup("More data"), 0);
+  mailbox2->put_init(xbt_strdup("More data"), 0)->detach();
 
   xbt_assert(mailbox2->listen()); // used to break.
   XBT_INFO("Task listen works on asynchronous mailboxes");
 
-  res = static_cast<char*>(simgrid::s4u::this_actor::recv(mailbox2));
+  res = static_cast<char*>(mailbox2->get());
   xbt_assert(not strcmp("More data", res));
   xbt_free(res);
 
@@ -51,5 +51,7 @@ int main(int argc, char* argv[])
   simgrid::s4u::Actor::createActor("test", simgrid::s4u::Host::by_name("Tremblay"), server);
 
   e->run();
+
+  delete e;
   return 0;
 }

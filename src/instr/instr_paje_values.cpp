@@ -27,7 +27,7 @@ val_t PJ_value_new (const char *name, const char *color, type_t father)
 
   xbt_dict_set (father->values, name, ret, nullptr);
   XBT_DEBUG("new value %s, child of %s", ret->name, ret->father->name);
-  new DefineEntityValueEvent(ret);
+  LogEntityValue(ret);
   return ret;
 }
 
@@ -56,13 +56,4 @@ val_t PJ_value_get (const char *name, type_t father)
     THROWF(tracing_error, 2, "value with name (%s) not found in father type (%s)", name, father->name);
   }
   return ret;
-}
-
-void PJ_value_free (val_t value)
-{
-  XBT_DEBUG("free value %s, child of %s", value->name, value->father->name);
-  xbt_free(((val_t)value)->name);
-  xbt_free(((val_t)value)->color);
-  xbt_free(((val_t)value)->id);
-  xbt_free(value);
 }

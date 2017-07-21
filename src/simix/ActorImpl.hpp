@@ -56,12 +56,12 @@ public:
   bool suspended    = false;
   bool auto_restart = false;
 
-  sg_host_t new_host            = nullptr; /* if not null, the host on which the process must migrate to */
+  sg_host_t new_host             = nullptr; /* if not null, the host on which the process must migrate to */
   smx_activity_t waiting_synchro = nullptr; /* the current blocking synchro if any */
   std::list<smx_activity_t> comms;          /* the current non-blocking communication synchros */
   xbt_dict_t properties         = nullptr;
   s_smx_simcall_t simcall;
-  void *data          = nullptr; /* kept for compatibility, it should be replaced with moddata */
+  void* userdata = nullptr;                      /* kept for compatibility, it should be replaced with moddata */
   std::vector<s_smx_process_exit_fun_t> on_exit; /* list of functions executed when the process dies */
 
   std::function<void()> code;
@@ -70,7 +70,8 @@ public:
 
   /* Refcounting */
 private:
-  std::atomic_int_fast32_t refcount_{1};
+  std::atomic_int_fast32_t refcount_{0};
+
 public:
   friend void intrusive_ptr_add_ref(ActorImpl* process)
   {
@@ -103,7 +104,14 @@ private:
   bool daemon = false;
 public:
   void daemonize();
-  bool isDaemon();
+  bool isDaemon() { return daemon; } /** Whether this actor has been daemonized */
+  bool isSuspended() { return suspended; }
+  ActorImpl* restart(ActorImpl* issuer);
+  smx_activity_t suspend(ActorImpl* issuer);
+  void resume();
+  smx_activity_t sleep(double duration);
+  void setUserData(void* data) { userdata = data; }
+  void* getUserData() { return userdata; }
 };
 
 }
@@ -131,23 +139,16 @@ XBT_PRIVATE void SIMIX_process_empty_trash();
 XBT_PRIVATE void SIMIX_process_yield(smx_actor_t self);
 XBT_PRIVATE void SIMIX_process_exception_terminate(xbt_ex_t * e);
 XBT_PRIVATE void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest);
-XBT_PRIVATE smx_activity_t SIMIX_process_suspend(smx_actor_t process, smx_actor_t issuer);
-XBT_PRIVATE void SIMIX_process_resume(smx_actor_t process);
-XBT_PRIVATE int SIMIX_process_get_PID(smx_actor_t self);
 XBT_PRIVATE void SIMIX_process_set_data(smx_actor_t process, void *data);
 XBT_PRIVATE smx_actor_t SIMIX_process_get_by_name(const char* name);
-XBT_PRIVATE int SIMIX_process_is_suspended(smx_actor_t process);
-XBT_PRIVATE xbt_dict_t SIMIX_process_get_properties(smx_actor_t process);
-XBT_PRIVATE smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, double timeout);
-XBT_PRIVATE smx_activity_t SIMIX_process_sleep(smx_actor_t process, double duration);
 
-XBT_PRIVATE void SIMIX_process_sleep_destroy(smx_activity_t synchro);
 XBT_PRIVATE void SIMIX_process_auto_restart_set(smx_actor_t process, int auto_restart);
-XBT_PRIVATE smx_actor_t SIMIX_process_restart(smx_actor_t process, smx_actor_t issuer);
 
-void SIMIX_segment_index_set(smx_actor_t process, int segment_index);
 extern void (*SMPI_switch_data_segment)(int dest);
 
 SG_END_DECL()
+
+XBT_PRIVATE void SIMIX_process_sleep_destroy(smx_activity_t synchro);
+XBT_PRIVATE smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, double timeout);
 
 #endif

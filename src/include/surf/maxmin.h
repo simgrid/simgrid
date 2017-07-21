@@ -18,10 +18,10 @@ class Action;
 }
 }
 
-/** @addtogroup SURF_lmm 
- * @details 
+/** @addtogroup SURF_lmm
+ * @details
  * A linear maxmin solver to resolve inequations systems.
- * 
+ *
  * Most SimGrid model rely on a "fluid/steady-state" modeling that simulate the sharing of resources between actions at
  * relatively coarse-grain.  Such sharing is generally done by solving a set of linear inequations. Let's take an
  * example and assume we have the variables \f$x_1\f$, \f$x_2\f$, \f$x_3\f$, and \f$x_4\f$ . Let's say that \f$x_1\f$
@@ -44,7 +44,7 @@ class Action;
  * This is called *max-min fairness* and is the most commonly used objective in SimGrid. Another possibility is to
  * maximize \f$\sum_if(x_i)\f$, where \f$f\f$ is a strictly increasing concave function.
  *
- * Constraint: 
+ * Constraint:
  *  - bound (set)
  *  - shared (set)
  *  - usage (computed)
@@ -56,7 +56,7 @@ class Action;
  *
  * Element:
  *  - value (set)
- * 
+ *
  * A possible system could be:
  * - three variables: `var1`, `var2`, `var3`
  * - two constraints: `cons1`, `cons2`
@@ -65,19 +65,19 @@ class Action;
  *  - `elem2` linking `var2` and `cons1`
  *  - `elem3` linking `var2` and `cons2`
  *  - `elem4` linking `var3` and `cons2`
- * 
+ *
  * And the corresponding inequations will be:
- * 
+ *
  *     var1.value <= var1.bound
  *     var2.value <= var2.bound
  *     var3.value <= var3.bound
  *     var1.weight * var1.value * elem1.value + var2.weight * var2.value * elem2.value <= cons1.bound
  *     var2.weight * var2.value * elem3.value + var3.weight * var3.value * elem4.value <= cons2.bound
- * 
+ *
  * where `var1.value`, `var2.value` and `var3.value` are the unknown values.
- * 
- * If a constraint is not shared, the sum is replaced by a max. 
- * For example, a third non-shared constraint `cons3` and the associated elements `elem5` and `elem6` could write as: 
+ *
+ * If a constraint is not shared, the sum is replaced by a max.
+ * For example, a third non-shared constraint `cons3` and the associated elements `elem5` and `elem6` could write as:
  *
  *     max( var1.weight * var1.value * elem5.value  ,  var3.weight * var3.value * elem6.value ) <= cons3.bound
  *
@@ -99,28 +99,28 @@ class Action;
  * (lmm_solve()) activates it when appropriate. It is possible that the variable is again disabled, e.g. to model the
  * pausing of an action.
  *
- * Concurrency limit and maximum 
- * 
- * We call concurrency, the number of variables that can be enabled at any time for each constraint. 
+ * Concurrency limit and maximum
+ *
+ * We call concurrency, the number of variables that can be enabled at any time for each constraint.
  * From a model perspective, this "concurrency" often represents the number of actions that actually compete for one
  * constraint.
  * The LMM solver is able to limit the concurrency for each constraint, and to monitor its maximum value.
- * 
+ *
  * One may want to limit the concurrency of constraints for essentially three reasons:
  *  - Keep LMM system in a size that can be solved (it does not react very well with tens of thousands of variables per
  *    constraint)
- *  - Stay within parameters where the fluid model is accurate enough.      
+ *  - Stay within parameters where the fluid model is accurate enough.
  *  - Model serialization effects
  *
  * The concurrency limit can also be set to a negative value to disable concurrency limit. This can improve performance
  * slightly.
- * 
+ *
  * Overall, each constraint contains three fields related to concurrency:
  *  - concurrency_limit which is the limit enforced by the solver
  *  - concurrency_current which is the current concurrency
- *  - concurrency_maximum which is the observed maximum concurrency 
+ *  - concurrency_maximum which is the observed maximum concurrency
  *
- * Variables also have one field related to concurrency: concurrency_share. 
+ * Variables also have one field related to concurrency: concurrency_share.
  * In effect, in some cases, one variable is involved multiple times (i.e. two elements) in a constraint.
  * For example, cross-traffic is modeled using 2 elements per constraint.
  * concurrency_share formally corresponds to the maximum number of elements that associate the variable and any given
@@ -130,7 +130,7 @@ class Action;
 XBT_PUBLIC_DATA(double) sg_maxmin_precision;
 XBT_PUBLIC_DATA(double) sg_surf_precision;
 XBT_PUBLIC_DATA(int) sg_concurrency_limit;
- 
+
 static inline void double_update(double *variable, double value, double precision)
 {
   //printf("Updating %g -= %g +- %g\n",*variable,value,precision);
@@ -172,7 +172,7 @@ XBT_PUBLIC(void) lmm_system_free(lmm_system_t sys);
  * @brief Create a new Linear MaxMin constraint
  * @param sys The system in which we add a constraint
  * @param id Data associated to the constraint (e.g.: a network link)
- * @param bound_value The bound value of the constraint 
+ * @param bound_value The bound value of the constraint
  */
 XBT_PUBLIC(lmm_constraint_t) lmm_constraint_new(lmm_system_t sys, void *id,double bound_value);
 
@@ -202,6 +202,8 @@ XBT_PUBLIC(void) lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst);
  * @return The usage of the constraint
  */
 XBT_PUBLIC(double) lmm_constraint_get_usage(lmm_constraint_t cnst);
+
+XBT_PUBLIC(int) lmm_constraint_get_variable_amount(lmm_constraint_t cnst);
 
 /**
  * @brief Sets the concurrency limit for this constraint
@@ -323,7 +325,7 @@ XBT_PUBLIC(double) lmm_get_cnst_weight_from_var(lmm_system_t sys, lmm_variable_t
 XBT_PUBLIC(int) lmm_get_number_of_cnst_from_var(lmm_system_t sys, lmm_variable_t var);
 
 /**
- * @brief Get a var associated to a constraint 
+ * @brief Get a var associated to a constraint
  * @details Get the first variable of the next variable of elem if elem is not NULL
  * @param sys The system associated to the variable (not used)
  * @param cnst A constraint
@@ -356,7 +358,7 @@ XBT_PUBLIC(lmm_constraint_t) lmm_get_first_active_constraint(lmm_system_t sys);
  * @brief Get the next active constraint of a constraint in a system
  * @param sys A system
  * @param cnst An active constraint of the system
- * 
+ *
  * @return The next active constraint
  */
 XBT_PUBLIC(lmm_constraint_t) lmm_get_next_active_constraint(lmm_system_t sys, lmm_constraint_t cnst);

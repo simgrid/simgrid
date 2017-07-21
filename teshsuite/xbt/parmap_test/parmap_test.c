@@ -1,16 +1,15 @@
 /* parmap_test -- test parmap                                               */
 
-/* Copyright (c) 2007-2010, 2013-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/simix.h"
+#include "simgrid/msg.h"
+#include "src/internal_config.h"
 #include "xbt.h"
 #include "xbt/ex.h"
 #include "xbt/xbt_os_time.h"
-#include "src/internal_config.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(parmap_test, "Test for parmap");
 
@@ -115,7 +114,7 @@ static int test_parmap_extended(e_xbt_parmap_mode_t mode)
 int main(int argc, char** argv)
 {
   int status = 0;
-  SIMIX_global_init(&argc, argv);
+  MSG_init(&argc, argv);
 
   XBT_INFO("Basic testing posix");
   status += test_parmap_basic(XBT_PARMAP_POSIX);

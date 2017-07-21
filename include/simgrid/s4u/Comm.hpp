@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -10,7 +10,10 @@
 
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Activity.hpp>
+#include <simgrid/s4u/Mailbox.hpp> // DEPRECATED 3.20
 #include <simgrid/s4u/forward.hpp>
+
+#include <vector>
 
 namespace simgrid {
 namespace s4u {
@@ -24,71 +27,72 @@ XBT_PUBLIC_CLASS Comm : public Activity
 public:
   friend void intrusive_ptr_release(simgrid::s4u::Comm * c);
   friend void intrusive_ptr_add_ref(simgrid::s4u::Comm * c);
+  friend Mailbox; // Factory of comms
 
   virtual ~Comm();
 
-  /*! take a range of s4u::Comm* (last excluded) and return when one of them is finished. The return value is an
+  /*! take a range of s4u::CommPtr (last excluded) and return when one of them is finished. The return value is an
    * iterator on the finished Comms. */
-  template <class I> static I wait_any(I first, I last)
+  static int wait_any(std::vector<CommPtr> * comms) { return wait_any_for(comms, -1); }
+  /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
+  static int wait_any_for(std::vector<CommPtr> * comms_in, double timeout)
   {
     // Map to dynar<Synchro*>:
-    xbt_dynar_t comms = xbt_dynar_new(sizeof(simgrid::kernel::activity::ActivityImpl*), NULL);
-    for (I iter = first; iter != last; iter++) {
-      Comm& comm = **iter;
-      if (comm.state_ == inited)
-        comm.start();
-      xbt_assert(comm.state_ == started);
-      xbt_dynar_push_as(comms, simgrid::kernel::activity::ActivityImpl*, comm.pimpl_);
-    }
-    // Call the underlying simcall:
-    int idx = simcall_comm_waitany(comms, -1);
-    xbt_dynar_free(&comms);
-    // Not found:
-    if (idx == -1)
-      return last;
-    // Lift the index to the corresponding iterator:
-    auto res       = std::next(first, idx);
-    (*res)->state_ = finished;
-    return res;
-  }
-  /*! Same as wait_any, but with a timeout. If wait_any_for return because of the timeout last is returned.*/
-  template <class I> static I wait_any_for(I first, I last, double timeout)
-  {
-    // Map to dynar<Synchro*>:
-    xbt_dynar_t comms = xbt_dynar_new(sizeof(simgrid::kernel::activity::ActivityImpl*), NULL);
-    for (I iter = first; iter != last; iter++) {
-      Comm& comm = **iter;
-      if (comm.state_ == inited)
-        comm.start();
-      xbt_assert(comm.state_ == started);
-      xbt_dynar_push_as(comms, simgrid::kernel::activity::ActivityImpl*, comm.pimpl_);
+    xbt_dynar_t comms = xbt_dynar_new(sizeof(simgrid::kernel::activity::ActivityImpl*), [](void*ptr){
+      intrusive_ptr_release(*(simgrid::kernel::activity::ActivityImpl**)ptr);
+    });
+    for (auto comm : *comms_in) {
+      if (comm->state_ == inited)
+        comm->start();
+      xbt_assert(comm->state_ == started);
+      simgrid::kernel::activity::ActivityImpl* ptr = comm->pimpl_.get();
+      intrusive_ptr_add_ref(ptr);
+      xbt_dynar_push_as(comms, simgrid::kernel::activity::ActivityImpl*, ptr);
     }
     // Call the underlying simcall:
     int idx = simcall_comm_waitany(comms, timeout);
     xbt_dynar_free(&comms);
-    // Not found:
-    if (idx == -1)
-      return last;
-    // Lift the index to the corresponding iterator:
-    auto res       = std::next(first, idx);
-    (*res)->state_ = finished;
-    return res;
+    return idx;
   }
   /** Creates (but don't start) an async send to the mailbox @p dest */
-  static CommPtr send_init(MailboxPtr dest);
+  static CommPtr XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_init(): v3.20 will remove Comm::send_init() completely.")
+      send_init(MailboxPtr dest)
+  {
+    return dest->put_init();
+  }
+  /** Creates (but don't start) an async send to the mailbox @p dest */
+  static CommPtr XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_init(): v3.20 will remove Comm::send_init() completely.")
+      send_init(MailboxPtr dest, void* data, int simulatedByteAmount)
+  {
+    return dest->put_init(data, simulatedByteAmount);
+  }
   /** Creates and start an async send to the mailbox @p dest */
-  static CommPtr send_async(MailboxPtr dest, void* data, int simulatedByteAmount);
+  static CommPtr XBT_ATTRIB_DEPRECATED_v320(
+      "Use Mailbox::put_async(): v3.20 will remove Comm::send_async() completely.")
+      send_async(MailboxPtr dest, void* data, int simulatedByteAmount)
+  {
+    return dest->put_async(data, simulatedByteAmount);
+  }
   /** Creates (but don't start) an async recv onto the mailbox @p from */
-  static CommPtr recv_init(MailboxPtr from);
+  static CommPtr XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get_init(): v3.20 will remove Comm::recv_init() completely.")
+      recv_init(MailboxPtr from)
+  {
+    return from->get_init();
+  }
   /** Creates and start an async recv to the mailbox @p from */
-  static CommPtr recv_async(MailboxPtr from, void** data);
-  /** Creates and start a detached send to the mailbox @p dest
-   *  TODO: make it possible to detach an already created comm */
-  static void send_detached(MailboxPtr dest, void* data, int simulatedSize);
+  static CommPtr XBT_ATTRIB_DEPRECATED_v320(
+      "Use Mailbox::get_async(): v3.20 will remove Comm::recv_async() completely.")
+      recv_async(MailboxPtr from, void** data)
+  {
+    return from->get_async(data);
+  }
 
   void start() override;
   void wait() override;
   void wait(double timeout) override;
+
+  /** Start the comm, and ignore its result. It can be completely forgotten after that. */
+  void detach();
 
   /** Sets the maximal communication rate (in byte/sec). Must be done before start */
   void setRate(double rate);
@@ -110,6 +114,9 @@ public:
   bool test();
   void cancel();
 
+  /** Retrieve the mailbox on which this comm acts */
+  MailboxPtr getMailbox();
+
 private:
   double rate_        = -1;
   void* dstBuff_      = nullptr;
@@ -119,7 +126,7 @@ private:
 
   /* FIXME: expose these elements in the API */
   int detached_ = 0;
-  int (*matchFunction_)(void*, void*, smx_activity_t) = nullptr;
+  int (*matchFunction_)(void*, void*, simgrid::kernel::activity::CommImpl*) = nullptr;
   void (*cleanFunction_)(void*) = nullptr;
   void (*copyDataFunction_)(smx_activity_t, void*, size_t) = nullptr;
 

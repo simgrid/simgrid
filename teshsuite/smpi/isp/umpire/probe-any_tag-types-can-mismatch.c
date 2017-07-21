@@ -51,11 +51,11 @@ main (int argc, char **argv)
 
       MPI_Wait (&req0, &status);
     }
-  else if (rank == 1) 
+  else if (rank == 1)
     {
       for (j = 0; j < 2; j++) {
 	MPI_Probe (0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-      
+
 	if (status.MPI_TAG == 0) {
 	  MPI_Recv (&i, 1, MPI_INT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 
@@ -63,7 +63,7 @@ main (int argc, char **argv)
 	    printf ("(%d) Type mismatch from matching other message\n", rank);
 	}
 	else {
-	  MPI_Recv (&x, 1, MPI_DOUBLE, 0, 
+	  MPI_Recv (&x, 1, MPI_DOUBLE, 0,
 		    MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 
 	  if (status.MPI_TAG == 0)
@@ -71,7 +71,7 @@ main (int argc, char **argv)
 	}
       }
     }
-      
+
   MPI_Barrier (MPI_COMM_WORLD);
 
   MPI_Finalize ();

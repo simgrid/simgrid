@@ -1,7 +1,6 @@
 /* automaton - representation of büchi automaton */
 
-/* Copyright (c) 2011-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2011-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -21,8 +20,7 @@ struct xbt_automaton_propositional_symbol{
 };
 
 xbt_automaton_t xbt_automaton_new(void){
-  xbt_automaton_t automaton = NULL;
-  automaton = xbt_new0(struct xbt_automaton, 1);
+  xbt_automaton_t automaton = xbt_new0(struct xbt_automaton, 1);
   automaton->states = xbt_dynar_new(sizeof(xbt_automaton_state_t), xbt_automaton_state_free_voidp);
   automaton->transitions = xbt_dynar_new(sizeof(xbt_automaton_transition_t), xbt_automaton_transition_free_voidp);
   automaton->propositional_symbols = xbt_dynar_new(sizeof(xbt_automaton_propositional_symbol_t), xbt_automaton_propositional_symbol_free_voidp);
@@ -30,19 +28,17 @@ xbt_automaton_t xbt_automaton_new(void){
 }
 
 xbt_automaton_state_t xbt_automaton_state_new(xbt_automaton_t a, int type, char* id){
-  xbt_automaton_state_t state = NULL;
-  state = xbt_new0(struct xbt_automaton_state, 1);
+  xbt_automaton_state_t state = xbt_new0(struct xbt_automaton_state, 1);
   state->type = type;
   state->id = xbt_strdup(id);
   state->in = xbt_dynar_new(sizeof(xbt_automaton_transition_t), xbt_automaton_transition_free_voidp);
-  state->out = xbt_dynar_new(sizeof(xbt_automaton_transition_t), xbt_automaton_transition_free_voidp); 
+  state->out = xbt_dynar_new(sizeof(xbt_automaton_transition_t), xbt_automaton_transition_free_voidp);
   xbt_dynar_push(a->states, &state);
   return state;
 }
 
 xbt_automaton_transition_t xbt_automaton_transition_new(xbt_automaton_t a, xbt_automaton_state_t src, xbt_automaton_state_t dst, xbt_automaton_exp_label_t label){
-  xbt_automaton_transition_t transition = NULL;
-  transition = xbt_new0(struct xbt_automaton_transition, 1);
+  xbt_automaton_transition_t transition = xbt_new0(struct xbt_automaton_transition, 1);
   if(src != NULL){
     xbt_dynar_push(src->out, &transition);
     transition->src = src;
@@ -205,8 +201,7 @@ static int call_simple_function(void* function)
 }
 
 xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new(xbt_automaton_t a, const char* id, int(*fct)(void)){
-  xbt_automaton_propositional_symbol_t prop_symb = NULL;
-  prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
+  xbt_automaton_propositional_symbol_t prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
   prop_symb->pred = xbt_strdup(id);
   prop_symb->callback                            = &call_simple_function;
   prop_symb->data = fct;
@@ -217,8 +212,7 @@ xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new(xbt_
 
 XBT_PUBLIC(xbt_automaton_propositional_symbol_t) xbt_automaton_propositional_symbol_new_pointer(xbt_automaton_t a, const char* id, int* value)
 {
-  xbt_automaton_propositional_symbol_t prop_symb = NULL;
-  prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
+  xbt_automaton_propositional_symbol_t prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
   prop_symb->pred = xbt_strdup(id);
   prop_symb->callback = NULL;
   prop_symb->data = value;
@@ -232,8 +226,7 @@ XBT_PUBLIC(xbt_automaton_propositional_symbol_t) xbt_automaton_propositional_sym
   xbt_automaton_propositional_symbol_callback_type callback,
   void* data, xbt_automaton_propositional_symbol_free_function_type free_function)
 {
-  xbt_automaton_propositional_symbol_t prop_symb = NULL;
-  prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
+  xbt_automaton_propositional_symbol_t prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
   prop_symb->pred = xbt_strdup(id);
   prop_symb->callback = callback;
   prop_symb->data = data;
@@ -283,7 +276,7 @@ int xbt_automaton_transition_compare(const void *t1, const void *t2){
 
   if(xbt_automaton_state_compare(((xbt_automaton_transition_t)t1)->src, ((xbt_automaton_transition_t)t2)->src))
     return 1;
-  
+
   if(xbt_automaton_state_compare(((xbt_automaton_transition_t)t1)->dst, ((xbt_automaton_transition_t)t2)->dst))
     return 1;
 
@@ -291,7 +284,7 @@ int xbt_automaton_transition_compare(const void *t1, const void *t2){
     return 1;
 
   return 0;
-  
+
 }
 
 int xbt_automaton_exp_label_compare(xbt_automaton_exp_label_t l1, xbt_automaton_exp_label_t l2){
@@ -300,7 +293,7 @@ int xbt_automaton_exp_label_compare(xbt_automaton_exp_label_t l1, xbt_automaton_
     return 1;
 
   switch(l1->type){
-  case 0 : // OR 
+  case 0 : // OR
   case 1 : // AND
     if(xbt_automaton_exp_label_compare(l1->u.or_and.left_exp, l2->u.or_and.left_exp))
       return 1;
@@ -330,7 +323,7 @@ int xbt_automaton_propositional_symbols_compare_value(xbt_dynar_t s1, xbt_dynar_
     int* iptr2 = xbt_dynar_get_ptr(s2, cursor);
     if(*iptr1 != *iptr2)
       return 1;
-  } 
+  }
 
   return 0;
 }

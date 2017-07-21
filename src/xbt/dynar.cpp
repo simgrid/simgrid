@@ -365,9 +365,6 @@ extern "C" void xbt_dynar_insert_at(xbt_dynar_t const dynar, const int idx, cons
  */
 extern "C" void xbt_dynar_remove_at(xbt_dynar_t const dynar, const int idx, void* const object)
 {
-  unsigned long nb_shift;
-  unsigned long offset;
-
   _sanity_check_dynar(dynar);
   _check_inbound_idx(dynar, idx);
 
@@ -377,10 +374,10 @@ extern "C" void xbt_dynar_remove_at(xbt_dynar_t const dynar, const int idx, void
     dynar->free_f(_xbt_dynar_elm(dynar, idx));
   }
 
-  nb_shift = dynar->used - 1 - idx;
+  unsigned long nb_shift = dynar->used - 1 - idx;
 
   if (nb_shift) {
-    offset = nb_shift * dynar->elmsize;
+    unsigned long offset = nb_shift * dynar->elmsize;
     memmove(_xbt_dynar_elm(dynar, idx), _xbt_dynar_elm(dynar, idx + 1), offset);
   }
 
@@ -396,10 +393,6 @@ extern "C" void xbt_dynar_remove_at(xbt_dynar_t const dynar, const int idx, void
  */
 extern "C" void xbt_dynar_remove_n_at(xbt_dynar_t const dynar, const unsigned int n, const int idx)
 {
-  unsigned long nb_shift;
-  unsigned long offset;
-  unsigned long cur;
-
   if (not n)
     return;
 
@@ -408,15 +401,15 @@ extern "C" void xbt_dynar_remove_n_at(xbt_dynar_t const dynar, const unsigned in
   _check_inbound_idx(dynar, idx + n - 1);
 
   if (dynar->free_f) {
-    for (cur = idx; cur < idx + n; cur++) {
+    for (unsigned long cur = idx; cur < idx + n; cur++) {
       dynar->free_f(_xbt_dynar_elm(dynar, cur));
     }
   }
 
-  nb_shift = dynar->used - n - idx;
+  unsigned long nb_shift = dynar->used - n - idx;
 
   if (nb_shift) {
-    offset = nb_shift * dynar->elmsize;
+    unsigned long offset = nb_shift * dynar->elmsize;
     memmove(_xbt_dynar_elm(dynar, idx), _xbt_dynar_elm(dynar, idx + n), offset);
   }
 
@@ -458,7 +451,7 @@ extern "C" unsigned int xbt_dynar_search(xbt_dynar_t const dynar, void* const el
  *
  * Beware that if your dynar contains pointed values (such as strings) instead of scalar, this function is probably not
  * what you want. Check the documentation of xbt_dynar_search() for more info.
- * 
+ *
  * Note that usually, the dynar indices are unsigned integers. If you have more than 2 million elements in your dynar,
  * this very function will not work (but the other will).
  */
@@ -474,7 +467,7 @@ extern "C" signed int xbt_dynar_search_or_negative(xbt_dynar_t const dynar, void
   return -1;
 }
 
-/** @brief Returns a boolean indicating whether the element is part of the dynar 
+/** @brief Returns a boolean indicating whether the element is part of the dynar
  *
  * Beware that if your dynar contains pointed values (such as strings) instead of scalar, this function is probably not
  * what you want. Check the documentation of xbt_dynar_search() for more info.
@@ -668,7 +661,7 @@ extern "C" void xbt_dynar_three_way_partition(xbt_dynar_t const dynar, int_f_pvo
   }
 }
 
-/** @brief Transform a dynar into a nullptr terminated array. 
+/** @brief Transform a dynar into a nullptr terminated array.
  *
  *  \param dynar the dynar to transform
  *  \return pointer to the first element of the array
@@ -744,7 +737,6 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
   /* Vars_decl [doxygen cruft] */
   int i;
   unsigned int cursor;
-  int *iptr;
 
   xbt_test_add("==== Traverse the empty dynar");
   xbt_dynar_t d = xbt_dynar_new(sizeof(int), nullptr);
@@ -767,7 +759,7 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
 
   /* 2. Traverse manually the dynar */
   for (cursor = 0; cursor < NB_ELEM; cursor++) {
-    iptr = (int*) xbt_dynar_get_ptr(d, cursor);
+    int* iptr = (int*)xbt_dynar_get_ptr(d, cursor);
     xbt_test_assert(cursor == (unsigned int)*iptr, "The retrieved value is not the same than the injected one (%u!=%d)",
                     cursor, *iptr);
   }

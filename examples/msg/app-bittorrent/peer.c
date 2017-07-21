@@ -454,7 +454,7 @@ void remove_current_piece(peer_t peer, connection_t remote_peer, unsigned int cu
 void update_pieces_count_from_bitfield(peer_t peer, unsigned int bitfield)
 {
   for (int i = 0; i < FILE_PIECES; i++) {
-    if ((bitfield & (1U << i))) {
+    if (bitfield & (1U << i)) {
       peer->pieces_count[i]++;
     }
   }
@@ -742,10 +742,9 @@ int is_interested_and_free(peer_t peer, connection_t remote_peer)
 int partially_downloaded_piece(peer_t peer, connection_t remote_peer)
 {
   for (int i = 0; i < FILE_PIECES; i++) {
-    if (peer_has_not_piece(peer, i) && connection_has_piece(remote_peer,i)&& peer_is_not_downloading_piece(peer, i)) {
-      if (get_first_block(peer, i) > 0)
-        return i;
-    }
+    if (peer_has_not_piece(peer, i) && connection_has_piece(remote_peer, i) && peer_is_not_downloading_piece(peer, i) &&
+        get_first_block(peer, i) > 0)
+      return i;
   }
   return -1;
 }

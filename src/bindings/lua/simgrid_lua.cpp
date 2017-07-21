@@ -69,7 +69,7 @@ static int critical(lua_State* L) {
  * @brief Dumps a lua table with XBT_DEBUG
  *
  * This function can be called from within lua via "simgrid.dump(table)". It will
- * then dump the table via XBT_DEBUG 
+ * then dump the table via XBT_DEBUG
  */
 static int dump(lua_State* L) {
   int argc = lua_gettop(L);
@@ -78,7 +78,7 @@ static int dump(lua_State* L) {
     if (lua_istable(L, i)) {
       lua_pushnil(L); /* table nil */
 
-      //lua_next pops the topmost element from the stack and 
+      //lua_next pops the topmost element from the stack and
       //gets the next pair from the table at the specified index
       while (lua_next(L, i)) { /* table key val  */
         // we need to copy here, as a cast from "Number" to "String"

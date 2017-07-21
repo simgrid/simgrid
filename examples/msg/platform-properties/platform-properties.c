@@ -7,7 +7,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Property test");
 
-static void test_host(const char*hostname) 
+static void test_host(const char*hostname)
 {
   msg_host_t thehost = MSG_host_by_name(hostname);
   xbt_dict_t props = MSG_host_get_properties(thehost);

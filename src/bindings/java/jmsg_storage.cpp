@@ -69,7 +69,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getByName(JNIEnv * env, j
   }
   env->ReleaseStringUTFChars(jname, name);
 
-  if (java_storage_map.find(storage->key) == java_storage_map.end()) {
+  if (java_storage_map.find(storage) == java_storage_map.end()) {
     /* Instantiate a new java storage */
     jstorage = jstorage_new_instance(env);
 
@@ -93,9 +93,9 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getByName(JNIEnv * env, j
     /* the native storage data field is set with the global reference to the
      * java storage returned by this function
      */
-    java_storage_map.insert({storage->key, jstorage});
+    java_storage_map.insert({storage, jstorage});
   } else
-    jstorage = java_storage_map.at(storage->key);
+    jstorage = java_storage_map.at(storage);
 
   /* return the global reference to the java storage instance */
   return (jobject)jstorage;
@@ -215,8 +215,8 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Storage_all(JNIEnv * env, jc
 
   for (index = 0; index < count; index++) {
     storage = xbt_dynar_get_as(table,index,msg_storage_t);
-    if (java_storage_map.find(storage->key) != java_storage_map.end()) {
-      jstorage = java_storage_map.at(storage->key);
+    if (java_storage_map.find(storage) != java_storage_map.end()) {
+      jstorage = java_storage_map.at(storage);
     } else {
       jname = env->NewStringUTF(MSG_storage_get_name(storage));
       jstorage = Java_org_simgrid_msg_Storage_getByName(env, cls_arg, jname);

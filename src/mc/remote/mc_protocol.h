@@ -11,6 +11,7 @@
 #include <xbt/base.h>
 
 #include "mc/datatypes.h"
+#include "simgrid/forward.h"
 
 SG_BEGIN_DECL()
 
@@ -41,6 +42,8 @@ typedef enum {
   MC_MESSAGE_ASSERTION_FAILED,
   // MCer request to finish the restoration:
   MC_MESSAGE_RESTORE,
+  MC_MESSAGE_ACTOR_ENABLED,
+  MC_MESSAGE_ACTOR_ENABLED_REPLY
 } e_mc_message_type;
 
 #define MC_MESSAGE_LENGTH 512
@@ -53,71 +56,70 @@ typedef enum {
  *
  *  Moreover the protocol is not stable. The same version of the library should be used
  *  for the client and the server.
- *
- *  This is the basic structure shared by all messages: all message start with a message
- *  type.
  */
+
+/* Basic structure: all message start with a message type */
 struct s_mc_message {
   e_mc_message_type type;
 };
-typedef struct s_mc_message s_mc_message_t;
-typedef struct s_mc_message* mc_message_t;
+typedef struct s_mc_message mc_message_t;
 
-struct s_mc_int_message {
+struct s_mc_message_int {
   e_mc_message_type type;
   uint64_t value;
 };
-typedef struct s_mc_int_message s_mc_int_message_t;
-typedef struct s_mc_int_message* mc_int_message_t;
+typedef struct s_mc_message_int mc_message_int_t;
 
-struct s_mc_ignore_heap_message {
+/* Client->Server */
+struct s_mc_message_ignore_heap {
   e_mc_message_type type;
   int block;
   int fragment;
   void* address;
   size_t size;
 };
-typedef struct s_mc_ignore_heap_message s_mc_ignore_heap_message_t;
-typedef struct s_mc_ignore_heap_message* mc_ignore_heap_message_t;
+typedef struct s_mc_message_ignore_heap s_mc_message_ignore_heap_t;
 
-struct s_mc_ignore_memory_message {
+struct s_mc_message_ignore_memory {
   e_mc_message_type type;
   uint64_t addr;
   size_t size;
 };
-typedef struct s_mc_ignore_memory_message s_mc_ignore_memory_message_t;
-typedef struct s_mc_ignore_memory_message* mc_ignore_memory_message_t;
+typedef struct s_mc_message_ignore_memory s_mc_message_ignore_memory_t;
 
-struct s_mc_stack_region_message {
+struct s_mc_message_stack_region {
   e_mc_message_type type;
   s_stack_region_t stack_region;
 };
-typedef struct s_mc_stack_region_message s_mc_stack_region_message_t;
-typedef struct s_mc_stack_region_message* mc_stack_region_message_t;
+typedef struct s_mc_message_stack_region s_mc_message_stack_region_t;
 
-struct s_mc_simcall_handle_message {
-  e_mc_message_type type;
-  unsigned long pid;
-  int value;
-};
-typedef struct s_mc_simcall_handle_message s_mc_simcall_handle_message_t;
-typedef struct s_mc_simcall_handle_message* mc_simcall_handle_message;
-
-struct s_mc_register_symbol_message {
+struct s_mc_message_register_symbol {
   e_mc_message_type type;
   char name[128];
   int (*callback)(void*);
   void* data;
 };
-typedef struct s_mc_register_symbol_message s_mc_register_symbol_message_t;
-typedef struct s_mc_register_symbol_message* mc_register_symbol_message_t;
+typedef struct s_mc_message_register_symbol s_mc_message_register_symbol_t;
 
-struct s_mc_restore_message {
+/* Server -> client */
+struct s_mc_message_simcall_handle {
+  e_mc_message_type type;
+  unsigned long pid;
+  int value;
+};
+typedef struct s_mc_message_simcall_handle s_mc_message_simcall_handle_t;
+
+struct s_mc_message_restore {
   e_mc_message_type type;
   int index;
 };
-typedef struct s_mc_restore_message s_mc_restore_message_t;
-typedef struct s_mc_restore_message* mc_restore_message_t;
+typedef struct s_mc_message_restore s_mc_message_restore_t;
+
+struct s_mc_message_actor_enabled {
+  e_mc_message_type type;
+  aid_t aid; // actor ID
+};
+typedef struct s_mc_message_actor_enabled s_mc_message_actor_enabled_t;
 
 XBT_PRIVATE const char* MC_message_type_name(e_mc_message_type type);
 

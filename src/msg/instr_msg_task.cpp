@@ -8,6 +8,8 @@
 #include "src/instr/instr_private.h"
 #include "src/msg/msg_private.h"
 
+#include <atomic>
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_msg, instr, "MSG instrumentation");
 
 void TRACE_msg_set_task_category(msg_task_t task, const char *category)
@@ -31,10 +33,10 @@ void TRACE_msg_set_task_category(msg_task_t task, const char *category)
 /* MSG_task_create related function*/
 void TRACE_msg_task_create(msg_task_t task)
 {
-  static long long counter = 0;
+  static std::atomic_ullong counter{0};
   task->counter = counter++;
   task->category = nullptr;
-  
+
   if(MC_is_active())
     MC_ignore_heap(&(task->counter), sizeof(task->counter));
 

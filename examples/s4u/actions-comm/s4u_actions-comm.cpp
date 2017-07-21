@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -61,10 +61,10 @@ public:
     double size                 = std::stod(action[3]);
     char* payload               = xbt_strdup(action[3]);
     double clock                = simgrid::s4u::Engine::getClock();
-    simgrid::s4u::MailboxPtr to = simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::name() + "_" + action[2]);
+    simgrid::s4u::MailboxPtr to = simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::getName() + "_" + action[2]);
     ACT_DEBUG("Entering Send: %s (size: %g) -- Actor %s on mailbox %s", NAME, size,
-              simgrid::s4u::this_actor::name().c_str(), to->name());
-    simgrid::s4u::this_actor::send(to, payload, size);
+              simgrid::s4u::this_actor::getName().c_str(), to->getName());
+    to->put(payload, size);
     xbt_free(payload);
 
     log_action(action, simgrid::s4u::Engine::getClock() - clock);
@@ -74,10 +74,11 @@ public:
   {
     double clock = simgrid::s4u::Engine::getClock();
     simgrid::s4u::MailboxPtr from =
-        simgrid::s4u::Mailbox::byName(std::string(action[2]) + "_" + simgrid::s4u::this_actor::name());
+        simgrid::s4u::Mailbox::byName(std::string(action[2]) + "_" + simgrid::s4u::this_actor::getName());
 
-    ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME, simgrid::s4u::this_actor::name().c_str(), from->name());
-    simgrid::s4u::this_actor::recv(from);
+    ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME, simgrid::s4u::this_actor::getName().c_str(),
+              from->getName());
+    from->get();
     log_action(action, simgrid::s4u::Engine::getClock() - clock);
   }
 };
@@ -117,5 +118,6 @@ int main(int argc, char *argv[])
 
   XBT_INFO("Simulation time %g", e->getClock());
 
+  delete e;
   return 0;
 }

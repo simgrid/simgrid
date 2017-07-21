@@ -128,7 +128,7 @@ RegionSnapshot region(
 RegionSnapshot sparse_region(RegionType region_type,
   void *start_addr, void* permanent_addr, size_t size)
 {
-  simgrid::mc::Process* process = &mc_model_checker->process();
+  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
   assert(process != nullptr);
 
   xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize-1)) == 0,
@@ -145,6 +145,6 @@ RegionSnapshot sparse_region(RegionType region_type,
   region.page_data(std::move(page_data));
   return region;
 }
-  
+
 }
 }

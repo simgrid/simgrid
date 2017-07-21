@@ -6,7 +6,7 @@
 #ifndef SIMGRID_MC_SMX_H
 #define SIMGRID_MC_SMX_H
 
-#include "src/mc/Process.hpp"
+#include "src/mc/remote/RemoteClient.hpp"
 
 /** @file
  *  @brief (Cross-process, MCer/MCed) Access to SMX structures

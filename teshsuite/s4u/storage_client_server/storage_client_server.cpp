@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2015, 2017. The    SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,9 +10,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(storage, "Messages specific for this simulation");
 
 static void display_storage_properties(simgrid::s4u::Storage* storage)
 {
-  xbt_dict_t props = storage->properties();
+  xbt_dict_t props = storage->getProperties();
   if (xbt_dict_length(props) > 0) {
-    XBT_INFO("\tProperties of mounted storage: %s", storage->name());
+    XBT_INFO("\tProperties of mounted storage: %s", storage->getName());
 
     xbt_dict_cursor_t cursor = NULL;
     char* key;
@@ -30,7 +29,7 @@ static sg_size_t write_local_file(const char* dest, sg_size_t file_size)
   simgrid::s4u::File* file = new simgrid::s4u::File(dest, nullptr);
   sg_size_t written        = file->write(file_size);
   XBT_INFO("%llu bytes on %llu bytes have been written by %s on /sd1", written, file_size,
-           simgrid::s4u::Actor::self()->name().c_str());
+           simgrid::s4u::Actor::self()->getName().c_str());
   delete file;
   return written;
 }
@@ -41,7 +40,7 @@ static sg_size_t read_local_file(const char* src)
   sg_size_t file_size      = file->size();
   sg_size_t read           = file->read(file_size);
 
-  XBT_INFO("%s has read %llu on %s", simgrid::s4u::Actor::self()->name().c_str(), read, src);
+  XBT_INFO("%s has read %llu on %s", simgrid::s4u::Actor::self()->getName().c_str(), read, src);
   delete file;
 
   return read;
@@ -54,80 +53,74 @@ static void hsm_put(const char* remote_host, const char* src, const char* dest)
   sg_size_t read_size = read_local_file(src);
 
   // Send file
-  XBT_INFO("%s sends %llu to %s", simgrid::s4u::this_actor::name().c_str(), read_size, remote_host);
+  XBT_INFO("%s sends %llu to %s", simgrid::s4u::this_actor::getName().c_str(), read_size, remote_host);
   char* payload                    = bprintf("%s %llu", dest, read_size);
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(remote_host);
-  simgrid::s4u::this_actor::send(mailbox, payload, static_cast<double>(read_size));
+  mailbox->put(payload, static_cast<double>(read_size));
   simgrid::s4u::this_actor::sleep_for(.4);
 }
 
 static void display_storage_content(simgrid::s4u::Storage* storage)
 {
-  XBT_INFO("Print the content of the storage element: %s", storage->name());
-  std::map<std::string, sg_size_t*>* content = storage->content();
+  XBT_INFO("Print the content of the storage element: %s", storage->getName());
+  std::map<std::string, sg_size_t>* content = storage->getContent();
   if (not content->empty()) {
     for (auto entry : *content)
-      XBT_INFO("\t%s size: %llu bytes", entry.first.c_str(), *entry.second);
+      XBT_INFO("\t%s size: %llu bytes", entry.first.c_str(), entry.second);
   } else {
     XBT_INFO("\tNo content.");
   }
 }
 
-static void dump_storage_by_name(char* name)
+static void dump_storage_by_name(const char* name)
 {
   XBT_INFO("*** Dump a storage element ***");
-  simgrid::s4u::Storage& storage = simgrid::s4u::Storage::byName(name);
-  display_storage_content(&storage);
+  simgrid::s4u::Storage* storage = simgrid::s4u::Storage::byName(name);
+  display_storage_content(storage);
 }
 
 static void get_set_storage_data(const char* storage_name)
 {
   XBT_INFO("*** GET/SET DATA for storage element: %s ***", storage_name);
-  simgrid::s4u::Storage& storage = simgrid::s4u::Storage::byName(storage_name);
+  simgrid::s4u::Storage* storage = simgrid::s4u::Storage::byName(storage_name);
 
-  char* data = static_cast<char*>(storage.userdata());
+  char* data = static_cast<char*>(storage->getUserdata());
   XBT_INFO("Get data: '%s'", data);
-  storage.setUserdata(xbt_strdup("Some data"));
-  data = static_cast<char*>(storage.userdata());
+  storage->setUserdata(xbt_strdup("Some data"));
+  data = static_cast<char*>(storage->getUserdata());
   XBT_INFO("\tSet and get data: '%s'", data);
   xbt_free(data);
 }
 
 static void dump_platform_storages()
 {
-  std::unordered_map<std::string, simgrid::s4u::Storage*>* storages = simgrid::s4u::Storage().allStorages();
+  std::map<std::string, simgrid::s4u::Storage*>* storages = simgrid::s4u::allStorages();
 
   for (auto storage : *storages) {
-    XBT_INFO("Storage %s is attached to %s", storage.first.c_str(), storage.second->host());
-    storage.second->setProperty("other usage", xbt_strdup("gpfs"));
+    XBT_INFO("Storage %s is attached to %s", storage.first.c_str(), storage.second->getHost()->getCname());
+    storage.second->setProperty("other usage", "gpfs");
   }
-  // Expected output in tesh file that's missing for now
-  //> [  1.207952] (server@alice) Storage Disk3 is attached to carl
-  //> [  1.207952] (server@alice) Storage Disk4 is attached to denise
+  delete storages;
 }
 
 static void storage_info(simgrid::s4u::Host* host)
 {
-  XBT_INFO("*** Storage info on %s ***", host->cname());
-  xbt_dict_cursor_t cursor = NULL;
-  char* mount_name;
-  char* storage_name;
+  XBT_INFO("*** Storage info on %s ***", host->getCname());
 
-  xbt_dict_t storage_list = host->mountedStoragesAsDict();
-  xbt_dict_foreach (storage_list, cursor, mount_name, storage_name) {
-    XBT_INFO("\tStorage name: %s, mount name: %s", storage_name, mount_name);
-    simgrid::s4u::Storage& storage = simgrid::s4u::Storage::byName(storage_name);
+  for (auto elm : host->getMountedStorages()) {
+    const char* mount_name         = elm.first.c_str();
+    simgrid::s4u::Storage* storage = elm.second;
+    XBT_INFO("\tStorage name: %s, mount name: %s", storage->getName(), mount_name);
 
-    sg_size_t free_size = storage.sizeFree();
-    sg_size_t used_size = storage.sizeUsed();
+    sg_size_t free_size = storage->getSizeFree();
+    sg_size_t used_size = storage->getSizeUsed();
 
     XBT_INFO("\t\tFree size: %llu bytes", free_size);
     XBT_INFO("\t\tUsed size: %llu bytes", used_size);
 
-    display_storage_properties(&storage);
-    dump_storage_by_name(storage_name);
+    display_storage_properties(storage);
+    dump_storage_by_name(storage->getName());
   }
-  xbt_dict_free(&storage_list);
 }
 
 static void client()
@@ -137,19 +130,19 @@ static void client()
   hsm_put("alice", "/home/doc/simgrid/examples/msg/alias/masterslave_forwarder_with_alias.c", "c:\\Windows\\tata.c");
 
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName("alice");
-  simgrid::s4u::this_actor::send(mailbox, xbt_strdup("finalize"), 0);
+  mailbox->put(xbt_strdup("finalize"), 0);
 
   get_set_storage_data("Disk1");
 }
 
 static void server()
 {
-  storage_info(simgrid::s4u::this_actor::host());
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::host()->cname());
+  storage_info(simgrid::s4u::this_actor::getHost());
+  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::getHost()->getCname());
 
   XBT_INFO("Server waiting for transfers ...");
   while (1) {
-    char* msg = static_cast<char*>(simgrid::s4u::this_actor::recv(mailbox));
+    char* msg = static_cast<char*>(mailbox->get());
     if (not strcmp(msg, "finalize")) { // Shutdown ...
       xbt_free(msg);
       break;
@@ -162,7 +155,7 @@ static void server()
     }
   }
 
-  storage_info(simgrid::s4u::this_actor::host());
+  storage_info(simgrid::s4u::this_actor::getHost());
   dump_platform_storages();
 }
 
@@ -179,5 +172,6 @@ int main(int argc, char* argv[])
 
   XBT_INFO("Simulated time: %g", e->getClock());
 
+  delete e;
   return 0;
 }

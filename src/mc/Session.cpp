@@ -20,6 +20,8 @@
 #include "src/mc/mc_private.h"
 #include "src/mc/checker/Checker.hpp"
 
+#include "src/smpi/include/private.hpp"
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Session, mc, "Model-checker session");
 
 namespace simgrid {
@@ -83,7 +85,7 @@ pid_t do_fork(F code)
 
 Session::Session(pid_t pid, int socket)
 {
-  std::unique_ptr<simgrid::mc::Process> process(new simgrid::mc::Process(pid, socket));
+  std::unique_ptr<simgrid::mc::RemoteClient> process(new simgrid::mc::RemoteClient(pid, socket));
   // TODO, automatic detection of the config from the process
   process->privatized(smpi_privatize_global_variables != SMPI_PRIVATIZE_NONE);
   modelChecker_ = std::unique_ptr<ModelChecker>(
@@ -134,7 +136,7 @@ void Session::logState()
 Session* Session::fork(std::function<void()> code)
 {
   // Create a AF_LOCAL socketpair used for exchanging messages
-  // bewteen the model-checker process (ourselves) and the model-checked
+  // between the model-checker process (ourselves) and the model-checked
   // process:
   int res;
   int sockets[2];

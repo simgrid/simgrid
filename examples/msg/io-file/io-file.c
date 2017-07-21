@@ -76,10 +76,10 @@ static int host(int argc, char *argv[])
             filename, MSG_storage_get_used_size(st), MSG_storage_get_size(st));
 
   if (MSG_process_self_PID() == 1){
-    XBT_INFO("\tUnlink file '%s'",MSG_file_get_name(file));
+    XBT_INFO("\tUnlink file '%s'", MSG_file_get_name(file));
     MSG_file_unlink(file);
   } else {
-    XBT_INFO("\tClose file '%s'",filename);
+    XBT_INFO("\tClose file '%s'", filename);
     MSG_file_close(file);
   }
   return 0;
@@ -99,6 +99,6 @@ int main(int argc, char **argv)
   xbt_dynar_free(&hosts);
 
   int res = MSG_main();
-  XBT_INFO("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %.6f", MSG_get_clock());
   return res != MSG_OK;
 }

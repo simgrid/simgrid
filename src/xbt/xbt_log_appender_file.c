@@ -130,7 +130,7 @@ xbt_log_appender_t xbt_log_appender2_file_new(char *arg,int roll) {
     data->count=-1;
   else
     data->count=0;
-  open_append2_file(data);  
+  open_append2_file(data);
   res->data = data;
   return res;
 }

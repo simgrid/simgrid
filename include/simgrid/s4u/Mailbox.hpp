@@ -26,7 +26,7 @@ namespace s4u {
  * Rendez-vous point for network communications, similar to URLs on
  * which you could post and retrieve data. Actually, the mailboxes are
  * not involved in the communication once it starts, but only to find
- * the contact with which you want to communicate. 
+ * the contact with which you want to communicate.
 
  * Here are some mechanisms similar to the mailbox in other
  * communication systems: The phone number, which allows the caller to
@@ -93,8 +93,8 @@ namespace s4u {
  * starts to flow as soon as the sender posts it, even if the receiver
  * did not post its recv() yet. This can obviously lead to bad
  * simulation timings, as the simulated communications do not start at
- * the exact same time than the real ones. 
- * 
+ * the exact same time than the real ones.
+ *
  * If the simulation timings are very important to you, you can
  * declare a specific receiver to a given mailbox (with the function
  * setReceiver()). That way, any send() posted to that mailbox will
@@ -121,7 +121,7 @@ public:
   kernel::activity::MailboxImpl* getImpl() { return pimpl_; }
 
   /** Gets the name of that mailbox */
-  const char *name();
+  const char* getName();
 
   /** Retrieve the mailbox associated to the given C string */
   static MailboxPtr byName(const char *name);
@@ -147,7 +147,29 @@ public:
   void setReceiver(ActorPtr actor);
 
   /** Return the actor declared as permanent receiver, or nullptr if none **/
-  ActorPtr receiver();
+  ActorPtr getReceiver();
+
+  /** Creates (but don't start) a data emission to that mailbox */
+  CommPtr put_init();
+  /** Creates (but don't start) a data emission to that mailbox */
+  CommPtr put_init(void* data, uint64_t simulatedSizeInBytes);
+  /** Creates and start a data emission to that mailbox */
+  CommPtr put_async(void* data, uint64_t simulatedSizeInBytes);
+
+  /** Blocking data emission */
+  void put(void* payload, uint64_t simulatedSizeInBytes);
+  /** Blocking data emission with timeout */
+  void put(void* payload, uint64_t simulatedSizeInBytes, double timeout);
+
+  /** Creates (but don't start) a data reception onto that mailbox */
+  CommPtr get_init();
+  /** Creates and start an async data reception to that mailbox */
+  CommPtr get_async(void** data);
+
+  /** Blocking data reception */
+  void* get();
+  /** Blocking data reception with timeout */
+  void* get(double timeout);
 };
 
 }} // namespace simgrid::s4u

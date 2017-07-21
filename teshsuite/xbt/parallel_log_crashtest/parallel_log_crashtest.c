@@ -6,6 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/msg.h"
 #include "xbt.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(synchro_crashtest, "Logs of this example");
@@ -31,29 +32,24 @@ static void* crasher_thread(void *arg)
   return NULL;
 }
 
-static int crasher(int argc, char *argv[])
+static int crasher()
 {
-  int i;
-  xbt_os_thread_t *crashers;
-
-  xbt_init(&argc, argv);
-
   /* initializations of the philosopher mechanisms */
   id = xbt_new0(int, crasher_amount);
-  crashers = xbt_new(xbt_os_thread_t, crasher_amount);
+  xbt_os_thread_t* crashers = xbt_new(xbt_os_thread_t, crasher_amount);
 
-  for (i = 0; i < crasher_amount; i++)
+  for (int i = 0; i < crasher_amount; i++)
     id[i] = i;
 
   /* spawn threads */
-  for (i = 0; i < crasher_amount; i++) {
+  for (int i = 0; i < crasher_amount; i++) {
     char *name = bprintf("thread %d", i);
     crashers[i] = xbt_os_thread_create(name, &crasher_thread, &id[i], NULL );
     free(name);
   }
 
   /* wait for them */
-  for (i = 0; i < crasher_amount; i++)
+  for (int i = 0; i < crasher_amount; i++)
     xbt_os_thread_join(crashers[i],NULL);
 
   xbt_free(crashers);
@@ -64,5 +60,6 @@ static int crasher(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-  return crasher(argc, argv);
+  MSG_init(&argc, argv);
+  return crasher();
 }

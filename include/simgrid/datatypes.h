@@ -21,7 +21,7 @@ struct vm_params {
   int skip_stage2;
   double max_downtime;
 
-  double dp_rate;
+  double dp_intensity; // Percentage of pages that get dirty compared to netspeed [0;1]
   double dp_cap; /* bytes per 1 flop execution */
 
   /* set migration speed */

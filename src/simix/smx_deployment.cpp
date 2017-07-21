@@ -114,11 +114,8 @@ simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(const char *name)
  * \brief Bypass the parser, get arguments, and set function to each process
  */
 
-void SIMIX_process_set_function(const char *process_host,
-                                const char *process_function,
-                                xbt_dynar_t arguments,
-                                double process_start_time,
-                                double process_kill_time)
+void SIMIX_process_set_function(const char* process_host, const char* process_function, xbt_dynar_t arguments,
+                                double process_start_time, double process_kill_time)
 {
   s_sg_platf_process_cbarg_t process;
   memset(&process,0,sizeof(process));
@@ -126,10 +123,10 @@ void SIMIX_process_set_function(const char *process_host,
   sg_host_t host = sg_host_by_name(process_host);
   if (not host)
     THROWF(arg_error, 0, "Host '%s' unknown", process_host);
-  process.host = host->cname();
+  process.host = process_host;
 
   process.argc = 1 + xbt_dynar_length(arguments);
-  process.argv = (const char**)xbt_new(char *, process.argc + 1);
+  process.argv    = static_cast<const char**>(xbt_new(const char*, process.argc + 1));
   process.argv[0] = xbt_strdup(process_function);
   /* add arguments */
   unsigned int i;

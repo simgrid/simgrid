@@ -7,9 +7,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf/maxmin.h"
+#include "simgrid/msg.h"
 #include "xbt/module.h"
+#include "xbt/sysdep.h" /* time manipulation for benchmarking */
 #include "xbt/xbt_os_time.h"
-#include "xbt/sysdep.h"         /* time manipulation for benchmarking */
 
 #define MYRANDMAX 1000
 
@@ -41,7 +42,6 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
   lmm_constraint_t cnst[nb_cnst];
   lmm_variable_t var[nb_var];
   int used[nb_cnst];
-  int concurrency_share;
 
   lmm_system_t Sys = lmm_system_new(1);
 
@@ -49,7 +49,7 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
     cnst[i] = lmm_constraint_new(Sys, NULL, float_random(10.0));
     int l;
     if(rate_no_limit>float_random(1.0))
-      //Look at what happens when there is no concurrency limit 
+      //Look at what happens when there is no concurrency limit
       l=-1;
     else
       //Badly logarithmically random concurrency limit in [2^pw_base_limit+1,2^pw_base_limit+2^pw_max_limit]
@@ -61,7 +61,7 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
   for (int i = 0; i < nb_var; i++) {
     var[i] = lmm_variable_new(Sys, NULL, 1.0, -1.0, nb_elem);
     //Have a few variables with a concurrency share of two (e.g. cross-traffic in some cases)
-    concurrency_share=1+int_random(max_share);
+    int concurrency_share = 1 + int_random(max_share);
     lmm_variable_concurrency_share_set(var[i],concurrency_share);
 
     for (int j = 0; j < nb_cnst; j++)
@@ -109,15 +109,17 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
 }
 
 unsigned int TestClasses [][4]=
-  //Nbcnst Nbvar Baselimit Maxlimit 
+  //Nbcnst Nbvar Baselimit Maxlimit
   {{  10  ,10    ,1        ,2 }, //small
    {  100 ,100   ,3        ,6 }, //medium
    {  2000,2000  ,5        ,8 }, //big
    { 20000,20000 ,7        ,10}  //huge
-  }; 
+  };
 
 int main(int argc, char **argv)
 {
+  MSG_init(&argc, argv);
+
   float rate_no_limit=0.2;
   float acc_date=0;
   float acc_date2=0;
@@ -180,7 +182,7 @@ int main(int argc, char **argv)
     acc_date2+=date*date;
   }
 
-  float mean_date= acc_date/(float)testcount;  
+  float mean_date= acc_date/(float)testcount;
   float stdev_date= sqrt(acc_date2/(float)testcount-mean_date*mean_date);
 
   fprintf(stderr,

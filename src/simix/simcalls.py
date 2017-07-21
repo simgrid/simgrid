@@ -80,24 +80,39 @@ class Simcall(object):
     def accessors(self):
         res = []
         res.append('')
+        regex = re.compile(r"^boost::intrusive_ptr<(.*?)>(.*)$") # to compute the raw type
         # Arguments getter/setters
         for i in range(len(self.args)):
             arg = self.args[i]
-            res.append('static inline %s simcall_%s__get__%s(smx_simcall_t simcall) {' % (
+            rawtype = regex.sub(r'\1*\2', arg.rettype())
+            res.append('static inline %s simcall_%s__get__%s(smx_simcall_t simcall)' % (
                 arg.rettype(), self.name, arg.name))
-            res.append(
-                '  return simgrid::simix::unmarshal<%s>(simcall->args[%i]);' % (arg.rettype(), i))
+            res.append('{')
+            res.append('  return simgrid::simix::unmarshal<%s>(simcall->args[%i]);' % (arg.rettype(), i))
             res.append('}')
-            res.append('static inline void simcall_%s__set__%s(smx_simcall_t simcall, %s arg) {' % (
+            res.append('static inline %s simcall_%s__getraw__%s(smx_simcall_t simcall)' % (
+                rawtype, self.name, arg.name))
+            res.append('{')
+            res.append('  return simgrid::simix::unmarshal_raw<%s>(simcall->args[%i]);' % (rawtype, i))
+            res.append('}')
+            res.append('static inline void simcall_%s__set__%s(smx_simcall_t simcall, %s arg)' % (
                 self.name, arg.name, arg.rettype()))
+            res.append('{')
             res.append('    simgrid::simix::marshal<%s>(simcall->args[%i], arg);' % (arg.rettype(), i))
             res.append('}')
 
         # Return value getter/setters
         if self.res.type != 'void':
+            rawtype = regex.sub(r'\1*\2', self.res.rettype())
             res.append(
-                'static inline %s simcall_%s__get__result(smx_simcall_t simcall){' % (self.res.rettype(), self.name))
+                'static inline %s simcall_%s__get__result(smx_simcall_t simcall)' % (self.res.rettype(), self.name))
+            res.append('{')
+
             res.append('    return simgrid::simix::unmarshal<%s>(simcall->result);' % self.res.rettype())
+            res.append('}')
+            res.append(
+                'static inline %s simcall_%s__getraw__result(smx_simcall_t simcall){' % (rawtype, self.name))
+            res.append('    return simgrid::simix::unmarshal_raw<%s>(simcall->result);' % rawtype)
             res.append('}')
             res.append(
                 'static inline void simcall_%s__set__result(smx_simcall_t simcall, %s result){' % (self.name, self.res.rettype()))
@@ -127,7 +142,7 @@ class Simcall(object):
         return '\n'.join(res)
 
     def body(self):
-        res = ['  ']
+        res = ['']
         res.append(
             'inline static %s simcall_BODY_%s(%s) {' % (self.res.rettype(),
                                                         self.name,

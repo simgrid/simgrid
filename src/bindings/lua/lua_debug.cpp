@@ -1,5 +1,5 @@
 /* Copyright (c) 2010-2016. The SimGrid Team.
- * All rights reserved.                                                     
+ * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -40,7 +40,7 @@ const char* sglua_tostring(lua_State* L, int index) {
       snprintf(buff, 4, "nil");
       break;
 
-    case LUA_TNUMBER: 
+    case LUA_TNUMBER:
       snprintf(buff, 64, "%.3f", lua_tonumber(L, index));
       break;
 
@@ -84,7 +84,7 @@ static int sglua_dump_table(lua_State* L) {
     if (lua_istable(L, i)) {
       lua_pushnil(L); /* table nil */
 
-      //lua_next pops the topmost element from the stack and 
+      //lua_next pops the topmost element from the stack and
       //gets the next pair from the table
       while (lua_next(L, -1)) { /* table key val  */
         // we need to copy here, as a cast from "Number" to "String"

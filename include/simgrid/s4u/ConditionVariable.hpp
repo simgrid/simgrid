@@ -104,8 +104,7 @@ public:
   void notify_one();
   void notify_all();
 
-  XBT_ATTRIB_DEPRECATED("Use notify_one() instead")
-  void notify() { notify_one(); }
+  XBT_ATTRIB_DEPRECATED_v319("Use notify_one(): v3.19 will remove notify() completely.") void notify() { notify_one(); }
 };
 
 using ConditionVariablePtr = ConditionVariable::Ptr;

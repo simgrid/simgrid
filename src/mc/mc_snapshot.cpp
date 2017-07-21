@@ -13,7 +13,7 @@
 #include "xbt/sysdep.h"
 
 #include "src/internal_config.h"
-#include "src/smpi/private.h"
+#include "src/smpi/include/private.h"
 
 #include "src/mc/mc_snapshot.h"
 #include "src/mc/mc_private.h"
@@ -159,7 +159,7 @@ int MC_snapshot_memcmp(
 namespace simgrid {
 namespace mc {
 
-Snapshot::Snapshot(Process* process, int _num_state)
+Snapshot::Snapshot(RemoteClient* process, int _num_state)
     : AddressSpace(process)
     , num_state(_num_state)
     , heap_bytes_used(0)
@@ -234,7 +234,7 @@ static void test_snapshot(bool sparse_checkpoint) {
   xbt_assert(xbt_pagesize == getpagesize());
   xbt_assert(1 << xbt_pagebits == xbt_pagesize);
 
-  std::unique_ptr<simgrid::mc::Process> process(new simgrid::mc::Process(getpid(), -1));
+  std::unique_ptr<simgrid::mc::RemoteClient> process(new simgrid::mc::RemoteClient(getpid(), -1));
   process->init();
   mc_model_checker = new ::simgrid::mc::ModelChecker(std::move(process));
 

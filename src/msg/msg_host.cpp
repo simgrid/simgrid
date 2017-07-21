@@ -20,7 +20,7 @@ int sg_storage_max_file_descriptors = 1024;
 
 /** @addtogroup m_host_management
  * (#msg_host_t) and the functions for managing it.
- *  
+ *
  *  A <em>location</em> (or <em>host</em>) is any possible place where  a process may run. Thus it may be represented
  *  as a <em>physical resource with computing capabilities</em>, some <em>mailboxes</em> to enable running process to
  *  communicate with remote ones, and some <em>private data</em> that can be only accessed by local process.
@@ -74,7 +74,7 @@ msg_host_t MSG_host_self()
  *
  * \brief Start the host if it is off
  *
- * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref SURF_plugin_energy
+ * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref plugin_energy
  * for more info on DVFS.
  */
 void MSG_host_on(msg_host_t host)
@@ -86,7 +86,7 @@ void MSG_host_on(msg_host_t host)
  *
  * \brief Stop the host if it is on
  *
- * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref SURF_plugin_energy
+ * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref plugin_energy
  * for more info on DVFS.
  */
 void MSG_host_off(msg_host_t host)
@@ -115,16 +115,7 @@ xbt_dynar_t MSG_hosts_as_dynar() {
  * \brief Return the speed of the processor (in flop/s), regardless of the current load on the machine.
  */
 double MSG_host_get_speed(msg_host_t host) {
-  return host->speed();
-}
-
-/** \ingroup m_host_management
- * \brief Return the speed of the processor (in flop/s), regardless of the current load on the machine.
- * Deprecated: use MSG_host_get_speed
- */
-double MSG_get_host_speed(msg_host_t host) {
-  XBT_WARN("MSG_get_host_speed is deprecated: use MSG_host_get_speed");
-  return MSG_host_get_speed(host);
+  return host->getSpeed();
 }
 
 /** \ingroup m_host_management
@@ -134,7 +125,7 @@ double MSG_get_host_speed(msg_host_t host) {
  * \return the number of cores
  */
 int MSG_host_get_core_number(msg_host_t host) {
-  return host->coreCount();
+  return host->getCoreCount();
 }
 
 /** \ingroup m_host_management
@@ -174,7 +165,7 @@ const char *MSG_host_get_property_value(msg_host_t host, const char *name)
 xbt_dict_t MSG_host_get_properties(msg_host_t host)
 {
   xbt_assert((host != nullptr), "Invalid parameters (host is nullptr)");
-  return host->properties();
+  return host->getProperties();
 }
 
 /** \ingroup m_host_management
@@ -192,7 +183,8 @@ void MSG_host_set_property_value(msg_host_t host, const char* name, char* value)
 /** @ingroup m_host_management
  * @brief Determine if a host is up and running.
  *
- * See also #MSG_host_on() and #MSG_host_off() to switch the host ON and OFF and @ref SURF_plugin_energy for more info on DVFS.
+ * See also #MSG_host_on() and #MSG_host_off() to switch the host ON and OFF and @ref plugin_energy for more info on
+ * DVFS.
  *
  * @param host host to test
  * @return Returns true if the host is up and running, and false if it's currently down
@@ -205,7 +197,8 @@ int MSG_host_is_on(msg_host_t host)
 /** @ingroup m_host_management
  * @brief Determine if a host is currently off.
  *
- * See also #MSG_host_on() and #MSG_host_off() to switch the host ON and OFF and @ref SURF_plugin_energy for more info on DVFS.
+ * See also #MSG_host_on() and #MSG_host_off() to switch the host ON and OFF and @ref plugin_energy for more info on
+ * DVFS.
  */
 int MSG_host_is_off(msg_host_t host)
 {
@@ -213,7 +206,7 @@ int MSG_host_is_off(msg_host_t host)
 }
 
 /** \ingroup m_host_management
- * \brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref SURF_plugin_energy.
+ * \brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref plugin_energy.
  *
  * \param  host host to test
  * \param pstate_index pstate to test
@@ -225,7 +218,7 @@ double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
 }
 
 /** \ingroup m_host_management
- * \brief Return the total count of pstates defined for a host. See also @ref SURF_plugin_energy.
+ * \brief Return the total count of pstates defined for a host. See also @ref plugin_energy.
  *
  * \param  host host to test
  */
@@ -240,8 +233,7 @@ int MSG_host_get_nb_pstates(msg_host_t host) {
  */
 xbt_dict_t MSG_host_get_mounted_storage_list(msg_host_t host)
 {
-  xbt_assert((host != nullptr), "Invalid parameters");
-  return host->mountedStoragesAsDict();
+  return sg_host_get_mounted_storage_list(host);
 }
 
 /** \ingroup m_host_management
@@ -263,19 +255,9 @@ xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
 {
   xbt_assert((host != nullptr), "Invalid parameters");
   xbt_dict_t contents = xbt_dict_new_homogeneous(nullptr);
-  msg_storage_t storage;
-  char* storage_name;
-  char* mount_name;
-  xbt_dict_cursor_t cursor = nullptr;
+  for (auto elm : host->getMountedStorages())
+    xbt_dict_set(contents, elm.first.c_str(), MSG_storage_get_content(elm.second), nullptr);
 
-  xbt_dict_t storage_list = host->mountedStoragesAsDict();
-
-  xbt_dict_foreach(storage_list,cursor,mount_name,storage_name){
-    storage = static_cast<msg_storage_t>(xbt_lib_get_elm_or_null(storage_lib,storage_name));
-    xbt_dict_t content = MSG_storage_get_content(storage);
-    xbt_dict_set(contents,mount_name, content,nullptr);
-  }
-  xbt_dict_free(&storage_list);
   return contents;
 }
 

@@ -12,8 +12,6 @@
 #include <stdarg.h>
 #include <xbt/dynar.h>
 
-SG_BEGIN_DECL()
-
 /** @addtogroup XBT_config
  *  @brief Changing the configuration of SimGrid components (grounding feature)
  *
@@ -66,6 +64,8 @@ typedef simgrid::config::Config* xbt_cfg_t;
 #else
 typedef void* xbt_cfg_t;
 #endif
+
+SG_BEGIN_DECL()
 
 XBT_PUBLIC(void) xbt_cfg_set_parse(const char *options);
 

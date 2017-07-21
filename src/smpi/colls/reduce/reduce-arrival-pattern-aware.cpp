@@ -62,7 +62,7 @@ int Coll_reduce_arrival_pattern_aware::reduce(void *buf, void *rbuf,
   /* use for buffer offset for sending and receiving data = segment size in byte */
   int increment = segment * extent;
 
-  /* if the input size is not divisible by segment size => 
+  /* if the input size is not divisible by segment size =>
      the small remainder will be done with native implementation */
   int remainder = count % segment;
 

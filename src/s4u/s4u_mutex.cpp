@@ -1,12 +1,11 @@
-/* Copyright (c) 2006-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/log.h"
 #include "src/msg/msg_private.h"
-#include "src/simix/smx_synchro_private.h"
+#include "src/simix/smx_synchro_private.hpp"
+#include "xbt/log.h"
 
 #include "simgrid/s4u/Mutex.hpp"
 
@@ -25,7 +24,8 @@ void Mutex::lock()
  */
 void Mutex::unlock()
 {
-  simcall_mutex_unlock(mutex_);
+  smx_actor_t self = SIMIX_process_self();
+  simgrid::simix::kernelImmediate([this, self] { return mutex_->unlock(self); });
 }
 
 /** @brief Acquire the mutex if it's free, and return false (without blocking) if not */

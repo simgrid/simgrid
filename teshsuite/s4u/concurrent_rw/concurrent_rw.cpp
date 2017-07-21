@@ -1,5 +1,4 @@
-/* Copyright (c) 2008-2010, 2012-2015, 2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -14,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u test");
 static void host()
 {
   char name[2048];
-  int id = simgrid::s4u::this_actor::pid();
+  int id = simgrid::s4u::this_actor::getPid();
   snprintf(name, 2048, "%s%i", FILENAME1, id);
   simgrid::s4u::File* file = new simgrid::s4u::File(name, NULL);
   XBT_INFO("process %d is writing!", id);
@@ -50,5 +49,6 @@ int main(int argc, char** argv)
   e->run();
   XBT_INFO("Simulation time %g", e->getClock());
 
+  delete e;
   return 0;
 }

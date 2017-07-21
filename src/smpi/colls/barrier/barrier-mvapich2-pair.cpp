@@ -19,7 +19,7 @@
  *
  * Additional copyrights may follow
  */
- 
+
  /* -*- Mode: C; c-basic-offset:4 ; -*- */
 /*
  *
@@ -60,7 +60,7 @@ int Coll_barrier_mvapich2_pair::barrier(MPI_Comm comm)
     /*  N2_prev = greatest power of two < size of Comm  */
     for( N2_prev = 1; N2_prev <= size; N2_prev <<= 1 );
     N2_prev >>= 1;
-    
+
     int surfeit = size - N2_prev;
 
     /* Perform a combine-like operation */

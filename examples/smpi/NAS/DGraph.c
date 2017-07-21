@@ -37,7 +37,7 @@ void nodeShow(DGNode* nd){
 /*
   if(nd->verified==1) fprintf(stderr,"%ld.%s\t: usable.",nd->id,nd->name);
   else if(nd->verified==0)  fprintf(stderr,"%ld.%s\t: unusable.",nd->id,nd->name);
-  else  fprintf(stderr,"%ld.%s\t: notverified.",nd->id,nd->name);   
+  else  fprintf(stderr,"%ld.%s\t: notverified.",nd->id,nd->name);
 */
 }
 
@@ -83,7 +83,7 @@ int AttachNode(DGraph* dg, DGNode* nd) {
       }
       memcpy( &(tmpnd->inArc[ tmpnd->inDegree]), nd->inArc, nd->inDegree*sizeof( DGArc *));
       tmpnd->inDegree += nd->inDegree;
-    }   
+    }
     if ( nd->outDegree > 0 ) {
       tmpnd->maxOutDegree += nd->maxOutDegree;
       ar =(DGArc **) calloc(tmpnd->maxOutDegree,sizeof(DGArc*));
@@ -96,7 +96,7 @@ int AttachNode(DGraph* dg, DGNode* nd) {
       memcpy( &(tmpnd->outArc[tmpnd->outDegree]),nd->outArc,nd->outDegree*sizeof( DGArc *));
       tmpnd->outDegree += nd->outDegree;
     }
-    free(nd); 
+    free(nd);
     return i;
   }
   nd->id = dg->numNodes;

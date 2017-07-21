@@ -6,6 +6,7 @@
 
 #include <xbt/base.h>
 
+#include "FileImpl.hpp"
 #include "StorageImpl.hpp"
 
 #ifndef STORAGE_N11_HPP_
@@ -42,12 +43,9 @@ class StorageN11 : public StorageImpl {
 public:
   StorageN11(StorageModel* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
              const char* type_id, char* content_name, sg_size_t size, char* attach);
-  StorageAction *open(const char* mount, const char* path);
-  StorageAction *close(surf_file_t fd);
-  StorageAction *ls(const char *path);
-  StorageAction* read(surf_file_t fd, sg_size_t size);
-  StorageAction* write(surf_file_t fd, sg_size_t size);
-  void rename(const char *src, const char *dest);
+  virtual ~StorageN11() = default;
+  StorageAction* read(sg_size_t size);
+  StorageAction* write(sg_size_t size);
 };
 
 /**********
@@ -63,7 +61,7 @@ public:
   void resume();
   bool isSuspended();
   void setMaxDuration(double duration);
-  void setPriority(double priority);
+  void setSharingWeight(double priority);
 };
 
 }

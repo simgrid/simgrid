@@ -33,14 +33,13 @@ int main(int argc, char **argv)
   dot = SD_dotload(argv[2]);
   if(dot == NULL){
     XBT_CRITICAL("No dot loaded. Do you have a cycle in your graph?");
-    SD_exit();
     exit(2);
   }
 
   char *tracefilename;
   char *last = strrchr(argv[2], '.');
   tracefilename = bprintf("%.*s.trace", (int) (last == NULL ? strlen(argv[2]) : last - argv[2]),argv[2]);
-  if (argc == 4) 
+  if (argc == 4)
     tracefilename = xbt_strdup(argv[3]);
 
   /* Display all the tasks */
@@ -104,6 +103,5 @@ int main(int argc, char **argv)
   fclose(out);
 
   /* exit */
-  SD_exit();
   return 0;
 }

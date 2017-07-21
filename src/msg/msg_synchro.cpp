@@ -90,6 +90,7 @@ void MSG_barrier_destroy(msg_bar_t bar) {
 int MSG_barrier_wait(msg_bar_t bar) {
   xbt_mutex_acquire(bar->mutex);
   bar->arrived_processes++;
+  XBT_DEBUG("waiting %p %d/%d", bar, bar->arrived_processes, bar->expected_processes);
   if (bar->arrived_processes == bar->expected_processes) {
     xbt_cond_broadcast(bar->cond);
     xbt_mutex_release(bar->mutex);

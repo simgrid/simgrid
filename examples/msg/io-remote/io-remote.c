@@ -69,7 +69,7 @@ int main(int argc, char **argv)
   xbt_dynar_foreach(storages, cur, st){
     XBT_INFO("Init: %llu MiB used on '%s'", MSG_storage_get_used_size(st)/INMEGA, MSG_storage_get_name(st));
   }
-  xbt_dynar_free_container(&storages);
+  xbt_dynar_free(&storages);
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
   return res != MSG_OK;

@@ -94,7 +94,7 @@ Coll_allgatherv_ring::allgatherv(void *send_buff, int send_count,
   for (i = 1; i < num_procs; i++) {
     src = (rank - i + num_procs) % num_procs;
     dst = (rank + i) % num_procs;
-    
+
     Request::sendrecv(sendptr, send_count, send_type, dst, tag,
                  recvptr + recv_disps[src] * extent, recv_counts[src], recv_type,
                  src, tag, comm, &status);

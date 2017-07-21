@@ -39,11 +39,10 @@ public class Node extends Process {
   }
 
   public void main(String[] args) throws MsgException {
-    String mount;
+    String mount = "/home";
     String fileName;
     switch (rank) {
       case 4:
-        mount = "/home";
         fileName = mount + file1;
       break;
       case 0:
@@ -51,16 +50,14 @@ public class Node extends Process {
         fileName = mount + file2;
       break;
       case 2:
-        mount = "/home";
         fileName = mount + file3;
       break;
       case 1:
-        mount = "/home";
         fileName = mount + file4;
       break;
       default:
-        mount = "/home";
         fileName = mount + file1;
+      break;
     }
 
     Msg.info("Open file " + fileName);

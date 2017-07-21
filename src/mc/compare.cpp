@@ -25,7 +25,8 @@
 #include "src/xbt/mmalloc/mmprivate.h"
 
 #if HAVE_SMPI
-#include "src/smpi/private.h"
+#include "src/smpi/include/private.h"
+#include "src/smpi/include/private.hpp"
 #endif
 
 #include "src/mc/mc_forward.hpp"
@@ -315,7 +316,7 @@ static
 int mmalloc_compare_heap(
   simgrid::mc::StateComparator& state, simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot* snapshot2)
 {
-  simgrid::mc::Process* process = &mc_model_checker->process();
+  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
   /* Start comparison */
   size_t i1;
@@ -608,7 +609,7 @@ static int compare_heap_area_without_type(
   HeapLocationPairs* previous, int size,
   int check_ignore)
 {
-  simgrid::mc::Process* process = &mc_model_checker->process();
+  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
   mc_mem_region_t heap_region1 = MC_get_heap_region(snapshot1);
   mc_mem_region_t heap_region2 = MC_get_heap_region(snapshot2);
 
@@ -964,7 +965,7 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
                       HeapLocationPairs* previous,
                       simgrid::mc::Type* type, int pointer_level)
 {
-  simgrid::mc::Process* process = &mc_model_checker->process();
+  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
   int res_compare;
   ssize_t block1;
@@ -1275,7 +1276,7 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state,
                                    void* real_area2, simgrid::mc::Snapshot* snapshot2, mc_mem_region_t region2,
                                    simgrid::mc::Type* type, int pointer_level)
 {
-  simgrid::mc::Process* process = &mc_model_checker->process();
+  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
   simgrid::mc::Type* subtype;
   simgrid::mc::Type* subsubtype;
@@ -1478,11 +1479,9 @@ static int compare_global_variables(
                (char *) current_var.address);
       return 1;
     }
-
   }
 
   return 0;
-
 }
 
 static int compare_local_variables(simgrid::mc::StateComparator& state,
@@ -1499,7 +1498,6 @@ static int compare_local_variables(simgrid::mc::StateComparator& state,
 
     unsigned int cursor = 0;
     local_variable_t current_var1, current_var2;
-    int res;
     while (cursor < stack1->local_variables.size()) {
       current_var1 = &stack1->local_variables[cursor];
       current_var2 = &stack1->local_variables[cursor];
@@ -1520,22 +1518,18 @@ static int compare_local_variables(simgrid::mc::StateComparator& state,
       // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
 
         simgrid::mc::Type* subtype = current_var1->type;
-        res =
-            compare_areas_with_type(state, process_index,
-                                    current_var1->address, snapshot1, mc_get_snapshot_region(current_var1->address, snapshot1, process_index),
-                                    current_var2->address, snapshot2, mc_get_snapshot_region(current_var2->address, snapshot2, process_index),
-                                    subtype, 0);
+        int res                    = compare_areas_with_type(
+            state, process_index, current_var1->address, snapshot1,
+            mc_get_snapshot_region(current_var1->address, snapshot1, process_index), current_var2->address, snapshot2,
+            mc_get_snapshot_region(current_var2->address, snapshot2, process_index), subtype, 0);
 
-      if (res == 1) {
-        // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
-        XBT_VERB
-            ("Local variable %s (%p - %p) in frame %s "
-             "is different between snapshots",
-             current_var1->name.c_str(),
-             current_var1->address,
-             current_var2->address,
-             current_var1->subprogram->name.c_str());
-        return res;
+        if (res == 1) {
+          // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
+          XBT_VERB("Local variable %s (%p - %p) in frame %s "
+                   "is different between snapshots",
+                   current_var1->name.c_str(), current_var1->address, current_var2->address,
+                   current_var1->subprogram->name.c_str());
+          return res;
       }
       cursor++;
     }
@@ -1556,7 +1550,7 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
   else
     state_comparator->clear();
 
-  simgrid::mc::Process* process = &mc_model_checker->process();
+  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
   int errors = 0;
 
@@ -1641,7 +1635,6 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
       XBT_DEBUG("(%d - %d) Different local variables between stacks %d", num1,
                 num2, cursor + 1);
       errors++;
-      is_diff = 1;
 #else
 
 #ifdef MC_VERBOSE

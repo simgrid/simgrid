@@ -46,10 +46,10 @@ main (int argc, char **argv)
       for (i = rank; i < buf_size; i = i + 2)
 	buf[i] = i;
 
-      MPI_Isend (&buf[rank], 1, 
+      MPI_Isend (&buf[rank], 1,
 		 strided_type, (rank + 1) % 2, 0, comm, &req);
 
-      MPI_Recv (&buf[(rank + 1) % 2], 1, 
+      MPI_Recv (&buf[(rank + 1) % 2], 1,
 		strided_type, (rank + 1) % 2, 0, comm, &status);
 
       MPI_Wait (&req, &status);

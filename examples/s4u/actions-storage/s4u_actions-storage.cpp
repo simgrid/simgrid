@@ -1,4 +1,4 @@
-/* Copyright (c) 2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017. The SimGrid Team. All rights reserved.               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -31,7 +31,7 @@ static void log_action(const char* const* action, double date)
 
 static simgrid::s4u::File* get_file_descriptor(const char* file_name)
 {
-  std::string full_name = simgrid::s4u::this_actor::name() + ":" + file_name;
+  std::string full_name = simgrid::s4u::this_actor::getName() + ":" + file_name;
 
   return opened_files.at(full_name);
 }
@@ -62,7 +62,7 @@ public:
   {
     const char* file_name = action[2];
     double clock          = simgrid::s4u::Engine::getClock();
-    std::string full_name = simgrid::s4u::this_actor::name() + ":" + file_name;
+    std::string full_name = simgrid::s4u::this_actor::getName() + ":" + file_name;
 
     ACT_DEBUG("Entering Open: %s (filename: %s)", NAME, file_name);
     simgrid::s4u::File* file = new simgrid::s4u::File(file_name, NULL);
@@ -133,5 +133,6 @@ int main(int argc, char* argv[])
 
   XBT_INFO("Simulation time %g", e->getClock());
 
+  delete e;
   return 0;
 }

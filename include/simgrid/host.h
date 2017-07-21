@@ -45,6 +45,8 @@ XBT_PUBLIC(xbt_dynar_t) sg_host_get_attached_storage_list(sg_host_t host);
 XBT_PUBLIC(double) sg_host_speed(sg_host_t host);
 XBT_PUBLIC(double) sg_host_get_available_speed(sg_host_t host);
 
+XBT_PUBLIC(sg_host_t) sg_host_self();
+XBT_PUBLIC(const char*) sg_host_self_get_name();
 XBT_PUBLIC(int) sg_host_get_nb_pstates(sg_host_t host);
 XBT_PUBLIC(int) sg_host_get_pstate(sg_host_t host);
 XBT_PUBLIC(void) sg_host_set_pstate(sg_host_t host,int pstate);

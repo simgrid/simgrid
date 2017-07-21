@@ -21,7 +21,7 @@ Coll_bcast_flattree_pipeline::bcast(void *buff, int count,
   extent = data_type->get_extent();
 
   int segment = flattree_segment_in_byte / extent;
-  segment =  segment == 0 ? 1 :segment; 
+  segment =  segment == 0 ? 1 :segment;
   int pipe_length = count / segment;
   int increment = segment * extent;
   if (pipe_length==0) {

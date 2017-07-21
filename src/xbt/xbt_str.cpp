@@ -371,7 +371,8 @@ xbt_dynar_t xbt_str_split_quoted(const char *s)
 /** @brief Join a set of strings as a single string */
 char *xbt_str_join(xbt_dynar_t dyn, const char *sep)
 {
-  int len = 1, dyn_len = xbt_dynar_length(dyn);
+  int len     = 1;
+  int dyn_len = xbt_dynar_length(dyn);
   unsigned int cpt;
   char* cursor;
 

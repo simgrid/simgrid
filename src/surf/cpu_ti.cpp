@@ -665,6 +665,7 @@ CpuTiAction::CpuTiAction(CpuTiModel *model_, double cost, bool failed, CpuTi *cp
  : CpuAction(model_, cost, failed)
  , cpu_(cpu)
 {
+  indexHeap_ = -1;
   cpu_->modified(true);
 }
 
@@ -750,10 +751,10 @@ void CpuTiAction::setMaxDuration(double duration)
   XBT_OUT();
 }
 
-void CpuTiAction::setPriority(double priority)
+void CpuTiAction::setSharingWeight(double priority)
 {
   XBT_IN("(%p,%g)", this, priority);
-  priority_ = priority;
+  sharingWeight_ = priority;
   cpu_->modified(true);
   XBT_OUT();
 }

@@ -135,7 +135,7 @@ void xbt_init(int *argc, char **argv)
   xbt_cmdline     = xbt_dynar_new(sizeof(char*), NULL);
   for (int i = 0; i < *argc; i++)
     xbt_dynar_push(xbt_cmdline,&(argv[i]));
-  
+
   xbt_log_init(argc, argv);
 }
 

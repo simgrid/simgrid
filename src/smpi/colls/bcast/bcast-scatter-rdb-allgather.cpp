@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "../colls_private.h"
-#include "src/smpi/smpi_status.hpp"
+#include "smpi_status.hpp"
 
 namespace simgrid{
 namespace smpi{
@@ -35,7 +35,7 @@ static int scatter_for_bcast(
        processes may not get any data. For example if bufsize = 97 and
        nprocs = 16, ranks 15 and 16 will get 0 data. On each process, the
        scattered data is stored at the same offset in the buffer as it is
-       on the root process. */ 
+       on the root process. */
 
     scatter_size = (nbytes + comm_size - 1)/comm_size; /* ceiling division */
     curr_size = (rank == root) ? nbytes : 0; /* root starts with all the
@@ -46,12 +46,12 @@ static int scatter_for_bcast(
     {
         if (relative_rank & mask)
         {
-            src = rank - mask; 
+            src = rank - mask;
             if (src < 0) src += comm_size;
             recv_size = nbytes - relative_rank*scatter_size;
             /* recv_size is larger than what might actually be sent by the
                sender. We don't need compute the exact value because MPI
-               allows you to post a larger recv.*/ 
+               allows you to post a larger recv.*/
             if (recv_size <= 0)
             {
                 curr_size = 0; /* this process doesn't receive any data
@@ -81,7 +81,7 @@ static int scatter_for_bcast(
     {
         if (relative_rank + mask < comm_size)
         {
-            send_size = curr_size - scatter_size * mask; 
+            send_size = curr_size - scatter_size * mask;
             /* mask is also the size of this process's subtree */
 
             if (send_size > 0)
@@ -104,10 +104,10 @@ static int scatter_for_bcast(
 
 int
 Coll_bcast_scatter_rdb_allgather::bcast (
-    void *buffer, 
-    int count, 
-    MPI_Datatype datatype, 
-    int root, 
+    void *buffer,
+    int count,
+    MPI_Datatype datatype,
+    int root,
     MPI_Comm comm)
 {
     MPI_Status status;
@@ -196,13 +196,13 @@ Coll_bcast_scatter_rdb_allgather::bcast (
     {
         relative_dst = relative_rank ^ mask;
 
-        dst = (relative_dst + root) % comm_size; 
+        dst = (relative_dst + root) % comm_size;
 
         /* find offset into send and recv buffers.
            zero out the least significant "i" bits of relative_rank and
            relative_dst to find root of src and dst
            subtrees. Use ranks of roots as index to send from
-           and recv into  buffer */ 
+           and recv into  buffer */
 
         dst_tree_root = relative_dst >> i;
         dst_tree_root <<= i;
@@ -216,9 +216,9 @@ Coll_bcast_scatter_rdb_allgather::bcast (
         if (relative_dst < comm_size)
         {
             Request::sendrecv(((char *)tmp_buf + send_offset),
-                                         curr_size, MPI_BYTE, dst, COLL_TAG_BCAST, 
+                                         curr_size, MPI_BYTE, dst, COLL_TAG_BCAST,
                                          ((char *)tmp_buf + recv_offset),
-                                         (nbytes-recv_offset < 0 ? 0 : nbytes-recv_offset), 
+                                         (nbytes-recv_offset < 0 ? 0 : nbytes-recv_offset),
                                          MPI_BYTE, dst, COLL_TAG_BCAST, comm, &status);
             recv_size=Status::get_count(&status, MPI_BYTE);
             curr_size += recv_size;
@@ -235,7 +235,7 @@ Coll_bcast_scatter_rdb_allgather::bcast (
         /* This part of the code will not currently be
            executed because we are not using recursive
            doubling for non power of two. Mark it as experimental
-           so that it doesn't show up as red in the coverage tests. */  
+           so that it doesn't show up as red in the coverage tests. */
 
         /* --BEGIN EXPERIMENTAL-- */
         if (dst_tree_root + mask > comm_size)
@@ -246,7 +246,7 @@ Coll_bcast_scatter_rdb_allgather::bcast (
                in a tree fashion. First find root of current tree
                that is being divided into two. k is the number of
                least-significant bits in this process's rank that
-               must be zeroed out to find the rank of the root */ 
+               must be zeroed out to find the rank of the root */
             j = mask;
             k = 0;
             while (j)
@@ -262,7 +262,7 @@ Coll_bcast_scatter_rdb_allgather::bcast (
             while (tmp_mask)
             {
                 relative_dst = relative_rank ^ tmp_mask;
-                dst = (relative_dst + root) % comm_size; 
+                dst = (relative_dst + root) % comm_size;
 
                 tree_root = relative_rank >> k;
                 tree_root <<= k;
@@ -270,12 +270,12 @@ Coll_bcast_scatter_rdb_allgather::bcast (
                 /* send only if this proc has data and destination
                    doesn't have data. */
 
-                /* if (rank == 3) { 
+                /* if (rank == 3) {
                    printf("rank %d, dst %d, root %d, nprocs_completed %d\n", relative_rank, relative_dst, tree_root, nprocs_completed);
                    fflush(stdout);
                    }*/
 
-                if ((relative_dst > relative_rank) && 
+                if ((relative_dst > relative_rank) &&
                     (relative_rank < tree_root + nprocs_completed)
                     && (relative_dst >= tree_root + nprocs_completed))
                 {
@@ -291,14 +291,14 @@ Coll_bcast_scatter_rdb_allgather::bcast (
                 }
                 /* recv only if this proc. doesn't have data and sender
                    has data */
-                else if ((relative_dst < relative_rank) && 
+                else if ((relative_dst < relative_rank) &&
                          (relative_dst < tree_root + nprocs_completed) &&
                          (relative_rank >= tree_root + nprocs_completed))
                 {
                     /* printf("Rank %d waiting to recv from rank %d\n",
                        relative_rank, dst); */
                     Request::recv(((char *)tmp_buf + offset),
-                                             nbytes - offset, 
+                                             nbytes - offset,
                                              MPI_BYTE, dst, COLL_TAG_BCAST,
                                              comm, &status);
                     /* nprocs_completed is also equal to the no. of processes

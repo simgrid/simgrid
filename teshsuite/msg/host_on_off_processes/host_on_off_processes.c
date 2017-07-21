@@ -1,10 +1,9 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/msg.h"            /* Yeah! If you want to use msg, you need to include simgrid/msg.h */
+#include "simgrid/msg.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
@@ -37,10 +36,9 @@ static int process_sleep(int argc, char *argv[])
 
 static int commTX(int argc, char *argv[])
 {
-  msg_task_t task = NULL;
   const char * mailbox = "comm";
   XBT_INFO("  Start TX");
-  task = MSG_task_create("COMM", 0, 100000000, NULL);
+  msg_task_t task = MSG_task_create("COMM", 0, 100000000, NULL);
   MSG_task_isend(task, mailbox);
   // We should wait a bit (if not the process will end before the communication, hence an exception on the other side).
   MSG_process_sleep(30);
@@ -176,12 +174,12 @@ static int test_launcher(int argc, char *argv[])
     msg_vm_t vm0;
     msg_process_t daemon;
 
-    vm0 = MSG_vm_create(jupiter, "vm0", 2048, 125, dpRate);
+    vm0 = MSG_vm_create(jupiter, "vm0", 1, 2048, 125, dpRate);
     MSG_vm_start(vm0);
 
     argvF = xbt_new(char*, 2);
     argvF[0] = xbt_strdup("process_daemon");
-    daemon = MSG_process_create_with_arguments("process_daemon", process_daemon, NULL, vm0, 1, argvF);
+    daemon   = MSG_process_create_with_arguments("process_daemon", process_daemon, NULL, (msg_host_t)vm0, 1, argvF);
 
     argvF = xbt_new(char*, 2);
     argvF[0] = xbt_strdup("process_daemonJUPI");

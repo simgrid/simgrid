@@ -13,17 +13,17 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_vm, "S4U virtual machines");
 namespace simgrid {
 namespace s4u {
 
-VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm) : Host(name)
+VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount)
+    : Host(name), pimpl_vm_(new vm::VirtualMachineImpl(this, pm, coreAmount))
 {
   XBT_DEBUG("Create VM %s", name);
 
-  pimpl_vm_ = new vm::VirtualMachineImpl(this, pm);
   /* Currently, a VM uses the network resource of its physical host */
   pimpl_netpoint = pm->pimpl_netpoint;
   // Create a VCPU for this VM
   surf::CpuCas01* sub_cpu = dynamic_cast<surf::CpuCas01*>(pm->pimpl_cpu);
 
-  pimpl_cpu = surf_cpu_model_vm->createCpu(this, sub_cpu->getSpeedPeakList(), 1 /*cores*/);
+  pimpl_cpu = surf_cpu_model_vm->createCpu(this, sub_cpu->getSpeedPeakList(), coreAmount);
   if (sub_cpu->getPState() != 0)
     pimpl_cpu->setPState(sub_cpu->getPState());
 
@@ -31,7 +31,7 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm) : Host(name)
   extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t host_container = PJ_container_get(pm->cname());
+    container_t host_container = PJ_container_get(pm->getCname());
     PJ_container_new(name, INSTR_MSG_VM, host_container);
   }
 }
@@ -40,7 +40,7 @@ VirtualMachine::~VirtualMachine()
 {
   onDestruction(*this);
 
-  XBT_DEBUG("destroy %s", cname());
+  XBT_DEBUG("destroy %s", getCname());
 
   /* FIXME: this is really strange that everything fails if the next line is removed.
    * This is as if we shared these data with the PM, which definitely should not be the case...
@@ -56,13 +56,13 @@ VirtualMachine::~VirtualMachine()
 
 bool VirtualMachine::isMigrating()
 {
-  return pimpl_vm_->isMigrating;
+  return pimpl_vm_ && pimpl_vm_->isMigrating;
 }
 double VirtualMachine::getRamsize()
 {
   return pimpl_vm_->params_.ramsize;
 }
-simgrid::s4u::Host* VirtualMachine::pm()
+simgrid::s4u::Host* VirtualMachine::getPm()
 {
   return pimpl_vm_->getPm();
 }
@@ -73,7 +73,7 @@ e_surf_vm_state_t VirtualMachine::getState()
 
 /** @brief Retrieve a copy of the parameters of that VM/PM
  *  @details The ramsize and overcommit fields are used on the PM too */
-void VirtualMachine::parameters(vm_params_t params)
+void VirtualMachine::getParameters(vm_params_t params)
 {
   pimpl_vm_->getParams(params);
 }

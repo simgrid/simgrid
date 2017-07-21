@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(comm_mxn_all2all, sd, "SimDag test All2All");
 /*
  * intra communication test
  * All2All
- * 
+ *
  * send 1 byte from all to all
  * + 2 secs latency
  * should be 8  (platform_4p_1switch.xml)
@@ -40,6 +40,5 @@ int main(int argc, char **argv)
 
   SD_task_destroy(task);
 
-  SD_exit();
   return 0;
 }

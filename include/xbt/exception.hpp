@@ -43,8 +43,7 @@ typedef std::vector<xbt_backtrace_location_t> Backtrace;
 class ThrowPoint {
  public:
   ThrowPoint() = default;
-  ThrowPoint(const char* file, int line, const char* function) :
-    file(file), line(line), function(function) {}
+  explicit ThrowPoint(const char* file, int line, const char* function) : file(file), line(line), function(function) {}
   const char* file = nullptr;
   int line = 0;
   const char* function = nullptr;
@@ -62,7 +61,7 @@ class ThrowPoint {
  *  You are not expected to inherit from it. Instead of you use should
  *  @ref XBT_THROW an exception which will throw a subclass of your original
  *  exception with those additional features.
- * 
+ *
  *  However, you can try `dynamic_cast` an exception to this type in order to
  *  get contextual information about the exception.
  */
@@ -73,16 +72,10 @@ public:
     procname_(xbt_procname()),
     pid_(xbt_getpid())
   {}
-  WithContextException(Backtrace bt) :
-    backtrace_(std::move(bt)),
-    procname_(xbt_procname()),
-    pid_(xbt_getpid())
+  explicit WithContextException(Backtrace bt) : backtrace_(std::move(bt)), procname_(xbt_procname()), pid_(xbt_getpid())
   {}
-  WithContextException(ThrowPoint throwpoint, Backtrace bt) :
-    backtrace_(std::move(bt)),
-    procname_(xbt_procname()),
-    pid_(xbt_getpid()),
-    throwpoint_(throwpoint)
+  explicit WithContextException(ThrowPoint throwpoint, Backtrace bt)
+      : backtrace_(std::move(bt)), procname_(xbt_procname()), pid_(xbt_getpid()), throwpoint_(throwpoint)
   {}
   virtual ~WithContextException();
   Backtrace const& backtrace() const
@@ -117,7 +110,7 @@ public:
   WithContext(E exception, WithContextException context) :
     E(std::move(exception)),
     WithContextException(std::move(context)) {}
-  ~WithContext() override {}
+  ~WithContext() override = default;
 };
 
 /** Throw a C++ exception with some context

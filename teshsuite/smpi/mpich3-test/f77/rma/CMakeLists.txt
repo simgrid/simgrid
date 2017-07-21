@@ -7,12 +7,11 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   endif()
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
-  include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
   add_executable(winaccf winaccf.f)
 #  add_executable(winerrf winerrf.f)
   add_executable(winfencef winfencef.f)
-#  add_executable(wingroupf wingroupf.f)
+  add_executable(wingroupf wingroupf.f)
 #  add_executable(baseattrwinf baseattrwinf.f)
 #  add_executable(winattr2f winattr2f.f)
 #  add_executable(winattrf winattrf.f)
@@ -25,7 +24,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 target_link_libraries(winaccf simgrid mtest_f77)
 #target_link_libraries(winerrf simgrid mtest_f77)
 target_link_libraries(winfencef simgrid mtest_f77)
-#target_link_libraries(wingroupf simgrid mtest_f77)
+target_link_libraries(wingroupf simgrid mtest_f77)
 #target_link_libraries(baseattrwinf simgrid mtest_f77)
 target_link_libraries(c2f2cwinf simgrid mtest_f77)
 #target_link_libraries(winattr2f simgrid mtest_f77)
@@ -53,6 +52,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/winscale1f.f
   ${CMAKE_CURRENT_SOURCE_DIR}/winscale2f.f
   ${CMAKE_CURRENT_SOURCE_DIR}/addsize.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/attraints.h
   PARENT_SCOPE)
 set(txt_files
   ${txt_files}

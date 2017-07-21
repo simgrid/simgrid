@@ -92,7 +92,7 @@ void xbt_os_thread_mod_preinit(void)
 
   int errcode = pthread_key_create(&xbt_self_thread_key, NULL);
   xbt_assert(errcode == 0, "pthread_key_create failed for xbt_self_thread_key");
-  
+
   main_thread = xbt_new(s_xbt_os_thread_t, 1);
   main_thread->name = NULL;
   main_thread->detached = 0;
@@ -165,7 +165,7 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,  pvoid_f_pvoid_t start_ro
   res_thread->start_routine = start_routine;
   res_thread->param = param;
   res_thread->extra_data = extra_data;
-  
+
   int errcode = pthread_create(&(res_thread->t), &thread_attr, wrapper_start_routine, res_thread);
   xbt_assert(errcode == 0, "pthread_create failed: %s", strerror(errcode));
 

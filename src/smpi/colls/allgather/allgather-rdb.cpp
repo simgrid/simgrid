@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "../colls_private.h"
-#include "src/smpi/smpi_status.hpp"
+#include "smpi_status.hpp"
 
 namespace simgrid{
 namespace smpi{
@@ -32,7 +32,7 @@ Coll_allgather_rdb::allgather(void *sbuf, int send_count,
   char *send_ptr = (char *) sbuf;
   char *recv_ptr = (char *) rbuf;
 
-  // get size of the communicator, followed by rank 
+  // get size of the communicator, followed by rank
   unsigned int num_procs = comm->size();
   unsigned int rank = comm->rank();
 

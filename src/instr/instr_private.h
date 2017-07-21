@@ -101,7 +101,7 @@ class s_container;
 typedef s_container *container_t;
 
 class s_container {
-  public: 
+  public:
   sg_netpoint_t netpoint;
   char *name;     /* Unique name of this container */
   char *id;       /* Unique id of this container */
@@ -123,20 +123,9 @@ class PajeEvent {
   virtual ~PajeEvent();
 };
 
-class DefineContainerEvent : public PajeEvent
-{
-  public:
-  type_t type;
-  void print() override;
-  DefineContainerEvent(type_t);
-};
-
 //--------------------------------------------------
 
-
-//--------------------------------------------------
-
-class DefineVariableTypeEvent : public PajeEvent 
+class DefineVariableTypeEvent : public PajeEvent
 {
   public:
   type_t type;
@@ -149,43 +138,6 @@ class DefineStateTypeEvent : public PajeEvent  {
   type_t type;
   public:
   DefineStateTypeEvent(type_t type);
-  void print() override;
-};
-
-class DefineEventTypeEvent : public PajeEvent  {
-  type_t type;
-  public: 
-  DefineEventTypeEvent(type_t type);
-  void print() override;
-};
-
-class DefineLinkTypeEvent : public PajeEvent  {
-  type_t type;
-  type_t source;
-  type_t dest;
-  public:
-  DefineLinkTypeEvent(type_t type, type_t source, type_t dest);
-  void print() override;
-};
-
-class DefineEntityValueEvent : public PajeEvent  {
-  val_t value;
-  public:
-  DefineEntityValueEvent (val_t type);
-  void print() override;
-};
-
-class CreateContainerEvent : public PajeEvent  {
-  public:
-  container_t container;
-  explicit CreateContainerEvent (container_t container);
-  void print() override;
-};
-
-class DestroyContainerEvent : public PajeEvent  {
-  public:
-  container_t container;
-  DestroyContainerEvent (container_t container);
   void print() override;
 };
 
@@ -216,7 +168,7 @@ class SubVariableEvent : public PajeEvent  {
   public:
   container_t container;
   type_t type;
-  double value; 
+  double value;
   public:
   SubVariableEvent(double timestamp, container_t container, type_t type, double value);
   void print() override;
@@ -277,11 +229,12 @@ class StartLinkEvent : public PajeEvent  {
   char *key;
   int size;
   public:
-  StartLinkEvent (double timestamp, container_t container, type_t type, container_t sourceContainer,
-                                    const char *value, const char *key);
-  StartLinkEvent (double timestamp, container_t container, type_t type,
-                                            container_t sourceContainer, const char *value, const char *key, int size);
-  void print() override;
+    ~StartLinkEvent();
+    StartLinkEvent(double timestamp, container_t container, type_t type, container_t sourceContainer, const char* value,
+                   const char* key);
+    StartLinkEvent(double timestamp, container_t container, type_t type, container_t sourceContainer, const char* value,
+                   const char* key, int size);
+    void print() override;
 };
 
 class EndLinkEvent : public PajeEvent  {
@@ -293,6 +246,7 @@ class EndLinkEvent : public PajeEvent  {
   public:
   EndLinkEvent (double timestamp, container_t container, type_t type, container_t destContainer,
                                   const char *value, const char *key);
+  ~EndLinkEvent();
   void print() override;
 };
 
@@ -383,7 +337,6 @@ XBT_PUBLIC(void) PJ_container_free_all (void);
 XBT_PUBLIC(void) PJ_container_remove_from_parent (container_t container);
 
 /* instr_paje_types.c */
-XBT_PRIVATE void PJ_type_alloc ();
 XBT_PRIVATE void PJ_type_release ();
 XBT_PUBLIC(type_t)  PJ_type_get_root ();
 XBT_PRIVATE type_t PJ_type_container_new (const char *name, type_t father);
@@ -393,62 +346,22 @@ XBT_PRIVATE XBT_PRIVATE type_t PJ_type_variable_new (const char *name, const cha
 XBT_PRIVATE type_t PJ_type_state_new (const char *name, type_t father);
 XBT_PUBLIC(type_t)  PJ_type_get (const char *name, const type_t father);
 XBT_PUBLIC(type_t)  PJ_type_get_or_null (const char *name, type_t father);
-void PJ_type_free_all ();
-XBT_PRIVATE XBT_PRIVATE void PJ_type_free (type_t type);
+XBT_PRIVATE XBT_PRIVATE void PJ_type_free (type_t type); 
+
+/* instr_config.c */
+XBT_PRIVATE void recursiveDestroyType (type_t type);
 
 /* instr_paje_values.c */
 XBT_PUBLIC(val_t)  PJ_value_new (const char *name, const char *color, type_t father);
 XBT_PUBLIC(val_t)  PJ_value_get_or_new (const char *name, const char *color, type_t father);
 XBT_PUBLIC(val_t)  PJ_value_get (const char *name, const type_t father);
-XBT_PRIVATE void PJ_value_free (val_t value);
-
-XBT_PRIVATE void print_pajeDefineContainerType(PajeEvent* event);
-XBT_PRIVATE void print_pajeDefineVariableType(PajeEvent* event);
-XBT_PRIVATE void print_pajeDefineStateType(PajeEvent* event);
-XBT_PRIVATE void print_pajeDefineEventType(PajeEvent* event);
-XBT_PRIVATE void print_pajeDefineLinkType(PajeEvent* event);
-XBT_PRIVATE void print_pajeDefineEntityValue (PajeEvent* event);
-XBT_PRIVATE void print_pajeCreateContainer(PajeEvent* event);
-XBT_PRIVATE void print_pajeDestroyContainer(PajeEvent* event);
-XBT_PRIVATE void print_pajeSetVariable(PajeEvent* event);
-XBT_PRIVATE void print_pajeAddVariable(PajeEvent* event);
-XBT_PRIVATE void print_pajeSubVariable(PajeEvent* event);
-XBT_PRIVATE void print_pajeSetState(PajeEvent* event);
-XBT_PRIVATE void print_pajePushState(PajeEvent* event);
-XBT_PRIVATE void print_pajePopState(PajeEvent* event);
-XBT_PRIVATE void print_pajeResetState(PajeEvent* event);
-XBT_PRIVATE void print_pajeStartLink(PajeEvent* event);
-XBT_PRIVATE void print_pajeEndLink(PajeEvent* event);
-XBT_PRIVATE void print_pajeNewEvent (PajeEvent* event);
 
 XBT_PRIVATE void TRACE_TI_start();
 XBT_PRIVATE void TRACE_TI_end();
 
-XBT_PRIVATE void print_NULL (PajeEvent* event);
 XBT_PRIVATE void TRACE_paje_dump_buffer (int force);
 XBT_PRIVATE void dump_comment_file (const char *filename);
 XBT_PRIVATE void dump_comment (const char *comment);
-
-typedef struct instr_trace_writer {
-  void (*print_DefineContainerType) (PajeEvent* event);
-  void (*print_DefineVariableType)(PajeEvent* event);
-  void (*print_DefineStateType)(PajeEvent* event);
-  void (*print_DefineEventType)(PajeEvent* event);
-  void (*print_DefineLinkType)(PajeEvent* event);
-  void (*print_DefineEntityValue)(PajeEvent* event);
-  void (*print_CreateContainer)(PajeEvent* event);
-  void (*print_DestroyContainer)(PajeEvent* event);
-  void (*print_SetVariable)(PajeEvent* event);
-  void (*print_AddVariable)(PajeEvent* event);
-  void (*print_SubVariable)(PajeEvent* event);
-  void (*print_SetState)(PajeEvent* event);
-  void (*print_PushState)(PajeEvent* event);
-  void (*print_PopState)(PajeEvent* event);
-  void (*print_ResetState)(PajeEvent* event);
-  void (*print_StartLink)(PajeEvent* event);
-  void (*print_EndLink)(PajeEvent* event);
-  void (*print_NewEvent) (PajeEvent* event);
-} s_instr_trace_writer_t;
 
 struct s_instr_extra_data;
 typedef struct s_instr_extra_data *instr_extra_data;
@@ -518,5 +431,14 @@ typedef enum { instr_fmt_paje, instr_fmt_TI } instr_fmt_type_t;
 extern instr_fmt_type_t instr_fmt_type;
 
 SG_END_DECL()
+
+void DefineContainerEvent(type_t type);
+void LogVariableTypeDefinition(type_t type);
+void LogStateTypeDefinition(type_t type);
+void LogLinkTypeDefinition(type_t type, type_t source, type_t dest);
+void LogEntityValue (val_t value);
+void LogContainerCreation (container_t container);
+void LogContainerDestruction (container_t container);
+void LogDefineEventType(type_t type);
 
 #endif

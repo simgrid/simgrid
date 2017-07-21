@@ -38,7 +38,7 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isResuming(JNIEnv* env, jobject j
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_setBound(JNIEnv* env, jobject jvm, jdouble bound);
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_create(JNIEnv* env, jobject jvm, jobject jhost, jstring jname,
-                                                      jint jramsize, jint dprate, jint mig_netspeed);
+                                                      jint coreAmount, jint jramsize, jint dprate, jint mig_netspeed);
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_VM_getVMByName(JNIEnv* env, jclass cls, jstring jname);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeFinalize(JNIEnv* env, jobject jvm);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_start(JNIEnv* env, jobject jvm);

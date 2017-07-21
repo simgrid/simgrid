@@ -9,11 +9,10 @@
 #include <xbt/base.h>
 
 #include <simgrid/simix.h>
+#include <string>
 
 namespace simgrid {
 namespace s4u {
-
-class Storage;
 
 /** @brief A simulated file
  *
@@ -27,34 +26,30 @@ XBT_PUBLIC_CLASS File
 {
 public:
   File(const char* fullpath, void* userdata);
+  File(const char* fullpath, sg_host_t host, void* userdata);
   ~File();
 
   /** Retrieves the path to the file */
-  const char* path() { return path_; }
+  const char* getPath() { return path_; }
 
-  /** Simulates a read action. Returns the size of data actually read
-   *
-   *  FIXME: reading from a remotely mounted disk is not implemented yet.
-   *  Any storage is considered as local, and no network communication ever occur.
-   */
+  /** Simulates a local read action. Returns the size of data actually read */
   sg_size_t read(sg_size_t size);
-  /** Simulates a write action. Returns the size of data actually written.
-   *
-   *  FIXME: reading from a remotely mounted disk is not implemented yet.
-   *  Any storage is considered as local, and no network communication ever occur.
-   */
+
+  /** Simulates a write action. Returns the size of data actually written. */
   sg_size_t write(sg_size_t size);
 
   /** Allows to store user data on that host */
   void setUserdata(void* data) { userdata_ = data; }
   /** Retrieves the previously stored data */
-  void* userdata() { return userdata_; }
+  void* getUserdata() { return userdata_; }
 
   /** Retrieve the datasize */
   sg_size_t size();
 
   /** Sets the file head to the given position. */
-  void seek(sg_size_t pos);
+  void seek(sg_offset_t pos);
+  void seek(sg_offset_t pos, int origin);
+
   /** Retrieves the current file position */
   sg_size_t tell();
 
@@ -64,18 +59,17 @@ public:
   void move(const char* fullpath);
 
   /** Remove a file from disk */
-  void unlink();
+  int unlink();
 
-  /* FIXME: add these to the S4U API:
-  XBT_PUBLIC(const char *) MSG_file_get_name(msg_file_t file);
-  XBT_PUBLIC(msg_error_t) MSG_file_rcopy(msg_file_t fd, msg_host_t host, const char* fullpath);
-  XBT_PUBLIC(msg_error_t) MSG_file_rmove(msg_file_t fd, msg_host_t host, const char* fullpath);
-  */
+  const char* storage_type;
+  const char* storageId;
+  std::string mount_point;
+  int desc_id = 0;
 
 private:
-  smx_file_t pimpl_ = nullptr;
-  const char* path_ = nullptr;
-  void* userdata_   = nullptr;
+  surf_file_t pimpl_ = nullptr;
+  const char* path_  = nullptr;
+  void* userdata_    = nullptr;
 };
 }
 } // namespace simgrid::s4u

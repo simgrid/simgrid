@@ -1,5 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2016-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -162,12 +161,14 @@ void SafetyChecker::run()
     if (visitedState_ == nullptr) {
 
       /* Get an enabled process and insert it in the interleave set of the next state */
-      for (auto& actor : mc_model_checker->process().actors())
-        if (simgrid::mc::actor_is_enabled(actor.copy.getBuffer())) {
-          next_state->interleave(actor.copy.getBuffer());
+      for (auto& remoteActor : mc_model_checker->process().actors()) {
+        auto actor = remoteActor.copy.getBuffer();
+        if (simgrid::mc::actor_is_enabled(actor)) {
+          next_state->addInterleavingSet(actor);
           if (reductionMode_ == simgrid::mc::ReductionMode::dpor)
-            break;
+            break; // With DPOR, we take the first enabled transition
         }
+      }
 
       if (dot_output != nullptr)
         std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
@@ -231,7 +232,7 @@ void SafetyChecker::backtrack()
           }
 
           if (not prev_state->actorStates[issuer->pid].isDone())
-            prev_state->interleave(issuer);
+            prev_state->addInterleavingSet(issuer);
           else
             XBT_DEBUG("Process %p is in done set", req->issuer);
 
@@ -321,7 +322,7 @@ SafetyChecker::SafetyChecker(Session& session) : Checker(session)
   /* Get an enabled actor and insert it in the interleave set of the initial state */
   for (auto& actor : mc_model_checker->process().actors())
     if (simgrid::mc::actor_is_enabled(actor.copy.getBuffer())) {
-      initial_state->interleave(actor.copy.getBuffer());
+      initial_state->addInterleavingSet(actor.copy.getBuffer());
       if (reductionMode_ != simgrid::mc::ReductionMode::none)
         break;
     }
@@ -333,6 +334,6 @@ Checker* createSafetyChecker(Session& session)
 {
   return new SafetyChecker(session);
 }
-  
+
 }
 }

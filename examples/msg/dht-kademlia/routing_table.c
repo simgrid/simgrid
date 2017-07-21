@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2016. The SimGrid Team.
+/* Copyright (c) 2012-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -90,7 +90,7 @@ bucket_t routing_table_find_bucket(routing_table_t table, unsigned int id)
 {
   unsigned int xor_number = table->id ^ id;
   unsigned int prefix = get_node_prefix(xor_number, identifier_size);
-  xbt_assert(prefix >= 0 && prefix <= identifier_size, "Tried to return a  bucket that doesn't exist.");
+  xbt_assert(prefix <= identifier_size, "Tried to return a  bucket that doesn't exist.");
   bucket_t bucket = &table->buckets[prefix];
   return bucket;
 }

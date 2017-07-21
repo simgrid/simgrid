@@ -28,7 +28,7 @@ public:
 
 NetZoneImpl::NetZoneImpl(NetZone* father, const char* name) : NetZone(father, name)
 {
-  xbt_assert(nullptr == simgrid::s4u::Engine::instance()->netpointByNameOrNull(name),
+  xbt_assert(nullptr == simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name),
              "Refusing to create a second NetZone called '%s'.", name);
 
   netpoint_ = new NetPoint(name, NetPoint::Type::NetZone, static_cast<NetZoneImpl*>(father));
@@ -39,7 +39,7 @@ NetZoneImpl::~NetZoneImpl()
   for (auto& kv : bypassRoutes_)
     delete kv.second;
 
-  simgrid::s4u::Engine::instance()->netpointUnregister(netpoint_);
+  simgrid::s4u::Engine::getInstance()->netpointUnregister(netpoint_);
 }
 
 simgrid::s4u::Host* NetZoneImpl::createHost(const char* name, std::vector<double>* speedPerPstate, int coreAmount,
@@ -58,7 +58,7 @@ simgrid::s4u::Host* NetZoneImpl::createHost(const char* name, std::vector<double
     for (auto kv : *props)
       res->setProperty(kv.first.c_str(), kv.second.c_str());
 
-  simgrid::s4u::Host::onCreation(*res);
+  simgrid::s4u::Host::onCreation(*res); // notify the signal
 
   return res;
 }
@@ -167,13 +167,13 @@ static void find_common_ancestors(NetPoint* src, NetPoint* dst,
   NetZoneImpl* current = src->netzone();
   while (current != nullptr) {
     path_src.push_back(current);
-    current = static_cast<NetZoneImpl*>(current->father());
+    current = static_cast<NetZoneImpl*>(current->getFather());
   }
   std::vector<NetZoneImpl*> path_dst;
   current = dst->netzone();
   while (current != nullptr) {
     path_dst.push_back(current);
-    current = static_cast<NetZoneImpl*>(current->father());
+    current = static_cast<NetZoneImpl*>(current->getFather());
   }
 
   /* (3) find the common father.
@@ -319,8 +319,8 @@ void NetZoneImpl::getGlobalRoute(routing::NetPoint* src, routing::NetPoint* dst,
   NetZoneImpl *src_ancestor;
   NetZoneImpl *dst_ancestor;
   find_common_ancestors(src, dst, &common_ancestor, &src_ancestor, &dst_ancestor);
-  XBT_DEBUG("elements_father: common ancestor '%s' src ancestor '%s' dst ancestor '%s'", common_ancestor->name(),
-            src_ancestor->name(), dst_ancestor->name());
+  XBT_DEBUG("elements_father: common ancestor '%s' src ancestor '%s' dst ancestor '%s'", common_ancestor->getCname(),
+            src_ancestor->getCname(), dst_ancestor->getCname());
 
   /* Check whether a direct bypass is defined. If so, use it and bail out */
   if (common_ancestor->getBypassRoute(src, dst, links, latency))

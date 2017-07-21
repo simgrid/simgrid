@@ -35,7 +35,7 @@ XBT_PUBLIC_CLASS VirtualMachine : public s4u::Host
 {
 
 public:
-  explicit VirtualMachine(const char* name, s4u::Host* hostPm);
+  explicit VirtualMachine(const char* name, s4u::Host* hostPm, int coreAmount);
 
   // No copy/move
   VirtualMachine(VirtualMachine const&) = delete;
@@ -47,10 +47,10 @@ private:
 public:
   bool isMigrating();
 
-  void parameters(vm_params_t params);
+  void getParameters(vm_params_t params);
   void setParameters(vm_params_t params);
   double getRamsize();
-  simgrid::s4u::Host* pm();
+  simgrid::s4u::Host* getPm();
 
   e_surf_vm_state_t getState();
 

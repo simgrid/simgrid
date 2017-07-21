@@ -91,3 +91,8 @@ $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platfor
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO] Test 6 is also weird: when the node Jupiter is turned off once again, the VM and its daemon are not killed. However, the issue regarding the shutdown of hosted VMs can be seen a feature not a bug ;)
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Test done. See you!
 > [10.000000] [msg_test/INFO] Simulation time 10
+> [10.000000] [surf_maxmin/WARNING] Probable bug: a simgrid::surf::CpuCas01Action variable (#13) not removed before the LMM system destruction.
+> [10.000000] [surf_maxmin/WARNING] Probable bug: a simgrid::surf::CpuCas01Action variable (#2) not removed before the LMM system destruction.
+
+p The previous test suffers of bug https://github.com/simgrid/simgrid/issues/120
+p but the code is still not clean enough to really solve it.

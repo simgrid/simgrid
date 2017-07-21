@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -10,7 +10,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_wait, "Messages specific for this msg exa
 /* Main function of the Sender process */
 static int sender(int argc, char *argv[])
 {
-  xbt_assert(argc==7, "The sender function expects 6 arguments from the XML deployment file"); 
+  xbt_assert(argc==7, "The sender function expects 6 arguments from the XML deployment file");
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");        /* - number of tasks */
   double task_comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s"); /* - computational cost */
   double task_comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s"); /* - communication cost */
@@ -45,10 +45,10 @@ static int sender(int argc, char *argv[])
 
   for (int i = 0; i < receivers_count; i++) {
     char mailbox[80];
-    snprintf(mailbox,79, "receiver-%ld", i % receivers_count);
+    snprintf(mailbox, 79, "receiver-%d", i);
     msg_task_t task = MSG_task_create("finalize", 0, 0, 0);
     msg_comm_t comm = MSG_task_isend(task, mailbox);
-    XBT_INFO("Send to receiver-%ld finalize", i % receivers_count);
+    XBT_INFO("Send to receiver-%d finalize", i);
     if (sleep_test_time > 0) {
       while (MSG_comm_test(comm) == 0) {
         MSG_process_sleep(sleep_test_time);

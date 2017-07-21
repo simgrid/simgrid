@@ -1,42 +1,42 @@
 /*************************************************************************
- *                                                                       * 
+ *                                                                       *
  *        N  A  S     P A R A L L E L     B E N C H M A R K S  3.3       *
- *                                                                       * 
- *                                  I S                                  * 
- *                                                                       * 
- ************************************************************************* 
- *                                                                       * 
+ *                                                                       *
+ *                                  I S                                  *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
  *   This benchmark is part of the NAS Parallel Benchmark 3.3 suite.     *
- *   It is described in NAS Technical Report 95-020.                     * 
- *                                                                       * 
- *   Permission to use, copy, distribute and modify this software        * 
- *   for any purpose with or without fee is hereby granted.  We          * 
- *   request, however, that all derived work reference the NAS           * 
+ *   It is described in NAS Technical Report 95-020.                     *
+ *                                                                       *
+ *   Permission to use, copy, distribute and modify this software        *
+ *   for any purpose with or without fee is hereby granted.  We          *
+ *   request, however, that all derived work reference the NAS           *
  *   Parallel Benchmarks 3.3. This software is provided "as is"          *
- *   without express or implied warranty.                                * 
- *                                                                       * 
+ *   without express or implied warranty.                                *
+ *                                                                       *
  *   Information on NPB 3.3, including the technical report, the         *
- *   original specifications, source code, results and information       * 
- *   on how to submit new results, is available at:                      * 
- *                                                                       * 
- *          http://www.nas.nasa.gov/Software/NPB                         * 
- *                                                                       * 
- *   Send comments or suggestions to  npb@nas.nasa.gov                   * 
- *   Send bug reports to              npb-bugs@nas.nasa.gov              * 
- *                                                                       * 
- *         NAS Parallel Benchmarks Group                                 * 
- *         NASA Ames Research Center                                     * 
- *         Mail Stop: T27A-1                                             * 
- *         Moffett Field, CA   94035-1000                                * 
- *                                                                       * 
- *         E-mail:  npb@nas.nasa.gov                                     * 
- *         Fax:     (650) 604-3957                                       * 
- *                                                                       * 
- ************************************************************************* 
- *                                                                       * 
- *   Author: M. Yarrow                                                   * 
- *           H. Jin                                                      * 
- *                                                                       * 
+ *   original specifications, source code, results and information       *
+ *   on how to submit new results, is available at:                      *
+ *                                                                       *
+ *          http://www.nas.nasa.gov/Software/NPB                         *
+ *                                                                       *
+ *   Send comments or suggestions to  npb@nas.nasa.gov                   *
+ *   Send bug reports to              npb-bugs@nas.nasa.gov              *
+ *                                                                       *
+ *         NAS Parallel Benchmarks Group                                 *
+ *         NASA Ames Research Center                                     *
+ *         Mail Stop: T27A-1                                             *
+ *         Moffett Field, CA   94035-1000                                *
+ *                                                                       *
+ *         E-mail:  npb@nas.nasa.gov                                     *
+ *         Fax:     (650) 604-3957                                       *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ *   Author: M. Yarrow                                                   *
+ *           H. Jin                                                      *
+ *                                                                       *
  *************************************************************************/
 
 #include "smpi/mpi.h"
@@ -221,7 +221,7 @@ static void rank( global_data* gd, int iteration )
   INT_TYPE    min_key_val, max_key_val;
   INT_TYPE    *key_buff_ptr;
 
-/*  Iteration alteration of keys */  
+/*  Iteration alteration of keys */
   if(gd->my_rank == 0){
     gd->key_array[iteration] = iteration;
     gd->key_array[iteration+MAX_ITERATIONS] = max_key - iteration;
@@ -579,7 +579,7 @@ int main( int argc, char **argv )
              1220703125.00 ),   /* Random number gen mult */
              1220703125.00 );   /* Random number gen mult */
 
-/*  Do one interation for free (i.e., untimed) to guarantee initialization of  
+/*  Do one interation for free (i.e., untimed) to guarantee initialization of
     all data and code pages and respective tables */
   rank(gd, 1 );
 

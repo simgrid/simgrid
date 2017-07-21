@@ -1,5 +1,4 @@
-/* Copyright (c) 2009-2010, 2013-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,12 +16,12 @@ static int my_onexit(smx_process_exit_status_t status, int* pid)
 static void sendpid()
 {
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName("mailbox");
-  int pid = simgrid::s4u::this_actor::pid();
+  int pid                          = simgrid::s4u::this_actor::getPid();
   double comm_size                 = 100000;
   simgrid::s4u::this_actor::onExit((int_f_pvoid_pvoid_t)my_onexit, &pid);
 
   XBT_INFO("Sending pid of \"%d\".", pid);
-  simgrid::s4u::this_actor::send(mailbox, &pid, comm_size);
+  mailbox->put(&pid, comm_size);
   XBT_INFO("Send of pid \"%d\" done.", pid);
 
   simgrid::s4u::this_actor::suspend();
@@ -32,7 +31,7 @@ static void killall()
 {
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName("mailbox");
   for (int i = 0; i < 3; i++) {
-    int* pid = static_cast<int*>(simgrid::s4u::this_actor::recv(mailbox));
+    int* pid = static_cast<int*>(mailbox->get());
     XBT_INFO("Killing process \"%d\".", *pid);
     simgrid::s4u::Actor::byPid(*pid)->kill();
   }
@@ -55,5 +54,6 @@ int main(int argc, char* argv[])
 
   e->run();
 
+  delete e;
   return 0;
 }

@@ -59,8 +59,8 @@ main (int argc, char **argv)
   int namelen = 128;
   int i, j, k, basic_extent;
   int blocklens[4], displs[4];
-  MPI_Datatype structtypes[4]; 
-  MPI_Datatype newtype[TYPE_CONSTRUCTOR_COUNT]; 
+  MPI_Datatype structtypes[4];
+  MPI_Datatype newtype[TYPE_CONSTRUCTOR_COUNT];
   MPI_Request aReq[TYPE_CONSTRUCTOR_COUNT];
   MPI_Status aStatus[TYPE_CONSTRUCTOR_COUNT];
 #ifdef RUN_TYPE_STRUCT
@@ -104,7 +104,7 @@ main (int argc, char **argv)
 
   /* create the types */
   MPI_Type_struct (2, blocklens, displs, structtypes, &newtype[0]);
-  
+
   MPI_Type_extent (newtype[0], &basic_extent);
   if (basic_extent != sizeof (test_basic_struct_t)) {
     fprintf (stderr, "(%d): Unexpected extent for struct\n");
@@ -112,7 +112,7 @@ main (int argc, char **argv)
   }
 
   MPI_Type_vector (2, 3, 4, newtype[0], &newtype[1]);
-  MPI_Type_hvector (3, 2, 15 * sizeof (test_basic_struct_t), 
+  MPI_Type_hvector (3, 2, 15 * sizeof (test_basic_struct_t),
 		    newtype[1], &newtype[2]);
   displs[1] = 2;
   MPI_Type_indexed (2, blocklens, displs, newtype[2], &newtype[3]);
@@ -132,7 +132,7 @@ main (int argc, char **argv)
 
   MPI_Type_struct (4, blocklens, displs, structtypes, &newtype[6]);
 
-#ifdef RUN_TYPE_STRUCT 
+#ifdef RUN_TYPE_STRUCT
   MPI_Type_commit (&newtype[0]);
 #endif
 
@@ -156,8 +156,8 @@ main (int argc, char **argv)
   MPI_Type_commit (&newtype[5]);
 #endif
 
-#ifdef RUN_TYPE_STRUCT_LB_UB 
-#ifndef RUN_TYPE_STRUCT 
+#ifdef RUN_TYPE_STRUCT_LB_UB
+#ifndef RUN_TYPE_STRUCT
   /* need the struct type for the receive... */
   MPI_Type_commit (&newtype[0]);
 #endif
@@ -254,7 +254,7 @@ main (int argc, char **argv)
 #endif
 
 #ifdef RUN_TYPE_STRUCT_LB_UB
-    MPI_Isend (&(struct_lb_ub_send_buf[0].the_double_to_send), 
+    MPI_Isend (&(struct_lb_ub_send_buf[0].the_double_to_send),
 	       MSG_COUNT, newtype[6], 1, 6, comm, &aReq[6]);
 #else
     aReq[6] = MPI_REQUEST_NULL;
@@ -347,7 +347,7 @@ main (int argc, char **argv)
 #endif
 
 #ifdef RUN_TYPE_STRUCT_LB_UB
-    MPI_Irecv (struct_lb_ub_recv_buf, 
+    MPI_Irecv (struct_lb_ub_recv_buf,
 	       MSG_COUNT, newtype[0], 0, 6, comm, &aReq[6]);
 #else
     aReq[6] = MPI_REQUEST_NULL;
@@ -714,7 +714,7 @@ main (int argc, char **argv)
 #ifdef RUN_TYPE_HVECTOR
       /* eight holes in hvector_buf... */
       /* hole in first vector, first block... */
-      assert ((hvector_buf[i*44 + 3].the_double == 2.0) && 
+      assert ((hvector_buf[i*44 + 3].the_double == 2.0) &&
 	      (hvector_buf[i*44 + 3].the_char == 'b'));
       /* hole in second vector, first block... */
       assert ((hvector_buf[i*44 + 10].the_double == 2.0) &&

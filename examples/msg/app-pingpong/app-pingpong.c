@@ -5,7 +5,7 @@
 
 #include "simgrid/msg.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(mag_app_pingpong,"Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_app_pingpong, "Messages specific for this msg example");
 
 static int pinger(int argc, char *argv[])
 {
@@ -30,7 +30,7 @@ static int pinger(int argc, char *argv[])
   XBT_INFO("Task received : %s", pong_task->name);
   xbt_free(pong_task->data);
   MSG_task_destroy(pong_task);
-  XBT_INFO("Pong time (bandwidth bound): %e", communication_time);
+  XBT_INFO("Pong time (bandwidth bound): %.3f", communication_time);
 
   return 0;
 }
@@ -51,14 +51,14 @@ static int ponger(int argc, char *argv[])
   XBT_INFO("Task received : %s", ping_task->name);
   xbt_free(ping_task->data);
   MSG_task_destroy(ping_task);
-  XBT_INFO(" Ping time (latency bound) %e", communication_time);
+  XBT_INFO(" Ping time (latency bound) %f", communication_time);
 
   /*  - ... Then send a 1GB pong back (bandwidth bound) */
   double now = MSG_get_clock();
   msg_task_t pong_task = MSG_task_create("large communication (bandwidth bound)", 0.0, 1e9, NULL);
   pong_task->data = xbt_new(double, 1);
   *(double *) pong_task->data = now;
-  XBT_INFO("task_bw->data = %e", *((double *) pong_task->data));
+  XBT_INFO("task_bw->data = %.3f", *((double*)pong_task->data));
   MSG_task_send(pong_task, argv[1]);
 
   return 0;
@@ -80,6 +80,6 @@ int main(int argc, char *argv[])
 
   msg_error_t res = MSG_main();             /* - Run the simulation */
 
-  XBT_INFO("Total simulation time: %e", MSG_get_clock());
+  XBT_INFO("Total simulation time: %.3f", MSG_get_clock());
   return res!=MSG_OK;
 }

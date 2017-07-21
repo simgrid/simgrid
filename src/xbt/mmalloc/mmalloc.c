@@ -1,7 +1,6 @@
 /* Memory allocator `malloc'. */
 
-/* Copyright (c) 2010-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -102,24 +101,19 @@ static void initialize(xbt_mheap_t mdp)
  * into the heap info table as necessary. */
 static void *register_morecore(struct mdesc *mdp, size_t size)
 {
-  int i;
-  void *result;
-  malloc_info *newinfo, *oldinfo;
-  size_t newsize;
-
-  result = align(mdp, size); // Never returns NULL
+  void* result = align(mdp, size); // Never returns NULL
 
   /* Check if we need to grow the info table (in a multiplicative manner)  */
   if ((size_t) BLOCK((char *) result + size) > mdp->heapsize) {
     int it;
 
-    newsize = mdp->heapsize;
+    size_t newsize = mdp->heapsize;
     while ((size_t) BLOCK((char *) result + size) > newsize)
       newsize *= 2;
 
     /* Copy old info into new location */
-    oldinfo = mdp->heapinfo;
-    newinfo = (malloc_info *) align(mdp, newsize * sizeof(malloc_info));
+    malloc_info* oldinfo = mdp->heapinfo;
+    malloc_info* newinfo = (malloc_info*)align(mdp, newsize * sizeof(malloc_info));
     memcpy(newinfo, oldinfo, mdp->heapsize * sizeof(malloc_info));
 
     /* Initialise the new blockinfo : */
@@ -129,14 +123,12 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
     /* Update the swag of busy blocks containing free fragments by applying the offset to all swag_hooks. Yeah. My hand is right in the fan and I still type */
     size_t offset=((char*)newinfo)-((char*)oldinfo);
 
-    for (i=1/*first element of heapinfo describes the mdesc area*/;
-         i<mdp->heaplimit;
-         i++) {
+    for (int i = 1 /*first element of heapinfo describes the mdesc area*/; i < mdp->heaplimit; i++) {
       update_hook(newinfo[i].freehook.next,offset);
       update_hook(newinfo[i].freehook.prev,offset);
     }
     // also update the starting points of the swag
-    for (i=0;i<BLOCKLOG;i++) {
+    for (int i = 0; i < BLOCKLOG; i++) {
       update_hook(mdp->fraghead[i].head,offset);
       update_hook(mdp->fraghead[i].tail,offset);
     }
@@ -176,10 +168,7 @@ void *mmalloc(xbt_mheap_t mdp, size_t size) {
 void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
 {
   void *result;
-  size_t block, blocks, lastblocks, start;
-  size_t i;
-  size_t log;
-  int it;
+  size_t block;
 
   size_t requested_size = size; // The amount of memory requested by user, for real
 
@@ -201,7 +190,7 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
   if (size <= BLOCKSIZE / 2) {
     /* Small allocation to receive a fragment of a block.
        Determine the logarithm to base two of the fragment size. */
-    log = 1;
+    size_t log = 1;
     --size;
     while ((size /= 2) != 0) {
       ++log;
@@ -251,6 +240,7 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
 
       mdp->heapinfo[block].type = log;
       /* Link all fragments but the first as free, and add the block to the swag of blocks containing free frags  */
+      size_t i;
       for (i = 1; i < (size_t) (BLOCKSIZE >> log); ++i) {
         mdp->heapinfo[block].busy_frag.frag_size[i] = -1;
         mdp->heapinfo[block].busy_frag.ignore[i] = 0;
@@ -277,8 +267,9 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
        Search the free list in a circle starting at the last place visited.
        If we loop completely around without finding a large enough
        space we will have to get more memory from the system.  */
-    blocks = BLOCKIFY(size);
-    start = block = MALLOC_SEARCH_START;
+    size_t blocks = BLOCKIFY(size);
+    size_t start  = MALLOC_SEARCH_START;
+    block         = MALLOC_SEARCH_START;
     while (mdp->heapinfo[block].free_block.size < blocks) {
       if (mdp->heapinfo[block].type >=0) { // Don't trust xbt_die and friends in malloc-level library, you fool!
         fprintf(stderr,"Internal error: found a free block not marked as such (block=%lu type=%lu). Please report this bug.\n",(unsigned long)block,(unsigned long)mdp->heapinfo[block].type);
@@ -291,7 +282,7 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
            the new core will be contiguous with the final free
            block; if so we don't need to get as much.  */
         block = mdp->heapinfo[0].free_block.prev;
-        lastblocks = mdp->heapinfo[block].free_block.size;
+        size_t lastblocks = mdp->heapinfo[block].free_block.size;
         if (mdp->heaplimit != 0 &&
             block + lastblocks == mdp->heaplimit &&
             mmorecore(mdp, 0) == ADDRESS(block + lastblocks) &&
@@ -307,11 +298,11 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
         result = register_morecore(mdp, blocks * BLOCKSIZE);
 
         block = BLOCK(result);
-        for (it=0;it<blocks;it++){
-          mdp->heapinfo[block+it].type = MMALLOC_TYPE_UNFRAGMENTED;
-          mdp->heapinfo[block+it].busy_block.busy_size = 0;
-          mdp->heapinfo[block+it].busy_block.ignore = 0;
-          mdp->heapinfo[block+it].busy_block.size = 0;
+        for (int it = 0; it < blocks; it++) {
+          mdp->heapinfo[block + it].type                 = MMALLOC_TYPE_UNFRAGMENTED;
+          mdp->heapinfo[block + it].busy_block.busy_size = 0;
+          mdp->heapinfo[block + it].busy_block.ignore    = 0;
+          mdp->heapinfo[block + it].busy_block.size      = 0;
         }
         mdp->heapinfo[block].busy_block.size = blocks;
         mdp->heapinfo[block].busy_block.busy_size = requested_size;
@@ -349,7 +340,7 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
         = mdp->heapindex = mdp->heapinfo[block].free_block.next;
     }
 
-    for (it=0;it<blocks;it++){
+    for (int it = 0; it < blocks; it++) {
       mdp->heapinfo[block+it].type = MMALLOC_TYPE_UNFRAGMENTED;
       mdp->heapinfo[block+it].busy_block.busy_size = 0;
       mdp->heapinfo[block+it].busy_block.ignore = 0;

@@ -1,23 +1,19 @@
 /* virtualization layer for XBT */
 
-/* Copyright (c) 2007-2014. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/misc.h"
+#include "simgrid/msg.h"
 #include "xbt/virtu.h"
-#include "xbt/function_types.h"
-#include "simgrid/simix.h"
 
-static int xbt_fake_pid(void)
+int xbt_getpid()
 {
-  return 0;
+  return MSG_process_self_PID();
 }
-
-int_f_void_t xbt_getpid = &xbt_fake_pid;
 
 const char *xbt_procname(void)
 {
-  return SIMIX_process_self_get_name();
+  return MSG_process_self_name();
 }

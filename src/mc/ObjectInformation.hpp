@@ -19,7 +19,7 @@
 #include "src/mc/Type.hpp"
 #include "src/mc/Frame.hpp"
 
-#include "src/smpi/private.h"
+#include "src/smpi/include/private.h"
 
 namespace simgrid {
 namespace mc {
@@ -83,7 +83,7 @@ public:
    *
    * We need to efficiently find the function from any given instruction
    * address inside its range. This index is sorted by low_pc
-   * 
+   *
    * The entries are sorted by low_pc and a binary search can be used to look
    * them up. In order to have a better cache locality, we only keep the
    * information we need for the lookup in this vector. We could probably
@@ -165,9 +165,7 @@ XBT_PRIVATE std::shared_ptr<ObjectInformation> createObjectInformation(
   std::vector<simgrid::xbt::VmMap> const& maps, const char* name);
 
 /** Augment the current module with informations about the other ones */
-XBT_PRIVATE void postProcessObjectInformation(
-  simgrid::mc::Process* process, simgrid::mc::ObjectInformation* info);
-
+XBT_PRIVATE void postProcessObjectInformation(simgrid::mc::RemoteClient* process, simgrid::mc::ObjectInformation* info);
 }
 }
 

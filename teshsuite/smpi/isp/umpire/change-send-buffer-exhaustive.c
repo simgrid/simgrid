@@ -42,42 +42,42 @@ main (int argc, char **argv)
   printf ("(%d) is alive on %s\n", rank, processor_name);
   fflush (stdout);
 
-  MPI_Buffer_attach (bbuf, sizeof(int) * 
+  MPI_Buffer_attach (bbuf, sizeof(int) *
 		     (BUF_SIZE + MPI_BSEND_OVERHEAD) * 2 * NUM_BSEND_TYPES);
 
   if (rank == 0) {
     /* set up persistent sends... */
     send_t_number = NUM_SEND_TYPES - NUM_PERSISTENT_SEND_TYPES;
 
-    MPI_Send_init (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT, 
+    MPI_Send_init (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT,
 		    1, send_t_number * 2, comm, &aReq[send_t_number * 2]);
-    MPI_Send_init (&buf[(send_t_number * 2 + 1) * BUF_SIZE], 
-		    BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1, 
+    MPI_Send_init (&buf[(send_t_number * 2 + 1) * BUF_SIZE],
+		    BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1,
 		    comm, &aReq[send_t_number * 2 + 1]);
 
     send_t_number++;
 
-    MPI_Bsend_init (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT, 
+    MPI_Bsend_init (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT,
 		    1, send_t_number * 2, comm, &aReq[send_t_number * 2]);
-    MPI_Bsend_init (&buf[(send_t_number * 2 + 1) * BUF_SIZE], 
-		    BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1, 
+    MPI_Bsend_init (&buf[(send_t_number * 2 + 1) * BUF_SIZE],
+		    BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1,
 		    comm, &aReq[send_t_number * 2 + 1]);
 
 
     send_t_number++;
 
-    MPI_Rsend_init (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT, 
+    MPI_Rsend_init (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT,
 		    1, send_t_number * 2, comm, &aReq[send_t_number * 2]);
-    MPI_Rsend_init (&buf[(send_t_number * 2 + 1) * BUF_SIZE], 
-		    BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1, 
+    MPI_Rsend_init (&buf[(send_t_number * 2 + 1) * BUF_SIZE],
+		    BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1,
 		    comm, &aReq[send_t_number * 2 + 1]);
 
     send_t_number++;
 
-    MPI_Ssend_init (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT, 
+    MPI_Ssend_init (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT,
 		    1, send_t_number * 2, comm, &aReq[send_t_number * 2]);
-    MPI_Ssend_init (&buf[(send_t_number * 2 + 1) * BUF_SIZE], 
-		    BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1, 
+    MPI_Ssend_init (&buf[(send_t_number * 2 + 1) * BUF_SIZE],
+		    BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1,
 		    comm, &aReq[send_t_number * 2 + 1]);
   }
 
@@ -101,19 +101,19 @@ main (int argc, char **argv)
     if (rank == 0) {
       /* set up transient sends... */
       send_t_number = 0;
-    
+
       MPI_Isend (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT,
 		 1, send_t_number * 2, comm, &aReq[send_t_number * 2]);
       MPI_Isend (&buf[(send_t_number * 2 + 1) * BUF_SIZE],
-		 BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1, 
+		 BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1,
 		 comm, &aReq[send_t_number * 2 + 1]);
 
       send_t_number++;
-      
+
       MPI_Ibsend (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT,
 		  1, send_t_number * 2, comm, &aReq[send_t_number * 2]);
       MPI_Ibsend (&buf[(send_t_number * 2 + 1) * BUF_SIZE],
-		  BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1, 
+		  BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1,
 		  comm, &aReq[send_t_number * 2 + 1]);
 
       send_t_number++;
@@ -124,7 +124,7 @@ main (int argc, char **argv)
       MPI_Irsend (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT,
 		  1, send_t_number * 2, comm, &aReq[send_t_number * 2]);
       MPI_Irsend (&buf[(send_t_number * 2 + 1) * BUF_SIZE],
-		  BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1, 
+		  BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1,
 		  comm, &aReq[send_t_number * 2 + 1]);
 
       send_t_number++;
@@ -132,7 +132,7 @@ main (int argc, char **argv)
       MPI_Issend (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT,
 		  1, send_t_number * 2, comm, &aReq[send_t_number * 2]);
       MPI_Issend (&buf[(send_t_number * 2 + 1) * BUF_SIZE],
-		  BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1, 
+		  BUF_SIZE, MPI_INT, 1, send_t_number * 2 + 1,
 		  comm, &aReq[send_t_number * 2 + 1]);
 
       /* just to be paranoid */
@@ -148,7 +148,7 @@ main (int argc, char **argv)
 	  MPI_Start (&aReq[2 * send_t_number + j]);
 	}
       }
-    
+
       /* NOTE: Changing the send buffer of a Bsend is NOT an error... */
       for (j = 0; j < NUM_SEND_TYPES; j++) {
 	/* muck the buffers */
@@ -229,7 +229,7 @@ main (int argc, char **argv)
 	  outcount = 0;
 
 	  while (!outcount) {
-	    MPI_Testsome (NUM_SEND_TYPES * 2, aReq, 
+	    MPI_Testsome (NUM_SEND_TYPES * 2, aReq,
 			  &outcount, indices, aStatus);
 	  }
 
@@ -246,7 +246,7 @@ main (int argc, char **argv)
     else if (rank == 1) {
       /* set up receives for all of the sends */
       for (j = 0; j < NUM_SEND_TYPES * 2; j++) {
-	MPI_Irecv (&buf[j * BUF_SIZE], BUF_SIZE, 
+	MPI_Irecv (&buf[j * BUF_SIZE], BUF_SIZE,
 		   MPI_INT, 0, j, comm, &aReq[j]);
       }
 
@@ -274,7 +274,7 @@ main (int argc, char **argv)
 
   MPI_Buffer_detach (bbuf, &at_size);
 
-  assert (at_size == 
+  assert (at_size ==
 	  sizeof(int) * (BUF_SIZE + MPI_BSEND_OVERHEAD) * 2 * NUM_BSEND_TYPES);
 
   MPI_Finalize ();

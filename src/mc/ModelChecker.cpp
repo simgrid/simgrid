@@ -46,13 +46,13 @@ using simgrid::mc::remote;
 namespace simgrid {
 namespace mc {
 
-ModelChecker::ModelChecker(std::unique_ptr<Process> process) :
-  base_(nullptr),
-  socket_event_(nullptr),
-  signal_event_(nullptr),
-  page_store_(500),
-  process_(std::move(process)),
-  parent_snapshot_(nullptr)
+ModelChecker::ModelChecker(std::unique_ptr<RemoteClient> process)
+    : base_(nullptr)
+    , socket_event_(nullptr)
+    , signal_event_(nullptr)
+    , page_store_(500)
+    , process_(std::move(process))
+    , parent_snapshot_(nullptr)
 {
 
 }
@@ -131,7 +131,7 @@ static const std::pair<const char*, const char*> ignored_local_variables[] = {
 
 void ModelChecker::setup_ignore()
 {
-  Process& process = this->process();
+  RemoteClient& process = this->process();
   for (std::pair<const char*, const char*> const& var :
       ignored_local_variables)
     process.ignore_local_variable(var.first, var.second);
@@ -144,7 +144,7 @@ void ModelChecker::shutdown()
 {
   XBT_DEBUG("Shuting down model-checker");
 
-  simgrid::mc::Process* process = &this->process();
+  simgrid::mc::RemoteClient* process = &this->process();
   if (process->running()) {
     XBT_DEBUG("Killing process");
     kill(process->pid(), SIGTERM);
@@ -152,7 +152,7 @@ void ModelChecker::shutdown()
   }
 }
 
-void ModelChecker::resume(simgrid::mc::Process& process)
+void ModelChecker::resume(simgrid::mc::RemoteClient& process)
 {
   int res = process.getChannel().send(MC_MESSAGE_CONTINUE);
   if (res)
@@ -196,7 +196,7 @@ static void MC_report_assertion_error()
 
 bool ModelChecker::handle_message(char* buffer, ssize_t size)
 {
-  s_mc_message_t base_message;
+  mc_message_t base_message;
   if (size < (ssize_t) sizeof(base_message))
     xbt_die("Broken message");
   memcpy(&base_message, buffer, sizeof(base_message));
@@ -205,73 +205,69 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
 
   case MC_MESSAGE_IGNORE_HEAP:
     {
-      s_mc_ignore_heap_message_t message;
-      if (size != sizeof(message))
-        xbt_die("Broken messsage");
-      memcpy(&message, buffer, sizeof(message));
+    s_mc_message_ignore_heap_t message;
+    if (size != sizeof(message))
+      xbt_die("Broken messsage");
+    memcpy(&message, buffer, sizeof(message));
 
-      IgnoredHeapRegion region;
-      region.block = message.block;
-      region.fragment = message.fragment;
-      region.address = message.address;
-      region.size = message.size;
-      process().ignore_heap(region);
-      break;
+    IgnoredHeapRegion region;
+    region.block    = message.block;
+    region.fragment = message.fragment;
+    region.address  = message.address;
+    region.size     = message.size;
+    process().ignore_heap(region);
+    break;
     }
 
   case MC_MESSAGE_UNIGNORE_HEAP:
     {
-      s_mc_ignore_memory_message_t message;
-      if (size != sizeof(message))
-        xbt_die("Broken messsage");
-      memcpy(&message, buffer, sizeof(message));
-      process().unignore_heap(
-        (void *)(std::uintptr_t) message.addr, message.size);
-      break;
+    s_mc_message_ignore_memory_t message;
+    if (size != sizeof(message))
+      xbt_die("Broken messsage");
+    memcpy(&message, buffer, sizeof(message));
+    process().unignore_heap((void*)(std::uintptr_t)message.addr, message.size);
+    break;
     }
 
   case MC_MESSAGE_IGNORE_MEMORY:
     {
-      s_mc_ignore_memory_message_t message;
-      if (size != sizeof(message))
-        xbt_die("Broken messsage");
-      memcpy(&message, buffer, sizeof(message));
-      this->process().ignore_region(message.addr, message.size);
-      break;
+    s_mc_message_ignore_memory_t message;
+    if (size != sizeof(message))
+      xbt_die("Broken messsage");
+    memcpy(&message, buffer, sizeof(message));
+    this->process().ignore_region(message.addr, message.size);
+    break;
     }
 
   case MC_MESSAGE_STACK_REGION:
     {
-      s_mc_stack_region_message_t message;
-      if (size != sizeof(message))
-        xbt_die("Broken messsage");
-      memcpy(&message, buffer, sizeof(message));
-      this->process().stack_areas().push_back(message.stack_region);
+    s_mc_message_stack_region_t message;
+    if (size != sizeof(message))
+      xbt_die("Broken messsage");
+    memcpy(&message, buffer, sizeof(message));
+    this->process().stack_areas().push_back(message.stack_region);
     }
     break;
 
   case MC_MESSAGE_REGISTER_SYMBOL:
     {
-      s_mc_register_symbol_message_t message;
-      if (size != sizeof(message))
-        xbt_die("Broken message");
-      memcpy(&message, buffer, sizeof(message));
-      if (message.callback)
-        xbt_die("Support for client-side function proposition is not implemented.");
-      XBT_DEBUG("Received symbol: %s", message.name);
+    s_mc_message_register_symbol_t message;
+    if (size != sizeof(message))
+      xbt_die("Broken message");
+    memcpy(&message, buffer, sizeof(message));
+    if (message.callback)
+      xbt_die("Support for client-side function proposition is not implemented.");
+    XBT_DEBUG("Received symbol: %s", message.name);
 
-      if (simgrid::mc::property_automaton == nullptr)
-        simgrid::mc::property_automaton = xbt_automaton_new();
+    if (simgrid::mc::property_automaton == nullptr)
+      simgrid::mc::property_automaton = xbt_automaton_new();
 
-      simgrid::mc::Process* process = &this->process();
-      simgrid::mc::RemotePtr<int> address
-        = simgrid::mc::remote((int*) message.data);
-      simgrid::xbt::add_proposition(simgrid::mc::property_automaton,
-        message.name,
-        [process, address]() { return process->read(address); }
-        );
+    simgrid::mc::RemoteClient* process  = &this->process();
+    simgrid::mc::RemotePtr<int> address = simgrid::mc::remote((int*)message.data);
+    simgrid::xbt::add_proposition(simgrid::mc::property_automaton, message.name,
+                                  [process, address]() { return process->read(address); });
 
-      break;
+    break;
     }
 
   case MC_MESSAGE_WAITING:
@@ -388,16 +384,16 @@ void ModelChecker::on_signal(int signo)
   }
 }
 
-void ModelChecker::wait_client(simgrid::mc::Process& process)
+void ModelChecker::wait_for_requests()
 {
-  this->resume(process);
+  this->resume(process());
   if (this->process().running())
     event_base_dispatch(base_);
 }
 
 void ModelChecker::handle_simcall(Transition const& transition)
 {
-  s_mc_simcall_handle_message m;
+  s_mc_message_simcall_handle m;
   memset(&m, 0, sizeof(m));
   m.type  = MC_MESSAGE_SIMCALL_HANDLE;
   m.pid   = transition.pid;
@@ -413,7 +409,7 @@ bool ModelChecker::checkDeadlock()
   int res;
   if ((res = this->process().getChannel().send(MC_MESSAGE_DEADLOCK_CHECK)))
     xbt_die("Could not check deadlock state");
-  s_mc_int_message_t message;
+  mc_message_int_t message;
   ssize_t s = mc_model_checker->process().getChannel().receive(message);
   if (s == -1)
     xbt_die("Could not receive message");

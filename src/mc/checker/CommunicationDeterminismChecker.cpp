@@ -21,7 +21,7 @@
 #include "src/mc/mc_state.h"
 #include "src/mc/remote/Client.hpp"
 
-#include "src/smpi/smpi_request.hpp"
+#include "smpi_request.hpp"
 
 using simgrid::mc::remote;
 
@@ -185,7 +185,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
   if (call_type == MC_CALL_TYPE_SEND) {
     /* Create comm pattern */
     pattern->type = simgrid::mc::PatternCommunicationType::send;
-    pattern->comm_addr = simcall_comm_isend__get__result(request);
+    pattern->comm_addr = static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_isend__getraw__result(request));
 
     simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_synchro;
     mc_model_checker->process().read(temp_synchro,
@@ -223,7 +223,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
     }
   } else if (call_type == MC_CALL_TYPE_RECV) {
     pattern->type = simgrid::mc::PatternCommunicationType::receive;
-    pattern->comm_addr = simcall_comm_irecv__get__result(request);
+    pattern->comm_addr = static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_irecv__getraw__result(request));
 
     simgrid::smpi::Request mpi_request;
     mc_model_checker->process().read(&mpi_request,
@@ -360,7 +360,7 @@ void CommunicationDeterminismChecker::prepare()
   /* Get an enabled actor and insert it in the interleave set of the initial state */
   for (auto& actor : mc_model_checker->process().actors())
     if (simgrid::mc::actor_is_enabled(actor.copy.getBuffer()))
-      initial_state->interleave(actor.copy.getBuffer());
+      initial_state->addInterleavingSet(actor.copy.getBuffer());
 
   stack_.push_back(std::move(initial_state));
 }
@@ -488,7 +488,7 @@ void CommunicationDeterminismChecker::main()
         /* Get enabled actors and insert them in the interleave set of the next state */
         for (auto& actor : mc_model_checker->process().actors())
           if (simgrid::mc::actor_is_enabled(actor.copy.getBuffer()))
-            next_state->interleave(actor.copy.getBuffer());
+            next_state->addInterleavingSet(actor.copy.getBuffer());
 
         if (dot_output != nullptr)
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",

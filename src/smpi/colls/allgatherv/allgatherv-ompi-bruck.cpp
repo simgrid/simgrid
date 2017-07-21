@@ -33,7 +33,7 @@
  *                in Multiport Message-Passing Systems"
  * Note:         Unlike in case of allgather implementation, we relay on
  *               indexed datatype to select buffers appropriately.
- *               The only additional memory requirement is for creation of 
+ *               The only additional memory requirement is for creation of
  *               temporary datatypes.
  * Example on 7 nodes (memory lay out need not be in-order)
  *   Initial set up:
@@ -55,7 +55,7 @@
  *         [ ]    [ ]    [ ]    [ ]    [5]    [5]    [ ]
  *         [ ]    [ ]    [ ]    [ ]    [ ]    [6]    [6]
  *   Step 1: send message to (rank - 2^1), receive message from (rank + 2^1).
- *           message contains all blocks from (rank) .. (rank + 2^2) with 
+ *           message contains all blocks from (rank) .. (rank + 2^2) with
  *           wrap around.
  *    #     0      1      2      3      4      5      6
  *         [0]    [ ]    [ ]    [ ]    [0]    [0]    [0]
@@ -66,7 +66,7 @@
  *         [ ]    [ ]    [5]    [5]    [5]    [5]    [ ]
  *         [ ]    [ ]    [ ]    [6]    [6]    [6]    [6]
  *   Step 2: send message to (rank - 2^2), receive message from (rank + 2^2).
- *           message size is "all remaining blocks" 
+ *           message size is "all remaining blocks"
  *    #     0      1      2      3      4      5      6
  *         [0]    [0]    [0]    [0]    [0]    [0]    [0]
  *         [1]    [1]    [1]    [1]    [1]    [1]    [1]
@@ -83,7 +83,7 @@ namespace smpi{
 int Coll_allgatherv_ompi_bruck::allgatherv(void *sbuf, int scount,
                                            MPI_Datatype sdtype,
                                            void *rbuf, int *rcounts,
-                                           int *rdispls, 
+                                           int *rdispls,
                                            MPI_Datatype rdtype,
                                            MPI_Comm comm)
 {
@@ -100,31 +100,31 @@ int Coll_allgatherv_ompi_bruck::allgatherv(void *sbuf, int scount,
 
    XBT_DEBUG(
                 "coll:tuned:allgather_ompi_bruck rank %d", rank);
-   
+
    sdtype->extent(&slb, &sext);
 
    rdtype->extent(&rlb, &rext);
 
    /* Initialization step:
-      - if send buffer is not MPI_IN_PLACE, copy send buffer to block rank of 
+      - if send buffer is not MPI_IN_PLACE, copy send buffer to block rank of
         the receive buffer.
    */
    tmprecv = (char*) rbuf + rdispls[rank] * rext;
    if (MPI_IN_PLACE != sbuf) {
       tmpsend = (char*) sbuf;
-      Datatype::copy(tmpsend, scount, sdtype, 
+      Datatype::copy(tmpsend, scount, sdtype,
                             tmprecv, rcounts[rank], rdtype);
    }
-   
+
    /* Communication step:
       At every step i, rank r:
       - doubles the distance
       - sends message with blockcount blocks, (rbuf[rank] .. rbuf[rank + 2^i])
         to rank (r - distance)
-      - receives message of blockcount blocks, 
-        (rbuf[r + distance] ... rbuf[(r+distance) + 2^i]) from 
+      - receives message of blockcount blocks,
+        (rbuf[r + distance] ... rbuf[(r+distance) + 2^i]) from
         rank (r + distance)
-      - blockcount doubles until the last step when only the remaining data is 
+      - blockcount doubles until the last step when only the remaining data is
       exchanged.
    */
    new_rcounts = (int*) calloc(4*size, sizeof(int));
@@ -139,7 +139,7 @@ int Coll_allgatherv_ompi_bruck::allgatherv(void *sbuf, int scount,
 
       if (distance <= (size >> 1)) {
          blockcount = distance;
-      } else { 
+      } else {
          blockcount = size - distance;
       }
 
@@ -152,7 +152,7 @@ int Coll_allgatherv_ompi_bruck::allgatherv(void *sbuf, int scount,
           new_rcounts[i] = rcounts[tmp_rrank];
           new_rdispls[i] = rdispls[tmp_rrank];
       }
-      Datatype::create_indexed(blockcount, new_scounts, new_sdispls, 
+      Datatype::create_indexed(blockcount, new_scounts, new_sdispls,
                                     rdtype, &new_sdtype);
       Datatype::create_indexed(blockcount, new_rcounts, new_rdispls,
                                     rdtype, &new_rdtype);

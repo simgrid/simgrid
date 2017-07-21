@@ -122,7 +122,6 @@ doc/msg-tuto-src/masterworker3
 doc/msg-tuto-src/masterworker4
 examples/msg/actions-comm/actions-comm
 examples/msg/actions-storage/actions-storage
-examples/msg/async-yield/async-yield
 examples/msg/async-wait/async-wait
 examples/msg/async-waitall/async-waitall
 examples/msg/async-waitany/async-waitany
@@ -155,6 +154,7 @@ examples/msg/process-join/process-join
 examples/msg/process-migration/process-migration
 examples/msg/process-startkilltime/process-startkilltime
 examples/msg/process-suspend/process-suspend
+examples/msg/process-yield/process-yield
 examples/msg/app-masterworker/app-masterworker
 examples/msg/mc/bugged1
 examples/msg/mc/bugged1_liveness
@@ -189,10 +189,12 @@ examples/msg/trace-process-migration/trace-process-migration
 examples/msg/trace-platform/trace-platform
 examples/msg/trace-host-user-variables/trace-host-user-variables
 examples/s4u/app-masterworker/s4u_app-masterworker
+examples/s4u/app-pingpong/s4u_app-pingpong
 examples/s4u/app-token-ring/s4u_app-token-ring
 examples/s4u/actions-comm/s4u_actions-comm
 examples/s4u/actions-storage/s4u_actions-storage
 examples/s4u/actor-create/s4u_actor-create
+examples/s4u/actor-daemon/s4u_actor-daemon
 examples/s4u/actor-kill/s4u_actor-kill
 examples/s4u/actor-migration/s4u_actor-migration
 examples/s4u/actor-suspend/s4u_actor-suspend
@@ -248,6 +250,7 @@ teshsuite/mc/dwarf-expression/dwarf-expression
 teshsuite/mc/random-bug/random-bug
 teshsuite/mc/mutex-handling/mutex-handling
 teshsuite/mc/mutex-handling/without-mutex-handling
+teshsuite/msg/cloud-sharing/cloud-sharing
 teshsuite/msg/concurrent_rw/concurrent_rw
 teshsuite/msg/get_sender/get_sender
 teshsuite/msg/host_on_off/host_on_off
@@ -259,6 +262,7 @@ teshsuite/msg/pid/pid
 teshsuite/msg/process/process
 teshsuite/msg/storage_client_server/storage_client_server
 teshsuite/msg/task_destroy_cancel/task_destroy_cancel
+teshsuite/msg/task_listen_from/task_listen_from
 teshsuite/msg/trace_integration/trace_integration
 teshsuite/simdag/availability/availability
 teshsuite/simdag/basic-link-test/basic-link-test
@@ -662,7 +666,6 @@ teshsuite/smpi/mpich3-test/f77/datatype/gaddressf
 teshsuite/smpi/mpich3-test/f77/datatype/hindex1f
 teshsuite/smpi/mpich3-test/f77/datatype/hindexed_blockf
 teshsuite/smpi/mpich3-test/f77/datatype/packef
-teshsuite/smpi/mpich3-test/f77/datatype/typeaints
 teshsuite/smpi/mpich3-test/f77/datatype/typeaints.h
 teshsuite/smpi/mpich3-test/f77/datatype/typecntsf
 teshsuite/smpi/mpich3-test/f77/datatype/typem2f
@@ -1049,6 +1052,8 @@ teshsuite/smpi/macro-partial-shared-communication/macro-partial-shared-communica
 teshsuite/smpi/type-struct/type-struct
 teshsuite/smpi/type-vector/type-vector
 teshsuite/s4u/actor/actor
+teshsuite/s4u/comm-pt2pt/comm-pt2pt
+teshsuite/s4u/comm-waitany/comm-waitany
 teshsuite/s4u/concurrent_rw/concurrent_rw
 teshsuite/s4u/host_on_off_wait/host_on_off_wait
 teshsuite/s4u/listen_async/listen_async

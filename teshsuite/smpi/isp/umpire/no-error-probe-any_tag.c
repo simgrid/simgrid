@@ -47,18 +47,18 @@ main (int argc, char **argv)
 
       MPI_Wait (&req0, &status);
     }
-  else if (rank == 1) 
+  else if (rank == 1)
     {
       for (j = 0; j < 2; j++) {
 	MPI_Probe (0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-      
+
 	if (status.MPI_TAG == 0)
 	  MPI_Recv (&i, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
 	else
 	  MPI_Recv (&x, 1, MPI_DOUBLE, 0, 1, MPI_COMM_WORLD, &status);
       }
     }
-      
+
   MPI_Barrier (MPI_COMM_WORLD);
 
   MPI_Finalize ();

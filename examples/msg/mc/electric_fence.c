@@ -1,14 +1,13 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /******************** Non-deterministic message ordering  *********************/
 /* This example implements one process which receives messages from two other */
-/* processes. There is no bug on it, it is just provided to test the soundness*/ 
+/* processes. There is no bug on it, it is just provided to test the soundness*/
 /* of the state space reduction with DPOR, if the maximum depth (defined with */
-/* --cfg=model-check/max_depth:) is reached.                                  */
+/* --cfg=model-check/max-depth:) is reached.                                  */
 /******************************************************************************/
 
 #include <simgrid/msg.h>
@@ -21,7 +20,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(electric_fence, "Example to check the soundness of 
 
 static int server(int argc, char *argv[])
 {
-  msg_task_t task1 = NULL, task2 = NULL;
+  msg_task_t task1 = NULL;
+  msg_task_t task2 = NULL;
 
   msg_comm_t comm_received1 = MSG_task_irecv(&task1, "mymailbox");
   msg_comm_t comm_received2 = MSG_task_irecv(&task2, "mymailbox");

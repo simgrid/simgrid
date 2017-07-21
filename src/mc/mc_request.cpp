@@ -1,11 +1,11 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <cassert>
 
+#include "src/include/mc/mc.h"
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/mc_request.h"
 #include "src/mc/mc_smx.h"
@@ -23,9 +23,9 @@ static inline simgrid::kernel::activity::CommImpl* MC_get_comm(smx_simcall_t r)
 {
   switch (r->call ) {
   case SIMCALL_COMM_WAIT:
-    return static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__get__comm(r));
+    return static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__getraw__comm(r));
   case SIMCALL_COMM_TEST:
-    return static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_test__get__comm(r));
+    return static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_test__getraw__comm(r));
   default:
     return nullptr;
   }
@@ -199,7 +199,7 @@ static char *buff_size_to_string(size_t buff_size)
 
 std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid::mc::RequestType request_type)
 {
-  xbt_assert(mc_model_checker != nullptr);
+  xbt_assert(mc_model_checker != nullptr, "Must be called from MCer");
 
   bool use_remote_comm = true;
   switch(request_type) {
@@ -257,7 +257,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
 
   case SIMCALL_COMM_WAIT: {
     simgrid::kernel::activity::CommImpl* remote_act =
-        static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__get__comm(req));
+        static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__getraw__comm(req));
     char* p;
     if (value == -1) {
       type = "WaitTimeout";
@@ -290,7 +290,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
 
   case SIMCALL_COMM_TEST: {
     simgrid::kernel::activity::CommImpl* remote_act =
-        static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_test__get__comm(req));
+        static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_test__getraw__comm(req));
     simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_synchro;
     simgrid::kernel::activity::CommImpl* act;
     if (use_remote_comm) {
@@ -329,7 +329,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
       read_element(mc_model_checker->process(),
         &remote_sync, remote(simcall_comm_waitany__get__comms(req)), value,
         sizeof(remote_sync));
-      char* p = pointer_to_string(remote_sync);
+      char* p = pointer_to_string(&*remote_sync);
       args = bprintf("comm=%s (%d of %lu)",
         p, value + 1, xbt_dynar_length(&comms));
       xbt_free(p);
@@ -404,25 +404,22 @@ namespace mc {
 
 bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
 {
-  smx_activity_t remote_act = nullptr;
+  simgrid::kernel::activity::ActivityImpl* remote_act = nullptr;
   switch (req->call) {
 
   case SIMCALL_COMM_WAIT:
     /* FIXME: check also that src and dst processes are not suspended */
-    remote_act = simcall_comm_wait__get__comm(req);
+    remote_act = simcall_comm_wait__getraw__comm(req);
     break;
 
   case SIMCALL_COMM_WAITANY: {
-    read_element(
-      mc_model_checker->process(), &remote_act,
-      remote(simcall_comm_waitany__get__comms(req)),
-      idx, sizeof(remote_act));
+    read_element(mc_model_checker->process(), &remote_act, remote(simcall_comm_waitany__getraw__comms(req)), idx,
+                 sizeof(remote_act));
     }
     break;
 
   case SIMCALL_COMM_TESTANY:
-    remote_act = mc_model_checker->process().read(remote(
-      simcall_comm_testany__get__comms(req) + idx));
+    remote_act = mc_model_checker->process().read(remote(simcall_comm_testany__getraw__comms(req) + idx));
     break;
 
   default:
@@ -435,10 +432,6 @@ bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
   return comm->src_proc && comm->dst_proc;
 }
 
-bool actor_is_enabled(smx_actor_t actor)
-{
-  return simgrid::mc::request_is_enabled(&actor->simcall);
-}
 
 static const char* colors[] = {
   "blue",
@@ -489,7 +482,7 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
       else
         label = simgrid::xbt::string_printf("[(%lu)] WaitTimeout", issuer->pid);
     } else {
-      smx_activity_t remote_act = simcall_comm_wait__get__comm(req);
+      simgrid::kernel::activity::ActivityImpl* remote_act = simcall_comm_wait__getraw__comm(req);
       simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
       mc_model_checker->process().read(temp_comm,
                                        remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
@@ -511,7 +504,7 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
   }
 
   case SIMCALL_COMM_TEST: {
-    smx_activity_t remote_act = simcall_comm_test__get__comm(req);
+    simgrid::kernel::activity::ActivityImpl* remote_act = simcall_comm_test__getraw__comm(req);
     simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
     mc_model_checker->process().read(temp_comm, remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
     simgrid::kernel::activity::CommImpl* comm = temp_comm.getBuffer();

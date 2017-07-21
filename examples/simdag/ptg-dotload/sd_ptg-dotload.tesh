@@ -4,7 +4,7 @@ p Test the loader of PTG (Parallel Task Graph) written in the DOT format
 # The order differ when executed with gcc's thread sanitizer
 ! output sort
 
-$ $SG_TEST_EXENV ${bindir:=.}/ptg-dotload/sd_ptg-dotload  ${srcdir:=.}/../platforms/two_clusters.xml ${srcdir:=.}/ptg-dotload/ptg.dot
+$ $SG_TEST_EXENV ${bindir:=.}/ptg-dotload/sd_ptg-dotload  ${srcdir:=.}/../platforms/cluster.xml ${srcdir:=.}/ptg-dotload/ptg.dot
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [test/INFO] ------------------- Display all tasks of the loaded DAG ---------------------------
 > [0.000000] [sd_task/INFO] Displaying task root
@@ -93,5 +93,5 @@ $ $SG_TEST_EXENV ${bindir:=.}/ptg-dotload/sd_ptg-dotload  ${srcdir:=.}/../platfo
 > [0.000000] [sd_task/INFO]     c3->end
 > [0.000000] [test/INFO] ------------------- Schedule tasks ---------------------------
 > [0.000000] [test/INFO] ------------------- Run the schedule ---------------------------
-> [3.126200] [test/INFO] Makespan: 3.126200
+> [2.931978] [test/INFO] Makespan: 2.931978
 

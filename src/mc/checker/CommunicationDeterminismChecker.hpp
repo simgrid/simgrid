@@ -1,5 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2016-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,7 +10,7 @@
 
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/checker/Checker.hpp"
-#include "src/mc/mc_comm_pattern.h"
+#include "src/mc/mc_comm_pattern.hpp"
 #include "src/mc/mc_forward.hpp"
 
 #ifndef SIMGRID_MC_COMMUNICATION_DETERMINISM_CHECKER_HPP
@@ -22,7 +21,7 @@ namespace mc {
 
 class XBT_PRIVATE CommunicationDeterminismChecker : public Checker {
 public:
-  CommunicationDeterminismChecker(Session& session);
+  explicit CommunicationDeterminismChecker(Session& session);
   ~CommunicationDeterminismChecker();
   void run() override;
   RecordTrace getRecordTrace() override;

@@ -1,8 +1,8 @@
-/* -*- C -*- 
+/* -*- C -*-
 
    @PROLOGUE@
 
-   ----- 
+   -----
 
    Jeffrey Vetter vetter@llnl.gov
    Center for Applied Scientific Computing, LLNL

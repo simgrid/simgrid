@@ -153,17 +153,9 @@ public:
   Actor(Actor const&) = delete;
   Actor& operator=(Actor const&) = delete;
 
-  // ***** Reference count (delegated to pimpl_) *****
-  friend void intrusive_ptr_add_ref(Actor* actor)
-  {
-    xbt_assert(actor != nullptr);
-    SIMIX_process_ref(actor->pimpl_);
-  }
-  friend void intrusive_ptr_release(Actor* actor)
-  {
-    xbt_assert(actor != nullptr);
-    SIMIX_process_unref(actor->pimpl_);
-  }
+  // ***** Reference count *****
+  friend void intrusive_ptr_add_ref(Actor * actor);
+  friend void intrusive_ptr_release(Actor * actor);
 
   // ***** Actor creation *****
   /** Retrieve a reference to myself */
@@ -174,6 +166,12 @@ public:
    *  If the actor is restarted, the actor has a fresh copy of the function.
    */
   static ActorPtr createActor(const char* name, s4u::Host* host, std::function<void()> code);
+
+  static ActorPtr createActor(const char* name, s4u::Host* host, std::function<void(std::vector<std::string>*)> code,
+                              std::vector<std::string>* args)
+  {
+    return createActor(name, host, [code](std::vector<std::string>* args) { code(args); }, args);
+  }
 
   /** Create an actor using code
    *
@@ -196,21 +194,23 @@ public:
   static ActorPtr createActor(const char* name, s4u::Host* host, const char* function, std::vector<std::string> args);
 
   // ***** Methods *****
+  /** This actor will be automatically terminated when the last non-daemon process finishes **/
+  void daemonize();
 
   /** Retrieves the name of that actor as a C string */
-  const char* cname();
+  const char* getCname();
   /** Retrieves the name of that actor as a C++ string */
-  simgrid::xbt::string name();
+  simgrid::xbt::string getName();
   /** Retrieves the host on which that actor is running */
-  s4u::Host* host();
+  s4u::Host* getHost();
   /** Retrieves the PID of that actor
    *
    * actor_id_t is an alias for unsigned long */
-  aid_t pid();
+  aid_t getPid();
   /** Retrieves the PPID of that actor
    *
    * actor_id_t is an alias for unsigned long */
-  aid_t ppid();
+  aid_t getPpid();
 
   /** Suspend an actor by suspending the task on which it was waiting for the completion. */
   void suspend();
@@ -232,7 +232,7 @@ public:
   /** Sets the time at which that actor should be killed */
   void setKillTime(double time);
   /** Retrieves the time at which that actor will be killed (or -1 if not set) */
-  double killTime();
+  double getKillTime();
 
   void migrate(Host * new_host);
 
@@ -256,7 +256,7 @@ public:
    * This blocks the calling actor until the actor on which we call join() is terminated
    */
   void join();
-  
+
   // Static methods on all actors:
 
   /** Ask kindly to all actors to die. Only the issuer will survive. */
@@ -267,7 +267,7 @@ public:
   simix::ActorImpl* getImpl();
 
   /** Retrieve the property value (or nullptr if not set) */
-  const char* property(const char* key);
+  const char* getProperty(const char* key);
   void setProperty(const char* key, const char* value);
 };
 
@@ -275,15 +275,16 @@ public:
  *  @brief Static methods working on the current actor (see @ref s4u::Actor) */
 namespace this_actor {
 
-  /** Block the actor sleeping for that amount of seconds (may throws hostFailure) */
-  XBT_PUBLIC(void) sleep_for(double duration);
-  XBT_PUBLIC(void) sleep_until(double timeout);
+XBT_PUBLIC(bool) isMaestro();
 
-  template<class Rep, class Period>
-  inline void sleep_for(std::chrono::duration<Rep, Period> duration)
-  {
-    auto seconds = std::chrono::duration_cast<SimulationClockDuration>(duration);
-    this_actor::sleep_for(seconds.count());
+/** Block the actor sleeping for that amount of seconds (may throws hostFailure) */
+XBT_PUBLIC(void) sleep_for(double duration);
+XBT_PUBLIC(void) sleep_until(double timeout);
+
+template <class Rep, class Period> inline void sleep_for(std::chrono::duration<Rep, Period> duration)
+{
+  auto seconds = std::chrono::duration_cast<SimulationClockDuration>(duration);
+  this_actor::sleep_for(seconds.count());
   }
   template<class Duration>
   inline void sleep_until(const SimulationTimePoint<Duration>& timeout_time)
@@ -292,43 +293,53 @@ namespace this_actor {
     this_actor::sleep_until(timeout_native.time_since_epoch().count());
   }
 
-  XBT_ATTRIB_DEPRECATED("Use sleep_for()")
-  inline void sleep(double duration)
+  XBT_ATTRIB_DEPRECATED_v320("Use sleep_for(): v3.20 will drop sleep() completely.") inline void sleep(double duration)
   {
     return sleep_for(duration);
   }
 
   /** Block the actor, computing the given amount of flops */
-  XBT_PUBLIC(e_smx_state_t) execute(double flop);
+  XBT_PUBLIC(void) execute(double flop);
 
   /** Block the actor until it gets a message from the given mailbox.
    *
    * See \ref Comm for the full communication API (including non blocking communications).
    */
-  XBT_PUBLIC(void*) recv(MailboxPtr chan);
-  XBT_PUBLIC(CommPtr) irecv(MailboxPtr chan, void** data);
+  XBT_PUBLIC(void*)
+  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get(): v3.20 will remove Actor::recv() completely.") recv(MailboxPtr chan);
+  XBT_PUBLIC(void*)
+  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get(): v3.20 will remove Actor::recv() completely.")
+      recv(MailboxPtr chan, double timeout);
+  XBT_PUBLIC(CommPtr)
+  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::recv_async(): v3.20 will remove Actor::irecv() completely.")
+      irecv(MailboxPtr chan, void** data);
 
   /** Block the actor until it delivers a message of the given simulated size to the given mailbox
    *
    * See \ref Comm for the full communication API (including non blocking communications).
   */
-  XBT_PUBLIC(void) send(MailboxPtr chan, void* payload, double simulatedSize);
-  XBT_PUBLIC(void) send(MailboxPtr chan, void* payload, double simulatedSize, double timeout);
+  XBT_PUBLIC(void)
+  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put(): v3.20 will remove Actor::send() completely.")
+      send(MailboxPtr chan, void* payload, double simulatedSize); // 3.17
+  XBT_PUBLIC(void)
+  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put(): v3.20 will remove Actor::send() completely.")
+      send(MailboxPtr chan, void* payload, double simulatedSize, double timeout); // 3.17
 
-  XBT_PUBLIC(CommPtr) isend(MailboxPtr chan, void* payload, double simulatedSize);
-  XBT_PUBLIC(void) dsend(MailboxPtr chan, void* payload, double simulatedSize);
+  XBT_PUBLIC(CommPtr)
+  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_async(): v3.20 will remove Actor::isend() completely.")
+      isend(MailboxPtr chan, void* payload, double simulatedSize);
 
   /** @brief Returns the actor ID of the current actor (same as pid). */
-  XBT_PUBLIC(aid_t) pid();
+  XBT_PUBLIC(aid_t) getPid();
 
   /** @brief Returns the ancestor's actor ID of the current actor (same as ppid). */
-  XBT_PUBLIC(aid_t) ppid();
+  XBT_PUBLIC(aid_t) getPpid();
 
   /** @brief Returns the name of the current actor. */
-  XBT_PUBLIC(std::string) name();
+  XBT_PUBLIC(std::string) getName();
 
   /** @brief Returns the name of the host on which the process is running. */
-  XBT_PUBLIC(Host*) host();
+  XBT_PUBLIC(Host*) getHost();
 
   /** @brief Suspend the actor. */
   XBT_PUBLIC(void) suspend();
@@ -336,7 +347,7 @@ namespace this_actor {
   /** @brief Resume the actor. */
   XBT_PUBLIC(void) resume();
 
-  XBT_PUBLIC(int) isSuspended();
+  XBT_PUBLIC(bool) isSuspended();
 
   /** @brief kill the actor. */
   XBT_PUBLIC(void) kill();

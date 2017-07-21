@@ -64,6 +64,6 @@ if [ -f Testing/TAG ] ; then
    find $WORKSPACE -iname "*.memcheck" -exec mv {} $WORKSPACE/memcheck \;
    #remove all "empty" files
    grep -r -L "error>" $WORKSPACE/memcheck | xargs rm -f
-   mv Testing/`head -n 1 < Testing/TAG`/Test.xml  $WORKSPACE/DynamicAnalysis.xml
+   mv Testing/$(head -n 1 < Testing/TAG)/Test.xml  $WORKSPACE/DynamicAnalysis.xml
 fi
 

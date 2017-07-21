@@ -24,7 +24,7 @@ enum class PatternCommunicationType {
 
 struct PatternCommunication {
   int num = 0;
-  smx_activity_t comm_addr;
+  simgrid::kernel::activity::CommImpl* comm_addr;
   PatternCommunicationType type = PatternCommunicationType::send;
   unsigned long src_proc = 0;
   unsigned long dst_proc = 0;
@@ -137,9 +137,7 @@ struct XBT_PRIVATE State {
   State(unsigned long state_number);
 
   std::size_t interleaveSize() const;
-  void interleave(smx_actor_t actor) {
-    this->actorStates[actor->pid].consider();
-  }
+  void addInterleavingSet(smx_actor_t actor) { this->actorStates[actor->pid].consider(); }
   Transition getTransition() const;
 };
 

@@ -12,7 +12,6 @@
 #include "ptask_L07.hpp"
 
 #include "cpu_interface.hpp"
-#include "xbt/lib.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);
@@ -41,7 +40,7 @@ HostL07Model::HostL07Model() : HostModel() {
   surf_cpu_model_pm = new CpuL07Model(this,maxminSystem_);
 }
 
-HostL07Model::~HostL07Model() 
+HostL07Model::~HostL07Model()
 {
   lmm_system_free(maxminSystem_);
   maxminSystem_ = nullptr;
@@ -316,7 +315,7 @@ void CpuL07::onSpeedChange() {
     Action* action = static_cast<Action*>(lmm_variable_id(var));
 
     lmm_update_variable_bound(model()->getMaxminSystem(), action->getVariable(), speed_.scale * speed_.peak);
-    }
+  }
 
   Cpu::onSpeedChange();
 }

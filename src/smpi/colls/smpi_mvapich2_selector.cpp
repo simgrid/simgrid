@@ -14,7 +14,7 @@ namespace simgrid{
 namespace smpi{
 
 
-int Coll_alltoall_mvapich2::alltoall( void *sendbuf, int sendcount, 
+int Coll_alltoall_mvapich2::alltoall( void *sendbuf, int sendcount,
     MPI_Datatype sendtype,
     void* recvbuf, int recvcount,
     MPI_Datatype recvtype,
@@ -106,7 +106,7 @@ int Coll_allgather_mvapich2::allgather(void *sendbuf, int sendcount, MPI_Datatyp
 
   if(mv2_allgather_table_ppn_conf==NULL)
     init_mv2_allgather_tables_stampede();
-    
+
   if(comm->get_leaders_comm()==MPI_COMM_NULL){
     comm->init_smp();
   }
@@ -134,7 +134,7 @@ int Coll_allgather_mvapich2::allgather(void *sendbuf, int sendcount, MPI_Datatyp
   if (partial_sub_ok != 1) {
     conf_index = 0;
   }
-  
+
   /* Search for the corresponding system size inside the tuning table */
   while ((range < (mv2_size_allgather_tuning_table[conf_index] - 1)) &&
       (comm_size >
@@ -239,17 +239,17 @@ int Coll_gather_mvapich2::gather(void *sendbuf,
       -1)) {
       range_intra_threshold++;
   }
-  
+
     if (comm->is_blocked() ) {
-        // Set intra-node function pt for gather_two_level 
-        MV2_Gather_intra_node_function = 
+        // Set intra-node function pt for gather_two_level
+        MV2_Gather_intra_node_function =
                               mv2_gather_thresholds_table[range].intra_node[range_intra_threshold].
                               MV2_pt_Gather_function;
-        //Set inter-leader pt 
+        //Set inter-leader pt
         MV2_Gather_inter_leader_function =
                               mv2_gather_thresholds_table[range].inter_leader[range_threshold].
                               MV2_pt_Gather_function;
-        // We call Gather function 
+        // We call Gather function
         mpi_errno =
             MV2_Gather_inter_leader_function(sendbuf, sendcnt, sendtype, recvbuf, recvcnt,
                                              recvtype, root, comm);
@@ -465,7 +465,7 @@ int Coll_alltoallv_mvapich2::alltoallv(void *sbuf, int *scounts, int *sdisps,
 
 
 int Coll_barrier_mvapich2::barrier(MPI_Comm  comm)
-{   
+{
   return Coll_barrier_mvapich2_pair::barrier(comm);
 }
 
@@ -480,7 +480,7 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
     int mpi_errno = MPI_SUCCESS;
     int comm_size/*, rank*/;
     int two_level_bcast = 1;
-    long nbytes = 0; 
+    long nbytes = 0;
     int range = 0;
     int range_threshold = 0;
     int range_threshold_intra = 0;
@@ -564,7 +564,7 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
 
     if (mv2_bcast_thresholds_table[range].inter_leader[range_threshold].
         zcpy_pipelined_knomial_factor != -1) {
-        zcpy_knomial_factor = 
+        zcpy_knomial_factor =
             mv2_bcast_thresholds_table[range].inter_leader[range_threshold].
             zcpy_pipelined_knomial_factor;
     }
@@ -581,7 +581,7 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
 
     /* Set value of pipeline segment size */
     bcast_segment_size = mv2_bcast_thresholds_table[range].bcast_segment_size;
-    
+
     /* Set value of inter node knomial factor */
     mv2_inter_node_knomial_factor = mv2_bcast_thresholds_table[range].inter_node_knomial_factor;
 
@@ -591,7 +591,7 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
     /* Check if we will use a two level algorithm or not */
     two_level_bcast =
 #if defined(_MCST_SUPPORT_)
-        mv2_bcast_thresholds_table[range].is_two_level_bcast[range_threshold] 
+        mv2_bcast_thresholds_table[range].is_two_level_bcast[range_threshold]
         || comm->ch.is_mcast_ok;
 #else
         mv2_bcast_thresholds_table[range].is_two_level_bcast[range_threshold];
@@ -613,13 +613,13 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
               (&MPIR_Pipelined_Bcast_Zcpy_MV2 == MV2_Bcast_function)) {
           if (not is_contig || not is_homogeneous) {
             mpi_errno = MPIR_Pipelined_Bcast_Zcpy_MV2(tmp_buf, nbytes, MPI_BYTE, root, comm);
-            } else { 
+            } else {
                 mpi_errno = MPIR_Pipelined_Bcast_Zcpy_MV2(buffer, count, datatype,
                                                  root, comm);
-            } 
-        } else 
+            }
+        } else
 #endif /* defined(CHANNEL_MRAIL_GEN2) */
-        { 
+        {
             shmem_comm = comm->get_intra_comm();
             if (not is_contig || not is_homogeneous) {
               mpi_errno = MPIR_Bcast_tune_inter_node_helper_MV2(tmp_buf, nbytes, MPI_BYTE, root, comm);
@@ -752,7 +752,7 @@ int Coll_reduce_mvapich2::reduce( void *sendbuf,
          if(comm->get_leaders_comm()==MPI_COMM_NULL){
            comm->init_smp();
          }
-         mpi_errno = MPIR_Reduce_two_level_helper_MV2(sendbuf, recvbuf, count, 
+         mpi_errno = MPIR_Reduce_two_level_helper_MV2(sendbuf, recvbuf, count,
                                            datatype, op, root, comm);
         } else {
       mpi_errno = MPIR_Reduce_binomial_MV2(sendbuf, recvbuf, count,
@@ -761,7 +761,7 @@ int Coll_reduce_mvapich2::reduce( void *sendbuf,
     } else if(MV2_Reduce_function == &MPIR_Reduce_inter_knomial_wrapper_MV2 ){
         if(is_commutative ==1)
           {
-            mpi_errno = MV2_Reduce_function(sendbuf, recvbuf, count, 
+            mpi_errno = MV2_Reduce_function(sendbuf, recvbuf, count,
                 datatype, op, root, comm);
           } else {
               mpi_errno = MPIR_Reduce_binomial_MV2(sendbuf, recvbuf, count,
@@ -770,14 +770,14 @@ int Coll_reduce_mvapich2::reduce( void *sendbuf,
     } else if(MV2_Reduce_function == &MPIR_Reduce_redscat_gather_MV2){
         if (/*(HANDLE_GET_KIND(op) == HANDLE_KIND_BUILTIN) &&*/ (count >= pof2))
           {
-            mpi_errno = MV2_Reduce_function(sendbuf, recvbuf, count, 
+            mpi_errno = MV2_Reduce_function(sendbuf, recvbuf, count,
                 datatype, op, root, comm);
           } else {
               mpi_errno = MPIR_Reduce_binomial_MV2(sendbuf, recvbuf, count,
                   datatype, op, root, comm);
           }
     } else {
-        mpi_errno = MV2_Reduce_function(sendbuf, recvbuf, count, 
+        mpi_errno = MV2_Reduce_function(sendbuf, recvbuf, count,
             datatype, op, root, comm);
     }
 
@@ -887,7 +887,7 @@ int Coll_scatter_mvapich2::scatter(void *sendbuf,
   if(comm->get_leaders_comm()==MPI_COMM_NULL){
     comm->init_smp();
   }
-  
+
   comm_size = comm->size();
 
   rank = comm->rank();
@@ -899,15 +899,15 @@ int Coll_scatter_mvapich2::scatter(void *sendbuf,
       recvtype_size=recvtype->size();
       nbytes = recvcnt * recvtype_size;
   }
-  
-    // check if safe to use partial subscription mode 
+
+    // check if safe to use partial subscription mode
     if (comm->is_uniform()) {
 
         shmem_comm = comm->get_intra_comm();
         local_size = shmem_comm->size();
         i = 0;
         if (mv2_scatter_table_ppn_conf[0] == -1) {
-            // Indicating user defined tuning 
+            // Indicating user defined tuning
             conf_index = 0;
         }else{
             do {
@@ -920,7 +920,7 @@ int Coll_scatter_mvapich2::scatter(void *sendbuf,
             } while(i < mv2_scatter_num_ppn_conf);
         }
     }
-   
+
   if (partial_sub_ok != 1) {
       conf_index = 0;
   }
@@ -968,7 +968,7 @@ int Coll_scatter_mvapich2::scatter(void *sendbuf,
               /* Fallback! */
               MV2_Scatter_function = &MPIR_Scatter_MV2_Binomial;
           }
-        } 
+        }
   }
 
   if( (MV2_Scatter_function == &MPIR_Scatter_MV2_two_level_Direct) ||

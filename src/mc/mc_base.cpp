@@ -33,17 +33,16 @@ namespace mc {
 void wait_for_requests()
 {
 #if SIMGRID_HAVE_MC
-  xbt_assert(mc_model_checker == nullptr);
+  xbt_assert(mc_model_checker == nullptr, "This must be called from the client");
 #endif
 
   smx_actor_t process;
-  smx_simcall_t req;
   unsigned int iter;
 
   while (not xbt_dynar_is_empty(simix_global->process_to_run)) {
     SIMIX_process_runall();
     xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
-      req = &process->simcall;
+      smx_simcall_t req = &process->simcall;
       if (req->call != SIMCALL_NONE && not simgrid::mc::request_is_visible(req))
         SIMIX_simcall_handle(req, 0);
     }
@@ -63,115 +62,66 @@ void wait_for_requests()
  * Only WAIT operations (on comm, on mutex, etc) can ever return false because they could lock the MC exploration.
  * Wait operations are OK and return true in only two situations:
  *  - if the wait will succeed immediately (if both peer of the comm are there already or if the mutex is available)
- *  - if a timeout is provided, because we can fire the timeout if the transition is not ready without blocking in this transition for ever.
+ *  - if a timeout is provided, because we can fire the timeout if the transition is not ready without blocking in this
+ * transition for ever.
  *
  */
 // Called from both MCer and MCed:
-bool request_is_enabled(smx_simcall_t req)
+bool actor_is_enabled(smx_actor_t actor)
 {
-  // TODO, add support for the subtypes?
+#if SIMGRID_HAVE_MC
+  // If in the MCer, ask the client app since it has all the data
+  if (mc_model_checker != nullptr) {
+    return mc_model_checker->process().actor_is_enabled(actor->pid);
+  }
+#endif
+
+  // Now, we are in the client app, no need for remote memory reading.
+  smx_simcall_t req = &actor->simcall;
 
   switch (req->call) {
-  case SIMCALL_NONE:
-    return false;
+    case SIMCALL_NONE:
+      return false;
 
-  case SIMCALL_COMM_WAIT:
-  {
-    /* FIXME: check also that src and dst processes are not suspended */
-    simgrid::kernel::activity::CommImpl* act =
-        static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__get__comm(req));
+    case SIMCALL_COMM_WAIT: {
+      /* FIXME: check also that src and dst processes are not suspended */
+      simgrid::kernel::activity::CommImpl* act =
+          static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__getraw__comm(req));
 
-#if SIMGRID_HAVE_MC
-    // Fetch from MCed memory:
-    // HACK, type puning
-    if (mc_model_checker != nullptr) {
-      simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
-      mc_model_checker->process().read(temp_comm, remote(act));
-      act = static_cast<simgrid::kernel::activity::CommImpl*>(temp_comm.getBuffer());
-    }
-#endif
-
-    if (simcall_comm_wait__get__timeout(req) >= 0) {
-      /* If it has a timeout it will be always be enabled, because even if the
-       * communication is not ready, it can timeout and won't block. */
-      if (_sg_mc_timeout == 1)
-        return true;
-    }
-    /* On the other hand if it hasn't a timeout, check if the comm is ready.*/
-    else if (act->detached && act->src_proc == nullptr
-          && act->type == SIMIX_COMM_READY)
+      if (act->src_timeout || act->dst_timeout) {
+        /* If it has a timeout it will be always be enabled (regardless of who declared the timeout),
+         * because even if the communication is not ready, it can timeout and won't block. */
+        if (_sg_mc_timeout == 1)
+          return true;
+      }
+      /* On the other hand if it hasn't a timeout, check if the comm is ready.*/
+      else if (act->detached && act->src_proc == nullptr && act->type == SIMIX_COMM_READY)
         return (act->dst_proc != nullptr);
-    return (act->src_proc && act->dst_proc);
-  }
+      return (act->src_proc && act->dst_proc);
+    }
 
-  case SIMCALL_COMM_WAITANY: {
-    xbt_dynar_t comms;
-    simgrid::kernel::activity::CommImpl* act =
-        static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__get__comm(req));
+    case SIMCALL_COMM_WAITANY: {
+      xbt_dynar_t comms;
+      simgrid::kernel::activity::CommImpl* act =
+          static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__getraw__comm(req));
 
-#if SIMGRID_HAVE_MC
-    s_xbt_dynar_t comms_buffer;
-    size_t buffer_size = 0;
-    if (mc_model_checker != nullptr) {
-      // Read dynar:
-      mc_model_checker->process().read(
-        &comms_buffer, remote(simcall_comm_waitany__get__comms(req)));
-      assert(comms_buffer.elmsize == sizeof(act));
-      buffer_size = comms_buffer.elmsize * comms_buffer.used;
-      comms = &comms_buffer;
-    } else
       comms = simcall_comm_waitany__get__comms(req);
 
-    // Read all the dynar buffer:
-    char buffer[buffer_size];
-    if (mc_model_checker != nullptr)
-      mc_model_checker->process().read_bytes(buffer, sizeof(buffer),
-        remote(comms->data));
-#else
-    comms = simcall_comm_waitany__get__comms(req);
-#endif
-
-    for (unsigned int index = 0; index < comms->used; ++index) {
-#if SIMGRID_HAVE_MC
-      // Fetch act from MCed memory:
-      // HACK, type puning
-      simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
-      if (mc_model_checker != nullptr) {
-        memcpy(&act, buffer + comms->elmsize * index, sizeof(act));
-        mc_model_checker->process().read(temp_comm, remote(act));
-        act = static_cast<simgrid::kernel::activity::CommImpl*>(temp_comm.getBuffer());
-      }
-      else
-#endif
+      for (unsigned int index = 0; index < comms->used; ++index) {
         act = xbt_dynar_get_as(comms, index, simgrid::kernel::activity::CommImpl*);
-      if (act->src_proc && act->dst_proc)
+        if (act->src_proc && act->dst_proc)
+          return true;
+      }
+      return false;
+    }
+
+    case SIMCALL_MUTEX_LOCK: {
+      smx_mutex_t mutex = simcall_mutex_lock__get__mutex(req);
+
+      if (mutex->owner == nullptr)
         return true;
-    }
-    return false;
-  }
-
-  case SIMCALL_MUTEX_LOCK: {
-    smx_mutex_t mutex = simcall_mutex_lock__get__mutex(req);
-#if SIMGRID_HAVE_MC
-    simgrid::mc::Remote<simgrid::simix::MutexImpl> temp_mutex;
-    if (mc_model_checker != nullptr) {
-      mc_model_checker->process().read(temp_mutex.getBuffer(), remote(mutex));
-      mutex = temp_mutex.getBuffer();
-    }
-#endif
-
-    if(mutex->owner == nullptr)
-      return true;
-#if SIMGRID_HAVE_MC
-    else if (mc_model_checker != nullptr) {
-      simgrid::mc::Process& modelchecked = mc_model_checker->process();
-      // TODO, *(mutex->owner) :/
-      return modelchecked.resolveActor(simgrid::mc::remote(mutex->owner))->pid ==
-             modelchecked.resolveActor(simgrid::mc::remote(req->issuer))->pid;
-    }
-#endif
-    else
-      return mutex->owner->pid == req->issuer->pid;
+      else
+        return mutex->owner->pid == req->issuer->pid;
     }
 
     case SIMCALL_SEM_ACQUIRE: {
@@ -196,8 +146,15 @@ bool request_is_enabled(smx_simcall_t req)
   }
 }
 
+/* This is the list of requests that are visible from the checker algorithm.
+ * Any other requests are handled right away on the application side.
+ */
 bool request_is_visible(smx_simcall_t req)
 {
+#if SIMGRID_HAVE_MC
+  xbt_assert(mc_model_checker == nullptr, "This should be called from the client side");
+#endif
+
   return req->call == SIMCALL_COMM_ISEND
       || req->call == SIMCALL_COMM_IRECV
       || req->call == SIMCALL_COMM_WAIT

@@ -14,12 +14,12 @@
 
 #include "src/mc/mc_private.h"
 
-#include "src/mc/Process.hpp"
-#include "src/mc/Type.hpp"
 #include "src/mc/ObjectInformation.hpp"
+#include "src/mc/Type.hpp"
 #include "src/mc/Variable.hpp"
+#include "src/mc/remote/RemoteClient.hpp"
 
-static simgrid::mc::Process* process;
+static simgrid::mc::RemoteClient* process;
 
 static
 uintptr_t eval_binary_operation(
@@ -149,7 +149,7 @@ void test_deref(simgrid::dwarf::ExpressionContext const& state) {
 }
 
 int main(int argc, char** argv) {
-  process = new simgrid::mc::Process(getpid(), -1);
+  process = new simgrid::mc::RemoteClient(getpid(), -1);
   process->init();
 
   simgrid::dwarf::ExpressionContext state;

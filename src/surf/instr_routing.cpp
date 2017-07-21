@@ -8,6 +8,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/routing/NetZoneImpl.hpp"
+#include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.h"
@@ -131,11 +132,11 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
     XBT_DEBUG("Graph extraction disabled by user.");
     return;
   }
-  XBT_DEBUG("Graph extraction for NetZone = %s", netzone->name());
-  if (not netzone->children()->empty()) {
+  XBT_DEBUG("Graph extraction for NetZone = %s", netzone->getCname());
+  if (not netzone->getChildren()->empty()) {
     //bottom-up recursion
-    for (auto nz_son : *netzone->children()) {
-      container_t child_container = static_cast<container_t>(xbt_dict_get(container->children, nz_son->name()));
+    for (auto nz_son : *netzone->getChildren()) {
+      container_t child_container = static_cast<container_t>(xbt_dict_get(container->children, nz_son->getCname()));
       recursiveGraphExtraction(nz_son, child_container, filter);
     }
   }
@@ -162,13 +163,12 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
 /*
  * Callbacks
  */
-void sg_instr_AS_begin(sg_platf_AS_cbarg_t AS)
+static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
 {
-  const char*id = AS->id;
+  const char* id = netzone.getCname();
 
   if (PJ_container_get_root() == nullptr){
     PJ_container_alloc ();
-    PJ_type_alloc();
     container_t root = PJ_container_new (id, INSTR_AS, nullptr);
     PJ_container_set_root (root);
 
@@ -197,7 +197,7 @@ void sg_instr_AS_begin(sg_platf_AS_cbarg_t AS)
   }
 }
 
-void sg_instr_AS_end()
+static void sg_instr_AS_end(simgrid::s4u::NetZone& /*netzone*/)
 {
   if (TRACE_needs_platform()){
     currentContainer.pop_back();
@@ -235,10 +235,10 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
   }
 }
 
-void sg_instr_new_host(simgrid::s4u::Host& host)
+static void sg_instr_new_host(simgrid::s4u::Host& host)
 {
   container_t father = currentContainer.back();
-  container_t container = PJ_container_new(host.cname(), INSTR_HOST, father);
+  container_t container = PJ_container_new(host.getCname(), INSTR_HOST, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
     type_t speed = PJ_type_get_or_null ("power", container->type);
@@ -246,7 +246,7 @@ void sg_instr_new_host(simgrid::s4u::Host& host)
       speed = PJ_type_variable_new ("power", nullptr, container->type);
     }
 
-    double current_speed_state = host.speed();
+    double current_speed_state = host.getSpeed();
     new SetVariableEvent (0, container, speed, current_speed_state);
   }
   if (TRACE_uncategorized()){
@@ -298,11 +298,13 @@ void sg_instr_new_host(simgrid::s4u::Host& host)
 
 }
 
-void sg_instr_new_router(const char* name)
+static void sg_instr_new_router(simgrid::kernel::routing::NetPoint * netpoint)
 {
+  if (not netpoint->isRouter())
+    return;
   if (TRACE_is_enabled() && TRACE_needs_platform()) {
     container_t father = currentContainer.back();
-    PJ_container_new(name, INSTR_ROUTER, father);
+    PJ_container_new(netpoint->cname(), INSTR_ROUTER, father);
   }
 }
 
@@ -311,7 +313,7 @@ static void instr_routing_parse_end_platform ()
   currentContainer.clear();
   xbt_dict_t filter = xbt_dict_new_homogeneous(xbt_free_f);
   XBT_DEBUG ("Starting graph extraction.");
-  recursiveGraphExtraction(simgrid::s4u::Engine::instance()->netRoot(), PJ_container_get_root(), filter);
+  recursiveGraphExtraction(simgrid::s4u::Engine::getInstance()->getNetRoot(), PJ_container_get_root(), filter);
   XBT_DEBUG ("Graph extraction finished.");
   xbt_dict_free(&filter);
   platform_created = 1;
@@ -322,12 +324,17 @@ void instr_routing_define_callbacks ()
 {
   //always need the call backs to ASes (we need only the root AS),
   //to create the rootContainer and the rootType properly
-  if (not TRACE_is_enabled() || not TRACE_needs_platform())
+  if (not TRACE_is_enabled())
     return;
-  simgrid::s4u::Link::onCreation.connect(instr_routing_parse_start_link);
-  simgrid::s4u::onPlatformCreated.connect(instr_routing_parse_end_platform);
+  if (TRACE_needs_platform()) {
+    simgrid::s4u::Link::onCreation.connect(instr_routing_parse_start_link);
+    simgrid::s4u::onPlatformCreated.connect(instr_routing_parse_end_platform);
+    simgrid::s4u::Host::onCreation.connect(sg_instr_new_host);
+  }
+  simgrid::s4u::NetZone::onCreation.connect(sg_instr_AS_begin);
+  simgrid::s4u::NetZone::onSeal.connect(sg_instr_AS_end);
+  simgrid::kernel::routing::NetPoint::onCreation.connect(&sg_instr_new_router);
 }
-
 /*
  * user categories support
  */
@@ -425,10 +432,11 @@ int instr_platform_traced ()
 static void recursiveXBTGraphExtraction(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges, sg_netzone_t netzone,
                                         container_t container)
 {
-  if (not netzone->children()->empty()) {
+  if (not netzone->getChildren()->empty()) {
     //bottom-up recursion
-    for (auto netzone_child : *netzone->children()) {
-      container_t child_container = static_cast<container_t>(xbt_dict_get(container->children, netzone_child->name()));
+    for (auto netzone_child : *netzone->getChildren()) {
+      container_t child_container =
+          static_cast<container_t>(xbt_dict_get(container->children, netzone_child->getCname()));
       recursiveXBTGraphExtraction(graph, nodes, edges, netzone_child, child_container);
     }
   }
@@ -441,7 +449,8 @@ xbt_graph_t instr_routing_platform_graph ()
   xbt_graph_t ret = xbt_graph_new_graph (0, nullptr);
   xbt_dict_t nodes = xbt_dict_new_homogeneous(nullptr);
   xbt_dict_t edges = xbt_dict_new_homogeneous(nullptr);
-  recursiveXBTGraphExtraction(ret, nodes, edges, simgrid::s4u::Engine::instance()->netRoot(), PJ_container_get_root());
+  recursiveXBTGraphExtraction(ret, nodes, edges, simgrid::s4u::Engine::getInstance()->getNetRoot(),
+                              PJ_container_get_root());
   xbt_dict_free (&nodes);
   xbt_dict_free (&edges);
   return ret;

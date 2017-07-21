@@ -54,7 +54,7 @@ Host::~Host()
 
   delete pimpl_;
   if (pimpl_netpoint != nullptr) // not removed yet by a children class
-    simgrid::s4u::Engine::instance()->netpointUnregister(pimpl_netpoint);
+    simgrid::s4u::Engine::getInstance()->netpointUnregister(pimpl_netpoint);
   delete pimpl_cpu;
   delete mounts;
 }
@@ -123,7 +123,8 @@ bool Host::isOn() {
   return this->pimpl_cpu->isOn();
 }
 
-int Host::pstatesCount() const {
+int Host::getPstatesCount() const
+{
   return this->pimpl_cpu->getNbPStates();
 }
 
@@ -160,55 +161,40 @@ void Host::routeTo(Host* dest, std::vector<Link*>* links, double* latency)
   for (surf::LinkImpl* l : linkImpls)
     links->push_back(&l->piface_);
 }
+
 /** @brief Just like Host::routeTo, but filling an array of link implementations */
 void Host::routeTo(Host* dest, std::vector<surf::LinkImpl*>* links, double* latency)
 {
   simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(pimpl_netpoint, dest->pimpl_netpoint, links, latency);
   if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {
-    XBT_CDEBUG(surf_route, "Route from '%s' to '%s' (latency: %f):", cname(), dest->cname(),
+    XBT_CDEBUG(surf_route, "Route from '%s' to '%s' (latency: %f):", getCname(), dest->getCname(),
                (latency == nullptr ? -1 : *latency));
     for (auto link : *links)
       XBT_CDEBUG(surf_route, "Link %s", link->cname());
   }
 }
 
-boost::unordered_map<std::string, Storage*> const& Host::mountedStorages() {
-  if (mounts == nullptr) {
-    mounts = new boost::unordered_map<std::string, Storage*> ();
-
-    xbt_dict_t dict = this->mountedStoragesAsDict();
-
-    xbt_dict_cursor_t cursor;
-    char *mountname;
-    char *storagename;
-    xbt_dict_foreach(dict, cursor, mountname, storagename) {
-      mounts->insert({mountname, &Storage::byName(storagename)});
-    }
-    xbt_dict_free(&dict);
-  }
-
-  return *mounts;
-}
-
 /** Get the properties assigned to a host */
-xbt_dict_t Host::properties() {
+xbt_dict_t Host::getProperties()
+{
   return simgrid::simix::kernelImmediate([this] {
     return this->pimpl_->getProperties();
   });
 }
 
 /** Retrieve the property value (or nullptr if not set) */
-const char*Host::property(const char*key) {
+const char* Host::getProperty(const char* key)
+{
   return this->pimpl_->getProperty(key);
 }
-void Host::setProperty(const char*key, const char *value){
-  simgrid::simix::kernelImmediate([this, key, value] {
-    this->pimpl_->setProperty(key, value);
-  });
+
+void Host::setProperty(const char* key, const char* value)
+{
+  simgrid::simix::kernelImmediate([this, key, value] { this->pimpl_->setProperty(key, value); });
 }
 
 /** Get the processes attached to the host */
-void Host::processes(std::vector<ActorPtr>* list)
+void Host::getProcesses(std::vector<ActorPtr>* list)
 {
   smx_actor_t actor = NULL;
   xbt_swag_foreach(actor, this->extension<simgrid::simix::Host>()->process_list) {
@@ -225,12 +211,14 @@ double Host::getPstateSpeed(int pstate_index)
 }
 
 /** @brief Get the peak processor speed (in flops/s), at the current pstate */
-double Host::speed() {
+double Host::getSpeed()
+{
   return pimpl_cpu->getSpeed(1.0);
 }
 
 /** @brief Returns the number of core of the processor. */
-int Host::coreCount() {
+int Host::getCoreCount()
+{
   return pimpl_cpu->coreCount();
 }
 
@@ -242,33 +230,32 @@ void Host::setPstate(int pstate_index)
   });
 }
 /** @brief Retrieve the pstate at which the host is currently running */
-int Host::pstate()
+int Host::getPstate()
 {
   return this->pimpl_cpu->getPState();
 }
 
 /**
  * \ingroup simix_storage_management
- * \brief Returns the list of storages mounted on an host.
- * \return a dict containing all storages mounted on the host
+ * \brief Returns the list of storages attached to an host.
+ * \return a vector containing all storages attached to the host
  */
-xbt_dict_t Host::mountedStoragesAsDict()
+void Host::getAttachedStorages(std::vector<const char*>* storages)
 {
-  return simgrid::simix::kernelImmediate([this] {
-    return this->pimpl_->getMountedStorageList();
+  simgrid::simix::kernelImmediate([this, storages] {
+     this->pimpl_->getAttachedStorageList(storages);
   });
 }
 
-/**
- * \ingroup simix_storage_management
- * \brief Returns the list of storages attached to an host.
- * \return a dict containing all storages attached to the host
- */
-void Host::attachedStorages(std::vector<const char*>* storages)
+std::unordered_map<std::string, Storage*> const& Host::getMountedStorages()
 {
-  simgrid::simix::kernelImmediate([this, storages] { 
-     this->pimpl_->getAttachedStorageList(storages); 
-  });
+  if (mounts == nullptr) {
+    mounts = new std::unordered_map<std::string, Storage*>();
+    for (auto m : this->pimpl_->storage_) {
+      mounts->insert({m.first, &m.second->piface_});
+    }
+  }
+  return *mounts;
 }
 
 } // namespace simgrid

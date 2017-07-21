@@ -11,11 +11,11 @@
  * Copyright (c) 2004-2005 The University of Tennessee and The University
  *                         of Tennessee Research Foundation.  All rights
  *                         reserved.
- * Copyright (c) 2004-2005 High Performance Computing Center Stuttgart, 
+ * Copyright (c) 2004-2005 High Performance Computing Center Stuttgart,
  *                         University of Stuttgart.  All rights reserved.
  * Copyright (c) 2004-2005 The Regents of the University of California.
  *                         All rights reserved.
- * 
+ *
  * Additional copyrights may follow
  */
 
@@ -76,7 +76,7 @@ ompi_coll_tuned_topo_build_tree( int fanout,
     int schild, sparent;
     int level; /* location of my rank in the tree structure of size */
     int delta; /* number of nodes on my level */
-    int slimit; /* total number of nodes on levels above me */ 
+    int slimit; /* total number of nodes on levels above me */
     int shiftedrank;
     int i;
     ompi_coll_tree_t* tree;
@@ -92,8 +92,8 @@ ompi_coll_tuned_topo_build_tree( int fanout,
         return NULL;
     }
 
-    /* 
-     * Get size and rank of the process in this communicator 
+    /*
+     * Get size and rank of the process in this communicator
      */
     size = comm->size();
     rank = comm->rank();
@@ -111,8 +111,8 @@ ompi_coll_tuned_topo_build_tree( int fanout,
      * Set root
      */
     tree->tree_root = root;
-  
-    /* 
+
+    /*
      * Initialize tree
      */
     tree->tree_fanout   = fanout;
@@ -128,11 +128,11 @@ ompi_coll_tuned_topo_build_tree( int fanout,
     if( size < 2 ) {
         return tree;
     }
-  
+
     /*
-     * Shift all ranks by root, so that the algorithm can be 
+     * Shift all ranks by root, so that the algorithm can be
      * designed as if root would be always 0
-     * shiftedrank should be used in calculating distances 
+     * shiftedrank should be used in calculating distances
      * and position in tree
      */
     shiftedrank = rank - root;
@@ -154,7 +154,7 @@ ompi_coll_tuned_topo_build_tree( int fanout,
             break;
         }
     }
-    
+
     /* find my parent */
     slimit = calculate_num_nodes_up_to_level( fanout, level );
     sparent = shiftedrank;
@@ -166,12 +166,12 @@ ompi_coll_tuned_topo_build_tree( int fanout,
         }
     }
     tree->tree_prev = (sparent+root)%size;
-  
+
     return tree;
 }
 
 /*
- * Constructs in-order binary tree which can be used for non-commutative reduce 
+ * Constructs in-order binary tree which can be used for non-commutative reduce
  * operations.
  * Root of this tree is always rank (size-1) and fanout is 2.
  * Here are some of the examples of this tree:
@@ -192,8 +192,8 @@ ompi_coll_tuned_topo_build_in_order_bintree( MPI_Comm comm )
     int parent, lchild, rchild;
     ompi_coll_tree_t* tree;
 
-    /* 
-     * Get size and rank of the process in this communicator 
+    /*
+     * Get size and rank of the process in this communicator
      */
     size = comm->size();
     rank = comm->rank();
@@ -207,7 +207,7 @@ ompi_coll_tuned_topo_build_in_order_bintree( MPI_Comm comm )
     tree->tree_root     = MPI_UNDEFINED;
     tree->tree_nextsize = MPI_UNDEFINED;
 
-    /* 
+    /*
      * Initialize tree
      */
     tree->tree_fanout   = 2;
@@ -218,10 +218,10 @@ ompi_coll_tuned_topo_build_in_order_bintree( MPI_Comm comm )
     tree->tree_next[0]  = -1;
     tree->tree_next[1]  = -1;
     XBT_DEBUG(
-                 "coll:tuned:topo_build_in_order_tree Building fo %d rt %d", 
+                 "coll:tuned:topo_build_in_order_tree Building fo %d rt %d",
                  tree->tree_fanout, tree->tree_root);
 
-    /* 
+    /*
      * Build the tree
      */
     myrank = rank;
@@ -237,18 +237,18 @@ ompi_coll_tuned_topo_build_in_order_bintree( MPI_Comm comm )
         rchild = -1;
         if (size - 1 > 0) {
             lchild = parent - 1;
-            if (lchild > 0) { 
+            if (lchild > 0) {
                 rchild = rightsize - 1;
             }
         }
-       
-        /* The following cases are possible: myrank can be 
+
+        /* The following cases are possible: myrank can be
            - a parent,
            - belong to the left subtree, or
            - belong to the right subtee
            Each of the cases need to be handled differently.
         */
-          
+
         if (myrank == parent) {
             /* I am the parent:
                - compute real ranks of my children, and exit the loop. */
@@ -259,7 +259,7 @@ ompi_coll_tuned_topo_build_in_order_bintree( MPI_Comm comm )
         if (myrank > rchild) {
             /* I belong to the left subtree:
                - If I am the left child, compute real rank of my parent
-               - Iterate down through tree: 
+               - Iterate down through tree:
                compute new size, shift ranks down, and update delta.
             */
             if (myrank == lchild) {
@@ -273,8 +273,8 @@ ompi_coll_tuned_topo_build_in_order_bintree( MPI_Comm comm )
         } else {
             /* I belong to the right subtree:
                - If I am the right child, compute real rank of my parent
-               - Iterate down through tree:  
-               compute new size and parent, 
+               - Iterate down through tree:
+               compute new size and parent,
                but the delta and rank do not need to change.
             */
             if (myrank == rchild) {
@@ -284,7 +284,7 @@ ompi_coll_tuned_topo_build_in_order_bintree( MPI_Comm comm )
             parent = rchild;
         }
     }
-    
+
     if (tree->tree_next[0] >= 0) { tree->tree_nextsize = 1; }
     if (tree->tree_next[1] >= 0) { tree->tree_nextsize += 1; }
 
@@ -308,7 +308,7 @@ int ompi_coll_tuned_topo_destroy_tree( ompi_coll_tree_t** tree )
 }
 
 /*
- * 
+ *
  * Here are some of the examples of this tree:
  * size == 2                   size = 4                 size = 8
  *      0                           0                        0
@@ -334,8 +334,8 @@ ompi_coll_tuned_topo_build_bmtree( MPI_Comm comm,
 
     XBT_DEBUG("coll:tuned:topo:build_bmtree rt %d", root);
 
-    /* 
-     * Get size and rank of the process in this communicator 
+    /*
+     * Get size and rank of the process in this communicator
      */
     size = comm->size();
     rank = comm->rank();
@@ -390,7 +390,7 @@ ompi_coll_tuned_topo_build_bmtree( MPI_Comm comm,
 /*
  * Constructs in-order binomial tree which can be used for gather/scatter
  * operations.
- * 
+ *
  * Here are some of the examples of this tree:
  * size == 2                   size = 4                 size = 8
  *      0                           0                        0
@@ -413,8 +413,8 @@ ompi_coll_tree_t* ompi_coll_tuned_topo_build_in_order_bmtree(MPI_Comm comm, int 
 
     XBT_DEBUG("coll:tuned:topo:build_in_order_bmtree rt %d", root);
 
-    /* 
-     * Get size and rank of the process in this communicator 
+    /*
+     * Get size and rank of the process in this communicator
      */
     size = comm->size();
     rank = comm->rank();
@@ -473,8 +473,8 @@ ompi_coll_tuned_topo_build_chain( int fanout,
 
     XBT_DEBUG("coll:tuned:topo:build_chain fo %d rt %d", fanout, root);
 
-    /* 
-     * Get size and rank of the process in this communicator 
+    /*
+     * Get size and rank of the process in this communicator
      */
     size = comm->size();
     rank = comm->rank();
@@ -489,7 +489,7 @@ ompi_coll_tuned_topo_build_chain( int fanout,
     }
 
     /*
-     * Allocate space for topology arrays if needed 
+     * Allocate space for topology arrays if needed
      */
     chain = (ompi_coll_tree_t*)malloc( sizeof(ompi_coll_tree_t) );
     if (not chain) {
@@ -501,17 +501,17 @@ ompi_coll_tuned_topo_build_chain( int fanout,
     chain->tree_nextsize = -1;
     for(i=0;i<fanout;i++) chain->tree_next[i] = -1;
 
-    /* 
+    /*
      * Set root & numchain
      */
     chain->tree_root = root;
-    if( (size - 1) < fanout ) { 
+    if( (size - 1) < fanout ) {
         chain->tree_nextsize = size-1;
         fanout = size-1;
     } else {
         chain->tree_nextsize = fanout;
     }
-    
+
     /*
      * Shift ranks
      */
@@ -582,13 +582,13 @@ ompi_coll_tuned_topo_build_chain( int fanout,
                 chain->tree_nextsize = 1;
             } else {
                 chain->tree_next[0] = -1;
-                chain->tree_nextsize = 0;    
+                chain->tree_nextsize = 0;
             }
         }
     }
-    
+
     /*
-     * Unshift values 
+     * Unshift values
      */
     if( rank == root ) {
         chain->tree_prev = -1;

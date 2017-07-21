@@ -7,9 +7,25 @@
 #ifndef MSG_H
 #define MSG_H
 
-#include "xbt/lib.h"
+#include "simgrid/datatypes.h"
 #include "simgrid/forward.h"
+#include "simgrid/host.h"
+
+#include "xbt/base.h"
+#include "xbt/dict.h"
+#include "xbt/dynar.h"
+
+#ifdef __cplusplus
 #include "simgrid/simix.h"
+namespace simgrid {
+namespace msg {
+class Comm;
+}
+}
+typedef simgrid::msg::Comm sg_msg_Comm;
+#else
+typedef struct msg_Comm sg_msg_Comm;
+#endif
 
 SG_BEGIN_DECL()
 
@@ -55,49 +71,19 @@ typedef struct msg_task {
 typedef struct msg_task *msg_task_t;
 
 /* ******************************** VM ************************************* */
-typedef msg_host_t msg_vm_t;
+typedef sg_vm_t msg_vm_t;
 
 /* ******************************** File ************************************ */
-
-typedef struct simdata_file* simdata_file_t;
-
-typedef struct msg_file_priv {
-  char *fullpath;
-  sg_size_t size;
-  char* mount_point;
-  char* storageId;
-  char* storage_type;
-  int desc_id;
-  void *data;
-  simdata_file_t simdata;
-} s_msg_file_priv_t;
-
-typedef struct msg_file_priv* msg_file_t;
+typedef sg_file_t msg_file_t;
 
 /* ******************************** Storage ************************************ */
-/* TODO: PV: to comment */
-
-extern int MSG_STORAGE_LEVEL;
 
 /** @brief Storage datatype.
  *  @ingroup msg_storage_management
  *
  *  You should consider this as an opaque object.
  */
-typedef xbt_dictelm_t msg_storage_t;
-
-struct msg_storage_priv  {
-  const char* name;
-  const char* hostname;
-  sg_size_t size;
-  void* data;
-};
-typedef struct msg_storage_priv  s_msg_storage_priv_t;
-typedef struct msg_storage_priv* msg_storage_priv_t;
-
-static inline msg_storage_priv_t MSG_storage_priv(msg_storage_t storage){
-  return (msg_storage_priv_t )xbt_lib_get_level(storage, MSG_STORAGE_LEVEL);
-}
+typedef sg_storage_t msg_storage_t;
 
 /**
  * \brief @brief Communication action.
@@ -105,7 +91,7 @@ static inline msg_storage_priv_t MSG_storage_priv(msg_storage_t storage){
  *
  * Object representing an ongoing communication between processes. Such beast is usually obtained by using #MSG_task_isend, #MSG_task_irecv or friends.
  */
-typedef struct msg_comm *msg_comm_t;
+typedef sg_msg_Comm* msg_comm_t;
 
 /** \brief Default value for an uninitialized #msg_task_t.
     \ingroup m_task_management
@@ -183,35 +169,48 @@ XBT_PUBLIC(const char*) MSG_zone_get_property_value(msg_netzone_t as, const char
 XBT_PUBLIC(void) MSG_zone_set_property_value(msg_netzone_t netzone, const char* name, char* value);
 XBT_PUBLIC(void) MSG_zone_get_hosts(msg_netzone_t zone, xbt_dynar_t whereto);
 
-/* Deprecated forms of the previous functions */
-static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_root since v3.16")
-    msg_netzone_t MSG_environment_get_routing_root() {
+static inline XBT_ATTRIB_DEPRECATED_v319(
+    "Use MSG_zone_get_root() instead: v3.19 will remove MSG_environment_get_routing_root() completely.") msg_netzone_t
+    MSG_environment_get_routing_root()
+{
   return MSG_zone_get_root();
 }
-static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_name since v3.16")
-    const char* MSG_environment_as_get_name(msg_netzone_t zone) {
+static inline XBT_ATTRIB_DEPRECATED_v319(
+    "Use MSG_zone_get_name() instead: v3.19 will remove MSG_environment_as_get_name() completely.") const
+    char* MSG_environment_as_get_name(msg_netzone_t zone)
+{
   return MSG_zone_get_name(zone);
 }
-static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_by_name since v3.16")
-    msg_netzone_t MSG_environment_as_get_by_name(const char* name) {
+static inline XBT_ATTRIB_DEPRECATED_v319(
+    "Use MSG_zone_get_by_name() instead: v3.19 will remove MSG_environment_as_get_by_name() completely.") msg_netzone_t
+    MSG_environment_as_get_by_name(const char* name)
+{
   return MSG_zone_get_by_name(name);
 }
-static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_sons since v3.16")
-    xbt_dict_t MSG_environment_as_get_routing_sons(msg_netzone_t zone) {
+static inline XBT_ATTRIB_DEPRECATED_v319(
+    "Use MSG_zone_get_sons() instead: v3.19 will remove MSG_environment_as_get_routing_sons() completely.") xbt_dict_t
+    MSG_environment_as_get_routing_sons(msg_netzone_t zone)
+{
   xbt_dict_t res = xbt_dict_new_homogeneous(NULL);
   MSG_zone_get_sons(zone, res);
   return res;
 }
-static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_property_value since v3.16")
-    const char* MSG_environment_as_get_property_value(msg_netzone_t zone, const char* name) {
+static inline XBT_ATTRIB_DEPRECATED_v319(
+    "Use MSG_zone_get_property_value() instead: v3.19 will remove MSG_environment_as_get_property_value() completely.")
+    const char* MSG_environment_as_get_property_value(msg_netzone_t zone, const char* name)
+{
   return MSG_zone_get_property_value(zone, name);
 }
-static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_set_property_value since v3.16")
-    void MSG_environment_as_set_property_value(msg_netzone_t zone, const char* name, char* value) {
+static inline XBT_ATTRIB_DEPRECATED_v319(
+    "Use MSG_zone_set_property_value() instead: v3.19 will remove MSG_environment_as_set_property_value() "
+    "completely.") void MSG_environment_as_set_property_value(msg_netzone_t zone, const char* name, char* value)
+{
   MSG_zone_set_property_value(zone, name, value);
 }
-static inline XBT_ATTRIB_DEPRECATED("Please use MSG_zone_get_hosts since v3.16")
-    xbt_dynar_t MSG_environment_as_get_hosts(msg_netzone_t zone) {
+static inline XBT_ATTRIB_DEPRECATED_v319(
+    "Use MSG_zone_get_hosts() instead: v3.19 will remove MSG_environment_as_get_hosts() completely.") xbt_dynar_t
+    MSG_environment_as_get_hosts(msg_netzone_t zone)
+{
   xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t), NULL);
   MSG_zone_get_hosts(zone, res);
   return res;
@@ -229,7 +228,6 @@ XBT_PUBLIC(void) MSG_file_dump(msg_file_t fd);
 XBT_PUBLIC(msg_error_t) MSG_file_unlink(msg_file_t fd);
 XBT_PUBLIC(msg_error_t) MSG_file_seek(msg_file_t fd, sg_offset_t offset, int origin);
 XBT_PUBLIC(sg_size_t) MSG_file_tell (msg_file_t fd);
-XBT_PUBLIC(void) __MSG_file_get_info(msg_file_t fd);
 XBT_PUBLIC(const char *) MSG_file_get_name(msg_file_t file);
 XBT_PUBLIC(msg_error_t) MSG_file_move(msg_file_t fd, const char* fullpath);
 XBT_PUBLIC(msg_error_t) MSG_file_rcopy(msg_file_t fd, msg_host_t host, const char* fullpath);
@@ -267,13 +265,23 @@ XBT_PUBLIC(void) MSG_host_get_process_list(msg_host_t h, xbt_dynar_t whereto);
 XBT_PUBLIC(int) MSG_host_is_on(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_off(msg_host_t h);
 
-XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h); /* deprecated */
+static inline double
+    XBT_ATTRIB_DEPRECATED_v319("Use MSG_host_get_speed(): v3.19 will drop MSG_get_host_speed() completely.")
+        MSG_get_host_speed(msg_host_t host)
+{
+  return MSG_host_get_speed(host);
+}
+static inline double XBT_ATTRIB_DEPRECATED_v320(
+    "Use MSG_host_get_speed(): v3.20 will drop MSG_host_get_current_power_peak() completely.")
+    MSG_host_get_current_power_peak(msg_host_t host)
+{
+  return MSG_host_get_speed(host);
+}
 
 XBT_PUBLIC(double) MSG_host_get_power_peak_at(msg_host_t h, int pstate);
-#define MSG_host_get_current_power_peak(h) MSG_host_get_speed(h) /* deprecated */
 XBT_PUBLIC(int)    MSG_host_get_nb_pstates(msg_host_t h);
-#define MSG_host_get_pstate(h)         sg_host_get_pstate(h)         /* deprecated */
-#define MSG_host_set_pstate(h, pstate) sg_host_set_pstate(h, pstate) /* deprecated */
+#define MSG_host_get_pstate(h) sg_host_get_pstate(h) /* users don't know that MSG is the C version of SimGrid */
+#define MSG_host_set_pstate(h, pstate) sg_host_set_pstate(h, pstate) /* (same here) */
 XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar();
 XBT_PUBLIC(int) MSG_get_host_number();
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_mounted_storage_list(msg_host_t host);
@@ -318,6 +326,7 @@ XBT_PUBLIC(int) MSG_process_get_PPID(msg_process_t process);
 XBT_PUBLIC(const char *) MSG_process_get_name(msg_process_t process);
 XBT_PUBLIC(int) MSG_process_self_PID();
 XBT_PUBLIC(int) MSG_process_self_PPID();
+XBT_PUBLIC(const char*) MSG_process_self_name();
 XBT_PUBLIC(msg_process_t) MSG_process_self();
 XBT_PUBLIC(xbt_dynar_t) MSG_processes_as_dynar();
 XBT_PUBLIC(int) MSG_process_get_number();
@@ -406,8 +415,9 @@ XBT_PUBLIC(msg_error_t) MSG_task_receive_bounded(msg_task_t * task, const char *
 
 XBT_PUBLIC(msg_comm_t) MSG_task_isend(msg_task_t task, const char *alias);
 XBT_PUBLIC(msg_comm_t) MSG_task_isend_bounded(msg_task_t task, const char *alias, double maxrate);
-XBT_PUBLIC(msg_comm_t) MSG_task_isend_with_matching(msg_task_t task, const char *alias,
-    int (*match_fun)(void*,void*, smx_activity_t), void *match_data);
+XBT_PUBLIC(msg_comm_t)
+MSG_task_isend_with_matching(msg_task_t task, const char* alias, int (*match_fun)(void*, void*, void*),
+                             void* match_data);
 
 XBT_PUBLIC(void) MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup);
 XBT_PUBLIC(void) MSG_task_dsend_bounded(msg_task_t task, const char *alias, void_f_pvoid_t cleanup, double maxrate);
@@ -484,15 +494,15 @@ XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t vm);
 XBT_PUBLIC(int) MSG_vm_is_migrating(msg_vm_t vm);
 XBT_PUBLIC(int) MSG_vm_is_suspended(msg_vm_t vm);
 
-#define MSG_vm_get_name(vm) MSG_host_get_name(vm)
-
+XBT_PUBLIC(const char*) MSG_vm_get_name(msg_vm_t vm);
 XBT_PUBLIC(void) MSG_vm_get_params(msg_vm_t vm, vm_params_t params);
 XBT_PUBLIC(void) MSG_vm_set_params(msg_vm_t vm, vm_params_t params);
 
 // TODO add VDI later
 XBT_PUBLIC(msg_vm_t) MSG_vm_create_core(msg_host_t location, const char *name);
+XBT_PUBLIC(msg_vm_t) MSG_vm_create_multicore(msg_host_t pm, const char* name, int coreAmount);
 XBT_PUBLIC(msg_vm_t)
-MSG_vm_create(msg_host_t ind_pm, const char* name, int ramsize, int mig_netspeed, int dp_intensity);
+MSG_vm_create(msg_host_t ind_pm, const char* name, int coreAmount, int ramsize, int mig_netspeed, int dp_intensity);
 
 XBT_PUBLIC(void) MSG_vm_destroy(msg_vm_t vm);
 

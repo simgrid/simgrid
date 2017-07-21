@@ -11,7 +11,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_semaphore_example, "Messages specific for this 
 msg_sem_t sem;
 
 static int peer(int argc, char* argv[]){
-  int i = 0; 
+  int i = 0;
   while(i < argc) {
     double wait_time = xbt_str_parse_double(argv[i],"Invalid wait time: %s");
     i++;
@@ -67,6 +67,7 @@ int main(int argc, char* argv[])
   MSG_process_create_with_arguments("Bob", peer, NULL, h, 8, bobTimes);
 
   msg_error_t res = MSG_main();
+  MSG_sem_destroy(sem);
   XBT_INFO("Finished\n");
   return (res != MSG_OK);
 }

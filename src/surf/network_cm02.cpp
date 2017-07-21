@@ -65,12 +65,12 @@ void surf_network_model_init_CM02()
   if (surf_network_model)
     return;
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model();
-  all_existing_models->push_back(surf_network_model);
-
   xbt_cfg_setdefault_double("network/latency-factor",   1.0);
   xbt_cfg_setdefault_double("network/bandwidth-factor", 1.0);
   xbt_cfg_setdefault_double("network/weight-S",         0.0);
+
+  surf_network_model = new simgrid::surf::NetworkCm02Model();
+  all_existing_models->push_back(surf_network_model);
 }
 
 /***************************************************************************/
@@ -88,14 +88,14 @@ void surf_network_model_init_Reno()
   if (surf_network_model)
     return;
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(&lagrange_solve);
-  all_existing_models->push_back(surf_network_model);
-
   lmm_set_default_protocol_function(func_reno_f, func_reno_fp, func_reno_fpi);
 
-  xbt_cfg_setdefault_double("network/latency-factor",     10.4);
-  xbt_cfg_setdefault_double("network/bandwidth-factor",    0.92);
-  xbt_cfg_setdefault_double("network/weight-S",         8775);
+  xbt_cfg_setdefault_double("network/latency-factor", 13.01);
+  xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
+  xbt_cfg_setdefault_double("network/weight-S", 20537);
+
+  surf_network_model = new simgrid::surf::NetworkCm02Model(&lagrange_solve);
+  all_existing_models->push_back(surf_network_model);
 }
 
 
@@ -104,14 +104,14 @@ void surf_network_model_init_Reno2()
   if (surf_network_model)
     return;
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(&lagrange_solve);
-  all_existing_models->push_back(surf_network_model);
-
   lmm_set_default_protocol_function(func_reno2_f, func_reno2_fp, func_reno2_fpi);
 
-  xbt_cfg_setdefault_double("network/latency-factor",    10.4);
-  xbt_cfg_setdefault_double("network/bandwidth-factor",   0.92);
-  xbt_cfg_setdefault_double("network/weight-S",        8775);
+  xbt_cfg_setdefault_double("network/latency-factor", 13.01);
+  xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
+  xbt_cfg_setdefault_double("network/weight-S", 20537);
+
+  surf_network_model = new simgrid::surf::NetworkCm02Model(&lagrange_solve);
+  all_existing_models->push_back(surf_network_model);
 }
 
 void surf_network_model_init_Vegas()
@@ -119,14 +119,14 @@ void surf_network_model_init_Vegas()
   if (surf_network_model)
     return;
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(&lagrange_solve);
-  all_existing_models->push_back(surf_network_model);
-
   lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp, func_vegas_fpi);
 
-  xbt_cfg_setdefault_double("network/latency-factor",    10.4);
-  xbt_cfg_setdefault_double("network/bandwidth-factor",   0.92);
-  xbt_cfg_setdefault_double("network/weight-S",        8775);
+  xbt_cfg_setdefault_double("network/latency-factor", 13.01);
+  xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
+  xbt_cfg_setdefault_double("network/weight-S", 20537);
+
+  surf_network_model = new simgrid::surf::NetworkCm02Model(&lagrange_solve);
+  all_existing_models->push_back(surf_network_model);
 }
 
 namespace simgrid {
@@ -208,8 +208,6 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
       action->finish();
       action->setState(Action::State::done);
       action->heapRemove(actionHeap_);
-
-      action->gapRemove();
     }
   }
 }
@@ -264,7 +262,6 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
         ((action->getMaxDuration() > NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
       action->finish();
       action->setState(Action::State::done);
-      action->gapRemove();
     }
   }
 }
@@ -276,12 +273,12 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   std::vector<LinkImpl*>* back_route = nullptr;
   std::vector<LinkImpl*>* route = new std::vector<LinkImpl*>();
 
-  XBT_IN("(%s,%s,%g,%g)", src->cname(), dst->cname(), size, rate);
+  XBT_IN("(%s,%s,%g,%g)", src->getCname(), dst->getCname(), size, rate);
 
   src->routeTo(dst, route, &latency);
   xbt_assert(not route->empty() || latency,
              "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
-             src->cname(), dst->cname());
+             src->getCname(), dst->getCname());
 
   for (auto link: *route)
     if (link->isOff())
@@ -322,7 +319,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
                "Using a model with a gap (e.g., SMPI) with a platform without links (e.g. vivaldi)!!!");
 
     gapAppend(size, route->at(0), action);
-    XBT_DEBUG("Comm %p: %s -> %s gap=%f (lat=%f)", action, src->cname(), dst->cname(), action->senderGap_,
+    XBT_DEBUG("Comm %p: %s -> %s gap=%f (lat=%f)", action, src->getCname(), dst->getCname(), action->senderGap_,
               action->latency_);
   }
 

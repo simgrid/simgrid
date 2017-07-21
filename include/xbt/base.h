@@ -1,6 +1,6 @@
 /* xbt.h - Public interface to the xbt (simgrid's toolbox)                  */
 
-/* Copyright (c) 2004-2015. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -47,7 +47,8 @@
 
 #define XBT_ATTRIB_NORETURN __attribute__((noreturn))
 #define XBT_ATTRIB_UNUSED  __attribute__((unused))
-#define XBT_ATTRIB_DEPRECATED(m)  __attribute__((deprecated(m)))
+#define XBT_ATTRIB_DEPRECATED_v319(msg) __attribute__((deprecated(msg))) /* Will be dropped in v3.19 */
+#define XBT_ATTRIB_DEPRECATED_v320(msg) __attribute__((deprecated(msg))) /* Will be dropped in v3.20 */
 
 /* Constructor priorities exist since gcc 4.3.  Apparently, they are however not
  * supported on Macs. */
@@ -137,6 +138,7 @@
 
 /* Build the DLL */
 #if defined(DLL_EXPORT)
+#  define XBT_ATTRIB_PUBLIC           __declspec(dllexport)
 #  define XBT_PUBLIC(type)            __declspec(dllexport) type
 #  define XBT_EXPORT_NO_IMPORT(type)  __declspec(dllexport) type
 #  define XBT_IMPORT_NO_EXPORT(type)  type
@@ -146,6 +148,7 @@
 
 /* Link against the DLL */
 #elif (defined(_WIN32) && !defined(DLL_EXPORT))
+#  define XBT_ATTRIB_PUBLIC           __declspec(dllimport)
 #  define XBT_PUBLIC(type)            __declspec(dllimport) type
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  __declspec(dllimport) type
@@ -153,7 +156,8 @@
 #  define XBT_PUBLIC_CLASS            class __declspec(dllimport)
 #  define XBT_PRIVATE
 
-#elif defined(__ELF__) 
+#elif defined(__ELF__)
+#  define XBT_ATTRIB_PUBLIC           __attribute__((visibility("default")))
 #  define XBT_PUBLIC(type)            __attribute__((visibility("default"))) type
 #  define XBT_EXPORT_NO_IMPORT(type)  __attribute__((visibility("default"))) type
 #  define XBT_IMPORT_NO_EXPORT(type)  __attribute__((visibility("default"))) type
@@ -162,6 +166,7 @@
 #  define XBT_PRIVATE                 __attribute__((visibility("hidden")))
 
 #else
+#  define XBT_ATTRIB_PUBLIC           /* public */
 #  define XBT_PUBLIC(type)            type
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  type

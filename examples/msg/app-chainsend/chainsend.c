@@ -11,7 +11,7 @@
 #include "peer.h"
 
 /** @addtogroup MSG_examples
- * 
+ *
  *  - <b>chainsend: MSG implementation of a file broadcasting system, similar to Kastafior (from Kadeploy).</b>.
  */
 

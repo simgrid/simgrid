@@ -9,6 +9,8 @@
 #include "simgrid/s4u/Host.hpp"
 #include "src/surf/maxmin_private.hpp"
 
+#include <list>
+
 /***********
  * Classes *
  ***********/
@@ -80,6 +82,19 @@ public:
    * @return The CpuAction corresponding to the processing
    */
   virtual simgrid::surf::Action *execution_start(double size)=0;
+
+  /**
+   * @brief Execute some quantity of computation on more than one core
+   *
+   * @param size The value of the processing amount (in flop) needed to process
+   * @param requestedCores The desired amount of cores. Must be >= 1
+   * @return The CpuAction corresponding to the processing
+   */
+  virtual simgrid::surf::Action* execution_start(double size, int requestedCores)
+  {
+    THROW_UNIMPLEMENTED;
+    return nullptr;
+  }
 
   /**
    * @brief Make a process sleep for duration (in seconds)

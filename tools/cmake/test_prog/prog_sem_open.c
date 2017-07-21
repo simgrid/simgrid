@@ -25,6 +25,6 @@ int main(void) {
 //     printf("sem_open failed\n");
      return 1;
    }
-//   printf("sem_open succeeded\n");   
+//   printf("sem_open succeeded\n");
    return 0;
 }

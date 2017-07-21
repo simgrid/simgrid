@@ -39,11 +39,11 @@ main (int argc, char **argv)
     {
       MPI_Request reqs[3];
 
-      MPI_Irecv (buf0, buf_size, MPI_INT, 
+      MPI_Irecv (buf0, buf_size, MPI_INT,
 		 MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, &reqs[0]);
-      MPI_Irecv (buf1, buf_size, MPI_INT, 
+      MPI_Irecv (buf1, buf_size, MPI_INT,
 		 MPI_ANY_SOURCE, 2, MPI_COMM_WORLD, &reqs[1]);
-      MPI_Irecv (buf2, buf_size, MPI_INT, 
+      MPI_Irecv (buf2, buf_size, MPI_INT,
 		 MPI_ANY_SOURCE, 3, MPI_COMM_WORLD, &reqs[2]);
 
       for (i = 3; i > 0; i--) {
@@ -59,7 +59,7 @@ main (int argc, char **argv)
       memset (buf0, 1, buf_size);
 
       for (i = 3; i > 0; i--) {
-	MPI_Recv (&flipbit, 1, MPI_INT, 
+	MPI_Recv (&flipbit, 1, MPI_INT,
 		  MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &status);
 	
 	MPI_Send (buf0, buf_size, MPI_INT, 0, i, MPI_COMM_WORLD);

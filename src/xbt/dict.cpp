@@ -20,14 +20,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt, "Dictionaries provide the same functionalities as hash tables");
 
-/**
- * \brief Constructor
- * \return pointer to the destination
- * \see xbt_dict_new_homogenous(), xbt_dict_free()
- *
- * Creates and initialize a new dictionary with a default hashtable size.
- * The dictionary is heterogeneous: each element can have a different free function.
- */
 xbt_dict_t xbt_dict_new()
 {
   XBT_WARN("Function xbt_dict_new() will soon be dropped. Please switch to xbt_dict_new_homogeneous()");
@@ -72,20 +64,15 @@ xbt_dict_t xbt_dict_new_homogeneous(void_f_pvoid_t free_ctn)
  */
 void xbt_dict_free(xbt_dict_t * dict)
 {
-  xbt_dictelm_t current;
-  xbt_dictelm_t previous;
-  int table_size;
-  xbt_dictelm_t *table;
-
-  //  if ( *dict )  xbt_dict_dump_sizes(*dict);
-
   if (dict != nullptr && *dict != nullptr) {
-    table_size = (*dict)->table_size;
-    table = (*dict)->table;
+    int table_size       = (*dict)->table_size;
+    xbt_dictelm_t* table = (*dict)->table;
     /* Warning: the size of the table is 'table_size+1'...
      * This is because table_size is used as a binary mask in xbt_dict_rehash */
     for (int i = 0; (*dict)->count && i <= table_size; i++) {
-      current = table[i];
+      xbt_dictelm_t current = table[i];
+      xbt_dictelm_t previous;
+
       while (current != nullptr) {
         previous = current;
         current = current->next;
@@ -444,11 +431,10 @@ int xbt_dict_is_empty(xbt_dict_t dict)
  */
 void xbt_dict_dump(xbt_dict_t dict, void_f_pvoid_t output)
 {
-  int i;
   xbt_dictelm_t element;
   printf("Dict %p:\n", dict);
   if (dict != nullptr) {
-    for (i = 0; i < dict->table_size; i++) {
+    for (int i = 0; i < dict->table_size; i++) {
       element = dict->table[i];
       if (element) {
         printf("[\n");

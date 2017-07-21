@@ -5,10 +5,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "../colls_private.h"
-/* IMPLEMENTED BY PITCH PATARASUK 
-   Non-topoloty-specific (however, number of cores/node need to be changed) 
+/* IMPLEMENTED BY PITCH PATARASUK
+   Non-topoloty-specific (however, number of cores/node need to be changed)
    all-reduce operation designed for smp clusters
-   It uses 2-layer communication: binomial for both intra-communication 
+   It uses 2-layer communication: binomial for both intra-communication
    inter-communication*/
 
 
@@ -83,7 +83,7 @@ int Coll_allreduce_smp_binomial::allreduce(void *send_buf, void *recv_buf,
     mask <<= 1;
   }
 
-  /* start binomial reduce inter-communication between each SMP nodes: 
+  /* start binomial reduce inter-communication between each SMP nodes:
      each node only have one process that can communicate to other nodes */
   if (intra_rank == 0) {
     mask = 1;
@@ -103,7 +103,7 @@ int Coll_allreduce_smp_binomial::allreduce(void *send_buf, void *recv_buf,
     }
   }
 
-  /* start binomial broadcast inter-communication between each SMP nodes: 
+  /* start binomial broadcast inter-communication between each SMP nodes:
      each node only have one process that can communicate to other nodes */
   if (intra_rank == 0) {
     mask = 1;

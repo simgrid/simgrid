@@ -19,9 +19,9 @@
 #include <sys/types.h>
 
 #include "src/mc/PageStore.hpp"
-#include "src/mc/Process.hpp"
 #include "src/mc/Transition.hpp"
 #include "src/mc/mc_forward.hpp"
+#include "src/mc/remote/RemoteClient.hpp"
 #include "src/mc/remote/mc_protocol.h"
 
 namespace simgrid {
@@ -38,7 +38,7 @@ class ModelChecker {
   std::set<std::string> hostnames_;
   // This is the parent snapshot of the current state:
   PageStore page_store_;
-  std::unique_ptr<Process> process_;
+  std::unique_ptr<RemoteClient> process_;
   Checker* checker_ = nullptr;
 public:
   std::shared_ptr<simgrid::mc::Snapshot> parent_snapshot_;
@@ -46,13 +46,10 @@ public:
 public:
   ModelChecker(ModelChecker const&) = delete;
   ModelChecker& operator=(ModelChecker const&) = delete;
-  explicit ModelChecker(std::unique_ptr<Process> process);
+  explicit ModelChecker(std::unique_ptr<RemoteClient> process);
   ~ModelChecker();
 
-  Process& process()
-  {
-    return *process_;
-  }
+  RemoteClient& process() { return *process_; }
   PageStore& page_store()
   {
     return page_store_;
@@ -69,15 +66,11 @@ public:
 
   void start();
   void shutdown();
-  void resume(simgrid::mc::Process& process);
+  void resume(simgrid::mc::RemoteClient& process);
   void loop();
   void handle_events(int fd, short events);
-  void wait_client(simgrid::mc::Process& process);
+  void wait_for_requests();
   void handle_simcall(Transition const& transition);
-  void wait_for_requests()
-  {
-    mc_model_checker->wait_client(mc_model_checker->process());
-  }
   void exit(int status);
 
   bool checkDeadlock();

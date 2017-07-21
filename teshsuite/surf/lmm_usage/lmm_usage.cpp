@@ -6,12 +6,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/sysdep.h"
+#include "simgrid/msg.h"
+#include "src/surf/surf_interface.hpp"
 #include "surf/maxmin.h"
 #include "xbt/log.h"
 #include "xbt/module.h"
+#include "xbt/sysdep.h"
 #include <math.h>
-#include "src/surf/surf_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
@@ -259,7 +260,7 @@ static void test3(method_t method)
 
   /* Creates the constraints */
   lmm_constraint_t *tmp_cnst = xbt_new0(lmm_constraint_t, 15);
-  for (int i = 0; i < 15; i++) 
+  for (int i = 0; i < 15; i++)
     tmp_cnst[i] = lmm_constraint_new(Sys, nullptr, B[i]);
 
   /* Creates the variables */
@@ -298,8 +299,9 @@ static void test3(method_t method)
   xbt_free(A);
 }
 
-int main()
+int main(int argc, char** argv)
 {
+  MSG_init(&argc, argv);
   XBT_INFO("***** Test 1 (Max-Min)");
   test1(MAXMIN);
   XBT_INFO("***** Test 1 (Lagrange - Vegas)");

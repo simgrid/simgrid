@@ -12,7 +12,7 @@
 #define TASK_NUM 3
 
 /**
- * 3 tasks send 1 byte in parallel 
+ * 3 tasks send 1 byte in parallel
  * 3 flows exceed bandwidth
  * should be 10001.5
  * because the max tcp win size is 20000
@@ -50,6 +50,5 @@ int main(int argc, char **argv)
   }
   SD_task_destroy(root);
 
-  SD_exit();
   return 0;
 }

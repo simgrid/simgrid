@@ -1,7 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) 2007-2014. The SimGrid Team.
-# All rights reserved.
+# Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -27,7 +26,7 @@ while true; do
         "-platform")
 	    PLATFORM="$2"
             if [ ! -f "${PLATFORM}" ]; then
-		echo "["$(basename $0)"] ** error: the file \'${PLATFORM}\' does not exist. Aborting."
+		echo "[$(basename $0)] ** error: the file '${PLATFORM}' does not exist. Aborting."
 		exit 1
             fi
 	    shift 2
@@ -35,7 +34,7 @@ while true; do
         "-hostfile")
 	    HOSTFILE="$2"
             if [ ! -f "${HOSTFILE}" ]; then
-		echo "["$(basename $0)"] ** error: the file \'${HOSTFILE}\' does not exist. Aborting."
+		echo "[$(basename $0)] ** error: the file '${HOSTFILE}' does not exist. Aborting."
 		exit 1
             fi
 	    shift 2
@@ -43,7 +42,7 @@ while true; do
         "-machinefile")
 	    HOSTFILE="$2"
             if [ ! -f "${HOSTFILE}" ]; then
-		echo "["$(basename $0)"] ** error: the file \'${HOSTFILE}\' does not exist. Aborting."
+		echo "[$(basename $0)] ** error: the file '${HOSTFILE}' does not exist. Aborting."
 		exit 1
             fi
 	    shift 2
@@ -101,7 +100,7 @@ fi
 # Don't use wc -l to compute it to avoid issues with trailing \n at EOF
 hostfile_procs=$(grep -c "[a-zA-Z0-9]" $HOSTFILE)
 if [ ${hostfile_procs} = 0 ] ; then
-   echo "["$(basename $0)"] ** error: the hostfile \'${HOSTFILE}\' is empty. Aborting." >&2
+   echo "[$(basename $0)] ** error: the hostfile '${HOSTFILE}' is empty. Aborting." >&2
    exit 1
 fi
 
@@ -134,8 +133,8 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
         IFS_OLD=
         # generate three lists, one with instance id, ont with instance size, one with files
         instance=$(echo "$line"|cut -d' ' -f1)
-        hosttrace=$(cat $(echo "$line"|cut -d' ' -f2)| tr '\n\r' '  ' )
-        NUMPROCSMINE=$(cat $(echo "$line"|cut -d' ' -f2) | wc -l)
+        hosttrace=$(tr '\n\r' '  ' < $(echo "$line"|cut -d' ' -f2))
+        NUMPROCSMINE=$(wc -l < $(echo "$line"|cut -d' ' -f2))
         
         if [ $NUMPROCSMINE != $(echo "$line"|cut -d' ' -f3) ];
         then
@@ -147,10 +146,10 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
         HAVE_SEQ=$(which seq 2>/dev/null)
 
         if [ -n "${HAVE_SEQ}" ]; then
-            SEQ1=$( ${HAVE_SEQ} 0 $((${NUMPROCSMINE}-1)) )
+            SEQ1=$( ${HAVE_SEQ} 0 $(( $NUMPROCSMINE - 1 )) )
         else
             cnt=0
-            while (( $cnt < ${NUMPROCSMINE} )) ; do
+            while (( $cnt < $NUMPROCSMINE )) ; do
             SEQ1="$SEQ1 $cnt"
             cnt=$((cnt + 1));
             done
@@ -167,7 +166,7 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
 ##---- generate <actor> tags------------------------------
         do
 	    if [ -n "${HOSTFILE}" ]; then
-		j=$(( ${NUMPROCS} % ${NUMHOSTS} +1))
+		j=$(( $NUMPROCS % $NUMHOSTS +1))
             fi
             hostname=$(echo $hostnames|cut -d' ' -f$j)
             if [ -z "${hostname}" ]; then
@@ -183,7 +182,7 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
 	    
             echo "    <argument value=\"${sleeptime}\"/> <!-- delay -->" >> ${APPLICATIONTMP}
             echo "  </actor>" >> ${APPLICATIONTMP}
-            NUMPROCS=$(( ${NUMPROCS} +1))
+            NUMPROCS=$(( $NUMPROCS +1))
         done
         # return IFS back to newline for "for" loop
         IFS_OLD=$IFS

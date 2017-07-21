@@ -49,9 +49,10 @@ public:
 
   // Copy and move
   ChunkedData(ChunkedData const& that)
+     : store_ (that.store_)
+     , pagenos_(that.pagenos_)
+
   {
-    store_ = that.store_;
-    pagenos_ = that.pagenos_;
     for (std::size_t pageno : pagenos_)
       store_->ref_page(pageno);
   }

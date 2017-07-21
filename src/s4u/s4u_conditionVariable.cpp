@@ -11,7 +11,7 @@
 
 #include "simgrid/s4u/ConditionVariable.hpp"
 #include "simgrid/simix.h"
-#include "src/simix/smx_synchro_private.h"
+#include "src/simix/smx_synchro_private.hpp"
 
 namespace simgrid {
 namespace s4u {
@@ -74,14 +74,14 @@ std::cv_status ConditionVariable::wait_until(std::unique_lock<Mutex>& lock, doub
     timeout = timeout_time - now;
   return this->wait_for(lock, timeout);
 }
-  
+
 /**
  * Notify functions
  */
 void ConditionVariable::notify_one() {
    simcall_cond_signal(cond_);
 }
- 
+
 void ConditionVariable::notify_all() {
   simcall_cond_broadcast(cond_);
 }

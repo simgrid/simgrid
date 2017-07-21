@@ -118,7 +118,7 @@ selector algorithms, that were collected directly in the source code
 of the targeted MPI implementations.
 
 You can switch the automatic selector through the
-\c smpi/coll_selector configuration item. Possible values:
+\c smpi/coll-selector configuration item. Possible values:
 
  - <b>ompi</b>: default selection logic of OpenMPI (version 1.7)
  - <b>mpich</b>: default selection logic of MPICH (version 3.0.4)

@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -10,10 +9,10 @@
 #include "xbt/sysdep.h"
 #include <xbt/dynar.hpp>
 
-#include "src/mc/mc_comm_pattern.h"
+#include "src/mc/checker/CommunicationDeterminismChecker.hpp"
+#include "src/mc/mc_comm_pattern.hpp"
 #include "src/mc/mc_smx.h"
 #include "src/mc/mc_xbt.hpp"
-#include "src/mc/checker/CommunicationDeterminismChecker.hpp"
 
 using simgrid::mc::remote;
 
@@ -88,7 +87,8 @@ void MC_handle_comm_pattern(
     {
     simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> comm_addr = nullptr;
     if (call_type == MC_CALL_TYPE_WAIT)
-      comm_addr = remote(static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__get__comm(req)));
+      comm_addr = remote(static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__getraw__comm(req)));
+
     else {
       simgrid::kernel::activity::CommImpl* addr;
       // comm_addr = REMOTE(xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_synchro_t)):

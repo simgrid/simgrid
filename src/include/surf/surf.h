@@ -13,28 +13,15 @@
 #include "xbt/misc.h"
 #include "xbt/config.h"
 #include "src/internal_config.h"
-#include "surf/surf_routing.h"
 #include "surf/datatypes.h"
-#include "xbt/lib.h"
 #include "simgrid/datatypes.h"
 #include "simgrid/forward.h"
 
-SG_BEGIN_DECL()
-/* Actions and models are highly connected structures... */
-
-/* user-visible parameters */
-extern XBT_PRIVATE double sg_tcp_gamma;
-extern XBT_PRIVATE double sg_sender_gap;
-extern XBT_PRIVATE double sg_latency_factor;
-extern XBT_PRIVATE double sg_bandwidth_factor;
-extern XBT_PRIVATE double sg_weight_S_parameter;
-extern XBT_PRIVATE int sg_network_crosstraffic;
 
 #ifdef __cplusplus
 
 namespace simgrid {
 namespace surf {
-
 class Model;
 class CpuModel;
 class HostModel;
@@ -51,10 +38,8 @@ typedef simgrid::surf::CpuModel surf_CpuModel;
 typedef simgrid::surf::Cpu surf_Cpu;
 typedef simgrid::surf::HostModel surf_HostModel;
 typedef simgrid::surf::NetworkModel surf_NetworkModel;
-typedef simgrid::surf::StorageImpl surf_Storage;
 typedef simgrid::surf::StorageModel surf_StorageModel;
 typedef simgrid::surf::Resource surf_Resource;
-typedef simgrid::surf::HostImpl surf_Host;
 typedef simgrid::surf::Action surf_Action;
 
 #else
@@ -64,13 +49,23 @@ typedef struct surf_CpuModel surf_CpuModel;
 typedef struct surf_Cpu surf_Cpu;
 typedef struct surf_HostModel surf_HostModel;
 typedef struct surf_NetworkModel surf_NetworkModel;
-typedef struct surf_StorageImpl surf_Storage;
 typedef struct surf_StorageModel surf_StorageModel;
 typedef struct surf_Resource surf_Resource;
 typedef struct surf_Host surf_Host;
 typedef struct surf_Action surf_Action;
 
 #endif
+
+SG_BEGIN_DECL()
+/* Actions and models are highly connected structures... */
+
+/* user-visible parameters */
+extern XBT_PRIVATE double sg_tcp_gamma;
+extern XBT_PRIVATE double sg_sender_gap;
+extern XBT_PRIVATE double sg_latency_factor;
+extern XBT_PRIVATE double sg_bandwidth_factor;
+extern XBT_PRIVATE double sg_weight_S_parameter;
+extern XBT_PRIVATE int sg_network_crosstraffic;
 
 /** @ingroup SURF_c_bindings
  *  \brief Model datatype
@@ -83,9 +78,6 @@ typedef surf_CpuModel *surf_cpu_model_t;
 typedef surf_HostModel *surf_host_model_t;
 typedef surf_NetworkModel *surf_network_model_t;
 typedef surf_StorageModel *surf_storage_model_t;
-typedef surf_Storage* surf_storage_t;
-
-typedef xbt_dictelm_t surf_resource_t;
 
 /** @ingroup SURF_c_bindings
  *  \brief Action structure
@@ -97,7 +89,6 @@ typedef xbt_dictelm_t surf_resource_t;
  */
 typedef surf_Action *surf_action_t;
 
-typedef struct surf_file *surf_file_t;
 
 /** \brief Resource model description
  */
@@ -115,15 +106,6 @@ XBT_PUBLIC(void) model_help(const char *category, s_surf_model_description_t * t
 /***************************/
 /* Generic model object */
 /***************************/
-
-static inline surf_storage_t surf_storage_resource_priv(const void* storage)
-{
-  return (surf_storage_t)xbt_lib_get_level((xbt_dictelm_t)storage, SURF_STORAGE_LEVEL);
-}
-
-static inline void *surf_storage_resource_by_name(const char *name){
-  return xbt_lib_get_elm_or_null(storage_lib, name);
-}
 
 /** @{ @ingroup SURF_c_bindings */
 
@@ -151,134 +133,6 @@ XBT_PUBLIC(surf_action_t) surf_model_extract_failed_action_set(surf_model_t mode
  */
 XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
 
-/** @brief Create a file opening action on the given host */
-XBT_PUBLIC(surf_action_t) surf_host_open(sg_host_t host, const char* fullpath);
-
-/** @brief Create a file closing action on the given host */
-XBT_PUBLIC(surf_action_t) surf_host_close(sg_host_t host, surf_file_t fd);
-
-/** @brief Create a file reading action on the given host */
-XBT_PUBLIC(surf_action_t) surf_host_read(sg_host_t host, surf_file_t fd, sg_size_t size);
-
-/** @brief Create a file writing action on the given host  */
-XBT_PUBLIC(surf_action_t) surf_host_write(sg_host_t host, surf_file_t fd, sg_size_t size);
-
-/**
- * @brief Get the information of a file descriptor
- * @details The returned xbt_dynar_t contains:
- *  - the size of the file,
- *  - the mount point,
- *  - the storage name,
- *  - the storage typeId,
- *  - the storage content type
- *
- * @param host The surf host
- * @param fd The file descriptor
- * @return An xbt_dynar_t with the file information
- */
-XBT_PUBLIC(xbt_dynar_t) surf_host_get_info(sg_host_t host, surf_file_t fd);
-
-/**
- * @brief Get the available space of the storage at the mount point
- *
- * @param resource The surf host
- * @param name The mount point
- * @return The amount of available space in bytes
- */
-XBT_PUBLIC(sg_size_t) surf_host_get_free_size(sg_host_t resource, const char* name);
-
-/**
- * @brief Get the used space of the storage at the mount point
- *
- * @param resource The surf host
- * @param name The mount point
- * @return The amount of used space in bytes
- */
-XBT_PUBLIC(sg_size_t) surf_host_get_used_size(sg_host_t resource, const char* name);
-
-/**
- * @brief Unlink a file descriptor
- *
- * @param host The surf host
- * @param fd The file descriptor
- *
- * @return 0 if failed to unlink, 1 otherwise
- */
-XBT_PUBLIC(int) surf_host_unlink(sg_host_t host, surf_file_t fd);
-
-/**
- * @brief Get the size of a file on a host
- *
- * @param host The surf host
- * @param fd The file descriptor
- *
- * @return The size in bytes of the file
- */
-XBT_PUBLIC(size_t) surf_host_get_size(sg_host_t host, surf_file_t fd);
-
-/**
- * @brief Get the current position of the file descriptor
- *
- * @param host The surf host
- * @param fd The file descriptor
- * @return The current position of the file descriptor
- */
-XBT_PUBLIC(size_t) surf_host_file_tell(sg_host_t host, surf_file_t fd);
-
-/**
- * @brief Move a file to another location on the *same mount point*.
- * @details [long description]
- *
- * @param host The surf host
- * @param fd The file descriptor
- * @param fullpath The new full path
- *
- * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
- */
-XBT_PUBLIC(int) surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath);
-
-/**
- * @brief Set the position indictator assiociated with the file descriptor to a new position
- * @details [long description]
- *
- * @param host The surf host
- * @param fd The file descriptor
- * @param offset The offset from the origin
- * @param origin Position used as a reference for the offset
- *  - SEEK_SET: beginning of the file
- *  - SEEK_CUR: current position indicator
- *  - SEEK_END: end of the file
- * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
- */
-XBT_PUBLIC(int) surf_host_file_seek(sg_host_t host, surf_file_t fd, sg_offset_t offset, int origin);
-
-/**
- * @brief Get the size in bytes of a storage
- *
- * @param resource The surf storage
- * @return The size in bytes of the storage
- */
-XBT_PUBLIC(sg_size_t) surf_storage_get_size(surf_resource_t resource);
-
-/**
- * @brief Get the available size in bytes of a storage
- *
- * @param resource The surf storage
- * @return The available size in bytes of the storage
- */
-XBT_PUBLIC(sg_size_t) surf_storage_get_free_size(surf_resource_t resource);
-
-/**
- * @brief Get the size in bytes of a storage
- *
- * @param resource The surf storage
- * @return The used size in bytes of the storage
- */
-XBT_PUBLIC(sg_size_t) surf_storage_get_used_size(surf_resource_t resource);
-
-/** @brief return the properties set associated to that storage */
-XBT_PUBLIC(xbt_dict_t) surf_storage_get_properties(surf_resource_t resource);
-
 /**
  * @brief [brief description]
  * @details [long description]
@@ -295,33 +149,6 @@ XBT_PUBLIC(void) surf_cpu_action_set_bound(surf_action_t action, double bound);
  * @param action The surf network action
  */
 XBT_PUBLIC(double) surf_network_action_get_latency_limited(surf_action_t action);
-
-/**
- * @brief Get the file associated to a storage action
- *
- * @param action The surf storage action
- * @return The file associated to a storage action
- */
-XBT_PUBLIC(surf_file_t) surf_storage_action_get_file(surf_action_t action);
-
-/**
- * @brief Get the result dictionary of an ls action
- *
- * @param action The surf storage action
- * @return The dictionry listing a path
- */
-XBT_PUBLIC(xbt_dict_t) surf_storage_action_get_ls_dict(surf_action_t action);
-
-
-/**
- * @brief Get the host the storage is attached to
- *
- * @param resource The surf storage
- * @return The host name
- * may not exist.
- */
-XBT_PUBLIC(const char * ) surf_storage_get_host(surf_resource_t resource);
-XBT_PUBLIC(const char * ) surf_storage_get_name(surf_resource_t resource);
 
 /** @} */
 

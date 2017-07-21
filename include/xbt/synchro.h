@@ -8,8 +8,6 @@
 #ifndef XBT_THREAD_H
 #define XBT_THREAD_H
 
-#include <simgrid/simix.h>
-
 #include "xbt/function_types.h"
 #include "xbt/misc.h" /* SG_BEGIN_DECL */
 

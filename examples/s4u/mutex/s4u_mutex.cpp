@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2015. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -64,5 +64,7 @@ int main(int argc, char **argv)
   e->loadPlatform("../../platforms/two_hosts.xml");
   simgrid::s4u::Actor::createActor("main", simgrid::s4u::Host::by_name("Tremblay"), master);
   e->run();
+
+  delete e;
   return 0;
 }

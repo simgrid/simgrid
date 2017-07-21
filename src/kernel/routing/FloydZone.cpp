@@ -32,10 +32,10 @@ FloydZone::~FloydZone()
 {
   if (linkTable_ == nullptr) // Dealing with a parse error in the file?
     return;
-  int table_size = vertices_.size();
+  unsigned int table_size = getTableSize();
   /* Delete link_table */
-  for (int i = 0; i < table_size; i++)
-    for (int j = 0; j < table_size; j++)
+  for (unsigned int i = 0; i < table_size; i++)
+    for (unsigned int j = 0; j < table_size; j++)
       routing_route_free(TO_FLOYD_LINK(i, j));
   xbt_free(linkTable_);
 
@@ -45,7 +45,7 @@ FloydZone::~FloydZone()
 
 void FloydZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
 {
-  size_t table_size = vertices_.size();
+  unsigned int table_size = getTableSize();
 
   getRouteCheckParams(src, dst);
 
@@ -87,7 +87,7 @@ void FloydZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
 void FloydZone::addRoute(sg_platf_route_cbarg_t route)
 {
   /* set the size of table routing */
-  int table_size = static_cast<int>(vertices_.size());
+  unsigned int table_size = getTableSize();
 
   addRouteCheckParams(route);
 
@@ -98,8 +98,8 @@ void FloydZone::addRoute(sg_platf_route_cbarg_t route)
     linkTable_        = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size); /* actual link between src and dst */
 
     /* Initialize costs and predecessors */
-    for (int i = 0; i < table_size; i++)
-      for (int j = 0; j < table_size; j++) {
+    for (unsigned int i = 0; i < table_size; i++)
+      for (unsigned int j = 0; j < table_size; j++) {
         TO_FLOYD_COST(i, j) = DBL_MAX;
         TO_FLOYD_PRED(i, j) = -1;
         TO_FLOYD_LINK(i, j) = nullptr;
@@ -156,7 +156,7 @@ void FloydZone::addRoute(sg_platf_route_cbarg_t route)
 void FloydZone::seal()
 {
   /* set the size of table routing */
-  size_t table_size = vertices_.size();
+  unsigned int table_size = getTableSize();
 
   if (not linkTable_) {
     /* Create Cost, Predecessor and Link tables */

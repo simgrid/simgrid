@@ -58,7 +58,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_As_nativeInit(JNIEnv* env, jclass cl
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getName(JNIEnv * env, jobject jas) {
   simgrid::s4u::NetZone* as = jnetzone_get_native(env, jas);
-  return env->NewStringUTF(as->name());
+  return env->NewStringUTF(as->getCname());
 }
 
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getSons(JNIEnv * env, jobject jas) {
@@ -71,14 +71,14 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getSons(JNIEnv * env, job
   if (not cls)
     return nullptr;
 
-  jtable = env->NewObjectArray(static_cast<jsize>(self_as->children()->size()), cls, nullptr);
+  jtable = env->NewObjectArray(static_cast<jsize>(self_as->getChildren()->size()), cls, nullptr);
 
   if (not jtable) {
     jxbt_throw_jni(env, "Hosts table allocation failed");
     return nullptr;
   }
 
-  for (auto tmp_as : *self_as->children()) {
+  for (auto tmp_as : *self_as->getChildren()) {
     jobject tmp_jas = jnetzone_new_instance(env);
     if (not tmp_jas) {
       jxbt_throw_jni(env, "java As instantiation failed");
@@ -130,7 +130,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jo
     return nullptr;
 
   std::vector<sg_host_t> table;
-  as->hosts(&table);
+  as->getHosts(&table);
 
   jtable = env->NewObjectArray(static_cast<jsize>(table.size()), cls, nullptr);
 
@@ -143,11 +143,11 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jo
   for (auto host : table) {
     jhost = static_cast<jobject>(host->extension(JAVA_HOST_LEVEL));
     if (not jhost) {
-      jname = env->NewStringUTF(host->cname());
+      jname = env->NewStringUTF(host->getCname());
 
       jhost = Java_org_simgrid_msg_Host_getByName(env, cls, jname);
 
-      env->ReleaseStringUTFChars(static_cast<jstring>(jname), host->cname());
+      env->ReleaseStringUTFChars(static_cast<jstring>(jname), host->getCname());
     }
 
     env->SetObjectArrayElement(jtable, index, jhost);

@@ -85,10 +85,10 @@ mpi_names_t mpi_names[] = {
     { MPI_OFFSET, "MPI_OFFSET" },
 #endif
     /* Size-specific types */
-    /* Do not move MPI_REAL4 - this is used to indicate the very first 
+    /* Do not move MPI_REAL4 - this is used to indicate the very first
        optional type.  In addition, you must not add any required types
        after this type */
-    /* See MPI 2.1, Section 16.2.  These are required, predefined types. 
+    /* See MPI 2.1, Section 16.2.  These are required, predefined types.
        If the type is not available (e.g., *only* because the Fortran
        compiler does not support it), the value may be MPI_DATATYPE_NULL */
     { MPI_REAL4, "MPI_REAL4" },
@@ -110,9 +110,9 @@ mpi_names_t mpi_names[] = {
     /* Semi-optional types - if the compiler doesn't support long double
        or long long, these might be MPI_DATATYPE_NULL */
     { MPI_LONG_DOUBLE, "MPI_LONG_DOUBLE" },
-    { MPI_LONG_LONG_INT, "MPI_LONG_LONG_INT" }, 
+    { MPI_LONG_LONG_INT, "MPI_LONG_LONG_INT" },
     { MPI_LONG_LONG, "MPI_LONG_LONG" },
-    { MPI_UNSIGNED_LONG_LONG, "MPI_UNSIGNED_LONG_LONG" }, 
+    { MPI_UNSIGNED_LONG_LONG, "MPI_UNSIGNED_LONG_LONG" },
     { MPI_LONG_DOUBLE_INT, "MPI_LONG_DOUBLE_INT" },
 #if MTEST_HAVE_MIN_MPI_VERSION(2,2)
     /* added in MPI-2.2 */
@@ -132,7 +132,7 @@ mpi_names_t mpi_names[] = {
     int errs = 0;
 
     MTest_Init( &argc, &argv );
-    
+
     /* Sample some datatypes */
     /* See 8.4, "Naming Objects" in MPI-2.  The default name is the same
        as the datatype name */
@@ -152,15 +152,15 @@ mpi_names_t mpi_names[] = {
     inOptional = 0;
     for (i=0; mpi_names[i].name != 0; i++) {
 	/* Are we in the optional types? */
-	if (strcmp( mpi_names[i].name, "MPI_REAL4" ) == 0) 
+	if (strcmp( mpi_names[i].name, "MPI_REAL4" ) == 0)
 	    inOptional = 1;
 	/* If this optional type is not supported, skip it */
 	if (inOptional && mpi_names[i].dtype == MPI_DATATYPE_NULL) continue;
 	if (mpi_names[i].dtype == MPI_DATATYPE_NULL) {
-	    /* Report an error because all of the standard types 
+	    /* Report an error because all of the standard types
 	       must be supported */
 	    errs++;
-	    fprintf( stderr, "MPI Datatype %s is MPI_DATATYPE_NULL\n", 
+	    fprintf( stderr, "MPI Datatype %s is MPI_DATATYPE_NULL\n",
 		     mpi_names[i].name );
 	    continue;
 	}
@@ -169,7 +169,7 @@ mpi_names_t mpi_names[] = {
 	MPI_Type_get_name( mpi_names[i].dtype, name, &namelen );
 	if (strncmp( name, mpi_names[i].name, namelen )) {
 	    errs++;
-	    fprintf( stderr, "Expected %s but got %s\n", 
+	    fprintf( stderr, "Expected %s but got %s\n",
 		     mpi_names[i].name, name );
 	}
     }

@@ -232,7 +232,6 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
       xbt_abort();
 
     memreg.prot = 0;
-
     for (i = 0; i < 3; i++){
       switch(lfields[1][i]){
         case 'r':
@@ -251,6 +250,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     if (memreg.prot == 0)
       memreg.prot |= PROT_NONE;
 
+    memreg.flags = 0;
     if (lfields[1][3] == 'p') {
       memreg.flags |= MAP_PRIVATE;
     } else {
@@ -339,6 +339,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
       memreg.prot |= PROT_EXEC;
 
     /* Private (copy-on-write) or shared? */
+    memreg.flags = 0;
     if (vmentries[i].kve_flags & KVME_FLAG_COW)
       memreg.flags |= MAP_PRIVATE;
     else

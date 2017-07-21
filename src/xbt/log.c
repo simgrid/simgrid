@@ -1,6 +1,6 @@
 /* log - a generic logging facility in the spirit of log4j                  */
 
-/* Copyright (c) 2004-2015. The SimGrid Team.
+/* Copyright (c) 2004-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -112,7 +112,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(xbt_exception);
   XBT_LOG_CONNECT(xbt_graph);
   XBT_LOG_CONNECT(xbt_heap);
-  XBT_LOG_CONNECT(xbt_lib);
   XBT_LOG_CONNECT(xbt_mallocator);
   XBT_LOG_CONNECT(xbt_memory_map);
   XBT_LOG_CONNECT(xbt_parmap);
@@ -200,7 +199,9 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(s4u_channel);
   XBT_LOG_CONNECT(s4u_comm);
   XBT_LOG_CONNECT(s4u_file);
-   
+  XBT_LOG_CONNECT(s4u_link);
+  XBT_LOG_CONNECT(s4u_vm);
+
   /* sg */
   XBT_LOG_CONNECT(sg_host);
 
@@ -221,6 +222,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(simix_host);
   XBT_LOG_CONNECT(simix_io);
   XBT_LOG_CONNECT(simix_kernel);
+  XBT_LOG_CONNECT(simix_mailbox);
   XBT_LOG_CONNECT(simix_network);
   XBT_LOG_CONNECT(simix_process);
   XBT_LOG_CONNECT(simix_popping);
@@ -236,6 +238,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_cpu_cas);
   XBT_LOG_CONNECT(surf_cpu_ti);
   XBT_LOG_CONNECT(surf_energy);
+  XBT_LOG_CONNECT(surf_file);
   XBT_LOG_CONNECT(surf_kernel);
   XBT_LOG_CONNECT(surf_lagrange);
   XBT_LOG_CONNECT(surf_lagrange_dichotomy);
@@ -245,6 +248,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(ns3);
 #endif
   XBT_LOG_CONNECT(surf_parse);
+  XBT_LOG_CONNECT(surf_plugin_load);
   XBT_LOG_CONNECT(surf_route);
   XBT_LOG_CONNECT(surf_routing_generic);
   XBT_LOG_CONNECT(surf_route_cluster);
@@ -260,7 +264,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_trace);
   XBT_LOG_CONNECT(surf_vm);
   XBT_LOG_CONNECT(surf_host);
-   
+
 #endif /* simgrid_EXPORTS */
 }
 
@@ -274,9 +278,7 @@ static void xbt_log_help_categories(void);
 void xbt_log_init(int *argc, char **argv)
 {
   unsigned help_requested = 0;  /* 1: logs; 2: categories */
-  int i;
-  int j;
-  char *opt;
+  int j                   = 1;
 
   /* uncomment to set the LOG category to debug directly */
   //    _XBT_LOGV(log).threshold = xbt_log_priority_debug;
@@ -284,9 +286,9 @@ void xbt_log_init(int *argc, char **argv)
   xbt_log_connect_categories();
 
   /* Set logs and init log submodule */
-  for (j = i = 1; i < *argc; i++) {
+  for (int i = 1; i < *argc; i++) {
     if (!strncmp(argv[i], "--log=", strlen("--log="))) {
-      opt = strchr(argv[i], '=');
+      char* opt = strchr(argv[i], '=');
       opt++;
       xbt_log_control_set(opt);
       XBT_DEBUG("Did apply '%s' as log setting", opt);
@@ -756,10 +758,8 @@ void xbt_log_control_set(const char *control_string)
 
   /* Parse each entry and either use it right now (if the category was already created), or store it for further use */
   xbt_dynar_foreach(set_strings, cpt, str) {
-    xbt_log_category_t cat = NULL;
-
     set = _xbt_log_parse_setting(str);
-    cat = _xbt_log_cat_searchsub(&_XBT_LOGV(XBT_LOG_ROOT_CAT), set->catname);
+    xbt_log_category_t cat = _xbt_log_cat_searchsub(&_XBT_LOGV(XBT_LOG_ROOT_CAT), set->catname);
 
     if (cat) {
       XBT_DEBUG("Apply directly");
@@ -809,54 +809,56 @@ void xbt_log_additivity_set(xbt_log_category_t cat, int additivity)
 
 static void xbt_log_help(void)
 {
-  printf(
-"Description of the logging output:\n"
-"\n"
-"   Threshold configuration: --log=CATEGORY_NAME.thres:PRIORITY_LEVEL\n"
-"      CATEGORY_NAME: defined in code with function 'XBT_LOG_NEW_CATEGORY'\n"
-"      PRIORITY_LEVEL: the level to print (trace,debug,verbose,info,warning,error,critical)\n"
-"         -> trace: enter and return of some functions\n"
-"         -> debug: crufty output\n"
-"         -> verbose: verbose output for the user wanting more\n"
-"         -> info: output about the regular functionning\n"
-"         -> warning: minor issue encountered\n"
-"         -> error: issue encountered\n"
-"         -> critical: major issue encountered\n"
-"\n"
-"   Format configuration: --log=CATEGORY_NAME.fmt:OPTIONS\n"
-"      OPTIONS may be:\n"
-"         -> %%%%: the %% char\n"
-"         -> %%n: platform-dependent line separator (LOG4J compatible)\n"
-"         -> %%e: plain old space (SimGrid extension)\n"
-"\n"
-"         -> %%m: user-provided message\n"
-"\n"
-"         -> %%c: Category name (LOG4J compatible)\n"
-"         -> %%p: Priority name (LOG4J compatible)\n"
-"\n"
-"         -> %%h: Hostname (SimGrid extension)\n"
-"         -> %%P: Process name (SimGrid extension)\n"
-"         -> %%t: Thread \"name\" (LOG4J compatible -- actually the address of the thread in memory)\n"
-"         -> %%i: Process PID (SimGrid extension -- this is a 'i' as in 'i'dea)\n"
-"\n"
-"         -> %%F: file name where the log event was raised (LOG4J compatible)\n"
-"         -> %%l: location where the log event was raised (LOG4J compatible, like '%%F:%%L' -- this is a l as in 'l'etter)\n"
-"         -> %%L: line number where the log event was raised (LOG4J compatible)\n"
-"         -> %%M: function name (LOG4J compatible -- called method name here of course).\n"
-"                 Defined only when using gcc because there is no __FUNCTION__ elsewhere.\n"
-"\n"
-"         -> %%b: full backtrace (Called %%throwable in LOG4J). Defined only under windows or when using the GNU libc because\n"
-"                 backtrace() is not defined elsewhere, and we only have a fallback for windows boxes, not mac ones for example.\n"
-"         -> %%B: short backtrace (only the first line of the %%b). Called %%throwable{short} in LOG4J; defined where %%b is.\n"
-"\n"
-"         -> %%d: date (UNIX-like epoch)\n"
-"         -> %%r: application age (time elapsed since the beginning of the application)\n"
-"\n"
-"   Miscellaneous:\n"
-"      --help-log-categories    Display the current hierarchy of log categories.\n"
-"      --log=no_loc             Don't print file names in messages (for tesh tests).\n"
-"\n"
-    );
+  printf("Description of the logging output:\n"
+         "\n"
+         "   Threshold configuration: --log=CATEGORY_NAME.thres:PRIORITY_LEVEL\n"
+         "      CATEGORY_NAME: defined in code with function 'XBT_LOG_NEW_CATEGORY'\n"
+         "      PRIORITY_LEVEL: the level to print (trace,debug,verbose,info,warning,error,critical)\n"
+         "         -> trace: enter and return of some functions\n"
+         "         -> debug: crufty output\n"
+         "         -> verbose: verbose output for the user wanting more\n"
+         "         -> info: output about the regular functioning\n"
+         "         -> warning: minor issue encountered\n"
+         "         -> error: issue encountered\n"
+         "         -> critical: major issue encountered\n"
+         "\n"
+         "   Format configuration: --log=CATEGORY_NAME.fmt:OPTIONS\n"
+         "      OPTIONS may be:\n"
+         "         -> %%%%: the %% char\n"
+         "         -> %%n: platform-dependent line separator (LOG4J compatible)\n"
+         "         -> %%e: plain old space (SimGrid extension)\n"
+         "\n"
+         "         -> %%m: user-provided message\n"
+         "\n"
+         "         -> %%c: Category name (LOG4J compatible)\n"
+         "         -> %%p: Priority name (LOG4J compatible)\n"
+         "\n"
+         "         -> %%h: Hostname (SimGrid extension)\n"
+         "         -> %%P: Process name (SimGrid extension)\n"
+         "         -> %%t: Thread \"name\" (LOG4J compatible -- actually the address of the thread in memory)\n"
+         "         -> %%i: Process PID (SimGrid extension -- this is a 'i' as in 'i'dea)\n"
+         "\n"
+         "         -> %%F: file name where the log event was raised (LOG4J compatible)\n"
+         "         -> %%l: location where the log event was raised (LOG4J compatible, like '%%F:%%L' -- this is a l as "
+         "in 'l'etter)\n"
+         "         -> %%L: line number where the log event was raised (LOG4J compatible)\n"
+         "         -> %%M: function name (LOG4J compatible -- called method name here of course).\n"
+         "                 Defined only when using gcc because there is no __FUNCTION__ elsewhere.\n"
+         "\n"
+         "         -> %%b: full backtrace (Called %%throwable in LOG4J). Defined only under windows or when using the "
+         "GNU libc because\n"
+         "                 backtrace() is not defined elsewhere, and we only have a fallback for windows boxes, not "
+         "mac ones for example.\n"
+         "         -> %%B: short backtrace (only the first line of the %%b). Called %%throwable{short} in LOG4J; "
+         "defined where %%b is.\n"
+         "\n"
+         "         -> %%d: date (UNIX-like epoch)\n"
+         "         -> %%r: application age (time elapsed since the beginning of the application)\n"
+         "\n"
+         "   Miscellaneous:\n"
+         "      --help-log-categories    Display the current hierarchy of log categories.\n"
+         "      --log=no_loc             Don't print file names in messages (for tesh tests).\n"
+         "\n");
 }
 
 static int xbt_log_cat_cmp(const void *pa, const void *pb)

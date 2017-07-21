@@ -5,10 +5,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/sysdep.h"
+#include "simgrid/host.h"
 #include "src/xbt/log_private.h"
-#include "simgrid/simix.h"      /* SIMIX_host_self_get_name */
 #include "surf/surf.h"
+#include "xbt/sysdep.h"
 #include <stdio.h>
 
 extern const char *xbt_log_priority_names[8];
@@ -119,11 +119,9 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
         show_string(xbt_log_priority_names[ev->priority]);
         break;
       case 'h':                 /* host name; SimGrid extension */
-        show_string(SIMIX_host_self_get_name());
+        show_string(sg_host_self_get_name());
         break;
-      case 't':                 /* thread name; LOG4J compliant */
-        show_string(SIMIX_process_self_get_name());
-        break;
+      case 't':                 /* thread/process name; LOG4J compliant */
       case 'P':                 /* process name; SimGrid extension */
         show_string(xbt_procname());
         break;

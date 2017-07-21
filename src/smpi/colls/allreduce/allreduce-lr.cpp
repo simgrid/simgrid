@@ -6,8 +6,8 @@
 
 #include "../colls_private.h"
 
-/* IMPLEMENTED BY PITCH PATARASUK 
-   Non-topoloty-specific all-reduce operation designed bandwidth optimally 
+/* IMPLEMENTED BY PITCH PATARASUK
+   Non-topoloty-specific all-reduce operation designed bandwidth optimally
    Bug fixing by Xin Yuan, 04/04/2008
 */
 
@@ -41,10 +41,10 @@ Coll_allreduce_lr::allreduce(void *sbuf, void *rbuf, int rcount,
   if (rcount < size) {
     XBT_WARN("MPI_allreduce_lr use default MPI_allreduce.");
     Coll_allreduce_default::allreduce(sbuf, rbuf, rcount, dtype, op, comm);
-    return MPI_SUCCESS; 
+    return MPI_SUCCESS;
   }
 
-  /* when communication size is not divisible by number of process: 
+  /* when communication size is not divisible by number of process:
      call the native implementation for the remain chunk at the end of the operation */
   if (rcount % size != 0) {
     remainder = rcount % size;
@@ -62,7 +62,7 @@ Coll_allreduce_lr::allreduce(void *sbuf, void *rbuf, int rcount,
   /* our ALL-REDUCE implementation
      1. copy (partial of)send_buf to recv_buf
      2. use logical ring reduce-scatter
-     3. use logical ring all-gather 
+     3. use logical ring all-gather
    */
 
   // copy partial data
@@ -95,7 +95,7 @@ Coll_allreduce_lr::allreduce(void *sbuf, void *rbuf, int rcount,
                  ((rank + size - 1) % size), tag + i, comm, &status);
   }
 
-  /* when communication size is not divisible by number of process: 
+  /* when communication size is not divisible by number of process:
      call the native implementation for the remain chunk at the end of the operation */
   if (remainder_flag) {
     return Colls::allreduce((char *) sbuf + remainder_offset,

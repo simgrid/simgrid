@@ -6,12 +6,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/internal_config.h"
 #include "xbt/mallocator.h"
+#include "mallocator_private.h"
+#include "simgrid/modelchecker.h" /* kill mallocators when model-checking is enabled */
+#include "src/internal_config.h"
 #include "xbt/asserts.h"
 #include "xbt/sysdep.h"
-#include "mc/mc.h" /* kill mallocators when model-checking is enabled */
-#include "mallocator_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mallocator, xbt, "Mallocators");
 

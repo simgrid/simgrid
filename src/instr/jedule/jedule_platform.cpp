@@ -59,15 +59,15 @@ void Container::addResources(std::vector<sg_host_t> hosts)
 void Container::createHierarchy(sg_netzone_t from_as)
 {
 
-  if (from_as->children()->empty()) {
+  if (from_as->getChildren()->empty()) {
     // I am no AS
     // add hosts to jedule platform
     std::vector<sg_host_t> table;
-    from_as->hosts(&table);
+    from_as->getHosts(&table);
     this->addResources(table);
   } else {
-    for (auto nz : *from_as->children()) {
-      jed_container_t child_container = new simgrid::jedule::Container(std::string(nz->name()));
+    for (auto nz : *from_as->getChildren()) {
+      jed_container_t child_container = new simgrid::jedule::Container(std::string(nz->getCname()));
       this->addChild(child_container);
       child_container->createHierarchy(nz);
     }

@@ -47,7 +47,7 @@ int Coll_allgather_SMP_NTS::allgather(void *sbuf, int scount,
   if (comm_size <= num_core) {
     XBT_WARN("MPI_allgather_SMP_NTS use default MPI_allgather.");
     Coll_allgather_default::allgather(sbuf, scount, stype, rbuf, rcount, rtype, comm);
-    return MPI_SUCCESS;    
+    return MPI_SUCCESS;
   }
 
   // the last SMP node may have fewer number of running processes than all others
@@ -78,7 +78,7 @@ int Coll_allgather_SMP_NTS::allgather(void *sbuf, int scount,
 
   }
 
-  // INTER-SMP-ALLGATHER 
+  // INTER-SMP-ALLGATHER
   // Every root of each SMP node post INTER-Sendrecv, then do INTRA-Bcast for each receiving message
   // Use logical ring algorithm
 

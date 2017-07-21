@@ -30,25 +30,25 @@ namespace simgrid {
   int LinkImpl::linksCount()
   {
     return links->size();
+  }
+  /** @brief Returns a list of all existing links */
+  LinkImpl** LinkImpl::linksList()
+  {
+    LinkImpl** res = xbt_new(LinkImpl*, (int)links->size());
+    int i          = 0;
+    for (auto kv : *links) {
+      res[i] = kv.second;
+      i++;
     }
-    /** @brief Returns a list of all existing links */
-    LinkImpl** LinkImpl::linksList()
-    {
-      LinkImpl** res = xbt_new(LinkImpl*, (int)links->size());
-      int i          = 0;
-      for (auto kv : *links) {
-        res[i] = kv.second;
-        i++;
-      }
-      return res;
-    }
-    /** @brief destructor of the static data */
-    void LinkImpl::linksExit()
-    {
-      for (auto kv : *links)
-        (kv.second)->destroy();
-      delete links;
-    }
+    return res;
+  }
+  /** @brief destructor of the static data */
+  void LinkImpl::linksExit()
+  {
+    for (auto kv : *links)
+      (kv.second)->destroy();
+    delete links;
+  }
   }
 }
 

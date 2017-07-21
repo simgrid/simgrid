@@ -30,7 +30,7 @@ static int sender(int argc, char *argv[])
     xbt_dynar_push_as(comms, msg_comm_t, comm);
     XBT_INFO("Send to receiver-%ld %s comm_size %f", i % receivers_count, taskname, task_comm_size / coef);
   }
-   
+
   /* Here we are waiting for the completion of all communications */
   while (xbt_dynar_is_empty(comms) == 0) {
     msg_comm_t comm;
@@ -63,7 +63,7 @@ static int receiver(int argc, char *argv[])
 
   char mailbox[80];
   snprintf(mailbox,79, "receiver-%d", id);
-   
+
   MSG_process_sleep(10);
   for (int i = 0; i < task_amount; i++) {
     XBT_INFO("Wait to receive task %d", i);

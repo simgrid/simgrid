@@ -42,7 +42,7 @@ public:
     XBT_INFO("Hello s4u, I have something to send");
     simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName("mb42");
 
-    simgrid::s4u::this_actor::send(mailbox, xbt_strdup(msg.c_str()), msg.size());
+    mailbox->put(xbt_strdup(msg.c_str()), msg.size());
     XBT_INFO("I'm done. See you.");
   }
 };
@@ -72,10 +72,10 @@ public:
   }
   void operator()()
   {
-    XBT_INFO("Hello s4u, I'm ready to get any message you'd want on %s", mailbox->name());
+    XBT_INFO("Hello s4u, I'm ready to get any message you'd want on %s", mailbox->getName());
 
-    char* msg1 = static_cast<char*>(simgrid::s4u::this_actor::recv(mailbox));
-    char* msg2 = static_cast<char*>(simgrid::s4u::this_actor::recv(mailbox));
+    char* msg1 = static_cast<char*>(mailbox->get());
+    char* msg2 = static_cast<char*>(mailbox->get());
     XBT_INFO("I received '%s' and '%s'", msg1, msg2);
     xbt_free(msg1);
     xbt_free(msg2);
@@ -114,5 +114,7 @@ int main(int argc, char** argv)
   e->run();
 
   /* Once the simulation is done, the program is ended */
+  delete e;
+
   return 0;
 }

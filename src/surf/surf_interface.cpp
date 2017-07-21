@@ -47,25 +47,31 @@ s_surf_model_description_t surf_plugin_description[] = {
 
 /* Don't forget to update the option description in smx_config when you change this */
 s_surf_model_description_t surf_network_model_description[] = {
-  {"LV08", "Realistic network analytic model (slow-start modeled by multiplying latency by 10.4, bandwidth by .92; bottleneck sharing uses a payload of S=8775 for evaluating RTT). ",
-   &surf_network_model_init_LegrandVelho},
-  {"Constant",
-   "Simplistic network model where all communication take a constant time (one second). This model provides the lowest realism, but is (marginally) faster.",
-   &surf_network_model_init_Constant},
-  {"SMPI", "Realistic network model specifically tailored for HPC settings (accurate modeling of slow start with correction factors on three intervals: < 1KiB, < 64 KiB, >= 64 KiB)",
-   &surf_network_model_init_SMPI},
-  {"IB", "Realistic network model specifically tailored for HPC settings, with Infiniband contention model",
-   &surf_network_model_init_IB},
-  {"CM02", "Legacy network analytic model (Very similar to LV08, but without corrective factors. The timings of small messages are thus poorly modeled).",
-   &surf_network_model_init_CM02},
-  {"NS3", "Network pseudo-model using the NS3 tcp model instead of an analytic model", &surf_network_model_init_NS3},
-  {"Reno",  "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
-   &surf_network_model_init_Reno},
-  {"Reno2", "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
-   &surf_network_model_init_Reno2},
-  {"Vegas", "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
-   &surf_network_model_init_Vegas},
-  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
+    {"LV08", "Realistic network analytic model (slow-start modeled by multiplying latency by 13.01, bandwidth by .97; "
+             "bottleneck sharing uses a payload of S=20537 for evaluating RTT). ",
+     &surf_network_model_init_LegrandVelho},
+    {"Constant", "Simplistic network model where all communication take a constant time (one second). This model "
+                 "provides the lowest realism, but is (marginally) faster.",
+     &surf_network_model_init_Constant},
+    {"SMPI", "Realistic network model specifically tailored for HPC settings (accurate modeling of slow start with "
+             "correction factors on three intervals: < 1KiB, < 64 KiB, >= 64 KiB)",
+     &surf_network_model_init_SMPI},
+    {"IB", "Realistic network model specifically tailored for HPC settings, with Infiniband contention model",
+     &surf_network_model_init_IB},
+    {"CM02", "Legacy network analytic model (Very similar to LV08, but without corrective factors. The timings of "
+             "small messages are thus poorly modeled).",
+     &surf_network_model_init_CM02},
+    {"NS3", "Network pseudo-model using the NS3 tcp model instead of an analytic model", &surf_network_model_init_NS3},
+    {"Reno",
+     "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
+     &surf_network_model_init_Reno},
+    {"Reno2",
+     "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
+     &surf_network_model_init_Reno2},
+    {"Vegas",
+     "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
+     &surf_network_model_init_Vegas},
+    {nullptr, nullptr, nullptr} /* this array must be nullptr terminated */
 };
 
 #if ! HAVE_SMPI
@@ -155,9 +161,8 @@ FILE *surf_fopen(const char *name, const char *mode)
 
   /* search relative files in the path */
   for (auto path_elm : surf_path) {
-    char* buff = bprintf("%s" FILE_DELIM "%s", path_elm.c_str(), name);
-    file = fopen(buff, mode);
-    free(buff);
+    std::string buff = path_elm + FILE_DELIM + name;
+    file             = fopen(buff.c_str(), mode);
 
     if (file)
       return file;
@@ -256,36 +261,31 @@ int find_model_description(s_surf_model_description_t * table,
   return -1;
 }
 
-static inline void surf_storage_free(void *r)
+void sg_version_check(int lib_version_major, int lib_version_minor, int lib_version_patch)
 {
-  delete static_cast<simgrid::surf::StorageImpl*>(r);
-}
-
-void sg_version_check(int lib_version_major,int lib_version_minor,int lib_version_patch) {
-    if ((lib_version_major != SIMGRID_VERSION_MAJOR) || (lib_version_minor != SIMGRID_VERSION_MINOR)) {
-      fprintf(stderr,
+  if ((lib_version_major != SIMGRID_VERSION_MAJOR) || (lib_version_minor != SIMGRID_VERSION_MINOR)) {
+    fprintf(stderr, "FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, "
+                    "and then linked against SimGrid %d.%d.%d. Please fix this.\n",
+            lib_version_major, lib_version_minor, lib_version_patch, SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR,
+            SIMGRID_VERSION_PATCH);
+    abort();
+  }
+  if (lib_version_patch != SIMGRID_VERSION_PATCH) {
+    if (SIMGRID_VERSION_PATCH >= 90 || lib_version_patch >= 90) {
+      fprintf(
+          stderr,
           "FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, "
-          "and then linked against SimGrid %d.%d.%d. Please fix this.\n",
-          lib_version_major,lib_version_minor,lib_version_patch,
-          SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH);
+          "and then linked against SimGrid %d.%d.%d. \n"
+          "One of them is a development version, and should not be mixed with the stable release. Please fix this.\n",
+          lib_version_major, lib_version_minor, lib_version_patch, SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR,
+          SIMGRID_VERSION_PATCH);
       abort();
     }
-    if (lib_version_patch != SIMGRID_VERSION_PATCH) {
-      if(SIMGRID_VERSION_PATCH >= 90 || lib_version_patch >=90){
-        fprintf(stderr,
-        "FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, "
-        "and then linked against SimGrid %d.%d.%d. \n"
-        "One of them is a development version, and should not be mixed with the stable release. Please fix this.\n",
-        lib_version_major,lib_version_minor,lib_version_patch,
-        SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH);
-        abort();
-      }
-        fprintf(stderr,
-            "Warning: Your program was compiled with SimGrid version %d.%d.%d, "
-            "and then linked against SimGrid %d.%d.%d. Proceeding anyway.\n",
-            lib_version_major,lib_version_minor,lib_version_patch,
-            SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH);
-    }
+    fprintf(stderr, "Warning: Your program was compiled with SimGrid version %d.%d.%d, "
+                    "and then linked against SimGrid %d.%d.%d. Proceeding anyway.\n",
+            lib_version_major, lib_version_minor, lib_version_patch, SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR,
+            SIMGRID_VERSION_PATCH);
+  }
 }
 
 void sg_version_get(int* ver_major, int* ver_minor, int* ver_patch)
@@ -345,11 +345,7 @@ void surf_init(int *argc, char **argv)
   XBT_DEBUG("Create all Libs");
   USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(nullptr);
 
-  storage_lib = xbt_lib_new();
   watched_hosts_lib = xbt_dict_new_homogeneous(nullptr);
-
-  XBT_DEBUG("Add SURF levels");
-  SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_free);
 
   xbt_init(argc, argv);
   if (not all_existing_models)
@@ -371,7 +367,6 @@ void surf_exit()
   TRACE_end();                  /* Just in case it was not called by the upper layer (or there is no upper layer) */
 
   sg_host_exit();
-  xbt_lib_free(&storage_lib);
   sg_link_exit();
   xbt_dict_free(&watched_hosts_lib);
   for (auto e : storage_types) {
@@ -383,6 +378,9 @@ void surf_exit()
     delete stype->model_properties;
     free(stype);
   }
+  for (auto s : *simgrid::surf::StorageImpl::storagesMap())
+    delete s.second;
+  delete simgrid::surf::StorageImpl::storagesMap();
 
   for (auto model : *all_existing_models)
     delete model;
@@ -740,13 +738,11 @@ void Action::setMaxDuration(double duration)
     heapRemove(getModel()->getActionHeap());
 }
 
-void Action::gapRemove() {}
-
-void Action::setPriority(double priority)
+void Action::setSharingWeight(double weight)
 {
-  XBT_IN("(%p,%g)", this, priority);
-  priority_ = priority;
-  lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), priority);
+  XBT_IN("(%p,%g)", this, weight);
+  sharingWeight_ = weight;
+  lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), weight);
 
   if (getModel()->getUpdateMechanism() == UM_LAZY)
     heapRemove(getModel()->getActionHeap());
@@ -788,7 +784,8 @@ void Action::suspend()
     lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), 0.0);
     if (getModel()->getUpdateMechanism() == UM_LAZY){
       heapRemove(getModel()->getActionHeap());
-      if (getModel()->getUpdateMechanism() == UM_LAZY  && stateSet_ == getModel()->getRunningActionSet() && priority_ > 0){
+      if (getModel()->getUpdateMechanism() == UM_LAZY && stateSet_ == getModel()->getRunningActionSet() &&
+          sharingWeight_ > 0) {
         //If we have a lazy model, we need to update the remaining value accordingly
         updateRemainingLazy(surf_get_clock());
       }
@@ -802,7 +799,7 @@ void Action::resume()
 {
   XBT_IN("(%p)", this);
   if (suspended_ != 2) {
-    lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), priority_);
+    lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), sharingWeight_);
     suspended_ = 0;
     if (getModel()->getUpdateMechanism() == UM_LAZY)
       heapRemove(getModel()->getActionHeap());
@@ -877,7 +874,7 @@ void Action::updateRemainingLazy(double now)
   else
   {
     xbt_assert(stateSet_ == getModel()->getRunningActionSet(), "You're updating an action that is not running.");
-    xbt_assert(priority_ > 0, "You're updating an action that seems suspended.");
+    xbt_assert(sharingWeight_ > 0, "You're updating an action that seems suspended.");
   }
 
   delta = now - lastUpdate_;
@@ -900,13 +897,8 @@ void Action::updateRemainingLazy(double now)
       double_update(&maxDuration_, delta, sg_surf_precision);
 
     //FIXME: duplicated code
-    if ((remains_ <= 0) &&
-        (lmm_get_variable_weight(getVariable()) > 0)) {
-      finish();
-      setState(Action::State::done);
-      heapRemove(getModel()->getActionHeap());
-    } else if (((maxDuration_ != NO_MAX_DURATION)
-        && (maxDuration_ <= 0))) {
+    if (((remains_ <= 0) && (lmm_get_variable_weight(getVariable()) > 0)) ||
+        ((maxDuration_ > NO_MAX_DURATION) && (maxDuration_ <= 0))) {
       finish();
       setState(Action::State::done);
       heapRemove(getModel()->getActionHeap());

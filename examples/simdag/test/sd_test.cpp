@@ -34,10 +34,10 @@ int main(int argc, char **argv)
   double comp_amount2 = 1000000;
   double comm_amount12 = 2000000;
   double comm_amount21 = 3000000;
-  XBT_INFO("Computation time for %f flops on %s: %f", comp_amount1, h1->cname(), comp_amount1/h1->speed());
-  XBT_INFO("Computation time for %f flops on %s: %f", comp_amount2, h2->cname(), comp_amount2/h2->speed());
+  XBT_INFO("Computation time for %f flops on %s: %f", comp_amount1, h1->getCname(), comp_amount1 / h1->getSpeed());
+  XBT_INFO("Computation time for %f flops on %s: %f", comp_amount2, h2->getCname(), comp_amount2 / h2->getSpeed());
 
-  XBT_INFO("Route between %s and %s:", h1->cname(), h2->cname());
+  XBT_INFO("Route between %s and %s:", h1->getCname(), h2->getCname());
   std::vector<sg_link_t> route;
   double latency = 0;
   h1->routeTo(h2, &route, &latency);
@@ -47,10 +47,10 @@ int main(int argc, char **argv)
              sg_link_bandwidth(link));
 
   XBT_INFO("Route latency = %f, route bandwidth = %f", latency, sg_host_route_bandwidth(h1, h2));
-  XBT_INFO("Communication time for %f bytes between %s and %s: %f", comm_amount12,  h1->cname(), h2->cname(),
-        sg_host_route_latency(h1, h2) + comm_amount12 / sg_host_route_bandwidth(h1, h2));
-  XBT_INFO("Communication time for %f bytes between %s and %s: %f", comm_amount21,  h2->cname(), h1->cname(),
-        sg_host_route_latency(h2, h1) + comm_amount21 / sg_host_route_bandwidth(h2, h1));
+  XBT_INFO("Communication time for %f bytes between %s and %s: %f", comm_amount12, h1->getCname(), h2->getCname(),
+           sg_host_route_latency(h1, h2) + comm_amount12 / sg_host_route_bandwidth(h1, h2));
+  XBT_INFO("Communication time for %f bytes between %s and %s: %f", comm_amount21, h2->getCname(), h1->getCname(),
+           sg_host_route_latency(h2, h1) + comm_amount21 / sg_host_route_bandwidth(h2, h1));
 
   /* creation of the tasks and their dependencies */
   SD_task_t taskA = SD_task_create("Task A", NULL, 10.0);
@@ -140,7 +140,6 @@ int main(int argc, char **argv)
   SD_task_destroy(taskD);
 
   XBT_DEBUG("Tasks destroyed. Exiting SimDag...");
-  SD_exit();
   xbt_free((sg_host_t*)hosts);
   return 0;
 }

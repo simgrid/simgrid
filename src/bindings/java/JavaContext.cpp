@@ -51,7 +51,7 @@ void JavaContextFactory::run_all()
   smx_actor_t process;
   unsigned int cursor;
   xbt_dynar_foreach(processes, cursor, process) {
-    static_cast<JavaContext*>(SIMIX_process_get_context(process))->resume();
+    static_cast<JavaContext*>(process->context)->resume();
   }
 }
 

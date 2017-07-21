@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -38,18 +38,18 @@ public:
 
       if (number_of_tasks < 10000 || i % 10000 == 0)
         XBT_INFO("Sending \"%s\" (of %ld) to mailbox \"%s\"", (std::string("Task_") + std::to_string(i)).c_str(),
-                                                              number_of_tasks, mailbox->name());
+                 number_of_tasks, mailbox->getName());
 
       /* - Send the task to the @ref worker */
       char* payload = bprintf("%f", comp_size);
-      simgrid::s4u::this_actor::send(mailbox, payload, comm_size);
+      mailbox->put(payload, comm_size);
     }
 
     XBT_INFO("All tasks have been dispatched. Let's tell everybody the computation is over.");
     for (int i = 0; i < workers_count; i++) {
       /* - Eventually tell all the workers to stop by sending a "finalize" task */
       mailbox = simgrid::s4u::Mailbox::byName(std::string("worker-") + std::to_string(i % workers_count));
-      simgrid::s4u::this_actor::send(mailbox, xbt_strdup("finalize"), 0);
+      mailbox->put(xbt_strdup("finalize"), 0);
     }
   }
 };
@@ -70,7 +70,7 @@ public:
   void operator()()
   {
     while (1) { /* The worker waits in an infinite loop for tasks sent by the \ref master */
-      char* res = static_cast<char*>(simgrid::s4u::this_actor::recv(mailbox));
+      char* res = static_cast<char*>(mailbox->get());
       xbt_assert(res != nullptr, "MSG_task_get failed");
 
       if (strcmp(res, "finalize") == 0) { /* - Exit if 'finalize' is received */
@@ -102,5 +102,6 @@ int main(int argc, char* argv[])
 
   XBT_INFO("Simulation time %g", e->getClock());
 
+  delete e;
   return 0;
 }

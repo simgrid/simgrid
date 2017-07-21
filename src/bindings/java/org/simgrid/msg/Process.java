@@ -313,7 +313,7 @@ public abstract class Process implements Runnable {
 	}
 
 	/**
-	 * The main function of the process (to implement).
+	 * The main function of the process (to implement by the user).
 	 *
 	 * @param args
 	 * @throws MsgException

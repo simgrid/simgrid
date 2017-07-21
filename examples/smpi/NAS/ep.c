@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
   int    m;
   int    mk=16;
   int    nk = (int)(pow(2,mk)),
-         nq=10, 
+         nq=10,
          np, node, no_nodes, i, ik, kk, l, k, nit, no_large_nodes, np_add, k_offset;
   int    verified;
   char   size[500]; // mind the size of the string to represent a big number

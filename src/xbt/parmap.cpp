@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <atomic>
+#include <climits>
 
 #include "src/internal_config.h"
 #if HAVE_UNISTD_H
@@ -114,13 +115,12 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
   xbt_parmap_set_mode(parmap, mode);
 
   /* Create the pool of worker threads */
-  xbt_parmap_thread_data_t data;
   parmap->workers[0] = nullptr;
 #if HAVE_PTHREAD_SETAFFINITY
   int core_bind = 0;
-#endif  
+#endif
   for (unsigned int i = 1; i < num_workers; i++) {
-    data = xbt_new0(s_xbt_parmap_thread_data_t, 1);
+    xbt_parmap_thread_data_t data = xbt_new0(s_xbt_parmap_thread_data_t, 1);
     data->parmap = parmap;
     data->worker_id = i;
     parmap->workers[i] = xbt_os_thread_create(nullptr, xbt_parmap_worker_main, data, nullptr);
@@ -129,7 +129,7 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
     if (core_bind != xbt_os_get_numcores() - 1)
       core_bind++;
     else
-      core_bind = 0; 
+      core_bind = 0;
 #endif
   }
   return parmap;

@@ -14,9 +14,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf, "Logging specific to the SURF storage module");
 
-xbt_lib_t storage_lib;
-int MSG_STORAGE_LEVEL                           = -1; // Msg storage level
-int SURF_STORAGE_LEVEL                          = -1;
 simgrid::surf::StorageModel* surf_storage_model = nullptr;
 
 namespace simgrid {
@@ -30,6 +27,17 @@ simgrid::xbt::signal<void(StorageImpl*)> storageCreatedCallbacks;
 simgrid::xbt::signal<void(StorageImpl*)> storageDestructedCallbacks;
 simgrid::xbt::signal<void(StorageImpl*, int, int)> storageStateChangedCallbacks; // signature: wasOn, isOn
 simgrid::xbt::signal<void(StorageAction*, Action::State, Action::State)> storageActionStateChangedCallbacks;
+
+/* List of storages */
+std::unordered_map<std::string, StorageImpl*>* StorageImpl::storages =
+    new std::unordered_map<std::string, StorageImpl*>();
+
+StorageImpl* StorageImpl::byName(const char* name)
+{
+  if (storages->find(name) == storages->end())
+    return nullptr;
+  return storages->at(name);
+}
 
 /*********
  * Model *
@@ -53,38 +61,33 @@ StorageModel::~StorageModel()
 StorageImpl::StorageImpl(Model* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
                          const char* type_id, const char* content_name, sg_size_t size, const char* attach)
     : Resource(model, name, lmm_constraint_new(maxminSystem, this, MAX(bread, bwrite)))
+    , piface_(this)
+    , typeId_(type_id)
     , size_(size)
-    , usedSize_(0)
-    , typeId_(xbt_strdup(type_id))
-    , writeActions_(std::vector<StorageAction*>())
+    , attach_(attach)
 {
   content_ = parseContent(content_name);
-  attach_  = xbt_strdup(attach);
   turnOn();
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);
   constraintRead_  = lmm_constraint_new(maxminSystem, this, bread);
   constraintWrite_ = lmm_constraint_new(maxminSystem, this, bwrite);
+  storages->insert({name, this});
 }
 
 StorageImpl::~StorageImpl()
 {
   storageDestructedCallbacks(this);
-  if (content_ != nullptr) {
-    for (auto entry : *content_)
-      delete entry.second;
+  if (content_ != nullptr)
     delete content_;
-  }
-  free(typeId_);
-  free(attach_);
 }
 
-std::map<std::string, sg_size_t*>* StorageImpl::parseContent(const char* filename)
+std::map<std::string, sg_size_t>* StorageImpl::parseContent(const char* filename)
 {
   usedSize_ = 0;
   if ((not filename) || (strcmp(filename, "") == 0))
     return nullptr;
 
-  std::map<std::string, sg_size_t*>* parse_content = new std::map<std::string, sg_size_t*>();
+  std::map<std::string, sg_size_t>* parse_content = new std::map<std::string, sg_size_t>();
 
   std::ifstream* fs = surf_ifsopen(filename);
 
@@ -99,9 +102,7 @@ std::map<std::string, sg_size_t*>* StorageImpl::parseContent(const char* filenam
       sg_size_t size = std::stoull(tokens.at(1));
 
       usedSize_ += size;
-      sg_size_t* psize = new sg_size_t;
-      *psize           = size;
-      parse_content->insert({tokens.front(), psize});
+      parse_content->insert({tokens.front(), size});
     }
   } while (not fs->eof());
   delete fs;
@@ -134,7 +135,7 @@ void StorageImpl::turnOff()
   }
 }
 
-std::map<std::string, sg_size_t*>* StorageImpl::getContent()
+std::map<std::string, sg_size_t>* StorageImpl::getContent()
 {
   /* For the moment this action has no cost, but in the future we could take in account access latency of the disk */
   return content_;
@@ -153,20 +154,6 @@ sg_size_t StorageImpl::getUsedSize()
 /**********
  * Action *
  **********/
-StorageAction::StorageAction(Model* model, double cost, bool failed, StorageImpl* storage,
-                             e_surf_action_storage_type_t type)
-    : Action(model, cost, failed), type_(type), storage_(storage), file_(nullptr)
-{
-  progress_ = 0;
-};
-
-StorageAction::StorageAction(Model* model, double cost, bool failed, lmm_variable_t var, StorageImpl* storage,
-                             e_surf_action_storage_type_t type)
-    : Action(model, cost, failed, var), type_(type), storage_(storage), file_(nullptr)
-{
-  progress_ = 0;
-}
-
 void StorageAction::setState(Action::State state)
 {
   Action::State old = getState();

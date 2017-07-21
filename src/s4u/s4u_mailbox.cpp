@@ -1,14 +1,14 @@
-/* Copyright (c) 2006-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/log.h"
+#include "simgrid/s4u/Comm.hpp"
+#include "simgrid/s4u/Mailbox.hpp"
 #include "src/msg/msg_private.h"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_network_private.h"
-#include "simgrid/s4u/Mailbox.hpp"
+#include "xbt/log.h"
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_channel,s4u,"S4U Communication Mailboxes");
@@ -16,7 +16,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_channel,s4u,"S4U Communication Mailboxes");
 namespace simgrid {
 namespace s4u {
 
-const char *Mailbox::name() {
+const char* Mailbox::getName()
+{
   return pimpl_->name_;
 }
 
@@ -58,11 +59,87 @@ void Mailbox::setReceiver(ActorPtr actor) {
 }
 
 /** @brief get the receiver (process associated to the mailbox) */
-ActorPtr Mailbox::receiver() {
+ActorPtr Mailbox::getReceiver()
+{
   if (pimpl_->permanent_receiver == nullptr)
     return ActorPtr();
   return pimpl_->permanent_receiver->iface();
 }
 
+CommPtr Mailbox::put_init()
+{
+  CommPtr res   = CommPtr(new s4u::Comm());
+  res->sender_  = SIMIX_process_self();
+  res->mailbox_ = this;
+  return res;
+}
+s4u::CommPtr Mailbox::put_init(void* data, uint64_t simulatedSize)
+{
+  s4u::CommPtr res = put_init();
+  res->setRemains(simulatedSize);
+  res->srcBuff_     = data;
+  res->srcBuffSize_ = sizeof(void*);
+  return res;
+}
+s4u::CommPtr Mailbox::put_async(void* payload, uint64_t simulatedSize)
+{
+  xbt_assert(payload != nullptr, "You cannot send nullptr");
+
+  s4u::CommPtr res = put_init(payload, simulatedSize);
+  res->start();
+  return res;
+}
+void Mailbox::put(void* payload, uint64_t simulatedSize)
+{
+  xbt_assert(payload != nullptr, "You cannot send nullptr");
+
+  CommPtr c = put_init();
+  c->setRemains(simulatedSize);
+  c->setSrcData(payload);
+  c->wait();
+}
+/** Blocking send with timeout */
+void Mailbox::put(void* payload, uint64_t simulatedSize, double timeout)
+{
+  xbt_assert(payload != nullptr, "You cannot send nullptr");
+
+  CommPtr c = put_init();
+  c->setRemains(simulatedSize);
+  c->setSrcData(payload);
+  // c->start() is optional.
+  c->wait(timeout);
+}
+
+s4u::CommPtr Mailbox::get_init()
+{
+  CommPtr res    = CommPtr(new s4u::Comm());
+  res->receiver_ = SIMIX_process_self();
+  res->mailbox_  = this;
+  return res;
+}
+s4u::CommPtr Mailbox::get_async(void** data)
+{
+  s4u::CommPtr res = get_init();
+  res->setDstData(data, sizeof(*data));
+  res->start();
+  return res;
+}
+
+void* Mailbox::get()
+{
+  void* res = nullptr;
+  CommPtr c = get_init();
+  c->setDstData(&res, sizeof(res));
+  c->wait();
+  return res;
+}
+void* Mailbox::get(double timeout)
+{
+  void* res = nullptr;
+  CommPtr c = get_init();
+  c->setDstData(&res, sizeof(res));
+  c->wait(timeout);
+  return res;
+}
 }
 }

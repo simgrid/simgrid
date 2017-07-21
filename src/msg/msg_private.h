@@ -30,9 +30,6 @@ public:
 typedef struct simdata_task {
   ~simdata_task()
   {
-    if (this->compute)
-      this->compute->unref();
-
     /* parallel tasks only */
     xbt_free(this->host_list);
   }
@@ -42,8 +39,8 @@ typedef struct simdata_task {
     this->isused = false;
   }
 
-  simgrid::kernel::activity::ExecImpl* compute = nullptr; /* SIMIX modeling of computation */
-  simgrid::kernel::activity::CommImpl* comm = nullptr; /* SIMIX modeling of communication */
+  simgrid::kernel::activity::ExecImplPtr compute = nullptr; /* SIMIX modeling of computation */
+  simgrid::kernel::activity::CommImplPtr comm    = nullptr; /* SIMIX modeling of communication */
   double bytes_amount = 0.0; /* Data size */
   double flops_amount = 0.0; /* Computation size */
   msg_process_t sender = nullptr;
@@ -65,28 +62,30 @@ private:
   void reportMultipleUse() const;
 } s_simdata_task_t;
 
-/********************************* File **************************************/
-typedef struct simdata_file {
-  smx_file_t smx_file;
-} s_simdata_file_t;
-
 /******************************* Process *************************************/
 
 namespace simgrid {
-class MsgActorExt {
+namespace msg {
+class ActorExt {
 public:
-  explicit MsgActorExt(void* d) : data(d) {}
+  explicit ActorExt(void* d) : data(d) {}
   msg_error_t errno_ = MSG_OK;  /* the last value returned by a MSG_function */
   void* data = nullptr; /* user data */
 };
-}
 
-typedef struct msg_comm {
-  smx_activity_t s_comm;          /* SIMIX communication object encapsulated (the same for both processes) */
+class Comm {
+public:
   msg_task_t task_sent;           /* task sent (NULL for the receiver) */
   msg_task_t *task_received;      /* where the task will be received (NULL for the sender) */
-  msg_error_t status;           /* status of the communication once finished */
-} s_msg_comm_t;
+  smx_activity_t s_comm;          /* SIMIX communication object encapsulated (the same for both processes) */
+  msg_error_t status = MSG_OK;    /* status of the communication once finished */
+  Comm(msg_task_t sent, msg_task_t* received, smx_activity_t comm)
+      : task_sent(sent), task_received(received), s_comm(std::move(comm))
+  {
+  }
+};
+}
+}
 
 /************************** Global variables ********************************/
 typedef struct MSG_Global {
@@ -102,19 +101,11 @@ SG_BEGIN_DECL()
 XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 
 /*************************************************************/
-
-XBT_PRIVATE msg_host_t __MSG_host_create(sg_host_t host);
-XBT_PRIVATE msg_storage_t __MSG_storage_create(smx_storage_t storage);
-XBT_PRIVATE void __MSG_storage_destroy(msg_storage_priv_t host);
-XBT_PRIVATE void __MSG_file_destroy(msg_file_t file);
-
 XBT_PRIVATE void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_proc);
 XBT_PRIVATE smx_actor_t MSG_process_create_from_SIMIX(const char* name, std::function<void()> code, void* data,
                                                       sg_host_t host, xbt_dict_t properties,
                                                       smx_actor_t parent_process);
 XBT_PRIVATE void MSG_comm_copy_data_from_SIMIX(smx_activity_t comm, void* buff, size_t buff_size);
-
-XBT_PRIVATE void MSG_post_create_environment();
 
 XBT_PRIVATE void MSG_host_add_task(msg_host_t host, msg_task_t task);
 XBT_PRIVATE void MSG_host_del_task(msg_host_t host, msg_task_t task);

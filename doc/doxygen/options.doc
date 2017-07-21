@@ -42,7 +42,7 @@ file:
 
 A last solution is to pass your configuration directly using the C
 interface. If you happen to use the MSG interface, this is very easy
-with the MSG_config() function. If you do not use MSG, that's a bit
+with the simgrid::s4u::Engine::setConfig() or MSG_config() functions. If you do not use MSG, that's a bit
 more complex, as you have to mess with the internal configuration set
 directly as follows. Check the \ref XBT_config "relevant page" for
 details on all the functions you can use in this context, \c
@@ -52,17 +52,115 @@ SimGrid.
 @code
 #include <xbt/config.h>
 
-extern xbt_cfg_t _sg_cfg_set;
-
 int main(int argc, char *argv[]) {
      SD_init(&argc, argv);
 
      /* Prefer MSG_config() if you use MSG!! */
-     xbt_cfg_set_parse(_sg_cfg_set,"Item:Value");
+     xbt_cfg_set_parse("Item:Value");
 
      // Rest of your code
 }
 @endcode
+
+\section options_index Index of all existing configuration options
+
+\note
+  The full list can be retrieved by passing "--help" and
+     "--help-cfg" to an executable that uses SimGrid.
+
+- \c clean-atexit: \ref options_generic_clean_atexit
+
+- \c contexts/factory: \ref options_virt_factory
+- \c contexts/guard-size: \ref options_virt_guard_size
+- \c contexts/nthreads: \ref options_virt_parallel
+- \c contexts/parallel-threshold: \ref options_virt_parallel
+- \c contexts/stack-size: \ref options_virt_stacksize
+- \c contexts/synchro: \ref options_virt_parallel
+
+- \c cpu/maxmin-selective-update: \ref options_model_optim
+- \c cpu/model: \ref options_model_select
+- \c cpu/optim: \ref options_model_optim
+
+- \c exception/cutpath: \ref options_exception_cutpath
+
+- \c host/model: \ref options_model_select
+
+- \c maxmin/precision: \ref options_model_precision
+- \c maxmin/concurrency-limit: \ref options_concurrency_limit
+
+- \c msg/debug-multiple-use: \ref options_msg_debug_multiple_use
+
+- \c model-check: \ref options_modelchecking
+- \c model-check/checkpoint: \ref options_modelchecking_steps
+- \c model-check/communications-determinism: \ref options_modelchecking_comm_determinism
+- \c model-check/dot-output: \ref options_modelchecking_dot_output
+- \c model-check/hash: \ref options_modelchecking_hash
+- \c model-check/property: \ref options_modelchecking_liveness
+- \c model-check/max-depth: \ref options_modelchecking_max_depth
+- \c model-check/record: \ref options_modelchecking_recordreplay
+- \c model-check/reduction: \ref options_modelchecking_reduction
+- \c model-check/replay: \ref options_modelchecking_recordreplay
+- \c model-check/send-determinism: \ref options_modelchecking_comm_determinism
+- \c model-check/sparse-checkpoint: \ref options_modelchecking_sparse_checkpoint
+- \c model-check/termination: \ref options_modelchecking_termination
+- \c model-check/timeout: \ref options_modelchecking_timeout
+- \c model-check/visited: \ref options_modelchecking_visited
+
+- \c network/bandwidth-factor: \ref options_model_network_coefs
+- \c network/crosstraffic: \ref options_model_network_crosstraffic
+- \c network/latency-factor: \ref options_model_network_coefs
+- \c network/maxmin-selective-update: \ref options_model_optim
+- \c network/model: \ref options_model_select
+- \c network/optim: \ref options_model_optim
+- \c network/sender_gap: \ref options_model_network_sendergap
+- \c network/TCP-gamma: \ref options_model_network_gamma
+- \c network/weight-S: \ref options_model_network_coefs
+
+- \c ns3/TcpModel: \ref options_pls
+- \c path: \ref options_generic_path
+- \c plugin: \ref options_generic_plugin
+
+- \c storage/max_file_descriptors: \ref option_model_storage_maxfd
+
+- \c surf/precision: \ref options_model_precision
+
+- \c <b>For collective operations of SMPI, please refer to Section \ref options_index_smpi_coll</b>
+- \c smpi/async-small-thresh: \ref options_model_network_asyncsend
+- \c smpi/bw-factor: \ref options_model_smpi_bw_factor
+- \c smpi/coll-selector: \ref options_model_smpi_collectives
+- \c smpi/comp-adjustment-file: \ref options_model_smpi_adj_file
+- \c smpi/cpu-threshold: \ref options_smpi_bench
+- \c smpi/display-timing: \ref options_smpi_timing
+- \c smpi/grow-injected-times: \ref options_model_smpi_test
+- \c smpi/host-speed: \ref options_smpi_bench
+- \c smpi/IB-penalty-factors: \ref options_model_network_coefs
+- \c smpi/iprobe: \ref options_model_smpi_iprobe
+- \c smpi/iprobe-cpu-usage: \ref options_model_smpi_iprobe_cpu_usage
+- \c smpi/init: \ref options_model_smpi_init
+- \c smpi/keep-temps: \ref options_smpi_temps
+- \c smpi/lat-factor: \ref options_model_smpi_lat_factor
+- \c smpi/ois: \ref options_model_smpi_ois
+- \c smpi/or: \ref options_model_smpi_or
+- \c smpi/os: \ref options_model_smpi_os
+- \c smpi/papi-events: \ref options_smpi_papi_events
+- \c smpi/privatization: \ref options_smpi_privatization
+- \c smpi/send-is-detached-thresh: \ref options_model_smpi_detached
+- \c smpi/shared-malloc: \ref options_model_smpi_shared_malloc
+- \c smpi/shared-malloc-hugepage: \ref options_model_smpi_shared_malloc
+- \c smpi/simulate-computation: \ref options_smpi_bench
+- \c smpi/test: \ref options_model_smpi_test
+- \c smpi/wtime: \ref options_model_smpi_wtime
+
+- \c <b>Tracing configuration options can be found in Section \ref tracing_tracing_options</b>.
+
+- \c storage/model: \ref options_storage_model
+- \c verbose-exit: \ref options_generic_exit
+
+- \c vm/model: \ref options_vm_model
+
+\subsection options_index_smpi_coll Index of SMPI collective algorithms options
+
+TODO: All available collective algorithms will be made available via the ``smpirun --help-coll`` command.
 
 \section options_model Configuring the platform models
 
@@ -118,8 +216,8 @@ described in
 
 If you compiled SimGrid accordingly, you can use packet-level network
 simulators as network models (see \ref pls_ns3). In that case, you have
-two extra models, described below, and some \ref options_pls "specific
-additional configuration flags".
+two extra models, described below, and some 
+\ref options_pls "specific additional configuration flags".
   - \b NS3: Network pseudo-model using the NS3 tcp model
 
 Concerning the CPU, we have only one model for now:
@@ -387,13 +485,15 @@ For now, this configuration variable can take 2 values:
 \subsection options_modelchecking_visited model-check/visited, Cycle detection
 
 In order to detect cycles, the model-checker needs to check if a new explored
-state is in fact the same state than a previous one. In order to do this,
+state is in fact the same state than a previous one. For that,
 the model-checker can take a snapshot of each visited state: this snapshot is
 then used to compare it with subsequent states in the exploration graph.
 
-The \b model-check/visited is the maximum number of states which are stored in
-memory. If the maximum number of snapshotted state is reached some states will
-be removed from the memory and some cycles might be missed.
+The \b model-check/visited option is the maximum number of states which are stored in
+memory. If the maximum number of snapshotted state is reached, some states will
+be removed from the memory and some cycles might be missed. Small
+values can lead to incorrect verifications, but large value can
+exhaust your memory, so choose carefully.
 
 By default, no state is snapshotted and cycles cannot be detected.
 
@@ -415,7 +515,7 @@ liveness violation) as well as the cycle for liveness properties. This dot file
 can then fed to the graphviz dot tool to generate an corresponding graphical
 representation.
 
-\subsection options_modelchecking_max_depth model-check/max_depth, Depth limit
+\subsection options_modelchecking_max_depth model-check/max-depth, Depth limit
 
 The \b model-checker/max-depth can set the maximum depth of the exploration
 graph of the model-checker. If this limit is reached, a logging message is
@@ -544,7 +644,8 @@ In SimGrid, the user code is virtualized in a specific mechanism
 that allows the simulation kernel to control its execution: when a user
 process requires a blocking action (such as sending a message), it is
 interrupted, and only gets released when the simulated clock reaches
-the point where the blocking operation is done.
+the point where the blocking operation is done. This is explained
+graphically in the [relevant tutorial, available online](http://simgrid.gforge.inria.fr/tutorials/simgrid-simix-101.pdf).
 
 In SimGrid, the containers in which user processes are virtualized are
 called contexts. Several context factory are provided, and you can
@@ -553,7 +654,7 @@ configuration item. Some of the following may not exist on your
 machine because of portability issues. In any case, the default one
 should be the most effcient one (please report bugs if the
 auto-detection fails for you). They are approximately sorted here from
-the slowest to the most effient:
+the slowest to the most efficient:
 
  - \b thread: very slow factory using full featured threads (either
    pthreads or windows native threads). They are slow but very
@@ -1214,110 +1315,5 @@ hence, the output would mismatch, causing the test to fail.
 \section options_log Logging Configuration
 
 It can be done by using XBT. Go to \ref XBT_log for more details.
-
-\section options_index Index of all existing configuration options
-
-\note
-  Almost all options are defined in <i>src/simgrid/sg_config.c</i>. You may
-  want to check this file, too, but this index should be somewhat complete
-  for the moment (May 2015).
-
-\note
-  \b Please \b note: You can also pass the command-line option "--help" and
-     "--help-cfg" to an executable that uses simgrid.
-
-- \c clean-atexit: \ref options_generic_clean_atexit
-
-- \c contexts/factory: \ref options_virt_factory
-- \c contexts/guard-size: \ref options_virt_guard_size
-- \c contexts/nthreads: \ref options_virt_parallel
-- \c contexts/parallel_threshold: \ref options_virt_parallel
-- \c contexts/stack-size: \ref options_virt_stacksize
-- \c contexts/synchro: \ref options_virt_parallel
-
-- \c cpu/maxmin-selective-update: \ref options_model_optim
-- \c cpu/model: \ref options_model_select
-- \c cpu/optim: \ref options_model_optim
-
-- \c exception/cutpath: \ref options_exception_cutpath
-
-- \c host/model: \ref options_model_select
-
-- \c maxmin/precision: \ref options_model_precision
-- \c maxmin/concurrency-limit: \ref options_concurrency_limit
-
-- \c msg/debug-multiple-use: \ref options_msg_debug_multiple_use
-
-- \c model-check: \ref options_modelchecking
-- \c model-check/checkpoint: \ref options_modelchecking_steps
-- \c model-check/communications-determinism: \ref options_modelchecking_comm_determinism
-- \c model-check/dot-output: \ref options_modelchecking_dot_output
-- \c model-check/hash: \ref options_modelchecking_hash
-- \c model-check/property: \ref options_modelchecking_liveness
-- \c model-check/max-depth: \ref options_modelchecking_max_depth
-- \c model-check/record: \ref options_modelchecking_recordreplay
-- \c model-check/reduction: \ref options_modelchecking_reduction
-- \c model-check/replay: \ref options_modelchecking_recordreplay
-- \c model-check/send-determinism: \ref options_modelchecking_comm_determinism
-- \c model-check/sparse-checkpoint: \ref options_modelchecking_sparse_checkpoint
-- \c model-check/termination: \ref options_modelchecking_termination
-- \c model-check/timeout: \ref options_modelchecking_timeout
-- \c model-check/visited: \ref options_modelchecking_visited
-
-- \c network/bandwidth-factor: \ref options_model_network_coefs
-- \c network/crosstraffic: \ref options_model_network_crosstraffic
-- \c network/latency-factor: \ref options_model_network_coefs
-- \c network/maxmin-selective-update: \ref options_model_optim
-- \c network/model: \ref options_model_select
-- \c network/optim: \ref options_model_optim
-- \c network/sender_gap: \ref options_model_network_sendergap
-- \c network/TCP-gamma: \ref options_model_network_gamma
-- \c network/weight-S: \ref options_model_network_coefs
-
-- \c ns3/TcpModel: \ref options_pls
-- \c path: \ref options_generic_path
-- \c plugin: \ref options_generic_plugin
-
-- \c storage/max_file_descriptors: \ref option_model_storage_maxfd
-
-- \c surf/precision: \ref options_model_precision
-
-- \c <b>For collective operations of SMPI, please refer to Section \ref options_index_smpi_coll</b>
-- \c smpi/async-small-thresh: \ref options_model_network_asyncsend
-- \c smpi/bw-factor: \ref options_model_smpi_bw_factor
-- \c smpi/coll-selector: \ref options_model_smpi_collectives
-- \c smpi/comp-adjustment-file: \ref options_model_smpi_adj_file
-- \c smpi/cpu-threshold: \ref options_smpi_bench
-- \c smpi/display-timing: \ref options_smpi_timing
-- \c smpi/grow-injected-times: \ref options_model_smpi_test
-- \c smpi/host-speed: \ref options_smpi_bench
-- \c smpi/IB-penalty-factors: \ref options_model_network_coefs
-- \c smpi/iprobe: \ref options_model_smpi_iprobe
-- \c smpi/iprobe-cpu-usage: \ref options_model_smpi_iprobe_cpu_usage
-- \c smpi/init: \ref options_model_smpi_init
-- \c smpi/keep-temps: \ref options_smpi_temps
-- \c smpi/lat-factor: \ref options_model_smpi_lat_factor
-- \c smpi/ois: \ref options_model_smpi_ois
-- \c smpi/or: \ref options_model_smpi_or
-- \c smpi/os: \ref options_model_smpi_os
-- \c smpi/papi-events: \ref options_smpi_papi_events
-- \c smpi/privatization: \ref options_smpi_privatization
-- \c smpi/send-is-detached-thresh: \ref options_model_smpi_detached
-- \c smpi/shared-malloc: \ref options_model_smpi_shared_malloc
-- \c smpi/shared-malloc-hugepage: \ref options_model_smpi_shared_malloc
-- \c smpi/simulate-computation: \ref options_smpi_bench
-- \c smpi/test: \ref options_model_smpi_test
-- \c smpi/wtime: \ref options_model_smpi_wtime
-
-- \c <b>Tracing configuration options can be found in Section \ref tracing_tracing_options</b>.
-
-- \c storage/model: \ref options_storage_model
-- \c verbose-exit: \ref options_generic_exit
-
-- \c vm/model: \ref options_vm_model
-
-\subsection options_index_smpi_coll Index of SMPI collective algorithms options
-
-TODO: All available collective algorithms will be made available via the ``smpirun --help-coll`` command.
 
 */

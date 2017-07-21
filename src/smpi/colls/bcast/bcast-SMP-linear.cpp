@@ -38,7 +38,7 @@ int Coll_bcast_SMP_linear::bcast(void *buf, int count,
   }
 
   int segment = bcast_SMP_linear_segment_byte / extent;
-  segment =  segment == 0 ? 1 :segment; 
+  segment =  segment == 0 ? 1 :segment;
   int pipe_length = count / segment;
   int remainder = count % segment;
   int increment = segment * extent;
@@ -55,7 +55,7 @@ int Coll_bcast_SMP_linear::bcast(void *buf, int count,
   if (size <= num_core) {
     XBT_WARN("MPI_bcast_SMP_linear use default MPI_bcast.");
     Coll_bcast_default::bcast(buf, count, datatype, root, comm);
-    return MPI_SUCCESS;            
+    return MPI_SUCCESS;
   }
   // if root is not zero send to rank zero first
   if (root != 0) {
@@ -64,7 +64,7 @@ int Coll_bcast_SMP_linear::bcast(void *buf, int count,
     else if (rank == 0)
       Request::recv(buf, count, datatype, root, tag, comm, &status);
   }
-  // when a message is smaller than a block size => no pipeline 
+  // when a message is smaller than a block size => no pipeline
   if (count <= segment) {
     // case ROOT
     if (rank == 0) {
