@@ -18,62 +18,44 @@ Group::Group()
 {
   size_=0;                            /* size */
   rank_to_index_map_=nullptr;                         /* rank_to_index_map_ */
-  index_to_rank_map_=nullptr;                         /* index_to_rank_map_ */
   refcount_=1;                            /* refcount_: start > 0 so that this group never gets freed */
 }
 
 Group::Group(int n) : size_(n)
 {
-  rank_to_index_map_ = xbt_new(int, size_);
-  index_to_rank_map_ = xbt_dict_new_homogeneous(xbt_free_f);
+  rank_to_index_map_ = new int[size_];
   refcount_ = 1;
-  for (int i = 0; i < size_; i++) {
+  for (int i              = 0; i < size_; i++)
     rank_to_index_map_[i] = MPI_UNDEFINED;
-  }
 }
 
 Group::Group(MPI_Group origin)
 {
-  if(origin != MPI_GROUP_NULL
-            && origin != MPI_GROUP_EMPTY)
-    {
-      size_ = origin->size();
-      rank_to_index_map_ = xbt_new(int, size_);
-      index_to_rank_map_ = xbt_dict_new_homogeneous(xbt_free_f);
-      refcount_ = 1;
-      for (int i = 0; i < size_; i++) {
-        rank_to_index_map_[i] = origin->rank_to_index_map_[i];
-      }
-
-      char* key;
-      char* ptr_rank;
-      xbt_dict_cursor_t cursor = nullptr;
-      xbt_dict_foreach(origin->index_to_rank_map_, cursor, key, ptr_rank) {
-        int * cp = static_cast<int*>(xbt_malloc(sizeof(int)));
-        *cp=*reinterpret_cast<int*>(ptr_rank);
-        xbt_dict_set(index_to_rank_map_, key, cp, nullptr);
-      }
+  if (origin != MPI_GROUP_NULL && origin != MPI_GROUP_EMPTY) {
+    size_              = origin->size();
+    rank_to_index_map_ = xbt_new(int, size_);
+    refcount_          = 1;
+    for (int i = 0; i < size_; i++) {
+      rank_to_index_map_[i] = origin->rank_to_index_map_[i];
     }
+
+    for (auto elm : origin->index_to_rank_map_) {
+      index_to_rank_map_.insert({elm.first, elm.second});
+    }
+  }
 }
 
 Group::~Group()
 {
-  xbt_free(rank_to_index_map_);
-  xbt_dict_free(&index_to_rank_map_);
+  delete[] rank_to_index_map_;
 }
 
 void Group::set_mapping(int index, int rank)
 {
   if (rank < size_) {
     rank_to_index_map_[rank] = index;
-    if (index!=MPI_UNDEFINED ) {
-      int* val_rank = static_cast<int*>(xbt_malloc(sizeof(int)));
-      *val_rank = rank;
-
-      char * key = bprintf("%d", index);
-      xbt_dict_set(index_to_rank_map_, key, val_rank, nullptr);
-      xbt_free(key);
-    }
+    if (index != MPI_UNDEFINED)
+      index_to_rank_map_.insert({index, rank});
   }
 }
 
@@ -89,16 +71,12 @@ int Group::index(int rank)
 
 int Group::rank(int index)
 {
-  int * ptr_rank = nullptr;
-  if (this==MPI_GROUP_EMPTY)
+  if (this == MPI_GROUP_EMPTY)
     return MPI_UNDEFINED;
-  char * key = bprintf("%d", index);
-  ptr_rank = static_cast<int*>(xbt_dict_get_or_null(index_to_rank_map_, key));
-  xbt_free(key);
-
-  if (ptr_rank==nullptr)
+  if (index_to_rank_map_.find(index) == index_to_rank_map_.end())
     return MPI_UNDEFINED;
-  return *ptr_rank;
+  else
+    return index_to_rank_map_.at(index);
 }
 
 void Group::ref()

@@ -16,7 +16,7 @@ class Group : public F2C{
   private:
     int size_;
     int *rank_to_index_map_;
-    xbt_dict_t index_to_rank_map_;
+    std::unordered_map<int, int> index_to_rank_map_;
     int refcount_;
   public:
     explicit Group();
