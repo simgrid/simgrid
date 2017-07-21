@@ -711,5 +711,5 @@ void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
         "Trace '%s' must have either a content, or point to a file on disk.",trace->id);
     tmgr_trace = tmgr_trace_new_from_string(trace->id, trace->pc_data, trace->periodicity);
   }
-  xbt_dict_set(traces_set_list, trace->id, static_cast<void*>(tmgr_trace), nullptr);
+  traces_set_list.insert({trace->id, tmgr_trace});
 }

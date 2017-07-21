@@ -14,6 +14,7 @@
 
 #include <boost/intrusive/list.hpp>
 #include <string>
+#include <unordered_map>
 
 #define NO_MAX_DURATION -1.0
 
@@ -29,6 +30,7 @@ extern XBT_PRIVATE double sg_bandwidth_factor;
 extern XBT_PRIVATE double sg_weight_S_parameter;
 extern XBT_PRIVATE int sg_network_crosstraffic;
 extern XBT_PRIVATE std::vector<std::string> surf_path;
+extern XBT_PRIVATE std::unordered_map<std::string, tmgr_trace_t> traces_set_list;
 
 extern "C" {
 XBT_PUBLIC(double) surf_get_clock();
@@ -60,12 +62,6 @@ enum heap_action_type{
   NORMAL,
   NOTSET
 };
-
-/*********
- * Trace *
- *********/
-/* For the trace and trace:connect tag (store their content till the end of the parsing) */
-XBT_PUBLIC_DATA(xbt_dict_t) traces_set_list;
 
 /**********
  * Action *
