@@ -1,5 +1,4 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -51,16 +50,15 @@ public:
   ChunkedData(ChunkedData const& that)
      : store_ (that.store_)
      , pagenos_(that.pagenos_)
-
   {
     for (std::size_t pageno : pagenos_)
       store_->ref_page(pageno);
   }
   ChunkedData(ChunkedData&& that)
+     : store(that.store_)
+     , pagenos_(std::move(that.pagenos_))
   {
-    store_ = that.store_;
     that.store_ = nullptr;
-    pagenos_ = std::move(that.pagenos_);
     that.pagenos_.clear();
   }
   ChunkedData& operator=(ChunkedData const& that)
