@@ -10,6 +10,7 @@
 #include <simgrid/sg_config.h>
 #include <stdarg.h>
 #include <wchar.h>
+#include "smpi_process.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_smpi, instr, "Tracing SMPI");
 
@@ -51,6 +52,9 @@ static const char *smpi_colors[] ={
     "put",       "0.3 1 0",
     "get",       "0 1 0.3",
     "accumulate",       "1 0.3 0",
+    
+    "migration",	"0.2 0.5 0.2",
+    
     "win_fence",       "1 0 0.3",
     "win_post",       "1 0 0.8",
     "win_wait",       "1 0.8 0",
@@ -87,9 +91,15 @@ static const char *instr_find_color (const char *state)
   return ret;
 }
 
-XBT_PRIVATE char *smpi_container(int rank, char *container, int n)
+char *smpi_container(int rank, char *container, int n)
 {
-  snprintf(container, n, "rank-%d", rank);
+  if(smpi_process()->replaying()){
+    snprintf(container, n, "%s-rank-%d", sg_host_self_get_name(), rank);
+  /*TODO We may need a configuration flag to enable or disable the tracing of
+   * the migration of processes/tasks.*/
+  }else{
+    snprintf(container, n, "rank-%d", rank);
+  }
   return container;
 }
 
@@ -202,12 +212,14 @@ void TRACE_smpi_init(int rank)
     father = PJ_container_get_root ();
   }
   xbt_assert(father!=nullptr,
-      "Could not find a parent for mpi rank %s at function %s", str, __FUNCTION__);
+      "Could not find a parent for mpi rank %s", str);
+  container_t me = PJ_container_new(str, INSTR_SMPI, father);
+  type_t eventype = PJ_type_event_new("MPI_Migrate", me->type);
+
+  PJ_value_new ("migrate", "0 0 0", eventype);
 #if HAVE_PAPI
-  container_t container =
-#endif
-      PJ_container_new(str, INSTR_SMPI, father);
-#if HAVE_PAPI
+  container_t container = me;
+
   papi_counter_t counters = smpi_process()->papi_counters();
 
   for (auto& it : counters) {
@@ -433,3 +445,69 @@ void TRACE_smpi_recv(int rank, int src, int dst, int tag)
   XBT_DEBUG("Recv tracing from %d to %d, tag %d, with key %s", src, dst, tag, key);
   new EndLinkEvent (SIMIX_get_clock(), PJ_container_get_root(), type, container, "PTP", key);
 }
+
+/**************** Functions to trace the migration of tasks. *****************/
+
+static void TRACE_smpi_task_migrate(int rank, sg_host_t host)
+{
+  if (!TRACE_smpi_is_enabled()) return;
+  
+  char str[INSTR_DEFAULT_STR_SIZE];
+  snprintf(str, INSTR_DEFAULT_STR_SIZE, "%s-rank-%d", sg_host_get_name(host), rank);
+  
+  if(PJ_container_get_or_null(str)){
+    return;
+  }
+
+  container_t father;
+  if (TRACE_smpi_is_grouped()){
+    father = PJ_container_get(sg_host_get_name(host));
+  }else{
+    father = PJ_container_get_root();
+  }
+  xbt_assert(father!=NULL,
+	      "Could not find a parent for mpi rank %s", str);
+  PJ_container_new(str, INSTR_SMPI, father);
+}
+
+
+void TRACE_smpi_send_process_data_in(int rank)
+{
+  if (!TRACE_smpi_is_enabled()) return;
+
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get(str);
+  
+  /* Now we change the container's state to indicate that the process data is
+   * being transferred. */ 
+  type_t type = PJ_type_get ("MIGRATE_STATE", container->type);
+  const char *color = instr_find_color ("migration");
+  val_t value = PJ_value_get_or_new ("migration", color, type);
+  new PushStateEvent(SIMIX_get_clock(), container, type, value);
+}
+
+void TRACE_smpi_send_process_data_out(int rank)
+{
+  if (!TRACE_smpi_is_enabled()) {
+      return;
+  }
+
+  char str[INSTR_DEFAULT_STR_SIZE];
+ 
+  /* Clean the process state. */ 
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get(str);
+  type_t type = PJ_type_get ("MIGRATE_STATE", container->type);
+  new PopStateEvent(SIMIX_get_clock(), container, type);
+}
+
+void TRACE_smpi_process_change_host(int rank, sg_host_t host,
+				    sg_host_t new_host, int size)
+{
+  if (!TRACE_smpi_is_enabled()) return;
+  
+  //Create new container on the new_host location, if it doesn't already exist.
+  TRACE_smpi_task_migrate(rank, new_host);
+}
+

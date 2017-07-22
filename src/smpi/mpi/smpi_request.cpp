@@ -99,6 +99,10 @@ size_t Request::real_size(){
   return real_size_;
 }
 
+MPI_Datatype Request::old_type(){
+  return old_type_;
+}
+
 void Request::unref(MPI_Request* request)
 {
   if((*request) != MPI_REQUEST_NULL){

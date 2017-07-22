@@ -399,7 +399,8 @@ typedef enum{
   TRACING_COMPUTING,
   TRACING_SLEEPING,
   TRACING_SCAN,
-  TRACING_EXSCAN
+  TRACING_EXSCAN,
+  TRACING_CUSTOM
 } e_caller_type ;
 
 typedef struct s_instr_extra_data {
@@ -410,12 +411,15 @@ typedef struct s_instr_extra_data {
   double sleep_duration;
   int src;
   int dst;
+  int tag; // Needed for matching waits to requests.
   int root;
   const char* datatype1;
   const char* datatype2;
   int * sendcounts;
   int * recvcounts;
   int num_processes;
+  int (*print_push)(FILE *trace_file, char *process_id, instr_extra_data extra);
+  int (*print_pop)(FILE *trace_file, char *process_id, instr_extra_data extra);
 } s_instr_extra_data_t;
 
 /* Format of TRACING output.

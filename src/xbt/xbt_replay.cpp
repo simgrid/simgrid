@@ -177,7 +177,9 @@ int replay_runner(int argc, char* argv[])
  */
 void xbt_replay_action_register(const char* action_name, action_fun function)
 {
-  simgrid::xbt::action_funs.insert({std::string(action_name), function});
+    /* Using operator[] because std::unordered_map::insert does not allow to
+     * replace the content associted to an already existing key. */
+    simgrid::xbt::action_funs[std::string(action_name)] = function;
 }
 
 /**

@@ -35,7 +35,10 @@ XBT_PRIVATE void TRACE_smpi_send(int rank, int src, int dst, int tag, int size);
 XBT_PRIVATE void TRACE_smpi_recv(int rank, int src, int dst, int tag);
 XBT_PRIVATE void TRACE_smpi_init(int rank);
 XBT_PRIVATE void TRACE_smpi_finalize(int rank);
-XBT_PRIVATE char* smpi_container(int rank, char* container, int n);
+XBT_PRIVATE void TRACE_smpi_send_process_data_in(int rank);
+XBT_PRIVATE void TRACE_smpi_send_process_data_out(int rank);
+XBT_PRIVATE void TRACE_smpi_process_change_host(int, sg_host_t, sg_host_t, int);
+XBT_PUBLIC(char*) smpi_container(int rank, char* container, int n);
 
 XBT_PRIVATE const char* encode_datatype(MPI_Datatype datatype, int* known);
 

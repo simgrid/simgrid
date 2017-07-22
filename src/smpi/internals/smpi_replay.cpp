@@ -14,6 +14,10 @@
 
 #include <unordered_map>
 #include <vector>
+#include <iostream>
+#include <sstream>
+
+#include "src/simix/ActorImpl.hpp"
 
 #define KEY_SIZE (sizeof(int) * 2 + 1)
 
@@ -21,7 +25,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay,smpi,"Trace Replay with SMPI");
 
 int communicator_size = 0;
 static int active_processes = 0;
-std::unordered_map<int,std::vector<MPI_Request>*> reqq;
+
+#define REQ_KEY_SIZE 61
+std::vector<std::unordered_map<std::string, MPI_Request>> reqd;
 
 MPI_Datatype MPI_DEFAULT_TYPE;
 MPI_Datatype MPI_CURRENT_TYPE;
@@ -31,22 +37,74 @@ char* sendbuffer=nullptr;
 static int recvbuffer_size=0;
 char* recvbuffer=nullptr;
 
+
+/******************************************************************************
+ * This code manages the request dictionaries which are used by the
+ * assynchronous comunication actions (Isend, Irecv, wait, test).
+ *****************************************************************************/
+
+static std::string build_request_key(int src, int dst, int tag){
+  std::stringstream key_stream;
+  key_stream << src << dst << tag;
+  std::string key = key_stream.str();
+  return key;
+}
+
+static std::string key_from_request(MPI_Request request)
+{
+  std::string key = build_request_key(
+      request->src(), request->dst(), request->tag());
+  return key;
+}
+
+static void register_request(MPI_Request request)
+{
+  std::string key = key_from_request(request);
+  reqd[smpi_process_index()].insert({key, request});
+}
+
+static void register_request_with_key(MPI_Request request, std::string key)
+{
+  reqd[smpi_process_index()].insert({key, request});
+}
+
+static MPI_Request get_request_with_key(std::string key){
+  MPI_Request request = nullptr;
+  try{
+    request = reqd[smpi_process_index()].at(key);
+  }
+  catch(std::out_of_range){
+    request = nullptr;
+  }
+  return request;
+}
+
+static MPI_Request get_request(int src, int dst, int tag)
+{
+  std::string key = build_request_key(src, dst, tag);
+  MPI_Request request = get_request_with_key(key);
+  return request;
+}
+
+static void remove_request_with_key(std::string key){
+  reqd[smpi_process_index()].erase(key);
+}
+
+static void remove_request(MPI_Request request){
+  std::string key = key_from_request(request);
+  remove_request_with_key(key);
+}
+
+
+/******************* End of the request storage code. ************************/
+
+
 static void log_timed_action (const char *const *action, double clock){
   if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
     char *name = xbt_str_join_array(action, " ");
-    XBT_VERB("%s %f", name, smpi_process()->simulated_elapsed()-clock);
+    XBT_VERB("%s %f", name, smpi_process()->simulated_elapsed() - clock);
     xbt_free(name);
   }
-}
-
-static std::vector<MPI_Request>* get_reqq_self()
-{
-  return reqq.at(smpi_process()->index());
-}
-
-static void set_reqq_self(std::vector<MPI_Request> *mpi_request)
-{
-   reqq.insert({smpi_process()->index(), mpi_request});
 }
 
 //allocate a single buffer for all sends, growing it if needed
@@ -146,6 +204,9 @@ const char* encode_datatype(MPI_Datatype datatype, int* known)
   return "-1";
 }
 
+
+//TODO should we move this macro to a public header, so it can be used
+//by actions implemented outside SimGrid?
 #define CHECK_ACTION_PARAMS(action, mandatory, optional) {\
     int i=0;\
     while(action[i]!=nullptr)\
@@ -157,8 +218,10 @@ const char* encode_datatype(MPI_Datatype datatype, int* known)
           "Please contact the Simgrid team if support is needed", __FUNCTION__, i, mandatory, optional);\
   }
 
+
 namespace simgrid {
 namespace smpi {
+
 
 static void action_init(const char *const *action)
 {
@@ -172,8 +235,12 @@ static void action_init(const char *const *action)
   smpi_process()->simulated_start();
   /*initialize the number of active processes */
   active_processes = smpi_process_count();
-
-  set_reqq_self(new std::vector<MPI_Request>);
+  if(reqd.empty()){
+    for(int i = 0; i< active_processes; i++){ 
+      std::unordered_map<std::string, MPI_Request> req_map;
+      reqd.push_back(req_map);
+    }
+  }
 }
 
 static void action_finalize(const char *const *action)
@@ -199,32 +266,43 @@ static void action_comm_dup(const char *const *action)
 
 static void action_compute(const char *const *action)
 {
-  CHECK_ACTION_PARAMS(action, 1, 0)
+  CHECK_ACTION_PARAMS(action, 1, 1)
   double clock = smpi_process()->simulated_elapsed();
   double flops= parse_double(action[2]);
+  double time_comp = action[3] ? parse_double(action[3]) : 0;
+  
   int rank = smpi_process()->index();
+  
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type=TRACING_COMPUTING;
-  extra->comp_size=flops;
+  if(action[3]){
+   extra->comp_size = time_comp; 
+  }else{
+    extra->comp_size = flops;
+  }
   TRACE_smpi_computing_in(rank, extra);
-
-  smpi_execute_flops(flops);
-
+  if(action[3]){
+    smpi_execute_flops(time_comp);
+  }else{
+    smpi_execute_flops(flops);
+  }
   TRACE_smpi_computing_out(rank);
   log_timed_action (action, clock);
 }
 
 static void action_send(const char *const *action)
 {
-  CHECK_ACTION_PARAMS(action, 2, 1)
+  CHECK_ACTION_PARAMS(action, 3, 1);
   int to = atoi(action[2]);
-  double size=parse_double(action[3]);
+  int tag = atoi(action[3]);
+  double size=parse_double(action[4]);
   double clock = smpi_process()->simulated_elapsed();
 
-  if(action[4])
-    MPI_CURRENT_TYPE=decode_datatype(action[4]);
-  else
+  if(action[5]) {
+    MPI_CURRENT_TYPE=decode_datatype(action[5]);
+  } else {
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
+  }
 
   int rank = smpi_process()->index();
 
@@ -239,7 +317,7 @@ static void action_send(const char *const *action)
   if (not TRACE_smpi_view_internals())
     TRACE_smpi_send(rank, rank, dst_traced, 0, size*MPI_CURRENT_TYPE->size());
 
-  Request::send(nullptr, size, MPI_CURRENT_TYPE, to , 0, MPI_COMM_WORLD);
+  Request::send(nullptr, size, MPI_CURRENT_TYPE, to , tag, MPI_COMM_WORLD);
 
   log_timed_action (action, clock);
 
@@ -248,14 +326,15 @@ static void action_send(const char *const *action)
 
 static void action_Isend(const char *const *action)
 {
-  CHECK_ACTION_PARAMS(action, 2, 1)
+  CHECK_ACTION_PARAMS(action, 3, 1);
   int to = atoi(action[2]);
-  double size=parse_double(action[3]);
+  int tag = atoi(action[3]);
+  double size=parse_double(action[4]);
   double clock = smpi_process()->simulated_elapsed();
 
-  if(action[4])
-    MPI_CURRENT_TYPE=decode_datatype(action[4]);
-  else
+  if(action[5]) 
+    MPI_CURRENT_TYPE=decode_datatype(action[5]);
+  else 
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
   int rank = smpi_process()->index();
@@ -270,26 +349,27 @@ static void action_Isend(const char *const *action)
   if (not TRACE_smpi_view_internals())
     TRACE_smpi_send(rank, rank, dst_traced, 0, size*MPI_CURRENT_TYPE->size());
 
-  MPI_Request request = Request::isend(nullptr, size, MPI_CURRENT_TYPE, to, 0,MPI_COMM_WORLD);
+  MPI_Request request = Request::isend(nullptr, size, MPI_CURRENT_TYPE, to, tag, MPI_COMM_WORLD);
 
   TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
 
-  get_reqq_self()->push_back(request);
+  register_request(request);
 
   log_timed_action (action, clock);
 }
 
 static void action_recv(const char *const *action) {
-  CHECK_ACTION_PARAMS(action, 2, 1)
+  CHECK_ACTION_PARAMS(action, 3, 1);
   int from = atoi(action[2]);
-  double size=parse_double(action[3]);
+  int tag = atoi(action[3]);
+  double size=parse_double(action[4]);
   double clock = smpi_process()->simulated_elapsed();
   MPI_Status status;
 
-  if(action[4])
-    MPI_CURRENT_TYPE=decode_datatype(action[4]);
+  if(action[5])
+    MPI_CURRENT_TYPE = decode_datatype(action[5]);
   else
-    MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
+    MPI_CURRENT_TYPE = MPI_DEFAULT_TYPE;
 
   int rank = smpi_process()->index();
   int src_traced = MPI_COMM_WORLD->group()->rank(from);
@@ -308,7 +388,7 @@ static void action_recv(const char *const *action) {
     size=status.count;
   }
 
-  Request::recv(nullptr, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD, &status);
+  Request::recv(nullptr, size, MPI_CURRENT_TYPE, from, tag, MPI_COMM_WORLD, &status);
 
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
   if (not TRACE_smpi_view_internals()) {
@@ -320,13 +400,14 @@ static void action_recv(const char *const *action) {
 
 static void action_Irecv(const char *const *action)
 {
-  CHECK_ACTION_PARAMS(action, 2, 1)
+  CHECK_ACTION_PARAMS(action, 3, 1);
   int from = atoi(action[2]);
-  double size=parse_double(action[3]);
+  int tag = atoi(action[3]);
+  double size=parse_double(action[4]);
   double clock = smpi_process()->simulated_elapsed();
 
-  if(action[4])
-    MPI_CURRENT_TYPE=decode_datatype(action[4]);
+  if(action[5])
+    MPI_CURRENT_TYPE=decode_datatype(action[5]);
   else
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
@@ -342,27 +423,33 @@ static void action_Irecv(const char *const *action)
   MPI_Status status;
   //unknow size from the receiver pov
   if(size<=0.0){
-      Request::probe(from, 0, MPI_COMM_WORLD, &status);
+      Request::probe(from, tag, MPI_COMM_WORLD, &status);
       size=status.count;
   }
 
-  MPI_Request request = Request::irecv(nullptr, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD);
+  MPI_Request request = Request::irecv(nullptr, size, MPI_CURRENT_TYPE, from, tag, MPI_COMM_WORLD);
 
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
-  get_reqq_self()->push_back(request);
+  register_request(request);
 
   log_timed_action (action, clock);
 }
 
 static void action_test(const char *const *action){
-  CHECK_ACTION_PARAMS(action, 0, 0)
+  CHECK_ACTION_PARAMS(action, 3, 0);
+  int src = atoi(action[2]);
+  int dst = atoi(action[3]);
+  int tag = atoi(action[4]);
   double clock = smpi_process()->simulated_elapsed();
+  MPI_Request request;
   MPI_Status status;
 
-  MPI_Request request = get_reqq_self()->back();
-  get_reqq_self()->pop_back();
-  //if request is null here, this may mean that a previous test has succeeded
-  //Different times in traced application and replayed version may lead to this
+  std::string key = build_request_key(src, dst, tag);
+  request = get_request_with_key(key);
+  remove_request_with_key(key);
+
+  //if request is null here, this may mean that a previous test has succeeded 
+  //Different times in traced application and replayed version may lead to this 
   //In this case, ignore the extra calls.
   if(request!=nullptr){
     int rank = smpi_process()->index();
@@ -373,24 +460,29 @@ static void action_test(const char *const *action){
     int flag = Request::test(&request, &status);
 
     XBT_DEBUG("MPI_Test result: %d", flag);
-    /* push back request in vector to be caught by a subsequent wait. if the test did succeed, the request is now nullptr.*/
-    get_reqq_self()->push_back(request);
 
+    register_request_with_key(request, key);
+  
     TRACE_smpi_testing_out(rank);
   }
   log_timed_action (action, clock);
 }
 
 static void action_wait(const char *const *action){
-  CHECK_ACTION_PARAMS(action, 0, 0)
+  CHECK_ACTION_PARAMS(action, 3, 0);
+  int src = atoi(action[2]);
+  int dst = atoi(action[3]);
+  int tag = atoi(action[4]);
   double clock = smpi_process()->simulated_elapsed();
+  std::string key = build_request_key(src, dst, tag);
+  MPI_Request request = get_request_with_key(key);
   MPI_Status status;
 
-  xbt_assert(get_reqq_self()->size(), "action wait not preceded by any irecv or isend: %s",
-      xbt_str_join_array(action," "));
-  MPI_Request request = get_reqq_self()->back();
-  get_reqq_self()->pop_back();
-
+  xbt_assert(!reqd[smpi_process_index()].empty(),
+    "action wait not preceded by any irecv or isend: %s",
+    xbt_str_join_array(action," "));
+  remove_request_with_key(key);
+  
   if (request==nullptr){
     /* Assume that the trace is well formed, meaning the comm might have been caught by a MPI_test. Then just return.*/
     return;
@@ -415,37 +507,43 @@ static void action_wait(const char *const *action){
 }
 
 static void action_waitall(const char *const *action){
-  CHECK_ACTION_PARAMS(action, 0, 0)
+  CHECK_ACTION_PARAMS(action, 0, 0);
   double clock = smpi_process()->simulated_elapsed();
-  unsigned int count_requests=get_reqq_self()->size();
+  unsigned int count_requests = reqd[smpi_process_index()].size();
+  unsigned int i = 0;
 
-  if (count_requests>0) {
+  if (count_requests > 0) {
+    MPI_Request requests[count_requests];
     MPI_Status status[count_requests];
+    int my_id = smpi_process_index();
+    for(auto it = reqd[my_id].begin(); it != reqd[my_id].end(); it++){
+      requests[i] = it->second;
+      i++;
+    } 
+   
+    int rank_traced = smpi_process_index();
+    instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
+    extra->type = TRACING_WAITALL;
+    extra->send_size=count_requests;
+    TRACE_smpi_ptp_in(rank_traced, -1, -1, __FUNCTION__,extra);
 
-   int rank_traced = smpi_process()->index();
-   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
-   extra->type = TRACING_WAITALL;
-   extra->send_size=count_requests;
-   TRACE_smpi_ptp_in(rank_traced, -1, -1, __FUNCTION__,extra);
-   int recvs_snd[count_requests];
-   int recvs_rcv[count_requests];
-   unsigned int i=0;
-   for (auto req : *(get_reqq_self())){
-     if (req && (req->flags () & RECV)){
-       recvs_snd[i]=req->src();
-       recvs_rcv[i]=req->dst();
-     }else
-       recvs_snd[i]=-100;
-     i++;
-   }
-   Request::waitall(count_requests, &(*get_reqq_self())[0], status);
+    unsigned int i = 0;
+   
+    Request::waitall(count_requests, requests, status);
 
-   for (i=0; i<count_requests;i++){
-     if (recvs_snd[i]!=-100)
-       TRACE_smpi_recv(rank_traced, recvs_snd[i], recvs_rcv[i],0);
-   }
-   TRACE_smpi_ptp_out(rank_traced, -1, -1, __FUNCTION__);
+    for(i = 0; i < count_requests; i++) {
+      MPI_Request req = requests[i];
+      if(req->flags() & RECV){
+        TRACE_smpi_recv(rank_traced, req->src(), req->dst(), req->tag());
+      }
+    }
+
+    TRACE_smpi_ptp_out(rank_traced, -1, -1, __FUNCTION__);
+   
+    reqd[smpi_process_index()].clear();
+
   }
+
   log_timed_action (action, clock);
 }
 
@@ -530,7 +628,7 @@ static void action_reduce(const char *const *action)
 }
 
 static void action_allReduce(const char *const *action) {
-  CHECK_ACTION_PARAMS(action, 2, 1)
+  CHECK_ACTION_PARAMS(action, 2, 1);
   double comm_size = parse_double(action[2]);
   double comp_size = parse_double(action[3]);
 
@@ -903,6 +1001,56 @@ static void action_allToAllv(const char *const *action) {
   log_timed_action (action, clock);
 }
 
+
+/*In previous versions, we called smpi_send_process_data (implemented on
+ * smpi_base.c). The problem is that that function needs to have at least one
+ * process in the destination host. This is not always true when using a
+ * centralized LB approach. This alternate implementation is more flexible,
+ * since we don't need to have processes in the receiving host.*/
+void smpi_replay_send_process_data(double data_size, sg_host_t host)
+{
+  smx_activity_t action;
+  sg_host_t host_list[2];
+  double comp_amount[2];
+  double comm_amount[4];
+  
+  TRACE_smpi_send_process_data_in(smpi_process_index());
+
+  host_list[0] = sg_host_self();
+  host_list[1] = host;
+  comp_amount[0] = 0;
+  comp_amount[1] = 0;
+  comm_amount[0] = data_size;
+  comm_amount[1] = 0;
+  comm_amount[2] = 0;
+  comm_amount[3] = 0;
+  action = simcall_execution_parallel_start("data_migration", 2, host_list, 
+	    comp_amount, comm_amount, -1.0, 0);
+  simcall_execution_wait(action);
+
+  TRACE_smpi_send_process_data_out(smpi_process_index());
+}
+
+
+/* Based on MSG_process_migrate [src/msg/msg_process.c] */
+void smpi_replay_process_migrate(smx_actor_t process, sg_host_t new_host,
+    unsigned long size)
+{
+ 
+  /* The data migration can't be done in this function, because it
+   * needs to be done in parallel. As this function needs to be called in a
+   * critical region (e.g. protected by a mutex), these (synchronous) data
+   * migrations would become sequential.*/
+
+
+  //Update the traces to reflect the migration.
+  sg_host_t host = sg_host_self();
+  TRACE_smpi_process_change_host(smpi_process_index(), host, new_host, size);
+  
+  // Now, we change the host to which this rank is mapped.
+  process->iface()->migrate(new_host);
+}
+
 }} // namespace simgrid::smpi
 
 /** @brief Only initialize the replay, don't do it for real */
@@ -919,6 +1067,7 @@ void smpi_replay_init(int* argc, char*** argv)
   extra->type = TRACING_INIT;
   TRACE_smpi_collective_in(rank, -1, "smpi_replay_run_init", extra);
   TRACE_smpi_collective_out(rank, -1, "smpi_replay_run_init");
+  
   xbt_replay_action_register("init",       simgrid::smpi::action_init);
   xbt_replay_action_register("finalize",   simgrid::smpi::action_finalize);
   xbt_replay_action_register("comm_size",  simgrid::smpi::action_comm_size);
@@ -963,29 +1112,32 @@ void smpi_replay_main(int* argc, char*** argv)
 
   /* and now, finalize everything */
   /* One active process will stop. Decrease the counter*/
-  XBT_DEBUG("There are %zu elements in reqq[*]", get_reqq_self()->size());
-  if (not get_reqq_self()->empty()) {
-    unsigned int count_requests=get_reqq_self()->size();
+  
+  XBT_DEBUG("There are %lu elements in reqd[*]",
+            reqd[smpi_process_index()].size());
+  if(!reqd[smpi_process_index()].empty()){
+    int count_requests=reqd[smpi_process_index()].size();
+
     MPI_Request requests[count_requests];
     MPI_Status status[count_requests];
-    unsigned int i=0;
-
-    for (auto req: *get_reqq_self()){
-      requests[i] = req;
+    unsigned int i = 0;
+    int my_id = smpi_process_index();
+    for(auto it = reqd[my_id].begin(); it != reqd[my_id].end(); it++){
+      requests[i] = it->second;
       i++;
     }
     simgrid::smpi::Request::waitall(count_requests, requests, status);
   }
-  delete get_reqq_self();
-  active_processes--;
 
+  active_processes--;
+  
   if(active_processes==0){
     /* Last process alive speaking: end the simulated timer */
     XBT_INFO("Simulation time %f", smpi_process()->simulated_elapsed());
     xbt_free(sendbuffer);
     xbt_free(recvbuffer);
   }
-
+  
   instr_extra_data extra_fin = xbt_new0(s_instr_extra_data_t,1);
   extra_fin->type = TRACING_FINALIZE;
   TRACE_smpi_collective_in(smpi_process()->index(), -1, "smpi_replay_run_finalize", extra_fin);
@@ -1002,3 +1154,4 @@ void smpi_replay_run(int* argc, char*** argv)
   smpi_replay_init(argc, argv);
   smpi_replay_main(argc, argv);
 }
+

@@ -106,6 +106,24 @@ xbt_dynar_t sg_hosts_as_dynar()
   return res;
 }
 
+xbt_dynar_t sg_host_get_processes_as_dynar(sg_host_t host)
+{
+  smx_actor_t process;
+
+  xbt_dynar_t process_dynar = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
+  xbt_swag_t process_swag = host->extension<simgrid::simix::Host>()->process_list;
+  
+  xbt_swag_foreach(process, process_swag){
+    xbt_dynar_push(process_dynar, &process);
+  }
+  
+  return process_dynar;
+}
+
+int sg_host_get_process_count(sg_host_t host){
+    return xbt_swag_size(host->extension<simgrid::simix::Host>()->process_list);
+}
+
 // ========= Layering madness ==============*
 
 // ========== User data Layer ==========

@@ -60,7 +60,7 @@ typedef SMPI_Graph_topology *MPIR_Graph_Topology;
 
 typedef SMPI_Dist_Graph_topology *MPIR_Dist_Graph_Topology;
 
-XBT_PRIVATE SMPI_Process* smpi_process();
+XBT_PUBLIC(SMPI_Process*) smpi_process();
 XBT_PRIVATE SMPI_Process* smpi_process_remote(int index);
 XBT_PRIVATE int smpi_process_count();
 
@@ -96,8 +96,8 @@ XBT_PRIVATE void smpi_get_executable_global_size();
 XBT_PRIVATE void smpi_initialize_global_memory_segments();
 XBT_PRIVATE void smpi_destroy_global_memory_segments();
 XBT_PRIVATE void smpi_bench_destroy();
-XBT_PRIVATE void smpi_bench_begin();
-XBT_PRIVATE void smpi_bench_end();
+XBT_PUBLIC(void) smpi_bench_begin();
+XBT_PUBLIC(void) smpi_bench_end();
 XBT_PRIVATE void smpi_shared_destroy();
 
 XBT_PRIVATE void* smpi_get_tmp_sendbuffer(int size);
@@ -414,6 +414,25 @@ typedef s_smpi_privatization_region_t* smpi_privatization_region_t;
 extern XBT_PRIVATE smpi_privatization_region_t smpi_privatization_regions;
 extern XBT_PRIVATE int smpi_loaded_page;
 extern XBT_PRIVATE int smpi_universe_size;
+
+XBT_PRIVATE int SIMIX_process_get_PID(smx_actor_t self);
+
+static inline __attribute__ ((always_inline))
+int smpi_process_index_of_smx_process(smx_actor_t process) {
+  return SIMIX_process_get_PID(process) -1;
+}
+
+/************ Functions used for load balancing simulation********************/
+namespace simgrid{
+namespace smpi{
+XBT_PUBLIC(void) smpi_replay_process_migrate(smx_actor_t process, sg_host_t new_host, unsigned long size);
+XBT_PUBLIC(void) smpi_replay_send_process_data(double data_size, sg_host_t host);
+}} // simgrid::smpi
+
+/* New function, as I can't calll smpi_index_of_smpi_process from outside
+ * SimGrid.*/
+XBT_PUBLIC(int) smpi_rank_of_smx_process(smx_actor_t process);
+/*****************************************************************************/
 
 SG_END_DECL()
 #endif

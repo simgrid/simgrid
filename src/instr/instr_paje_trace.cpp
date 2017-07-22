@@ -27,6 +27,8 @@ FILE *tracing_file = nullptr;
 static xbt_dict_t tracing_files = nullptr; // TI specific
 static double prefix=0.0; // TI specific
 
+static xbt_dynar_t state_tracker = nullptr; //TI specific
+
 std::vector<PajeEvent*> buffer;
 void buffer_debug(std::vector<PajeEvent*> *buf);
 
@@ -587,22 +589,22 @@ void PushStateEvent::print() {
         fprintf(trace_file, "%s finalize\n", process_id);
         break;
       case TRACING_SEND:
-        fprintf(trace_file, "%s send %d %d %s\n", process_id, extra->dst, extra->send_size, extra->datatype1);
+        fprintf(trace_file, "%s send %d %d %d %s\n", process_id, extra->dst, extra->tag, extra->send_size, extra->datatype1);
         break;
       case TRACING_ISEND:
-        fprintf(trace_file, "%s Isend %d %d %s\n", process_id, extra->dst, extra->send_size, extra->datatype1);
+        fprintf(trace_file, "%s Isend %d %d %d %s\n", process_id, extra->dst, extra->tag, extra->send_size, extra->datatype1);
         break;
       case TRACING_RECV:
-        fprintf(trace_file, "%s recv %d %d %s\n", process_id, extra->src, extra->send_size, extra->datatype1);
+        fprintf(trace_file, "%s recv %d %d %d %s\n", process_id, extra->src, extra->tag, extra->send_size, extra->datatype1);
         break;
       case TRACING_IRECV:
-        fprintf(trace_file, "%s Irecv %d %d %s\n", process_id, extra->src, extra->send_size, extra->datatype1);
+        fprintf(trace_file, "%s Irecv %d %d %d %s\n", process_id, extra->src, extra->tag, extra->send_size, extra->datatype1);
         break;
       case TRACING_TEST:
         fprintf(trace_file, "%s test\n", process_id);
         break;
       case TRACING_WAIT:
-        fprintf(trace_file, "%s wait\n", process_id);
+        fprintf(trace_file, "%s wait %d %d %d\n", process_id, extra->src, extra->dst, extra->tag);
         break;
       case TRACING_WAITALL:
         fprintf(trace_file, "%s waitAll\n", process_id);
@@ -667,6 +669,10 @@ void PushStateEvent::print() {
           fprintf(trace_file, "%d ", extra->recvcounts[i]);
         fprintf(trace_file, "%d %s %s\n", extra->root, extra->datatype1, extra->datatype2);
         break;
+      case TRACING_CUSTOM:
+	if(extra->print_push)
+	  extra->print_push(trace_file, process_id, extra);
+	break;
       case TRACING_WAITANY:
       case TRACING_SENDRECV:
       case TRACING_SCATTER:
@@ -683,13 +689,15 @@ void PushStateEvent::print() {
         XBT_WARN("Call from %s impossible to translate into replay command : Not implemented (yet)", value->name);
         break;
     }
+ 
+    //We need to keep track of the current state, so we can register when the
+    //current iteration (TRACING_ITERATION) ends. 
+    // We will push the whole 'extra', because we need access to the printing
+    // function when the state is popped.
+    xbt_dynar_push(state_tracker, &extra);
 
-    if (extra->recvcounts != nullptr)
-      xbt_free(extra->recvcounts);
-    if (extra->sendcounts != nullptr)
-      xbt_free(extra->sendcounts);
     xbt_free(process_id);
-    xbt_free(extra);
+    //'extra' will be freed in PopStateEvent::print
 
   } else {
     THROW_IMPOSSIBLE;
@@ -718,7 +726,26 @@ void PopStateEvent::print() {
     stream << " " << type->id << " " << container->id;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
-    /* Nothing to do */
+    char *process_id;
+
+    instr_extra_data extra;
+    xbt_dynar_pop(state_tracker, &extra);
+    if(extra->type  == TRACING_CUSTOM){
+      if (strstr(container->name, "rank-") == nullptr)
+	process_id = xbt_strdup(container->name);
+      else
+	process_id = xbt_strdup(container->name + 5);
+
+      FILE *trace_file = (FILE *)xbt_dict_get(tracing_files, container->name);
+      if(extra->print_pop){
+        extra->print_pop(trace_file, process_id, extra);
+      }
+    }
+    if (extra->recvcounts != nullptr)
+      xbt_free(extra->recvcounts);
+    if (extra->sendcounts != nullptr)
+      xbt_free(extra->sendcounts);
+    xbt_free(extra);
   } else {
     THROW_IMPOSSIBLE;
   }
@@ -870,6 +897,7 @@ void TRACE_TI_start()
 {
   char *filename = TRACE_get_filename();
   tracing_file = fopen(filename, "w");
+  state_tracker = xbt_dynar_new(sizeof(instr_extra_data), NULL);
   if (tracing_file == nullptr)
     THROWF(system_error, 1, "Tracefile %s could not be opened for writing.", filename);
 
@@ -885,6 +913,7 @@ void TRACE_TI_start()
 void TRACE_TI_end()
 {
   xbt_dict_free(&tracing_files);
+  xbt_dynar_free(&state_tracker);
   fclose(tracing_file);
   char *filename = TRACE_get_filename();
   XBT_DEBUG("Filename %s is closed", filename);
