@@ -1,5 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2016-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -19,7 +18,7 @@ XBT_PUBLIC(double) sg_host_get_wattmin_at(sg_host_t host, int pstate);
 XBT_PUBLIC(double) sg_host_get_wattmax_at(sg_host_t host, int pstate);
 XBT_PUBLIC(double) sg_host_get_current_consumption(sg_host_t host);
 
-#define MSG_host_energy_plugin_init() sg_energy_plugin_init()
+#define MSG_host_energy_plugin_init() sg_host_energy_plugin_init()
 #define MSG_host_get_consumed_energy(host) sg_host_get_consumed_energy(host)
 #define MSG_host_get_wattmin_at(host,pstate) sg_host_get_wattmin_at(host,pstate)
 #define MSG_host_get_wattmax_at(host,pstate) sg_host_get_wattmax_at(host,pstate)
