@@ -55,7 +55,7 @@ public:
       store_->ref_page(pageno);
   }
   ChunkedData(ChunkedData&& that)
-     : store(that.store_)
+     : store_(that.store_)
      , pagenos_(std::move(that.pagenos_))
   {
     that.store_ = nullptr;
