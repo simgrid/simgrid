@@ -24,7 +24,7 @@ char *instr_process_id_2 (const char *process_name, int process_pid, char *str, 
 /*
  * Instrumentation functions to trace MSG processes (msg_process_t)
  */
-void TRACE_msg_process_change_host(msg_process_t process, msg_host_t old_host, msg_host_t new_host)
+void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host)
 {
   if (TRACE_msg_process_is_enabled()){
     static long long int counter = 0;
@@ -94,7 +94,7 @@ void TRACE_msg_process_suspend(msg_process_t process)
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    val_t value = PJ_value_get ("suspend", type);
+    val_t value = s_val::PJ_value_get ("suspend", type);
     new PushStateEvent (MSG_get_clock(), process_container, type, value);
   }
 }
@@ -119,7 +119,7 @@ void TRACE_msg_process_sleep_in(msg_process_t process)
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    val_t value = PJ_value_get ("sleep", type);
+    val_t value = s_val::PJ_value_get ("sleep", type);
     new PushStateEvent (MSG_get_clock(), process_container, type, value);
   }
 }
