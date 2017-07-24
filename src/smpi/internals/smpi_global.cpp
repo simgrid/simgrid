@@ -536,7 +536,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
     return 0;
   }
 
-  TRACE_global_init(&argc, argv);
+  TRACE_global_init();
 
   SIMIX_global_init(&argc, argv);
   MSG_init(&argc,argv);

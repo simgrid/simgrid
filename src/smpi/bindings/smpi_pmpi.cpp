@@ -42,7 +42,7 @@ int PMPI_Init(int *argc, char ***argv)
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_INIT;
     TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
-    TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+    TRACE_smpi_collective_out(rank, __FUNCTION__);
     smpi_bench_begin();
   }
 
@@ -61,7 +61,7 @@ int PMPI_Finalize()
 
   smpi_process()->finalize();
 
-  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+  TRACE_smpi_collective_out(rank, __FUNCTION__);
   TRACE_smpi_finalize(smpi_process()->index());
   return MPI_SUCCESS;
 }

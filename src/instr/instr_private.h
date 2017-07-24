@@ -147,6 +147,7 @@ class DefineStateTypeEvent : public PajeEvent  {
 
 
 class SetVariableEvent : public PajeEvent  {
+  private:
   container_t container;
   type_t type;
   double value;
@@ -157,6 +158,7 @@ class SetVariableEvent : public PajeEvent  {
 
 
 class AddVariableEvent:public PajeEvent {
+  private:
   container_t container;
   type_t type;
   double value;
@@ -169,7 +171,7 @@ class AddVariableEvent:public PajeEvent {
 
 
 class SubVariableEvent : public PajeEvent  {
-  public:
+  private:
   container_t container;
   type_t type;
   double value;
@@ -180,7 +182,7 @@ class SubVariableEvent : public PajeEvent  {
 //--------------------------------------------------
 
 class SetStateEvent : public PajeEvent  {
-  public:
+  private:
   container_t container;
   type_t type;
   val_t value;

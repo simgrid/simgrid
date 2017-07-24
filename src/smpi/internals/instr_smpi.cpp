@@ -249,7 +249,7 @@ void TRACE_smpi_collective_in(int rank, int root, const char *operation, instr_e
   new PushStateEvent (SIMIX_get_clock(), container, type, value, static_cast<void*>(extra));
 }
 
-void TRACE_smpi_collective_out(int rank, int root, const char *operation)
+void TRACE_smpi_collective_out(int rank, const char *operation)
 {
   if (not TRACE_smpi_is_enabled())
     return;
