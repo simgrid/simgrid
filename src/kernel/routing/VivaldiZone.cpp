@@ -83,21 +83,26 @@ void VivaldiZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
   }
 
   /* Retrieve the private links */
-  if (privateLinks_.find(src->id()) != privateLinks_.end()) {
+  try {
     std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(src->id());
     if (info.first) {
       route->link_list->push_back(info.first);
       if (lat)
         *lat += info.first->latency();
     }
+  } catch (std::out_of_range& unfound) {
+    XBT_DEBUG("Source of private link (%u) doesn't exist", src->id());
   }
-  if (privateLinks_.find(dst->id()) != privateLinks_.end()) {
+
+  try {
     std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(dst->id());
     if (info.second) {
       route->link_list->push_back(info.second);
       if (lat)
         *lat += info.second->latency();
     }
+  } catch (std::out_of_range& unfound) {
+    XBT_DEBUG("Destination of private link (%u) doesn't exist", dst->id());
   }
 
   /* Compute the extra latency due to the euclidean distance if needed */
