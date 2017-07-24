@@ -29,8 +29,8 @@ class XBT_PRIVATE StorageN11Action;
 
 class StorageN11Model : public StorageModel {
 public:
-  StorageImpl* createStorage(const char* id, const char* type_id, const char* content_name,
-                             const char* attach) override;
+  StorageImpl* createStorage(std::string id, std::string type_id, std::string content_name,
+                             std::string attach) override;
   double nextOccuringEvent(double now) override;
   void updateActionsState(double now, double delta) override;
 };
@@ -41,8 +41,8 @@ public:
 
 class StorageN11 : public StorageImpl {
 public:
-  StorageN11(StorageModel* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
-             const char* type_id, char* content_name, sg_size_t size, char* attach);
+  StorageN11(StorageModel* model, std::string name, lmm_system_t maxminSystem, double bread, double bwrite,
+             std::string type_id, std::string content_name, sg_size_t size, std::string attach);
   virtual ~StorageN11() = default;
   StorageAction* read(sg_size_t size);
   StorageAction* write(sg_size_t size);

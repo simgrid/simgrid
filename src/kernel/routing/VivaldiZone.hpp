@@ -47,7 +47,7 @@ class XBT_PRIVATE VivaldiZone : public ClusterZone {
 public:
   explicit VivaldiZone(NetZone* father, const char* name);
 
-  void setPeerLink(NetPoint* netpoint, double bw_in, double bw_out, const char* coord);
+  void setPeerLink(NetPoint* netpoint, double bw_in, double bw_out, std::string coord);
   void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency) override;
 };
 
@@ -55,8 +55,8 @@ namespace vivaldi {
 class XBT_PRIVATE Coords {
 public:
   static simgrid::xbt::Extension<NetPoint, Coords> EXTENSION_ID;
-  explicit Coords(NetPoint* host, const char* str);
-  virtual ~Coords();
+  explicit Coords(NetPoint* host, std::string str);
+  virtual ~Coords() = default;
 
   std::vector<double> coords;
 };

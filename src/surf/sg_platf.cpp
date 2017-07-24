@@ -359,29 +359,33 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
   delete cabinet->radicals;
 }
 
-void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)
+void sg_platf_new_storage(StorageCreationArgs* storage)
 {
   xbt_assert(std::find(known_storages.begin(), known_storages.end(), storage->id) == known_storages.end(),
-             "Refusing to add a second storage named \"%s\"", storage->id);
+             "Refusing to add a second storage named \"%s\"", storage->id.c_str());
 
-  xbt_assert(storage_types.find(storage->type_id) != storage_types.end(), "No storage type '%s'", storage->type_id);
-  storage_type_t stype = storage_types.at(storage->type_id);
+  storage_type_t stype;
+  try {
+    stype = storage_types.at(storage->type_id);
+  } catch (std::out_of_range& unfound) {
+    xbt_die("No storage type '%s'", storage->type_id.c_str());
+  }
 
-  XBT_DEBUG("ROUTING Create a storage name '%s' with type_id '%s' and content '%s'", storage->id, storage->type_id,
-            storage->content);
+  XBT_DEBUG("ROUTING Create a storage name '%s' with type_id '%s' and content '%s'", storage->id.c_str(),
+            storage->type_id.c_str(), storage->content.c_str());
 
   known_storages.push_back(storage->id);
 
   // if storage content is not specified use the content of storage_type if any
-  if (not strcmp(storage->content, "") && strcmp(stype->content, "")) {
-    storage->content      = stype->content;
-    XBT_DEBUG("For disk '%s' content is empty, inherit the content (of type %s)", storage->id, stype->type_id);
+  if (storage->content.empty() && strcmp(stype->content, "")) {
+    storage->content = std::string(stype->content);
+    XBT_DEBUG("For disk '%s' content is empty, inherit the content (of type %s)", storage->id.c_str(), stype->type_id);
   }
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' "
             "\n\t\tmodel '%s' \n\t\tcontent '%s' "
             "\n\t\tproperties '%p''\n",
-            storage->id, stype->model, stype->type_id, storage->content, storage->properties);
+            storage->id.c_str(), stype->model, stype->type_id, storage->content.c_str(), storage->properties);
 
   auto s = surf_storage_model->createStorage(storage->id, stype->type_id, storage->content, storage->attach);
 
@@ -408,21 +412,22 @@ void sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type)
   stype->size = storage_type->size;
   stype->model_properties = storage_type->model_properties;
 
-  XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s', content '%s'", stype->type_id, stype->model,
+  XBT_DEBUG("Create a storage type id '%s' with model '%s', content '%s'", stype->type_id, stype->model,
             storage_type->content);
 
   storage_types.insert({std::string(stype->type_id), stype});
 }
 
-void sg_platf_new_mount(sg_platf_mount_cbarg_t mount){
+void sg_platf_new_mount(MountCreationArgs* mount)
+{
   xbt_assert(std::find(known_storages.begin(), known_storages.end(), mount->storageId) != known_storages.end(),
-             "Cannot mount non-existent disk \"%s\"", mount->storageId);
+             "Cannot mount non-existent disk \"%s\"", mount->storageId.c_str());
 
-  XBT_DEBUG("ROUTING Mount '%s' on '%s'",mount->storageId, mount->name);
+  XBT_DEBUG("Mount '%s' on '%s'", mount->storageId.c_str(), mount->name.c_str());
 
   if (mount_list.empty())
     XBT_DEBUG("Create a Mount list for %s", A_surfxml_host_id);
-  mount_list.insert({std::string(mount->name), simgrid::surf::StorageImpl::byName(mount->storageId)});
+  mount_list.insert({mount->name, simgrid::surf::StorageImpl::byName(mount->storageId.c_str())});
 }
 
 void sg_platf_new_route(sg_platf_route_cbarg_t route)
@@ -513,14 +518,14 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   current_property_set = nullptr;
 }
 
-void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
+void sg_platf_new_peer(PeerCreationArgs* peer)
 {
   simgrid::kernel::routing::VivaldiZone* as = dynamic_cast<simgrid::kernel::routing::VivaldiZone*>(current_routing);
   xbt_assert(as, "<peer> tag can only be used in Vivaldi netzones.");
 
   std::vector<double> speedPerPstate;
   speedPerPstate.push_back(peer->speed);
-  simgrid::s4u::Host* host = as->createHost(peer->id, &speedPerPstate, 1, nullptr);
+  simgrid::s4u::Host* host = as->createHost(peer->id.c_str(), &speedPerPstate, 1, nullptr);
 
   as->setPeerLink(host->pimpl_netpoint, peer->bw_in, peer->bw_out, peer->coord);
 

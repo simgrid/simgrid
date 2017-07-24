@@ -68,8 +68,8 @@ public:
   StorageModel();
   ~StorageModel();
 
-  virtual StorageImpl* createStorage(const char* id, const char* type_id, const char* content_name,
-                                     const char* attach) = 0;
+  virtual StorageImpl* createStorage(std::string id, std::string type_id, std::string content_name,
+                                     std::string attach) = 0;
 
   std::vector<StorageImpl*> p_storageList;
 };
@@ -84,8 +84,8 @@ public:
 class StorageImpl : public simgrid::surf::Resource, public simgrid::surf::PropertyHolder {
 public:
   /** @brief Storage constructor */
-  StorageImpl(Model* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
-              const char* type_id, const char* content_name, sg_size_t size, const char* attach);
+  StorageImpl(Model* model, std::string name, lmm_system_t maxminSystem, double bread, double bwrite,
+              std::string type_id, std::string content_name, sg_size_t size, std::string attach);
 
   ~StorageImpl() override;
 
@@ -140,7 +140,7 @@ public:
   virtual sg_size_t getSize() { return size_; }
   virtual std::string getHost() { return attach_; }
 
-  std::map<std::string, sg_size_t>* parseContent(const char* filename);
+  std::map<std::string, sg_size_t>* parseContent(std::string filename);
   static std::unordered_map<std::string, StorageImpl*>* storagesMap() { return StorageImpl::storages; }
 
   lmm_constraint_t constraintWrite_; /* Constraint for maximum write bandwidth*/

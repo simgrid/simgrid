@@ -58,9 +58,9 @@ StorageModel::~StorageModel()
  * Resource *
  ************/
 
-StorageImpl::StorageImpl(Model* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
-                         const char* type_id, const char* content_name, sg_size_t size, const char* attach)
-    : Resource(model, name, lmm_constraint_new(maxminSystem, this, MAX(bread, bwrite)))
+StorageImpl::StorageImpl(Model* model, std::string name, lmm_system_t maxminSystem, double bread, double bwrite,
+                         std::string type_id, std::string content_name, sg_size_t size, std::string attach)
+    : Resource(model, name.c_str(), lmm_constraint_new(maxminSystem, this, MAX(bread, bwrite)))
     , piface_(this)
     , typeId_(type_id)
     , size_(size)
@@ -81,15 +81,15 @@ StorageImpl::~StorageImpl()
     delete content_;
 }
 
-std::map<std::string, sg_size_t>* StorageImpl::parseContent(const char* filename)
+std::map<std::string, sg_size_t>* StorageImpl::parseContent(std::string filename)
 {
   usedSize_ = 0;
-  if ((not filename) || (strcmp(filename, "") == 0))
+  if (filename.empty())
     return nullptr;
 
   std::map<std::string, sg_size_t>* parse_content = new std::map<std::string, sg_size_t>();
 
-  std::ifstream* fs = surf_ifsopen(filename);
+  std::ifstream* fs = surf_ifsopen(filename.c_str());
 
   std::string line;
   std::vector<std::string> tokens;
@@ -98,7 +98,7 @@ std::map<std::string, sg_size_t>* StorageImpl::parseContent(const char* filename
     boost::trim(line);
     if (line.length() > 0) {
       boost::split(tokens, line, boost::is_any_of(" \t"), boost::token_compress_on);
-      xbt_assert(tokens.size() == 2, "Parse error in %s: %s", filename, line.c_str());
+      xbt_assert(tokens.size() == 2, "Parse error in %s: %s", filename.c_str(), line.c_str());
       sg_size_t size = std::stoull(tokens.at(1));
 
       usedSize_ += size;

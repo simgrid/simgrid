@@ -20,7 +20,7 @@ namespace routing {
 namespace vivaldi {
 simgrid::xbt::Extension<NetPoint, Coords> Coords::EXTENSION_ID;
 
-Coords::Coords(NetPoint* netpoint, const char* coordStr)
+Coords::Coords(NetPoint* netpoint, std::string coordStr)
 {
   if (not Coords::EXTENSION_ID.valid())
     Coords::EXTENSION_ID = NetPoint::extension_create<Coords>();
@@ -30,13 +30,16 @@ Coords::Coords(NetPoint* netpoint, const char* coordStr)
   xbt_assert(string_values.size() == 3, "Coordinates of %s must have 3 dimensions", netpoint->cname());
 
   for (auto str : string_values)
-    coords.push_back(xbt_str_parse_double(str.c_str(), "Invalid coordinate: %s"));
+    try {
+      coords.push_back(std::stod(str));
+    } catch (std::invalid_argument const& ia) {
+      throw std::invalid_argument(std::string("Invalid coordinate: ") + ia.what());
+    }
   coords.shrink_to_fit();
 
   netpoint->extension_set<Coords>(this);
-  XBT_DEBUG("Coords of %s %p: %s", netpoint->cname(), netpoint, coordStr);
+  XBT_DEBUG("Coords of %s %p: %s", netpoint->cname(), netpoint, coordStr.c_str());
 }
-Coords::~Coords() = default;
 }; // namespace vivaldi
 
 static inline double euclidean_dist_comp(int index, std::vector<double>* src, std::vector<double>* dst)
@@ -58,7 +61,7 @@ VivaldiZone::VivaldiZone(NetZone* father, const char* name) : ClusterZone(father
 {
 }
 
-void VivaldiZone::setPeerLink(NetPoint* netpoint, double bw_in, double bw_out, const char* coord)
+void VivaldiZone::setPeerLink(NetPoint* netpoint, double bw_in, double bw_out, std::string coord)
 {
   xbt_assert(netpoint->netzone() == this, "Cannot add a peer link to a netpoint that is not in this netzone");
 
