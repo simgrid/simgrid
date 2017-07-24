@@ -46,21 +46,22 @@ void surf_storage_model_init_default()
 namespace simgrid {
 namespace surf {
 
-StorageImpl* StorageN11Model::createStorage(const char* id, const char* type_id, const char* content_name,
-                                            const char* attach)
+StorageImpl* StorageN11Model::createStorage(std::string id, std::string type_id, std::string content_name,
+                                            std::string attach)
 {
   storage_type_t storage_type = storage_types.at(type_id);
 
-  double Bread =
-      surf_parse_get_bandwidth(storage_type->model_properties->at("Bread").c_str(), "property Bread, storage", type_id);
+  double Bread = surf_parse_get_bandwidth(storage_type->model_properties->at("Bread").c_str(),
+                                          "property Bread, storage", type_id.c_str());
   double Bwrite = surf_parse_get_bandwidth(storage_type->model_properties->at("Bwrite").c_str(),
-                                           "property Bwrite, storage", type_id);
+                                           "property Bwrite, storage", type_id.c_str());
 
-  StorageImpl* storage = new StorageN11(this, id, maxminSystem_, Bread, Bwrite, type_id, (char*)content_name,
-                                        storage_type->size, (char*)attach);
+  StorageImpl* storage =
+      new StorageN11(this, id, maxminSystem_, Bread, Bwrite, type_id, content_name, storage_type->size, attach);
   storageCreatedCallbacks(storage);
 
-  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tBread '%f'\n", id, type_id, Bread);
+  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tBread '%f'\n", id.c_str(), type_id.c_str(),
+            Bread);
 
   p_storageList.push_back(storage);
 
@@ -111,8 +112,8 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
  * Resource *
  ************/
 
-StorageN11::StorageN11(StorageModel* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
-                       const char* type_id, char* content_name, sg_size_t size, char* attach)
+StorageN11::StorageN11(StorageModel* model, std::string name, lmm_system_t maxminSystem, double bread, double bwrite,
+                       std::string type_id, std::string content_name, sg_size_t size, std::string attach)
     : StorageImpl(model, name, maxminSystem, bread, bwrite, type_id, content_name, size, attach)
 {
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);

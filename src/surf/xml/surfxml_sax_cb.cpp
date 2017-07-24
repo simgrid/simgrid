@@ -329,19 +329,17 @@ xbt_dict_t random_data_list = nullptr;
 YY_BUFFER_STATE surf_input_buffer;
 FILE *surf_file_to_parse = nullptr;
 
-/*
- * Stuff relative to storage
- */
+/* Stuff relative to storage */
 void STag_surfxml_storage()
 {
   ZONE_TAG = 0;
   XBT_DEBUG("STag_surfxml_storage");
   xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
 }
+
 void ETag_surfxml_storage()
 {
-  s_sg_platf_storage_cbarg_t storage;
-  memset(&storage,0,sizeof(storage));
+  StorageCreationArgs storage;
 
   storage.properties   = current_property_set;
   current_property_set = nullptr;
@@ -349,8 +347,8 @@ void ETag_surfxml_storage()
   storage.id           = A_surfxml_storage_id;
   storage.type_id      = A_surfxml_storage_typeId;
   storage.content      = A_surfxml_storage_content;
-
   storage.attach       = A_surfxml_storage_attach;
+
   sg_platf_new_storage(&storage);
 }
 void STag_surfxml_storage___type()
@@ -378,14 +376,15 @@ void ETag_surfxml_storage___type()
         "size of storage type", storage_type.id);
   sg_platf_new_storage_type(&storage_type);
 }
+
 void STag_surfxml_mount()
 {
   XBT_DEBUG("STag_surfxml_mount");
 }
+
 void ETag_surfxml_mount()
 {
-  s_sg_platf_mount_cbarg_t mount;
-  memset(&mount,0,sizeof(mount));
+  MountCreationArgs mount;
 
   mount.name      = A_surfxml_mount_name;
   mount.storageId = A_surfxml_mount_storageId;
@@ -666,12 +665,12 @@ void STag_surfxml_cabinet(){
 
 void STag_surfxml_peer(){
   parse_after_config();
-  s_sg_platf_peer_cbarg_t peer;
-  memset(&peer,0,sizeof(peer));
-  peer.id          = A_surfxml_peer_id;
-  peer.speed       = surf_parse_get_speed(A_surfxml_peer_speed, "speed of peer", peer.id);
-  peer.bw_in       = surf_parse_get_bandwidth(A_surfxml_peer_bw___in, "bw_in of peer", peer.id);
-  peer.bw_out      = surf_parse_get_bandwidth(A_surfxml_peer_bw___out, "bw_out of peer", peer.id);
+  PeerCreationArgs peer;
+
+  peer.id          = std::string(A_surfxml_peer_id);
+  peer.speed       = surf_parse_get_speed(A_surfxml_peer_speed, "speed of peer", peer.id.c_str());
+  peer.bw_in       = surf_parse_get_bandwidth(A_surfxml_peer_bw___in, "bw_in of peer", peer.id.c_str());
+  peer.bw_out      = surf_parse_get_bandwidth(A_surfxml_peer_bw___out, "bw_out of peer", peer.id.c_str());
   peer.coord       = A_surfxml_peer_coordinates;
   peer.speed_trace = A_surfxml_peer_availability___file[0] ? tmgr_trace_new_from_file(A_surfxml_peer_availability___file) : nullptr;
   peer.state_trace = A_surfxml_peer_state___file[0] ? tmgr_trace_new_from_file(A_surfxml_peer_state___file) : nullptr;

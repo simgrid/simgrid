@@ -128,9 +128,11 @@ NetZone* Engine::getNetzoneByNameOrNull(const char* name)
 /** @brief Retrieve the netpoint of the given name (or nullptr if not found) */
 simgrid::kernel::routing::NetPoint* Engine::getNetpointByNameOrNull(const char* name)
 {
-  if (pimpl->netpoints_.find(name) == pimpl->netpoints_.end())
+  try {
+    return pimpl->netpoints_.at(name);
+  } catch (std::out_of_range& unfound) {
     return nullptr;
-  return pimpl->netpoints_.at(name);
+  }
 }
 /** @brief Fill the provided vector with all existing netpoints */
 void Engine::getNetpointList(std::vector<simgrid::kernel::routing::NetPoint*>* list)

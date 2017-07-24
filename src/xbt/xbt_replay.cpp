@@ -78,9 +78,9 @@ static ReplayAction* get_action(char* name)
       } else {
         // Else, I have to store it for the relevant colleague
         std::queue<ReplayAction*>* otherqueue = nullptr;
-        if (action_queues.find(evtname) != action_queues.end())
+        try {
           otherqueue = action_queues.at(evtname);
-        else { // Damn. Create the queue of that guy
+        } catch (std::out_of_range& unfound) { // Damn. Create the queue of that guy
           otherqueue = new std::queue<ReplayAction*>();
           action_queues.insert({evtname, otherqueue});
         }

@@ -22,9 +22,11 @@ namespace simgrid {
 
   LinkImpl* LinkImpl::byName(const char* name)
   {
-    if (links->find(name) == links->end())
+    try {
+      return links->at(name);
+    } catch (std::out_of_range& unfound) {
       return nullptr;
-    return links->at(name);
+    }
   }
   /** @brief Returns the amount of links in the platform */
   int LinkImpl::linksCount()

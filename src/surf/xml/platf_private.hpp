@@ -72,16 +72,16 @@ public:
   xbt_dict_t properties               = nullptr;
 };
 
-typedef struct s_sg_platf_peer_cbarg *sg_platf_peer_cbarg_t;
-typedef struct s_sg_platf_peer_cbarg {
-  const char* id;
+class PeerCreationArgs {
+public:
+  std::string id;
   double speed;
   double bw_in;
   double bw_out;
-  const char* coord;
+  std::string coord;
   tmgr_trace_t speed_trace;
   tmgr_trace_t state_trace;
-} s_sg_platf_peer_cbarg_t;
+};
 
 typedef struct s_sg_platf_route_cbarg *sg_platf_route_cbarg_t;
 typedef struct s_sg_platf_route_cbarg {
@@ -127,14 +127,14 @@ typedef struct s_sg_platf_cabinet_cbarg {
   double lat;
 } s_sg_platf_cabinet_cbarg_t;
 
-typedef struct s_sg_platf_storage_cbarg* sg_platf_storage_cbarg_t;
-typedef struct s_sg_platf_storage_cbarg {
-  const char* id;
-  const char* type_id;
-  const char* content;
+class StorageCreationArgs {
+public:
+  std::string id;
+  std::string type_id;
+  std::string content;
   xbt_dict_t properties;
-  const char* attach;
-} s_sg_platf_storage_cbarg_t;
+  std::string attach;
+};
 
 typedef struct s_sg_platf_storage_type_cbarg* sg_platf_storage_type_cbarg_t;
 typedef struct s_sg_platf_storage_type_cbarg {
@@ -146,11 +146,11 @@ typedef struct s_sg_platf_storage_type_cbarg {
   sg_size_t size;
 } s_sg_platf_storage_type_cbarg_t;
 
-typedef struct s_sg_platf_mount_cbarg* sg_platf_mount_cbarg_t;
-typedef struct s_sg_platf_mount_cbarg {
-  const char* storageId;
-  const char* name;
-} s_sg_platf_mount_cbarg_t;
+class MountCreationArgs {
+public:
+  std::string storageId;
+  std::string name;
+};
 
 typedef struct s_sg_platf_prop_cbarg *sg_platf_prop_cbarg_t;
 typedef struct s_sg_platf_prop_cbarg {
@@ -208,7 +208,7 @@ XBT_PUBLIC(void) sg_platf_new_hostlink(sg_platf_host_link_cbarg_t h); // Add an 
 XBT_PUBLIC(simgrid::kernel::routing::NetPoint*)
 sg_platf_new_router(const char* name, const char* coords);             // Add a router  to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_link(LinkCreationArgs* link);            // Add a link    to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_peer   (sg_platf_peer_cbarg_t peer);     // Add a peer    to the currently described AS
+XBT_PUBLIC(void) sg_platf_new_peer(PeerCreationArgs* peer);            // Add a peer    to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_cluster(sg_platf_cluster_cbarg_t clust); // Add a cluster to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet); // Add a cabinet to the currently described AS
 
@@ -217,9 +217,9 @@ XBT_PUBLIC(void) sg_platf_new_bypassRoute (sg_platf_route_cbarg_t bypassroute); 
 
 XBT_PUBLIC(void) sg_platf_new_trace(sg_platf_trace_cbarg_t trace);
 
-XBT_PUBLIC(void) sg_platf_new_storage(sg_platf_storage_cbarg_t storage); // Add a storage to the currently described AS
+XBT_PUBLIC(void) sg_platf_new_storage(StorageCreationArgs* storage); // Add a storage to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type);
-XBT_PUBLIC(void) sg_platf_new_mount(sg_platf_mount_cbarg_t mount);
+XBT_PUBLIC(void) sg_platf_new_mount(MountCreationArgs* mount);
 
 XBT_PUBLIC(void) sg_platf_new_process(sg_platf_process_cbarg_t process);
 XBT_PRIVATE void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect);

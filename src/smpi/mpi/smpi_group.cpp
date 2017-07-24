@@ -73,10 +73,11 @@ int Group::rank(int index)
 {
   if (this == MPI_GROUP_EMPTY)
     return MPI_UNDEFINED;
-  if (index_to_rank_map_.find(index) == index_to_rank_map_.end())
-    return MPI_UNDEFINED;
-  else
+  try {
     return index_to_rank_map_.at(index);
+  } catch (std::out_of_range& unfound) {
+    return MPI_UNDEFINED;
+  }
 }
 
 void Group::ref()

@@ -87,9 +87,11 @@ Host* Host::by_name_or_null(const char* name)
 }
 Host* Host::by_name_or_null(std::string name)
 {
-  if (host_list.find(name) == host_list.end())
+  try {
+    return host_list.at(name);
+  } catch (std::out_of_range& unfound) {
     return nullptr;
-  return host_list.at(name);
+  }
 }
 
 Host *Host::current(){
