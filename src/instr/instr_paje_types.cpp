@@ -52,10 +52,7 @@ void PJ_type_free (type_t type)
   xbt_dict_cursor_t cursor = nullptr;
   xbt_dict_foreach (type->values, cursor, value_name, val) {
     XBT_DEBUG("free value %s, child of %s", val->name, val->father->name);
-    xbt_free(val->name);
-    xbt_free(val->color);
-    xbt_free(val->id);
-    xbt_free(val);
+    delete val;
   }
   xbt_dict_free (&type->values);
   xbt_free (type->name);

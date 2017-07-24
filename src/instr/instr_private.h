@@ -80,6 +80,7 @@ public:
   type_t father;
   value* ret;
   value(const char* name, const char* color, type_t father);
+  ~value();
   static value* get_or_new(const char* name, const char* color, type_t father);
   static value* get(const char* name, type_t father);
 };
