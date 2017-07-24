@@ -418,7 +418,7 @@ void TRACE_smpi_send(int rank, int src, int dst, int tag, int size)
   new StartLinkEvent (SIMIX_get_clock(), PJ_container_get_root(), type, container, "PTP", key, size);
 }
 
-void TRACE_smpi_recv(int rank, int src, int dst, int tag)
+void TRACE_smpi_recv(int src, int dst, int tag)
 {
   if (not TRACE_smpi_is_enabled())
     return;

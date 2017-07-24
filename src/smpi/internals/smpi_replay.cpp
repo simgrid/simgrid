@@ -312,7 +312,7 @@ static void action_recv(const char *const *action) {
 
   TRACE_smpi_ptp_out(rank, rank, __FUNCTION__);
   if (not TRACE_smpi_view_internals()) {
-    TRACE_smpi_recv(rank, src_traced, rank, 0);
+    TRACE_smpi_recv(src_traced, rank, 0);
   }
 
   log_timed_action (action, clock);
@@ -410,7 +410,7 @@ static void action_wait(const char *const *action){
 
   TRACE_smpi_ptp_out(rank, dst_traced, __FUNCTION__);
   if (is_wait_for_receive)
-    TRACE_smpi_recv(rank, src_traced, dst_traced, 0);
+    TRACE_smpi_recv(src_traced, dst_traced, 0);
   log_timed_action (action, clock);
 }
 
@@ -442,7 +442,7 @@ static void action_waitall(const char *const *action){
 
    for (i=0; i<count_requests;i++){
      if (recvs_snd[i]!=-100)
-       TRACE_smpi_recv(rank_traced, recvs_snd[i], recvs_rcv[i],0);
+       TRACE_smpi_recv(recvs_snd[i], recvs_rcv[i],0);
    }
    TRACE_smpi_ptp_out(rank_traced, -1, __FUNCTION__);
   }

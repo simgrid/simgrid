@@ -322,7 +322,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     if (status != MPI_STATUS_IGNORE) {
       src_traced = comm->group()->index(status->MPI_SOURCE);
       if (not TRACE_smpi_view_internals()) {
-        TRACE_smpi_recv(rank, src_traced, rank, tag);
+        TRACE_smpi_recv(src_traced, rank, tag);
       }
     }
     TRACE_smpi_ptp_out(rank, rank, __FUNCTION__);
@@ -475,7 +475,7 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
   retval = MPI_SUCCESS;
 
   TRACE_smpi_ptp_out(rank, dst_traced, __FUNCTION__);
-  TRACE_smpi_recv(rank, src_traced, rank, recvtag);
+  TRACE_smpi_recv(src_traced, rank, recvtag);
   }
 
   smpi_bench_begin();
@@ -635,7 +635,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
         src_traced = (status!=MPI_STATUS_IGNORE) ?
           comm->group()->rank(status->MPI_SOURCE) :
           src_traced;
-      TRACE_smpi_recv(rank, src_traced, dst_traced, tag_traced);
+      TRACE_smpi_recv(src_traced, dst_traced, tag_traced);
     }
   }
 
@@ -685,7 +685,7 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
         src_traced = (status != MPI_STATUSES_IGNORE)
                          ? savedvals[*index].comm->group()->rank(status->MPI_SOURCE)
                          : savedvals[*index].src;
-      TRACE_smpi_recv(rank_traced, src_traced, dst_traced, savedvals[*index].tag);
+      TRACE_smpi_recv(src_traced, dst_traced, savedvals[*index].tag);
     }
     TRACE_smpi_ptp_out(rank_traced, dst_traced, __FUNCTION__);
   }
@@ -735,7 +735,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
         if(src_traced==MPI_ANY_SOURCE)
         src_traced = (status!=MPI_STATUSES_IGNORE) ?
                           savedvals[i].comm->group()->rank(status[i].MPI_SOURCE) : savedvals[i].src;
-        TRACE_smpi_recv(rank_traced, src_traced, dst_traced,savedvals[i].tag);
+        TRACE_smpi_recv(src_traced, dst_traced,savedvals[i].tag);
       }
     }
   }
