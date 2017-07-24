@@ -116,7 +116,6 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
    * Dimension based routing routes through each dimension consecutively
    * TODO Change to dynamic assignment
    */
-  unsigned int dim_product = 1;
   unsigned int current_node = src->id();
   unsigned int next_node    = 0;
   /*
@@ -142,7 +141,7 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
   bool use_lnk_up = false; // Is this link of the form "cur -> next" or "next -> cur"?
   // false means: next -> cur
   while (current_node != dst->id()) {
-    dim_product = 1; // First, we will route in x-dimension
+    unsigned int dim_product = 1; // First, we will route in x-dimension
     int j=0;
     for (auto cur_dim : dimensions_){
       // current_node/dim_product = position in current dimension
