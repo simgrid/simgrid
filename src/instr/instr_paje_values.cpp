@@ -10,11 +10,12 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_values, instr, "Paje tracing event system (values)");
 
-s_val::s_val(const char *name, const char *color, type_t father){
+value::value(const char* name, const char* color, type_t father)
+{
   if (name == nullptr || father == nullptr){
     THROWF (tracing_error, 0, "can't create a value with a nullptr name (or a nullptr father)");
   }
-  this->ret = xbt_new0(s_val, 1);
+  this->ret         = xbt_new0(value, 1);
   this->ret->name = xbt_strdup (name);
   this->ret->father = father;
   this->ret->color = xbt_strdup (color);
@@ -28,20 +29,20 @@ s_val::s_val(const char *name, const char *color, type_t father){
   LogEntityValue(this->ret);
 };
 
-val_t s_val::PJ_value_get_or_new (const char *name, const char *color, type_t father)
+value* value::get_or_new(const char* name, const char* color, type_t father)
 {
-  val_t ret = 0;
+  value* ret = 0;
   try {
-    ret = s_val::PJ_value_get(name, father);
+    ret = value::get(name, father);
   }
   catch(xbt_ex& e) {
-    s_val rett(name, color, father);
+    value rett(name, color, father);
     ret = rett.ret;
   }
   return ret;
 }
 
-val_t s_val::PJ_value_get (const char *name, type_t father)
+value* value::get(const char* name, type_t father)
 {
   if (name == nullptr || father == nullptr){
     THROWF (tracing_error, 0, "can't get a value with a nullptr name (or a nullptr father)");
@@ -49,7 +50,7 @@ val_t s_val::PJ_value_get (const char *name, type_t father)
 
   if (father->kind == TYPE_VARIABLE)
     THROWF(tracing_error, 0, "variables can't have different values (%s)", father->name);
-  val_t ret = (val_t)xbt_dict_get_or_null (father->values, name);
+  value* ret = (value*)xbt_dict_get_or_null(father->values, name);
   if (ret == nullptr) {
     THROWF(tracing_error, 2, "value with name (%s) not found in father type (%s)", name, father->name);
   }

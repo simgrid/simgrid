@@ -22,8 +22,8 @@
     }                                                                                                                  \
     char cont_name[25];                                                                                                \
     snprintf(cont_name, 25, "rank-%d", smpi_process()->index());                                                       \
-    val_t value = s_val::PJ_value_get_or_new(Colls::mpi_coll_##cat##_description[i].name, "1.0 1.0 1.0", type);               \
-    new NewEvent(SIMIX_get_clock(), PJ_container_get(cont_name), type, value);                                         \
+    value* val = value::get_or_new(Colls::mpi_coll_##cat##_description[i].name, "1.0 1.0 1.0", type);                  \
+    new NewEvent(SIMIX_get_clock(), PJ_container_get(cont_name), type, val);                                           \
   }
 
 #define AUTOMATIC_COLL_BENCH(cat, ret, args, args2)                                                                    \

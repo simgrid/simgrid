@@ -54,8 +54,8 @@ void TRACE_msg_task_execute_start(msg_task_t task)
 
     container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    val_t value = s_val::PJ_value_get ("task_execute", type);
-    new PushStateEvent (MSG_get_clock(), process_container, type, value);
+    value* val                    = value::get("task_execute", type);
+    new PushStateEvent(MSG_get_clock(), process_container, type, val);
   }
 }
 
@@ -94,8 +94,8 @@ void TRACE_msg_task_get_start()
 
     container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    val_t value = s_val::PJ_value_get ("receive", type);
-    new PushStateEvent (MSG_get_clock(), process_container, type, value);
+    value* val                    = value::get("receive", type);
+    new PushStateEvent(MSG_get_clock(), process_container, type, val);
   }
 }
 
@@ -129,8 +129,8 @@ int TRACE_msg_task_put_start(msg_task_t task)
 
     container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    val_t value = s_val::PJ_value_get ("send", type);
-    new PushStateEvent (MSG_get_clock(), process_container, type, value);
+    value* val                    = value::get("send", type);
+    new PushStateEvent(MSG_get_clock(), process_container, type, val);
 
     char key[INSTR_DEFAULT_STR_SIZE];
     snprintf (key, INSTR_DEFAULT_STR_SIZE, "p%lld", task->counter);

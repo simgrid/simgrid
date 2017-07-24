@@ -267,11 +267,11 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     if (msg_process == nullptr){
       msg_process = PJ_type_container_new("MSG_PROCESS", container->type);
       type_t state = PJ_type_state_new ("MSG_PROCESS_STATE", msg_process);
-      s_val PJ_value("suspend", "1 0 1", state);
-      s_val::PJ_value_get_or_new("sleep", "1 1 0", state);
-      s_val::PJ_value_get_or_new("receive", "1 0 0", state);
-      s_val::PJ_value_get_or_new("send", "0 0 1", state);
-      s_val::PJ_value_get_or_new("task_execute", "0 1 1", state);
+      value PJ_value("suspend", "1 0 1", state);
+      value::get_or_new("sleep", "1 1 0", state);
+      value::get_or_new("receive", "1 0 0", state);
+      value::get_or_new("send", "0 0 1", state);
+      value::get_or_new("task_execute", "0 1 1", state);
       PJ_type_link_new ("MSG_PROCESS_LINK", PJ_type_get_root(), msg_process, msg_process);
       PJ_type_link_new ("MSG_PROCESS_TASK_LINK", PJ_type_get_root(), msg_process, msg_process);
     }
@@ -282,11 +282,11 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     if (msg_vm == nullptr){
       msg_vm = PJ_type_container_new("MSG_VM", container->type);
       type_t state = PJ_type_state_new ("MSG_VM_STATE", msg_vm);
-      s_val PJ_value("suspend", "1 0 1", state);
-      s_val::PJ_value_get_or_new ("sleep", "1 1 0", state);
-      s_val::PJ_value_get_or_new ("receive", "1 0 0", state);
-      s_val::PJ_value_get_or_new ("send", "0 0 1", state);
-      s_val::PJ_value_get_or_new ("task_execute", "0 1 1", state);
+      value PJ_value("suspend", "1 0 1", state);
+      value::get_or_new("sleep", "1 1 0", state);
+      value::get_or_new("receive", "1 0 0", state);
+      value::get_or_new("send", "0 0 1", state);
+      value::get_or_new("task_execute", "0 1 1", state);
       PJ_type_link_new ("MSG_VM_LINK", PJ_type_get_root(), msg_vm, msg_vm);
       PJ_type_link_new ("MSG_VM_PROCESS_LINK", PJ_type_get_root(), msg_vm, msg_vm);
     }
@@ -400,16 +400,16 @@ void instr_new_user_state_type (const char *father_type, const char *new_typenam
   recursiveNewUserStateType (father_type, new_typename, PJ_type_get_root());
 }
 
-static void recursiveNewValueForUserStateType (const char *type_name, const char *value, const char *color, type_t root)
+static void recursiveNewValueForUserStateType(const char* type_name, const char* val, const char* color, type_t root)
 {
   if (not strcmp(root->name, type_name)) {
-    s_val PJ_value (value, color, root);
+    value PJ_value(val, color, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
   type_t child_type;
   char *name;
   xbt_dict_foreach(root->children, cursor, name, child_type) {
-    recursiveNewValueForUserStateType (type_name, value, color, child_type);
+    recursiveNewValueForUserStateType(type_name, val, color, child_type);
   }
 }
 

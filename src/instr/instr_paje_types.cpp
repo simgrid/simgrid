@@ -47,15 +47,15 @@ static type_t newType (const char *typeNameBuff, const char *key, const char *co
 
 void PJ_type_free (type_t type)
 {
-  val_t value;
+  value* val;
   char *value_name;
   xbt_dict_cursor_t cursor = nullptr;
-  xbt_dict_foreach(type->values, cursor, value_name, value) {
-     XBT_DEBUG("free value %s, child of %s", value->name, value->father->name);
-     xbt_free(value->name);
-     xbt_free(value->color);
-     xbt_free(value->id);
-     xbt_free(value);
+  xbt_dict_foreach (type->values, cursor, value_name, val) {
+    XBT_DEBUG("free value %s, child of %s", val->name, val->father->name);
+    xbt_free(val->name);
+    xbt_free(val->color);
+    xbt_free(val->id);
+    xbt_free(val);
   }
   xbt_dict_free (&type->values);
   xbt_free (type->name);

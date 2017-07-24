@@ -72,19 +72,16 @@ class s_type {
 typedef s_type s_type_t;
 
 //--------------------------------------------------
-class s_val;
-typedef s_val *val_t;
-
-class s_val {
-  public:
+class value {
+public:
   char *id;
   char *name;
   char *color;
   type_t father;
-  val_t ret;
-  s_val(const char *name, const char *color, type_t father);
-  static val_t PJ_value_get_or_new (const char *name, const char *color, type_t father);
-  static val_t PJ_value_get (const char *name, type_t father);
+  value* ret;
+  value(const char* name, const char* color, type_t father);
+  static value* get_or_new(const char* name, const char* color, type_t father);
+  static value* get(const char* name, type_t father);
 };
 
 
@@ -185,12 +182,12 @@ class SetStateEvent : public PajeEvent  {
   private:
   container_t container;
   type_t type;
-  val_t value;
+  value* val;
   const char* filename;
   int linenumber;
   public:
-  SetStateEvent (double timestamp, container_t container, type_t type, val_t value);
-  void print() override;
+    SetStateEvent(double timestamp, container_t container, type_t type, value* val);
+    void print() override;
 };
 
 
@@ -198,16 +195,15 @@ class PushStateEvent : public PajeEvent  {
   public:
   container_t container;
   type_t type;
-  val_t value;
+  value* val;
   int size;
   const char* filename;
   int linenumber;
   void* extra_;
   public:
-  PushStateEvent (double timestamp, container_t container, type_t type, val_t value);
-  PushStateEvent (double timestamp, container_t container, type_t type, val_t value,
-                                             void* extra);
-  void print() override;
+    PushStateEvent(double timestamp, container_t container, type_t type, value* val);
+    PushStateEvent(double timestamp, container_t container, type_t type, value* val, void* extra);
+    void print() override;
 };
 
 class PopStateEvent : public PajeEvent  {
@@ -261,9 +257,10 @@ class NewEvent : public PajeEvent  {
   public:
   container_t container;
   type_t type;
-  val_t value;
-  public:
-  NewEvent (double timestamp, container_t container, type_t type, val_t value);
+  value* val;
+
+public:
+  NewEvent(double timestamp, container_t container, type_t type, value* val);
   void print() override;
 
 };
@@ -433,7 +430,7 @@ void DefineContainerEvent(type_t type);
 void LogVariableTypeDefinition(type_t type);
 void LogStateTypeDefinition(type_t type);
 void LogLinkTypeDefinition(type_t type, type_t source, type_t dest);
-void LogEntityValue (val_t value);
+void LogEntityValue(value* val);
 void LogContainerCreation (container_t container);
 void LogContainerDestruction (container_t container);
 void LogDefineEventType(type_t type);
