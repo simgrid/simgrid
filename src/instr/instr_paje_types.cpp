@@ -112,14 +112,10 @@ type_t PJ_type_container_new (const char *name, type_t father)
     THROWF (tracing_error, 0, "can't create a container type with a nullptr name");
   }
 
-  type_t ret = nullptr;
-
-  ret = newType (name, name, nullptr, TYPE_CONTAINER, father);
-  if (father == nullptr){
+  type_t ret = newType(name, name, nullptr, TYPE_CONTAINER, father);
+  if (father == nullptr) {
     rootType = ret;
-  }
-
-  if(father){
+  } else {
     XBT_DEBUG("ContainerType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
     DefineContainerEvent(ret);
   }
