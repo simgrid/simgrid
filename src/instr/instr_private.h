@@ -81,8 +81,12 @@ class s_val {
   char *name;
   char *color;
   type_t father;
+  val_t ret;
+  s_val(const char *name, const char *color, type_t father);
+  static val_t PJ_value_get_or_new (const char *name, const char *color, type_t father);
+  static val_t PJ_value_get (const char *name, type_t father);
 };
-typedef s_val s_val_t;
+
 
 //--------------------------------------------------
 typedef enum {
@@ -143,6 +147,7 @@ class DefineStateTypeEvent : public PajeEvent  {
 
 
 class SetVariableEvent : public PajeEvent  {
+  private:
   container_t container;
   type_t type;
   double value;
@@ -153,6 +158,7 @@ class SetVariableEvent : public PajeEvent  {
 
 
 class AddVariableEvent:public PajeEvent {
+  private:
   container_t container;
   type_t type;
   double value;
@@ -165,7 +171,7 @@ class AddVariableEvent:public PajeEvent {
 
 
 class SubVariableEvent : public PajeEvent  {
-  public:
+  private:
   container_t container;
   type_t type;
   double value;
@@ -176,7 +182,7 @@ class SubVariableEvent : public PajeEvent  {
 //--------------------------------------------------
 
 class SetStateEvent : public PajeEvent  {
-  public:
+  private:
   container_t container;
   type_t type;
   val_t value;
@@ -350,11 +356,6 @@ XBT_PRIVATE XBT_PRIVATE void PJ_type_free (type_t type);
 
 /* instr_config.c */
 XBT_PRIVATE void recursiveDestroyType (type_t type);
-
-/* instr_paje_values.c */
-XBT_PUBLIC(val_t)  PJ_value_new (const char *name, const char *color, type_t father);
-XBT_PUBLIC(val_t)  PJ_value_get_or_new (const char *name, const char *color, type_t father);
-XBT_PUBLIC(val_t)  PJ_value_get (const char *name, const type_t father);
 
 XBT_PRIVATE void TRACE_TI_start();
 XBT_PRIVATE void TRACE_TI_end();

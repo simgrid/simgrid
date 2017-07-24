@@ -12,7 +12,7 @@ SG_BEGIN_DECL()
 
 XBT_PUBLIC(int) TRACE_start ();
 XBT_PUBLIC(int) TRACE_end ();
-XBT_PUBLIC(void) TRACE_global_init(int *argc, char **argv);
+XBT_PUBLIC(void) TRACE_global_init();
 XBT_PUBLIC(void) TRACE_help(int detailed);
 XBT_PUBLIC(void) TRACE_surf_resource_utilization_alloc();
 XBT_PUBLIC(void) TRACE_surf_resource_utilization_release();

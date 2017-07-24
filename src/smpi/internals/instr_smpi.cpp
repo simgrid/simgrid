@@ -233,7 +233,7 @@ void TRACE_smpi_finalize(int rank)
   PJ_container_free (container);
 }
 
-void TRACE_smpi_collective_in(int rank, int root, const char *operation, instr_extra_data extra)
+void TRACE_smpi_collective_in(int rank, const char *operation, instr_extra_data extra)
 {
   if (not TRACE_smpi_is_enabled()) {
     cleanup_extra_data(extra);
@@ -245,11 +245,11 @@ void TRACE_smpi_collective_in(int rank, int root, const char *operation, instr_e
   container_t container = PJ_container_get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   const char *color = instr_find_color (operation);
-  val_t value = PJ_value_get_or_new (operation, color, type);
+  val_t value = s_val::PJ_value_get_or_new (operation, color, type);
   new PushStateEvent (SIMIX_get_clock(), container, type, value, static_cast<void*>(extra));
 }
 
-void TRACE_smpi_collective_out(int rank, int root, const char *operation)
+void TRACE_smpi_collective_out(int rank, const char *operation)
 {
   if (not TRACE_smpi_is_enabled())
     return;
@@ -273,7 +273,7 @@ void TRACE_smpi_computing_init(int rank)
  container_t container = PJ_container_get(str);
  type_t type           = PJ_type_get("MPI_STATE", container->type);
  const char* color     = instr_find_color("computing");
- val_t value           = PJ_value_get_or_new("computing", color, type);
+ val_t value           = s_val::PJ_value_get_or_new("computing", color, type);
  new PushStateEvent(SIMIX_get_clock(), container, type, value);
 }
 
@@ -289,7 +289,7 @@ void TRACE_smpi_computing_in(int rank, instr_extra_data extra)
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
-  val_t value = PJ_value_get_or_new ("computing", nullptr, type);
+  val_t value = s_val::PJ_value_get_or_new ("computing", nullptr, type);
   new PushStateEvent  (SIMIX_get_clock(), container, type, value, static_cast<void*>(extra));
 }
 
@@ -315,7 +315,7 @@ void TRACE_smpi_sleeping_init(int rank)
   container_t container = PJ_container_get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   const char *color = instr_find_color ("sleeping");
-  val_t value = PJ_value_get_or_new ("sleeping", color, type);
+  val_t value = s_val::PJ_value_get_or_new ("sleeping", color, type);
   new PushStateEvent (SIMIX_get_clock(), container, type, value);
 }
 
@@ -331,7 +331,7 @@ void TRACE_smpi_sleeping_in(int rank, instr_extra_data extra)
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
-  val_t value = PJ_value_get_or_new ("sleeping", nullptr, type);
+  val_t value = s_val::PJ_value_get_or_new ("sleeping", nullptr, type);
   new PushStateEvent  (SIMIX_get_clock(), container, type, value, static_cast<void*>(extra));
 }
 
@@ -358,7 +358,7 @@ void TRACE_smpi_testing_in(int rank, instr_extra_data extra)
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
-  val_t value = PJ_value_get_or_new ("test", nullptr, type);
+  val_t value = s_val::PJ_value_get_or_new ("test", nullptr, type);
   new PushStateEvent  (SIMIX_get_clock(), container, type, value, static_cast<void*>(extra));
 }
 
@@ -373,7 +373,7 @@ void TRACE_smpi_testing_out(int rank)
   new PopStateEvent (SIMIX_get_clock(), container, type);
 }
 
-void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation, instr_extra_data extra)
+void TRACE_smpi_ptp_in(int rank, const char *operation, instr_extra_data extra)
 {
   if (not TRACE_smpi_is_enabled()) {
     cleanup_extra_data(extra);
@@ -385,11 +385,11 @@ void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation, instr_
   container_t container = PJ_container_get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   const char *color = instr_find_color (operation);
-  val_t value = PJ_value_get_or_new (operation, color, type);
+  val_t value = s_val::PJ_value_get_or_new (operation, color, type);
   new PushStateEvent (SIMIX_get_clock(), container, type, value, static_cast<void*>(extra));
 }
 
-void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation)
+void TRACE_smpi_ptp_out(int rank, int dst, const char *operation)
 {
   if (not TRACE_smpi_is_enabled())
     return;
@@ -418,7 +418,7 @@ void TRACE_smpi_send(int rank, int src, int dst, int tag, int size)
   new StartLinkEvent (SIMIX_get_clock(), PJ_container_get_root(), type, container, "PTP", key, size);
 }
 
-void TRACE_smpi_recv(int rank, int src, int dst, int tag)
+void TRACE_smpi_recv(int src, int dst, int tag)
 {
   if (not TRACE_smpi_is_enabled())
     return;

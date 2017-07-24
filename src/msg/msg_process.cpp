@@ -211,7 +211,7 @@ msg_error_t MSG_process_join(msg_process_t process, double timeout){
  */
 msg_error_t MSG_process_migrate(msg_process_t process, msg_host_t host)
 {
-  TRACE_msg_process_change_host(process, MSG_process_get_host(process), host);
+  TRACE_msg_process_change_host(process, host);
   process->migrate(host);
   return MSG_OK;
 }

@@ -32,7 +32,7 @@ static void _sg_cfg_cb_msg_debug_multiple_use(const char *name)
  */
 void MSG_init_nocheck(int *argc, char **argv) {
 
-  TRACE_global_init(argc, argv);
+  TRACE_global_init();
 
   if (not msg_global) {
 

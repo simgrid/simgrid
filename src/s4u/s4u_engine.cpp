@@ -35,7 +35,7 @@ Engine::Engine(int *argc, char **argv) {
   s4u::Engine::instance_ = this;
   pimpl                  = new kernel::EngineImpl();
 
-  TRACE_global_init(argc, argv);
+  TRACE_global_init();
   SIMIX_global_init(argc, argv);
 }
 
