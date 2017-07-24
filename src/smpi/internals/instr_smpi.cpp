@@ -233,7 +233,7 @@ void TRACE_smpi_finalize(int rank)
   PJ_container_free (container);
 }
 
-void TRACE_smpi_collective_in(int rank, int root, const char *operation, instr_extra_data extra)
+void TRACE_smpi_collective_in(int rank, const char *operation, instr_extra_data extra)
 {
   if (not TRACE_smpi_is_enabled()) {
     cleanup_extra_data(extra);
@@ -373,7 +373,7 @@ void TRACE_smpi_testing_out(int rank)
   new PopStateEvent (SIMIX_get_clock(), container, type);
 }
 
-void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation, instr_extra_data extra)
+void TRACE_smpi_ptp_in(int rank, const char *operation, instr_extra_data extra)
 {
   if (not TRACE_smpi_is_enabled()) {
     cleanup_extra_data(extra);
@@ -389,7 +389,7 @@ void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation, instr_
   new PushStateEvent (SIMIX_get_clock(), container, type, value, static_cast<void*>(extra));
 }
 
-void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation)
+void TRACE_smpi_ptp_out(int rank, int dst, const char *operation)
 {
   if (not TRACE_smpi_is_enabled())
     return;
