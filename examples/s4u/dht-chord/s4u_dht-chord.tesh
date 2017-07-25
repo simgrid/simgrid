@@ -234,4 +234,4 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u_dht-chord$EXEEXT -nb_bits=3 ${srcdir:=.}/clust
 > [ 990.45356] (node@node-0.acme.org)    6  | 16728096
 > [ 990.45356] (node@node-0.acme.org) Predecessor: 42
 > [1040.45356] (node@node-0.acme.org) Well Guys! I Think it's time for me to leave ;)
-> [1090.46137] (maestro@) Simulated time: 1090.46
+> [1090.45356] (maestro@) Simulated time: 1090.45

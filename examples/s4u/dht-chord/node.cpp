@@ -120,8 +120,8 @@ void Node::notifyAndQuit()
     }
   }
 
-  if (pred_id_ != -1) {
-    // send the SUCCESSOR_LEAVING to our predecessor (only if I have one)
+  if (pred_id_ != -1 && pred_id_ != id_) {
+    // send the SUCCESSOR_LEAVING to our predecessor (only if I have one that is not me)
     ChordMessage* succ_msg = new ChordMessage(SUCCESSOR_LEAVING);
     succ_msg->request_id   = fingers_[0];
     succ_msg->answer_to    = mailbox_;
@@ -398,13 +398,10 @@ void Node::stabilize()
   XBT_DEBUG("Stabilizing node");
 
   // get the predecessor of my immediate successor
-  int candidate_id;
+  int candidate_id = pred_id_;
   int successor_id = fingers_[0];
-  if (successor_id != id_) {
+  if (successor_id != id_)
     candidate_id = remoteGetPredecessor(successor_id);
-  } else {
-    candidate_id = pred_id_;
-  }
 
   // this node is a candidate to become my new successor
   if (candidate_id != -1 && is_in_interval(candidate_id, id_ + 1, successor_id - 1)) {
