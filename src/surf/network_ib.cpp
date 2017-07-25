@@ -55,13 +55,13 @@ static void IB_action_init_callback(simgrid::surf::NetworkAction* action, simgri
   try {
     act_src = ibModel->active_nodes.at(src->getName());
   } catch (std::out_of_range& unfound) {
-    throw std::out_of_range(std::string("Could not find '") + src->getName() + "' active comms !");
+    throw std::out_of_range(std::string("Could not find '") + src->getCname() + "' active comms !");
   }
 
   try {
     act_dst = ibModel->active_nodes.at(dst->getName());
   } catch (std::out_of_range& unfound) {
-    throw std::out_of_range(std::string("Could not find '") + dst->getName() + "' active comms !");
+    throw std::out_of_range(std::string("Could not find '") + dst->getCname() + "' active comms !");
   }
 
   ibModel->active_comms[action]=std::make_pair(act_src, act_dst);
