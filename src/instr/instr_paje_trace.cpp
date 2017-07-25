@@ -667,11 +667,13 @@ void PushStateEvent::print() {
           fprintf(trace_file, "%d ", extra->recvcounts[i]);
         fprintf(trace_file, "%d %s %s\n", extra->root, extra->datatype1, extra->datatype2);
         break;
+      case TRACING_ALLGATHER: // rank allgather sendcount recvcounts (sendtype) (recvtype)
+        fprintf(trace_file, "%s allGather %d %d %s %s", process_id, extra->send_size, extra->recv_size, extra->datatype1, extra->datatype2);
+        break;
       case TRACING_WAITANY:
       case TRACING_SENDRECV:
       case TRACING_SCATTER:
       case TRACING_SCATTERV:
-      case TRACING_ALLGATHER:
       case TRACING_SCAN:
       case TRACING_EXSCAN:
       case TRACING_COMM_SIZE:
