@@ -284,16 +284,16 @@ if (instr_fmt_type == instr_fmt_paje) {
   }
 }
 
-void LogEntityValue (val_t value)
+void LogEntityValue(value* val)
 {
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, PAJE_DefineEntityValue);
   //print it
 if (instr_fmt_type == instr_fmt_paje) {
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << PAJE_DefineEntityValue;
-    stream << " " << value->id << " " << value->father->id << " " << value->name;
-    if (value->color)
-      stream << " \"" << value->color << "\"";
+    stream << " " << val->id << " " << val->father->id << " " << val->name;
+    if (val->color)
+      stream << " \"" << val->color << "\"";
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -467,13 +467,13 @@ void SubVariableEvent::print() {
   }
 }
 
-SetStateEvent::SetStateEvent (double timestamp, container_t container, type_t type, val_t value)
+SetStateEvent::SetStateEvent(double timestamp, container_t container, type_t type, value* val)
 {
   this->event_type                      = PAJE_SetState;
   this->timestamp                       = timestamp;
   this->type      = type;
   this->container = container;
-  this->value     = value;
+  this->val                             = val;
 
 #if HAVE_SMPI
   if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
@@ -495,7 +495,7 @@ void SetStateEvent::print() {
     stream << (int)this->event_type;
     print_timestamp(this);
     stream << " " << type->id << " " << container->id;
-    stream << " " << value->id;
+    stream << " " << val->id;
 #if HAVE_SMPI
     if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
       stream << " \"" << filename << "\" " << linenumber;
@@ -509,13 +509,13 @@ void SetStateEvent::print() {
   }
 }
 
-PushStateEvent::PushStateEvent (double timestamp, container_t container, type_t type, val_t value, void* extra)
+PushStateEvent::PushStateEvent(double timestamp, container_t container, type_t type, value* val, void* extra)
 {
   this->event_type                  = PAJE_PushState;
   this->timestamp                   = timestamp;
   this->type = type;
   this->container = container;
-  this->value     = value;
+  this->val                         = val;
   this->extra_     = extra;
 
 #if HAVE_SMPI
@@ -531,8 +531,8 @@ PushStateEvent::PushStateEvent (double timestamp, container_t container, type_t 
   insert_into_buffer (this);
 }
 
-PushStateEvent::PushStateEvent (double timestamp, container_t container, type_t type, val_t value)
- : PushStateEvent(timestamp, container, type, value, nullptr)
+PushStateEvent::PushStateEvent(double timestamp, container_t container, type_t type, value* val)
+    : PushStateEvent(timestamp, container, type, val, nullptr)
 {}
 void PushStateEvent::print() {
   if (instr_fmt_type == instr_fmt_paje) {
@@ -541,7 +541,7 @@ void PushStateEvent::print() {
     stream << (int)this->event_type;
     print_timestamp(this);
     stream << " " << type->id << " " << container->id;
-    stream << " " << value->id;
+    stream << " " << val->id;
 
     if (TRACE_display_sizes()) {
       stream << " ";
@@ -680,7 +680,7 @@ void PushStateEvent::print() {
       case TRACING_SSEND:
       case TRACING_ISSEND:
       default:
-        XBT_WARN("Call from %s impossible to translate into replay command : Not implemented (yet)", value->name);
+        XBT_WARN("Call from %s impossible to translate into replay command : Not implemented (yet)", val->name);
         break;
     }
 
@@ -837,13 +837,13 @@ void EndLinkEvent::print() {
   }
 }
 
-NewEvent::NewEvent (double timestamp, container_t container, type_t type, val_t value)
+NewEvent::NewEvent(double timestamp, container_t container, type_t type, value* val)
 {
   this->event_type                      = PAJE_NewEvent;
   this->timestamp                       = timestamp;
   this->type      = type;
   this->container = container;
-  this->value     = value;
+  this->val                             = val;
 
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
 
@@ -856,7 +856,7 @@ void NewEvent::print () {
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->event_type;
     print_timestamp(this);
-    stream << " " << type->id << " " << container->id << " " << value->id;
+    stream << " " << type->id << " " << container->id << " " << val->id;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */

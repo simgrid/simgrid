@@ -53,7 +53,7 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
   snprintf (id_str, INSTR_DEFAULT_STR_SIZE, "%lld", container_id);
   container_id++;
 
-  container_t newContainer = xbt_new0(s_container_t, 1);
+  container_t newContainer = xbt_new0(s_container, 1);
   newContainer->name = xbt_strdup (name); // name of the container
   newContainer->id = xbt_strdup (id_str); // id (or alias) of the container
   newContainer->father = father;

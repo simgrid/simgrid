@@ -72,17 +72,19 @@ class s_type {
 typedef s_type s_type_t;
 
 //--------------------------------------------------
-class s_val;
-typedef s_val *val_t;
-
-class s_val {
-  public:
+class value {
+public:
   char *id;
   char *name;
   char *color;
   type_t father;
+  value* ret;
+  value(const char* name, const char* color, type_t father);
+  ~value();
+  static value* get_or_new(const char* name, const char* color, type_t father);
+  static value* get(const char* name, type_t father);
 };
-typedef s_val s_val_t;
+
 
 //--------------------------------------------------
 typedef enum {
@@ -143,6 +145,7 @@ class DefineStateTypeEvent : public PajeEvent  {
 
 
 class SetVariableEvent : public PajeEvent  {
+  private:
   container_t container;
   type_t type;
   double value;
@@ -153,6 +156,7 @@ class SetVariableEvent : public PajeEvent  {
 
 
 class AddVariableEvent:public PajeEvent {
+  private:
   container_t container;
   type_t type;
   double value;
@@ -165,7 +169,7 @@ class AddVariableEvent:public PajeEvent {
 
 
 class SubVariableEvent : public PajeEvent  {
-  public:
+  private:
   container_t container;
   type_t type;
   double value;
@@ -176,15 +180,15 @@ class SubVariableEvent : public PajeEvent  {
 //--------------------------------------------------
 
 class SetStateEvent : public PajeEvent  {
-  public:
+  private:
   container_t container;
   type_t type;
-  val_t value;
+  value* val;
   const char* filename;
   int linenumber;
   public:
-  SetStateEvent (double timestamp, container_t container, type_t type, val_t value);
-  void print() override;
+    SetStateEvent(double timestamp, container_t container, type_t type, value* val);
+    void print() override;
 };
 
 
@@ -192,16 +196,15 @@ class PushStateEvent : public PajeEvent  {
   public:
   container_t container;
   type_t type;
-  val_t value;
+  value* val;
   int size;
   const char* filename;
   int linenumber;
   void* extra_;
   public:
-  PushStateEvent (double timestamp, container_t container, type_t type, val_t value);
-  PushStateEvent (double timestamp, container_t container, type_t type, val_t value,
-                                             void* extra);
-  void print() override;
+    PushStateEvent(double timestamp, container_t container, type_t type, value* val);
+    PushStateEvent(double timestamp, container_t container, type_t type, value* val, void* extra);
+    void print() override;
 };
 
 class PopStateEvent : public PajeEvent  {
@@ -255,9 +258,10 @@ class NewEvent : public PajeEvent  {
   public:
   container_t container;
   type_t type;
-  val_t value;
-  public:
-  NewEvent (double timestamp, container_t container, type_t type, val_t value);
+  value* val;
+
+public:
+  NewEvent(double timestamp, container_t container, type_t type, value* val);
   void print() override;
 
 };
@@ -351,11 +355,6 @@ XBT_PRIVATE XBT_PRIVATE void PJ_type_free (type_t type);
 /* instr_config.c */
 XBT_PRIVATE void recursiveDestroyType (type_t type);
 
-/* instr_paje_values.c */
-XBT_PUBLIC(val_t)  PJ_value_new (const char *name, const char *color, type_t father);
-XBT_PUBLIC(val_t)  PJ_value_get_or_new (const char *name, const char *color, type_t father);
-XBT_PUBLIC(val_t)  PJ_value_get (const char *name, const type_t father);
-
 XBT_PRIVATE void TRACE_TI_start();
 XBT_PRIVATE void TRACE_TI_end();
 
@@ -432,7 +431,7 @@ void DefineContainerEvent(type_t type);
 void LogVariableTypeDefinition(type_t type);
 void LogStateTypeDefinition(type_t type);
 void LogLinkTypeDefinition(type_t type, type_t source, type_t dest);
-void LogEntityValue (val_t value);
+void LogEntityValue(value* val);
 void LogContainerCreation (container_t container);
 void LogContainerDestruction (container_t container);
 void LogDefineEventType(type_t type);

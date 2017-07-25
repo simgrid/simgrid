@@ -719,7 +719,7 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
   if (TRACE_smpi_view_internals() && ((req->flags_ & RECV) != 0)){
     int rank = smpi_process()->index();
     int src_traced = (req->src_ == MPI_ANY_SOURCE ? req->real_src_ : req->src_);
-    TRACE_smpi_recv(rank, src_traced, rank,req->tag_);
+    TRACE_smpi_recv(src_traced, rank,req->tag_);
   }
   if(req->detached_sender_ != nullptr){
     //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0

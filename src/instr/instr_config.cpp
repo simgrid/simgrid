@@ -315,7 +315,7 @@ char *TRACE_get_viva_cat_conf ()
   return xbt_cfg_get_string(OPT_VIVA_CAT_CONF);
 }
 
-void TRACE_global_init(int *argc, char **argv)
+void TRACE_global_init()
 {
   static int is_initialised = 0;
   if (is_initialised)

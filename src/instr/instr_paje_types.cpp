@@ -26,7 +26,7 @@ static type_t newType (const char *typeNameBuff, const char *key, const char *co
     THROWF(tracing_error, 0, "can't create a new type with name or key equal nullptr");
   }
 
-  type_t ret = xbt_new0(s_type_t, 1);
+  type_t ret = xbt_new0(s_type, 1);
   ret->name = xbt_strdup (typeNameBuff);
   ret->father = father;
   ret->kind = kind;
@@ -47,15 +47,12 @@ static type_t newType (const char *typeNameBuff, const char *key, const char *co
 
 void PJ_type_free (type_t type)
 {
-  val_t value;
+  value* val;
   char *value_name;
   xbt_dict_cursor_t cursor = nullptr;
-  xbt_dict_foreach(type->values, cursor, value_name, value) {
-     XBT_DEBUG("free value %s, child of %s", value->name, value->father->name);
-     xbt_free(value->name);
-     xbt_free(value->color);
-     xbt_free(value->id);
-     xbt_free(value);
+  xbt_dict_foreach (type->values, cursor, value_name, val) {
+    XBT_DEBUG("free value %s, child of %s", val->name, val->father->name);
+    delete val;
   }
   xbt_dict_free (&type->values);
   xbt_free (type->name);
@@ -115,14 +112,10 @@ type_t PJ_type_container_new (const char *name, type_t father)
     THROWF (tracing_error, 0, "can't create a container type with a nullptr name");
   }
 
-  type_t ret = nullptr;
-
-  ret = newType (name, name, nullptr, TYPE_CONTAINER, father);
-  if (father == nullptr){
+  type_t ret = newType(name, name, nullptr, TYPE_CONTAINER, father);
+  if (father == nullptr) {
     rootType = ret;
-  }
-
-  if(father){
+  } else {
     XBT_DEBUG("ContainerType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
     DefineContainerEvent(ret);
   }

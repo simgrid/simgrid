@@ -1,5 +1,4 @@
-/* Copyright (c) 2015-2016. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -39,10 +38,10 @@ public:
   {}
   void operator()() const
   {
-    char noarg[] = {'\0'};
     const int argc = args_->size();
     std::vector<std::string> args = *args_;
     if (not args.empty()) {
+      char noarg[] = {'\0'};
       std::unique_ptr<char* []> argv(new char*[argc + 1]);
       for (int i = 0; i != argc; ++i)
         argv[i]  = args[i].empty() ? noarg : &args[i].front();
