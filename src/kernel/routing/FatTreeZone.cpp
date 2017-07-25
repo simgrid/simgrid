@@ -369,7 +369,11 @@ void FatTreeZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
   }
 
   // The first parts of topo_parameters should be the levels number
-  this->levels_ = xbt_str_parse_int(parameters[0].c_str(), "First parameter is not the amount of levels: %s");
+  try {
+    this->levels_ = std::stoi(parameters[0]);
+  } catch (std::invalid_argument& ia) {
+    throw std::invalid_argument(std::string("First parameter is not the amount of levels:") + parameters[0]);
+  }
 
   // Then, a l-sized vector standing for the children number by level
   boost::split(tmp, parameters[1], boost::is_any_of(","));
@@ -378,7 +382,11 @@ void FatTreeZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
                      ", see the documentation for more information");
   }
   for (size_t i = 0; i < tmp.size(); i++) {
-    this->lowerLevelNodesNumber_.push_back(xbt_str_parse_int(tmp[i].c_str(), "Invalid lower level node number: %s"));
+    try {
+      this->lowerLevelNodesNumber_.push_back(std::stoi(tmp[i]));
+    } catch (std::invalid_argument& ia) {
+      throw std::invalid_argument(std::string("Invalid lower level node number:") + tmp[i]);
+    }
   }
 
   // Then, a l-sized vector standing for the parents number by level
@@ -388,7 +396,11 @@ void FatTreeZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
                      ", see the documentation for more information");
   }
   for (size_t i = 0; i < tmp.size(); i++) {
-    this->upperLevelNodesNumber_.push_back(xbt_str_parse_int(tmp[i].c_str(), "Invalid upper level node number: %s"));
+    try {
+      this->upperLevelNodesNumber_.push_back(std::stoi(tmp[i]));
+    } catch (std::invalid_argument& ia) {
+      throw std::invalid_argument(std::string("Invalid upper level node number:") + tmp[i]);
+    }
   }
 
   // Finally, a l-sized vector standing for the ports number with the lower level
@@ -398,7 +410,11 @@ void FatTreeZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
                      ", see the documentation for more information");
   }
   for (size_t i = 0; i < tmp.size(); i++) {
-    this->lowerLevelPortsNumber_.push_back(xbt_str_parse_int(tmp[i].c_str(), "Invalid lower level node number: %s"));
+    try {
+      this->lowerLevelPortsNumber_.push_back(std::stoi(tmp[i]));
+    } catch (std::invalid_argument& ia) {
+      throw std::invalid_argument(std::string("Invalid lower level port number:") + tmp[i]);
+    }
   }
   this->cluster_ = cluster;
 }

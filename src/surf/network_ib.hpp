@@ -10,7 +10,7 @@
 #include "src/surf/network_smpi.hpp"
 #include "xbt/base.h"
 
-#include <map>
+#include <unordered_map>
 
 namespace simgrid {
   namespace surf {
@@ -50,8 +50,8 @@ namespace simgrid {
       ~NetworkIBModel() override;
       void updateIBfactors(NetworkAction *action, IBNode *from, IBNode * to, int remove);
 
-      xbt_dict_t active_nodes;
-      std::map<NetworkAction *, std::pair<IBNode*,IBNode*> > active_comms;
+      std::unordered_map<std::string, IBNode*> active_nodes;
+      std::unordered_map<NetworkAction*, std::pair<IBNode*, IBNode*>> active_comms;
 
       double Bs;
       double Be;

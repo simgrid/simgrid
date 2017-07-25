@@ -119,7 +119,7 @@ public:
 
 private:
   // description of a PGFT (TODO : better doc)
-  unsigned int levels_ = 0;
+  unsigned long levels_ = 0;
   std::vector<unsigned int> lowerLevelNodesNumber_; // number of children by node
   std::vector<unsigned int> upperLevelNodesNumber_; // number of parents by node
   std::vector<unsigned int> lowerLevelPortsNumber_; // ports between each level l and l-1

@@ -59,17 +59,34 @@ void DragonflyZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
     surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
   }
 
-  this->numGroups_    = xbt_str_parse_int(tmp[0].c_str(), "Invalid number of groups: %s");
-  this->numLinksBlue_ = xbt_str_parse_int(tmp[1].c_str(), "Invalid number of links for the blue level: %s");
+  try {
+    this->numGroups_ = std::stoi(tmp[0]);
+  } catch (std::invalid_argument& ia) {
+    throw std::invalid_argument(std::string("Invalid number of groups:") + tmp[0]);
+  }
 
+  try {
+    this->numLinksBlue_ = std::stoi(tmp[1]);
+  } catch (std::invalid_argument& ia) {
+    throw std::invalid_argument(std::string("Invalid number of links for the blue level:") + tmp[1]);
+  }
   // Black network : number of chassis/group, number of links between each router on the black network
   boost::split(tmp, parameters[1], boost::is_any_of(","));
   if (tmp.size() != 2) {
     surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
   }
 
-  this->numChassisPerGroup_ = xbt_str_parse_int(tmp[0].c_str(), "Invalid number of groups: %s");
-  this->numLinksBlack_      = xbt_str_parse_int(tmp[1].c_str(), "Invalid number of links  for the black level: %s");
+  try {
+    this->numChassisPerGroup_ = std::stoi(tmp[0]);
+  } catch (std::invalid_argument& ia) {
+    throw std::invalid_argument(std::string("Invalid number of groups:") + tmp[0]);
+  }
+
+  try {
+    this->numLinksBlack_ = std::stoi(tmp[1]);
+  } catch (std::invalid_argument& ia) {
+    throw std::invalid_argument(std::string("Invalid number of links for the black level:") + tmp[1]);
+  }
 
   // Green network : number of blades/chassis, number of links between each router on the green network
   boost::split(tmp, parameters[2], boost::is_any_of(","));
@@ -77,12 +94,25 @@ void DragonflyZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
     surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
   }
 
-  this->numBladesPerChassis_ = xbt_str_parse_int(tmp[0].c_str(), "Invalid number of groups: %s");
-  this->numLinksGreen_       = xbt_str_parse_int(tmp[1].c_str(), "Invalid number of links for the green level: %s");
+  try {
+    this->numBladesPerChassis_ = std::stoi(tmp[0]);
+  } catch (std::invalid_argument& ia) {
+    throw std::invalid_argument(std::string("Invalid number of groups:") + tmp[0]);
+  }
+
+  try {
+    this->numLinksGreen_ = std::stoi(tmp[1]);
+  } catch (std::invalid_argument& ia) {
+    throw std::invalid_argument(std::string("Invalid number of links for the green level:") + tmp[1]);
+  }
 
   // The last part of topo_parameters should be the number of nodes per blade
-  this->numNodesPerBlade_ =
-      xbt_str_parse_int(parameters[3].c_str(), "Last parameter is not the amount of nodes per blade: %s");
+  try {
+    this->numNodesPerBlade_ = std::stoi(parameters[3]);
+  } catch (std::invalid_argument& ia) {
+    throw std::invalid_argument(std::string("Last parameter is not the amount of nodes per blade:") + parameters[3]);
+  }
+
   this->cluster_ = cluster;
 }
 

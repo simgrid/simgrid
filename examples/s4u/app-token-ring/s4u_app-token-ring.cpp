@@ -23,8 +23,12 @@ public:
 
   void operator()()
   {
-    rank = xbt_str_parse_int(simgrid::s4u::this_actor::getName().c_str(),
-                             "Any process of this example must have a numerical name, not %s");
+    try {
+      rank = std::stoi(simgrid::s4u::this_actor::getName());
+    } catch (std::invalid_argument& ia) {
+      throw std::invalid_argument(std::string("Processes of this example must have a numerical name, not ") +
+                                  ia.what());
+    }
     my_mailbox = simgrid::s4u::Mailbox::byName(std::to_string(rank));
     if (rank + 1 == simgrid::s4u::Engine::getInstance()->getHostCount())
       /* The last process, which sends the token back to rank 0 */
