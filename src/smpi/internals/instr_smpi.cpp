@@ -372,22 +372,6 @@ void TRACE_smpi_testing_out(int rank)
   new PopStateEvent (SIMIX_get_clock(), container, type);
 }
 
-void TRACE_smpi_ptp_in(int rank, const char *operation, instr_extra_data extra)
-{
-  if (not TRACE_smpi_is_enabled()) {
-    cleanup_extra_data(extra);
-    return;
-  }
-
-  char str[INSTR_DEFAULT_STR_SIZE];
-  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-  container_t container = PJ_container_get (str);
-  type_t type = PJ_type_get ("MPI_STATE", container->type);
-  const char *color = instr_find_color (operation);
-  value* val            = value::get_or_new(operation, color, type);
-  new PushStateEvent(SIMIX_get_clock(), container, type, val, static_cast<void*>(extra));
-}
-
 void TRACE_smpi_ptp_out(int rank, int dst, const char *operation)
 {
   if (not TRACE_smpi_is_enabled())

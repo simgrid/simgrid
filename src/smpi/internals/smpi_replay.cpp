@@ -235,7 +235,7 @@ static void action_send(const char *const *action)
   extra->src = rank;
   extra->dst = dst_traced;
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
-  TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
+  TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
   if (not TRACE_smpi_view_internals())
     TRACE_smpi_send(rank, rank, dst_traced, 0, size*MPI_CURRENT_TYPE->size());
 
@@ -266,7 +266,7 @@ static void action_Isend(const char *const *action)
   extra->src = rank;
   extra->dst = dst_traced;
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
-  TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
+  TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
   if (not TRACE_smpi_view_internals())
     TRACE_smpi_send(rank, rank, dst_traced, 0, size*MPI_CURRENT_TYPE->size());
 
@@ -300,7 +300,7 @@ static void action_recv(const char *const *action) {
   extra->src = src_traced;
   extra->dst = rank;
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
-  TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
+  TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
 
   //unknown size from the receiver point of view
   if(size<=0.0){
@@ -338,7 +338,7 @@ static void action_Irecv(const char *const *action)
   extra->src = src_traced;
   extra->dst = rank;
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
-  TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
+  TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
   MPI_Status status;
   //unknow size from the receiver pov
   if(size<=0.0){
@@ -404,7 +404,7 @@ static void action_wait(const char *const *action){
   int is_wait_for_receive = (request->flags() & RECV);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_WAIT;
-  TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
+  TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
 
   Request::wait(&request, &status);
 
@@ -426,7 +426,7 @@ static void action_waitall(const char *const *action){
    instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
    extra->type = TRACING_WAITALL;
    extra->send_size=count_requests;
-   TRACE_smpi_ptp_in(rank_traced, __FUNCTION__,extra);
+   TRACE_smpi_collective_in(rank_traced, __FUNCTION__,extra);
    int recvs_snd[count_requests];
    int recvs_rcv[count_requests];
    unsigned int i=0;
