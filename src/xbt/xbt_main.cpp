@@ -7,14 +7,14 @@
 
 #define XBT_LOG_LOCALLY_DEFINE_XBT_CHANNEL /* MSVC don't want it to be declared extern in headers and local here */
 
-#include <math.h>
-#include "xbt/misc.h"
 #include "simgrid_config.h"
-#include "xbt/sysdep.h"
+#include "xbt/config.h"
+#include "xbt/dynar.h"
 #include "xbt/log.h"
 #include "xbt/log.hpp"
-#include "xbt/dynar.h"
-#include "xbt/config.h"
+#include "xbt/misc.h"
+#include "xbt/sysdep.h"
+#include <cmath>
 
 #include "xbt/module.h"         /* this module */
 
@@ -23,9 +23,9 @@
 #include "simgrid/sg_config.h"
 
 #include "src/internal_config.h"
-#include <stdio.h>
+#include <cstdio>
 #ifdef _WIN32
-#include <signal.h> /* To silence MSVC on abort() */
+#include <csignal> /* To silence MSVC on abort() */
 #endif
 #if HAVE_UNISTD_H
 #  include <unistd.h>

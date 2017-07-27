@@ -8,7 +8,7 @@
 #include "simgrid/simdag.h"
 #include "src/internal_config.h"
 #include "xbt/file.h"
-#include <string.h>
+#include <cstring>
 #include <unordered_map>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");

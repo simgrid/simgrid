@@ -9,7 +9,7 @@
 /* At some point we should use https://github.com/google/googletest instead */
 
 #include "src/internal_config.h"
-#include <stdio.h>
+#include <cstdio>
 
 #include <xbt/ex.hpp>
 #include "xbt/sysdep.h"         /* bvprintf */

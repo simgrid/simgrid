@@ -41,8 +41,8 @@
 /* The extensions made for the SimGrid project can either be distributed    */
 /* under the same license, or under the LGPL v2.1                           */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 #include <xbt/backtrace.hpp>
 #include "src/internal_config.h"           /* execinfo when available */
@@ -113,8 +113,8 @@ const char *xbt_ex_catname(xbt_errcat_t cat)
 }
 
 #ifdef SIMGRID_TEST
-#include <stdio.h>
 #include "xbt/ex.h"
+#include <cstdio>
 #include <xbt/ex.hpp>
 
 XBT_TEST_SUITE("xbt_ex", "Exception Handling");

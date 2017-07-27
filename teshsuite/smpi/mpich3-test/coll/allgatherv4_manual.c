@@ -67,10 +67,14 @@ int main(int argc, char ** argv)
     SMPI_VARGET_GLOBAL(displs) = (void *) malloc(comm_size * sizeof(int));
     if (!SMPI_VARGET_GLOBAL(recvcounts) || !SMPI_VARGET_GLOBAL(displs) || !SMPI_VARGET_GLOBAL(sbuf) || !SMPI_VARGET_GLOBAL(rbuf)) {
         fprintf(stderr, "Unable to allocate memory:\n");
-	if (!SMPI_VARGET_GLOBAL(sbuf)) fprintf(stderr,"\tsbuf of %d bytes\n", MAX_BUF );
-	if (!SMPI_VARGET_GLOBAL(rbuf)) fprintf(stderr,"\trbuf of %d bytes\n", MAX_BUF );
-	if (!SMPI_VARGET_GLOBAL(recvcounts)) fprintf(stderr,"\trecvcounts of %zd bytes\n", comm_size * sizeof(int) );
-	if (!SMPI_VARGET_GLOBAL(displs)) fprintf(stderr,"\tdispls of %zd bytes\n", comm_size * sizeof(int) );
+	if (!SMPI_VARGET_GLOBAL(sbuf))
+            fprintf(stderr,"\tsbuf of %d bytes\n", MAX_BUF );
+	if (!SMPI_VARGET_GLOBAL(rbuf))
+            fprintf(stderr,"\trbuf of %d bytes\n", MAX_BUF );
+        if (!SMPI_VARGET_GLOBAL(recvcounts))
+            fprintf(stderr,"\trecvcounts of %zu bytes\n", comm_size * sizeof(int));
+        if (!SMPI_VARGET_GLOBAL(displs))
+            fprintf(stderr,"\tdispls of %zu bytes\n", comm_size * sizeof(int));
         fflush(stderr);
         MPI_Abort(MPI_COMM_WORLD, -1);
         exit(-1);

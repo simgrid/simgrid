@@ -9,13 +9,13 @@
 
 #include <vector>
 
-#include <stdlib.h>
-#include <sys/types.h>
-#include <string.h>
-#include <stdio.h>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <errno.h>
+#include <sys/types.h>
 
 #ifndef WIN32
 #include <sys/mman.h>
@@ -135,7 +135,7 @@ void smpi_initialize_global_memory_segments()
     int status;
 
     do {
-      snprintf(path, sizeof(path), "/smpi-buffer-%06x", rand() % 0xffffff);
+      snprintf(path, sizeof(path), "/smpi-buffer-%06x", rand() % 0xffffffU);
       file_descriptor = shm_open(path, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
     } while (file_descriptor == -1 && errno == EEXIST);
     if (file_descriptor < 0) {

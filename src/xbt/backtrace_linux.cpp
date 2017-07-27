@@ -166,7 +166,7 @@ std::vector<std::string> resolveBacktrace(
   std::vector<std::string> addrs(count);
   for (std::size_t i = 0; i < count; i++) {
     /* retrieve this address */
-    XBT_DEBUG("Retrieving address number %zd from '%s'", i, backtrace_syms[i]);
+    XBT_DEBUG("Retrieving address number %zu from '%s'", i, backtrace_syms[i]);
     char buff[256];
     snprintf(buff, 256, "%s", strchr(backtrace_syms[i], '[') + 1);
     char* p = strchr(buff, ']');
@@ -175,7 +175,7 @@ std::vector<std::string> resolveBacktrace(
       addrs[i] = buff;
     else
       addrs[i] = "0x0";
-    XBT_DEBUG("Set up a new address: %zd, '%s'", i, addrs[i].c_str());
+    XBT_DEBUG("Set up a new address: %zu, '%s'", i, addrs[i].c_str());
     /* Add it to the command line args */
     stream << addrs[i] << ' ';
   }
@@ -194,17 +194,17 @@ std::vector<std::string> resolveBacktrace(
   char line_func[1024];
   char line_pos[1024];
   for (std::size_t i = 0; i < count; i++) {
-    XBT_DEBUG("Looking for symbol %zd, addr = '%s'", i, addrs[i].c_str());
+    XBT_DEBUG("Looking for symbol %zu, addr = '%s'", i, addrs[i].c_str());
     if (fgets(line_func, 1024, pipe)) {
       line_func[strlen(line_func) - 1] = '\0';
     } else {
-      XBT_VERB("Cannot run fgets to look for symbol %zd, addr %s", i, addrs[i].c_str());
+      XBT_VERB("Cannot run fgets to look for symbol %zu, addr %s", i, addrs[i].c_str());
       strncpy(line_func, "???",3);
     }
     if (fgets(line_pos, 1024, pipe)) {
       line_pos[strlen(line_pos) - 1] = '\0';
     } else {
-      XBT_VERB("Cannot run fgets to look for symbol %zd, addr %s", i, addrs[i].c_str());
+      XBT_VERB("Cannot run fgets to look for symbol %zu, addr %s", i, addrs[i].c_str());
       strncpy(line_pos, backtrace_syms[i],1024);
     }
 
@@ -218,7 +218,7 @@ std::vector<std::string> resolveBacktrace(
       /* Damn. The symbol is in a dynamic library. Let's get wild */
 
       char maps_buff[512];
-      long int offset = 0;
+      unsigned long int offset = 0;
       char* p;
       int found = 0;
 
@@ -226,17 +226,15 @@ std::vector<std::string> resolveBacktrace(
       char* maps_name = bprintf("/proc/%d/maps", (int) getpid());
       FILE* maps = fopen(maps_name, "r");
 
-      long int addr = strtol(addrs[i].c_str(), &p, 16);
+      unsigned long int addr = strtoul(addrs[i].c_str(), &p, 16);
       if (*p != '\0') {
-        XBT_CRITICAL("Cannot parse backtrace address '%s' (addr=%#lx)",
-          addrs[i].c_str(), addr);
+        XBT_CRITICAL("Cannot parse backtrace address '%s' (addr=%#lx)", addrs[i].c_str(), addr);
       }
-      XBT_DEBUG("addr=%s (as string) =%#lx (as number)",
-        addrs[i].c_str(), addr);
+      XBT_DEBUG("addr=%s (as string) =%#lx (as number)", addrs[i].c_str(), addr);
 
       while (not found) {
-        long int first;
-        long int last;
+        unsigned long int first;
+        unsigned long int last;
 
         if (fgets(maps_buff, 512, maps) == nullptr)
           break;

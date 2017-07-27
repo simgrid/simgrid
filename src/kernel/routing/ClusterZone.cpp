@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -22,7 +22,7 @@ ClusterZone::ClusterZone(NetZone* father, const char* name) : NetZoneImpl(father
 
 void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
 {
-  XBT_VERB("cluster getLocalRoute from '%s'[%d] to '%s'[%d]", src->cname(), src->id(), dst->cname(), dst->id());
+  XBT_VERB("cluster getLocalRoute from '%s'[%u] to '%s'[%u]", src->cname(), src->id(), dst->cname(), dst->id());
   xbt_assert(not privateLinks_.empty(),
              "Cluster routing: no links attached to the source node - did you use host_link tag?");
 

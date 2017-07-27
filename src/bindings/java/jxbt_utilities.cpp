@@ -8,7 +8,7 @@
 #include "xbt/sysdep.h"
 #include "jxbt_utilities.h"
 
-#include <stdlib.h> /* abort */
+#include <cstdlib> /* abort */
 
 SG_BEGIN_DECL()
 

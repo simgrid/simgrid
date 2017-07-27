@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -286,7 +286,7 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
   if (dst->isRouter() || src->isRouter())
     return;
 
-  XBT_VERB("dragonfly getLocalRout from '%s'[%d] to '%s'[%d]", src->name().c_str(), src->id(), dst->name().c_str(),
+  XBT_VERB("dragonfly getLocalRout from '%s'[%u] to '%s'[%u]", src->name().c_str(), src->id(), dst->name().c_str(),
            dst->id());
 
   if ((src->id() == dst->id()) && hasLoopback_) {

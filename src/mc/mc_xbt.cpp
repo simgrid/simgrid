@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
+/* Copyright (c) 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -22,7 +22,7 @@ void read_element(AddressSpace const& as,
   s_xbt_dynar_t d;
   as.read_bytes(&d, sizeof(d), addr);
   if (i >= d.used)
-    xbt_die("Out of bound index %zi/%lu", i, d.used);
+    xbt_die("Out of bound index %zu/%lu", i, d.used);
   if (len != d.elmsize)
     xbt_die("Bad size in simgrid::mc::read_element");
   as.read_bytes(local, len, remote(xbt_dynar_get_ptr(&d, i)));

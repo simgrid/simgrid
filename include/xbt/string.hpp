@@ -8,15 +8,14 @@
 
 #include <simgrid_config.h>
 
-#include <string>
 #include <cstdarg>
-#include <stdlib.h>
+#include <cstdlib>
+#include <string>
 
 #if SIMGRID_HAVE_MC
 
 #include <stdexcept>
 #include <cstddef>
-#include <cstdlib>
 #include <cstring>
 #include <iterator>
 

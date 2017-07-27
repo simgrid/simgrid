@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
+/* Copyright (c) 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -8,8 +8,8 @@
 #undef NDEBUG
 #endif
 
-#include <string.h>
-#include <assert.h>
+#include <cassert>
+#include <cstring>
 
 #include <mc/mc.h>
 

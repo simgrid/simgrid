@@ -1,16 +1,16 @@
-/* Copyright (c) 2006-2015. The SimGrid Team.
+/* Copyright (c) 2006-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/simdag.h"
 #include "simgrid/s4u.hpp"
+#include "simgrid/simdag.h"
 #include "xbt/ex.h"
-#include <xbt/ex.hpp>
 #include "xbt/log.h"
-#include <math.h>
+#include <cmath>
 #include <set>
+#include <xbt/ex.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test, "Logging specific to this SimDag example");
 

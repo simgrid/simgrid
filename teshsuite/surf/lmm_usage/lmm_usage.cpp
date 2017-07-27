@@ -1,6 +1,6 @@
 /* A few tests for the maxmin library                                       */
 
-/* Copyright (c) 2007-2015. The SimGrid Team.
+/* Copyright (c) 2007-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -12,7 +12,7 @@
 #include "xbt/log.h"
 #include "xbt/module.h"
 #include "xbt/sysdep.h"
-#include <math.h>
+#include <cmath>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
