@@ -659,10 +659,6 @@ set(MC_SRC
 set(MC_SIMGRID_MC_SRC  src/mc/checker/simgrid_mc.cpp)
 
 set(headers_to_install
-  include/msg/msg.h
-  include/msg/datatypes.h
-  include/simdag/simdag.h
-  include/simdag/datatypes.h
   include/simgrid/chrono.hpp
   include/simgrid/plugins/energy.h
   include/simgrid/plugins/load.h

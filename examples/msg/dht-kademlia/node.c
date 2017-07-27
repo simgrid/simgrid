@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, 2012-2016. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -20,7 +20,7 @@ node_t node_init(unsigned int node_id)
 
   node->id = node_id;
   node->table = routing_table_init(node_id);
-  snprintf(node->mailbox,MAILBOX_NAME_SIZE-1, "%d", node_id);
+  snprintf(node->mailbox, MAILBOX_NAME_SIZE - 1, "%u", node_id);
   node->find_node_failed = 0;
   node->find_node_success = 0;
 
@@ -139,7 +139,7 @@ unsigned int get_node_prefix(unsigned int id, unsigned int nb_bits)
 /** @brief Gets the mailbox name of a host given its identifier */
 void get_node_mailbox(unsigned int id, char *mailbox)
 {
-  snprintf(mailbox,MAILBOX_NAME_SIZE-1, "%d", id);
+  snprintf(mailbox, MAILBOX_NAME_SIZE - 1, "%u", id);
 }
 
 /** Constructor, build a new contact information. */

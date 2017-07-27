@@ -1,9 +1,9 @@
-/* Copyright (c) 2004-2014,2016. The SimGrid Team. All rights reserved.     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
+#include <cstdio>
 
 #include <algorithm>
 #include <cerrno>
@@ -11,11 +11,11 @@
 #include <climits>
 
 #include <functional>
+#include <map>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
 #include <typeinfo>
-#include <unordered_map>
 #include <vector>
 
 #include <xbt/ex.hpp>
@@ -260,9 +260,10 @@ const char* TypedConfigurationElement<T>::getTypeName() // override
 class Config {
 private:
   // name -> ConfigElement:
-  std::unordered_map<std::string, simgrid::config::ConfigurationElement*> options;
+  std::map<std::string, simgrid::config::ConfigurationElement*> options;
   // alias -> xbt_dict_elm_t from options:
-  std::unordered_map<std::string, simgrid::config::ConfigurationElement*> aliases;
+  std::map<std::string, simgrid::config::ConfigurationElement*> aliases;
+  bool warn_for_aliases = true;
 
 public:
   Config() = default;
@@ -313,7 +314,8 @@ inline ConfigurationElement* Config::getDictElement(const char* name)
   } catch (std::out_of_range& unfound) {
     try {
       ConfigurationElement* res = aliases.at(name);
-      XBT_INFO("Option %s has been renamed to %s. Consider switching.", name, res->getKey().c_str());
+      if (warn_for_aliases)
+        XBT_INFO("Option %s has been renamed to %s. Consider switching.", name, res->getKey().c_str());
       return res;
     } catch (std::out_of_range& missing_key) {
       throw simgrid::config::missing_key_error(std::string("Bad config key: ") + name);
@@ -356,28 +358,19 @@ void Config::dump(const char *name, const char *indent)
 /** @brief Displays the declared aliases and their description */
 void Config::showAliases()
 {
-  std::vector<std::string> names;
-
+  bool old_warn_for_aliases = false;
+  std::swap(warn_for_aliases, old_warn_for_aliases);
   for (auto elm : aliases)
-    names.push_back(elm.first);
-  std::sort(names.begin(), names.end());
-
-  for (auto name : names)
-    printf("   %s: %s\n", name.c_str(), (*this)[name.c_str()].getDescription().c_str());
+    printf("   %s: %s\n", elm.first.c_str(), (*this)[elm.first.c_str()].getDescription().c_str());
+  std::swap(warn_for_aliases, old_warn_for_aliases);
 }
 
 /** @brief Displays the declared options and their description */
 void Config::help()
 {
-  std::vector<std::string> names;
-
-  for (auto elm : options)
-    names.push_back(elm.first);
-  std::sort(names.begin(), names.end());
-
-  for (auto name : names) {
-    simgrid::config::ConfigurationElement* variable = this->options.at(name);
-    printf("   %s: %s\n", name.c_str(), variable->getDescription().c_str());
+  for (auto elm : options) {
+    simgrid::config::ConfigurationElement* variable = this->options.at(elm.first);
+    printf("   %s: %s\n", elm.first.c_str(), variable->getDescription().c_str());
     printf("       Type: %s; ", variable->getTypeName());
     printf("Current value: %s\n", variable->getStringValue().c_str());
   }

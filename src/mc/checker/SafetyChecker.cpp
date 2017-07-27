@@ -97,8 +97,8 @@ void SafetyChecker::run()
     simgrid::mc::State* state = stack_.back().get();
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth=%zi (state=%p, num %d)(%zu interleave)",
-      stack_.size(), state, state->num, state->interleaveSize());
+    XBT_DEBUG("Exploration depth=%zu (state=%p, num %d)(%zu interleave)", stack_.size(), state, state->num,
+              state->interleaveSize());
 
     mc_model_checker->visited_states++;
 
@@ -125,7 +125,7 @@ void SafetyChecker::run()
     // req is now the transition of the process that was selected to be executed
 
     if (req == nullptr) {
-      XBT_DEBUG("There are no more processes to interleave. (depth %zi)", stack_.size() + 1);
+      XBT_DEBUG("There are no more processes to interleave. (depth %zu)", stack_.size() + 1);
 
       this->backtrack();
       continue;
@@ -259,15 +259,13 @@ void SafetyChecker::backtrack()
     if (state->interleaveSize()
         && stack_.size() < (std::size_t) _sg_mc_max_depth) {
       /* We found a back-tracking point, let's loop */
-      XBT_DEBUG("Back-tracking to state %d at depth %zi", state->num, stack_.size() + 1);
+      XBT_DEBUG("Back-tracking to state %d at depth %zu", state->num, stack_.size() + 1);
       stack_.push_back(std::move(state));
       this->restoreState();
-      XBT_DEBUG("Back-tracking to state %d at depth %zi done",
-        stack_.back()->num, stack_.size());
+      XBT_DEBUG("Back-tracking to state %d at depth %zu done", stack_.back()->num, stack_.size());
       break;
     } else {
-      XBT_DEBUG("Delete state %d at depth %zi",
-        state->num, stack_.size() + 1);
+      XBT_DEBUG("Delete state %d at depth %zu", state->num, stack_.size() + 1);
     }
   }
 }

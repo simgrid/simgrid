@@ -24,13 +24,13 @@ extern int* index_to_process_data;
 
 static char *get_mailbox_name(char *str, int index)
 {
-  snprintf(str, MAILBOX_NAME_MAXLEN, "SMPI-%0*x", static_cast<int> (sizeof(int) * 2), index);
+  snprintf(str, MAILBOX_NAME_MAXLEN, "SMPI-%0*x", static_cast<int>(sizeof(int) * 2), static_cast<unsigned>(index));
   return str;
 }
 
 static char *get_mailbox_name_small(char *str, int index)
 {
-  snprintf(str, MAILBOX_NAME_MAXLEN, "small%0*x", static_cast<int> (sizeof(int) * 2), index);
+  snprintf(str, MAILBOX_NAME_MAXLEN, "small%0*x", static_cast<int>(sizeof(int) * 2), static_cast<unsigned>(index));
   return str;
 }
 

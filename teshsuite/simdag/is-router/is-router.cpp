@@ -8,7 +8,7 @@
 #include "simgrid/simdag.h"
 #include "src/kernel/routing/NetPoint.hpp"
 #include <algorithm>
-#include <stdio.h>
+#include <cstdio>
 
 int main(int argc, char **argv)
 {

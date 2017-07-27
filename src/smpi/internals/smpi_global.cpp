@@ -19,11 +19,11 @@
 #include "smpi_info.hpp"
 #include "smpi_process.hpp"
 
+#include <cfloat> /* DBL_MAX */
 #include <dlfcn.h>
 #include <fcntl.h>
-#include <sys/stat.h>
-#include <float.h> /* DBL_MAX */
 #include <fstream>
+#include <sys/stat.h>
 
 #if HAVE_SENDFILE
 #include <sys/sendfile.h>

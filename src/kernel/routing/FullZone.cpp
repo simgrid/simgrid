@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -60,7 +60,7 @@ FullZone::~FullZone()
 
 void FullZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t res, double* lat)
 {
-  XBT_DEBUG("full getLocalRoute from %s[%d] to %s[%d]", src->cname(), src->id(), dst->cname(), dst->id());
+  XBT_DEBUG("full getLocalRoute from %s[%u] to %s[%u]", src->cname(), src->id(), dst->cname(), dst->id());
 
   unsigned int table_size        = getTableSize();
   sg_platf_route_cbarg_t e_route = TO_ROUTE_FULL(src->id(), dst->id());

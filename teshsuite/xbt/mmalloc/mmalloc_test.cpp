@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2014. The SimGrid Team.
+/* Copyright (c) 2012-2014, 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -6,12 +6,12 @@
 
 #include "xbt/mmalloc.h"
 #include "xbt.h"
-#include <stdio.h>
-#include <assert.h>
+#include <cassert>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 
 #include <xbt/ex.hpp>
@@ -45,7 +45,7 @@ int main(int argc, char**argv)
   for (i = 0; i < TESTSIZE; i++) {
     size = size_of_block(i);
     pointers[i] = mmalloc(heapA, size);
-    XBT_INFO("%d bytes allocated with offset %tx", size, ((char*)pointers[i])-((char*)heapA));
+    XBT_INFO("%d bytes allocated with offset %zx", size, (size_t)((char*)pointers[i] - (char*)heapA));
   }
   XBT_INFO("All blocks were correctly allocated. Free every second block");
   for (i = 0; i < TESTSIZE; i+=2) {

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2011, 2013-2014. The SimGrid Team.
+/* Copyright (c) 2007-2011, 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -7,9 +7,9 @@
 #include "maxmin_private.hpp"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
-#include <float.h>
-#include <math.h>
-#include <stdlib.h>
+#include <cfloat>
+#include <cmath>
+#include <cstdlib>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_maxmin);
 #define SHOW_EXPR_G(expr) XBT_DEBUG(#expr " = %g",expr);

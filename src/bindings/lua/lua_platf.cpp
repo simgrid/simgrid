@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, 2012-2015. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -10,8 +10,8 @@
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
-#include <ctype.h>
-#include <string.h>
+#include <cctype>
+#include <cstring>
 
 extern "C" {
 #include <lauxlib.h>

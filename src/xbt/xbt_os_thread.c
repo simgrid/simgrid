@@ -2,7 +2,7 @@
 /* Used in RL to get win/lin portability, and in SG when CONTEXT_THREAD     */
 /* in SG, when using HAVE_UCONTEXT_CONTEXTS, xbt_os_thread_stub is used instead   */
 
-/* Copyright (c) 2007-2015. The SimGrid Team.
+/* Copyright (c) 2007-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -208,16 +208,16 @@ void xbt_os_thread_setstacksize(int stack_size)
     size_t rem = sz % alignment[i];
     if (rem != 0 || sz == 0) {
       size_t sz2 = sz - rem + alignment[i];
-      XBT_DEBUG("pthread_attr_setstacksize failed for %zd, try again with %zd", sz, sz2);
+      XBT_DEBUG("pthread_attr_setstacksize failed for %zu, try again with %zu", sz, sz2);
       sz = sz2;
       res = pthread_attr_setstacksize(&thread_attr, sz);
     }
   }
 
   if (res == EINVAL)
-    XBT_WARN("invalid stack size (maybe too big): %zd", sz);
+    XBT_WARN("invalid stack size (maybe too big): %zu", sz);
   else if (res != 0)
-    XBT_WARN("unknown error %d in pthread stacksize setting: %zd", res, sz);
+    XBT_WARN("unknown error %d in pthread stacksize setting: %zu", res, sz);
 }
 
 void xbt_os_thread_setguardsize(int guard_size)
@@ -228,7 +228,7 @@ void xbt_os_thread_setguardsize(int guard_size)
   size_t sz = guard_size;
   int res = pthread_attr_setguardsize(&thread_attr, sz);
   if (res)
-    XBT_WARN("pthread_attr_setguardsize failed (%d) for size: %zd", res, sz);
+    XBT_WARN("pthread_attr_setguardsize failed (%d) for size: %zu", res, sz);
 #endif
 }
 

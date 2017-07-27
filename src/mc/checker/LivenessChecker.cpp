@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2015. The SimGrid Team.
+/* Copyright (c) 2011-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -282,7 +282,7 @@ void LivenessChecker::showAcceptanceCycle(std::size_t depth)
   for (auto& s : this->getTextualTrace())
     XBT_INFO("%s", s.c_str());
   simgrid::mc::session->logState();
-  XBT_INFO("Counter-example depth : %zd", depth);
+  XBT_INFO("Counter-example depth : %zu", depth);
 }
 
 std::vector<std::string> LivenessChecker::getTextualTrace() // override
@@ -372,11 +372,10 @@ void LivenessChecker::run()
     /* Update current state in buchi automaton */
     simgrid::mc::property_automaton->current_state = current_pair->automaton_state;
 
-    XBT_DEBUG("********************* ( Depth = %d, search_cycle = %d, interleave size = %zd, pair_num = %d, requests = %d)",
-       current_pair->depth, current_pair->search_cycle,
-       current_pair->graph_state->interleaveSize(),
-       current_pair->num,
-       current_pair->requests);
+    XBT_DEBUG(
+        "********************* ( Depth = %d, search_cycle = %d, interleave size = %zu, pair_num = %d, requests = %d)",
+        current_pair->depth, current_pair->search_cycle, current_pair->graph_state->interleaveSize(), current_pair->num,
+        current_pair->requests);
 
     if (current_pair->requests == 0) {
       this->backtrack();

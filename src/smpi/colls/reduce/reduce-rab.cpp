@@ -10,8 +10,8 @@
  */
 
 #include "../colls_private.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 #define REDUCE_NEW_ALWAYS 1
 

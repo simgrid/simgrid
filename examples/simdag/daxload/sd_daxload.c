@@ -1,6 +1,6 @@
 /* simple test trying to load a DAX file.                                   */
 
-/* Copyright (c) 2009-2015. The SimGrid Team.
+/* Copyright (c) 2009-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
               sg_host_get_name(wsl[0]), SD_task_get_amount(task), SD_task_get_name(task));
       break;
     default:
-      xbt_die("Task %s is of unknown kind %d", SD_task_get_name(task), SD_task_get_kind(task));
+      xbt_die("Task %s is of unknown kind %u", SD_task_get_name(task), SD_task_get_kind(task));
     }
     SD_task_destroy(task);
   }
