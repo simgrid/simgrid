@@ -392,7 +392,7 @@ void Config::showAliases()
 
   xbt_dict_foreach(this->aliases, dict_cursor, name, dictel)
     names.push_back(name);
-  std::sort(names.begin(), names.end());
+  std::sort(begin(names), end(names), [](char* a, char* b) { return strcmp(a, b) < 0; });
 
   for (auto name : names)
     printf("   %s: %s\n", name, (*this)[name].getDescription().c_str());
@@ -408,7 +408,7 @@ void Config::help()
 
   xbt_dict_foreach(this->options, dict_cursor, name, variable)
     names.push_back(name);
-  std::sort(names.begin(), names.end());
+  std::sort(begin(names), end(names), [](char* a, char* b) { return strcmp(a, b) < 0; });
 
   for (auto name : names) {
     variable = (simgrid::config::ConfigurationElement*) xbt_dict_get(this->options, name);
