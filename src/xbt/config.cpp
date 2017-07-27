@@ -141,7 +141,6 @@ protected:
   bool isdefault = true;
 
 public:
-
   /* Callback */
   xbt_cfg_cb_t old_callback = nullptr;
 
@@ -190,16 +189,13 @@ public:
   TypedConfigurationElement(const char* key, const char* desc, T value = T())
     : ConfigurationElement(key, desc), content(std::move(value))
   {}
-  TypedConfigurationElement(const char* key, const char* desc, T value,
-      xbt_cfg_cb_t cb)
-    : ConfigurationElement(key, desc, cb), content(std::move(value))
+  TypedConfigurationElement(const char* key, const char* desc, T value, xbt_cfg_cb_t cb)
+      : ConfigurationElement(key, desc, cb), content(std::move(value))
   {}
-  TypedConfigurationElement(const char* key, const char* desc, T value,
-      std::function<void(T&)> callback)
-    : ConfigurationElement(key, desc), content(std::move(value)),
-      callback(std::move(callback))
+  TypedConfigurationElement(const char* key, const char* desc, T value, std::function<void(T&)> callback)
+      : ConfigurationElement(key, desc), content(std::move(value)), callback(std::move(callback))
   {}
-  ~TypedConfigurationElement()=default;
+  ~TypedConfigurationElement() = default;
 
   std::string getStringValue() override;
   const char* getTypeName() override;
@@ -227,8 +223,8 @@ public:
       this->content = std::move(value);
       this->update();
     } else {
-      XBT_DEBUG("Do not override configuration variable '%s' with value '%s'"
-        " because it was already set.", key.c_str(), to_string(value).c_str());
+      XBT_DEBUG("Do not override configuration variable '%s' with value '%s' because it was already set.", key.c_str(),
+                to_string(value).c_str());
     }
   }
 };
@@ -567,8 +563,7 @@ on_exception:
 }
 
 // Horrible mess to translate C++ exceptions to C exceptions:
-// Exit from the catch blog (and do the correct exceptio cleaning)
-// before attempting to THROWF.
+// Exit from the catch block (and do the correct exception cleaning) before attempting to THROWF.
 #define TRANSLATE_EXCEPTIONS(...) \
   catch(simgrid::config::missing_key_error& e) { THROWF(not_found_error, 0, __VA_ARGS__); abort(); } \
   catch(...) { THROWF(not_found_error, 0, __VA_ARGS__); abort(); }
@@ -599,8 +594,7 @@ void xbt_cfg_setdefault_int(const char *key, int value)
     (*simgrid_config)[key].setDefaultValue<int>(value);
     return;
   }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to default integer %i",
-    key, value);
+  TRANSLATE_EXCEPTIONS("Could not set variable %s to default integer %i", key, value);
 }
 
 /** @brief Set an integer value to \a name within \a cfg if it wasn't changed yet
@@ -614,8 +608,7 @@ void xbt_cfg_setdefault_double(const char *key, double value)
     (*simgrid_config)[key].setDefaultValue<double>(value);
     return;
   }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to default double %f",
-    key, value);
+  TRANSLATE_EXCEPTIONS("Could not set variable %s to default double %f", key, value);
 }
 
 /** @brief Set a string value to \a name within \a cfg if it wasn't changed yet
@@ -629,8 +622,7 @@ void xbt_cfg_setdefault_string(const char *key, const char *value)
     (*simgrid_config)[key].setDefaultValue<std::string>(value ? value : "");
     return;
   }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to default string %s",
-    key, value);
+  TRANSLATE_EXCEPTIONS("Could not set variable %s to default string %s", key, value);
 }
 
 /** @brief Set an boolean value to \a name within \a cfg if it wasn't changed yet
@@ -644,8 +636,7 @@ void xbt_cfg_setdefault_boolean(const char *key, const char *value)
     (*simgrid_config)[key].setDefaultValue<bool>(simgrid::config::parseBool(value));
     return;
   }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to default boolean %s",
-    key, value);
+  TRANSLATE_EXCEPTIONS("Could not set variable %s to default boolean %s", key, value);
 }
 
 /** @brief Set an integer value to \a name within \a cfg
@@ -659,8 +650,7 @@ void xbt_cfg_set_int(const char *key, int value)
     (*simgrid_config)[key].setValue<int>(value);
     return;
   }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to integer %i",
-    key, value);
+  TRANSLATE_EXCEPTIONS("Could not set variable %s to integer %i", key, value);
 }
 
 /** @brief Set or add a double value to \a name within \a cfg
@@ -674,8 +664,7 @@ void xbt_cfg_set_double(const char *key, double value)
     (*simgrid_config)[key].setValue<double>(value);
     return;
   }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to double %f",
-    key, value);
+  TRANSLATE_EXCEPTIONS("Could not set variable %s to double %f", key, value);
 }
 
 /** @brief Set or add a string value to \a name within \a cfg
@@ -690,8 +679,7 @@ void xbt_cfg_set_string(const char *key, const char *value)
     (*simgrid_config)[key].setValue<std::string>(value ? value : "");
     return;
   }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to string %s",
-    key, value);
+  TRANSLATE_EXCEPTIONS("Could not set variable %s to string %s", key, value);
 }
 
 /** @brief Set or add a boolean value to \a name within \a cfg
@@ -705,8 +693,7 @@ void xbt_cfg_set_boolean(const char *key, const char *value)
     (*simgrid_config)[key].setValue<bool>(simgrid::config::parseBool(value));
     return;
   }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to boolean %s",
-    key, value);
+  TRANSLATE_EXCEPTIONS("Could not set variable %s to boolean %s", key, value);
 }
 
 
@@ -823,10 +810,8 @@ XBT_TEST_UNIT("use", test_config_use, "Data retrieving tests")
   xbt_test_add("Get a single value");
   {
     /* get_single_value */
-    int ival;
-
     xbt_cfg_set_parse("peername:toto:42 speed:42");
-    ival = xbt_cfg_get_int("speed");
+    int ival = xbt_cfg_get_int("speed");
     if (ival != 42)
       xbt_test_fail("Speed value = %d, I expected 42", ival);
   }

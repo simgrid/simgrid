@@ -24,10 +24,8 @@
 #include "surf/surf.h"
 #include "xbt/base.h"
 #include "xbt/config.h"
-#include "xbt/dict.h"
 #include "xbt/function_types.h"
 #include "xbt/mallocator.h"
-#include "xbt/swag.h"
 #include "xbt/xbt_os_time.h"
 
 #include "src/simix/ActorImpl.hpp"
