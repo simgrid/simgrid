@@ -265,6 +265,7 @@ private:
   xbt_dict_t options;
   // alias -> xbt_dict_elm_t from options:
   xbt_dict_t aliases;
+  bool warn_for_aliases;
 
 public:
   Config();
@@ -312,9 +313,10 @@ static void xbt_cfgelm_free(void *data)
     delete (simgrid::config::ConfigurationElement*) data;
 }
 
-Config::Config() :
-  options(xbt_dict_new_homogeneous(xbt_cfgelm_free)),
-  aliases(xbt_dict_new_homogeneous(nullptr))
+Config::Config()
+    : options(xbt_dict_new_homogeneous(xbt_cfgelm_free))
+    , aliases(xbt_dict_new_homogeneous(nullptr))
+    , warn_for_aliases(true)
 {}
 
 Config::~Config()
@@ -333,7 +335,7 @@ xbt_dictelm_t Config::getDictElement(const char* name)
     return res;
   // The aliases dict stores pointers to the options dictelm:
   res = (xbt_dictelm_t) xbt_dict_get_or_null(aliases, name);
-  if (res)
+  if (res && warn_for_aliases)
     XBT_INFO("Option %s has been renamed to %s. Consider switching.", name, res->key);
   return res;
 }
@@ -394,8 +396,11 @@ void Config::showAliases()
     names.push_back(name);
   std::sort(begin(names), end(names), [](char* a, char* b) { return strcmp(a, b) < 0; });
 
+  bool old_warn_for_aliases = false;
+  std::swap(warn_for_aliases, old_warn_for_aliases);
   for (auto name : names)
     printf("   %s: %s\n", name, (*this)[name].getDescription().c_str());
+  std::swap(warn_for_aliases, old_warn_for_aliases);
 }
 
 /** @brief Displays the declared options and their description */
