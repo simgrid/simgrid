@@ -2,7 +2,7 @@
 /*  no system header should be loaded out of this file so that we have only */
 /*  one file to check when porting to another OS                            */
 
-/* Copyright (c) 2004-2015. The SimGrid Team.
+/* Copyright (c) 2004-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -76,13 +76,7 @@ XBT_PUBLIC(void) xbt_backtrace_display_current();
 /** @brief Like malloc, but xbt_die() on error
     @hideinitializer */
 static XBT_ALWAYS_INLINE void *xbt_malloc(size_t n) {
-  void *res;
-/*  if (n==0) {
-     xbt_backtrace_display_current();
-     xbt_die("malloc(0) is not portable");
-  }*/
-
-  res = malloc(n);
+  void *res = malloc(n);
   if (!res)
     xbt_die("Memory allocation of %lu bytes failed", (unsigned long)n);
   return res;
@@ -91,9 +85,7 @@ static XBT_ALWAYS_INLINE void *xbt_malloc(size_t n) {
 /** @brief like malloc, but xbt_die() on error and memset data to 0
     @hideinitializer */
 static XBT_ALWAYS_INLINE void *xbt_malloc0(size_t n) {
-  void *res;
-  //if (n==0) xbt_die("calloc(0) is not portable");
-  res = calloc(n, 1);
+  void *res = calloc(n, 1);
   if (!res)
     xbt_die("Memory callocation of %lu bytes failed", (unsigned long)n);
   return res;
@@ -103,7 +95,6 @@ static XBT_ALWAYS_INLINE void *xbt_malloc0(size_t n) {
     @hideinitializer */
 static XBT_ALWAYS_INLINE void *xbt_realloc(void *p, size_t s) {
   void *res = NULL;
-  //if (s==0) xbt_die("realloc(0) is not portable");
   if (s) {
     if (p) {
       res = realloc(p, s);
