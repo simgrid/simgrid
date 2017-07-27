@@ -572,7 +572,7 @@ void update_choked_peers(peer_t peer)
 {
   if (nb_interested_peers(peer) == 0)
     return;
-  XBT_DEBUG("(%d) update_choked peers %d active peers", peer->id, xbt_dict_size(peer->active_peers));
+  XBT_DEBUG("(%d) update_choked peers %u active peers", peer->id, xbt_dict_size(peer->active_peers));
   //update the current round
   peer->round = (peer->round + 1) % 3;
   char *key;
