@@ -114,9 +114,9 @@ int broadcaster(int argc, char *argv[])
   /* argv[2] is the number of pieces */
   if (argc > 2) {
     piece_count = xbt_str_parse_int(argv[2], "Invalid number of pieces: %s");
-    XBT_DEBUG("piece_count set to %d", piece_count);
+    XBT_DEBUG("piece_count set to %u", piece_count);
   } else {
-    XBT_DEBUG("No piece_count specified, defaulting to %d", piece_count);
+    XBT_DEBUG("No piece_count specified, defaulting to %u", piece_count);
   }
   broadcaster_t bc = broadcaster_init(host_list, piece_count);
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2012, 2014-2016. The SimGrid Team.
+/* Copyright (c) 2012, 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -96,7 +96,7 @@ static int node(int argc, char *argv[])
     XBT_INFO("I couldn't join the network :(");
   }
   XBT_DEBUG("I'm leaving the network");
-  XBT_INFO("%d/%d FIND_NODE have succeeded", node->find_node_success, node->find_node_success + node->find_node_failed);
+  XBT_INFO("%u/%u FIND_NODE have succeeded", node->find_node_success, node->find_node_success + node->find_node_failed);
   node_free(node);
 
   return 0;
@@ -229,8 +229,8 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
               answers++;
 
               nodes_added = answer_merge(node_list, data->answer);
-              XBT_DEBUG("Received an answer from %s (%s) with %ld nodes on it",
-                        data->answer_to, data->issuer_host_name, xbt_dynar_length(data->answer->nodes));
+              XBT_DEBUG("Received an answer from %s (%s) with %lu nodes on it", data->answer_to, data->issuer_host_name,
+                        xbt_dynar_length(data->answer->nodes));
 
               task_free(node->task_received);
             } else {
@@ -254,12 +254,12 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
     if (count_in_stats)
       node->find_node_success++;
     if (queries > 4)
-      XBT_VERB("FIND_NODE on %08x success in %d steps", id_to_find, steps);
+      XBT_VERB("FIND_NODE on %08x success in %u steps", id_to_find, steps);
     node_routing_table_update(node, id_to_find);
   } else {
     if (count_in_stats) {
       node->find_node_failed++;
-      XBT_VERB("%08x not found in %d steps", id_to_find, steps);
+      XBT_VERB("%08x not found in %u steps", id_to_find, steps);
     }
   }
   answer_free(node_list);

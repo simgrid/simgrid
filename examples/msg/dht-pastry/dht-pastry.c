@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
+/* Copyright (c) 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -32,12 +32,12 @@ static int timeout = 50;
 static int max_simulation_time = 1000;
 
 typedef struct s_node {
-  int id;                                 //128bits generated random(2^128 -1)
-  int known_id;
+  unsigned id;                            //128bits generated random(2^128 -1)
+  unsigned known_id;
   char mailbox[MAILBOX_NAME_SIZE];        // my mailbox name (string representation of the id)
-  int namespace_set[NAMESPACE_SIZE];
-  int neighborhood_set[NEIGHBORHOOD_SIZE];
-  int routing_table[LEVELS_COUNT][LEVEL_SIZE];
+  unsigned namespace_set[NAMESPACE_SIZE];
+  unsigned neighborhood_set[NEIGHBORHOOD_SIZE];
+  unsigned routing_table[LEVELS_COUNT][LEVEL_SIZE];
   int ready;
   msg_comm_t comm_receive;                // current communication to receive
   xbt_dynar_t pending_tasks;
@@ -45,10 +45,10 @@ typedef struct s_node {
 typedef s_node_t* node_t;
 
 typedef struct s_state {
-  int id;
-  int namespace_set[NAMESPACE_SIZE];
-  int neighborhood_set[NEIGHBORHOOD_SIZE];
-  int routing_table[LEVELS_COUNT][LEVEL_SIZE];
+  unsigned id;
+  unsigned namespace_set[NAMESPACE_SIZE];
+  unsigned neighborhood_set[NEIGHBORHOOD_SIZE];
+  unsigned routing_table[LEVELS_COUNT][LEVEL_SIZE];
 } s_state_t;
 typedef s_state_t* state_t;
 
@@ -62,9 +62,9 @@ typedef enum {
 
 typedef struct s_task_data {
   e_task_type_t type;                     // type of task
-  int sender_id;                          // id parameter (used by some types of tasks)
+  unsigned sender_id;                     // id parameter (used by some types of tasks)
   //int request_finger;                     // finger parameter (used by some types of tasks)
-  int answer_id;                          // answer (used by some types of tasks)
+  unsigned answer_id;                     // answer (used by some types of tasks)
   char answer_to[MAILBOX_NAME_SIZE];      // mailbox to send an answer to (if any)
   //const char* issuer_host_name;           // used for logging
   int steps;
@@ -190,7 +190,7 @@ static state_t node_get_state(node_t node) {
 }
 
 static void print_node_id(node_t node) {
-  XBT_INFO(" Id: %i '%08x' ", node->id, node->id);
+  XBT_INFO(" Id: %u '%08x' ", node->id, node->id);
 }
 
 static void print_node_neighborood_set(node_t node) {
@@ -230,14 +230,14 @@ static void handle_task(node_t node, msg_task_t task) {
   int j;
   int min;
   int max;
-  int next;
+  unsigned next;
   msg_task_t task_sent;
   task_data_t req_data;
   task_data_t task_data = (task_data_t) MSG_task_get_data(task);
   e_task_type_t type = task_data->type;
   // If the node is not ready keep the task for later
   if (node->ready != 0 && !(type==TASK_JOIN_LAST_REPLY || type==TASK_JOIN_REPLY)) {
-    XBT_DEBUG("Task pending %i", type);
+    XBT_DEBUG("Task pending %u", type);
     xbt_dynar_push(node->pending_tasks, &task);
     return;
   }
@@ -259,7 +259,7 @@ static void handle_task(node_t node, msg_task_t task) {
         task_data->steps++;
         task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, task_data);
         if (MSG_task_send_with_timeout(task_sent, mailbox, timeout)== MSG_TIMEOUT) {
-          XBT_DEBUG("Timeout expired when forwarding join to next %d", next);
+          XBT_DEBUG("Timeout expired when forwarding join to next %u", next);
           task_free(task_sent);
         }
         type = TASK_JOIN_REPLY;
@@ -272,7 +272,7 @@ static void handle_task(node_t node, msg_task_t task) {
       req_data->state = node_get_state(node);
       task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
       if (MSG_task_send_with_timeout(task_sent, task_data->answer_to, timeout)== MSG_TIMEOUT) {
-        XBT_DEBUG("Timeout expired when sending back the current node state to the joining node to %d", node->id);
+        XBT_DEBUG("Timeout expired when sending back the current node state to the joining node to %u", node->id);
         task_free(task_sent);
       }
       break;
@@ -311,7 +311,7 @@ static void handle_task(node_t node, msg_task_t task) {
       node->ready--;
       // if the node is ready, do all the pending tasks and send update to known nodes
       if (node->ready==0) {
-        XBT_DEBUG("Node %i is ready!!!", node->id);
+        XBT_DEBUG("Node %u is ready!!!", node->id);
         while(xbt_dynar_length(node->pending_tasks)){
           msg_task_t task;
           xbt_dynar_shift(node->pending_tasks, &task);
@@ -342,10 +342,10 @@ static void handle_task(node_t node, msg_task_t task) {
       break;
     /* Received an update of state */
     case TASK_UPDATE:
-      XBT_DEBUG("Task update %i !!!", node->id);
+      XBT_DEBUG("Task update %u !!!", node->id);
 
       /* Update namespace ses */
-      XBT_INFO("Task update from %i !!!", task_data->sender_id);
+      XBT_INFO("Task update from %u !!!", task_data->sender_id);
       XBT_INFO("Node:");
       print_node_id(node);
       print_node_namespace_set(node);
@@ -447,7 +447,7 @@ static int join(node_t node){
   msg_task_t task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
   XBT_DEBUG("Trying to join Pastry ring... (with node %s)", mailbox);
   if (MSG_task_send_with_timeout(task_sent, mailbox, timeout)== MSG_TIMEOUT) {
-    XBT_DEBUG("Timeout expired when joining ring with node %d", node->known_id);
+    XBT_DEBUG("Timeout expired when joining ring with node %u", node->known_id);
     task_free(task_sent);
   }
 

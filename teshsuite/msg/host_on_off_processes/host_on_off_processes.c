@@ -59,7 +59,7 @@ static int commRX(int argc, char *argv[])
   } else if (error==MSG_TRANSFER_FAILURE) {
     XBT_INFO("  Receive message: TRANSFERT_FAILURE");
   } else {
-    XBT_INFO("  Receive message: %d", error);
+    XBT_INFO("  Receive message: %u", error);
   }
   XBT_INFO("  RX Done");
   return 0;

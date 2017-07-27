@@ -180,14 +180,14 @@ static DGraph *buildSH(const char cls){
   tmpS>>=1;
   }
   for(i=0;i<numSources;i++){
-  snprintf(nm,BLOCK_SIZE,"Source.%d",i);
-  nd=newNode(nm);
-  AttachNode(dg,nd);
+    snprintf(nm, BLOCK_SIZE, "Source.%u", i);
+    nd = newNode(nm);
+    AttachNode(dg, nd);
   }
   for(j=0;j<numOfLayers;j++){
     mask=0x00000001<<j;
     for(i=0;i<numSources;i++){
-      snprintf(nm,BLOCK_SIZE,"Comparator.%d",(i+j*firstLayerNode));
+      snprintf(nm, BLOCK_SIZE, "Comparator.%u", (i + j * firstLayerNode));
       nd=newNode(nm);
       AttachNode(dg,nd);
       ndoff=i&(~mask);
@@ -203,7 +203,7 @@ static DGraph *buildSH(const char cls){
   }
   mask=0x00000001<<numOfLayers;
   for(i=0;i<numSources;i++){
-    snprintf(nm,BLOCK_SIZE,"Sink.%d",i);
+    snprintf(nm, BLOCK_SIZE, "Sink.%u", i);
     nd=newNode(nm);
     AttachNode(dg,nd);
     ndoff=i&(~mask);

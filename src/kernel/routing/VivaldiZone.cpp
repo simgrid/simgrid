@@ -76,7 +76,7 @@ void VivaldiZone::setPeerLink(NetPoint* netpoint, double bw_in, double bw_out, s
 
 void VivaldiZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
 {
-  XBT_DEBUG("vivaldi getLocalRoute from '%s'[%d] '%s'[%d]", src->cname(), src->id(), dst->cname(), dst->id());
+  XBT_DEBUG("vivaldi getLocalRoute from '%s'[%u] '%s'[%u]", src->cname(), src->id(), dst->cname(), dst->id());
 
   if (src->isNetZone()) {
     std::string srcName = "router_" + src->name();

@@ -85,12 +85,10 @@ int main(int argc, char *argv[])
              * this can generate a file that diff, for example,
              * believes is a binary file */
             if (isprint((int) (s1[j].c))) {
-                fprintf(stderr, "Got s[%d].c = %c; expected %c\n",
-                        j, s1[j].c, j + status.MPI_SOURCE + 'a');
+                fprintf(stderr, "Got s[%d].c = %c; expected %c\n", j, s1[j].c, j + status.MPI_SOURCE + 'a');
             }
             else {
-                fprintf(stderr, "Got s[%d].c = %x; expected %c\n",
-                        j, (int) s1[j].c, j + status.MPI_SOURCE + 'a');
+                fprintf(stderr, "Got s[%d].c = %hhx; expected %c\n", j, s1[j].c, j + status.MPI_SOURCE + 'a');
             }
         }
     }

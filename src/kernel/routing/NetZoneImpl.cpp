@@ -32,7 +32,7 @@ NetZoneImpl::NetZoneImpl(NetZone* father, const char* name) : NetZone(father, na
              "Refusing to create a second NetZone called '%s'.", name);
 
   netpoint_ = new NetPoint(name, NetPoint::Type::NetZone, static_cast<NetZoneImpl*>(father));
-  XBT_DEBUG("NetZone '%s' created with the id '%d'", name, netpoint_->id());
+  XBT_DEBUG("NetZone '%s' created with the id '%u'", name, netpoint_->id());
 }
 NetZoneImpl::~NetZoneImpl()
 {

@@ -427,7 +427,7 @@ void RemoteClient::read_variable(const char* name, void* target, size_t size) co
   simgrid::mc::Variable* var = this->find_variable(name);
   xbt_assert(var->address, "No simple location for this variable");
   xbt_assert(var->type->full_type, "Partial type for %s, cannot check size", name);
-  xbt_assert((size_t)var->type->full_type->byte_size == size, "Unexpected size for %s (expected %zi, was %zi)", name,
+  xbt_assert((size_t)var->type->full_type->byte_size == size, "Unexpected size for %s (expected %zu, was %zu)", name,
              size, (size_t)var->type->full_type->byte_size);
   this->read_bytes(target, size, remote(var->address));
 }

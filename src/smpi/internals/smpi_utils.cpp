@@ -1,4 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team.
+/* Copyright (c) 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

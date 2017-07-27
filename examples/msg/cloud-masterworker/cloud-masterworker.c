@@ -122,8 +122,8 @@ static int master_fun(int argc, char *argv[])
   XBT_INFO("# Add one more process on each VM");
   xbt_dynar_foreach(vms, i, vm) {
     unsigned int index = i + xbt_dynar_length(vms);
-    char *vm_name = bprintf("VM%02d", i);
-    char *pr_name = bprintf("WRK%02d", index);
+    char *vm_name      = bprintf("VM%02u", i);
+    char *pr_name      = bprintf("WRK%02u", index);
 
     XBT_INFO("put a process (%s) on %s", pr_name, vm_name);
     MSG_process_create(pr_name, worker_fun, NULL, (msg_host_t)vm);

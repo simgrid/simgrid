@@ -98,8 +98,7 @@ int Coll_allgatherv_ompi_bruck::allgatherv(void *sbuf, int scount,
    unsigned int size = comm->size();
    unsigned int rank = comm->rank();
 
-   XBT_DEBUG(
-                "coll:tuned:allgather_ompi_bruck rank %d", rank);
+   XBT_DEBUG("coll:tuned:allgather_ompi_bruck rank %u", rank);
 
    sdtype->extent(&slb, &sext);
 

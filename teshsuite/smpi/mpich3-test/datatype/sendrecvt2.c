@@ -93,7 +93,7 @@ int main(int argc, char **argv)
                             myname, j, world_rank, errloc - 1);
                     p1 = (char *) inbufs[j];
                     p2 = (char *) outbufs[j];
-                    fprintf(stderr, "Got %x expected %x\n", p1[errloc - 1], p2[errloc - 1]);
+                    fprintf(stderr, "Got %hhx expected %hhx\n", p1[errloc - 1], p2[errloc - 1]);
                     err++;
                 }
             }

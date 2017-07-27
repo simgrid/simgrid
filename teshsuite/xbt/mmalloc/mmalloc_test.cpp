@@ -45,7 +45,7 @@ int main(int argc, char**argv)
   for (i = 0; i < TESTSIZE; i++) {
     size = size_of_block(i);
     pointers[i] = mmalloc(heapA, size);
-    XBT_INFO("%d bytes allocated with offset %tx", size, ((char*)pointers[i])-((char*)heapA));
+    XBT_INFO("%d bytes allocated with offset %zx", size, (size_t)((char*)pointers[i] - (char*)heapA));
   }
   XBT_INFO("All blocks were correctly allocated. Free every second block");
   for (i = 0; i < TESTSIZE; i+=2) {

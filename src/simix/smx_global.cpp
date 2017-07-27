@@ -127,8 +127,8 @@ static void install_segvhandler()
     return;
   }
   if (not(old_stack.ss_flags & SS_DISABLE)) {
-    XBT_DEBUG("An alternate stack was already installed (sp=%p, size=%zd, flags=%x). Restore it.",
-              old_stack.ss_sp, old_stack.ss_size, old_stack.ss_flags);
+    XBT_DEBUG("An alternate stack was already installed (sp=%p, size=%zu, flags=%x). Restore it.", old_stack.ss_sp,
+              old_stack.ss_size, (unsigned)old_stack.ss_flags);
     sigaltstack(&old_stack, nullptr);
   }
 

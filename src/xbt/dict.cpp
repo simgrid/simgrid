@@ -103,7 +103,7 @@ static void xbt_dict_rehash(xbt_dict_t dict)
   newsize--;
   dict->table_size = newsize;
   dict->table = currcell;
-  XBT_DEBUG("REHASH (%d->%d)", oldsize, newsize);
+  XBT_DEBUG("REHASH (%u->%u)", oldsize, newsize);
 
   for (unsigned i = 0; i < oldsize; i++, currcell++) {
     if (*currcell == nullptr) /* empty cell */

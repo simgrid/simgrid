@@ -135,7 +135,7 @@ void smpi_initialize_global_memory_segments()
     int status;
 
     do {
-      snprintf(path, sizeof(path), "/smpi-buffer-%06x", rand() % 0xffffff);
+      snprintf(path, sizeof(path), "/smpi-buffer-%06x", rand() % 0xffffffU);
       file_descriptor = shm_open(path, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
     } while (file_descriptor == -1 && errno == EEXIST);
     if (file_descriptor < 0) {

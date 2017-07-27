@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -64,16 +64,16 @@ void FatTreeZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
 
   /* Let's find the source and the destination in our internal structure */
   auto searchedNode = this->computeNodes_.find(src->id());
-  xbt_assert(searchedNode != this->computeNodes_.end(), "Could not find the source %s [%d] in the fat tree",
+  xbt_assert(searchedNode != this->computeNodes_.end(), "Could not find the source %s [%u] in the fat tree",
              src->name().c_str(), src->id());
   FatTreeNode* source = searchedNode->second;
 
   searchedNode = this->computeNodes_.find(dst->id());
-  xbt_assert(searchedNode != this->computeNodes_.end(), "Could not find the destination %s [%d] in the fat tree",
+  xbt_assert(searchedNode != this->computeNodes_.end(), "Could not find the destination %s [%u] in the fat tree",
              dst->name().c_str(), dst->id());
   FatTreeNode* destination = searchedNode->second;
 
-  XBT_VERB("Get route and latency from '%s' [%d] to '%s' [%d] in a fat tree", src->name().c_str(), src->id(),
+  XBT_VERB("Get route and latency from '%s' [%u] to '%s' [%u] in a fat tree", src->name().c_str(), src->id(),
            dst->name().c_str(), dst->id());
 
   /* In case destination is the source, and there is a loopback, let's use it instead of going up to a switch */
@@ -242,7 +242,7 @@ void FatTreeZone::generateSwitches()
 
   if (this->nodesByLevel_[0] != this->nodes_.size()) {
     surf_parse_error("The number of provided nodes does not fit with the wanted topology."
-                     " Please check your platform description (We need %d nodes, we got %zu)",
+                     " Please check your platform description (We need %u nodes, we got %zu)",
                      this->nodesByLevel_[0], this->nodes_.size());
     return;
   }
@@ -264,7 +264,7 @@ void FatTreeZone::generateSwitches()
   for (unsigned int i = 0; i < this->levels_; i++) {
     for (unsigned int j = 0; j < this->nodesByLevel_[i + 1]; j++) {
       FatTreeNode* newNode = new FatTreeNode(this->cluster_, --k, i + 1, j);
-      XBT_DEBUG("We create the switch %d(%d,%d)", newNode->id, newNode->level, newNode->position);
+      XBT_DEBUG("We create the switch %d(%u,%u)", newNode->id, newNode->level, newNode->position);
       newNode->children.resize(this->lowerLevelNodesNumber_[i] * this->lowerLevelPortsNumber_[i]);
       if (i != this->levels_ - 1) {
         newNode->parents.resize(this->upperLevelNodesNumber_[i + 1] * this->lowerLevelPortsNumber_[i + 1]);
@@ -348,7 +348,7 @@ void FatTreeZone::addLink(FatTreeNode* parent, unsigned int parentPort, FatTreeN
 {
   FatTreeLink* newLink;
   newLink = new FatTreeLink(this->cluster_, child, parent);
-  XBT_DEBUG("Creating a link between the parent (%d,%d,%u) and the child (%d,%d,%u)", parent->level, parent->position,
+  XBT_DEBUG("Creating a link between the parent (%u,%u,%u) and the child (%u,%u,%u)", parent->level, parent->position,
             parentPort, child->level, child->position, childPort);
   parent->children[parentPort] = newLink;
   child->parents[childPort]    = newLink;

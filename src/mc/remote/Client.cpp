@@ -140,33 +140,33 @@ void Client::handleMessages()
     switch (message->type) {
 
       case MC_MESSAGE_DEADLOCK_CHECK:
-        xbt_assert(received_size == sizeof(mc_message_t), "Unexpected size for DEADLOCK_CHECK (%zu != %zu)",
+        xbt_assert(received_size == sizeof(mc_message_t), "Unexpected size for DEADLOCK_CHECK (%zd != %zu)",
                    received_size, sizeof(mc_message_t));
         handleDeadlockCheck(message);
         break;
 
       case MC_MESSAGE_CONTINUE:
-        xbt_assert(received_size == sizeof(mc_message_t), "Unexpected size for MESSAGE_CONTINUE (%zu != %zu)",
+        xbt_assert(received_size == sizeof(mc_message_t), "Unexpected size for MESSAGE_CONTINUE (%zd != %zu)",
                    received_size, sizeof(mc_message_t));
         handleContinue(message);
         return;
 
       case MC_MESSAGE_SIMCALL_HANDLE:
         xbt_assert(received_size == sizeof(s_mc_message_simcall_handle_t),
-                   "Unexpected size for SIMCALL_HANDLE (%zu != %zu)", received_size,
+                   "Unexpected size for SIMCALL_HANDLE (%zd != %zu)", received_size,
                    sizeof(s_mc_message_simcall_handle_t));
         handleSimcall((s_mc_message_simcall_handle_t*)message_buffer);
         break;
 
       case MC_MESSAGE_RESTORE:
-        xbt_assert(received_size == sizeof(mc_message_t), "Unexpected size for MESSAGE_RESTORE (%zu != %zu)",
+        xbt_assert(received_size == sizeof(mc_message_t), "Unexpected size for MESSAGE_RESTORE (%zd != %zu)",
                    received_size, sizeof(mc_message_t));
         handleRestore((s_mc_message_restore_t*)message_buffer);
         break;
 
       case MC_MESSAGE_ACTOR_ENABLED:
         xbt_assert(received_size == sizeof(s_mc_message_actor_enabled_t),
-                   "Unexpected size for ACTOR_ENABLED (%zu != %zu)", received_size,
+                   "Unexpected size for ACTOR_ENABLED (%zd != %zu)", received_size,
                    sizeof(s_mc_message_actor_enabled_t));
         handleActorEnabled((s_mc_message_actor_enabled_t*)message_buffer);
         break;

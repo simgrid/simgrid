@@ -306,7 +306,7 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
     size_t start_block_offset = ALIGN_UP(start_offset, smpi_shared_malloc_blocksize);
     size_t stop_block_offset = ALIGN_DOWN(stop_offset, smpi_shared_malloc_blocksize);
     for (unsigned block_id=0, i = start_block_offset / smpi_shared_malloc_blocksize; i < stop_block_offset / smpi_shared_malloc_blocksize; block_id++, i++) {
-      XBT_DEBUG("\t\tglobal shared allocation, mmap block offset %d", block_id);
+      XBT_DEBUG("\t\tglobal shared allocation, mmap block offset %u", block_id);
       void* pos = (void*)((unsigned long)mem + i * smpi_shared_malloc_blocksize);
       void* res = mmap(pos, smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE, mmap_flag,
                        huge_fd, 0);
