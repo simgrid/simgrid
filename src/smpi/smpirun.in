@@ -404,7 +404,7 @@ fi
 HAVE_SEQ="$(which seq 2>/dev/null)"
 
 if [ -n "${HAVE_SEQ}" ]; then
-    SEQ=$(${HAVE_SEQ} 0 $((${NUMPROCS}-1)))
+    SEQ=$(${HAVE_SEQ} 0 $(( NUMPROCS - 1)))
 else
     cnt=0
     while [ $cnt -lt ${NUMPROCS} ] ; do
@@ -424,7 +424,7 @@ done
 
 for i in ${SEQ}
 do
-    j=$(( $i % ${hostfile_procs} + 1 ))
+    j=$(( i % hostfile_procs + 1 ))
     host=$(eval "echo \${$j}")
 
     ##---- optional display of ranks to actor mapping
