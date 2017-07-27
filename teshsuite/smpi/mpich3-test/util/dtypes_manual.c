@@ -361,7 +361,7 @@ static int MtestDatatype2CheckAndPrint(void *inbuf, void *outbuf, int size_bytes
                 typename, typenum, world_rank, errloc - 1, size_bytes);
         p1 = (char *) inbuf;
         p2 = (char *) outbuf;
-        fprintf(stderr, "Got %x expected %x\n", p2[errloc - 1], p1[errloc - 1]);
+        fprintf(stderr, "Got %hhx expected %hhx\n", p2[errloc - 1], p1[errloc - 1]);
     }
     return errloc;
 }

@@ -26,7 +26,7 @@ if(enable_compile_warnings)
   endif()
 
   set(warnCXXFLAGS "${warnCFLAGS} -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing")
-  if(CMAKE_COMPILER_IS_GNUCXX AND (NOT (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER "5.0")))
+  if(CMAKE_COMPILER_IS_GNUCXX AND (NOT (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.0")))
     set(warnCFLAGS "${warnCFLAGS} -Wformat-signedness")
   endif()
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GCC")
