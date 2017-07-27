@@ -75,6 +75,11 @@ unset pid
 
 trapped_signals="HUP INT QUIT ILL ABRT SEGV FPE ALRM TERM USR1 USR2 BUS"
 
+die () {
+    printf '[%s] ** error: %s. Aborting.\n' "$(basename $0)" "$*" >&2
+    exit 1
+}
+
 smpirun_cleanup()
 {
   if [ -z "${KEEP}" ] ; then
@@ -138,24 +143,21 @@ while true; do
         "-platform")
 	    PLATFORM="$2"
             if [ ! -f "${PLATFORM}" ]; then
-		echo "[`basename $0`] ** error: the file '${PLATFORM}' does not exist. Aborting."
-		exit 1
+                die "the file '${PLATFORM}' does not exist"
             fi
 	    shift 2
             ;;
         "-hostfile")
 	    HOSTFILE="$2"
             if [ ! -f "${HOSTFILE}" ]; then
-		echo "[`basename $0`] ** error: the file '${HOSTFILE}' does not exist. Aborting."
-		exit 1
+                die "the file '${HOSTFILE}' does not exist"
             fi
 	    shift 2
             ;;
         "-machinefile")
 	    HOSTFILE="$2"
             if [ ! -f "${HOSTFILE}" ]; then
-		echo "[`basename $0`] ** error: the file '${HOSTFILE}' does not exist. Aborting."
-		exit 1
+                die "the file '${HOSTFILE}' does not exist"
             fi
 	    shift 2
             ;;
@@ -313,8 +315,7 @@ fi
 # Don't use wc -l to compute it to avoid issues with trailing \n at EOF
 hostfile_procs=$(grep -c "[a-zA-Z0-9]" $HOSTFILE)
 if [ ${hostfile_procs} = 0 ] ; then
-   echo "[`basename $0`] ** error: the hostfile '${HOSTFILE}' is empty. Aborting." >&2
-   exit 1
+    die "the hostfile '${HOSTFILE}' is empty"
 fi
 
 if [ -z "${NUMPROCS}" ] ; then
