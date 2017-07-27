@@ -158,10 +158,8 @@ smx_actor_t Process::process(){
   return process_;
 }
 
-
 /**
- * \brief Returns a structure that stores the location (filename + linenumber)
- *        of the last calls to MPI_* functions.
+ * \brief Returns a structure that stores the location (filename + linenumber) of the last calls to MPI_* functions.
  *
  * \see smpi_trace_set_call_location
  */
@@ -281,8 +279,12 @@ void Process::init(int *argc, char ***argv){
     }
 
     char* instance_id = (*argv)[1];
-    int rank = xbt_str_parse_int((*argv)[2], "Invalid rank: %s");
-    smpi_deployment_register_process(instance_id, rank, index);
+    try {
+      int rank = std::stoi(std::string((*argv)[2]));
+      smpi_deployment_register_process(instance_id, rank, index);
+    } catch (std::invalid_argument& ia) {
+      throw std::invalid_argument(std::string("Invalid rank: ") + (*argv)[2]);
+    }
 
     if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){
       /* Now using segment index of the process  */

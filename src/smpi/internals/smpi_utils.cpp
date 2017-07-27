@@ -40,16 +40,22 @@ std::vector<s_smpi_factor_t> parse_factor(const char *smpi_coef_string)
     unsigned int iteration = 0;
     for (Tokenizer::iterator factor_iter = factor_values.begin(); factor_iter != factor_values.end(); factor_iter++) {
       iteration++;
-      char *errmsg;
 
       if (factor_iter == factor_values.begin()) { /* first element */
-        errmsg = bprintf("Invalid factor in chunk #%zu: %%s", smpi_factor.size()+1);
-        fact.factor = xbt_str_parse_int(factor_iter->c_str(), errmsg);
+        try {
+          fact.factor = std::stoi(*factor_iter);
+        } catch (std::invalid_argument& ia) {
+          throw std::invalid_argument(std::string("Invalid factor in chunk ") + std::to_string(smpi_factor.size() + 1) +
+                                      ": " + *factor_iter);
+        }
       } else {
-        errmsg = bprintf("Invalid factor value %d in chunk #%zu: %%s", iteration, smpi_factor.size()+1);
-        fact.values.push_back(xbt_str_parse_double(factor_iter->c_str(), errmsg));
+        try {
+          fact.values.push_back(std::stod(*factor_iter));
+        } catch (std::invalid_argument& ia) {
+          throw std::invalid_argument(std::string("Invalid factor value ") + std::to_string(iteration) + " in chunk " +
+                                      std::to_string(smpi_factor.size() + 1) + ": " + *factor_iter);
+        }
       }
-      xbt_free(errmsg);
     }
 
     smpi_factor.push_back(fact);

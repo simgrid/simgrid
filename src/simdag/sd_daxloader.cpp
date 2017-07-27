@@ -4,12 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/simdag.h"
-#include "xbt/misc.h"
-#include "xbt/log.h"
-#include "xbt/str.h"
-#include "xbt/file.h" /* xbt_basename() */
 #include "simdag_private.hpp"
+#include "simgrid/simdag.h"
+#include "xbt/file.h" /* xbt_basename() */
+#include "xbt/log.h"
+#include "xbt/misc.h"
+#include "xbt/str.h"
+#include <unordered_map>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_daxparse, sd, "Parsing DAX files");
 
@@ -22,17 +23,15 @@ extern "C" {
 }
 
 /* Ensure that transfer tasks have unique names even though a file is used several times */
-
 void uniq_transfer_task_name(SD_task_t task)
 {
   SD_task_t child = *(task->successors->begin());
   SD_task_t parent = *(task->predecessors->begin());
 
-  char *new_name = bprintf("%s_%s_%s", SD_task_get_name(parent), SD_task_get_name(task), SD_task_get_name(child));
+  std::string new_name =
+      std::string(SD_task_get_name(parent)) + "_" + SD_task_get_name(task) + "_" + SD_task_get_name(child);
 
-  SD_task_set_name(task, new_name);
-
-  free(new_name);
+  SD_task_set_name(task, new_name.c_str());
 }
 
 static bool children_are_marked(SD_task_t task){
@@ -142,7 +141,7 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
 static YY_BUFFER_STATE input_buffer;
 
 static xbt_dynar_t result;
-static xbt_dict_t jobs;
+static std::unordered_map<std::string, SD_task_t> jobs;
 static xbt_dict_t files;
 static SD_task_t current_job;
 static SD_task_t root_task;
@@ -161,8 +160,8 @@ xbt_dynar_t SD_daxload(const char *filename)
 {
   xbt_dict_cursor_t cursor;
   SD_task_t file;
-  char *name;
-  FILE *in_file = fopen(filename, "r");
+  char* name;
+  FILE* in_file = fopen(filename, "r");
   xbt_assert(in_file, "Unable to open \"%s\"\n", filename);
   input_buffer = dax__create_buffer(in_file, 10);
   dax__switch_to_buffer(input_buffer);
@@ -170,7 +169,6 @@ xbt_dynar_t SD_daxload(const char *filename)
 
   result = xbt_dynar_new(sizeof(SD_task_t), dax_task_free);
   files = xbt_dict_new_homogeneous(&dax_task_free);
-  jobs = xbt_dict_new_homogeneous(nullptr);
   root_task = SD_task_create_comp_seq("root", nullptr, 0);
   /* by design the root task is always SCHEDULABLE */
   SD_task_set_state(root_task, SD_SCHEDULABLE);
@@ -184,7 +182,6 @@ xbt_dynar_t SD_daxload(const char *filename)
   dax__delete_buffer(input_buffer);
   fclose(in_file);
   dax_lex_destroy();
-  xbt_dict_free(&jobs);
 
   /* And now, post-process the files.
    * We want a file task per pair of computation tasks exchanging the file. Duplicate on need
@@ -263,28 +260,39 @@ xbt_dynar_t SD_daxload(const char *filename)
 
 void STag_dax__adag()
 {
-  XBT_ATTRIB_UNUSED double version;
-  version = xbt_str_parse_double(A_dax__adag_version, "Parse error: %s is not a double");
-
-  xbt_assert(version == 2.1, "Expected version 2.1 in <adag> tag, got %f. Fix the parser or your file", version);
+  try {
+    double version = std::stod(std::string(A_dax__adag_version));
+    xbt_assert(version == 2.1, "Expected version 2.1 in <adag> tag, got %f. Fix the parser or your file", version);
+  } catch (std::invalid_argument& ia) {
+    throw std::invalid_argument(std::string("Parse error: ") + A_dax__adag_version + " is not a double");
+  }
 }
 
 void STag_dax__job()
 {
-  double runtime = xbt_str_parse_double(A_dax__job_runtime, "Parse error: %s is not a double");
-  char *name = bprintf("%s@%s", A_dax__job_id, A_dax__job_name);
-  runtime *= 4200000000.;       /* Assume that timings were done on a 4.2GFlops machine. I mean, why not? */
-  XBT_DEBUG("See <job id=%s runtime=%s %.0f>",A_dax__job_id,A_dax__job_runtime,runtime);
-  current_job = SD_task_create_comp_seq(name, nullptr, runtime);
-  xbt_dict_set(jobs, A_dax__job_id, current_job, nullptr);
-  free(name);
-  xbt_dynar_push(result, &current_job);
+  try {
+    double runtime = std::stod(std::string(A_dax__job_runtime));
+
+    std::string name = std::string(A_dax__job_id) + "@" + A_dax__job_name;
+    runtime *= 4200000000.; /* Assume that timings were done on a 4.2GFlops machine. I mean, why not? */
+    XBT_DEBUG("See <job id=%s runtime=%s %.0f>", A_dax__job_id, A_dax__job_runtime, runtime);
+    current_job = SD_task_create_comp_seq(name.c_str(), nullptr, runtime);
+    jobs.insert({A_dax__job_id, current_job});
+    xbt_dynar_push(result, &current_job);
+  } catch (std::invalid_argument& ia) {
+    throw std::invalid_argument(std::string("Parse error: ") + A_dax__job_runtime + " is not a double");
+  }
 }
 
 void STag_dax__uses()
 {
-  double size = xbt_str_parse_double(A_dax__uses_size, "Parse error: %s is not a double");
-  int is_input = (A_dax__uses_link == A_dax__uses_link_input);
+  double size;
+  try {
+    size = std::stod(std::string(A_dax__uses_size));
+  } catch (std::invalid_argument& ia) {
+    throw std::invalid_argument(std::string("Parse error: ") + A_dax__uses_size + " is not a double");
+  }
+  bool is_input = (A_dax__uses_link == A_dax__uses_link_input);
 
   XBT_DEBUG("See <uses file=%s %s>",A_dax__uses_file,(is_input?"in":"out"));
   SD_task_t file = static_cast<SD_task_t>(xbt_dict_get_or_null(files, A_dax__uses_file));
@@ -310,9 +318,12 @@ void STag_dax__uses()
 static SD_task_t current_child;
 void STag_dax__child()
 {
-  current_child = static_cast<SD_task_t>(xbt_dict_get_or_null(jobs, A_dax__child_ref));
-  xbt_assert(current_child != nullptr,"Parse error on line %d: Asked to add dependencies to the non-existent %s task",
-             dax_lineno, A_dax__child_ref);
+  try {
+    current_child = jobs.at(A_dax__child_ref);
+  } catch (std::out_of_range& unfound) {
+    throw std::out_of_range(std::string("Parse error on line ") + std::to_string(dax_lineno) +
+                            ": Asked to add dependencies to the non-existent " + A_dax__child_ref + "task");
+  }
 }
 
 void ETag_dax__child()
@@ -322,11 +333,15 @@ void ETag_dax__child()
 
 void STag_dax__parent()
 {
-  SD_task_t parent = static_cast<SD_task_t>(xbt_dict_get_or_null(jobs, A_dax__parent_ref));
-  xbt_assert(parent != nullptr, "Parse error on line %d: Asked to add a dependency from %s to %s, but %s does not exist",
-             dax_lineno, current_child->name, A_dax__parent_ref, A_dax__parent_ref);
-  SD_task_dependency_add(nullptr, nullptr, parent, current_child);
-  XBT_DEBUG("Control-flow dependency from %s to %s", current_child->name, parent->name);
+  try {
+    SD_task_t parent = jobs.at(A_dax__parent_ref);
+    SD_task_dependency_add(nullptr, nullptr, parent, current_child);
+    XBT_DEBUG("Control-flow dependency from %s to %s", current_child->name, parent->name);
+  } catch (std::out_of_range& unfound) {
+    throw std::out_of_range(std::string("Parse error on line ") + std::to_string(dax_lineno) +
+                            ": Asked to add a dependency from " + current_child->name + " to " + A_dax__parent_ref +
+                            ", but " + A_dax__parent_ref + " does not exist");
+  }
 }
 
 void ETag_dax__adag()
