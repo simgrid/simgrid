@@ -2,8 +2,8 @@
 
 explore_files() {
 
-  for cmake in `find -name CMakeLists.txt` ; do
-    d=`dirname $cmake`
+  for cmake in $(find -name CMakeLists.txt) ; do
+    d=$(dirname $cmake)
   
     echo;echo "Directory $d"
   

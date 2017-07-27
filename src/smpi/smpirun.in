@@ -298,7 +298,7 @@ fi
 UNROLLEDHOSTFILETMP=0
 
 #parse if our lines are terminated by :num_process
-multiple_processes=`grep -c ":" $HOSTFILE`
+multiple_processes=$(grep -c ":" $HOSTFILE)
 if [ "${multiple_processes}" -gt 0 ] ; then
     UNROLLEDHOSTFILETMP=1
     UNROLLEDHOSTFILE="$(mktemp smpitmp-hostfXXXXXX)"
@@ -311,7 +311,7 @@ if [ "${multiple_processes}" -gt 0 ] ; then
 fi
 
 # Don't use wc -l to compute it to avoid issues with trailing \n at EOF
-hostfile_procs=`grep -c "[a-zA-Z0-9]" $HOSTFILE`
+hostfile_procs=$(grep -c "[a-zA-Z0-9]" $HOSTFILE)
 if [ ${hostfile_procs} = 0 ] ; then
    echo "[`basename $0`] ** error: the hostfile '${HOSTFILE}' is empty. Aborting." >&2
    exit 1
@@ -401,10 +401,10 @@ fi
 ##  hostfile has less than i lines.
 ##----------------------------------------------------------
 
-HAVE_SEQ="`which seq 2>/dev/null`"
+HAVE_SEQ="$(which seq 2>/dev/null)"
 
 if [ -n "${HAVE_SEQ}" ]; then
-    SEQ=`${HAVE_SEQ} 0 $((${NUMPROCS}-1))`
+    SEQ=$(${HAVE_SEQ} 0 $((${NUMPROCS}-1)))
 else
     cnt=0
     while [ $cnt -lt ${NUMPROCS} ] ; do
