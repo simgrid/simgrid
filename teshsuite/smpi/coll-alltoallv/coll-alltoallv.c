@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2014. The SimGrid Team.
+/* Copyright (c) 2013-2014, 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -46,10 +46,9 @@
 
 static void print_buffer_int(void *buf, int len, char *msg, int rank)
 {
-  int* v;
   printf("[%d] %s (#%d): ", rank, msg, len);
   for (int tmp = 0; tmp < len; tmp++) {
-    v = buf;
+    int *v = buf;
     printf("[%d]", v[tmp]);
   }
   printf("\n");
