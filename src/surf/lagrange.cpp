@@ -11,9 +11,9 @@
 #include "xbt/sysdep.h"
 #include "maxmin_private.hpp"
 
-#include <stdlib.h>
+#include <cstdlib>
 #ifndef MATH
-#include <math.h>
+#include <cmath>
 #endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_lagrange, surf, "Logging specific to SURF (lagrange)");

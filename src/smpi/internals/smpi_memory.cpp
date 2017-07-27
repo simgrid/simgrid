@@ -9,13 +9,13 @@
 
 #include <vector>
 
-#include <stdlib.h>
-#include <sys/types.h>
-#include <string.h>
-#include <stdio.h>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <errno.h>
+#include <sys/types.h>
 
 #ifndef WIN32
 #include <sys/mman.h>

@@ -40,16 +40,15 @@
 #include "private.hpp"
 #include "xbt/dict.h"
 #include "xbt/ex.hpp"
-#include <errno.h>
+#include <cerrno>
 
 #include <sys/types.h>
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
-#include <sys/stat.h>
+#include <cstdio>
 #include <fcntl.h>
-#include <string.h>
-#include <stdio.h>
+#include <sys/stat.h>
 
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON

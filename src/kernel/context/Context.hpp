@@ -30,8 +30,8 @@
 #include "xbt/swag.h"
 #include "xbt/xbt_os_time.h"
 
-#include <signal.h>
 #include "src/simix/ActorImpl.hpp"
+#include <csignal>
 
 #include <simgrid/simix.hpp>
 

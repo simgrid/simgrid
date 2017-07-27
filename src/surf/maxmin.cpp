@@ -9,10 +9,10 @@
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
 #include "xbt/sysdep.h"
+#include <cmath>
+#include <cstdlib>
 #include <cxxabi.h>
 #include <limits>
-#include <math.h>
-#include <stdlib.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_maxmin, surf, "Logging specific to SURF (maxmin)");
 

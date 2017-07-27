@@ -3,9 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstdlib>
 #include <iostream>
 #include <simgrid/s4u.hpp>
-#include <stdlib.h>
 #include <vector>
 
 #define NUM_COMMS 1

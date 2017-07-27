@@ -6,8 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <string.h>
-#include <stdio.h>
+#include <cstdio>
+#include <cstring>
 
 #include "xbt/dict.h"
 #include "xbt/ex.h"
@@ -554,11 +554,11 @@ void xbt_dict_postexit()
 }
 
 #ifdef SIMGRID_TEST
-#include <time.h>
+#include "src/internal_config.h"
 #include "xbt.h"
 #include "xbt/ex.h"
+#include <ctime>
 #include <xbt/ex.hpp>
-#include "src/internal_config.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_dict);
 

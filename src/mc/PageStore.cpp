@@ -1,11 +1,11 @@
-/* Copyright (c) 2015. The SimGrid Team.
+/* Copyright (c) 2015-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstring> // memcpy, memcmp
 #include <unistd.h>
-#include <string.h> // memcpy, memcmp
 
 #include <sys/mman.h>
 #ifdef __FreeBSD__

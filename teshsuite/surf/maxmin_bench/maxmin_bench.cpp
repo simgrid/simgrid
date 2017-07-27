@@ -1,6 +1,6 @@
 /* A crash few tests for the maxmin library                                 */
 
-/* Copyright (c) 2004-2015. The SimGrid Team.
+/* Copyright (c) 2004-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -14,9 +14,9 @@
 
 #define MYRANDMAX 1000
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
 
 double date;
 int64_t seedx = 0;

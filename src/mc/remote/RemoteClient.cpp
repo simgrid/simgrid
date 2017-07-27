@@ -5,10 +5,10 @@
 
 #define _FILE_OFFSET_BITS 64 /* needed for pread_whole to work as expected on 32bits */
 
-#include <assert.h>
-#include <errno.h>
-#include <stddef.h>
-#include <stdint.h>
+#include <cassert>
+#include <cerrno>
+#include <cstddef>
+#include <cstdint>
 
 #include <sys/ptrace.h>
 

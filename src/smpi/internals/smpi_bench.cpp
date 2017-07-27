@@ -14,7 +14,7 @@
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
-#include <math.h> // sqrt
+#include <cmath>
 
 #if HAVE_PAPI
 #include <papi.h>

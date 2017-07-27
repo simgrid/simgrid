@@ -15,7 +15,7 @@ bool init_unit_test(); // boost forget to give this prototype on NetBSD, which d
 #include "xbt/log.h"
 #include "xbt/misc.h"
 
-#include <math.h>
+#include <cmath>
 
 namespace utf  = boost::unit_test;
 namespace tmgr = simgrid::trace_mgr;
