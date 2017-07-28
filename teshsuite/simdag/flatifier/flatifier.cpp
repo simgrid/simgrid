@@ -17,16 +17,6 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(flatifier, "Logging specific to this platform parsing tool");
 
-static int name_compare_hosts(const void *n1, const void *n2)
-{
-  return std::strcmp(sg_host_get_name(*(sg_host_t *) n1), sg_host_get_name(*(sg_host_t *) n2));
-}
-
-static int name_compare_links(const void *n1, const void *n2)
-{
-  return std::strcmp(sg_link_name(*(SD_link_t *) n1),sg_link_name(*(SD_link_t *) n2));
-}
-
 static bool parse_cmdline(int* timings, char** platformFile, int argc, char** argv)
 {
   bool parse_ok = true;
@@ -73,7 +63,8 @@ static void dump_platform()
   // Hosts
   unsigned int totalHosts = sg_host_count();
   sg_host_t* hosts        = sg_host_list();
-  std::qsort((void*)hosts, totalHosts, sizeof(sg_host_t), name_compare_hosts);
+  std::sort(hosts, hosts + totalHosts,
+            [](sg_host_t a, sg_host_t b) { return strcmp(sg_host_get_name(a), sg_host_get_name(b)) < 0; });
 
   for (unsigned int i = 0; i < totalHosts; i++) {
     std::printf("  <host id=\"%s\" speed=\"%.0f\"", hosts[i]->getCname(), sg_host_speed(hosts[i]));
@@ -108,7 +99,8 @@ static void dump_platform()
   unsigned int totalLinks    = sg_link_count();
   simgrid::s4u::Link** links = sg_link_list();
 
-  std::qsort((void*)links, totalLinks, sizeof(SD_link_t), name_compare_links);
+  std::sort(links, links + totalLinks,
+            [](simgrid::s4u::Link* a, simgrid::s4u::Link* b) { return strcmp(sg_link_name(a), sg_link_name(b)) < 0; });
 
   for (unsigned int i = 0; i < totalLinks; i++) {
     simgrid::s4u::Link* link = links[i];

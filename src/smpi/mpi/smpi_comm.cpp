@@ -3,19 +3,19 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u/Host.hpp"
-#include <climits>
-
-#include "src/simix/smx_private.h"
+#include "smpi_comm.hpp"
 #include "private.h"
 #include "private.hpp"
-#include "smpi_comm.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_datatype.hpp"
 #include "smpi_process.hpp"
 #include "smpi_request.hpp"
 #include "smpi_status.hpp"
 #include "smpi_win.hpp"
+#include "src/simix/smx_private.h"
+#include <algorithm>
+#include <climits>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi, "Logging specific to SMPI (comm)");
 
@@ -305,14 +305,6 @@ void Comm::unref(Comm* comm){
   }
 }
 
-static int compare_ints (const void *a, const void *b)
-{
-  const int *da = static_cast<const int *>(a);
-  const int *db = static_cast<const int *>(b);
-
-  return static_cast<int>(*da > *db) - static_cast<int>(*da < *db);
-}
-
 void Comm::init_smp(){
   int leader = -1;
 
@@ -395,7 +387,7 @@ void Comm::init_smp(){
         leader_group_size++;
       }
   }
-  qsort(leader_list, leader_group_size, sizeof(int),compare_ints);
+  std::sort(leader_list, leader_list + leader_group_size);
 
   MPI_Group leaders_group = new  Group(leader_group_size);
 
