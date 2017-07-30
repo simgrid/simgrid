@@ -183,7 +183,7 @@ simgrid::s4u::Actor* ActorImpl::restart()
   arg.auto_restart = auto_restart;
 
   // kill the old process
-  SIMIX_process_kill(this, this);
+  SIMIX_process_kill(this, (this == simix_global->maestro_process) ? this : SIMIX_process_self());
 
   // start the new process
   ActorImpl* actor = simix_global->create_process_function(arg.name.c_str(), std::move(arg.code), arg.data, arg.host,
@@ -265,8 +265,7 @@ void create_maestro(std::function<void()> code)
   } else {
     if (not simix_global)
       xbt_die("simix is not initialized, please call MSG_init first");
-    maestro->context =
-      simix_global->context_factory->create_maestro(code, maestro);
+    maestro->context = simix_global->context_factory->create_maestro(code, maestro);
   }
 
   maestro->simcall.issuer = maestro;
@@ -398,8 +397,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   XBT_VERB("Create context %s", process->name.c_str());
   if (not simix_global)
     xbt_die("simix is not initialized, please call MSG_init first");
-  process->context = simix_global->context_factory->attach(
-    simix_global->cleanup_process_function, process);
+  process->context = simix_global->context_factory->attach(simix_global->cleanup_process_function, process);
 
   /* Add properties */
   process->properties = properties;
