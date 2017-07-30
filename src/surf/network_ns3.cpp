@@ -353,7 +353,7 @@ void ns3_create_flow(simgrid::s4u::Host* src, simgrid::s4u::Host* dst,
   xbt_assert(addr != nullptr, "Element %s is unknown to NS3. Is it connected to any one-hop link?",
              dst->pimpl_netpoint->cname());
 
-  XBT_DEBUG("ns3_create_flow %d Bytes from %d to %d with Interface %s",TotalBytes, node1, node2,addr);
+  XBT_DEBUG("ns3_create_flow %u Bytes from %u to %u with Interface %s", TotalBytes, node1, node2, addr);
   ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress (ns3::Ipv4Address::GetAny(), port_number));
   sink.Install (dst_node);
 
@@ -407,11 +407,11 @@ void ns3_add_cluster(const char* id, double bw, double lat) {
 
   for (unsigned int i = number_of_clusters_nodes; i < Cluster_nodes.GetN(); i++) {
     Nodes.Add(Cluster_nodes.Get(i));
-    XBT_DEBUG("Add node %d to cluster",i);
+    XBT_DEBUG("Add node %u to cluster", i);
   }
   number_of_clusters_nodes = Cluster_nodes.GetN();
 
-  XBT_DEBUG("Add router %d to cluster",nodes.GetN()-Nodes.GetN()-1);
+  XBT_DEBUG("Add router %u to cluster", nodes.GetN() - Nodes.GetN() - 1);
   Nodes.Add(nodes.Get(nodes.GetN()-Nodes.GetN()-1));
 
   xbt_assert(Nodes.GetN() <= 65000, "Cluster with NS3 is limited to 65000 nodes");
@@ -435,7 +435,7 @@ void ns3_add_cluster(const char* id, double bw, double lat) {
   }else{
     number_of_links++;
   }
-  XBT_DEBUG("Number of nodes in Cluster_nodes: %d",Cluster_nodes.GetN());
+  XBT_DEBUG("Number of nodes in Cluster_nodes: %u", Cluster_nodes.GetN());
 }
 
 static char* transformIpv4Address (ns3::Ipv4Address from){
