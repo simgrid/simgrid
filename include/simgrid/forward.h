@@ -97,8 +97,6 @@ typedef struct Trace tmgr_Trace;
 
 typedef struct s_smx_context* smx_context_t;
 typedef struct s_smx_actor* smx_actor_t;
-typedef struct s_smx_mutex* smx_mutex_t;
-typedef struct s_smx_mailbox* smx_mailbox_t;
 
 #endif
 
