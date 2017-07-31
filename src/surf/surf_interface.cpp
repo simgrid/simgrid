@@ -242,20 +242,18 @@ void model_help(const char *category, s_surf_model_description_t * table)
     printf("  %s: %s\n", table[i].name, table[i].description);
 }
 
-int find_model_description(s_surf_model_description_t * table,
-                           const char *name)
+int find_model_description(s_surf_model_description_t* table, const char* name)
 {
-  int i;
-  char *name_list = nullptr;
-
-  for (i = 0; table[i].name; i++)
+  for (int i = 0; table[i].name; i++)
     if (not strcmp(name, table[i].name)) {
       return i;
     }
+
   if (not table[0].name)
     xbt_die("No model is valid! This is a bug.");
-  name_list = xbt_strdup(table[0].name);
-  for (i = 1; table[i].name; i++) {
+
+  char* name_list = xbt_strdup(table[0].name);
+  for (int i = 1; table[i].name; i++) {
     name_list = (char *) xbt_realloc(name_list, strlen(name_list) + strlen(table[i].name) + 3);
     strncat(name_list, ", ", 2);
     strncat(name_list, table[i].name, strlen(table[i].name));
@@ -650,7 +648,7 @@ Action::~Action() {
 }
 
 void Action::finish() {
-    finishTime_ = surf_get_clock();
+  finishTime_ = surf_get_clock();
 }
 
 Action::State Action::getState()
@@ -866,13 +864,10 @@ void Action::updateRemainingLazy(double now)
 {
   double delta = 0.0;
 
-  if(getModel() == surf_network_model)
-  {
+  if (getModel() == surf_network_model) {
     if (suspended_ != 0)
       return;
-  }
-  else
-  {
+  } else {
     xbt_assert(stateSet_ == getModel()->getRunningActionSet(), "You're updating an action that is not running.");
     xbt_assert(sharingWeight_ > 0, "You're updating an action that seems suspended.");
   }
@@ -891,8 +886,7 @@ void Action::updateRemainingLazy(double now)
     XBT_DEBUG("Updating action(%p): remains is now %f", this, remains_);
   }
 
-  if(getModel() == surf_network_model)
-  {
+  if (getModel() == surf_network_model) {
     if (maxDuration_ != NO_MAX_DURATION)
       double_update(&maxDuration_, delta, sg_surf_precision);
 
