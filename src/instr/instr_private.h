@@ -77,6 +77,7 @@ public:
   char *color;
   type_t father;
   value* ret;
+  value(){};
   value(const char* name, const char* color, type_t father);
   ~value();
   static value* get_or_new(const char* name, const char* color, type_t father);

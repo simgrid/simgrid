@@ -122,6 +122,8 @@ static XBT_ALWAYS_INLINE void *xbt_realloc(void *p, size_t s) {
     @hideinitializer */
 #define xbt_free(p) free(p) /*nothing specific to do here. A poor valgrind replacement? */
 
+#define xbt_delete(p) (delete[] p) /*nothing specific to do here. A poor valgrind replacement? */
+
 /** @brief like free, but you can be sure that it is a function  */
 XBT_PUBLIC(void) xbt_free_f(void *p);
 /** @brief should be given a pointer to pointer, and frees the second one */
@@ -133,6 +135,8 @@ SG_END_DECL()
 /** @brief like calloc, but xbt_die() on error
     @hideinitializer */
 #define xbt_new0(type, count) ((type*)xbt_malloc0 (sizeof (type) * (count)))
+
+#define xbt_new1(type, count) (new type[count])
 
 /** @} */
 
