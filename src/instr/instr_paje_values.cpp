@@ -31,6 +31,7 @@ value::value(const char* name, const char* color, type_t father)
 
 value::~value()
 {
+  // All ready destroyed by recursiveDestroyType function.
 }
 
 value* value::get_or_new(const char* name, const char* color, type_t father)

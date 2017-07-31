@@ -196,7 +196,7 @@ int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     int rank = smpi_process()->index();
     MPI_Group group;
     win->get_group(&group);
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_collective_in(rank, __FUNCTION__, nullptr);
 
     retval = win->get( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
                            target_datatype);
@@ -232,7 +232,7 @@ int PMPI_Rget( void *origin_addr, int origin_count, MPI_Datatype origin_datatype
     int rank = smpi_process()->index();
     MPI_Group group;
     win->get_group(&group);
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_collective_in(rank, __FUNCTION__, nullptr);
 
     retval = win->get( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
                            target_datatype, request);
@@ -266,7 +266,7 @@ int PMPI_Put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     MPI_Group group;
     win->get_group(&group);
     int dst_traced = group->index(target_rank);
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_collective_in(rank, __FUNCTION__, nullptr);
     TRACE_smpi_send(rank, rank, dst_traced, SMPI_RMA_TAG, origin_count*origin_datatype->size());
 
     retval = win->put( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
@@ -304,7 +304,7 @@ int PMPI_Rput( void *origin_addr, int origin_count, MPI_Datatype origin_datatype
     MPI_Group group;
     win->get_group(&group);
     int dst_traced = group->index(target_rank);
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_collective_in(rank, __FUNCTION__, nullptr);
     TRACE_smpi_send(rank, rank, dst_traced, SMPI_RMA_TAG, origin_count*origin_datatype->size());
 
     retval = win->put( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
@@ -340,7 +340,7 @@ int PMPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
     int rank = smpi_process()->index();
     MPI_Group group;
     win->get_group(&group);
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_collective_in(rank, __FUNCTION__, nullptr);
     retval = win->accumulate( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
                                   target_datatype, op);
 
@@ -377,7 +377,7 @@ int PMPI_Raccumulate( void *origin_addr, int origin_count, MPI_Datatype origin_d
     int rank = smpi_process()->index();
     MPI_Group group;
     win->get_group(&group);
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_collective_in(rank, __FUNCTION__, nullptr);
 
     retval = win->accumulate( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
                                   target_datatype, op, request);
@@ -415,7 +415,7 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
     int rank = smpi_process()->index();
     MPI_Group group;
     win->get_group(&group);
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_collective_in(rank, __FUNCTION__, nullptr);
 
     retval = win->get_accumulate( origin_addr, origin_count, origin_datatype, result_addr,
                                   result_count, result_datatype, target_rank, target_disp,
@@ -458,7 +458,7 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
     int rank = smpi_process()->index();
     MPI_Group group;
     win->get_group(&group);
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_collective_in(rank, __FUNCTION__, nullptr);
 
     retval = win->get_accumulate( origin_addr, origin_count, origin_datatype, result_addr,
                                   result_count, result_datatype, target_rank, target_disp,
@@ -496,7 +496,7 @@ int PMPI_Compare_and_swap(void *origin_addr, void *compare_addr,
     int rank = smpi_process()->index();
     MPI_Group group;
     win->get_group(&group);
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_collective_in(rank, __FUNCTION__, nullptr);
 
     retval = win->compare_and_swap( origin_addr, compare_addr, result_addr, datatype,
                                   target_rank, target_disp);
