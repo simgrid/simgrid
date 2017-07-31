@@ -37,7 +37,7 @@ static void receive_callback(ns3::Ptr<ns3::Socket> socket)
 
   if (flow->finished_ == false) {
     flow->finished_ = true;
-    XBT_DEBUG("recv_cb of F[%p, %p, %d]", flow, flow->action_, flow->totalBytes_);
+    XBT_DEBUG("recv_cb of F[%p, %p, %u]", flow, flow->action_, flow->totalBytes_);
     XBT_DEBUG("Stop simulator at %f seconds", ns3::Simulator::Now().GetSeconds());
     ns3::Simulator::Stop(ns3::Seconds(0.0));
     ns3::Simulator::Run();
@@ -63,8 +63,8 @@ static void WriteUntilBufferFull(ns3::Ptr<ns3::Socket> sock, uint32_t txSpace)
     flow->bufferedBytes_ += amountSent;
     flow->remaining_ -= amountSent;
 
-    XBT_DEBUG("%f: sent %d bytes over flow %p (still %d to go)",
-        ns3::Simulator::Now().GetSeconds(), amountSent, flow, flow->remaining_);
+    XBT_DEBUG("%f: sent %d bytes over flow %p (still %u to go)", ns3::Simulator::Now().GetSeconds(), amountSent, flow,
+              flow->remaining_);
   }
 
   if (flow->bufferedBytes_ >= flow->totalBytes_)
@@ -76,34 +76,34 @@ static void datasent_callback(ns3::Ptr<ns3::Socket> socket, uint32_t dataSent)
   /* The tracing wants to know */
   SgFlow* flow = getFlowFromSocket(socket);
   flow->sentBytes_ += dataSent;
-  XBT_DEBUG("datasent_cb of F[%p, %p, %d] %d sent (%d total)",
-      flow, flow->action_, flow->totalBytes_, dataSent, flow->sentBytes_);
+  XBT_DEBUG("datasent_cb of F[%p, %p, %u] %u sent (%u total)", flow, flow->action_, flow->totalBytes_, dataSent,
+            flow->sentBytes_);
 }
 
 static void normalClose_callback(ns3::Ptr<ns3::Socket> socket)
 {
   SgFlow* flow = getFlowFromSocket(socket);
-  XBT_DEBUG("normalClose_cb of F[%p, %p, %d]", flow, flow->action_, flow->totalBytes_);
+  XBT_DEBUG("normalClose_cb of F[%p, %p, %u]", flow, flow->action_, flow->totalBytes_);
   receive_callback(socket);
 }
 
 static void errorClose_callback(ns3::Ptr<ns3::Socket> socket)
 {
   SgFlow* flow = getFlowFromSocket(socket);
-  XBT_DEBUG("errorClose_cb of F[%p, %p, %d]", flow, flow->action_, flow->totalBytes_);
+  XBT_DEBUG("errorClose_cb of F[%p, %p, %u]", flow, flow->action_, flow->totalBytes_);
   xbt_die("NS3: a socket was closed anormally");
 }
 
 static void succeededConnect_callback(ns3::Ptr<ns3::Socket> socket)
 {
   SgFlow* flow = getFlowFromSocket(socket);
-  XBT_DEBUG("succeededConnect_cb of F[%p, %p, %d]", flow, flow->action_, flow->totalBytes_);
+  XBT_DEBUG("succeededConnect_cb of F[%p, %p, %u]", flow, flow->action_, flow->totalBytes_);
 }
 
 static void failedConnect_callback(ns3::Ptr<ns3::Socket> socket)
 {
   SgFlow* mysocket = getFlowFromSocket(socket);
-  XBT_DEBUG("failedConnect_cb of F[%p, %p, %d]", mysocket, mysocket->action_, mysocket->totalBytes_);
+  XBT_DEBUG("failedConnect_cb of F[%p, %p, %u]", mysocket, mysocket->action_, mysocket->totalBytes_);
   xbt_die("NS3: a socket failed to connect");
 }
 
@@ -120,7 +120,7 @@ void StartFlow(ns3::Ptr<ns3::Socket> sock, const char* to, uint16_t port_number)
   sock->SetRecvCallback(MakeCallback(&receive_callback));
   // Keep track of what was used (for the TRACING module)
   sock->SetDataSentCallback(MakeCallback(&datasent_callback));
-  XBT_DEBUG("startFlow of F[%p, %p, %d] dest=%s port=%d", flow, flow->action_, flow->totalBytes_, to, port_number);
+  XBT_DEBUG("startFlow of F[%p, %p, %u] dest=%s port=%d", flow, flow->action_, flow->totalBytes_, to, port_number);
 
   //WriteUntilBufferFull (sock, sock->GetTxAvailable ());
   /*

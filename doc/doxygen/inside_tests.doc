@@ -244,7 +244,7 @@ configurations. It takes a long time to answer, and it often reports
 issues but when it's green, then you know that SimGrid is very fit!
 We use <a href="https://travis-ci.org/simgrid/simgrid">Travis</a> to
 quickly run some tests on Linux and Mac. It answers quickly but may
-miss issues. And we use <a href="https://ci.appveyor.com/project/simgrid/simgrid">AppVeyor</a>
+miss issues. And we use <a href="https://ci.appveyor.com/project/mquinson/simgrid">AppVeyor</a>
 to build and somehow test SimGrid on windows. 
 
 \subsection inside_tests_jenkins Jenkins on the Inria CI servers
