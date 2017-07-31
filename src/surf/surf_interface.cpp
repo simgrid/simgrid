@@ -12,6 +12,8 @@
 #include "src/surf/HostImpl.hpp"
 
 #include <fstream>
+#include <set>
+#include <string>
 #include <vector>
 
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
@@ -26,7 +28,8 @@ std::vector<surf_model_t> * all_existing_models = nullptr; /* to destroy models 
 simgrid::trace_mgr::future_evt_set *future_evt_set = nullptr;
 std::vector<std::string> surf_path;
 std::vector<simgrid::s4u::Host*> host_that_restart;
-xbt_dict_t watched_hosts_lib;
+/**  set of hosts for which one want to be notified if they ever restart. */
+std::set<std::string> watched_hosts;
 extern std::map<std::string, storage_type_t> storage_types;
 
 namespace simgrid {
@@ -345,8 +348,6 @@ void surf_init(int *argc, char **argv)
   XBT_DEBUG("Create all Libs");
   USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(nullptr);
 
-  watched_hosts_lib = xbt_dict_new_homogeneous(nullptr);
-
   xbt_init(argc, argv);
   if (not all_existing_models)
     all_existing_models = new std::vector<simgrid::surf::Model*>();
@@ -368,7 +369,6 @@ void surf_exit()
 
   sg_host_exit();
   sg_link_exit();
-  xbt_dict_free(&watched_hosts_lib);
   for (auto e : storage_types) {
     storage_type_t stype = e.second;
     free(stype->model);

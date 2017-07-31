@@ -13,6 +13,7 @@
 #include "xbt/str.h"
 
 #include <boost/intrusive/list.hpp>
+#include <set>
 #include <string>
 #include <unordered_map>
 
@@ -31,6 +32,7 @@ extern XBT_PRIVATE double sg_weight_S_parameter;
 extern XBT_PRIVATE int sg_network_crosstraffic;
 extern XBT_PRIVATE std::vector<std::string> surf_path;
 extern XBT_PRIVATE std::unordered_map<std::string, tmgr_trace_t> traces_set_list;
+extern XBT_PRIVATE std::set<std::string> watched_hosts;
 
 extern "C" {
 XBT_PUBLIC(double) surf_get_clock();

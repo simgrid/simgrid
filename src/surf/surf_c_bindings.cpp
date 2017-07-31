@@ -100,7 +100,7 @@ double surf_solve(double max_date)
     XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", time_delta, NOW, next_event_date);
 
     while ((event = future_evt_set->pop_leq(next_event_date, &value, &resource))) {
-      if (resource->isUsed() || xbt_dict_get_or_null(watched_hosts_lib, resource->cname())) {
+      if (resource->isUsed() || (watched_hosts.find(resource->cname()) != watched_hosts.end())) {
         time_delta = next_event_date - NOW;
         XBT_DEBUG("This event invalidates the next_occuring_event() computation of models. Next event set to %f", time_delta);
       }

@@ -14,8 +14,6 @@
 
 SG_BEGIN_DECL()
 
-XBT_PUBLIC_DATA(xbt_dict_t) watched_hosts_lib;
-
 extern XBT_PRIVATE const char *surf_action_state_names[6];
 
 /** @ingroup SURF_interface

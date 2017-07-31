@@ -374,11 +374,6 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_host_model_description[];
  */
 XBT_PUBLIC(void) surf_vm_model_init_HL13();
 
-/** \ingroup SURF_simulation
- *  \brief List of hosts for which one want to be notified if they ever restart.
- */
-XBT_PUBLIC_DATA(xbt_dict_t) watched_hosts_lib;
-
 /*** SURF Globals **************************/
 
 /** \ingroup SURF_simulation

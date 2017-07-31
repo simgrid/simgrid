@@ -8,6 +8,7 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/mc_replay.h"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "src/surf/surf_interface.hpp"
 #include "xbt/ex.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix, "SIMIX hosts");
@@ -124,9 +125,9 @@ void SIMIX_host_add_auto_restart_process(
   arg->properties = properties;
   arg->auto_restart = auto_restart;
 
-  if (host->isOff() && not xbt_dict_get_or_null(watched_hosts_lib, host->getCname())) {
-    xbt_dict_set(watched_hosts_lib, host->getCname(), host, nullptr);
-    XBT_DEBUG("Push host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF", host->getCname());
+  if (host->isOff() && watched_hosts.find(host->getCname()) == watched_hosts.end()) {
+    watched_hosts.insert(host->getCname());
+    XBT_DEBUG("Push host %s to watched_hosts because state == SURF_RESOURCE_OFF", host->getCname());
   }
   host->extension<simgrid::simix::Host>()->auto_restart_processes.push_back(arg);
 }
