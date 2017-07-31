@@ -10,15 +10,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(storage, "Messages specific for this simulation");
 
 static void display_storage_properties(simgrid::s4u::Storage* storage)
 {
-  xbt_dict_t props = storage->getProperties();
-  if (xbt_dict_length(props) > 0) {
+  std::unordered_map<std::string, std::string>* props = storage->getProperties();
+  if (not props->empty()) {
     XBT_INFO("\tProperties of mounted storage: %s", storage->getName());
 
-    xbt_dict_cursor_t cursor = NULL;
-    char* key;
-    char* data;
-    xbt_dict_foreach (props, cursor, key, data)
-      XBT_INFO("\t\t'%s' -> '%s'", key, data);
+    for (auto elm : *props) {
+      XBT_INFO("    %s->%s", elm.first.c_str(), elm.second.c_str());
+    }
   } else {
     XBT_INFO("\tNo property attached.");
   }

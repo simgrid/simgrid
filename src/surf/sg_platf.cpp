@@ -100,7 +100,6 @@ void sg_platf_new_host(sg_platf_host_cbarg_t args)
     host->pimpl_cpu->setPState(args->pstate);
   if (args->coord && strcmp(args->coord, ""))
     new simgrid::kernel::routing::vivaldi::Coords(host->pimpl_netpoint, args->coord);
-
 }
 
 /** @brief Add a "router" to the network element list */

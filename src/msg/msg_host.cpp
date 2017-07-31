@@ -165,7 +165,14 @@ const char *MSG_host_get_property_value(msg_host_t host, const char *name)
 xbt_dict_t MSG_host_get_properties(msg_host_t host)
 {
   xbt_assert((host != nullptr), "Invalid parameters (host is nullptr)");
-  return host->getProperties();
+  xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
+  std::unordered_map<std::string, std::string>* props = host->getProperties();
+  if (props == nullptr)
+    return nullptr;
+  for (auto elm : *props) {
+    xbt_dict_set(as_dict, elm.first.c_str(), xbt_strdup(elm.second.c_str()), nullptr);
+  }
+  return as_dict;
 }
 
 /** \ingroup m_host_management

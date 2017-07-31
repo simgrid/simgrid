@@ -177,7 +177,7 @@ void Host::routeTo(Host* dest, std::vector<surf::LinkImpl*>* links, double* late
 }
 
 /** Get the properties assigned to a host */
-xbt_dict_t Host::getProperties()
+std::unordered_map<std::string, std::string>* Host::getProperties()
 {
   return simgrid::simix::kernelImmediate([this] {
     return this->pimpl_->getProperties();

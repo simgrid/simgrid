@@ -388,7 +388,14 @@ sg_size_t MSG_storage_get_used_size(msg_storage_t storage)
 xbt_dict_t MSG_storage_get_properties(msg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters (storage is nullptr)");
-  return storage->getProperties();
+  xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
+  std::unordered_map<std::string, std::string>* props = storage->getProperties();
+  if (props == nullptr)
+    return nullptr;
+  for (auto elm : *props) {
+    xbt_dict_set(as_dict, elm.first.c_str(), xbt_strdup(elm.second.c_str()), nullptr);
+  }
+  return as_dict;
 }
 
 /** \ingroup msg_storage_management
@@ -470,14 +477,14 @@ void *MSG_storage_get_data(msg_storage_t storage)
 xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
 {
   std::map<std::string, sg_size_t>* content = storage->getContent();
-  xbt_dict_t content_dict = xbt_dict_new_homogeneous(&free);
+  xbt_dict_t content_as_dict = xbt_dict_new_homogeneous(xbt_free_f);
 
   for (auto entry : *content) {
     sg_size_t* psize = static_cast<sg_size_t*>(malloc(sizeof(sg_size_t)));
     *psize           = entry.second;
-    xbt_dict_set(content_dict, entry.first.c_str(), psize, nullptr);
+    xbt_dict_set(content_as_dict, entry.first.c_str(), psize, nullptr);
   }
-  return content_dict;
+  return content_as_dict;
 }
 
 /** \ingroup msg_storage_management

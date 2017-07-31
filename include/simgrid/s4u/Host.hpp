@@ -86,7 +86,7 @@ public:
 
   double getSpeed();
   int getCoreCount();
-  xbt_dict_t getProperties();
+  std::unordered_map<std::string, std::string>* getProperties();
   const char* getProperty(const char* key);
   void setProperty(const char* key, const char* value);
   void getProcesses(std::vector<ActorPtr> * list);

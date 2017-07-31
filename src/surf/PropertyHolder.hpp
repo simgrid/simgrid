@@ -5,7 +5,7 @@
 
 #ifndef SRC_SURF_PROPERTYHOLDER_HPP_
 #define SRC_SURF_PROPERTYHOLDER_HPP_
-#include <xbt/dict.h>
+#include <unordered_map>
 
 namespace simgrid {
 namespace surf {
@@ -26,9 +26,10 @@ public:
   /* FIXME: This should not be exposed, as users may do bad things with the dict they got (it's not a copy).
    * But some user API expose this call so removing it is not so easy.
    */
-  xbt_dict_t getProperties();
+  std::unordered_map<std::string, std::string>* getProperties();
+
 private:
-  xbt_dict_t properties_ = nullptr;
+  std::unordered_map<std::string, std::string>* properties_ = nullptr;
 };
 
 } /* namespace surf */

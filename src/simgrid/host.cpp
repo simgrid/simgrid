@@ -180,7 +180,14 @@ void sg_host_set_pstate(sg_host_t host,int pstate) {
 
 /** @brief Get the properties of an host */
 xbt_dict_t sg_host_get_properties(sg_host_t host) {
-  return host->getProperties();
+  xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
+  std::unordered_map<std::string, std::string>* props = host->getProperties();
+  if (props == nullptr)
+    return nullptr;
+  for (auto elm : *props) {
+    xbt_dict_set(as_dict, elm.first.c_str(), xbt_strdup(elm.second.c_str()), nullptr);
+  }
+  return as_dict;
 }
 
 /** \ingroup m_host_management
@@ -192,8 +199,14 @@ xbt_dict_t sg_host_get_properties(sg_host_t host) {
 */
 const char *sg_host_get_property_value(sg_host_t host, const char *name)
 {
-  return (const char*) xbt_dict_get_or_null(sg_host_get_properties(host), name);
+  return host->getProperty(name);
 }
+
+void sg_host_set_property_value(sg_host_t host, const char* name, const char* value)
+{
+  host->setProperty(name, value);
+}
+
 /**
  * \brief Find a route between two hosts
  *
@@ -244,21 +257,15 @@ double sg_host_route_bandwidth(sg_host_t from, sg_host_t to)
 /** @brief Displays debugging information about a host */
 void sg_host_dump(sg_host_t host)
 {
-  xbt_dict_t props;
-
   XBT_INFO("Displaying host %s", host->getCname());
   XBT_INFO("  - speed: %.0f", host->getSpeed());
   XBT_INFO("  - available speed: %.2f", sg_host_get_available_speed(host));
-  props = host->getProperties();
+  std::unordered_map<std::string, std::string>* props = host->getProperties();
 
-  if (not xbt_dict_is_empty(props)) {
+  if (not props->empty()) {
     XBT_INFO("  - properties:");
-    xbt_dict_cursor_t cursor = nullptr;
-    char* key;
-    char* data;
-
-    xbt_dict_foreach(props,cursor,key,data) {
-      XBT_INFO("    %s->%s",key,data);
+    for (auto elm : *props) {
+      XBT_INFO("    %s->%s", elm.first.c_str(), elm.second.c_str());
     }
   }
 }

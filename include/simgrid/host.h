@@ -46,6 +46,7 @@ XBT_PUBLIC(int) sg_host_get_pstate(sg_host_t host);
 XBT_PUBLIC(void) sg_host_set_pstate(sg_host_t host,int pstate);
 XBT_PUBLIC(xbt_dict_t) sg_host_get_properties(sg_host_t host);
 XBT_PUBLIC(const char*) sg_host_get_property_value(sg_host_t host, const char* name);
+XBT_PUBLIC(void) sg_host_set_property_value(sg_host_t host, const char* name, const char* value);
 XBT_PUBLIC(void) sg_host_route(sg_host_t from, sg_host_t to, xbt_dynar_t links);
 XBT_PUBLIC(double) sg_host_route_latency(sg_host_t from, sg_host_t to);
 XBT_PUBLIC(double) sg_host_route_bandwidth(sg_host_t from, sg_host_t to);

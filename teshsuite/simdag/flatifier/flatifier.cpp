@@ -81,6 +81,7 @@ static void dump_platform()
     } else {
       std::printf("/>\n");
     }
+    xbt_dict_free(&props);
   }
 
   // Routers
