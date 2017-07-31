@@ -9,6 +9,7 @@
 
 #include "smpi/smpi.h"
 #include "smpi_f2c.hpp"
+#include <string>
 #include <unordered_map>
 
 namespace simgrid{

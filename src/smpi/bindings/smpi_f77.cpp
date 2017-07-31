@@ -239,8 +239,8 @@ void mpi_win_delete_attr_(int* win, int* comm_keyval, int* ierr){
 }
 
 void mpi_win_create_keyval_(void* copy_fn, void* delete_fn, int* keyval, void* extra_state, int* ierr){
-  *ierr = MPI_Win_create_keyval(reinterpret_cast<MPI_Win_copy_attr_function*>(copy_fn),  reinterpret_cast<MPI_Win_delete_attr_function*>(delete_fn),
-         keyval,  extra_state) ;
+  *ierr = MPI_Win_create_keyval(reinterpret_cast<MPI_Win_copy_attr_function*>(copy_fn),
+                                reinterpret_cast<MPI_Win_delete_attr_function*>(delete_fn), keyval, extra_state);
 }
 
 void mpi_win_free_keyval_(int* keyval, int* ierr){
