@@ -8,7 +8,7 @@
 #include "simgrid/simdag.h"
 #include "src/internal_config.h"
 #include "xbt/file.h"
-#include <string.h>
+#include <cstring>
 #include <unordered_map>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
@@ -62,16 +62,14 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
   SD_task_t root;
   SD_task_t end;
   SD_task_t task;
-  xbt_dynar_t computer = nullptr;
-  xbt_dict_cursor_t dict_cursor;
+  std::vector<SD_task_t>* computer;
+  std::unordered_map<std::string, std::vector<SD_task_t>*> computers;
   bool schedule_success = true;
 
   std::unordered_map<std::string, SD_task_t> jobs;
   xbt_dynar_t result = xbt_dynar_new(sizeof(SD_task_t), dot_task_p_free);
 
   Agraph_t * dag_dot = agread(in_file, NIL(Agdisc_t *));
-
-  xbt_dict_t computers = xbt_dict_new_homogeneous(nullptr);
 
   /* Create all the nodes */
   Agnode_t *node = nullptr;
@@ -105,24 +103,25 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
         if ((performer != -1 && order != -1) && performer < static_cast<int>(sg_host_count())) {
           /* required parameters are given and less performers than hosts are required */
           XBT_DEBUG ("Task '%s' is scheduled on workstation '%d' in position '%d'", task->name, performer, order);
-          computer = static_cast<xbt_dynar_t> (xbt_dict_get_or_null(computers, char_performer));
-          if(computer == nullptr){
-            computer = xbt_dynar_new(sizeof(SD_task_t), nullptr);
-            xbt_dict_set(computers, char_performer, computer, nullptr);
+          try {
+            computer = computers.at(char_performer);
+          } catch (std::out_of_range& unfound) {
+            computer = new std::vector<SD_task_t>;
+            computers.insert({char_performer, computer});
           }
-
-          if(static_cast<unsigned int>(order) < xbt_dynar_length(computer)){
-            SD_task_t *task_test = (SD_task_t *)xbt_dynar_get_ptr(computer,order);
-            if(*task_test && *task_test != task){
+          if (static_cast<unsigned int>(order) < computer->size()) {
+            SD_task_t task_test = computer->at(order);
+            if (task_test && task_test != task) {
               /* the user gave the same order to several tasks */
               schedule_success = false;
               XBT_VERB("Task '%s' wants to start on performer '%s' at the same position '%s' as task '%s'",
-                       (*task_test)->name, char_performer, char_order, task->name);
+                       task_test->name, char_performer, char_order, task->name);
               continue;
             }
-          }
-          /* the parameter seems to be ok */
-          xbt_dynar_set_as(computer, order, SD_task_t, task);
+          } else
+            computer->resize(order);
+
+          computer->insert(computer->begin() + order, task);
         } else {
           /* one of required parameters is not given */
           schedule_success = false;
@@ -211,33 +210,30 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
   fclose(in_file);
 
   if(schedule){
-    char *computer_name;
     if (schedule_success) {
       const sg_host_t *workstations = sg_host_list ();
-      xbt_dict_foreach(computers,dict_cursor,computer_name,computer){
+      for (auto elm : computers) {
         SD_task_t previous_task = nullptr;
-        xbt_dynar_foreach(computer, i, task){
+        for (auto task : *elm.second) {
           /* add dependency between the previous and the task to avoid parallel execution */
           if(task){
             if (previous_task && not SD_task_dependency_exists(previous_task, task))
               SD_task_dependency_add(nullptr, nullptr, previous_task, task);
 
-            SD_task_schedulel(task, 1, workstations[atoi(computer_name)]);
+            SD_task_schedulel(task, 1, workstations[atoi(elm.first.c_str())]);
             previous_task = task;
           }
         }
-        xbt_dynar_free(&computer);
+        delete elm.second;
       }
     } else {
       XBT_WARN("The scheduling is ignored");
-      xbt_dict_foreach(computers,dict_cursor,computer_name,computer)
-        xbt_dynar_free(&computer);
+      for (auto elm : computers)
+        delete elm.second;
       xbt_dynar_free(&result);
       result = nullptr;
     }
   }
-
-  xbt_dict_free(&computers);
 
   if (result && not acyclic_graph_detail(result)) {
     char* base = xbt_basename(filename);

@@ -1,6 +1,6 @@
 /* A crash few tests for the maxmin library                                 */
 
-/* Copyright (c) 2004-2015. The SimGrid Team.
+/* Copyright (c) 2004-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -14,9 +14,9 @@
 
 #define MYRANDMAX 1000
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
 
 double date;
 int64_t seedx = 0;
@@ -185,10 +185,10 @@ int main(int argc, char **argv)
   float mean_date= acc_date/(float)testcount;
   float stdev_date= sqrt(acc_date2/(float)testcount-mean_date*mean_date);
 
-  fprintf(stderr,
-         "%ix One shot execution time for a total of %d constraints, "
-         "%d variables with %d active constraint each, concurrency in [%i,%i] and max concurrency share %i\n",
-         testcount,nb_cnst, nb_var, nb_elem, (1<<pw_base_limit), (1<<pw_base_limit)+(1<<pw_max_limit), max_share);
+  fprintf(stderr, "%ix One shot execution time for a total of %u constraints, "
+                  "%u variables with %u active constraint each, concurrency in [%i,%i] and max concurrency share %u\n",
+          testcount, nb_cnst, nb_var, nb_elem, (1 << pw_base_limit), (1 << pw_base_limit) + (1 << pw_max_limit),
+          max_share);
   if(mode==3)
     fprintf(stderr, "Execution time: %g +- %g  microseconds \n",mean_date, stdev_date);
 

@@ -3,19 +3,20 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u/Host.hpp"
-#include <climits>
-
-#include "src/simix/smx_private.h"
+#include "smpi_comm.hpp"
 #include "private.h"
 #include "private.hpp"
-#include "smpi_comm.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_datatype.hpp"
 #include "smpi_process.hpp"
 #include "smpi_request.hpp"
 #include "smpi_status.hpp"
 #include "smpi_win.hpp"
+#include "src/simix/smx_private.h"
+#include <algorithm>
+#include <climits>
+#include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi, "Logging specific to SMPI (comm)");
 
@@ -24,26 +25,6 @@ MPI_Comm MPI_COMM_UNINITIALIZED=&mpi_MPI_COMM_UNINITIALIZED;
 
 /* Support for cartesian topology was added, but there are 2 other types of topology, graph et dist graph. In order to
  * support them, we have to add a field SMPI_Topo_type, and replace the MPI_Topology field by an union. */
-
-static int smpi_compare_rankmap(const void *a, const void *b)
-{
-  const int* x = static_cast<const int*>(a);
-  const int* y = static_cast<const int*>(b);
-
-  if (x[1] < y[1]) {
-    return -1;
-  }
-  if (x[1] == y[1]) {
-    if (x[0] < y[0]) {
-      return -1;
-    }
-    if (x[0] == y[0]) {
-      return 0;
-    }
-    return 1;
-  }
-  return 1;
-}
 
 namespace simgrid{
 namespace smpi{
@@ -216,38 +197,35 @@ MPI_Comm Comm::split(int color, int key)
   /* Do the actual job */
   if(rank == 0) {
     MPI_Group* group_snd = xbt_new(MPI_Group, size);
-    int* rankmap         = xbt_new(int, 2 * size);
+    std::vector<std::pair<int, int>> rankmap;
+    rankmap.reserve(size);
     for (int i = 0; i < size; i++) {
       if (recvbuf[2 * i] != MPI_UNDEFINED) {
-        int count = 0;
+        rankmap.clear();
         for (int j = i + 1; j < size; j++) {
           if(recvbuf[2 * i] == recvbuf[2 * j]) {
             recvbuf[2 * j] = MPI_UNDEFINED;
-            rankmap[2 * count] = j;
-            rankmap[2 * count + 1] = recvbuf[2 * j + 1];
-            count++;
+            rankmap.push_back({recvbuf[2 * j + 1], j});
           }
         }
         /* Add self in the group */
         recvbuf[2 * i] = MPI_UNDEFINED;
-        rankmap[2 * count] = i;
-        rankmap[2 * count + 1] = recvbuf[2 * i + 1];
-        count++;
-        qsort(rankmap, count, 2 * sizeof(int), &smpi_compare_rankmap);
-        group_out = new  Group(count);
+        rankmap.push_back({recvbuf[2 * i + 1], i});
+        std::sort(begin(rankmap), end(rankmap));
+        group_out = new Group(rankmap.size());
         if (i == 0) {
           group_root = group_out; /* Save root's group */
         }
-        for (int j = 0; j < count; j++) {
-          int index = group->index(rankmap[2 * j]);
+        for (unsigned j = 0; j < rankmap.size(); j++) {
+          int index = group->index(rankmap[j].second);
           group_out->set_mapping(index, j);
         }
-        MPI_Request* requests = xbt_new(MPI_Request, count);
+        MPI_Request* requests = xbt_new(MPI_Request, rankmap.size());
         int reqs              = 0;
-        for (int j = 0; j < count; j++) {
-          if(rankmap[2 * j] != 0) {
+        for (const auto& rank : rankmap) {
+          if (rank.second != 0) {
             group_snd[reqs]=new  Group(group_out);
-            requests[reqs] = Request::isend(&(group_snd[reqs]), 1, MPI_PTR, rankmap[2 * j], system_tag, this);
+            requests[reqs] = Request::isend(&(group_snd[reqs]), 1, MPI_PTR, rank.second, system_tag, this);
             reqs++;
           }
         }
@@ -259,7 +237,6 @@ MPI_Comm Comm::split(int color, int key)
       }
     }
     xbt_free(recvbuf);
-    xbt_free(rankmap);
     xbt_free(group_snd);
     group_out = group_root; /* exit with root's group */
   } else {
@@ -303,14 +280,6 @@ void Comm::unref(Comm* comm){
     comm->cleanup_attr<Comm>();
     delete comm;
   }
-}
-
-static int compare_ints (const void *a, const void *b)
-{
-  const int *da = static_cast<const int *>(a);
-  const int *db = static_cast<const int *>(b);
-
-  return static_cast<int>(*da > *db) - static_cast<int>(*da < *db);
 }
 
 void Comm::init_smp(){
@@ -395,7 +364,7 @@ void Comm::init_smp(){
         leader_group_size++;
       }
   }
-  qsort(leader_list, leader_group_size, sizeof(int),compare_ints);
+  std::sort(leader_list, leader_list + leader_group_size);
 
   MPI_Group leaders_group = new  Group(leader_group_size);
 

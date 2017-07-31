@@ -445,9 +445,9 @@ double Model::nextOccuringEvent(double now)
 
 double Model::nextOccuringEventLazy(double now)
 {
-  XBT_DEBUG("Before share resources, the size of modified actions set is %zd", modifiedSet_->size());
+  XBT_DEBUG("Before share resources, the size of modified actions set is %zu", modifiedSet_->size());
   lmm_solve(maxminSystem_);
-  XBT_DEBUG("After share resources, The size of modified actions set is %zd", modifiedSet_->size());
+  XBT_DEBUG("After share resources, The size of modified actions set is %zu", modifiedSet_->size());
 
   while (not modifiedSet_->empty()) {
     Action *action = &(modifiedSet_->front());

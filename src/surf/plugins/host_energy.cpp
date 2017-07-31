@@ -18,16 +18,14 @@
 
 /** @addtogroup plugin_energy
 
+This is the energy plugin, enabling to account not only for computation time, but also for the dissipated energy in the
+simulated platform.
+To activate this plugin, first call sg_host_energy_plugin_init() before your #MSG_init(), and then use
+MSG_host_get_consumed_energy() to retrieve the consumption of a given host.
 
-This is the energy plugin, enabling to account not only for computation time,
-but also for the dissipated energy in the simulated platform.
-To activate this plugin, first call sg_host_energy_plugin_init() before your #MSG_init(),
-and then use MSG_host_get_consumed_energy() to retrieve the consumption of a given host.
-
-When the host is on, this energy consumption naturally depends on both the
-current CPU load and the host energy profile. According to our measurements,
-the consumption is somehow linear in the amount of cores at full speed,
-with an abnormality when all the cores are idle. The full details are in
+When the host is on, this energy consumption naturally depends on both the current CPU load and the host energy profile.
+According to our measurements, the consumption is somehow linear in the amount of cores at full speed, with an
+abnormality when all the cores are idle. The full details are in
 <a href="https://hal.inria.fr/hal-01523608">our scientific paper</a> on that topic.
 
 As a result, our energy model takes 4 parameters:
@@ -61,10 +59,9 @@ This is enough to compute the consumption as a function of the amount of loaded 
 
 ### What if a given core is only at load 50%?
 
-This is impossible in SimGrid because we recompute everything each time
-that the CPU starts or stops doing something. So if a core is at load 50% over
-a period, it means that it is at load 100% half of the time and at load 0% the
-rest of the time, and our model holds.
+This is impossible in SimGrid because we recompute everything each time that the CPU starts or stops doing something.
+So if a core is at load 50% over a period, it means that it is at load 100% half of the time and at load 0% the rest of
+the time, and our model holds.
 
 ### What if the host has only one core?
 
@@ -81,8 +78,7 @@ If you insist on passing 3 parameters in this case, then you must have the same 
 
 ### How does DVFS interact with the host energy model?
 
-If your host has several DVFS levels (several pstates), then you should
-give the energetic profile of each pstate level:
+If your host has several DVFS levels (several pstates), then you should give the energetic profile of each pstate level:
 
 \code{.xml}
 <host id="HostC" power="100.0Mf,50.0Mf,20.0Mf" cores="4">
@@ -104,14 +100,11 @@ To change the pstate of a given CPU, use the following functions:
 
 ### How accurate are these models?
 
-This model cannot be more accurate than your instantiation:
-with the default values, your result will not be accurate at all. You can still get
-accurate energy prediction, provided that you carefully instantiate the model.
-The first step is to ensure that your timing prediction match perfectly. But this
-is only the first step of the path, and you really want to read
-<a href="https://hal.inria.fr/hal-01523608">this paper</a> to see all what you need
-to do before you can get accurate energy predictions.
-
+This model cannot be more accurate than your instantiation: with the default values, your result will not be accurate at
+all. You can still get accurate energy prediction, provided that you carefully instantiate the model.
+The first step is to ensure that your timing prediction match perfectly. But this is only the first step of the path,
+and you really want to read <a href="https://hal.inria.fr/hal-01523608">this paper</a> to see all what you need to do
+before you can get accurate energy predictions.
  */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_energy, surf, "Logging specific to the SURF energy plugin");
@@ -147,9 +140,8 @@ private:
   std::vector<PowerRange>
       power_range_watts_list; /*< List of (min_power,max_power) pairs corresponding to each cpu pstate */
 
-  /* We need to keep track of what pstate has been used, as we will sometimes
-   * be notified only *after* a pstate has been used (but we need to update the energy consumption
-   * with the old pstate!)
+  /* We need to keep track of what pstate has been used, as we will sometimes be notified only *after* a pstate has been
+   * used (but we need to update the energy consumption with the old pstate!)
    */
   int pstate = 0;
   const int pstate_off = -1;
@@ -162,7 +154,7 @@ public:
 
 simgrid::xbt::Extension<simgrid::s4u::Host, HostEnergy> HostEnergy::EXTENSION_ID;
 
-/* Computes the consumption so far.  Called lazily on need. */
+/* Computes the consumption so far. Called lazily on need. */
 void HostEnergy::update()
 {
   double start_time  = this->last_updated;
@@ -229,9 +221,12 @@ HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host(ptr), last_updated(surf_g
 
   const char* off_power_str = host->getProperty("watt_off");
   if (off_power_str != nullptr) {
-    char* msg       = bprintf("Invalid value for property watt_off of host %s: %%s", host->getCname());
-    this->watts_off = xbt_str_parse_double(off_power_str, msg);
-    xbt_free(msg);
+    try {
+      this->watts_off = std::stod(std::string(off_power_str));
+    } catch (std::invalid_argument& ia) {
+      throw std::invalid_argument(std::string("Invalid value for property watt_off of host ") + host->getCname() +
+                                  ": " + off_power_str);
+    }
   }
   /* watts_off is 0 by default */
 }

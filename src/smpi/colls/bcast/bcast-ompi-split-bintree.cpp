@@ -98,7 +98,7 @@ Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
     else
       segsize = 1024 << 3;
 
-    XBT_DEBUG("ompi_coll_tuned_bcast_intra_split_bintree rank %d root %d ss %5d", rank, root, segsize);
+    XBT_DEBUG("ompi_coll_tuned_bcast_intra_split_bintree rank %d root %d ss %5u", rank, root, segsize);
 
     if (size == 1) {
         return MPI_SUCCESS;

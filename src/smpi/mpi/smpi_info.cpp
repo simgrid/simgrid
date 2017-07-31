@@ -11,22 +11,8 @@
 namespace simgrid{
 namespace smpi{
 
-Info::Info():refcount_(1){
-  dict_= xbt_dict_new_homogeneous(xbt_free_f);
-}
-
-Info::Info(Info* info):refcount_(1){
-  dict_= xbt_dict_new_homogeneous(xbt_free_f);
-  xbt_dict_cursor_t cursor = nullptr;
-  char* key;
-  void* data;
-  xbt_dict_foreach(info->dict_,cursor,key,data){
-    xbt_dict_set(dict_, key, xbt_strdup(static_cast<char*>(data)), nullptr);
-  }
-}
-
-Info::~Info(){
-  xbt_dict_free(&dict_);
+Info::Info(Info* info) : map_(info->map_)
+{
 }
 
 void Info::ref(){
@@ -41,45 +27,41 @@ void Info::unref(Info* info){
 }
 
 void Info::set(char *key, char *value){
-  xbt_dict_set(dict_, key, xbt_strdup(value), nullptr);
+  map_[key] = value;
 }
 
 int Info::get(char *key, int valuelen, char *value, int *flag){
   *flag=false;
-  char* tmpvalue=static_cast<char*>(xbt_dict_get_or_null(dict_, key));
-  if(tmpvalue){
+  try {
+    std::string tmpvalue = map_.at(key);
+
     memset(value, 0, valuelen);
-    memcpy(value,tmpvalue, (strlen(tmpvalue) + 1 < static_cast<size_t>(valuelen)) ? strlen(tmpvalue) + 1 : valuelen);
+    memcpy(value, tmpvalue.c_str(),
+           (tmpvalue.length() + 1 < static_cast<size_t>(valuelen)) ? tmpvalue.length() + 1 : valuelen);
     *flag=true;
+    return MPI_SUCCESS;
+  } catch (std::out_of_range& unfound) {
+    return MPI_ERR_INFO_KEY;
   }
-  return MPI_SUCCESS;
 }
 
-
 int Info::remove(char *key){
-  try {
-    xbt_dict_remove(dict_, key);
-  }
-  catch(xbt_ex& e){
+  if (map_.erase(key) == 0)
     return MPI_ERR_INFO_NOKEY;
-  }
-  return MPI_SUCCESS;
+  else
+    return MPI_SUCCESS;
 }
 
 int Info::get_nkeys(int *nkeys){
-  *nkeys=xbt_dict_size(dict_);
+  *nkeys = map_.size();
   return MPI_SUCCESS;
 }
 
 int Info::get_nthkey(int n, char *key){
-  xbt_dict_cursor_t cursor = nullptr;
-  char *keyn;
-  void* data;
   int num=0;
-  xbt_dict_foreach(dict_,cursor,keyn,data){
-    if(num==n){
-      strncpy(key,keyn,strlen(keyn)+1);
-      xbt_dict_cursor_free(&cursor);
+  for (auto elm : map_) {
+    if (num == n) {
+      strncpy(key, elm.first.c_str(), elm.first.length() + 1);
       return MPI_SUCCESS;
     }
     num++;
@@ -89,12 +71,13 @@ int Info::get_nthkey(int n, char *key){
 
 int Info::get_valuelen(char *key, int *valuelen, int *flag){
   *flag=false;
-  char* tmpvalue=static_cast<char*>(xbt_dict_get_or_null(dict_, key));
-  if(tmpvalue){
-    *valuelen=strlen(tmpvalue);
+  try {
+    *valuelen = map_.at(key).length();
     *flag=true;
+    return MPI_SUCCESS;
+  } catch (std::out_of_range& unfound) {
+    return MPI_ERR_INFO_KEY;
   }
-  return MPI_SUCCESS;
 }
 
 Info* Info::f2c(int id){
@@ -103,4 +86,3 @@ Info* Info::f2c(int id){
 
 }
 }
-

@@ -16,8 +16,8 @@
 #endif
 
 #if HAVE_FUTEX_H
+#include <climits>
 #include <linux/futex.h>
-#include <limits.h>
 #endif
 
 #include "xbt/parmap.h"

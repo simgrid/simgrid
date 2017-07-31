@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
+/* Copyright (c) 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -190,27 +190,27 @@ static state_t node_get_state(node_t node) {
 }
 
 static void print_node_id(node_t node) {
-  XBT_INFO(" Id: %i '%08x' ", node->id, node->id);
+  XBT_INFO(" Id: %i '%08x' ", node->id, (unsigned)node->id);
 }
 
 static void print_node_neighborood_set(node_t node) {
   XBT_INFO(" Neighborhood:");
   for (int i=0; i<NEIGHBORHOOD_SIZE; i++)
-    XBT_INFO("  %08x", node->neighborhood_set[i]);
+    XBT_INFO("  %08x", (unsigned)node->neighborhood_set[i]);
 }
 
 static void print_node_routing_table(node_t node) {
   XBT_INFO(" Routing table:");
   for (int i=0; i<LEVELS_COUNT; i++){
     for (int j=0; j<LEVEL_SIZE; j++)
-      XBT_INFO("  %08x ", node->routing_table[i][j]);
+      XBT_INFO("  %08x ", (unsigned)node->routing_table[i][j]);
   }
 }
 /* Print the node namespace set */
 static void print_node_namespace_set(node_t node) {
   XBT_INFO(" Namespace:");
   for (int i=0; i<NAMESPACE_SIZE; i++)
-    XBT_INFO("  %08x", node->namespace_set[i]);
+    XBT_INFO("  %08x", (unsigned)node->namespace_set[i]);
 }
 
 /* Print the node information */
@@ -237,7 +237,7 @@ static void handle_task(node_t node, msg_task_t task) {
   e_task_type_t type = task_data->type;
   // If the node is not ready keep the task for later
   if (node->ready != 0 && !(type==TASK_JOIN_LAST_REPLY || type==TASK_JOIN_REPLY)) {
-    XBT_DEBUG("Task pending %i", type);
+    XBT_DEBUG("Task pending %u", type);
     xbt_dynar_push(node->pending_tasks, &task);
     return;
   }
@@ -245,7 +245,7 @@ static void handle_task(node_t node, msg_task_t task) {
     /* Try to join the ring */
     case TASK_JOIN:
       next = routing_next(node, task_data->answer_id);
-      XBT_DEBUG("Join request from %08x forwarding to %08x", task_data->answer_id, next);
+      XBT_DEBUG("Join request from %08x forwarding to %08x", (unsigned)task_data->answer_id, (unsigned)next);
       type = TASK_JOIN_LAST_REPLY;
 
       req_data = xbt_new0(s_task_data_t,1);
@@ -475,7 +475,7 @@ static int node(int argc, char *argv[])
   node.ready = -1;
   node.pending_tasks = xbt_dynar_new(sizeof(msg_task_t), NULL);
   get_mailbox(node.id, node.mailbox);
-  XBT_DEBUG("New node with id %s (%08x)", node.mailbox, node.id);
+  XBT_DEBUG("New node with id %s (%08x)", node.mailbox, (unsigned)node.id);
 
   for (int i=0; i<LEVELS_COUNT; i++){
     int d = domain(node.id, i);

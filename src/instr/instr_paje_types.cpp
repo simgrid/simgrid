@@ -1,4 +1,4 @@
-/* Copyright (c) 2012, 2014-2015. The SimGrid Team.
+/* Copyright (c) 2012, 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -142,8 +142,8 @@ type_t PJ_type_variable_new (const char *name, const char *color, type_t father)
 
   type_t ret = nullptr;
 
-  char white[INSTR_DEFAULT_STR_SIZE] = "1 1 1";
   if (not color) {
+    char white[INSTR_DEFAULT_STR_SIZE] = "1 1 1";
     ret = newType (name, name, white, TYPE_VARIABLE, father);
   }else{
     ret = newType (name, name, color, TYPE_VARIABLE, father);

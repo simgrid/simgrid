@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
+/* Copyright (c) 2008-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -539,8 +539,7 @@ static void MC_dwarf_fill_member_location(
     // It's supposed to be possible in DWARF2 but I couldn't find its semantic
     // in the spec.
   default:
-    xbt_die("Can't handle form class (%i) / form 0x%x as DW_AT_member_location",
-            (int) form_class, form);
+    xbt_die("Can't handle form class (%d) / form 0x%x as DW_AT_member_location", (int)form_class, (unsigned)form);
   }
 
 }
@@ -790,11 +789,8 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
     break;
 
   default:
-    xbt_die("Unexpected form 0x%x (%i), class 0x%x (%i) list for location "
-            "in <%" PRIx64 ">%s",
-            form, form, (int) form_class, (int) form_class,
-            (uint64_t) variable->id,
-            variable->name.c_str());
+    xbt_die("Unexpected form 0x%x (%i), class 0x%x (%i) list for location in <%" PRIx64 ">%s", (unsigned)form, form,
+            (unsigned)form_class, (int)form_class, (uint64_t)variable->id, variable->name.c_str());
   }
 
   // Handle start_scope:
@@ -814,9 +810,8 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
 
     case simgrid::dwarf::FormClass::RangeListPtr:     // TODO
     default:
-      xbt_die
-          ("Unhandled form 0x%x, class 0x%X for DW_AT_start_scope of variable %s",
-           form, (int) form_class, name == nullptr ? "?" : name);
+      xbt_die("Unhandled form 0x%x, class 0x%X for DW_AT_start_scope of variable %s", (unsigned)form,
+              (unsigned)form_class, name == nullptr ? "?" : name);
     }
   }
 

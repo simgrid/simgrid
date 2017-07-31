@@ -7,21 +7,23 @@
 #ifndef SMPI_INFO_HPP
 #define SMPI_INFO_HPP
 
-#include "smpi_f2c.hpp"
 #include "smpi/smpi.h"
-#include "xbt/dict.h"
+#include "smpi_f2c.hpp"
+#include <string>
+#include <unordered_map>
 
 namespace simgrid{
 namespace smpi{
 
 class Info : public F2C{
   private:
-    xbt_dict_t dict_;
-    int refcount_;
+    std::unordered_map<std::string, std::string> map_;
+    int refcount_ = 1;
+
   public:
-    explicit Info();
+    Info() = default;
     explicit Info(Info* orig);
-    ~Info();
+    ~Info() = default;
     void ref();
     static void unref(MPI_Info info);
     void set(char *key, char *value);

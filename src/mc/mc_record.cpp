@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
+/* Copyright (c) 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -86,7 +86,7 @@ RecordTrace parseRecordTrace(const char* data)
   while (*current) {
 
     simgrid::mc::Transition item;
-    int count = sscanf(current, "%u/%u", &item.pid, &item.argument);
+    int count = sscanf(current, "%d/%d", &item.pid, &item.argument);
     if(count != 2 && count != 1)
       throw std::runtime_error("Could not parse record path");
     res.push_back(item);

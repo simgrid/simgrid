@@ -1,11 +1,10 @@
-/* Copyright (c) 2004-2005, 2007, 2009-2014. The SimGrid Team.
+/* Copyright (c) 2004-2005, 2007, 2009-2014, 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/sysdep.h"
-#include "xbt/dict.h"
 #include "xbt/log.h"
 #include "xbt/str.h"
 
@@ -16,8 +15,8 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <cmath>
 #include <fstream>
-#include <math.h>
 #include <sstream>
 #include <unordered_map>
 

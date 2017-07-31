@@ -38,9 +38,8 @@ class F2C {
     static void free_f(int id);
     int c2f();
 
-    //This method should be overriden in all subclasses
-    //to avoid casting the result when calling it.
-    //For the default one, the MPI_*_NULL returned is assumed to be NULL.
+    // This method should be overridden in all subclasses to avoid casting the result when calling it.
+    // For the default one, the MPI_*_NULL returned is assumed to be NULL.
     static F2C* f2c(int id);
 };
 

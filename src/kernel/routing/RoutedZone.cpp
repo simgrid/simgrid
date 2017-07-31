@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/dict.h"
-#include "xbt/dynar.h"
 #include "xbt/graph.h"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"

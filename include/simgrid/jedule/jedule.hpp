@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2012, 2014-2016. The SimGrid Team.
+/* Copyright (c) 2010-2012, 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -6,8 +6,8 @@
 
 #ifndef JEDULE_HPP_
 #define JEDULE_HPP_
-#include <stdio.h>
 #include "simgrid_config.h"
+#include <cstdio>
 
 #include "jedule_events.hpp"
 #include "jedule_platform.hpp"

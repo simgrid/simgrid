@@ -1,5 +1,4 @@
-
-/* Copyright (c) 2007-2015. The SimGrid Team.
+/* Copyright (c) 2007-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -169,7 +168,7 @@ void MutexImpl::unlock(smx_actor_t issuer)
 
   /* If the mutex is not owned by the issuer, that's not good */
   if (issuer != this->owner)
-    THROWF(mismatch_error, 0, "Cannot release that mutex: it was locked by %s (pid:%ld), not by you.",
+    THROWF(mismatch_error, 0, "Cannot release that mutex: it was locked by %s (pid:%lu), not by you.",
            this->owner->cname(), this->owner->pid);
 
   if (xbt_swag_size(this->sleeping) > 0) {

@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -97,7 +97,7 @@ void TorusZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
 void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
 {
 
-  XBT_VERB("torus getLocalRoute from '%s'[%d] to '%s'[%d]", src->name().c_str(), src->id(), dst->name().c_str(),
+  XBT_VERB("torus getLocalRoute from '%s'[%u] to '%s'[%u]", src->name().c_str(), src->id(), dst->name().c_str(),
            dst->id());
 
   if (dst->isRouter() || src->isRouter())
@@ -175,7 +175,7 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
 
           assert(linkOffset >= 0);
         }
-        XBT_DEBUG("torus_get_route_and_latency - current_node: %i, next_node: %u, linkOffset is %i", current_node,
+        XBT_DEBUG("torus_get_route_and_latency - current_node: %u, next_node: %u, linkOffset is %i", current_node,
                   next_node, linkOffset);
         break;
       }

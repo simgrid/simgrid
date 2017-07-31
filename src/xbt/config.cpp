@@ -1,9 +1,9 @@
-/* Copyright (c) 2004-2014,2016. The SimGrid Team. All rights reserved.     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
+#include <cstdio>
 
 #include <algorithm>
 #include <cerrno>
@@ -11,10 +11,11 @@
 #include <climits>
 
 #include <functional>
+#include <map>
 #include <stdexcept>
 #include <string>
-#include <typeinfo>
 #include <type_traits>
+#include <typeinfo>
 #include <vector>
 
 #include <xbt/ex.hpp>
@@ -23,11 +24,7 @@
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "xbt/ex.h"
 #include "xbt/dynar.h"
-#include "xbt/dict.h"
-
-// *****
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 
@@ -144,7 +141,6 @@ protected:
   bool isdefault = true;
 
 public:
-
   /* Callback */
   xbt_cfg_cb_t old_callback = nullptr;
 
@@ -177,6 +173,7 @@ public:
   bool isDefault() const { return isdefault; }
 
   std::string const& getDescription() const { return desc; }
+  std::string const& getKey() const { return key; }
 };
 
 // **** TypedConfigurationElement<T> ****
@@ -192,16 +189,13 @@ public:
   TypedConfigurationElement(const char* key, const char* desc, T value = T())
     : ConfigurationElement(key, desc), content(std::move(value))
   {}
-  TypedConfigurationElement(const char* key, const char* desc, T value,
-      xbt_cfg_cb_t cb)
-    : ConfigurationElement(key, desc, cb), content(std::move(value))
+  TypedConfigurationElement(const char* key, const char* desc, T value, xbt_cfg_cb_t cb)
+      : ConfigurationElement(key, desc, cb), content(std::move(value))
   {}
-  TypedConfigurationElement(const char* key, const char* desc, T value,
-      std::function<void(T&)> callback)
-    : ConfigurationElement(key, desc), content(std::move(value)),
-      callback(std::move(callback))
+  TypedConfigurationElement(const char* key, const char* desc, T value, std::function<void(T&)> callback)
+      : ConfigurationElement(key, desc), content(std::move(value)), callback(std::move(callback))
   {}
-  ~TypedConfigurationElement()=default;
+  ~TypedConfigurationElement() = default;
 
   std::string getStringValue() override;
   const char* getTypeName() override;
@@ -229,8 +223,8 @@ public:
       this->content = std::move(value);
       this->update();
     } else {
-      XBT_DEBUG("Do not override configuration variable '%s' with value '%s'"
-        " because it was already set.", key.c_str(), to_string(value).c_str());
+      XBT_DEBUG("Do not override configuration variable '%s' with value '%s' because it was already set.", key.c_str(),
+                to_string(value).c_str());
     }
   }
 };
@@ -262,12 +256,13 @@ const char* TypedConfigurationElement<T>::getTypeName() // override
 class Config {
 private:
   // name -> ConfigElement:
-  xbt_dict_t options;
+  std::map<std::string, simgrid::config::ConfigurationElement*> options;
   // alias -> xbt_dict_elm_t from options:
-  xbt_dict_t aliases;
+  std::map<std::string, simgrid::config::ConfigurationElement*> aliases;
+  bool warn_for_aliases = true;
 
 public:
-  Config();
+  Config() = default;
   ~Config();
 
   // No copy:
@@ -283,15 +278,11 @@ public:
   simgrid::config::TypedConfigurationElement<T>*
     registerOption(const char* name, A&&... a)
   {
-    xbt_assert(xbt_dict_get_or_null(this->options, name) == nullptr,
-      "Refusing to register the config element '%s' twice.", name);
-    TypedConfigurationElement<T>* variable =
-      new TypedConfigurationElement<T>(name, std::forward<A>(a)...);
-    XBT_DEBUG("Register cfg elm %s (%s) of type %s @%p in set %p)",
-              name,
-              variable->getDescription().c_str(),
+    xbt_assert(options.find(name) == options.end(), "Refusing to register the config element '%s' twice.", name);
+    TypedConfigurationElement<T>* variable = new TypedConfigurationElement<T>(name, std::forward<A>(a)...);
+    XBT_DEBUG("Register cfg elm %s (%s) of type %s @%p in set %p)", name, variable->getDescription().c_str(),
               variable->getTypeName(), variable, this);
-    xbt_dict_set(this->options, name, variable, nullptr);
+    options.insert({name, variable});
     variable->update();
     return variable;
   }
@@ -302,57 +293,43 @@ public:
   void help();
 
 protected:
-  xbt_dictelm_t getDictElement(const char* name);
+  ConfigurationElement* getDictElement(const char* name);
 };
-
-/* Internal stuff used in cache to free a variable */
-static void xbt_cfgelm_free(void *data)
-{
-  if (data)
-    delete (simgrid::config::ConfigurationElement*) data;
-}
-
-Config::Config() :
-  options(xbt_dict_new_homogeneous(xbt_cfgelm_free)),
-  aliases(xbt_dict_new_homogeneous(nullptr))
-{}
 
 Config::~Config()
 {
   XBT_DEBUG("Frees cfg set %p", this);
-  xbt_dict_free(&this->options);
-  xbt_dict_free(&this->aliases);
+  for (auto elm : options)
+    delete elm.second;
 }
 
-inline
-xbt_dictelm_t Config::getDictElement(const char* name)
+inline ConfigurationElement* Config::getDictElement(const char* name)
 {
-  // We are interested in the options dictelm:
-  xbt_dictelm_t res = xbt_dict_get_elm_or_null(options, name);
-  if (res)
-    return res;
-  // The aliases dict stores pointers to the options dictelm:
-  res = (xbt_dictelm_t) xbt_dict_get_or_null(aliases, name);
-  if (res)
-    XBT_INFO("Option %s has been renamed to %s. Consider switching.", name, res->key);
-  return res;
+  try {
+    return options.at(name);
+  } catch (std::out_of_range& unfound) {
+    try {
+      ConfigurationElement* res = aliases.at(name);
+      if (warn_for_aliases)
+        XBT_INFO("Option %s has been renamed to %s. Consider switching.", name, res->getKey().c_str());
+      return res;
+    } catch (std::out_of_range& missing_key) {
+      throw simgrid::config::missing_key_error(std::string("Bad config key: ") + name);
+    }
+  }
 }
 
-inline
-ConfigurationElement& Config::operator[](const char* name)
+inline ConfigurationElement& Config::operator[](const char* name)
 {
-  xbt_dictelm_t elm = getDictElement(name);
-  if (elm == nullptr)
-    throw simgrid::config::missing_key_error(std::string("Bad config key, ") + name);
-  return *(ConfigurationElement*)elm->content;
+  return *(getDictElement(name));
 }
 
 void Config::alias(const char* realname, const char* aliasname)
 {
-  xbt_assert(this->getDictElement(aliasname) == nullptr, "Alias '%s' already.", aliasname);
-  xbt_dictelm_t element = this->getDictElement(realname);
+  xbt_assert(aliases.find(aliasname) == aliases.end(), "Alias '%s' already.", aliasname);
+  ConfigurationElement* element = this->getDictElement(realname);
   xbt_assert(element, "Cannot define an alias to the non-existing option '%s'.", realname);
-  xbt_dict_set(this->aliases, aliasname, element, nullptr);
+  this->aliases.insert({aliasname, element});
 }
 
 /** @brief Dump a config set for debuging purpose
@@ -362,57 +339,34 @@ void Config::alias(const char* realname, const char* aliasname)
  */
 void Config::dump(const char *name, const char *indent)
 {
-  xbt_dict_t dict = this->options;
-  xbt_dict_cursor_t cursor = nullptr;
-  simgrid::config::ConfigurationElement* variable = nullptr;
-  char *key = nullptr;
-
   if (name)
     printf("%s>> Dumping of the config set '%s':\n", indent, name);
 
-  xbt_dict_foreach(dict, cursor, key, variable)
-    printf("%s  %s: ()%s) %s", indent, key,
-      variable->getTypeName(),
-      variable->getStringValue().c_str());
+  for (auto elm : options)
+    printf("%s  %s: ()%s) %s", indent, elm.first.c_str(), elm.second->getTypeName(),
+           elm.second->getStringValue().c_str());
 
   if (name)
     printf("%s<< End of the config set '%s'\n", indent, name);
   fflush(stdout);
-
-  xbt_dict_cursor_free(&cursor);
 }
 
 /** @brief Displays the declared aliases and their description */
 void Config::showAliases()
 {
-  xbt_dict_cursor_t dict_cursor;
-  xbt_dictelm_t dictel;
-  char *name;
-  std::vector<char*> names;
-
-  xbt_dict_foreach(this->aliases, dict_cursor, name, dictel)
-    names.push_back(name);
-  std::sort(names.begin(), names.end());
-
-  for (auto name : names)
-    printf("   %s: %s\n", name, (*this)[name].getDescription().c_str());
+  bool old_warn_for_aliases = false;
+  std::swap(warn_for_aliases, old_warn_for_aliases);
+  for (auto elm : aliases)
+    printf("   %s: %s\n", elm.first.c_str(), (*this)[elm.first.c_str()].getDescription().c_str());
+  std::swap(warn_for_aliases, old_warn_for_aliases);
 }
 
 /** @brief Displays the declared options and their description */
 void Config::help()
 {
-  xbt_dict_cursor_t dict_cursor;
-  simgrid::config::ConfigurationElement* variable;
-  char *name;
-  std::vector<char*> names;
-
-  xbt_dict_foreach(this->options, dict_cursor, name, variable)
-    names.push_back(name);
-  std::sort(names.begin(), names.end());
-
-  for (auto name : names) {
-    variable = (simgrid::config::ConfigurationElement*) xbt_dict_get(this->options, name);
-    printf("   %s: %s\n", name, variable->getDescription().c_str());
+  for (auto elm : options) {
+    simgrid::config::ConfigurationElement* variable = this->options.at(elm.first);
+    printf("   %s: %s\n", elm.first.c_str(), variable->getDescription().c_str());
     printf("       Type: %s; ", variable->getTypeName());
     printf("Current value: %s\n", variable->getStringValue().c_str());
   }
@@ -609,8 +563,7 @@ on_exception:
 }
 
 // Horrible mess to translate C++ exceptions to C exceptions:
-// Exit from the catch blog (and do the correct exceptio cleaning)
-// before attempting to THROWF.
+// Exit from the catch block (and do the correct exception cleaning) before attempting to THROWF.
 #define TRANSLATE_EXCEPTIONS(...) \
   catch(simgrid::config::missing_key_error& e) { THROWF(not_found_error, 0, __VA_ARGS__); abort(); } \
   catch(...) { THROWF(not_found_error, 0, __VA_ARGS__); abort(); }
@@ -641,8 +594,7 @@ void xbt_cfg_setdefault_int(const char *key, int value)
     (*simgrid_config)[key].setDefaultValue<int>(value);
     return;
   }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to default integer %i",
-    key, value);
+  TRANSLATE_EXCEPTIONS("Could not set variable %s to default integer %i", key, value);
 }
 
 /** @brief Set an integer value to \a name within \a cfg if it wasn't changed yet
@@ -656,8 +608,7 @@ void xbt_cfg_setdefault_double(const char *key, double value)
     (*simgrid_config)[key].setDefaultValue<double>(value);
     return;
   }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to default double %f",
-    key, value);
+  TRANSLATE_EXCEPTIONS("Could not set variable %s to default double %f", key, value);
 }
 
 /** @brief Set a string value to \a name within \a cfg if it wasn't changed yet
@@ -671,8 +622,7 @@ void xbt_cfg_setdefault_string(const char *key, const char *value)
     (*simgrid_config)[key].setDefaultValue<std::string>(value ? value : "");
     return;
   }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to default string %s",
-    key, value);
+  TRANSLATE_EXCEPTIONS("Could not set variable %s to default string %s", key, value);
 }
 
 /** @brief Set an boolean value to \a name within \a cfg if it wasn't changed yet
@@ -686,8 +636,7 @@ void xbt_cfg_setdefault_boolean(const char *key, const char *value)
     (*simgrid_config)[key].setDefaultValue<bool>(simgrid::config::parseBool(value));
     return;
   }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to default boolean %s",
-    key, value);
+  TRANSLATE_EXCEPTIONS("Could not set variable %s to default boolean %s", key, value);
 }
 
 /** @brief Set an integer value to \a name within \a cfg
@@ -701,8 +650,7 @@ void xbt_cfg_set_int(const char *key, int value)
     (*simgrid_config)[key].setValue<int>(value);
     return;
   }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to integer %i",
-    key, value);
+  TRANSLATE_EXCEPTIONS("Could not set variable %s to integer %i", key, value);
 }
 
 /** @brief Set or add a double value to \a name within \a cfg
@@ -716,8 +664,7 @@ void xbt_cfg_set_double(const char *key, double value)
     (*simgrid_config)[key].setValue<double>(value);
     return;
   }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to double %f",
-    key, value);
+  TRANSLATE_EXCEPTIONS("Could not set variable %s to double %f", key, value);
 }
 
 /** @brief Set or add a string value to \a name within \a cfg
@@ -732,8 +679,7 @@ void xbt_cfg_set_string(const char *key, const char *value)
     (*simgrid_config)[key].setValue<std::string>(value ? value : "");
     return;
   }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to string %s",
-    key, value);
+  TRANSLATE_EXCEPTIONS("Could not set variable %s to string %s", key, value);
 }
 
 /** @brief Set or add a boolean value to \a name within \a cfg
@@ -747,8 +693,7 @@ void xbt_cfg_set_boolean(const char *key, const char *value)
     (*simgrid_config)[key].setValue<bool>(simgrid::config::parseBool(value));
     return;
   }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to boolean %s",
-    key, value);
+  TRANSLATE_EXCEPTIONS("Could not set variable %s to boolean %s", key, value);
 }
 
 
@@ -865,10 +810,8 @@ XBT_TEST_UNIT("use", test_config_use, "Data retrieving tests")
   xbt_test_add("Get a single value");
   {
     /* get_single_value */
-    int ival;
-
     xbt_cfg_set_parse("peername:toto:42 speed:42");
-    ival = xbt_cfg_get_int("speed");
+    int ival = xbt_cfg_get_int("speed");
     if (ival != 42)
       xbt_test_fail("Speed value = %d, I expected 42", ival);
   }

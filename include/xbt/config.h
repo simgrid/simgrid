@@ -10,7 +10,7 @@
 #define XBT_CONFIG_H
 
 #include <stdarg.h>
-#include <xbt/dynar.h>
+#include <xbt/base.h>
 
 /** @addtogroup XBT_config
  *  @brief Changing the configuration of SimGrid components (grounding feature)

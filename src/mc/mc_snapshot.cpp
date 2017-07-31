@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
+/* Copyright (c) 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -196,8 +196,8 @@ const void* Snapshot::read_bytes(void* buffer, std::size_t size,
 
 #ifdef SIMGRID_TEST
 
-#include <string.h>
-#include <stdlib.h>
+#include <cstdlib>
+#include <cstring>
 
 #include <sys/mman.h>
 

@@ -115,7 +115,7 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const char* name, const 
 
   simgrid::kernel::routing::NetPoint* netpoint =
       new simgrid::kernel::routing::NetPoint(name, simgrid::kernel::routing::NetPoint::Type::Router, current_routing);
-  XBT_DEBUG("Router '%s' has the id %d", name, netpoint->id());
+  XBT_DEBUG("Router '%s' has the id %u", name, netpoint->id());
 
   if (coords && strcmp(coords, ""))
     new simgrid::kernel::routing::vivaldi::Coords(netpoint, coords);
@@ -702,7 +702,7 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
   if (as_cluster->privateLinks_.find(netpoint->id()) != as_cluster->privateLinks_.end())
     surf_parse_error("Host_link for '%s' is already defined!",hostlink->id);
 
-  XBT_DEBUG("Push Host_link for host '%s' to position %d", netpoint->cname(), netpoint->id());
+  XBT_DEBUG("Push Host_link for host '%s' to position %u", netpoint->cname(), netpoint->id());
   as_cluster->privateLinks_.insert({netpoint->id(), {linkUp, linkDown}});
 }
 
