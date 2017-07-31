@@ -153,7 +153,7 @@ void MSG_host_get_process_list(msg_host_t host, xbt_dynar_t whereto)
  */
 const char *MSG_host_get_property_value(msg_host_t host, const char *name)
 {
-  return static_cast<const char*>(xbt_dict_get_or_null(MSG_host_get_properties(host), name));
+  return host->getProperty(name);
 }
 
 /** \ingroup m_host_management
@@ -177,7 +177,7 @@ xbt_dict_t MSG_host_get_properties(msg_host_t host)
  */
 void MSG_host_set_property_value(msg_host_t host, const char* name, char* value)
 {
-  xbt_dict_set(MSG_host_get_properties(host), name, value, nullptr);
+  host->setProperty(name, value);
 }
 
 /** @ingroup m_host_management
