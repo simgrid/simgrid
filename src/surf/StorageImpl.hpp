@@ -207,17 +207,22 @@ public:
   StorageImpl* storage_;
   FileImpl* file_ = nullptr;
 };
-}
-}
 
-typedef struct s_storage_type {
-  char* model;
-  char* content;
-  char* type_id;
+class StorageType {
+public:
+  std::string id;
+  std::string model;
+  std::string content;
   xbt_dict_t properties;
   std::map<std::string, std::string>* model_properties;
   sg_size_t size;
-} s_storage_type_t;
-typedef s_storage_type_t* storage_type_t;
+  StorageType(std::string id, std::string model, std::string content, xbt_dict_t properties,
+              std::map<std::string, std::string>* model_properties, sg_size_t size)
+      : id(id), model(model), content(content), properties(properties), model_properties(model_properties), size(size)
+  {
+  }
+};
+}
+}
 
 #endif /* STORAGE_INTERFACE_HPP_ */

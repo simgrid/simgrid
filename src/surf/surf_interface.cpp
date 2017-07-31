@@ -30,7 +30,7 @@ std::vector<std::string> surf_path;
 std::vector<simgrid::s4u::Host*> host_that_restart;
 /**  set of hosts for which one want to be notified if they ever restart. */
 std::set<std::string> watched_hosts;
-extern std::map<std::string, storage_type_t> storage_types;
+extern std::map<std::string, simgrid::surf::StorageType*> storage_types;
 
 namespace simgrid {
 namespace surf {
@@ -368,13 +368,10 @@ void surf_exit()
   sg_host_exit();
   sg_link_exit();
   for (auto e : storage_types) {
-    storage_type_t stype = e.second;
-    free(stype->model);
-    free(stype->type_id);
-    free(stype->content);
+    simgrid::surf::StorageType* stype = e.second;
     xbt_dict_free(&(stype->properties));
     delete stype->model_properties;
-    free(stype);
+    delete stype;
   }
   for (auto s : *simgrid::surf::StorageImpl::storagesMap())
     delete s.second;

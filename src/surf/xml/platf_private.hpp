@@ -136,15 +136,15 @@ public:
   std::string attach;
 };
 
-typedef struct s_sg_platf_storage_type_cbarg* sg_platf_storage_type_cbarg_t;
-typedef struct s_sg_platf_storage_type_cbarg {
-  const char* id;
-  const char* model;
-  const char* content;
+class StorageTypeCreationArgs {
+public:
+  std::string id;
+  std::string model;
+  std::string content;
   xbt_dict_t properties;
   std::map<std::string, std::string>* model_properties;
   sg_size_t size;
-} s_sg_platf_storage_type_cbarg_t;
+};
 
 class MountCreationArgs {
 public:
@@ -218,7 +218,7 @@ XBT_PUBLIC(void) sg_platf_new_bypassRoute (sg_platf_route_cbarg_t bypassroute); 
 XBT_PUBLIC(void) sg_platf_new_trace(sg_platf_trace_cbarg_t trace);
 
 XBT_PUBLIC(void) sg_platf_new_storage(StorageCreationArgs* storage); // Add a storage to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type);
+XBT_PUBLIC(void) sg_platf_new_storage_type(StorageTypeCreationArgs* storage_type);
 XBT_PUBLIC(void) sg_platf_new_mount(MountCreationArgs* mount);
 
 XBT_PUBLIC(void) sg_platf_new_process(sg_platf_process_cbarg_t process);

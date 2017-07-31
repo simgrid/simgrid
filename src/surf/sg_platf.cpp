@@ -48,7 +48,7 @@ extern std::map<std::string, simgrid::s4u::Host*> host_list;
 }
 
 static int surf_parse_models_setup_already_called = 0;
-std::map<std::string, storage_type_t> storage_types;
+std::map<std::string, simgrid::surf::StorageType*> storage_types;
 
 /** The current AS in the parsing */
 static simgrid::kernel::routing::NetZoneImpl* current_routing = nullptr;
@@ -364,7 +364,7 @@ void sg_platf_new_storage(StorageCreationArgs* storage)
   xbt_assert(std::find(known_storages.begin(), known_storages.end(), storage->id) == known_storages.end(),
              "Refusing to add a second storage named \"%s\"", storage->id.c_str());
 
-  storage_type_t stype;
+  simgrid::surf::StorageType* stype;
   try {
     stype = storage_types.at(storage->type_id);
   } catch (std::out_of_range& unfound) {
@@ -377,17 +377,19 @@ void sg_platf_new_storage(StorageCreationArgs* storage)
   known_storages.push_back(storage->id);
 
   // if storage content is not specified use the content of storage_type if any
-  if (storage->content.empty() && strcmp(stype->content, "")) {
-    storage->content = std::string(stype->content);
-    XBT_DEBUG("For disk '%s' content is empty, inherit the content (of type %s)", storage->id.c_str(), stype->type_id);
+  if (storage->content.empty() && not stype->content.empty()) {
+    storage->content = stype->content;
+    XBT_DEBUG("For disk '%s' content is empty, inherit the content (of type %s)", storage->id.c_str(),
+              stype->id.c_str());
   }
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' "
             "\n\t\tmodel '%s' \n\t\tcontent '%s' "
             "\n\t\tproperties '%p''\n",
-            storage->id.c_str(), stype->model, stype->type_id, storage->content.c_str(), storage->properties);
+            storage->id.c_str(), stype->model.c_str(), stype->id.c_str(), storage->content.c_str(),
+            storage->properties);
 
-  auto s = surf_storage_model->createStorage(storage->id, stype->type_id, storage->content, storage->attach);
+  auto s = surf_storage_model->createStorage(storage->id, stype->id, storage->content, storage->attach);
 
   if (storage->properties) {
     xbt_dict_cursor_t cursor = nullptr;
@@ -399,23 +401,19 @@ void sg_platf_new_storage(StorageCreationArgs* storage)
   }
 }
 
-void sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type)
+void sg_platf_new_storage_type(StorageTypeCreationArgs* storage_type)
 {
   xbt_assert(storage_types.find(storage_type->id) == storage_types.end(),
-             "Reading a storage type, processing unit \"%s\" already exists", storage_type->id);
+             "Reading a storage type, processing unit \"%s\" already exists", storage_type->id.c_str());
 
-  storage_type_t stype = xbt_new0(s_storage_type_t, 1);
-  stype->model = xbt_strdup(storage_type->model);
-  stype->properties = storage_type->properties;
-  stype->content = xbt_strdup(storage_type->content);
-  stype->type_id = xbt_strdup(storage_type->id);
-  stype->size = storage_type->size;
-  stype->model_properties = storage_type->model_properties;
+  simgrid::surf::StorageType* stype =
+      new simgrid::surf::StorageType(storage_type->id, storage_type->model, storage_type->content,
+                                     storage_type->properties, storage_type->model_properties, storage_type->size);
 
-  XBT_DEBUG("Create a storage type id '%s' with model '%s', content '%s'", stype->type_id, stype->model,
-            storage_type->content);
+  XBT_DEBUG("Create a storage type id '%s' with model '%s', content '%s'", storage_type->id.c_str(),
+            storage_type->model.c_str(), storage_type->content.c_str());
 
-  storage_types.insert({std::string(stype->type_id), stype});
+  storage_types[storage_type->id] = stype;
 }
 
 void sg_platf_new_mount(MountCreationArgs* mount)

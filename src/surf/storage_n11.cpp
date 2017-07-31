@@ -13,7 +13,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_storage);
 /*************
  * CallBacks *
  *************/
-extern std::map<std::string, storage_type_t> storage_types;
+extern std::map<std::string, simgrid::surf::StorageType*> storage_types;
 
 static void check_disk_attachment()
 {
@@ -49,7 +49,7 @@ namespace surf {
 StorageImpl* StorageN11Model::createStorage(std::string id, std::string type_id, std::string content_name,
                                             std::string attach)
 {
-  storage_type_t storage_type = storage_types.at(type_id);
+  StorageType* storage_type = storage_types.at(type_id);
 
   double Bread = surf_parse_get_bandwidth(storage_type->model_properties->at("Bread").c_str(),
                                           "property Bread, storage", type_id.c_str());

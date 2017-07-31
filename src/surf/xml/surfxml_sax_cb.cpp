@@ -360,8 +360,7 @@ void STag_surfxml_storage___type()
 }
 void ETag_surfxml_storage___type()
 {
-  s_sg_platf_storage_type_cbarg_t storage_type;
-  memset(&storage_type,0,sizeof(storage_type));
+  StorageTypeCreationArgs storage_type;
 
   storage_type.properties = current_property_set;
   current_property_set    = nullptr;
@@ -369,11 +368,11 @@ void ETag_surfxml_storage___type()
   storage_type.model_properties = current_model_property_set;
   current_model_property_set    = nullptr;
 
-  storage_type.content          = A_surfxml_storage___type_content;
-  storage_type.id               = A_surfxml_storage___type_id;
-  storage_type.model            = A_surfxml_storage___type_model;
-  storage_type.size             = surf_parse_get_size(A_surfxml_storage___type_size,
-        "size of storage type", storage_type.id);
+  storage_type.content = A_surfxml_storage___type_content;
+  storage_type.id      = A_surfxml_storage___type_id;
+  storage_type.model   = A_surfxml_storage___type_model;
+  storage_type.size =
+      surf_parse_get_size(A_surfxml_storage___type_size, "size of storage type", storage_type.id.c_str());
   sg_platf_new_storage_type(&storage_type);
 }
 
