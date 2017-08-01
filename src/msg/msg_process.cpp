@@ -51,7 +51,7 @@ void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
 
 /* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
 smx_actor_t MSG_process_create_from_SIMIX(const char* name, std::function<void()> code, void* data, sg_host_t host,
-                                          xbt_dict_t properties, smx_actor_t parent_process)
+                                          std::map<std::string, std::string>* properties, smx_actor_t parent_process)
 {
   msg_process_t p = MSG_process_create_from_stdfunc(name, std::move(code), data, host, properties);
   return p == nullptr ? nullptr : p->getImpl();
@@ -123,7 +123,15 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
   if (code)
     function = simgrid::xbt::wrapMain(code, argc, static_cast<const char* const*>(argv));
 
-  msg_process_t res = MSG_process_create_from_stdfunc(name, std::move(function), data, host, properties);
+  std::map<std::string, std::string> props;
+  xbt_dict_cursor_t cursor = nullptr;
+  char* key;
+  char* value;
+  xbt_dict_foreach (properties, cursor, key, value)
+    props[key] = value;
+  xbt_dict_free(&properties);
+
+  msg_process_t res = MSG_process_create_from_stdfunc(name, std::move(function), data, host, &props);
   for (int i = 0; i != argc; ++i)
     xbt_free(argv[i]);
   xbt_free(argv);
@@ -133,7 +141,7 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
 SG_END_DECL()
 
 msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<void()> code, void* data, msg_host_t host,
-                                              xbt_dict_t properties)
+                                              std::map<std::string, std::string>* properties)
 {
   xbt_assert(code != nullptr && host != nullptr, "Invalid parameters: host and code params must not be nullptr");
   simgrid::msg::ActorExt* msgExt = new simgrid::msg::ActorExt(data);
@@ -161,10 +169,16 @@ SG_BEGIN_DECL()
 msg_process_t MSG_process_attach(const char *name, void *data, msg_host_t host, xbt_dict_t properties)
 {
   xbt_assert(host != nullptr, "Invalid parameters: host and code params must not be nullptr");
+  std::map<std::string, std::string> props;
+  xbt_dict_cursor_t cursor = nullptr;
+  char* key;
+  char* value;
+  xbt_dict_foreach (properties, cursor, key, value)
+    props[key] = value;
+  xbt_dict_free(&properties);
 
   /* Let's create the process: SIMIX may decide to start it right now, even before returning the flow control to us */
-  smx_actor_t process =
-      SIMIX_process_attach(name, new simgrid::msg::ActorExt(data), host->getCname(), properties, nullptr);
+  smx_actor_t process = SIMIX_process_attach(name, new simgrid::msg::ActorExt(data), host->getCname(), &props, nullptr);
   if (not process)
     xbt_die("Could not attach");
   simcall_process_on_exit(process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,process);
@@ -355,7 +369,7 @@ const char *MSG_process_get_name(msg_process_t process)
  */
 const char *MSG_process_get_property_value(msg_process_t process, const char *name)
 {
-  return (char*) xbt_dict_get_or_null(MSG_process_get_properties(process), name);
+  return process->getProperty(name);
 }
 
 /** \ingroup m_process_management
@@ -366,7 +380,15 @@ const char *MSG_process_get_property_value(msg_process_t process, const char *na
 xbt_dict_t MSG_process_get_properties(msg_process_t process)
 {
   xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
-  return simcall_process_get_properties(process->getImpl());
+  xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
+  std::map<std::string, std::string>* props =
+      simgrid::simix::kernelImmediate([process] { return process->getImpl()->getProperties(); });
+  if (props == nullptr)
+    return nullptr;
+  for (auto elm : *props) {
+    xbt_dict_set(as_dict, elm.first.c_str(), xbt_strdup(elm.second.c_str()), nullptr);
+  }
+  return as_dict;
 }
 
 /** \ingroup m_process_management

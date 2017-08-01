@@ -49,7 +49,7 @@ typedef struct {
   tmgr_trace_t speed_trace;
   tmgr_trace_t state_trace;
   const char* coord;
-  xbt_dict_t properties;
+  std::map<std::string, std::string>* properties;
 } s_sg_platf_host_cbarg_t;
 typedef s_sg_platf_host_cbarg_t* sg_platf_host_cbarg_t;
 
@@ -69,7 +69,7 @@ public:
   tmgr_trace_t latency_trace          = nullptr;
   tmgr_trace_t state_trace            = nullptr;
   e_surf_link_sharing_policy_t policy = SURF_LINK_FATPIPE;
-  xbt_dict_t properties               = nullptr;
+  std::map<std::string, std::string>* properties = nullptr;
 };
 
 class PeerCreationArgs {
@@ -110,7 +110,7 @@ typedef struct s_sg_platf_cluster_cbarg {
   double limiter_link;
   e_surf_cluster_topology_t topology;
   const char* topo_parameters;
-  xbt_dict_t properties;
+  std::map<std::string, std::string>* properties;
   const char* router_id;
   e_surf_link_sharing_policy_t sharing_policy;
   e_surf_link_sharing_policy_t bb_sharing_policy;
@@ -132,7 +132,7 @@ public:
   std::string id;
   std::string type_id;
   std::string content;
-  xbt_dict_t properties;
+  std::map<std::string, std::string>* properties;
   std::string attach;
 };
 
@@ -141,7 +141,7 @@ public:
   std::string id;
   std::string model;
   std::string content;
-  xbt_dict_t properties;
+  std::map<std::string, std::string>* properties;
   std::map<std::string, std::string>* model_properties;
   sg_size_t size;
 };
@@ -177,7 +177,7 @@ typedef struct s_sg_platf_process_cbarg *sg_platf_process_cbarg_t;
 typedef struct s_sg_platf_process_cbarg {
   const char **argv;
   int argc;
-  xbt_dict_t properties;
+  std::map<std::string, std::string>* properties;
   const char *host;
   const char *function;
   double start_time;
@@ -192,6 +192,8 @@ typedef struct s_sg_platf_AS_cbarg {
 } s_sg_platf_AS_cbarg_t;
 
 #define SG_PLATF_AS_INITIALIZER {nullptr,0}
+/* The default current property receiver. Setup in the corresponding opening callbacks. */
+extern std::map<std::string, std::string>* current_property_set;
 
 /********** Routing **********/
 void routing_cluster_add_backbone(simgrid::surf::LinkImpl* bb);

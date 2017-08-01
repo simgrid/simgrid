@@ -177,11 +177,9 @@ void Host::routeTo(Host* dest, std::vector<surf::LinkImpl*>* links, double* late
 }
 
 /** Get the properties assigned to a host */
-std::unordered_map<std::string, std::string>* Host::getProperties()
+std::map<std::string, std::string>* Host::getProperties()
 {
-  return simgrid::simix::kernelImmediate([this] {
-    return this->pimpl_->getProperties();
-  });
+  return simgrid::simix::kernelImmediate([this] { return this->pimpl_->getProperties(); });
 }
 
 /** Retrieve the property value (or nullptr if not set) */
@@ -190,7 +188,7 @@ const char* Host::getProperty(const char* key)
   return this->pimpl_->getProperty(key);
 }
 
-void Host::setProperty(const char* key, const char* value)
+void Host::setProperty(std::string key, std::string value)
 {
   simgrid::simix::kernelImmediate([this, key, value] { this->pimpl_->setProperty(key, value); });
 }

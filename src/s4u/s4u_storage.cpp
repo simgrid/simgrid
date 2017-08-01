@@ -60,7 +60,7 @@ sg_size_t Storage::getSize()
   return pimpl_->getSize();
 }
 
-std::unordered_map<std::string, std::string>* Storage::getProperties()
+std::map<std::string, std::string>* Storage::getProperties()
 {
   return simgrid::simix::kernelImmediate([this] { return pimpl_->getProperties(); });
 }

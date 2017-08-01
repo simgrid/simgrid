@@ -319,7 +319,7 @@ static std::vector<double> surf_parse_get_all_speeds(char* speeds, const char* e
 /* make sure these symbols are defined as strong ones in this file so that the linker can resolve them */
 
 /* The default current property receiver. Setup in the corresponding opening callbacks. */
-xbt_dict_t current_property_set = nullptr;
+std::map<std::string, std::string>* current_property_set       = nullptr;
 std::map<std::string, std::string>* current_model_property_set = nullptr;
 int ZONE_TAG                            = 0; // Whether we just opened a zone tag (to see what to do with the properties)
 
@@ -520,11 +520,10 @@ void STag_surfxml_prop()
     simgrid::s4u::NetZone* netzone = simgrid::s4u::Engine::getInstance()->getNetzoneByNameOrNull(A_surfxml_zone_id);
 
     netzone->setProperty(A_surfxml_prop_id, A_surfxml_prop_value);
-  }
-  else{
+  } else {
     if (not current_property_set)
-      current_property_set = xbt_dict_new_homogeneous(&xbt_free_f); // Maybe, it should raise an error
-    xbt_dict_set(current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), nullptr);
+      current_property_set = new std::map<std::string, std::string>; // Maybe, it should raise an error
+    current_property_set->insert({A_surfxml_prop_id, A_surfxml_prop_value});
     XBT_DEBUG("add prop %s=%s into current property set %p", A_surfxml_prop_id, A_surfxml_prop_value,
               current_property_set);
   }
@@ -996,19 +995,16 @@ void STag_surfxml_config()
 
 void ETag_surfxml_config()
 {
-  xbt_dict_cursor_t cursor = nullptr;
-  char *key;
-  char *elem;
-  xbt_dict_foreach(current_property_set, cursor, key, elem) {
-    if (xbt_cfg_is_default_value(key)) {
-      std::string cfg = std::string(key) + ":" + elem;
+  for (auto elm : *current_property_set) {
+    if (xbt_cfg_is_default_value(elm.first.c_str())) {
+      std::string cfg = elm.first + ":" + elm.second;
       xbt_cfg_set_parse(cfg.c_str());
     } else
-      XBT_INFO("The custom configuration '%s' is already defined by user!",key);
+      XBT_INFO("The custom configuration '%s' is already defined by user!", elm.first.c_str());
   }
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
 
-  xbt_dict_free(&current_property_set);
+  delete current_property_set;
   current_property_set = nullptr;
 }
 

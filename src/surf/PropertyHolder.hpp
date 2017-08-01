@@ -5,7 +5,7 @@
 
 #ifndef SRC_SURF_PROPERTYHOLDER_HPP_
 #define SRC_SURF_PROPERTYHOLDER_HPP_
-#include <unordered_map>
+#include <map>
 
 namespace simgrid {
 namespace surf {
@@ -17,19 +17,19 @@ namespace surf {
 class PropertyHolder { // DO NOT DERIVE THIS CLASS, or the diamond inheritance mayhem will get you
 
 public:
-  explicit PropertyHolder();
+  PropertyHolder() = default;
   ~PropertyHolder();
 
   const char *getProperty(const char*id);
-  void setProperty(const char*id, const char*value);
+  void setProperty(std::string id, std::string value);
 
   /* FIXME: This should not be exposed, as users may do bad things with the dict they got (it's not a copy).
    * But some user API expose this call so removing it is not so easy.
    */
-  std::unordered_map<std::string, std::string>* getProperties();
+  std::map<std::string, std::string>* getProperties();
 
 private:
-  std::unordered_map<std::string, std::string>* properties_ = nullptr;
+  std::map<std::string, std::string>* properties_ = nullptr;
 };
 
 } /* namespace surf */

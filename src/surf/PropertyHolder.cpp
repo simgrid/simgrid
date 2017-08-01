@@ -8,8 +8,6 @@
 namespace simgrid {
 namespace surf {
 
-PropertyHolder::PropertyHolder() = default;
-
 PropertyHolder::~PropertyHolder() {
   delete properties_;
 }
@@ -26,17 +24,18 @@ const char *PropertyHolder::getProperty(const char*key) {
 }
 
 /** @brief Change the value of a given key in the property set */
-void PropertyHolder::setProperty(const char*key, const char*value) {
+void PropertyHolder::setProperty(std::string key, std::string value)
+{
   if (not properties_)
-    properties_       = new std::unordered_map<std::string, std::string>;
+    properties_       = new std::map<std::string, std::string>;
   (*properties_)[key] = value;
 }
 
 /** @brief Return the whole set of properties. Don't mess with it, dude! */
-std::unordered_map<std::string, std::string>* PropertyHolder::getProperties()
+std::map<std::string, std::string>* PropertyHolder::getProperties()
 {
   if (not properties_)
-    properties_ = new std::unordered_map<std::string, std::string>;
+    properties_ = new std::map<std::string, std::string>;
   return properties_;
 }
 

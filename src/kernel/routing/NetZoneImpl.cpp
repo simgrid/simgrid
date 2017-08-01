@@ -43,7 +43,7 @@ NetZoneImpl::~NetZoneImpl()
 }
 
 simgrid::s4u::Host* NetZoneImpl::createHost(const char* name, std::vector<double>* speedPerPstate, int coreAmount,
-                                            std::unordered_map<std::string, std::string>* props)
+                                            std::map<std::string, std::string>* props)
 {
   simgrid::s4u::Host* res = new simgrid::s4u::Host(name);
 
@@ -56,7 +56,7 @@ simgrid::s4u::Host* NetZoneImpl::createHost(const char* name, std::vector<double
 
   if (props != nullptr)
     for (auto kv : *props)
-      res->setProperty(kv.first.c_str(), kv.second.c_str());
+      res->setProperty(kv.first, kv.second);
 
   simgrid::s4u::Host::onCreation(*res); // notify the signal
 

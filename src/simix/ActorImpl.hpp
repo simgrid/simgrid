@@ -8,8 +8,10 @@
 
 #include "simgrid/s4u/Actor.hpp"
 #include "src/simix/popping_private.h"
+#include "src/surf/PropertyHolder.hpp"
 #include "xbt/swag.h"
 #include <list>
+#include <map>
 
 typedef struct s_smx_process_exit_fun {
   int_f_pvoid_pvoid_t fun;
@@ -27,11 +29,11 @@ public:
   void *data            = nullptr;
   sg_host_t host        = nullptr;
   double kill_time      = 0.0;
-  xbt_dict_t properties = nullptr;
+  std::map<std::string, std::string>* properties = nullptr;
   bool auto_restart     = false;
 };
 
-class ActorImpl {
+class ActorImpl : public simgrid::surf::PropertyHolder {
 public:
   ActorImpl() : piface_(this) {}
   ~ActorImpl();
@@ -59,7 +61,6 @@ public:
   sg_host_t new_host             = nullptr; /* if not null, the host on which the process must migrate to */
   smx_activity_t waiting_synchro = nullptr; /* the current blocking synchro if any */
   std::list<smx_activity_t> comms;          /* the current non-blocking communication synchros */
-  xbt_dict_t properties         = nullptr;
   s_smx_simcall_t simcall;
   void* userdata = nullptr;                      /* kept for compatibility, it should be replaced with moddata */
   std::vector<s_smx_process_exit_fun_t> on_exit; /* list of functions executed when the process dies */
@@ -123,13 +124,9 @@ typedef simgrid::simix::ActorImpl* smx_actor_t;
 
 SG_BEGIN_DECL()
 
-XBT_PRIVATE smx_actor_t SIMIX_process_create(
-                          const char *name,
-                          std::function<void()> code,
-                          void *data,
-                          sg_host_t host,
-                          xbt_dict_t properties,
-                          smx_actor_t parent_process);
+XBT_PRIVATE smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host,
+                                             std::map<std::string, std::string>* properties,
+                                             smx_actor_t parent_process);
 
 XBT_PRIVATE void SIMIX_process_runall();
 XBT_PRIVATE void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer);

@@ -17,7 +17,6 @@
 #include "simgrid/datatypes.h"
 #include "simgrid/forward.h"
 
-
 #ifdef __cplusplus
 
 namespace simgrid {
@@ -422,9 +421,6 @@ XBT_PUBLIC(double) surf_get_clock();
  *  \see surf_init()
  */
 XBT_PUBLIC(void) surf_exit();
-
-/* Prototypes of the functions that handle the properties */
-XBT_PUBLIC_DATA(xbt_dict_t) current_property_set;// the prop set for the currently parsed element (also used in SIMIX)
 
 /* surf parse file related (public because called from a test suite) */
 XBT_PUBLIC(void) parse_platform_file(const char *file);

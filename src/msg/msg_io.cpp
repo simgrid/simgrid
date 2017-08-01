@@ -389,7 +389,7 @@ xbt_dict_t MSG_storage_get_properties(msg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters (storage is nullptr)");
   xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
-  std::unordered_map<std::string, std::string>* props = storage->getProperties();
+  std::map<std::string, std::string>* props = storage->getProperties();
   if (props == nullptr)
     return nullptr;
   for (auto elm : *props) {

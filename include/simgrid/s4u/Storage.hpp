@@ -36,7 +36,7 @@ public:
   sg_size_t getSizeFree();
   sg_size_t getSizeUsed();
 
-  std::unordered_map<std::string, std::string>* getProperties();
+  std::map<std::string, std::string>* getProperties();
   const char* getProperty(const char* key);
   void setProperty(const char* key, const char* value);
   std::map<std::string, sg_size_t>* getContent();

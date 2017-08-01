@@ -369,7 +369,7 @@ void surf_exit()
   sg_link_exit();
   for (auto e : storage_types) {
     simgrid::surf::StorageType* stype = e.second;
-    xbt_dict_free(&(stype->properties));
+    delete stype->properties;
     delete stype->model_properties;
     delete stype;
   }

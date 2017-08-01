@@ -174,14 +174,12 @@ void Actor::killAll(int resetPid)
 /** Retrieve the property value (or nullptr if not set) */
 const char* Actor::getProperty(const char* key)
 {
-  return (char*)xbt_dict_get_or_null(simcall_process_get_properties(pimpl_), key);
+  return simgrid::simix::kernelImmediate([this, key] { return pimpl_->getProperty(key); });
 }
 
 void Actor::setProperty(const char* key, const char* value)
 {
-  simgrid::simix::kernelImmediate([this, key, value] {
-    xbt_dict_set(simcall_process_get_properties(pimpl_), key, (char*)value, (void_f_pvoid_t) nullptr);
-  });
+  simgrid::simix::kernelImmediate([this, key, value] { pimpl_->setProperty(key, value); });
 }
 
 Actor* Actor::restart()

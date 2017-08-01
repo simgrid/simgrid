@@ -11,7 +11,7 @@
 #include "simgrid/host.h"
 #include "xbt/ex.h"
 #include "xbt/parmap.h"
-
+#include <map>
 /* ******************************** Host ************************************ */
 /** @brief Host datatype
     @ingroup simix_host_management
@@ -140,12 +140,9 @@ XBT_PUBLIC(void) SIMIX_process_set_function(const char* process_host,
  */
 
 XBT_PUBLIC(void) SIMIX_maestro_create(void (*code)(void*), void* data);
-XBT_PUBLIC(smx_actor_t) SIMIX_process_attach(
-  const char* name,
-  void *data,
-  const char* hostname,
-  xbt_dict_t properties,
-  smx_actor_t parent_process);
+XBT_PUBLIC(smx_actor_t)
+SIMIX_process_attach(const char* name, void* data, const char* hostname, std::map<std::string, std::string>* properties,
+                     smx_actor_t parent_process);
 XBT_PUBLIC(void) SIMIX_process_detach();
 
 /*********************************** Host *************************************/
@@ -202,7 +199,7 @@ SG_BEGIN_DECL()
 /* Constructor and Destructor */
 XBT_PUBLIC(smx_actor_t)
 simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_host_t host, int argc, char** argv,
-                       xbt_dict_t properties);
+                       std::map<std::string, std::string>* properties);
 
 XBT_PUBLIC(void) simcall_process_kill(smx_actor_t process);
 XBT_PUBLIC(void) simcall_process_killall(int reset_pid);
@@ -216,7 +213,6 @@ XBT_PUBLIC(void) simcall_process_suspend(smx_actor_t process);
 /* Getters and Setters */
 XBT_PUBLIC(int) simcall_process_count();
 XBT_PUBLIC(void) simcall_process_set_data(smx_actor_t process, void *data);
-XBT_PUBLIC(xbt_dict_t) simcall_process_get_properties(smx_actor_t host);
 XBT_PUBLIC(void) simcall_process_set_kill_time(smx_actor_t process, double kill_time);
 XBT_PUBLIC(void) simcall_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void *data);
 XBT_PUBLIC(void) simcall_process_join(smx_actor_t process, double timeout);

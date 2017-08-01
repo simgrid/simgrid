@@ -112,9 +112,9 @@ const char* sg_host_self_get_name()
  * The processes will only be restarted once, meaning that you will have to register the process
  * again to restart the process again.
  */
-void SIMIX_host_add_auto_restart_process(
-  sg_host_t host, const char *name, std::function<void()> code,
-  void* data, double kill_time, xbt_dict_t properties, int auto_restart)
+void SIMIX_host_add_auto_restart_process(sg_host_t host, const char* name, std::function<void()> code, void* data,
+                                         double kill_time, std::map<std::string, std::string>* properties,
+                                         int auto_restart)
 {
   smx_process_arg_t arg = new simgrid::simix::ProcessArg();
   arg->name = name;

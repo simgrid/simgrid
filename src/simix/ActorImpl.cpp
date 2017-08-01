@@ -5,12 +5,12 @@
 
 #include <exception>
 #include <functional>
+#include <map>
 #include <string>
 #include <utility>
 
 #include <boost/range/algorithm.hpp>
 
-#include "xbt/dict.h"
 #include "xbt/ex.hpp"
 #include "xbt/functional.hpp"
 #include "xbt/log.h"
@@ -141,7 +141,6 @@ namespace simix {
 ActorImpl::~ActorImpl()
 {
   delete this->context;
-  xbt_dict_free(&this->properties);
 }
 
 static int dying_daemon(void* exit_status, void* data)
@@ -291,7 +290,7 @@ void SIMIX_maestro_create(void (*code)(void*), void* data)
  * \return the process created
  */
 smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, void* data, simgrid::s4u::Host* host,
-                                 xbt_dict_t properties, smx_actor_t parent_process)
+                                 std::map<std::string, std::string>* properties, smx_actor_t parent_process)
 {
 
   XBT_DEBUG("Start process %s on host '%s'", name, host->getCname());
@@ -331,7 +330,9 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
   process->context = SIMIX_context_new(std::move(code), simix_global->cleanup_process_function, process);
 
   /* Add properties */
-  process->properties = properties;
+  if (properties != nullptr)
+    for (auto kv : *properties)
+      process->setProperty(kv.first, kv.second);
 
   /* Make sure that the process is initialized for simix, in case we are called from the Host::onCreation signal */
   if (host->extension<simgrid::simix::Host>() == nullptr)
@@ -354,8 +355,8 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
   return process;
 }
 
-smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostname, xbt_dict_t properties,
-                                 smx_actor_t parent_process)
+smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostname,
+                                 std::map<std::string, std::string>* properties, smx_actor_t parent_process)
 {
   // This is mostly a copy/paste from SIMIX_process_new(),
   // it'd be nice to share some code between those two functions.
@@ -364,8 +365,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   XBT_DEBUG("Attach process %s on host '%s'", name, hostname);
 
   if (host->isOff()) {
-    XBT_WARN("Cannot launch process '%s' on failed host '%s'",
-      name, hostname);
+    XBT_WARN("Cannot launch process '%s' on failed host '%s'", name, hostname);
     return nullptr;
   }
 
@@ -400,7 +400,9 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   process->context = simix_global->context_factory->attach(simix_global->cleanup_process_function, process);
 
   /* Add properties */
-  process->properties = properties;
+  if (properties != nullptr)
+    for (auto kv : *properties)
+      process->setProperty(kv.first, kv.second);
 
   /* Add the process to it's host process list */
   xbt_swag_insert(process, host->extension<simgrid::simix::Host>()->process_list);
@@ -780,7 +782,8 @@ void SIMIX_process_yield(smx_actor_t self)
     /* Add the process to the list of process to restart, only if the host is down */
     if (self->auto_restart && self->host->isOff()) {
       SIMIX_host_add_auto_restart_process(self->host, self->cname(), self->code, self->userdata,
-                                          SIMIX_timer_get_date(self->kill_timer), self->properties, self->auto_restart);
+                                          SIMIX_timer_get_date(self->kill_timer), self->getProperties(),
+                                          self->auto_restart);
     }
     XBT_DEBUG("Process %s@%s is dead", self->cname(), self->host->getCname());
     self->context->stop();
@@ -882,9 +885,8 @@ void SIMIX_process_auto_restart_set(smx_actor_t process, int auto_restart) {
  * \param properties the properties of the process
  * \param auto_restart either it is autorestarting or not.
  */
-extern "C"
-smx_actor_t simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_host_t host, int argc,
-                                   char** argv, xbt_dict_t properties)
+extern "C" smx_actor_t simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_host_t host,
+                                              int argc, char** argv, std::map<std::string, std::string>* properties)
 {
   if (name == nullptr)
     name = "";
@@ -897,7 +899,7 @@ smx_actor_t simcall_process_create(const char* name, xbt_main_func_t code, void*
 }
 
 smx_actor_t simcall_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host,
-                                   xbt_dict_t properties)
+                                   std::map<std::string, std::string>* properties)
 {
   if (name == nullptr)
     name = "";

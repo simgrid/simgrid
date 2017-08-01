@@ -213,10 +213,10 @@ public:
   std::string id;
   std::string model;
   std::string content;
-  xbt_dict_t properties;
+  std::map<std::string, std::string>* properties;
   std::map<std::string, std::string>* model_properties;
   sg_size_t size;
-  StorageType(std::string id, std::string model, std::string content, xbt_dict_t properties,
+  StorageType(std::string id, std::string model, std::string content, std::map<std::string, std::string>* properties,
               std::map<std::string, std::string>* model_properties, sg_size_t size)
       : id(id), model(model), content(content), properties(properties), model_properties(model_properties), size(size)
   {

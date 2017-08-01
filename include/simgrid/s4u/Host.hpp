@@ -6,6 +6,7 @@
 #ifndef SIMGRID_S4U_HOST_HPP
 #define SIMGRID_S4U_HOST_HPP
 
+#include <map>
 #include <string>
 #include <unordered_map>
 
@@ -86,9 +87,9 @@ public:
 
   double getSpeed();
   int getCoreCount();
-  std::unordered_map<std::string, std::string>* getProperties();
+  std::map<std::string, std::string>* getProperties();
   const char* getProperty(const char* key);
-  void setProperty(const char* key, const char* value);
+  void setProperty(std::string key, std::string value);
   void getProcesses(std::vector<ActorPtr> * list);
   double getPstateSpeed(int pstate_index);
   int getPstatesCount() const;

@@ -166,7 +166,7 @@ xbt_dict_t MSG_host_get_properties(msg_host_t host)
 {
   xbt_assert((host != nullptr), "Invalid parameters (host is nullptr)");
   xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
-  std::unordered_map<std::string, std::string>* props = host->getProperties();
+  std::map<std::string, std::string>* props = host->getProperties();
   if (props == nullptr)
     return nullptr;
   for (auto elm : *props) {

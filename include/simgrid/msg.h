@@ -17,6 +17,7 @@
 
 #ifdef __cplusplus
 #include "simgrid/simix.h"
+#include <map>
 namespace simgrid {
 namespace msg {
 class Comm;
@@ -377,36 +378,26 @@ XBT_PUBLIC(void) MSG_task_set_bound(msg_task_t task, double bound);
 XBT_PUBLIC(msg_error_t) MSG_process_join(msg_process_t process, double timeout);
 XBT_PUBLIC(msg_error_t) MSG_process_sleep(double nb_sec);
 
-XBT_PUBLIC(void) MSG_task_set_flops_amount(msg_task_t task,
-                                               double flops_amount);
+XBT_PUBLIC(void) MSG_task_set_flops_amount(msg_task_t task, double flops_amount);
 XBT_PUBLIC(double) MSG_task_get_flops_amount(msg_task_t task);
-XBT_PUBLIC(void) MSG_task_set_bytes_amount(msg_task_t task,
-                                        double bytes_amount);
+XBT_PUBLIC(void) MSG_task_set_bytes_amount(msg_task_t task, double bytes_amount);
 
 XBT_PUBLIC(double) MSG_task_get_remaining_communication(msg_task_t task);
 XBT_PUBLIC(int) MSG_task_is_latency_bounded(msg_task_t task);
 XBT_PUBLIC(double) MSG_task_get_bytes_amount(msg_task_t task);
 
+XBT_PUBLIC(msg_error_t) MSG_task_receive_ext(msg_task_t* task, const char* alias, double timeout, msg_host_t host);
 
-XBT_PUBLIC(msg_error_t)
-    MSG_task_receive_ext(msg_task_t * task, const char *alias, double timeout,
-                     msg_host_t host);
+XBT_PUBLIC(msg_error_t) MSG_task_receive_with_timeout(msg_task_t* task, const char* alias, double timeout);
 
-XBT_PUBLIC(msg_error_t)
-    MSG_task_receive_with_timeout(msg_task_t * task, const char *alias,
-                              double timeout);
-
-XBT_PUBLIC(msg_error_t)
-    MSG_task_receive(msg_task_t * task, const char *alias);
+XBT_PUBLIC(msg_error_t) MSG_task_receive(msg_task_t* task, const char* alias);
 #define MSG_task_recv(t,a) MSG_task_receive(t,a)
 
-
+XBT_PUBLIC(msg_error_t)
+MSG_task_receive_ext_bounded(msg_task_t* task, const char* alias, double timeout, msg_host_t host, double rate);
 
 XBT_PUBLIC(msg_error_t)
-    MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, double timeout,
-                     msg_host_t host, double rate);
-
-XBT_PUBLIC(msg_error_t) MSG_task_receive_with_timeout_bounded(msg_task_t * task, const char *alias,  double timeout, double rate);
+MSG_task_receive_with_timeout_bounded(msg_task_t* task, const char* alias, double timeout, double rate);
 XBT_PUBLIC(msg_error_t) MSG_task_receive_bounded(msg_task_t * task, const char *alias,double rate);
 #define MSG_task_recv_bounded(t,a,r) MSG_task_receive_bounded(t,a,r)
 
@@ -517,24 +508,21 @@ XBT_PUBLIC(void) MSG_vm_resume(msg_vm_t vm);
 XBT_PUBLIC(msg_host_t) MSG_vm_get_pm(msg_vm_t vm);
 XBT_PUBLIC(void) MSG_vm_set_bound(msg_vm_t vm, double bound);
 
-
 #include "simgrid/instr.h"
 
 /* ****************************************************************************************** */
 /* Used only by the bindings -- unclean pimple, please ignore if you're not writing a binding */
 XBT_PUBLIC(smx_context_t) MSG_process_get_smx_ctx(msg_process_t process);
 
-
 /* Functions renamed in 3.14 */
 #define MSG_mailbox_get_head(m) MSG_mailbox_front(m)
-
 
 SG_END_DECL()
 
 #ifdef __cplusplus
 XBT_PUBLIC(msg_process_t)
 MSG_process_create_from_stdfunc(const char* name, std::function<void()> code, void* data, msg_host_t host,
-                                xbt_dict_t properties);
+                                std::map<std::string, std::string>* properties);
 #endif
 
 #endif

@@ -6,8 +6,9 @@
 #ifndef SIMIX_HOST_PRIVATE_H
 #define SIMIX_HOST_PRIVATE_H
 
-#include <vector>
 #include <functional>
+#include <map>
+#include <vector>
 
 #include <xbt/base.h>
 #include <xbt/Extendable.hpp>
@@ -39,13 +40,9 @@ namespace simgrid {
 }
 
 SG_BEGIN_DECL()
-XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host,
-                                         const char *name,
-                                         std::function<void()> code,
-                                         void *data,
-                                         double kill_time,
-                                         xbt_dict_t properties,
-                                         int auto_restart);
+XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host, const char* name, std::function<void()> code,
+                                                     void* data, double kill_time,
+                                                     std::map<std::string, std::string>* properties, int auto_restart);
 
 XBT_PRIVATE void SIMIX_host_autorestart(sg_host_t host);
 XBT_PRIVATE void SIMIX_execution_cancel(smx_activity_t synchro);

@@ -181,7 +181,7 @@ void sg_host_set_pstate(sg_host_t host,int pstate) {
 /** @brief Get the properties of an host */
 xbt_dict_t sg_host_get_properties(sg_host_t host) {
   xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
-  std::unordered_map<std::string, std::string>* props = host->getProperties();
+  std::map<std::string, std::string>* props = host->getProperties();
   if (props == nullptr)
     return nullptr;
   for (auto elm : *props) {
@@ -260,7 +260,7 @@ void sg_host_dump(sg_host_t host)
   XBT_INFO("Displaying host %s", host->getCname());
   XBT_INFO("  - speed: %.0f", host->getSpeed());
   XBT_INFO("  - available speed: %.2f", sg_host_get_available_speed(host));
-  std::unordered_map<std::string, std::string>* props = host->getProperties();
+  std::map<std::string, std::string>* props = host->getProperties();
 
   if (not props->empty()) {
     XBT_INFO("  - properties:");

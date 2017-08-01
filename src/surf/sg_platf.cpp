@@ -75,14 +75,11 @@ void sg_platf_exit() {
 /** @brief Add an host to the current AS */
 void sg_platf_new_host(sg_platf_host_cbarg_t args)
 {
-  std::unordered_map<std::string, std::string> props;
+  std::map<std::string, std::string> props;
   if (args->properties) {
-    xbt_dict_cursor_t cursor=nullptr;
-    char *key;
-    char* data;
-    xbt_dict_foreach (args->properties, cursor, key, data)
-      props[key] = data;
-    xbt_dict_free(&args->properties);
+    for (auto elm : *args->properties)
+      props.insert({elm.first, elm.second});
+    delete args->properties;
   }
 
   simgrid::s4u::Host* host =
@@ -138,12 +135,9 @@ void sg_platf_new_link(LinkCreationArgs* link)
         surf_network_model->createLink(link_name.c_str(), link->bandwidth, link->latency, link->policy);
 
     if (link->properties) {
-      xbt_dict_cursor_t cursor = nullptr;
-      char* key;
-      char* data;
-      xbt_dict_foreach (link->properties, cursor, key, data)
-        l->setProperty(key, data);
-      xbt_dict_free(&link->properties);
+      for (auto elm : *link->properties)
+        l->setProperty(elm.first, elm.second);
+      delete link->properties;
     }
 
     if (link->latency_trace)
@@ -204,15 +198,11 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     s_sg_platf_host_cbarg_t host;
     memset(&host, 0, sizeof(host));
     host.id = host_id;
-    if ((cluster->properties != nullptr) && (not xbt_dict_is_empty(cluster->properties))) {
-      xbt_dict_cursor_t cursor=nullptr;
-      char *key;
-      char* data;
-      host.properties = xbt_dict_new_homogeneous(free);
+    if ((cluster->properties != nullptr) && (not cluster->properties->empty())) {
+      host.properties = new std::map<std::string, std::string>;
 
-      xbt_dict_foreach(cluster->properties,cursor,key,data) {
-        xbt_dict_set(host.properties, key, xbt_strdup(data), nullptr);
-      }
+      for (auto elm : *cluster->properties)
+        host.properties->insert({elm.first, elm.second});
     }
 
     host.speed_per_pstate = cluster->speeds;
@@ -280,7 +270,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     xbt_free(host_id);
     rankId++;
   }
-  xbt_dict_free(&cluster->properties);
+  delete cluster->properties;
 
   // Add a router.
   XBT_DEBUG(" ");
@@ -391,12 +381,9 @@ void sg_platf_new_storage(StorageCreationArgs* storage)
   auto s = surf_storage_model->createStorage(storage->id, stype->id, storage->content, storage->attach);
 
   if (storage->properties) {
-    xbt_dict_cursor_t cursor = nullptr;
-    char *key;
-    char* data;
-    xbt_dict_foreach (storage->properties, cursor, key, data)
-      s->setProperty(key, data);
-    xbt_dict_free(&storage->properties);
+    for (auto elm : *storage->properties)
+      s->setProperty(elm.first, elm.second);
+    delete storage->properties;
   }
 }
 

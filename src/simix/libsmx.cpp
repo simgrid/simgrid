@@ -247,16 +247,6 @@ void simcall_process_set_kill_time(smx_actor_t process, double kill_time)
 
 /**
  * \ingroup simix_process_management
- * \brief Return the properties
- *
- * This function returns the properties associated with this process
- */
-xbt_dict_t simcall_process_get_properties(smx_actor_t process)
-{
-  return process->properties;
-}
-/**
- * \ingroup simix_process_management
  * \brief Add an on_exit function
  * Add an on_exit function which will be executed when the process exits/is killed.
  */
