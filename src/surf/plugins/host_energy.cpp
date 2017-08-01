@@ -66,7 +66,7 @@ the time, and our model holds.
 ### What if the host has only one core?
 
 In this case, the parameters \b OneCore and \b AllCores are obviously the same.
-Actually, SimGrid expect an energetic profile formated as 'Idle:Running' for mono-cores hosts.
+Actually, SimGrid expect an energetic profile formatted as 'Idle:Running' for mono-cores hosts.
 If you insist on passing 3 parameters in this case, then you must have the same value for \b OneCore and \b AllCores.
 
 \code{.xml}
@@ -325,7 +325,7 @@ void HostEnergy::initWattsRangeList()
       } else { // size == 3
         xbt_assert((current_power_values.at(1)) == (current_power_values.at(2)),
                    "Power properties incorrectly defined for host %s.\n"
-                   "The energy profile of mono-cores should be formated as 'Idle:FullSpeed' only.\n"
+                   "The energy profile of mono-cores should be formatted as 'Idle:FullSpeed' only.\n"
                    "If you go for a 'Idle:OneCore:AllCores' power profile on mono-cores, then OneCore and AllCores "
                    "must be equal.",
                    host->getCname());

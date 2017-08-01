@@ -391,8 +391,8 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_boolean("model-check/sparse-checkpoint", "no", _mc_cfg_cb_sparse_checkpoint, "Use sparse per-page snapshots.");
     xbt_cfg_register_boolean("model-check/ksm", "no", _mc_cfg_cb_ksm, "Kernel same-page merging");
 
-    xbt_cfg_register_string("model-check/property","", _mc_cfg_cb_property,
-        "Name of the file containing the property, as formated by the ltl2ba program.");
+    xbt_cfg_register_string("model-check/property", "", _mc_cfg_cb_property,
+                            "Name of the file containing the property, as formatted by the ltl2ba program.");
     xbt_cfg_register_boolean("model-check/communications-determinism", "no", _mc_cfg_cb_comms_determinism,
         "Whether to enable the detection of communication determinism");
     xbt_cfg_register_alias("model-check/communications-determinism","model-check/communications_determinism");
