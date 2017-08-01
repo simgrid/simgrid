@@ -69,22 +69,16 @@ class s_type {
   xbt_dict_t values; //valid for all types except variable and container
 };
 
-typedef s_type s_type_t;
-
 //--------------------------------------------------
-class value {
+class value : public s_type{
 public:
-  char *id;
-  char *name;
-  char *color;
-  type_t father;
   value* ret;
+  value(){};
   value(const char* name, const char* color, type_t father);
   ~value();
   static value* get_or_new(const char* name, const char* color, type_t father);
   static value* get(const char* name, type_t father);
 };
-
 
 //--------------------------------------------------
 typedef enum {
@@ -113,7 +107,6 @@ class s_container {
   s_container *father;
   xbt_dict_t children;
 };
-typedef s_container s_container_t;
 
 //--------------------------------------------------
 class PajeEvent {

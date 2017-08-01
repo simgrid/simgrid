@@ -15,7 +15,7 @@ value::value(const char* name, const char* color, type_t father)
   if (name == nullptr || father == nullptr){
     THROWF (tracing_error, 0, "can't create a value with a nullptr name (or a nullptr father)");
   }
-  this->ret         = xbt_new0(value, 1);
+  this->ret         = new value[1];
   this->ret->name = xbt_strdup (name);
   this->ret->father = father;
   this->ret->color = xbt_strdup (color);
@@ -31,11 +31,7 @@ value::value(const char* name, const char* color, type_t father)
 
 value::~value()
 {
-  /* FIXME: this should be cleanable
-  xbt_free(name);
-  xbt_free(color);
-  xbt_free(id);
-  */
+// Already destroyed by recursiveDestroyType function.
 }
 
 value* value::get_or_new(const char* name, const char* color, type_t father)
@@ -45,8 +41,8 @@ value* value::get_or_new(const char* name, const char* color, type_t father)
     ret = value::get(name, father);
   }
   catch(xbt_ex& e) {
-    value rett(name, color, father);
-    ret = rett.ret;
+    ret = new value(name, color, father);
+    ret = ret->ret;
   }
   return ret;
 }
