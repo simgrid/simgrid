@@ -723,7 +723,12 @@ smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, doubl
    * The C API should first be properly replaced with the C++ one, which is a fair amount of work.
    */
   intrusive_ptr_add_ref(process);
-  SIMIX_process_on_exit(process, (int_f_pvoid_pvoid_t)SIMIX_process_join_finish, &*res);
+  SIMIX_process_on_exit(process,
+                        [](void*, void* arg) {
+                          return simgrid::simix::kernelImmediate(
+                              [&] { return SIMIX_process_join_finish(SMX_EXIT_SUCCESS, arg); });
+                        },
+                        &*res);
   return res;
 }
 
