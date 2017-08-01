@@ -1,5 +1,4 @@
-/* Copyright (c) 2012-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -33,7 +32,7 @@ public class Node extends Process {
 
   protected int rank;
 
-  public Node(Host host, int number) throws HostNotFoundException {
+  public Node(Host host, int number) {
     super(host, Integer.toString(number), null);
     this.rank = number;
   }

@@ -40,11 +40,7 @@ public class XVM extends VM {
 
   public void start(){
     super.start();
-    try {
-      daemon.start();
-    } catch (HostNotFoundException e) {
-      e.printStackTrace();
-    }
+    daemon.start();
     this.setLoad(0);
   }
 

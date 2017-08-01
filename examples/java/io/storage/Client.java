@@ -1,5 +1,4 @@
-/* Copyright (c) 2012-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -24,7 +23,7 @@ import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.MsgException;
 
 public class Client extends Process {
-  public Client(Host host, int number) throws HostNotFoundException {
+  public Client(Host host, int number) {
     super(host, Integer.toString(number), null);
   }
 
