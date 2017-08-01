@@ -6,6 +6,7 @@
 #ifndef SRC_SURF_PROPERTYHOLDER_HPP_
 #define SRC_SURF_PROPERTYHOLDER_HPP_
 #include <map>
+#include <string>
 
 namespace simgrid {
 namespace surf {
