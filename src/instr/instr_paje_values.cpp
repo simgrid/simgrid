@@ -15,7 +15,11 @@ value::value(const char* name, const char* color, type_t father)
   if (name == nullptr || father == nullptr){
     THROWF (tracing_error, 0, "can't create a value with a nullptr name (or a nullptr father)");
   }
+<<<<<<< HEAD
   this->ret         = new value[1];
+=======
+  this->ret         = xbt_new1(value, 1); 
+>>>>>>> 6896998a44d0f8dd0f44f5496bfa291dbc5d3751
   this->ret->name = xbt_strdup (name);
   this->ret->father = father;
   this->ret->color = xbt_strdup (color);
