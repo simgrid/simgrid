@@ -79,6 +79,11 @@ if(enable_compile_optimizations AND CMAKE_COMPILER_IS_GNUCC
   set(optCFLAGS "${optCFLAGS} -finline-functions ")
 endif()
 
+# Do not leak the current directory into the binaries
+if(CMAKE_COMPILER_IS_GNUCC)
+  set(optCFLAGS "${optCFLAGS} -fdebug-prefix-map=${CMAKE_SOURCE_DIR}=.")
+endif()
+
 # Configure LTO
 # NOTE, cmake 3.0 has a INTERPROCEDURAL_OPTIMIZATION target
 #       property for this (http://www.cmake.org/cmake/help/v3.0/prop_tgt/INTERPROCEDURAL_OPTIMIZATION.html)
