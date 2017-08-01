@@ -1,5 +1,4 @@
-/* Copyright (c) 2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -38,7 +37,8 @@ public class XVM extends VM {
     currentLoad = load ;
   }
 
-  public void start(){
+  @Override
+  public void start() {
     super.start();
     daemon.start();
     this.setLoad(0);
@@ -53,6 +53,7 @@ public class XVM extends VM {
     return this.currentLoad;
   }
 
+  @Override
   public void migrate(Host host) throws HostFailureException {
     Msg.info("Start migration of VM " + this.getName() + " to " + host.getName());
     Msg.info("    currentLoad:" + this.currentLoad + "/ramSize:" + this.ramsize + "/dpIntensity:" + this.dpIntensity 
