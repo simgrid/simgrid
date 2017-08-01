@@ -20,7 +20,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi, "Logging specific to SMPI (comm)");
 
- simgrid::smpi::Comm mpi_MPI_COMM_UNINITIALIZED;
+simgrid::smpi::Comm mpi_MPI_COMM_UNINITIALIZED;
 MPI_Comm MPI_COMM_UNINITIALIZED=&mpi_MPI_COMM_UNINITIALIZED;
 
 /* Support for cartesian topology was added, but there are 2 other types of topology, graph et dist graph. In order to
@@ -56,8 +56,8 @@ void Comm::destroy(Comm* comm)
 
 int Comm::dup(MPI_Comm* newcomm){
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){ //we need to switch as the called function may silently touch global variables
-     smpi_switch_data_segment(smpi_process()->index());
-   }
+    smpi_switch_data_segment(smpi_process()->index());
+  }
   MPI_Group cp = new  Group(this->group());
   (*newcomm) = new  Comm(cp, this->topo());
   int ret = MPI_SUCCESS;
@@ -79,8 +79,8 @@ int Comm::dup(MPI_Comm* newcomm){
           (*newcomm)->attributes()->insert({it.first, value_out});
         }
       }
-      }
     }
+  }
   return ret;
 }
 
@@ -294,29 +294,29 @@ void Comm::init_smp(){
   // tell SimGrid we are not in replay for a while, because we need the buffers to be copied for the following calls
   bool replaying = false; //cache data to set it back again after
   if(smpi_process()->replaying()){
-   replaying=true;
-   smpi_process()->set_replaying(false);
+    replaying = true;
+    smpi_process()->set_replaying(false);
   }
 
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){ //we need to switch as the called function may silently touch global variables
-     smpi_switch_data_segment(smpi_process()->index());
-   }
+    smpi_switch_data_segment(smpi_process()->index());
+  }
   //identify neighbours in comm
   //get the indexes of all processes sharing the same simix host
-   xbt_swag_t process_list = sg_host_self()->extension<simgrid::simix::Host>()->process_list;
-   int intra_comm_size     = 0;
-   int min_index           = INT_MAX; // the minimum index will be the leader
-   smx_actor_t actor       = nullptr;
-   xbt_swag_foreach(actor, process_list)
-   {
-     int index = actor->pid - 1;
+  xbt_swag_t process_list = sg_host_self()->extension<simgrid::simix::Host>()->process_list;
+  int intra_comm_size     = 0;
+  int min_index           = INT_MAX; // the minimum index will be the leader
+  smx_actor_t actor       = nullptr;
+  xbt_swag_foreach(actor, process_list)
+  {
+    int index = actor->pid - 1;
 
-     if (this->group()->rank(index) != MPI_UNDEFINED) {
-       intra_comm_size++;
-       // the process is in the comm
-       if (index < min_index)
-         min_index = index;
-     }
+    if (this->group()->rank(index) != MPI_UNDEFINED) {
+      intra_comm_size++;
+      // the process is in the comm
+      if (index < min_index)
+        min_index = index;
+    }
   }
   XBT_DEBUG("number of processes deployed on my node : %d", intra_comm_size);
   MPI_Group group_intra = new  Group(intra_comm_size);
@@ -336,14 +336,14 @@ void Comm::init_smp(){
   int * leaders_map= static_cast<int*>(xbt_malloc0(sizeof(int)*comm_size));
   int * leader_list= static_cast<int*>(xbt_malloc0(sizeof(int)*comm_size));
   for(i=0; i<comm_size; i++){
-      leader_list[i]=-1;
+    leader_list[i] = -1;
   }
 
   Coll_allgather_mpich::allgather(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, this);
 
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){ //we need to switch as the called function may silently touch global variables
-     smpi_switch_data_segment(smpi_process()->index());
-   }
+    smpi_switch_data_segment(smpi_process()->index());
+  }
 
   if(leaders_map_==nullptr){
     leaders_map_= leaders_map;
@@ -353,16 +353,16 @@ void Comm::init_smp(){
   int j=0;
   int leader_group_size = 0;
   for(i=0; i<comm_size; i++){
-      int already_done=0;
-      for(j=0;j<leader_group_size; j++){
-        if(leaders_map_[i]==leader_list[j]){
-            already_done=1;
-        }
+    int already_done = 0;
+    for (j = 0; j < leader_group_size; j++) {
+      if (leaders_map_[i] == leader_list[j]) {
+        already_done = 1;
       }
-      if(already_done==0){
-        leader_list[leader_group_size]=leaders_map_[i];
-        leader_group_size++;
-      }
+    }
+    if (already_done == 0) {
+      leader_list[leader_group_size] = leaders_map_[i];
+      leader_group_size++;
+    }
   }
   std::sort(leader_list, leader_list + leader_group_size);
 
@@ -377,7 +377,7 @@ void Comm::init_smp(){
     this->set_leaders_comm(leader_comm);
     this->set_intra_comm(comm_intra);
 
-   //create intracommunicator
+    // create intracommunicator
   }else{
     for (i=0; i< leader_group_size;i++)
       leaders_group->set_mapping(leader_list[i], i);
@@ -406,27 +406,27 @@ void Comm::init_smp(){
       }
     }
     if(is_uniform==0 && this->is_uniform()!=0){
-        non_uniform_map_= non_uniform_map;
+      non_uniform_map_ = non_uniform_map;
     }else{
-        xbt_free(non_uniform_map);
+      xbt_free(non_uniform_map);
     }
     is_uniform_=is_uniform;
   }
   Coll_bcast_mpich::bcast(&(is_uniform_),1, MPI_INT, 0, comm_intra );
 
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){ //we need to switch as the called function may silently touch global variables
-     smpi_switch_data_segment(smpi_process()->index());
-   }
+    smpi_switch_data_segment(smpi_process()->index());
+  }
   // Are the ranks blocked ? = allocated contiguously on the SMP nodes
   int is_blocked=1;
   int prev=this->group()->rank(comm_intra->group()->index(0));
-    for (i=1; i<my_local_size; i++){
-      int that=this->group()->rank(comm_intra->group()->index(i));
-      if(that!=prev+1){
-        is_blocked=0;
-        break;
-      }
-      prev = that;
+  for (i = 1; i < my_local_size; i++) {
+    int that = this->group()->rank(comm_intra->group()->index(i));
+    if (that != prev + 1) {
+      is_blocked = 0;
+      break;
+    }
+    prev = that;
   }
 
   int global_blocked;
@@ -434,7 +434,7 @@ void Comm::init_smp(){
 
   if(MPI_COMM_WORLD==MPI_COMM_UNINITIALIZED || this==MPI_COMM_WORLD){
     if(this->rank()==0){
-        is_blocked_=global_blocked;
+      is_blocked_ = global_blocked;
     }
   }else{
     is_blocked_=global_blocked;
@@ -451,9 +451,12 @@ MPI_Comm Comm::f2c(int id) {
   } else if(id==0){
     return MPI_COMM_WORLD;
   } else if(F2C::f2c_lookup() != nullptr && id >= 0) {
-      char key[KEY_SIZE];
-      MPI_Comm tmp =  static_cast<MPI_Comm>(xbt_dict_get_or_null(F2C::f2c_lookup(),get_key_id(key, id)));
-      return tmp != nullptr ? tmp : MPI_COMM_NULL ;
+    char key[KEY_SIZE];
+    try {
+      return static_cast<MPI_Comm>(F2C::f2c_lookup()->at(get_key_id(key, id)));
+    } catch (std::out_of_range& unfound) {
+      return MPI_COMM_NULL;
+    }
   } else {
     return MPI_COMM_NULL;
   }
@@ -461,19 +464,18 @@ MPI_Comm Comm::f2c(int id) {
 
 void Comm::free_f(int id) {
   char key[KEY_SIZE];
-  xbt_dict_remove(F2C::f2c_lookup(), id==0? get_key(key, id) : get_key_id(key, id));
+  F2C::f2c_lookup()->erase(id == 0 ? get_key(key, id) : get_key_id(key, id));
 }
 
 int Comm::add_f() {
   if(F2C::f2c_lookup()==nullptr){
-    F2C::set_f2c_lookup(xbt_dict_new_homogeneous(nullptr));
+    F2C::set_f2c_lookup(new std::unordered_map<std::string, F2C*>);
   }
   char key[KEY_SIZE];
-  xbt_dict_set(F2C::f2c_lookup(), this==MPI_COMM_WORLD? get_key(key, F2C::f2c_id()) : get_key_id(key,F2C::f2c_id()), this, nullptr);
+  (*(F2C::f2c_lookup()))[this == MPI_COMM_WORLD ? get_key(key, F2C::f2c_id()) : get_key_id(key, F2C::f2c_id())] = this;
   f2c_id_increment();
   return F2C::f2c_id()-1;
 }
-
 
 void Comm::add_rma_win(MPI_Win win){
   rma_wins_.push_back(win);
@@ -491,7 +493,6 @@ void Comm::finish_rma_calls(){
     }
   }
 }
-
 
 }
 }

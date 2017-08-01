@@ -9,7 +9,7 @@
 #ifndef SMPI_F2C_HPP_INCLUDED
 #define SMPI_F2C_HPP_INCLUDED
 
-#include "xbt/dict.h"
+#include <unordered_map>
 
 #define KEY_SIZE (sizeof(int) * 2 + 1)
 
@@ -20,18 +20,18 @@ class F2C {
   private:
     // We use a single lookup table for every type.
     // Beware of collisions if id in mpif.h is not unique
-    static xbt_dict_t f2c_lookup_;
+    static std::unordered_map<std::string, F2C*>* f2c_lookup_;
     static int f2c_id_;
   protected:
-    static xbt_dict_t f2c_lookup();
-    static void set_f2c_lookup(xbt_dict_t dict);
+    static std::unordered_map<std::string, F2C*>* f2c_lookup();
+    static void set_f2c_lookup(std::unordered_map<std::string, F2C*>* map);
     static int f2c_id();
     static void f2c_id_increment();
   public:
     static char* get_key(char* key, int id);
     static char* get_key_id(char* key, int id);
     static void delete_lookup();
-    static xbt_dict_t lookup();
+    static std::unordered_map<std::string, F2C*>* lookup();
 
     //Override these to handle specific values.
     int add_f();

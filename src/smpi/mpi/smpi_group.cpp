@@ -355,7 +355,7 @@ MPI_Group Group::f2c(int id) {
     return MPI_GROUP_EMPTY;
   } else if(F2C::f2c_lookup() != nullptr && id >= 0) {
     char key[KEY_SIZE];
-    return static_cast<MPI_Group>(xbt_dict_get_or_null(F2C::f2c_lookup(), get_key(key, id)));
+    return static_cast<MPI_Group>(F2C::f2c_lookup()->at(get_key(key, id)));
   } else {
     return static_cast<MPI_Group>(MPI_GROUP_NULL);
   }
