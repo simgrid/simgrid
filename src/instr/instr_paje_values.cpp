@@ -30,6 +30,9 @@ value::value(const char* name, const char* color, type_t father)
 
 value::~value()
 {
+  xbt_free (this->name);
+  xbt_free (this->id);
+  xbt_free (this->color);
 }
 
 value* value::get_or_new(const char* name, const char* color, type_t father)

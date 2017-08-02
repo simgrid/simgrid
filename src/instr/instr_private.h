@@ -56,15 +56,20 @@ typedef enum {
 } e_entity_types;
 
 //--------------------------------------------------
-class s_type;
-typedef s_type *type_t;
-class s_type {
+
+class ess_type{
   public:
   char *id;
   char *name;
   char *color;
-  e_entity_types kind;
+};
+
+class s_type;
+typedef s_type *type_t;
+class s_type :public ess_type {
+  public:
   s_type *father;
+  e_entity_types kind;
   xbt_dict_t children;
   xbt_dict_t values; //valid for all types except variable and container
 };
@@ -72,14 +77,14 @@ class s_type {
 typedef s_type s_type_t;
 
 //--------------------------------------------------
-class value : public s_type {
+class value : public ess_type {
 public:
+  s_type *father;
   value(const char* name, const char* color, type_t father);
   ~value();
   static value* get_or_new(const char* name, const char* color, type_t father);
   static value* get(const char* name, type_t father);
 };
-
 
 //--------------------------------------------------
 typedef enum {
