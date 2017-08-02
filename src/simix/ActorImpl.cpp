@@ -79,8 +79,9 @@ void SIMIX_process_cleanup(smx_actor_t process)
   xbt_os_mutex_acquire(simix_global->mutex);
 
   /* cancel non-blocking communications */
-  smx_activity_t synchro = process->comms.front();
   while (not process->comms.empty()) {
+    smx_activity_t synchro = process->comms.front();
+    process->comms.pop_front();
     simgrid::kernel::activity::CommImplPtr comm =
         boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
 
@@ -104,8 +105,6 @@ void SIMIX_process_cleanup(smx_actor_t process)
     } else {
       xbt_die("Communication synchro %p is in my list but I'm not the sender nor the receiver", synchro.get());
     }
-    process->comms.pop_front();
-    synchro = process->comms.front();
     comm->cancel();
   }
 
