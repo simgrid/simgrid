@@ -21,7 +21,6 @@ import org.simgrid.msg.Msg;
 import org.simgrid.msg.File;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
-import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.MsgException;
 
 public class Node extends Process {

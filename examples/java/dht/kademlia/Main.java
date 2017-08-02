@@ -5,7 +5,6 @@
 
 package dht.kademlia;
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.MsgException;
 
 class Main {
   private Main() {

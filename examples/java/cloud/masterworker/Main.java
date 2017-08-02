@@ -9,7 +9,6 @@ import java.io.File;
 
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
-import org.simgrid.msg.MsgException;
 
 class Main {
   public static final double TASK_COMP_SIZE = 10;
@@ -21,7 +20,7 @@ class Main {
     throw new IllegalAccessError("Utility class");
   }
 
-  public static void main(String[] args) throws MsgException {
+  public static void main(String[] args) {
     Msg.init(args); 
 
     String platfFile = "../../examples/platforms/small_platform.xml";

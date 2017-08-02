@@ -8,7 +8,6 @@ package cloud.migration;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.VM;
 import org.simgrid.msg.Host;
-import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.HostFailureException;
 
 public class XVM extends VM {

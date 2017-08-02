@@ -12,7 +12,6 @@ package async.yield;
  */
 
 import org.simgrid.msg.Host;
-import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.Msg;
 
 class Main {
@@ -21,7 +20,7 @@ class Main {
     throw new IllegalAccessError("Utility class");
   }
 
-  public static void main(String[] args) throws HostNotFoundException {
+  public static void main(String[] args) {
     Msg.init(args);
 
     String platform = "../platforms/small_platform.xml";

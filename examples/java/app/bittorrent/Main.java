@@ -6,7 +6,6 @@
 package app.bittorrent;
 
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.MsgException;
 import org.simgrid.msg.RngStream;
 
 class Main{
