@@ -170,7 +170,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
     if(known==0)
       dt_size_send = datatype->size();
     extra->send_size = count*dt_size_send;
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
 
     *request = simgrid::smpi::Request::irecv(buf, count, datatype, src, tag, comm);
     retval = MPI_SUCCESS;
@@ -218,7 +218,7 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     if(known==0)
       dt_size_send = datatype->size();
     extra->send_size = count*dt_size_send;
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
     TRACE_smpi_send(rank, rank, dst_traced, tag, count*datatype->size());
 
     *request = simgrid::smpi::Request::isend(buf, count, datatype, dst, tag, comm);
@@ -266,7 +266,7 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, M
     if(known==0)
       dt_size_send = datatype->size();
     extra->send_size = count*dt_size_send;
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
     TRACE_smpi_send(rank, rank, dst_traced, tag, count*datatype->size());
 
     *request = simgrid::smpi::Request::issend(buf, count, datatype, dst, tag, comm);
@@ -313,7 +313,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     if (known == 0)
       dt_size_send   = datatype->size();
     extra->send_size = count * dt_size_send;
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
 
     simgrid::smpi::Request::recv(buf, count, datatype, src, tag, comm, status);
     retval = MPI_SUCCESS;
@@ -364,7 +364,7 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
       dt_size_send = datatype->size();
     }
     extra->send_size = count*dt_size_send;
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
     if (not TRACE_smpi_view_internals()) {
       TRACE_smpi_send(rank, rank, dst_traced, tag,count*datatype->size());
     }
@@ -410,7 +410,7 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
       dt_size_send = datatype->size();
     }
     extra->send_size = count*dt_size_send;
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
     TRACE_smpi_send(rank, rank, dst_traced, tag,count*datatype->size());
 
     simgrid::smpi::Request::ssend(buf, count, datatype, dst, tag, comm);
@@ -467,7 +467,7 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
     dt_size_recv = recvtype->size();
   extra->recv_size = recvcount*dt_size_recv;
 
-  TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
+  TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
   TRACE_smpi_send(rank, rank, dst_traced, sendtag,sendcount*sendtype->size());
 
   simgrid::smpi::Request::sendrecv(sendbuf, sendcount, sendtype, dst, sendtag, recvbuf, recvcount, recvtype, src, recvtag, comm,
@@ -623,7 +623,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
     int is_wait_for_receive = ((*request)->flags() & RECV);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_WAIT;
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
 
     simgrid::smpi::Request::wait(request, status);
     retval = MPI_SUCCESS;
@@ -671,7 +671,7 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_WAITANY;
   extra->send_size=count;
-  TRACE_smpi_ptp_in(rank_traced, __FUNCTION__,extra);
+  TRACE_smpi_collective_in(rank_traced, __FUNCTION__,extra);
 
   *index = simgrid::smpi::Request::waitany(count, requests, status);
 
@@ -721,7 +721,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_WAITALL;
   extra->send_size=count;
-  TRACE_smpi_ptp_in(rank_traced, __FUNCTION__,extra);
+  TRACE_smpi_collective_in(rank_traced, __FUNCTION__,extra);
 
   int retval = simgrid::smpi::Request::waitall(count, requests, status);
 

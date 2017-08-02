@@ -29,7 +29,6 @@ XBT_PRIVATE void TRACE_smpi_testing_out(int rank);
 XBT_PRIVATE void TRACE_smpi_testing_in(int rank, instr_extra_data extra);
 XBT_PRIVATE void TRACE_smpi_alloc();
 XBT_PRIVATE void TRACE_smpi_release();
-XBT_PRIVATE void TRACE_smpi_ptp_in(int rank, const char* operation, instr_extra_data extra);
 XBT_PRIVATE void TRACE_smpi_ptp_out(int rank, int dst, const char* operation);
 XBT_PRIVATE void TRACE_smpi_send(int rank, int src, int dst, int tag, int size);
 XBT_PRIVATE void TRACE_smpi_recv(int src, int dst, int tag);
