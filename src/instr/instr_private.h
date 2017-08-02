@@ -72,12 +72,8 @@ class s_type {
 typedef s_type s_type_t;
 
 //--------------------------------------------------
-class value {
+class value : public s_type {
 public:
-  char *id;
-  char *name;
-  char *color;
-  type_t father;
   value* ret;
   value(const char* name, const char* color, type_t father);
   ~value();
