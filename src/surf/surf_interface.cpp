@@ -115,10 +115,6 @@ s_surf_model_description_t surf_storage_model_description[] = {
   {nullptr, nullptr,  nullptr}      /* this array must be nullptr terminated */
 };
 
-#if HAVE_THREAD_CONTEXTS
-static xbt_parmap_t surf_parmap = nullptr; /* parallel map on models */
-#endif
-
 double NOW = 0;
 
 double surf_get_clock()
@@ -387,10 +383,6 @@ void surf_exit()
     delete future_evt_set;
     future_evt_set = nullptr;
   }
-
-#if HAVE_THREAD_CONTEXTS
-  xbt_parmap_destroy(surf_parmap);
-#endif
 
   tmgr_finalize();
   sg_platf_exit();
