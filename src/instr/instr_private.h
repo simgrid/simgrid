@@ -74,7 +74,6 @@ typedef s_type s_type_t;
 //--------------------------------------------------
 class value : public s_type {
 public:
-  value* ret;
   value(const char* name, const char* color, type_t father);
   ~value();
   static value* get_or_new(const char* name, const char* color, type_t father);
