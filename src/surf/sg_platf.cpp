@@ -354,9 +354,10 @@ void sg_platf_new_storage(StorageCreationArgs* storage)
              "Refusing to add a second storage named \"%s\"", storage->id.c_str());
 
   simgrid::surf::StorageType* stype;
-  try {
-    stype = storage_types.at(storage->type_id);
-  } catch (std::out_of_range& unfound) {
+  auto st = storage_types.find(storage->type_id);
+  if (st != storage_types.end()) {
+    stype = st->second;
+  } else {
     xbt_die("No storage type '%s'", storage->type_id.c_str());
   }
 

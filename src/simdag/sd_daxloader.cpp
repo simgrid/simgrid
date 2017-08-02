@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2016. The SimGrid Team.
+/* Copyright (c) 2009-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -318,9 +318,10 @@ void STag_dax__uses()
 static SD_task_t current_child;
 void STag_dax__child()
 {
-  try {
-    current_child = jobs.at(A_dax__child_ref);
-  } catch (std::out_of_range& unfound) {
+  auto job = jobs.find(A_dax__child_ref);
+  if (job != jobs.end()) {
+    current_child = job->second;
+  } else {
     throw std::out_of_range(std::string("Parse error on line ") + std::to_string(dax_lineno) +
                             ": Asked to add dependencies to the non-existent " + A_dax__child_ref + "task");
   }
@@ -333,11 +334,12 @@ void ETag_dax__child()
 
 void STag_dax__parent()
 {
-  try {
-    SD_task_t parent = jobs.at(A_dax__parent_ref);
+  auto job = jobs.find(A_dax__parent_ref);
+  if (job != jobs.end()) {
+    SD_task_t parent = job->second;
     SD_task_dependency_add(nullptr, nullptr, parent, current_child);
     XBT_DEBUG("Control-flow dependency from %s to %s", current_child->name, parent->name);
-  } catch (std::out_of_range& unfound) {
+  } else {
     throw std::out_of_range(std::string("Parse error on line ") + std::to_string(dax_lineno) +
                             ": Asked to add a dependency from " + current_child->name + " to " + A_dax__parent_ref +
                             ", but " + A_dax__parent_ref + " does not exist");

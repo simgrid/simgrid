@@ -829,11 +829,8 @@ xbt_dynar_t SIMIX_process_get_runnable()
 /** @brief Returns the process from PID. */
 smx_actor_t SIMIX_process_from_PID(aid_t PID)
 {
-  try {
-    return simix_global->process_list.at(PID);
-  } catch (std::out_of_range& unfound) {
-    return nullptr;
-  }
+  auto process = simix_global->process_list.find(PID);
+  return process == simix_global->process_list.end() ? nullptr : process->second;
 }
 
 /** @brief returns a dynar containing all currently existing processes */

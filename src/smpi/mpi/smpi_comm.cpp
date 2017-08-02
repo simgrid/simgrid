@@ -452,11 +452,9 @@ MPI_Comm Comm::f2c(int id) {
     return MPI_COMM_WORLD;
   } else if(F2C::f2c_lookup() != nullptr && id >= 0) {
     char key[KEY_SIZE];
-    try {
-      return static_cast<MPI_Comm>(F2C::f2c_lookup()->at(get_key_id(key, id)));
-    } catch (std::out_of_range& unfound) {
-      return MPI_COMM_NULL;
-    }
+    const auto& lookup = F2C::f2c_lookup();
+    auto comm          = lookup->find(get_key_id(key, id));
+    return comm == lookup->end() ? MPI_COMM_NULL : static_cast<MPI_Comm>(comm->second);
   } else {
     return MPI_COMM_NULL;
   }
