@@ -18,8 +18,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 std::vector<s_smpi_factor_t> smpi_bw_factor;
 std::vector<s_smpi_factor_t> smpi_lat_factor;
 
-xbt_dict_t gap_lookup = nullptr;
-
 /*********
  * Model *
  *********/
@@ -47,68 +45,62 @@ void surf_network_model_init_SMPI()
 }
 
 namespace simgrid {
-  namespace surf {
+namespace surf {
 
-  NetworkSmpiModel::NetworkSmpiModel() : NetworkCm02Model()
-  {
-    haveGap_ = true;
-    }
+NetworkSmpiModel::NetworkSmpiModel() : NetworkCm02Model()
+{
+  haveGap_ = true;
+}
 
-    NetworkSmpiModel::~NetworkSmpiModel()
-    {
-      xbt_dict_free(&gap_lookup);
-    }
+NetworkSmpiModel::~NetworkSmpiModel() = default;
 
-    double NetworkSmpiModel::bandwidthFactor(double size)
-    {
-      if (smpi_bw_factor.empty())
-        smpi_bw_factor = parse_factor(xbt_cfg_get_string("smpi/bw-factor"));
+double NetworkSmpiModel::bandwidthFactor(double size)
+{
+  if (smpi_bw_factor.empty())
+    smpi_bw_factor = parse_factor(xbt_cfg_get_string("smpi/bw-factor"));
 
-      double current = 1.0;
-      for (const auto& fact : smpi_bw_factor) {
-        if (size <= fact.factor) {
-          XBT_DEBUG("%f <= %zu return %f", size, fact.factor, current);
-          return current;
-        } else
-          current = fact.values.front();
-      }
-      XBT_DEBUG("%f > %zu return %f", size, smpi_bw_factor.back().factor, current);
-
+  double current = 1.0;
+  for (const auto& fact : smpi_bw_factor) {
+    if (size <= fact.factor) {
+      XBT_DEBUG("%f <= %zu return %f", size, fact.factor, current);
       return current;
-    }
-
-    double NetworkSmpiModel::latencyFactor(double size)
-    {
-      if (smpi_lat_factor.empty())
-        smpi_lat_factor = parse_factor(xbt_cfg_get_string("smpi/lat-factor"));
-
-      double current=1.0;
-      for (const auto& fact : smpi_lat_factor) {
-        if (size <= fact.factor) {
-          XBT_DEBUG("%f <= %zu return %f", size, fact.factor, current);
-          return current;
-        }else
-          current=fact.values.front();
-      }
-      XBT_DEBUG("%f > %zu return %f", size, smpi_lat_factor.back().factor, current);
-
-      return current;
-    }
-
-    double NetworkSmpiModel::bandwidthConstraint(double rate, double bound, double size)
-    {
-      return rate < 0 ? bound : std::min(bound, rate * bandwidthFactor(size));
-    }
-
-    /************
-     * Resource *
-     ************/
-
-
-
-    /**********
-     * Action *
-     **********/
-
+    } else
+      current = fact.values.front();
   }
+  XBT_DEBUG("%f > %zu return %f", size, smpi_bw_factor.back().factor, current);
+
+  return current;
+}
+
+double NetworkSmpiModel::latencyFactor(double size)
+{
+  if (smpi_lat_factor.empty())
+    smpi_lat_factor = parse_factor(xbt_cfg_get_string("smpi/lat-factor"));
+
+  double current = 1.0;
+  for (const auto& fact : smpi_lat_factor) {
+    if (size <= fact.factor) {
+      XBT_DEBUG("%f <= %zu return %f", size, fact.factor, current);
+      return current;
+    } else
+      current = fact.values.front();
+  }
+  XBT_DEBUG("%f > %zu return %f", size, smpi_lat_factor.back().factor, current);
+
+  return current;
+}
+
+double NetworkSmpiModel::bandwidthConstraint(double rate, double bound, double size)
+{
+  return rate < 0 ? bound : std::min(bound, rate * bandwidthFactor(size));
+}
+
+/************
+ * Resource *
+ ************/
+
+/**********
+ * Action *
+ **********/
+}
 }

@@ -452,23 +452,19 @@ int console_add_ASroute(lua_State *L) {
 }
 
 int console_AS_open(lua_State *L) {
- const char *id;
- const char *mode;
- int type;
-
  XBT_DEBUG("Opening AS");
 
  lua_ensure(lua_istable(L, 1), "Bad Arguments to AS_open, Should be a table with named arguments");
 
  lua_pushstring(L, "id");
- type = lua_gettable(L, -2);
+ int type = lua_gettable(L, -2);
  lua_ensure(type == LUA_TSTRING, "Attribute 'id' must be specified for any AS and must be a string.");
- id = lua_tostring(L, -1);
+ const char* id = lua_tostring(L, -1);
  lua_pop(L, 1);
 
  lua_pushstring(L, "mode");
  lua_gettable(L, -2);
- mode = lua_tostring(L, -1);
+ const char* mode = lua_tostring(L, -1);
  lua_pop(L, 1);
 
  int mode_int = A_surfxml_AS_routing_None;
@@ -535,8 +531,7 @@ int console_host_set_property(lua_State *L) {
 
   sg_host_t host = sg_host_by_name(name);
   lua_ensure(host, "no host '%s' found",name);
-  xbt_dict_t props = sg_host_get_properties(host);
-  xbt_dict_set(props,prop_id,xbt_strdup(prop_value),nullptr);
+  host->setProperty(prop_id, prop_value);
 
   return 0;
 }
