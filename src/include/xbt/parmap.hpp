@@ -60,7 +60,7 @@ private:
    */
   class Synchro {
   public:
-    Synchro(Parmap<T>& parmap) : parmap(parmap) {}
+    explicit Synchro(Parmap<T>& parmap) : parmap(parmap) {}
     virtual ~Synchro() {}
     /**
      * \brief Wakes all workers and waits for them to finish the tasks.
@@ -95,7 +95,7 @@ private:
 
   class PosixSynchro : public Synchro {
   public:
-    PosixSynchro(Parmap<T>& parmap);
+    explicit PosixSynchro(Parmap<T>& parmap);
     ~PosixSynchro();
     void master_signal();
     void master_wait();
@@ -112,7 +112,7 @@ private:
 #if HAVE_FUTEX_H
   class FutexSynchro : public Synchro {
   public:
-    FutexSynchro(Parmap<T>& parmap) : Synchro(parmap) {}
+    explicit FutexSynchro(Parmap<T>& parmap) : Synchro(parmap) {}
     void master_signal();
     void master_wait();
     void worker_signal();
@@ -126,7 +126,7 @@ private:
 
   class BusyWaitSynchro : public Synchro {
   public:
-    BusyWaitSynchro(Parmap<T>& parmap) : Synchro(parmap) {}
+    explicit BusyWaitSynchro(Parmap<T>& parmap) : Synchro(parmap) {}
     void master_signal();
     void master_wait();
     void worker_signal();
