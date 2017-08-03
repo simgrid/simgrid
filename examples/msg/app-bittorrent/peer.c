@@ -17,8 +17,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_peers, "Messages specific for the peers");
  * User parameters for transferred file data. For the test, the default values are :
  * File size: 10 pieces * 5 blocks/piece * 16384 bytes/block = 819200 bytes
  */
-#define FILE_PIECES  10U
-#define PIECES_BLOCKS 5U
+#define FILE_PIECES 10UL
+#define PIECES_BLOCKS 5UL
 #define BLOCK_SIZE  16384
 static const unsigned long int FILE_SIZE = FILE_PIECES * PIECES_BLOCKS * BLOCK_SIZE;
 
