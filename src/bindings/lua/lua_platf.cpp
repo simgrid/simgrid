@@ -1,5 +1,4 @@
-/* Copyright (c) 2010, 2012-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -507,26 +506,23 @@ int console_AS_seal(lua_State *L) {
 }
 
 int console_host_set_property(lua_State *L) {
-  const char* name ="";
-  const char* prop_id = "";
-  const char* prop_value = "";
   lua_ensure(lua_istable(L, -1), "Bad Arguments to create link, Should be a table with named arguments");
 
   // get Host id
   lua_pushstring(L, "host");
   lua_gettable(L, -2);
-  name = lua_tostring(L, -1);
+  const char* name = lua_tostring(L, -1);
   lua_pop(L, 1);
 
   // get prop Name
   lua_pushstring(L, "prop");
   lua_gettable(L, -2);
-  prop_id = lua_tostring(L, -1);
+  const char* prop_id = lua_tostring(L, -1);
   lua_pop(L, 1);
   //get args
   lua_pushstring(L,"value");
   lua_gettable(L, -2);
-  prop_value = lua_tostring(L,-1);
+  const char* prop_value = lua_tostring(L, -1);
   lua_pop(L, 1);
 
   sg_host_t host = sg_host_by_name(name);
