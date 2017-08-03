@@ -138,15 +138,16 @@ private:
   Synchro* new_synchro(e_xbt_parmap_mode_t mode);
   void work();
 
-  Flag status;                 /**< is the parmap active or being destroyed? */
-  unsigned work_round;         /**< index of the current round */
-  unsigned thread_counter;     /**< number of workers that have done the work */
-  unsigned num_workers;        /**< total number of worker threads including the controller */
-  xbt_os_thread_t* workers;    /**< worker thread handlers */
-  void (*fun)(const T);        /**< function to run in parallel on each element of data */
-  const std::vector<T>* data;  /**< parameters to pass to fun in parallel */
-  std::atomic<unsigned> index; /**< index of the next element of data to pick */
-  Synchro* synchro;            /**< synchronization object */
+  Flag status;              /**< is the parmap active or being destroyed? */
+  unsigned work_round;      /**< index of the current round */
+  xbt_os_thread_t* workers; /**< worker thread handlers */
+  unsigned num_workers;     /**< total number of worker threads including the controller */
+  Synchro* synchro;         /**< synchronization object */
+
+  unsigned thread_counter    = 0;       /**< number of workers that have done the work */
+  void (*fun)(const T)       = nullptr; /**< function to run in parallel on each element of data */
+  const std::vector<T>* data = nullptr; /**< parameters to pass to fun in parallel */
+  std::atomic<unsigned> index;          /**< index of the next element of data to pick */
 };
 
 /**
