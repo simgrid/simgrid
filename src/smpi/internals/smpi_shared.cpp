@@ -38,8 +38,6 @@
 
 #include "private.h"
 #include "private.hpp"
-#include "xbt/dict.h"
-#include "xbt/ex.hpp"
 #include <cerrno>
 
 #include <sys/types.h>
