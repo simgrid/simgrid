@@ -9,12 +9,6 @@
 #ifndef XBT_PARMAP_H
 #define XBT_PARMAP_H
 
-#include "xbt/misc.h"           /* SG_BEGIN_DECL */
-#include "xbt/function_types.h"
-#include "xbt/dynar.h"
-
-SG_BEGIN_DECL()
-
 /** \addtogroup XBT_parmap
   * \ingroup XBT_misc
   * \brief Parallel map.
@@ -28,9 +22,6 @@ SG_BEGIN_DECL()
   * \{
   */
 
-/** \brief Parallel map data type (opaque type) */
-typedef struct s_xbt_parmap *xbt_parmap_t;
-
 /** \brief Synchronization mode of the worker threads of a parmap. */
 typedef enum {
   XBT_PARMAP_POSIX,          /**< use POSIX synchronization primitives */
@@ -39,13 +30,6 @@ typedef enum {
   XBT_PARMAP_DEFAULT         /**< futex if available, posix otherwise */
 } e_xbt_parmap_mode_t;
 
-XBT_PUBLIC(xbt_parmap_t) xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode);
-XBT_PUBLIC(void) xbt_parmap_destroy(xbt_parmap_t parmap);
-XBT_PUBLIC(void) xbt_parmap_apply(xbt_parmap_t parmap, void_f_pvoid_t fun, xbt_dynar_t data);
-XBT_PUBLIC(void*) xbt_parmap_next(xbt_parmap_t parmap);
-
 /** \} */
-
-SG_END_DECL()
 
 #endif
