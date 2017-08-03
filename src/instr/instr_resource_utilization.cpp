@@ -1,10 +1,11 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
+/* Copyright (c) 2010-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/instr/instr_private.h"
+#include <string>
 #include <unordered_map>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_resource, instr, "tracing (un)-categorized resource utilization");
