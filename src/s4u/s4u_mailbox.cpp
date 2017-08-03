@@ -18,7 +18,7 @@ namespace s4u {
 
 const char* Mailbox::getName()
 {
-  return pimpl_->name_;
+  return pimpl_->name_.c_str();
 }
 
 MailboxPtr Mailbox::byName(const char*name)
@@ -53,9 +53,7 @@ smx_activity_t Mailbox::front()
 }
 
 void Mailbox::setReceiver(ActorPtr actor) {
-  simix::kernelImmediate([this, actor]() {
-    this->pimpl_->setReceiver(actor);
-  });
+  simix::kernelImmediate([this, actor]() { this->pimpl_->setReceiver(actor); });
 }
 
 /** @brief get the receiver (process associated to the mailbox) */

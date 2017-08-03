@@ -9,13 +9,13 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_mailbox, simix, "Mailbox implementation");
 
-static xbt_dict_t mailboxes = xbt_dict_new_homogeneous([](void* data) {
-  delete static_cast<smx_mailbox_t>(data);
-});
+static std::map<std::string, smx_mailbox_t>* mailboxes = new std::map<std::string, smx_mailbox_t>;
 
 void SIMIX_mailbox_exit()
 {
-  xbt_dict_free(&mailboxes);
+  for (auto elm : *mailboxes)
+    delete elm.second;
+  delete mailboxes;
 }
 
 /******************************************************************************/
@@ -28,20 +28,25 @@ namespace activity {
 /** @brief Returns the mailbox of that name, or nullptr */
 MailboxImpl* MailboxImpl::byNameOrNull(const char* name)
 {
-  return static_cast<smx_mailbox_t>(xbt_dict_get_or_null(mailboxes, name));
+  auto mbox = mailboxes->find(name);
+  if (mbox != mailboxes->end())
+    return mbox->second;
+  else
+    return nullptr;
 }
 /** @brief Returns the mailbox of that name, newly created on need */
 MailboxImpl* MailboxImpl::byNameOrCreate(const char* name)
 {
   xbt_assert(name, "Mailboxes must have a name");
   /* two processes may have pushed the same mbox_create simcall at the same time */
-  smx_mailbox_t mbox = static_cast<smx_mailbox_t>(xbt_dict_get_or_null(mailboxes, name));
-  if (not mbox) {
-    mbox = new MailboxImpl(name);
+  auto m = mailboxes->find(name);
+  if (m == mailboxes->end()) {
+    smx_mailbox_t mbox = new MailboxImpl(name);
     XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name);
-    xbt_dict_set(mailboxes, mbox->name_, mbox, nullptr);
-  }
-  return mbox;
+    (*mailboxes)[mbox->name_] = mbox;
+    return mbox;
+  } else
+    return m->second;
 }
 /** @brief set the receiver of the mailbox to allow eager sends
  *  \param actor The receiving dude
@@ -68,14 +73,14 @@ void MailboxImpl::remove(smx_activity_t activity)
       boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(activity);
 
   xbt_assert(comm->mbox == this, "Comm %p is in mailbox %s, not mailbox %s", comm.get(),
-             (comm->mbox ? comm->mbox->name_ : "(null)"), this->name_);
+             (comm->mbox ? comm->mbox->name_.c_str() : "(null)"), this->name_.c_str());
   comm->mbox = nullptr;
   for (auto it = this->comm_queue.begin(); it != this->comm_queue.end(); it++)
     if (*it == comm) {
       this->comm_queue.erase(it);
       return;
     }
-  xbt_die("Comm %p not found in mailbox %s", comm.get(), this->name_);
+  xbt_die("Comm %p not found in mailbox %s", comm.get(), this->name_.c_str());
 }
 }
 }

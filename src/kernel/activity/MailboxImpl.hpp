@@ -21,12 +21,12 @@ namespace activity {
 
 class MailboxImpl {
   explicit MailboxImpl(const char* name)
-      : piface_(this), name_(xbt_strdup(name)), comm_queue(MAX_MAILBOX_SIZE), done_comm_queue(MAX_MAILBOX_SIZE)
+      : piface_(this), name_(name), comm_queue(MAX_MAILBOX_SIZE), done_comm_queue(MAX_MAILBOX_SIZE)
   {
   }
 
 public:
-  ~MailboxImpl() { xbt_free(name_); }
+  ~MailboxImpl() = default;
 
   static MailboxImpl* byNameOrNull(const char* name);
   static MailboxImpl* byNameOrCreate(const char* name);
@@ -34,7 +34,7 @@ public:
   void push(activity::CommImplPtr comm);
   void remove(smx_activity_t activity);
   simgrid::s4u::Mailbox piface_; // Our interface
-  char* name_;
+  std::string name_;
 
   simgrid::simix::ActorImplPtr permanent_receiver; // process which the mailbox is attached to
   boost::circular_buffer_space_optimized<smx_activity_t> comm_queue;
