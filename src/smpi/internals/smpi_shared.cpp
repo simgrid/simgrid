@@ -7,7 +7,7 @@
  * Associated data and metadata are used as follows:
  *
  *                                                                    mmap #1
- *    `allocs' dict                                                     ---- -.
+ *    `allocs' map                                                      ---- -.
  *    ----------      shared_data_t               shared_metadata_t   / |  |  |
  * .->| <name> | ---> -------------------- <--.   -----------------   | |  |  |
  * |  ----------      | fd of <name>     |    |   | size of mmap  | --| |  |  |
@@ -15,7 +15,7 @@
  * `----------------- | <name>           |    |   -----------------     ----  |
  *                    --------------------    |   ^                           |
  *                                            |   |                           |
- *                                            |   |   `allocs_metadata' dict  |
+ *                                            |   |   `allocs_metadata' map   |
  *                                            |   |   ----------------------  |
  *                                            |   `-- | <addr of mmap #1>  |<-'
  *                                            |   .-- | <addr of mmap #2>  |<-.
@@ -122,7 +122,8 @@ typedef struct {
 } shared_metadata_t;
 
 std::map<void*, shared_metadata_t> allocs_metadata;
-xbt_dict_t calls = nullptr;           /* Allocated on first use */
+std::map<std::string, void*> calls;
+
 #ifndef WIN32
 static int smpi_shared_malloc_bogusfile           = -1;
 static int smpi_shared_malloc_bogusfile_huge_page  = -1;
@@ -135,7 +136,7 @@ void smpi_shared_destroy()
 {
   allocs.clear();
   allocs_metadata.clear();
-  xbt_dict_free(&calls);
+  calls.clear();
 }
 
 static size_t shm_size(int fd) {
@@ -487,46 +488,18 @@ void smpi_shared_free(void *ptr)
 
 int smpi_shared_known_call(const char* func, const char* input)
 {
-  char* loc = bprintf("%s:%s", func, input);
-  int known = 0;
-
-  if (calls==nullptr) {
-    calls = xbt_dict_new_homogeneous(nullptr);
-  }
-  try {
-    xbt_dict_get(calls, loc); /* Succeed or throw */
-    known = 1;
-    xbt_free(loc);
-  }
-  catch (xbt_ex& ex) {
-    xbt_free(loc);
-    if (ex.category != not_found_error)
-      throw;
-  }
-  catch(...) {
-    xbt_free(loc);
-    throw;
-  }
-  return known;
+  std::string loc = std::string(func) + ":" + input;
+  return calls.find(loc) != calls.end();
 }
 
 void* smpi_shared_get_call(const char* func, const char* input) {
-  char* loc = bprintf("%s:%s", func, input);
+  std::string loc = std::string(func) + ":" + input;
 
-  if (calls == nullptr)
-    calls    = xbt_dict_new_homogeneous(nullptr);
-  void* data = xbt_dict_get(calls, loc);
-  xbt_free(loc);
-  return data;
+  return calls.at(loc);
 }
 
 void* smpi_shared_set_call(const char* func, const char* input, void* data) {
-  char* loc = bprintf("%s:%s", func, input);
-
-  if (calls == nullptr)
-    calls = xbt_dict_new_homogeneous(nullptr);
-  xbt_dict_set(calls, loc, data, nullptr);
-  xbt_free(loc);
+  std::string loc = std::string(func) + ":" + input;
+  calls[loc]      = data;
   return data;
 }
-
