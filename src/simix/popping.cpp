@@ -25,9 +25,10 @@ void SIMIX_simcall_answer(smx_simcall_t simcall)
         simcall->issuer->name.c_str(), simcall->issuer);
     simcall->issuer->simcall.call = SIMCALL_NONE;
     /* This check should be useless and slows everyone. Reactivate if you see something weird in process scheduling. */
-    // if (xbt_dynar_member(simix_global->process_to_run, &(simcall->issuer)))
+    // if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), simcall->issuer) !=
+    //         end(simix_global->process_to_run))
     //   DIE_IMPOSSIBLE;
-    xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, simcall->issuer);
+    simix_global->process_to_run.push_back(simcall->issuer);
   }
 }
 

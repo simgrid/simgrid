@@ -7,12 +7,11 @@
 
 #include <ucontext.h>           /* context relative declarations */
 
-#include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_private.h"
-#include "xbt/parmap.h"
 #include "mc/mc.h"
 #include "src/mc/mc_ignore.h"
-
+#include "src/simix/ActorImpl.hpp"
+#include "src/simix/smx_private.h"
+#include "xbt/parmap.hpp"
 
 /** Many integers are needed to store a pointer
  *
@@ -55,7 +54,7 @@ namespace context {
 }}}
 
 #if HAVE_THREAD_CONTEXTS
-static xbt_parmap_t sysv_parmap;
+static simgrid::xbt::Parmap<smx_actor_t>* sysv_parmap;
 static simgrid::kernel::context::ParallelUContext** sysv_workers_context;   /* space to save the worker's context in each thread */
 static uintptr_t sysv_threads_working;     /* number of threads that have started their work */
 static xbt_os_thread_key_t sysv_worker_id_key; /* thread-specific storage for the thread id */
@@ -146,8 +145,7 @@ UContextFactory::UContextFactory() : ContextFactory("UContextFactory")
 UContextFactory::~UContextFactory()
 {
 #if HAVE_THREAD_CONTEXTS
-  if (sysv_parmap)
-    xbt_parmap_destroy(sysv_parmap);
+  delete sysv_parmap;
   xbt_free(sysv_workers_context);
 #endif
 }
@@ -169,25 +167,24 @@ void UContextFactory::run_all()
       // with simix_global->context_factory (which might not be initialized
       // when bootstrapping):
       if (sysv_parmap == nullptr)
-        sysv_parmap = xbt_parmap_new(
-          SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
+        sysv_parmap =
+            new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
 
-      xbt_parmap_apply(sysv_parmap,
-        [](void* arg) {
-          smx_actor_t process = (smx_actor_t) arg;
-          ParallelUContext* context = static_cast<ParallelUContext*>(process->context);
-          context->resume();
-        },
-        simix_global->process_to_run);
+      sysv_parmap->apply(
+          [](smx_actor_t process) {
+            ParallelUContext* context = static_cast<ParallelUContext*>(process->context);
+            context->resume();
+          },
+          simix_global->process_to_run);
 #else
       xbt_die("You asked for a parallel execution, but you don't have any threads.");
 #endif
   } else {
     // Serial:
-    if (xbt_dynar_is_empty(simix_global->process_to_run))
+    if (simix_global->process_to_run.empty())
       return;
 
-    smx_actor_t first_process = xbt_dynar_get_as(simix_global->process_to_run, 0, smx_actor_t);
+    smx_actor_t first_process = simix_global->process_to_run.front();
     sysv_process_index = 1;
     SerialUContext* context = static_cast<SerialUContext*>(first_process->context);
     context->resume();
@@ -270,11 +267,10 @@ void SerialUContext::suspend()
   SerialUContext* next_context = nullptr;
   unsigned long int i = sysv_process_index++;
 
-  if (i < xbt_dynar_length(simix_global->process_to_run)) {
+  if (i < simix_global->process_to_run.size()) {
     /* execute the next process */
     XBT_DEBUG("Run next process");
-    next_context = (SerialUContext*) xbt_dynar_get_as(
-        simix_global->process_to_run,i, smx_actor_t)->context;
+    next_context = (SerialUContext*)simix_global->process_to_run[i]->context;
   } else {
     /* all processes were run, return to maestro */
     XBT_DEBUG("No more process to run");
@@ -345,15 +341,12 @@ void ParallelUContext::suspend()
 #if HAVE_THREAD_CONTEXTS
   /* determine the next context */
   // Get the next soul to embody now:
-  smx_actor_t next_work = (smx_actor_t) xbt_parmap_next(sysv_parmap);
-  ParallelUContext* next_context = nullptr;
-  // Will contain the next soul to run, either simulated or initial minion's one
-  ucontext_t* next_stack;
-
-  if (next_work != nullptr) {
+  boost::optional<smx_actor_t> next_work = sysv_parmap->next();
+  ParallelUContext* next_context;
+  if (next_work) {
     // There is a next soul to embody (ie, a next process to resume)
     XBT_DEBUG("Run next process");
-    next_context = (ParallelUContext*) next_work->context;
+    next_context = static_cast<ParallelUContext*>(next_work.get()->context);
   } else {
     // All processes were run, go to the barrier
     XBT_DEBUG("No more processes to run");
@@ -366,7 +359,8 @@ void ParallelUContext::suspend()
     // When given that soul, the body will wait for the next scheduling round
   }
 
-  next_stack = &next_context->uc_;
+  // Will contain the next soul to run, either simulated or initial minion's one
+  ucontext_t* next_stack = &next_context->uc_;
 
   SIMIX_context_set_current(next_context);
   // Get that next soul:

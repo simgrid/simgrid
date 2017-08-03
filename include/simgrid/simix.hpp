@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2010, 2012-2015. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2012-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -69,6 +69,7 @@ typename std::result_of<F()>::type kernelImmediate(F&& code)
   return result.get();
 }
 
+XBT_PUBLIC(const std::vector<smx_actor_t>&) process_get_runnable();
 
 XBT_PUBLIC(void) set_maestro(std::function<void()> code);
 XBT_PUBLIC(void) create_maestro(std::function<void()> code);

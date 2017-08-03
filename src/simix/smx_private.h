@@ -11,6 +11,7 @@
 #include <signal.h>
 
 #include <map>
+#include <vector>
 
 /********************************** Simix Global ******************************/
 
@@ -22,8 +23,8 @@ class Global {
 
 public:
   smx_context_factory_t context_factory = nullptr;
-  xbt_dynar_t process_to_run = nullptr;
-  xbt_dynar_t process_that_ran = nullptr;
+  std::vector<smx_actor_t> process_to_run;
+  std::vector<smx_actor_t> process_that_ran;
   std::map<aid_t, smx_actor_t> process_list;
 #if SIMGRID_HAVE_MC
   /* MCer cannot read the std::map above in the remote process, so we copy the info it needs in a dynar.

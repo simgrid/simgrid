@@ -5,7 +5,7 @@
 
 #include "src/internal_config.h"
 
-#include "xbt/parmap.h"
+#include "xbt/parmap.hpp"
 
 #include "src/simix/smx_private.h"
 #include "mc/mc.h"
@@ -73,7 +73,7 @@ ContextFactory* raw_factory()
 // ***** Loads of static stuff
 
 #if HAVE_THREAD_CONTEXTS
-static xbt_parmap_t raw_parmap;
+static simgrid::xbt::Parmap<smx_actor_t>* raw_parmap;
 static simgrid::kernel::context::RawContext** raw_workers_context;    /* space to save the worker context in each thread */
 static uintptr_t raw_threads_working;     /* number of threads that have started their work */
 static xbt_os_thread_key_t raw_worker_id_key; /* thread-specific storage for the thread id */
@@ -277,8 +277,7 @@ RawContextFactory::RawContextFactory()
 RawContextFactory::~RawContextFactory()
 {
 #if HAVE_THREAD_CONTEXTS
-  if (raw_parmap)
-    xbt_parmap_destroy(raw_parmap);
+  delete raw_parmap;
   xbt_free(raw_workers_context);
 #endif
 }
@@ -337,11 +336,10 @@ void RawContextFactory::run_all()
 
 void RawContextFactory::run_all_serial()
 {
-  if (xbt_dynar_is_empty(simix_global->process_to_run))
+  if (simix_global->process_to_run.empty())
     return;
 
-  smx_actor_t first_process =
-      xbt_dynar_get_as(simix_global->process_to_run, 0, smx_actor_t);
+  smx_actor_t first_process = simix_global->process_to_run.front();
   raw_process_index = 1;
   static_cast<RawContext*>(first_process->context)->resume_serial();
 }
@@ -351,11 +349,9 @@ void RawContextFactory::run_all_parallel()
 #if HAVE_THREAD_CONTEXTS
   raw_threads_working = 0;
   if (raw_parmap == nullptr)
-    raw_parmap = xbt_parmap_new(
-      SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
-  xbt_parmap_apply(raw_parmap,
-      [](void* arg) {
-        smx_actor_t process = static_cast<smx_actor_t>(arg);
+    raw_parmap = new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
+  raw_parmap->apply(
+      [](smx_actor_t process) {
         RawContext* context = static_cast<RawContext*>(process->context);
         context->resume_parallel();
       },
@@ -379,10 +375,10 @@ void RawContext::suspend_serial()
   RawContext* next_context = nullptr;
   unsigned long int i      = raw_process_index;
   raw_process_index++;
-  if (i < xbt_dynar_length(simix_global->process_to_run)) {
+  if (i < simix_global->process_to_run.size()) {
     /* execute the next process */
     XBT_DEBUG("Run next process");
-    next_context = static_cast<RawContext*>(xbt_dynar_get_as(simix_global->process_to_run, i, smx_actor_t)->context);
+    next_context = static_cast<RawContext*>(simix_global->process_to_run[i]->context);
   } else {
     /* all processes were run, return to maestro */
     XBT_DEBUG("No more process to run");
@@ -396,13 +392,12 @@ void RawContext::suspend_parallel()
 {
 #if HAVE_THREAD_CONTEXTS
   /* determine the next context */
-  smx_actor_t next_work    = static_cast<smx_actor_t>(xbt_parmap_next(raw_parmap));
-  RawContext* next_context = nullptr;
-
-  if (next_work != nullptr) {
+  boost::optional<smx_actor_t> next_work = raw_parmap->next();
+  RawContext* next_context;
+  if (next_work) {
     /* there is a next process to resume */
     XBT_DEBUG("Run next process");
-    next_context = static_cast<RawContext*>(next_work->context);
+    next_context = static_cast<RawContext*>(next_work.get()->context);
   } else {
     /* all processes were run, go to the barrier */
     XBT_DEBUG("No more processes to run");
@@ -450,7 +445,7 @@ void RawContext::resume_parallel()
 /** @brief Resumes all processes ready to run. */
 void RawContextFactory::run_all_adaptative()
 {
-  unsigned long nb_processes = xbt_dynar_length(simix_global->process_to_run);
+  unsigned long nb_processes = simix_global->process_to_run.size();
   if (SIMIX_context_is_parallel() &&
       static_cast<unsigned long>(SIMIX_context_get_parallel_threshold()) < nb_processes) {
     raw_context_parallel = true;
