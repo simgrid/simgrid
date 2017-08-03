@@ -104,7 +104,6 @@ namespace surf {
 
 NetworkIBModel::NetworkIBModel() : NetworkSmpiModel()
 {
-  haveGap_                      = false;
   const char* IB_factors_string = xbt_cfg_get_string("smpi/IB-penalty-factors");
   std::vector<std::string> radical_elements;
   boost::split(radical_elements, IB_factors_string, boost::is_any_of(";"));

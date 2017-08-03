@@ -314,14 +314,6 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   action->latCurrent_ = action->latency_;
   action->latency_ *= latencyFactor(size);
   action->rate_ = bandwidthConstraint(action->rate_, bandwidth_bound, size);
-  if (haveGap_) {
-    xbt_assert(not route->empty(),
-               "Using a model with a gap (e.g., SMPI) with a platform without links (e.g. vivaldi)!!!");
-
-    gapAppend(size, route->at(0), action);
-    XBT_DEBUG("Comm %p: %s -> %s gap=%f (lat=%f)", action, src->getCname(), dst->getCname(), action->senderGap_,
-              action->latency_);
-  }
 
   int constraints_per_variable = route->size();
   if (back_route != nullptr)
@@ -363,10 +355,6 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   simgrid::s4u::Link::onCommunicate(action, src, dst);
   return action;
 }
-
-void NetworkCm02Model::gapAppend(double size, const LinkImpl* link, NetworkAction* action){
-    // Nothing
-};
 
 /************
  * Resource *
@@ -514,8 +502,5 @@ void NetworkCm02Action::updateRemainingLazy(double now)
   lastValue_ = lmm_variable_getvalue(getVariable());
 }
 
-void NetworkCm02Link::gapAppend(double size, const LinkImpl* link, NetworkAction* action){
-    // Nothing
-};
 }
 }
