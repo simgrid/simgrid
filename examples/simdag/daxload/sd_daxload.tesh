@@ -109,16 +109,16 @@ $ cat ${srcdir:=.}/daxload/smalldax.trace
 > [0.016600] node-1.acme.org compute 42000000000.000000 # 1@task1
 > [0.016600] node-10.acme.org compute 42000000000.000000 # 2@task2
 > [42.033200] node-11.acme.org compute 42000000000.000000 # 3@task1
-> [0.000000] node-0.acme.org send node-10.acme.org 1000000.000000 # root_i2_2@task2
-> [0.016600] node-10.acme.org recv node-0.acme.org 1000000.000000 # root_i2_2@task2
-> [42.016600] node-1.acme.org send node-11.acme.org 1000000.000000 # 1@task1_o1_3@task1
-> [42.033200] node-11.acme.org recv node-1.acme.org 1000000.000000 # 1@task1_o1_3@task1
-> [42.016600] node-10.acme.org send node-11.acme.org 1000000.000000 # 2@task2_o2_3@task1
-> [42.033200] node-11.acme.org recv node-10.acme.org 1000000.000000 # 2@task2_o2_3@task1
 > [84.033200] node-11.acme.org send node-0.acme.org 4167312.000000 # 3@task1_o3_end
 > [84.067138] node-0.acme.org recv node-11.acme.org 4167312.000000 # 3@task1_o3_end
 > [0.000000] node-0.acme.org send node-1.acme.org 1000000.000000 # root_i1_1@task1
 > [0.016600] node-1.acme.org recv node-0.acme.org 1000000.000000 # root_i1_1@task1
+> [42.016600] node-1.acme.org send node-11.acme.org 1000000.000000 # 1@task1_o1_3@task1
+> [42.033200] node-11.acme.org recv node-1.acme.org 1000000.000000 # 1@task1_o1_3@task1
+> [0.000000] node-0.acme.org send node-10.acme.org 1000000.000000 # root_i2_2@task2
+> [0.016600] node-10.acme.org recv node-0.acme.org 1000000.000000 # root_i2_2@task2
+> [42.016600] node-10.acme.org send node-11.acme.org 1000000.000000 # 2@task2_o2_3@task1
+> [42.033200] node-11.acme.org recv node-10.acme.org 1000000.000000 # 2@task2_o2_3@task1
 > [84.067138] node-0.acme.org compute 0.000000 # end
 
 $ cmake -E remove -f ${srcdir:=.}/dax.dot ${srcdir:=.}/daxload/smalldax.trace
