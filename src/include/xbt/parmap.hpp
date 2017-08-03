@@ -38,6 +38,7 @@ namespace xbt {
 template <typename T> class Parmap {
 public:
   Parmap(unsigned num_workers, e_xbt_parmap_mode_t mode);
+  Parmap(const Parmap&) = delete;
   ~Parmap();
   void apply(void (*fun)(T), const std::vector<T>& data);
   boost::optional<T> next();

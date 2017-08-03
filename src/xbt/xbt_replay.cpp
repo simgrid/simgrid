@@ -38,6 +38,7 @@ public:
     fs = new std::ifstream(filename, std::ifstream::in);
     xbt_assert(fs->is_open(), "Cannot read replay file '%s'", filename);
   }
+  ReplayReader(const ReplayReader&) = delete;
   ~ReplayReader()
   {
     delete fs;
