@@ -699,31 +699,29 @@ set(headers_to_install
   include/smpi/smpi_extended_traces_fortran.h
   include/smpi/forward.hpp
   include/xbt.h
-  include/xbt/RngStream.h
+  include/xbt/algorithm.hpp
   include/xbt/asserts.h
   include/xbt/automaton.h
   include/xbt/automaton.hpp
+  include/xbt/backtrace.h
+  include/xbt/backtrace.hpp
   include/xbt/base.h
   include/xbt/config.h
   include/xbt/config.hpp
   include/xbt/cunit.h
   include/xbt/dict.h
-  include/xbt/string.hpp
-  include/xbt/signal.hpp
   include/xbt/dynar.h
   include/xbt/dynar.hpp
   include/xbt/ex.h
   include/xbt/ex.hpp
   include/xbt/exception.hpp
-  include/xbt/backtrace.h
-  include/xbt/backtrace.hpp
+  include/xbt/Extendable.hpp
   include/xbt/file.h
-  include/xbt/function_types.h
   include/xbt/functional.hpp
+  include/xbt/function_types.h
   include/xbt/future.hpp
   include/xbt/graph.h
   include/xbt/heap.h
-  include/xbt/Extendable.hpp
   include/xbt/log.h
   include/xbt/log.hpp
   include/xbt/mallocator.h
@@ -733,7 +731,10 @@ set(headers_to_install
   include/xbt/parmap.h
   include/xbt/range.hpp
   include/xbt/replay.hpp
+  include/xbt/RngStream.h
+  include/xbt/signal.hpp
   include/xbt/str.h
+  include/xbt/string.hpp
   include/xbt/swag.h
   include/xbt/synchro.h
   include/xbt/sysdep.h
