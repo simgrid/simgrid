@@ -47,13 +47,12 @@ static std::string parmap_mode_name(e_xbt_parmap_mode_t mode)
 
 static bool parmap_skip_mode(e_xbt_parmap_mode_t mode)
 {
-#if !HAVE_FUTEX_H
-  if (mode == XBT_PARMAP_FUTEX) {
+  if (mode == XBT_PARMAP_FUTEX && not HAVE_FUTEX_H) {
     std::cout << "not available\n";
     return true;
-  } else
-#endif
+  } else {
     return false;
+  }
 }
 
 static unsigned fibonacci(unsigned n)
