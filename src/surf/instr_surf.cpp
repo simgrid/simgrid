@@ -9,16 +9,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_surf, instr, "Tracing Surf");
 
-void TRACE_surf_alloc()
-{
-  TRACE_surf_resource_utilization_alloc();
-}
-
-void TRACE_surf_release()
-{
-  TRACE_surf_resource_utilization_release();
-}
-
 void TRACE_surf_host_set_speed(double date, const char *resource, double speed)
 {
   if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) {

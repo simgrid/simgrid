@@ -434,8 +434,6 @@ const char *__surf_get_initial_path();
 /********** Tracing **********/
 /* from surf_instr.c */
 void TRACE_surf_action(surf_action_t surf_action, const char *category);
-void TRACE_surf_alloc();
-void TRACE_surf_release();
 
 /* instr_routing.c */
 void instr_routing_define_callbacks ();
