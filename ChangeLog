@@ -4,6 +4,9 @@ SimGrid (3.17) UNRELEASED (release target: September 22 2017)
   - Comm.detach(): start and forget about asynchronous emission
   - this_actor::send(mailbox) is now mailbox->put()
 
+ SURF
+  - Unused option network/sender-gap is removed.
+
 SimGrid (3.16) Released June 22. 2017.
 
  The Blooming Spring Release: developments are budding.

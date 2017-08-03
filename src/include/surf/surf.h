@@ -60,7 +60,6 @@ SG_BEGIN_DECL()
 
 /* user-visible parameters */
 extern XBT_PRIVATE double sg_tcp_gamma;
-extern XBT_PRIVATE double sg_sender_gap;
 extern XBT_PRIVATE double sg_latency_factor;
 extern XBT_PRIVATE double sg_bandwidth_factor;
 extern XBT_PRIVATE double sg_weight_S_parameter;

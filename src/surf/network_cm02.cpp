@@ -13,7 +13,6 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
-double sg_sender_gap = 0.0;
 double sg_latency_factor = 1.0; /* default value; can be set by model or from command line */
 double sg_bandwidth_factor = 1.0;       /* default value; can be set by model or from command line */
 double sg_weight_S_parameter = 0.0;     /* default value; can be set by model or from command line */
