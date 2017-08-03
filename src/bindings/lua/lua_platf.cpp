@@ -19,7 +19,7 @@ extern "C" {
 #include "src/surf/surf_private.h"
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <simgrid/host.h>
+#include <simgrid/s4u/Host.hpp>
 #include <string>
 #include <vector>
 
