@@ -5,14 +5,15 @@ set(EXTRA_DIST
   src/include/instr/instr_interface.h
   src/include/mc/datatypes.h
   src/include/mc/mc.h
-  src/mc/mc_mmu.h
-  src/mc/PageStore.hpp
-  src/mc/mc_record.h
   src/include/simgrid/sg_config.h
   src/include/smpi/smpi_utils.hpp
   src/include/surf/datatypes.h
   src/include/surf/maxmin.h
   src/include/surf/surf.h
+  src/include/xbt/parmap.hpp
+  src/mc/mc_mmu.h
+  src/mc/mc_record.h
+  src/mc/PageStore.hpp
   src/msg/msg_private.h
   src/simdag/dax.dtd
   src/simdag/dax_dtd.c

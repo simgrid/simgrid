@@ -1,6 +1,6 @@
 /* A thread pool.                                          */
 
-/* Copyright (c) 2007, 2009-2014. The SimGrid Team.
+/* Copyright (c) 2007, 2009-2014, 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -19,11 +19,11 @@ SG_BEGIN_DECL()
   * \ingroup XBT_misc
   * \brief Parallel map.
   *
-  * A function is applied to all elements of a dynar in parallel with n worker threads.
-  * The worker threads are persistent until the destruction of the parmap.
+  * A function is applied to all elements of a std::vector in parallel with n worker threads.  The worker threads are
+  * persistent until the destruction of the parmap.
   *
-  * If there are more than n elements in the dynar, the worker threads are allowed to fetch themselves remaining work
-  * with xbt_parmap_next() and execute it.
+  * If there are more than n elements in the vector, the worker threads are allowed to fetch themselves remaining work
+  * with method next() and execute it.
   *
   * \{
   */
