@@ -270,11 +270,11 @@ void SerialUContext::suspend()
   if (i < simix_global->process_to_run.size()) {
     /* execute the next process */
     XBT_DEBUG("Run next process");
-    next_context = (SerialUContext*)simix_global->process_to_run[i]->context;
+    next_context = static_cast<SerialUContext*>(simix_global->process_to_run[i]->context);
   } else {
     /* all processes were run, return to maestro */
     XBT_DEBUG("No more process to run");
-    next_context = (SerialUContext*) sysv_maestro_context;
+    next_context = static_cast<SerialUContext*>(sysv_maestro_context);
   }
   SIMIX_context_set_current(next_context);
   swapcontext(&this->uc_, &next_context->uc_);
@@ -285,7 +285,7 @@ void SerialUContext::suspend()
 void SerialUContext::resume()
 {
   SIMIX_context_set_current(this);
-  swapcontext(&((SerialUContext*)sysv_maestro_context)->uc_, &this->uc_);
+  swapcontext(&static_cast<SerialUContext*>(sysv_maestro_context)->uc_, &this->uc_);
 }
 
 void ParallelUContext::stop()
@@ -303,11 +303,11 @@ void ParallelUContext::resume()
   // Store the number of my containing body in os-thread-specific area :
   xbt_os_thread_set_specific(sysv_worker_id_key, (void*) worker_id);
   // Get my current soul:
-  ParallelUContext* worker_context = (ParallelUContext*) SIMIX_context_self();
+  ParallelUContext* worker_context = static_cast<ParallelUContext*>(SIMIX_context_self());
   // Write down that this soul is hosted in that body (for now)
   sysv_workers_context[worker_id] = worker_context;
   // Retrieve the system-level info that fuels this soul:
-  ucontext_t* worker_stack = &((ParallelUContext*) worker_context)->uc_;
+  ucontext_t* worker_stack = &worker_context->uc_;
   // Write in simix that I switched my soul
   SIMIX_context_set_current(this);
    // Actually do that using the relevant library call:
@@ -355,7 +355,7 @@ void ParallelUContext::suspend()
     uintptr_t worker_id =
         (uintptr_t) xbt_os_thread_get_specific(sysv_worker_id_key);
     // Deduce the initial soul of that body
-    next_context = (ParallelUContext*) sysv_workers_context[worker_id];
+    next_context = sysv_workers_context[worker_id];
     // When given that soul, the body will wait for the next scheduling round
   }
 
