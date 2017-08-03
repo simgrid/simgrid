@@ -404,32 +404,32 @@ void smpi_sample_3(int global, const char *file, int line)
 }
 
 extern "C" { /** These functions will be called from the user code **/
-  smpi_trace_call_location_t* smpi_trace_get_call_location() {
-    return smpi_process()->call_location();
-  }
+smpi_trace_call_location_t* smpi_trace_get_call_location()
+{
+  return smpi_process()->call_location();
+}
 
-  void smpi_trace_set_call_location(const char* file, const int line) {
-    smpi_trace_call_location_t* loc = smpi_process()->call_location();
+void smpi_trace_set_call_location(const char* file, const int line)
+{
+  smpi_trace_call_location_t* loc = smpi_process()->call_location();
 
-    loc->previous_filename   = loc->filename;
-    loc->previous_linenumber = loc->linenumber;
-    loc->filename            = file;
-    loc->linenumber          = line;
-  }
+  loc->previous_filename   = loc->filename;
+  loc->previous_linenumber = loc->linenumber;
+  loc->filename            = file;
+  loc->linenumber          = line;
+}
 
-  /**
-   * Required for Fortran bindings
-   */
-  void smpi_trace_set_call_location_(const char* file, int* line) {
-    smpi_trace_set_call_location(file, *line);
-  }
+/** Required for Fortran bindings */
+void smpi_trace_set_call_location_(const char* file, int* line)
+{
+  smpi_trace_set_call_location(file, *line);
+}
 
-  /**
-   * Required for Fortran if -fsecond-underscore is activated
-   */
-  void smpi_trace_set_call_location__(const char* file, int* line) {
-    smpi_trace_set_call_location(file, *line);
-  }
+/** Required for Fortran if -fsecond-underscore is activated */
+void smpi_trace_set_call_location__(const char* file, int* line)
+{
+  smpi_trace_set_call_location(file, *line);
+}
 }
 
 void smpi_bench_destroy()
