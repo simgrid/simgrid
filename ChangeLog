@@ -55,7 +55,7 @@ SimGrid (3.16) Released June 22. 2017.
  SMPI
   - New algorithm to privatize globals: dlopen, with dynamic loading tricks
   - New option: smpi/keep-temps to not cleanup temp files
-  - New option : smpi/shared-malloc-blocksize . Relevant only when global shared 
+  - New option : smpi/shared-malloc-blocksize . Relevant only when global shared
     mallocs mode is used, allows to change the size of the fake file used
     (default 1MB), to potentially limit the number of mappings for large runs.
   - Support for sparse privatized malloc with SMPI_PARTIAL_SHARED_MALLOC()
@@ -96,7 +96,7 @@ SimGrid (3.15) Released March 22. 2017
 
  MSG
  - New: MSG_process_yield(). Stop and yield to other processes.
- - New: MSG_process_daemon(). Daemon processes are automatically killed 
+ - New: MSG_process_daemon(). Daemon processes are automatically killed
    when the last non-daemon process terminates
  - New: MSG_process_ref/unref(). Fiddle with the process refcounting.
  - Renamed MSG_energy_plugin_init() -> MSG_host_energy_plugin_init()
@@ -108,13 +108,13 @@ SimGrid (3.15) Released March 22. 2017
  - Kill the obscure NativeException. Nobody want to survive the issues
    it denotes, so use JniException that is a RuntimeException (not to
    be caught explicitly).
- - Partial bug fix in initialization. SimGrid flags on command line were 
-   consumed at C level but stayed in the original Java String[] args. 
+ - Partial bug fix in initialization. SimGrid flags on command line were
+   consumed at C level but stayed in the original Java String[] args.
    This could mess users' args[i] if SG flags were not put at the end of
    the command line.
-   The SimGrid flags are now removed from the Java arguments. However, 
+   The SimGrid flags are now removed from the Java arguments. However,
    the number of arguments REMAINS UNCHANGED. It is then UNSAFE to test
-   if args.length is greater than the number of YOUR OWN ARGUMENTS. 
+   if args.length is greater than the number of YOUR OWN ARGUMENTS.
    It might be if you have --log or --cfg flags in the command line.
  - Fix numerous memleaks all around the place. In particular, around VMs.
 
@@ -136,21 +136,21 @@ SimGrid (3.15) Released March 22. 2017
 
  SimDag
  - Backwards Compatibility breaks
-    - The SD_route_get_list and SD_route_get_size functions have been removed. 
-      They are replaced by the unique 
+    - The SD_route_get_list and SD_route_get_size functions have been removed.
+      They are replaced by the unique
          void sg_host_route(sg_host_t src, sg_host_t dst, xbt_dynar_t links)
-      The route from src to dst is built in the links dynar whose size can 
+      The route from src to dst is built in the links dynar whose size can
       be obtained with xbt_dynar_length.
     - The SD_route_bandwidth and SD_route_latency functions have been replaced by
-        sg_host_route_bandwidth and sg_host_route_latency. 
+        sg_host_route_bandwidth and sg_host_route_latency.
       Macros ensure the backwards compatibility, but you should fix your code
 
  SMPI
- - Major C++ rewrite ongoing (SMPI used to be C compiled in C++). 
+ - Major C++ rewrite ongoing (SMPI used to be C compiled in C++).
    This can break codes using SMPI internals (from private.h instead of the public smpi.h).
- - Bump our claim of support from MPI 1.1 to MPI 2.2. 
+ - Bump our claim of support from MPI 1.1 to MPI 2.2.
    We don't support 100% of it, but it should be enough. Contact us if not.
- - MPI_Win_lock/unlock, MPI_Get_accumulate support added (as for all RMA, implementation is 
+ - MPI_Win_lock/unlock, MPI_Get_accumulate support added (as for all RMA, implementation is
    naive and probably inaccurate)
  - New algorithm for SMPI_SHARED_MALLOC: global, where all blocks are
    mapped onto a unique small file using some system magic.
@@ -197,13 +197,13 @@ SimGrid (3.14) Released December 24. 2016
 
  SMPI
  * Privatization now works on FreeBSD
- 
+
  * Privatization is now activated by default in smpirun
    You can turn it off with -no-privatize if something goes wrong.
 
  * Call-location tracing for SMPI.
-   You can add the exact location (filename / linenumber) of an MPI call to 
-   your trace files and slow down or speed up the simulation between two 
+   You can add the exact location (filename / linenumber) of an MPI call to
+   your trace files and slow down or speed up the simulation between two
    consecutive calls by using an adjustment file (see the documentation).
 
  * Fixed computation of timings for MPI_Send, MPI_Recv & possibly also others
@@ -215,8 +215,8 @@ SimGrid (3.14) Released December 24. 2016
  * smpi/cpu-threshold:-1 should become smpi/simulate-computation:no
    smpi/running-power    is renamed to smpi/host-speed
 
- * smpi/grow-injected-times option to enable or disable multiplication of the 
-   timings injected in MPI_Iprobe, or MPI_Test. Enabled by default, which can 
+ * smpi/grow-injected-times option to enable or disable multiplication of the
+   timings injected in MPI_Iprobe, or MPI_Test. Enabled by default, which can
    make simulation less precise (but also much faster).
 
  * smpirun script should be (much) faster for large deployments.
@@ -246,11 +246,11 @@ SimGrid (3.14) Released December 24. 2016
    - Ignored parameter of vm_create: core_nb, disk_path and disk_size.
    - Unimplemented save/restore methods
  * MSG_as_router_get_property_value() was redundent with
-   MSG_environment_as_get_property_value(). 
+   MSG_environment_as_get_property_value().
    - Removed MSG_as_router_*propert*() functions
    - Added MSG_environment_as_set_property_value() for consistency
- * xbt heterogeneous dictionnaries (created with xbt_dict_new()). 
-   Well, they are still there for now, but deprecated with a warning. 
+ * xbt heterogeneous dictionnaries (created with xbt_dict_new()).
+   Well, they are still there for now, but deprecated with a warning.
    Please switch to xbt_dict_new_homogeneous() before this is removed
    for real.
  * Task affinity. Its intended behavior (that was very badly tested
@@ -258,8 +258,8 @@ SimGrid (3.14) Released December 24. 2016
    would have hoped here.
  * xbt_os_sem_get_value: unused internally, deprecated on OS X El Capitan
  * Option network/coordinates is now useless and should be dropped.
- 
- Storage: 
+
+ Storage:
  * Added option storage/max_file_descriptors to allow more than 1024 files opened
 
  SURF:
@@ -268,29 +268,29 @@ SimGrid (3.14) Released December 24. 2016
 
  XML:
  * Add Exa- and Peta- units such as EiB, EB, Eib, Eb for size, and
-   EiBps, EBps, Eibps, Ebps for bandwidth. 
+   EiBps, EBps, Eibps, Ebps for bandwidth.
    They may become useful to some lucky ones.
-   
+
  Java:
  * New functions: msg.Comm.waitAll() and msg.Comm.waitAny()
  * ex/app_tokenring: new example, very similar to the MSG Token Ring
  * ex/async_waitAll: new example, on asynchronous communications
 
  MSG:
- * Memory usage should be decreased for simulations with a large number 
+ * Memory usage should be decreased for simulations with a large number
    of processes. This also helps for SMPI.
 
 SimGrid (3.13) stable; urgency=low
 
  The Half Release, a.k.a. the Zealous Easter Trim.
- 
+
  - We removed half of the lines, that were mostly experimental cruft.
    v3.12 lasted 286000 lines of code, v3.13 is only 142000 lines
    (not counting blanks and comments -- according to openhub.net)
  - The internals are now compiled in C++ (and will soon be clean C++)
- - We removed 75 klines of XML, 12 klines of Java, 5 klines of cmake, 
+ - We removed 75 klines of XML, 12 klines of Java, 5 klines of cmake,
    59 klines of C, etc. We added only 29 klines of C++ in replacement.
-   
+
  * Backwards Compatibility breaks
    - Removed Lua simulation bindings (switch to C or Java for that).
      Lua can still be used to describe platforms
@@ -302,11 +302,11 @@ SimGrid (3.13) stable; urgency=low
         way, with filter function.
           - MSG_task_listen_from_host
           - MSG_mailbox_get_count_host_waiting_tasks
-          - MSG_mailbox_put_with_timeout was removed. 
+          - MSG_mailbox_put_with_timeout was removed.
             Please use MSG_task_send_with_timeout instead.
-   - In SimDag 
-      - the SD_application_reinit function was removed. It has been a noop for a while. 
-      - The ACCESS_MODE of SD_workstation has been removed. This feature was not really usable and should soon be 
+   - In SimDag
+      - the SD_application_reinit function was removed. It has been a noop for a while.
+      - The ACCESS_MODE of SD_workstation has been removed. This feature was not really usable and should soon be
         replaced by a more flexible mechanism.
       - The following functions thus do not exist anymore
          - SD_workstation_get_access_mode
@@ -316,7 +316,7 @@ SimGrid (3.13) stable; urgency=low
         - SD_route_get_communication_time => SG_route_get_latency() + amount / SD_route_get_bandwidth()
         - SD_workstation_get_computation_time => amount / sg_host_speed()
    - In Java
-      - VM.setBound(int load) is now VM.setBound(double bound) to meet the MSG semantics. 
+      - VM.setBound(int load) is now VM.setBound(double bound) to meet the MSG semantics.
         Use VM.getSpeed()*load/100 for the legacy behavior.
    - In CMake
       - option enable_tracing was removed. It was not doing anything for a while.
@@ -355,7 +355,7 @@ SimGrid (3.13) stable; urgency=low
        And the same in bits:  'Tibps', 'Gibps', 'Mibps', 'Kibps', 'Tbps', 'Gbps', 'Mbps', 'kbps', 'bps'
      - latency. Default: 's' second. Also defined:
        'w' week, 'd' day, 'h' hour, 'm' minute, 'ms' millisecond, 'us' microsecond, 'ns' nanosecond, 'ps' picosecond
-       
+
  * bin/simgrid_update_xml can upgrade your files automatically (won't convert unit-less values)
    tools/sg_xml_unit_converter.py may help (but it's just a warning and will probably ever be).
 
@@ -366,14 +366,14 @@ SimGrid (3.13) stable; urgency=low
 
  MSG
  * The examples were completely reorganized (in C and Java), for your browsing pleasure.
- * Kill all deprecated functions (the ones you had when declaring MSG_DEPRECATED). 
+ * Kill all deprecated functions (the ones you had when declaring MSG_DEPRECATED).
    They were deprecated since a few years, and probably did not even compile anymore.
 
  SimDag
- * The API has been profoundly modified to directly use the core objects instead of redefining its own. 
+ * The API has been profoundly modified to directly use the core objects instead of redefining its own.
    SD_Workstation_t and SD_link_t are now sg_host_t and sg_link_t respectively.
-   Some functions have also been renamed for consistency. Backward compatibility is maintained, but users are 
-   encouraged to update their codes. A list of the modified functions can be found at the end of 
+   Some functions have also been renamed for consistency. Backward compatibility is maintained, but users are
+   encouraged to update their codes. A list of the modified functions can be found at the end of
    include/simgrid/simdag.h
 
  Simix
@@ -409,7 +409,7 @@ SimGrid (3.13) stable; urgency=low
  * refactoring and cleanup of the code;
  * ongoing process to cleanly separate the model-checking algorithms
    from the code model-checking support.
- 
+
  -- Wed Apr 27 21:00:53 CEST 2016 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.12) stable; urgency=low
