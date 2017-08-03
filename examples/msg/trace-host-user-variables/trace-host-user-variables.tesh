@@ -9,12 +9,12 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace-host-user-variables$EXEEXT --cfg=tracing:yes
 > [0.004078] [msg_test/INFO] HDD_utilization
 > [0.004078] [msg_test/INFO] Declared link variables:
 > [0.004078] [msg_test/INFO] Node types in the trace:
-> [0.004078] [msg_test/INFO] LINK
 > [0.004078] [msg_test/INFO] HOST
+> [0.004078] [msg_test/INFO] LINK
 > [0.004078] [msg_test/INFO] Node types in the trace:
-> [0.004078] [msg_test/INFO] 0-LINK3-LINK3
 > [0.004078] [msg_test/INFO] 0-HOST1-LINK3
 > [0.004078] [msg_test/INFO] 0-LINK3-HOST1
+> [0.004078] [msg_test/INFO] 0-LINK3-LINK3
 
 $ rm -f viva_graph.plist
 

@@ -122,13 +122,6 @@ int TRACE_start()
     }
     trace_active = 1;
     XBT_DEBUG("Tracing is on");
-
-    /* other trace initialization */
-    created_categories = xbt_dict_new_homogeneous(xbt_free_f);
-    declared_marks = xbt_dict_new_homogeneous(xbt_free_f);
-    user_host_variables = xbt_dict_new_homogeneous(xbt_free_f);
-    user_vm_variables = xbt_dict_new_homogeneous(xbt_free_f);
-    user_link_variables = xbt_dict_new_homogeneous(xbt_free_f);
   }
   return 0;
 }
@@ -153,12 +146,6 @@ int TRACE_end()
     recursiveDestroyType (PJ_type_get_root());
     PJ_container_release();
     rootType = nullptr;
-
-    xbt_dict_free(&user_link_variables);
-    xbt_dict_free(&user_host_variables);
-    xbt_dict_free(&user_vm_variables);
-    xbt_dict_free(&declared_marks);
-    xbt_dict_free(&created_categories);
 
     /* close the trace files */
     const char* format = xbt_cfg_get_string(OPT_TRACING_FORMAT);
@@ -491,20 +478,19 @@ static void output_types (const char *name, xbt_dynar_t types, FILE *file)
   xbt_dynar_free (&types);
 }
 
-static void output_categories (const char *name, xbt_dynar_t cats, FILE *file)
+static void output_categories(const char* name, FILE* file)
 {
-  unsigned int i;
+  unsigned int i = created_categories.size();
   fprintf (file, "    values = (");
-  for (i = xbt_dynar_length(cats); i > 0; i--) {
-    char *cat = *(static_cast<char**>(xbt_dynar_get_ptr(cats, i - 1)));
-    fprintf (file, "\"%s%s\"", name, cat);
-    if (i - 1 > 0){
+  for (auto cat : created_categories) {
+    --i;
+    fprintf(file, "\"%s%s\"", name, cat.c_str());
+    if (i > 0) {
       fprintf (file, ",");
     }else{
       fprintf (file, ");\n");
     }
   }
-  xbt_dynar_free (&cats);
 }
 
 static void uncat_configuration (FILE *file)
@@ -541,13 +527,13 @@ static void cat_configuration (FILE *file)
            "  host = {\n"
            "    type = \"square\";\n"
            "    size = \"power\";\n");
-  output_categories ("p", TRACE_get_categories(), file);
+  output_categories("p", file);
   fprintf (file,
            "  };\n"
            "  link = {\n"
            "    type = \"rhombus\";\n"
            "    size = \"bandwidth\";\n");
-  output_categories ("b", TRACE_get_categories(), file);
+  output_categories("b", file);
   fprintf (file, "  };\n");
   //close
 }
@@ -574,7 +560,7 @@ static void generate_cat_configuration (const char *output, const char *name, in
 {
   if (output && strlen(output) > 0){
     //check if we do have categories declared
-    if (xbt_dict_is_empty(created_categories)){
+    if (created_categories.empty()) {
       XBT_INFO("No categories declared, ignoring generation of %s graph configuration", name);
       return;
     }

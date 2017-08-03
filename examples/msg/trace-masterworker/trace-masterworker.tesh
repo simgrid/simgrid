@@ -10,10 +10,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace-masterworker$EXEEXT --cfg=tracing:yes --cfg=
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/categorized' to 'trace-masterworker.cat.plist'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/uncategorized' to 'trace-masterworker.uncat.plist'
 > [4.214821] [msg_trace_masterworker/INFO] Declared tracing categories:
-> [4.214821] [msg_trace_masterworker/INFO] request
+> [4.214821] [msg_trace_masterworker/INFO] compute
 > [4.214821] [msg_trace_masterworker/INFO] finalize
 > [4.214821] [msg_trace_masterworker/INFO] report
-> [4.214821] [msg_trace_masterworker/INFO] compute
+> [4.214821] [msg_trace_masterworker/INFO] request
 > [4.214821] [msg_trace_masterworker/INFO] Declared marks:
 > [4.214821] [msg_trace_masterworker/INFO] msmark
 
@@ -27,10 +27,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace-masterworker$EXEEXT ${srcdir:=.}/config_trac
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/categorized' to 'trace-masterworker.cat.plist'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/uncategorized' to 'trace-masterworker.uncat.plist'
 > [4.214821] [msg_trace_masterworker/INFO] Declared tracing categories:
-> [4.214821] [msg_trace_masterworker/INFO] request
+> [4.214821] [msg_trace_masterworker/INFO] compute
 > [4.214821] [msg_trace_masterworker/INFO] finalize
 > [4.214821] [msg_trace_masterworker/INFO] report
-> [4.214821] [msg_trace_masterworker/INFO] compute
+> [4.214821] [msg_trace_masterworker/INFO] request
 > [4.214821] [msg_trace_masterworker/INFO] Declared marks:
 > [4.214821] [msg_trace_masterworker/INFO] msmark
 
@@ -48,17 +48,17 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace-masterworker$EXEEXT --cfg=tracing:yes --cfg=
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/categorized' to 'trace-masterworker.cat.plist'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/uncategorized' to 'trace-masterworker.uncat.plist'
 > [4.214821] [msg_trace_masterworker/INFO] Declared tracing categories:
-> [4.214821] [msg_trace_masterworker/INFO] request
+> [4.214821] [msg_trace_masterworker/INFO] compute
 > [4.214821] [msg_trace_masterworker/INFO] finalize
 > [4.214821] [msg_trace_masterworker/INFO] report
-> [4.214821] [msg_trace_masterworker/INFO] compute
+> [4.214821] [msg_trace_masterworker/INFO] request
 > [4.214821] [msg_trace_masterworker/INFO] Declared marks:
 > [4.214821] [msg_trace_masterworker/INFO] msmark
 
 $ $SG_TEST_EXENV cat trace-masterworker.uncat.plist
->   node = ("HOST","LINK");
+>   node = ("LINK","HOST");
 >   edge = ("0-LINK13-LINK13","0-LINK13-HOST1","0-HOST1-LINK13");
-> 
+>
 >   host = {
 >     type = "square";
 >     size = "power";
@@ -71,18 +71,18 @@ $ $SG_TEST_EXENV cat trace-masterworker.uncat.plist
 >   };
 
 $ $SG_TEST_EXENV cat trace-masterworker.cat.plist
->   node = ("HOST","LINK");
+>   node = ("LINK","HOST");
 >   edge = ("0-LINK13-LINK13","0-LINK13-HOST1","0-HOST1-LINK13");
-> 
+>
 >   host = {
 >     type = "square";
 >     size = "power";
->     values = ("pcompute","preport","pfinalize","prequest");
+>     values = ("pcompute","pfinalize","preport","prequest");
 >   };
 >   link = {
 >     type = "rhombus";
 >     size = "bandwidth";
->     values = ("bcompute","breport","bfinalize","brequest");
+>     values = ("bcompute","bfinalize","breport","brequest");
 >   };
 
 $ rm -rf trace-masterworker.trace trace-masterworker.cat.plist trace-masterworker.uncat.plist

@@ -14,8 +14,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing eve
 
 static container_t rootContainer = nullptr;    /* the root container */
 static xbt_dict_t allContainers = nullptr;     /* all created containers indexed by name */
-xbt_dict_t trivaNodeTypes = nullptr;     /* all host types defined */
-xbt_dict_t trivaEdgeTypes = nullptr;     /* all link types defined */
+std::set<std::string> trivaNodeTypes;           /* all host types defined */
+std::set<std::string> trivaEdgeTypes;           /* all link types defined */
 
 long long int instr_new_paje_id ()
 {
@@ -26,15 +26,11 @@ long long int instr_new_paje_id ()
 void PJ_container_alloc ()
 {
   allContainers = xbt_dict_new_homogeneous(nullptr);
-  trivaNodeTypes = xbt_dict_new_homogeneous(xbt_free_f);
-  trivaEdgeTypes = xbt_dict_new_homogeneous(xbt_free_f);
 }
 
 void PJ_container_release ()
 {
   xbt_dict_free (&allContainers);
-  xbt_dict_free (&trivaNodeTypes);
-  xbt_dict_free (&trivaEdgeTypes);
 }
 
 void PJ_container_set_root (container_t root)
@@ -151,7 +147,7 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
 
   //register NODE types for triva configuration
   if (newContainer->kind == INSTR_HOST || newContainer->kind == INSTR_LINK || newContainer->kind == INSTR_ROUTER) {
-    xbt_dict_set (trivaNodeTypes, newContainer->type->name, xbt_strdup("1"), nullptr);
+    trivaNodeTypes.insert(newContainer->type->name);
   }
   return newContainer;
 }
