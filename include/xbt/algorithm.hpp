@@ -13,9 +13,9 @@ namespace xbt {
  * three colors.  Since there are only three colors, it is linear and much faster than a classical sort.  See for
  * example http://en.wikipedia.org/wiki/Dutch_national_flag_problem
  *
- * \param first forward iterators to the initial position of the sequence to partition.  \param last forward iterators
- * to the final position of the sequence to partition.  \param color the color function that accepts an element in the
- * range as argument, and returns a value of 0, 1, or 2.
+ * \param first forward iterators to the initial position of the sequence to partition.
+ * \param last forward iterators to the final position of the sequence to partition.
+ * \param color the color function that accepts an element in the range as argument, and returns a value of 0, 1, or 2.
  *
  * At the end of the call, elements with color 0 are at the beginning of the range, elements with color 2 are at the end
  * and elements with color 1 are in the middle.
