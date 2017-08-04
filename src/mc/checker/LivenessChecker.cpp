@@ -279,7 +279,7 @@ void LivenessChecker::showAcceptanceCycle(std::size_t depth)
   XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
   XBT_INFO("Counter-example that violates formula :");
   simgrid::mc::dumpRecordPath();
-  for (auto& s : this->getTextualTrace())
+  for (auto const& s : this->getTextualTrace())
     XBT_INFO("%s", s.c_str());
   simgrid::mc::session->logState();
   XBT_INFO("Counter-example depth : %zu", depth);

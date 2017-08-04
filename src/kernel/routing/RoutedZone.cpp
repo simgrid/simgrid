@@ -73,8 +73,8 @@ void RoutedZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 {
   std::vector<kernel::routing::NetPoint*> vertices = getVertices();
 
-  for (auto my_src : vertices) {
-    for (auto my_dst : vertices) {
+  for (auto const& my_src : vertices) {
+    for (auto const& my_dst : vertices) {
       if (my_src == my_dst)
         continue;
 
@@ -98,7 +98,7 @@ void RoutedZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
         previous_name = my_src->cname();
       }
 
-      for (auto link : *route->link_list) {
+      for (auto const& link : *route->link_list) {
         const char* link_name = link->cname();
         current               = new_xbt_graph_node(graph, link_name, nodes);
         current_name          = link_name;
@@ -145,7 +145,7 @@ sg_platf_route_cbarg_t RoutedZone::newExtendedRoute(RoutingMode hierarchy, sg_pl
     result->gw_dst = routearg->gw_dst;
   }
 
-  for (auto link : *routearg->link_list) {
+  for (auto const& link : *routearg->link_list) {
     if (change_order)
       result->link_list->push_back(link);
     else

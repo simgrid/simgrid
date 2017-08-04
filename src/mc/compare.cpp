@@ -306,7 +306,7 @@ int StateComparator::initHeapInformation(xbt_mheap_t heap1, xbt_mheap_t heap2,
 static inline
 mc_mem_region_t MC_get_heap_region(simgrid::mc::Snapshot* snapshot)
 {
-  for (auto& region : snapshot->snapshot_regions)
+  for (auto const& region : snapshot->snapshot_regions)
     if (region->region_type() == simgrid::mc::RegionType::Heap)
       return region.get();
   xbt_die("No heap region");
@@ -1459,7 +1459,7 @@ static int compare_global_variables(
 
   std::vector<simgrid::mc::Variable>& variables = object_info->global_variables;
 
-  for (simgrid::mc::Variable& current_var : variables) {
+  for (simgrid::mc::Variable const& current_var : variables) {
 
     // If the variable is not in this object, skip it:
     // We do not expect to find a pointer to something which is not reachable

@@ -25,7 +25,7 @@ double SmpiHost::orecv(size_t size)
   // Iterate over all the sections that were specified and find the right value. (fact.factor represents the interval
   // sizes; we want to find the section that has fact.factor <= size and no other such fact.factor <= size)
   // Note: parse_factor() (used before) already sorts the vector we iterate over!
-  for (auto fact : orecv_parsed_values) {
+  for (auto const& fact : orecv_parsed_values) {
     if (size <= fact.factor) { // Values already too large, use the previously computed value of current!
       XBT_DEBUG("or : %zu <= %zu return %.10f", size, fact.factor, current);
       return current;
@@ -48,7 +48,7 @@ double SmpiHost::osend(size_t size)
   // value. (fact.factor represents the interval sizes; we want to find the
   // section that has fact.factor <= size and no other such fact.factor <= size)
   // Note: parse_factor() (used before) already sorts the vector we iterate over!
-  for (auto& fact : osend_parsed_values) {
+  for (auto const& fact : osend_parsed_values) {
     if (size <= fact.factor) { // Values already too large, use the previously computed value of current!
       XBT_DEBUG("os : %zu <= %zu return %.10f", size, fact.factor, current);
       return current;
@@ -71,7 +71,7 @@ double SmpiHost::oisend(size_t size)
   // Iterate over all the sections that were specified and find the right value. (fact.factor represents the interval
   // sizes; we want to find the section that has fact.factor <= size and no other such fact.factor <= size)
   // Note: parse_factor() (used before) already sorts the vector we iterate over!
-  for (auto& fact : oisend_parsed_values) {
+  for (auto const& fact : oisend_parsed_values) {
     if (size <= fact.factor) { // Values already too large, use the previously  computed value of current!
       XBT_DEBUG("ois : %zu <= %zu return %.10f", size, fact.factor, current);
       return current;

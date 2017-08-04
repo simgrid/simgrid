@@ -71,7 +71,7 @@ double VMModel::nextOccuringEvent(double now)
    **/
 
   /* iterate for all virtual machines */
-  for (s4u::VirtualMachine* ws_vm : VirtualMachineImpl::allVms_) {
+  for (s4u::VirtualMachine* const& ws_vm : VirtualMachineImpl::allVms_) {
     surf::Cpu* cpu = ws_vm->pimpl_cpu;
     xbt_assert(cpu, "cpu-less host");
 

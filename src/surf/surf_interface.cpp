@@ -137,7 +137,7 @@ std::ifstream* surf_ifsopen(std::string name)
   }
 
   /* search relative files in the path */
-  for (auto path_elm : surf_path) {
+  for (auto const& path_elm : surf_path) {
     std::string buff = path_elm + FILE_DELIM + name;
     fs->open(buff.c_str(), std::ifstream::in);
 
@@ -160,7 +160,7 @@ FILE *surf_fopen(const char *name, const char *mode)
     return fopen(name, mode);
 
   /* search relative files in the path */
-  for (auto path_elm : surf_path) {
+  for (auto const& path_elm : surf_path) {
     std::string buff = path_elm + FILE_DELIM + name;
     file             = fopen(buff.c_str(), mode);
 
@@ -361,17 +361,17 @@ void surf_exit()
 
   sg_host_exit();
   sg_link_exit();
-  for (auto e : storage_types) {
+  for (auto const& e : storage_types) {
     simgrid::surf::StorageType* stype = e.second;
     delete stype->properties;
     delete stype->model_properties;
     delete stype;
   }
-  for (auto s : *simgrid::surf::StorageImpl::storagesMap())
+  for (auto const& s : *simgrid::surf::StorageImpl::storagesMap())
     delete s.second;
   delete simgrid::surf::StorageImpl::storagesMap();
 
-  for (auto model : *all_existing_models)
+  for (auto const& model : *all_existing_models)
     delete model;
   delete all_existing_models;
 

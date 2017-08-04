@@ -17,7 +17,7 @@ inline void rankId_to_coords(int rankId, std::vector<unsigned int> dimensions, u
 {
   unsigned int dim_size_product = 1;
   unsigned int i = 0;
-  for (auto cur_dim_size: dimensions) {
+  for (auto const& cur_dim_size : dimensions) {
     (*coords)[i] = (rankId / dim_size_product) % cur_dim_size;
     dim_size_product *= cur_dim_size;
     i++;
@@ -84,7 +84,7 @@ void TorusZone::parse_specific_arguments(ClusterCreationArgs* cluster)
      * Parse attribute dimensions="dim1,dim2,dim3,...,dimN" and save them into a vector.
      * Additionally, we need to know how many ranks we have in total
      */
-    for (auto group : dimensions)
+    for (auto const& group : dimensions)
       dimensions_.push_back(surf_parse_get_int(group));
 
     linkCountPerNode_ = dimensions_.size();
@@ -135,7 +135,7 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
   while (current_node != dst->id()) {
     unsigned int dim_product = 1; // First, we will route in x-dimension
     int j=0;
-    for (auto cur_dim : dimensions_){
+    for (auto const& cur_dim : dimensions_) {
       // current_node/dim_product = position in current dimension
       if ((current_node / dim_product) % cur_dim != (dst->id() / dim_product) % cur_dim) {
 

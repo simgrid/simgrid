@@ -37,7 +37,7 @@ void wait_for_requests()
 #endif
   while (not simix_global->process_to_run.empty()) {
     SIMIX_process_runall();
-    for (smx_actor_t process : simix_global->process_that_ran) {
+    for (smx_actor_t const& process : simix_global->process_that_ran) {
       smx_simcall_t req = &process->simcall;
       if (req->call != SIMCALL_NONE && not simgrid::mc::request_is_visible(req))
         SIMIX_simcall_handle(req, 0);
@@ -45,7 +45,7 @@ void wait_for_requests()
   }
 #if SIMGRID_HAVE_MC
   xbt_dynar_reset(simix_global->actors_vector);
-  for (std::pair<aid_t, smx_actor_t> kv : simix_global->process_list) {
+  for (std::pair<aid_t, smx_actor_t> const& kv : simix_global->process_list) {
     xbt_dynar_push_as(simix_global->actors_vector, smx_actor_t, kv.second);
   }
 #endif

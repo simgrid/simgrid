@@ -140,7 +140,7 @@ template <typename T> int Keyval::attr_put(int keyval, void* attr_value){
 template <typename T> void Keyval::cleanup_attr(){
   if (not attributes()->empty()) {
     int flag=0;
-    for(auto it : attributes_){
+    for (auto const& it : attributes_) {
       auto elm = T::keyvals_.find(it.first);
       if (elm != T::keyvals_.end()) {
         smpi_key_elem elem = elm->second;

@@ -118,7 +118,7 @@ void parse_platform_file(const char *file)
     parse_status = surf_parse();
 
     /* connect all traces relative to hosts */
-    for (auto elm : trace_connect_list_host_avail) {
+    for (auto const& elm : trace_connect_list_host_avail) {
       xbt_assert(traces_set_list.find(elm.first) != traces_set_list.end(), "Trace %s undefined", elm.first.c_str());
       tmgr_trace_t trace = traces_set_list.at(elm.first);
 
@@ -129,7 +129,7 @@ void parse_platform_file(const char *file)
       cpu->setStateTrace(trace);
     }
 
-    for (auto elm : trace_connect_list_host_speed) {
+    for (auto const& elm : trace_connect_list_host_speed) {
       xbt_assert(traces_set_list.find(elm.first) != traces_set_list.end(), "Trace %s undefined", elm.first.c_str());
       tmgr_trace_t trace = traces_set_list.at(elm.first);
 
@@ -140,7 +140,7 @@ void parse_platform_file(const char *file)
       cpu->setSpeedTrace(trace);
     }
 
-    for (auto elm : trace_connect_list_link_avail) {
+    for (auto const& elm : trace_connect_list_link_avail) {
       xbt_assert(traces_set_list.find(elm.first) != traces_set_list.end(), "Trace %s undefined", elm.first.c_str());
       tmgr_trace_t trace = traces_set_list.at(elm.first);
 
@@ -149,7 +149,7 @@ void parse_platform_file(const char *file)
       link->setStateTrace(trace);
     }
 
-    for (auto elm : trace_connect_list_link_bw) {
+    for (auto const& elm : trace_connect_list_link_bw) {
       xbt_assert(traces_set_list.find(elm.first) != traces_set_list.end(), "Trace %s undefined", elm.first.c_str());
       tmgr_trace_t trace = traces_set_list.at(elm.first);
       sg_link_t link = simgrid::s4u::Link::byName(elm.second.c_str());
@@ -157,7 +157,7 @@ void parse_platform_file(const char *file)
       link->setBandwidthTrace(trace);
     }
 
-    for (auto elm : trace_connect_list_link_lat) {
+    for (auto const& elm : trace_connect_list_link_lat) {
       xbt_assert(traces_set_list.find(elm.first) != traces_set_list.end(), "Trace %s undefined", elm.first.c_str());
       tmgr_trace_t trace = traces_set_list.at(elm.first);
       sg_link_t link = simgrid::s4u::Link::byName(elm.second.c_str());

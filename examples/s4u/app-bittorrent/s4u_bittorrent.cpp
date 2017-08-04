@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 
   std::vector<simgrid::s4u::Host*> list;
   simgrid::s4u::Engine::getInstance()->getHostList(&list);
-  for (auto host : list)
+  for (auto const& host : list)
     host->extension_set(new HostBittorrent(host));
 
   e->registerFunction<Tracker>("tracker");

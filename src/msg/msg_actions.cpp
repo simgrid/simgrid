@@ -40,7 +40,7 @@ msg_error_t MSG_action_trace_run(char *path)
     XBT_WARN("Not all actions got consumed. If the simulation ended successfully (without deadlock),"
              " you may want to add new processes to your deployment file.");
 
-    for (auto actions_of : simgrid::xbt::action_queues) {
+    for (auto const& actions_of : simgrid::xbt::action_queues) {
       XBT_WARN("Still %zu actions for %s", actions_of.second->size(), actions_of.first.c_str());
     }
   }

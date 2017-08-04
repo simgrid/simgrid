@@ -34,7 +34,7 @@ void surf_presolve()
   }
 
   XBT_DEBUG ("Set every models in the right state by updating them to 0.");
-  for (auto model : *all_existing_models)
+  for (auto const& model : *all_existing_models)
       model->updateActionsState(NOW, 0.0);
 }
 
@@ -129,7 +129,7 @@ double surf_solve(double max_date)
   NOW = NOW + time_delta;
 
   // Inform the models of the date change
-  for (auto model : *all_existing_models) {
+  for (auto const& model : *all_existing_models) {
     model->updateActionsState(NOW, time_delta);
   }
   simgrid::s4u::onTimeAdvance(time_delta);

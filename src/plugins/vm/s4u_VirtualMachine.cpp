@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -71,7 +71,7 @@ void VirtualMachine::start()
     if (pm_ramsize && not pm_overcommit) { /* Only verify that we don't overcommit on need */
       /* Retrieve the memory occupied by the VMs on that host. Yep, we have to traverse all VMs of all hosts for that */
       long total_ramsize_of_vms = 0;
-      for (simgrid::s4u::VirtualMachine* ws_vm : simgrid::vm::VirtualMachineImpl::allVms_)
+      for (simgrid::s4u::VirtualMachine* const& ws_vm : simgrid::vm::VirtualMachineImpl::allVms_)
         if (pm == ws_vm->pimpl_vm_->getPm())
           total_ramsize_of_vms += ws_vm->pimpl_vm_->getRamsize();
 

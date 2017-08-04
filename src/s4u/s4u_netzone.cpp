@@ -35,7 +35,7 @@ void NetZone::seal()
 
 NetZone::~NetZone()
 {
-  for (auto nz : *children_)
+  for (auto const& nz : *children_)
     delete nz;
   delete children_;
 }
@@ -74,7 +74,7 @@ NetZone* NetZone::getFather()
 
 void NetZone::getHosts(std::vector<s4u::Host*>* whereto)
 {
-  for (auto card : vertices_) {
+  for (auto const& card : vertices_) {
     s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->name());
     if (host != nullptr)
       whereto->push_back(host);

@@ -430,7 +430,7 @@ static void action_waitall(const char *const *action){
    int recvs_snd[count_requests];
    int recvs_rcv[count_requests];
    unsigned int i=0;
-   for (auto req : *(get_reqq_self())){
+   for (auto const& req : *(get_reqq_self())) {
      if (req && (req->flags () & RECV)){
        recvs_snd[i]=req->src();
        recvs_rcv[i]=req->dst();
@@ -970,7 +970,7 @@ void smpi_replay_main(int* argc, char*** argv)
     MPI_Status status[count_requests];
     unsigned int i=0;
 
-    for (auto req: *get_reqq_self()){
+    for (auto const& req : *get_reqq_self()) {
       requests[i] = req;
       i++;
     }

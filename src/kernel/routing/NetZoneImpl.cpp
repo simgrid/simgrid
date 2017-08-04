@@ -37,7 +37,7 @@ NetZoneImpl::NetZoneImpl(NetZone* father, std::string name) : NetZone(father, na
 
 NetZoneImpl::~NetZoneImpl()
 {
-  for (auto& kv : bypassRoutes_)
+  for (auto const& kv : bypassRoutes_)
     delete kv.second;
 
   simgrid::s4u::Engine::getInstance()->netpointUnregister(netpoint_);
@@ -56,7 +56,7 @@ simgrid::s4u::Host* NetZoneImpl::createHost(const char* name, std::vector<double
   surf_cpu_model_pm->createCpu(res, speedPerPstate, coreAmount);
 
   if (props != nullptr)
-    for (auto kv : *props)
+    for (auto const& kv : *props)
       res->setProperty(kv.first, kv.second);
 
   simgrid::s4u::Host::onCreation(*res); // notify the signal
@@ -85,7 +85,7 @@ void NetZoneImpl::addBypassRoute(sg_platf_route_cbarg_t e_route)
 
   /* Build a copy that will be stored in the dict */
   kernel::routing::BypassRoute* newRoute = new kernel::routing::BypassRoute(e_route->gw_src, e_route->gw_dst);
-  for (auto link : *e_route->link_list)
+  for (auto const& link : *e_route->link_list)
     newRoute->links.push_back(link);
 
   /* Store it */
@@ -213,7 +213,7 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
   if (dst->netzone() == this && src->netzone() == this) {
     if (bypassRoutes_.find({src, dst}) != bypassRoutes_.end()) {
       BypassRoute* bypassedRoute = bypassRoutes_.at({src, dst});
-      for (surf::LinkImpl* link : bypassedRoute->links) {
+      for (surf::LinkImpl* const& link : bypassedRoute->links) {
         links->push_back(link);
         if (latency)
           *latency += link->latency();
@@ -297,7 +297,7 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
               src->cname(), dst->cname(), bypassedRoute->links.size());
     if (src != key.first)
       getGlobalRoute(src, bypassedRoute->gw_src, links, latency);
-    for (surf::LinkImpl* link : bypassedRoute->links) {
+    for (surf::LinkImpl* const& link : bypassedRoute->links) {
       links->push_back(link);
       if (latency)
         *latency += link->latency();
@@ -348,7 +348,7 @@ void NetZoneImpl::getGlobalRoute(routing::NetPoint* src, routing::NetPoint* dst,
   /* If source gateway is not our source, we have to recursively find our way up to this point */
   if (src != route.gw_src)
     getGlobalRoute(src, route.gw_src, links, latency);
-  for (auto link : *route.link_list)
+  for (auto const& link : *route.link_list)
     links->push_back(link);
   delete route.link_list;
 

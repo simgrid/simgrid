@@ -157,7 +157,7 @@ void Host::routeTo(Host* dest, std::vector<Link*>* links, double* latency)
 {
   std::vector<surf::LinkImpl*> linkImpls;
   this->routeTo(dest, &linkImpls, latency);
-  for (surf::LinkImpl* l : linkImpls)
+  for (surf::LinkImpl* const& l : linkImpls)
     links->push_back(&l->piface_);
 }
 
@@ -168,7 +168,7 @@ void Host::routeTo(Host* dest, std::vector<surf::LinkImpl*>* links, double* late
   if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {
     XBT_CDEBUG(surf_route, "Route from '%s' to '%s' (latency: %f):", getCname(), dest->getCname(),
                (latency == nullptr ? -1 : *latency));
-    for (auto link : *links)
+    for (auto const& link : *links)
       XBT_CDEBUG(surf_route, "Link %s", link->cname());
   }
 }
@@ -248,7 +248,7 @@ std::unordered_map<std::string, Storage*> const& Host::getMountedStorages()
 {
   if (mounts == nullptr) {
     mounts = new std::unordered_map<std::string, Storage*>();
-    for (auto m : this->pimpl_->storage_) {
+    for (auto const& m : this->pimpl_->storage_) {
       mounts->insert({m.first, &m.second->piface_});
     }
   }

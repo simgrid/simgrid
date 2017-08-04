@@ -56,7 +56,7 @@ NetPointNs3::NetPointNs3()
 
 static void clusterCreation_cb(ClusterCreationArgs* cluster)
 {
-  for (int i : *cluster->radicals) {
+  for (int const& i : *cluster->radicals) {
     // Routers don't create a router on the other end of the private link by themselves.
     // We just need this router to be given an ID so we create a temporary NetPointNS3 so that it gets one
     NetPointNs3* host_dst = new NetPointNs3();
@@ -159,7 +159,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
 }
 
 NetworkNS3Model::~NetworkNS3Model() {
-  for (auto addr : IPV4addr)
+  for (auto const& addr : IPV4addr)
     free(addr);
   IPV4addr.clear();
   xbt_dict_free(&flowFromSock);
@@ -226,7 +226,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
       std::vector<LinkImpl*> route = std::vector<LinkImpl*>();
 
       action->src_->routeTo(action->dst_, &route, nullptr);
-      for (auto link : route)
+      for (auto const& link : route)
         TRACE_surf_link_set_utilization(link->cname(), action->getCategory(), (data_delta_sent) / delta, now - delta,
                                         delta);
 

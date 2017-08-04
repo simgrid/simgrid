@@ -65,7 +65,7 @@ int Comm::dup(MPI_Comm* newcomm){
   if (not attributes()->empty()) {
     int flag;
     void* value_out;
-    for(auto it : *attributes()){
+    for (auto const& it : *attributes()) {
       smpi_key_elem elem = keyvals_.at(it.first);
       if (elem != nullptr && elem->copy_fn.comm_copy_fn != MPI_NULL_COPY_FN) {
         ret = elem->copy_fn.comm_copy_fn(this, it.first, nullptr, it.second, &value_out, &flag);
@@ -484,7 +484,7 @@ void Comm::remove_rma_win(MPI_Win win){
 }
 
 void Comm::finish_rma_calls(){
-  for(auto it : rma_wins_){
+  for (auto const& it : rma_wins_) {
     if(it->rank()==this->rank()){//is it ours (for MPI_COMM_WORLD)?
       int finished = it->finish_comms();
       XBT_DEBUG("Barrier for rank %d - Finished %d RMA calls",this->rank(), finished);

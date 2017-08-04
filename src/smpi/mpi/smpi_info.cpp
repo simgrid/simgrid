@@ -60,7 +60,7 @@ int Info::get_nkeys(int *nkeys){
 
 int Info::get_nthkey(int n, char *key){
   int num=0;
-  for (auto elm : map_) {
+  for (auto const& elm : map_) {
     if (num == n) {
       strncpy(key, elm.first.c_str(), elm.first.length() + 1);
       return MPI_SUCCESS;

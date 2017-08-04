@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     double now = surf_get_clock();
     XBT_INFO("Next Event : %g", now);
 
-    for (auto model: *all_existing_models) {
+    for (auto const& model : *all_existing_models) {
       if (surf_model_running_action_set_size(model)) {
         XBT_DEBUG("\t Running that model");
         running = 1;

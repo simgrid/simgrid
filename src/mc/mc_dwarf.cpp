@@ -1134,7 +1134,7 @@ std::string find_by_build_id(std::vector<char> id)
 {
   std::string filename;
   std::string hex = to_hex(id);
-  for (const char* debug_path : debug_paths) {
+  for (const char* const& debug_path : debug_paths) {
     // Example:
     filename = std::string(debug_path) + ".build-id/"
       + to_hex(id.data(), 1) + '/'

@@ -338,7 +338,7 @@ static void start_dirty_page_tracking(msg_vm_t vm)
   if (vm->pimpl_vm_->dp_objs.empty())
     return;
 
-  for (auto elm : vm->pimpl_vm_->dp_objs) {
+  for (auto const& elm : vm->pimpl_vm_->dp_objs) {
     dirty_page_t dp    = elm.second;
     double remaining = MSG_task_get_flops_amount(dp->task);
     dp->prev_clock = MSG_get_clock();
@@ -367,7 +367,7 @@ static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug
 {
   double total = 0;
 
-  for (auto elm : vm->pimpl_vm_->dp_objs) {
+  for (auto const& elm : vm->pimpl_vm_->dp_objs) {
     const char* key  = elm.first.c_str();
     dirty_page_t dp  = elm.second;
     double remaining = MSG_task_get_flops_amount(dp->task);

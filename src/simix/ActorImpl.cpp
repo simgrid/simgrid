@@ -330,7 +330,7 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
 
   /* Add properties */
   if (properties != nullptr)
-    for (auto kv : *properties)
+    for (auto const& kv : *properties)
       process->setProperty(kv.first, kv.second);
 
   /* Make sure that the process is initialized for simix, in case we are called from the Host::onCreation signal */
@@ -400,7 +400,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
 
   /* Add properties */
   if (properties != nullptr)
-    for (auto kv : *properties)
+    for (auto const& kv : *properties)
       process->setProperty(kv.first, kv.second);
 
   /* Add the process to it's host process list */
@@ -592,7 +592,7 @@ void simcall_HANDLER_process_killall(smx_simcall_t simcall, int reset_pid) {
  */
 void SIMIX_process_killall(smx_actor_t issuer, int reset_pid)
 {
-  for (auto kv : simix_global->process_list)
+  for (auto const& kv : simix_global->process_list)
     if (kv.second != issuer)
       SIMIX_process_kill(kv.second, issuer);
 
@@ -664,7 +664,7 @@ const char* SIMIX_process_self_get_name() {
 
 smx_actor_t SIMIX_process_get_by_name(const char* name)
 {
-  for (auto kv : simix_global->process_list)
+  for (auto const& kv : simix_global->process_list)
     if (kv.second->name == name)
       return kv.second;
   return nullptr;

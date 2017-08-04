@@ -125,19 +125,19 @@ void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, s
 
 static void print(std::vector<std::pair<size_t, size_t>> vec) {
   std::fprintf(stderr, "{");
-  for (auto elt : vec) {
+  for (auto const& elt : vec) {
     std::fprintf(stderr, "(0x%zx, 0x%zx),", elt.first, elt.second);
   }
   std::fprintf(stderr, "}\n");
 }
 static void memcpy_private(void* dest, const void* src, std::vector<std::pair<size_t, size_t>>& private_blocks)
 {
-  for (auto block : private_blocks)
+  for (auto const& block : private_blocks)
     memcpy((uint8_t*)dest+block.first, (uint8_t*)src+block.first, block.second-block.first);
 }
 
 static void check_blocks(std::vector<std::pair<size_t, size_t>> &private_blocks, size_t buff_size) {
-  for (auto block : private_blocks)
+  for (auto const& block : private_blocks)
     xbt_assert(block.first <= block.second && block.second <= buff_size, "Oops, bug in shared malloc.");
 }
 
@@ -282,7 +282,7 @@ void smpi_global_init()
 
     // Iterate over all the computational units. This could be processes, hosts, threads, ranks... You name it.
     // I'm not exactly sure what we will support eventually, so I'll leave it at the general term "units".
-    for (auto& unit_it : tokens) {
+    for (auto const& unit_it : tokens) {
       boost::char_separator<char> separator_events(":");
       Tokenizer event_tokens(unit_it, separator_events);
 

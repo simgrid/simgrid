@@ -249,7 +249,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getMountedStorage(JNIEn
     return nullptr;
   }
 
-  for (auto elm : mounted_storages) {
+  for (auto const& elm : mounted_storages) {
     jname    = env->NewStringUTF(elm.second->getName());
     jstorage = Java_org_simgrid_msg_Storage_getByName(env,cls,jname);
     env->SetObjectArrayElement(jtable, index, jstorage);

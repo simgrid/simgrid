@@ -68,7 +68,7 @@ void SIMIX_io_destroy(smx_activity_t synchro)
 
 void SIMIX_io_finish(smx_activity_t synchro)
 {
-  for (smx_simcall_t simcall : synchro->simcalls) {
+  for (smx_simcall_t const& simcall : synchro->simcalls) {
     switch (synchro->state) {
       case SIMIX_DONE:
         /* do nothing, synchro done */

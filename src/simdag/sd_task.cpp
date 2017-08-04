@@ -336,9 +336,9 @@ xbt_dynar_t SD_task_get_parents(SD_task_t task)
 {
   xbt_dynar_t parents = xbt_dynar_new(sizeof(SD_task_t), nullptr);
 
-  for (auto it : *task->predecessors)
+  for (auto const& it : *task->predecessors)
     xbt_dynar_push(parents, &it);
-  for (auto it : *task->inputs)
+  for (auto const& it : *task->inputs)
     xbt_dynar_push(parents, &it);
 
   return parents;
@@ -353,9 +353,9 @@ xbt_dynar_t SD_task_get_children(SD_task_t task)
 {
   xbt_dynar_t children = xbt_dynar_new(sizeof(SD_task_t), nullptr);
 
-  for (auto it : *task->successors)
+  for (auto const& it : *task->successors)
     xbt_dynar_push(children, &it);
-  for (auto it : *task->outputs)
+  for (auto const& it : *task->outputs)
     xbt_dynar_push(children, &it);
 
   return children;
@@ -480,18 +480,18 @@ void SD_task_dump(SD_task_t task)
   XBT_INFO("  - Dependencies to satisfy: %zu", task->inputs->size()+ task->predecessors->size());
   if ((task->inputs->size()+ task->predecessors->size()) > 0) {
     XBT_INFO("  - pre-dependencies:");
-    for (auto it : *task->predecessors)
+    for (auto const& it : *task->predecessors)
       XBT_INFO("    %s", it->name);
 
-    for (auto it: *task->inputs)
+    for (auto const& it : *task->inputs)
       XBT_INFO("    %s", it->name);
   }
   if ((task->outputs->size() + task->successors->size()) > 0) {
     XBT_INFO("  - post-dependencies:");
 
-    for (auto it : *task->successors)
+    for (auto const& it : *task->successors)
       XBT_INFO("    %s", it->name);
-    for (auto it : *task->outputs)
+    for (auto const& it : *task->outputs)
       XBT_INFO("    %s", it->name);
   }
 }
@@ -514,9 +514,9 @@ void SD_task_dotty(SD_task_t task, void *out)
     xbt_die("Unknown task type!");
   }
   fprintf(fout, "];\n");
-  for (auto it : *task->predecessors)
+  for (auto const& it : *task->predecessors)
     fprintf(fout, " T%p -> T%p;\n", it, task);
-  for (auto it : *task->inputs)
+  for (auto const& it : *task->inputs)
     fprintf(fout, " T%p -> T%p;\n", it, task);
 }
 
@@ -800,7 +800,7 @@ void SD_task_run(SD_task_t task)
   int host_nb = task->allocation->size();
   sg_host_t *hosts = xbt_new(sg_host_t, host_nb);
   int i =0;
-  for (auto host: *task->allocation){
+  for (auto const& host : *task->allocation) {
     hosts[i] = host;
     i++;
   }
@@ -926,7 +926,7 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
   SD_task_do_schedule(task);
 
   /* Iterate over all inputs and outputs to say where I am located (and start them if runnable) */
-  for (auto input : *task->inputs){
+  for (auto const& input : *task->inputs) {
     int src_nb = input->allocation->size();
     int dst_nb = count;
     if (input->allocation->empty())
@@ -945,7 +945,7 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
     }
   }
 
-  for (auto output : *task->outputs){
+  for (auto const& output : *task->outputs) {
     int src_nb = count;
     int dst_nb = output->allocation->size();
     if (output->allocation->empty())

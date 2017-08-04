@@ -96,7 +96,7 @@ void MC_run()
   simgrid::mc::processes_time.resize(SIMIX_process_get_maxpid());
   MC_ignore_heap(simgrid::mc::processes_time.data(),
     simgrid::mc::processes_time.size() * sizeof(simgrid::mc::processes_time[0]));
-  for (auto kv : simix_global->process_list) {
+  for (auto const& kv : simix_global->process_list) {
     smx_actor_t actor = kv.second;
     MC_ignore_heap(&(actor->process_hookup), sizeof(actor->process_hookup));
   }
@@ -110,7 +110,7 @@ void MC_show_deadlock()
   XBT_INFO("*** DEAD-LOCK DETECTED ***");
   XBT_INFO("**************************");
   XBT_INFO("Counter-example execution trace:");
-  for (auto& s : mc_model_checker->getChecker()->getTextualTrace())
+  for (auto const& s : mc_model_checker->getChecker()->getTextualTrace())
     XBT_INFO("%s", s.c_str());
   simgrid::mc::session->logState();
 }

@@ -29,7 +29,7 @@ namespace surf {
 void HostModel::ignoreEmptyVmInPmLMM()
 {
   /* iterate for all virtual machines */
-  for (s4u::VirtualMachine* ws_vm : vm::VirtualMachineImpl::allVms_) {
+  for (s4u::VirtualMachine* const& ws_vm : vm::VirtualMachineImpl::allVms_) {
     Cpu* cpu = ws_vm->pimpl_cpu;
     int active_tasks = lmm_constraint_get_variable_amount(cpu->constraint());
 
@@ -102,7 +102,7 @@ HostImpl::HostImpl(s4u::Host* host) : piface_(host)
 
 void HostImpl::getAttachedStorageList(std::vector<const char*>* storages)
 {
-  for (auto s : storage_)
+  for (auto const& s : storage_)
     if (s.second->getHost() == piface_->getCname())
       storages->push_back(s.second->piface_.getName());
 }

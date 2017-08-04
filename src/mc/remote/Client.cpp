@@ -88,7 +88,7 @@ void Client::handleDeadlockCheck(mc_message_t* msg)
   bool deadlock = false;
   if (not simix_global->process_list.empty()) {
     deadlock = true;
-    for (auto kv : simix_global->process_list)
+    for (auto const& kv : simix_global->process_list)
       if (simgrid::mc::actor_is_enabled(kv.second)) {
         deadlock = false;
         break;

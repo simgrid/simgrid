@@ -57,7 +57,7 @@ Peer::Peer(std::vector<std::string> args)
 
 Peer::~Peer()
 {
-  for (auto peer : connected_peers)
+  for (auto const& peer : connected_peers)
     delete peer.second;
   delete[] pieces_count;
 }
@@ -102,7 +102,7 @@ bool Peer::getPeersFromTracker()
   try {
     TrackerAnswer* answer = static_cast<TrackerAnswer*>(mailbox_->get(GET_PEERS_TIMEOUT));
     // Add the peers the tracker gave us to our peer list.
-    for (auto peer_id : *answer->getPeers())
+    for (auto const& peer_id : *answer->getPeers())
       if (id != peer_id)
         connected_peers[peer_id] = new Connection(peer_id);
     delete answer;
@@ -117,7 +117,7 @@ bool Peer::getPeersFromTracker()
 
 void Peer::sendHandshakeToAllPeers()
 {
-  for (auto kv : connected_peers) {
+  for (auto const& kv : connected_peers) {
     Connection* remote_peer = kv.second;
     Message* handshake      = new Message(MESSAGE_HANDSHAKE, id, mailbox_);
     remote_peer->mailbox_->put_init(handshake, MESSAGE_HANDSHAKE_SIZE)->detach();
@@ -151,7 +151,7 @@ void Peer::sendPiece(simgrid::s4u::MailboxPtr mailbox, unsigned int piece, int b
 void Peer::sendHaveToAllPeers(unsigned int piece)
 {
   XBT_DEBUG("Sending HAVE message to all my peers");
-  for (auto kv : connected_peers) {
+  for (auto const& kv : connected_peers) {
     Connection* remote_peer = kv.second;
     remote_peer->mailbox_->put_init(new Message(MESSAGE_HAVE, id, mailbox_, piece), MESSAGE_HAVE_SIZE)->detach();
   }
@@ -220,7 +220,7 @@ unsigned int Peer::countPieces(unsigned int bitfield)
 int Peer::nbInterestedPeers()
 {
   int nb = 0;
-  for (auto kv : connected_peers)
+  for (auto const& kv : connected_peers)
     if (kv.second->interested)
       nb++;
   return nb;
@@ -558,7 +558,7 @@ void Peer::updateChokedPeers()
   if (hasFinished()) {
     Connection* remote_peer;
     double unchoke_time = simgrid::s4u::Engine::getClock() + 1;
-    for (auto kv : connected_peers) {
+    for (auto const& kv : connected_peers) {
       remote_peer = kv.second;
       if (remote_peer->last_unchoke < unchoke_time && remote_peer->interested && remote_peer->choked_upload) {
         unchoke_time = remote_peer->last_unchoke;
@@ -585,7 +585,7 @@ void Peer::updateChokedPeers()
     } else {
       // Use the "fastest download" policy.
       double fastest_speed = 0.0;
-      for (auto kv : connected_peers) {
+      for (auto const& kv : connected_peers) {
         Connection* remote_peer = kv.second;
         if (remote_peer->peer_speed > fastest_speed && remote_peer->choked_upload && remote_peer->interested) {
           chosen_peer   = remote_peer;
@@ -622,7 +622,7 @@ void Peer::updateChokedPeers()
 /** @brief Update "interested" state of peers: send "not interested" to peers that don't have any more pieces we want.*/
 void Peer::updateInterestedAfterReceive()
 {
-  for (auto kv : connected_peers) {
+  for (auto const& kv : connected_peers) {
     Connection* remote_peer = kv.second;
     if (remote_peer->am_interested) {
       bool interested = false;

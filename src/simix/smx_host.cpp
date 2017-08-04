@@ -38,10 +38,10 @@ namespace simgrid {
         SIMIX_display_process_status();
         THROWF(arg_error, 0, "%s", msg.c_str());
       }
-      for (auto arg : auto_restart_processes)
+      for (auto const& arg : auto_restart_processes)
         delete arg;
       auto_restart_processes.clear();
-      for (auto arg : boot_processes)
+      for (auto const& arg : boot_processes)
         delete arg;
       boot_processes.clear();
       xbt_swag_free(process_list);
@@ -53,7 +53,7 @@ namespace simgrid {
      */
     void Host::turnOn()
     {
-      for (auto arg : boot_processes) {
+      for (auto const& arg : boot_processes) {
         XBT_DEBUG("Booting Process %s(%s) right now", arg->name.c_str(), arg->host->getCname());
         smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host,
                                                                   arg->properties, nullptr);
@@ -137,7 +137,7 @@ void SIMIX_host_autorestart(sg_host_t host)
   std::vector<simgrid::simix::ProcessArg*> process_list =
       host->extension<simgrid::simix::Host>()->auto_restart_processes;
 
-  for (auto arg : process_list) {
+  for (auto const& arg : process_list) {
     XBT_DEBUG("Restarting Process %s@%s right now", arg->name.c_str(), arg->host->getCname());
     smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host,
                                                               arg->properties, nullptr);
@@ -240,7 +240,7 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_activity_t synchr
 
 void SIMIX_execution_finish(simgrid::kernel::activity::ExecImplPtr exec)
 {
-  for (smx_simcall_t simcall : exec->simcalls) {
+  for (smx_simcall_t const& simcall : exec->simcalls) {
     switch (exec->state) {
 
       case SIMIX_DONE:

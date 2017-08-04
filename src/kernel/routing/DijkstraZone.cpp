@@ -167,7 +167,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
 
     sg_platf_route_cbarg_t e_route = (sg_platf_route_cbarg_t)xbt_graph_edge_get_data(edge);
 
-    for (auto link : *e_route->link_list) {
+    for (auto const& link : *e_route->link_list) {
       route->link_list->insert(route->link_list->begin(), link);
       if (lat)
         *lat += static_cast<surf::LinkImpl*>(link)->latency();
@@ -265,7 +265,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
       NetPoint* prev_gw_src_net_elm = nullptr;
       getGlobalRoute(gw_dst_net_elm, prev_gw_src_net_elm, &e_route_as_to_as, nullptr);
       auto pos = route->link_list->begin();
-      for (auto link : e_route_as_to_as) {
+      for (auto const& link : e_route_as_to_as) {
         route->link_list->insert(pos, link);
         if (lat)
           *lat += link->latency();
@@ -273,7 +273,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
       }
     }
 
-    for (auto link : *e_route->link_list) {
+    for (auto const& link : *e_route->link_list) {
       route->link_list->insert(route->link_list->begin(), link);
       if (lat)
         *lat += static_cast<surf::LinkImpl*>(link)->latency();

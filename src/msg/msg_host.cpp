@@ -169,7 +169,7 @@ xbt_dict_t MSG_host_get_properties(msg_host_t host)
   std::map<std::string, std::string>* props = host->getProperties();
   if (props == nullptr)
     return nullptr;
-  for (auto elm : *props) {
+  for (auto const& elm : *props) {
     xbt_dict_set(as_dict, elm.first.c_str(), xbt_strdup(elm.second.c_str()), nullptr);
   }
   return as_dict;
@@ -262,7 +262,7 @@ xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
 {
   xbt_assert((host != nullptr), "Invalid parameters");
   xbt_dict_t contents = xbt_dict_new_homogeneous(nullptr);
-  for (auto elm : host->getMountedStorages())
+  for (auto const& elm : host->getMountedStorages())
     xbt_dict_set(contents, elm.first.c_str(), MSG_storage_get_content(elm.second), nullptr);
 
   return contents;

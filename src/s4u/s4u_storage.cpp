@@ -16,7 +16,7 @@ std::map<std::string, Storage*>* allStorages()
 {
   std::unordered_map<std::string, surf::StorageImpl*>* map = surf::StorageImpl::storagesMap();
   std::map<std::string, Storage*>* res                     = new std::map<std::string, Storage*>;
-  for (auto s : *map)
+  for (auto const& s : *map)
     res->insert({s.first, &(s.second->piface_)}); // Convert each entry into its interface
 
   return res;

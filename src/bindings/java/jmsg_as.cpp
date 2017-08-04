@@ -78,7 +78,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getSons(JNIEnv * env, job
     return nullptr;
   }
 
-  for (auto tmp_as : *self_as->getChildren()) {
+  for (auto const& tmp_as : *self_as->getChildren()) {
     jobject tmp_jas = jnetzone_new_instance(env);
     if (not tmp_jas) {
       jxbt_throw_jni(env, "java As instantiation failed");
@@ -140,7 +140,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jo
   }
 
   int index = 0;
-  for (auto host : table) {
+  for (auto const& host : table) {
     jhost = static_cast<jobject>(host->extension(JAVA_HOST_LEVEL));
     if (not jhost) {
       jname = env->NewStringUTF(host->getCname());

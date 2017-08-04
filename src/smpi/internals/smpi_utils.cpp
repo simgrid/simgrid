@@ -64,7 +64,7 @@ std::vector<s_smpi_factor_t> parse_factor(const char *smpi_coef_string)
   std::sort(smpi_factor.begin(), smpi_factor.end(), [](const s_smpi_factor_t &pa, const s_smpi_factor_t &pb) {
     return (pa.factor < pb.factor);
   });
-  for (auto& fact : smpi_factor) {
+  for (auto const& fact : smpi_factor) {
     XBT_DEBUG("smpi_factor:\t%zu : %zu values, first: %f", fact.factor, smpi_factor.size() ,fact.values[0]);
   }
   smpi_factor.shrink_to_fit();

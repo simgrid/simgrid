@@ -41,7 +41,7 @@ public:
     xbt_dynar_t comms = xbt_dynar_new(sizeof(simgrid::kernel::activity::ActivityImpl*), [](void*ptr){
       intrusive_ptr_release(*(simgrid::kernel::activity::ActivityImpl**)ptr);
     });
-    for (auto comm : *comms_in) {
+    for (auto const& comm : *comms_in) {
       if (comm->state_ == inited)
         comm->start();
       xbt_assert(comm->state_ == started);

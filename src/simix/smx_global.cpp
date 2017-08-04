@@ -338,7 +338,7 @@ static void SIMIX_wake_processes()
 {
   surf_action_t action;
 
-  for(auto model : *all_existing_models) {
+  for (auto const& model : *all_existing_models) {
     XBT_DEBUG("Handling the processes whose action failed (if any)");
     while ((action = surf_model_extract_failed_action_set(model))) {
       XBT_DEBUG("   Handling Action %p",action);
@@ -480,7 +480,7 @@ void SIMIX_run()
        *   That would thus be a pure waste of time.
        */
 
-      for (smx_actor_t process : simix_global->process_that_ran) {
+      for (smx_actor_t const& process : simix_global->process_that_ran) {
         if (process->simcall.call != SIMCALL_NONE) {
           SIMIX_simcall_handle(&process->simcall, 0);
         }
@@ -520,7 +520,7 @@ void SIMIX_run()
     } while (again);
 
     /* Autorestart all process */
-    for (auto host: host_that_restart) {
+    for (auto const& host : host_that_restart) {
       XBT_INFO("Restart processes on host %s", host->getCname());
       SIMIX_host_autorestart(host);
     }
@@ -627,7 +627,7 @@ void SIMIX_display_process_status()
   XBT_INFO("%d processes are still running, waiting for something.", nbprocess);
   /*  List the process and their state */
   XBT_INFO("Legend of the following listing: \"Process <pid> (<name>@<host>): <status>\"");
-  for (auto kv : simix_global->process_list) {
+  for (auto const& kv : simix_global->process_list) {
     smx_actor_t process = kv.second;
 
     if (process->waiting_synchro) {

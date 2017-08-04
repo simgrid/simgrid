@@ -35,7 +35,7 @@ namespace simgrid {
   {
     LinkImpl** res = xbt_new(LinkImpl*, (int)links->size());
     int i          = 0;
-    for (auto kv : *links) {
+    for (auto const& kv : *links) {
       res[i] = kv.second;
       i++;
     }
@@ -44,7 +44,7 @@ namespace simgrid {
   /** @brief destructor of the static data */
   void LinkImpl::linksExit()
   {
-    for (auto kv : *links)
+    for (auto const& kv : *links)
       (kv.second)->destroy();
     delete links;
   }

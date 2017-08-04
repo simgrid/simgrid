@@ -25,7 +25,7 @@ static void master()
   std::vector<simgrid::s4u::ActorPtr>* actor_list = new std::vector<simgrid::s4u::ActorPtr>();
   simgrid::s4u::this_actor::getHost()->actorList(actor_list);
 
-  for (auto actor : *actor_list) {
+  for (auto const& actor : *actor_list) {
     XBT_INFO("Actor (pid=%lu, ppid=%lu, name=%s)", actor->getPid(), actor->getPpid(), actor->getName().c_str());
     if (simgrid::s4u::this_actor::getPid() != actor->getPid())
       actor->kill();

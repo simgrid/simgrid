@@ -68,14 +68,14 @@ void TRACE_paje_dump_buffer (int force)
     return;
   XBT_DEBUG("%s: dump until %f. starts", __FUNCTION__, TRACE_last_timestamp_to_dump);
   if (force){
-    for (auto event : buffer){
+    for (auto const& event : buffer) {
       event->print();
       delete event;
     }
     buffer.clear();
   }else{
     std::vector<PajeEvent*>::iterator i = buffer.begin();
-    for (auto event :buffer){
+    for (auto const& event : buffer) {
       double head_timestamp = event->timestamp;
       if (head_timestamp > TRACE_last_timestamp_to_dump)
         break;
@@ -92,7 +92,7 @@ void buffer_debug(std::vector<PajeEvent*> *buf);
 void buffer_debug(std::vector<PajeEvent*> *buf) {
   return;
   XBT_DEBUG(">>>>>> Dump the state of the buffer. %zu events", buf->size());
-  for (auto event :*buf){
+  for (auto const& event : *buf) {
     event->print();
     XBT_DEBUG("%p %s", event, stream.str().c_str());
     stream.str("");

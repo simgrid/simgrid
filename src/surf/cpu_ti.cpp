@@ -34,7 +34,7 @@ CpuTiTrace::CpuTiTrace(tmgr_trace_t speedTrace)
   nbPoints_ = speedTrace->event_list.size() + 1;
   timePoints_ = new double[nbPoints_];
   integral_ =  new double[nbPoints_];
-  for (auto val : speedTrace->event_list) {
+  for (auto const& val : speedTrace->event_list) {
     timePoints_[i] = time;
     integral_[i] = integral;
     integral += val.date_ * val.value_;
@@ -273,7 +273,7 @@ CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value) :
   type_ = TRACE_DYNAMIC;
 
   /* count the total time of trace file */
-  for (auto val : speedTrace->event_list)
+  for (auto const& val : speedTrace->event_list)
     total_time += val.date_;
 
   trace_ = new CpuTiTrace(speedTrace);

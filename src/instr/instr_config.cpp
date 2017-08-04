@@ -482,7 +482,7 @@ static void output_categories(const char* name, FILE* file)
 {
   unsigned int i = created_categories.size();
   fprintf (file, "    values = (");
-  for (auto cat : created_categories) {
+  for (auto const& cat : created_categories) {
     --i;
     fprintf(file, "\"%s%s\"", name, cat.c_str());
     if (i > 0) {
