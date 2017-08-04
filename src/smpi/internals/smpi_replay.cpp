@@ -527,12 +527,11 @@ static void action_waitall(const char *const *action){
     extra->send_size=count_requests;
     TRACE_smpi_ptp_in(rank_traced, -1, -1, __FUNCTION__,extra);
 
-    unsigned int i = 0;
    
     Request::waitall(count_requests, requests, status);
 
-    for(i = 0; i < count_requests; i++) {
-      MPI_Request req = requests[i];
+    for(auto it = reqd[my_id].begin(); it != reqd[my_id].end(); it++){
+      MPI_Request req = it->second;
       if(req->flags() & RECV){
         TRACE_smpi_recv(rank_traced, req->src(), req->dst(), req->tag());
       }
