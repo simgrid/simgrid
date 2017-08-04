@@ -168,6 +168,9 @@ static simgrid::xbt::signal<void(simgrid::surf::CpuAction*)> onShareChange;
 
   void updateRemainingLazy(double now) override;
   std::list<Cpu*> cpus();
+  
+  void suspend() override;
+  void resume() override;
 };
 
 }
