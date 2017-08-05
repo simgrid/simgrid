@@ -7,6 +7,10 @@ SimGrid (3.17) UNRELEASED (release target: September 22 2017)
  SURF
   - Unused option network/sender-gap is removed.
 
+ MSG
+  - Deprecate MSG_task_isend_with_matching(): This unused feature
+    really complicates our internals. Will be removed in v3.20.
+
 SimGrid (3.16) Released June 22. 2017.
 
  The Blooming Spring Release: developments are budding.
