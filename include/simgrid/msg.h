@@ -1,5 +1,4 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -513,9 +512,6 @@ XBT_PUBLIC(void) MSG_vm_set_bound(msg_vm_t vm, double bound);
 /* ****************************************************************************************** */
 /* Used only by the bindings -- unclean pimple, please ignore if you're not writing a binding */
 XBT_PUBLIC(smx_context_t) MSG_process_get_smx_ctx(msg_process_t process);
-
-/* Functions renamed in 3.14 */
-#define MSG_mailbox_get_head(m) MSG_mailbox_front(m)
 
 SG_END_DECL()
 
