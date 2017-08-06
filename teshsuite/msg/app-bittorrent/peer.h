@@ -6,43 +6,43 @@
 
 #ifndef BITTORRENT_PEER_H
 #define BITTORRENT_PEER_H
+#include "bittorrent.h"
+#include "connection.h"
 #include <simgrid/msg.h>
+#include <xbt/RngStream.h>
 #include <xbt/dict.h>
 #include <xbt/dynar.h>
-#include <xbt/RngStream.h>
-#include "connection.h"
-#include "bittorrent.h"
 
 /** Peer data */
 typedef struct s_peer {
-  int id;                       //peer id
+  int id; // peer id
 
-  unsigned int bitfield;        //list of pieces the peer has.
-  unsigned long long bitfield_blocks; //list of blocks the peer has.
-  short *pieces_count;          //number of peers that have each piece.
+  unsigned int bitfield;              // list of pieces the peer has.
+  unsigned long long bitfield_blocks; // list of blocks the peer has.
+  short* pieces_count;                // number of peers that have each piece.
 
-  unsigned int current_pieces;   //current pieces the peer is downloading
+  unsigned int current_pieces; // current pieces the peer is downloading
 
-  xbt_dict_t peers;             //peers list
-  xbt_dict_t active_peers;      //active peers list
-  int round;                    //current round for the chocking algorithm.
+  xbt_dict_t peers;        // peers list
+  xbt_dict_t active_peers; // active peers list
+  int round;               // current round for the chocking algorithm.
 
-  char mailbox[MAILBOX_SIZE];   //peer mailbox.
-  char mailbox_tracker[MAILBOX_SIZE];   //pair mailbox while communicating with the tracker.
-  const char *hostname;         //peer hostname
+  char mailbox[MAILBOX_SIZE];         // peer mailbox.
+  char mailbox_tracker[MAILBOX_SIZE]; // pair mailbox while communicating with the tracker.
+  const char* hostname;               // peer hostname
 
-  msg_task_t task_received;     //current task being received
-  msg_comm_t comm_received;     //current comm
+  msg_task_t task_received; // current task being received
+  msg_comm_t comm_received; // current comm
 
-  RngStream stream;             //RngStream for
+  RngStream stream; // RngStream for
 
-  double begin_receive_time;    //time when the receiving communication has begun, useful for calculating host speed.
+  double begin_receive_time; // time when the receiving communication has begun, useful for calculating host speed.
 } s_peer_t;
-typedef s_peer_t *peer_t;
+typedef s_peer_t* peer_t;
 
 /** Peer main function */
-int peer(int argc, char *argv[]);
-void get_status(char **status, unsigned int bitfield);
+int peer(int argc, char* argv[]);
+void get_status(char** status, unsigned int bitfield);
 
 int get_peers_data(peer_t peer);
 void leech_loop(peer_t peer, double deadline);
@@ -83,16 +83,16 @@ int select_piece_to_download(peer_t peer, connection_t remote_peer);
 
 void send_handshake_all(peer_t peer);
 
-void send_interested(peer_t peer, const char *mailbox);
+void send_interested(peer_t peer, const char* mailbox);
 
-void send_notinterested(peer_t peer, const char *mailbox);
-void send_handshake(peer_t peer, const char *mailbox);
-void send_bitfield(peer_t peer, const char *mailbox);
-void send_choked(peer_t peer, const char *mailbox);
-void send_unchoked(peer_t peer, const char *mailbox);
+void send_notinterested(peer_t peer, const char* mailbox);
+void send_handshake(peer_t peer, const char* mailbox);
+void send_bitfield(peer_t peer, const char* mailbox);
+void send_choked(peer_t peer, const char* mailbox);
+void send_unchoked(peer_t peer, const char* mailbox);
 void send_have(peer_t peer, int piece);
 
-void send_request(peer_t peer, const char *mailbox, int piece, int block_index, int block_length);
-void send_piece(peer_t peer, const char *mailbox, int piece, int block_index, int block_length);
+void send_request(peer_t peer, const char* mailbox, int piece, int block_index, int block_length);
+void send_piece(peer_t peer, const char* mailbox, int piece, int block_index, int block_length);
 
-#endif                          /* BITTORRENT_PEER_H */
+#endif /* BITTORRENT_PEER_H */

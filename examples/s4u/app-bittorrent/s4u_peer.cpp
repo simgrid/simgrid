@@ -348,21 +348,18 @@ void Peer::handleMessage()
       }
       break;
     case MESSAGE_INTERESTED:
-      xbt_assert((remote_peer != nullptr),
-                 "The impossible did happened: A non-in-our-list peer has sent us a message.");
+      xbt_assert((remote_peer != nullptr), "The impossible did happened: A not-in-our-list peer sent us a message.");
       // Update the interested state of the peer.
       remote_peer->interested = true;
       updateActivePeersSet(remote_peer);
       break;
     case MESSAGE_NOTINTERESTED:
-      xbt_assert((remote_peer != nullptr),
-                 "The impossible did happened: A non-in-our-list peer has sent us a message.");
+      xbt_assert((remote_peer != nullptr), "The impossible did happened: A not-in-our-list peer sent us a message.");
       remote_peer->interested = false;
       updateActivePeersSet(remote_peer);
       break;
     case MESSAGE_UNCHOKE:
-      xbt_assert((remote_peer != nullptr),
-                 "The impossible did happened: A non-in-our-list peer has sent us a message.");
+      xbt_assert((remote_peer != nullptr), "The impossible did happened: A not-in-our-list peer sent us a message.");
       xbt_assert(remote_peer->choked_download);
       remote_peer->choked_download = false;
       // Send requests to the peer, since it has unchoked us
@@ -370,8 +367,7 @@ void Peer::handleMessage()
       requestNewPieceTo(remote_peer);
       break;
     case MESSAGE_CHOKE:
-      xbt_assert((remote_peer != nullptr),
-                 "The impossible did happened: A non-in-our-list peer has sent us a message.");
+      xbt_assert((remote_peer != nullptr), "The impossible did happened: A not-in-our-list peer sent us a message.");
       xbt_assert(not remote_peer->choked_download);
       remote_peer->choked_download = true;
       if (remote_peer->current_piece != -1)

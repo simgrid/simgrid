@@ -30,13 +30,6 @@ if(SIMGRID_HAVE_NS3)
   set_target_properties(network-ns3  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/network-ns3)
 endif()
 
-add_executable       (bittorrent app-bittorrent/bittorrent.c app-bittorrent/messages.c app-bittorrent/peer.c app-bittorrent/tracker.c app-bittorrent/connection.c)
-target_link_libraries(bittorrent simgrid)
-set_target_properties(bittorrent PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-bittorrent)
-foreach (file bittorrent connection messages peer tracker)
-  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.h)
-endforeach()
-
 add_executable       (chainsend app-chainsend/chainsend.c app-chainsend/iterator.c app-chainsend/common.c app-chainsend/messages.c app-chainsend/broadcaster.c app-chainsend/peer.c)
 target_link_libraries(chainsend simgrid)
 set_target_properties(chainsend PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-chainsend)
@@ -51,21 +44,19 @@ foreach (file answer dht-kademlia node routing_table task)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.h)
 endforeach()
 
-foreach (file app-bittorrent app-chainsend app-masterworker app-pingpong async-wait
+foreach (file app-chainsend app-masterworker app-pingpong async-wait
          async-waitall async-waitany dht-kademlia dht-pastry io-remote platform-properties process-yield 
          task-priority)
   set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
 endforeach()
 
 set(txt_files    ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/README.doc          PARENT_SCOPE)
-set(bin_files    ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/generate.py
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py
+set(bin_files    ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-pastry/generate.py                       PARENT_SCOPE)
 set(examples_src ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/chainsend.c
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/common.h
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/network-ns3.c                    PARENT_SCOPE)
-set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/app-bittorrent.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/app-chainsend.tesh
+set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/app-chainsend.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/dht-kademlia.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-multicore.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-vivaldi.tesh
@@ -89,7 +80,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_kill_d.xml       PARENT_SCOPE)
 
-foreach(x app-bittorrent app-chainsend app-masterworker app-pingpong app-token-ring
+foreach(x app-chainsend app-masterworker app-pingpong app-token-ring
           async-wait async-waitall async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple 
           cloud-two-tasks dht-pastry dht-kademlia platform-failures io-file io-remote io-storage task-priority 
           process-create process-daemon process-join process-kill process-migration process-startkilltime process-suspend process-yield
@@ -105,7 +96,6 @@ foreach (x categories route-user-variables link-user-variables masterworker plat
   ADD_TESH(msg-trace-${x} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/trace-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/trace-${x} trace-${x}.tesh)
 endforeach()
 
-ADD_TESH_FACTORIES(msg-app-bittorrent-parallel         "thread;ucontext;raw" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/app-bittorrent --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/app-bittorrent app-bittorrent.tesh)
 ADD_TESH_FACTORIES(msg-dht-kademlia-parallel           "thread;ucontext;raw" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/dht-kademlia --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/dht-kademlia dht-kademlia.tesh)
 ADD_TESH_FACTORIES(msg-energy-pstate-ptask             "thread;ucontext;raw;boost" --cfg host/model:ptask_L07 --log xbt_cfg.threshold:critical --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy-pstate/energy-pstate.tesh)
 ADD_TESH_FACTORIES(msg-energy-consumption-ptask        "thread;ucontext;raw;boost" --cfg host/model:ptask_L07 --log xbt_cfg.threshold:critical --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy-consumption/energy-consumption.tesh)
