@@ -624,7 +624,7 @@ void update_choked_peers(peer_t peer)
         else
           XBT_DEBUG("Nothing to do, keep going");
         j++;
-      } while (peer_choosed == NULL && j < MAXIMUM_PAIRS);
+      } while (peer_choosed == NULL && j < MAXIMUM_PEERS);
     } else {
       //Use the "fastest download" policy.
       connection_t connection;

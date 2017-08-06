@@ -10,7 +10,7 @@
 #define MAILBOX_SIZE 40
 #define TRACKER_MAILBOX "tracker_mailbox"
 /** Max number of pairs sent by the tracker to clients */
-#define MAXIMUM_PAIRS 50
+#define MAXIMUM_PEERS 50
 /** Interval of time where the peer should send a request to the tracker */
 #define TRACKER_QUERY_INTERVAL 1000
 /** Communication size for a task to the tracker */

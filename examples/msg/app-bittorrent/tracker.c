@@ -49,7 +49,7 @@ int tracker(int argc, char *argv[])
         //Sending peers to the peer
         int next_peer;
         int peers_length = xbt_dynar_length(peers_list);
-        for (int i = 0; i < MAXIMUM_PAIRS && i < peers_length; i++) {
+        for (int i = 0; i < MAXIMUM_PEERS && i < peers_length; i++) {
           do {
             next_peer = xbt_dynar_get_as(peers_list, RngStream_RandInt(stream, 0, peers_length - 1), int);
           } while (is_in_list(data->peers, next_peer));
