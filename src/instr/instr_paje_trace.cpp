@@ -726,34 +726,6 @@ void PopStateEvent::print() {
   }
 }
 
-ResetStateEvent::ResetStateEvent (double timestamp, container_t container, type_t type)
-{
-  this->event_type                        = PAJE_ResetState;
-  this->timestamp                         = timestamp;
-  this->type      = type;
-  this->container = container;
-
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event_type, this->timestamp);
-
-  insert_into_buffer (this);
-  delete[] this;
-}
-
-void ResetStateEvent::print() {
-  if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
-    stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << (int)this->event_type;
-    print_timestamp(this);
-    stream << " " << type->id << " " << container->id;
-    print_row();
-  } else if (instr_fmt_type == instr_fmt_TI) {
-    /* Nothing to do */
-  } else {
-    THROW_IMPOSSIBLE;
-  }
-}
-
 StartLinkEvent::~StartLinkEvent()
 {
   free(value);

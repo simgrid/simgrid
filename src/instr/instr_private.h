@@ -128,22 +128,6 @@ class PajeEvent {
 
 //--------------------------------------------------
 
-class DefineVariableTypeEvent : public PajeEvent
-{
-  public:
-  type_t type;
-   DefineVariableTypeEvent(type_t type);
-   void print() override;
-};
-//--------------------------------------------------
-
-class DefineStateTypeEvent : public PajeEvent  {
-  type_t type;
-  public:
-  DefineStateTypeEvent(type_t type);
-  void print() override;
-};
-
 
 class SetVariableEvent : public PajeEvent  {
   private:
@@ -213,14 +197,6 @@ class PopStateEvent : public PajeEvent  {
   type_t type;
   public:
   PopStateEvent (double timestamp, container_t container, type_t type);
-  void print() override;
-};
-
-class ResetStateEvent : public PajeEvent  {
-  container_t container;
-  type_t type;
-  public:
-  ResetStateEvent (double timestamp, container_t container, type_t type);
   void print() override;
 };
 
