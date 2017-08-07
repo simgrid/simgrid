@@ -573,11 +573,12 @@ void PushStateEvent::print() {
     instr_extra_data extra = (instr_extra_data)extra_;
 
     char* process_id = nullptr;
-    // FIXME: dirty extract "rank-" from the name, as we want the bare process id here
-    if (strstr(container->name, "rank-") == nullptr)
+    // FIXME: dirty extract "rank-" or "hostname-rank-" from the name, as we want the bare process id here
+    char *dash_pos = strrchr(container->name, '-');
+    if (dash_pos == nullptr)
       process_id = xbt_strdup(container->name);
     else
-      process_id = xbt_strdup(container->name + 5);
+      process_id = xbt_strdup(dash_pos + 1);
 
     FILE* trace_file = (FILE*)xbt_dict_get(tracing_files, container->name);
 
