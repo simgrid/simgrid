@@ -10,6 +10,7 @@
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_private.h"
 #include "surf/surf.h"
+#include <algorithm>
 
 typedef enum {
   INSTR_US_DECLARE,
@@ -20,26 +21,23 @@ typedef enum {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_api, instr, "API");
 
-xbt_dict_t created_categories = nullptr;
-xbt_dict_t declared_marks = nullptr;
-xbt_dict_t user_host_variables = nullptr;
-xbt_dict_t user_vm_variables = nullptr;
-xbt_dict_t user_link_variables = nullptr;
-extern xbt_dict_t trivaNodeTypes;
-extern xbt_dict_t trivaEdgeTypes;
+std::set<std::string> created_categories;
+std::set<std::string> declared_marks;
+std::set<std::string> user_host_variables;
+std::set<std::string> user_vm_variables;
+std::set<std::string> user_link_variables;
+extern std::set<std::string> trivaNodeTypes;
+extern std::set<std::string> trivaEdgeTypes;
 
-static xbt_dynar_t instr_dict_to_dynar (xbt_dict_t filter)
+static xbt_dynar_t instr_set_to_dynar(std::set<std::string>* filter)
 {
   if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return nullptr;
 
   xbt_dynar_t ret = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
-  xbt_dict_cursor_t cursor = nullptr;
-  char *name;
-  char *value;
-  xbt_dict_foreach(filter, cursor, name, value) {
-    xbt_dynar_push_as (ret, char*, xbt_strdup(name));
-  }
+  for (auto name : *filter)
+    xbt_dynar_push_as(ret, char*, xbt_strdup(name.c_str()));
+
   return ret;
 }
 
@@ -88,10 +86,10 @@ void TRACE_category_with_color (const char *category, const char *color)
     return;
 
   //check if category is already created
-  if (xbt_dict_get_or_null(created_categories, category) != nullptr)
+  if (created_categories.find(category) != created_categories.end())
     return;
-
-  xbt_dict_set (created_categories, category, xbt_strdup("1"), nullptr);
+  else
+    created_categories.insert(category);
 
   //define final_color
   char final_color[INSTR_DEFAULT_STR_SIZE];
@@ -127,8 +125,7 @@ xbt_dynar_t TRACE_get_categories ()
 {
   if (not TRACE_is_enabled() || not TRACE_categorized())
     return nullptr;
-
-  return instr_dict_to_dynar (created_categories);
+  return instr_set_to_dynar(&created_categories);
 }
 
 /** \ingroup TRACE_mark
@@ -151,13 +148,13 @@ void TRACE_declare_mark(const char *mark_type)
     THROWF (tracing_error, 1, "mark_type is nullptr");
 
   //check if mark_type is already declared
-  if (xbt_dict_get_or_null(declared_marks, mark_type) != nullptr) {
+  if (declared_marks.find(mark_type) != declared_marks.end()) {
     THROWF (tracing_error, 1, "mark_type with name (%s) is already declared", mark_type);
   }
 
   XBT_DEBUG("MARK,declare %s", mark_type);
   PJ_type_event_new(mark_type, PJ_type_get_root());
-  xbt_dict_set (declared_marks, mark_type, xbt_strdup("1"), nullptr);
+  declared_marks.insert(mark_type);
 }
 
 /** \ingroup TRACE_mark
@@ -263,25 +260,25 @@ xbt_dynar_t TRACE_get_marks ()
   if (not TRACE_is_enabled())
     return nullptr;
 
-  return instr_dict_to_dynar (declared_marks);
+  return instr_set_to_dynar(&declared_marks);
 }
 
-static void instr_user_variable(double time, const char *resource, const char *variable, const char *father_type,
-                         double value, InstrUserVariable what, const char *color, xbt_dict_t filter)
+static void instr_user_variable(double time, const char* resource, const char* variable, const char* father_type,
+                                double value, InstrUserVariable what, const char* color, std::set<std::string>* filter)
 {
   /* safe switches. tracing has to be activated and if platform is not traced, we don't allow user variables */
   if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return;
 
   //check if variable is already declared
-  char *created = (char*)xbt_dict_get_or_null(filter, variable);
+  auto created = filter->find(variable);
   if (what == INSTR_US_DECLARE){
-    if (not created) { // not declared yet
-      xbt_dict_set (filter, variable, xbt_strdup("1"), nullptr);
+    if (created == filter->end()) { // not declared yet
+      filter->insert(variable);
       instr_new_user_variable_type (father_type, variable, color);
     }
   }else{
-    if (created) { // declared, let's work
+    if (created != filter->end()) { // declared, let's work
       char valuestr[100];
       snprintf(valuestr, 100, "%g", value);
       container_t container = PJ_container_get(resource);
@@ -318,7 +315,7 @@ static void instr_user_srcdst_variable(double time, const char *src, const char 
   std::vector<simgrid::surf::LinkImpl*> route;
   simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(src_elm, dst_elm, &route, nullptr);
   for (auto link : route)
-    instr_user_variable(time, link->cname(), variable, father_type, value, what, nullptr, user_link_variables);
+    instr_user_variable(time, link->cname(), variable, father_type, value, what, nullptr, &user_link_variables);
 }
 
 /** \ingroup TRACE_API
@@ -364,7 +361,7 @@ int TRACE_platform_graph_export_graphviz (const char *filename)
  */
 void TRACE_vm_variable_declare (const char *variable)
 {
-  instr_user_variable(0, nullptr, variable, "MSG_VM", 0, INSTR_US_DECLARE, nullptr, user_vm_variables);
+  instr_user_variable(0, nullptr, variable, "MSG_VM", 0, INSTR_US_DECLARE, nullptr, &user_vm_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -379,7 +376,7 @@ void TRACE_vm_variable_declare (const char *variable)
  */
 void TRACE_vm_variable_declare_with_color (const char *variable, const char *color)
 {
-   instr_user_variable(0, nullptr, variable, "MSG_VM", 0, INSTR_US_DECLARE, color, user_vm_variables);
+  instr_user_variable(0, nullptr, variable, "MSG_VM", 0, INSTR_US_DECLARE, color, &user_vm_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -441,7 +438,7 @@ void TRACE_vm_variable_sub (const char *vm, const char *variable, double value)
  */
 void TRACE_vm_variable_set_with_time (double time, const char *vm, const char *variable, double value)
 {
-  instr_user_variable(time, vm, variable, "MSG_VM", value, INSTR_US_SET, nullptr, user_vm_variables);
+  instr_user_variable(time, vm, variable, "MSG_VM", value, INSTR_US_SET, nullptr, &user_vm_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -461,7 +458,7 @@ void TRACE_vm_variable_set_with_time (double time, const char *vm, const char *v
  */
 void TRACE_vm_variable_add_with_time (double time, const char *vm, const char *variable, double value)
 {
-  instr_user_variable(time, vm, variable, "MSG_VM", value, INSTR_US_ADD, nullptr, user_vm_variables);
+  instr_user_variable(time, vm, variable, "MSG_VM", value, INSTR_US_ADD, nullptr, &user_vm_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -481,7 +478,7 @@ void TRACE_vm_variable_add_with_time (double time, const char *vm, const char *v
  */
 void TRACE_vm_variable_sub_with_time (double time, const char *vm, const char *variable, double value)
 {
-  instr_user_variable(time, vm, variable, "MSG_VM", value, INSTR_US_SUB, nullptr, user_vm_variables);
+  instr_user_variable(time, vm, variable, "MSG_VM", value, INSTR_US_SUB, nullptr, &user_vm_variables);
 }
 
 /* for host variables */
@@ -498,7 +495,7 @@ void TRACE_vm_variable_sub_with_time (double time, const char *vm, const char *v
  */
 void TRACE_host_variable_declare (const char *variable)
 {
-  instr_user_variable(0, nullptr, variable, "HOST", 0, INSTR_US_DECLARE, nullptr, user_host_variables);
+  instr_user_variable(0, nullptr, variable, "HOST", 0, INSTR_US_DECLARE, nullptr, &user_host_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -513,7 +510,7 @@ void TRACE_host_variable_declare (const char *variable)
  */
 void TRACE_host_variable_declare_with_color (const char *variable, const char *color)
 {
-  instr_user_variable(0, nullptr, variable, "HOST", 0, INSTR_US_DECLARE, color, user_host_variables);
+  instr_user_variable(0, nullptr, variable, "HOST", 0, INSTR_US_DECLARE, color, &user_host_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -575,7 +572,7 @@ void TRACE_host_variable_sub (const char *host, const char *variable, double val
  */
 void TRACE_host_variable_set_with_time (double time, const char *host, const char *variable, double value)
 {
-  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SET, nullptr, user_host_variables);
+  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SET, nullptr, &user_host_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -595,7 +592,7 @@ void TRACE_host_variable_set_with_time (double time, const char *host, const cha
  */
 void TRACE_host_variable_add_with_time (double time, const char *host, const char *variable, double value)
 {
-  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_ADD, nullptr, user_host_variables);
+  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_ADD, nullptr, &user_host_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -615,7 +612,7 @@ void TRACE_host_variable_add_with_time (double time, const char *host, const cha
  */
 void TRACE_host_variable_sub_with_time (double time, const char *host, const char *variable, double value)
 {
-  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SUB, nullptr, user_host_variables);
+  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SUB, nullptr, &user_host_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -628,7 +625,7 @@ void TRACE_host_variable_sub_with_time (double time, const char *host, const cha
  */
 xbt_dynar_t TRACE_get_host_variables ()
 {
-  return instr_dict_to_dynar (user_host_variables);
+  return instr_set_to_dynar(&user_host_variables);
 }
 
 /* for link variables */
@@ -645,7 +642,7 @@ xbt_dynar_t TRACE_get_host_variables ()
  */
 void TRACE_link_variable_declare (const char *variable)
 {
-  instr_user_variable (0, nullptr, variable, "LINK", 0, INSTR_US_DECLARE, nullptr, user_link_variables);
+  instr_user_variable(0, nullptr, variable, "LINK", 0, INSTR_US_DECLARE, nullptr, &user_link_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -660,7 +657,7 @@ void TRACE_link_variable_declare (const char *variable)
  */
 void TRACE_link_variable_declare_with_color (const char *variable, const char *color)
 {
-  instr_user_variable (0, nullptr, variable, "LINK", 0, INSTR_US_DECLARE, color, user_link_variables);
+  instr_user_variable(0, nullptr, variable, "LINK", 0, INSTR_US_DECLARE, color, &user_link_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -722,7 +719,7 @@ void TRACE_link_variable_sub (const char *link, const char *variable, double val
  */
 void TRACE_link_variable_set_with_time (double time, const char *link, const char *variable, double value)
 {
-  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_SET, nullptr, user_link_variables);
+  instr_user_variable(time, link, variable, "LINK", value, INSTR_US_SET, nullptr, &user_link_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -742,7 +739,7 @@ void TRACE_link_variable_set_with_time (double time, const char *link, const cha
  */
 void TRACE_link_variable_add_with_time (double time, const char *link, const char *variable, double value)
 {
-  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_ADD, nullptr, user_link_variables);
+  instr_user_variable(time, link, variable, "LINK", value, INSTR_US_ADD, nullptr, &user_link_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -762,7 +759,7 @@ void TRACE_link_variable_add_with_time (double time, const char *link, const cha
  */
 void TRACE_link_variable_sub_with_time (double time, const char *link, const char *variable, double value)
 {
-  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_SUB, nullptr, user_link_variables);
+  instr_user_variable(time, link, variable, "LINK", value, INSTR_US_SUB, nullptr, &user_link_variables);
 }
 
 /* for link variables, but with src and dst used for get_route */
@@ -899,7 +896,7 @@ void TRACE_link_srcdst_variable_sub_with_time (double time, const char *src, con
  */
 xbt_dynar_t TRACE_get_link_variables ()
 {
-  return instr_dict_to_dynar (user_link_variables);
+  return instr_set_to_dynar(&user_link_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -1001,7 +998,7 @@ void TRACE_host_pop_state (const char *host, const char *state)
  */
 xbt_dynar_t TRACE_get_node_types ()
 {
-  return instr_dict_to_dynar (trivaNodeTypes);
+  return instr_set_to_dynar(&trivaNodeTypes);
 }
 
 /** \ingroup TRACE_API
@@ -1014,5 +1011,5 @@ xbt_dynar_t TRACE_get_node_types ()
  */
 xbt_dynar_t TRACE_get_edge_types ()
 {
-  return instr_dict_to_dynar (trivaEdgeTypes);
+  return instr_set_to_dynar(&trivaEdgeTypes);
 }

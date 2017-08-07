@@ -1,5 +1,4 @@
-/* Copyright (c) 2010, 2012-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -20,7 +19,7 @@ extern "C" {
 #include "src/surf/surf_private.h"
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <simgrid/host.h>
+#include <simgrid/s4u/Host.hpp>
 #include <string>
 #include <vector>
 
@@ -452,23 +451,19 @@ int console_add_ASroute(lua_State *L) {
 }
 
 int console_AS_open(lua_State *L) {
- const char *id;
- const char *mode;
- int type;
-
  XBT_DEBUG("Opening AS");
 
  lua_ensure(lua_istable(L, 1), "Bad Arguments to AS_open, Should be a table with named arguments");
 
  lua_pushstring(L, "id");
- type = lua_gettable(L, -2);
+ int type = lua_gettable(L, -2);
  lua_ensure(type == LUA_TSTRING, "Attribute 'id' must be specified for any AS and must be a string.");
- id = lua_tostring(L, -1);
+ const char* id = lua_tostring(L, -1);
  lua_pop(L, 1);
 
  lua_pushstring(L, "mode");
  lua_gettable(L, -2);
- mode = lua_tostring(L, -1);
+ const char* mode = lua_tostring(L, -1);
  lua_pop(L, 1);
 
  int mode_int = A_surfxml_AS_routing_None;
@@ -511,32 +506,28 @@ int console_AS_seal(lua_State *L) {
 }
 
 int console_host_set_property(lua_State *L) {
-  const char* name ="";
-  const char* prop_id = "";
-  const char* prop_value = "";
   lua_ensure(lua_istable(L, -1), "Bad Arguments to create link, Should be a table with named arguments");
 
   // get Host id
   lua_pushstring(L, "host");
   lua_gettable(L, -2);
-  name = lua_tostring(L, -1);
+  const char* name = lua_tostring(L, -1);
   lua_pop(L, 1);
 
   // get prop Name
   lua_pushstring(L, "prop");
   lua_gettable(L, -2);
-  prop_id = lua_tostring(L, -1);
+  const char* prop_id = lua_tostring(L, -1);
   lua_pop(L, 1);
   //get args
   lua_pushstring(L,"value");
   lua_gettable(L, -2);
-  prop_value = lua_tostring(L,-1);
+  const char* prop_value = lua_tostring(L, -1);
   lua_pop(L, 1);
 
   sg_host_t host = sg_host_by_name(name);
   lua_ensure(host, "no host '%s' found",name);
-  xbt_dict_t props = sg_host_get_properties(host);
-  xbt_dict_set(props,prop_id,xbt_strdup(prop_value),nullptr);
+  host->setProperty(prop_id, prop_value);
 
   return 0;
 }

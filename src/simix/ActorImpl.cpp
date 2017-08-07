@@ -79,8 +79,9 @@ void SIMIX_process_cleanup(smx_actor_t process)
   xbt_os_mutex_acquire(simix_global->mutex);
 
   /* cancel non-blocking communications */
-  smx_activity_t synchro = process->comms.front();
   while (not process->comms.empty()) {
+    smx_activity_t synchro = process->comms.front();
+    process->comms.pop_front();
     simgrid::kernel::activity::CommImplPtr comm =
         boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
 
@@ -104,8 +105,6 @@ void SIMIX_process_cleanup(smx_actor_t process)
     } else {
       xbt_die("Communication synchro %p is in my list but I'm not the sender nor the receiver", synchro.get());
     }
-    process->comms.pop_front();
-    synchro = process->comms.front();
     comm->cancel();
   }
 
@@ -346,7 +345,7 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
   /* Now insert it in the global process list and in the process to run list */
   simix_global->process_list[process->pid] = process;
   XBT_DEBUG("Inserting %s(%s) in the to_run list", process->cname(), host->getCname());
-  xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, process);
+  simix_global->process_to_run.push_back(process);
   intrusive_ptr_add_ref(process);
 
   /* Tracing the process creation */
@@ -410,7 +409,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   /* Now insert it in the global process list and in the process to run list */
   simix_global->process_list[process->pid] = process;
   XBT_DEBUG("Inserting %s(%s) in the to_run list", process->cname(), host->getCname());
-  xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, process);
+  simix_global->process_to_run.push_back(process);
 
   /* Tracing the process creation */
   TRACE_msg_process_create(process->cname(), process->pid, process->host);
@@ -454,10 +453,8 @@ void SIMIX_process_runall()
 {
   SIMIX_context_runall();
 
-  xbt_dynar_t tmp = simix_global->process_that_ran;
-  simix_global->process_that_ran = simix_global->process_to_run;
-  simix_global->process_to_run = tmp;
-  xbt_dynar_reset(simix_global->process_to_run);
+  simix_global->process_to_run.swap(simix_global->process_that_ran);
+  simix_global->process_to_run.clear();
 }
 
 void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_actor_t process) {
@@ -525,9 +522,11 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
 
     process->waiting_synchro = nullptr;
   }
-  if (not xbt_dynar_member(simix_global->process_to_run, &(process)) && process != issuer) {
+  if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), process) ==
+          end(simix_global->process_to_run) &&
+      process != issuer) {
     XBT_DEBUG("Inserting %s in the to_run list", process->name.c_str());
-    xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, process);
+    simix_global->process_to_run.push_back(process);
   }
 }
 
@@ -564,9 +563,11 @@ void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const
         boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(process->waiting_synchro);
     if (sleep != nullptr) {
       SIMIX_process_sleep_destroy(process->waiting_synchro);
-      if (not xbt_dynar_member(simix_global->process_to_run, &(process)) && process != SIMIX_process_self()) {
+      if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), process) ==
+              end(simix_global->process_to_run) &&
+          process != SIMIX_process_self()) {
         XBT_DEBUG("Inserting %s in the to_run list", process->name.c_str());
-        xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, process);
+        simix_global->process_to_run.push_back(process);
       }
     }
 
@@ -821,7 +822,7 @@ void SIMIX_process_exception_terminate(xbt_ex_t * e)
 }
 
 /** @brief Returns the list of processes to run. */
-xbt_dynar_t SIMIX_process_get_runnable()
+const std::vector<smx_actor_t>& simgrid::simix::process_get_runnable()
 {
   return simix_global->process_to_run;
 }

@@ -43,10 +43,6 @@ public:
   void updateActionsStateLazy(double now, double delta) override;
   void updateActionsStateFull(double now, double delta) override;
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
-  virtual void gapAppend(double size, const LinkImpl* link, NetworkAction* action);
-
-protected:
-  bool haveGap_ = false;
 };
 
 /************
@@ -61,7 +57,6 @@ public:
   void apply_event(tmgr_trace_event_t event, double value) override;
   void setBandwidth(double value) override;
   void setLatency(double value) override;
-  virtual void gapAppend(double size, const LinkImpl* link, NetworkAction* action);
 };
 
 /**********
@@ -75,9 +70,6 @@ public:
   NetworkCm02Action(Model* model, double cost, bool failed) : NetworkAction(model, cost, failed){};
   virtual ~NetworkCm02Action() = default;
   void updateRemainingLazy(double now) override;
-
-protected:
-  double senderGap_;
 };
 }
 }

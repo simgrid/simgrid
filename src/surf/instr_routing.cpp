@@ -111,7 +111,7 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
   }
 
   //register EDGE types for triva configuration
-  xbt_dict_set (trivaEdgeTypes, link_type->name, xbt_strdup("1"), nullptr);
+  trivaEdgeTypes.insert(link_type->name);
 
   //create the link
   static long long counter = 0;

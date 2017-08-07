@@ -1,15 +1,17 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
+/* Copyright (c) 2010-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/instr/instr_private.h"
+#include <string>
+#include <unordered_map>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_resource, instr, "tracing (un)-categorized resource utilization");
 
 //to check if variables were previously set to 0, otherwise paje won't simulate them
-static xbt_dict_t platform_variables;
+static std::unordered_map<std::string, std::string> platform_variables;
 
 //used by all methods
 static void __TRACE_surf_check_variable_set_to_zero(double now, const char *variable, const char *resource)
@@ -21,18 +23,15 @@ static void __TRACE_surf_check_variable_set_to_zero(double now, const char *vari
    */
 
   // create a key considering the resource and variable
-  int n = strlen(variable)+strlen(resource)+1;
-  char *key = (char*)xbt_malloc(n*sizeof(char));
-  snprintf (key, n, "%s%s", resource, variable);
+  std::string key = std::string(resource) + variable;
 
   // check if key exists: if it doesn't, set the variable to zero and mark this in the dict
-  if (not xbt_dict_get_or_null(platform_variables, key)) {
+  if (platform_variables.find(key) == platform_variables.end()) {
     container_t container = PJ_container_get (resource);
     type_t type = PJ_type_get (variable, container->type);
     new SetVariableEvent (now, container, type, 0);
-    xbt_dict_set(platform_variables, key, (char*)"", nullptr);
+    platform_variables[key] = std::string("");
   }
-  xbt_free(key);
 }
 
 static void instr_event (double now, double delta, type_t variable, container_t resource, double value)
@@ -99,14 +98,4 @@ void TRACE_surf_host_set_utilization(const char *resource, const char *category,
     type_t type = PJ_type_get (category_type, container->type);
     instr_event (now, delta, type, container, value);
   }
-}
-
-void TRACE_surf_resource_utilization_alloc()
-{
-  platform_variables = xbt_dict_new_homogeneous(nullptr);
-}
-
-void TRACE_surf_resource_utilization_release()
-{
-  xbt_dict_free(&platform_variables);
 }

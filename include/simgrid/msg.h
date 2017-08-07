@@ -1,5 +1,4 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -404,8 +403,10 @@ XBT_PUBLIC(msg_error_t) MSG_task_receive_bounded(msg_task_t * task, const char *
 XBT_PUBLIC(msg_comm_t) MSG_task_isend(msg_task_t task, const char *alias);
 XBT_PUBLIC(msg_comm_t) MSG_task_isend_bounded(msg_task_t task, const char *alias, double maxrate);
 XBT_PUBLIC(msg_comm_t)
-MSG_task_isend_with_matching(msg_task_t task, const char* alias, int (*match_fun)(void*, void*, void*),
-                             void* match_data);
+XBT_ATTRIB_DEPRECATED_v320(
+    "This function will be removed from SimGrid v3.20. If you really need this function, please speak up quickly.")
+    MSG_task_isend_with_matching(msg_task_t task, const char* alias, int (*match_fun)(void*, void*, void*),
+                                 void* match_data);
 
 XBT_PUBLIC(void) MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup);
 XBT_PUBLIC(void) MSG_task_dsend_bounded(msg_task_t task, const char *alias, void_f_pvoid_t cleanup, double maxrate);
@@ -513,9 +514,6 @@ XBT_PUBLIC(void) MSG_vm_set_bound(msg_vm_t vm, double bound);
 /* ****************************************************************************************** */
 /* Used only by the bindings -- unclean pimple, please ignore if you're not writing a binding */
 XBT_PUBLIC(smx_context_t) MSG_process_get_smx_ctx(msg_process_t process);
-
-/* Functions renamed in 3.14 */
-#define MSG_mailbox_get_head(m) MSG_mailbox_front(m)
 
 SG_END_DECL()
 

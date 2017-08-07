@@ -7,7 +7,6 @@
 #include "src/instr/instr_private.h" // TRACE_start(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
-#include "xbt/dict.h"
 #include "xbt/log.h"
 #include "xbt/misc.h"
 #include "xbt/str.h"
@@ -26,7 +25,6 @@ extern "C" {
 #endif
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
-
 
 /* Trace related stuff */
 XBT_PRIVATE std::unordered_map<std::string, tmgr_trace_t> traces_set_list;

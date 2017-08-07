@@ -47,10 +47,7 @@ JavaContext* JavaContextFactory::create_context(
 
 void JavaContextFactory::run_all()
 {
-  xbt_dynar_t processes = SIMIX_process_get_runnable();
-  smx_actor_t process;
-  unsigned int cursor;
-  xbt_dynar_foreach(processes, cursor, process) {
+  for (smx_actor_t process : simgrid::simix::process_get_runnable()) {
     static_cast<JavaContext*>(process->context)->resume();
   }
 }

@@ -341,11 +341,6 @@ void sg_config_init(int *argc, char **argv)
 
   /* The parameters of network models */
 
-  // real default for "network/sender-gap" is set in network_smpi.cpp:
-  sg_sender_gap = NAN;
-  simgrid::config::bindFlag(sg_sender_gap, {"network/sender-gap", "network/sender_gap"},
-                            "Minimum gap between two overlapping sends");
-
   sg_latency_factor = 13.01; // comes from the default LV08 network model
   simgrid::config::bindFlag(sg_latency_factor, {"network/latency-factor", "network/latency_factor"},
                             "Correction factor to apply to the provided latency (default value set by network model)");
