@@ -179,6 +179,8 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
         if (not TRACE_smpi_is_grouped())
           PJ_type_state_new ("MPI_STATE", mpi);
         PJ_type_link_new ("MPI_LINK", PJ_type_get_root(), mpi, mpi);
+	PJ_type_link_new ("MIGRATE_LINK", PJ_type_get_root(), mpi, mpi);
+        PJ_type_state_new ("MIGRATE_STATE", mpi);
       }
     }
 
@@ -259,6 +261,8 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     if (mpi == nullptr){
       mpi = PJ_type_container_new("MPI", container->type);
       PJ_type_state_new ("MPI_STATE", mpi);
+      PJ_type_link_new ("MIGRATE_LINK",PJ_type_get_root(), mpi, mpi);
+      PJ_type_state_new ("MIGRATE_STATE", mpi);
     }
   }
 

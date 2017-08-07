@@ -83,6 +83,60 @@ int PMPI_Ssend_init(void* buf, int count, MPI_Datatype datatype, int dst, int ta
   return retval;
 }
 
+static int persistent_send(MPI_Request *request)
+{
+  int retval = 0;
+  MPI_Request req = *request;
+
+  int rank = req->comm() != MPI_COMM_NULL ? smpi_process_index() : -1;
+  int dst_traced = req->comm()->group()->index(req->dst()); //smpi_group_index(smpi_comm_group(req->comm()), req->dst());
+
+  int known = 0;
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
+  extra->type = TRACING_ISEND;
+  extra->send_size = req->size() / req->old_type()->size();
+  extra->src = rank;
+  extra->dst = dst_traced;
+  extra->tag = req->tag();
+  extra->datatype1 = encode_datatype(req->old_type(), &known);
+  TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
+  TRACE_smpi_send(rank, rank, dst_traced, req->tag(), req->size());
+
+  (*request)->start();
+  retval = MPI_SUCCESS;
+
+  TRACE_smpi_ptp_out(rank, dst_traced, __FUNCTION__);
+
+  return retval;
+}
+
+static int persistent_recv(MPI_Request *request)
+{
+
+  int retval = 0;
+  MPI_Request req = *request;
+
+  int rank = req->comm() != MPI_COMM_NULL ? smpi_process_index() : -1;
+  int src_traced = req->comm()->group()->index(req->src());
+
+  int known = 0;
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
+  extra->type = TRACING_IRECV;
+  extra->send_size = req->size() / req->old_type()->size();
+  extra->src = src_traced;
+  extra->dst = rank;
+  extra->tag = req->tag();
+  extra->datatype1 = encode_datatype(req->old_type(), &known);
+  TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
+
+  (*request)->start();
+  retval = MPI_SUCCESS;
+
+  TRACE_smpi_ptp_out(rank, rank, __FUNCTION__);
+
+  return retval;
+}
+
 int PMPI_Start(MPI_Request * request)
 {
   int retval = 0;
@@ -91,8 +145,14 @@ int PMPI_Start(MPI_Request * request)
   if (request == nullptr || *request == MPI_REQUEST_NULL) {
     retval = MPI_ERR_REQUEST;
   } else {
-    (*request)->start();
-    retval = MPI_SUCCESS;
+    if((*request)->flags() & SEND){
+      retval = persistent_send(request);
+    }else if((*request)->flags() & RECV){
+      retval = persistent_recv(request);
+    }else{
+      (*request)->start();
+      retval = MPI_SUCCESS;
+    }
   }
   smpi_bench_begin();
   return retval;
@@ -164,6 +224,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
     extra->type = TRACING_IRECV;
     extra->src = src_traced;
     extra->dst = rank;
+    extra->tag = tag;
     int known=0;
     extra->datatype1 = encode_datatype(datatype, &known);
     int dt_size_send = 1;
@@ -212,6 +273,7 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     extra->type = TRACING_ISEND;
     extra->src = rank;
     extra->dst = dst_traced;
+    extra->tag = tag;
     int known=0;
     extra->datatype1 = encode_datatype(datatype, &known);
     int dt_size_send = 1;
@@ -307,6 +369,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     extra->type            = TRACING_RECV;
     extra->src             = src_traced;
     extra->dst             = rank;
+    extra->tag             = tag;
     int known              = 0;
     extra->datatype1       = encode_datatype(datatype, &known);
     int dt_size_send       = 1;
@@ -357,6 +420,7 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
     extra->type            = TRACING_SEND;
     extra->src             = rank;
     extra->dst             = dst_traced;
+    extra->tag             = tag;
     int known              = 0;
     extra->datatype1       = encode_datatype(datatype, &known);
     int dt_size_send       = 1;
@@ -623,6 +687,9 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
     int is_wait_for_receive = ((*request)->flags() & RECV);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_WAIT;
+    extra->src = src_traced;
+    extra->dst = dst_traced;
+    extra->tag = (*request)->tag();
     TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
 
     simgrid::smpi::Request::wait(request, status);
