@@ -73,7 +73,6 @@ extern int smx_context_guard_size_was_set;
 SG_BEGIN_DECL()
 
 XBT_PUBLIC(smx_actor_t) SIMIX_process_from_PID(aid_t PID);
-XBT_PUBLIC(xbt_dynar_t) SIMIX_processes_as_dynar();
 
 /* parallelism */
 XBT_PUBLIC(int) SIMIX_context_is_parallel();

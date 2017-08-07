@@ -834,16 +834,6 @@ smx_actor_t SIMIX_process_from_PID(aid_t PID)
   return process == simix_global->process_list.end() ? nullptr : process->second;
 }
 
-/** @brief returns a dynar containing all currently existing processes */
-xbt_dynar_t SIMIX_processes_as_dynar() {
-  xbt_dynar_t res = xbt_dynar_new(sizeof(smx_actor_t),nullptr);
-  for (auto kv : simix_global->process_list) {
-    smx_actor_t proc = kv.second;
-    xbt_dynar_push(res,&proc);
-  }
-  return res;
-}
-
 void SIMIX_process_on_exit_runall(smx_actor_t process) {
   smx_process_exit_status_t exit_status = (process->context->iwannadie) ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
   while (not process->on_exit.empty()) {

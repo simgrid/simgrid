@@ -6,6 +6,7 @@
 #include "msg_private.h"
 #include "simgrid/s4u/Host.hpp"
 #include "src/simix/ActorImpl.hpp"
+#include "src/simix/smx_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (process)");
 
@@ -304,7 +305,12 @@ msg_process_t MSG_process_from_PID(int PID)
 
 /** @brief returns a list of all currently existing processes */
 xbt_dynar_t MSG_processes_as_dynar() {
-  return SIMIX_processes_as_dynar();
+  xbt_dynar_t res = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
+  for (auto kv : simix_global->process_list) {
+    smx_actor_t actor = kv.second;
+    xbt_dynar_push(res, &actor);
+  }
+  return res;
 }
 
 /** @brief Return the current number MSG processes. */
