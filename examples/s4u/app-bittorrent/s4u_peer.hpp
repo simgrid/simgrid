@@ -24,7 +24,7 @@ public:
   bool choked_upload   = true;  // Indicates if the peer is choked for the current peer
   bool choked_download = true;  // Indicates if the peer has choked the current peer
 
-  Connection(int id) : id(id), mailbox_(simgrid::s4u::Mailbox::byName(std::to_string(id))){};
+  explicit Connection(int id) : id(id), mailbox_(simgrid::s4u::Mailbox::byName(std::to_string(id))){};
   ~Connection() = default;
   void addSpeedValue(double speed) { peer_speed = peer_speed * 0.6 + speed * 0.4; }
   bool hasPiece(unsigned int piece) { return bitfield & 1U << piece; }
@@ -35,6 +35,7 @@ class Peer {
   double deadline;
   RngStream stream;
   simgrid::s4u::MailboxPtr mailbox_;
+  std::unordered_map<int, Connection*> connected_peers;
   std::set<Connection*> active_peers; // active peers list
 
   unsigned int bitfield_             = 0;       // list of pieces the peer has.
@@ -44,7 +45,6 @@ class Peer {
   double begin_receive_time = 0; // time when the receiving communication has begun, useful for calculating host speed.
   int round_                = 0; // current round for the chocking algorithm.
 
-  std::unordered_map<int, Connection*> connected_peers;
   simgrid::s4u::CommPtr comm_received = nullptr; // current comm
   Message* message                    = nullptr; // current message being received
 public:
@@ -75,15 +75,10 @@ public:
   void requestNewPieceTo(Connection* remote_peer);
 
   bool getPeersFromTracker();
-  void sendHandshake(simgrid::s4u::MailboxPtr mailbox);
+  void sendMessage(simgrid::s4u::MailboxPtr mailbox, e_message_type type, uint64_t size);
   void sendBitfield(simgrid::s4u::MailboxPtr mailbox);
   void sendPiece(simgrid::s4u::MailboxPtr mailbox, unsigned int piece, int block_index, int block_length);
-  void sendInterested(simgrid::s4u::MailboxPtr mailbox);
-  void sendChoked(simgrid::s4u::MailboxPtr mailbox);
-  void sendUnchoked(simgrid::s4u::MailboxPtr mailbox);
-  void sendNotInterested(simgrid::s4u::MailboxPtr mailbox);
   void sendHandshakeToAllPeers();
-  void sendRequest(simgrid::s4u::MailboxPtr mailbox, unsigned int piece, int block_index, int block_length);
   void sendHaveToAllPeers(unsigned int piece);
   void sendRequestTo(Connection* remote_peer, unsigned int piece);
 

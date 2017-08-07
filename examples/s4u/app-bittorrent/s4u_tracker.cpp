@@ -66,6 +66,5 @@ void Tracker::operator()()
       simgrid::s4u::this_actor::sleep_for(1);
     }
   }
-  // TODO See if some cleanup is needed
   XBT_INFO("Tracker is leaving");
 }

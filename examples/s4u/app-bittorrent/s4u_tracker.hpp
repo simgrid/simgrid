@@ -42,6 +42,7 @@ class Tracker {
 
 public:
   explicit Tracker(std::vector<std::string> args);
+  Tracker(const Tracker&) = delete;
   void operator()();
 };
 
