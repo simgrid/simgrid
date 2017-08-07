@@ -657,7 +657,7 @@ bool Peer::hasCompletedPiece(unsigned int piece)
 int Peer::getFirstMissingBlockFrom(int piece)
 {
   for (unsigned int i = 0; i < PIECES_BLOCKS; i++)
-    if (!(bitfield_blocks & 1ULL << (piece * PIECES_BLOCKS + i)))
+    if (not(bitfield_blocks & 1ULL << (piece * PIECES_BLOCKS + i)))
       return i;
   return -1;
 }

@@ -61,11 +61,11 @@ public:
   void updateInterestedAfterReceive();
   void updateChokedPeers();
 
-  bool hasNotPiece(unsigned int piece) { return !(bitfield_ & 1U << piece); }
+  bool hasNotPiece(unsigned int piece) { return not(bitfield_ & 1U << piece); }
   bool hasCompletedPiece(unsigned int piece);
   unsigned int countPieces(unsigned int bitfield);
   /** Check that a piece is not currently being download by the peer. */
-  bool isNotDownloadingPiece(unsigned int piece) { return !(current_pieces & 1U << piece); }
+  bool isNotDownloadingPiece(unsigned int piece) { return not(current_pieces & 1U << piece); }
   int partiallyDownloadedPiece(Connection* remote_peer);
   void updatePiecesCountFromBitfield(unsigned int bitfield);
   void removeCurrentPiece(Connection* remote_peer, unsigned int current_piece);

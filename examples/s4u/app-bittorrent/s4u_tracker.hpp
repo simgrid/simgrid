@@ -29,6 +29,7 @@ class TrackerAnswer {
   std::set<int>* peers; // the peer list the peer has asked for.
 public:
   explicit TrackerAnswer(int interval) : interval(interval) { peers = new std::set<int>; }
+  TrackerAnswer(const TrackerAnswer&)                               = delete;
   ~TrackerAnswer() { delete peers; };
   void addPeer(int peer) { peers->insert(peer); }
   std::set<int>* getPeers() { return peers; }
@@ -42,7 +43,6 @@ class Tracker {
 
 public:
   explicit Tracker(std::vector<std::string> args);
-  Tracker(const Tracker&) = delete;
   void operator()();
 };
 
