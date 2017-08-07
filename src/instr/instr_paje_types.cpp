@@ -43,21 +43,20 @@ s_type::s_type (const char *typeNameBuff, const char *key, const char *color, e_
   }
 }
 
-void PJ_type_free (type_t type)
+s_type::~s_type ()
 {
   value* val;
   char *value_name;
   xbt_dict_cursor_t cursor = nullptr;
-  xbt_dict_foreach (type->values, cursor, value_name, val) {
+  xbt_dict_foreach (this->values, cursor, value_name, val) {
     XBT_DEBUG("free value %s, child of %s", val->name, val->father->name);
   }
-  xbt_dict_free (&type->values);
-  xbt_free (type->name);
-  xbt_free (type->id);
-  xbt_free (type->color);
-  xbt_dict_free (&type->children);
-  xbt_free (type);
-  type = nullptr;
+  xbt_dict_free (&this->values);
+  xbt_free (this->name);
+  xbt_free (this->id);
+  xbt_free (this->color);
+  xbt_dict_free (&this->children);
+  xbt_free (this);
 }
 
 void recursiveDestroyType (type_t type)
@@ -69,7 +68,7 @@ void recursiveDestroyType (type_t type)
   xbt_dict_foreach(type->children, cursor, child_name, child) {
     recursiveDestroyType (child);
   }
-  PJ_type_free(type);
+  type->~s_type();
 }
 
 type_t PJ_type_get (const char *name, type_t father)
