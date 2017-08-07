@@ -312,6 +312,7 @@ static void action_send(const char *const *action)
   extra->send_size = size;
   extra->src = rank;
   extra->dst = dst_traced;
+  extra->tag = tag;
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
   if (not TRACE_smpi_view_internals())
@@ -344,6 +345,7 @@ static void action_Isend(const char *const *action)
   extra->send_size = size;
   extra->src = rank;
   extra->dst = dst_traced;
+  extra->tag = tag;
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
   if (not TRACE_smpi_view_internals())
@@ -379,6 +381,7 @@ static void action_recv(const char *const *action) {
   extra->send_size = size;
   extra->src = src_traced;
   extra->dst = rank;
+  extra->tag = tag;
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
 
@@ -418,6 +421,7 @@ static void action_Irecv(const char *const *action)
   extra->send_size = size;
   extra->src = src_traced;
   extra->dst = rank;
+  extra->tag = tag;
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
   MPI_Status status;
