@@ -211,15 +211,15 @@ void CpuAction::updateRemainingLazy(double now)
 simgrid::xbt::signal<void(simgrid::surf::CpuAction*, Action::State)> CpuAction::onStateChange;
 
 void CpuAction::suspend(){
-	Action::State previous = getState();
-	onStateChange(this, previous);
-	Action::suspend();
+  Action::State previous = getState();
+  onStateChange(this, previous);
+  Action::suspend();
 }
 
 void CpuAction::resume(){
-	Action::State previous = getState();
-	onStateChange(this, previous);
-	Action::resume();
+  Action::State previous = getState();
+  onStateChange(this, previous);
+  Action::resume();
 }
 
 void CpuAction::setState(Action::State state){
