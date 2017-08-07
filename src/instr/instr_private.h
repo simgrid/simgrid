@@ -75,8 +75,6 @@ class s_type :public ess_type {
   xbt_dict_t values; //valid for all types except variable and container
 };
 
-typedef s_type s_type_t;
-
 //--------------------------------------------------
 class value : public ess_type {
 public:
@@ -114,7 +112,6 @@ class s_container {
   s_container *father;
   xbt_dict_t children;
 };
-typedef s_container s_container_t;
 
 //--------------------------------------------------
 class PajeEvent {
