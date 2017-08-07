@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
+/* Copyright (c) 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -16,7 +16,6 @@ namespace simgrid {
       NetworkSmpiModel();
       ~NetworkSmpiModel();
 
-      using NetworkCm02Model::gapAppend; // Explicit about overloaded method (silence Woverloaded-virtual from clang)
       double latencyFactor(double size);
       double bandwidthFactor(double size);
       double bandwidthConstraint(double rate, double bound, double size);

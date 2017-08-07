@@ -120,7 +120,7 @@ public:
   /**
    * @brief Get the content of the current Storage
    *
-   * @return A xbt_dict_t with path as keys and size in bytes as values
+   * @return A map with path as keys and size in bytes as values
    */
   virtual std::map<std::string, sg_size_t>* getContent();
 

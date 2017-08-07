@@ -1,0 +1,39 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4.1">
+
+  <actor host="node-0.acme.org" function="tracker">
+    <argument value="3000" />
+  </actor>
+
+  <actor host="node-1.acme.org" function="peer">
+    <argument value="00000002"/>    <!-- my id -->
+    <argument value="5000" />    <!-- end time --> 
+    <argument value="1" />       <!-- indicates if the peer is a seed at the beginning of the simulation --> 
+  </actor>
+  <actor host="node-2.acme.org" function="peer">
+    <argument value="00000003"/>    <!-- my id -->
+    <argument value="5000" />    <!-- end time --> 
+  </actor>
+  <actor host="node-3.acme.org" function="peer">
+    <argument value="00000004"/>    <!-- my id -->
+    <argument value="5000" />    <!-- end time --> 
+  </actor>
+  <actor host="node-4.acme.org" function="peer">
+    <argument value="00000005"/>    <!-- my id -->
+    <argument value="5000" />    <!-- end time --> 
+    <argument value="1" />       <!-- indicates if the peer is a seed at the beginning of the simulation --> 
+  </actor>
+  <actor host="node-5.acme.org" function="peer">
+    <argument value="00000006"/>    <!-- my id -->
+    <argument value="5000" />    <!-- end time --> 
+  </actor>
+  <actor host="node-6.acme.org" function="peer">
+    <argument value="00000007"/>    <!-- my id -->
+    <argument value="5000" />    <!-- end time --> 
+  </actor>
+  <actor host="node-7.acme.org" function="peer">
+    <argument value="00000008"/>    <!-- my id -->
+    <argument value="5000" />    <!-- end time --> 
+  </actor>
+</platform>

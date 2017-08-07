@@ -60,7 +60,6 @@ SG_BEGIN_DECL()
 
 /* user-visible parameters */
 extern XBT_PRIVATE double sg_tcp_gamma;
-extern XBT_PRIVATE double sg_sender_gap;
 extern XBT_PRIVATE double sg_latency_factor;
 extern XBT_PRIVATE double sg_bandwidth_factor;
 extern XBT_PRIVATE double sg_weight_S_parameter;
@@ -434,8 +433,6 @@ const char *__surf_get_initial_path();
 /********** Tracing **********/
 /* from surf_instr.c */
 void TRACE_surf_action(surf_action_t surf_action, const char *category);
-void TRACE_surf_alloc();
-void TRACE_surf_release();
 
 /* instr_routing.c */
 void instr_routing_define_callbacks ();

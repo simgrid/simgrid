@@ -8,10 +8,11 @@
 
 #include <xbt/base.h>
 
-#include "simgrid/instr.h"
 #include "instr/instr_interface.h"
-#include "src/internal_config.h"
+#include "simgrid/instr.h"
 #include "simgrid_config.h"
+#include "src/internal_config.h"
+#include <set>
 
 SG_BEGIN_DECL()
 
@@ -266,12 +267,11 @@ public:
 
 };
 
-
-extern XBT_PRIVATE xbt_dict_t created_categories;
-extern XBT_PRIVATE xbt_dict_t declared_marks;
-extern XBT_PRIVATE xbt_dict_t user_host_variables;
-extern XBT_PRIVATE xbt_dict_t user_vm_variables;
-extern XBT_PRIVATE xbt_dict_t user_link_variables;
+extern XBT_PRIVATE std::set<std::string> created_categories;
+extern XBT_PRIVATE std::set<std::string> declared_marks;
+extern XBT_PRIVATE std::set<std::string> user_host_variables;
+extern XBT_PRIVATE std::set<std::string> user_vm_variables;
+extern XBT_PRIVATE std::set<std::string> user_link_variables;
 extern XBT_PRIVATE double TRACE_last_timestamp_to_dump;
 
 /* instr_paje_header.c */
@@ -326,8 +326,8 @@ XBT_PRIVATE void TRACE_surf_link_set_utilization(const char *resource,const char
 XBT_PUBLIC(void) TRACE_surf_resource_utilization_alloc();
 
 /* instr_paje.c */
-extern XBT_PRIVATE xbt_dict_t trivaNodeTypes;
-extern XBT_PRIVATE xbt_dict_t trivaEdgeTypes;
+extern XBT_PRIVATE std::set<std::string> trivaNodeTypes;
+extern XBT_PRIVATE std::set<std::string> trivaEdgeTypes;
 XBT_PRIVATE long long int instr_new_paje_id ();
 XBT_PRIVATE void PJ_container_alloc ();
 XBT_PRIVATE void PJ_container_release ();

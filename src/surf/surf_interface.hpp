@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -25,7 +25,6 @@
 
 /* user-visible parameters */
 extern XBT_PRIVATE double sg_tcp_gamma;
-extern XBT_PRIVATE double sg_sender_gap;
 extern XBT_PRIVATE double sg_latency_factor;
 extern XBT_PRIVATE double sg_bandwidth_factor;
 extern XBT_PRIVATE double sg_weight_S_parameter;
@@ -41,9 +40,6 @@ XBT_PUBLIC(double) surf_get_clock();
  *  \brief List of hosts that have just restarted and whose autorestart process should be restarted.
  */
 XBT_PUBLIC_DATA(std::vector<sg_host_t>) host_that_restart;
-
-
-extern XBT_PRIVATE double sg_sender_gap;
 
 namespace simgrid {
 namespace surf {

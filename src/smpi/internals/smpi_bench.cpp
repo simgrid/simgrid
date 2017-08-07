@@ -3,13 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/internal_config.h"
 #include "private.h"
 #include "private.hpp"
 #include "simgrid/modelchecker.h"
-#include "src/mc/mc_replay.h"
-#include "smpi_process.hpp"
 #include "smpi_comm.hpp"
+#include "smpi_process.hpp"
+#include "src/internal_config.h"
+#include "src/mc/mc_replay.h"
+#include <unordered_map>
 
 #ifndef WIN32
 #include <sys/mman.h>
@@ -22,20 +23,12 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi, "Logging specific to SMPI (benchmarking)");
 
-
-xbt_dict_t samples = nullptr;         /* Allocated on first use */
-
 double smpi_cpu_threshold = -1;
 double smpi_host_speed;
 
 shared_malloc_type smpi_cfg_shared_malloc = shmalloc_global;
 double smpi_total_benched_time = 0;
 smpi_privatization_region_t smpi_privatization_regions;
-
-void smpi_bench_destroy()
-{
-  xbt_dict_free(&samples);
-}
 
 extern "C" XBT_PUBLIC(void) smpi_execute_flops_(double *flops);
 void smpi_execute_flops_(double *flops)
@@ -282,6 +275,8 @@ typedef struct {
   int benching;     /* 1: we are benchmarking; 0: we have enough data, no bench anymore */
 } local_data_t;
 
+std::unordered_map<std::string, local_data_t*> samples; /* Allocated on first use */
+
 static char *sample_location(int global, const char *file, int line) {
   if (global) {
     return bprintf("%s:%d", file, line);
@@ -310,14 +305,12 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
   smpi_bench_end();     /* Take time from previous, unrelated computation into account */
   smpi_process()->set_sampling(1);
 
-  if (samples==nullptr)
-    samples = xbt_dict_new_homogeneous(free);
-
-  local_data_t *data = static_cast<local_data_t *>(xbt_dict_get_or_null(samples, loc));
-  if (data==nullptr) {
+  auto ld = samples.find(loc);
+  local_data_t* data;
+  if (ld == samples.end()) {
     xbt_assert(threshold>0 || iters>0,
         "You should provide either a positive amount of iterations to bench, or a positive maximal stderr (or both)");
-    data = static_cast<local_data_t *>( xbt_new(local_data_t, 1));
+    data            = static_cast<local_data_t*>(xbt_new(local_data_t, 1));
     data->count = 0;
     data->sum = 0.0;
     data->sum_pow2 = 0.0;
@@ -325,9 +318,10 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
     data->threshold = threshold;
     data->benching = 1; // If we have no data, we need at least one
     data->mean = 0;
-    xbt_dict_set(samples, loc, data, nullptr);
+    samples[loc]    = data;
     XBT_DEBUG("XXXXX First time ever on benched nest %s.",loc);
   } else {
+    data = ld->second;
     if (data->iters != iters || data->threshold != threshold) {
       XBT_ERROR("Asked to bench block %s with different settings %d, %f is not %d, %f. "
                 "How did you manage to give two numbers at the same line??",
@@ -349,8 +343,9 @@ int smpi_sample_2(int global, const char *file, int line)
   char *loc = sample_location(global, file, line);
   int res;
 
-  xbt_assert(samples, "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
-  local_data_t *data = static_cast<local_data_t *>(xbt_dict_get(samples, loc));
+  xbt_assert(not samples.empty(),
+             "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
+  local_data_t* data = samples.at(loc);
   XBT_DEBUG("sample2 %s",loc);
   xbt_free(loc);
 
@@ -377,8 +372,9 @@ void smpi_sample_3(int global, const char *file, int line)
 {
   char *loc = sample_location(global, file, line);
 
-  xbt_assert(samples, "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
-  local_data_t *data = static_cast<local_data_t *>(xbt_dict_get(samples, loc));
+  xbt_assert(not samples.empty(),
+             "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
+  local_data_t* data = samples.at(loc);
   XBT_DEBUG("sample3 %s",loc);
   xbt_free(loc);
 
@@ -408,30 +404,36 @@ void smpi_sample_3(int global, const char *file, int line)
 }
 
 extern "C" { /** These functions will be called from the user code **/
-  smpi_trace_call_location_t* smpi_trace_get_call_location() {
-    return smpi_process()->call_location();
-  }
+smpi_trace_call_location_t* smpi_trace_get_call_location()
+{
+  return smpi_process()->call_location();
+}
 
-  void smpi_trace_set_call_location(const char* file, const int line) {
-    smpi_trace_call_location_t* loc = smpi_process()->call_location();
+void smpi_trace_set_call_location(const char* file, const int line)
+{
+  smpi_trace_call_location_t* loc = smpi_process()->call_location();
 
-    loc->previous_filename   = loc->filename;
-    loc->previous_linenumber = loc->linenumber;
-    loc->filename            = file;
-    loc->linenumber          = line;
-  }
+  loc->previous_filename   = loc->filename;
+  loc->previous_linenumber = loc->linenumber;
+  loc->filename            = file;
+  loc->linenumber          = line;
+}
 
-  /**
-   * Required for Fortran bindings
-   */
-  void smpi_trace_set_call_location_(const char* file, int* line) {
-    smpi_trace_set_call_location(file, *line);
-  }
+/** Required for Fortran bindings */
+void smpi_trace_set_call_location_(const char* file, int* line)
+{
+  smpi_trace_set_call_location(file, *line);
+}
 
-  /**
-   * Required for Fortran if -fsecond-underscore is activated
-   */
-  void smpi_trace_set_call_location__(const char* file, int* line) {
-    smpi_trace_set_call_location(file, *line);
-  }
+/** Required for Fortran if -fsecond-underscore is activated */
+void smpi_trace_set_call_location__(const char* file, int* line)
+{
+  smpi_trace_set_call_location(file, *line);
+}
+}
+
+void smpi_bench_destroy()
+{
+  for (auto elm : samples)
+    xbt_free(elm.second);
 }

@@ -147,10 +147,8 @@ SG_BEGIN_DECL()
 XBT_PRIVATE void SIMIX_context_mod_init();
 XBT_PRIVATE void SIMIX_context_mod_exit();
 
-XBT_PRIVATE smx_context_t SIMIX_context_new(
-  std::function<void()> code,
-  void_pfn_smxprocess_t cleanup_func,
-  smx_actor_t simix_process);
+XBT_PUBLIC(smx_context_t)
+SIMIX_context_new(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t simix_process);
 
 #ifndef WIN32
 XBT_PUBLIC_DATA(char sigsegv_stack[SIGSTKSZ]);
@@ -174,7 +172,7 @@ XBT_PUBLIC(smx_context_t) SIMIX_context_self(); // public because it's used in s
 XBT_PRIVATE void *SIMIX_context_stack_new();
 XBT_PRIVATE void SIMIX_context_stack_delete(void *stack);
 
-XBT_PRIVATE void SIMIX_context_set_current(smx_context_t context);
+XBT_PUBLIC(void) SIMIX_context_set_current(smx_context_t context);
 XBT_PRIVATE smx_context_t SIMIX_context_get_current();
 
 XBT_PUBLIC(int) SIMIX_process_get_maxpid();

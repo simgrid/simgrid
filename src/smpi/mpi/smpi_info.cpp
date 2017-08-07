@@ -32,15 +32,16 @@ void Info::set(char *key, char *value){
 
 int Info::get(char *key, int valuelen, char *value, int *flag){
   *flag=false;
-  try {
-    std::string tmpvalue = map_.at(key);
+  auto val = map_.find(key);
+  if (val != map_.end()) {
+    std::string tmpvalue = val->second;
 
     memset(value, 0, valuelen);
     memcpy(value, tmpvalue.c_str(),
            (tmpvalue.length() + 1 < static_cast<size_t>(valuelen)) ? tmpvalue.length() + 1 : valuelen);
     *flag=true;
     return MPI_SUCCESS;
-  } catch (std::out_of_range& unfound) {
+  } else {
     return MPI_ERR_INFO_KEY;
   }
 }
@@ -71,11 +72,12 @@ int Info::get_nthkey(int n, char *key){
 
 int Info::get_valuelen(char *key, int *valuelen, int *flag){
   *flag=false;
-  try {
-    *valuelen = map_.at(key).length();
+  auto val = map_.find(key);
+  if (val != map_.end()) {
+    *valuelen = val->second.length();
     *flag=true;
     return MPI_SUCCESS;
-  } catch (std::out_of_range& unfound) {
+  } else {
     return MPI_ERR_INFO_KEY;
   }
 }

@@ -6,7 +6,6 @@
 #ifndef SURF_SURFXML_PARSE_H
 #define SURF_SURFXML_PARSE_H
 
-#include <xbt/dict.h>
 #include <xbt/function_types.h>
 #include <xbt/misc.h>
 #include <xbt/signal.hpp>

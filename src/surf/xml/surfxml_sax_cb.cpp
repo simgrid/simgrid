@@ -323,9 +323,6 @@ std::map<std::string, std::string>* current_property_set       = nullptr;
 std::map<std::string, std::string>* current_model_property_set = nullptr;
 int ZONE_TAG                            = 0; // Whether we just opened a zone tag (to see what to do with the properties)
 
-/* dictionary of random generator data */
-xbt_dict_t random_data_list = nullptr;
-
 YY_BUFFER_STATE surf_input_buffer;
 FILE *surf_file_to_parse = nullptr;
 

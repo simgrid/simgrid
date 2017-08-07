@@ -1,6 +1,6 @@
 /* a generic DYNamic ARray implementation.                                  */
 
-/* Copyright (c) 2004-2015. The SimGrid Team.
+/* Copyright (c) 2004-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -612,53 +612,6 @@ extern "C" xbt_dynar_t xbt_dynar_sort_strings(xbt_dynar_t dynar)
 {
   xbt_dynar_sort(dynar, strcmp_voidp);
   return dynar; // to enable functional uses
-}
-
-/** @brief Sorts a dynar according to their color assuming elements can have only three colors.
- * Since there are only three colors, it is linear and much faster than a classical sort.
- * See for example http://en.wikipedia.org/wiki/Dutch_national_flag_problem
- *
- * \param dynar the dynar to sort
- * \param color the color function of type (int (compar_fn*) (void*) (void*)). The return value of color is assumed to
- *        be 0, 1, or 2.
- *
- * At the end of the call, elements with color 0 are at the beginning of the dynar, elements with color 2 are at the
- * end and elements with color 1 are in the middle.
- *
- * Remark: if the elements stored in the dynar are structures, the color function has to retrieve the field to sort
- * first.
- */
-extern "C" void xbt_dynar_three_way_partition(xbt_dynar_t const dynar, int_f_pvoid_t color)
-{
-  unsigned long int i;
-  unsigned long int p = -1;
-  unsigned long int q = dynar->used;
-  const unsigned long elmsize = dynar->elmsize;
-  char* tmp[elmsize];
-  void *elm;
-
-  for (i = 0; i < q;) {
-    void *elmi = _xbt_dynar_elm(dynar, i);
-    int colori = color(elmi);
-
-    if (colori == 1) {
-      ++i;
-    } else {
-      if (colori == 0) {
-        ++p;
-        elm = _xbt_dynar_elm(dynar, p);
-        ++i;
-      } else {                  /* colori == 2 */
-        --q;
-        elm = _xbt_dynar_elm(dynar, q);
-      }
-      if (elm != elmi) {
-        memcpy(tmp,  elm,  elmsize);
-        memcpy(elm,  elmi, elmsize);
-        memcpy(elmi, tmp,  elmsize);
-      }
-    }
-  }
 }
 
 /** @brief Transform a dynar into a nullptr terminated array.

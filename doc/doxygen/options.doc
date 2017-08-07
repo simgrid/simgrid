@@ -112,7 +112,6 @@ int main(int argc, char *argv[]) {
 - \c network/maxmin-selective-update: \ref options_model_optim
 - \c network/model: \ref options_model_select
 - \c network/optim: \ref options_model_optim
-- \c network/sender_gap: \ref options_model_network_sendergap
 - \c network/TCP-gamma: \ref options_model_network_gamma
 - \c network/weight-S: \ref options_model_network_coefs
 
@@ -372,15 +371,6 @@ This is activated through the \b network/crosstraffic item, that
 can be set to 0 (disable this feature) or 1 (enable it).
 
 Note that with the default host model this option is activated by default.
-
-\subsubsection options_model_network_sendergap Simulating sender gap
-
-(this configuration item is experimental and may change or disapear)
-
-It is possible to specify a timing gap between consecutive emission on
-the same network card through the \b network/sender-gap item. This
-is still under investigation as of writting, and the default value is
-to wait 10 microseconds (1e-5 seconds) between emissions.
 
 \subsubsection options_model_network_asyncsend Simulating asyncronous send
 

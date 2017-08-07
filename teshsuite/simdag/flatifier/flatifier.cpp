@@ -50,10 +50,7 @@ static void create_environment(xbt_os_timer_t parse_time, const char *platformFi
 static void dump_platform()
 {
   int version = 4;
-  xbt_dict_t props = nullptr;
-  xbt_dict_cursor_t cursor = nullptr;
-  char* key;
-  char* data;
+  std::map<std::string, std::string>* props = nullptr;
 
   std::printf("<?xml version='1.0'?>\n");
   std::printf("<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\">\n");
@@ -68,20 +65,19 @@ static void dump_platform()
 
   for (unsigned int i = 0; i < totalHosts; i++) {
     std::printf("  <host id=\"%s\" speed=\"%.0f\"", hosts[i]->getCname(), sg_host_speed(hosts[i]));
-    props = sg_host_get_properties(hosts[i]);
+    props = hosts[i]->getProperties();
     if (hosts[i]->getCoreCount() > 1) {
       std::printf(" core=\"%d\"", hosts[i]->getCoreCount());
     }
-    if (props && not xbt_dict_is_empty(props)) {
+    if (props && not props->empty()) {
       std::printf(">\n");
-      xbt_dict_foreach (props, cursor, key, data) {
-        std::printf("    <prop id=\"%s\" value=\"%s\"/>\n", key, data);
+      for (auto kv : *props) {
+        std::printf("    <prop id=\"%s\" value=\"%s\"/>\n", kv.first.c_str(), kv.second.c_str());
       }
       std::printf("  </host>\n");
     } else {
       std::printf("/>\n");
     }
-    xbt_dict_free(&props);
   }
 
   // Routers

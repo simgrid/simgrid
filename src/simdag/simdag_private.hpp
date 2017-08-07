@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2015. The SimGrid Team.
+/* Copyright (c) 2006-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -21,6 +21,7 @@ namespace sd{
 class Global {
 public:
   explicit Global();
+  Global(const Global&) = delete;
   ~Global();
   bool watch_point_reached;      /* has a task just reached a watch point? */
   std::set<SD_task_t> *initial_tasks;

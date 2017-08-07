@@ -11,7 +11,6 @@
 #include <unordered_map>
 
 #include "xbt/Extendable.hpp"
-#include "xbt/dict.h"
 #include "xbt/signal.hpp"
 #include "xbt/string.hpp"
 #include "xbt/swag.h"

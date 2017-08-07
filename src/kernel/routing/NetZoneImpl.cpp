@@ -260,20 +260,18 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
     for (int i = 0; i < max; i++) {
       if (i <= max_index_src && max <= max_index_dst) {
         key = {path_src.at(i)->netpoint_, path_dst.at(max)->netpoint_};
-        try {
-          bypassedRoute = bypassRoutes_.at(key);
+        auto bpr = bypassRoutes_.find(key);
+        if (bpr != bypassRoutes_.end()) {
+          bypassedRoute = bpr->second;
           break;
-        } catch (std::out_of_range& unfound) {
-          // Do nothing
         }
       }
       if (max <= max_index_src && i <= max_index_dst) {
         key = {path_src.at(max)->netpoint_, path_dst.at(i)->netpoint_};
-        try {
-          bypassedRoute = bypassRoutes_.at(key);
+        auto bpr = bypassRoutes_.find(key);
+        if (bpr != bypassRoutes_.end()) {
+          bypassedRoute = bpr->second;
           break;
-        } catch (std::out_of_range& unfound) {
-          // Do nothing
         }
       }
     }
@@ -283,11 +281,10 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
 
     if (max <= max_index_src && max <= max_index_dst) {
       key = {path_src.at(max)->netpoint_, path_dst.at(max)->netpoint_};
-      try {
-        bypassedRoute = bypassRoutes_.at(key);
+      auto bpr = bypassRoutes_.find(key);
+      if (bpr != bypassRoutes_.end()) {
+        bypassedRoute = bpr->second;
         break;
-      } catch (std::out_of_range& unfound) {
-        // Do nothing
       }
     }
   }

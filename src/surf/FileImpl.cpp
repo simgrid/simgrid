@@ -17,9 +17,10 @@ FileImpl::FileImpl(sg_storage_t st, std::string path, std::string mount) : path_
   location_ = st->getImpl();
   std::map<std::string, sg_size_t>* content = location_->getContent();
   // if file does not exist create an empty file
-  try {
-    size_ = content->at(path);
-  } catch (std::out_of_range& unfound) {
+  auto sz = content->find(path);
+  if (sz != content->end()) {
+    size_ = sz->second;
+  } else {
     size_ = 0;
     content->insert({path, size_});
     XBT_DEBUG("File '%s' was not found, file created.", path.c_str());
@@ -96,13 +97,14 @@ void FileImpl::move(const char* fullpath)
   /* Check if the new full path is on the same mount point */
   if (not strncmp(mount_point_.c_str(), fullpath, mount_point_.size())) {
     std::map<std::string, sg_size_t>* content = location_->getContent();
-    try { // src file exists
-      sg_size_t new_size = content->at(path_);
+    auto sz = content->find(path_);
+    if (sz != content->end()) { // src file exists
+      sg_size_t new_size = sz->second;
       content->erase(path_);
       std::string path = std::string(fullpath).substr(mount_point_.size(), strlen(fullpath));
       content->insert({path.c_str(), new_size});
       XBT_DEBUG("Move file from %s to %s, size '%llu'", path_.c_str(), fullpath, new_size);
-    } catch (std::out_of_range& unfound) {
+    } else {
       XBT_WARN("File %s doesn't exist", path_.c_str());
     }
   } else {

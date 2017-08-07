@@ -1,4 +1,4 @@
-/* Copyright (c) 2015. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -49,12 +49,12 @@ public:
 
 // BoostContextFactory
 
-bool                BoostContext::parallel_        = false;
-xbt_parmap_t        BoostContext::parmap_          = nullptr;
-uintptr_t           BoostContext::threads_working_ = 0;
+bool BoostContext::parallel_                             = false;
+simgrid::xbt::Parmap<smx_actor_t>* BoostContext::parmap_ = nullptr;
+uintptr_t BoostContext::threads_working_                 = 0;
 xbt_os_thread_key_t BoostContext::worker_id_key_;
-unsigned long       BoostContext::process_index_   = 0;
-BoostContext*       BoostContext::maestro_context_ = nullptr;
+unsigned long BoostContext::process_index_   = 0;
+BoostContext* BoostContext::maestro_context_ = nullptr;
 std::vector<BoostContext*> BoostContext::workers_context_;
 
 BoostContextFactory::BoostContextFactory()
@@ -64,7 +64,7 @@ BoostContextFactory::BoostContextFactory()
   if (BoostContext::parallel_) {
 #if HAVE_THREAD_CONTEXTS
     int nthreads = SIMIX_context_get_nthreads();
-    BoostContext::parmap_ = xbt_parmap_new(nthreads, SIMIX_context_get_parallel_mode());
+    BoostContext::parmap_ = new simgrid::xbt::Parmap<smx_actor_t>(nthreads, SIMIX_context_get_parallel_mode());
     BoostContext::workers_context_.clear();
     BoostContext::workers_context_.resize(nthreads, nullptr);
     BoostContext::maestro_context_ = nullptr;
@@ -79,7 +79,7 @@ BoostContextFactory::~BoostContextFactory()
 {
 #if HAVE_THREAD_CONTEXTS
   if (BoostContext::parmap_) {
-    xbt_parmap_destroy(BoostContext::parmap_);
+    delete BoostContext::parmap_;
     BoostContext::parmap_ = nullptr;
   }
   BoostContext::workers_context_.clear();
@@ -106,19 +106,18 @@ void BoostContextFactory::run_all()
 #if HAVE_THREAD_CONTEXTS
   if (BoostContext::parallel_) {
     BoostContext::threads_working_ = 0;
-    xbt_parmap_apply(BoostContext::parmap_,
-      [](void* arg) {
-        smx_actor_t process = static_cast<smx_actor_t>(arg);
-        BoostContext* context  = static_cast<BoostContext*>(process->context);
-        return context->resume();
-      },
-      simix_global->process_to_run);
+    BoostContext::parmap_->apply(
+        [](smx_actor_t process) {
+          BoostContext* context = static_cast<BoostContext*>(process->context);
+          return context->resume();
+        },
+        simix_global->process_to_run);
   } else
 #endif
   {
-    if (xbt_dynar_is_empty(simix_global->process_to_run))
+    if (simix_global->process_to_run.empty())
       return;
-    smx_actor_t first_process = xbt_dynar_get_as(simix_global->process_to_run, 0, smx_actor_t);
+    smx_actor_t first_process    = simix_global->process_to_run.front();
     BoostContext::process_index_ = 1;
     /* execute the first process */
     static_cast<BoostContext*>(first_process->context)->resume();
@@ -193,11 +192,10 @@ void BoostSerialContext::suspend()
   unsigned long int i              = process_index_;
   process_index_++;
 
-  if (i < xbt_dynar_length(simix_global->process_to_run)) {
+  if (i < simix_global->process_to_run.size()) {
     /* execute the next process */
     XBT_DEBUG("Run next process");
-    next_context =
-        static_cast<BoostSerialContext*>(xbt_dynar_get_as(simix_global->process_to_run, i, smx_actor_t)->context);
+    next_context = static_cast<BoostSerialContext*>(simix_global->process_to_run[i]->context);
   } else {
     /* all processes were run, return to maestro */
     XBT_DEBUG("No more process to run");
@@ -223,12 +221,11 @@ void BoostSerialContext::stop()
 
 void BoostParallelContext::suspend()
 {
-  smx_actor_t next_work = static_cast<smx_actor_t>(xbt_parmap_next(parmap_));
-  BoostParallelContext* next_context = nullptr;
-
-  if (next_work != nullptr) {
+  boost::optional<smx_actor_t> next_work = parmap_->next();
+  BoostParallelContext* next_context;
+  if (next_work) {
     XBT_DEBUG("Run next process");
-    next_context = static_cast<BoostParallelContext*>(next_work->context);
+    next_context = static_cast<BoostParallelContext*>(next_work.get()->context);
   } else {
     XBT_DEBUG("No more processes to run");
     uintptr_t worker_id = (uintptr_t)xbt_os_thread_get_specific(worker_id_key_);

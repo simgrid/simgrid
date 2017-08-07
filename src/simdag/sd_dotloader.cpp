@@ -103,9 +103,10 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
         if ((performer != -1 && order != -1) && performer < static_cast<int>(sg_host_count())) {
           /* required parameters are given and less performers than hosts are required */
           XBT_DEBUG ("Task '%s' is scheduled on workstation '%d' in position '%d'", task->name, performer, order);
-          try {
-            computer = computers.at(char_performer);
-          } catch (std::out_of_range& unfound) {
+          auto comp = computers.find(char_performer);
+          if (comp != computers.end()) {
+            computer = comp->second;
+          } else {
             computer = new std::vector<SD_task_t>;
             computers.insert({char_performer, computer});
           }
