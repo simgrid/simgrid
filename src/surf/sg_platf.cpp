@@ -685,7 +685,7 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
   auto as_cluster = static_cast<simgrid::kernel::routing::ClusterZone*>(current_routing);
 
   if (as_cluster->privateLinks_.find(netpoint->id()) != as_cluster->privateLinks_.end())
-    surf_parse_error("Host_link for '%s' is already defined!",hostlink->id);
+    surf_parse_error(std::string("Host_link for '") + hostlink->id + "' is already defined!");
 
   XBT_DEBUG("Push Host_link for host '%s' to position %u", netpoint->cname(), netpoint->id());
   as_cluster->privateLinks_.insert({netpoint->id(), {linkUp, linkDown}});

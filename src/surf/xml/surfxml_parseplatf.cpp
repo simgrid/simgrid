@@ -57,8 +57,8 @@ void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
     trace_connect_list_link_lat.insert({trace_connect->trace, trace_connect->element});
     break;
   default:
-    surf_parse_error("Cannot connect trace %s to %s: kind of trace unknown", trace_connect->trace,
-                     trace_connect->element);
+    surf_parse_error(std::string("Cannot connect trace ") + trace_connect->trace + " to " + trace_connect->element +
+                     ": unknown kind of trace");
     break;
   }
 }
@@ -167,7 +167,7 @@ void parse_platform_file(const char *file)
     surf_parse_close();
 
     if (parse_status)
-      surf_parse_error("Parse error in %s", file);
+      surf_parse_error(std::string("Parse error in ") + file);
   }
 }
 

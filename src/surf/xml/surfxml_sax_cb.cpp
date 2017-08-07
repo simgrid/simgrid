@@ -30,30 +30,25 @@ std::vector<simgrid::surf::LinkImpl*> parsed_link_list; /* temporary store of cu
 /*
  * Helping functions
  */
-void surf_parse_assert(bool cond, const char *fmt, ...) {
+void surf_parse_assert(bool cond, std::string msg)
+{
   if (not cond) {
-    va_list va;
-    va_start(va,fmt);
     int lineno = surf_parse_lineno;
-    char *msg = bvprintf(fmt,va);
-    va_end(va);
     cleanup();
-    XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename, lineno, msg);
+    XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename, lineno, msg.c_str());
     surf_exit();
     xbt_die("Exiting now");
   }
 }
-void surf_parse_error(const char *fmt, ...) {
-  va_list va;
-  va_start(va,fmt);
+void surf_parse_error(std::string msg)
+{
   int lineno = surf_parse_lineno;
-  char *msg = bvprintf(fmt,va);
-  va_end(va);
   cleanup();
-  XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename, lineno, msg);
+  XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename, lineno, msg.c_str());
   surf_exit();
   xbt_die("Exiting now");
 }
+
 void surf_parse_assert_netpoint(char* hostname, const char* pre, const char* post)
 {
   if (sg_netpoint_by_name_or_null(hostname) != nullptr) // found
@@ -85,7 +80,7 @@ void surf_parse_assert_netpoint(char* hostname, const char* pre, const char* pos
       break;
     }
   }
-  surf_parse_error("%s", msg.c_str());
+  surf_parse_error(msg);
 }
 
 void surf_parse_warn(const char *fmt, ...) {
@@ -101,7 +96,7 @@ double surf_parse_get_double(const char *string) {
   double res;
   int ret = sscanf(string, "%lg", &res);
   if (ret != 1)
-    surf_parse_error("%s is not a double", string);
+    surf_parse_error(std::string(string) + " is not a double");
   return res;
 }
 
@@ -109,7 +104,7 @@ int surf_parse_get_int(const char *string) {
   int res;
   int ret = sscanf(string, "%d", &res);
   if (ret != 1)
-    surf_parse_error("%s is not an integer", string);
+    surf_parse_error(std::string(string) + " is not an integer");
   return res;
 }
 
@@ -135,7 +130,7 @@ static std::vector<int>* explodesRadical(const char* radicals)
         end = surf_parse_get_int((radical_ends.back()).c_str());
         break;
       default:
-        surf_parse_error("Malformed radical: %s", group.c_str());
+        surf_parse_error(std::string("Malformed radical: ") + group);
         break;
     }
     for (int i = start; i <= end; i++)
@@ -159,9 +154,9 @@ static double surf_parse_get_value_with_unit(const char *string, const struct un
   errno = 0;
   double res   = strtod(string, &ptr);
   if (errno == ERANGE)
-    surf_parse_error("value out of range: %s", string);
+    surf_parse_error(std::string("value out of range: ") + string);
   if (ptr == string)
-    surf_parse_error("cannot parse number: %s", string);
+    surf_parse_error(std::string("cannot parse number:") + string);
   if (ptr[0] == '\0') {
     if (res == 0)
       return res; // Ok, 0 can be unit-less
@@ -174,7 +169,7 @@ static double surf_parse_get_value_with_unit(const char *string, const struct un
   if (units[i].unit != nullptr)
     res *= units[i].scale;
   else
-    surf_parse_error("unknown unit: %s", ptr);
+    surf_parse_error(std::string("unknown unit: ") + ptr);
   return res;
 }
 
@@ -601,8 +596,7 @@ void ETag_surfxml_cluster(){
     cluster.topology= SURF_CLUSTER_DRAGONFLY ;
     break;
   default:
-    surf_parse_error("Invalid cluster topology for cluster %s",
-                     cluster.id);
+    surf_parse_error(std::string("Invalid cluster topology for cluster ") + cluster.id);
     break;
   }
   cluster.topo_parameters = A_surfxml_cluster_topo___parameters;
@@ -619,7 +613,7 @@ void ETag_surfxml_cluster(){
     cluster.sharing_policy = SURF_LINK_FATPIPE;
     break;
   default:
-    surf_parse_error("Invalid cluster sharing policy for cluster %s", cluster.id);
+    surf_parse_error(std::string("Invalid cluster sharing policy for cluster ") + cluster.id);
     break;
   }
   switch (AX_surfxml_cluster_bb___sharing___policy) {
@@ -630,7 +624,7 @@ void ETag_surfxml_cluster(){
     cluster.bb_sharing_policy = SURF_LINK_SHARED;
     break;
   default:
-    surf_parse_error("Invalid bb sharing policy in cluster %s", cluster.id);
+    surf_parse_error(std::string("Invalid bb sharing policy in cluster ") + cluster.id);
     break;
   }
 
@@ -706,7 +700,7 @@ void ETag_surfxml_link(){
      link.policy = SURF_LINK_FULLDUPLEX;
      break;
   default:
-    surf_parse_error("Invalid sharing policy in link %s", link.id.c_str());
+    surf_parse_error(std::string("Invalid sharing policy in link ") + link.id);
     break;
   }
 
@@ -731,7 +725,7 @@ void STag_surfxml_link___ctn(){
     link      = simgrid::surf::LinkImpl::byName(link_name);
     break;
   default:
-    surf_parse_error("Invalid direction for link %s", link_name);
+    surf_parse_error(std::string("Invalid direction for link ") + link_name);
     break;
   }
   xbt_free(link_name); // no-op if it's already nullptr
@@ -747,7 +741,7 @@ void STag_surfxml_link___ctn(){
     default:
       dirname = "";
   }
-  surf_parse_assert(link != nullptr, "No such link: '%s'%s", A_surfxml_link___ctn_id, dirname);
+  surf_parse_assert(link != nullptr, std::string("No such link: '") + A_surfxml_link___ctn_id + "'" + dirname);
   parsed_link_list.push_back(link);
 }
 
