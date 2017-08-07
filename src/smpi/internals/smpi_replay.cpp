@@ -316,7 +316,7 @@ static void action_send(const char *const *action)
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
   if (not TRACE_smpi_view_internals())
-    TRACE_smpi_send(rank, rank, dst_traced, 0, size*MPI_CURRENT_TYPE->size());
+    TRACE_smpi_send(rank, rank, dst_traced, tag, size*MPI_CURRENT_TYPE->size());
 
   Request::send(nullptr, size, MPI_CURRENT_TYPE, to , tag, MPI_COMM_WORLD);
 
@@ -349,7 +349,7 @@ static void action_Isend(const char *const *action)
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
   if (not TRACE_smpi_view_internals())
-    TRACE_smpi_send(rank, rank, dst_traced, 0, size*MPI_CURRENT_TYPE->size());
+    TRACE_smpi_send(rank, rank, dst_traced, tag, size*MPI_CURRENT_TYPE->size());
 
   MPI_Request request = Request::isend(nullptr, size, MPI_CURRENT_TYPE, to, tag, MPI_COMM_WORLD);
 
@@ -387,7 +387,7 @@ static void action_recv(const char *const *action) {
 
   //unknown size from the receiver point of view
   if(size<=0.0){
-    Request::probe(from, 0, MPI_COMM_WORLD, &status);
+    Request::probe(from, tag, MPI_COMM_WORLD, &status);
     size=status.count;
   }
 
@@ -395,7 +395,7 @@ static void action_recv(const char *const *action) {
 
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
   if (not TRACE_smpi_view_internals()) {
-    TRACE_smpi_recv(rank, src_traced, rank, 0);
+    TRACE_smpi_recv(rank, src_traced, rank, tag);
   }
 
   log_timed_action (action, clock);
