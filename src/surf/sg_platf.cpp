@@ -427,6 +427,12 @@ void sg_platf_new_bypassRoute(sg_platf_route_cbarg_t bypassRoute)
 
 void sg_platf_new_process(sg_platf_process_cbarg_t process)
 {
+  std::map<std::string, std::string> props;
+  if (process->properties) {
+    for (auto elm : *process->properties)
+      props.insert({elm.first, elm.second});
+    delete process->properties;
+  }
   sg_host_t host = sg_host_by_name(process->host);
   if (not host) {
     // The requested host does not exist. Do a nice message to the user
@@ -462,7 +468,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   arg->data = nullptr;
   arg->host = host;
   arg->kill_time = kill_time;
-  arg->properties = current_property_set;
+  arg->properties = &props;
 
   host->extension<simgrid::simix::Host>()->boot_processes.push_back(arg);
 
@@ -474,7 +480,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     arg->data = nullptr;
     arg->host = host;
     arg->kill_time = kill_time;
-    arg->properties = current_property_set;
+    arg->properties = &props;
 
     XBT_DEBUG("Process %s@%s will be started at time %f", arg->name.c_str(), arg->host->getCname(), start_time);
     SIMIX_timer_set(start_time, [arg, auto_restart]() {
@@ -490,7 +496,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     XBT_DEBUG("Starting Process %s(%s) right now", arg->name.c_str(), host->getCname());
 
     smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), std::move(code), nullptr, host,
-                                                              current_property_set, nullptr);
+                                                              arg->properties, nullptr);
 
     /* The actor creation will fail if the host is currently dead, but that's fine */
     if (actor != nullptr) {
