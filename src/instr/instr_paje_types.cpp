@@ -71,7 +71,7 @@ void recursiveDestroyType (type_t type)
   type->~s_type();
 }
 
-type_t PJ_type_get (const char *name, type_t father)
+type_t s_type::PJ_type_get (const char *name, type_t father)
 {
   type_t ret = s_type::PJ_type_get_or_null (name, father);
   if (ret == nullptr){
