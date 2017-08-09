@@ -219,9 +219,10 @@ static std::string get_mig_process_rx_name(msg_vm_t vm, msg_host_t src_pm, msg_h
   return std::string("__pr_mig_rx:") + vm->getName() + "(" + src_pm->getName() + "-" + dst_pm->getName() + ")";
 }
 
-static inline char *get_mig_task_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm, int stage)
+static std::string get_mig_task_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm, int stage)
 {
-  return bprintf("__task_mig_stage%d:%s(%s-%s)", stage, vm->getCname(), src_pm->getCname(), dst_pm->getCname());
+  return std::string("__task_mig_stage") + std::to_string(stage) + ":" + vm->getName() + "(" + src_pm->getName() + "-" +
+         dst_pm->getName() + ")";
 }
 
 struct migration_session {
@@ -245,7 +246,7 @@ static int migration_rx_fun(int argc, char *argv[])
 
   bool received_finalize = false;
 
-  char *finalize_task_name = get_mig_task_name(ms->vm, ms->src_pm, ms->dst_pm, 3);
+  std::string finalize_task_name = get_mig_task_name(ms->vm, ms->src_pm, ms->dst_pm, 3);
   while (not received_finalize) {
     msg_task_t task = nullptr;
     int ret         = MSG_task_recv(&task, ms->mbox);
@@ -253,16 +254,14 @@ static int migration_rx_fun(int argc, char *argv[])
     if (ret != MSG_OK) {
       // An error occurred, clean the code and return
       // The owner did not change, hence the task should be only destroyed on the other side
-      xbt_free(finalize_task_name);
       return 0;
     }
 
-    if (strcmp(task->name, finalize_task_name) == 0)
+    if (finalize_task_name == task->name)
       received_finalize = 1;
 
     MSG_task_destroy(task);
   }
-  xbt_free(finalize_task_name);
 
   // Here Stage 1, 2  and 3 have been performed.
   // Hence complete the migration
@@ -315,8 +314,8 @@ static int migration_rx_fun(int argc, char *argv[])
   }
 
   // Inform the SRC that the migration has been correctly performed
-  char *task_name = get_mig_task_name(ms->vm, ms->src_pm, ms->dst_pm, 4);
-  msg_task_t task = MSG_task_create(task_name, 0, 0, nullptr);
+  std::string task_name = get_mig_task_name(ms->vm, ms->src_pm, ms->dst_pm, 4);
+  msg_task_t task       = MSG_task_create(task_name.c_str(), 0, 0, nullptr);
   msg_error_t ret = MSG_task_send(task, ms->mbox_ctl);
   // xbt_assert(ret == MSG_OK);
   if(ret == MSG_HOST_FAILURE){
@@ -328,7 +327,6 @@ static int migration_rx_fun(int argc, char *argv[])
     // The SRC has crashed, this is not a problem has the VM has been correctly migrated on the DST node
     MSG_task_destroy(task);
   }
-  xbt_free(task_name);
 
   XBT_DEBUG("mig: rx_done");
   return 0;
@@ -451,8 +449,8 @@ static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t 
                                      int stage, int stage2_round, double mig_speed, double timeout)
 {
   sg_size_t sent = 0;
-  char *task_name = get_mig_task_name(vm, src_pm, dst_pm, stage);
-  msg_task_t task = MSG_task_create(task_name, 0, static_cast<double>(size), nullptr);
+  std::string task_name = get_mig_task_name(vm, src_pm, dst_pm, stage);
+  msg_task_t task       = MSG_task_create(task_name.c_str(), 0, static_cast<double>(size), nullptr);
 
   double clock_sta = MSG_get_clock();
 
@@ -461,8 +459,6 @@ static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t 
     ret = MSG_task_send_with_timeout_bounded(task, mbox, timeout, mig_speed);
   else
     ret = MSG_task_send(task, mbox);
-
-  xbt_free(task_name);
 
   if (ret == MSG_OK) {
     sent = size;
@@ -757,9 +753,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
            vm->getCname());
   }
 
-  char* expected_task_name = get_mig_task_name(vm, src_pm, dst_pm, 4);
-  xbt_assert(strcmp(task->name, expected_task_name) == 0);
-  xbt_free(expected_task_name);
+  xbt_assert(get_mig_task_name(vm, src_pm, dst_pm, 4) == task->name);
   MSG_task_destroy(task);
 }
 
