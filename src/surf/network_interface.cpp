@@ -20,7 +20,7 @@ namespace simgrid {
   /* List of links */
   std::unordered_map<std::string, LinkImpl*>* LinkImpl::links = new std::unordered_map<std::string, LinkImpl*>();
 
-  LinkImpl* LinkImpl::byName(const char* name)
+  LinkImpl* LinkImpl::byName(std::string name)
   {
     auto link = links->find(name);
     return link == links->end() ? nullptr : link->second;

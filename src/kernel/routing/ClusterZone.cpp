@@ -133,12 +133,10 @@ void ClusterZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id
   surf::LinkImpl *linkUp;
   surf::LinkImpl *linkDown;
   if (link.policy == SURF_LINK_FULLDUPLEX) {
-    char* tmp_link = bprintf("%s_UP", link_id);
+    std::string tmp_link = std::string(link_id) + "_UP";
     linkUp         = surf::LinkImpl::byName(tmp_link);
-    xbt_free(tmp_link);
     tmp_link = bprintf("%s_DOWN", link_id);
     linkDown = surf::LinkImpl::byName(tmp_link);
-    xbt_free(tmp_link);
   } else {
     linkUp   = surf::LinkImpl::byName(link_id);
     linkDown = linkUp;

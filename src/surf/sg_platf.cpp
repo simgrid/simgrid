@@ -233,8 +233,8 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       link.latency   = cluster->loopback_lat;
       link.policy    = SURF_LINK_FATPIPE;
       sg_platf_new_link(&link);
-      linkUp   = simgrid::surf::LinkImpl::byName(tmp_link.c_str());
-      linkDown = simgrid::surf::LinkImpl::byName(tmp_link.c_str());
+      linkUp   = simgrid::surf::LinkImpl::byName(tmp_link);
+      linkDown = simgrid::surf::LinkImpl::byName(tmp_link);
 
       auto as_cluster = static_cast<ClusterZone*>(current_as);
       as_cluster->privateLinks_.insert({rankId * as_cluster->linkCountPerNode_, {linkUp, linkDown}});
@@ -253,7 +253,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       link.latency = 0;
       link.policy = SURF_LINK_SHARED;
       sg_platf_new_link(&link);
-      linkDown = simgrid::surf::LinkImpl::byName(tmp_link.c_str());
+      linkDown = simgrid::surf::LinkImpl::byName(tmp_link);
       linkUp   = linkDown;
       current_as->privateLinks_.insert(
           {rankId * current_as->linkCountPerNode_ + current_as->hasLoopback_, {linkUp, linkDown}});
@@ -295,7 +295,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/>", link.id.c_str(), cluster->bb_bw, cluster->bb_lat);
     sg_platf_new_link(&link);
 
-    routing_cluster_add_backbone(simgrid::surf::LinkImpl::byName(link.id.c_str()));
+    routing_cluster_add_backbone(simgrid::surf::LinkImpl::byName(link.id));
   }
 
   XBT_DEBUG("</AS>");

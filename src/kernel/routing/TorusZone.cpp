@@ -45,7 +45,8 @@ void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
                                ? rank - (current_dimension - 1) * dim_product
                                : rank + dim_product;
     // name of neighbor is not right for non contiguous cluster radicals (as id != rank in this case)
-    char* link_id  = bprintf("%s_link_from_%i_to_%i", cluster->id, id, neighbor_rank_id);
+    std::string link_id =
+        std::string(cluster->id) + "_link_from_" + std::to_string(id) + "_to_" + std::to_string(neighbor_rank_id);
     link.id        = link_id;
     link.bandwidth = cluster->bw;
     link.latency   = cluster->lat;
@@ -54,12 +55,10 @@ void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
     surf::LinkImpl* linkUp;
     surf::LinkImpl* linkDown;
     if (link.policy == SURF_LINK_FULLDUPLEX) {
-      char* tmp_link = bprintf("%s_UP", link_id);
+      std::string tmp_link = link_id + "_UP";
       linkUp         = surf::LinkImpl::byName(tmp_link);
-      free(tmp_link);
-      tmp_link = bprintf("%s_DOWN", link_id);
+      tmp_link             = link_id + "_DOWN";
       linkDown = surf::LinkImpl::byName(tmp_link);
-      free(tmp_link);
     } else {
       linkUp   = surf::LinkImpl::byName(link_id);
       linkDown = linkUp;
@@ -71,7 +70,6 @@ void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
      */
     privateLinks_.insert({position + j, {linkUp, linkDown}});
     dim_product *= current_dimension;
-    xbt_free(link_id);
   }
   rank++;
 }

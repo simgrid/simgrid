@@ -101,7 +101,7 @@ int console_add_backbone(lua_State *L) {
   }
 
   sg_platf_new_link(&link);
-  routing_cluster_add_backbone(simgrid::surf::LinkImpl::byName(link.id.c_str()));
+  routing_cluster_add_backbone(simgrid::surf::LinkImpl::byName(link.id));
 
   return 0;
 }
@@ -342,7 +342,7 @@ int console_add_route(lua_State *L) {
     // Several names separated by , \t\r\n
     for (auto name : names) {
       if (name.length() > 0) {
-        simgrid::surf::LinkImpl* link = simgrid::surf::LinkImpl::byName(name.c_str());
+        simgrid::surf::LinkImpl* link = simgrid::surf::LinkImpl::byName(name);
         route.link_list->push_back(link);
       }
     }
@@ -423,7 +423,7 @@ int console_add_ASroute(lua_State *L) {
     // Several names separated by , \t\r\n
     for (auto name : names) {
       if (name.length() > 0) {
-        simgrid::surf::LinkImpl* link = simgrid::surf::LinkImpl::byName(name.c_str());
+        simgrid::surf::LinkImpl* link = simgrid::surf::LinkImpl::byName(name);
         ASroute.link_list->push_back(link);
       }
     }

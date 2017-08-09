@@ -176,13 +176,13 @@ void DragonflyZone::createLink(std::string id, int numlinks, surf::LinkImpl** li
   std::string tmpID;
   if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX) {
     tmpID     = linkTemplate.id + "_UP";
-    link      = surf::LinkImpl::byName(tmpID.c_str());
+    link      = surf::LinkImpl::byName(tmpID);
     *linkup   = link; // check link?
     tmpID     = linkTemplate.id + "_DOWN";
-    link      = surf::LinkImpl::byName(tmpID.c_str());
+    link      = surf::LinkImpl::byName(tmpID);
     *linkdown = link; // check link ?
   } else {
-    link      = surf::LinkImpl::byName(linkTemplate.id.c_str());
+    link      = surf::LinkImpl::byName(linkTemplate.id);
     *linkup   = link;
     *linkdown = link;
   }
