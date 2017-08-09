@@ -10,7 +10,7 @@
 #include "xbt/log.h"
 #include "xbt/misc.h"
 #include "xbt/str.h"
-#include <unordered_map>
+#include <map>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_daxparse, sd, "Parsing DAX files");
 
@@ -141,8 +141,8 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
 static YY_BUFFER_STATE input_buffer;
 
 static xbt_dynar_t result;
-static std::unordered_map<std::string, SD_task_t> jobs;
-static std::unordered_map<std::string, SD_task_t> files;
+static std::map<std::string, SD_task_t> jobs;
+static std::map<std::string, SD_task_t> files;
 static SD_task_t current_job;
 static SD_task_t root_task;
 static SD_task_t end_task;
