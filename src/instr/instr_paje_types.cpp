@@ -130,7 +130,7 @@ type_t PJ_type_event_new (const char *name, type_t father)
   return ret;
 }
 
-type_t PJ_type_variable_new (const char *name, const char *color, type_t father)
+type_t s_type::s_type_variable_new (const char *name, const char *color, type_t father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a variable type with a nullptr name");

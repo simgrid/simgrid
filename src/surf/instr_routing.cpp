@@ -216,11 +216,11 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
     type_t bandwidth = s_type::s_type_get_or_null("bandwidth", container->type);
     if (bandwidth == nullptr) {
-      bandwidth = PJ_type_variable_new("bandwidth", nullptr, container->type);
+      bandwidth = s_type::s_type_variable_new("bandwidth", nullptr, container->type);
     }
     type_t latency = s_type::s_type_get_or_null("latency", container->type);
     if (latency == nullptr) {
-      latency = PJ_type_variable_new("latency", nullptr, container->type);
+      latency = s_type::s_type_variable_new("latency", nullptr, container->type);
     }
     new SetVariableEvent(0, container, bandwidth, bandwidth_value);
     new SetVariableEvent(0, container, latency, latency_value);
@@ -228,7 +228,7 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
   if (TRACE_uncategorized()) {
     type_t bandwidth_used = s_type::s_type_get_or_null("bandwidth_used", container->type);
     if (bandwidth_used == nullptr) {
-      PJ_type_variable_new("bandwidth_used", "0.5 0.5 0.5", container->type);
+      s_type::s_type_variable_new("bandwidth_used", "0.5 0.5 0.5", container->type);
     }
   }
 }
@@ -241,7 +241,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
     type_t speed = s_type::s_type_get_or_null ("power", container->type);
     if (speed == nullptr){
-      speed = PJ_type_variable_new ("power", nullptr, container->type);
+      speed = s_type::s_type_variable_new ("power", nullptr, container->type);
     }
 
     double current_speed_state = host.getSpeed();
@@ -250,7 +250,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   if (TRACE_uncategorized()){
     type_t speed_used = s_type::s_type_get_or_null ("power_used", container->type);
     if (speed_used == nullptr){
-      PJ_type_variable_new ("power_used", "0.5 0.5 0.5", container->type);
+      s_type::s_type_variable_new ("power_used", "0.5 0.5 0.5", container->type);
     }
   }
 
@@ -339,17 +339,17 @@ static void recursiveNewVariableType (const char *new_typename, const char *colo
   if (not strcmp(root->name, "HOST")) {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
-    PJ_type_variable_new (tnstr, color, root);
+    s_type::s_type_variable_new (tnstr, color, root);
   }
   if (not strcmp(root->name, "MSG_VM")) {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
-    PJ_type_variable_new (tnstr, color, root);
+    s_type::s_type_variable_new (tnstr, color, root);
   }
   if (not strcmp(root->name, "LINK")) {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "b%s", new_typename);
-    PJ_type_variable_new (tnstr, color, root);
+    s_type::s_type_variable_new (tnstr, color, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
   type_t child_type;
@@ -367,7 +367,7 @@ void instr_new_variable_type (const char *new_typename, const char *color)
 static void recursiveNewUserVariableType (const char *father_type, const char *new_typename, const char *color, type_t root)
 {
   if (not strcmp(root->name, father_type)) {
-    PJ_type_variable_new (new_typename, color, root);
+    s_type::s_type_variable_new (new_typename, color, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
   type_t child_type;
