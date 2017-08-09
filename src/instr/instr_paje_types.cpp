@@ -73,14 +73,14 @@ void recursiveDestroyType (type_t type)
 
 type_t PJ_type_get (const char *name, type_t father)
 {
-  type_t ret = PJ_type_get_or_null (name, father);
+  type_t ret = s_type::PJ_type_get_or_null (name, father);
   if (ret == nullptr){
     THROWF (tracing_error, 2, "type with name (%s) not found in father type (%s)", name, father->name);
   }
   return ret;
 }
 
-type_t PJ_type_get_or_null (const char *name, type_t father)
+type_t s_type::PJ_type_get_or_null (const char *name, type_t father)
 {
   if (name == nullptr || father == nullptr){
     THROWF (tracing_error, 0, "can't get type with a nullptr name or from a nullptr father");

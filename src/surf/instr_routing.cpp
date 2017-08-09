@@ -105,7 +105,7 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
             father->type->name,
             src->type->name, src->type->id,
             dst->type->name, dst->type->id);
-  type_t link_type = PJ_type_get_or_null (link_typename, father->type);
+  type_t link_type = s_type::PJ_type_get_or_null (link_typename, father->type);
   if (link_type == nullptr){
     link_type = PJ_type_link_new (link_typename, father->type, src->type, dst->type);
   }
@@ -173,7 +173,7 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
     PJ_container_set_root (root);
 
     if (TRACE_smpi_is_enabled()) {
-      type_t mpi = PJ_type_get_or_null ("MPI", root->type);
+      type_t mpi = s_type::PJ_type_get_or_null ("MPI", root->type);
       if (mpi == nullptr){
         mpi = PJ_type_container_new("MPI", root->type);
         if (not TRACE_smpi_is_grouped())
@@ -214,11 +214,11 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
   container_t container = PJ_container_new(link.name(), INSTR_LINK, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
-    type_t bandwidth = PJ_type_get_or_null("bandwidth", container->type);
+    type_t bandwidth = s_type::PJ_type_get_or_null("bandwidth", container->type);
     if (bandwidth == nullptr) {
       bandwidth = PJ_type_variable_new("bandwidth", nullptr, container->type);
     }
-    type_t latency = PJ_type_get_or_null("latency", container->type);
+    type_t latency = s_type::PJ_type_get_or_null("latency", container->type);
     if (latency == nullptr) {
       latency = PJ_type_variable_new("latency", nullptr, container->type);
     }
@@ -226,7 +226,7 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
     new SetVariableEvent(0, container, latency, latency_value);
   }
   if (TRACE_uncategorized()) {
-    type_t bandwidth_used = PJ_type_get_or_null("bandwidth_used", container->type);
+    type_t bandwidth_used = s_type::PJ_type_get_or_null("bandwidth_used", container->type);
     if (bandwidth_used == nullptr) {
       PJ_type_variable_new("bandwidth_used", "0.5 0.5 0.5", container->type);
     }
@@ -239,7 +239,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   container_t container = PJ_container_new(host.getCname(), INSTR_HOST, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
-    type_t speed = PJ_type_get_or_null ("power", container->type);
+    type_t speed = s_type::PJ_type_get_or_null ("power", container->type);
     if (speed == nullptr){
       speed = PJ_type_variable_new ("power", nullptr, container->type);
     }
@@ -248,14 +248,14 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     new SetVariableEvent (0, container, speed, current_speed_state);
   }
   if (TRACE_uncategorized()){
-    type_t speed_used = PJ_type_get_or_null ("power_used", container->type);
+    type_t speed_used = s_type::PJ_type_get_or_null ("power_used", container->type);
     if (speed_used == nullptr){
       PJ_type_variable_new ("power_used", "0.5 0.5 0.5", container->type);
     }
   }
 
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped()){
-    type_t mpi = PJ_type_get_or_null ("MPI", container->type);
+    type_t mpi = s_type::PJ_type_get_or_null ("MPI", container->type);
     if (mpi == nullptr){
       mpi = PJ_type_container_new("MPI", container->type);
       PJ_type_state_new ("MPI_STATE", mpi);
@@ -263,7 +263,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   }
 
   if (TRACE_msg_process_is_enabled()) {
-    type_t msg_process = PJ_type_get_or_null ("MSG_PROCESS", container->type);
+    type_t msg_process = s_type::PJ_type_get_or_null ("MSG_PROCESS", container->type);
     if (msg_process == nullptr){
       msg_process = PJ_type_container_new("MSG_PROCESS", container->type);
       type_t state = PJ_type_state_new ("MSG_PROCESS_STATE", msg_process);
@@ -278,7 +278,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   }
 
   if (TRACE_msg_vm_is_enabled()) {
-    type_t msg_vm = PJ_type_get_or_null ("MSG_VM", container->type);
+    type_t msg_vm = s_type::PJ_type_get_or_null ("MSG_VM", container->type);
     if (msg_vm == nullptr){
       msg_vm = PJ_type_container_new("MSG_VM", container->type);
       type_t state = PJ_type_state_new ("MSG_VM_STATE", msg_vm);
