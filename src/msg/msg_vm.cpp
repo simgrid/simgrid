@@ -237,14 +237,14 @@ void MSG_vm_shutdown(msg_vm_t vm)
   MSG_process_sleep(0.);
 }
 
-static inline char *get_mig_process_tx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
+static std::string get_mig_process_tx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
-  return bprintf("__pr_mig_tx:%s(%s-%s)", vm->getCname(), src_pm->getCname(), dst_pm->getCname());
+  return std::string("__pr_mig_tx:") + vm->getName() + "(" + src_pm->getName() + "-" + dst_pm->getName() + ")";
 }
 
-static inline char *get_mig_process_rx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
+static std::string get_mig_process_rx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
-  return bprintf("__pr_mig_rx:%s(%s-%s)", vm->getCname(), src_pm->getCname(), dst_pm->getCname());
+  return std::string("__pr_mig_rx:") + vm->getName() + "(" + src_pm->getName() + "-" + dst_pm->getName() + ")";
 }
 
 static inline char *get_mig_task_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm, int stage)
@@ -752,12 +752,12 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
   ms->mbox_ctl = bprintf("__mbox_mig_ctl:%s(%s-%s)", vm->getCname(), src_pm->getCname(), dst_pm->getCname());
   ms->mbox     = bprintf("__mbox_mig_src_dst:%s(%s-%s)", vm->getCname(), src_pm->getCname(), dst_pm->getCname());
 
-  char *pr_rx_name = get_mig_process_rx_name(vm, src_pm, dst_pm);
-  char *pr_tx_name = get_mig_process_tx_name(vm, src_pm, dst_pm);
+  std::string pr_rx_name = get_mig_process_rx_name(vm, src_pm, dst_pm);
+  std::string pr_tx_name = get_mig_process_tx_name(vm, src_pm, dst_pm);
 
-  MSG_process_create(pr_rx_name, migration_rx_fun, ms, dst_pm);
+  MSG_process_create(pr_rx_name.c_str(), migration_rx_fun, ms, dst_pm);
 
-  MSG_process_create(pr_tx_name, migration_tx_fun, ms, src_pm);
+  MSG_process_create(pr_tx_name.c_str(), migration_tx_fun, ms, src_pm);
 
   /* wait until the migration have finished or on error has occurred */
   XBT_DEBUG("wait for reception of the final ACK (i.e. migration has been correctly performed");
