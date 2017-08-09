@@ -184,34 +184,7 @@ void MSG_vm_destroy(msg_vm_t vm)
  */
 void MSG_vm_start(msg_vm_t vm)
 {
-  simgrid::simix::kernelImmediate([vm]() {
-    simgrid::vm::VmHostExt::ensureVmExtInstalled();
-
-    simgrid::s4u::Host* pm = vm->pimpl_vm_->getPm();
-    if (pm->extension<simgrid::vm::VmHostExt>() == nullptr)
-      pm->extension_set(new simgrid::vm::VmHostExt());
-
-    long pm_ramsize   = pm->extension<simgrid::vm::VmHostExt>()->ramsize;
-    int pm_overcommit = pm->extension<simgrid::vm::VmHostExt>()->overcommit;
-    long vm_ramsize   = vm->getRamsize();
-
-    if (pm_ramsize && not pm_overcommit) { /* Only verify that we don't overcommit on need */
-      /* Retrieve the memory occupied by the VMs on that host. Yep, we have to traverse all VMs of all hosts for that */
-      long total_ramsize_of_vms = 0;
-      for (simgrid::s4u::VirtualMachine* ws_vm : simgrid::vm::VirtualMachineImpl::allVms_)
-        if (pm == ws_vm->pimpl_vm_->getPm())
-          total_ramsize_of_vms += ws_vm->pimpl_vm_->getRamsize();
-
-      if (vm_ramsize > pm_ramsize - total_ramsize_of_vms) {
-        XBT_WARN("cannnot start %s@%s due to memory shortage: vm_ramsize %ld, free %ld, pm_ramsize %ld (bytes).",
-                 vm->getCname(), pm->getCname(), vm_ramsize, pm_ramsize - total_ramsize_of_vms, pm_ramsize);
-        THROWF(vm_error, 0, "Memory shortage on host '%s', VM '%s' cannot be started", pm->getCname(), vm->getCname());
-      }
-    }
-
-    vm->pimpl_vm_->setState(SURF_VM_STATE_RUNNING);
-  });
-
+  vm->start();
   if (TRACE_msg_vm_is_enabled()) {
     container_t vm_container = PJ_container_get(vm->getCname());
     type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
@@ -229,11 +202,10 @@ void MSG_vm_start(msg_vm_t vm)
  */
 void MSG_vm_shutdown(msg_vm_t vm)
 {
-  smx_actor_t issuer=SIMIX_process_self();
+  smx_actor_t issuer = SIMIX_process_self();
   simgrid::simix::kernelImmediate([vm, issuer]() { vm->pimpl_vm_->shutdown(issuer); });
 
-  // Make sure that the processes in the VM are killed in this scheduling round before processing
-  // (eg with the VM destroy)
+  // Make sure that processes in the VM are killed in this scheduling round before processing (eg with the VM destroy)
   MSG_process_sleep(0.);
 }
 
