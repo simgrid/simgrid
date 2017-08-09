@@ -75,8 +75,8 @@ class s_type :public ess_type {
   xbt_dict_t values; //valid for all types except variable and container
   s_type(const char *typeNameBuff, const char *key, const char *color, e_entity_types kind, type_t father);
   ~s_type();
-  static s_type* PJ_type_get_or_null (const char *name, type_t father);
-  static s_type* PJ_type_get (const char *name, type_t father);
+  static s_type* s_type_get_or_null (const char *name, type_t father);
+  static s_type* s_type_get (const char *name, type_t father);
 };
 
 //--------------------------------------------------

@@ -167,7 +167,7 @@ void smpi_bench_end()
 
     for (auto& pair : counter_data) {
       new_pajeSetVariable(surf_get_clock(), container,
-                          s_type::PJ_type_get(/* countername */ pair.first.c_str(), container->type), pair.second);
+                          s_type::s_type_get(/* countername */ pair.first.c_str(), container->type), pair.second);
     }
   }
 #endif

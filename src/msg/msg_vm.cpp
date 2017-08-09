@@ -214,7 +214,7 @@ void MSG_vm_start(msg_vm_t vm)
 
   if (TRACE_msg_vm_is_enabled()) {
     container_t vm_container = PJ_container_get(vm->getCname());
-    type_t type              = s_type::PJ_type_get("MSG_VM_STATE", vm_container->type);
+    type_t type              = s_type::s_type_get("MSG_VM_STATE", vm_container->type);
     value* val               = value::get_or_new("start", "0 0 1", type); // start is blue
     new PushStateEvent(MSG_get_clock(), vm_container, type, val);
   }
@@ -325,7 +325,7 @@ static int migration_rx_fun(int argc, char *argv[])
 
     // start link
     container_t msg = PJ_container_get(vm->getCname());
-    type_t type     = s_type::PJ_type_get("MSG_VM_LINK", PJ_type_get_root());
+    type_t type     = s_type::s_type_get("MSG_VM_LINK", PJ_type_get_root());
     new StartLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
 
     // destroy existing container of this vm
@@ -338,7 +338,7 @@ static int migration_rx_fun(int argc, char *argv[])
 
     // end link
     msg  = PJ_container_get(vm->getCname());
-    type = s_type::PJ_type_get("MSG_VM_LINK", PJ_type_get_root());
+    type = s_type::s_type_get("MSG_VM_LINK", PJ_type_get_root());
     new EndLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
   }
 
@@ -814,7 +814,7 @@ void MSG_vm_suspend(msg_vm_t vm)
 
   if (TRACE_msg_vm_is_enabled()) {
     container_t vm_container = PJ_container_get(vm->getCname());
-    type_t type              = s_type::PJ_type_get("MSG_VM_STATE", vm_container->type);
+    type_t type              = s_type::s_type_get("MSG_VM_STATE", vm_container->type);
     value* val               = value::get_or_new("suspend", "1 0 0", type); // suspend is red
     new PushStateEvent(MSG_get_clock(), vm_container, type, val);
   }
@@ -831,7 +831,7 @@ void MSG_vm_resume(msg_vm_t vm)
 
   if (TRACE_msg_vm_is_enabled()) {
     container_t vm_container = PJ_container_get(vm->getCname());
-    type_t type              = s_type::PJ_type_get("MSG_VM_STATE", vm_container->type);
+    type_t type              = s_type::s_type_get("MSG_VM_STATE", vm_container->type);
     new PopStateEvent(MSG_get_clock(), vm_container, type);
   }
 }

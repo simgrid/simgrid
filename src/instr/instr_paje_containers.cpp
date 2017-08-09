@@ -88,7 +88,7 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
     char as_typename[INSTR_DEFAULT_STR_SIZE];
     snprintf (as_typename, INSTR_DEFAULT_STR_SIZE, "L%d", newContainer->level);
     if (newContainer->father){
-      newContainer->type = s_type::PJ_type_get_or_null (as_typename, newContainer->father->type);
+      newContainer->type = s_type::s_type_get_or_null (as_typename, newContainer->father->type);
       if (newContainer->type == nullptr){
         newContainer->type = PJ_type_container_new (as_typename, newContainer->father->type);
       }
@@ -124,7 +124,7 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
         THROWF (tracing_error, 0, "new container kind is unknown.");
         break;
     }
-    type_t type = s_type::PJ_type_get_or_null (typeNameBuff, newContainer->father->type);
+    type_t type = s_type::s_type_get_or_null (typeNameBuff, newContainer->father->type);
     if (type == nullptr){
       newContainer->type = PJ_type_container_new (typeNameBuff, newContainer->father->type);
     }else{
