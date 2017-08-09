@@ -211,18 +211,18 @@ void MSG_vm_shutdown(msg_vm_t vm)
 
 static std::string get_mig_process_tx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
-  return std::string("__pr_mig_tx:") + vm->getName() + "(" + src_pm->getName() + "-" + dst_pm->getName() + ")";
+  return std::string("__pr_mig_tx:") + vm->getCname() + "(" + src_pm->getCname() + "-" + dst_pm->getCname() + ")";
 }
 
 static std::string get_mig_process_rx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
-  return std::string("__pr_mig_rx:") + vm->getName() + "(" + src_pm->getName() + "-" + dst_pm->getName() + ")";
+  return std::string("__pr_mig_rx:") + vm->getCname() + "(" + src_pm->getCname() + "-" + dst_pm->getCname() + ")";
 }
 
 static std::string get_mig_task_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm, int stage)
 {
-  return std::string("__task_mig_stage") + std::to_string(stage) + ":" + vm->getName() + "(" + src_pm->getName() + "-" +
-         dst_pm->getName() + ")";
+  return std::string("__task_mig_stage") + std::to_string(stage) + ":" + vm->getCname() + "(" + src_pm->getCname() +
+         "-" + dst_pm->getCname() + ")";
 }
 
 struct migration_session {
