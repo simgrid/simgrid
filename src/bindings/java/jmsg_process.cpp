@@ -101,7 +101,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID(JNIEnv * env, jcl
   msg_process_t process = MSG_process_from_PID(pid);
 
   if (not process) {
-    jxbt_throw_process_not_found(env, bprintf("PID = %d",static_cast<int>(pid)));
+    jxbt_throw_process_not_found(env, std::string("PID = ") + std::to_string(static_cast<int>(pid)));
     return nullptr;
   }
 
@@ -156,7 +156,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_suspend(JNIEnv * env, jobjec
   /* try to suspend the process */
   msg_error_t rv = MSG_process_suspend(process);
 
-  jxbt_check_res("MSG_process_suspend()", rv, MSG_OK, bprintf("unexpected error , please report this bug"));
+  jxbt_check_res("MSG_process_suspend()", rv, MSG_OK, "unexpected error , please report this bug");
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_resume(JNIEnv * env, jobject jprocess)
@@ -170,7 +170,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_resume(JNIEnv * env, jobject
 
   /* try to resume the process */
   msg_error_t res = MSG_process_resume(process);
-  jxbt_check_res("MSG_process_resume()", res, MSG_OK, bprintf("unexpected error , please report this bug"));
+  jxbt_check_res("MSG_process_resume()", res, MSG_OK, "unexpected error , please report this bug");
 }
 
 JNIEXPORT void

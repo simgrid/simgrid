@@ -121,7 +121,7 @@ void ClusterZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges
 
 void ClusterZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int /*rank*/, int position)
 {
-  char* link_id = bprintf("%s_link_%d", cluster->id, id);
+  std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(id);
 
   LinkCreationArgs link;
   link.id        = link_id;
@@ -135,13 +135,12 @@ void ClusterZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id
   if (link.policy == SURF_LINK_FULLDUPLEX) {
     std::string tmp_link = std::string(link_id) + "_UP";
     linkUp         = surf::LinkImpl::byName(tmp_link);
-    tmp_link = bprintf("%s_DOWN", link_id);
+    tmp_link             = std::string(link_id) + "_DOWN";
     linkDown = surf::LinkImpl::byName(tmp_link);
   } else {
     linkUp   = surf::LinkImpl::byName(link_id);
     linkDown = linkUp;
   }
-  xbt_free(link_id);
   privateLinks_.insert({position, {linkUp, linkDown}});
 }
 }
