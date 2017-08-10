@@ -501,7 +501,7 @@ int console_AS_open(lua_State *L) {
 }
 int console_AS_seal(lua_State *L) {
   XBT_DEBUG("Sealing AS");
-  sg_platf_new_AS_seal();
+  sg_platf_new_Zone_seal();
   return 0;
 }
 

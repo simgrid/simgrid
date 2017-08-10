@@ -65,7 +65,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-RoutedZone::RoutedZone(NetZone* father, const char* name) : NetZoneImpl(father, name)
+RoutedZone::RoutedZone(NetZone* father, std::string name) : NetZoneImpl(father, name)
 {
 }
 

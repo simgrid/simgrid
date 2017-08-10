@@ -57,7 +57,8 @@ static std::vector<double>* getCoordsFromNetpoint(NetPoint* np)
              (np->isNetZone() ? "Netzone" : (np->isHost() ? "Host" : "Router")), np->cname(), np);
   return &coords->coords;
 }
-VivaldiZone::VivaldiZone(NetZone* father, const char* name) : ClusterZone(father, name)
+
+VivaldiZone::VivaldiZone(NetZone* father, std::string name) : ClusterZone(father, name)
 {
 }
 

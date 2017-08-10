@@ -961,14 +961,16 @@ void STag_surfxml_zone()
 {
   parse_after_config();
   ZONE_TAG                 = 1;
-  s_sg_platf_AS_cbarg_t AS = {A_surfxml_zone_id, (int)A_surfxml_zone_routing};
+  ZoneCreationArgs zone;
+  zone.id      = A_surfxml_zone_id;
+  zone.routing = static_cast<int>(A_surfxml_zone_routing);
 
-  sg_platf_new_AS_begin(&AS);
+  sg_platf_new_Zone_begin(&zone);
 }
 
 void ETag_surfxml_zone()
 {
-  sg_platf_new_AS_seal();
+  sg_platf_new_Zone_seal();
 }
 
 void STag_surfxml_config()

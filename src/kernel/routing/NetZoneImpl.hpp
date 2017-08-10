@@ -53,7 +53,7 @@ XBT_PUBLIC_CLASS NetZoneImpl : public s4u::NetZone
   friend simgrid::kernel::EngineImpl; // it destroys netRoot_
 
 protected:
-  explicit NetZoneImpl(NetZone * father, const char* name);
+  explicit NetZoneImpl(NetZone * father, std::string name);
   virtual ~NetZoneImpl();
 
 public:

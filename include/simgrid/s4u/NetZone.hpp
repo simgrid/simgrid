@@ -38,13 +38,13 @@ XBT_PUBLIC_CLASS NetZone
 protected:
   friend simgrid::kernel::routing::NetZoneImpl;
 
-  explicit NetZone(NetZone * father, const char* name);
+  explicit NetZone(NetZone * father, std::string name);
   virtual ~NetZone();
 
 public:
   /** @brief Seal your netzone once you're done adding content, and before routing stuff through it */
   virtual void seal();
-  char* getCname();
+  const char* getCname();
   NetZone* getFather();
 
   std::vector<NetZone*>* getChildren();             // Sub netzones
@@ -80,7 +80,7 @@ private:
 
   std::unordered_map<std::string, std::string> properties_;
   NetZone* father_ = nullptr;
-  char* name_      = nullptr;
+  std::string name_;
 
   bool sealed_ = false; // We cannot add more content when sealed
 

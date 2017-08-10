@@ -159,23 +159,23 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   int rankId=0;
 
   // What an inventive way of initializing the AS that I have as ancestor :-(
-  s_sg_platf_AS_cbarg_t AS;
-  AS.id = cluster->id;
+  ZoneCreationArgs zone;
+  zone.id = cluster->id;
   switch (cluster->topology) {
   case SURF_CLUSTER_TORUS:
-    AS.routing = A_surfxml_AS_routing_ClusterTorus;
+    zone.routing = A_surfxml_AS_routing_ClusterTorus;
     break;
   case SURF_CLUSTER_DRAGONFLY:
-    AS.routing = A_surfxml_AS_routing_ClusterDragonfly;
+    zone.routing = A_surfxml_AS_routing_ClusterDragonfly;
     break;
   case SURF_CLUSTER_FAT_TREE:
-    AS.routing = A_surfxml_AS_routing_ClusterFatTree;
+    zone.routing = A_surfxml_AS_routing_ClusterFatTree;
     break;
   default:
-    AS.routing = A_surfxml_AS_routing_Cluster;
+    zone.routing = A_surfxml_AS_routing_Cluster;
     break;
   }
-  sg_platf_new_AS_begin(&AS);
+  sg_platf_new_Zone_begin(&zone);
   simgrid::kernel::routing::ClusterZone* current_as = static_cast<ClusterZone*>(routing_get_current());
   current_as->parse_specific_arguments(cluster);
 
@@ -296,7 +296,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   }
 
   XBT_DEBUG("</AS>");
-  sg_platf_new_AS_seal();
+  sg_platf_new_Zone_seal();
 
   simgrid::surf::on_cluster(cluster);
   delete cluster->radicals;
@@ -564,18 +564,16 @@ static void surf_config_models_setup()
 }
 
 /**
- * \brief Add an AS to the platform
+ * \brief Add a Zone to the platform
  *
- * Add a new autonomous system to the platform. Any elements (such as host,
- * router or sub-AS) added after this call and before the corresponding call
- * to sg_platf_new_AS_seal() will be added to this AS.
+ * Add a new autonomous system to the platform. Any elements (such as host, router or sub-Zone) added after this call
+ * and before the corresponding call to sg_platf_new_Zone_seal() will be added to this Zone.
  *
- * Once this function was called, the configuration concerning the used
- * models cannot be changed anymore.
+ * Once this function was called, the configuration concerning the used models cannot be changed anymore.
  *
- * @param AS the parameters defining the AS to build.
+ * @param zone the parameters defining the Zone to build.
  */
-simgrid::s4u::NetZone* sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
+simgrid::s4u::NetZone* sg_platf_new_Zone_begin(ZoneCreationArgs* zone)
 {
   if (not surf_parse_models_setup_already_called) {
     /* Initialize the surf models. That must be done after we got all config, and before we need the models.
@@ -593,37 +591,37 @@ simgrid::s4u::NetZone* sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
                             * any further config now that we created some real content */
 
   /* search the routing model */
-  simgrid::kernel::routing::NetZoneImpl* new_as = nullptr;
-  switch(AS->routing){
+  simgrid::kernel::routing::NetZoneImpl* new_zone = nullptr;
+  switch (zone->routing) {
     case A_surfxml_AS_routing_Cluster:
-      new_as = new simgrid::kernel::routing::ClusterZone(current_routing, AS->id);
+      new_zone = new simgrid::kernel::routing::ClusterZone(current_routing, zone->id);
       break;
     case A_surfxml_AS_routing_ClusterDragonfly:
-      new_as = new simgrid::kernel::routing::DragonflyZone(current_routing, AS->id);
+      new_zone = new simgrid::kernel::routing::DragonflyZone(current_routing, zone->id);
       break;
     case A_surfxml_AS_routing_ClusterTorus:
-      new_as = new simgrid::kernel::routing::TorusZone(current_routing, AS->id);
+      new_zone = new simgrid::kernel::routing::TorusZone(current_routing, zone->id);
       break;
     case A_surfxml_AS_routing_ClusterFatTree:
-      new_as = new simgrid::kernel::routing::FatTreeZone(current_routing, AS->id);
+      new_zone = new simgrid::kernel::routing::FatTreeZone(current_routing, zone->id);
       break;
     case A_surfxml_AS_routing_Dijkstra:
-      new_as = new simgrid::kernel::routing::DijkstraZone(current_routing, AS->id, 0);
+      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, 0);
       break;
     case A_surfxml_AS_routing_DijkstraCache:
-      new_as = new simgrid::kernel::routing::DijkstraZone(current_routing, AS->id, 1);
+      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, 1);
       break;
     case A_surfxml_AS_routing_Floyd:
-      new_as = new simgrid::kernel::routing::FloydZone(current_routing, AS->id);
+      new_zone = new simgrid::kernel::routing::FloydZone(current_routing, zone->id);
       break;
     case A_surfxml_AS_routing_Full:
-      new_as = new simgrid::kernel::routing::FullZone(current_routing, AS->id);
+      new_zone = new simgrid::kernel::routing::FullZone(current_routing, zone->id);
       break;
     case A_surfxml_AS_routing_None:
-      new_as = new simgrid::kernel::routing::EmptyZone(current_routing, AS->id);
+      new_zone = new simgrid::kernel::routing::EmptyZone(current_routing, zone->id);
       break;
     case A_surfxml_AS_routing_Vivaldi:
-      new_as = new simgrid::kernel::routing::VivaldiZone(current_routing, AS->id);
+      new_zone = new simgrid::kernel::routing::VivaldiZone(current_routing, zone->id);
       break;
     default:
       xbt_die("Not a valid model!");
@@ -633,22 +631,22 @@ simgrid::s4u::NetZone* sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
   if (current_routing == nullptr) { /* it is the first one */
     xbt_assert(simgrid::s4u::Engine::getInstance()->pimpl->netRoot_ == nullptr,
                "All defined components must belong to a networking zone.");
-    simgrid::s4u::Engine::getInstance()->pimpl->netRoot_ = new_as;
+    simgrid::s4u::Engine::getInstance()->pimpl->netRoot_ = new_zone;
 
   } else {
     /* set the father behavior */
     if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
       current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::recursive;
     /* add to the sons dictionary */
-    current_routing->getChildren()->push_back(static_cast<simgrid::s4u::NetZone*>(new_as));
+    current_routing->getChildren()->push_back(static_cast<simgrid::s4u::NetZone*>(new_zone));
   }
 
   /* set the new current component of the tree */
-  current_routing = new_as;
+  current_routing = new_zone;
 
-  simgrid::s4u::NetZone::onCreation(*new_as); // notify the signal
+  simgrid::s4u::NetZone::onCreation(*new_zone); // notify the signal
 
-  return new_as;
+  return new_zone;
 }
 
 /**
@@ -657,7 +655,7 @@ simgrid::s4u::NetZone* sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
  * Once you've declared all the content of your AS, you have to seal
  * it with this call. Your AS is not usable until you call this function.
  */
-void sg_platf_new_AS_seal()
+void sg_platf_new_Zone_seal()
 {
   xbt_assert(current_routing, "Cannot seal the current AS: none under construction");
   current_routing->seal();

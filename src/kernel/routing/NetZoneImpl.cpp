@@ -26,14 +26,15 @@ public:
   std::vector<surf::LinkImpl*> links;
 };
 
-NetZoneImpl::NetZoneImpl(NetZone* father, const char* name) : NetZone(father, name)
+NetZoneImpl::NetZoneImpl(NetZone* father, std::string name) : NetZone(father, name)
 {
-  xbt_assert(nullptr == simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name),
-             "Refusing to create a second NetZone called '%s'.", name);
+  xbt_assert(nullptr == simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name.c_str()),
+             "Refusing to create a second NetZone called '%s'.", name.c_str());
 
   netpoint_ = new NetPoint(name, NetPoint::Type::NetZone, static_cast<NetZoneImpl*>(father));
-  XBT_DEBUG("NetZone '%s' created with the id '%u'", name, netpoint_->id());
+  XBT_DEBUG("NetZone '%s' created with the id '%u'", name.c_str(), netpoint_->id());
 }
+
 NetZoneImpl::~NetZoneImpl()
 {
   for (auto& kv : bypassRoutes_)

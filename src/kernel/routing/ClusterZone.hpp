@@ -67,7 +67,7 @@ namespace routing {
 
 class XBT_PRIVATE ClusterZone : public NetZoneImpl {
 public:
-  explicit ClusterZone(NetZone* father, const char* name);
+  explicit ClusterZone(NetZone* father, std::string name);
 
   void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency) override;
   void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
