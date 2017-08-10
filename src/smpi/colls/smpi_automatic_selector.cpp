@@ -18,7 +18,7 @@
   if (TRACE_is_enabled()) {                                                                                            \
     type_t type = s_type::s_type_get_or_null(#cat, PJ_type_get_root());                                                       \
     if (not type) {                                                                                                    \
-      type = PJ_type_event_new(#cat, PJ_type_get_root());                                                              \
+      type = s_type::s_type_event_new(#cat, PJ_type_get_root());                                                              \
     }                                                                                                                  \
     char cont_name[25];                                                                                                \
     snprintf(cont_name, 25, "rank-%d", smpi_process()->index());                                                       \
