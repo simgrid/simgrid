@@ -706,28 +706,24 @@ void ETag_surfxml_link(){
   sg_platf_new_link(&link);
 }
 
-void STag_surfxml_link___ctn(){
-
+void STag_surfxml_link___ctn()
+{
   simgrid::surf::LinkImpl* link = nullptr;
-  char *link_name=nullptr;
   switch (A_surfxml_link___ctn_direction) {
   case AU_surfxml_link___ctn_direction:
   case A_surfxml_link___ctn_direction_NONE:
     link = simgrid::surf::LinkImpl::byName(A_surfxml_link___ctn_id);
     break;
   case A_surfxml_link___ctn_direction_UP:
-    link_name = bprintf("%s_UP", A_surfxml_link___ctn_id);
-    link      = simgrid::surf::LinkImpl::byName(link_name);
+    link = simgrid::surf::LinkImpl::byName(std::string(A_surfxml_link___ctn_id) + "_UP");
     break;
   case A_surfxml_link___ctn_direction_DOWN:
-    link_name = bprintf("%s_DOWN", A_surfxml_link___ctn_id);
-    link      = simgrid::surf::LinkImpl::byName(link_name);
+    link = simgrid::surf::LinkImpl::byName(std::string(A_surfxml_link___ctn_id) + "_DOWN");
     break;
   default:
-    surf_parse_error(std::string("Invalid direction for link ") + link_name);
+    surf_parse_error(std::string("Invalid direction for link ") + A_surfxml_link___ctn_id);
     break;
   }
-  xbt_free(link_name); // no-op if it's already nullptr
 
   const char* dirname = "";
   switch (A_surfxml_link___ctn_direction) {
