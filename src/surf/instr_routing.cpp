@@ -107,7 +107,7 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
             dst->type->name, dst->type->id);
   type_t link_type = s_type::s_type_get_or_null (link_typename, father->type);
   if (link_type == nullptr){
-    link_type = PJ_type_link_new (link_typename, father->type, src->type, dst->type);
+    link_type = s_type::s_type_link_new (link_typename, father->type, src->type, dst->type);
   }
 
   //register EDGE types for triva configuration
@@ -178,7 +178,7 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
         mpi = s_type::s_type_container_new("MPI", root->type);
         if (not TRACE_smpi_is_grouped())
           PJ_type_state_new ("MPI_STATE", mpi);
-        PJ_type_link_new ("MPI_LINK", PJ_type_get_root(), mpi, mpi);
+        s_type::s_type_link_new ("MPI_LINK", PJ_type_get_root(), mpi, mpi);
       }
     }
 
@@ -272,8 +272,8 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
       value::get_or_new("receive", "1 0 0", state);
       value::get_or_new("send", "0 0 1", state);
       value::get_or_new("task_execute", "0 1 1", state);
-      PJ_type_link_new ("MSG_PROCESS_LINK", PJ_type_get_root(), msg_process, msg_process);
-      PJ_type_link_new ("MSG_PROCESS_TASK_LINK", PJ_type_get_root(), msg_process, msg_process);
+      s_type::s_type_link_new ("MSG_PROCESS_LINK", PJ_type_get_root(), msg_process, msg_process);
+      s_type::s_type_link_new ("MSG_PROCESS_TASK_LINK", PJ_type_get_root(), msg_process, msg_process);
     }
   }
 
@@ -287,8 +287,8 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
       value::get_or_new("receive", "1 0 0", state);
       value::get_or_new("send", "0 0 1", state);
       value::get_or_new("task_execute", "0 1 1", state);
-      PJ_type_link_new ("MSG_VM_LINK", PJ_type_get_root(), msg_vm, msg_vm);
-      PJ_type_link_new ("MSG_VM_PROCESS_LINK", PJ_type_get_root(), msg_vm, msg_vm);
+      s_type::s_type_link_new ("MSG_VM_LINK", PJ_type_get_root(), msg_vm, msg_vm);
+      s_type::s_type_link_new ("MSG_VM_PROCESS_LINK", PJ_type_get_root(), msg_vm, msg_vm);
     }
   }
 
