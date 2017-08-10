@@ -24,7 +24,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf, "Surf trace management");
 
 namespace tmgr = simgrid::trace_mgr;
 
-static std::unordered_map<const char*, tmgr::trace*> trace_list;
+static std::unordered_map<std::string, tmgr::trace*> trace_list;
 
 static inline bool doubleEq(double d1, double d2)
 {
@@ -58,13 +58,13 @@ simgrid::trace_mgr::future_evt_set::~future_evt_set()
 }
 }
 
-tmgr_trace_t tmgr_trace_new_from_string(const char* name, std::string input, double periodicity)
+tmgr_trace_t tmgr_trace_new_from_string(std::string name, std::string input, double periodicity)
 {
   int linecount = 0;
   tmgr_trace_t trace           = new simgrid::trace_mgr::trace();
   tmgr::DatedValue* last_event = &(trace->event_list.back());
 
-  xbt_assert(trace_list.find(name) == trace_list.end(), "Refusing to define trace %s twice", name);
+  xbt_assert(trace_list.find(name) == trace_list.end(), "Refusing to define trace %s twice", name.c_str());
 
   std::vector<std::string> list;
   boost::split(list, input, boost::is_any_of("\n\r"));
@@ -80,10 +80,10 @@ tmgr_trace_t tmgr_trace_new_from_string(const char* name, std::string input, dou
       continue;
 
     xbt_assert(sscanf(val.c_str(), "%lg  %lg\n", &event.date_, &event.value_) == 2, "%s:%d: Syntax error in trace\n%s",
-               name, linecount, input.c_str());
+               name.c_str(), linecount, input.c_str());
 
     xbt_assert(last_event->date_ <= event.date_,
-               "%s:%d: Invalid trace: Events must be sorted, but time %g > time %g.\n%s", name, linecount,
+               "%s:%d: Invalid trace: Events must be sorted, but time %g > time %g.\n%s", name.c_str(), linecount,
                last_event->date_, event.date_, input.c_str());
     last_event->date_ = event.date_ - last_event->date_;
 
@@ -98,18 +98,18 @@ tmgr_trace_t tmgr_trace_new_from_string(const char* name, std::string input, dou
     }
   }
 
-  trace_list.insert({xbt_strdup(name), trace});
+  trace_list.insert({name, trace});
 
   return trace;
 }
 
-tmgr_trace_t tmgr_trace_new_from_file(const char *filename)
+tmgr_trace_t tmgr_trace_new_from_file(std::string filename)
 {
-  xbt_assert(filename && filename[0], "Cannot parse a trace from the null or empty filename");
-  xbt_assert(trace_list.find(filename) == trace_list.end(), "Refusing to define trace %s twice", filename);
+  xbt_assert(not filename.empty(), "Cannot parse a trace from an empty filename");
+  xbt_assert(trace_list.find(filename) == trace_list.end(), "Refusing to define trace %s twice", filename.c_str());
 
   std::ifstream* f = surf_ifsopen(filename);
-  xbt_assert(not f->fail(), "Cannot open file '%s' (path=%s)", filename, (boost::join(surf_path, ":")).c_str());
+  xbt_assert(not f->fail(), "Cannot open file '%s' (path=%s)", filename.c_str(), (boost::join(surf_path, ":")).c_str());
 
   std::stringstream buffer;
   buffer << f->rdbuf();
@@ -177,10 +177,8 @@ tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::pop_leq(double date, doub
 
 void tmgr_finalize()
 {
-  for (auto kv : trace_list) {
-    xbt_free((char*)kv.first);
+  for (auto kv : trace_list)
     delete kv.second;
-  }
   trace_list.clear();
 }
 

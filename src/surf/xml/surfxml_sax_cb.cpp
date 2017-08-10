@@ -639,14 +639,13 @@ void STag_surfxml_cluster(){
 
 void STag_surfxml_cabinet(){
   parse_after_config();
-  s_sg_platf_cabinet_cbarg_t cabinet;
-  memset(&cabinet,0,sizeof(cabinet));
+  CabinetCreationArgs cabinet;
   cabinet.id      = A_surfxml_cabinet_id;
   cabinet.prefix  = A_surfxml_cabinet_prefix;
   cabinet.suffix  = A_surfxml_cabinet_suffix;
-  cabinet.speed   = surf_parse_get_speed(A_surfxml_cabinet_speed, "speed of cabinet", cabinet.id);
-  cabinet.bw      = surf_parse_get_bandwidth(A_surfxml_cabinet_bw, "bw of cabinet", cabinet.id);
-  cabinet.lat     = surf_parse_get_time(A_surfxml_cabinet_lat, "lat of cabinet", cabinet.id);
+  cabinet.speed    = surf_parse_get_speed(A_surfxml_cabinet_speed, "speed of cabinet", cabinet.id.c_str());
+  cabinet.bw       = surf_parse_get_bandwidth(A_surfxml_cabinet_bw, "bw of cabinet", cabinet.id.c_str());
+  cabinet.lat      = surf_parse_get_time(A_surfxml_cabinet_lat, "lat of cabinet", cabinet.id.c_str());
   cabinet.radicals = explodesRadical(A_surfxml_cabinet_radical);
 
   sg_platf_new_cabinet(&cabinet);
@@ -903,8 +902,7 @@ void ETag_surfxml_bypassZoneRoute()
 }
 
 void ETag_surfxml_trace(){
-  s_sg_platf_trace_cbarg_t trace;
-  memset(&trace,0,sizeof(trace));
+  TraceCreationArgs trace;
 
   trace.id = A_surfxml_trace_id;
   trace.file = A_surfxml_trace_file;
@@ -917,7 +915,7 @@ void ETag_surfxml_trace(){
 void STag_surfxml_trace___connect()
 {
   parse_after_config();
-  s_sg_platf_trace_connect_cbarg_t trace_connect;
+  TraceConnectCreationArgs trace_connect;
   memset(&trace_connect,0,sizeof(trace_connect));
 
   trace_connect.element = A_surfxml_trace___connect_element;

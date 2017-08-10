@@ -39,8 +39,8 @@ simgrid::xbt::signal<void()> surfExitCallbacks;
 }
 }
 
-#include <simgrid/plugins/energy.h> // FIXME: this plugin should not be linked to the core
-#include <simgrid/plugins/load.h>   // FIXME: this plugin should not be linked to the core
+#include <simgrid/plugins/energy.h> // FIXME: this plug-in should not be linked to the core
+#include <simgrid/plugins/load.h>   // FIXME: this plug-in should not be linked to the core
 
 s_surf_model_description_t surf_plugin_description[] = {
     {"Energy", "Cpu energy consumption.", &sg_host_energy_plugin_init},
@@ -128,12 +128,12 @@ double surf_get_clock()
 # define FILE_DELIM "/"         /* FIXME: move to better location */
 #endif
 
-std::ifstream* surf_ifsopen(const char* name)
+std::ifstream* surf_ifsopen(std::string name)
 {
   std::ifstream* fs = new std::ifstream();
-  xbt_assert(name);
-  if (__surf_is_absolute_file_path(name)) { /* don't mess with absolute file names */
-    fs->open(name, std::ifstream::in);
+  xbt_assert(not name.empty());
+  if (__surf_is_absolute_file_path(name.c_str())) { /* don't mess with absolute file names */
+    fs->open(name.c_str(), std::ifstream::in);
   }
 
   /* search relative files in the path */
@@ -149,6 +149,7 @@ std::ifstream* surf_ifsopen(const char* name)
 
   return fs;
 }
+
 FILE *surf_fopen(const char *name, const char *mode)
 {
   FILE *file = nullptr;

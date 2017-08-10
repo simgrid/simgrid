@@ -116,16 +116,16 @@ typedef struct s_sg_platf_cluster_cbarg {
   e_surf_link_sharing_policy_t bb_sharing_policy;
 } s_sg_platf_cluster_cbarg_t;
 
-typedef struct s_sg_platf_cabinet_cbarg* sg_platf_cabinet_cbarg_t;
-typedef struct s_sg_platf_cabinet_cbarg {
-  const char* id;
-  const char* prefix;
-  const char* suffix;
+class CabinetCreationArgs {
+public:
+  std::string id;
+  std::string prefix;
+  std::string suffix;
   std::vector<int>* radicals;
   double speed;
   double bw;
   double lat;
-} s_sg_platf_cabinet_cbarg_t;
+};
 
 class StorageCreationArgs {
 public:
@@ -158,20 +158,20 @@ typedef struct s_sg_platf_prop_cbarg {
   const char *value;
 } s_sg_platf_prop_cbarg_t;
 
-typedef struct s_sg_platf_trace_cbarg *sg_platf_trace_cbarg_t;
-typedef struct s_sg_platf_trace_cbarg {
-  const char *id;
-  const char *file;
+class TraceCreationArgs {
+public:
+  std::string id;
+  std::string file;
   double periodicity;
-  const char *pc_data;
-} s_sg_platf_trace_cbarg_t;
+  std::string pc_data;
+};
 
-typedef struct s_sg_platf_trace_connect_cbarg *sg_platf_trace_connect_cbarg_t;
-typedef struct s_sg_platf_trace_connect_cbarg {
+class TraceConnectCreationArgs {
+public:
   e_surf_trace_connect_kind_t kind;
-  const char *trace;
-  const char *element;
-} s_sg_platf_trace_connect_cbarg_t;
+  std::string trace;
+  std::string element;
+};
 
 typedef struct s_sg_platf_process_cbarg *sg_platf_process_cbarg_t;
 typedef struct s_sg_platf_process_cbarg {
@@ -212,19 +212,19 @@ sg_platf_new_router(const char* name, const char* coords);             // Add a 
 XBT_PUBLIC(void) sg_platf_new_link(LinkCreationArgs* link);            // Add a link    to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_peer(PeerCreationArgs* peer);            // Add a peer    to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_cluster(sg_platf_cluster_cbarg_t clust); // Add a cluster to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet); // Add a cabinet to the currently described AS
+XBT_PUBLIC(void) sg_platf_new_cabinet(CabinetCreationArgs* cabinet);   // Add a cabinet to the currently described AS
 
 XBT_PUBLIC(void) sg_platf_new_route (sg_platf_route_cbarg_t route); // Add a route
 XBT_PUBLIC(void) sg_platf_new_bypassRoute (sg_platf_route_cbarg_t bypassroute); // Add a bypassRoute
 
-XBT_PUBLIC(void) sg_platf_new_trace(sg_platf_trace_cbarg_t trace);
+XBT_PUBLIC(void) sg_platf_new_trace(TraceCreationArgs* trace);
 
 XBT_PUBLIC(void) sg_platf_new_storage(StorageCreationArgs* storage); // Add a storage to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_storage_type(StorageTypeCreationArgs* storage_type);
 XBT_PUBLIC(void) sg_platf_new_mount(MountCreationArgs* mount);
 
 XBT_PUBLIC(void) sg_platf_new_process(sg_platf_process_cbarg_t process);
-XBT_PRIVATE void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect);
+XBT_PRIVATE void sg_platf_trace_connect(TraceConnectCreationArgs* trace_connect);
 
 /* Prototypes of the functions offered by flex */
 XBT_PUBLIC(int) surf_parse_lex();

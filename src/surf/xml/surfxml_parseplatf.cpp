@@ -35,10 +35,11 @@ XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link
 XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link_lat;
 
 SG_BEGIN_DECL()
-void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
+void sg_platf_trace_connect(TraceConnectCreationArgs* trace_connect)
 {
   xbt_assert(traces_set_list.find(trace_connect->trace) != traces_set_list.end(),
-             "Cannot connect trace %s to %s: trace unknown", trace_connect->trace, trace_connect->element);
+             "Cannot connect trace %s to %s: trace unknown", trace_connect->trace.c_str(),
+             trace_connect->element.c_str());
 
   switch (trace_connect->kind) {
   case SURF_TRACE_CONNECT_KIND_HOST_AVAIL:

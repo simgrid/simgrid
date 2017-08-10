@@ -190,14 +190,14 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   }
 
   for (int i : *cluster->radicals) {
-    char * host_id = bprintf("%s%d%s", cluster->prefix, i, cluster->suffix);
-    char * link_id = bprintf("%s_link_%d", cluster->id, i);
+    std::string host_id = std::string(cluster->prefix) + std::to_string(i) + cluster->suffix;
+    std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(i);
 
-    XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, cluster->speeds.front());
+    XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id.c_str(), cluster->speeds.front());
 
     s_sg_platf_host_cbarg_t host;
     memset(&host, 0, sizeof(host));
-    host.id = host_id;
+    host.id = host_id.c_str();
     if ((cluster->properties != nullptr) && (not cluster->properties->empty())) {
       host.properties = new std::map<std::string, std::string>;
 
@@ -212,7 +212,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     sg_platf_new_host(&host);
     XBT_DEBUG("</host>");
 
-    XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id, cluster->bw, cluster->lat);
+    XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id.c_str(), cluster->bw, cluster->lat);
 
     // All links are saved in a matrix;
     // every row describes a single node; every node may have multiple links.
@@ -224,11 +224,11 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     simgrid::surf::LinkImpl* linkUp   = nullptr;
     simgrid::surf::LinkImpl* linkDown = nullptr;
     if(cluster->loopback_bw > 0 || cluster->loopback_lat > 0){
-      std::string tmp_link = std::string(link_id) + "_loopback";
+      std::string tmp_link = link_id + "_loopback";
       XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", tmp_link.c_str(), cluster->loopback_bw);
 
       LinkCreationArgs link;
-      link.id        = tmp_link.c_str();
+      link.id        = tmp_link;
       link.bandwidth = cluster->loopback_bw;
       link.latency   = cluster->loopback_lat;
       link.policy    = SURF_LINK_FATPIPE;
@@ -248,7 +248,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", tmp_link.c_str(), cluster->limiter_link);
 
       LinkCreationArgs link;
-      link.id        = tmp_link.c_str();
+      link.id        = tmp_link;
       link.bandwidth = cluster->limiter_link;
       link.latency = 0;
       link.policy = SURF_LINK_SHARED;
@@ -266,8 +266,6 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       current_as->create_links_for_node(cluster, i, rankId,
           rankId*current_as->linkCountPerNode_ + current_as->hasLoopback_ + current_as->hasLimiter_ );
     }
-    xbt_free(link_id);
-    xbt_free(host_id);
     rankId++;
   }
   delete cluster->properties;
@@ -276,9 +274,8 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   XBT_DEBUG(" ");
   XBT_DEBUG("<router id=\"%s\"/>", cluster->router_id);
   if (not cluster->router_id || not strcmp(cluster->router_id, "")) {
-    char* newid         = bprintf("%s%s_router%s", cluster->prefix, cluster->id, cluster->suffix);
-    current_as->router_ = sg_platf_new_router(newid, NULL);
-    free(newid);
+    std::string newid   = std::string(cluster->prefix) + cluster->id + "_router" + cluster->suffix;
+    current_as->router_ = sg_platf_new_router(newid.c_str(), NULL);
   } else {
     current_as->router_ = sg_platf_new_router(cluster->router_id, NULL);
   }
@@ -317,10 +314,10 @@ void routing_cluster_add_backbone(simgrid::surf::LinkImpl* bb)
   XBT_DEBUG("Add a backbone to AS '%s'", current_routing->getCname());
 }
 
-void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
+void sg_platf_new_cabinet(CabinetCreationArgs* cabinet)
 {
   for (int radical : *cabinet->radicals) {
-    std::string hostname = std::string(cabinet->prefix) + std::to_string(radical) + std::string(cabinet->suffix);
+    std::string hostname = cabinet->prefix + std::to_string(radical) + cabinet->suffix;
     s_sg_platf_host_cbarg_t host;
     memset(&host, 0, sizeof(host));
     host.pstate           = 0;
@@ -691,14 +688,14 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
   as_cluster->privateLinks_.insert({netpoint->id(), {linkUp, linkDown}});
 }
 
-void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
+void sg_platf_new_trace(TraceCreationArgs* trace)
 {
   tmgr_trace_t tmgr_trace;
-  if (trace->file && strcmp(trace->file, "") != 0) {
+  if (not trace->file.empty()) {
     tmgr_trace = tmgr_trace_new_from_file(trace->file);
   } else {
-    xbt_assert(strcmp(trace->pc_data, ""),
-        "Trace '%s' must have either a content, or point to a file on disk.",trace->id);
+    xbt_assert(not trace->pc_data.empty(), "Trace '%s' must have either a content, or point to a file on disk.",
+               trace->id.c_str());
     tmgr_trace = tmgr_trace_new_from_string(trace->id, trace->pc_data, trace->periodicity);
   }
   traces_set_list.insert({trace->id, tmgr_trace});
