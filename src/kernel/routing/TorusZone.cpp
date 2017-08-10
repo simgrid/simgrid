@@ -81,12 +81,11 @@ void TorusZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
 
   if (not dimensions.empty()) {
     /* We are in a torus cluster
-     * Parse attribute dimensions="dim1,dim2,dim3,...,dimN" and safe it in a vector.
+     * Parse attribute dimensions="dim1,dim2,dim3,...,dimN" and save them into a vector.
      * Additionally, we need to know how many ranks we have in total
      */
-    for (auto group : dimensions) {
-      dimensions_.push_back(surf_parse_get_int(group.c_str()));
-    }
+    for (auto group : dimensions)
+      dimensions_.push_back(surf_parse_get_int(group));
 
     linkCountPerNode_ = dimensions_.size();
   }
@@ -117,21 +116,16 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
   unsigned int current_node = src->id();
   unsigned int next_node    = 0;
   /*
-   * Arrays that hold the coordinates of the current node and
-   * the target; comparing the values at the i-th position of
-   * both arrays, we can easily assess whether we need to route
-   * into this dimension or not.
+   * Arrays that hold the coordinates of the current node andthe target; comparing the values at the i-th position of
+   * both arrays, we can easily assess whether we need to route into this dimension or not.
    */
   unsigned int myCoords[4];
   rankId_to_coords(src->id(), dimensions_, &myCoords);
   unsigned int targetCoords[4];
   rankId_to_coords(dst->id(), dimensions_, &targetCoords);
   /*
-   * linkOffset describes the offset where the link
-   * we want to use is stored
-   * (+1 is added because each node has a link from itself to itself,
-   * which can only be the case if src->m_id == dst->m_id -- see above
-   * for this special case)
+   * linkOffset describes the offset where the link we want to use is stored(+1 is added because each node has a link
+   * from itself to itself, which can only be the case if src->m_id == dst->m_id -- see above for this special case)
    */
   int nodeOffset = (dimensions_.size() + 1) * src->id();
 

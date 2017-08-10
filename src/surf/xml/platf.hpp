@@ -3,11 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SURF_SURFXML_PARSE_H
-#define SURF_SURFXML_PARSE_H
+#ifndef SURF_SURFXML_PARSE_HPP
+#define SURF_SURFXML_PARSE_HPP
 
-#include <xbt/function_types.h>
-#include <xbt/misc.h>
 #include <xbt/signal.hpp>
 
 SG_BEGIN_DECL()
@@ -20,11 +18,11 @@ XBT_PUBLIC(void) surf_parse_open(const char *file);
 XBT_PUBLIC(void) surf_parse_close();
 XBT_PUBLIC(void) surf_parse_assert(bool cond, std::string msg);
 XBT_PUBLIC(void) XBT_ATTRIB_NORETURN surf_parse_error(std::string msg);
-XBT_PUBLIC(void) surf_parse_assert_netpoint(char* hostname, const char* pre, const char* post);
-XBT_PUBLIC(void) surf_parse_warn(const char *msg,...) XBT_ATTRIB_PRINTF(1,2);
+XBT_PUBLIC(void) surf_parse_assert_netpoint(std::string hostname, std::string pre, std::string post);
+XBT_PUBLIC(void) surf_parse_warn(std::string msg);
 
-XBT_PUBLIC(double) surf_parse_get_double(const char *string);
-XBT_PUBLIC(int) surf_parse_get_int(const char *string);
+XBT_PUBLIC(double) surf_parse_get_double(std::string s);
+XBT_PUBLIC(int) surf_parse_get_int(std::string s);
 XBT_PUBLIC(double) surf_parse_get_time(const char *string, const char *entity_kind, const char *name);
 XBT_PUBLIC(double) surf_parse_get_size(const char *string, const char *entity_kind, const char *name);
 XBT_PUBLIC(double) surf_parse_get_bandwidth(const char *string, const char *entity_kind, const char *name);

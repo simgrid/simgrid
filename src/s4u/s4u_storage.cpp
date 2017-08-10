@@ -22,7 +22,7 @@ std::map<std::string, Storage*>* allStorages()
   return res;
 }
 
-Storage* Storage::byName(const char* name)
+Storage* Storage::byName(std::string name)
 {
   surf::StorageImpl* res = surf::StorageImpl::byName(name);
   if (res == nullptr)

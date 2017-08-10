@@ -91,7 +91,7 @@ public:
 
   /** @brief Public interface */
   s4u::Storage piface_;
-  static StorageImpl* byName(const char* name);
+  static StorageImpl* byName(std::string name);
 
   /** @brief Check if the Storage is used (if an action currently uses its resources) */
   bool isUsed() override;

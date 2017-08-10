@@ -191,7 +191,6 @@ public:
   int routing;
 };
 
-#define SG_PLATF_AS_INITIALIZER {nullptr,0}
 /* The default current property receiver. Setup in the corresponding opening callbacks. */
 extern std::map<std::string, std::string>* current_property_set;
 
@@ -205,21 +204,21 @@ XBT_PUBLIC(void) sg_platf_end(); // Finish the creation of the platform
 XBT_PUBLIC(simgrid::s4u::NetZone*) sg_platf_new_Zone_begin(ZoneCreationArgs* zone); // Begin description of new Zone
 XBT_PUBLIC(void) sg_platf_new_Zone_seal();                                          // That Zone is fully described
 
-XBT_PUBLIC(void) sg_platf_new_host   (sg_platf_host_cbarg_t   host);   // Add an host   to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_hostlink(sg_platf_host_link_cbarg_t h); // Add an host_link to the currently described AS
-XBT_PUBLIC(simgrid::kernel::routing::NetPoint*)
-sg_platf_new_router(const char* name, const char* coords);             // Add a router  to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_link(LinkCreationArgs* link);            // Add a link    to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_peer(PeerCreationArgs* peer);            // Add a peer    to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_cluster(sg_platf_cluster_cbarg_t clust); // Add a cluster to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_cabinet(CabinetCreationArgs* cabinet);   // Add a cabinet to the currently described AS
+XBT_PUBLIC(void) sg_platf_new_host(sg_platf_host_cbarg_t host);        // Add a host      to the current Zone
+XBT_PUBLIC(void) sg_platf_new_hostlink(sg_platf_host_link_cbarg_t h);  // Add a host_link to the current Zone
+XBT_PUBLIC(void) sg_platf_new_link(LinkCreationArgs* link);            // Add a link      to the current Zone
+XBT_PUBLIC(void) sg_platf_new_peer(PeerCreationArgs* peer);            // Add a peer      to the current Zone
+XBT_PUBLIC(void) sg_platf_new_cluster(sg_platf_cluster_cbarg_t clust); // Add a cluster   to the current Zone
+XBT_PUBLIC(void) sg_platf_new_cabinet(CabinetCreationArgs* cabinet);   // Add a cabinet   to the current Zone
+XBT_PUBLIC(simgrid::kernel::routing::NetPoint*)                        // Add a router    to the current Zone
+sg_platf_new_router(const char* name, const char* coords);
 
 XBT_PUBLIC(void) sg_platf_new_route (sg_platf_route_cbarg_t route); // Add a route
 XBT_PUBLIC(void) sg_platf_new_bypassRoute (sg_platf_route_cbarg_t bypassroute); // Add a bypassRoute
 
 XBT_PUBLIC(void) sg_platf_new_trace(TraceCreationArgs* trace);
 
-XBT_PUBLIC(void) sg_platf_new_storage(StorageCreationArgs* storage); // Add a storage to the currently described AS
+XBT_PUBLIC(void) sg_platf_new_storage(StorageCreationArgs* storage); // Add a storage to the current Zone
 XBT_PUBLIC(void) sg_platf_new_storage_type(StorageTypeCreationArgs* storage_type);
 XBT_PUBLIC(void) sg_platf_new_mount(MountCreationArgs* mount);
 

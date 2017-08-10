@@ -40,6 +40,7 @@ void surf_parse_assert(bool cond, std::string msg)
     xbt_die("Exiting now");
   }
 }
+
 void surf_parse_error(std::string msg)
 {
   int lineno = surf_parse_lineno;
@@ -49,15 +50,12 @@ void surf_parse_error(std::string msg)
   xbt_die("Exiting now");
 }
 
-void surf_parse_assert_netpoint(char* hostname, const char* pre, const char* post)
+void surf_parse_assert_netpoint(std::string hostname, std::string pre, std::string post)
 {
-  if (sg_netpoint_by_name_or_null(hostname) != nullptr) // found
+  if (sg_netpoint_by_name_or_null(hostname.c_str()) != nullptr) // found
     return;
 
-  std::string msg = std::string(pre);
-  msg += hostname;
-  msg += post;
-  msg += " Existing netpoints: \n";
+  std::string msg = pre + hostname + post + " Existing netpoints: \n";
 
   std::vector<simgrid::kernel::routing::NetPoint*> list;
   simgrid::s4u::Engine::getInstance()->getNetpointList(&list);
@@ -83,33 +81,33 @@ void surf_parse_assert_netpoint(char* hostname, const char* pre, const char* pos
   surf_parse_error(msg);
 }
 
-void surf_parse_warn(const char *fmt, ...) {
-  va_list va;
-  va_start(va,fmt);
-  char *msg = bvprintf(fmt,va);
-  va_end(va);
-    XBT_WARN("%s:%d: %s", surf_parsed_filename, surf_parse_lineno, msg);
-    free(msg);
+void surf_parse_warn(std::string msg)
+{
+  XBT_WARN("%s:%d: %s", surf_parsed_filename, surf_parse_lineno, msg.c_str());
 }
 
-double surf_parse_get_double(const char *string) {
-  double res;
-  int ret = sscanf(string, "%lg", &res);
-  if (ret != 1)
-    surf_parse_error(std::string(string) + " is not a double");
-  return res;
+double surf_parse_get_double(std::string s)
+{
+  try {
+    return std::stod(s);
+  } catch (std::invalid_argument& ia) {
+    surf_parse_error(s + " is not a double");
+    return -1;
+  }
 }
 
-int surf_parse_get_int(const char *string) {
-  int res;
-  int ret = sscanf(string, "%d", &res);
-  if (ret != 1)
-    surf_parse_error(std::string(string) + " is not an integer");
-  return res;
+int surf_parse_get_int(std::string s)
+{
+  try {
+    return std::stoi(s);
+  } catch (std::invalid_argument& ia) {
+    surf_parse_error(s + " is not a double");
+    return -1;
+  }
 }
 
 /* Turn something like "1-4,6,9-11" into the vector {1,2,3,4,6,9,10,11} */
-static std::vector<int>* explodesRadical(const char* radicals)
+static std::vector<int>* explodesRadical(std::string radicals)
 {
   std::vector<int>* exploded = new std::vector<int>();
 
@@ -119,15 +117,15 @@ static std::vector<int>* explodesRadical(const char* radicals)
   for (auto group : radical_elements) {
     std::vector<std::string> radical_ends;
     boost::split(radical_ends, group, boost::is_any_of("-"));
-    int start                = surf_parse_get_int((radical_ends.front()).c_str());
-    int end                  = 0;
+    int start = surf_parse_get_int(radical_ends.front());
+    int end   = 0;
 
     switch (radical_ends.size()) {
       case 1:
         end = start;
         break;
       case 2:
-        end = surf_parse_get_int((radical_ends.back()).c_str());
+        end = surf_parse_get_int(radical_ends.back());
         break;
       default:
         surf_parse_error(std::string("Malformed radical: ") + group);
@@ -706,28 +704,24 @@ void ETag_surfxml_link(){
   sg_platf_new_link(&link);
 }
 
-void STag_surfxml_link___ctn(){
-
+void STag_surfxml_link___ctn()
+{
   simgrid::surf::LinkImpl* link = nullptr;
-  char *link_name=nullptr;
   switch (A_surfxml_link___ctn_direction) {
   case AU_surfxml_link___ctn_direction:
   case A_surfxml_link___ctn_direction_NONE:
     link = simgrid::surf::LinkImpl::byName(A_surfxml_link___ctn_id);
     break;
   case A_surfxml_link___ctn_direction_UP:
-    link_name = bprintf("%s_UP", A_surfxml_link___ctn_id);
-    link      = simgrid::surf::LinkImpl::byName(link_name);
+    link = simgrid::surf::LinkImpl::byName(std::string(A_surfxml_link___ctn_id) + "_UP");
     break;
   case A_surfxml_link___ctn_direction_DOWN:
-    link_name = bprintf("%s_DOWN", A_surfxml_link___ctn_id);
-    link      = simgrid::surf::LinkImpl::byName(link_name);
+    link = simgrid::surf::LinkImpl::byName(std::string(A_surfxml_link___ctn_id) + "_DOWN");
     break;
   default:
-    surf_parse_error(std::string("Invalid direction for link ") + link_name);
+    surf_parse_error(std::string("Invalid direction for link ") + A_surfxml_link___ctn_id);
     break;
   }
-  xbt_free(link_name); // no-op if it's already nullptr
 
   const char* dirname = "";
   switch (A_surfxml_link___ctn_direction) {
@@ -976,7 +970,8 @@ void ETag_surfxml_zone()
 void STag_surfxml_config()
 {
   ZONE_TAG = 0;
-  xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
+  xbt_assert(current_property_set == nullptr,
+             "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
   XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
   if (_sg_cfg_init_status == 2) {
     surf_parse_error("All <config> tags must be given before any platform elements (such as <zone>, <host>, <cluster>, "
@@ -1007,6 +1002,7 @@ void STag_surfxml_process()
   AX_surfxml_actor_function = AX_surfxml_process_function;
   STag_surfxml_actor();
 }
+
 void STag_surfxml_actor()
 {
   ZONE_TAG  = 0;
@@ -1025,6 +1021,7 @@ void ETag_surfxml_process()
   AX_surfxml_actor_on___failure = (AT_surfxml_actor_on___failure)AX_surfxml_process_on___failure;
   ETag_surfxml_actor();
 }
+
 void ETag_surfxml_actor()
 {
   s_sg_platf_process_cbarg_t actor;
@@ -1071,8 +1068,7 @@ void STag_surfxml_model___prop(){
   if (not current_model_property_set)
     current_model_property_set = new std::map<std::string, std::string>();
 
-  current_model_property_set->insert(
-      {std::string(A_surfxml_model___prop_id), std::string(A_surfxml_model___prop_value)});
+  current_model_property_set->insert({A_surfxml_model___prop_id, A_surfxml_model___prop_value});
 }
 
 void ETag_surfxml_prop(){/* Nothing to do */}

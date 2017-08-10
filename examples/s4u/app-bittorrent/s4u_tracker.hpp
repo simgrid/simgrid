@@ -13,12 +13,9 @@
 class TrackerQuery {
   int peer_id; // peer id
   simgrid::s4u::MailboxPtr return_mailbox;
-  int uploaded;   // how much the peer has already uploaded
-  int downloaded; // how much the peer has downloaded
-  int left;       // how much the peer has left
 public:
-  explicit TrackerQuery(int peer_id, simgrid::s4u::MailboxPtr return_mailbox, int uploaded, int downloaded, int left)
-      : peer_id(peer_id), return_mailbox(return_mailbox), uploaded(uploaded), downloaded(downloaded), left(left){};
+  explicit TrackerQuery(int peer_id, simgrid::s4u::MailboxPtr return_mailbox)
+      : peer_id(peer_id), return_mailbox(return_mailbox){};
   ~TrackerQuery() = default;
   int getPeerId() { return peer_id; }
   simgrid::s4u::MailboxPtr getReturnMailbox() { return return_mailbox; }
