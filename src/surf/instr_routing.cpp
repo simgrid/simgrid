@@ -175,7 +175,7 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
     if (TRACE_smpi_is_enabled()) {
       type_t mpi = s_type::s_type_get_or_null ("MPI", root->type);
       if (mpi == nullptr){
-        mpi = PJ_type_container_new("MPI", root->type);
+        mpi = s_type::s_type_container_new("MPI", root->type);
         if (not TRACE_smpi_is_grouped())
           PJ_type_state_new ("MPI_STATE", mpi);
         PJ_type_link_new ("MPI_LINK", PJ_type_get_root(), mpi, mpi);
@@ -257,7 +257,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped()){
     type_t mpi = s_type::s_type_get_or_null ("MPI", container->type);
     if (mpi == nullptr){
-      mpi = PJ_type_container_new("MPI", container->type);
+      mpi = s_type::s_type_container_new("MPI", container->type);
       PJ_type_state_new ("MPI_STATE", mpi);
     }
   }
@@ -265,7 +265,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   if (TRACE_msg_process_is_enabled()) {
     type_t msg_process = s_type::s_type_get_or_null ("MSG_PROCESS", container->type);
     if (msg_process == nullptr){
-      msg_process = PJ_type_container_new("MSG_PROCESS", container->type);
+      msg_process = s_type::s_type_container_new("MSG_PROCESS", container->type);
       type_t state = PJ_type_state_new ("MSG_PROCESS_STATE", msg_process);
       value PJ_value("suspend", "1 0 1", state);
       value::get_or_new("sleep", "1 1 0", state);
@@ -280,7 +280,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   if (TRACE_msg_vm_is_enabled()) {
     type_t msg_vm = s_type::s_type_get_or_null ("MSG_VM", container->type);
     if (msg_vm == nullptr){
-      msg_vm = PJ_type_container_new("MSG_VM", container->type);
+      msg_vm = s_type::s_type_container_new("MSG_VM", container->type);
       type_t state = PJ_type_state_new ("MSG_VM_STATE", msg_vm);
       value PJ_value("suspend", "1 0 1", state);
       value::get_or_new("sleep", "1 1 0", state);
