@@ -755,15 +755,9 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
   char *pr_rx_name = get_mig_process_rx_name(vm, src_pm, dst_pm);
   char *pr_tx_name = get_mig_process_tx_name(vm, src_pm, dst_pm);
 
-  char** argv = xbt_new(char*, 2);
-  argv[0]     = pr_rx_name;
-  argv[1]     = nullptr;
-  MSG_process_create_with_arguments(pr_rx_name, migration_rx_fun, ms, dst_pm, 1, argv);
+  MSG_process_create(pr_rx_name, migration_rx_fun, ms, dst_pm);
 
-  argv        = xbt_new(char*, 2);
-  argv[0]     = pr_tx_name;
-  argv[1]     = nullptr;
-  MSG_process_create_with_arguments(pr_tx_name, migration_tx_fun, ms, src_pm, 1, argv);
+  MSG_process_create(pr_tx_name, migration_tx_fun, ms, src_pm);
 
   /* wait until the migration have finished or on error has occurred */
   XBT_DEBUG("wait for reception of the final ACK (i.e. migration has been correctly performed");

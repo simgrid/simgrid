@@ -277,11 +277,12 @@ typedef struct {
 
 std::unordered_map<std::string, local_data_t*> samples; /* Allocated on first use */
 
-static char *sample_location(int global, const char *file, int line) {
+static std::string sample_location(int global, const char* file, int line)
+{
   if (global) {
-    return bprintf("%s:%d", file, line);
+    return std::string(file) + ":" + std::to_string(line);
   } else {
-    return bprintf("%s:%d:%d", file, line, smpi_process()->index());
+    return std::string(file) + ":" + std::to_string(line) + ":" + std::to_string(smpi_process()->index());
   }
 }
 
@@ -300,7 +301,7 @@ static int sample_enough_benchs(local_data_t *data) {
 
 void smpi_sample_1(int global, const char *file, int line, int iters, double threshold)
 {
-  char *loc = sample_location(global, file, line);
+  std::string loc = sample_location(global, file, line);
 
   smpi_bench_end();     /* Take time from previous, unrelated computation into account */
   smpi_process()->set_sampling(1);
@@ -319,35 +320,33 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
     data->benching = 1; // If we have no data, we need at least one
     data->mean = 0;
     samples[loc]    = data;
-    XBT_DEBUG("XXXXX First time ever on benched nest %s.",loc);
+    XBT_DEBUG("XXXXX First time ever on benched nest %s.", loc.c_str());
   } else {
     data = ld->second;
     if (data->iters != iters || data->threshold != threshold) {
       XBT_ERROR("Asked to bench block %s with different settings %d, %f is not %d, %f. "
                 "How did you manage to give two numbers at the same line??",
-                loc, data->iters, data->threshold, iters, threshold);
+                loc.c_str(), data->iters, data->threshold, iters, threshold);
       THROW_IMPOSSIBLE;
     }
 
     // if we already have some data, check whether sample_2 should get one more bench or whether it should emulate
     // the computation instead
     data->benching = (sample_enough_benchs(data) == 0);
-    XBT_DEBUG("XXXX Re-entering the benched nest %s. %s", loc,
+    XBT_DEBUG("XXXX Re-entering the benched nest %s. %s", loc.c_str(),
               (data->benching ? "more benching needed" : "we have enough data, skip computes"));
   }
-  xbt_free(loc);
 }
 
 int smpi_sample_2(int global, const char *file, int line)
 {
-  char *loc = sample_location(global, file, line);
+  std::string loc = sample_location(global, file, line);
   int res;
 
   xbt_assert(not samples.empty(),
              "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
   local_data_t* data = samples.at(loc);
-  XBT_DEBUG("sample2 %s",loc);
-  xbt_free(loc);
+  XBT_DEBUG("sample2 %s", loc.c_str());
 
   if (data->benching==1) {
     // we need to run a new bench
@@ -370,13 +369,12 @@ int smpi_sample_2(int global, const char *file, int line)
 
 void smpi_sample_3(int global, const char *file, int line)
 {
-  char *loc = sample_location(global, file, line);
+  std::string loc = sample_location(global, file, line);
 
   xbt_assert(not samples.empty(),
              "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
   local_data_t* data = samples.at(loc);
-  XBT_DEBUG("sample3 %s",loc);
-  xbt_free(loc);
+  XBT_DEBUG("sample3 %s", loc.c_str());
 
   if (data->benching==0)
     THROW_IMPOSSIBLE;

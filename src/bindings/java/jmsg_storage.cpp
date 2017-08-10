@@ -56,7 +56,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getByName(JNIEnv * env, j
 
   /* get the C string from the java string */
   if (jname == nullptr) {
-    jxbt_throw_null(env,bprintf("No host can have a null name"));
+    jxbt_throw_null(env, "No host can have a null name");
     return nullptr;
   }
   const char *name = env->GetStringUTFChars(jname, 0);
