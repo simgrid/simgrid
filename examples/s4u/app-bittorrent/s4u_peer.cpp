@@ -88,7 +88,7 @@ bool Peer::getPeersFromTracker()
 {
   simgrid::s4u::MailboxPtr tracker_mailbox = simgrid::s4u::Mailbox::byName(TRACKER_MAILBOX);
   // Build the task to send to the tracker
-  TrackerQuery* peer_request = new TrackerQuery(id, mailbox_, 0, 0, FILE_SIZE);
+  TrackerQuery* peer_request = new TrackerQuery(id, mailbox_);
   try {
     XBT_DEBUG("Sending a peer request to the tracker.");
     tracker_mailbox->put(peer_request, TRACKER_COMM_SIZE, GET_PEERS_TIMEOUT);
