@@ -28,7 +28,7 @@ public:
   explicit Storage(surf::StorageImpl * pimpl) : pimpl_(pimpl) {}
   virtual ~Storage() = default;
   /** Retrieve a Storage by its name. It must exist in the platform file */
-  static Storage* byName(const char* name);
+  static Storage* byName(std::string name);
   const char* getName();
   const char* getType();
   Host* getHost();

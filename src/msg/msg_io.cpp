@@ -73,7 +73,8 @@ void MSG_file_dump (msg_file_t fd){
            "\t\tStorage Id: '%s'\n"
            "\t\tStorage Type: '%s'\n"
            "\t\tFile Descriptor Id: %d",
-           fd->getPath(), fd->size(), fd->mount_point.c_str(), fd->storageId, fd->storage_type, fd->desc_id);
+           fd->getPath(), fd->size(), fd->mount_point.c_str(), fd->storageId.c_str(), fd->storage_type.c_str(),
+           fd->desc_id);
 }
 
 /** \ingroup msg_file

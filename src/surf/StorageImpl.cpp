@@ -32,7 +32,7 @@ simgrid::xbt::signal<void(StorageAction*, Action::State, Action::State)> storage
 std::unordered_map<std::string, StorageImpl*>* StorageImpl::storages =
     new std::unordered_map<std::string, StorageImpl*>();
 
-StorageImpl* StorageImpl::byName(const char* name)
+StorageImpl* StorageImpl::byName(std::string name)
 {
   if (storages->find(name) == storages->end())
     return nullptr;

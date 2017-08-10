@@ -25,12 +25,12 @@ namespace s4u {
 XBT_PUBLIC_CLASS File
 {
 public:
-  File(const char* fullpath, void* userdata);
-  File(const char* fullpath, sg_host_t host, void* userdata);
+  File(std::string fullpath, void* userdata);
+  File(std::string fullpath, sg_host_t host, void* userdata);
   ~File();
 
   /** Retrieves the path to the file */
-  const char* getPath() { return path_; }
+  const char* getPath() { return path_.c_str(); }
 
   /** Simulates a local read action. Returns the size of data actually read */
   sg_size_t read(sg_size_t size);
@@ -53,23 +53,21 @@ public:
   /** Retrieves the current file position */
   sg_size_t tell();
 
-  /** Rename a file
-   *
-   * WARNING: It is forbidden to move the file to another mount point */
-  void move(const char* fullpath);
+  /** Rename a file. WARNING: It is forbidden to move the file to another mount point */
+  void move(std::string fullpath);
 
   /** Remove a file from disk */
   int unlink();
 
-  const char* storage_type;
-  const char* storageId;
+  std::string storage_type;
+  std::string storageId;
   std::string mount_point;
   int desc_id = 0;
 
 private:
   surf_file_t pimpl_ = nullptr;
-  const char* path_  = nullptr;
-  void* userdata_    = nullptr;
+  std::string path_;
+  void* userdata_ = nullptr;
 };
 }
 } // namespace simgrid::s4u

@@ -16,7 +16,7 @@ public:
     XBT_INFO("Storage info on %s:", simgrid::s4u::Host::current()->getCname());
 
     for (const auto&kv : mounts) {
-      const char* mountpoint = kv.first.c_str();
+      std::string mountpoint         = kv.first;
       simgrid::s4u::Storage* storage = kv.second;
 
       // Retrieve disk's information
@@ -24,8 +24,8 @@ public:
       sg_size_t used_size = storage->getSizeUsed();
       sg_size_t size      = storage->getSize();
 
-      XBT_INFO("    %s (%s) Used: %llu; Free: %llu; Total: %llu.", storage->getName(), mountpoint, used_size, free_size,
-               size);
+      XBT_INFO("    %s (%s) Used: %llu; Free: %llu; Total: %llu.", storage->getName(), mountpoint.c_str(), used_size,
+               free_size, size);
     }
   }
 
@@ -36,11 +36,11 @@ public:
     show_info(mounts);
 
     // Open an non-existing file to create it
-    const char* filename = "/home/tmp/data.txt";
+    std::string filename     = "/home/tmp/data.txt";
     simgrid::s4u::File* file = new simgrid::s4u::File(filename, nullptr);
 
     sg_size_t write = file->write(200000);  // Write 200,000 bytes
-    XBT_INFO("Create a %llu bytes file named '%s' on /sd1", write, filename);
+    XBT_INFO("Create a %llu bytes file named '%s' on /sd1", write, filename.c_str());
 
     // check that sizes have changed
     show_info(mounts);
@@ -49,22 +49,22 @@ public:
     const sg_size_t file_size = file->size();
     file->seek(0);
     const sg_size_t read = file->read(file_size);
-    XBT_INFO("Read %llu bytes on %s", read, filename);
+    XBT_INFO("Read %llu bytes on %s", read, filename.c_str());
 
     // Now write 100,000 bytes in tmp/data.txt
     write = file->write(100000);  // Write 100,000 bytes
-    XBT_INFO("Write %llu bytes on %s", write, filename);
+    XBT_INFO("Write %llu bytes on %s", write, filename.c_str());
 
     simgrid::s4u::Storage* storage = simgrid::s4u::Storage::byName("Disk4");
 
     // Now rename file from ./tmp/data.txt to ./tmp/simgrid.readme
-    const char *newpath = "/home/tmp/simgrid.readme";
-    XBT_INFO("Move '%s' to '%s'", file->getPath(), newpath);
+    std::string newpath = "/home/tmp/simgrid.readme";
+    XBT_INFO("Move '%s' to '%s'", file->getPath(), newpath.c_str());
     file->move(newpath);
 
     // Test attaching some user data to the file
     file->setUserdata(xbt_strdup("777"));
-    XBT_INFO("User data attached to the file: %s", (char*)file->getUserdata());
+    XBT_INFO("User data attached to the file: %s", static_cast<char*>(file->getUserdata()));
     xbt_free(file->getUserdata());
 
     // Close the file
@@ -72,10 +72,10 @@ public:
 
     // Now attach some user data to disk1
     XBT_INFO("Get/set data for storage element: %s", storage->getName());
-    XBT_INFO("    Uninitialized storage data: '%s'", (char*)storage->getUserdata());
+    XBT_INFO("    Uninitialized storage data: '%s'", static_cast<char*>(storage->getUserdata()));
 
     storage->setUserdata(xbt_strdup("Some user data"));
-    XBT_INFO("    Set and get data: '%s'", (char*)storage->getUserdata());
+    XBT_INFO("    Set and get data: '%s'", static_cast<char*>(storage->getUserdata()));
 
     xbt_free(storage->getUserdata());
   }

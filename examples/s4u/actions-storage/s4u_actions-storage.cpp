@@ -29,7 +29,7 @@ static void log_action(const char* const* action, double date)
   }
 }
 
-static simgrid::s4u::File* get_file_descriptor(const char* file_name)
+static simgrid::s4u::File* get_file_descriptor(std::string file_name)
 {
   std::string full_name = simgrid::s4u::this_actor::getName() + ":" + file_name;
 
@@ -60,11 +60,11 @@ public:
   /* My actions */
   static void open(const char* const* action)
   {
-    const char* file_name = action[2];
+    std::string file_name = action[2];
     double clock          = simgrid::s4u::Engine::getClock();
     std::string full_name = simgrid::s4u::this_actor::getName() + ":" + file_name;
 
-    ACT_DEBUG("Entering Open: %s (filename: %s)", NAME, file_name);
+    ACT_DEBUG("Entering Open: %s (filename: %s)", NAME, file_name.c_str());
     simgrid::s4u::File* file = new simgrid::s4u::File(file_name, NULL);
 
     opened_files.insert({full_name, file});
@@ -74,7 +74,7 @@ public:
 
   static void read(const char* const* action)
   {
-    const char* file_name = action[2];
+    std::string file_name = action[2];
     sg_size_t size        = std::stoul(action[3]);
     double clock          = simgrid::s4u::Engine::getClock();
 
@@ -88,12 +88,12 @@ public:
 
   static void close(const char* const* action)
   {
-    const char* file_name = action[2];
+    std::string file_name = action[2];
     double clock          = simgrid::s4u::Engine::getClock();
 
     simgrid::s4u::File* file = get_file_descriptor(file_name);
 
-    ACT_DEBUG("Entering Close: %s (filename: %s)", NAME, file_name);
+    ACT_DEBUG("Entering Close: %s (filename: %s)", NAME, file_name.c_str());
     delete file;
 
     log_action(action, simgrid::s4u::Engine::getClock() - clock);

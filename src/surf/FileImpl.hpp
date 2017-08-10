@@ -28,7 +28,7 @@ public:
   sg_size_t tell() { return current_position_; }
   int seek(sg_offset_t offset, int origin);
   int unlink();
-  void move(const char* fullpath);
+  void move(std::string fullpath);
   Action* read(sg_size_t size);
   Action* write(sg_size_t size);
 
