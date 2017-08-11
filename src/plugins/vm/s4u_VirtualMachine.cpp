@@ -113,7 +113,7 @@ void VirtualMachine::getParameters(vm_params_t params)
 /** @brief Sets the params of that VM/PM */
 void VirtualMachine::setParameters(vm_params_t params)
 {
-  simgrid::simix::kernelImmediate([&]() { pimpl_vm_->setParams(params); });
+  simgrid::simix::kernelImmediate([this, params] { pimpl_vm_->setParams(params); });
 }
 
 } // namespace simgrid
