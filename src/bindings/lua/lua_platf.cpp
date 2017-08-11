@@ -107,12 +107,10 @@ int console_add_backbone(lua_State *L) {
 }
 
 int console_add_host___link(lua_State *L) {
-  s_sg_platf_host_link_cbarg_t hostlink;
-  memset(&hostlink,0,sizeof(hostlink));
+  HostLinkCreationArgs hostlink;
   int type;
 
-  lua_ensure(lua_istable(L, -1),
-      "Bad Arguments to create host_link in Lua. Should be a table with named arguments.");
+  lua_ensure(lua_istable(L, -1), "Bad Arguments to create host_link in Lua. Should be a table with named arguments.");
 
   lua_pushstring(L, "id");
   type = lua_gettable(L, -2);
@@ -284,8 +282,7 @@ int  console_add_link(lua_State *L) {
  * add Router to AS components
  */
 int console_add_router(lua_State* L) {
-  lua_ensure(lua_istable(L, -1),
-      "Bad Arguments to create router, Should be a table with named arguments");
+  lua_ensure(lua_istable(L, -1), "Bad Arguments to create router, Should be a table with named arguments");
 
   lua_pushstring(L, "id");
   int type = lua_gettable(L, -2);
