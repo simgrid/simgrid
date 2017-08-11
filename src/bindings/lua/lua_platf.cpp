@@ -483,10 +483,10 @@ int console_AS_open(lua_State *L) {
    mode_int = A_surfxml_AS_routing_None;
  else xbt_die("Don't have the model name '%s'",mode);
 
- s_sg_platf_AS_cbarg_t AS;
+ ZoneCreationArgs AS;
  AS.id = id;
  AS.routing = mode_int;
- simgrid::s4u::NetZone* new_as = sg_platf_new_AS_begin(&AS);
+ simgrid::s4u::NetZone* new_as = sg_platf_new_Zone_begin(&AS);
 
  /* Build a Lua representation of the new AS on the stack */
  lua_newtable(L);
