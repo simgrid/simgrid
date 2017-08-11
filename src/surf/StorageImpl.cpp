@@ -89,7 +89,7 @@ std::map<std::string, sg_size_t>* StorageImpl::parseContent(std::string filename
 
   std::map<std::string, sg_size_t>* parse_content = new std::map<std::string, sg_size_t>();
 
-  std::ifstream* fs = surf_ifsopen(filename.c_str());
+  std::ifstream* fs = surf_ifsopen(filename);
 
   std::string line;
   std::vector<std::string> tokens;

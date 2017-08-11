@@ -49,6 +49,7 @@ class Peer {
   Message* message                    = nullptr; // current message being received
 public:
   explicit Peer(std::vector<std::string> args);
+  Peer(const Peer&) = delete;
   ~Peer();
   void operator()();
 
