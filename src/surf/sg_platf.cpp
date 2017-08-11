@@ -35,8 +35,7 @@ XBT_PRIVATE std::vector<std::string> known_storages;
 namespace simgrid {
 namespace surf {
 
-simgrid::xbt::signal<void(sg_platf_cluster_cbarg_t)> on_cluster;
-
+simgrid::xbt::signal<void(ClusterCreationArgs*)> on_cluster;
 }
 }
 
@@ -100,18 +99,18 @@ void sg_platf_new_host(sg_platf_host_cbarg_t args)
 }
 
 /** @brief Add a "router" to the network element list */
-simgrid::kernel::routing::NetPoint* sg_platf_new_router(const char* name, const char* coords)
+simgrid::kernel::routing::NetPoint* sg_platf_new_router(std::string name, const char* coords)
 {
   simgrid::kernel::routing::NetZoneImpl* current_routing = routing_get_current();
 
   if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
     current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::base;
   xbt_assert(nullptr == simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name),
-             "Refusing to create a router named '%s': this name already describes a node.", name);
+             "Refusing to create a router named '%s': this name already describes a node.", name.c_str());
 
   simgrid::kernel::routing::NetPoint* netpoint =
       new simgrid::kernel::routing::NetPoint(name, simgrid::kernel::routing::NetPoint::Type::Router, current_routing);
-  XBT_DEBUG("Router '%s' has the id %u", name, netpoint->id());
+  XBT_DEBUG("Router '%s' has the id %u", name.c_str(), netpoint->id());
 
   if (coords && strcmp(coords, ""))
     new simgrid::kernel::routing::vivaldi::Coords(netpoint, coords);
@@ -149,7 +148,7 @@ void sg_platf_new_link(LinkCreationArgs* link)
   }
 }
 
-void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
+void sg_platf_new_cluster(ClusterCreationArgs* cluster)
 {
   using simgrid::kernel::routing::ClusterZone;
   using simgrid::kernel::routing::DragonflyZone;
@@ -272,8 +271,8 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
 
   // Add a router.
   XBT_DEBUG(" ");
-  XBT_DEBUG("<router id=\"%s\"/>", cluster->router_id);
-  if (not cluster->router_id || not strcmp(cluster->router_id, "")) {
+  XBT_DEBUG("<router id=\"%s\"/>", cluster->router_id.c_str());
+  if (cluster->router_id.empty()) {
     std::string newid   = std::string(cluster->prefix) + cluster->id + "_router" + cluster->suffix;
     current_as->router_ = sg_platf_new_router(newid.c_str(), NULL);
   } else {

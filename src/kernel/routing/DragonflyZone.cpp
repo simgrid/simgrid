@@ -41,7 +41,7 @@ void DragonflyZone::rankId_to_coords(int rankId, unsigned int (*coords)[4])
   (*coords)[3]         = rankId % numNodesPerBlade_;
 }
 
-void DragonflyZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
+void DragonflyZone::parse_specific_arguments(ClusterCreationArgs* cluster)
 {
   std::vector<std::string> parameters;
   std::vector<std::string> tmp;

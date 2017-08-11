@@ -21,9 +21,9 @@ namespace routing {
 class XBT_PRIVATE TorusZone : public ClusterZone {
 public:
   explicit TorusZone(NetZone* father, std::string name);
-  void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position) override;
+  void create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, int position) override;
   void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency) override;
-  void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) override;
+  void parse_specific_arguments(ClusterCreationArgs* cluster) override;
 
 private:
   std::vector<unsigned int> dimensions_;

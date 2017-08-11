@@ -75,7 +75,7 @@ public:
   simgrid::s4u::NetZone* getNetzoneByNameOrNull(const char* name);
 
   /** @brief Retrieve the netcard of the given name (or nullptr if not found) */
-  simgrid::kernel::routing::NetPoint* getNetpointByNameOrNull(const char* name);
+  simgrid::kernel::routing::NetPoint* getNetpointByNameOrNull(std::string name);
   void getNetpointList(std::vector<simgrid::kernel::routing::NetPoint*> * list);
   void netpointRegister(simgrid::kernel::routing::NetPoint * card);
   void netpointUnregister(simgrid::kernel::routing::NetPoint * card);

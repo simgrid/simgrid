@@ -31,7 +31,7 @@ TorusZone::TorusZone(NetZone* father, std::string name) : ClusterZone(father, na
 {
 }
 
-void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position)
+void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, int position)
 {
   /* Create all links that exist in the torus. Each rank creates @a dimensions-1 links */
   int dim_product = 1; // Needed to calculate the next neighbor_id
@@ -74,7 +74,7 @@ void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
   rank++;
 }
 
-void TorusZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
+void TorusZone::parse_specific_arguments(ClusterCreationArgs* cluster)
 {
   std::vector<std::string> dimensions;
   boost::split(dimensions, cluster->topo_parameters, boost::is_any_of(","));

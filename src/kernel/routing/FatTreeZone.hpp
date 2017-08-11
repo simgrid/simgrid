@@ -51,7 +51,7 @@ public:
    * instead of passing by an upper level switch.
    */
   surf::LinkImpl* loopback;
-  FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, int position);
+  FatTreeNode(ClusterCreationArgs* cluster, int id, int level, int position);
 };
 
 /** \brief Link in a fat tree (@ref FatTreeZone).
@@ -61,7 +61,7 @@ public:
  */
 class FatTreeLink {
 public:
-  FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode* source, FatTreeNode* destination);
+  FatTreeLink(ClusterCreationArgs* cluster, FatTreeNode* source, FatTreeNode* destination);
   /** Link going up in the tree */
   surf::LinkImpl* upLink;
   /** Link going down in the tree */
@@ -113,7 +113,7 @@ public:
    *
    * It will also store the cluster for future use.
    */
-  void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) override;
+  void parse_specific_arguments(ClusterCreationArgs* cluster) override;
   void addProcessingNode(int id);
   void generateDotFile(const std::string& filename = "fatTree.dot") const;
 
@@ -129,7 +129,7 @@ private:
   std::vector<FatTreeLink*> links_;
   std::vector<unsigned int> nodesByLevel_;
 
-  sg_platf_cluster_cbarg_t cluster_ = nullptr;
+  ClusterCreationArgs* cluster_ = nullptr;
 
   void addLink(FatTreeNode* parent, unsigned int parentPort, FatTreeNode* child, unsigned int childPort);
   int getLevelPosition(const unsigned int level);

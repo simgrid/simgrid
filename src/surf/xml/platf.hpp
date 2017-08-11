@@ -23,10 +23,10 @@ XBT_PUBLIC(void) surf_parse_warn(std::string msg);
 
 XBT_PUBLIC(double) surf_parse_get_double(std::string s);
 XBT_PUBLIC(int) surf_parse_get_int(std::string s);
-XBT_PUBLIC(double) surf_parse_get_time(const char *string, const char *entity_kind, const char *name);
-XBT_PUBLIC(double) surf_parse_get_size(const char *string, const char *entity_kind, const char *name);
-XBT_PUBLIC(double) surf_parse_get_bandwidth(const char *string, const char *entity_kind, const char *name);
-XBT_PUBLIC(double) surf_parse_get_speed(const char *string, const char *entity_kind, const char *name);
+XBT_PUBLIC(double) surf_parse_get_time(const char* string, const char* entity_kind, std::string name);
+XBT_PUBLIC(double) surf_parse_get_size(const char* string, const char* entity_kind, std::string name);
+XBT_PUBLIC(double) surf_parse_get_bandwidth(const char* string, const char* entity_kind, std::string name);
+XBT_PUBLIC(double) surf_parse_get_speed(const char* string, const char* entity_kind, std::string name);
 
 XBT_PUBLIC(int) surf_parse(); /* Entry-point to the parser */
 

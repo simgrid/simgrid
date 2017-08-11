@@ -93,28 +93,28 @@ typedef struct s_sg_platf_route_cbarg {
   std::vector<simgrid::surf::LinkImpl*>* link_list;
 } s_sg_platf_route_cbarg_t;
 
-typedef struct s_sg_platf_cluster_cbarg *sg_platf_cluster_cbarg_t;
-typedef struct s_sg_platf_cluster_cbarg {
-  const char* id;
-  const char* prefix;
-  const char* suffix;
-  std::vector<int>* radicals;
+class ClusterCreationArgs {
+public:
+  std::string id;
+  std::string prefix;
+  std::string suffix;
+  std::vector<int>* radicals = nullptr;
   std::vector<double> speeds;
-  int core_amount;
-  double bw;
-  double lat;
-  double bb_bw;
-  double bb_lat;
-  double loopback_bw;
-  double loopback_lat;
-  double limiter_link;
+  int core_amount     = 0;
+  double bw           = 0;
+  double lat          = 0;
+  double bb_bw        = 0;
+  double bb_lat       = 0;
+  double loopback_bw  = 0;
+  double loopback_lat = 0;
+  double limiter_link = 0;
   e_surf_cluster_topology_t topology;
-  const char* topo_parameters;
+  std::string topo_parameters;
   std::map<std::string, std::string>* properties;
-  const char* router_id;
+  std::string router_id;
   e_surf_link_sharing_policy_t sharing_policy;
   e_surf_link_sharing_policy_t bb_sharing_policy;
-} s_sg_platf_cluster_cbarg_t;
+};
 
 class CabinetCreationArgs {
 public:
@@ -208,10 +208,10 @@ XBT_PUBLIC(void) sg_platf_new_host(sg_platf_host_cbarg_t host);        // Add a 
 XBT_PUBLIC(void) sg_platf_new_hostlink(HostLinkCreationArgs* h);       // Add a host_link to the current Zone
 XBT_PUBLIC(void) sg_platf_new_link(LinkCreationArgs* link);            // Add a link      to the current Zone
 XBT_PUBLIC(void) sg_platf_new_peer(PeerCreationArgs* peer);            // Add a peer      to the current Zone
-XBT_PUBLIC(void) sg_platf_new_cluster(sg_platf_cluster_cbarg_t clust); // Add a cluster   to the current Zone
+XBT_PUBLIC(void) sg_platf_new_cluster(ClusterCreationArgs* clust);     // Add a cluster   to the current Zone
 XBT_PUBLIC(void) sg_platf_new_cabinet(CabinetCreationArgs* cabinet);   // Add a cabinet   to the current Zone
 XBT_PUBLIC(simgrid::kernel::routing::NetPoint*)                        // Add a router    to the current Zone
-sg_platf_new_router(const char* name, const char* coords);
+sg_platf_new_router(std::string, const char* coords);
 
 XBT_PUBLIC(void) sg_platf_new_route (sg_platf_route_cbarg_t route); // Add a route
 XBT_PUBLIC(void) sg_platf_new_bypassRoute (sg_platf_route_cbarg_t bypassroute); // Add a bypassRoute
@@ -246,8 +246,7 @@ SG_END_DECL()
 namespace simgrid {
 namespace surf {
 
-extern XBT_PRIVATE simgrid::xbt::signal<void(sg_platf_cluster_cbarg_t)> on_cluster;
-
+extern XBT_PRIVATE simgrid::xbt::signal<void(ClusterCreationArgs*)> on_cluster;
 }
 }
 

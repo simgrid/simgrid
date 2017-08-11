@@ -356,7 +356,7 @@ void FatTreeZone::addLink(FatTreeNode* parent, unsigned int parentPort, FatTreeN
   this->links_.push_back(newLink);
 }
 
-void FatTreeZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
+void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
 {
   std::vector<std::string> parameters;
   std::vector<std::string> tmp;
@@ -441,7 +441,7 @@ void FatTreeZone::generateDotFile(const std::string& filename) const
   file.close();
 }
 
-FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, int position)
+FatTreeNode::FatTreeNode(ClusterCreationArgs* cluster, int id, int level, int position)
     : id(id), level(level), position(position)
 {
   LinkCreationArgs linkTemplate;
@@ -463,7 +463,7 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, in
   }
 }
 
-FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode* downNode, FatTreeNode* upNode)
+FatTreeLink::FatTreeLink(ClusterCreationArgs* cluster, FatTreeNode* downNode, FatTreeNode* upNode)
     : upNode(upNode), downNode(downNode)
 {
   static int uniqueId = 0;

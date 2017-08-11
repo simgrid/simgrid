@@ -144,8 +144,9 @@ struct unit_scale {
 };
 
 /* Note: field `unit' for the last element of parameter `units' should be nullptr. */
-static double surf_parse_get_value_with_unit(const char *string, const struct unit_scale *units,
-    const char *entity_kind, const char *name, const char *error_msg, const char *default_unit)
+static double surf_parse_get_value_with_unit(const char* string, const struct unit_scale* units,
+                                             const char* entity_kind, std::string name, const char* error_msg,
+                                             const char* default_unit)
 {
   char* ptr;
   int i;
@@ -159,7 +160,7 @@ static double surf_parse_get_value_with_unit(const char *string, const struct un
     if (res == 0)
       return res; // Ok, 0 can be unit-less
 
-    XBT_WARN("Deprecated unit-less value '%s' for %s %s. %s",string, entity_kind, name, error_msg);
+    XBT_WARN("Deprecated unit-less value '%s' for %s %s. %s", string, entity_kind, name.c_str(), error_msg);
     ptr = (char*)default_unit;
   }
   for (i = 0; units[i].unit != nullptr && strcmp(ptr, units[i].unit) != 0; i++);
@@ -171,7 +172,7 @@ static double surf_parse_get_value_with_unit(const char *string, const struct un
   return res;
 }
 
-double surf_parse_get_time(const char *string, const char *entity_kind, const char *name)
+double surf_parse_get_time(const char* string, const char* entity_kind, std::string name)
 {
   const struct unit_scale units[] = {
     { "w",  7 * 24 * 60 * 60 },
@@ -189,7 +190,7 @@ double surf_parse_get_time(const char *string, const char *entity_kind, const ch
       "Append 's' to your time to get seconds", "s");
 }
 
-double surf_parse_get_size(const char *string, const char *entity_kind, const char *name)
+double surf_parse_get_size(const char* string, const char* entity_kind, std::string name)
 {
   const struct unit_scale units[] = {
     { "EiB", pow(1024, 6) },
@@ -224,7 +225,7 @@ double surf_parse_get_size(const char *string, const char *entity_kind, const ch
       "Append 'B' to get bytes (or 'b' for bits but 1B = 8b).", "B");
 }
 
-double surf_parse_get_bandwidth(const char *string, const char *entity_kind, const char *name)
+double surf_parse_get_bandwidth(const char* string, const char* entity_kind, std::string name)
 {
   const struct unit_scale units[] = {
     { "EiBps", pow(1024, 6) },
@@ -257,7 +258,7 @@ double surf_parse_get_bandwidth(const char *string, const char *entity_kind, con
       "Append 'Bps' to get bytes per second (or 'bps' for bits but 1Bps = 8bps)", "Bps");
 }
 
-double surf_parse_get_speed(const char *string, const char *entity_kind, const char *name)
+double surf_parse_get_speed(const char* string, const char* entity_kind, std::string name)
 {
   const struct unit_scale units[] = {
     { "yottaflops", 1e24 },
@@ -284,7 +285,8 @@ double surf_parse_get_speed(const char *string, const char *entity_kind, const c
       "Append 'f' or 'flops' to your speed to get flop per second", "f");
 }
 
-static std::vector<double> surf_parse_get_all_speeds(char* speeds, const char* entity_kind, const char* id){
+static std::vector<double> surf_parse_get_all_speeds(char* speeds, const char* entity_kind, std::string id)
+{
 
   std::vector<double> speed_per_pstate;
 
@@ -555,9 +557,8 @@ void STag_surfxml_router(){
 }
 
 void ETag_surfxml_cluster(){
-  s_sg_platf_cluster_cbarg_t cluster;
-  memset(&cluster,0,sizeof(cluster));
-  cluster.properties = current_property_set;
+  ClusterCreationArgs cluster;
+  cluster.properties   = current_property_set;
   current_property_set = nullptr;
 
   cluster.id          = A_surfxml_cluster_id;

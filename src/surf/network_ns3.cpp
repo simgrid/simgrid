@@ -54,7 +54,7 @@ NetPointNs3::NetPointNs3()
  * Callbacks *
  *************/
 
-static void clusterCreation_cb(sg_platf_cluster_cbarg_t cluster)
+static void clusterCreation_cb(ClusterCreationArgs* cluster)
 {
   for (int i : *cluster->radicals) {
     // Routers don't create a router on the other end of the private link by themselves.
