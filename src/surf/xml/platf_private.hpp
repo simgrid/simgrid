@@ -53,12 +53,12 @@ typedef struct {
 } s_sg_platf_host_cbarg_t;
 typedef s_sg_platf_host_cbarg_t* sg_platf_host_cbarg_t;
 
-typedef struct {
-  const char* id;
-  const char* link_up;
-  const char* link_down;
-} s_sg_platf_host_link_cbarg_t;
-typedef s_sg_platf_host_link_cbarg_t* sg_platf_host_link_cbarg_t;
+class HostLinkCreationArgs {
+public:
+  std::string id;
+  std::string link_up;
+  std::string link_down;
+};
 
 class LinkCreationArgs {
 public:
@@ -205,7 +205,7 @@ XBT_PUBLIC(simgrid::s4u::NetZone*) sg_platf_new_Zone_begin(ZoneCreationArgs* zon
 XBT_PUBLIC(void) sg_platf_new_Zone_seal();                                          // That Zone is fully described
 
 XBT_PUBLIC(void) sg_platf_new_host(sg_platf_host_cbarg_t host);        // Add a host      to the current Zone
-XBT_PUBLIC(void) sg_platf_new_hostlink(sg_platf_host_link_cbarg_t h);  // Add a host_link to the current Zone
+XBT_PUBLIC(void) sg_platf_new_hostlink(HostLinkCreationArgs* h);       // Add a host_link to the current Zone
 XBT_PUBLIC(void) sg_platf_new_link(LinkCreationArgs* link);            // Add a link      to the current Zone
 XBT_PUBLIC(void) sg_platf_new_peer(PeerCreationArgs* peer);            // Add a peer      to the current Zone
 XBT_PUBLIC(void) sg_platf_new_cluster(sg_platf_cluster_cbarg_t clust); // Add a cluster   to the current Zone

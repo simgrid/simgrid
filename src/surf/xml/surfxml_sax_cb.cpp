@@ -542,8 +542,7 @@ void ETag_surfxml_host()    {
 
 void STag_surfxml_host___link(){
   XBT_DEBUG("Create a Host_link for %s",A_surfxml_host___link_id);
-  s_sg_platf_host_link_cbarg_t host_link;
-  memset(&host_link,0,sizeof(host_link));
+  HostLinkCreationArgs host_link;
 
   host_link.id        = A_surfxml_host___link_id;
   host_link.link_up   = A_surfxml_host___link_up;

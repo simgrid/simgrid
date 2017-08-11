@@ -333,13 +333,10 @@ void sg_platf_new_cabinet(CabinetCreationArgs* cabinet)
     link.id        = "link_" + hostname;
     sg_platf_new_link(&link);
 
-    s_sg_platf_host_link_cbarg_t host_link;
-    memset(&host_link, 0, sizeof(host_link));
-    std::string tmp_link_up   = std::string("link_") + hostname + "_UP";
-    std::string tmp_link_down = std::string("link_") + hostname + "_DOWN";
-    host_link.id        = hostname.c_str();
-    host_link.link_up         = tmp_link_up.c_str();
-    host_link.link_down       = tmp_link_down.c_str();
+    HostLinkCreationArgs host_link;
+    host_link.id        = hostname;
+    host_link.link_up   = std::string("link_") + hostname + "_UP";
+    host_link.link_down = std::string("link_") + hostname + "_DOWN";
     sg_platf_new_hostlink(&host_link);
   }
   delete cabinet->radicals;
@@ -664,23 +661,23 @@ void sg_platf_new_Zone_seal()
 }
 
 /** @brief Add a link connecting an host to the rest of its AS (which must be cluster or vivaldi) */
-void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
+void sg_platf_new_hostlink(HostLinkCreationArgs* hostlink)
 {
-  simgrid::kernel::routing::NetPoint* netpoint = sg_host_by_name(hostlink->id)->pimpl_netpoint;
-  xbt_assert(netpoint, "Host '%s' not found!", hostlink->id);
+  simgrid::kernel::routing::NetPoint* netpoint = sg_host_by_name(hostlink->id.c_str())->pimpl_netpoint;
+  xbt_assert(netpoint, "Host '%s' not found!", hostlink->id.c_str());
   xbt_assert(dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing),
              "Only hosts from Cluster and Vivaldi ASes can get an host_link.");
 
   simgrid::surf::LinkImpl* linkUp   = simgrid::surf::LinkImpl::byName(hostlink->link_up);
   simgrid::surf::LinkImpl* linkDown = simgrid::surf::LinkImpl::byName(hostlink->link_down);
 
-  xbt_assert(linkUp, "Link '%s' not found!", hostlink->link_up);
-  xbt_assert(linkDown, "Link '%s' not found!", hostlink->link_down);
+  xbt_assert(linkUp, "Link '%s' not found!", hostlink->link_up.c_str());
+  xbt_assert(linkDown, "Link '%s' not found!", hostlink->link_down.c_str());
 
   auto as_cluster = static_cast<simgrid::kernel::routing::ClusterZone*>(current_routing);
 
   if (as_cluster->privateLinks_.find(netpoint->id()) != as_cluster->privateLinks_.end())
-    surf_parse_error(std::string("Host_link for '") + hostlink->id + "' is already defined!");
+    surf_parse_error(std::string("Host_link for '") + hostlink->id.c_str() + "' is already defined!");
 
   XBT_DEBUG("Push Host_link for host '%s' to position %u", netpoint->cname(), netpoint->id());
   as_cluster->privateLinks_.insert({netpoint->id(), {linkUp, linkDown}});
