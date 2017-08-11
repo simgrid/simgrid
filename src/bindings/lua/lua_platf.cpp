@@ -132,7 +132,7 @@ int console_add_host___link(lua_State *L) {
   hostlink.link_down = lua_tostring(L, -1);
   lua_pop(L, 1);
 
-  XBT_DEBUG("Create a host_link for host %s", hostlink.id);
+  XBT_DEBUG("Create a host_link for host %s", hostlink.id.c_str());
   sg_platf_new_hostlink(&hostlink);
 
   return 0;
