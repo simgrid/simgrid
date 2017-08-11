@@ -62,19 +62,18 @@ static void clusterCreation_cb(ClusterCreationArgs* cluster)
     NetPointNs3* host_dst = new NetPointNs3();
 
     // Create private link
-    char* host_id = bprintf("%s%d%s", cluster->prefix, i, cluster->suffix);
-    NetPointNs3* host_src = sg_host_by_name(host_id)->pimpl_netpoint->extension<NetPointNs3>();
-    xbt_assert(host_src, "Cannot find a NS3 host of name %s", host_id);
+    std::string host_id   = cluster->prefix + std::to_string(i) + cluster->suffix;
+    NetPointNs3* host_src = sg_host_by_name(host_id.c_str())->pimpl_netpoint->extension<NetPointNs3>();
+    xbt_assert(host_src, "Cannot find a NS3 host of name %s", host_id.c_str());
 
     // Any NS3 route is symmetrical
     ns3_add_link(host_src, host_dst, cluster->bw, cluster->lat);
 
     delete host_dst;
-    free(host_id);
   }
 
   //Create link backbone
-  ns3_add_cluster(cluster->id, cluster->bb_bw, cluster->bb_lat);
+  ns3_add_cluster(cluster->id.c_str(), cluster->bb_bw, cluster->bb_lat);
 }
 
 static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoint* src,
