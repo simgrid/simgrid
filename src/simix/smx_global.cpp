@@ -425,20 +425,6 @@ void SIMIX_run()
       /* Run all processes that are ready to run, possibly in parallel */
       SIMIX_process_runall();
 
-      /* Move all killer processes to the end of the list, because killing a process that have an ongoing simcall is a bad idea */
-      simgrid::xbt::three_way_partition(begin(simix_global->process_that_ran), end(simix_global->process_that_ran),
-                                        [](smx_actor_t p) {
-                                          switch (p->simcall.call) {
-                                            case SIMCALL_NONE:
-                                            case SIMCALL_PROCESS_KILL:
-                                              return 2;
-                                            // case SIMCALL_PROCESS_RESUME:
-                                            //   return 1;
-                                            default:
-                                              return 0;
-                                          }
-                                        });
-
       /* answer sequentially and in a fixed arbitrary order all the simcalls that were issued during that sub-round */
 
       /* WARNING, the order *must* be fixed or you'll jeopardize the simulation reproducibility (see RR-7653) */

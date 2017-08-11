@@ -457,9 +457,6 @@ void SIMIX_process_runall()
   simix_global->process_to_run.clear();
 }
 
-void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_actor_t process) {
-  SIMIX_process_kill(process, simcall->issuer);
-}
 /**
  * \brief Internal function to kill a SIMIX process.
  *

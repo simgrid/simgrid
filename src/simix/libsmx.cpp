@@ -156,19 +156,6 @@ e_smx_state_t simcall_execution_wait(smx_activity_t execution)
 
 /**
  * \ingroup simix_process_management
- * \brief Kills a SIMIX process.
- *
- * This function simply kills a  process.
- *
- * \param process poor victim
- */
-void simcall_process_kill(smx_actor_t process)
-{
-  simcall_BODY_process_kill(process);
-}
-
-/**
- * \ingroup simix_process_management
  * \brief Kills all SIMIX processes.
  */
 void simcall_process_killall(int reset_pid)
