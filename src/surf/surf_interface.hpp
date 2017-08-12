@@ -412,13 +412,9 @@ protected:
 }
 
 namespace std {
-  template <>
-  struct hash<simgrid::surf::Resource>
-  {
-    std::size_t operator()(const simgrid::surf::Resource& r) const
-    {
-      return (std::size_t) xbt_str_hash(r.cname());
-    }
+template <> class hash<simgrid::surf::Resource> {
+public:
+  std::size_t operator()(const simgrid::surf::Resource& r) const { return (std::size_t)xbt_str_hash(r.cname()); }
   };
 }
 

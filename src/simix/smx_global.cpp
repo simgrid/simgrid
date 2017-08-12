@@ -54,11 +54,12 @@ std::unique_ptr<simgrid::simix::Global> simix_global;
 static xbt_heap_t simix_timers = nullptr;
 
 /** @brief Timer datatype */
-typedef struct s_smx_timer {
+typedef class s_smx_timer {
+public:
   double date = 0.0;
+  s_smx_timer() = default;
   simgrid::xbt::Task<void()> callback;
 
-  s_smx_timer()=default;
   s_smx_timer(double date, simgrid::xbt::Task<void()> callback) : date(date), callback(std::move(callback)) {}
 } s_smx_timer_t;
 
