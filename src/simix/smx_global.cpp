@@ -55,11 +55,12 @@ static xbt_heap_t simix_timers = nullptr;
 
 /** @brief Timer datatype */
 typedef class s_smx_timer {
-public:
   double date = 0.0;
   s_smx_timer() = default;
-  simgrid::xbt::Task<void()> callback;
 
+public:
+  simgrid::xbt::Task<void()> callback;
+  double getDate() { return date; }
   s_smx_timer(double date, simgrid::xbt::Task<void()> callback) : date(date), callback(std::move(callback)) {}
 } s_smx_timer_t;
 
@@ -574,12 +575,12 @@ smx_timer_t SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback)
 
 /** @brief cancels a timer that was added earlier */
 void SIMIX_timer_remove(smx_timer_t timer) {
-  xbt_heap_rm_elm(simix_timers, timer, timer->date);
+  xbt_heap_rm_elm(simix_timers, timer, timer->getDate());
 }
 
 /** @brief Returns the date at which the timer will trigger (or 0 if nullptr timer) */
 double SIMIX_timer_get_date(smx_timer_t timer) {
-  return timer?timer->date:0;
+  return timer ? timer->getDate() : 0;
 }
 
 /**
