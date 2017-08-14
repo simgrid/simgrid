@@ -910,7 +910,6 @@ void STag_surfxml_trace___connect()
 {
   parse_after_config();
   TraceConnectCreationArgs trace_connect;
-  memset(&trace_connect,0,sizeof(trace_connect));
 
   trace_connect.element = A_surfxml_trace___connect_element;
   trace_connect.trace = A_surfxml_trace___connect_trace;
