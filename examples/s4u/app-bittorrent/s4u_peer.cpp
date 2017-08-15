@@ -18,7 +18,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_bt_peer, "Messages specific for the peers");
 #define FILE_PIECES 10UL
 #define PIECES_BLOCKS 5UL
 #define BLOCK_SIZE 16384
-static const unsigned long int FILE_SIZE = FILE_PIECES * PIECES_BLOCKS * BLOCK_SIZE;
 
 /** Number of blocks asked by each request */
 #define BLOCKS_REQUESTED 2
