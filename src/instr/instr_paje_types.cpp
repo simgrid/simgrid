@@ -151,7 +151,7 @@ type_t s_type::s_type_variable_new (const char *name, const char *color, type_t 
   return ret;
 }
 
-type_t PJ_type_link_new (const char *name, type_t father, type_t source, type_t dest)
+type_t s_type::s_type_link_new (const char *name, type_t father, type_t source, type_t dest)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a link type with a nullptr name");
