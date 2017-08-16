@@ -3,13 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "private.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
-#include "private.h"
 #include "smpi_comm.hpp"
 #include "smpi_datatype_derived.hpp"
 #include "smpi_process.hpp"
 #include "smpi_status.hpp"
+#include "src/simix/ActorImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_pmpi, smpi, "Logging specific to SMPI (pmpi)");
 
@@ -119,7 +120,8 @@ int PMPI_Abort(MPI_Comm comm, int errorcode)
 {
   smpi_bench_end();
   // FIXME: should kill all processes in comm instead
-  simcall_process_kill(SIMIX_process_self());
+  smx_actor_t process = SIMIX_process_self();
+  simgrid::simix::kernelImmediate([process] { SIMIX_process_kill(process, process); });
   return MPI_SUCCESS;
 }
 

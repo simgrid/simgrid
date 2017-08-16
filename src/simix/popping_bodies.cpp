@@ -36,12 +36,6 @@ inline static R simcall(e_smx_simcall_t call, T const&... t)
   return simgrid::simix::unmarshal<R>(self->simcall.result);
 }
 
-inline static void simcall_BODY_process_kill(smx_actor_t process) {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_process_kill(&SIMIX_process_self()->simcall, process);
-    return simcall<void, smx_actor_t>(SIMCALL_PROCESS_KILL, process);
-  }
-
 inline static void simcall_BODY_process_killall(int reset_pid) {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) simcall_HANDLER_process_killall(&SIMIX_process_self()->simcall, reset_pid);

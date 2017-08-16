@@ -11,7 +11,7 @@
 #include <xbt/RngStream.h>
 
 /** Bittorrent example launcher */
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   msg_host_t host;
   unsigned i;
@@ -19,12 +19,12 @@ int main(int argc, char *argv[])
   MSG_init(&argc, argv);
 
   /* Check the arguments */
-  xbt_assert (argc > 2, "Usage: %s platform_file deployment_file", argv[0]);
+  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file", argv[0]);
 
   MSG_create_environment(argv[1]);
 
   xbt_dynar_t host_list = MSG_hosts_as_dynar();
-  xbt_dynar_foreach(host_list, i, host) {
+  xbt_dynar_foreach (host_list, i, host) {
     char descr[512];
     snprintf(descr, sizeof descr, "RngSream<%s>", MSG_host_get_name(host));
     RngStream stream = RngStream_CreateStream(descr);
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 
   MSG_main();
 
-  xbt_dynar_foreach(host_list, i, host) {
+  xbt_dynar_foreach (host_list, i, host) {
     RngStream stream = (RngStream)MSG_host_get_data(host);
     RngStream_DeleteStream(&stream);
     MSG_host_set_data(host, NULL);

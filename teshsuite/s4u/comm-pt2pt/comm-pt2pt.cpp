@@ -50,8 +50,8 @@ static void sender(std::vector<std::string> args)
   XBT_INFO("Sender spec: %s", args[0].c_str());
   for (unsigned int test = 1; test <= args[0].size(); test++) {
     this_actor::sleep_until(test * 5 - 5);
-    char* mboxName                = bprintf("Test #%u", test);
-    simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(mboxName);
+    std::string* mboxName         = new std::string("Test #" + std::to_string(test));
+    simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(mboxName->c_str());
 
     switch (args[0][test - 1]) {
       case 'r':
@@ -97,8 +97,8 @@ static void receiver(std::vector<std::string> args)
   XBT_INFO("Receiver spec: %s", args[0].c_str());
   for (unsigned int test = 1; test <= args[0].size(); test++) {
     this_actor::sleep_until(test * 5 - 5);
-    char* mboxName                = bprintf("Test #%u", test);
-    simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(mboxName);
+    std::string mboxName          = "Test #" + std::to_string(test);
+    simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(mboxName.c_str());
     void* received                = nullptr;
 
     switch (args[0][test - 1]) {
@@ -146,10 +146,9 @@ static void receiver(std::vector<std::string> args)
       default:
         xbt_die("Unknown receiver spec for test %u: '%c'", test, args[0][test - 1]);
     }
-
-    xbt_assert(strcmp(static_cast<char*>(received), mboxName) == 0);
-    xbt_free(received);
-    xbt_free(mboxName);
+    std::string* receivedStr = static_cast<std::string*>(received);
+    xbt_assert(*receivedStr == mboxName);
+    delete receivedStr;
     XBT_INFO("Test %u OK", test);
   }
   simgrid::s4u::this_actor::sleep_for(0.5);

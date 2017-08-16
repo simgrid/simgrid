@@ -21,7 +21,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-FloydZone::FloydZone(NetZone* father, const char* name) : RoutedZone(father, name)
+FloydZone::FloydZone(NetZone* father, std::string name) : RoutedZone(father, name)
 {
   predecessorTable_ = nullptr;
   costTable_        = nullptr;

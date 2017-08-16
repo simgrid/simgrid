@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
+/* Copyright (c) 2014-2017. The SimGrid Team.
 *All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -52,15 +52,17 @@ static void IB_action_init_callback(simgrid::surf::NetworkAction* action, simgri
   simgrid::surf::IBNode* act_src;
   simgrid::surf::IBNode* act_dst;
 
-  try {
-    act_src = ibModel->active_nodes.at(src->getName());
-  } catch (std::out_of_range& unfound) {
+  auto asrc = ibModel->active_nodes.find(src->getName());
+  if (asrc != ibModel->active_nodes.end()) {
+    act_src = asrc->second;
+  } else {
     throw std::out_of_range(std::string("Could not find '") + src->getCname() + "' active comms !");
   }
 
-  try {
-    act_dst = ibModel->active_nodes.at(dst->getName());
-  } catch (std::out_of_range& unfound) {
+  auto adst = ibModel->active_nodes.find(dst->getName());
+  if (adst != ibModel->active_nodes.end()) {
+    act_dst = adst->second;
+  } else {
     throw std::out_of_range(std::string("Could not find '") + dst->getCname() + "' active comms !");
   }
 
@@ -102,7 +104,6 @@ namespace surf {
 
 NetworkIBModel::NetworkIBModel() : NetworkSmpiModel()
 {
-  haveGap_                      = false;
   const char* IB_factors_string = xbt_cfg_get_string("smpi/IB-penalty-factors");
   std::vector<std::string> radical_elements;
   boost::split(radical_elements, IB_factors_string, boost::is_any_of(";"));

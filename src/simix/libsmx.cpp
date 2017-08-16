@@ -156,19 +156,6 @@ e_smx_state_t simcall_execution_wait(smx_activity_t execution)
 
 /**
  * \ingroup simix_process_management
- * \brief Kills a SIMIX process.
- *
- * This function simply kills a  process.
- *
- * \param process poor victim
- */
-void simcall_process_kill(smx_actor_t process)
-{
-  simcall_BODY_process_kill(process);
-}
-
-/**
- * \ingroup simix_process_management
  * \brief Kills all SIMIX processes.
  */
 void simcall_process_killall(int reset_pid)
@@ -239,7 +226,7 @@ void simcall_process_set_kill_time(smx_actor_t process, double kill_time)
   if (kill_time <= SIMIX_get_clock() || simix_global->kill_process_function == nullptr)
     return;
   XBT_DEBUG("Set kill time %f for process %s@%s", kill_time, process->cname(), process->host->getCname());
-  process->kill_timer = SIMIX_timer_set(kill_time, [=] {
+  process->kill_timer = SIMIX_timer_set(kill_time, [process] {
     simix_global->kill_process_function(process);
     process->kill_timer=nullptr;
   });

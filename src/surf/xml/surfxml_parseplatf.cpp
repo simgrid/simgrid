@@ -7,7 +7,6 @@
 #include "src/instr/instr_private.h" // TRACE_start(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
-#include "xbt/dict.h"
 #include "xbt/log.h"
 #include "xbt/misc.h"
 #include "xbt/str.h"
@@ -27,7 +26,6 @@ extern "C" {
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 
-
 /* Trace related stuff */
 XBT_PRIVATE std::unordered_map<std::string, tmgr_trace_t> traces_set_list;
 XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_host_avail;
@@ -37,10 +35,11 @@ XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link
 XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link_lat;
 
 SG_BEGIN_DECL()
-void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
+void sg_platf_trace_connect(TraceConnectCreationArgs* trace_connect)
 {
   xbt_assert(traces_set_list.find(trace_connect->trace) != traces_set_list.end(),
-             "Cannot connect trace %s to %s: trace unknown", trace_connect->trace, trace_connect->element);
+             "Cannot connect trace %s to %s: trace unknown", trace_connect->trace.c_str(),
+             trace_connect->element.c_str());
 
   switch (trace_connect->kind) {
   case SURF_TRACE_CONNECT_KIND_HOST_AVAIL:
@@ -59,8 +58,8 @@ void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
     trace_connect_list_link_lat.insert({trace_connect->trace, trace_connect->element});
     break;
   default:
-    surf_parse_error("Cannot connect trace %s to %s: kind of trace unknown", trace_connect->trace,
-                     trace_connect->element);
+    surf_parse_error(std::string("Cannot connect trace ") + trace_connect->trace + " to " + trace_connect->element +
+                     ": unknown kind of trace");
     break;
   }
 }
@@ -169,7 +168,7 @@ void parse_platform_file(const char *file)
     surf_parse_close();
 
     if (parse_status)
-      surf_parse_error("Parse error in %s", file);
+      surf_parse_error(std::string("Parse error in ") + file);
   }
 }
 

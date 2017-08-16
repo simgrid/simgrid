@@ -1,4 +1,4 @@
-/* Copyright (c) 2015. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,7 +9,7 @@
 #include <functional>
 #include <vector>
 
-#include <xbt/parmap.h>
+#include <xbt/parmap.hpp>
 
 #include <simgrid/simix.hpp>
 
@@ -27,7 +27,7 @@ class BoostContextFactory;
 class BoostContext : public Context {
 protected: // static
   static bool parallel_;
-  static xbt_parmap_t parmap_;
+  static simgrid::xbt::Parmap<smx_actor_t>* parmap_;
   static std::vector<BoostContext*> workers_context_;
   static uintptr_t threads_working_;
   static xbt_os_thread_key_t worker_id_key_;

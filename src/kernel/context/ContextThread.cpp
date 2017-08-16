@@ -58,9 +58,7 @@ void ThreadContextFactory::run_all()
 {
   if (smx_ctx_thread_sem == nullptr) {
     // Serial execution
-    smx_actor_t process;
-    unsigned int cursor;
-    xbt_dynar_foreach(simix_global->process_to_run, cursor, process) {
+    for (smx_actor_t process : simix_global->process_to_run) {
       XBT_DEBUG("Handling %p",process);
       ThreadContext* context = static_cast<ThreadContext*>(process->context);
       xbt_os_sem_release(context->begin_);
@@ -68,12 +66,10 @@ void ThreadContextFactory::run_all()
     }
   } else {
     // Parallel execution
-    unsigned int index;
-    smx_actor_t process;
-    xbt_dynar_foreach(simix_global->process_to_run, index, process)
+    for (smx_actor_t process : simix_global->process_to_run)
       xbt_os_sem_release(static_cast<ThreadContext*>(process->context)->begin_);
-    xbt_dynar_foreach(simix_global->process_to_run, index, process)
-       xbt_os_sem_acquire(static_cast<ThreadContext*>(process->context)->end_);
+    for (smx_actor_t process : simix_global->process_to_run)
+      xbt_os_sem_acquire(static_cast<ThreadContext*>(process->context)->end_);
   }
 }
 

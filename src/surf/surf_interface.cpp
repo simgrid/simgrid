@@ -39,8 +39,8 @@ simgrid::xbt::signal<void()> surfExitCallbacks;
 }
 }
 
-#include <simgrid/plugins/energy.h> // FIXME: this plugin should not be linked to the core
-#include <simgrid/plugins/load.h>   // FIXME: this plugin should not be linked to the core
+#include <simgrid/plugins/energy.h> // FIXME: this plug-in should not be linked to the core
+#include <simgrid/plugins/load.h>   // FIXME: this plug-in should not be linked to the core
 
 s_surf_model_description_t surf_plugin_description[] = {
     {"Energy", "Cpu energy consumption.", &sg_host_energy_plugin_init},
@@ -115,10 +115,6 @@ s_surf_model_description_t surf_storage_model_description[] = {
   {nullptr, nullptr,  nullptr}      /* this array must be nullptr terminated */
 };
 
-#if HAVE_THREAD_CONTEXTS
-static xbt_parmap_t surf_parmap = nullptr; /* parallel map on models */
-#endif
-
 double NOW = 0;
 
 double surf_get_clock()
@@ -132,12 +128,12 @@ double surf_get_clock()
 # define FILE_DELIM "/"         /* FIXME: move to better location */
 #endif
 
-std::ifstream* surf_ifsopen(const char* name)
+std::ifstream* surf_ifsopen(std::string name)
 {
   std::ifstream* fs = new std::ifstream();
-  xbt_assert(name);
-  if (__surf_is_absolute_file_path(name)) { /* don't mess with absolute file names */
-    fs->open(name, std::ifstream::in);
+  xbt_assert(not name.empty());
+  if (__surf_is_absolute_file_path(name.c_str())) { /* don't mess with absolute file names */
+    fs->open(name.c_str(), std::ifstream::in);
   }
 
   /* search relative files in the path */
@@ -153,6 +149,7 @@ std::ifstream* surf_ifsopen(const char* name)
 
   return fs;
 }
+
 FILE *surf_fopen(const char *name, const char *mode)
 {
   FILE *file = nullptr;
@@ -352,9 +349,6 @@ void surf_init(int *argc, char **argv)
   if (not future_evt_set)
     future_evt_set = new simgrid::trace_mgr::future_evt_set();
 
-  TRACE_surf_alloc();
-  simgrid::surf::surfExitCallbacks.connect(TRACE_surf_release);
-
   sg_config_init(argc, argv);
 
   if (MC_is_active())
@@ -387,10 +381,6 @@ void surf_exit()
     delete future_evt_set;
     future_evt_set = nullptr;
   }
-
-#if HAVE_THREAD_CONTEXTS
-  xbt_parmap_destroy(surf_parmap);
-#endif
 
   tmgr_finalize();
   sg_platf_exit();

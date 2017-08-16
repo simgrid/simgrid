@@ -10,6 +10,8 @@
 #include "jmsg.h"
 
 #include <simgrid/msg.h>
+#include <string>
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
 SG_BEGIN_DECL()
@@ -79,7 +81,7 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject j
   }
 
   if (not comm) {
-    jxbt_throw_null(env, bprintf("comm is null"));
+    jxbt_throw_null(env, "comm is null");
     return JNI_FALSE;
   }
 
@@ -99,7 +101,7 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject j
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble timeout) {
   msg_comm_t comm = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
   if (not comm) {
-    jxbt_throw_null(env, bprintf("comm is null"));
+    jxbt_throw_null(env, "comm is null");
     return;
   }
 
@@ -130,7 +132,7 @@ static msg_comm_t* jarray_to_commArray(JNIEnv *env, jobjectArray jcomms, /* OUT 
 
      comms[i] = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
      if (not comms[i]) {
-       jxbt_throw_null(env, bprintf("comm at rank %d is null", i));
+       jxbt_throw_null(env, std::string("comm at rank ") + std::to_string(i) + " is null");
        return nullptr;
      }
 

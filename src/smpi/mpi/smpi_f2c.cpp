@@ -90,11 +90,8 @@ F2C* F2C::f2c(int id)
 
   if(id >= 0){
     char key[KEY_SIZE];
-    try {
-      return f2c_lookup_->at(get_key(key, id));
-    } catch (std::out_of_range& unfound) {
-      return nullptr;
-    }
+    auto comm = f2c_lookup_->find(get_key(key, id));
+    return comm == f2c_lookup_->end() ? nullptr : comm->second;
   }else
     return nullptr;
 }

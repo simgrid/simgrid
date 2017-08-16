@@ -60,11 +60,11 @@ public:
  */
 class XBT_PRIVATE DragonflyZone : public ClusterZone {
 public:
-  explicit DragonflyZone(NetZone* father, const char* name);
+  explicit DragonflyZone(NetZone* father, std::string name);
   ~DragonflyZone() override;
   //      void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position) override;
   void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency) override;
-  void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) override;
+  void parse_specific_arguments(ClusterCreationArgs* cluster) override;
   void seal() override;
   void generateRouters();
   void generateLinks();
@@ -72,7 +72,7 @@ public:
 
 private:
   void rankId_to_coords(int rankId, unsigned int (*coords)[4]);
-  sg_platf_cluster_cbarg_t cluster_;
+  ClusterCreationArgs* cluster_;
   unsigned int numNodesPerBlade_    = 0;
   unsigned int numBladesPerChassis_ = 0;
   unsigned int numChassisPerGroup_  = 0;

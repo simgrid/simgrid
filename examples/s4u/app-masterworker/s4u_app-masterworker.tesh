@@ -31,6 +31,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u_app-masterworker$EXEEXT ${srcdir:=.}/small_pla
 > [  4.057541] (worker@Jupiter) I'm done. See you!
 > [  4.083249] (worker@Fafard) I'm done. See you!
 > [  4.931805] (worker@Ginette) I'm done. See you!
-> [  5.094868] (maestro@) Simulation time 5.09487
 > [  5.094868] (worker@Bourassa) I'm done. See you!
+> [  5.194868] (maestro@) Simulation time 5.19487
 

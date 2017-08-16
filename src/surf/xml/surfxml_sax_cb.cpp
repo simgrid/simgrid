@@ -30,39 +30,32 @@ std::vector<simgrid::surf::LinkImpl*> parsed_link_list; /* temporary store of cu
 /*
  * Helping functions
  */
-void surf_parse_assert(bool cond, const char *fmt, ...) {
+void surf_parse_assert(bool cond, std::string msg)
+{
   if (not cond) {
-    va_list va;
-    va_start(va,fmt);
     int lineno = surf_parse_lineno;
-    char *msg = bvprintf(fmt,va);
-    va_end(va);
     cleanup();
-    XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename, lineno, msg);
+    XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename, lineno, msg.c_str());
     surf_exit();
     xbt_die("Exiting now");
   }
 }
-void surf_parse_error(const char *fmt, ...) {
-  va_list va;
-  va_start(va,fmt);
+
+void surf_parse_error(std::string msg)
+{
   int lineno = surf_parse_lineno;
-  char *msg = bvprintf(fmt,va);
-  va_end(va);
   cleanup();
-  XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename, lineno, msg);
+  XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename, lineno, msg.c_str());
   surf_exit();
   xbt_die("Exiting now");
 }
-void surf_parse_assert_netpoint(char* hostname, const char* pre, const char* post)
+
+void surf_parse_assert_netpoint(std::string hostname, std::string pre, std::string post)
 {
-  if (sg_netpoint_by_name_or_null(hostname) != nullptr) // found
+  if (sg_netpoint_by_name_or_null(hostname.c_str()) != nullptr) // found
     return;
 
-  std::string msg = std::string(pre);
-  msg += hostname;
-  msg += post;
-  msg += " Existing netpoints: \n";
+  std::string msg = pre + hostname + post + " Existing netpoints: \n";
 
   std::vector<simgrid::kernel::routing::NetPoint*> list;
   simgrid::s4u::Engine::getInstance()->getNetpointList(&list);
@@ -85,36 +78,36 @@ void surf_parse_assert_netpoint(char* hostname, const char* pre, const char* pos
       break;
     }
   }
-  surf_parse_error("%s", msg.c_str());
+  surf_parse_error(msg);
 }
 
-void surf_parse_warn(const char *fmt, ...) {
-  va_list va;
-  va_start(va,fmt);
-  char *msg = bvprintf(fmt,va);
-  va_end(va);
-    XBT_WARN("%s:%d: %s", surf_parsed_filename, surf_parse_lineno, msg);
-    free(msg);
+void surf_parse_warn(std::string msg)
+{
+  XBT_WARN("%s:%d: %s", surf_parsed_filename, surf_parse_lineno, msg.c_str());
 }
 
-double surf_parse_get_double(const char *string) {
-  double res;
-  int ret = sscanf(string, "%lg", &res);
-  if (ret != 1)
-    surf_parse_error("%s is not a double", string);
-  return res;
+double surf_parse_get_double(std::string s)
+{
+  try {
+    return std::stod(s);
+  } catch (std::invalid_argument& ia) {
+    surf_parse_error(s + " is not a double");
+    return -1;
+  }
 }
 
-int surf_parse_get_int(const char *string) {
-  int res;
-  int ret = sscanf(string, "%d", &res);
-  if (ret != 1)
-    surf_parse_error("%s is not an integer", string);
-  return res;
+int surf_parse_get_int(std::string s)
+{
+  try {
+    return std::stoi(s);
+  } catch (std::invalid_argument& ia) {
+    surf_parse_error(s + " is not a double");
+    return -1;
+  }
 }
 
 /* Turn something like "1-4,6,9-11" into the vector {1,2,3,4,6,9,10,11} */
-static std::vector<int>* explodesRadical(const char* radicals)
+static std::vector<int>* explodesRadical(std::string radicals)
 {
   std::vector<int>* exploded = new std::vector<int>();
 
@@ -124,18 +117,18 @@ static std::vector<int>* explodesRadical(const char* radicals)
   for (auto group : radical_elements) {
     std::vector<std::string> radical_ends;
     boost::split(radical_ends, group, boost::is_any_of("-"));
-    int start                = surf_parse_get_int((radical_ends.front()).c_str());
-    int end                  = 0;
+    int start = surf_parse_get_int(radical_ends.front());
+    int end   = 0;
 
     switch (radical_ends.size()) {
       case 1:
         end = start;
         break;
       case 2:
-        end = surf_parse_get_int((radical_ends.back()).c_str());
+        end = surf_parse_get_int(radical_ends.back());
         break;
       default:
-        surf_parse_error("Malformed radical: %s", group.c_str());
+        surf_parse_error(std::string("Malformed radical: ") + group);
         break;
     }
     for (int i = start; i <= end; i++)
@@ -151,22 +144,23 @@ struct unit_scale {
 };
 
 /* Note: field `unit' for the last element of parameter `units' should be nullptr. */
-static double surf_parse_get_value_with_unit(const char *string, const struct unit_scale *units,
-    const char *entity_kind, const char *name, const char *error_msg, const char *default_unit)
+static double surf_parse_get_value_with_unit(const char* string, const struct unit_scale* units,
+                                             const char* entity_kind, std::string name, const char* error_msg,
+                                             const char* default_unit)
 {
   char* ptr;
   int i;
   errno = 0;
   double res   = strtod(string, &ptr);
   if (errno == ERANGE)
-    surf_parse_error("value out of range: %s", string);
+    surf_parse_error(std::string("value out of range: ") + string);
   if (ptr == string)
-    surf_parse_error("cannot parse number: %s", string);
+    surf_parse_error(std::string("cannot parse number:") + string);
   if (ptr[0] == '\0') {
     if (res == 0)
       return res; // Ok, 0 can be unit-less
 
-    XBT_WARN("Deprecated unit-less value '%s' for %s %s. %s",string, entity_kind, name, error_msg);
+    XBT_WARN("Deprecated unit-less value '%s' for %s %s. %s", string, entity_kind, name.c_str(), error_msg);
     ptr = (char*)default_unit;
   }
   for (i = 0; units[i].unit != nullptr && strcmp(ptr, units[i].unit) != 0; i++);
@@ -174,11 +168,11 @@ static double surf_parse_get_value_with_unit(const char *string, const struct un
   if (units[i].unit != nullptr)
     res *= units[i].scale;
   else
-    surf_parse_error("unknown unit: %s", ptr);
+    surf_parse_error(std::string("unknown unit: ") + ptr);
   return res;
 }
 
-double surf_parse_get_time(const char *string, const char *entity_kind, const char *name)
+double surf_parse_get_time(const char* string, const char* entity_kind, std::string name)
 {
   const struct unit_scale units[] = {
     { "w",  7 * 24 * 60 * 60 },
@@ -196,7 +190,7 @@ double surf_parse_get_time(const char *string, const char *entity_kind, const ch
       "Append 's' to your time to get seconds", "s");
 }
 
-double surf_parse_get_size(const char *string, const char *entity_kind, const char *name)
+double surf_parse_get_size(const char* string, const char* entity_kind, std::string name)
 {
   const struct unit_scale units[] = {
     { "EiB", pow(1024, 6) },
@@ -231,7 +225,7 @@ double surf_parse_get_size(const char *string, const char *entity_kind, const ch
       "Append 'B' to get bytes (or 'b' for bits but 1B = 8b).", "B");
 }
 
-double surf_parse_get_bandwidth(const char *string, const char *entity_kind, const char *name)
+double surf_parse_get_bandwidth(const char* string, const char* entity_kind, std::string name)
 {
   const struct unit_scale units[] = {
     { "EiBps", pow(1024, 6) },
@@ -264,7 +258,7 @@ double surf_parse_get_bandwidth(const char *string, const char *entity_kind, con
       "Append 'Bps' to get bytes per second (or 'bps' for bits but 1Bps = 8bps)", "Bps");
 }
 
-double surf_parse_get_speed(const char *string, const char *entity_kind, const char *name)
+double surf_parse_get_speed(const char* string, const char* entity_kind, std::string name)
 {
   const struct unit_scale units[] = {
     { "yottaflops", 1e24 },
@@ -291,7 +285,8 @@ double surf_parse_get_speed(const char *string, const char *entity_kind, const c
       "Append 'f' or 'flops' to your speed to get flop per second", "f");
 }
 
-static std::vector<double> surf_parse_get_all_speeds(char* speeds, const char* entity_kind, const char* id){
+static std::vector<double> surf_parse_get_all_speeds(char* speeds, const char* entity_kind, std::string id)
+{
 
   std::vector<double> speed_per_pstate;
 
@@ -322,9 +317,6 @@ static std::vector<double> surf_parse_get_all_speeds(char* speeds, const char* e
 std::map<std::string, std::string>* current_property_set       = nullptr;
 std::map<std::string, std::string>* current_model_property_set = nullptr;
 int ZONE_TAG                            = 0; // Whether we just opened a zone tag (to see what to do with the properties)
-
-/* dictionary of random generator data */
-xbt_dict_t random_data_list = nullptr;
 
 YY_BUFFER_STATE surf_input_buffer;
 FILE *surf_file_to_parse = nullptr;
@@ -552,8 +544,7 @@ void ETag_surfxml_host()    {
 
 void STag_surfxml_host___link(){
   XBT_DEBUG("Create a Host_link for %s",A_surfxml_host___link_id);
-  s_sg_platf_host_link_cbarg_t host_link;
-  memset(&host_link,0,sizeof(host_link));
+  HostLinkCreationArgs host_link;
 
   host_link.id        = A_surfxml_host___link_id;
   host_link.link_up   = A_surfxml_host___link_up;
@@ -566,9 +557,8 @@ void STag_surfxml_router(){
 }
 
 void ETag_surfxml_cluster(){
-  s_sg_platf_cluster_cbarg_t cluster;
-  memset(&cluster,0,sizeof(cluster));
-  cluster.properties = current_property_set;
+  ClusterCreationArgs cluster;
+  cluster.properties   = current_property_set;
   current_property_set = nullptr;
 
   cluster.id          = A_surfxml_cluster_id;
@@ -604,8 +594,7 @@ void ETag_surfxml_cluster(){
     cluster.topology= SURF_CLUSTER_DRAGONFLY ;
     break;
   default:
-    surf_parse_error("Invalid cluster topology for cluster %s",
-                     cluster.id);
+    surf_parse_error(std::string("Invalid cluster topology for cluster ") + cluster.id);
     break;
   }
   cluster.topo_parameters = A_surfxml_cluster_topo___parameters;
@@ -622,7 +611,7 @@ void ETag_surfxml_cluster(){
     cluster.sharing_policy = SURF_LINK_FATPIPE;
     break;
   default:
-    surf_parse_error("Invalid cluster sharing policy for cluster %s", cluster.id);
+    surf_parse_error(std::string("Invalid cluster sharing policy for cluster ") + cluster.id);
     break;
   }
   switch (AX_surfxml_cluster_bb___sharing___policy) {
@@ -633,7 +622,7 @@ void ETag_surfxml_cluster(){
     cluster.bb_sharing_policy = SURF_LINK_SHARED;
     break;
   default:
-    surf_parse_error("Invalid bb sharing policy in cluster %s", cluster.id);
+    surf_parse_error(std::string("Invalid bb sharing policy in cluster ") + cluster.id);
     break;
   }
 
@@ -648,14 +637,13 @@ void STag_surfxml_cluster(){
 
 void STag_surfxml_cabinet(){
   parse_after_config();
-  s_sg_platf_cabinet_cbarg_t cabinet;
-  memset(&cabinet,0,sizeof(cabinet));
+  CabinetCreationArgs cabinet;
   cabinet.id      = A_surfxml_cabinet_id;
   cabinet.prefix  = A_surfxml_cabinet_prefix;
   cabinet.suffix  = A_surfxml_cabinet_suffix;
-  cabinet.speed   = surf_parse_get_speed(A_surfxml_cabinet_speed, "speed of cabinet", cabinet.id);
-  cabinet.bw      = surf_parse_get_bandwidth(A_surfxml_cabinet_bw, "bw of cabinet", cabinet.id);
-  cabinet.lat     = surf_parse_get_time(A_surfxml_cabinet_lat, "lat of cabinet", cabinet.id);
+  cabinet.speed    = surf_parse_get_speed(A_surfxml_cabinet_speed, "speed of cabinet", cabinet.id.c_str());
+  cabinet.bw       = surf_parse_get_bandwidth(A_surfxml_cabinet_bw, "bw of cabinet", cabinet.id.c_str());
+  cabinet.lat      = surf_parse_get_time(A_surfxml_cabinet_lat, "lat of cabinet", cabinet.id.c_str());
   cabinet.radicals = explodesRadical(A_surfxml_cabinet_radical);
 
   sg_platf_new_cabinet(&cabinet);
@@ -709,35 +697,31 @@ void ETag_surfxml_link(){
      link.policy = SURF_LINK_FULLDUPLEX;
      break;
   default:
-    surf_parse_error("Invalid sharing policy in link %s", link.id.c_str());
+    surf_parse_error(std::string("Invalid sharing policy in link ") + link.id);
     break;
   }
 
   sg_platf_new_link(&link);
 }
 
-void STag_surfxml_link___ctn(){
-
+void STag_surfxml_link___ctn()
+{
   simgrid::surf::LinkImpl* link = nullptr;
-  char *link_name=nullptr;
   switch (A_surfxml_link___ctn_direction) {
   case AU_surfxml_link___ctn_direction:
   case A_surfxml_link___ctn_direction_NONE:
     link = simgrid::surf::LinkImpl::byName(A_surfxml_link___ctn_id);
     break;
   case A_surfxml_link___ctn_direction_UP:
-    link_name = bprintf("%s_UP", A_surfxml_link___ctn_id);
-    link      = simgrid::surf::LinkImpl::byName(link_name);
+    link = simgrid::surf::LinkImpl::byName(std::string(A_surfxml_link___ctn_id) + "_UP");
     break;
   case A_surfxml_link___ctn_direction_DOWN:
-    link_name = bprintf("%s_DOWN", A_surfxml_link___ctn_id);
-    link      = simgrid::surf::LinkImpl::byName(link_name);
+    link = simgrid::surf::LinkImpl::byName(std::string(A_surfxml_link___ctn_id) + "_DOWN");
     break;
   default:
-    surf_parse_error("Invalid direction for link %s", link_name);
+    surf_parse_error(std::string("Invalid direction for link ") + A_surfxml_link___ctn_id);
     break;
   }
-  xbt_free(link_name); // no-op if it's already nullptr
 
   const char* dirname = "";
   switch (A_surfxml_link___ctn_direction) {
@@ -750,7 +734,7 @@ void STag_surfxml_link___ctn(){
     default:
       dirname = "";
   }
-  surf_parse_assert(link != nullptr, "No such link: '%s'%s", A_surfxml_link___ctn_id, dirname);
+  surf_parse_assert(link != nullptr, std::string("No such link: '") + A_surfxml_link___ctn_id + "'" + dirname);
   parsed_link_list.push_back(link);
 }
 
@@ -912,8 +896,7 @@ void ETag_surfxml_bypassZoneRoute()
 }
 
 void ETag_surfxml_trace(){
-  s_sg_platf_trace_cbarg_t trace;
-  memset(&trace,0,sizeof(trace));
+  TraceCreationArgs trace;
 
   trace.id = A_surfxml_trace_id;
   trace.file = A_surfxml_trace_file;
@@ -926,8 +909,7 @@ void ETag_surfxml_trace(){
 void STag_surfxml_trace___connect()
 {
   parse_after_config();
-  s_sg_platf_trace_connect_cbarg_t trace_connect;
-  memset(&trace_connect,0,sizeof(trace_connect));
+  TraceConnectCreationArgs trace_connect;
 
   trace_connect.element = A_surfxml_trace___connect_element;
   trace_connect.trace = A_surfxml_trace___connect_trace;
@@ -972,20 +954,23 @@ void STag_surfxml_zone()
 {
   parse_after_config();
   ZONE_TAG                 = 1;
-  s_sg_platf_AS_cbarg_t AS = {A_surfxml_zone_id, (int)A_surfxml_zone_routing};
+  ZoneCreationArgs zone;
+  zone.id      = A_surfxml_zone_id;
+  zone.routing = static_cast<int>(A_surfxml_zone_routing);
 
-  sg_platf_new_AS_begin(&AS);
+  sg_platf_new_Zone_begin(&zone);
 }
 
 void ETag_surfxml_zone()
 {
-  sg_platf_new_AS_seal();
+  sg_platf_new_Zone_seal();
 }
 
 void STag_surfxml_config()
 {
   ZONE_TAG = 0;
-  xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
+  xbt_assert(current_property_set == nullptr,
+             "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
   XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
   if (_sg_cfg_init_status == 2) {
     surf_parse_error("All <config> tags must be given before any platform elements (such as <zone>, <host>, <cluster>, "
@@ -1016,6 +1001,7 @@ void STag_surfxml_process()
   AX_surfxml_actor_function = AX_surfxml_process_function;
   STag_surfxml_actor();
 }
+
 void STag_surfxml_actor()
 {
   ZONE_TAG  = 0;
@@ -1034,6 +1020,7 @@ void ETag_surfxml_process()
   AX_surfxml_actor_on___failure = (AT_surfxml_actor_on___failure)AX_surfxml_process_on___failure;
   ETag_surfxml_actor();
 }
+
 void ETag_surfxml_actor()
 {
   s_sg_platf_process_cbarg_t actor;
@@ -1080,8 +1067,7 @@ void STag_surfxml_model___prop(){
   if (not current_model_property_set)
     current_model_property_set = new std::map<std::string, std::string>();
 
-  current_model_property_set->insert(
-      {std::string(A_surfxml_model___prop_id), std::string(A_surfxml_model___prop_value)});
+  current_model_property_set->insert({A_surfxml_model___prop_id, A_surfxml_model___prop_value});
 }
 
 void ETag_surfxml_prop(){/* Nothing to do */}

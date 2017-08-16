@@ -9,13 +9,13 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_mailbox, simix, "Mailbox implementation");
 
-static xbt_dict_t mailboxes = xbt_dict_new_homogeneous([](void* data) {
-  delete static_cast<smx_mailbox_t>(data);
-});
+static std::map<std::string, smx_mailbox_t>* mailboxes = new std::map<std::string, smx_mailbox_t>;
 
 void SIMIX_mailbox_exit()
 {
-  xbt_dict_free(&mailboxes);
+  for (auto elm : *mailboxes)
+    delete elm.second;
+  delete mailboxes;
 }
 
 /******************************************************************************/
@@ -28,20 +28,25 @@ namespace activity {
 /** @brief Returns the mailbox of that name, or nullptr */
 MailboxImpl* MailboxImpl::byNameOrNull(const char* name)
 {
-  return static_cast<smx_mailbox_t>(xbt_dict_get_or_null(mailboxes, name));
+  auto mbox = mailboxes->find(name);
+  if (mbox != mailboxes->end())
+    return mbox->second;
+  else
+    return nullptr;
 }
 /** @brief Returns the mailbox of that name, newly created on need */
 MailboxImpl* MailboxImpl::byNameOrCreate(const char* name)
 {
   xbt_assert(name, "Mailboxes must have a name");
   /* two processes may have pushed the same mbox_create simcall at the same time */
-  smx_mailbox_t mbox = static_cast<smx_mailbox_t>(xbt_dict_get_or_null(mailboxes, name));
-  if (not mbox) {
-    mbox = new MailboxImpl(name);
+  auto m = mailboxes->find(name);
+  if (m == mailboxes->end()) {
+    smx_mailbox_t mbox = new MailboxImpl(name);
     XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name);
-    xbt_dict_set(mailboxes, mbox->name_, mbox, nullptr);
-  }
-  return mbox;
+    (*mailboxes)[mbox->name_] = mbox;
+    return mbox;
+  } else
+    return m->second;
 }
 /** @brief set the receiver of the mailbox to allow eager sends
  *  \param actor The receiving dude

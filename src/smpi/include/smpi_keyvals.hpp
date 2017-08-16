@@ -109,11 +109,12 @@ template <typename T> int Keyval::attr_get(int keyval, void* attr_value, int* fl
     *flag=0;
     return MPI_SUCCESS;
   }
-  try {
-    *static_cast<void**>(attr_value) = attributes()->at(keyval);
+  const auto& attribs = attributes();
+  auto attr           = attribs->find(keyval);
+  if (attr != attribs->end()) {
+    *static_cast<void**>(attr_value) = attr->second;
     *flag=1;
-  }
-  catch (const std::out_of_range& oor) {
+  } else {
     *flag=0;
   }
   return MPI_SUCCESS;
@@ -140,12 +141,13 @@ template <typename T> void Keyval::cleanup_attr(){
   if (not attributes()->empty()) {
     int flag=0;
     for(auto it : attributes_){
-      try{
-        smpi_key_elem elem = T::keyvals_.at(it.first);
+      auto elm = T::keyvals_.find(it.first);
+      if (elm != T::keyvals_.end()) {
+        smpi_key_elem elem = elm->second;
         if(elem != nullptr){
           call_deleter<T>((T*)this, elem, it.first,it.second,&flag);
         }
-      }catch(const std::out_of_range& oor) {
+      } else {
         //already deleted, not a problem;
         flag=0;
       }

@@ -307,7 +307,7 @@ DijkstraZone::~DijkstraZone()
 
 /* Creation routing model functions */
 
-DijkstraZone::DijkstraZone(NetZone* father, const char* name, bool cached) : RoutedZone(father, name)
+DijkstraZone::DijkstraZone(NetZone* father, std::string name, bool cached) : RoutedZone(father, name)
 {
   if (cached)
     routeCache_ = xbt_dict_new_homogeneous(&route_cache_elem_free);

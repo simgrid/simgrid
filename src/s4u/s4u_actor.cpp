@@ -134,7 +134,7 @@ void Actor::kill(aid_t pid)
 {
   smx_actor_t process = SIMIX_process_from_PID(pid);
   if(process != nullptr) {
-    simcall_process_kill(process);
+    simgrid::simix::kernelImmediate([process] { SIMIX_process_kill(process, process); });
   } else {
     std::ostringstream oss;
     oss << "kill: ("<< pid <<") - No such process" << std::endl;
@@ -147,7 +147,9 @@ smx_actor_t Actor::getImpl() {
 }
 
 void Actor::kill() {
-  simcall_process_kill(pimpl_);
+  smx_actor_t process = SIMIX_process_self();
+  simgrid::simix::kernelImmediate(
+      [this, process] { SIMIX_process_kill(pimpl_, (pimpl_ == simix_global->maestro_process) ? pimpl_ : process); });
 }
 
 // ***** Static functions *****
@@ -294,7 +296,8 @@ bool isSuspended()
 
 void kill()
 {
-  simcall_process_kill(SIMIX_process_self());
+  smx_actor_t process = SIMIX_process_self();
+  simgrid::simix::kernelImmediate([process] { SIMIX_process_kill(process, process); });
 }
 
 void onExit(int_f_pvoid_pvoid_t fun, void* data)

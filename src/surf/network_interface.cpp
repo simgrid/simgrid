@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
+/* Copyright (c) 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -20,13 +20,10 @@ namespace simgrid {
   /* List of links */
   std::unordered_map<std::string, LinkImpl*>* LinkImpl::links = new std::unordered_map<std::string, LinkImpl*>();
 
-  LinkImpl* LinkImpl::byName(const char* name)
+  LinkImpl* LinkImpl::byName(std::string name)
   {
-    try {
-      return links->at(name);
-    } catch (std::out_of_range& unfound) {
-      return nullptr;
-    }
+    auto link = links->find(name);
+    return link == links->end() ? nullptr : link->second;
   }
   /** @brief Returns the amount of links in the platform */
   int LinkImpl::linksCount()

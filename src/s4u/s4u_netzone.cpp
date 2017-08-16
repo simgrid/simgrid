@@ -23,7 +23,7 @@ simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kern
 simgrid::xbt::signal<void(NetZone&)> NetZone::onCreation;
 simgrid::xbt::signal<void(NetZone&)> NetZone::onSeal;
 
-NetZone::NetZone(NetZone* father, const char* name) : father_(father), name_(xbt_strdup(name))
+NetZone::NetZone(NetZone* father, std::string name) : father_(father), name_(name)
 {
   children_ = new std::vector<NetZone*>();
 }
@@ -38,7 +38,6 @@ NetZone::~NetZone()
   for (auto nz : *children_)
     delete nz;
   delete children_;
-  xbt_free(name_);
 }
 
 std::unordered_map<std::string, std::string>* NetZone::getProperties()
@@ -64,9 +63,9 @@ std::vector<NetZone*>* NetZone::getChildren()
 {
   return children_;
 }
-char* NetZone::getCname()
+const char* NetZone::getCname()
 {
-  return name_;
+  return name_.c_str();
 }
 NetZone* NetZone::getFather()
 {
@@ -90,7 +89,7 @@ int NetZone::addComponent(kernel::routing::NetPoint* elm)
 
 void NetZone::addRoute(sg_platf_route_cbarg_t /*route*/)
 {
-  xbt_die("NetZone '%s' does not accept new routes (wrong class).", name_);
+  xbt_die("NetZone '%s' does not accept new routes (wrong class).", name_.c_str());
 }
 }
 }; // namespace simgrid::s4u

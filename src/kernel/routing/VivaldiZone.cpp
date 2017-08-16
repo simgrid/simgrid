@@ -57,7 +57,8 @@ static std::vector<double>* getCoordsFromNetpoint(NetPoint* np)
              (np->isNetZone() ? "Netzone" : (np->isHost() ? "Host" : "Router")), np->cname(), np);
   return &coords->coords;
 }
-VivaldiZone::VivaldiZone(NetZone* father, const char* name) : ClusterZone(father, name)
+
+VivaldiZone::VivaldiZone(NetZone* father, std::string name) : ClusterZone(father, name)
 {
 }
 
@@ -86,25 +87,27 @@ void VivaldiZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
   }
 
   /* Retrieve the private links */
-  try {
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(src->id());
+  auto src_link = privateLinks_.find(src->id());
+  if (src_link != privateLinks_.end()) {
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = src_link->second;
     if (info.first) {
       route->link_list->push_back(info.first);
       if (lat)
         *lat += info.first->latency();
     }
-  } catch (std::out_of_range& unfound) {
+  } else {
     XBT_DEBUG("Source of private link (%u) doesn't exist", src->id());
   }
 
-  try {
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(dst->id());
+  auto dst_link = privateLinks_.find(dst->id());
+  if (dst_link != privateLinks_.end()) {
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = dst_link->second;
     if (info.second) {
       route->link_list->push_back(info.second);
       if (lat)
         *lat += info.second->latency();
     }
-  } catch (std::out_of_range& unfound) {
+  } else {
     XBT_DEBUG("Destination of private link (%u) doesn't exist", dst->id());
   }
 

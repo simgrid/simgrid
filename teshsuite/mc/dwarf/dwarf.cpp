@@ -153,7 +153,7 @@ int main(int argc, char** argv)
   int lexical_block_variable = 50;
   test_local_variable(process.binary_info.get(), "main", "lexical_block_variable", &lexical_block_variable, &cursor);
 
-  s_foo my_foo;
+  s_foo my_foo = {0};
   test_type_by_name(process, my_foo);
 
   _exit(0);

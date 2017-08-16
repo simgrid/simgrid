@@ -33,7 +33,6 @@ Container::~Container()
 
 void Container::addChild(jed_container_t child)
 {
-  xbt_assert(this != nullptr);
   xbt_assert(child != nullptr);
   this->children.push_back(child);
   child->parent = this;
@@ -76,8 +75,6 @@ void Container::createHierarchy(sg_netzone_t from_as)
 
 std::vector<int> Container::getHierarchy()
 {
-  xbt_assert( this!= nullptr );
-
   if(this->parent != nullptr ) {
 
     if (not this->parent->children.empty()) {
@@ -147,7 +144,6 @@ void Container::printResources(FILE * jed_file)
 
 void Container::print(FILE* jed_file)
 {
-  xbt_assert( this != nullptr );
   fprintf(jed_file, "    <res name=\"%s\">\n", this->name.c_str());
   if (not this->children.empty()) {
     for (auto child: this->children) {

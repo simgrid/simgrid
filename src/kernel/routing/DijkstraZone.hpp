@@ -43,7 +43,7 @@ namespace routing {
  */
 class XBT_PRIVATE DijkstraZone : public RoutedZone {
 public:
-  DijkstraZone(NetZone* father, const char* name, bool cached);
+  DijkstraZone(NetZone* father, std::string name, bool cached);
   void seal() override;
 
   ~DijkstraZone() override;

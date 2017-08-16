@@ -38,22 +38,24 @@ int main(int argc, char **argv)
 
 
   /* Print the properties of 'host1' */
-  xbt_dict_foreach(props, cursor, key, data) {
+  xbt_dict_foreach (props, cursor, key, data)
     XBT_INFO("\tProperty: %s has value: %s", key, data);
-  }
 
   /* Try to get a property that does not exist */
   value = sg_host_get_property_value(h1, noexist);
   XBT_INFO("\tProperty: %s has value: %s", noexist, value?value:"Undefined (NULL)");
+
+  xbt_dict_free(&props);
 
   /* Get the property list of 'host2' */
   XBT_INFO("Property list for host %s", name2);
   props = sg_host_get_properties(h2);
 
   /* Print the properties of 'host2' */
-  xbt_dict_foreach(props, cursor, key, data) {
+  xbt_dict_foreach (props, cursor, key, data)
     XBT_INFO("\tProperty: %s on host: %s", key, data);
-  }
+
+  xbt_dict_free(&props);
 
   /* Modify an existing property test. First check it exists */
   XBT_INFO("Modify an existing property");

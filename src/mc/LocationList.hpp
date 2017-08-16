@@ -1,5 +1,4 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2015. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -63,7 +62,8 @@ typedef std::vector<LocationListEntry> LocationList;
 class Location {
 private:
   void* memory_;
-  int register_id_;
+  int register_id_ = 0;
+
 public:
   explicit Location(void* x) : memory_(x) {}
   explicit Location(int register_id) : memory_(nullptr), register_id_(register_id) {}

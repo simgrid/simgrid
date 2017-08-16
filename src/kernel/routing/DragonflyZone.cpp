@@ -17,7 +17,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-DragonflyZone::DragonflyZone(NetZone* father, const char* name) : ClusterZone(father, name)
+DragonflyZone::DragonflyZone(NetZone* father, std::string name) : ClusterZone(father, name)
 {
 }
 
@@ -41,7 +41,7 @@ void DragonflyZone::rankId_to_coords(int rankId, unsigned int (*coords)[4])
   (*coords)[3]         = rankId % numNodesPerBlade_;
 }
 
-void DragonflyZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
+void DragonflyZone::parse_specific_arguments(ClusterCreationArgs* cluster)
 {
   std::vector<std::string> parameters;
   std::vector<std::string> tmp;
@@ -176,13 +176,13 @@ void DragonflyZone::createLink(std::string id, int numlinks, surf::LinkImpl** li
   std::string tmpID;
   if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX) {
     tmpID     = linkTemplate.id + "_UP";
-    link      = surf::LinkImpl::byName(tmpID.c_str());
+    link      = surf::LinkImpl::byName(tmpID);
     *linkup   = link; // check link?
     tmpID     = linkTemplate.id + "_DOWN";
-    link      = surf::LinkImpl::byName(tmpID.c_str());
+    link      = surf::LinkImpl::byName(tmpID);
     *linkdown = link; // check link ?
   } else {
-    link      = surf::LinkImpl::byName(linkTemplate.id.c_str());
+    link      = surf::LinkImpl::byName(linkTemplate.id);
     *linkup   = link;
     *linkdown = link;
   }

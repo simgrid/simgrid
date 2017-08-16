@@ -72,9 +72,7 @@ extern int smx_context_guard_size_was_set;
 
 SG_BEGIN_DECL()
 
-XBT_PUBLIC(xbt_dynar_t) SIMIX_process_get_runnable();
 XBT_PUBLIC(smx_actor_t) SIMIX_process_from_PID(aid_t PID);
-XBT_PUBLIC(xbt_dynar_t) SIMIX_processes_as_dynar();
 
 /* parallelism */
 XBT_PUBLIC(int) SIMIX_context_is_parallel();
@@ -201,7 +199,6 @@ XBT_PUBLIC(smx_actor_t)
 simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_host_t host, int argc, char** argv,
                        std::map<std::string, std::string>* properties);
 
-XBT_PUBLIC(void) simcall_process_kill(smx_actor_t process);
 XBT_PUBLIC(void) simcall_process_killall(int reset_pid);
 XBT_PUBLIC(void) SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const char *msg);
 

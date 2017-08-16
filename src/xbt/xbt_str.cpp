@@ -56,7 +56,7 @@ void xbt_str_rtrim(char *s, const char *char_list)
 
 /**  @brief Strip whitespace (or other characters) from the beginning of a string.
  *
- * Strips the whitespaces from the begining of s.
+ * Strips the whitespaces from the beginning of s.
  * By default (when char_list=nullptr), these characters get stripped:
  *
  *  - " "    (ASCII 32  (0x20))  space.
@@ -94,7 +94,7 @@ void xbt_str_ltrim(char *s, const char *char_list)
   memmove(s, cur, strlen(cur) + 1);
 }
 
-/**  @brief Strip whitespace (or other characters) from the end and the begining of a string.
+/**  @brief Strip whitespace (or other characters) from the end and the beginning of a string.
  *
  * Strips the whitespaces from both the beginning and the end of s.
  * By default (when char_list=nullptr), these characters get stripped:
@@ -123,7 +123,7 @@ void xbt_str_trim(char *s, const char *char_list)
  * @param str the string to modify
  * @param from char to search
  * @param to char to put instead
- * @param occurence number of changes to do (=0 means all)
+ * @param occurrence number of changes to do (=0 means all)
  */
 void xbt_str_subst(char *str, char from, char to, int occurence)
 {

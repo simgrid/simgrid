@@ -5,6 +5,7 @@
 
 #include "src/instr/instr_private.h"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "src/plugins/vm/VmHostExt.hpp"
 #include "src/simix/smx_host_private.h"
 #include "src/surf/cpu_cas01.hpp"
 
@@ -54,6 +55,38 @@ VirtualMachine::~VirtualMachine()
   pimpl_netpoint = nullptr;
 }
 
+void VirtualMachine::start()
+{
+  simgrid::simix::kernelImmediate([this]() {
+    simgrid::vm::VmHostExt::ensureVmExtInstalled();
+
+    simgrid::s4u::Host* pm = this->pimpl_vm_->getPm();
+    if (pm->extension<simgrid::vm::VmHostExt>() == nullptr)
+      pm->extension_set(new simgrid::vm::VmHostExt());
+
+    long pm_ramsize   = pm->extension<simgrid::vm::VmHostExt>()->ramsize;
+    int pm_overcommit = pm->extension<simgrid::vm::VmHostExt>()->overcommit;
+    long vm_ramsize   = this->getRamsize();
+
+    if (pm_ramsize && not pm_overcommit) { /* Only verify that we don't overcommit on need */
+      /* Retrieve the memory occupied by the VMs on that host. Yep, we have to traverse all VMs of all hosts for that */
+      long total_ramsize_of_vms = 0;
+      for (simgrid::s4u::VirtualMachine* ws_vm : simgrid::vm::VirtualMachineImpl::allVms_)
+        if (pm == ws_vm->pimpl_vm_->getPm())
+          total_ramsize_of_vms += ws_vm->pimpl_vm_->getRamsize();
+
+      if (vm_ramsize > pm_ramsize - total_ramsize_of_vms) {
+        XBT_WARN("cannnot start %s@%s due to memory shortage: vm_ramsize %ld, free %ld, pm_ramsize %ld (bytes).",
+                 this->getCname(), pm->getCname(), vm_ramsize, pm_ramsize - total_ramsize_of_vms, pm_ramsize);
+        THROWF(vm_error, 0, "Memory shortage on host '%s', VM '%s' cannot be started", pm->getCname(),
+               this->getCname());
+      }
+    }
+
+    this->pimpl_vm_->setState(SURF_VM_STATE_RUNNING);
+  });
+}
+
 bool VirtualMachine::isMigrating()
 {
   return pimpl_vm_ && pimpl_vm_->isMigrating;
@@ -80,7 +113,7 @@ void VirtualMachine::getParameters(vm_params_t params)
 /** @brief Sets the params of that VM/PM */
 void VirtualMachine::setParameters(vm_params_t params)
 {
-  simgrid::simix::kernelImmediate([&]() { pimpl_vm_->setParams(params); });
+  simgrid::simix::kernelImmediate([this, params] { pimpl_vm_->setParams(params); });
 }
 
 } // namespace simgrid

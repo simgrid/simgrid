@@ -35,7 +35,6 @@
 # Last but not the least, you should declare the new simix call in
 # ./include/simgrid/simix.h (otherwise you will get a warning at compile time)
 
-void process_kill(smx_actor_t process);
 void process_killall(int reset_pid);
 void process_cleanup(smx_actor_t process) [[nohandler]];
 void process_suspend(smx_actor_t process) [[block]];

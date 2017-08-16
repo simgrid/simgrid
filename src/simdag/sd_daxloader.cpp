@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2016. The SimGrid Team.
+/* Copyright (c) 2009-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -10,7 +10,7 @@
 #include "xbt/log.h"
 #include "xbt/misc.h"
 #include "xbt/str.h"
-#include <unordered_map>
+#include <map>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_daxparse, sd, "Parsing DAX files");
 
@@ -141,8 +141,8 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
 static YY_BUFFER_STATE input_buffer;
 
 static xbt_dynar_t result;
-static std::unordered_map<std::string, SD_task_t> jobs;
-static xbt_dict_t files;
+static std::map<std::string, SD_task_t> jobs;
+static std::map<std::string, SD_task_t> files;
 static SD_task_t current_job;
 static SD_task_t root_task;
 static SD_task_t end_task;
@@ -158,9 +158,7 @@ static void dax_task_free(void *task)
  */
 xbt_dynar_t SD_daxload(const char *filename)
 {
-  xbt_dict_cursor_t cursor;
   SD_task_t file;
-  char* name;
   FILE* in_file = fopen(filename, "r");
   xbt_assert(in_file, "Unable to open \"%s\"\n", filename);
   input_buffer = dax__create_buffer(in_file, 10);
@@ -168,7 +166,6 @@ xbt_dynar_t SD_daxload(const char *filename)
   dax_lineno = 1;
 
   result = xbt_dynar_new(sizeof(SD_task_t), dax_task_free);
-  files = xbt_dict_new_homogeneous(&dax_task_free);
   root_task = SD_task_create_comp_seq("root", nullptr, 0);
   /* by design the root task is always SCHEDULABLE */
   SD_task_set_state(root_task, SD_SCHEDULABLE);
@@ -189,7 +186,8 @@ xbt_dynar_t SD_daxload(const char *filename)
    * Files not consumed in the system are said to be consumed by end task (bottom of DAG).
    */
 
-  xbt_dict_foreach(files, cursor, name, file) {
+  for (auto elm : files) {
+    file = elm.second;
     SD_task_t newfile;
     if (file->predecessors->empty()) {
       for (SD_task_t it : *file->successors) {
@@ -225,7 +223,8 @@ xbt_dynar_t SD_daxload(const char *filename)
   xbt_dynar_push(result, &end_task);
 
   /* Free previous copy of the files */
-  xbt_dict_free(&files);
+  for (auto elm : files)
+    SD_task_destroy(elm.second);
   unsigned int cpt;
   xbt_dynar_foreach(result, cpt, file) {
     if (SD_task_get_kind(file) == SD_TASK_COMM_E2E) {
@@ -295,12 +294,14 @@ void STag_dax__uses()
   bool is_input = (A_dax__uses_link == A_dax__uses_link_input);
 
   XBT_DEBUG("See <uses file=%s %s>",A_dax__uses_file,(is_input?"in":"out"));
-  SD_task_t file = static_cast<SD_task_t>(xbt_dict_get_or_null(files, A_dax__uses_file));
-  if (file == nullptr) {
+  auto it = files.find(A_dax__uses_file);
+  SD_task_t file;
+  if (it == files.end()) {
     file = SD_task_create_comm_e2e(A_dax__uses_file, nullptr, size);
     sd_global->initial_tasks->erase(file);
-    xbt_dict_set(files, A_dax__uses_file, file, nullptr);
+    files[A_dax__uses_file] = file;
   } else {
+    file = it->second;
     if (file->amount < size || file->amount > size) {
       XBT_WARN("Ignore file %s size redefinition from %.0f to %.0f", A_dax__uses_file, SD_task_get_amount(file), size);
     }
@@ -318,9 +319,10 @@ void STag_dax__uses()
 static SD_task_t current_child;
 void STag_dax__child()
 {
-  try {
-    current_child = jobs.at(A_dax__child_ref);
-  } catch (std::out_of_range& unfound) {
+  auto job = jobs.find(A_dax__child_ref);
+  if (job != jobs.end()) {
+    current_child = job->second;
+  } else {
     throw std::out_of_range(std::string("Parse error on line ") + std::to_string(dax_lineno) +
                             ": Asked to add dependencies to the non-existent " + A_dax__child_ref + "task");
   }
@@ -333,11 +335,12 @@ void ETag_dax__child()
 
 void STag_dax__parent()
 {
-  try {
-    SD_task_t parent = jobs.at(A_dax__parent_ref);
+  auto job = jobs.find(A_dax__parent_ref);
+  if (job != jobs.end()) {
+    SD_task_t parent = job->second;
     SD_task_dependency_add(nullptr, nullptr, parent, current_child);
     XBT_DEBUG("Control-flow dependency from %s to %s", current_child->name, parent->name);
-  } catch (std::out_of_range& unfound) {
+  } else {
     throw std::out_of_range(std::string("Parse error on line ") + std::to_string(dax_lineno) +
                             ": Asked to add a dependency from " + current_child->name + " to " + A_dax__parent_ref +
                             ", but " + A_dax__parent_ref + " does not exist");

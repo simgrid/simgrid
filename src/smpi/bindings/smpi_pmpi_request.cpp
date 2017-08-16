@@ -20,16 +20,16 @@ int PMPI_Send_init(void *buf, int count, MPI_Datatype datatype, int dst, int tag
 
   smpi_bench_end();
   if (request == nullptr) {
-      retval = MPI_ERR_ARG;
+    retval = MPI_ERR_ARG;
   } else if (comm == MPI_COMM_NULL) {
-      retval = MPI_ERR_COMM;
+    retval = MPI_ERR_COMM;
   } else if (not datatype->is_valid()) {
     retval = MPI_ERR_TYPE;
   } else if (dst == MPI_PROC_NULL) {
-      retval = MPI_SUCCESS;
+    retval = MPI_SUCCESS;
   } else {
-      *request = simgrid::smpi::Request::send_init(buf, count, datatype, dst, tag, comm);
-      retval = MPI_SUCCESS;
+    *request = simgrid::smpi::Request::send_init(buf, count, datatype, dst, tag, comm);
+    retval   = MPI_SUCCESS;
   }
   smpi_bench_begin();
   if (retval != MPI_SUCCESS && request != nullptr)
@@ -423,8 +423,8 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
   return retval;
 }
 
-int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dst, int sendtag, void *recvbuf,
-                 int recvcount, MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Status * status)
+int PMPI_Sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, int sendtag, void* recvbuf,
+                  int recvcount, MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Status* status)
 {
   int retval = 0;
 
@@ -448,34 +448,34 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
     retval = MPI_ERR_TAG;
   } else {
 
-  int rank = comm != MPI_COMM_NULL ? smpi_process()->index() : -1;
-  int dst_traced = comm->group()->index(dst);
-  int src_traced = comm->group()->index(src);
-  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
-  extra->type = TRACING_SENDRECV;
-  extra->src = src_traced;
-  extra->dst = dst_traced;
-  int known=0;
-  extra->datatype1 = encode_datatype(sendtype, &known);
-  int dt_size_send = 1;
-  if(known==0)
-    dt_size_send = sendtype->size();
-  extra->send_size = sendcount*dt_size_send;
-  extra->datatype2 = encode_datatype(recvtype, &known);
-  int dt_size_recv = 1;
-  if(known==0)
-    dt_size_recv = recvtype->size();
-  extra->recv_size = recvcount*dt_size_recv;
+    int rank               = comm != MPI_COMM_NULL ? smpi_process()->index() : -1;
+    int dst_traced         = comm->group()->index(dst);
+    int src_traced         = comm->group()->index(src);
+    instr_extra_data extra = xbt_new0(s_instr_extra_data_t, 1);
+    extra->type            = TRACING_SENDRECV;
+    extra->src             = src_traced;
+    extra->dst             = dst_traced;
+    int known              = 0;
+    extra->datatype1       = encode_datatype(sendtype, &known);
+    int dt_size_send       = 1;
+    if (known == 0)
+      dt_size_send   = sendtype->size();
+    extra->send_size = sendcount * dt_size_send;
+    extra->datatype2 = encode_datatype(recvtype, &known);
+    int dt_size_recv = 1;
+    if (known == 0)
+      dt_size_recv   = recvtype->size();
+    extra->recv_size = recvcount * dt_size_recv;
 
-  TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
-  TRACE_smpi_send(rank, rank, dst_traced, sendtag,sendcount*sendtype->size());
+    TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_send(rank, rank, dst_traced, sendtag, sendcount * sendtype->size());
 
-  simgrid::smpi::Request::sendrecv(sendbuf, sendcount, sendtype, dst, sendtag, recvbuf, recvcount, recvtype, src, recvtag, comm,
-                    status);
-  retval = MPI_SUCCESS;
+    simgrid::smpi::Request::sendrecv(sendbuf, sendcount, sendtype, dst, sendtag, recvbuf, recvcount, recvtype, src,
+                                     recvtag, comm, status);
+    retval = MPI_SUCCESS;
 
-  TRACE_smpi_ptp_out(rank, dst_traced, __FUNCTION__);
-  TRACE_smpi_recv(src_traced, rank, recvtag);
+    TRACE_smpi_ptp_out(rank, dst_traced, __FUNCTION__);
+    TRACE_smpi_recv(src_traced, rank, recvtag);
   }
 
   smpi_bench_begin();
@@ -495,7 +495,7 @@ int PMPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, 
     void* recvbuf = xbt_new0(char, size);
     retval = MPI_Sendrecv(buf, count, datatype, dst, sendtag, recvbuf, count, datatype, src, recvtag, comm, status);
     if(retval==MPI_SUCCESS){
-        simgrid::smpi::Datatype::copy(recvbuf, count, datatype, buf, count, datatype);
+      simgrid::smpi::Datatype::copy(recvbuf, count, datatype, buf, count, datatype);
     }
     xbt_free(recvbuf);
 
@@ -632,9 +632,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
     TRACE_smpi_ptp_out(rank, dst_traced, __FUNCTION__);
     if (is_wait_for_receive) {
       if(src_traced==MPI_ANY_SOURCE)
-        src_traced = (status!=MPI_STATUS_IGNORE) ?
-          comm->group()->rank(status->MPI_SOURCE) :
-          src_traced;
+        src_traced = (status != MPI_STATUS_IGNORE) ? comm->group()->rank(status->MPI_SOURCE) : src_traced;
       TRACE_smpi_recv(src_traced, dst_traced, tag_traced);
     }
   }
@@ -682,9 +680,8 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
     int is_wait_for_receive = savedvals[*index].recv;
     if (is_wait_for_receive) {
       if(savedvals[*index].src==MPI_ANY_SOURCE)
-        src_traced = (status != MPI_STATUSES_IGNORE)
-                         ? savedvals[*index].comm->group()->rank(status->MPI_SOURCE)
-                         : savedvals[*index].src;
+        src_traced = (status != MPI_STATUSES_IGNORE) ? savedvals[*index].comm->group()->rank(status->MPI_SOURCE)
+                                                     : savedvals[*index].src;
       TRACE_smpi_recv(src_traced, dst_traced, savedvals[*index].tag);
     }
     TRACE_smpi_ptp_out(rank_traced, dst_traced, __FUNCTION__);
@@ -727,14 +724,14 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
 
   for (int i = 0; i < count; i++) {
     if(savedvals[i].valid){
-    //the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
+      // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
       int src_traced = savedvals[i].src;
       int dst_traced = savedvals[i].dst;
       int is_wait_for_receive = savedvals[i].recv;
       if (is_wait_for_receive) {
         if(src_traced==MPI_ANY_SOURCE)
-        src_traced = (status!=MPI_STATUSES_IGNORE) ?
-                          savedvals[i].comm->group()->rank(status[i].MPI_SOURCE) : savedvals[i].src;
+          src_traced = (status != MPI_STATUSES_IGNORE) ? savedvals[i].comm->group()->rank(status[i].MPI_SOURCE)
+                                                       : savedvals[i].src;
         TRACE_smpi_recv(src_traced, dst_traced,savedvals[i].tag);
       }
     }

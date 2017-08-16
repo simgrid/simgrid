@@ -67,13 +67,13 @@ namespace routing {
 
 class XBT_PRIVATE ClusterZone : public NetZoneImpl {
 public:
-  explicit ClusterZone(NetZone* father, const char* name);
+  explicit ClusterZone(NetZone* father, std::string name);
 
   void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency) override;
   void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
 
-  virtual void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position);
-  virtual void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
+  virtual void create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, int position);
+  virtual void parse_specific_arguments(ClusterCreationArgs* cluster)
   {
     /* this routing method does not require any specific argument */
   }

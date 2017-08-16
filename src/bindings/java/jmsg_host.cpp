@@ -7,6 +7,7 @@
 
 #include "simgrid/plugins/energy.h"
 #include "simgrid/s4u/Host.hpp"
+#include "simgrid/s4u/Storage.hpp"
 
 #include "jmsg.h"
 #include "jmsg_host.h"
@@ -55,7 +56,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jcla
 
   /* get the C string from the java string */
   if (jname == nullptr) {
-    jxbt_throw_null(env,bprintf("No host can have a null name"));
+    jxbt_throw_null(env, "No host can have a null name");
     return nullptr;
   }
   const char *name = env->GetStringUTFChars(jname, 0);
@@ -237,8 +238,8 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getMountedStorage(JNIEn
 
   int index = 0;
   jobjectArray jtable;
-  xbt_dict_t dict =  MSG_host_get_mounted_storage_list(host);
-  int count = xbt_dict_length(dict);
+  std::unordered_map<std::string, msg_storage_t> mounted_storages = host->getMountedStorages();
+  int count  = mounted_storages.size();
   jclass cls = env->FindClass("org/simgrid/msg/Storage");
 
   jtable = env->NewObjectArray((jsize) count, cls, nullptr);
@@ -248,17 +249,12 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getMountedStorage(JNIEn
     return nullptr;
   }
 
-  xbt_dict_cursor_t cursor=nullptr;
-  const char* mount_name;
-  const char* storage_name;
-
-  xbt_dict_foreach(dict,cursor,mount_name,storage_name) {
-    jname = env->NewStringUTF(storage_name);
+  for (auto elm : mounted_storages) {
+    jname    = env->NewStringUTF(elm.second->getName());
     jstorage = Java_org_simgrid_msg_Storage_getByName(env,cls,jname);
     env->SetObjectArrayElement(jtable, index, jstorage);
     index++;
   }
-  xbt_dict_free(&dict);
   return jtable;
 }
 

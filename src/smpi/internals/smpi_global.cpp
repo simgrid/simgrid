@@ -127,20 +127,18 @@ static void print(std::vector<std::pair<size_t, size_t>> vec) {
   std::fprintf(stderr, "{");
   for (auto elt : vec) {
     std::fprintf(stderr, "(0x%zx, 0x%zx),", elt.first, elt.second);
-    }
-    std::fprintf(stderr, "}\n");
+  }
+  std::fprintf(stderr, "}\n");
 }
 static void memcpy_private(void* dest, const void* src, std::vector<std::pair<size_t, size_t>>& private_blocks)
 {
-  for(auto block : private_blocks) {
+  for (auto block : private_blocks)
     memcpy((uint8_t*)dest+block.first, (uint8_t*)src+block.first, block.second-block.first);
-  }
 }
 
 static void check_blocks(std::vector<std::pair<size_t, size_t>> &private_blocks, size_t buff_size) {
-  for(auto block : private_blocks) {
+  for (auto block : private_blocks)
     xbt_assert(block.first <= block.second && block.second <= buff_size, "Oops, bug in shared malloc.");
-  }
 }
 
 void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t buff_size)
@@ -205,8 +203,8 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
     //xbt_free(comm->comm.src_data);// inside SMPI the request is kept inside the user data and should be free
     comm->src_buff = nullptr;
   }
-  if(tmpbuff!=buff)xbt_free(tmpbuff);
-
+  if (tmpbuff != buff)
+    xbt_free(tmpbuff);
 }
 
 void smpi_comm_null_copy_buffer_callback(smx_activity_t comm, void *buff, size_t buff_size)
@@ -282,10 +280,8 @@ void smpi_global_init()
     std::string str = std::string(xbt_cfg_get_string("smpi/papi-events"));
     Tokenizer tokens(str, separator_units);
 
-    // Iterate over all the computational units. This could be
-    // processes, hosts, threads, ranks... You name it. I'm not exactly
-    // sure what we will support eventually, so I'll leave it at the
-    // general term "units".
+    // Iterate over all the computational units. This could be processes, hosts, threads, ranks... You name it.
+    // I'm not exactly sure what we will support eventually, so I'll leave it at the general term "units".
     for (auto& unit_it : tokens) {
       boost::char_separator<char> separator_events(":");
       Tokenizer event_tokens(unit_it, separator_events);
@@ -306,7 +302,7 @@ void smpi_global_init()
       // Note that we need to remove the name of the unit
       // (that could also be the "default" value), which always comes first.
       // Hence, we start at ++(events.begin())!
-      for (Tokenizer::iterator events_it = ++(event_tokens.begin()); events_it != event_tokens.end(); events_it++) {
+      for (Tokenizer::iterator events_it = ++(event_tokens.begin()); events_it != event_tokens.end(); ++events_it) {
 
         int event_code   = PAPI_NULL;
         char* event_name = const_cast<char*>((*events_it).c_str());

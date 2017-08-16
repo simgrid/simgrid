@@ -1,10 +1,19 @@
-foreach(x heap_bench log_large log_usage mallocator parallel_log_crashtest parmap_bench parmap_test)
+foreach(x heap_bench log_large log_usage mallocator parallel_log_crashtest)
   add_executable       (${x}  ${x}/${x}.c)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
+endforeach()
+
+foreach(x parmap_bench parmap_test)
+  add_executable       (${x}  ${x}/${x}.cpp)
+  target_link_libraries(${x}  simgrid)
+  set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
+
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
+  set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
 endforeach()
 
 if(HAVE_MMALLOC)

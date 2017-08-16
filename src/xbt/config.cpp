@@ -305,15 +305,17 @@ Config::~Config()
 
 inline ConfigurationElement* Config::getDictElement(const char* name)
 {
-  try {
-    return options.at(name);
-  } catch (std::out_of_range& unfound) {
-    try {
-      ConfigurationElement* res = aliases.at(name);
+  auto opt = options.find(name);
+  if (opt != options.end()) {
+    return opt->second;
+  } else {
+    auto als = aliases.find(name);
+    if (als != aliases.end()) {
+      ConfigurationElement* res = als->second;
       if (warn_for_aliases)
         XBT_INFO("Option %s has been renamed to %s. Consider switching.", name, res->getKey().c_str());
       return res;
-    } catch (std::out_of_range& missing_key) {
+    } else {
       throw simgrid::config::missing_key_error(std::string("Bad config key: ") + name);
     }
   }

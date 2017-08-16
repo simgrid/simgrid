@@ -26,14 +26,15 @@ public:
   std::vector<surf::LinkImpl*> links;
 };
 
-NetZoneImpl::NetZoneImpl(NetZone* father, const char* name) : NetZone(father, name)
+NetZoneImpl::NetZoneImpl(NetZone* father, std::string name) : NetZone(father, name)
 {
-  xbt_assert(nullptr == simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name),
-             "Refusing to create a second NetZone called '%s'.", name);
+  xbt_assert(nullptr == simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name.c_str()),
+             "Refusing to create a second NetZone called '%s'.", name.c_str());
 
   netpoint_ = new NetPoint(name, NetPoint::Type::NetZone, static_cast<NetZoneImpl*>(father));
-  XBT_DEBUG("NetZone '%s' created with the id '%u'", name, netpoint_->id());
+  XBT_DEBUG("NetZone '%s' created with the id '%u'", name.c_str(), netpoint_->id());
 }
+
 NetZoneImpl::~NetZoneImpl()
 {
   for (auto& kv : bypassRoutes_)
@@ -260,20 +261,18 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
     for (int i = 0; i < max; i++) {
       if (i <= max_index_src && max <= max_index_dst) {
         key = {path_src.at(i)->netpoint_, path_dst.at(max)->netpoint_};
-        try {
-          bypassedRoute = bypassRoutes_.at(key);
+        auto bpr = bypassRoutes_.find(key);
+        if (bpr != bypassRoutes_.end()) {
+          bypassedRoute = bpr->second;
           break;
-        } catch (std::out_of_range& unfound) {
-          // Do nothing
         }
       }
       if (max <= max_index_src && i <= max_index_dst) {
         key = {path_src.at(max)->netpoint_, path_dst.at(i)->netpoint_};
-        try {
-          bypassedRoute = bypassRoutes_.at(key);
+        auto bpr = bypassRoutes_.find(key);
+        if (bpr != bypassRoutes_.end()) {
+          bypassedRoute = bpr->second;
           break;
-        } catch (std::out_of_range& unfound) {
-          // Do nothing
         }
       }
     }
@@ -283,11 +282,10 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
 
     if (max <= max_index_src && max <= max_index_dst) {
       key = {path_src.at(max)->netpoint_, path_dst.at(max)->netpoint_};
-      try {
-        bypassedRoute = bypassRoutes_.at(key);
+      auto bpr = bypassRoutes_.find(key);
+      if (bpr != bypassRoutes_.end()) {
+        bypassedRoute = bpr->second;
         break;
-      } catch (std::out_of_range& unfound) {
-        // Do nothing
       }
     }
   }

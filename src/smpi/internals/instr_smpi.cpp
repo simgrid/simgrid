@@ -9,11 +9,12 @@
 #include <cctype>
 #include <cstdarg>
 #include <cwchar>
+#include <deque>
 #include <simgrid/sg_config.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_smpi, instr, "Tracing SMPI");
 
-static xbt_dict_t keys;
+static std::unordered_map<char*, std::deque<std::string>*> keys;
 
 static const char *smpi_colors[] ={
     "recv",     "1 0 0",
@@ -100,12 +101,14 @@ static char *TRACE_smpi_put_key(int src, int dst, int tag, char *key, int n, int
   //get the dynar for src#dst
   char aux[INSTR_DEFAULT_STR_SIZE];
   snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d#%d#%d", src, dst, tag, send);
-  xbt_dynar_t d = static_cast<xbt_dynar_t>(xbt_dict_get_or_null(keys, aux));
+  auto it = keys.find(aux);
+  std::deque<std::string>* d;
 
-  if (d == nullptr) {
-    d = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-    xbt_dict_set(keys, aux, d, nullptr);
-  }
+  if (it == keys.end()) {
+    d         = new std::deque<std::string>;
+    keys[aux] = d;
+  } else
+    d = it->second;
 
   //generate the key
   static unsigned long long counter = 0;
@@ -113,8 +116,7 @@ static char *TRACE_smpi_put_key(int src, int dst, int tag, char *key, int n, int
   snprintf(key, n, "%d_%d_%d_%llu", src, dst, tag, counter);
 
   //push it
-  char *a = static_cast<char*> (xbt_strdup(key));
-  xbt_dynar_push_as(d, char *, a);
+  d->push_back(key);
 
   return key;
 }
@@ -123,21 +125,18 @@ static char *TRACE_smpi_get_key(int src, int dst, int tag, char *key, int n, int
 {
   char aux[INSTR_DEFAULT_STR_SIZE];
   snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d#%d#%d", src, dst, tag, send==1?0:1);
-  xbt_dynar_t d = static_cast<xbt_dynar_t>(xbt_dict_get_or_null(keys, aux));
-
-  // first posted
-  if(xbt_dynar_is_empty(d)){
-      TRACE_smpi_put_key(src, dst, tag, key, n, send);
-      return key;
+  auto it = keys.find(aux);
+  if (it == keys.end()) {
+    // first posted
+    TRACE_smpi_put_key(src, dst, tag, key, n, send);
+  } else {
+    snprintf(key, n, "%s", it->second->front().c_str());
+    it->second->pop_front();
   }
-
-  char *s = xbt_dynar_get_as (d, 0, char *);
-  snprintf (key, n, "%s", s);
-  xbt_dynar_remove_at (d, 0, nullptr);
   return key;
 }
 
-static xbt_dict_t process_category;
+static std::unordered_map<smx_actor_t, std::string> process_category;
 
 static void cleanup_extra_data (instr_extra_data extra){
   if(extra!=nullptr){
@@ -157,12 +156,8 @@ void TRACE_internal_smpi_set_category (const char *category)
   //declare category
   TRACE_category (category);
 
-  char processid[INSTR_DEFAULT_STR_SIZE];
-  snprintf (processid, INSTR_DEFAULT_STR_SIZE, "%p", SIMIX_process_self());
-  if (xbt_dict_get_or_null (process_category, processid))
-    xbt_dict_remove (process_category, processid);
   if (category != nullptr)
-    xbt_dict_set (process_category, processid, xbt_strdup(category), nullptr);
+    process_category[SIMIX_process_self()] = category;
 }
 
 const char *TRACE_internal_smpi_get_category ()
@@ -170,21 +165,19 @@ const char *TRACE_internal_smpi_get_category ()
   if (not TRACE_smpi_is_enabled())
     return nullptr;
 
-  char processid[INSTR_DEFAULT_STR_SIZE];
-  snprintf (processid, INSTR_DEFAULT_STR_SIZE, "%p", SIMIX_process_self());
-  return static_cast<char*>(xbt_dict_get_or_null (process_category, processid));
+  auto it = process_category.find(SIMIX_process_self());
+  return (it == process_category.end()) ? nullptr : it->second.c_str();
 }
 
 void TRACE_smpi_alloc()
 {
-  keys = xbt_dict_new_homogeneous(xbt_dynar_free_voidp);
-  process_category = xbt_dict_new_homogeneous(xbt_free_f);
+  // for symmetry
 }
 
 void TRACE_smpi_release()
 {
-  xbt_dict_free(&keys);
-  xbt_dict_free(&process_category);
+  for (auto elm : keys)
+    delete elm.second;
 }
 
 void TRACE_smpi_init(int rank)

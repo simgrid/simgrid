@@ -17,19 +17,19 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_file,"S4U files");
 namespace simgrid {
 namespace s4u {
 
-File::File(const char* fullpath, void* userdata) : File(fullpath, Host::current(), userdata){};
+File::File(std::string fullpath, void* userdata) : File(fullpath, Host::current(), userdata){};
 
-File::File(const char* fullpath, sg_host_t host, void* userdata) : path_(fullpath), userdata_(userdata)
+File::File(std::string fullpath, sg_host_t host, void* userdata) : path_(fullpath), userdata_(userdata)
 {
   // this cannot fail because we get a xbt_die if the mountpoint does not exist
   Storage* st                  = nullptr;
   size_t longest_prefix_length = 0;
   std::string path;
-  XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath, host->getCname());
+  XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath.c_str(), host->getCname());
 
   for (auto mnt : host->getMountedStorages()) {
     XBT_DEBUG("See '%s'", mnt.first.c_str());
-    mount_point = std::string(fullpath).substr(0, mnt.first.size());
+    mount_point = fullpath.substr(0, mnt.first.length());
 
     if (mount_point == mnt.first && mnt.first.length() > longest_prefix_length) {
       /* The current mount name is found in the full path and is bigger than the previous*/
@@ -38,10 +38,10 @@ File::File(const char* fullpath, sg_host_t host, void* userdata) : path_(fullpat
     }
   }
   if (longest_prefix_length > 0) { /* Mount point found, split fullpath into mount_name and path+filename*/
-    mount_point = std::string(fullpath).substr(0, longest_prefix_length);
-    path        = std::string(fullpath).substr(longest_prefix_length, strlen(fullpath));
+    mount_point = fullpath.substr(0, longest_prefix_length);
+    path        = fullpath.substr(longest_prefix_length, fullpath.length());
   } else
-    xbt_die("Can't find mount point for '%s' on '%s'", fullpath, host->getCname());
+    xbt_die("Can't find mount point for '%s' on '%s'", fullpath.c_str(), host->getCname());
 
   pimpl_ =
       simgrid::simix::kernelImmediate([this, st, path] { return new simgrid::surf::FileImpl(st, path, mount_point); });
@@ -84,7 +84,7 @@ sg_size_t File::tell()
   return simgrid::simix::kernelImmediate([this] { return pimpl_->tell(); });
 }
 
-void File::move(const char* fullpath)
+void File::move(std::string fullpath)
 {
   simgrid::simix::kernelImmediate([this, fullpath] { pimpl_->move(fullpath); });
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2015. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -16,11 +16,8 @@ PropertyHolder::~PropertyHolder() {
 const char *PropertyHolder::getProperty(const char*key) {
   if (properties_ == nullptr)
     return nullptr;
-  try {
-    return properties_->at(key).c_str();
-  } catch (std::out_of_range& unfound) {
-    return nullptr;
-  }
+  auto prop = properties_->find(key);
+  return prop == properties_->end() ? nullptr : prop->second.c_str();
 }
 
 /** @brief Change the value of a given key in the property set */

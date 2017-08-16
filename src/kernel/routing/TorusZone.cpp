@@ -27,11 +27,11 @@ inline void rankId_to_coords(int rankId, std::vector<unsigned int> dimensions, u
 namespace simgrid {
 namespace kernel {
 namespace routing {
-TorusZone::TorusZone(NetZone* father, const char* name) : ClusterZone(father, name)
+TorusZone::TorusZone(NetZone* father, std::string name) : ClusterZone(father, name)
 {
 }
 
-void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position)
+void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, int position)
 {
   /* Create all links that exist in the torus. Each rank creates @a dimensions-1 links */
   int dim_product = 1; // Needed to calculate the next neighbor_id
@@ -45,7 +45,8 @@ void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
                                ? rank - (current_dimension - 1) * dim_product
                                : rank + dim_product;
     // name of neighbor is not right for non contiguous cluster radicals (as id != rank in this case)
-    char* link_id  = bprintf("%s_link_from_%i_to_%i", cluster->id, id, neighbor_rank_id);
+    std::string link_id =
+        std::string(cluster->id) + "_link_from_" + std::to_string(id) + "_to_" + std::to_string(neighbor_rank_id);
     link.id        = link_id;
     link.bandwidth = cluster->bw;
     link.latency   = cluster->lat;
@@ -54,12 +55,10 @@ void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
     surf::LinkImpl* linkUp;
     surf::LinkImpl* linkDown;
     if (link.policy == SURF_LINK_FULLDUPLEX) {
-      char* tmp_link = bprintf("%s_UP", link_id);
+      std::string tmp_link = link_id + "_UP";
       linkUp         = surf::LinkImpl::byName(tmp_link);
-      free(tmp_link);
-      tmp_link = bprintf("%s_DOWN", link_id);
+      tmp_link             = link_id + "_DOWN";
       linkDown = surf::LinkImpl::byName(tmp_link);
-      free(tmp_link);
     } else {
       linkUp   = surf::LinkImpl::byName(link_id);
       linkDown = linkUp;
@@ -71,24 +70,22 @@ void TorusZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
      */
     privateLinks_.insert({position + j, {linkUp, linkDown}});
     dim_product *= current_dimension;
-    xbt_free(link_id);
   }
   rank++;
 }
 
-void TorusZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
+void TorusZone::parse_specific_arguments(ClusterCreationArgs* cluster)
 {
   std::vector<std::string> dimensions;
   boost::split(dimensions, cluster->topo_parameters, boost::is_any_of(","));
 
   if (not dimensions.empty()) {
     /* We are in a torus cluster
-     * Parse attribute dimensions="dim1,dim2,dim3,...,dimN" and safe it in a vector.
+     * Parse attribute dimensions="dim1,dim2,dim3,...,dimN" and save them into a vector.
      * Additionally, we need to know how many ranks we have in total
      */
-    for (auto group : dimensions) {
-      dimensions_.push_back(surf_parse_get_int(group.c_str()));
-    }
+    for (auto group : dimensions)
+      dimensions_.push_back(surf_parse_get_int(group));
 
     linkCountPerNode_ = dimensions_.size();
   }
@@ -119,21 +116,16 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
   unsigned int current_node = src->id();
   unsigned int next_node    = 0;
   /*
-   * Arrays that hold the coordinates of the current node and
-   * the target; comparing the values at the i-th position of
-   * both arrays, we can easily assess whether we need to route
-   * into this dimension or not.
+   * Arrays that hold the coordinates of the current node andthe target; comparing the values at the i-th position of
+   * both arrays, we can easily assess whether we need to route into this dimension or not.
    */
   unsigned int myCoords[4];
   rankId_to_coords(src->id(), dimensions_, &myCoords);
   unsigned int targetCoords[4];
   rankId_to_coords(dst->id(), dimensions_, &targetCoords);
   /*
-   * linkOffset describes the offset where the link
-   * we want to use is stored
-   * (+1 is added because each node has a link from itself to itself,
-   * which can only be the case if src->m_id == dst->m_id -- see above
-   * for this special case)
+   * linkOffset describes the offset where the link we want to use is stored(+1 is added because each node has a link
+   * from itself to itself, which can only be the case if src->m_id == dst->m_id -- see above for this special case)
    */
   int nodeOffset = (dimensions_.size() + 1) * src->id();
 

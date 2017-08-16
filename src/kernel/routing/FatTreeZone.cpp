@@ -20,7 +20,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-FatTreeZone::FatTreeZone(NetZone* father, const char* name) : ClusterZone(father, name)
+FatTreeZone::FatTreeZone(NetZone* father, std::string name) : ClusterZone(father, name)
 {
   XBT_DEBUG("Creating a new fat tree.");
 }
@@ -241,9 +241,9 @@ void FatTreeZone::generateSwitches()
     this->nodesByLevel_[0] *= this->lowerLevelNodesNumber_[i];
 
   if (this->nodesByLevel_[0] != this->nodes_.size()) {
-    surf_parse_error("The number of provided nodes does not fit with the wanted topology."
-                     " Please check your platform description (We need %u nodes, we got %zu)",
-                     this->nodesByLevel_[0], this->nodes_.size());
+    surf_parse_error(std::string("The number of provided nodes does not fit with the wanted topology.") +
+                     " Please check your platform description (We need " + std::to_string(this->nodesByLevel_[0]) +
+                     "nodes, we got " + std::to_string(this->nodes_.size()));
     return;
   }
 
@@ -356,7 +356,7 @@ void FatTreeZone::addLink(FatTreeNode* parent, unsigned int parentPort, FatTreeN
   this->links_.push_back(newLink);
 }
 
-void FatTreeZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
+void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
 {
   std::vector<std::string> parameters;
   std::vector<std::string> tmp;
@@ -441,7 +441,7 @@ void FatTreeZone::generateDotFile(const std::string& filename) const
   file.close();
 }
 
-FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, int position)
+FatTreeNode::FatTreeNode(ClusterCreationArgs* cluster, int id, int level, int position)
     : id(id), level(level), position(position)
 {
   LinkCreationArgs linkTemplate;
@@ -451,7 +451,7 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, in
     linkTemplate.policy    = SURF_LINK_SHARED;
     linkTemplate.id        = "limiter_"+std::to_string(id);
     sg_platf_new_link(&linkTemplate);
-    this->limiterLink = surf::LinkImpl::byName(linkTemplate.id.c_str());
+    this->limiterLink = surf::LinkImpl::byName(linkTemplate.id);
   }
   if (cluster->loopback_bw || cluster->loopback_lat) {
     linkTemplate.bandwidth = cluster->loopback_bw;
@@ -459,11 +459,11 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, in
     linkTemplate.policy    = SURF_LINK_FATPIPE;
     linkTemplate.id        = "loopback_"+ std::to_string(id);
     sg_platf_new_link(&linkTemplate);
-    this->loopback = surf::LinkImpl::byName(linkTemplate.id.c_str());
+    this->loopback = surf::LinkImpl::byName(linkTemplate.id);
   }
 }
 
-FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode* downNode, FatTreeNode* upNode)
+FatTreeLink::FatTreeLink(ClusterCreationArgs* cluster, FatTreeNode* downNode, FatTreeNode* upNode)
     : upNode(upNode), downNode(downNode)
 {
   static int uniqueId = 0;
@@ -477,11 +477,11 @@ FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode* downNode
 
   if (cluster->sharing_policy == SURF_LINK_FULLDUPLEX) {
     std::string tmpID = std::string(linkTemplate.id) + "_UP";
-    this->upLink      = surf::LinkImpl::byName(tmpID.c_str()); // check link?
+    this->upLink      = surf::LinkImpl::byName(tmpID); // check link?
     tmpID          = std::string(linkTemplate.id) + "_DOWN";
-    this->downLink    = surf::LinkImpl::byName(tmpID.c_str()); // check link ?
+    this->downLink    = surf::LinkImpl::byName(tmpID); // check link ?
   } else {
-    this->upLink   = surf::LinkImpl::byName(linkTemplate.id.c_str());
+    this->upLink   = surf::LinkImpl::byName(linkTemplate.id);
     this->downLink = this->upLink;
   }
   uniqueId++;

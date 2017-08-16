@@ -24,12 +24,11 @@ void SIMIX_simcall_answer(smx_simcall_t simcall)
     XBT_DEBUG("Answer simcall %s (%d) issued by %s (%p)", SIMIX_simcall_name(simcall->call), (int)simcall->call,
         simcall->issuer->name.c_str(), simcall->issuer);
     simcall->issuer->simcall.call = SIMCALL_NONE;
-    xbt_assert(SIMIX_is_maestro(), "Ugh! This code path is reserved for maestro, but I'm '%s' on '%s'",
-               SIMIX_process_self()->cname(), sg_host_get_name(SIMIX_process_self()->host));
     /* This check should be useless and slows everyone. Reactivate if you see something weird in process scheduling. */
-    // if (xbt_dynar_member(simix_global->process_to_run, &(simcall->issuer)))
+    // if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), simcall->issuer) !=
+    //         end(simix_global->process_to_run))
     //   DIE_IMPOSSIBLE;
-    xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, simcall->issuer);
+    simix_global->process_to_run.push_back(simcall->issuer);
   }
 }
 

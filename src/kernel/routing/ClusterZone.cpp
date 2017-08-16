@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf"
 namespace simgrid {
 namespace kernel {
 namespace routing {
-ClusterZone::ClusterZone(NetZone* father, const char* name) : NetZoneImpl(father, name)
+ClusterZone::ClusterZone(NetZone* father, std::string name) : NetZoneImpl(father, name)
 {
 }
 
@@ -119,9 +119,9 @@ void ClusterZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges
   }
 }
 
-void ClusterZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int /*rank*/, int position)
+void ClusterZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int /*rank*/, int position)
 {
-  char* link_id = bprintf("%s_link_%d", cluster->id, id);
+  std::string link_id = cluster->id + "_link_" + std::to_string(id);
 
   LinkCreationArgs link;
   link.id        = link_id;
@@ -133,17 +133,12 @@ void ClusterZone::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id
   surf::LinkImpl *linkUp;
   surf::LinkImpl *linkDown;
   if (link.policy == SURF_LINK_FULLDUPLEX) {
-    char* tmp_link = bprintf("%s_UP", link_id);
-    linkUp         = surf::LinkImpl::byName(tmp_link);
-    xbt_free(tmp_link);
-    tmp_link = bprintf("%s_DOWN", link_id);
-    linkDown = surf::LinkImpl::byName(tmp_link);
-    xbt_free(tmp_link);
+    linkUp   = surf::LinkImpl::byName(link_id + "_UP");
+    linkDown = surf::LinkImpl::byName(link_id + "_DOWN");
   } else {
     linkUp   = surf::LinkImpl::byName(link_id);
     linkDown = linkUp;
   }
-  xbt_free(link_id);
   privateLinks_.insert({position, {linkUp, linkDown}});
 }
 }

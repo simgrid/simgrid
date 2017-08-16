@@ -40,17 +40,18 @@ public:
         XBT_INFO("Sending \"%s\" (of %ld) to mailbox \"%s\"", (std::string("Task_") + std::to_string(i)).c_str(),
                  number_of_tasks, mailbox->getName());
 
-      /* - Send the task to the @ref worker */
-      char* payload = bprintf("%f", comp_size);
-      mailbox->put(payload, comm_size);
+      /* - Send the computation amount to the @ref worker */
+      mailbox->put(static_cast<void*>(&comp_size), comm_size);
     }
 
     XBT_INFO("All tasks have been dispatched. Let's tell everybody the computation is over.");
     for (int i = 0; i < workers_count; i++) {
       /* - Eventually tell all the workers to stop by sending a "finalize" task */
       mailbox = simgrid::s4u::Mailbox::byName(std::string("worker-") + std::to_string(i % workers_count));
-      mailbox->put(xbt_strdup("finalize"), 0);
+      double finalize = -1;
+      mailbox->put(static_cast<void*>(&finalize), 0);
     }
+    simgrid::s4u::this_actor::sleep_for(.1); // Grace time to ensure everyone finishes.
   }
 };
 
@@ -70,19 +71,15 @@ public:
   void operator()()
   {
     while (1) { /* The worker waits in an infinite loop for tasks sent by the \ref master */
-      char* res = static_cast<char*>(mailbox->get());
-      xbt_assert(res != nullptr, "MSG_task_get failed");
-
-      if (strcmp(res, "finalize") == 0) { /* - Exit if 'finalize' is received */
-        xbt_free(res);
+      double* comp_size = static_cast<double*>(mailbox->get());
+      xbt_assert(comp_size != nullptr, "MSG_task_get failed");
+      if (*comp_size < 0) { /* - Exit if 'finalize' is received */
+        XBT_INFO("I'm done. See you!");
         break;
       }
       /*  - Otherwise, process the task */
-      double comp_size = std::stod(res);
-      xbt_free(res);
-      simgrid::s4u::this_actor::execute(comp_size);
+      simgrid::s4u::this_actor::execute(*comp_size);
     }
-    XBT_INFO("I'm done. See you!");
   }
 };
 

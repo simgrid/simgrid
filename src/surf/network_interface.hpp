@@ -171,7 +171,7 @@ private:
   static std::unordered_map<std::string, LinkImpl*>* links;
 
 public:
-  static LinkImpl* byName(const char* name);
+  static LinkImpl* byName(std::string name);
   static int linksCount();
   static LinkImpl** linksList();
   static void linksExit();

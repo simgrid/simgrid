@@ -221,11 +221,11 @@ MPI_Request Request::rma_recv_init(void *buf, int count, MPI_Datatype datatype, 
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
   if(op==MPI_OP_NULL){
-    request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype,  src, dst, tag,
-                            comm, RMA | NON_PERSISTENT | RECV | PREPARED);
+    request = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, src, dst, tag, comm,
+                          RMA | NON_PERSISTENT | RECV | PREPARED);
   }else{
-    request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype,  src, dst, tag,
-                            comm, RMA | NON_PERSISTENT | RECV | PREPARED | ACCUMULATE);
+    request = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, src, dst, tag, comm,
+                          RMA | NON_PERSISTENT | RECV | PREPARED | ACCUMULATE);
     request->op_ = op;
   }
   return request;
@@ -233,16 +233,16 @@ MPI_Request Request::rma_recv_init(void *buf, int count, MPI_Datatype datatype, 
 
 MPI_Request Request::irecv_init(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm)
 {
-  return new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE :
-                          comm->group()->index(src), smpi_process()->index(), tag,
-                          comm, PERSISTENT | RECV | PREPARED);
+  return new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype,
+                     src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->index(src), smpi_process()->index(), tag,
+                     comm, PERSISTENT | RECV | PREPARED);
 }
 
 MPI_Request Request::isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
-  request =  new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
-                           comm->group()->index(dst), tag, comm, NON_PERSISTENT | ISEND | SEND);
+  request             = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
+                        comm->group()->index(dst), tag, comm, NON_PERSISTENT | ISEND | SEND);
   request->start();
   return request;
 }
@@ -250,8 +250,8 @@ MPI_Request Request::isend(void *buf, int count, MPI_Datatype datatype, int dst,
 MPI_Request Request::issend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
-  request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
-                        comm->group()->index(dst), tag,comm, NON_PERSISTENT | ISEND | SSEND | SEND);
+  request             = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
+                        comm->group()->index(dst), tag, comm, NON_PERSISTENT | ISEND | SSEND | SEND);
   request->start();
   return request;
 }
@@ -260,9 +260,9 @@ MPI_Request Request::issend(void *buf, int count, MPI_Datatype datatype, int dst
 MPI_Request Request::irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm)
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
-  request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE :
-                          comm->group()->index(src), smpi_process()->index(), tag, comm,
-                          NON_PERSISTENT | RECV);
+  request             = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype,
+                        src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->index(src), smpi_process()->index(),
+                        tag, comm, NON_PERSISTENT | RECV);
   request->start();
   return request;
 }
@@ -278,8 +278,8 @@ void Request::recv(void *buf, int count, MPI_Datatype datatype, int src, int tag
 void Request::send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
-  request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
-                          comm->group()->index(dst), tag, comm, NON_PERSISTENT | SEND);
+  request             = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
+                        comm->group()->index(dst), tag, comm, NON_PERSISTENT | SEND);
 
   request->start();
   wait(&request, MPI_STATUS_IGNORE);
@@ -289,8 +289,8 @@ void Request::send(void *buf, int count, MPI_Datatype datatype, int dst, int tag
 void Request::ssend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
-  request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
-                          comm->group()->index(dst), tag, comm, NON_PERSISTENT | SSEND | SEND);
+  request             = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
+                        comm->group()->index(dst), tag, comm, NON_PERSISTENT | SSEND | SEND);
 
   request->start();
   wait(&request,MPI_STATUS_IGNORE);

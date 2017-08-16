@@ -10,6 +10,7 @@
 #include <csignal> /* Signal handling */
 #include <cstdlib>
 
+#include <xbt/algorithm.hpp>
 #include <xbt/functional.hpp>
 
 #include "simgrid/s4u/Engine.hpp"
@@ -204,8 +205,6 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_global = std::unique_ptr<simgrid::simix::Global>(new simgrid::simix::Global());
 
     simgrid::simix::ActorImpl proc;
-    simix_global->process_to_run = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
-    simix_global->process_that_ran = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
     simix_global->process_to_destroy = xbt_swag_new(xbt_swag_offset(proc, destroy_hookup));
     simix_global->maestro_process = nullptr;
     simix_global->create_process_function = &SIMIX_process_create;
@@ -277,7 +276,7 @@ void SIMIX_clean()
 
   smx_cleaned = 1;
   XBT_DEBUG("SIMIX_clean called. Simulation's over.");
-  if (not xbt_dynar_is_empty(simix_global->process_to_run) && SIMIX_get_clock() <= 0.0) {
+  if (not simix_global->process_to_run.empty() && SIMIX_get_clock() <= 0.0) {
     XBT_CRITICAL("   ");
     XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
     XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
@@ -292,8 +291,8 @@ void SIMIX_clean()
   xbt_heap_free(simix_timers);
   simix_timers = nullptr;
   /* Free the remaining data structures */
-  xbt_dynar_free(&simix_global->process_to_run);
-  xbt_dynar_free(&simix_global->process_that_ran);
+  simix_global->process_to_run.clear();
+  simix_global->process_that_ran.clear();
   xbt_swag_free(simix_global->process_to_destroy);
   simix_global->process_list.clear();
   simix_global->process_to_destroy = nullptr;
@@ -331,19 +330,6 @@ double SIMIX_get_clock()
     return MC_process_clock_get(SIMIX_process_self());
   }else{
     return surf_get_clock();
-  }
-}
-
-static int process_syscall_color(void *p)
-{
-  switch ((*(smx_actor_t *)p)->simcall.call) {
-  case SIMCALL_NONE:
-  case SIMCALL_PROCESS_KILL:
-    return 2;
-  //  case SIMCALL_PROCESS_RESUME:
-  //    return 1;
-  default:
-    return 0;
   }
 }
 
@@ -429,18 +415,15 @@ void SIMIX_run()
   double time = 0;
 
   do {
-    XBT_DEBUG("New Schedule Round; size(queue)=%lu", xbt_dynar_length(simix_global->process_to_run));
+    XBT_DEBUG("New Schedule Round; size(queue)=%zu", simix_global->process_to_run.size());
 
     SIMIX_execute_tasks();
 
-    while (not xbt_dynar_is_empty(simix_global->process_to_run)) {
-      XBT_DEBUG("New Sub-Schedule Round; size(queue)=%lu", xbt_dynar_length(simix_global->process_to_run));
+    while (not simix_global->process_to_run.empty()) {
+      XBT_DEBUG("New Sub-Schedule Round; size(queue)=%zu", simix_global->process_to_run.size());
 
       /* Run all processes that are ready to run, possibly in parallel */
       SIMIX_process_runall();
-
-      /* Move all killer processes to the end of the list, because killing a process that have an ongoing simcall is a bad idea */
-      xbt_dynar_three_way_partition(simix_global->process_that_ran, process_syscall_color);
 
       /* answer sequentially and in a fixed arbitrary order all the simcalls that were issued during that sub-round */
 
@@ -497,9 +480,7 @@ void SIMIX_run()
        *   That would thus be a pure waste of time.
        */
 
-      unsigned int iter;
-      smx_actor_t process;
-      xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
+      for (smx_actor_t process : simix_global->process_that_ran) {
         if (process->simcall.call != SIMCALL_NONE) {
           SIMIX_simcall_handle(&process->simcall, 0);
         }
@@ -548,13 +529,13 @@ void SIMIX_run()
     /* Clean processes to destroy */
     SIMIX_process_empty_trash();
 
-    XBT_DEBUG("### time %f, #processes %zu, #to_run %lu", time, simix_global->process_list.size(),
-              xbt_dynar_length(simix_global->process_to_run));
+    XBT_DEBUG("### time %f, #processes %zu, #to_run %zu", time, simix_global->process_list.size(),
+              simix_global->process_to_run.size());
 
-    if (xbt_dynar_is_empty(simix_global->process_to_run) && not simix_global->process_list.empty())
+    if (simix_global->process_to_run.empty() && not simix_global->process_list.empty())
       simgrid::simix::onDeadlock();
 
-  } while (time > -1.0 || not xbt_dynar_is_empty(simix_global->process_to_run));
+  } while (time > -1.0 || not simix_global->process_to_run.empty());
 
   if (simix_global->process_list.size() != 0) {
 

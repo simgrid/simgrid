@@ -184,34 +184,7 @@ void MSG_vm_destroy(msg_vm_t vm)
  */
 void MSG_vm_start(msg_vm_t vm)
 {
-  simgrid::simix::kernelImmediate([vm]() {
-    simgrid::vm::VmHostExt::ensureVmExtInstalled();
-
-    simgrid::s4u::Host* pm = vm->pimpl_vm_->getPm();
-    if (pm->extension<simgrid::vm::VmHostExt>() == nullptr)
-      pm->extension_set(new simgrid::vm::VmHostExt());
-
-    long pm_ramsize   = pm->extension<simgrid::vm::VmHostExt>()->ramsize;
-    int pm_overcommit = pm->extension<simgrid::vm::VmHostExt>()->overcommit;
-    long vm_ramsize   = vm->getRamsize();
-
-    if (pm_ramsize && not pm_overcommit) { /* Only verify that we don't overcommit on need */
-      /* Retrieve the memory occupied by the VMs on that host. Yep, we have to traverse all VMs of all hosts for that */
-      long total_ramsize_of_vms = 0;
-      for (simgrid::s4u::VirtualMachine* ws_vm : simgrid::vm::VirtualMachineImpl::allVms_)
-        if (pm == ws_vm->pimpl_vm_->getPm())
-          total_ramsize_of_vms += ws_vm->pimpl_vm_->getRamsize();
-
-      if (vm_ramsize > pm_ramsize - total_ramsize_of_vms) {
-        XBT_WARN("cannnot start %s@%s due to memory shortage: vm_ramsize %ld, free %ld, pm_ramsize %ld (bytes).",
-                 vm->getCname(), pm->getCname(), vm_ramsize, pm_ramsize - total_ramsize_of_vms, pm_ramsize);
-        THROWF(vm_error, 0, "Memory shortage on host '%s', VM '%s' cannot be started", pm->getCname(), vm->getCname());
-      }
-    }
-
-    vm->pimpl_vm_->setState(SURF_VM_STATE_RUNNING);
-  });
-
+  vm->start();
   if (TRACE_msg_vm_is_enabled()) {
     container_t vm_container = PJ_container_get(vm->getCname());
     type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
@@ -229,27 +202,27 @@ void MSG_vm_start(msg_vm_t vm)
  */
 void MSG_vm_shutdown(msg_vm_t vm)
 {
-  smx_actor_t issuer=SIMIX_process_self();
+  smx_actor_t issuer = SIMIX_process_self();
   simgrid::simix::kernelImmediate([vm, issuer]() { vm->pimpl_vm_->shutdown(issuer); });
 
-  // Make sure that the processes in the VM are killed in this scheduling round before processing
-  // (eg with the VM destroy)
+  // Make sure that processes in the VM are killed in this scheduling round before processing (eg with the VM destroy)
   MSG_process_sleep(0.);
 }
 
-static inline char *get_mig_process_tx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
+static std::string get_mig_process_tx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
-  return bprintf("__pr_mig_tx:%s(%s-%s)", vm->getCname(), src_pm->getCname(), dst_pm->getCname());
+  return std::string("__pr_mig_tx:") + vm->getCname() + "(" + src_pm->getCname() + "-" + dst_pm->getCname() + ")";
 }
 
-static inline char *get_mig_process_rx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
+static std::string get_mig_process_rx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
-  return bprintf("__pr_mig_rx:%s(%s-%s)", vm->getCname(), src_pm->getCname(), dst_pm->getCname());
+  return std::string("__pr_mig_rx:") + vm->getCname() + "(" + src_pm->getCname() + "-" + dst_pm->getCname() + ")";
 }
 
-static inline char *get_mig_task_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm, int stage)
+static std::string get_mig_task_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm, int stage)
 {
-  return bprintf("__task_mig_stage%d:%s(%s-%s)", stage, vm->getCname(), src_pm->getCname(), dst_pm->getCname());
+  return std::string("__task_mig_stage") + std::to_string(stage) + ":" + vm->getCname() + "(" + src_pm->getCname() +
+         "-" + dst_pm->getCname() + ")";
 }
 
 struct migration_session {
@@ -273,7 +246,7 @@ static int migration_rx_fun(int argc, char *argv[])
 
   bool received_finalize = false;
 
-  char *finalize_task_name = get_mig_task_name(ms->vm, ms->src_pm, ms->dst_pm, 3);
+  std::string finalize_task_name = get_mig_task_name(ms->vm, ms->src_pm, ms->dst_pm, 3);
   while (not received_finalize) {
     msg_task_t task = nullptr;
     int ret         = MSG_task_recv(&task, ms->mbox);
@@ -281,16 +254,14 @@ static int migration_rx_fun(int argc, char *argv[])
     if (ret != MSG_OK) {
       // An error occurred, clean the code and return
       // The owner did not change, hence the task should be only destroyed on the other side
-      xbt_free(finalize_task_name);
       return 0;
     }
 
-    if (strcmp(task->name, finalize_task_name) == 0)
+    if (finalize_task_name == task->name)
       received_finalize = 1;
 
     MSG_task_destroy(task);
   }
-  xbt_free(finalize_task_name);
 
   // Here Stage 1, 2  and 3 have been performed.
   // Hence complete the migration
@@ -343,8 +314,8 @@ static int migration_rx_fun(int argc, char *argv[])
   }
 
   // Inform the SRC that the migration has been correctly performed
-  char *task_name = get_mig_task_name(ms->vm, ms->src_pm, ms->dst_pm, 4);
-  msg_task_t task = MSG_task_create(task_name, 0, 0, nullptr);
+  std::string task_name = get_mig_task_name(ms->vm, ms->src_pm, ms->dst_pm, 4);
+  msg_task_t task       = MSG_task_create(task_name.c_str(), 0, 0, nullptr);
   msg_error_t ret = MSG_task_send(task, ms->mbox_ctl);
   // xbt_assert(ret == MSG_OK);
   if(ret == MSG_HOST_FAILURE){
@@ -356,7 +327,6 @@ static int migration_rx_fun(int argc, char *argv[])
     // The SRC has crashed, this is not a problem has the VM has been correctly migrated on the DST node
     MSG_task_destroy(task);
   }
-  xbt_free(task_name);
 
   XBT_DEBUG("mig: rx_done");
   return 0;
@@ -479,8 +449,8 @@ static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t 
                                      int stage, int stage2_round, double mig_speed, double timeout)
 {
   sg_size_t sent = 0;
-  char *task_name = get_mig_task_name(vm, src_pm, dst_pm, stage);
-  msg_task_t task = MSG_task_create(task_name, 0, static_cast<double>(size), nullptr);
+  std::string task_name = get_mig_task_name(vm, src_pm, dst_pm, stage);
+  msg_task_t task       = MSG_task_create(task_name.c_str(), 0, static_cast<double>(size), nullptr);
 
   double clock_sta = MSG_get_clock();
 
@@ -489,8 +459,6 @@ static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t 
     ret = MSG_task_send_with_timeout_bounded(task, mbox, timeout, mig_speed);
   else
     ret = MSG_task_send(task, mbox);
-
-  xbt_free(task_name);
 
   if (ret == MSG_OK) {
     sent = size;
@@ -752,18 +720,12 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
   ms->mbox_ctl = bprintf("__mbox_mig_ctl:%s(%s-%s)", vm->getCname(), src_pm->getCname(), dst_pm->getCname());
   ms->mbox     = bprintf("__mbox_mig_src_dst:%s(%s-%s)", vm->getCname(), src_pm->getCname(), dst_pm->getCname());
 
-  char *pr_rx_name = get_mig_process_rx_name(vm, src_pm, dst_pm);
-  char *pr_tx_name = get_mig_process_tx_name(vm, src_pm, dst_pm);
+  std::string pr_rx_name = get_mig_process_rx_name(vm, src_pm, dst_pm);
+  std::string pr_tx_name = get_mig_process_tx_name(vm, src_pm, dst_pm);
 
-  char** argv = xbt_new(char*, 2);
-  argv[0]     = pr_rx_name;
-  argv[1]     = nullptr;
-  MSG_process_create_with_arguments(pr_rx_name, migration_rx_fun, ms, dst_pm, 1, argv);
+  MSG_process_create(pr_rx_name.c_str(), migration_rx_fun, ms, dst_pm);
 
-  argv        = xbt_new(char*, 2);
-  argv[0]     = pr_tx_name;
-  argv[1]     = nullptr;
-  MSG_process_create_with_arguments(pr_tx_name, migration_tx_fun, ms, src_pm, 1, argv);
+  MSG_process_create(pr_tx_name.c_str(), migration_tx_fun, ms, src_pm);
 
   /* wait until the migration have finished or on error has occurred */
   XBT_DEBUG("wait for reception of the final ACK (i.e. migration has been correctly performed");
@@ -791,9 +753,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
            vm->getCname());
   }
 
-  char* expected_task_name = get_mig_task_name(vm, src_pm, dst_pm, 4);
-  xbt_assert(strcmp(task->name, expected_task_name) == 0);
-  xbt_free(expected_task_name);
+  xbt_assert(get_mig_task_name(vm, src_pm, dst_pm, 4) == task->name);
   MSG_task_destroy(task);
 }
 
