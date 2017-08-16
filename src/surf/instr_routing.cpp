@@ -177,7 +177,7 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
       if (mpi == nullptr){
         mpi = s_type::s_type_container_new("MPI", root->type);
         if (not TRACE_smpi_is_grouped())
-          PJ_type_state_new ("MPI_STATE", mpi);
+          s_type::s_type_state_new ("MPI_STATE", mpi);
         s_type::s_type_link_new ("MPI_LINK", PJ_type_get_root(), mpi, mpi);
       }
     }
@@ -258,7 +258,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     type_t mpi = s_type::s_type_get_or_null ("MPI", container->type);
     if (mpi == nullptr){
       mpi = s_type::s_type_container_new("MPI", container->type);
-      PJ_type_state_new ("MPI_STATE", mpi);
+      s_type::s_type_state_new ("MPI_STATE", mpi);
     }
   }
 
@@ -266,7 +266,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     type_t msg_process = s_type::s_type_get_or_null ("MSG_PROCESS", container->type);
     if (msg_process == nullptr){
       msg_process = s_type::s_type_container_new("MSG_PROCESS", container->type);
-      type_t state = PJ_type_state_new ("MSG_PROCESS_STATE", msg_process);
+      type_t state = s_type::s_type_state_new ("MSG_PROCESS_STATE", msg_process);
       value PJ_value("suspend", "1 0 1", state);
       value::get_or_new("sleep", "1 1 0", state);
       value::get_or_new("receive", "1 0 0", state);
@@ -281,7 +281,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     type_t msg_vm = s_type::s_type_get_or_null ("MSG_VM", container->type);
     if (msg_vm == nullptr){
       msg_vm = s_type::s_type_container_new("MSG_VM", container->type);
-      type_t state = PJ_type_state_new ("MSG_VM_STATE", msg_vm);
+      type_t state = s_type::s_type_state_new ("MSG_VM_STATE", msg_vm);
       value PJ_value("suspend", "1 0 1", state);
       value::get_or_new("sleep", "1 1 0", state);
       value::get_or_new("receive", "1 0 0", state);
@@ -385,7 +385,7 @@ void instr_new_user_variable_type  (const char *father_type, const char *new_typ
 static void recursiveNewUserStateType (const char *father_type, const char *new_typename, type_t root)
 {
   if (not strcmp(root->name, father_type)) {
-    PJ_type_state_new (new_typename, root);
+    s_type::s_type_state_new (new_typename, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
   type_t child_type;

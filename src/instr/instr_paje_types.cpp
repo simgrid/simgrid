@@ -168,7 +168,7 @@ type_t s_type::s_type_link_new (const char *name, type_t father, type_t source, 
   return ret;
 }
 
-type_t PJ_type_state_new (const char *name, type_t father)
+type_t s_type::s_type_state_new (const char *name, type_t father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a state type with a nullptr name");
