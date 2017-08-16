@@ -77,6 +77,7 @@ class s_type : public ess_type {
   static type_t s_type_get_or_null (const char *name, type_t father);
   static type_t s_type_container_new (const char *name, type_t father);
   static type_t s_type_event_new (const char *name, type_t father);
+  static type_t s_type_variable_new (const char *name, const char *color, type_t father);
 };
 
 //--------------------------------------------------
@@ -347,7 +348,6 @@ XBT_PUBLIC(void) PJ_container_remove_from_parent (container_t container);
 XBT_PRIVATE void PJ_type_release ();
 XBT_PUBLIC(type_t)  PJ_type_get_root ();
 type_t PJ_type_link_new (const char *name, type_t father, type_t source, type_t dest);
-XBT_PRIVATE XBT_PRIVATE type_t PJ_type_variable_new (const char *name, const char *color, type_t father);
 XBT_PRIVATE type_t PJ_type_state_new (const char *name, type_t father);
 XBT_PUBLIC(type_t)  PJ_type_get (const char *name, const type_t father);
 XBT_PRIVATE XBT_PRIVATE void PJ_type_free (type_t type); 
