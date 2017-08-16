@@ -104,7 +104,7 @@ type_t s_type::s_type_get_or_null (const char *name, type_t father)
   return ret;
 }
 
-type_t PJ_type_container_new (const char *name, type_t father)
+type_t s_type::s_type_container_new (const char *name, type_t father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a container type with a nullptr name");

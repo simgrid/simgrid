@@ -90,10 +90,10 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
     if (newContainer->father){
       newContainer->type = s_type::s_type_get_or_null (as_typename, newContainer->father->type);
       if (newContainer->type == nullptr){
-        newContainer->type = PJ_type_container_new (as_typename, newContainer->father->type);
+        newContainer->type = s_type::s_type_container_new (as_typename, newContainer->father->type);
       }
     }else{
-      newContainer->type = PJ_type_container_new ("0", nullptr);
+      newContainer->type = s_type::s_type_container_new ("0", nullptr);
     }
   }else{
     //otherwise, the name is its kind
@@ -126,7 +126,7 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
     }
     type_t type = s_type::s_type_get_or_null (typeNameBuff, newContainer->father->type);
     if (type == nullptr){
-      newContainer->type = PJ_type_container_new (typeNameBuff, newContainer->father->type);
+      newContainer->type = s_type::s_type_container_new (typeNameBuff, newContainer->father->type);
     }else{
       newContainer->type = type;
     }
