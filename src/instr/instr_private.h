@@ -73,6 +73,7 @@ class s_type : public ess_type {
   s_type *father;
   xbt_dict_t children;
   xbt_dict_t values; //valid for all types except variable and container
+  s_type (const char *typeNameBuff, const char *key, const char *color, e_entity_types kind, type_t father);
 };
 
 //--------------------------------------------------
