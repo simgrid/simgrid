@@ -36,9 +36,9 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host)
     char str[INSTR_DEFAULT_STR_SIZE];
 
     //start link
-    container_t msg = PJ_container_get (instr_process_id(process, str, len));
+    container_t msg = s_container::s_container_get (instr_process_id(process, str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_LINK", PJ_type_get_root());
-    new StartLinkEvent (MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
+    new StartLinkEvent (MSG_get_clock(), s_container_get_root(), type, msg, "M", key);
 
     //destroy existing container of this process
     TRACE_msg_process_destroy (MSG_process_get_name (process), MSG_process_get_PID (process));
@@ -47,9 +47,9 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host)
     TRACE_msg_process_create (MSG_process_get_name (process), MSG_process_get_PID (process), new_host);
 
     //end link
-    msg = PJ_container_get(instr_process_id(process, str, len));
+    msg = s_container::s_container_get(instr_process_id(process, str, len));
     type = PJ_type_get ("MSG_PROCESS_LINK", PJ_type_get_root());
-    new EndLinkEvent (MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
+    new EndLinkEvent (MSG_get_clock(), s_container_get_root(), type, msg, "M", key);
   }
 }
 
@@ -59,7 +59,7 @@ void TRACE_msg_process_create (const char *process_name, int process_pid, msg_ho
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t host_container = PJ_container_get(host->getCname());
+    container_t host_container = s_container::s_container_get(host->getCname());
     new s_container(instr_process_id_2(process_name, process_pid, str, len), INSTR_MSG_PROCESS, host_container);
   }
 }
@@ -70,7 +70,7 @@ void TRACE_msg_process_destroy (const char *process_name, int process_pid)
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t process = PJ_container_get_or_null(instr_process_id_2(process_name, process_pid, str, len));
+    container_t process = s_container_get_or_null(instr_process_id_2(process_name, process_pid, str, len));
     if (process) {
       PJ_container_remove_from_parent (process);
       PJ_container_free (process);
@@ -92,7 +92,7 @@ void TRACE_msg_process_suspend(msg_process_t process)
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t process_container = PJ_container_get (instr_process_id(process, str, len));
+    container_t process_container = s_container::s_container_get (instr_process_id(process, str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
     value* val                    = value::get("suspend", type);
     new PushStateEvent(MSG_get_clock(), process_container, type, val);
@@ -105,7 +105,7 @@ void TRACE_msg_process_resume(msg_process_t process)
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t process_container = PJ_container_get (instr_process_id(process, str, len));
+    container_t process_container = s_container::s_container_get (instr_process_id(process, str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
     new PopStateEvent (MSG_get_clock(), process_container, type);
   }
@@ -117,7 +117,7 @@ void TRACE_msg_process_sleep_in(msg_process_t process)
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t process_container = PJ_container_get (instr_process_id(process, str, len));
+    container_t process_container = s_container::s_container_get (instr_process_id(process, str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
     value* val                    = value::get("sleep", type);
     new PushStateEvent(MSG_get_clock(), process_container, type, val);
@@ -130,7 +130,7 @@ void TRACE_msg_process_sleep_out(msg_process_t process)
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t process_container = PJ_container_get (instr_process_id(process, str, len));
+    container_t process_container = s_container::s_container_get (instr_process_id(process, str, len));
     type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
     new PopStateEvent (MSG_get_clock(), process_container, type);
   }

@@ -152,8 +152,8 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
   static_cast<simgrid::kernel::routing::NetZoneImpl*>(netzone)->getGraph(graph, nodes, edges);
   xbt_dict_foreach(edges,cursor,edge_name,edge) {
     linkContainers(
-          PJ_container_get(static_cast<const char*>(edge->src->data)),
-          PJ_container_get(static_cast<const char*>(edge->dst->data)), filter);
+          s_container::s_container_get(static_cast<const char*>(edge->src->data)),
+          s_container::s_container_get(static_cast<const char*>(edge->dst->data)), filter);
   }
   xbt_dict_free (&nodes);
   xbt_dict_free (&edges);
@@ -167,7 +167,7 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
 {
   const char* id = netzone.getCname();
 
-  if (PJ_container_get_root() == nullptr){
+  if (s_container_get_root() == nullptr){
     PJ_container_alloc ();
     container_t root = new s_container (id, INSTR_AS, nullptr);
     PJ_container_set_root (root);
@@ -309,7 +309,7 @@ static void instr_routing_parse_end_platform ()
   currentContainer.clear();
   xbt_dict_t filter = xbt_dict_new_homogeneous(xbt_free_f);
   XBT_DEBUG ("Starting graph extraction.");
-  recursiveGraphExtraction(simgrid::s4u::Engine::getInstance()->getNetRoot(), PJ_container_get_root(), filter);
+  recursiveGraphExtraction(simgrid::s4u::Engine::getInstance()->getNetRoot(), s_container_get_root(), filter);
   XBT_DEBUG ("Graph extraction finished.");
   xbt_dict_free(&filter);
   platform_created = 1;
@@ -446,7 +446,7 @@ xbt_graph_t instr_routing_platform_graph ()
   xbt_dict_t nodes = xbt_dict_new_homogeneous(nullptr);
   xbt_dict_t edges = xbt_dict_new_homogeneous(nullptr);
   recursiveXBTGraphExtraction(ret, nodes, edges, simgrid::s4u::Engine::getInstance()->getNetRoot(),
-                              PJ_container_get_root());
+                              s_container_get_root());
   xbt_dict_free (&nodes);
   xbt_dict_free (&edges);
   return ret;

@@ -150,21 +150,21 @@ s_container::s_container (const char *name, e_container_types kind, container_t 
   }
 }
 
-container_t PJ_container_get (const char *name)
+container_t s_container::s_container_get (const char *name)
 {
-  container_t ret = PJ_container_get_or_null (name);
+  container_t ret = s_container_get_or_null (name);
   if (ret == nullptr){
     THROWF(tracing_error, 1, "container with name %s not found", name);
   }
   return ret;
 }
 
-container_t PJ_container_get_or_null (const char *name)
+container_t s_container_get_or_null (const char *name)
 {
   return static_cast<container_t>(name != nullptr ? xbt_dict_get_or_null(allContainers, name) : nullptr);
 }
 
-container_t PJ_container_get_root ()
+container_t s_container_get_root ()
 {
   return rootContainer;
 }
@@ -197,7 +197,7 @@ void PJ_container_free (container_t container)
   TRACE_paje_dump_buffer(1);
 
   //trace my destruction
-  if (not TRACE_disable_destroy() && container != PJ_container_get_root()) {
+  if (not TRACE_disable_destroy() && container != s_container_get_root()) {
     //do not trace the container destruction if user requests
     //or if the container is root
     LogContainerDestruction(container);
@@ -231,7 +231,7 @@ static void recursiveDestroyContainer (container_t container)
 
 void PJ_container_free_all ()
 {
-  container_t root = PJ_container_get_root();
+  container_t root = s_container_get_root();
   if (root == nullptr){
     THROWF (tracing_error, 0, "trying to free all containers, but root is nullptr");
   }

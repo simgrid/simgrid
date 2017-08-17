@@ -245,7 +245,7 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
   }
 
   XBT_DEBUG("MARK %s %s", mark_type, mark_value);
-  new NewEvent(MSG_get_clock(), PJ_container_get_root(), type, value::get(mark_value, type));
+  new NewEvent(MSG_get_clock(), s_container_get_root(), type, value::get(mark_value, type));
 }
 
 /** \ingroup TRACE_mark
@@ -281,7 +281,7 @@ static void instr_user_variable(double time, const char* resource, const char* v
     if (created != filter->end()) { // declared, let's work
       char valuestr[100];
       snprintf(valuestr, 100, "%g", value);
-      container_t container = PJ_container_get(resource);
+      container_t container = s_container::s_container_get(resource);
       type_t type = PJ_type_get (variable, container->type);
       switch (what){
       case INSTR_US_SET:
@@ -944,7 +944,7 @@ void TRACE_host_state_declare_value (const char *state, const char *value, const
  */
 void TRACE_host_set_state(const char* host, const char* state, const char* value_str)
 {
-  container_t container = PJ_container_get(host);
+  container_t container = s_container::s_container_get(host);
   type_t type = PJ_type_get (state, container->type);
   value* val =
       value::get_or_new(value_str, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
@@ -964,7 +964,7 @@ void TRACE_host_set_state(const char* host, const char* state, const char* value
  */
 void TRACE_host_push_state(const char* host, const char* state, const char* value_str)
 {
-  container_t container = PJ_container_get(host);
+  container_t container = s_container::s_container_get(host);
   type_t type = PJ_type_get (state, container->type);
   value* val =
       value::get_or_new(value_str, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
@@ -983,7 +983,7 @@ void TRACE_host_push_state(const char* host, const char* state, const char* valu
  */
 void TRACE_host_pop_state (const char *host, const char *state)
 {
-  container_t container = PJ_container_get(host);
+  container_t container = s_container::s_container_get(host);
   type_t type = PJ_type_get (state, container->type);
   new PopStateEvent(MSG_get_clock(), container, type);
 }

@@ -32,7 +32,7 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount)
   extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t host_container = PJ_container_get(pm->getCname());
+    container_t host_container = s_container::s_container_get(pm->getCname());
     new s_container(name, INSTR_MSG_VM, host_container);
   }
 }

@@ -114,6 +114,7 @@ class s_container {
   s_container *father;
   xbt_dict_t children;
   s_container (const char *name, e_container_types kind, container_t father);
+  static container_t s_container_get (const char *name);
 };
 
 //--------------------------------------------------
@@ -331,9 +332,8 @@ extern XBT_PRIVATE std::set<std::string> trivaEdgeTypes;
 XBT_PRIVATE long long int instr_new_paje_id ();
 XBT_PRIVATE void PJ_container_alloc ();
 XBT_PRIVATE void PJ_container_release ();
-XBT_PUBLIC(container_t) PJ_container_get (const char *name);
-XBT_PUBLIC(container_t) PJ_container_get_or_null (const char *name);
-XBT_PUBLIC(container_t) PJ_container_get_root ();
+XBT_PUBLIC(container_t) s_container_get_or_null (const char *name);
+XBT_PUBLIC(container_t) s_container_get_root ();
 XBT_PUBLIC(void) PJ_container_set_root (container_t root);
 XBT_PUBLIC(void) PJ_container_free (container_t container);
 XBT_PUBLIC(void) PJ_container_free_all (void);
