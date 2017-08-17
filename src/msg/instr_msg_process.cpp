@@ -60,7 +60,7 @@ void TRACE_msg_process_create (const char *process_name, int process_pid, msg_ho
     char str[INSTR_DEFAULT_STR_SIZE];
 
     container_t host_container = PJ_container_get(host->getCname());
-    PJ_container_new(instr_process_id_2(process_name, process_pid, str, len), INSTR_MSG_PROCESS, host_container);
+    new s_container(instr_process_id_2(process_name, process_pid, str, len), INSTR_MSG_PROCESS, host_container);
   }
 }
 

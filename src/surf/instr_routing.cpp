@@ -169,7 +169,7 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
 
   if (PJ_container_get_root() == nullptr){
     PJ_container_alloc ();
-    container_t root = PJ_container_new (id, INSTR_AS, nullptr);
+    container_t root = new s_container (id, INSTR_AS, nullptr);
     PJ_container_set_root (root);
 
     if (TRACE_smpi_is_enabled()) {
@@ -190,7 +190,7 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
 
   if (TRACE_needs_platform()){
     container_t father = currentContainer.back();
-    container_t container = PJ_container_new (id, INSTR_AS, father);
+    container_t container = new s_container (id, INSTR_AS, father);
     currentContainer.push_back(container);
   }
 }
@@ -211,7 +211,7 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
   double bandwidth_value = link.bandwidth();
   double latency_value   = link.latency();
 
-  container_t container = PJ_container_new(link.name(), INSTR_LINK, father);
+  container_t container = new s_container(link.name(), INSTR_LINK, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
     type_t bandwidth = PJ_type_get_or_null("bandwidth", container->type);
@@ -236,7 +236,7 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
 static void sg_instr_new_host(simgrid::s4u::Host& host)
 {
   container_t father = currentContainer.back();
-  container_t container = PJ_container_new(host.getCname(), INSTR_HOST, father);
+  container_t container = new s_container(host.getCname(), INSTR_HOST, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
     type_t speed = PJ_type_get_or_null ("power", container->type);
@@ -300,7 +300,7 @@ static void sg_instr_new_router(simgrid::kernel::routing::NetPoint * netpoint)
     return;
   if (TRACE_is_enabled() && TRACE_needs_platform()) {
     container_t father = currentContainer.back();
-    PJ_container_new(netpoint->cname(), INSTR_ROUTER, father);
+    new s_container(netpoint->cname(), INSTR_ROUTER, father);
   }
 }
 

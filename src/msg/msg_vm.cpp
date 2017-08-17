@@ -305,7 +305,7 @@ static int migration_rx_fun(int argc, char *argv[])
     PJ_container_free(existing_container);
 
     // create new container on the new_host location
-    PJ_container_new(vm->getCname(), INSTR_MSG_VM, PJ_container_get(ms->dst_pm->getCname()));
+    new s_container(vm->getCname(), INSTR_MSG_VM, PJ_container_get(ms->dst_pm->getCname()));
 
     // end link
     msg  = PJ_container_get(vm->getCname());
