@@ -97,7 +97,7 @@ typedef enum {
   INSTR_MSG_VM,
   INSTR_MSG_PROCESS,
   INSTR_MSG_TASK
-} e_container_types;
+} containerTypes;
 
 //--------------------------------------------------
 class s_container;
@@ -110,12 +110,12 @@ class s_container {
   char *id;       /* Unique id of this container */
   type_t type;    /* Type of this container */
   int level;      /* Level in the hierarchy, root level is 0 */
-  e_container_types kind; /* This container is of what kind */
+  containerTypes kind; /* This container is of what kind */
   s_container *father;
   xbt_dict_t children;
-  s_container (const char *name, e_container_types kind, container_t father);
+  s_container (const char *name, containerTypes kind, container_t father);
   static container_t s_container_get (const char *name);
-  static void s_container_remove_from_parent (container_t container);
+  static void removeFromParent (container_t container);
 };
 
 //--------------------------------------------------

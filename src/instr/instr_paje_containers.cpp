@@ -38,7 +38,7 @@ void PJ_container_set_root (container_t root)
   rootContainer = root;
 }
 
-s_container::s_container (const char *name, e_container_types kind, container_t father)
+s_container::s_container (const char *name, containerTypes kind, container_t father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a container with a nullptr name");
@@ -169,7 +169,7 @@ container_t s_container_get_root ()
   return rootContainer;
 }
 
-void s_container::s_container_remove_from_parent (container_t child)
+void s_container::removeFromParent (container_t child)
 {
   if (child == nullptr){
     THROWF (tracing_error, 0, "can't remove from parent with a nullptr child");

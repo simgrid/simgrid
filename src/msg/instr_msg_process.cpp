@@ -72,7 +72,7 @@ void TRACE_msg_process_destroy (const char *process_name, int process_pid)
 
     container_t process = s_container_get_or_null(instr_process_id_2(process_name, process_pid, str, len));
     if (process) {
-      s_container::s_container_remove_from_parent (process);
+      s_container::removeFromParent (process);
       PJ_container_free (process);
     }
   }

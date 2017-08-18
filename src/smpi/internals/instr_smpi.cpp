@@ -222,7 +222,7 @@ void TRACE_smpi_finalize(int rank)
 
   char str[INSTR_DEFAULT_STR_SIZE];
   container_t container = s_container::s_container_get(smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE));
-  s_container::s_container_remove_from_parent (container);
+  s_container::removeFromParent (container);
   PJ_container_free (container);
 }
 

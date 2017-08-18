@@ -172,7 +172,7 @@ void MSG_vm_destroy(msg_vm_t vm)
 
   if (TRACE_msg_vm_is_enabled()) {
     container_t container = s_container::s_container_get(vm->getCname());
-    s_container::s_container_remove_from_parent(container);
+    s_container::removeFromParent(container);
     PJ_container_free(container);
   }
 }
@@ -301,7 +301,7 @@ static int migration_rx_fun(int argc, char *argv[])
 
     // destroy existing container of this vm
     container_t existing_container = s_container::s_container_get(vm->getCname());
-    s_container::s_container_remove_from_parent(existing_container);
+    s_container::removeFromParent(existing_container);
     PJ_container_free(existing_container);
 
     // create new container on the new_host location
