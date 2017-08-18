@@ -16,9 +16,9 @@
 
 #define TRACE_AUTO_COLL(cat)                                                                                           \
   if (TRACE_is_enabled()) {                                                                                            \
-    type_t type = s_type::getOrNull(#cat, PJ_type_get_root());                                                       \
+    type_t type = Type::getOrNull(#cat, PJ_type_get_root());                                                       \
     if (not type) {                                                                                                    \
-      type = s_type::eventNew(#cat, PJ_type_get_root());                                                              \
+      type = Type::eventNew(#cat, PJ_type_get_root());                                                              \
     }                                                                                                                  \
     char cont_name[25];                                                                                                \
     snprintf(cont_name, 25, "rank-%d", smpi_process()->index());                                                       \

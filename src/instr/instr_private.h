@@ -65,15 +65,15 @@ class ess_type {
   char *color;
 };
 
-class s_type;
-typedef s_type *type_t;
-class s_type : public ess_type {
+class Type;
+typedef Type *type_t;
+class Type : public ess_type {
   public:
   e_entity_types kind;
-  s_type *father;
+  Type *father;
   xbt_dict_t children;
   xbt_dict_t values; //valid for all types except variable and container
-  s_type (const char *typeNameBuff, const char *key, const char *color, e_entity_types kind, type_t father);
+  Type (const char *typeNameBuff, const char *key, const char *color, e_entity_types kind, type_t father);
   static type_t getOrNull (const char *name, type_t father);
   static type_t containerNew (const char *name, type_t father);
   static type_t eventNew (const char *name, type_t father);
