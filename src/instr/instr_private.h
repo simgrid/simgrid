@@ -115,6 +115,7 @@ class s_container {
   xbt_dict_t children;
   s_container (const char *name, e_container_types kind, container_t father);
   static container_t s_container_get (const char *name);
+  static void s_container_remove_from_parent (container_t container);
 };
 
 //--------------------------------------------------
@@ -337,7 +338,6 @@ XBT_PUBLIC(container_t) s_container_get_root ();
 XBT_PUBLIC(void) PJ_container_set_root (container_t root);
 XBT_PUBLIC(void) PJ_container_free (container_t container);
 XBT_PUBLIC(void) PJ_container_free_all (void);
-XBT_PUBLIC(void) PJ_container_remove_from_parent (container_t container);
 
 /* instr_paje_types.c */
 XBT_PRIVATE void PJ_type_release ();

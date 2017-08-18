@@ -169,7 +169,7 @@ container_t s_container_get_root ()
   return rootContainer;
 }
 
-void PJ_container_remove_from_parent (container_t child)
+void s_container::s_container_remove_from_parent (container_t child)
 {
   if (child == nullptr){
     THROWF (tracing_error, 0, "can't remove from parent with a nullptr child");
