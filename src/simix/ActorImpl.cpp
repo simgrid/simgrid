@@ -545,9 +545,8 @@ void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const
 
     simgrid::kernel::activity::ExecImplPtr exec =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(process->waiting_synchro);
-    if (exec != nullptr) {
-      SIMIX_execution_cancel(process->waiting_synchro);
-    }
+    if (exec != nullptr && exec->surf_exec)
+      exec->surf_exec->cancel();
 
     simgrid::kernel::activity::CommImplPtr comm =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(process->waiting_synchro);
