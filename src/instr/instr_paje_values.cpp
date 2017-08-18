@@ -10,7 +10,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_values, instr, "Paje tracing event system (values)");
 
-value::value(const char* name, const char* color, type_t father)
+value::value(const char* name, const char* color, Type* father)
 {
   if (name == nullptr || father == nullptr){
     THROWF (tracing_error, 0, "can't create a value with a nullptr name (or a nullptr father)");
@@ -38,7 +38,7 @@ value::~value()
   */
 }
 
-value* value::get_or_new(const char* name, const char* color, type_t father)
+value* value::get_or_new(const char* name, const char* color, Type* father)
 {
   value* ret = 0;
   try {
@@ -51,7 +51,7 @@ value* value::get_or_new(const char* name, const char* color, type_t father)
   return ret;
 }
 
-value* value::get(const char* name, type_t father)
+value* value::get(const char* name, Type* father)
 {
   if (name == nullptr || father == nullptr){
     THROWF (tracing_error, 0, "can't get a value with a nullptr name (or a nullptr father)");

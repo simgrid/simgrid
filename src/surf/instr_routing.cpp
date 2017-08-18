@@ -105,7 +105,7 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
             father->type->name,
             src->type->name, src->type->id,
             dst->type->name, dst->type->id);
-  type_t link_type = Type::getOrNull (link_typename, father->type);
+  Type* link_type = Type::getOrNull (link_typename, father->type);
   if (link_type == nullptr){
     link_type = Type::linkNew (link_typename, father->type, src->type, dst->type);
   }
@@ -173,7 +173,7 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
     PJ_container_set_root (root);
 
     if (TRACE_smpi_is_enabled()) {
-      type_t mpi = Type::getOrNull ("MPI", root->type);
+      Type* mpi = Type::getOrNull ("MPI", root->type);
       if (mpi == nullptr){
         mpi = Type::containerNew("MPI", root->type);
         if (not TRACE_smpi_is_grouped())
@@ -214,11 +214,11 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
   container_t container = PJ_container_new(link.name(), INSTR_LINK, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
-    type_t bandwidth = Type::getOrNull("bandwidth", container->type);
+    Type* bandwidth = Type::getOrNull("bandwidth", container->type);
     if (bandwidth == nullptr) {
       bandwidth = Type::variableNew("bandwidth", nullptr, container->type);
     }
-    type_t latency = Type::getOrNull("latency", container->type);
+    Type* latency = Type::getOrNull("latency", container->type);
     if (latency == nullptr) {
       latency = Type::variableNew("latency", nullptr, container->type);
     }
@@ -226,7 +226,7 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
     new SetVariableEvent(0, container, latency, latency_value);
   }
   if (TRACE_uncategorized()) {
-    type_t bandwidth_used = Type::getOrNull("bandwidth_used", container->type);
+    Type* bandwidth_used = Type::getOrNull("bandwidth_used", container->type);
     if (bandwidth_used == nullptr) {
       Type::variableNew("bandwidth_used", "0.5 0.5 0.5", container->type);
     }
@@ -239,7 +239,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   container_t container = PJ_container_new(host.getCname(), INSTR_HOST, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
-    type_t speed = Type::getOrNull ("power", container->type);
+    Type* speed = Type::getOrNull ("power", container->type);
     if (speed == nullptr){
       speed = Type::variableNew ("power", nullptr, container->type);
     }
@@ -248,14 +248,14 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     new SetVariableEvent (0, container, speed, current_speed_state);
   }
   if (TRACE_uncategorized()){
-    type_t speed_used = Type::getOrNull ("power_used", container->type);
+    Type* speed_used = Type::getOrNull ("power_used", container->type);
     if (speed_used == nullptr){
       Type::variableNew ("power_used", "0.5 0.5 0.5", container->type);
     }
   }
 
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped()){
-    type_t mpi = Type::getOrNull ("MPI", container->type);
+    Type* mpi = Type::getOrNull ("MPI", container->type);
     if (mpi == nullptr){
       mpi = Type::containerNew("MPI", container->type);
       Type::stateNew ("MPI_STATE", mpi);
@@ -263,10 +263,10 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   }
 
   if (TRACE_msg_process_is_enabled()) {
-    type_t msg_process = Type::getOrNull ("MSG_PROCESS", container->type);
+    Type* msg_process = Type::getOrNull ("MSG_PROCESS", container->type);
     if (msg_process == nullptr){
       msg_process = Type::containerNew("MSG_PROCESS", container->type);
-      type_t state = Type::stateNew ("MSG_PROCESS_STATE", msg_process);
+      Type* state = Type::stateNew ("MSG_PROCESS_STATE", msg_process);
       value PJ_value("suspend", "1 0 1", state);
       value::get_or_new("sleep", "1 1 0", state);
       value::get_or_new("receive", "1 0 0", state);
@@ -278,10 +278,10 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   }
 
   if (TRACE_msg_vm_is_enabled()) {
-    type_t msg_vm = Type::getOrNull ("MSG_VM", container->type);
+    Type* msg_vm = Type::getOrNull ("MSG_VM", container->type);
     if (msg_vm == nullptr){
       msg_vm = Type::containerNew("MSG_VM", container->type);
-      type_t state = Type::stateNew ("MSG_VM_STATE", msg_vm);
+      Type* state = Type::stateNew ("MSG_VM_STATE", msg_vm);
       value PJ_value("suspend", "1 0 1", state);
       value::get_or_new("sleep", "1 1 0", state);
       value::get_or_new("receive", "1 0 0", state);
@@ -334,7 +334,7 @@ void instr_routing_define_callbacks ()
 /*
  * user categories support
  */
-static void recursiveNewVariableType (const char *new_typename, const char *color, type_t root)
+static void recursiveNewVariableType (const char *new_typename, const char *color, Type* root)
 {
   if (not strcmp(root->name, "HOST")) {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
@@ -352,7 +352,7 @@ static void recursiveNewVariableType (const char *new_typename, const char *colo
     Type::variableNew (tnstr, color, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
-  type_t child_type;
+  Type* child_type;
   char *name;
   xbt_dict_foreach(root->children, cursor, name, child_type) {
     recursiveNewVariableType (new_typename, color, child_type);
@@ -364,13 +364,13 @@ void instr_new_variable_type (const char *new_typename, const char *color)
   recursiveNewVariableType (new_typename, color, PJ_type_get_root());
 }
 
-static void recursiveNewUserVariableType (const char *father_type, const char *new_typename, const char *color, type_t root)
+static void recursiveNewUserVariableType (const char *father_type, const char *new_typename, const char *color, Type* root)
 {
   if (not strcmp(root->name, father_type)) {
     Type::variableNew (new_typename, color, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
-  type_t child_type;
+  Type* child_type;
   char *name;
   xbt_dict_foreach(root->children, cursor, name, child_type) {
     recursiveNewUserVariableType (father_type, new_typename, color, child_type);
@@ -382,13 +382,13 @@ void instr_new_user_variable_type  (const char *father_type, const char *new_typ
   recursiveNewUserVariableType (father_type, new_typename, color, PJ_type_get_root());
 }
 
-static void recursiveNewUserStateType (const char *father_type, const char *new_typename, type_t root)
+static void recursiveNewUserStateType (const char *father_type, const char *new_typename, Type* root)
 {
   if (not strcmp(root->name, father_type)) {
     Type::stateNew (new_typename, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
-  type_t child_type;
+  Type* child_type;
   char *name;
   xbt_dict_foreach(root->children, cursor, name, child_type) {
     recursiveNewUserStateType (father_type, new_typename, child_type);
@@ -400,13 +400,13 @@ void instr_new_user_state_type (const char *father_type, const char *new_typenam
   recursiveNewUserStateType (father_type, new_typename, PJ_type_get_root());
 }
 
-static void recursiveNewValueForUserStateType(const char* type_name, const char* val, const char* color, type_t root)
+static void recursiveNewValueForUserStateType(const char* type_name, const char* val, const char* color, Type* root)
 {
   if (not strcmp(root->name, type_name)) {
     value PJ_value(val, color, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
-  type_t child_type;
+  Type* child_type;
   char *name;
   xbt_dict_foreach(root->children, cursor, name, child_type) {
     recursiveNewValueForUserStateType(type_name, val, color, child_type);

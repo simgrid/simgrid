@@ -63,7 +63,7 @@ static int trace_precision;
 static bool trace_configured = false;
 static bool trace_active     = false;
 
-static type_t rootType = nullptr;        /* the root type */
+static Type* rootType = nullptr;        /* the root type */
 
 instr_fmt_type_t instr_fmt_type = instr_fmt_paje;
 

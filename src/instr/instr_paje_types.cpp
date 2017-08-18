@@ -8,7 +8,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_types, instr, "Paje tracing event system (types)");
 
-static type_t rootType = nullptr;        /* the root type */
+static Type* rootType = nullptr;        /* the root type */
 
 void PJ_type_release ()
 {
@@ -20,7 +20,7 @@ type_t PJ_type_get_root ()
   return rootType;
 }
 
-Type::Type (const char *typeNameBuff, const char *key, const char *color, e_entity_types kind, type_t father)
+Type::Type (const char *typeNameBuff, const char *key, const char *color, e_entity_types kind, Type* father)
 {
   if (typeNameBuff == nullptr || key == nullptr){
     THROWF(tracing_error, 0, "can't create a new type with name or key equal nullptr");
@@ -65,7 +65,7 @@ void recursiveDestroyType (type_t type)
 {
   XBT_DEBUG("recursiveDestroyType %s", type->name);
   xbt_dict_cursor_t cursor = nullptr;
-  type_t child;
+  Type* child;
   char *child_name;
   xbt_dict_foreach(type->children, cursor, child_name, child) {
     recursiveDestroyType (child);
@@ -73,23 +73,23 @@ void recursiveDestroyType (type_t type)
   PJ_type_free(type);
 }
 
-type_t PJ_type_get (const char *name, type_t father)
+type_t PJ_type_get (const char *name, Type* father)
 {
-  type_t ret = Type::getOrNull (name, father);
+  Type* ret = Type::getOrNull (name, father);
   if (ret == nullptr){
     THROWF (tracing_error, 2, "type with name (%s) not found in father type (%s)", name, father->name);
   }
   return ret;
 }
 
-type_t Type::getOrNull (const char *name, type_t father)
+type_t Type::getOrNull (const char *name, Type* father)
 {
   if (name == nullptr || father == nullptr){
     THROWF (tracing_error, 0, "can't get type with a nullptr name or from a nullptr father");
   }
 
-  type_t ret = nullptr;
-  type_t child;
+  Type* ret = nullptr;
+  Type* child;
   char *child_name;
   xbt_dict_cursor_t cursor = nullptr;
   xbt_dict_foreach(father->children, cursor, child_name, child) {
@@ -104,13 +104,13 @@ type_t Type::getOrNull (const char *name, type_t father)
   return ret;
 }
 
-type_t Type::containerNew (const char *name, type_t father)
+type_t Type::containerNew (const char *name, Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a container type with a nullptr name");
   }
 
-  type_t ret = new Type (name, name, nullptr, TYPE_CONTAINER, father);
+  Type* ret = new Type (name, name, nullptr, TYPE_CONTAINER, father);
   if (father == nullptr) {
     rootType = ret;
   } else {
@@ -120,25 +120,25 @@ type_t Type::containerNew (const char *name, type_t father)
   return ret;
 }
 
-type_t Type::eventNew (const char *name, type_t father)
+type_t Type::eventNew (const char *name, Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create an event type with a nullptr name");
   }
 
-  type_t ret = new Type (name, name, nullptr, TYPE_EVENT, father);
+  Type* ret = new Type (name, name, nullptr, TYPE_EVENT, father);
   XBT_DEBUG("EventType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
   LogDefineEventType(ret);
   return ret;
 }
 
-type_t Type::variableNew (const char *name, const char *color, type_t father)
+type_t Type::variableNew (const char *name, const char *color, Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a variable type with a nullptr name");
   }
 
-  type_t ret = nullptr;
+  Type* ret = nullptr;
 
   if (not color) {
     char white[INSTR_DEFAULT_STR_SIZE] = "1 1 1";
@@ -151,13 +151,13 @@ type_t Type::variableNew (const char *name, const char *color, type_t father)
   return ret;
 }
 
-type_t Type::linkNew (const char *name, type_t father, type_t source, type_t dest)
+type_t Type::linkNew (const char *name, Type* father, Type* source, Type* dest)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a link type with a nullptr name");
   }
 
-  type_t ret = nullptr;
+  Type* ret = nullptr;
 
   char key[INSTR_DEFAULT_STR_SIZE];
   snprintf (key, INSTR_DEFAULT_STR_SIZE, "%s-%s-%s", name, source->id, dest->id);
@@ -168,13 +168,13 @@ type_t Type::linkNew (const char *name, type_t father, type_t source, type_t des
   return ret;
 }
 
-type_t Type::stateNew (const char *name, type_t father)
+type_t Type::stateNew (const char *name, Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a state type with a nullptr name");
   }
 
-  type_t ret = nullptr;
+  Type* ret = nullptr;
 
   ret = new Type (name, name, nullptr, TYPE_STATE, father);
   XBT_DEBUG("StateType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);

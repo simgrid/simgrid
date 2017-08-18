@@ -124,7 +124,7 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
         THROWF (tracing_error, 0, "new container kind is unknown.");
         break;
     }
-    type_t type = Type::getOrNull (typeNameBuff, newContainer->father->type);
+    Type* type = Type::getOrNull (typeNameBuff, newContainer->father->type);
     if (type == nullptr){
       newContainer->type = Type::containerNew (typeNameBuff, newContainer->father->type);
     }else{

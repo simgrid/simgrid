@@ -16,7 +16,7 @@
 
 #define TRACE_AUTO_COLL(cat)                                                                                           \
   if (TRACE_is_enabled()) {                                                                                            \
-    type_t type = Type::getOrNull(#cat, PJ_type_get_root());                                                       \
+    Type* type = Type::getOrNull(#cat, PJ_type_get_root());                                                       \
     if (not type) {                                                                                                    \
       type = Type::eventNew(#cat, PJ_type_get_root());                                                              \
     }                                                                                                                  \
