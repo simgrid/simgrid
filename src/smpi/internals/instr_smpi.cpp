@@ -190,7 +190,7 @@ void TRACE_smpi_init(int rank)
 
   Container* father;
   if (TRACE_smpi_is_grouped()){
-    father = Container::s_container_get(sg_host_self_get_name());
+    father = Container::get(sg_host_self_get_name());
   }else{
     father = s_container_get_root ();
   }
@@ -221,7 +221,7 @@ void TRACE_smpi_finalize(int rank)
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
-  Container* container = Container::s_container_get(smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE));
+  Container* container = Container::get(smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE));
   Container::removeFromParent (container);
   PJ_container_free (container);
 }
@@ -235,7 +235,7 @@ void TRACE_smpi_collective_in(int rank, const char *operation, instr_extra_data 
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-  Container* container = Container::s_container_get (str);
+  Container* container = Container::get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   const char *color = instr_find_color (operation);
   value* val            = value::get_or_new(operation, color, type);
@@ -249,7 +249,7 @@ void TRACE_smpi_collective_out(int rank, const char *operation)
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-  Container* container = Container::s_container_get (str);
+  Container* container = Container::get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
 
   new PopStateEvent (SIMIX_get_clock(), container, type);
@@ -263,7 +263,7 @@ void TRACE_smpi_computing_init(int rank)
 
  char str[INSTR_DEFAULT_STR_SIZE];
  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
- Container* container = Container::s_container_get(str);
+ Container* container = Container::get(str);
  type_t type           = PJ_type_get("MPI_STATE", container->type);
  const char* color     = instr_find_color("computing");
  new PushStateEvent(SIMIX_get_clock(), container, type, value::get_or_new("computing", color, type));
@@ -279,7 +279,7 @@ void TRACE_smpi_computing_in(int rank, instr_extra_data extra)
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-  Container* container = Container::s_container_get (str);
+  Container* container = Container::get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   value* val            = value::get_or_new("computing", nullptr, type);
   new PushStateEvent(SIMIX_get_clock(), container, type, val, static_cast<void*>(extra));
@@ -291,7 +291,7 @@ void TRACE_smpi_computing_out(int rank)
     return;
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-  Container* container = Container::s_container_get (str);
+  Container* container = Container::get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   new PopStateEvent (SIMIX_get_clock(), container, type);
 }
@@ -304,7 +304,7 @@ void TRACE_smpi_sleeping_init(int rank)
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-  Container* container = Container::s_container_get (str);
+  Container* container = Container::get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   const char *color = instr_find_color ("sleeping");
   value* val            = value::get_or_new("sleeping", color, type);
@@ -321,7 +321,7 @@ void TRACE_smpi_sleeping_in(int rank, instr_extra_data extra)
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-  Container* container = Container::s_container_get (str);
+  Container* container = Container::get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   value* val            = value::get_or_new("sleeping", nullptr, type);
   new PushStateEvent(SIMIX_get_clock(), container, type, val, static_cast<void*>(extra));
@@ -333,7 +333,7 @@ void TRACE_smpi_sleeping_out(int rank)
     return;
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-  Container* container = Container::s_container_get (str);
+  Container* container = Container::get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   new PopStateEvent (SIMIX_get_clock(), container, type);
 }
@@ -348,7 +348,7 @@ void TRACE_smpi_testing_in(int rank, instr_extra_data extra)
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-  Container* container = Container::s_container_get (str);
+  Container* container = Container::get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   value* val            = value::get_or_new("test", nullptr, type);
   new PushStateEvent(SIMIX_get_clock(), container, type, val, static_cast<void*>(extra));
@@ -360,7 +360,7 @@ void TRACE_smpi_testing_out(int rank)
     return;
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-  Container* container = Container::s_container_get (str);
+  Container* container = Container::get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   new PopStateEvent (SIMIX_get_clock(), container, type);
 }
@@ -374,7 +374,7 @@ void TRACE_smpi_ptp_in(int rank, const char *operation, instr_extra_data extra)
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-  Container* container = Container::s_container_get (str);
+  Container* container = Container::get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   const char *color = instr_find_color (operation);
   value* val            = value::get_or_new(operation, color, type);
@@ -388,7 +388,7 @@ void TRACE_smpi_ptp_out(int rank, int dst, const char *operation)
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-  Container* container = Container::s_container_get (str);
+  Container* container = Container::get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
 
   new PopStateEvent (SIMIX_get_clock(), container, type);
@@ -404,7 +404,7 @@ void TRACE_smpi_send(int rank, int src, int dst, int tag, int size)
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(src, str, INSTR_DEFAULT_STR_SIZE);
-  Container* container = Container::s_container_get (str);
+  Container* container = Container::get (str);
   type_t type = PJ_type_get ("MPI_LINK", PJ_type_get_root());
   XBT_DEBUG("Send tracing from %d to %d, tag %d, with key %s", src, dst, tag, key);
   new StartLinkEvent (SIMIX_get_clock(), s_container_get_root(), type, container, "PTP", key, size);
@@ -420,7 +420,7 @@ void TRACE_smpi_recv(int src, int dst, int tag)
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(dst, str, INSTR_DEFAULT_STR_SIZE);
-  Container* container = Container::s_container_get (str);
+  Container* container = Container::get (str);
   type_t type = PJ_type_get ("MPI_LINK", PJ_type_get_root());
   XBT_DEBUG("Recv tracing from %d to %d, tag %d, with key %s", src, dst, tag, key);
   new EndLinkEvent (SIMIX_get_clock(), s_container_get_root(), type, container, "PTP", key);

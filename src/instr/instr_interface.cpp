@@ -281,7 +281,7 @@ static void instr_user_variable(double time, const char* resource, const char* v
     if (created != filter->end()) { // declared, let's work
       char valuestr[100];
       snprintf(valuestr, 100, "%g", value);
-      Container* container = Container::s_container_get(resource);
+      Container* container = Container::get(resource);
       type_t type = PJ_type_get (variable, container->type);
       switch (what){
       case INSTR_US_SET:
@@ -944,7 +944,7 @@ void TRACE_host_state_declare_value (const char *state, const char *value, const
  */
 void TRACE_host_set_state(const char* host, const char* state, const char* value_str)
 {
-  Container* container = Container::s_container_get(host);
+  Container* container = Container::get(host);
   type_t type = PJ_type_get (state, container->type);
   value* val =
       value::get_or_new(value_str, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
@@ -964,7 +964,7 @@ void TRACE_host_set_state(const char* host, const char* state, const char* value
  */
 void TRACE_host_push_state(const char* host, const char* state, const char* value_str)
 {
-  Container* container = Container::s_container_get(host);
+  Container* container = Container::get(host);
   type_t type = PJ_type_get (state, container->type);
   value* val =
       value::get_or_new(value_str, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
@@ -983,7 +983,7 @@ void TRACE_host_push_state(const char* host, const char* state, const char* valu
  */
 void TRACE_host_pop_state (const char *host, const char *state)
 {
-  Container* container = Container::s_container_get(host);
+  Container* container = Container::get(host);
   type_t type = PJ_type_get (state, container->type);
   new PopStateEvent(MSG_get_clock(), container, type);
 }

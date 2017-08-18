@@ -152,8 +152,8 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, Container* 
   static_cast<simgrid::kernel::routing::NetZoneImpl*>(netzone)->getGraph(graph, nodes, edges);
   xbt_dict_foreach(edges,cursor,edge_name,edge) {
     linkContainers(
-          Container::s_container_get(static_cast<const char*>(edge->src->data)),
-          Container::s_container_get(static_cast<const char*>(edge->dst->data)), filter);
+          Container::get(static_cast<const char*>(edge->src->data)),
+          Container::get(static_cast<const char*>(edge->dst->data)), filter);
   }
   xbt_dict_free (&nodes);
   xbt_dict_free (&edges);

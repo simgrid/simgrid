@@ -162,7 +162,7 @@ void smpi_bench_end()
   if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0' && TRACE_smpi_is_enabled()) {
     char container_name[INSTR_DEFAULT_STR_SIZE];
     smpi_container(smpi_process()->index(), container_name, INSTR_DEFAULT_STR_SIZE);
-    Container* container        = Container::s_container_get(container_name);
+    Container* container        = Container::get(container_name);
     papi_counter_t& counter_data = smpi_process()->papi_counters();
 
     for (auto& pair : counter_data) {

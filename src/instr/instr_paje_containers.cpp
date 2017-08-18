@@ -38,7 +38,7 @@ void PJ_container_set_root (Container* root)
   rootContainer = root;
 }
 
-Container::Container (const char *name, containerTypes kind, Container* father)
+Container::Container (const char *name, e_container_types kind, Container* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a container with a nullptr name");
@@ -150,7 +150,7 @@ Container::Container (const char *name, containerTypes kind, Container* father)
   }
 }
 
-Container* Container::s_container_get (const char *name)
+Container* Container::get (const char *name)
 {
   Container* ret = s_container_get_or_null (name);
   if (ret == nullptr){
