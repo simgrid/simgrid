@@ -12,7 +12,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing event system (containers)");
 
-static container_t rootContainer = nullptr;    /* the root container */
+static Container* rootContainer = nullptr;    /* the root container */
 static xbt_dict_t allContainers = nullptr;     /* all created containers indexed by name */
 std::set<std::string> trivaNodeTypes;           /* all host types defined */
 std::set<std::string> trivaEdgeTypes;           /* all link types defined */
@@ -33,12 +33,12 @@ void PJ_container_release ()
   xbt_dict_free (&allContainers);
 }
 
-void PJ_container_set_root (container_t root)
+void PJ_container_set_root (Container* root)
 {
   rootContainer = root;
 }
 
-s_container::s_container (const char *name, containerTypes kind, container_t father)
+Container::Container (const char *name, containerTypes kind, Container* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a container with a nullptr name");
@@ -150,32 +150,32 @@ s_container::s_container (const char *name, containerTypes kind, container_t fat
   }
 }
 
-container_t s_container::s_container_get (const char *name)
+Container* Container::s_container_get (const char *name)
 {
-  container_t ret = s_container_get_or_null (name);
+  Container* ret = s_container_get_or_null (name);
   if (ret == nullptr){
     THROWF(tracing_error, 1, "container with name %s not found", name);
   }
   return ret;
 }
 
-container_t s_container_get_or_null (const char *name)
+Container* s_container_get_or_null (const char *name)
 {
-  return static_cast<container_t>(name != nullptr ? xbt_dict_get_or_null(allContainers, name) : nullptr);
+  return static_cast<Container*>(name != nullptr ? xbt_dict_get_or_null(allContainers, name) : nullptr);
 }
 
-container_t s_container_get_root ()
+Container* s_container_get_root ()
 {
   return rootContainer;
 }
 
-void s_container::removeFromParent (container_t child)
+void Container::removeFromParent (Container* child)
 {
   if (child == nullptr){
     THROWF (tracing_error, 0, "can't remove from parent with a nullptr child");
   }
 
-  container_t parent = child->father;
+  Container* parent = child->father;
   if (parent){
     XBT_DEBUG("removeChildContainer (%s) FromContainer (%s) ",
         child->name,
@@ -184,7 +184,7 @@ void s_container::removeFromParent (container_t child)
   }
 }
 
-void PJ_container_free (container_t container)
+void PJ_container_free (Container* container)
 {
   if (container == nullptr){
     THROWF (tracing_error, 0, "trying to free a nullptr container");
@@ -214,14 +214,14 @@ void PJ_container_free (container_t container)
   container = nullptr;
 }
 
-static void recursiveDestroyContainer (container_t container)
+static void recursiveDestroyContainer (Container* container)
 {
   if (container == nullptr){
     THROWF (tracing_error, 0, "trying to recursively destroy a nullptr container");
   }
   XBT_DEBUG("recursiveDestroyContainer %s", container->name);
   xbt_dict_cursor_t cursor = nullptr;
-  container_t child;
+  Container* child;
   char *child_name;
   xbt_dict_foreach(container->children, cursor, child_name, child) {
     recursiveDestroyContainer (child);
@@ -231,7 +231,7 @@ static void recursiveDestroyContainer (container_t container)
 
 void PJ_container_free_all ()
 {
-  container_t root = s_container_get_root();
+  Container* root = s_container_get_root();
   if (root == nullptr){
     THROWF (tracing_error, 0, "trying to free all containers, but root is nullptr");
   }

@@ -17,7 +17,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarchy");
 
 static int platform_created = 0;            /* indicate whether the platform file has been traced */
-static std::vector<container_t> currentContainer; /* push and pop, used only in creation */
+static std::vector<Container*> currentContainer; /* push and pop, used only in creation */
 
 static const char *instr_node_name (xbt_node_t node)
 {
@@ -25,22 +25,22 @@ static const char *instr_node_name (xbt_node_t node)
   return static_cast<char*>(data);
 }
 
-static container_t lowestCommonAncestor (container_t a1, container_t a2)
+static Container* lowestCommonAncestor (Container* a1, Container* a2)
 {
   //this is only an optimization (since most of a1 and a2 share the same parent)
   if (a1->father == a2->father)
     return a1->father;
 
   //create an array with all ancestors of a1
-  std::vector<container_t> ancestors_a1;
-  container_t p = a1->father;
+  std::vector<Container*> ancestors_a1;
+  Container* p = a1->father;
   while (p){
     ancestors_a1.push_back(p);
     p = p->father;
   }
 
   //create an array with all ancestors of a2
-  std::vector<container_t> ancestors_a2;
+  std::vector<Container*> ancestors_a2;
   p = a2->father;
   while (p){
     ancestors_a2.push_back(p);
@@ -52,8 +52,8 @@ static container_t lowestCommonAncestor (container_t a1, container_t a2)
   int i = ancestors_a1.size() - 1;
   int j = ancestors_a2.size() - 1;
   while (i >= 0 && j >= 0){
-    container_t a1p = ancestors_a1.at(i);
-    container_t a2p = ancestors_a2.at(j);
+    Container* a1p = ancestors_a1.at(i);
+    Container* a2p = ancestors_a2.at(j);
     if (a1p == a2p){
       p = a1p;
     }else{
@@ -65,7 +65,7 @@ static container_t lowestCommonAncestor (container_t a1, container_t a2)
   return p;
 }
 
-static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
+static void linkContainers (Container* src, Container* dst, xbt_dict_t filter)
 {
   //ignore loopback
   if (strcmp (src->name, "__loopback__") == 0 || strcmp (dst->name, "__loopback__") == 0){
@@ -74,7 +74,7 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
   }
 
   //find common father
-  container_t father = lowestCommonAncestor (src, dst);
+  Container* father = lowestCommonAncestor (src, dst);
   if (not father) {
     xbt_die ("common father unknown, this is a tracing problem");
   }
@@ -126,7 +126,7 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
   XBT_DEBUG ("  linkContainers %s <-> %s", src->name, dst->name);
 }
 
-static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t container, xbt_dict_t filter)
+static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, Container* container, xbt_dict_t filter)
 {
   if (not TRACE_platform_topology()) {
     XBT_DEBUG("Graph extraction disabled by user.");
@@ -136,7 +136,7 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
   if (not netzone->getChildren()->empty()) {
     //bottom-up recursion
     for (auto nz_son : *netzone->getChildren()) {
-      container_t child_container = static_cast<container_t>(xbt_dict_get(container->children, nz_son->getCname()));
+      Container* child_container = static_cast<Container*>(xbt_dict_get(container->children, nz_son->getCname()));
       recursiveGraphExtraction(nz_son, child_container, filter);
     }
   }
@@ -152,8 +152,8 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
   static_cast<simgrid::kernel::routing::NetZoneImpl*>(netzone)->getGraph(graph, nodes, edges);
   xbt_dict_foreach(edges,cursor,edge_name,edge) {
     linkContainers(
-          s_container::s_container_get(static_cast<const char*>(edge->src->data)),
-          s_container::s_container_get(static_cast<const char*>(edge->dst->data)), filter);
+          Container::s_container_get(static_cast<const char*>(edge->src->data)),
+          Container::s_container_get(static_cast<const char*>(edge->dst->data)), filter);
   }
   xbt_dict_free (&nodes);
   xbt_dict_free (&edges);
@@ -169,7 +169,7 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
 
   if (s_container_get_root() == nullptr){
     PJ_container_alloc ();
-    container_t root = new s_container (id, INSTR_AS, nullptr);
+    Container* root = new Container (id, INSTR_AS, nullptr);
     PJ_container_set_root (root);
 
     if (TRACE_smpi_is_enabled()) {
@@ -189,8 +189,8 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
   }
 
   if (TRACE_needs_platform()){
-    container_t father = currentContainer.back();
-    container_t container = new s_container (id, INSTR_AS, father);
+    Container* father = currentContainer.back();
+    Container* container = new Container (id, INSTR_AS, father);
     currentContainer.push_back(container);
   }
 }
@@ -206,12 +206,12 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
 {
   if (currentContainer.empty()) // No ongoing parsing. Are you creating the loopback?
     return;
-  container_t father = currentContainer.back();
+  Container* father = currentContainer.back();
 
   double bandwidth_value = link.bandwidth();
   double latency_value   = link.latency();
 
-  container_t container = new s_container(link.name(), INSTR_LINK, father);
+  Container* container = new Container(link.name(), INSTR_LINK, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
     type_t bandwidth = PJ_type_get_or_null("bandwidth", container->type);
@@ -235,8 +235,8 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
 
 static void sg_instr_new_host(simgrid::s4u::Host& host)
 {
-  container_t father = currentContainer.back();
-  container_t container = new s_container(host.getCname(), INSTR_HOST, father);
+  Container* father = currentContainer.back();
+  Container* container = new Container(host.getCname(), INSTR_HOST, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
     type_t speed = PJ_type_get_or_null ("power", container->type);
@@ -299,8 +299,8 @@ static void sg_instr_new_router(simgrid::kernel::routing::NetPoint * netpoint)
   if (not netpoint->isRouter())
     return;
   if (TRACE_is_enabled() && TRACE_needs_platform()) {
-    container_t father = currentContainer.back();
-    new s_container(netpoint->cname(), INSTR_ROUTER, father);
+    Container* father = currentContainer.back();
+    new Container(netpoint->cname(), INSTR_ROUTER, father);
   }
 }
 
@@ -426,13 +426,13 @@ int instr_platform_traced ()
 #define GRAPHICATOR_SUPPORT_FUNCTIONS
 
 static void recursiveXBTGraphExtraction(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges, sg_netzone_t netzone,
-                                        container_t container)
+                                        Container* container)
 {
   if (not netzone->getChildren()->empty()) {
     //bottom-up recursion
     for (auto netzone_child : *netzone->getChildren()) {
-      container_t child_container =
-          static_cast<container_t>(xbt_dict_get(container->children, netzone_child->getCname()));
+      Container* child_container =
+          static_cast<Container*>(xbt_dict_get(container->children, netzone_child->getCname()));
       recursiveXBTGraphExtraction(graph, nodes, edges, netzone_child, child_container);
     }
   }

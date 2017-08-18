@@ -27,14 +27,14 @@ static void __TRACE_surf_check_variable_set_to_zero(double now, const char *vari
 
   // check if key exists: if it doesn't, set the variable to zero and mark this in the dict
   if (platform_variables.find(key) == platform_variables.end()) {
-    container_t container = s_container::s_container_get (resource);
+    Container* container = Container::s_container_get (resource);
     type_t type = PJ_type_get (variable, container->type);
     new SetVariableEvent (now, container, type, 0);
     platform_variables[key] = std::string("");
   }
 }
 
-static void instr_event (double now, double delta, type_t variable, container_t resource, double value)
+static void instr_event (double now, double delta, type_t variable, Container* resource, double value)
 {
   __TRACE_surf_check_variable_set_to_zero(now, variable->name, resource->name);
   new AddVariableEvent(now, resource, variable, value);
@@ -53,7 +53,7 @@ void TRACE_surf_link_set_utilization(const char *resource, const char *category,
   //trace uncategorized link utilization
   if (TRACE_uncategorized()){
     XBT_DEBUG("UNCAT LINK [%f - %f] %s bandwidth_used %f", now, now+delta, resource, value);
-    container_t container = s_container::s_container_get (resource);
+    Container* container = Container::s_container_get (resource);
     type_t type = PJ_type_get ("bandwidth_used", container->type);
     instr_event (now, delta, type, container, value);
   }
@@ -66,7 +66,7 @@ void TRACE_surf_link_set_utilization(const char *resource, const char *category,
     char category_type[INSTR_DEFAULT_STR_SIZE];
     snprintf (category_type, INSTR_DEFAULT_STR_SIZE, "b%s", category);
     XBT_DEBUG("CAT LINK [%f - %f] %s %s %f", now, now+delta, resource, category_type, value);
-    container_t container = s_container::s_container_get (resource);
+    Container* container = Container::s_container_get (resource);
     type_t type = PJ_type_get (category_type, container->type);
     instr_event (now, delta, type, container, value);
   }
@@ -76,7 +76,7 @@ void TRACE_surf_link_set_utilization(const char *resource, const char *category,
 void TRACE_surf_host_set_utilization(const char *resource, const char *category, double value, double now, double delta)
 {
   //only trace host utilization if host is known by tracing mechanism
-  container_t container = s_container_get_or_null(resource);
+  Container* container = s_container_get_or_null(resource);
   if (not container || not value)
     return;
 

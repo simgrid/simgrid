@@ -303,7 +303,7 @@ if (instr_fmt_type == instr_fmt_paje) {
 }
 
 
-void LogContainerCreation (container_t container)
+void LogContainerCreation (Container* container)
 {
   double timestamp                              = SIMIX_get_clock();
 
@@ -354,7 +354,7 @@ if (instr_fmt_type == instr_fmt_paje) {
   }
 }
 
-void LogContainerDestruction(container_t container)
+void LogContainerDestruction(Container* container)
 {
   double timestamp                               = SIMIX_get_clock();
 
@@ -383,7 +383,7 @@ if (instr_fmt_type == instr_fmt_paje) {
 }
 
 
-SetVariableEvent::SetVariableEvent (double timestamp, container_t container, type_t type, double value)
+SetVariableEvent::SetVariableEvent (double timestamp, Container* container, type_t type, double value)
 {
   this->event_type                         = PAJE_SetVariable;
   this->timestamp                          = timestamp;
@@ -411,7 +411,7 @@ void SetVariableEvent::print() {
   }
 }
 
-AddVariableEvent::AddVariableEvent (double timestamp, container_t container, type_t type, double value)
+AddVariableEvent::AddVariableEvent (double timestamp, Container* container, type_t type, double value)
 {
   this->event_type                         = PAJE_AddVariable;
   this->timestamp                          = timestamp;
@@ -439,7 +439,7 @@ void AddVariableEvent::print() {
   }
 }
 
-SubVariableEvent::SubVariableEvent (double timestamp, container_t container, type_t type, double value)
+SubVariableEvent::SubVariableEvent (double timestamp, Container* container, type_t type, double value)
 {
   this->event_type                         = PAJE_SubVariable;
   this->timestamp                          = timestamp;
@@ -467,7 +467,7 @@ void SubVariableEvent::print() {
   }
 }
 
-SetStateEvent::SetStateEvent(double timestamp, container_t container, type_t type, value* val)
+SetStateEvent::SetStateEvent(double timestamp, Container* container, type_t type, value* val)
 {
   this->event_type                      = PAJE_SetState;
   this->timestamp                       = timestamp;
@@ -509,7 +509,7 @@ void SetStateEvent::print() {
   }
 }
 
-PushStateEvent::PushStateEvent(double timestamp, container_t container, type_t type, value* val, void* extra)
+PushStateEvent::PushStateEvent(double timestamp, Container* container, type_t type, value* val, void* extra)
 {
   this->event_type                  = PAJE_PushState;
   this->timestamp                   = timestamp;
@@ -531,7 +531,7 @@ PushStateEvent::PushStateEvent(double timestamp, container_t container, type_t t
   insert_into_buffer (this);
 }
 
-PushStateEvent::PushStateEvent(double timestamp, container_t container, type_t type, value* val)
+PushStateEvent::PushStateEvent(double timestamp, Container* container, type_t type, value* val)
     : PushStateEvent(timestamp, container, type, val, nullptr)
 {}
 void PushStateEvent::print() {
@@ -699,7 +699,7 @@ void PushStateEvent::print() {
 }
 
 
-PopStateEvent::PopStateEvent (double timestamp, container_t container, type_t type)
+PopStateEvent::PopStateEvent (double timestamp, Container* container, type_t type)
 {
   this->event_type                      = PAJE_PopState;
   this->timestamp                       = timestamp;
@@ -726,7 +726,7 @@ void PopStateEvent::print() {
   }
 }
 
-ResetStateEvent::ResetStateEvent (double timestamp, container_t container, type_t type)
+ResetStateEvent::ResetStateEvent (double timestamp, Container* container, type_t type)
 {
   this->event_type                        = PAJE_ResetState;
   this->timestamp                         = timestamp;
@@ -759,12 +759,12 @@ StartLinkEvent::~StartLinkEvent()
   free(value);
   free(key);
 }
-StartLinkEvent::StartLinkEvent (double timestamp, container_t container,
-    type_t type, container_t sourceContainer, const char *value, const char *key)
+StartLinkEvent::StartLinkEvent (double timestamp, Container* container,
+    type_t type, Container* sourceContainer, const char *value, const char *key)
   : StartLinkEvent(timestamp, container, type, sourceContainer, value, key, -1)
 {}
 
-StartLinkEvent::StartLinkEvent (double timestamp, container_t container, type_t type, container_t sourceContainer,
+StartLinkEvent::StartLinkEvent (double timestamp, Container* container, type_t type, Container* sourceContainer,
                                 const char *value, const char *key, int size)
 {
   event_type                             = PAJE_StartLink;
@@ -802,7 +802,7 @@ void StartLinkEvent::print() {
   }
 }
 
-EndLinkEvent::EndLinkEvent (double timestamp, container_t container, type_t type, container_t destContainer,
+EndLinkEvent::EndLinkEvent (double timestamp, Container* container, type_t type, Container* destContainer,
                       const char *value, const char *key)
 {
   this->event_type                         = PAJE_EndLink;
@@ -839,7 +839,7 @@ void EndLinkEvent::print() {
   }
 }
 
-NewEvent::NewEvent(double timestamp, container_t container, type_t type, value* val)
+NewEvent::NewEvent(double timestamp, Container* container, type_t type, value* val)
 {
   this->event_type                      = PAJE_NewEvent;
   this->timestamp                       = timestamp;
