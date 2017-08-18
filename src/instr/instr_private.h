@@ -74,12 +74,12 @@ class s_type : public ess_type {
   xbt_dict_t children;
   xbt_dict_t values; //valid for all types except variable and container
   s_type (const char *typeNameBuff, const char *key, const char *color, e_entity_types kind, type_t father);
-  static type_t s_type_get_or_null (const char *name, type_t father);
-  static type_t s_type_container_new (const char *name, type_t father);
-  static type_t s_type_event_new (const char *name, type_t father);
-  static type_t s_type_variable_new (const char *name, const char *color, type_t father);
-  static type_t s_type_link_new (const char *name, type_t father, type_t source, type_t dest);
-  static type_t s_type_state_new (const char *name, type_t father);
+  static type_t getOrNull (const char *name, type_t father);
+  static type_t containerNew (const char *name, type_t father);
+  static type_t eventNew (const char *name, type_t father);
+  static type_t variableNew (const char *name, const char *color, type_t father);
+  static type_t linkNew (const char *name, type_t father, type_t source, type_t dest);
+  static type_t stateNew (const char *name, type_t father);
 };
 
 //--------------------------------------------------

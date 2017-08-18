@@ -208,8 +208,8 @@ void TRACE_smpi_init(int rank)
      * Check whether this variable already exists or not. Otherwise, it will be created
      * multiple times but only the last one would be used...
      */
-    if (s_type::s_type_get_or_null(it.first.c_str(), container->type) == nullptr) {
-      s_type::s_type_variable_new(it.first.c_str(), nullptr, container->type);
+    if (s_type::getOrNull(it.first.c_str(), container->type) == nullptr) {
+      s_type::variableNew(it.first.c_str(), nullptr, container->type);
     }
   }
 #endif

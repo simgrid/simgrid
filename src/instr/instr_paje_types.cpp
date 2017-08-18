@@ -75,14 +75,14 @@ void recursiveDestroyType (type_t type)
 
 type_t PJ_type_get (const char *name, type_t father)
 {
-  type_t ret = s_type::s_type_get_or_null (name, father);
+  type_t ret = s_type::getOrNull (name, father);
   if (ret == nullptr){
     THROWF (tracing_error, 2, "type with name (%s) not found in father type (%s)", name, father->name);
   }
   return ret;
 }
 
-type_t s_type::s_type_get_or_null (const char *name, type_t father)
+type_t s_type::getOrNull (const char *name, type_t father)
 {
   if (name == nullptr || father == nullptr){
     THROWF (tracing_error, 0, "can't get type with a nullptr name or from a nullptr father");
@@ -104,7 +104,7 @@ type_t s_type::s_type_get_or_null (const char *name, type_t father)
   return ret;
 }
 
-type_t s_type::s_type_container_new (const char *name, type_t father)
+type_t s_type::containerNew (const char *name, type_t father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a container type with a nullptr name");
@@ -120,7 +120,7 @@ type_t s_type::s_type_container_new (const char *name, type_t father)
   return ret;
 }
 
-type_t s_type::s_type_event_new (const char *name, type_t father)
+type_t s_type::eventNew (const char *name, type_t father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create an event type with a nullptr name");
@@ -132,7 +132,7 @@ type_t s_type::s_type_event_new (const char *name, type_t father)
   return ret;
 }
 
-type_t s_type::s_type_variable_new (const char *name, const char *color, type_t father)
+type_t s_type::variableNew (const char *name, const char *color, type_t father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a variable type with a nullptr name");
@@ -151,7 +151,7 @@ type_t s_type::s_type_variable_new (const char *name, const char *color, type_t 
   return ret;
 }
 
-type_t s_type::s_type_link_new (const char *name, type_t father, type_t source, type_t dest)
+type_t s_type::linkNew (const char *name, type_t father, type_t source, type_t dest)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a link type with a nullptr name");
@@ -168,7 +168,7 @@ type_t s_type::s_type_link_new (const char *name, type_t father, type_t source, 
   return ret;
 }
 
-type_t s_type::s_type_state_new (const char *name, type_t father)
+type_t s_type::stateNew (const char *name, type_t father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a state type with a nullptr name");

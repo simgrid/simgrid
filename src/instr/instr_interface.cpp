@@ -153,7 +153,7 @@ void TRACE_declare_mark(const char *mark_type)
   }
 
   XBT_DEBUG("MARK,declare %s", mark_type);
-  s_type::s_type_event_new(mark_type, PJ_type_get_root());
+  s_type::eventNew(mark_type, PJ_type_get_root());
   declared_marks.insert(mark_type);
 }
 
