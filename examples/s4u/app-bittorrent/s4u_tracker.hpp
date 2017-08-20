@@ -22,10 +22,10 @@ public:
 };
 
 class TrackerAnswer {
-  XBT_ATTRIB_UNUSED int interval; // how often the peer should contact the tracker (unused for now)
+  // int interval; // how often the peer should contact the tracker (unused for now)
   std::set<int>* peers; // the peer list the peer has asked for.
 public:
-  explicit TrackerAnswer(int interval) : interval(interval) { peers = new std::set<int>; }
+  explicit TrackerAnswer(int /*interval*/) /*: interval(interval)*/ { peers = new std::set<int>; }
   TrackerAnswer(const TrackerAnswer&)                               = delete;
   ~TrackerAnswer() { delete peers; };
   void addPeer(int peer) { peers->insert(peer); }
