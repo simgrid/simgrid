@@ -15,6 +15,8 @@
 
 package io.storage;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
@@ -30,6 +32,11 @@ public class Client extends Process {
    // Retrieve all mount points of current host
     Storage[] storages = getHost().getMountedStorage();
 
+    Arrays.sort(storages, new Comparator<Storage>() {
+        public int compare(Storage a, Storage b) {
+          return a.getName().compareTo(b.getName());
+        }
+      });
     for (int i = 0; i < storages.length; i++) {
       // For each disk mounted on host
       Msg.info("------------------------------------");
