@@ -62,7 +62,7 @@ private:
   class Synchro {
   public:
     explicit Synchro(Parmap<T>& parmap) : parmap(parmap) {}
-    virtual ~Synchro() {}
+    virtual ~Synchro() = default;
     /**
      * \brief Wakes all workers and waits for them to finish the tasks.
      *
