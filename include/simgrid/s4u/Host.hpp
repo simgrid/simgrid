@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2015. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -67,7 +67,7 @@ public:
   static s4u::Host* current();
 
   simgrid::xbt::string const& getName() const { return name_; }
-  const char* getCname() { return name_.c_str(); }
+  const char* getCname() const { return name_.c_str(); }
 
   void actorList(std::vector<ActorPtr> * whereto);
 
