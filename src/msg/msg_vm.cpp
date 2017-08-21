@@ -171,8 +171,8 @@ void MSG_vm_destroy(msg_vm_t vm)
   simgrid::simix::kernelImmediate([vm]() { vm->destroy(); });
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t container = PJ_container_get(vm->getCname());
-    PJ_container_remove_from_parent(container);
+    Container* container = Container::get(vm->getCname());
+    Container::removeFromParent(container);
     PJ_container_free(container);
   }
 }
@@ -186,7 +186,7 @@ void MSG_vm_start(msg_vm_t vm)
 {
   vm->start();
   if (TRACE_msg_vm_is_enabled()) {
-    container_t vm_container = PJ_container_get(vm->getCname());
+    Container* vm_container = Container::get(vm->getCname());
     type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
     value* val               = value::get_or_new("start", "0 0 1", type); // start is blue
     new PushStateEvent(MSG_get_clock(), vm_container, type, val);
@@ -295,22 +295,22 @@ static int migration_rx_fun(int argc, char *argv[])
     counter++;
 
     // start link
-    container_t msg = PJ_container_get(vm->getCname());
+    Container* msg = Container::get(vm->getCname());
     type_t type     = PJ_type_get("MSG_VM_LINK", PJ_type_get_root());
-    new StartLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
+    new StartLinkEvent(MSG_get_clock(), s_container_get_root(), type, msg, "M", key);
 
     // destroy existing container of this vm
-    container_t existing_container = PJ_container_get(vm->getCname());
-    PJ_container_remove_from_parent(existing_container);
+    Container* existing_container = Container::get(vm->getCname());
+    Container::removeFromParent(existing_container);
     PJ_container_free(existing_container);
 
     // create new container on the new_host location
-    PJ_container_new(vm->getCname(), INSTR_MSG_VM, PJ_container_get(ms->dst_pm->getCname()));
+    new Container(vm->getCname(), INSTR_MSG_VM, Container::get(ms->dst_pm->getCname()));
 
     // end link
-    msg  = PJ_container_get(vm->getCname());
+    msg  = Container::get(vm->getCname());
     type = PJ_type_get("MSG_VM_LINK", PJ_type_get_root());
-    new EndLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
+    new EndLinkEvent(MSG_get_clock(), s_container_get_root(), type, msg, "M", key);
   }
 
   // Inform the SRC that the migration has been correctly performed
@@ -773,7 +773,7 @@ void MSG_vm_suspend(msg_vm_t vm)
   XBT_DEBUG("vm_suspend done");
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t vm_container = PJ_container_get(vm->getCname());
+    Container* vm_container = Container::get(vm->getCname());
     type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
     value* val               = value::get_or_new("suspend", "1 0 0", type); // suspend is red
     new PushStateEvent(MSG_get_clock(), vm_container, type, val);
@@ -790,7 +790,7 @@ void MSG_vm_resume(msg_vm_t vm)
   vm->pimpl_vm_->resume();
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t vm_container = PJ_container_get(vm->getCname());
+    Container* vm_container = Container::get(vm->getCname());
     type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
     new PopStateEvent(MSG_get_clock(), vm_container, type);
   }

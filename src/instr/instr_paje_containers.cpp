@@ -12,7 +12,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing event system (containers)");
 
-static container_t rootContainer = nullptr;    /* the root container */
+static Container* rootContainer = nullptr;    /* the root container */
 static xbt_dict_t allContainers = nullptr;     /* all created containers indexed by name */
 std::set<std::string> trivaNodeTypes;           /* all host types defined */
 std::set<std::string> trivaEdgeTypes;           /* all link types defined */
@@ -33,12 +33,12 @@ void PJ_container_release ()
   xbt_dict_free (&allContainers);
 }
 
-void PJ_container_set_root (container_t root)
+void PJ_container_set_root (Container* root)
 {
   rootContainer = root;
 }
 
-container_t PJ_container_new (const char *name, e_container_types kind, container_t father)
+Container::Container (const char *name, e_container_types kind, Container* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a container with a nullptr name");
@@ -49,56 +49,55 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
   snprintf (id_str, INSTR_DEFAULT_STR_SIZE, "%lld", container_id);
   container_id++;
 
-  container_t newContainer = xbt_new0(s_container, 1);
-  newContainer->name = xbt_strdup (name); // name of the container
-  newContainer->id = xbt_strdup (id_str); // id (or alias) of the container
-  newContainer->father = father;
+  this->name = xbt_strdup (name); // name of the container
+  this->id = xbt_strdup (id_str); // id (or alias) of the container
+  this->father = father;
   sg_host_t sg_host = sg_host_by_name(name);
 
   //Search for network_element_t
   switch (kind){
     case INSTR_HOST:
-      newContainer->netpoint = sg_host->pimpl_netpoint;
-      xbt_assert(newContainer->netpoint, "Element '%s' not found", name);
+      this->netpoint = sg_host->pimpl_netpoint;
+      xbt_assert(this->netpoint, "Element '%s' not found", name);
       break;
     case INSTR_ROUTER:
-      newContainer->netpoint = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
-      xbt_assert(newContainer->netpoint, "Element '%s' not found", name);
+      this->netpoint = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
+      xbt_assert(this->netpoint, "Element '%s' not found", name);
       break;
     case INSTR_AS:
-      newContainer->netpoint = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
-      xbt_assert(newContainer->netpoint, "Element '%s' not found", name);
+      this->netpoint = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
+      xbt_assert(this->netpoint, "Element '%s' not found", name);
       break;
     default:
-      newContainer->netpoint = nullptr;
+      this->netpoint = nullptr;
       break;
   }
 
   // level depends on level of father
-  if (newContainer->father){
-    newContainer->level = newContainer->father->level+1;
+  if (this->father){
+    this->level = this->father->level+1;
     XBT_DEBUG("new container %s, child of %s", name, father->name);
   }else{
-    newContainer->level = 0;
+    this->level = 0;
   }
   // type definition (method depends on kind of this new container)
-  newContainer->kind = kind;
-  if (newContainer->kind == INSTR_AS){
+  this->kind = kind;
+  if (this->kind == INSTR_AS){
     //if this container is of an AS, its type name depends on its level
     char as_typename[INSTR_DEFAULT_STR_SIZE];
-    snprintf (as_typename, INSTR_DEFAULT_STR_SIZE, "L%d", newContainer->level);
-    if (newContainer->father){
-      newContainer->type = PJ_type_get_or_null (as_typename, newContainer->father->type);
-      if (newContainer->type == nullptr){
-        newContainer->type = PJ_type_container_new (as_typename, newContainer->father->type);
+    snprintf (as_typename, INSTR_DEFAULT_STR_SIZE, "L%d", this->level);
+    if (this->father){
+      this->type = PJ_type_get_or_null (as_typename, this->father->type);
+      if (this->type == nullptr){
+        this->type = PJ_type_container_new (as_typename, this->father->type);
       }
     }else{
-      newContainer->type = PJ_type_container_new ("0", nullptr);
+      this->type = PJ_type_container_new ("0", nullptr);
     }
   }else{
     //otherwise, the name is its kind
     char typeNameBuff[INSTR_DEFAULT_STR_SIZE];
-    switch (newContainer->kind){
+    switch (this->kind){
       case INSTR_HOST:
         snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "HOST");
         break;
@@ -124,60 +123,59 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
         THROWF (tracing_error, 0, "new container kind is unknown.");
         break;
     }
-    type_t type = PJ_type_get_or_null (typeNameBuff, newContainer->father->type);
+    type_t type = PJ_type_get_or_null (typeNameBuff, this->father->type);
     if (type == nullptr){
-      newContainer->type = PJ_type_container_new (typeNameBuff, newContainer->father->type);
+      this->type = PJ_type_container_new (typeNameBuff, this->father->type);
     }else{
-      newContainer->type = type;
+      this->type = type;
     }
   }
-  newContainer->children = xbt_dict_new_homogeneous(nullptr);
-  if (newContainer->father){
-    xbt_dict_set(newContainer->father->children, newContainer->name, newContainer, nullptr);
-    LogContainerCreation(newContainer);
+  this->children = xbt_dict_new_homogeneous(nullptr);
+  if (this->father){
+    xbt_dict_set(this->father->children, this->name, this, nullptr);
+    LogContainerCreation(this);
   }
 
   //register all kinds by name
-  if (xbt_dict_get_or_null(allContainers, newContainer->name) != nullptr){
-    THROWF(tracing_error, 1, "container %s already present in allContainers data structure", newContainer->name);
+  if (xbt_dict_get_or_null(allContainers, this->name) != nullptr){
+    THROWF(tracing_error, 1, "container %s already present in allContainers data structure", this->name);
   }
 
-  xbt_dict_set (allContainers, newContainer->name, newContainer, nullptr);
-  XBT_DEBUG("Add container name '%s'",newContainer->name);
+  xbt_dict_set (allContainers, this->name, this, nullptr);
+  XBT_DEBUG("Add container name '%s'",this->name);
 
   //register NODE types for triva configuration
-  if (newContainer->kind == INSTR_HOST || newContainer->kind == INSTR_LINK || newContainer->kind == INSTR_ROUTER) {
-    trivaNodeTypes.insert(newContainer->type->name);
+  if (this->kind == INSTR_HOST || this->kind == INSTR_LINK || this->kind == INSTR_ROUTER) {
+    trivaNodeTypes.insert(this->type->name);
   }
-  return newContainer;
 }
 
-container_t PJ_container_get (const char *name)
+Container* Container::get (const char *name)
 {
-  container_t ret = PJ_container_get_or_null (name);
+  Container* ret = s_container_get_or_null (name);
   if (ret == nullptr){
     THROWF(tracing_error, 1, "container with name %s not found", name);
   }
   return ret;
 }
 
-container_t PJ_container_get_or_null (const char *name)
+Container* s_container_get_or_null (const char *name)
 {
-  return static_cast<container_t>(name != nullptr ? xbt_dict_get_or_null(allContainers, name) : nullptr);
+  return static_cast<Container*>(name != nullptr ? xbt_dict_get_or_null(allContainers, name) : nullptr);
 }
 
-container_t PJ_container_get_root ()
+Container* s_container_get_root ()
 {
   return rootContainer;
 }
 
-void PJ_container_remove_from_parent (container_t child)
+void Container::removeFromParent (Container* child)
 {
   if (child == nullptr){
     THROWF (tracing_error, 0, "can't remove from parent with a nullptr child");
   }
 
-  container_t parent = child->father;
+  Container* parent = child->father;
   if (parent){
     XBT_DEBUG("removeChildContainer (%s) FromContainer (%s) ",
         child->name,
@@ -186,7 +184,7 @@ void PJ_container_remove_from_parent (container_t child)
   }
 }
 
-void PJ_container_free (container_t container)
+void PJ_container_free (Container* container)
 {
   if (container == nullptr){
     THROWF (tracing_error, 0, "trying to free a nullptr container");
@@ -199,7 +197,7 @@ void PJ_container_free (container_t container)
   TRACE_paje_dump_buffer(1);
 
   //trace my destruction
-  if (not TRACE_disable_destroy() && container != PJ_container_get_root()) {
+  if (not TRACE_disable_destroy() && container != s_container_get_root()) {
     //do not trace the container destruction if user requests
     //or if the container is root
     LogContainerDestruction(container);
@@ -216,14 +214,14 @@ void PJ_container_free (container_t container)
   container = nullptr;
 }
 
-static void recursiveDestroyContainer (container_t container)
+static void recursiveDestroyContainer (Container* container)
 {
   if (container == nullptr){
     THROWF (tracing_error, 0, "trying to recursively destroy a nullptr container");
   }
   XBT_DEBUG("recursiveDestroyContainer %s", container->name);
   xbt_dict_cursor_t cursor = nullptr;
-  container_t child;
+  Container* child;
   char *child_name;
   xbt_dict_foreach(container->children, cursor, child_name, child) {
     recursiveDestroyContainer (child);
@@ -233,7 +231,7 @@ static void recursiveDestroyContainer (container_t container)
 
 void PJ_container_free_all ()
 {
-  container_t root = PJ_container_get_root();
+  Container* root = s_container_get_root();
   if (root == nullptr){
     THROWF (tracing_error, 0, "trying to free all containers, but root is nullptr");
   }
