@@ -546,8 +546,13 @@ void Peer::updateChokedPeers()
   round_                  = (round_ + 1) % 3;
   Connection* chosen_peer = nullptr;
   // select first active peer and remove it from the set
-  Connection* choked_peer = *(active_peers.begin());
-  active_peers.erase(choked_peer);
+  Connection* choked_peer;
+  if (active_peers.empty()) {
+    choked_peer = nullptr;
+  } else {
+    choked_peer = *active_peers.begin();
+    active_peers.erase(choked_peer);
+  }
 
   /**If we are currently seeding, we unchoke the peer which has been unchoked the last time.*/
   if (hasFinished()) {

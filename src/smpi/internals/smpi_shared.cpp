@@ -388,7 +388,7 @@ int smpi_is_shared(void* ptr, std::vector<std::pair<size_t, size_t>> &private_bl
     return 0;
   if ( smpi_cfg_shared_malloc == shmalloc_local || smpi_cfg_shared_malloc == shmalloc_global) {
     auto low = allocs_metadata.lower_bound(ptr);
-    if (low->first==ptr) {
+    if (low != allocs_metadata.end() && low->first == ptr) {
       private_blocks = low->second.private_blocks;
       *offset = 0;
       return 1;

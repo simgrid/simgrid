@@ -122,9 +122,9 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
           if (parents_are_marked(succ))
             next.push_back(succ);
         }
-        current.clear();
-        current = next;
       }
+      current.clear();
+      current = next;
     }
 
     all_marked = true;

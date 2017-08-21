@@ -380,7 +380,7 @@ int SD_task_get_workstation_count(SD_task_t task)
  */
 sg_host_t *SD_task_get_workstation_list(SD_task_t task)
 {
-  return &(*(task->allocation))[0];
+  return task->allocation->data();
 }
 
 /**

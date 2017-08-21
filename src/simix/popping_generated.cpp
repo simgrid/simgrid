@@ -32,9 +32,6 @@ const char* simcall_names[] = {
     "SIMCALL_PROCESS_SLEEP",
     "SIMCALL_EXECUTION_START",
     "SIMCALL_EXECUTION_PARALLEL_START",
-    "SIMCALL_EXECUTION_CANCEL",
-    "SIMCALL_EXECUTION_SET_PRIORITY",
-    "SIMCALL_EXECUTION_SET_BOUND",
     "SIMCALL_EXECUTION_WAIT",
     "SIMCALL_PROCESS_ON_EXIT",
     "SIMCALL_COMM_IPROBE",
@@ -115,26 +112,6 @@ case SIMCALL_EXECUTION_PARALLEL_START:
           simgrid::simix::unmarshal<sg_host_t*>(simcall->args[2]), simgrid::simix::unmarshal<double*>(simcall->args[3]),
           simgrid::simix::unmarshal<double*>(simcall->args[4]), simgrid::simix::unmarshal<double>(simcall->args[5]),
           simgrid::simix::unmarshal<double>(simcall->args[6])));
-  SIMIX_simcall_answer(simcall);
-  break;
-
-case SIMCALL_EXECUTION_CANCEL:
-  SIMIX_execution_cancel(
-      simgrid::simix::unmarshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->args[0]));
-  SIMIX_simcall_answer(simcall);
-  break;
-
-case SIMCALL_EXECUTION_SET_PRIORITY:
-  SIMIX_execution_set_priority(
-      simgrid::simix::unmarshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->args[0]),
-      simgrid::simix::unmarshal<double>(simcall->args[1]));
-  SIMIX_simcall_answer(simcall);
-  break;
-
-case SIMCALL_EXECUTION_SET_BOUND:
-  SIMIX_execution_set_bound(
-      simgrid::simix::unmarshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->args[0]),
-      simgrid::simix::unmarshal<double>(simcall->args[1]));
   SIMIX_simcall_answer(simcall);
   break;
 

@@ -45,9 +45,6 @@ XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host, const char*
                                                      std::map<std::string, std::string>* properties, int auto_restart);
 
 XBT_PRIVATE void SIMIX_host_autorestart(sg_host_t host);
-XBT_PRIVATE void SIMIX_execution_cancel(smx_activity_t synchro);
-XBT_PRIVATE void SIMIX_execution_set_priority(smx_activity_t synchro, double priority);
-XBT_PRIVATE void SIMIX_execution_set_bound(smx_activity_t synchro, double bound);
 
 XBT_PRIVATE void SIMIX_execution_finish(simgrid::kernel::activity::ExecImplPtr exec);
 

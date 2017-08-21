@@ -87,35 +87,6 @@ inline static int simcall_BODY_process_sleep(double duration) {
                                             bytes_amount, rate, timeout);
   }
 
-  inline static void
-  simcall_BODY_execution_cancel(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution)
-  {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_execution_cancel(execution);
-    return simcall<void, boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(SIMCALL_EXECUTION_CANCEL,
-                                                                                        execution);
-  }
-
-  inline static void
-  simcall_BODY_execution_set_priority(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution,
-                                      double priority)
-  {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_execution_set_priority(execution, priority);
-    return simcall<void, boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>, double>(
-        SIMCALL_EXECUTION_SET_PRIORITY, execution, priority);
-  }
-
-  inline static void
-  simcall_BODY_execution_set_bound(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution,
-                                   double bound)
-  {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_execution_set_bound(execution, bound);
-    return simcall<void, boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>, double>(
-        SIMCALL_EXECUTION_SET_BOUND, execution, bound);
-  }
-
   inline static int simcall_BODY_execution_wait(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution)
   {
     /* Go to that function to follow the code flow through the simcall barrier */

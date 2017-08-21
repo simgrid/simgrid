@@ -111,7 +111,14 @@ smx_activity_t simcall_execution_parallel_start(const char* name, int host_nb, s
  */
 void simcall_execution_cancel(smx_activity_t execution)
 {
-  simcall_BODY_execution_cancel(execution);
+  simgrid::simix::kernelImmediate([execution] {
+    XBT_DEBUG("Cancel synchro %p", execution.get());
+    simgrid::kernel::activity::ExecImplPtr exec =
+        boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
+
+    if (exec->surf_exec)
+      exec->surf_exec->cancel();
+  });
 }
 
 /**
@@ -126,8 +133,13 @@ void simcall_execution_set_priority(smx_activity_t execution, double priority)
 {
   /* checking for infinite values */
   xbt_assert(std::isfinite(priority), "priority is not finite!");
+  simgrid::simix::kernelImmediate([execution, priority] {
 
-  simcall_BODY_execution_set_priority(execution, priority);
+    simgrid::kernel::activity::ExecImplPtr exec =
+        boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
+    if (exec->surf_exec)
+      exec->surf_exec->setSharingWeight(priority);
+  });
 }
 
 /**
@@ -140,7 +152,12 @@ void simcall_execution_set_priority(smx_activity_t execution, double priority)
  */
 void simcall_execution_set_bound(smx_activity_t execution, double bound)
 {
-  simcall_BODY_execution_set_bound(execution, bound);
+  simgrid::simix::kernelImmediate([execution, bound] {
+    simgrid::kernel::activity::ExecImplPtr exec =
+        boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
+    if (exec->surf_exec)
+      static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)->setBound(bound);
+  });
 }
 
 /**

@@ -216,32 +216,6 @@ SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_li
   return exec;
 }
 
-void SIMIX_execution_cancel(smx_activity_t synchro)
-{
-  XBT_DEBUG("Cancel synchro %p", synchro.get());
-  simgrid::kernel::activity::ExecImplPtr exec =
-      boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro);
-
-  if (exec->surf_exec)
-    exec->surf_exec->cancel();
-}
-
-void SIMIX_execution_set_priority(smx_activity_t synchro, double priority)
-{
-  simgrid::kernel::activity::ExecImplPtr exec =
-      boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro);
-  if(exec->surf_exec)
-    exec->surf_exec->setSharingWeight(priority);
-}
-
-void SIMIX_execution_set_bound(smx_activity_t synchro, double bound)
-{
-  simgrid::kernel::activity::ExecImplPtr exec =
-      boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro);
-  if(exec->surf_exec)
-    static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)->setBound(bound);
-}
-
 void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_activity_t synchro)
 {
   simgrid::kernel::activity::ExecImplPtr exec =
