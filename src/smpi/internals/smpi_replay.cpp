@@ -458,7 +458,7 @@ static void action_barrier(const char *const *action){
 
   Colls::barrier(MPI_COMM_WORLD);
 
-  TRACE_smpi_collective_out(rank, __FUNCTION__);
+  TRACE_smpi_collective_out(rank);
   log_timed_action (action, clock);
 }
 
@@ -490,7 +490,7 @@ static void action_bcast(const char *const *action)
 
   Colls::bcast(sendbuf, size, MPI_CURRENT_TYPE, root, MPI_COMM_WORLD);
 
-  TRACE_smpi_collective_out(rank, __FUNCTION__);
+  TRACE_smpi_collective_out(rank);
   log_timed_action (action, clock);
 }
 
@@ -525,7 +525,7 @@ static void action_reduce(const char *const *action)
   Colls::reduce(sendbuf, recvbuf, comm_size, MPI_CURRENT_TYPE, MPI_OP_NULL, root, MPI_COMM_WORLD);
   smpi_execute_flops(comp_size);
 
-  TRACE_smpi_collective_out(rank, __FUNCTION__);
+  TRACE_smpi_collective_out(rank);
   log_timed_action (action, clock);
 }
 
@@ -553,7 +553,7 @@ static void action_allReduce(const char *const *action) {
   Colls::allreduce(sendbuf, recvbuf, comm_size, MPI_CURRENT_TYPE, MPI_OP_NULL, MPI_COMM_WORLD);
   smpi_execute_flops(comp_size);
 
-  TRACE_smpi_collective_out(rank, __FUNCTION__);
+  TRACE_smpi_collective_out(rank);
   log_timed_action (action, clock);
 }
 
@@ -587,7 +587,7 @@ static void action_allToAll(const char *const *action) {
 
   Colls::alltoall(send, send_size, MPI_CURRENT_TYPE, recv, recv_size, MPI_CURRENT_TYPE2, MPI_COMM_WORLD);
 
-  TRACE_smpi_collective_out(rank, __FUNCTION__);
+  TRACE_smpi_collective_out(rank);
   log_timed_action (action, clock);
 }
 
@@ -635,7 +635,7 @@ static void action_gather(const char *const *action) {
 
   Colls::gather(send, send_size, MPI_CURRENT_TYPE, recv, recv_size, MPI_CURRENT_TYPE2, root, MPI_COMM_WORLD);
 
-  TRACE_smpi_collective_out(smpi_process()->index(), __FUNCTION__);
+  TRACE_smpi_collective_out(smpi_process()->index());
   log_timed_action (action, clock);
 }
 
@@ -693,7 +693,7 @@ static void action_gatherv(const char *const *action) {
 
   Colls::gatherv(send, send_size, MPI_CURRENT_TYPE, recv, recvcounts, disps, MPI_CURRENT_TYPE2, root, MPI_COMM_WORLD);
 
-  TRACE_smpi_collective_out(smpi_process()->index(), __FUNCTION__);
+  TRACE_smpi_collective_out(smpi_process()->index());
   log_timed_action (action, clock);
 }
 
@@ -740,7 +740,7 @@ static void action_reducescatter(const char *const *action) {
   Colls::reduce_scatter(sendbuf, recvbuf, recvcounts, MPI_CURRENT_TYPE, MPI_OP_NULL, MPI_COMM_WORLD);
   smpi_execute_flops(comp_size);
 
-  TRACE_smpi_collective_out(rank, __FUNCTION__);
+  TRACE_smpi_collective_out(rank);
   log_timed_action (action, clock);
 }
 
@@ -782,7 +782,7 @@ static void action_allgather(const char *const *action) {
 
   Colls::allgather(sendbuf, sendcount, MPI_CURRENT_TYPE, recvbuf, recvcount, MPI_CURRENT_TYPE2, MPI_COMM_WORLD);
 
-  TRACE_smpi_collective_out(rank, __FUNCTION__);
+  TRACE_smpi_collective_out(rank);
   log_timed_action (action, clock);
 }
 
@@ -835,7 +835,7 @@ static void action_allgatherv(const char *const *action) {
   Colls::allgatherv(sendbuf, sendcount, MPI_CURRENT_TYPE, recvbuf, recvcounts, disps, MPI_CURRENT_TYPE2,
                           MPI_COMM_WORLD);
 
-  TRACE_smpi_collective_out(rank, __FUNCTION__);
+  TRACE_smpi_collective_out(rank);
   log_timed_action (action, clock);
 }
 
@@ -899,7 +899,7 @@ static void action_allToAllv(const char *const *action) {
   Colls::alltoallv(sendbuf, sendcounts, senddisps, MPI_CURRENT_TYPE,recvbuf, recvcounts, recvdisps,
                          MPI_CURRENT_TYPE, MPI_COMM_WORLD);
 
-  TRACE_smpi_collective_out(rank, __FUNCTION__);
+  TRACE_smpi_collective_out(rank);
   log_timed_action (action, clock);
 }
 
@@ -918,7 +918,7 @@ void smpi_replay_init(int* argc, char*** argv)
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_INIT;
   TRACE_smpi_collective_in(rank, "smpi_replay_run_init", extra);
-  TRACE_smpi_collective_out(rank, "smpi_replay_run_init");
+  TRACE_smpi_collective_out(rank);
   xbt_replay_action_register("init",       simgrid::smpi::action_init);
   xbt_replay_action_register("finalize",   simgrid::smpi::action_finalize);
   xbt_replay_action_register("comm_size",  simgrid::smpi::action_comm_size);
@@ -992,7 +992,7 @@ void smpi_replay_main(int* argc, char*** argv)
 
   smpi_process()->finalize();
 
-  TRACE_smpi_collective_out(smpi_process()->index(), "smpi_replay_run_finalize");
+  TRACE_smpi_collective_out(smpi_process()->index());
   TRACE_smpi_finalize(smpi_process()->index());
 }
 

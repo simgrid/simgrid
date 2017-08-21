@@ -18,7 +18,7 @@ SG_BEGIN_DECL()
 XBT_PRIVATE void TRACE_internal_smpi_set_category(const char* category);
 XBT_PRIVATE const char* TRACE_internal_smpi_get_category();
 XBT_PRIVATE void TRACE_smpi_collective_in(int rank, const char* operation, instr_extra_data extra);
-XBT_PRIVATE void TRACE_smpi_collective_out(int rank, const char* operation);
+XBT_PRIVATE void TRACE_smpi_collective_out(int rank);
 XBT_PRIVATE void TRACE_smpi_computing_init(int rank);
 XBT_PRIVATE void TRACE_smpi_computing_out(int rank);
 XBT_PRIVATE void TRACE_smpi_computing_in(int rank, instr_extra_data extra);
