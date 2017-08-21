@@ -696,6 +696,15 @@ void SMPI_finalize(){
   smpi_global_destroy();
 }
 
+int smpi_rank_of_smx_process(smx_actor_t process)
+{
+  if(process == nullptr){
+    return -1;
+  }else{
+    return process->pid - 1;
+  }
+}
+
 void smpi_mpi_init() {
   if(smpi_init_sleep > 0)
     simcall_process_sleep(smpi_init_sleep);
