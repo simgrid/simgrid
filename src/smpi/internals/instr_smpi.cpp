@@ -381,7 +381,7 @@ void TRACE_smpi_ptp_in(int rank, const char *operation, instr_extra_data extra)
   new PushStateEvent(SIMIX_get_clock(), container, type, val, static_cast<void*>(extra));
 }
 
-void TRACE_smpi_ptp_out(int rank, int dst, const char *operation)
+void TRACE_smpi_ptp_out(int rank, int dst)
 {
   if (not TRACE_smpi_is_enabled())
     return;

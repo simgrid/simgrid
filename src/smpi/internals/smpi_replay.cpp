@@ -243,7 +243,7 @@ static void action_send(const char *const *action)
 
   log_timed_action (action, clock);
 
-  TRACE_smpi_ptp_out(rank, dst_traced, __FUNCTION__);
+  TRACE_smpi_ptp_out(rank, dst_traced);
 }
 
 static void action_Isend(const char *const *action)
@@ -272,7 +272,7 @@ static void action_Isend(const char *const *action)
 
   MPI_Request request = Request::isend(nullptr, size, MPI_CURRENT_TYPE, to, 0,MPI_COMM_WORLD);
 
-  TRACE_smpi_ptp_out(rank, dst_traced, __FUNCTION__);
+  TRACE_smpi_ptp_out(rank, dst_traced);
 
   get_reqq_self()->push_back(request);
 
@@ -310,7 +310,7 @@ static void action_recv(const char *const *action) {
 
   Request::recv(nullptr, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD, &status);
 
-  TRACE_smpi_ptp_out(rank, rank, __FUNCTION__);
+  TRACE_smpi_ptp_out(rank, rank);
   if (not TRACE_smpi_view_internals()) {
     TRACE_smpi_recv(src_traced, rank, 0);
   }
@@ -348,7 +348,7 @@ static void action_Irecv(const char *const *action)
 
   MPI_Request request = Request::irecv(nullptr, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD);
 
-  TRACE_smpi_ptp_out(rank, rank, __FUNCTION__);
+  TRACE_smpi_ptp_out(rank, rank);
   get_reqq_self()->push_back(request);
 
   log_timed_action (action, clock);
@@ -408,7 +408,7 @@ static void action_wait(const char *const *action){
 
   Request::wait(&request, &status);
 
-  TRACE_smpi_ptp_out(rank, dst_traced, __FUNCTION__);
+  TRACE_smpi_ptp_out(rank, dst_traced);
   if (is_wait_for_receive)
     TRACE_smpi_recv(src_traced, dst_traced, 0);
   log_timed_action (action, clock);
@@ -444,7 +444,7 @@ static void action_waitall(const char *const *action){
      if (recvs_snd[i]!=-100)
        TRACE_smpi_recv(recvs_snd[i], recvs_rcv[i],0);
    }
-   TRACE_smpi_ptp_out(rank_traced, -1, __FUNCTION__);
+   TRACE_smpi_ptp_out(rank_traced, -1);
   }
   log_timed_action (action, clock);
 }
