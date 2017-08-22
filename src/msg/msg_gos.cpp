@@ -259,7 +259,6 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
     THROW_UNIMPLEMENTED;
 
   TRACE_msg_task_get_start();
-  double start_time = MSG_get_clock();
 
   /* Sanity check */
   xbt_assert(task, "Null pointer for the task storage");
