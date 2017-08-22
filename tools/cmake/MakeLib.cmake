@@ -86,7 +86,7 @@ if(SIMGRID_HAVE_MC AND HAVE_GNU_LD AND NOT ${DL_LIBRARY} STREQUAL "")
 endif()
 
 if(SIMGRID_HAVE_NS3)
-  SET(SIMGRID_DEP "${SIMGRID_DEP} -lns${NS3_VERSION}-core${NS3_SUFFIX} -lns${NS3_VERSION}-csma${NS3_SUFFIX} -lns${NS3_VERSION}-point-to-point${NS3_SUFFIX} -lns${NS3_VERSION}-internet${NS3_SUFFIX} -lns${NS3_VERSION}-applications${NS3_SUFFIX}")
+  SET(SIMGRID_DEP "${SIMGRID_DEP} -lns${NS3_VERSION}-core${NS3_SUFFIX} -lns${NS3_VERSION}-csma${NS3_SUFFIX} -lns${NS3_VERSION}-point-to-point${NS3_SUFFIX} -lns${NS3_VERSION}-internet${NS3_SUFFIX} -lns${NS3_VERSION}-network${NS3_SUFFIX} -lns${NS3_VERSION}-applications${NS3_SUFFIX}")
 endif()
 
 if(HAVE_POSIX_GETTIME)
