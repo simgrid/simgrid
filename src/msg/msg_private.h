@@ -117,7 +117,7 @@ XBT_PRIVATE void TRACE_msg_task_create(msg_task_t task);
 XBT_PRIVATE void TRACE_msg_task_execute_start(msg_task_t task);
 XBT_PRIVATE void TRACE_msg_task_execute_end(msg_task_t task);
 XBT_PRIVATE void TRACE_msg_task_destroy(msg_task_t task);
-XBT_PRIVATE void TRACE_msg_task_get_end(double start_time, msg_task_t task);
+XBT_PRIVATE void TRACE_msg_task_get_end(msg_task_t task);
 XBT_PRIVATE void TRACE_msg_task_get_start();
 XBT_PRIVATE int TRACE_msg_task_put_start(msg_task_t task);    //returns TRUE if the task_put_end must be called
 XBT_PRIVATE void TRACE_msg_task_put_end();

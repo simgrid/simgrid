@@ -291,7 +291,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
   }
 
   if (ret != MSG_HOST_FAILURE && ret != MSG_TRANSFER_FAILURE && ret != MSG_TIMEOUT) {
-    TRACE_msg_task_get_end(start_time, *task);
+    TRACE_msg_task_get_end(*task);
   }
   return ret;
 }
