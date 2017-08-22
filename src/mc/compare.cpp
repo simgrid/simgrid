@@ -865,7 +865,7 @@ top:
           return res;
       }
     } else {
-      for(simgrid::mc::Member& member : type->members) {
+      for (simgrid::mc::Member& member : type->members) {
         // TODO, optimize this? (for the offset case)
         void *real_member1 = simgrid::dwarf::resolve_member(
           real_area1, type, &member, (simgrid::mc::AddressSpace*) snapshot1, process_index);
@@ -926,7 +926,7 @@ static simgrid::mc::Type* get_offset_type(void *real_base_address, simgrid::mc::
         return nullptr;
     }
 
-    for(simgrid::mc::Member& member : type->members) {
+    for (simgrid::mc::Member& member : type->members) {
       if (member.has_offset_location()) {
         // We have the offset, use it directly (shortcut):
         if (member.offset() == offset)
@@ -1395,7 +1395,7 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state,
   }
   case DW_TAG_structure_type:
   case DW_TAG_class_type:
-    for(simgrid::mc::Member& member : type->members) {
+    for (simgrid::mc::Member& member : type->members) {
       void *member1 = simgrid::dwarf::resolve_member(
         real_area1, type, &member, snapshot1, process_index);
       void *member2 = simgrid::dwarf::resolve_member(

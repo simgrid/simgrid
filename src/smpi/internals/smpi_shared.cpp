@@ -411,10 +411,10 @@ int smpi_is_shared(void* ptr, std::vector<std::pair<size_t, size_t>> &private_bl
 std::vector<std::pair<size_t, size_t>> shift_and_frame_private_blocks(const std::vector<std::pair<size_t, size_t>> vec, size_t offset, size_t buff_size) {
     std::vector<std::pair<size_t, size_t>> result;
     for (auto const& block : vec) {
-        auto new_block = std::make_pair(std::min(std::max((size_t)0, block.first-offset), buff_size),
-                                        std::min(std::max((size_t)0, block.second-offset), buff_size));
-        if(new_block.second > 0 && new_block.first < buff_size)
-            result.push_back(new_block);
+      auto new_block = std::make_pair(std::min(std::max((size_t)0, block.first - offset), buff_size),
+                                      std::min(std::max((size_t)0, block.second - offset), buff_size));
+      if (new_block.second > 0 && new_block.first < buff_size)
+        result.push_back(new_block);
     }
     return result;
 }

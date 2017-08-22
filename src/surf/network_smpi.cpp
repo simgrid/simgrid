@@ -58,7 +58,7 @@ double NetworkSmpiModel::bandwidthFactor(double size)
     smpi_bw_factor = parse_factor(xbt_cfg_get_string("smpi/bw-factor"));
 
   double current = 1.0;
-  for (const auto& fact : smpi_bw_factor) {
+  for (auto const& fact : smpi_bw_factor) {
     if (size <= fact.factor) {
       XBT_DEBUG("%f <= %zu return %f", size, fact.factor, current);
       return current;
@@ -76,7 +76,7 @@ double NetworkSmpiModel::latencyFactor(double size)
     smpi_lat_factor = parse_factor(xbt_cfg_get_string("smpi/lat-factor"));
 
   double current = 1.0;
-  for (const auto& fact : smpi_lat_factor) {
+  for (auto const& fact : smpi_lat_factor) {
     if (size <= fact.factor) {
       XBT_DEBUG("%f <= %zu return %f", size, fact.factor, current);
       return current;

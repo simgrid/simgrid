@@ -222,7 +222,7 @@ MPI_Comm Comm::split(int color, int key)
         }
         MPI_Request* requests = xbt_new(MPI_Request, rankmap.size());
         int reqs              = 0;
-        for (const auto& rank : rankmap) {
+        for (auto const& rank : rankmap) {
           if (rank.second != 0) {
             group_snd[reqs]=new  Group(group_out);
             requests[reqs] = Request::isend(&(group_snd[reqs]), 1, MPI_PTR, rank.second, system_tag, this);

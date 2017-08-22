@@ -35,7 +35,7 @@ void surf_presolve()
 
   XBT_DEBUG ("Set every models in the right state by updating them to 0.");
   for (auto const& model : *all_existing_models)
-      model->updateActionsState(NOW, 0.0);
+    model->updateActionsState(NOW, 0.0);
 }
 
 double surf_solve(double max_date)

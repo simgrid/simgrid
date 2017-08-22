@@ -43,7 +43,7 @@ void Jedule::writeOutput(FILE *file) {
 
     fprintf(file, "  <events>\n");
     for (auto const& event : this->event_set)
-        event->print(file);
+      event->print(file);
     fprintf(file, "  </events>\n");
 
     fprintf(file, "</jedule>\n");

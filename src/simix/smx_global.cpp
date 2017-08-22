@@ -493,7 +493,7 @@ void SIMIX_run()
 
       /* If only daemon processes remain, cancel their actions, mark them to die and reschedule them */
       if (simix_global->process_list.size() == simix_global->daemons.size())
-        for (const auto& dmon : simix_global->daemons) {
+        for (auto const& dmon : simix_global->daemons) {
           XBT_DEBUG("Kill %s", dmon->cname());
           SIMIX_process_kill(dmon, simix_global->maestro_process);
         }
