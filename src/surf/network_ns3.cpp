@@ -143,6 +143,7 @@ namespace surf {
 NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   NetPointNs3::EXTENSION_ID = simgrid::kernel::routing::NetPoint::extension_create<NetPointNs3>();
 
+  flowFromSock = xbt_dict_new_homogeneous([](void* p) { delete (SgFlow*)p; });
   ns3_initialize(ns3_tcp_model.get().c_str());
 
   simgrid::kernel::routing::NetPoint::onCreation.connect([](simgrid::kernel::routing::NetPoint* pt) {

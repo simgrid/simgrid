@@ -10,9 +10,7 @@
 
 #include <algorithm>
 
-xbt_dict_t flowFromSock = xbt_dict_new_homogeneous([](void *p) {
-  delete (SgFlow*)p;
-}); // ns3::sock -> SgFlow
+xbt_dict_t flowFromSock = nullptr; // ns3::sock -> SgFlow
 
 static void receive_callback(ns3::Ptr<ns3::Socket> socket);
 static void datasent_callback(ns3::Ptr<ns3::Socket> socket, uint32_t dataSent);
