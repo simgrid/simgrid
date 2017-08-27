@@ -80,18 +80,18 @@ public:
 };
 
 //--------------------------------------------------
-class value {
+class Value {
 public:
   char* id;
   char* name;
   char* color;
 
   type_t father;
-  value* ret;
-  value(const char* name, const char* color, type_t father);
-  ~value();
-  static value* get_or_new(const char* name, const char* color, type_t father);
-  static value* get(const char* name, type_t father);
+  Value* ret;
+  Value(const char* name, const char* color, type_t father);
+  ~Value();
+  static Value* get_or_new(const char* name, const char* color, type_t father);
+  static Value* get(const char* name, type_t father);
 };
 
 
@@ -191,11 +191,11 @@ class SetStateEvent : public PajeEvent  {
   private:
   container_t container;
   type_t type;
-  value* val;
+  Value* val;
   const char* filename;
   int linenumber;
   public:
-    SetStateEvent(double timestamp, container_t container, type_t type, value* val);
+    SetStateEvent(double timestamp, container_t container, type_t type, Value* val);
     void print() override;
 };
 
@@ -204,14 +204,14 @@ class PushStateEvent : public PajeEvent  {
   public:
   container_t container;
   type_t type;
-  value* val;
+  Value* val;
   int size;
   const char* filename;
   int linenumber;
   void* extra_;
   public:
-    PushStateEvent(double timestamp, container_t container, type_t type, value* val);
-    PushStateEvent(double timestamp, container_t container, type_t type, value* val, void* extra);
+    PushStateEvent(double timestamp, container_t container, type_t type, Value* val);
+    PushStateEvent(double timestamp, container_t container, type_t type, Value* val, void* extra);
     void print() override;
 };
 
@@ -266,10 +266,10 @@ class NewEvent : public PajeEvent  {
   public:
   container_t container;
   type_t type;
-  value* val;
+  Value* val;
 
 public:
-  NewEvent(double timestamp, container_t container, type_t type, value* val);
+  NewEvent(double timestamp, container_t container, type_t type, Value* val);
   void print() override;
 
 };
@@ -432,7 +432,7 @@ void DefineContainerEvent(type_t type);
 void LogVariableTypeDefinition(type_t type);
 void LogStateTypeDefinition(type_t type);
 void LogLinkTypeDefinition(type_t type, type_t source, type_t dest);
-void LogEntityValue(value* val);
+void LogEntityValue(Value* val);
 void LogContainerCreation (container_t container);
 void LogContainerDestruction (container_t container);
 void LogDefineEventType(type_t type);

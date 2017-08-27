@@ -94,7 +94,7 @@ void TRACE_msg_process_suspend(msg_process_t process)
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
     Type* type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    value* val                    = value::get("suspend", type);
+    Value* val                    = Value::get("suspend", type);
     new PushStateEvent(MSG_get_clock(), process_container, type, val);
   }
 }
@@ -119,7 +119,7 @@ void TRACE_msg_process_sleep_in(msg_process_t process)
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
     Type* type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    value* val                    = value::get("sleep", type);
+    Value* val                    = Value::get("sleep", type);
     new PushStateEvent(MSG_get_clock(), process_container, type, val);
   }
 }

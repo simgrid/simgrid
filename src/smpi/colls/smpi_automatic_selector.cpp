@@ -16,13 +16,13 @@
 
 #define TRACE_AUTO_COLL(cat)                                                                                           \
   if (TRACE_is_enabled()) {                                                                                            \
-    Type* type = Type::getOrNull(#cat, PJ_type_get_root());                                                       \
+    Type* type = Type::getOrNull(#cat, PJ_type_get_root());                                                            \
     if (not type) {                                                                                                    \
-      type = Type::eventNew(#cat, PJ_type_get_root());                                                              \
+      type = Type::eventNew(#cat, PJ_type_get_root());                                                                 \
     }                                                                                                                  \
     char cont_name[25];                                                                                                \
     snprintf(cont_name, 25, "rank-%d", smpi_process()->index());                                                       \
-    value* val = value::get_or_new(Colls::mpi_coll_##cat##_description[i].name, "1.0 1.0 1.0", type);                  \
+    Value* val = Value::get_or_new(Colls::mpi_coll_##cat##_description[i].name, "1.0 1.0 1.0", type);                  \
     new NewEvent(SIMIX_get_clock(), PJ_container_get(cont_name), type, val);                                           \
   }
 

@@ -284,7 +284,7 @@ if (instr_fmt_type == instr_fmt_paje) {
   }
 }
 
-void LogEntityValue(value* val)
+void LogEntityValue(Value* val)
 {
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, PAJE_DefineEntityValue);
   //print it
@@ -467,7 +467,7 @@ void SubVariableEvent::print() {
   }
 }
 
-SetStateEvent::SetStateEvent(double timestamp, container_t container, Type* type, value* val)
+SetStateEvent::SetStateEvent(double timestamp, container_t container, Type* type, Value* val)
 {
   this->event_type                      = PAJE_SetState;
   this->timestamp                       = timestamp;
@@ -509,7 +509,7 @@ void SetStateEvent::print() {
   }
 }
 
-PushStateEvent::PushStateEvent(double timestamp, container_t container, Type* type, value* val, void* extra)
+PushStateEvent::PushStateEvent(double timestamp, container_t container, Type* type, Value* val, void* extra)
 {
   this->event_type                  = PAJE_PushState;
   this->timestamp                   = timestamp;
@@ -531,7 +531,7 @@ PushStateEvent::PushStateEvent(double timestamp, container_t container, Type* ty
   insert_into_buffer (this);
 }
 
-PushStateEvent::PushStateEvent(double timestamp, container_t container, Type* type, value* val)
+PushStateEvent::PushStateEvent(double timestamp, container_t container, Type* type, Value* val)
     : PushStateEvent(timestamp, container, type, val, nullptr)
 {}
 void PushStateEvent::print() {
@@ -839,7 +839,7 @@ void EndLinkEvent::print() {
   }
 }
 
-NewEvent::NewEvent(double timestamp, container_t container, Type* type, value* val)
+NewEvent::NewEvent(double timestamp, container_t container, Type* type, Value* val)
 {
   this->event_type                      = PAJE_NewEvent;
   this->timestamp                       = timestamp;

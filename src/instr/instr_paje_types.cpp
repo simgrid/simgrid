@@ -45,7 +45,7 @@ Type::Type (const char *typeNameBuff, const char *key, const char *color, e_enti
 
 void PJ_type_free (type_t type)
 {
-  value* val;
+  Value* val;
   char *value_name;
   xbt_dict_cursor_t cursor = nullptr;
   xbt_dict_foreach (type->values, cursor, value_name, val) {

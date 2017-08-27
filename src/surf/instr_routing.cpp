@@ -267,11 +267,11 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     if (msg_process == nullptr){
       msg_process = Type::containerNew("MSG_PROCESS", container->type);
       Type* state = Type::stateNew ("MSG_PROCESS_STATE", msg_process);
-      value PJ_value("suspend", "1 0 1", state);
-      value::get_or_new("sleep", "1 1 0", state);
-      value::get_or_new("receive", "1 0 0", state);
-      value::get_or_new("send", "0 0 1", state);
-      value::get_or_new("task_execute", "0 1 1", state);
+      Value PJ_value("suspend", "1 0 1", state);
+      Value::get_or_new("sleep", "1 1 0", state);
+      Value::get_or_new("receive", "1 0 0", state);
+      Value::get_or_new("send", "0 0 1", state);
+      Value::get_or_new("task_execute", "0 1 1", state);
       Type::linkNew ("MSG_PROCESS_LINK", PJ_type_get_root(), msg_process, msg_process);
       Type::linkNew ("MSG_PROCESS_TASK_LINK", PJ_type_get_root(), msg_process, msg_process);
     }
@@ -282,11 +282,11 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     if (msg_vm == nullptr){
       msg_vm = Type::containerNew("MSG_VM", container->type);
       Type* state = Type::stateNew ("MSG_VM_STATE", msg_vm);
-      value PJ_value("suspend", "1 0 1", state);
-      value::get_or_new("sleep", "1 1 0", state);
-      value::get_or_new("receive", "1 0 0", state);
-      value::get_or_new("send", "0 0 1", state);
-      value::get_or_new("task_execute", "0 1 1", state);
+      Value PJ_value("suspend", "1 0 1", state);
+      Value::get_or_new("sleep", "1 1 0", state);
+      Value::get_or_new("receive", "1 0 0", state);
+      Value::get_or_new("send", "0 0 1", state);
+      Value::get_or_new("task_execute", "0 1 1", state);
       Type::linkNew ("MSG_VM_LINK", PJ_type_get_root(), msg_vm, msg_vm);
       Type::linkNew ("MSG_VM_PROCESS_LINK", PJ_type_get_root(), msg_vm, msg_vm);
     }
@@ -403,7 +403,7 @@ void instr_new_user_state_type (const char *father_type, const char *new_typenam
 static void recursiveNewValueForUserStateType(const char* type_name, const char* val, const char* color, Type* root)
 {
   if (not strcmp(root->name, type_name)) {
-    value PJ_value(val, color, root);
+    Value PJ_value(val, color, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
   Type* child_type;
