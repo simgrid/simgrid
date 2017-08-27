@@ -8,7 +8,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_types, instr, "Paje tracing event system (types)");
 
-static type_t rootType = nullptr;        /* the root type */
+static Type* rootType = nullptr;        /* the root type */
 
 void PJ_type_release ()
 {
@@ -20,29 +20,27 @@ type_t PJ_type_get_root ()
   return rootType;
 }
 
-static type_t newType (const char *typeNameBuff, const char *key, const char *color, e_entity_types kind, type_t father)
+Type::Type (const char *typeNameBuff, const char *key, const char *color, e_entity_types kind, Type* father)
 {
   if (typeNameBuff == nullptr || key == nullptr){
     THROWF(tracing_error, 0, "can't create a new type with name or key equal nullptr");
   }
 
-  type_t ret = xbt_new0(s_type, 1);
-  ret->name = xbt_strdup (typeNameBuff);
-  ret->father = father;
-  ret->kind = kind;
-  ret->children = xbt_dict_new_homogeneous(nullptr);
-  ret->values = xbt_dict_new_homogeneous(nullptr);
-  ret->color = xbt_strdup (color);
+  this->name = xbt_strdup (typeNameBuff);
+  this->father = father;
+  this->kind = kind;
+  this->children = xbt_dict_new_homogeneous(nullptr);
+  this->values = xbt_dict_new_homogeneous(nullptr);
+  this->color = xbt_strdup (color);
 
   char str_id[INSTR_DEFAULT_STR_SIZE];
   snprintf (str_id, INSTR_DEFAULT_STR_SIZE, "%lld", instr_new_paje_id());
-  ret->id = xbt_strdup (str_id);
+  this->id = xbt_strdup (str_id);
 
   if (father != nullptr){
-    xbt_dict_set (father->children, key, ret, nullptr);
+    xbt_dict_set (father->children, key, this, nullptr);
     XBT_DEBUG("new type %s, child of %s", typeNameBuff, father->name);
   }
-  return ret;
 }
 
 void PJ_type_free (type_t type)
@@ -67,7 +65,7 @@ void recursiveDestroyType (type_t type)
 {
   XBT_DEBUG("recursiveDestroyType %s", type->name);
   xbt_dict_cursor_t cursor = nullptr;
-  type_t child;
+  Type* child;
   char *child_name;
   xbt_dict_foreach(type->children, cursor, child_name, child) {
     recursiveDestroyType (child);
@@ -75,23 +73,23 @@ void recursiveDestroyType (type_t type)
   PJ_type_free(type);
 }
 
-type_t PJ_type_get (const char *name, type_t father)
+type_t PJ_type_get (const char *name, Type* father)
 {
-  type_t ret = PJ_type_get_or_null (name, father);
+  Type* ret = Type::getOrNull (name, father);
   if (ret == nullptr){
     THROWF (tracing_error, 2, "type with name (%s) not found in father type (%s)", name, father->name);
   }
   return ret;
 }
 
-type_t PJ_type_get_or_null (const char *name, type_t father)
+type_t Type::getOrNull (const char *name, Type* father)
 {
   if (name == nullptr || father == nullptr){
     THROWF (tracing_error, 0, "can't get type with a nullptr name or from a nullptr father");
   }
 
-  type_t ret = nullptr;
-  type_t child;
+  Type* ret = nullptr;
+  Type* child;
   char *child_name;
   xbt_dict_cursor_t cursor = nullptr;
   xbt_dict_foreach(father->children, cursor, child_name, child) {
@@ -106,13 +104,13 @@ type_t PJ_type_get_or_null (const char *name, type_t father)
   return ret;
 }
 
-type_t PJ_type_container_new (const char *name, type_t father)
+type_t Type::containerNew (const char *name, Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a container type with a nullptr name");
   }
 
-  type_t ret = newType(name, name, nullptr, TYPE_CONTAINER, father);
+  Type* ret = new Type (name, name, nullptr, TYPE_CONTAINER, father);
   if (father == nullptr) {
     rootType = ret;
   } else {
@@ -122,63 +120,63 @@ type_t PJ_type_container_new (const char *name, type_t father)
   return ret;
 }
 
-type_t PJ_type_event_new (const char *name, type_t father)
+type_t Type::eventNew (const char *name, Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create an event type with a nullptr name");
   }
 
-  type_t ret = newType (name, name, nullptr, TYPE_EVENT, father);
+  Type* ret = new Type (name, name, nullptr, TYPE_EVENT, father);
   XBT_DEBUG("EventType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
   LogDefineEventType(ret);
   return ret;
 }
 
-type_t PJ_type_variable_new (const char *name, const char *color, type_t father)
+type_t Type::variableNew (const char *name, const char *color, Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a variable type with a nullptr name");
   }
 
-  type_t ret = nullptr;
+  Type* ret = nullptr;
 
   if (not color) {
     char white[INSTR_DEFAULT_STR_SIZE] = "1 1 1";
-    ret = newType (name, name, white, TYPE_VARIABLE, father);
+    ret = new Type (name, name, white, TYPE_VARIABLE, father);
   }else{
-    ret = newType (name, name, color, TYPE_VARIABLE, father);
+    ret = new Type (name, name, color, TYPE_VARIABLE, father);
   }
   XBT_DEBUG("VariableType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
   LogVariableTypeDefinition (ret);
   return ret;
 }
 
-type_t PJ_type_link_new (const char *name, type_t father, type_t source, type_t dest)
+type_t Type::linkNew (const char *name, Type* father, Type* source, Type* dest)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a link type with a nullptr name");
   }
 
-  type_t ret = nullptr;
+  Type* ret = nullptr;
 
   char key[INSTR_DEFAULT_STR_SIZE];
   snprintf (key, INSTR_DEFAULT_STR_SIZE, "%s-%s-%s", name, source->id, dest->id);
-  ret = newType (name, key, nullptr, TYPE_LINK, father);
+  ret = new Type (name, key, nullptr, TYPE_LINK, father);
   XBT_DEBUG("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->name, ret->id, father->name, father->id,
             source->name, source->id, dest->name, dest->id);
   LogLinkTypeDefinition(ret, source, dest);
   return ret;
 }
 
-type_t PJ_type_state_new (const char *name, type_t father)
+type_t Type::stateNew (const char *name, Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a state type with a nullptr name");
   }
 
-  type_t ret = nullptr;
+  Type* ret = nullptr;
 
-  ret = newType (name, name, nullptr, TYPE_STATE, father);
+  ret = new Type (name, name, nullptr, TYPE_STATE, father);
   XBT_DEBUG("StateType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
   LogStateTypeDefinition(ret);
   return ret;

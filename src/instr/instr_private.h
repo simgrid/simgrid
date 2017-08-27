@@ -57,27 +57,34 @@ typedef enum {
 } e_entity_types;
 
 //--------------------------------------------------
-class s_type;
-typedef s_type *type_t;
-class s_type {
+
+class ess_type {
   public:
   char *id;
   char *name;
   char *color;
-  e_entity_types kind;
-  s_type *father;
-  xbt_dict_t children;
-  xbt_dict_t values; //valid for all types except variable and container
 };
 
-typedef s_type s_type_t;
+class Type;
+typedef Type *type_t;
+class Type : public ess_type {
+  public:
+  e_entity_types kind;
+  Type *father;
+  xbt_dict_t children;
+  xbt_dict_t values; //valid for all types except variable and container
+  Type (const char *typeNameBuff, const char *key, const char *color, e_entity_types kind, type_t father);
+  static type_t getOrNull (const char *name, type_t father);
+  static type_t containerNew (const char *name, type_t father);
+  static type_t eventNew (const char *name, type_t father);
+  static type_t variableNew (const char *name, const char *color, type_t father);
+  static type_t linkNew (const char *name, type_t father, type_t source, type_t dest);
+  static type_t stateNew (const char *name, type_t father);
+};
 
 //--------------------------------------------------
-class value {
+class value : public ess_type{
 public:
-  char *id;
-  char *name;
-  char *color;
   type_t father;
   value* ret;
   value(const char* name, const char* color, type_t father);
@@ -114,7 +121,6 @@ class s_container {
   s_container *father;
   xbt_dict_t children;
 };
-typedef s_container s_container_t;
 
 //--------------------------------------------------
 class PajeEvent {
@@ -343,13 +349,7 @@ XBT_PUBLIC(void) PJ_container_remove_from_parent (container_t container);
 /* instr_paje_types.c */
 XBT_PRIVATE void PJ_type_release ();
 XBT_PUBLIC(type_t)  PJ_type_get_root ();
-XBT_PRIVATE type_t PJ_type_container_new (const char *name, type_t father);
-XBT_PRIVATE type_t PJ_type_event_new (const char *name, type_t father);
-type_t PJ_type_link_new (const char *name, type_t father, type_t source, type_t dest);
-XBT_PRIVATE XBT_PRIVATE type_t PJ_type_variable_new (const char *name, const char *color, type_t father);
-XBT_PRIVATE type_t PJ_type_state_new (const char *name, type_t father);
 XBT_PUBLIC(type_t)  PJ_type_get (const char *name, const type_t father);
-XBT_PUBLIC(type_t)  PJ_type_get_or_null (const char *name, type_t father);
 XBT_PRIVATE XBT_PRIVATE void PJ_type_free (type_t type); 
 
 /* instr_config.c */
