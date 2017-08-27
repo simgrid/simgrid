@@ -15,7 +15,7 @@ void PJ_type_release ()
   rootType = nullptr;
 }
 
-type_t PJ_type_get_root ()
+Type* PJ_type_get_root()
 {
   return rootType;
 }
@@ -43,7 +43,7 @@ Type::Type (const char *typeNameBuff, const char *key, const char *color, e_enti
   }
 }
 
-void PJ_type_free (type_t type)
+void PJ_type_free(Type* type)
 {
   Value* val;
   char *value_name;
@@ -61,7 +61,7 @@ void PJ_type_free (type_t type)
   type = nullptr;
 }
 
-void recursiveDestroyType (type_t type)
+void recursiveDestroyType(Type* type)
 {
   XBT_DEBUG("recursiveDestroyType %s", type->name);
   xbt_dict_cursor_t cursor = nullptr;
@@ -73,7 +73,7 @@ void recursiveDestroyType (type_t type)
   PJ_type_free(type);
 }
 
-type_t PJ_type_get (const char *name, Type* father)
+Type* PJ_type_get(const char* name, Type* father)
 {
   Type* ret = Type::getOrNull (name, father);
   if (ret == nullptr){
@@ -82,7 +82,7 @@ type_t PJ_type_get (const char *name, Type* father)
   return ret;
 }
 
-type_t Type::getOrNull (const char *name, Type* father)
+Type* Type::getOrNull(const char* name, Type* father)
 {
   if (name == nullptr || father == nullptr){
     THROWF (tracing_error, 0, "can't get type with a nullptr name or from a nullptr father");
@@ -104,7 +104,7 @@ type_t Type::getOrNull (const char *name, Type* father)
   return ret;
 }
 
-type_t Type::containerNew (const char *name, Type* father)
+Type* Type::containerNew(const char* name, Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a container type with a nullptr name");
@@ -120,7 +120,7 @@ type_t Type::containerNew (const char *name, Type* father)
   return ret;
 }
 
-type_t Type::eventNew (const char *name, Type* father)
+Type* Type::eventNew(const char* name, Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create an event type with a nullptr name");
@@ -132,7 +132,7 @@ type_t Type::eventNew (const char *name, Type* father)
   return ret;
 }
 
-type_t Type::variableNew (const char *name, const char *color, Type* father)
+Type* Type::variableNew(const char* name, const char* color, Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a variable type with a nullptr name");
@@ -151,7 +151,7 @@ type_t Type::variableNew (const char *name, const char *color, Type* father)
   return ret;
 }
 
-type_t Type::linkNew (const char *name, Type* father, Type* source, Type* dest)
+Type* Type::linkNew(const char* name, Type* father, Type* source, Type* dest)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a link type with a nullptr name");
@@ -168,7 +168,7 @@ type_t Type::linkNew (const char *name, Type* father, Type* source, Type* dest)
   return ret;
 }
 
-type_t Type::stateNew (const char *name, Type* father)
+Type* Type::stateNew(const char* name, Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a state type with a nullptr name");

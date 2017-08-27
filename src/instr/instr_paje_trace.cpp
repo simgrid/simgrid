@@ -192,7 +192,7 @@ void TRACE_paje_end() {
   XBT_DEBUG("Filename %s is closed", filename);
 }
 
-void DefineContainerEvent(type_t type)
+void DefineContainerEvent(Type* type)
 {
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, PAJE_DefineContainerType);
   //print it
@@ -210,9 +210,7 @@ void DefineContainerEvent(type_t type)
   //--
 }
 
-
-
-void LogVariableTypeDefinition(type_t type)
+void LogVariableTypeDefinition(Type* type)
 {
 
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, PAJE_DefineVariableType);
@@ -233,8 +231,7 @@ if (instr_fmt_type == instr_fmt_paje) {
   }
 }
 
-
-void LogStateTypeDefinition(type_t type)
+void LogStateTypeDefinition(Type* type)
 {
   //print it
 if (instr_fmt_type == instr_fmt_paje) {
@@ -250,8 +247,7 @@ if (instr_fmt_type == instr_fmt_paje) {
   }
 }
 
-
-void LogDefineEventType(type_t type)
+void LogDefineEventType(Type* type)
 {
   //print it
   if (instr_fmt_type == instr_fmt_paje) {
@@ -267,7 +263,7 @@ void LogDefineEventType(type_t type)
   }
 }
 
-void LogLinkTypeDefinition(type_t type, Type* source, Type* dest)
+void LogLinkTypeDefinition(Type* type, Type* source, Type* dest)
 {
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, PAJE_DefineLinkType);
   //print it
