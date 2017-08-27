@@ -44,7 +44,7 @@ int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm c
       simgrid::smpi::Colls::bcast(buf, count, datatype, root, comm);
     retval = MPI_SUCCESS;
 
-    TRACE_smpi_collective_out(rank, __FUNCTION__);
+    TRACE_smpi_collective_out(rank);
   }
   smpi_bench_begin();
   return retval;
@@ -71,7 +71,7 @@ int PMPI_Barrier(MPI_Comm comm)
 
     retval = MPI_SUCCESS;
 
-    TRACE_smpi_collective_out(rank, __FUNCTION__);
+    TRACE_smpi_collective_out(rank);
   }
 
   smpi_bench_begin();
@@ -123,7 +123,7 @@ int PMPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,void *recvbu
     simgrid::smpi::Colls::gather(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcount, recvtype, root, comm);
 
     retval = MPI_SUCCESS;
-    TRACE_smpi_collective_out(rank, __FUNCTION__);
+    TRACE_smpi_collective_out(rank);
   }
 
   smpi_bench_begin();
@@ -180,7 +180,7 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recv
     TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
 
     retval = simgrid::smpi::Colls::gatherv(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcounts, displs, recvtype, root, comm);
-    TRACE_smpi_collective_out(rank, __FUNCTION__);
+    TRACE_smpi_collective_out(rank);
   }
 
   smpi_bench_begin();
@@ -227,7 +227,7 @@ int PMPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
     simgrid::smpi::Colls::allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
     retval = MPI_SUCCESS;
-    TRACE_smpi_collective_out(rank, __FUNCTION__);
+    TRACE_smpi_collective_out(rank);
   }
   smpi_bench_begin();
   return retval;
@@ -279,7 +279,7 @@ int PMPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
     simgrid::smpi::Colls::allgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm);
     retval = MPI_SUCCESS;
-    TRACE_smpi_collective_out(rank, __FUNCTION__);
+    TRACE_smpi_collective_out(rank);
   }
 
   smpi_bench_begin();
@@ -327,7 +327,7 @@ int PMPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
     simgrid::smpi::Colls::scatter(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm);
     retval = MPI_SUCCESS;
-    TRACE_smpi_collective_out(rank, __FUNCTION__);
+    TRACE_smpi_collective_out(rank);
   }
 
   smpi_bench_begin();
@@ -379,7 +379,7 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
 
     retval = simgrid::smpi::Colls::scatterv(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm);
 
-    TRACE_smpi_collective_out(rank, __FUNCTION__);
+    TRACE_smpi_collective_out(rank);
   }
 
   smpi_bench_begin();
@@ -414,7 +414,7 @@ int PMPI_Reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
     simgrid::smpi::Colls::reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
 
     retval = MPI_SUCCESS;
-    TRACE_smpi_collective_out(rank, __FUNCTION__);
+    TRACE_smpi_collective_out(rank);
   }
 
   smpi_bench_begin();
@@ -472,7 +472,7 @@ int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
       xbt_free(sendtmpbuf);
 
     retval = MPI_SUCCESS;
-    TRACE_smpi_collective_out(rank, __FUNCTION__);
+    TRACE_smpi_collective_out(rank);
   }
 
   smpi_bench_begin();
@@ -506,7 +506,7 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MP
 
     retval = simgrid::smpi::Colls::scan(sendbuf, recvbuf, count, datatype, op, comm);
 
-    TRACE_smpi_collective_out(rank, __FUNCTION__);
+    TRACE_smpi_collective_out(rank);
   }
 
   smpi_bench_begin();
@@ -543,7 +543,7 @@ int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
 
     retval = simgrid::smpi::Colls::exscan(sendtmpbuf, recvbuf, count, datatype, op, comm);
 
-    TRACE_smpi_collective_out(rank, __FUNCTION__);
+    TRACE_smpi_collective_out(rank);
     if (sendbuf == MPI_IN_PLACE)
       xbt_free(sendtmpbuf);
   }
@@ -594,7 +594,7 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datat
 
     simgrid::smpi::Colls::reduce_scatter(sendtmpbuf, recvbuf, recvcounts, datatype, op, comm);
     retval = MPI_SUCCESS;
-    TRACE_smpi_collective_out(rank, __FUNCTION__);
+    TRACE_smpi_collective_out(rank);
 
     if (sendbuf == MPI_IN_PLACE)
       xbt_free(sendtmpbuf);
@@ -649,7 +649,7 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
     xbt_free(recvcounts);
     retval = MPI_SUCCESS;
 
-    TRACE_smpi_collective_out(rank, __FUNCTION__);
+    TRACE_smpi_collective_out(rank);
 
     if (sendbuf == MPI_IN_PLACE)
       xbt_free(sendtmpbuf);
@@ -700,7 +700,7 @@ int PMPI_Alltoall(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* rec
 
     retval = simgrid::smpi::Colls::alltoall(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcount, recvtype, comm);
 
-    TRACE_smpi_collective_out(rank, __FUNCTION__);
+    TRACE_smpi_collective_out(rank);
 
     if (sendbuf == MPI_IN_PLACE)
       xbt_free(sendtmpbuf);
@@ -771,7 +771,7 @@ int PMPI_Alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype 
     TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
     retval = simgrid::smpi::Colls::alltoallv(sendtmpbuf, sendtmpcounts, sendtmpdisps, sendtmptype, recvbuf, recvcounts,
                                     recvdisps, recvtype, comm);
-    TRACE_smpi_collective_out(rank, __FUNCTION__);
+    TRACE_smpi_collective_out(rank);
 
     if (sendbuf == MPI_IN_PLACE) {
       xbt_free(sendtmpbuf);

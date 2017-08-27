@@ -57,27 +57,27 @@ typedef enum {
 } e_entity_types;
 
 //--------------------------------------------------
-class s_type;
-typedef s_type *type_t;
-class s_type {
+
+class ess_type {
   public:
   char *id;
   char *name;
   char *color;
+};
+
+class s_type;
+typedef s_type *type_t;
+class s_type : public ess_type {
+  public:
   e_entity_types kind;
   s_type *father;
   xbt_dict_t children;
   xbt_dict_t values; //valid for all types except variable and container
 };
 
-typedef s_type s_type_t;
-
 //--------------------------------------------------
-class value {
+class value : public ess_type{
 public:
-  char *id;
-  char *name;
-  char *color;
   type_t father;
   value* ret;
   value(const char* name, const char* color, type_t father);
@@ -114,7 +114,6 @@ class s_container {
   s_container *father;
   xbt_dict_t children;
 };
-typedef s_container s_container_t;
 
 //--------------------------------------------------
 class PajeEvent {
@@ -127,23 +126,6 @@ class PajeEvent {
 };
 
 //--------------------------------------------------
-
-class DefineVariableTypeEvent : public PajeEvent
-{
-  public:
-  type_t type;
-   DefineVariableTypeEvent(type_t type);
-   void print() override;
-};
-//--------------------------------------------------
-
-class DefineStateTypeEvent : public PajeEvent  {
-  type_t type;
-  public:
-  DefineStateTypeEvent(type_t type);
-  void print() override;
-};
-
 
 class SetVariableEvent : public PajeEvent  {
   private:
@@ -213,14 +195,6 @@ class PopStateEvent : public PajeEvent  {
   type_t type;
   public:
   PopStateEvent (double timestamp, container_t container, type_t type);
-  void print() override;
-};
-
-class ResetStateEvent : public PajeEvent  {
-  container_t container;
-  type_t type;
-  public:
-  ResetStateEvent (double timestamp, container_t container, type_t type);
   void print() override;
 };
 

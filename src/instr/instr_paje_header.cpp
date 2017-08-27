@@ -11,7 +11,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_header, instr, "Paje tracing event sy
 
 extern FILE *tracing_file;
 
-static void TRACE_header_PajeDefineContainerType (int basic, int size)
+static void TRACE_header_PajeDefineContainerType (int basic)
 {
   fprintf(tracing_file, "%%EventDef PajeDefineContainerType %d\n", PAJE_DefineContainerType);
   fprintf(tracing_file, "%%       Alias string\n");
@@ -24,7 +24,7 @@ static void TRACE_header_PajeDefineContainerType (int basic, int size)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeDefineVariableType (int basic, int size)
+static void TRACE_header_PajeDefineVariableType (int basic)
 {
   fprintf(tracing_file, "%%EventDef PajeDefineVariableType %d\n", PAJE_DefineVariableType);
   fprintf(tracing_file, "%%       Alias string\n");
@@ -38,7 +38,7 @@ static void TRACE_header_PajeDefineVariableType (int basic, int size)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeDefineStateType (int basic, int size)
+static void TRACE_header_PajeDefineStateType (int basic)
 {
   fprintf(tracing_file, "%%EventDef PajeDefineStateType %d\n", PAJE_DefineStateType);
   fprintf(tracing_file, "%%       Alias string\n");
@@ -51,7 +51,7 @@ static void TRACE_header_PajeDefineStateType (int basic, int size)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeDefineEventType (int basic, int size)
+static void TRACE_header_PajeDefineEventType (int basic)
 {
   fprintf(tracing_file, "%%EventDef PajeDefineEventType %d\n", PAJE_DefineEventType);
   fprintf(tracing_file, "%%       Alias string\n");
@@ -64,7 +64,7 @@ static void TRACE_header_PajeDefineEventType (int basic, int size)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeDefineLinkType (int basic, int size)
+static void TRACE_header_PajeDefineLinkType (int basic)
 {
   fprintf(tracing_file, "%%EventDef PajeDefineLinkType %d\n", PAJE_DefineLinkType);
   fprintf(tracing_file, "%%       Alias string\n");
@@ -81,7 +81,7 @@ static void TRACE_header_PajeDefineLinkType (int basic, int size)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeDefineEntityValue (int basic, int size)
+static void TRACE_header_PajeDefineEntityValue (int basic)
 {
   fprintf(tracing_file, "%%EventDef PajeDefineEntityValue %d\n", PAJE_DefineEntityValue);
   fprintf(tracing_file, "%%       Alias string\n");
@@ -95,7 +95,7 @@ static void TRACE_header_PajeDefineEntityValue (int basic, int size)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeCreateContainer (int basic, int size)
+static void TRACE_header_PajeCreateContainer (int basic)
 {
   fprintf(tracing_file, "%%EventDef PajeCreateContainer %d\n", PAJE_CreateContainer);
   fprintf(tracing_file, "%%       Time date\n");
@@ -106,7 +106,7 @@ static void TRACE_header_PajeCreateContainer (int basic, int size)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeDestroyContainer (int basic, int size)
+static void TRACE_header_PajeDestroyContainer (int basic)
 {
   fprintf(tracing_file, "%%EventDef PajeDestroyContainer %d\n", PAJE_DestroyContainer);
   fprintf(tracing_file, "%%       Time date\n");
@@ -115,7 +115,7 @@ static void TRACE_header_PajeDestroyContainer (int basic, int size)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeSetVariable (int basic, int size)
+static void TRACE_header_PajeSetVariable (int basic)
 {
   fprintf(tracing_file, "%%EventDef PajeSetVariable %d\n", PAJE_SetVariable);
   fprintf(tracing_file, "%%       Time date\n");
@@ -125,7 +125,7 @@ static void TRACE_header_PajeSetVariable (int basic, int size)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeAddVariable (int basic, int size)
+static void TRACE_header_PajeAddVariable (int basic)
 {
   fprintf(tracing_file, "%%EventDef PajeAddVariable %d\n", PAJE_AddVariable);
   fprintf(tracing_file, "%%       Time date\n");
@@ -135,7 +135,7 @@ static void TRACE_header_PajeAddVariable (int basic, int size)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeSubVariable (int basic, int size)
+static void TRACE_header_PajeSubVariable (int basic)
 {
   fprintf(tracing_file, "%%EventDef PajeSubVariable %d\n", PAJE_SubVariable);
   fprintf(tracing_file, "%%       Time date\n");
@@ -146,7 +146,7 @@ static void TRACE_header_PajeSubVariable (int basic, int size)
 }
 
 
-static void TRACE_header_PajeSetState (int basic, int size)
+static void TRACE_header_PajeSetState (int basic)
 {
   fprintf(tracing_file, "%%EventDef PajeSetState %d\n", PAJE_SetState);
   fprintf(tracing_file, "%%       Time date\n");
@@ -177,7 +177,7 @@ static void TRACE_header_PajePushState (int basic, int size)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajePopState (int basic, int size)
+static void TRACE_header_PajePopState (int basic)
 {
   fprintf(tracing_file, "%%EventDef PajePopState %d\n", PAJE_PopState);
   fprintf(tracing_file, "%%       Time date\n");
@@ -186,7 +186,7 @@ static void TRACE_header_PajePopState (int basic, int size)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeResetState (int basic, int size)
+static void TRACE_header_PajeResetState (int basic)
 {
   if (basic) return;
 
@@ -214,7 +214,7 @@ static void TRACE_header_PajeStartLink (int basic, int size)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeEndLink (int basic, int size)
+static void TRACE_header_PajeEndLink (int basic)
 {
   fprintf(tracing_file, "%%EventDef PajeEndLink %d\n", PAJE_EndLink);
   fprintf(tracing_file, "%%       Time date\n");
@@ -230,7 +230,7 @@ static void TRACE_header_PajeEndLink (int basic, int size)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeNewEvent (int basic, int size)
+static void TRACE_header_PajeNewEvent (int basic)
 {
   fprintf(tracing_file, "%%EventDef PajeNewEvent %d\n", PAJE_NewEvent);
   fprintf(tracing_file, "%%       Time date\n");
@@ -243,22 +243,22 @@ static void TRACE_header_PajeNewEvent (int basic, int size)
 void TRACE_header(int basic, int size)
 {
   XBT_DEBUG ("Define paje header");
-  TRACE_header_PajeDefineContainerType (basic, size);
-  TRACE_header_PajeDefineVariableType (basic, size);
-  TRACE_header_PajeDefineStateType (basic, size);
-  TRACE_header_PajeDefineEventType (basic, size);
-  TRACE_header_PajeDefineLinkType (basic, size);
-  TRACE_header_PajeDefineEntityValue (basic, size);
-  TRACE_header_PajeCreateContainer (basic, size);
-  TRACE_header_PajeDestroyContainer (basic, size);
-  TRACE_header_PajeSetVariable (basic, size);
-  TRACE_header_PajeAddVariable (basic, size);
-  TRACE_header_PajeSubVariable (basic, size);
-  TRACE_header_PajeSetState (basic, size);
+  TRACE_header_PajeDefineContainerType (basic);
+  TRACE_header_PajeDefineVariableType (basic);
+  TRACE_header_PajeDefineStateType (basic);
+  TRACE_header_PajeDefineEventType (basic);
+  TRACE_header_PajeDefineLinkType (basic);
+  TRACE_header_PajeDefineEntityValue (basic);
+  TRACE_header_PajeCreateContainer (basic);
+  TRACE_header_PajeDestroyContainer (basic);
+  TRACE_header_PajeSetVariable (basic);
+  TRACE_header_PajeAddVariable (basic);
+  TRACE_header_PajeSubVariable (basic);
+  TRACE_header_PajeSetState (basic);
   TRACE_header_PajePushState (basic, size);
-  TRACE_header_PajePopState (basic, size);
-  TRACE_header_PajeResetState (basic, size);
+  TRACE_header_PajePopState (basic);
+  TRACE_header_PajeResetState (basic);
   TRACE_header_PajeStartLink (basic, size);
-  TRACE_header_PajeEndLink (basic, size);
-  TRACE_header_PajeNewEvent (basic, size);
+  TRACE_header_PajeEndLink (basic);
+  TRACE_header_PajeNewEvent (basic);
 }
