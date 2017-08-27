@@ -153,7 +153,7 @@ void TRACE_declare_mark(const char *mark_type)
   }
 
   XBT_DEBUG("MARK,declare %s", mark_type);
-  PJ_type_event_new(mark_type, PJ_type_get_root());
+  s_type::s_type_event_new(mark_type, PJ_type_get_root());
   declared_marks.insert(mark_type);
 }
 
@@ -183,7 +183,7 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
   if (not mark_value)
     THROWF (tracing_error, 1, "mark_value is nullptr");
 
-  type_t type = PJ_type_get (mark_type, PJ_type_get_root());
+  type_t type = s_type::s_type_get (mark_type, PJ_type_get_root());
   if (not type) {
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
   }
@@ -239,7 +239,7 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
     THROWF (tracing_error, 1, "mark_value is nullptr");
 
   //check if mark_type is already declared
-  type_t type = PJ_type_get (mark_type, PJ_type_get_root());
+  type_t type = s_type::s_type_get (mark_type, PJ_type_get_root());
   if (not type) {
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
   }
@@ -282,7 +282,7 @@ static void instr_user_variable(double time, const char* resource, const char* v
       char valuestr[100];
       snprintf(valuestr, 100, "%g", value);
       container_t container = PJ_container_get(resource);
-      type_t type = PJ_type_get (variable, container->type);
+      type_t type = s_type::s_type_get (variable, container->type);
       switch (what){
       case INSTR_US_SET:
         new SetVariableEvent(time, container, type, value);
@@ -945,7 +945,7 @@ void TRACE_host_state_declare_value (const char *state, const char *value, const
 void TRACE_host_set_state(const char* host, const char* state, const char* value_str)
 {
   container_t container = PJ_container_get(host);
-  type_t type = PJ_type_get (state, container->type);
+  type_t type = s_type::s_type_get (state, container->type);
   value* val =
       value::get_or_new(value_str, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
   new SetStateEvent(MSG_get_clock(), container, type, val);
@@ -965,7 +965,7 @@ void TRACE_host_set_state(const char* host, const char* state, const char* value
 void TRACE_host_push_state(const char* host, const char* state, const char* value_str)
 {
   container_t container = PJ_container_get(host);
-  type_t type = PJ_type_get (state, container->type);
+  type_t type = s_type::s_type_get (state, container->type);
   value* val =
       value::get_or_new(value_str, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
   new PushStateEvent(MSG_get_clock(), container, type, val);
@@ -984,7 +984,7 @@ void TRACE_host_push_state(const char* host, const char* state, const char* valu
 void TRACE_host_pop_state (const char *host, const char *state)
 {
   container_t container = PJ_container_get(host);
-  type_t type = PJ_type_get (state, container->type);
+  type_t type = s_type::s_type_get (state, container->type);
   new PopStateEvent(MSG_get_clock(), container, type);
 }
 

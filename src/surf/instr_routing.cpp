@@ -105,9 +105,9 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
             father->type->name,
             src->type->name, src->type->id,
             dst->type->name, dst->type->id);
-  type_t link_type = PJ_type_get_or_null (link_typename, father->type);
+  type_t link_type = s_type::s_type_get_or_null (link_typename, father->type);
   if (link_type == nullptr){
-    link_type = PJ_type_link_new (link_typename, father->type, src->type, dst->type);
+    link_type = s_type::s_type_link_new (link_typename, father->type, src->type, dst->type);
   }
 
   //register EDGE types for triva configuration
@@ -173,12 +173,12 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
     PJ_container_set_root (root);
 
     if (TRACE_smpi_is_enabled()) {
-      type_t mpi = PJ_type_get_or_null ("MPI", root->type);
+      type_t mpi = s_type::s_type_get_or_null ("MPI", root->type);
       if (mpi == nullptr){
-        mpi = PJ_type_container_new("MPI", root->type);
+        mpi = s_type::s_type_container_new("MPI", root->type);
         if (not TRACE_smpi_is_grouped())
           PJ_type_state_new ("MPI_STATE", mpi);
-        PJ_type_link_new ("MPI_LINK", PJ_type_get_root(), mpi, mpi);
+        s_type::s_type_link_new ("MPI_LINK", PJ_type_get_root(), mpi, mpi);
       }
     }
 
@@ -214,21 +214,21 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
   container_t container = PJ_container_new(link.name(), INSTR_LINK, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
-    type_t bandwidth = PJ_type_get_or_null("bandwidth", container->type);
+    type_t bandwidth = s_type::s_type_get_or_null("bandwidth", container->type);
     if (bandwidth == nullptr) {
-      bandwidth = PJ_type_variable_new("bandwidth", nullptr, container->type);
+      bandwidth = s_type::s_type_variable_new("bandwidth", nullptr, container->type);
     }
-    type_t latency = PJ_type_get_or_null("latency", container->type);
+    type_t latency = s_type::s_type_get_or_null("latency", container->type);
     if (latency == nullptr) {
-      latency = PJ_type_variable_new("latency", nullptr, container->type);
+      latency = s_type::s_type_variable_new("latency", nullptr, container->type);
     }
     new SetVariableEvent(0, container, bandwidth, bandwidth_value);
     new SetVariableEvent(0, container, latency, latency_value);
   }
   if (TRACE_uncategorized()) {
-    type_t bandwidth_used = PJ_type_get_or_null("bandwidth_used", container->type);
+    type_t bandwidth_used = s_type::s_type_get_or_null("bandwidth_used", container->type);
     if (bandwidth_used == nullptr) {
-      PJ_type_variable_new("bandwidth_used", "0.5 0.5 0.5", container->type);
+      s_type::s_type_variable_new("bandwidth_used", "0.5 0.5 0.5", container->type);
     }
   }
 }
@@ -239,56 +239,56 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   container_t container = PJ_container_new(host.getCname(), INSTR_HOST, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
-    type_t speed = PJ_type_get_or_null ("power", container->type);
+    type_t speed = s_type::s_type_get_or_null ("power", container->type);
     if (speed == nullptr){
-      speed = PJ_type_variable_new ("power", nullptr, container->type);
+      speed = s_type::s_type_variable_new ("power", nullptr, container->type);
     }
 
     double current_speed_state = host.getSpeed();
     new SetVariableEvent (0, container, speed, current_speed_state);
   }
   if (TRACE_uncategorized()){
-    type_t speed_used = PJ_type_get_or_null ("power_used", container->type);
+    type_t speed_used = s_type::s_type_get_or_null ("power_used", container->type);
     if (speed_used == nullptr){
-      PJ_type_variable_new ("power_used", "0.5 0.5 0.5", container->type);
+      s_type::s_type_variable_new ("power_used", "0.5 0.5 0.5", container->type);
     }
   }
 
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped()){
-    type_t mpi = PJ_type_get_or_null ("MPI", container->type);
+    type_t mpi = s_type::s_type_get_or_null ("MPI", container->type);
     if (mpi == nullptr){
-      mpi = PJ_type_container_new("MPI", container->type);
+      mpi = s_type::s_type_container_new("MPI", container->type);
       PJ_type_state_new ("MPI_STATE", mpi);
     }
   }
 
   if (TRACE_msg_process_is_enabled()) {
-    type_t msg_process = PJ_type_get_or_null ("MSG_PROCESS", container->type);
+    type_t msg_process = s_type::s_type_get_or_null ("MSG_PROCESS", container->type);
     if (msg_process == nullptr){
-      msg_process = PJ_type_container_new("MSG_PROCESS", container->type);
+      msg_process = s_type::s_type_container_new("MSG_PROCESS", container->type);
       type_t state = PJ_type_state_new ("MSG_PROCESS_STATE", msg_process);
       value PJ_value("suspend", "1 0 1", state);
       value::get_or_new("sleep", "1 1 0", state);
       value::get_or_new("receive", "1 0 0", state);
       value::get_or_new("send", "0 0 1", state);
       value::get_or_new("task_execute", "0 1 1", state);
-      PJ_type_link_new ("MSG_PROCESS_LINK", PJ_type_get_root(), msg_process, msg_process);
-      PJ_type_link_new ("MSG_PROCESS_TASK_LINK", PJ_type_get_root(), msg_process, msg_process);
+      s_type::s_type_link_new ("MSG_PROCESS_LINK", PJ_type_get_root(), msg_process, msg_process);
+      s_type::s_type_link_new ("MSG_PROCESS_TASK_LINK", PJ_type_get_root(), msg_process, msg_process);
     }
   }
 
   if (TRACE_msg_vm_is_enabled()) {
-    type_t msg_vm = PJ_type_get_or_null ("MSG_VM", container->type);
+    type_t msg_vm = s_type::s_type_get_or_null ("MSG_VM", container->type);
     if (msg_vm == nullptr){
-      msg_vm = PJ_type_container_new("MSG_VM", container->type);
+      msg_vm = s_type::s_type_container_new("MSG_VM", container->type);
       type_t state = PJ_type_state_new ("MSG_VM_STATE", msg_vm);
       value PJ_value("suspend", "1 0 1", state);
       value::get_or_new("sleep", "1 1 0", state);
       value::get_or_new("receive", "1 0 0", state);
       value::get_or_new("send", "0 0 1", state);
       value::get_or_new("task_execute", "0 1 1", state);
-      PJ_type_link_new ("MSG_VM_LINK", PJ_type_get_root(), msg_vm, msg_vm);
-      PJ_type_link_new ("MSG_VM_PROCESS_LINK", PJ_type_get_root(), msg_vm, msg_vm);
+      s_type::s_type_link_new ("MSG_VM_LINK", PJ_type_get_root(), msg_vm, msg_vm);
+      s_type::s_type_link_new ("MSG_VM_PROCESS_LINK", PJ_type_get_root(), msg_vm, msg_vm);
     }
   }
 
@@ -339,17 +339,17 @@ static void recursiveNewVariableType (const char *new_typename, const char *colo
   if (not strcmp(root->name, "HOST")) {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
-    PJ_type_variable_new (tnstr, color, root);
+    s_type::s_type_variable_new (tnstr, color, root);
   }
   if (not strcmp(root->name, "MSG_VM")) {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
-    PJ_type_variable_new (tnstr, color, root);
+    s_type::s_type_variable_new (tnstr, color, root);
   }
   if (not strcmp(root->name, "LINK")) {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "b%s", new_typename);
-    PJ_type_variable_new (tnstr, color, root);
+    s_type::s_type_variable_new (tnstr, color, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
   type_t child_type;
@@ -367,7 +367,7 @@ void instr_new_variable_type (const char *new_typename, const char *color)
 static void recursiveNewUserVariableType (const char *father_type, const char *new_typename, const char *color, type_t root)
 {
   if (not strcmp(root->name, father_type)) {
-    PJ_type_variable_new (new_typename, color, root);
+    s_type::s_type_variable_new (new_typename, color, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
   type_t child_type;

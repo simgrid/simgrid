@@ -15,27 +15,24 @@ value::value(const char* name, const char* color, type_t father)
   if (name == nullptr || father == nullptr){
     THROWF (tracing_error, 0, "can't create a value with a nullptr name (or a nullptr father)");
   }
-  this->ret         = xbt_new0(value, 1);
-  this->ret->name = xbt_strdup (name);
-  this->ret->father = father;
-  this->ret->color = xbt_strdup (color);
+  this->name = xbt_strdup (name);
+  this->father = father;
+  this->color = xbt_strdup (color);
 
   char str_id[INSTR_DEFAULT_STR_SIZE];
   snprintf (str_id, INSTR_DEFAULT_STR_SIZE, "%lld", instr_new_paje_id());
-  this->ret->id = xbt_strdup (str_id);
+  this->id = xbt_strdup (str_id);
 
-  xbt_dict_set (father->values, name, ret, nullptr);
-  XBT_DEBUG("new value %s, child of %s", ret->name, ret->father->name);
-  LogEntityValue(this->ret);
+  xbt_dict_set (father->values, name, this, nullptr);
+  XBT_DEBUG("new value %s, child of %s", name, father->name);
+  LogEntityValue(this);
 };
 
 value::~value()
 {
-  /* FIXME: this should be cleanable
-  xbt_free(name);
-  xbt_free(color);
-  xbt_free(id);
-  */
+  xbt_free (this->name);
+  xbt_free (this->id);
+  xbt_free (this->color);
 }
 
 value* value::get_or_new(const char* name, const char* color, type_t father)
@@ -45,8 +42,7 @@ value* value::get_or_new(const char* name, const char* color, type_t father)
     ret = value::get(name, father);
   }
   catch(xbt_ex& e) {
-    value rett(name, color, father);
-    ret = rett.ret;
+    ret = new value(name, color, father);
   }
   return ret;
 }
