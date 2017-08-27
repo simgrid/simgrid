@@ -16,7 +16,7 @@ EngineImpl::~EngineImpl()
 {
   sg_host_exit(); // Hosts should be part of the engine, at some point
   delete netRoot_;
-  for (auto kv : netpoints_)
+  for (auto const& kv : netpoints_)
     delete kv.second;
 }
 }

@@ -195,7 +195,7 @@ int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   if(opened_==0){//check that post/start has been done
     // no fence or start .. lock ok ?
     int locked=0;
-    for(auto it : recv_win->lockers_)
+    for (auto const& it : recv_win->lockers_)
       if (it == comm_->rank())
         locked = 1;
     if(locked != 1)
@@ -252,7 +252,7 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   if(opened_==0){//check that post/start has been done
     // no fence or start .. lock ok ?
     int locked=0;
-    for(auto it : send_win->lockers_)
+    for (auto const& it : send_win->lockers_)
       if (it == comm_->rank())
         locked = 1;
     if(locked != 1)
@@ -314,7 +314,7 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
   if(opened_==0){//check that post/start has been done
     // no fence or start .. lock ok ?
     int locked=0;
-    for(auto it : recv_win->lockers_)
+    for (auto const& it : recv_win->lockers_)
       if (it == comm_->rank())
         locked = 1;
     if(locked != 1)
@@ -368,7 +368,7 @@ int Win::get_accumulate( void *origin_addr, int origin_count, MPI_Datatype origi
   if(opened_==0){//check that post/start has been done
     // no fence or start .. lock ok ?
     int locked=0;
-    for(auto it : send_win->lockers_)
+    for (auto const& it : send_win->lockers_)
       if (it == comm_->rank())
         locked = 1;
     if(locked != 1)
@@ -405,7 +405,7 @@ int Win::compare_and_swap(void *origin_addr, void *compare_addr,
   if(opened_==0){//check that post/start has been done
     // no fence or start .. lock ok ?
     int locked=0;
-    for(auto it : send_win->lockers_)
+    for (auto const& it : send_win->lockers_)
       if (it == comm_->rank())
         locked = 1;
     if(locked != 1)

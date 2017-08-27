@@ -132,7 +132,7 @@ NetworkIBModel::NetworkIBModel() : NetworkSmpiModel()
 
 NetworkIBModel::~NetworkIBModel()
 {
-  for (auto instance : active_nodes)
+  for (auto const& instance : active_nodes)
     delete instance.second;
 }
 

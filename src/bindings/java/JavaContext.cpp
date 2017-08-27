@@ -47,7 +47,7 @@ JavaContext* JavaContextFactory::create_context(
 
 void JavaContextFactory::run_all()
 {
-  for (smx_actor_t process : simgrid::simix::process_get_runnable()) {
+  for (smx_actor_t const& process : simgrid::simix::process_get_runnable()) {
     static_cast<JavaContext*>(process->context)->resume();
   }
 }

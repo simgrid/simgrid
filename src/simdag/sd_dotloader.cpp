@@ -213,9 +213,9 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
   if(schedule){
     if (schedule_success) {
       const sg_host_t *workstations = sg_host_list ();
-      for (auto elm : computers) {
+      for (auto const& elm : computers) {
         SD_task_t previous_task = nullptr;
-        for (auto task : *elm.second) {
+        for (auto const& task : *elm.second) {
           /* add dependency between the previous and the task to avoid parallel execution */
           if(task){
             if (previous_task && not SD_task_dependency_exists(previous_task, task))
@@ -229,7 +229,7 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
       }
     } else {
       XBT_WARN("The scheduling is ignored");
-      for (auto elm : computers)
+      for (auto const& elm : computers)
         delete elm.second;
       xbt_dynar_free(&result);
       result = nullptr;

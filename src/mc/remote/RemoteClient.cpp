@@ -105,7 +105,7 @@ static bool is_simgrid_lib(const char* libname)
 
 static bool is_filtered_lib(const char* libname)
 {
-  for (const char* filtered_lib : filtered_libraries)
+  for (const char* const& filtered_lib : filtered_libraries)
     if (strcmp(libname, filtered_lib) == 0)
       return true;
   return false;

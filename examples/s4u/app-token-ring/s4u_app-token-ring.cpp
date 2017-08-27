@@ -63,7 +63,7 @@ int main(int argc, char** argv)
   int id = 0;
   std::vector<simgrid::s4u::Host*> list;
   e->getHostList(&list);
-  for (auto host : list) {
+  for (auto const& host : list) {
     /* - Give a unique rank to each host and create a @ref relay_runner process on each */
     simgrid::s4u::Actor::createActor((std::to_string(id)).c_str(), host, RelayRunner());
     id++;

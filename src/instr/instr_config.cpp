@@ -482,7 +482,7 @@ static void output_categories(const char* name, FILE* file)
 {
   unsigned int i = created_categories.size();
   fprintf (file, "    values = (");
-  for (auto cat : created_categories) {
+  for (auto const& cat : created_categories) {
     --i;
     fprintf(file, "\"%s%s\"", name, cat.c_str());
     if (i > 0) {
@@ -618,21 +618,3 @@ void instr_resume_tracing ()
   XBT_DEBUG ("Tracing is resumed.");
   previous_trace_state = -1;
 }
-
-#undef OPT_TRACING
-#undef OPT_TRACING_PLATFORM
-#undef OPT_TRACING_TOPOLOGY
-#undef OPT_TRACING_SMPI
-#undef OPT_TRACING_SMPI_GROUP
-#undef OPT_TRACING_CATEGORIZED
-#undef OPT_TRACING_UNCATEGORIZED
-#undef OPT_TRACING_MSG_PROCESS
-#undef OPT_TRACING_FILENAME
-#undef OPT_TRACING_BUFFER
-#undef OPT_TRACING_ONELINK_ONLY
-#undef OPT_TRACING_DISABLE_DESTROY
-#undef OPT_TRACING_BASIC
-#undef OPT_TRACING_COMMENT
-#undef OPT_TRACING_COMMENT_FILE
-#undef OPT_VIVA_UNCAT_CONF
-#undef OPT_VIVA_CAT_CONF

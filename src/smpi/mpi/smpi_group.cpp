@@ -39,7 +39,7 @@ Group::Group(MPI_Group origin)
       rank_to_index_map_[i] = origin->rank_to_index_map_[i];
     }
 
-    for (auto elm : origin->index_to_rank_map_) {
+    for (auto const& elm : origin->index_to_rank_map_) {
       index_to_rank_map_.insert({elm.first, elm.second});
     }
   }

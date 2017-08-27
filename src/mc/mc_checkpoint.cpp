@@ -288,8 +288,7 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame,
   if (not scope || not scope->range.contain(stack_frame->ip))
     return;
 
-  for(simgrid::mc::Variable& current_variable :
-      scope->variables) {
+  for (simgrid::mc::Variable& current_variable : scope->variables) {
 
     if (not valid_variable(&current_variable, scope, (void*)stack_frame->ip))
       continue;
@@ -331,7 +330,7 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame,
   }
 
   // Recursive processing of nested scopes:
-  for(simgrid::mc::Frame& nested_scope : scope->scopes)
+  for (simgrid::mc::Frame& nested_scope : scope->scopes)
     fill_local_variables_values(
       stack_frame, &nested_scope, process_index, result);
 }
@@ -453,7 +452,7 @@ static void snapshot_handle_ignore(simgrid::mc::Snapshot* snapshot)
   }
 
   // Zero the memory:
-  for(auto const& region : mc_model_checker->process().ignored_regions())
+  for (auto const& region : mc_model_checker->process().ignored_regions())
     snapshot->process()->clear_bytes(remote(region.addr), region.size);
 
 }
@@ -559,7 +558,7 @@ std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
 
   std::shared_ptr<simgrid::mc::Snapshot> snapshot = std::make_shared<simgrid::mc::Snapshot>(mc_process, num_state);
 
-  for (auto& p : mc_model_checker->process().actors())
+  for (auto const& p : mc_model_checker->process().actors())
     snapshot->enabled_processes.insert(p.copy.getBuffer()->pid);
 
   snapshot_handle_ignore(snapshot.get());
@@ -588,7 +587,7 @@ std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
 static inline
 void restore_snapshot_regions(simgrid::mc::Snapshot* snapshot)
 {
-  for(std::unique_ptr<s_mc_mem_region_t> const& region : snapshot->snapshot_regions) {
+  for (std::unique_ptr<s_mc_mem_region_t> const& region : snapshot->snapshot_regions) {
     // For privatized, variables we decided it was not necessary to take the snapshot:
     if (region)
       restore(region.get());

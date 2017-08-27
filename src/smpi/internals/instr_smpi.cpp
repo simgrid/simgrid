@@ -176,7 +176,7 @@ void TRACE_smpi_alloc()
 
 void TRACE_smpi_release()
 {
-  for (auto elm : keys)
+  for (auto const& elm : keys)
     delete elm.second;
 }
 
@@ -203,7 +203,7 @@ void TRACE_smpi_init(int rank)
 #if HAVE_PAPI
   papi_counter_t counters = smpi_process()->papi_counters();
 
-  for (auto& it : counters) {
+  for (auto const& it : counters) {
     /**
      * Check whether this variable already exists or not. Otherwise, it will be created
      * multiple times but only the last one would be used...

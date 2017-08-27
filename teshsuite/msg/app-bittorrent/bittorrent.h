@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2014, 2016. The SimGrid Team.
+/* Copyright (c) 2012-2014, 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -14,7 +14,7 @@
 /** Interval of time where the peer should send a request to the tracker */
 #define TRACKER_QUERY_INTERVAL 1000
 /** Communication size for a task to the tracker */
-#define TRACKER_COMM_SIZE 0.01
+#define TRACKER_COMM_SIZE 1
 #define GET_PEERS_TIMEOUT 10000
 #define TIMEOUT_MESSAGE 10
 #define TRACKER_RECEIVE_TIMEOUT 10

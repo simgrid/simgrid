@@ -27,13 +27,12 @@ Container::Container(std::string name): name(name)
 Container::~Container()
 {
   if (not this->children.empty())
-    for (auto child: this->children)
+    for (auto const& child : this->children)
       delete child;
 }
 
 void Container::addChild(jed_container_t child)
 {
-  xbt_assert(this != nullptr);
   xbt_assert(child != nullptr);
   this->children.push_back(child);
   child->parent = this;
@@ -47,7 +46,7 @@ void Container::addResources(std::vector<sg_host_t> hosts)
 
   //FIXME do we need to sort?: xbt_dynar_sort_strings(host_names);
 
-  for (auto host : hosts) {
+  for (auto const& host : hosts) {
     const char *host_name = sg_host_get_name(host);
     this->name2id.insert({host_name, this->last_id});
     (this->last_id)++;
@@ -66,7 +65,7 @@ void Container::createHierarchy(sg_netzone_t from_as)
     from_as->getHosts(&table);
     this->addResources(table);
   } else {
-    for (auto nz : *from_as->getChildren()) {
+    for (auto const& nz : *from_as->getChildren()) {
       jed_container_t child_container = new simgrid::jedule::Container(std::string(nz->getCname()));
       this->addChild(child_container);
       child_container->createHierarchy(nz);
@@ -76,8 +75,6 @@ void Container::createHierarchy(sg_netzone_t from_as)
 
 std::vector<int> Container::getHierarchy()
 {
-  xbt_assert( this!= nullptr );
-
   if(this->parent != nullptr ) {
 
     if (not this->parent->children.empty()) {
@@ -87,7 +84,7 @@ std::vector<int> Container::getHierarchy()
       unsigned int i =0;
       int child_nb = -1;
 
-      for (auto child : this->parent->children) {
+      for (auto const& child : this->parent->children) {
         if( child == this) {
           child_nb = i;
           break;
@@ -115,7 +112,7 @@ std::string Container::getHierarchyAsString()
 
   unsigned int length = heir_list.size();
   unsigned int i = 0;
-  for (auto id : heir_list) {
+  for (auto const& id : heir_list) {
     output += std::to_string(id);
     if( i != length-1 ) {
       output += ".";
@@ -134,7 +131,7 @@ void Container::printResources(FILE * jed_file)
   std::string resid = this->getHierarchyAsString();
 
   fprintf(jed_file, "      <rset id=\"%s\" nb=\"%u\" names=\"", resid.c_str(), res_nb);
-  for (auto res: this->resource_list) {
+  for (auto const& res : this->resource_list) {
     const char * res_name = sg_host_get_name(res);
     fprintf(jed_file, "%s", res_name);
     if( i != res_nb-1 ) {
@@ -147,10 +144,9 @@ void Container::printResources(FILE * jed_file)
 
 void Container::print(FILE* jed_file)
 {
-  xbt_assert( this != nullptr );
   fprintf(jed_file, "    <res name=\"%s\">\n", this->name.c_str());
   if (not this->children.empty()) {
-    for (auto child: this->children) {
+    for (auto const& child : this->children) {
       child->print(jed_file);
     }
   } else {
@@ -173,7 +169,7 @@ static void add_subsets_to(std::vector<jed_subset_t> *subset_list, std::vector<c
 
   std::vector<unsigned int> id_list;
 
-  for (auto host_name : hostgroup) {
+  for (auto const& host_name : hostgroup) {
     xbt_assert( host_name != nullptr );
     jed_container_t parent = host2_simgrid_parent_container.at(host_name);
     unsigned int id = parent->name2id.at(host_name);
@@ -211,7 +207,7 @@ void get_resource_selection_by_hosts(std::vector<jed_subset_t> *subset_list, std
   //  find parent container
   //  group by parent container
   std::unordered_map<const char*, std::vector<const char*>> parent2hostgroup;
-  for (auto host: *host_list) {
+  for (auto const& host : *host_list) {
     const char *host_name = sg_host_get_name(host);
     jed_container_t parent = host2_simgrid_parent_container.at(host_name);
     xbt_assert( parent != nullptr );
@@ -223,7 +219,7 @@ void get_resource_selection_by_hosts(std::vector<jed_subset_t> *subset_list, std
       host_group->second.push_back(host_name);
   }
 
-  for (auto elm: parent2hostgroup) {
+  for (auto const& elm : parent2hostgroup) {
     jed_container_t parent = container_name2container.at(elm.first);
     add_subsets_to(subset_list, elm.second, parent);
   }

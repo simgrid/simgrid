@@ -337,7 +337,7 @@ int console_add_route(lua_State *L) {
     route.link_list->push_back(simgrid::surf::LinkImpl::byName(lua_tostring(L, -1)));
   } else {
     // Several names separated by , \t\r\n
-    for (auto name : names) {
+    for (auto const& name : names) {
       if (name.length() > 0) {
         simgrid::surf::LinkImpl* link = simgrid::surf::LinkImpl::byName(name);
         route.link_list->push_back(link);
@@ -418,7 +418,7 @@ int console_add_ASroute(lua_State *L) {
     ASroute.link_list->push_back(simgrid::surf::LinkImpl::byName(lua_tostring(L, -1)));
   } else {
     // Several names separated by , \t\r\n
-    for (auto name : names) {
+    for (auto const& name : names) {
       if (name.length() > 0) {
         simgrid::surf::LinkImpl* link = simgrid::surf::LinkImpl::byName(name);
         ASroute.link_list->push_back(link);

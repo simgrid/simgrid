@@ -64,7 +64,7 @@ void surf_parse_assert_netpoint(std::string hostname, std::string pre, std::stri
       return a->name() < b->name();
   });
   bool first = true;
-  for (auto np : list) {
+  for (auto const& np : list) {
     if (np->isNetZone())
       continue;
 
@@ -114,7 +114,7 @@ static std::vector<int>* explodesRadical(std::string radicals)
   // Make all hosts
   std::vector<std::string> radical_elements;
   boost::split(radical_elements, radicals, boost::is_any_of(","));
-  for (auto group : radical_elements) {
+  for (auto const& group : radical_elements) {
     std::vector<std::string> radical_ends;
     boost::split(radical_ends, group, boost::is_any_of("-"));
     int start = surf_parse_get_int(radical_ends.front());
@@ -799,7 +799,7 @@ void ETag_surfxml_route(){
   route.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
   route.symmetrical = (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES);
 
-  for (auto link: parsed_link_list)
+  for (auto const& link : parsed_link_list)
     route.link_list->push_back(link);
   parsed_link_list.clear();
 
@@ -829,7 +829,7 @@ void ETag_surfxml_zoneRoute()
 
   ASroute.link_list = new std::vector<simgrid::surf::LinkImpl*>();
 
-  for (auto link: parsed_link_list)
+  for (auto const& link : parsed_link_list)
     ASroute.link_list->push_back(link);
   parsed_link_list.clear();
 
@@ -858,7 +858,7 @@ void ETag_surfxml_bypassRoute(){
   route.symmetrical = false;
   route.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
 
-  for (auto link: parsed_link_list)
+  for (auto const& link : parsed_link_list)
     route.link_list->push_back(link);
   parsed_link_list.clear();
 
@@ -882,7 +882,7 @@ void ETag_surfxml_bypassZoneRoute()
   ASroute.src         = sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_src);
   ASroute.dst         = sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_dst);
   ASroute.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
-  for (auto link: parsed_link_list)
+  for (auto const& link : parsed_link_list)
     ASroute.link_list->push_back(link);
   parsed_link_list.clear();
 
@@ -910,7 +910,6 @@ void STag_surfxml_trace___connect()
 {
   parse_after_config();
   TraceConnectCreationArgs trace_connect;
-  memset(&trace_connect,0,sizeof(trace_connect));
 
   trace_connect.element = A_surfxml_trace___connect_element;
   trace_connect.trace = A_surfxml_trace___connect_trace;
@@ -981,7 +980,7 @@ void STag_surfxml_config()
 
 void ETag_surfxml_config()
 {
-  for (auto elm : *current_property_set) {
+  for (auto const& elm : *current_property_set) {
     if (xbt_cfg_is_default_value(elm.first.c_str())) {
       std::string cfg = elm.first + ":" + elm.second;
       xbt_cfg_set_parse(cfg.c_str());

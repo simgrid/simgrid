@@ -37,7 +37,7 @@ public:
   ChunkedData() = default;
   void clear()
   {
-    for (std::size_t pageno : pagenos_)
+    for (std::size_t const& pageno : pagenos_)
       store_->unref_page(pageno);
     pagenos_.clear();
   }
@@ -51,7 +51,7 @@ public:
      : store_ (that.store_)
      , pagenos_(that.pagenos_)
   {
-    for (std::size_t pageno : pagenos_)
+    for (std::size_t const& pageno : pagenos_)
       store_->ref_page(pageno);
   }
   ChunkedData(ChunkedData&& that)
@@ -66,7 +66,7 @@ public:
     this->clear();
     store_ = that.store_;
     pagenos_ = that.pagenos_;
-    for (std::size_t pageno : pagenos_)
+    for (std::size_t const& pageno : pagenos_)
       store_->ref_page(pageno);
     return *this;
   }

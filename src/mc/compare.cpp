@@ -306,7 +306,7 @@ int StateComparator::initHeapInformation(xbt_mheap_t heap1, xbt_mheap_t heap2,
 static inline
 mc_mem_region_t MC_get_heap_region(simgrid::mc::Snapshot* snapshot)
 {
-  for (auto& region : snapshot->snapshot_regions)
+  for (auto const& region : snapshot->snapshot_regions)
     if (region->region_type() == simgrid::mc::RegionType::Heap)
       return region.get();
   xbt_die("No heap region");
@@ -865,7 +865,7 @@ top:
           return res;
       }
     } else {
-      for(simgrid::mc::Member& member : type->members) {
+      for (simgrid::mc::Member& member : type->members) {
         // TODO, optimize this? (for the offset case)
         void *real_member1 = simgrid::dwarf::resolve_member(
           real_area1, type, &member, (simgrid::mc::AddressSpace*) snapshot1, process_index);
@@ -926,7 +926,7 @@ static simgrid::mc::Type* get_offset_type(void *real_base_address, simgrid::mc::
         return nullptr;
     }
 
-    for(simgrid::mc::Member& member : type->members) {
+    for (simgrid::mc::Member& member : type->members) {
       if (member.has_offset_location()) {
         // We have the offset, use it directly (shortcut):
         if (member.offset() == offset)
@@ -1395,7 +1395,7 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state,
   }
   case DW_TAG_structure_type:
   case DW_TAG_class_type:
-    for(simgrid::mc::Member& member : type->members) {
+    for (simgrid::mc::Member& member : type->members) {
       void *member1 = simgrid::dwarf::resolve_member(
         real_area1, type, &member, snapshot1, process_index);
       void *member2 = simgrid::dwarf::resolve_member(
@@ -1459,7 +1459,7 @@ static int compare_global_variables(
 
   std::vector<simgrid::mc::Variable>& variables = object_info->global_variables;
 
-  for (simgrid::mc::Variable& current_var : variables) {
+  for (simgrid::mc::Variable const& current_var : variables) {
 
     // If the variable is not in this object, skip it:
     // We do not expect to find a pointer to something which is not reachable

@@ -285,7 +285,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
   msg_host_t dst_host;
   size_t longest_prefix_length = 0;
 
-  for (auto elm : host->getMountedStorages()) {
+  for (auto const& elm : host->getMountedStorages()) {
     std::string mount_point = std::string(fullpath).substr(0, elm.first.size());
     if (mount_point == elm.first && elm.first.length() > longest_prefix_length) {
       /* The current mount name is found in the full path and is bigger than the previous*/
@@ -393,7 +393,7 @@ xbt_dict_t MSG_storage_get_properties(msg_storage_t storage)
   std::map<std::string, std::string>* props = storage->getProperties();
   if (props == nullptr)
     return nullptr;
-  for (auto elm : *props) {
+  for (auto const& elm : *props) {
     xbt_dict_set(as_dict, elm.first.c_str(), xbt_strdup(elm.second.c_str()), nullptr);
   }
   return as_dict;
@@ -440,7 +440,7 @@ xbt_dynar_t MSG_storages_as_dynar()
 {
   std::map<std::string, simgrid::s4u::Storage*>* storage_map = simgrid::s4u::allStorages();
   xbt_dynar_t res = xbt_dynar_new(sizeof(msg_storage_t),nullptr);
-  for (auto s : *storage_map)
+  for (auto const& s : *storage_map)
     xbt_dynar_push(res, &(s.second));
   delete storage_map;
   return res;
@@ -480,7 +480,7 @@ xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
   std::map<std::string, sg_size_t>* content = storage->getContent();
   xbt_dict_t content_as_dict = xbt_dict_new_homogeneous(xbt_free_f);
 
-  for (auto entry : *content) {
+  for (auto const& entry : *content) {
     sg_size_t* psize = static_cast<sg_size_t*>(malloc(sizeof(sg_size_t)));
     *psize           = entry.second;
     xbt_dict_set(content_as_dict, entry.first.c_str(), psize, nullptr);

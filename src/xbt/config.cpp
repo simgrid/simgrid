@@ -51,10 +51,10 @@ const char* false_values[] = {
 
 static bool parseBool(const char* value)
 {
-  for (const char* true_value : true_values)
+  for (const char* const& true_value : true_values)
     if (std::strcmp(true_value, value) == 0)
       return true;
-  for (const char* false_value : false_values)
+  for (const char* const& false_value : false_values)
     if (std::strcmp(false_value, value) == 0)
       return false;
   throw std::range_error("not a boolean");
@@ -299,7 +299,7 @@ protected:
 Config::~Config()
 {
   XBT_DEBUG("Frees cfg set %p", this);
-  for (auto elm : options)
+  for (auto const& elm : options)
     delete elm.second;
 }
 
@@ -344,7 +344,7 @@ void Config::dump(const char *name, const char *indent)
   if (name)
     printf("%s>> Dumping of the config set '%s':\n", indent, name);
 
-  for (auto elm : options)
+  for (auto const& elm : options)
     printf("%s  %s: ()%s) %s", indent, elm.first.c_str(), elm.second->getTypeName(),
            elm.second->getStringValue().c_str());
 
@@ -358,7 +358,7 @@ void Config::showAliases()
 {
   bool old_warn_for_aliases = false;
   std::swap(warn_for_aliases, old_warn_for_aliases);
-  for (auto elm : aliases)
+  for (auto const& elm : aliases)
     printf("   %s: %s\n", elm.first.c_str(), (*this)[elm.first.c_str()].getDescription().c_str());
   std::swap(warn_for_aliases, old_warn_for_aliases);
 }
@@ -366,7 +366,7 @@ void Config::showAliases()
 /** @brief Displays the declared options and their description */
 void Config::help()
 {
-  for (auto elm : options) {
+  for (auto const& elm : options) {
     simgrid::config::ConfigurationElement* variable = this->options.at(elm.first);
     printf("   %s: %s\n", elm.first.c_str(), variable->getDescription().c_str());
     printf("       Type: %s; ", variable->getTypeName());

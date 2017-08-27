@@ -110,7 +110,7 @@ Cpu::Cpu(Model* model, simgrid::s4u::Host* host, lmm_constraint_t constraint, st
   xbt_assert(speed_.scale > 0, "Speed of host %s must be >0", host->getCname());
 
   // Copy the power peak array:
-  for (double value : *speedPerPstate) {
+  for (double const& value : *speedPerPstate) {
     speedPerPstate_.push_back(value);
   }
 }

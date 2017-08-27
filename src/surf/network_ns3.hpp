@@ -22,7 +22,7 @@ public:
                        e_surf_link_sharing_policy_t policy) override;
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
   double nextOccuringEvent(double now) override;
-  bool nextOccuringEventIsIdempotent() {return false;}
+  bool nextOccuringEventIsIdempotent() override { return false; }
   void updateActionsState(double now, double delta) override;
 };
 
@@ -48,7 +48,7 @@ class XBT_PRIVATE NetworkNS3Action : public NetworkAction {
 public:
   NetworkNS3Action(Model* model, double cost, s4u::Host* src, s4u::Host* dst);
 
-  bool isSuspended();
+  bool isSuspended() override;
   int unref() override;
   void suspend() override;
   void resume() override;

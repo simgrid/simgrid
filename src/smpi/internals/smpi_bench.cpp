@@ -165,7 +165,7 @@ void smpi_bench_end()
     container_t container        = PJ_container_get(container_name);
     papi_counter_t& counter_data = smpi_process()->papi_counters();
 
-    for (auto& pair : counter_data) {
+    for (auto const& pair : counter_data) {
       new_pajeSetVariable(surf_get_clock(), container,
                           PJ_type_get(/* countername */ pair.first.c_str(), container->type), pair.second);
     }
@@ -432,6 +432,6 @@ void smpi_trace_set_call_location__(const char* file, int* line)
 
 void smpi_bench_destroy()
 {
-  for (auto elm : samples)
+  for (auto const& elm : samples)
     xbt_free(elm.second);
 }

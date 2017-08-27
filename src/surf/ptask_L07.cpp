@@ -187,7 +187,7 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
           hostList_->at(i)->routeTo(hostList_->at(j), &route, &lat);
           latency = MAX(latency, lat);
 
-          for (auto link : route)
+          for (auto const& link : route)
             affected_links.insert(link->cname());
         }
       }
@@ -216,7 +216,7 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
           std::vector<LinkImpl*> route;
           hostList_->at(i)->routeTo(hostList_->at(j), &route, nullptr);
 
-          for (auto link : route)
+          for (auto const& link : route)
             lmm_expand_add(model->getMaxminSystem(), link->constraint(), this->getVariable(),
                            bytes_amount[i * host_nb + j]);
         }

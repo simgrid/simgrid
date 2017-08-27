@@ -306,7 +306,7 @@ msg_process_t MSG_process_from_PID(int PID)
 /** @brief returns a list of all currently existing processes */
 xbt_dynar_t MSG_processes_as_dynar() {
   xbt_dynar_t res = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
-  for (auto kv : simix_global->process_list) {
+  for (auto const& kv : simix_global->process_list) {
     smx_actor_t actor = kv.second;
     xbt_dynar_push(res, &actor);
   }
@@ -391,7 +391,7 @@ xbt_dict_t MSG_process_get_properties(msg_process_t process)
       simgrid::simix::kernelImmediate([process] { return process->getImpl()->getProperties(); });
   if (props == nullptr)
     return nullptr;
-  for (auto elm : *props) {
+  for (auto const& elm : *props) {
     xbt_dict_set(as_dict, elm.first.c_str(), xbt_strdup(elm.second.c_str()), nullptr);
   }
   return as_dict;

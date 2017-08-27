@@ -154,7 +154,7 @@ JNIEXPORT void JNICALL JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass
   xbt_dynar_free(&hosts);
 
   /* Cleanup java storages */
-  for (auto elm : java_storage_map)
+  for (auto const& elm : java_storage_map)
     jstorage_unref(env, elm.second);
 }
 

@@ -310,7 +310,7 @@ void HostEnergy::initWattsRangeList()
   XBT_DEBUG("%s: profile: %s, cores: %d", host->getCname(), all_power_values_str, host->getCoreCount());
 
   int i = 0;
-  for (auto current_power_values_str : all_power_values) {
+  for (auto const& current_power_values_str : all_power_values) {
     /* retrieve the power values associated with the current pstate */
     std::vector<std::string> current_power_values;
     boost::split(current_power_values, current_power_values_str, boost::is_any_of(":"));
@@ -370,7 +370,7 @@ static void onCreation(simgrid::s4u::Host& host)
 
 static void onActionStateChange(simgrid::surf::CpuAction* action, simgrid::surf::Action::State previous)
 {
-  for (simgrid::surf::Cpu* cpu : action->cpus()) {
+  for (simgrid::surf::Cpu* const& cpu : action->cpus()) {
     simgrid::s4u::Host* host = cpu->getHost();
     if (host != nullptr) {
 
@@ -464,7 +464,7 @@ void sg_host_energy_update_all()
   simgrid::simix::kernelImmediate([]() {
     std::vector<simgrid::s4u::Host*> list;
     simgrid::s4u::Engine::getInstance()->getHostList(&list);
-    for (auto host : list)
+    for (auto const& host : list)
       if (dynamic_cast<simgrid::s4u::VirtualMachine*>(host) == nullptr) // Ignore virtual machines
         host->extension<HostEnergy>()->update();
   });

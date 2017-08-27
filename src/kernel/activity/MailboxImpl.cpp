@@ -13,7 +13,7 @@ static std::map<std::string, smx_mailbox_t>* mailboxes = new std::map<std::strin
 
 void SIMIX_mailbox_exit()
 {
-  for (auto elm : *mailboxes)
+  for (auto const& elm : *mailboxes)
     delete elm.second;
   delete mailboxes;
 }

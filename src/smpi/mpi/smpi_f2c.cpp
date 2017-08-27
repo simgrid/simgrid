@@ -75,7 +75,7 @@ int F2C::c2f()
     f2c_lookup_ = new std::unordered_map<std::string, F2C*>;
   }
 
-  for (auto elm : *f2c_lookup_)
+  for (auto const& elm : *f2c_lookup_)
     if (elm.second == this)
       return std::stoi(elm.first);
 

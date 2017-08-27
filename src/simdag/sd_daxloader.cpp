@@ -35,20 +35,20 @@ void uniq_transfer_task_name(SD_task_t task)
 }
 
 static bool children_are_marked(SD_task_t task){
-  for (SD_task_t it : *task->successors)
+  for (SD_task_t const& it : *task->successors)
     if (it->marked == 0)
       return false;
-  for (SD_task_t it : *task->outputs)
+  for (SD_task_t const& it : *task->outputs)
     if (it->marked == 0)
       return false;
   return true;
 }
 
 static bool parents_are_marked(SD_task_t task){
-  for (SD_task_t it : *task->predecessors)
+  for (SD_task_t const& it : *task->predecessors)
     if (it->marked == 0)
       return false;
-  for (SD_task_t it : *task->inputs)
+  for (SD_task_t const& it : *task->inputs)
     if (it->marked == 0)
       return false;
   return true;
@@ -68,17 +68,17 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
   }
   while (not current.empty()) {
     std::vector<SD_task_t> next;
-    for (auto t: current){
+    for (auto const& t : current) {
       //Mark task
       t->marked = 1;
-      for (SD_task_t input : *t->inputs){
+      for (SD_task_t const& input : *t->inputs) {
         input->marked=1;
         // Inputs are communication, hence they can have only one predecessor
         SD_task_t input_pred = *(input->predecessors->begin());
         if (children_are_marked(input_pred))
           next.push_back(input_pred);
       }
-      for (SD_task_t pred : *t->predecessors) {
+      for (SD_task_t const& pred : *t->predecessors) {
         if (children_are_marked(pred))
           next.push_back(pred);
       }
@@ -109,22 +109,22 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
     while (not current.empty()) {
       std::vector<SD_task_t> next;
       //test if the current iteration is done
-      for (auto t: current){
+      for (auto const& t : current) {
         t->marked = 1;
-        for (SD_task_t output : *t->outputs) {
+        for (SD_task_t const& output : *t->outputs) {
           output->marked = 1;
           // outputs are communication, hence they can have only one successor
           SD_task_t output_succ = *(output->successors->begin());
           if (parents_are_marked(output_succ))
             next.push_back(output_succ);
         }
-        for (SD_task_t succ : *t->successors) {
+        for (SD_task_t const& succ : *t->successors) {
           if (parents_are_marked(succ))
             next.push_back(succ);
         }
-        current.clear();
-        current = next;
       }
+      current.clear();
+      current = next;
     }
 
     all_marked = true;
@@ -186,26 +186,26 @@ xbt_dynar_t SD_daxload(const char *filename)
    * Files not consumed in the system are said to be consumed by end task (bottom of DAG).
    */
 
-  for (auto elm : files) {
+  for (auto const& elm : files) {
     file = elm.second;
     SD_task_t newfile;
     if (file->predecessors->empty()) {
-      for (SD_task_t it : *file->successors) {
+      for (SD_task_t const& it : *file->successors) {
         newfile = SD_task_create_comm_e2e(file->name, nullptr, file->amount);
         SD_task_dependency_add(nullptr, nullptr, root_task, newfile);
         SD_task_dependency_add(nullptr, nullptr, newfile, it);
         xbt_dynar_push(result, &newfile);
       }
     } else if (file->successors->empty()) {
-      for (SD_task_t it : *file->predecessors){
+      for (SD_task_t const& it : *file->predecessors) {
         newfile = SD_task_create_comm_e2e(file->name, nullptr, file->amount);
         SD_task_dependency_add(nullptr, nullptr, it, newfile);
         SD_task_dependency_add(nullptr, nullptr, newfile, end_task);
         xbt_dynar_push(result, &newfile);
       }
     } else {
-      for (SD_task_t it : *file->predecessors) {
-        for (SD_task_t it2 : *file->successors) {
+      for (SD_task_t const& it : *file->predecessors) {
+        for (SD_task_t const& it2 : *file->successors) {
           if (it == it2) {
             XBT_WARN ("File %s is produced and consumed by task %s."
                       "This loop dependency will prevent the execution of the task.", file->name, it->name);
@@ -223,7 +223,7 @@ xbt_dynar_t SD_daxload(const char *filename)
   xbt_dynar_push(result, &end_task);
 
   /* Free previous copy of the files */
-  for (auto elm : files)
+  for (auto const& elm : files)
     SD_task_destroy(elm.second);
   unsigned int cpt;
   xbt_dynar_foreach(result, cpt, file) {

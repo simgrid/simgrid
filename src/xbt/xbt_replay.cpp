@@ -105,7 +105,7 @@ static void handle_action(ReplayAction* action)
   char** c_action     = new char*[action->size() + 1];
   action_fun function = action_funs.at(action->at(1));
   int i               = 0;
-  for (auto arg : *action) {
+  for (auto const& arg : *action) {
     c_action[i] = xbt_strdup(arg.c_str());
     i++;
   }

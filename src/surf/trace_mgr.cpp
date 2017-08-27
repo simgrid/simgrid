@@ -177,7 +177,7 @@ tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::pop_leq(double date, doub
 
 void tmgr_finalize()
 {
-  for (auto kv : trace_list)
+  for (auto const& kv : trace_list)
     delete kv.second;
   trace_list.clear();
 }

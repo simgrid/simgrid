@@ -15,7 +15,7 @@ public:
   {
     XBT_INFO("Storage info on %s:", simgrid::s4u::Host::current()->getCname());
 
-    for (const auto&kv : mounts) {
+    for (auto const& kv : mounts) {
       std::string mountpoint         = kv.first;
       simgrid::s4u::Storage* storage = kv.second;
 

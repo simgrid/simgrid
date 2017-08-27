@@ -68,7 +68,7 @@ void FullZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_
   if (e_route != nullptr) {
     res->gw_src = e_route->gw_src;
     res->gw_dst = e_route->gw_dst;
-    for (auto link : *e_route->link_list) {
+    for (auto const& link : *e_route->link_list) {
       res->link_list->push_back(link);
       if (lat)
         *lat += link->latency();

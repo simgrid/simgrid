@@ -39,7 +39,7 @@ static void trace2vector(const char* str, std::vector<tmgr::DatedValue>* whereto
   simgrid::trace_mgr::trace* trace = tmgr_trace_new_from_string("TheName", str, 0);
   XBT_VERB("---------------------------------------------------------");
   XBT_VERB("data>>\n%s<<data\n", str);
-  for (auto evt : trace->event_list)
+  for (auto const& evt : trace->event_list)
     XBT_VERB("event: d:%lg v:%lg", evt.date_, evt.value_);
 
   MockedResource daResource;

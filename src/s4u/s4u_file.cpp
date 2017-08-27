@@ -27,7 +27,7 @@ File::File(std::string fullpath, sg_host_t host, void* userdata) : path_(fullpat
   std::string path;
   XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath.c_str(), host->getCname());
 
-  for (auto mnt : host->getMountedStorages()) {
+  for (auto const& mnt : host->getMountedStorages()) {
     XBT_DEBUG("See '%s'", mnt.first.c_str());
     mount_point = fullpath.substr(0, mnt.first.length());
 

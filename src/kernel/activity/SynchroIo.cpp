@@ -21,7 +21,7 @@ void simgrid::kernel::activity::IoImpl::resume()
 
 void simgrid::kernel::activity::IoImpl::post()
 {
-  for (smx_simcall_t simcall : simcalls) {
+  for (smx_simcall_t const& simcall : simcalls) {
     switch (simcall->call) {
     case SIMCALL_FILE_WRITE:
       simcall_file_write__set__result(simcall, surf_io->getCost());

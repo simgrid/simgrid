@@ -1134,7 +1134,7 @@ std::string find_by_build_id(std::vector<char> id)
 {
   std::string filename;
   std::string hex = to_hex(id);
-  for (const char* debug_path : debug_paths) {
+  for (const char* const& debug_path : debug_paths) {
     // Example:
     filename = std::string(debug_path) + ".build-id/"
       + to_hex(id.data(), 1) + '/'
@@ -1277,7 +1277,7 @@ static void MC_post_process_variables(simgrid::mc::ObjectInformation* info)
   // Someone needs this to be sorted but who?
   boost::range::sort(info->global_variables, MC_compare_variable);
 
-  for(simgrid::mc::Variable& variable : info->global_variables)
+  for (simgrid::mc::Variable& variable : info->global_variables)
     if (variable.type_id)
       variable.type = simgrid::util::find_map_ptr(
         info->types, variable.type_id);
@@ -1303,8 +1303,7 @@ static void mc_post_process_scope(simgrid::mc::ObjectInformation* info, simgrid:
 
   // Recursive post-processing of nested-scopes:
   for (simgrid::mc::Frame& nested_scope : scope->scopes)
-      mc_post_process_scope(info, &nested_scope);
-
+    mc_post_process_scope(info, &nested_scope);
 }
 
 static
@@ -1337,7 +1336,7 @@ simgrid::mc::Type* MC_resolve_type(
 static void MC_post_process_types(simgrid::mc::ObjectInformation* info)
 {
   // Lookup "subtype" field:
-  for(auto& i : info->types) {
+  for (auto& i : info->types) {
     i.second.subtype = MC_resolve_type(info, i.second.type_id);
     for (simgrid::mc::Member& member : i.second.members)
       member.type = MC_resolve_type(info, member.type_id);

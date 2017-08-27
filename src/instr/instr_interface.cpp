@@ -35,7 +35,7 @@ static xbt_dynar_t instr_set_to_dynar(std::set<std::string>* filter)
     return nullptr;
 
   xbt_dynar_t ret = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
-  for (auto name : *filter)
+  for (auto const& name : *filter)
     xbt_dynar_push_as(ret, char*, xbt_strdup(name.c_str()));
 
   return ret;
@@ -314,7 +314,7 @@ static void instr_user_srcdst_variable(double time, const char *src, const char 
 
   std::vector<simgrid::surf::LinkImpl*> route;
   simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(src_elm, dst_elm, &route, nullptr);
-  for (auto link : route)
+  for (auto const& link : route)
     instr_user_variable(time, link->cname(), variable, father_type, value, what, nullptr, &user_link_variables);
 }
 

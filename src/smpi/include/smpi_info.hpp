@@ -10,14 +10,14 @@
 #include "smpi/smpi.h"
 #include "smpi_f2c.hpp"
 #include <string>
-#include <unordered_map>
+#include <map>
 
 namespace simgrid{
 namespace smpi{
 
 class Info : public F2C{
   private:
-    std::unordered_map<std::string, std::string> map_;
+    std::map<std::string, std::string> map_;
     int refcount_ = 1;
 
   public:

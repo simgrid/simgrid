@@ -53,7 +53,7 @@ msg_netzone_t MSG_zone_get_by_name(const char* name)
 
 void MSG_zone_get_sons(msg_netzone_t netzone, xbt_dict_t whereto)
 {
-  for (auto elem : *netzone->getChildren()) {
+  for (auto const& elem : *netzone->getChildren()) {
     xbt_dict_set(whereto, elem->getCname(), static_cast<void*>(elem), nullptr);
   }
 }
@@ -73,7 +73,7 @@ void MSG_zone_get_hosts(msg_netzone_t netzone, xbt_dynar_t whereto)
   /* converts vector to dynar */
   std::vector<simgrid::s4u::Host*> hosts;
   netzone->getHosts(&hosts);
-  for (auto host : hosts)
+  for (auto const& host : hosts)
     xbt_dynar_push(whereto, &host);
 }
 

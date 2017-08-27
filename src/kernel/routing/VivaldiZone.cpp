@@ -29,7 +29,7 @@ Coords::Coords(NetPoint* netpoint, std::string coordStr)
   boost::split(string_values, coordStr, boost::is_any_of(" "));
   xbt_assert(string_values.size() == 3, "Coordinates of %s must have 3 dimensions", netpoint->cname());
 
-  for (auto str : string_values)
+  for (auto const& str : string_values)
     try {
       coords.push_back(std::stod(str));
     } catch (std::invalid_argument const& ia) {

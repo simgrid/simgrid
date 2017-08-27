@@ -62,25 +62,25 @@ private:
   class Synchro {
   public:
     explicit Synchro(Parmap<T>& parmap) : parmap(parmap) {}
-    virtual ~Synchro() {}
+    virtual ~Synchro() = default;
     /**
      * \brief Wakes all workers and waits for them to finish the tasks.
      *
      * This function is called by the controller thread.
      */
-    virtual void master_signal()       = 0;
+    virtual void master_signal() = 0;
     /**
      * \brief Starts the parmap: waits for all workers to be ready and returns.
      *
      * This function is called by the controller thread.
      */
-    virtual void master_wait()         = 0;
+    virtual void master_wait() = 0;
     /**
      * \brief Ends the parmap: wakes the controller thread when all workers terminate.
      *
      * This function is called by all worker threads when they end (not including the controller).
      */
-    virtual void worker_signal()       = 0;
+    virtual void worker_signal() = 0;
     /**
      * \brief Waits for some work to process.
      *

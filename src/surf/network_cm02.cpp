@@ -279,14 +279,14 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
              "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
              src->getCname(), dst->getCname());
 
-  for (auto link: *route)
+  for (auto const& link : *route)
     if (link->isOff())
       failed = 1;
 
   if (sg_network_crosstraffic == 1) {
     back_route = new std::vector<LinkImpl*>();
     dst->routeTo(src, back_route, nullptr);
-    for (auto link: *back_route)
+    for (auto const& link : *back_route)
       if (link->isOff())
         failed = 1;
   }
@@ -302,10 +302,10 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 
   double bandwidth_bound = -1.0;
   if (sg_weight_S_parameter > 0)
-    for (auto link : *route)
+    for (auto const& link : *route)
       action->weight_ += sg_weight_S_parameter / link->bandwidth();
 
-  for (auto link : *route) {
+  for (auto const& link : *route) {
     double bb       = bandwidthFactor(size) * link->bandwidth();
     bandwidth_bound = (bandwidth_bound < 0.0) ? bb : std::min(bandwidth_bound, bb);
   }
@@ -334,12 +334,12 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
     lmm_update_variable_bound(maxminSystem_, action->getVariable(), (action->latCurrent_ > 0) ? std::min(action->rate_, sg_tcp_gamma / (2.0 * action->latCurrent_)) : action->rate_);
   }
 
-  for (auto link: *route)
+  for (auto const& link : *route)
     lmm_expand(maxminSystem_, link->constraint(), action->getVariable(), 1.0);
 
   if (back_route != nullptr) { //  sg_network_crosstraffic was activated
     XBT_DEBUG("Fullduplex active adding backward flow using 5%%");
-    for (auto link : *back_route)
+    for (auto const& link : *back_route)
       lmm_expand(maxminSystem_, link->constraint(), action->getVariable(), .05);
 
     //Change concurrency_share here, if you want that cross-traffic is included in the SURF concurrency

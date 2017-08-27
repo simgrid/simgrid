@@ -17,7 +17,7 @@ extern std::map<std::string, simgrid::surf::StorageType*> storage_types;
 
 static void check_disk_attachment()
 {
-  for (auto s : *simgrid::surf::StorageImpl::storagesMap()) {
+  for (auto const& s : *simgrid::surf::StorageImpl::storagesMap()) {
     simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(s.second->getHost().c_str());
     if (not host_elm)
       surf_parse_error(std::string("Unable to attach storage ") + s.second->cname() + ": host " + s.second->getHost() +

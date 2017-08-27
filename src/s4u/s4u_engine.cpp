@@ -88,7 +88,7 @@ size_t Engine::getHostCount()
 /** @brief Fills the passed list with all hosts found in the platform */
 void Engine::getHostList(std::vector<Host*>* list)
 {
-  for (auto kv : host_list)
+  for (auto const& kv : host_list)
     list->push_back(kv.second);
 }
 
@@ -110,7 +110,7 @@ static s4u::NetZone* netzoneByNameRecursive(s4u::NetZone* current, const char* n
   if (not strcmp(current->getCname(), name))
     return current;
 
-  for (auto elem : *(current->getChildren())) {
+  for (auto const& elem : *(current->getChildren())) {
     simgrid::s4u::NetZone* tmp = netzoneByNameRecursive(elem, name);
     if (tmp != nullptr) {
       return tmp;
@@ -135,7 +135,7 @@ simgrid::kernel::routing::NetPoint* Engine::getNetpointByNameOrNull(std::string 
 /** @brief Fill the provided vector with all existing netpoints */
 void Engine::getNetpointList(std::vector<simgrid::kernel::routing::NetPoint*>* list)
 {
-  for (auto kv : pimpl->netpoints_)
+  for (auto const& kv : pimpl->netpoints_)
     list->push_back(kv.second);
 }
 /** @brief Register a new netpoint to the system */

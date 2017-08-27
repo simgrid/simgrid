@@ -76,7 +76,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t args)
 {
   std::map<std::string, std::string> props;
   if (args->properties) {
-    for (auto elm : *args->properties)
+    for (auto const& elm : *args->properties)
       props.insert({elm.first, elm.second});
     delete args->properties;
   }
@@ -129,12 +129,12 @@ void sg_platf_new_link(LinkCreationArgs* link)
   } else {
     names.push_back(link->id);
   }
-  for (auto link_name : names) {
+  for (auto const& link_name : names) {
     simgrid::surf::LinkImpl* l =
         surf_network_model->createLink(link_name.c_str(), link->bandwidth, link->latency, link->policy);
 
     if (link->properties) {
-      for (auto elm : *link->properties)
+      for (auto const& elm : *link->properties)
         l->setProperty(elm.first, elm.second);
       delete link->properties;
     }
@@ -188,7 +188,7 @@ void sg_platf_new_cluster(ClusterCreationArgs* cluster)
     current_as->hasLimiter_ = 1;
   }
 
-  for (int i : *cluster->radicals) {
+  for (int const& i : *cluster->radicals) {
     std::string host_id = std::string(cluster->prefix) + std::to_string(i) + cluster->suffix;
     std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(i);
 
@@ -200,7 +200,7 @@ void sg_platf_new_cluster(ClusterCreationArgs* cluster)
     if ((cluster->properties != nullptr) && (not cluster->properties->empty())) {
       host.properties = new std::map<std::string, std::string>;
 
-      for (auto elm : *cluster->properties)
+      for (auto const& elm : *cluster->properties)
         host.properties->insert({elm.first, elm.second});
     }
 
@@ -315,7 +315,7 @@ void routing_cluster_add_backbone(simgrid::surf::LinkImpl* bb)
 
 void sg_platf_new_cabinet(CabinetCreationArgs* cabinet)
 {
-  for (int radical : *cabinet->radicals) {
+  for (int const& radical : *cabinet->radicals) {
     std::string hostname = cabinet->prefix + std::to_string(radical) + cabinet->suffix;
     s_sg_platf_host_cbarg_t host;
     memset(&host, 0, sizeof(host));
@@ -375,7 +375,7 @@ void sg_platf_new_storage(StorageCreationArgs* storage)
   auto s = surf_storage_model->createStorage(storage->id, stype->id, storage->content, storage->attach);
 
   if (storage->properties) {
-    for (auto elm : *storage->properties)
+    for (auto const& elm : *storage->properties)
       s->setProperty(elm.first, elm.second);
     delete storage->properties;
   }
@@ -425,7 +425,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     // The requested host does not exist. Do a nice message to the user
     std::string msg = std::string("Cannot create process '") + process->function + "': host '" + process->host +
                       "' does not exist\nExisting hosts: '";
-    for (auto kv : simgrid::s4u::host_list) {
+    for (auto const& kv : simgrid::s4u::host_list) {
       simgrid::s4u::Host* host = kv.second;
       msg += host->getName();
       msg += "', '";

@@ -61,7 +61,7 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
   static int already_called = 0;
   if (not already_called) {
     already_called = 1;
-    for (auto& item : simgrid::s4u::host_list) {
+    for (auto const& item : simgrid::s4u::host_list) {
       simgrid::s4u::Host* host = item.second;
       host->extension_set(new simgrid::smpi::SmpiHost(host));
     }
@@ -113,7 +113,7 @@ msg_bar_t smpi_deployment_finalization_barrier(const char* instance_id)
 }
 
 void smpi_deployment_cleanup_instances(){
-  for (auto& item : smpi_instances) {
+  for (auto const& item : smpi_instances) {
     Instance instance = item.second;
     if (instance.comm_world != MPI_COMM_NULL)
       delete instance.comm_world->group();
