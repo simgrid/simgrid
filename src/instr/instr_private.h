@@ -58,17 +58,14 @@ typedef enum {
 
 //--------------------------------------------------
 
-class ess_type {
-  public:
+class Type;
+typedef Type* type_t;
+class Type {
+public:
   char *id;
   char *name;
   char *color;
-};
 
-class Type;
-typedef Type *type_t;
-class Type : public ess_type {
-  public:
   e_entity_types kind;
   Type *father;
   xbt_dict_t children;
@@ -83,8 +80,12 @@ class Type : public ess_type {
 };
 
 //--------------------------------------------------
-class value : public ess_type{
+class value {
 public:
+  char* id;
+  char* name;
+  char* color;
+
   type_t father;
   value* ret;
   value(const char* name, const char* color, type_t father);
