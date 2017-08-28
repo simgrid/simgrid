@@ -25,7 +25,7 @@ SPEED="${DEFAULT_SPEED}"
 
 PRIVATIZE="--cfg=smpi/privatization:@HAVE_PRIVATIZATION@"
 
-SIMOPTS="--cfg=surf/precision:1e-9 --cfg=network/model:SMPI --cfg=network/TCP-gamma:4194304"
+SIMOPTS="--cfg=surf/precision:1e-9 --cfg=network/model:SMPI"
 
 #usage to print the way this script should be called
 usage () {
